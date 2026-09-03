@@ -44,15 +44,6 @@
 #include "tech/fixed.h"
 
 /**********************************************************************
-**	Language control: define the desired language for this build.
-*/
-// #define ENGLISH 1
-// #define FRENCH 1
-// #define GERMAN 1
-// #define SPAIN 1	(never used)
-//	- Language define is now passed in from the makefile. -
-
-/**********************************************************************
 ** ColinM
 ** Set this to enable dongle protection
 */

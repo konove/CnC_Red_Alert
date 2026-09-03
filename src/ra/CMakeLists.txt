@@ -3,15 +3,15 @@
 set(RA_LANGUAGE "english" CACHE STRING "Red Alert build language: english, german or french")
 set_property(CACHE RA_LANGUAGE PROPERTY STRINGS english german french)
 
+# Only ra/config.h reads these definitions; the code selects on
+# config::kBuildLanguage. English is the default and needs no definition.
 function(apply_language_setting TARGET_NAME)
     string(TOLOWER "${RA_LANGUAGE}" LANGUAGE_LOWER)
     if (LANGUAGE_LOWER STREQUAL "german")
         target_compile_definitions(${TARGET_NAME} PRIVATE GERMAN=1)
     elseif (LANGUAGE_LOWER STREQUAL "french")
         target_compile_definitions(${TARGET_NAME} PRIVATE FRENCH=1)
-    elseif (LANGUAGE_LOWER STREQUAL "english")
-        target_compile_definitions(${TARGET_NAME} PRIVATE ENGLISH=1)
-    else ()
+    elseif (NOT LANGUAGE_LOWER STREQUAL "english")
         message(FATAL_ERROR "RA_LANGUAGE must be english, german or french, not '${RA_LANGUAGE}'")
     endif ()
 endfunction()

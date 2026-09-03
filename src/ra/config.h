@@ -57,7 +57,9 @@ inline constexpr bool kSortDrawEnabled = true;
 // reachable, and the servers it dials have been gone for two decades.
 inline constexpr bool kWolapiEnabled = false;
 
-// Build language
+// Build language, from RA_LANGUAGE in CMake (or LANGUAGE in .env). It picks
+// the compiled-in layout tweaks and messages; the game data supplies the
+// string table, so the data's language should match.
 enum class BuildLanguage { English, German, French };
 
 #ifdef FRENCH

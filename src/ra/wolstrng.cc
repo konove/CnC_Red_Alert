@@ -16,1035 +16,992 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//	New character strings for wolapi integration.
+// Westwood Online strings for the build language. These never lived in
+// CONQUER.ENG, so the translations are compiled in. The German and French
+// texts keep the DOS code page bytes of the original files; the German
+// release also replaced "\337" (sharp s) with "\251" where the 8 point font
+// is used (see 8point.lbm).
 
-// #ifdef WOLAPI_INTEGRATION
 #include "ra/wolstrng.h"
 
-// #undef ENGLISH
-// #define GERMAN
-
-#ifdef ENGLISH
+#include "ra/config.h"
 
 //	Menu choice for Internet game.
-const char TXT_WOL_INTERNETBUTTON[] = "Internet";
+const char* const TXT_WOL_INTERNETBUTTON = "Internet";
 //	Generic error message, though implies that blame lies with Westwood
 // Online.
-const char TXT_WOL_ERRORMESSAGE[] =
-    "Unexpected error occurred communicating with Westwood Online.";
+const char* const TXT_WOL_ERRORMESSAGE =
+    config::kIsGerman ? "Unerwarteter Fehler trat bei der Kommunikation mit "
+                        "Westwood Online auf."
+    : config::kIsFrench
+        ? "Erreur inattendue lors de la connexion  Westwood Online."
+        : "Unexpected error occurred communicating with Westwood Online.";
 //	Connect button on login dialog.
-const char TXT_WOL_CONNECT[] = "Connect";
+const char* const TXT_WOL_CONNECT = config::kIsGerman   ? "Verbinden"
+                                    : config::kIsFrench ? "Se connecter"
+                                                        : "Connect";
 //	Title for login dialog.
-const char TXT_WOL_LOGINDIALOG[] = "Westwood Online Login";
+const char* const TXT_WOL_LOGINDIALOG =
+    config::kIsGerman   ? "Westwood-Online-Login"
+    : config::kIsFrench ? "Identifiant  Westwood Online"
+                        : "Westwood Online Login";
 //	Appears on login dialog - user login name field.
-const char TXT_WOL_NAME[] = "Nickname";
+const char* const TXT_WOL_NAME = config::kIsGerman   ? "Spitzname"
+                                 : config::kIsFrench ? "Pseudo"
+                                                     : "Nickname";
 //	Appears on login dialog - user password field.
-const char TXT_WOL_PASSWORD[] = "Password";
+const char* const TXT_WOL_PASSWORD = config::kIsGerman   ? "Pa\251wort"
+                                     : config::kIsFrench ? "Mot de passe"
+                                                         : "Password";
 //	Appears on login dialog - checkbox specifying whether nickname/password
 // should be saved to disk.
-const char TXT_WOL_SAVELOGIN[] = "Save";
+const char* const TXT_WOL_SAVELOGIN = config::kIsGerman   ? "Speichern"
+                                      : config::kIsFrench ? "Sauvegarder"
+                                                          : "Save";
 //	User hit the Escape button to cancel the logging in process.
-const char TXT_WOL_LOGINCANCEL[] = "Login cancelled.";
-
-const char TXT_WOL_MISSINGNAME[] = "Please enter your login nickname.";
-
-const char TXT_WOL_MISSINGPASSWORD[] = "Please enter your login password.";
-
-const char TXT_WOL_CANTSAVENICK[] = "Error saving nickname/password.";
-
-const char TXT_WOL_NICKINUSE[] =
-    "That nickname is in use. Please select another.";
-
-const char TXT_WOL_BADPASS[] = "Invalid password for this nickname.";
-
-const char TXT_WOL_TIMEOUT[] = "Connection to Westwood Online timed out.";
-
-const char TXT_WOL_CONNECTING[] = "Connecting to Westwood Online...";
-
-const char TXT_WOL_CANTCONNECT[] =
-    "Could not establish connection to Westwood Online.";
+const char* const TXT_WOL_LOGINCANCEL = config::kIsGerman ? "Login abgebrochen."
+                                        : config::kIsFrench
+                                            ? "Ouverture de session annule."
+                                            : "Login cancelled.";
+const char* const TXT_WOL_MISSINGNAME =
+    config::kIsGerman   ? "Bitte geben Sie Ihren Login-Spitznamen ein."
+    : config::kIsFrench ? "Veuillez entrer l'identifiant pour votre pseudo."
+                        : "Please enter your login nickname.";
+const char* const TXT_WOL_MISSINGPASSWORD =
+    config::kIsGerman ? "Bitte geben Sie Ihr Login-Pa\251wort ein."
+    : config::kIsFrench
+        ? "Veuillez entrer l'identifiant pour votre mot de passe."
+        : "Please enter your login password.";
+const char* const TXT_WOL_CANTSAVENICK =
+    config::kIsGerman   ? "Fehler beim Speichern des Spitznamens/Pa\251worts"
+    : config::kIsFrench ? "Erreur lors de la sauvegarde du pseudo/mot de passe."
+                        : "Error saving nickname/password.";
+const char* const TXT_WOL_NICKINUSE =
+    config::kIsGerman ? "Dieser Spitzname wird bereits verwendet. Bitte whlen "
+                        "Sie einen anderen."
+    : config::kIsFrench ? "Ce pseudo est dj utilis. Slectionnez-en un autre."
+                        : "That nickname is in use. Please select another.";
+const char* const TXT_WOL_BADPASS =
+    config::kIsGerman   ? "Ungltiges Pa\251wort fr diesen Spitznamen"
+    : config::kIsFrench ? "Mot de passe invalide pour ce pseudo."
+                        : "Invalid password for this nickname.";
+const char* const TXT_WOL_TIMEOUT =
+    config::kIsGerman   ? "Verbindung zu Westwood Online unterbrochen"
+    : config::kIsFrench ? "Expiration du temps de connexion  Westwood Online."
+                        : "Connection to Westwood Online timed out.";
+const char* const TXT_WOL_CONNECTING =
+    config::kIsGerman   ? "Verbinde zu Westwood Online..."
+    : config::kIsFrench ? "Connexion  Westwood Online..."
+                        : "Connecting to Westwood Online...";
+const char* const TXT_WOL_CANTCONNECT =
+    config::kIsGerman
+        ? "Verbindung zu Westwood Online konnte nicht hergestellt werden."
+    : config::kIsFrench ? "Impossible d'tablir la connexion  Westwood Online."
+                        : "Could not establish connection to Westwood Online.";
 //	Appears while connecting and logging in to Westwood Online.
-const char TXT_WOL_ATTEMPTLOGIN[] = "Logging in...";
+const char* const TXT_WOL_ATTEMPTLOGIN =
+    config::kIsGerman   ? "Einloggen ... "
+    : config::kIsFrench ? "Ouverture de la session en cours..."
+                        : "Logging in...";
 //	Appears while logging out and disconnecting from Westwood Online.
-const char TXT_WOL_ATTEMPTLOGOUT[] = "Logging out...";
+const char* const TXT_WOL_ATTEMPTLOGOUT =
+    config::kIsGerman   ? "Ausloggen ..."
+    : config::kIsFrench ? "Fermeture de la session en cours..."
+                        : "Logging out...";
 //	Appears while logging out and disconnecting from Westwood Online after
 // an error has occurred.
-const char TXT_WOL_ERRORLOGOUT[] =
-    "Terminating connection with Westwood Online...";
+const char* const TXT_WOL_ERRORLOGOUT =
+    config::kIsGerman   ? "Verbindung zu Westwood Online beenden ..."
+    : config::kIsFrench ? "Fin de connexion avec Westwood Online..."
+                        : "Terminating connection with Westwood Online...";
 //	Common "please wait" message.
-const char TXT_WOL_WAIT[] =
-    "Please wait... communicating with Westwood Online...";
+const char* const TXT_WOL_WAIT =
+    config::kIsGerman
+        ? "Bitte warten ... Verbindung zu Westwood Online wird hergestellt ..."
+    : config::kIsFrench
+        ? "Attendez svp, en communication  Westwood Online..."
+        : "Please wait... communicating with Westwood Online...";
 //	Title for the top WW Online level.
-const char TXT_WOL_TOPLEVELTITLE[] = "Westwood Online";
+const char* const TXT_WOL_TOPLEVELTITLE = "Westwood Online";
 //	Title for the WW Online level where "official" chat channels are listed.
-const char TXT_WOL_OFFICIALCHAT[] = "Official Chat";
+const char* const TXT_WOL_OFFICIALCHAT = config::kIsGerman ? "Offizieller Chat"
+                                         : config::kIsFrench
+                                             ? "Conversation officielle"
+                                             : "Official Chat";
 //	Title for the WW Online level where "user" (in other words, unofficial)
 // chat channels are listed.
-const char TXT_WOL_USERCHAT[] = "User Chat";
+const char* const TXT_WOL_USERCHAT = config::kIsGerman ? "User-Chat"
+                                     : config::kIsFrench
+                                         ? "Conversation utilisateur"
+                                         : "User Chat";
 //	Title for the WW Online level where game channels are listed.
-const char TXT_WOL_GAMECHANNELS[] = "Game Channels";
+const char* const TXT_WOL_GAMECHANNELS = config::kIsGerman   ? "Game-Channels"
+                                         : config::kIsFrench ? "Canaux de jeu"
+                                                             : "Game Channels";
 //	Title for the WW Online level where Red Alert game lobbies are listed.
-const char TXT_WOL_REDALERTLOBBIES[] = "Red Alert Lobbies";
+const char* const TXT_WOL_REDALERTLOBBIES =
+    config::kIsGerman   ? "Alarmstufe-Rot-Lobbies"
+    : config::kIsFrench ? "Salons d'Alerte Rouge"
+                        : "Red Alert Lobbies";
 //	Appears briefly while a list of channels is being downloaded.
-const char TXT_WOL_CHANNELLISTLOADING[] = "...downloading...";
-
-const char TXT_WOL_YOURENOTINCHANNEL[] =
-    "You are not currently in a chat channel.";
+const char* const TXT_WOL_CHANNELLISTLOADING =
+    config::kIsGerman   ? "... Daten werden heruntergeladen ..."
+    : config::kIsFrench ? "...En cours de tlchargement..."
+                        : "...downloading...";
+const char* const TXT_WOL_YOURENOTINCHANNEL =
+    config::kIsGerman
+        ? "Sie befinden sich zur Zeit nicht in einem Chat-Channel."
+    : config::kIsFrench ? "Vous n'tes pas dans un canal de conversation."
+                        : "You are not currently in a chat channel.";
 //	"Action" button. Causes text entered by user to show up as if they were
 // performing an action, as opposed to speaking.
-const char TXT_WOL_ACTION[] = "Action";
+const char* const TXT_WOL_ACTION = "Action";
 //	"Join" button. Allows user to join a channel, game, or WW Online level.
-const char TXT_WOL_JOIN[] = "Join";
-
-const char TXT_WOL_CANTCREATEINCHANNEL[] =
-    "You can't create a new channel until you exit this channel.";
+const char* const TXT_WOL_JOIN = config::kIsGerman   ? "Teilnehmen"
+                                 : config::kIsFrench ? "Rejoindre"
+                                                     : "Join";
+const char* const TXT_WOL_CANTCREATEINCHANNEL =
+    config::kIsGerman
+        ? "Sie knnen keinen neuen Channel erstellen, bevor Sie diesen Channel "
+          "verlassen."
+    : config::kIsFrench
+        ? "Cration d'un nouveau canal impossible tant que vous ne quittez pas "
+          "ce "
+          "canal."
+        : "You can't create a new channel until you exit this channel.";
 //	"New" button. Allows user to create a new chat channel or game.
-const char TXT_WOL_NEWSOMETHING[] = "New";
+const char* const TXT_WOL_NEWSOMETHING = config::kIsGerman   ? "Neu"
+                                         : config::kIsFrench ? "Nouveau"
+                                                             : "New";
 //	Title for chat channel creation dialog.
-const char TXT_WOL_CREATECHANNELTITLE[] = "Create Channel";
-
-const char TXT_WOL_CREATECHANNELPROMPT[] = "Channel Name: ";
+const char* const TXT_WOL_CREATECHANNELTITLE =
+    config::kIsGerman   ? "Channel erstellen"
+    : config::kIsFrench ? "Crer un canal"
+                        : "Create Channel";
+const char* const TXT_WOL_CREATECHANNELPROMPT =
+    config::kIsGerman   ? "Channel-Name: "
+    : config::kIsFrench ? "Nom du canal : "
+                        : "Channel Name: ";
 //	Prompt for fields where the user must enter a password.
-const char TXT_WOL_PASSPROMPT[] = "Password: ";
+const char* const TXT_WOL_PASSPROMPT = config::kIsGerman   ? "Pa\251wort: "
+                                       : config::kIsFrench ? "Mot de passe : "
+                                                           : "Password: ";
 //	Prompt for fields where the user may enter a password, but it is not
 // required.
-const char TXT_WOL_OPTIONALPASSPROMPT[] = "Password (optional): ";
+const char* const TXT_WOL_OPTIONALPASSPROMPT =
+    config::kIsGerman   ? "Pa\251wort (optional): "
+    : config::kIsFrench ? "Mot de passe (en option): "
+                        : "Password (optional): ";
 //	Appears in channel list, as top choice, which the user can use to go
 // back to the top WW Online level.
-const char TXT_WOL_CHANNEL_TOP[] = ".. <back to top>";
+const char* const TXT_WOL_CHANNEL_TOP =
+    config::kIsGerman   ? ".. <zurck zum Anfang>"
+    : config::kIsFrench ? ".. <retour  la page d'accueil>"
+                        : ".. <back to top>";
 //	Appears in channel list, as top choice, which the user can use to go
 // back up one WW Online level.
-const char TXT_WOL_CHANNEL_BACK[] = ".. <back>";
+const char* const TXT_WOL_CHANNEL_BACK = config::kIsGerman   ? ".. <zurck>"
+                                         : config::kIsFrench ? ".. <retour>"
+                                                             : ".. <back>";
 //	%s is replaced by the name of a channel.
-const char TXT_WOL_YOUJOINED[] = "You have joined the %s channel.";
+const char* const TXT_WOL_YOUJOINED =
+    config::kIsGerman   ? "Sie nehmen am %s-Channel teil."
+    : config::kIsFrench ? "Vous avez rejoint le canal %s."
+                        : "You have joined the %s channel.";
 //	%s is replaced by the name of a user.
-const char TXT_WOL_YOUJOINEDGAME[] = "You have joined %s's game.";
+const char* const TXT_WOL_YOUJOINEDGAME =
+    config::kIsGerman   ? "Sie nehmen an %ss Spiel teil."
+    : config::kIsFrench ? "Vous rejoignez la partie de %s."
+                        : "You have joined %s's game.";
 //	Message confirming that user created a new game.
-const char TXT_WOL_YOUCREATEDGAME[] = "New game created.";
+const char* const TXT_WOL_YOUCREATEDGAME =
+    config::kIsGerman   ? "Neues Spiel erstellt."
+    : config::kIsFrench ? "Cration d'une nouvelle partie."
+                        : "New game created.";
 //	%s is replaced by the name of a lobby.
-const char TXT_WOL_YOUJOINEDLOBBY[] = "You have entered the %s lobby.";
+const char* const TXT_WOL_YOUJOINEDLOBBY =
+    config::kIsGerman   ? "Sie haben die %s-Lobby betreten."
+    : config::kIsFrench ? "Vous tes entr dans le salon %s."
+                        : "You have entered the %s lobby.";
 //	%s is replaced by the name of a channel.
-const char TXT_WOL_YOULEFT[] = "You have left the %s channel.";
+const char* const TXT_WOL_YOULEFT =
+    config::kIsGerman   ? "Sie haben den %s-Channel verlassen."
+    : config::kIsFrench ? "Vous avez quitt le canal %s."
+                        : "You have left the %s channel.";
 //	%s is replaced by the name of a lobby.
-const char TXT_WOL_YOULEFTLOBBY[] = "You have left the %s lobby.";
+const char* const TXT_WOL_YOULEFTLOBBY =
+    config::kIsGerman   ? "Sie haben die %s-Lobby verlassen."
+    : config::kIsFrench ? "Vous avez quitt le salon %s."
+                        : "You have left the %s lobby.";
 //	Title for dialog that prompts user for the password needed to enter a
 // private channel.
-const char TXT_WOL_JOINPRIVATETITLE[] = "Join Private Channel";
-
-const char TXT_WOL_JOINPRIVATEPROMPT[] = "Enter Channel Password: ";
-
-const char TXT_WOL_BADCHANKEY[] = "Incorrect channel password.";
+const char* const TXT_WOL_JOINPRIVATETITLE =
+    config::kIsGerman   ? "An privatem Channel teilnehmen"
+    : config::kIsFrench ? "Rejoindre un canal priv"
+                        : "Join Private Channel";
+const char* const TXT_WOL_JOINPRIVATEPROMPT =
+    config::kIsGerman   ? "Channel-Pa\251wort eingeben: "
+    : config::kIsFrench ? "Entrer le mot de passe du canal : "
+                        : "Enter Channel Password: ";
+const char* const TXT_WOL_BADCHANKEY =
+    config::kIsGerman   ? "Falsches Channel-Pa\251wort."
+    : config::kIsFrench ? "Mot de passe du canal incorrect."
+                        : "Incorrect channel password.";
 //	Title for the Page/Locate dialog. Page = send a user a message. Locate =
 // find out where a user is.
-const char TXT_WOL_PAGELOCATE[] = "Page/Locate";
+const char* const TXT_WOL_PAGELOCATE = config::kIsGerman ? "Senden/Suchen"
+                                       : config::kIsFrench
+                                           ? "Envoyer/Rechercher"
+                                           : "Page/Locate";
 //	Appears on Page/Locate dialog.
-const char TXT_WOL_USERNAMEPROMPT[] = "User Name: ";
+const char* const TXT_WOL_USERNAMEPROMPT = config::kIsGerman ? "User-Name: "
+                                           : config::kIsFrench
+                                               ? "Nom de l'utilisateur : "
+                                               : "User Name: ";
 //	Text for Page button on dialog.
-const char TXT_WOL_PAGE[] = "Page";
+const char* const TXT_WOL_PAGE = config::kIsGerman   ? "Senden"
+                                 : config::kIsFrench ? "Envoyer"
+                                                     : "Page";
 //	Text for Locate button on dialog.
-const char TXT_WOL_LOCATE[] = "Locate";
+const char* const TXT_WOL_LOCATE = config::kIsGerman   ? "Suchen"
+                                   : config::kIsFrench ? "Rechercher"
+                                                       : "Locate";
 //	%s is replaced with name of user being located.
-const char TXT_WOL_LOCATING[] = "Locating %s...";
-
-const char TXT_WOL_FIND_NOTHERE[] = "The specified user name does not exist.";
-
-const char TXT_WOL_FIND_NOCHAN[] =
-    "The specified user is currently not in a channel.";
-
-const char TXT_WOL_FIND_OFF[] =
-    "The specified user has disabled find capability.";
+const char* const TXT_WOL_LOCATING = config::kIsGerman ? "Suche %s..."
+                                     : config::kIsFrench
+                                         ? "Recherche de %s en cours ..."
+                                         : "Locating %s...";
+const char* const TXT_WOL_FIND_NOTHERE =
+    config::kIsGerman   ? "Der gesuchte User-Name existiert nicht."
+    : config::kIsFrench ? "Le nom de l'utilisateur spcifi n'existe pas."
+                        : "The specified user name does not exist.";
+const char* const TXT_WOL_FIND_NOCHAN =
+    config::kIsGerman
+        ? "Der genannte User befindet sich zur Zeit nicht in einem Channel."
+    : config::kIsFrench
+        ? "L'utilisateur spcifi n'est pas sur le canal pour le moment."
+        : "The specified user is currently not in a channel.";
+const char* const TXT_WOL_FIND_OFF =
+    config::kIsGerman ? "Der genannte User hat die Suchfunktion ausgeschaltet."
+    : config::kIsFrench
+        ? "L'utilisateur spcifi a dsactiv la fonction de recherche."
+        : "The specified user has disabled find capability.";
 //	%s is replaced with name of user being located.
-const char TXT_WOL_FOUNDIN[] = "User found in the %s channel.";
+const char* const TXT_WOL_FOUNDIN =
+    config::kIsGerman   ? "User wurde im %s-Channel gefunden."
+    : config::kIsFrench ? "Utilisateur trouv dans le canal %s."
+                        : "User found in the %s channel.";
 //	Title for Page dialog.
-const char TXT_WOL_PAGEMESSAGETITLE[] = "Page User";
+const char* const TXT_WOL_PAGEMESSAGETITLE = config::kIsGerman ? "Sender"
+                                             : config::kIsFrench
+                                                 ? "Envoyer  l'utilisateur"
+                                                 : "Page User";
 //	Prompt for field in which user enters the message that is to be sent to
 // user.
-const char TXT_WOL_PAGEMESSAGEPROMPT[] = "Message to Send: ";
+const char* const TXT_WOL_PAGEMESSAGEPROMPT =
+    config::kIsGerman   ? "Zu sendende Nachricht: "
+    : config::kIsFrench ? "Message  envoyer : "
+                        : "Message to Send: ";
 //	%s is replaced with name of user being paged.
-const char TXT_WOL_PAGING[] = "Paging %s...";
-
-const char TXT_WOL_PAGE_NOTHERE[] = "The specified user is not logged in.";
-
-const char TXT_WOL_PAGE_OFF[] =
-    "The specified user has disabled page capability.";
+const char* const TXT_WOL_PAGING = config::kIsGerman   ? "Sende an %s ..."
+                                   : config::kIsFrench ? "Envoi  %s en cours..."
+                                                       : "Paging %s...";
+const char* const TXT_WOL_PAGE_NOTHERE =
+    config::kIsGerman   ? "Der genannte User ist nicht eingeloggt."
+    : config::kIsFrench ? "L'utilisateur spcifi n'a pas ouvert la session."
+                        : "The specified user is not logged in.";
+const char* const TXT_WOL_PAGE_OFF =
+    config::kIsGerman
+        ? "Der genannte User hat die Empfangsfunktion ausgeschaltet."
+    : config::kIsFrench
+        ? "L'utilisateur spcifi a dsactiv la fonction d'envoi de messages."
+        : "The specified user has disabled page capability.";
 //	First %s is replaced with user name, second %s with a text message.
-const char TXT_WOL_ONPAGE[] = "Page from %s: %s";
+const char* const TXT_WOL_ONPAGE = config::kIsGerman   ? "Sende von %s: %s"
+                                   : config::kIsFrench ? "Envoi de %s : %s"
+                                                       : "Page from %s: %s";
 //	%s is replaced with name of user being paged.
-const char TXT_WOL_WASPAGED[] = "%s was successfully paged.";
+const char* const TXT_WOL_WASPAGED =
+    config::kIsGerman   ? "Die Nachricht wurde %s erfolgreich zugestellt."
+    : config::kIsFrench ? "Envoi  %s russi."
+                        : "%s was successfully paged.";
 //	%s is replaced with the name of a user that has just been squelched.
 //(Currently unused.) const char TXT_WOL_USERISSQUELCHED[]		= "%s
 // has been squelched."; 	%s is replaced with the name of a user that has
 // had
 // squelch removed. (Currently unused.) const char TXT_WOL_USERISNOTSQUELCHED[]
 // = "%s is no longer squelched.";
-
-const char TXT_WOL_ONLYOWNERCANKICK[] =
-    "Only the channel owner can kick users out.";
+const char* const TXT_WOL_ONLYOWNERCANKICK =
+    config::kIsGerman
+        ? "Nur der Channel-Besitzer kann andere User hinauswerfen."
+    : config::kIsFrench
+        ? "Seul le responsable du canal peut expulser des utilisateurs."
+        : "Only the channel owner can kick users out.";
 //	Both %s replaced with user names.
-const char TXT_WOL_USERKICKEDUSER[] = "%s kicked %s out of the channel.";
+const char* const TXT_WOL_USERKICKEDUSER =
+    config::kIsGerman   ? "%s hat %s aus dem Channel geworfen."
+    : config::kIsFrench ? "%s expulse %s du canal."
+                        : "%s kicked %s out of the channel.";
 //	%s replaced with user name.
-const char TXT_WOL_USERKICKEDYOU[] =
-    "You were kicked out of the channel by %s.";
-
-const char TXT_WOL_NOONETOKICK[] = "Select the user(s) you wish to kick out.";
+const char* const TXT_WOL_USERKICKEDYOU =
+    config::kIsGerman   ? "Sie wurden von %s aus dem Channel geworfen."
+    : config::kIsFrench ? "Vous tes expuls du canal par %s."
+                        : "You were kicked out of the channel by %s.";
+const char* const TXT_WOL_NOONETOKICK =
+    config::kIsGerman ? "Whlen Sie den/die User, die Sie hinauswerfen mchten."
+    : config::kIsFrench
+        ? "Slectionnez l'(les) utilisateur(s) que vous voulez expulser."
+        : "Select the user(s) you wish to kick out.";
 //	%s replaced with user name.
-const char TXT_WOL_USERWASBANNED[] = "%s has been banned from the channel.";
+const char* const TXT_WOL_USERWASBANNED =
+    config::kIsGerman   ? "%s hat keinen Zutritt mehr zu diesem Channel."
+    : config::kIsFrench ? "%s est exclu du canal."
+                        : "%s has been banned from the channel.";
 //	Title for dialog in which user enters password for new game they are
 // creating.
-const char TXT_WOL_CREATEPRIVGAMETITLE[] = "Create Private Game";
-
-const char TXT_WOL_YOUREBANNED[] =
-    "You've been banned from entering this channel.";
+const char* const TXT_WOL_CREATEPRIVGAMETITLE =
+    config::kIsGerman   ? "Privates Spiel erstellen"
+    : config::kIsFrench ? "Crer une partie prive"
+                        : "Create Private Game";
+const char* const TXT_WOL_YOUREBANNED =
+    config::kIsGerman   ? "Sie haben keinen Zutritt mehr zu diesem Channel."
+    : config::kIsFrench ? "Vous n'tes pas autoris  entrer dans ce canal."
+                        : "You've been banned from entering this channel.";
 //	%s replaced with user name.
-const char TXT_WOL_PLAYERLEFTGAME[] = "%s has left the game.";
+const char* const TXT_WOL_PLAYERLEFTGAME =
+    config::kIsGerman   ? "%s hat das Spiel verlassen."
+    : config::kIsFrench ? "%s a quitt la partie."
+                        : "%s has left the game.";
 //	%s replaced with user name.
-const char TXT_WOL_PLAYERJOINEDGAME[] = "%s has joined the game.";
-
-const char TXT_WOL_YOUWEREKICKEDFROMGAME[] =
-    "You've been kicked out of the game.";
+const char* const TXT_WOL_PLAYERJOINEDGAME =
+    config::kIsGerman   ? "%s hat an dem Spiel teilgenommen."
+    : config::kIsFrench ? "%s a rejoint la partie."
+                        : "%s has joined the game.";
+const char* const TXT_WOL_YOUWEREKICKEDFROMGAME =
+    config::kIsGerman   ? "Sie wurden aus dem Spiel geworfen."
+    : config::kIsFrench ? "Vous avez t expuls de la partie."
+                        : "You've been kicked out of the game.";
 //	Shows user's ladder ranking and win/loss record. Appears above main chat
 // area.
-const char TXT_WOL_PERSONALWINLOSSRECORD[] =
-    "%s. Red Alert: Ranked %u. Won %u. Lost %u. Points %u.";
+const char* const TXT_WOL_PERSONALWINLOSSRECORD =
+    config::kIsGerman
+        ? "%s. Alarmstufe Rot: Pl %u. Siege %u. Niederl %u. Pkte %u."
+    : config::kIsFrench
+        ? "%s. Alerte Rouge: position %u. Vict. %u. Df. %u. Pts. %u."
+        : "%s. Red Alert: Ranked %u. Won %u. Lost %u. Points %u.";
 //	Shows user's ladder ranking and win/loss record. Appears above main chat
 // area. Appended Aftermath ranking.
-const char TXT_WOL_PERSONALWINLOSSRECORDAM[] =
-    "%s. Aftermath: Ranked %u. Won %u. Lost %u. Points %u.";
+const char* const TXT_WOL_PERSONALWINLOSSRECORDAM =
+    config::kIsGerman
+        ? "%s. Vergeltungsschlag: Pl %u. Siege %u. Niederl %u. Pkte %u."
+    : config::kIsFrench
+        ? "%s. Missions M.A.D.: position %u. Vict. %u. Df. %u. Pts. %u."
+        : "%s. Aftermath: Ranked %u. Won %u. Lost %u. Points %u.";
 //	Used to show brief user ladder ranking in user lists. Example: FredX
 //(Rank 134)
-const char TXT_WOL_USERRANK[] = "%s (Rank %u)";
+const char* const TXT_WOL_USERRANK = config::kIsGerman   ? "%s (Platz %u)"
+                                     : config::kIsFrench ? "%s (Position %u)"
+                                                         : "%s (Rank %u)";
 //	No need to translate.
-const char TXT_WOL_USERHOUSE[] = "%s <%s>";
+const char* const TXT_WOL_USERHOUSE = "%s <%s>";
 //	"Rank" translates the same here as above.
-const char TXT_WOL_USERRANKHOUSE[] = "%s (Rank %u) <%s>";
+const char* const TXT_WOL_USERRANKHOUSE =
+    config::kIsGerman   ? "%s (Platz %u) <%s>"
+    : config::kIsFrench ? "%s (Position %u) <%s>"
+                        : "%s (Rank %u) <%s>";
 //	Button host user presses to start a game they have created.
-const char TXT_WOL_STARTBUTTON[] = "Start";
+const char* const TXT_WOL_STARTBUTTON = config::kIsFrench ? "Dmarrer" : "Start";
 //	Button that guests joining a game press to indicate that they agree to
 // the game rules set up by the host.
-const char TXT_WOL_ACCEPTBUTTON[] = "Accept";
+const char* const TXT_WOL_ACCEPTBUTTON = config::kIsGerman   ? "Besttigen"
+                                         : config::kIsFrench ? "Accepter"
+                                                             : "Accept";
 //	%s replaced with user name.
-const char TXT_WOL_HOSTLEFTGAME[] = "%s has cancelled the game.";
+const char* const TXT_WOL_HOSTLEFTGAME =
+    config::kIsGerman   ? "%s hat das Spiel abgebrochen."
+    : config::kIsFrench ? "%s a annul la partie."
+                        : "%s has cancelled the game.";
 //	Appears when game is actually being started.
-const char TXT_WOL_WAITINGTOSTART[] = "Launching game...";
+const char* const TXT_WOL_WAITINGTOSTART =
+    config::kIsGerman   ? "Spiel wird gestartet ..."
+    : config::kIsFrench ? "Lancement de la partie..."
+                        : "Launching game...";
 //	Tooltip help for WW Online button: disconnect.
-const char TXT_WOL_TTIP_DISCON[] = " Leave Westwood Online ";
+const char* const TXT_WOL_TTIP_DISCON =
+    config::kIsGerman   ? " Westwood Online verlassen"
+    : config::kIsFrench ? " Quitter Westwood Online "
+                        : " Leave Westwood Online ";
 //	Tooltip help for WW Online button: leave current channel.
-const char TXT_WOL_TTIP_LEAVE[] = " Leave the channel you are in ";
+const char* const TXT_WOL_TTIP_LEAVE =
+    config::kIsGerman   ? " Derzeitigen Channel verlassen "
+    : config::kIsFrench ? " Quitter le canal o vous vous trouvez "
+                        : " Leave the channel you are in ";
 //	Tooltip help for WW Online button: refresh current list.
-const char TXT_WOL_TTIP_REFRESH[] = " Refresh current channel list ";
+const char* const TXT_WOL_TTIP_REFRESH =
+    config::kIsGerman   ? " Channel-Liste aktualisieren "
+    : config::kIsFrench ? " Rafrachir la liste du canal "
+                        : " Refresh current channel list ";
 //	Tooltip help for WW Online button: squelch user(s).
-const char TXT_WOL_TTIP_SQUELCH[] =
-    " Enable/disable incoming message from user(s) ";
+const char* const TXT_WOL_TTIP_SQUELCH =
+    config::kIsGerman   ? " Nachrichteneingang von User(n) ein/ausschalten"
+    : config::kIsFrench ? " Activer/dsactiver les messages en provenance de(s) "
+                          "l'utilisateur(s) "
+                        : " Enable/disable incoming message from user(s) ";
 //	Tooltip help for WW Online button: ban (and kick) user(s).
-const char TXT_WOL_TTIP_BAN[] = " Ban user(s) from channel ";
+const char* const TXT_WOL_TTIP_BAN =
+    config::kIsGerman   ? " User(n) Zutritt zum Channel verwehren "
+    : config::kIsFrench ? " Exclure l'/les utilisateur(s)du canal "
+                        : " Ban user(s) from channel ";
 //	Tooltip help for WW Online button: kick user(s).
-const char TXT_WOL_TTIP_KICK[] = " Kick user(s) out of channel ";
+const char* const TXT_WOL_TTIP_KICK =
+    config::kIsGerman   ? " User aus dem Channel werfen "
+    : config::kIsFrench ? " Expulser l'/les utilisateurs du canal "
+                        : " Kick user(s) out of channel ";
 //	Tooltip help for WW Online button: find/page.
-const char TXT_WOL_TTIP_FINDPAGE[] = " Find or page a user ";
+const char* const TXT_WOL_TTIP_FINDPAGE =
+    config::kIsGerman   ? " User suchen oder an User senden "
+    : config::kIsFrench ? " Rechercher ou envoyer un message  un utilisateur "
+                        : " Find or page a user ";
 //	Tooltip help for WW Online button: show options dialog.
-const char TXT_WOL_TTIP_OPTIONS[] = " Set Westwood Online options ";
+const char* const TXT_WOL_TTIP_OPTIONS =
+    config::kIsGerman   ? " Westwood-Online-Optionen einstellen "
+    : config::kIsFrench ? " Rgler les options de Westwood Online "
+                        : " Set Westwood Online options ";
 //	Tooltip help for WW Online button: browse game ladder.
-const char TXT_WOL_TTIP_LADDER[] = " Browse Red Alert ladders ";
+const char* const TXT_WOL_TTIP_LADDER =
+    config::kIsGerman   ? " Alarmstufe-Rot-Tabelle durchsuchen "
+    : config::kIsFrench ? " Parcourir les hirarchies d'Alerte Rouge "
+                        : " Browse Red Alert ladders ";
 //	Tooltip help for WW Online button: show help.
-const char TXT_WOL_TTIP_HELP[] = " Show Westwood Online help ";
+const char* const TXT_WOL_TTIP_HELP =
+    config::kIsGerman   ? " Westwood-Online-Hilfe anzeigen "
+    : config::kIsFrench ? " Afficher l'aide de Westwood Online "
+                        : " Show Westwood Online help ";
 //	Tooltip help. Appears for button host presses to start a game.
-const char TXT_WOL_TTIP_START[] = " Start the game ";
+const char* const TXT_WOL_TTIP_START = config::kIsGerman   ? " Spiel starten "
+                                       : config::kIsFrench ? " Dmarrer le jeu "
+                                                           : " Start the game ";
 //	Tooltip help. Appears for button guests press in order to agree to
 //(accept) game rules set up by the host.
-const char TXT_WOL_TTIP_ACCEPT[] = " Accept the current game settings ";
+const char* const TXT_WOL_TTIP_ACCEPT =
+    config::kIsGerman   ? " Aktuelle Spieleinstellungen besttigen "
+    : config::kIsFrench ? " Valider les paramtres actuels du jeu "
+                        : " Accept the current game settings ";
 //	Tooltip help. Appears for the small buttons that allow users to enlarge
 // or diminish the size of channel/user lists.
-const char TXT_WOL_TTIP_EXPANDLIST[] = " Expand/contract list ";
+const char* const TXT_WOL_TTIP_EXPANDLIST =
+    config::kIsGerman   ? " Listen erweitern/verkleinern "
+    : config::kIsFrench ? " Complter/rduire la liste "
+                        : " Expand/contract list ";
 //	Tooltip for Cancel button during game setup.
-const char TXT_WOL_TTIP_CANCELGAME[] = " Go back a level ";
+const char* const TXT_WOL_TTIP_CANCELGAME =
+    config::kIsGerman   ? " Einen Level zurck "
+    : config::kIsFrench ? " Retour au niveau prcdent "
+                        : " Go back a level ";
 //	Tooltip for Join button during chat.
-const char TXT_WOL_TTIP_JOIN[] = " Join a chat or game channel ";
+const char* const TXT_WOL_TTIP_JOIN =
+    config::kIsGerman   ? " An Chat- oder Game-Channel teilnehmen "
+    : config::kIsFrench ? " Rejoindre un canal de conversation/jeu "
+                        : " Join a chat or game channel ";
 //	Tooltip for Back button during chat.
-const char TXT_WOL_TTIP_BACK[] = " Go back a level ";
+const char* const TXT_WOL_TTIP_BACK = config::kIsGerman ? " Einen Level zurck "
+                                      : config::kIsFrench
+                                          ? " Retour au niveau prcdent "
+                                          : " Go back a level ";
 //	Tooltip for New button during chat.
-const char TXT_WOL_TTIP_CREATE[] = " Create a new chat/game channel ";
+const char* const TXT_WOL_TTIP_CREATE =
+    config::kIsGerman   ? " Neuen Chat- oder Game-Level erstellen "
+    : config::kIsFrench ? " Crer un nouveau canal de conversation/jeu "
+                        : " Create a new chat/game channel ";
 //	Tooltip for Action button.
-const char TXT_WOL_TTIP_ACTION[] = " Action message ";
-
-const char TXT_WOL_OPTFIND[] = "Let others FIND you.";
-
-const char TXT_WOL_OPTPAGE[] = "Let others PAGE you.";
-
-const char TXT_WOL_OPTLANGUAGE[] = "Filter out bad language.";
+const char* const TXT_WOL_TTIP_ACTION = config::kIsGerman ? " Action-Nachricht "
+                                        : config::kIsFrench
+                                            ? " Message d'action "
+                                            : " Action message ";
+const char* const TXT_WOL_OPTFIND =
+    config::kIsGerman   ? "Lassen Sie zu, da\251 andere Sie FINDEN."
+    : config::kIsFrench ? "Laisser les autres vous RECHERCHER."
+                        : "Let others FIND you.";
+const char* const TXT_WOL_OPTPAGE =
+    config::kIsGerman ? "Lassen Sie zu, da\251 andere Ihnen Nachrichten SENDEN."
+    : config::kIsFrench ? "Laisser les autres vous ENVOYER des messages."
+                        : "Let others PAGE you.";
+const char* const TXT_WOL_OPTLANGUAGE =
+    config::kIsGerman   ? "Unangemessene Sprache herausfiltern."
+    : config::kIsFrench ? "Filtrer les vulgarits."
+                        : "Filter out bad language.";
 //	"Display just the games that were created by someone in the lobby you
 // are currently in."
-const char TXT_WOL_OPTGAMESCOPE[] = "Show local lobby games only.";
-
-const char TXT_WOL_CHANNELGONE[] = "Channel no longer exists.";
+const char* const TXT_WOL_OPTGAMESCOPE =
+    config::kIsGerman   ? "Nur lokale Spiel-Lobby anzeigen."
+    : config::kIsFrench ? "Afficher seulement les parties en salons locaux."
+                        : "Show local lobby games only.";
+const char* const TXT_WOL_CHANNELGONE =
+    config::kIsGerman   ? "Channel existiert nicht mehr."
+    : config::kIsFrench ? "Ce canal n'existe plus."
+                        : "Channel no longer exists.";
 //	Title for create new game dialog.
-const char TXT_WOL_CG_TITLE[] = "Create Game";
+const char* const TXT_WOL_CG_TITLE = config::kIsGerman   ? "Spiel erstellen"
+                                     : config::kIsFrench ? "Crer une partie"
+                                                         : "Create Game";
 //	%i replaced by number of players allowed into game channel.
-const char TXT_WOL_CG_PLAYERS[] = "Players:  %i";
+const char* const TXT_WOL_CG_PLAYERS = config::kIsGerman   ? "Spieler:  %i"
+                                       : config::kIsFrench ? "Joueurs :  %i"
+                                                           : "Players:  %i";
 //	Marks field indicating whether or not this is a tournament game.
-const char TXT_WOL_CG_TOURNAMENT[] = "Tournament";
+const char* const TXT_WOL_CG_TOURNAMENT = config::kIsGerman   ? "Turnier"
+                                          : config::kIsFrench ? "Tournoi"
+                                                              : "Tournament";
 //	Marks field indicating whether or not this is a private game.
-const char TXT_WOL_CG_PRIVACY[] = "Private";
-
-const char TXT_WOL_CG_RAGAME[] = "Red Alert game";
-
-const char TXT_WOL_CG_CSGAME[] = "Counterstrike game";
-
-const char TXT_WOL_CG_AMGAME[] = "Aftermath game";
-
-const char TXT_WOL_NEEDCOUNTERSTRIKE[] =
-    "Sorry, you must have Counterstrike installed to play this game.";
-
-const char TXT_WOL_NEEDAFTERMATH[] =
-    "Sorry, you must have Aftermath installed to play this game.";
+const char* const TXT_WOL_CG_PRIVACY = config::kIsGerman   ? "Privat"
+                                       : config::kIsFrench ? "Prive"
+                                                           : "Private";
+const char* const TXT_WOL_CG_RAGAME = config::kIsGerman ? "Alarmstufe-Rot-Spiel"
+                                      : config::kIsFrench
+                                          ? "Partie Alerte Rouge"
+                                          : "Red Alert game";
+const char* const TXT_WOL_CG_CSGAME = config::kIsGerman ? "Gegenangriff-Spiel"
+                                      : config::kIsFrench
+                                          ? "Partie Missions Taga"
+                                          : "Counterstrike game";
+const char* const TXT_WOL_CG_AMGAME =
+    config::kIsGerman   ? "Vergeltungsschlag-Spiel"
+    : config::kIsFrench ? "Partie Missions M.A.D."
+                        : "Aftermath game";
+const char* const TXT_WOL_NEEDCOUNTERSTRIKE =
+    config::kIsGerman ? "Sie mssen 'Gegenangriff' installiert haben, um dieses "
+                        "Spiel spielen zu "
+                        "knnen."
+    : config::kIsFrench
+        ? "Dsol, vous devez installer Missions Taga pour jouer cette partie."
+        : "Sorry, you must have Counterstrike installed to play this game.";
+const char* const TXT_WOL_NEEDAFTERMATH =
+    config::kIsGerman ? "Sie mssen 'Vergeltungsschlag' installiert haben, um "
+                        "dieses Spiel spielen "
+                        "zu knnen."
+    : config::kIsFrench
+        ? "Dsol, vous devez installer Missions M.A.D. pour jouer cette partie."
+        : "Sorry, you must have Aftermath installed to play this game.";
 //	%s = name of channel, %i = number of people in channel.
-const char TXT_WOL_TTIP_CHANLIST_CHAT[] =
-    " Doubleclick to join the '%s' channel (%i current users). ";
+const char* const TXT_WOL_TTIP_CHANLIST_CHAT =
+    config::kIsGerman
+        ? " Doppelklick zur Teilnahme am '%s'-Channel (z.Z. %i User). "
+    : config::kIsFrench
+        ? " Double-clic pour rejoindre canal %s (%i utilisateurs). "
+        : " Doubleclick to join the '%s' channel (%i current users). ";
 //	%s = name of lobby, %i = number of people in channel.
-const char TXT_WOL_TTIP_CHANLIST_LOBBY[] =
-    " Doubleclick to join the '%s' lobby (%i current users). ";
+const char* const TXT_WOL_TTIP_CHANLIST_LOBBY =
+    config::kIsGerman
+        ? " Doppelklick zur Teilnahme an der '%s'-Lobby (z.Z. %i User). "
+    : config::kIsFrench
+        ? " Double-clic pour rejoindre salon %s (%i utilisateurs). "
+        : " Doubleclick to join the '%s' lobby (%i current users). ";
 //	Appears in tooltip help for a channel list item.
-const char TXT_WOL_TTIP_REDALERT[] = "Red Alert";
+const char* const TXT_WOL_TTIP_REDALERT = config::kIsGerman   ? "Alarmstufe Rot"
+                                          : config::kIsFrench ? "Alerte Rouge"
+                                                              : "Red Alert";
 //	Appears in tooltip help for a channel list item.
-const char TXT_WOL_TTIP_COUNTERSTRIKE[] = "Counterstrike";
+const char* const TXT_WOL_TTIP_COUNTERSTRIKE =
+    config::kIsGerman   ? "Gegenangriff"
+    : config::kIsFrench ? "Missions Taga"
+                        : "Counterstrike";
 //	Appears in tooltip help for a channel list item.
-const char TXT_WOL_TTIP_AFTERMATH[] = "Aftermath";
+const char* const TXT_WOL_TTIP_AFTERMATH =
+    config::kIsGerman   ? "Vergeltungsschlag"
+    : config::kIsFrench ? "Missions M.A.D."
+                        : "Aftermath";
 //	%s = name of user, first %i = number of players in channel, second %i =
 // maximum number of players allowed.
-const char TXT_WOL_TTIP_CHANLIST_RAGAME[] =
-    " %s game (%i players of a maximum %i). ";
+const char* const TXT_WOL_TTIP_CHANLIST_RAGAME =
+    config::kIsGerman   ? " %s-Spiel (%i Spieler von maximal %i). "
+    : config::kIsFrench ? " Partie de %s (%i joueurs pour un max. de %i). "
+                        : " %s game (%i players of a maximum %i). ";
 //	%s = name of user, %i = number of players in channel.
-const char TXT_WOL_TTIP_CHANLIST_GAME[] = " %s game (%i players). ";
+const char* const TXT_WOL_TTIP_CHANLIST_GAME =
+    config::kIsGerman   ? " %s-Spiel (%i Spieler). "
+    : config::kIsFrench ? " Partie de %s (%i joueurs). "
+                        : " %s game (%i players). ";
 //	Appears in tooltip help for a channel list item.
-const char TXT_WOL_TTIP_PRIVATEGAME[] = "(Private) ";
+const char* const TXT_WOL_TTIP_PRIVATEGAME = config::kIsGerman   ? "(Privat) "
+                                             : config::kIsFrench ? "(Prive) "
+                                                                 : "(Private) ";
 //	Appears in tooltip help for a channel list item.
-const char TXT_WOL_TTIP_TOURNAMENTGAME[] = "(Tournament) ";
+const char* const TXT_WOL_TTIP_TOURNAMENTGAME = config::kIsGerman ? "(Turnier) "
+                                                : config::kIsFrench
+                                                    ? "(Tournoi) "
+                                                    : "(Tournament) ";
 //	%s is a kind of game, for example, "Dune 2000".
-const char TXT_WOL_TTIP_CHANNELTYPE_GAMESOFTYPE[] =
-    " Doubleclick to view %s games. ";
-
-const char TXT_WOL_TOURNAMENTPLAYERLIMIT[] =
-    "Tournament games must be two player games.";
+const char* const TXT_WOL_TTIP_CHANNELTYPE_GAMESOFTYPE =
+    config::kIsGerman   ? " Doppelklicken Sie, um %s-Spiele anzusehen. "
+    : config::kIsFrench ? " Double-clic pour afficher les parties %s. "
+                        : " Doubleclick to view %s games. ";
+const char* const TXT_WOL_TOURNAMENTPLAYERLIMIT =
+    config::kIsGerman ? "Turnierspiele mssen von zwei Spieler gespielt werden."
+    : config::kIsFrench
+        ? "Les parties en tournoi doivent rassembler deux joueurs."
+        : "Tournament games must be two player games.";
 //	Shows on game setup screen for private games. %s = password for game.
-const char TXT_WOL_PRIVATEPASSWORD[] = "Password: %s";
+const char* const TXT_WOL_PRIVATEPASSWORD = config::kIsGerman ? "Pa\251wort: %s"
+                                            : config::kIsFrench
+                                                ? "Mot de passe : %s"
+                                                : "Password: %s";
 //	User cannot join game because either he or the game host has hacked the
 // game.
-const char TXT_WOL_RULESMISMATCH[] =
-    "Your game is incompatible with the host's!";
+const char* const TXT_WOL_RULESMISMATCH =
+    config::kIsGerman ? "Ihr Spiel ist mit dem des Host nicht kompatibel!"
+    : config::kIsFrench
+        ? "Votre partie n'est pas compatible avec celle du serveur !"
+        : "Your game is incompatible with the host's!";
 //	Message appears when game host presses start button but slow responses
 // cause an automatic cancellation of game start.
-const char TXT_WOL_STARTTIMEOUT[] =
-    "Timed out waiting for guest responses! Game start cancelled.";
+const char* const TXT_WOL_STARTTIMEOUT =
+    config::kIsGerman ? "Keine Antworten von Gsten! Spielstart abgebrochen."
+    : config::kIsFrench
+        ? "Expiration du temps de rponse des clients ! Dmarrage du jeu annul."
+        : "Timed out waiting for guest responses! Game start cancelled.";
 //	Message appears for guests when automatic cancellation occurs.
-const char TXT_WOL_STARTCANCELLED[] = "Game start cancelled.";
+const char* const TXT_WOL_STARTCANCELLED =
+    config::kIsGerman   ? "Spielstart abgebrochen."
+    : config::kIsFrench ? "Dmarrage du jeu annul."
+                        : "Game start cancelled.";
 //	Text of button on game setup screen that takes user out of the game
 // channel.
-const char TXT_WOL_CANCELGAME[] = "Back";
-
-const char TXT_WOL_PATCHQUESTION[] =
-    "An update patch is required for Internet play. Do you want to download it "
-    "now?";
+const char* const TXT_WOL_CANCELGAME = config::kIsGerman   ? "Zurck"
+                                       : config::kIsFrench ? "Retour"
+                                                           : "Back";
+const char* const TXT_WOL_PATCHQUESTION =
+    config::kIsGerman ? "Ein Update-Patch wird fr Internet-Spiele bentigt. "
+                        "Mchten Sie es jetzt "
+                        "herunterladen?"
+    : config::kIsFrench ? "Un patch mis  jour est ncessaire pour le jeu sur "
+                          "Internet. Voulez-vous "
+                          "le tlcharger maintenant ?"
+                        : "An update patch is required for Internet play. Do "
+                          "you want to download it "
+                          "now?";
 //	Title of patch download dialog. First %i = current file being
 // downloaded, second %i = total # of files to download.
-const char TXT_WOL_DOWNLOADING[] = "Download file %i of %i";
-
-const char TXT_WOL_DOWNLOADERROR[] = "An error occurred during file download.";
+const char* const TXT_WOL_DOWNLOADING =
+    config::kIsGerman   ? "Datei %i von %i herunterladen"
+    : config::kIsFrench ? "Tlcharger %i fichier(s) sur %i."
+                        : "Download file %i of %i";
+const char* const TXT_WOL_DOWNLOADERROR =
+    config::kIsGerman   ? "Ein Fehler trat beim Herunterladen der Dateien auf."
+    : config::kIsFrench ? "Erreur lors du tlchargement du fichier."
+                        : "An error occurred during file download.";
 //	Appears on patch download dialog. First %i = current # of bytes
 // downloaded, second %i = total # of bytes to download.
-const char TXT_WOL_DOWNLOADBYTES[] = "Received %i bytes out of %i. (%i%%%%)";
+const char* const TXT_WOL_DOWNLOADBYTES =
+    config::kIsGerman   ? "%i Bytes von %i erhalten. (%i%%%%)"
+    : config::kIsFrench ? "Rception de %i octets sur %i. (%i%%%%)."
+                        : "Received %i bytes out of %i. (%i%%%%)";
 //	Appears on patch download dialog. First %i = number of minutes left,
 // second %i = number of seconds left.
-const char TXT_WOL_DOWNLOADTIME[] = "Time Remaining: %i min. %i secs.";
+const char* const TXT_WOL_DOWNLOADTIME =
+    config::kIsGerman   ? "Verbleibende Zeit: %i Min. %i Sek."
+    : config::kIsFrench ? "Temps restant : %i min. %i secs."
+                        : "Time Remaining: %i min. %i secs.";
 //	Appended to title of patch download dialog when resuming an interrupted
 // download. %s is the regular title, as above.
-const char TXT_WOL_DOWNLOADRESUMED[] = "%s (Resumed after interruption.)";
-
-const char TXT_WOL_DOWNLOADCONNECTING[] = "Status: Connecting...";
-
-const char TXT_WOL_DOWNLOADLOCATING[] = "Status: Locating file...";
-
-const char TXT_WOL_DOWNLOADDOWNLOADING[] = "Status: Downloading...";
-
-const char TXT_WOL_DOWNLOADEXITWARNING[] =
-    "Download complete! Red Alert will now restart in order to apply the "
-    "update patch.";
-
-const char TXT_WOL_HELPSHELL[] =
-    "Are you sure you want to launch the Internet browser for Westwood Online "
-    "help?";
-
-const char TXT_WOL_LADDERSHELL[] =
-    "Are you sure you want to launch the Internet browser for the Red Alert "
-    "ladders?";
-
-const char TXT_WOL_WEBREGISTRATIONSHELL[] =
-    "No saved usernames found. Would you like to register a new username for "
-    "Westwood Online?";
-
-const char TXT_WOL_GAMEADVERTSHELL[] =
-    "Are you sure you want to launch the Internet browser for information "
-    "about %s?";
+const char* const TXT_WOL_DOWNLOADRESUMED =
+    config::kIsGerman   ? "%s (Nach Unterbrechung wiederaufgenommen.)"
+    : config::kIsFrench ? "%s (reprise aprs interruption.)"
+                        : "%s (Resumed after interruption.)";
+const char* const TXT_WOL_DOWNLOADCONNECTING =
+    config::kIsGerman   ? "Status: Verbinde ..."
+    : config::kIsFrench ? "Etat : en cours de connexion..."
+                        : "Status: Connecting...";
+const char* const TXT_WOL_DOWNLOADLOCATING =
+    config::kIsGerman   ? "Status: Suche Datei ..."
+    : config::kIsFrench ? "Etat : recherche du fichier..."
+                        : "Status: Locating file...";
+const char* const TXT_WOL_DOWNLOADDOWNLOADING =
+    config::kIsGerman   ? "Status: Lade herunter ..."
+    : config::kIsFrench ? "Etat : en cours de tlchargement..."
+                        : "Status: Downloading...";
+const char* const TXT_WOL_DOWNLOADEXITWARNING =
+    config::kIsGerman ? "Herunterladen abgeschlossen! Alarmstufe Rot wird "
+                        "jetzt neugestartet, "
+                        "damit das Update-Patch angewendet werden kann."
+    : config::kIsFrench
+        ? "Tlchargement termin ! Alerte Rouge est relanc pour que le nouveau "
+          "patch soit pris en compte."
+        : "Download complete! Red Alert will now restart in order to apply the "
+          "update patch.";
+const char* const TXT_WOL_HELPSHELL =
+    config::kIsGerman
+        ? "Sind Sie sicher, da\251 Sie den Internet-Browser fr die "
+          "Westwood-Online-Hilfe starten mchten?"
+    : config::kIsFrench ? "Voulez-vous vraiment lancer le navigateur Internet "
+                          "pour obtenir l'aide "
+                          "Westwood Online ?"
+                        : "Are you sure you want to launch the Internet "
+                          "browser for Westwood Online "
+                          "help?";
+const char* const TXT_WOL_LADDERSHELL =
+    config::kIsGerman
+        ? "Sind Sie sicher, da\251 Sie den Internet-Browser fr die "
+          "Alarmstufe-Rot-Tabellen starten mchten?"
+    : config::kIsFrench ? "Voulez-vous vraiment lancer le navigateur Internet "
+                          "pour les hirarchies "
+                          "d'Alerte Rouge ?"
+                        : "Are you sure you want to launch the Internet "
+                          "browser for the Red Alert "
+                          "ladders?";
+const char* const TXT_WOL_WEBREGISTRATIONSHELL =
+    config::kIsGerman
+        ? "Keine gespeicherten User-Namen gefunden. Mchten Sie einen neuen "
+          "User-Namen fr Westwood Online eintragen?"
+    : config::kIsFrench ? "Aucun nom d'utilisateur sauvegard. Voulez-vous "
+                          "enregistrer un nouveau "
+                          "nom d'utilisateur pour Westwood Online ?"
+                        : "No saved usernames found. Would you like to "
+                          "register a new username for "
+                          "Westwood Online?";
+const char* const TXT_WOL_GAMEADVERTSHELL =
+    config::kIsGerman ? "Sind Sie sicher, da\251 Sie den Internet-Browser fr "
+                        "Informationen ber "
+                        "%s starten mchten?"
+    : config::kIsFrench
+        ? "Voulez-vous vraiment lancer le navigateur Internet pour obtenir des "
+          "informations sur %s ?"
+        : "Are you sure you want to launch the Internet browser for "
+          "information "
+          "about %s?";
 //	Appears above user list. %i = number of users in the current channel.
-const char TXT_WOL_USERLIST[] = "Users   %i";
+const char* const TXT_WOL_USERLIST = config::kIsGerman   ? "User: %i"
+                                     : config::kIsFrench ? "Utilisateurs %i"
+                                                         : "Users   %i";
 //	Appears above user list to explain why no users are being listed:
 // because the user is not currently in a chat channel.
-const char TXT_WOL_NOUSERLIST[] = "(not in a channel)";
-
-const char TXT_WOL_CANTCREATEHERE[] =
-    "To start a game, you have to be in a Red Alert lobby.";
+const char* const TXT_WOL_NOUSERLIST =
+    config::kIsGerman   ? "(nicht in einem Channel)"
+    : config::kIsFrench ? "(absent du canal)"
+                        : "(not in a channel)";
+const char* const TXT_WOL_CANTCREATEHERE =
+    config::kIsGerman
+        ? "Um ein Spiel zu starten, mssen Sie in der Lobby Alarmstufe Rot sein."
+    : config::kIsFrench
+        ? "Pour commencer une partie, vous devez tre dans un salon d'Alerte "
+          "Rouge."
+        : "To start a game, you have to be in a Red Alert lobby.";
 //	Appears inside game, when connection to WW Online is lost.
-const char TXT_WOL_WOLAPIGONE[] =
-    "Connection to Westwood Online has been lost!";
+const char* const TXT_WOL_WOLAPIGONE =
+    config::kIsGerman   ? "Verbindung zu Westwood Online verloren!"
+    : config::kIsFrench ? "Perte de connexion avec Westwood Online !"
+                        : "Connection to Westwood Online has been lost!";
 //	Appears after game, when attempting to get back into WW Online.
-const char TXT_WOL_WOLAPIREINIT[] =
-    "Connection to Westwood Online was lost. Reinitializing...";
-
-const char TXT_WOL_NOTPAGED[] = "Can't respond to page; no one has paged you.";
+const char* const TXT_WOL_WOLAPIREINIT =
+    config::kIsGerman
+        ? "Verbindung zu Westwood Online verloren. Verbinde erneut ..."
+    : config::kIsFrench
+        ? "Perte de connexion avec Westwood Online. Rinitialisation en cours..."
+        : "Connection to Westwood Online was lost. Reinitializing...";
+const char* const TXT_WOL_NOTPAGED =
+    config::kIsGerman
+        ? "Kann keine Antwort senden, niemand hat Ihnen geschrieben."
+    : config::kIsFrench
+        ? "Impossible de rpondre au message ; personne ne vous en a envoy."
+        : "Can't respond to page; no one has paged you.";
 //	Appears briefly in the space for scenario name, in game setup dialog.
-const char TXT_WOL_SCENARIONAMEWAIT[] = "waiting for scenario...";
+const char* const TXT_WOL_SCENARIONAMEWAIT =
+    config::kIsGerman   ? "Warte auf Szenario ..."
+    : config::kIsFrench ? "En attente du scnario..."
+                        : "waiting for scenario...";
 //	Text of button on chat screen that takes user out of a chat channel, or
 // up one WW Online level.
-const char TXT_WOL_BACK[] = "Back";
-
-const char TXT_WOL_AMDISCNEEDED[] =
-    "The Aftermath disk will be required for this game; please insert it now.";
-
-const char TXT_WOL_CONFIRMLOGOUT[] =
-    "Are you sure you want to leave Westwood Online?";
+const char* const TXT_WOL_BACK = config::kIsGerman   ? "Zurck"
+                                 : config::kIsFrench ? "Retour"
+                                                     : "Back";
+const char* const TXT_WOL_AMDISCNEEDED =
+    config::kIsGerman ? "Die CD 'Vergeltungsschlag' wird fr dieses Spiel "
+                        "bentigt, bitte legen "
+                        "Sie sie jetzt ein."
+    : config::kIsFrench ? "Le CD de Missions M.A.D. est ncessaire pour cette "
+                          "partie ; insrez-le "
+                          "maintenant."
+                        : "The Aftermath disk will be required for this game; "
+                          "please insert it now.";
+const char* const TXT_WOL_CONFIRMLOGOUT =
+    config::kIsGerman
+        ? "Sind Sie sicher, da\251 Sie Westwood Online verlassen mchten?"
+    : config::kIsFrench ? "Voulez-vous vraiment quitter Westwood Online ?"
+                        : "Are you sure you want to leave Westwood Online?";
 //	"Propose a stalemate" button.
-const char TXT_WOL_PROPOSE_DRAW[] = "Propose a Draw";
+const char* const TXT_WOL_PROPOSE_DRAW =
+    config::kIsGerman   ? "Unentschieden vorschlagen"
+    : config::kIsFrench ? "Proposer une fin avec galit"
+                        : "Propose a Draw";
 //	Withdraw proposed stalemate button.
-const char TXT_WOL_RETRACT_DRAW[] = "Retract Draw Proposal";
+const char* const TXT_WOL_RETRACT_DRAW =
+    config::kIsGerman   ? "Unentschieden-Vorschlag zurckziehen"
+    : config::kIsFrench ? "Annuler la proposition de fin avec galit"
+                        : "Retract Draw Proposal";
 //	Accept offered stalemate button.
-const char TXT_WOL_ACCEPT_DRAW[] = "Accept Proposed Draw";
+const char* const TXT_WOL_ACCEPT_DRAW =
+    config::kIsGerman   ? "Unentschieden-Vorschlag akzeptieren"
+    : config::kIsFrench ? "Accepter la proposition de fin avec galit"
+                        : "Accept Proposed Draw";
 //	User proposes that the game be declared a stalemate.
-const char TXT_WOL_PROPOSE_DRAW_CONFIRM[] =
-    "Are you sure you want to propose a draw?";
+const char* const TXT_WOL_PROPOSE_DRAW_CONFIRM =
+    config::kIsGerman
+        ? "Sind Sie sicher, da\251 Sie ein Unentschieden vorschlagen mchten?"
+    : config::kIsFrench ? "Voulez-vous vraiment proposer une fin avec galit ?"
+                        : "Are you sure you want to propose a draw?";
 //	User accepts the other's offer that the game be a tie.
-const char TXT_WOL_ACCEPT_DRAW_CONFIRM[] =
-    "Are you sure you want to accept a draw?";
-
-const char TXT_WOL_DRAW_PROPOSED_LOCAL[] =
-    "You have proposed that the game be declared a draw.";
-
-const char TXT_WOL_DRAW_PROPOSED_OTHER[] =
-    "%s has proposed that the game be declared a draw.";
-
-const char TXT_WOL_DRAW_RETRACTED_LOCAL[] =
-    "You have retracted your offer of a draw.";
-
-const char TXT_WOL_DRAW_RETRACTED_OTHER[] =
-    "%s has retracted the offer of a draw.";
+const char* const TXT_WOL_ACCEPT_DRAW_CONFIRM =
+    config::kIsGerman
+        ? "Sind Sie sicher, da\251 Sie ein Unentschieden akzeptieren mchten?"
+    : config::kIsFrench ? "Voulez-vous vraiment accepter une fin avec galit ?"
+                        : "Are you sure you want to accept a draw?";
+const char* const TXT_WOL_DRAW_PROPOSED_LOCAL =
+    config::kIsGerman ? "Sie haben vorgeschlagen, da\251 das Spiel fr "
+                        "unentschieden erklrt wird."
+    : config::kIsFrench
+        ? "Vous proposez de terminer la partie sans vainqueur ni perdant."
+        : "You have proposed that the game be declared a draw.";
+const char* const TXT_WOL_DRAW_PROPOSED_OTHER =
+    config::kIsGerman
+        ? "%s hat vorgeschlagen, da\251 das Spiel fr unentschieden erklrt wird."
+    : config::kIsFrench
+        ? "%s a propos de terminer la partie sans vainqueur ni perdant."
+        : "%s has proposed that the game be declared a draw.";
+const char* const TXT_WOL_DRAW_RETRACTED_LOCAL =
+    config::kIsGerman   ? "Sie haben Ihr Unentschieden-Angebot zurckgezogen."
+    : config::kIsFrench ? "Vous avez annul votre proposition de terminer la "
+                          "partie sans vainqueur "
+                          "ni perdant."
+                        : "You have retracted your offer of a draw.";
+const char* const TXT_WOL_DRAW_RETRACTED_OTHER =
+    config::kIsGerman ? "%s hat das Unentschieden-Angebot zurckgezogen."
+    : config::kIsFrench
+        ? "%s a annul sa proposition de terminer la partie sans vainqueur ni "
+          "perdant."
+        : "%s has retracted the offer of a draw.";
 //	Message that appears in place of "Mission Accomplished" or "Mission
 // Failed", when game is a draw.
-const char TXT_WOL_DRAW[] = "The Game is a Draw";
+const char* const TXT_WOL_DRAW = config::kIsGerman
+                                     ? "Das Spiel ist unentschieden"
+                                 : config::kIsFrench ? "Match nul"
+                                                     : "The Game is a Draw";
 //	Error message that appears when user's web browser can't be
 // automatically launched. %s is a web site URL.
-const char TXT_WOL_CANTLAUNCHBROWSER[] = "Can't launch web browser to open %s!";
-
-const char TXT_WOL_CHANNELFULL[] = "That chat/game channel is full.";
-
-const char TXT_WOL_CHANNELTYPE_TOP[] = " Doubleclick to go to the top level. ";
-
-const char TXT_WOL_CHANNELTYPE_OFFICIALCHAT[] =
-    " Doubleclick to go to the official chat channels level. ";
-
-const char TXT_WOL_CHANNELTYPE_USERCHAT[] =
-    " Doubleclick to go to the user chat channels level. ";
-
-const char TXT_WOL_CHANNELTYPE_GAMES[] =
-    " Doubleclick to go to the game channels level. ";
-
-const char TXT_WOL_CHANNELTYPE_LOADING[] =
-    " Loading list from Westwood Online, please wait... ";
-
-const char TXT_WOL_CHANNELTYPE_LOBBIES[] =
-    " Doubleclick to go to the lobbies level. ";
-
-const char TXT_WOL_FINDINGLOBBY[] =
-    "Connected - finding available lobby to enter...";
-
-const char TXT_WOL_PRIVATETOMULTIPLE[] = "<Private to multiple users>:";
-
-const char TXT_WOL_PRIVATETO[] = "Private to";
-
-const char TXT_WOL_CS_MISSIONS[] = "Counterstrike Missions";
-
-const char TXT_WOL_AM_MISSIONS[] = "Aftermath Missions";
-
-const char TXT_WOL_CANTSQUELCHSELF[] =
-    "You cannot disable viewing of your own messages!";
+const char* const TXT_WOL_CANTLAUNCHBROWSER =
+    config::kIsGerman ? "Web-Browser kann %s nicht ffnen!"
+    : config::kIsFrench
+        ? "Impossible de lancer le navigateur web pour ouvrir %s !"
+        : "Can't launch web browser to open %s!";
+const char* const TXT_WOL_CHANNELFULL =
+    config::kIsGerman   ? "Dieser Chat-/Game-Channel ist voll."
+    : config::kIsFrench ? "Ce canal de jeu/conversation est satur."
+                        : "That chat/game channel is full.";
+const char* const TXT_WOL_CHANNELTYPE_TOP =
+    config::kIsGerman
+        ? " Doppelklicken Sie, um zum obersten Level zu gelangen. "
+    : config::kIsFrench ? " Double-clic pour retourner au premier niveau. "
+                        : " Doubleclick to go to the top level. ";
+const char* const TXT_WOL_CHANNELTYPE_OFFICIALCHAT =
+    config::kIsGerman ? " Doppelklicken Sie, um zum offiziellen "
+                        "Chat-Channel-Level zu gelangen. "
+    : config::kIsFrench
+        ? " Double-clic pour les canaux de conversation officiels. "
+        : " Doubleclick to go to the official chat channels level. ";
+const char* const TXT_WOL_CHANNELTYPE_USERCHAT =
+    config::kIsGerman
+        ? " Doppelklicken Sie, um zum User-Chat-Channel-Level zu gelangen. "
+    : config::kIsFrench
+        ? " Double-clic pour les canaux d' utilisateur. "
+        : " Doubleclick to go to the user chat channels level. ";
+const char* const TXT_WOL_CHANNELTYPE_GAMES =
+    config::kIsGerman
+        ? " Doppelklicken Sie, um zum Game-Channel-Level zu gelangen. "
+    : config::kIsFrench
+        ? " Double-clic pour accder au niveau des canaux de jeu. "
+        : " Doubleclick to go to the game channels level. ";
+const char* const TXT_WOL_CHANNELTYPE_LOADING =
+    config::kIsGerman
+        ? " Liste von Westwood Online wird geladen, bitte warten... "
+    : config::kIsFrench ? " Chargement de la liste depuis Westwood Online, "
+                          "veuillez patienter..."
+                        : " Loading list from Westwood Online, please wait... ";
+const char* const TXT_WOL_CHANNELTYPE_LOBBIES =
+    config::kIsGerman   ? " Doppelklicken Sie, um zum Lobby-Level zu gelangen. "
+    : config::kIsFrench ? " Double-clic pour accder au niveau des salons. "
+                        : " Doubleclick to go to the lobbies level. ";
+const char* const TXT_WOL_FINDINGLOBBY =
+    config::kIsGerman   ? "Verbunden - suche verfgbare Lobby..."
+    : config::kIsFrench ? "Connection : recherche de salons disponibles..."
+                        : "Connected - finding available lobby to enter...";
+const char* const TXT_WOL_PRIVATETOMULTIPLE =
+    config::kIsGerman   ? "<Privat an mehrere User>:"
+    : config::kIsFrench ? "<Message personnel adress  divers utilisateurs> :"
+                        : "<Private to multiple users>:";
+const char* const TXT_WOL_PRIVATETO = config::kIsGerman   ? "Privat an"
+                                      : config::kIsFrench ? "Message personnel "
+                                                          : "Private to";
+const char* const TXT_WOL_CS_MISSIONS =
+    config::kIsGerman   ? "Gegenangriff-Missionen"
+    : config::kIsFrench ? "Missions extraites de Missions Taga"
+                        : "Counterstrike Missions";
+const char* const TXT_WOL_AM_MISSIONS =
+    config::kIsGerman   ? "Vergeltungsschlag-Missionen"
+    : config::kIsFrench ? "Missions extraites de Missions M.A.D."
+                        : "Aftermath Missions";
+const char* const TXT_WOL_CANTSQUELCHSELF =
+    config::kIsGerman
+        ? "Sie knnen die Option zum Lesen Ihrer eigenen Nachrichten nicht "
+          "ausschalten!"
+    : config::kIsFrench ? "Vous ne pouvez pas dsactiver vos propres messages!"
+                        : "You cannot disable viewing of your own messages!";
 //	Title of the WW Online options dialog.
-const char TXT_WOL_OPTTITLE[] = "Westwood Online Options";
-
-const char TXT_WOL_SLOWUNITBUILD[] = "Slow Unit Build";
-
-const char TXT_WOL_THEGAMEHOST[] = "The game host";
-
-const char TXT_WOL_TTIP_RANKRA[] = " Show Red Alert ladder rankings ";
-
-const char TXT_WOL_TTIP_RANKAM[] = " Show Aftermath ladder rankings ";
-
-const char TXT_WOL_OPTRANKAM[] =
-    "Show Aftermath rankings (instead of Red Alert)";
-
-const char TXT_WOL_CANCELMEANSFORFEIT[] = " (AND FORFEIT THE GAME)";
-
-const char TXT_WOL_DLLERROR_GETIE3[] =
-    "Your version of Windows is out of date. Please upgrade to Windows SP1, or "
-    "install Internet Explorer 3.0 or higher.";
-
-const char TXT_WOL_DLLERROR_CALLUS[] =
-    "An unexpected error has occurred. Please contact Westwood technical "
-    "support.";
-
-const char TXT_WOL_PRIVATE[] = "<private>";
-
-#else
-
-#ifdef GERMAN
-#pragma message("...Building German version...")
-
-//	Replaced "" with ascii 169 (in octal, 251) in cases where 8 point font
-// is used (see 8point.lbm for why).
-const char TXT_WOL_INTERNETBUTTON[] = "Internet";
-const char TXT_WOL_ERRORMESSAGE[] =
-    "Unerwarteter Fehler trat bei der Kommunikation mit Westwood Online auf.";
-const char TXT_WOL_CONNECT[] = "Verbinden";
-const char TXT_WOL_LOGINDIALOG[] = "Westwood-Online-Login";
-const char TXT_WOL_NAME[] = "Spitzname";
-const char TXT_WOL_PASSWORD[] = "Pa\251wort";
-const char TXT_WOL_SAVELOGIN[] = "Speichern";
-const char TXT_WOL_LOGINCANCEL[] = "Login abgebrochen.";
-const char TXT_WOL_MISSINGNAME[] =
-    "Bitte geben Sie Ihren Login-Spitznamen ein.";
-const char TXT_WOL_MISSINGPASSWORD[] =
-    "Bitte geben Sie Ihr Login-Pa\251wort ein.";
-const char TXT_WOL_CANTSAVENICK[] =
-    "Fehler beim Speichern des Spitznamens/Pa\251worts";
-const char TXT_WOL_NICKINUSE[] =
-    "Dieser Spitzname wird bereits verwendet. Bitte whlen Sie einen anderen.";
-const char TXT_WOL_BADPASS[] = "Ungltiges Pa\251wort fr diesen Spitznamen";
-const char TXT_WOL_TIMEOUT[] = "Verbindung zu Westwood Online unterbrochen";
-const char TXT_WOL_CONNECTING[] = "Verbinde zu Westwood Online...";
-const char TXT_WOL_CANTCONNECT[] =
-    "Verbindung zu Westwood Online konnte nicht hergestellt werden.";
-const char TXT_WOL_ATTEMPTLOGIN[] = "Einloggen ... ";
-const char TXT_WOL_ATTEMPTLOGOUT[] = "Ausloggen ...";
-const char TXT_WOL_ERRORLOGOUT[] = "Verbindung zu Westwood Online beenden ...";
-const char TXT_WOL_WAIT[] =
-    "Bitte warten ... Verbindung zu Westwood Online wird hergestellt ...";
-const char TXT_WOL_TOPLEVELTITLE[] = "Westwood Online";
-const char TXT_WOL_OFFICIALCHAT[] = "Offizieller Chat";
-const char TXT_WOL_USERCHAT[] = "User-Chat";
-const char TXT_WOL_GAMECHANNELS[] = "Game-Channels";
-const char TXT_WOL_REDALERTLOBBIES[] = "Alarmstufe-Rot-Lobbies";
-const char TXT_WOL_CHANNELLISTLOADING[] =
-    "... Daten werden heruntergeladen ...";
-const char TXT_WOL_YOURENOTINCHANNEL[] =
-    "Sie befinden sich zur Zeit nicht in einem Chat-Channel.";
-const char TXT_WOL_ACTION[] = "Action";
-const char TXT_WOL_JOIN[] = "Teilnehmen";
-const char TXT_WOL_CANTCREATEINCHANNEL[] =
-    "Sie knnen keinen neuen Channel erstellen, bevor Sie diesen Channel "
-    "verlassen.";
-const char TXT_WOL_NEWSOMETHING[] = "Neu";
-const char TXT_WOL_CREATECHANNELTITLE[] = "Channel erstellen";
-const char TXT_WOL_CREATECHANNELPROMPT[] = "Channel-Name: ";
-const char TXT_WOL_PASSPROMPT[] = "Pa\251wort: ";
-const char TXT_WOL_OPTIONALPASSPROMPT[] = "Pa\251wort (optional): ";
-const char TXT_WOL_CHANNEL_TOP[] = ".. <zurck zum Anfang>";
-const char TXT_WOL_CHANNEL_BACK[] = ".. <zurck>";
-const char TXT_WOL_YOUJOINED[] = "Sie nehmen am %s-Channel teil.";
-const char TXT_WOL_YOUJOINEDGAME[] = "Sie nehmen an %ss Spiel teil.";
-const char TXT_WOL_YOUCREATEDGAME[] = "Neues Spiel erstellt.";
-const char TXT_WOL_YOUJOINEDLOBBY[] = "Sie haben die %s-Lobby betreten.";
-const char TXT_WOL_YOULEFT[] = "Sie haben den %s-Channel verlassen.";
-const char TXT_WOL_YOULEFTLOBBY[] = "Sie haben die %s-Lobby verlassen.";
-const char TXT_WOL_JOINPRIVATETITLE[] = "An privatem Channel teilnehmen";
-const char TXT_WOL_JOINPRIVATEPROMPT[] = "Channel-Pa\251wort eingeben: ";
-const char TXT_WOL_BADCHANKEY[] = "Falsches Channel-Pa\251wort.";
-const char TXT_WOL_PAGELOCATE[] = "Senden/Suchen";
-const char TXT_WOL_USERNAMEPROMPT[] = "User-Name: ";
-const char TXT_WOL_PAGE[] = "Senden";
-const char TXT_WOL_LOCATE[] = "Suchen";
-const char TXT_WOL_LOCATING[] = "Suche %s...";
-const char TXT_WOL_FIND_NOTHERE[] = "Der gesuchte User-Name existiert nicht.";
-const char TXT_WOL_FIND_NOCHAN[] =
-    "Der genannte User befindet sich zur Zeit nicht in einem Channel.";
-const char TXT_WOL_FIND_OFF[] =
-    "Der genannte User hat die Suchfunktion ausgeschaltet.";
-const char TXT_WOL_FOUNDIN[] = "User wurde im %s-Channel gefunden.";
-const char TXT_WOL_PAGEMESSAGETITLE[] = "Sender";
-const char TXT_WOL_PAGEMESSAGEPROMPT[] = "Zu sendende Nachricht: ";
-const char TXT_WOL_PAGING[] = "Sende an %s ...";
-const char TXT_WOL_PAGE_NOTHERE[] = "Der genannte User ist nicht eingeloggt.";
-const char TXT_WOL_PAGE_OFF[] =
-    "Der genannte User hat die Empfangsfunktion ausgeschaltet.";
-const char TXT_WOL_ONPAGE[] = "Sende von %s: %s";
-const char TXT_WOL_WASPAGED[] =
-    "Die Nachricht wurde %s erfolgreich zugestellt.";
-// const char TXT_WOL_USERISSQUELCHED[]		= "%s ist zur Zeit nicht
-// erreichbar."; const char TXT_WOL_USERISNOTSQUELCHED[]		= "%s
-// ist jetzt wieder erreichbar.";
-const char TXT_WOL_ONLYOWNERCANKICK[] =
-    "Nur der Channel-Besitzer kann andere User hinauswerfen.";
-const char TXT_WOL_USERKICKEDUSER[] = "%s hat %s aus dem Channel geworfen.";
-const char TXT_WOL_USERKICKEDYOU[] =
-    "Sie wurden von %s aus dem Channel geworfen.";
-const char TXT_WOL_NOONETOKICK[] =
-    "Whlen Sie den/die User, die Sie hinauswerfen mchten.";
-const char TXT_WOL_USERWASBANNED[] =
-    "%s hat keinen Zutritt mehr zu diesem Channel.";
-const char TXT_WOL_CREATEPRIVGAMETITLE[] = "Privates Spiel erstellen";
-const char TXT_WOL_YOUREBANNED[] =
-    "Sie haben keinen Zutritt mehr zu diesem Channel.";
-const char TXT_WOL_PLAYERLEFTGAME[] = "%s hat das Spiel verlassen.";
-const char TXT_WOL_PLAYERJOINEDGAME[] = "%s hat an dem Spiel teilgenommen.";
-const char TXT_WOL_YOUWEREKICKEDFROMGAME[] =
-    "Sie wurden aus dem Spiel geworfen.";
-const char TXT_WOL_PERSONALWINLOSSRECORD[] =
-    "%s. Alarmstufe Rot: Pl %u. Siege %u. Niederl %u. Pkte %u.";
-const char TXT_WOL_PERSONALWINLOSSRECORDAM[] =
-    "%s. Vergeltungsschlag: Pl %u. Siege %u. Niederl %u. Pkte %u.";
-const char TXT_WOL_USERRANK[] = "%s (Platz %u)";
-const char TXT_WOL_USERHOUSE[] = "%s <%s>";
-const char TXT_WOL_USERRANKHOUSE[] = "%s (Platz %u) <%s>";
-const char TXT_WOL_STARTBUTTON[] = "Start";
-const char TXT_WOL_ACCEPTBUTTON[] = "Besttigen";
-const char TXT_WOL_HOSTLEFTGAME[] = "%s hat das Spiel abgebrochen.";
-const char TXT_WOL_WAITINGTOSTART[] = "Spiel wird gestartet ...";
-const char TXT_WOL_TTIP_DISCON[] = " Westwood Online verlassen";
-const char TXT_WOL_TTIP_LEAVE[] = " Derzeitigen Channel verlassen ";
-const char TXT_WOL_TTIP_REFRESH[] = " Channel-Liste aktualisieren ";
-const char TXT_WOL_TTIP_SQUELCH[] =
-    " Nachrichteneingang von User(n) ein/ausschalten";
-const char TXT_WOL_TTIP_BAN[] = " User(n) Zutritt zum Channel verwehren ";
-const char TXT_WOL_TTIP_KICK[] = " User aus dem Channel werfen ";
-const char TXT_WOL_TTIP_FINDPAGE[] = " User suchen oder an User senden ";
-const char TXT_WOL_TTIP_OPTIONS[] = " Westwood-Online-Optionen einstellen ";
-const char TXT_WOL_TTIP_LADDER[] = " Alarmstufe-Rot-Tabelle durchsuchen ";
-const char TXT_WOL_TTIP_HELP[] = " Westwood-Online-Hilfe anzeigen ";
-const char TXT_WOL_TTIP_START[] = " Spiel starten ";
-const char TXT_WOL_TTIP_ACCEPT[] = " Aktuelle Spieleinstellungen besttigen ";
-const char TXT_WOL_TTIP_EXPANDLIST[] = " Listen erweitern/verkleinern ";
-const char TXT_WOL_TTIP_CANCELGAME[] = " Einen Level zurck ";
-const char TXT_WOL_TTIP_JOIN[] = " An Chat- oder Game-Channel teilnehmen ";
-const char TXT_WOL_TTIP_BACK[] = " Einen Level zurck ";
-const char TXT_WOL_TTIP_CREATE[] = " Neuen Chat- oder Game-Level erstellen ";
-const char TXT_WOL_TTIP_ACTION[] = " Action-Nachricht ";
-const char TXT_WOL_OPTFIND[] = "Lassen Sie zu, da\251 andere Sie FINDEN.";
-const char TXT_WOL_OPTPAGE[] =
-    "Lassen Sie zu, da\251 andere Ihnen Nachrichten SENDEN.";
-const char TXT_WOL_OPTLANGUAGE[] = "Unangemessene Sprache herausfiltern.";
-const char TXT_WOL_OPTGAMESCOPE[] = "Nur lokale Spiel-Lobby anzeigen.";
-// const char TXT_WOL_OPTTITLE[]				= "Optionen";
-const char TXT_WOL_CHANNELGONE[] = "Channel existiert nicht mehr.";
-const char TXT_WOL_CG_TITLE[] = "Spiel erstellen";
-const char TXT_WOL_CG_PLAYERS[] = "Spieler:  %i";
-const char TXT_WOL_CG_TOURNAMENT[] = "Turnier";
-const char TXT_WOL_CG_PRIVACY[] = "Privat";
-const char TXT_WOL_CG_RAGAME[] = "Alarmstufe-Rot-Spiel";
-const char TXT_WOL_CG_CSGAME[] = "Gegenangriff-Spiel";
-const char TXT_WOL_CG_AMGAME[] = "Vergeltungsschlag-Spiel";
-const char TXT_WOL_NEEDCOUNTERSTRIKE[] =
-    "Sie mssen 'Gegenangriff' installiert haben, um dieses Spiel spielen zu "
-    "knnen.";
-const char TXT_WOL_NEEDAFTERMATH[] =
-    "Sie mssen 'Vergeltungsschlag' installiert haben, um dieses Spiel spielen "
-    "zu knnen.";
-const char TXT_WOL_TTIP_CHANLIST_CHAT[] =
-    " Doppelklick zur Teilnahme am '%s'-Channel (z.Z. %i User). ";
-const char TXT_WOL_TTIP_CHANLIST_LOBBY[] =
-    " Doppelklick zur Teilnahme an der '%s'-Lobby (z.Z. %i User). ";
-const char TXT_WOL_TTIP_REDALERT[] = "Alarmstufe Rot";
-const char TXT_WOL_TTIP_COUNTERSTRIKE[] = "Gegenangriff";
-const char TXT_WOL_TTIP_AFTERMATH[] = "Vergeltungsschlag";
-const char TXT_WOL_TTIP_CHANLIST_RAGAME[] =
-    " %s-Spiel (%i Spieler von maximal %i). ";
-const char TXT_WOL_TTIP_CHANLIST_GAME[] = " %s-Spiel (%i Spieler). ";
-const char TXT_WOL_TTIP_PRIVATEGAME[] = "(Privat) ";
-const char TXT_WOL_TTIP_TOURNAMENTGAME[] = "(Turnier) ";
-const char TXT_WOL_TTIP_CHANNELTYPE_GAMESOFTYPE[] =
-    " Doppelklicken Sie, um %s-Spiele anzusehen. ";
-const char TXT_WOL_TOURNAMENTPLAYERLIMIT[] =
-    "Turnierspiele mssen von zwei Spieler gespielt werden.";
-const char TXT_WOL_PRIVATEPASSWORD[] = "Pa\251wort: %s";
-const char TXT_WOL_RULESMISMATCH[] =
-    "Ihr Spiel ist mit dem des Host nicht kompatibel!";
-const char TXT_WOL_STARTTIMEOUT[] =
-    "Keine Antworten von Gsten! Spielstart abgebrochen.";
-const char TXT_WOL_STARTCANCELLED[] = "Spielstart abgebrochen.";
-const char TXT_WOL_CANCELGAME[] = "Zurck";
-const char TXT_WOL_PATCHQUESTION[] =
-    "Ein Update-Patch wird fr Internet-Spiele bentigt. Mchten Sie es jetzt "
-    "herunterladen?";
-const char TXT_WOL_DOWNLOADING[] = "Datei %i von %i herunterladen";
-const char TXT_WOL_DOWNLOADERROR[] =
-    "Ein Fehler trat beim Herunterladen der Dateien auf.";
-const char TXT_WOL_DOWNLOADBYTES[] = "%i Bytes von %i erhalten. (%i%%%%)";
-const char TXT_WOL_DOWNLOADTIME[] = "Verbleibende Zeit: %i Min. %i Sek.";
-const char TXT_WOL_DOWNLOADRESUMED[] =
-    "%s (Nach Unterbrechung wiederaufgenommen.)";
-const char TXT_WOL_DOWNLOADCONNECTING[] = "Status: Verbinde ...";
-const char TXT_WOL_DOWNLOADLOCATING[] = "Status: Suche Datei ...";
-const char TXT_WOL_DOWNLOADDOWNLOADING[] = "Status: Lade herunter ...";
-const char TXT_WOL_DOWNLOADEXITWARNING[] =
-    "Herunterladen abgeschlossen! Alarmstufe Rot wird jetzt neugestartet, "
-    "damit das Update-Patch angewendet werden kann.";
-const char TXT_WOL_HELPSHELL[] =
-    "Sind Sie sicher, da\251 Sie den Internet-Browser fr die "
-    "Westwood-Online-Hilfe starten mchten?";
-const char TXT_WOL_LADDERSHELL[] =
-    "Sind Sie sicher, da\251 Sie den Internet-Browser fr die "
-    "Alarmstufe-Rot-Tabellen starten mchten?";
-const char TXT_WOL_WEBREGISTRATIONSHELL[] =
-    "Keine gespeicherten User-Namen gefunden. Mchten Sie einen neuen "
-    "User-Namen fr Westwood Online eintragen?";
-const char TXT_WOL_GAMEADVERTSHELL[] =
-    "Sind Sie sicher, da\251 Sie den Internet-Browser fr Informationen ber "
-    "%s starten mchten?";
-const char TXT_WOL_USERLIST[] = "User: %i";
-const char TXT_WOL_NOUSERLIST[] = "(nicht in einem Channel)";
-const char TXT_WOL_CANTCREATEHERE[] =
-    "Um ein Spiel zu starten, mssen Sie in der Lobby Alarmstufe Rot sein.";
-const char TXT_WOL_WOLAPIGONE[] = "Verbindung zu Westwood Online verloren!";
-const char TXT_WOL_WOLAPIREINIT[] =
-    "Verbindung zu Westwood Online verloren. Verbinde erneut ...";
-const char TXT_WOL_NOTPAGED[] =
-    "Kann keine Antwort senden, niemand hat Ihnen geschrieben.";
-const char TXT_WOL_SCENARIONAMEWAIT[] = "Warte auf Szenario ...";
-const char TXT_WOL_BACK[] = "Zurck";
-const char TXT_WOL_AMDISCNEEDED[] =
-    "Die CD 'Vergeltungsschlag' wird fr dieses Spiel bentigt, bitte legen "
-    "Sie sie jetzt ein.";
-const char TXT_WOL_CONFIRMLOGOUT[] =
-    "Sind Sie sicher, da\251 Sie Westwood Online verlassen mchten?";
-const char TXT_WOL_PROPOSE_DRAW[] = "Unentschieden vorschlagen";
-const char TXT_WOL_RETRACT_DRAW[] = "Unentschieden-Vorschlag zurckziehen";
-const char TXT_WOL_ACCEPT_DRAW[] = "Unentschieden-Vorschlag akzeptieren";
-const char TXT_WOL_PROPOSE_DRAW_CONFIRM[] =
-    "Sind Sie sicher, da\251 Sie ein Unentschieden vorschlagen mchten?";
-const char TXT_WOL_ACCEPT_DRAW_CONFIRM[] =
-    "Sind Sie sicher, da\251 Sie ein Unentschieden akzeptieren mchten?";
-const char TXT_WOL_DRAW_PROPOSED_LOCAL[] =
-    "Sie haben vorgeschlagen, da\251 das Spiel fr unentschieden erklrt wird.";
-const char TXT_WOL_DRAW_PROPOSED_OTHER[] =
-    "%s hat vorgeschlagen, da\251 das Spiel fr unentschieden erklrt wird.";
-const char TXT_WOL_DRAW_RETRACTED_LOCAL[] =
-    "Sie haben Ihr Unentschieden-Angebot zurckgezogen.";
-const char TXT_WOL_DRAW_RETRACTED_OTHER[] =
-    "%s hat das Unentschieden-Angebot zurckgezogen.";
-const char TXT_WOL_DRAW[] = "Das Spiel ist unentschieden";
-const char TXT_WOL_CANTLAUNCHBROWSER[] = "Web-Browser kann %s nicht ffnen!";
-const char TXT_WOL_CHANNELFULL[] = "Dieser Chat-/Game-Channel ist voll.";
-const char TXT_WOL_CHANNELTYPE_TOP[] =
-    " Doppelklicken Sie, um zum obersten Level zu gelangen. ";
-const char TXT_WOL_CHANNELTYPE_OFFICIALCHAT[] =
-    " Doppelklicken Sie, um zum offiziellen Chat-Channel-Level zu gelangen. ";
-const char TXT_WOL_CHANNELTYPE_USERCHAT[] =
-    " Doppelklicken Sie, um zum User-Chat-Channel-Level zu gelangen. ";
-const char TXT_WOL_CHANNELTYPE_GAMES[] =
-    " Doppelklicken Sie, um zum Game-Channel-Level zu gelangen. ";
-const char TXT_WOL_CHANNELTYPE_LOADING[] =
-    " Liste von Westwood Online wird geladen, bitte warten... ";
-const char TXT_WOL_CHANNELTYPE_LOBBIES[] =
-    " Doppelklicken Sie, um zum Lobby-Level zu gelangen. ";
-const char TXT_WOL_FINDINGLOBBY[] = "Verbunden - suche verfgbare Lobby...";
-const char TXT_WOL_PRIVATETOMULTIPLE[] = "<Privat an mehrere User>:";
-const char TXT_WOL_PRIVATETO[] = "Privat an";
-const char TXT_WOL_CS_MISSIONS[] = "Gegenangriff-Missionen";
-const char TXT_WOL_AM_MISSIONS[] = "Vergeltungsschlag-Missionen";
-const char TXT_WOL_CANTSQUELCHSELF[] =
-    "Sie knnen die Option zum Lesen Ihrer eigenen Nachrichten nicht "
-    "ausschalten!";
-const char TXT_WOL_OPTTITLE[] = "Westwood Online-Optionen";
-const char TXT_WOL_SLOWUNITBUILD[] = "Einheitenbau verlangsamen";
-const char TXT_WOL_THEGAMEHOST[] = "Der Spiel-Host";
-const char TXT_WOL_TTIP_RANKRA[] = " Alarmstufe-Rot-Platz anzeigen ";
-const char TXT_WOL_TTIP_RANKAM[] = " Vergeltungsschlag-Platz anzeigen ";
-const char TXT_WOL_OPTRANKAM[] = "Vergeltungsschlag-Platz anzeigen.";
-const char TXT_WOL_CANCELMEANSFORFEIT[] = " (UND BSSEN SIE DAS SPIEL EIN)";
-const char TXT_WOL_DLLERROR_GETIE3[] =
-    "Ihre Version der Windows ist veraltet. Bauen Sie bitte zu den Windows "
-    "SP1, aus oder installieren Sie Internet Explorer 3,0 oder hheres.";
-const char TXT_WOL_DLLERROR_CALLUS[] =
-    "Ein unerwarteter Fehler ist aufgetreten. Bitte wenden Sie sich an den "
-    "Technischen Kundendienst.";
-const char TXT_WOL_PRIVATE[] = "<privat>";
-
-#else  //	FRENCH
-
-#pragma message("...Building French version...")
-
-const char TXT_WOL_INTERNETBUTTON[] = "Internet";
-const char TXT_WOL_ERRORMESSAGE[] =
-    "Erreur inattendue lors de la connexion  Westwood Online.";
-const char TXT_WOL_CONNECT[] = "Se connecter";
-const char TXT_WOL_LOGINDIALOG[] = "Identifiant  Westwood Online";
-const char TXT_WOL_NAME[] = "Pseudo";
-const char TXT_WOL_PASSWORD[] = "Mot de passe";
-const char TXT_WOL_SAVELOGIN[] = "Sauvegarder";
-const char TXT_WOL_LOGINCANCEL[] = "Ouverture de session annule.";
-const char TXT_WOL_MISSINGNAME[] =
-    "Veuillez entrer l'identifiant pour votre pseudo.";
-const char TXT_WOL_MISSINGPASSWORD[] =
-    "Veuillez entrer l'identifiant pour votre mot de passe.";
-const char TXT_WOL_CANTSAVENICK[] =
-    "Erreur lors de la sauvegarde du pseudo/mot de passe.";
-const char TXT_WOL_NICKINUSE[] =
-    "Ce pseudo est dj utilis. Slectionnez-en un autre.";
-const char TXT_WOL_BADPASS[] = "Mot de passe invalide pour ce pseudo.";
-const char TXT_WOL_TIMEOUT[] =
-    "Expiration du temps de connexion  Westwood Online.";
-const char TXT_WOL_CONNECTING[] = "Connexion  Westwood Online...";
-const char TXT_WOL_CANTCONNECT[] =
-    "Impossible d'tablir la connexion  Westwood Online.";
-const char TXT_WOL_ATTEMPTLOGIN[] = "Ouverture de la session en cours...";
-const char TXT_WOL_ATTEMPTLOGOUT[] = "Fermeture de la session en cours...";
-const char TXT_WOL_ERRORLOGOUT[] = "Fin de connexion avec Westwood Online...";
-const char TXT_WOL_WAIT[] =
-    "Attendez svp, en communication  Westwood Online...";
-const char TXT_WOL_TOPLEVELTITLE[] = "Westwood Online";
-const char TXT_WOL_OFFICIALCHAT[] = "Conversation officielle";
-const char TXT_WOL_USERCHAT[] = "Conversation utilisateur";
-const char TXT_WOL_GAMECHANNELS[] = "Canaux de jeu";
-const char TXT_WOL_REDALERTLOBBIES[] = "Salons d'Alerte Rouge";
-const char TXT_WOL_CHANNELLISTLOADING[] = "...En cours de tlchargement...";
-const char TXT_WOL_YOURENOTINCHANNEL[] =
-    "Vous n'tes pas dans un canal de conversation.";
-const char TXT_WOL_ACTION[] = "Action";
-const char TXT_WOL_JOIN[] = "Rejoindre";
-const char TXT_WOL_CANTCREATEINCHANNEL[] =
-    "Cration d'un nouveau canal impossible tant que vous ne quittez pas ce "
-    "canal.";
-const char TXT_WOL_NEWSOMETHING[] = "Nouveau";
-const char TXT_WOL_CREATECHANNELTITLE[] = "Crer un canal";
-const char TXT_WOL_CREATECHANNELPROMPT[] = "Nom du canal : ";
-const char TXT_WOL_PASSPROMPT[] = "Mot de passe : ";
-const char TXT_WOL_OPTIONALPASSPROMPT[] = "Mot de passe (en option): ";
-const char TXT_WOL_CHANNEL_TOP[] = ".. <retour  la page d'accueil>";
-const char TXT_WOL_CHANNEL_BACK[] = ".. <retour>";
-const char TXT_WOL_YOUJOINED[] = "Vous avez rejoint le canal %s.";
-const char TXT_WOL_YOUJOINEDGAME[] = "Vous rejoignez la partie de %s.";
-const char TXT_WOL_YOUCREATEDGAME[] = "Cration d'une nouvelle partie.";
-const char TXT_WOL_YOUJOINEDLOBBY[] = "Vous tes entr dans le salon %s.";
-const char TXT_WOL_YOULEFT[] = "Vous avez quitt le canal %s.";
-const char TXT_WOL_YOULEFTLOBBY[] = "Vous avez quitt le salon %s.";
-const char TXT_WOL_JOINPRIVATETITLE[] = "Rejoindre un canal priv";
-const char TXT_WOL_JOINPRIVATEPROMPT[] = "Entrer le mot de passe du canal : ";
-const char TXT_WOL_BADCHANKEY[] = "Mot de passe du canal incorrect.";
-const char TXT_WOL_PAGELOCATE[] = "Envoyer/Rechercher";
-const char TXT_WOL_USERNAMEPROMPT[] = "Nom de l'utilisateur : ";
-const char TXT_WOL_PAGE[] = "Envoyer";
-const char TXT_WOL_LOCATE[] = "Rechercher";
-const char TXT_WOL_LOCATING[] = "Recherche de %s en cours ...";
-const char TXT_WOL_FIND_NOTHERE[] =
-    "Le nom de l'utilisateur spcifi n'existe pas.";
-const char TXT_WOL_FIND_NOCHAN[] =
-    "L'utilisateur spcifi n'est pas sur le canal pour le moment.";
-const char TXT_WOL_FIND_OFF[] =
-    "L'utilisateur spcifi a dsactiv la fonction de recherche.";
-const char TXT_WOL_FOUNDIN[] = "Utilisateur trouv dans le canal %s.";
-const char TXT_WOL_PAGEMESSAGETITLE[] = "Envoyer  l'utilisateur";
-const char TXT_WOL_PAGEMESSAGEPROMPT[] = "Message  envoyer : ";
-const char TXT_WOL_PAGING[] = "Envoi  %s en cours...";
-const char TXT_WOL_PAGE_NOTHERE[] =
-    "L'utilisateur spcifi n'a pas ouvert la session.";
-const char TXT_WOL_PAGE_OFF[] =
-    "L'utilisateur spcifi a dsactiv la fonction d'envoi de messages.";
-const char TXT_WOL_ONPAGE[] = "Envoi de %s : %s";
-const char TXT_WOL_WASPAGED[] = "Envoi  %s russi.";
-// const char TXT_WOL_USERISSQUELCHED[]		= "%s a t rejet.";
-// //	ajw rejete really means squelched? const char
-// TXT_WOL_USERISNOTSQUELCHED[]		= "%s n'est plus rejet.";
-const char TXT_WOL_ONLYOWNERCANKICK[] =
-    "Seul le responsable du canal peut expulser des utilisateurs.";
-const char TXT_WOL_USERKICKEDUSER[] = "%s expulse %s du canal.";
-const char TXT_WOL_USERKICKEDYOU[] = "Vous tes expuls du canal par %s.";
-const char TXT_WOL_NOONETOKICK[] =
-    "Slectionnez l'(les) utilisateur(s) que vous voulez expulser.";
-const char TXT_WOL_USERWASBANNED[] = "%s est exclu du canal.";
-const char TXT_WOL_CREATEPRIVGAMETITLE[] = "Crer une partie prive";
-const char TXT_WOL_YOUREBANNED[] =
-    "Vous n'tes pas autoris  entrer dans ce canal.";
-const char TXT_WOL_PLAYERLEFTGAME[] = "%s a quitt la partie.";
-const char TXT_WOL_PLAYERJOINEDGAME[] = "%s a rejoint la partie.";
-const char TXT_WOL_YOUWEREKICKEDFROMGAME[] = "Vous avez t expuls de la partie.";
-const char TXT_WOL_PERSONALWINLOSSRECORD[] =
-    "%s. Alerte Rouge: position %u. Vict. %u. Df. %u. Pts. %u.";
-const char TXT_WOL_PERSONALWINLOSSRECORDAM[] =
-    "%s. Missions M.A.D.: position %u. Vict. %u. Df. %u. Pts. %u.";
-const char TXT_WOL_USERRANK[] = "%s (Position %u)";
-const char TXT_WOL_USERHOUSE[] = "%s <%s>";
-const char TXT_WOL_USERRANKHOUSE[] = "%s (Position %u) <%s>";
-const char TXT_WOL_STARTBUTTON[] = "Dmarrer";
-const char TXT_WOL_ACCEPTBUTTON[] = "Accepter";
-const char TXT_WOL_HOSTLEFTGAME[] = "%s a annul la partie.";
-const char TXT_WOL_WAITINGTOSTART[] = "Lancement de la partie...";
-const char TXT_WOL_TTIP_DISCON[] = " Quitter Westwood Online ";
-const char TXT_WOL_TTIP_LEAVE[] = " Quitter le canal o vous vous trouvez ";
-const char TXT_WOL_TTIP_REFRESH[] = " Rafrachir la liste du canal ";
-const char TXT_WOL_TTIP_SQUELCH[] =
-    " Activer/dsactiver les messages en provenance de(s) l'utilisateur(s) ";
-const char TXT_WOL_TTIP_BAN[] = " Exclure l'/les utilisateur(s)du canal ";
-const char TXT_WOL_TTIP_KICK[] = " Expulser l'/les utilisateurs du canal ";
-const char TXT_WOL_TTIP_FINDPAGE[] =
-    " Rechercher ou envoyer un message  un utilisateur ";
-const char TXT_WOL_TTIP_OPTIONS[] = " Rgler les options de Westwood Online ";
-const char TXT_WOL_TTIP_LADDER[] = " Parcourir les hirarchies d'Alerte Rouge ";
-const char TXT_WOL_TTIP_HELP[] = " Afficher l'aide de Westwood Online ";
-const char TXT_WOL_TTIP_START[] = " Dmarrer le jeu ";
-const char TXT_WOL_TTIP_ACCEPT[] = " Valider les paramtres actuels du jeu ";
-const char TXT_WOL_TTIP_EXPANDLIST[] = " Complter/rduire la liste ";
-const char TXT_WOL_TTIP_CANCELGAME[] = " Retour au niveau prcdent ";
-const char TXT_WOL_TTIP_JOIN[] = " Rejoindre un canal de conversation/jeu ";
-const char TXT_WOL_TTIP_BACK[] = " Retour au niveau prcdent ";
-const char TXT_WOL_TTIP_CREATE[] =
-    " Crer un nouveau canal de conversation/jeu ";
-const char TXT_WOL_TTIP_ACTION[] = " Message d'action ";
-const char TXT_WOL_OPTFIND[] = "Laisser les autres vous RECHERCHER.";
-const char TXT_WOL_OPTPAGE[] = "Laisser les autres vous ENVOYER des messages.";
-const char TXT_WOL_OPTLANGUAGE[] = "Filtrer les vulgarits.";
-const char TXT_WOL_OPTGAMESCOPE[] =
-    "Afficher seulement les parties en salons locaux.";
-// const char TXT_WOL_OPTTITLE[]				= "Options";
-const char TXT_WOL_CHANNELGONE[] = "Ce canal n'existe plus.";
-const char TXT_WOL_CG_TITLE[] = "Crer une partie";
-const char TXT_WOL_CG_PLAYERS[] = "Joueurs :  %i";
-const char TXT_WOL_CG_TOURNAMENT[] = "Tournoi";
-const char TXT_WOL_CG_PRIVACY[] = "Prive";
-const char TXT_WOL_CG_RAGAME[] = "Partie Alerte Rouge";
-const char TXT_WOL_CG_CSGAME[] = "Partie Missions Taga";
-const char TXT_WOL_CG_AMGAME[] = "Partie Missions M.A.D.";
-const char TXT_WOL_NEEDCOUNTERSTRIKE[] =
-    "Dsol, vous devez installer Missions Taga pour jouer cette partie.";
-const char TXT_WOL_NEEDAFTERMATH[] =
-    "Dsol, vous devez installer Missions M.A.D. pour jouer cette partie.";
-const char TXT_WOL_TTIP_CHANLIST_CHAT[] =
-    " Double-clic pour rejoindre canal %s (%i utilisateurs). ";
-const char TXT_WOL_TTIP_CHANLIST_LOBBY[] =
-    " Double-clic pour rejoindre salon %s (%i utilisateurs). ";
-const char TXT_WOL_TTIP_REDALERT[] = "Alerte Rouge";
-const char TXT_WOL_TTIP_COUNTERSTRIKE[] = "Missions Taga";
-const char TXT_WOL_TTIP_AFTERMATH[] = "Missions M.A.D.";
-const char TXT_WOL_TTIP_CHANLIST_RAGAME[] =
-    " Partie de %s (%i joueurs pour un max. de %i). ";
-const char TXT_WOL_TTIP_CHANLIST_GAME[] = " Partie de %s (%i joueurs). ";
-const char TXT_WOL_TTIP_PRIVATEGAME[] = "(Prive) ";
-const char TXT_WOL_TTIP_TOURNAMENTGAME[] = "(Tournoi) ";
-const char TXT_WOL_TTIP_CHANNELTYPE_GAMESOFTYPE[] =
-    " Double-clic pour afficher les parties %s. ";
-const char TXT_WOL_TOURNAMENTPLAYERLIMIT[] =
-    "Les parties en tournoi doivent rassembler deux joueurs.";
-const char TXT_WOL_PRIVATEPASSWORD[] = "Mot de passe : %s";
-const char TXT_WOL_RULESMISMATCH[] =
-    "Votre partie n'est pas compatible avec celle du serveur !";
-const char TXT_WOL_STARTTIMEOUT[] =
-    "Expiration du temps de rponse des clients ! Dmarrage du jeu annul.";
-const char TXT_WOL_STARTCANCELLED[] = "Dmarrage du jeu annul.";
-const char TXT_WOL_CANCELGAME[] = "Retour";
-const char TXT_WOL_PATCHQUESTION[] =
-    "Un patch mis  jour est ncessaire pour le jeu sur Internet. Voulez-vous "
-    "le tlcharger maintenant ?";
-const char TXT_WOL_DOWNLOADING[] = "Tlcharger %i fichier(s) sur %i.";
-const char TXT_WOL_DOWNLOADERROR[] = "Erreur lors du tlchargement du fichier.";
-const char TXT_WOL_DOWNLOADBYTES[] = "Rception de %i octets sur %i. (%i%%%%).";
-const char TXT_WOL_DOWNLOADTIME[] = "Temps restant : %i min. %i secs.";
-const char TXT_WOL_DOWNLOADRESUMED[] = "%s (reprise aprs interruption.)";
-const char TXT_WOL_DOWNLOADCONNECTING[] = "Etat : en cours de connexion...";
-const char TXT_WOL_DOWNLOADLOCATING[] = "Etat : recherche du fichier...";
-const char TXT_WOL_DOWNLOADDOWNLOADING[] = "Etat : en cours de tlchargement...";
-const char TXT_WOL_DOWNLOADEXITWARNING[] =
-    "Tlchargement termin ! Alerte Rouge est relanc pour que le nouveau "
-    "patch soit pris en compte.";
-const char TXT_WOL_HELPSHELL[] =
-    "Voulez-vous vraiment lancer le navigateur Internet pour obtenir l'aide "
-    "Westwood Online ?";
-const char TXT_WOL_LADDERSHELL[] =
-    "Voulez-vous vraiment lancer le navigateur Internet pour les hirarchies "
-    "d'Alerte Rouge ?";
-const char TXT_WOL_WEBREGISTRATIONSHELL[] =
-    "Aucun nom d'utilisateur sauvegard. Voulez-vous enregistrer un nouveau "
-    "nom d'utilisateur pour Westwood Online ?";
-const char TXT_WOL_GAMEADVERTSHELL[] =
-    "Voulez-vous vraiment lancer le navigateur Internet pour obtenir des "
-    "informations sur %s ?";
-const char TXT_WOL_USERLIST[] = "Utilisateurs %i";
-const char TXT_WOL_NOUSERLIST[] = "(absent du canal)";
-const char TXT_WOL_CANTCREATEHERE[] =
-    "Pour commencer une partie, vous devez tre dans un salon d'Alerte Rouge.";
-const char TXT_WOL_WOLAPIGONE[] = "Perte de connexion avec Westwood Online !";
-const char TXT_WOL_WOLAPIREINIT[] =
-    "Perte de connexion avec Westwood Online. Rinitialisation en cours...";
-const char TXT_WOL_NOTPAGED[] =
-    "Impossible de rpondre au message ; personne ne vous en a envoy.";
-const char TXT_WOL_SCENARIONAMEWAIT[] = "En attente du scnario...";
-const char TXT_WOL_BACK[] = "Retour";
-const char TXT_WOL_AMDISCNEEDED[] =
-    "Le CD de Missions M.A.D. est ncessaire pour cette partie ; insrez-le "
-    "maintenant.";
-const char TXT_WOL_CONFIRMLOGOUT[] =
-    "Voulez-vous vraiment quitter Westwood Online ?";
-const char TXT_WOL_PROPOSE_DRAW[] = "Proposer une fin avec galit";
-const char TXT_WOL_RETRACT_DRAW[] = "Annuler la proposition de fin avec galit";
-const char TXT_WOL_ACCEPT_DRAW[] = "Accepter la proposition de fin avec galit";
-const char TXT_WOL_PROPOSE_DRAW_CONFIRM[] =
-    "Voulez-vous vraiment proposer une fin avec galit ?";
-const char TXT_WOL_ACCEPT_DRAW_CONFIRM[] =
-    "Voulez-vous vraiment accepter une fin avec galit ?";
-const char TXT_WOL_DRAW_PROPOSED_LOCAL[] =
-    "Vous proposez de terminer la partie sans vainqueur ni perdant.";
-const char TXT_WOL_DRAW_PROPOSED_OTHER[] =
-    "%s a propos de terminer la partie sans vainqueur ni perdant.";
-const char TXT_WOL_DRAW_RETRACTED_LOCAL[] =
-    "Vous avez annul votre proposition de terminer la partie sans vainqueur "
-    "ni perdant.";
-const char TXT_WOL_DRAW_RETRACTED_OTHER[] =
-    "%s a annul sa proposition de terminer la partie sans vainqueur ni "
-    "perdant.";
-const char TXT_WOL_DRAW[] = "Match nul";
-const char TXT_WOL_CANTLAUNCHBROWSER[] =
-    "Impossible de lancer le navigateur web pour ouvrir %s !";
-const char TXT_WOL_CHANNELFULL[] = "Ce canal de jeu/conversation est satur.";
-const char TXT_WOL_CHANNELTYPE_TOP[] =
-    " Double-clic pour retourner au premier niveau. ";
-const char TXT_WOL_CHANNELTYPE_OFFICIALCHAT[] =
-    " Double-clic pour les canaux de conversation officiels. ";
-const char TXT_WOL_CHANNELTYPE_USERCHAT[] =
-    " Double-clic pour les canaux d' utilisateur. ";
-const char TXT_WOL_CHANNELTYPE_GAMES[] =
-    " Double-clic pour accder au niveau des canaux de jeu. ";
-const char TXT_WOL_CHANNELTYPE_LOADING[] =
-    " Chargement de la liste depuis Westwood Online, veuillez patienter...";
-const char TXT_WOL_CHANNELTYPE_LOBBIES[] =
-    " Double-clic pour accder au niveau des salons. ";
-const char TXT_WOL_FINDINGLOBBY[] =
-    "Connection : recherche de salons disponibles...";
-const char TXT_WOL_PRIVATETOMULTIPLE[] =
-    "<Message personnel adress  divers utilisateurs> :";
-const char TXT_WOL_PRIVATETO[] = "Message personnel ";
-const char TXT_WOL_CS_MISSIONS[] = "Missions extraites de Missions Taga";
-const char TXT_WOL_AM_MISSIONS[] = "Missions extraites de Missions M.A.D.";
-const char TXT_WOL_CANTSQUELCHSELF[] =
-    "Vous ne pouvez pas dsactiver vos propres messages!";
-const char TXT_WOL_OPTTITLE[] = "Options de Westwood Online";
-const char TXT_WOL_SLOWUNITBUILD[] = "Ralentir la Construction";
-const char TXT_WOL_THEGAMEHOST[] = "Le serveur";
-const char TXT_WOL_TTIP_RANKRA[] = " Afficher les positions d'Alerte Rouge ";
-const char TXT_WOL_TTIP_RANKAM[] =
-    " Afficher les positions de Missions M.A.D. ";
-const char TXT_WOL_OPTRANKAM[] = "Afficher les positions de Missions M.A.D.";
-const char TXT_WOL_CANCELMEANSFORFEIT[] = " (ET RENONCER AU JEU)";
-const char TXT_WOL_DLLERROR_GETIE3[] =
-    "Votre version des Windows est dmode. Amliorez s'il vous plait aux "
-    "Windows SP1, ou installez l'Internet Explorer 3,0 ou plus haut.";
-const char TXT_WOL_DLLERROR_CALLUS[] =
-    "Une erreur inattendue s'est produite. Veuillez contacter l'assistance "
-    "technique de Electronic Arts.";
-const char TXT_WOL_PRIVATE[] = "<personnel>";
-
-#endif
-
-#endif
-
-// #endif
+const char* const TXT_WOL_OPTTITLE =
+    config::kIsGerman   ? "Westwood Online-Optionen"
+    : config::kIsFrench ? "Options de Westwood Online"
+                        : "Westwood Online Options";
+const char* const TXT_WOL_SLOWUNITBUILD =
+    config::kIsGerman   ? "Einheitenbau verlangsamen"
+    : config::kIsFrench ? "Ralentir la Construction"
+                        : "Slow Unit Build";
+const char* const TXT_WOL_THEGAMEHOST = config::kIsGerman   ? "Der Spiel-Host"
+                                        : config::kIsFrench ? "Le serveur"
+                                                            : "The game host";
+const char* const TXT_WOL_TTIP_RANKRA =
+    config::kIsGerman   ? " Alarmstufe-Rot-Platz anzeigen "
+    : config::kIsFrench ? " Afficher les positions d'Alerte Rouge "
+                        : " Show Red Alert ladder rankings ";
+const char* const TXT_WOL_TTIP_RANKAM =
+    config::kIsGerman   ? " Vergeltungsschlag-Platz anzeigen "
+    : config::kIsFrench ? " Afficher les positions de Missions M.A.D. "
+                        : " Show Aftermath ladder rankings ";
+const char* const TXT_WOL_OPTRANKAM =
+    config::kIsGerman   ? "Vergeltungsschlag-Platz anzeigen."
+    : config::kIsFrench ? "Afficher les positions de Missions M.A.D."
+                        : "Show Aftermath rankings (instead of Red Alert)";
+const char* const TXT_WOL_CANCELMEANSFORFEIT =
+    config::kIsGerman   ? " (UND BSSEN SIE DAS SPIEL EIN)"
+    : config::kIsFrench ? " (ET RENONCER AU JEU)"
+                        : " (AND FORFEIT THE GAME)";
+const char* const TXT_WOL_DLLERROR_GETIE3 =
+    config::kIsGerman
+        ? "Ihre Version der Windows ist veraltet. Bauen Sie bitte zu den "
+          "Windows "
+          "SP1, aus oder installieren Sie Internet Explorer 3,0 oder hheres."
+    : config::kIsFrench
+        ? "Votre version des Windows est dmode. Amliorez s'il vous plait aux "
+          "Windows SP1, ou installez l'Internet Explorer 3,0 ou plus haut."
+        : "Your version of Windows is out of date. Please upgrade to Windows "
+          "SP1, or "
+          "install Internet Explorer 3.0 or higher.";
+const char* const TXT_WOL_DLLERROR_CALLUS =
+    config::kIsGerman ? "Ein unerwarteter Fehler ist aufgetreten. Bitte wenden "
+                        "Sie sich an den "
+                        "Technischen Kundendienst."
+    : config::kIsFrench
+        ? "Une erreur inattendue s'est produite. Veuillez contacter "
+          "l'assistance "
+          "technique de Electronic Arts."
+        : "An unexpected error has occurred. Please contact Westwood technical "
+          "support.";
+const char* const TXT_WOL_PRIVATE = config::kIsGerman   ? "<privat>"
+                                    : config::kIsFrench ? "<personnel>"
+                                                        : "<private>";
