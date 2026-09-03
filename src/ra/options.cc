@@ -483,7 +483,7 @@ void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
   **	Adjust for palette.
   */
   for (int index = 0; index < PaletteClass::COLOR_COUNT; index++) {
-    if (index == CC_MOUSE_COLOR) {
+    if (index == kMouseColor) {
       newpal[index] = oldpal[index];
     } else {
       /*

@@ -3020,7 +3020,9 @@ typedef enum {
   SDLG_SPECIAL
 } SpecialDialogType;
 
-typedef enum { CC_MOUSE_COLOR = 16 } CCPaletteType;
+// Palette entry reserved for the mouse cursor; brightness adjustment leaves
+// it alone.
+inline constexpr int kMouseColor = 16;
 
 /****************************************************************************
 **	These specify the shape numbers in the OPTIONS.SHP file. These shapes
