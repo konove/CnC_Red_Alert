@@ -211,8 +211,9 @@ enum RTTIType {
   RTTI_COUNT
 };
 
-// These are the difficulty settings of the game.
+  // These are the difficulty settings of the game.
 enum DiffType { DIFF_EASY, DIFF_NORMAL, DIFF_HARD };
+inline constexpr int kDiffCount = DIFF_HARD + 1;
 
 /**********************************************************************
 **	This is the size of the speech buffer. This value should be as large
