@@ -3048,18 +3048,6 @@ bool BuildingClass::Captured(HouseClass* newowner) {
   assert(IsActive);
 
   if (Class->IsCaptureable && newowner != House) {
-#ifdef TOFIX
-    switch (Owner()) {
-      case HOUSE_GOOD:
-        Speak(VOX_GDI_CAPTURED);
-        break;
-
-      case HOUSE_BAD:
-        Speak(VOX_NOD_CAPTURED);
-        break;
-    }
-#endif
-
     /*
     ** Make sure the capturer isn't spying on his own building, and if
     ** it was a radar facility, update the target house's RadarSpied field.
