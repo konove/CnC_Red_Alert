@@ -152,7 +152,7 @@ typedef enum ButtonNumberType {
   BUTTON_REPAIR,
   BUTTON_DEMOLISH,
   BUTTON_UPGRADE,
-  BUTTON_SELECT,
+  kButtonSelect,
   BUTTON_ZOOM
 } ButtonNumberType;
 
@@ -163,10 +163,10 @@ SidebarClass::SBGadgetClass SidebarClass::Background;
 ShapeButtonClass SidebarClass::Repair;
 ShapeButtonClass SidebarClass::Upgrade;
 ShapeButtonClass SidebarClass::Zoom;
-ShapeButtonClass SidebarClass::StripClass::UpButton[COLUMNS];
-ShapeButtonClass SidebarClass::StripClass::DownButton[COLUMNS];
+ShapeButtonClass SidebarClass::StripClass::UpButton[kColumns];
+ShapeButtonClass SidebarClass::StripClass::DownButton[kColumns];
 SidebarClass::StripClass::SelectClass
-    SidebarClass::StripClass::SelectButton[COLUMNS][MAX_VISIBLE];
+    SidebarClass::StripClass::SelectButton[kColumns][kMaxVisible];
 
 /*
 ** Shape data pointers
@@ -200,13 +200,13 @@ SidebarClass::SidebarClass()
   *drawing *	code so that as the sidebar buildable buttons scroll, they get
   *properly *	clipped at the top and bottom edges.
   */
-  WindowList[WINDOW_SIDEBAR][WINDOWX] = SIDE_X + 8;
-  WindowList[WINDOW_SIDEBAR][WINDOWY] = SIDE_Y + 1 + TOP_HEIGHT;
-  WindowList[WINDOW_SIDEBAR][WINDOWWIDTH] = SIDE_WIDTH;
+  WindowList[WINDOW_SIDEBAR][WINDOWX] = kSideX + 8;
+  WindowList[WINDOW_SIDEBAR][WINDOWY] = kSideY + 1 + kTopHeight;
+  WindowList[WINDOW_SIDEBAR][WINDOWWIDTH] = kSideWidth;
   WindowList[WINDOW_SIDEBAR][WINDOWHEIGHT] =
-      StripClass::MAX_VISIBLE * StripClass::OBJECT_HEIGHT;
-  //	WindowList[WINDOW_SIDEBAR][WINDOWHEIGHT] = StripClass::MAX_VISIBLE *
-  // StripClass::OBJECT_HEIGHT-1;
+      StripClass::kMaxVisible * StripClass::kObjectHeight;
+  //	WindowList[WINDOW_SIDEBAR][WINDOWHEIGHT] = StripClass::kMaxVisible *
+  // StripClass::kObjectHeight-1;
 
   /*
   **	Set up the coordinates for the sidebar strips. These coordinates are for
@@ -215,10 +215,10 @@ SidebarClass::SidebarClass()
   new (&Column[0]) StripClass(InitClass());
   new (&Column[1]) StripClass(InitClass());
 
-  Column[0].X = COLUMN_ONE_X * 2;
-  Column[0].Y = COLUMN_ONE_Y * 2;
-  Column[1].X = COLUMN_TWO_X * 2;
-  Column[1].Y = COLUMN_TWO_Y * 2;
+  Column[0].X = kColumnOneX * 2;
+  Column[0].Y = kColumnOneY * 2;
+  Column[1].X = kColumnTwoX * 2;
+  Column[1].Y = kColumnTwoY * 2;
 }
 
 /***********************************************************************************************
@@ -244,10 +244,10 @@ SidebarClass::SidebarClass(const NoInitClass& x) : PowerClass(x) {
   **	Set up the coordinates for the sidebar strips. These coordinates are for
   **	the upper left corner.
   */
-  //	Column[0].X = COLUMN_ONE_X * 2;
-  //	Column[0].Y = COLUMN_ONE_Y * 2;
-  //	Column[1].X = COLUMN_TWO_X * 2;
-  //	Column[1].Y = COLUMN_TWO_Y * 2;
+  //	Column[0].X = kColumnOneX * 2;
+  //	Column[0].Y = kColumnOneY * 2;
+  //	Column[1].X = kColumnTwoX * 2;
+  //	Column[1].Y = kColumnTwoY * 2;
 }
 
 /***********************************************************************************************
@@ -272,13 +272,13 @@ void SidebarClass::One_Time() {
   *drawing *	code so that as the sidebar buildable buttons scroll, they get
   *properly *	clipped at the top and bottom edges.
   */
-  WindowList[WINDOW_SIDEBAR][WINDOWX] = (SIDE_X + 8) * 2;
-  WindowList[WINDOW_SIDEBAR][WINDOWY] = (SIDE_Y + 1 + TOP_HEIGHT) * 2;
-  WindowList[WINDOW_SIDEBAR][WINDOWWIDTH] = SIDE_WIDTH * 2;
+  WindowList[WINDOW_SIDEBAR][WINDOWX] = (kSideX + 8) * 2;
+  WindowList[WINDOW_SIDEBAR][WINDOWY] = (kSideY + 1 + kTopHeight) * 2;
+  WindowList[WINDOW_SIDEBAR][WINDOWWIDTH] = kSideWidth * 2;
   WindowList[WINDOW_SIDEBAR][WINDOWHEIGHT] =
-      StripClass::MAX_VISIBLE * StripClass::OBJECT_HEIGHT * 2;
-  //	WindowList[WINDOW_SIDEBAR][WINDOWHEIGHT] = (StripClass::MAX_VISIBLE *
-  // StripClass::OBJECT_HEIGHT-1) * 2;
+      StripClass::kMaxVisible * StripClass::kObjectHeight * 2;
+  //	WindowList[WINDOW_SIDEBAR][WINDOWHEIGHT] = (StripClass::kMaxVisible *
+  // StripClass::kObjectHeight-1) * 2;
 
   /*
   ** Top of the window seems to be wrong for the new sidebar. ST - 5/2/96 2:49AM
@@ -289,10 +289,10 @@ void SidebarClass::One_Time() {
   **	Set up the coordinates for the sidebar strips. These coordinates are for
   **	the upper left corner.
   */
-  //	Column[0].X = COLUMN_ONE_X * 2;
-  //	Column[0].Y = COLUMN_ONE_Y * 2;
-  //	Column[1].X = COLUMN_TWO_X * 2;
-  //	Column[1].Y = COLUMN_TWO_Y * 2;
+  //	Column[0].X = kColumnOneX * 2;
+  //	Column[0].Y = kColumnOneY * 2;
+  //	Column[1].X = kColumnTwoX * 2;
+  //	Column[1].Y = kColumnTwoY * 2;
   Column[0].One_Time(0);
   Column[1].One_Time(1);
 
@@ -780,12 +780,12 @@ void SidebarClass::Draw_It(bool complete) {
       ** The sidebar shape is too big in 640x400 so it needs to be drawn in
       *three chunks.
       */
-      CC_Draw_Shape(SidebarShape, 0, SIDE_X * 2, 16,
+      CC_Draw_Shape(SidebarShape, 0, kSideX * 2, 16, WINDOW_MAIN,
+                    SHAPE_WIN_REL);
+      CC_Draw_Shape(SidebarMiddleShape, shape, kSideX * 2, (8 + 80) * 2,
                     WINDOW_MAIN, SHAPE_WIN_REL);
-      CC_Draw_Shape(SidebarMiddleShape, shape, SIDE_X * 2,
-                    (8 + 80) * 2, WINDOW_MAIN, SHAPE_WIN_REL);
-      CC_Draw_Shape(SidebarBottomShape, shape, SIDE_X * 2,
-                    (8 + 80 + 50) * 2, WINDOW_MAIN, SHAPE_WIN_REL);
+      CC_Draw_Shape(SidebarBottomShape, shape, kSideX * 2, (8 + 80 + 50) * 2,
+                    WINDOW_MAIN, SHAPE_WIN_REL);
 
       Repair.Draw_Me(true);
       Upgrade.Draw_Me(true);
@@ -973,8 +973,7 @@ bool SidebarClass::Activate(int control) {
     *then *	activate it on the left side of the screen.
     */
     if (IsSidebarActive /*&& X*/) {
-      Set_View_Dimensions(0, 16,
-                          (320 - SIDE_WIDTH) / ICON_PIXEL_W * 2);
+      Set_View_Dimensions(0, 16, (320 - kSideWidth) / ICON_PIXEL_W * 2);
       IsToRedraw = true;
       Help_Text(TXT_NONE);
       Repair.Zap();
@@ -1041,7 +1040,7 @@ SidebarClass::StripClass::StripClass(const InitClass&)
       Scroller(0),
       Slid(0),
       BuildableCount(0) {
-  for (int index = 0; index < MAX_BUILDABLES; index++) {
+  for (int index = 0; index < kMaxBuildables; index++) {
     Buildables[index].BuildableID = 0;
     Buildables[index].BuildableType = RTTI_NONE;
     Buildables[index].Factory = -1;
@@ -1126,7 +1125,7 @@ void SidebarClass::StripClass::Init_Clear() {
   ** Since we're resetting the strips, clear out all the buildables & factory
   *pointers.
   */
-  for (int index = 0; index < MAX_BUILDABLES; index++) {
+  for (int index = 0; index < kMaxBuildables; index++) {
     Buildables[index].BuildableID = 0;
     Buildables[index].BuildableType = RTTI_NONE;
     Buildables[index].Factory = -1;
@@ -1150,16 +1149,16 @@ void SidebarClass::StripClass::Init_IO(int id) {
   ID = id;
 
   UpButton[ID].IsSticky = true;
-  UpButton[ID].ID = BUTTON_UP + id;
-  UpButton[ID].X = X + UP_X_OFFSET * 2;
-  UpButton[ID].Y = Y + UP_Y_OFFSET * 2;
+  UpButton[ID].ID = kButtonUp + id;
+  UpButton[ID].X = X + kUpXOffset * 2;
+  UpButton[ID].Y = Y + kUpYOffset * 2;
 
   UpButton[ID].Set_Shape(MFCD::Retrieve("STRIPUP.SHP"));
 
   DownButton[ID].IsSticky = true;
-  DownButton[ID].ID = BUTTON_DOWN + id;
-  DownButton[ID].X = X + DOWN_X_OFFSET * 2;
-  DownButton[ID].Y = Y + DOWN_Y_OFFSET * 2;
+  DownButton[ID].ID = kButtonDown + id;
+  DownButton[ID].X = X + kDownXOffset * 2;
+  DownButton[ID].Y = Y + kDownYOffset * 2;
 
   /*
   ** Buttons are in a slightly different position in the new sidebar
@@ -1169,13 +1168,13 @@ void SidebarClass::StripClass::Init_IO(int id) {
 
   DownButton[ID].Set_Shape(MFCD::Retrieve("STRIPDN.SHP"));
 
-  for (int index = 0; index < MAX_VISIBLE; index++) {
+  for (int index = 0; index < kMaxVisible; index++) {
     SelectClass& g = SelectButton[ID][index];
-    g.ID = BUTTON_SELECT;
+    g.ID = kButtonSelect;
     g.X = X;
-    g.Y = Y + OBJECT_HEIGHT * index * 2;
-    g.Width = OBJECT_WIDTH * 2;
-    g.Height = OBJECT_HEIGHT * 2;
+    g.Y = Y + kObjectHeight * index * 2;
+    g.Width = kObjectWidth * 2;
+    g.Height = kObjectHeight * 2;
     g.Set_Owner(*this, index);
   }
 }
@@ -1267,7 +1266,7 @@ void SidebarClass::StripClass::Activate() {
   DownButton[ID].Zap();
   Map.Add_A_Button(DownButton[ID]);
 
-  for (int index = 0; index < MAX_VISIBLE; index++) {
+  for (int index = 0; index < kMaxVisible; index++) {
     SelectButton[ID][index].Zap();
     Map.Add_A_Button(SelectButton[ID][index]);
   }
@@ -1292,7 +1291,7 @@ void SidebarClass::StripClass::Activate() {
 void SidebarClass::StripClass::Deactivate() {
   Map.Remove_A_Button(UpButton[ID]);
   Map.Remove_A_Button(DownButton[ID]);
-  for (int index = 0; index < MAX_VISIBLE; index++) {
+  for (int index = 0; index < kMaxVisible; index++) {
     Map.Remove_A_Button(SelectButton[ID][index]);
   }
 }
@@ -1314,7 +1313,7 @@ void SidebarClass::StripClass::Deactivate() {
  * HISTORY: * 12/31/1994 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::StripClass::Add(RTTIType type, int id) {
-  if (BuildableCount <= MAX_BUILDABLES) {
+  if (BuildableCount <= kMaxBuildables) {
     for (int index = 0; index < BuildableCount; index++) {
       if (Buildables[index].BuildableType == type &&
           Buildables[index].BuildableID == id) {
@@ -1359,7 +1358,7 @@ bool SidebarClass::StripClass::Scroll(bool up) {
     }
     Scroller--;
   } else {
-    if (TopIndex + MAX_VISIBLE >= BuildableCount) {
+    if (TopIndex + kMaxVisible >= BuildableCount) {
       return false;
     }
     Scroller++;
@@ -1435,7 +1434,7 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int, int) {
   **	logic handler. This might result in up or down scrolling.
   */
   if (!IsScrolling && Scroller) {
-    if (BuildableCount <= MAX_VISIBLE) {
+    if (BuildableCount <= kMaxVisible) {
       Scroller = 0;
     } else {
       /*
@@ -1455,11 +1454,11 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int, int) {
         }
 
       } else {
-        if (TopIndex + MAX_VISIBLE >= BuildableCount) {
+        if (TopIndex + kMaxVisible >= BuildableCount) {
           Scroller = 0;
         } else {
           Scroller--;
-          Slid = OBJECT_HEIGHT;
+          Slid = kObjectHeight;
           IsScrollingDown = true;
           IsScrolling = true;
         }
@@ -1472,15 +1471,15 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int, int) {
   */
   if (IsScrolling) {
     if (IsScrollingDown) {
-      Slid -= SCROLL_RATE;
+      Slid -= kScrollRate;
       if (Slid <= 0) {
         IsScrolling = false;
         Slid = 0;
         TopIndex++;
       }
     } else {
-      Slid += SCROLL_RATE;
-      if (Slid >= OBJECT_HEIGHT) {
+      Slid += kScrollRate;
+      if (Slid >= kObjectHeight) {
         IsScrolling = false;
         Slid = 0;
       }
@@ -1592,7 +1591,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
     /*
     ** New sidebar needs to be drawn not filled
     */
-    if (BuildableCount < MAX_VISIBLE) {
+    if (BuildableCount < kMaxVisible) {
       CC_Draw_Shape(LogoShapes, ID, X + 4, Y, WINDOW_MAIN,
                     SHAPE_WIN_REL | SHAPE_NORMAL, nullptr);
     }
@@ -1608,7 +1607,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
     *render *	them. Their Y offset may be adjusted if the strip is in the
     *process of scrolling.
     */
-    for (int i = 0; i < MAX_VISIBLE + (IsScrolling ? 1 : 0); i++) {
+    for (int i = 0; i < kMaxVisible + (IsScrolling ? 1 : 0); i++) {
       bool production = false;
       bool completed = false;
       int stage = 0;
@@ -1619,15 +1618,15 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       FactoryClass* factory = nullptr;
       int index = i + TopIndex;
       int x = X;
-      int y = Y + i * OBJECT_HEIGHT * 2;
+      int y = Y + i * kObjectHeight * 2;
 
       /*
       **	If the strip is scrolling, then the offset is adjusted
       *accordingly.
       */
       if (IsScrolling) {
-        y -= (OBJECT_HEIGHT - Slid) * 2;
-        //				y -= OBJECT_HEIGHT - Slid;
+        y -= (kObjectHeight - Slid) * 2;
+        //				y -= kObjectHeight - Slid;
       }
 
       /*
@@ -1724,25 +1723,25 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       *6:01PM
       */
       if (shapenum != SB_BLANK || shapefile != LogoShapes) {
-        CC_Draw_Shape(shapefile, shapenum,
-                      x - WindowList[WINDOW_SIDEBAR][WINDOWX] +
-                          LEFT_EDGE_OFFSET * 2,
-                      y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
-                      SHAPE_NORMAL | SHAPE_WIN_REL |
-                          (remapper ? SHAPE_FADING : SHAPE_NORMAL),
-                      remapper);
+        CC_Draw_Shape(
+            shapefile, shapenum,
+            x - WindowList[WINDOW_SIDEBAR][WINDOWX] + kLeftEdgeOffset * 2,
+            y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
+            SHAPE_NORMAL | SHAPE_WIN_REL |
+                (remapper ? SHAPE_FADING : SHAPE_NORMAL),
+            remapper);
 
         /*
         **	Darken this object because it cannot be produced or is otherwise
         **	unavailable.
         */
         if (darken) {
-          CC_Draw_Shape(ClockShapes, 0,
-                        x - WindowList[WINDOW_SIDEBAR][WINDOWX] +
-                            LEFT_EDGE_OFFSET * 2,
-                        y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
-                        SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
-                        ClockTranslucentTable);
+          CC_Draw_Shape(
+              ClockShapes, 0,
+              x - WindowList[WINDOW_SIDEBAR][WINDOWX] + kLeftEdgeOffset * 2,
+              y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
+              SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
+              ClockTranslucentTable);
         }
       }
 
@@ -1758,28 +1757,27 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           */
           CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_READY,
                         x - WindowList[WINDOW_SIDEBAR][WINDOWX] +
-                            (LEFT_EDGE_OFFSET + 15) * 2,
+                            (kLeftEdgeOffset + 15) * 2,
                         y - WindowList[WINDOW_SIDEBAR][WINDOWY] + 8,
                         WINDOW_SIDEBAR, SHAPE_CENTER);
         } else {
-          CC_Draw_Shape(ClockShapes, stage + 1,
-                        x - WindowList[WINDOW_SIDEBAR][WINDOWX] +
-                            LEFT_EDGE_OFFSET * 2,
-                        y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
-                        SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
-                        ClockTranslucentTable);
+          CC_Draw_Shape(
+              ClockShapes, stage + 1,
+              x - WindowList[WINDOW_SIDEBAR][WINDOWX] + kLeftEdgeOffset * 2,
+              y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
+              SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
+              ClockTranslucentTable);
 
           /*
           **	Display text showing that the construction is temporarily on
           *hold.
           */
           if (factory && !factory->Is_Building()) {
-            CC_Draw_Shape(
-                ObjectTypeClass::PipShapes, PIP_HOLDING,
-                x - WindowList[WINDOW_SIDEBAR][WINDOWX] +
-                    (LEFT_EDGE_OFFSET + 15) * 2,
-                y - WindowList[WINDOW_SIDEBAR][WINDOWY] + 8,
-                WINDOW_SIDEBAR, SHAPE_CENTER);
+            CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_HOLDING,
+                          x - WindowList[WINDOW_SIDEBAR][WINDOWX] +
+                              (kLeftEdgeOffset + 15) * 2,
+                          y - WindowList[WINDOW_SIDEBAR][WINDOWY] + 8,
+                          WINDOW_SIDEBAR, SHAPE_CENTER);
           }
         }
       }
@@ -1870,8 +1868,8 @@ bool SidebarClass::StripClass::Recalc() {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 SidebarClass::StripClass::SelectClass::SelectClass()
-    : ControlClass(0, 0, 0, (OBJECT_WIDTH - 1) * 2,
-                   OBJECT_HEIGHT * 2, LEFTPRESS | RIGHTPRESS | LEFTUP),
+    : ControlClass(0, 0, 0, (kObjectWidth - 1) * 2, kObjectHeight * 2,
+                   LEFTPRESS | RIGHTPRESS | LEFTUP),
       Strip(nullptr),
       Index(0) {}
 
@@ -1886,7 +1884,7 @@ SidebarClass::StripClass::SelectClass::SelectClass()
  * INPUT:   strip    -- Reference to the strip that owns this buildable button.
  **
  *                                                                                             *
- *          index    -- The index (0 .. MAX_VISIBLE-1) of this button. This is
+ *          index    -- The index (0 .. kMaxVisible-1) of this button. This is
  *used to let     * the owning strip know what index this button refers to. *
  *                                                                                             *
  * OUTPUT:  none *
@@ -1900,7 +1898,7 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
   Strip = &strip;
   Index = index;
   X = strip.X;
-  Y = strip.Y + index * OBJECT_HEIGHT * 2;
+  Y = strip.Y + index * kObjectHeight * 2;
 }
 
 /***********************************************************************************************

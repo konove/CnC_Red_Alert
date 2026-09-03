@@ -40,7 +40,6 @@
 #ifndef CNC_RED_ALERT_RA_SIDEBAR_H_
 #define CNC_RED_ALERT_RA_SIDEBAR_H_
 
-#include "ra/config.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/gadget.h"
@@ -56,38 +55,18 @@ class InitClass {};
 
 class SidebarClass : public PowerClass {
  public:
-  /*
-  **	These constants are used to control the sidebar rendering. They are
-  *instantiated *	as enumerations since C++ cannot use "const" in this
-  *context.
-  */
-  enum SideBarClassEnums {
-    BUTTON_ACTIVATOR = 100,      // Button ID for the activator.
-    SIDE_X = 320 - 80,           // The X position of sidebar upper left corner.
-    SIDE_Y = 7 + 70,             // The Y position of sidebar upper left corner.
-    SIDE_WIDTH = kSidebarWidth,  // Width of the entire sidebar (in pixels).
-    SIDE_HEIGHT = 200 - (7 + 70),  // Height of the entire sidebar (in pixels).
-    TOP_HEIGHT = 13,  // Height of top section (with repair/sell buttons).
-    COLUMN_ONE_X = 320 - 80 + 8,  // Sidestrip upper left coordinates...
-    COLUMN_ONE_Y = SIDE_Y + TOP_HEIGHT,
-    COLUMN_TWO_X = 320 - 80 + 8 + (80 - 16) / 2 + 3,
-    COLUMN_TWO_Y = 7 + 70 + 13,
-
-    // The German and French button captions are wider, so the three
-    // buttons share the space differently.
-    BUTTON_ONE_WIDTH = config::kIsEnglish ? 32 : 20,
-    BUTTON_TWO_WIDTH = config::kIsEnglish ? 20 : 27,
-    BUTTON_THREE_WIDTH = config::kIsEnglish ? 20 : 26,
-    BUTTON_HEIGHT = 9,
-    BUTTON_ONE_X = SIDE_X + 2,
-    BUTTON_ONE_Y = SIDE_Y + 2,
-    BUTTON_TWO_X = SIDE_X + (config::kIsEnglish ? 36 : 24),
-    BUTTON_TWO_Y = SIDE_Y + 2,
-    BUTTON_THREE_X = SIDE_X + (config::kIsEnglish ? 58 : 53),
-    BUTTON_THREE_Y = SIDE_Y + 2,
-
-    COLUMNS = 2  // Number of side strips on sidebar.
-  };
+  // Sidebar geometry in 320x200 pixels.
+  static constexpr int kSideX = 320 - 80;  // Upper left corner.
+  static constexpr int kSideY = 7 + 70;
+  static constexpr int kSideWidth = 80;
+  static constexpr int kSideHeight = 200 - (7 + 70);
+  static constexpr int kTopHeight =
+      13;  // Section with the repair/sell buttons.
+  static constexpr int kColumnOneX = 320 - 80 + 8;  // Side strip corners.
+  static constexpr int kColumnOneY = kSideY + kTopHeight;
+  static constexpr int kColumnTwoX = 320 - 80 + 8 + (80 - 16) / 2 + 3;
+  static constexpr int kColumnTwoY = 7 + 70 + 13;
+  static constexpr int kColumns = 2;  // Side strips on the sidebar.
 
   static void* SidebarShape;
   static void* SidebarMiddleShape;  // Only used in Win95 version
@@ -164,30 +143,23 @@ class SidebarClass : public PowerClass {
     bool Load(Straw& file);
     bool Save(Pipe& file) const;
 
-    /*
-    **	Working numbers used when rendering and processing the side strip.
-    */
-    enum SideBarGeneralEnums {
-      BUTTON_UP = 200,
-      BUTTON_DOWN = 210,
-      BUTTON_SELECT = 220,
-      MAX_BUILDABLES = 75,  // Maximum number of object types in sidebar.
-      OBJECT_HEIGHT = 24,   // Pixel height of each buildable object.
-      OBJECT_WIDTH = 32,    // Pixel width of each buildable object.
-      STRIP_WIDTH = 35,     // Width of strip (not counting border lines).
-      MAX_VISIBLE = 4,      // Number of object slots visible at any one time.
-      SCROLL_RATE = 12,  // The pixel jump while scrolling (larger is faster).
-      UP_X_OFFSET = 2,  // Scroll up arrow coordinates.
-      UP_Y_OFFSET = MAX_VISIBLE * OBJECT_HEIGHT + 1,
-      DOWN_X_OFFSET = 18,           // Scroll down arrow coordinates.
-      DOWN_Y_OFFSET = UP_Y_OFFSET,  // BGint(MAX_VISIBLE)*int(OBJECT_HEIGHT)+1,
-      SBUTTON_WIDTH = 16,           // Width of the mini-scroll button.
-      SBUTTON_HEIGHT = 12,          // Height of the mini-scroll button.
-      LEFT_EDGE_OFFSET = 2,  // Offset from left edge for building shapes.
-      TEXT_X_OFFSET = 18,    // X offset to print "ready" text.
-      TEXT_Y_OFFSET = 15,    // Y offset to print "ready" text.
-      TEXT_COLOR = 255       // Color to use for the "Ready" text.
-    };
+    // Button IDs for the strip's gadgets.
+    static constexpr int kButtonUp = 200;
+    static constexpr int kButtonDown = 210;
+    static constexpr int kButtonSelect = 220;
+
+    // Working numbers used when rendering and processing the side strip.
+    static constexpr int kMaxBuildables = 75;  // Object types a strip can hold.
+    static constexpr int kObjectHeight = 24;   // Pixel size of a buildable
+    static constexpr int kObjectWidth = 32;    // object.
+    static constexpr int kMaxVisible = 4;      // Object slots visible at once.
+    static constexpr int kScrollRate = 12;     // Pixel jump while scrolling.
+    static constexpr int kUpXOffset = 2;       // Scroll arrow coordinates.
+    static constexpr int kUpYOffset = kMaxVisible * kObjectHeight + 1;
+    static constexpr int kDownXOffset = 18;
+    static constexpr int kDownYOffset = kUpYOffset;
+    static constexpr int kLeftEdgeOffset = 2;  // Building shapes, from the
+                                               // left edge.
 
     /*
     **	This is the coordinate of the upper left corner that this side strip
@@ -289,7 +261,7 @@ class SidebarClass : public PowerClass {
       RTTIType BuildableType;
       int Factory;  // Production manager.
     } BuildType;
-    BuildType Buildables[MAX_BUILDABLES];
+    BuildType Buildables[kMaxBuildables];
 
     /*
     **	Pointer to the shape data for small versions of the logos. These are
@@ -316,9 +288,9 @@ class SidebarClass : public PowerClass {
     */
     //				static TheaterType LastTheater;
 
-    static ShapeButtonClass UpButton[COLUMNS];
-    static ShapeButtonClass DownButton[COLUMNS];
-    static SelectClass SelectButton[COLUMNS][MAX_VISIBLE];
+    static ShapeButtonClass UpButton[kColumns];
+    static ShapeButtonClass DownButton[kColumns];
+    static SelectClass SelectButton[kColumns][kMaxVisible];
 
     /*
     **	This points to the shapes that are used for the clock overlay. This
@@ -326,7 +298,7 @@ class SidebarClass : public PowerClass {
     */
     static char ClockTranslucentTable[(1 + 1) * 256];
 
-  } Column[COLUMNS];
+  } Column[kColumns];
 
   /*
   **	If the sidebar is active then this flag is true.
@@ -342,14 +314,9 @@ class SidebarClass : public PowerClass {
   class SBGadgetClass : public GadgetClass {
    public:
     SBGadgetClass()
-        : GadgetClass((static_cast<int>(SIDE_X) + 8) * 2,
-                      static_cast<int>(SIDE_Y) * 2,
-                      (static_cast<int>(SIDE_WIDTH) - 1) * 2 - 1,
-                      (static_cast<int>(SIDE_HEIGHT) - 1) * 2, LEFTUP) {
-    }
-    // #else
-    //				SBGadgetClass() : GadgetClass((int)SIDE_X+8,
-    //(int)SIDE_Y, (int)SIDE_WIDTH-1, (int)SIDE_HEIGHT-1, LEFTUP) {}; #endif
+        : GadgetClass((kSideX + 8) * 2, kSideY * 2, (kSideWidth - 1) * 2 - 1,
+                      (kSideHeight - 1) * 2, LEFTUP) {}
+
    protected:
     int Action(unsigned flags, KeyNumType& key) override;
   };

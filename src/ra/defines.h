@@ -43,9 +43,6 @@
 
 #include "tech/fixed.h"
 
-// Width of the sidebar in pixels.
-inline constexpr int kSidebarWidth = 80;
-
 /**********************************************************************
 **	Optional parameter control for special options.
 */
