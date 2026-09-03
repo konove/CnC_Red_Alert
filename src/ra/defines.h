@@ -52,14 +52,6 @@
 // Network frame-timing fix. Still a preprocessor flag: it is tested with #if.
 #define TIMING_FIX 1
 
-/**********************************************************************
-**	This define tells the Version Number class to use the date/time-based
-** version numbering system.  If this define is not set, the actual
-** major/minor version numbers will be used.
-*/
-// #define DEV_VERSION
-// #define DEV_VER_NAME
-
 // Width of the sidebar in pixels.
 inline constexpr int kSidebarWidth = 80;
 
