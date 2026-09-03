@@ -43,6 +43,7 @@
 
 #include <algorithm>
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/bench_util.h"
 #include "ra/config.h"
@@ -385,14 +386,17 @@ void LogicClass::AI() {
   **	House processing is performed.
   */
   if (Session.Type == GAME_NORMAL) {
-    for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; ++house) {
+    for (HousesType house : magic_enum::enum_values<HousesType>()) {
       HouseClass* hptr = HouseClass::As_Pointer(house);
       if (hptr != nullptr && hptr->IsActive) {
         hptr->AI();
       }
     }
   } else {
-    for (HousesType house = HOUSE_MULTI1; house < HOUSE_COUNT; ++house) {
+    for (HousesType house : magic_enum::enum_values<HousesType>()) {
+      if (house < HOUSE_MULTI1) {
+        continue;
+      }
       HouseClass* hptr = HouseClass::As_Pointer(house);
       if (hptr != nullptr && hptr->IsActive) {
         hptr->AI();

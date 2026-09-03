@@ -50,6 +50,7 @@
 
 #include <cstring>
 
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/ccini.h"
 #include "ra/conquer.h"
@@ -397,7 +398,7 @@ void HouseTypeClass::Init_Heap() {
  *=============================================================================================*/
 HousesType HouseTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
-    for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
+    for (HousesType house : magic_enum::enum_values<HousesType>()) {
       if (stricmp(As_Reference(house).IniName, name) == 0) {
         //			if (stricmp(Pointers[house]->IniName, name) ==
         // 0) {

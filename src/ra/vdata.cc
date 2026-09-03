@@ -60,6 +60,7 @@
 #include <string>
 
 #include "base/trig.h"
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
@@ -92,7 +93,8 @@ static const VesselTypeClass VesselSubmarine(
     true,         // Always use the given name for the vehicle?
     false,        // Is it equipped with a combat turret?
     8,            // Rotation stages.
-    14            // Turret center offset along body centerline.
+    14,           // Turret center offset along body centerline.
+    false        // Added by Aftermath?
 );
 
 // Destroyer
@@ -110,7 +112,8 @@ static const VesselTypeClass VesselDestroyer(
     true,         // Always use the given name for the vehicle?
     true,         // Is it equipped with a combat turret?
     8,            // Rotation stages.
-    14            // Turret center offset along body centerline.
+    14,           // Turret center offset along body centerline.
+    false        // Added by Aftermath?
 );
 
 // Cruiser
@@ -128,7 +131,8 @@ static const VesselTypeClass VesselCruiser(
     true,         // Always use the given name for the vehicle?
     true,         // Is it equipped with a combat turret?
     8,            // Rotation stages.
-    14            // Turret center offset along body centerline.
+    14,           // Turret center offset along body centerline.
+    false        // Added by Aftermath?
 );
 
 // Transport
@@ -146,7 +150,8 @@ static const VesselTypeClass VesselTransport(
     true,           // Always use the given name for the vehicle?
     false,          // Is it equipped with a combat turret?
     0,              // Rotation stages.
-    0               // Turret center offset along body centerline.
+    0,              // Turret center offset along body centerline.
+    false          // Added by Aftermath?
 );
 
 // Gun Boat
@@ -164,7 +169,8 @@ static const VesselTypeClass VesselPTBoat(
     true,         // Always use the given name for the vehicle?
     true,         // Is it equipped with a combat turret?
     8,            // Rotation stages.
-    14            // Turret center offset along body centerline.
+    14,           // Turret center offset along body centerline.
+    false        // Added by Aftermath?
 );
 
 // Missile Submarine
@@ -182,7 +188,8 @@ static const VesselTypeClass VesselMissileSubmarine(
     true,            // Always use the given name for the vehicle?
     false,           // Is it equipped with a combat turret?
     8,               // Rotation stages.
-    14               // Turret center offset along body centerline.
+    14,              // Turret center offset along body centerline.
+    true            // Added by Aftermath?
 );
 
 // Transport
@@ -200,7 +207,8 @@ static const VesselTypeClass VesselCarrier(
     true,         // Always use the given name for the vehicle?
     false,        // Is it equipped with a combat turret?
     0,            // Rotation stages.
-    0             // Turret center offset along body centerline.
+    0,            // Turret center offset along body centerline.
+    true         // Added by Aftermath?
 );
 
 /***********************************************************************************************
@@ -224,13 +232,14 @@ VesselTypeClass::VesselTypeClass(VesselType type, int name, const char* ininame,
                                  int secondaryoffset, int secondarylateral,
                                  bool is_eight, bool is_nominal,
                                  bool is_turret_equipped, int rotation,
-                                 int toffset)
+                                 int toffset, bool is_aftermath)
     : TechnoTypeClass(RTTI_VESSELTYPE, static_cast<int>(type), name, ininame,
                       REMAP_NORMAL, verticaloffset, primaryoffset,
                       primarylateral, secondaryoffset, secondarylateral,
                       is_nominal, false, true, true, false, false, false,
                       is_turret_equipped, true, true, rotation, SPEED_FLOAT),
       IsPieceOfEight(is_eight),
+      IsAftermath(is_aftermath),
       Type(type),
       TurretOffset(static_cast<signed char>(toffset)),
       Mission(MISSION_GUARD),
@@ -383,7 +392,7 @@ void VesselTypeClass::Display(int x, int y, WindowNumberType window,
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselTypeClass::Prep_For_Add() {
-  for (VesselType index = VESSEL_FIRST; index < VESSEL_COUNT; index++) {
+  for (VesselType index : magic_enum::enum_values<VesselType>()) {
     if (As_Reference(index).Get_Image_Data() != nullptr) {
       Map.Add_To_List(&As_Reference(index));
     }
@@ -477,7 +486,7 @@ void VesselTypeClass::Dimensions(int& width, int& height) const {
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselTypeClass::One_Time() {
-  for (VesselType index = VESSEL_FIRST; index < VESSEL_COUNT; index++) {
+  for (VesselType index : magic_enum::enum_values<VesselType>()) {
     VesselTypeClass& uclass = As_Reference(index);
     if (uclass.Level != -1 || index == VESSEL_CARRIER) {
       /*
@@ -606,7 +615,7 @@ const short* VesselTypeClass::Overlap_List() const {
  *=============================================================================================*/
 VesselType VesselTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
-    for (VesselType classid = VESSEL_FIRST; classid < VESSEL_COUNT; classid++) {
+    for (VesselType classid : magic_enum::enum_values<VesselType>()) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
         return classid;
       }

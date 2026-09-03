@@ -919,6 +919,9 @@ class UnitTypeClass : public TechnoTypeClass {
   */
   unsigned IsNoFireWhileMoving : 1;
 
+  // Added by Aftermath; cannot be built while NewUnitsEnabled is false.
+  unsigned IsAftermath : 1;
+
   /*
   **	This value represents the unit class. It can serve as a unique
   **	identification number for this unit class.
@@ -960,7 +963,7 @@ class UnitTypeClass : public TechnoTypeClass {
                 bool is_turret_equipped, bool is_radar_equipped,
                 bool is_fire_anim, bool is_lock_turret, bool is_gigundo,
                 bool is_animating, bool is_jammer, bool is_gapper, int rotation,
-                int toffset, MissionType order);
+                int toffset, MissionType order, bool is_aftermath);
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
@@ -1013,6 +1016,9 @@ class VesselTypeClass : public TechnoTypeClass {
   */
   unsigned IsPieceOfEight : 1;
 
+  // Added by Aftermath; cannot be built while NewUnitsEnabled is false.
+  unsigned IsAftermath : 1;
+
   /*
   **	This value represents the unit class. It can serve as a unique
   **	identification number for this unit class.
@@ -1050,7 +1056,7 @@ class VesselTypeClass : public TechnoTypeClass {
                   int verticaloffset, int primaryoffset, int primarylateral,
                   int secondaryoffset, int secondarylateral, bool is_eight,
                   bool is_nominal, bool is_turret_equipped, int rotation,
-                  int toffset);
+                  int toffset, bool is_aftermath);
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
@@ -1137,6 +1143,9 @@ class InfantryTypeClass : public TechnoTypeClass {
   */
   unsigned IsRemapOverride : 1;
 
+  // Added by Aftermath; cannot be built while NewUnitsEnabled is false.
+  unsigned IsAftermath : 1;
+
   /*
   **	This value represents the unit class. It can serve as a unique
   **	identification number for this unit class.
@@ -1179,7 +1188,8 @@ class InfantryTypeClass : public TechnoTypeClass {
                     bool is_crawling, bool is_civilian, bool is_remap_override,
                     bool is_nominal, bool is_theater, PipEnum pip,
                     const DoInfoStruct* controls, int firelaunch,
-                    int pronelaunch, const unsigned char* override_remap);
+                    int pronelaunch, const unsigned char* override_remap,
+                    bool is_aftermath);
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }

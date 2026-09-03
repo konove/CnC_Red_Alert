@@ -1620,7 +1620,6 @@ static int Net_Join_Dialog() {
   }
 #else
   for (HousesType house = HOUSE_USSR; house <= HOUSE_FRANCE; house++) {
-    //	for (HousesType house = HOUSE_FIRST; house <= HOUSE_TURKEY; house++) {
     housebtn.Add_Item(
         Text_String(HouseTypeClass::As_Reference(house).Full_Name()));
   }

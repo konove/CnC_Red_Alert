@@ -48,6 +48,7 @@
 
 #include <cassert>
 
+#include "magic_enum/magic_enum.hpp"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/building.h"
@@ -662,7 +663,7 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
                              MissionType mission, TARGET tarcom, TARGET navcom,
                              InfantryType passenger) {
   assert(house != nullptr);
-  assert(static_cast<unsigned>(air) < AIRCRAFT_COUNT);
+  assert(static_cast<unsigned>(air) < magic_enum::enum_count<AircraftType>());
   assert(number != 0);
   assert(static_cast<unsigned>(mission) < MISSION_COUNT);
   /*

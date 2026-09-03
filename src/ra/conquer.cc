@@ -45,6 +45,7 @@
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "base/types.h"
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/platform.h"
 #include "port/safe_string.h"
@@ -1014,14 +1015,13 @@ void Keyboard_Process(KeyNumType& input) {
 
   if constexpr (config::kCheatKeysEnabled) {
     if (Debug_Flag) {
-      HousesType h;
 
       switch (static_cast<unsigned>(input)) {
         case static_cast<unsigned>(KN_M) | static_cast<unsigned>(KN_SHIFT_BIT):
         case static_cast<unsigned>(KN_M) | static_cast<unsigned>(KN_ALT_BIT):
         case static_cast<unsigned>(KN_M) | static_cast<unsigned>(KN_CTRL_BIT):
-          for (h = HOUSE_FIRST; h < HOUSE_COUNT; ++h) {
-            Houses.Ptr(h)->Refund_Money(10000);
+          for (HousesType house : magic_enum::enum_values<HousesType>()) {
+            Houses.Ptr(house)->Refund_Money(10000);
           }
           break;
 

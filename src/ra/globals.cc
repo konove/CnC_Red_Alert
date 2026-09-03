@@ -41,6 +41,7 @@
 #include <algorithm>
 #include <cstdint>
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/base.h"
@@ -588,7 +589,8 @@ QueueClass<EventClass, kMaxEvents * 64> DoList;
 /***************************************************************************
 **	These are arrays/lists of trigger pointers for each cell & the houses.
 */
-DynamicVectorClass<TriggerClass*> HouseTriggers[HOUSE_COUNT];
+DynamicVectorClass<TriggerClass*>
+    HouseTriggers[magic_enum::enum_count<HousesType>()];
 DynamicVectorClass<TriggerClass*> MapTriggers;
 int MapTriggerID;
 DynamicVectorClass<TriggerClass*> LogicTriggers;

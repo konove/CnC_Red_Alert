@@ -59,6 +59,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/bench_util.h"
 #include "ra/conquer.h"
@@ -1003,7 +1004,7 @@ bool RulesClass::Objects(CCINIClass& ini) {
   /*
   **	Fetch the house attribute override values.
   */
-  for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
+  for (HousesType house : magic_enum::enum_values<HousesType>()) {
     HouseTypeClass::As_Reference(house).Read_INI(ini);
   }
 

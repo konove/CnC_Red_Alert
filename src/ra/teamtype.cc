@@ -70,6 +70,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/ccini.h"
@@ -714,7 +715,7 @@ bool TeamTypeClass::Edit() {
       BUTTON_HOUSE, housetext, sizeof(housetext), TPF_EFNT | TPF_NOSHADOW,
       name_edt.X + name_edt.Width + D_SPACING_X, name_edt.Y, 55, 8 * 5,
       MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
-  for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
+  for (HousesType house : magic_enum::enum_values<HousesType>()) {
     housebtn.Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
   if (House == HOUSE_NONE) {

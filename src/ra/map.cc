@@ -75,6 +75,7 @@
 #include <iterator>
 #include <new>
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
@@ -2042,12 +2043,13 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
  *=============================================================================================*/
 bool MapClass::Base_Region(CELL cell, HousesType& house, ZoneType& zone) const {
   if (static_cast<unsigned>(cell) < MAP_CELL_TOTAL && In_Radar(cell)) {
-    for (house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
-      HouseClass* h = HouseClass::As_Pointer(house);
+    for (HousesType candidate : magic_enum::enum_values<HousesType>()) {
+      HouseClass* h = HouseClass::As_Pointer(candidate);
 
       if (h && h->IsActive && !h->IsDefeated && h->Center) {
         zone = h->Which_Zone(cell);
         if (zone != ZONE_NONE) {
+          house = candidate;
           return true;
         }
       }

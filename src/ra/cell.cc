@@ -96,6 +96,7 @@
 #include <utility>
 
 #include "config.h"
+#include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/bench_util.h"
 #include "ra/building.h"
@@ -1830,7 +1831,7 @@ void CellClass::Adjust_Threat(HousesType house, int threat_value) {
 
   int region = Map.Cell_Region(Cell_Number());
 
-  for (HousesType lp = HOUSE_FIRST; lp < HOUSE_COUNT; lp++) {
+  for (HousesType lp : magic_enum::enum_values<HousesType>()) {
     if (lp == house) {
       continue;
     }
@@ -2092,20 +2093,30 @@ bool CellClass::Goodie_Check(FootClass* object) {
                 HouseClass* hptr = Houses.Ptr(i + HOUSE_MULTI1);
                 if (hptr != nullptr && !hptr->IsDefeated) {
                   int j;
-                  for (j = 0; j < UNIT_COUNT; j++) {
+                  for (j = 0;
+                       j < static_cast<int>(magic_enum::enum_count<UnitType>());
+                       j++) {
                     ucount += hptr->QuantityU(j);
                   }
-                  for (j = 0; j < INFANTRY_COUNT; j++) {
+                  for (j = 0; j < static_cast<int>(
+                                      magic_enum::enum_count<InfantryType>());
+                       j++) {
                     ucount += hptr->QuantityI(j);
                   }
-                  for (j = 0; j < AIRCRAFT_COUNT; j++) {
+                  for (j = 0; j < static_cast<int>(
+                                      magic_enum::enum_count<AircraftType>());
+                       j++) {
                     ucount += hptr->QuantityA(j);
                   }
-                  for (j = 0; j < VESSEL_COUNT; j++) {
+                  for (j = 0; j < static_cast<int>(
+                                      magic_enum::enum_count<VesselType>());
+                       j++) {
                     ucount += hptr->QuantityV(j);
                   }
                   int bcount = 0;
-                  for (j = 0; j < STRUCT_COUNT; j++) {
+                  for (j = 0; j < static_cast<int>(
+                                      magic_enum::enum_count<StructType>());
+                       j++) {
                     bcount += hptr->QuantityB(j);
                   }
                   ucount += bcount / 2;  // weight buildings less
@@ -2275,7 +2286,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
         */
         while (utp == nullptr) {
           UnitType utype = Random_Pick(
-              UNIT_FIRST, static_cast<UnitType>(UNIT_RA_COUNT - 1 - 3));
+              magic_enum::enum_values<UnitType>().front(),
+              static_cast<UnitType>(HouseClass::kOriginalUnitCount - 1 - 3));
           if (utype != UNIT_MCV || Session.Options.Bases) {
             utp = &UnitTypeClass::As_Reference(utype);
             if (utp->IsCrateGoodie &&

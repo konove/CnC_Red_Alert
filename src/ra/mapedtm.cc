@@ -39,6 +39,7 @@
  *   MapEditClass::Team_Members -- user picks makeup of a team             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
 #include "ra/control.h"
@@ -562,22 +563,22 @@ int MapEditClass::Team_Members(HousesType house) {
   **	checking to be sure this house can own the object
   */
   i = 0;
-  for (InfantryType i_id = INFANTRY_FIRST; i_id < INFANTRY_COUNT; i_id++) {
+  for (InfantryType i_id : magic_enum::enum_values<InfantryType>()) {
     teamclass[i] = &InfantryTypeClass::As_Reference(i_id);
     i++;
   }
 
-  for (AircraftType a_id = AIRCRAFT_FIRST; a_id < AIRCRAFT_COUNT; a_id++) {
+  for (AircraftType a_id : magic_enum::enum_values<AircraftType>()) {
     teamclass[i] = &AircraftTypeClass::As_Reference(a_id);
     i++;
   }
 
-  for (UnitType u_id = UNIT_FIRST; u_id < UNIT_COUNT; u_id++) {
+  for (UnitType u_id : magic_enum::enum_values<UnitType>()) {
     teamclass[i] = &UnitTypeClass::As_Reference(u_id);
     i++;
   }
 
-  for (VesselType v_id = VESSEL_FIRST; v_id < VESSEL_COUNT; v_id++) {
+  for (VesselType v_id : magic_enum::enum_values<VesselType>()) {
     teamclass[i] = &VesselTypeClass::As_Reference(v_id);
     i++;
   }

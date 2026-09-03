@@ -77,6 +77,7 @@
 #include <string_view>
 
 #include "absl/log/log.h"
+#include "magic_enum/magic_enum.hpp"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -633,7 +634,7 @@ void Fill_In_Data() {
   **	Move available money to silos, if the scenario flag so indicates.
   */
   if (Scen.IsMoneyTiberium) {
-    for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
+    for (HousesType house : magic_enum::enum_values<HousesType>()) {
       HouseClass* hptr = HouseClass::As_Pointer(house);
       if (hptr != nullptr) {
         int tomove = static_cast<int>(hptr->Capacity - hptr->Tiberium);
@@ -729,7 +730,7 @@ void Clear_Scenario() {
   MapTriggers.Clear();
   LogicTriggers.Clear();
 
-  for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
+  for (HousesType house : magic_enum::enum_values<HousesType>()) {
     HouseTriggers[house].Clear();
   }
 

@@ -56,6 +56,7 @@
 
 #include <algorithm>
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/base.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -278,7 +279,7 @@ int MapEditClass::Placement_Dialog() {
   ListClass housebtn(BUTTON_HOUSE, D_GDI_X, D_GDI_Y, 60, 8 * 16,
                      TPF_EFNT | TPF_NOSHADOW, MFCD::Retrieve("EBTN-UP.SHP"),
                      MFCD::Retrieve("EBTN-DN.SHP"));
-  for (house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
+  for (HousesType house : magic_enum::enum_values<HousesType>()) {
     housebtn.Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
 

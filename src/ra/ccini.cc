@@ -104,6 +104,7 @@
 #include <string>
 #include <string_view>
 
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/adata.h"
 #include "ra/anim.h"
@@ -483,7 +484,8 @@ bool CCINIClass::Put_Owners(const char* section, const char* entry,
   }
 
   // Iterate through House Types
-  for (int i = HOUSE_FIRST; i < static_cast<int>(HOUSE_COUNT); ++i) {
+  for (int i = 0; i < static_cast<int>(magic_enum::enum_count<HousesType>());
+       ++i) {
     if ((value & 1L << i) != 0) {
       const auto house = static_cast<HousesType>(i);
       append(HouseTypeClass::As_Reference(house).Name());
@@ -1442,7 +1444,8 @@ bool CCINIClass::Put_Buildings(const char* section, const char* entry,
 
   // The input 'value' is a 'long', so it can only represent
   // the first 32 buildings (Indices 0 to 31).
-  constexpr int limit = std::min(32, static_cast<int>(STRUCT_COUNT));
+  constexpr int limit =
+      std::min(32, static_cast<int>(magic_enum::enum_count<StructType>()));
 
   auto append = [&](const std::string_view name) {
     if (!buffer.empty()) {
@@ -1451,8 +1454,7 @@ bool CCINIClass::Put_Buildings(const char* section, const char* entry,
     buffer += name;
   };
 
-  // We start at STRUCT_FIRST (0) and go up to limit.
-  for (size_t i = STRUCT_FIRST; i < limit; ++i) {
+  for (size_t i = 0; i < limit; ++i) {
     // Check if the bit at index 'i' is set.
     // We use 1L (long) to match the type of 'value'.
     if ((value & 1L << i) != 0) {

@@ -65,9 +65,11 @@
 #include <cstdlib>
 #include <cstring>
 #include <format>
+#include <iterator>
 #include <string>
 #include <utility>
 
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/ccptr.h"
@@ -94,7 +96,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include <iterator>
 
 /***********************************************************************************************
  * TriggerTypeClass::TriggerTypeClass -- Constructor for trigger class object. *
@@ -747,7 +748,7 @@ bool TriggerTypeClass::Edit() {
                            ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                            MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (StructType ss = STRUCT_FIRST; ss < STRUCT_COUNT; ss++) {
+  for (StructType ss : magic_enum::enum_values<StructType>()) {
     btype1list.Add_Item(
         Text_String(BuildingTypeClass::As_Reference(ss).Full_Name()));
     btype2list.Add_Item(
@@ -779,7 +780,7 @@ bool TriggerTypeClass::Edit() {
                            ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                            MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (InfantryType ii = INFANTRY_FIRST; ii < INFANTRY_COUNT; ii++) {
+  for (InfantryType ii : magic_enum::enum_values<InfantryType>()) {
     itype1list.Add_Item(
         Text_String(InfantryTypeClass::As_Reference(ii).Full_Name()));
     itype2list.Add_Item(
@@ -811,7 +812,7 @@ bool TriggerTypeClass::Edit() {
                            ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                            MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (AircraftType aa = AIRCRAFT_FIRST; aa < AIRCRAFT_COUNT; aa++) {
+  for (AircraftType aa : magic_enum::enum_values<AircraftType>()) {
     atype1list.Add_Item(
         Text_String(AircraftTypeClass::As_Reference(aa).Full_Name()));
     atype2list.Add_Item(
@@ -843,7 +844,7 @@ bool TriggerTypeClass::Edit() {
                            ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                            MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (UnitType uu = UNIT_FIRST; uu < UNIT_COUNT; uu++) {
+  for (UnitType uu : magic_enum::enum_values<UnitType>()) {
     utype1list.Add_Item(
         Text_String(UnitTypeClass::As_Reference(uu).Full_Name()));
     utype2list.Add_Item(
@@ -885,7 +886,7 @@ bool TriggerTypeClass::Edit() {
                            ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                            MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (HousesType hh = HOUSE_FIRST; hh < HOUSE_COUNT; hh++) {
+  for (HousesType hh : magic_enum::enum_values<HousesType>()) {
     htype1list.Add_Item(HouseTypeClass::As_Reference(hh).IniName);
     htype2list.Add_Item(HouseTypeClass::As_Reference(hh).IniName);
     htype3list.Add_Item(HouseTypeClass::As_Reference(hh).IniName);
@@ -986,7 +987,7 @@ bool TriggerTypeClass::Edit() {
       BUTTON_HOUSE, housetext, sizeof(housetext), TPF_EFNT | TPF_NOSHADOW,
       name_edt.X + name_edt.Width + 20, name_edt.Y, 95, 8 * 5,
       MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
-  for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
+  for (HousesType house : magic_enum::enum_values<HousesType>()) {
     housebtn.Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
   if (House == HOUSE_NONE) {

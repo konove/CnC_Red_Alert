@@ -50,6 +50,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/base.h"
@@ -130,7 +131,6 @@ int MapEditClass::New_Scenario() {
   Disect_Scenario_Name(Scen.ScenarioName, scen_num, player, dir, var);
 
   int rc;
-  HousesType house;
 
   /*
   **	Force the house save value to match the player house.
@@ -179,7 +179,7 @@ int MapEditClass::New_Scenario() {
   /*
   **	Create houses
   */
-  for (house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
+  for (HousesType house : magic_enum::enum_values<HousesType>()) {
     new HouseClass(house);
   }
 
@@ -1636,12 +1636,12 @@ int MapEditClass::Load_Scenario() {
     TheaterType orig_theater = Scen.Theater;  // original theater
     HousesType house = PlayerPtr->Class->House;
     HousesType newhouse = house;
-    HouseStaticClass hdata[HOUSE_COUNT];
+    HouseStaticClass hdata[magic_enum::enum_count<HousesType>()];
 
     /*
     **	Fill in the house data for each house that exists.
     */
-    for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+    for (HousesType h : magic_enum::enum_values<HousesType>()) {
       HouseClass* hptr = HouseClass::As_Pointer(h);
       if (hptr) {
         hdata[h] = hptr->Control;
@@ -1913,7 +1913,7 @@ int MapEditClass::Load_Scenario() {
                        D_DIALOG_Y + 105, 55, 7 * 10, TPF_EFNT | TPF_NOSHADOW,
                        MFCD::Retrieve("EBTN-UP.SHP"),
                        MFCD::Retrieve("EBTN-DN.SHP"));
-    for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+    for (HousesType h : magic_enum::enum_values<HousesType>()) {
       housebtn.Add_Item(HouseTypeClass::As_Reference(h).IniName);
     }
     housebtn.Set_Selected_Index(PlayerPtr->Class->House);
@@ -1926,7 +1926,7 @@ int MapEditClass::Load_Scenario() {
         BUTTON_BASE, basetext, sizeof(basetext), TPF_EFNT | TPF_NOSHADOW,
         D_DIALOG_X + 30, D_DIALOG_Y + 80, 65, 7 * 10,
         MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
-    for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+    for (HousesType h : magic_enum::enum_values<HousesType>()) {
       basebtn.Add_Item(HouseTypeClass::As_Reference(h).IniName);
     }
     if (Base.House != HOUSE_NONE) {
@@ -2017,7 +2017,7 @@ int MapEditClass::Load_Scenario() {
                           housebtn.Y, 65, 7 * 10, TPF_EFNT | TPF_NOSHADOW,
                           MFCD::Retrieve("EBTN-UP.SHP"),
                           MFCD::Retrieve("EBTN-DN.SHP"));
-    for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+    for (HousesType h : magic_enum::enum_values<HousesType>()) {
       allies.Add_Item(HouseTypeClass::As_Reference(h).IniName);
       if (hdata[house].Allies & (1L << h)) {
         allies.Check_Item(h, true);
@@ -2032,7 +2032,7 @@ int MapEditClass::Load_Scenario() {
                            housebtn.Y, 65, 7 * 10, TPF_EFNT | TPF_NOSHADOW,
                            MFCD::Retrieve("EBTN-UP.SHP"),
                            MFCD::Retrieve("EBTN-DN.SHP"));
-    for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+    for (HousesType h : magic_enum::enum_values<HousesType>()) {
       control.Add_Item(HouseTypeClass::As_Reference(h).IniName);
       if (HouseClass::As_Pointer(h)->IsPlayerControl) {
         control.Check_Item(h, true);
@@ -2113,7 +2113,7 @@ int MapEditClass::Load_Scenario() {
         techlevel.Set_Value(hstatic->TechLevel);
         sourcebtn.Set_Selected_Index(hstatic->Edge);
         maxunit.Set_Value(hstatic->MaxUnit + hstatic->MaxInfantry);
-        for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+        for (HousesType h : magic_enum::enum_values<HousesType>()) {
           allies.Check_Item(h, hstatic->Allies & (1L << h));
         }
         smarties.Set_Value(hstatic->IQ);
@@ -2364,7 +2364,7 @@ int MapEditClass::Load_Scenario() {
         hstatic->MaxUnit = maxunit.Get_Value() / 2;
         hstatic->MaxInfantry = maxunit.Get_Value() / 2;
         hstatic->IQ = smarties.Get_Value();
-        for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+        for (HousesType h : magic_enum::enum_values<HousesType>()) {
           if (allies.Is_Checked(h)) {
             hstatic->Allies = static_cast<int>(hstatic->Allies | (1L << h));
           } else {
@@ -2391,7 +2391,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Copy the dialog data back into the appropriate game data locations.
     */
-    for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+    for (HousesType h : magic_enum::enum_values<HousesType>()) {
       HouseClass* hptr = HouseClass::As_Pointer(h);
       if (hptr != nullptr) {
         hptr->Control = hdata[h];

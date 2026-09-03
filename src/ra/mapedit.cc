@@ -66,6 +66,7 @@
 #include <cstring>
 #include <type_traits>
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/base.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -173,7 +174,7 @@ void MapEditClass::One_Time() {
       POPUP_HOUSELIST, POPUP_HOUSE_X, POPUP_HOUSE_Y, POPUP_HOUSE_W,
       POPUP_HOUSE_H, TPF_EFNT | TPF_NOSHADOW, MFCD::Retrieve("EBTN-UP.SHP"),
       MFCD::Retrieve("EBTN-DN.SHP"));
-  for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
+  for (HousesType house : magic_enum::enum_values<HousesType>()) {
     HouseList->Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
 
@@ -1787,16 +1788,17 @@ HousesType MapEditClass::Cycle_House(HousesType curhouse,
     /*
     **	Go to next house
     */
-    curhouse++;
-    if (curhouse == HOUSE_COUNT) {
-      curhouse = HOUSE_FIRST;
+    if (curhouse == magic_enum::enum_values<HousesType>().back()) {
+      curhouse = magic_enum::enum_values<HousesType>().front();
+    } else {
+      curhouse++;
     }
 
     /*
     **	Count # iterations; don't go forever
     */
     count++;
-    if (count == HOUSE_COUNT) {
+    if (count == static_cast<int>(magic_enum::enum_count<HousesType>())) {
       curhouse = HOUSE_NONE;
       break;
     }

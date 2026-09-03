@@ -128,6 +128,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/base.h"
@@ -2263,14 +2264,9 @@ void BuildingClass::Update_Buildables() {
   assert(IsActive);
 
   if (House == PlayerPtr && !IsInLimbo && IsDiscoveredByPlayer) {
-    StructType i;
-    UnitType u;
-    InfantryType f;
-    AircraftType a;
-    VesselType v;
     switch (Class->ToBuild) {
       case RTTI_VESSELTYPE:
-        for (v = VESSEL_FIRST; v < VESSEL_COUNT; v++) {
+        for (VesselType v : magic_enum::enum_values<VesselType>()) {
           if (PlayerPtr->Can_Build(&VesselTypeClass::As_Reference(v),
                                    ActLike)) {
             Map.Add(RTTI_VESSELTYPE, v);
@@ -2279,7 +2275,7 @@ void BuildingClass::Update_Buildables() {
         break;
 
       case RTTI_BUILDINGTYPE:
-        for (i = STRUCT_FIRST; i < STRUCT_COUNT; i++) {
+        for (StructType i : magic_enum::enum_values<StructType>()) {
           if (PlayerPtr->Can_Build(&BuildingTypeClass::As_Reference(i),
                                    ActLike)) {
             Map.Add(RTTI_BUILDINGTYPE, i);
@@ -2288,7 +2284,7 @@ void BuildingClass::Update_Buildables() {
         break;
 
       case RTTI_UNITTYPE:
-        for (u = UNIT_FIRST; u < UNIT_COUNT; u++) {
+        for (UnitType u : magic_enum::enum_values<UnitType>()) {
           if (PlayerPtr->Can_Build(&UnitTypeClass::As_Reference(u), ActLike)) {
             Map.Add(RTTI_UNITTYPE, u);
           }
@@ -2296,7 +2292,7 @@ void BuildingClass::Update_Buildables() {
         break;
 
       case RTTI_INFANTRYTYPE:
-        for (f = INFANTRY_FIRST; f < INFANTRY_COUNT; f++) {
+        for (InfantryType f : magic_enum::enum_values<InfantryType>()) {
           if (PlayerPtr->Can_Build(&InfantryTypeClass::As_Reference(f),
                                    ActLike)) {
             if (InfantryTypeClass::As_Reference(f).IsDog) {
@@ -2313,7 +2309,7 @@ void BuildingClass::Update_Buildables() {
         break;
 
       case RTTI_AIRCRAFTTYPE:
-        for (a = AIRCRAFT_FIRST; a < AIRCRAFT_COUNT; a++) {
+        for (AircraftType a : magic_enum::enum_values<AircraftType>()) {
           if (PlayerPtr->Can_Build(&AircraftTypeClass::As_Reference(a),
                                    ActLike)) {
             Map.Add(RTTI_AIRCRAFTTYPE, a);

@@ -73,6 +73,7 @@
 #include <filesystem>
 #include <string>
 
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/building.h"
 #include "ra/ccini.h"
@@ -3098,7 +3099,7 @@ void BuildingTypeClass::One_Time() {
       {STRUCT_TESLA, BSTATE_ACTIVE, 0, 10, 2},
   };
 
-  for (StructType sindex = STRUCT_FIRST; sindex < STRUCT_COUNT; sindex++) {
+  for (StructType sindex : magic_enum::enum_values<StructType>()) {
     BuildingTypeClass& building = As_Reference(sindex);
 
     /*
@@ -3179,7 +3180,7 @@ void BuildingTypeClass::One_Time() {
  *=============================================================================================*/
 StructType BuildingTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
-    for (StructType classid = STRUCT_FIRST; classid < STRUCT_COUNT; classid++) {
+    for (StructType classid : magic_enum::enum_values<StructType>()) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
         return classid;
       }
@@ -3234,7 +3235,7 @@ void BuildingTypeClass::Display(int x, int y, WindowNumberType window,
  *interface routines.                                     *
  *=============================================================================================*/
 void BuildingTypeClass::Prep_For_Add() {
-  for (StructType index = STRUCT_FIRST; index < STRUCT_COUNT; index++) {
+  for (StructType index : magic_enum::enum_values<StructType>()) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
     }
@@ -3341,7 +3342,7 @@ void BuildingTypeClass::Init_Anim(BStateType state, int start, int count,
  *=============================================================================================*/
 void BuildingTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
-    for (StructType sindex = STRUCT_FIRST; sindex < STRUCT_COUNT; sindex++) {
+    for (StructType sindex : magic_enum::enum_values<StructType>()) {
       BuildingTypeClass* classptr = &As_Reference(sindex);
 
       if (classptr->IsTheater) {

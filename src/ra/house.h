@@ -125,6 +125,13 @@ class HouseStaticClass {
 */
 class HouseClass {
  public:
+  // Aftermath appended its units after the original lists, but the saved
+  // per-type quantity arrays keep the original sizes and Aftermath IDs wrap
+  // into them. These mark where the originals end.
+  static constexpr int kOriginalUnitCount = UNIT_CHRONOTANK;
+  static constexpr int kOriginalInfantryCount = INFANTRY_SHOCK;
+  static constexpr int kOriginalVesselCount = VESSEL_MISSILESUB;
+
   RTTIType RTTI;
   int ID;
 
@@ -514,9 +521,9 @@ class HouseClass {
   ** For multiplayer games, each house needs to keep track of how many
   ** objects of each other house they've killed.
   */
-  unsigned UnitsKilled[HOUSE_COUNT];
+  unsigned UnitsKilled[magic_enum::enum_count<HousesType>()];
   unsigned UnitsLost;
-  unsigned BuildingsKilled[HOUSE_COUNT];
+  unsigned BuildingsKilled[magic_enum::enum_count<HousesType>()];
   unsigned BuildingsLost;
 
   /*
@@ -577,12 +584,12 @@ class HouseClass {
   **	Tracks number of each building type owned by this house. Even if the
   **	building is in construction, it will be reflected in this total.
   */
-  int BQuantity[STRUCT_COUNT - 3];
-  int UQuantity[UNIT_RA_COUNT - 3];
+  int BQuantity[magic_enum::enum_count<StructType>() - 3];
+  int UQuantity[kOriginalUnitCount - 3];
 
-  int IQuantity[INFANTRY_RA_COUNT];
-  int AQuantity[AIRCRAFT_COUNT];
-  int VQuantity[VESSEL_RA_COUNT];
+  int IQuantity[kOriginalInfantryCount];
+  int AQuantity[magic_enum::enum_count<AircraftType>()];
+  int VQuantity[kOriginalVesselCount];
 
   /*
   **	This timer keeps track of when an all out attack should be performed.
@@ -916,21 +923,21 @@ class HouseClass {
 
   int QuantityB(int index) { return BQuantity[index]; }
   int QuantityU(int index) {
-    if (index >= UNIT_RA_COUNT) {
-      index -= UNIT_RA_COUNT;
+    if (index >= kOriginalUnitCount) {
+      index -= kOriginalUnitCount;
     }
     return UQuantity[index];
   }
   int QuantityI(int index) {
-    if (index >= INFANTRY_RA_COUNT) {
-      index -= INFANTRY_RA_COUNT;
+    if (index >= kOriginalInfantryCount) {
+      index -= kOriginalInfantryCount;
     }
     return IQuantity[index];
   }
   int QuantityA(int index) { return AQuantity[index]; }
   int QuantityV(int index) {
-    if (index >= VESSEL_RA_COUNT) {
-      index -= VESSEL_RA_COUNT;
+    if (index >= kOriginalVesselCount) {
+      index -= kOriginalVesselCount;
     }
     return VQuantity[index];
   }

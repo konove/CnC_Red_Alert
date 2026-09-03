@@ -847,9 +847,7 @@ enum HousesType : int8_t {
   HOUSE_MULTI5,   // Multi-Player house #5
   HOUSE_MULTI6,   // Multi-Player house #6
   HOUSE_MULTI7,   // Multi-Player house #7
-  HOUSE_MULTI8,   // Multi-Player house #8
-  HOUSE_COUNT,
-  HOUSE_FIRST = 0
+  HOUSE_MULTI8    // Multi-Player house #8
 };
 
 // House bit masks over HousesType, for owner lists.
@@ -1107,10 +1105,7 @@ enum StructType {
 
   STRUCT_QUEEN,
   STRUCT_LARVA1,
-  STRUCT_LARVA2,
-
-  STRUCT_COUNT,
-  STRUCT_FIRST = 0
+  STRUCT_LARVA2
 };
 
 // Building bit masks over StructType, matching HouseClass::BScan. The enum
@@ -1213,12 +1208,7 @@ enum InfantryType {
 
   // CounterStrike II only!
   INFANTRY_SHOCK,  // Shock Trooper
-  INFANTRY_MECHANIC,
-
-  INFANTRY_COUNT,
-  INFANTRY_FIRST = 0,
-  // TODO(konove): Replace this weird count with sets.
-  INFANTRY_RA_COUNT = INFANTRY_SHOCK
+  INFANTRY_MECHANIC
 };
 
 // Infantry bit mask over InfantryType, matching HouseClass::IScan.
@@ -1254,11 +1244,7 @@ enum UnitType {
   UNIT_TESLATANK,   // Tesla-equipped tank
   UNIT_MAD,         // Timequake tank
   UNIT_DEMOTRUCK,   // Jihad truck
-  UNIT_PHASE,       // cloaking APC for special missions
-
-  UNIT_COUNT,
-  UNIT_FIRST = 0,
-  UNIT_RA_COUNT = UNIT_CHRONOTANK
+  UNIT_PHASE        // cloaking APC for special missions
 };
 
 // Unit bit masks over UnitType, matching HouseClass::UScan.
@@ -1279,12 +1265,7 @@ enum VesselType {
 
   // CS II ONLY
   VESSEL_MISSILESUB,  // Missile-equipped submarine
-  VESSEL_CARRIER,
-
-  VESSEL_COUNT,
-  VESSEL_FIRST = 0,
-  // TODO(konove): Replace this weird count with sets
-  VESSEL_RA_COUNT = VESSEL_MISSILESUB
+  VESSEL_CARRIER
 };
 
 /**********************************************************************
@@ -1300,9 +1281,7 @@ enum AircraftType {
   AIRCRAFT_LONGBOW,    // Apache gunship.
   AIRCRAFT_HIND,       // Soviet attach helicopter.
 
-  AIRCRAFT_COUNT,
-  AIRCRAFT_NONE = -1,
-  AIRCRAFT_FIRST = 0
+  AIRCRAFT_NONE = -1
 };
 
 /**********************************************************************
@@ -2390,7 +2369,9 @@ inline constexpr TextPrintType kTpfText =
 *the *	object class.
 */
 inline constexpr int kBuildingMax = 500;           // Lasts for hours.
-inline constexpr int kHouseMax = HOUSE_COUNT + 1;  // Lasts entire scenario.
+inline constexpr int kHouseMax =
+    static_cast<int>(magic_enum::enum_count<HousesType>()) +
+    1;                                             // Lasts entire scenario.
 inline constexpr int kInfantryMax = 500;           // Lasts for minutes.
 inline constexpr int kUnitMax = 500;               // Lasts for minutes.
 inline constexpr int kVesselMax = 100;             // Lasts for minutes.

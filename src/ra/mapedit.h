@@ -77,14 +77,18 @@
 */
 enum MapEdit1Enum {
   MAX_EDIT_OBJECTS =  // max # of ObjectTypeClasses allowed
-  static_cast<int>(TEMPLATE_COUNT) + static_cast<int>(OVERLAY_COUNT) +
-  static_cast<int>(SMUDGE_COUNT) + static_cast<int>(TERRAIN_COUNT) +
-  static_cast<int>(UNIT_COUNT) + static_cast<int>(INFANTRY_COUNT) +
-  static_cast<int>(VESSEL_COUNT) + static_cast<int>(STRUCT_COUNT),
+      static_cast<int>(TEMPLATE_COUNT) +
+      static_cast<int>(OVERLAY_COUNT) + static_cast<int>(SMUDGE_COUNT) +
+      static_cast<int>(TERRAIN_COUNT) +
+      static_cast<int>(magic_enum::enum_count<UnitType>()) +
+      static_cast<int>(magic_enum::enum_count<InfantryType>()) +
+      static_cast<int>(magic_enum::enum_count<VesselType>()) +
+      static_cast<int>(magic_enum::enum_count<StructType>()),
 
   MAX_TEAM_CLASSES =  // max # ObjectTypeClasses for a team
-  static_cast<int>(UNIT_COUNT) + static_cast<int>(INFANTRY_COUNT) +
-  static_cast<int>(AIRCRAFT_COUNT),
+      static_cast<int>(magic_enum::enum_count<UnitType>()) +
+      static_cast<int>(magic_enum::enum_count<InfantryType>()) +
+      static_cast<int>(magic_enum::enum_count<AircraftType>()),
 
   //	NUM_EDIT_MISSIONS = 6,			// # missions that can be
   // assigned an object

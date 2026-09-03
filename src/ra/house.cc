@@ -157,6 +157,8 @@
 #include <new>
 
 #include "absl/log/check.h"
+#include "base/types.h"
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
@@ -207,7 +209,6 @@
 #include "ra/vortex.h"
 #include "ra/ww_audio.h"
 #include "sdllib/gbuffer.h"
-#include "base/types.h"
 
 TFixedIHeapClass<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;
 
@@ -316,7 +317,9 @@ HouseClass* HouseClass::As_Pointer(HousesType house) {
  *                                                                                             *
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::One_Time() { BuildChoice.Set_Heap(STRUCT_COUNT); }
+void HouseClass::One_Time() {
+  BuildChoice.Set_Heap(magic_enum::enum_count<StructType>());
+}
 
 /***********************************************************************************************
  * HouseClass::Assign_Handicap -- Assigns the specified handicap rating to the
@@ -830,19 +833,30 @@ HouseClass::HouseClass(HousesType house)
              static_cast<int>(Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
 
   if (Session.Type == GAME_INTERNET) {
-    AircraftTotals = new UnitTrackerClass(static_cast<int>(AIRCRAFT_COUNT));
-    InfantryTotals = new UnitTrackerClass(static_cast<int>(INFANTRY_COUNT));
-    UnitTotals = new UnitTrackerClass(static_cast<int>(UNIT_COUNT));
-    BuildingTotals = new UnitTrackerClass(static_cast<int>(STRUCT_COUNT));
-    VesselTotals = new UnitTrackerClass(static_cast<int>(VESSEL_COUNT));
+    AircraftTotals = new UnitTrackerClass(
+        static_cast<int>(magic_enum::enum_count<AircraftType>()));
+    InfantryTotals = new UnitTrackerClass(
+        static_cast<int>(magic_enum::enum_count<InfantryType>()));
+    UnitTotals = new UnitTrackerClass(
+        static_cast<int>(magic_enum::enum_count<UnitType>()));
+    BuildingTotals = new UnitTrackerClass(
+        static_cast<int>(magic_enum::enum_count<StructType>()));
+    VesselTotals = new UnitTrackerClass(
+        static_cast<int>(magic_enum::enum_count<VesselType>()));
 
-    DestroyedAircraft = new UnitTrackerClass(static_cast<int>(AIRCRAFT_COUNT));
-    DestroyedInfantry = new UnitTrackerClass(static_cast<int>(INFANTRY_COUNT));
-    DestroyedUnits = new UnitTrackerClass(static_cast<int>(UNIT_COUNT));
-    DestroyedBuildings = new UnitTrackerClass(static_cast<int>(STRUCT_COUNT));
-    DestroyedVessels = new UnitTrackerClass(static_cast<int>(VESSEL_COUNT));
+    DestroyedAircraft = new UnitTrackerClass(
+        static_cast<int>(magic_enum::enum_count<AircraftType>()));
+    DestroyedInfantry = new UnitTrackerClass(
+        static_cast<int>(magic_enum::enum_count<InfantryType>()));
+    DestroyedUnits = new UnitTrackerClass(
+        static_cast<int>(magic_enum::enum_count<UnitType>()));
+    DestroyedBuildings = new UnitTrackerClass(
+        static_cast<int>(magic_enum::enum_count<StructType>()));
+    DestroyedVessels = new UnitTrackerClass(
+        static_cast<int>(magic_enum::enum_count<VesselType>()));
 
-    CapturedBuildings = new UnitTrackerClass(static_cast<int>(STRUCT_COUNT));
+    CapturedBuildings = new UnitTrackerClass(
+        static_cast<int>(magic_enum::enum_count<StructType>()));
     TotalCrates = new UnitTrackerClass(CRATE_COUNT);
   }
 }
@@ -951,22 +965,35 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
   ** don't allow building this unit.
   */
   if (!NewUnitsEnabled) {
+    // The saved quantity arrays assume the Aftermath types are exactly those
+    // past the kOriginal*Count boundaries; the data flags must agree.
     switch (type->What_Am_I()) {
-      case RTTI_INFANTRYTYPE:
-        if (((InfantryTypeClass*)type)->ID >= INFANTRY_RA_COUNT) {
+      case RTTI_INFANTRYTYPE: {
+        const auto* infantry = dynamic_cast<const InfantryTypeClass*>(type);
+        DCHECK_EQ(infantry->IsAftermath != 0,
+                  infantry->Type >= kOriginalInfantryCount);
+        if (infantry->IsAftermath) {
           return false;
         }
         break;
-      case RTTI_UNITTYPE:
-        if (((UnitTypeClass*)type)->ID >= UNIT_RA_COUNT) {
+      }
+      case RTTI_UNITTYPE: {
+        const auto* unit = dynamic_cast<const UnitTypeClass*>(type);
+        DCHECK_EQ(unit->IsAftermath != 0, unit->Type >= kOriginalUnitCount);
+        if (unit->IsAftermath) {
           return false;
         }
         break;
-      case RTTI_VESSELTYPE:
-        if (((VesselTypeClass*)type)->ID >= VESSEL_RA_COUNT) {
+      }
+      case RTTI_VESSELTYPE: {
+        const auto* vessel = dynamic_cast<const VesselTypeClass*>(type);
+        DCHECK_EQ(vessel->IsAftermath != 0,
+                  vessel->Type >= kOriginalVesselCount);
+        if (vessel->IsAftermath) {
           return false;
         }
         break;
+      }
       default:
         break;
     }
@@ -1057,7 +1084,7 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
 void HouseClass::Init() {
   Houses.Free_All();
 
-  for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
+  for (HousesType index : magic_enum::enum_values<HousesType>()) {
     HouseTriggers[index].Clear();
   }
 }
@@ -1335,11 +1362,13 @@ void HouseClass::AI() {
         0)  //	Includes count of VESSEL_MISSILESUBs. ajw
     {
       int iCount = 0;
-      for (int i = 0; i != STRUCT_COUNT - 3; ++i) {
+      for (int i = 0;
+           i != static_cast<int>(magic_enum::enum_count<StructType>()) - 3;
+           ++i) {
         iCount += BQuantity[i];
       }
       if (!iCount) {
-        for (int i = 0; i != UNIT_RA_COUNT - 3; ++i) {
+        for (int i = 0; i != kOriginalUnitCount - 3; ++i) {
           iCount += UQuantity[i];
         }
         if (!iCount) {
@@ -1349,11 +1378,13 @@ void HouseClass::AI() {
             iCount += IQuantity[i];
           }
           if (!iCount) {
-            for (int i = 0; i != AIRCRAFT_COUNT; ++i) {
+            for (int i = 0;
+                 i != static_cast<int>(magic_enum::enum_count<AircraftType>());
+                 ++i) {
               iCount += AQuantity[i];
             }
             if (!iCount) {
-              for (int i = 0; i != VESSEL_RA_COUNT; ++i) {
+              for (int i = 0; i != kOriginalVesselCount; ++i) {
                 if (i != VESSEL_SS) {
                   iCount += VQuantity[i];
                 }
@@ -3309,14 +3340,11 @@ bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
   CHECK_EQ(Houses.ID(this), ID);
 
   int bflag = 1 << btype;
-  for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
-    HouseClass* house = As_Pointer(index);
-
-    if (house && !Is_Ally(house) && (house->ActiveBScan & bflag) != 0) {
-      return true;
-    }
-  }
-  return false;
+  return std::ranges::any_of(
+      magic_enum::enum_values<HousesType>(), [&](HousesType index) {
+        HouseClass* house = As_Pointer(index);
+        return house && !Is_Ally(house) && (house->ActiveBScan & bflag) != 0;
+      });
 }
 
 /***********************************************************************************************
@@ -3777,8 +3805,6 @@ void HouseClass::MPlayer_Defeated() {
  *   11/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 void HouseClass::Tally_Score() {
-  HousesType house;
-  HousesType house2;
   HouseClass* hptr;
   int score_index;
   int i, j, k;
@@ -3789,7 +3815,7 @@ void HouseClass::Tally_Score() {
   /*
   ** Loop through all houses, tallying up each player's score
   */
-  for (house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
+  for (HousesType house : magic_enum::enum_values<HousesType>()) {
     hptr = As_Pointer(house);
     /*
     ** Skip this house if it's not human.
@@ -3878,7 +3904,7 @@ void HouseClass::Tally_Score() {
     /*
     **	Tally up all kills for this player
     */
-    for (house2 = HOUSE_FIRST; house2 < HOUSE_COUNT; house2++) {
+    for (HousesType house2 : magic_enum::enum_values<HousesType>()) {
       Session.Score[score_index].Kills[Session.CurGame] +=
           hptr->UnitsKilled[house2];
       Session.Score[score_index].Kills[Session.CurGame] +=
@@ -4588,7 +4614,7 @@ int HouseClass::Expert_AI() {
     int maxbuilding = 0;
     int enemycount = 0;
 
-    for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
+    for (HousesType house : magic_enum::enum_values<HousesType>()) {
       HouseClass* h = As_Pointer(house);
       if (h != nullptr && h->IsActive && !h->IsDefeated && !Is_Ally(h)) {
         /*
@@ -5278,7 +5304,7 @@ int HouseClass::AI_Building() {
     **	Don't suggest anything to build if the base is already big enough.
     */
     int quant = 0;
-    for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+    for (HousesType h : magic_enum::enum_values<HousesType>()) {
       const HouseClass* hptr = As_Pointer(h);
 
       if (hptr != nullptr && hptr->IsActive && hptr->IsHuman &&
@@ -5467,7 +5493,7 @@ int HouseClass::AI_Building() {
         threat_quantity = enemy->CurAircraft;
       }
       if (!airthreat) {
-        for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
+        for (HousesType house : magic_enum::enum_values<HousesType>()) {
           HouseClass* h = As_Pointer(house);
           if (h != nullptr && !Is_Ally(house) && h->AScan != 0) {
             airthreat = true;
@@ -5668,7 +5694,7 @@ int HouseClass::AI_Unit() {
   }
 
   if (Session.Type == GAME_NORMAL) {
-    int counter[UNIT_COUNT];
+    int counter[magic_enum::enum_count<UnitType>()];
     memset(counter, 0x00, sizeof(counter));
 
     /*
@@ -5733,8 +5759,8 @@ int HouseClass::AI_Unit() {
     */
     int bestval = -1;
     int bestcount = 0;
-    UnitType bestlist[UNIT_COUNT];
-    for (UnitType utype = UNIT_FIRST; utype < UNIT_COUNT; utype++) {
+    UnitType bestlist[magic_enum::enum_count<UnitType>()];
+    for (UnitType utype : magic_enum::enum_values<UnitType>()) {
       if (counter[utype] > 0 &&
           Can_Build(&UnitTypeClass::As_Reference(utype), Class->House) &&
           UnitTypeClass::As_Reference(utype).Cost_Of() <= Available_Money()) {
@@ -5756,9 +5782,9 @@ int HouseClass::AI_Unit() {
   }
 
   if (IsBaseBuilding) {
-    int counter[UNIT_COUNT];
+    int counter[magic_enum::enum_count<UnitType>()];
     int total = 0;
-    for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
+    for (UnitType index : magic_enum::enum_values<UnitType>()) {
       const UnitTypeClass* utype = &UnitTypeClass::As_Reference(index);
       if (Can_Build(utype, ActLike) && utype->Type != UNIT_HARVESTER) {
         if (utype->PrimaryWeapon != nullptr) {
@@ -5774,7 +5800,7 @@ int HouseClass::AI_Unit() {
 
     if (total > 0) {
       int choice = Random_Pick(0, total - 1);
-      for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
+      for (UnitType index : magic_enum::enum_values<UnitType>()) {
         if (choice < counter[index]) {
           BuildUnit = index;
           break;
@@ -5798,11 +5824,11 @@ int HouseClass::AI_Vessel() {
   }
 
   if (Session.Type == GAME_NORMAL) {
-    int counter[VESSEL_COUNT];
+    int counter[magic_enum::enum_count<VesselType>()];
     if (Session.Type == GAME_NORMAL) {
       memset(counter, 0x00, sizeof(counter));
     } else {
-      for (VesselType index = VESSEL_FIRST; index < VESSEL_COUNT; index++) {
+      for (VesselType index : magic_enum::enum_values<VesselType>()) {
         if (Can_Build(&VesselTypeClass::As_Reference(index), Class->House) &&
             VesselTypeClass::As_Reference(index).Level <= Control.TechLevel) {
           counter[index] = 16;
@@ -5878,8 +5904,8 @@ int HouseClass::AI_Vessel() {
     */
     int bestval = -1;
     int bestcount = 0;
-    VesselType bestlist[VESSEL_COUNT];
-    for (VesselType utype = VESSEL_FIRST; utype < VESSEL_COUNT; utype++) {
+    VesselType bestlist[magic_enum::enum_count<VesselType>()];
+    for (VesselType utype : magic_enum::enum_values<VesselType>()) {
       if (counter[utype] > 0 &&
           Can_Build(&VesselTypeClass::As_Reference(utype), Class->House) &&
           VesselTypeClass::As_Reference(utype).Cost_Of() <= Available_Money()) {
@@ -5933,7 +5959,7 @@ int HouseClass::AI_Infantry() {
   }
 
   if (Session.Type == GAME_NORMAL) {
-    int counter[INFANTRY_COUNT];
+    int counter[magic_enum::enum_count<InfantryType>()];
     memset(counter, 0x00, sizeof(counter));
 
     /*
@@ -6008,8 +6034,8 @@ int HouseClass::AI_Infantry() {
     */
     int bestval = -1;
     int bestcount = 0;
-    InfantryType bestlist[INFANTRY_COUNT];
-    for (InfantryType utype = INFANTRY_FIRST; utype < INFANTRY_COUNT; utype++) {
+    InfantryType bestlist[magic_enum::enum_count<InfantryType>()];
+    for (InfantryType utype : magic_enum::enum_values<InfantryType>()) {
       if (utype != INFANTRY_DOG || !(IScan & kInfantryFlagDog)) {
         if (counter[utype] > 0 &&
             Can_Build(&InfantryTypeClass::As_Reference(utype), Class->House) &&
@@ -6048,18 +6074,18 @@ int HouseClass::AI_Infantry() {
     struct {
       InfantryType Type;  // Infantry type.
       int Value;          // Relative value assigned.
-    } typetrack[INFANTRY_COUNT];
+    } typetrack[magic_enum::enum_count<InfantryType>()];
     int count = 0;
     int total = 0;
-    for (InfantryType index = INFANTRY_FIRST; index < INFANTRY_COUNT; index++) {
+    for (InfantryType index : magic_enum::enum_values<InfantryType>()) {
       if (Can_Build(&InfantryTypeClass::As_Reference(index), ActLike) &&
           InfantryTypeClass::As_Reference(index).Level <= Control.TechLevel) {
         typetrack[count].Value = 0;
         // ajw 9/28/98 This looks like a potential bug.
         // It is prob. for save game format compatibility.
         int clipindex = index;
-        if (clipindex >= INFANTRY_RA_COUNT) {
-          clipindex -= INFANTRY_RA_COUNT;
+        if (clipindex >= kOriginalInfantryCount) {
+          clipindex -= kOriginalInfantryCount;
         }
         if ((enemy != nullptr &&
              enemy->IQuantity[clipindex] > IQuantity[clipindex]) ||
@@ -6289,8 +6315,8 @@ void HouseClass::Tracking_Remove(const TechnoClass* techno) {
       CurInfantry--;
       if (!((InfantryClass*)techno)->IsTechnician) {
         type = dynamic_cast<const InfantryTypeClass&>(techno->Class_Of()).Type;
-        if (type >= INFANTRY_RA_COUNT) {
-          type -= INFANTRY_RA_COUNT;
+        if (type >= kOriginalInfantryCount) {
+          type -= kOriginalInfantryCount;
         }
         IQuantity[type]--;
       }
@@ -6299,8 +6325,8 @@ void HouseClass::Tracking_Remove(const TechnoClass* techno) {
     case RTTI_UNIT:
       CurUnits--;
       type = dynamic_cast<const UnitTypeClass&>(techno->Class_Of()).Type;
-      if (type >= UNIT_RA_COUNT) {
-        type -= UNIT_RA_COUNT;
+      if (type >= kOriginalUnitCount) {
+        type -= kOriginalUnitCount;
       }
       UQuantity[type]--;
       break;
@@ -6308,8 +6334,8 @@ void HouseClass::Tracking_Remove(const TechnoClass* techno) {
     case RTTI_VESSEL:
       CurVessels--;
       type = dynamic_cast<const VesselTypeClass&>(techno->Class_Of()).Type;
-      if (type >= VESSEL_RA_COUNT) {
-        type -= VESSEL_RA_COUNT;
+      if (type >= kOriginalVesselCount) {
+        type -= kOriginalVesselCount;
       }
       VQuantity[type]--;
       break;
@@ -6374,8 +6400,8 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
           dynamic_cast<const InfantryTypeClass&>(techno->Class_Of()).Type;
       if (!((InfantryClass*)techno)->IsTechnician) {
         quant = infantry;
-        if (quant >= INFANTRY_RA_COUNT) {
-          quant -= INFANTRY_RA_COUNT;
+        if (quant >= kOriginalInfantryCount) {
+          quant -= kOriginalInfantryCount;
         }
         IQuantity[quant]++;
         if (!dynamic_cast<const InfantryTypeClass&>(techno->Class_Of())
@@ -6391,8 +6417,8 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
       CurUnits++;
       unit = dynamic_cast<const UnitTypeClass&>(techno->Class_Of()).Type;
       quant = unit;
-      if (quant >= UNIT_RA_COUNT) {
-        quant -= UNIT_RA_COUNT;
+      if (quant >= kOriginalUnitCount) {
+        quant -= kOriginalUnitCount;
       }
       UQuantity[quant]++;
       UScan |= 1L << unit;
@@ -6405,8 +6431,8 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
       CurVessels++;
       vessel = dynamic_cast<const VesselTypeClass&>(techno->Class_Of()).Type;
       quant = vessel;
-      if (quant >= VESSEL_RA_COUNT) {
-        quant -= VESSEL_RA_COUNT;
+      if (quant >= kOriginalVesselCount) {
+        quant -= kOriginalVesselCount;
       }
       VQuantity[quant]++;
       VScan |= 1L << vessel;
@@ -7052,7 +7078,7 @@ void HouseClass::Read_INI(CCINIClass& ini) {
   HouseClass* p;      // Pointer to current player data.
   const char* hname;  //	Pointer to house name.
 
-  for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
+  for (HousesType index : magic_enum::enum_values<HousesType>()) {
     hname = HouseTypeClass::As_Reference(index).IniName;
 
     p = new HouseClass(index);
@@ -7082,7 +7108,7 @@ void HouseClass::Read_INI(CCINIClass& ini) {
     int owners = static_cast<int>(ini.Get_Owners(hname, "Allies", 1 << HOUSE_NEUTRAL));
     p->Make_Ally(index);
     p->Make_Ally(HOUSE_NEUTRAL);
-    for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+    for (HousesType h : magic_enum::enum_values<HousesType>()) {
       if ((owners & 1 << h) != 0) {
         p->Make_Ally(h);
       }
@@ -7112,7 +7138,7 @@ void HouseClass::Write_INI(CCINIClass& ini) {
   */
   HouseStaticClass control;
 
-  for (HousesType i = HOUSE_FIRST; i < HOUSE_COUNT; i++) {
+  for (HousesType i : magic_enum::enum_values<HousesType>()) {
     HouseClass* p = As_Pointer(i);
 
     if (p != nullptr) {
@@ -7395,7 +7421,10 @@ bool HouseClass::Is_Allowed_To_Ally(HousesType house) const {
   */
   int housecount = 0;
   int allycount = 0;
-  for (HousesType house2 = HOUSE_MULTI1; house2 < HOUSE_COUNT; house2++) {
+  for (HousesType house2 : magic_enum::enum_values<HousesType>()) {
+    if (house2 < HOUSE_MULTI1) {
+      continue;
+    }
     HouseClass* hptr = As_Pointer(house2);
     if (hptr != nullptr && hptr->IsActive && !hptr->IsDefeated) {
       housecount++;
@@ -7434,7 +7463,10 @@ void HouseClass::Computer_Paranoid() {
   *other computer *	controlled houses and then make enemies with all other
   *human controlled houses.
   */
-  for (HousesType house = HOUSE_MULTI1; house < HOUSE_COUNT; house++) {
+  for (HousesType house : magic_enum::enum_values<HousesType>()) {
+    if (house < HOUSE_MULTI1) {
+      continue;
+    }
     HouseClass* hptr = As_Pointer(house);
     if (hptr != nullptr && hptr->IsActive && !hptr->IsDefeated &&
         !hptr->IsHuman) {
@@ -7444,7 +7476,10 @@ void HouseClass::Computer_Paranoid() {
       **	Break alliance with every human it is allied with and make
       *friends with *	any other computer players.
       */
-      for (HousesType house2 = HOUSE_MULTI1; house2 < HOUSE_COUNT; house2++) {
+      for (HousesType house2 : magic_enum::enum_values<HousesType>()) {
+        if (house2 < HOUSE_MULTI1) {
+          continue;
+        }
         HouseClass* hptr2 = As_Pointer(house2);
         if (hptr2 != nullptr && hptr2->IsActive && !hptr2->IsDefeated) {
           if (hptr2->IsHuman) {

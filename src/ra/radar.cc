@@ -84,6 +84,8 @@
 #include <iterator>
 
 #include "absl/log/check.h"
+#include "base/types.h"
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/bench_util.h"
@@ -117,7 +119,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/rawfile.h"
-#include "base/types.h"
 
 // void const * RadarClass::CoverShape;
 RadarClass::RTacticalClass RadarClass::RadarButton;
@@ -2150,7 +2151,7 @@ bool RadarClass::Spy_Next_House() {
   IsPlayerNames = false;
   IsToRedraw = true;
 
-  HousesType maxhouse;
+  int maxhouse;  // One past the last house to consider.
   HousesType firsthouse;
   HousesType house;
 
@@ -2159,7 +2160,7 @@ bool RadarClass::Spy_Next_House() {
     maxhouse = HOUSE_GOOD;
   } else {
     firsthouse = HOUSE_MULTI1;
-    maxhouse = HOUSE_COUNT;
+    maxhouse = static_cast<int>(magic_enum::enum_count<HousesType>());
   }
 
   if (IsHouseSpy) {
@@ -2302,7 +2303,6 @@ void RadarClass::Draw_Names() {
   HouseClass* ptr;
   int y;
   char txt[40];
-  HousesType h;
   int kills;
   RemapControlType* color;
   TextPrintType style;
@@ -2374,7 +2374,7 @@ void RadarClass::Draw_Names() {
     Fancy_Text_Print(txt, RadX + RadOffX, y, color, TBLACK, style);
 
     kills = 0;
-    for (h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+    for (HousesType h : magic_enum::enum_values<HousesType>()) {
       kills += ptr->UnitsKilled[h];
       kills += ptr->BuildingsKilled[h];
     }

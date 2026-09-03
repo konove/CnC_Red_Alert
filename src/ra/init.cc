@@ -280,14 +280,14 @@ bool Init_Game(int, char*[]) {
   *allocated as a consequence *	of processing the rules.ini file, but that is a
   *bit beyond the capabilities of *	the rule parser routine (currently).
   */
-  HouseTypes.Set_Heap(HOUSE_COUNT);
-  BuildingTypes.Set_Heap(STRUCT_COUNT);
-  AircraftTypes.Set_Heap(AIRCRAFT_COUNT);
-  InfantryTypes.Set_Heap(INFANTRY_COUNT);
+  HouseTypes.Set_Heap(magic_enum::enum_count<HousesType>());
+  BuildingTypes.Set_Heap(magic_enum::enum_count<StructType>());
+  AircraftTypes.Set_Heap(magic_enum::enum_count<AircraftType>());
+  InfantryTypes.Set_Heap(magic_enum::enum_count<InfantryType>());
   BulletTypes.Set_Heap(BULLET_COUNT);
   AnimTypes.Set_Heap(ANIM_COUNT);
-  UnitTypes.Set_Heap(UNIT_COUNT);
-  VesselTypes.Set_Heap(VESSEL_COUNT);
+  UnitTypes.Set_Heap(magic_enum::enum_count<UnitType>());
+  VesselTypes.Set_Heap(magic_enum::enum_count<VesselType>());
   TemplateTypes.Set_Heap(TEMPLATE_COUNT);
   TerrainTypes.Set_Heap(TERRAIN_COUNT);
   OverlayTypes.Set_Heap(OVERLAY_COUNT);

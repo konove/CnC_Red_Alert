@@ -59,6 +59,7 @@
 #include <cstddef>
 #include <string>
 
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/aircraft.h"
 #include "ra/ccptr.h"
@@ -368,8 +369,7 @@ void AircraftTypeClass::Init_Heap() {
  *=============================================================================================*/
 AircraftType AircraftTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
-    for (AircraftType classid = AIRCRAFT_FIRST; classid < AIRCRAFT_COUNT;
-         classid++) {
+    for (AircraftType classid : magic_enum::enum_values<AircraftType>()) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
         return classid;
       }
@@ -382,7 +382,7 @@ AircraftType AircraftTypeClass::From_Name(const char* name) {
 /// Loads graphics and other data files for all aircraft types
 /// WARNING: Reads from disk - must only be called ONCE
 void AircraftTypeClass::One_Time() {
-  for (AircraftType index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; index++) {
+  for (AircraftType index : magic_enum::enum_values<AircraftType>()) {
     auto& uclass = As_Reference(index);
 
     // Load cameo icon: "<GraphicName>ICON.SHP"
@@ -436,7 +436,7 @@ ObjectClass* AircraftTypeClass::Create_One_Of(HouseClass* house) const {
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 void AircraftTypeClass::Prep_For_Add() {
-  for (AircraftType index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; index++) {
+  for (AircraftType index : magic_enum::enum_values<AircraftType>()) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
     }

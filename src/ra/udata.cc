@@ -62,6 +62,7 @@
 #include <utility>
 #include <vector>
 
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/ccfile.h"
 #include "ra/ccini.h"
@@ -103,24 +104,25 @@ static const UnitTypeClass UnitV2Launcher(
     0x0000,           // Primary weapon offset along turret centerline.
     0x0000,           // Primary weapon lateral offset along turret centerline.
     0x0000,           // Secondary weapon offset along turret centerline.
-    0x0000,       // Secondary weapon lateral offset along turret centerling.
-    true,         // Can this be a goodie surprise from a crate?
-    false,        // Always use the given name for the vehicle?
-    true,         // Can this unit squash infantry?
-    false,        // Does this unit harvest Tiberium?
-    false,        // Is invisible to radar?
-    false,        // Is it insignificant (won't be announced)?
-    false,        // Is it equipped with a combat turret?
-    false,        // Does it have a rotating radar dish?
-    false,        // Is there an associated firing animation?
-    false,        // Must the turret be in a locked down position while moving?
-    true,         // Is this a gigundo-rotund-enormous unit?
-    false,        // Does the unit have a constant animation?
-    false,        // Is the unit capable of jamming radar?
-    false,        // Is the unit a mobile gap generator?
-    32,           // Rotation stages.
-    0,            // Turret center offset along body centerline.
-    MISSION_HUNT  // ORDERS:		Default order to give new unit.
+    0x0000,        // Secondary weapon lateral offset along turret centerling.
+    true,          // Can this be a goodie surprise from a crate?
+    false,         // Always use the given name for the vehicle?
+    true,          // Can this unit squash infantry?
+    false,         // Does this unit harvest Tiberium?
+    false,         // Is invisible to radar?
+    false,         // Is it insignificant (won't be announced)?
+    false,         // Is it equipped with a combat turret?
+    false,         // Does it have a rotating radar dish?
+    false,         // Is there an associated firing animation?
+    false,         // Must the turret be in a locked down position while moving?
+    true,          // Is this a gigundo-rotund-enormous unit?
+    false,         // Does the unit have a constant animation?
+    false,         // Is the unit capable of jamming radar?
+    false,         // Is the unit a mobile gap generator?
+    32,            // Rotation stages.
+    0,             // Turret center offset along body centerline.
+    MISSION_HUNT,  // ORDERS:		Default order to give new unit.
+    false         // Added by Aftermath?
 );
 
 // Light tank
@@ -151,7 +153,8 @@ static const UnitTypeClass UnitLTank(
     false,         // Is the unit a mobile gap generator?
     32,            // Rotation stages.
     0,             // Turret center offset along body centerline.
-    MISSION_HUNT   // ORDERS:		Default order to give new unit.
+    MISSION_HUNT,  // ORDERS:		Default order to give new unit.
+    false         // Added by Aftermath?
 );
 
 // Heavy tank
@@ -182,7 +185,8 @@ static const UnitTypeClass UnitMTank(
     false,         // Is the unit a mobile gap generator?
     32,            // Rotation stages.
     0,             // Turret center offset along body centerline.
-    MISSION_HUNT   // ORDERS:		Default order to give new unit.
+    MISSION_HUNT,  // ORDERS:		Default order to give new unit.
+    false         // Added by Aftermath?
 );
 
 // Medium tank
@@ -213,7 +217,8 @@ static const UnitTypeClass UnitMTank2(
     false,         // Is the unit a mobile gap generator?
     32,            // Rotation stages.
     0,             // Turret center offset along body centerline.
-    MISSION_HUNT   // ORDERS:		Default order to give new unit.
+    MISSION_HUNT,  // ORDERS:		Default order to give new unit.
+    false         // Added by Aftermath?
 );
 
 // Mastadon tank
@@ -237,14 +242,15 @@ static const UnitTypeClass UnitHTank(
     true,           // Is it equipped with a combat turret?
     false,          // Does it have a rotating radar dish?
     false,          // Is there an associated firing animation?
-    false,        // Must the turret be in a locked down position while moving?
-    true,         // Is this a gigundo-rotund-enormous unit?
-    false,        // Does the unit have a constant animation?
-    false,        // Is the unit capable of jamming radar?
-    false,        // Is the unit a mobile gap generator?
-    32,           // Rotation stages.
-    0,            // Turret center offset along body centerline.
-    MISSION_HUNT  // ORDERS:		Default order to give new unit.
+    false,         // Must the turret be in a locked down position while moving?
+    true,          // Is this a gigundo-rotund-enormous unit?
+    false,         // Does the unit have a constant animation?
+    false,         // Is the unit capable of jamming radar?
+    false,         // Is the unit a mobile gap generator?
+    32,            // Rotation stages.
+    0,             // Turret center offset along body centerline.
+    MISSION_HUNT,  // ORDERS:		Default order to give new unit.
+    false         // Added by Aftermath?
 );
 
 // Mobile Radar Jammer
@@ -275,7 +281,8 @@ static const UnitTypeClass UnitMRJammer(
     false,         // Is the unit a mobile gap generator?
     32,            // Rotation stages.
     0,             // Turret center offset along body centerline.
-    MISSION_HUNT   // ORDERS:		Default order to give new unit.
+    MISSION_HUNT,  // ORDERS:		Default order to give new unit.
+    false         // Added by Aftermath?
 );
 
 // Mobile Gap Generator
@@ -306,7 +313,8 @@ static const UnitTypeClass UnitMGG(
     true,          // Is the unit a mobile gap generator?
     32,            // Rotation stages.
     0,             // Turret center offset along body centerline.
-    MISSION_HUNT   // ORDERS:		Default order to give new unit.
+    MISSION_HUNT,  // ORDERS:		Default order to give new unit.
+    false         // Added by Aftermath?
 );
 
 // Artillery
@@ -330,14 +338,15 @@ static const UnitTypeClass UnitArty(
     false,          // Is it equipped with a combat turret?
     false,          // Does it have a rotating radar dish?
     false,          // Is there an associated firing animation?
-    false,        // Must the turret be in a locked down position while moving?
-    false,        // Is this a gigundo-rotund-enormous unit?
-    false,        // Does the unit have a constant animation?
-    false,        // Is the unit capable of jamming radar?
-    false,        // Is the unit a mobile gap generator?
-    32,           // Rotation stages.
-    0,            // Turret center offset along body centerline.
-    MISSION_HUNT  // ORDERS:		Default order to give new unit.
+    false,         // Must the turret be in a locked down position while moving?
+    false,         // Is this a gigundo-rotund-enormous unit?
+    false,         // Does the unit have a constant animation?
+    false,         // Is the unit capable of jamming radar?
+    false,         // Is the unit a mobile gap generator?
+    32,            // Rotation stages.
+    0,             // Turret center offset along body centerline.
+    MISSION_HUNT,  // ORDERS:		Default order to give new unit.
+    false         // Added by Aftermath?
 );
 
 // Harvester
@@ -368,7 +377,8 @@ static const UnitTypeClass UnitHarvester(
     false,   // Is the unit a mobile gap generator?
     32,      // Rotation stages.
     0,       // Turret center offset along body centerline.
-    MISSION_HARVEST  // ORDERS:		Default order to give new unit.
+    MISSION_HARVEST,  // ORDERS:		Default order to give new unit.
+    false            // Added by Aftermath?
 );
 
 // Mobile construction vehicle
@@ -382,24 +392,25 @@ static const UnitTypeClass UnitMCV(
     0x0000,           // Primary weapon offset along turret centerline.
     0x0000,           // Primary weapon lateral offset along turret centerline.
     0x0000,           // Secondary weapon offset along turret centerline.
-    0x0000,       // Secondary weapon lateral offset along turret centerling.
-    true,         // Can this be a goodie surprise from a crate?
-    false,        // Always use the given name for the vehicle?
-    true,         // Can this unit squash infantry?
-    false,        // Does this unit harvest Tiberium?
-    false,        // Is invisible to radar?
-    false,        // Is it insignificant (won't be announced)?
-    false,        // Is it equipped with a combat turret?
-    false,        // Does it have a rotating radar dish?
-    false,        // Is there an associated firing animation?
-    false,        // Must the turret be in a locked down position while moving?
-    true,         // Is this a gigundo-rotund-enormous unit?
-    false,        // Does the unit have a constant animation?
-    false,        // Is the unit capable of jamming radar?
-    false,        // Is the unit a mobile gap generator?
-    32,           // Rotation stages.
-    0,            // Turret center offset along body centerline.
-    MISSION_HUNT  // ORDERS:		Default order to give new unit.
+    0x0000,        // Secondary weapon lateral offset along turret centerling.
+    true,          // Can this be a goodie surprise from a crate?
+    false,         // Always use the given name for the vehicle?
+    true,          // Can this unit squash infantry?
+    false,         // Does this unit harvest Tiberium?
+    false,         // Is invisible to radar?
+    false,         // Is it insignificant (won't be announced)?
+    false,         // Is it equipped with a combat turret?
+    false,         // Does it have a rotating radar dish?
+    false,         // Is there an associated firing animation?
+    false,         // Must the turret be in a locked down position while moving?
+    true,          // Is this a gigundo-rotund-enormous unit?
+    false,         // Does the unit have a constant animation?
+    false,         // Is the unit capable of jamming radar?
+    false,         // Is the unit a mobile gap generator?
+    32,            // Rotation stages.
+    0,             // Turret center offset along body centerline.
+    MISSION_HUNT,  // ORDERS:		Default order to give new unit.
+    false         // Added by Aftermath?
 );
 
 // Jeep (hummer)
@@ -430,7 +441,8 @@ static const UnitTypeClass UnitJeep(
     false,         // Is the unit a mobile gap generator?
     32,            // Rotation stages.
     0,             // Turret center offset along body centerline.
-    MISSION_HUNT   // ORDERS:		Default order to give new unit.
+    MISSION_HUNT,  // ORDERS:		Default order to give new unit.
+    false         // Added by Aftermath?
 );
 
 // Armored personnel carrier
@@ -461,7 +473,8 @@ static const UnitTypeClass UnitAPC(
     false,         // Is the unit a mobile gap generator?
     32,            // Rotation stages.
     0,             // Turret center offset along body centerline.
-    MISSION_HUNT   // ORDERS:		Default order to give new unit.
+    MISSION_HUNT,  // ORDERS:		Default order to give new unit.
+    false         // Added by Aftermath?
 );
 
 // Mine laying truck
@@ -485,14 +498,15 @@ static const UnitTypeClass UnitMineLayer(
     false,           // Is it equipped with a combat turret?
     false,           // Does it have a rotating radar dish?
     false,           // Is there an associated firing animation?
-    false,        // Must the turret be in a locked down position while moving?
-    false,        // Is this a gigundo-rotund-enormous unit?
-    false,        // Does the unit have a constant animation?
-    false,        // Is the unit capable of jamming radar?
-    false,        // Is the unit a mobile gap generator?
-    32,           // Rotation stages.
-    0,            // Turret center offset along body centerline.
-    MISSION_HUNT  // ORDERS:		Default order to give new unit.
+    false,         // Must the turret be in a locked down position while moving?
+    false,         // Is this a gigundo-rotund-enormous unit?
+    false,         // Does the unit have a constant animation?
+    false,         // Is the unit capable of jamming radar?
+    false,         // Is the unit a mobile gap generator?
+    32,            // Rotation stages.
+    0,             // Turret center offset along body centerline.
+    MISSION_HUNT,  // ORDERS:		Default order to give new unit.
+    false         // Added by Aftermath?
 );
 
 // Convoy Truck
@@ -523,7 +537,8 @@ static const UnitTypeClass UnitConvoyTruck(
     false,         // Is the unit a mobile gap generator?
     32,            // Rotation stages.
     0,             // Turret center offset along body centerline.
-    MISSION_GUARD  // ORDERS:		Default order to give new unit.
+    MISSION_GUARD,  // ORDERS:		Default order to give new unit.
+    false          // Added by Aftermath?
 );
 
 /*
@@ -576,14 +591,15 @@ static const UnitTypeClass UnitAnt1(
     false,           // Is it equipped with a combat turret?
     false,           // Does it have a rotating radar dish?
     false,           // Is there an associated firing animation?
-    false,        // Must the turret be in a locked down position while moving?
-    true,         // Is this a gigundo-rotund-enormous unit?
-    false,        // Does the unit have a constant animation?
-    false,        // Is the unit capable of jamming radar?
-    false,        // Is the unit a mobile gap generator?
-    8,            // Rotation stages.
-    0,            // Turret center offset along body centerline.
-    MISSION_HUNT  // ORDERS:		Default order to give new unit.
+    false,         // Must the turret be in a locked down position while moving?
+    true,          // Is this a gigundo-rotund-enormous unit?
+    false,         // Does the unit have a constant animation?
+    false,         // Is the unit capable of jamming radar?
+    false,         // Is the unit a mobile gap generator?
+    8,             // Rotation stages.
+    0,             // Turret center offset along body centerline.
+    MISSION_HUNT,  // ORDERS:		Default order to give new unit.
+    false         // Added by Aftermath?
 );
 static const UnitTypeClass UnitAnt2(
     UNIT_ANT2,
@@ -605,14 +621,15 @@ static const UnitTypeClass UnitAnt2(
     false,           // Is it equipped with a combat turret?
     false,           // Does it have a rotating radar dish?
     false,           // Is there an associated firing animation?
-    false,        // Must the turret be in a locked down position while moving?
-    true,         // Is this a gigundo-rotund-enormous unit?
-    false,        // Does the unit have a constant animation?
-    false,        // Is the unit capable of jamming radar?
-    false,        // Is the unit a mobile gap generator?
-    8,            // Rotation stages.
-    0,            // Turret center offset along body centerline.
-    MISSION_HUNT  // ORDERS:		Default order to give new unit.
+    false,         // Must the turret be in a locked down position while moving?
+    true,          // Is this a gigundo-rotund-enormous unit?
+    false,         // Does the unit have a constant animation?
+    false,         // Is the unit capable of jamming radar?
+    false,         // Is the unit a mobile gap generator?
+    8,             // Rotation stages.
+    0,             // Turret center offset along body centerline.
+    MISSION_HUNT,  // ORDERS:		Default order to give new unit.
+    false         // Added by Aftermath?
 );
 static const UnitTypeClass UnitAnt3(
     UNIT_ANT3,
@@ -634,14 +651,15 @@ static const UnitTypeClass UnitAnt3(
     false,           // Is it equipped with a combat turret?
     false,           // Does it have a rotating radar dish?
     false,           // Is there an associated firing animation?
-    false,        // Must the turret be in a locked down position while moving?
-    true,         // Is this a gigundo-rotund-enormous unit?
-    false,        // Does the unit have a constant animation?
-    false,        // Is the unit capable of jamming radar?
-    false,        // Is the unit a mobile gap generator?
-    8,            // Rotation stages.
-    0,            // Turret center offset along body centerline.
-    MISSION_HUNT  // ORDERS:		Default order to give new unit.
+    false,         // Must the turret be in a locked down position while moving?
+    true,          // Is this a gigundo-rotund-enormous unit?
+    false,         // Does the unit have a constant animation?
+    false,         // Is the unit capable of jamming radar?
+    false,         // Is the unit a mobile gap generator?
+    8,             // Rotation stages.
+    0,             // Turret center offset along body centerline.
+    MISSION_HUNT,  // ORDERS:		Default order to give new unit.
+    false         // Added by Aftermath?
 );
 
 // Chrono Tank
@@ -665,14 +683,15 @@ static const UnitTypeClass UnitChrono(
     false,           // Is it equipped with a combat turret?
     false,           // Does it have a rotating radar dish?
     false,           // Is there an associated firing animation?
-    false,        // Must the turret be in a locked down position while moving?
-    true,         // Is this a gigundo-rotund-enormous unit?
-    false,        // Does the unit have a constant animation?
-    false,        // Is the unit capable of jamming radar?
-    false,        // Is the unit a mobile gap generator?
-    32,           // Rotation stages.
-    0,            // Turret center offset along body centerline.
-    MISSION_HUNT  // ORDERS:		Default order to give new unit.
+    false,         // Must the turret be in a locked down position while moving?
+    true,          // Is this a gigundo-rotund-enormous unit?
+    false,         // Does the unit have a constant animation?
+    false,         // Is the unit capable of jamming radar?
+    false,         // Is the unit a mobile gap generator?
+    32,            // Rotation stages.
+    0,             // Turret center offset along body centerline.
+    MISSION_HUNT,  // ORDERS:		Default order to give new unit.
+    true          // Added by Aftermath?
 );
 
 // Tesla Tank
@@ -696,14 +715,15 @@ static const UnitTypeClass UnitTesla(
     false,          // Is it equipped with a combat turret?
     true,           // Does it have a rotating radar dish?
     false,          // Is there an associated firing animation?
-    false,        // Must the turret be in a locked down position while moving?
-    true,         // Is this a gigundo-rotund-enormous unit?
-    false,        // Does the unit have a constant animation?
-    true,         // Is the unit capable of jamming radar?
-    false,        // Is the unit a mobile gap generator?
-    32,           // Rotation stages.
-    0,            // Turret center offset along body centerline.
-    MISSION_HUNT  // ORDERS:		Default order to give new unit.
+    false,         // Must the turret be in a locked down position while moving?
+    true,          // Is this a gigundo-rotund-enormous unit?
+    false,         // Does the unit have a constant animation?
+    true,          // Is the unit capable of jamming radar?
+    false,         // Is the unit a mobile gap generator?
+    32,            // Rotation stages.
+    0,             // Turret center offset along body centerline.
+    MISSION_HUNT,  // ORDERS:		Default order to give new unit.
+    true          // Added by Aftermath?
 );
 
 // M.A.D. Tank
@@ -734,7 +754,8 @@ static const UnitTypeClass UnitMAD(
     false,         // Is the unit a mobile gap generator?
     32,            // Rotation stages.
     0,             // Turret center offset along body centerline.
-    MISSION_HUNT   // ORDERS:		Default order to give new unit.
+    MISSION_HUNT,  // ORDERS:		Default order to give new unit.
+    true          // Added by Aftermath?
 );
 
 // Demolition Truck
@@ -758,14 +779,15 @@ static const UnitTypeClass UnitDemoTruck(
     false,          // Is it equipped with a combat turret?
     false,          // Does it have a rotating radar dish?
     false,          // Is there an associated firing animation?
-    false,         // Must the turret be in a locked down position while moving?
-    false,         // Is this a gigundo-rotund-enormous unit?
-    false,         // Does the unit have a constant animation?
-    false,         // Is the unit capable of jamming radar?
-    false,         // Is the unit a mobile gap generator?
-    32,            // Rotation stages.
-    0,             // Turret center offset along body centerline.
-    MISSION_GUARD  // ORDERS:		Default order to give new unit.
+    false,  // Must the turret be in a locked down position while moving?
+    false,  // Is this a gigundo-rotund-enormous unit?
+    false,  // Does the unit have a constant animation?
+    false,  // Is the unit capable of jamming radar?
+    false,  // Is the unit a mobile gap generator?
+    32,     // Rotation stages.
+    0,      // Turret center offset along body centerline.
+    MISSION_GUARD,  // ORDERS:		Default order to give new unit.
+    true           // Added by Aftermath?
 );
 static const UnitTypeClass UnitPhase(
     UNIT_PHASE,
@@ -776,27 +798,28 @@ static const UnitTypeClass UnitPhase(
     REMAP_NORMAL,        // Sidebar remap logic.
     0x0030,              //	Vertical offset.
     0x0030,              // Primary weapon offset along turret centerline.
-    0x0000,       // Primary weapon lateral offset along turret centerline.
-    0x0030,       // Secondary weapon offset along turret centerline.
-    0x0000,       // Secondary weapon lateral offset along turret centerling.
-    false,        // Can this be a goodie surprise from a crate?
-    false,        // Always use the given name for the vehicle?
-    true,         // Can this unit squash infantry?
-    false,        // Does this unit harvest Tiberium?
-    false,        // Is invisible to radar?
-    false,        // Is it insignificant (won't be announced)?
-    true,         // Is it equipped with a combat turret?
-    false,        // Does it have a rotating radar dish?
-    false,        // Is there an associated firing animation?
-    false,        // Must the turret be in a locked down position while moving?
-    true,         //		false,				// Is this a
-                  // gigundo-rotund-enormous unit?
-    false,        // Does the unit have a constant animation?
-    false,        // Is the unit capable of jamming radar?
-    false,        // Is the unit a mobile gap generator?
-    32,           // Rotation stages.
-    0,            // Turret center offset along body centerline.
-    MISSION_HUNT  // ORDERS:		Default order to give new unit.
+    0x0000,        // Primary weapon lateral offset along turret centerline.
+    0x0030,        // Secondary weapon offset along turret centerline.
+    0x0000,        // Secondary weapon lateral offset along turret centerling.
+    false,         // Can this be a goodie surprise from a crate?
+    false,         // Always use the given name for the vehicle?
+    true,          // Can this unit squash infantry?
+    false,         // Does this unit harvest Tiberium?
+    false,         // Is invisible to radar?
+    false,         // Is it insignificant (won't be announced)?
+    true,          // Is it equipped with a combat turret?
+    false,         // Does it have a rotating radar dish?
+    false,         // Is there an associated firing animation?
+    false,         // Must the turret be in a locked down position while moving?
+    true,          //		false,				// Is this a
+                   // gigundo-rotund-enormous unit?
+    false,         // Does the unit have a constant animation?
+    false,         // Is the unit capable of jamming radar?
+    false,         // Is the unit a mobile gap generator?
+    32,            // Rotation stages.
+    0,             // Turret center offset along body centerline.
+    MISSION_HUNT,  // ORDERS:		Default order to give new unit.
+    true          // Added by Aftermath?
 );
 
 /***********************************************************************************************
@@ -823,7 +846,8 @@ UnitTypeClass::UnitTypeClass(
     bool is_crusher, bool is_harvest, bool is_stealthy, bool is_insignificant,
     bool is_turret_equipped, bool is_radar_equipped, bool is_fire_anim,
     bool is_lock_turret, bool is_gigundo, bool is_animating, bool is_jammer,
-    bool is_gapper, int rotation, int toffset, MissionType order)
+    bool is_gapper, int rotation, int toffset, MissionType order,
+    bool is_aftermath)
     : TechnoTypeClass(RTTI_UNITTYPE, static_cast<int>(type), name, ininame,
                       remap, verticaloffset, primaryoffset, primarylateral,
                       secondaryoffset, secondarylateral, is_nominal,
@@ -840,6 +864,7 @@ UnitTypeClass::UnitTypeClass(
       IsJammer(is_jammer),
       IsGapper(is_gapper),
       IsNoFireWhileMoving(false),
+      IsAftermath(is_aftermath),
       Type(type),
       TurretOffset(static_cast<signed char>(toffset)),
       Mission(order),
@@ -954,7 +979,7 @@ void UnitTypeClass::Init_Heap() {
  *=============================================================================================*/
 UnitType UnitTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
-    for (UnitType classid = UNIT_FIRST; classid < UNIT_COUNT; classid++) {
+    for (UnitType classid : magic_enum::enum_values<UnitType>()) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
         return classid;
       }
@@ -1009,7 +1034,7 @@ void UnitTypeClass::Display(int x, int y, WindowNumberType window,
  *interface functions.                                    *
  *=============================================================================================*/
 void UnitTypeClass::Prep_For_Add() {
-  for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
+  for (UnitType index : magic_enum::enum_values<UnitType>()) {
     if (As_Reference(index).Get_Image_Data() != nullptr) {
       Map.Add_To_List(&As_Reference(index));
     }
@@ -1033,7 +1058,7 @@ void UnitTypeClass::Prep_For_Add() {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 void UnitTypeClass::One_Time() {
-  for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
+  for (UnitType index : magic_enum::enum_values<UnitType>()) {
     UnitTypeClass& uclass = As_Reference(index);
     CCFileClass file;
 

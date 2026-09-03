@@ -59,6 +59,7 @@
 #include <filesystem>
 #include <string>
 
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/ccfile.h"
 #include "ra/ccini.h"
@@ -410,9 +411,10 @@ static const InfantryTypeClass Dog(
     false,          // Theater specific graphic image?
     PIP_FULL,       // Transport pip shape/color to use.
     DogDoControls,
-    1,       // Frame of projectile launch.
-    1,       // Frame of projectile launch while prone.
-    nullptr  // pointer to override remap table
+    1,        // Frame of projectile launch.
+    1,        // Frame of projectile launch while prone.
+    nullptr,  // pointer to override remap table
+    false    // Added by Aftermath?
 );
 
 // Minigunners
@@ -430,9 +432,10 @@ static const InfantryTypeClass E1(
     false,        // Theater specific graphic image?
     PIP_FULL,     // Transport pip shape/color to use.
     E1DoControls,
-    2,       // Frame of projectile launch.
-    2,       // Frame of projectile launch while prone.
-    nullptr  // pointer to override remap table
+    2,        // Frame of projectile launch.
+    2,        // Frame of projectile launch while prone.
+    nullptr,  // pointer to override remap table
+    false    // Added by Aftermath?
 );
 
 // Grenadiers
@@ -450,9 +453,10 @@ static const InfantryTypeClass E2(
     false,        // Theater specific graphic image?
     PIP_FULL,     // Transport pip shape/color to use.
     E2DoControls,
-    14,      // Frame of projectile launch.
-    6,       // Frame of projectile launch while prone.
-    nullptr  // pointer to override remap table
+    14,       // Frame of projectile launch.
+    6,        // Frame of projectile launch while prone.
+    nullptr,  // pointer to override remap table
+    false    // Added by Aftermath?
 );
 
 // Bazooka
@@ -470,9 +474,10 @@ static const InfantryTypeClass E3(
     false,        // Theater specific graphic image?
     PIP_FULL,     // Transport pip shape/color to use.
     E3DoControls,
-    3,       // Frame of projectile launch.
-    3,       // Frame of projectile launch while prone.
-    nullptr  // pointer to override remap table
+    3,        // Frame of projectile launch.
+    3,        // Frame of projectile launch while prone.
+    nullptr,  // pointer to override remap table
+    false    // Added by Aftermath?
 );
 
 // Flamethrower
@@ -490,9 +495,10 @@ static const InfantryTypeClass E4(
     false,        // Theater specific graphic image?
     PIP_FULL,     // Transport pip shape/color to use.
     E4DoControls,
-    2,       // Frame of projectile launch.
-    0,       // Frame of projectile launch while prone.
-    nullptr  // pointer to override remap table
+    2,        // Frame of projectile launch.
+    0,        // Frame of projectile launch while prone.
+    nullptr,  // pointer to override remap table
+    false    // Added by Aftermath?
 );
 
 // Renovator
@@ -510,9 +516,10 @@ static const InfantryTypeClass E6(
     false,               // Theater specific graphic image?
     PIP_ENGINEER,        // Transport pip shape/color to use.
     E6DoControls,
-    3,       // Frame of projectile launch.
-    3,       // Frame of projectile launch while prone.
-    nullptr  // pointer to override remap table
+    3,        // Frame of projectile launch.
+    3,        // Frame of projectile launch while prone.
+    nullptr,  // pointer to override remap table
+    false    // Added by Aftermath?
 );
 
 // Spy
@@ -530,9 +537,10 @@ static const InfantryTypeClass E8(
     false,         // Theater specific graphic image?
     PIP_ENGINEER,  // Transport pip shape/color to use.
     SpyDoControls,
-    3,       // Frame of projectile launch.
-    3,       // Frame of projectile launch while prone.
-    nullptr  // pointer to override remap table
+    3,        // Frame of projectile launch.
+    3,        // Frame of projectile launch while prone.
+    nullptr,  // pointer to override remap table
+    false    // Added by Aftermath?
 );
 
 // Thief
@@ -550,9 +558,10 @@ static const InfantryTypeClass E9(
     false,           // Theater specific graphic image?
     PIP_ENGINEER,    // Transport pip shape/color to use.
     E9DoControls,
-    3,       // Frame of projectile launch.
-    3,       // Frame of projectile launch while prone.
-    nullptr  // pointer to override remap table
+    3,        // Frame of projectile launch.
+    3,        // Frame of projectile launch while prone.
+    nullptr,  // pointer to override remap table
+    false    // Added by Aftermath?
 );
 
 // Tanya
@@ -570,9 +579,10 @@ static const InfantryTypeClass E7(
     false,           // Theater specific graphic image?
     PIP_COMMANDO,    // Transport pip shape/color to use.
     E7DoControls,
-    2,       // Frame of projectile launch.
-    2,       // Frame of projectile launch while prone.
-    nullptr  // pointer to override remap table
+    2,        // Frame of projectile launch.
+    2,        // Frame of projectile launch while prone.
+    nullptr,  // pointer to override remap table
+    false    // Added by Aftermath?
 );
 
 static const InfantryTypeClass Medic(
@@ -589,9 +599,10 @@ static const InfantryTypeClass Medic(
     false,           // Theater specific graphic image?
     PIP_ENGINEER,    // Transport pip shape/color to use.
     MedicDoControls,
-    25,      // Frame of projectile launch.
-    25,      // Frame of projectile launch while prone.
-    nullptr  // pointer to override remap table
+    25,       // Frame of projectile launch.
+    25,       // Frame of projectile launch while prone.
+    nullptr,  // pointer to override remap table
+    false    // Added by Aftermath?
 );
 
 static const InfantryTypeClass General(
@@ -608,9 +619,10 @@ static const InfantryTypeClass General(
     false,             // Theater specific graphic image?
     PIP_ENGINEER,      // Transport pip shape/color to use.
     GeneralDoControls,
-    2,       // Frame of projectile launch.
-    2,       // Frame of projectile launch while prone.
-    nullptr  // pointer to override remap table
+    2,        // Frame of projectile launch.
+    2,        // Frame of projectile launch while prone.
+    nullptr,  // pointer to override remap table
+    false    // Added by Aftermath?
 );
 
 // Civilians
@@ -628,9 +640,10 @@ static const InfantryTypeClass C1(
     false,         // Theater specific graphic image?
     PIP_CIVILIAN,  // Transport pip shape/color to use.
     CivilianDoControls,
-    2,       // Frame of projectile launch.
-    0,       // Frame of projectile launch while prone.
-    nullptr  // pointer to override remap table
+    2,        // Frame of projectile launch.
+    0,        // Frame of projectile launch while prone.
+    nullptr,  // pointer to override remap table
+    false    // Added by Aftermath?
 );
 
 static const InfantryTypeClass C2(
@@ -647,9 +660,10 @@ static const InfantryTypeClass C2(
     false,         // Theater specific graphic image?
     PIP_CIVILIAN,  // Transport pip shape/color to use.
     CivilianDoControls,
-    2,         // Frame of projectile launch.
-    0,         // Frame of projectile launch while prone.
-    RemapCiv2  // pointer to override remap table
+    2,          // Frame of projectile launch.
+    0,          // Frame of projectile launch while prone.
+    RemapCiv2,  // pointer to override remap table
+    false      // Added by Aftermath?
 );
 
 static const InfantryTypeClass C3(
@@ -666,9 +680,10 @@ static const InfantryTypeClass C3(
     false,         // Theater specific graphic image?
     PIP_CIVILIAN,  // Transport pip shape/color to use.
     CivilianDoControls,
-    2,       // Frame of projectile launch.
-    0,       // Frame of projectile launch while prone.
-    nullptr  // pointer to override remap table
+    2,        // Frame of projectile launch.
+    0,        // Frame of projectile launch while prone.
+    nullptr,  // pointer to override remap table
+    false    // Added by Aftermath?
 );
 
 static const InfantryTypeClass C4(
@@ -685,9 +700,10 @@ static const InfantryTypeClass C4(
     false,         // Theater specific graphic image?
     PIP_CIVILIAN,  // Transport pip shape/color to use.
     CivilianDoControls,
-    2,         // Frame of projectile launch.
-    0,         // Frame of projectile launch while prone.
-    RemapCiv4  // pointer to override remap table
+    2,          // Frame of projectile launch.
+    0,          // Frame of projectile launch while prone.
+    RemapCiv4,  // pointer to override remap table
+    false      // Added by Aftermath?
 );
 
 static const InfantryTypeClass C5(
@@ -704,9 +720,10 @@ static const InfantryTypeClass C5(
     false,         // Theater specific graphic image?
     PIP_CIVILIAN,  // Transport pip shape/color to use.
     CivilianDoControls,
-    2,         // Frame of projectile launch.
-    0,         // Frame of projectile launch while prone.
-    RemapCiv5  // pointer to override remap table
+    2,          // Frame of projectile launch.
+    0,          // Frame of projectile launch while prone.
+    RemapCiv5,  // pointer to override remap table
+    false      // Added by Aftermath?
 );
 
 static const InfantryTypeClass C6(
@@ -723,9 +740,10 @@ static const InfantryTypeClass C6(
     false,         // Theater specific graphic image?
     PIP_CIVILIAN,  // Transport pip shape/color to use.
     CivilianDoControls,
-    2,         // Frame of projectile launch.
-    0,         // Frame of projectile launch while prone.
-    RemapCiv6  // pointer to override remap table
+    2,          // Frame of projectile launch.
+    0,          // Frame of projectile launch while prone.
+    RemapCiv6,  // pointer to override remap table
+    false      // Added by Aftermath?
 );
 
 static const InfantryTypeClass C7(
@@ -742,9 +760,10 @@ static const InfantryTypeClass C7(
     false,         // Theater specific graphic image?
     PIP_CIVILIAN,  // Transport pip shape/color to use.
     CivilianDoControls,
-    2,         // Frame of projectile launch.
-    0,         // Frame of projectile launch while prone.
-    RemapCiv7  // pointer to override remap table
+    2,          // Frame of projectile launch.
+    0,          // Frame of projectile launch while prone.
+    RemapCiv7,  // pointer to override remap table
+    false      // Added by Aftermath?
 );
 
 static const InfantryTypeClass C8(
@@ -761,9 +780,10 @@ static const InfantryTypeClass C8(
     false,         // Theater specific graphic image?
     PIP_CIVILIAN,  // Transport pip shape/color to use.
     CivilianDoControls,
-    2,         // Frame of projectile launch.
-    0,         // Frame of projectile launch while prone.
-    RemapCiv8  // pointer to override remap table
+    2,          // Frame of projectile launch.
+    0,          // Frame of projectile launch while prone.
+    RemapCiv8,  // pointer to override remap table
+    false      // Added by Aftermath?
 );
 
 static const InfantryTypeClass C9(
@@ -780,9 +800,10 @@ static const InfantryTypeClass C9(
     false,         // Theater specific graphic image?
     PIP_CIVILIAN,  // Transport pip shape/color to use.
     CivilianDoControls,
-    2,         // Frame of projectile launch.
-    0,         // Frame of projectile launch while prone.
-    RemapCiv9  // pointer to override remap table
+    2,          // Frame of projectile launch.
+    0,          // Frame of projectile launch while prone.
+    RemapCiv9,  // pointer to override remap table
+    false      // Added by Aftermath?
 );
 
 // Nikoomba
@@ -800,9 +821,10 @@ static const InfantryTypeClass C10(
     false,         // Theater specific graphic image?
     PIP_ENGINEER,  // Transport pip shape/color to use.
     CivilianDoControls,
-    2,          // Frame of projectile launch.
-    0,          // Frame of projectile launch while prone.
-    RemapCiv10  // pointer to override remap table
+    2,           // Frame of projectile launch.
+    0,           // Frame of projectile launch while prone.
+    RemapCiv10,  // pointer to override remap table
+    false       // Added by Aftermath?
 );
 
 static const InfantryTypeClass Einstein(
@@ -819,9 +841,10 @@ static const InfantryTypeClass Einstein(
     false,              // Theater specific graphic image?
     PIP_ENGINEER,       // Transport pip shape/color to use.
     EinsteinDoControls,
-    0,       // Frame of projectile launch.
-    0,       // Frame of projectile launch while prone.
-    nullptr  // pointer to override remap table
+    0,        // Frame of projectile launch.
+    0,        // Frame of projectile launch while prone.
+    nullptr,  // pointer to override remap table
+    false    // Added by Aftermath?
 );
 
 static const InfantryTypeClass Delphi(
@@ -838,9 +861,10 @@ static const InfantryTypeClass Delphi(
     false,            // Theater specific graphic image?
     PIP_ENGINEER,     // Transport pip shape/color to use.
     CivilianDoControls,
-    2,       // Frame of projectile launch.
-    0,       // Frame of projectile launch while prone.
-    nullptr  // pointer to override remap table
+    2,        // Frame of projectile launch.
+    0,        // Frame of projectile launch while prone.
+    nullptr,  // pointer to override remap table
+    false    // Added by Aftermath?
 );
 
 static const InfantryTypeClass DrChan(
@@ -857,9 +881,10 @@ static const InfantryTypeClass DrChan(
     false,          // Theater specific graphic image?
     PIP_ENGINEER,   // Transport pip shape/color to use.
     EinsteinDoControls,
-    2,       // Frame of projectile launch.
-    0,       // Frame of projectile launch while prone.
-    nullptr  // pointer to override remap table
+    2,        // Frame of projectile launch.
+    0,        // Frame of projectile launch while prone.
+    nullptr,  // pointer to override remap table
+    false    // Added by Aftermath?
 );
 
 // Shock Trooper
@@ -877,9 +902,10 @@ static const InfantryTypeClass ShockTrooper(
     false,             // Theater specific graphic image?
     PIP_FULL,          // Transport pip shape/color to use.
     E4DoControls,
-    2,       // Frame of projectile launch.
-    0,       // Frame of projectile launch while prone.
-    nullptr  // pointer to override remap table
+    2,        // Frame of projectile launch.
+    0,        // Frame of projectile launch while prone.
+    nullptr,  // pointer to override remap table
+    true     // Added by Aftermath?
 );
 
 static const InfantryTypeClass Mechanic(
@@ -896,9 +922,10 @@ static const InfantryTypeClass Mechanic(
     false,              // Theater specific graphic image?
     PIP_ENGINEER,       // Transport pip shape/color to use.
     MedicDoControls,
-    25,      // Frame of projectile launch.
-    25,      // Frame of projectile launch while prone.
-    nullptr  // pointer to override remap table
+    25,       // Frame of projectile launch.
+    25,       // Frame of projectile launch while prone.
+    nullptr,  // pointer to override remap table
+    true     // Added by Aftermath?
 );
 
 /***********************************************************************************************
@@ -922,7 +949,7 @@ InfantryTypeClass::InfantryTypeClass(
     int primaryoffset, bool is_female, bool is_crawling, bool is_civilian,
     bool is_remap_override, bool is_nominal, bool is_theater, PipEnum pip,
     const DoInfoStruct* control, int firelaunch, int pronelaunch,
-    const unsigned char* override_remap)
+    const unsigned char* override_remap, bool is_aftermath)
     : TechnoTypeClass(RTTI_INFANTRYTYPE, static_cast<int>(type), name, ininame,
                       REMAP_NORMAL, verticaloffset, primaryoffset, 0x0000,
                       0x0000, 0x0000, is_nominal, true, true, true, false,
@@ -935,6 +962,7 @@ InfantryTypeClass::InfantryTypeClass(
       IsBomber(false),
       IsDog(false),
       IsRemapOverride(is_remap_override),
+      IsAftermath(is_aftermath),
       Type(type),
       Pip(pip),
       DoControls(control),
@@ -1167,7 +1195,7 @@ void InfantryTypeClass::Display(int x, int y, WindowNumberType window,
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryTypeClass::Prep_For_Add() {
-  for (InfantryType index = INFANTRY_FIRST; index < INFANTRY_COUNT; index++) {
+  for (InfantryType index : magic_enum::enum_values<InfantryType>()) {
     Map.Add_To_List(&As_Reference(index));
   }
 }
@@ -1192,8 +1220,7 @@ void InfantryTypeClass::Prep_For_Add() {
  *=============================================================================================*/
 InfantryType InfantryTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
-    for (InfantryType classid = INFANTRY_FIRST; classid < INFANTRY_COUNT;
-         classid++) {
+    for (InfantryType classid : magic_enum::enum_values<InfantryType>()) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
         return classid;
       }
@@ -1219,7 +1246,7 @@ InfantryType InfantryTypeClass::From_Name(const char* name) {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryTypeClass::One_Time() {
-  for (InfantryType index = INFANTRY_FIRST; index < INFANTRY_COUNT; index++) {
+  for (InfantryType index : magic_enum::enum_values<InfantryType>()) {
     CCFileClass file;
 
     InfantryTypeClass* uclass = &As_Reference(index);

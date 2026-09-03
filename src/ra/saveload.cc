@@ -58,6 +58,8 @@
 #include <cstring>
 #include <new>
 
+#include "base/types.h"
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
@@ -123,7 +125,6 @@
 #include "tech/shastraw.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
-#include "base/types.h"
 
 #define SAVE_BLOCK_SIZE 4096
 
@@ -280,7 +281,7 @@ static void Put_All(Pipe& pipe, int save_net) {
   if (!save_net) {
     Call_Back();
   }
-  for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+  for (HousesType h : magic_enum::enum_values<HousesType>()) {
     count = HouseTriggers[h].Count();
     pipe.Put(&count, sizeof(count));
     for (int index = 0; index < HouseTriggers[h].Count(); index++) {
@@ -773,7 +774,7 @@ bool Load_Game(int id) {
     LogicTriggers.Add(As_Trigger(target));
   }
 
-  for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+  for (HousesType h : magic_enum::enum_values<HousesType>()) {
     straw.Get(&count, sizeof(count));
     HouseTriggers[h].Clear();
     for (int index = 0; index < count; index++) {

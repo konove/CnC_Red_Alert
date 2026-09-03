@@ -240,7 +240,8 @@ extern QueueClass<EventClass, kMaxEvents * 64> DoList;
 extern DynamicVectorClass<ObjectClass*> CurrentObject;
 extern DynamicVectorClass<TriggerClass*> LogicTriggers;
 extern DynamicVectorClass<TriggerClass*> MapTriggers;
-extern DynamicVectorClass<TriggerClass*> HouseTriggers[HOUSE_COUNT];
+extern DynamicVectorClass<TriggerClass*>
+    HouseTriggers[magic_enum::enum_count<HousesType>()];
 
 extern BaseClass Base;
 
