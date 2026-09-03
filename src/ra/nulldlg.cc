@@ -65,6 +65,7 @@
 #include "ra/ccini.h"
 #include "ra/cheklist.h"
 #include "ra/colrlist.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
@@ -135,7 +136,7 @@ extern bool Is_Mission_126x126(char* file_name);
 #define PACKET_CANCEL_TIMEOUT 900
 
 // extern char const *ForMisStr[];
-extern const char* EngMisStr[];
+extern const char* const* EngMisStr;
 
 //
 // how much time (ticks) to go by before sending another packet
@@ -1370,11 +1371,7 @@ void Advanced_Modem_Settings(SerialSettingsType* settings) {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-#if (FRENCH | GERMAN)
-  int d_dialog_w = 440;  // dialog width
-#else
-  int d_dialog_w = 340;  // dialog width
-#endif
+  int d_dialog_w = config::kIsEnglish ? 340 : 440;  // dialog width
 
   int d_dialog_h = 200;                   // dialog height
   int d_dialog_x = 320 - d_dialog_w / 2;  // dialog x-coord
@@ -1713,21 +1710,13 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   int d_initstr_y = d_initstrlist_y - d_margin - d_txt6_h;
 
   int d_add_w = 90;
-#ifdef FRENCH
-  int d_add_x = d_dialog_cx - (d_add_w / 2);
-#else
-  int d_add_x = d_dialog_cx - d_add_w / 2 + 30;
-#endif
+  int d_add_x = d_dialog_cx - d_add_w / 2 + (config::kIsFrench ? 0 : 30);
   int d_add_h = 18;
   int d_add_y = d_initstr_y - d_add_h - 6;
 
   int d_delete_w = 90;
-#ifdef FRENCH
-  int d_delete_x =
-      (d_dialog_x + ((d_dialog_w * 3) / 4) - (d_delete_w / 2)) + 10;
-#else
-  int d_delete_x = d_dialog_x + d_dialog_w * 3 / 4 - d_delete_w / 2;
-#endif
+  int d_delete_x = d_dialog_x + d_dialog_w * 3 / 4 - d_delete_w / 2 +
+                   (config::kIsFrench ? 10 : 0);
   int d_delete_h = 18;
   int d_delete_y = d_initstr_y - d_add_h - 6;
 
@@ -1753,11 +1742,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   int d_pulse_x = d_dialog_x + d_dialog_w * 3 / 4 - d_pulse_w / 2;
   int d_pulse_y = d_tone_y + d_tone_h + d_margin;
 
-#ifdef FRENCH
-  int d_save_w = 160;
-#else
-  int d_save_w = 80;
-#endif
+  int d_save_w = config::kIsFrench ? 160 : 80;
   int d_save_h = 18;
   int d_save_x = d_dialog_x + d_dialog_w / 5 - d_save_w / 2;
   int d_save_y = d_dialog_y + d_dialog_h - d_save_h - d_margin - 8;
@@ -1768,11 +1753,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   int d_cancel_y =
       d_dialog_y + d_dialog_h - d_cancel_h - d_margin - 8;
 
-#if (GERMAN | FRENCH)
-  int d_advanced_w = 100;
-#else
-  int d_advanced_w = 80;
-#endif
+  int d_advanced_w = config::kIsEnglish ? 80 : 100;
   int d_advanced_h = 18;
   int d_advanced_x = d_dialog_x + d_dialog_w / 2 - d_advanced_w / 2;
   int d_advanced_y =
@@ -3086,11 +3067,7 @@ int Com_Scenario_Dialog(bool skirmish) {
              Is_Counterstrike_Installed()) &&
             (!IsMissionAftermath(Session.Scenarios[i]->Get_Filename()) ||
              Is_Aftermath_Installed())) {
-#if defined(GERMAN) || defined(FRENCH)
-          scenariolist.Add_Item(EngMisStr[j + 1]);
-#else
-          scenariolist.Add_Item(EngMisStr[j]);
-#endif
+          scenariolist.Add_Item(EngMisStr[config::kIsEnglish ? j : j + 1]);
         }
         break;
       }
@@ -5071,11 +5048,10 @@ int Com_Show_Scenario_Dialog() {
               for (i = 0; EngMisStr[i] != nullptr; i++) {
                 if (!strcmp(Session.Options.ScenarioDescription,
                             EngMisStr[i])) {
-#if defined(GERMAN) || defined(FRENCH)
-                  sprintf(txt, "%s %s", p, EngMisStr[i + 1]);
-#else
-                  sprintf(txt, "%s %s", p, Session.Options.ScenarioDescription);
-#endif
+                  sprintf(txt, "%s %s", p,
+                          config::kIsEnglish
+                              ? Session.Options.ScenarioDescription
+                              : EngMisStr[i + 1]);
                   break;
                 }
               }

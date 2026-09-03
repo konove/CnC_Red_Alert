@@ -54,9 +54,11 @@
 #include <cstdio>
 #include <cstring>
 
+#include "base/types.h"
 #include "ra/ccfile.h"
 #include "ra/ccptr.h"
 #include "ra/compat.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/display.h"
@@ -90,7 +92,6 @@
 #include "tech/fixed.h"
 #include "tech/random.h"
 #include "tech/rgb.h"
-#include "base/types.h"
 
 #define SCORETEXT_X 184
 // #define SCORETEXT_Y 8
@@ -340,13 +341,8 @@ void ScoreClass::Presentation() {
   static const int _casuay[2] = {78, 78};
   static const int _gditxy[2] = {90, 90};
 
-#if defined(FRENCH) || defined(GERMAN)
-  static const int _gditxx[2] = {130, 150};
-  static const int _nodtxx[2] = {130, 150};
-#else
-  static const int _gditxx[2] = {135, 150};
-  static const int _nodtxx[2] = {135, 150};
-#endif
+  static const int _gditxx[2] = {config::kIsEnglish ? 135 : 130, 150};
+  static const int _nodtxx[2] = {config::kIsEnglish ? 135 : 130, 150};
   static const int _nodtxy[2] = {102, 102};
   static const int _bldggy[2] = {138, 138};
   static const int _bldgny[2] = {150, 150};
@@ -419,11 +415,8 @@ void ScoreClass::Presentation() {
   /* Now display the stuff */
   Set_Logic_Page(SeenBuff);
 
-#ifdef FRENCH
-  Alloc_Object(new ScorePrintClass(TXT_SCORE_TIME, 198, 9, _greenpal));
-#else
-  Alloc_Object(new ScorePrintClass(TXT_SCORE_TIME, 204, 9, _greenpal));
-#endif
+  Alloc_Object(new ScorePrintClass(
+      TXT_SCORE_TIME, config::kIsFrench ? 198 : 204, 9, _greenpal));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_LEAD, 164, 26, _greenpal));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_EFFI, 164, 38, _greenpal));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TOTA, 164, 50, _greenpal));
@@ -1084,15 +1077,10 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
   static int _credsx[2] = {276, 276};
   static int _credsy[2] = {173, 58};
   static int _credpx[2] = {228, 236};
-#ifdef GERMAN
-  static int _credpy[2] = {181, 74};
-  static int _credtx[2] = {162, 162};
-  static int _credty[2] = {173, 62};
-#else
-  static int _credpy[2] = {189 - 12, 74};
-  static int _credtx[2] = {182, 182};
-  static int _credty[2] = {179 - 12, 62};
-#endif
+  static int _credpy[2] = {config::kIsGerman ? 181 : 189 - 12, 74};
+  static int _credtx[2] = {config::kIsGerman ? 162 : 182,
+                           config::kIsGerman ? 162 : 182};
+  static int _credty[2] = {config::kIsGerman ? 173 : 179 - 12, 62};
 
   int credobj, i;
   int minval, add;
@@ -1621,23 +1609,16 @@ void Multi_Score_Presentation() {
 
   Set_Logic_Page(SeenBuff);
 
-#ifdef FRENCH
-  Alloc_Object(new ScorePrintClass(TXT_SCORE_TOP, 113, 13, _greenpal));
-#else
-  Alloc_Object(new ScorePrintClass(TXT_SCORE_TOP, 130, 13, _greenpal));
-#endif
+  Alloc_Object(new ScorePrintClass(TXT_SCORE_TOP, config::kIsFrench ? 113 : 130,
+                                   13, _greenpal));
   Call_Back_Delay(5);
   Alloc_Object(new ScorePrintClass(TXT_COMMANDER, 27, 31, _greenpal));
   Call_Back_Delay(10);
-#ifdef FRENCH
-  Alloc_Object(new ScorePrintClass(TXT_BATTLES_WON, 113, 31, _greenpal));
-#endif
-#ifdef GERMAN
-  Alloc_Object(new ScorePrintClass(TXT_BATTLES_WON, 118, 31, _greenpal));
-#endif
-#ifdef ENGLISH
-  Alloc_Object(new ScorePrintClass(TXT_BATTLES_WON, 126, 31, _greenpal));
-#endif
+  Alloc_Object(new ScorePrintClass(TXT_BATTLES_WON,
+                                   config::kIsFrench   ? 113
+                                   : config::kIsGerman ? 118
+                                                       : 126,
+                                   31, _greenpal));
   Call_Back_Delay(13);
   Alloc_Object(new ScorePrintClass(TXT_KILLS_COLON, 249, 31, _greenpal));
   Call_Back_Delay(6);
@@ -1682,15 +1663,8 @@ void Multi_Score_Presentation() {
     }
   }
 
-#if defined(GERMAN) || defined(FRENCH)
   Alloc_Object(new ScorePrintClass(
-      TXT_CLICK_CONTINUE, 95 /*(320-strlen(Text_String(TXT_MAP_CLICK2)))/2*/,
-      190, _yellowpal));
-#else
-  Alloc_Object(new ScorePrintClass(
-      TXT_CLICK_CONTINUE, 109 /*(320-strlen(Text_String(TXT_MAP_CLICK2)))/2*/,
-      190, _yellowpal));
-#endif
+      TXT_CLICK_CONTINUE, config::kIsEnglish ? 109 : 95, 190, _yellowpal));
   Cycle_Wait_Click(false);
 
   /* get rid of all the animating objects */

@@ -27,6 +27,7 @@
 #include "port/win32/win32_system.h"
 #include "ra/bigcheck.h"
 #include "ra/cheklist.h"
+#include "ra/config.h"
 #include "ra/dialog.h"
 #include "ra/drop.h"
 #include "ra/edit.h"
@@ -72,11 +73,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   /*
   **	Dialog & button dimensions
   */
-#ifdef FRENCH
-  int d_dialog_w = 320;  // dialog width
-#else
-  int d_dialog_w = 300;  // dialog width
-#endif
+  int d_dialog_w = config::kIsFrench ? 320 : 300;  // dialog width
   int d_dialog_h = 170;  // dialog height
   int d_dialog_x = ((640 - d_dialog_w) / 2);
   int d_dialog_y = ((510 - d_dialog_h) / 2);
@@ -84,11 +81,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   int top_margin = 0;
 
   int d_name_w = 132;
-#ifdef FRENCH
-  int d_name_x = d_dialog_x + 50;
-#else
-  int d_name_x = d_dialog_x + 40;
-#endif
+  int d_name_x = d_dialog_x + (config::kIsFrench ? 50 : 40);
   int d_name_y = d_dialog_y + top_margin + 50;
 
   int d_pass_w = 72;
@@ -110,20 +103,12 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   int d_delete_x = d_save_x;
   int d_delete_y = d_list_y + d_list_h - d_delete_h;
 
-#ifdef FRENCH
-  int d_connect_w = 90;
-#else
-  int d_connect_w = 80;
-#endif
+  int d_connect_w = config::kIsFrench ? 90 : 80;
   int d_connect_x = d_name_x + d_name_w / 2 - d_connect_w / 2;
   int d_connect_y = d_dialog_y + top_margin +
                     130;  // d_dialog_y + d_dialog_h - d_connect_h - d_margin;
 
-#if defined(GERMAN) || defined(FRENCH)
-  int d_cancel_w = 80;  // BG:40
-#else
   int d_cancel_w = 80;
-#endif
   int d_cancel_x =
       d_pass_x + d_pass_w / 2 - d_cancel_w / 2;  // d_dialog_cx + d_margin;
   int d_cancel_y = d_connect_y;

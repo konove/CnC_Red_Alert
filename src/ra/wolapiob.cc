@@ -38,6 +38,7 @@
 #include "port/win32/win32_com.h"
 #include "port/win32/win32_registry.h"
 #include "port/win32/win32_system.h"
+#include "ra/config.h"
 #include "ra/externs.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
@@ -1416,26 +1417,21 @@ HousesType WolapiObject::PullPlayerHouse_From(const char* szSource) {
 // szSource ); 	pChar is now a valid house name.
 
 //	return HouseTypeClass::From_Name( szHouse );
-#ifdef ENGLISH
-  //	Bloody bloody hell I can't believe there are bugs in RA like the one I
-  // deal with here...
-  if (strcmp(szHouse, "Russia") == 0) {
-    return HOUSE_USSR;
-  }
-  return HouseTypeClass::From_Name(
-      szHouse);  //	Fails on "Russia". (Thinks "USSR".)
-
-#else
-  for (HousesType house = HOUSE_USSR; house <= HOUSE_FRANCE; house++) {
-    if (strcmp(Text_String(HouseTypeClass::As_Reference(house).Full_Name()),
-               szHouse) == 0) {
-      return house;
+  if constexpr (config::kIsEnglish) {
+    // From_Name() knows the house as "USSR", but the game calls it "Russia".
+    if (strcmp(szHouse, "Russia") == 0) {
+      return HOUSE_USSR;
     }
+    return HouseTypeClass::From_Name(szHouse);
+  } else {
+    for (HousesType house = HOUSE_USSR; house <= HOUSE_FRANCE; house++) {
+      if (strcmp(Text_String(HouseTypeClass::As_Reference(house).Full_Name()),
+                 szHouse) == 0) {
+        return house;
+      }
+    }
+    return HOUSE_USSR;  // Should never happen.
   }
-  //	debugprint( "dohfus" );		//	should never happen
-  //	Fatal( "" );
-  return HOUSE_USSR;
-#endif
 }
 
 //***********************************************************************************************
@@ -2021,26 +2017,9 @@ bool WolapiObject::DoLadder() {
   bPump_In_Call_Back = true;
   if (WWMessageBox().Process(TXT_WOL_LADDERSHELL, TXT_YES, TXT_NO) == 0) {
     bPump_In_Call_Back = false;
-#ifdef ENGLISH
-    // return SpawnBrowser( "http://www.westwood.com/ra_ladders.html" );
     return SpawnBrowser(
         "http://www.westwood.com/westwoodonline/tournaments/redalert/"
         "index.html");
-#else
-#ifdef GERMAN
-    //		return SpawnBrowser(
-    //"http://www.westwood.com/ra_ladders_german.html" );
-    return SpawnBrowser(
-        "http://www.westwood.com/westwoodonline/tournaments/redalert/"
-        "index.html");
-#else
-    //		return SpawnBrowser(
-    //"http://www.westwood.com/ra_ladders_french.html" );
-    return SpawnBrowser(
-        "http://www.westwood.com/westwoodonline/tournaments/redalert/"
-        "index.html");
-#endif
-#endif
   }
 
   bPump_In_Call_Back = false;

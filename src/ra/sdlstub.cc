@@ -5,6 +5,7 @@
 
 #include <cstdlib>
 
+#include "ra/config.h"
 #include "ra/externs.h"
 #include "ra/jshell.h"
 #include "ra/language.h"
@@ -47,21 +48,14 @@ void Memory_Error_Handler() {
   exit(0);
 }
 
-#if (ENGLISH)
-#define WINDOW_NAME "Red Alert"
-#endif
-
-#if (FRENCH)
-#define WINDOW_NAME "Alerte Rouge"
-#endif
-
-#if (GERMAN)
-#define WINDOW_NAME "Alarmstufe Rot"
-#endif
+static constexpr const char* kWindowName = config::kIsFrench ? "Alerte Rouge"
+                                           : config::kIsGerman
+                                               ? "Alarmstufe Rot"
+                                               : "Red Alert";
 
 void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
                         int height) {
-  SDL_Create_Main_Window(WINDOW_NAME, width, height);
+  SDL_Create_Main_Window(kWindowName, width, height);
 
   // Audio_Focus_Loss_Function = &Focus_Loss;
   Misc_Focus_Loss_Function = &Focus_Loss;

@@ -25,6 +25,7 @@
 
 #include "port/ex_string.h"
 #include "ra/bigcheck.h"
+#include "ra/config.h"
 #include "ra/externs.h"
 #include "ra/iconlist.h"
 #include "ra/mission_id.h"
@@ -35,7 +36,7 @@
 #include "ra/wolstrng.h"
 #include "ra/wsproto.h"
 
-extern const char* EngMisStr[];
+extern const char* const* EngMisStr;
 
 bool Is_Mission_126x126(char* file_name);
 
@@ -314,11 +315,7 @@ void WOL_GameSetupDialog::Initialize() {
   d_aiplayers_x = d_count_x;
   d_aiplayers_y = d_credits_y + d_credits_h;
 
-#ifdef GERMAN
-  d_options_w = 186;
-#else
-  d_options_w = 180;
-#endif
+  d_options_w = config::kIsGerman ? 186 : 180;
   d_options_h = ((6 * 6) + 4) * 2 + 1;
   d_options_x = d_dialog_x + d_dialog_w - d_options_w - d_margin1;
   d_options_y = 127 - d_txt6_h + 2;
@@ -655,16 +652,16 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         //(What a hack I have inherited...)
         MultiMission* pMMission = Session.Scenarios[i];
         const char* szScenarioNameShow = pMMission->Description();
-#if defined(GERMAN) || defined(FRENCH)
-        for (int j = 0; EngMisStr[j] != NULL; j++) {
-          if (!strcmp(szScenarioNameShow, EngMisStr[j])) {
-            //	Found description in translation array that matches mission.
-            szScenarioNameShow = EngMisStr[j + 1];
-            break;
+        if constexpr (!config::kIsEnglish) {
+          // Show the translation when the table has one; otherwise the
+          // English description stands.
+          for (int j = 0; EngMisStr[j] != nullptr; j++) {
+            if (!strcmp(szScenarioNameShow, EngMisStr[j])) {
+              szScenarioNameShow = EngMisStr[j + 1];
+              break;
+            }
           }
         }
-        //	(If no match found, defaults to English description.)
-#endif
         //	Place scenario name in a specific scenario list.
         if (pMMission->Get_Official()) {
           if (IsMissionCounterstrike(Session.Scenarios[i]->Get_Filename())) {
@@ -1169,15 +1166,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           int ii = 0;
           for (; EngMisStr[ii] != nullptr; ii++) {
             if (!strcmp(szScenarioDesc, EngMisStr[ii])) {
-#if defined(GERMAN) || defined(FRENCH)
-              // sprintf(txt, "%s %s", Text_String(TXT_SCENARIO_COLON),
-              // EngMisStr[ii+1]);
-              sprintf(txt, "%s", EngMisStr[ii + 1]);
-#else
-              // sprintf(txt, "%s %s", Text_String(TXT_SCENARIO_COLON),
-              // Session.Options.ScenarioDescription);
-              sprintf(txt, "%s", szScenarioDesc);
-#endif
+              sprintf(txt, "%s",
+                      config::kIsEnglish ? szScenarioDesc : EngMisStr[ii + 1]);
               break;
             }
           }

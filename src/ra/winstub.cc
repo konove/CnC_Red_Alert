@@ -48,9 +48,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-
 #include "WSProto.h"
+#include "ra/config.h"
+#include "ra/function.h"
 
 unsigned long CCFocusMessage =
     WM_USER + 50;  // Private message for receiving application focus
@@ -298,17 +298,10 @@ void WWDebugString(const char* string) {
 
 #define CC_ICON 1
 
-#if (ENGLISH)
-#define WINDOW_NAME "Red Alert"
-#endif
-
-#if (FRENCH)
-#define WINDOW_NAME "Alerte Rouge"
-#endif
-
-#if (GERMAN)
-#define WINDOW_NAME "Alarmstufe Rot"
-#endif
+static constexpr const char* kWindowName = config::kIsFrench ? "Alerte Rouge"
+                                           : config::kIsGerman
+                                               ? "Alarmstufe Rot"
+                                               : "Red Alert";
 
 void Create_Main_Window(HANDLE instance, int command_show, int width,
                         int height)
@@ -328,15 +321,15 @@ void Create_Main_Window(HANDLE instance, int command_show, int width,
   wndclass.hIcon = LoadIcon(instance, MAKEINTRESOURCE(CC_ICON));
   wndclass.hCursor = NULL;
   wndclass.hbrBackground = NULL;
-  wndclass.lpszMenuName = WINDOW_NAME;  // NULL
-  wndclass.lpszClassName = WINDOW_NAME;
+  wndclass.lpszMenuName = kWindowName;  // NULL
+  wndclass.lpszClassName = kWindowName;
 
   RegisterClass(&wndclass);
 
   //
   // Create our main window
   //
-  hwnd = CreateWindowEx(WS_EX_TOPMOST, WINDOW_NAME, WINDOW_NAME,
+  hwnd = CreateWindowEx(WS_EX_TOPMOST, kWindowName, kWindowName,
                         WS_POPUP,  // Denzil | WS_MAXIMIZE,
                         0, 0,
                         // Denzil 5/18/98 - Making window fullscreen prevents

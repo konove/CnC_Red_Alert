@@ -43,6 +43,7 @@
 
 #include "port/safe_string.h"
 #include "ra/ccfile.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -67,8 +68,6 @@
 #include "sdllib/wwstd.h"
 
 // #define CS_DEBUG
-
-// #define ARRAYOFFSET 20
 
 /***********************************************************************************************
  * Expansion_CS_Present -- Is the Counterstrike expansion available? *
@@ -140,8 +139,8 @@ const char* TestNames2[] = {
     "SCG07EA", "SCG08EA", "SCU01EA", "SCU02EA", "SCU03EA", "SCU04EA",
     "SCU05EA", "SCU06EA", "SCU07EA", "SCU08EA", "SCU09EA", nullptr};
 
-#ifdef GERMAN
-const char* XlatNames[] = {
+// Translated Counterstrike mission names, in scenario order.
+static const char* const kGermanMissionNames[] = {
     "Zusammenstoss", "Unter Tage", "Kontrollierte Verbrennung",
     "Griechenland 1 - Stavros", "Griechenland 2 - Evakuierung",
     "Sibirien 1 - Frische Spuren", "Sibirien 2 - In der Falle",
@@ -175,10 +174,7 @@ const char* XlatNames[] = {
                                     // Revolution
     nullptr};
 
-#endif
-
-#ifdef FRENCH
-const char* XlatNames[] = {
+static const char* const kFrenchMissionNames[] = {
     "Gaz Sarin 1: Ravitaillement Fatal",
     "Gaz Sarin 2: En Sous-sol",
     "Gaz Sarin 3: Attaque Chirurgicale",
@@ -221,7 +217,11 @@ const char* XlatNames[] = {
     nullptr,
 };
 
-#endif
+// The name table for this build's language, indexed by scenario number minus
+// kMissionNameOffset. English builds take the name from the INI instead.
+[[maybe_unused]] static const char* const* const kTranslatedMissionNames =
+    config::kIsGerman ? kGermanMissionNames : kFrenchMissionNames;
+inline constexpr int kMissionNameOffset = 20;
 
 #define OPTION_WIDTH 560
 #define OPTION_HEIGHT 332
@@ -377,11 +377,12 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
           sbuffer[2000 + 2] = '\0';
           WWGetPrivateProfileString("Basic", "Name", "x", buffer,
                                     sizeof(buffer), sbuffer);
-#if defined(GERMAN) || defined(FRENCH)
-          port::SafeCopy(obj->Name, XlatNames[index - ARRAYOFFSET]);
-#else
-          port::SafeCopy(obj->Name, buffer);
-#endif
+          if constexpr (config::kIsEnglish) {
+            port::SafeCopy(obj->Name, buffer);
+          } else {
+            port::SafeCopy(obj->Name,
+                           kTranslatedMissionNames[index - kMissionNameOffset]);
+          }
           port::SafeCopy(obj->FullName, buffer2);
           obj->House = HOUSE_GOOD;
           obj->Scenario = index;
@@ -396,11 +397,12 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
           sbuffer[2000 + 2] = '\0';
           WWGetPrivateProfileString("Basic", "Name", "x", buffer,
                                     sizeof(buffer), sbuffer);
-#if defined(GERMAN) || defined(FRENCH)
-          port::SafeCopy(obj->Name, XlatNames[index - ARRAYOFFSET]);
-#else
-          port::SafeCopy(obj->Name, buffer);
-#endif
+          if constexpr (config::kIsEnglish) {
+            port::SafeCopy(obj->Name, buffer);
+          } else {
+            port::SafeCopy(obj->Name,
+                           kTranslatedMissionNames[index - kMissionNameOffset]);
+          }
           port::SafeCopy(obj->FullName, buffer2);
           obj->House = HOUSE_BAD;
           obj->Scenario = index;

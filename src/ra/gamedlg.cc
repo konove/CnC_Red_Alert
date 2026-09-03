@@ -66,8 +66,6 @@
 #include "session.h"
 #include "slider.h"
 
-// #define GERMAN_OFFSET_Y 4  // VG
-
 #include "ra/config.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
@@ -102,22 +100,16 @@ void GameControlsClass::Process() {
   int d_speed_w = d_dialog_w - 68;
   int d_speed_h = 12;
   int d_speed_x = d_dialog_x + 34;
-#ifdef GERMAN
+  // The German captions sit a little higher.
+  constexpr int kGermanOffsetY = config::kIsGerman ? 4 : 0;
   int d_speed_y =
-      d_dialog_y + d_top_margin + d_margin1 + d_txt6_h - GERMAN_OFFSET_Y;
-#else
-  int d_speed_y = d_dialog_y + d_top_margin + d_margin1 + d_txt6_h;
-#endif
+      d_dialog_y + d_top_margin + d_margin1 + d_txt6_h - kGermanOffsetY;
 
   int d_scroll_w = d_dialog_w - 68;
   int d_scroll_h = 12;
   int d_scroll_x = d_dialog_x + 34;
-#ifdef GERMAN
-  int d_scroll_y = d_speed_y + d_speed_h + d_txt6_h + (d_margin1 * 2) +
-                   d_txt6_h - GERMAN_OFFSET_Y;
-#else
-  int d_scroll_y = d_speed_y + d_speed_h + d_txt6_h + d_margin1 * 2 + d_txt6_h;
-#endif
+  int d_scroll_y = d_speed_y + d_speed_h + d_txt6_h + d_margin1 * 2 + d_txt6_h -
+                   kGermanOffsetY;
 
   int d_visual_w = d_dialog_w - 80;
   int d_visual_h = 18;

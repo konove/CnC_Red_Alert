@@ -1154,11 +1154,7 @@ void SidebarClass::StripClass::Init_IO(int id) {
   UpButton[ID].X = X + UP_X_OFFSET * 2;
   UpButton[ID].Y = Y + UP_Y_OFFSET * 2;
 
-#if (FRENCH)
   UpButton[ID].Set_Shape(MFCD::Retrieve("STRIPUP.SHP"));
-#else   // FRENCH
-  UpButton[ID].Set_Shape(MFCD::Retrieve("STRIPUP.SHP"));
-#endif  // FRENCH
 
   DownButton[ID].IsSticky = true;
   DownButton[ID].ID = BUTTON_DOWN + id;

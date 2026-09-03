@@ -2649,11 +2649,11 @@ int UnitClass::Mission_Unload() {
         Gems = 1;
         Gold = 0;
         Arm.Set(QuakeDelay * House->ROFBias);
-#ifdef ENGLISH
-        Speak(VOX_MADTANK_DEPLOYED);  // this voice only exists in English
-#else
-        Sound_Effect(VOC_BUZZY1, Center_Coord());
-#endif
+        if constexpr (config::kIsEnglish) {
+          Speak(VOX_MADTANK_DEPLOYED);  // Only the English speech set has it.
+        } else {
+          Sound_Effect(VOC_BUZZY1, Center_Coord());
+        }
         Set_Stage(0);
         Set_Rate(Rule.OreDumpRate * 2);
         IsDumping = true;

@@ -42,6 +42,7 @@
 
 #include <cstdio>
 
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/control.h"
 #include "ra/defines.h"
@@ -330,15 +331,9 @@ void SoundControlsClass::Process() {
                        option_y + fxslider_y - 4, scheme, TBLACK,
                        kTpfText | TPF_RIGHT);
 
-#if defined(GERMAN) || defined(FRENCH)
-      Fancy_Text_Print(TXT_SHUFFLE, option_x + 4 + shuffle_x - (10),
-                       option_y + shuffle_y + (2), scheme, TBLACK,
-                       kTpfText | TPF_RIGHT);
-#else
-      Fancy_Text_Print(TXT_SHUFFLE, option_x + shuffle_x - 10,
-                       option_y + shuffle_y + 2, scheme, TBLACK,
-                       kTpfText | TPF_RIGHT);
-#endif
+      Fancy_Text_Print(
+          TXT_SHUFFLE, option_x + shuffle_x - 10 + (config::kIsEnglish ? 0 : 4),
+          option_y + shuffle_y + 2, scheme, TBLACK, kTpfText | TPF_RIGHT);
       Fancy_Text_Print(TXT_REPEAT, option_x + repeat_x - 10,
                        option_y + repeat_y + 2, scheme, TBLACK,
                        kTpfText | TPF_RIGHT);

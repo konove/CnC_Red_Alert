@@ -707,13 +707,7 @@ const char* Version_Name() {
 
   version = "3.03";
 
-#ifdef ENGLISH
-  version += 'E';
-#elifdef GERMAN
-  version += "G";
-#elifdef FRENCH
-  version += "F";
-#endif
+  version += config::kIsEnglish ? 'E' : config::kIsGerman ? 'G' : 'F';
 
   if (Is_Counterstrike_Installed()) {
     version += "CS";

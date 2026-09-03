@@ -26,6 +26,7 @@
 #include "port/win32/win32_registry.h"
 #include "port/win32/win32_system.h"
 #include "ra/cheklist.h"
+#include "ra/config.h"
 #include "ra/dialog.h"
 #include "ra/drop.h"
 #include "ra/edit.h"
@@ -1214,21 +1215,12 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
         Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
                          kTpfText);  //	Required before String_Pixel_Width()
                                      // call, for god's sake.
-#ifdef ENGLISH
         SimpleEditDlgClass* pEditDlg = new SimpleEditDlgClass(
-            300, TXT_WOL_JOINPRIVATETITLE, TXT_WOL_JOINPRIVATEPROMPT,
+            config::kIsEnglish  ? 300
+            : config::kIsGerman ? 400
+                                : 500,
+            TXT_WOL_JOINPRIVATETITLE, TXT_WOL_JOINPRIVATEPROMPT,
             WOL_CHANKEY_LEN_MAX);
-#else
-#ifdef GERMAN
-        SimpleEditDlgClass* pEditDlg = new SimpleEditDlgClass(
-            400, TXT_WOL_JOINPRIVATETITLE, TXT_WOL_JOINPRIVATEPROMPT,
-            WOL_CHANKEY_LEN_MAX);
-#else
-        SimpleEditDlgClass* pEditDlg = new SimpleEditDlgClass(
-            500, TXT_WOL_JOINPRIVATETITLE, TXT_WOL_JOINPRIVATEPROMPT,
-            WOL_CHANKEY_LEN_MAX);
-#endif
-#endif
         pWO->bPump_In_Call_Back = true;
         if (strcmp(pEditDlg->Show(), Text_String(TXT_OK)) != 0 ||
             !*pEditDlg->szEdit) {

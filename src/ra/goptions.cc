@@ -231,13 +231,8 @@ void GameOptionsClass::Process() {
     g->X = OptionX + (OptionWidth - g->Width) / 2;
     g = g->Get_Next();
   }
-  // #ifdef FRENCH
-  //	buttonsel[BUTTON_RESUME-1]->Width = 110 * 2;
-  //	buttonsel[BUTTON_RESUME-1]->X = OptionX + (17 * 2) - 5;
-  // #else
   buttonsel[BUTTON_RESUME - 1]->Width = 180;
   buttonsel[BUTTON_RESUME - 1]->X = OptionX + 34;
-  // #endif
 
   if (Session.Type == GAME_NORMAL) {
     buttonsel[BUTTON_RESTATE - 1]->Width = 180;

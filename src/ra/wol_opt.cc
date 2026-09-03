@@ -27,6 +27,7 @@
 #include "port/win32/win32_system.h"
 #include "ra/bigcheck.h"
 #include "ra/cheklist.h"
+#include "ra/config.h"
 #include "ra/dialog.h"
 #include "ra/drop.h"
 #include "ra/edit.h"
@@ -70,15 +71,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   /*
   **	Dialog & button dimensions
   */
-#ifdef GERMAN
-  int d_list_w = 360;
-#else
-#ifdef FRENCH
-  int d_list_w = 330;
-#else
-  int d_list_w = 330;
-#endif
-#endif
+  int d_list_w = config::kIsGerman ? 360 : 330;
 
   int d_dialog_w = d_list_w + 80;  // dialog width
   int d_dialog_h = 180;            // dialog height
@@ -93,11 +86,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   int d_list_x = d_dialog_cx - d_list_w / 2;
   int d_list_y = d_dialog_y + d_margin + 24;
 
-#if (GERMAN | FRENCH)
   int d_ok_w = 80;
-#else
-  int d_ok_w = 80;
-#endif
   int d_ok_h = 26;
   int d_ok_x = d_dialog_cx - d_ok_w / 2;
   int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin;

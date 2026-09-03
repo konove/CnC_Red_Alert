@@ -164,13 +164,6 @@ static int _build_tech[11] = {
     2, 2,  // Tech level 0 and 1 are the same (tech 0 is never used).
     4, 5, 7, 8, 9, 10, 11, 12, 13};
 
-#ifdef FRENCH
-// #define TXT_HACKHACK "Accomplie"
-#endif
-#if defined(ENGLISH) || defined(GERMAN)
-// #define TXT_HACKHACK Text_String(TXT_ACCOMPLISHED)
-#endif
-
 /***********************************************************************************************
  * ScenarioClass::ScenarioClass -- Constructor for the scenario control object.
  **
@@ -1308,15 +1301,9 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
   const char* b1txt = Text_String(left_btn);
   const char* b2txt = Text_String(right_btn);
-#ifdef FRENCH
-  const char* b3txt = "SUITE";
-#else
-#ifdef GERMAN
-  const char* b3txt = "MEHR";
-#else
-  const char* b3txt = "MORE";
-#endif
-#endif
+  const char* b3txt = config::kIsFrench   ? "SUITE"
+                      : config::kIsGerman ? "MEHR"
+                                          : "MORE";
 
   const void* briefsnd = MFCD::Retrieve("BRIEFING.AUD");
 

@@ -101,18 +101,6 @@ void Check_Use_Compressed_Shapes();
 void Read_Setup_Options(RawFileClass* config_file);
 bool VideoBackBufferAllowed = true;
 
-// #if (ENGLISH)
-// #define WINDOW_NAME "Red Alert"
-// #endif
-//
-// #if (FRENCH)
-// #define WINDOW_NAME "Alerte Rouge"
-// #endif
-//
-// #if (GERMAN)
-// #define WINDOW_NAME "Alarmstufe Rot"
-// #endif
-
 /***********************************************************************************************
  * main -- Initial startup routine (preps library systems). *
  *                                                                                             *

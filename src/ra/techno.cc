@@ -155,6 +155,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "port/ex_string.h"
 #include "ra/techno.h"
 
 #include <algorithm>
@@ -232,10 +233,9 @@ const void* TechnoTypeClass::SamShapes = nullptr;
 const void* TechnoTypeClass::MGunShapes = nullptr;
 
 // Xlat Tables for French and German
-//  For name overriding
-// #define NEWNAMES  22
-#ifdef GERMAN
-const char* NewName[] = {
+// Translated unit and building names for the Aftermath additions, as pairs
+// of the English name from the INI and its replacement.
+static const char* const kGermanNameOverrides[] = {
     "Scout Ant",
     "Kundschafter-Ameise",
     "Warrior Ant",
@@ -263,9 +263,7 @@ const char* NewName[] = {
     nullptr,
 };
 
-#endif
-#ifdef FRENCH
-const char* NewName[] = {
+static const char* const kFrenchNameOverrides[] = {
     "Scout Ant",
     "Fourmi de Reconnaissance",
     "Warrior Ant",
@@ -293,7 +291,8 @@ const char* NewName[] = {
     nullptr,
 };
 
-#endif
+[[maybe_unused]] static const char* const* const kNameOverrides =
+    config::kIsGerman ? kGermanNameOverrides : kFrenchNameOverrides;
 
 /***************************************************************************
 **	Which shape to use depending on which facing is controlled by these
@@ -6367,16 +6366,14 @@ bool TechnoTypeClass::Read_INI(CCINIClass& ini) {
 
     ini.Get_String(Name(), "Name", "", buffer, sizeof(buffer));
     if (strlen(buffer) > 0) {
-#if defined(GERMAN) || (FRENCH)
-
-      for (int xx = 0; NewName[xx] != nullptr; xx++) {
-        if (!strcmp(NewName[xx], buffer)) {
-          memcpy(buffer, "", sizeof(buffer));
-          memcpy(buffer, NewName[xx + 1], sizeof(buffer));
-          break;
+      if constexpr (!config::kIsEnglish) {
+        for (int xx = 0; kNameOverrides[xx] != nullptr; xx++) {
+          if (!strcmp(kNameOverrides[xx], buffer)) {
+            port::SafeCopy(buffer, kNameOverrides[xx + 1]);
+            break;
+          }
         }
       }
-#endif
 
       /*
       **	Insert the new name text into the buffer list.

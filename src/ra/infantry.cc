@@ -98,6 +98,7 @@
 #include "ra/infantry.h"
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
@@ -2403,11 +2404,14 @@ void InfantryClass::Response_Move() {
     static VocType _spy_response[] = {VOC_SPY_ONWAY, VOC_SPY_KING,
                                       VOC_SPY_INDEED};
     static VocType _medic_response[] = {VOC_MED_AFFIRM, VOC_MED_MOVEOUT};
-#ifdef ENGLISH
-    static VocType _tanya_response[] = {VOC_TANYA_THERE, VOC_TANYA_ROCK};
-#else
-    static VocType _tanya_response[] = {VOC_TANYA_THERE, VOC_TANYA_GIVE};
-#endif
+    // Only the English speech set has the "rock and roll" line.
+    static constexpr auto _tanya_response = [] {
+      if constexpr (config::kIsEnglish) {
+        return std::array{VOC_TANYA_THERE, VOC_TANYA_ROCK};
+      } else {
+        return std::array{VOC_TANYA_THERE, VOC_TANYA_GIVE};
+      }
+    }();
     static VocType _thief_response[] = {VOC_THIEF_MOVEOUT, VOC_THIEF_OKAY,
                                         VOC_THIEF_AFFIRM};
     static VocType _default_response[] = {VOC_ROGER, VOC_RIGHT_AWAY, VOC_UGOTIT,
@@ -2418,7 +2422,7 @@ void InfantryClass::Response_Move() {
     static VocType _shock[] = {VOC_STPOWER1, VOC_STDANCE1, VOC_STCHRGE1};
 
     int size = 0;
-    VocType* response = nullptr;
+    const VocType* response = nullptr;
     HousesType house = PlayerPtr->ActLike;
     switch (Class->Type) {
       case INFANTRY_GENERAL:
@@ -2472,7 +2476,7 @@ void InfantryClass::Response_Move() {
         break;
 
       case INFANTRY_TANYA:
-        response = _tanya_response;
+        response = _tanya_response.data();
         size = std::ssize(_tanya_response);
         break;
 
@@ -2533,13 +2537,14 @@ void InfantryClass::Response_Attack() {
     static VocType _spy_response[] = {VOC_SPY_ONWAY, VOC_SPY_KING,
                                       VOC_SPY_INDEED};
     static VocType _medic_response[] = {VOC_MED_AFFIRM, VOC_MED_MOVEOUT};
-#ifdef ENGLISH
-    static VocType _tanya_response[] = {VOC_TANYA_CHEW, VOC_TANYA_CHING,
-                                        VOC_TANYA_LAUGH};
-#else
-    static VocType _tanya_response[] = {VOC_TANYA_CHEW, VOC_TANYA_CHING,
-                                        VOC_TANYA_LAUGH, VOC_TANYA_ROCK};
-#endif
+    static constexpr auto _tanya_response = [] {
+      if constexpr (config::kIsEnglish) {
+        return std::array{VOC_TANYA_CHEW, VOC_TANYA_CHING, VOC_TANYA_LAUGH};
+      } else {
+        return std::array{VOC_TANYA_CHEW, VOC_TANYA_CHING, VOC_TANYA_LAUGH,
+                          VOC_TANYA_ROCK};
+      }
+    }();
     static VocType _thief_response[] = {VOC_NONE};
     static VocType _default_response[] = {
         VOC_RIGHT_AWAY, VOC_AFFIRM, VOC_AFFIRM, VOC_UGOTIT,
@@ -2551,7 +2556,7 @@ void InfantryClass::Response_Attack() {
                                VOC_STSHOCK1};
 
     int size = 0;
-    VocType* response = nullptr;
+    const VocType* response = nullptr;
     HousesType house = PlayerPtr->ActLike;
     switch (Class->Type) {
       case INFANTRY_GENERAL:
@@ -2605,7 +2610,7 @@ void InfantryClass::Response_Attack() {
         break;
 
       case INFANTRY_TANYA:
-        response = _tanya_response;
+        response = _tanya_response.data();
         size = std::ssize(_tanya_response);
         break;
 

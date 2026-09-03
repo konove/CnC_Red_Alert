@@ -52,6 +52,7 @@
 
 #include "port/ex_string.h"
 #include "port/safe_string.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/control.h"
 #include "ra/defines.h"
@@ -155,20 +156,12 @@ int LoadOptionsClass::Process() {
   int d_edit_x = d_dialog_x + x_margin;
   int d_edit_y = d_list_y + d_list_h - 60 + d_margin + d_txt8_h;
 
-#if (GERMAN | FRENCH)
-  int d_button_w = 100;
-#else
-  int d_button_w = 80;
-#endif
+  int d_button_w = config::kIsEnglish ? 80 : 100;
   int d_button_h = 26;
   int d_button_x = d_dialog_cx - d_button_w - d_margin;
   int d_button_y = d_dialog_y + d_dialog_h - d_button_h - d_margin;
 
-#if defined(GERMAN) || defined(FRENCH)
-  int d_cancel_w = 120;  // BG:40
-#else
-  int d_cancel_w = 80;
-#endif
+  int d_cancel_w = config::kIsEnglish ? 80 : 120;
   int d_cancel_h = 26;
   int d_cancel_x = d_dialog_cx + d_margin;
   int d_cancel_y = d_dialog_y + d_dialog_h - d_cancel_h - d_margin;

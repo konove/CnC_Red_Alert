@@ -55,6 +55,7 @@
 #include "absl/log/log.h"
 #include "port/ex_string.h"
 #include "ra/ccfile.h"
+#include "ra/config.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display.h"
@@ -645,12 +646,8 @@ static const char* Speech[VOX_COUNT] = {
                  // to build more
     "PRIBLDG1",  //	VOX_PRIMARY_SELECTED				primary
                  // building selected
-#ifdef ENGLISH
-    "TANK01",  // VOX_MADTANK_DEPLOYED				M.A.D. Tank
-               // Deployed
-#else
-    "none",
-#endif
+    // VOX_MADTANK_DEPLOYED: M.A.D. Tank Deployed, English speech set only.
+    config::kIsEnglish ? "TANK01" : "none",
     "none",      //	VOX_SOVIET_CAPTURED				Allied building
                  // captured
     "UNITLST1",  // VOX_UNIT_LOST unit lost

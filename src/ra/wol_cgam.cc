@@ -108,11 +108,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   int d_checkam_x = d_checktourn_x;
   int d_checkam_y = d_checkcs_y + d_checkcs_h + 5;
 
-#if (GERMAN | FRENCH)
   int d_ok_w = 60;
-#else
-  int d_ok_w = 60;
-#endif
   int d_ok_h = 26;
   int d_ok_x = d_dialog_x + (d_dialog_w / 3) - (d_ok_w / 2);
   int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin;

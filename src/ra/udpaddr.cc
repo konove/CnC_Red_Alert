@@ -23,6 +23,7 @@
 #include "ra/ccfile.h"
 #include "ra/ccini.h"
 #include "ra/colrlist.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -59,11 +60,7 @@ bool Get_Broadcast_Addresses() {
   int d_ok_x = d_dialog_cx + d_dialog_w / 4;
   int d_ok_y = d_dialog_y + d_dialog_h - 40;
 
-#if (GERMAN | FRENCH)
-  int d_cancel_w = 100;
-#else
-  int d_cancel_w = 80;
-#endif
+  int d_cancel_w = config::kIsEnglish ? 80 : 100;
   int d_cancel_h = 18;
   int d_cancel_x = d_dialog_cx - d_dialog_w / 4;
   int d_cancel_y = d_dialog_y + d_dialog_h - 40;
