@@ -185,7 +185,6 @@ class DriveClass : public FootClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  void Fixup_Path(PathType* path) override;
   bool While_Moving();
   bool Start_Of_Move();
   void Lay_Track();

@@ -365,7 +365,6 @@ class FootClass : public TechnoClass {
   void Clear_Navigation_List();
   void Per_Cell_Process(PCPType why) override;
   virtual void Approach_Target();
-  virtual void Fixup_Path(PathType*) {}
   virtual void Set_Speed(int speed);
   MoveType Can_Enter_Cell(CELL cell,
                           FacingType from = FACING_NONE) const override;

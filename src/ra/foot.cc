@@ -476,7 +476,6 @@ bool FootClass::Basic_Path() {
       **	list.
       */
       if (found1) {
-        Fixup_Path(&path1);
         memcpy(&Path[0], &workpath1[0],
                std::min(path->Length, static_cast<int>(sizeof(Path))));
       }

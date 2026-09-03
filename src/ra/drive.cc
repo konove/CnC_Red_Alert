@@ -41,7 +41,6 @@
  *monochrome screen.               * DriveClass::Do_Turn -- Tries to turn the
  *vehicle to the specified direction.              * DriveClass::DriveClass --
  *Constructor for drive class object.                             *
- *   DriveClass::Fixup_Path -- Adds smooth start path to normal movement path. *
  *   DriveClass::Force_Track -- Forces the unit to use the indicated track. *
  *   DriveClass::Lay_Track -- Handles track laying logic for the unit. *
  *   DriveClass::Limbo -- Prepares vehicle and then limbos it. *
@@ -331,34 +330,7 @@ void DriveClass::Do_Turn(DirType dir) {
   assert(IsActive);
 
   if (dir != PrimaryFacing) {
-#ifdef TOFIX
-    /*
-    **	Special rotation track is needed for units that
-    **	cannot rotate in place.
-    */
-    if (Special.IsThreePoint && TrackNumber == -1 &&
-        Techno_Type_Class()->Speed == SPEED_WHEEL) {
-      int facediff;     // Signed difference between current and desired facing.
-      FacingType face;  // Current facing (ordinal value).
-
-      facediff = PrimaryFacing.Difference(dir) >> 5;
-      facediff = Bound(facediff, -2, 2);
-      if (facediff) {
-        face = Dir_Facing(PrimaryFacing);
-
-        IsOnShortTrack = true;
-        Force_Track(face * FACING_COUNT + (face + facediff), Coord);
-
-        Path[0] = FACING_NONE;
-        Set_Speed(0xFF);  // Full speed.
-      }
-    } else {
-      PrimaryFacing.Set_Desired(dir);
-    }
-#else
     PrimaryFacing.Set_Desired(dir);
-//			IsRotating = true;
-#endif
   }
 }
 
@@ -778,11 +750,7 @@ bool DriveClass::While_Moving() {
                 break;
 
               case MOVE_TEMP:
-#ifdef TOFIX
-                if (*this == UNIT_HARVESTER || !House->IsHuman) {
-#else
                 if (!House->IsHuman) {
-#endif
                   Map[c].Incoming(0, true, true);
                 }
                 break;
@@ -1347,22 +1315,12 @@ void DriveClass::AI() {
     /*
     **	For tracked units that are rotating in place, perform the rotation now.
     */
-#ifdef TOFIX
-    if ((Class->Speed == SPEED_FLOAT || Class->Speed == SPEED_HOVER ||
-         Class->Speed == SPEED_TRACK ||
-         (Class->Speed == SPEED_WHEEL && !Special.IsThreePoint)) &&
-        PrimaryFacing.Is_Rotating()) {
-      if (PrimaryFacing.Rotation_Adjust(Class->ROT)) {
-        Mark(MARK_CHANGE);
-      }
-#else
     if (PrimaryFacing.Is_Rotating()) {
       Mark(MARK_CHANGE_REDRAW);
       if (PrimaryFacing.Rotation_Adjust(Techno_Type_Class()->ROT *
                                         House->GroundspeedBias)) {
         Mark(MARK_CHANGE_REDRAW);
       }
-#endif
       if (!IsRotating) {
         Per_Cell_Process(PCP_ROTATION);
         if (!IsActive) {
@@ -1403,212 +1361,6 @@ void DriveClass::AI() {
         }
       }
     }
-  }
-}
-
-/***********************************************************************************************
- * DriveClass::Fixup_Path -- Adds smooth start path to normal movement path. *
- *                                                                                             *
- *    This routine modifies the path of the specified unit so that it * will not
- *start out with a rotation. This is necessary for those * vehicles that have
- *difficulty with rotating in place. Typically,                         * this
- *includes wheeled vehicles. *
- *                                                                                             *
- * INPUT:   unit  -- Pointer to the unit to adjust. *
- *                                                                                             *
- *          path  -- Pointer to path structure. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   Only units that require a fixup get modified. The * modification
- *only occurs, if there is a legal path to                           * do so. *
- *                                                                                             *
- * HISTORY: * 04/03/1994 JLB : Created. * 04/06/1994 JLB : Uses path structure.
- ** 04/10/1994 JLB : Diagonal smooth turn added. * 04/15/1994 JLB : Converted to
- *member function.                                            *
- *=============================================================================================*/
-void DriveClass::Fixup_Path(PathType* path) {
-  assert(IsActive);
-
-  FacingType stage[6] = {FACING_N, FACING_N, FACING_N, FACING_N,
-                         FACING_N, FACING_N};  // Prefix path elements.
-  int facediff;  // The facing difference value (0..4 | 0..-4).
-  static FacingType _path[4][6] = {
-      {static_cast<FacingType>(2), static_cast<FacingType>(0),
-       static_cast<FacingType>(2), static_cast<FacingType>(0),
-       static_cast<FacingType>(0), static_cast<FacingType>(0)},
-      {static_cast<FacingType>(3), static_cast<FacingType>(0),
-       static_cast<FacingType>(2), static_cast<FacingType>(2),
-       static_cast<FacingType>(0), static_cast<FacingType>(0)},
-      {static_cast<FacingType>(4), static_cast<FacingType>(0),
-       static_cast<FacingType>(2), static_cast<FacingType>(2),
-       static_cast<FacingType>(0), static_cast<FacingType>(0)},
-      {static_cast<FacingType>(4), static_cast<FacingType>(0),
-       static_cast<FacingType>(2), static_cast<FacingType>(2),
-       static_cast<FacingType>(1), static_cast<FacingType>(0)}};
-  static FacingType _dpath[4][6] = {
-      {static_cast<FacingType>(0), static_cast<FacingType>(0),
-       static_cast<FacingType>(0), static_cast<FacingType>(0),
-       static_cast<FacingType>(0), static_cast<FacingType>(0)},
-      {static_cast<FacingType>(3), static_cast<FacingType>(0),
-       static_cast<FacingType>(2), static_cast<FacingType>(2),
-       static_cast<FacingType>(0), static_cast<FacingType>(0)},
-      {static_cast<FacingType>(4), static_cast<FacingType>(0),
-       static_cast<FacingType>(2), static_cast<FacingType>(2),
-       static_cast<FacingType>(1), static_cast<FacingType>(0)},
-      {static_cast<FacingType>(5), static_cast<FacingType>(0),
-       static_cast<FacingType>(2), static_cast<FacingType>(2),
-       static_cast<FacingType>(1), static_cast<FacingType>(0)}};
-
-  int index;
-  int counter;          // Path addition
-  FacingType* ptr;      // Path list pointer.
-  FacingType* ptr2;     // Copy of new path list pointer.
-  FacingType nextpath;  // Next path value.
-  CELL cell;            // Working cell value.
-  bool ok;
-
-  /*
-  **	Verify that the unit is valid and there is a path problem to resolve.
-  */
-  if (!path || path->Command[0] == FACING_NONE) {
-    return;
-  }
-
-  /*
-  **	Only wheeled vehicles need a path fixup -- to avoid 3 point turns.
-  */
-#ifdef TOFIX
-  if (!Special.IsThreePoint || Class->Speed != SPEED_WHEEL) {
-#else
-  if (What_Am_I() == RTTI_UNIT || What_Am_I() == RTTI_VESSEL) {
-//	if (What_Am_I() == RTTI_UNIT) {
-#endif
-    return;
-  }
-
-  /*
-  **	If the original path starts in the same direction as the unit, then
-  **	there is no problem to resolve -- abort.
-  */
-  facediff =
-      PrimaryFacing.Difference(static_cast<DirType>(path->Command[0] << 5)) >>
-      5;
-
-  if (!facediff) {
-    return;
-  }
-
-  if (Dir_Facing(PrimaryFacing) & FACING_NE) {
-    ptr = &_dpath[static_cast<FacingType>(std::abs(facediff)) - FACING_NE]
-                 [1];  // Pointer to path adjust list.
-    counter =
-        static_cast<int>(_dpath[(FacingType)std::abs(facediff) - FACING_NE]
-                               [0]);  // Number of path adjusts.
-  } else {
-    ptr = &_path[static_cast<FacingType>(std::abs(facediff)) - FACING_NE]
-                [1];  // Pointer to path adjust list.
-    counter = static_cast<int>(_path[(FacingType)std::abs(facediff) - FACING_NE]
-                                    [0]);  // Number of path adjusts.
-  }
-  ptr2 = ptr;
-
-  ok = true;                             // Presume adjustment is all ok.
-  cell = Coord_Cell(Coord);              // Starting cell.
-  nextpath = Dir_Facing(PrimaryFacing);  // Starting path.
-  for (index = 0; index < counter; index++) {
-    /*
-    **	Determine next path element and add it to the
-    **	working path list.
-    */
-    if (facediff > 0) {
-      nextpath = nextpath + *ptr++;
-    } else {
-      nextpath = nextpath - *ptr++;
-    }
-    stage[index] = nextpath;
-    cell = Adjacent_Cell(cell, nextpath);
-    // cell = Coord_Cell(Adjacent_Cell(Cell_Coord(cell), nextpath));
-
-    /*
-    **	If it can't enter this cell, then abort the path
-    **	building operation without adjusting the unit's
-    **	path.
-    */
-    if (Can_Enter_Cell(cell, nextpath) != MOVE_OK) {
-      ok = false;
-      break;
-    }
-  }
-
-  /*
-  **	If veering to the left was not successful, then try veering
-  **	to the right. This only makes sense if the vehicle is trying
-  **	to turn 180 degrees.
-  */
-  if (!ok && std::abs(facediff) == 4) {
-    ptr = ptr2;  // Pointer to path adjust list.
-    facediff = -facediff;
-    ok = true;                             // Presume adjustment is all ok.
-    cell = Coord_Cell(Coord);              // Starting cell.
-    nextpath = Dir_Facing(PrimaryFacing);  // Starting path.
-    for (index = 0; index < counter; index++) {
-      /*
-      **	Determine next path element and add it to the
-      **	working path list.
-      */
-      if (facediff > 0) {
-        nextpath = nextpath + *ptr++;
-      } else {
-        nextpath = nextpath - *ptr++;
-      }
-      stage[index] = nextpath;
-      cell = Coord_Cell(Adjacent_Cell(Cell_Coord(cell), nextpath));
-
-      /*
-      **	If it can't enter this cell, then abort the path
-      **	building operation without adjusting the unit's
-      **	path.
-      */
-      if (Can_Enter_Cell(cell, nextpath) != MOVE_OK) {
-        ok = false;
-        break;
-      }
-    }
-  }
-
-  /*
-  **	If a legal path addition was created, then install it in place
-  **	of the first path value. The initial path entry is to be replaced
-  **	with a sequence of path entries that create smooth turning.
-  */
-  if (ok) {
-    if (path->Length <= 1) {
-      memmove(&stage[0], path->Command, std::max(counter, 1));
-      path->Length = counter;
-    } else {
-      /*
-      **	Optimize the transition path step from the smooth turn
-      **	first part as it joins with the rest of the normal
-      **	path. The normal prefix path steps are NOT to be optimized.
-      */
-      if (counter) {
-        counter--;
-        path->Command[0] = stage[counter];
-        Optimize_Moves(path, MOVE_OK);
-      }
-
-      /*
-      **	If there is more than one prefix path element, then
-      **	insert the rest now.
-      */
-      if (counter) {
-        memmove(&path->Command[0], &path->Command[counter], 40 - counter);
-        memmove(&stage[0], &path->Command[0], counter);
-        path->Length += counter;
-      }
-    }
-    path->Command[path->Length] = FACING_NONE;
   }
 }
 
