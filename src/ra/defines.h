@@ -319,7 +319,7 @@ union TARGET_COMPOSITE {
   } Sub;
 };
 
-inline TARGET Build_Target(RTTIType kind, int value) {
+inline TARGET Build_Target(const RTTIType kind, const int value) {
   TARGET_COMPOSITE target;
 
   target.Target = 0;
@@ -511,7 +511,7 @@ enum SpecialWeaponType : int {
   SPC_GPS             // give allies free unjammable radar.
 };
 // Second stage of chronosphere targeting: picking the destination.
-inline constexpr SpecialWeaponType kSpcChrono2 =
+inline constexpr auto kSpcChrono2 =
     static_cast<SpecialWeaponType>(magic_enum::enum_count<SpecialWeaponType>());
 
 /**********************************************************************
@@ -618,7 +618,7 @@ enum ThreatType {
       0x2000  // Consider base defense buildings a greater target?
 };
 
-inline constexpr ThreatType kThreatGround = static_cast<ThreatType>(
+inline constexpr auto kThreatGround = static_cast<ThreatType>(
     THREAT_VEHICLES | THREAT_BUILDINGS | THREAT_INFANTRY);
 
 /**********************************************************************
@@ -885,12 +885,10 @@ enum ScenarioPlayerType {
   SCEN_PLAYER_MPLAYER
 };
 
-
 /**********************************************************************
 ** These are the directional parameters for a scenario.
 */
 enum ScenarioDirType { SCEN_DIR_NONE = -1, SCEN_DIR_EAST, SCEN_DIR_WEST };
-
 
 /**********************************************************************
 ** These are the random variations of a scenario.
@@ -1839,7 +1837,6 @@ enum DoType {
   DO_DOG_MAUL
 };
 
-
 /*
 **	This structure is associated with each maneuver type. It tells whether
 *the *	maneuver can be interrupted and the frame rate.
@@ -2252,11 +2249,11 @@ enum TextPrintType {
 };
 
 // Standard button text print flags.
-inline constexpr TextPrintType kTpfButton =
+inline constexpr auto kTpfButton =
     static_cast<TextPrintType>(TPF_CENTER | TPF_6PT_GRAD | TPF_NOSHADOW);
-inline constexpr TextPrintType kTpfEButton =
+inline constexpr auto kTpfEButton =
     static_cast<TextPrintType>(TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
-inline constexpr TextPrintType kTpfText =
+inline constexpr auto kTpfText =
     static_cast<TextPrintType>(TPF_6PT_GRAD | TPF_NOSHADOW);
 
 /**********************************************************************
@@ -2264,14 +2261,14 @@ inline constexpr TextPrintType kTpfText =
 *these *	maximums never exceed the maximum value for the "ID" element in
 *the *	object class.
 */
-inline constexpr int kBuildingMax = 500;           // Lasts for hours.
+inline constexpr int kBuildingMax = 500;  // Lasts for hours.
 inline constexpr int kHouseMax =
     static_cast<int>(magic_enum::enum_count<HousesType>()) +
-    1;                                             // Lasts entire scenario.
-inline constexpr int kInfantryMax = 500;           // Lasts for minutes.
-inline constexpr int kUnitMax = 500;               // Lasts for minutes.
-inline constexpr int kVesselMax = 100;             // Lasts for minutes.
-inline constexpr int kTeamTypeMax = 60;            // Lasts forever.
+    1;                                    // Lasts entire scenario.
+inline constexpr int kInfantryMax = 500;  // Lasts for minutes.
+inline constexpr int kUnitMax = 500;      // Lasts for minutes.
+inline constexpr int kVesselMax = 100;    // Lasts for minutes.
+inline constexpr int kTeamTypeMax = 60;   // Lasts forever.
 
 // Save filename description: 40 chars + CR + LF + CTRL-Z + NULL.
 inline constexpr int kDescripMax = 44;
@@ -2391,30 +2388,33 @@ enum FacingType : int8_t {
   FACING_NW   // North-West
 };
 
-inline FacingType operator+(FacingType f1, FacingType f2) {
-  return static_cast<FacingType>((int)f1 + (int)f2 & 0x07);
+inline FacingType operator+(const FacingType f1, const FacingType f2) {
+  return static_cast<FacingType>((static_cast<int>(f1) + static_cast<int>(f2)) &
+                                 0x07);
 }
-inline FacingType operator+(FacingType f1, int f2) {
-  return static_cast<FacingType>((int)f1 + f2 & 0x07);
-}
-
-inline FacingType operator-(FacingType f1, FacingType f2) {
-  return static_cast<FacingType>((int)f1 - (int)f2 & 0x07);
-}
-inline FacingType operator-(FacingType f1, int f2) {
-  return static_cast<FacingType>((int)f1 - f2 & 0x07);
+inline FacingType operator+(const FacingType f1, const int f2) {
+  return static_cast<FacingType>((static_cast<int>(f1) + f2) & 0x07);
 }
 
-inline FacingType operator+=(FacingType& f1, FacingType f2) {
-  f1 = static_cast<FacingType>((int)f1 + (int)f2 & 0x07);
+inline FacingType operator-(const FacingType f1, const FacingType f2) {
+  return static_cast<FacingType>((static_cast<int>(f1) - static_cast<int>(f2)) &
+                                 0x07);
+}
+inline FacingType operator-(const FacingType f1, const int f2) {
+  return static_cast<FacingType>((static_cast<int>(f1) - f2) & 0x07);
+}
+
+inline FacingType operator+=(FacingType& f1, const FacingType f2) {
+  f1 = static_cast<FacingType>((static_cast<int>(f1) + static_cast<int>(f2)) &
+                               0x07);
   return f1;
 }
-inline FacingType operator+=(FacingType& f1, int f2) {
-  f1 = static_cast<FacingType>((int)f1 + f2 & 0x07);
+inline FacingType operator+=(FacingType& f1, const int f2) {
+  f1 = static_cast<FacingType>((static_cast<int>(f1) + f2) & 0x07);
   return f1;
 }
 
-inline int operator*(FacingType f1, FacingType f2) {
+inline int operator*(const FacingType f1, const FacingType f2) {
   return static_cast<int>(f1) * static_cast<int>(f2);
 }
 
@@ -2812,8 +2812,9 @@ struct RemapControlType {
 **	corresponding GroundType structure.
 */
 struct GroundType {
-  fixed Cost[magic_enum::enum_count<SpeedType>()];  // Terrain effect cost (normal).
-  bool Build;               // Can build on this terrain?
+  fixed Cost[magic_enum::enum_count<SpeedType>()];  // Terrain effect cost
+                                                    // (normal).
+  bool Build;  // Can build on this terrain?
 };
 
 /**************************************************************************
@@ -2828,7 +2829,6 @@ struct PathType {
   CELL LastOverlap;        // stores position of last overlap
   CELL LastFixup;          // stores position of last overlap
 };
-
 
 /****************************************************************************
 **	This is the max number of events supported on one frame.
