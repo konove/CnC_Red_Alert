@@ -165,7 +165,7 @@ VersionClass::VersionClass()
 // but I don't have time 	for a full rebuild (3 hrs!), and as MIN_VERSION
 // is no
 // longer referred to, I'm going to leave it. 	Really, it should be deleted or
-// commented out. 	Version number used is now GAME_VERSION. 	Note
+// commented out. 	Version number used is now kGameVersion. 	Note
 // also that VERSION_RA_300 is wrong, but not used.
 
 unsigned long VersionClass::Version_Number() {
@@ -650,7 +650,7 @@ unsigned long VersionClass::Min_Version() {
     //	ajw: "Note! I'm no longer using MIN_VERSION, MAX_VERSION, or
     //	VERSION_RA_300! But no time to do three full rebuilds right now, so
     //	I'm not deleting them from the header file..."
-    return GAME_VERSION;
+    return kGameVersion;
   } else {
     if (Is_Counterstrike_Installed()) {
       return MIN_VERSION - 1;
@@ -694,7 +694,7 @@ unsigned long VersionClass::Max_Version() {
 #else  // DEV_VERSION
 
   if constexpr (config::kWolapiEnabled) {
-    return GAME_VERSION;
+    return kGameVersion;
   } else {
     return MAX_VERSION;
   }

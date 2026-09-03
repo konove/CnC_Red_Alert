@@ -35,6 +35,7 @@
 // renamed IsNetworkHost, so there is nothing left to collide with.
 #include "port/win32/win32_com.h"
 #include "port/win32/win32_types.h"
+#include "ra/config.h"
 #include "ra/defines.h"
 #include "ra/wolapi/chatdefs.h"
 #include "ra/wolapi/downloaddefs.h"
@@ -308,18 +309,12 @@ class RANetUtilEventSink :
 
 //***********************************************************************************************
 
-//	SKU, reported to WOLAPI for the purpose of finding patches.
-#ifdef ENGLISH
-#define GAME_SKU 0x1500
-#else
-#ifdef GERMAN
-#define GAME_SKU 0x1502
-#else
-#define GAME_SKU 0x1503
-#endif
-#endif
+// SKU reported to WOLAPI for the purpose of finding patches: one per
+// language release.
+inline constexpr int kGameSku =
+    config::kIsEnglish ? 0x1500 : config::kIsGerman ? 0x1502 : 0x1503;
 
-#define GAME_VERSION 0x00030003
+inline constexpr int kGameVersion = 0x00030003;
 #define GAME_TYPE 21
 #define LOB_PREFIX "Lob_21_"
 

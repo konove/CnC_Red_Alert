@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_GOPTIONS_H_
 #define CNC_RED_ALERT_RA_GOPTIONS_H_
 
+#include "ra/config.h"
 #include "ra/options.h"
 
 class GameOptionsClass : public OptionsClass {
@@ -61,11 +62,7 @@ class GameOptionsClass : public OptionsClass {
     OPTION_HEIGHT = 100,
     OPTION_X = (320 - (216 + 8)) / 2,
     OPTION_Y = (200 - 100) / 2,
-#ifdef FRENCH
-    BUTTON_WIDTH = 142,
-#else
-    BUTTON_WIDTH = 130,
-#endif
+    BUTTON_WIDTH = config::kIsFrench ? 142 : 130,
     NUMBER_OF_BUTTONS = 6,  //	ajw Not used.
     CAPTION_Y_POS = 5,
     BUTTON_Y = 21,

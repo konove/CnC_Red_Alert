@@ -573,7 +573,8 @@ void Memory_Error_Handler() {
   while (Get_Mouse_State()) {
     Show_Mouse();
   };
-  WWMessageBox().Process(TEXT_MEMORY_ERROR, TEXT_ABORT, false);
+  WWMessageBox().Process(kLanguageText.memory_error, kLanguageText.abort,
+                         false);
 
   ReadyToQuit = 1;
 

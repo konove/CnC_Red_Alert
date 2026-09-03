@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
   absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfo);
 
   if (Ram_Free(MEM_NORMAL) < 7000000) {
-    printf(TEXT_NO_RAM);
+    fputs(kLanguageText.no_ram, stdout);
 
     return EXIT_FAILURE;
   }
@@ -273,9 +273,8 @@ int main(int argc, char* argv[])
     */
     if (Disk_Space_Available() < kInitFreeDiskSpace) {
       // pretty unlikely, but print something anyway
-      printf(TEXT_INSUFFICIENT);
-      printf(TEXT_MUST_HAVE, kInitFreeDiskSpace / (1024 * 1024));
-      printf("\n");
+      fputs(kLanguageText.insufficient_disk, stdout);
+      puts(MustHaveDiskSpaceText(kInitFreeDiskSpace / (1024 * 1024)).c_str());
       ShutdownTickTimer();
       return EXIT_FAILURE;
     }
@@ -374,7 +373,7 @@ int main(int argc, char* argv[])
 
       return EXIT_SUCCESS;
     }
-    puts(TEXT_SETUP_FIRST);
+    puts(kLanguageText.setup_first);
     Keyboard->Get();
 
     ShutdownTickTimer();

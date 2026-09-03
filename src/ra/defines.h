@@ -2833,11 +2833,7 @@ typedef enum VoxType : int8_t {
   VOX_BASE_UNDER_ATTACK,    //	our base is under attack
   VOX_UNABLE_TO_BUILD,      //	unable to build more
   VOX_PRIMARY_SELECTED,     //	primary building selected
-#ifdef ENGLISH
-  VOX_MADTANK_DEPLOYED,  // M.A.D. Tank Deployed
-#else
-  VOX_none3,
-#endif
+  VOX_MADTANK_DEPLOYED,     // M.A.D. Tank Deployed (English speech set only)
   VOX_none4,
   VOX_UNIT_LOST,         //	unit lost
   VOX_SELECT_TARGET,     // select target

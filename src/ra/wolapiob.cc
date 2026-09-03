@@ -620,7 +620,7 @@ HRESULT WolapiObject::GetChatServer() {
   //	Request chat server address from server server.
   pChatSink->bRequestServerListWait = true;
   //	debugprint( "Calling RequestServerList...\n" );
-  if (!SUCCEEDED(pChat->RequestServerList(GAME_SKU, GAME_VERSION, "unused",
+  if (!SUCCEEDED(pChat->RequestServerList(kGameSku, kGameVersion, "unused",
                                           "unused", 5))) {
     //		debugprint( "RequestServerList call failed\n" );
     return E_FAIL;
@@ -673,7 +673,7 @@ HRESULT WolapiObject::GetChatServer() {
           //	Bypass RequestServerList, as it is unnecessary and may not be
   possible if serverserver can't be reached.
           //	Set SKU manually because normally RequestServerList does this
-  for you. pChat->SetProductSKU( GAME_SKU ); if( pChatSink->pServer ) delete
+  for you. pChat->SetProductSKU( kGameSku ); if( pChatSink->pServer ) delete
   pChatSink->pServer; pChatSink->pServer = new Server; if( !(
   ::GetAsyncKeyState( VK_CONTROL ) & 0x8000 ) ) port::SafeCopy(
   (char*)pChatSink->pServer->conndata, "TCP;irc.westwood.com;9000" ); else

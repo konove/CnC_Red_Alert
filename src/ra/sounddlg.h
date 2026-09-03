@@ -40,13 +40,11 @@
 #ifndef CNC_RED_ALERT_RA_SOUNDDLG_H_
 #define CNC_RED_ALERT_RA_SOUNDDLG_H_
 
+#include "ra/config.h"
+
 class SoundControlsClass {
   enum SoundControlsClassEnums {
-#ifdef FRENCH
-    OPTION_WIDTH = 308,
-#else
-    OPTION_WIDTH = 292,
-#endif
+    OPTION_WIDTH = config::kIsFrench ? 308 : 292,
     OPTION_HEIGHT = 146,
 
     OPTION_X = (320 - OPTION_WIDTH) / 2,
@@ -68,22 +66,10 @@ class SoundControlsClass {
     PLAY_Y = 128,
 
     ONOFF_WIDTH = 25,
-#ifdef GERMAN
-    SHUFFLE_X = 79,  // BGA:91,
-#else
-#ifdef FRENCH
-    SHUFFLE_X = 99,
-#else
-    SHUFFLE_X = 97,
-#endif
-#endif
+    SHUFFLE_X = config::kIsGerman ? 79 : config::kIsFrench ? 99 : 97,
     SHUFFLE_Y = 128,
 
-#ifdef FRENCH
-    REPEAT_X = 169,
-#else
-    REPEAT_X = 164,
-#endif
+    REPEAT_X = config::kIsFrench ? 169 : 164,
     REPEAT_Y = 128,
 
     MSLIDER_X = 147,

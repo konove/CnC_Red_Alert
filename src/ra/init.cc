@@ -1293,7 +1293,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
       **	Unrecognized command line parameter... Display usage
       **	and then exit.
       */
-      puts(TEXT_OPTIONS);
+      puts(kLanguageText.options);
       return false;
     }
 
@@ -1527,7 +1527,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
             break;
 
           default:
-            puts(TEXT_INVALID);
+            puts(kLanguageText.invalid_option);
             return false;
         }
       }
@@ -2530,12 +2530,10 @@ static void Init_Mouse() {
       }
     }
   } else {
-    char buffer[255];
     GamePalette.Set();
     GamePalette.Set();
-    sprintf(buffer, TEXT_NO_MOUSE);
     VisiblePage.Clear();
-    WWMessageBox().Process(buffer, TXT_OK);
+    WWMessageBox().Process(kLanguageText.no_mouse, TXT_OK);
     // Prog_End();
     Emergency_Exit(1);
   }

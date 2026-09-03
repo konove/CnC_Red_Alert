@@ -1798,8 +1798,8 @@ bool Main_Loop() {
   // Is there a memory trasher altering the map??
   if (Debug_Check_Map) {
     if (!Map.Validate()) {
-      if (WWMessageBox().Process(TEXT_MAP_ERROR, TEXT_STOP, TEXT_CONTINUE) ==
-          0) {
+      if (WWMessageBox().Process(kLanguageText.map_error, kLanguageText.stop,
+                                 kLanguageText.continue_button) == 0) {
         GameActive = false;
       }
       Map.Validate();  // give debugger a chance to catch it

@@ -68,6 +68,10 @@ inline constexpr auto kBuildLanguage = BuildLanguage::German;
 inline constexpr auto kBuildLanguage = BuildLanguage::English;
 #endif
 
+inline constexpr bool kIsEnglish = kBuildLanguage == BuildLanguage::English;
+inline constexpr bool kIsGerman = kBuildLanguage == BuildLanguage::German;
+inline constexpr bool kIsFrench = kBuildLanguage == BuildLanguage::French;
+
 }  // namespace config
 
 #endif  // CNC_RED_ALERT_RA_CONFIG_H_

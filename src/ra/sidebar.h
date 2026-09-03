@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_SIDEBAR_H_
 #define CNC_RED_ALERT_RA_SIDEBAR_H_
 
+#include "ra/config.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/gadget.h"
@@ -72,45 +73,18 @@ class SidebarClass : public PowerClass {
     COLUMN_TWO_X = 320 - 80 + 8 + (80 - 16) / 2 + 3,
     COLUMN_TWO_Y = 7 + 70 + 13,
 
-// BGA: changes to all buttons
-#ifdef GERMAN
-    BUTTON_ONE_WIDTH = 20,         // Button width.
-    BUTTON_TWO_WIDTH = 27,         // Button width.
-    BUTTON_THREE_WIDTH = 26,       // Button width.
-    BUTTON_HEIGHT = 9,             // Button height.
-    BUTTON_ONE_X = SIDE_X + 2,     // Left button X coordinate.
-    BUTTON_ONE_Y = SIDE_Y + 2,     // Left button Y coordinate.
-    BUTTON_TWO_X = SIDE_X + 24,    // Right button X coordinate.
-    BUTTON_TWO_Y = SIDE_Y + 2,     // Right button Y coordinate.
-    BUTTON_THREE_X = SIDE_X + 53,  // Right button X coordinate.
-    BUTTON_THREE_Y = SIDE_Y + 2,   // Right button Y coordinate.
-#endif
-
-#ifdef FRENCH
-    BUTTON_ONE_WIDTH = 20,         // Button width.
-    BUTTON_TWO_WIDTH = 27,         // Button width.
-    BUTTON_THREE_WIDTH = 26,       // Button width.
-    BUTTON_HEIGHT = 9,             // Button height.
-    BUTTON_ONE_X = SIDE_X + 2,     // Left button X coordinate.
-    BUTTON_ONE_Y = SIDE_Y + 2,     // Left button Y coordinate.
-    BUTTON_TWO_X = SIDE_X + 24,    // Right button X coordinate.
-    BUTTON_TWO_Y = SIDE_Y + 2,     // Right button Y coordinate.
-    BUTTON_THREE_X = SIDE_X + 53,  // Right button X coordinate.
-    BUTTON_THREE_Y = SIDE_Y + 2,   // Right button Y coordinate.
-#endif
-
-#ifdef ENGLISH
-    BUTTON_ONE_WIDTH = 32,         // Button width.
-    BUTTON_TWO_WIDTH = 20,         // Button width.
-    BUTTON_THREE_WIDTH = 20,       // Button width.
-    BUTTON_HEIGHT = 9,             // Button height.
-    BUTTON_ONE_X = SIDE_X + 2,     // Left button X coordinate.
-    BUTTON_ONE_Y = SIDE_Y + 2,     // Left button Y coordinate.
-    BUTTON_TWO_X = SIDE_X + 36,    // Right button X coordinate.
-    BUTTON_TWO_Y = SIDE_Y + 2,     // Right button Y coordinate.
-    BUTTON_THREE_X = SIDE_X + 58,  // Right button X coordinate.
-    BUTTON_THREE_Y = SIDE_Y + 2,   // Right button Y coordinate.
-#endif
+    // The German and French button captions are wider, so the three
+    // buttons share the space differently.
+    BUTTON_ONE_WIDTH = config::kIsEnglish ? 32 : 20,
+    BUTTON_TWO_WIDTH = config::kIsEnglish ? 20 : 27,
+    BUTTON_THREE_WIDTH = config::kIsEnglish ? 20 : 26,
+    BUTTON_HEIGHT = 9,
+    BUTTON_ONE_X = SIDE_X + 2,
+    BUTTON_ONE_Y = SIDE_Y + 2,
+    BUTTON_TWO_X = SIDE_X + (config::kIsEnglish ? 36 : 24),
+    BUTTON_TWO_Y = SIDE_Y + 2,
+    BUTTON_THREE_X = SIDE_X + (config::kIsEnglish ? 58 : 53),
+    BUTTON_THREE_Y = SIDE_Y + 2,
 
     COLUMNS = 2  // Number of side strips on sidebar.
   };
