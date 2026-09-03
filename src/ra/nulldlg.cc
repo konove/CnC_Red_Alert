@@ -59,6 +59,7 @@
 #include <ctime>
 #include <string>
 
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/ccfile.h"
@@ -5469,7 +5470,8 @@ int Com_Show_Scenario_Dialog() {
 
               Session.ColorIdx = static_cast<PlayerColorType>(TheirColor + 1);
               if (Session.ColorIdx >= 6) {
-                Session.ColorIdx = PCOLOR_FIRST;
+                Session.ColorIdx =
+                    magic_enum::enum_values<PlayerColorType>().front();
               }
               name_edt.Set_Color(
                   &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE

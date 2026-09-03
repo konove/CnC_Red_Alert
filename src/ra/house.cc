@@ -857,7 +857,8 @@ HouseClass::HouseClass(HousesType house)
 
     CapturedBuildings = new UnitTrackerClass(
         static_cast<int>(magic_enum::enum_count<StructType>()));
-    TotalCrates = new UnitTrackerClass(CRATE_COUNT);
+    TotalCrates = new UnitTrackerClass(
+        static_cast<int>(magic_enum::enum_count<CrateType>()));
   }
 }
 
@@ -1564,7 +1565,8 @@ void HouseClass::Super_Weapon_Handler() {
   **	the graphic needs changing for the special weapon and updates the
   **	sidebar as necessary.
   */
-  for (SpecialWeaponType special = SPC_FIRST; special < SPC_COUNT; special++) {
+  for (SpecialWeaponType special :
+       magic_enum::enum_values<SpecialWeaponType>()) {
     SuperClass* super = &SuperWeapon[special];
 
     if (super->Is_Present()) {
@@ -1695,11 +1697,10 @@ void HouseClass::Super_Weapon_Handler() {
           if (Map.IsTargettingMode == SPC_CHRONOSPHERE ||
               Map.IsTargettingMode == kSpcChrono2) {
             if (Map.IsTargettingMode == kSpcChrono2) {
-              TechnoClass* tech =
-                  dynamic_cast<TechnoClass*>(As_Object(UnitToTeleport));
-              if (tech && tech->IsActive && tech->What_Am_I() == RTTI_UNIT &&
-                  *dynamic_cast<UnitClass*>(tech) == UNIT_CHRONOTANK) {
-              } else {
+              // Only a live chrono tank keeps its own targeting mode alive.
+              auto* unit = dynamic_cast<UnitClass*>(As_Object(UnitToTeleport));
+              if (unit == nullptr || !unit->IsActive ||
+                  *unit != UNIT_CHRONOTANK) {
                 Map.IsTargettingMode = SPC_NONE;
               }
             } else {
@@ -4751,9 +4752,9 @@ int HouseClass::Expert_AI() {
   /*
   **	Records the urgency of all actions possible.
   */
-  UrgencyType urgency[STRATEGY_COUNT];
+  UrgencyType urgency[magic_enum::enum_count<StrategyType>()];
 
-  for (StrategyType strat = STRATEGY_FIRST; strat < STRATEGY_COUNT; strat++) {
+  for (StrategyType strat : magic_enum::enum_values<StrategyType>()) {
     urgency[strat] = URGENCY_NONE;
 
     switch (strat) {
@@ -4810,7 +4811,7 @@ int HouseClass::Expert_AI() {
   **	actions tend to greatly affect the lower urgency actions.
   */
   for (UrgencyType u = URGENCY_CRITICAL; u >= URGENCY_LOW; u--) {
-    for (StrategyType strat = STRATEGY_FIRST; strat < STRATEGY_COUNT; strat++) {
+    for (StrategyType strat : magic_enum::enum_values<StrategyType>()) {
       if (urgency[strat] == u) {
         switch (strat) {
           case STRATEGY_BUILD_POWER:

@@ -83,7 +83,7 @@
 #include "sdllib/shape.h"
 #include "tech/rawfile.h"
 
-static DoInfoStruct DogDoControls[DO_COUNT] = {
+static DoInfoStruct DogDoControls[magic_enum::enum_count<DoType>()] = {
     {0, 1, 1},      // DO_STAND_READY
     {0, 1, 1},      // DO_STAND_GUARD
     {0, 1, 1},      // DO_PRONE			// NA
@@ -107,7 +107,7 @@ static DoInfoStruct DogDoControls[DO_COUNT] = {
     {106, 12, 14},  //	DO_DOG_MAUL
 };
 
-static DoInfoStruct E1DoControls[DO_COUNT] = {
+static DoInfoStruct E1DoControls[magic_enum::enum_count<DoType>()] = {
     {0, 1, 1},          // DO_STAND_READY
     {8, 1, 1},          // DO_STAND_GUARD
     {192, 1, 8},        // DO_PRONE
@@ -131,7 +131,7 @@ static DoInfoStruct E1DoControls[DO_COUNT] = {
     {0, 0, 0},          //	DO_DOG_MAUL			// N/A
 };
 
-static DoInfoStruct E2DoControls[DO_COUNT] = {
+static DoInfoStruct E2DoControls[magic_enum::enum_count<DoType>()] = {
     {0, 1, 1},          // DO_STAND_READY
     {8, 1, 1},          // DO_STAND_GUARD
     {288, 1, 12},       // DO_PRONE
@@ -155,7 +155,7 @@ static DoInfoStruct E2DoControls[DO_COUNT] = {
     {0, 0, 0},          //	DO_DOG_MAUL			// N/A
 };
 
-static DoInfoStruct E3DoControls[DO_COUNT] = {
+static DoInfoStruct E3DoControls[magic_enum::enum_count<DoType>()] = {
     {0, 1, 1},          // DO_STAND_READY
     {8, 1, 1},          // DO_STAND_GUARD
     {192, 1, 10},       // DO_PRONE
@@ -179,7 +179,7 @@ static DoInfoStruct E3DoControls[DO_COUNT] = {
     {0, 0, 0},          //	DO_DOG_MAUL			// N/A
 };
 
-static DoInfoStruct E4DoControls[DO_COUNT] = {
+static DoInfoStruct E4DoControls[magic_enum::enum_count<DoType>()] = {
     {0, 1, 1},          // DO_STAND_READY
     {8, 1, 1},          // DO_STAND_GUARD
     {256, 1, 16},       // DO_PRONE
@@ -203,7 +203,7 @@ static DoInfoStruct E4DoControls[DO_COUNT] = {
     {0, 0, 0},          //	DO_DOG_MAUL			// N/A
 };
 
-static DoInfoStruct E6DoControls[DO_COUNT] = {
+static DoInfoStruct E6DoControls[magic_enum::enum_count<DoType>()] = {
     {0, 1, 1},     // DO_STAND_READY
     {8, 1, 1},     // DO_STAND_GUARD
     {82, 1, 4},    // DO_PRONE
@@ -227,7 +227,7 @@ static DoInfoStruct E6DoControls[DO_COUNT] = {
     {0, 0, 0},     //	DO_DOG_MAUL			// N/A
 };
 
-static DoInfoStruct E7DoControls[DO_COUNT] = {
+static DoInfoStruct E7DoControls[magic_enum::enum_count<DoType>()] = {
     {0, 1, 1},     // DO_STAND_READY
     {0, 1, 1},     // DO_STAND_GUARD
     {128, 1, 4},   // DO_PRONE
@@ -252,7 +252,7 @@ static DoInfoStruct E7DoControls[DO_COUNT] = {
 };
 
 // Spy
-static DoInfoStruct SpyDoControls[DO_COUNT] = {
+static DoInfoStruct SpyDoControls[magic_enum::enum_count<DoType>()] = {
     {0, 1, 1},     // DO_STAND_READY
     {8, 1, 1},     // DO_STAND_GUARD
     {144, 1, 4},   // DO_PRONE
@@ -276,7 +276,7 @@ static DoInfoStruct SpyDoControls[DO_COUNT] = {
     {0, 0, 0},     //	DO_DOG_MAUL			// N/A
 };
 
-static DoInfoStruct E9DoControls[DO_COUNT] = {
+static DoInfoStruct E9DoControls[magic_enum::enum_count<DoType>()] = {
     {0, 1, 1},     // DO_STAND_READY
     {8, 1, 1},     // DO_STAND_GUARD
     {72, 1, 4},    // DO_PRONE
@@ -300,7 +300,7 @@ static DoInfoStruct E9DoControls[DO_COUNT] = {
     {0, 0, 0},     //	DO_DOG_MAUL			// N/A
 };
 
-static DoInfoStruct MedicDoControls[DO_COUNT] = {
+static DoInfoStruct MedicDoControls[magic_enum::enum_count<DoType>()] = {
     {0, 1, 1},     // DO_STAND_READY
     {0, 1, 1},     // DO_STAND_GUARD
     {130, 1, 4},   // DO_PRONE
@@ -324,7 +324,7 @@ static DoInfoStruct MedicDoControls[DO_COUNT] = {
     {0, 0, 0},     //	DO_DOG_MAUL			// N/A
 };
 
-static DoInfoStruct GeneralDoControls[DO_COUNT] = {
+static DoInfoStruct GeneralDoControls[magic_enum::enum_count<DoType>()] = {
     {0, 1, 1},     // DO_STAND_READY
     {0, 1, 1},     // DO_STAND_GUARD
     {104, 1, 4},   // DO_PRONE
@@ -348,7 +348,7 @@ static DoInfoStruct GeneralDoControls[DO_COUNT] = {
     {0, 0, 0},     //	DO_DOG_MAUL			// N/A
 };
 
-static DoInfoStruct CivilianDoControls[DO_COUNT] = {
+static DoInfoStruct CivilianDoControls[magic_enum::enum_count<DoType>()] = {
     {0, 1, 1},          // DO_STAND_READY
     {0, 1, 1},          // DO_STAND_GUARD
     {0, 1, 1},          // DO_PRONE				// N/A
@@ -372,7 +372,7 @@ static DoInfoStruct CivilianDoControls[DO_COUNT] = {
     {0, 0, 0},          //	DO_DOG_MAUL			// N/A
 };
 
-static DoInfoStruct EinsteinDoControls[DO_COUNT] = {
+static DoInfoStruct EinsteinDoControls[magic_enum::enum_count<DoType>()] = {
     {0, 1, 1},          // DO_STAND_READY
     {0, 1, 1},          // DO_STAND_GUARD
     {0, 1, 1},          // DO_PRONE				// N/A

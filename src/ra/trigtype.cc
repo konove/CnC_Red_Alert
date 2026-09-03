@@ -927,16 +927,18 @@ bool TriggerTypeClass::Edit() {
                      TPF_EFNT | TPF_NOSHADOW, AD2_X, AD2_Y, ED_WIDTH, ED_HEIGHT,
                      MFCD::Retrieve("EBTN-UP.SHP"),
                      MFCD::Retrieve("EBTN-DN.SHP"));
-  for (SpecialWeaponType spec = SPC_FIRST; spec < SPC_COUNT; spec++) {
+  for (SpecialWeaponType spec : magic_enum::enum_values<SpecialWeaponType>()) {
     spc1.Add_Item(SpecialWeaponName[spec]);
     spc2.Add_Item(SpecialWeaponName[spec]);
   }
-  if ((unsigned)Action1.Data.Special < SPC_COUNT) {
+  if ((unsigned)Action1.Data.Special <
+      magic_enum::enum_count<SpecialWeaponType>()) {
     spc1.Set_Selected_Index(Action1.Data.Special);
   } else {
     spc1.Set_Selected_Index(0);
   }
-  if ((unsigned)Action2.Data.Special < SPC_COUNT) {
+  if ((unsigned)Action2.Data.Special <
+      magic_enum::enum_count<SpecialWeaponType>()) {
     spc2.Set_Selected_Index(Action2.Data.Special);
   } else {
     spc2.Set_Selected_Index(0);
@@ -955,16 +957,16 @@ bool TriggerTypeClass::Edit() {
                        TPF_EFNT | TPF_NOSHADOW, AD2_X, AD2_Y, ED_WIDTH,
                        ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                        MFCD::Retrieve("EBTN-DN.SHP"));
-  for (QuarryType q = QUARRY_FIRST; q < QUARRY_COUNT; q++) {
+  for (QuarryType q : magic_enum::enum_values<QuarryType>()) {
     qlist1.Add_Item(QuarryName[q]);
     qlist2.Add_Item(QuarryName[q]);
   }
-  if ((unsigned)Action1.Data.Quarry < QUARRY_COUNT) {
+  if ((unsigned)Action1.Data.Quarry < magic_enum::enum_count<QuarryType>()) {
     qlist1.Set_Selected_Index(Action1.Data.Quarry);
   } else {
     qlist1.Set_Selected_Index(0);
   }
-  if ((unsigned)Action2.Data.Quarry < QUARRY_COUNT) {
+  if ((unsigned)Action2.Data.Quarry < magic_enum::enum_count<QuarryType>()) {
     qlist2.Set_Selected_Index(Action2.Data.Quarry);
   } else {
     qlist2.Set_Selected_Index(0);

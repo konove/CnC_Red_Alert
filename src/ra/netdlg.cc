@@ -131,6 +131,7 @@
 #include <cstring>
 #include <ctime>
 
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/_wsproto.h"
@@ -7175,8 +7176,10 @@ void Start_WWChat(ColorListClass* playerlist) {
     // 1st, only add the name if it's different from the previous name.
     //.....................................................................
     if (i == 0 || strcmp(WWPersons[i].Name, WWPersons[i - 1].Name) != 0) {
-      WWPersons[i].Color =
-          static_cast<PlayerColorType>(Random_Pick(0, PCOLOR_LAST - 1));
+      WWPersons[i].Color = static_cast<PlayerColorType>(Random_Pick(
+          0,
+          static_cast<int>(magic_enum::enum_values<PlayerColorType>().back()) -
+              1));
       if (Percent_Chance(50)) {
         house = HOUSE_GREECE;
       } else {

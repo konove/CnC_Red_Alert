@@ -151,28 +151,29 @@ const int InfantryClass::HumanShape[32] = {0, 0, 7, 7, 7, 7, 6, 6, 6, 6, 5,
 **	specifies the frame rate as well as if the animation can be aborted.
 */
 // interruptible, mobile, randomstart, rate
-const DoStruct InfantryClass::MasterDoControls[DO_COUNT] = {
-    {true, false, false, 0},   // DO_STAND_READY
-    {true, false, false, 0},   // DO_STAND_GUARD
-    {true, false, false, 0},   // DO_PRONE
-    {true, true, true, 2},     // DO_WALK
-    {true, false, false, 1},   // DO_FIRE_WEAPON
-    {false, true, false, 2},   // DO_LIE_DOWN
-    {true, true, true, 2},     // DO_CRAWL
-    {false, false, false, 3},  // DO_GET_UP
-    {true, false, false, 1},   // DO_FIRE_PRONE
-    {true, false, false, 2},   // DO_IDLE1
-    {true, false, false, 2},   // DO_IDLE2
-    {false, false, false, 2},  // DO_GUN_DEATH
-    {false, false, false, 2},  // DO_EXPLOSION_DEATH
-    {false, false, false, 2},  // DO_EXPLOSION2_DEATH
-    {false, false, false, 2},  // DO_GRENADE_DEATH
-    {false, false, false, 2},  // DO_FIRE_DEATH
-    {false, false, false, 2},  // DO_GESTURE1
-    {false, false, false, 2},  // DO_SALUTE1
-    {false, false, false, 2},  // DO_GESTURE2
-    {false, false, false, 2},  // DO_SALUTE2
-    {false, false, false, 2},  // DO_DOG_MAUL
+const DoStruct
+    InfantryClass::MasterDoControls[magic_enum::enum_count<DoType>()] = {
+        {true, false, false, 0},   // DO_STAND_READY
+        {true, false, false, 0},   // DO_STAND_GUARD
+        {true, false, false, 0},   // DO_PRONE
+        {true, true, true, 2},     // DO_WALK
+        {true, false, false, 1},   // DO_FIRE_WEAPON
+        {false, true, false, 2},   // DO_LIE_DOWN
+        {true, true, true, 2},     // DO_CRAWL
+        {false, false, false, 3},  // DO_GET_UP
+        {true, false, false, 1},   // DO_FIRE_PRONE
+        {true, false, false, 2},   // DO_IDLE1
+        {true, false, false, 2},   // DO_IDLE2
+        {false, false, false, 2},  // DO_GUN_DEATH
+        {false, false, false, 2},  // DO_EXPLOSION_DEATH
+        {false, false, false, 2},  // DO_EXPLOSION2_DEATH
+        {false, false, false, 2},  // DO_GRENADE_DEATH
+        {false, false, false, 2},  // DO_FIRE_DEATH
+        {false, false, false, 2},  // DO_GESTURE1
+        {false, false, false, 2},  // DO_SALUTE1
+        {false, false, false, 2},  // DO_GESTURE2
+        {false, false, false, 2},  // DO_SALUTE2
+        {false, false, false, 2},  // DO_DOG_MAUL
 };
 
 /***********************************************************************************************

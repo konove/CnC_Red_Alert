@@ -48,7 +48,7 @@
 **	This specifies the odds of receiving the various random crate power
 **	ups. The odds are expressed as "shares" of 100 percent.
 */
-int CrateShares[CRATE_COUNT] = {
+int CrateShares[magic_enum::enum_count<CrateType>()] = {
     50,  //	CRATE_MONEY
     20,  //	CRATE_UNIT
     3,   //	CRATE_PARA_BOMB
@@ -69,7 +69,7 @@ int CrateShares[CRATE_COUNT] = {
     5    // CRATE_VORTEX
 };
 
-AnimType CrateAnims[CRATE_COUNT] = {
+AnimType CrateAnims[magic_enum::enum_count<CrateType>()] = {
     ANIM_NONE,  //	CRATE_MONEY
     ANIM_NONE,  //	CRATE_UNIT
     ANIM_NONE,  //	CRATE_PARA_BOMB
@@ -90,7 +90,7 @@ AnimType CrateAnims[CRATE_COUNT] = {
     ANIM_NONE   // CRATE_VORTEX
 };
 
-int CrateData[CRATE_COUNT] = {
+int CrateData[magic_enum::enum_count<CrateType>()] = {
     0,  //	CRATE_MONEY
     0,  //	CRATE_UNIT
     0,  //	CRATE_PARA_BOMB

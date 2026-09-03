@@ -247,7 +247,7 @@ class InfantryClass final : public FootClass {
   static const int HumanShape[32];
 
  private:
-  static const DoStruct MasterDoControls[DO_COUNT];
+  static const DoStruct MasterDoControls[magic_enum::enum_count<DoType>()];
 };
 
 #endif  // CNC_RED_ALERT_RA_INFANTRY_H_

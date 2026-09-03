@@ -338,7 +338,7 @@ class HouseClass {
   **	These super weapon control objects are used to control the recharge
   **	and availability of these special weapons to this house.
   */
-  SuperClass SuperWeapon[SPC_COUNT];
+  SuperClass SuperWeapon[magic_enum::enum_count<SpecialWeaponType>()];
 
   /*
   **	This is a record of the last building that was built. For buildings that

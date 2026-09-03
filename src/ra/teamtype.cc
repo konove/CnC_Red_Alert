@@ -892,7 +892,7 @@ bool TeamTypeClass::Edit() {
       BUTTON_QUARRY, qtext, sizeof(qtext), TPF_EFNT | TPF_NOSHADOW,
       missionlist1.X + missionlist1.Width + 15, missionlist1.Y, 100, 5 * 8,
       MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
-  for (QuarryType q = QUARRY_FIRST; q < QUARRY_COUNT; q++) {
+  for (QuarryType q : magic_enum::enum_values<QuarryType>()) {
     qlist.Add_Item(QuarryName[q]);
   }
   qlist.Set_Selected_Index(0);
@@ -903,7 +903,7 @@ bool TeamTypeClass::Edit() {
       BUTTON_FORMATION, ftext, sizeof(ftext), TPF_EFNT | TPF_NOSHADOW,
       missionlist1.X + missionlist1.Width + 15, missionlist1.Y, 100, 5 * 8,
       MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
-  for (FormationType f = FORMATION_FIRST; f < FORMATION_COUNT; f++) {
+  for (FormationType f : magic_enum::enum_values<FormationType>()) {
     flist.Add_Item(FormationName[f]);
   }
   flist.Set_Selected_Index(0);
@@ -914,7 +914,7 @@ bool TeamTypeClass::Edit() {
       BUTTON_MISSION, mtext, sizeof(mtext), TPF_EFNT | TPF_NOSHADOW,
       missionlist1.X + missionlist1.Width + 15, missionlist1.Y, 100, 5 * 8,
       MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
-  for (MissionType m = MISSION_FIRST; m < MISSION_COUNT; m++) {
+  for (MissionType m : magic_enum::enum_values<MissionType>()) {
     mlist.Add_Item(MissionClass::Mission_Name(m));
   }
   mlist.Set_Selected_Index(0);

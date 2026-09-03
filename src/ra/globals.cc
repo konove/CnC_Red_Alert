@@ -294,7 +294,7 @@ int NameIDOverride[25];
 **	These are the mission control structures. They hold the information
 *about *	how the missions should behave in the system.
 */
-MissionControlClass MissionControl[MISSION_COUNT];
+MissionControlClass MissionControl[magic_enum::enum_count<MissionType>()];
 
 /***************************************************************************
 **	There are various tutorial messages that can appear in the game. These
@@ -332,7 +332,7 @@ KeyboardClass* Keyboard;
 **	tables for the various possible player colors, and the color schemes
 ** for dialogs.
 */
-RemapControlType ColorRemaps[PCOLOR_COUNT];
+RemapControlType ColorRemaps[magic_enum::enum_count<PlayerColorType>()];
 
 /*
 ** Special remap scheme for font that hs to print over metallic tabs
@@ -452,7 +452,7 @@ long SidebarRedraws;  // Number of sidebar redraws.
 **	This is the monochrome debug page array. The various monochrome data
 **	screens are located here.
 */
-MonoClass MonoArray[DMONO_COUNT];
+MonoClass MonoArray[magic_enum::enum_count<DMonoType>()];
 DMonoType MonoPage = DMONO_STRESS;  // The current page.
 
 /***************************************************************************

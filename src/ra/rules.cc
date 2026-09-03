@@ -787,7 +787,7 @@ bool RulesClass::AI(CCINIClass& ini) {
 bool RulesClass::Powerups(CCINIClass& ini) {
   static const char* const POWERUPS = "Powerups";
   if (ini.Is_Present(POWERUPS)) {
-    for (CrateType crate = CRATE_FIRST; crate < CRATE_COUNT; crate++) {
+    for (CrateType crate : magic_enum::enum_values<CrateType>()) {
       char buffer[128];
       if (ini.Get_String(POWERUPS, CrateNames[crate], "0,NONE", buffer,
                          sizeof(buffer))) {
@@ -1011,8 +1011,7 @@ bool RulesClass::Objects(CCINIClass& ini) {
   /*
   **	Fetch the mission control values.
   */
-  for (MissionType mission = MISSION_FIRST; mission < MISSION_COUNT;
-       mission++) {
+  for (MissionType mission : magic_enum::enum_values<MissionType>()) {
     MissionControlClass* miss = &MissionControl[mission];
     miss->Mission = mission;
     miss->Read_INI(ini);

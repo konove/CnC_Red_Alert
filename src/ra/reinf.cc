@@ -666,7 +666,8 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
   assert(house != nullptr);
   assert(static_cast<unsigned>(air) < magic_enum::enum_count<AircraftType>());
   assert(number != 0);
-  assert(static_cast<unsigned>(mission) < MISSION_COUNT);
+  assert(static_cast<unsigned>(mission) <
+         magic_enum::enum_count<MissionType>());
   /*
   ** Get a pointer to the class of the object that we are going to create.
   */

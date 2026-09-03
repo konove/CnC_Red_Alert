@@ -237,7 +237,7 @@ bool Init_Game(int, char*[]) {
   */
   if constexpr (config::kCheatKeysEnabled) {
     if (Processor() >= 2) {
-      Benches = new Benchmark[BENCH_COUNT];
+      Benches = new Benchmark[magic_enum::enum_count<BenchType>()];
     }
   }
 
@@ -1828,7 +1828,7 @@ static void Init_Color_Remaps() {
   SysMemPage.Clear();
   Load_Picture("PALETTE.CPS", SysMemPage, SysMemPage, nullptr, BM_DEFAULT);
   SysMemPage.Blit(HidPage);
-  for (PlayerColorType pcolor = PCOLOR_FIRST; pcolor < PCOLOR_COUNT; pcolor++) {
+  for (PlayerColorType pcolor : magic_enum::enum_values<PlayerColorType>()) {
     unsigned char* ptr = ColorRemaps[pcolor].RemapTable;
 
     for (int color = 0; color < 256; color++) {

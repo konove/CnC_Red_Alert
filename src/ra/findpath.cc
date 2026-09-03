@@ -1332,7 +1332,7 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
     }
   }
 
-  static int _value[MOVE_COUNT] = {
+  static int _value[magic_enum::enum_count<MoveType>()] = {
       1,   //	MOVE_OK
       1,   //	MOVE_CLOAK
       3,   //	MOVE_MOVING_BLOCK

@@ -2001,7 +2001,10 @@ int MapEditClass::Load_Scenario() {
                         maxunit.Y + 20, 100, 7 * 4, TPF_EFNT | TPF_NOSHADOW,
                         MFCD::Retrieve("EBTN-UP.SHP"),
                         MFCD::Retrieve("EBTN-DN.SHP"));
-    for (SourceType source = SOURCE_FIRST; source <= SOURCE_WEST; source++) {
+    for (SourceType source : magic_enum::enum_values<SourceType>()) {
+      if (source > SOURCE_WEST) {
+        break;
+      }
       sourcebtn.Add_Item(SourceName[source]);
     }
 

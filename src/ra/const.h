@@ -9,9 +9,9 @@
 #include "ra/defines.h"
 #include "sdllib/wwstd.h"
 
-extern int CrateShares[CRATE_COUNT];
-extern AnimType CrateAnims[CRATE_COUNT];
-extern int CrateData[CRATE_COUNT];
+extern int CrateShares[magic_enum::enum_count<CrateType>()];
+extern AnimType CrateAnims[magic_enum::enum_count<CrateType>()];
+extern int CrateData[magic_enum::enum_count<CrateType>()];
 extern GroundType Ground[magic_enum::enum_count<LandType>()];
 
 /***************************************************************************
@@ -49,7 +49,7 @@ constexpr uint32_t EditorCodes[] = {0xA2C09326,  // Erik Yeo
 **	a unit can have. The system initiated orders have no use for the ASCII
 *name *	associated, but they are listed here for completeness’s sake.
 */
-constexpr const char* Missions[MISSION_COUNT] = {
+constexpr const char* Missions[magic_enum::enum_count<MissionType>()] = {
     "Sleep",   "Attack", "Move",    "QMove",   "Retreat",    "Guard",
     "Sticky",  "Enter",  "Capture", "Harvest", "Area Guard", "Return",
     "Stop",    "Ambush", "Hunt",    "Unload",  "Sabotage",   "Construction",
@@ -58,20 +58,22 @@ constexpr const char* Missions[MISSION_COUNT] = {
 /***************************************************************************
 **	Special weapon names.
 */
-constexpr const char* SpecialWeaponName[SPC_COUNT] = {
-    "Sonar Pulse",  "Nuclear Missile", "Chronosphere", "Parachute Bomb",
-    "Paratroopers", "Recon Plane",     "Iron Curtain", "GPS Satellite"};
-constexpr int SpecialWeaponHelp[SPC_COUNT] = {
+constexpr const char*
+    SpecialWeaponName[magic_enum::enum_count<SpecialWeaponType>()] = {
+        "Sonar Pulse",  "Nuclear Missile", "Chronosphere", "Parachute Bomb",
+        "Paratroopers", "Recon Plane",     "Iron Curtain", "GPS Satellite"};
+constexpr int SpecialWeaponHelp[magic_enum::enum_count<SpecialWeaponType>()] = {
     TXT_SONAR_PULSE,   TXT_NUCLEAR_BOMB, TXT_CHRONOSHIFT, TXT_PARA_BOMB,
     TXT_PARA_INFANTRY, TXT_SPY_MISSION,  TXT_INVUL,       TXT_GPS_SATELLITE};
-constexpr const char* SpecialWeaponFile[SPC_COUNT] = {
-    "SONR", "ATOM", "WARP", "PBMB", "PINF", "CAM", "INFX", "GPSS"};
+constexpr const char*
+    SpecialWeaponFile[magic_enum::enum_count<SpecialWeaponType>()] = {
+        "SONR", "ATOM", "WARP", "PBMB", "PINF", "CAM", "INFX", "GPSS"};
 
 /***************************************************************************
 **	Type of quarry to search out and attack. These values are used for team
 **	attack missions.
 */
-constexpr const char* QuarryName[QUARRY_COUNT] = {
+constexpr const char* QuarryName[magic_enum::enum_count<QuarryType>()] = {
     "N/A",           "Anything",       "Buildings - any",  "Harvesters",
     "Infantry",      "Vehicles - any", "Ships - any",      "Factories",
     "Base Defenses", "Base Threats",   "Power Facilities", "Fake Buildings"};
@@ -79,7 +81,7 @@ constexpr const char* QuarryName[QUARRY_COUNT] = {
 /***************************************************************************
 **	These are the text names for the formation types.
 */
-constexpr const char* FormationName[FORMATION_COUNT] = {
+constexpr const char* FormationName[magic_enum::enum_count<FormationType>()] = {
     "None",
 
     "Tight",       "Loose",      "Wedge North", "Wedge East",
@@ -88,8 +90,8 @@ constexpr const char* FormationName[FORMATION_COUNT] = {
 /***************************************************************************
 **	These are the ASCII names for the reinforcement sources.
 */
-constexpr const char* SourceName[SOURCE_COUNT] = {"North", "East", "South",
-                                                  "West", "Air"};
+constexpr const char* SourceName[magic_enum::enum_count<SourceType>()] = {
+    "North", "East", "South", "West", "Air"};
 
 /***************************************************************************
 **	These are the text names for the various armor types a unit may possess.
@@ -164,7 +166,7 @@ constexpr COORDINATE AdjacentCoord[magic_enum::enum_count<FacingType>()] = {
     0xFF000000L, 0xFF000100L, 0x00000100L, 0x01000100L,
     0x01000000L, 0x0100FF00L, 0x0000FF00L, 0xFF00FF00L};
 
-constexpr const char* CrateNames[CRATE_COUNT] = {
+constexpr const char* CrateNames[magic_enum::enum_count<CrateType>()] = {
     "Money",           "Unit",         "ParaBomb", "HealBase",
     "Cloak",           "Explosion",    "Napalm",   "Squad",
     "Darkness",        "Reveal",       "Sonar",    "Armor",

@@ -47,6 +47,7 @@
 
 #include <cassert>
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/config.h"
 #include "ra/techno.h"
 
@@ -54,7 +55,7 @@
 **	These are the text representations of the radio messages that can be
 *transmitted.
 */
-const char* RadioClass::Messages[RADIO_COUNT] = {
+const char* RadioClass::Messages[magic_enum::enum_count<RadioMessageType>()] = {
     "static (no message)",
     "Roger.",
     "Come in.",

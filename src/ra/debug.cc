@@ -46,6 +46,7 @@
 #include <cinttypes>
 #include <cstdio>
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/building.h"
@@ -133,7 +134,8 @@ void Debug_Key(unsigned input) {
         break;
 
       case KN_P: {
-        for (SpecialWeaponType spc = SPC_FIRST; spc < SPC_COUNT; spc++) {
+        for (SpecialWeaponType spc :
+             magic_enum::enum_values<SpecialWeaponType>()) {
           PlayerPtr->SuperWeapon[spc].Enable(true, true);
           PlayerPtr->SuperWeapon[spc].Forced_Charge(true);
           Map.Add(RTTI_SPECIAL, spc);
@@ -269,8 +271,8 @@ void Debug_Key(unsigned input) {
 
       case KN_LBRACKET:
       case KN_F11:
-        if (MonoPage == DMONO_FIRST) {
-          MonoPage = DMonoType(DMONO_COUNT - 1);
+        if (MonoPage == magic_enum::enum_values<DMonoType>().front()) {
+          MonoPage = magic_enum::enum_values<DMonoType>().back();
         } else {
           MonoPage = DMonoType(MonoPage - 1);
         }
@@ -279,9 +281,10 @@ void Debug_Key(unsigned input) {
 
       case KN_RBRACKET:
       case KN_F12:
-        MonoPage = DMonoType(MonoPage + 1);
-        if (MonoPage == DMONO_COUNT) {
-          MonoPage = DMONO_FIRST;
+        if (MonoPage == magic_enum::enum_values<DMonoType>().back()) {
+          MonoPage = magic_enum::enum_values<DMonoType>().front();
+        } else {
+          MonoPage = DMonoType(MonoPage + 1);
         }
         DebugTimer.Set(0);
         break;
@@ -470,7 +473,7 @@ static void Benchmarks(MonoClass* mono) {
     mono->Set_Cursor(66, 4);
     mono->Printf("%7d", Benches[BENCH_SCENARIO].Value());
 
-    for (BenchType index = BENCH_FIRST; index < BENCH_COUNT; index++) {
+    for (BenchType index : magic_enum::enum_values<BenchType>()) {
       if (index != BENCH_RULES && index != BENCH_SCENARIO) {
         Benches[index].Reset();
       }
@@ -507,7 +510,7 @@ void Self_Regulate() {
     if (MonoClass::Is_Enabled()) {
       if (_first) {
         _first = false;
-        for (DMonoType index = DMONO_FIRST; index < DMONO_COUNT; index++) {
+        for (DMonoType index : magic_enum::enum_values<DMonoType>()) {
           MonoArray[index].Clear();
         }
       }

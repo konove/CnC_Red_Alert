@@ -279,7 +279,8 @@ class SidebarClass : public PowerClass {
     ** This points to the animation sequence which deals with special
     ** shapes which handle non-production based icons.
     */
-    static const void* SpecialShapes[SPC_COUNT];
+    static const void*
+        SpecialShapes[magic_enum::enum_count<SpecialWeaponType>()];
 
     /*
     **	This is the last theater that the special palette remap table was loaded

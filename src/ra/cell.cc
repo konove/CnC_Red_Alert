@@ -1965,7 +1965,9 @@ bool CellClass::Goodie_Check(FootClass* object) {
     *used as *	the base pool to determine the odds from.
     */
     int total_shares = 0;
-    for (int index = CRATE_FIRST; index < CRATE_COUNT; index++) {
+    for (int index = 0;
+         index < static_cast<int>(magic_enum::enum_count<CrateType>());
+         index++) {
       total_shares += CrateShares[index];
     }
 
@@ -1998,13 +2000,16 @@ bool CellClass::Goodie_Check(FootClass* object) {
       int pick = Random_Pick(1, total_shares);
 
       int share_count = 0;
-      for (powerup = CRATE_FIRST; powerup < CRATE_COUNT; powerup++) {
-        share_count += CrateShares[powerup];
+      bool found = false;
+      for (CrateType candidate : magic_enum::enum_values<CrateType>()) {
+        share_count += CrateShares[candidate];
         if (pick <= share_count) {
+          powerup = candidate;
+          found = true;
           break;
         }
       }
-      assert(powerup != CRATE_COUNT);
+      assert(found);
 
       /*
       **	Depending on what was picked, there might be an alternate goodie

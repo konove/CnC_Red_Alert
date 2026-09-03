@@ -72,7 +72,7 @@ class RadioClass : public MissionClass {
   **	This is a text representation of all the possible radio messages. This
   **	text is used for monochrome debug printing.
   */
-  static const char* Messages[RADIO_COUNT];
+  static const char* Messages[magic_enum::enum_count<RadioMessageType>()];
 
  public:
   /*---------------------------------------------------------------------

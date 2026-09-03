@@ -1506,7 +1506,7 @@ void IPX_Call_Back() {
 
 SourceType Source_From_Name(const char* name) {
   if (name) {
-    for (SourceType source = SOURCE_FIRST; source < SOURCE_COUNT; ++source) {
+    for (SourceType source : magic_enum::enum_values<SourceType>()) {
       if (stricmp(SourceName[source], name) == 0) {
         return source;
       }
@@ -1516,7 +1516,7 @@ SourceType Source_From_Name(const char* name) {
 }
 
 const char* Name_From_Source(const SourceType source) {
-  if (static_cast<unsigned>(source) < SOURCE_COUNT) {
+  if (static_cast<unsigned>(source) < magic_enum::enum_count<SourceType>()) {
     return SourceName[source];
   }
   return "None";
@@ -2467,7 +2467,6 @@ const TechnoTypeClass* Fetch_Techno_Type(const RTTIType type, const int id) {
     case RTTI_TERRAINTYPE:
     case RTTI_TRIGGER:
     case RTTI_TRIGGERTYPE:
-    case RTTI_COUNT:
     default:
       break;
   }
@@ -3075,7 +3074,7 @@ void* Hires_Load(char* name) {
 
 CrateType Crate_From_Name(const char* name) {
   if (name != nullptr) {
-    for (CrateType crate = CRATE_FIRST; crate < CRATE_COUNT; ++crate) {
+    for (CrateType crate : magic_enum::enum_values<CrateType>()) {
       if (stricmp(name, CrateNames[crate]) == 0) {
         return crate;
       }

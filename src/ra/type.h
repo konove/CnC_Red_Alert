@@ -762,7 +762,7 @@ class BuildingTypeClass : public TechnoTypeClass {
     int Count;  // Number of frames in this animation.
     int Rate;   // Number of ticks to delay between each frame.
   } AnimControlType;
-  AnimControlType Anims[BSTATE_COUNT];
+  AnimControlType Anims[magic_enum::enum_count<BStateType>()];
 
   /*---------------------------------------------------------------------------
   **	This is the building type explicit constructor.

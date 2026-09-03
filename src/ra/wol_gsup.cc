@@ -23,6 +23,7 @@
 #include <cstring>
 #include <ctime>
 
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/bigcheck.h"
 #include "ra/config.h"
@@ -2888,7 +2889,7 @@ void Debug_GlobalPacketType( const GlobalPacketType& gp1 )
 
 //***********************************************************************************************
 PlayerColorType PlayerColorTypeOf(RemapControlType* pColorRemap) {
-  for (PlayerColorType pcolor = PCOLOR_FIRST; pcolor < PCOLOR_COUNT; pcolor++) {
+  for (PlayerColorType pcolor : magic_enum::enum_values<PlayerColorType>()) {
     if (&ColorRemaps[pcolor] == pColorRemap) {
       return pcolor;
     }

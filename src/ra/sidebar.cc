@@ -96,6 +96,7 @@
 #include <new>
 #include <string>
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -173,7 +174,8 @@ SidebarClass::StripClass::SelectClass
 */
 void* SidebarClass::StripClass::LogoShapes = nullptr;
 const void* SidebarClass::StripClass::ClockShapes;
-const void* SidebarClass::StripClass::SpecialShapes[SPC_COUNT];
+const void* SidebarClass::StripClass::SpecialShapes
+    [magic_enum::enum_count<SpecialWeaponType>()];
 
 /***********************************************************************************************
  * SidebarClass::SidebarClass -- Default constructor for the sidebar. *
@@ -500,7 +502,7 @@ int SidebarClass::Which_Column(RTTIType type) {
  * HISTORY: * 05/19/1995 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Factory_Link(int factory, RTTIType type, int id) {
-  assert(static_cast<unsigned>(type) < RTTI_COUNT);
+  assert(static_cast<unsigned>(type) < magic_enum::enum_count<RTTIType>());
   assert(id >= 0);
 
   return Column[Which_Column(type)].Factory_Link(factory, type, id);
@@ -684,7 +686,7 @@ bool SidebarClass::Activate_Demolish(int control) {
  * HISTORY: * 11/17/1994 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Add(RTTIType type, int id) {
-  assert(static_cast<unsigned>(type) < RTTI_COUNT);
+  assert(static_cast<unsigned>(type) < magic_enum::enum_count<RTTIType>());
 
   /*
   ** Add the sidebar only if we're not in editor mode.
@@ -1068,7 +1070,7 @@ void SidebarClass::StripClass::One_Time(int) {
   */
   ClockShapes = MFCD::Retrieve("CLOCK.SHP");
 
-  for (SpecialWeaponType lp = SPC_FIRST; lp < SPC_COUNT; lp++) {
+  for (SpecialWeaponType lp : magic_enum::enum_values<SpecialWeaponType>()) {
     auto filename = std::string(SpecialWeaponFile[lp]) + "ICON";
     auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
@@ -1094,7 +1096,8 @@ void SidebarClass::StripClass::One_Time(int) {
  *=============================================================================================*/
 const void* SidebarClass::StripClass::Get_Special_Cameo(
     SpecialWeaponType type) {
-  if (static_cast<unsigned>(type) < SPC_COUNT) {
+  if (static_cast<unsigned>(type) <
+      magic_enum::enum_count<SpecialWeaponType>()) {
     return SpecialShapes[type];
   }
   return nullptr;
@@ -1695,7 +1698,8 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           // Get_Special_Cameo() returns null for an out of range special, but
           // SuperWeapon has no such guard. Range check before indexing it and
           // leave the defaults (not complete, stage zero) in place otherwise.
-          if (static_cast<unsigned>(spc) < SPC_COUNT) {
+          if (static_cast<unsigned>(spc) <
+              magic_enum::enum_count<SpecialWeaponType>()) {
             completed = PlayerPtr->SuperWeapon[spc].Is_Ready();
             stage = PlayerPtr->SuperWeapon[spc].Anim_Stage();
           }
@@ -1826,7 +1830,8 @@ bool SidebarClass::StripClass::Recalc() {
       ok = tech->Who_Can_Build_Me(true, false, PlayerPtr->Class->House) !=
            nullptr;
     } else {
-      if (static_cast<unsigned>(Buildables[index].BuildableID) < SPC_COUNT) {
+      if (static_cast<unsigned>(Buildables[index].BuildableID) <
+          magic_enum::enum_count<SpecialWeaponType>()) {
         ok = PlayerPtr->SuperWeapon[Buildables[index].BuildableID].Is_Present();
       } else {
         ok = false;
@@ -1977,7 +1982,8 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
     ** available then we should activate it.
     */
     if (flags & LEFTPRESS) {
-      if (static_cast<unsigned>(spc) < SPC_COUNT) {
+      if (static_cast<unsigned>(spc) <
+          magic_enum::enum_count<SpecialWeaponType>()) {
         if (PlayerPtr->SuperWeapon[spc].Is_Ready()) {
           if (spc != SPC_SONAR_PULSE) {
             Map.IsTargettingMode = spc;

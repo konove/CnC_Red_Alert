@@ -56,6 +56,7 @@
 
 #include <cassert>
 
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/bench_util.h"
 #include "ra/config.h"
@@ -403,10 +404,8 @@ void MissionClass::Assign_Mission(MissionType order) {
  *member function.                                     *
  *=============================================================================================*/
 MissionType MissionClass::Mission_From_Name(const char* name) {
-  MissionType order;
-
   if (name) {
-    for (order = MISSION_FIRST; order < MISSION_COUNT; order++) {
+    for (MissionType order : magic_enum::enum_values<MissionType>()) {
       if (stricmp(Missions[order], name) == 0) {
         return order;
       }

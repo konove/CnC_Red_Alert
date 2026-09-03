@@ -207,12 +207,10 @@ enum RTTIType {
   RTTI_UNIT,
   RTTI_UNITTYPE,
   RTTI_VESSEL,
-  RTTI_VESSELTYPE,
-
-  RTTI_COUNT
+  RTTI_VESSELTYPE
 };
 
-  // These are the difficulty settings of the game.
+// These are the difficulty settings of the game.
 enum DiffType { DIFF_EASY, DIFF_NORMAL, DIFF_HARD };
 inline constexpr int kDiffCount = DIFF_HARD + 1;
 
@@ -427,14 +425,11 @@ enum StateType {
 **	is to perform.
 */
 enum UrgencyType {
-  URGENCY_NONE,      // No action on this matter is needed or desired.
-  URGENCY_LOW,       // Minimal attention requested.
-  URGENCY_MEDIUM,    //	Normal attention requested.
-  URGENCY_HIGH,      // High attention requested.
-  URGENCY_CRITICAL,  // This matter must be addressed immediately.
-
-  URGENCY_COUNT,
-  URGENCY_FIRST = URGENCY_CRITICAL
+  URGENCY_NONE,     // No action on this matter is needed or desired.
+  URGENCY_LOW,      // Minimal attention requested.
+  URGENCY_MEDIUM,   //	Normal attention requested.
+  URGENCY_HIGH,     // High attention requested.
+  URGENCY_CRITICAL  // This matter must be addressed immediately.
 };
 
 /**********************************************************************
@@ -452,10 +447,7 @@ enum StrategyType {
   STRATEGY_RAISE_MONEY,     // Money is low, emergency raise cash.
   STRATEGY_RAISE_POWER,     // Money is low, raise power by selling.
   STRATEGY_LOWER_POWER,     // Too much power, sell power plants.
-  STRATEGY_ATTACK,          // General charge the enemy attack logic.
-
-  STRATEGY_COUNT,
-  STRATEGY_FIRST = STRATEGY_BUILD_POWER
+  STRATEGY_ATTACK           // General charge the enemy attack logic.
 };
 
 /**********************************************************************
@@ -500,10 +492,7 @@ enum CrateType {
   CRATE_ICBM,
   CRATE_TIMEQUAKE,
   CRATE_INVULN,
-  CRATE_VORTEX,
-
-  CRATE_COUNT,
-  CRATE_FIRST = 0
+  CRATE_VORTEX
 };
 
 /**********************************************************************
@@ -511,7 +500,9 @@ enum CrateType {
 *thread *	with these weapons is that they are controlled through the
 *sidebar *	mechanism.
 */
-enum SpecialWeaponType {
+// Fixed underlying type so that kSpcChrono2, one past the last weapon, is a
+// representable value.
+enum SpecialWeaponType : int {
   SPC_NONE = -1,
   SPC_SONAR_PULSE,    // Momentarily reveals submarines.
   SPC_NUCLEAR_BOMB,   //	Tactical nuclear weapon.
@@ -522,12 +513,11 @@ enum SpecialWeaponType {
   SPC_IRON_CURTAIN,   // Bestow invulnerability on a unit/building
   SPC_GPS,            // give allies free unjammable radar.
 
-  SPC_COUNT,
-  SPC_FIRST = 0,
   SPC_ANY = 1
 };
 // Second stage of chronosphere targeting: picking the destination.
-inline constexpr SpecialWeaponType kSpcChrono2 = SPC_COUNT;
+inline constexpr SpecialWeaponType kSpcChrono2 =
+    static_cast<SpecialWeaponType>(magic_enum::enum_count<SpecialWeaponType>());
 
 /**********************************************************************
 **	The computer AI is categorized by the following enumerations. If
@@ -553,9 +543,7 @@ enum MoveType {
   MOVE_MOVING_BLOCK,  // Blocked, but only temporarily.
   MOVE_DESTROYABLE,   // Enemy unit or building is blocking.
   MOVE_TEMP,          // Blocked by friendly unit.
-  MOVE_NO,            // Strictly prohibited terrain.
-
-  MOVE_COUNT
+  MOVE_NO             // Strictly prohibited terrain.
 };
 
 /**********************************************************************
@@ -717,10 +705,7 @@ enum MissionType {
   MISSION_REPAIR,          // Repair process mission.
   MISSION_RESCUE,
   MISSION_MISSILE,
-  MISSION_HARMLESS,  // Sit around and don't appear like a threat.
-
-  MISSION_COUNT,
-  MISSION_FIRST = 0
+  MISSION_HARMLESS  // Sit around and don't appear like a threat.
 };
 
 /**********************************************************************
@@ -735,9 +720,7 @@ enum BStateType {
   BSTATE_ACTIVE,        // Animation when building is "doing its thing".
   BSTATE_FULL,          // Special alternate active state.
   BSTATE_AUX1,          // Auxiliary animation.
-  BSTATE_AUX2,          // Auxiliary animation.
-
-  BSTATE_COUNT
+  BSTATE_AUX2           // Auxiliary animation.
 };
 
 /**********************************************************************
@@ -780,9 +763,7 @@ enum ActionType {
   ACTION_GREPAIR,        // Enter and complete repair building.
   ACTION_NO_DEPLOY,
   ACTION_NO_ENTER,
-  ACTION_NO_GREPAIR,
-
-  ACTION_COUNT
+  ACTION_NO_GREPAIR
 };
 
 /**********************************************************************
@@ -889,11 +870,7 @@ enum PlayerColorType {
   PCOLOR_BROWN,
   PCOLOR_TYPE,
   PCOLOR_REALLY_BLUE,
-  PCOLOR_DIALOG_BLUE,
-
-  PCOLOR_COUNT,
-  PCOLOR_FIRST = 0,
-  PCOLOR_LAST = PCOLOR_COUNT - 1
+  PCOLOR_DIALOG_BLUE
 };
 
 /**********************************************************************
@@ -914,9 +891,7 @@ enum ScenarioPlayerType {
   SCEN_PLAYER_USSR,
   SCEN_PLAYER_JP,
   SCEN_PLAYER_2PLAYER,
-  SCEN_PLAYER_MPLAYER,
-  SCEN_PLAYER_COUNT,
-  SCEN_PLAYER_FIRST = 0
+  SCEN_PLAYER_MPLAYER
 };
 
 inline ScenarioPlayerType operator++(ScenarioPlayerType&, int);
@@ -924,13 +899,7 @@ inline ScenarioPlayerType operator++(ScenarioPlayerType&, int);
 /**********************************************************************
 ** These are the directional parameters for a scenario.
 */
-enum ScenarioDirType {
-  SCEN_DIR_NONE = -1,
-  SCEN_DIR_EAST,
-  SCEN_DIR_WEST,
-  SCEN_DIR_COUNT,
-  SCEN_DIR_FIRST = 0
-};
+enum ScenarioDirType { SCEN_DIR_NONE = -1, SCEN_DIR_EAST, SCEN_DIR_WEST };
 
 inline ScenarioDirType operator++(ScenarioDirType&, int);
 
@@ -943,9 +912,7 @@ enum ScenarioVarType {
   SCEN_VAR_B,
   SCEN_VAR_C,
   SCEN_VAR_D,
-  SCEN_VAR_COUNT,  // comes before the Lose value!
-  SCEN_VAR_LOSE,
-  SCEN_VAR_FIRST = 0
+  SCEN_VAR_LOSE
 };
 
 /**********************************************************************
@@ -1886,10 +1853,7 @@ enum DoType {
   DO_SALUTE1,
   DO_GESTURE2,
   DO_SALUTE2,
-  DO_DOG_MAUL,
-
-  DO_COUNT,
-  DO_FIRST = 0
+  DO_DOG_MAUL
 };
 
 inline DoType operator++(DoType&, int);
@@ -1950,9 +1914,7 @@ enum RadioMessageType {
   RADIO_CANT,            // "Circumstances prevent success."
   RADIO_ALL_DONE,        // "I have completed the task."
   RADIO_NEED_REPAIR,     // "Are you in need of service depot work?"
-  RADIO_ON_DEPOT,        // "Are you sitting on a service depot?"
-
-  RADIO_COUNT
+  RADIO_ON_DEPOT         // "Are you sitting on a service depot?"
 };
 
 /****************************************************************************
@@ -2004,10 +1966,7 @@ enum QuarryType {
   QUARRY_DEFENSE,     // Attack base defense buildings.
   QUARRY_THREAT,      // Attack enemies near friendly base.
   QUARRY_POWER,       // Attack power facilities.
-  QUARRY_FAKES,       // Prefer to attack fake buildings.
-
-  QUARRY_COUNT,
-  QUARRY_FIRST = 0
+  QUARRY_FAKES        // Prefer to attack fake buildings.
 };
 
 /****************************************************************************
@@ -2024,10 +1983,7 @@ enum FormationType {
   FORMATION_WEDGE_S,  // Wedge shape.
   FORMATION_WEDGE_W,  // Wedge shape.
   FORMATION_LINE_NS,  // Column formation.
-  FORMATION_LINE_EW,  // Line formation.
-
-  FORMATION_COUNT,
-  FORMATION_FIRST = 0
+  FORMATION_LINE_EW   // Line formation.
 };
 
 /****************************************************************************
@@ -2041,9 +1997,7 @@ enum SelectEnum {
   SELECT_UNIT,                    // Big unit selection box.
   SELECT_BUILDING = SELECT_UNIT,  // Custom box for buildings.
   SELECT_TERRAIN = SELECT_UNIT,   // Custom box for terrain objects.
-  SELECT_WRENCH,                  // A building is repairing overlay graphic.
-
-  SELECT_COUNT
+  SELECT_WRENCH                   // A building is repairing overlay graphic.
 };
 
 /****************************************************************************
@@ -2124,9 +2078,7 @@ enum MouseType {
   MOUSE_NO_ENTER,
   MOUSE_NO_GREPAIR,
   MOUSE_CHRONO_SELECT,
-  MOUSE_CHRONO_DEST,
-
-  MOUSE_COUNT
+  MOUSE_CHRONO_DEST
 };
 
 /**********************************************************************
@@ -2248,15 +2200,7 @@ enum ArmorType {
 /**********************************************************************
 **	These are the identifiers for the various monochrome debug screens.
 */
-enum DMonoType {
-  DMONO_OBJECT,
-  DMONO_HOUSE,
-  DMONO_STRESS,
-  DMONO_EVENTS,
-
-  DMONO_COUNT,
-  DMONO_FIRST = 0
-};
+enum DMonoType { DMONO_OBJECT, DMONO_HOUSE, DMONO_STRESS, DMONO_EVENTS };
 
 /*
 **	Performance benchmark tracking identifiers.
@@ -2286,11 +2230,8 @@ enum BenchType {
   BENCH_BLIT_DISPLAY,    // DirectX or shadow blit of hidpage to seenpage.
   BENCH_MISSION,         // Mission list processing.
 
-  BENCH_RULES,     // Processing of the rules.ini file.
-  BENCH_SCENARIO,  // Processing of the scenario.ini file.
-
-  BENCH_COUNT,
-  BENCH_FIRST = 0
+  BENCH_RULES,    // Processing of the rules.ini file.
+  BENCH_SCENARIO  // Processing of the scenario.ini file.
 };
 
 // Working MCGA colors that give a pleasing effect for beveled edges and
@@ -2874,10 +2815,7 @@ enum SourceType {
   SOURCE_EAST,       // From east edge.
   SOURCE_SOUTH,      // From south edge.
   SOURCE_WEST,       // From west edge.
-  SOURCE_AIR,        // Dropped by air (someplace).
-
-  SOURCE_COUNT,
-  SOURCE_FIRST = 0
+  SOURCE_AIR         // Dropped by air (someplace).
 };
 
 /****************************************************************************
@@ -2974,20 +2912,6 @@ inline constexpr int kMouseColor = 16;
 *pairs. *	For dialog box shapes, they are left image / right image paired.
 *For buttons, *	they are up / down paired.
 */
-enum OptionControlType {
-  OPTION_NONE = -1,          // No fancy shmancy shape.
-  OPTION_DIALOG = 0,         // Small dialog boxes.
-  OPTION_CONTROLS = 2,       // Large dialog boxes, game controls.
-  OPTION_DELETE = 4,         // Delete,Load,Save game.
-  OPTION_SERIAL = 6,         // Serial dialog.
-  OPTION_PHONE = 8,          // Phone dialog.
-  OPTION_VISUAL = 10,        // Visual dialog.
-  OPTION_NETWORK = 12,       // Network dialog.
-  OPTION_JOIN_NETWORK = 14,  // Join network dialog.
-  OPTION_SOUND = 16,         // Sound controls.
-
-  OPTION_COUNT
-};
 
 inline constexpr int kMaxLogLevel = 10;
 

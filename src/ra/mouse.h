@@ -102,7 +102,7 @@ class MouseClass : public ScrollClass {
   **	The control frames and rates for the various mouse pointers are stored
   **	in this static array.
   */
-  static MouseStruct MouseControl[MOUSE_COUNT];
+  static MouseStruct MouseControl[magic_enum::enum_count<MouseType>()];
 
  public:
   /*

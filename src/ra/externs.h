@@ -144,7 +144,8 @@ extern GraphicBufferClass VQ640;  // 640x400 staging page for hi-res movies
 /*
 **	Dynamic global variables (these change or are initialized at run time).
 */
-extern MissionControlClass MissionControl[MISSION_COUNT];
+extern MissionControlClass
+    MissionControl[magic_enum::enum_count<MissionType>()];
 extern const char* TutorialTextData;
 extern uint16_t TutorialTextOffsets[225];
 extern Buffer* TheaterBuffer;
@@ -162,7 +163,7 @@ extern RandomStraw CryptRandom;
 extern RandomClass local_rng;
 extern CarryoverClass* Carryover;
 extern ScenarioClass Scen;
-extern RemapControlType ColorRemaps[PCOLOR_COUNT];
+extern RemapControlType ColorRemaps[magic_enum::enum_count<PlayerColorType>()];
 extern RemapControlType MetalScheme;
 extern RemapControlType GreyScheme;
 extern VersionClass VerNum;
@@ -185,7 +186,7 @@ extern GameOptionsClass Options;
 extern LogicClass Logic;
 extern MapEditClass Map;
 extern ScoreClass Score;
-extern MonoClass MonoArray[DMONO_COUNT];
+extern MonoClass MonoArray[magic_enum::enum_count<DMonoType>()];
 extern MFCD* TheaterData;
 extern MFCD* MoviesMix;
 extern MFCD* GeneralMix;
@@ -229,7 +230,7 @@ extern TFixedIHeapClass<TerrainTypeClass> TerrainTypes;
 extern TFixedIHeapClass<OverlayTypeClass> OverlayTypes;
 extern TFixedIHeapClass<SmudgeTypeClass> SmudgeTypes;
 
-extern FixedIHeapClass* HeapPointers[RTTI_COUNT];
+extern FixedIHeapClass* HeapPointers[magic_enum::enum_count<RTTIType>()];
 
 extern TFixedIHeapClass<WeaponTypeClass> Weapons;
 extern TFixedIHeapClass<WarheadTypeClass> Warheads;

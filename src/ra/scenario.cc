@@ -1700,7 +1700,6 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
   char c_player;  // character representing player type
   char c_dir;     // character representing direction type
   char c_var;     // character representing variation type
-  ScenarioVarType i;
   char fname[_MAX_FNAME + _MAX_EXT];
 
   /*
@@ -1758,18 +1757,24 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
     /*
     ** Find which variations are available for this scenario
     */
-    for (i = SCEN_VAR_FIRST; i < SCEN_VAR_COUNT; i++) {
-      sprintf(fname, "SC%c%02d%c%c.INI", c_player, scenario, c_dir, 'A' + i);
+    int available = 0;  // Variations A.. that exist, in order.
+    for (ScenarioVarType candidate :
+         magic_enum::enum_values<ScenarioVarType>()) {
+      if (candidate == SCEN_VAR_LOSE) {
+        break;
+      }
+      sprintf(fname, "SC%c%02d%c%c.INI", c_player, scenario, c_dir,
+              'A' + candidate);
       if (!CCFileClass(fname).Is_Available()) {
         break;
       }
+      available++;
     }
 
-    if (i == SCEN_VAR_FIRST) {
+    if (available == 0) {
       c_var = 'X';  // indicates an error
     } else {
-      c_var = static_cast<char>('A' + Random_Pick(0, i - 1));
-      //			ScenVar = (ScenarioVarType)i;
+      c_var = static_cast<char>('A' + Random_Pick(0, available - 1));
     }
   } else {
     switch (var) {

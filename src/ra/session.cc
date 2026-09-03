@@ -57,7 +57,11 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>  // for station ID computation
 
+#include "base/types.h"
+#include "magic_enum/magic_enum.hpp"
+#include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -84,11 +88,6 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/wwstd.h"
 #include "tech/rawfile.h"
-
-#include <ctime>  // for station ID computation
-
-#include "port/ex_string.h"
-#include "base/types.h"
 
 // #include "WolDebug.h"
 
@@ -178,8 +177,8 @@ SessionClass::SessionClass() {
   UniqueID = 0;
 
   Handle[0] = 0;
-  PrefColor = PCOLOR_FIRST;
-  ColorIdx = PCOLOR_FIRST;
+  PrefColor = magic_enum::enum_values<PlayerColorType>().front();
+  ColorIdx = magic_enum::enum_values<PlayerColorType>().front();
   House = HOUSE_GOOD;
   ObiWan = 0;
   Solo = 0;
