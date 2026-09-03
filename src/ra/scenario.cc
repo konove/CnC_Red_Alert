@@ -2008,11 +2008,10 @@ bool Read_Scenario_INI(char* fname, bool) {
     if (Scen.ScenarioName[2] != 'M' || Scen.Scenario >= 25) {
       GamePalette.Set();
       WWMessageBox().Process(TXT_SCENARIO_ERROR, TXT_OK);
-#ifdef RELEASE_VERSION
-      return false;
-#endif
+      if constexpr (config::kReleaseVersion) {
+        return false;
+      }
     }
-    //		}
   }
 
   /*

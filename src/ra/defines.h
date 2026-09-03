@@ -53,21 +53,6 @@
 //	- Language define is now passed in from the makefile. -
 
 /**********************************************************************
-**	Controls the nature of the game and its abilities. Only define
-**	one of these values.
-**
-**	Internal version -- complete with scenario editor.
-**	Playtest version -- no editor but does have minimal cheat keys.
-**	Release version -- no editor or cheat keys -- all debugging info
-*removed.
-*/
-// Build version controlled via .env file (see .env.example)
-// Defaults to Release if nothing defined
-#if !defined(INTERNAL_VERSION) && !defined(PLAYTEST_VERSION)
-#define RELEASE_VERSION
-#endif
-
-/**********************************************************************
 ** ColinM
 ** Set this to enable dongle protection
 */
