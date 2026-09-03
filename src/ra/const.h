@@ -96,13 +96,13 @@ constexpr const char* SourceName[magic_enum::enum_count<SourceType>()] = {
 /***************************************************************************
 **	These are the text names for the various armor types a unit may possess.
 */
-constexpr const char* ArmorName[ARMOR_COUNT] = {"none", "wood", "light",
-                                                "heavy", "concrete"};
+constexpr const char* ArmorName[magic_enum::enum_count<ArmorType>()] = {
+    "none", "wood", "light", "heavy", "concrete"};
 
 /***************************************************************************
 **	The list of VQ filenames.
 */
-constexpr const char* VQName[VQ_COUNT] = {
+constexpr const char* VQName[magic_enum::enum_count<VQType>()] = {
     "AAGUN",    "MIG",      "SFROZEN",  "AIRFIELD", "BATTLE",   "BMAP",
     "BOMBRUN",  "DPTHCHRG", "GRVESTNE", "MONTPASS", "MTNKFACT", "CRONTEST",
     "OILDRUM",  "ALLYEND",  "RADRRAID", "SHIPYARD", "SHORBOMB", "SITDUCK",

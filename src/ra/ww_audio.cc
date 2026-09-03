@@ -53,6 +53,7 @@
 #include <string>
 
 #include "absl/log/log.h"
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/ccfile.h"
 #include "ra/config.h"
@@ -81,7 +82,7 @@ static struct {
   const char* Name;   // Digitized voice file name.
   int Priority;       // Playback priority of this sample.
   ContextType Where;  // In what game context does this sample exist.
-} SoundEffectName[VOC_COUNT] = {
+} SoundEffectName[magic_enum::enum_count<VocType>()] = {
 
     /*
     **	Civilian voices (technicians too).
@@ -400,7 +401,7 @@ VocType Voc_From_Name(const char* name) {
     return VOC_NONE;
   }
 
-  for (VocType voc = VOC_FIRST; voc < VOC_COUNT; voc++) {
+  for (VocType voc : magic_enum::enum_values<VocType>()) {
     if (stricmp(name, SoundEffectName[voc].Name) == 0) {
       return voc;
     }
@@ -523,9 +524,11 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation,
  *=============================================================================================*/
 int Sound_Effect(VocType voc, fixed volume, int variation,
                  signed short pan_value, HousesType house) {
-  if (voc != VOC_NONE && (voc < 0 || voc >= VOC_COUNT)) {
+  if (voc != VOC_NONE &&
+      (voc < 0 || voc >= static_cast<int>(magic_enum::enum_count<VocType>()))) {
     DLOG(WARNING) << "Sound_Effect: invalid voc=" << static_cast<int>(voc)
-                  << ", valid range is [0, " << static_cast<int>(VOC_COUNT) - 1
+                  << ", valid range is [0, "
+                  << static_cast<int>(magic_enum::enum_count<VocType>()) - 1
                   << "]";
     return -1;
   }
@@ -609,7 +612,7 @@ int Sound_Effect(VocType voc, fixed volume, int variation,
 /*
 **	This elaborates all the EVA speech voices.
 */
-static const char* Speech[VOX_COUNT] = {
+static const char* Speech[magic_enum::enum_count<VoxType>()] = {
     "MISNWON1",  //	VOX_ACCOMPLISHED
                  // mission accomplished
     "MISNLST1",  //	VOX_FAIL

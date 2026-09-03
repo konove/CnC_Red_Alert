@@ -51,6 +51,7 @@
 #include <filesystem>
 #include <string>
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/conquer.h"
 #include "ra/const.h"
 #include "ra/defines.h"
@@ -2174,7 +2175,7 @@ void AnimTypeClass::Init_Heap() {
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void AnimTypeClass::One_Time() {
-  for (AnimType index = ANIM_FIRST; index < ANIM_COUNT; ++index) {
+  for (AnimType index : magic_enum::enum_values<AnimType>()) {
     const AnimTypeClass& anim = As_Reference(index);
 
     if (!anim.IsTheater) {
@@ -2214,7 +2215,7 @@ void AnimTypeClass::One_Time() {
  *=============================================================================================*/
 void AnimTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
-    for (AnimType index = ANIM_FIRST; index < ANIM_COUNT; index++) {
+    for (AnimType index : magic_enum::enum_values<AnimType>()) {
       AnimTypeClass& anim = As_Reference(index);
 
       if (anim.IsTheater) {

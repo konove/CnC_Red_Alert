@@ -62,6 +62,7 @@
 #include <cassert>
 #include <cstddef>
 
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/bench_util.h"
 #include "ra/building.h"
@@ -116,7 +117,7 @@ AnimType Anim_From_Name(const char* name) {
     return ANIM_NONE;
   }
 
-  for (AnimType anim = ANIM_FIRST; anim < ANIM_COUNT; anim++) {
+  for (AnimType anim : magic_enum::enum_values<AnimType>()) {
     if (stricmp(AnimTypeClass::As_Reference(anim).IniName, name) == 0) {
       return anim;
     }

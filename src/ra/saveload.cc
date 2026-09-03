@@ -1022,7 +1022,7 @@ bool Load_Game(int id) {
     }
   }
   if (Scen.TransitTheme == THEME_NONE) {
-    Theme.Queue_Song(THEME_FIRST);
+    Theme.Queue_Song(magic_enum::enum_values<ThemeType>().front());
   } else {
     Theme.Queue_Song(Scen.TransitTheme);
   }

@@ -284,8 +284,8 @@ bool Init_Game(int, char*[]) {
   BuildingTypes.Set_Heap(magic_enum::enum_count<StructType>());
   AircraftTypes.Set_Heap(magic_enum::enum_count<AircraftType>());
   InfantryTypes.Set_Heap(magic_enum::enum_count<InfantryType>());
-  BulletTypes.Set_Heap(BULLET_COUNT);
-  AnimTypes.Set_Heap(ANIM_COUNT);
+  BulletTypes.Set_Heap(magic_enum::enum_count<BulletType>());
+  AnimTypes.Set_Heap(magic_enum::enum_count<AnimType>());
   UnitTypes.Set_Heap(magic_enum::enum_count<UnitType>());
   VesselTypes.Set_Heap(magic_enum::enum_count<VesselType>());
   TemplateTypes.Set_Heap(magic_enum::enum_count<TemplateType>());
@@ -642,7 +642,7 @@ bool Select_Game(bool /*fade*/) {
                      << magic_enum::enum_name(Scen.CDifficulty);
 
           Theme.Fade_Out();
-          Theme.Queue_Song(THEME_FIRST);
+          Theme.Queue_Song(magic_enum::enum_values<ThemeType>().front());
           Session.Type = GAME_NORMAL;
           process = false;
           break;
@@ -727,7 +727,7 @@ bool Select_Game(bool /*fade*/) {
         */
         case SEL_LOAD_MISSION:
           if (LoadOptionsClass(LoadOptionsClass::LOAD).Process()) {
-            Theme.Queue_Song(THEME_FIRST);
+            Theme.Queue_Song(magic_enum::enum_values<ThemeType>().front());
             process = false;
             gameloaded = true;
           } else {
@@ -1139,15 +1139,13 @@ bool Select_Game(bool /*fade*/) {
  *Alert and direction control.                            *
  *=============================================================================================*/
 static void Play_Intro(bool sequenced) {
-  static VQType _counter = VQ_FIRST;
+  static VQType _counter = magic_enum::enum_values<VQType>().front();
 
   Keyboard->Clear();
   if (sequenced) {
-    if (_counter <= VQ_FIRST) {
-      _counter = VQ_COUNT;
-    }
-    if (_counter == VQ_COUNT) {
-      _counter--;
+    // Play the movies from the last down to the first, then wrap.
+    if (_counter <= magic_enum::enum_values<VQType>().front()) {
+      _counter = magic_enum::enum_values<VQType>().back();
     }
     if (_counter == VQ_REDINTRO) {
       _counter--;

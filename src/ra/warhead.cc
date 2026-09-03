@@ -47,6 +47,7 @@
 
 #include <cstring>
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/defines.h"
 #include "ra/heap.h"
 #include "ra/jshell.h"
@@ -82,7 +83,7 @@ WarheadTypeClass::WarheadTypeClass(const char* name)
       IsOrganic(false),
       ExplosionSet(0),
       InfantryDeath(0) {
-  for (ArmorType armor = ARMOR_FIRST; armor < ARMOR_COUNT; armor++) {
+  for (ArmorType armor : magic_enum::enum_values<ArmorType>()) {
     Modifier[armor] = fixed(1);
   }
 }
@@ -179,7 +180,7 @@ bool WarheadTypeClass::Read_INI(CCINIClass& ini) {
     if (ini.Get_String(Name(), "Verses", "100%%,100%%,100%%,100%%,100%%",
                        buffer, sizeof(buffer))) {
       char* aval = strtok(buffer, ",");
-      for (ArmorType armor = ARMOR_FIRST; armor < ARMOR_COUNT; armor++) {
+      for (ArmorType armor : magic_enum::enum_values<ArmorType>()) {
         Modifier[armor] = fixed::FromString(aval);
         aval = strtok(nullptr, ",");
       }

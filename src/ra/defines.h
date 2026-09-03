@@ -164,10 +164,7 @@ enum VQType {
   VQ_SIZZLE,
   VQ_SIZZLE2,
   VQ_ANTEND,
-  VQ_ANTINTRO,
-
-  VQ_COUNT,
-  VQ_FIRST = 0
+  VQ_ANTINTRO
 };
 
 /**********************************************************************
@@ -596,11 +593,7 @@ enum ThemeType {
   THEME_RPT,
   THEME_SEARCH,
   THEME_TRACTION,
-  THEME_WASTELND,
-
-  THEME_COUNT,
-  THEME_LAST = THEME_COUNT - 1,
-  THEME_FIRST = 0
+  THEME_WASTELND
 };
 
 /**********************************************************************
@@ -953,10 +946,7 @@ enum BulletType {
   BULLET_AAMISSILE,
   BULLET_GPS_SATELLITE,
   BULLET_NUKE_UP,
-  BULLET_NUKE_DOWN,
-
-  BULLET_COUNT,
-  BULLET_FIRST = 0
+  BULLET_NUKE_DOWN
 };
 
 /**********************************************************************
@@ -1821,10 +1811,7 @@ enum AnimType {
   ANIM_PARA_BOMB,
   ANIM_MINE_EXP1,
 
-  ANIM_ANT_DEATH,
-
-  ANIM_COUNT,
-  ANIM_FIRST = 0
+  ANIM_ANT_DEATH
 };
 
 /****************************************************************************
@@ -2117,9 +2104,7 @@ enum WarheadType {
   WARHEAD_TESLA,         // Electrocution warhead for infantrymen
   WARHEAD_DOG,           // Slavering attack beast mauling infantryman
   WARHEAD_NUKE,          // Nuclear missile
-  WARHEAD_MECHANICAL,    // repair weapon for vehicles
-  WARHEAD_COUNT,
-  WARHEAD_FIRST = 0
+  WARHEAD_MECHANICAL     // repair weapon for vehicles
 };
 
 /**********************************************************************
@@ -2174,10 +2159,7 @@ enum WeaponType {
   WEAPON_TTANKZAP,
   WEAPON_APTUSK,
   WEAPON_DEMOCHARGE,
-  WEAPON_CARRIER,
-
-  WEAPON_COUNT,
-  WEAPON_FIRST = 0
+  WEAPON_CARRIER
 };
 
 /**********************************************************************
@@ -2191,10 +2173,7 @@ enum ArmorType {
   ARMOR_WOOD,      // Vulnerable to HE and Fire.
   ARMOR_ALUMINUM,  // Vulnerable to AP and SA.
   ARMOR_STEEL,     // Vulnerable to AP.
-  ARMOR_CONCRETE,  // Vulnerable to HE and AP.
-
-  ARMOR_COUNT,
-  ARMOR_FIRST = 0
+  ARMOR_CONCRETE   // Vulnerable to HE and AP.
 };
 
 /**********************************************************************
@@ -2665,10 +2644,7 @@ enum VocType {
   VOC_MECH_FIXIT1,
   VOC_MAD_CHARGE,
   VOC_MAD_EXPLODE,
-  VOC_SHOCK_TROOP1,
-
-  VOC_COUNT,
-  VOC_FIRST = 0
+  VOC_SHOCK_TROOP1
 };
 
 // Sound effects outgrow magic_enum's default window of 127.
@@ -2798,10 +2774,7 @@ enum VoxType : int8_t {
   VOX_ABOMB_AVAILABLE,
   VOX_ALLIED_REINFORCEMENTS,
   VOX_SAVE1,
-  VOX_LOAD1,
-
-  VOX_COUNT,
-  VOX_FIRST = 0
+  VOX_LOAD1
 };
 
 /****************************************************************************

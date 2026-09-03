@@ -768,7 +768,7 @@ WarheadType CCINIClass::Get_WarheadType(const char* section, const char* entry,
   char buffer[128];
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    for (WarheadType wh = WARHEAD_FIRST; wh < WARHEAD_COUNT; wh++) {
+    for (WarheadType wh : magic_enum::enum_values<WarheadType>()) {
       if (stricmp(WarheadTypeClass::As_Pointer(wh)->Name(), buffer) == 0) {
         return wh;
       }
@@ -886,7 +886,7 @@ BulletType CCINIClass::Get_BulletType(const char* section, const char* entry,
   char buffer[128];
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    for (BulletType proj = BULLET_FIRST; proj < BULLET_COUNT; proj++) {
+    for (BulletType proj : magic_enum::enum_values<BulletType>()) {
       if (stricmp(BulletTypeClass::As_Reference(proj).Name(), buffer) == 0) {
         //			if (stricmp(ProjectileNames[proj], buffer) == 0)
         //{
@@ -1009,7 +1009,7 @@ VQType CCINIClass::Get_VQType(const char* section, const char* entry,
   char buffer[128];
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    for (VQType vq = VQ_FIRST; vq < VQ_COUNT; vq++) {
+    for (VQType vq : magic_enum::enum_values<VQType>()) {
       if (stricmp(buffer, VQName[vq]) == 0) {
         return vq;
       }

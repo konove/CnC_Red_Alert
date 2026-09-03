@@ -54,9 +54,11 @@
 
 #include "ra/theme.h"
 
+#include <iterator>
 #include <cstring>
 #include <filesystem>
 
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/ccfile.h"
 #include "ra/conquer.h"
@@ -71,11 +73,11 @@
 #include "session.h"
 #include "tech/fixed.h"
 
-
 /*
 **	These are the actual filename list for the theme sample files.
 */
-ThemeClass::ThemeControl ThemeClass::_themes[THEME_COUNT] = {
+ThemeClass::ThemeControl ThemeClass::_themes[magic_enum::enum_count<
+    ThemeType>()] = {
     {"BIGF226M", TXT_THEME_BIGF, 0, 307, true, false, true, kHouseFlagAllies},
     {"CRUS226M", TXT_THEME_CRUS, 0, 222, true, false, true, kHouseFlagSoviet},
     {"FAC1226M", TXT_THEME_FAC1, 0, 271, true, false, true, kHouseFlagAllies},
@@ -187,7 +189,7 @@ ThemeClass::ThemeClass()
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 const char* ThemeClass::Full_Name(ThemeType theme) const {
-  if (theme >= THEME_FIRST && theme < THEME_COUNT) {
+  if (static_cast<unsigned>(theme) < magic_enum::enum_count<ThemeType>()) {
     return Text_String(_themes[theme].Fullname);
   }
   return nullptr;
@@ -258,7 +260,8 @@ ThemeType ThemeClass::Next_Song(ThemeType theme) const {
       */
       ThemeType newtheme;
       do {
-        newtheme = Sim_Random_Pick(THEME_FIRST, THEME_LAST);
+        newtheme = Sim_Random_Pick(magic_enum::enum_values<ThemeType>().front(),
+                                   magic_enum::enum_values<ThemeType>().back());
       } while (newtheme == theme || !Is_Allowed(newtheme));
       theme = newtheme;
 
@@ -268,8 +271,8 @@ ThemeType ThemeClass::Next_Song(ThemeType theme) const {
       */
       do {
         theme++;
-        if (theme > THEME_LAST) {
-          theme = THEME_FIRST;
+        if (theme > magic_enum::enum_values<ThemeType>().back()) {
+          theme = magic_enum::enum_values<ThemeType>().front();
         }
       } while (!Is_Allowed(theme));
     }
@@ -379,7 +382,7 @@ int ThemeClass::Play_Song(ThemeType theme) {
  *support.                                                 *
  *=============================================================================================*/
 const char* ThemeClass::Theme_File_Name(ThemeType theme) {
-  if (theme >= THEME_FIRST && theme < THEME_COUNT) {
+  if (static_cast<unsigned>(theme) < magic_enum::enum_count<ThemeType>()) {
     static std::string name;
     name = std::filesystem::path(_themes[theme].Name)
                .replace_extension(".AUD")
@@ -408,7 +411,7 @@ const char* ThemeClass::Theme_File_Name(ThemeType theme) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 int ThemeClass::Track_Length(ThemeType theme) const {
-  if (static_cast<unsigned>(theme) < THEME_COUNT) {
+  if (static_cast<unsigned>(theme) < magic_enum::enum_count<ThemeType>()) {
     return _themes[theme].Duration;
   }
   return 0;
@@ -484,7 +487,7 @@ int ThemeClass::Still_Playing() const {
  *playlist checking.                                     *
  *=============================================================================================*/
 bool ThemeClass::Is_Allowed(ThemeType index) const {
-  if (static_cast<unsigned>(index) >= THEME_COUNT) {
+  if (static_cast<unsigned>(index) >= magic_enum::enum_count<ThemeType>()) {
     return true;
   }
 
@@ -551,7 +554,7 @@ ThemeType ThemeClass::From_Name(const char* name) const {
     **	First search for an exact name match with the filename
     **	of the theme. This is guaranteed to be unique.
     */
-    for (ThemeType theme = THEME_FIRST; theme < THEME_COUNT; theme++) {
+    for (ThemeType theme : magic_enum::enum_values<ThemeType>()) {
       if (stricmp(_themes[theme].Name, name) == 0) {
         return theme;
       }
@@ -562,7 +565,7 @@ ThemeType ThemeClass::From_Name(const char* name) const {
     **	a substring within the full name of the score. This might
     **	yield a match, but is not guaranteed to be unique.
     */
-    for (ThemeType theme = THEME_FIRST; theme < THEME_COUNT; theme++) {
+    for (ThemeType theme : magic_enum::enum_values<ThemeType>()) {
       if (strstr(Text_String(_themes[theme].Fullname), name) != nullptr) {
         return theme;
       }
@@ -590,9 +593,10 @@ ThemeType ThemeClass::From_Name(const char* name) const {
  * HISTORY: * 01/04/1996 JLB : Created. *
  *=============================================================================================*/
 void ThemeClass::Scan() {
-  for (ThemeType theme = THEME_FIRST; theme < THEME_COUNT; theme++) {
-    _themes[theme].Available =
-        CCFileClass(Theme_File_Name(theme)).Is_Available();
+  for (int index = 0; index < std::ssize(_themes); ++index) {
+    _themes[index].Available =
+        CCFileClass(Theme_File_Name(static_cast<ThemeType>(index)))
+            .Is_Available();
   }
 }
 

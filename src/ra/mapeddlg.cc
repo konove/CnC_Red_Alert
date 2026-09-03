@@ -1861,7 +1861,7 @@ int MapEditClass::Load_Scenario() {
         theaterbtn.X, theaterbtn.Y + theaterbtn.Height + 24, 50, 7 * 10,
         MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
     intro.Add_Item("<none>");
-    for (VQType v = VQ_FIRST; v < VQ_COUNT; v++) {
+    for (VQType v : magic_enum::enum_values<VQType>()) {
       intro.Add_Item(VQName[v]);
     }
     intro.Set_Selected_Index((int)Scen.IntroMovie + 1);
@@ -1875,7 +1875,7 @@ int MapEditClass::Load_Scenario() {
                            intro.Y, 50, 7 * 10, MFCD::Retrieve("EBTN-UP.SHP"),
                            MFCD::Retrieve("EBTN-DN.SHP"));
     briefing.Add_Item("<none>");
-    for (VQType v = VQ_FIRST; v < VQ_COUNT; v++) {
+    for (VQType v : magic_enum::enum_values<VQType>()) {
       briefing.Add_Item(VQName[v]);
     }
     briefing.Set_Selected_Index((int)Scen.BriefMovie + 1);
@@ -1886,7 +1886,7 @@ int MapEditClass::Load_Scenario() {
         briefing.X + briefing.Width + 10, briefing.Y, 50, 7 * 10,
         MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
     action.Add_Item("<none>");
-    for (VQType v = VQ_FIRST; v < VQ_COUNT; v++) {
+    for (VQType v : magic_enum::enum_values<VQType>()) {
       action.Add_Item(VQName[v]);
     }
     action.Set_Selected_Index((int)Scen.ActionMovie + 1);
@@ -1897,7 +1897,7 @@ int MapEditClass::Load_Scenario() {
                       action.Y, 50, 7 * 10, MFCD::Retrieve("EBTN-UP.SHP"),
                       MFCD::Retrieve("EBTN-DN.SHP"));
     win.Add_Item("<none>");
-    for (VQType v = VQ_FIRST; v < VQ_COUNT; v++) {
+    for (VQType v : magic_enum::enum_values<VQType>()) {
       win.Add_Item(VQName[v]);
     }
     win.Set_Selected_Index((int)Scen.WinMovie + 1);
@@ -1908,7 +1908,7 @@ int MapEditClass::Load_Scenario() {
                        50, 7 * 10, MFCD::Retrieve("EBTN-UP.SHP"),
                        MFCD::Retrieve("EBTN-DN.SHP"));
     lose.Add_Item("<none>");
-    for (VQType v = VQ_FIRST; v < VQ_COUNT; v++) {
+    for (VQType v : magic_enum::enum_values<VQType>()) {
       lose.Add_Item(VQName[v]);
     }
     lose.Set_Selected_Index((int)Scen.LoseMovie + 1);
@@ -1949,7 +1949,7 @@ int MapEditClass::Load_Scenario() {
         basebtn.X + basebtn.Width + 30, basebtn.Y, 85, 7 * 10,
         MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
     themebtn.Add_Item("<none>");
-    for (ThemeType th = THEME_FIRST; th < THEME_COUNT; th++) {
+    for (ThemeType th : magic_enum::enum_values<ThemeType>()) {
       themebtn.Add_Item(Theme.Full_Name(th));
     }
     if (Scen.TransitTheme != THEME_NONE) {

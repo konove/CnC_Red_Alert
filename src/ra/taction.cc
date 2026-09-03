@@ -57,6 +57,7 @@
 #include <utility>
 
 #include "absl/log/log.h"
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
@@ -329,9 +330,11 @@ void TActionClass::Read_INI() {
   ** the low byte (137) is the valid VocType index.
   */
   if (Action == TACTION_PLAY_SOUND &&
-      (Data.Value < 0 || Data.Value >= VOC_COUNT)) {
+      (Data.Value < 0 ||
+       Data.Value >= static_cast<int>(magic_enum::enum_count<VocType>()))) {
     int fixed = Data.Value & 0xFF;
-    if (fixed >= 0 && fixed < VOC_COUNT) {
+    if (fixed >= 0 &&
+        fixed < static_cast<int>(magic_enum::enum_count<VocType>())) {
       DLOG(WARNING) << "Read_INI: Fixed corrupted sound value " << Data.Value
                     << " -> " << fixed;
       Data.Value = fixed;

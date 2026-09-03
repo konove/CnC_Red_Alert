@@ -109,7 +109,7 @@ class WarheadTypeClass {
   **	The warhead damage is reduced depending on the the type of armor the
   **	defender has. This table is what gives weapons their "character".
   */
-  fixed Modifier[ARMOR_COUNT];
+  fixed Modifier[magic_enum::enum_count<ArmorType>()];
 
   /*
   **	Which explosion set to use for warhead impact.

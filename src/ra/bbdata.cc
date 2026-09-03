@@ -50,6 +50,7 @@
 #include <filesystem>
 #include <string>
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/ccini.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -201,7 +202,7 @@ void BulletTypeClass::One_Time() {
   /*
   **	Load the bullet shapes.
   */
-  for (BulletType index = BULLET_FIRST; index < BULLET_COUNT; index++) {
+  for (BulletType index : magic_enum::enum_values<BulletType>()) {
     BulletTypeClass& bullet = As_Reference(index);
 
     if (!bullet.IsInvisible) {

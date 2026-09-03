@@ -421,7 +421,7 @@ bool Start_Scenario(char* name, bool briefing) {
   }
 
   if (Scen.TransitTheme == THEME_NONE) {
-    Theme.Queue_Song(THEME_FIRST);
+    Theme.Queue_Song(magic_enum::enum_values<ThemeType>().front());
   }
 
   /*

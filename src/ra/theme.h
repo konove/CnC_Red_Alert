@@ -61,7 +61,7 @@ class ThemeClass {
     int Owner;  // What houses are allowed to play this theme (bit field)?
   } ThemeControl;
 
-  static ThemeControl _themes[THEME_COUNT];
+  static ThemeControl _themes[magic_enum::enum_count<ThemeType>()];
 
   enum { THEME_DELAY = kTimerSecond };
 
@@ -77,7 +77,6 @@ class ThemeClass {
   }
   const char* Base_Name(ThemeType index) const;
   const char* Full_Name(ThemeType index) const;
-  int Max_Themes() const { return THEME_COUNT; }
   int Play_Song(ThemeType index);
   int Still_Playing() const;
   int Track_Length(ThemeType index) const;

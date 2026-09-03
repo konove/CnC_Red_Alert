@@ -628,7 +628,7 @@ bool TriggerTypeClass::Edit() {
                                ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                                MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (ThemeType theme = THEME_FIRST; theme < THEME_COUNT; theme++) {
+  for (ThemeType theme : magic_enum::enum_values<ThemeType>()) {
     themetype1list.Add_Item(Theme.Full_Name(theme));
     themetype2list.Add_Item(Theme.Full_Name(theme));
   }
@@ -658,7 +658,7 @@ bool TriggerTypeClass::Edit() {
                                ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                                MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (VQType movie = VQ_FIRST; movie < VQ_COUNT; movie++) {
+  for (VQType movie : magic_enum::enum_values<VQType>()) {
     movietype1list.Add_Item(VQName[movie]);
     movietype2list.Add_Item(VQName[movie]);
   }
@@ -688,7 +688,7 @@ bool TriggerTypeClass::Edit() {
                                ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                                MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (VocType sound = VOC_FIRST; sound < VOC_COUNT; sound++) {
+  for (VocType sound : magic_enum::enum_values<VocType>()) {
     soundtype1list.Add_Item(Voc_Name(sound));
     soundtype2list.Add_Item(Voc_Name(sound));
   }
@@ -718,7 +718,7 @@ bool TriggerTypeClass::Edit() {
                                 ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                                 MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (VoxType speech = VOX_FIRST; speech < VOX_COUNT; speech++) {
+  for (VoxType speech : magic_enum::enum_values<VoxType>()) {
     speechtype1list.Add_Item(Speech_Name(speech));
     speechtype2list.Add_Item(Speech_Name(speech));
   }

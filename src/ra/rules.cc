@@ -889,7 +889,7 @@ bool RulesClass::Themes(CCINIClass& ini) {
   static const char* const THEMECONTROL = "ThemeControl";
 
   if (ini.Is_Present(THEMECONTROL)) {
-    for (ThemeType theme = THEME_FIRST; theme < THEME_COUNT; theme++) {
+    for (ThemeType theme : magic_enum::enum_values<ThemeType>()) {
       if (ini.Is_Present(THEMECONTROL, Theme.Base_Name(theme))) {
         char buffer[128];
         int scen = 1;
