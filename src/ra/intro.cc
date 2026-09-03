@@ -72,7 +72,7 @@ void Choose_Side()  //	ajw - In RA, all this did was play a movie.
       Hide_Mouse();
       Load_Title_Page();
       GamePalette = CCPalette;
-      HidPage.Blit(SeenPage);
+      HidPage.Blit(SeenBuff);
       CCPalette.Set();
       Set_Logic_Page(SeenBuff);
       Show_Mouse();
@@ -89,7 +89,7 @@ void Choose_Side()  //	ajw - In RA, all this did was play a movie.
 
       Hide_Mouse();
       BlackPalette.Set(kFadePaletteSlow);
-      SeenPage.Clear();
+      SeenBuff.Clear();
     }
 
     Play_Movie(VQ_INTRO_MOVIE, THEME_NONE, false);

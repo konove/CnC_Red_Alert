@@ -244,14 +244,14 @@ void ScorePrintClass::Update() {
       Set_Font_Palette(PrimaryPalette);
       localstr[0] = ((char*)DataPtr)[Stage - 1];
       HidPage.Print(localstr, pos - 12, YPos, TBLACK, TBLACK);
-      HidPage.Blit(SeenPage, pos - 12, YPos - 2, pos - 12, YPos - 2, 14, 16);
+      HidPage.Blit(SeenBuff, pos - 12, YPos - 2, pos - 12, YPos - 2, 14, 16);
     }
     if (((char*)DataPtr)[Stage]) {
       localstr[0] = ((char*)DataPtr)[Stage];
       Set_Font_Palette(_whitepal);
-      SeenPage.Print(localstr, pos, YPos - 1, TBLACK, TBLACK);
-      SeenPage.Print(localstr, pos, YPos + 1, TBLACK, TBLACK);
-      SeenPage.Print(localstr, pos + 1, YPos, TBLACK, TBLACK);
+      SeenBuff.Print(localstr, pos, YPos - 1, TBLACK, TBLACK);
+      SeenBuff.Print(localstr, pos, YPos + 1, TBLACK, TBLACK);
+      SeenBuff.Print(localstr, pos + 1, YPos, TBLACK, TBLACK);
     }
     Stage++;
   }
@@ -277,7 +277,7 @@ void ScoreScaleClass::Update() {
       Set_Font_Palette(Palette);
       HidPage.Fill_Rect(0, 0, 14, 14, TBLACK);
       HidPage.Print((char*)DataPtr, 0, 0, TBLACK, TBLACK);
-      HidPage.Scale(SeenPage, 0, 0, _destx[Stage] * 2, YPos, 10, 12,
+      HidPage.Scale(SeenBuff, 0, 0, _destx[Stage] * 2, YPos, 10, 12,
                     _destw[Stage] * 2, _destw[Stage] * 2, true);
       Stage--;
     } else {
@@ -288,7 +288,7 @@ void ScoreScaleClass::Update() {
         }
       }
       HidPage.Print((char*)DataPtr, XPos, YPos, TBLACK, TBLACK);
-      HidPage.Blit(SeenPage, XPos, YPos, XPos, YPos, 12, 12);
+      HidPage.Blit(SeenBuff, XPos, YPos, XPos, YPos, 12, 12);
       delete this;
       return;
     }
@@ -398,7 +398,7 @@ void ScoreClass::Presentation() {
   Hide_Mouse();
   Load_Title_Screen(ScreenNames[house], &HidPage, ScorePalette);
   Increase_Palette_Luminance(ScorePalette, 30, 30, 30, 63);
-  HidPage.Blit(SeenPage);
+  HidPage.Blit(SeenBuff);
   ScorePalette.Set(kFadePaletteFast, Call_Back);
   Play_Sample(country4, 255, Options.Normalize_Volume(150));
 
@@ -791,7 +791,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
   /*
   ** Print the # of buildings on the hidpage so we only need to do it once
   */
-  SeenPage.Blit(HidPage);
+  SeenBuff.Blit(HidPage);
   Set_Logic_Page(HidPage);
   Call_Back_Delay(30);
   Set_Font_Palette(_redpal);
@@ -854,7 +854,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
                   i + 32, 40, WINDOW_MAIN,
                   SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST,
                   ColorRemaps[PCOLOR_RED].RemapTable, DisplayClass::UnitShadow);
-    HidPage.Blit(SeenPage, 0, 0, BUILDING_X, BUILDING_Y, 320 - BUILDING_X, 48);
+    HidPage.Blit(SeenBuff, 0, 0, BUILDING_X, BUILDING_Y, 320 - BUILDING_X, 48);
     Call_Back_Delay(1);
   }
 
@@ -934,7 +934,7 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
       CC_Draw_Shape(yellowptr, i, xpos * 2, ypos * 2, WINDOW_MAIN,
                     SHAPE_WIN_REL, nullptr, nullptr);
     } else {
-      HidPage.Blit(SeenPage, 0, 0, xpos * 2, ypos * 2, (3 + gdikilled) * 2, 16);
+      HidPage.Blit(SeenBuff, 0, 0, xpos * 2, ypos * 2, (3 + gdikilled) * 2, 16);
     }
 
     Count_Up_Print("%d", i * gkilled / maxval, gkilled, 297, ypos + 2);
@@ -954,7 +954,7 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
       CC_Draw_Shape(redptr, i, xpos * 2, (ypos + 12) * 2, WINDOW_MAIN,
                     SHAPE_WIN_REL, nullptr, nullptr);
     } else {
-      HidPage.Blit(SeenPage, 0, 0, xpos * 2, (ypos + 12) * 2,
+      HidPage.Blit(SeenBuff, 0, 0, xpos * 2, (ypos + 12) * 2,
                    (3 + nodkilled) * 2, 16);
     }
 
@@ -1023,7 +1023,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   ** Draw the infantrymen and pause briefly before running the graph
   */
   Draw_InfantryMen();
-  HidPage.Blit(SeenPage, 0, 0, BARGRAPH_X, CASUALTY_Y, 320 - BARGRAPH_X, 34);
+  HidPage.Blit(SeenBuff, 0, 0, BARGRAPH_X, CASUALTY_Y, 320 - BARGRAPH_X, 34);
   Call_Back_Delay(40);
 
   for (i = 1; i <= maxval; i++) {
@@ -1031,7 +1031,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
     for (int index = 0; index < 3; index++) {
       Draw_InfantryMen();
       Draw_Bar_Graphs(i, nodkilled, gdikilled);
-      HidPage.Blit(SeenPage, 0, 0, BARGRAPH_X, CASUALTY_Y, 320 - BARGRAPH_X,
+      HidPage.Blit(SeenBuff, 0, 0, BARGRAPH_X, CASUALTY_Y, 320 - BARGRAPH_X,
                    34);
 
       Set_Font_Palette(_redpal);
@@ -1068,7 +1068,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
       Draw_InfantryMen();
     }
     Draw_Bar_Graphs(maxval, nodkilled, gdikilled);
-    HidPage.Blit(SeenPage, 0, 0, BARGRAPH_X, CASUALTY_Y, 320 - BARGRAPH_X, 34);
+    HidPage.Blit(SeenBuff, 0, 0, BARGRAPH_X, CASUALTY_Y, 320 - BARGRAPH_X, 34);
     Call_Back_Delay(1);
   }
 }
@@ -1153,7 +1153,7 @@ void ScoreClass::Print_Minutes(int minutes) {
     Format_Runtime_Text(str, sizeof(str), Text_String(TXT_SCORE_TIMEFORMAT2),
                         minutes);
   }
-  SeenPage.Print(str, 550, 18, TBLACK, TBLACK);
+  SeenBuff.Print(str, 550, 18, TBLACK, TBLACK);
 }
 
 /***********************************************************************************************
@@ -1182,7 +1182,7 @@ void ScoreClass::Count_Up_Print(const char* str, int percent, int maxval,
 
   Format_Runtime_Text(destbuf, sizeof(destbuf), str,
                       percent <= maxval ? percent : maxval);
-  SeenPage.Print(destbuf, xpos * 2, ypos * 2, TBLACK, BLACK);
+  SeenBuff.Print(destbuf, xpos * 2, ypos * 2, TBLACK, BLACK);
 }
 
 /***********************************************************************************************
@@ -1211,7 +1211,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
   /*
   ** Ready the hidpage so it can restore background under zoomed letters
   */
-  SeenPage.Blit(HidPage);
+  SeenBuff.Blit(HidPage);
 
   /*
   ** Put a copy of the high score area on a spare area of the hidpage, so
@@ -1248,7 +1248,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
           str[--index] = 0;
 
           int xposindex6 = (xpos + index * 6) * 2;
-          HidPage.Blit(SeenPage, xposindex6, (ypos - 100) * 2, xposindex6,
+          HidPage.Blit(SeenBuff, xposindex6, (ypos - 100) * 2, xposindex6,
                        ypos * 2, 12, 12);
           HidPage.Blit(HidPage, xposindex6, (ypos - 100) * 2, xposindex6,
                        ypos * 2, 12, 12);
@@ -1261,7 +1261,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
           ascii -= 'a' - 'A';
         }
         if ((ascii >= '!' && ascii <= KA_TILDA) || ascii == ' ') {
-          HidPage.Blit(SeenPage, (xpos + index * 6) * 2, (ypos - 100) * 2,
+          HidPage.Blit(SeenBuff, (xpos + index * 6) * 2, (ypos - 100) * 2,
                        (xpos + index * 6) * 2, ypos * 2, 12, 12);
           HidPage.Blit(HidPage, (xpos + index * 6) * 2, (ypos - 100) * 2,
                        (xpos + index * 6) * 2, ypos * 2, 12, 12);
@@ -1298,7 +1298,7 @@ void Animate_Cursor(int pos, int ypos) {
   // If they moved the cursor, erase old one and force state=0, to make green
   // draw right away
   if (pos != _lastpos) {
-    HidPage.Blit(SeenPage, (HALLFAME_X + _lastpos * 6) * 2, ypos - 200,
+    HidPage.Blit(SeenBuff, (HALLFAME_X + _lastpos * 6) * 2, ypos - 200,
                  (HALLFAME_X + _lastpos * 6) * 2, ypos, 12, 2);
     _lastpos = pos;
     _state = 0;
@@ -1578,7 +1578,7 @@ void Multi_Score_Presentation() {
   //	Theme.Queue_Song(THEME_WIN);
 
   BlackPalette.Set();
-  SeenPage.Clear();
+  SeenBuff.Clear();
   HidPage.Clear();
   Hide_Mouse();
   void* anim =
@@ -1678,7 +1678,7 @@ void Multi_Score_Presentation() {
   Theme.Queue_Song(THEME_NONE);
 
   BlackPalette.Set(kFadePaletteFast, nullptr);
-  SeenPage.Clear();
+  SeenBuff.Clear();
   GamePalette.Set();
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;

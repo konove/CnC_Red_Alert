@@ -1472,7 +1472,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     filename = "ALIPAPER.PCX";
   }
   Load_Title_Screen(filename, &HidPage, temp);
-  HidPage.Blit(SeenPage);
+  HidPage.Blit(SeenBuff);
 
   static unsigned char _scorepal[] = {0, 1, 12, 13,  4,   5,   6,  7,
                                       8, 9, 10, 255, 252, 253, 14, 248};
@@ -1498,7 +1498,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
     } else {
       if (bufprint[0] != 20) {
-        SeenPage.Print(bufprint, xprint, yprint, TBLACK, TBLACK);
+        SeenBuff.Print(bufprint, xprint, yprint, TBLACK, TBLACK);
         xprint += Char_Pixel_Width(bufprint[0]);
       }
     }
@@ -1656,7 +1656,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     case 0:
     case 1:
       BlackPalette.Set(kFadePaletteMedium, Call_Back);
-      SeenPage.Clear();
+      SeenBuff.Clear();
       break;
     default:
       break;
@@ -1953,7 +1953,7 @@ bool Read_Scenario_INI(char* fname, bool) {
     int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
     if ((!Using_DVD() || cd_index != 5) && cd_index != RequiredCD) {
       if ((RequiredCD == 0 || RequiredCD == 1) && Session.Type == GAME_NORMAL) {
-        SeenPage.Clear();
+        SeenBuff.Clear();
       }
       GamePalette.Set(kFadePaletteFast, Call_Back);
     }

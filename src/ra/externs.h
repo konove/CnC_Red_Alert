@@ -134,7 +134,6 @@ extern int AllDone;
 extern bool InMovie;
 extern WWMouseClass* WWMouse;
 extern GraphicBufferClass HiddenPage;
-#define SeenPage SeenBuff
 extern GraphicBufferClass VisiblePage;
 extern GraphicBufferClass SysMemPage;
 extern int ScreenWidth;

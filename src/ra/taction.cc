@@ -588,7 +588,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     */
     case TACTION_PLAY_MOVIE:
       Hide_Mouse();
-      SeenPage.Clear();
+      SeenBuff.Clear();
       Play_Movie(Data.Movie, THEME_NONE, true);
       GamePalette.Set();
       Map.Flag_To_Redraw(true);

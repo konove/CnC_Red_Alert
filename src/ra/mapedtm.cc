@@ -636,7 +636,7 @@ int MapEditClass::Team_Members(HousesType house) {
   cancelbtn.Y = dlg_y + dlg_h - D_MARGIN - D_CANCEL_H - 15;
 
   /*
-  **	Draw to SeenPage.
+  **	Draw to SeenBuff.
   */
   Set_Logic_Page(SeenBuff);
 

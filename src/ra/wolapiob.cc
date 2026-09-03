@@ -2115,7 +2115,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
     Hide_Mouse();
     BlackPalette.Set(kFadePaletteFast, Call_Back);
     //		::ShowWindow( MainWindow, SW_SHOWMINIMIZED );
-    SeenPage.Clear();
+    SeenBuff.Clear();
     if (::CreateProcess(
             nullptr,
             szCommandLine,  //	Command line.

@@ -436,7 +436,7 @@ int LoadOptionsClass::Process() {
               Call_Back();
             }
             Hide_Mouse();
-            SeenPage.Clear();
+            SeenBuff.Clear();
             GamePalette.Set();
             //						Set_Palette(GamePalette);
             Show_Mouse();

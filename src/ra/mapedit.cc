@@ -1997,7 +1997,7 @@ bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
       */
       case ButtonKey(BUTTON_OK):
         Hide_Mouse();
-        SeenPage.Clear();
+        SeenBuff.Clear();
         GamePalette.Set();
         Show_Mouse();
         process = false;
@@ -2010,7 +2010,7 @@ bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
       case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         Hide_Mouse();
-        SeenPage.Clear();
+        SeenBuff.Clear();
         GamePalette.Set();
         Show_Mouse();
         cancel = true;

@@ -3109,7 +3109,7 @@ void Shake_The_Screen(int shakes) {
   shakes += shakes;
 
   Hide_Mouse();
-  SeenPage.Blit(HidPage);
+  SeenBuff.Blit(HidPage);
   // TODO: old_y_off is never reassigned, so the reject test below only ever
   // rejects 0. The offset is therefore always +/-2 and never centre, which
   // makes the new_y_off == 0 case unreachable. Intent was presumably to reject
@@ -3125,20 +3125,20 @@ void Shake_The_Screen(int shakes) {
     } while (new_y_off == old_y_off);
     switch (new_y_off) {
       case -1:
-        HidPage.Blit(SeenPage, 0, 2, 0, 0, 640, 398);
+        HidPage.Blit(SeenBuff, 0, 2, 0, 0, 640, 398);
         break;
       case 1:
-        HidPage.Blit(SeenPage, 0, 0, 0, 2, 640, 398);
+        HidPage.Blit(SeenBuff, 0, 0, 0, 2, 640, 398);
         break;
       default:
-        HidPage.Blit(SeenPage);
+        HidPage.Blit(SeenBuff);
         break;
     }
     while (x == TickCount.Value()) {
       Video_End_Frame();
     }
   }
-  HidPage.Blit(SeenPage);
+  HidPage.Blit(SeenBuff);
   Show_Mouse();
 }
 

@@ -209,7 +209,7 @@ bool Expansion_Dialog(bool bCounterstrike);
 static void Load_Prolog_Page() {
   Hide_Mouse();
   Load_Title_Screen("PROLOG.PCX", &HidPage, CCPalette);
-  HidPage.Blit(SeenPage);
+  HidPage.Blit(SeenBuff);
   CCPalette.Set();
   Show_Mouse();
 }
@@ -549,7 +549,7 @@ bool Select_Game(bool /*fade*/) {
         Load_Title_Page();
         GamePalette = CCPalette;
 
-        HidPage.Blit(SeenPage);
+        HidPage.Blit(SeenBuff);
         //				if (fade) {
         //					WhitePalette.Set();
         //					CCPalette.Set(kFadePaletteSlow,
@@ -1094,7 +1094,7 @@ bool Select_Game(bool /*fade*/) {
   }
 
   /*
-  **	Hide the SeenPage; force the map to render one frame.  The caller can
+  **	Hide the SeenBuff; force the map to render one frame.  The caller can
   **	then fade the palette in.
   **	(If we loaded a game, this step will fade out the title screen.  If we
   **	started a scenario, Start_Scenario() will have played a couple of VQ
@@ -1793,7 +1793,7 @@ void Load_Title_Page(bool visible) {
   Load_Title_Screen("TITLE.PCX", &HidPage, CCPalette);
 
   if (visible) {
-    HidPage.Blit(SeenPage);
+    HidPage.Blit(SeenBuff);
   }
 }
 
