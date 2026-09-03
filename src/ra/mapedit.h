@@ -77,9 +77,10 @@
 */
 enum MapEdit1Enum {
   MAX_EDIT_OBJECTS =  // max # of ObjectTypeClasses allowed
-      static_cast<int>(TEMPLATE_COUNT) +
-      static_cast<int>(OVERLAY_COUNT) + static_cast<int>(SMUDGE_COUNT) +
-      static_cast<int>(TERRAIN_COUNT) +
+      static_cast<int>(magic_enum::enum_count<TemplateType>()) +
+      static_cast<int>(magic_enum::enum_count<OverlayType>()) +
+      static_cast<int>(magic_enum::enum_count<SmudgeType>()) +
+      static_cast<int>(magic_enum::enum_count<TerrainType>()) +
       static_cast<int>(magic_enum::enum_count<UnitType>()) +
       static_cast<int>(magic_enum::enum_count<InfantryType>()) +
       static_cast<int>(magic_enum::enum_count<VesselType>()) +

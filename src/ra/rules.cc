@@ -846,10 +846,10 @@ bool RulesClass::Land_Types(CCINIClass& ini) {
   /*
   **	Fetch the movement characteristic data for terrain types.
   */
-  for (LandType land = LAND_FIRST; land < LAND_COUNT; land++) {
-    static const char* _lands[LAND_COUNT] = {"Clear", "Road",  "Water",
-                                             "Rock",  "Wall",  "Ore",
-                                             "Beach", "Rough", "River"};
+  for (LandType land : magic_enum::enum_values<LandType>()) {
+    static const char* _lands[magic_enum::enum_count<LandType>()] = {
+        "Clear", "Road",  "Water", "Rock", "Wall",
+        "Ore",   "Beach", "Rough", "River"};
 
     GroundType* gptr = &Ground[land];
 

@@ -69,6 +69,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
@@ -221,7 +222,7 @@ void DriveClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
         toface = toface + static_cast<FacingType>(Random_Pick(0, 2) - 1);
       }
 
-      for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+      for (FacingType face : magic_enum::enum_values<FacingType>()) {
         newface = toface + face;
         newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
@@ -706,7 +707,8 @@ bool DriveClass::While_Moving() {
           const TurnTrackType* newtrack;  // Proposed jump-to track.
           int tnum;
 
-          tnum = Dir_Facing(track->Facing) * FACING_COUNT +
+          tnum = Dir_Facing(track->Facing) *
+                     static_cast<int>(magic_enum::enum_count<FacingType>()) +
                  static_cast<int>(nextface);
           newtrack = &TrackControl[tnum];
           if (newtrack->Track && RawTracks[newtrack->Track - 1].Entry) {
@@ -1154,7 +1156,9 @@ bool DriveClass::Start_Of_Move() {
     }
 
     IsOnShortTrack = false;
-    TrackNumber = facing * FACING_COUNT + static_cast<int>(nextface);
+    TrackNumber =
+        facing * static_cast<int>(magic_enum::enum_count<FacingType>()) +
+        static_cast<int>(nextface);
     if (TrackControl[TrackNumber].Track == 0) {
       Path[0] = FACING_NONE;
       TrackNumber = -1;

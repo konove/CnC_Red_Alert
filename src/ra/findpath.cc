@@ -59,6 +59,7 @@
 #include <cstring>
 
 #include "absl/log/check.h"
+#include "magic_enum/magic_enum.hpp"
 #include "ra/bench_util.h"
 #include "ra/ccptr.h"
 #include "ra/coord.h"
@@ -1078,13 +1079,13 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   *first command facing.
   */
 #ifdef DIAGONAL
-  static FacingType _trans[FACING_COUNT] = {
+  static FacingType _trans[magic_enum::enum_count<FacingType>()] = {
       static_cast<FacingType>(0),  static_cast<FacingType>(0),
       static_cast<FacingType>(1),  static_cast<FacingType>(2),
       static_cast<FacingType>(3),  static_cast<FacingType>(-2),
       static_cast<FacingType>(-1), static_cast<FacingType>(0)};  // Smoothing.
 #else
-  static FacingType _trans[FACING_COUNT] = {
+  static FacingType _trans[magic_enum::enum_count<FacingType>()] = {
       (FacingType)0, (FacingType)0,  (FacingType)0, (FacingType)2,
       (FacingType)3, (FacingType)-2, (FacingType)0, (FacingType)0};
 #endif
@@ -1143,7 +1144,8 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       */
       newcmd = *cmd2 - *cmd1;
       if (newcmd < FACING_N) {
-        newcmd = newcmd + FACING_COUNT;
+        newcmd =
+            newcmd + static_cast<int>(magic_enum::enum_count<FacingType>());
       }
       newcmd = _trans[newcmd];
 

@@ -88,6 +88,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "magic_enum/magic_enum.hpp"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -3816,7 +3817,7 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   //	Map Layers
   //------------------------------------------------------------------------
-  for (i = 0; i < LAYER_COUNT; i++) {
+  for (i = 0; i < static_cast<int>(magic_enum::enum_count<LayerType>()); i++) {
     for (j = 0; j < MouseClass::Layer[i].Count(); j++) {
       objp = MouseClass::Layer[i][j];
       Add_CRC(&GameCRC, static_cast<int>(objp->Coord) +
@@ -4063,7 +4064,7 @@ static void Print_CRCs(EventClass* ev) {
   //	Map Layers
   //------------------------------------------------------------------------
   GameCRC = 0;
-  for (i = 0; i < LAYER_COUNT; i++) {
+  for (i = 0; i < static_cast<int>(magic_enum::enum_count<LayerType>()); i++) {
     fprintf(fp, ">>>> MAP LAYER %d <<<<\n", i);
     for (j = 0; j < MouseClass::Layer[i].Count(); j++) {
       objp = MouseClass::Layer[i][j];

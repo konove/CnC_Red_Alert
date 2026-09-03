@@ -57,6 +57,7 @@
 #include <filesystem>
 #include <string>
 
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/conquer.h"
 #include "ra/const.h"
@@ -503,7 +504,7 @@ void TerrainTypeClass::One_Time() {}
  *=============================================================================================*/
 void TerrainTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
-    for (TerrainType index = TERRAIN_FIRST; index < TERRAIN_COUNT; index++) {
+    for (TerrainType index : magic_enum::enum_values<TerrainType>()) {
       TerrainTypeClass& terrain = As_Reference(index);
       /*
       **	Clear any existing shape pointer. All terrain is theater
@@ -546,10 +547,8 @@ void TerrainTypeClass::Init(TheaterType theater) {
  * HISTORY: * 05/16/1994 JLB : Created. *
  *=============================================================================================*/
 TerrainType TerrainTypeClass::From_Name(const char* name) {
-  TerrainType index;
-
   if (name != nullptr) {
-    for (index = TERRAIN_FIRST; index < TERRAIN_COUNT; index++) {
+    for (TerrainType index : magic_enum::enum_values<TerrainType>()) {
       if (stricmp(name, As_Reference(index).IniName) == 0) {
         return index;
       }
@@ -598,7 +597,7 @@ void TerrainTypeClass::Display(int x, int y, WindowNumberType window,
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
 void TerrainTypeClass::Prep_For_Add() {
-  for (TerrainType index = TERRAIN_FIRST; index < TERRAIN_COUNT; index++) {
+  for (TerrainType index : magic_enum::enum_values<TerrainType>()) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
     }

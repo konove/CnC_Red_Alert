@@ -552,9 +552,9 @@ void Fill_In_Data() {
     Map.Activate(1);
     //		if (Session.Type == GAME_NORMAL) {
     Scen.Views[0] = Scen.Views[1] = Scen.Views[2] = Scen.Views[3] =
-        Scen.Waypoint[WAYPT_HOME];
-    Map.Set_Tactical_Position(
-        Cell_Coord(static_cast<CELL>(Scen.Waypoint[WAYPT_HOME] - MAP_CELL_W * 8 - 10)));
+        Scen.Waypoint[ScenarioClass::kHomeWaypoint];
+    Map.Set_Tactical_Position(Cell_Coord(static_cast<CELL>(
+        Scen.Waypoint[ScenarioClass::kHomeWaypoint] - MAP_CELL_W * 8 - 10)));
     //		}
   }
 
@@ -769,7 +769,7 @@ void Clear_Scenario() {
 
   CurrentObject.Clear();
 
-  for (int index = 0; index < WAYPT_COUNT; index++) {
+  for (int index = 0; index < ScenarioClass::kWaypointCount; index++) {
     Scen.Waypoint[index] = -1;
   }
 

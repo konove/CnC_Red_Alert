@@ -293,7 +293,8 @@ static void Put_All(Pipe& pipe, int save_net) {
     Call_Back();
   }
 
-  for (int i = 0; i < LAYER_COUNT; i++) {
+  for (int i = 0; i < static_cast<int>(magic_enum::enum_count<LayerType>());
+       i++) {
     MouseClass::Layer[i].Save(pipe);
   }
 
@@ -784,7 +785,7 @@ bool Load_Game(int id) {
     }
   }
 
-  for (i = 0; i < LAYER_COUNT; i++) {
+  for (i = 0; i < static_cast<int>(magic_enum::enum_count<LayerType>()); i++) {
     MouseClass::Layer[i].Load(straw);
   }
 
@@ -1256,7 +1257,7 @@ void Code_All_Pointers() {
   **	The Layers.
   */
   Logic.Code_Pointers();
-  for (i = 0; i < LAYER_COUNT; i++) {
+  for (i = 0; i < static_cast<int>(magic_enum::enum_count<LayerType>()); i++) {
     MouseClass::Layer[i].Code_Pointers();
   }
 
@@ -1337,7 +1338,8 @@ void Decode_All_Pointers() {
   **	The Layers.
   */
   Logic.Decode_Pointers();
-  for (int i = 0; i < LAYER_COUNT; i++) {
+  for (int i = 0; i < static_cast<int>(magic_enum::enum_count<LayerType>());
+       i++) {
     MouseClass::Layer[i].Decode_Pointers();
   }
 

@@ -760,7 +760,8 @@ void TeamClass::AI() {
           break;
 
         case TMISSION_MOVE:
-          if (static_cast<unsigned>(mission->Data.Value) < WAYPT_COUNT &&
+          if (static_cast<unsigned>(mission->Data.Value) <
+                  ScenarioClass::kWaypointCount &&
               Member != nullptr) {
             FootClass* leader = Fetch_A_Leader();
             CELL movecell = Scen.Waypoint[mission->Data.Value];
@@ -778,7 +779,8 @@ void TeamClass::AI() {
         case TMISSION_ATT_WAYPT:
         case TMISSION_PATROL:
         case TMISSION_SPY:
-          if (static_cast<unsigned>(mission->Data.Value) < WAYPT_COUNT) {
+          if (static_cast<unsigned>(mission->Data.Value) <
+              ScenarioClass::kWaypointCount) {
             Assign_Mission_Target(
                 ::As_Target(Scen.Waypoint[mission->Data.Value]));
           }
@@ -2961,7 +2963,8 @@ int TeamClass::TMission_Patrol() {
   */
   if (!Target_Legal(Target)) {
     const TeamMissionClass* mission = &Class->MissionList[CurrentMission];
-    if (static_cast<unsigned>(mission->Data.Value) < WAYPT_COUNT) {
+    if (static_cast<unsigned>(mission->Data.Value) <
+        ScenarioClass::kWaypointCount) {
       Assign_Mission_Target(::As_Target(Scen.Waypoint[mission->Data.Value]));
     }
   }

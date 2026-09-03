@@ -105,6 +105,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/bench_util.h"
 #include "ra/building.h"
@@ -1807,8 +1808,8 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
 
     CELL newcell = 0;
     CELL altcell = 0;
-    FacingType face;
-    for (face = FACING_N; face < FACING_COUNT; face++) {
+    bool found = false;
+    for (FacingType face : magic_enum::enum_values<FacingType>()) {
       FacingType newface = toface + face;
       newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
@@ -1817,13 +1818,12 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
           altcell = newcell;
         }
         if (!Map[newcell].Is_Bridge_Here()) {
+          found = true;
           break;
         }
-        //				Assign_Mission(MISSION_MOVE);
-        //				Assign_Destination(::As_Target(newcell));
       }
     }
-    if (face == FACING_COUNT) {
+    if (!found) {
       newcell = 0;
     }
 
@@ -2809,7 +2809,7 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
           bool found = false;
           while (*list != kRefreshEol && !found) {
             CELL newcell = static_cast<CELL>(cell + *list++);
-            for (FacingType i = FACING_N; i < FACING_COUNT; i++) {
+            for (FacingType i : magic_enum::enum_values<FacingType>()) {
               if (Map[Adjacent_Cell(newcell, i)].Zones[Class->MZone] ==
                   targzone) {
                 found = true;

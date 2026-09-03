@@ -114,6 +114,8 @@
 
 #include "absl/log/check.h"
 #include "base/trig.h"
+#include "base/types.h"
+#include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/bench_util.h"
 #include "ra/building.h"
@@ -157,7 +159,6 @@
 #include "ra/ww_audio.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
-#include "base/types.h"
 
 /***********************************************************************************************
  * _Counts_As_Civ_Evac -- Is the specified object a candidate for civilian evac
@@ -558,7 +559,8 @@ void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
   }
 
   if (*this == AIRCRAFT_TRANSPORT) {
-    int _stretch[FACING_COUNT] = {8, 9, 10, 9, 8, 9, 10, 9};
+    int _stretch[magic_enum::enum_count<FacingType>()] = {8, 9, 10, 9,
+                                                          8, 9, 10, 9};
 
     /*
     **	Dual rotors offset along flight axis.
@@ -1139,7 +1141,8 @@ int AircraftClass::Mission_Unload() {
             Assign_Destination(
                 ::As_Target(Scen.Waypoint[foot->Team->Class->Origin]));
           } else {
-            Assign_Destination(New_LZ(::As_Target(Scen.Waypoint[WAYPT_REINF])));
+            Assign_Destination(New_LZ(::As_Target(
+                Scen.Waypoint[ScenarioClass::kReinforcementWaypoint])));
             if (Team.Is_Valid()) {
               Team->Assign_Mission_Target(NavCom);
             }
@@ -1431,9 +1434,10 @@ int AircraftClass::Exit_Object(TechnoClass* unit) {
   DCHECK(IsActive);
 
   // Priority order for trying adjacent cells when unloading passengers.
-  static constexpr FacingType kUnloadPriority[FACING_COUNT] = {
-      FACING_S,  FACING_SW, FACING_SE, FACING_NW,
-      FACING_NE, FACING_N,  FACING_W,  FACING_E};
+  static constexpr FacingType
+      kUnloadPriority[magic_enum::enum_count<FacingType>()] = {
+          FACING_S,  FACING_SW, FACING_SE, FACING_NW,
+          FACING_NE, FACING_N,  FACING_W,  FACING_E};
 
   /*
   **	Find a free cell to drop the unit off at.
@@ -2654,7 +2658,7 @@ TARGET AircraftClass::New_LZ(TARGET oldlz) const {
       **	Perform a radius scan out from the original center location. Try
       *to *	find a cell that is allowed to be a legal LZ.
       */
-      for (FacingType facing = FACING_N; facing < FACING_COUNT; facing++) {
+      for (FacingType facing : magic_enum::enum_values<FacingType>()) {
         CELL newcell = Coord_Cell(Coord_Move(
             coord, Facing_Dir(facing + modifier), radius * ICON_LEPTON_W));
         if (Map.In_Radar(newcell)) {

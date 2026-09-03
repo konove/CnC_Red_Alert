@@ -132,7 +132,7 @@ MapEditClass::MapEditClass() {
     NumType[i] = 0;
     TypeOffset[i] = 0;
   }
-  Scen.Waypoint[WAYPT_HOME] = 0;
+  Scen.Waypoint[ScenarioClass::kHomeWaypoint] = 0;
   CurrentCell = 0;
   CurTeam = nullptr;
   CurTrigger = nullptr;
@@ -758,7 +758,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         **	Set map position
         */
         ScenarioInit++;
-        Set_Tactical_Position(Scen.Waypoint[WAYPT_HOME]);
+        Set_Tactical_Position(Scen.Waypoint[ScenarioClass::kHomeWaypoint]);
         ScenarioInit--;
 
         /*
@@ -780,12 +780,12 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         ** Unflag the old Home Cell, if there are no other waypoints
         ** pointing to it
         */
-        cell = Scen.Waypoint[WAYPT_HOME];
+        cell = Scen.Waypoint[ScenarioClass::kHomeWaypoint];
 
         if (cell != -1) {
           found = 0;
-          for (i = 0; i < WAYPT_COUNT; i++) {
-            if (i != WAYPT_HOME && Scen.Waypoint[i] == cell) {
+          for (i = 0; i < ScenarioClass::kWaypointCount; i++) {
+            if (i != ScenarioClass::kHomeWaypoint && Scen.Waypoint[i] == cell) {
               found = 1;
             }
           }
@@ -799,11 +799,11 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         ** Now set the new Home cell
         */
-        //			Scen.Waypoint[WAYPT_HOME] =
+        //			Scen.Waypoint[ScenarioClass::kHomeWaypoint] =
         // Coord_Cell(TacticalCoord);
         //			(*this)[TacticalCoord].IsWaypoint = 1;
         //			Flag_Cell(Coord_Cell(TacticalCoord));
-        Scen.Waypoint[WAYPT_HOME] = CurrentCell;
+        Scen.Waypoint[ScenarioClass::kHomeWaypoint] = CurrentCell;
         (*this)[CurrentCell].IsWaypoint = 1;
         Flag_Cell(CurrentCell);
 
@@ -817,7 +817,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     **	the Reinf. Cell to the same as the Home Cell (for display purposes.)
     */
     case ((int)KN_R | (int)KN_SHIFT_BIT):
-      if (CurrentCell == 0 || CurrentCell == Scen.Waypoint[WAYPT_HOME]) {
+      if (CurrentCell == 0 ||
+          CurrentCell == Scen.Waypoint[ScenarioClass::kHomeWaypoint]) {
         break;
       }
 
@@ -825,12 +826,13 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       ** Unflag the old Reinforcement Cell, if there are no other waypoints
       ** pointing to it
       */
-      cell = Scen.Waypoint[WAYPT_REINF];
+      cell = Scen.Waypoint[ScenarioClass::kReinforcementWaypoint];
 
       if (cell != -1) {
         found = 0;
-        for (i = 0; i < WAYPT_COUNT; i++) {
-          if (i != WAYPT_REINF && Scen.Waypoint[i] == cell) {
+        for (i = 0; i < ScenarioClass::kWaypointCount; i++) {
+          if (i != ScenarioClass::kReinforcementWaypoint &&
+              Scen.Waypoint[i] == cell) {
             found = 1;
           }
         }
@@ -843,7 +845,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       /*
       ** Now set the new Reinforcement cell
       */
-      Scen.Waypoint[WAYPT_REINF] = CurrentCell;
+      Scen.Waypoint[ScenarioClass::kReinforcementWaypoint] = CurrentCell;
       (*this)[CurrentCell].IsWaypoint = 1;
       Flag_Cell(CurrentCell);
       Changed = 1;
@@ -901,7 +903,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
             if (wayname[1] >= 'A' && wayname[1] <= 'Z') {
               waynm = (waynm + 1) * 26 + (wayname[1] - 'A');
             }
-            if (waynm < WAYPT_HOME) {
+            if (waynm < ScenarioClass::kHomeWaypoint) {
               Update_Waypoint(waynm);
             }
           }
@@ -919,7 +921,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         **	Loop through letter waypoints; if this cell is one of them,
         **	clear that waypoint.
         */
-        for (i = 0; i < WAYPT_HOME; i++) {
+        for (i = 0; i < ScenarioClass::kHomeWaypoint; i++) {
           if (Scen.Waypoint[i] == CurrentCell) {
             Scen.Waypoint[i] = -1;
           }
@@ -942,8 +944,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         **	If there are no more waypoints on this cell, clear the cell's
         **	waypoint designation.
         */
-        if (Scen.Waypoint[WAYPT_HOME] != CurrentCell &&
-            Scen.Waypoint[WAYPT_REINF] != CurrentCell) {
+        if (Scen.Waypoint[ScenarioClass::kHomeWaypoint] != CurrentCell &&
+            Scen.Waypoint[ScenarioClass::kReinforcementWaypoint] !=
+                CurrentCell) {
           (*this)[CurrentCell].IsWaypoint = 0;
         }
         Changed = 1;
@@ -2036,8 +2039,8 @@ void MapEditClass::Update_Waypoint(int waypt_idx) {
   */
   cell = Scen.Waypoint[waypt_idx];
   if (cell != -1) {
-    if (Scen.Waypoint[WAYPT_HOME] != cell &&
-        Scen.Waypoint[WAYPT_REINF] != cell) {
+    if (Scen.Waypoint[ScenarioClass::kHomeWaypoint] != cell &&
+        Scen.Waypoint[ScenarioClass::kReinforcementWaypoint] != cell) {
       (*this)[cell].IsWaypoint = 0;
     }
     Flag_Cell(cell);

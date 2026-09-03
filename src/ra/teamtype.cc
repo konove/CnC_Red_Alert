@@ -95,6 +95,7 @@
 #include "ra/list.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
+#include "ra/scenario.h"
 #include "ra/target.h"
 #include "ra/team.h"
 #include "ra/textbtn.h"
@@ -1175,7 +1176,7 @@ bool TeamTypeClass::Edit() {
                 tm->Data.Value = (tm->Data.Value + 1) * 26;
                 tm->Data.Value += toupper(*(arg_edt.Get_Text() + 1)) - 'A';
               }
-              if ((unsigned)tm->Data.Value >= WAYPT_HOME) {
+              if ((unsigned)tm->Data.Value >= ScenarioClass::kHomeWaypoint) {
                 tm->Data.Value = 0;
               }
               break;
@@ -1224,7 +1225,7 @@ bool TeamTypeClass::Edit() {
                 tm->Data.Value = (tm->Data.Value + 1) * 26;
                 tm->Data.Value += toupper(*(arg_edt.Get_Text() + 1)) - 'A';
               }
-              if ((unsigned)tm->Data.Value >= WAYPT_HOME) {
+              if ((unsigned)tm->Data.Value >= ScenarioClass::kHomeWaypoint) {
                 tm->Data.Value = 0;
               }
               break;
@@ -1274,7 +1275,7 @@ bool TeamTypeClass::Edit() {
                 tm->Data.Value = (tm->Data.Value + 1) * 26;
                 tm->Data.Value += toupper(*(arg_edt.Get_Text() + 1)) - 'A';
               }
-              if ((unsigned)tm->Data.Value >= WAYPT_HOME) {
+              if ((unsigned)tm->Data.Value >= ScenarioClass::kHomeWaypoint) {
                 tm->Data.Value = 0;
               }
               break;

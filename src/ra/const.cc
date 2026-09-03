@@ -39,6 +39,7 @@
 
 #include "ra/const.h"
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/defines.h"
 
 // TODO(konove): Move to globals. These are not constants.
@@ -110,4 +111,4 @@ int CrateData[CRATE_COUNT] = {
     0   //	CRATE_VORTEX
 };
 
-GroundType Ground[LAND_COUNT];
+GroundType Ground[magic_enum::enum_count<LandType>()];

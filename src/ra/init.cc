@@ -288,10 +288,10 @@ bool Init_Game(int, char*[]) {
   AnimTypes.Set_Heap(ANIM_COUNT);
   UnitTypes.Set_Heap(magic_enum::enum_count<UnitType>());
   VesselTypes.Set_Heap(magic_enum::enum_count<VesselType>());
-  TemplateTypes.Set_Heap(TEMPLATE_COUNT);
-  TerrainTypes.Set_Heap(TERRAIN_COUNT);
-  OverlayTypes.Set_Heap(OVERLAY_COUNT);
-  SmudgeTypes.Set_Heap(SMUDGE_COUNT);
+  TemplateTypes.Set_Heap(magic_enum::enum_count<TemplateType>());
+  TerrainTypes.Set_Heap(magic_enum::enum_count<TerrainType>());
+  OverlayTypes.Set_Heap(magic_enum::enum_count<OverlayType>());
+  SmudgeTypes.Set_Heap(magic_enum::enum_count<SmudgeType>());
 
   HouseTypeClass::Init_Heap();
   BuildingTypeClass::Init_Heap();

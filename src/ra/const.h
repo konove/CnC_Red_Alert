@@ -12,7 +12,7 @@
 extern int CrateShares[CRATE_COUNT];
 extern AnimType CrateAnims[CRATE_COUNT];
 extern int CrateData[CRATE_COUNT];
-extern GroundType Ground[LAND_COUNT];
+extern GroundType Ground[magic_enum::enum_count<LandType>()];
 
 /***************************************************************************
 **	These are the access passwords used to activate cheat mode, editor mode,
@@ -149,7 +149,7 @@ constexpr unsigned char Pixel2Lepton[24] = {
 **	offset that, when added to another cell, will achieve the adjacent cell
 **	in the indexed direction.
 */
-constexpr CELL AdjacentCell[FACING_COUNT] = {
+constexpr CELL AdjacentCell[magic_enum::enum_count<FacingType>()] = {
     -MAP_CELL_W,        // North
     -(MAP_CELL_W - 1),  // North East
     1,                  // East
@@ -160,7 +160,7 @@ constexpr CELL AdjacentCell[FACING_COUNT] = {
     -(MAP_CELL_W + 1)   // North West
 };
 
-constexpr COORDINATE AdjacentCoord[FACING_COUNT] = {
+constexpr COORDINATE AdjacentCoord[magic_enum::enum_count<FacingType>()] = {
     0xFF000000L, 0xFF000100L, 0x00000100L, 0x01000100L,
     0x01000000L, 0x0100FF00L, 0x0000FF00L, 0xFF00FF00L};
 
@@ -247,7 +247,7 @@ constexpr unsigned char Facing32[256] = {
 **	of the given terrain cells.
 */
 
-constexpr int GroundColor[LAND_COUNT] = {
+constexpr int GroundColor[magic_enum::enum_count<LandType>()] = {
     141,  // "Clear" terrain.
     141,  // Road terrain.
     172,  // Water.
@@ -259,7 +259,7 @@ constexpr int GroundColor[LAND_COUNT] = {
     174   // Rocky riverbed.
 };
 
-constexpr int SnowColor[LAND_COUNT] = {
+constexpr int SnowColor[magic_enum::enum_count<LandType>()] = {
     141,  // "Clear" terrain.
     141,  // Road terrain.
     172,  // Water.
@@ -274,7 +274,7 @@ constexpr int SnowColor[LAND_COUNT] = {
 /***************************************************************************
 **	These are the names of the theaters.
 */
-constexpr TheaterDataType Theaters[THEATER_COUNT] = {
+constexpr TheaterDataType Theaters[magic_enum::enum_count<TheaterType>()] = {
     {"TEMPERATE", "TEMPERAT", "TEM"},
     {"SNOW", "SNOW", "SNO"},
     {"INTERIOR", "INTERIOR", "INT"},

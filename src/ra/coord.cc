@@ -25,6 +25,7 @@
 #include <iterator>
 
 #include "base/trig.h"
+#include "magic_enum/magic_enum.hpp"
 #include "ra/const.h"
 #include "ra/display.h"
 #include "ra/inline.h"
@@ -127,16 +128,18 @@ int Distance(const TARGET target1, const TARGET target2) {
 }
 
 const short* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
-  static const short kFacingOffsets[static_cast<int>(FACING_COUNT) + 1][5] = {
-      {0, -MAP_CELL_W, kRefreshEol, 0, 0},                   // N
-      {0, -MAP_CELL_W, 1, -(MAP_CELL_W - 1), kRefreshEol},   // NE
-      {0, 1, kRefreshEol, 0, 0},                             // E
-      {0, 1, MAP_CELL_W, MAP_CELL_W + 1, kRefreshEol},       // SE
-      {0, MAP_CELL_W, kRefreshEol, 0, 0},                    // S
-      {0, -1, MAP_CELL_W, MAP_CELL_W - 1, kRefreshEol},      // SW
-      {0, -1, kRefreshEol, 0, 0},                            // W
-      {0, -1, -MAP_CELL_W, -(MAP_CELL_W + 1), kRefreshEol},  // NW
-      {0, kRefreshEol, 0, 0, 0}                              // non-moving.
+  static const short
+      kFacingOffsets[static_cast<int>(magic_enum::enum_count<FacingType>()) +
+                     1][5] = {
+          {0, -MAP_CELL_W, kRefreshEol, 0, 0},                   // N
+          {0, -MAP_CELL_W, 1, -(MAP_CELL_W - 1), kRefreshEol},   // NE
+          {0, 1, kRefreshEol, 0, 0},                             // E
+          {0, 1, MAP_CELL_W, MAP_CELL_W + 1, kRefreshEol},       // SE
+          {0, MAP_CELL_W, kRefreshEol, 0, 0},                    // S
+          {0, -1, MAP_CELL_W, MAP_CELL_W - 1, kRefreshEol},      // SW
+          {0, -1, kRefreshEol, 0, 0},                            // W
+          {0, -1, -MAP_CELL_W, -(MAP_CELL_W + 1), kRefreshEol},  // NW
+          {0, kRefreshEol, 0, 0, 0}                              // non-moving.
   };
   static short computed_offsets[10];
   // 4-bit index encoding: bit3=south, bit2=north, bit1=east, bit0=west.

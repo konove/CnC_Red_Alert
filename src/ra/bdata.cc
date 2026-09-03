@@ -3512,7 +3512,8 @@ const short* BuildingTypeClass::Overlap_List() const {
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Width() const {
-  static int width[BSIZE_COUNT] = {1, 2, 1, 2, 2, 3, 3, 4, 5};
+  static int width[magic_enum::enum_count<BSizeType>()] = {1, 2, 1, 2, 2,
+                                                           3, 3, 4, 5};
   return width[Size];
 }
 
@@ -3531,7 +3532,8 @@ int BuildingTypeClass::Width() const {
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Height(bool bib) const {
-  static int height[BSIZE_COUNT] = {1, 1, 2, 2, 3, 2, 3, 2, 5};
+  static int height[magic_enum::enum_count<BSizeType>()] = {1, 1, 2, 2, 3,
+                                                            2, 3, 2, 5};
   return height[Size] + (bib && IsBibbed ? 1 : 0);
 }
 

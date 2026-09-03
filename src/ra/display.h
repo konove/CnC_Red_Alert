@@ -74,7 +74,7 @@ class DisplayClass : public MapClass {
   **	These layer control elements are used to group the displayable objects
   **	so that proper overlap can be obtained.
   */
-  static LayerClass Layer[LAYER_COUNT];
+  static LayerClass Layer[magic_enum::enum_count<LayerType>()];
 
   /*
   **	This records the position and shape of a placement cursor to display

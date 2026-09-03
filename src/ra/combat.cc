@@ -45,6 +45,7 @@
 #include <algorithm>
 #include <iterator>
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/cell.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
@@ -212,7 +213,9 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   **	the cell data directly.
   */
   count = 0;
-  for (FacingType i = FACING_NONE; i < FACING_COUNT; i++) {
+  // The centre cell (FACING_NONE) and its eight neighbours.
+  for (FacingType i = FACING_NONE;
+       i <= magic_enum::enum_values<FacingType>().back(); i++) {
     /*
     **	Fetch a pointer to the cell to examine. This is either
     **	an adjacent cell or the center cell. Damage never spills

@@ -187,7 +187,8 @@ CellClass::CellClass()
       InfType(HOUSE_NONE),
       OccupierPtr(nullptr),
       Land(LAND_CLEAR) {
-  for (int zone = MZONE_FIRST; zone < MZONE_COUNT; zone++) {
+  for (int zone = 0;
+       zone < static_cast<int>(magic_enum::enum_count<MZoneType>()); zone++) {
     Zones[zone] = 0;
   }
   Flag.Composite = 0;
@@ -1121,7 +1122,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
           */
           if (IsWaypoint) {
             char waypt[3];
-            for (int i = 0; i < WAYPT_HOME; i++) {
+            for (int i = 0; i < ScenarioClass::kHomeWaypoint; i++) {
               if (Scen.Waypoint[i] == Cell_Number()) {
                 if (i < 26) {
                   waypt[0] = static_cast<char>('A' + i);
@@ -1138,13 +1139,14 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                 break;
               }
             }
-            if (Scen.Waypoint[WAYPT_HOME] == Cell_Number()) {
+            if (Scen.Waypoint[ScenarioClass::kHomeWaypoint] == Cell_Number()) {
               Fancy_Text_Print("Home", Map.TacPixelX + x,
                                Map.TacPixelY + y + (CELL_PIXEL_H)-7,
                                &ColorRemaps[PCOLOR_GREY], TBLACK,
                                TPF_EFNT | TPF_FULLSHADOW);
             }
-            if (Scen.Waypoint[WAYPT_REINF] == Cell_Number()) {
+            if (Scen.Waypoint[ScenarioClass::kReinforcementWaypoint] ==
+                Cell_Number()) {
               Fancy_Text_Print("Reinf", Map.TacPixelX + x,
                                Map.TacPixelY + y + (CELL_PIXEL_H)-7,
                                &ColorRemaps[PCOLOR_GREY], TBLACK,
@@ -1802,7 +1804,7 @@ void CellClass::Incoming(COORDINATE threat, bool forced, bool nokidding) {
 const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  if (static_cast<unsigned>(face) >= FACING_COUNT) {
+  if (static_cast<unsigned>(face) >= magic_enum::enum_count<FacingType>()) {
     return *this;
   }
 
@@ -1910,7 +1912,7 @@ long CellClass::Tiberium_Adjust(bool pregame) {
       **	Add up all adjacent cells that contain tiberium.
       ** (Skip those cells which aren't on the map)
       */
-      for (FacingType face = FACING_FIRST; face < FACING_COUNT; face++) {
+      for (FacingType face : magic_enum::enum_values<FacingType>()) {
         CellClass& adj = Adjacent_Cell(face);
 
         if (adj.Overlay != OVERLAY_NONE &&
@@ -2896,7 +2898,9 @@ bool CellClass::Spread_Tiberium(bool forced) {
     }
   }
   FacingType offset = Random_Pick(FACING_N, FACING_NW);
-  for (FacingType index = FACING_N; index < FACING_COUNT; index++) {
+  // Placing the overlay is the point of the search, so not any_of.
+  // NOLINTNEXTLINE(readability-use-anyofallof)
+  for (FacingType index : magic_enum::enum_values<FacingType>()) {
     CellClass* newcell = &Adjacent_Cell(index + offset);
 
     if (newcell != nullptr && newcell->Can_Tiberium_Germinate()) {

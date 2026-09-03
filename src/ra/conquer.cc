@@ -1524,7 +1524,7 @@ const char* Name_From_Source(const SourceType source) {
 
 TheaterType Theater_From_Name(const char* name) {
   if (name != nullptr) {
-    for (TheaterType index = THEATER_FIRST; index < THEATER_COUNT; ++index) {
+    for (TheaterType index : magic_enum::enum_values<TheaterType>()) {
       if (stricmp(name, Theaters[index].Name) == 0) {
         return index;
       }

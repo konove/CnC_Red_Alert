@@ -384,8 +384,6 @@ enum ZoneType {
   ZONE_SOUTH,  // South section.
   ZONE_WEST,   // West section.
 
-  ZONE_COUNT,
-  ZONE_FIRST = 0,
   ZONE_NONE = -1
 };
 
@@ -398,10 +396,7 @@ enum MZoneType {
   MZONE_NORMAL,     // Normal terrestrial objects (can't crush walls).
   MZONE_CRUSHER,    // Can crush crushable wall types.
   MZONE_DESTROYER,  // Can destroy walls.
-  MZONE_WATER,      //	Water based objects.
-
-  MZONE_COUNT,
-  MZONE_FIRST = 0
+  MZONE_WATER       //	Water based objects.
 };
 
 // Bit masks over MZoneType for Map.Zone_Reset and zone checks.
@@ -964,10 +959,7 @@ enum LayerType {
                   // height).
   LAYER_GROUND,   // Touching the ground type object (units & buildings).
   LAYER_AIR,      // Flying above the ground (explosions & flames).
-  LAYER_TOP,      // Topmost layer (aircraft & bullets).
-
-  LAYER_COUNT,
-  LAYER_FIRST = 0
+  LAYER_TOP       // Topmost layer (aircraft & bullets).
 };
 
 /**********************************************************************
@@ -1168,10 +1160,7 @@ enum OverlayType : int8_t {
   OVERLAY_WOOD_CRATE,   // Wooden goodie crate.
   OVERLAY_STEEL_CRATE,  //	Steel goodie crate.
   OVERLAY_FENCE,        // New fangled fence.
-  OVERLAY_WATER_CRATE,  //	Water goodie crate.
-
-  OVERLAY_COUNT,
-  OVERLAY_FIRST = 0
+  OVERLAY_WATER_CRATE   //	Water goodie crate.
 };
 
 /**********************************************************************
@@ -1697,9 +1686,7 @@ enum TemplateType : uint16_t {
 
   TEMPLATE_HILL01,
 
-  TEMPLATE_COUNT,
-  TEMPLATE_NONE = 65535,
-  TEMPLATE_FIRST = 0
+  TEMPLATE_NONE = 65535
 };
 
 // Templates outgrow magic_enum's default window; TEMPLATE_NONE (65535)
@@ -1754,10 +1741,7 @@ enum TerrainType {
   TERRAIN_BOXES08,
   TERRAIN_BOXES09,
 
-  TERRAIN_MINE,
-
-  TERRAIN_COUNT,
-  TERRAIN_FIRST = 0
+  TERRAIN_MINE
 };
 
 /**********************************************************************
@@ -1781,10 +1765,7 @@ enum SmudgeType {
   SMUDGE_SCORCH6,
   SMUDGE_BIB1,
   SMUDGE_BIB2,
-  SMUDGE_BIB3,
-
-  SMUDGE_COUNT,
-  SMUDGE_FIRST = 0
+  SMUDGE_BIB3
 };
 
 /**********************************************************************
@@ -2406,9 +2387,7 @@ enum LandType {
   LAND_ROUGH,     // Rocky terrain.
   LAND_RIVER,     // Rocky riverbed.
 
-  LAND_COUNT,
-  LAND_NONE = -1,
-  LAND_FIRST = 0
+  LAND_NONE = -1
 };
 
 /**********************************************************************
@@ -2418,10 +2397,7 @@ enum TheaterType {
   THEATER_NONE = -1,
   THEATER_TEMPERATE = 0,
   THEATER_SNOW = 1,
-  THEATER_INTERIOR = 2,
-
-  THEATER_COUNT = 3,
-  THEATER_FIRST = 0
+  THEATER_INTERIOR = 2
 };
 
 // Theater bit masks over TheaterType, for the object type tables.
@@ -2450,9 +2426,7 @@ enum BSizeType {
   BSIZE_32,
   BSIZE_33,
   BSIZE_42,
-  BSIZE_55,
-
-  BSIZE_COUNT
+  BSIZE_55
 };
 
 /**********************************************************************
@@ -2499,10 +2473,7 @@ enum FacingType : int8_t {
   FACING_S,   // South
   FACING_SW,  // South-West
   FACING_W,   // West
-  FACING_NW,  // North-West
-
-  FACING_COUNT,  // Total of 8 directions (0..7).
-  FACING_FIRST = 0
+  FACING_NW   // North-West
 };
 
 inline FacingType operator+(FacingType f1, FacingType f2) {
@@ -2569,10 +2540,7 @@ enum SpeedType {
   SPEED_TRACK,   // Tracked locomotion.
   SPEED_WHEEL,   // Balloon tires.
   SPEED_WINGED,  // Lifter's, 'thopters, and rockets.
-  SPEED_FLOAT,   // Ships.
-
-  SPEED_COUNT,
-  SPEED_FIRST = SPEED_FOOT
+  SPEED_FLOAT    // Ships.
 };
 
 /**********************************************************************
@@ -2938,7 +2906,7 @@ typedef struct RemapControlType {
 **	corresponding GroundType structure.
 */
 typedef struct {
-  fixed Cost[SPEED_COUNT];  // Terrain effect cost (normal).
+  fixed Cost[magic_enum::enum_count<SpeedType>()];  // Terrain effect cost (normal).
   bool Build;               // Can build on this terrain?
 } GroundType;
 
@@ -2955,16 +2923,6 @@ typedef struct {
   CELL LastFixup;          // stores position of last overlap
 } PathType;
 
-/**********************************************************************
-** These are special indices into the Waypoint array; slots 0-25 are
-** reserved for letter-designated Waypoints, the others are special.
-*/
-enum WaypointType {
-  WAYPT_HOME = 98,  // Home-cell for this scenario
-  WAYPT_REINF,      // cell where reinforcements arrive
-  WAYPT_SPECIAL,    // Used by special airdrop reinforcements.
-  WAYPT_COUNT
-};
 
 /****************************************************************************
 **	This is the max number of events supported on one frame.

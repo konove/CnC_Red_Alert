@@ -110,6 +110,7 @@
 #include <iterator>
 
 #include "base/types.h"
+#include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
 #include "ra/bench_util.h"
 #include "ra/building.h"
@@ -161,7 +162,7 @@
 **	These layer control elements are used to group the displayable objects
 **	so that proper overlap can be obtained.
 */
-LayerClass DisplayClass::Layer[LAYER_COUNT];
+LayerClass DisplayClass::Layer[magic_enum::enum_count<LayerType>()];
 
 /*
 ** Fading tables
@@ -265,7 +266,7 @@ void DisplayClass::One_Time() {
   // Sized here rather than in constructor to follow one-time init pattern.
   CellRedraw.resize(MAP_CELL_TOTAL);
 
-  for (LayerType layer = LAYER_FIRST; layer < LAYER_COUNT; layer++) {
+  for (LayerType layer : magic_enum::enum_values<LayerType>()) {
     Layer[layer].One_Time();
   }
 
@@ -318,7 +319,7 @@ void DisplayClass::Init_Clear() {
   /*
   ** Empty all the display's layers
   */
-  for (LayerType layer = LAYER_FIRST; layer < LAYER_COUNT; layer++) {
+  for (LayerType layer : magic_enum::enum_values<LayerType>()) {
     Layer[layer].Init();
   }
 }
@@ -752,7 +753,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
         break;
       }
 
-      for (FacingType facing = FACING_FIRST; facing < FACING_COUNT; facing++) {
+      for (FacingType facing : magic_enum::enum_values<FacingType>()) {
         CELL newcell = Adjacent_Cell(cell, facing);
 
         if (!In_Radar(newcell)) {
@@ -798,7 +799,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
           break;
         }
 
-        for (FacingType newface = FACING_N; newface < FACING_COUNT; newface++) {
+        for (FacingType newface : magic_enum::enum_values<FacingType>()) {
           CELL newercell = Adjacent_Cell(newcell, newface);
 
           if (building->IsWall ||
@@ -1527,7 +1528,7 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
   **	are not allowed, and to fix this, just map the cells until
   **	all is ok.
   */
-  for (FacingType dir = FACING_FIRST; dir < FACING_COUNT; dir++) {
+  for (FacingType dir : magic_enum::enum_values<FacingType>()) {
     int shadow;
     CELL c;
 
@@ -2032,7 +2033,7 @@ void DisplayClass::Draw_It(bool forced) {
       *increasing altitude.
       */
       BStart(BENCH_OBJECTS);
-      for (LayerType layer = LAYER_FIRST; layer < LAYER_COUNT; layer++) {
+      for (LayerType layer : magic_enum::enum_values<LayerType>()) {
         for (int index = 0; index < Layer[layer].Count(); index++) {
           ObjectClass* ptr = Layer[layer][index];
 
@@ -2073,7 +2074,7 @@ void DisplayClass::Draw_It(bool forced) {
       // Clear IsToDisplay for ALL layers at frame end. Objects don't clear
       // IsToDisplay during Render() to allow multiple renders per frame,
       // preventing flickering when render rate exceeds logic tick rate.
-      for (LayerType layer = LAYER_FIRST; layer < LAYER_COUNT; ++layer) {
+      for (LayerType layer : magic_enum::enum_values<LayerType>()) {
         for (int index = 0; index < Layer[layer].Count(); ++index) {
           Layer[layer][index]->IsToDisplay = false;
         }
@@ -3918,8 +3919,9 @@ void DisplayClass::Compute_Start_Pos() {
   x = std::clamp<long>(x, MapCellX + 10, MapCellX + MapCellWidth - 10);
   y = std::clamp<long>(y, MapCellY + 8, MapCellY + MapCellHeight - 8);
 
-  Scen.Waypoint[WAYPT_HOME] = Scen.Views[0] = Scen.Views[1] = Scen.Views[2] =
-      Scen.Views[3] = XY_Cell(static_cast<int>(x), static_cast<int>(y));
+  Scen.Waypoint[ScenarioClass::kHomeWaypoint] = Scen.Views[0] = Scen.Views[1] =
+      Scen.Views[2] = Scen.Views[3] =
+          XY_Cell(static_cast<int>(x), static_cast<int>(y));
 
   Map.Set_Tactical_Position(Coord_Whole(
       Cell_Coord(static_cast<CELL>(Scen.Views[0] - MAP_CELL_W * 8 - 10))));
@@ -4245,7 +4247,7 @@ void DisplayClass::Shroud_Cell(CELL cell /*KO, bool shadeit*/) {
     **	shrouded cells such that more cells must be shrouded in order for
     **	this to work.
     */
-    for (FacingType dir = FACING_FIRST; dir < FACING_COUNT; dir++) {
+    for (FacingType dir : magic_enum::enum_values<FacingType>()) {
       CELL c = Adjacent_Cell(cell, dir);
       CellClass* cptr = &(*this)[c];
 
@@ -4330,7 +4332,7 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   /*
   **	Read the Waypoint entries.
   */
-  for (int i = 0; i < WAYPT_COUNT; i++) {
+  for (int i = 0; i < ScenarioClass::kWaypointCount; i++) {
     char buf[20];
     sprintf(buf, "%d", i);
     Scen.Waypoint[i] = static_cast<CELL>(ini.Get_Int("Waypoints", buf, -1));
@@ -4344,14 +4346,15 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   **	Set the starting position (do this after Init(), which clears the cells'
   **	IsWaypoint flags).
   */
-  if (Scen.Waypoint[WAYPT_HOME] == -1) {
-    Scen.Waypoint[WAYPT_HOME] = XY_Cell(MapCellX + 10, MapCellY + 8);
+  if (Scen.Waypoint[ScenarioClass::kHomeWaypoint] == -1) {
+    Scen.Waypoint[ScenarioClass::kHomeWaypoint] =
+        XY_Cell(MapCellX + 10, MapCellY + 8);
   }
 
   Scen.Views[0] = Scen.Views[1] = Scen.Views[2] = Scen.Views[3] =
-      Scen.Waypoint[WAYPT_HOME];
-  Set_Tactical_Position(Cell_Coord(
-      static_cast<CELL>(Scen.Waypoint[WAYPT_HOME] - MAP_CELL_W * 8 - 10)));
+      Scen.Waypoint[ScenarioClass::kHomeWaypoint];
+  Set_Tactical_Position(Cell_Coord(static_cast<CELL>(
+      Scen.Waypoint[ScenarioClass::kHomeWaypoint] - MAP_CELL_W * 8 - 10)));
 
   /*
   **	Loop through all CellTrigger entries.
@@ -4420,7 +4423,7 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
   */
   static const char* const WAYNAME = "Waypoints";
   ini.Clear(WAYNAME);
-  for (int i = 0; i < WAYPT_COUNT; i++) {
+  for (int i = 0; i < ScenarioClass::kWaypointCount; i++) {
     if (Scen.Waypoint[i] != -1) {
       sprintf(entry, "%d", i);
       ini.Put_Int(WAYNAME, entry, Scen.Waypoint[i]);

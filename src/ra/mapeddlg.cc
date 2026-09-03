@@ -226,15 +226,15 @@ int MapEditClass::New_Scenario() {
   /*
   **	Set the Home & Reinforcement Cells to the center of the map
   */
-  Scen.Waypoint[WAYPT_REINF] =
+  Scen.Waypoint[ScenarioClass::kReinforcementWaypoint] =
       XY_Cell(MapCellX + MapCellWidth / 2, MapCellY + MapCellHeight / 2);
-  Scen.Waypoint[WAYPT_HOME] =
+  Scen.Waypoint[ScenarioClass::kHomeWaypoint] =
       XY_Cell(MapCellX + MapCellWidth / 2, MapCellY + MapCellHeight / 2);
   (*this)[TacticalCoord].IsWaypoint = 1;
   Flag_Cell(Coord_Cell(TacticalCoord));
 
-  Set_Tactical_Position(
-      Cell_Coord(static_cast<CELL>(Scen.Waypoint[WAYPT_HOME] - (MAP_CELL_W * 8) - 10)));
+  Set_Tactical_Position(Cell_Coord(static_cast<CELL>(
+      Scen.Waypoint[ScenarioClass::kHomeWaypoint] - (MAP_CELL_W * 8) - 10)));
   ScenarioInit--;
 
   return 0;
@@ -1295,8 +1295,11 @@ int MapEditClass::Load_Scenario() {
             **	Draw Home location
             */
             LogicPage->Put_Pixel(
-                D_BORD_X1 + Cell_X(Scen.Waypoint[WAYPT_HOME]) + 1,
-                D_BORD_Y1 + Cell_Y(Scen.Waypoint[WAYPT_HOME]) + 1, WHITE);
+                D_BORD_X1 +
+                    Cell_X(Scen.Waypoint[ScenarioClass::kHomeWaypoint]) + 1,
+                D_BORD_Y1 +
+                    Cell_Y(Scen.Waypoint[ScenarioClass::kHomeWaypoint]) + 1,
+                WHITE);
 
             /*
             **	Erase old coordinates
@@ -1590,24 +1593,28 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Clip Home Cell to new map size
     */
-    if (Cell_X(Scen.Waypoint[WAYPT_HOME]) < MapCellX) {
-      Scen.Waypoint[WAYPT_HOME] =
-          XY_Cell(MapCellX, Cell_Y(Scen.Waypoint[WAYPT_HOME]));
+    if (Cell_X(Scen.Waypoint[ScenarioClass::kHomeWaypoint]) < MapCellX) {
+      Scen.Waypoint[ScenarioClass::kHomeWaypoint] = XY_Cell(
+          MapCellX, Cell_Y(Scen.Waypoint[ScenarioClass::kHomeWaypoint]));
     }
 
-    if (Cell_X(Scen.Waypoint[WAYPT_HOME]) > MapCellX + MapCellWidth - 1) {
-      Scen.Waypoint[WAYPT_HOME] = XY_Cell(MapCellX + MapCellWidth - 1,
-                                          Cell_Y(Scen.Waypoint[WAYPT_HOME]));
+    if (Cell_X(Scen.Waypoint[ScenarioClass::kHomeWaypoint]) >
+        MapCellX + MapCellWidth - 1) {
+      Scen.Waypoint[ScenarioClass::kHomeWaypoint] =
+          XY_Cell(MapCellX + MapCellWidth - 1,
+                  Cell_Y(Scen.Waypoint[ScenarioClass::kHomeWaypoint]));
     }
 
-    if (Cell_Y(Scen.Waypoint[WAYPT_HOME]) < MapCellY) {
-      Scen.Waypoint[WAYPT_HOME] =
-          XY_Cell(Cell_X(Scen.Waypoint[WAYPT_HOME]), MapCellY);
+    if (Cell_Y(Scen.Waypoint[ScenarioClass::kHomeWaypoint]) < MapCellY) {
+      Scen.Waypoint[ScenarioClass::kHomeWaypoint] = XY_Cell(
+          Cell_X(Scen.Waypoint[ScenarioClass::kHomeWaypoint]), MapCellY);
     }
 
-    if (Cell_Y(Scen.Waypoint[WAYPT_HOME]) > MapCellY + MapCellHeight - 1) {
-      Scen.Waypoint[WAYPT_HOME] = XY_Cell(Cell_X(Scen.Waypoint[WAYPT_HOME]),
-                                          MapCellY + MapCellHeight - 1);
+    if (Cell_Y(Scen.Waypoint[ScenarioClass::kHomeWaypoint]) >
+        MapCellY + MapCellHeight - 1) {
+      Scen.Waypoint[ScenarioClass::kHomeWaypoint] =
+          XY_Cell(Cell_X(Scen.Waypoint[ScenarioClass::kHomeWaypoint]),
+                  MapCellY + MapCellHeight - 1);
     }
 
     return 0;
@@ -1720,7 +1727,7 @@ int MapEditClass::Load_Scenario() {
                              D_DIALOG_X + 30, D_DIALOG_Y + 30, 65,
                              8 * 5, MFCD::Retrieve("EBTN-UP.SHP"),
                              MFCD::Retrieve("EBTN-DN.SHP"));
-    for (TheaterType t = THEATER_FIRST; t < THEATER_COUNT; t++) {
+    for (TheaterType t : magic_enum::enum_values<TheaterType>()) {
       theaterbtn.Add_Item(Theaters[t].Name);
     }
     theaterbtn.Set_Selected_Index(orig_theater);

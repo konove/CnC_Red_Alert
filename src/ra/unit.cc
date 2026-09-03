@@ -117,6 +117,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/bench_util.h"
 #include "ra/building.h"
@@ -2411,7 +2412,7 @@ int UnitClass::Mission_Unload() {
               DirType toface = DIR_S + PrimaryFacing;
               bool placed = false;
 
-              for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+              for (FacingType face : magic_enum::enum_values<FacingType>()) {
                 DirType newface = toface + Facing_Dir(face);
                 CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
@@ -2491,7 +2492,7 @@ int UnitClass::Mission_Unload() {
               DirType toface = DIR_S + PrimaryFacing;
               bool placed = false;
 
-              for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+              for (FacingType face : magic_enum::enum_values<FacingType>()) {
                 DirType newface = toface + Facing_Dir(face);
                 CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
@@ -2667,7 +2668,7 @@ int UnitClass::Mission_Unload() {
         if (crew != nullptr) {
           DirType toface = DIR_S + PrimaryFacing;
 
-          for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+          for (FacingType face : magic_enum::enum_values<FacingType>()) {
             DirType newface = toface + Facing_Dir(face);
             CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
             if (crew->Can_Enter_Cell(newcell) == MOVE_OK) {
@@ -3693,7 +3694,7 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   */
   FacingType bestdir = FACING_N;
   int bestval = -1;
-  for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+  for (FacingType face : magic_enum::enum_values<FacingType>()) {
     int value = 0;
     CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
 
@@ -3752,7 +3753,7 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   */
   moveto = 0;
   if (bestval > 0) {
-    static DirType _desired_to_actual[FACING_COUNT] = {
+    static DirType _desired_to_actual[magic_enum::enum_count<FacingType>()] = {
         DIR_S, DIR_SW, DIR_NW, DIR_NW, DIR_NE, DIR_NE, DIR_NE, DIR_SE};
 
     moveto = Adjacent_Cell(Coord_Cell(Coord), bestdir);

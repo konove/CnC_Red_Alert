@@ -190,13 +190,14 @@ enum SAMState {
 /***************************************************************************
 **	Center of building offset table.
 */
-const COORDINATE BuildingClass::CenterOffset[BSIZE_COUNT] = {
-    0x00800080L, 0x008000FFL, 0x00FF0080L, 0x00FF00FFL,
-    0x018000FFL, 0x00FF0180L, 0x01800180L,
+const COORDINATE
+    BuildingClass::CenterOffset[magic_enum::enum_count<BSizeType>()] = {
+        0x00800080L, 0x008000FFL, 0x00FF0080L, 0x00FF00FFL,
+        0x018000FFL, 0x00FF0180L, 0x01800180L,
 
-    0x00FF0200L,
+        0x00FF0200L,
 
-    0x02800280L,
+        0x02800280L,
 };
 
 /***********************************************************************************************
@@ -4498,7 +4499,7 @@ int BuildingClass::Mission_Unload() {
           /*
           **	Scatter everything around the weapon's factory door.
           */
-          for (FacingType f = FACING_FIRST; f < FACING_COUNT; f++) {
+          for (FacingType f : magic_enum::enum_values<FacingType>()) {
             CellClass* cptr = &cellptr->Adjacent_Cell(f);
             if (cptr->Cell_Building() == nullptr) {
               cptr->Incoming(coord, true, true);

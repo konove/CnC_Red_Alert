@@ -99,6 +99,7 @@
 #include <iterator>
 
 #include "base/types.h"
+#include "magic_enum/magic_enum.hpp"
 #include "ra/building.h"
 #include "ra/cell.h"
 #include "ra/config.h"
@@ -1365,7 +1366,7 @@ void FootClass::Per_Cell_Process(PCPType why) {
     **	then shimmer the cloaked object.
     */
     if (Cloak == CLOAKED) {
-      for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+      for (FacingType face : magic_enum::enum_values<FacingType>()) {
         CELL cell = Adjacent_Cell(Coord_Cell(Coord), face);
 
         if (Map.In_Radar(cell)) {

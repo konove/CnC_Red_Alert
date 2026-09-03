@@ -363,7 +363,7 @@ class BuildingClass : public TechnoClass {
  private:
   void Drop_Debris(TARGET source = kTargetNone);
 
-  static const COORDINATE CenterOffset[BSIZE_COUNT];
+  static const COORDINATE CenterOffset[magic_enum::enum_count<BSizeType>()];
 };
 
 #endif  // CNC_RED_ALERT_RA_BUILDING_H_

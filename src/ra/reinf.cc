@@ -506,16 +506,17 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
       *location that it can *	be unlimboed at. If this fails, then abort the
       *whole placement process.
       */
-      FacingType adj;
-      for (adj = FACING_N; adj < FACING_COUNT; adj++) {
+      bool found = false;
+      for (FacingType adj : magic_enum::enum_values<FacingType>()) {
         CELL trycell = Adjacent_Cell(newcell, adj);
         if (!Map.In_Radar(trycell) &&
             object->Can_Enter_Cell(trycell, adj) == MOVE_OK) {
           newcell = trycell;
+          found = true;
           break;
         }
       }
-      if (adj < FACING_COUNT) {
+      if (found) {
         continue;
       }
       newcell = -1;
@@ -611,7 +612,7 @@ bool Create_Special_Reinforcement(HouseClass* house,
       team->MissionCount = 1;
       if (mission == TMISSION_NONE) {
         team->MissionList[0].Mission = TMISSION_UNLOAD;
-        team->MissionList[0].Data.Value = WAYPT_REINF;
+        team->MissionList[0].Data.Value = ScenarioClass::kReinforcementWaypoint;
       } else {
         team->MissionList[0].Mission = mission;
         team->MissionList[0].Data.Value = argument;

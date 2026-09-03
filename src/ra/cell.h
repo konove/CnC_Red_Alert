@@ -125,7 +125,7 @@ class CellClass {
   **	will only consider the CrushZone. All other terrestrial travellers will
   **	use the normal Zone.
   */
-  unsigned char Zones[MZONE_COUNT];
+  unsigned char Zones[magic_enum::enum_count<MZoneType>()];
 
   /*
   ** This field controls whether an area is being jammed by a gap

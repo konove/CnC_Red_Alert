@@ -58,6 +58,7 @@
 #include <string>
 
 #include "externs.h"
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/conquer.h"
 #include "ra/const.h"
@@ -286,7 +287,7 @@ void SmudgeTypeClass::Init_Heap() {
  *=============================================================================================*/
 SmudgeType SmudgeTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
-    for (SmudgeType index = SMUDGE_FIRST; index < SMUDGE_COUNT; index++) {
+    for (SmudgeType index : magic_enum::enum_values<SmudgeType>()) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
         return index;
       }
@@ -341,7 +342,7 @@ const short* SmudgeTypeClass::Occupy_List(bool) const {
  *=============================================================================================*/
 void SmudgeTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
-    for (SmudgeType index = SMUDGE_FIRST; index < SMUDGE_COUNT; index++) {
+    for (SmudgeType index : magic_enum::enum_values<SmudgeType>()) {
       SmudgeTypeClass& smudge = As_Reference(index);
       // Fully constructed smudge data set name.
       auto fullname = std::filesystem::path(smudge.IniName)
@@ -404,7 +405,7 @@ void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 void SmudgeTypeClass::Prep_For_Add() {
-  for (SmudgeType index = SMUDGE_FIRST; index < SMUDGE_COUNT; index++) {
+  for (SmudgeType index : magic_enum::enum_values<SmudgeType>()) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
     }

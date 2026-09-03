@@ -96,7 +96,14 @@ class ScenarioClass {
   ** shouldn't be needed often; usually, you know the waypoint & you want the
   *CELL.
   */
-  CELL Waypoint[WAYPT_COUNT];
+  // Waypoints 0..97 are the scenario's lettered waypoints; the last three
+  // slots are reserved for the home cell, reinforcement arrivals and special
+  // airdrop reinforcements.
+  static constexpr int kWaypointCount = 101;
+  static constexpr int kSpecialWaypoint = kWaypointCount - 1;
+  static constexpr int kReinforcementWaypoint = kWaypointCount - 2;
+  static constexpr int kHomeWaypoint = kWaypointCount - 3;
+  CELL Waypoint[kWaypointCount];
 
   /*
   **	This holds the system wide mission countdown timer. Time based missions

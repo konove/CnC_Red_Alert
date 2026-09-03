@@ -1540,7 +1540,8 @@ int MapClass::Validate() {
     **	Validate Template & Icon data
     */
     ttype = (*this)[cell].TType;
-    if (ttype >= TEMPLATE_COUNT && ttype != TEMPLATE_NONE) {
+    if (ttype >= static_cast<int>(magic_enum::enum_count<TemplateType>()) &&
+        ttype != TEMPLATE_NONE) {
       return false;
     }
 
@@ -1565,7 +1566,8 @@ int MapClass::Validate() {
     **	Validate Overlay
     */
     overlay = (*this)[cell].Overlay;
-    if (overlay < OVERLAY_NONE || overlay >= OVERLAY_COUNT) {
+    if (overlay < OVERLAY_NONE ||
+        overlay >= static_cast<int>(magic_enum::enum_count<OverlayType>())) {
       return false;
     }
 
@@ -1573,7 +1575,8 @@ int MapClass::Validate() {
     **	Validate Smudge
     */
     smudge = (*this)[cell].Smudge;
-    if (smudge < SMUDGE_NONE || smudge >= SMUDGE_COUNT) {
+    if (smudge < SMUDGE_NONE ||
+        smudge >= static_cast<int>(magic_enum::enum_count<SmudgeType>())) {
       return false;
     }
 
@@ -1581,7 +1584,8 @@ int MapClass::Validate() {
     **	Validate LandType
     */
     land = (*this)[cell].Land_Type();
-    if (land < LAND_CLEAR || land >= LAND_COUNT) {
+    if (land < LAND_CLEAR ||
+        land >= static_cast<int>(magic_enum::enum_count<LandType>())) {
       return false;
     }
 

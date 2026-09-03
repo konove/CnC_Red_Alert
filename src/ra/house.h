@@ -542,7 +542,7 @@ class HouseClass {
     int AirDefense;
     int ArmorDefense;
     int InfantryDefense;
-  } ZoneInfo[ZONE_COUNT];
+  } ZoneInfo[magic_enum::enum_count<ZoneType>()];
 
   /*
   **	This records information about the last time a building of this

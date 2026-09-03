@@ -78,6 +78,8 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "base/types.h"
+#include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/bench_util.h"
@@ -110,7 +112,6 @@
 #include "ra/weapon.h"
 #include "ra/ww_audio.h"
 #include "tech/fixed.h"
-#include "base/types.h"
 
 /***********************************************************************************************
  * VesselClass::VesselClass -- Constructor for vessel class objects. *
@@ -710,7 +711,7 @@ void VesselClass::Per_Cell_Process(PCPType why) {
     IsPlanningToLook = false;
 
     if (IsToSelfRepair) {
-      for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+      for (FacingType face : magic_enum::enum_values<FacingType>()) {
         CELL cell = Coord_Cell(Adjacent_Cell(Center_Coord(), face));
         BuildingClass* whom = Map[cell].Cell_Building();
         if (whom != nullptr &&
@@ -772,8 +773,10 @@ ActionType VesselClass::What_Action(const ObjectClass* object) const {
       // check to see if the transporter can unload.
       bool found = 0;
       if (*this != VESSEL_CARRIER) {
-        for (FacingType face = FACING_N; face < FACING_COUNT && !found;
-             face++) {
+        for (FacingType face : magic_enum::enum_values<FacingType>()) {
+          if (found) {
+            break;
+          }
           CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
           CellClass* cell = &Map[cellnum];
           if (Map.In_Radar(cellnum) &&
@@ -1557,7 +1560,7 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
   */
   FacingType bestdir = FACING_N;
   int bestval = -1;
-  for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+  for (FacingType face : magic_enum::enum_values<FacingType>()) {
     int value = 0;
     CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
 
@@ -1607,7 +1610,7 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
   */
   moveto = 0;
   if (bestval > 0) {
-    static DirType _desired_to_actual[FACING_COUNT] = {
+    static DirType _desired_to_actual[magic_enum::enum_count<FacingType>()] = {
         DIR_S, DIR_SW, DIR_NW, DIR_NW, DIR_NE, DIR_NE, DIR_NE, DIR_SE};
 
     moveto = Adjacent_Cell(Coord_Cell(Coord), bestdir);
@@ -1730,7 +1733,7 @@ int VesselClass::Mission_Unload() {
               DirType toface = DIR_S + PrimaryFacing;
               bool placed = false;
 
-              for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+              for (FacingType face : magic_enum::enum_values<FacingType>()) {
                 DirType newface = toface + Facing_Dir(face);
                 CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
@@ -1762,7 +1765,7 @@ int VesselClass::Mission_Unload() {
                 /*
                 **	Tell everyone around the transport to scatter.
                 */
-                for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+                for (FacingType face : magic_enum::enum_values<FacingType>()) {
                   CellClass* cellptr = &Map[Coord].Adjacent_Cell(face);
                   if (cellptr->Is_Clear_To_Move(SPEED_TRACK, true, true)) {
                     cellptr->Incoming(0, true);

@@ -2828,10 +2828,10 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
             ttype->IsTransient = true;
             ttype->IsPrebuilt = false;
             ttype->IsReinforcable = false;
-            ttype->Origin = WAYPT_SPECIAL;
+            ttype->Origin = ScenarioClass::kSpecialWaypoint;
             ttype->MissionCount = 1;
             ttype->MissionList[0].Mission = TMISSION_ATT_WAYPT;
-            ttype->MissionList[0].Data.Value = WAYPT_SPECIAL;
+            ttype->MissionList[0].Data.Value = ScenarioClass::kSpecialWaypoint;
             ttype->ClassCount = 2;
             ttype->Members[0].Quantity =
                 AircraftTypeClass::As_Reference(AIRCRAFT_BADGER)
@@ -2846,7 +2846,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
 
         if (ttype != nullptr) {
           ttype->House = Class->House;
-          Scen.Waypoint[WAYPT_SPECIAL] = Map.Nearby_Location(cell, SPEED_FOOT);
+          Scen.Waypoint[ScenarioClass::kSpecialWaypoint] =
+              Map.Nearby_Location(cell, SPEED_FOOT);
           Do_Reinforcements(ttype);
         }
 
@@ -4347,7 +4348,7 @@ BuildingClass* HouseClass::Find_Building(StructType type, ZoneType zone) const {
 COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
   CHECK_EQ(Houses.ID(this), ID);
 
-  int zonerating[ZONE_COUNT];
+  int zonerating[magic_enum::enum_count<ZoneType>()];
   struct {
     int AntiAir;       // Average air defense for the base.
     int AntiArmor;     // Average armor defense for the base.
@@ -4371,14 +4372,20 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
   **	Determine the average zone strengths for the base. This value is
   **	used to determine what zones are considered under or over strength.
   */
-  for (ZoneType z = ZONE_NORTH; z < ZONE_COUNT; z++) {
+  for (ZoneType z : magic_enum::enum_values<ZoneType>()) {
+    if (z < ZONE_NORTH) {
+      continue;
+    }
     zoneinfo.AntiAir += ZoneInfo[z].AirDefense;
     zoneinfo.AntiArmor += ZoneInfo[z].ArmorDefense;
     zoneinfo.AntiInfantry += ZoneInfo[z].InfantryDefense;
   }
-  zoneinfo.AntiAir /= ZONE_COUNT - ZONE_NORTH;
-  zoneinfo.AntiArmor /= ZONE_COUNT - ZONE_NORTH;
-  zoneinfo.AntiInfantry /= ZONE_COUNT - ZONE_NORTH;
+  zoneinfo.AntiAir /=
+      static_cast<int>(magic_enum::enum_count<ZoneType>()) - ZONE_NORTH;
+  zoneinfo.AntiArmor /=
+      static_cast<int>(magic_enum::enum_count<ZoneType>()) - ZONE_NORTH;
+  zoneinfo.AntiInfantry /=
+      static_cast<int>(magic_enum::enum_count<ZoneType>()) - ZONE_NORTH;
 
   /*
   **	Give each zone a rating for value. The higher the value the more
@@ -4387,7 +4394,7 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
   *very under *	defended.
   */
   memset(&zonerating[0], '\0', sizeof(zonerating));
-  for (ZoneType z = ZONE_FIRST; z < ZONE_COUNT; z++) {
+  for (ZoneType z : magic_enum::enum_values<ZoneType>()) {
     int diff;
 
     diff = zoneinfo.AntiAir - ZoneInfo[z].AirDefense;
@@ -4419,9 +4426,10 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
   **	Now that each zone has been given a desirability rating, find the zone
   **	with the greatest value and try to place the building in that zone.
   */
-  ZoneType zone = Random_Pick(ZONE_FIRST, ZONE_WEST);
+  ZoneType zone =
+      Random_Pick(magic_enum::enum_values<ZoneType>().front(), ZONE_WEST);
   int largest = 0;
-  for (ZoneType z = ZONE_FIRST; z < ZONE_COUNT; z++) {
+  for (ZoneType z : magic_enum::enum_values<ZoneType>()) {
     if (zonerating[z] > largest) {
       zone = z;
       largest = zonerating[z];
@@ -4475,7 +4483,7 @@ void HouseClass::Recalc_Center() {
   */
   Center = 0;
   Radius = 0;
-  for (ZoneType zone = ZONE_FIRST; zone < ZONE_COUNT; zone++) {
+  for (ZoneType zone : magic_enum::enum_values<ZoneType>()) {
     ZoneInfo[zone].AirDefense = 0;
     ZoneInfo[zone].ArmorDefense = 0;
     ZoneInfo[zone].InfantryDefense = 0;

@@ -57,6 +57,7 @@
 #include <span>
 #include <string>
 
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/compat.h"
 #include "ra/conquer.h"
@@ -1766,7 +1767,7 @@ LandType TemplateTypeClass::Land_Type(int icon) const {
  *=============================================================================================*/
 TemplateType TemplateTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
-    for (TemplateType index = TEMPLATE_FIRST; index < TEMPLATE_COUNT; index++) {
+    for (TemplateType index : magic_enum::enum_values<TemplateType>()) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
         return index;
       }
@@ -1830,7 +1831,7 @@ const short* TemplateTypeClass::Occupy_List(bool) const {
  *loading now (as it should).                         *
  *=============================================================================================*/
 void TemplateTypeClass::Init(TheaterType theater) {
-  for (TemplateType index = TEMPLATE_FIRST; index < TEMPLATE_COUNT; index++) {
+  for (TemplateType index : magic_enum::enum_values<TemplateType>()) {
     TemplateTypeClass& tplate = As_Reference(index);
 
     tplate.ClearImage();
@@ -1929,7 +1930,7 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
  *map editing interface functions.                                    *
  *=============================================================================================*/
 void TemplateTypeClass::Prep_For_Add() {
-  for (TemplateType index = TEMPLATE_CLEAR1; index < TEMPLATE_COUNT; index++) {
+  for (TemplateType index : magic_enum::enum_values<TemplateType>()) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
     }
