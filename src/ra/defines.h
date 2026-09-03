@@ -274,50 +274,50 @@ inline constexpr int16_t kRefreshSidebar = 32766;
 **	size is critical. COORDINATE is more efficient when dealing with
 **	accuracy and object movement.
 */
-typedef unsigned short LEPTON;
-typedef union {
+using LEPTON = unsigned short;
+union LEPTON_COMPOSITE {
   LEPTON Raw;
   struct {
     unsigned char Lepton;
     unsigned char Cell;
   } Sub;
-} LEPTON_COMPOSITE;
+};
 
-typedef uint32_t COORDINATE;
-typedef union {
+using COORDINATE = uint32_t;
+union COORD_COMPOSITE {
   COORDINATE Coord;
   struct {
     LEPTON_COMPOSITE X;
     LEPTON_COMPOSITE Y;
   } Sub;
-} COORD_COMPOSITE;
+};
 
-typedef union {
+union CELL_COMPOSITE {
   CELL Cell;
   struct {
     unsigned X : 7;
     unsigned Y : 7;
   } Sub;
-} CELL_COMPOSITE;
+};
 
-typedef int WAYPOINT;
+using WAYPOINT = int;
 
 /**********************************************************************
 **	This is the target composit information. Notice that with an RTTI_NONE
 **	and an index value of 0, the target value returned is identical with
 **	kTargetNone. This is by design and is necessary.
 */
-typedef int32_t TARGET;
+using TARGET = int32_t;
 
 inline constexpr int kTargetMantissaBits = 24;  // Bits of value precision.
 inline constexpr int kTargetExponentBits = 8;
-typedef union {
+union TARGET_COMPOSITE {
   TARGET Target;
   struct {
     unsigned Mantissa : kTargetMantissaBits;
     unsigned Exponent : kTargetExponentBits;
   } Sub;
-} TARGET_COMPOSITE;
+};
 
 inline TARGET Build_Target(RTTIType kind, int value) {
   TARGET_COMPOSITE target;
@@ -1849,18 +1849,18 @@ inline DoType operator++(DoType&, int);
 **	This structure is associated with each maneuver type. It tells whether
 *the *	maneuver can be interrupted and the frame rate.
 */
-typedef struct {
+struct DoStruct {
   unsigned Interrupt : 1;    // Can it be interrupted?
   unsigned IsMobile : 1;     // Can it move while doing this?
   unsigned RandomStart : 1;  // Should animation be "randomized"?
   unsigned char Rate;        // Frame rate.
-} DoStruct;
+};
 
-typedef struct {
+struct DoInfoStruct {
   int Frame;            // Starting frame of the animation.
   unsigned char Count;  // Number of frames of animation.
   unsigned char Jump;   // Frames to jump between facings.
-} DoInfoStruct;
+};
 
 /****************************************************************************
 **	These are the various radio message that can be transmitted between
@@ -2325,11 +2325,11 @@ inline constexpr int kTheaterFlagTemperate = 1 << THEATER_TEMPERATE;
 inline constexpr int kTheaterFlagSnow = 1 << THEATER_SNOW;
 inline constexpr int kTheaterFlagInterior = 1 << THEATER_INTERIOR;
 
-typedef struct {
+struct TheaterDataType {
   char Name[16];
   char Root[10];
   char Suffix[4];
-} TheaterDataType;
+};
 
 /**********************************************************************
 **	Each building has a predetermined size. These are the size numbers.
@@ -2796,7 +2796,7 @@ enum SourceType {
 *table,
 ** the font remap table, and a color scheme for dialog boxes and buttons.
 */
-typedef struct RemapControlType {
+struct RemapControlType {
   unsigned char BrightColor;      // Highlight (bright) color index.
   unsigned char Color;            // Normal color index.
   unsigned char RemapTable[256];  // Actual remap table.
@@ -2809,22 +2809,22 @@ typedef struct RemapControlType {
   unsigned char Bright;     // Color used for highlighted text.
   unsigned char Underline;  // Color for underlining dialog box titles.
   unsigned char Bar;        // Selected entry list box background color.
-} RemapControlType;
+};
 
 /****************************************************************************
 **	Each type of terrain has certain characteristics. These are indicated
 **	by the structure below. For every element of terrain there is a
 **	corresponding GroundType structure.
 */
-typedef struct {
+struct GroundType {
   fixed Cost[magic_enum::enum_count<SpeedType>()];  // Terrain effect cost (normal).
   bool Build;               // Can build on this terrain?
-} GroundType;
+};
 
 /**************************************************************************
 **	Find_Path returns with a pointer to this structure.
 */
-typedef struct {
+struct PathType {
   CELL Start;              // Starting cell number.
   int Cost;                // Accumulated terrain cost.
   int Length;              // Command string length.
@@ -2832,7 +2832,7 @@ typedef struct {
   unsigned long* Overlap;  // Pointer to overlap list
   CELL LastOverlap;        // stores position of last overlap
   CELL LastFixup;          // stores position of last overlap
-} PathType;
+};
 
 
 /****************************************************************************
@@ -2852,7 +2852,7 @@ enum KeyFrameType {
 /*
 ** New Config structure for .CFG files
 */
-typedef struct {
+struct NewConfigType {
   unsigned DigitCard;      // SoundCardType.
   unsigned Port;           // SoundCardType.
   unsigned IRQ;            // SoundCardType.
@@ -2862,7 +2862,7 @@ typedef struct {
   unsigned Speed;          // stereo/mono sound card
   bool Reverse;            // Reverse left/right speakers
   char Language[4];
-} NewConfigType;
+};
 
 /****************************************************************************
 **	These are the types of dialogs that can pop up outside of the main loop,
