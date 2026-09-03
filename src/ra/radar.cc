@@ -204,17 +204,10 @@ void RadarClass::One_Time() {
   RadIHeight = 128 + 2;  //************
 
   DisplayClass::One_Time();
-#ifdef OBSOLETE
-  RadarButton.X = RadX + RadOffX;
-  RadarButton.Y = RadY + RadOffY;
-  RadarButton.Width = RadIWidth;
-  RadarButton.Height = RadIHeight;
-#else
   RadarButton.X = RadX;
   RadarButton.Y = RadY;
   RadarButton.Width = RadWidth;
   RadarButton.Height = RadHeight;
-#endif
 }
 
 /***********************************************************************************************

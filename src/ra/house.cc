@@ -4646,15 +4646,6 @@ int HouseClass::Expert_AI() {
           value += 100;
         }
 
-#ifdef OBSOLETE
-        /*
-        **	Human players are a given preference as the target.
-        */
-        if (h->IsHuman) {
-          value *= 2;
-        }
-#endif
-
         /*
         **	Compare the calculated value for this candidate house and if it
         *is *	greater than the previously recorded maximum, record this house

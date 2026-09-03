@@ -853,32 +853,6 @@ typedef enum ResultType {
   RESULT_DESTROYED  // Damaged to complete destruction.
 } ResultType;
 
-#ifdef OBSOLETE
-/**********************************************************************
-**	These are the special concrete control defines. They enumerate the
-**	sequence order of the concrete icons in the concrete art file.
-*/
-// DEBUG === convert this to be zero based so that a nulled cell is the
-//			 	 default cell.
-enum ConcreteEnum {
-  C_NONE = -1,
-  C_LEFT = 0,
-  C_RIGHT = 1,
-  C_RIGHT_UPDOWN = 2,
-  C_LEFT_UPDOWN = 3,
-  C_UP_RIGHT = 4,
-  C_UP_LEFT = 5,
-  C_DOWN_RIGHT = 6,
-  C_DOWN_LEFT = 7,
-  C_RIGHT_DOWN = 8,
-  C_LEFT_DOWN = 9,
-  C_RIGHT_UP = 10,
-  C_LEFT_UP = 11,
-  C_UPDOWN_RIGHT = 12,
-  C_UPDOWN_LEFT = 13
-};
-#endif
-
 /**********************************************************************
 **	Units that move can move at different speeds. These enumerate the
 **	different speeds that a unit can move.

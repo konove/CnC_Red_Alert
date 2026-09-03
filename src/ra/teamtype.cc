@@ -463,55 +463,6 @@ const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house, long,
         ttype->Number < maxnum) {
       choices[choicecount++] = ttype;
 
-#ifdef OBSOLETE
-      /*
-      **	Determine what kind of units this team requires.
-      */
-      long uneeded = 0;
-      long ineeded = 0;
-      long vneeded = 0;
-      long aneeded = 0;
-      for (int ctype = 0; ctype < ttype->ClassCount; ctype++) {
-        switch (ttype->Members[ctype].Class->What_Am_I()) {
-          case RTTI_INFANTRYTYPE:
-            ineeded |=
-                (1 << ((InfantryTypeClass*)ttype->Members[ctype].Class)->Type);
-            break;
-
-          case RTTI_UNITTYPE:
-            uneeded |=
-                (1 << ((UnitTypeClass*)ttype->Members[ctype].Class)->Type);
-            break;
-
-          case RTTI_VESSELTYPE:
-            vneeded |=
-                (1 << ((VesselTypeClass*)ttype->Members[ctype].Class)->Type);
-            break;
-
-          case RTTI_AIRCRAFTTYPE:
-            aneeded |=
-                (1 << ((AircraftTypeClass*)ttype->Members[ctype].Class)->Type);
-            break;
-        }
-      }
-
-      /*
-      **	If this team can use the types required, then consider it a
-      *possible *	team type to create.
-      */
-      int value = 0;
-      if ((aneeded & atypes) != 0 || (ineeded & itypes) != 0 ||
-          (uneeded & utypes) != 0 || (vneeded & vtypes) != 0) {
-        value = ttype->RecruitPriority;
-      } else {
-        value = ttype->RecruitPriority / 2;
-      }
-
-      if (best == nullptr || bestvalue < value) {
-        bestvalue = value;
-        best = ttype;
-      }
-#endif
     }
   }
 

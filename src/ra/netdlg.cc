@@ -2443,17 +2443,6 @@ static int Net_Join_Dialog() {
           display = REDRAW_MESSAGE;
         }
 
-#ifdef OBSOLETE
-        //
-        // This is for the old drop-down list of houses, not used any more.
-        //
-        if (housebtn.IsDropped) {
-          isdropped = 1;
-        } else if (isdropped) {
-          display = REDRAW_ALL;
-        }
-#endif
-
         break;
     }
 

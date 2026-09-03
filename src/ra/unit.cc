@@ -4318,41 +4318,23 @@ void UnitClass::Overrun_Square(CELL cell, bool threaten) {
       while (object != nullptr) {
         if (object->Class_Of().IsCrushable && !House->Is_Ally(object) &&
             Distance(object->Center_Coord()) < CELL_LEPTON_W / 2) {
-#ifdef OBSOLETE
+          ObjectClass* next = object->Next;
+          crushed = true;
+
           /*
-          ** If we're running over infantry, let's see if the infantry we're
-          ** squashing is a thief trying to capture us.  If so, let him succeed.
+          ** Record credit for the kill(s)
           */
-          if (object->What_Am_I() == RTTI_INFANTRY &&
-              *((InfantryClass*)object) == INFANTRY_THIEF &&
-              ((InfantryClass*)object)->NavCom == As_Target()) {
-            ObjectClass* next = object->Next;
-            IsOwnedByPlayer = ((InfantryClass*)object)->IsOwnedByPlayer;
-            House = ((InfantryClass*)object)->House;
-            delete object;
-            object = next;
-          } else {
-#endif
-            ObjectClass* next = object->Next;
-            crushed = true;
-
-            /*
-            ** Record credit for the kill(s)
-            */
-            Sound_Effect(VOC_SQUISH, Coord);
-            if (object->Height == 0) {
-              new AnimClass(ANIM_CORPSE1, object->Center_Coord());
-            }
-            object->Record_The_Kill(this);
-            object->Mark(MARK_UP);
-            object->Limbo();
-            delete object;
-            // new OverlayClass(OVERLAY_SQUISH, Coord_Cell(Coord));
-
-            object = next;
-#ifdef OBSOLETE
+          Sound_Effect(VOC_SQUISH, Coord);
+          if (object->Height == 0) {
+            new AnimClass(ANIM_CORPSE1, object->Center_Coord());
           }
-#endif
+          object->Record_The_Kill(this);
+          object->Mark(MARK_UP);
+          object->Limbo();
+          delete object;
+          // new OverlayClass(OVERLAY_SQUISH, Coord_Cell(Coord));
+
+          object = next;
         } else {
           object = object->Next;
         }
@@ -4544,12 +4526,6 @@ TARGET UnitClass::Greatest_Threat(ThreatType threat)  // const
   if (Class->SecondaryWeapon != nullptr) {
     threat = threat | Class->SecondaryWeapon->Allowed_Threats();
   }
-
-#ifdef OBSOLETE
-  if (House->IsHuman) {
-    threat = threat & ~THREAT_BUILDINGS;
-  }
-#endif
 
   return FootClass::Greatest_Threat(threat);
 }

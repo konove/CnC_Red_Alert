@@ -879,13 +879,6 @@ void FootClass::Approach_Target() {
       ** in the room.
       */
       maxrange -= 0x00B7;
-#ifdef OBSOLETE
-      if (What_Am_I() == RTTI_INFANTRY) {
-        maxrange -= 0x0111;
-      } else {
-        maxrange -= 0x00B7;
-      }
-#endif
       maxrange = std::max(maxrange, 0);
 
       COORDINATE tcoord = As_Coord(TarCom);
@@ -1310,11 +1303,6 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
           } else {
             cell = Map.Nearby_Location(cell, Techno_Type_Class()->Speed);
           }
-#ifdef OBSOLETE
-          cell = Map.Nearby_Location(cell, Techno_Type_Class()->Speed,
-                                     cellptr->Zones[Techno_Type_Class()->MZone],
-                                     Techno_Type_Class()->MZone);
-#endif
         }
 
         Player_Assign_Mission(MISSION_MOVE, kTargetNone, ::As_Target(cell));
@@ -1491,22 +1479,6 @@ void FootClass::Per_Cell_Process(PCPType why) {
       }
     }
 
-#ifdef OBSOLETE
-    /*
-    ** Flag any gap generators to re-draw
-    */
-    for (int index = 0; index < Buildings.Count(); index++) {
-      BuildingClass* obj = Buildings.Ptr(index);
-      if (obj && *obj == STRUCT_GAP && !obj->IsInLimbo &&
-          (HouseClass*)obj->House != PlayerPtr) {
-        int dist = Distance(obj) / CELL_LEPTON_W;
-        if (dist < (6 + Rule.GapShroudRadius)) {
-          //			if (dist < (6 + obj->Class->SightRange) ) {
-          obj->IsJamming = false;  // lie so it'll re-jam now
-        }
-      }
-    }
-#endif
   }
 
   TechnoClass::Per_Cell_Process(why);
@@ -2458,15 +2430,6 @@ void FootClass::AI() {
   TechnoClass::AI();
 
 // FootClass::Per_Cell_Process does this function already.
-#ifdef OBSOLETE
-  if (IsActive) {
-    if (!IsScattering && !IsTethered && !IsInLimbo &&
-        What_Am_I() != RTTI_AIRCRAFT && Target_Legal(TarCom) &&
-        In_Range(TarCom)) {
-      Assign_Destination(kTargetNone);
-    }
-  }
-#endif
 }
 
 /***********************************************************************************************

@@ -1376,25 +1376,13 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
           }
 
           /*
-          **	Some kinds of terrain are considered destroyable if the infantry
-          *is equipped *	with the weapon that can destroy it. Otherwise,
-          *the terrain is considered *	impassable.
+          **	Terrain is always impassable. Tiberian Dawn let infantry with a
+          **	wood-destroying weapon burn through trees; Red Alert dropped
+          **	that.
           */
           switch (obj->What_Am_I()) {
             case RTTI_TERRAIN:
-#ifdef OBSOLETE
-              if (((TerrainClass*)obj)->Class->Armor == ARMOR_WOOD &&
-                  Class->PrimaryWeapon->WarheadPtr->IsWoodDestroyer) {
-                if (retval < MOVE_DESTROYABLE) {
-                  retval = MOVE_DESTROYABLE;
-                }
-              } else {
-                return (MOVE_NO);
-              }
-              break;
-#else
               return MOVE_NO;
-#endif
             case RTTI_INFANTRY:
               if (*dynamic_cast<InfantryClass*>(obj) == INFANTRY_SPY &&
                   !Class->IsDog) {
@@ -1424,22 +1412,6 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
   */
   if (retval == MOVE_OK && !IsTethered &&
       Ground[cellptr->Land_Type()].Cost[SPEED_FOOT] == 0) {
-#ifdef OBSOLETE
-    /*
-    ** Special case - if it's an engineer, and the cell under consideration
-    ** is his NavCom, and his mission is mission_capture, then he's most
-    ** likely moving to his final destination to repair a bridge, so we
-    ** should let him.
-    */
-    if (*this == INFANTRY_RENOVATOR && Is_Target_Cell(TarCom) &&
-        (cell == ::As_Cell(NavCom)) &&
-        (cellptr->TType == TEMPLATE_BRIDGE1D ||
-         cellptr->TType == TEMPLATE_BRIDGE2D ||
-         (cellptr->TType >= TEMPLATE_BRIDGE_1C &&
-          cellptr->TType <= TEMPLATE_BRIDGE_3E))) {
-      return (MOVE_OK);
-    }
-#endif
     return MOVE_NO;
   }
 
@@ -2739,17 +2711,6 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
     }
   }
 
-#ifdef OBSOLETE
-  /*
-  ** See if it's a thief attacking an enemy vehicle, let him CAPTURE it.
-  */
-  if (*this == INFANTRY_THIEF && object->What_Am_I() == RTTI_UNIT) {
-    if (((UnitClass*)object)->House != House) {
-      return (ACTION_CAPTURE);
-    }
-  }
-#endif
-
   /*
   ** Dogs can only attack infantrymen
   */
@@ -3113,59 +3074,6 @@ ActionType InfantryClass::What_Action(CELL cell) const {
     }
   }
 
-#ifdef OBSOLETE
-  /*
-  ** Engineers may repair a destroyed bridge.
-  */
-  if (*this == INFANTRY_RENOVATOR && action == ACTION_NOMOVE) {
-    /*
-    ** If they're pointing on the wrong side of the bridge, ignore it
-    ** 'cause we can't get there.
-    */
-    TemplateType tt = Map[cell].TType;
-    if (tt == TEMPLATE_BRIDGE1D || tt == TEMPLATE_BRIDGE2D ||
-        tt == TEMPLATE_BRIDGE_1C || tt == TEMPLATE_BRIDGE_2C ||
-        (tt >= TEMPLATE_BRIDGE_3C && tt <= TEMPLATE_BRIDGE_3E)) {
-      /*
-      ** We know they're pointing at a destroyed bridge cell.  If the cell
-      ** they're pointing at is surrounded by impassables, return this
-      ** cell as impassable.  But, if any cell surrounding this cell is
-      ** passable, return that this is a capturable cell.
-      */
-      if (Map[cell].Land_Type() == LAND_ROCK) {
-        if (tt == TEMPLATE_BRIDGE_3C) {
-          return (ACTION_CAPTURE);
-        }
-
-        if (tt == TEMPLATE_BRIDGE_3C) {
-          return (ACTION_CAPTURE);
-        }
-        int y = Cell_Y(cell);
-        if (y) {
-          LandType above = Map[(CELL)(cell - (MAP_CELL_W - 1))].Land_Type();
-          if (above == LAND_CLEAR || above == LAND_ROAD) {
-            if (Map[(CELL)(cell - (MAP_CELL_W - 1))].Zone ==
-                Map[As_Cell(As_Target())].Zone) {
-              return (ACTION_CAPTURE);
-            }
-            return (ACTION_NOMOVE);
-          }
-        }
-        if (y < MAP_CELL_H) {
-          LandType below = Map[(CELL)(cell + MAP_CELL_W - 1)].Land_Type();
-          if (below == LAND_CLEAR || below == LAND_ROAD) {
-            if (Map[(CELL)(cell + MAP_CELL_W - 1)].Zone ==
-                Map[As_Cell(As_Target())].Zone) {
-              return (ACTION_CAPTURE);
-            }
-            return (ACTION_NOMOVE);
-          }
-        }
-      }
-      return (ACTION_NOMOVE);
-    }
-  }
-#endif
   return action;
 }
 
