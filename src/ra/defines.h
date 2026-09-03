@@ -41,6 +41,7 @@
 #include <cstdint>
 #include <utility>
 
+#include "magic_enum/magic_enum.hpp"
 #include "tech/fixed.h"
 
 /**********************************************************************
@@ -1722,6 +1723,14 @@ enum TemplateType : uint16_t {
   TEMPLATE_FIRST = 0
 };
 
+// Templates outgrow magic_enum's default window; TEMPLATE_NONE (65535)
+// stays outside it on purpose, it is not an index.
+template <>
+struct magic_enum::customize::enum_range<TemplateType> {
+  static constexpr int min = 0;
+  static constexpr int max = 512;
+};
+
 /**********************************************************************
 **	The three dimensional terrain objects are enumerated here. These
 **	objects function similar to buildings in that they can be driven
@@ -2770,6 +2779,13 @@ enum VocType {
 
   VOC_COUNT,
   VOC_FIRST = 0
+};
+
+// Sound effects outgrow magic_enum's default window of 127.
+template <>
+struct magic_enum::customize::enum_range<VocType> {
+  static constexpr int min = 0;
+  static constexpr int max = 256;
 };
 
 /*

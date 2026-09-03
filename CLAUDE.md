@@ -211,11 +211,19 @@ release builds—follow this pattern. Use `CHECK` for programmer errors/invarian
 
 ## magic_enum
 
-Auto-fetched via CMake (`magic_enum::magic_enum`). Use `magic_enum::enum_values<T>()` to iterate an enum and
-`enum_count<T>()` for array sizes instead of `X_FIRST`/`X_COUNT` sentinels, and `enum_name(value)` in `DLOG`
-output. Enums it reflects must not contain sentinels or aliases. It only sees enumerator values in
-`[-128, 127]` by default; specialize `magic_enum::customize::enum_range<T>` for wider enums (`DirType`, speeds)
-and use the `enum_flags_*` API for bit-flag enums. Include it in `.cc` files, not in widely included headers.
+Auto-fetched via CMake (`magic_enum::magic_enum`, linked into `rasdl`). Enums hold only real values: no
+`X_FIRST`/`X_COUNT` sentinels and no aliases. A negative `X_NONE` is fine; the build sets
+`MAGIC_ENUM_RANGE_MIN=0`, so reflection sees exactly the index values 0..N-1 (and `enum_name(X_NONE)` is empty).
+
+- Array size or count: `magic_enum::enum_count<E>()`. It is a `size_t`; when comparing with an `int` index write
+  `static_cast<int>(magic_enum::enum_count<E>())` rather than adding a sign-compare warning.
+- Iteration: `for (E e : magic_enum::enum_values<E>())`. First/last value: `enum_values<E>().front()` / `.back()`.
+- Names in debug output: `magic_enum::enum_name(value)` in `DLOG`.
+- Enums with values above 127 need an `enum_range` specialization next to the enum (see VocType and TemplateType in
+  `ra/defines.h`). Enums whose values are not 0..N-1 (bit flags, shape indices) are not index enums; give them
+  constants instead.
+- Each reflected enum costs ~40 ms of compile time per translation unit; `defines.h` includes the header, `.cc`
+  files that reflect include `magic_enum/magic_enum.hpp` themselves.
 
 ## Legacy Code
 

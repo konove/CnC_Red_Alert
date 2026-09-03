@@ -46,6 +46,10 @@ FetchContent_Declare(
         SYSTEM
 )
 FetchContent_MakeAvailable(magic_enum)
+# The game's enums are array indices 0..N-1, sometimes preceded by a negative
+# "none" value. Reflecting from 0 makes enum_count/enum_values see exactly the
+# index values, so nothing needs FIRST/COUNT sentinels.
+target_compile_definitions(magic_enum INTERFACE MAGIC_ENUM_RANGE_MIN=0)
 
 # Option to enable AddressSanitizer for debugging memory issues
 option(ENABLE_ASAN "Enable AddressSanitizer for memory debugging" OFF)
