@@ -471,48 +471,6 @@ bool FootClass::Basic_Path() {
         }
       }
 
-#ifdef NEVER
-      /*
-      **	Determine if ANY path could be calculated by first examining the
-      *most *	aggressive case. If this fails, then no path will succeed.
-      *Further *	scanning is unnecessary.
-      */
-      path = Find_Path(cell, &workpath1[0], sizeof(workpath1), maxtype);
-      if (path && path->Cost) {
-        memcpy(&path1, path, sizeof(path1));
-        found1 = true;
-
-        /*
-        **	Scan for the best path possible. If this succeeds, then do a
-        *simple *	comparison with the most aggressive path. If they are
-        *very close, then *	go with the best (easiest) path method.
-        */
-        path = Find_Path(cell, &workpath2[0], sizeof(workpath2), MOVE_CLOAK);
-        if (path && path->Cost &&
-            path->Cost < max((path1.Cost + (path1.Cost / 2)), 3)) {
-          memcpy(&path1, path, sizeof(path1));
-          memcpy(workpath1, workpath2, sizeof(workpath1));
-        } else {
-          /*
-          **	The easiest path method didn't result in a satisfactory path.
-          *Scan through *	the rest of the path options, looking for the
-          *best one.
-          */
-          for (MoveType move = (MoveType)(MOVE_CLOAK + 1);
-               move < (MoveType)(maxtype - 1); move++) {
-            //					for (MoveType move =
-            // MOVE_MOVING_BLOCK; move < maxtype-1; move++) {
-            path = Find_Path(cell, &workpath2[0], sizeof(workpath2), move);
-            if (path && path->Cost &&
-                path->Cost < max((path1.Cost + (path1.Cost / 2)), 3)) {
-              memcpy(&path1, path, sizeof(path1));
-              memcpy(workpath1, workpath2, sizeof(workpath1));
-            }
-          }
-        }
-      }
-#endif
-
       /*
       **	If a good path was found, then record it in the object's path
       **	list.

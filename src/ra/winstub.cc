@@ -236,14 +236,6 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       //				if (WWMouse) WWMouse->Set_Cursor_Clip();
       //			}
       return (0);
-#ifdef NEVER
-    case WM_ACTIVATE:
-      if (low_param == WA_INACTIVE) {
-        GameInFocus = false;
-        Focus_Loss();
-      }
-      return (0);
-#endif  // NEVER
 
     case WM_SYSCOMMAND:
       switch (wParam) {

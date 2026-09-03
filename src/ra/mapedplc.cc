@@ -1567,33 +1567,6 @@ void MapEditClass::Set_House_Buttons(HousesType house, GadgetClass*, int)
 {
   HouseList->Set_Selected_Index(house);
 
-#ifdef NEVER
-  HousesType h;
-  int id;
-  TextButtonClass* btn;
-
-  /*
-  **	Loop through all houses, searching the button list for each one.
-  */
-  for (h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
-    /*
-    **	Compute the desired button ID; get a pointer to the button
-    */
-    id = (int)h + base_id;
-    btn = (TextButtonClass*)btnlist->Extract_Gadget(id);
-    if (btn) {
-      /*
-      **	If this house value is the desired one, turn the button on;
-      **	otherwise, turn it off.
-      */
-      if (h == house) {
-        btn->Turn_On();
-      } else {
-        btn->Turn_Off();
-      }
-    }
-  }
-#endif
 }
 
 /***************************************************************************

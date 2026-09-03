@@ -2620,29 +2620,6 @@ inline int operator*(FacingType f1, FacingType f2) {
   return static_cast<int>(f1) * static_cast<int>(f2);
 }
 
-#ifdef NEVER
-typedef enum DirType {
-  DIR_MIN = 0,
-  DIR_N = 0,
-  DIR_NE = 1 << 5,
-  DIR_E = 2 << 5,
-  DIR_SE = 3 << 5,
-  DIR_S = 4 << 5,
-  DIR_SW = 5 << 5,
-  DIR_SW_X1 = (5 << 5) - 8,   // Direction of harvester while unloading.
-  DIR_SW_X2 = (5 << 5) - 16,  // Direction of harvester while unloading.
-  DIR_W = 6 << 5,
-  DIR_NW = 7 << 5,
-  DIR_MAX = 255
-} DirType;
-inline DirType operator+(DirType f1, DirType f2) {
-  return (DirType)(((int)f1 + (int)f2) & 0x00FF);
-}
-inline DirType operator+(DirType f1, int f2) {
-  return (DirType)(((int)f1 + (int)f2) & 0x00FF);
-}
-#endif
-
 /****************************************************************************
 **	Timer constants. These are used when setting the countdown timer.
 **	Note that this is based upon a timer that ticks every 60th of a second.

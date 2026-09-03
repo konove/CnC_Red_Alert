@@ -94,17 +94,6 @@
 #include "ra/ww_audio.h"
 #include "tech/fixed.h"
 
-#ifdef NEVER
-void test() {
-  enum nums { one, two, three };
-
-  nums x;
-  nums* ptr;
-
-  ptr = &x;
-}
-#endif
-
 /***********************************************************************************************
  * DriveClass::Response_Select -- Voice feedback when selecting the unit. *
  *                                                                                             *
@@ -1167,17 +1156,6 @@ bool DriveClass::Start_Of_Move() {
     speed = 128;
   }
 
-#ifdef NEVER
-  /*
-  **	Set the jiggle flag if the terrain would cause the unit
-  **	to jiggle when travelled over.
-  */
-  BaseF &= ~BASEF_JIGGLE;
-  if (Ground[ground].Jiggle) {
-    BaseF |= BASEF_JIGGLE;
-  }
-#endif
-
   /*
   **	A damaged unit has a reduced speed.
   */
@@ -1651,18 +1629,6 @@ void DriveClass::Fixup_Path(PathType* path) {
  *=============================================================================================*/
 void DriveClass::Lay_Track() {
   assert(IsActive);
-
-#ifdef NEVER
-  static IconCommandType* _trackdirs[8] = {TrackN_S,   TrackNE_SW, TrackE_W,
-                                           TrackNW_SE, TrackN_S,   TrackNE_SW,
-                                           TrackE_W,   TrackNW_SE};
-
-  if (!(ClassF & CLASSF_TRACKS)) {
-    return;
-  }
-
-  Icon_Install(Coord_Cell(Coord), _trackdirs[Facing_To_8(BodyFacing)]);
-#endif
 }
 
 /***********************************************************************************************

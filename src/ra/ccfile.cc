@@ -574,21 +574,6 @@ int __cdecl Find_File(const char* file_name) {
   return file.Is_Available();
 }
 
-#ifdef NEVER
-int __cdecl Delete_File(const char* file_name) {
-  return (CCFileClass(file_name).Delete());
-}
-
-int __cdecl Create_File(const char* file_name) {
-  return (CCFileClass(file_name).Create());
-}
-
-unsigned long __cdecl Load_Data(const char* name, void* ptr,
-                                unsigned long size) {
-  return (CCFileClass(name).Read(ptr, size));
-}
-#endif
-
 void* __cdecl Load_Alloc_Data(const char* name, int) {
   CCFileClass file(name);
 
@@ -602,32 +587,12 @@ unsigned long __cdecl File_Size(int handle) {
   return 0;
 }
 
-#ifdef NEVER
-unsigned long __cdecl Write_Data(const char* name, const void* ptr,
-                                 unsigned long size) {
-  return (CCFileClass(name).Write(ptr, size));
-}
-#endif
-
 unsigned long __cdecl Seek_File(int handle, long offset, int starting) {
   if (handle != WWERROR && Handles[handle].Is_Open()) {
     return Handles[handle].Seek(offset, starting);
   }
   return 0;
 }
-
-#ifdef NEVER
-bool __cdecl Multi_Drive_Search(bool on) {
-  //	return(CCFileClass::Multi_Drive_Search(on));
-  return (on);
-}
-
-void __cdecl WWDOS_Init() {}
-
-void __cdecl WWDOS_Shutdown() {}
-
-int __cdecl Find_Disk_Number(const char*) { return (0); }
-#endif
 
 // unsigned long __cdecl Load_Uncompress(char const * file, BuffType
 // uncomp_buff, BuffType dest_buff, void * reserved_data)

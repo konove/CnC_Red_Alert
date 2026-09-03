@@ -177,14 +177,6 @@ void Format_Runtime_Text(char* buffer, size_t size, const char* format,
 
 #pragma GCC diagnostic pop
 
-#ifdef NEVER
-void File_Fatal(const char* message) {
-  // Prog_End();
-  perror(message);
-  Emergency_Exit(EXIT_FAILURE);
-}
-#endif
-
 /***********************************************************************************************
  * Load_Uncompress -- Loads and uncompresses data to a buffer. *
  *                                                                                             *

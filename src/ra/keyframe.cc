@@ -188,19 +188,8 @@ unsigned long Build_Frame(const void* dataptr, unsigned short framenumber,
       return nullptr;
     }
 
-#ifdef NEVER
-    // check for LCW'd rsd
-
-    if (((offset[1] >> 24) & KF_LCW)) {
-      length = LCW_Uncompress(ptr, buffptr, buffsize);
-    } else {
-      length = buffsize;
-      Apply_XOR_Delta(buffptr, Add_Long_To_Pointer(ptr, offdiff));
-    }
-#else
     length = buffsize;
     Apply_Delta(buffptr, Add_Long_To_Pointer(ptr, offdiff));
-#endif
 
     if (frameflags & KF_DELTA) {
       // adjust to delta after the keydelta
@@ -211,19 +200,8 @@ unsigned long Build_Frame(const void* dataptr, unsigned short framenumber,
       while (currframe <= framenumber) {
         offdiff = (offset[subframe] & 0x00FFFFFFL) - offcurr;
 
-#ifdef NEVER
-        // check for LCW'd rsd
-
-        if (((offset[1] >> 24) & KF_LCW)) {
-          length = LCW_Uncompress(ptr, buffptr, buffsize);
-        } else {
-          length = buffsize;
-          Apply_XOR_Delta(buffptr, Add_Long_To_Pointer(ptr, offdiff));
-        }
-#else
         length = buffsize;
         Apply_Delta(buffptr, Add_Long_To_Pointer(ptr, offdiff));
-#endif
 
         currframe++;
         subframe += 2;

@@ -307,13 +307,6 @@ int MapEditClass::Load_Scenario() {
     Session.NumPlayers = 1;
     LastHouse = HOUSE_MULTI1;
   } else {
-#ifdef NEVER
-    if (ScenPlayer == SCEN_PLAYER_JP) {
-      PlayerPtr = HouseClass::As_Pointer(HOUSE_MULTI4);
-      PlayerPtr->IsHuman = true;
-      Base.House = HOUSE_MULTI4;
-    } else {
-#endif
       LastHouse = HOUSE_GOOD;
     }
 
