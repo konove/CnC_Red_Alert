@@ -489,16 +489,6 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
     rotation = static_cast<DirType>(Rotation16[SecondaryFacing]);
   }
 
-#ifdef TOFIX
-  /*
-  **	The orca attack helicopter uses a special shape set when it is
-  *travelling *	forward above a certain speed.
-  */
-  if (*this == AIRCRAFT_HIND && Get_Speed() >= MPH_MEDIUM_FAST) {
-    shapenum += Class->Rotation;
-  }
-#endif
-
   /*
   **	Helicopters that are flying have a "bobbing" effect.
   */
