@@ -4666,18 +4666,6 @@ int TechnoClass::Value() const {
     }
   }
 
-#ifdef TOFIX
-  /*
-  **	Increase the value of power producing object when there is power
-  *critical *	defensive structures.
-  */
-  if (What_Am_I() == RTTI_BUILDING && ((BuildingClass*)this)->Class->Power) {
-    if (House->BScan & (STRUCTF_ATOWER | STRUCTF_OBELISK)) {
-      value += Techno_Type_Class()->Reward;
-    }
-  }
-#endif
-
   return Risk() + Techno_Type_Class()->Reward + value;
 }
 
