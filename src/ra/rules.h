@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_RULES_H_
 #define CNC_RED_ALERT_RA_RULES_H_
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "tech/fixed.h"
@@ -506,7 +507,7 @@ class RulesClass {
   **	This array controls the difficulty affects on the game. There is one
   **	difficulty class object for each difficulty level.
   */
-  DifficultyClass Diff[DIFF_COUNT];
+  DifficultyClass Diff[magic_enum::enum_count<DiffType>()];
 
   /*
   **	Is the computer paranoid? If so, then it will band together with other

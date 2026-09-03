@@ -75,6 +75,7 @@
 #include <string>
 
 #include "absl/log/log.h"
+#include "magic_enum/magic_enum.hpp"
 #include "absl/strings/match.h"
 #include "port/ex_string.h"
 #include "port/platform.h"
@@ -636,6 +637,9 @@ bool Select_Game(bool /*fade*/) {
               Scen.Difficulty = DIFF_HARD;
               break;
           }
+          DLOG(INFO) << "Difficulty: player "
+                     << magic_enum::enum_name(Scen.Difficulty) << ", computer "
+                     << magic_enum::enum_name(Scen.CDifficulty);
 
           Theme.Fade_Out();
           Theme.Queue_Song(THEME_FIRST);

@@ -214,14 +214,7 @@ typedef enum RTTIType {
 /**********************************************************************
 **	These are the difficulty settings of the game.
 */
-typedef enum DiffType {
-  DIFF_EASY,
-  DIFF_NORMAL,
-  DIFF_HARD,
-
-  DIFF_COUNT,
-  DIFF_FIRST = 0
-} DiffType;
+typedef enum DiffType { DIFF_EASY, DIFF_NORMAL, DIFF_HARD } DiffType;
 
 /**********************************************************************
 **	This is the size of the speech buffer. This value should be as large

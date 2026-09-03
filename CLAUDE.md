@@ -209,6 +209,14 @@ release builds—follow this pattern. Use `CHECK` for programmer errors/invarian
 
 **CMake linking:** `target_link_libraries(mytarget PRIVATE absl::log absl::check absl::strings)`
 
+## magic_enum
+
+Auto-fetched via CMake (`magic_enum::magic_enum`). Use `magic_enum::enum_values<T>()` to iterate an enum and
+`enum_count<T>()` for array sizes instead of `X_FIRST`/`X_COUNT` sentinels, and `enum_name(value)` in `DLOG`
+output. Enums it reflects must not contain sentinels or aliases. It only sees enumerator values in
+`[-128, 127]` by default; specialize `magic_enum::customize::enum_range<T>` for wider enums (`DirType`, speeds)
+and use the `enum_flags_*` API for bit-flag enums. Include it in `.cc` files, not in widely included headers.
+
 ## Legacy Code
 
 You will encounter: `strcpy`/`strcat`/`sprintf`, raw `new`/`delete`, C-style casts, globals in `ra/externs.h`,

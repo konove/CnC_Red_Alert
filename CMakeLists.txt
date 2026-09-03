@@ -38,6 +38,15 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+# magic_enum: compile-time enum reflection (enum_values, enum_count, enum_name).
+FetchContent_Declare(
+        magic_enum
+        GIT_REPOSITORY https://github.com/Neargye/magic_enum.git
+        GIT_TAG v0.9.7
+        SYSTEM
+)
+FetchContent_MakeAvailable(magic_enum)
+
 # Option to enable AddressSanitizer for debugging memory issues
 option(ENABLE_ASAN "Enable AddressSanitizer for memory debugging" OFF)
 

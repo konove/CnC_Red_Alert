@@ -108,7 +108,8 @@ target_link_libraries(rasdl PUBLIC absl::strings PRIVATE
         absl::log_initialize
         absl::status
         absl::statusor
-        absl::str_format) # mpgdll wwipx32
+        absl::str_format
+        magic_enum::magic_enum) # mpgdll wwipx32
 
 install(TARGETS rasdl)
 
@@ -135,14 +136,14 @@ add_gtest(
 add_gtest(
     NAME ra_winbits_test
     SOURCES winbits_test.cc winbits.cc dib.cc
-    LIBS base tech port sdllib vqa32 absl::strings absl::check absl::log
+    LIBS base tech port sdllib vqa32 absl::strings absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_winbits_test)
 
 add_gtest(
     NAME ra_heap_layout_test
     SOURCES heap_layout_test.cc
-    LIBS base tech port sdllib vqa32 absl::strings absl::check absl::log
+    LIBS base tech port sdllib vqa32 absl::strings absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_heap_layout_test)
 
