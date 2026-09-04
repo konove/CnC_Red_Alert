@@ -77,6 +77,10 @@
 #include "td/textbtn.h"
 #include "tech/rawfile.h"
 
+#ifdef _WIN32
+#include "td/ccdde.h"
+#endif
+
 /***************************************************************************
 ** Internet specific globals
 */
@@ -415,6 +419,10 @@ bool Spawn_Registration_App() {
  * HISTORY: * 6/7/96 8:30PM ST : Created *
  *=============================================================================================*/
 bool Do_The_Internet_Menu_Thang() {
+#ifdef _WIN32
+  // The payload WChat expects with a connection-failed notice.
+  char packet[10] = {"Hello"};
+#endif
 #ifndef DEMO
 
   int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;

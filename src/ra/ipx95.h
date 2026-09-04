@@ -45,24 +45,22 @@
 
 #ifndef CNC_RED_ALERT_RA_IPX95_H_
 #define CNC_RED_ALERT_RA_IPX95_H_
-#endif  // CNC_RED_ALERT_RA_IPX95_H_
 
 /*
 ** Types for function pointers
 */
-typedef int __stdcall (*IPXInitialiseType)();
-typedef int __stdcall (*IPXGetOutstandingBuffer95Type)(unsigned char*);
-typedef void __stdcall (*IPXShutDown95Type)();
-typedef int __stdcall (*IPXSendPacket95Type)(unsigned char*, unsigned char*,
-                                             int, unsigned char*,
-                                             unsigned char*);
-typedef int __stdcall (*IPXBroadcastPacket95Type)(unsigned char*, int);
-typedef int __stdcall (*IPXStartListening95Type)();
-typedef int __stdcall (*IPXOpenSocket95Type)(int);
-typedef void __stdcall (*IPXCloseSocket95Type)(int);
-typedef int __stdcall (*IPXGetConnectionNumber95Type)();
-typedef int __stdcall (*IPXGetLocalTarget95)(unsigned char*, unsigned char*,
-                                             unsigned short, unsigned char*);
+typedef int (*IPXInitialiseType)();
+typedef int (*IPXGetOutstandingBuffer95Type)(unsigned char*);
+typedef void (*IPXShutDown95Type)();
+typedef int (*IPXSendPacket95Type)(unsigned char*, unsigned char*, int,
+                                   unsigned char*, unsigned char*);
+typedef int (*IPXBroadcastPacket95Type)(unsigned char*, int);
+typedef int (*IPXStartListening95Type)();
+typedef int (*IPXOpenSocket95Type)(int);
+typedef void (*IPXCloseSocket95Type)(int);
+typedef int (*IPXGetConnectionNumber95Type)();
+typedef int (*IPXGetLocalTarget95)(unsigned char*, unsigned char*,
+                                   unsigned short, unsigned char*);
 
 /*
 ** Function pointers
@@ -87,3 +85,5 @@ bool Load_IPX_Dll();
 void Unload_IPX_Dll();
 
 extern bool WindowsNT;
+
+#endif  // CNC_RED_ALERT_RA_IPX95_H_

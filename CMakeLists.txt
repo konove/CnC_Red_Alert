@@ -111,8 +111,9 @@ if (MSVC)
             /wd4068 /wd4081 # old #pragmas for another compiler
             /wd4661 # missing template definitions, 10000s of these
     )
-    # <windows.h> defines min/max macros that break std::min/std::max.
-    add_compile_definitions(NOMINMAX)
+    # <windows.h> defines min/max macros that break std::min/std::max, and
+    # VK_* key codes that collide with the SDL-based ones in sdllib/keyboard.h.
+    add_compile_definitions(NOMINMAX NOVIRTUALKEYCODES)
 else ()
     if (STRICT_CHECKS)
         if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")

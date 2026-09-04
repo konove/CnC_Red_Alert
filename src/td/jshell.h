@@ -42,12 +42,12 @@
 #define CNC_RED_ALERT_TD_JSHELL_H_
 
 #include <algorithm>
+#include <bit>
 #include <cstdarg>
 #include <cstddef>
 #include <cstdint>
 
 #include "absl/base/attributes.h"
-
 #include "sdllib/buffer.h"
 #include "sdllib/iff.h"
 #include "sdllib/keyboard.h"
@@ -165,18 +165,11 @@ inline int First_True_Bit(const void* array) {
   const uint32_t* array32 = static_cast<const uint32_t*>(array);
   int off = 0;
   while (true) {
-    uint32_t v = *array32++;
-#ifdef _MSC_VER
-    DWORD pos;
-    if (_BitScanForward(&pos, v)) {
+    const uint32_t v = *array32++;
+    const int pos = std::countr_zero(v);
+    if (pos < 32) {
       return off + pos;
     }
-#else
-    int pos = __builtin_ffs(v);
-    if (pos) {
-      return off + pos - 1;
-    }
-#endif
     off += 32;
   }
 }
@@ -185,18 +178,11 @@ inline int First_False_Bit(const void* array) {
   const uint32_t* array32 = static_cast<const uint32_t*>(array);
   int off = 0;
   while (true) {
-    uint32_t v = *array32++;
-#ifdef _MSC_VER
-    DWORD pos;
-    if (_BitScanForward(&pos, ~v)) {
+    const uint32_t v = *array32++;
+    const int pos = std::countr_zero(~v);
+    if (pos < 32) {
       return off + pos;
     }
-#else
-    int pos = __builtin_ffs(~v);
-    if (pos) {
-      return off + pos - 1;
-    }
-#endif
     off += 32;
   }
 }

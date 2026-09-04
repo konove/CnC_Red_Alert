@@ -22,8 +22,10 @@
 
 #ifdef _WIN32
 
-#include <objbase.h>
 #include <windows.h>
+// Not self-contained: both need the types from <windows.h> above.
+#include <objbase.h>
+#include <ocidl.h>
 
 #else
 
@@ -157,5 +159,18 @@ HRESULT CoCreateInstance(REFCLSID clsid, IUnknown* outer, DWORD context,
                          REFIID iid, void** object);
 
 #endif  // _WIN32
+
+// Declares an event sink's destructor. The shim's IUnknown has a virtual
+// destructor for -Wnon-virtual-dtor, so the sink's overrides it; the real
+// IUnknown has none, so on Windows the sink's must be virtual in its own right.
+//
+// Example:
+//   COM_SINK_DESTRUCTOR(RAChatEventSink);
+//   COM_SINK_DESTRUCTOR(RADownloadEventSink) = default;
+#ifdef _WIN32
+#define COM_SINK_DESTRUCTOR(Class) virtual ~Class()
+#else
+#define COM_SINK_DESTRUCTOR(Class) ~Class() override
+#endif
 
 #endif  // CNC_RED_ALERT_PORT_WIN32_WIN32_COM_H_

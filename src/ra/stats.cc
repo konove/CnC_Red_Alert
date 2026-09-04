@@ -175,9 +175,13 @@ TimerClass GameTimer;
 long GameEndTime;
 void* PacketLater = nullptr;
 
+#ifdef _WIN32
+#include <winsock.h>
+#else
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <unistd.h>
+#endif
 
 #include "port/safe_string.h"
 #include "ra/config.h"

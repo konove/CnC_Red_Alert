@@ -41,9 +41,8 @@
 
 #include "td/debug.h"
 
-#include <unistd.h>
-
 #include <cstdio>
+#include <filesystem>
 
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
@@ -209,7 +208,7 @@ void Debug_Key(unsigned input) {
             } else {
               sprintf(filename, "scrsht%d.pcx", lp);
             }
-            if (access(filename, F_OK) == -1) {
+            if (!std::filesystem::exists(filename)) {
               break;
             }
           }

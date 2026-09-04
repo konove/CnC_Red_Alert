@@ -364,36 +364,6 @@ int Test_Null_Modem() {
     Show_Mouse();
   }
 
-#ifdef _WIN32
-  /*
-  ** This is supposed to be a direct connection so hang up any modem on this
-  *port
-  ** just to annoy British Telecom
-  */
-  /*
-  ** Go into break mode
-  */
-  SetCommBreak(SerialPort->Get_Port_Handle());
-
-  /*
-  ** Send hangup command
-  */
-  SerialPort->Write_To_Serial_Port((unsigned char*)"ATH\r", strlen("ATH\r"));
-  CountDownTimerClass time;
-  time.Set(2 * 60);
-  while (time.Time()) {
-  }
-
-  /*
-  ** Back out of break mode
-  */
-  ClearCommBreak(SerialPort->Get_Port_Handle());
-
-  /*
-  ** Drop DTR as well - just in case the modem still hasnt got the message
-  */
-  EscapeCommFunction(SerialPort->Get_Port_Handle(), CLRDTR);
-#endif  // _WIN32
 
   /*
   ** Check for a packet.  If we detect one, the other system has already been
@@ -4197,11 +4167,11 @@ int Com_Scenario_Dialog(bool skirmish) {
       //
       if (!skirmish) {
         if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-          Session.MaxAhead = static_cast<int>(
-              std::max((SendPacket.ScenarioInfo.ResponseTime / 8 +
-                        (Session.FrameSendRate - 1)) /
-                           Session.FrameSendRate * Session.FrameSendRate,
-                       Session.FrameSendRate * 2));
+          Session.MaxAhead = static_cast<int>(std::max<int64_t>(
+              (SendPacket.ScenarioInfo.ResponseTime / 8 +
+               (Session.FrameSendRate - 1)) /
+                  Session.FrameSendRate * Session.FrameSendRate,
+              Session.FrameSendRate * 2));
         } else {
           Session.MaxAhead = std::max(
               static_cast<unsigned>(SendPacket.ScenarioInfo.ResponseTime / 8),
@@ -5843,11 +5813,11 @@ int Com_Show_Scenario_Dialog() {
             // to execute a packet
             //
             if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-              Session.MaxAhead = static_cast<int>(
-                  std::max((ReceivePacket.ScenarioInfo.ResponseTime / 8 +
-                            (Session.FrameSendRate - 1)) /
-                               Session.FrameSendRate * Session.FrameSendRate,
-                           Session.FrameSendRate * 2));
+              Session.MaxAhead = static_cast<int>(std::max<int64_t>(
+                  (ReceivePacket.ScenarioInfo.ResponseTime / 8 +
+                   (Session.FrameSendRate - 1)) /
+                      Session.FrameSendRate * Session.FrameSendRate,
+                  Session.FrameSendRate * 2));
             } else {
               Session.MaxAhead =
                   std::max(static_cast<unsigned>(

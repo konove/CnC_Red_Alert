@@ -144,6 +144,10 @@
 #include "td/interpal.h"
 #include "base/types.h"
 
+#ifdef _WIN32
+#include "td/ccdde.h"
+#endif
+
 #define SHAPE_TRANS 0x40
 
 void* Get_Shape_Header_Data(void* ptr);

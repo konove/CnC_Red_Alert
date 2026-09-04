@@ -47,8 +47,8 @@
 
 #include "ra/connect.h"
 
+#include <chrono>
 #include <cstring>
-#include <ctime>
 
 /*
 ********************************* Globals ***********************************
@@ -766,11 +766,10 @@ int ConnectionClass::Service_Receive_Queue() {
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 unsigned long ConnectionClass::Time() {
-  timespec ts;
-  clock_gettime(CLOCK_MONOTONIC, &ts);
-  const unsigned long msec =
-      static_cast<unsigned long>(ts.tv_sec) * 1000L + ts.tv_nsec / 1000000L;
-  return msec / 100 * 6;
+  const auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(
+                        std::chrono::steady_clock::now().time_since_epoch())
+                        .count();
+  return static_cast<unsigned long>(msec / 100 * 6);
 }
 
 /***************************************************************************

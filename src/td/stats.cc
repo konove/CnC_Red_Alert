@@ -65,6 +65,10 @@
 #include "td/utracker.h"
 #include "tech/packet.h"
 
+#ifdef _WIN32
+#include "td/ccdde.h"
+#endif
+
 #define FIELD_PACKET_TYPE "TYPE"
 #define FIELD_GAME_ID "IDNO"
 #define FIELD_START_CREDITS "CRED"

@@ -514,7 +514,7 @@ bool operator<(const User& u1, const User& u2) {
   if (!(u1.flags & CHAT_USER_VOICE) && u2.flags & CHAT_USER_VOICE) {
     return false;
   }
-  return (strcasecmp((char*)u1.name, (char*)u2.name) < 0);
+  return (stricmp((char*)u1.name, (char*)u2.name) < 0);
 }
 
 //***********************************************************************************************
@@ -560,7 +560,7 @@ STDMETHODIMP RAChatEventSink::OnChannelLeave(HRESULT hRes, Channel*,
       User* pUserPrevious = nullptr;
       bool bFound = false;
       while (pUserSearch) {
-        if (strcasecmp((char*)pUserSearch->name, (char*)pUser->name) == 0) {
+        if (stricmp((char*)pUserSearch->name, (char*)pUser->name) == 0) {
           //	Remove from list.
           if (!pUserPrevious) {
             //	Head of list is being removed.
@@ -1361,7 +1361,7 @@ unsigned long RAChatEventSink::GetPlayerGameIP(const char* szPlayerName) const {
   //	Returns ipaddr value of player if found in pGameUserList, else 0.
   User* pUser = pGameUserList;
   while (pUser) {
-    if (strcasecmp((char*)pUser->name, szPlayerName) == 0) {
+    if (stricmp((char*)pUser->name, szPlayerName) == 0) {
       return pUser->ipaddr;
     }
     pUser = pUser->next;
@@ -1432,7 +1432,7 @@ STDMETHODIMP RAChatEventSink::OnUserIP(HRESULT hRes, User* pUser) {
     //	Look for user in our current users list.
     User* pUserSearch = pUserIPList;
     while (pUserSearch) {
-      if (strcasecmp((char*)pUserSearch->name, (char*)pUser->name) == 0) {
+      if (stricmp((char*)pUserSearch->name, (char*)pUser->name) == 0) {
         //	Found matching user. Replace it's ipaddr value, in case it
         // changed.(?)
         pUserSearch->ipaddr = pUser->ipaddr;
@@ -1481,7 +1481,7 @@ unsigned long RAChatEventSink::GetUserIP(const char* szName) const {
   //	Find szName in list.
   User* pUser = pUserIPList;
   while (pUser) {
-    if (strcasecmp((char*)pUser->name, szName) == 0) {
+    if (stricmp((char*)pUser->name, szName) == 0) {
       return pUser->ipaddr;
     }
     pUser = pUser->next;
@@ -1527,7 +1527,7 @@ STDMETHODIMP RAChatEventSink::OnUserFlags(HRESULT hRes, LPCSTR name,
   User* pUserPrior = nullptr;
   User* pUserSearch = pUserList;
   while (pUserSearch) {
-    if (strcasecmp((char*)pUserSearch->name, name) == 0) {
+    if (stricmp((char*)pUserSearch->name, name) == 0) {
       //	Set user's flags to new value.
       pUserSearch->flags = flags;
 
@@ -1779,8 +1779,7 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(HRESULT hRes,
             pLadderTail->next = pLadderNew;
             pLadderTail = pLadderNew;
           }
-          if (strcasecmp((char*)pLadderNew->login_name, pOwner->szMyName) ==
-              0) {
+          if (stricmp((char*)pLadderNew->login_name, pOwner->szMyName) == 0) {
             //	Set up local player's win/loss string.
             Format_Runtime_Text(pOwner->szMyRecord, sizeof(pOwner->szMyRecord),
                                 TXT_WOL_PERSONALWINLOSSRECORD, pOwner->szMyName,
@@ -1799,8 +1798,7 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(HRESULT hRes,
             pLadderTailAM->next = pLadderNew;
             pLadderTailAM = pLadderNew;
           }
-          if (strcasecmp((char*)pLadderNew->login_name, pOwner->szMyName) ==
-              0) {
+          if (stricmp((char*)pLadderNew->login_name, pOwner->szMyName) == 0) {
             //	Set up local player's win/loss string for Aftermath.
             Format_Runtime_Text(
                 pOwner->szMyRecordAM, sizeof(pOwner->szMyRecordAM),
@@ -1880,7 +1878,7 @@ unsigned int RANetUtilEventSink::GetUserRank(const char* szName, bool bRankRA) {
 
   while (pLad) {
     //		debugprint( "  comparing %s\n", (char*)pLad->login_name );
-    if (strcasecmp((char*)pLad->login_name, szName) == 0) {
+    if (stricmp((char*)pLad->login_name, szName) == 0) {
       //			debugprint( "found rung value %u\n", pLad->rung
       //);
       return pLad->rung;

@@ -99,7 +99,7 @@ class RAChatEventSink
        public IChatEvent {
  public:
   RAChatEventSink(WolapiObject* pOwner);
-  ~RAChatEventSink() override;
+  COM_SINK_DESTRUCTOR(RAChatEventSink);
 
   //    BEGIN_COM_MAP(RAChatEventSink)
   //	  COM_INTERFACE_ENTRY(IChatEvent)
@@ -230,7 +230,7 @@ class RADownloadEventSink :
     public IDownloadEvent {
  public:
   RADownloadEventSink();
-  ~RADownloadEventSink() override = default;
+  COM_SINK_DESTRUCTOR(RADownloadEventSink) = default;
 
   //  BEGIN_COM_MAP(RADownloadEventSink)
   //    COM_INTERFACE_ENTRY(IDownloadEvent)
@@ -271,7 +271,7 @@ class RANetUtilEventSink :
     public INetUtilEvent {
  public:
   RANetUtilEventSink(WolapiObject* pOwner);
-  ~RANetUtilEventSink() override;
+  COM_SINK_DESTRUCTOR(RANetUtilEventSink);
 
   // BEGIN_COM_MAP(CNetUtilEventSink)
   //	COM_INTERFACE_ENTRY(INetUtilEvent)

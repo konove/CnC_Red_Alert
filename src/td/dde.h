@@ -57,8 +57,9 @@
 #ifndef CNC_RED_ALERT_TD_DDE_H_
 #define CNC_RED_ALERT_TD_DDE_H_
 
-#include <ddeml.h>
 #include <windows.h>
+// Not self-contained: needs the types from <windows.h> above.
+#include <ddeml.h>
 
 #define DDE_ADVISE_CONNECT -1     // advisory "client has connected"
 #define DDE_ADVISE_DISCONNECT -2  // advisory "client has disconnected"

@@ -46,6 +46,7 @@
 
 #include "ra/utracker.h"
 
+#include <cstdint>
 #include <cstring>
 
 /*
@@ -55,7 +56,6 @@
 #include <winsock.h>
 #else
 #include <arpa/inet.h>
-#include <cstdint>
 #endif
 
 /***********************************************************************************************

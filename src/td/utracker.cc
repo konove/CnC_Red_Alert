@@ -49,12 +49,12 @@
 */
 #include "td/utracker.h"
 
+#include <cstdint>
 #include <cstring>
 #ifdef _WIN32
 #include <winsock.h>
 #else
 #include <arpa/inet.h>
-#include <cstdint>
 #endif
 
 /***********************************************************************************************

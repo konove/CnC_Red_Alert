@@ -168,6 +168,10 @@
 #include "td/vector.h"
 #include "tech/crc.h"
 
+#ifdef _WIN32
+#include "td/ccdde.h"
+#endif
+
 #define SHOW_MONO 0
 
 #ifndef DEMO

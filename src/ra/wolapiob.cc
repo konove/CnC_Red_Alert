@@ -21,7 +21,11 @@
 
 #include "ra/wolapiob.h"
 
+#ifdef _WIN32
+#include <winsock.h>
+#else
 #include <arpa/inet.h>
+#endif
 
 #include <algorithm>
 #include <array>
@@ -1578,18 +1582,18 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
     //	Send public message.
     if (!bAction) {
       //	Easter egg related.
-      if (strcasecmp(szMessage, "/nousersounds") == 0) {
+      if (stricmp(szMessage, "/nousersounds") == 0) {
         bEggSounds = false;
         return;
       }
-      if (strcasecmp(szMessage, "/usersounds") ==
+      if (stricmp(szMessage, "/usersounds") ==
           0)  //	Left as obvious text in the exe, for someone to find...
               //:-)
       {
         bEggSounds = true;
         return;
       }
-      if (strcasecmp(szMessage, "/8playergames") ==
+      if (stricmp(szMessage, "/8playergames") ==
           0)  //	Left as obvious text in the exe, for someone to find...
               //:-)
       {

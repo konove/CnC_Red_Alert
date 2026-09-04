@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_JSHELL_H_
 #define CNC_RED_ALERT_RA_JSHELL_H_
 
+#include <bit>
 #include <cassert>
 #include <cstdarg>
 #include <cstddef>
@@ -47,7 +48,6 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-
 #include "port/ex_string.h"
 #include "ra/compat.h"
 #include "ra/globals.h"
@@ -154,18 +154,11 @@ inline int First_True_Bit(const void* array) {
   const uint32_t* array32 = (const uint32_t*)array;
   int off = 0;
   while (true) {
-    uint32_t v = *array32++;
-#ifdef _MSC_VER
-    DWORD pos;
-    if (_BitScanForward(&pos, v)) {
+    const uint32_t v = *array32++;
+    const int pos = std::countr_zero(v);
+    if (pos < 32) {
       return off + pos;
     }
-#else
-    int pos = __builtin_ffs(v);
-    if (pos) {
-      return off + pos - 1;
-    }
-#endif
     off += 32;
   }
 }
@@ -173,18 +166,11 @@ inline int First_False_Bit(const void* array) {
   const uint32_t* array32 = (const uint32_t*)array;
   int off = 0;
   while (true) {
-    uint32_t v = *array32++;
-#ifdef _MSC_VER
-    DWORD pos;
-    if (_BitScanForward(&pos, ~v)) {
+    const uint32_t v = *array32++;
+    const int pos = std::countr_zero(~v);
+    if (pos < 32) {
       return off + pos;
     }
-#else
-    int pos = __builtin_ffs(~v);
-    if (pos) {
-      return off + pos - 1;
-    }
-#endif
     off += 32;
   }
 }

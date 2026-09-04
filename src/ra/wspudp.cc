@@ -49,8 +49,6 @@
 
 #include "ra/wspudp.h"
 
-#include <sys/socket.h>
-
 #include <cassert>
 #include <cerrno>
 #include <cstdint>
@@ -64,12 +62,14 @@
 #ifdef _WIN32
 #include <nspapi.h>
 #include <svcguid.h>
+#include <winsock.h>
 
 typedef int socklen_t;
 #else
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <sys/socket.h>
 #include <unistd.h>
 
 #define INVALID_SOCKET -1

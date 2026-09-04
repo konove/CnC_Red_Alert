@@ -111,6 +111,10 @@
 #include "tech/rawfile.h"
 #include "winvq/vqa32/vqaplay.h"
 
+#ifdef _WIN32
+#include "td/ccdde.h"
+#endif
+
 /****************************************
 **	Function prototypes for this module **
 *****************************************/

@@ -80,6 +80,10 @@
 #include "td/theme.h"
 #include "td/type.h"
 
+#ifdef _WIN32
+#include "td/ccdde.h"
+#endif
+
 unsigned char EventClass::EventLength[LAST_EVENT] = {
     0,                                          // EMPTY
     size_of(EventClass, Data.General),          // ALLY

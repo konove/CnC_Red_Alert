@@ -78,7 +78,7 @@
 
 #ifdef _WIN32
 #include <direct.h>  //chdir
-#else
+#include <windows.h>
 #endif
 
 bool Read_Private_Config_Struct(char* profile, NewConfigType* config);
