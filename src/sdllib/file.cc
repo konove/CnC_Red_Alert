@@ -175,7 +175,7 @@ static bool Update_Find_Result(FindFileState& state) {
 
     // 3. Success: We found a valid non-directory file, and stat_buf is
     // populated. Populate the state and return true.
-    state.mod_time = stat_buf.st_mtim.tv_sec;
+    state.mod_time = stat_buf.st_mtime;
     state.name = current_path;
 
     // Note: We leave state.offset pointing to this current valid item.

@@ -9,6 +9,8 @@
 #include <span>
 #include <string_view>
 
+#ifndef _WIN32
+
 int stricmp(const char* string1, const char* string2) {
   const std::string_view view1(string1);
   const std::string_view view2(string2);
@@ -104,3 +106,5 @@ char* strrev(char* str) {
   std::reverse(str, str + strlen(str));
   return str;
 }
+
+#endif  // _WIN32

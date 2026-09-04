@@ -105,8 +105,6 @@ HWND GetTopWindow(HWND /*parent*/) { return nullptr; }
 
 DWORD GetLastError() { return 0; }
 
-#endif  // _WIN32
-
 DWORD GetCurrentDirectory(DWORD buffer_length, LPSTR buffer) {
   if (buffer == nullptr || buffer_length == 0) {
     return 0;
@@ -137,3 +135,5 @@ BOOL SetCurrentDirectory(LPCSTR path_name) {
   std::filesystem::current_path(path_name, failed);
   return failed ? FALSE : TRUE;
 }
+
+#endif  // _WIN32

@@ -20,8 +20,9 @@
 
 #ifdef _WIN32
 
-#include <shellapi.h>
 #include <windows.h>
+// Not self-contained: needs the types from <windows.h> above.
+#include <shellapi.h>
 
 #else
 
