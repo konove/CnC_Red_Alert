@@ -49,9 +49,29 @@
 #include "tech/rndstraw.h"
 
 #include <climits>
+#include <cstddef>
 #include <cstring>
 
 #include "tech/sha.h"
+
+namespace {
+
+// Zeroes `length` bytes at `data` in a way the optimiser may not drop as a
+// dead store, which a plain memset in a destructor is.
+void WipeMemory(void* data, std::size_t length) {
+#ifdef __linux__
+  explicit_bzero(data, length);
+#else
+  // Neither macOS nor MSVC's headers offer explicit_bzero; a volatile write
+  // sequence is the portable equivalent.
+  auto* bytes = static_cast<volatile unsigned char*>(data);
+  for (std::size_t i = 0; i < length; ++i) {
+    bytes[i] = 0;
+  }
+#endif
+}
+
+}  // namespace
 
 /***********************************************************************************************
  * RandomStraw::~RandomStraw -- Destructor for random straw class. *
@@ -68,15 +88,9 @@
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
 RandomStraw::~RandomStraw() {
-#ifdef _WIN32
-  SecureZeroMemory(&SeedBits, sizeof(SeedBits));
-  SecureZeroMemory(&Current, sizeof(Current));
-  SecureZeroMemory(Random, sizeof(Random));
-#else
-  explicit_bzero(&SeedBits, sizeof(SeedBits));
-  explicit_bzero(&Current, sizeof(Current));
-  explicit_bzero(Random, sizeof(Random));
-#endif
+  WipeMemory(&SeedBits, sizeof(SeedBits));
+  WipeMemory(&Current, sizeof(Current));
+  WipeMemory(Random, sizeof(Random));
 }
 
 /***********************************************************************************************

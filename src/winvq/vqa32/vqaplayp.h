@@ -393,10 +393,9 @@ struct VQAAudio {
 struct VQAData {
   long (*Draw_Frame)(VQAHandle* vqa) = nullptr;
 
-  void __cdecl (*UnVQ)(const unsigned char* codebook,
-                       const unsigned char* pointers, unsigned char* buffer,
-                       unsigned long blocksperrow, unsigned long numrows,
-                       unsigned long bufwidth) = nullptr;
+  void (*UnVQ)(const unsigned char* codebook, const unsigned char* pointers,
+               unsigned char* buffer, unsigned long blocksperrow,
+               unsigned long numrows, unsigned long bufwidth) = nullptr;
 
   // RAII storage for nodes - these vectors own the node objects
   std::vector<std::unique_ptr<VQACBNode>> CBNodes;

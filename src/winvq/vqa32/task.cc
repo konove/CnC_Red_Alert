@@ -54,6 +54,10 @@
 
 #include <cstdint>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include "winvq/vqa32/vqafile.h"
 #include "winvq/vqa32/vqaplay.h"
 #include "winvq/vqa32/vqaplayp.h"
