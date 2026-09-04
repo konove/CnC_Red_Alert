@@ -34,6 +34,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 #include "tech/field.h"
 
+#include <cstdint>
 #include <cstring>
 
 // htons/htonl
@@ -41,7 +42,6 @@
 #include <winsock.h>
 #else
 #include <arpa/inet.h>
-#include <cstdint>
 #endif
 
 FieldClass::FieldClass(const char* id, char data) {

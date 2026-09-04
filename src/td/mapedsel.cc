@@ -44,9 +44,9 @@
  *   MapEditClass::Change_House -- changes CurrentObject's house           *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include <algorithm>
 #include <array>
 #include <cstdio>
-#include <ranges>
 #include <type_traits>
 
 #include "sdllib/gbuffer.h"
@@ -345,11 +345,11 @@ void MapEditClass::Popup_Controls() {
   */
   owner = CurrentObject[0]->Owner();
   mission_index = 0;
-  for (auto [idx, mission] : MapEditMissions | std::views::enumerate) {
-    if (CurrentObject[0]->Get_Mission() == mission) {
-      mission_index = static_cast<int>(idx);
-      break;
-    }
+  // Not std::views::enumerate: Apple's libc++ does not ship it yet.
+  const auto found = std::ranges::find(MapEditMissions,
+                                       CurrentObject[0]->Get_Mission());
+  if (found != MapEditMissions.end()) {
+    mission_index = static_cast<int>(found - MapEditMissions.begin());
   }
   strength = CurrentObject[0]->Health_Ratio();
 

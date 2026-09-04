@@ -33,6 +33,7 @@
 #ifndef CNC_RED_ALERT_WINVQ_VQM32_SOSCOMP_H_
 #define CNC_RED_ALERT_WINVQ_VQM32_SOSCOMP_H_
 
+#include <cstddef>
 #include <cstdint>
 
 /* compression types */
@@ -87,7 +88,7 @@ extern "C" {
 
 void __cdecl VQA_sosCODECInitStream(SosCompressInfo*);
 unsigned long __cdecl VQA_sosCODECCompressData(SosCompressInfo*, unsigned long);
-bool __cdecl DecompressVqaSosData(SosCompressInfo*, unsigned long);
+bool __cdecl DecompressVqaSosData(SosCompressInfo*, std::size_t);
 
 #ifdef __cplusplus
 }
