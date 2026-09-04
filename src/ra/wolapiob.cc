@@ -27,6 +27,8 @@
 #include <arpa/inet.h>
 #endif
 
+#include <SDL_video.h>
+
 #include <algorithm>
 #include <array>
 #include <cstddef>
@@ -58,6 +60,7 @@
 #include "ra/ww_audio.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
+#include "sdllib/ww_win.h"
 
 extern void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
                              PlayerColorType iColorRemap = PCOLOR_NONE);
@@ -66,6 +69,24 @@ extern void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
 void HostNameFromGameChannelName(char* szNameToSet, const char* szChannelName);
 
 bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame);
+
+namespace {
+
+// MainWindow is the SDL window, not an HWND, so the Win32 ShowWindow and
+// SetForegroundWindow calls the browser launch used cannot take it on any
+// platform. SDL does the same job.
+SDL_Window* GameWindow() { return static_cast<SDL_Window*>(MainWindow); }
+
+void Restore_Game_Window() {
+  SDL_RestoreWindow(GameWindow());
+  SDL_RaiseWindow(GameWindow());
+}
+
+bool Game_Window_Has_Focus() {
+  return (SDL_GetWindowFlags(GameWindow()) & SDL_WINDOW_INPUT_FOCUS) != 0;
+}
+
+}  // namespace
 
 //***********************************************************************************************
 WolapiObject::WolapiObject()
@@ -1468,7 +1489,7 @@ void WolapiObject::RequestPlayerPings() {
       if (UserIP) {
         int iUnused;
         in_addr inaddrUser;
-        inaddrUser.s_addr = static_cast<in_addr_t>(UserIP);
+        inaddrUser.s_addr = static_cast<uint32_t>(UserIP);
         char* szIP = inet_ntoa(inaddrUser);
         //				debugprint( "RequestPing of %s, ipaddr
         // of %i, aka %s\n", (char*)pUser->name, UserIP, szIP );
@@ -2147,14 +2168,11 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
             //	Either user closed the browser app, or game is starting and we
             // should return focus to game.
             cancel_current_msgbox = false;
-            ::SetForegroundWindow(MainWindow);
-            ::ShowWindow(MainWindow, SW_RESTORE);
+            Restore_Game_Window();
             break;
           }
-          if (::GetTopWindow(nullptr) == MainWindow) {
-            ::ShowWindow(
-                MainWindow,
-                SW_RESTORE);  //	In case it was topmost but minimized.
+          if (Game_Window_Has_Focus()) {
+            Restore_Game_Window();  //	In case it was topmost but minimized.
             break;
           }
         }
@@ -2172,7 +2190,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
       //			debugprint( "ShellExecute\n" );
       //	ShellExecute failed as well. Just print a message instead.
       GamePalette.Set();
-      ::ShowWindow(MainWindow, SW_RESTORE);
+      Restore_Game_Window();
       char szError[300];
       Format_Runtime_Text(szError, sizeof(szError), TXT_WOL_CANTLAUNCHBROWSER,
                           szURL);
@@ -3207,7 +3225,7 @@ bool WolapiObject::Pump_DisconnectPinging() {
       //	Ping opponent.
       in_addr inaddr;
       char* szIP;
-      inaddr.s_addr = static_cast<in_addr_t>(TournamentOpponentIP);
+      inaddr.s_addr = static_cast<uint32_t>(TournamentOpponentIP);
       szIP = inet_ntoa(inaddr);
       //		debugprint( "RequestPing ( opponent )\n" );
       if (pNetUtil->RequestPing(szIP, 1000, &iUnused) != S_OK) {
