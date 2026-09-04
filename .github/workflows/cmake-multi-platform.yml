@@ -69,6 +69,13 @@ jobs:
     - uses: ilammy/msvc-dev-cmd@v1
       if: runner.os == 'Windows'
 
+    # Test discovery runs each test binary at build time, and on Windows it
+    # needs SDL2.dll on PATH to start at all.
+    - name: Put SDL on PATH
+      if: runner.os == 'Windows'
+      shell: bash
+      run: echo "${{ steps.sdl.outputs.prefix }}/bin" >> "$GITHUB_PATH"
+
     # Ninja everywhere, including Windows: it stops at the first failed step,
     # where MSBuild keeps building every independent project and only reports
     # the failure at the end.
