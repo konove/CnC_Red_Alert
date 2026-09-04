@@ -79,7 +79,7 @@ BOOL(CALLBACK* Instance_Class::callback)(
  *   6/1/1996 SW : Created.                                                *
  *=========================================================================*/
 
-Instance_Class::Instance_Class(LPSTR name1, LPSTR name2) {
+Instance_Class::Instance_Class(LPCSTR name1, LPCSTR name2) {
   dde_error = FALSE;      // no errors
   process_pokes = FALSE;  // disable pokes in callback
 

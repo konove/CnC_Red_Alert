@@ -79,8 +79,8 @@ class Instance_Class {
   .....................................................................*/
 
   Instance_Class(  // constructor
-      LPSTR,       // null terminated local sever name string
-      LPSTR        // null terminated remote server name string
+      LPCSTR,      // null terminated local sever name string
+      LPCSTR       // null terminated remote server name string
   );
 
   /*.....................................................................
