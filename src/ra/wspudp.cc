@@ -55,6 +55,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "port/socket_bytes.h"
 #include "ra/externs.h"
 #include "ra/jshell.h"
 #include "ra/vector.h"
@@ -247,13 +248,11 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
   */
   ling.l_onoff = 0;   // linger off
   ling.l_linger = 0;  // timeout in seconds (ie close now)
-  setsockopt(Socket, SOL_SOCKET, SO_LINGER,
-             reinterpret_cast<const char*>(&ling), sizeof(ling));
+  setsockopt(Socket, SOL_SOCKET, SO_LINGER, SocketBytes(ling), sizeof(ling));
 
   // enable broadcast
   int yes = 1;
-  setsockopt(Socket, SOL_SOCKET, SO_BROADCAST,
-             reinterpret_cast<const char*>(&yes), sizeof(int));
+  setsockopt(Socket, SOL_SOCKET, SO_BROADCAST, SocketBytes(yes), sizeof(int));
 
   WinsockInterfaceClass::Set_Socket_Options();
 
@@ -326,9 +325,9 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       ** Call the recvfrom function to get the outstanding packet.
       */
       socklen_t addr_len = sizeof(addr);
-      int rc = static_cast<int>(
-          recvfrom(Socket, reinterpret_cast<char*>(ReceiveBuffer),
-                   sizeof(ReceiveBuffer), 0, (sockaddr*)&addr, &addr_len));
+      int rc = static_cast<int>(recvfrom(Socket, SocketBytes(ReceiveBuffer),
+                                         sizeof(ReceiveBuffer), 0,
+                                         (sockaddr*)&addr, &addr_len));
       if (rc == SOCKET_ERROR) {
         Clear_Socket_Error(Socket);
         return;
@@ -394,9 +393,9 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       *Winsock will
       ** send us another WRITE message when it is ready to receive more data.
       */
-      int rc = static_cast<int>(
-          sendto(Socket, reinterpret_cast<const char*>(packet->Buffer),
-                 packet->BufferLen, 0, (sockaddr*)&addr, sizeof(addr)));
+      int rc = static_cast<int>(sendto(Socket, SocketBytes(packet->Buffer),
+                                       packet->BufferLen, 0, (sockaddr*)&addr,
+                                       sizeof(addr)));
 
       if (rc == -1) {
         if (Get_Last_Error() == EWOULDBLOCK) {
