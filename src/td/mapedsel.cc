@@ -47,6 +47,7 @@
 #include <algorithm>
 #include <array>
 #include <cstdio>
+#include <iterator>
 #include <type_traits>
 
 #include "sdllib/gbuffer.h"
@@ -346,10 +347,13 @@ void MapEditClass::Popup_Controls() {
   owner = CurrentObject[0]->Owner();
   mission_index = 0;
   // Not std::views::enumerate: Apple's libc++ does not ship it yet.
-  const auto* const found =
-      std::ranges::find(MapEditMissions, CurrentObject[0]->Get_Mission());
-  if (found != MapEditMissions.end()) {
-    mission_index = static_cast<int>(found - MapEditMissions.begin());
+  // Distance rather than an iterator variable: std::array's iterator is a
+  // pointer in libstdc++ and libc++ but a class in MSVC's STL.
+  const auto index = std::ranges::distance(
+      MapEditMissions.begin(),
+      std::ranges::find(MapEditMissions, CurrentObject[0]->Get_Mission()));
+  if (index < std::ssize(MapEditMissions)) {
+    mission_index = static_cast<int>(index);
   }
   strength = CurrentObject[0]->Health_Ratio();
 
