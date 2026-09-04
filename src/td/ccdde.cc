@@ -54,10 +54,13 @@
 
 #include "td/ccdde.h"
 
-#include <WINDOWS.H>
-#include <timer.h>
+#include <windows.h>
+#include <winsock.h>
 
 #include <cstdio>
+#include <cstring>
+
+#include "sdllib/timer.h"
 
 DDEServerClass DDEServer;  // Instance of the DDE Server class
 
@@ -67,7 +70,6 @@ Instance_Class* DDE_Class = NULL;  // pointer for client callback
 bool CC95AlreadyRunning =
     FALSE;  // Was there an instance of C&C 95 already running when we started?
 
-extern HWND MainWindow;
 extern TimerClass GameTimer;
 extern bool GameTimerInUse;
 extern void CCDebugString(const char* string);
@@ -331,7 +333,7 @@ int DDEServerClass::Time_Since_Heartbeat() {
  *                                                                                             *
  * HISTORY: * 6/9/96 11:07PM ST : Created *
  *=============================================================================================*/
-BOOL Send_Data_To_DDE_Server(char* data, int length, int packet_type) {
+BOOL Send_Data_To_DDE_Server(const char* data, int length, int packet_type) {
   if (DDE_Class->Open_Poke_Connection(DDE_Class->remote_name) == FALSE) {
     CCDebugString("C&C95 - Failed to connect for POKE!");
     return (FALSE);
