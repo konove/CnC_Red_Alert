@@ -97,7 +97,9 @@ endif ()
 
 apply_dotenv_settings(rasdl)
 apply_language_setting(rasdl)
-target_link_libraries(rasdl PUBLIC absl::strings PRIVATE
+# magic_enum is PUBLIC because the public header defines.h includes it; the
+# interface-header-set verification compiles that header standalone.
+target_link_libraries(rasdl PUBLIC absl::strings magic_enum::magic_enum PRIVATE
         tech
         port
         sdllib
@@ -108,8 +110,7 @@ target_link_libraries(rasdl PUBLIC absl::strings PRIVATE
         absl::log_initialize
         absl::status
         absl::statusor
-        absl::str_format
-        magic_enum::magic_enum) # mpgdll wwipx32
+        absl::str_format) # mpgdll wwipx32
 
 install(TARGETS rasdl)
 

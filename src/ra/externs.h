@@ -42,6 +42,7 @@
 
 #include <cstdint>
 
+#include "magic_enum/magic_enum.hpp"
 #include "ra/base.h"
 #include "ra/building.h"
 #include "ra/carry.h"
