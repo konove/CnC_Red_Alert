@@ -1,13 +1,12 @@
 # Parse .env file for development configuration.
 # Has NO effect in Release builds.
 
+# The Release check must not return() from this file: apply_dotenv_settings
+# below has to exist in every configuration, or the callers fail to configure.
+set(DOTENV_FILE "${CMAKE_SOURCE_DIR}/.env")
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
     message(STATUS "Release build - .env file ignored")
-    return()
-endif ()
-
-set(DOTENV_FILE "${CMAKE_SOURCE_DIR}/.env")
-if (EXISTS "${DOTENV_FILE}")
+elseif (EXISTS "${DOTENV_FILE}")
     message(STATUS "Loading configuration from .env")
     file(STRINGS "${DOTENV_FILE}" DOTENV_LINES)
     foreach (LINE ${DOTENV_LINES})
