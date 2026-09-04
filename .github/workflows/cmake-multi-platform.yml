@@ -38,7 +38,7 @@ jobs:
       BUILD_TYPE: Release
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Set reusable strings
       id: strings
@@ -101,7 +101,7 @@ jobs:
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --parallel --target install
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ steps.strings.outputs.artifact-name }}
         path: ${{ steps.strings.outputs.build-install-dir }}
@@ -118,7 +118,7 @@ jobs:
       LLVM_VERSION: 23
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Install LLVM ${{ env.LLVM_VERSION }}
       run: |
