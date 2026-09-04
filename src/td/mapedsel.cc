@@ -346,8 +346,8 @@ void MapEditClass::Popup_Controls() {
   owner = CurrentObject[0]->Owner();
   mission_index = 0;
   // Not std::views::enumerate: Apple's libc++ does not ship it yet.
-  const auto found = std::ranges::find(MapEditMissions,
-                                       CurrentObject[0]->Get_Mission());
+  const auto* const found =
+      std::ranges::find(MapEditMissions, CurrentObject[0]->Get_Mission());
   if (found != MapEditMissions.end()) {
     mission_index = static_cast<int>(found - MapEditMissions.begin());
   }
@@ -509,7 +509,8 @@ int MapEditClass::Move_Grabbed_Object() {
     /*------------------------------------------------------------------------
     Non-infantry: use cell's center coordinate
     ------------------------------------------------------------------------*/
-    new_coord = static_cast<CELL>(Cell_Coord(static_cast<CELL>(ZoneCell + GrabOffset)));
+    new_coord =
+        static_cast<CELL>(Cell_Coord(static_cast<CELL>(ZoneCell + GrabOffset)));
 
     if (GrabbedObject->What_Am_I() == RTTI_BUILDING ||
         GrabbedObject->What_Am_I() == RTTI_TERRAIN) {

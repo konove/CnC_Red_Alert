@@ -146,15 +146,6 @@ void TcpipManagerClass::Close() {
     return;
   }
 
-#ifdef _WIN32
-  /*
-  ** Cancel any outstaning asyncronous events
-  */
-  if (Async) {
-    WSACancelAsyncRequest(Async);
-  }
-#endif
-
   /*
   ** Close any open sockets
   */
@@ -392,9 +383,12 @@ bool TcpipManagerClass::Add_Client() {
   /*
   ** Set options for this socket
   */
-  setsockopt(ConnectSocket, IPPROTO_TCP, TCP_NODELAY, &delay, 4);
-  setsockopt(ConnectSocket, SOL_SOCKET, SO_RCVBUF, &SocketReceiveBuffer, 4);
-  setsockopt(ConnectSocket, SOL_SOCKET, SO_SNDBUF, &SocketSendBuffer, 4);
+  setsockopt(ConnectSocket, IPPROTO_TCP, TCP_NODELAY,
+             reinterpret_cast<const char*>(&delay), 4);
+  setsockopt(ConnectSocket, SOL_SOCKET, SO_RCVBUF,
+             reinterpret_cast<const char*>(&SocketReceiveBuffer), 4);
+  setsockopt(ConnectSocket, SOL_SOCKET, SO_SNDBUF,
+             reinterpret_cast<const char*>(&SocketSendBuffer), 4);
 
   /*
   ** Save the clients address
@@ -426,8 +420,10 @@ bool TcpipManagerClass::Add_Client() {
   /*
   ** Set options for the UDP socket
   */
-  setsockopt(UDPSocket, SOL_SOCKET, SO_RCVBUF, &SocketReceiveBuffer, 4);
-  setsockopt(UDPSocket, SOL_SOCKET, SO_SNDBUF, &SocketSendBuffer, 4);
+  setsockopt(UDPSocket, SOL_SOCKET, SO_RCVBUF,
+             reinterpret_cast<const char*>(&SocketReceiveBuffer), 4);
+  setsockopt(UDPSocket, SOL_SOCKET, SO_SNDBUF,
+             reinterpret_cast<const char*>(&SocketSendBuffer), 4);
 
   return true;
 }
@@ -566,8 +562,10 @@ void TcpipManagerClass::Start_Client() {
   /*
   ** Set options for the UDP socket
   */
-  setsockopt(UDPSocket, SOL_SOCKET, SO_RCVBUF, &SocketReceiveBuffer, 4);
-  setsockopt(UDPSocket, SOL_SOCKET, SO_SNDBUF, &SocketSendBuffer, 4);
+  setsockopt(UDPSocket, SOL_SOCKET, SO_RCVBUF,
+             reinterpret_cast<const char*>(&SocketReceiveBuffer), 4);
+  setsockopt(UDPSocket, SOL_SOCKET, SO_SNDBUF,
+             reinterpret_cast<const char*>(&SocketSendBuffer), 4);
 }
 
 /***********************************************************************************************
@@ -589,7 +587,8 @@ void TcpipManagerClass::Close_Socket(SOCKET s) {
 
   ling.l_onoff = 0;   // linger off
   ling.l_linger = 0;  // timeout in seconds (ie close now)
-  setsockopt(s, SOL_SOCKET, SO_LINGER, &ling, sizeof(ling));
+  setsockopt(s, SOL_SOCKET, SO_LINGER, reinterpret_cast<const char*>(&ling),
+             sizeof(ling));
   closesocket(s);
 }
 
@@ -599,9 +598,11 @@ void TcpipManagerClass::Clear_Socket_Error(SOCKET socket) {
   unsigned long error_code;
   socklen_t length = 4;
 
-  getsockopt(socket, SOL_SOCKET, SO_ERROR, &error_code, &length);
+  getsockopt(socket, SOL_SOCKET, SO_ERROR, reinterpret_cast<char*>(&error_code),
+             &length);
   error_code = 0;
-  setsockopt(socket, SOL_SOCKET, SO_ERROR, &error_code, length);
+  setsockopt(socket, SOL_SOCKET, SO_ERROR,
+             reinterpret_cast<const char*>(&error_code), length);
 }
 
 #endif  // FORCE_WINSOCK
