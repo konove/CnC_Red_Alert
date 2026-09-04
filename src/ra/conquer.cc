@@ -1015,7 +1015,6 @@ void Keyboard_Process(KeyNumType& input) {
 
   if constexpr (config::kCheatKeysEnabled) {
     if (Debug_Flag) {
-
       switch (static_cast<unsigned>(input)) {
         case static_cast<unsigned>(KN_M) | static_cast<unsigned>(KN_SHIFT_BIT):
         case static_cast<unsigned>(KN_M) | static_cast<unsigned>(KN_ALT_BIT):
@@ -1607,7 +1606,6 @@ static void Sync_Delay() {
 // Nothing that affects game state may be skipped here on the grounds that it is
 // only visual -- every machine in a multiplayer game runs this same sequence
 // and must arrive at the same state, or the session desyncs.
-
 bool Main_Loop() {
   Mono_Set_Cursor(0, 0);
 
@@ -3102,26 +3100,24 @@ int Owner_From_Name(const char* text) {
   return static_cast<int>(ownable);
 }
 
-// Copies the screen two pixels up or two pixels down, one step per game tick,
-// for twice the requested number of shakes.
+// Shows the screen two pixels up, centred, or two pixels down, picking a
+// different position each game tick, for twice the requested number of shakes.
 void Shake_The_Screen(int shakes) {
   shakes += shakes;
 
   Hide_Mouse();
   SeenBuff.Blit(HidPage);
-  // TODO: old_y_off is never reassigned, so the reject test below only ever
-  // rejects 0. The offset is therefore always +/-2 and never centre, which
-  // makes the new_y_off == 0 case unreachable. Intent was presumably to reject
-  // a repeat of the previous offset.
-  int new_y_off = 0;
+  int old_y_off = 0;
   while (shakes-- != 0) {
-    constexpr int old_y_off = 0;
     // Hold each offset for exactly one tick, so the shake runs at game speed
     // rather than as fast as the machine can blit.
     int64_t x = TickCount.Value();
+    // Never repeat the previous offset, so every tick visibly moves the screen.
+    int new_y_off;
     do {
       new_y_off = Sim_Random_Pick(0, 2) - 1;
     } while (new_y_off == old_y_off);
+    old_y_off = new_y_off;
     switch (new_y_off) {
       case -1:
         HidPage.Blit(SeenBuff, 0, 2, 0, 0, 640, 398);
