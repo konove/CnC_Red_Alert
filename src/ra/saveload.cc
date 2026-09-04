@@ -627,8 +627,8 @@ bool Load_Game(int id) {
   SHAStraw sha;
   sha.SetSource(fstraw);
   for (;;) {
-    if (sha.Get(_staging_buffer, sizeof(_staging_buffer)) !=
-        sizeof(_staging_buffer)) {
+    if (sha.Get(staging_buffer, sizeof(staging_buffer)) !=
+        sizeof(staging_buffer)) {
       break;
     }
   }

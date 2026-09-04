@@ -4382,8 +4382,8 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   **	Read the map template data.
   */
   static const char* const MAPPACK = "MapPack";
-  len = ini.Get_UUBlock(MAPPACK, _staging_buffer, sizeof(_staging_buffer));
-  BufferStraw bstraw(_staging_buffer, len);
+  len = ini.Get_UUBlock(MAPPACK, staging_buffer, sizeof(staging_buffer));
+  BufferStraw bstraw(staging_buffer, len);
   Map.Read_Binary(bstraw);
 
   LastTheater = Scen.Theater;
@@ -4456,11 +4456,11 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
   **	Write the map template data out to the ini file.
   */
   static const char* const MAPPACK = "MapPack";
-  BufferPipe bpipe(_staging_buffer, sizeof(_staging_buffer));
+  BufferPipe bpipe(staging_buffer, sizeof(staging_buffer));
   int len = Map.Write_Binary(bpipe);
   ini.Clear(MAPPACK);
   if (len) {
-    ini.Put_UUBlock(MAPPACK, _staging_buffer, len);
+    ini.Put_UUBlock(MAPPACK, staging_buffer, len);
   }
 }
 

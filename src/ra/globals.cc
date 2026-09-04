@@ -232,8 +232,6 @@ bool FormMove;
 SpeedType FormSpeed;
 MPHType FormMaxSpeed;
 
-char _staging_buffer[32000];
-
 /*
 ** Global flag for the life of Tanya.  If this flag is set, she is
 ** no longer available.

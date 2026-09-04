@@ -266,11 +266,11 @@ bool OverlayClass::Mark(MarkType mark) {
  *=============================================================================================*/
 void OverlayClass::Read_INI(CCINIClass& ini) {
   if (NewINIFormat > 1) {
-    int len = ini.Get_UUBlock("OverlayPack", _staging_buffer,
-                              sizeof(_staging_buffer));
+    int len = ini.Get_UUBlock("OverlayPack", staging_buffer,
+                              sizeof(staging_buffer));
 
     if (len > 0) {
-      BufferStraw bpipe(_staging_buffer, len);
+      BufferStraw bpipe(staging_buffer, len);
       LCWStraw uncomp(LCWStraw::DECOMPRESS);
       uncomp.SetSource(&bpipe);
 
@@ -360,7 +360,7 @@ void OverlayClass::Write_INI(CCINIClass& ini) {
   ini.Clear(INI_Name());
   ini.Clear("OverlayPack");
 
-  BufferPipe bpipe(_staging_buffer, sizeof(_staging_buffer));
+  BufferPipe bpipe(staging_buffer, sizeof(staging_buffer));
   LCWPipe comppipe(LCWPipe::COMPRESS);
 
   comppipe.SetSink(&bpipe);
@@ -372,7 +372,7 @@ void OverlayClass::Write_INI(CCINIClass& ini) {
     cellptr++;
   }
   if (total) {
-    ini.Put_UUBlock("OverlayPack", _staging_buffer, total);
+    ini.Put_UUBlock("OverlayPack", staging_buffer, total);
   }
 
   //	for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {

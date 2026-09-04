@@ -75,16 +75,11 @@
 #include "tech/mixfile.h"
 #include "tech/rndstraw.h"
 
-extern char _staging_buffer[32000];
-extern "C" {
-void _PRO();
-}
+// Scratch space for packing and unpacking the MapPack and OverlayPack INI blocks.
+inline char staging_buffer[32000];
 
-/*
-**	Convenient alias for MixFileClass<CDFileClass> object. This allows
-**	easier entry into the code and less clutter.
-*/
-typedef MixFileClass<CCFileClass> MFCD;
+// Convenient alias for MixFileClass<CCFileClass>; keeps call sites short.
+using MFCD = MixFileClass<CCFileClass>;
 
 extern bool IsVQ640;
 extern unsigned long GameVersion;

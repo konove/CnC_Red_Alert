@@ -2679,12 +2679,6 @@ bool Load_Recording_Values(CCFileClass& file) {
   return true;
 }
 
-extern "C" {
-void __PRO() {
-  //	printf("_pro\n");
-}
-}
-
 void Extract(const char* filename, const char* outname) {
   CCFileClass inFile(filename);
   CCFileClass outFile(outname);
