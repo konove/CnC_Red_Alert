@@ -61,7 +61,6 @@
 #include "winvq/vqa32/vqafile.h"
 #include "winvq/vqa32/vqaplay.h"
 #include "winvq/vqa32/vqaplayp.h"
-#include "winvq/vqm32/font.h"
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS
@@ -443,5 +442,3 @@ int64_t User_Update(VQAHandle* vqa) {
 
   return 0;
 }
-
-void VQA_Dummy() { Set_Font(nullptr); }

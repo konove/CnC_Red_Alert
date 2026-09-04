@@ -23,8 +23,6 @@ extern "C" unsigned long LCW_Uncompress(char const* /*source*/, char* /*dest*/,
 extern "C" void SetPalette(unsigned char* /*palette*/, long /*numbytes*/,
                            unsigned long /*slowpal*/) {}
 
-void* Set_Font(void const* /*font*/) { return nullptr; }
-
 void Flag_To_Set_Palette(unsigned char* /*palette*/, long /*numbytes*/,
                          unsigned long /*slowpal*/) {}
 

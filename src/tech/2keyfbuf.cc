@@ -38,9 +38,9 @@ constexpr BlitFlags operator|(BlitFlags t1, BlitFlags t2) {
 
 #define PRED_MASK 0xE
 
-extern "C" char* BigShapeBufferStart;
-extern "C" char* TheaterShapeBufferStart;
-extern "C" bool UseBigShapeBuffer;
+extern char* BigShapeBufferStart;
+extern char* TheaterShapeBufferStart;
+extern bool UseBigShapeBuffer;
 
 static int BFPredOffset;
 static int BFPartialCount;
