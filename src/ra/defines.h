@@ -521,10 +521,12 @@ inline constexpr auto kSpcChrono2 =
 **	of the house.
 */
 // enum IQType {
-//	IQ_DEAD=0x0000,			// Player controlled (computer does
-// nothing). 	IQ_IDIOT=0x0040, 	IQ_IMBECILE=0x0080, 	IQ_MORON=0x00C0,
-//	IQ_MENSA=0x0100			// Complete computer control -- look
-// out! };
+//   IQ_DEAD=0x0000,// Player controlled (computer does nothing).
+//   IQ_IDIOT=0x0040,
+//   IQ_IMBECILE=0x0080,
+//   IQ_MORON=0x00C0,
+//   IQ_MENSA=0x0100 // Complete computer control -- look out!
+// };
 
 /**********************************************************************
 **	These are the response values when checking to see if an object
