@@ -61,8 +61,16 @@ if (ENABLE_ASAN)
 endif ()
 
 if (STRICT_CHECKS)
+    # Resolve the binary at configure time so a missing clang-tidy is one clear
+    # message rather than a failure on every compile. Override with
+    # -DCLANG_TIDY_PROGRAM=/path/to/clang-tidy-NN to pin a version.
+    find_program(CLANG_TIDY_PROGRAM NAMES clang-tidy DOC "Path to clang-tidy")
+    if (NOT CLANG_TIDY_PROGRAM)
+        message(FATAL_ERROR "STRICT_CHECKS is ON but clang-tidy was not found. "
+                "Install it or configure with -DSTRICT_CHECKS=OFF.")
+    endif ()
     set(CMAKE_CXX_CLANG_TIDY
-            "clang-tidy"
+            "${CLANG_TIDY_PROGRAM}"
             "--header-filter=${CMAKE_SOURCE_DIR}/src/(base|port|sdllib|tech|winvq|ra|td)/.*"
     )
     # Ninja decides what is stale from the command line and the declared inputs,
