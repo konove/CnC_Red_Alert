@@ -76,12 +76,10 @@ typedef struct {
 
 unsigned BigShapeBufferLength = INITIAL_BIG_SHAPE_BUFFER_SIZE;
 unsigned TheaterShapeBufferLength = THEATER_BIG_SHAPE_BUFFER_SIZE;
-extern "C" {
 char* BigShapeBufferStart = nullptr;
 char* TheaterShapeBufferStart = nullptr;
 bool UseBigShapeBuffer = false;
 bool IsTheaterShape = false;
-}
 char* BigShapeBufferPtr = nullptr;
 int TotalBigShapes = 0;
 bool ReallocShapeBufferFlag = false;

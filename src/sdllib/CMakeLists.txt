@@ -17,6 +17,10 @@ target_sources(sdllib PUBLIC
 
 find_package(SDL2 REQUIRED)
 target_link_libraries(sdllib base SDL2::SDL2 absl::check absl::log absl::strings)
+if (WIN32)
+    # net_select.cc calls select() through Winsock.
+    target_link_libraries(sdllib wsock32)
+endif ()
 
 # Tests
 include(Testing)
