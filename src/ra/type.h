@@ -168,7 +168,6 @@ class HouseTypeClass : public AbstractTypeClass {
   fixed BuildSpeedBias;
 
   //------------------------------------------------------------------------
-  HouseTypeClass(const NoInitClass& x) : AbstractTypeClass(x) {}
   HouseTypeClass(HousesType house, const char* ini, int fullname,
                  const char* ext, int lemon, PlayerColorType remapcolor,
                  char prefix);
@@ -287,7 +286,6 @@ class ObjectTypeClass : public AbstractTypeClass {
   std::unique_ptr<char[]> RadarIcon;
 
   //--------------------------------------------------------------------
-  ObjectTypeClass(const NoInitClass& x) : AbstractTypeClass(x) {}
   ObjectTypeClass(RTTIType rtti, int id, bool is_sentient, bool is_stealthy,
                   bool is_selectable, bool is_legal_target,
                   bool is_insignificant, bool is_immune, bool is_footprint,
@@ -582,7 +580,6 @@ class TechnoTypeClass : public ObjectTypeClass {
   int Points;
 
   //--------------------------------------------------------------------
-  TechnoTypeClass(const NoInitClass& x) : ObjectTypeClass(x) {}
   TechnoTypeClass(RTTIType rtti, int id, int name, const char* ininame,
                   RemapType remap, int verticaloffset, int primaryoffset,
                   int primarylateral, int secondaryoffset, int secondarylateral,
@@ -767,7 +764,6 @@ class BuildingTypeClass : public TechnoTypeClass {
   /*---------------------------------------------------------------------------
   **	This is the building type explicit constructor.
   */
-  BuildingTypeClass(const NoInitClass& x) : TechnoTypeClass(x) {}
   BuildingTypeClass(StructType type, int name, const char* ininame,
                     FacingType foundation, COORDINATE exitpoint,
                     RemapType remap, int verticaloffset, int primaryoffset,
@@ -954,7 +950,6 @@ class UnitTypeClass : public TechnoTypeClass {
   /*
   **	This is the explicit unit class constructor.
   */
-  UnitTypeClass(const NoInitClass& x) : TechnoTypeClass(x) {}
   UnitTypeClass(UnitType type, int name, const char* ininame, AnimType exp,
                 RemapType remap, int verticaloffset, int primaryoffset,
                 int primarylateral, int secondaryoffset, int secondarylateral,
@@ -1051,7 +1046,6 @@ class VesselTypeClass : public TechnoTypeClass {
   /*
   **	This is the explicit unit class constructor.
   */
-  VesselTypeClass(const NoInitClass& x) : TechnoTypeClass(x) {}
   VesselTypeClass(VesselType type, int name, const char* ininame, AnimType exp,
                   int verticaloffset, int primaryoffset, int primarylateral,
                   int secondaryoffset, int secondarylateral, bool is_eight,
@@ -1182,7 +1176,6 @@ class InfantryTypeClass : public TechnoTypeClass {
   /*
   **	This is the explicit unit class constructor.
   */
-  InfantryTypeClass(const NoInitClass& x) : TechnoTypeClass(x) {}
   InfantryTypeClass(InfantryType type, int name, const char* ininame,
                     int verticaloffset, int primaryoffset, bool is_female,
                     bool is_crawling, bool is_civilian, bool is_remap_override,
@@ -1268,7 +1261,6 @@ class AircraftTypeClass : public TechnoTypeClass {
   */
   int LandingSpeed;
 
-  AircraftTypeClass(const NoInitClass& x) : TechnoTypeClass(x) {}
   AircraftTypeClass(AircraftType airtype, int name, const char* ininame,
                     int verticaloffset, int primaryoffset, int primarylateral,
                     bool is_fixedwing, bool is_rotorequipped,
@@ -1453,7 +1445,6 @@ class BulletTypeClass : public ObjectTypeClass {
   int Tumble;
 
   //---------------------------------------------------------------------
-  BulletTypeClass(const NoInitClass& x) : ObjectTypeClass(x) {}
   BulletTypeClass(const char* name);
 
   void* operator new(size_t) noexcept;
@@ -1503,7 +1494,6 @@ class TerrainTypeClass : public ObjectTypeClass {
   unsigned IsWaterBased : 1;
 
   //----------------------------------------------------------------
-  TerrainTypeClass(const NoInitClass& x) : ObjectTypeClass(x) {}
   TerrainTypeClass(TerrainType terrain, int theater, COORDINATE centerbase,
                    bool is_immune, bool is_water, const char* ininame,
                    int fullname, const short* occupy, const short* overlap);
@@ -1559,7 +1549,6 @@ class TemplateTypeClass : public ObjectTypeClass {
   unsigned char Width, Height;
 
   //----------------------------------------------------------
-  TemplateTypeClass(const NoInitClass& x) : ObjectTypeClass(x) {}
   TemplateTypeClass(TemplateType iconset, int theater, const char* ininame,
                     int fullname);
 
@@ -1735,7 +1724,6 @@ class AnimTypeClass : public ObjectTypeClass {
   AnimType ChainTo;
 
   //---------------------------------------------------------------------------
-  AnimTypeClass(const NoInitClass& x) : ObjectTypeClass(x) {}
   AnimTypeClass(AnimType anim, const char* name, int size, int biggest,
                 bool istheater, bool isnormal, bool iswhite, bool isscorcher,
                 bool iscrater, bool issticky, bool ground, bool istrans,
@@ -1833,7 +1821,6 @@ class OverlayTypeClass : public ObjectTypeClass {
   unsigned IsRadarVisible : 1;
 
   //----------------------------------------------------------
-  OverlayTypeClass(const NoInitClass& x) : ObjectTypeClass(x) {}
   OverlayTypeClass(OverlayType iconset, const char* ininame, int fullname,
                    LandType ground, int damagelevels, int damagepoints,
                    bool isradarinvisible, bool iswooden, bool istarget,
@@ -1897,7 +1884,6 @@ class SmudgeTypeClass : public ObjectTypeClass {
   unsigned IsBib : 1;
 
   //----------------------------------------------------------
-  SmudgeTypeClass(const NoInitClass& x) : ObjectTypeClass(x) {}
   SmudgeTypeClass(SmudgeType smudge, const char* ininame, int fullname,
                   int width, int height, bool isbib, bool iscrater);
 

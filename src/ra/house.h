@@ -889,11 +889,6 @@ class HouseClass {
     StructType Structure;  // The type of building to produce.
 
     BuildChoiceClass(UrgencyType u, StructType s) : Urgency(u), Structure(s) {}
-    BuildChoiceClass(const NoInitClass&) {}
-    int Save(Pipe&) const { return true; }
-    int Load(Straw&) { return true; }
-    void Code_Pointers() {}
-    void Decode_Pointers() {}
   };
 
   static TFixedIHeapClass<BuildChoiceClass> BuildChoice;

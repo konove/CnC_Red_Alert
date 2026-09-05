@@ -88,13 +88,21 @@ class ArchiveBase {
         }
       }
     } else if constexpr (std::same_as<V, bool>) {
-      uint8_t byte = value ? 1 : 0;
+      uint8_t byte = 0;
+      if constexpr (!Derived::kIsReading) {
+        byte = value ? 1 : 0;
+      }
       self().Scalar(byte);
       if constexpr (Derived::kIsReading) {
         value = byte != 0;
       }
     } else if constexpr (std::is_enum_v<V>) {
-      auto raw = static_cast<int32_t>(std::to_underlying(value));
+      // The value is only read when writing; on the read side it may still
+      // be uninitialized storage.
+      int32_t raw = 0;
+      if constexpr (!Derived::kIsReading) {
+        raw = static_cast<int32_t>(value);
+      }
       self().Scalar(raw);
       if constexpr (Derived::kIsReading) {
         value = static_cast<V>(raw);

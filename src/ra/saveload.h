@@ -2,11 +2,22 @@
 #define CNC_RED_ALERT_RA_SAVELOAD_H_
 
 #include <cstddef>
+#include <cstdint>
 
 #include "ra/defines.h"
+#include "tech/archive.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"
 #include "tech/wwfile.h"
+
+// Identifies a saved game written by this port. It follows the description
+// in the file header, where the original format kept the scenario number, so
+// a pre-migration save can never pass the check.
+inline constexpr uint32_t kSaveGameMagic = FourCC("RASV");
+
+// Bump on every change to the on-disk layout, including each class that moves
+// from a raw image to Serialize(). Only an exact match loads.
+inline constexpr int32_t kSaveGameVersion = 1;
 
 bool Load_Misc_Values(Straw& file);
 bool Save_Misc_Values(Pipe& file);

@@ -86,6 +86,20 @@ class CCPtr {
   long Raw() const { return ID; }
   void Set_Raw(const long value) { ID = static_cast<int>(value); }
 
+  // Saved-game support. The ID is the whole state; a loaded ID outside the
+  // heap is a corrupt save, not a programmer error, so it is reported through
+  // the reader rather than checked.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(ID);
+    if constexpr (Archive::kIsReading) {
+      if (ID != -1 && (Heap == nullptr || ID < 0 || ID >= Heap->Length())) {
+        ar.Fail("CCPtr ID outside its heap");
+        ID = -1;
+      }
+    }
+  }
+
  private:
   static FixedIHeapClass* Heap;
 

@@ -60,6 +60,12 @@ class FacingClass {
   DirType Current() const { return CurrentFacing; }
   DirType Desired() const { return DesiredFacing; }
 
+  // Saved-game support.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(CurrentFacing, DesiredFacing);
+  }
+
   int Set_Desired(DirType facing);
   int Set_Current(DirType facing);
 

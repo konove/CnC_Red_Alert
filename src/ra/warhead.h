@@ -45,7 +45,6 @@
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "tech/fixed.h"
-#include "tech/noinit.h"
 
 /**********************************************************************
 **	Each of the warhead types has specific characteristics. This structure
@@ -54,7 +53,6 @@
 class WarheadTypeClass {
  public:
   WarheadTypeClass(const char* name);
-  WarheadTypeClass(const NoInitClass&) {}
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }

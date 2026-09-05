@@ -58,7 +58,6 @@
 #include <cstring>
 #include <new>
 
-#include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -131,23 +130,18 @@
 /*
 ********************************** Defines **********************************
 */
-#define SAVEGAME_VERSION                                                       \
-  (kDescripMax + 0x01000006 +                                                  \
-   (sizeof(AircraftClass) + sizeof(AircraftTypeClass) + sizeof(AnimClass) +    \
-    sizeof(AnimTypeClass) + sizeof(BaseClass) + sizeof(BuildingClass) +        \
-    sizeof(BuildingTypeClass) + sizeof(BulletClass) +                          \
-    sizeof(BulletTypeClass) + sizeof(CellClass) + sizeof(FactoryClass) +       \
-    sizeof(HouseClass) + sizeof(HouseTypeClass) + sizeof(InfantryClass) +      \
-    sizeof(InfantryTypeClass) + sizeof(LayerClass) + sizeof(MouseClass) +      \
-    sizeof(OverlayClass) + sizeof(OverlayTypeClass) + sizeof(SmudgeClass) +    \
-    sizeof(SmudgeTypeClass) + sizeof(TeamClass) + sizeof(TeamTypeClass) +      \
-    sizeof(TemplateClass) + sizeof(TemplateTypeClass) + sizeof(TerrainClass) + \
-    sizeof(TerrainTypeClass) + sizeof(TriggerClass) +                          \
-    sizeof(TriggerTypeClass) + sizeof(UnitClass) + sizeof(UnitTypeClass) +     \
-    sizeof(VesselClass) + sizeof(ScenarioClass) + sizeof(ChronalVortexClass)))
-//										sizeof(Waypoint)))
-
 static int Reconcile_Players();
+
+// Section tags bracket every top-level block of the save body. They cost
+// four bytes each and turn a field-list mismatch into an error that names
+// the block instead of garbage further down the stream.
+static void Put_Section(Pipe& pipe, uint32_t tag) {
+  ArchiveWriter(pipe).Section(tag);
+}
+static bool Get_Section(Straw& straw, uint32_t tag) {
+  ArchiveReader reader(straw);
+  return reader.Section(tag);
+}
 
 /***********************************************************************************************
  * Put_All -- Store all save game data to the pipe. *
@@ -166,8 +160,15 @@ static int Reconcile_Players();
  *=============================================================================================*/
 static void Put_All(Pipe& pipe, int save_net) {
   /*
+  **	Frame goes first: every frame-based timer re-anchors to it when read.
+  */
+  Put_Section(pipe, FourCC("FRAM"));
+  ArchiveWriter{pipe}(Frame);
+
+  /*
   **	Save the scenario global information.
   */
+  Put_Section(pipe, FourCC("SCEN"));
   pipe.Put(&Scen, sizeof(Scen));
 
   /*
@@ -176,6 +177,7 @@ static void Put_All(Pipe& pipe, int save_net) {
   if (!save_net) {
     Call_Back();
   }
+  Put_Section(pipe, FourCC("MAP_"));
   Map.Save(pipe);
 
   if (!save_net) {
@@ -186,72 +188,89 @@ static void Put_All(Pipe& pipe, int save_net) {
   **	Save all game objects.  This code saves every object that's stored in a
   **	TFixedIHeap class.
   */
+  Put_Section(pipe, FourCC("HOUS"));
   Houses.Save(pipe);
   if (!save_net) {
     Call_Back();
   }
+  Put_Section(pipe, FourCC("TMTY"));
   TeamTypes.Save(pipe);
   if (!save_net) {
     Call_Back();
   }
+  Put_Section(pipe, FourCC("TEAM"));
   Teams.Save(pipe);
   if (!save_net) {
     Call_Back();
   }
+  Put_Section(pipe, FourCC("TRTY"));
   TriggerTypes.Save(pipe);
   if (!save_net) {
     Call_Back();
   }
+  Put_Section(pipe, FourCC("TRIG"));
   Triggers.Save(pipe);
   if (!save_net) {
     Call_Back();
   }
+  Put_Section(pipe, FourCC("AIRC"));
   Aircraft.Save(pipe);
   if (!save_net) {
     Call_Back();
   }
+  Put_Section(pipe, FourCC("ANIM"));
   Anims.Save(pipe);
 
   if (!save_net) {
     Call_Back();
   }
 
+  Put_Section(pipe, FourCC("BLDG"));
   Buildings.Save(pipe);
   if (!save_net) {
     Call_Back();
   }
+  Put_Section(pipe, FourCC("BULL"));
   Bullets.Save(pipe);
   if (!save_net) {
     Call_Back();
   }
+  Put_Section(pipe, FourCC("INFT"));
   Infantry.Save(pipe);
   if (!save_net) {
     Call_Back();
   }
+  Put_Section(pipe, FourCC("OVRL"));
   Overlays.Save(pipe);
   if (!save_net) {
     Call_Back();
   }
+  Put_Section(pipe, FourCC("SMDG"));
   Smudges.Save(pipe);
   if (!save_net) {
     Call_Back();
   }
+  Put_Section(pipe, FourCC("TMPL"));
   Templates.Save(pipe);
   if (!save_net) {
     Call_Back();
   }
+  Put_Section(pipe, FourCC("TERR"));
   Terrains.Save(pipe);
   if (!save_net) {
     Call_Back();
   }
+  Put_Section(pipe, FourCC("UNIT"));
   Units.Save(pipe);
   if (!save_net) {
     Call_Back();
   }
+  Put_Section(pipe, FourCC("FACT"));
   Factories.Save(pipe);
   if (!save_net) {
     Call_Back();
   }
+  Put_Section(pipe, FourCC("VESL"));
   Vessels.Save(pipe);
 
   if (!save_net) {
@@ -261,10 +280,12 @@ static void Put_All(Pipe& pipe, int save_net) {
   /*
   **	Save the Logic & Map layers
   */
+  Put_Section(pipe, FourCC("LOGC"));
   Logic.Save(pipe);
 
   // int32_t on both sides: Load_Game reads the same width. A base::ssize here
   // is 8 bytes on 64-bit and made every save unreadable by its own build.
+  Put_Section(pipe, FourCC("TRGV"));
   int32_t count = static_cast<int32_t>(MapTriggers.Count());
   pipe.Put(&count, sizeof(count));
   for (int index = 0; index < MapTriggers.Count(); index++) {
@@ -295,6 +316,7 @@ static void Put_All(Pipe& pipe, int save_net) {
     Call_Back();
   }
 
+  Put_Section(pipe, FourCC("LAYR"));
   for (int i = 0; i < static_cast<int>(magic_enum::enum_count<LayerType>());
        i++) {
     MouseClass::Layer[i].Save(pipe);
@@ -307,6 +329,7 @@ static void Put_All(Pipe& pipe, int save_net) {
   /*
   **	Save the Score
   */
+  Put_Section(pipe, FourCC("SCOR"));
   pipe.Put(&Score, sizeof(Score));
   if (!save_net) {
     Call_Back();
@@ -315,6 +338,7 @@ static void Put_All(Pipe& pipe, int save_net) {
   /*
   **	Save the AI Base
   */
+  Put_Section(pipe, FourCC("BASE"));
   Base.Save(pipe);
   if (!save_net) {
     Call_Back();
@@ -324,6 +348,7 @@ static void Put_All(Pipe& pipe, int save_net) {
   **	Save out the carry over list (if present). First see how
   **	many carry over objects are in the list.
   */
+  Put_Section(pipe, FourCC("CARY"));
   int carry_count = 0;
   const CarryoverClass* cptr = Carryover;
   while (cptr != nullptr) {
@@ -359,6 +384,7 @@ static void Put_All(Pipe& pipe, int save_net) {
   /*
   **	Save miscellaneous variables.
   */
+  Put_Section(pipe, FourCC("MISC"));
   Save_Misc_Values(pipe);
 
   if (!save_net) {
@@ -369,6 +395,7 @@ static void Put_All(Pipe& pipe, int save_net) {
   **	Save multiplayer values
   */
   if (save_net) {
+    Put_Section(pipe, FourCC("MPLY"));
     Save_MPlayer_Values(pipe);
   }
 
@@ -461,16 +488,17 @@ bool Save_Game(int id, const char* descr, bool) {
   descr_buf[strlen(descr_buf) + 1] = 26;  // put CTRL-Z after nullptr
   fpipe.Put(descr_buf, kDescripMax);
 
-  fpipe.Put(&scenario, sizeof(scenario));
-
-  fpipe.Put(&house, sizeof(house));
-
   /*
-  **	Save the save-game version, for loading verification
+  **	Magic and version come right after the description so the load dialog
+  **	can reject a foreign or stale file without decrypting anything.
   */
-  unsigned long version = SAVEGAME_VERSION;
-  version++;
-  fpipe.Put(&version, sizeof(version));
+  {
+    ArchiveWriter header(fpipe);
+    uint32_t magic = kSaveGameMagic;
+    int32_t version = kSaveGameVersion;
+    int32_t scenario32 = static_cast<int32_t>(scenario);
+    header(magic, version, scenario32, house);
+  }
 
   int pos = static_cast<int>(file.Seek(0, SEEK_CUR));
 
@@ -556,8 +584,7 @@ bool Save_Game(int id, const char* descr, bool) {
 bool Load_Game(int id) {
   char name[_MAX_FNAME + _MAX_EXT];
   int i;
-  unsigned scenario;
-  HousesType house;
+  HousesType house = HOUSE_NONE;
   char descr_buf[kDescripMax];
   int load_net = 0;  // 1 = save network/modem game
 
@@ -591,24 +618,17 @@ bool Load_Game(int id) {
     return false;
   }
 
-  if (fstraw.Get(&scenario, sizeof(scenario)) != sizeof(scenario)) {
-    return false;
-  }
-
-  if (fstraw.Get(&house, sizeof(house)) != sizeof(house)) {
-    return false;
-  }
-
-  /*
-  **	Read in & verify the save-game ID code
-  */
-  unsigned long version;
-  if (fstraw.Get(&version, sizeof(version)) != sizeof(version)) {
-    return false;
-  }
-  GameVersion = version;
-  if (version != SAVEGAME_VERSION && version - 1 != SAVEGAME_VERSION) {
-    return false;
+  {
+    ArchiveReader header(fstraw);
+    uint32_t magic = 0;
+    int32_t version = 0;
+    int32_t scenario32 = 0;
+    header(magic, version, scenario32, house);
+    if (!header.ok() || magic != kSaveGameMagic ||
+        version != kSaveGameVersion) {
+      return false;
+    }
+    GameVersion = static_cast<unsigned long>(version);
   }
   /*
   **	Get the message digest that is embedded in the file.
@@ -672,9 +692,17 @@ bool Load_Game(int id) {
   */
   Clear_Scenario();
 
+  if (!Get_Section(straw, FourCC("FRAM"))) {
+    return false;
+  }
+  ArchiveReader{straw}(Frame);
+
   /*
   **	Load the scenario global information.
   */
+  if (!Get_Section(straw, FourCC("SCEN"))) {
+    return false;
+  }
   straw.Get(&Scen, sizeof(Scen));
 
   /*
@@ -727,6 +755,9 @@ bool Load_Game(int id) {
   *them *	what the Theater is; this must be done before any objects are
   *created, so *	they'll be properly created.
   */
+  if (!Get_Section(straw, FourCC("MAP_"))) {
+    return false;
+  }
   Map.Load(straw);
 
   Call_Back();
@@ -734,32 +765,72 @@ bool Load_Game(int id) {
   /*
   **	Load the object data.
   */
-  Houses.Load(straw);
-  TeamTypes.Load(straw);
-  Teams.Load(straw);
-  TriggerTypes.Load(straw);
-  Triggers.Load(straw);
-  Aircraft.Load(straw);
-  Anims.Load(straw);
-  Buildings.Load(straw);
-  Bullets.Load(straw);
+  if (!Get_Section(straw, FourCC("HOUS")) || !Houses.Load(straw)) {
+    return false;
+  }
+  if (!Get_Section(straw, FourCC("TMTY")) || !TeamTypes.Load(straw)) {
+    return false;
+  }
+  if (!Get_Section(straw, FourCC("TEAM")) || !Teams.Load(straw)) {
+    return false;
+  }
+  if (!Get_Section(straw, FourCC("TRTY")) || !TriggerTypes.Load(straw)) {
+    return false;
+  }
+  if (!Get_Section(straw, FourCC("TRIG")) || !Triggers.Load(straw)) {
+    return false;
+  }
+  if (!Get_Section(straw, FourCC("AIRC")) || !Aircraft.Load(straw)) {
+    return false;
+  }
+  if (!Get_Section(straw, FourCC("ANIM")) || !Anims.Load(straw)) {
+    return false;
+  }
+  if (!Get_Section(straw, FourCC("BLDG")) || !Buildings.Load(straw)) {
+    return false;
+  }
+  if (!Get_Section(straw, FourCC("BULL")) || !Bullets.Load(straw)) {
+    return false;
+  }
 
   Call_Back();
 
-  Infantry.Load(straw);
-  Overlays.Load(straw);
-  Smudges.Load(straw);
-  Templates.Load(straw);
-  Terrains.Load(straw);
-  Units.Load(straw);
-  Factories.Load(straw);
-  Vessels.Load(straw);
+  if (!Get_Section(straw, FourCC("INFT")) || !Infantry.Load(straw)) {
+    return false;
+  }
+  if (!Get_Section(straw, FourCC("OVRL")) || !Overlays.Load(straw)) {
+    return false;
+  }
+  if (!Get_Section(straw, FourCC("SMDG")) || !Smudges.Load(straw)) {
+    return false;
+  }
+  if (!Get_Section(straw, FourCC("TMPL")) || !Templates.Load(straw)) {
+    return false;
+  }
+  if (!Get_Section(straw, FourCC("TERR")) || !Terrains.Load(straw)) {
+    return false;
+  }
+  if (!Get_Section(straw, FourCC("UNIT")) || !Units.Load(straw)) {
+    return false;
+  }
+  if (!Get_Section(straw, FourCC("FACT")) || !Factories.Load(straw)) {
+    return false;
+  }
+  if (!Get_Section(straw, FourCC("VESL")) || !Vessels.Load(straw)) {
+    return false;
+  }
 
   /*
   **	Load the Logic & Map Layers
   */
+  if (!Get_Section(straw, FourCC("LOGC"))) {
+    return false;
+  }
   Logic.Load(straw);
 
+  if (!Get_Section(straw, FourCC("TRGV"))) {
+    return false;
+  }
   int32_t count;
   straw.Get(&count, sizeof(count));
   MapTriggers.Clear();
@@ -787,6 +858,9 @@ bool Load_Game(int id) {
     }
   }
 
+  if (!Get_Section(straw, FourCC("LAYR"))) {
+    return false;
+  }
   for (i = 0; i < static_cast<int>(magic_enum::enum_count<LayerType>()); i++) {
     MouseClass::Layer[i].Load(straw);
   }
@@ -796,17 +870,26 @@ bool Load_Game(int id) {
   /*
   **	Load the Score
   */
+  if (!Get_Section(straw, FourCC("SCOR"))) {
+    return false;
+  }
   straw.Get(&Score, sizeof(Score));
   new (&Score) ScoreClass(NoInitClass());
 
   /*
   **	Load the AI Base
   */
+  if (!Get_Section(straw, FourCC("BASE"))) {
+    return false;
+  }
   Base.Load(straw);
 
   /*
   **	Delete any carryover pseudo-saved game list.
   */
+  if (!Get_Section(straw, FourCC("CARY"))) {
+    return false;
+  }
   while (Carryover != nullptr) {
     CarryoverClass* cptr = dynamic_cast<CarryoverClass*>(Carryover->Get_Next());
     Carryover->Remove();
@@ -840,12 +923,18 @@ bool Load_Game(int id) {
   /*
   **	Load miscellaneous variables, including the map size & the Theater
   */
+  if (!Get_Section(straw, FourCC("MISC"))) {
+    return false;
+  }
   Load_Misc_Values(straw);
 
   /*
   **	Load multiplayer values
   */
   if (load_net) {
+    if (!Get_Section(straw, FourCC("MPLY"))) {
+      return false;
+    }
     Load_MPlayer_Values(straw);
   }
 
@@ -1059,11 +1148,6 @@ bool Save_Misc_Values(Pipe& file) {
   file.Put(&x, sizeof(x));
 
   /*
-  **	Save frame #.
-  */
-  file.Put(&Frame, sizeof(Frame));
-
-  /*
   **	Save currently-selected objects list.
   **	Save the # of ptrs in the list.
   */
@@ -1113,11 +1197,6 @@ bool Load_Misc_Values(Straw& file) {
   file.Get(&x, sizeof(x));
   //	file.Get(&PlayerPtr, sizeof(PlayerPtr));
   PlayerPtr = HouseClass::As_Pointer(static_cast<HousesType>(x));
-
-  /*
-  **	Load frame #.
-  */
-  file.Get(&Frame, sizeof(Frame));
 
   /*
   **	Load currently-selected objects list.
@@ -1409,7 +1488,6 @@ void Decode_All_Pointers() {
 bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
                        HousesType* housep) {
   char name[_MAX_FNAME + _MAX_EXT];
-  unsigned long version;
   char descr_buf[kDescripMax];
 
   /*
@@ -1430,23 +1508,17 @@ bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
   descr_buf[strlen(descr_buf) - 2] = '\0';  // trim off CR/LF
   port::SafeCopy(buf, descr_buf, buf_size);
 
-  if (straw.Get(scenp, sizeof(unsigned)) != sizeof(unsigned)) {
+  ArchiveReader header(straw);
+  uint32_t magic = 0;
+  int32_t version = 0;
+  int32_t scenario32 = 0;
+  HousesType house = HOUSE_NONE;
+  header(magic, version, scenario32, house);
+  if (!header.ok() || magic != kSaveGameMagic || version != kSaveGameVersion) {
     return false;
   }
-
-  if (straw.Get(housep, sizeof(HousesType)) != sizeof(HousesType)) {
-    return false;
-  }
-
-  /*
-  **	Read & verify the save-game version #
-  */
-  if (straw.Get(&version, sizeof(version)) != sizeof(version)) {
-    return false;
-  }
-  if (version != SAVEGAME_VERSION && version - 1 != SAVEGAME_VERSION) {
-    return false;
-  }
+  *scenp = static_cast<unsigned>(scenario32);
+  *housep = house;
   return true;
 }
 

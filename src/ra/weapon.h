@@ -46,7 +46,6 @@
 #include "ra/defines.h"
 #include "ra/type.h"
 #include "ra/warhead.h"
-#include "tech/noinit.h"
 
 /**********************************************************************
 **	This is the constant data associated with a weapon. Some objects
@@ -56,7 +55,6 @@
 class WeaponTypeClass {
  public:
   WeaponTypeClass(const char* name);
-  WeaponTypeClass(const NoInitClass&) {}
   ~WeaponTypeClass();
 
   void* operator new(size_t) noexcept;
