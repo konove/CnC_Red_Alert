@@ -359,7 +359,7 @@ bool LayerClass::Load(Straw& file) {
   /*
   **	Read # elements in the layer
   */
-  int count;
+  int32_t count;
   if (file.Get(&count, sizeof(count)) != sizeof(count)) {
     return false;
   }
@@ -399,7 +399,8 @@ bool LayerClass::Save(Pipe& file) const {
   /*
   **	Save # array elements
   */
-  base::ssize count = Count();
+  // Same width as Load reads; base::ssize is 8 bytes here and Load read 4.
+  int32_t count = static_cast<int32_t>(Count());
   file.Put(&count, sizeof(count));
 
   /*

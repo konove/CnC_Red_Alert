@@ -263,7 +263,9 @@ static void Put_All(Pipe& pipe, int save_net) {
   */
   Logic.Save(pipe);
 
-  base::ssize count = MapTriggers.Count();
+  // int32_t on both sides: Load_Game reads the same width. A base::ssize here
+  // is 8 bytes on 64-bit and made every save unreadable by its own build.
+  int32_t count = static_cast<int32_t>(MapTriggers.Count());
   pipe.Put(&count, sizeof(count));
   for (int index = 0; index < MapTriggers.Count(); index++) {
     TARGET target = MapTriggers[index]->As_Target();
@@ -272,7 +274,7 @@ static void Put_All(Pipe& pipe, int save_net) {
   if (!save_net) {
     Call_Back();
   }
-  count = LogicTriggers.Count();
+  count = static_cast<int32_t>(LogicTriggers.Count());
   pipe.Put(&count, sizeof(count));
   for (int index = 0; index < LogicTriggers.Count(); index++) {
     TARGET target = LogicTriggers[index]->As_Target();
@@ -282,7 +284,7 @@ static void Put_All(Pipe& pipe, int save_net) {
     Call_Back();
   }
   for (HousesType h : magic_enum::enum_values<HousesType>()) {
-    count = HouseTriggers[h].Count();
+    count = static_cast<int32_t>(HouseTriggers[h].Count());
     pipe.Put(&count, sizeof(count));
     for (int index = 0; index < HouseTriggers[h].Count(); index++) {
       TARGET target = HouseTriggers[h][index]->As_Target();
@@ -758,7 +760,7 @@ bool Load_Game(int id) {
   */
   Logic.Load(straw);
 
-  int count;
+  int32_t count;
   straw.Get(&count, sizeof(count));
   MapTriggers.Clear();
   for (int index = 0; index < count; index++) {

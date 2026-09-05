@@ -210,8 +210,7 @@ class TeamClass : public AbstractClass {
         House(x),
         SuspendTimer(x),
         Trigger(x),
-        TimeOut(x),
-        Member(nullptr) {}
+        TimeOut(x) {}
   ~TeamClass() override;
   void operator delete(void* ptr);
   void* operator new(size_t size) noexcept;

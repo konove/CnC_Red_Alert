@@ -140,8 +140,10 @@ class ObjectClass : public AbstractClass {
   **	Constructor & destructors.
   */
   ObjectClass(RTTIType rtti, int id);
-  ObjectClass(const NoInitClass& x)
-      : AbstractClass(x), Next(nullptr), Trigger(x) {}
+  // Next must not be touched here: TFixedIHeapClass::Load runs this after the
+  // raw image is in place, and Next holds the coded TARGET Decode_Pointers
+  // still has to resolve.
+  ObjectClass(const NoInitClass& x) : AbstractClass(x), Trigger(x) {}
   ~ObjectClass() override { Next = nullptr; }
   int operator<(const ObjectClass& object) const {
     return Sort_Y() < object.Sort_Y();
