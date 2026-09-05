@@ -108,9 +108,9 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
-    # Advisory while the tree is brought up to the checks; flip to false once
-    # a clean run exists so regressions block.
-    continue-on-error: true
+    # Blocking: the tree is clean under these checks, so a finding is a
+    # regression.
+    continue-on-error: false
 
     env:
       # Pinned so findings do not shift with the runner image. Keep in step with
