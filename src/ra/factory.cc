@@ -86,19 +86,7 @@
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-FactoryClass::FactoryClass()
-    : RTTI(RTTI_FACTORY),
-      ID(Factories.ID(this)),
-      IsSuspended(false),
-      IsDifferent(false),
-      Balance(0),
-      OriginalBalance(0),
-      Object(nullptr),
-      SpecialItem(SPC_NONE),
-      House(nullptr) {
-  Set_Rate(0);
-  Set_Stage(0);
-}
+FactoryClass::FactoryClass() : RTTI(RTTI_FACTORY), ID(Factories.ID(this)) {}
 
 /***********************************************************************************************
  * FactoryClass::~FactoryClass -- Default destructor for factory objects. *

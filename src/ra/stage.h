@@ -69,6 +69,12 @@ class StageClass {
   StageClass() : Stage(0), StageTimer(0), Rate(0) {}
   StageClass(const NoInitClass& x) : StageTimer(x) {}
 
+  // Saved-game support.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(Stage, StageTimer, Rate);
+  }
+
   int Fetch_Stage() const { return Stage; }
   int Fetch_Rate() const { return Rate; }
   void Set_Stage(int stage) { Stage = stage; }

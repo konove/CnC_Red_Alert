@@ -1,5 +1,8 @@
 // Layout tripwire for the raw-byte save format.
 //
+// Types leave this list as they move to Serialize(); the field-wise format
+// does not depend on their layout.
+//
 // Saved games are not serialized field by field. TFixedIHeapClass<T>::Save and
 // ::Load (ra/heap.cc) write and read sizeof(T) raw bytes per object and then
 // repair the vtable pointer with a placement-new of T(NoInitClass()). The same
@@ -41,7 +44,6 @@
 #include "ra/carry.h"
 #include "ra/cell.h"
 #include "ra/event.h"
-#include "ra/factory.h"
 #include "ra/goptions.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
@@ -85,7 +87,6 @@ constexpr LayoutCase kSerializedTypes[] = {
     LAYOUT_CASE(AnimClass, 104),
     LAYOUT_CASE(BuildingClass, 520),
     LAYOUT_CASE(BulletClass, 96),
-    LAYOUT_CASE(FactoryClass, 80),
     LAYOUT_CASE(HouseClass, 11256),
     LAYOUT_CASE(InfantryClass, 648),
     LAYOUT_CASE(OverlayClass, 56),

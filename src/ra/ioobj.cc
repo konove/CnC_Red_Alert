@@ -72,9 +72,9 @@
 
 #include "ra/bullet.h"
 #include "ra/cargo.h"
-#include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/factory.h"
+#include "ra/serialize.h"
 #include "ra/foot.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
@@ -94,7 +94,6 @@
 #include "tech/ftimer.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"
-#include "base/types.h"
 
 /***********************************************************************************************
  * TeamTypeClass::Code_Pointers -- codes class's pointers for load/save *
@@ -296,53 +295,20 @@ void BulletClass::Decode_Pointers() {
   ObjectClass::Decode_Pointers();
 }
 
-/***********************************************************************************************
- * FactoryClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void FactoryClass::Code_Pointers() {
-  if (Object) {
-    Object = (TechnoClass*)Object->As_Target();
-  }
-
-  House = (HouseClass*)House->Class->House;
+template <class Archive>
+void FactoryClass::Serialize(Archive& ar) {
+  StageClass::Serialize(ar);
+  bool is_active = IsActive;
+  bool is_suspended = IsSuspended;
+  bool is_different = IsDifferent;
+  ar(RTTI, ID, is_active, is_suspended, is_different, Balance, OriginalBalance,
+     ObjectPtr(Object), SpecialItem, House);
+  IsActive = is_active;
+  IsSuspended = is_suspended;
+  IsDifferent = is_different;
 }
-
-/***********************************************************************************************
- * FactoryClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void FactoryClass::Decode_Pointers() {
-  if (Object) {
-    Object = As_Techno(static_cast<TARGET>((intptr_t)Object));
-    assert(Object != nullptr);
-  }
-
-  House = HouseClass::As_Pointer(static_cast<HousesType>((intptr_t)House));
-  assert(House != nullptr);
-}
+template void FactoryClass::Serialize(ArchiveWriter&);
+template void FactoryClass::Serialize(ArchiveReader&);
 
 /***********************************************************************************************
  * LayerClass::Load -- Loads from a save game file. *

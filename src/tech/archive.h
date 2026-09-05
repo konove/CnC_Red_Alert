@@ -201,11 +201,18 @@ class ArchiveReader : public ArchiveBase<ArchiveReader> {
   std::string error_;
 };
 
-// A type that can be both written and read by the archives.
+// A type that declares its own Serialize() member template. Inheriting a
+// base class's Serialize() is not enough: a derived class that forgot to
+// declare one would otherwise be saved as its base and load with every
+// derived field missing. The member-pointer test fails for an inherited
+// member because its class is the base, not T.
 template <class T>
-concept Serializable = requires(T& t, ArchiveReader& r, ArchiveWriter& w) {
-  t.Serialize(r);
-  t.Serialize(w);
-};
+concept Serializable =
+    requires(T& t, ArchiveReader& r, ArchiveWriter& w) {
+      t.Serialize(r);
+      t.Serialize(w);
+    } &&
+    std::same_as<decltype(&T::template Serialize<ArchiveWriter>),
+                 void (T::*)(ArchiveWriter&)>;
 
 #endif  // CNC_RED_ALERT_TECH_ARCHIVE_H_

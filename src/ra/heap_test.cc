@@ -25,6 +25,13 @@ struct Widget {
 static_assert(Serializable<Widget>);
 static_assert(!RawImage<Widget>);
 
+// A derived type that only inherits Serialize() must not count: saving it
+// as its base would drop every field it adds.
+struct Gadget : Widget {
+  int32_t extra = 0;
+};
+static_assert(!Serializable<Gadget>);
+
 class VectorPipe : public Pipe {
  public:
   int Put(const void* source, int slen) override {
