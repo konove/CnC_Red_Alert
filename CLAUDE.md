@@ -31,7 +31,7 @@ JOBS=$(($(getconf _NPROCESSORS_ONLN) / 2))
 sudo apt update
 sudo apt install libsdl2-dev clang-tidy ninja-build
 ```
-  
+
 **macOS:**
 
   ```bash
