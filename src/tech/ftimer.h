@@ -24,9 +24,9 @@
 // The tick-source class T must provide `T::Tick() const` returning a
 // monotonically increasing tick count (typically int64_t or uint64_t).
 //
-// These classes are serialized via raw memcpy (see heap.cc), so all members
-// must be trivially copyable. Do not use std::optional or other non-trivial
-// types as members.
+// Both serialize by value through Serialize(); the NoInit constructors and
+// the trivially-copyable layout are only still needed by the raw-image save
+// path that the save-game migration is retiring.
 
 #ifndef CNC_RED_ALERT_TECH_FTIMER_H_
 #define CNC_RED_ALERT_TECH_FTIMER_H_
@@ -68,6 +68,13 @@ class Stopwatch {
 
   bool IsRunning() const;
 
+  // Saved-game support. Writes the elapsed value and the running flag, not
+  // the anchor tick, so the format does not depend on the tick source. On
+  // read the stopwatch re-anchors to the current tick, which for a frame
+  // tick source means Frame must already be restored.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
  private:
   // Returns ticks elapsed since start_tick_ was last anchored.
   int64_t Elapsed() const;
@@ -86,6 +93,19 @@ Stopwatch<T>::Stopwatch()
 
 template <TickSource T>
 Stopwatch<T>::Stopwatch(const NoInitClass&) {}
+
+template <TickSource T>
+template <class Archive>
+void Stopwatch<T>::Serialize(Archive& ar) {
+  int64_t value = Value();
+  bool running = running_;
+  ar(value, running);
+  if constexpr (Archive::kIsReading) {
+    accumulated_ticks_ = value;
+    start_tick_ = static_cast<int64_t>(T::Tick());
+    running_ = running;
+  }
+}
 
 template <TickSource T>
 int64_t Stopwatch<T>::Value() const {
@@ -162,6 +182,11 @@ class Timer {
   bool IsFinished() const;
   bool HasTimeLeft() const;
 
+  // Saved-game support. Writes the remaining value and the running flag and
+  // re-anchors on read; see Stopwatch::Serialize for the Frame precondition.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
  private:
   // Returns ticks elapsed since start_tick_ was last anchored.
   int64_t Elapsed() const;
@@ -180,6 +205,19 @@ Timer<T>::Timer(int64_t set)
 
 template <TickSource T>
 Timer<T>::Timer(const NoInitClass&) {}
+
+template <TickSource T>
+template <class Archive>
+void Timer<T>::Serialize(Archive& ar) {
+  int64_t value = Value();
+  bool running = running_;
+  ar(value, running);
+  if constexpr (Archive::kIsReading) {
+    delay_time_ = value;
+    start_tick_ = static_cast<int64_t>(T::Tick());
+    running_ = running;
+  }
+}
 
 template <TickSource T>
 int64_t Timer<T>::Value() const {

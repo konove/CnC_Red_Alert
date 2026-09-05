@@ -68,6 +68,12 @@ class fixed {
   // Resets the value to zero.
   void Clear() { raw_ = 0; }
 
+  // Saved-game support: the raw 8.8 bit pattern is the whole state.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(raw_);
+  }
+
   // In-place arithmetic operators.
   fixed& operator*=(const fixed& rvalue) {
     // Divide by 256 to remove extra 8.8 scale factor.

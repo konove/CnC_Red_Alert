@@ -1,9 +1,15 @@
 #include "tech/fixed.h"
 
+#include <cstdint>
+#include <initializer_list>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "gtest/gtest.h"
+#include "tech/archive.h"
+#include "tech/pipe.h"
+#include "tech/xstraw.h"
 
 namespace {
 
@@ -227,6 +233,36 @@ TEST(FixedAsStringTest, OnePointFive) {
 TEST(FixedAsStringTest, StripsTrailingZeros) {
   // fixed(1, 4) has fraction 64 → 64*1000/256 = 250 → "0.250" → "0.25"
   EXPECT_EQ(fixed(1, 4).AsString(), "0.25");
+}
+
+// Serialize: the raw 8.8 pattern round-trips through the archive.
+
+class ByteSink : public Pipe {
+ public:
+  int Put(const void* source, int slen) override {
+    const auto* begin = static_cast<const uint8_t*>(source);
+    bytes.insert(bytes.end(), begin, begin + slen);
+    return slen;
+  }
+  std::vector<uint8_t> bytes;
+};
+
+TEST(FixedSerializeTest, RoundTripsRawBits) {
+  for (const fixed value : {fixed(0, 1), fixed(3, 4), fixed(255, 1),
+                            fixed(65535, 256)}) {
+    ByteSink sink;
+    ArchiveWriter writer(sink);
+    fixed out = value;
+    out.Serialize(writer);
+    EXPECT_EQ(sink.bytes.size(), 2u);
+
+    BufferStraw straw(sink.bytes.data(), static_cast<int>(sink.bytes.size()));
+    ArchiveReader reader(straw);
+    fixed in;
+    in.Serialize(reader);
+    EXPECT_TRUE(reader.ok());
+    EXPECT_EQ(in, value);
+  }
 }
 
 }  // namespace
