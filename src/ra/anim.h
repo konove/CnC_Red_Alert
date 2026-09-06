@@ -48,8 +48,6 @@
 #include "ra/stage.h"
 #include "ra/type.h"
 #include "tech/fixed.h"
-#include "tech/noinit.h"
-#include "tech/straw.h"
 #include "tech/wwfile.h"
 
 /**********************************************************************************************
@@ -66,8 +64,6 @@ class AnimClass final : public ObjectClass, public StageClass {
  public:
   AnimClass(AnimType animnum, COORDINATE coord, unsigned char timedelay = 0,
             unsigned char loop = 1);
-  AnimClass(const NoInitClass& x)
-      : ObjectClass(x), StageClass(x), Class(x), Accum(x) {}
   ~AnimClass() override;
 
   operator AnimType() const { return Class->Type; }
@@ -101,28 +97,29 @@ class AnimClass final : public ObjectClass, public StageClass {
   /*
   **	File I/O.
   */
-  bool Load(Straw& file);
-  bool Save(FileClass& file);
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	If this animation is attached to an object, then this points to that
   *object. An *	animation that is attached will follow that object as it moves.
   *This is important *	for animations such as flames and smoke.
   */
-  TARGET xObject;
+  TARGET xObject = kTargetNone;
 
   /*
   **	If this animation has an owner, then it will be recorded here. An owner
   **	is used when damage is caused by this animation during the middle of its
   **	animation.
   */
-  HousesType OwnerHouse;
+  HousesType OwnerHouse = HOUSE_NONE;
 
   /*
   **	This counter tells how many more times the animation should loop before
   *it *	terminates.
   */
-  unsigned char Loops;
+  unsigned char Loops = 1;
 
  protected:
   void Middle();
@@ -133,27 +130,27 @@ class AnimClass final : public ObjectClass, public StageClass {
   **	Delete this animation at the next opportunity. This is flagged when the
   **	animation is to be prematurely ended as a result of some outside event.
   */
-  unsigned IsToDelete : 1;
+  unsigned IsToDelete : 1 = false;
 
   /*
   **	If the animation has just been created, then don't do any animation
   **	processing until it has been through the render loop at least once.
   */
-  unsigned IsBrandNew : 1;
+  unsigned IsBrandNew : 1 = true;
 
   /*
   **	If this animation is invisible, then this flag will be true. An
   *invisible *	animation is one that is created for the sole purpose of keeping
   *all *	machines synchronized. It will not be displayed.
   */
-  unsigned IsInvisible : 1;
+  unsigned IsInvisible : 1 = false;
 
   /*
   **	Is this animation in a temporary suspended state?  If so, then it won't
   **	be rendered until this value is zero. The flag will be set to false
   **	after the first countdown timer reaches 0.
   */
-  int Delay;
+  int Delay = 0;
 
   /*
   **	If this is an animation that damages whatever it is attached to, then
@@ -162,6 +159,10 @@ class AnimClass final : public ObjectClass, public StageClass {
   *the attached object.
   */
   fixed Accum;
+
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  AnimClass() = default;
+  friend class TFixedIHeapClass<AnimClass>;
 };
 
 void Shorten_Attached_Anims(ObjectClass* obj);

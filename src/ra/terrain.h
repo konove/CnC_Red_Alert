@@ -52,9 +52,6 @@
 #include "ra/stage.h"
 #include "ra/techno.h"
 #include "ra/type.h"
-#include "tech/noinit.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 /****************************************************************************
 **	Each type of terrain has certain pieces of static information associated
@@ -75,8 +72,6 @@ class TerrainClass final : public ObjectClass, public StageClass {
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   TerrainClass(TerrainType id, CELL cell);
-  TerrainClass(const NoInitClass& x)
-      : ObjectClass(x), Class(x), StageClass(x) {}
   ~TerrainClass() override;
   operator TerrainType() const { return Class->Type; }
 
@@ -148,20 +143,25 @@ class TerrainClass final : public ObjectClass, public StageClass {
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
   static const char* INI_Name() { return "TERRAIN"; }
-  bool Load(Straw& file);
-  bool Save(Pipe& file) const;
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
  private:
   /*
   **	If this terrain object is on fire, then this flag will be true.
   */
-  unsigned IsOnFire : 1;
+  unsigned IsOnFire : 1 = false;
 
   /*
   **	Is this a terrain object that undergoes crumbling animation and it is
   **	in fact crumbling at this time?
   */
-  unsigned IsCrumbling : 1;
+  unsigned IsCrumbling : 1 = false;
+
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  TerrainClass() = default;
+  friend class TFixedIHeapClass<TerrainClass>;
 };
 
 #endif  // CNC_RED_ALERT_RA_TERRAIN_H_

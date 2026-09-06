@@ -237,9 +237,7 @@ void TerrainClass::operator delete(void* ptr) {
  *=============================================================================================*/
 TerrainClass::TerrainClass(TerrainType type, CELL cell)
     : ObjectClass(RTTI_TERRAIN, Terrains.ID(this)),
-      Class(TerrainTypes.Ptr(type)),
-      IsOnFire(false),
-      IsCrumbling(false) {
+      Class(TerrainTypes.Ptr(type)) {
   Strength = Class->MaxStrength;
   if (cell != -1) {
     if (!Unlimbo(Cell_Coord(cell))) {

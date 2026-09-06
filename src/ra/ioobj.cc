@@ -70,6 +70,7 @@
 #include <cassert>
 #include <cstdint>
 
+#include "ra/anim.h"
 #include "ra/bullet.h"
 #include "ra/cargo.h"
 #include "ra/defines.h"
@@ -78,6 +79,7 @@
 #include "ra/serialize.h"
 #include "ra/smudge.h"
 #include "ra/template.h"
+#include "ra/terrain.h"
 #include "ra/foot.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
@@ -292,6 +294,35 @@ void SmudgeClass::Serialize(Archive& ar) {
 }
 template void SmudgeClass::Serialize(ArchiveWriter&);
 template void SmudgeClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void AnimClass::Serialize(Archive& ar) {
+  ObjectClass::Serialize(ar);
+  StageClass::Serialize(ar);
+  bool is_to_delete = IsToDelete;
+  bool is_brand_new = IsBrandNew;
+  bool is_invisible = IsInvisible;
+  ar(Class, xObject, OwnerHouse, Loops, is_to_delete, is_brand_new,
+     is_invisible, Delay, Accum);
+  IsToDelete = is_to_delete;
+  IsBrandNew = is_brand_new;
+  IsInvisible = is_invisible;
+}
+template void AnimClass::Serialize(ArchiveWriter&);
+template void AnimClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void TerrainClass::Serialize(Archive& ar) {
+  ObjectClass::Serialize(ar);
+  StageClass::Serialize(ar);
+  bool is_on_fire = IsOnFire;
+  bool is_crumbling = IsCrumbling;
+  ar(Class, is_on_fire, is_crumbling);
+  IsOnFire = is_on_fire;
+  IsCrumbling = is_crumbling;
+}
+template void TerrainClass::Serialize(ArchiveWriter&);
+template void TerrainClass::Serialize(ArchiveReader&);
 
 template <class Archive>
 void FactoryClass::Serialize(Archive& ar) {

@@ -488,14 +488,7 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
                      unsigned char timedelay, unsigned char loop)
     : ObjectClass(RTTI_ANIM, Anims.ID(this)),
       Class(AnimTypes.Ptr(animnum)),
-      xObject(kTargetNone),
-      OwnerHouse(HOUSE_NONE),
-      Loops(1),
-      IsToDelete(false),
-      IsBrandNew(true),
-      IsInvisible(false),
-      Delay(timedelay),
-      Accum(0) {
+      Delay(timedelay) {
   if (Class->Stages == -1) {
     IsTheaterShape = Class->IsTheater;
     Class->Stages = Get_Build_Frame_Count(Class->Get_Image_Data());
