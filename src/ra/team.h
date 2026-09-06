@@ -51,9 +51,6 @@
 #include "ra/object.h"
 #include "ra/teamtype.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 /*
 ** Units are only allowed to stray a certain distance away from their
@@ -78,27 +75,27 @@ class TeamClass : public AbstractClass {
   **	This flag forces the team into active state regardless of whether it
   **	is understrength or not.
   */
-  unsigned IsForcedActive : 1;
+  unsigned IsForcedActive : 1 = false;
 
   /*
   **	This flag is set to true when the team initiates into active mode. The
   **	flag is never cleared. By examining this flag, it is possible to
   *determine *	if the team has ever launched into active mode.
   */
-  unsigned IsHasBeen : 1;
+  unsigned IsHasBeen : 1 = false;
 
   /*
   **	If the team is full strength, then this flag is true. A full strength
   **	team will not try to recruit members.
   */
-  unsigned IsFullStrength : 1;
+  unsigned IsFullStrength : 1 = false;
 
   /*
   **	A team that is below half strength has this flag true. It means that the
   **	the team should hide back at the owner's base and try to recruit
   **	members.
   */
-  unsigned IsUnderStrength : 1;
+  unsigned IsUnderStrength : 1 = true;
 
   /*
   **	If a team is not understrength but is not yet full strength, then
@@ -106,13 +103,13 @@ class TeamClass : public AbstractClass {
   **	full strength, the all members of the team will become initiated
   ** and this flag will be reset.
   */
-  unsigned IsReforming : 1;
+  unsigned IsReforming : 1 = false;
 
   /*
   ** This bit should be set if a team is determined to have lagging
   ** units in its formation.
   */
-  unsigned IsLagging : 1;
+  unsigned IsLagging : 1 = false;
 
   /*
   **	If a team member was removed or added, then this flag will be set to
@@ -121,22 +118,22 @@ class TeamClass : public AbstractClass {
   *need to occur *	EVERY time a unit added or deleted from a team, just
   *every so often if the *	team has been changed.
   */
-  unsigned IsAltered : 1;
-  unsigned JustAltered : 1;
+  unsigned IsAltered : 1 = true;
+  unsigned JustAltered : 1 = false;
 
   /*
   **	If the team is working on it's primary mission (it is past the build up
   *stage) *	then this flag will be true. The transition between "moving" and
   *"stationary" *	stages usually requires some action on the team's part.
   */
-  unsigned IsMoving : 1;
+  unsigned IsMoving : 1 = false;
 
   /*
   **	When the team determines that the next mission should be advanced to, it
   *will *	set this flag to true. Mission advance will either change the
   *behavior of the *	team or cause it to disband.
   */
-  unsigned IsNextMission : 1;
+  unsigned IsNextMission : 1 = true;
 
   /*
   **	If at least one member of this team successfully left the map, then this
@@ -144,12 +141,12 @@ class TeamClass : public AbstractClass {
   *true, then *	if there are any triggers that depend upon this team leaving,
   *they will be *	sprung.
   */
-  unsigned IsLeaveMap : 1;
+  unsigned IsLeaveMap : 1 = false;
 
   /*
   ** Records whether the team is suspended from production.
   */
-  unsigned Suspended : 1;
+  unsigned Suspended : 1 = false;
 
   /*
   **	A team will have a center point. This is the point used to determine if
@@ -157,39 +154,39 @@ class TeamClass : public AbstractClass {
   **	center point is usually calculated as the average position of all the
   **	team members.
   */
-  TARGET Zone;
+  TARGET Zone = kTargetNone;
 
   /*
   **	This is the target value of the team member that is closest to the
   **	destination of the team. The implied location serves as the
   **	regroup point for the unit as it is moving.
   */
-  TARGET ClosestMember;
+  TARGET ClosestMember = kTargetNone;
 
   /*
   **	This is the target of the team. Typically, it is a unit or structure,
   *but *	for the case of teams with a movement mission, it might
   *represent a *	destination cell.
   */
-  TARGET MissionTarget;
-  TARGET Target;
+  TARGET MissionTarget = kTargetNone;
+  TARGET Target = kTargetNone;
 
   /*
   **	This is the total number of members in this team.
   */
-  int Total;
+  int Total = 0;
 
   /*
   **	This is the teams combined risk value
   */
-  int Risk;
+  int Risk = 0;
 
   /*
   **	If this team is assigned a formation, then the formation type
   **	will be stored here. If the formation type is FORMATION_NONE, then
   **	the team is a loose grouping -- just like C&C.
   */
-  FormationType Formation;
+  FormationType Formation = FORMATION_NONE;
 
   /*
   ** This is the amount of time the team is suspended for.
@@ -203,14 +200,7 @@ class TeamClass : public AbstractClass {
   CCPtr<TriggerClass> Trigger;
 
   //------------------------------------------------------------
-  TeamClass(const TeamTypeClass* team = nullptr, HouseClass* owner = nullptr);
-  TeamClass(const NoInitClass& x)
-      : AbstractClass(x),
-        Class(x),
-        House(x),
-        SuspendTimer(x),
-        Trigger(x),
-        TimeOut(x) {}
+  TeamClass(const TeamTypeClass* team, HouseClass* owner = nullptr);
   ~TeamClass() override;
   void operator delete(void* ptr);
   void* operator new(size_t size) noexcept;
@@ -222,10 +212,9 @@ class TeamClass : public AbstractClass {
   /*
   **	File I/O.
   */
-  bool Load(Straw& file);
-  bool Save(Pipe& file) const;
-  void Code_Pointers();
-  void Decode_Pointers();
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   bool Is_Empty() const { return Member == static_cast<void*>(nullptr); }
   bool Has_Entered_Map() const;
@@ -247,7 +236,7 @@ class TeamClass : public AbstractClass {
   /*
   **	The current mission index into the mission list is recorded here.
   */
-  int CurrentMission;
+  int CurrentMission = -1;
 
   /*
   **	Some missions will time out. This is the timer that keeps track of the
@@ -280,9 +269,13 @@ class TeamClass : public AbstractClass {
   /*
   **	Points to the first member in the list of members for this team.
   */
-  FootClass* Member;
+  FootClass* Member = nullptr;
 
-  unsigned char Quantity[TeamTypeClass::MAX_TEAM_CLASSCOUNT];
+  unsigned char Quantity[TeamTypeClass::MAX_TEAM_CLASSCOUNT] = {};
+
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  TeamClass() = default;
+  friend class TFixedIHeapClass<TeamClass>;
 };
 
 #endif  // CNC_RED_ALERT_RA_TEAM_H_

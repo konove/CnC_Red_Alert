@@ -128,55 +128,41 @@ void TeamTypeClass::Serialize(Archive& ar) {
 template void TeamTypeClass::Serialize(ArchiveWriter&);
 template void TeamTypeClass::Serialize(ArchiveReader&);
 
-/***********************************************************************************************
- * TeamClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. * 05/13/1996 JLB : Simplified. *
- *=============================================================================================*/
-void TeamClass::Code_Pointers() {
-  /*
-  **	Code the 'Member'
-  */
-  if (Member) {
-    Member = (FootClass*)Member->As_Target();
-  }
+template <class Archive>
+void TeamClass::Serialize(Archive& ar) {
+  AbstractClass::Serialize(ar);
+  bool is_forced_active = IsForcedActive;
+  bool is_has_been = IsHasBeen;
+  bool is_full_strength = IsFullStrength;
+  bool is_under_strength = IsUnderStrength;
+  bool is_reforming = IsReforming;
+  bool is_lagging = IsLagging;
+  bool is_altered = IsAltered;
+  bool just_altered = JustAltered;
+  bool is_moving = IsMoving;
+  bool is_next_mission = IsNextMission;
+  bool is_leave_map = IsLeaveMap;
+  bool suspended = Suspended;
+  ar(Class, House, is_forced_active, is_has_been, is_full_strength,
+     is_under_strength, is_reforming, is_lagging, is_altered, just_altered,
+     is_moving, is_next_mission, is_leave_map, suspended, Zone, ClosestMember,
+     MissionTarget, Target, Total, Risk, Formation, SuspendTimer, Trigger,
+     CurrentMission, TimeOut, ObjectPtr(Member), Quantity);
+  IsForcedActive = is_forced_active;
+  IsHasBeen = is_has_been;
+  IsFullStrength = is_full_strength;
+  IsUnderStrength = is_under_strength;
+  IsReforming = is_reforming;
+  IsLagging = is_lagging;
+  IsAltered = is_altered;
+  JustAltered = just_altered;
+  IsMoving = is_moving;
+  IsNextMission = is_next_mission;
+  IsLeaveMap = is_leave_map;
+  Suspended = suspended;
 }
-
-/***********************************************************************************************
- * TeamClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. * 03/12/1996 JLB : Simplified. *
- *=============================================================================================*/
-void TeamClass::Decode_Pointers() {
-  /*
-  **	Decode the 'Member'
-  */
-  if (Member) {
-    Member = dynamic_cast<FootClass*>(
-        As_Techno(static_cast<TARGET>(std::bit_cast<intptr_t>(Member))));
-    assert(Member != nullptr);
-  }
-}
+template void TeamClass::Serialize(ArchiveWriter&);
+template void TeamClass::Serialize(ArchiveReader&);
 
 template <class Archive>
 void TriggerClass::Serialize(Archive& ar) {

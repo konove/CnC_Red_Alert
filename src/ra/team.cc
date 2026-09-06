@@ -375,31 +375,7 @@ TeamClass::~TeamClass() {
 TeamClass::TeamClass(const TeamTypeClass* type, HouseClass* owner)
     : AbstractClass(RTTI_TEAM, Teams.ID(this)),
       Class((TeamTypeClass*)type),
-      House(owner),
-      IsForcedActive(false),
-      IsHasBeen(false),
-      IsFullStrength(false),
-      IsUnderStrength(true),
-      IsReforming(false),
-      IsLagging(false),
-      IsAltered(true),
-      JustAltered(false),
-      IsMoving(false),
-      IsNextMission(true),
-      IsLeaveMap(false),
-      Suspended(false),
-      Trigger(nullptr),
-      Zone(kTargetNone),
-      ClosestMember(kTargetNone),
-      MissionTarget(kTargetNone),
-      Target(kTargetNone),
-      Total(0),
-      Risk(0),
-      Formation(FORMATION_NONE),
-      SuspendTimer(0),
-      CurrentMission(-1),
-      TimeOut(0),
-      Member(nullptr) {
+      House(owner) {
   assert(Class);
   assert(Class->IsActive);
   assert(Class->ClassCount > 0);
@@ -408,7 +384,6 @@ TeamClass::TeamClass(const TeamTypeClass* type, HouseClass* owner)
     House = HouseClass::As_Pointer(Class->House);
   }
 
-  memset(Quantity, 0, sizeof(Quantity));
   if (Class->Origin != -1) {
     Zone = ::As_Target(Scen.Waypoint[Class->Origin]);
   }

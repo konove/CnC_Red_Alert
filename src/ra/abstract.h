@@ -61,12 +61,32 @@ class AbstractClass {
   // Whether this slot in the fixed-size object heap is in use.
   unsigned IsActive : 1;
 
+  // No default member initializers here while the NoInit constructor
+  // exists: they would run inside it and overwrite a raw-loaded image.
   AbstractClass(const RTTIType rtti, const int id)
       : RTTI(rtti),
         ID(id),
         Coord(0xFFFFFFFFL),  // Sentinel: no position assigned.
         Height(0) {}
   AbstractClass(const NoInitClass&) {}
+
+  // Saved-game support for the base part; derived classes call it first.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    bool is_active = IsActive;
+    ar(RTTI, ID, Coord, Height, is_active);
+    IsActive = is_active;
+  }
+
+ protected:
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // IsActive starts true because each heap type's operator new sets it
+  // before a normal constructor runs, and the shell must not disagree.
+  AbstractClass() : RTTI(RTTI_NONE), ID(-1), Coord(0xFFFFFFFFL), Height(0) {
+    IsActive = true;
+  }
+
+ public:
   virtual ~AbstractClass() {}
 
   virtual const char* Name() const { return ""; }
