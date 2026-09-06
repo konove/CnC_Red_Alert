@@ -74,7 +74,10 @@
 #include "ra/cargo.h"
 #include "ra/defines.h"
 #include "ra/factory.h"
+#include "ra/overlay.h"
 #include "ra/serialize.h"
+#include "ra/smudge.h"
+#include "ra/template.h"
 #include "ra/foot.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
@@ -242,6 +245,53 @@ void BulletClass::Decode_Pointers() {
   */
   ObjectClass::Decode_Pointers();
 }
+
+template <class Archive>
+void ObjectClass::Serialize(Archive& ar) {
+  AbstractClass::Serialize(ar);
+  bool is_down = IsDown;
+  bool is_to_damage = IsToDamage;
+  bool is_to_display = IsToDisplay;
+  bool is_in_limbo = IsInLimbo;
+  bool is_selected = IsSelected;
+  bool is_anim_attached = IsAnimAttached;
+  bool is_falling = IsFalling;
+  ar(is_down, is_to_damage, is_to_display, is_in_limbo, is_selected,
+     is_anim_attached, is_falling, Riser, ObjectPtr(Next), Trigger, Strength);
+  IsDown = is_down;
+  IsToDamage = is_to_damage;
+  IsToDisplay = is_to_display;
+  IsInLimbo = is_in_limbo;
+  IsSelected = is_selected;
+  IsAnimAttached = is_anim_attached;
+  IsFalling = is_falling;
+}
+template void ObjectClass::Serialize(ArchiveWriter&);
+template void ObjectClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void TemplateClass::Serialize(Archive& ar) {
+  ObjectClass::Serialize(ar);
+  ar(Class);
+}
+template void TemplateClass::Serialize(ArchiveWriter&);
+template void TemplateClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void OverlayClass::Serialize(Archive& ar) {
+  ObjectClass::Serialize(ar);
+  ar(Class);
+}
+template void OverlayClass::Serialize(ArchiveWriter&);
+template void OverlayClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void SmudgeClass::Serialize(Archive& ar) {
+  ObjectClass::Serialize(ar);
+  ar(Class);
+}
+template void SmudgeClass::Serialize(ArchiveWriter&);
+template void SmudgeClass::Serialize(ArchiveReader&);
 
 template <class Archive>
 void FactoryClass::Serialize(Archive& ar) {

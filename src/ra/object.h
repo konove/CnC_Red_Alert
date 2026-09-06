@@ -134,7 +134,7 @@ class ObjectClass : public AbstractClass {
   /*
   **	This is the current strength of this object.
   */
-  short Strength;
+  int16_t Strength;
 
   /*-----------------------------------------------------------------------------------
   **	Constructor & destructors.
@@ -144,6 +144,30 @@ class ObjectClass : public AbstractClass {
   // raw image is in place, and Next holds the coded TARGET Decode_Pointers
   // still has to resolve.
   ObjectClass(const NoInitClass& x) : AbstractClass(x), Trigger(x) {}
+
+  // Saved-game support for the base part; derived classes call it first.
+  // Defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
+ protected:
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Explicit initializers rather than default member initializers because
+  // the NoInit constructor above must leave the members alone.
+  ObjectClass()
+      : IsDown(false),
+        IsToDamage(false),
+        IsToDisplay(false),
+        IsInLimbo(true),
+        IsSelected(false),
+        IsAnimAttached(false),
+        IsFalling(false),
+        Riser(0),
+        Next(nullptr),
+        Trigger(nullptr),
+        Strength(255) {}
+
+ public:
   ~ObjectClass() override { Next = nullptr; }
   int operator<(const ObjectClass& object) const {
     return Sort_Y() < object.Sort_Y();

@@ -48,13 +48,10 @@
 #include "ra/infantry.h"
 #include "ra/layer.h"
 #include "ra/mouse.h"
-#include "ra/overlay.h"
 #include "ra/scenario.h"
 #include "ra/score.h"
 #include "ra/session.h"
-#include "ra/smudge.h"
 #include "ra/special.h"
-#include "ra/template.h"
 #include "ra/terrain.h"
 #include "ra/type.h"
 #include "ra/unit.h"
@@ -83,9 +80,6 @@ constexpr LayoutCase kSerializedTypes[] = {
     LAYOUT_CASE(BuildingClass, 520),
     LAYOUT_CASE(BulletClass, 96),
     LAYOUT_CASE(InfantryClass, 648),
-    LAYOUT_CASE(OverlayClass, 56),
-    LAYOUT_CASE(SmudgeClass, 56),
-    LAYOUT_CASE(TemplateClass, 56),
     LAYOUT_CASE(TerrainClass, 96),
     LAYOUT_CASE(UnitClass, 712),
     LAYOUT_CASE(VesselClass, 712),

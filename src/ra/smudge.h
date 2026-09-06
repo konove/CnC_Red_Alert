@@ -48,9 +48,6 @@
 #include "ra/globals.h"
 #include "ra/object.h"
 #include "ra/type.h"
-#include "tech/noinit.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 /******************************************************************************
 **	This is the transitory form for smudges. They exist as independent
@@ -65,6 +62,10 @@ class SmudgeClass : public ObjectClass {
   */
   CCPtr<SmudgeTypeClass> Class;
 
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  SmudgeClass() = default;
+  friend class TFixedIHeapClass<SmudgeClass>;
+
   /*-------------------------------------------------------------------
   **	Constructors and destructors.
   */
@@ -73,7 +74,6 @@ class SmudgeClass : public ObjectClass {
   void operator delete(void* ptr);
   SmudgeClass(SmudgeType type, COORDINATE pos = 0xFFFFFFFFUL,
               HousesType house = HOUSE_NONE);
-  SmudgeClass(const NoInitClass& x) : ObjectClass(x), Class(x) {}
   operator SmudgeType() const { return Class->Type; }
   ~SmudgeClass() override {
     if (GameActive) {
@@ -90,8 +90,9 @@ class SmudgeClass : public ObjectClass {
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
   static const char* INI_Name() { return "SMUDGE"; }
-  bool Load(Straw& file);
-  bool Save(Pipe& file) const;
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   const ObjectTypeClass& Class_Of() const override { return *Class; }
   bool Mark(MarkType) override;

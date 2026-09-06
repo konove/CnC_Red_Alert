@@ -48,9 +48,6 @@
 #include "ra/globals.h"
 #include "ra/object.h"
 #include "ra/type.h"
-#include "tech/noinit.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 /******************************************************************************
 **	This class controls the overlay object. Overlay objects function
@@ -64,6 +61,10 @@ class OverlayClass : public ObjectClass {
   */
   CCPtr<OverlayTypeClass> Class;
 
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  OverlayClass() = default;
+  friend class TFixedIHeapClass<OverlayClass>;
+
   /*-------------------------------------------------------------------
   **	Constructors and destructors.
   */
@@ -71,7 +72,6 @@ class OverlayClass : public ObjectClass {
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   OverlayClass(OverlayType type, CELL pos = -1, HousesType = HOUSE_NONE);
-  OverlayClass(const NoInitClass& x) : ObjectClass(x), Class(x) {}
   ~OverlayClass() override {
     if (GameActive) {
       OverlayClass::Limbo();
@@ -88,8 +88,9 @@ class OverlayClass : public ObjectClass {
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
   static const char* INI_Name() { return "OVERLAY"; }
-  bool Load(Straw& file);
-  bool Save(Pipe& file) const;
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	Virtual support functionality.

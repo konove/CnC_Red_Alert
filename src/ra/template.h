@@ -47,9 +47,6 @@
 #include "ra/globals.h"
 #include "ra/object.h"
 #include "ra/type.h"
-#include "tech/noinit.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 /******************************************************************************
 **	This class controls the template object. Template objects function
@@ -63,6 +60,10 @@ class TemplateClass : public ObjectClass {
   */
   CCPtr<TemplateTypeClass> Class;
 
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  TemplateClass() = default;
+  friend class TFixedIHeapClass<TemplateClass>;
+
   /*-------------------------------------------------------------------
   **	Constructors and destructors.
   */
@@ -70,7 +71,6 @@ class TemplateClass : public ObjectClass {
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   TemplateClass(TemplateType type, CELL pos = -1);
-  TemplateClass(const NoInitClass& x) : ObjectClass(x), Class(x) {}
   ~TemplateClass() override {
     if (GameActive) {
       TemplateClass::Limbo();
@@ -97,8 +97,9 @@ class TemplateClass : public ObjectClass {
   /*
   **	File I/O.
   */
-  bool Load(Straw& file);
-  bool Save(Pipe& file) const;
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 };
 
 #endif  // CNC_RED_ALERT_RA_TEMPLATE_H_
