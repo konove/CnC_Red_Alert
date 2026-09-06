@@ -84,6 +84,12 @@ using MFCD = MixFileClass<CCFileClass>;
 
 extern bool IsVQ640;
 extern unsigned long GameVersion;
+
+// Developer switches (-LOADGAME<n>, -QUITFRAME<n>, -SAVESLOT<n>) for
+// save-game checks without a display; see init.cc and conquer.cc. -1 = unset.
+extern int DebugLoadGame;
+extern int64_t DebugQuitAtFrame;
+extern int DebugSaveSlot;
 extern bool Debug_MotionCapture;
 extern bool Debug_Quiet;
 extern bool Debug_Cheat;

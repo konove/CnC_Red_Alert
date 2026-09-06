@@ -120,6 +120,7 @@
 #include "ra/palette.h"
 #include "ra/queue.h"
 #include "ra/rules.h"
+#include "ra/saveload.h"
 #include "ra/scenario.h"
 #include "ra/session.h"
 #include "ra/special.h"
@@ -573,6 +574,20 @@ bool Select_Game(bool /*fade*/) {
 
       if (config::kWolapiEnabled && pWolapi != nullptr) {
         selection = SEL_MULTIPLAYER_GAME;  //	We are returning from a game.
+      }
+
+      // -LOADGAME<n>: skip the menu and load save slot n straight away.
+      // Used with -QUITFRAME to drive save/load checks without a display.
+      if (selection == SEL_NONE && DebugLoadGame >= 0) {
+        int slot = DebugLoadGame;
+        DebugLoadGame = -1;
+        if (Load_Game(slot)) {
+          Theme.Queue_Song(magic_enum::enum_values<ThemeType>().front());
+          process = false;
+          gameloaded = true;
+          continue;
+        }
+        LOG(ERROR) << "-LOADGAME: could not load slot " << slot;
       }
 
       if (selection == SEL_NONE) {
@@ -1451,6 +1466,21 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     /*
     ** Disable mouse grabbing for debugging
     */
+    // Developer switches for save-game checks; see Select_Game and
+    // Main_Loop.
+    if (strncmp(string, "-LOADGAME", 9) == 0) {
+      DebugLoadGame = atoi(string + 9);
+      continue;
+    }
+    if (strncmp(string, "-QUITFRAME", 10) == 0) {
+      DebugQuitAtFrame = atoi(string + 10);
+      continue;
+    }
+    if (strncmp(string, "-SAVESLOT", 9) == 0) {
+      DebugSaveSlot = atoi(string + 9);
+      continue;
+    }
+
     if (strstr(string, "-NOMOUSEGRAB")) {
       extern bool NoMouseGrab;
       NoMouseGrab = true;

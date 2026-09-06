@@ -94,6 +94,7 @@
 #include "ra/palette.h"
 #include "ra/queue.h"
 #include "ra/rules.h"
+#include "ra/saveload.h"
 #include "ra/scenario.h"
 #include "ra/score.h"
 #include "ra/session.h"
@@ -1794,6 +1795,33 @@ bool Main_Loop() {
   // The frame logic has been completed. Increment the frame
   // counter.
   Frame++;
+
+  // -QUITFRAME<n>: log where every mobile object is each frame, then end
+  // the game at frame n, saving to -SAVESLOT<n> first if one was given.
+  // Together with -LOADGAME this checks that loaded objects keep moving
+  // without anyone at the keyboard.
+  if (DebugQuitAtFrame >= 0) {
+    for (int index = 0; index < Units.Count(); index++) {
+      const UnitClass* unit = Units.Ptr(index);
+      LOG(INFO) << "frame " << Frame << " unit " << unit->Class->IniName
+                << " coord " << absl::StrFormat("%08x", unit->Coord)
+                << " mission " << magic_enum::enum_name(unit->Mission)
+                << " navcom " << absl::StrFormat("%08x", unit->NavCom);
+    }
+    for (int index = 0; index < Aircraft.Count(); index++) {
+      const AircraftClass* air = Aircraft.Ptr(index);
+      LOG(INFO) << "frame " << Frame << " aircraft " << air->Class->IniName
+                << " coord " << absl::StrFormat("%08x", air->Coord)
+                << " mission " << magic_enum::enum_name(air->Mission);
+    }
+    if (Frame >= DebugQuitAtFrame) {
+      if (DebugSaveSlot >= 0) {
+        Save_Game(DebugSaveSlot, "debug");
+      }
+      GameActive = false;
+      return true;
+    }
+  }
 
   // Is there a memory trasher altering the map??
   if (Debug_Check_Map) {

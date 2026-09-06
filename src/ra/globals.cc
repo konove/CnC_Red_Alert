@@ -108,6 +108,9 @@
 
 bool IsVQ640 = false;
 unsigned long GameVersion = 0;
+int DebugLoadGame = -1;
+int64_t DebugQuitAtFrame = -1;
+int DebugSaveSlot = -1;
 bool Debug_MotionCapture = false;
 bool Debug_Quiet = false;
 bool Debug_Cheat = false;
