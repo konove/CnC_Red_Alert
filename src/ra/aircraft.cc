@@ -291,14 +291,7 @@ void AircraftClass::operator delete(void* ptr) {
 AircraftClass::AircraftClass(AircraftType classid, HousesType house)
     : FootClass(RTTI_AIRCRAFT, Aircraft.ID(this), house),
       Class(AircraftTypes.Ptr(classid)),
-      SecondaryFacing(PrimaryFacing),
-      Passenger(false),
-      IsLanding(false),
-      IsTakingOff(false),
-      IsHovering(false),
-      Jitter(0),
-      SightTimer(0),
-      AttacksRemaining(1) {
+      SecondaryFacing(PrimaryFacing) {
   /*
   **	For two shooters, clear out the second shot flag -- it will be set the
   *first time *	the object fires. For non two shooters, set the flag since it

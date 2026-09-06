@@ -70,6 +70,7 @@
 #include <cassert>
 #include <cstdint>
 
+#include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/building.h"
 #include "ra/bullet.h"
@@ -439,6 +440,24 @@ void InfantryClass::Serialize(Archive& ar) {
 }
 template void InfantryClass::Serialize(ArchiveWriter&);
 template void InfantryClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void AircraftClass::Serialize(Archive& ar) {
+  FootClass::Serialize(ar);
+  FlyClass::Serialize(ar);
+  bool is_landing = IsLanding;
+  bool is_taking_off = IsTakingOff;
+  bool is_homing = IsHoming;
+  bool is_hovering = IsHovering;
+  ar(Class, SecondaryFacing, Passenger, is_landing, is_taking_off, is_homing,
+     is_hovering, Jitter, SightTimer, AttacksRemaining);
+  IsLanding = is_landing;
+  IsTakingOff = is_taking_off;
+  IsHoming = is_homing;
+  IsHovering = is_hovering;
+}
+template void AircraftClass::Serialize(ArchiveWriter&);
+template void AircraftClass::Serialize(ArchiveReader&);
 
 template <class Archive>
 void FactoryClass::Serialize(Archive& ar) {

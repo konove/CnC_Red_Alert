@@ -57,9 +57,6 @@
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 /*
 **	This aircraft class is used for all flying sentient objects. This
@@ -80,12 +77,6 @@ class AircraftClass : public FootClass, public FlyClass {
   void operator delete(void*);
   operator AircraftType() const { return Class->Type; }
   AircraftClass(AircraftType classid, HousesType house);
-  AircraftClass(const NoInitClass& x)
-      : FootClass(x),
-        FlyClass(x),
-        Class(x),
-        SecondaryFacing(x),
-        SightTimer(x) {}
   ~AircraftClass() override;
 
   static void Init();
@@ -197,8 +188,9 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   static void Read_INI(CCINIClass& ini);
   static const char* INI_Name() { return "AIRCRAFT"; }
-  bool Load(Straw& file);
-  bool Save(Pipe& file) const;
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	This is the facing used for the body of the aircraft. Typically, this is
@@ -212,7 +204,7 @@ class AircraftClass : public FootClass, public FlyClass {
   *This is *	necessary because once the passengers are unloaded, the fact
   *that it was a *	passenger carrier must still be known.
   */
-  bool Passenger;
+  bool Passenger = false;
 
  private:
   /*
@@ -221,8 +213,8 @@ class AircraftClass : public FootClass, public FlyClass {
   *landing. It is *	necessary to handle the transition in this manner so
   *that it occurs smoothly *	during the graphic processing section.
   */
-  unsigned IsLanding : 1;
-  unsigned IsTakingOff : 1;
+  unsigned IsLanding : 1 = false;
+  unsigned IsTakingOff : 1 = false;
 
   /*
   **	It is very common for aircraft to be homing in on a target. When this
@@ -234,7 +226,7 @@ class AircraftClass : public FootClass, public FlyClass {
   *mode. Example: Transport helicopters go into a hovering into correct position
   **	mode when the target is reached.
   */
-  unsigned IsHoming : 1;
+  unsigned IsHoming : 1 = false;
 
   /*
   **	Helicopters that are about to land must hover into a position exactly
@@ -245,28 +237,32 @@ class AircraftClass : public FootClass, public FlyClass {
   **	zone. When the position is over the landing zone, then this flag is set
   *to false.
   */
-  unsigned IsHovering : 1;
+  unsigned IsHovering : 1 = false;
 
   /*
   **	This is the jitter tracker to be used when the aircraft is a helicopter
   *and *	is flying. It is most noticeable when the helicopter is
   *hovering.
   */
-  unsigned char Jitter;
+  unsigned char Jitter = 0;
 
   /*
   **	This timer controls when the aircraft will reveal the terrain around
   *itself. *	When this timer expires and this aircraft has a sight range,
   *then the *	look around process will occur.
   */
-  Timer<FrameTickSource> SightTimer;
+  Timer<FrameTickSource> SightTimer{0};
 
   /*
   **	Most attack aircraft can make several attack runs. This value contains
   *the *	number of attack runs the aircraft has left. When this value
   *reaches *	zero then the aircraft is technically out of ammo.
   */
-  char AttacksRemaining;
+  char AttacksRemaining = 1;
+
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  AircraftClass() = default;
+  friend class TFixedIHeapClass<AircraftClass>;
 };
 
 bool Building_Check();

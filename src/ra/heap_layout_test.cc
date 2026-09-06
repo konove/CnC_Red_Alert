@@ -36,7 +36,6 @@
 
 #include "base/types.h"
 #include "gtest/gtest.h"
-#include "ra/aircraft.h"
 #include "ra/base.h"
 #include "ra/carry.h"
 #include "ra/cell.h"
@@ -70,7 +69,6 @@ struct LayoutCase {
 // below.
 constexpr LayoutCase kSerializedTypes[] = {
     // Game objects, saved by TFixedIHeapClass<T>::Save/Load.
-    LAYOUT_CASE(AircraftClass, 656),
     LAYOUT_CASE(UnitClass, 712),
     LAYOUT_CASE(VesselClass, 712),
 
