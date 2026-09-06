@@ -48,9 +48,6 @@
 #include "ra/house.h"
 #include "ra/target.h"
 #include "ra/type.h"
-#include "tech/noinit.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 /*
 **	TeamMissionType: the various missions that a team can have.
@@ -84,6 +81,12 @@ typedef enum TeamMissionType {
 */
 class TeamMissionClass {
  public:
+  // Saved-game support. The union travels through its widest member.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(Mission, Data.Value);
+  }
+
   const char* Description(int index) const;
   operator const char*() const { return Description(0); }
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
@@ -104,8 +107,12 @@ class TeamMissionClass {
 */
 class TeamMemberClass {
  public:
-  int Quantity;                  // Number of objects desired for this type.
-  const TechnoTypeClass* Class;  // The type of object desired.
+  int Quantity = 0;  // Number of objects desired for this type.
+  const TechnoTypeClass* Class = nullptr;  // The type of object desired.
+
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 };
 
 /*
@@ -119,7 +126,6 @@ class TeamTypeClass : public AbstractTypeClass {
   **	Constructor/Destructor
   */
   TeamTypeClass();
-  TeamTypeClass(const NoInitClass& x) : AbstractTypeClass(x), Trigger(x) {}
   ~TeamTypeClass() override {}
 
   void* operator new(size_t);
@@ -139,10 +145,9 @@ class TeamTypeClass : public AbstractTypeClass {
   void Fill_In(char* name, char* entry);
   static void Write_INI(CCINIClass& ini);
   static const char* INI_Name() { return "TeamTypes"; }
-  bool Load(Straw& file);
-  bool Save(Pipe& file) const;
-  void Code_Pointers();
-  void Decode_Pointers();
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	As_Pointer gets a pointer to the trigger object give its name
@@ -177,71 +182,73 @@ class TeamTypeClass : public AbstractTypeClass {
   **	TeamType objects that are not active are either not yet created or have
   **	been deleted after fulfilling their action.
   */
-  unsigned IsActive : 1;
+  // operator new sets this before the constructor runs; the initializer
+  // must agree with it.
+  unsigned IsActive : 1 = true;
 
   /*
   **	If RoundAbout, the team avoids high-threat areas
   */
-  unsigned IsRoundAbout : 1;
+  unsigned IsRoundAbout : 1 = false;
 
   /*
   **	If Suicide, the team won't stop until it achieves its mission or it's
   **	dead
   */
-  unsigned IsSuicide : 1;
+  unsigned IsSuicide : 1 = false;
 
   /*
   **	Is this team type allowed to be created automatically by the computer
   **	when the appropriate trigger indicates?
   */
-  unsigned IsAutocreate : 1;
+  unsigned IsAutocreate : 1 = false;
 
   /*
   **	This flag tells the computer that it should build members to fill
   **	a team of this type regardless of whether there actually is a team
   **	of this type active.
   */
-  unsigned IsPrebuilt : 1;
+  unsigned IsPrebuilt : 1 = true;
 
   /*
   **	If this team should allow recruitment of new members, then this flag
   **	will be true. A false value results in a team that fights until it
   **	is dead. This is similar to IsSuicide, but they will defend themselves.
   */
-  unsigned IsReinforcable : 1;
+  unsigned IsReinforcable : 1 = true;
 
   /*
   **	A transient team type was created exclusively to bring on reinforcements
   **	as a result of some special event. As soon as there are no teams
   **	existing of this type, then this team type should be deleted.
   */
-  unsigned IsTransient : 1;
+  unsigned IsTransient : 1 = false;
 
   /*
   **	Priority given the team for recruiting purposes; higher priority means
   **	it can steal members from other teams (scale: 0 - 15)
   */
-  int RecruitPriority;
+  int RecruitPriority = 7;
 
   /*
   **	Initial # of this type of team
   */
-  unsigned char InitNum;
+  unsigned char InitNum = 0;
 
   /*
   **	Max # of this type of team allowed at one time
   */
-  unsigned char MaxAllowed;
+  unsigned char MaxAllowed = 0;
 
   /*
   **	Fear level of this team
   */
-  unsigned char Fear;
+  unsigned char Fear = 0;
 
   /*
   **	House the team belongs to
   */
-  HousesType House;
+  HousesType House = HOUSE_NONE;
 
   /*
   **	Trigger to assign to each object as it joins this team.
@@ -252,24 +259,24 @@ class TeamTypeClass : public AbstractTypeClass {
   **	This is the waypoint origin to use when creating this team or
   **	when bringing the team on as a reinforcement.
   */
-  WAYPOINT Origin;
+  WAYPOINT Origin = -1;
 
   /*
   **	This records the number of teams of this type that are currently
   **	active.
   */
-  int Number;
+  int Number = 0;
 
   /*
   **	Number and list of missions that this team will follow.
   */
-  int MissionCount;
+  int MissionCount = 0;
   TeamMissionClass MissionList[MAX_TEAM_MISSIONS];
 
   /*
   **	Number and type of members desired for this team.
   */
-  int ClassCount;
+  int ClassCount = 0;
   TeamMemberClass Members[MAX_TEAM_CLASSCOUNT];
 
   static const char* TMissions[TMISSION_COUNT];

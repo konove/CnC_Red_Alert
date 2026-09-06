@@ -20,6 +20,7 @@
 #include "ra/techno.h"
 #include "ra/template.h"
 #include "ra/terrain.h"
+#include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/vessel.h"
 #include "tech/archive.h"
@@ -126,3 +127,21 @@ void ObjectPtr<T>::Serialize(ArchiveReader& ar) {
 template class ObjectPtr<ObjectClass>;
 template class ObjectPtr<TechnoClass>;
 template class ObjectPtr<FootClass>;
+
+void TechnoTypePtr::Serialize(ArchiveWriter& ar) {
+  TARGET target = ref_ != nullptr ? ref_->As_Target() : kTargetNone;
+  ar(target);
+}
+
+void TechnoTypePtr::Serialize(ArchiveReader& ar) {
+  TARGET target = kTargetNone;
+  ar(target);
+  ref_ = nullptr;
+  if (target == kTargetNone) {
+    return;
+  }
+  ref_ = As_TechnoType(target);
+  if (ref_ == nullptr) {
+    ar.Fail("saved techno type target does not name a type");
+  }
+}

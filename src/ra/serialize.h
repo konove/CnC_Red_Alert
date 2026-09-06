@@ -19,6 +19,7 @@
 #include "tech/archive.h"
 
 class ObjectClass;
+class TechnoTypeClass;
 
 // Resolves a saved TARGET to the raw heap slot it names, without looking at
 // the slot's contents. Returns nullptr for kTargetNone. Records an error on
@@ -41,5 +42,19 @@ class ObjectPtr {
 
 template <class T>
 ObjectPtr(T*&) -> ObjectPtr<T>;
+
+// Serializes a pointer to a TechnoTypeClass as a TARGET. The type heaps are
+// filled from the rules before a save is loaded, so the pointer is resolved
+// directly on read.
+class TechnoTypePtr {
+ public:
+  explicit TechnoTypePtr(const TechnoTypeClass*& ref) : ref_(ref) {}
+
+  void Serialize(ArchiveWriter& ar);
+  void Serialize(ArchiveReader& ar);
+
+ private:
+  const TechnoTypeClass*& ref_;
+};
 
 #endif  // CNC_RED_ALERT_RA_SERIALIZE_H_

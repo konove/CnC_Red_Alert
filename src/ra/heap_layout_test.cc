@@ -56,7 +56,6 @@
 #include "ra/smudge.h"
 #include "ra/special.h"
 #include "ra/team.h"
-#include "ra/teamtype.h"
 #include "ra/template.h"
 #include "ra/terrain.h"
 #include "ra/type.h"
@@ -90,7 +89,6 @@ constexpr LayoutCase kSerializedTypes[] = {
     LAYOUT_CASE(OverlayClass, 56),
     LAYOUT_CASE(SmudgeClass, 56),
     LAYOUT_CASE(TeamClass, 144),
-    LAYOUT_CASE(TeamTypeClass, 320),
     LAYOUT_CASE(TemplateClass, 56),
     LAYOUT_CASE(TerrainClass, 96),
     LAYOUT_CASE(UnitClass, 712),

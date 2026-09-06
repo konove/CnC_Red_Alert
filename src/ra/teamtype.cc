@@ -199,28 +199,7 @@ const char* TeamTypeClass::TMissions[TMISSION_COUNT] = {
  *   11/22/1995 JLB : Uses initializer constructor method.                 *
  *=========================================================================*/
 TeamTypeClass::TeamTypeClass()
-    : AbstractTypeClass(RTTI_TEAMTYPE, TeamTypes.ID(this), TXT_NONE, ""),
-      IsRoundAbout(false),
-      IsSuicide(false),
-      IsAutocreate(false),
-      IsPrebuilt(true),
-      IsReinforcable(true),
-      IsTransient(false),
-      RecruitPriority(7),
-      InitNum(0),
-      MaxAllowed(0),
-      Fear(0),
-      House(HOUSE_NONE),
-      Trigger(nullptr),
-      Origin(-1),
-      Number(0),
-      MissionCount(0),
-      ClassCount(0) {
-  for (int i = 0; i < MAX_TEAM_CLASSCOUNT; i++) {
-    Members[i].Class = nullptr;
-    Members[i].Quantity = 0;
-  }
-}
+    : AbstractTypeClass(RTTI_TEAMTYPE, TeamTypes.ID(this), TXT_NONE, "") {}
 
 /***************************************************************************
  * TeamTypeClass::Init -- pre-scenario initialization                      *

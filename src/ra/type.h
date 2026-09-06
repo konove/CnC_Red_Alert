@@ -54,7 +54,6 @@
 #include "ra/face.h"
 #include "ra/object.h"
 #include "tech/fixed.h"
-#include "tech/noinit.h"
 #include "tech/rect.h"
 
 class WeaponTypeClass;
@@ -89,7 +88,6 @@ class AbstractTypeClass {
   int FullName;
 
   AbstractTypeClass(RTTIType rtti, int id, int name, const char* ini);
-  AbstractTypeClass(const NoInitClass&) {}
   virtual ~AbstractTypeClass() = default;
 
   // Saved-game support for the base part; derived classes call it first.

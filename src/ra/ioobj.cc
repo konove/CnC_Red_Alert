@@ -96,56 +96,37 @@
 #include "tech/pipe.h"
 #include "tech/straw.h"
 
-/***********************************************************************************************
- * TeamTypeClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TeamTypeClass::Code_Pointers() {
-  /*
-  **	Code the Class array
-  */
-  for (int i = 0; i < ClassCount; i++) {
-    Members[i].Class = (TechnoTypeClass*)Members[i].Class->As_Target();
-    assert(Members[i].Class != nullptr);
-  }
+template <class Archive>
+void TeamMemberClass::Serialize(Archive& ar) {
+  ar(Quantity, TechnoTypePtr(Class));
 }
+template void TeamMemberClass::Serialize(ArchiveWriter&);
+template void TeamMemberClass::Serialize(ArchiveReader&);
 
-/***********************************************************************************************
- * TeamTypeClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TeamTypeClass::Decode_Pointers() {
-  /*
-  **	Decode the Class array
-  */
-  for (int i = 0; i < ClassCount; i++) {
-    Members[i].Class =
-        As_TechnoType(static_cast<TARGET>((intptr_t)Members[i].Class));
-    assert(Members[i].Class != nullptr);
-  }
+template <class Archive>
+void TeamTypeClass::Serialize(Archive& ar) {
+  AbstractTypeClass::Serialize(ar);
+  bool is_active = IsActive;
+  bool is_round_about = IsRoundAbout;
+  bool is_suicide = IsSuicide;
+  bool is_autocreate = IsAutocreate;
+  bool is_prebuilt = IsPrebuilt;
+  bool is_reinforcable = IsReinforcable;
+  bool is_transient = IsTransient;
+  ar(is_active, is_round_about, is_suicide, is_autocreate, is_prebuilt,
+     is_reinforcable, is_transient, RecruitPriority, InitNum, MaxAllowed, Fear,
+     House, Trigger, Origin, Number, MissionCount, MissionList, ClassCount,
+     Members);
+  IsActive = is_active;
+  IsRoundAbout = is_round_about;
+  IsSuicide = is_suicide;
+  IsAutocreate = is_autocreate;
+  IsPrebuilt = is_prebuilt;
+  IsReinforcable = is_reinforcable;
+  IsTransient = is_transient;
 }
+template void TeamTypeClass::Serialize(ArchiveWriter&);
+template void TeamTypeClass::Serialize(ArchiveReader&);
 
 /***********************************************************************************************
  * TeamClass::Code_Pointers -- codes class's pointers for load/save *
