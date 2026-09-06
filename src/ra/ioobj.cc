@@ -88,6 +88,7 @@
 #include "ra/team.h"
 #include "ra/teamtype.h"
 #include "ra/techno.h"
+#include "ra/trigger.h"
 #include "ra/trigtype.h"
 #include "ra/type.h"
 #include "ra/vector.h"
@@ -212,6 +213,15 @@ void TeamClass::Decode_Pointers() {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
+template <class Archive>
+void TriggerClass::Serialize(Archive& ar) {
+  bool is_active = IsActive;
+  ar(RTTI, ID, Class, Event1, Event2, is_active, AttachCount, Cell);
+  IsActive = is_active;
+}
+template void TriggerClass::Serialize(ArchiveWriter&);
+template void TriggerClass::Serialize(ArchiveReader&);
+
 void TriggerTypeClass::Code_Pointers() {
   Action1.Code_Pointers();
   Action2.Code_Pointers();

@@ -147,14 +147,12 @@ void TriggerClass::Draw_It(int, int x, int y, int width, int height,
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
 TriggerClass::TriggerClass(TriggerTypeClass* trigtype)
-    : RTTI(RTTI_TRIGGER),
-      ID(Triggers.ID(this)),
-      Class(trigtype),
-      AttachCount(0),
-      Cell(0) {
+    : RTTI(RTTI_TRIGGER), ID(Triggers.ID(this)), Class(trigtype) {
   Class->Event1.Reset(Event1);
   Class->Event2.Reset(Event2);
 }
+
+TriggerClass::TriggerClass() : RTTI(RTTI_TRIGGER), ID(Triggers.ID(this)) {}
 
 /***********************************************************************************************
  * TriggerClass::~TriggerClass -- Destructor for trigger objects. *

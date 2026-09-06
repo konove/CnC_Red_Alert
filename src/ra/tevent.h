@@ -110,15 +110,20 @@ struct TDEventClass {
   **	will return a successful event trigger flag. Typical use of this is
   **	for when objects of a specific type are built.
   */
-  unsigned IsTripped : 1;
+  unsigned IsTripped : 1 = false;
 
   /*
   **	Timer based events require a special timer control handler.
   */
   Timer<FrameTickSource> EventTimer;
 
-  TDEventClass() : IsTripped(false), EventTimer(0) {}
-  TDEventClass(const NoInitClass& x) : EventTimer(x) {}
+  // Saved-game support.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    bool is_tripped = IsTripped;
+    ar(is_tripped, EventTimer);
+    IsTripped = is_tripped;
+  }
 };
 
 /*

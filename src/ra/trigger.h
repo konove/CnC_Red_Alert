@@ -43,13 +43,11 @@
 #include <cstddef>
 
 #include "ra/ccptr.h"
+#include "ra/heap.h"
 #include "ra/defines.h"
 #include "ra/object.h"
 #include "ra/tevent.h"
 #include "ra/trigtype.h"
-#include "tech/noinit.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 class TriggerClass {
  public:
@@ -67,8 +65,7 @@ class TriggerClass {
   /*
   **	Constructor/Destructor
   */
-  TriggerClass(TriggerTypeClass* trigtype = nullptr);
-  TriggerClass(const NoInitClass& x) : Class(x), Event1(x), Event2(x) {}
+  explicit TriggerClass(TriggerTypeClass* trigtype);
   ~TriggerClass();
 
   /*
@@ -86,10 +83,9 @@ class TriggerClass {
   /*
   **	File I/O routines
   */
-  bool Load(Straw& file);
-  bool Save(Pipe& file) const;
-  void Code_Pointers() {}
-  void Decode_Pointers() {}
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	Utility routines
@@ -112,14 +108,16 @@ class TriggerClass {
   **	objects that are not active are either not yet created or have been
   **	deleted after fulfilling their action.
   */
-  unsigned IsActive : 1;
+  // operator new sets this before the constructor runs; the initializer
+  // must agree with it.
+  unsigned IsActive : 1 = true;
 
   /*
   **	This value tells how many objects or cells this trigger is attached
   **	to.  The Read_INI routine for all classes that point to a trigger must
   **	increment this value!
   */
-  int AttachCount;
+  int AttachCount = 0;
 
   /*
   **	This value is used for triggers that can only exist in one cell. It is
@@ -127,7 +125,13 @@ class TriggerClass {
   *needed *	during processing but its location cannot be inferred from other
   *data. *	For all other triggers, this value is ignored.
   */
-  CELL Cell;
+  CELL Cell = 0;
+
+ private:
+  // Shell for TFixedIHeapClass::Load: a fully initialized object with no
+  // trigger type, filled in by Serialize().
+  TriggerClass();
+  friend class TFixedIHeapClass<TriggerClass>;
 };
 
 TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype);
