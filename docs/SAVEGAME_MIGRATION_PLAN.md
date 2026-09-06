@@ -235,6 +235,21 @@ save/load smoke test. Bump `kSaveGameVersion` in every format-changing commit.
    there would wipe crate and superweapon state on every load. They become `= default` + NSDMI in commits 9 (super) and
    17 (crate).
 
+**Bridge found after commit 4 (`a88622e9`).** `fixed` had a zeroing default constructor, so every `fixed` member a
+NoInit constructor did not name was reset by the post-load placement-new: loaded vehicles had `SpeedBias` 0 and never
+moved. `fixed` got a NoInit constructor and the raw classes forward it; the same audit found unlisted timers
+(`TechnoClass::CloakingDevice`, `HouseClass::RepairTimer`, `VesselClass` countdowns) and array members that cannot be
+forwarded and are still reset on every load until their class migrates: `MapClass::Crates[]` (commit 17),
+`HouseClass::Regions[]` and `SuperWeapon[]` (commit 9), `TeamTypeClass::MissionList[]` (commit 7),
+`ScoreClass::RealTime` (commit 18). Any type given a default member initializer while still inside a raw image
+reintroduces this bug; the rule "no NSDMI in a class with a NoInit constructor" applies to member types too.
+
+**Headless smoke test (`4071a5f0`).** `rasdl -LOADGAME<n> -QUITFRAME<f> [-SAVESLOT<m>]` with
+`SDL_VIDEODRIVER=dummy` loads a slot, logs every unit's coordinate per frame, and saves before quitting. Run it after
+every flip commit: load the reference save, run 30 frames, save to a scratch slot, load that, and check the moving
+units keep moving. The in-game test on a real display is still the final check, but this catches the freeze class
+without a keyboard.
+
 **Phase 1 — infrastructure**
 1. `tech/archive.h` + `archive_test.cc` (widths, enums→int32, bool, char arrays, nested, LE byte layout, short read → `!ok()`, Section mismatch, FourCC).
 2. `fixed`, `Timer`, `Stopwatch` `Serialize` + tests (`FakeTick` source; "advancing the clock between write and read keeps `Value()`").
