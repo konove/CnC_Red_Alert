@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_RA_EXTERNS_H_
 
 #include <cstdint>
+#include <string>
 
 #include "magic_enum/magic_enum.hpp"
 #include "ra/base.h"
@@ -85,8 +86,10 @@ using MFCD = MixFileClass<CCFileClass>;
 extern bool IsVQ640;
 extern unsigned long GameVersion;
 
-// Developer switches (-LOADGAME<n>, -QUITFRAME<n>, -SAVESLOT<n>) for
-// save-game checks without a display; see init.cc and conquer.cc. -1 = unset.
+// Developer switches (-NEWGAME<scenario>, -LOADGAME<n>, -QUITFRAME<n>,
+// -SAVESLOT<n>) for save-game checks without a display; see init.cc and
+// conquer.cc. -1 or empty means unset.
+extern std::string DebugNewGame;
 extern int DebugLoadGame;
 extern int64_t DebugQuitAtFrame;
 extern int DebugSaveSlot;

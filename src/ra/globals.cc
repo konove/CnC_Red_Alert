@@ -40,6 +40,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <string>
 
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
@@ -108,6 +109,7 @@
 
 bool IsVQ640 = false;
 unsigned long GameVersion = 0;
+std::string DebugNewGame;
 int DebugLoadGame = -1;
 int64_t DebugQuitAtFrame = -1;
 int DebugSaveSlot = -1;

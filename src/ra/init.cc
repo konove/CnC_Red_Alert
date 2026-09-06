@@ -456,6 +456,13 @@ bool Select_Game(bool /*fade*/) {
   bool process = true;      // false = break out of while loop
   bool display = true;
 
+  // A -QUITFRAME run has ended when the game it started (-NEWGAME or
+  // -LOADGAME, both consumed on use) brings control back here. Leave rather
+  // than wait at the menu for input that never comes.
+  if (DebugQuitAtFrame >= 0 && DebugNewGame.empty() && DebugLoadGame < 0) {
+    return false;
+  }
+
   int cdcheck = 0;
 
   Show_Mouse();
@@ -574,6 +581,25 @@ bool Select_Game(bool /*fade*/) {
 
       if (config::kWolapiEnabled && pWolapi != nullptr) {
         selection = SEL_MULTIPLAYER_GAME;  //	We are returning from a game.
+      }
+
+      // -NEWGAME<scenario>: skip the menu and start that scenario as a
+      // normal-difficulty campaign game, e.g. -NEWGAMESCG01EA. Used with
+      // -QUITFRAME and -SAVESLOT to produce a reference save without a
+      // display.
+      if (selection == SEL_NONE && !DebugNewGame.empty()) {
+        Scen.CDifficulty = DIFF_NORMAL;
+        Scen.Difficulty = DIFF_NORMAL;
+        Scen.CarryOverMoney = 0;
+        BuildLevel = 10;
+        IsTanyaDead = false;
+        SaveTanya = false;
+        Whom = HOUSE_GOOD;
+        Scen.Set_Scenario_Name((DebugNewGame + ".INI").c_str());
+        DebugNewGame.clear();
+        Session.Type = GAME_NORMAL;
+        process = false;
+        continue;
       }
 
       // -LOADGAME<n>: skip the menu and load save slot n straight away.
@@ -1474,6 +1500,10 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     }
     if (strncmp(string, "-QUITFRAME", 10) == 0) {
       DebugQuitAtFrame = atoi(string + 10);
+      continue;
+    }
+    if (strncmp(string, "-NEWGAME", 8) == 0) {
+      DebugNewGame = string + 8;
       continue;
     }
     if (strncmp(string, "-SAVESLOT", 9) == 0) {
