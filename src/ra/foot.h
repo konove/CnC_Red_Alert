@@ -281,7 +281,11 @@ class FootClass : public TechnoClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   FootClass(const NoInitClass& x)
-      : TechnoClass(x), Team(x), PathDelay(x), BaseAttackTimer(x) {}
+      : TechnoClass(x),
+        Team(x),
+        SpeedBias(x),
+        PathDelay(x),
+        BaseAttackTimer(x) {}
   FootClass(RTTIType rtti, int id, HousesType house);
 
   /*---------------------------------------------------------------------

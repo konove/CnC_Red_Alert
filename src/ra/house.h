@@ -641,7 +641,17 @@ class HouseClass {
   HouseClass(HousesType house);
   HouseClass(const NoInitClass& x)
       : Class(x),
+        FirepowerBias(x),
+        GroundspeedBias(x),
+        AirspeedBias(x),
+        ArmorBias(x),
+        ROFBias(x),
+        CostBias(x),
+        BuildSpeedBias(x),
+        RepairDelay(x),
+        BuildDelay(x),
         Control(x),
+        RepairTimer(x),
         AlertTime(x),
         BorrowedTime(x),
         Attack(x),

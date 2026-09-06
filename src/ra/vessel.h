@@ -93,7 +93,11 @@ class VesselClass : public DriveClass {
 
   VesselClass(VesselType classid, HousesType house);
   VesselClass(const NoInitClass& x)
-      : DriveClass(x), Class(x), SecondaryFacing(x) {}
+      : DriveClass(x),
+        Class(x),
+        DoorShutCountDown(x),
+        PulseCountDown(x),
+        SecondaryFacing(x) {}
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);

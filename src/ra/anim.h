@@ -66,7 +66,8 @@ class AnimClass final : public ObjectClass, public StageClass {
  public:
   AnimClass(AnimType animnum, COORDINATE coord, unsigned char timedelay = 0,
             unsigned char loop = 1);
-  AnimClass(const NoInitClass& x) : ObjectClass(x), Class(x), StageClass(x) {}
+  AnimClass(const NoInitClass& x)
+      : ObjectClass(x), StageClass(x), Class(x), Accum(x) {}
   ~AnimClass() override;
 
   operator AnimType() const { return Class->Type; }
