@@ -374,47 +374,84 @@ void LayerClass::Decode_Pointers() {
   }
 }
 
-/***********************************************************************************************
- * HouseClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void HouseClass::Code_Pointers() {}
-
-/***********************************************************************************************
- * HouseClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void HouseClass::Decode_Pointers() {
-  /*
-  ** Re-assign the house's remap table (for multiplayer game loads)
-  ** Loading the house from disk will have over-written the house's RemapTable,
-  *so
-  ** Init_Data() is called to reset it to a valid pointer.
-  */
-  Init_Data(RemapColor, ActLike, static_cast<int>(Credits));
+template <class Archive>
+void HouseClass::Serialize(Archive& ar) {
+  bool is_active = IsActive;
+  bool is_human = IsHuman;
+  bool is_player_control = IsPlayerControl;
+  bool is_started = IsStarted;
+  bool is_alerted = IsAlerted;
+  bool is_base_building = IsBaseBuilding;
+  bool is_discovered = IsDiscovered;
+  bool is_maxed_out = IsMaxedOut;
+  bool is_defeated = IsDefeated;
+  bool is_to_die = IsToDie;
+  bool is_to_win = IsToWin;
+  bool is_to_lose = IsToLose;
+  bool is_civ_evacuated = IsCivEvacuated;
+  bool is_recalc_needed = IsRecalcNeeded;
+  bool is_visionary = IsVisionary;
+  bool is_tiberium_short = IsTiberiumShort;
+  bool is_spied = IsSpied;
+  bool is_thieved = IsThieved;
+  bool did_repair = DidRepair;
+  bool is_gps_active = IsGPSActive;
+  bool is_built_something = IsBuiltSomething;
+  bool is_resigner = IsResigner;
+  bool is_giver_upper = IsGiverUpper;
+  bool is_paranoid = IsParanoid;
+  bool is_to_look = IsToLook;
+  ar(RTTI, ID, Class, Difficulty, FirepowerBias, GroundspeedBias, AirspeedBias,
+     ArmorBias, ROFBias, CostBias, BuildSpeedBias, RepairDelay, BuildDelay,
+     Control, ActLike, is_active, is_human, is_player_control, is_started, is_alerted, is_base_building, is_discovered, is_maxed_out, is_defeated, is_to_die, is_to_win, is_to_lose, is_civ_evacuated, is_recalc_needed, is_visionary, is_tiberium_short, is_spied, is_thieved, did_repair, is_gps_active, is_built_something, is_resigner, is_giver_upper, is_paranoid, is_to_look);
+  ar(IQ, State, SuperWeapon, JustBuiltStructure, JustBuiltInfantry,
+     JustBuiltUnit, JustBuiltAircraft, JustBuiltVessel, Blockage, RepairTimer,
+     AlertTime, BorrowedTime, BScan, ActiveBScan, OldBScan, UScan, ActiveUScan,
+     OldUScan, IScan, ActiveIScan, OldIScan, AScan, ActiveAScan, OldAScan,
+     VScan, ActiveVScan, OldVScan, CreditsSpent, HarvestedCredits,
+     StolenBuildingsCredits, CurUnits, CurBuildings, CurInfantry, CurVessels,
+     CurAircraft, Tiberium, Credits, Capacity);
+  // The UnitTrackerClass statistics are runtime-only; Init_Trackers()
+  // recreates them on the shell object before Serialize() runs.
+  ar(AircraftFactories, InfantryFactories, UnitFactories, VesselFactories,
+     BuildingFactories, Power, Drain, AircraftFactory, InfantryFactory,
+     UnitFactory, VesselFactory, BuildingFactory, FlagLocation, FlagHome,
+     UnitsKilled, UnitsLost, BuildingsKilled, BuildingsLost, WhoLastHurtMe,
+     Center, Radius, ZoneInfo, LATime, LAType, LAZone, LAEnemy, ToCapture,
+     RadarSpied, PointTotal, PreferredTarget, BQuantity, UQuantity, IQuantity,
+     AQuantity, VQuantity, Attack, Enemy, AITimer, UnitToTeleport,
+     BuildStructure, BuildUnit, BuildInfantry, BuildAircraft, BuildVessel,
+     Regions, NukeDest, Allies, DamageTime, TeamTime, TriggerTime,
+     SpeakAttackDelay, SpeakPowerDelay, SpeakMoneyDelay, SpeakMaxedDelay,
+     RemapColor, IniName, InitialName);
+  IsActive = is_active;
+  IsHuman = is_human;
+  IsPlayerControl = is_player_control;
+  IsStarted = is_started;
+  IsAlerted = is_alerted;
+  IsBaseBuilding = is_base_building;
+  IsDiscovered = is_discovered;
+  IsMaxedOut = is_maxed_out;
+  IsDefeated = is_defeated;
+  IsToDie = is_to_die;
+  IsToWin = is_to_win;
+  IsToLose = is_to_lose;
+  IsCivEvacuated = is_civ_evacuated;
+  IsRecalcNeeded = is_recalc_needed;
+  IsVisionary = is_visionary;
+  IsTiberiumShort = is_tiberium_short;
+  IsSpied = is_spied;
+  IsThieved = is_thieved;
+  DidRepair = did_repair;
+  IsGPSActive = is_gps_active;
+  IsBuiltSomething = is_built_something;
+  IsResigner = is_resigner;
+  IsGiverUpper = is_giver_upper;
+  IsParanoid = is_paranoid;
+  IsToLook = is_to_look;
 }
+template void HouseClass::Serialize(ArchiveWriter&);
+template void HouseClass::Serialize(ArchiveReader&);
 
 /***********************************************************************************************
  * ScoreClass::Code_Pointers -- codes class's pointers for load/save *

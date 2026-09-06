@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_RA_HOUSE_H_
 
 #include <cstddef>
+#include <cstdint>
 
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
@@ -56,9 +57,6 @@
 #include "ra/utracker.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 class FootClass;
 class FactoryClass;
@@ -75,7 +73,13 @@ class FactoryClass;
 class HouseStaticClass {
  public:
   HouseStaticClass();
-  HouseStaticClass(const NoInitClass&) {}
+
+  // Saved-game support.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(IQ, TechLevel, Allies, MaxUnit, MaxBuilding, MaxInfantry, MaxVessel,
+       MaxAircraft, InitialCredits, Edge);
+  }
 
   /*
   **	This value indicates the degree of smartness to assign to this house.
@@ -110,7 +114,7 @@ class HouseStaticClass {
   **	This records the initial credits assigned to this house when the
   *scenario *	was loaded.
   */
-  long InitialCredits;
+  int64_t InitialCredits;
 
   /*
   **	For generic (unspecified) reinforcements, they arrive by a common
@@ -149,15 +153,15 @@ class HouseClass {
   /*
   **	Override handicap control values.
   */
-  fixed FirepowerBias;
-  fixed GroundspeedBias;
-  fixed AirspeedBias;
-  fixed ArmorBias;
-  fixed ROFBias;
-  fixed CostBias;
-  fixed BuildSpeedBias;
-  fixed RepairDelay;
-  fixed BuildDelay;
+  fixed FirepowerBias{1, 1};
+  fixed GroundspeedBias{1, 1};
+  fixed AirspeedBias{1, 1};
+  fixed ArmorBias{1, 1};
+  fixed ROFBias{1, 1};
+  fixed CostBias{1, 1};
+  fixed BuildSpeedBias{1, 1};
+  fixed RepairDelay{0, 1};
+  fixed BuildDelay{0, 1};
 
   /*
   **	The initial house data as loaded from the scenario control file is
@@ -182,38 +186,38 @@ class HouseClass {
   **	If this house is controlled by the player, then this flag will be true.
   *The *	computer controls all other active houses.
   */
-  unsigned IsHuman : 1;
+  unsigned IsHuman : 1 = false;
 
   /*
   **	If the player can control units of this house even if the player doesn't
   **	own units of this house, then this flag will be true.
   */
-  unsigned IsPlayerControl : 1;
+  unsigned IsPlayerControl : 1 = false;
 
   /*
   **	This flag enables production. If the flag is false, production is
   *disabled. *	By timing when this flag gets set, the player can be given some
   *breathing room.
   */
-  unsigned IsStarted : 1;
+  unsigned IsStarted : 1 = false;
 
   /*
   **	When alerted, the house will create teams of the special "auto" type and
   **	will generate appropriate units to fill those team types.
   */
-  unsigned IsAlerted : 1;
+  unsigned IsAlerted : 1 = false;
 
   /*
   **	If automatic base building is on, then this flag will be set to true.
   */
-  unsigned IsBaseBuilding : 1;
+  unsigned IsBaseBuilding : 1 = false;
 
   /*
   **	If the house has been discovered, then this flag will be set
   **	to true. However, the trigger even associated with discovery
   **	will only be executed during the next house AI process.
   */
-  unsigned IsDiscovered : 1;
+  unsigned IsDiscovered : 1 = false;
 
   /*
   **	If Tiberium storage is maxed out, then this flag will be set. At some
@@ -221,13 +225,13 @@ class HouseClass {
   *This allows the *	player to be told, but only occasionally rather than
   *continuously.
   */
-  unsigned IsMaxedOut : 1;
+  unsigned IsMaxedOut : 1 = false;
 
   /*
   ** If this house is played by a human in a multiplayer game, this flag
   ** keeps track of whether this house has been defeated or not.
   */
-  unsigned IsDefeated : 1;
+  unsigned IsDefeated : 1 = false;
 
   /*
   **	These flags are used in conjunction with the BorrowedTime timer. When
@@ -235,30 +239,30 @@ class HouseClass {
   **	applied to the house. This allows a dramatic pause between the event
   **	trigger and the result.
   */
-  unsigned IsToDie : 1;
-  unsigned IsToWin : 1;
-  unsigned IsToLose : 1;
+  unsigned IsToDie : 1 = false;
+  unsigned IsToWin : 1 = false;
+  unsigned IsToLose : 1 = false;
 
   /*
   **	This flag is set when a transport carrying a civilian has been
   **	successfully evacuated. It is presumed that a possible trigger
   **	event will be sprung by this event.
   */
-  unsigned IsCivEvacuated : 1;
+  unsigned IsCivEvacuated : 1 = false;
 
   /*
   **	If potentially something changed that might affect the sidebar list of
   **	buildable objects, then this flag indicates that at the first LEGAL
   *opportunity, *	the sidebar will be recalculated.
   */
-  unsigned IsRecalcNeeded : 1;
+  unsigned IsRecalcNeeded : 1 = true;
 
   /*
   **	If the map has been completely revealed to the player, then this flag
   **	will be set to true. By examining this flag, a second "reveal all map"
   **	crate won't be given to the player.
   */
-  unsigned IsVisionary : 1;
+  unsigned IsVisionary : 1 = false;
 
   /*
   **	This flag is set to true when the house has determined that
@@ -267,58 +271,58 @@ class HouseClass {
   **	should cease. This is one of the first signs that the endgame
   **	has begun.
   */
-  unsigned IsTiberiumShort : 1;
+  unsigned IsTiberiumShort : 1 = false;
 
   /*
   **	These flags are used for the general house trigger events of being
   **	spied and thieved. The appropriate flag will be set when the event
   **	occurs.
   */
-  unsigned IsSpied : 1;
-  unsigned IsThieved : 1;
+  unsigned IsSpied : 1 = false;
+  unsigned IsThieved : 1 = false;
 
   /*
   ** This flag is used to control non-human repairing of buildings.  Each
   ** house gets to repair one building per loop, and this flag controls
   ** whether this house has 'spent' its repair option this time through.
   */
-  unsigned DidRepair : 1;
+  unsigned DidRepair : 1 = false;
 
   /*
   ** This flag is used to control whether or not this house has the GPS
   ** satellite in orbit.  If the satellite's there, they have unlimited
   ** radar and the map is fully revealed.
   */
-  unsigned IsGPSActive : 1;
+  unsigned IsGPSActive : 1 = false;
 
   /*
   **	If the JustBuilt??? variable has changed, then this flag will
   **	be set to true.
   */
-  unsigned IsBuiltSomething : 1;
+  unsigned IsBuiltSomething : 1 = false;
 
   /*
   ** Did this house lose via resignation?
   */
-  unsigned IsResigner : 1;
+  unsigned IsResigner : 1 = false;
 
   /*
   ** Did this house lose because the player quit?
   */
-  unsigned IsGiverUpper : 1;
+  unsigned IsGiverUpper : 1 = false;
 
   /*
   **	If this computer controlled house has reason to be mad at humans,
   **	then this flag will be true. Such a condition prevents alliances with
   **	a human and encourages the computers players to ally amongst themselves.
   */
-  unsigned IsParanoid : 1;
+  unsigned IsParanoid : 1 = false;
 
   /*
   **	A gap generator shrouded cells and all units of this house must perform
   **	a look just in case their look radius intersects the shroud area.
   */
-  unsigned IsToLook : 1;
+  unsigned IsToLook : 1 = true;
 
   /*
   **	This value indicates the degree of smartness to assign to this house.
@@ -332,7 +336,7 @@ class HouseClass {
   *production and *	unit disposition. The state will change according to
   *time and combat *	events.
   */
-  StateType State;
+  StateType State = STATE_BUILDUP;
 
   /*
   **	These super weapon control objects are used to control the recharge
@@ -345,38 +349,38 @@ class HouseClass {
   **	were built as a part of scenario creation, it will be the last one
   **	discovered.
   */
-  StructType JustBuiltStructure;
-  InfantryType JustBuiltInfantry;
-  UnitType JustBuiltUnit;
-  AircraftType JustBuiltAircraft;
-  VesselType JustBuiltVessel;
+  StructType JustBuiltStructure = STRUCT_NONE;
+  InfantryType JustBuiltInfantry = INFANTRY_NONE;
+  UnitType JustBuiltUnit = UNIT_NONE;
+  AircraftType JustBuiltAircraft = AIRCRAFT_NONE;
+  VesselType JustBuiltVessel = VESSEL_NONE;
 
   /*
   **	This records the number of triggers associated with this house that are
   **	blocking a win condition. A win will only occur if all the blocking
   **	triggers have been deleted.
   */
-  int Blockage;
+  int Blockage = 0;
 
   /*
   **	For computer controlled houses, there is an artificial delay between
   **	performing repair actions. This timer regulates that delay. If the
   **	timer has not expired, then no repair initiation is allowed.
   */
-  Timer<FrameTickSource> RepairTimer;
+  Timer<FrameTickSource> RepairTimer{0};
 
   /*
   **	This timer controls the computer auto-attack logic. When this timer
   *expires *	and the house has been alerted, then it will create a set of
   *attack *	teams.
   */
-  Timer<FrameTickSource> AlertTime;
+  Timer<FrameTickSource> AlertTime{0};
 
   /*
   **	This timer is used to handle the delay between some catastrophic
   **	event trigger and when it is actually carried out.
   */
-  Timer<FrameTickSource> BorrowedTime;
+  Timer<FrameTickSource> BorrowedTime{0};
 
   /*
   **	This is the last working scan bits for buildings. If a building is
@@ -385,9 +389,9 @@ class HouseClass {
   **	accumulated over time, the "New" element contains the under-construction
   **	version.
   */
-  unsigned long BScan;
-  unsigned long ActiveBScan;
-  unsigned long OldBScan;
+  uint64_t BScan = 0;
+  uint64_t ActiveBScan = 0;
+  uint64_t OldBScan = 0;
 
   /*
   **	This is the last working scan bits for units. For every existing unit
@@ -396,48 +400,48 @@ class HouseClass {
   *element *	and then duplicated into the regular element at the end of every
   *logic cycle.
   */
-  unsigned long UScan;
-  unsigned long ActiveUScan;
-  unsigned long OldUScan;
+  uint64_t UScan = 0;
+  uint64_t ActiveUScan = 0;
+  uint64_t OldUScan = 0;
 
   /*
   **	Infantry type existence bits. Similar to unit and building bits.
   */
-  unsigned long IScan;
-  unsigned long ActiveIScan;
-  unsigned long OldIScan;
+  uint64_t IScan = 0;
+  uint64_t ActiveIScan = 0;
+  uint64_t OldIScan = 0;
 
   /*
   **	Aircraft type existence bits. Similar to unit and building bits.
   */
-  unsigned long AScan;
-  unsigned long ActiveAScan;
-  unsigned long OldAScan;
+  uint64_t AScan = 0;
+  uint64_t ActiveAScan = 0;
+  uint64_t OldAScan = 0;
 
   /*
   **	Vessel type existence bits. Similar to unit and building bits.
   */
-  unsigned long VScan;
-  unsigned long ActiveVScan;
-  unsigned long OldVScan;
+  uint64_t VScan = 0;
+  uint64_t ActiveVScan = 0;
+  uint64_t OldVScan = 0;
 
   /*
   **	Record of gains and losses for this house during the course of the
   **	scenario.
   */
-  unsigned CreditsSpent;
-  unsigned HarvestedCredits;
-  int StolenBuildingsCredits;
+  unsigned CreditsSpent = 0;
+  unsigned HarvestedCredits = 0;
+  int StolenBuildingsCredits = 0;
 
   /*
   **	This is the running count of the number of units owned by this house.
   *This *	value is used to keep track of ownership limits.
   */
-  unsigned CurUnits;
-  int CurBuildings;
-  int CurInfantry;
-  unsigned CurVessels;
-  int CurAircraft;
+  unsigned CurUnits = 0;
+  int CurBuildings = 0;
+  int CurInfantry = 0;
+  unsigned CurVessels = 0;
+  int CurAircraft = 0;
 
   /*
   **	This is the running total of the number of credits this house has
@@ -445,86 +449,86 @@ class HouseClass {
   */
   // Stays 64-bit: HouseClass is byte-serialized into the save file (see
   // src/{ra,td}/heap_layout_test.cc), so narrowing this changes sizeof().
-  long Tiberium;
-  long Credits;
-  long Capacity;
+  int64_t Tiberium = 0;
+  int64_t Credits = 0;
+  int64_t Capacity = 0;
 
   /*
   ** Stuff to keep track of the total number of units built by this house.
   */
-  UnitTrackerClass* AircraftTotals;
-  UnitTrackerClass* InfantryTotals;
-  UnitTrackerClass* UnitTotals;
-  UnitTrackerClass* BuildingTotals;
-  UnitTrackerClass* VesselTotals;
+  UnitTrackerClass* AircraftTotals = nullptr;
+  UnitTrackerClass* InfantryTotals = nullptr;
+  UnitTrackerClass* UnitTotals = nullptr;
+  UnitTrackerClass* BuildingTotals = nullptr;
+  UnitTrackerClass* VesselTotals = nullptr;
 
   /*
   ** Total number of units destroyed by this house
   */
-  UnitTrackerClass* DestroyedAircraft;
-  UnitTrackerClass* DestroyedInfantry;
-  UnitTrackerClass* DestroyedUnits;
-  UnitTrackerClass* DestroyedBuildings;
-  UnitTrackerClass* DestroyedVessels;
+  UnitTrackerClass* DestroyedAircraft = nullptr;
+  UnitTrackerClass* DestroyedInfantry = nullptr;
+  UnitTrackerClass* DestroyedUnits = nullptr;
+  UnitTrackerClass* DestroyedBuildings = nullptr;
+  UnitTrackerClass* DestroyedVessels = nullptr;
 
   /*
   ** Total number of enemy buildings captured by this house
   */
-  UnitTrackerClass* CapturedBuildings;
+  UnitTrackerClass* CapturedBuildings = nullptr;
 
   /*
   ** Total number of crates found by this house
   */
-  UnitTrackerClass* TotalCrates;
+  UnitTrackerClass* TotalCrates = nullptr;
 
   /*
   **	Records the number of infantry and vehicle factories active. This value
   *is *	used to regulate the speed of production.
   */
-  int AircraftFactories;
-  int InfantryFactories;
-  int UnitFactories;
-  int VesselFactories;
-  int BuildingFactories;
+  int AircraftFactories = 0;
+  int InfantryFactories = 0;
+  int UnitFactories = 0;
+  int VesselFactories = 0;
+  int BuildingFactories = 0;
 
   /*
   **	This is the accumulation of the total power and drain factors. From
   *these *	values a ratio can be derived. This ratio is used to control the
   *rate *	of building decay.
   */
-  int Power;  // Current power output.
-  int Drain;  // Power consumption.
+  int Power = 0;  // Current power output.
+  int Drain = 0;  // Power consumption.
 
   /*
   **	For human controlled houses, only one type of unit can be produced
   **	at any one instant. These factory objects control this production.
   */
-  int AircraftFactory;
-  int InfantryFactory;
-  int UnitFactory;
-  int VesselFactory;
-  int BuildingFactory;
+  int AircraftFactory = -1;
+  int InfantryFactory = -1;
+  int UnitFactory = -1;
+  int VesselFactory = -1;
+  int BuildingFactory = -1;
 
   /*
   **	This target value specifies where the flag is located. It might be a
   *cell *	or it might be an object.
   */
-  TARGET FlagLocation;
+  TARGET FlagLocation = kTargetNone;
 
   /*
   ** This is the flag-home-cell for this house.  This is where we must bring
   ** another house's flag back to, to defeat that house.
   */
-  CELL FlagHome;
+  CELL FlagHome = 0;
 
   /*
   ** For multiplayer games, each house needs to keep track of how many
   ** objects of each other house they've killed.
   */
-  unsigned UnitsKilled[magic_enum::enum_count<HousesType>()];
-  unsigned UnitsLost;
-  unsigned BuildingsKilled[magic_enum::enum_count<HousesType>()];
-  unsigned BuildingsLost;
+  unsigned UnitsKilled[magic_enum::enum_count<HousesType>()] = {};
+  unsigned UnitsLost = 0;
+  unsigned BuildingsKilled[magic_enum::enum_count<HousesType>()] = {};
+  unsigned BuildingsLost = 0;
 
   /*
   ** This keeps track of the last house to destroy one of my units.
@@ -536,12 +540,17 @@ class HouseClass {
   **	This records information about the location and size of
   **	the base.
   */
-  COORDINATE Center;  // Center of the base.
-  int Radius;         // Average building distance from center (leptons).
+  COORDINATE Center = 0;  // Center of the base.
+  int Radius = 0;         // Average building distance from center (leptons).
   struct {
     int AirDefense;
     int ArmorDefense;
     int InfantryDefense;
+
+    template <class Archive>
+    void Serialize(Archive& ar) {
+      ar(AirDefense, ArmorDefense, InfantryDefense);
+    }
   } ZoneInfo[magic_enum::enum_count<ZoneType>()];
 
   /*
@@ -549,54 +558,54 @@ class HouseClass {
   **	side was attacked. This information is used to determine proper
   **	response.
   */
-  int LATime;          // Time of attack.
-  RTTIType LAType;     // Type of attacker.
-  ZoneType LAZone;     // Last zone that was attacked.
-  HousesType LAEnemy;  // Owner of attacker.
+  int LATime = 0;          // Time of attack.
+  RTTIType LAType = RTTI_NONE;     // Type of attacker.
+  ZoneType LAZone = ZONE_NONE;     // Last zone that was attacked.
+  HousesType LAEnemy = HOUSE_NONE;  // Owner of attacker.
 
   /*
   **	This target value is the building that must be captured as soon as
   *possible. *	Typically, this will be one of the buildings of this house that
   *has been *	captured and needs to be recaptured.
   */
-  TARGET ToCapture;
+  TARGET ToCapture = kTargetNone;
 
   /*
   ** This value shows who is spying on this house's radar facilities.
   ** This is used for the other side to be able to update their radar
   ** map based on the cells that this house's units reveal.
   */
-  int RadarSpied;
+  int RadarSpied = 0;
 
   /*
   ** Running score, based on units destroyed and units lost.
   */
-  int PointTotal;
+  int PointTotal = 0;
 
   /*
   **	This is the targeting directions for when this house gets a
   **	special weapon.
   */
-  QuarryType PreferredTarget;
+  QuarryType PreferredTarget = QUARRY_ANYTHING;
 
  private:
   /*
   **	Tracks number of each building type owned by this house. Even if the
   **	building is in construction, it will be reflected in this total.
   */
-  int BQuantity[magic_enum::enum_count<StructType>() - 3];
-  int UQuantity[kOriginalUnitCount - 3];
+  int BQuantity[magic_enum::enum_count<StructType>() - 3] = {};
+  int UQuantity[kOriginalUnitCount - 3] = {};
 
-  int IQuantity[kOriginalInfantryCount];
-  int AQuantity[magic_enum::enum_count<AircraftType>()];
-  int VQuantity[kOriginalVesselCount];
+  int IQuantity[kOriginalInfantryCount] = {};
+  int AQuantity[magic_enum::enum_count<AircraftType>()] = {};
+  int VQuantity[kOriginalVesselCount] = {};
 
   /*
   **	This timer keeps track of when an all out attack should be performed.
   **	When this timer expires, send most of this house's units in an
   **	attack.
   */
-  Timer<FrameTickSource> Attack;
+  Timer<FrameTickSource> Attack{0};
 
  public:
   /*
@@ -604,7 +613,7 @@ class HouseClass {
   **	destroy. Typically, this is the last house to attack, but can be
   **	influenced by nearness.
   */
-  HousesType Enemy;
+  HousesType Enemy = HOUSE_NONE;
 
   /*
   **	The house expert system is regulated by this timer. Each computer
@@ -612,13 +621,13 @@ class HouseClass {
   *intervals. Not only will *	this distribute the overhead more evenly, but
   *will add variety to play.
   */
-  Timer<FrameTickSource> AITimer;
+  Timer<FrameTickSource> AITimer{0};
 
   /*
   ** For the moebius effect, this is a pointer to the unit that we
   ** selected to teleport.  Only one teleporter should be active per house.
   */
-  TARGET UnitToTeleport;
+  TARGET UnitToTeleport = 0;
 
   /*
   **	This elaborates the suggested objects to construct. When the specified
@@ -626,11 +635,11 @@ class HouseClass {
   *nill state. The *	expert system decides what should be produced, and then
   *records the *	recommendation in these variables.
   */
-  StructType BuildStructure;
-  UnitType BuildUnit;
-  InfantryType BuildInfantry;
-  AircraftType BuildAircraft;
-  VesselType BuildVessel;
+  StructType BuildStructure = STRUCT_NONE;
+  UnitType BuildUnit = UNIT_NONE;
+  InfantryType BuildInfantry = INFANTRY_NONE;
+  AircraftType BuildAircraft = AIRCRAFT_NONE;
+  VesselType BuildVessel = VESSEL_NONE;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
@@ -639,30 +648,6 @@ class HouseClass {
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   HouseClass(HousesType house);
-  HouseClass(const NoInitClass& x)
-      : Class(x),
-        FirepowerBias(x),
-        GroundspeedBias(x),
-        AirspeedBias(x),
-        ArmorBias(x),
-        ROFBias(x),
-        CostBias(x),
-        BuildSpeedBias(x),
-        RepairDelay(x),
-        BuildDelay(x),
-        Control(x),
-        RepairTimer(x),
-        AlertTime(x),
-        BorrowedTime(x),
-        Attack(x),
-        AITimer(x),
-        DamageTime(x),
-        TeamTime(x),
-        TriggerTime(x),
-        SpeakAttackDelay(x),
-        SpeakPowerDelay(x),
-        SpeakMoneyDelay(x),
-        SpeakMaxedDelay(x) {}
   ~HouseClass();
   operator HousesType() const;
 
@@ -803,10 +788,9 @@ class HouseClass {
   static void Write_INI(CCINIClass& ini);
   static void Read_Flag_INI(char* buffer);
   static void Write_Flag_INI(char* buffer);
-  bool Load(Straw& file);
-  bool Save(Pipe& file) const;
-  void Code_Pointers();
-  void Decode_Pointers();
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	Special house actions.
@@ -823,7 +807,7 @@ class HouseClass {
   **	This count down timer class decrements and then changes
   ** the Atomic Bomb state.
   */
-  CELL NukeDest;
+  CELL NukeDest = 0;
 
   /*
   ** This routine completely removes this house & all its objects from the game.
@@ -861,7 +845,7 @@ class HouseClass {
   **	this house. It is presumed that any house that isn't an ally, is
   *therefore *	an enemy. A house is always considered allied with itself.
   */
-  unsigned Allies;
+  unsigned Allies = 0;
 
   /*
   **	General low-power related damaged is doled out whenever this timer
@@ -877,17 +861,17 @@ class HouseClass {
   /*
   **	This controls the rate that the trigger time logic is processed.
   */
-  Timer<FrameTickSource> TriggerTime;
+  Timer<FrameTickSource> TriggerTime{0};
 
   /*
   **	At various times, the computer may announce the player's condition. The
   *following *	variables are used as countdown timers so that these
   *announcements are paced *	far enough apart to reduce annoyance.
   */
-  Timer<FrameTickSource> SpeakAttackDelay;
-  Timer<FrameTickSource> SpeakPowerDelay;
-  Timer<FrameTickSource> SpeakMoneyDelay;
-  Timer<FrameTickSource> SpeakMaxedDelay;
+  Timer<FrameTickSource> SpeakAttackDelay{1};
+  Timer<FrameTickSource> SpeakPowerDelay{1};
+  Timer<FrameTickSource> SpeakMoneyDelay{1};
+  Timer<FrameTickSource> SpeakMaxedDelay{1};
 
   /*
   **	This structure is used to record a build request as determined by
@@ -902,6 +886,14 @@ class HouseClass {
   };
 
   static TFixedIHeapClass<BuildChoiceClass> BuildChoice;
+
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  HouseClass();
+  friend class TFixedIHeapClass<HouseClass>;
+
+  // Allocates the per-type statistics trackers an Internet game keeps.
+  // Called by both constructors; the trackers are not saved.
+  void Init_Trackers();
 
   /*
   ** These values are for multiplay only.

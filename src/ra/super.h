@@ -43,12 +43,10 @@
 #include "ra/defines.h"
 #include "ra/jshell.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
 
 class SuperClass {
  public:
-  SuperClass(const NoInitClass& x) : Control(x) {}
-  SuperClass() : Control(NoInitClass()) {}
+  SuperClass() = default;
   SuperClass(int recharge, bool powered, VoxType charging = VOX_NONE,
              VoxType ready = VOX_NONE, VoxType impatient = VOX_NONE,
              VoxType suspend = VOX_NONE);
@@ -61,6 +59,21 @@ class SuperClass {
   void Impatient_Click() const;
   int Anim_Stage() const;
   bool Discharged(bool player);
+
+  // Saved-game support.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    bool is_powered = IsPowered;
+    bool is_present = IsPresent;
+    bool is_one_time = IsOneTime;
+    bool is_ready = IsReady;
+    ar(is_powered, is_present, is_one_time, is_ready, Control, OldStage,
+       VoxRecharge, VoxCharging, VoxImpatient, VoxSuspend, RechargeTime);
+    IsPowered = is_powered;
+    IsPresent = is_present;
+    IsOneTime = is_one_time;
+    IsReady = is_ready;
+  }
   bool Is_Ready() const { return IsReady; }
   bool Is_Present() const { return IsPresent; }
   bool Is_One_Time() const { return IsOneTime && IsPresent; }
@@ -69,19 +82,19 @@ class SuperClass {
  private:
   bool Recharge(bool player = false);
 
-  unsigned IsPowered : 1;
-  unsigned IsPresent : 1;
-  unsigned IsOneTime : 1;
-  unsigned IsReady : 1;
+  unsigned IsPowered : 1 = false;
+  unsigned IsPresent : 1 = false;
+  unsigned IsOneTime : 1 = false;
+  unsigned IsReady : 1 = false;
 
   Timer<FrameTickSource> Control;
-  int OldStage;
+  int OldStage = -1;
 
-  VoxType VoxRecharge;
-  VoxType VoxCharging;
-  VoxType VoxImpatient;
-  VoxType VoxSuspend;
-  int RechargeTime;
+  VoxType VoxRecharge = VOX_NONE;
+  VoxType VoxCharging = VOX_NONE;
+  VoxType VoxImpatient = VOX_NONE;
+  VoxType VoxSuspend = VOX_NONE;
+  int RechargeTime = 0;
 
   enum { ANIMATION_STAGES = 54 };
 };

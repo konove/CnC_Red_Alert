@@ -40,11 +40,18 @@
 #ifndef CNC_RED_ALERT_RA_REGION_H_
 #define CNC_RED_ALERT_RA_REGION_H_
 
+#include <cstdint>
 #include <cstring>
 
 class RegionClass {
  public:
-  RegionClass() { Threat = 0; }
+  RegionClass() = default;
+
+  // Saved-game support.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(Threat);
+  }
   int operator!=(const RegionClass& region) {
     return memcmp(this, &region, sizeof(RegionClass));
   }
@@ -69,7 +76,7 @@ class RegionClass {
   int Threat_Value() const { return static_cast<int>(Threat); }
 
  protected:
-  long Threat;
+  int64_t Threat = 0;
 };
 
 #endif  // CNC_RED_ALERT_RA_REGION_H_

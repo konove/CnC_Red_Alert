@@ -45,7 +45,6 @@
 #include "ra/cell.h"
 #include "ra/event.h"
 #include "ra/goptions.h"
-#include "ra/house.h"
 #include "ra/infantry.h"
 #include "ra/layer.h"
 #include "ra/mouse.h"
@@ -83,7 +82,6 @@ constexpr LayoutCase kSerializedTypes[] = {
     LAYOUT_CASE(AnimClass, 104),
     LAYOUT_CASE(BuildingClass, 520),
     LAYOUT_CASE(BulletClass, 96),
-    LAYOUT_CASE(HouseClass, 11256),
     LAYOUT_CASE(InfantryClass, 648),
     LAYOUT_CASE(OverlayClass, 56),
     LAYOUT_CASE(SmudgeClass, 56),

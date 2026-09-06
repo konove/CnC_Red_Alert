@@ -637,134 +637,11 @@ HouseClass::HouseClass(HousesType house)
       ID(Houses.ID(this)),
       Class(HouseTypes.Ptr(house)),
       Difficulty(Scen.CDifficulty),
-      FirepowerBias(1),
-      GroundspeedBias(1),
-      AirspeedBias(1),
-      ArmorBias(1),
-      ROFBias(1),
-      CostBias(1),
-      BuildSpeedBias(1),
-      RepairDelay(0),
-      BuildDelay(0),
       ActLike(Class->House),
-      IsHuman(false),
-      IsPlayerControl(false),
-      IsStarted(false),
-      IsAlerted(false),
-      IsBaseBuilding(false),
-      IsDiscovered(false),
-      IsMaxedOut(false),
-      IsDefeated(false),
-      IsToDie(false),
-      IsToLose(false),
-      IsToWin(false),
-      IsCivEvacuated(false),
-      IsRecalcNeeded(true),
-      IsVisionary(false),
-      IsTiberiumShort(false),
-      IsSpied(false),
-      IsThieved(false),
-      IsGPSActive(false),
-      IsBuiltSomething(false),
-      IsResigner(false),
-      IsGiverUpper(false),
-      IsParanoid(false),
-      IsToLook(true),
-      DidRepair(false),
       IQ(Control.IQ),
-      State(STATE_BUILDUP),
-      JustBuiltStructure(STRUCT_NONE),
-      JustBuiltInfantry(INFANTRY_NONE),
-      JustBuiltUnit(UNIT_NONE),
-      JustBuiltAircraft(AIRCRAFT_NONE),
-      JustBuiltVessel(VESSEL_NONE),
-      Blockage(0),
-      RepairTimer(0),
-      AlertTime(0),
-      BorrowedTime(0),
-      BScan(0),
-      ActiveBScan(0),
-      OldBScan(0),
-      UScan(0),
-      ActiveUScan(0),
-      OldUScan(0),
-      IScan(0),
-      ActiveIScan(0),
-      OldIScan(0),
-      AScan(0),
-      ActiveAScan(0),
-      OldAScan(0),
-      VScan(0),
-      ActiveVScan(0),
-      OldVScan(0),
-      CreditsSpent(0),
-      HarvestedCredits(0),
-      StolenBuildingsCredits(0),
-      CurUnits(0),
-      CurBuildings(0),
-      CurInfantry(0),
-      CurVessels(0),
-      CurAircraft(0),
-      Tiberium(0),
-      Credits(0),
-      Capacity(0),
-      AircraftTotals(nullptr),
-      InfantryTotals(nullptr),
-      UnitTotals(nullptr),
-      BuildingTotals(nullptr),
-      VesselTotals(nullptr),
-      DestroyedAircraft(nullptr),
-      DestroyedInfantry(nullptr),
-      DestroyedUnits(nullptr),
-      DestroyedBuildings(nullptr),
-      DestroyedVessels(nullptr),
-      CapturedBuildings(nullptr),
-      TotalCrates(nullptr),
-      AircraftFactories(0),
-      InfantryFactories(0),
-      UnitFactories(0),
-      BuildingFactories(0),
-      VesselFactories(0),
-      Power(0),
-      Drain(0),
-      AircraftFactory(-1),
-      InfantryFactory(-1),
-      UnitFactory(-1),
-      BuildingFactory(-1),
-      VesselFactory(-1),
-      FlagLocation(kTargetNone),
-      FlagHome(0),
-      UnitsLost(0),
-      BuildingsLost(0),
       WhoLastHurtMe(house),
-      Center(0),
-      Radius(0),
-      LATime(0),
-      LAType(RTTI_NONE),
-      LAZone(ZONE_NONE),
-      LAEnemy(HOUSE_NONE),
-      ToCapture(kTargetNone),
-      RadarSpied(0),
-      PointTotal(0),
-      PreferredTarget(QUARRY_ANYTHING),
-      Attack(0),
-      Enemy(HOUSE_NONE),
-      AITimer(0),
-      UnitToTeleport(0),
-      BuildStructure(STRUCT_NONE),
-      BuildUnit(UNIT_NONE),
-      BuildInfantry(INFANTRY_NONE),
-      BuildAircraft(AIRCRAFT_NONE),
-      BuildVessel(VESSEL_NONE),
-      NukeDest(0),
-      Allies(0),
       DamageTime(kTicksPerMinute * Rule.DamageDelay),
       TeamTime(kTicksPerMinute * Rule.TeamDelay),
-      TriggerTime(0),
-      SpeakAttackDelay(1),
-      SpeakPowerDelay(1),
-      SpeakMoneyDelay(1),
-      SpeakMaxedDelay(1),
       RemapColor(Class->RemapColor) {
   /*
   **	Explicit in-place construction of the super weapons is
@@ -797,16 +674,8 @@ HouseClass::HouseClass(HousesType house)
       SuperClass(kTicksPerMinute * Rule.GPSTime, true, VOX_NONE, VOX_NONE,
                  VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
 
-  memset(UnitsKilled, '\0', sizeof(UnitsKilled));
-  memset(BuildingsKilled, '\0', sizeof(BuildingsKilled));
-  memset(BQuantity, '\0', sizeof(BQuantity));
-  memset(UQuantity, '\0', sizeof(UQuantity));
-  memset(IQuantity, '\0', sizeof(IQuantity));
-  memset(AQuantity, '\0', sizeof(AQuantity));
-  memset(VQuantity, '\0', sizeof(VQuantity));
   port::SafeCopy(IniName, Text_String(TXT_COMPUTER));  // Default computer name.
   HouseTriggers[house].Clear();
-  memset(&Regions[0], 0x00, sizeof(Regions));
   Make_Ally(house);
   Assign_Handicap(Scen.CDifficulty);
 
@@ -816,6 +685,23 @@ HouseClass::HouseClass(HousesType house)
   Attack.Set(Rule.AttackDelay *
              static_cast<int>(Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
 
+  Init_Trackers();
+}
+
+/***********************************************************************************************
+ * HouseClass::~HouseClass -- House class destructor *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Nothing *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 8/6/96 4:48PM ST : Created *
+ *=============================================================================================*/
+void HouseClass::Init_Trackers() {
   if (Session.Type == GAME_INTERNET) {
     AircraftTotals = new UnitTrackerClass(
         static_cast<int>(magic_enum::enum_count<AircraftType>()));
@@ -846,19 +732,17 @@ HouseClass::HouseClass(HousesType house)
   }
 }
 
-/***********************************************************************************************
- * HouseClass::~HouseClass -- House class destructor *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 8/6/96 4:48PM ST : Created *
- *=============================================================================================*/
+HouseClass::HouseClass()
+    : RTTI(RTTI_HOUSE),
+      ID(Houses.ID(this)),
+      Difficulty(DIFF_NORMAL),
+      ActLike(HOUSE_NONE),
+      IQ(0),
+      WhoLastHurtMe(HOUSE_NONE),
+      RemapColor(PCOLOR_NONE) {
+  Init_Trackers();
+}
+
 HouseClass::~HouseClass() {
   Class = nullptr;
 
