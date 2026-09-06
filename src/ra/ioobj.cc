@@ -189,64 +189,22 @@ void TriggerTypeClass::Serialize(Archive& ar) {
 template void TriggerTypeClass::Serialize(ArchiveWriter&);
 template void TriggerTypeClass::Serialize(ArchiveReader&);
 
-/***********************************************************************************************
- * BulletClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void BulletClass::Code_Pointers() {
-  /*
-  **	Code 'Payback'
-  */
-  if (Payback) {
-    Payback = (TechnoClass*)Payback->As_Target();
-  }
-
-  /*
-  **	Chain to parent
-  */
-  ObjectClass::Code_Pointers();
+template <class Archive>
+void BulletClass::Serialize(Archive& ar) {
+  ObjectClass::Serialize(ar);
+  FlyClass::Serialize(ar);
+  FuseClass::Serialize(ar);
+  bool is_inaccurate = IsInaccurate;
+  bool is_to_animate = IsToAnimate;
+  bool is_locked = IsLocked;
+  ar(Class, ObjectPtr(Payback), PrimaryFacing, is_inaccurate, is_to_animate,
+     is_locked, TarCom, MaxSpeed, Warhead);
+  IsInaccurate = is_inaccurate;
+  IsToAnimate = is_to_animate;
+  IsLocked = is_locked;
 }
-
-/***********************************************************************************************
- * BulletClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void BulletClass::Decode_Pointers() {
-  /*
-  **	Decode 'Payback'
-  */
-  if (Payback) {
-    Payback = As_Techno(static_cast<TARGET>((intptr_t)Payback));
-    assert(Payback != nullptr);
-  }
-
-  /*
-  **	Chain to parent
-  */
-  ObjectClass::Decode_Pointers();
-}
+template void BulletClass::Serialize(ArchiveWriter&);
+template void BulletClass::Serialize(ArchiveReader&);
 
 template <class Archive>
 void ObjectClass::Serialize(Archive& ar) {

@@ -48,23 +48,6 @@
 #include "ra/defines.h"
 #include "ra/display.h"
 
-/***********************************************************************************************
- * FuseClass::FuseClass -- Constructor. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/27/1995 BRR : Created.  Gosh, what a lotta work. *
- *=============================================================================================*/
-FuseClass::FuseClass() {
-  Timer = 0;
-  Arming = 0;
-  HeadTo = 0;
-  Proximity = 0;
-}
 
 /***********************************************************************************************
  * FuseClass::Arm_Fuse -- Sets up fuse for detonation check. *

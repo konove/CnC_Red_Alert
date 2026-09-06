@@ -40,8 +40,9 @@
 #ifndef CNC_RED_ALERT_RA_FUSE_H_
 #define CNC_RED_ALERT_RA_FUSE_H_
 
+#include <cstdint>
+
 #include "ra/defines.h"
-#include "tech/noinit.h"
 #include "tech/wwfile.h"
 
 /****************************************************************************
@@ -51,8 +52,13 @@
 */
 class FuseClass {
  public:
-  FuseClass();
-  FuseClass(const NoInitClass&) {}
+  FuseClass() = default;
+
+  // Saved-game support.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(Timer, Arming, HeadTo, Proximity);
+  }
   ~FuseClass() {}
 
   void Arm_Fuse(COORDINATE location, COORDINATE target, int time = 0xFF,
@@ -66,7 +72,7 @@ class FuseClass {
   **	Fuses can detonate if enough time has elapsed. This value counts
   **	down. When it reaches zero, detonation occurs.
   */
-  unsigned char Timer;
+  unsigned char Timer = 0;
 
  private:
   /*
@@ -74,20 +80,20 @@ class FuseClass {
   **	occur. This counts down and when it reaches zero, normal fuse
   **	detonation checking can occur.
   */
-  unsigned char Arming;
+  unsigned char Arming = 0;
 
   /*
   **	This is the designated impact point of the projectile. The fuse
   **	will trip when the closest point to this location has been reached.
   */
-  COORDINATE HeadTo;
+  COORDINATE HeadTo = 0;
 
   /*
   **	This is the running proximity value to the impact point. This value
   **	will progressively get smaller. Detonation occurs when it reaches
   **	zero or when it starts to grow larger.
   */
-  short Proximity;
+  int16_t Proximity = 0;
 };
 
 inline COORDINATE FuseClass::Fuse_Target() { return HeadTo; }

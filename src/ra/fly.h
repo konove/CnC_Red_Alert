@@ -60,6 +60,12 @@ class FlyClass {
   */
   FlyClass() : SpeedAccum(0), SpeedAdd(MPH_IMMOBILE) {}
   FlyClass(const NoInitClass&) {}
+
+  // Saved-game support.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(SpeedAccum, SpeedAdd);
+  }
   ~FlyClass() {}
 
   /*---------------------------------------------------------------------

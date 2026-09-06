@@ -50,9 +50,6 @@
 #include "ra/fuse.h"
 #include "ra/object.h"
 #include "ra/type.h"
-#include "tech/noinit.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
  public:
@@ -68,7 +65,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   **	Records who sent this "present" so that an appropriate "thank you" can
   **	be returned.
   */
-  TechnoClass* Payback;
+  TechnoClass* Payback = nullptr;
 
   /*
   **	This is the facing that the projectile is traveling.
@@ -84,8 +81,6 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   void operator delete(void* ptr);
   BulletClass(BulletType id, TARGET target, TechnoClass* Payback, int strength,
               WarheadType warhead, int speed);
-  BulletClass(const NoInitClass& x)
-      : ObjectClass(x), Class(x), FlyClass(x), FuseClass(x), PrimaryFacing(x) {}
   ~BulletClass() override;
   operator BulletType() const { return Class->Type; }
 
@@ -115,41 +110,44 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   /*
   **	File I/O.
   */
-  bool Load(Straw& file);
-  bool Save(Pipe& file) const;
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	If this bullet is forced to be inaccurate because of some outside means.
   *A tank *	firing while moving is a good example.
   */
-  unsigned IsInaccurate : 1;
+  unsigned IsInaccurate : 1 = false;
 
  private:
   // Crude animation flag.
-  unsigned IsToAnimate : 1;
+  unsigned IsToAnimate : 1 = false;
 
   /*
   ** Is this missile allowed to come in from out of bounds?
   */
-  unsigned IsLocked : 1;
+  unsigned IsLocked : 1 = true;
 
   /*
   **	This is the target of the projectile. It is especially significant for
   *those projectiles *	that home in on a target.
   */
-  TARGET TarCom;
+  TARGET TarCom = kTargetNone;
 
   /*
   **	The speed of this projectile.
   */
-  int MaxSpeed;
+  int MaxSpeed = 0;
 
   /*
   **	The warhead of this projectile.
   */
-  WarheadType Warhead;
+  WarheadType Warhead = WARHEAD_NONE;
+
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  BulletClass() = default;
+  friend class TFixedIHeapClass<BulletClass>;
 };
 
 #endif  // CNC_RED_ALERT_RA_BULLET_H_
