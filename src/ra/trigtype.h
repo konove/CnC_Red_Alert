@@ -49,9 +49,6 @@
 #include "ra/taction.h"
 #include "ra/tevent.h"
 #include "ra/type.h"
-#include "tech/noinit.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 /*
 **	There can be multiple trigger events and trigger actions. This
@@ -67,7 +64,9 @@ typedef enum MultiStyleType {
 
 class TriggerTypeClass : public AbstractTypeClass {
  public:
-  unsigned IsActive : 1;
+  // operator new sets this before the constructor runs; the initializer
+  // must agree with it.
+  unsigned IsActive : 1 = true;
 
   typedef enum PersistantType {
     VOLATILE = 0,
@@ -85,12 +84,12 @@ class TriggerTypeClass : public AbstractTypeClass {
   **		 triggered from all the objects; then, it removes itself.
   **	2 = trigger is Fully Persistent; it just won't go away.
   */
-  PersistantType IsPersistant;
+  PersistantType IsPersistant = VOLATILE;
 
   /*
   **	For house-specific events, this is the house for that event.
   */
-  HousesType House;
+  HousesType House = HOUSE_SPAIN;
 
   /*
   **	Each trigger must have an event which activates it. This is the event
@@ -98,18 +97,16 @@ class TriggerTypeClass : public AbstractTypeClass {
   */
   TEventClass Event1;
   TEventClass Event2;
-  MultiStyleType EventControl;
+  MultiStyleType EventControl = MULTI_ONLY;
 
   /*
   **	This is the action to perform when the trigger event occurs.
   */
   TActionClass Action1;
   TActionClass Action2;
-  MultiStyleType ActionControl;
+  MultiStyleType ActionControl = MULTI_ONLY;
 
   TriggerTypeClass();
-  TriggerTypeClass(const NoInitClass& x)
-      : AbstractTypeClass(x), Event1(x), Event2(x), Action1(x), Action2(x) {}
   ~TriggerTypeClass() override = default;
 
   void* operator new(size_t);
@@ -130,10 +127,9 @@ class TriggerTypeClass : public AbstractTypeClass {
   void Build_INI_Entry(std::string& buffer) const;
 
   static const char* INI_Name() { return "Trigs"; }
-  bool Load(Straw& file);
-  bool Save(Pipe& file) const;
-  void Code_Pointers();
-  void Decode_Pointers();
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	Processing routines

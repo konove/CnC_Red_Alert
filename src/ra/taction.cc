@@ -342,42 +342,6 @@ void TActionClass::Read_INI() {
   }
 }
 
-/***********************************************************************************************
- * TActionClass::Code_Pointers -- Convert embedded pointers into a transportable
- *format.       *
- *                                                                                             *
- *    This routine is called prior to saving the game. It will convert any
- *pointers into a     * format that is safe for persistent storage. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   This routine makes the object unfit for use. The
- *Decode_Pointers() routine      * must be called prior to using this object. *
- *                                                                                             *
- * HISTORY: * 02/22/1996 JLB : Created. *
- *=============================================================================================*/
-void TActionClass::Code_Pointers() {}
-
-/***********************************************************************************************
- * TActionClass::Decode_Pointers -- Converts coded pointers into usable format.
- **
- *                                                                                             *
- *    This routine is called after a game has been loaded. The encoded pointers
- *will be        * converted back into usable format by this routine. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   This routine will NOT work unless the pointer are, in fact,
- *coded. There is     * no prevention check to protect against calling this
- *routine twice.              *
- *                                                                                             *
- * HISTORY: * 02/22/1996 JLB : Created. *
- *=============================================================================================*/
-void TActionClass::Decode_Pointers() {}
 
 /***********************************************************************************************
  * TActionClass::operator -- Performs the action that this object does. *

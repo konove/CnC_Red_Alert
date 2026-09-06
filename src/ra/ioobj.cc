@@ -197,22 +197,6 @@ void TeamClass::Decode_Pointers() {
   }
 }
 
-/***********************************************************************************************
- * TriggerClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
 template <class Archive>
 void TriggerClass::Serialize(Archive& ar) {
   bool is_active = IsActive;
@@ -222,29 +206,16 @@ void TriggerClass::Serialize(Archive& ar) {
 template void TriggerClass::Serialize(ArchiveWriter&);
 template void TriggerClass::Serialize(ArchiveReader&);
 
-void TriggerTypeClass::Code_Pointers() {
-  Action1.Code_Pointers();
-  Action2.Code_Pointers();
+template <class Archive>
+void TriggerTypeClass::Serialize(Archive& ar) {
+  AbstractTypeClass::Serialize(ar);
+  bool is_active = IsActive;
+  ar(is_active, IsPersistant, House, Event1, Event2, EventControl, Action1,
+     Action2, ActionControl);
+  IsActive = is_active;
 }
-
-/***********************************************************************************************
- * TriggerClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TriggerTypeClass::Decode_Pointers() {
-  Action1.Decode_Pointers();
-  Action2.Decode_Pointers();
-}
+template void TriggerTypeClass::Serialize(ArchiveWriter&);
+template void TriggerTypeClass::Serialize(ArchiveReader&);
 
 /***********************************************************************************************
  * BulletClass::Code_Pointers -- codes class's pointers for load/save *

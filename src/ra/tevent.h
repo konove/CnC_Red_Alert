@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_TEVENT_H_
 #define CNC_RED_ALERT_RA_TEVENT_H_
 
+#include <cstdint>
 #include <string>
 
 #include "port/ex_string.h"
@@ -49,7 +50,6 @@
 #include "ra/object.h"
 #include "ra/teamtype.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
 
 /*
 **	These are the trigger events that are checked for and if qualified, they
@@ -150,15 +150,18 @@ struct TEventClass {
     InfantryType Infantry;  //	Used for infantry type checking.
     AircraftType Aircraft;  // Used for aircraft type checking.
     HousesType House;       // Used for house specific events.
-    long Value;             // Used for other events that need data.
+    int32_t Value;          // Used for other events that need data.
   } Data;
 
   TEventClass() : Event(TEVENT_NONE) { Data.Value = 0; }
   TEventClass(TEventType event) : Event(event) { Data.Value = 0; }
-  TEventClass(const NoInitClass& x) : Team(x) {}
 
-  void Code_Pointers();
-  void Decode_Pointers();
+  // Saved-game support. The union travels through its widest member.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(Event, Team, Data.Value);
+  }
+
   void Reset(TDEventClass& td) const;
   bool operator()(TDEventClass& td, TEventType event, HousesType house,
                   const ObjectClass* object, bool forced);

@@ -48,7 +48,6 @@
 #include "ra/defines.h"
 #include "ra/object.h"
 #include "ra/teamtype.h"
-#include "tech/noinit.h"
 
 typedef enum TActionType {
   TACTION_NONE,
@@ -131,11 +130,14 @@ struct TActionClass {
     Data.Theme = THEME_NONE;
     Data.Value = -1;
   }
-  TActionClass(const NoInitClass& x) : Team(x), Trigger(x) {}
 
   void Detach(TARGET target);
-  void Code_Pointers();
-  void Decode_Pointers();
+
+  // Saved-game support. The union travels through its widest member.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(Action, Team, Trigger, Data.Value);
+  }
   void Read_INI();
   void Build_INI_Entry(std::string& buffer) const;
 

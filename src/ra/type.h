@@ -92,6 +92,12 @@ class AbstractTypeClass {
   AbstractTypeClass(const NoInitClass&) {}
   virtual ~AbstractTypeClass() = default;
 
+  // Saved-game support for the base part; derived classes call it first.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(RTTI, ID, IniName, FullName);
+  }
+
   RTTIType What_Am_I() const { return RTTI; }
   TARGET As_Target() const { return Build_Target(RTTI, ID); }
 

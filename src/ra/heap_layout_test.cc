@@ -59,7 +59,6 @@
 #include "ra/teamtype.h"
 #include "ra/template.h"
 #include "ra/terrain.h"
-#include "ra/trigtype.h"
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/vessel.h"
@@ -94,7 +93,6 @@ constexpr LayoutCase kSerializedTypes[] = {
     LAYOUT_CASE(TeamTypeClass, 320),
     LAYOUT_CASE(TemplateClass, 56),
     LAYOUT_CASE(TerrainClass, 96),
-    LAYOUT_CASE(TriggerTypeClass, 128),
     LAYOUT_CASE(UnitClass, 712),
     LAYOUT_CASE(VesselClass, 712),
 

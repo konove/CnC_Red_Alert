@@ -112,11 +112,8 @@
  * HISTORY: * 06/10/1996 JLB : Created. *
  *=============================================================================================*/
 TriggerTypeClass::TriggerTypeClass()
-    : AbstractTypeClass(RTTI_TRIGGERTYPE, TriggerTypes.ID(this), TXT_NONE, "x"),
-      IsPersistant(VOLATILE),
-      EventControl(MULTI_ONLY),
-      ActionControl(MULTI_ONLY),
-      House(HOUSE_SPAIN) {}
+    : AbstractTypeClass(RTTI_TRIGGERTYPE, TriggerTypes.ID(this), TXT_NONE, "x") {
+}
 
 /***********************************************************************************************
  * TriggerTypeClass::operator new -- Allocates a trigger type class object. *
@@ -420,8 +417,8 @@ bool TriggerTypeClass::Edit() {
               static_cast<int>(Event1.Data.Value) + 'A');
     } else {
       sprintf(way1data.Get_Text(), "%c%c",
-              static_cast<int>(Event1.Data.Value / 26) + 'A' - 1,
-              static_cast<int>(Event1.Data.Value % 26) + 'A');
+              Event1.Data.Value / 26 + 'A' - 1,
+              Event1.Data.Value % 26 + 'A');
     }
   }
 
@@ -434,8 +431,8 @@ bool TriggerTypeClass::Edit() {
               static_cast<int>(Event2.Data.Value) + 'A');
     } else {
       sprintf(way2data.Get_Text(), "%c%c",
-              static_cast<int>(Event2.Data.Value / 26) + 'A' - 1,
-              static_cast<int>(Event2.Data.Value % 26) + 'A');
+              Event2.Data.Value / 26 + 'A' - 1,
+              Event2.Data.Value % 26 + 'A');
     }
   }
 
@@ -1792,8 +1789,8 @@ const char* TriggerTypeClass::Description() const {
           sprintf(tbuf, "'%c'", static_cast<int>(Event1.Data.Value) + 'A');
         } else {
           sprintf(tbuf, "'%c%c'",
-                  static_cast<int>(Event1.Data.Value / 26) + 'A' - 1,
-                  static_cast<int>(Event1.Data.Value % 26) + 'A');
+                  Event1.Data.Value / 26 + 'A' - 1,
+                  Event1.Data.Value % 26 + 'A');
         }
         added = tbuf;
         break;
