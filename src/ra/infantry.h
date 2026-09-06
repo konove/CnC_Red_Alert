@@ -56,9 +56,6 @@
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 class InfantryClass final : public FootClass {
  public:
@@ -71,35 +68,35 @@ class InfantryClass final : public FootClass {
   *performing an animation *	sequence, the infantry cannot perform anything
   *else (even move).
   */
-  DoType Doing;
+  DoType Doing = DO_NOTHING;
 
   /*
   **	Certain infantry will either perform some comment or say something after
   *an *	amount of time has expired subsequent to an significant event. This is
   *the *	timer the counts down.
   */
-  Timer<FrameTickSource> Comment;
+  Timer<FrameTickSource> Comment{0};
 
   /*
   **	If this civilian is actually a technician, then this flag will be true.
   **	It should only be set for the civilian type infantry. Typically, the
   **	technician appears after a building is destroyed.
   */
-  unsigned IsTechnician : 1;
+  unsigned IsTechnician : 1 = false;
 
   /*
   **	If the infantry just performed some feat, then it may respond with an
   *action. *	This flag will be true if an action is to be performed when the
   *Comment timer *	has expired.
   */
-  unsigned IsStoked : 1;
+  unsigned IsStoked : 1 = false;
 
   /*
   **	This flag indicates if the infantry unit is prone. Prone infantry become
   *that way *	when they are fired upon. Infantry in the prone position are
   *less vulnerable to *	combat.
   */
-  unsigned IsProne : 1;
+  unsigned IsProne : 1 = false;
 
   /*
   **	If the infantry is allowed to move one cell from one zone to another,
@@ -107,20 +104,24 @@ class InfantryClass final : public FootClass {
   *destroyed, the bomb *	placer is allowed to run from the destroyed
   *bridge cell back onto a real cell.
   */
-  unsigned IsZoneCheat : 1;
+  unsigned IsZoneCheat : 1 = false;
 
   /*
   ** This flag is set for the dogs, when they launch into bullet mode.
   ** it's to remember if the unit was selected, and if it was, then
   ** when the dog is re-enabled, he'll reselect himself.
   */
-  unsigned WasSelected : 1;
+  unsigned WasSelected : 1 = false;
 
   /*
   **	The fear rating of this infantry unit. The more afraid the infantry, the
   *more *	likely it is to panic and seek cover.
   */
-  FearType Fear;
+  FearType Fear = FEAR_NONE;
+
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  InfantryClass() = default;
+  friend class TFixedIHeapClass<InfantryClass>;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
@@ -129,7 +130,6 @@ class InfantryClass final : public FootClass {
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   InfantryClass(InfantryType classid, HousesType house);
-  InfantryClass(const NoInitClass& x) : FootClass(x), Class(x), Comment(x) {}
   ~InfantryClass() override;
   operator InfantryType() const { return Class->Type; }
 
@@ -225,8 +225,9 @@ class InfantryClass final : public FootClass {
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
   static const char* INI_Name() { return "INFANTRY"; }
-  bool Load(Straw& file);
-  bool Save(Pipe& file) const;
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	Movement and animation.

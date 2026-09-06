@@ -234,15 +234,7 @@ void InfantryClass::Debug_Dump(MonoClass* mono) const {
  *=============================================================================================*/
 InfantryClass::InfantryClass(InfantryType classid, HousesType house)
     : FootClass(RTTI_INFANTRY, Infantry.ID(this), house),
-      Class(InfantryTypes.Ptr(classid)),
-      Doing(DO_NOTHING),
-      Comment(0),
-      IsTechnician(false),
-      IsStoked(false),
-      IsProne(false),
-      IsZoneCheat(false),
-      WasSelected(false),
-      Fear(FEAR_NONE) {
+      Class(InfantryTypes.Ptr(classid)) {
   House->Tracking_Add(this);
   IsCloakable = Class->IsCloakable;
   /*

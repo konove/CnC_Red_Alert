@@ -1808,6 +1808,20 @@ bool Main_Loop() {
                 << " mission " << magic_enum::enum_name(unit->Mission)
                 << " navcom " << absl::StrFormat("%08x", unit->NavCom);
     }
+    for (int index = 0; index < Infantry.Count(); index++) {
+      const InfantryClass* inf = Infantry.Ptr(index);
+      LOG(INFO) << "frame " << Frame << " infantry " << inf->Class->IniName
+                << " coord " << absl::StrFormat("%08x", inf->Coord)
+                << " mission " << magic_enum::enum_name(inf->Mission)
+                << " navcom " << absl::StrFormat("%08x", inf->NavCom);
+    }
+    for (int index = 0; index < Vessels.Count(); index++) {
+      const VesselClass* vessel = Vessels.Ptr(index);
+      LOG(INFO) << "frame " << Frame << " vessel " << vessel->Class->IniName
+                << " coord " << absl::StrFormat("%08x", vessel->Coord)
+                << " mission " << magic_enum::enum_name(vessel->Mission)
+                << " navcom " << absl::StrFormat("%08x", vessel->NavCom);
+    }
     for (int index = 0; index < Aircraft.Count(); index++) {
       const AircraftClass* air = Aircraft.Ptr(index);
       LOG(INFO) << "frame " << Frame << " aircraft " << air->Class->IniName

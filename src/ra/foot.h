@@ -286,6 +286,50 @@ class FootClass : public TechnoClass {
         SpeedBias(x),
         PathDelay(x),
         BaseAttackTimer(x) {}
+
+  // Saved-game support for the base part; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
+ protected:
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Explicit initializers rather than default member initializers because
+  // the NoInit constructor above must leave the members alone.
+  FootClass()
+      : IsScanLimited(false),
+        IsInitiated(false),
+        IsNewNavCom(false),
+        IsPlanningToLook(false),
+        IsDeploying(false),
+        IsFiring(false),
+        IsRotating(false),
+        IsDriving(false),
+        IsUnloading(false),
+        IsFormationMove(false),
+        IsNavQueueLoop(false),
+        IsScattering(false),
+        Speed(0),
+        SpeedBias(1),
+        XFormOffset(kNoFormationOffset),
+        YFormOffset(kNoFormationOffset),
+        NavCom(kTargetNone),
+        SuspendedNavCom(kTargetNone),
+        NavQueue{},
+        Team(nullptr),
+        Group(kNoGroup),
+        Member(nullptr),
+        Path{},
+        PathThreshhold(MOVE_CLOAK),
+        PathDelay(0),
+        TryTryAgain(PATH_RETRY),
+        BaseAttackTimer(0),
+        FormationSpeed(SPEED_FOOT),
+        FormationMaxSpeed(MPH_IMMOBILE),
+        HeadToCoord(0) {
+    Path[0] = FACING_NONE;
+  }
+
+ public:
   FootClass(RTTIType rtti, int id, HousesType house);
 
   /*---------------------------------------------------------------------

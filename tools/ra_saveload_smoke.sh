@@ -2,10 +2,10 @@
 # Headless save/load check for Red Alert.
 #
 # Starts a scenario, saves at frame SAVE_AT, keeps running to END_AT, then
-# loads that save and runs to END_AT again. Ground units must be at the same
-# coordinates in both runs; any difference means the save lost state.
-# Aircraft are excluded because their flight is not deterministic between
-# two fresh runs either.
+# loads that save and runs to END_AT again. Vehicles and vessels must be at
+# the same coordinates in both runs; any difference means the save lost
+# state. Aircraft, and the infantry that react to them, are logged but not
+# compared: two fresh runs already disagree about them.
 #
 # Usage: tools/ra_saveload_smoke.sh [rasdl] [scenario]
 #   rasdl     path to the binary (default: cmake-build-strict-ra-clang/src/ra/rasdl)
@@ -38,18 +38,18 @@ run "-NEWGAME$SCENARIO" "-QUITFRAME$END_AT" > "$WORK/continuous.log"
 run "-LOADGAME$SLOT" "-QUITFRAME$END_AT" > "$WORK/loaded.log"
 rm -f "SAVEGAME.0$SLOT"
 
-filter() { awk -v from="$SAVE_AT" '$2 > from && $3 == "unit"' "$1"; }
+filter() { awk -v from="$SAVE_AT" '$2 > from && ($3 == "unit" || $3 == "vessel")' "$1"; }
 filter "$WORK/continuous.log" > "$WORK/a"
 filter "$WORK/loaded.log" > "$WORK/b"
 
 if [ ! -s "$WORK/b" ]; then
-  echo "FAIL: no unit positions logged after load"
+  echo "FAIL: no object positions logged after load"
   exit 1
 fi
 if diff -q "$WORK/a" "$WORK/b" > /dev/null; then
-  echo "OK: $(wc -l < "$WORK/b") unit positions identical across save/load"
+  echo "OK: $(wc -l < "$WORK/b") object positions identical across save/load"
 else
-  echo "FAIL: unit positions diverge after load"
+  echo "FAIL: object positions diverge after load"
   diff "$WORK/a" "$WORK/b" | head -20
   exit 1
 fi

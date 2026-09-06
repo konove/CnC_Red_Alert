@@ -83,6 +83,7 @@
 #include "ra/terrain.h"
 #include "ra/foot.h"
 #include "ra/house.h"
+#include "ra/infantry.h"
 #include "ra/jshell.h"
 #include "ra/layer.h"
 #include "ra/mission.h"
@@ -382,6 +383,62 @@ void BuildingClass::Serialize(Archive& ar) {
 }
 template void BuildingClass::Serialize(ArchiveWriter&);
 template void BuildingClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void FootClass::Serialize(Archive& ar) {
+  TechnoClass::Serialize(ar);
+  bool is_scan_limited = IsScanLimited;
+  bool is_initiated = IsInitiated;
+  bool is_new_nav_com = IsNewNavCom;
+  bool is_planning_to_look = IsPlanningToLook;
+  bool is_deploying = IsDeploying;
+  bool is_firing = IsFiring;
+  bool is_rotating = IsRotating;
+  bool is_driving = IsDriving;
+  bool is_unloading = IsUnloading;
+  bool is_formation_move = IsFormationMove;
+  bool is_nav_queue_loop = IsNavQueueLoop;
+  bool is_scattering = IsScattering;
+  ar(is_scan_limited, is_initiated, is_new_nav_com, is_planning_to_look,
+     is_deploying, is_firing, is_rotating, is_driving, is_unloading,
+     is_formation_move, is_nav_queue_loop, is_scattering, Speed, SpeedBias,
+     XFormOffset, YFormOffset, NavCom, SuspendedNavCom, NavQueue, Team, Group,
+     ObjectPtr(Member), Path, PathThreshhold, PathDelay, TryTryAgain,
+     BaseAttackTimer, FormationSpeed, FormationMaxSpeed, HeadToCoord);
+  IsScanLimited = is_scan_limited;
+  IsInitiated = is_initiated;
+  IsNewNavCom = is_new_nav_com;
+  IsPlanningToLook = is_planning_to_look;
+  IsDeploying = is_deploying;
+  IsFiring = is_firing;
+  IsRotating = is_rotating;
+  IsDriving = is_driving;
+  IsUnloading = is_unloading;
+  IsFormationMove = is_formation_move;
+  IsNavQueueLoop = is_nav_queue_loop;
+  IsScattering = is_scattering;
+}
+template void FootClass::Serialize(ArchiveWriter&);
+template void FootClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void InfantryClass::Serialize(Archive& ar) {
+  FootClass::Serialize(ar);
+  bool is_technician = IsTechnician;
+  bool is_stoked = IsStoked;
+  bool is_prone = IsProne;
+  bool is_zone_cheat = IsZoneCheat;
+  bool was_selected = WasSelected;
+  ar(Class, Doing, Comment, is_technician, is_stoked, is_prone, is_zone_cheat,
+     was_selected, Fear);
+  IsTechnician = is_technician;
+  IsStoked = is_stoked;
+  IsProne = is_prone;
+  IsZoneCheat = is_zone_cheat;
+  WasSelected = was_selected;
+}
+template void InfantryClass::Serialize(ArchiveWriter&);
+template void InfantryClass::Serialize(ArchiveReader&);
 
 template <class Archive>
 void FactoryClass::Serialize(Archive& ar) {

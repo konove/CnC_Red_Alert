@@ -42,7 +42,6 @@
 #include "ra/cell.h"
 #include "ra/event.h"
 #include "ra/goptions.h"
-#include "ra/infantry.h"
 #include "ra/layer.h"
 #include "ra/mouse.h"
 #include "ra/scenario.h"
@@ -72,7 +71,6 @@ struct LayoutCase {
 constexpr LayoutCase kSerializedTypes[] = {
     // Game objects, saved by TFixedIHeapClass<T>::Save/Load.
     LAYOUT_CASE(AircraftClass, 656),
-    LAYOUT_CASE(InfantryClass, 648),
     LAYOUT_CASE(UnitClass, 712),
     LAYOUT_CASE(VesselClass, 712),
 
