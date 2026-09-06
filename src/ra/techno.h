@@ -272,6 +272,46 @@ class TechnoClass : public RadioClass,
         Arm(x) {}
   ~TechnoClass() override { House = nullptr; }
 
+  // Saved-game support for the base part; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
+ protected:
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Explicit initializers rather than default member initializers because
+  // the NoInit constructor above must leave the members alone.
+  TechnoClass()
+      : IsUseless(false),
+        IsTickedOff(false),
+        IsCloakable(false),
+        IsLeader(false),
+        IsALoaner(false),
+        IsLocked(false),
+        IsInRecoilState(false),
+        IsTethered(false),
+        IsOwnedByPlayer(false),
+        IsDiscoveredByPlayer(false),
+        IsDiscoveredByComputer(false),
+        IsALemon(false),
+        IsSecondShot(true),
+        ArmorBias(1),
+        FirepowerBias(1),
+        IdleTimer(0),
+        IronCurtainCountDown(0),
+        SpiedBy(0),
+        ArchiveTarget(kTargetNone),
+        House(nullptr),
+        Cloak(UNCLOAKED),
+        CloakDelay(0),
+        TarCom(kTargetNone),
+        SuspendedTarCom(kTargetNone),
+        PrimaryFacing(DIR_N),
+        Arm(0),
+        Ammo(-1),
+        PurchasePrice(0) {}
+
+ public:
+
   /*
   **	Query functions.
   */

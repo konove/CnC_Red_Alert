@@ -75,6 +75,14 @@ class DoorClass {
   DoorClass();
   DoorClass(const NoInitClass& x) : Control(x) {}
 
+  // Saved-game support.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    bool is_to_redraw = IsToRedraw;
+    ar(Control, Stages, State, is_to_redraw);
+    IsToRedraw = is_to_redraw;
+  }
+
   bool Time_To_Redraw() { return IsToRedraw; }
   void Clear_Redraw_Flag() { IsToRedraw = false; }
   void AI();

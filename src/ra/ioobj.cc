@@ -71,6 +71,7 @@
 #include <cstdint>
 
 #include "ra/anim.h"
+#include "ra/building.h"
 #include "ra/bullet.h"
 #include "ra/cargo.h"
 #include "ra/defines.h"
@@ -281,6 +282,106 @@ void TerrainClass::Serialize(Archive& ar) {
 }
 template void TerrainClass::Serialize(ArchiveWriter&);
 template void TerrainClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void RadioClass::Serialize(Archive& ar) {
+  MissionClass::Serialize(ar);
+  ar(Old, ObjectPtr(Radio));
+}
+template void RadioClass::Serialize(ArchiveWriter&);
+template void RadioClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void CargoClass::Serialize(Archive& ar) {
+  ar(Quantity, ObjectPtr(CargoHold));
+}
+template void CargoClass::Serialize(ArchiveWriter&);
+template void CargoClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void TechnoClass::Serialize(Archive& ar) {
+  RadioClass::Serialize(ar);
+  FlasherClass::Serialize(ar);
+  StageClass::Serialize(ar);
+  CargoClass::Serialize(ar);
+  DoorClass::Serialize(ar);
+  bool is_useless = IsUseless;
+  bool is_ticked_off = IsTickedOff;
+  bool is_cloakable = IsCloakable;
+  bool is_leader = IsLeader;
+  bool is_a_loaner = IsALoaner;
+  bool is_locked = IsLocked;
+  bool is_in_recoil_state = IsInRecoilState;
+  bool is_tethered = IsTethered;
+  bool is_owned_by_player = IsOwnedByPlayer;
+  bool is_discovered_by_player = IsDiscoveredByPlayer;
+  bool is_discovered_by_computer = IsDiscoveredByComputer;
+  bool is_a_lemon = IsALemon;
+  bool is_second_shot = IsSecondShot;
+  ar(Crew, is_useless, is_ticked_off, is_cloakable, is_leader, is_a_loaner,
+     is_locked, is_in_recoil_state, is_tethered, is_owned_by_player,
+     is_discovered_by_player, is_discovered_by_computer, is_a_lemon,
+     is_second_shot, ArmorBias, FirepowerBias, IdleTimer, IronCurtainCountDown,
+     SpiedBy, ArchiveTarget, House, Cloak, CloakingDevice, CloakDelay, TarCom,
+     SuspendedTarCom, PrimaryFacing, Arm, Ammo, PurchasePrice);
+  IsUseless = is_useless;
+  IsTickedOff = is_ticked_off;
+  IsCloakable = is_cloakable;
+  IsLeader = is_leader;
+  IsALoaner = is_a_loaner;
+  IsLocked = is_locked;
+  IsInRecoilState = is_in_recoil_state;
+  IsTethered = is_tethered;
+  IsOwnedByPlayer = is_owned_by_player;
+  IsDiscoveredByPlayer = is_discovered_by_player;
+  IsDiscoveredByComputer = is_discovered_by_computer;
+  IsALemon = is_a_lemon;
+  IsSecondShot = is_second_shot;
+}
+template void TechnoClass::Serialize(ArchiveWriter&);
+template void TechnoClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void BuildingClass::Serialize(Archive& ar) {
+  TechnoClass::Serialize(ar);
+  bool is_to_rebuild = IsToRebuild;
+  bool is_to_repair = IsToRepair;
+  bool is_allowed_to_sell = IsAllowedToSell;
+  bool is_ready_to_commence = IsReadyToCommence;
+  bool is_repairing = IsRepairing;
+  bool is_wrench_visible = IsWrenchVisible;
+  bool is_going_to_blow = IsGoingToBlow;
+  bool is_survivorless = IsSurvivorless;
+  bool is_charging = IsCharging;
+  bool is_charged = IsCharged;
+  bool is_captured = IsCaptured;
+  bool is_jamming = IsJamming;
+  bool is_jammed = IsJammed;
+  bool has_fired = HasFired;
+  bool has_opened = HasOpened;
+  ar(Class, Factory, ActLike, is_to_rebuild, is_to_repair, is_allowed_to_sell,
+     is_ready_to_commence, is_repairing, is_wrench_visible, is_going_to_blow,
+     is_survivorless, is_charging, is_charged, is_captured, is_jamming,
+     is_jammed, has_fired, has_opened, CountDown, BState, QueueBState,
+     WhoLastHurtMe, WhomToRepay, LastStrength, AnimToTrack, PlacementDelay);
+  IsToRebuild = is_to_rebuild;
+  IsToRepair = is_to_repair;
+  IsAllowedToSell = is_allowed_to_sell;
+  IsReadyToCommence = is_ready_to_commence;
+  IsRepairing = is_repairing;
+  IsWrenchVisible = is_wrench_visible;
+  IsGoingToBlow = is_going_to_blow;
+  IsSurvivorless = is_survivorless;
+  IsCharging = is_charging;
+  IsCharged = is_charged;
+  IsCaptured = is_captured;
+  IsJamming = is_jamming;
+  IsJammed = is_jammed;
+  HasFired = has_fired;
+  HasOpened = has_opened;
+}
+template void BuildingClass::Serialize(ArchiveWriter&);
+template void BuildingClass::Serialize(ArchiveReader&);
 
 template <class Archive>
 void FactoryClass::Serialize(Archive& ar) {

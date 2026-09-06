@@ -57,6 +57,12 @@ class CrewClass {
   */
   CrewClass() : Kills(0) {}
   CrewClass(const NoInitClass&) {}
+
+  // Saved-game support.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(Kills);
+  }
   ~CrewClass() {}
 
   int Made_A_Kill() {

@@ -55,9 +55,6 @@
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 #define MAX_DOOR_STAGE 18  // # of frames of door opening on weapons factory
 #define DOOR_OPEN_STAGE 9  // frame on which the door is entirely open
@@ -94,25 +91,25 @@ class BuildingClass : public TechnoClass {
   **	This building should be rebuilt if it is destroyed. This is in spite
   **	of the condition of the prebuilt base list.
   */
-  unsigned IsToRebuild : 1;
+  unsigned IsToRebuild : 1 = false;
 
   /*
   **	Is the building allowed to repair itself?
   */
-  unsigned IsToRepair : 1;
+  unsigned IsToRepair : 1 = false;
 
   /*
   **	If the computer owns this building, then it is allowed to sell it if
   **	the situation warrants it. In the other case, it cannot sell the
   **	building regardless of conditions.
   */
-  unsigned IsAllowedToSell : 1;
+  unsigned IsAllowedToSell : 1 = true;
 
   /*
   **	If the building is at a good point to change orders, then this
   **	flag will be set to true.
   */
-  unsigned IsReadyToCommence : 1;
+  unsigned IsReadyToCommence : 1 = false;
 
   /*
   **	If this building is currently spending money to repair itself, then
@@ -120,110 +117,114 @@ class BuildingClass : public TechnoClass {
   *building *	has reached full strength, when money is exhausted, or if the
   *player *	specifically stops the repair process.
   */
-  unsigned IsRepairing : 1;
+  unsigned IsRepairing : 1 = false;
 
   /*
   **	If repair is currently in progress and this flag is true, then a wrench
   *graphic *	will be overlaid on the building to give visual feedback for the
   *repair process.
   */
-  unsigned IsWrenchVisible : 1;
+  unsigned IsWrenchVisible : 1 = false;
 
   /*
   ** This flag is set when a commando has raided the building and planted
   ** plastic explosives.  When the CommandoCountDown timer expires, the
   ** building takes massive damage.
   */
-  unsigned IsGoingToBlow : 1;
+  unsigned IsGoingToBlow : 1 = false;
 
   /*
   **	If this building was destroyed by some method that would prevent
   **	survivors, then this flag will be true.
   */
-  unsigned IsSurvivorless : 1;
+  unsigned IsSurvivorless : 1 = false;
 
   /*
   **	These state control variables are used by the obelisk for the charging
   **	animation.
   */
-  unsigned IsCharging : 1;
-  unsigned IsCharged : 1;
+  unsigned IsCharging : 1 = false;
+  unsigned IsCharged : 1 = false;
 
   /*
   **	A building that has been captured will not contain the full compliment
   **	of crew. This is true even if it subsequently gets captured back.
   */
-  unsigned IsCaptured : 1;
+  unsigned IsCaptured : 1 = false;
 
   /*
   ** Used by the gap generator to decide if it should jam or unjam
   */
-  unsigned IsJamming : 1;
+  unsigned IsJamming : 1 = false;
 
   /*
   ** Used by radar facilities to know if they're being jammed by a mobile
   ** radar jammer
   */
-  unsigned IsJammed : 1;
+  unsigned IsJammed : 1 = false;
 
   /*
   ** Used only by advanced tech center, this keeps track of whether the
   ** GPS satellite has been fired or not.
   */
-  unsigned HasFired : 1;
+  unsigned HasFired : 1 = false;
 
   /*
   **	If Grand_Opening was already called for this building, then this
   **	flag will be true. By utilizing this flag, multiple inadvertant
   **	calls to Grand_Opening won't cause problems.
   */
-  unsigned HasOpened : 1;
+  unsigned HasOpened : 1 = false;
 
   /*
   **	Special countdown to destruction value. If the building is destroyed,
   **	it won't actually be removed from the map until this value reaches
   **	zero. This delay is for cosmetic reasons.
   */
-  Timer<FrameTickSource> CountDown;
+  Timer<FrameTickSource> CountDown{0};
 
   /*
   **	This is the current animation processing state that the building is
   **	in.
   */
-  BStateType BState;
-  BStateType QueueBState;
+  BStateType BState = BSTATE_NONE;
+  BStateType QueueBState = BSTATE_NONE;
 
   /*
   ** For multiplayer games, this keeps track of the last house to damage
   ** this building, so if it burns to death or otherwise gradually dies,
   ** proper credit can be given for the kill.
   */
-  HousesType WhoLastHurtMe;
+  HousesType WhoLastHurtMe = HOUSE_NONE;
 
   /*
   **	This is the saboteur responsible for this building's destruction.
   */
-  TARGET WhomToRepay;
+  TARGET WhomToRepay = kTargetNone;
 
   /*
   **	This is a record of the last strength of the building. Every so often,
   **	it will compare this strength to the current strength. If there is a
   **	discrepancy, then the owner power is adjusted accordingly.
   */
-  int LastStrength;
+  int LastStrength = 0;
 
   /*
   ** This is a target id of an animation we're keeping track of.  Examples
   ** of this usage are the advanced tech center, which needs to know
   ** when the sputdoor animation has reached a certain stage.
   */
-  TARGET AnimToTrack;
+  TARGET AnimToTrack = kTargetNone;
 
   /*
   **	This is the countdown timer that regulates placement retry logic
   **	for factory type buildings.
   */
-  Timer<FrameTickSource> PlacementDelay;
+  Timer<FrameTickSource> PlacementDelay{0};
+
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  BuildingClass() : ActLike(HOUSE_NONE) {}
+  friend class TFixedIHeapClass<BuildingClass>;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
@@ -232,8 +233,6 @@ class BuildingClass : public TechnoClass {
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   BuildingClass(StructType type, HousesType house);
-  BuildingClass(const NoInitClass& x)
-      : TechnoClass(x), Class(x), Factory(x), CountDown(x), PlacementDelay(x) {}
   ~BuildingClass() override;
   operator StructType() const { return Class->Type; }
 
@@ -357,8 +356,9 @@ class BuildingClass : public TechnoClass {
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
   static const char* INI_Name() { return "STRUCTURES"; }
-  bool Load(Straw& file);
-  bool Save(Pipe& file) const;
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
  private:
   void Drop_Debris(TARGET source = kTargetNone);

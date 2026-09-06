@@ -80,6 +80,16 @@ class RadioClass : public MissionClass {
   */
   RadioClass(RTTIType rtti, int id) : MissionClass(rtti, id), Radio(nullptr) {}
   RadioClass(const NoInitClass& x) : MissionClass(x) {}
+
+  // Saved-game support for the base part; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
+ protected:
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  RadioClass() : Old{RADIO_STATIC, RADIO_STATIC, RADIO_STATIC}, Radio(nullptr) {}
+
+ public:
   ~RadioClass() override { Radio = nullptr; }
 
   /*---------------------------------------------------------------------

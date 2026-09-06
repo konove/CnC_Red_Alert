@@ -78,6 +78,24 @@ class MissionClass : public ObjectClass {
   MissionClass(RTTIType rtti, int id);
   explicit MissionClass(const NoInitClass& x)
       : ObjectClass(x), MissionTimer(x) {}
+
+  // Saved-game support for the base part; derived classes call it first.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ObjectClass::Serialize(ar);
+    ar(Mission, SuspendedMission, MissionQueue, Status, MissionTimer);
+  }
+
+ protected:
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  MissionClass()
+      : Mission(MISSION_NONE),
+        SuspendedMission(MISSION_NONE),
+        MissionQueue(MISSION_NONE),
+        Status(0),
+        MissionTimer(0) {}
+
+ public:
   ~MissionClass() override {}
 
   /*---------------------------------------------------------------------

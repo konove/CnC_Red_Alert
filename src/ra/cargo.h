@@ -54,6 +54,10 @@ class CargoClass {
   */
   CargoClass() : Quantity(0), CargoHold(nullptr) {}
   CargoClass(const NoInitClass&) {}
+
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
   virtual ~CargoClass() { CargoHold = nullptr; }
 
   /*---------------------------------------------------------------------

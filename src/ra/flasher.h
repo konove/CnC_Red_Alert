@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_FLASHER_H_
 #define CNC_RED_ALERT_RA_FLASHER_H_
 
+#include <cstdint>
+
 #include "ra/monoc.h"
 #include "tech/noinit.h"
 
@@ -64,6 +66,16 @@ class FlasherClass {
     IsBlushing = false;
   }
   FlasherClass(const NoInitClass&) {}
+
+  // Saved-game support.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    uint8_t flash_count = FlashCount;
+    bool is_blushing = IsBlushing;
+    ar(flash_count, is_blushing);
+    FlashCount = flash_count;
+    IsBlushing = is_blushing;
+  }
   virtual ~FlasherClass() = default;
 
   virtual void Debug_Dump(MonoClass* mono) const;

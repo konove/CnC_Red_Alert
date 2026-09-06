@@ -1676,31 +1676,8 @@ void BuildingClass::operator delete(void* ptr) {
 BuildingClass::BuildingClass(StructType type, HousesType house)
     : TechnoClass(RTTI_BUILDING, Buildings.ID(this), house),
       Class(BuildingTypes.Ptr(type)),
-      Factory(nullptr),
       ActLike(House->ActLike),
-      IsToRebuild(false),
-      IsToRepair(false),
-      IsAllowedToSell(true),
-      IsReadyToCommence(false),
-      IsRepairing(false),
-      IsWrenchVisible(false),
-      IsGoingToBlow(false),
-      IsSurvivorless(false),
-      IsCharging(false),
-      IsCharged(false),
-      IsCaptured(false),
-      IsJamming(false),
-      IsJammed(false),
-      HasFired(false),
-      HasOpened(false),
-      CountDown(0),
-      BState(BSTATE_NONE),
-      QueueBState(BSTATE_NONE),
-      WhoLastHurtMe(house),
-      WhomToRepay(kTargetNone),
-      AnimToTrack(kTargetNone),
-      LastStrength(0),
-      PlacementDelay(0) {
+      WhoLastHurtMe(house) {
   House->Tracking_Add(this);
   IsSecondShot = !Class->Is_Two_Shooter();
   Strength = Class->MaxStrength;
