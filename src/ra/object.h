@@ -47,7 +47,6 @@
 #include "ra/jshell.h"
 #include "ra/monoc.h"
 #include "tech/fixed.h"
-#include "tech/noinit.h"
 
 class BuildingClass;
 class HouseClass;
@@ -140,10 +139,6 @@ class ObjectClass : public AbstractClass {
   **	Constructor & destructors.
   */
   ObjectClass(RTTIType rtti, int id);
-  // Next must not be touched here: TFixedIHeapClass::Load runs this after the
-  // raw image is in place, and Next holds the coded TARGET Decode_Pointers
-  // still has to resolve.
-  ObjectClass(const NoInitClass& x) : AbstractClass(x), Trigger(x) {}
 
   // Saved-game support for the base part; derived classes call it first.
   // Defined in ioobj.cc.
@@ -285,12 +280,6 @@ class ObjectClass : public AbstractClass {
   virtual void Repair(int);
   virtual void Sell_Back(int);
   void AI() override;
-
-  /*
-  **	File I/O.
-  */
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
 
   /*
   **	Scenario and debug support.

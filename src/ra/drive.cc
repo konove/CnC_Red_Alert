@@ -430,16 +430,7 @@ void DriveClass::Force_Track(int track, COORDINATE coord) {
  * HISTORY: * 07/13/1994 JLB : Created. *
  *=============================================================================================*/
 DriveClass::DriveClass(RTTIType rtti, int id, HousesType house)
-    : FootClass(rtti, id, house),
-      IsMoebius(false),
-      IsHarvesting(false),
-      IsTurretLockedDown(false),
-      IsOnShortTrack(false),
-      SpeedAccum(0),
-      MoebiusCountDown(0),
-      MoebiusCell(0),
-      TrackNumber(-1),
-      TrackIndex(0) {}
+    : FootClass(rtti, id, house) {}
 
 /***********************************************************************************************
  * DriveClass::Debug_Dump -- Displays status information to monochrome screen. *

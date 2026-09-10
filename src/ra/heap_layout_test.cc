@@ -48,8 +48,6 @@
 #include "ra/session.h"
 #include "ra/special.h"
 #include "ra/type.h"
-#include "ra/unit.h"
-#include "ra/vessel.h"
 #include "ra/vortex.h"
 #include "ra/warhead.h"
 #include "ra/weapon.h"
@@ -68,10 +66,6 @@ struct LayoutCase {
 // Sizes are pinned for the Itanium C++ ABI on a 64-bit target; see the skip
 // below.
 constexpr LayoutCase kSerializedTypes[] = {
-    // Game objects, saved by TFixedIHeapClass<T>::Save/Load.
-    LAYOUT_CASE(UnitClass, 712),
-    LAYOUT_CASE(VesselClass, 712),
-
     // Static type heaps. Objects reference these by index, so their layout is
     // part of the save contract even though the heaps themselves come from
     // rules.ini.

@@ -42,7 +42,6 @@
 
 #include "ra/jshell.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
 
 class StageClass {
   /*
@@ -67,7 +66,6 @@ class StageClass {
 
  public:
   StageClass() : Stage(0), StageTimer(0), Rate(0) {}
-  StageClass(const NoInitClass& x) : StageTimer(x) {}
 
   // Saved-game support.
   template <class Archive>

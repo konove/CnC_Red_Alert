@@ -1,5 +1,18 @@
 # Migration plan: field-wise save games, delete `NoInitClass`, enable `cppcoreguidelines-pro-type-member-init`
 
+## Resume checkpoint (2026-09-10)
+
+- Steps 0–15 are committed; step 15 is `9a8a07e4` (AircraftClass).
+- Step 16 is implemented: UnitClass, VesselClass, and DriveClass now serialize fields;
+  their remaining heap-object NoInit constructors and pointer-coding methods are removed. Save version is **14**.
+- Validation: full strict build (both games) and all **144 CTest tests** pass. The headless `SCG01EA` and
+  `SCU01EA` smoke tests each match **240** vehicle/vessel positions across save/load.
+  A real-display playthrough remains outstanding. Step 16 is ready for the Map/Cell migration.
+- Smoke-test caveat: `-NOMOVIES` currently sets `bNoMovies`, but movie playback never reads it. Campaign
+  opening movies therefore still run under the dummy driver; allow the harness timeout to cover startup.
+- Next implementation step is **17: RA Map/Cell**. Keep the remaining raw-image globals and their NoInit paths
+  intact until their scheduled migration; heap infrastructure cleanup remains step 19.
+
 ## Context
 
 The next item in `docs/CLANG_TIDY_PRIORITIES.md` is `cppcoreguidelines-pro-type-member-init` (Tier 2, step 6). A

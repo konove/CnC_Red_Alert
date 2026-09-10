@@ -56,9 +56,6 @@
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 class VesselClass : public DriveClass {
  public:
@@ -72,32 +69,26 @@ class VesselClass : public DriveClass {
   ** Has this sea vessel been told to move to a shipyard?  If so, then
   ** when we get there, start the repair process.
   */
-  unsigned IsToSelfRepair : 1;
+  unsigned IsToSelfRepair : 1 = false;
 
   /*
   ** Is this sea vessel parked next to a shipyard/subpen, and therefore
   ** in the special self-repair mode?
   */
-  unsigned IsSelfRepairing : 1;
+  unsigned IsSelfRepairing : 1 = false;
 
   /*
   ** If this is an LST, is it time to shut the door?
   */
-  Timer<FrameTickSource> DoorShutCountDown;
+  Timer<FrameTickSource> DoorShutCountDown{0};
 
   /*
   ** If this is a sub, has the sonar pulse worn off, such that we can
   ** re-submerge?
   */
-  Timer<FrameTickSource> PulseCountDown;
+  Timer<FrameTickSource> PulseCountDown{0};
 
   VesselClass(VesselType classid, HousesType house);
-  VesselClass(const NoInitClass& x)
-      : DriveClass(x),
-        Class(x),
-        DoorShutCountDown(x),
-        PulseCountDown(x),
-        SecondaryFacing(x) {}
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
@@ -156,8 +147,9 @@ class VesselClass : public DriveClass {
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
   static const char* INI_Name() { return "SHIPS"; }
-  bool Load(Straw& file);
-  bool Save(Pipe& file) const;
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	Scenario and debug support.
@@ -170,6 +162,10 @@ class VesselClass : public DriveClass {
   **	rotated independently of the body it is attached to.
   */
   FacingClass SecondaryFacing;
+
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  VesselClass() = default;
+  friend class TFixedIHeapClass<VesselClass>;
 };
 
 #endif  // CNC_RED_ALERT_RA_VESSEL_H_

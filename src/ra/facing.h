@@ -40,7 +40,6 @@
 #ifndef CNC_RED_ALERT_RA_FACING_H_
 #define CNC_RED_ALERT_RA_FACING_H_
 #include "ra/face.h"
-#include "tech/noinit.h"
 
 /*
 **	This is a general facing handler class. It is used in those cases where
@@ -53,7 +52,6 @@ class FacingClass {
  public:
   FacingClass();
   FacingClass(DirType dir) : CurrentFacing(dir), DesiredFacing(dir) {}
-  FacingClass(const NoInitClass&) {}
 
   operator DirType() const { return CurrentFacing; }
 

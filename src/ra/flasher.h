@@ -43,7 +43,6 @@
 #include <cstdint>
 
 #include "ra/monoc.h"
-#include "tech/noinit.h"
 
 class FlasherClass {
  public:
@@ -65,7 +64,6 @@ class FlasherClass {
     FlashCount = 0;
     IsBlushing = false;
   }
-  FlasherClass(const NoInitClass&) {}
 
   // Saved-game support.
   template <class Archive>

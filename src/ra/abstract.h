@@ -44,7 +44,6 @@
 #include "ra/defines.h"
 #include "ra/face.h"
 #include "ra/monoc.h"
-#include "tech/noinit.h"
 
 // Base class for all game objects that exist on the battlefield.
 class AbstractClass {
@@ -68,7 +67,6 @@ class AbstractClass {
         ID(id),
         Coord(0xFFFFFFFFL),  // Sentinel: no position assigned.
         Height(0) {}
-  AbstractClass(const NoInitClass&) {}
 
   // Saved-game support for the base part; derived classes call it first.
   template <class Archive>

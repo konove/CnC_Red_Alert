@@ -42,6 +42,8 @@
 
 #include <cstddef>
 
+#include <cstdint>
+
 #include "ra/bullet.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
@@ -57,9 +59,6 @@
 #include "ra/type.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 /****************************************************************************
 **	For each instance of a unit (vehicle) in the game, there is one of
@@ -77,51 +76,51 @@ class UnitClass final : public DriveClass {
   /*
   **	This records the house flag that this object is currently carrying.
   */
-  HousesType Flagged;
+  HousesType Flagged = HOUSE_NONE;
 
   /*
   ** This flag is used for when the harvester dumps ore, to track its
   ** special animation.
   */
-  unsigned IsDumping : 1;
+  unsigned IsDumping : 1 = false;
 
   /*
   ** This is a count of the # of loads of the various minerals that the
   ** unit has harvested.
   */
-  unsigned Gold : 5;
-  unsigned Gems : 5;
+  unsigned Gold : 5 = 0;
+  unsigned Gems : 5 = 0;
 
   /*
   ** This flag tells a unit that, if after reaching its destination, it
   ** should scatter away.  It's meant to help a LST unload its units by
   ** having its previous passengers get out of the way.
   */
-  unsigned IsToScatter : 1;
+  unsigned IsToScatter : 1 = false;
 
   /*
   **	This records the number of "loads" of Tiberium the unit is carrying.
   *Only *	harvesters use this field.
   */
-  int Tiberium;
+  int Tiberium = 0;
 
   /*
   ** This is the area where a mobile gap generator stores the previously-held
   ** shroud values for the cells surrounding itself.
   */
-  unsigned long ShroudBits;
+  uint64_t ShroudBits = 0xFFFFFFFFUL;
 
   /*
   ** This is the center coordinate for the mobile gap generator, as to
   ** what cells should be revealed (according to ShroudBits)
   */
-  CELL ShroudCenter;
+  CELL ShroudCenter = 0;
 
   /*
   **	This is the timer that controls the reload rate. The MSAM rocket
   **	launcher is the primary user of this.
   */
-  Timer<FrameTickSource> Reload;
+  Timer<FrameTickSource> Reload{0};
 
   /*
   **	This is the facing of the turret. It can be, and usually is,
@@ -129,6 +128,12 @@ class UnitClass final : public DriveClass {
   */
   FacingClass SecondaryFacing;
 
+ protected:
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  UnitClass() = default;
+  friend class TFixedIHeapClass<UnitClass>;
+
+ public:
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
@@ -136,8 +141,6 @@ class UnitClass final : public DriveClass {
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   UnitClass(UnitType classid, HousesType house);
-  UnitClass(const NoInitClass& x)
-      : DriveClass(x), Class(x), Reload(x), SecondaryFacing(x) {}
   operator UnitType() const { return Class->Type; }
   ~UnitClass() override;
 
@@ -264,8 +267,9 @@ class UnitClass final : public DriveClass {
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
   static const char* INI_Name() { return "UNITS"; }
-  bool Load(Straw& file);
-  bool Save(Pipe& file) const;
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 };
 
 #endif  // CNC_RED_ALERT_RA_UNIT_H_

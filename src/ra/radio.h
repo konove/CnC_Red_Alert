@@ -45,7 +45,6 @@
 #include "ra/mission.h"
 #include "ra/monoc.h"
 #include "ra/object.h"
-#include "tech/noinit.h"
 
 /****************************************************************************
 **	Radio contact is controlled by this class. It handles the mundane chore
@@ -79,7 +78,6 @@ class RadioClass : public MissionClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   RadioClass(RTTIType rtti, int id) : MissionClass(rtti, id), Radio(nullptr) {}
-  RadioClass(const NoInitClass& x) : MissionClass(x) {}
 
   // Saved-game support for the base part; defined in ioobj.cc.
   template <class Archive>
@@ -113,8 +111,6 @@ class RadioClass : public MissionClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 };
 
 #endif  // CNC_RED_ALERT_RA_RADIO_H_

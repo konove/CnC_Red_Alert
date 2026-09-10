@@ -42,7 +42,6 @@
 
 #include "ra/house.h"
 #include "ra/monoc.h"
-#include "tech/noinit.h"
 
 /****************************************************************************
 **	This class handles the basic cargo logic.
@@ -53,7 +52,6 @@ class CargoClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   CargoClass() : Quantity(0), CargoHold(nullptr) {}
-  CargoClass(const NoInitClass&) {}
 
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>
@@ -72,12 +70,6 @@ class CargoClass {
   FootClass* Attached_Object() const;
   FootClass* Detach_Object();
   void Attach(FootClass* object);
-
-  /*
-  **	File I/O.
-  */
-  void Code_Pointers();
-  void Decode_Pointers();
 
  private:
   /*

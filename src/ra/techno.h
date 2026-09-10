@@ -58,7 +58,6 @@
 #include "ra/type.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
 
 /****************************************************************************
 **	This is the common data between building and units.
@@ -254,22 +253,6 @@ class TechnoClass : public RadioClass,
   **	Constructors, Destructors, and overloaded operators.
   */
   TechnoClass(RTTIType rtti, int id, HousesType house = HOUSE_NONE);
-  TechnoClass(const NoInitClass& x)
-      : RadioClass(x),
-        FlasherClass(x),
-        StageClass(x),
-        CargoClass(x),
-        DoorClass(x),
-        Crew(x),
-        ArmorBias(x),
-        FirepowerBias(x),
-        IdleTimer(x),
-        IronCurtainCountDown(x),
-        House(x),
-        CloakingDevice(x),
-        CloakDelay(x),
-        PrimaryFacing(x),
-        Arm(x) {}
   ~TechnoClass() override { House = nullptr; }
 
   // Saved-game support for the base part; defined in ioobj.cc.
@@ -425,12 +408,6 @@ class TechnoClass : public RadioClass,
   **	Scenario and debug support.
   */
   void Debug_Dump(MonoClass* mono) const override;
-
-  /*
-  **	File I/O.
-  */
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how

@@ -56,7 +56,6 @@ class CrewClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   CrewClass() : Kills(0) {}
-  CrewClass(const NoInitClass&) {}
 
   // Saved-game support.
   template <class Archive>

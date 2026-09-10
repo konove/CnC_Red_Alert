@@ -40,7 +40,6 @@
 #ifndef CNC_RED_ALERT_RA_DOOR_H_
 #define CNC_RED_ALERT_RA_DOOR_H_
 #include "ra/stage.h"
-#include "tech/noinit.h"
 
 class DoorClass {
  private:
@@ -73,7 +72,6 @@ class DoorClass {
 
  public:
   DoorClass();
-  DoorClass(const NoInitClass& x) : Control(x) {}
 
   // Saved-game support.
   template <class Archive>

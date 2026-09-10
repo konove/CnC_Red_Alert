@@ -45,12 +45,6 @@
 
 class TurretClass : public DriveClass {
  public:
-  /*
-  **	File I/O.
-  */
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
-
  protected:
   TurretClass(UnitType classid, HousesType house);
   TurretClass();

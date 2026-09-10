@@ -132,10 +132,6 @@
 VesselClass::VesselClass(VesselType classid, HousesType house)
     : DriveClass(RTTI_VESSEL, Vessels.ID(this), house),
       Class(VesselTypes.Ptr(classid)),
-      IsToSelfRepair(false),
-      IsSelfRepairing(false),
-      DoorShutCountDown(0),
-      PulseCountDown(0),
       SecondaryFacing(PrimaryFacing) {
   House->Tracking_Add(this);
 

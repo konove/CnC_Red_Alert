@@ -261,7 +261,6 @@ static void Toggle_Formation() {
   // -- so the first cell examined replaces both.
   long minx = 0x7FFFFFFFL, miny = 0x7FFFFFFFL;
   long maxx = 0, maxy = 0;
-  int index;
   bool set_form = false;
 
   // Recording support
@@ -277,7 +276,7 @@ static void Toggle_Formation() {
   //
   // The three passes are ordered units, infantry, vessels because a mixed
   // group takes its speed from whichever type is found first.
-  for (index = 0; index < Units.Count(); index++) {
+  for (int index = 0; index < Units.Count(); index++) {
     UnitClass* obj = Units.Ptr(index);
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr && obj->IsSelected) {
       team = obj->Group;
@@ -290,7 +289,7 @@ static void Toggle_Formation() {
     }
   }
   if (team == kNoGroup) {
-    for (index = 0; index < Infantry.Count(); index++) {
+    for (int index = 0; index < Infantry.Count(); index++) {
       InfantryClass* obj = Infantry.Ptr(index);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           obj->IsSelected) {
@@ -306,7 +305,7 @@ static void Toggle_Formation() {
   }
 
   if (team == kNoGroup) {
-    for (index = 0; index < Vessels.Count(); index++) {
+    for (int index = 0; index < Vessels.Count(); index++) {
       VesselClass* obj = Vessels.Ptr(index);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           obj->IsSelected) {
@@ -325,8 +324,8 @@ static void Toggle_Formation() {
     return;
   }
   // Now that we have a team, let's go set (or clear) the formation offsets.
-  for (index = 0; index < Units.Count(); index++) {
-    UnitClass* obj = Units.Ptr(index);
+  for (int i = 0; i < Units.Count(); i++) {
+    UnitClass* obj = Units.Ptr(i);
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
         obj->Group == team) {
       obj->Mark(MARK_CHANGE);
@@ -347,8 +346,8 @@ static void Toggle_Formation() {
     }
   }
 
-  for (index = 0; index < Infantry.Count(); index++) {
-    InfantryClass* obj = Infantry.Ptr(index);
+  for (int i = 0; i < Infantry.Count(); i++) {
+    InfantryClass* obj = Infantry.Ptr(i);
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
         obj->Group == team) {
       obj->Mark(MARK_CHANGE);
@@ -366,8 +365,8 @@ static void Toggle_Formation() {
     }
   }
 
-  for (index = 0; index < Vessels.Count(); index++) {
-    VesselClass* obj = Vessels.Ptr(index);
+  for (int i = 0; i < Vessels.Count(); i++) {
+    VesselClass* obj = Vessels.Ptr(i);
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
         obj->Group == team) {
       obj->Mark(MARK_CHANGE);
@@ -395,8 +394,8 @@ static void Toggle_Formation() {
     int center_x = static_cast<int>((maxx - minx) / 2 + minx);
     int center_y = static_cast<int>((maxy - miny) / 2 + miny);
 
-    for (index = 0; index < Units.Count(); index++) {
-      UnitClass* obj = Units.Ptr(index);
+    for (int i = 0; i < Units.Count(); i++) {
+      UnitClass* obj = Units.Ptr(i);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           obj->Group == team) {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
@@ -407,8 +406,8 @@ static void Toggle_Formation() {
       }
     }
 
-    for (index = 0; index < Infantry.Count(); index++) {
-      InfantryClass* obj = Infantry.Ptr(index);
+    for (int i = 0; i < Infantry.Count(); i++) {
+      InfantryClass* obj = Infantry.Ptr(i);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           obj->Group == team) {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
@@ -419,8 +418,8 @@ static void Toggle_Formation() {
       }
     }
 
-    for (index = 0; index < Vessels.Count(); index++) {
-      VesselClass* obj = Vessels.Ptr(index);
+    for (int i = 0; i < Vessels.Count(); i++) {
+      VesselClass* obj = Vessels.Ptr(i);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           obj->Group == team) {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));

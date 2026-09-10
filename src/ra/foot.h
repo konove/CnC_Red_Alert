@@ -52,7 +52,6 @@
 #include "ra/techno.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
 
 // Value of FootClass::Group meaning "not in any of the player's numbered
 // groups". Group is an unsigned char, so this cannot be -1 no matter how
@@ -280,12 +279,6 @@ class FootClass : public TechnoClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  FootClass(const NoInitClass& x)
-      : TechnoClass(x),
-        Team(x),
-        SpeedBias(x),
-        PathDelay(x),
-        BaseAttackTimer(x) {}
 
   // Saved-game support for the base part; defined in ioobj.cc.
   template <class Archive>
@@ -421,12 +414,6 @@ class FootClass : public TechnoClass {
                         TARGET navcom) override;
   bool Restore_Mission() override;
   CELL Adjust_Dest(CELL cell) const;
-
-  /*
-  **	File I/O.
-  */
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 
   CELL Safety_Point(CELL src, CELL dst, int start, int max);
   int Rescue_Mission(TARGET tarcom);

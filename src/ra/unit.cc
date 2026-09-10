@@ -314,15 +314,6 @@ UnitClass::~UnitClass() {
 UnitClass::UnitClass(UnitType classid, HousesType house)
     : DriveClass(RTTI_UNIT, Units.ID(this), house),
       Class(UnitTypes.Ptr(classid)),
-      Flagged(HOUSE_NONE),
-      IsDumping(false),
-      Gems(0),
-      Gold(0),
-      Tiberium(0),
-      IsToScatter(false),
-      ShroudBits(0xFFFFFFFFUL),
-      ShroudCenter(0),
-      Reload(0),
       SecondaryFacing(PrimaryFacing) {
   Reload.Set(0);
   House->Tracking_Add(this);

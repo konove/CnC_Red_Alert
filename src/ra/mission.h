@@ -47,7 +47,6 @@
 #include "ra/object.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
 
 /****************************************************************************
 **	This handles order assignment and tracking. The order is used to guide
@@ -76,8 +75,6 @@ class MissionClass : public ObjectClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   MissionClass(RTTIType rtti, int id);
-  explicit MissionClass(const NoInitClass& x)
-      : ObjectClass(x), MissionTimer(x) {}
 
   // Saved-game support for the base part; derived classes call it first.
   template <class Archive>

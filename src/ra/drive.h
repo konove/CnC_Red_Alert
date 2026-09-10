@@ -46,7 +46,6 @@
 #include "ra/jshell.h"
 #include "ra/monoc.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
 
 /****************************************************************************
 **	Movable objects are handled by this class definition. Moveable objects
@@ -59,26 +58,26 @@ class DriveClass : public FootClass {
   *flag *	is located here because the other bit flags here give it a free
   *place to *	reside.
   */
-  unsigned IsHarvesting : 1;
+  unsigned IsHarvesting : 1 = false;
 
   /*
   ** This flag controls whether the unit has been moebius'd into a
   ** different location, and whether the MoebiusCountDown timer should be
   ** used to take him back where he belongs.
   */
-  unsigned IsMoebius : 1;
+  unsigned IsMoebius : 1 = false;
 
   /*
   ** This controls how long a unit can exist in its alternate location
   ** before being pulled back by the chronosphere into its normal location.
   */
-  Timer<FrameTickSource> MoebiusCountDown;
+  Timer<FrameTickSource> MoebiusCountDown{0};
 
   /*
   ** This is the coord the unit will be taken back to once its moebius
   ** effect wears off.
   */
-  CELL MoebiusCell;
+  CELL MoebiusCell = 0;
 
   /*
   **	Some units must have their turret locked down to face their body
@@ -87,19 +86,28 @@ class DriveClass : public FootClass {
   *may be *	rotating into position so that a pending track may start. During
   *this process *	the track number does not indicate anything.
   */
-  unsigned IsTurretLockedDown : 1;
+  unsigned IsTurretLockedDown : 1 = false;
 
   /*
   **	This vehicle could be processing a "short track". A short track is one
   *that *	doesn't actually go anywhere. Kind of like turning in place.
   */
-  unsigned IsOnShortTrack : 1;
+  unsigned IsOnShortTrack : 1 = false;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
   DriveClass(RTTIType rtti, int id, HousesType house);
-  DriveClass(const NoInitClass& x) : FootClass(x), MoebiusCountDown(x) {}
+
+  // Saved-game support for the base part; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
+ protected:
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  DriveClass() = default;
+
+ public:
   ~DriveClass() override {}
 
   /*---------------------------------------------------------------------
@@ -171,7 +179,7 @@ class DriveClass : public FootClass {
   **	convert them into pixel "steps" that are then translated through
   **	the currently running track so that the unit will move.
   */
-  int SpeedAccum;
+  int SpeedAccum = 0;
 
   /*
   **	This the track control logic (used for ground vehicles only). The
@@ -179,8 +187,8 @@ class DriveClass : public FootClass {
   *track). The *	'TrackIndex' variable holds the current index into the
   *specified track *	(starts at 0).
   */
-  int TrackNumber;
-  int TrackIndex;
+  int TrackNumber = -1;
+  int TrackIndex = 0;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
