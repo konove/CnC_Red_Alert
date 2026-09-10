@@ -1900,6 +1900,10 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     std::string original_arg = argv[index];  // Copy for preserving case.
     char* string = strupr(argv[index]);      // Pointer to argument.
 
+    if (strncmp(string, "-SEED", 5) == 0) {
+      CustomSeed = static_cast<unsigned short>(atoi(string + 5));
+      continue;
+    }
     if (strncmp(string, "-NEWGAME", 8) == 0) {
       DebugNewGame = string + 8;
       if (DebugNewGame.size() < 3) {
@@ -2288,14 +2292,6 @@ bool Parse_Command_Line(int argc, char* argv[]) {
       */
       if (stricmp(string, "-HANSOLO") == 0) {
         MPlayerSolo = true;
-        continue;
-      }
-
-      /*
-      **	Specify the random number seed (for debugging)
-      */
-      if (strstr(string, "-SEED")) {
-        CustomSeed = (unsigned short)atoi(string + strlen("SEED"));
         continue;
       }
     }

@@ -66,7 +66,7 @@ target_compile_definitions(td_heap_layout_test PRIVATE TD=1)
 
 add_gtest(
     NAME td_saveload_test
-    SOURCES saveload_test.cc savevalues_test.cc door.cc flasher.cc fuse.cc
+    SOURCES saveload_test.cc savevalues_test.cc door.cc flasher.cc fuse.cc super.cc fixedmath.cc
     LIBS tech
 )
 

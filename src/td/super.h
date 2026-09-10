@@ -43,14 +43,40 @@
 
 #include "td/defines.h"
 #include "td/ftimer.h"
-#include "tech/noinit.h"
 
 class SuperClass {
  public:
-  SuperClass(const NoInitClass& x) : Control(x) {}
-  SuperClass(int recharge = 0, VoxType charging = VOX_NONE,
-             VoxType ready = VOX_NONE, VoxType impatient = VOX_NONE,
-             VoxType suspend = VOX_NONE);
+  SuperClass(int recharge = 0, VoxType ready = VOX_NONE,
+             VoxType charging = VOX_NONE, VoxType impatient = VOX_NONE,
+             VoxType suspend = VOX_NONE)
+      : VoxRecharge(ready),
+        VoxCharging(charging),
+        VoxImpatient(impatient),
+        VoxSuspend(suspend),
+        RechargeTime(recharge) {}
+
+  // Preserve charging progress and suspension independently of the current
+  // frame.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    bool present = IsPresent, one_time = IsOneTime, ready = IsReady,
+         suspended = IsSuspended;
+    ar(present, one_time, ready, suspended, Control, OldStage, SuspendTime,
+       VoxRecharge, VoxCharging, VoxImpatient, VoxSuspend, RechargeTime);
+    if constexpr (Archive::kIsReading) {
+      IsPresent = present;
+      IsOneTime = one_time;
+      IsReady = ready;
+      IsSuspended = suspended;
+      if (RechargeTime < 0 || SuspendTime < 0 || VoxRecharge < VOX_NONE ||
+          VoxRecharge >= VOX_COUNT || VoxCharging < VOX_NONE ||
+          VoxCharging >= VOX_COUNT || VoxImpatient < VOX_NONE ||
+          VoxImpatient >= VOX_COUNT || VoxSuspend < VOX_NONE ||
+          VoxSuspend >= VOX_COUNT) {
+        ar.Fail("invalid superweapon state");
+      }
+    }
+  }
 
   bool Suspend(bool on);
   bool Enable(bool onetime = false, bool player = false, bool quiet = false);
@@ -67,14 +93,14 @@ class SuperClass {
  private:
   bool Recharge(bool player = false);
 
-  unsigned IsPresent : 1;
-  unsigned IsOneTime : 1;
-  unsigned IsReady : 1;
-  unsigned IsSuspended : 1;
+  unsigned IsPresent : 1 = false;
+  unsigned IsOneTime : 1 = false;
+  unsigned IsReady : 1 = false;
+  unsigned IsSuspended : 1 = false;
 
   TCountDownTimerClass Control;
-  int OldStage;
-  int SuspendTime;
+  int OldStage = -1;
+  int SuspendTime = 0;
 
   VoxType VoxRecharge;
   VoxType VoxCharging;

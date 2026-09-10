@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Steps 0–22 are committed; step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
+- Steps 0–23 are committed; step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -72,12 +72,32 @@
 - `-TEAMTEST` creates a populated team with guard/loop missions and an active suspension countdown;
   pass `--team` as the TD smoke script's third argument. Smoke logs now stream complete serialized
   fields without a fixed-size buffer and compare team/type state and per-type live counts.
-  Next checkpoint is **24: HouseClass**, then the remaining object hierarchy.
+  Step 24 continues with HouseClass.
 - Step-23 validation: strict builds of both games and **176 CTest tests** pass. New unit coverage
   checks mission fields, invalid/truncated missions, and abstract coordinate/active-state handling.
   Headless TD save/load matches **1,291** logged states with the populated team fixture, **1,231**
   with active production, and **1,380** in Nod (including team/type fields and live counts).
   RA still matches **240** vehicle/vessel positions. Real-display/live-multiplayer checks remain pending.
+- Step 24 migrates **HouseClass** (TD version **5**): all gameplay fields, superweapon state,
+  region threats, and every countdown timer are field-wise. Scan masks are uint64_t; credit/storage
+  values and region threats are int64_t. House and SuperClass NoInit paths are removed; raw descendants
+  elsewhere retain their own NoInit paths. Remap pointers use checked table IDs, preserving RemapNone
+  independently of the player color. Factory indices, enums, names, and superweapon values are checked.
+- House load shells recreate all ten runtime-only UnitTracker counters, as planned, instead of restoring
+  process addresses. Their totals restart at zero; scenario reset deletes old houses to release trackers.
+  Construction leaves scenario globals alone. Houses no longer participate in pointer coding.
+- Superweapon tests exercise partial charge, suspended/resumed charging, and rejected input using the
+  real fixed-point helpers, extracted from `coord.cc` into `fixedmath.cc` for independent linking.
+  Region tests preserve wide and negative threat values. Smoke logs now include every house field.
+- GDI diagnostics exposed different infantry positions **before** saving: fresh runs were using
+  wall-clock seeds. `-SEED<n>` now parses past the dash correctly and works outside cheat builds;
+  the TD smoke script uses `-SEED1` for reproducible scenario creation. Infantry coordinates are also
+  logged for diagnosis. This does not add RNG-state persistence (remaining globals work).
+  Next checkpoint is **25: the smaller world-object heaps**, before Techno/Foot and mobile objects.
+- Step-24 validation: strict builds of both games and **180 CTest tests** pass. Fixed-seed TD smoke
+  runs match **1,831** states with active production, **1,891** with the populated team, and **1,980**
+  in Nod, including serialized house fields. RA matches **240** vehicle/vessel positions.
+  Real-display and live-multiplayer verification remains outstanding.
 - Step-19 validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
   Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke

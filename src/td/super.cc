@@ -76,22 +76,6 @@
 #include "td/ftimer.h"
 #include "td/jshell.h"
 
-SuperClass::SuperClass(int recharge, VoxType ready, VoxType charging,
-                       VoxType impatient, VoxType suspend) {
-  IsPresent = false;
-  IsOneTime = false;
-  IsReady = false;
-  IsSuspended = false;
-  OldStage = -1;
-  Control = 0;
-  RechargeTime = recharge;
-  SuspendTime = 0;
-  VoxRecharge = ready;
-  VoxCharging = charging;
-  VoxImpatient = impatient;
-  VoxSuspend = suspend;
-}
-
 /***********************************************************************************************
  * SuperClass::Suspend -- Suspend the charging of the super weapon. *
  *                                                                                             *

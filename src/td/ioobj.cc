@@ -89,10 +89,7 @@
  *Write to a save game file.                                            *
  *   LayerClass::Code_Pointers -- codes class's pointers for load/save *
  *   LayerClass::Decode_Pointers -- decodes pointers for load/save *
- *   HouseClass::Load -- Reads from a save game file. * HouseClass::Save --
- *Write to a save game file.                                            *
- *   HouseClass::Code_Pointers -- codes class's pointers for load/save *
- *   HouseClass::Decode_Pointers -- decodes pointers for load/save *
+ *   HouseClass::Serialize -- Read/write house state. *
  *   ScoreClass::Load -- Reads from a save game file. * ScoreClass::Save --
  *Write to a save game file.                                            *
  *   ScoreClass::Code_Pointers -- codes class's pointers for load/save *
@@ -1190,82 +1187,6 @@ void LayerClass::Decode_Pointers() {
 }
 
 /***********************************************************************************************
- * HouseClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool HouseClass::Load(ArchiveReader& file) {
-  return Read_Object(this, sizeof(*this), sizeof(*this), file, nullptr);
-}
-
-/***********************************************************************************************
- * HouseClass::Save -- Write to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool HouseClass::Save(ArchiveWriter& file) {
-  return Write_Object(this, sizeof(*this), file);
-}
-
-/***********************************************************************************************
- * HouseClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void HouseClass::Code_Pointers() {
-  /*
-  ------------------------------ Code 'Class' ------------------------------
-  */
-  Class = (const HouseTypeClass*)Class->House;
-}
-
-/***********************************************************************************************
- * HouseClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void HouseClass::Decode_Pointers() {
-  /*
-  ----------------------------- Decode 'Class' -----------------------------
-  */
-  Class =
-      &HouseTypeClass::As_Reference(static_cast<HousesType>((uintptr_t)Class));
-  Check_Ptr(Class);
-}
-
-/***********************************************************************************************
  * ScoreClass::Load -- Loads from a save game file. *
  *                                                                                             *
  * INPUT:   file  -- The file to read the cell's data from. *
@@ -1973,3 +1894,100 @@ void TeamClass::Serialize(Archive& ar) {
 }
 template void TeamClass::Serialize(ArchiveWriter&);
 template void TeamClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void HouseClass::Serialize(Archive& ar) {
+  // Runtime remap pointers are encoded by table identity, including RemapNone.
+  const unsigned char* tables[] = {RemapNone,      RemapYellow, RemapRed,
+                                   RemapBlueGreen, RemapOrange, RemapGreen,
+                                   RemapBlue};
+  int32_t remap_id = -1;
+  if constexpr (!Archive::kIsReading) {
+    for (int i = 0; i < 7; ++i) {
+      if (RemapTable == tables[i]) {
+        remap_id = i;
+      }
+    }
+  }
+  bool saved_IsActive = IsActive;
+  bool saved_IsHuman = IsHuman;
+  bool saved_IsStarted = IsStarted;
+  bool saved_IsAlerted = IsAlerted;
+  bool saved_IsDiscovered = IsDiscovered;
+  bool saved_IsMaxedOut = IsMaxedOut;
+  bool saved_IsDefeated = IsDefeated;
+  bool saved_IsToDie = IsToDie;
+  bool saved_IsToWin = IsToWin;
+  bool saved_IsToLose = IsToLose;
+  bool saved_IsCivEvacuated = IsCivEvacuated;
+  bool saved_IsRecalcNeeded = IsRecalcNeeded;
+  bool saved_IsVisionary = IsVisionary;
+  bool saved_IsAirstrikePending = IsAirstrikePending;
+  uint8_t saved_NukePieces = NukePieces;
+  bool saved_IsFreeHarvester = IsFreeHarvester;
+  bool saved_Resigned = Resigned;
+  bool saved_IGaveUp = IGaveUp;
+  ar(TypePtr(Class), ActLike, saved_IsActive, saved_IsHuman, saved_IsStarted,
+     saved_IsAlerted, saved_IsDiscovered, saved_IsMaxedOut, saved_IsDefeated,
+     saved_IsToDie, saved_IsToWin, saved_IsToLose, saved_IsCivEvacuated,
+     saved_IsRecalcNeeded, saved_IsVisionary, saved_IsAirstrikePending,
+     saved_NukePieces, saved_IsFreeHarvester, FreeHarvester, IonCannon,
+     AirStrike, NukeStrike, JustBuilt, Blockage, AlertTime, BorrowedTime, BScan,
+     ActiveBScan, NewBScan, NewActiveBScan, UScan, ActiveUScan, NewUScan,
+     NewActiveUScan, IScan, ActiveIScan, NewIScan, NewActiveIScan, AScan,
+     ActiveAScan, NewAScan, NewActiveAScan, CreditsSpent, HarvestedCredits,
+     CurUnits, CurBuildings, MaxUnit, MaxBuilding, Tiberium, Credits,
+     InitialCredits, Capacity, saved_Resigned, saved_IGaveUp, AircraftFactories,
+     InfantryFactories, UnitFactories, BuildingFactories, SpecialFactories,
+     Power, Drain, Edge, AircraftFactory, InfantryFactory, UnitFactory,
+     BuildingFactory, SpecialFactory, FlagLocation, FlagHome, remap_id,
+     RemapColor, Name, UnitsKilled, UnitsLost, BuildingsKilled, BuildingsLost,
+     WhoLastHurtMe, Regions, BlitzTime, NukeDest, Allies, DamageTime, TeamTime,
+     TriggerTime, SpeakAttackDelay, SpeakPowerDelay, SpeakMoneyDelay,
+     SpeakMaxedDelay);
+  if constexpr (Archive::kIsReading) {
+    IsActive = saved_IsActive;
+    IsHuman = saved_IsHuman;
+    IsStarted = saved_IsStarted;
+    IsAlerted = saved_IsAlerted;
+    IsDiscovered = saved_IsDiscovered;
+    IsMaxedOut = saved_IsMaxedOut;
+    IsDefeated = saved_IsDefeated;
+    IsToDie = saved_IsToDie;
+    IsToWin = saved_IsToWin;
+    IsToLose = saved_IsToLose;
+    IsCivEvacuated = saved_IsCivEvacuated;
+    IsRecalcNeeded = saved_IsRecalcNeeded;
+    IsVisionary = saved_IsVisionary;
+    IsAirstrikePending = saved_IsAirstrikePending;
+    NukePieces = saved_NukePieces;
+    IsFreeHarvester = saved_IsFreeHarvester;
+    Resigned = saved_Resigned;
+    IGaveUp = saved_IGaveUp;
+    if (!ar.ok()) {
+      return;
+    }
+    if (!IsActive || Class == nullptr || ActLike < HOUSE_FIRST ||
+        ActLike >= HOUSE_COUNT || saved_NukePieces > 7 ||
+        JustBuilt < STRUCT_NONE || JustBuilt >= STRUCT_COUNT ||
+        Edge < SOURCE_FIRST || Edge >= SOURCE_COUNT || remap_id < 0 ||
+        remap_id >= 7 || RemapColor < REMAP_NONE || RemapColor >= REMAP_COUNT ||
+        WhoLastHurtMe < HOUSE_NONE || WhoLastHurtMe >= HOUSE_COUNT ||
+        Name[sizeof(Name) - 1] != '\0') {
+      ar.Fail("invalid house state");
+      return;
+    }
+    for (int factory : {AircraftFactory, InfantryFactory, UnitFactory,
+                        BuildingFactory, SpecialFactory}) {
+      if (factory < -1 || factory >= Factories.Length()) {
+        ar.Fail("invalid house factory slot");
+        return;
+      }
+    }
+    RemapTable = tables[remap_id];
+    // The ten runtime-only UnitTracker counters are recreated by the shell
+    // ctor.
+  }
+}
+template void HouseClass::Serialize(ArchiveWriter&);
+template void HouseClass::Serialize(ArchiveReader&);

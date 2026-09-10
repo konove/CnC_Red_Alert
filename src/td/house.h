@@ -13,7 +13,7 @@
 **	GNU General Public License for more details.
 **
 **	You should have received a copy of the GNU General Public License
-**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+**	aint64_t with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /* $Header:   F:\projects\c&c\vcs\code\house.h_v   2.21   16 Oct 1995 16:46:14
@@ -45,6 +45,7 @@ class ArchiveReader;
 class ArchiveWriter;
 
 #include <cstddef>
+#include <cstdint>
 
 #include "td/defines.h"
 #include "td/ftimer.h"
@@ -56,8 +57,6 @@ class ArchiveWriter;
 #include "td/target.h"
 #include "td/type.h"
 #include "td/utracker.h"
-#include "tech/noinit.h"
-#include "tech/wwfile.h"
 
 /****************************************************************************
 **	Player control structure. Each player (computer or human) has one of
@@ -71,45 +70,45 @@ class HouseClass {
   **	Pointer to the HouseTypeClass that this house is "owned" by.
   **	All constant data for a house type is stored in that class.
   */
-  const HouseTypeClass* Class;
+  const HouseTypeClass* Class = nullptr;
 
   /*
   **	This is the house type that this house object should act like. This
   **	value controls production choices and radar cover plate imagery.
   */
-  HousesType ActLike;
+  HousesType ActLike = HOUSE_NONE;
 
   /*
   **	Is this player active?  Usually that answer is true, but for civilians,
   *it *	might possibly be false.
   */
-  unsigned IsActive : 1;
+  unsigned IsActive : 1 = true;
 
   /*
   **	If this house is controlled by the player, then this flag will be true.
   *The *	computer controls all other active houses.
   */
-  unsigned IsHuman : 1;
+  unsigned IsHuman : 1 = false;
 
   /*
   **	When the computer becomes alerted to the presence of the player's
   *forces, it *	begins production and attack logic. This flag is set to true if
   *the human *	player has been discovered by the computer.
   */
-  unsigned IsStarted : 1;
+  unsigned IsStarted : 1 = false;
 
   /*
   **	When alerted, the house will create teams of the special "auto" type and
   **	will generate appropriate units to fill those team types.
   */
-  unsigned IsAlerted : 1;
+  unsigned IsAlerted : 1 = false;
 
   /*
   **	If the house has been discovered, then this flag will be set
   **	to true. However, the trigger even associated with discovery
   **	will only be executed during the next house AI process.
   */
-  unsigned IsDiscovered : 1;
+  unsigned IsDiscovered : 1 = false;
 
   /*
   **	If Tiberium storage is maxed out, then this flag will be set. At some
@@ -117,13 +116,13 @@ class HouseClass {
   *This allows the *	player to be told, but only occationally rather than
   *continuously.
   */
-  unsigned IsMaxedOut : 1;
+  unsigned IsMaxedOut : 1 = false;
 
   /*
   ** If this house is played by a human in a multiplayer game, this flag
   ** keeps track of whether this house has been defeated or not.
   */
-  unsigned IsDefeated : 1;
+  unsigned IsDefeated : 1 = false;
 
   /*
   **	These flags are used in conjunction with the BorrowedTime timer. When
@@ -131,48 +130,48 @@ class HouseClass {
   **	applied to the house. This allows a dramatic pause between the event
   **	trigger and the result.
   */
-  unsigned IsToDie : 1;
-  unsigned IsToWin : 1;
-  unsigned IsToLose : 1;
+  unsigned IsToDie : 1 = false;
+  unsigned IsToWin : 1 = false;
+  unsigned IsToLose : 1 = false;
 
   /*
   **	This flag is set when a transport carrying a civilian has been
   **	successfully evacuated. It is presumed that a possible trigger
   **	event will be sprung by this event.
   */
-  unsigned IsCivEvacuated : 1;
+  unsigned IsCivEvacuated : 1 = false;
 
   /*
   **	If potentially something changed that might affect the sidebar list of
   **	buildable objects, then this flag indicates that at the first LEGAL
   *opportunity, *	the sidebar will be recalculated.
   */
-  unsigned IsRecalcNeeded : 1;
+  unsigned IsRecalcNeeded : 1 = false;
 
   /*
   **	If the map has been completely revealed to the player, then this flag
   **	will be set to true. By examining this flag, a second "reveal all map"
   **	crate won't be given to the player.
   */
-  unsigned IsVisionary : 1;
+  unsigned IsVisionary : 1 = false;
 
   /*
   **	If a trigger has indicated that the airstrike option should appear, this
   *flag *	will be set to true. It is up to the normal house AI processing
   *to actually *	add the airstrike to the sidebar.
   */
-  unsigned IsAirstrikePending : 1;
+  unsigned IsAirstrikePending : 1 = false;
 
   /*
   **	This records the existance of the three nuke weapon pieces.
   */
-  unsigned NukePieces : 3;
+  unsigned NukePieces : 3 = 0;
 
   /*
   **	This flag indicates that a free harvester is pending and will be
   **	created when the FreeHarvester timer expires.
   */
-  unsigned IsFreeHarvester : 1;
+  unsigned IsFreeHarvester : 1 = false;
 
   TCountDownTimerClass FreeHarvester;
 
@@ -189,14 +188,14 @@ class HouseClass {
   **	were built as a part of scenario creation, it will be the last one
   **	discovered.
   */
-  StructType JustBuilt;
+  StructType JustBuilt = STRUCT_NONE;
 
   /*
   **	This records the number of triggers associated with this house that are
   **	blocking a win condition. A win will only occur if all the blocking
   **	triggers have been deleted.
   */
-  int Blockage;
+  int Blockage = 0;
 
   /*
   **	This timer controls the computer auto-attack logic. When this timer
@@ -218,10 +217,10 @@ class HouseClass {
   **	accumulated over time, the "New" element contains the under-construction
   **	version.
   */
-  unsigned long BScan;
-  unsigned long ActiveBScan;
-  unsigned long NewBScan;
-  unsigned long NewActiveBScan;
+  uint64_t BScan = 0;
+  uint64_t ActiveBScan = 0;
+  uint64_t NewBScan = 0;
+  uint64_t NewActiveBScan = 0;
 
   /*
   **	This is the last working scan bits for units. For every existing unit
@@ -230,164 +229,162 @@ class HouseClass {
   *element *	and then duplicated into the regular element at the end of every
   *logic cycle.
   */
-  unsigned long UScan;
-  unsigned long ActiveUScan;
-  unsigned long NewUScan;
-  unsigned long NewActiveUScan;
+  uint64_t UScan = 0;
+  uint64_t ActiveUScan = 0;
+  uint64_t NewUScan = 0;
+  uint64_t NewActiveUScan = 0;
 
   /*
   **	Infantry type existence bits. Similar to unit and building bits.
   */
-  unsigned long IScan;
-  unsigned long ActiveIScan;
-  unsigned long NewIScan;
-  unsigned long NewActiveIScan;
+  uint64_t IScan = 0;
+  uint64_t ActiveIScan = 0;
+  uint64_t NewIScan = 0;
+  uint64_t NewActiveIScan = 0;
 
   /*
   **	Aircraft type existence bits. Similar to unit and building buts.
   */
-  unsigned long AScan;
-  unsigned long ActiveAScan;
-  unsigned long NewAScan;
-  unsigned long NewActiveAScan;
+  uint64_t AScan = 0;
+  uint64_t ActiveAScan = 0;
+  uint64_t NewAScan = 0;
+  uint64_t NewActiveAScan = 0;
 
   /*
   **	Record of gains and losses for this house during the course of the
   **	scenario.
   */
-  unsigned CreditsSpent;
-  unsigned HarvestedCredits;
+  unsigned CreditsSpent = 0;
+  unsigned HarvestedCredits = 0;
 
   /*
   **	This is the running count of the number of units owned by this house.
   *This *	value is used to keep track of ownership limits.
   */
-  unsigned CurUnits;
-  unsigned CurBuildings;
+  unsigned CurUnits = 0;
+  unsigned CurBuildings = 0;
 
   /*
   **	This is the maximum number allowed to be built by this house. The
   **	value depends on the scenario being played.
   */
-  unsigned MaxUnit;
-  unsigned MaxBuilding;
+  unsigned MaxUnit = 0;
+  unsigned MaxBuilding = 0;
 
   /*
   **	This is the running total of the number of credits this house has
   *accumulated.
   */
-  // Stays 64-bit: HouseClass is byte-serialized into the save file (see
-  // src/{ra,td}/heap_layout_test.cc), so narrowing this changes sizeof().
-  long Tiberium;
-  long Credits;
-  long InitialCredits;
-  long Capacity;
+  int64_t Tiberium = 0;
+  int64_t Credits = 0;
+  int64_t InitialCredits = 0;
+  int64_t Capacity = 0;
 
   /*
   ** Did this house lose via resignation?
   */
-  unsigned Resigned : 1;
+  unsigned Resigned : 1 = false;
 
   /*
   ** Did this house lose because the player quit?
   */
-  unsigned IGaveUp : 1;
+  unsigned IGaveUp : 1 = false;
 
   /*
   ** Stuff to keep track of the total number of units built by this house.
   */
-  UnitTrackerClass* AircraftTotals;
-  UnitTrackerClass* InfantryTotals;
-  UnitTrackerClass* UnitTotals;
-  UnitTrackerClass* BuildingTotals;
+  UnitTrackerClass* AircraftTotals = nullptr;
+  UnitTrackerClass* InfantryTotals = nullptr;
+  UnitTrackerClass* UnitTotals = nullptr;
+  UnitTrackerClass* BuildingTotals = nullptr;
 
   /*
   ** Total number of units destroyed by this house
   */
-  UnitTrackerClass* DestroyedAircraft;
-  UnitTrackerClass* DestroyedInfantry;
-  UnitTrackerClass* DestroyedUnits;
-  UnitTrackerClass* DestroyedBuildings;
+  UnitTrackerClass* DestroyedAircraft = nullptr;
+  UnitTrackerClass* DestroyedInfantry = nullptr;
+  UnitTrackerClass* DestroyedUnits = nullptr;
+  UnitTrackerClass* DestroyedBuildings = nullptr;
 
   /*
   ** Total number of enemy buildings captured by this house
   */
-  UnitTrackerClass* CapturedBuildings;
+  UnitTrackerClass* CapturedBuildings = nullptr;
 
   /*
   ** Total number of crates found by this house
   */
-  UnitTrackerClass* TotalCrates;
+  UnitTrackerClass* TotalCrates = nullptr;
 
   /*
   **	Records the number of infantry and vehicle factories active. This value
   *is *	used to regulate the speed of production.
   */
-  int AircraftFactories;
-  int InfantryFactories;
-  int UnitFactories;
-  int BuildingFactories;
-  int SpecialFactories;
+  int AircraftFactories = 0;
+  int InfantryFactories = 0;
+  int UnitFactories = 0;
+  int BuildingFactories = 0;
+  int SpecialFactories = 0;
 
   /*
   **	This is the accumulation of the total power and drain factors. From
   *these *	values a ratio can be derived. This ratio is used to control the
   *rate *	of building decay.
   */
-  int Power;  // Current power output.
-  int Drain;  // Power consumption.
+  int Power = 0;  // Current power output.
+  int Drain = 0;  // Power consumption.
 
   /*
   **	For generic (unspecified) reinforcements, they arrive by a common
   *method. This *	specifies which method is to be used.
   */
-  SourceType Edge;
+  SourceType Edge = SOURCE_NORTH;
 
   /*
   **	For human controlled houses, only one type of unit can be produced
   **	at any one instant. These factory objects control this production.
   */
-  int AircraftFactory;
-  int InfantryFactory;
-  int UnitFactory;
-  int BuildingFactory;
-  int SpecialFactory;
+  int AircraftFactory = -1;
+  int InfantryFactory = -1;
+  int UnitFactory = -1;
+  int BuildingFactory = -1;
+  int SpecialFactory = -1;
 
   /*
   **	This target value specifies where the flag is located. It might be a
   *cell *	or it might be an object.
   */
-  TARGET FlagLocation;
+  TARGET FlagLocation = kTargetNone;
 
   /*
   ** This is the flag-home-cell for this house.  This is where we must bring
   ** another house's flag back to, to defeat that house.
   */
-  CELL FlagHome;
+  CELL FlagHome = 0;
 
   /*
   ** For multiplayer games, each house instance has a remap table; the table
   ** in the HousesTypeClass isn't used.  This variable is set to the remap
   ** table for the color the player wants to play.
   */
-  const unsigned char* RemapTable;
-  PlayerColorType RemapColor;
-  char Name[MPLAYER_NAME_MAX];
+  const unsigned char* RemapTable = nullptr;
+  PlayerColorType RemapColor = REMAP_NONE;
+  char Name[MPLAYER_NAME_MAX]{};
 
   /*
   ** For multiplayer games, each house needs to keep track of how many
   ** objects of each other house they've killed.
   */
-  unsigned UnitsKilled[HOUSE_COUNT];
-  unsigned UnitsLost;
-  unsigned BuildingsKilled[HOUSE_COUNT];
-  unsigned BuildingsLost;
+  unsigned UnitsKilled[HOUSE_COUNT]{};
+  unsigned UnitsLost = 0;
+  unsigned BuildingsKilled[HOUSE_COUNT]{};
+  unsigned BuildingsLost = 0;
 
   /*
   ** For multiplayer games, this keeps track of the last house to destroy
   ** one of my units.
   */
-  HousesType WhoLastHurtMe;
+  HousesType WhoLastHurtMe = HOUSE_NONE;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
@@ -395,22 +392,9 @@ class HouseClass {
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
-  HouseClass() : Class(nullptr) {}
+  // Load shell: allocate runtime trackers without touching scenario state.
+  HouseClass() { Init_Trackers(); }
   HouseClass(HousesType house);
-  HouseClass(const NoInitClass& x)
-      : FreeHarvester(x),
-        IonCannon(x),
-        AirStrike(x),
-        NukeStrike(x),
-        AlertTime(x),
-        BorrowedTime(x),
-        DamageTime(x),
-        TeamTime(x),
-        TriggerTime(x),
-        SpeakAttackDelay(x),
-        SpeakPowerDelay(x),
-        SpeakMoneyDelay(x),
-        SpeakMaxedDelay(x) {}
   ~HouseClass();
   operator HousesType() const;
 
@@ -461,7 +445,7 @@ class HouseClass {
   const TechnoTypeClass* Suggest_New_Object(RTTIType objectype) const;
   bool Does_Enemy_Building_Exist(StructType) const;
   void Harvested(unsigned tiberium);
-  long Available_Money() const;
+  int64_t Available_Money() const;
   void Spend_Money(unsigned money);
   void Refund_Money(unsigned money);
   void Attacked();
@@ -490,10 +474,9 @@ class HouseClass {
   static void Write_INI(char* buffer);
   static void Read_Flag_INI(char* buffer);
   static void Write_Flag_INI(char* buffer);
-  bool Load(ArchiveReader& file);
-  bool Save(ArchiveWriter& file);
-  void Code_Pointers();
-  void Decode_Pointers();
+  // Field-wise saved-game support, defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	Dee-buggin' support.
@@ -519,7 +502,7 @@ class HouseClass {
   **	This vector holds the recorded status of the map regions. It is through
   **	this region information that team paths are calculated.
   */
-  RegionClass Regions[MAP_TOTAL_REGIONS];
+  RegionClass Regions[MAP_TOTAL_REGIONS]{};
 
 #ifdef OBSOLETE
   /*
@@ -529,13 +512,13 @@ class HouseClass {
   ** of range.
   */
   TCountDownTimerClass IonControl;
-  int IonOldStage;
+  int IonOldStage = 0;
 
   TCountDownTimerClass AirControl;
-  int AirOldStage;
+  int AirOldStage = 0;
 
   TCountDownTimerClass NukeControl;
-  int NukeOldStage;
+  int NukeOldStage = 0;
 #endif
 
   /*
@@ -548,7 +531,7 @@ class HouseClass {
   **	This count down timer class decrements and then changes
   ** the Atomic Bomb state.
   */
-  CELL NukeDest;
+  CELL NukeDest = 0;
 
   /*
   ** This routine completely removes this house & all its objects from the game.
@@ -567,14 +550,16 @@ class HouseClass {
   void MPlayer_Defeated();
 
  private:
-  void Silo_Redraw_Check(long oldtib, long oldcap);
+  // Recreate the runtime-only network statistics counters.
+  void Init_Trackers();
+  void Silo_Redraw_Check(int64_t oldtib, int64_t oldcap);
 
   /*
   **	This is a bit field record of all the other houses that are allies with
   **	this house. It is presumed that any house that isn't an ally, is
   *therefore *	an enemy. A house is always considered allied with itself.
   */
-  unsigned Allies;
+  unsigned Allies = 0;
 
   /*
   **	This is the standard delay time between announcements concerning the

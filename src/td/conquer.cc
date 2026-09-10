@@ -1717,6 +1717,12 @@ bool Main_Loop() {
                 << " coord " << unit->Coord << " mission " << unit->Mission
                 << " navcom " << unit->NavCom;
     }
+    for (int index = 0; index < Infantry.Count(); ++index) {
+      const InfantryClass* infantry = Infantry.Ptr(index);
+      LOG(INFO) << "frame " << Frame << " infantry " << Infantry.ID(infantry)
+                << " coord " << infantry->Coord << " mission "
+                << infantry->Mission << " navcom " << infantry->NavCom;
+    }
     // Compare every serialized field of migrated objects in smoke runs.
     auto log_heap = [](auto& heap, const char* kind) {
       for (int index = 0; index < heap.Count(); ++index) {
@@ -1744,6 +1750,7 @@ bool Main_Loop() {
     log_heap(Triggers, "trigger");
     log_heap(TeamTypes, "teamtype");
     log_heap(Teams, "team");
+    log_heap(Houses, "house");
     for (int i = 0; i < TeamTypes.Count(); ++i) {
       const int id = TeamTypes.ID(TeamTypes.Ptr(i));
       LOG(INFO) << "frame " << Frame << " teamcount " << id << " "

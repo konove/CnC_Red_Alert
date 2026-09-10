@@ -742,14 +742,6 @@ void Code_All_Pointers() {
   for (i = 0; i < CurrentObject.Count(); i++) {
     CurrentObject[i] = (ObjectClass*)CurrentObject[i]->As_Target();
   }
-
-  /*
-  ** Houses must be coded last, because the Class->House member of the
-  *HouseClass
-  ** is used to code HouseClass pointers for all other objects, and if Class is
-  ** coded, it will point to a meaningless value.
-  */
-  Houses.Code_Pointers();
 }
 
 /***********************************************************************************************

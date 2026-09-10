@@ -446,6 +446,10 @@ HouseClass::HouseClass(HousesType house)
   UScan = 0;
   memset(&Regions[0], 0x00, sizeof(Regions));
 
+  Init_Trackers();
+}
+
+void HouseClass::Init_Trackers() {
   AircraftTotals = new UnitTrackerClass(static_cast<int>(AIRCRAFT_COUNT));
   InfantryTotals = new UnitTrackerClass(static_cast<int>(INFANTRY_COUNT));
   UnitTotals = new UnitTrackerClass(static_cast<int>(UNIT_COUNT));
@@ -785,6 +789,11 @@ bool HouseClass::Can_Build(AircraftType aircraft, HousesType house) const {
  *   12/17/1994 JLB : Resets tracker bits.                                 *
  *=========================================================================*/
 void HouseClass::Init() {
+  // Shell loads allocate fresh trackers; release the previous scenario's
+  // owners.
+  while (Houses.Count() != 0) {
+    delete Houses.Ptr(0);
+  }
   Houses.Free_All();
 
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
@@ -1507,7 +1516,7 @@ void HouseClass::Attacked() {
  *=============================================================================================*/
 void HouseClass::Harvested(unsigned tiberium) {
   Validate();
-  long oldtib = Tiberium;
+  int64_t oldtib = Tiberium;
 
   Tiberium += tiberium;
   if (Tiberium > Capacity) {
@@ -1533,7 +1542,7 @@ void HouseClass::Harvested(unsigned tiberium) {
  *                                                                                             *
  * HISTORY: * 01/25/1995 JLB : Created. *
  *=============================================================================================*/
-long HouseClass::Available_Money() const {
+int64_t HouseClass::Available_Money() const {
   Validate();
   return Tiberium + Credits;
 }
@@ -1557,7 +1566,7 @@ long HouseClass::Available_Money() const {
  *=============================================================================================*/
 void HouseClass::Spend_Money(unsigned money) {
   Validate();
-  long oldtib = Tiberium;
+  int64_t oldtib = Tiberium;
   if (money > Tiberium) {
     money -= static_cast<unsigned>(Tiberium);
     Tiberium = 0;
@@ -1612,7 +1621,7 @@ void HouseClass::Refund_Money(unsigned money) {
  *=============================================================================================*/
 int HouseClass::Adjust_Capacity(int adjust, bool inanger) {
   Validate();
-  long oldcap = Capacity;
+  int64_t oldcap = Capacity;
   int retval = 0;
 
   Capacity += adjust;
@@ -1649,7 +1658,7 @@ int HouseClass::Adjust_Capacity(int adjust, bool inanger) {
  *                                                                                             *
  * HISTORY: * 02/02/1995 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Silo_Redraw_Check(long oldtib, long oldcap) {
+void HouseClass::Silo_Redraw_Check(int64_t oldtib, int64_t oldcap) {
   Validate();
   int oldratio = 0;
   if (oldcap) {
@@ -1708,7 +1717,7 @@ void HouseClass::Read_INI(char* buffer) {
 
     p->MaxBuilding = maxbuilding;
     p->MaxUnit = maxunit;
-    p->Credits = static_cast<long>(credits) * 100;
+    p->Credits = static_cast<int64_t>(credits) * 100;
     p->InitialCredits = p->Credits;
     WWGetPrivateProfileString(hname, "Edge", "", buf, sizeof(buf) - 1, buffer);
     p->Edge = Source_From_Name(buf);
@@ -1911,9 +1920,8 @@ void HouseClass::Make_Ally(HousesType house) {
         }
       }
 
-      Format_Runtime_Text(buffer, sizeof(buffer),
-                          Text_String(TXT_HAS_ALLIED), Name,
-                          As_Pointer(house)->Name);
+      Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_HAS_ALLIED),
+                          Name, As_Pointer(house)->Name);
       Messages.Add_Message(buffer, MPlayerTColors[RemapColor],
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                            1200, 0, 0);
@@ -1949,8 +1957,8 @@ void HouseClass::Make_Enemy(HousesType house) {
     if ((Debug_Flag || GameToPlay != GAME_NORMAL) && !ScenarioInit) {
       char buffer[80];
 
-      Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_AT_WAR),
-                          Name, enemy->Name);
+      Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_AT_WAR), Name,
+                          enemy->Name);
       Messages.Add_Message(buffer, MPlayerTColors[RemapColor],
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                            600, 0, 0);
