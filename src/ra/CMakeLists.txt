@@ -162,12 +162,6 @@ add_gtest(
 )
 apply_language_setting(ra_saveglobals_test)
 
-add_gtest(
-    NAME ra_heap_layout_test
-    SOURCES heap_layout_test.cc
-    LIBS base tech port sdllib vqa32 absl::strings absl::check absl::log magic_enum::magic_enum
-)
-apply_language_setting(ra_heap_layout_test)
 
 if (EMSCRIPTEN)
     set_target_properties(rasdl PROPERTIES

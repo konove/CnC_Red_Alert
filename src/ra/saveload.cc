@@ -50,6 +50,7 @@
 
 #include <vector>
 
+#include "absl/log/log.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -113,6 +114,7 @@
 #include "tech/rawfile.h"
 #include "tech/shapipe.h"
 #include "tech/shastraw.h"
+#include "tech/teepipe.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
 
@@ -515,7 +517,26 @@ bool Save_Game(int id, const char* descr, bool) {
   sha.SetSink(fpipe);
   bpipe.SetSink(sha);
   pipe.SetSink(bpipe);
-  Put_All(pipe, save_net);
+
+  // Tee the field-wise body before compression. The dump has Section tags
+  // but no save header, encryption, or digest, so it can be compared directly.
+  RawFileClass dump_file;
+  FilePipe dump_pipe(dump_file);
+  bool dump_open = false;
+  const char* dump_path = std::getenv("RA_SAVE_DUMP");
+  if (dump_path != nullptr && dump_path[0] != '\0') {
+    dump_file.Open(dump_path, FileAccess::kWrite);
+    dump_open = dump_file.Is_Open() != 0;
+    if (!dump_open) {
+      DLOG(WARNING) << "Cannot open RA_SAVE_DUMP: " << dump_path;
+    }
+  }
+  TeePipe tee(pipe, dump_open ? &dump_pipe : nullptr);
+  Put_All(tee, save_net);
+  if (!tee.copy_ok()) {
+    DLOG(WARNING) << "Incomplete RA_SAVE_DUMP: " << dump_path;
+  }
+  dump_file.Close();
 
   /*
   **	Output the real final message digest. This is the one that is of

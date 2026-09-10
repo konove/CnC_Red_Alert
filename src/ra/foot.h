@@ -286,8 +286,6 @@ class FootClass : public TechnoClass {
 
  protected:
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
-  // Explicit initializers rather than default member initializers because
-  // the NoInit constructor above must leave the members alone.
   FootClass()
       : IsScanLimited(false),
         IsInitiated(false),

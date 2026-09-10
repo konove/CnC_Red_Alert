@@ -64,8 +64,6 @@ class WeaponTypeClass {
   const char* Name() const { return IniName; }
   bool Read_INI(CCINIClass& ini);
   static WeaponTypeClass* As_Pointer(WeaponType weapon);
-  void Code_Pointers() {}
-  void Decode_Pointers() {}
   ThreatType Allowed_Threats() const;
   bool Is_Wall_Destroyer() const;
 

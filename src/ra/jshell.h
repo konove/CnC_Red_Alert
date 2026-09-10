@@ -57,7 +57,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
-#include "tech/noinit.h"
 #include "tech/wwfile.h"
 
 /*

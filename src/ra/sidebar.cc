@@ -130,7 +130,6 @@
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
-#include "tech/noinit.h"
 
 void* SidebarClass::SidebarShape = nullptr;
 void* SidebarClass::SidebarMiddleShape = nullptr;

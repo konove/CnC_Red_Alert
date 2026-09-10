@@ -51,7 +51,6 @@
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "tech/archive.h"
-#include "tech/noinit.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"
 
@@ -200,18 +199,11 @@ class FixedIHeapClass : public FixedHeapClass {
   DynamicVectorClass<void*> ActivePointers;
 };
 
-// A heap element that is still saved as a raw byte image and repaired with a
-// placement-new of T(NoInitClass()). Every such type is being migrated to
-// Serialize(); this concept disappears with the last of them.
-template <class T>
-concept RawImage = std::constructible_from<T, const NoInitClass&>;
-
 // Type-safe wrapper around FixedIHeapClass with automatic type conversion.
 // Provides type-safe access to iterable heap functionality plus serialization
 // support. All type conversions are compile-time with zero runtime overhead.
 //
-// Save and Load exist only for element types that can be serialized, either
-// field-wise through Serialize() or, during the migration, as a raw image.
+// Save and Load exist only for element types with field-wise Serialize().
 // A Serializable T needs a default constructor reachable from this class
 // (declare `friend class TFixedIHeapClass<T>;`) that fully initializes the
 // object without side effects; Load placement-news it into the slot before
@@ -239,16 +231,11 @@ class TFixedIHeapClass : public FixedIHeapClass {
   int Free(void* pointer) override { return FixedIHeapClass::Free(pointer); }
   // Writes the active count, then each object's slot index and contents.
   int Save(Pipe& file) const
-    requires(Serializable<T> || RawImage<T>);
+    requires Serializable<T>;
   // Reads what Save wrote back into the same slots. Returns false on a
   // malformed stream; the heap is then partially populated.
   int Load(Straw& file)
-    requires(Serializable<T> || RawImage<T>);
-  // Pointer coding for raw-image types. Serializable types encode pointers
-  // inside Serialize(), so these are no-ops for them.
-  void Code_Pointers();
-  void Decode_Pointers();
-
+    requires Serializable<T>;
   virtual T* Ptr(std::size_t index) const {
     return static_cast<T*>(ActivePointers[index]);
   }
@@ -259,7 +246,7 @@ class TFixedIHeapClass : public FixedIHeapClass {
 
 template <class T>
 int TFixedIHeapClass<T>::Save(Pipe& file) const
-  requires(Serializable<T> || RawImage<T>)
+  requires Serializable<T>
 {
   ArchiveWriter writer(file);
   int32_t count = ActiveCount;
@@ -270,18 +257,14 @@ int TFixedIHeapClass<T>::Save(Pipe& file) const
     // load, which keeps TARGET values valid across the round trip.
     int32_t idx = ID(Ptr(i));
     writer(idx);
-    if constexpr (Serializable<T>) {
-      Ptr(i)->Serialize(writer);
-    } else {
-      writer.Bytes(Ptr(i), sizeof(T));
-    }
+    Ptr(i)->Serialize(writer);
   }
   return true;
 }
 
 template <class T>
 int TFixedIHeapClass<T>::Load(Straw& file)
-  requires(Serializable<T> || RawImage<T>)
+  requires Serializable<T>
 {
   ArchiveReader reader(file);
   int32_t count = 0;
@@ -302,37 +285,13 @@ int TFixedIHeapClass<T>::Load(Straw& file)
     ActiveCount++;
     ActivePointers.Add(ptr);
 
-    if constexpr (Serializable<T>) {
-      new (ptr) T();
-      ptr->Serialize(reader);
-      if (!reader.ok()) {
-        return false;
-      }
-    } else {
-      // Raw image, then a constructor that touches nothing but the vtable.
-      reader.Bytes(ptr, sizeof(T));
-      new (ptr) T(NoInitClass());
+    new (ptr) T();
+    ptr->Serialize(reader);
+    if (!reader.ok()) {
+      return false;
     }
   }
   return reader.ok();
-}
-
-template <class T>
-void TFixedIHeapClass<T>::Code_Pointers() {
-  if constexpr (!Serializable<T>) {
-    for (int i = 0; i < ActiveCount; i++) {
-      Ptr(i)->Code_Pointers();
-    }
-  }
-}
-
-template <class T>
-void TFixedIHeapClass<T>::Decode_Pointers() {
-  if constexpr (!Serializable<T>) {
-    for (int i = 0; i < ActiveCount; i++) {
-      Ptr(i)->Decode_Pointers();
-    }
-  }
 }
 
 #endif  // CNC_RED_ALERT_RA_HEAP_H_

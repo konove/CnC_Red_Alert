@@ -24,9 +24,7 @@
 // The tick-source class T must provide `T::Tick() const` returning a
 // monotonically increasing tick count (typically int64_t or uint64_t).
 //
-// Both serialize by value through Serialize(); the NoInit constructors and
-// the trivially-copyable layout are only still needed by the raw-image save
-// path that the save-game migration is retiring.
+// Both serialize by value through Serialize().
 
 #ifndef CNC_RED_ALERT_TECH_FTIMER_H_
 #define CNC_RED_ALERT_TECH_FTIMER_H_
@@ -34,7 +32,6 @@
 #include <concepts>
 #include <cstdint>
 
-#include "tech/noinit.h"
 
 template <typename T>
 concept TickSource = requires {
@@ -50,9 +47,6 @@ class Stopwatch {
  public:
   // Creates a running timer starting at zero elapsed ticks.
   Stopwatch();
-
-  // No-init constructor for save/load serialization.
-  Stopwatch(const NoInitClass&);
 
   // Returns the current elapsed tick count, accounting for paused time.
   int64_t Value() const;
@@ -90,9 +84,6 @@ Stopwatch<T>::Stopwatch()
     : start_tick_(static_cast<int64_t>(T::Tick())),
       accumulated_ticks_(0),
       running_(true) {}
-
-template <TickSource T>
-Stopwatch<T>::Stopwatch(const NoInitClass&) {}
 
 template <TickSource T>
 template <class Archive>
@@ -160,9 +151,6 @@ class Timer {
   // Starts counting down from `set` ticks.
   explicit Timer(int64_t set = 0);
 
-  // No-init constructor for save/load serialization.
-  Timer(const NoInitClass&);
-
   // Returns the ticks remaining, or 0 if the countdown has finished.
   int64_t Value() const;
 
@@ -202,9 +190,6 @@ Timer<T>::Timer(int64_t set)
     : start_tick_(static_cast<int64_t>(T::Tick())),
       delay_time_(set),
       running_(true) {}
-
-template <TickSource T>
-Timer<T>::Timer(const NoInitClass&) {}
 
 template <TickSource T>
 template <class Archive>

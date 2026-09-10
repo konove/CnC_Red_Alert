@@ -116,8 +116,6 @@ class AbstractTypeClass {
   // derived classes override to restrict ownership.
   virtual int Get_Ownable() const;
 
-  void Code_Pointers() {}
-  void Decode_Pointers() {}
 };
 
 /**********************************************************************

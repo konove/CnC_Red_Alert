@@ -60,8 +60,6 @@ class AbstractClass {
   // Whether this slot in the fixed-size object heap is in use.
   unsigned IsActive : 1;
 
-  // No default member initializers here while the NoInit constructor
-  // exists: they would run inside it and overwrite a raw-loaded image.
   AbstractClass(const RTTIType rtti, const int id)
       : RTTI(rtti),
         ID(id),

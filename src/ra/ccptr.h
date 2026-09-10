@@ -39,7 +39,6 @@
 #include <cassert>
 
 #include "ra/heap.h"
-#include "tech/noinit.h"
 
 // The CCPtr class is designed for a specific purpose. It functions like a
 // pointer except that it requires no fixups for saving and loading. If pointer
@@ -48,7 +47,6 @@ template <class T>
 class CCPtr {
  public:
   CCPtr() : ID(-1) {}
-  CCPtr(const NoInitClass&) {}
   CCPtr(T* ptr);
 
   operator T*() const {

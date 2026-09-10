@@ -23,7 +23,6 @@
 #include <string>
 #include <string_view>
 
-#include "tech/noinit.h"
 
 // Unsigned 8.8 fixed-point number (whole: 0-255, fraction: 1/256 precision).
 //
@@ -38,11 +37,6 @@ class fixed {
  public:
   // Default-constructs to zero.
   constexpr fixed() : raw_(0) {}
-
-  // Leaves the value alone for the raw-image save path: the bytes loaded
-  // over the object must survive the placement-new that follows. Goes away
-  // with NoInitClass.
-  explicit fixed(const NoInitClass&) {}
 
   // Constructs from a fraction (e.g., fixed(3, 4) = 0.75). Zero denominator
   // yields zero.

@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Steps 0–17 are committed; step 17 is `4fc3e47c` (Map/Cell). `45013c52` fixes `-NOMOVIES`.
+- Steps 0–18 are committed; step 18 is `a542c517` (globals/recordings). `45013c52` fixes `-NOMOVIES`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -10,10 +10,20 @@
   network save loading must retain connected peers for `Reconcile_Players()`.
 - Recordings use `RARC` plus the save-format version to reject incompatible data. Both playback entry
   points honor load failure. Options restore game speed only, preserving local controls/audio/display settings.
-- Next implementation step is **19: RA cleanup** (remaining archive/heap NoInit infrastructure and save dump).
-- Validation: strict build of both games and all **152 CTest tests** pass. Headless save/load checks pass
+- Step 19 is complete (working tree). It removes RA's raw-image heap fallback, pointer-coding stubs, layout test, and
+  remaining NoInit includes/constructors (including the now-unused shared `fixed` bridge). The NoInit
+  header remains for TD. RA's old `SAVEGAME_VERSION` macro was already removed.
+- `RA_SAVE_DUMP=<path>` writes the plaintext save body before LZO, starting with `FRAM`; it omits the
+  header and digest and replaces the dump on each save. An unset/empty value disables it. Failed dump
+  opens or short writes produce debug warnings without interrupting the normal save. Format stays **16**.
+- Next implementation step is **20: TD plumbing**.
+- Validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
-  Headless SCG01EA recording/playback also matches all 240 positions, with the `RARC`/version-16 header.
+  Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke
+  passed with `RA_SAVE_DUMP` enabled (plaintext `FRAM=60` and Section tags verified); SCG02EA passed
+  with an invalid dump path. Three tee tests cover exact copying, short writes, and disabled copying.
+  The step-18 headless SCG01EA recording/playback check matched all 240 positions, with the
+  `RARC`/version-16 header.
 - A real-display playthrough and live multiplayer end-to-end checks remain outstanding.
 
 ## Context

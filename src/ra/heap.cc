@@ -47,11 +47,6 @@
  *   FixedIHeapClass::Free_All -- Frees all objects out of the indexed heap. *
  *   FixedIHeapClass::Logical_ID -- Fetches the logical ID number. *
  *   FixedIHeapClass::Set_Heap -- Set the heap to the buffer provided. *
- *   TFixedIHeapClass::Code_Pointers -- codes pointers for every object, to
- *prepare for save   * TFixedIHeapClass::Decode_Pointers -- Decodes all object
- *pointers, for after loading       * TFixedIHeapClass::Load -- Loads all active
- *objects                                        * TFixedIHeapClass::Save --
- *Saves all active objects                                        *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 

@@ -37,10 +37,8 @@
  *   Action_Needs -- Figures out what data an action object needs. *
  *   Name_From_Action -- retrieves name for ActionType *
  *   TActionClass::Build_INI_Entry -- Builds an INI entry for this trigger
- *action.             * TActionClass::Code_Pointers -- Convert embedded pointers
- *into a transportable format.     * TActionClass::Decode_Pointers -- Converts
- *coded pointers into usable format.              * TActionClass::Detach --
- *Removes any attachment from associated action.                    *
+ *action.
+ *   TActionClass::Detach -- Removes any attachment from associated action.
  *   TActionClass::Read_INI -- Converts INI text into appropriate action data. *
  *   TActionClass::operator -- Performs the action that this object does. *
  *   ActionChoiceClass::Draw_It -- Display the action choice as part of a list
