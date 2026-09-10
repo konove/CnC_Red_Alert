@@ -17,7 +17,7 @@ inline constexpr uint32_t kSaveGameMagic = FourCC("RASV");
 
 // Bump on every change to the on-disk layout, including each class that moves
 // from a raw image to Serialize(). Only an exact match loads.
-inline constexpr int32_t kSaveGameVersion = 15;
+inline constexpr int32_t kSaveGameVersion = 16;
 
 bool Load_Misc_Values(Straw& file);
 bool Save_Misc_Values(Pipe& file);
@@ -30,8 +30,6 @@ bool Read_Object(void* ptr, int base_size, int class_size, FileClass& file,
                  void* vtable);
 bool Save_Game(int id, const char* descr, bool bargraph = false);
 bool Write_Object(void* ptr, int class_size, FileClass& file);
-void Code_All_Pointers();
-void Decode_All_Pointers();
 void Dump();
 
 #endif  // CNC_RED_ALERT_RA_SAVELOAD_H_

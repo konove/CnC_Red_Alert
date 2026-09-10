@@ -609,7 +609,7 @@ BaseClass Base;
 **	pseudo saved game that might be carried along with the current saved
 **	game.
 */
-CarryoverClass* Carryover;
+std::vector<CarryoverClass> Carryover;
 
 /***************************************************************************
 ** This value is computed every time a new scenario is loaded; it's a

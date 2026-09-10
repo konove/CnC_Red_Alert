@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_EXTERNS_H_
 #define CNC_RED_ALERT_RA_EXTERNS_H_
 
+#include <vector>
 #include <cstdint>
 #include <string>
 
@@ -166,7 +167,7 @@ extern RulesClass Rule;
 extern KeyboardClass* Keyboard;
 extern RandomStraw CryptRandom;
 extern RandomClass local_rng;
-extern CarryoverClass* Carryover;
+extern std::vector<CarryoverClass> Carryover;
 extern ScenarioClass Scen;
 extern RemapControlType ColorRemaps[magic_enum::enum_count<PlayerColorType>()];
 extern RemapControlType MetalScheme;

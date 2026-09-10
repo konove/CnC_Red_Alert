@@ -51,8 +51,12 @@
  *- - - - - - - */
 
 #include "ra/session.h"
+#include "tech/archive.h"
+#include "tech/xpipe.h"
+#include "tech/xstraw.h"
 
 #include <algorithm>
+#include <array>
 #include <cctype>
 #include <cstdio>
 #include <cstdlib>
@@ -416,27 +420,57 @@ bool SessionClass::Am_I_Master() {
  * HISTORY:                                                                *
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-int SessionClass::Save(Pipe& file) const {
-  file.Put(&CommProtocol, sizeof(CommProtocol));
-  file.Put(&MaxAhead, sizeof(MaxAhead));
-  file.Put(&FrameSendRate, sizeof(FrameSendRate));
-  file.Put(&DesiredFrameRate, sizeof(DesiredFrameRate));
-  file.Put(&PrefColor, sizeof(PrefColor));
-  file.Put(&ColorIdx, sizeof(ColorIdx));
-  file.Put(&House, sizeof(House));
-  file.Put(&NumPlayers, sizeof(NumPlayers));
-  file.Put(&Options.Bases, sizeof(Options.Bases));
-  file.Put(&Options.Credits, sizeof(Options.Credits));
-  file.Put(&Options.Tiberium, sizeof(Options.Tiberium));
-  file.Put(&Options.Goodies, sizeof(Options.Goodies));
-  file.Put(&Options.Ghosts, sizeof(Options.Ghosts));
-  file.Put(&Options.UnitCount, sizeof(Options.UnitCount));
-  file.Put(&Options.AIPlayers, sizeof(Options.AIPlayers));
-  file.Put(&ObiWan, sizeof(ObiWan));
-  file.Put(&EmergencySave, sizeof(EmergencySave));
+template <class Archive>
+void SessionClass::Serialize(Archive& ar) {
+  ar(Type, CommProtocol, MaxAhead, FrameSendRate, DesiredFrameRate,
+     PrefColor, ColorIdx, House, NumPlayers, Options.Bases, Options.Credits,
+     Options.Tiberium, Options.Goodies, Options.Ghosts, Options.UnitCount,
+     Options.AIPlayers, ObiWan, EmergencySave);
+  if constexpr (Archive::kIsReading) {
+    if (!magic_enum::enum_contains(Type) || NumPlayers < 0 ||
+        NumPlayers > MAX_MULTI_NAMES) {
+      ar.Fail("invalid saved session");
+    }
+  }
+}
+template void SessionClass::Serialize(ArchiveWriter&);
+template void SessionClass::Serialize(ArchiveReader&);
 
+template <class Archive>
+void SessionClass::SerializePlayers(Archive& ar) {
+  int32_t count = static_cast<int32_t>(Players.Count());
+  ar(count);
+  if constexpr (Archive::kIsReading) {
+    if (!ar.ok() || count < 0 || count > MAX_MULTI_NAMES) {
+      ar.Fail("invalid recording player count");
+      return;
+    }
+    for (int i = 0; i < Players.Count(); ++i) {
+      delete Players[i];
+    }
+    Players.Clear();
+    for (int i = 0; i < count; ++i) {
+      auto* node = new NodeNameType{};
+      ar(*node);
+      if (!ar.ok()) {
+        delete node;
+        return;
+      }
+      Players.Add(node);
+    }
+  } else {
+    for (int i = 0; i < count; ++i) {
+      ar(*Players[i]);
+    }
+  }
+}
+template void SessionClass::SerializePlayers(ArchiveWriter&);
+template void SessionClass::SerializePlayers(ArchiveReader&);
+
+int SessionClass::Save(Pipe& file) {
+  ArchiveWriter writer(file);
+  Serialize(writer);
   return 1;
-
 }  // end of Save
 
 /***************************************************************************
@@ -458,28 +492,9 @@ int SessionClass::Save(Pipe& file) const {
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
 int SessionClass::Load(Straw& file) {
-  //	if(GameVersion != 0x0100616D){
-  file.Get(&CommProtocol, sizeof(CommProtocol));
-  file.Get(&MaxAhead, sizeof(MaxAhead));
-  file.Get(&FrameSendRate, sizeof(FrameSendRate));
-  file.Get(&DesiredFrameRate, sizeof(DesiredFrameRate));
-  //	}
-  file.Get(&PrefColor, sizeof(PrefColor));
-  file.Get(&ColorIdx, sizeof(ColorIdx));
-  file.Get(&House, sizeof(House));
-  file.Get(&NumPlayers, sizeof(NumPlayers));
-  file.Get(&Options.Bases, sizeof(Options.Bases));
-  file.Get(&Options.Credits, sizeof(Options.Credits));
-  file.Get(&Options.Tiberium, sizeof(Options.Tiberium));
-  file.Get(&Options.Goodies, sizeof(Options.Goodies));
-  file.Get(&Options.Ghosts, sizeof(Options.Ghosts));
-  file.Get(&Options.UnitCount, sizeof(Options.UnitCount));
-  file.Get(&Options.AIPlayers, sizeof(Options.AIPlayers));
-  file.Get(&ObiWan, sizeof(ObiWan));
-  file.Get(&EmergencySave, sizeof(EmergencySave));
-
-  return 1;
-
+  ArchiveReader reader(file);
+  Serialize(reader);
+  return reader.ok();
 }  // end of Load
 
 /***************************************************************************
@@ -505,33 +520,11 @@ int SessionClass::Load(Straw& file) {
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
 int SessionClass::Save(CCFileClass& file) {
-  int i;
-
-  file.Write(&Type, sizeof(Type));
-  file.Write(&CommProtocol, sizeof(CommProtocol));
-  file.Write(&FrameSendRate, sizeof(FrameSendRate));
-  file.Write(&PrefColor, sizeof(PrefColor));
-  file.Write(&ColorIdx, sizeof(ColorIdx));
-  file.Write(&House, sizeof(House));
-  file.Write(&NumPlayers, sizeof(NumPlayers));
-  file.Write(&Options.Bases, sizeof(Options.Bases));
-  file.Write(&Options.Credits, sizeof(Options.Credits));
-  file.Write(&Options.Tiberium, sizeof(Options.Tiberium));
-  file.Write(&Options.Goodies, sizeof(Options.Goodies));
-  file.Write(&Options.Ghosts, sizeof(Options.Ghosts));
-  file.Write(&Options.UnitCount, sizeof(Options.UnitCount));
-  file.Write(&Options.AIPlayers, sizeof(Options.AIPlayers));
-  file.Write(&ObiWan, sizeof(ObiWan));
-  file.Write(&EmergencySave, sizeof(EmergencySave));
-
-  i = static_cast<int>(Players.Count());
-  file.Write(&i, sizeof(i));
-  for (i = 0; i < Players.Count(); i++) {
-    file.Write(Players[i], sizeof(NodeNameType));
-  }
-
+  FilePipe pipe(file);
+  ArchiveWriter writer(pipe);
+  Serialize(writer);
+  SerializePlayers(writer);
   return 1;
-
 }  // end of Save
 
 /***************************************************************************
@@ -553,36 +546,11 @@ int SessionClass::Save(CCFileClass& file) {
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
 int SessionClass::Load(CCFileClass& file) {
-  int count;
-  int i;
-  NodeNameType* node;
-
-  file.Read(&Type, sizeof(Type));
-  file.Read(&CommProtocol, sizeof(CommProtocol));
-  file.Read(&FrameSendRate, sizeof(FrameSendRate));
-  file.Read(&PrefColor, sizeof(PrefColor));
-  file.Read(&ColorIdx, sizeof(ColorIdx));
-  file.Read(&House, sizeof(House));
-  file.Read(&NumPlayers, sizeof(NumPlayers));
-  file.Read(&Options.Bases, sizeof(Options.Bases));
-  file.Read(&Options.Credits, sizeof(Options.Credits));
-  file.Read(&Options.Tiberium, sizeof(Options.Tiberium));
-  file.Read(&Options.Goodies, sizeof(Options.Goodies));
-  file.Read(&Options.Ghosts, sizeof(Options.Ghosts));
-  file.Read(&Options.UnitCount, sizeof(Options.UnitCount));
-  file.Read(&Options.AIPlayers, sizeof(Options.AIPlayers));
-  file.Read(&ObiWan, sizeof(ObiWan));
-  file.Read(&EmergencySave, sizeof(EmergencySave));
-
-  file.Read(&count, sizeof(count));
-  for (i = 0; i < count; i++) {
-    node = new NodeNameType;
-    file.Read(node, sizeof(NodeNameType));
-    Players.Add(node);
-  }
-
-  return 1;
-
+  FileStraw straw(file);
+  ArchiveReader reader(straw);
+  Serialize(reader);
+  SerializePlayers(reader);
+  return reader.ok();
 }  // end of Load
 
 /***************************************************************************

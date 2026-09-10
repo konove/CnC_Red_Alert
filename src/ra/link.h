@@ -40,7 +40,6 @@
 #ifndef CNC_RED_ALERT_RA_LINK_H_
 #define CNC_RED_ALERT_RA_LINK_H_
 
-#include "tech/noinit.h"
 
 /*
 **	This implements a simple linked list. It is possible to add, remove, and
@@ -49,7 +48,6 @@
 */
 class LinkClass {
  public:
-  LinkClass(const NoInitClass&) {}
   LinkClass() : Next(nullptr), Prev(nullptr) {}
   virtual ~LinkClass();
 

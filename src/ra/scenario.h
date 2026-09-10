@@ -58,6 +58,10 @@
 */
 class ScenarioClass {
  public:
+  // Field-wise saved-game state; read and write share this field list.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   // Constructor.
   ScenarioClass();
   void Set_Scenario_Name(int scenario, ScenarioPlayerType player,

@@ -41,14 +41,15 @@
 #define CNC_RED_ALERT_RA_CARRY_H_
 
 #include "ra/defines.h"
-#include "ra/link.h"
 #include "ra/techno.h"
-#include "tech/noinit.h"
 
-class CarryoverClass : public LinkClass {
+class CarryoverClass {
  public:
+  // Field-wise saved-game state; read and write share this field list.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   CarryoverClass(TechnoClass* techno = nullptr);
-  CarryoverClass(const NoInitClass& x) : LinkClass(x) {}
 
   bool Create() const;
 
@@ -68,7 +69,7 @@ class CarryoverClass : public LinkClass {
     UnitType Unit;
     InfantryType Infantry;
     VesselType Vessel;
-  } Type;
+  } Type{};
 
   /*
   **	The location of the object.

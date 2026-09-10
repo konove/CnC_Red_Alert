@@ -62,11 +62,14 @@
  *- - */
 
 #include "ra/vortex.h"
+#include "tech/archive.h"
 
 #include <algorithm>
 #include <cstdio>
+#include <cstdint>
 
 #include "ra/building.h"
+#include "ra/scenario.h"
 #include "ra/ccfile.h"
 #include "ra/cell.h"
 #include "ra/conquer.h"
@@ -295,62 +298,31 @@ void ChronalVortexClass::Stop() {
   }
 }
 
-/***********************************************************************************************
- * CVC::Load -- Loads the chronal vortex from a savegame file. *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    ptr to file *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 8/29/96 4:32PM ST : Created *
- *=============================================================================================*/
-void ChronalVortexClass::Load(Straw& file) {
-  /*
-  ** Delete the render buffer as we are going to lose the pointer anyway.
-  ** It will be re-allocated when needed.
-  */
-  delete RenderBuffer;
-
-  file.Get(this, sizeof(ChronalVortexClass));
-}
-
-/***********************************************************************************************
- * CVC::Save -- Saves the vortex class data to a savegame file *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    file *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 8/29/96 4:33PM ST : Created *
- *=============================================================================================*/
-void ChronalVortexClass::Save(Pipe& file) {
-  GraphicBufferClass* save_ptr = nullptr;
-
-  if (RenderBuffer) {
-    /*
-    ** Save the ptr to the render buffer so we can null it for the save
-    */
-    save_ptr = RenderBuffer;
+template <class Archive>
+void ChronalVortexClass::Serialize(Archive& ar) {
+  bool active = Active != 0;
+  bool shutdown = StartShutdown != 0;
+  bool hiding = StartHiding != 0;
+  bool hidden = Hidden != 0;
+  ar(Position, AnimateDir, AnimateFrame, Animate, State, active, shutdown,
+     hiding, hidden, LastAttackFrame, ZapFrame, TargetObject, TargetDistance,
+     HiddenFrame, XDir, YDir, DesiredXDir, DesiredYDir, Range, Speed, Damage);
+  if constexpr (Archive::kIsReading) {
+    // These signed one-bit fields represent true as -1.
+    Active = active ? -1 : 0;
+    StartShutdown = shutdown ? -1 : 0;
+    StartHiding = hiding ? -1 : 0;
+    Hidden = hidden ? -1 : 0;
+    delete RenderBuffer;
     RenderBuffer = nullptr;
-  }
-
-  file.Put(this, sizeof(ChronalVortexClass));
-
-  /*
-  ** Restore the render buffer ptr
-  */
-  if (save_ptr) {
-    RenderBuffer = save_ptr;
+    if (ar.ok()) {
+      Theater = THEATER_NONE;
+      Setup_Remap_Tables(Scen.Theater);
+    }
   }
 }
+template void ChronalVortexClass::Serialize(ArchiveWriter&);
+template void ChronalVortexClass::Serialize(ArchiveReader&);
 
 /***********************************************************************************************
  * CVC::AI -- AI for the vortex. Includes movement and firing. *

@@ -49,11 +49,13 @@
 #include "ra/object.h"
 #include "ra/palette.h"
 #include "sdllib/gbuffer.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 class ChronalVortexClass {
  public:
+  // Field-wise saved-game state; read and write share this field list.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   /*
   ** Constructor and destructor.
   */
@@ -95,8 +97,6 @@ class ChronalVortexClass {
   /*
   ** Functions to load and save the vortex.
   */
-  void Load(Straw& file);
-  void Save(Pipe& file);
 
   /*
   ** Returns true of vortex is currently active.

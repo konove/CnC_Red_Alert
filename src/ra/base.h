@@ -45,8 +45,6 @@
 #include "ra/object.h"
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 /****************************************************************************
 ** This class defines one "node" in the pre-built base list.  Each node
@@ -60,8 +58,8 @@ class BaseNodeClass {
   int operator!=(const BaseNodeClass& node);
   int operator>(const BaseNodeClass& node);
 
-  StructType Type;
-  CELL Cell;
+  StructType Type = STRUCT_NONE;
+  CELL Cell = 0;
 };
 
 /****************************************************************************
@@ -70,6 +68,10 @@ class BaseNodeClass {
 */
 class BaseClass {
  public:
+  // Field-wise saved-game state; read and write share this field list.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   /*
   ** Constructor/Destructor
   */
@@ -90,10 +92,6 @@ class BaseClass {
   void Read_INI(CCINIClass& ini);
   void Write_INI(CCINIClass& ini);
   static const char* INI_Name() { return "Base"; }
-  bool Load(Straw& file);
-  bool Save(Pipe& file) const;
-  virtual void Code_Pointers() {}
-  virtual void Decode_Pointers() {}
 
   /*
   ** Tells if the given node has been built or not
@@ -132,7 +130,7 @@ class BaseClass {
   /*
   ** This is the house this base belongs to.
   */
-  HousesType House;
+  HousesType House = HOUSE_NONE;
 };
 
 #endif  // CNC_RED_ALERT_RA_BASE_H_

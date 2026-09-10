@@ -610,10 +610,8 @@ void Fill_In_Data() {
   *carry over *	objects at this time.
   */
   if (Scen.IsToInherit) {
-    CarryoverClass* cptr = Carryover;
-    while (cptr != nullptr) {
-      cptr->Create();
-      cptr = dynamic_cast<CarryoverClass*>(cptr->Get_Next());
+    for (const auto& object : Carryover) {
+      object.Create();
     }
   }
 
@@ -943,13 +941,7 @@ void Do_Win() {
     **	blasted over by the new list -- there is only one logic carryover
     **	list to be maintained.
     */
-    while (Carryover) {
-      CarryoverClass* cptr =
-          dynamic_cast<CarryoverClass*>(Carryover->Get_Next());
-      Carryover->Remove();
-      delete Carryover;
-      Carryover = cptr;
-    }
+    Carryover.clear();
 
     /*
     **	Record all objects, that are to be part of the carry over set, into
@@ -960,30 +952,14 @@ void Do_Win() {
       BuildingClass* building = Buildings.Ptr(building_index);
 
       if (building && !building->IsInLimbo && building->Strength > 0) {
-        CarryoverClass* cptr = new CarryoverClass(building);
-
-        if (cptr) {
-          if (Carryover) {
-            cptr->Add_Tail(*Carryover);
-          } else {
-            Carryover = cptr;
-          }
-        }
+        Carryover.emplace_back(building);
       }
     }
     for (int unit_index = 0; unit_index < Units.Count(); unit_index++) {
       UnitClass* unit = Units.Ptr(unit_index);
 
       if (unit && !unit->IsInLimbo && unit->Strength > 0) {
-        CarryoverClass* cptr = new CarryoverClass(unit);
-
-        if (cptr) {
-          if (Carryover) {
-            cptr->Add_Tail(*Carryover);
-          } else {
-            Carryover = cptr;
-          }
-        }
+        Carryover.emplace_back(unit);
       }
     }
     for (int infantry_index = 0; infantry_index < Infantry.Count();
@@ -991,30 +967,14 @@ void Do_Win() {
       InfantryClass* infantry = Infantry.Ptr(infantry_index);
 
       if (infantry && !infantry->IsInLimbo && infantry->Strength > 0) {
-        CarryoverClass* cptr = new CarryoverClass(infantry);
-
-        if (cptr) {
-          if (Carryover) {
-            cptr->Add_Tail(*Carryover);
-          } else {
-            Carryover = cptr;
-          }
-        }
+        Carryover.emplace_back(infantry);
       }
     }
     for (int vessel_index = 0; vessel_index < Vessels.Count(); vessel_index++) {
       VesselClass* vessel = Vessels.Ptr(vessel_index);
 
       if (vessel && !vessel->IsInLimbo && vessel->Strength > 0) {
-        CarryoverClass* cptr = new CarryoverClass(vessel);
-
-        if (cptr) {
-          if (Carryover) {
-            cptr->Add_Tail(*Carryover);
-          } else {
-            Carryover = cptr;
-          }
-        }
+        Carryover.emplace_back(vessel);
       }
     }
   }

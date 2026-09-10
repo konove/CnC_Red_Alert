@@ -60,6 +60,12 @@ class IPXAddressClass {
   Constructors:
   .....................................................................*/
   IPXAddressClass();
+
+  // Network and node bytes are already in wire order.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(NetworkNumber, NodeAddress);
+  }
   IPXAddressClass(NetNumType net, NetNodeType node);
   IPXAddressClass(IPXHeaderType* header);
 

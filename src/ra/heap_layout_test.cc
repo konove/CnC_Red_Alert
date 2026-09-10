@@ -36,17 +36,8 @@
 
 #include "base/types.h"
 #include "gtest/gtest.h"
-#include "ra/base.h"
-#include "ra/carry.h"
 #include "ra/event.h"
-#include "ra/goptions.h"
-#include "ra/layer.h"
-#include "ra/scenario.h"
-#include "ra/score.h"
-#include "ra/session.h"
-#include "ra/special.h"
 #include "ra/type.h"
-#include "ra/vortex.h"
 #include "ra/warhead.h"
 #include "ra/weapon.h"
 
@@ -85,19 +76,9 @@ constexpr LayoutCase kSerializedTypes[] = {
     LAYOUT_CASE(WeaponTypeClass, 64),
 
     // Whole-object byte I/O outside the heaps.
-    LAYOUT_CASE(BaseClass, 64),
-    LAYOUT_CASE(ChronalVortexClass, 4440),
-    LAYOUT_CASE(LayerClass, 48),
-    LAYOUT_CASE(ScenarioClass, 2032),
 
     // Also not in SAVEGAME_VERSION.
-    LAYOUT_CASE(BaseNodeClass, 8),
-    LAYOUT_CASE(CarryoverClass, 48),
     LAYOUT_CASE(EventClass, 32),
-    LAYOUT_CASE(GameOptionsClass, 264),
-    LAYOUT_CASE(NodeNameType, 40),
-    LAYOUT_CASE(ScoreClass, 80),
-    LAYOUT_CASE(SpecialClass, 4),
 };
 
 #undef LAYOUT_CASE

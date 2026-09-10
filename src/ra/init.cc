@@ -60,6 +60,9 @@
  *pre-prolog "please wait" page.                      *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
+#include "sdllib/file_access.h"
+#include <span>
+#include <array>
 #include "ra/init.h"
 
 #include <algorithm>
@@ -144,6 +147,9 @@
 #include "tech/bench.h"
 #include "tech/buff.h"
 #include "tech/crc.h"
+#include "tech/archive.h"
+#include "tech/xpipe.h"
+#include "tech/xstraw.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/mpu.h"
@@ -457,9 +463,11 @@ bool Select_Game(bool /*fade*/) {
   bool display = true;
 
   // A -QUITFRAME run has ended when the game it started (-NEWGAME or
-  // -LOADGAME, both consumed on use) brings control back here. Leave rather
+  // -LOADGAME, both consumed on use, or recording playback) brings control
+  // back here. Leave rather
   // than wait at the menu for input that never comes.
-  if (DebugQuitAtFrame >= 0 && DebugNewGame.empty() && DebugLoadGame < 0) {
+  if (DebugQuitAtFrame >= 0 && DebugNewGame.empty() && DebugLoadGame < 0 &&
+      !Session.Play) {
     return false;
   }
 
@@ -536,9 +544,13 @@ bool Select_Game(bool /*fade*/) {
     */
     if (Session.Play && Session.RecordFile.Is_Available()) {
       if (Session.RecordFile.Open(FileAccess::kRead)) {
-        Load_Recording_Values(Session.RecordFile);
-        process = false;
-        Theme.Fade_Out();
+        if (Load_Recording_Values(Session.RecordFile)) {
+          process = false;
+          Theme.Fade_Out();
+        } else {
+          Session.RecordFile.Close();
+          Session.Play = false;
+        }
       } else {
         Session.Play = false;
       }
@@ -999,9 +1011,14 @@ bool Select_Game(bool /*fade*/) {
           if (Session.Attract && Session.RecordFile.Is_Available()) {
             Session.Play = true;
             if (Session.RecordFile.Open(FileAccess::kRead)) {
-              Load_Recording_Values(Session.RecordFile);
-              process = false;
-              Theme.Fade_Out();
+              if (Load_Recording_Values(Session.RecordFile)) {
+                process = false;
+                Theme.Fade_Out();
+              } else {
+                Session.RecordFile.Close();
+                Session.Play = false;
+                selection = SEL_NONE;
+              }
             } else {
               Session.Play = false;
               selection = SEL_NONE;
@@ -2693,17 +2710,30 @@ static void Init_Keys() {
  * HISTORY:                                                                *
  *   09/28/1995 BRR : Created.                                             *
  *=========================================================================*/
-bool Save_Recording_Values(CCFileClass& file) {
-  Session.Save(file);
-  file.Write(&BuildLevel, sizeof(BuildLevel));
-  file.Write(&Debug_Unshroud, sizeof(Debug_Unshroud));
-  file.Write(&Seed, sizeof(Seed));
-  file.Write(&Scen.Scenario, sizeof(Scen.Scenario));
-  file.Write(Scen.ScenarioName, sizeof(Scen.ScenarioName));
-  file.Write(&Whom, sizeof(Whom));
-  file.Write(&Special, sizeof(SpecialClass));
-  file.Write(&Options, sizeof(GameOptionsClass));
+template <class Archive>
+static void SerializeRecording(Archive& ar) {
+  ar.Section(FourCC("RARC"));
+  int32_t version = kSaveGameVersion;
+  ar(version);
+  if constexpr (Archive::kIsReading) {
+    if (!ar.ok() || version != kSaveGameVersion) {
+      ar.Fail("unsupported recording version");
+      return;
+    }
+  }
+  ar(Session);
+  Session.SerializePlayers(ar);
+  ar(BuildLevel, Debug_Unshroud, Seed, Scen.Scenario, Scen.ScenarioName,
+     Whom, Special, Options);
+  if constexpr (Archive::kIsReading) {
+    Scen.ScenarioName[sizeof(Scen.ScenarioName) - 1] = '\0';
+  }
+}
 
+bool Save_Recording_Values(CCFileClass& file) {
+  FilePipe pipe(file);
+  ArchiveWriter writer(pipe);
+  SerializeRecording(writer);
   return true;
 }
 
@@ -2726,16 +2756,10 @@ bool Save_Recording_Values(CCFileClass& file) {
  *   09/28/1995 BRR : Created.                                             *
  *=========================================================================*/
 bool Load_Recording_Values(CCFileClass& file) {
-  Session.Load(file);
-  file.Read(&BuildLevel, sizeof(BuildLevel));
-  file.Read(&Debug_Unshroud, sizeof(Debug_Unshroud));
-  file.Read(&Seed, sizeof(Seed));
-  file.Read(&Scen.Scenario, sizeof(Scen.Scenario));
-  file.Read(Scen.ScenarioName, sizeof(Scen.ScenarioName));
-  file.Read(&Whom, sizeof(Whom));
-  file.Read(&Special, sizeof(SpecialClass));
-  file.Read(&Options, sizeof(GameOptionsClass));
-  return true;
+  FileStraw straw(file);
+  ArchiveReader reader(straw);
+  SerializeRecording(reader);
+  return reader.ok();
 }
 
 void Extract(const char* filename, const char* outname) {

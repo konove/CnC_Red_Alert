@@ -18,8 +18,15 @@
 
 #include "tech/archive.h"
 
+template <class T>
+class DynamicVectorClass;
+
 class ObjectClass;
 class TechnoTypeClass;
+
+// Saves an ordered list of object TARGETs. Read only after all object heaps.
+template <class Archive>
+void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects);
 
 // Resolves a saved TARGET to the raw heap slot it names, without looking at
 // the slot's contents. Returns nullptr for kTargetNone. Records an error on

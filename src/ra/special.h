@@ -44,6 +44,10 @@
 
 class SpecialClass {
  public:
+  // Field-wise saved-game state; read and write share this field list.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   /*
   **	This initializes all members just like a constructor. A constructor
   **	cannot be used for this class because it is part of a union.

@@ -2,18 +2,19 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Steps 0–16 are committed; step 16 is `3dc9d787` (UnitClass/VesselClass). `45013c52` fixes `-NOMOVIES`.
-- Step 17 is implemented and verified. Save version is **15**.
-  Map/Cell, crate timers, radar state, and sidebar production entries now use field-wise serialization.
-  The live map and cell array stay constructed; repair/sell/targeting modes and transient UI animations reset.
-- `Init_Cells()` must run before restoring map fields because it clears `TotalValue`.
-- `LinkClass`'s NoInit constructor remains until step 18: the raw Carryover load still calls it. The other
-  map/UI NoInit constructors, plus VectorClass and TargetClass, are removed in step 17.
-- Next implementation step is **18: RA globals**. Keep remaining raw-image globals and their NoInit paths
-  intact until then; heap infrastructure cleanup remains step 19.
-- Validation: strict build of both games and **148 CTest tests** pass, including four new crate tests.
-  Headless smoke tests pass for `SCG01EA` and `SCU01EA` (240 matching vehicle/vessel positions each) and
-  `SCG02EA` (120 matching positions). A real-display playthrough remains outstanding.
+- Steps 0–17 are committed; step 17 is `4fc3e47c` (Map/Cell). `45013c52` fixes `-NOMOVIES`.
+- Step 18 is complete. Save version is **16**.
+  Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
+  field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
+- Session saves and recordings share their common field list. Only recordings serialize the player roster:
+  network save loading must retain connected peers for `Reconcile_Players()`.
+- Recordings use `RARC` plus the save-format version to reject incompatible data. Both playback entry
+  points honor load failure. Options restore game speed only, preserving local controls/audio/display settings.
+- Next implementation step is **19: RA cleanup** (remaining archive/heap NoInit infrastructure and save dump).
+- Validation: strict build of both games and all **152 CTest tests** pass. Headless save/load checks pass
+  for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
+  Headless SCG01EA recording/playback also matches all 240 positions, with the `RARC`/version-16 header.
+- A real-display playthrough and live multiplayer end-to-end checks remain outstanding.
 
 ## Context
 
@@ -174,7 +175,8 @@ Read sequence: `Reset_Theater_Shapes`/`Init_Theater(Scen.Theater)` + 11 `XTypeCl
   volumes into the loader — a bug). Call out in the commit message.
 - `ChronalVortexClass`: state fields only; remap tables (3.8 KB) and `RenderBuffer` are caches → on read
   `Theater = THEATER_NONE; Setup_Remap_Tables(Scen.Theater)`. Delete the null/restore dance (`vortex.cc:311-353`).
-- `SessionClass`/`NodeNameType`: one shared field list for the Pipe and CCFileClass variants; write `Type` in both;
+- `SessionClass`/`NodeNameType`: one shared session field list for the Pipe and CCFileClass variants; write `Type` in both.
+  Keep the player roster recording-only: network loads retain connected peers for `Reconcile_Players()`.
   `NodeNameType` = `Name`, `Address` bytes, Player arm of the union.
 - `BaseClass`: `House`, count, per node `Type`, `Cell`; drop the `sizeof(*this)` guard.
 - Trigger vectors, `LayerClass`, `CurrentObject`: count `int32` + TARGET via the archive.
@@ -323,7 +325,8 @@ the `RawImage` branch rows of `ra/heap_layout_test.cc`.
 ## Files
 
 New: `src/tech/archive.h`, `src/tech/archive_test.cc`, `src/ra/serialize.h`, `src/ra/serialize.cc`,
-`src/ra/heap_instances.cc`, `src/ra/heap_test.cc`, `src/ra/crate_test.cc`, `src/td/saveload_test.cc`.
+`src/ra/heap_instances.cc`, `src/ra/heap_test.cc`, `src/ra/crate_test.cc`, `src/ra/saveglobals.cc`,
+`src/ra/saveglobals_test.cc`, `src/td/saveload_test.cc`.
 Deleted: `src/tech/noinit.h`, `src/ra/heap_layout_test.cc`, `src/td/heap_layout_test.cc`, `src/td/session.h`, `src/td/wwfile.h`.
 Modified (core): `src/ra/heap.h/.cc`, `ra/ioobj.cc`, `ra/iomap.cc`, `ra/saveload.h/.cc`, `ra/ccptr.h`, `ra/target.h/.cc`,
 `tech/fixed.h`, `tech/ftimer.h`, the 17 RA heap classes + bases/mixins, the Map chain headers, `ra/scenario.h`,
@@ -333,7 +336,8 @@ Modified (core): `src/ra/heap.h/.cc`, `ra/ioobj.cc`, `ra/iomap.cc`, `ra/saveload
 
 ## Verification
 
-- Unit: `archive_test`, `fixed_test`, `ra_crate_test` (default state, timer preservation, invalid cells, truncated timer), timer tests, `ra_heap_test` (sparse indices, `ID != idx` rejected, count mismatch
+- Unit: `ra_saveglobals_test` (all Special bitmasks, wide score counters, stopwatch state, truncated scores,
+  player names/addresses/fields), `archive_test`, `fixed_test`, `ra_crate_test` (default state, timer preservation, invalid cells, truncated timer), timer tests, `ra_heap_test` (sparse indices, `ID != idx` rejected, count mismatch
   rejected), `CCPtr` range check, small mixins (`StageClass`, `TDEventClass`, `RegionClass`, `HouseStaticClass`,
   `FlasherClass`), `td_saveload_test`. Game objects and `CellClass` need the full `rasdl` link and are not unit-testable.
 - In-game smoke after every flip commit: build `rasdl`, run with real SDL and the Steam MIX files (dummy video driver

@@ -35,7 +35,6 @@
  *---------------------------------------------------------------------------------------------*
  * Field-wise heap serialization and legacy layer/score save support.
  */
-#include <cassert>
 #include <cstdint>
 
 #include "ra/abstract.h"
@@ -44,7 +43,6 @@
 #include "ra/building.h"
 #include "ra/bullet.h"
 #include "ra/cargo.h"
-#include "ra/defines.h"
 #include "ra/door.h"
 #include "ra/drive.h"
 #include "ra/factory.h"
@@ -54,17 +52,14 @@
 #include "ra/fuse.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
-#include "ra/jshell.h"
 #include "ra/layer.h"
 #include "ra/mission.h"
 #include "ra/object.h"
 #include "ra/overlay.h"
 #include "ra/radio.h"
-#include "ra/score.h"
 #include "ra/serialize.h"
 #include "ra/smudge.h"
 #include "ra/stage.h"
-#include "ra/target.h"
 #include "ra/team.h"
 #include "ra/teamtype.h"
 #include "ra/techno.h"
@@ -74,11 +69,7 @@
 #include "ra/trigtype.h"
 #include "ra/type.h"
 #include "ra/unit.h"
-#include "ra/vector.h"
 #include "ra/vessel.h"
-#include "tech/ftimer.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 template <class Archive>
 void TeamMemberClass::Serialize(Archive& ar) {
@@ -498,121 +489,12 @@ void FactoryClass::Serialize(Archive& ar) {
 template void FactoryClass::Serialize(ArchiveWriter&);
 template void FactoryClass::Serialize(ArchiveReader&);
 
-/***********************************************************************************************
- * LayerClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool LayerClass::Load(Straw& file) {
-  /*
-  **	Read # elements in the layer
-  */
-  int32_t count;
-  if (file.Get(&count, sizeof(count)) != sizeof(count)) {
-    return false;
-  }
-
-  /*
-  **	Clear the array
-  */
-  Clear();
-
-  /*
-  **	Read in all array elements
-  */
-  for (int index = 0; index < count; index++) {
-    ObjectClass* ptr;
-    if (file.Get(static_cast<void*>(&ptr), sizeof(ObjectClass*)) !=
-        sizeof(ObjectClass*)) {
-      return false;
-    }
-    Add(ptr);
-  }
-
-  return true;
+template <class Archive>
+void LayerClass::Serialize(Archive& ar) {
+  SerializeObjectList(ar, *this);
 }
-
-/***********************************************************************************************
- * LayerClass::Save -- Write to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool LayerClass::Save(Pipe& file) const {
-  /*
-  **	Save # array elements
-  */
-  // Same width as Load reads; base::ssize is 8 bytes here and Load read 4.
-  int32_t count = static_cast<int32_t>(Count());
-  file.Put(&count, sizeof(count));
-
-  /*
-  **	Save all elements
-  */
-  for (int index = 0; index < count; index++) {
-    ObjectClass* ptr = (*this)[index];
-    file.Put(static_cast<const void*>(&ptr), sizeof(ObjectClass*));
-  }
-
-  return true;
-}
-
-/***********************************************************************************************
- * LayerClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void LayerClass::Code_Pointers() {
-  for (int index = 0; index < Count(); index++) {
-    ObjectClass* obj = (*this)[index];
-    assert(obj != nullptr);
-    (*this)[index] = (ObjectClass*)obj->As_Target();
-  }
-}
-
-/***********************************************************************************************
- * LayerClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void LayerClass::Decode_Pointers() {
-  for (int index = 0; index < Count(); index++) {
-    TARGET target = static_cast<TARGET>((intptr_t)(*this)[index]);
-    (*this)[index] = As_Object(target);
-    assert((*this)[index] != nullptr);
-  }
-}
+template void LayerClass::Serialize(ArchiveWriter&);
+template void LayerClass::Serialize(ArchiveReader&);
 
 template <class Archive>
 void HouseClass::Serialize(Archive& ar) {
@@ -692,29 +574,3 @@ void HouseClass::Serialize(Archive& ar) {
 }
 template void HouseClass::Serialize(ArchiveWriter&);
 template void HouseClass::Serialize(ArchiveReader&);
-
-/***********************************************************************************************
- * ScoreClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void ScoreClass::Code_Pointers() { RealTime.Stop(); }
-
-/***********************************************************************************************
- * ScoreClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void ScoreClass::Decode_Pointers() { RealTime.Start(); }

@@ -267,6 +267,10 @@ class PhoneEntryClass {
 //	'Game' structure is used for games; the 'Player' structure for players.
 //...........................................................................
 typedef struct NodeNameTag {
+  // Only the Player arm is saved; Game and Chat describe live discovery data.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   char Name[MPLAYER_NAME_MAX];  // player or game name
   IPXAddressClass Address;
   union {
@@ -517,7 +521,14 @@ class SessionClass {
   //.....................................................................
   // File I/O
   //.....................................................................
-  int Save(Pipe& file) const;
+  // Session state shared by saved games and recordings. Connected peers stay local.
+  template <class Archive>
+  void Serialize(Archive& ar);
+  // Recording-only player roster; network load keeps the connected roster.
+  template <class Archive>
+  void SerializePlayers(Archive& ar);
+
+  int Save(Pipe& file);
   int Load(Straw& file);
   int Save(CCFileClass& file);
   int Load(CCFileClass& file);
@@ -573,7 +584,7 @@ class SessionClass {
   // 'FrameSendRate' is the # frames between data packets
   //.....................................................................
   int MaxAhead;
-  long FrameSendRate;
+  int64_t FrameSendRate;
 
   int DesiredFrameRate;
 

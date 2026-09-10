@@ -40,30 +40,32 @@
 #ifndef CNC_RED_ALERT_RA_SCORE_H_
 #define CNC_RED_ALERT_RA_SCORE_H_
 
+#include <cstdint>
+
 #include "ra/jshell.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/wwstd.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 class ScoreClass {
  public:
-  ScoreClass() {}
-  ScoreClass(const NoInitClass&) {}
+  // Field-wise saved-game state; read and write share this field list.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
-  int Score;
-  int NKilled;
-  int GKilled;
-  int CKilled;
-  int NBKilled;
-  int GBKilled;
-  int CBKilled;
-  int NHarvested;
-  int GHarvested;
-  int CHarvested;
-  unsigned long ElapsedTime;
+  ScoreClass() = default;
+
+  int Score = 0;
+  int NKilled = 0;
+  int GKilled = 0;
+  int CKilled = 0;
+  int NBKilled = 0;
+  int GBKilled = 0;
+  int CBKilled = 0;
+  int NHarvested = 0;
+  int GHarvested = 0;
+  int CHarvested = 0;
+  int64_t ElapsedTime = 0;
   Stopwatch<SystemTickSource> RealTime;
 
   void Init();
@@ -72,13 +74,9 @@ class ScoreClass {
   /*
   **	File I/O.
   */
-  bool Load(Straw& file);
-  bool Save(Pipe& file) const;
-  void Code_Pointers();
-  void Decode_Pointers();
 
  private:
-  unsigned char* ChangingGun;
+  unsigned char* ChangingGun = nullptr;
 
   void ScoreDelay(int ticks);
   void Pulse_Bar_Graph();

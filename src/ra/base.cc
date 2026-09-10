@@ -49,7 +49,11 @@
  *-- greater-than operator                                        *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
+#include "base/types.h"
+#include "magic_enum/magic_enum.hpp"
+#include <cstdint>
 #include "ra/base.h"
+#include "tech/archive.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -114,100 +118,6 @@ int BaseNodeClass::operator!=(const BaseNodeClass& node) {
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
 int BaseNodeClass::operator>(const BaseNodeClass&) { return true; }
-
-/***********************************************************************************************
- * BaseClass::Load -- loads from a saved game file *
- *                                                                                             *
- * INPUT: * file      open file *
- *                                                                                             *
- * OUTPUT: * true = success, false = failure *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 03/24/1995 BRR : Created. * 07/04/1996 JLB : Converted to demand
- *driven data source.                                  *
- *=============================================================================================*/
-bool BaseClass::Load(Straw& file) {
-  int num_struct;
-  int i;
-  BaseNodeClass node;
-
-  /*
-  ** Read in & check the size of this class
-  */
-  if (file.Get(&i, sizeof(i)) != sizeof(i)) {
-    return false;
-  }
-
-  if (i != sizeof(*this)) {
-    return false;
-  }
-
-  /*
-  ** Read in the House & the number of structures in the base
-  */
-  if (file.Get(&House, sizeof(House)) != sizeof(House)) {
-    return false;
-  }
-
-  if (file.Get(&num_struct, sizeof(num_struct)) != sizeof(num_struct)) {
-    return false;
-  }
-
-  /*
-  ** Read each node entry & add it to the list
-  */
-  for (i = 0; i < num_struct; i++) {
-    if (file.Get(&node, sizeof(node)) != sizeof(node)) {
-      return false;
-    }
-    Nodes.Add(node);
-  }
-
-  return true;
-}
-
-/***********************************************************************************************
- * BaseClass::Save -- saves to a saved game file *
- *                                                                                             *
- * INPUT: * file      open file *
- *                                                                                             *
- * OUTPUT: * true = success, false = failure *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 03/24/1995 BRR : Created. * 07/04/1996 JLB : Converted to supply
- *driven data output.                                  *
- *=============================================================================================*/
-bool BaseClass::Save(Pipe& file) const {
-  int num_struct;
-  int i;
-  BaseNodeClass node;
-
-  /*
-  ** Write the size of this class
-  */
-  i = sizeof(*this);
-  file.Put(&i, sizeof(i));
-
-  /*
-  ** Write the House & the number of structures in the base
-  */
-  file.Put(&House, sizeof(House));
-
-  num_struct = static_cast<int>(Nodes.Count());
-  file.Put(&num_struct, sizeof(num_struct));
-
-  /*
-  ** Write each node entry
-  */
-  for (i = 0; i < num_struct; i++) {
-    node = Nodes[i];
-    file.Put(&node, sizeof(node));
-  }
-
-  return true;
-}
 
 /***********************************************************************************************
  * BaseClass::Is_Built -- Tells if given item in the list has been built yet *
@@ -511,3 +421,33 @@ void BaseClass::Write_INI(CCINIClass& ini) {
     }
   }
 }
+
+template <class Archive>
+void BaseClass::Serialize(Archive& ar) {
+  ar(House);
+  int32_t count = static_cast<int32_t>(Nodes.Count());
+  ar(count);
+  if constexpr (Archive::kIsReading) {
+    if (!ar.ok() || count < 0 || count > MAP_CELL_TOTAL) {
+      ar.Fail("invalid base node count");
+      return;
+    }
+    Nodes.Clear();
+    for (int i = 0; i < count; ++i) {
+      BaseNodeClass node;
+      ar(node.Type, node.Cell);
+      if (!ar.ok() || !magic_enum::enum_contains(node.Type) ||
+          node.Cell < 0 || node.Cell >= MAP_CELL_TOTAL) {
+        ar.Fail("invalid base node");
+        return;
+      }
+      Nodes.Add(node);
+    }
+  } else {
+    for (int i = 0; i < count; ++i) {
+      ar(Nodes[i].Type, Nodes[i].Cell);
+    }
+  }
+}
+template void BaseClass::Serialize(ArchiveWriter&);
+template void BaseClass::Serialize(ArchiveReader&);

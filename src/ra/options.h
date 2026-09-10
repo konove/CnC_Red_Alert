@@ -46,6 +46,10 @@
 
 class OptionsClass {
  public:
+  // Field-wise saved-game state; read and write share this field list.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   enum { MAX_SCROLL_SETTING = 7, MAX_SPEED_SETTING = 7 };
 
   OptionsClass();

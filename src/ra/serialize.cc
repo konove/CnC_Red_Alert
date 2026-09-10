@@ -24,6 +24,8 @@
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/vessel.h"
+#include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 #include "tech/archive.h"
 
 namespace {
@@ -147,3 +149,34 @@ void TechnoTypePtr::Serialize(ArchiveReader& ar) {
     ar.Fail("saved techno type target does not name a type");
   }
 }
+
+template <class Archive>
+void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects) {
+  int32_t count = static_cast<int32_t>(objects.Count());
+  ar(count);
+  if constexpr (Archive::kIsReading) {
+    const int capacity = Aircraft.Length() + Anims.Length() + Buildings.Length() +
+        Bullets.Length() + Infantry.Length() + Overlays.Length() + Smudges.Length() +
+        Templates.Length() + Terrains.Length() + Units.Length() + Vessels.Length();
+    if (!ar.ok() || count < 0 || count > capacity) {
+      ar.Fail("invalid saved object list count");
+      return;
+    }
+    objects.Clear();
+    for (int i = 0; i < count; ++i) {
+      ObjectClass* object = nullptr;
+      ar(ObjectPtr(object));
+      if (!ar.ok() || object == nullptr) {
+        ar.Fail("invalid saved object list entry");
+        return;
+      }
+      objects.Add(object);
+    }
+  } else {
+    for (int i = 0; i < count; ++i) {
+      ar(ObjectPtr(objects[i]));
+    }
+  }
+}
+template void SerializeObjectList(ArchiveWriter&, DynamicVectorClass<ObjectClass*>&);
+template void SerializeObjectList(ArchiveReader&, DynamicVectorClass<ObjectClass*>&);

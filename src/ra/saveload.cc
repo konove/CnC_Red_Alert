@@ -33,23 +33,13 @@
  *                  Last Update : July 8, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * Code_All_Pointers -- Code all pointers. * Decode_All_Pointers --
- *Decodes all pointers.                                              *
- *   Get_Savefile_Info -- gets description, scenario #, house * Load_Game --
- *loads a saved game                                                           *
- *   Load_MPlayer_Values -- Loads multiplayer-specific values * Load_Misc_Values
- *-- loads miscellaneous variables                                         *
- *   MPlayer_Save_Message -- pops up a "saving..." message * Put_All -- Store
- *all save game data to the pipe.                                          *
- *   Reconcile_Players -- Reconciles loaded data with the 'Players' vector
- ** Save_Game -- saves a game to disk * Save_MPlayer_Values -- Saves
- *multiplayer-specific values                                  *
- *   Save_Misc_Values -- saves miscellaneous variables *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+ * Field-wise saved-game orchestration and post-load fixups.
+ */
 
 #include "ra/saveload.h"
+#include "ra/serialize.h"
 
+#include <array>
 #include <cassert>
 #include <cctype>
 #include <cstdint>
@@ -57,6 +47,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <new>
+
+#include <vector>
 
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -118,7 +110,6 @@
 #include "tech/blwstraw.h"
 #include "tech/lzopipe.h"
 #include "tech/lzostraw.h"
-#include "tech/noinit.h"
 #include "tech/rawfile.h"
 #include "tech/shapipe.h"
 #include "tech/shastraw.h"
@@ -143,6 +134,69 @@ static bool Get_Section(Straw& straw, uint32_t tag) {
   return reader.Section(tag);
 }
 
+// Trigger lists load after the trigger heap, so targets can resolve directly.
+template <class Archive>
+static void SerializeTriggerList(Archive& ar, DynamicVectorClass<TriggerClass*>& list) {
+  int32_t count = static_cast<int32_t>(list.Count());
+  ar(count);
+  if constexpr (Archive::kIsReading) {
+    if (!ar.ok() || count < 0 || count > Triggers.Length()) {
+      ar.Fail("invalid trigger list count");
+      return;
+    }
+    list.Clear();
+  }
+  for (int i = 0; i < count; ++i) {
+    TARGET target = kTargetNone;
+    if constexpr (!Archive::kIsReading) {
+      target = list[i]->As_Target();
+    }
+    ar(target);
+    if constexpr (Archive::kIsReading) {
+      if (!ar.ok() || !Is_Target_Trigger(target) ||
+          Target_Value(target) >= static_cast<unsigned>(Triggers.Length())) {
+        ar.Fail("invalid saved trigger target");
+        return;
+      }
+      list.Add(As_Trigger(target));
+    }
+  }
+}
+
+template <class Archive>
+static void SerializeTriggerLists(Archive& ar) {
+  SerializeTriggerList(ar, MapTriggers);
+  SerializeTriggerList(ar, LogicTriggers);
+  for (HousesType house : magic_enum::enum_values<HousesType>()) {
+    SerializeTriggerList(ar, HouseTriggers[house]);
+  }
+}
+
+template <class Archive>
+static void SerializeCarryover(Archive& ar) {
+  int32_t count = static_cast<int32_t>(Carryover.size());
+  ar(count);
+  if constexpr (Archive::kIsReading) {
+    if (!ar.ok() || count < 0 || count > MAP_CELL_TOTAL) {
+      ar.Fail("invalid carryover count");
+      return;
+    }
+    Carryover.clear();
+    for (int i = 0; i < count; ++i) {
+      CarryoverClass object;
+      ar(object);
+      if (!ar.ok()) {
+        return;
+      }
+      Carryover.push_back(object);
+    }
+  } else {
+    for (auto& object : Carryover) {
+      ar(object);
+    }
+  }
+}
+
 /***********************************************************************************************
  * Put_All -- Store all save game data to the pipe. *
  *                                                                                             *
@@ -159,17 +213,18 @@ static bool Get_Section(Straw& straw, uint32_t tag) {
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
 static void Put_All(Pipe& pipe, int save_net) {
+  ArchiveWriter writer(pipe);
   /*
   **	Frame goes first: every frame-based timer re-anchors to it when read.
   */
   Put_Section(pipe, FourCC("FRAM"));
-  ArchiveWriter{pipe}(Frame);
+  writer(Frame);
 
   /*
   **	Save the scenario global information.
   */
   Put_Section(pipe, FourCC("SCEN"));
-  pipe.Put(&Scen, sizeof(Scen));
+  writer(Scen);
 
   /*
   **	Save the map.  The map must be saved first, since it saves the Theater.
@@ -281,37 +336,10 @@ static void Put_All(Pipe& pipe, int save_net) {
   **	Save the Logic & Map layers
   */
   Put_Section(pipe, FourCC("LOGC"));
-  Logic.Save(pipe);
+  writer(Logic);
 
-  // int32_t on both sides: Load_Game reads the same width. A base::ssize here
-  // is 8 bytes on 64-bit and made every save unreadable by its own build.
   Put_Section(pipe, FourCC("TRGV"));
-  int32_t count = static_cast<int32_t>(MapTriggers.Count());
-  pipe.Put(&count, sizeof(count));
-  for (int index = 0; index < MapTriggers.Count(); index++) {
-    TARGET target = MapTriggers[index]->As_Target();
-    pipe.Put(&target, sizeof(target));
-  }
-  if (!save_net) {
-    Call_Back();
-  }
-  count = static_cast<int32_t>(LogicTriggers.Count());
-  pipe.Put(&count, sizeof(count));
-  for (int index = 0; index < LogicTriggers.Count(); index++) {
-    TARGET target = LogicTriggers[index]->As_Target();
-    pipe.Put(&target, sizeof(target));
-  }
-  if (!save_net) {
-    Call_Back();
-  }
-  for (HousesType h : magic_enum::enum_values<HousesType>()) {
-    count = static_cast<int32_t>(HouseTriggers[h].Count());
-    pipe.Put(&count, sizeof(count));
-    for (int index = 0; index < HouseTriggers[h].Count(); index++) {
-      TARGET target = HouseTriggers[h][index]->As_Target();
-      pipe.Put(&target, sizeof(target));
-    }
-  }
+  SerializeTriggerLists(writer);
   if (!save_net) {
     Call_Back();
   }
@@ -319,7 +347,7 @@ static void Put_All(Pipe& pipe, int save_net) {
   Put_Section(pipe, FourCC("LAYR"));
   for (int i = 0; i < static_cast<int>(magic_enum::enum_count<LayerType>());
        i++) {
-    MouseClass::Layer[i].Save(pipe);
+    writer(MouseClass::Layer[i]);
   }
 
   if (!save_net) {
@@ -330,7 +358,7 @@ static void Put_All(Pipe& pipe, int save_net) {
   **	Save the Score
   */
   Put_Section(pipe, FourCC("SCOR"));
-  pipe.Put(&Score, sizeof(Score));
+  writer(Score);
   if (!save_net) {
     Call_Back();
   }
@@ -339,44 +367,13 @@ static void Put_All(Pipe& pipe, int save_net) {
   **	Save the AI Base
   */
   Put_Section(pipe, FourCC("BASE"));
-  Base.Save(pipe);
+  writer(Base);
   if (!save_net) {
     Call_Back();
   }
 
-  /*
-  **	Save out the carry over list (if present). First see how
-  **	many carry over objects are in the list.
-  */
   Put_Section(pipe, FourCC("CARY"));
-  int carry_count = 0;
-  const CarryoverClass* cptr = Carryover;
-  while (cptr != nullptr) {
-    carry_count++;
-    cptr = dynamic_cast<const CarryoverClass*>(cptr->Get_Next());
-  }
-
-  if (!save_net) {
-    Call_Back();
-  }
-
-  /*
-  **	Save out the number of objects in the list.
-  */
-  pipe.Put(&carry_count, sizeof(carry_count));
-  if (!save_net) {
-    Call_Back();
-  }
-
-  /*
-  **	Now write out the objects themselves.
-  */
-  const CarryoverClass* object_to_write = Carryover;
-  while (object_to_write != nullptr) {
-    pipe.Put(object_to_write, sizeof(*object_to_write));
-    object_to_write =
-        dynamic_cast<const CarryoverClass*>(object_to_write->Get_Next());
-  }
+  SerializeCarryover(writer);
   if (!save_net) {
     Call_Back();
   }
@@ -462,11 +459,6 @@ bool Save_Game(int id, const char* descr, bool) {
   }
 
   /*
-  **	Code everybody's pointers
-  */
-  Code_All_Pointers();
-
-  /*
   **	Open the file
   */
   BufferIOFileClass file(name);
@@ -535,8 +527,6 @@ bool Save_Game(int id, const char* descr, bool) {
   fpipe.Put(digest, sizeof(digest));
 
   pipe.End();
-
-  Decode_All_Pointers();
 
   return true;
 }
@@ -695,7 +685,11 @@ bool Load_Game(int id) {
   if (!Get_Section(straw, FourCC("FRAM"))) {
     return false;
   }
-  ArchiveReader{straw}(Frame);
+  ArchiveReader reader(straw);
+  reader(Frame);
+  if (!reader.ok()) {
+    return false;
+  }
 
   /*
   **	Load the scenario global information.
@@ -703,7 +697,10 @@ bool Load_Game(int id) {
   if (!Get_Section(straw, FourCC("SCEN"))) {
     return false;
   }
-  straw.Get(&Scen, sizeof(Scen));
+  reader(Scen);
+  if (!reader.ok()) {
+    return false;
+  }
 
   /*
   **	Fixup the Sessionclass scenario info so we can work out which
@@ -828,43 +825,27 @@ bool Load_Game(int id) {
   if (!Get_Section(straw, FourCC("LOGC"))) {
     return false;
   }
-  Logic.Load(straw);
+  reader(Logic);
+  if (!reader.ok()) {
+    return false;
+  }
 
   if (!Get_Section(straw, FourCC("TRGV"))) {
     return false;
   }
-  int32_t count;
-  straw.Get(&count, sizeof(count));
-  MapTriggers.Clear();
-  for (int index = 0; index < count; index++) {
-    TARGET target;
-    straw.Get(&target, sizeof(target));
-    MapTriggers.Add(As_Trigger(target));
-  }
-
-  straw.Get(&count, sizeof(count));
-  LogicTriggers.Clear();
-  for (int index = 0; index < count; index++) {
-    TARGET target;
-    straw.Get(&target, sizeof(target));
-    LogicTriggers.Add(As_Trigger(target));
-  }
-
-  for (HousesType h : magic_enum::enum_values<HousesType>()) {
-    straw.Get(&count, sizeof(count));
-    HouseTriggers[h].Clear();
-    for (int index = 0; index < count; index++) {
-      TARGET target;
-      straw.Get(&target, sizeof(target));
-      HouseTriggers[h].Add(As_Trigger(target));
-    }
+  SerializeTriggerLists(reader);
+  if (!reader.ok()) {
+    return false;
   }
 
   if (!Get_Section(straw, FourCC("LAYR"))) {
     return false;
   }
   for (i = 0; i < static_cast<int>(magic_enum::enum_count<LayerType>()); i++) {
-    MouseClass::Layer[i].Load(straw);
+    reader(MouseClass::Layer[i]);
+    if (!reader.ok()) {
+      return false;
+    }
   }
 
   Call_Back();
@@ -875,8 +856,10 @@ bool Load_Game(int id) {
   if (!Get_Section(straw, FourCC("SCOR"))) {
     return false;
   }
-  straw.Get(&Score, sizeof(Score));
-  new (&Score) ScoreClass(NoInitClass());
+  reader(Score);
+  if (!reader.ok()) {
+    return false;
+  }
 
   /*
   **	Load the AI Base
@@ -884,42 +867,18 @@ bool Load_Game(int id) {
   if (!Get_Section(straw, FourCC("BASE"))) {
     return false;
   }
-  Base.Load(straw);
+  reader(Base);
+  if (!reader.ok()) {
+    return false;
+  }
 
-  /*
-  **	Delete any carryover pseudo-saved game list.
-  */
   if (!Get_Section(straw, FourCC("CARY"))) {
     return false;
   }
-  while (Carryover != nullptr) {
-    CarryoverClass* cptr = dynamic_cast<CarryoverClass*>(Carryover->Get_Next());
-    Carryover->Remove();
-    delete Carryover;
-    Carryover = cptr;
+  SerializeCarryover(reader);
+  if (!reader.ok()) {
+    return false;
   }
-
-  /*
-  **	Load any carryover pseudo-saved game list.
-  */
-  int carry_count = 0;
-  straw.Get(&carry_count, sizeof(carry_count));
-  while (carry_count) {
-    CarryoverClass* cptr = new CarryoverClass;
-    assert(cptr != nullptr);
-
-    straw.Get(cptr, sizeof(CarryoverClass));
-    new (cptr) CarryoverClass(NoInitClass());
-    cptr->Zap();
-
-    if (!Carryover) {
-      Carryover = cptr;
-    } else {
-      cptr->Add_Tail(*Carryover);
-    }
-    carry_count--;
-  }
-
   Call_Back();
 
   /*
@@ -928,7 +887,9 @@ bool Load_Game(int id) {
   if (!Get_Section(straw, FourCC("MISC"))) {
     return false;
   }
-  Load_Misc_Values(straw);
+  if (!Load_Misc_Values(straw)) {
+    return false;
+  }
 
   /*
   **	Load multiplayer values
@@ -937,11 +898,24 @@ bool Load_Game(int id) {
     if (!Get_Section(straw, FourCC("MPLY"))) {
       return false;
     }
-    Load_MPlayer_Values(straw);
+    if (!Load_MPlayer_Values(straw)) {
+      return false;
+    }
   }
 
   file.Close();
-  Decode_All_Pointers();
+  Whom = PlayerPtr->Class->House;
+  if (Map.PendingObjectPtr) {
+    Map.PendingObject = &Map.PendingObjectPtr->Class_Of();
+    assert(Map.PendingObject != nullptr);
+    Map.Set_Cursor_Shape(Map.PendingObject->Occupy_List(true));
+#ifdef BG
+    Map.Set_Placement_List(Map.PendingObject->Placement_List(true));
+#endif
+  } else {
+    Map.PendingObject = nullptr;
+    Map.Set_Cursor_Shape(nullptr);
+  }
   Map.Init_IO();
   Map.Flag_To_Redraw(true);
 
@@ -1138,43 +1112,36 @@ bool Load_Game(int id) {
  *   12/29/1994 BR : Created.                                              *
  *   03/12/1996 JLB : Simplified.                                          *
  *=========================================================================*/
-bool Save_Misc_Values(Pipe& file) {
-  int i;
-  int count;         // # ptrs in 'CurrentObject'
-  ObjectClass* ptr;  // for saving 'CurrentObject' ptrs
-
-  /*
-  **	Player's House.
-  */
-  int x = PlayerPtr->Class->House;
-  file.Put(&x, sizeof(x));
-
-  /*
-  **	Save currently-selected objects list.
-  **	Save the # of ptrs in the list.
-  */
-  count = static_cast<int>(CurrentObject.Count());
-  file.Put(&count, sizeof(count));
-
-  /*
-  **	Save the pointers.
-  */
-  for (i = 0; i < count; i++) {
-    ptr = CurrentObject[i];
-    file.Put(static_cast<const void*>(&ptr), sizeof(void*));
+template <class Archive>
+static void SerializeMisc(Archive& ar) {
+  HousesType house = HOUSE_NONE;
+  if constexpr (!Archive::kIsReading) {
+    house = PlayerPtr->Class->House;
   }
+  ar(house);
+  if constexpr (Archive::kIsReading) {
+    if (!ar.ok() || !magic_enum::enum_contains(house)) {
+      ar.Fail("invalid player house");
+      return;
+    }
+    PlayerPtr = HouseClass::As_Pointer(house);
+    if (PlayerPtr == nullptr) {
+      ar.Fail("player house is absent");
+      return;
+    }
+  }
+  SerializeObjectList(ar, CurrentObject);
+  ar(ChronalVortex, IsTanyaDead, SaveTanya);
+}
 
-  /*
-  ** Save the chronal vortex
-  */
-  ChronalVortex.Save(file);
+template <class Archive>
+static void SerializeMultiplayer(Archive& ar) {
+  ar(Session, BuildLevel, Debug_Unshroud, Seed, Whom, Special, Options);
+}
 
-  /*
-  **	Save Tanya flags.
-  */
-  file.Put(&IsTanyaDead, sizeof(IsTanyaDead));
-  file.Put(&SaveTanya, sizeof(SaveTanya));
-
+bool Save_Misc_Values(Pipe& file) {
+  ArchiveWriter writer(file);
+  SerializeMisc(writer);
   return true;
 }
 
@@ -1190,43 +1157,9 @@ bool Save_Misc_Values(Pipe& file) {
  * HISTORY: * 06/24/1995 BRR : Created. * 03/12/1996 JLB : Simplified. *
  *=============================================================================================*/
 bool Load_Misc_Values(Straw& file) {
-  ObjectClass* ptr;  // for loading 'CurrentObject' ptrs
-
-  /*
-  **	Player's House.
-  */
-  int x;
-  file.Get(&x, sizeof(x));
-  //	file.Get(&PlayerPtr, sizeof(PlayerPtr));
-  PlayerPtr = HouseClass::As_Pointer(static_cast<HousesType>(x));
-
-  /*
-  **	Load currently-selected objects list.
-  **	Load the # of ptrs in the list.
-  */
-  int count;  // # ptrs in 'CurrentObject'
-  file.Get(&count, sizeof(count));
-
-  /*
-  **	Load the pointers.
-  */
-  for (int i = 0; i < count; i++) {
-    file.Get(static_cast<void*>(&ptr), sizeof(void*));
-    CurrentObject.Add(ptr);  // add to the list
-  }
-
-  /*
-  ** Load the chronal vortex
-  */
-  ChronalVortex.Load(file);
-
-  /*
-  **	Save Tanya flags.
-  */
-  file.Get(&IsTanyaDead, sizeof(IsTanyaDead));
-  file.Get(&SaveTanya, sizeof(SaveTanya));
-
-  return true;
+  ArchiveReader reader(file);
+  SerializeMisc(reader);
+  return reader.ok();
 }
 
 /***************************************************************************
@@ -1257,14 +1190,8 @@ bool Load_Misc_Values(Straw& file) {
  *   09/28/1995 BRR : Created.                                             *
  *=========================================================================*/
 bool Save_MPlayer_Values(Pipe& file) {
-  Session.Save(file);
-  file.Put(&BuildLevel, sizeof(BuildLevel));
-  file.Put(&Debug_Unshroud, sizeof(Debug_Unshroud));
-  file.Put(&Seed, sizeof(Seed));
-  file.Put(&Whom, sizeof(Whom));
-  file.Put(&Special, sizeof(SpecialClass));
-  file.Put(&Options, sizeof(GameOptionsClass));
-
+  ArchiveWriter writer(file);
+  SerializeMultiplayer(writer);
   return true;
 }
 
@@ -1287,125 +1214,9 @@ bool Save_MPlayer_Values(Pipe& file) {
  *   09/28/1995 BRR : Created.                                             *
  *=========================================================================*/
 bool Load_MPlayer_Values(Straw& file) {
-  Session.Load(file);
-  file.Get(&BuildLevel, sizeof(BuildLevel));
-  file.Get(&Debug_Unshroud, sizeof(Debug_Unshroud));
-  file.Get(&Seed, sizeof(Seed));
-  file.Get(&Whom, sizeof(Whom));
-  file.Get(&Special, sizeof(SpecialClass));
-  file.Get(&Options, sizeof(GameOptionsClass));
-
-  return true;
-}
-
-/***********************************************************************************************
- * Code_All_Pointers -- Code all pointers. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/24/1995 BRR : Created. *
- *=============================================================================================*/
-void Code_All_Pointers() {
-  int i;
-
-  /*
-  **	The Layers.
-  */
-  Logic.Code_Pointers();
-  for (i = 0; i < static_cast<int>(magic_enum::enum_count<LayerType>()); i++) {
-    MouseClass::Layer[i].Code_Pointers();
-  }
-
-  /*
-  **	The Score.
-  */
-  Score.Code_Pointers();
-
-  /*
-  **	The Base.
-  */
-  Base.Code_Pointers();
-
-  /*
-  **	PlayerPtr.
-  */
-  //	PlayerPtr = (HouseClass *)(PlayerPtr->Class->House);
-
-  /*
-  **	Currently-selected objects.
-  */
-  for (i = 0; i < CurrentObject.Count(); i++) {
-    CurrentObject[i] = (ObjectClass*)CurrentObject[i]->As_Target();
-  }
-
-}
-
-/***********************************************************************************************
- * Decode_All_Pointers -- Decodes all pointers. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/24/1995 BRR : Created. *
- *=============================================================================================*/
-void Decode_All_Pointers() {
-  /*
-  **	The Layers.
-  */
-  Logic.Decode_Pointers();
-  for (int i = 0; i < static_cast<int>(magic_enum::enum_count<LayerType>());
-       i++) {
-    MouseClass::Layer[i].Decode_Pointers();
-  }
-
-  /*
-  **	The Score.
-  */
-  Score.Decode_Pointers();
-
-  /*
-  **	The Base.
-  */
-  Base.Decode_Pointers();
-
-  /*
-  **	PlayerPtr.
-  */
-  //	PlayerPtr = HouseClass::As_Pointer((HousesType)PlayerPtr);
-  Whom = PlayerPtr->Class->House;
-  assert(PlayerPtr != nullptr);
-
-  /*
-  **	Currently-selected objects.
-  */
-  for (int index = 0; index < CurrentObject.Count(); index++) {
-    CurrentObject[index] =
-        As_Object(static_cast<TARGET>((intptr_t)CurrentObject[index]));
-    assert(CurrentObject[index] != nullptr);
-  }
-
-  /*
-  **	Last-Minute Fixups; to resolve these pointers properly requires all
-  *other *	pointers to be loaded & decoded.
-  */
-  if (Map.PendingObjectPtr) {
-    Map.PendingObject = &Map.PendingObjectPtr->Class_Of();
-    assert(Map.PendingObject != nullptr);
-    Map.Set_Cursor_Shape(Map.PendingObject->Occupy_List(true));
-#ifdef BG
-    Map.Set_Placement_List(Map.PendingObject->Placement_List(true));
-#endif
-  } else {
-    Map.PendingObject = nullptr;
-    Map.Set_Cursor_Shape(nullptr);
-  }
+  ArchiveReader reader(file);
+  SerializeMultiplayer(reader);
+  return reader.ok();
 }
 
 /***************************************************************************

@@ -41,13 +41,15 @@
 #define CNC_RED_ALERT_RA_LAYER_H_
 
 #include "ra/vector_dynamic.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 class ObjectClass;
 
 class LayerClass : public DynamicVectorClass<ObjectClass*> {
  public:
+  // Field-wise saved-game state; read and write share this field list.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   //-----------------------------------------------------------------
   void Sort();
   bool Submit(const ObjectClass* object, bool sort = false);
@@ -59,10 +61,6 @@ class LayerClass : public DynamicVectorClass<ObjectClass*> {
   /*
   **	File I/O.
   */
-  bool Load(Straw& file);
-  bool Save(Pipe& file) const;
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
 };
 
 #endif  // CNC_RED_ALERT_RA_LAYER_H_
