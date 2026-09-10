@@ -34,7 +34,6 @@
 #include "ra/type.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/wwstd.h"
-#include "tech/noinit.h"
 
 #define ICON_PIXEL_W 24
 #define ICON_PIXEL_H 24
@@ -56,6 +55,13 @@ extern COORDINATE Coord_Add(COORDINATE a, COORDINATE b);
 
 class DisplayClass : public MapClass {
  public:
+  // Resets transient UI state after loading, preserving saved game state.
+  void ResetTransientUiState();
+
+  // Saved-game state; defined in iomap.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   /*
   ** The tactical map display position is indicated by the cell of the
   **	upper left hand corner. These should not be altered directly. Use
@@ -113,7 +119,6 @@ class DisplayClass : public MapClass {
 
   //-------------------------------------------------------------------------
   DisplayClass();
-  DisplayClass(const NoInitClass& x) : MapClass(x) {}
 
   virtual void Read_INI(CCINIClass& ini);
   void Write_INI(CCINIClass& ini);
@@ -207,8 +212,6 @@ class DisplayClass : public MapClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 
  protected:
   virtual void Mouse_Right_Press();

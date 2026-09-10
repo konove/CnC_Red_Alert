@@ -46,12 +46,17 @@
 #include "ra/house.h"
 #include "ra/jshell.h"
 #include "sdllib/keyboard.h"
-#include "tech/noinit.h"
 
 class RadarClass : public DisplayClass {
  public:
+  // Resets transient UI state after loading, preserving saved game state.
+  void ResetTransientUiState();
+
+  // Saved-game state; defined in iomap.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   RadarClass();
-  RadarClass(const NoInitClass& x) : DisplayClass(x) {}
 
   /*
   **	The dimensions and coordinates of the radar map.

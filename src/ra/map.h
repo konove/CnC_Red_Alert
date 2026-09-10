@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_MAP_H_
 #define CNC_RED_ALERT_RA_MAP_H_
 
+#include <cstdint>
+
 #include "ra/cell.h"
 #include "ra/coord.h"
 #include "ra/crate.h"
@@ -48,14 +50,16 @@
 #include "ra/house.h"
 #include "ra/object.h"
 #include "ra/vector.h"
-#include "tech/noinit.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"
 
 class MapClass : public GScreenClass {
  public:
+  // Saved-game state; defined in iomap.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   MapClass() {}
-  MapClass(const NoInitClass& x) : GScreenClass(x), Array(x) {}
 
   /*
   ** Initialization
@@ -107,12 +111,6 @@ class MapClass : public GScreenClass {
   virtual void Set_Map_Dimensions(int x, int y, int w, int h);
 
   /*
-  **	File I/O.
-  */
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
-
-  /*
   ** Debug routine
   */
   int Validate();
@@ -130,7 +128,7 @@ class MapClass : public GScreenClass {
   /*
   **	This is the total value of all harvestable Tiberium on the map.
   */
-  long TotalValue;
+  int64_t TotalValue;
 
   CellClass& operator[](COORDINATE coord) { return Array[Coord_Cell(coord)]; }
   CellClass& operator[](CELL cell) { return Array[cell]; }

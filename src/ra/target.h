@@ -44,7 +44,6 @@
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/object.h"
-#include "tech/noinit.h"
 
 class AbstractTypeClass;
 class AircraftClass;
@@ -235,7 +234,6 @@ class xTargetClass {
 class TargetClass : public xTargetClass {
  public:
   TargetClass() { Invalidate(); }
-  TargetClass(const NoInitClass&) {}
   TargetClass(RTTIType rtti, int id) {
     Target.Sub.Exponent = rtti;
     Target.Sub.Mantissa = id;

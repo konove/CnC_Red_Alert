@@ -45,14 +45,19 @@
 #include "ra/scroll.h"
 #include "sdllib/keyboard.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"
 
 class MouseClass : public ScrollClass {
  public:
+  // Resets transient UI state after loading, preserving saved game state.
+  void ResetTransientUiState();
+
+  // Saved-game state; defined in iomap.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   MouseClass();
-  MouseClass(const NoInitClass& x) : ScrollClass(x) {}
 
   /*
   ** Initialization
@@ -70,7 +75,7 @@ class MouseClass : public ScrollClass {
   **	File I/O.
   */
   virtual bool Load(Straw& file);
-  virtual bool Save(Pipe& file) const;
+  virtual bool Save(Pipe& file);
 
   void Set_Default_Mouse(MouseType mouse, bool wsmall = false) override;
 

@@ -224,35 +224,6 @@ SidebarClass::SidebarClass()
 }
 
 /***********************************************************************************************
- * SidebarClass::SidebarClass -- This is the no initialization constructor for
- *the sidebar.    *
- *                                                                                             *
- *    Unlike the normal constructor, this one doesn't do any initialization.
- *There is one      * exception to this. The stip classes can't call an explicit
- *NoInitClass constructor       * since they are an array. Since the default
- *constructor is called for these strips, we    * must reset the X and Y
- *location to what we know they should be.                          *
- *                                                                                             *
- * INPUT:   flag to indicate that this is a no initialization constructor. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/06/1996 JLB : Created. *
- *=============================================================================================*/
-SidebarClass::SidebarClass(const NoInitClass& x) : PowerClass(x) {
-  /*
-  **	Set up the coordinates for the sidebar strips. These coordinates are for
-  **	the upper left corner.
-  */
-  //	Column[0].X = kColumnOneX * 2;
-  //	Column[0].Y = kColumnOneY * 2;
-  //	Column[1].X = kColumnTwoX * 2;
-  //	Column[1].Y = kColumnTwoY * 2;
-}
-
-/***********************************************************************************************
  * SidebarClass::One_Time -- Handles the one time game initializations. *
  *                                                                                             *
  *    This routine is used to load the graphic data that is needed by the

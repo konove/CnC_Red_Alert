@@ -47,14 +47,18 @@
 #include "ra/shapebtn.h"
 #include "ra/stage.h"
 #include "sdllib/keyboard.h"
-#include "tech/noinit.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 class InitClass {};
 
 class SidebarClass : public PowerClass {
  public:
+  // Resets transient UI state after loading, preserving saved game state.
+  void ResetTransientUiState();
+
+  // Saved-game state; defined in iomap.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   // Sidebar geometry in 320x200 pixels.
   static constexpr int kSideX = 320 - 80;  // Upper left corner.
   static constexpr int kSideY = 7 + 70;
@@ -73,7 +77,6 @@ class SidebarClass : public PowerClass {
   static void* SidebarBottomShape;  // Only used in Win95 version
 
   SidebarClass();
-  SidebarClass(const NoInitClass& x);
 
   /*
   ** Initialization
@@ -104,7 +107,6 @@ class SidebarClass : public PowerClass {
     class SelectClass : public ControlClass {
      public:
       SelectClass();
-      SelectClass(const NoInitClass& x) : ControlClass(x) {}
 
       void Set_Owner(StripClass& strip, int index);
 
@@ -118,7 +120,6 @@ class SidebarClass : public PowerClass {
    public:
     StripClass() {}
     StripClass(const InitClass&);
-    StripClass(const NoInitClass&) {}
 
     bool Add(RTTIType type, int ID);
     bool Abandon_Production(int factory);
@@ -140,8 +141,9 @@ class SidebarClass : public PowerClass {
     /*
     **	File I/O.
     */
-    bool Load(Straw& file);
-    bool Save(Pipe& file) const;
+    // Saves production state; scrolling animation is reset on load.
+    template <class Archive>
+    void Serialize(Archive& ar);
 
     // Button IDs for the strip's gadgets.
     static constexpr int kButtonUp = 200;

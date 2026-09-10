@@ -47,14 +47,15 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/wwstd.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
 
 #define HELP_TEXT_COLOR 80  // 158		//Goldy/orange
 
 class HelpClass : public TabClass {
  public:
+  // Resets transient UI state after loading, preserving saved game state.
+  void ResetTransientUiState();
+
   HelpClass();
-  HelpClass(const NoInitClass& x) : TabClass(x) {}
 
   /*
   ** Initialization

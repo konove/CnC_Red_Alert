@@ -44,7 +44,6 @@
 #include "ra/jshell.h"
 #include "sdllib/keyboard.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
 
 class ScrollClass : public HelpClass {
   /*
@@ -67,8 +66,10 @@ class ScrollClass : public HelpClass {
   int Inertia;
 
  public:
+  // Resets transient UI state after loading, preserving saved game state.
+  void ResetTransientUiState();
+
   ScrollClass();
-  ScrollClass(const NoInitClass& x) : HelpClass(x) {}
 
   bool Set_Autoscroll(int control);
 

@@ -38,11 +38,9 @@
 #include "gtest/gtest.h"
 #include "ra/base.h"
 #include "ra/carry.h"
-#include "ra/cell.h"
 #include "ra/event.h"
 #include "ra/goptions.h"
 #include "ra/layer.h"
-#include "ra/mouse.h"
 #include "ra/scenario.h"
 #include "ra/score.h"
 #include "ra/session.h"
@@ -88,10 +86,8 @@ constexpr LayoutCase kSerializedTypes[] = {
 
     // Whole-object byte I/O outside the heaps.
     LAYOUT_CASE(BaseClass, 64),
-    LAYOUT_CASE(CellClass, 128),
     LAYOUT_CASE(ChronalVortexClass, 4440),
     LAYOUT_CASE(LayerClass, 48),
-    LAYOUT_CASE(MouseClass, 11752),
     LAYOUT_CASE(ScenarioClass, 2032),
 
     // Also not in SAVEGAME_VERSION.

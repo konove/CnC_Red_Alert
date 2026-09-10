@@ -758,7 +758,9 @@ bool Load_Game(int id) {
   if (!Get_Section(straw, FourCC("MAP_"))) {
     return false;
   }
-  Map.Load(straw);
+  if (!Map.Load(straw)) {
+    return false;
+  }
 
   Call_Back();
 
@@ -1311,11 +1313,6 @@ void Code_All_Pointers() {
   int i;
 
   /*
-  **	The Map.
-  */
-  Map.Code_Pointers();
-
-  /*
   **	The Layers.
   */
   Logic.Code_Pointers();
@@ -1359,11 +1356,6 @@ void Code_All_Pointers() {
  * HISTORY: * 06/24/1995 BRR : Created. *
  *=============================================================================================*/
 void Decode_All_Pointers() {
-  /*
-  **	The Map.
-  */
-  Map.Decode_Pointers();
-
   /*
   **	The Layers.
   */

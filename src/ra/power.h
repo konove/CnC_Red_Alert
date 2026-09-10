@@ -47,12 +47,13 @@
 #include "ra/radar.h"
 #include "sdllib/keyboard.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
 
 class PowerClass : public RadarClass {
  public:
+  // Resets transient UI state after loading, preserving saved game state.
+  void ResetTransientUiState();
+
   PowerClass();
-  PowerClass(const NoInitClass& x) : RadarClass(x), FlashTimer(x) {}
 
   /*
   ** Initialization

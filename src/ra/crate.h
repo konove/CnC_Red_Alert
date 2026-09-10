@@ -43,11 +43,21 @@
 #include "ra/defines.h"
 #include "ra/jshell.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
 
 class CrateClass {
  public:
-  CrateClass() : CrateTimer(NoInitClass()), Cell(-1) {}
+  CrateClass() = default;
+
+  // Saved-game state; timer reads re-anchor to the restored game frame.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(Cell, CrateTimer);
+    if constexpr (Archive::kIsReading) {
+      if (Cell < -1 || Cell >= MAP_CELL_TOTAL) {
+        ar.Fail("invalid crate cell");
+      }
+    }
+  }
   void Init() { Make_Invalid(); }
   bool Create_Crate(CELL cell);
   bool Is_Here(CELL cell) const { return Is_Valid() && cell == Cell; }
@@ -65,7 +75,7 @@ class CrateClass {
   }
 
   Timer<FrameTickSource> CrateTimer;
-  CELL Cell;
+  CELL Cell = -1;
 };
 
 #endif  // CNC_RED_ALERT_RA_CRATE_H_

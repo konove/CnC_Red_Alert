@@ -479,8 +479,8 @@ void MapClass::Init_Clear() {
 /***********************************************************************************************
  * MapClass::Alloc_Cells -- allocates the cell array *
  *                                                                                             *
- * This routine should be called at One_Time, and after loading the Map object
- *from a save     * game, but prior to loading the cell objects. *
+ * Called during One_Time to size the constructed cell array. Saved games
+ *reuse that array and initialize its cells before restoring their fields. *
  *                                                                                             *
  * INPUT: * none. *
  *                                                                                             *
@@ -490,21 +490,12 @@ void MapClass::Init_Clear() {
  *                                                                                             *
  * HISTORY: * 03/17/1995 BRR : Created. *
  *=============================================================================================*/
-void MapClass::Alloc_Cells() {
-  /*
-  **	Assume that whatever the contents of the VectorClass are is garbage
-  **	(it may have been loaded from a save-game file), so zero it out first.
-  */
-  new (&Array) VectorClass<CellClass>;
-  Array.Resize(Size);
-}
+void MapClass::Alloc_Cells() { Array.Resize(Size); }
 
 /***********************************************************************************************
  * MapClass::Free_Cells -- frees the cell array *
  *                                                                                             *
- * This routine is used by the Load_Game routine to free the map's cell array
- *before loading   * the map object from disk; the array is then re-allocated &
- *cleared before the cell objects  * are loaded. *
+ * Releases the cell array when the map no longer needs its storage. *
  *                                                                                             *
  * INPUT: * none. *
  *                                                                                             *

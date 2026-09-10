@@ -70,7 +70,6 @@
 #include "ra/txtlabel.h"
 #include "ra/type.h"
 #include "sdllib/keyboard.h"
-#include "tech/noinit.h"
 
 /*
 **	This is the maximum # of ObjectTypeClasses the editor has to deal with.
@@ -198,7 +197,6 @@ class MapEditClass : public MouseClass {
   **	mapedit.cpp
   */
   MapEditClass();
-  MapEditClass(const NoInitClass& x) : MouseClass(x) {}
   bool Get_Waypoint_Name(char wayptname[]);
   void Update_Waypoint(int waypt_index);
 

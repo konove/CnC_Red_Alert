@@ -27,14 +27,12 @@
 #include "base/types.h"
 #include "ra/defines.h"  // IWYU pragma: keep
 #include "ra/egos.h"     // IWYU pragma: keep
-#include "tech/noinit.h"
 
 // Resizable array of arbitrary objects. Not optimized for integral types -
 // consider a specialized version for char/int if performance is critical.
 template <typename T>
 class VectorClass {
  public:
-  VectorClass(const NoInitClass&) {}
   VectorClass(base::ssize size = 0, const T* array = nullptr);
   VectorClass(const VectorClass&);  // Copy constructor.
   virtual ~VectorClass();

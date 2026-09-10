@@ -44,12 +44,13 @@
 #include "ra/gadget.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
-#include "tech/noinit.h"
 
 class GScreenClass {
  public:
+  // Resets transient UI state after loading, preserving saved game state.
+  void ResetTransientUiState();
+
   GScreenClass();
-  GScreenClass(const NoInitClass&) {}
   virtual ~GScreenClass() = default;
 
   /*

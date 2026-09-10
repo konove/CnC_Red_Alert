@@ -45,13 +45,13 @@
 #include "ra/sidebar.h"
 #include "sdllib/keyboard.h"
 #include "tech/ftimer.h"
-#include "tech/noinit.h"
 
 class TabClass : public SidebarClass {
  public:
+  // Resets transient UI state after loading, preserving saved game state.
+  void ResetTransientUiState();
+
   TabClass();
-  TabClass(const NoInitClass& x)
-      : SidebarClass(x), Credits(x), FlasherTimer(x), MoneyFlashTimer(x) {}
 
   void AI(KeyNumType& input, int x, int y) override;
   void Draw_It(bool complete = false) override;

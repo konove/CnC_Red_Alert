@@ -2,17 +2,18 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Steps 0–15 are committed; step 15 is `9a8a07e4` (AircraftClass).
-- Step 16 is committed as `3dc9d787`: UnitClass, VesselClass, and DriveClass now serialize fields;
-  their remaining heap-object NoInit constructors and pointer-coding methods are removed. Save version is **14**.
-- Validation: full strict build (both games) and all **144 CTest tests** pass. The headless `SCG01EA` and
-  `SCU01EA` smoke tests each match **240** vehicle/vessel positions across save/load.
-  A real-display playthrough remains outstanding. Step 16 is ready for the Map/Cell migration.
-- Smoke-test startup fix: `-NOMOVIES` is now accepted in all builds and checked by the shared movie
-  playback entry point, so headless runs skip both opening movies and campaign briefings. Both campaign
-  smoke tests pass in approximately **17.5 seconds each** with this fix.
-- Next implementation step is **17: RA Map/Cell**. Keep the remaining raw-image globals and their NoInit paths
-  intact until their scheduled migration; heap infrastructure cleanup remains step 19.
+- Steps 0–16 are committed; step 16 is `3dc9d787` (UnitClass/VesselClass). `45013c52` fixes `-NOMOVIES`.
+- Step 17 is implemented and verified. Save version is **15**.
+  Map/Cell, crate timers, radar state, and sidebar production entries now use field-wise serialization.
+  The live map and cell array stay constructed; repair/sell/targeting modes and transient UI animations reset.
+- `Init_Cells()` must run before restoring map fields because it clears `TotalValue`.
+- `LinkClass`'s NoInit constructor remains until step 18: the raw Carryover load still calls it. The other
+  map/UI NoInit constructors, plus VectorClass and TargetClass, are removed in step 17.
+- Next implementation step is **18: RA globals**. Keep remaining raw-image globals and their NoInit paths
+  intact until then; heap infrastructure cleanup remains step 19.
+- Validation: strict build of both games and **148 CTest tests** pass, including four new crate tests.
+  Headless smoke tests pass for `SCG01EA` and `SCU01EA` (240 matching vehicle/vessel positions each) and
+  `SCG02EA` (120 matching positions). A real-display playthrough remains outstanding.
 
 ## Context
 
@@ -294,8 +295,8 @@ Commit 16 also deletes all per-object `Code/Decode_Pointers`, the heap loops in 
 the `RawImage` branch rows of `ra/heap_layout_test.cc`.
 
 **Phase 3 — RA Map/Cell and globals**
-17. `CellClass` + `MouseClass` chain (`iomap.cc`), `CrateClass` (`crate.h:50` → `= default` + NSDMI), `VectorClass`/`MapClass::Array` NoInit, `SidebarClass` NoInit, UI-chain NoInit ctors (gscreen…mapedit, gadget, control, credits), `TargetClass`/`LinkClass` NoInit.
-18. `Scen`, `Score`, `Carryover` (→ `std::vector`), `Special`, `Options` (GameSpeed only), `ChronalVortex`, `Session`/`NodeNameType`, `Base`, trigger vectors, layers, misc/MP values, recording path. Delete `Code_All/Decode_All_Pointers` drivers; move fixups to `Load_Game` tail.
+17. `CellClass` + `MouseClass` chain (`iomap.cc`), `CrateClass` (`crate.h:50` → `= default` + NSDMI), `VectorClass`/`MapClass::Array` NoInit, `SidebarClass` NoInit, UI-chain NoInit ctors (gscreen…mapedit, gadget, control, credits), `TargetClass` NoInit. Keep `LinkClass` NoInit until Carryover migrates in step 18.
+18. `Scen`, `Score`, `Carryover` (→ `std::vector`), `Special`, `Options` (GameSpeed only), `ChronalVortex`, `Session`/`NodeNameType`, `Base`, trigger vectors, layers, misc/MP values, recording path. Delete `Code_All/Decode_All_Pointers` drivers and the now-unused `LinkClass` NoInit constructor; move fixups to `Load_Game` tail.
 19. RA cleanup: `CCPtr`/`Timer`/`Stopwatch` NoInit ctors (`tech/ftimer.h` is RA-only; TD uses `td/ftimer.h`), `RawImage` constraint, `ra/heap_layout_test.cc` + its `add_gtest`, every `#include "tech/noinit.h"` in `src/ra` and `src/tech`, `SAVEGAME_VERSION` macro. Add `RA_SAVE_DUMP=<path>` env tee of the plaintext stream (before LZO) as a debugging aid.
 
 **Phase 4 — TD** (mirrors Phase 1–3; ⚠ = not copy-paste, see TD section)
@@ -322,7 +323,7 @@ the `RawImage` branch rows of `ra/heap_layout_test.cc`.
 ## Files
 
 New: `src/tech/archive.h`, `src/tech/archive_test.cc`, `src/ra/serialize.h`, `src/ra/serialize.cc`,
-`src/ra/heap_instances.cc`, `src/ra/heap_test.cc`, `src/td/saveload_test.cc`.
+`src/ra/heap_instances.cc`, `src/ra/heap_test.cc`, `src/ra/crate_test.cc`, `src/td/saveload_test.cc`.
 Deleted: `src/tech/noinit.h`, `src/ra/heap_layout_test.cc`, `src/td/heap_layout_test.cc`, `src/td/session.h`, `src/td/wwfile.h`.
 Modified (core): `src/ra/heap.h/.cc`, `ra/ioobj.cc`, `ra/iomap.cc`, `ra/saveload.h/.cc`, `ra/ccptr.h`, `ra/target.h/.cc`,
 `tech/fixed.h`, `tech/ftimer.h`, the 17 RA heap classes + bases/mixins, the Map chain headers, `ra/scenario.h`,
@@ -332,7 +333,7 @@ Modified (core): `src/ra/heap.h/.cc`, `ra/ioobj.cc`, `ra/iomap.cc`, `ra/saveload
 
 ## Verification
 
-- Unit: `archive_test`, `fixed_test`, timer tests, `ra_heap_test` (sparse indices, `ID != idx` rejected, count mismatch
+- Unit: `archive_test`, `fixed_test`, `ra_crate_test` (default state, timer preservation, invalid cells, truncated timer), timer tests, `ra_heap_test` (sparse indices, `ID != idx` rejected, count mismatch
   rejected), `CCPtr` range check, small mixins (`StageClass`, `TDEventClass`, `RegionClass`, `HouseStaticClass`,
   `FlasherClass`), `td_saveload_test`. Game objects and `CellClass` need the full `rasdl` link and are not unit-testable.
 - In-game smoke after every flip commit: build `rasdl`, run with real SDL and the Steam MIX files (dummy video driver

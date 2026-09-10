@@ -87,7 +87,6 @@
 #include "ra/defines.h"
 #include "ra/link.h"
 #include "sdllib/keyboard.h"
-#include "tech/noinit.h"
 
 class ControlClass;
 
@@ -106,7 +105,6 @@ class GadgetClass : public LinkClass {
   } FlagEnum;
 
   GadgetClass(int x, int y, int w, int h, unsigned flags, int sticky = false);
-  GadgetClass(const NoInitClass& x) : LinkClass(x) {}
   GadgetClass() {}
   // Not copyable -- see LinkClass.
   GadgetClass(const GadgetClass&) = delete;

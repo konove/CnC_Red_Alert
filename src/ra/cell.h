@@ -49,9 +49,6 @@
 #include "ra/target.h"
 #include "ra/techno.h"
 #include "ra/unit.h"
-#include "tech/noinit.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 /****************************************************************************
 **	Each cell on the map is controlled by the following structure.
@@ -185,7 +182,7 @@ class CellClass {
 
  public:
   // The cell-sorted renderer tracks more overlapping objects per cell. This
-  // sizes CellClass, so it is part of the save format.
+  // sets the maximum overlapper count accepted when loading a save.
   static constexpr base::ssize kOverlapperCount =
       config::kSortDrawEnabled ? 10 : 6;
   ObjectClass* Overlappers[kOverlapperCount];
@@ -215,7 +212,6 @@ class CellClass {
 
   //----------------------------------------------------------------
   CellClass();
-  CellClass(const NoInitClass& x) : Trigger(x) {}
   ~CellClass() { OccupierPtr = nullptr; }
 
   int operator==(const CellClass& cell) const { return &cell == this; }
@@ -275,10 +271,9 @@ class CellClass {
   **	File I/O.
   */
   bool Should_Save() const;
-  bool Save(Pipe& file) const;
-  bool Load(Straw& file);
-  void Code_Pointers();
-  void Decode_Pointers();
+  // Saved cell state; the map supplies ID and rebuilds movement zones.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	Display and rendering controls.

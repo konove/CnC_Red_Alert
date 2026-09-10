@@ -16,95 +16,50 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/IOMAP.CPP 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : IOMAP.CPP *
- *                                                                                             *
- *                   Programmer : Bill Randolph *
- *                                                                                             *
- *                   Start Date : January 16, 1995 *
- *                                                                                             *
- *                  Last Update : March 12, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * All map-related loading/saving routines should go in this module, so it can
- *be overlayed.   *
- *---------------------------------------------------------------------------------------------*
- * Functions: * CellClass::Code_Pointers -- codes class's pointers for load/save
- ** CellClass::Decode_Pointers -- decodes pointers for load/save *
- *   CellClass::Load -- Reads from a save game file. * CellClass::Save -- Write
- *to a save game file.                                             *
- *   CellClass::Should_Save -- Should the cell be written to disk? *
- *   DisplayClass::Code_Pointers -- codes class's pointers for load/save *
- *   DisplayClass::Decode_Pointers -- decodes pointers for load/save *
- *   MapClass::Code_Pointers -- codes class's pointers for load/save *
- *   MapClass::Decode_Pointers -- decodes pointers for load/save *
- *   MouseClass::Load -- Loads from a save game file. * MouseClass::Save --
- *Saves to a save game file.                                            *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// Field-wise map saves preserve the constructed UI and cell array. Heap
+// pointers resolve to slots without dereferencing objects that load later.
 
-#include <cassert>
+#include <algorithm>
 #include <cstdint>
 #include <iterator>
-#include <new>
+#include <vector>
 
+#include "ra/ccptr.h"
 #include "ra/cell.h"
+#include "ra/conquer.h"
+#include "ra/crate.h"
+#include "ra/credits.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/externs.h"
+#include "ra/gscreen.h"
+#include "ra/help.h"
 #include "ra/jshell.h"
 #include "ra/map.h"
-#include "ra/mapedit.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
+#include "ra/power.h"
+#include "ra/radar.h"
 #include "ra/scenario.h"
-#include "ra/target.h"
+#include "ra/scroll.h"
+#include "ra/serialize.h"
+#include "ra/sidebar.h"
+#include "ra/tab.h"
 #include "ra/type.h"
-#include "tech/noinit.h"
+#include "sdllib/wwstd.h"
+#include "tech/archive.h"
+#include "tech/ftimer.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"
 
-/***********************************************************************************************
- * CellClass::Should_Save -- Should the cell be written to disk? *
- *                                                                                             *
- *    This function will determine if the cell needs to be written to disk. Any
- *cell that      * contains special data should be written to disk. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  bool; Should this cell's data be written to disk? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-// Compares every field against the value the default constructor assigns. ID is
-// deliberately excluded: it is just the cell's index in the map array, which the
-// constructor recomputes and which MouseClass::Save writes separately as the
-// cell number. Cells that fail this test are never written, so MouseClass::Load
-// relies on Init_Cells() to restore them to exactly this default state.
+// ID comes from the sparse map index. Movement zones are rebuilt by
+// Post_Load_Game(), so they do not make an otherwise empty cell worth saving.
 bool CellClass::Should_Save() const {
-  for (unsigned char zone : Zones) {
-    if (zone != 0) {
-      return true;
-    }
-  }
-
-  // Occupier and overlapper pointers are null both before and after
-  // Code_Pointers(), so this test holds whichever side of coding it runs on.
   for (const ObjectClass* overlapper : Overlappers) {
     if (overlapper != nullptr) {
       return true;
     }
   }
-
   return IsPlot || IsCursorHere || IsMapped || IsVisible || IsWaypoint ||
          IsRadarCursor || IsFlagged || IsToShroud || Jammed != 0 ||
          Trigger.Is_Valid() || TType != TEMPLATE_NONE || TIcon != 0 ||
@@ -114,370 +69,339 @@ bool CellClass::Should_Save() const {
          Flag.Composite != 0 || Land != LAND_CLEAR;
 }
 
-/***********************************************************************************************
- * CellClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool CellClass::Load(Straw& file) {
-  file.Get(this, sizeof(*this));
-  return true;
+template <class Archive>
+void CellClass::Serialize(Archive& ar) {
+  uint8_t flags = static_cast<uint8_t>(
+      IsPlot | (IsCursorHere << 1) | (IsMapped << 2) | (IsVisible << 3) |
+      (IsWaypoint << 4) | (IsRadarCursor << 5) | (IsFlagged << 6) |
+      (IsToShroud << 7));
+  ar(flags, Jammed, Trigger, TType, TIcon, Overlay, OverlayData, Smudge,
+     SmudgeData, Owner, InfType, ObjectPtr(OccupierPtr));
+  if constexpr (Archive::kIsReading) {
+    IsPlot = (flags & 1) != 0;
+    IsCursorHere = (flags & 2) != 0;
+    IsMapped = (flags & 4) != 0;
+    IsVisible = (flags & 8) != 0;
+    IsWaypoint = (flags & 16) != 0;
+    IsRadarCursor = (flags & 32) != 0;
+    IsFlagged = (flags & 64) != 0;
+    IsToShroud = (flags & 128) != 0;
+    std::fill(std::begin(Overlappers), std::end(Overlappers), nullptr);
+  }
+  int32_t count = static_cast<int32_t>(kOverlapperCount);
+  ar(count);
+  if constexpr (Archive::kIsReading) {
+    if (!ar.ok() || count < 0 || count > kOverlapperCount) {
+      ar.Fail("invalid cell overlapper count");
+      return;
+    }
+  }
+  for (int i = 0; i < count; ++i) {
+    ar(ObjectPtr(Overlappers[i]));
+  }
+  ar(Flag.Composite, Land);
 }
+template void CellClass::Serialize(ArchiveWriter&);
+template void CellClass::Serialize(ArchiveReader&);
 
-/***********************************************************************************************
- * CellClass::Save -- Write to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool CellClass::Save(Pipe& file) const {
-  file.Put(this, sizeof(*this));
-  return true;
-}
-
-/***********************************************************************************************
- * CellClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void CellClass::Code_Pointers() {
-  if (Cell_Occupier() != nullptr) {
-    OccupierPtr = (ObjectClass*)OccupierPtr->As_Target();
+template <class Archive>
+void MapClass::Serialize(Archive& ar) {
+  ar(MapCellX, MapCellY, MapCellWidth, MapCellHeight, TotalValue,
+     TiberiumGrowth, TiberiumGrowthCount, TiberiumGrowthExcess,
+     TiberiumSpread, TiberiumSpreadCount, TiberiumSpreadExcess, TiberiumScan);
+  if constexpr (Archive::kIsReading) {
+    if (!ar.ok() || MapCellX < 0 || MapCellY < 0 || MapCellWidth <= 0 ||
+        MapCellHeight <= 0 || MapCellWidth > MAP_CELL_W ||
+        MapCellHeight > MAP_CELL_H || MapCellX > MAP_CELL_W - MapCellWidth ||
+        MapCellY > MAP_CELL_H - MapCellHeight || TiberiumGrowthCount < 0 ||
+        TiberiumGrowthCount > std::ssize(TiberiumGrowth) ||
+        TiberiumSpreadCount < 0 ||
+        TiberiumSpreadCount > std::ssize(TiberiumSpread) || TiberiumScan < 0 ||
+        TiberiumScan >= MAP_CELL_TOTAL) {
+      ar.Fail("invalid map dimensions or ore scan state");
+      return;
+    }
+    for (auto& crate : Crates) {
+      crate.Init();
+    }
   }
 
-  for (auto& overlapper : Overlappers) {
-    if (overlapper != nullptr && overlapper->IsActive) {
-      overlapper = (ObjectClass*)overlapper->As_Target();
-    } else {
-      overlapper = nullptr;
+  int32_t count = 0;
+  if constexpr (!Archive::kIsReading) {
+    for (const auto& crate : Crates) {
+      if (crate.Is_Valid()) {
+        ++count;
+      }
+    }
+  }
+  ar(count);
+  if constexpr (Archive::kIsReading) {
+    if (!ar.ok() || count < 0 || count > std::ssize(Crates)) {
+      ar.Fail("invalid crate count");
+      return;
+    }
+    int32_t previous = -1;
+    for (int i = 0; i < count; ++i) {
+      int32_t index = 0;
+      ar(index);
+      if (!ar.ok() || index <= previous || index >= std::ssize(Crates)) {
+        ar.Fail("invalid or duplicate crate index");
+        return;
+      }
+      ar(Crates[index]);
+      if (!ar.ok() || !Crates[index].Is_Valid()) {
+        ar.Fail("invalid saved crate");
+        return;
+      }
+      previous = index;
+    }
+  } else {
+    for (int32_t index = 0; index < std::ssize(Crates); ++index) {
+      if (Crates[index].Is_Valid()) {
+        ar(index, Crates[index]);
+      }
     }
   }
 }
+template void MapClass::Serialize(ArchiveWriter&);
+template void MapClass::Serialize(ArchiveReader&);
 
-/***********************************************************************************************
- * CellClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. * 03/12/1996 JLB : Simplified. *
- *=============================================================================================*/
-void CellClass::Decode_Pointers() {
-  if (OccupierPtr != nullptr) {
-    OccupierPtr = As_Object(static_cast<TARGET>((intptr_t)OccupierPtr));
-    assert(OccupierPtr != nullptr);
+template <class Archive>
+void DisplayClass::Serialize(Archive& ar) {
+  MapClass::Serialize(ar);
+  ar(TacticalCoord, DesiredTacticalCoord, ZoneCell, ZoneOffset,
+     ObjectPtr(PendingObjectPtr), PendingHouse);
+}
+template void DisplayClass::Serialize(ArchiveWriter&);
+template void DisplayClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void RadarClass::Serialize(Archive& ar) {
+  DisplayClass::Serialize(ar);
+  bool exists = DoesRadarExist;
+  bool active = IsRadarActive;
+  bool jammed = IsRadarJammed;
+  bool zoomed = IsZoomed;
+  bool names = IsPlayerNames;
+  bool spy = IsHouseSpy;
+  ar(exists, active, jammed, zoomed, names, spy, SpyingOn, ZoomFactor,
+     RadarX, RadarY, RadarCell, RadarCellWidth, RadarCellHeight, BaseX,
+     BaseY, RadarWidth, RadarHeight);
+  if constexpr (Archive::kIsReading) {
+    DoesRadarExist = exists;
+    IsRadarActive = active;
+    IsRadarJammed = jammed;
+    IsZoomed = zoomed;
+    IsPlayerNames = names;
+    IsHouseSpy = spy;
   }
+}
+template void RadarClass::Serialize(ArchiveWriter&);
+template void RadarClass::Serialize(ArchiveReader&);
 
-  for (int index = 0; index < std::ssize(Overlappers); index++) {
-    if (Overlappers[index] != nullptr) {
-      Overlappers[index] =
-          As_Object(static_cast<TARGET>((intptr_t)Overlappers[index]));
-      assert(Overlappers[index] != nullptr);
+template <class Archive>
+void SidebarClass::StripClass::Serialize(Archive& ar) {
+  bool building = IsBuilding;
+  ar(building, Flasher, TopIndex, BuildableCount);
+  if constexpr (Archive::kIsReading) {
+    if (!ar.ok() || BuildableCount < 0 || BuildableCount > kMaxBuildables ||
+        TopIndex < 0 || TopIndex >= kMaxBuildables) {
+      ar.Fail("invalid sidebar buildable count or scroll position");
+      return;
     }
+    IsBuilding = building;
+    for (auto& item : Buildables) {
+      item = {0, RTTI_NONE, -1};
+    }
+  }
+  for (int i = 0; i < BuildableCount; ++i) {
+    auto& item = Buildables[i];
+    ar(item.BuildableID, item.BuildableType, item.Factory);
+  }
+}
+template void SidebarClass::StripClass::Serialize(ArchiveWriter&);
+template void SidebarClass::StripClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void SidebarClass::Serialize(Archive& ar) {
+  RadarClass::Serialize(ar);
+  bool active = IsSidebarActive;
+  ar(active, Column);
+  if constexpr (Archive::kIsReading) {
+    IsSidebarActive = active;
+  }
+}
+template void SidebarClass::Serialize(ArchiveWriter&);
+template void SidebarClass::Serialize(ArchiveReader&);
+
+void GScreenClass::ResetTransientUiState() {
+  IsToRedraw = true;
+  IsToUpdate = true;
+}
+
+void DisplayClass::ResetTransientUiState() {
+  GScreenClass::ResetTransientUiState();
+  PendingObject = nullptr;
+  CursorSize = nullptr;
+  ProximityCheck = false;
+  IsToRedraw = true;
+  IsRepairMode = false;
+  IsSellMode = false;
+  IsTargettingMode = SPC_NONE;
+  IsRubberBand = false;
+  IsTentative = false;
+  IsShadowPresent = false;
+  BandX = BandY = NewX = NewY = 0;
+  std::fill(CellRedraw.begin(), CellRedraw.end(), true);
+}
+
+void RadarClass::ResetTransientUiState() {
+  DisplayClass::ResetTransientUiState();
+  IsToRedraw = true;
+  RadarCursorRedraw = true;
+  IsRadarActivating = false;
+  IsRadarDeactivating = false;
+  IsPulseActive = false;
+  RadarPulseFrame = 0;
+  SpecialRadarFrame = 0;
+  RadarAnimFrame = IsRadarActive ? RADAR_ACTIVATED_FRAME : 0;
+  PixelPtr = 0;
+  std::fill(std::begin(PixelStack), std::end(PixelStack), 0);
+}
+
+void PowerClass::ResetTransientUiState() {
+  RadarClass::ResetTransientUiState();
+  IsToRedraw = true;
+  FlashTimer.Set(0);
+  RecordedDrain = RecordedPower = -1;
+  DesiredDrainHeight = DesiredPowerHeight = 0;
+  DrainHeight = PowerHeight = DrainBounce = PowerBounce = 0;
+  PowerDir = DrainDir = 0;
+}
+
+void SidebarClass::ResetTransientUiState() {
+  PowerClass::ResetTransientUiState();
+  IsToRedraw = true;
+  IsRepairActive = IsUpgradeActive = IsDemolishActive = false;
+  for (auto& column : Column) {
+    column.IsToRedraw = true;
+    column.IsScrolling = column.IsScrollingDown = false;
+    column.Scroller = column.Slid = column.LastSlid = 0;
+    column.Set_Stage(0);
+    column.Set_Rate(0);
   }
 }
 
-/***********************************************************************************************
- * MouseClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * Loading the map is very complicated.  Here are the steps: *
- * - Read the Theater for this save-game *
- * - call Init_Theater to perform theater-specific inits *
- * - call Free_Cells to free the cell array, because loading the map object will
- *overwrite     * the pointer to the cell array *
- * - read the map object from disk *
- * - call Alloc_Cells to re-allocate the cell array *
- * - call Init_Cells to set the cells to a known state, because not every cell
- *will be loaded  *
- * - read the cell objects into the cell array *
- * - After the map & all objects have been loaded & the pointers decoded,
- *Init_IO() >MUST< be  * called to restore the map's button list to the proper
- *state.                              *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. * 03/12/1996 JLB : Simplified. *
- *=============================================================================================*/
+void TabClass::ResetTransientUiState() {
+  SidebarClass::ResetTransientUiState();
+  Credits = CreditClass();
+  IsToRedraw = true;
+  FlasherTimer.Set(0);
+  MoneyFlashTimer.Set(0);
+}
+
+void HelpClass::ResetTransientUiState() {
+  TabClass::ResetTransientUiState();
+  HelpText = nullptr;
+  IsRight = false;
+  Cost = X = Y = DrawX = DrawY = Width = 0;
+  Text = TXT_NONE;
+  Color = LTGREY;
+  CountDownTimer.Set(0);
+  OverlapList[0] = kRefreshEol;
+}
+
+void ScrollClass::ResetTransientUiState() {
+  HelpClass::ResetTransientUiState();
+  // Autoscroll is a local preference, not saved-game state.
+  Inertia = 0;
+  Counter.Set(0);
+}
+
+void MouseClass::ResetTransientUiState() {
+  ScrollClass::ResetTransientUiState();
+  Override_Mouse_Shape(MOUSE_NORMAL, false);
+  NormalMouseShape = MOUSE_NORMAL;
+  Frame = 0;
+  AnimTimer.Set(0);
+}
+
+template <class Archive>
+void MouseClass::Serialize(Archive& ar) {
+  if constexpr (Archive::kIsReading) {
+    LastTheater = THEATER_NONE;
+    Reset_Theater_Shapes();
+    Init_Theater(Scen.Theater);
+    TerrainTypeClass::Init(Scen.Theater);
+    TemplateTypeClass::Init(Scen.Theater);
+    OverlayTypeClass::Init(Scen.Theater);
+    UnitTypeClass::Init(Scen.Theater);
+    InfantryTypeClass::Init(Scen.Theater);
+    BuildingTypeClass::Init(Scen.Theater);
+    BulletTypeClass::Init(Scen.Theater);
+    AnimTypeClass::Init(Scen.Theater);
+    AircraftTypeClass::Init(Scen.Theater);
+    VesselTypeClass::Init(Scen.Theater);
+    SmudgeTypeClass::Init(Scen.Theater);
+    // Init_Cells also clears TotalValue, so do this before reading map state.
+    Init_Cells();
+  }
+  SidebarClass::Serialize(ar);
+  if constexpr (Archive::kIsReading) {
+    if (!ar.ok()) {
+      return;
+    }
+    ResetTransientUiState();
+  }
+
+  int32_t count = 0;
+  if constexpr (!Archive::kIsReading) {
+    for (CELL cell = 0; cell < MAP_CELL_TOTAL; ++cell) {
+      if ((*this)[cell].Should_Save()) {
+        ++count;
+      }
+    }
+  }
+  ar(count);
+  if constexpr (Archive::kIsReading) {
+    if (!ar.ok() || count < 0 || count > MAP_CELL_TOTAL) {
+      ar.Fail("invalid saved cell count");
+      return;
+    }
+    CELL previous = -1;
+    for (int i = 0; i < count; ++i) {
+      CELL cell = 0;
+      ar(cell);
+      if (!ar.ok() || cell <= previous || cell >= MAP_CELL_TOTAL) {
+        ar.Fail("invalid or duplicate saved cell index");
+        return;
+      }
+      ar((*this)[cell]);
+      if (!ar.ok()) {
+        return;
+      }
+      previous = cell;
+    }
+    LastTheater = Scen.Theater;
+  } else {
+    for (CELL cell = 0; cell < MAP_CELL_TOTAL; ++cell) {
+      if ((*this)[cell].Should_Save()) {
+        ar(cell, (*this)[cell]);
+      }
+    }
+  }
+}
+template void MouseClass::Serialize(ArchiveWriter&);
+template void MouseClass::Serialize(ArchiveReader&);
+
 bool MouseClass::Load(Straw& file) {
-  /*
-  **	Load Theater:  Even though this value is located in the DisplayClass,
-  **	it must be loaded first so initialization can be done before any other
-  **	map data is loaded.  If initialization isn't done first, data read from
-  **	disk will be over-written when initialization occurs.  This code must
-  **	go in the most-derived Map class.
-  */
-  TheaterType theater;
-  if (file.Get(&theater, sizeof(theater)) != sizeof(theater)) {
-    return false;
-  }
+  ArchiveReader reader(file);
+  Serialize(reader);
+  return reader.ok();
+}
 
-  LastTheater = THEATER_NONE;
-
-  /*
-  ** Remove any old theater specific uncompressed shapes
-  */
-  //	if (theater != LastTheater) {
-  Reset_Theater_Shapes();
-//	}
-
-  /*
-  **	Init display mixfiles
-  */
-  Init_Theater(theater);
-  TerrainTypeClass::Init(Scen.Theater);
-  TemplateTypeClass::Init(Scen.Theater);
-  OverlayTypeClass::Init(Scen.Theater);
-  UnitTypeClass::Init(Scen.Theater);
-  InfantryTypeClass::Init(Scen.Theater);
-  BuildingTypeClass::Init(Scen.Theater);
-  BulletTypeClass::Init(Scen.Theater);
-  AnimTypeClass::Init(Scen.Theater);
-  AircraftTypeClass::Init(Scen.Theater);
-  VesselTypeClass::Init(Scen.Theater);
-  SmudgeTypeClass::Init(Scen.Theater);
-
-  // LastTheater = Scen.Theater;
-
-  /*
-  ** Free the cell array, because we're about to overwrite its pointers
-  */
-  Free_Cells();
-
-  /*
-  ** Read the entire map object in.  Only read in sizeof(MouseClass), so if
-  *we're
-  ** in editor mode, none of the map editor object is read in.
-  */
-  file.Get(this, sizeof(*this));
-  new (this) MapEditClass(NoInitClass());
-
-  /*
-  ** Reallocate the cell array
-  */
-  Alloc_Cells();
-
-  /*
-  ** Init all cells to empty
-  */
-  Init_Cells();
-
-  /*
-  **	Read # cells saved
-  */
-  int count;
-  if (file.Get(&count, sizeof(count)) != sizeof(count)) {
-    return false;
-  }
-
-  /*
-  **	Read cells
-  */
-  for (int index = 0; index < count; index++) {
-    CELL cell = 0;
-    if (file.Get(&cell, sizeof(cell)) != sizeof(cell)) {
-      return false;
-    }
-
-    if (!(*this)[cell].Load(file)) {
-      return false;
-    }
-  }
-
-  LastTheater = Scen.Theater;
+bool MouseClass::Save(Pipe& file) {
+  ArchiveWriter writer(file);
+  Serialize(writer);
   return true;
-}
-
-/***********************************************************************************************
- * MouseClass::Save -- Save to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. * 02/26/1996 JLB : Cleaned up. *
- *=============================================================================================*/
-bool MouseClass::Save(Pipe& file) const {
-  /*
-  **	Save Theater >first<
-  */
-  TheaterType theater = Scen.Theater;
-  file.Put(&theater, sizeof(theater));
-
-  file.Put(this, sizeof(*this));
-
-  /*
-  **	Count how many cells will be saved.
-  */
-  int count = 0;
-  const CellClass* cellptr = &(*this)[static_cast<CELL>(0)];
-  for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-    if (cellptr->Should_Save()) {
-      count++;
-    }
-    cellptr++;
-  }
-
-  /*
-  **	write out count of the cells.
-  */
-  file.Put(&count, sizeof(count));
-
-  /*
-  **	Save cells that need it
-  */
-  cellptr = &(*this)[static_cast<CELL>(0)];
-  for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-    if (cellptr->Should_Save()) {
-      file.Put(&cell, sizeof(cell));
-      cellptr->Save(file);
-      count--;
-    }
-    cellptr++;
-  }
-
-  return count == 0;
-}
-
-/***********************************************************************************************
- * DisplayClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void DisplayClass::Code_Pointers() {
-  /*
-  **	Code PendingObjectPtr.
-  */
-  if (PendingObjectPtr) {
-    PendingObjectPtr = (ObjectClass*)PendingObjectPtr->As_Target();
-  }
-
-  /*
-  **	Chain to parent.
-  */
-  MapClass::Code_Pointers();
-}
-
-/***********************************************************************************************
- * DisplayClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void DisplayClass::Decode_Pointers() {
-  /*
-  **	Decode PendingObjectPtr.  We can't decode PendingObject here, because
-  *we'd *	have to reference PendingObjectPtr->Class_Of(), and the object
-  *that *	PendingObjectPtr is pointing to hasn't been decoded yet.  Since
-  *we can't *	decode PendingObjectPtr, we can't set the placement cursor shape
-  *here *	either.  These have to be done as last-minute fixups.
-  */
-  if (PendingObjectPtr) {
-    PendingObjectPtr =
-        As_Object(static_cast<TARGET>((intptr_t)PendingObjectPtr));
-    assert(PendingObjectPtr != nullptr);
-  }
-
-  /*
-  **	Chain to parent.
-  */
-  MapClass::Decode_Pointers();
-}
-
-/***********************************************************************************************
- * MapClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void MapClass::Code_Pointers() {
-  CellClass* cellptr = &(*this)[static_cast<CELL>(0)];
-  for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-    cellptr->Code_Pointers();
-    cellptr++;
-  }
-}
-
-/***********************************************************************************************
- * MapClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void MapClass::Decode_Pointers() {
-  CellClass* cellptr = &(*this)[static_cast<CELL>(0)];
-  for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-    cellptr->Decode_Pointers();
-    cellptr++;
-  }
 }
