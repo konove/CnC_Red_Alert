@@ -54,6 +54,11 @@ class CargoClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
+  // Saves the passenger count and a checked TARGET reference to the first
+  // passenger. Its heap slot may not have been constructed yet on load.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   CargoClass() {
     Quantity = 0;
     CargoHold = nullptr;

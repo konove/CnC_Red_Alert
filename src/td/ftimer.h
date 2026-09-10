@@ -42,6 +42,7 @@
 #define CNC_RED_ALERT_TD_FTIMER_H_
 
 #include <algorithm>
+#include <cstdint>
 
 #include "td/globals.h"
 #include "tech/noinit.h"
@@ -56,16 +57,36 @@ class TCountDownTimerClass {
  public:
   // Constructor.  Timers set before low level init has been done will not
   // be able to be 'Started' or 'on' until timer system is in place.
-  TCountDownTimerClass(long set = 0) { Set(set); }
+  TCountDownTimerClass(int64_t set = 0) { Set(set); }
   TCountDownTimerClass(const NoInitClass&) {}
+
+  // Saves remaining ticks and whether the timer is active. Restore Frame
+  // before reading; the timer re-anchors to it instead of an old frame origin.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    int64_t remaining = Active() ? Time() : 0;
+    bool active = Active();
+    ar(remaining, active);
+    if constexpr (Archive::kIsReading) {
+      if (remaining < 0) {
+        ar.Fail("negative countdown duration");
+        return;
+      }
+      if (active) {
+        Set(remaining);
+      } else {
+        Clear();
+      }
+    }
+  }
 
   // No destructor.
   ~TCountDownTimerClass() {}
 
-  operator long() const { return Time(); }
+  operator int64_t() const { return Time(); }
 
   // Public functions
-  void Set(long set) {
+  void Set(int64_t set) {
     Started = Frame;
     DelayTime = set;
   }  // Set count down value.
@@ -74,17 +95,17 @@ class TCountDownTimerClass {
     Started = -1;
     DelayTime = 0;
   }
-  long Get_Start() const { return Started; }
-  long Get_Delay() const { return DelayTime; }
+  int64_t Get_Start() const { return Started; }
+  int64_t Get_Delay() const { return DelayTime; }
   bool Active() const { return Started != -1; }
   int Expired() const { return Time() == 0; }
-  long Time() const {
-    return std::max<long>(DelayTime - (Frame - Started), 0);
+  int64_t Time() const {
+    return std::max<int64_t>(DelayTime - (Frame - Started), 0);
   }  // Fetch current count down value.
 
  protected:
-  long Started;    // Initial frame time start.
-  long DelayTime;  // Ticks remaining before countdown timer expires.
+  int64_t Started;    // Initial frame time start.
+  int64_t DelayTime;  // Ticks remaining before countdown timer expires.
 };
 
 #endif  // CNC_RED_ALERT_TD_FTIMER_H_

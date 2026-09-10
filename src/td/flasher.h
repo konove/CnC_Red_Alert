@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_FLASHER_H_
 #define CNC_RED_ALERT_TD_FLASHER_H_
 
+#include <cstdint>
+
 #include "td/monoc.h"
 #include "tech/noinit.h"
 
@@ -59,6 +61,22 @@ class FlasherClass {
   *the flashing *	is determined to be completed.
   */
   unsigned IsBlushing : 1;
+
+  // Preserves both halves of the flashing state without serializing bitfields.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    uint8_t count = FlashCount;
+    bool blushing = IsBlushing;
+    ar(count, blushing);
+    if constexpr (Archive::kIsReading) {
+      if (count > 127) {
+        ar.Fail("invalid flash count");
+        return;
+      }
+      FlashCount = count;
+      IsBlushing = blushing;
+    }
+  }
 
   FlasherClass() {
     FlashCount = 0;

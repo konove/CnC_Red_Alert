@@ -36,8 +36,6 @@
  *---------------------------------------------------------------------------------------------*
  * Functions: * FuseClass::Arm_Fuse -- Sets up fuse for detonation check. *
  *   FuseClass::Fuse_Checkup -- Determines if the fuse triggers. *
- *   FuseClass::Fuse_Write -- Writes the fuse data to the save game file. *
- *   FuseClass::Fuse_Read -- Reads the fuse class data from the save game file.
  **
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
@@ -60,8 +58,6 @@
 #include "td/defines.h"
 #include "td/display_constants.h"
 #include "td/inline.h"
-#include "tech/archive.h"
-#include "tech/wwfile.h"
 
 FuseClass::FuseClass() {
   Timer = 0;
@@ -154,46 +150,4 @@ bool FuseClass::Fuse_Checkup(COORDINATE newlocation) {
     Proximity = static_cast<short>(proximity);
   }
   return false;
-}
-
-/***********************************************************************************************
- * FuseClass::Fuse_Write -- Writes the fuse data to the save game file. *
- *                                                                                             *
- *    Use this routine to output the fuse class data to the save game file
- *specified.          *
- *                                                                                             *
- * INPUT:   file  -- The file to output the data to. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/17/1994 JLB : Created. *
- *=============================================================================================*/
-void FuseClass::Fuse_Write(ArchiveWriter& file) {
-  file.Bytes(&Timer, sizeof(Timer));
-  file.Bytes(&Arming, sizeof(Arming));
-  file.Bytes(&HeadTo, sizeof(HeadTo));
-  file.Bytes(&Proximity, sizeof(Proximity));
-}
-
-/***********************************************************************************************
- * FuseClass::Fuse_Read -- Reads the fuse class data from the save game file. *
- *                                                                                             *
- *    Use this routine to input the fuse class data from the save game file
- *specified.         *
- *                                                                                             *
- * INPUT:   file  -- The file to input the data from. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/17/1994 JLB : Created. *
- *=============================================================================================*/
-void FuseClass::Fuse_Read(ArchiveReader& file) {
-  file.Bytes(&Timer, sizeof(Timer));
-  file.Bytes(&Arming, sizeof(Arming));
-  file.Bytes(&HeadTo, sizeof(HeadTo));
-  file.Bytes(&Proximity, sizeof(Proximity));
 }

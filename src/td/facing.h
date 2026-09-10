@@ -53,6 +53,12 @@
 */
 class FacingClass {
  public:
+  // Field-wise saved-game support; raw-image owners still need NoInit.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(CurrentFacing, DesiredFacing);
+  }
+
   FacingClass();
   FacingClass(DirType dir) { CurrentFacing = DesiredFacing = dir; }
   FacingClass(const NoInitClass&) {}

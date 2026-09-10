@@ -55,6 +55,12 @@ typedef enum ImpactType {
 */
 class FlyClass {
  public:
+  // Field-wise saved-game support; raw-image owners still need NoInit.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(SpeedAccum, SpeedAdd);
+  }
+
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */

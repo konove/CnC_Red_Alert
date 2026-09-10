@@ -47,6 +47,12 @@
 */
 class CrewClass {
  public:
+  // Field-wise saved-game support; raw-image owners still need NoInit.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(Kills);
+  }
+
   /*
   **	This keeps track of the number of "kills" the unit as accumulated.
   **	When it reaches a certain point, the unit improves.

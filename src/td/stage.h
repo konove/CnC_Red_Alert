@@ -66,6 +66,12 @@ class StageClass {
   unsigned char Rate;
 
  public:
+  // Field-wise saved-game support; raw-image owners still need NoInit.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(Stage, StageTimer, Rate);
+  }
+
   virtual ~StageClass() = default;
   StageClass() {
     StageTimer = 0;

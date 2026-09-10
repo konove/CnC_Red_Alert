@@ -41,12 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_FUSE_H_
 #define CNC_RED_ALERT_TD_FUSE_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-
 #include "td/defines.h"
 #include "tech/noinit.h"
-#include "tech/wwfile.h"
 
 /****************************************************************************
 **	The fuse is used by projectiles to determine whether detonation should
@@ -55,13 +51,17 @@ class ArchiveWriter;
 */
 class FuseClass {
  public:
+  // Field-wise saved-game support; raw-image owners still need NoInit.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(Timer, Arming, HeadTo, Proximity);
+  }
+
   FuseClass();
   FuseClass(const NoInitClass&) {}
   void Arm_Fuse(COORDINATE location, COORDINATE target, int time = 0xFF,
                 int arming = 0);
   bool Fuse_Checkup(COORDINATE newlocation);
-  void Fuse_Write(ArchiveWriter& file);
-  void Fuse_Read(ArchiveReader& file);
   COORDINATE Fuse_Target();
 
   /*

@@ -74,6 +74,16 @@ class DoorClass {
   unsigned IsToRedraw : 1;
 
  public:
+  // Saves the animation phase, door state, and pending redraw flag.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    bool redraw = IsToRedraw;
+    ar(Control, Stages, State, redraw);
+    if constexpr (Archive::kIsReading) {
+      IsToRedraw = redraw;
+    }
+  }
+
   DoorClass();
   DoorClass(const NoInitClass& x) : Control(x) {}
 

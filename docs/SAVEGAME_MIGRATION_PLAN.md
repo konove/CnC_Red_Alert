@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Steps 0–19 are committed; step 19 is `1121d8e6` (RA cleanup/dumps). Step 18 is `a542c517`.
+- Steps 0–20 are committed; step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -29,7 +29,22 @@
 - Step-20 validation: strict builds of both games and all **156 CTest tests** pass. TD SCG01EA and
   SCB01EA match **120** and **180** unit positions across save/load, respectively. A version-0 header,
   one-byte-truncated ActionMovie, and invalid raw map size are rejected without starting gameplay.
-  RA SCG01EA still matches 240 positions. Next implementation step is **21: TD leaf value types**.
+  RA SCG01EA still matches 240 positions.
+- Step 21 is complete: field-wise serializers are ready for TD's countdown, facing, stage, flight,
+  fuse, cargo, door, flasher, and crew values. The unused Fuse_Read/Write pair is deleted.
+  NoInit constructors remain wherever raw owners still need them; no member initializers were added.
+  TD has no `CloakingClass`: its cloak state is `CloakType` plus a `StageClass` member of TechnoClass.
+- TD save version is now **2**, accounting for countdown storage changing from `long` to `int64_t`
+  on platforms with 32-bit long. The new countdown serializer stores remaining time and active state,
+  re-anchoring to restored Frame. Heap objects still use raw images until the next steps wire these in.
+- `td/serialize.{h,cc}` adds checked object TARGET proxies (including cargo's FootClass pointer) and
+  enum-based static type references for all 11 tables. Object reads resolve raw heap addresses without
+  dereferencing not-yet-constructed slots. Production type-table bindings are explicitly instantiated.
+- Step-21 validation: strict builds of both games and **168 CTest tests** pass. Twelve new tests cover
+  timer width/re-anchoring/invalid data, facing, partial animation, flight accumulation, door progress,
+  flashing, crew kills, fuse behavior, and type-pointer resolution/rejection. Debug-display and legacy
+  flight pointer-coding hooks are test-only link stubs; cargo/object-slot integration awaits heap migration.
+  TD GDI/Nod smoke checks match 120/180 positions; RA matches 240. Next step is **22: TD heap objects**.
 - Step-19 validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
   Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke
@@ -326,7 +341,7 @@ the `RawImage` branch rows of `ra/heap_layout_test.cc`.
 
 **Phase 4 — TD** (mirrors Phase 1–3; ⚠ = not copy-paste, see TD section)
 20. Plumbing ⚠: FilePipe/FileStraw wrap, `int32_t` version constant, seek-free cell count, unconditional `ActionMovie`, all `Save/Load(FileClass&)` signatures → archives. Still raw bytes inside: checkpoint.
-21. Leaf value types: `TCountDownTimerClass`, `FacingClass`, `StageClass` (public), `FlyClass`, `FuseClass` (delete Fuse_Read/Write), `CargoClass`, `DoorClass`, `FlasherClass`, `CrewClass`, `CloakingClass`; type-ref helper ⚠.
+21. Leaf value types: `TCountDownTimerClass`, `FacingClass`, `StageClass` (public), `FlyClass`, `FuseClass` (delete Fuse_Read/Write), `CargoClass`, `DoorClass`, `FlasherClass`, `CrewClass`; type-ref helper ⚠. TD cloak state is a `CloakType` plus `StageClass`, not a separate class.
 22–27. Heap hierarchy in the same base-first order as RA (Techno + Crew ⚠, Turret/TarCom ⚠, Building Factory index ⚠, Trigger ⚠, House ⚠). Delete `ioobj.cc` bodies, `Read/Write_Object`, `VTable` statics, `heap.cc` raw paths.
 28. Map/Cell ⚠ (theater-first, `CellTriggers`, full `Should_Save`).
 29. Globals: Score, Base, Layers, Misc.
