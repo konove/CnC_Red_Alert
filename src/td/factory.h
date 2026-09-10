@@ -50,13 +50,11 @@ class ArchiveWriter;
 #include "td/stage.h"
 #include "td/techno.h"
 #include "td/type.h"
-#include "tech/noinit.h"
 #include "tech/wwfile.h"
 
 class FactoryClass : StageClass {
  public:
-  FactoryClass();
-  FactoryClass(const NoInitClass& x) : StageClass(x) {}
+  FactoryClass() = default;
   ~FactoryClass() override;
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
@@ -67,10 +65,9 @@ class FactoryClass : StageClass {
   /*
   **	File I/O.
   */
-  bool Load(ArchiveReader& file);
-  bool Save(ArchiveWriter& file);
-  void Code_Pointers();
-  void Decode_Pointers();
+  // Field-wise saved-game support, defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   bool Abandon();
   bool Completed();
@@ -86,7 +83,7 @@ class FactoryClass : StageClass {
   int Get_Special_Item() const;
   void AI();
   void Set(TechnoClass& object);
-  HouseClass* Get_House() { return House; }
+  HouseClass* Get_House() { return HouseClass::As_Pointer(House); }
 
   /*
   **	Dee-buggin' support.
@@ -98,7 +95,7 @@ class FactoryClass : StageClass {
   *object has *	been allocated, then this flag is true. Otherwise, the object is
   *free to be *	allocated.
   */
-  unsigned IsActive : 1;
+  unsigned IsActive : 1 = true;
 
  protected:
   enum StepCountEnum {
@@ -115,7 +112,7 @@ class FactoryClass : StageClass {
   *Suspended production is not *	abandoned. It may be resumed with a call
   *to Start().
   */
-  unsigned IsSuspended : 1;
+  unsigned IsSuspended : 1 = false;
 
   /*
   **	If the AI process detected that the production process has advanced far
@@ -123,7 +120,7 @@ class FactoryClass : StageClass {
   *will be true. *	Examination of this flag (through the Has_Chaged
   *function) allows intelligent *	updating of any production graphic.
   */
-  unsigned IsDifferent : 1;
+  unsigned IsDifferent : 1 = false;
 
   /*
   **	This records the balance due on the current production item. This value
@@ -132,8 +129,8 @@ class FactoryClass : StageClass {
   *production cost will be EXACT *	regardless of the number of installment
   *payments that are made.
   */
-  int Balance;
-  int OriginalBalance;
+  int Balance = 0;
+  int OriginalBalance = 0;
 
   /*
   **	This is the object that is being produced. It is held in a state of
@@ -141,20 +138,20 @@ class FactoryClass : StageClass {
   *the time production is *	started, it is always available when production
   *completes.
   */
-  TechnoClass* Object;
+  TechnoClass* Object = nullptr;
 
   /*
   **	If the factory is not producing an object and is instead producing
   ** a special item, then special item will be set.
   */
-  int SpecialItem;
+  int SpecialItem = SPC_NONE;
 
   /*
   ** The factory has to be doing production for one house or another.
-  ** The house pointer will point to whichever house it is being done
+  ** The house ID records whichever house it is being done
   ** for.
   */
-  HouseClass* House;
+  HousesType House = HOUSE_NONE;
 };
 
 #endif  // CNC_RED_ALERT_TD_FACTORY_H_

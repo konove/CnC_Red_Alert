@@ -31,6 +31,20 @@ class ObjectPtr {
 template <class T>
 ObjectPtr(T*&) -> ObjectPtr<T>;
 
+class TeamTypeClass;
+
+// A team definition lives in a heap, rather than a static type table. Preserve
+// its TARGET and validate kind/bounds before returning an unconstructed slot.
+class TeamTypePtr {
+ public:
+  explicit TeamTypePtr(TeamTypeClass*& ref) : ref_(ref) {}
+  void Serialize(ArchiveWriter& ar);
+  void Serialize(ArchiveReader& ar);
+
+ private:
+  TeamTypeClass*& ref_;
+};
+
 namespace td_save_detail {
 
 // Each supported type enum indexes a static table, with no holes below COUNT.

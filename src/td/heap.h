@@ -41,14 +41,14 @@
 #ifndef CNC_RED_ALERT_TD_HEAP_H_
 #define CNC_RED_ALERT_TD_HEAP_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-
+#include <concepts>
+#include <new>
 #include <vector>
 
 #include "base/types.h"
 #include "td/vector.h"
-#include "tech/wwfile.h"
+#include "tech/archive.h"
+#include "tech/noinit.h"
 
 // Heap templates are generic - users must include type headers themselves.
 // IWYU pragma: no_include "td/aircraft.h"
@@ -185,6 +185,10 @@ class FixedIHeapClass : public FixedHeapClass {
 **	class. By using this template, the object pointers are automatically
 *converted *	to the correct type without any code overhead.
 */
+// Raw owners stay on the old format until they declare their own Serialize.
+template <class T>
+concept RawImage = std::constructible_from<T, const NoInitClass&>;
+
 template <class T>
 class TFixedIHeapClass : public FixedIHeapClass {
  public:
@@ -197,13 +201,190 @@ class TFixedIHeapClass : public FixedIHeapClass {
   virtual T* Alloc() { return static_cast<T*>(FixedIHeapClass::Allocate()); }
   virtual int Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
   int Free(void* pointer) override { return FixedIHeapClass::Free(pointer); }
-  virtual int Save(ArchiveWriter&);
-  virtual int Load(ArchiveReader&);
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  int Save(ArchiveWriter&)
+    requires(Serializable<T> || RawImage<T>);
+  int Load(ArchiveReader&)
+    requires(Serializable<T> || RawImage<T>);
+  void Code_Pointers();
+  void Decode_Pointers();
 
   virtual T* Ptr(int index) { return static_cast<T*>(ActivePointers[index]); }
   virtual T* Raw_Ptr(int index) { return static_cast<T*>((*this)[index]); }
 };
+
+/***********************************************************************************************
+ * TFixedIHeapClass::Save -- Saves all active objects *
+ *                                                                                             *
+ * INPUT:   file      file to write to *
+ *                                                                                             *
+ * OUTPUT:  true = OK, false = error *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 03/15/1995 BRR : Created. *
+ *=============================================================================================*/
+template <class T>
+int TFixedIHeapClass<T>::Save(ArchiveWriter& file)
+  requires(Serializable<T> || RawImage<T>)
+{
+  int i;    // loop counter
+  int idx;  // object index
+
+  /*
+  ** Save the number of instances of this class
+  */
+  file.Bytes(&ActiveCount, sizeof(ActiveCount));
+
+  /*
+  ** Save each instance of this class
+  */
+  for (i = 0; i < ActiveCount; i++) {
+    /*
+    ** Save the array index of the object, so it can be loaded back into the
+    ** same array location (so TARGET translations will work)
+    */
+    idx = ID(Ptr(i));
+    file.Bytes(&idx, sizeof(idx));
+
+    /*
+    ** Save the object itself
+    */
+    if constexpr (Serializable<T>) {
+      Ptr(i)->Serialize(file);
+    } else if (!Ptr(i)->Save(file)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/***********************************************************************************************
+ * TFixedIHeapClass::Load -- Loads all active objects *
+ *                                                                                             *
+ * INPUT:   file      file to read from *
+ *                                                                                             *
+ * OUTPUT:  true = OK, false = error *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 03/15/1995 BRR : Created. *
+ *=============================================================================================*/
+template <class T>
+int TFixedIHeapClass<T>::Load(ArchiveReader& file)
+  requires(Serializable<T> || RawImage<T>)
+{
+  int i;    // loop counter
+  int idx;  // object index
+  T* ptr;   // object pointer
+  int a_count;
+
+  /*
+  ** Read the number of instances of this class
+  */
+  file.Bytes(&a_count, sizeof(a_count));
+  if (!file.ok()) {
+    return false;
+  }
+
+  /*
+  ** Error if more objects than we can hold
+  */
+  if (a_count < 0 || a_count > TotalCount) {
+    return false;
+  }
+
+  /*
+  ** Read each class instance
+  */
+  for (i = 0; i < a_count; i++) {
+    /*
+    ** Read the object's array index
+    */
+    file.Bytes(&idx, sizeof(idx));
+    if (!file.ok()) {
+      return false;
+    }
+
+    /*
+    ** Get a pointer to the object, activate that object
+    */
+    if (idx < 0 || idx >= TotalCount || FreeFlag[idx]) {
+      file.Fail("invalid heap slot");
+      return false;
+    }
+    ptr = static_cast<T*>((*this)[idx]);
+    FreeFlag[idx] = true;
+    ActiveCount++;
+    ActivePointers.Add(ptr);
+
+    /*
+    ** Load the object
+    */
+    if constexpr (Serializable<T>) {
+      new (ptr) T();
+      ptr->Serialize(file);
+      if (!file.ok()) {
+        return false;
+      }
+    } else {
+      int size;
+      file.Bytes(&size, sizeof(size));
+      if (!file.ok() || size != sizeof(T)) {
+        file.Fail("invalid raw object size");
+        return false;
+      }
+      file.Bytes(ptr, sizeof(T));
+      if (!file.ok()) {
+        return false;
+      }
+      new (ptr) T(NoInitClass());
+    }
+  }
+
+  return file.ok();
+}
+
+/***********************************************************************************************
+ * TFixedIHeapClass::Code_Pointers -- codes pointers for every object, to
+ *prepare for save     *
+ *                                                                                             *
+ * INPUT:   file      file to read from *
+ *                                                                                             *
+ * OUTPUT:  true = OK, false = error *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 03/15/1995 BRR : Created. *
+ *=============================================================================================*/
+template <class T>
+void TFixedIHeapClass<T>::Code_Pointers() {
+  if constexpr (!Serializable<T>) {
+    for (int i = 0; i < ActiveCount; i++) {
+      Ptr(i)->Code_Pointers();
+    }
+  }
+}
+
+/***********************************************************************************************
+ * TFixedIHeapClass::Decode_Pointers -- Decodes all object pointers, for after
+ *loading         *
+ *                                                                                             *
+ * INPUT:   file      file to read from *
+ *                                                                                             *
+ * OUTPUT:  true = OK, false = error *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 03/15/1995 BRR : Created. *
+ *=============================================================================================*/
+template <class T>
+void TFixedIHeapClass<T>::Decode_Pointers() {
+  if constexpr (!Serializable<T>) {
+    for (int i = 0; i < ActiveCount; i++) {
+      Ptr(i)->Decode_Pointers();
+    }
+  }
+}
 
 #endif  // CNC_RED_ALERT_TD_HEAP_H_

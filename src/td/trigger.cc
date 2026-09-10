@@ -64,6 +64,7 @@
 
 #include "td/trigger.h"
 
+#include <cinttypes>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -288,16 +289,6 @@ bool TriggerClass::Action_Need_Team(ActionType action) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-TriggerClass::TriggerClass() {
-  IsPersistant = VOLATILE;
-  AttachCount = 0;
-  Event = EVENT_NONE;
-  Action = ACTION_NONE;
-  House = HOUSE_NONE;
-  DataCopy = Data = 0L;
-  Name[0] = '\0';
-  Team = nullptr;
-}
 
 /***********************************************************************************************
  * TriggerClass::~TriggerClass -- Destructor for trigger objects. *
@@ -1191,7 +1182,7 @@ void TriggerClass::Write_INI(char* buffer, bool refresh) {
       tname = trigger->Team->IniName;
     }
 
-    sprintf(buf, "%s,%s,%ld,%s,%s,%d", Name_From_Event(trigger->Event),
+    sprintf(buf, "%s,%s,%" PRId64 ",%s,%s,%d", Name_From_Event(trigger->Event),
             Name_From_Action(trigger->Action), trigger->Data, hname, tname,
             trigger->IsPersistant);
     WWWritePrivateProfileString(INI_Name(), trigger->Get_Name(), buf, buffer);

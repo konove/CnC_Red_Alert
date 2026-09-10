@@ -121,16 +121,6 @@ int FactoryClass::Validate() const {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-FactoryClass::FactoryClass() {
-  IsSuspended = false;
-  IsDifferent = false;
-  Balance = 0;
-  SpecialItem = SPC_NONE;
-  Object = nullptr;
-  House = nullptr;
-  Set_Rate(0);
-  Set_Stage(0);
-}
 
 /***********************************************************************************************
  * FactoryClass::~FactoryClass -- Default destructor for factory objects. *
@@ -244,22 +234,22 @@ void FactoryClass::AI() {
     **	units on a building by building basis -- quantity of building
     **	factory types doesn't affect individual factories.
     */
-    if (Object && House->IsHuman) {
+    if (Object && Get_House()->IsHuman) {
       switch (Object->What_Am_I()) {
         case RTTI_AIRCRAFT:
-          stages = House->AircraftFactories;
+          stages = Get_House()->AircraftFactories;
           break;
 
         case RTTI_INFANTRY:
-          stages = House->InfantryFactories;
+          stages = Get_House()->InfantryFactories;
           break;
 
         case RTTI_UNIT:
-          stages = House->UnitFactories;
+          stages = Get_House()->UnitFactories;
           break;
 
         case RTTI_BUILDING:
-          stages = House->BuildingFactories;
+          stages = Get_House()->BuildingFactories;
           break;
       }
       stages = std::max(stages, 1);
@@ -280,10 +270,10 @@ void FactoryClass::AI() {
         *the time the next *	production step occurs, there may be sufficient
         *funds available.
         */
-        if (cost > House->Available_Money()) {
+        if (cost > Get_House()->Available_Money()) {
           Set_Stage(Fetch_Stage() - 1);
         } else {
-          House->Spend_Money(cost);
+          Get_House()->Spend_Money(cost);
           Balance -= cost;
         }
         if (Debug_Instant_Build) {
@@ -296,7 +286,7 @@ void FactoryClass::AI() {
         if (Fetch_Stage() == STEP_COUNT) {
           IsSuspended = true;
           Set_Rate(0);
-          House->Spend_Money(Balance);
+          Get_House()->Spend_Money(Balance);
           Balance = 0;
         }
       }
@@ -372,7 +362,7 @@ bool FactoryClass::Set(const TechnoTypeClass& object, HouseClass& house) {
   Object = dynamic_cast<TechnoClass*>(object.Create_One_Of(&house));
 
   if (Object) {
-    House = Object->House;
+    House = Object->House->Class->House;
     Balance = object.Cost_Of();
     Object->PurchasePrice = Balance;
   }
@@ -419,7 +409,7 @@ bool FactoryClass::Set(const int& type, HouseClass& house) {
   **	Create an object of the type requested.
   */
   SpecialItem = type;
-  House = &house;
+  House = house.Class->House;
   Balance = 0;
 
   /*
@@ -448,7 +438,7 @@ void FactoryClass::Set(TechnoClass& object) {
   Validate();
   Abandon();
   Object = &object;
-  House = Object->House;
+  House = Object->House->Class->House;
   Balance = 0;
   Set_Rate(0);
   Set_Stage(STEP_COUNT);
@@ -503,16 +493,16 @@ bool FactoryClass::Suspend() {
 bool FactoryClass::Start() {
   Validate();
   if ((Object || SpecialItem) && IsSuspended && !Has_Completed()) {
-    if (House->Available_Money() >= Cost_Per_Tick()) {
+    if (Get_House()->Available_Money() >= Cost_Per_Tick()) {
       int time;
 
       if (Object) {
-        time = Object->Class_Of().Time_To_Build(House->Class->House);
+        time = Object->Class_Of().Time_To_Build(Get_House()->Class->House);
       } else {
         time = kTicksPerMinute * 5;
       }
 
-      int frac = House->Power_Fraction();
+      int frac = Get_House()->Power_Fraction();
       frac = Bound(frac, 0x0010, 0x0100);
       int rate = time * 256 / frac;
 
@@ -552,7 +542,7 @@ bool FactoryClass::Abandon() {
       **	Refund all money expended so far, back to the owner of the
       *object under construction.
       */
-      House->Refund_Money(Object->Class_Of().Cost_Of() - Balance);
+      Get_House()->Refund_Money(Object->Class_Of().Cost_Of() - Balance);
       Balance = 0;
 
       /*

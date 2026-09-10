@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Steps 0–20 are committed; step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
+- Steps 0–21 are committed; step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -44,7 +44,23 @@
   timer width/re-anchoring/invalid data, facing, partial animation, flight accumulation, door progress,
   flashing, crew kills, fuse behavior, and type-pointer resolution/rejection. Debug-display and legacy
   flight pointer-coding hooks are test-only link stubs; cargo/object-slot integration awaits heap migration.
-  TD GDI/Nod smoke checks match 120/180 positions; RA matches 240. Next step is **22: TD heap objects**.
+  TD GDI/Nod smoke checks match 120/180 positions; RA matches 240. Step 22 starts the TD heap migration.
+- Step 22 migrates **FactoryClass and TriggerClass** to field-wise archives (TD version **3**).
+  Their NoInit constructors and raw I/O/pointer-coding methods are removed; safe defaults include active
+  heap membership. Factory ownership is a house enum so saving never dereferences a coded HouseClass.
+  Object TARGET and team-type TARGET references resolve checked heap slots. Trigger counters use int64_t.
+- TD heaps now dispatch between Serializable objects and the remaining NoInit/raw objects. Migrated
+  objects skip pointer coding; loads preserve sparse slots and reject duplicate/out-of-range slots,
+  bad raw sizes, and truncated fields. Allocator and template instantiations are separated for tests;
+  vector template definitions live in `vector_impl.h` so the allocator tests need no game link.
+- `-FACTORYTEST` starts Jeep production after a new scenario. The TD smoke script accepts `--factory`
+  as its third argument and compares serialized factory/trigger fields as well as unit positions.
+  Next checkpoint is **23: TeamTypeClass and TeamClass**, followed by the remaining heap hierarchy.
+- Step-22 validation: strict builds of both games and **173 CTest tests** pass. Five heap tests cover
+  sparse slots, skipped coding for field objects, raw vtable restoration, invalid counts/indices,
+  duplicate slots, wrong raw sizes, and truncated data. TD GDI with active Jeep production matches
+  **660** unit/factory/trigger states across save/load; Nod matches **630**, and RA matches **240**
+  vehicle/vessel positions. Real-display gameplay and live multiplayer checks remain outstanding.
 - Step-19 validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
   Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke
@@ -342,7 +358,9 @@ the `RawImage` branch rows of `ra/heap_layout_test.cc`.
 **Phase 4 — TD** (mirrors Phase 1–3; ⚠ = not copy-paste, see TD section)
 20. Plumbing ⚠: FilePipe/FileStraw wrap, `int32_t` version constant, seek-free cell count, unconditional `ActionMovie`, all `Save/Load(FileClass&)` signatures → archives. Still raw bytes inside: checkpoint.
 21. Leaf value types: `TCountDownTimerClass`, `FacingClass`, `StageClass` (public), `FlyClass`, `FuseClass` (delete Fuse_Read/Write), `CargoClass`, `DoorClass`, `FlasherClass`, `CrewClass`; type-ref helper ⚠. TD cloak state is a `CloakType` plus `StageClass`, not a separate class.
-22–27. Heap hierarchy in the same base-first order as RA (Techno + Crew ⚠, Turret/TarCom ⚠, Building Factory index ⚠, Trigger ⚠, House ⚠). Delete `ioobj.cc` bodies, `Read/Write_Object`, `VTable` statics, `heap.cc` raw paths.
+22. FactoryClass + TriggerClass, mixed Serializable/raw heap dispatch, and heap tests.
+23. TeamTypeClass + TeamClass.
+24–27. Remaining heap hierarchy in the same base-first order as RA (Techno + Crew ⚠, Turret/TarCom ⚠, Building Factory index ⚠, Trigger ⚠, House ⚠). Delete `ioobj.cc` bodies, `Read/Write_Object`, `VTable` statics, `heap.cc` raw paths.
 28. Map/Cell ⚠ (theater-first, `CellTriggers`, full `Should_Save`).
 29. Globals: Score, Base, Layers, Misc.
 30. TD cleanup: remaining NoInit ctors incl. `td/ftimer.h:60`, `td/heap_layout_test.cc`, `td/session.h`, `td/wwfile.h`, `td_saveload_test` round-trip (BufferPipe→BufferStraw for Cell, Map members, House, Unit).

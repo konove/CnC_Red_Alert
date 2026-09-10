@@ -73,7 +73,6 @@ constexpr LayoutCase kSerializedTypes[] = {
     LAYOUT_CASE(AnimClass, 88),
     LAYOUT_CASE(BuildingClass, 296),
     LAYOUT_CASE(BulletClass, 104),
-    LAYOUT_CASE(FactoryClass, 48),
     LAYOUT_CASE(HouseClass, 3368),
     LAYOUT_CASE(InfantryClass, 360),
     LAYOUT_CASE(OverlayClass, 48),
@@ -108,7 +107,6 @@ constexpr LayoutCase kSerializedTypes[] = {
     LAYOUT_CASE(BaseNodeClass, 8),
     LAYOUT_CASE(EventClass, 32),
     LAYOUT_CASE(ScoreClass, 56),
-    LAYOUT_CASE(TriggerClass, 56),
     LAYOUT_CASE(WarheadTypeClass, 12),
     LAYOUT_CASE(WeaponTypeClass, 20),
 };

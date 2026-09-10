@@ -72,6 +72,13 @@ add_gtest(
 
 target_compile_definitions(td_saveload_test PRIVATE TD=1)
 
+add_gtest(
+    NAME td_heap_test
+    SOURCES heap_test.cc heap.cc
+    LIBS tech
+)
+target_compile_definitions(td_heap_test PRIVATE TD=1)
+
 if (EMSCRIPTEN)
     set_target_properties(tdsdl PROPERTIES
             SUFFIX ".html"

@@ -44,12 +44,12 @@
 class ArchiveReader;
 class ArchiveWriter;
 
+#include <cstdint>
 #include <cstring>
 
 #include "td/defines.h"
 #include "td/object.h"
 #include "td/teamtype.h"
-#include "tech/noinit.h"
 #include "tech/wwfile.h"
 
 typedef enum EventType {
@@ -130,8 +130,7 @@ class TriggerClass {
   **
   **	Constructor/Destructor
   */
-  TriggerClass();
-  TriggerClass(const NoInitClass&) {}
+  TriggerClass() = default;
   ~TriggerClass();
 
   /*
@@ -154,10 +153,9 @@ class TriggerClass {
   void Fill_In(char* name, char* entry);
   static void Write_INI(char* buffer, bool refresh);
   static const char* INI_Name() { return "Triggers"; }
-  bool Load(ArchiveReader& file);
-  bool Save(ArchiveWriter& file);
-  void Code_Pointers();
-  void Decode_Pointers();
+  // Field-wise saved-game support, defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	As_Pointer gets a pointer to the trigger object give the mnemonic
@@ -211,14 +209,14 @@ class TriggerClass {
   **	a team-related trigger goes off, or for reinforcements. The house
   **	for reinforcements is determined by the house for that team.
   */
-  TeamTypeClass* Team;
+  TeamTypeClass* Team = nullptr;
 
   /*
   **	If this trigger object is active, then this flag will be true. Trigger
   **	objects that are not active are either not yet created or have been
   **	deleted after fulfilling their action.
   */
-  unsigned IsActive : 1;
+  unsigned IsActive : 1 = true;
 
   /*
   **	This flag controls whether the trigger destroys itself after it goes
@@ -230,45 +228,45 @@ class TriggerClass {
   **		 triggered from all the objects; then, it removes itself.
   **	2 = trigger is Fully Persistent; it just won't go away.
   */
-  PersistantType IsPersistant;
+  PersistantType IsPersistant = VOLATILE;
 
   /*
   **	This value tells how many objects or cells this trigger is attached
   **	to.  The Read_INI routine for all classes that point to a trigger must
   **	increment this value!
   */
-  int AttachCount;
+  int AttachCount = 0;
 
   /*
   **	Each trigger must have an event which activates it. This is the event
   *that is *	used to activate this trigger.
   */
-  EventType Event;
+  EventType Event = EVENT_NONE;
 
   /*
   **	This is the action to perform when the trigger event occurs.
   */
-  ActionType Action;
+  ActionType Action = ACTION_NONE;
 
   /*
   **	For house-specific events, this is the house for that event.
   */
-  HousesType House;
+  HousesType House = HOUSE_NONE;
 
   /*
   **	For credit-related triggers, this is the number of credits that
   **	generate the trigger. For time-based triggers, this is the number
   **	of minutes that must elapse.
   */
-  long Data;
-  long DataCopy;
+  int64_t Data = 0;
+  int64_t DataCopy = 0;
 
  private:
   /*
   **	Triggers can be referred to by their name, which can be up to 4
   **	characters.
   */
-  char Name[5];
+  char Name[5]{};
 };
 
 #endif  // CNC_RED_ALERT_TD_TRIGGER_H_

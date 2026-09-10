@@ -45,10 +45,7 @@
  *to a save game file.                                             *
  *   TeamClass::Code_Pointers -- codes class's pointers for load/save *
  *   TeamClass::Decode_Pointers -- decodes pointers for load/save *
- *   TriggerClass::Load -- Reads from a save game file. * TriggerClass::Save --
- *Write to a save game file.                                          *
- *   TriggerClass::Code_Pointers -- codes class's pointers for load/save *
- *   TriggerClass::Decode_Pointers -- decodes pointers for load/save *
+ *   TriggerClass::Serialize -- Read/write saved fields. *
  *   AircraftClass::Load -- Reads from a save game file. * AircraftClass::Save
  *-- Write to a save game file.                                         *
  *   AircraftClass::Code_Pointers -- codes class's pointers for load/save *
@@ -93,10 +90,7 @@
  *to a save game file.                                             *
  *   UnitClass::Code_Pointers -- codes class's pointers for load/save *
  *   UnitClass::Decode_Pointers -- decodes pointers for load/save *
- *   FactoryClass::Load -- Reads from a save game file. * FactoryClass::Save --
- *Write to a save game file.                                          *
- *   FactoryClass::Code_Pointers -- codes class's pointers for load/save *
- *   FactoryClass::Decode_Pointers -- decodes pointers for load/save *
+ *   FactoryClass::Serialize -- Read/write saved fields. *
  *   LayerClass::Load -- Reads from a save game file. * LayerClass::Save --
  *Write to a save game file.                                            *
  *   LayerClass::Code_Pointers -- codes class's pointers for load/save *
@@ -163,6 +157,7 @@
 #include "td/radio.h"
 #include "td/saveload.h"
 #include "td/score.h"
+#include "td/serialize.h"
 #include "td/smudge.h"
 #include "td/stage.h"
 #include "td/support.h"
@@ -371,90 +366,6 @@ void TeamClass::Decode_Pointers() {
     }
 
     Check_Ptr(Member);
-  }
-}
-
-/***********************************************************************************************
- * TriggerClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool TriggerClass::Load(ArchiveReader& file) {
-  int rc = Read_Object(this, sizeof(*this), sizeof(*this), file, nullptr);
-
-  /*
-  -------------------------- Add to HouseTriggers --------------------------
-  */
-  if (rc) {
-    if (House != HOUSE_NONE) {
-      HouseTriggers[House].Add(this);
-    }
-  }
-
-  return rc;
-}
-
-/***********************************************************************************************
- * TriggerClass::Save -- Write to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool TriggerClass::Save(ArchiveWriter& file) {
-  return Write_Object(this, sizeof(*this), file);
-}
-
-/***********************************************************************************************
- * TriggerClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TriggerClass::Code_Pointers() {
-  if (Team) {
-    Team = (TeamTypeClass*)Team->As_Target();
-  }
-}
-
-/***********************************************************************************************
- * TriggerClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TriggerClass::Decode_Pointers() {
-  if (Team) {
-    Team = As_TeamType(static_cast<TARGET>((uintptr_t)Team));
-    Check_Ptr(Team);
   }
 }
 
@@ -1353,88 +1264,6 @@ void UnitClass::Code_Pointers() { TarComClass::Code_Pointers(); }
 void UnitClass::Decode_Pointers() { TarComClass::Decode_Pointers(); }
 
 /***********************************************************************************************
- * FactoryClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool FactoryClass::Load(ArchiveReader& file) {
-  return Read_Object(this, sizeof(StageClass), sizeof(*this), file, nullptr);
-}
-
-/***********************************************************************************************
- * FactoryClass::Save -- Write to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool FactoryClass::Save(ArchiveWriter& file) {
-  return Write_Object(this, sizeof(*this), file);
-}
-
-/***********************************************************************************************
- * FactoryClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void FactoryClass::Code_Pointers() {
-  if (Object) {
-    Object = (TechnoClass*)Object->As_Target();
-  }
-
-  House = (HouseClass*)House->Class->House;
-
-  StageClass::Code_Pointers();
-}
-
-/***********************************************************************************************
- * FactoryClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void FactoryClass::Decode_Pointers() {
-  if (Object) {
-    Object = As_Techno(static_cast<TARGET>((uintptr_t)Object));
-    Check_Ptr(Object);
-  }
-
-  House = HouseClass::As_Pointer(static_cast<HousesType>((uintptr_t)House));
-  Check_Ptr(House);
-
-  StageClass::Decode_Pointers();
-}
-
-/***********************************************************************************************
  * LayerClass::Load -- Loads from a save game file. *
  *                                                                                             *
  * INPUT:   file  -- The file to read the cell's data from. *
@@ -2219,3 +2048,45 @@ void ObjectClass::Decode_Pointers() {
     Check_Ptr((void*)Trigger);
   }
 }
+
+// These objects stay live while the remaining raw heaps code their pointers.
+// House IDs and heap TARGETs avoid looking through any coded type pointers.
+template <class Archive>
+void FactoryClass::Serialize(Archive& ar) {
+  StageClass::Serialize(ar);
+  bool active = IsActive;
+  bool suspended = IsSuspended;
+  bool different = IsDifferent;
+  ar(active, suspended, different, Balance, OriginalBalance, ObjectPtr(Object),
+     SpecialItem, House);
+  if constexpr (Archive::kIsReading) {
+    IsActive = active;
+    IsSuspended = suspended;
+    IsDifferent = different;
+    if (!active || House < HOUSE_NONE || House >= HOUSE_COUNT ||
+        ((Object != nullptr || SpecialItem != SPC_NONE) &&
+         House == HOUSE_NONE)) {
+      ar.Fail("invalid factory state");
+    }
+  }
+}
+template void FactoryClass::Serialize(ArchiveWriter&);
+template void FactoryClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void TriggerClass::Serialize(Archive& ar) {
+  bool active = IsActive;
+  ar(TeamTypePtr(Team), active, IsPersistant, AttachCount, Event, Action, House,
+     Data, DataCopy, Name);
+  if constexpr (Archive::kIsReading) {
+    IsActive = active;
+    if (!active || IsPersistant < VOLATILE || IsPersistant > PERSISTANT ||
+        AttachCount < 0 || Event < EVENT_NONE || Event >= EVENT_COUNT ||
+        Action < ACTION_NONE || Action >= ACTION_COUNT || House < HOUSE_NONE ||
+        House >= HOUSE_COUNT || Name[4] != '\0') {
+      ar.Fail("invalid trigger state");
+    }
+  }
+}
+template void TriggerClass::Serialize(ArchiveWriter&);
+template void TriggerClass::Serialize(ArchiveReader&);

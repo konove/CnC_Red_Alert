@@ -65,6 +65,8 @@
 
 #include "td/conquer.h"
 
+#include <array>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -72,8 +74,8 @@
 #include <iterator>
 #include <string>
 
-#include "base/types.h"
 #include "absl/log/log.h"
+#include "base/types.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "sdllib/drawbuff.h"
@@ -102,6 +104,7 @@
 #include "td/display.h"
 #include "td/event.h"
 #include "td/externs.h"
+#include "td/factory.h"
 #include "td/foot.h"
 #include "td/globals.h"
 #include "td/goptions.h"
@@ -142,7 +145,9 @@
 #include "td/unit.h"
 #include "td/vector.h"
 #include "tech/2keyfbuf.h"
+#include "tech/archive.h"
 #include "tech/crc.h"
+#include "tech/xpipe.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifdef _WIN32
@@ -1713,6 +1718,25 @@ bool Main_Loop() {
                 << " coord " << unit->Coord << " mission " << unit->Mission
                 << " navcom " << unit->NavCom;
     }
+    // Compare every serialized field of migrated objects in smoke runs.
+    auto log_heap = [](auto& heap, const char* kind) {
+      for (int index = 0; index < heap.Count(); ++index) {
+        std::array<uint8_t, 128> bytes{};
+        BufferPipe sink(bytes.data(), static_cast<int>(bytes.size()));
+        ArchiveWriter writer(sink);
+        heap.Ptr(index)->Serialize(writer);
+        std::string fields;
+        constexpr char hex[] = "0123456789abcdef";
+        for (uint8_t byte : bytes) {
+          fields += hex[byte >> 4];
+          fields += hex[byte & 15];
+        }
+        LOG(INFO) << "frame " << Frame << " " << kind << " "
+                  << heap.ID(heap.Ptr(index)) << " fields " << fields;
+      }
+    };
+    log_heap(Factories, "factory");
+    log_heap(Triggers, "trigger");
     if (Frame >= DebugQuitAtFrame) {
       if (DebugSaveSlot >= 0) {
         char description[] = "debug";

@@ -13,6 +13,7 @@
 #include "td/infantry.h"
 #include "td/object.h"
 #include "td/target.h"
+#include "td/teamtype.h"
 #include "td/techno.h"
 #include "td/terrain.h"
 #include "td/type.h"
@@ -119,3 +120,24 @@ INSTANTIATE_TYPE_PTR(AircraftTypeClass);
 INSTANTIATE_TYPE_PTR(OverlayTypeClass);
 INSTANTIATE_TYPE_PTR(SmudgeTypeClass);
 #undef INSTANTIATE_TYPE_PTR
+
+void TeamTypePtr::Serialize(ArchiveWriter& ar) {
+  TARGET target =
+      ref_ != nullptr && ref_->IsActive ? ref_->As_Target() : kTargetNone;
+  ar(target);
+}
+
+void TeamTypePtr::Serialize(ArchiveReader& ar) {
+  TARGET target = kTargetNone;
+  ar(target);
+  ref_ = nullptr;
+  if (!ar.ok() || target == kTargetNone) {
+    return;
+  }
+  if (Target_Kind(target) != KIND_TEAMTYPE ||
+      Target_Value(target) >= static_cast<unsigned>(TeamTypes.Length())) {
+    ar.Fail("invalid saved team type target");
+    return;
+  }
+  ref_ = TeamTypes.Raw_Ptr(static_cast<int>(Target_Value(target)));
+}

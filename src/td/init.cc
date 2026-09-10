@@ -57,9 +57,8 @@
 #include <string>
 
 #include "absl/log/log.h"
-#include "port/safe_string.h"
-#include "td/saveload.h"
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
 #include "sdllib/font.h"
@@ -80,6 +79,7 @@
 #include "td/event.h"
 #include "td/expand.h"
 #include "td/externs.h"
+#include "td/factory.h"
 #include "td/globals.h"
 #include "td/goptions.h"
 #include "td/heap.h"
@@ -104,6 +104,7 @@
 #include "td/nullmgr.h"
 #include "td/palette.h"
 #include "td/queue.h"
+#include "td/saveload.h"
 #include "td/scenario.h"
 #include "td/special.h"
 #include "td/tcpip.h"
@@ -1613,6 +1614,15 @@ bool Select_Game(bool fade) {
       return false;
     }
     DLOG(INFO) << "C&C95 - Scenario started OK.";
+    if (DebugFactoryTest) {
+      auto* factory = new FactoryClass;
+      if (factory == nullptr ||
+          !factory->Set(UnitTypeClass::As_Reference(UNIT_JEEP), *PlayerPtr) ||
+          !factory->Start()) {
+        LOG(ERROR) << "-FACTORYTEST: could not start production";
+        return false;
+      }
+    }
   }
 
   /*
@@ -1875,6 +1885,10 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     }
     if (strncmp(string, "-SAVESLOT", 9) == 0) {
       DebugSaveSlot = atoi(string + 9);
+      continue;
+    }
+    if (strcmp(string, "-FACTORYTEST") == 0) {
+      DebugFactoryTest = true;
       continue;
     }
     if (strcmp(string, "-NOMOVIES") == 0) {

@@ -215,6 +215,7 @@ bool CrateMaker = false;
 **	per second. This value is saved and restored with the saved game.
 */
 std::string DebugNewGame;
+bool DebugFactoryTest = false;
 int DebugLoadGame = -1;
 int DebugQuitAtFrame = -1;
 int DebugSaveSlot = -1;
