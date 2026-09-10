@@ -35,14 +35,42 @@ class TeamTypeClass;
 
 // A team definition lives in a heap, rather than a static type table. Preserve
 // its TARGET and validate kind/bounds before returning an unconstructed slot.
+template <class T>
 class TeamTypePtr {
  public:
-  explicit TeamTypePtr(TeamTypeClass*& ref) : ref_(ref) {}
+  explicit TeamTypePtr(T*& ref) : ref_(ref) {}
   void Serialize(ArchiveWriter& ar);
   void Serialize(ArchiveReader& ar);
 
  private:
-  TeamTypeClass*& ref_;
+  T*& ref_;
+};
+
+template <class T>
+TeamTypePtr(T*&) -> TeamTypePtr<T>;
+
+class HouseClass;
+// House heap indices stay usable while HouseClass::Class is pointer-coded.
+class HousePtr {
+ public:
+  explicit HousePtr(HouseClass*& ref) : ref_(ref) {}
+  void Serialize(ArchiveWriter& ar);
+  void Serialize(ArchiveReader& ar);
+
+ private:
+  HouseClass*& ref_;
+};
+
+class TechnoTypeClass;
+// A heterogeneous static type reference: kind plus checked table index.
+class TechnoTypePtr {
+ public:
+  explicit TechnoTypePtr(const TechnoTypeClass*& ref) : ref_(ref) {}
+  void Serialize(ArchiveWriter& ar);
+  void Serialize(ArchiveReader& ar);
+
+ private:
+  const TechnoTypeClass*& ref_;
 };
 
 namespace td_save_detail {

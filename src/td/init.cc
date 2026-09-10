@@ -108,6 +108,8 @@
 #include "td/scenario.h"
 #include "td/special.h"
 #include "td/tcpip.h"
+#include "td/team.h"
+#include "td/teamtype.h"
 #include "td/theme.h"
 #include "td/type.h"
 #include "tech/crc.h"
@@ -1614,6 +1616,36 @@ bool Select_Game(bool fade) {
       return false;
     }
     DLOG(INFO) << "C&C95 - Scenario started OK.";
+    if (DebugTeamTest) {
+      UnitClass* member = nullptr;
+      for (int i = 0; i < Units.Count(); ++i) {
+        if (Units.Ptr(i)->House == PlayerPtr && !Units.Ptr(i)->IsInLimbo) {
+          member = Units.Ptr(i);
+          break;
+        }
+      }
+      auto* type = new TeamTypeClass;
+      if (member == nullptr || type == nullptr) {
+        LOG(ERROR) << "-TEAMTEST: no member or team type slot";
+        return false;
+      }
+      type->Set_Name("saveteam");
+      type->House = PlayerPtr->Class->House;
+      type->MaxAllowed = 1;
+      type->ClassCount = 1;
+      type->Class[0] = member->Class;
+      type->DesiredNum[0] = 1;
+      type->MissionCount = 2;
+      type->MissionList[0] = {TMISSION_GUARD, 100};
+      type->MissionList[1] = {TMISSION_LOOP, 0};
+      auto* team = type->Create_One_Of();
+      if (team == nullptr || !team->Add(member)) {
+        LOG(ERROR) << "-TEAMTEST: could not create a populated team";
+        return false;
+      }
+      team->Force_Active();
+      team->SuspendTimer = 150;
+    }
     if (DebugFactoryTest) {
       auto* factory = new FactoryClass;
       if (factory == nullptr ||
@@ -1885,6 +1917,10 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     }
     if (strncmp(string, "-SAVESLOT", 9) == 0) {
       DebugSaveSlot = atoi(string + 9);
+      continue;
+    }
+    if (strcmp(string, "-TEAMTEST") == 0) {
+      DebugTeamTest = true;
       continue;
     }
     if (strcmp(string, "-FACTORYTEST") == 0) {

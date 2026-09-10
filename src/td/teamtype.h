@@ -46,8 +46,6 @@ class ArchiveWriter;
 #include "td/house.h"
 #include "td/target.h"
 #include "td/type.h"
-#include "tech/noinit.h"
-#include "tech/wwfile.h"
 
 /*
 ********************************** Defines **********************************
@@ -82,8 +80,18 @@ typedef enum TeamMissionType {
 **	This structure contains one team mission value & its argument.
 */
 typedef struct TeamMissionTag {
-  TeamMissionType Mission;
-  int Argument;
+  TeamMissionType Mission = TMISSION_NONE;
+  int Argument = 0;
+
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(Mission, Argument);
+    if constexpr (Archive::kIsReading) {
+      if (Mission < TMISSION_NONE || Mission >= TMISSION_COUNT) {
+        ar.Fail("invalid team mission");
+      }
+    }
+  }
 } TeamMissionStruct;
 
 /*
@@ -96,8 +104,7 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	Constructor/Destructor
   */
-  TeamTypeClass();
-  TeamTypeClass(const NoInitClass& x) : AbstractTypeClass(x) {}
+  TeamTypeClass() : AbstractTypeClass(0, "") {}
   ~TeamTypeClass() override {}
 
   /*
@@ -113,10 +120,9 @@ class TeamTypeClass : public AbstractTypeClass {
   static void Write_INI(char* buffer, bool refresh);
   static void Read_Old_INI(char* buffer);
   static const char* INI_Name() { return "TeamTypes"; }
-  bool Load(ArchiveReader& file);
-  bool Save(ArchiveWriter& file);
-  void Code_Pointers();
-  void Decode_Pointers();
+  // Field-wise saved-game support, defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	As_Pointer gets a pointer to the trigger object give its name
@@ -157,110 +163,105 @@ class TeamTypeClass : public AbstractTypeClass {
   **	TeamType objects that are not active are either not yet created or have
   **	been deleted after fulfilling their action.
   */
-  unsigned IsActive : 1;
+  unsigned IsActive : 1 = true;
 
   /*
   **	If RoundAbout, the team avoids high-threat areas
   */
-  unsigned IsRoundAbout : 1;
+  unsigned IsRoundAbout : 1 = false;
 
   /*
   **	If Learning, the team learns from mistakes
   */
-  unsigned IsLearning : 1;
+  unsigned IsLearning : 1 = false;
 
   /*
   **	If Suicide, the team won't stop until it achieves its mission or it's
   **	dead
   */
-  unsigned IsSuicide : 1;
+  unsigned IsSuicide : 1 = false;
 
   /*
   **	Is this team type allowed to be created automatically by the computer
   **	when the appropriate trigger indicates?
   */
-  unsigned IsAutocreate : 1;
+  unsigned IsAutocreate : 1 = false;
 
   /*
   **	Mercenaries will change sides if they start to lose.
   */
-  unsigned IsMercenary : 1;
+  unsigned IsMercenary : 1 = false;
 
   /*
   **	This flag tells the computer that it should build members to fill
   **	a team of this type regardless of whether there actually is a team
   **	of this type active.
   */
-  unsigned IsPrebuilt : 1;
+  unsigned IsPrebuilt : 1 = true;
 
   /*
   **	If this team should allow recruitment of new members, then this flag
   **	will be true. A false value results in a team that fights until it
   **	is dead. This is similar to IsSuicide, but they will defend themselves.
   */
-  unsigned IsReinforcable : 1;
+  unsigned IsReinforcable : 1 = true;
 
   /*
   **	A transient team type was created exclusively to bring on reinforcements
   **	as a result of some special event. As soon as there are no teams
   **	existing of this type, then this team type should be deleted.
   */
-  unsigned IsTransient : 1;
+  unsigned IsTransient : 1 = false;
 
   /*
   **	Priority given the team for recruiting purposes; higher priority means
   **	it can steal members from other teams (scale: 0 - 15)
   */
-  int RecruitPriority;
+  int RecruitPriority = 7;
 
   /*
   **	Initial # of this type of team
   */
-  unsigned char InitNum;
+  unsigned char InitNum = 0;
 
   /*
   **	Max # of this type of team allowed at one time
   */
-  unsigned char MaxAllowed;
+  unsigned char MaxAllowed = 0;
 
   /*
   **	Fear level of this team
   */
-  unsigned char Fear;
+  unsigned char Fear = 0;
 
   /*
   **	House the team belongs to
   */
-  HousesType House;
+  HousesType House = HOUSE_NONE;
 
   /*
   **	The mission list for this team
   */
-  int MissionCount;
-  TeamMissionStruct MissionList[MAX_TEAM_MISSIONS];
+  int MissionCount = 0;
+  TeamMissionStruct MissionList[MAX_TEAM_MISSIONS]{};
 
   /*
   **	Number of different classes in the team
   */
-  unsigned char ClassCount;
+  unsigned char ClassCount = 0;
 
   /*
   **	Array of object types comprising the team
   */
-  const TechnoTypeClass* Class[MAX_TEAM_CLASSCOUNT];
+  const TechnoTypeClass* Class[MAX_TEAM_CLASSCOUNT]{};
 
   /*
   **	Desired # of each type of object comprising the team
   */
-  unsigned char DesiredNum[MAX_TEAM_CLASSCOUNT];
+  unsigned char DesiredNum[MAX_TEAM_CLASSCOUNT]{};
 
  private:
   static const char* TMissions[TMISSION_COUNT];
-
-  /*
-  ** This contains the value of the Virtual Function Table Pointer
-  */
-  static void* VTable;
 };
 
 #endif  // CNC_RED_ALERT_TD_TEAMTYPE_H_

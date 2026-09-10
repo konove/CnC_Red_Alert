@@ -227,6 +227,17 @@ class AbstractTypeClass {
   */
   int Name;
 
+  // Names are saved values; imagery and static type tables remain external.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(IniName, Name);
+    if constexpr (Archive::kIsReading) {
+      if (IniName[sizeof(IniName) - 1] != '\0') {
+        ar.Fail("unterminated saved type name");
+      }
+    }
+  }
+
   AbstractTypeClass() {}
   AbstractTypeClass(int name, const char* ini);
   AbstractTypeClass(const NoInitClass&) {}

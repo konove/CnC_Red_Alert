@@ -10,6 +10,7 @@
 // Headless save/load checks; consumed by Select_Game and Main_Loop.
 extern std::string DebugNewGame;
 extern bool DebugFactoryTest;
+extern bool DebugTeamTest;
 extern int DebugLoadGame;
 extern int DebugQuitAtFrame;
 extern int DebugSaveSlot;

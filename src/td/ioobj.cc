@@ -37,14 +37,8 @@
  * All object-related loading/saving routines should go in this module, so it
  *can be overlayed.*
  *---------------------------------------------------------------------------------------------*
- * Functions: * TeamTypeClass::Load -- Reads from a save game file. *
- *   TeamTypeClass::Save -- Write to a save game file. *
- *   TeamTypeClass::Code_Pointers -- codes class's pointers for load/save *
- *   TeamTypeClass::Decode_Pointers -- decodes pointers for load/save *
- *   TeamClass::Load -- Reads from a save game file. * TeamClass::Save -- Write
- *to a save game file.                                             *
- *   TeamClass::Code_Pointers -- codes class's pointers for load/save *
- *   TeamClass::Decode_Pointers -- decodes pointers for load/save *
+ * Functions: * TeamTypeClass::Serialize -- Read/write team definitions. *
+ *   TeamClass::Serialize -- Read/write team state. *
  *   TriggerClass::Serialize -- Read/write saved fields. *
  *   AircraftClass::Load -- Reads from a save game file. * AircraftClass::Save
  *-- Write to a save game file.                                         *
@@ -175,199 +169,6 @@
 #include "td/vector.h"
 #include "tech/archive.h"
 #include "tech/wwfile.h"
-
-/***********************************************************************************************
- * TeamTypeClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool TeamTypeClass::Load(ArchiveReader& file) {
-  return Read_Object(this, sizeof(AbstractTypeClass), sizeof(*this), file,
-                     VTable);
-}
-
-/***********************************************************************************************
- * TeamTypeClass::Save -- Write to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool TeamTypeClass::Save(ArchiveWriter& file) {
-  return Write_Object(this, sizeof(*this), file);
-}
-
-/***********************************************************************************************
- * TeamTypeClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TeamTypeClass::Code_Pointers() {
-  /*
-  -------------------------- Code the Class array --------------------------
-  */
-  for (int i = 0; i < ClassCount; i++) {
-    Class[i] = (TechnoTypeClass*)TechnoType_To_Target(Class[i]);
-  }
-}
-
-/***********************************************************************************************
- * TeamTypeClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TeamTypeClass::Decode_Pointers() {
-  /*
-  ------------------------- Decode the Class array -------------------------
-  */
-  for (int i = 0; i < ClassCount; i++) {
-    Class[i] = Target_To_TechnoType(static_cast<TARGET>((uintptr_t)Class[i]));
-    Check_Ptr((void*)Class[i]);
-  }
-}
-
-/***********************************************************************************************
- * TeamClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool TeamClass::Load(ArchiveReader& file) {
-  return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
-}
-
-/***********************************************************************************************
- * TeamClass::Save -- Write to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool TeamClass::Save(ArchiveWriter& file) {
-  return Write_Object(this, sizeof(*this), file);
-}
-
-/***********************************************************************************************
- * TeamClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TeamClass::Code_Pointers() {
-  const TeamTypeClass* cls;
-
-  /*
-  -------------------- Code Class & House for this team --------------------
-  */
-  cls = Class;
-  (TeamTypeClass*&)Class = (TeamTypeClass*)cls->As_Target();
-  House = (HouseClass*)House->Class->House;
-
-  /*
-  --------------------------- Code the 'Member' ----------------------------
-  */
-  if (Member) {
-    Member = (FootClass*)Member->As_Target();
-  }
-}
-
-/***********************************************************************************************
- * TeamClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TeamClass::Decode_Pointers() {
-  /*
-  ------------------- Decode Class & House for this team -------------------
-  */
-  (TeamTypeClass*&)Class = As_TeamType(static_cast<TARGET>((uintptr_t)Class));
-  Check_Ptr(Class);
-  House = HouseClass::As_Pointer(static_cast<HousesType>((uintptr_t)House));
-  Check_Ptr(House);
-
-  /*
-  -------------------------- Decode the 'Member' ---------------------------
-  */
-  if (Member) {
-    switch (Target_Kind(static_cast<TARGET>((uintptr_t)Member))) {
-      case KIND_INFANTRY:
-        Member = As_Infantry(static_cast<TARGET>((uintptr_t)Member));
-        break;
-
-      case KIND_UNIT:
-        Member = As_Unit(static_cast<TARGET>((uintptr_t)Member));
-        break;
-
-      case KIND_AIRCRAFT:
-        Member = As_Aircraft(static_cast<TARGET>((uintptr_t)Member));
-        break;
-
-      default:
-        Member = nullptr;
-        break;
-    }
-
-    Check_Ptr(Member);
-  }
-}
 
 /***********************************************************************************************
  * AircraftClass::Load -- Loads from a save game file. *
@@ -2090,3 +1891,85 @@ void TriggerClass::Serialize(Archive& ar) {
 }
 template void TriggerClass::Serialize(ArchiveWriter&);
 template void TriggerClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void TeamTypeClass::Serialize(Archive& ar) {
+  AbstractTypeClass::Serialize(ar);
+  bool active = IsActive, roundabout = IsRoundAbout, learning = IsLearning;
+  bool suicide = IsSuicide, autocreate = IsAutocreate, mercenary = IsMercenary;
+  bool prebuilt = IsPrebuilt, reinforcable = IsReinforcable,
+       transient = IsTransient;
+  ar(active, roundabout, learning, suicide, autocreate, mercenary, prebuilt,
+     reinforcable, transient, RecruitPriority, InitNum, MaxAllowed, Fear, House,
+     MissionCount, ClassCount);
+  if constexpr (Archive::kIsReading) {
+    IsActive = active;
+    IsRoundAbout = roundabout;
+    IsLearning = learning;
+    IsSuicide = suicide;
+    IsAutocreate = autocreate;
+    IsMercenary = mercenary;
+    IsPrebuilt = prebuilt;
+    IsReinforcable = reinforcable;
+    IsTransient = transient;
+    if (!active || MissionCount < 0 || MissionCount > MAX_TEAM_MISSIONS ||
+        ClassCount > MAX_TEAM_CLASSCOUNT || House < HOUSE_NONE ||
+        House >= HOUSE_COUNT) {
+      ar.Fail("invalid team type state");
+      return;
+    }
+  }
+  // Unused array tails have no gameplay meaning and are defaulted on load.
+  for (int i = 0; i < MissionCount; ++i) {
+    ar(MissionList[i]);
+  }
+  for (int i = 0; i < ClassCount; ++i) {
+    ar(TechnoTypePtr(Class[i]), DesiredNum[i]);
+    if constexpr (Archive::kIsReading) {
+      if (Class[i] == nullptr) {
+        ar.Fail("missing team member type");
+      }
+    }
+  }
+}
+template void TeamTypeClass::Serialize(ArchiveWriter&);
+template void TeamTypeClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void TeamClass::Serialize(Archive& ar) {
+  AbstractClass::Serialize(ar);
+  bool forced = IsForcedActive, has_been = IsHasBeen, full = IsFullStrength;
+  bool under = IsUnderStrength, reforming = IsReforming, lagging = IsLagging;
+  bool altered = IsAltered, moving = IsMoving, next = IsNextMission,
+       suspended = Suspended;
+  ar(TeamTypePtr(Class), HousePtr(House), forced, has_been, full, under,
+     reforming, lagging, altered, moving, next, suspended, Center,
+     ObjectiveCenter, MissionTarget, Target, Total, Risk, SuspendTimer,
+     CurrentMission, TimeOut, ObjectPtr(Member), Quantity);
+  if constexpr (Archive::kIsReading) {
+    IsForcedActive = forced;
+    IsHasBeen = has_been;
+    IsFullStrength = full;
+    IsUnderStrength = under;
+    IsReforming = reforming;
+    IsLagging = lagging;
+    IsAltered = altered;
+    IsMoving = moving;
+    IsNextMission = next;
+    Suspended = suspended;
+    // TeamTypes and Houses precede Teams in the stream. Members load later.
+    bool known_type = false;
+    for (int i = 0; i < TeamTypes.Count(); ++i) {
+      if (TeamTypes.Ptr(i) == Class) {
+        known_type = true;
+        break;
+      }
+    }
+    if (!known_type || Houses.ActivePointers.ID(House) < 0 || Total < 0 ||
+        CurrentMission < -1 || CurrentMission >= Class->MissionCount) {
+      ar.Fail("invalid team state");
+    }
+  }
+}
+template void TeamClass::Serialize(ArchiveWriter&);
+template void TeamClass::Serialize(ArchiveReader&);

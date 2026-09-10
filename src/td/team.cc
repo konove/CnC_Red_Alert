@@ -97,11 +97,6 @@ unsigned char TeamClass::Number[kTeamTypeMax];
 */
 unsigned char TeamClass::Success[kTeamTypeMax];
 
-/*
-** This contains the value of the Virtual Function Table Pointer
-*/
-void* TeamClass::VTable;
-
 /***********************************************************************************************
  * TeamClass::Validate -- validates team pointer
  **
@@ -147,15 +142,9 @@ int TeamClass::Validate() const {
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
 void TeamClass::Init() {
-  TeamClass* ptr;
-
   Teams.Free_All();
   memset(Number, 0, sizeof(Number));
   memset(Success, 0, sizeof(Success));
-
-  ptr = new TeamClass();
-  VTable = ((void**)((char*)ptr + sizeof(AbstractClass) - 4))[0];
-  delete ptr;
 }
 
 void* TeamClass::operator new(size_t) noexcept {
@@ -187,28 +176,9 @@ TeamClass::~TeamClass() {
 }
 
 TeamClass::TeamClass(const TeamTypeClass* type, HouseClass* owner)
-    : Class(type), House(owner) {
-  memset(Quantity, 0, sizeof(Quantity));
-  IsAltered = true;
-  IsForcedActive = false;
-  IsFullStrength = false;
-  IsUnderStrength = true;
-  IsReforming = false;
-  IsLagging = false;
-  IsMoving = false;
-  IsHasBeen = false;
-  Center = 0;
-  Target = kTargetNone;
-  ObjectiveCenter = 0;
-  MissionTarget = kTargetNone;
-  Member = nullptr;
-  Total = 0;
-  Risk = 0;
-  CurrentMission = -1;
-  IsNextMission = true;
-  TimeOut = 0;
-  SuspendTimer.Clear();
-  Suspended = false;
+    : TeamClass() {
+  Class = type;
+  House = owner;
   Number[TeamTypes.ID(Class)]++;
 }
 

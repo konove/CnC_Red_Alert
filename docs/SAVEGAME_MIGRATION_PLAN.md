@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Steps 0–21 are committed; step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
+- Steps 0–22 are committed; step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -55,12 +55,29 @@
   vector template definitions live in `vector_impl.h` so the allocator tests need no game link.
 - `-FACTORYTEST` starts Jeep production after a new scenario. The TD smoke script accepts `--factory`
   as its third argument and compares serialized factory/trigger fields as well as unit positions.
-  Next checkpoint is **23: TeamTypeClass and TeamClass**, followed by the remaining heap hierarchy.
+  Step 23 continues with TeamTypeClass and TeamClass.
 - Step-22 validation: strict builds of both games and **173 CTest tests** pass. Five heap tests cover
   sparse slots, skipped coding for field objects, raw vtable restoration, invalid counts/indices,
   duplicate slots, wrong raw sizes, and truncated data. TD GDI with active Jeep production matches
   **660** unit/factory/trigger states across save/load; Nod matches **630**, and RA matches **240**
   vehicle/vessel positions. Real-display gameplay and live multiplayer checks remain outstanding.
+- Step 23 migrates **TeamTypeClass and TeamClass** (TD version **4**), including abstract base
+  values, team missions, flags, timers, member references, and mixed static type references. Only
+  populated definition arrays are saved; unused tails are initialized on load. Their NoInit/raw I/O,
+  pointer coding, and vtable-capture setup are deleted; shared base NoInit paths remain for raw subclasses.
+- Team shells initialize all fields without registering a team. Loads rebuild `TeamClass::Number`
+  from the loaded heap, preserving recruitment limits and transient-team cleanup. House references
+  use checked heap indices so they never inspect coded house metadata; team reads require a loaded
+  house and team type before dereferencing them. Mixed type references validate kind and table bounds.
+- `-TEAMTEST` creates a populated team with guard/loop missions and an active suspension countdown;
+  pass `--team` as the TD smoke script's third argument. Smoke logs now stream complete serialized
+  fields without a fixed-size buffer and compare team/type state and per-type live counts.
+  Next checkpoint is **24: HouseClass**, then the remaining object hierarchy.
+- Step-23 validation: strict builds of both games and **176 CTest tests** pass. New unit coverage
+  checks mission fields, invalid/truncated missions, and abstract coordinate/active-state handling.
+  Headless TD save/load matches **1,291** logged states with the populated team fixture, **1,231**
+  with active production, and **1,380** in Nod (including team/type fields and live counts).
+  RA still matches **240** vehicle/vessel positions. Real-display/live-multiplayer checks remain pending.
 - Step-19 validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
   Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke

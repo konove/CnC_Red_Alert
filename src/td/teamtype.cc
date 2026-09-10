@@ -90,11 +90,6 @@ const char* TeamTypeClass::TMissions[TMISSION_COUNT] = {
     "Unload",
 };
 
-/*
-** This contains the value of the Virtual Function Table Pointer
-*/
-void* TeamTypeClass::VTable;
-
 /***********************************************************************************************
  * TeamTypeClass::Validate -- validates teamtype pointer
  **
@@ -126,41 +121,6 @@ int TeamTypeClass::Validate() const {
 }
 
 /***************************************************************************
- * TeamTypeClass::TeamTypeClass -- class constructor                       *
- *                                                                         *
- * INPUT:                                                                  *
- *                                                                         *
- * OUTPUT:                                                                 *
- *                                                                         *
- * WARNINGS:                                                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/07/1994 BR : Created.                                              *
- *=========================================================================*/
-TeamTypeClass::TeamTypeClass() {
-  IsPrebuilt = true;
-  IsReinforcable = true;
-  IsRoundAbout = false;
-  IsLearning = false;
-  IsSuicide = false;
-  IsAutocreate = false;
-  IsTransient = false;
-  IsMercenary = false;
-  RecruitPriority = 7;
-  MaxAllowed = 0;
-  Fear = 0;
-  InitNum = 0;
-  House = HOUSE_NONE;
-  MissionCount = 0;
-  IniName[0] = '\0';
-  ClassCount = 0;
-  for (int i = 0; i < MAX_TEAM_CLASSCOUNT; i++) {
-    Class[i] = nullptr;
-    DesiredNum[i] = 0;
-  }
-}
-
-/***************************************************************************
  * TeamTypeClass::Init -- pre-scenario initialization                      *
  *                                                                         *
  * INPUT:                                                                  *
@@ -172,15 +132,7 @@ TeamTypeClass::TeamTypeClass() {
  * HISTORY:                                                                *
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
-void TeamTypeClass::Init() {
-  TeamTypeClass* ptr;
-
-  TeamTypes.Free_All();
-
-  ptr = new TeamTypeClass();
-  VTable = ((void**)((char*)ptr + sizeof(AbstractTypeClass) - 4))[0];
-  delete ptr;
-}
+void TeamTypeClass::Init() { TeamTypes.Free_All(); }
 
 /***************************************************************************
  * TeamTypeClass::Read_INI -- reads INI data                               *

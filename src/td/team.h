@@ -53,8 +53,6 @@ class ArchiveWriter;
 #include "td/house.h"
 #include "td/teamtype.h"
 #include "td/techno.h"
-#include "tech/noinit.h"
-#include "tech/wwfile.h"
 
 /*
 ** Units are only allowed to stray a certain distance away from their
@@ -68,38 +66,38 @@ class TeamClass : public AbstractClass {
   /*
   **	This specifies the type of team this is.
   */
-  const TeamTypeClass* Class;
+  const TeamTypeClass* Class = nullptr;
 
   /*
   **	This specifies the owner of this team.
   */
-  HouseClass* House;
+  HouseClass* House = nullptr;
 
   /*
   **	This flag forces the team into active state regardless of whether it
   **	is understrength or not.
   */
-  unsigned IsForcedActive : 1;
+  unsigned IsForcedActive : 1 = false;
 
   /*
   **	This flag is set to true when the team initiates into active mode. The
   **	flag is never cleared. By examining this flag, it is possible to
   *determine *	if the team has ever launched into active mode.
   */
-  unsigned IsHasBeen : 1;
+  unsigned IsHasBeen : 1 = false;
 
   /*
   **	If the team is full strength, then this flag is true. A full strength
   **	team will not try to recruit members.
   */
-  unsigned IsFullStrength : 1;
+  unsigned IsFullStrength : 1 = false;
 
   /*
   **	A team that is below half strength has this flag true. It means that the
   **	the team should hide back at the owner's base and try to recruit
   **	members.
   */
-  unsigned IsUnderStrength : 1;
+  unsigned IsUnderStrength : 1 = true;
 
   /*
   **	If a team is not understrength but is not yet full strength, then
@@ -107,13 +105,13 @@ class TeamClass : public AbstractClass {
   **	full strength, the all members of the team will become initiated
   ** and this flag will be reset.
   */
-  unsigned IsReforming : 1;
+  unsigned IsReforming : 1 = false;
 
   /*
   ** This bit should be set if a team is determined to have lagging
   ** units in its formation.
   */
-  unsigned IsLagging : 1;
+  unsigned IsLagging : 1 = false;
 
  private:
   /*
@@ -123,25 +121,25 @@ class TeamClass : public AbstractClass {
   *need to occur *	EVERY time a unit added or deleted from a team, just
   *every so often if the *	team has been changed.
   */
-  unsigned IsAltered : 1;
+  unsigned IsAltered : 1 = true;
 
   /*
   **	If the team is working on it's primary mission (it is past the build up
   *stage) *	then this flag will be true. The transition between "moving" and
   *"stationary" *	stages usually requires some action on the team's part.
   */
-  unsigned IsMoving : 1;
+  unsigned IsMoving : 1 = false;
 
   /*
   **	When the team determines that the next mission should be advanced to, it
   *will *	set this flag to true. Mission advance will either change the
   *behavior of the *	team or cause it to disband.
   */
-  unsigned IsNextMission : 1;
+  unsigned IsNextMission : 1 = true;
   /*
   ** Records whether the team is suspended from production.
   */
-  unsigned Suspended : 1;
+  unsigned Suspended : 1 = false;
 
  public:
   /*
@@ -150,40 +148,38 @@ class TeamClass : public AbstractClass {
   **	center point is usually calculated as the average position of all the
   **	team members.
   */
-  CELL Center;
-  CELL ObjectiveCenter;
+  CELL Center = 0;
+  CELL ObjectiveCenter = 0;
 
   /*
   **	This is the target of the team. Typically, it is a unit or structure,
   *but *	for the case of teams with a movement mission, it might
   *represent a *	destination cell.
   */
-  TARGET MissionTarget;
-  TARGET Target;
+  TARGET MissionTarget = kTargetNone;
+  TARGET Target = kTargetNone;
 
   /*
   **	This is the total number of members in this team.
   */
-  int Total;
+  int Total = 0;
 
   /*
   **	This is the teams combined risk value
   */
-  int Risk;
+  int Risk = 0;
   /*
   ** This is the amount of time the team is suspended for.
   */
   TCountDownTimerClass SuspendTimer;
 
   //------------------------------------------------------------
-  TeamClass() : Class(nullptr), House(nullptr) {
-    IsActive = false;
-    Member = nullptr;
-    IsAltered = true;
+  // Loading constructs an active shell without changing team counts.
+  TeamClass() {
+    IsActive = true;
+    SuspendTimer.Clear();
   }
   TeamClass(const TeamTypeClass* team, HouseClass* owner);
-  TeamClass(const NoInitClass& x)
-      : AbstractClass(x), SuspendTimer(x), TimeOut(x) {}
   ~TeamClass() override;
   virtual RTTIType What_Am_I() const { return RTTI_TEAM; }
   void operator delete(void* ptr);
@@ -197,10 +193,9 @@ class TeamClass : public AbstractClass {
   /*
   **	File I/O.
   */
-  bool Load(ArchiveReader& file);
-  bool Save(ArchiveWriter& file);
-  void Code_Pointers();
-  void Decode_Pointers();
+  // Field-wise saved-game support, defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   void Force_Active() {
     IsForcedActive = true;
@@ -228,7 +223,7 @@ class TeamClass : public AbstractClass {
   /*
   **	The current mission index into the mission list is recorded here.
   */
-  int CurrentMission;
+  int CurrentMission = -1;
 
   /*
   **	Some missions will time out. This is the timer that keeps track of the
@@ -250,9 +245,9 @@ class TeamClass : public AbstractClass {
   /*
   **	Points to the first member in the list of members for this team.
   */
-  FootClass* Member;
+  FootClass* Member = nullptr;
 
-  unsigned char Quantity[TeamTypeClass::MAX_TEAM_CLASSCOUNT];
+  unsigned char Quantity[TeamTypeClass::MAX_TEAM_CLASSCOUNT]{};
 
   /*
   **	This records the success of each team type. As the team carries out its
@@ -261,11 +256,6 @@ class TeamClass : public AbstractClass {
   **	will be created more than the others.
   */
   static unsigned char Success[kTeamTypeMax];
-
-  /*
-  ** This contains the value of the Virtual Function Table Pointer
-  */
-  static void* VTable;
 };
 
 #endif  // CNC_RED_ALERT_TD_TEAM_H_

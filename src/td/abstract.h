@@ -63,6 +63,18 @@ class AbstractClass {
   /*-----------------------------------------------------------------------------------
   **	Constructor & destructors.
   */
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    bool active = IsActive;
+    ar(Coord, active);
+    if constexpr (Archive::kIsReading) {
+      IsActive = active;
+      if (!active) {
+        ar.Fail("inactive saved object");
+      }
+    }
+  }
+
   AbstractClass() { Coord = 0L; }
   AbstractClass(const NoInitClass& x) { x(); }
   virtual ~AbstractClass() {}

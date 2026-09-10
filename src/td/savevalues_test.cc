@@ -2,6 +2,7 @@
 #include <cstdint>
 
 #include "gtest/gtest.h"
+#include "td/abstract.h"
 #include "td/crew.h"
 #include "td/door.h"
 #include "td/facing.h"
@@ -12,6 +13,7 @@
 #include "td/monoc.h"
 #include "td/serialize.h"
 #include "td/stage.h"
+#include "td/teamtype.h"
 #include "tech/archive.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
@@ -252,3 +254,45 @@ TEST(TdSaveValuesTest, TypePointersRejectInvalidIdsAndTruncation) {
 }
 
 }  // namespace
+
+TEST(TdSaveValuesTest, TeamMissionPreservesOrderAndArgument) {
+  TeamMissionStruct mission{TMISSION_MOVECELL, 4095};
+  TeamMissionStruct loaded;
+  Restore(loaded, Save(mission));
+  EXPECT_EQ(loaded.Mission, TMISSION_MOVECELL);
+  EXPECT_EQ(loaded.Argument, 4095);
+}
+
+TEST(TdSaveValuesTest, TeamMissionRejectsUnknownOrderAndTruncation) {
+  TeamMissionStruct mission{TMISSION_COUNT, 1};
+  auto bytes = Save(mission);
+  BufferStraw source(bytes.data(), static_cast<int>(bytes.size()));
+  ArchiveReader reader(source);
+  reader(mission);
+  EXPECT_FALSE(reader.ok());
+  mission.Mission = TMISSION_GUARD;
+  bytes = Save(mission);
+  BufferStraw truncated(bytes.data(), 7);
+  ArchiveReader short_reader(truncated);
+  short_reader(mission);
+  EXPECT_FALSE(short_reader.ok());
+}
+
+TEST(TdSaveValuesTest,
+     AbstractStatePreservesCoordinatesAndRejectsInactiveSlots) {
+  struct ActiveObject : AbstractClass {
+    ActiveObject() { IsActive = true; }
+  };
+  ActiveObject value;
+  value.Coord = 0x12345678;
+  ActiveObject loaded;
+  Restore(loaded, Save(value));
+  EXPECT_EQ(loaded.Coord, value.Coord);
+  EXPECT_TRUE(loaded.IsActive);
+  value.IsActive = false;
+  auto bytes = Save(value);
+  BufferStraw source(bytes.data(), static_cast<int>(bytes.size()));
+  ArchiveReader reader(source);
+  reader(loaded);
+  EXPECT_FALSE(reader.ok());
+}

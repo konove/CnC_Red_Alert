@@ -121,13 +121,15 @@ INSTANTIATE_TYPE_PTR(OverlayTypeClass);
 INSTANTIATE_TYPE_PTR(SmudgeTypeClass);
 #undef INSTANTIATE_TYPE_PTR
 
-void TeamTypePtr::Serialize(ArchiveWriter& ar) {
+template <class T>
+void TeamTypePtr<T>::Serialize(ArchiveWriter& ar) {
   TARGET target =
       ref_ != nullptr && ref_->IsActive ? ref_->As_Target() : kTargetNone;
   ar(target);
 }
 
-void TeamTypePtr::Serialize(ArchiveReader& ar) {
+template <class T>
+void TeamTypePtr<T>::Serialize(ArchiveReader& ar) {
   TARGET target = kTargetNone;
   ar(target);
   ref_ = nullptr;
@@ -140,4 +142,92 @@ void TeamTypePtr::Serialize(ArchiveReader& ar) {
     return;
   }
   ref_ = TeamTypes.Raw_Ptr(static_cast<int>(Target_Value(target)));
+}
+
+template class TeamTypePtr<TeamTypeClass>;
+template class TeamTypePtr<const TeamTypeClass>;
+
+void HousePtr::Serialize(ArchiveWriter& ar) {
+  int32_t index = ref_ == nullptr ? -1 : Houses.ID(ref_);
+  ar(index);
+}
+void HousePtr::Serialize(ArchiveReader& ar) {
+  int32_t index = -1;
+  ar(index);
+  ref_ = nullptr;
+  if (!ar.ok() || index == -1) {
+    return;
+  }
+  if (index < 0 || index >= Houses.Length()) {
+    ar.Fail("invalid saved house slot");
+    return;
+  }
+  ref_ = Houses.Raw_Ptr(index);
+}
+
+void TechnoTypePtr::Serialize(ArchiveWriter& ar) {
+  TARGET target = kTargetNone;
+  if (ref_ != nullptr) {
+    switch (ref_->What_Am_I()) {
+      case RTTI_INFANTRYTYPE:
+        target = Build_Target(
+            KIND_INFANTRY, dynamic_cast<const InfantryTypeClass*>(ref_)->Type);
+        break;
+      case RTTI_UNITTYPE:
+        target = Build_Target(KIND_UNIT,
+                              dynamic_cast<const UnitTypeClass*>(ref_)->Type);
+        break;
+      case RTTI_AIRCRAFTTYPE:
+        target = Build_Target(
+            KIND_AIRCRAFT, dynamic_cast<const AircraftTypeClass*>(ref_)->Type);
+        break;
+      case RTTI_BUILDINGTYPE:
+        target = Build_Target(
+            KIND_BUILDING, dynamic_cast<const BuildingTypeClass*>(ref_)->Type);
+        break;
+      default:
+        break;
+    }
+  }
+  ar(target);
+}
+void TechnoTypePtr::Serialize(ArchiveReader& ar) {
+  TARGET target = kTargetNone;
+  ar(target);
+  ref_ = nullptr;
+  if (!ar.ok() || target == kTargetNone) {
+    return;
+  }
+  const auto index = Target_Value(target);
+  switch (Target_Kind(target)) {
+    case KIND_INFANTRY:
+      if (index < INFANTRY_COUNT) {
+        ref_ =
+            &InfantryTypeClass::As_Reference(static_cast<InfantryType>(index));
+        return;
+      }
+      break;
+    case KIND_UNIT:
+      if (index < UNIT_COUNT) {
+        ref_ = &UnitTypeClass::As_Reference(static_cast<UnitType>(index));
+        return;
+      }
+      break;
+    case KIND_AIRCRAFT:
+      if (index < AIRCRAFT_COUNT) {
+        ref_ =
+            &AircraftTypeClass::As_Reference(static_cast<AircraftType>(index));
+        return;
+      }
+      break;
+    case KIND_BUILDING:
+      if (index < STRUCT_COUNT) {
+        ref_ = &BuildingTypeClass::As_Reference(static_cast<StructType>(index));
+        return;
+      }
+      break;
+    default:
+      break;
+  }
+  ar.Fail("invalid saved techno type target");
 }

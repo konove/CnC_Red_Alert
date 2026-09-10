@@ -10,7 +10,7 @@ class ArchiveWriter;
 #include "td/type.h"
 
 // Raw-object archive checkpoint; older layout-derived versions are rejected.
-inline constexpr int32_t kSaveGameVersion = 3;
+inline constexpr int32_t kSaveGameVersion = 4;
 
 bool Load_Misc_Values(ArchiveReader& file);
 bool Save_Misc_Values(ArchiveWriter& file);
@@ -20,8 +20,6 @@ bool Read_Object(void* ptr, int base_size, int class_size, ArchiveReader& file,
                  void* vtable);
 bool Save_Game(int id, char* descr);
 bool Write_Object(void* ptr, int class_size, ArchiveWriter& file);
-TARGET TechnoType_To_Target(const TechnoTypeClass* ptr);
-const TechnoTypeClass* Target_To_TechnoType(TARGET target);
 void* Get_VTable(void* ptr, int base_size);
 void Code_All_Pointers();
 void Decode_All_Pointers();

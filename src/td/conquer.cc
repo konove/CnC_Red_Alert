@@ -65,7 +65,6 @@
 
 #include "td/conquer.h"
 
-#include <array>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -147,7 +146,7 @@
 #include "tech/2keyfbuf.h"
 #include "tech/archive.h"
 #include "tech/crc.h"
-#include "tech/xpipe.h"
+#include "tech/pipe.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifdef _WIN32
@@ -1721,22 +1720,35 @@ bool Main_Loop() {
     // Compare every serialized field of migrated objects in smoke runs.
     auto log_heap = [](auto& heap, const char* kind) {
       for (int index = 0; index < heap.Count(); ++index) {
-        std::array<uint8_t, 128> bytes{};
-        BufferPipe sink(bytes.data(), static_cast<int>(bytes.size()));
+        // Stream directly to hex so growing field lists cannot be truncated.
+        class HexPipe : public Pipe {
+         public:
+          std::string fields;
+          int Put(const void* data, int length) override {
+            constexpr char hex[] = "0123456789abcdef";
+            const auto* bytes = static_cast<const uint8_t*>(data);
+            for (int i = 0; i < length; ++i) {
+              fields += hex[bytes[i] >> 4];
+              fields += hex[bytes[i] & 15];
+            }
+            return length;
+          }
+        } sink;
         ArchiveWriter writer(sink);
         heap.Ptr(index)->Serialize(writer);
-        std::string fields;
-        constexpr char hex[] = "0123456789abcdef";
-        for (uint8_t byte : bytes) {
-          fields += hex[byte >> 4];
-          fields += hex[byte & 15];
-        }
         LOG(INFO) << "frame " << Frame << " " << kind << " "
-                  << heap.ID(heap.Ptr(index)) << " fields " << fields;
+                  << heap.ID(heap.Ptr(index)) << " fields " << sink.fields;
       }
     };
     log_heap(Factories, "factory");
     log_heap(Triggers, "trigger");
+    log_heap(TeamTypes, "teamtype");
+    log_heap(Teams, "team");
+    for (int i = 0; i < TeamTypes.Count(); ++i) {
+      const int id = TeamTypes.ID(TeamTypes.Ptr(i));
+      LOG(INFO) << "frame " << Frame << " teamcount " << id << " "
+                << static_cast<int>(TeamClass::Number[id]);
+    }
     if (Frame >= DebugQuitAtFrame) {
       if (DebugSaveSlot >= 0) {
         char description[] = "debug";
