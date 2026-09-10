@@ -41,11 +41,14 @@
 #ifndef CNC_RED_ALERT_TD_HEAP_H_
 #define CNC_RED_ALERT_TD_HEAP_H_
 
+class ArchiveReader;
+class ArchiveWriter;
+
 #include <vector>
 
+#include "base/types.h"
 #include "td/vector.h"
 #include "tech/wwfile.h"
-#include "base/types.h"
 
 // Heap templates are generic - users must include type headers themselves.
 // IWYU pragma: no_include "td/aircraft.h"
@@ -194,8 +197,8 @@ class TFixedIHeapClass : public FixedIHeapClass {
   virtual T* Alloc() { return static_cast<T*>(FixedIHeapClass::Allocate()); }
   virtual int Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
   int Free(void* pointer) override { return FixedIHeapClass::Free(pointer); }
-  virtual int Save(FileClass&);
-  virtual int Load(FileClass&);
+  virtual int Save(ArchiveWriter&);
+  virtual int Load(ArchiveReader&);
   virtual void Code_Pointers();
   virtual void Decode_Pointers();
 

@@ -41,6 +41,9 @@
 #ifndef CNC_RED_ALERT_TD_SCORE_H_
 #define CNC_RED_ALERT_TD_SCORE_H_
 
+class ArchiveReader;
+class ArchiveWriter;
+
 #include <cstring>
 
 #include "sdllib/gbuffer.h"
@@ -68,8 +71,8 @@ class ScoreClass {
   /*
   **	File I/O.
   */
-  bool Load(FileClass& file);
-  bool Save(FileClass& file);
+  bool Load(ArchiveReader& file);
+  bool Save(ArchiveWriter& file);
   void Code_Pointers();
   void Decode_Pointers();
 

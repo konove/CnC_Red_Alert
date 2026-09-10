@@ -1,18 +1,25 @@
 #ifndef CNC_RED_ALERT_TD_SAVELOAD_H_
 #define CNC_RED_ALERT_TD_SAVELOAD_H_
 
+class ArchiveReader;
+class ArchiveWriter;
+
+#include <cstdint>
+
 #include "td/defines.h"
 #include "td/type.h"
-#include "tech/wwfile.h"
 
-bool Load_Misc_Values(FileClass& file);
-bool Save_Misc_Values(FileClass& file);
+// Raw-object archive checkpoint; older layout-derived versions are rejected.
+inline constexpr int32_t kSaveGameVersion = 1;
+
+bool Load_Misc_Values(ArchiveReader& file);
+bool Save_Misc_Values(ArchiveWriter& file);
 bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep);
 bool Load_Game(int id);
-bool Read_Object(void* ptr, int base_size, int class_size, FileClass& file,
+bool Read_Object(void* ptr, int base_size, int class_size, ArchiveReader& file,
                  void* vtable);
 bool Save_Game(int id, char* descr);
-bool Write_Object(void* ptr, int class_size, FileClass& file);
+bool Write_Object(void* ptr, int class_size, ArchiveWriter& file);
 TARGET TechnoType_To_Target(const TechnoTypeClass* ptr);
 const TechnoTypeClass* Target_To_TechnoType(TARGET target);
 void* Get_VTable(void* ptr, int base_size);

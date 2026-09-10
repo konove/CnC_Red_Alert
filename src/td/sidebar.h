@@ -41,6 +41,9 @@
 #ifndef CNC_RED_ALERT_TD_SIDEBAR_H_
 #define CNC_RED_ALERT_TD_SIDEBAR_H_
 
+class ArchiveReader;
+class ArchiveWriter;
+
 #include "sdllib/keyboard.h"
 #include "td/control.h"
 #include "td/defines.h"
@@ -152,8 +155,8 @@ class SidebarClass : public PowerClass {
     /*
     **	File I/O.
     */
-    bool Load(FileClass& file);
-    bool Save(FileClass& file);
+    bool Load(ArchiveReader& file);
+    bool Save(ArchiveWriter& file);
     void Code_Pointers();
     void Decode_Pointers();
 

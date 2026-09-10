@@ -41,6 +41,9 @@
 #ifndef CNC_RED_ALERT_TD_TEMPLATE_H_
 #define CNC_RED_ALERT_TD_TEMPLATE_H_
 
+class ArchiveReader;
+class ArchiveWriter;
+
 #include <cstddef>
 
 #include "td/defines.h"
@@ -108,8 +111,8 @@ class TemplateClass : public ObjectClass {
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
   static const char* INI_Name() { return "TEMPLATE"; }
-  bool Load(FileClass& file);
-  bool Save(FileClass& file);
+  bool Load(ArchiveReader& file);
+  bool Save(ArchiveWriter& file);
   void Code_Pointers() override;
   void Decode_Pointers() override;
 

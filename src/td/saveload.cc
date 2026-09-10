@@ -79,6 +79,7 @@
 #include "td/mouse.h"
 #include "td/object.h"
 #include "td/overlay.h"
+#include "td/savepipe.h"
 #include "td/scenario.h"
 #include "td/score.h"
 #include "td/smudge.h"
@@ -91,25 +92,14 @@
 #include "td/trigger.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "tech/archive.h"
 #include "tech/rawfile.h"
+#include "tech/xpipe.h"
+#include "tech/xstraw.h"
 
 /*
 ********************************** Defines **********************************
 */
-#define SAVEGAME_VERSION                                                       \
-  (kDescripMax + 0x01000003 +                                                  \
-   (sizeof(AircraftClass) + sizeof(AircraftTypeClass) + sizeof(AnimClass) +    \
-    sizeof(AnimTypeClass) + sizeof(BuildingClass) +                            \
-    sizeof(BuildingTypeClass) + sizeof(BulletClass) +                          \
-    sizeof(BulletTypeClass) + sizeof(HouseClass) + sizeof(HouseTypeClass) +    \
-    sizeof(InfantryClass) + sizeof(InfantryTypeClass) + sizeof(OverlayClass) + \
-    sizeof(OverlayTypeClass) + sizeof(SmudgeClass) + sizeof(SmudgeTypeClass) + \
-    sizeof(TeamClass) + sizeof(TeamTypeClass) + sizeof(TemplateClass) +        \
-    sizeof(TemplateTypeClass) + sizeof(TerrainClass) +                         \
-    sizeof(TerrainTypeClass) + sizeof(UnitClass) + sizeof(UnitTypeClass) +     \
-    sizeof(MouseClass) + sizeof(CellClass) + sizeof(FactoryClass) +            \
-    sizeof(BaseClass) + sizeof(LayerClass) + sizeof(BriefingText) +            \
-    sizeof(Waypoint)))
 
 /***************************************************************************
  * Save_Game -- saves a game to disk                                       *
@@ -153,10 +143,10 @@ bool Save_Game(int id, char* descr) {
   RawFileClass file;
   char name[_MAX_FNAME + _MAX_EXT];
   int i;
-  unsigned long version;
+  int32_t version = 0;
   unsigned scenario;
   HousesType house;
-  char descr_buf[kDescripMax];
+  char descr_buf[kDescripMax]{};
 
   scenario = Scenario;              // get current scenario #
   house = PlayerPtr->Class->House;  // get current house
@@ -167,15 +157,10 @@ bool Save_Game(int id, char* descr) {
   sprintf(name, "SAVEGAME.%03d", id);
 
   /*
-  **	Code everybody's pointers
-  */
-  Code_All_Pointers();
-
-  /*
   **	Open the file
   */
-  if (!file.Open(name, FileAccess::kWrite)) {
-    Decode_All_Pointers();
+  file.Open(name, FileAccess::kWrite);
+  if (!file.Is_Open()) {
     return false;
   }
 
@@ -188,7 +173,8 @@ bool Save_Game(int id, char* descr) {
   **	which may or may not be a HousesType number; so, saving 'house'
   **	here ensures we can always pull out the house for this file.)
   */
-  sprintf(descr_buf, "%s\r\n", descr);    // put CR-LF after text
+  snprintf(descr_buf, sizeof(descr_buf) - 1, "%s\r\n",
+           descr);                        // put CR-LF after text
   descr_buf[strlen(descr_buf) + 1] = 26;  // put CTRL-Z after NULL
 
   if (file.Write(descr_buf, kDescripMax) != kDescripMax) {
@@ -209,89 +195,83 @@ bool Save_Game(int id, char* descr) {
   /*
   **	Save the save-game version, for loading verification
   */
-  version = SAVEGAME_VERSION;
+  version = kSaveGameVersion;
 
   if (file.Write(&version, sizeof(version)) != sizeof(version)) {
     file.Close();
     return false;
   }
 
-  Call_Back();
-  /*
-  **	Save the map.  The map must be saved first, since it saves the Theater.
-  */
-  Map.Save(file);
-
-  Call_Back();
-  /*
-  **	Save all game objects.  This code saves every object that's stored in a
-  **	TFixedIHeap class.
-  */
-  if (!Houses.Save(file) || !TeamTypes.Save(file) || !Teams.Save(file) ||
-      !Triggers.Save(file) || !Aircraft.Save(file) || !Anims.Save(file) ||
-      !Buildings.Save(file) || !Bullets.Save(file) || !Infantry.Save(file) ||
-      !Overlays.Save(file) || !Smudges.Save(file) || !Templates.Save(file) ||
-      !Terrains.Save(file) || !Units.Save(file) || !Factories.Save(file)) {
-    file.Close();
-
-    Decode_All_Pointers();
-
-    return false;
-  }
-
-  Call_Back();
-  /*
-  **	Save the Logic & Map layers
-  */
-  if (!Logic.Save(file)) {
-    file.Close();
-    Decode_All_Pointers();
-    return false;
-  }
-
-  for (i = 0; i < LAYER_COUNT; i++) {
-    if (!MouseClass::Layer[i].Save(file)) {
-      file.Close();
-      Decode_All_Pointers();
+  FilePipe sink(file);
+  SaveGamePipe checked_sink(sink);
+  ArchiveWriter writer(checked_sink);
+  writer.Section(FourCC("FRAM"));
+  writer(Frame);
+  Code_All_Pointers();
+  const bool saved = [&] {
+    Call_Back();
+    /*
+    **	Save the map.  The map must be saved first, since it saves the Theater.
+    */
+    if (!Map.Save(writer)) {
       return false;
     }
-  }
 
-  /*
-  **	Save the Score
-  */
-  if (!Score.Save(file)) {
-    file.Close();
-    Decode_All_Pointers();
-    return false;
-  }
+    Call_Back();
+    /*
+    **	Save all game objects.  This code saves every object that's stored in a
+    **	TFixedIHeap class.
+    */
+    if (!Houses.Save(writer) || !TeamTypes.Save(writer) ||
+        !Teams.Save(writer) || !Triggers.Save(writer) ||
+        !Aircraft.Save(writer) || !Anims.Save(writer) ||
+        !Buildings.Save(writer) || !Bullets.Save(writer) ||
+        !Infantry.Save(writer) || !Overlays.Save(writer) ||
+        !Smudges.Save(writer) || !Templates.Save(writer) ||
+        !Terrains.Save(writer) || !Units.Save(writer) ||
+        !Factories.Save(writer)) {
+      return false;
+    }
 
-  /*
-  **	Save the AI Base
-  */
-  if (!Base.Save(file)) {
-    file.Close();
-    Decode_All_Pointers();
-    return false;
-  }
+    Call_Back();
+    /*
+    **	Save the Logic & Map layers
+    */
+    if (!Logic.Save(writer)) {
+      return false;
+    }
 
-  /*
-  **	Save miscellaneous variables.
-  */
-  if (!Save_Misc_Values(file)) {
-    file.Close();
-    Decode_All_Pointers();
-    return false;
-  }
+    for (i = 0; i < LAYER_COUNT; i++) {
+      if (!MouseClass::Layer[i].Save(writer)) {
+        return false;
+      }
+    }
 
-  Call_Back();
-  /*
-  **	Close the file; we're done
-  */
-  file.Close();
+    /*
+    **	Save the Score
+    */
+    if (!Score.Save(writer)) {
+      return false;
+    }
+
+    /*
+    **	Save the AI Base
+    */
+    if (!Base.Save(writer)) {
+      return false;
+    }
+
+    /*
+    **	Save miscellaneous variables.
+    */
+    if (!Save_Misc_Values(writer)) {
+      return false;
+    }
+
+    return true;
+  }();
   Decode_All_Pointers();
-
-  return true;
+  return saved && checked_sink.ok();
 }
 
 /***************************************************************************
@@ -337,7 +317,7 @@ bool Load_Game(int id) {
   RawFileClass file;
   char name[_MAX_FNAME + _MAX_EXT];
   int i;
-  unsigned long version;
+  int32_t version = 0;
   unsigned scenario;
   HousesType house;
   char descr_buf[kDescripMax];
@@ -350,7 +330,8 @@ bool Load_Game(int id) {
   /*
   **	Open the file
   */
-  if (!file.Open(name, FileAccess::kRead)) {
+  file.Open(name, FileAccess::kRead);
+  if (!file.Is_Open()) {
     return false;
   }
 
@@ -382,7 +363,6 @@ bool Load_Game(int id) {
   **	- The map's Layers & Logic Layer are cleared to empty
   **	- The list of currently-selected objects is cleared
   */
-  Clear_Scenario();
 
   /*
   **	Read in & verify the save-game ID code
@@ -392,8 +372,19 @@ bool Load_Game(int id) {
     return false;
   }
 
-  if (version != SAVEGAME_VERSION) {
+  if (version != kSaveGameVersion) {
     file.Close();
+    return false;
+  }
+
+  Clear_Scenario();
+  FileStraw source(file);
+  ArchiveReader reader(source);
+  if (!reader.Section(FourCC("FRAM"))) {
+    return false;
+  }
+  reader(Frame);
+  if (!reader.ok()) {
     return false;
   }
 
@@ -433,17 +424,21 @@ bool Load_Game(int id) {
   *them *	what the Theater is; this must be done before any objects are
   *created, so *	they'll be properly created.
   */
-  Map.Load(file);
+  if (!Map.Load(reader)) {
+    return false;
+  }
 
   Call_Back();
   /*
   **	Load the object data.
   */
-  if (!Houses.Load(file) || !TeamTypes.Load(file) || !Teams.Load(file) ||
-      !Triggers.Load(file) || !Aircraft.Load(file) || !Anims.Load(file) ||
-      !Buildings.Load(file) || !Bullets.Load(file) || !Infantry.Load(file) ||
-      !Overlays.Load(file) || !Smudges.Load(file) || !Templates.Load(file) ||
-      !Terrains.Load(file) || !Units.Load(file) || !Factories.Load(file)) {
+  if (!Houses.Load(reader) || !TeamTypes.Load(reader) || !Teams.Load(reader) ||
+      !Triggers.Load(reader) || !Aircraft.Load(reader) || !Anims.Load(reader) ||
+      !Buildings.Load(reader) || !Bullets.Load(reader) ||
+      !Infantry.Load(reader) || !Overlays.Load(reader) ||
+      !Smudges.Load(reader) || !Templates.Load(reader) ||
+      !Terrains.Load(reader) || !Units.Load(reader) ||
+      !Factories.Load(reader)) {
     file.Close();
     return false;
   }
@@ -460,12 +455,12 @@ bool Load_Game(int id) {
   /*
   **	Load the Logic & Map Layers
   */
-  if (!Logic.Load(file)) {
+  if (!Logic.Load(reader)) {
     file.Close();
     return false;
   }
   for (i = 0; i < LAYER_COUNT; i++) {
-    if (!MouseClass::Layer[i].Load(file)) {
+    if (!MouseClass::Layer[i].Load(reader)) {
       file.Close();
       return false;
     }
@@ -475,7 +470,7 @@ bool Load_Game(int id) {
   /*
   **	Load the Score
   */
-  if (!Score.Load(file)) {
+  if (!Score.Load(reader)) {
     file.Close();
     return false;
   }
@@ -483,7 +478,7 @@ bool Load_Game(int id) {
   /*
   **	Load the AI Base
   */
-  if (!Base.Load(file)) {
+  if (!Base.Load(reader)) {
     file.Close();
     return false;
   }
@@ -491,7 +486,7 @@ bool Load_Game(int id) {
   /*
   **	Load miscellaneous variables, including the map size & the Theater
   */
-  if (!Load_Misc_Values(file)) {
+  if (!Load_Misc_Values(reader)) {
     file.Close();
     return false;
   }
@@ -505,7 +500,6 @@ bool Load_Game(int id) {
 
 #ifdef DEMO
   if (Scenario != 10 && Scenario != 1 && Scenario != 6) {
-    Clear_Scenario();
     return (false);
   }
 #endif
@@ -529,7 +523,7 @@ bool Load_Game(int id) {
  * HISTORY:                                                                *
  *   12/29/1994 BR : Created.                                              *
  *=========================================================================*/
-bool Save_Misc_Values(FileClass& file) {
+bool Save_Misc_Values(ArchiveWriter& file) {
   int i;
   int count;         // # ptrs in 'CurrentObject'
   ObjectClass* ptr;  // for saving 'CurrentObject' ptrs
@@ -537,75 +531,52 @@ bool Save_Misc_Values(FileClass& file) {
   /*
   **	Player's House.
   */
-  if (file.Write(static_cast<const void*>(&PlayerPtr), sizeof(void*)) !=
-      sizeof(void*)) {
-    return false;
-  }
+  file.Bytes(static_cast<const void*>(&PlayerPtr), sizeof(void*));
 
   /*
   **	Save this scenario number.
   */
-  if (file.Write(&Scenario, sizeof(Scenario)) != sizeof(Scenario)) {
-    return false;
-  }
-
-  /*
-  **	Save frame #.
-  */
-  if (file.Write(&Frame, sizeof(Frame)) != sizeof(Frame)) {
-    return false;
-  }
+  file.Bytes(&Scenario, sizeof(Scenario));
 
   /*
   **	Save VQ Movie names.
   */
-  if (file.Write(WinMovie, sizeof(WinMovie)) != sizeof(WinMovie)) {
-    return false;
-  }
+  file.Bytes(WinMovie, sizeof(WinMovie));
 
-  if (file.Write(LoseMovie, sizeof(LoseMovie)) != sizeof(LoseMovie)) {
-    return false;
-  }
+  file.Bytes(LoseMovie, sizeof(LoseMovie));
 
   /*
   **	Save currently-selected objects list.
   **	Save the # of ptrs in the list.
   */
   count = static_cast<int>(CurrentObject.Count());
-  if (file.Write(&count, sizeof(count)) != sizeof(count)) {
-    return false;
-  }
+  file.Bytes(&count, sizeof(count));
 
   /*
   **	Save the pointers.
   */
   for (i = 0; i < count; i++) {
     ptr = CurrentObject[i];
-    if (file.Write(static_cast<const void*>(&ptr), sizeof(void*)) !=
-        sizeof(void*)) {
-      return false;
-    }
+    file.Bytes(static_cast<const void*>(&ptr), sizeof(void*));
   }
 
   /*
   **	Save the list of waypoints.
   */
-  if (file.Write(Waypoint, sizeof(Waypoint)) != sizeof(Waypoint)) {
-    return false;
-  }
+  file.Bytes(Waypoint, sizeof(Waypoint));
 
-  file.Write(&ScenDir, sizeof(ScenDir));
-  file.Write(&ScenVar, sizeof(ScenVar));
-  file.Write(&CarryOverMoney, sizeof(CarryOverMoney));
-  file.Write(&CarryOverPercent, sizeof(CarryOverPercent));
-  file.Write(&BuildLevel, sizeof(BuildLevel));
-  file.Write(BriefMovie, sizeof(BriefMovie));
-  file.Write(Views, sizeof(Views));
-  file.Write(&EndCountDown, sizeof(EndCountDown));
-  file.Write(BriefingText, sizeof(BriefingText));
+  file.Bytes(&ScenDir, sizeof(ScenDir));
+  file.Bytes(&ScenVar, sizeof(ScenVar));
+  file.Bytes(&CarryOverMoney, sizeof(CarryOverMoney));
+  file.Bytes(&CarryOverPercent, sizeof(CarryOverPercent));
+  file.Bytes(&BuildLevel, sizeof(BuildLevel));
+  file.Bytes(BriefMovie, sizeof(BriefMovie));
+  file.Bytes(Views, sizeof(Views));
+  file.Bytes(&EndCountDown, sizeof(EndCountDown));
+  file.Bytes(BriefingText, sizeof(BriefingText));
 
   // This is new...
-  file.Write(ActionMovie, sizeof(ActionMovie));
+  file.Bytes(ActionMovie, sizeof(ActionMovie));
 
   return true;
 }
@@ -621,7 +592,7 @@ bool Save_Misc_Values(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 06/24/1995 BRR : Created. *
  *=============================================================================================*/
-bool Load_Misc_Values(FileClass& file) {
+bool Load_Misc_Values(ArchiveReader& file) {
   int i;
   int count;         // # ptrs in 'CurrentObject'
   ObjectClass* ptr;  // for loading 'CurrentObject' ptrs
@@ -629,33 +600,29 @@ bool Load_Misc_Values(FileClass& file) {
   /*
   **	Player's House.
   */
-  if (file.Read(static_cast<void*>(&PlayerPtr), sizeof(void*)) !=
-      sizeof(void*)) {
+  file.Bytes(static_cast<void*>(&PlayerPtr), sizeof(void*));
+  if (!file.ok()) {
     return false;
   }
 
   /*
   **	Read this scenario number.
   */
-  if (file.Read(&Scenario, sizeof(Scenario)) != sizeof(Scenario)) {
-    return false;
-  }
-
-  /*
-  **	Load frame #.
-  */
-  if (file.Read(&Frame, sizeof(Frame)) != sizeof(Frame)) {
+  file.Bytes(&Scenario, sizeof(Scenario));
+  if (!file.ok()) {
     return false;
   }
 
   /*
   **	Load VQ Movie names.
   */
-  if (file.Read(WinMovie, sizeof(WinMovie)) != sizeof(WinMovie)) {
+  file.Bytes(WinMovie, sizeof(WinMovie));
+  if (!file.ok()) {
     return false;
   }
 
-  if (file.Read(LoseMovie, sizeof(LoseMovie)) != sizeof(LoseMovie)) {
+  file.Bytes(LoseMovie, sizeof(LoseMovie));
+  if (!file.ok()) {
     return false;
   }
 
@@ -663,7 +630,8 @@ bool Load_Misc_Values(FileClass& file) {
   **	Load currently-selected objects list.
   **	Load the # of ptrs in the list.
   */
-  if (file.Read(&count, sizeof(count)) != sizeof(count)) {
+  file.Bytes(&count, sizeof(count));
+  if (!file.ok()) {
     return false;
   }
 
@@ -671,8 +639,8 @@ bool Load_Misc_Values(FileClass& file) {
   **	Load the pointers.
   */
   for (i = 0; i < count; i++) {
-    if (file.Read(static_cast<void*>(&ptr), sizeof(void*)) !=
-        sizeof(void*)) {
+    file.Bytes(static_cast<void*>(&ptr), sizeof(void*));
+    if (!file.ok()) {
       return false;
     }
     CurrentObject.Add(ptr);  // add to the list
@@ -681,25 +649,24 @@ bool Load_Misc_Values(FileClass& file) {
   /*
   **	Save the list of waypoints.
   */
-  if (file.Read(Waypoint, sizeof(Waypoint)) != sizeof(Waypoint)) {
+  file.Bytes(Waypoint, sizeof(Waypoint));
+  if (!file.ok()) {
     return false;
   }
 
-  file.Read(&ScenDir, sizeof(ScenDir));
-  file.Read(&ScenVar, sizeof(ScenVar));
-  file.Read(&CarryOverMoney, sizeof(CarryOverMoney));
-  file.Read(&CarryOverPercent, sizeof(CarryOverPercent));
-  file.Read(&BuildLevel, sizeof(BuildLevel));
-  file.Read(BriefMovie, sizeof(BriefMovie));
-  file.Read(Views, sizeof(Views));
-  file.Read(&EndCountDown, sizeof(EndCountDown));
-  file.Read(BriefingText, sizeof(BriefingText));
+  file.Bytes(&ScenDir, sizeof(ScenDir));
+  file.Bytes(&ScenVar, sizeof(ScenVar));
+  file.Bytes(&CarryOverMoney, sizeof(CarryOverMoney));
+  file.Bytes(&CarryOverPercent, sizeof(CarryOverPercent));
+  file.Bytes(&BuildLevel, sizeof(BuildLevel));
+  file.Bytes(BriefMovie, sizeof(BriefMovie));
+  file.Bytes(Views, sizeof(Views));
+  file.Bytes(&EndCountDown, sizeof(EndCountDown));
+  file.Bytes(BriefingText, sizeof(BriefingText));
 
-  if (file.Seek(0, SEEK_CUR) < file.Size()) {
-    file.Read(ActionMovie, sizeof(ActionMovie));
-  }
+  file.Bytes(ActionMovie, sizeof(ActionMovie));
 
-  return true;
+  return file.ok();
 }
 
 /***********************************************************************************************
@@ -929,14 +896,15 @@ void Decode_All_Pointers() {
  *                                                                                             *
  * HISTORY: * 01/10/1995 BR : Created. *
  *=============================================================================================*/
-bool Read_Object(void* ptr, int base_size, int class_size, FileClass& file,
+bool Read_Object(void* ptr, int base_size, int class_size, ArchiveReader& file,
                  void* vtable) {
   int size;  // object size in bytes
 
   /*
   **	Read size of this chunk.
   */
-  if (file.Read(&size, sizeof(size)) != sizeof(size)) {
+  file.Bytes(&size, sizeof(size));
+  if (!file.ok()) {
     return false;
   }
 
@@ -950,7 +918,8 @@ bool Read_Object(void* ptr, int base_size, int class_size, FileClass& file,
   /*
   **	Read object data.
   */
-  if (file.Read(ptr, class_size) != class_size) {
+  file.Bytes(ptr, class_size);
+  if (!file.ok()) {
     return false;
   }
 
@@ -961,7 +930,7 @@ bool Read_Object(void* ptr, int base_size, int class_size, FileClass& file,
     ((void**)(static_cast<char*>(ptr) + base_size - 4))[0] = vtable;
   }
 
-  return true;
+  return file.ok();
 }
 
 /***********************************************************************************************
@@ -984,20 +953,16 @@ bool Read_Object(void* ptr, int base_size, int class_size, FileClass& file,
  *                                                                                             *
  * HISTORY: * 01/10/1995 BR : Created. *
  *=============================================================================================*/
-bool Write_Object(void* ptr, int class_size, FileClass& file) {
+bool Write_Object(void* ptr, int class_size, ArchiveWriter& file) {
   /*
   **	Save size of this chunk.
   */
-  if (file.Write(&class_size, sizeof(class_size)) != sizeof(class_size)) {
-    return false;
-  }
+  file.Bytes(&class_size, sizeof(class_size));
 
   /*
   **	Save object data.
   */
-  if (file.Write(ptr, class_size) != class_size) {
-    return false;
-  }
+  file.Bytes(ptr, class_size);
 
   return true;
 }
@@ -1023,7 +988,7 @@ bool Write_Object(void* ptr, int class_size, FileClass& file) {
 bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
   RawFileClass file;
   char name[_MAX_FNAME + _MAX_EXT];
-  unsigned long version;
+  int32_t version = 0;
   char descr_buf[kDescripMax];
 
   /*
@@ -1034,7 +999,8 @@ bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
   /*
   **	If the file opens OK, read the file
   */
-  if (file.Open(name, FileAccess::kRead)) {
+  file.Open(name, FileAccess::kRead);
+  if (file.Is_Open()) {
     /*
     **	Read in the description, scenario #, and the house
     */
@@ -1043,7 +1009,12 @@ bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
       return false;
     }
 
-    descr_buf[strlen(descr_buf) - 2] = '\0';  // trim off CR/LF
+    descr_buf[kDescripMax - 1] = '\0';
+    const auto description_length = strlen(descr_buf);
+    if (description_length >= 2 && descr_buf[description_length - 2] == '\r' &&
+        descr_buf[description_length - 1] == '\n') {
+      descr_buf[description_length - 2] = '\0';
+    }
     port::SafeCopy(buf, descr_buf, kDescripMax);
 
     if (file.Read(scenp, sizeof(unsigned)) != sizeof(unsigned)) {
@@ -1064,7 +1035,7 @@ bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
       return false;
     }
 
-    if (version != SAVEGAME_VERSION) {
+    if (version != kSaveGameVersion) {
       file.Close();
       return false;
     }

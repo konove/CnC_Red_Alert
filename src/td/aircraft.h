@@ -19,6 +19,9 @@
 #ifndef CNC_RED_ALERT_TD_AIRCRAFT_H_
 #define CNC_RED_ALERT_TD_AIRCRAFT_H_
 
+class ArchiveReader;
+class ArchiveWriter;
+
 #include <cstddef>
 
 #include "td/bullet.h"
@@ -43,10 +46,7 @@ class AircraftClass : public FootClass, public FlyClass {
   operator AircraftType() const { return Class->Type; }
   AircraftClass() : Class(nullptr) {}
   AircraftClass(const NoInitClass& x)
-      : FootClass(x),
-        FlyClass(x),
-        SecondaryFacing(x),
-        SightTimer(x) {}
+      : FootClass(x), FlyClass(x), SecondaryFacing(x), SightTimer(x) {}
   AircraftClass(AircraftType classid, HousesType house);
   ~AircraftClass() override;
   RTTIType What_Am_I() const override { return RTTI_AIRCRAFT; }
@@ -144,8 +144,8 @@ class AircraftClass : public FootClass, public FlyClass {
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
   static const char* INI_Name() { return "AIRCRAFT"; }
-  bool Load(FileClass& file);
-  bool Save(FileClass& file);
+  bool Load(ArchiveReader& file);
+  bool Save(ArchiveWriter& file);
   void Code_Pointers() override;
   void Decode_Pointers() override;
 

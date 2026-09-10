@@ -57,6 +57,8 @@
 #include <string>
 
 #include "absl/log/log.h"
+#include "port/safe_string.h"
+#include "td/saveload.h"
 #include "port/ex_string.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
@@ -702,6 +704,7 @@ void Uninit_Game() {
 
   WWDOS_Shutdown();
   delete[] Palette;
+  Palette = nullptr;  // Prog_End may run again when SDL handles the quit event.
 }
 
 extern bool Do_The_Internet_Menu_Thang();
@@ -728,6 +731,9 @@ extern int WChatSendRate;
 void Check_From_WChat(char* wchat_name);
 
 bool Select_Game(bool fade) {
+  if (DebugQuitAtFrame >= 0 && DebugNewGame.empty() && DebugLoadGame < 0) {
+    return false;
+  }
   enum {
     SEL_TIMEOUT = -1,  // main menu timeout--go into attract mode
 #ifdef NEWMENU
@@ -865,6 +871,25 @@ bool Select_Game(bool fade) {
     }
 
     while (process) {
+      if (!DebugNewGame.empty()) {
+        Scenario = atoi(DebugNewGame.c_str() + 3);
+        ScenPlayer = DebugNewGame[2] == 'B' ? SCEN_PLAYER_NOD : SCEN_PLAYER_GDI;
+        Whom = ScenPlayer == SCEN_PLAYER_NOD ? HOUSE_BAD : HOUSE_GOOD;
+        GameToPlay = GAME_NORMAL;
+        process = false;
+        continue;
+      }
+      if (DebugLoadGame >= 0) {
+        const int slot = DebugLoadGame;
+        DebugLoadGame = -1;
+        if (!Load_Game(slot)) {
+          LOG(ERROR) << "-LOADGAME: could not load slot " << slot;
+          return false;
+        }
+        gameloaded = true;
+        process = false;
+        continue;
+      }
       /*
       ** If we have just received input focus again after running in the
       *background then
@@ -1559,7 +1584,10 @@ bool Select_Game(bool fade) {
   *one. *	Skip this if we've already loaded a save-game.
   */
   if (!gameloaded) {
-    if (Debug_Map) {
+    if (!DebugNewGame.empty()) {
+      port::SafeCopy(ScenarioName, DebugNewGame.c_str());
+      DebugNewGame.clear();
+    } else if (Debug_Map) {
       Set_Scenario_Name(ScenarioName, Scenario, ScenPlayer, ScenDir,
                         SCEN_VAR_A);
     } else {
@@ -1768,14 +1796,14 @@ void Anim_Init() {
     AnimControl.OptionFlags |= VQAOPTF_SLOWPAL;
   }
 
-//	AnimControl.AudioBuf = (unsigned char *)HidPage.Get_Buffer();
-//	AnimControl.AudioBufSize = 32768U;
-// AnimControl.DigiCard = NewConfig.DigitCard;
-// AnimControl.HMIBufSize = 8192;
-// AnimControl.DigiHandle = Get_Digi_Handle();
-// AnimControl.Volume = 0x00FF;
-// AnimControl.AudioRate = 22050;
-//	if (NewConfig.Speed) AnimControl.AudioRate = 11025;
+  //	AnimControl.AudioBuf = (unsigned char *)HidPage.Get_Buffer();
+  //	AnimControl.AudioBufSize = 32768U;
+  // AnimControl.DigiCard = NewConfig.DigitCard;
+  // AnimControl.HMIBufSize = 8192;
+  // AnimControl.DigiHandle = Get_Digi_Handle();
+  // AnimControl.Volume = 0x00FF;
+  // AnimControl.AudioRate = 22050;
+  //	if (NewConfig.Speed) AnimControl.AudioRate = 11025;
   AnimControl.AudioDeviceID = Get_Audio_Device();
   AnimControl.AudioCallback = Get_Audio_Callback_Ptr();
   AnimControl.AudioSpec = Get_Audio_Spec();
@@ -1829,6 +1857,30 @@ bool Parse_Command_Line(int argc, char* argv[]) {
   for (int index = 1; index < argc; index++) {
     std::string original_arg = argv[index];  // Copy for preserving case.
     char* string = strupr(argv[index]);      // Pointer to argument.
+
+    if (strncmp(string, "-NEWGAME", 8) == 0) {
+      DebugNewGame = string + 8;
+      if (DebugNewGame.size() < 3) {
+        return false;
+      }
+      continue;
+    }
+    if (strncmp(string, "-LOADGAME", 9) == 0) {
+      DebugLoadGame = atoi(string + 9);
+      continue;
+    }
+    if (strncmp(string, "-QUITFRAME", 10) == 0) {
+      DebugQuitAtFrame = atoi(string + 10);
+      continue;
+    }
+    if (strncmp(string, "-SAVESLOT", 9) == 0) {
+      DebugSaveSlot = atoi(string + 9);
+      continue;
+    }
+    if (strcmp(string, "-NOMOVIES") == 0) {
+      DebugNoMovies = true;
+      continue;
+    }
 
     /*
     **	Print usage text only if requested.
@@ -2711,7 +2763,8 @@ long Obfuscate(const char* string) {
     int maxlen = std::max(length + 3 & 0x00FC, 16);
     int index;
     for (index = length; index < maxlen; index++) {
-      buffer[index] = static_cast<char>('A' + (('?' ^ buffer[index - length]) + index) % 26);
+      buffer[index] = static_cast<char>(
+          'A' + (('?' ^ buffer[index - length]) + index) % 26);
     }
     length = index;
     buffer[length] = '\0';

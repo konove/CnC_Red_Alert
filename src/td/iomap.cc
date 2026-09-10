@@ -94,6 +94,7 @@
 #include "td/trigger.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "tech/archive.h"
 #include "tech/noinit.h"
 #include "tech/wwfile.h"
 
@@ -129,7 +130,7 @@ bool CellClass::Should_Save() const {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool CellClass::Load(FileClass& file) {
+bool CellClass::Load(ArchiveReader& file) {
   int rc;
   TriggerClass* trig;
 
@@ -143,8 +144,8 @@ bool CellClass::Load(FileClass& file) {
   */
   if (rc) {
     if (IsTrigger) {
-      if (file.Read(static_cast<void*>(&trig), sizeof(void*)) !=
-          sizeof(void*)) {
+      file.Bytes(static_cast<void*>(&trig), sizeof(void*));
+      if (!file.ok()) {
         return false;
       }
       CellTriggers[Cell_Number()] = trig;
@@ -165,7 +166,7 @@ bool CellClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool CellClass::Save(FileClass& file) {
+bool CellClass::Save(ArchiveWriter& file) {
   int rc;
   TriggerClass* trig;
 
@@ -180,10 +181,7 @@ bool CellClass::Save(FileClass& file) {
   if (rc) {
     if (IsTrigger) {
       trig = CellTriggers[Cell_Number()];
-      if (file.Write(static_cast<const void*>(&trig), sizeof(void*)) !=
-          sizeof(void*)) {
-        return false;
-      }
+      file.Bytes(static_cast<const void*>(&trig), sizeof(void*));
     }
   }
 
@@ -308,8 +306,8 @@ void CellClass::Decode_Pointers() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool MouseClass::Load(FileClass& file) {
-  int count;
+bool MouseClass::Load(ArchiveReader& file) {
+  int32_t count = 0;
   CELL cell = 0;
   int index;
   //	int rc;
@@ -323,7 +321,8 @@ bool MouseClass::Load(FileClass& file) {
   disk will be over-written when initialization occurs.  This code must
   go in the most-derived Map class.
   ------------------------------------------------------------------------*/
-  if (file.Read(&Theater, sizeof(Theater)) != sizeof(Theater)) {
+  file.Bytes(&Theater, sizeof(Theater));
+  if (!file.ok()) {
     return false;
   }
 
@@ -362,8 +361,15 @@ bool MouseClass::Load(FileClass& file) {
   ** in editor mode, none of the map editor object is read in.
   */
   int size;
-  file.Read(&size, sizeof(size));
-  file.Read(this, sizeof(*this));
+  file.Bytes(&size, sizeof(size));
+  if (!file.ok() || size != sizeof(*this)) {
+    file.Fail("invalid raw map size");
+    return false;
+  }
+  file.Bytes(this, sizeof(*this));
+  if (!file.ok()) {
+    return false;
+  }
   new (this) MapEditClass(NoInitClass());
 
   /*
@@ -379,24 +385,34 @@ bool MouseClass::Load(FileClass& file) {
   /*
   --------------------------- Read # cells saved ---------------------------
   */
-  if (file.Read(&count, sizeof(count)) != sizeof(count)) {
+  file(count);
+  if (!file.ok()) {
     return false;
   }
 
   /*
   ------------------------------- Read cells -------------------------------
   */
+  if (count < 0 || count > MAP_CELL_TOTAL) {
+    file.Fail("invalid saved cell count");
+    return false;
+  }
   for (index = 0; index < count; index++) {
-    if (file.Read(&cell, sizeof(cell)) != sizeof(cell)) {
+    file.Bytes(&cell, sizeof(cell));
+    if (!file.ok()) {
       return false;
     }
 
+    if (cell < 0 || cell >= MAP_CELL_TOTAL) {
+      file.Fail("invalid saved cell index");
+      return false;
+    }
     if (!(*this)[cell].Load(file)) {
       return false;
     }
   }
 
-  return true;
+  return file.ok();
 }
 
 /***********************************************************************************************
@@ -410,62 +426,26 @@ bool MouseClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool MouseClass::Save(FileClass& file) {
-  int count;
-  long pos;
-
-  /*
-  -------------------------- Save Theater >first< --------------------------
-  */
-  if (file.Write(&Theater, sizeof(Theater)) != sizeof(Theater)) {
-    return false;
-  }
-
+bool MouseClass::Save(ArchiveWriter& file) {
+  file.Bytes(&Theater, sizeof(Theater));
   if (!Write_Object(this, sizeof(MouseClass), file)) {
     return false;
   }
-
-  /*
-  ---------------------- Record current file position ----------------------
-  */
-  pos = file.Seek(0, SEEK_CUR);
-
-  /*
-  ---------------------- write out placeholder bytes -----------------------
-  */
-  if (file.Write(&count, sizeof(count)) != sizeof(count)) {
-    return false;
-  }
-
-  /*
-  ------------------------ Save cells that need it -------------------------
-  */
-  count = 0;
+  int32_t count = 0;
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     if ((*this)[cell].Should_Save()) {
-      if (file.Write(&cell, sizeof(cell)) != sizeof(cell)) {
-        return false;
-      }
-
-      count++;
-
+      ++count;
+    }
+  }
+  file(count);
+  for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+    if ((*this)[cell].Should_Save()) {
+      file.Bytes(&cell, sizeof(cell));
       if (!(*this)[cell].Save(file)) {
         return false;
       }
     }
   }
-
-  /*
-  -------------------------- Save # cells written --------------------------
-  */
-  file.Seek(pos, SEEK_SET);
-
-  if (file.Write(&count, sizeof(count)) != sizeof(count)) {
-    return false;
-  }
-
-  file.Seek(0, SEEK_END);
-
   return true;
 }
 

@@ -41,6 +41,9 @@
 #ifndef CNC_RED_ALERT_TD_TEAM_H_
 #define CNC_RED_ALERT_TD_TEAM_H_
 
+class ArchiveReader;
+class ArchiveWriter;
+
 #include <cstddef>
 
 #include "td/abstract.h"
@@ -180,9 +183,7 @@ class TeamClass : public AbstractClass {
   }
   TeamClass(const TeamTypeClass* team, HouseClass* owner);
   TeamClass(const NoInitClass& x)
-      : AbstractClass(x),
-        SuspendTimer(x),
-        TimeOut(x) {}
+      : AbstractClass(x), SuspendTimer(x), TimeOut(x) {}
   ~TeamClass() override;
   virtual RTTIType What_Am_I() const { return RTTI_TEAM; }
   void operator delete(void* ptr);
@@ -196,8 +197,8 @@ class TeamClass : public AbstractClass {
   /*
   **	File I/O.
   */
-  bool Load(FileClass& file);
-  bool Save(FileClass& file);
+  bool Load(ArchiveReader& file);
+  bool Save(ArchiveWriter& file);
   void Code_Pointers();
   void Decode_Pointers();
 

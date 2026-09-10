@@ -77,6 +77,7 @@
 #include "td/profile.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "tech/archive.h"
 #include "tech/wwfile.h"
 
 int BaseNodeClass::operator==(const BaseNodeClass& node) {
@@ -204,7 +205,8 @@ void BaseClass::Write_INI(char* buffer) {
   **	they must be read in the same order they were created, so "000" must be
   **	read first, etc.
   */
-  WWWritePrivateProfileInt(INI_Name(), "Count", static_cast<int>(Nodes.Count()), buffer);
+  WWWritePrivateProfileInt(INI_Name(), "Count", static_cast<int>(Nodes.Count()),
+                           buffer);
 
   /*
   **	Write each entry into the INI
@@ -230,7 +232,7 @@ void BaseClass::Write_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-bool BaseClass::Load(FileClass& file) {
+bool BaseClass::Load(ArchiveReader& file) {
   int num_struct;
   int i;
   BaseNodeClass node;
@@ -238,7 +240,8 @@ bool BaseClass::Load(FileClass& file) {
   /*
   ** Read in & check the size of this class
   */
-  if (file.Read(&i, sizeof(i)) != sizeof(i)) {
+  file.Bytes(&i, sizeof(i));
+  if (!file.ok()) {
     return false;
   }
 
@@ -249,11 +252,13 @@ bool BaseClass::Load(FileClass& file) {
   /*
   ** Read in the House & the number of structures in the base
   */
-  if (file.Read(&House, sizeof(House)) != sizeof(House)) {
+  file.Bytes(&House, sizeof(House));
+  if (!file.ok()) {
     return false;
   }
 
-  if (file.Read(&num_struct, sizeof(num_struct)) != sizeof(num_struct)) {
+  file.Bytes(&num_struct, sizeof(num_struct));
+  if (!file.ok()) {
     return false;
   }
 
@@ -261,13 +266,14 @@ bool BaseClass::Load(FileClass& file) {
   ** Read each node entry & add it to the list
   */
   for (i = 0; i < num_struct; i++) {
-    if (file.Read(&node, sizeof(node)) != sizeof(node)) {
+    file.Bytes(&node, sizeof(node));
+    if (!file.ok()) {
       return false;
     }
     Nodes.Add(node);
   }
 
-  return true;
+  return file.ok();
 }
 
 /***********************************************************************************************
@@ -281,7 +287,7 @@ bool BaseClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-bool BaseClass::Save(FileClass& file) {
+bool BaseClass::Save(ArchiveWriter& file) {
   int num_struct;
   int i;
   BaseNodeClass node;
@@ -290,30 +296,22 @@ bool BaseClass::Save(FileClass& file) {
   ** Write the size of this class
   */
   i = sizeof(*this);
-  if (file.Write(&i, sizeof(i)) != sizeof(i)) {
-    return false;
-  }
+  file.Bytes(&i, sizeof(i));
 
   /*
   ** Write the House & the number of structures in the base
   */
-  if (file.Write(&House, sizeof(House)) != sizeof(House)) {
-    return false;
-  }
+  file.Bytes(&House, sizeof(House));
 
   num_struct = static_cast<int>(Nodes.Count());
-  if (file.Write(&num_struct, sizeof(num_struct)) != sizeof(num_struct)) {
-    return false;
-  }
+  file.Bytes(&num_struct, sizeof(num_struct));
 
   /*
   ** Write each node entry
   */
   for (i = 0; i < num_struct; i++) {
     node = Nodes[i];
-    if (file.Write(&node, sizeof(node)) != sizeof(node)) {
-      return false;
-    }
+    file.Bytes(&node, sizeof(node));
   }
 
   return true;

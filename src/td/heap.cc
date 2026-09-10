@@ -55,6 +55,7 @@
 
 #include "td/heap.h"
 
+#include <cstddef>
 #include <cstring>
 #include <new>
 
@@ -74,9 +75,9 @@
 #include "td/terrain.h"
 #include "td/trigger.h"
 #include "td/unit.h"
+#include "tech/archive.h"
 #include "tech/noinit.h"
 #include "tech/wwfile.h"
-#include <cstddef>
 
 /***********************************************************************************************
  * FixedHeapClass::FixedHeapClass -- Normal constructor for heap management
@@ -392,16 +393,14 @@ int FixedIHeapClass::Free(void* pointer) {
  * HISTORY: * 03/15/1995 BRR : Created. *
  *=============================================================================================*/
 template <class T>
-int TFixedIHeapClass<T>::Save(FileClass& file) {
+int TFixedIHeapClass<T>::Save(ArchiveWriter& file) {
   int i;    // loop counter
   int idx;  // object index
 
   /*
   ** Save the number of instances of this class
   */
-  if (file.Write(&ActiveCount, sizeof(ActiveCount)) != sizeof(ActiveCount)) {
-    return false;
-  }
+  file.Bytes(&ActiveCount, sizeof(ActiveCount));
 
   /*
   ** Save each instance of this class
@@ -412,9 +411,7 @@ int TFixedIHeapClass<T>::Save(FileClass& file) {
     ** same array location (so TARGET translations will work)
     */
     idx = ID(Ptr(i));
-    if (file.Write(&idx, sizeof(idx)) != sizeof(idx)) {
-      return false;
-    }
+    file.Bytes(&idx, sizeof(idx));
 
     /*
     ** Save the object itself
@@ -439,7 +436,7 @@ int TFixedIHeapClass<T>::Save(FileClass& file) {
  * HISTORY: * 03/15/1995 BRR : Created. *
  *=============================================================================================*/
 template <class T>
-int TFixedIHeapClass<T>::Load(FileClass& file) {
+int TFixedIHeapClass<T>::Load(ArchiveReader& file) {
   int i;    // loop counter
   int idx;  // object index
   T* ptr;   // object pointer
@@ -448,14 +445,15 @@ int TFixedIHeapClass<T>::Load(FileClass& file) {
   /*
   ** Read the number of instances of this class
   */
-  if (file.Read(&a_count, sizeof(a_count)) != sizeof(a_count)) {
+  file.Bytes(&a_count, sizeof(a_count));
+  if (!file.ok()) {
     return false;
   }
 
   /*
   ** Error if more objects than we can hold
   */
-  if (a_count > TotalCount) {
+  if (a_count < 0 || a_count > TotalCount) {
     return false;
   }
 
@@ -466,13 +464,18 @@ int TFixedIHeapClass<T>::Load(FileClass& file) {
     /*
     ** Read the object's array index
     */
-    if (file.Read(&idx, sizeof(idx)) != sizeof(idx)) {
+    file.Bytes(&idx, sizeof(idx));
+    if (!file.ok()) {
       return false;
     }
 
     /*
     ** Get a pointer to the object, activate that object
     */
+    if (idx < 0 || idx >= TotalCount || FreeFlag[idx]) {
+      file.Fail("invalid heap slot");
+      return false;
+    }
     ptr = static_cast<T*>((*this)[idx]);
     FreeFlag[idx] = true;
     ActiveCount++;
@@ -482,15 +485,22 @@ int TFixedIHeapClass<T>::Load(FileClass& file) {
     ** Load the object
     */
     int size;
-    file.Read(&size, sizeof(size));
-    file.Read(ptr, sizeof(T));
+    file.Bytes(&size, sizeof(size));
+    if (!file.ok() || size != sizeof(T)) {
+      file.Fail("invalid raw object size");
+      return false;
+    }
+    file.Bytes(ptr, sizeof(T));
+    if (!file.ok()) {
+      return false;
+    }
     new (ptr) T(NoInitClass());
     //		if (!ptr->Load(file)) {
     //			return(false);
     //		}
   }
 
-  return true;
+  return file.ok();
 }
 
 /***********************************************************************************************

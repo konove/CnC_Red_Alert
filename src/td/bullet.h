@@ -41,6 +41,9 @@
 #ifndef CNC_RED_ALERT_TD_BULLET_H_
 #define CNC_RED_ALERT_TD_BULLET_H_
 
+class ArchiveReader;
+class ArchiveWriter;
+
 #include <cstddef>
 
 #include "td/defines.h"
@@ -83,10 +86,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   BulletClass();
   BulletClass(BulletType id);
   BulletClass(const NoInitClass& x)
-      : ObjectClass(x),
-        FlyClass(x),
-        FuseClass(x),
-        PrimaryFacing(x) {}
+      : ObjectClass(x), FlyClass(x), FuseClass(x), PrimaryFacing(x) {}
   ~BulletClass() override {
     if (GameActive) {
       BulletClass::Limbo();
@@ -114,8 +114,8 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   /*
   **	File I/O.
   */
-  bool Load(FileClass& file);
-  bool Save(FileClass& file);
+  bool Load(ArchiveReader& file);
+  bool Save(ArchiveWriter& file);
   void Code_Pointers() override;
   void Decode_Pointers() override;
 

@@ -41,6 +41,9 @@
 #ifndef CNC_RED_ALERT_TD_BUILDING_H_
 #define CNC_RED_ALERT_TD_BUILDING_H_
 
+class ArchiveReader;
+class ArchiveWriter;
+
 #include <cstddef>
 
 #include "td/bullet.h"
@@ -294,8 +297,8 @@ class BuildingClass final : public TechnoClass {
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
   static const char* INI_Name() { return "STRUCTURES"; }
-  bool Load(FileClass& file);
-  bool Save(FileClass& file);
+  bool Load(ArchiveReader& file);
+  bool Save(ArchiveWriter& file);
   void Code_Pointers() override;
   void Decode_Pointers() override;
   void Update_Specials();

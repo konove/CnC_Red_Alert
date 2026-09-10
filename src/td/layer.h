@@ -41,6 +41,9 @@
 #ifndef CNC_RED_ALERT_TD_LAYER_H_
 #define CNC_RED_ALERT_TD_LAYER_H_
 
+class ArchiveReader;
+class ArchiveWriter;
+
 #include "td/object.h"
 #include "td/vector.h"
 #include "tech/wwfile.h"
@@ -58,8 +61,8 @@ class LayerClass : public DynamicVectorClass<ObjectClass*> {
   /*
   **	File I/O.
   */
-  bool Load(FileClass& file);
-  bool Save(FileClass& file);
+  bool Load(ArchiveReader& file);
+  bool Save(ArchiveWriter& file);
   virtual void Code_Pointers();
   virtual void Decode_Pointers();
 };

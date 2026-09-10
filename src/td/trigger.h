@@ -41,6 +41,9 @@
 #ifndef CNC_RED_ALERT_TD_TRIGGER_H_
 #define CNC_RED_ALERT_TD_TRIGGER_H_
 
+class ArchiveReader;
+class ArchiveWriter;
+
 #include <cstring>
 
 #include "td/defines.h"
@@ -151,8 +154,8 @@ class TriggerClass {
   void Fill_In(char* name, char* entry);
   static void Write_INI(char* buffer, bool refresh);
   static const char* INI_Name() { return "Triggers"; }
-  bool Load(FileClass& file);
-  bool Save(FileClass& file);
+  bool Load(ArchiveReader& file);
+  bool Save(ArchiveWriter& file);
   void Code_Pointers();
   void Decode_Pointers();
 

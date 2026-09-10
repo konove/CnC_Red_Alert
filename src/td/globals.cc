@@ -214,7 +214,12 @@ bool CrateMaker = false;
 **	upward at the rate of one per game logic process. The target rate is 15
 **	per second. This value is saved and restored with the saved game.
 */
-long Frame = 0;
+std::string DebugNewGame;
+int DebugLoadGame = -1;
+int DebugQuitAtFrame = -1;
+int DebugSaveSlot = -1;
+bool DebugNoMovies = false;
+int64_t Frame = 0;
 
 /***************************************************************************
 **	These globals are constantly monitored to determine if the player
@@ -353,7 +358,7 @@ bool SpecialFlag = false;
 ** This value tells the sidebar what items it's allowed to add.  The
 ** lower the value, the simpler the sidebar will be.
 */
-int BuildLevel = 3;       // Buildable level (1 = simplest)
+int BuildLevel = 3;  // Buildable level (1 = simplest)
 
 /***************************************************************************
 ** This value is computed every time a new scenario is loaded; it's a

@@ -37,6 +37,9 @@
 #ifndef CNC_RED_ALERT_TD_TEAMTYPE_H_
 #define CNC_RED_ALERT_TD_TEAMTYPE_H_
 
+class ArchiveReader;
+class ArchiveWriter;
+
 #include <cstddef>
 
 #include "td/defines.h"
@@ -110,8 +113,8 @@ class TeamTypeClass : public AbstractTypeClass {
   static void Write_INI(char* buffer, bool refresh);
   static void Read_Old_INI(char* buffer);
   static const char* INI_Name() { return "TeamTypes"; }
-  bool Load(FileClass& file);
-  bool Save(FileClass& file);
+  bool Load(ArchiveReader& file);
+  bool Save(ArchiveWriter& file);
   void Code_Pointers();
   void Decode_Pointers();
 

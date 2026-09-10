@@ -72,6 +72,8 @@
 #include <iterator>
 #include <string>
 
+#include "base/types.h"
+#include "absl/log/log.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "sdllib/drawbuff.h"
@@ -108,6 +110,7 @@
 #include "td/infantry.h"
 #include "td/init.h"
 #include "td/inline.h"
+#include "td/interpal.h"
 #include "td/ipxaddr.h"
 #include "td/ipxgconn.h"
 #include "td/ipxmgr.h"
@@ -127,6 +130,7 @@
 #include "td/object.h"
 #include "td/palette.h"
 #include "td/queue.h"
+#include "td/saveload.h"
 #include "td/scenario.h"
 #include "td/score.h"
 #include "td/special.h"
@@ -140,9 +144,6 @@
 #include "tech/2keyfbuf.h"
 #include "tech/crc.h"
 #include "winvq/vqa32/vqaplay.h"
-
-#include "td/interpal.h"
-#include "base/types.h"
 
 #ifdef _WIN32
 #include "td/ccdde.h"
@@ -172,7 +173,6 @@ extern "C" {
 extern char* __nheapbeg;
 }
 bool InMainLoop = false;
-
 
 /***********************************************************************************************
  * Main_Game -- Main game startup routine. *
@@ -989,7 +989,8 @@ static void Message_Input(KeyNumType& input) {
         NullModem.Send_Message(NullModem.BuildBuf, sizeof(SerialPacketType), 1);
 
         magic_number++;
-        sent_so_far = static_cast<int>(sent_so_far + actual_message_size);  // COMPAT_MESSAGE_LENGTH-5;
+        sent_so_far = static_cast<int>(
+            sent_so_far + actual_message_size);  // COMPAT_MESSAGE_LENGTH-5;
       }
 
     } else {
@@ -1065,7 +1066,8 @@ static void Message_Input(KeyNumType& input) {
           }
 
           magic_number++;
-          sent_so_far = static_cast<int>(sent_so_far + actual_message_size);  // COMPAT_MESSAGE_LENGTH-5;
+          sent_so_far = static_cast<int>(
+              sent_so_far + actual_message_size);  // COMPAT_MESSAGE_LENGTH-5;
         }
       }
     }
@@ -1145,10 +1147,11 @@ bool Color_Cycle() {
 
     _timer.Set(kTimerSecond / 4);
 
-    memmove(colors,
-            &GamePalette[std::size_t{CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1} *
-                         3],
-            sizeof(colors));
+    memmove(
+        colors,
+        &GamePalette[std::size_t{CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1} *
+                     3],
+        sizeof(colors));
     memmove(&GamePalette[std::size_t{CYCLE_COLOR_START + 1} * 3],
             &GamePalette[std::size_t{CYCLE_COLOR_START} * 3],
             std::size_t{CYCLE_COLOR_COUNT - 1} * 3);
@@ -1702,6 +1705,26 @@ bool Main_Loop() {
   */
   Frame++;
 
+  // Record mobile-object state and optionally save before ending a smoke run.
+  if (DebugQuitAtFrame >= 0) {
+    for (int index = 0; index < Units.Count(); ++index) {
+      const UnitClass* unit = Units.Ptr(index);
+      LOG(INFO) << "frame " << Frame << " unit " << unit->Class->IniName
+                << " coord " << unit->Coord << " mission " << unit->Mission
+                << " navcom " << unit->NavCom;
+    }
+    if (Frame >= DebugQuitAtFrame) {
+      if (DebugSaveSlot >= 0) {
+        char description[] = "debug";
+        if (!Save_Game(DebugSaveSlot, description)) {
+          LOG(ERROR) << "-SAVESLOT: could not save slot " << DebugSaveSlot;
+        }
+      }
+      GameActive = false;
+      return true;
+    }
+  }
+
   /*
   ** Very rarely, the human players will get a message from the computer.
   */
@@ -1936,7 +1959,9 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
   for (i = 0; i < num_palettes; i++) {
     InterpolatedPalettes[i + start_palette] = new unsigned char[65536]();
     for (int y = 0; y < 256; y++) {
-      file.Read(InterpolatedPalettes[i + start_palette] + static_cast<base::ssize>(y) * 256, y + 1);
+      file.Read(InterpolatedPalettes[i + start_palette] +
+                    static_cast<base::ssize>(y) * 256,
+                y + 1);
     }
 
     Rebuild_Interpolated_Palette(InterpolatedPalettes[i + start_palette]);
@@ -1981,6 +2006,9 @@ void Free_Interpolated_Palettes() {
 extern bool InMovie;
 extern bool VQPaletteChange;
 void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
+  if (DebugNoMovies) {
+    return;
+  }
   /*
   ** Don't play movies in editor mode
   */
@@ -2308,7 +2336,9 @@ void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
       // LogicPage->Texture_Fill_Rect (xpos, ypos, width, height, shape_pointer,
       // source_width, source_height);
       if (LogicPage->Lock()) {
-        unsigned char* shape_end = shape_pointer + static_cast<base::ssize>(source_width) * source_height;
+        unsigned char* shape_end =
+            shape_pointer +
+            static_cast<base::ssize>(source_width) * source_height;
 
         for (int y = ypos; y < ypos + height; y++) {
           unsigned char* shape_save = shape_pointer;
@@ -2325,7 +2355,8 @@ void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
           shape_pointer = line_end;
 
           if (shape_pointer == shape_end) {
-            shape_pointer -= static_cast<base::ssize>(source_width) * source_height;
+            shape_pointer -=
+                static_cast<base::ssize>(source_width) * source_height;
           }
         }
 
@@ -3060,8 +3091,7 @@ bool Force_CD_Available(int cd) {
         } else {
           // 0 or 1?
           Format_Runtime_Text(buffer, sizeof(buffer),
-                              Text_String(TXT_CD_DIALOG_2), cd + 1,
-                              _volid[cd]);
+                              Text_String(TXT_CD_DIALOG_2), cd + 1, _volid[cd]);
         }
       }
       GraphicViewPortClass* oldpage = Set_Logic_Page(SeenBuff);

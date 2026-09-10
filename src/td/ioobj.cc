@@ -178,6 +178,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "tech/archive.h"
 #include "tech/wwfile.h"
 
 /***********************************************************************************************
@@ -191,7 +192,7 @@
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TeamTypeClass::Load(FileClass& file) {
+bool TeamTypeClass::Load(ArchiveReader& file) {
   return Read_Object(this, sizeof(AbstractTypeClass), sizeof(*this), file,
                      VTable);
 }
@@ -207,7 +208,7 @@ bool TeamTypeClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TeamTypeClass::Save(FileClass& file) {
+bool TeamTypeClass::Save(ArchiveWriter& file) {
   return Write_Object(this, sizeof(*this), file);
 }
 
@@ -271,7 +272,7 @@ void TeamTypeClass::Decode_Pointers() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TeamClass::Load(FileClass& file) {
+bool TeamClass::Load(ArchiveReader& file) {
   return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
 }
 
@@ -286,7 +287,7 @@ bool TeamClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TeamClass::Save(FileClass& file) {
+bool TeamClass::Save(ArchiveWriter& file) {
   return Write_Object(this, sizeof(*this), file);
 }
 
@@ -384,7 +385,7 @@ void TeamClass::Decode_Pointers() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TriggerClass::Load(FileClass& file) {
+bool TriggerClass::Load(ArchiveReader& file) {
   int rc = Read_Object(this, sizeof(*this), sizeof(*this), file, nullptr);
 
   /*
@@ -410,7 +411,7 @@ bool TriggerClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TriggerClass::Save(FileClass& file) {
+bool TriggerClass::Save(ArchiveWriter& file) {
   return Write_Object(this, sizeof(*this), file);
 }
 
@@ -468,7 +469,7 @@ void TriggerClass::Decode_Pointers() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool AircraftClass::Load(FileClass& file) {
+bool AircraftClass::Load(ArchiveReader& file) {
   return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
 }
 
@@ -483,7 +484,7 @@ bool AircraftClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool AircraftClass::Save(FileClass& file) {
+bool AircraftClass::Save(ArchiveWriter& file) {
   return Write_Object(this, sizeof(*this), file);
 }
 
@@ -556,7 +557,7 @@ void AircraftClass::Decode_Pointers() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool AnimClass::Load(FileClass& file) {
+bool AnimClass::Load(ArchiveReader& file) {
   return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
 }
 
@@ -571,7 +572,7 @@ bool AnimClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool AnimClass::Save(FileClass& file) {
+bool AnimClass::Save(ArchiveWriter& file) {
   return Write_Object(this, sizeof(*this), file);
 }
 
@@ -658,7 +659,7 @@ void AnimClass::Decode_Pointers() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool BuildingClass::Load(FileClass& file) {
+bool BuildingClass::Load(ArchiveReader& file) {
   return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
 }
 
@@ -673,7 +674,7 @@ bool BuildingClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool BuildingClass::Save(FileClass& file) {
+bool BuildingClass::Save(ArchiveWriter& file) {
   return Write_Object(this, sizeof(*this), file);
 }
 
@@ -761,7 +762,7 @@ void BuildingClass::Decode_Pointers() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool BulletClass::Load(FileClass& file) {
+bool BulletClass::Load(ArchiveReader& file) {
   return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
 }
 
@@ -776,7 +777,7 @@ bool BulletClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool BulletClass::Save(FileClass& file) {
+bool BulletClass::Save(ArchiveWriter& file) {
   return Write_Object(this, sizeof(*this), file);
 }
 
@@ -866,7 +867,7 @@ void BulletClass::Decode_Pointers() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool InfantryClass::Load(FileClass& file) {
+bool InfantryClass::Load(ArchiveReader& file) {
   return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
 }
 
@@ -881,7 +882,7 @@ bool InfantryClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool InfantryClass::Save(FileClass& file) {
+bool InfantryClass::Save(ArchiveWriter& file) {
   return Write_Object(this, sizeof(*this), file);
 }
 
@@ -952,7 +953,7 @@ void InfantryClass::Decode_Pointers() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool OverlayClass::Load(FileClass& file) {
+bool OverlayClass::Load(ArchiveReader& file) {
   return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
 }
 
@@ -967,7 +968,7 @@ bool OverlayClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool OverlayClass::Save(FileClass& file) {
+bool OverlayClass::Save(ArchiveWriter& file) {
   return Write_Object(this, sizeof(*this), file);
 }
 
@@ -1038,7 +1039,7 @@ void OverlayClass::Decode_Pointers() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool SmudgeClass::Load(FileClass& file) {
+bool SmudgeClass::Load(ArchiveReader& file) {
   return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
 }
 
@@ -1053,7 +1054,7 @@ bool SmudgeClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool SmudgeClass::Save(FileClass& file) {
+bool SmudgeClass::Save(ArchiveWriter& file) {
   return Write_Object(this, sizeof(*this), file);
 }
 
@@ -1124,7 +1125,7 @@ void SmudgeClass::Decode_Pointers() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TemplateClass::Load(FileClass& file) {
+bool TemplateClass::Load(ArchiveReader& file) {
   return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
 }
 
@@ -1139,7 +1140,7 @@ bool TemplateClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TemplateClass::Save(FileClass& file) {
+bool TemplateClass::Save(ArchiveWriter& file) {
   return Write_Object(this, sizeof(*this), file);
 }
 
@@ -1210,7 +1211,7 @@ void TemplateClass::Decode_Pointers() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TerrainClass::Load(FileClass& file) {
+bool TerrainClass::Load(ArchiveReader& file) {
   return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
 }
 
@@ -1225,7 +1226,7 @@ bool TerrainClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TerrainClass::Save(FileClass& file) {
+bool TerrainClass::Save(ArchiveWriter& file) {
   return Write_Object(this, sizeof(*this), file);
 }
 
@@ -1298,7 +1299,7 @@ void TerrainClass::Decode_Pointers() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Load(FileClass& file) {
+bool UnitClass::Load(ArchiveReader& file) {
   return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
 }
 
@@ -1313,7 +1314,7 @@ bool UnitClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Save(FileClass& file) {
+bool UnitClass::Save(ArchiveWriter& file) {
   return Write_Object(this, sizeof(*this), file);
 }
 
@@ -1362,7 +1363,7 @@ void UnitClass::Decode_Pointers() { TarComClass::Decode_Pointers(); }
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Load(FileClass& file) {
+bool FactoryClass::Load(ArchiveReader& file) {
   return Read_Object(this, sizeof(StageClass), sizeof(*this), file, nullptr);
 }
 
@@ -1377,7 +1378,7 @@ bool FactoryClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Save(FileClass& file) {
+bool FactoryClass::Save(ArchiveWriter& file) {
   return Write_Object(this, sizeof(*this), file);
 }
 
@@ -1444,7 +1445,7 @@ void FactoryClass::Decode_Pointers() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool LayerClass::Load(FileClass& file) {
+bool LayerClass::Load(ArchiveReader& file) {
   int count;
   int i;
   ObjectClass* ptr;
@@ -1452,7 +1453,8 @@ bool LayerClass::Load(FileClass& file) {
   /*
   ---------------------- Read # elements in the layer ----------------------
   */
-  if (file.Read(&count, sizeof(count)) != sizeof(count)) {
+  file.Bytes(&count, sizeof(count));
+  if (!file.ok()) {
     return false;
   }
 
@@ -1465,14 +1467,14 @@ bool LayerClass::Load(FileClass& file) {
   ----------------------- Read in all array elements -----------------------
   */
   for (i = 0; i < count; i++) {
-    if (file.Read(static_cast<void*>(&ptr), sizeof(ObjectClass*)) !=
-        sizeof(ObjectClass*)) {
+    file.Bytes(static_cast<void*>(&ptr), sizeof(ObjectClass*));
+    if (!file.ok()) {
       return false;
     }
     Add(ptr);
   }
 
-  return true;
+  return file.ok();
 }
 
 /***********************************************************************************************
@@ -1486,7 +1488,7 @@ bool LayerClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool LayerClass::Save(FileClass& file) {
+bool LayerClass::Save(ArchiveWriter& file) {
   int count;
   int i;
   ObjectClass* ptr;
@@ -1495,19 +1497,14 @@ bool LayerClass::Save(FileClass& file) {
   ------------------------- Save # array elements --------------------------
   */
   count = static_cast<int>(Count());
-  if (file.Write(&count, sizeof(count)) != sizeof(count)) {
-    return false;
-  }
+  file.Bytes(&count, sizeof(count));
 
   /*
   --------------------------- Save all elements ----------------------------
   */
   for (i = 0; i < count; i++) {
     ptr = (*this)[i];
-    if (file.Write(static_cast<const void*>(&ptr), sizeof(ObjectClass*)) !=
-        sizeof(ObjectClass*)) {
-      return false;
-    }
+    file.Bytes(static_cast<const void*>(&ptr), sizeof(ObjectClass*));
   }
 
   return true;
@@ -1573,7 +1570,7 @@ void LayerClass::Decode_Pointers() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool HouseClass::Load(FileClass& file) {
+bool HouseClass::Load(ArchiveReader& file) {
   return Read_Object(this, sizeof(*this), sizeof(*this), file, nullptr);
 }
 
@@ -1588,7 +1585,7 @@ bool HouseClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool HouseClass::Save(FileClass& file) {
+bool HouseClass::Save(ArchiveWriter& file) {
   return Write_Object(this, sizeof(*this), file);
 }
 
@@ -1649,7 +1646,7 @@ void HouseClass::Decode_Pointers() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool ScoreClass::Load(FileClass& file) {
+bool ScoreClass::Load(ArchiveReader& file) {
   return Read_Object(this, sizeof(*this), sizeof(*this), file, nullptr);
 }
 
@@ -1664,7 +1661,7 @@ bool ScoreClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool ScoreClass::Save(FileClass& file) {
+bool ScoreClass::Save(ArchiveWriter& file) {
   return Write_Object(this, sizeof(*this), file);
 }
 

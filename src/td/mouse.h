@@ -41,6 +41,9 @@
 #ifndef CNC_RED_ALERT_TD_MOUSE_H_
 #define CNC_RED_ALERT_TD_MOUSE_H_
 
+class ArchiveReader;
+class ArchiveWriter;
+
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
 #include "td/defines.h"
@@ -68,8 +71,8 @@ class MouseClass : public ScrollClass {
   /*
   **	File I/O.
   */
-  virtual bool Load(FileClass& file);
-  virtual bool Save(FileClass& file);
+  virtual bool Load(ArchiveReader& file);
+  virtual bool Save(ArchiveWriter& file);
   void Code_Pointers() override;
   void Decode_Pointers() override;
 

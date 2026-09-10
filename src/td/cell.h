@@ -41,6 +41,9 @@
 #ifndef CNC_RED_ALERT_TD_CELL_H_
 #define CNC_RED_ALERT_TD_CELL_H_
 
+class ArchiveReader;
+class ArchiveWriter;
+
 #include "td/building.h"
 #include "td/defines.h"
 #include "td/foot.h"
@@ -234,8 +237,8 @@ class CellClass {
   **	File I/O.
   */
   bool Should_Save() const;
-  bool Save(FileClass& file);
-  bool Load(FileClass& file);
+  bool Save(ArchiveWriter& file);
+  bool Load(ArchiveReader& file);
   void Code_Pointers();
   void Decode_Pointers();
 

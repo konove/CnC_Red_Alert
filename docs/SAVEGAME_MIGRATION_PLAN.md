@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Steps 0–18 are committed; step 18 is `a542c517` (globals/recordings). `45013c52` fixes `-NOMOVIES`.
+- Steps 0–19 are committed; step 19 is `1121d8e6` (RA cleanup/dumps). Step 18 is `a542c517`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -10,14 +10,27 @@
   network save loading must retain connected peers for `Reconcile_Players()`.
 - Recordings use `RARC` plus the save-format version to reject incompatible data. Both playback entry
   points honor load failure. Options restore game speed only, preserving local controls/audio/display settings.
-- Step 19 is complete (working tree). It removes RA's raw-image heap fallback, pointer-coding stubs, layout test, and
+- Step 19 is complete. It removes RA's raw-image heap fallback, pointer-coding stubs, layout test, and
   remaining NoInit includes/constructors (including the now-unused shared `fixed` bridge). The NoInit
   header remains for TD. RA's old `SAVEGAME_VERSION` macro was already removed.
 - `RA_SAVE_DUMP=<path>` writes the plaintext save body before LZO, starting with `FRAM`; it omits the
   header and digest and replaces the dump on each save. An unset/empty value disables it. Failed dump
   opens or short writes produce debug warnings without interrupting the normal save. Format stays **16**.
-- Next implementation step is **20: TD plumbing**.
-- Validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
+- Step 20 is complete: TD now wraps its raw file in FilePipe/FileStraw and passes archives through
+  all active save/load routines. The raw header has explicit **TD version 1**; the body starts with
+  `FRAM` and an `int64_t Frame`. Object images and pointer-coding passes remain until later steps.
+  Sparse cell counts no longer seek, `ActionMovie` is required, and load failures propagate from
+  Map, raw-size/index checks, and the trailing fields. An unbuffered checked pipe reports short writes,
+  with pointer decoding on every body-save exit. The unused `session.h` stays for deletion in step 30.
+- TD supports `-NEWGAME<scenario>`, `-LOADGAME<n>`, `-QUITFRAME<n>`, `-SAVESLOT<n>`, and `-NOMOVIES`.
+  `tools/td_saveload_smoke.sh` runs in isolation using a temporary executable symlink because TD changes
+  to the executable directory. The smoke run exposed and fixed a shutdown double-free: `Uninit_Game`
+  now clears `Palette` after deleting it, before the SDL quit handler calls `Prog_End`.
+- Step-20 validation: strict builds of both games and all **156 CTest tests** pass. TD SCG01EA and
+  SCB01EA match **120** and **180** unit positions across save/load, respectively. A version-0 header,
+  one-byte-truncated ActionMovie, and invalid raw map size are rejected without starting gameplay.
+  RA SCG01EA still matches 240 positions. Next implementation step is **21: TD leaf value types**.
+- Step-19 validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
   Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke
   passed with `RA_SAVE_DUMP` enabled (plaintext `FRAM=60` and Section tags verified); SCG02EA passed

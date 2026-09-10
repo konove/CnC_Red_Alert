@@ -41,6 +41,9 @@
 #ifndef CNC_RED_ALERT_TD_HOUSE_H_
 #define CNC_RED_ALERT_TD_HOUSE_H_
 
+class ArchiveReader;
+class ArchiveWriter;
+
 #include <cstddef>
 
 #include "td/defines.h"
@@ -467,7 +470,10 @@ class HouseClass {
   int Adjust_Capacity(int adjust, bool inanger = false);
   int Power_Fraction() const;
   int Tiberium_Fraction() {
-    return !static_cast<int>(Tiberium) ? 0 : Cardinal_To_Fixed(static_cast<int>(Capacity), static_cast<int>(Tiberium));
+    return !static_cast<int>(Tiberium)
+               ? 0
+               : Cardinal_To_Fixed(static_cast<int>(Capacity),
+                                   static_cast<int>(Tiberium));
   }
   void Begin_Production() { IsStarted = true; }
   const TeamTypeClass* Suggested_New_Team(bool alertcheck = false);
@@ -484,8 +490,8 @@ class HouseClass {
   static void Write_INI(char* buffer);
   static void Read_Flag_INI(char* buffer);
   static void Write_Flag_INI(char* buffer);
-  bool Load(FileClass& file);
-  bool Save(FileClass& file);
+  bool Load(ArchiveReader& file);
+  bool Save(ArchiveWriter& file);
   void Code_Pointers();
   void Decode_Pointers();
 

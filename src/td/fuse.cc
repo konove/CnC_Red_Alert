@@ -60,6 +60,7 @@
 #include "td/defines.h"
 #include "td/display_constants.h"
 #include "td/inline.h"
+#include "tech/archive.h"
 #include "tech/wwfile.h"
 
 FuseClass::FuseClass() {
@@ -169,11 +170,11 @@ bool FuseClass::Fuse_Checkup(COORDINATE newlocation) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void FuseClass::Fuse_Write(FileClass& file) {
-  file.Write(&Timer, sizeof(Timer));
-  file.Write(&Arming, sizeof(Arming));
-  file.Write(&HeadTo, sizeof(HeadTo));
-  file.Write(&Proximity, sizeof(Proximity));
+void FuseClass::Fuse_Write(ArchiveWriter& file) {
+  file.Bytes(&Timer, sizeof(Timer));
+  file.Bytes(&Arming, sizeof(Arming));
+  file.Bytes(&HeadTo, sizeof(HeadTo));
+  file.Bytes(&Proximity, sizeof(Proximity));
 }
 
 /***********************************************************************************************
@@ -190,9 +191,9 @@ void FuseClass::Fuse_Write(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void FuseClass::Fuse_Read(FileClass& file) {
-  file.Read(&Timer, sizeof(Timer));
-  file.Read(&Arming, sizeof(Arming));
-  file.Read(&HeadTo, sizeof(HeadTo));
-  file.Read(&Proximity, sizeof(Proximity));
+void FuseClass::Fuse_Read(ArchiveReader& file) {
+  file.Bytes(&Timer, sizeof(Timer));
+  file.Bytes(&Arming, sizeof(Arming));
+  file.Bytes(&HeadTo, sizeof(HeadTo));
+  file.Bytes(&Proximity, sizeof(Proximity));
 }

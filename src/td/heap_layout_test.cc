@@ -11,7 +11,7 @@
 // AbstractClass declares a virtual destructor, so every serialized type fails
 // both is_trivially_copyable_v and is_trivially_destructible_v and no standard
 // trait can express the real contract. clang-tidy cannot help either: the byte
-// copy goes through FileClass::Read/Write and Read_Object/Write_Object, all of
+// copy goes through ArchiveReader::Bytes and Read_Object/Write_Object, all of
 // which take void*, so bugprone-raw-memory-call-on-non-trivial-type and
 // bugprone-undefined-memory-manipulation never see a class-typed pointer.
 //
@@ -24,10 +24,8 @@
 //      that does not initialize it. If it cannot, the type must not be
 //      byte-serialized.
 //   2. Update the expected size below.
-//   3. Check SAVEGAME_VERSION in td/saveload.cc. It already sums sizeof() over
-//      most of these types, so a size change invalidates existing saves
-//      automatically -- but the types marked "not in SAVEGAME_VERSION" below
-//      are absent from that sum, and for those this test is the only guard.
+//   3. Bump kSaveGameVersion in td/saveload.h. The raw-object checkpoint
+//      requires an explicit version bump whenever a serialized layout changes.
 
 #include <cstddef>
 
@@ -106,7 +104,7 @@ constexpr LayoutCase kSerializedTypes[] = {
     LAYOUT_CASE(LayerClass, 40),
     LAYOUT_CASE(MouseClass, 1952),
 
-    // Not in SAVEGAME_VERSION -- this test is the only guard.
+    // Raw layout remains guarded until this type migrates.
     LAYOUT_CASE(BaseNodeClass, 8),
     LAYOUT_CASE(EventClass, 32),
     LAYOUT_CASE(ScoreClass, 56),

@@ -41,6 +41,9 @@
 #ifndef CNC_RED_ALERT_TD_BASE_H_
 #define CNC_RED_ALERT_TD_BASE_H_
 
+class ArchiveReader;
+class ArchiveWriter;
+
 #include "td/building.h"
 #include "td/defines.h"
 #include "td/vector.h"
@@ -84,8 +87,8 @@ class BaseClass {
   void Read_INI(char* buffer);
   void Write_INI(char* buffer);
   static const char* INI_Name() { return "Base"; }
-  bool Load(FileClass& file);
-  bool Save(FileClass& file);
+  bool Load(ArchiveReader& file);
+  bool Save(ArchiveWriter& file);
   virtual void Code_Pointers() {}
   virtual void Decode_Pointers() {}
 

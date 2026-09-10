@@ -41,6 +41,9 @@
 #ifndef CNC_RED_ALERT_TD_FUSE_H_
 #define CNC_RED_ALERT_TD_FUSE_H_
 
+class ArchiveReader;
+class ArchiveWriter;
+
 #include "td/defines.h"
 #include "tech/noinit.h"
 #include "tech/wwfile.h"
@@ -57,8 +60,8 @@ class FuseClass {
   void Arm_Fuse(COORDINATE location, COORDINATE target, int time = 0xFF,
                 int arming = 0);
   bool Fuse_Checkup(COORDINATE newlocation);
-  void Fuse_Write(FileClass& file);
-  void Fuse_Read(FileClass& file);
+  void Fuse_Write(ArchiveWriter& file);
+  void Fuse_Read(ArchiveReader& file);
   COORDINATE Fuse_Target();
 
   /*
