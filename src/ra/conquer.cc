@@ -2048,6 +2048,12 @@ void Free_Interpolated_Palettes() {
 }
 
 void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
+  // Both named and enum-based movies come through here, including campaign
+  // briefings that would otherwise delay headless save/load checks.
+  if (bNoMovies) {
+    return;
+  }
+
   DLOG(INFO) << "Play_Movie: " << name;
 
   // A movie blocks until it finishes, which would stall every other player in

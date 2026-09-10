@@ -1483,10 +1483,9 @@ bool Parse_Command_Line(int argc, char* argv[]) {
       }
     }
 
-    if constexpr (config::kCheatKeysEnabled) {
-      if (strstr(string, "-NOMOVIES")) {
-        bNoMovies = true;
-      }
+    if (strcmp(string, "-NOMOVIES") == 0) {
+      bNoMovies = true;
+      continue;
     }
 
     /*
