@@ -44,7 +44,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-reorder-ctor`                               | Enabled | Commit `Match constructor initialization order to declarations`: reorder 16 initializer lists while preserving expressions, member layouts, and actual initialization order.                                                    |
 | `bugprone-unhandled-code-paths`                               | Skipped | Commit `Document missing-default check policy`: default mode flags switches with valid post-switch fallbacks and bounded inputs; retain exclusion rather than require redundant defaults. See review below.                     |
 | `bugprone-non-zero-enum-to-bool-conversion`                   | Enabled | Commit `Enable nonzero enum-to-bool conversion checking`: both games and shared code pass without source fixes.                                                                                                                 |
-| `clang-analyzer-optin.core.EnumCastOutOfRange`                | Pending | Validate integer-to-enum boundaries; distinguish bit masks.                                                                                                                                                                     |
+| `clang-analyzer-optin.core.EnumCastOutOfRange`                | Skipped | Commit `Document enum cast range check policy`: LLVM 23.1.2 rejects intentional intermediate directions, flag combinations, and path-command sentinels; retain exclusion. See review below.                                     |
 | `clang-diagnostic-tautological-constant-out-of-range-compare` | Pending | Find impossible comparisons hiding range-check mistakes.                                                                                                                                                                        |
 | `clang-diagnostic-tautological-unsigned-enum-zero-compare`    | Pending | Find enum checks that cannot detect invalid values.                                                                                                                                                                             |
 | `clang-diagnostic-tautological-unsigned-zero-compare`         | Pending | Find ineffective negative checks on unsigned values.                                                                                                                                                                            |
@@ -352,6 +352,48 @@ does not assess missing final `else` branches; see the
 Keep this excluded rather than enforce empty defaults or move valid fallbacks solely to satisfy the
 syntax rule. No source or configuration changes were made. The excluded-name count remains 230.
 Review actual enum coverage separately with the pending compiler switch diagnostics.
+
+### Enum-cast range check policy (2026-09-11)
+
+`clang-analyzer-optin.core.EnumCastOutOfRange` remains excluded after review. The isolated sweep of
+889 project translation units, including 431 generated header checks, produced findings in 141
+translation units: 300 distinct diagnostic messages at 45 source locations. Different enum types and
+values at shared operator templates account for many repeated locations. This is a policy decision,
+not a clean candidate scan or proof that every reported cast is correct.
+
+The checker compares cast inputs against named enumerator values, which does not match several
+intentional representations in this code:
+
+- Both games use `DirType : uint8_t` for 256-step directions with only selected angles named.
+  Nuclear missile placement casts angle 28; TD aircraft searches use angles in steps of 16.
+  `Desired_Facing256` also returns intermediate angles. These values need not be named enumerators.
+  `Desired_Facing8` can return 256, which converts through the fixed unsigned-byte underlying type
+  to north (0).
+- `TextPrintType`, `ThreatType`, gadget flags, keyboard modifiers, and graphics-buffer flags combine
+  values through enum operators. For example, combining `GBC_VIDEOMEM` (1) and `GBC_VISIBLE` (2)
+  yields the intentional unnamed value 3.
+- Both path optimizers use the representable `FacingType : int8_t` value -2 to mark removed commands
+  before compacting the list. Negative values also encode relative turns, which `Next_Direction`
+  wraps into the eight directions. Named sentinel and integer turn-delta types could clarify this
+  code independently, but these reports alone do not establish invalid movement.
+
+A minimal reproduction under the installed LLVM 23.1.2 reports the legal intermediate angle below:
+
+```cpp
+enum Direction : unsigned char { North = 0, East = 64, South = 128, West = 192 };
+Direction intermediate() { return static_cast<Direction>(28); }
+```
+
+Separate probes also report unsigned-byte wrapping from 256 to 0, a flag combination of 1 and 2, and
+a signed-byte sentinel of -2. Annotating the flag enum with `[[clang::flag_enum]]` removes its
+warning, consistent with the
+[LLVM checker implementation](https://clang.llvm.org/doxygen/EnumCastOutOfRangeChecker_8cpp_source.html).
+That annotation does not describe continuous angles or signed path commands. Enabling this check
+would require additional suppressions or type changes to accommodate valid representations. Retain
+the exclusion and revisit if the checker gains suitable range semantics or those types are
+redesigned. No source or configuration changes were made; the excluded-name count remains 229.
+Markdown formatting and whitespace checks passed; game builds and tests were not rerun for this
+documentation-only decision.
 
 ### Completed validation
 
