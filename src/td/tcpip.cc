@@ -369,7 +369,8 @@ void TcpipManagerClass::Write(void* buffer, int buffer_len) {
 bool TcpipManagerClass::Add_Client() {
   struct sockaddr_in addr{};
   socklen_t addrsize;
-  bool delay = true;
+  // Socket boolean options use an int, not the one-byte C++ bool type.
+  const int no_delay = 1;
 
   /*
   ** Accept the connection. If there is an error then dont do anything else
@@ -384,7 +385,8 @@ bool TcpipManagerClass::Add_Client() {
   /*
   ** Set options for this socket
   */
-  setsockopt(ConnectSocket, IPPROTO_TCP, TCP_NODELAY, SocketBytes(delay), 4);
+  setsockopt(ConnectSocket, IPPROTO_TCP, TCP_NODELAY, SocketBytes(no_delay),
+             sizeof(no_delay));
   setsockopt(ConnectSocket, SOL_SOCKET, SO_RCVBUF,
              SocketBytes(SocketReceiveBuffer), 4);
   setsockopt(ConnectSocket, SOL_SOCKET, SO_SNDBUF,
