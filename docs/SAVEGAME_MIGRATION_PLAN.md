@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Steps 0–33 are complete; step 32 is `d9a92318`; step 31 is `bf27db84`; step 30 is `fbb36dd1`; step 29 is `2689ff4c`; step 28 is `96f23c5b`; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
+- Steps 0–34a are complete; step 33 is `67677f6f`; step 32 is `d9a92318`; step 31 is `bf27db84`; step 30 is `fbb36dd1`; step 29 is `2689ff4c`; step 28 is `96f23c5b`; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -281,7 +281,20 @@
 - Step-33 validation: strict builds of both games and all **196 CTest tests** pass. TD globals smoke
   matches **5,742** state records and rejects all **14** malformed globals; RA smoke matches **240**
   positions. No suppressions were added. Real-display and live-multiplayer checks remain pending.
-  Next checkpoint is **34a: TD behavior-relevant initialization (event delegation, cells, deleted constructors)**.
+- Step 34a is complete: all ten non-default TD event constructors now delegate to the default
+  constructor, clearing `IsExecuted`, `MPlayerID`, unused payload bytes, and padding before assigning
+  command fields. Explicit member defaults satisfy the initialization check; the full byte clear stays
+  because events are compared and transmitted as raw bytes. A regression test constructs every overload
+  over storage filled with `0xff` and compares the full representation against the expected command.
+- TD cell occupancy flags are value-initialized; the existing cell reset and sparse-save tests remain.
+  The empty private CellClass and CCFileClass copy constructors are deleted. The sweep of **308 TD
+  translation units** reports **zero compilation errors** and **61 remaining TD sites**, with no
+  findings in the step-34a classes. This removes **14 baseline sites**, leaving **181** across TD/RA.
+  Save formats remain **RA 16 / TD 10**; no suppressions were added.
+- Step-34a validation: strict builds of both games and all **197 CTest tests** pass. TD globals smoke
+  matches **5,742** state records and rejects all **14** malformed globals; RA smoke matches **240**
+  positions. Real-display and live-multiplayer checks remain pending.
+  Next checkpoint is **34b: remaining TD initialization sites**.
 - Step-19 validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
   Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke

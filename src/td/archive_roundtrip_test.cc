@@ -1,16 +1,21 @@
 // Exercise real game serializers without loading MIX files or starting SDL.
+#include <array>
 #include <cstdint>
+#include <cstring>
+#include <new>
 #include <vector>
 
 #include "gtest/gtest.h"
 #include "td/cell.h"
 #include "td/defines.h"
+#include "td/event.h"
 #include "td/externs.h"
 #include "td/factory.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/map.h"
 #include "td/mapedit.h"
+#include "td/special.h"
 #include "td/target.h"
 #include "td/team.h"
 #include "td/trigger.h"
@@ -77,6 +82,71 @@ class TdArchiveRoundTripTest : public testing::Test {
     Map.Clear();
   }
 };
+
+TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireBytes) {
+  const auto check = [](auto configure, auto... args) {
+    EventClass expected;
+    expected.ID = Houses.ID(PlayerPtr);
+    expected.Frame = static_cast<unsigned>(Frame);
+    configure(expected);
+    alignas(EventClass) std::array<unsigned char, sizeof(EventClass)> storage{};
+    storage.fill(0xff);
+    auto* event = new (storage.data()) EventClass(args...);
+    EXPECT_EQ(event->IsExecuted, 0U);
+    EXPECT_EQ(event->MPlayerID, 0);
+    std::array<unsigned char, sizeof(EventClass)> expected_bytes{};
+    std::memcpy(expected_bytes.data(), &expected, sizeof(expected));
+    EXPECT_EQ(storage, expected_bytes);
+    event->~EventClass();
+  };
+  check([](EventClass& e) { e.Type = EventClass::OPTIONS; }, EventClass::OPTIONS);
+  check([](EventClass& e) {
+    e.Type = EventClass::GAMESPEED;
+    e.Data.General.Value = 3;
+  }, EventClass::GAMESPEED, 3);
+  check([](EventClass& e) {
+    e.Type = EventClass::IDLE;
+    e.Data.Target.Whom = TARGET{123};
+  }, EventClass::IDLE, TARGET{123});
+  check([](EventClass& e) {
+    e.Type = EventClass::IDLE;
+    e.Data.NavCom.Whom = TARGET{123};
+    e.Data.NavCom.Where = TARGET{456};
+  }, EventClass::IDLE, TARGET{123}, TARGET{456});
+  check([](EventClass& e) {
+    e.Type = EventClass::MEGAMISSION;
+    e.Data.MegaMission.Whom = TARGET{123};
+    e.Data.MegaMission.Mission = MISSION_MOVE;
+    e.Data.MegaMission.Target = TARGET{456};
+    e.Data.MegaMission.Destination = TARGET{789};
+  }, TARGET{123}, MISSION_MOVE, TARGET{456}, TARGET{789});
+  check([](EventClass& e) {
+    e.Type = EventClass::PRODUCE;
+    e.Data.Specific.Type = RTTI_UNITTYPE;
+    e.Data.Specific.ID = 2;
+  }, EventClass::PRODUCE, RTTI_UNITTYPE, 2);
+  check([](EventClass& e) {
+    e.Type = EventClass::PLACE;
+    e.Data.Place.Type = RTTI_BUILDINGTYPE;
+    e.Data.Place.Cell = CELL{100};
+  }, EventClass::PLACE, RTTI_BUILDINGTYPE, CELL{100});
+  check([](EventClass& e) {
+    e.Type = EventClass::SPECIAL_PLACE;
+    e.Data.Special.ID = 2;
+    e.Data.Special.Cell = CELL{100};
+  }, EventClass::SPECIAL_PLACE, 2, CELL{100});
+  check([](EventClass& e) {
+    e.Type = EventClass::ANIMATION;
+    e.Data.Anim.What = ANIM_FIRE_SMALL;
+    e.Data.Anim.Owner = HOUSE_GOOD;
+    e.Data.Anim.Where = COORDINATE{100};
+  }, ANIM_FIRE_SMALL, HOUSE_GOOD, COORDINATE{100});
+  SpecialClass options{};
+  check([&options](EventClass& e) {
+    e.Type = EventClass::SPECIAL;
+    e.Data.Options.Data = options;
+  }, options);
+}
 
 TEST_F(TdArchiveRoundTripTest, CellRestoresFlagsAndGappedObjectAndTriggerReferences) {
   auto* unit = new UnitClass(UNIT_LTANK, HOUSE_GOOD);

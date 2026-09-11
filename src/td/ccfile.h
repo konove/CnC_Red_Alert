@@ -118,7 +118,7 @@ class CCFileClass : public CDFileClass {
 
   // Force these to never be invoked.
   const CCFileClass operator=(const CCFileClass& c);
-  CCFileClass(const CCFileClass&) {}
+  CCFileClass(const CCFileClass&) = delete;
 };
 
 void WWDOS_Shutdown();

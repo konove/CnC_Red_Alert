@@ -178,7 +178,7 @@ class CellClass {
           : 1;  // A building of some time (usually blocks movement).
     } Occupy;
     unsigned char Composite;
-  } Flag;
+  } Flag{};
 
   //----------------------------------------------------------------
   CellClass();
@@ -264,7 +264,7 @@ class CellClass {
   int Validate() const;
 
  private:
-  CellClass(const CellClass&) {}
+  CellClass(const CellClass&) = delete;
 
   LandType Land;  // The land type of this cell.
 };
