@@ -154,7 +154,7 @@ inline LEPTON Pixel_To_Lepton(int pixel) {
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
 inline COORDINATE XY_Coord(LEPTON x, LEPTON y) {
-  COORD_COMPOSITE coord;
+  COORD_COMPOSITE coord{};
 
   coord.Sub.X.Raw = x;
   coord.Sub.Y.Raw = y;
@@ -232,7 +232,7 @@ inline CELL Coord_YCell(COORDINATE coord) {
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
 inline CELL XY_Cell(int x, int y) {
-  CELL_COMPOSITE cell;
+  CELL_COMPOSITE cell{};
   cell.Cell = 0;
   cell.Sub.X = x;
   cell.Sub.Y = y;
@@ -254,7 +254,7 @@ inline CELL XY_Cell(int x, int y) {
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
 inline LEPTON Cell_To_Lepton(int cell_distance) {
-  LEPTON_COMPOSITE lepton;
+  LEPTON_COMPOSITE lepton{};
   lepton.Sub.Cell = static_cast<unsigned char>(cell_distance);
   lepton.Sub.Lepton = 0;
   return lepton.Raw;
@@ -413,7 +413,7 @@ inline int Coord_YLepton(COORDINATE coord) {
  * HISTORY: * 08/23/1996 JLB : Created. *
  *=============================================================================================*/
 inline COORDINATE XYP_Coord(int x, int y) {
-  COORD_COMPOSITE coord;
+  COORD_COMPOSITE coord{};
 
   coord.Sub.X.Raw = Pixel_To_Lepton(x);
   coord.Sub.Y.Raw = Pixel_To_Lepton(y);
@@ -436,7 +436,7 @@ inline COORDINATE XYP_Coord(int x, int y) {
  * HISTORY: * 08/23/1996 JLB : Created. *
  *=============================================================================================*/
 inline COORDINATE Cell_Coord(CELL cell) {
-  COORD_COMPOSITE coord;
+  COORD_COMPOSITE coord{};
 
   coord.Sub.X.Sub.Cell =
       static_cast<unsigned char>(((CELL_COMPOSITE&)cell).Sub.X);
@@ -530,7 +530,7 @@ inline COORDINATE Coord_Whole(COORDINATE coord) {
  * HISTORY: * 08/23/1996 JLB : Created. *
  *=============================================================================================*/
 inline COORDINATE Coord_Add(COORDINATE a, COORDINATE b) {
-  COORD_COMPOSITE coord;
+  COORD_COMPOSITE coord{};
 
   coord.Sub.X.Raw =
       static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)a).Sub.X.Raw +
@@ -560,7 +560,7 @@ inline COORDINATE Coord_Add(COORDINATE a, COORDINATE b) {
  * HISTORY: * 08/23/1996 JLB : Created. *
  *=============================================================================================*/
 inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
-  COORD_COMPOSITE coord;
+  COORD_COMPOSITE coord{};
 
   coord.Sub.X.Raw =
       static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)coord1).Sub.X.Raw -
@@ -588,7 +588,7 @@ inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
  * HISTORY: * 08/23/1996 JLB : Created. *
  *=============================================================================================*/
 inline COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) {
-  COORD_COMPOSITE coord;
+  COORD_COMPOSITE coord{};
 
   coord.Sub.X.Raw =
       static_cast<LEPTON>(((int)((COORD_COMPOSITE&)coord1).Sub.X.Raw +

@@ -122,7 +122,7 @@ class CellClass {
   **	will only consider the CrushZone. All other terrestrial travellers will
   **	use the normal Zone.
   */
-  unsigned char Zones[magic_enum::enum_count<MZoneType>()];
+  unsigned char Zones[magic_enum::enum_count<MZoneType>()]{};
 
   /*
   ** This field controls whether an area is being jammed by a gap
@@ -185,7 +185,7 @@ class CellClass {
   // sets the maximum overlapper count accepted when loading a save.
   static constexpr base::ssize kOverlapperCount =
       config::kSortDrawEnabled ? 10 : 6;
-  ObjectClass* Overlappers[kOverlapperCount];
+  ObjectClass* Overlappers[kOverlapperCount]{};
 
   /*
   **	This array of bit flags is used to indicate which sub positions
@@ -208,7 +208,7 @@ class CellClass {
           : 1;  // A building of some time (usually blocks movement).
     } Occupy;
     unsigned char Composite;
-  } Flag;
+  } Flag{};
 
   //----------------------------------------------------------------
   CellClass();

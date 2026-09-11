@@ -111,24 +111,24 @@ class EventClass {
     LAST_EVENT,  // one past the last event
   } EventType;
 
-  EventType Type;  // Type of queue command object.
+  EventType Type = EMPTY;  // Type of queue command object.
 
   /*
   ** 'Frame' is the frame that the command should execute on.
   ** 27 bits gives over 25 days of playing time without wrapping,
   ** at 30 frames per second, so it should be plenty!
   */
-  unsigned Frame : 26;
+  unsigned Frame : 26 = 0;
 
   /*
   ** House index of the player originating this event
   */
-  unsigned ID : 5;
+  unsigned ID : 5 = 0;
 
   /*
   ** This bit tells us if we've already executed this event.
   */
-  unsigned IsExecuted : 1;
+  unsigned IsExecuted : 1 = 0;
 
   /*
   **	This union contains the specific data that the event requires.
@@ -235,13 +235,13 @@ class EventClass {
       unsigned short AverageTicks;
     } ProcessTime;
 
-  } Data;
+  } Data{};
 
   //-------------- Constructors ---------------------
   // Events cross the wire and are compared as raw bytes, so every byte has to
   // be deterministic - the padding and the unused half of Data included.
-  // Initializing the members cannot reach those, which is why the queue code
-  // used to memset each event by hand right after constructing it.
+  // Member initializers cannot reach padding. Every other defined constructor
+  // delegates here to clear IsExecuted and all unused payload bytes.
   // NOLINTNEXTLINE(cert-oop57-cpp)
   EventClass() { std::memset(this, 0, sizeof(EventClass)); }
   EventClass(SpecialClass data);

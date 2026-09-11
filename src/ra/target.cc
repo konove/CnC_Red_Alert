@@ -89,9 +89,9 @@
 #include "ra/unit.h"
 #include "ra/vessel.h"
 
-TargetClass::TargetClass(TARGET target) { Target.Target = target; }
+TargetClass::TargetClass(TARGET target) : xTargetClass() { Target.Target = target; }
 
-TargetClass::TargetClass(const AbstractClass* ptr) {
+TargetClass::TargetClass(const AbstractClass* ptr) : xTargetClass() {
   if (ptr != nullptr) {
     Target.Sub.Exponent = ptr->RTTI;
     Target.Sub.Mantissa = ptr->ID;
@@ -100,7 +100,7 @@ TargetClass::TargetClass(const AbstractClass* ptr) {
   }
 }
 
-TargetClass::TargetClass(const AbstractTypeClass* ptr) {
+TargetClass::TargetClass(const AbstractTypeClass* ptr) : xTargetClass() {
   if (ptr != nullptr) {
     Target.Sub.Exponent = ptr->RTTI;
     Target.Sub.Mantissa = ptr->ID;
@@ -109,7 +109,7 @@ TargetClass::TargetClass(const AbstractTypeClass* ptr) {
   }
 }
 
-TargetClass::TargetClass(const CellClass* ptr) {
+TargetClass::TargetClass(const CellClass* ptr) : xTargetClass() {
   if (ptr != nullptr) {
     Target.Sub.Exponent = RTTI_CELL;
     Target.Sub.Mantissa = ptr->ID;

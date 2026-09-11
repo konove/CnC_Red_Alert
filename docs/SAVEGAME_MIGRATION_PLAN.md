@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Steps 0–34b are complete; step 34a is `1cb944f7`; step 33 is `67677f6f`; step 32 is `d9a92318`; step 31 is `bf27db84`; step 30 is `fbb36dd1`; step 29 is `2689ff4c`; step 28 is `96f23c5b`; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
+- Steps 0–35a are complete; step 34b is `46ac7e12`; step 34a is `1cb944f7`; step 33 is `67677f6f`; step 32 is `d9a92318`; step 31 is `bf27db84`; step 30 is `fbb36dd1`; step 29 is `2689ff4c`; step 28 is `96f23c5b`; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -311,7 +311,25 @@
 - Step-34b validation: strict builds of both games and all **197 CTest tests** pass. TD globals smoke
   matches **5,742** state records and rejects all **14** malformed globals; RA smoke matches **240**
   positions. Real-display and live-multiplayer checks remain pending.
-  Next checkpoint is **35a: RA behavior-relevant initialization**.
+- Step 35a is complete: all thirteen defined non-default RA event constructors delegate to the
+  byte-clearing default constructor. Explicit defaults cover the event header and payload union;
+  fresh events start unexecuted, with deterministic unused payload bytes and padding. The existing
+  byte clear remains necessary for raw event comparison and transmission.
+- All seven TargetClass constructors value-initialize their xTargetClass base. The union-compatible
+  base remains trivially default-constructible; null-pointer construction now leaves a zero mantissa
+  instead of uninitialized bits. The default target constructor still calls Invalidate and retains
+  its all-ones mantissa sentinel.
+- Cell zones, overlappers, and occupancy flags now have explicit initializers. Fourteen composite
+  locals in coordinate helpers and Build_Target are value-initialized. Existing setup loops and
+  assignments remain in place. Save formats stay **RA 16 / TD 10**; no suppressions were added.
+- The sweep of **383 RA translation units** reports **zero compilation errors** and **84 remaining
+  initialization sites**, all deferred to step 35b. This removes **36 historical baseline sites**.
+  A compile-time probe confirms xTargetClass remains trivially default-constructible, EventClass
+  remains trivially copyable, and TargetClass retains the size of both xTargetClass and TARGET.
+- Step-35a validation: strict builds of both games and all **197 CTest tests** pass. TD globals smoke
+  matches **5,742** state records and rejects all **14** malformed globals; RA smoke matches **240**
+  positions. Real-display and live-multiplayer checks remain pending.
+  Next checkpoint is **35b: remaining RA initialization sites**.
 - Step-19 validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
   Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke

@@ -320,7 +320,7 @@ union TARGET_COMPOSITE {
 };
 
 inline TARGET Build_Target(const RTTIType kind, const int value) {
-  TARGET_COMPOSITE target;
+  TARGET_COMPOSITE target{};
 
   target.Target = 0;
   target.Sub.Exponent = kind;

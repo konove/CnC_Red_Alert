@@ -44,10 +44,10 @@ const short* Coord_Spillage_List(const COORDINATE coord, const Rect& rect,
   const LEPTON y = Coord_Y(coord);
 
   // Convert the rect from coord-relative to absolute world leptons.
-  LEPTON_COMPOSITE left;
-  LEPTON_COMPOSITE top;
-  LEPTON_COMPOSITE right;
-  LEPTON_COMPOSITE bottom;
+  LEPTON_COMPOSITE left{};
+  LEPTON_COMPOSITE top{};
+  LEPTON_COMPOSITE right{};
+  LEPTON_COMPOSITE bottom{};
   left.Raw = static_cast<int>(x) + static_cast<short>(Pixel_To_Lepton(rect.X));
   top.Raw = static_cast<int>(y) + static_cast<short>(Pixel_To_Lepton(rect.Y));
   right.Raw = left.Raw + Pixel_To_Lepton(rect.Width - 1);
@@ -234,7 +234,7 @@ const short* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
 CELL Coord_Cell(COORDINATE coord) {
   COORD_COMPOSITE cc{};
   cc.Coord = coord;
-  CELL_COMPOSITE cell;
+  CELL_COMPOSITE cell{};
   cell.Cell = 0;
   cell.Sub.X = cc.Sub.X.Sub.Cell;
   cell.Sub.Y = cc.Sub.Y.Sub.Cell;

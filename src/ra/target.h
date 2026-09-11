@@ -233,12 +233,12 @@ class xTargetClass {
 */
 class TargetClass : public xTargetClass {
  public:
-  TargetClass() { Invalidate(); }
-  TargetClass(RTTIType rtti, int id) {
+  TargetClass() : xTargetClass() { Invalidate(); }
+  TargetClass(RTTIType rtti, int id) : xTargetClass() {
     Target.Sub.Exponent = rtti;
     Target.Sub.Mantissa = id;
   }
-  TargetClass(CELL cell) {
+  TargetClass(CELL cell) : xTargetClass() {
     Target.Sub.Exponent = RTTI_CELL;
     Target.Sub.Mantissa = cell;
   }

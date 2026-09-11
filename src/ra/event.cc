@@ -161,7 +161,7 @@ const char* EventClass::EventNames[LAST_EVENT] = {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(SpecialClass data) {
+EventClass::EventClass(SpecialClass data) : EventClass() {
   ID = PlayerPtr->ID;
   Type = SPECIAL;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -185,7 +185,7 @@ EventClass::EventClass(SpecialClass data) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, TargetClass target) {
+EventClass::EventClass(EventType type, TargetClass target) : EventClass() {
   ID = PlayerPtr->ID;
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -193,7 +193,7 @@ EventClass::EventClass(EventType type, TargetClass target) {
   Data.Target.Whom = target;
 }
 
-EventClass::EventClass(EventType type, CELL cell) {
+EventClass::EventClass(EventType type, CELL cell) : EventClass() {
   ID = PlayerPtr->ID;
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -215,7 +215,7 @@ EventClass::EventClass(EventType type, CELL cell) {
  *                                                                                             *
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type) {
+EventClass::EventClass(EventType type) : EventClass() {
   ID = PlayerPtr->ID;
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -233,7 +233,7 @@ EventClass::EventClass(EventType type) {
  *                                                                                             *
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, int val) {
+EventClass::EventClass(EventType type, int val) : EventClass() {
   ID = PlayerPtr->ID;
   Type = type;
   Data.General.Value = val;
@@ -260,7 +260,7 @@ EventClass::EventClass(EventType type, int val) {
  *                                                                                             *
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, TargetClass src, TargetClass dest) {
+EventClass::EventClass(EventType type, TargetClass src, TargetClass dest) : EventClass() {
   ID = PlayerPtr->ID;
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -285,7 +285,7 @@ EventClass::EventClass(EventType type, TargetClass src, TargetClass dest) {
  *                                                                                             *
  * HISTORY: * 05/19/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(AnimType anim, HousesType owner, COORDINATE coord) {
+EventClass::EventClass(AnimType anim, HousesType owner, COORDINATE coord) : EventClass() {
   ID = PlayerPtr->ID;
   Type = ANIMATION;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -316,7 +316,7 @@ EventClass::EventClass(AnimType anim, HousesType owner, COORDINATE coord) {
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(TargetClass src, MissionType mission, TargetClass target,
-                       TargetClass destination) {
+                       TargetClass destination) : EventClass() {
   ID = PlayerPtr->ID;
   Type = MEGAMISSION;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -354,7 +354,7 @@ EventClass::EventClass(TargetClass src, MissionType mission, TargetClass target,
  *=============================================================================================*/
 EventClass::EventClass(TargetClass src, MissionType mission, TargetClass target,
                        TargetClass destination, SpeedType speed,
-                       MPHType maxspeed) {
+                       MPHType maxspeed) : EventClass() {
   ID = PlayerPtr->ID;
   Type = MEGAMISSION_F;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -385,7 +385,7 @@ EventClass::EventClass(TargetClass src, MissionType mission, TargetClass target,
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, RTTIType object, int id) {
+EventClass::EventClass(EventType type, RTTIType object, int id) : EventClass() {
   ID = PlayerPtr->ID;
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -415,7 +415,7 @@ EventClass::EventClass(EventType type, RTTIType object, int id) {
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, RTTIType object, CELL cell) {
+EventClass::EventClass(EventType type, RTTIType object, CELL cell) : EventClass() {
   ID = PlayerPtr->ID;
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -442,7 +442,7 @@ EventClass::EventClass(EventType type, RTTIType object, CELL cell) {
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, int id, CELL cell) {
+EventClass::EventClass(EventType type, int id, CELL cell) : EventClass() {
   ID = PlayerPtr->ID;
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -465,7 +465,7 @@ EventClass::EventClass(EventType type, int id, CELL cell) {
  *                                                                                             *
  * HISTORY: * 11/10/1995 BRR : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, void* ptr, unsigned long size) {
+EventClass::EventClass(EventType type, void* ptr, unsigned long size) : EventClass() {
   ID = PlayerPtr->ID;
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
