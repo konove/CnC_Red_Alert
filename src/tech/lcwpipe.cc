@@ -68,7 +68,6 @@ LCWPipe::LCWPipe(CompControl control, int blocksize)
   SafetyMargin = BlockSize / 128 + 1;
   Buffer = new char[BlockSize + SafetyMargin];
   Buffer2 = new char[BlockSize + SafetyMargin];
-  BlockHeader.CompCount = 0xFFFF;
 }
 
 /***********************************************************************************************

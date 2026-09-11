@@ -77,14 +77,14 @@ class Base64Straw : public Straw {
   *buffer if *	this is for a decoding process. Otherwise, it will be used as a
   *scratch buffer.
   */
-  char CBuffer[4];
+  char CBuffer[4]{};
 
   /*
   **	Buffer that holds the plain bytes. This will be the staging buffer if
   *this *	is for an encoding process. Otherwise, it will be used as a
   *scratch buffer.
   */
-  char PBuffer[3];
+  char PBuffer[3]{};
 };
 
 #endif  // CNC_RED_ALERT_TECH_B64STRAW_H_

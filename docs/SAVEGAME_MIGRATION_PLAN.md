@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Steps 0–31 are complete; step 30 is `fbb36dd1`; step 29 is `2689ff4c`; step 28 is `96f23c5b`; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
+- Steps 0–32 are complete; step 31 is `bf27db84`; step 30 is `fbb36dd1`; step 29 is `2689ff4c`; step 28 is `96f23c5b`; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -249,7 +249,27 @@
   matches **5,742** state records and rejects all **14** malformed globals. RA smoke matches **240**
   positions after the loading-shell fix. No suppressions were added. Real-display and live-multiplayer
   checks remain pending.
-  Next checkpoint is **32: fix the 27 remaining tech initialization sites**.
+- Step 32 is complete: all **27 tech initialization sites** are fixed. Codec buffers, Blowfish
+  tables, integer registers/remainder tables, field IDs, SHA state, LZW dictionary/stack data, and
+  mix-file lookup offsets/sizes now have explicit defaults. The CD search state is value-initialized.
+  Compression pipe headers retain their **0xFFFF** pending-header sentinel; straw headers start at
+  zero. Existing key setup, hash seeds, integer setup, and dictionary reset routines remain in use.
+- Five codec regression tests exercise LZO/LZW in both Pipe-to-Straw and Straw-to-Pipe directions,
+  byte-at-a-time input, fragmented reads, multiple blocks, and a one-byte tail. LCW's existing compressor
+  is a stub, so its Pipe/Straw decoders are checked against independently authored literal/run blocks.
+  Base64 checks canonical encodings and decoding for short final groups; SHA checks its known abc
+  digest after resetting a partial stream.
+- The Base64 regression exposed an existing short-group offset bug: decoding writes one or two bytes
+  at the start of its scratch buffer, while Get drains them from the end. Get now aligns a partial
+  decoded group with that drain position, fixing padded final groups without adding persistent state.
+- The single-check sweep of **103 tech translation units**, including generated header checks and
+  the new tests, reports **zero** initialization sites and **zero** compilation errors. The step-31
+  baseline remains historical; **210 sites** remain in the other components. Save formats remain
+  **RA 16 / TD 10**; check enablement is still scheduled for step 36.
+- Step-32 validation: strict builds of both games and **196 CTest tests** pass. TD globals smoke
+  matches **5,742** state records and rejects all **14** malformed globals; RA smoke matches **240**
+  positions. No suppressions were added. Real-display and live-multiplayer checks remain pending.
+  Next checkpoint is **33: fix the 14 sdllib and one winvq initialization sites**.
 - Step-19 validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
   Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke

@@ -68,7 +68,6 @@ LZOPipe::LZOPipe(CompControl control, int blocksize)
   SafetyMargin = BlockSize;
   Buffer = new char[BlockSize + SafetyMargin];
   Buffer2 = new char[BlockSize + SafetyMargin];
-  BlockHeader.CompCount = 0xFFFF;
 }
 
 /***********************************************************************************************

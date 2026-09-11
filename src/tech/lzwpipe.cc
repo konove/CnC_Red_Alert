@@ -70,7 +70,6 @@ LZWPipe::LZWPipe(CompControl control, int blocksize)
   //	SafetyMargin = BlockSize/128+1;
   source_buffer_ = new char[BlockSize + SafetyMargin];
   output_buffer_ = new char[BlockSize + SafetyMargin];
-  BlockHeader.CompCount = 0xFFFF;
 }
 
 /***********************************************************************************************

@@ -54,9 +54,9 @@ class LZWEngine {
  private:
   typedef short CodeType;
   struct CodeClass {
-    CodeType CodeValue;
-    CodeType ParentCode;
-    char CharValue;
+    CodeType CodeValue = UNUSED;
+    CodeType ParentCode = 0;
+    char CharValue = 0;
 
     CodeClass() {}
     CodeClass(CodeType code, CodeType parent, char c)
@@ -79,7 +79,7 @@ class LZWEngine {
   };
   CodeClass dict[TABLE_SIZE];
 
-  char decode_stack[TABLE_SIZE];
+  char decode_stack[TABLE_SIZE]{};
 
   int Find_Child_Node(CodeType parent_code, char child_character);
   int Decode_String(char* ptr, CodeType code);

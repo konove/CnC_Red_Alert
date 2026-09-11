@@ -79,7 +79,7 @@ class SHAEngine {
   **	multiple sequential requests.
   */
   bool IsCached = false;
-  SHADigest FinalResult;
+  SHADigest FinalResult{};
 
   enum {
     // These are the initial seeds to the block accumulators.
@@ -162,7 +162,7 @@ class SHAEngine {
   **	are updated by a block processing step that occurs
   **	every 512 bits of source data.
   */
-  SHADigest Acc;
+  SHADigest Acc{};
 
   /*
   **	This is the running length of the source data
@@ -178,7 +178,7 @@ class SHAEngine {
   **	to the SHA Engine.
   */
   int PartialCount = 0;
-  char Partial[SRC_BLOCK_SIZE];
+  char Partial[SRC_BLOCK_SIZE]{};
 };
 
 #define SHA_SOURCE1 "abc"

@@ -98,13 +98,13 @@ class BlowfishEngine {
   /*
   **	Permutation tables for encryption and decryption.
   */
-  unsigned long P_Encrypt[static_cast<int>(ROUNDS) + 2];
-  unsigned long P_Decrypt[static_cast<int>(ROUNDS) + 2];
+  unsigned long P_Encrypt[static_cast<int>(ROUNDS) + 2]{};
+  unsigned long P_Decrypt[static_cast<int>(ROUNDS) + 2]{};
 
   /*
   **	S-Box tables (four).
   */
-  unsigned long bf_S[4][UCHAR_MAX + 1];
+  unsigned long bf_S[4][UCHAR_MAX + 1]{};
 };
 
 #endif  // CNC_RED_ALERT_TECH_BLOWFISH_H_

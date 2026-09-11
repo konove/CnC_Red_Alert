@@ -350,7 +350,7 @@ class Int {
   static Int Remainder;
 
  private:
-  uint32_t reg[PRECISION];
+  uint32_t reg[PRECISION]{};
 
   struct RemainderTable {
     explicit RemainderTable(const Int<PRECISION>& p) {
@@ -381,7 +381,7 @@ class Int {
     }
 
     bool HasZeroEntry = false;
-    unsigned short table[std::size(primeTable)];
+    unsigned short table[std::size(primeTable)]{};
   };
 };
 

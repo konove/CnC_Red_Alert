@@ -73,10 +73,10 @@ class MixFileClass : public Node<MixFileClass<T>> {
     MixFileClass* mixfile;
 
     // Absolute file offset (if uncached) or relative (if cached).
-    std::int32_t offset;
+    std::int32_t offset = 0;
 
     // Size of the embedded file.
-    std::int32_t size;
+    std::int32_t size = 0;
   };
 
   ~MixFileClass() override;

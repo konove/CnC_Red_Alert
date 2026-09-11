@@ -21,6 +21,6 @@ target_link_libraries(tech PUBLIC absl::strings PRIVATE base sdllib port vqa32 l
 include(Testing)
 add_gtest(
     NAME tech_test
-    SOURCES archive_test.cc fixed_test.cc ftimer_test.cc teepipe_test.cc
+    SOURCES archive_test.cc codec_state_test.cc fixed_test.cc ftimer_test.cc teepipe_test.cc
     LIBS tech
 )

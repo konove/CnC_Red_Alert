@@ -73,7 +73,7 @@ class BlowPipe : public Pipe {
   BlowfishEngine* BF = nullptr;
 
  private:
-  char Buffer[8];
+  char Buffer[8]{};
   int Counter = 0;
   CryptControl Control;
 

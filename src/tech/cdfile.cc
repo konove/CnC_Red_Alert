@@ -85,7 +85,7 @@ int cdecl Is_Disk_Inserted(int disk) {
   scan[0] = static_cast<char>('A' + disk);
 
   // yeah this isn't going to work on non-windows...
-  FindFileState state;
+  FindFileState state{};
   bool ret = Find_First_File(scan, state);
   End_Find_File(state);
   return ret;

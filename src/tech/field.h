@@ -60,7 +60,7 @@ class FieldClass {
   // packet reader default-constructs a field and then memcpy's only
   // FIELD_HEADER_SIZE bytes into it, which covers ID, DataType and Size but
   // not Data or Next.
-  FieldClass() : ID{}, DataType(0), Size(0), Data(nullptr), Next(nullptr) {}
+  FieldClass() : DataType(0), Size(0), Data(nullptr), Next(nullptr) {}
   FieldClass(const char* id, char data);
   FieldClass(const char* id, unsigned char data);
   FieldClass(const char* id, short data);
@@ -74,7 +74,7 @@ class FieldClass {
   void Net_To_Host();
 
  private:
-  char ID[4];               // id value of this field
+  char ID[4]{};               // id value of this field
   unsigned short DataType;  // id of the data type we are using
   unsigned short Size;      // size of the data portion of this field
   void* Data;               // pointer to the data portion of this field

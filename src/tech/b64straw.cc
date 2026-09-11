@@ -116,6 +116,11 @@ int Base64Straw::Get(void* source, int slen) {
     if (Counter == 0) {
       break;
     }
+    // Pending bytes are drained from the end of the scratch buffer above.
+    // Decoding a padded final group produces only one or two bytes at its start.
+    if (Counter < tosize) {
+      memmove(to + tosize - Counter, to, Counter);
+    }
   }
 
   return total;
