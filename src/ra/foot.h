@@ -206,7 +206,7 @@ class FootClass : public TechnoClass {
   **	stores as an array of movement targets. The list is terminated with a
   **	kTargetNone.
   */
-  TARGET NavQueue[10];
+  TARGET NavQueue[10]{};
 
   /*
   **	This points to the team that "owns" this object. This pointer is used to
@@ -240,7 +240,7 @@ class FootClass : public TechnoClass {
   *generations *	of path lists before the ultimate destination is
   *reached. The game logic *	handles regenerating the path list as necessary.
   */
-  FacingType Path[kConquerPathMax];
+  FacingType Path[kConquerPathMax]{};
 
   /*
   **	This value keeps track of how serious the unit is in trying to reach the

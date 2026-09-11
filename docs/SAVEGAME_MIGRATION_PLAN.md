@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Steps 0–35a are complete; step 34b is `46ac7e12`; step 34a is `1cb944f7`; step 33 is `67677f6f`; step 32 is `d9a92318`; step 31 is `bf27db84`; step 30 is `fbb36dd1`; step 29 is `2689ff4c`; step 28 is `96f23c5b`; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
+- Steps 0–35b are complete; step 35a is `ed1f462c`; step 34b is `46ac7e12`; step 34a is `1cb944f7`; step 33 is `67677f6f`; step 32 is `d9a92318`; step 31 is `bf27db84`; step 30 is `fbb36dd1`; step 29 is `2689ff4c`; step 28 is `96f23c5b`; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -329,7 +329,22 @@
 - Step-35a validation: strict builds of both games and all **197 CTest tests** pass. TD globals smoke
   matches **5,742** state records and rejects all **14** malformed globals; RA smoke matches **240**
   positions. Real-display and live-multiplayer checks remain pending.
-  Next checkpoint is **35b: remaining RA initialization sites**.
+- Step 35b is complete: all **84 remaining RA initialization sites** are fixed. Type strings,
+  animation/path buffers, map/editor fields, session/scenario state, trigger payloads, communication
+  queues, vortex state, and legacy online UI/download fields now have explicit defaults. Local search,
+  path, display, socket, process, and game-metadata records are value-initialized. Redundant full-record
+  zeroing of text-remap and process-startup locals is removed; subsequent setup assignments remain.
+- Heap-object and house `IsActive` defaults remain **true**. Sequence IDs retain **0xffffffff**;
+  sidebar flash and tooltip selection retain **-1**. Online metadata starts with the valid **RAGAME**
+  kind, while connection and channel state use explicit inactive sentinels. An initialized ping address
+  is scoped within its switch case. Save formats remain **RA 16 / TD 10**; no suppressions were added.
+- The RA sweep of **383 translation units** reports **zero initialization findings** and **zero
+  compilation errors**. All sites in the historical step-31 baseline have now been addressed.
+- Step-35b validation: strict builds of both games and all **197 CTest tests** pass. TD globals smoke
+  matches **5,742** state records and rejects all **14** malformed globals; RA smoke matches **240**
+  positions. The final online-metadata change also passes the single-check recheck. Real-display and
+  live-multiplayer checks remain pending.
+  Next checkpoint is **36: enable the initialization checks, update clang-tidy documentation, and run the full sweep**.
 - Step-19 validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
   Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke

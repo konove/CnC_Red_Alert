@@ -2816,7 +2816,7 @@ struct RemapControlType {
 struct GroundType {
   fixed Cost[magic_enum::enum_count<SpeedType>()];  // Terrain effect cost
                                                     // (normal).
-  bool Build;  // Can build on this terrain?
+  bool Build = false;  // Can build on this terrain?
 };
 
 /**************************************************************************

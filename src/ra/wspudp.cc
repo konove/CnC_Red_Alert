@@ -163,8 +163,8 @@ void UDPInterfaceClass::Set_Broadcast_Address(void* address) {
  * HISTORY: * 8/5/97 12:13PM ST : Created *
  *=============================================================================================*/
 bool UDPInterfaceClass::Open_Socket(SOCKET) {
-  linger ling;
-  struct sockaddr_in addr;
+  linger ling{};
+  struct sockaddr_in addr{};
 
   /*
   ** If Winsock is not initialised then do it now.
@@ -316,7 +316,7 @@ void UDPInterfaceClass::Broadcast(void* buffer, int buffer_len) {
 
 // like below, but less windows-y
 void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
-  struct sockaddr_in addr;
+  struct sockaddr_in addr{};
   WinsockBufferType* packet;
 
   switch (event) {

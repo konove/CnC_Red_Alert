@@ -77,17 +77,17 @@ class GameOptionsClass : public OptionsClass {
   void Process();
 
  private:
-  int OptionWidth;
-  int OptionHeight;
-  int OptionX;
-  int OptionY;
-  int ButtonWidth;
-  int OButtonHeight;
-  int CaptionYPos;
-  int ButtonY;
-  int Border1Len;
-  int Border2Len;
-  int ButtonResumeY;
+  int OptionWidth = 0;
+  int OptionHeight = 0;
+  int OptionX = 0;
+  int OptionY = 0;
+  int ButtonWidth = 0;
+  int OButtonHeight = 0;
+  int CaptionYPos = 0;
+  int ButtonY = 0;
+  int Border1Len = 0;
+  int Border2Len = 0;
+  int ButtonResumeY = 0;
 };
 
 #endif  // CNC_RED_ALERT_RA_GOPTIONS_H_

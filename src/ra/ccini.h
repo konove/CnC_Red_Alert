@@ -143,7 +143,7 @@ class CCINIClass : public INIClass {
   **	This is the message digest (SHA) of the INI database that was embedded
   *as part of *	the INI file.
   */
-  unsigned char Digest[20];
+  unsigned char Digest[20]{};
 };
 
 #endif  // CNC_RED_ALERT_RA_CCINI_H_

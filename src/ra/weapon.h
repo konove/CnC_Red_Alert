@@ -81,7 +81,7 @@ class WeaponTypeClass {
   /*
   **	Increase the weapon speed if the target is flying.
   */
-  unsigned IsTurboBoosted : 1;
+  unsigned IsTurboBoosted : 1 = 0;
 
   /*
   **	If potential targets of this weapon should be scanned for

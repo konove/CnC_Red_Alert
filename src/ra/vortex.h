@@ -158,37 +158,37 @@ class ChronalVortexClass {
   /*
   ** Position of the top left of the vortex
   */
-  COORDINATE Position;
+  COORDINATE Position = 0;
 
   /*
   ** Direction of rotation
   */
-  int AnimateDir;
+  int AnimateDir = 1;
 
   /*
   ** Current frame of animation
   */
-  int AnimateFrame;
+  int AnimateFrame = 0;
 
   /*
   ** Animation flag. When 0 vortex will animate 1 frame.
   */
-  int Animate;
+  int Animate = 0;
 
   /*
   ** State of vortex. See ENUM for info.
   */
-  AnimStateType State;
+  AnimStateType State = STATE_GROW;
 
   /*
   ** Color lookup tables for shading on vortex.
   */
-  unsigned char VortexRemapTables[MAX_REMAP_SHADES][256];
+  unsigned char VortexRemapTables[MAX_REMAP_SHADES][256]{};
 
   /*
   ** Color lookup table to make the blue lightning orange.
   */
-  unsigned char LightningRemap[256];
+  unsigned char LightningRemap[256]{};
 
   /*
   ** Is vortex currently active?
@@ -198,17 +198,17 @@ class ChronalVortexClass {
   /*
   ** Is the vortex winding down?
   */
-  int StartShutdown : 1;
+  int StartShutdown : 1 = 0;
 
   /*
   ** Is the vortex about to hide from view?
   */
-  int StartHiding : 1;
+  int StartHiding : 1 = 0;
 
   /*
   ** Is the vortex active but hidden?
   */
-  int Hidden : 1;
+  int Hidden : 1 = 0;
 
   /*
   ** Theater that lookup table is good for.
@@ -218,40 +218,40 @@ class ChronalVortexClass {
   /*
   ** Last frame that vortex attacked on
   */
-  int LastAttackFrame;
+  int LastAttackFrame = 0;
 
   /*
   ** How many times lightning has zapped on this attack
   */
-  int ZapFrame;
+  int ZapFrame = 0;
 
   /*
   ** Ptr to object that the vortex is zapping
   */
-  TARGET TargetObject;
+  TARGET TargetObject = kTargetNone;
   //		ObjectClass		*TargetObject;
 
   /*
   ** Distance to the target object
   */
-  int TargetDistance;
+  int TargetDistance = 0;
 
   /*
   ** Game frame that vortex hid on.
   */
-  int HiddenFrame;
+  int HiddenFrame = 0;
 
   /*
   ** Direction vortex is going in.
   */
-  int XDir;
-  int YDir;
+  int XDir = 0;
+  int YDir = 0;
 
   /*
   ** Direction vortex should be going in
   */
-  int DesiredXDir;
-  int DesiredYDir;
+  int DesiredXDir = 0;
+  int DesiredYDir = 0;
 
   /*
   ** Range in cells of the vortex lightning

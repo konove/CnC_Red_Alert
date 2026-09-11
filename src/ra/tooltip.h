@@ -58,16 +58,16 @@ class ToolTipClass {
   int yShow;
   int wShow;
   int hShow;
-  char szTip[TOOLTIPTEXT_MAX_LEN + 1];  //	Text to show as tip.
+  char szTip[TOOLTIPTEXT_MAX_LEN + 1]{};  //	Text to show as tip.
 
   std::uint8_t* pSaveRect;
 
   //	Used only if bIconList.
-  int iLastIconListIndex;
-  bool bLastShowNoText;
-  int xLastShow;
-  int yLastShow;
-  int wLastShow;
+  int iLastIconListIndex = -1;
+  bool bLastShowNoText = false;
+  int xLastShow = 0;
+  int yLastShow = 0;
+  int wLastShow = 0;
 };
 
 #endif  // CNC_RED_ALERT_RA_TOOLTIP_H_

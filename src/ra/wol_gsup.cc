@@ -2412,7 +2412,7 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
 bool WOL_GameSetupDialog::bParamsUnfresh() {
   //	Returns true if game setup parameters do not match what they were last
   // time they were sent.
-  GAMEPARAMS GParamsNow;
+  GAMEPARAMS GParamsNow{};
   SetGParamsToCurrent(GParamsNow);
 
   //	if( !( GParamsNow == GParamsLastSent ) )

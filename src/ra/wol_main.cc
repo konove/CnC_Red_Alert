@@ -215,7 +215,7 @@ bool ReregisterWolapiDLL() {
     DWORD dwBufSize = _MAX_PATH;
     if (::RegQueryValueEx(hKey, "InstallPath", nullptr, nullptr,
                           (LPBYTE)szInstallPath, &dwBufSize) == ERROR_SUCCESS) {
-      WIN32_FIND_DATA wfd;
+      WIN32_FIND_DATA wfd{};
       HANDLE handle = FindFirstFile(szInstallPath, &wfd);
       if (handle == INVALID_HANDLE_VALUE) {
         //	File is not there.

@@ -57,9 +57,9 @@ class DifficultyClass {
   fixed RepairDelay;
   fixed BuildDelay;
 
-  unsigned IsBuildSlowdown : 1;
-  unsigned IsWallDestroyer : 1;
-  unsigned IsContentScan : 1;
+  unsigned IsBuildSlowdown : 1 = 0;
+  unsigned IsWallDestroyer : 1 = 0;
+  unsigned IsContentScan : 1 = 0;
 };
 
 class RulesClass {

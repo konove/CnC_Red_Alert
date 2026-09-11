@@ -271,13 +271,13 @@ typedef struct NodeNameTag {
   template <class Archive>
   void Serialize(Archive& ar);
 
-  char Name[MPLAYER_NAME_MAX];  // player or game name
+  char Name[MPLAYER_NAME_MAX]{};  // player or game name
   IPXAddressClass Address;
   union {
     struct {
       unsigned char IsOpen;    // is the game open?
       unsigned long LastTime;  // last time we heard from this guy
-    } Game;
+    } Game{};
     struct {
       HousesType House;       // "ActLike" House of this player
       PlayerColorType Color;  // Color of this player
@@ -464,11 +464,11 @@ class MultiMission {
   }  //	Implied "IsCounterstrike". No longer used. -ajw
 
  private:
-  char ScenarioDescription[kDescripMax];
-  char Filename[_MAX_FNAME + _MAX_EXT];
-  char Digest[32];
-  bool IsOfficial;
-  bool IsExpansion;
+  char ScenarioDescription[kDescripMax]{};
+  char Filename[_MAX_FNAME + _MAX_EXT]{};
+  char Digest[32]{};
+  bool IsOfficial = false;
+  bool IsExpansion = false;
 };
 
 typedef struct {
@@ -554,7 +554,7 @@ class SessionClass {
   //.....................................................................
   // Game options
   //.....................................................................
-  GameOptionsType Options;
+  GameOptionsType Options{};
 
   //.....................................................................
   // Unique workstation ID, for detecting my own packets
@@ -564,7 +564,7 @@ class SessionClass {
   //.....................................................................
   // Player's local options
   //.....................................................................
-  char Handle[MPLAYER_NAME_MAX];  // player name
+  char Handle[MPLAYER_NAME_MAX]{};  // player name
   PlayerColorType PrefColor;      // preferred color index
   PlayerColorType ColorIdx;       // actual color index
   HousesType House;               // GDI / NOD
@@ -586,11 +586,11 @@ class SessionClass {
   int MaxAhead;
   int64_t FrameSendRate;
 
-  int DesiredFrameRate;
+  int DesiredFrameRate = 0;
 
-  int64_t ProcessTimer;
-  int64_t ProcessTicks;
-  int ProcessFrames;
+  int64_t ProcessTimer = 0;
+  int64_t ProcessTicks = 0;
+  int ProcessFrames = 0;
 
   //.....................................................................
   // This flag is set when we've loaded a multiplayer game.
@@ -611,14 +611,14 @@ class SessionClass {
   //		DynamicVectorClass <int> Filenum;
 
   char ScenarioFileName[_MAX_FNAME + _MAX_EXT +
-                        1];  // File name of scenario to load
+                        1]{};  // File name of scenario to load
 
-  char ScenarioDigest[32];  // Digest of scenario to load
-  unsigned int ScenarioFileLength;
-  bool ScenarioIsOfficial;
+  char ScenarioDigest[32]{};  // Digest of scenario to load
+  unsigned int ScenarioFileLength = 0;
+  bool ScenarioIsOfficial = false;
 
-  char ScenarioRequests[20];  // Which players requested scenario files
-  int RequestCount;
+  char ScenarioRequests[20]{};  // Which players requested scenario files
+  int RequestCount = 0;
   IPXAddressClass HostAddress;
 
   //.....................................................................
@@ -626,17 +626,17 @@ class SessionClass {
   //.....................................................................
   MessageListClass Messages;
   IPXAddressClass MessageAddress;
-  char LastMessage[MAX_MESSAGE_LENGTH];
+  char LastMessage[MAX_MESSAGE_LENGTH]{};
   unsigned WWChat : 1;  // 1 = go into special WW Chat mode
 
   //.....................................................................
   // This is the multiplayer scorekeeping system
   //.....................................................................
-  MPlayerScoreType Score[MAX_MULTI_NAMES];
-  int GamesPlayed;  // # games played this run
-  int NumScores;    // # active entries in MPlayerScore
-  int Winner;       // index of winner of last game
-  int CurGame;      // index of current game being played
+  MPlayerScoreType Score[MAX_MULTI_NAMES]{};
+  int GamesPlayed = 0;  // # games played this run
+  int NumScores = 0;  // # active entries in MPlayerScore
+  int Winner = 0;   // index of winner of last game
+  int CurGame = 0;  // index of current game being played
 
   //.....................................................................
   // Static arrays
@@ -663,12 +663,12 @@ class SessionClass {
   bool NetStealth;                            // makes us invisible
   bool NetProtect;                            // keeps others from messaging us
   bool NetOpen;                               // 1 = game is open for joining
-  char GameName[MPLAYER_NAME_MAX];            // game's name
-  GlobalPacketType GPacket;                   // global packet
-  int GPacketlen;                             // global packet length
+  char GameName[MPLAYER_NAME_MAX]{};          // game's name
+  GlobalPacketType GPacket{};                 // global packet
+  int GPacketlen = 0;                         // global packet length
   IPXAddressClass GAddress;                   // address of sender
   unsigned short GProductID;                  // product ID of sender
-  char MetaPacket[MAX_IPX_PACKET_SIZE];       // packet building buffer
+  char MetaPacket[MAX_IPX_PACKET_SIZE]{};     // packet building buffer
   int MetaSize;                               // size of MetaPacket
   DynamicVectorClass<NodeNameType*> Games;    // list of games
   DynamicVectorClass<NodeNameType*> Players;  // list of players
@@ -679,7 +679,7 @@ class SessionClass {
   //.....................................................................
   unsigned ModemService : 1;          // 1 = service modem in Call_Back
   int CurPhoneIdx;                    // phone listing index
-  SerialSettingsType SerialDefaults;  // default serial settings
+  SerialSettingsType SerialDefaults{};  // default serial settings
   ModemGameType ModemType;            // caller or answerer?
 
   DynamicVectorClass<PhoneEntryClass*> PhoneBook;
@@ -692,7 +692,7 @@ class SessionClass {
   //.....................................................................
   long TrapFrame;             // frame # to start trapping 'TrapObject'
   RTTIType TrapObjType;       // type of object to trap
-  TrapObjectType TrapObject;  // ptr to object to trap (watch)
+  TrapObjectType TrapObject{};  // ptr to object to trap (watch)
   COORDINATE TrapCoord;       // coord of object, 0 = ignore
   TARGET TrapTarget;          // Target # of object, 0 = ignore
   CellClass* TrapCell;        // Ptr to cell to trap (watch)

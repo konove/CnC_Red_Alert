@@ -151,7 +151,7 @@ struct TEventClass {
     AircraftType Aircraft;  // Used for aircraft type checking.
     HousesType House;       // Used for house specific events.
     int32_t Value;          // Used for other events that need data.
-  } Data;
+  } Data{};
 
   TEventClass() : Event(TEVENT_NONE) { Data.Value = 0; }
   TEventClass(TEventType event) : Event(event) { Data.Value = 0; }

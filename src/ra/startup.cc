@@ -209,7 +209,7 @@ int main(int argc, char* argv[])
   if constexpr (config::kWolapiEnabled) {
     //	Look for special wolapi install program, used after the patch to version
     // 3, to install "Shared Internet Components".
-    WIN32_FIND_DATA wfd;
+    WIN32_FIND_DATA wfd{};
     HANDLE hWOLSetupFile = FindFirstFile("wolsetup.exe", &wfd);
     bool bWOLSetupFile = (hWOLSetupFile != INVALID_HANDLE_VALUE);
     //	if( bWOLSetupFile )

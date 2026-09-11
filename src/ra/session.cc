@@ -1010,7 +1010,7 @@ void SessionClass::Read_Scenario_Descriptions() {
 /*
 **	Fetch any scenario packet lists and apply them first.
 */
-  FindFileState state;
+  FindFileState state{};
   bool found = Find_First_File("*.PKT", state);
   while (found) {
     // Mono_Printf("Found file '%s'.\n", block.cAlternateFileName);

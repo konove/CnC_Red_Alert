@@ -159,15 +159,15 @@ class RAChatEventSink
   // wolapi act in a modal way. In many places I "block" until a callback
   // response to a 	wolapi request has been received.
   bool bRequestServerListWait;
-  bool bRequestConnectionWait;
-  bool bRequestLogoutWait;
+  bool bRequestConnectionWait = false;
+  bool bRequestLogoutWait = false;
   //	bool	bRequestChannelListWait;
-  bool bRequestChannelJoinWait;
-  bool bRequestChannelLeaveWait;
-  bool bRequestUserListWait;
-  bool bRequestChannelCreateWait;
-  bool bRequestFindWait;
-  bool bRequestPageWait;
+  bool bRequestChannelJoinWait = false;
+  bool bRequestChannelLeaveWait = false;
+  bool bRequestUserListWait = false;
+  bool bRequestChannelCreateWait = false;
+  bool bRequestFindWait = false;
+  bool bRequestPageWait = false;
 
   bool bRequestChannelListForLobbiesWait;
 
@@ -183,7 +183,7 @@ class RAChatEventSink
   bool bJoined;     //	True when user has joined a channel.
 
   Channel* pChannelList;        //	First element of channel list, or null.
-  CHANNELFILTER ChannelFilter;  //	Affects what channels are included in
+  CHANNELFILTER ChannelFilter = CHANNELFILTER_NO;  //	Affects what channels are included in
                                 // channel list when built.
 
   User* pUserList;  //	First element of user list, or null.
@@ -192,12 +192,12 @@ class RAChatEventSink
   char* szMotd;                        //	Message of the day.
   HRESULT hresRequestConnectionError;  //	Used to pass error hresult.
 
-  HRESULT hresRequestFindResult;  //	Used to pass hresult.
-  Channel OnFindChannel;
+  HRESULT hresRequestFindResult = 0;  //	Used to pass hresult.
+  Channel OnFindChannel{};
 
-  HRESULT hresRequestPageResult;  //	Used to pass hresult.
+  HRESULT hresRequestPageResult = 0;  //	Used to pass hresult.
 
-  HRESULT hresRequestJoinResult;  //	Used to pass hresult.
+  HRESULT hresRequestJoinResult = 0;  //	Used to pass hresult.
 
   bool bGotKickedTrigger;  //	Special flag meaning do some more processing
                            // after callback has exited.
@@ -254,12 +254,12 @@ class RADownloadEventSink :
   bool bFlagProgressUpdate;
   bool bFlagStatusUpdate;
   bool bFlagQueryResume;
-  int iBytesRead;
-  int iTotalSize;
-  int iTimeTaken;
-  int iTimeLeft;
-  int iStatus;
-  bool bResumed;
+  int iBytesRead = 0;
+  int iTotalSize = 0;
+  int iTimeTaken = 0;
+  int iTimeLeft = 0;
+  int iStatus = 0;
+  bool bResumed = false;
 
  private:
   std::atomic<int> m_cRef;  // Reference count.

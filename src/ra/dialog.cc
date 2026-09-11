@@ -873,9 +873,8 @@ void Conquer_Clip_Text_Print(const char* text, int x, int y,
  *=========================================================================*/
 void Plain_Text_Print(int text, unsigned x, unsigned y, unsigned fore,
                       unsigned back, TextPrintType flag, ...) {
-  RemapControlType scheme;
+  RemapControlType scheme{};
 
-  memset(&scheme, 0, sizeof(RemapControlType));
   memset(&scheme.FontRemap[4], fore, 12);
 
   scheme.BrightColor = fore;
@@ -919,9 +918,8 @@ void Plain_Text_Print(int text, unsigned x, unsigned y, unsigned fore,
  *=========================================================================*/
 void Plain_Text_Print(const char* text, unsigned x, unsigned y, unsigned fore,
                       unsigned back, TextPrintType flag, ...) {
-  RemapControlType scheme;
+  RemapControlType scheme{};
 
-  memset(&scheme, 0, sizeof(RemapControlType));
   memset(&scheme.FontRemap[4], fore, 12);
 
   scheme.BrightColor = fore;

@@ -95,14 +95,14 @@ class SliderClass final : public GaugeClass {
   **	the thumb imagery. It is also the amount that is bumped when the
   **	Bump() function is called.  (This value is in application units.)
   */
-  int Thumb;
+  int Thumb = 0;
 
   /*
   **	This is the current thumb pixel size and starting offset from beginning
   **	of slider region.  (These values are in pixels.)
   */
-  int ThumbSize;
-  int ThumbStart;  // x or y position for the thumb
+  int ThumbSize = 0;
+  int ThumbStart = 0;  // x or y position for the thumb
 
   int Action(unsigned flags, KeyNumType& key) override;
   void Draw_Thumb() override;

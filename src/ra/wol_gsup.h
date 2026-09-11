@@ -139,114 +139,114 @@ class WOL_GameSetupDialog {
   //	bool	bSpecialAftermathScenario( const char* szScenarioDescription );
 
  public:
-  int d_dialog_w;
-  int d_dialog_h;
-  int d_dialog_x;
-  int d_dialog_y;
-  int d_dialog_cx;
+  int d_dialog_w = 0;
+  int d_dialog_h = 0;
+  int d_dialog_x = 0;
+  int d_dialog_y = 0;
+  int d_dialog_cx = 0;
 
-  int d_txt6_h;
-  int d_margin1;
+  int d_txt6_h = 0;
+  int d_margin1 = 0;
 
-  int d_house_w;
-  int d_house_h;
-  int d_house_x;
-  int d_house_y;
+  int d_house_w = 0;
+  int d_house_h = 0;
+  int d_house_x = 0;
+  int d_house_y = 0;
 
-  int d_color_w;
-  int d_color_h;
-  int d_color_x;
-  int d_color_y;
+  int d_color_w = 0;
+  int d_color_h = 0;
+  int d_color_x = 0;
+  int d_color_y = 0;
 
-  int d_playerlist_w;
-  int d_playerlist_h;
-  int d_playerlist_x;
-  int d_playerlist_y;
+  int d_playerlist_w = 0;
+  int d_playerlist_h = 0;
+  int d_playerlist_x = 0;
+  int d_playerlist_y = 0;
 
-  int d_scenariolist_w;
-  int d_scenariolist_h;
-  int d_scenariolist_x;
-  int d_scenariolist_y;
+  int d_scenariolist_w = 0;
+  int d_scenariolist_h = 0;
+  int d_scenariolist_x = 0;
+  int d_scenariolist_y = 0;
 
-  int d_gamekind_w;
-  int d_gamekind_h;
-  int d_gamekind_x;
-  int d_gamekind_y;
+  int d_gamekind_w = 0;
+  int d_gamekind_h = 0;
+  int d_gamekind_x = 0;
+  int d_gamekind_y = 0;
 
-  int d_count_w;
-  int d_count_h;
-  int d_count_x;
-  int d_count_y;
+  int d_count_w = 0;
+  int d_count_h = 0;
+  int d_count_x = 0;
+  int d_count_y = 0;
 
-  int d_level_w;
-  int d_level_h;
-  int d_level_x;
-  int d_level_y;
+  int d_level_w = 0;
+  int d_level_h = 0;
+  int d_level_x = 0;
+  int d_level_y = 0;
 
-  int d_credits_w;
-  int d_credits_h;
-  int d_credits_x;
-  int d_credits_y;
+  int d_credits_w = 0;
+  int d_credits_h = 0;
+  int d_credits_x = 0;
+  int d_credits_y = 0;
 
-  int d_aiplayers_w;
-  int d_aiplayers_h;
-  int d_aiplayers_x;
-  int d_aiplayers_y;
+  int d_aiplayers_w = 0;
+  int d_aiplayers_h = 0;
+  int d_aiplayers_x = 0;
+  int d_aiplayers_y = 0;
 
-  int d_options_w;
-  int d_options_h;
-  int d_options_x;
-  int d_options_y;
+  int d_options_w = 0;
+  int d_options_h = 0;
+  int d_options_x = 0;
+  int d_options_y = 0;
 
-  int d_disc_w;
-  int d_disc_h;
-  int d_disc_x;
-  int d_disc_y;
+  int d_disc_w = 0;
+  int d_disc_h = 0;
+  int d_disc_x = 0;
+  int d_disc_y = 0;
 
-  int d_send_w;
-  int d_send_h;
-  int d_send_x;
-  int d_send_y;
+  int d_send_w = 0;
+  int d_send_h = 0;
+  int d_send_x = 0;
+  int d_send_y = 0;
 
-  int d_ok_w;
-  int d_ok_h;
-  int d_ok_x;
-  int d_ok_y;
+  int d_ok_w = 0;
+  int d_ok_h = 0;
+  int d_ok_x = 0;
+  int d_ok_y = 0;
 
-  int d_cancel_w;
-  int d_cancel_h;
-  int d_cancel_x;
-  int d_cancel_y;
+  int d_cancel_w = 0;
+  int d_cancel_h = 0;
+  int d_cancel_x = 0;
+  int d_cancel_y = 0;
 
-  int d_accept_w;
-  int d_accept_h;
-  int d_accept_x;
-  int d_accept_y;
+  int d_accept_w = 0;
+  int d_accept_h = 0;
+  int d_accept_x = 0;
+  int d_accept_y = 0;
 
-  int d_amunits_w;
-  int d_amunits_h;
-  int d_amunits_x;
-  int d_amunits_y;
+  int d_amunits_w = 0;
+  int d_amunits_h = 0;
+  int d_amunits_x = 0;
+  int d_amunits_y = 0;
 
-  int d_action_w;
-  int d_action_h;
-  int d_action_x;
-  int d_action_y;
+  int d_action_w = 0;
+  int d_action_h = 0;
+  int d_action_x = 0;
+  int d_action_y = 0;
 
  protected:
-  GadgetClass* commands;  //	The controls list.
+  GadgetClass* commands = nullptr;  //	The controls list.
 
   IconListClass* pILPlayers;
   IconListClass* pILScens;
   IconListClass* pILDisc;
-  char szSendBuffer[MAXCHATSENDLENGTH];
+  char szSendBuffer[MAXCHATSENDLENGTH]{};
   EditClass* pEditSend;
   GaugeClass* pGaugeCount;
   GaugeClass* pGaugeLevel;
   GaugeClass* pGaugeCredits;
   GaugeClass* pGaugeAIPlayers;
   CheckListClass* pCheckListOptions;
-  TextButtonClass* pTextBtnOk;
+  TextButtonClass* pTextBtnOk = nullptr;
   TextButtonClass* pTextBtnCancel;
   TextButtonClass* pTextBtnAcceptStart;
   TextButtonClass* pTextBtnAction;
@@ -255,7 +255,7 @@ class WOL_GameSetupDialog {
   StaticButtonClass* pStaticLevel;
   StaticButtonClass* pStaticCredits;
   StaticButtonClass* pStaticAIPlayers;
-  char szHouseBuffer[25];  // buffer for house droplist
+  char szHouseBuffer[25]{};  // buffer for house droplist
   DropListClass* pDropListHouse;
   BigCheckBoxClass* pCheckAftermathUnits;
   ShapeButtonClass* pShpBtnScenarioRA;
@@ -269,10 +269,10 @@ class WOL_GameSetupDialog {
 
   WolapiObject* pWO;
 
-  GAMEPARAMS GParamsLastSent;  //	Used merely as a handy container for the
+  GAMEPARAMS GParamsLastSent{};  //	Used merely as a handy container for the
                                // vars I need to set.
 
-  DWORD dwTimeNextParamRefresh;  //	Param changes are sent by host at
+  DWORD dwTimeNextParamRefresh = 0;  //	Param changes are sent by host at
                                  // certain interval.
 
   HousesType HousePrevious;
@@ -283,9 +283,9 @@ class WOL_GameSetupDialog {
 
   bool bWaitingToStart;
 
-  bool bProcess;                //	True means continue doing input loop.
-  RESULT_WOLGSUP ResultReturn;  //	Value that will be returned from Show().
-  char szNameOfHostWhoJustBailedOnUs[WOL_NAME_LEN_MAX];  //	If set, triggers
+  bool bProcess = false;        //	True means continue doing input loop.
+  RESULT_WOLGSUP ResultReturn = RESULT_WOLGSUP_BACKTOCHAT;  //	Value that will be returned from Show().
+  char szNameOfHostWhoJustBailedOnUs[WOL_NAME_LEN_MAX]{};  //	If set, triggers
                                                          // setup cancellation.
 
   bool bParamsReceived;  //	True after any WOL_GAMEOPT_INFPARAMS messages
@@ -293,21 +293,21 @@ class WOL_GameSetupDialog {
 
   bool bLeaveDueToRulesMismatchTrigger;
 
-  bool bRequestedScenarioDownload;
+  bool bRequestedScenarioDownload = false;
 
-  char szTriggerGameStartInfo[(WOL_NAME_LEN_MAX + 10) * 4 + 60];
+  char szTriggerGameStartInfo[(WOL_NAME_LEN_MAX + 10) * 4 + 60]{};
 
   //	Tooltips...
-  DWORD timeToolTipAppear;
+  DWORD timeToolTipAppear = 0;
   ToolTipClass*
       pToolTipHead;  //	Head of list of ToolTips that parallels gadget list.
   ToolTipClass*
       pToolTipHitLast;  //	ToolTip the mouse was last over, or null.
 
   //	Extra game params...
-  bool bAftermathUnits;  //	True if aftermath units are to be used in the
+  bool bAftermathUnits = false;  //	True if aftermath units are to be used in the
                          // game.
-  bool bSlowUnitBuildRate;
+  bool bSlowUnitBuildRate = false;
 
   SCENARIO_GAMEKIND ScenKindCurrent;  //	Describes what gamekind of
                                       // scenarios we are viewing, if host.
@@ -369,7 +369,7 @@ class WOL_GameSetupDialog {
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 
-  RedrawType display;
+  RedrawType display = REDRAW_NONE;
 };
 
 #endif  // CNC_RED_ALERT_RA_WOL_GSUP_H_

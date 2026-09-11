@@ -1488,7 +1488,7 @@ void WolapiObject::RequestPlayerPings() {
       unsigned long UserIP = pChatSink->GetUserIP((char*)pUser->name);
       if (UserIP) {
         int iUnused;
-        in_addr inaddrUser;
+        in_addr inaddrUser{};
         inaddrUser.s_addr = static_cast<uint32_t>(UserIP);
         char* szIP = inet_ntoa(inaddrUser);
         //				debugprint( "RequestPing of %s, ipaddr
@@ -2127,10 +2127,9 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
   //	Loosely based on Dune2000 example.
 
   bool bSuccess = false;
-  STARTUPINFO si;
-  PROCESS_INFORMATION pi;
+  STARTUPINFO si{};
+  PROCESS_INFORMATION pi{};
 
-  ZeroMemory(&si, sizeof(si));
   si.cb = sizeof(si);
 
   if (*szWebBrowser) {
@@ -3202,7 +3201,7 @@ bool WolapiObject::Pump_DisconnectPinging() {
   }
 
   switch (DisconnectPingResult_Server[iDisconnectPingCurrent]) {
-    case PING_UNSTARTED:
+    case PING_UNSTARTED: {
       //	Pings have yet to be requested.
       //	Ping game results server.
       int iUnused;
@@ -3223,7 +3222,7 @@ bool WolapiObject::Pump_DisconnectPinging() {
       }
 
       //	Ping opponent.
-      in_addr inaddr;
+      in_addr inaddr{};
       char* szIP;
       inaddr.s_addr = static_cast<uint32_t>(TournamentOpponentIP);
       szIP = inet_ntoa(inaddr);
@@ -3236,6 +3235,7 @@ bool WolapiObject::Pump_DisconnectPinging() {
         DisconnectPingResult_Opponent[iDisconnectPingCurrent] = PING_WAITING;
       }
       break;
+    }
     case PING_WAITING:
       //	Ping results still pending. (Callback will set vars when results
       // arrive.)

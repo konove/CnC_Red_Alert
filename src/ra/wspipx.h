@@ -78,17 +78,17 @@ class IPXInterfaceClass : public WinsockInterfaceClass {
   *the current
   ** network.
   */
-  unsigned char BroadcastNet[4];
+  unsigned char BroadcastNet[4]{};
 
   /*
   ** The node to use as a broadcast address. Normally ff,ff,ff,ff,ff,ff.
   */
-  unsigned char BroadcastNode[6];
+  unsigned char BroadcastNode[6]{};
 
   /*
   ** The id of the network cars in this machine.
   */
-  unsigned char MyNode[6];
+  unsigned char MyNode[6]{};
 };
 
 #endif  // CNC_RED_ALERT_RA_WSPIPX_H_

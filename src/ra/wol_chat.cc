@@ -1285,7 +1285,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
     if (pWO->iLobbyReturnAfterGame == 0x00FFFFFF) {
       pWO->iLobbyReturnAfterGame = -1;
     }
-    CREATEGAMEINFO CreateGameInfo;
+    CREATEGAMEINFO CreateGameInfo{};
     //	Not all of these values are currently used during setup.
     CreateGameInfo.bCreateGame = false;
     CreateGameInfo.iPlayerMax = pChannel->maxUsers;

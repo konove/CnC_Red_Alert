@@ -206,22 +206,22 @@ class MessageListClass {
   int EditX;                              // x-coord of edit field
   int EditY;                              // y-coord of edit field
   TextLabelClass* EditLabel;              // ptr to current edit label
-  char EditBuf[MAX_MESSAGE_LENGTH + 30];  // buffer for editable message
-  char OverflowBuf[MAX_MESSAGE_LENGTH + 30];  // overflow area
+  char EditBuf[MAX_MESSAGE_LENGTH + 30]{};  // buffer for editable message
+  char OverflowBuf[MAX_MESSAGE_LENGTH + 30]{};  // overflow area
   int EditCurPos;                             // current edit position
   int EditInitPos;                            // initial edit position
   char CursorChar;                            // character to use a cursor
   int OverflowStart;                          // 1st index for overflow trimming
   int OverflowEnd;  // last index for overflow trimming
-  int Width;        // Maximum width in pixels of editable string
+  int Width = 0;    // Maximum width in pixels of editable string
 
   //.....................................................................
   // Buffers provided for messages.  They must be long enough for
   // both the message, and for the "To" prefix on edited messages, or
   // the "Name:" prefix on received messages.
   //.....................................................................
-  char MessageBuffers[MAX_NUM_MESSAGES][MAX_MESSAGE_LENGTH + 30];
-  char BufferAvail[MAX_NUM_MESSAGES];
+  char MessageBuffers[MAX_NUM_MESSAGES][MAX_MESSAGE_LENGTH + 30]{};
+  char BufferAvail[MAX_NUM_MESSAGES]{};
 };
 
 #endif  // CNC_RED_ALERT_RA_MSGLIST_H_

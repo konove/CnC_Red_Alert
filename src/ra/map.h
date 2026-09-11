@@ -120,15 +120,15 @@ class MapClass : public GScreenClass {
   *map. *	It is this region that appears on the radar map and constrains
   *normal *	movement.
   */
-  int MapCellX;
-  int MapCellY;
-  int MapCellWidth;
-  int MapCellHeight;
+  int MapCellX = 0;
+  int MapCellY = 0;
+  int MapCellWidth = 0;
+  int MapCellHeight = 0;
 
   /*
   **	This is the total value of all harvestable Tiberium on the map.
   */
-  int64_t TotalValue;
+  int64_t TotalValue = 0;
 
   CellClass& operator[](COORDINATE coord) { return Array[Coord_Cell(coord)]; }
   CellClass& operator[](CELL cell) { return Array[cell]; }
@@ -150,9 +150,9 @@ class MapClass : public GScreenClass {
   **	This is the dimensions of the "map" that the tactical view is
   **	restricted to.
   */
-  int XSize;
-  int YSize;
-  int Size;
+  int XSize = 0;
+  int YSize = 0;
+  int Size = 0;
 
   static const int RadiusCount[11];
   static const int RadiusOffset[];
@@ -168,22 +168,22 @@ class MapClass : public GScreenClass {
   /*
   **	Tiberium growth potential cells are recorded here.
   */
-  CELL TiberiumGrowth[MAP_CELL_W / 2];
-  int TiberiumGrowthCount;
-  int TiberiumGrowthExcess;
+  CELL TiberiumGrowth[MAP_CELL_W / 2]{};
+  int TiberiumGrowthCount = 0;
+  int TiberiumGrowthExcess = 0;
 
   /*
   **	List of cells that are full enough strength that they could spread
   **	Tiberium to adjacent cells.
   */
-  CELL TiberiumSpread[MAP_CELL_W / 2];
-  int TiberiumSpreadCount;
-  int TiberiumSpreadExcess;
+  CELL TiberiumSpread[MAP_CELL_W / 2]{};
+  int TiberiumSpreadCount = 0;
+  int TiberiumSpreadExcess = 0;
 
   /*
   **	This is the current cell number in the incremental map scan process.
   */
-  CELL TiberiumScan;
+  CELL TiberiumScan = 0;
 
   enum MapEnum { SCAN_AMOUNT = MAP_CELL_TOTAL };
 };

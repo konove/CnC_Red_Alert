@@ -61,16 +61,16 @@ class RadarClass : public DisplayClass {
   /*
   **	The dimensions and coordinates of the radar map.
   */
-  int RadX;
-  int RadOffX;
-  int RadY;
-  int RadOffY;
-  int RadWidth;
-  int RadHeight;
-  int RadIWidth;
-  int RadIHeight;
-  int RadPWidth;
-  int RadPHeight;
+  int RadX = 0;
+  int RadOffX = 0;
+  int RadY = 0;
+  int RadOffY = 0;
+  int RadWidth = 0;
+  int RadHeight = 0;
+  int RadIWidth = 0;
+  int RadIHeight = 0;
+  int RadPWidth = 0;
+  int RadPHeight = 0;
 
   /*
   ** Initialization
@@ -247,7 +247,7 @@ class RadarClass : public DisplayClass {
   */
   int PixelPtr;
   enum PixelStackEnums { PIXELSTACK = 400 };
-  CELL PixelStack[PIXELSTACK];
+  CELL PixelStack[PIXELSTACK]{};
 };
 
 #endif  // CNC_RED_ALERT_RA_RADAR_H_

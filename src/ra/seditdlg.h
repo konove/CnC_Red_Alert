@@ -44,8 +44,8 @@ class SimpleEditDlgClass {
   void SetButtons(const char* szOk, const char* szCancel,
                   const char* szMiddle = nullptr);
 
-  char szEdit[300];  //	iEditCharsAccept upper limit.
-  char szEdit2[300];
+  char szEdit[300]{};  //	iEditCharsAccept upper limit.
+  char szEdit2[300]{};
 
  protected:
   int iDialogWidth;     //	X pixels width of entire dialog.

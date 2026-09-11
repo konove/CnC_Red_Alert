@@ -271,7 +271,7 @@ class TeamTypeClass : public AbstractTypeClass {
   **	Number and list of missions that this team will follow.
   */
   int MissionCount = 0;
-  TeamMissionClass MissionList[MAX_TEAM_MISSIONS];
+  TeamMissionClass MissionList[MAX_TEAM_MISSIONS]{};
 
   /*
   **	Number and type of members desired for this team.

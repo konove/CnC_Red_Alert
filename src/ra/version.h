@@ -170,14 +170,14 @@ class VersionClass {
   //.....................................................................
   // This array is used for formatting the version # as a string
   //.....................................................................
-  char VersionName[30];
+  char VersionName[30]{};
 
   //.....................................................................
   // This array contains special version labels (such as "Beta"), stored
   // in the file VERSION.TXT.  If the file isn't present, no label is
   // shown.
   //.....................................................................
-  char VersionText[16];
+  char VersionText[16]{};
 
   //.....................................................................
   // Values used for "Version Clipping"

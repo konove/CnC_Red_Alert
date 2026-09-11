@@ -107,7 +107,7 @@ class ScenarioClass {
   static constexpr int kSpecialWaypoint = kWaypointCount - 1;
   static constexpr int kReinforcementWaypoint = kWaypointCount - 2;
   static constexpr int kHomeWaypoint = kWaypointCount - 3;
-  CELL Waypoint[kWaypointCount];
+  CELL Waypoint[kWaypointCount]{};
 
   /*
   **	This holds the system wide mission countdown timer. Time based missions
@@ -136,12 +136,12 @@ class ScenarioClass {
   /*
   **	The full name of the scenario (as it exists on disk).
   */
-  char ScenarioName[_MAX_FNAME + _MAX_EXT];
+  char ScenarioName[_MAX_FNAME + _MAX_EXT]{};
 
   /*
   **	Description of the scenario.
   */
-  char Description[kDescripMax];
+  char Description[kDescripMax]{};
 
   /*
   **	The filename of the introduction movie.
@@ -174,7 +174,7 @@ class ScenarioClass {
   **	displayed when the player commands the "restate mission
   **	objectives" operation.
   */
-  char BriefingText[1024];
+  char BriefingText[1024]{};
 
   /*
   **	This is the theme to start playing at the beginning of the action
@@ -217,12 +217,12 @@ class ScenarioClass {
   **	Global flags that are used in the trigger system and are persistent
   **	over the course of the game.
   */
-  bool GlobalFlags[30];
+  bool GlobalFlags[30]{};
 
   /*
   **	This records the bookmark view locations the player has recorded.
   */
-  CELL Views[4];
+  CELL Views[4]{};
 
   /*
   **	This is the number of active passable bridges in the current game.
@@ -338,9 +338,9 @@ class ScenarioClass {
   // left in the game.
   Timer<FrameTickSource> AutoSonarTimer;
 
-  bool bLocalProposesDraw;  //	True if the local player in a 2-player game has
+  bool bLocalProposesDraw = false;  //	True if the local player in a 2-player game has
                             // a draw offer extended.
-  bool bOtherProposesDraw;  //	True if the other player in a 2-player game has
+  bool bOtherProposesDraw = false;  //	True if the other player in a 2-player game has
                             // a draw offer extended.
 };
 

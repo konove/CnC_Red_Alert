@@ -288,7 +288,7 @@ class MapEditClass : public MouseClass {
   **	Array of all TypeClasses the user can add to the map; cleared by
   **	Clear_List(), added to by Add_To_List()
   */
-  const ObjectTypeClass* Objects[MAX_EDIT_OBJECTS];
+  const ObjectTypeClass* Objects[MAX_EDIT_OBJECTS]{};
   int ObjCount;  // # of objects in the Objects array
 
   /*
@@ -301,13 +301,13 @@ class MapEditClass : public MouseClass {
   **	Variables for grabbing/moving objects
   */
   ObjectClass* GrabbedObject;   // object "grabbed" with mouse
-  CELL GrabOffset;              // offset to grabbed obj's upper-left
-  unsigned long LastClickTime;  // time of last LMOUSE click
+  CELL GrabOffset = 0;          // offset to grabbed obj's upper-left
+  unsigned long LastClickTime = 0;  // time of last LMOUSE click
 
   /*
   **	Number of each type of object in Objects, so we can switch categories
   */
-  int NumType[NUM_EDIT_CLASSES];  // # of each type of class:
+  int NumType[NUM_EDIT_CLASSES]{};  // # of each type of class:
                                   // 0 = Template
                                   // 1 = Overlay
                                   // 2 = Smudge
@@ -321,7 +321,7 @@ class MapEditClass : public MouseClass {
   /*
   **	The offset of each type of object within the Objects[] array
   */
-  int TypeOffset[NUM_EDIT_CLASSES];  // offsets within Objects[]
+  int TypeOffset[NUM_EDIT_CLASSES]{};  // offsets within Objects[]
 
   /*
   **	The "current" trigger for point-and-click trigger setting
@@ -349,17 +349,17 @@ class MapEditClass : public MouseClass {
   /*
   **	Variables for supporting the object-editing controls at screen bottom
   */
-  ListClass* HouseList;
-  ListClass* MissionList;
-  TriColorGaugeClass* HealthGauge;
-  Dial8Class* FacingDial;
-  ControlClass* MapArea;
-  TextLabelClass* HealthText;
-  TextButtonClass* Sellable;
-  TextButtonClass* Rebuildable;
+  ListClass* HouseList = nullptr;
+  ListClass* MissionList = nullptr;
+  TriColorGaugeClass* HealthGauge = nullptr;
+  Dial8Class* FacingDial = nullptr;
+  ControlClass* MapArea = nullptr;
+  TextLabelClass* HealthText = nullptr;
+  TextButtonClass* Sellable = nullptr;
+  TextButtonClass* Rebuildable = nullptr;
   static char HealthBuf[20];
-  GaugeClass* BaseGauge;
-  TextLabelClass* BaseLabel;
+  GaugeClass* BaseGauge = nullptr;
+  TextLabelClass* BaseLabel = nullptr;
   static constexpr std::array MapEditMissions = {
       MISSION_GUARD,   MISSION_STICKY,     MISSION_HARMLESS,
       MISSION_HARVEST, MISSION_GUARD_AREA, MISSION_RETURN,

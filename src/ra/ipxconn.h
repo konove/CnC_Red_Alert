@@ -109,14 +109,14 @@ class IPXConnClass : public ConnectionClass {
   The "Immediate" (Bridge) address for this connection, and a flag
   telling if the address has been precomputed.
   .....................................................................*/
-  NetNodeType ImmediateAddress;
+  NetNodeType ImmediateAddress{};
   int Immed_Set;
 
   /*.....................................................................
   Each IPX Connection can have a Name & Unique numerical ID
   .....................................................................*/
   int ID;
-  char Name[CONN_NAME_MAX];
+  char Name[CONN_NAME_MAX]{};
 
   /*
   -------------------------- Protected Interface ---------------------------

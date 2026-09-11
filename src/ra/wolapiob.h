@@ -97,9 +97,9 @@ enum WOL_LEVEL {
 };
 
 struct WOL_GAMETYPEINFO {
-  int iGameType;
-  char szName[128];
-  char szURL[256];
+  int iGameType = 0;
+  char szName[128]{};
+  char szURL[256]{};
   //	The icon for this game type, once downloaded. Was a GlobalAlloc handle
   //	plus the pointer you got by locking it; the image owns its own memory
   //	now, and empty means the download has not happened or did not work.
@@ -142,7 +142,7 @@ enum DIBICON {
 #define NUMDIBICONS 9
 
 struct DIBICONINFO {
-  char szFile[50];
+  char szFile[50]{};
   std::optional<dib::Image> Icon;
 };
 
@@ -151,9 +151,9 @@ struct DIBICONINFO {
   150            //	Wider than text that will fit in the chat list window.
 struct CHATSAVE  //	What we save about each individual list item.
 {
-  char szText[SAVECHATWIDTH + 1];
+  char szText[SAVECHATWIDTH + 1]{};
   IconList_ItemExtras ItemExtras;  //	Only color is used.
-  CHATSAVE* next;
+  CHATSAVE* next = nullptr;
 };
 
 struct CREATEGAMEINFO {
@@ -172,7 +172,7 @@ struct CREATEGAMEINFO {
                      // launch, used for stats.
   bool bTournament;
   bool bPrivate;
-  GAMEKIND GameKind;
+  GAMEKIND GameKind = RAGAME;
   char szPassword[WOL_CHANKEY_LEN_MAX];  //	If not blank, key for private
                                          // game.
 };
@@ -226,24 +226,24 @@ class WolapiObject {
 
   IChat* pChat;
   IDownload* pDownload;
-  INetUtil* pNetUtil;
+  INetUtil* pNetUtil = nullptr;
   DWORD dwChatAdvise;  //	Value that identifies the "connection" from chat
                        // to chatsink.
   DWORD dwDownloadAdvise;
-  DWORD dwNetUtilAdvise;
+  DWORD dwNetUtilAdvise = 0;
 
   RAChatEventSink* pChatSink;
   RADownloadEventSink* pDownloadSink;
-  RANetUtilEventSink* pNetUtilSink;
+  RANetUtilEventSink* pNetUtilSink = nullptr;
 
   bool bChatShownBefore;
 
-  char szLadderServerHost[150];
-  int iLadderServerPort;
-  char szGameResServerHost1[150];
-  int iGameResServerPort1;
-  char szGameResServerHost2[150];
-  int iGameResServerPort2;
+  char szLadderServerHost[150]{};
+  int iLadderServerPort = 0;
+  char szGameResServerHost1[150]{};
+  int iGameResServerPort1 = 0;
+  char szGameResServerHost2[150]{};
+  int iGameResServerPort2 = 0;
 
   bool bFindEnabled;  //	I have to maintain these, though wolapi should
                       // do it for me...
@@ -257,18 +257,18 @@ class WolapiObject {
                      // that we don't really have to support the feature...
 
   WOL_LEVEL CurrentLevel;
-  WOL_LEVEL LastUpdateChannelCallLevel;
-  char szMyName[WOL_NAME_LEN_MAX];  //	Local user's name, valid while
+  WOL_LEVEL LastUpdateChannelCallLevel = WOL_LEVEL_INVALID;
+  char szMyName[WOL_NAME_LEN_MAX]{};  //	Local user's name, valid while
                                     // connected.
-  char szMyRecord[WOL_NAME_LEN_MAX + 80];
-  char szMyRecordAM[WOL_NAME_LEN_MAX + 80];
+  char szMyRecord[WOL_NAME_LEN_MAX + 80]{};
+  char szMyRecordAM[WOL_NAME_LEN_MAX + 80]{};
   bool bMyRecordUpdated;  //	True when szMyRecord has changed and not yet
                           // recognized by chat dialog.
-  char szChannelListTitle[100];
+  char szChannelListTitle[100]{};
   bool bChannelListTitleUpdated;
-  char szChannelNameCurrent[WOL_CHANNAME_LEN_MAX];
+  char szChannelNameCurrent[WOL_CHANNAME_LEN_MAX]{};
   bool bChannelOwner;
-  char szChannelReturnOnGameEnterFail[WOL_CHANNAME_LEN_MAX];
+  char szChannelReturnOnGameEnterFail[WOL_CHANNAME_LEN_MAX]{};
 
   int iLobbyReturnAfterGame;  //	When in game channel, part of the value
                               // of the channel's 'reserved' field.
@@ -279,10 +279,9 @@ class WolapiObject {
 
   //	CREATEGAMEINFO::GAMEKIND GameKindCurrent;	//	Kind of game
   //(Red Alert, CS, AM) we are in game setup for.
-  CREATEGAMEINFO
-  GameInfoCurrent;  //	Kind of game (Red Alert, CS, AM, tournament,
+  CREATEGAMEINFO GameInfoCurrent{};  //	Kind of game (Red Alert, CS, AM, tournament,
                     // private) we are in game setup for.
-  bool bEnableNewAftermathUnits;  //	Used to pass game parameter back to init
+  bool bEnableNewAftermathUnits = false;  //	Used to pass game parameter back to init
                                   // only.
 
   DWORD dwTimeNextWolapiPump;
@@ -290,18 +289,18 @@ class WolapiObject {
 
   DIBICONINFO DibIconInfos[NUMDIBICONS];
 
-  HRESULT hresPatchResults;  //	Used when a patch has been downloaded or
+  HRESULT hresPatchResults = 0;  //	Used when a patch has been downloaded or
                              // cancelled.
 
   WOL_GameSetupDialog* pGSupDlg;  //	When in a game channel, setting up a
                                   // game; ptr to the dialog.
 
   bool bInGame;          //	True while playing a game.
-  bool bConnectionDown;  //	Flag used while in a game, set to true if
+  bool bConnectionDown = false;  //	Flag used while in a game, set to true if
                          // connection goes down.
-  bool bGameServer;  //	Flag used while in a game, true if game server (host).
+  bool bGameServer = false;  //	Flag used while in a game, true if game server (host).
 
-  unsigned long TournamentOpponentIP;  //	Valid while playing a tournament
+  unsigned long TournamentOpponentIP = 0;  //	Valid while playing a tournament
                                        // game. IP address of opponent.
 
   bool bPump_In_Call_Back;  //	Used to enable PumpMessages during Call_Back(),
@@ -310,17 +309,17 @@ class WolapiObject {
   bool bSelfDestruct;  //	If set true, causes logout and deletion of
                        // wolapi object.
 
-  char szWebBrowser[_MAX_PATH + 1];
+  char szWebBrowser[_MAX_PATH + 1]{};
 
   //	For "disconnect pinging".
   bool bDoingDisconnectPinging;
-  bool bDisconnectPingingCompleted;
-  int iDisconnectPingCurrent;
-  DISCONNECT_PING_STATUS DisconnectPingResult_Server[DISCONNECT_PING_COUNT];
-  DISCONNECT_PING_STATUS DisconnectPingResult_Opponent[DISCONNECT_PING_COUNT];
+  bool bDisconnectPingingCompleted = false;
+  int iDisconnectPingCurrent = 0;
+  DISCONNECT_PING_STATUS DisconnectPingResult_Server[DISCONNECT_PING_COUNT]{};
+  DISCONNECT_PING_STATUS DisconnectPingResult_Opponent[DISCONNECT_PING_COUNT]{};
 
   //	Used for in-game paging and responding.
-  char szExternalPager[WOL_NAME_LEN_MAX];  //	Last person to page me from
+  char szExternalPager[WOL_NAME_LEN_MAX]{};  //	Last person to page me from
                                            // outside the game, or blank for
                                            // none.
   bool bFreezeExternalPager;
@@ -487,7 +486,7 @@ class WolapiObject {
 
   //	Used by the general chat dialog.
   IconListClass* pILChat;      //	Main messages list.
-  IconListClass* pILChannels;  //	Channels list.
+  IconListClass* pILChannels = nullptr;  //	Channels list.
   IconListClass* pILUsers;     //	Users list.
 
   //	IconListClass*			pILDisc;			//
@@ -500,14 +499,14 @@ class WolapiObject {
   WOL_GAMETYPEINFO* GameTypeInfos;
   unsigned int nGameTypeInfos;
 
-  float fLatencyToIconWidth;
+  float fLatencyToIconWidth = 0.0f;
   //	Width in pixels of the latency bar icon, or 0 if it did not load. Kept
   //	beside fLatencyToIconWidth so the list code does not have to reach into
   //	an optional it cannot check from where it stands.
-  int iLatencyIconWidth;
+  int iLatencyIconWidth = 0;
 
   CHATSAVE* pChatSaveList;
-  CHATSAVE* pChatSaveLast;
+  CHATSAVE* pChatSaveLast = nullptr;
 };
 
 // The one Westwood Online session, or nullptr when the game is not logged in.

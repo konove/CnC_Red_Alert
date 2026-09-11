@@ -563,7 +563,7 @@ bool IndexClass<T>::Remove_Index(int id) {
     }
     IndexCount--;
 
-    NodeElement fake;
+    NodeElement fake{};
     fake.ID = 0;
     fake.Data = T();
     IndexTable[IndexCount] = fake;  // zap last (now unused) element
@@ -645,7 +645,7 @@ const IndexClass<T>::NodeElement* IndexClass<T>::Search_For_Node(int id) const {
   /*
   **	This list is sorted and ready to perform a binary search upon it.
   */
-  NodeElement node;
+  NodeElement node{};
   node.ID = id;
   return (const NodeElement*)bsearch(&node, &IndexTable[0], IndexCount,
                                      sizeof(IndexTable[0]), search_compfunc);

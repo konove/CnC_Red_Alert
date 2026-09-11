@@ -58,7 +58,7 @@ class AbstractClass {
   int Height;  // Above-ground height in leptons.
 
   // Whether this slot in the fixed-size object heap is in use.
-  unsigned IsActive : 1;
+  unsigned IsActive : 1 = true;
 
   AbstractClass(const RTTIType rtti, const int id)
       : RTTI(rtti),

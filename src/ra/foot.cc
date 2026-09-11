@@ -425,7 +425,7 @@ bool FootClass::Basic_Path() {
       *failure occurs, or a decent *	path was found.
       */
       bool found1 = false;  // Found a best path yet?
-      PathType path1;
+      PathType path1{};
       FacingType workpath1[200];  // Staging area for path list.
       //			FacingType	workpath2[200];	// Staging area
       // for path list.

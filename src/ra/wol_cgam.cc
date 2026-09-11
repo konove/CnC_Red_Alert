@@ -56,7 +56,7 @@ void SetPlayerCountList(IconListClass& PlayerCountList, int iPlayerMax,
 
 //***********************************************************************************************
 CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
-  CREATEGAMEINFO cgiReturn;
+  CREATEGAMEINFO cgiReturn{};
   cgiReturn.bCreateGame = false;
   cgiReturn.iPlayerMax = 2;
   cgiReturn.bTournament = false;

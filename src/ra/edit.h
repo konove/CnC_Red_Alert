@@ -78,7 +78,7 @@ class EditClass : public ControlClass {
 
  protected:
   TextPrintType TextFlags;  // Text rendering style (font, alignment).
-  EditStyle EditFlags;      // Allowed character types for input filtering.
+  EditStyle EditFlags{};    // Allowed character types for input filtering.
 
   char* String;   // Caller-owned text buffer modified in place.
   int MaxLength;  // Max string length (excludes null terminator).

@@ -104,8 +104,8 @@ class IPXAddressClass {
   --------------------------- Private Interface ----------------------------
   */
  private:
-  NetNumType NetworkNumber;
-  NetNodeType NodeAddress;
+  NetNumType NetworkNumber{};
+  NetNodeType NodeAddress{};
 };
 
 #endif  // CNC_RED_ALERT_RA_IPXADDR_H_

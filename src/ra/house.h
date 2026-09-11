@@ -180,7 +180,7 @@ class HouseClass {
   **	Is this player active?  Usually that answer is true, but for civilians,
   *it *	might possibly be false.
   */
-  unsigned IsActive : 1;
+  unsigned IsActive : 1 = true;
 
   /*
   **	If this house is controlled by the player, then this flag will be true.
@@ -550,7 +550,7 @@ class HouseClass {
     void Serialize(Archive& ar) {
       ar(AirDefense, ArmorDefense, InfantryDefense);
     }
-  } ZoneInfo[magic_enum::enum_count<ZoneType>()];
+  } ZoneInfo[magic_enum::enum_count<ZoneType>()]{};
 
   /*
   **	This records information about the last time a building of this
@@ -909,13 +909,13 @@ class HouseClass {
   /*
   ** This is the name ("handle") the player has chosen for himself.
   */
-  char IniName[HOUSE_NAME_MAX];
+  char IniName[HOUSE_NAME_MAX]{};
 
   // The name this player started the game with. Unlike IniName it is never
   // rewritten to "Computer" when the computer takes over for a player who has
   // left, so end-of-game reporting can still say who was here. Internet games
   // are the only ones that fill it in.
-  char InitialName[HOUSE_NAME_MAX];
+  char InitialName[HOUSE_NAME_MAX]{};
 
   int QuantityB(int index) { return BQuantity[index]; }
   int QuantityU(int index) {

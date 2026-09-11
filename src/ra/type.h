@@ -77,7 +77,7 @@ class AbstractTypeClass {
   **	used in scenario control files and for other text based unique
   **	identification purposes.
   */
-  char IniName[24];
+  char IniName[24]{};
 
   /*
   **	The translated (language specific) text name number of this object.
@@ -134,7 +134,7 @@ class HouseTypeClass : public AbstractTypeClass {
   **	This is the filename suffix to use when creating a house specific
   **	file name. It is three characters long.
   */
-  char Suffix[_MAX_EXT];
+  char Suffix[_MAX_EXT]{};
 
   /*
   **	This is the "lemon percentage" to use when determining if a particular
@@ -196,7 +196,7 @@ class HouseTypeClass : public AbstractTypeClass {
 class ObjectTypeClass : public AbstractTypeClass {
  public:
   // Base filename for graphic data. Empty string indicates no graphic.
-  char GraphicName[_MAX_FNAME];
+  char GraphicName[_MAX_FNAME]{};
 
   /*
   **	Is this object squashable by heavy vehicles?  If it is, then the vehicle
@@ -761,7 +761,7 @@ class BuildingTypeClass : public TechnoTypeClass {
     int Count;  // Number of frames in this animation.
     int Rate;   // Number of ticks to delay between each frame.
   } AnimControlType;
-  AnimControlType Anims[magic_enum::enum_count<BStateType>()];
+  AnimControlType Anims[magic_enum::enum_count<BStateType>()]{};
 
   /*---------------------------------------------------------------------------
   **	This is the building type explicit constructor.

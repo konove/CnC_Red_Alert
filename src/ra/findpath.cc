@@ -465,7 +465,8 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
   int cost;                                   // Cost to enter the square
   FacingType moves_left[MAX_MLIST_SIZE + 2],  // Counterclockwise move list.
       moves_right[MAX_MLIST_SIZE + 2];        // Clockwise move list.
-  PathType pleft, pright;                     // Path control structures.
+  PathType pleft{};
+  PathType pright{};                     // Path control structures.
   PathType* which;                            // Which path to actually use.
   int threat;
   int threat_stage = 0;

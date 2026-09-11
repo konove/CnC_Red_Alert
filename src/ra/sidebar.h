@@ -167,7 +167,8 @@ class SidebarClass : public PowerClass {
     **	This is the coordinate of the upper left corner that this side strip
     **	uses for rendering.
     */
-    int X, Y;
+    int X = 0;
+    int Y = 0;
 
     /*
     **	This is a unique identifier for the sidebar strip. Using this
@@ -177,7 +178,7 @@ class SidebarClass : public PowerClass {
     ** the Column[] array, because the strip uses it to access the stripclass
     ** buttons.
     */
-    int ID;
+    int ID = 0;
 
     /*
     **	Shape numbers for the shapes in the STRIP.SHP file.
@@ -191,46 +192,46 @@ class SidebarClass : public PowerClass {
     **	If this particular side strip needs to be redrawn, then this flag
     **	will be true.
     */
-    unsigned IsToRedraw : 1;
+    unsigned IsToRedraw : 1 = 0;
 
     /*
     **	If construction is in progress (no other objects in this strip can
     **	be started), then this flag will be true. It will be cleared when
     **	the strip is free to start production again.
     */
-    unsigned IsBuilding : 1;
+    unsigned IsBuilding : 1 = 0;
 
     /*
     **	This controls the sidebar slide direction. If this is true, then the
     *sidebar *	will scroll downward -- revealing previous objects.
     */
-    unsigned IsScrollingDown : 1;
+    unsigned IsScrollingDown : 1 = 0;
 
     /*
     **	If the sidebar is scrolling, then this flag is true. Otherwise it is
     *false.
     */
-    unsigned IsScrolling : 1;
+    unsigned IsScrolling : 1 = 0;
 
     /*
     **	This is the object (sidebar slot) that is flashing. Only one slot can be
     *flashing *	at any one instant. This is usually the result of a click on the
     *slot and construction *	has commenced.
     */
-    int Flasher;
+    int Flasher = -1;
 
     /*
     **	As the sidebar scrolls up and down, this variable holds the index for
     *the topmost *	visible sidebar slot.
     */
-    int TopIndex;
+    int TopIndex = 0;
 
     /*
     **	This is the queued scroll direction and amount. The sidebar
     **	will scroll the number of slots indicated by this value. This
     **	value is set according to the scroll buttons.
     */
-    int Scroller;
+    int Scroller = 0;
 
     /*
     **	The sidebar has smooth scrolling. This is the number of pixels the
@@ -240,17 +241,17 @@ class SidebarClass : public PowerClass {
     *decremented. For sliding in the *	opposite direction, change the
     *IsScrollingDown flag.
     */
-    int Slid;
+    int Slid = 0;
 
     /*
     ** The value of Slid the last time we rendered the sidebar.
     */
-    int LastSlid;
+    int LastSlid = 0;
 
     /*
     **	This is the count of the number of sidebar slots that are active.
     */
-    int BuildableCount;
+    int BuildableCount = 0;
 
     /*
     **	This is the array of buildable object types. This array is sorted in the
@@ -263,7 +264,7 @@ class SidebarClass : public PowerClass {
       RTTIType BuildableType;
       int Factory;  // Production manager.
     } BuildType;
-    BuildType Buildables[kMaxBuildables];
+    BuildType Buildables[kMaxBuildables]{};
 
     /*
     **	Pointer to the shape data for small versions of the logos. These are

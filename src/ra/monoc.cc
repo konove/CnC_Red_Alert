@@ -171,7 +171,7 @@ void MonoClass::Pan(int cols) {
     return;
   }
 
-  CellType cell;
+  CellType cell{};
   cell.Character = ' ';
   cell.Attribute = Attrib;
 
@@ -280,7 +280,7 @@ void MonoClass::Sub_Window(int x, int y, int w, int h) {
  *=============================================================================================*/
 void MonoClass::Draw_Box(int x, int y, int w, int h, MonoAttribute attrib,
                          BoxStyleType thick) {
-  CellType cell;
+  CellType cell{};
   MonoAttribute oldattrib = Attrib;
 
   if (!Enabled || !w || !h) {
@@ -401,7 +401,7 @@ void MonoClass::Clear() {
 
   Set_Cursor(0, 0);
 
-  CellType cell;
+  CellType cell{};
   cell.Attribute = Attrib;
   cell.Character = ' ';
 
@@ -475,7 +475,7 @@ void MonoClass::Scroll(int lines) {
     return;
   }
 
-  CellType cell;
+  CellType cell{};
   cell.Attribute = Attrib;
   cell.Character = ' ';
 
@@ -587,7 +587,7 @@ void MonoClass::Printf(int text, ...) {
 void MonoClass::Print(const char* ptr) {
   int startcol = X;
   const char* text;
-  CellType cell;
+  CellType cell{};
 
   if (!ptr || !Enabled) {
     return;

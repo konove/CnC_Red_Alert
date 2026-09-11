@@ -124,7 +124,7 @@ struct TActionClass {
     VQType Movie;               // The movie to play.
     bool Bool;                  // Boolean value.
     int Value;
-  } Data;
+  } Data{};
 
   TActionClass() : Action(TACTION_NONE) {
     Data.Theme = THEME_NONE;

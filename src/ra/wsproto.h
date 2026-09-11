@@ -178,12 +178,12 @@ class WinsockInterfaceClass {
   /*
   ** Temporary receive buffer to use when querying Winsock for incoming packets.
   */
-  unsigned char ReceiveBuffer[WS_RECEIVE_BUFFER_LEN];
+  unsigned char ReceiveBuffer[WS_RECEIVE_BUFFER_LEN]{};
 
   /*
   ** Current connection status.
   */
-  ConnectStatusEnum ConnectStatus;
+  ConnectStatusEnum ConnectStatus = NOT_CONNECTING;
 };
 
 #endif  // CNC_RED_ALERT_RA_WSPROTO_H_

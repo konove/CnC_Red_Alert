@@ -171,8 +171,8 @@ class IPXGlobalConnClass : public IPXConnClass {
   // number allows us to obtain its local target address only once, then
   // re-use it.
   //.....................................................................
-  NetNumType BridgeNet;
-  NetNodeType BridgeNode;
+  NetNumType BridgeNet{};
+  NetNodeType BridgeNode{};
   int IsBridge;
 
   //------------------------------------------------------------------------
@@ -203,7 +203,7 @@ class IPXGlobalConnClass : public IPXConnClass {
   // app to receive the same packet twice!
   //.....................................................................
   IPXAddressClass LastAddress[4];  // array of last 4 addresses
-  unsigned long LastPacketID[4];   // array of last 4 packet ID's
+  unsigned long LastPacketID[4]{};  // array of last 4 packet ID's
   int LastRXIndex;                 // index of next avail pos
 };
 

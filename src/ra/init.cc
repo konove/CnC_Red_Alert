@@ -2082,7 +2082,7 @@ static void Init_Expansion_Files() {
   /*
   **	Before all else, cache any additional mixfiles.
   */
-  FindFileState state;
+  FindFileState state{};
   if (Find_First_File("SC*.MIX", state)) {
     do {
       // scores shouldn't be loaded here but may be found if main has been

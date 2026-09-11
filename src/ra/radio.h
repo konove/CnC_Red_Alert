@@ -57,7 +57,7 @@ class RadioClass : public MissionClass {
   /*
   **	This is a record of the last message received by this receiver.
   */
-  RadioMessageType Old[3];
+  RadioMessageType Old[3]{};
 
   /*
   **	This is the object that radio communication has been established

@@ -155,10 +155,10 @@ class GadgetClass : public LinkClass {
   **	This is the coordinates and dimensions of the gadget region. These are
   *in *	absolute screen pixel coordinates.
   */
-  int X;
-  int Y;
-  int Width;
-  int Height;
+  int X = 0;
+  int Y = 0;
+  int Width = 0;
+  int Height = 0;
 
  protected:
   /*
@@ -197,7 +197,7 @@ class GadgetClass : public LinkClass {
   *element needs *	to be redrawn. This flag is set by default if the Action
   *function is called.
   */
-  unsigned IsToRepaint : 1;
+  unsigned IsToRepaint : 1 = 0;
 
  public
      :  // HACK HACK HACK.. this is here because the sidebar buttons are static.
@@ -207,7 +207,7 @@ class GadgetClass : public LinkClass {
   *mouse continues *	to remain pressed. This is the standard behavior for all
   *normal Windows style *	buttons.
   */
-  unsigned IsSticky : 1;
+  unsigned IsSticky : 1 = 0;
 
   //	ajw - Publicized StuckOn 7/30/98 (was protected)
   /*
@@ -225,7 +225,7 @@ class GadgetClass : public LinkClass {
   *perform no action -- just return. Or, *	just remove the button from the
   *list.
   */
-  unsigned IsDisabled : 1;
+  unsigned IsDisabled : 1 = 0;
 
   /*
   **	These are the action flags that are used to determine when the action
@@ -233,7 +233,7 @@ class GadgetClass : public LinkClass {
   *button called when *	the left mouse button is pressed over the its region,
   *then the flag will be set *	to LEFTPRESS.
   */
-  unsigned Flags;
+  unsigned Flags = 0;
 
   /*
   ** This is the current color scheme; it must be initialized by the app.

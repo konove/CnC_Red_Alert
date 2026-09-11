@@ -260,23 +260,23 @@ class ConnectionClass {
   Running totals of # of packets we send & receive which require an ACK,
   and those that don't.
   .....................................................................*/
-  unsigned long NumRecNoAck;
-  unsigned long NumRecAck;
-  unsigned long NumSendNoAck;
-  unsigned long NumSendAck;
+  unsigned long NumRecNoAck = 0;
+  unsigned long NumRecAck = 0;
+  unsigned long NumSendNoAck = 0;
+  unsigned long NumSendAck = 0;
 
   /*.....................................................................
   This is the ID of the last consecutively-received packet; anything older
   than this, we know is a resend.  Anything newer than this MUST be lying
   around in the Queue for us to detect it as a resend.
   .....................................................................*/
-  uint32_t LastSeqID;
+  uint32_t LastSeqID = 0xffffffff;
 
   /*.....................................................................
   This is the ID of the PACKET_DATA_ACK packet we read last; it ensures
   that the application reads that type of packet in order.
   .....................................................................*/
-  uint32_t LastReadID;
+  uint32_t LastReadID = 0xffffffff;
 
   /*.....................................................................
   Names of all packet commands

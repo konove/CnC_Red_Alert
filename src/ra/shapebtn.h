@@ -63,6 +63,6 @@ class ShapeButtonClass final : public ToggleClass {
   **	This points to the shape data file. This file contains the appropriate
   *shapes *	for this button in the offsets specified above.
   */
-  const void* ShapeData;
+  const void* ShapeData = nullptr;
 };
 #endif  // CNC_RED_ALERT_RA_SHAPEBTN_H_
