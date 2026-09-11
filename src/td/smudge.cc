@@ -65,11 +65,6 @@
 #include "td/profile.h"
 #include "td/vector.h"
 
-/*
-** This contains the value of the Virtual Function Table Pointer
-*/
-void* SmudgeClass::VTable;
-
 HousesType SmudgeClass::ToOwn = HOUSE_NONE;
 
 /***********************************************************************************************
@@ -191,15 +186,7 @@ SmudgeClass::SmudgeClass(SmudgeType type, COORDINATE pos, HousesType house)
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void SmudgeClass::Init() {
-  SmudgeClass* ptr;
-
-  Smudges.Free_All();
-
-  ptr = new SmudgeClass();
-  VTable = ((void**)((char*)ptr + sizeof(AbstractClass) - 4))[0];
-  delete ptr;
-}
+void SmudgeClass::Init() { Smudges.Free_All(); }
 
 /***********************************************************************************************
  * SmudgeClass::Mark -- Marks a smudge down on the map. *
@@ -352,7 +339,8 @@ void SmudgeClass::Write_INI(char* buffer) {
   */
   tbuffer = buffer + strlen(buffer) + 2;
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            _ShapeBufferSize - static_cast<int>(strlen(buffer)), buffer);
+                            _ShapeBufferSize - static_cast<int>(strlen(buffer)),
+                            buffer);
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
     tbuffer += strlen(tbuffer) + 1;

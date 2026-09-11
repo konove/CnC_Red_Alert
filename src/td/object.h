@@ -133,6 +133,9 @@ class ObjectClass : public AbstractClass {
   /*-----------------------------------------------------------------------------------
   **	Constructor & destructors.
   */
+  // Shared fields; raw Techno subclasses still need NoInit and pointer coding.
+  template <class Archive>
+  void Serialize(Archive& ar);
   ObjectClass();
   ObjectClass(const NoInitClass& x) : AbstractClass(x) {}
   ~ObjectClass() override {}

@@ -53,8 +53,6 @@ class ArchiveWriter;
 #include "td/globals.h"
 #include "td/object.h"
 #include "td/type.h"
-#include "tech/noinit.h"
-#include "tech/wwfile.h"
 
 class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
  public:
@@ -63,14 +61,14 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   *attributes *	for this bullet is located in the BulletTypeClass pointed to by
   *this variable.
   */
-  const BulletTypeClass* Class;
+  const BulletTypeClass* Class = nullptr;
   operator BulletType() const { return Class->Type; }
 
   /*
   **	Records who sent this "present" so that an appropriate "thank you" can
   **	be returned.
   */
-  TechnoClass* Payback;
+  TechnoClass* Payback = nullptr;
 
   /*
   **	This is the facing that the projectile is travelling.
@@ -83,10 +81,11 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
-  BulletClass();
+  BulletClass() {
+    IsActive = true;
+    Strength = 0;
+  }
   BulletClass(BulletType id);
-  BulletClass(const NoInitClass& x)
-      : ObjectClass(x), FlyClass(x), FuseClass(x), PrimaryFacing(x) {}
   ~BulletClass() override {
     if (GameActive) {
       BulletClass::Limbo();
@@ -114,10 +113,9 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   /*
   **	File I/O.
   */
-  bool Load(ArchiveReader& file);
-  bool Save(ArchiveWriter& file);
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
+  // Field-wise saved-game support, defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	Dee-buggin' support.
@@ -128,18 +126,18 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   **	If this bullet is forced to be inaccurate because of some outside means.
   *A tank *	firing while moving is a good example.
   */
-  unsigned IsInaccurate : 1;
+  unsigned IsInaccurate : 1 = false;
 
  private:
   // Crude animation flag.
-  unsigned IsToAnimate : 1;
+  unsigned IsToAnimate : 1 = false;
 
   /*
   **	This is the height of the projectile. It starts at a low height, rises
   *to an *	apogee and then drops to explode upon impact. The height is used
   *to render *	the bullet's vertical offset.
   */
-  int Altitude;
+  int Altitude = 0;
 
   /*
   **	This is a modifier for the altitude that rises and falls in order to
@@ -147,23 +145,18 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   *every game tick *	while simultaneously being reduced itself. The net
   *effect, is a rising *	projectile that slows and then eventually drops.
   */
-  signed char Riser;
+  signed char Riser = 0;
 
   /*
   **	This is the target of the projectile. It is especially significant for
   *those projectiles *	that home in on a target.
   */
-  TARGET TarCom;
+  TARGET TarCom = kTargetNone;
 
   /*
   ** Is this missle allowed to come in from out of bounds?
   */
-  unsigned IsLocked : 1;
-
-  /*
-  ** This contains the value of the Virtual Function Table Pointer
-  */
-  static void* VTable;
+  unsigned IsLocked : 1 = true;
 };
 
 #endif  // CNC_RED_ALERT_TD_BULLET_H_

@@ -77,6 +77,7 @@
 #include "td/mouse.h"
 #include "td/object.h"
 #include "td/overlay.h"
+#include "td/randomstate.h"
 #include "td/savepipe.h"
 #include "td/scenario.h"
 #include "td/score.h"
@@ -584,6 +585,9 @@ bool Save_Misc_Values(ArchiveWriter& file) {
 
   // This is new...
   file.Bytes(ActionMovie, sizeof(ActionMovie));
+  auto random_state = CaptureRandomState();
+  file.Section(FourCC("RNGS"));
+  file(random_state);
 
   return true;
 }
@@ -672,6 +676,12 @@ bool Load_Misc_Values(ArchiveReader& file) {
   file.Bytes(BriefingText, sizeof(BriefingText));
 
   file.Bytes(ActionMovie, sizeof(ActionMovie));
+  TdRandomState random_state;
+  file.Section(FourCC("RNGS"));
+  file(random_state);
+  if (file.ok()) {
+    RestoreRandomState(random_state);
+  }
 
   return file.ok();
 }

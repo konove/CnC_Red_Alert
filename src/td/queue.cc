@@ -77,6 +77,7 @@
  *   Print_Framesync_Values -- displays frame-sync variables               *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "td/rand.h"
 #include "td/queue.h"
 
 #include <algorithm>
@@ -3439,7 +3440,7 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   //	A random #
   //------------------------------------------------------------------------
-  Add_CRC(&GameCRC, rand());
+  Add_CRC(&GameCRC, GameRandomDraw());
 
 } /* end of Compute_Game_CRC */
 
@@ -3922,7 +3923,7 @@ void Print_CRCs(EventClass* /*ev*/) {
   //------------------------------------------------------------------------
   //	Random # generator, frame #
   //------------------------------------------------------------------------
-  rnd = rand();
+  rnd = GameRandomDraw();
 
   Mono_Printf("Random Number:%d\n", rnd);
   fprintf(fp, "\nRandom Number:%d\n", rnd);

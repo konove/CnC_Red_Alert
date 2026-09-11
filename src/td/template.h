@@ -50,8 +50,6 @@ class ArchiveWriter;
 #include "td/globals.h"
 #include "td/object.h"
 #include "td/type.h"
-#include "tech/noinit.h"
-#include "tech/wwfile.h"
 
 /******************************************************************************
 **	This class controls the template object. Template objects function
@@ -66,9 +64,8 @@ class TemplateClass : public ObjectClass {
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
-  TemplateClass();
+  TemplateClass() { IsActive = true; }
   TemplateClass(TemplateType type, CELL pos = -1);
-  TemplateClass(const NoInitClass& x) : ObjectClass(x) {}
   ~TemplateClass() override {
     if (GameActive) {
       TemplateClass::Limbo();
@@ -111,10 +108,9 @@ class TemplateClass : public ObjectClass {
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
   static const char* INI_Name() { return "TEMPLATE"; }
-  bool Load(ArchiveReader& file);
-  bool Save(ArchiveWriter& file);
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
+  // Field-wise saved-game support, defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	Dee-buggin' support.
@@ -125,12 +121,7 @@ class TemplateClass : public ObjectClass {
   /*
   **	This is a pointer to the template object's class.
   */
-  const TemplateTypeClass* Class;
-
-  /*
-  ** This contains the value of the Virtual Function Table Pointer
-  */
-  static void* VTable;
+  const TemplateTypeClass* Class = nullptr;
 };
 
 #endif  // CNC_RED_ALERT_TD_TEMPLATE_H_

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Starts a TD campaign, saves at frame 60, and compares the next 60 frames
 # with an uninterrupted run using the same fixed scenario seed. Set TD_CD to override the Steam data directory.
-# Usage: tools/td_saveload_smoke.sh [tdsdl] [scenario, default SCG01EA] [--factory|--team]
+# Usage: tools/td_saveload_smoke.sh [tdsdl] [scenario, default SCG01EA] [--factory|--team|--world]
 set -euo pipefail
 
 TDSDL=$(realpath "${1:-cmake-build-strict-ra-clang/src/td/tdsdl}")
@@ -10,6 +10,7 @@ FIXTURE=()
 case ${3:-} in
   --factory) FIXTURE=(-FACTORYTEST);;
   --team) FIXTURE=(-TEAMTEST);;
+  --world) FIXTURE=(-WORLDTEST);;
 esac
 TD_CD=${TD_CD:-"$HOME/.local/share/Steam/steamapps/common/Command & Conquer"}
 WORK=$(mktemp -d)
@@ -34,7 +35,7 @@ run continuous.log "-NEWGAME$SCENARIO" "${FIXTURE[@]}" -QUITFRAME120
 run loaded.log -LOADGAME99 -QUITFRAME120
 
 filter() {
-  sed -n 's/^.*] \(frame .*\)/\1/p' "$1" | awk '$2 > 60 && ($3 == "unit" || $3 == "factory" || $3 == "trigger" || $3 == "teamtype" || $3 == "team" || $3 == "teamcount" || $3 == "house")'
+  sed -n 's/^.*] \(frame .*\)/\1/p' "$1" | awk '$2 > 60 && ($3 == "unit" || $3 == "factory" || $3 == "trigger" || $3 == "teamtype" || $3 == "team" || $3 == "teamcount" || $3 == "house" || $3 == "template" || $3 == "overlay" || $3 == "smudge" || $3 == "anim" || $3 == "terrain" || $3 == "bullet")'
 }
 filter continuous.log > continuous.positions
 filter loaded.log > loaded.positions
@@ -45,8 +46,13 @@ fi
 if [[ ${3:-} == --team ]]; then
   grep -q ' team ' loaded.positions || { echo 'FAIL: no loaded team'; exit 1; }
 fi
+if [[ ${3:-} == --world ]]; then
+  for kind in template overlay smudge terrain bullet anim; do
+    grep -q " $kind " loaded.positions || { echo "FAIL: no loaded $kind"; exit 1; }
+  done
+fi
 if diff -u continuous.positions loaded.positions > difference.log; then
-  echo "OK: $(wc -l < loaded.positions) unit/factory/trigger/team/house states identical across save/load"
+  echo "OK: $(wc -l < loaded.positions) game states identical across save/load"
 else
   head -30 difference.log | cut -c1-300
   echo 'FAIL: saved states diverge after load'

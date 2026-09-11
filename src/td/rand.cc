@@ -39,8 +39,35 @@
 #include "td/rand.h"
 
 #include "td/jshell.h"
+#include "tech/random.h"
 
 int SimRandIndex = 0;
+extern "C" {
+extern long RandNumb;  // Legacy byte generator, shared with sdllib::Random().
+}
+
+namespace {
+RandomClass gameplay_random;
+}  // namespace
+
+void SeedGameRandom(uint32_t seed) {
+  gameplay_random.set_seed(seed);
+  RandNumb = static_cast<long>(seed);
+  SimRandIndex = 0;
+}
+int GameRandomRange(int low, int high) {
+  return gameplay_random.InRange(low, high);
+}
+int GameRandomDraw() { return gameplay_random.Next(); }
+TdRandomState CaptureRandomState() {
+  return {gameplay_random.seed(), static_cast<uint32_t>(RandNumb),
+          SimRandIndex};
+}
+void RestoreRandomState(const TdRandomState& state) {
+  gameplay_random.set_seed(state.gameplay);
+  RandNumb = static_cast<long>(state.byte_stream);
+  SimRandIndex = state.simulation_index;
+}
 
 /***************************************************************************
  * Sim_Random -- Returns 0 - 255                                           *
@@ -84,8 +111,7 @@ int Sim_Random() {
       0x56, 0x11, 0x71, 0x6a,
   };
 
-  ((unsigned char&)SimRandIndex)++;
-  //	SimRandIndex &= 0xff;
+  SimRandIndex = (SimRandIndex + 1) & 0xff;
   return _randvals[SimRandIndex];
 }
 

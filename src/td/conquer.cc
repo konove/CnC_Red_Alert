@@ -132,6 +132,7 @@
 #include "td/object.h"
 #include "td/palette.h"
 #include "td/queue.h"
+#include "td/rand.h"
 #include "td/saveload.h"
 #include "td/scenario.h"
 #include "td/score.h"
@@ -1751,6 +1752,12 @@ bool Main_Loop() {
     log_heap(TeamTypes, "teamtype");
     log_heap(Teams, "team");
     log_heap(Houses, "house");
+    log_heap(Templates, "template");
+    log_heap(Overlays, "overlay");
+    log_heap(Smudges, "smudge");
+    log_heap(Anims, "anim");
+    log_heap(Terrains, "terrain");
+    log_heap(Bullets, "bullet");
     for (int i = 0; i < TeamTypes.Count(); ++i) {
       const int id = TeamTypes.ID(TeamTypes.Ptr(i));
       LOG(INFO) << "frame " << Frame << " teamcount " << id << " "
@@ -1771,7 +1778,8 @@ bool Main_Loop() {
   /*
   ** Very rarely, the human players will get a message from the computer.
   */
-  if (GameToPlay != GAME_NORMAL && MPlayerGhosts && IRandom(0, 10000) == 1) {
+  if (GameToPlay != GAME_NORMAL && MPlayerGhosts &&
+      GameRandomRange(0, 10000) == 1) {
     Computer_Message();
   }
 

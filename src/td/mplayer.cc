@@ -47,6 +47,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/rand.h"
 #include "td/mplayer.h"
 
 #include <algorithm>
@@ -1019,11 +1020,11 @@ void Computer_Message() {
     We now have a 1/4 chance of echoing one of the human players' messages
     back.
     .....................................................................*/
-    if (IRandom(0, 3) == 2) {
+    if (GameRandomRange(0, 3) == 2) {
       /*..................................................................
       Now we have a 1/3 chance of garbling the human message.
       ..................................................................*/
-      if (IRandom(0, 2) == 1) {
+      if (GameRandomRange(0, 2) == 1) {
         Garble_Message(LastMessage);
       }
 
@@ -1038,7 +1039,7 @@ void Computer_Message() {
       }
     } else {
       sprintf(txt, "%s %s", Text_String(TXT_FROM_COMPUTER),
-              Text_String(TXT_COMP_MSG1 + IRandom(0, 12)));
+              Text_String(TXT_COMP_MSG1 + GameRandomRange(0, 12)));
       Messages.Add_Message(txt, color,
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                            600, 0, 0);

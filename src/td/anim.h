@@ -50,8 +50,6 @@ class ArchiveWriter;
 #include "td/object.h"
 #include "td/stage.h"
 #include "td/type.h"
-#include "tech/noinit.h"
-#include "tech/wwfile.h"
 
 /**********************************************************************************************
 **	This is the class that controls the shape animation objects. Shape
@@ -63,13 +61,9 @@ class AnimClass final : public ObjectClass, private StageClass {
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
-  AnimClass() : Class(nullptr) {
-    Owner = HOUSE_NONE;
-    Object = nullptr;
-  }  // Default constructor does nothing.
+  AnimClass() { IsActive = true; }
   AnimClass(AnimType animnum, COORDINATE coord, unsigned char timedelay = 0,
             unsigned char loop = 1, bool alt = false);
-  AnimClass(const NoInitClass& x) : ObjectClass(x), StageClass(x) {}
   ~AnimClass() override;
   operator AnimType() const { return Class->Type; }
   RTTIType What_Am_I() const override { return RTTI_ANIM; }
@@ -99,10 +93,9 @@ class AnimClass final : public ObjectClass, private StageClass {
   /*
   **	File I/O.
   */
-  bool Load(ArchiveReader& file);
-  bool Save(ArchiveWriter& file);
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
+  // Field-wise saved-game support, defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	Dee-buggin' support.
@@ -114,20 +107,20 @@ class AnimClass final : public ObjectClass, private StageClass {
   *object. An *	animation that is attached will follow that object as it moves.
   *This is important *	for animations such as flames and smoke.
   */
-  ObjectClass* Object;
+  ObjectClass* Object = nullptr;
 
   /*
   **	If this animation has an owner, then it will be recorded here. An owner
   **	is used when damage is caused by this animation during the middle of its
   **	animation.
   */
-  HousesType Owner;
+  HousesType Owner = HOUSE_NONE;
 
   /*
   **	This counter tells how many more times the animation should loop before
   *it *	terminates.
   */
-  unsigned char Loops;
+  unsigned char Loops = 1;
 
  protected:
   void Middle();
@@ -144,35 +137,35 @@ class AnimClass final : public ObjectClass, private StageClass {
   **	Delete this animation at the next opportunity. This is flagged when the
   **	animation is to be prematurely ended as a result of some outside event.
   */
-  unsigned IsToDelete : 1;
+  unsigned IsToDelete : 1 = false;
 
   /*
   **	If the animation has just been created, then don't do any animation
   **	processing until it has been through the render loop at least once.
   */
-  unsigned IsBrandNew : 1;
+  unsigned IsBrandNew : 1 = true;
 
   // Use alternate color when drawing?
-  unsigned IsAlternate : 1;
+  unsigned IsAlternate : 1 = false;
 
   /*
   **	If this animation is invisible, then this flag will be true. An
   *invisible *	animation is one that is created for the sole purpose of keeping
   *all *	machines syncronised. It will not be displayed.
   */
-  unsigned IsInvisible : 1;
+  unsigned IsInvisible : 1 = false;
 
   /*
   **	This points to the type of animation object this is.
   */
-  const AnimTypeClass* Class;
+  const AnimTypeClass* Class = nullptr;
 
   /*
   **	Is this animation in a temporary suspended state?  If so, then it won't
   **	be rendered until this flag is false. The flag will be set to false
   **	after the first countdown timer reaches 0.
   */
-  unsigned char Delay;
+  unsigned char Delay = 0;
 
   /*
   **	If this is an animation that damages whatever it is attached to, then
@@ -180,12 +173,7 @@ class AnimClass final : public ObjectClass, private StageClass {
   *the accumulated *	fractions reach 256, then one damage point is applied to
   *the attached object.
   */
-  unsigned char Accum;
-
-  /*
-  ** This contains the value of the Virtual Function Table Pointer
-  */
-  static void* VTable;
+  unsigned char Accum = 0;
 };
 
 void Shorten_Attached_Anims(ObjectClass* obj);

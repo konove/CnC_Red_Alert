@@ -15,7 +15,9 @@
 #include "td/target.h"
 #include "td/teamtype.h"
 #include "td/techno.h"
+#include "td/template.h"
 #include "td/terrain.h"
+#include "td/trigger.h"
 #include "td/type.h"
 #include "td/unit.h"
 
@@ -64,6 +66,8 @@ ObjectClass* ResolveSavedObject(TARGET target, ArchiveReader& ar) {
       return Slot(Bullets, index, ar);
     case KIND_ANIMATION:
       return Slot(Anims, index, ar);
+    case KIND_TEMPLATE:
+      return Slot(Templates, index, ar);
     default:
       ar.Fail("saved target is not an object kind");
       return nullptr;
@@ -230,4 +234,24 @@ void TechnoTypePtr::Serialize(ArchiveReader& ar) {
       break;
   }
   ar.Fail("invalid saved techno type target");
+}
+
+void TriggerPtr::Serialize(ArchiveWriter& ar) {
+  TARGET target =
+      ref_ != nullptr && ref_->IsActive ? ref_->As_Target() : kTargetNone;
+  ar(target);
+}
+void TriggerPtr::Serialize(ArchiveReader& ar) {
+  TARGET target = kTargetNone;
+  ar(target);
+  ref_ = nullptr;
+  if (!ar.ok() || target == kTargetNone) {
+    return;
+  }
+  if (Target_Kind(target) != KIND_TRIGGER ||
+      Target_Value(target) >= static_cast<unsigned>(Triggers.Length())) {
+    ar.Fail("invalid saved trigger target");
+    return;
+  }
+  ref_ = Triggers.Raw_Ptr(static_cast<int>(Target_Value(target)));
 }

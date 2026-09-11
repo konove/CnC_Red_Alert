@@ -58,6 +58,7 @@
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "td/rand.h"
 #include "td/audio.h"
 #include "td/ccfile.h"
 #include "td/conquer.h"
@@ -1478,7 +1479,7 @@ void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
   for (shuffled_cols = 0; shuffled_cols < w; shuffled_cols++) {
     int temp;
 
-    x = IRandom(0, w - 1);
+    x = GameRandomRange(0, w - 1);
     temp = _shuffled_cols[x];
     _shuffled_cols[x] = _shuffled_cols[shuffled_cols];
     _shuffled_cols[shuffled_cols] = temp;
@@ -1491,7 +1492,7 @@ void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
   for (shuffled_rows = 0; shuffled_rows < h; shuffled_rows++) {
     int temp;
 
-    y = IRandom(0, h - 1);
+    y = GameRandomRange(0, h - 1);
     temp = _shuffled_rows[y];
     _shuffled_rows[y] = _shuffled_rows[shuffled_rows];
     _shuffled_rows[shuffled_rows] = temp;

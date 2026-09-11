@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Steps 0–23 are committed; step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
+- Step 25 is complete; steps 0–24 are committed; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -93,11 +93,35 @@
   wall-clock seeds. `-SEED<n>` now parses past the dash correctly and works outside cheat builds;
   the TD smoke script uses `-SEED1` for reproducible scenario creation. Infantry coordinates are also
   logged for diagnosis. This does not add RNG-state persistence (remaining globals work).
-  Next checkpoint is **25: the smaller world-object heaps**, before Techno/Foot and mobile objects.
+  Step 25 continues with the smaller world-object heaps.
 - Step-24 validation: strict builds of both games and **180 CTest tests** pass. Fixed-seed TD smoke
   runs match **1,831** states with active production, **1,891** with the populated team, and **1,980**
   in Nod, including serialized house fields. RA matches **240** vehicle/vessel positions.
   Real-display and live-multiplayer verification remains outstanding.
+- Step 25 migrates **TemplateClass, OverlayClass, SmudgeClass, AnimClass, TerrainClass, and
+  BulletClass** (TD version **6**), including shared ObjectClass flags, links, trigger references,
+  and strength. Animations/terrain preserve stage progress; projectiles preserve flight, fuse,
+  facing, altitude, and targeting state. The six classes lose raw I/O, NoInit, and vtable capture.
+  Their default constructors initialize active shells without modifying scenario globals.
+- ObjectClass keeps its NoInit and pointer-coding paths for raw Techno subclasses. Compile-time
+  guards require buildings, infantry, units, and aircraft to stay raw while these six heaps use
+  their own serializers. Trigger references validate TARGET kind/bounds; generic object references
+  now support template slots. Overlay's static ownership reset moves to scenario initialization.
+- `-WORLDTEST` / smoke argument `--world` creates all six world-object kinds, including limbo
+  placement objects, shared trigger links, forward heap references, terrain stage state, an attached
+  delayed animation, a configured dormant projectile, and a slow live missile with a timed fuse.
+  Smoke comparisons include complete serialized world-object fields.
+- The expanded projectile check exposed unsaved libc RNG state: shots created after loading diverged
+  at frame 95. Step 25 brings RNG persistence forward from step 29. TD gameplay draws now use the
+  shared deterministic RandomClass; the new RNGS section saves its seed, the legacy byte-generator
+  state, and the simulation-table index. Loading no longer reseeds these streams. This changes TD's
+  seeded sequences and makes recordings from the old RNG implementation incompatible in behavior.
+  Tests cover mixed-stream continuation, invalid indices, and truncated state.
+- Step-25 validation: strict builds of both games and **182 CTest tests** pass. TD smoke matches
+  **5,111** states with the world fixture, **4,631** with production, **4,691** with a populated team,
+  and **3,480** in Nod. RA matches **240** vehicle/vessel positions. Real-display and live-multiplayer
+  verification remains outstanding.
+  Next checkpoint is **26: MissionClass/RadioClass/TechnoClass and BuildingClass**; mobile objects follow.
 - Step-19 validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
   Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke
@@ -399,7 +423,7 @@ the `RawImage` branch rows of `ra/heap_layout_test.cc`.
 23. TeamTypeClass + TeamClass.
 24–27. Remaining heap hierarchy in the same base-first order as RA (Techno + Crew ⚠, Turret/TarCom ⚠, Building Factory index ⚠, Trigger ⚠, House ⚠). Delete `ioobj.cc` bodies, `Read/Write_Object`, `VTable` statics, `heap.cc` raw paths.
 28. Map/Cell ⚠ (theater-first, `CellTriggers`, full `Should_Save`).
-29. Globals: Score, Base, Layers, Misc.
+29. Globals: Score, Base, Layers, Misc. RNG streams already migrated in step 25.
 30. TD cleanup: remaining NoInit ctors incl. `td/ftimer.h:60`, `td/heap_layout_test.cc`, `td/session.h`, `td/wwfile.h`, `td_saveload_test` round-trip (BufferPipe→BufferStraw for Cell, Map members, House, Unit).
 
 **Phase 5 — delete the header, enable the check**

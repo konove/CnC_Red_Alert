@@ -72,6 +72,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "base/types.h"
 #include "rand.h"
 #include "sdllib/misc.h"
 #include "sdllib/shape.h"
@@ -93,16 +94,10 @@
 #include "td/target.h"
 #include "td/trigger.h"
 #include "td/vector.h"
-#include "base/types.h"
 
 #define BARNACLE_STAGE 22
 #define FIRST_SPORE_STAGE 30
 // #define FIRST_SPORABLE_LEVEL 7
-
-/*
-** This contains the value of the Virtual Function Table Pointer
-*/
-void* TerrainClass::VTable;
 
 /***********************************************************************************************
  * TerrainClass::Validate -- validates terrain pointer
@@ -425,15 +420,7 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Init() {
-  TerrainClass* ptr;
-
-  Terrains.Free_All();
-
-  ptr = new TerrainClass();
-  VTable = ((void**)((char*)ptr + sizeof(AbstractClass) - 4))[0];
-  delete ptr;
-}
+void TerrainClass::Init() { Terrains.Free_All(); }
 
 /***********************************************************************************************
  * TerrainClass::Can_Enter_Cell -- Determines if the terrain object can exist in
@@ -738,14 +725,6 @@ COORDINATE TerrainClass::Center_Coord() const {
  *                                                                                             *
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
-TerrainClass::TerrainClass() : Class(nullptr) {
-  IsOnFire = false;
-  IsCrumbling = false;
-  IsBlossoming = false;
-  IsBarnacled = false;
-  IsSporing = false;
-  Strength = 0;
-}
 
 /***********************************************************************************************
  * TerrainClass::Radar_Icon -- Fetches pointer to radar icon to use. *
@@ -777,8 +756,10 @@ unsigned char* TerrainClass::Radar_Icon(CELL cell) {
   ** conveniantly stored out as the first byte of every icon we made.
   */
   int basecell = Coord_Cell(Coord);  // find the base cell of terrain
-  int ydiff = static_cast<CELL>(Cell_Y(cell) - Cell_Y(static_cast<CELL>(basecell)));
-  int xdiff = static_cast<CELL>(Cell_X(cell) - Cell_X(static_cast<CELL>(basecell)));
+  int ydiff =
+      static_cast<CELL>(Cell_Y(cell) - Cell_Y(static_cast<CELL>(basecell)));
+  int xdiff =
+      static_cast<CELL>(Cell_X(cell) - Cell_X(static_cast<CELL>(basecell)));
   if (xdiff < width && ydiff < height) {
     int iconnum = ydiff * width + xdiff;
     return icon + static_cast<base::ssize>(iconnum) * 9;
@@ -860,7 +841,8 @@ void TerrainClass::Write_INI(char* buffer) {
   */
   tbuffer = buffer + strlen(buffer) + 2;
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            _ShapeBufferSize - static_cast<int>(strlen(buffer)), buffer);
+                            _ShapeBufferSize - static_cast<int>(strlen(buffer)),
+                            buffer);
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
     tbuffer += strlen(tbuffer) + 1;

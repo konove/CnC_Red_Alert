@@ -44,42 +44,24 @@
  *-- Write to a save game file.                                         *
  *   AircraftClass::Code_Pointers -- codes class's pointers for load/save *
  *   AircraftClass::Decode_Pointers -- decodes pointers for load/save *
- *   AnimClass::Load -- Reads from a save game file. * AnimClass::Save -- Write
- *to a save game file.                                             *
- *   AnimClass::Code_Pointers -- codes class's pointers for load/save *
- *   AnimClass::Decode_Pointers -- decodes pointers for load/save *
+ *   AnimClass::Serialize -- Read/write saved fields. *
  *   BuildingClass::Load -- Reads from a save game file. * BuildingClass::Save
  *-- Write to a save game file.                                         *
  *   BuildingClass::Code_Pointers -- codes class's pointers for load/save *
  *   BuildingClass::Decode_Pointers -- decodes pointers for load/save *
- *   BulletClass::Load -- Reads from a save game file. * BulletClass::Save --
- *Write to a save game file.                                           *
- *   BulletClass::Code_Pointers -- codes class's pointers for load/save *
- *   BulletClass::Decode_Pointers -- decodes pointers for load/save *
+ *   BulletClass::Serialize -- Read/write saved fields. *
  *   InfantryClass::Load -- Reads from a save game file. * InfantryClass::Save
  *-- Write to a save game file.                                         *
  *   InfantryClass::Code_Pointers -- codes class's pointers for load/save *
  *   InfantryClass::Decode_Pointers -- decodes pointers for load/save *
- *   OverlayClass::Load -- Reads from a save game file. * OverlayClass::Save --
- *Write to a save game file.                                          *
- *   OverlayClass::Code_Pointers -- codes class's pointers for load/save *
- *   OverlayClass::Decode_Pointers -- decodes pointers for load/save *
+ *   OverlayClass::Serialize -- Read/write saved fields. *
  *   ReinforcementClass::Load -- Reads from a save game file. *
  *   ReinforcementClass::Save -- Write to a save game file. *
  *   ReinforcementClass::Code_Pointers -- codes class's pointers for load/save *
  *   ReinforcementClass::Decode_Pointers -- decodes pointers for load/save *
- *   SmudgeClass::Load -- Reads from a save game file. * SmudgeClass::Save --
- *Write to a save game file.                                           *
- *   SmudgeClass::Code_Pointers -- codes class's pointers for load/save *
- *   SmudgeClass::Decode_Pointers -- decodes pointers for load/save *
- *   TemplateClass::Load -- Reads from a save game file. * TemplateClass::Save
- *-- Write to a save game file.                                         *
- *   TemplateClass::Code_Pointers -- codes class's pointers for load/save *
- *   TemplateClass::Decode_Pointers -- decodes pointers for load/save *
- *   TerrainClass::Load -- Reads from a save game file. * TerrainClass::Save --
- *Write to a save game file.                                          *
- *   TerrainClass::Code_Pointers -- codes class's pointers for load/save *
- *   TerrainClass::Decode_Pointers -- decodes pointers for load/save *
+ *   SmudgeClass::Serialize -- Read/write saved fields. *
+ *   TemplateClass::Serialize -- Read/write saved fields. *
+ *   TerrainClass::Serialize -- Read/write saved fields. *
  *   UnitClass::Load -- Reads from a save game file. * UnitClass::Save -- Write
  *to a save game file.                                             *
  *   UnitClass::Code_Pointers -- codes class's pointers for load/save *
@@ -256,108 +238,6 @@ void AircraftClass::Decode_Pointers() {
 }
 
 /***********************************************************************************************
- * AnimClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool AnimClass::Load(ArchiveReader& file) {
-  return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
-}
-
-/***********************************************************************************************
- * AnimClass::Save -- Write to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool AnimClass::Save(ArchiveWriter& file) {
-  return Write_Object(this, sizeof(*this), file);
-}
-
-/***********************************************************************************************
- * AnimClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void AnimClass::Code_Pointers() {
-  /*
-  ------------------------------ Code 'Class' ------------------------------
-  */
-  (AnimTypeClass*&)Class = (AnimTypeClass*)Class->Type;
-
-  /*
-  ----------------------------- Code 'Object' ------------------------------
-  */
-  if (Object) {
-    Object = (ObjectClass*)Object->As_Target();
-  }
-
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  ObjectClass::Code_Pointers();
-  StageClass::Code_Pointers();
-}
-
-/***********************************************************************************************
- * AnimClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void AnimClass::Decode_Pointers() {
-  /*
-  ----------------------------- Decode 'Class' -----------------------------
-  */
-  Class = &AnimTypeClass::As_Reference(static_cast<AnimType>((uintptr_t)Class));
-  Check_Ptr(Class);
-
-  /*
-  ---------------------------- Decode 'Object' -----------------------------
-  */
-  if (Object) {
-    Object = As_Object(static_cast<TARGET>((uintptr_t)Object));
-    Check_Ptr(Object);
-  }
-
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  ObjectClass::Decode_Pointers();
-  StageClass::Decode_Pointers();
-}
-
-/***********************************************************************************************
  * BuildingClass::Load -- Loads from a save game file. *
  *                                                                                             *
  * INPUT:   file  -- The file to read the cell's data from. *
@@ -461,111 +341,6 @@ void BuildingClass::Decode_Pointers() {
 }
 
 /***********************************************************************************************
- * BulletClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool BulletClass::Load(ArchiveReader& file) {
-  return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
-}
-
-/***********************************************************************************************
- * BulletClass::Save -- Write to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool BulletClass::Save(ArchiveWriter& file) {
-  return Write_Object(this, sizeof(*this), file);
-}
-
-/***********************************************************************************************
- * BulletClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void BulletClass::Code_Pointers() {
-  /*
-  ------------------------------ Code 'Class' ------------------------------
-  */
-  (BulletTypeClass*&)Class = (BulletTypeClass*)Class->Type;
-
-  /*
-  ----------------------------- Code 'Payback' -----------------------------
-  */
-  if (Payback) {
-    Payback = (TechnoClass*)Payback->As_Target();
-  }
-
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  ObjectClass::Code_Pointers();
-  FlyClass::Code_Pointers();
-  FuseClass::Code_Pointers();
-}
-
-/***********************************************************************************************
- * BulletClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void BulletClass::Decode_Pointers() {
-  /*
-  ----------------------------- Decode 'Class' -----------------------------
-  */
-  Class =
-      &BulletTypeClass::As_Reference(static_cast<BulletType>((uintptr_t)Class));
-  Check_Ptr(Class);
-
-  /*
-  ---------------------------- Decode 'Payback' ----------------------------
-  */
-  if (Payback) {
-    Payback = As_Techno(static_cast<TARGET>((uintptr_t)Payback));
-    Check_Ptr(Payback);
-  }
-
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  ObjectClass::Decode_Pointers();
-  FlyClass::Decode_Pointers();
-  FuseClass::Decode_Pointers();
-}
-
-/***********************************************************************************************
  * InfantryClass::Load -- Loads from a save game file. *
  *                                                                                             *
  * INPUT:   file  -- The file to read the cell's data from. *
@@ -649,352 +424,6 @@ void InfantryClass::Decode_Pointers() {
   ---------------------------- Chain to parent -----------------------------
   */
   FootClass::Decode_Pointers();
-}
-
-/***********************************************************************************************
- * OverlayClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool OverlayClass::Load(ArchiveReader& file) {
-  return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
-}
-
-/***********************************************************************************************
- * OverlayClass::Save -- Write to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool OverlayClass::Save(ArchiveWriter& file) {
-  return Write_Object(this, sizeof(*this), file);
-}
-
-/***********************************************************************************************
- * OverlayClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void OverlayClass::Code_Pointers() {
-  /*
-  ------------------------------ Code 'Class' ------------------------------
-  */
-  (OverlayTypeClass*&)Class = (OverlayTypeClass*)Class->Type;
-
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  ObjectClass::Code_Pointers();
-}
-
-/***********************************************************************************************
- * OverlayClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void OverlayClass::Decode_Pointers() {
-  /*
-  ----------------------------- Decode 'Class' -----------------------------
-  */
-  Class = &OverlayTypeClass::As_Reference(
-      static_cast<OverlayType>((uintptr_t)Class));
-  Check_Ptr(Class);
-
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  ObjectClass::Decode_Pointers();
-}
-
-/***********************************************************************************************
- * SmudgeClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool SmudgeClass::Load(ArchiveReader& file) {
-  return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
-}
-
-/***********************************************************************************************
- * SmudgeClass::Save -- Write to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool SmudgeClass::Save(ArchiveWriter& file) {
-  return Write_Object(this, sizeof(*this), file);
-}
-
-/***********************************************************************************************
- * SmudgeClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void SmudgeClass::Code_Pointers() {
-  /*
-  ------------------------------ Code 'Class' ------------------------------
-  */
-  Class = (SmudgeTypeClass*)Class->Type;
-
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  ObjectClass::Code_Pointers();
-}
-
-/***********************************************************************************************
- * SmudgeClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void SmudgeClass::Decode_Pointers() {
-  /*
-  ----------------------------- Decode 'Class' -----------------------------
-  */
-  Class =
-      &SmudgeTypeClass::As_Reference(static_cast<SmudgeType>((uintptr_t)Class));
-  Check_Ptr(Class);
-
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  ObjectClass::Decode_Pointers();
-}
-
-/***********************************************************************************************
- * TemplateClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool TemplateClass::Load(ArchiveReader& file) {
-  return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
-}
-
-/***********************************************************************************************
- * TemplateClass::Save -- Write to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool TemplateClass::Save(ArchiveWriter& file) {
-  return Write_Object(this, sizeof(*this), file);
-}
-
-/***********************************************************************************************
- * TemplateClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TemplateClass::Code_Pointers() {
-  /*
-  ------------------------------ Code 'Class' ------------------------------
-  */
-  (TemplateTypeClass*&)Class = (TemplateTypeClass*)Class->Type;
-
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  ObjectClass::Code_Pointers();
-}
-
-/***********************************************************************************************
- * TemplateClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TemplateClass::Decode_Pointers() {
-  /*
-  ----------------------------- Decode 'Class' -----------------------------
-  */
-  Class = &TemplateTypeClass::As_Reference(
-      static_cast<TemplateType>((uintptr_t)Class));
-  Check_Ptr(Class);
-
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  ObjectClass::Decode_Pointers();
-}
-
-/***********************************************************************************************
- * TerrainClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool TerrainClass::Load(ArchiveReader& file) {
-  return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
-}
-
-/***********************************************************************************************
- * TerrainClass::Save -- Write to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool TerrainClass::Save(ArchiveWriter& file) {
-  return Write_Object(this, sizeof(*this), file);
-}
-
-/***********************************************************************************************
- * TerrainClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TerrainClass::Code_Pointers() {
-  /*
-  ------------------------------ Code 'Class' ------------------------------
-  */
-  (TerrainTypeClass*&)Class = (TerrainTypeClass*)Class->Type;
-
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  ObjectClass::Code_Pointers();
-  StageClass::Code_Pointers();
-}
-
-/***********************************************************************************************
- * TerrainClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TerrainClass::Decode_Pointers() {
-  /*
-  ----------------------------- Decode 'Class' -----------------------------
-  */
-  Class = &TerrainTypeClass::As_Reference(
-      static_cast<TerrainType>((uintptr_t)Class));
-  Check_Ptr(Class);
-
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  ObjectClass::Decode_Pointers();
-  StageClass::Decode_Pointers();
 }
 
 /***********************************************************************************************
@@ -1991,3 +1420,123 @@ void HouseClass::Serialize(Archive& ar) {
 }
 template void HouseClass::Serialize(ArchiveWriter&);
 template void HouseClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void ObjectClass::Serialize(Archive& ar) {
+  AbstractClass::Serialize(ar);
+  bool down = IsDown, damage = IsToDamage, display = IsToDisplay;
+  bool limbo = IsInLimbo, selected = IsSelected, attached = IsAnimAttached;
+  ar(down, damage, display, limbo, selected, attached, ObjectPtr(Next),
+     TriggerPtr(Trigger), Strength);
+  if constexpr (Archive::kIsReading) {
+    IsDown = down;
+    IsToDamage = damage;
+    IsToDisplay = display;
+    IsInLimbo = limbo;
+    IsSelected = selected;
+    IsAnimAttached = attached;
+  }
+}
+template void ObjectClass::Serialize(ArchiveWriter&);
+template void ObjectClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void TemplateClass::Serialize(Archive& ar) {
+  ObjectClass::Serialize(ar);
+  ar(TypePtr(Class));
+  if constexpr (Archive::kIsReading) {
+    if (Class == nullptr) {
+      ar.Fail("missing saved object type");
+    }
+  }
+}
+template void TemplateClass::Serialize(ArchiveWriter&);
+template void TemplateClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void OverlayClass::Serialize(Archive& ar) {
+  ObjectClass::Serialize(ar);
+  ar(TypePtr(Class));
+  if constexpr (Archive::kIsReading) {
+    if (Class == nullptr) {
+      ar.Fail("missing saved object type");
+    }
+  }
+}
+template void OverlayClass::Serialize(ArchiveWriter&);
+template void OverlayClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void SmudgeClass::Serialize(Archive& ar) {
+  ObjectClass::Serialize(ar);
+  ar(TypePtr(Class));
+  if constexpr (Archive::kIsReading) {
+    if (Class == nullptr) {
+      ar.Fail("missing saved object type");
+    }
+  }
+}
+template void SmudgeClass::Serialize(ArchiveWriter&);
+template void SmudgeClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void AnimClass::Serialize(Archive& ar) {
+  ObjectClass::Serialize(ar);
+  StageClass::Serialize(ar);
+  bool to_delete = IsToDelete, brand_new = IsBrandNew;
+  bool alternate = IsAlternate, invisible = IsInvisible;
+  ar(ObjectPtr(Object), Owner, Loops, to_delete, brand_new, alternate,
+     invisible, TypePtr(Class), Delay, Accum);
+  if constexpr (Archive::kIsReading) {
+    IsToDelete = to_delete;
+    IsBrandNew = brand_new;
+    IsAlternate = alternate;
+    IsInvisible = invisible;
+    if (Class == nullptr || Owner < HOUSE_NONE || Owner >= HOUSE_COUNT) {
+      ar.Fail("invalid animation state");
+    }
+  }
+}
+template void AnimClass::Serialize(ArchiveWriter&);
+template void AnimClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void TerrainClass::Serialize(Archive& ar) {
+  ObjectClass::Serialize(ar);
+  StageClass::Serialize(ar);
+  bool fire = IsOnFire, crumbling = IsCrumbling, blossoming = IsBlossoming;
+  bool barnacled = IsBarnacled, sporing = IsSporing;
+  ar(TypePtr(Class), fire, crumbling, blossoming, barnacled, sporing);
+  if constexpr (Archive::kIsReading) {
+    IsOnFire = fire;
+    IsCrumbling = crumbling;
+    IsBlossoming = blossoming;
+    IsBarnacled = barnacled;
+    IsSporing = sporing;
+    if (Class == nullptr) {
+      ar.Fail("missing terrain type");
+    }
+  }
+}
+template void TerrainClass::Serialize(ArchiveWriter&);
+template void TerrainClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void BulletClass::Serialize(Archive& ar) {
+  ObjectClass::Serialize(ar);
+  FlyClass::Serialize(ar);
+  FuseClass::Serialize(ar);
+  bool inaccurate = IsInaccurate, animate = IsToAnimate, locked = IsLocked;
+  ar(TypePtr(Class), ObjectPtr(Payback), PrimaryFacing, inaccurate, animate,
+     Altitude, Riser, TarCom, locked);
+  if constexpr (Archive::kIsReading) {
+    IsInaccurate = inaccurate;
+    IsToAnimate = animate;
+    IsLocked = locked;
+    if (Class == nullptr) {
+      ar.Fail("missing projectile type");
+    }
+  }
+}
+template void BulletClass::Serialize(ArchiveWriter&);
+template void BulletClass::Serialize(ArchiveReader&);

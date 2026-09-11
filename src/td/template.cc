@@ -71,11 +71,6 @@
 #include "td/target.h"
 #include "td/vector.h"
 
-/*
-** This contains the value of the Virtual Function Table Pointer
-*/
-void* TemplateClass::VTable;
-
 /***********************************************************************************************
  * TemplateClass::Validate -- validates template pointer
  **
@@ -169,7 +164,8 @@ void TemplateClass::Write_INI(char* buffer) {
   */
   tbuffer = buffer + strlen(buffer) + 2;
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            _ShapeBufferSize - static_cast<int>(strlen(buffer)), buffer);
+                            _ShapeBufferSize - static_cast<int>(strlen(buffer)),
+                            buffer);
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
     tbuffer += strlen(tbuffer) + 1;
@@ -207,7 +203,6 @@ void TemplateClass::Write_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-TemplateClass::TemplateClass() : Class(nullptr) {}
 
 /***********************************************************************************************
  * TemplateClass::As_Target -- Converts a template object into a target number.
@@ -244,15 +239,7 @@ TARGET TemplateClass::As_Target() const {
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void TemplateClass::Init() {
-  TemplateClass* ptr;
-
-  Templates.Free_All();
-
-  ptr = new TemplateClass();
-  VTable = ((void**)((char*)ptr + sizeof(AbstractClass) - 4))[0];
-  delete ptr;
-}
+void TemplateClass::Init() { Templates.Free_All(); }
 
 /***********************************************************************************************
  * TemplateClass::Mark -- Lifts or drops a template object. *

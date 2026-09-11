@@ -52,6 +52,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 
 #include "td/abstract.h"
 #include "td/cell.h"
@@ -65,16 +66,8 @@
 #include "td/profile.h"
 #include "td/special.h"
 #include "td/vector.h"
-#include <iterator>
-
-/*
-** This contains the value of the Virtual Function Table Pointer
-*/
-void* OverlayClass::VTable;
 
 HousesType OverlayClass::ToOwn = HOUSE_NONE;
-
-OverlayClass::OverlayClass() : Class(nullptr) { ToOwn = HOUSE_NONE; };
 
 /***********************************************************************************************
  * OverlayClass::Validate -- validates overlay
@@ -121,13 +114,8 @@ int OverlayClass::Validate() const {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void OverlayClass::Init() {
-  OverlayClass* ptr;
-
   Overlays.Free_All();
-
-  ptr = new OverlayClass();
-  VTable = ((void**)((char*)ptr + sizeof(AbstractClass) - 4))[0];
-  delete ptr;
+  ToOwn = HOUSE_NONE;
 }
 
 /***********************************************************************************************
@@ -318,8 +306,7 @@ bool OverlayClass::Mark(MarkType mark) {
                 static FacingType _face[4] = {FACING_N, FACING_E, FACING_S,
                                               FACING_W};
 
-                for (int index = 0; index < std::ssize(_face);
-                     index++) {
+                for (int index = 0; index < std::ssize(_face); index++) {
                   cellptr->Adjacent_Cell(_face[index]).Concrete_Calc();
                 }
               }
@@ -416,7 +403,8 @@ void OverlayClass::Write_INI(char* buffer) {
   */
   tbuffer = buffer + strlen(buffer) + 2;
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            _ShapeBufferSize - static_cast<int>(strlen(buffer)), buffer);
+                            _ShapeBufferSize - static_cast<int>(strlen(buffer)),
+                            buffer);
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
     tbuffer += strlen(tbuffer) + 1;

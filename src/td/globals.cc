@@ -217,6 +217,7 @@ bool CrateMaker = false;
 std::string DebugNewGame;
 bool DebugFactoryTest = false;
 bool DebugTeamTest = false;
+bool DebugWorldTest = false;
 int DebugLoadGame = -1;
 int DebugQuitAtFrame = -1;
 int DebugSaveSlot = -1;

@@ -70,14 +70,8 @@ struct LayoutCase {
 constexpr LayoutCase kSerializedTypes[] = {
     // Game objects, saved by TFixedIHeapClass<T>::Load and td/ioobj.cc.
     LAYOUT_CASE(AircraftClass, 384),
-    LAYOUT_CASE(AnimClass, 88),
     LAYOUT_CASE(BuildingClass, 296),
-    LAYOUT_CASE(BulletClass, 104),
     LAYOUT_CASE(InfantryClass, 360),
-    LAYOUT_CASE(OverlayClass, 48),
-    LAYOUT_CASE(SmudgeClass, 48),
-    LAYOUT_CASE(TemplateClass, 48),
-    LAYOUT_CASE(TerrainClass, 72),
     LAYOUT_CASE(UnitClass, 368),
 
     // Static type tables. Objects reference these by index, so their layout is

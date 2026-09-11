@@ -588,7 +588,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
       /*
       ** If Ghosts are on, set up their houses for blitzing the humans
       */
-      MPlayerBlitz = IRandom(0, 1);  // 1 = computer will blitz
+      MPlayerBlitz = GameRandomRange(0, 1);  // 1 = computer will blitz
       if (MPlayerBlitz) {
         if (MPlayerBases) {
           rndmax = 14000;
@@ -601,7 +601,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
         for (int i = 0; i < MPlayerMax; i++) {
           HousesType house = static_cast<HousesType>(i + (int)HOUSE_MULTI1);
           HouseClass* housep = HouseClass::As_Pointer(house);
-          housep->BlitzTime = IRandom(rndmin, rndmax);
+          housep->BlitzTime = GameRandomRange(rndmin, rndmax);
         }
       }
     }
@@ -854,7 +854,7 @@ static void Assign_Houses() {
       *pointer *	to the house instance
       */
       house = static_cast<HousesType>(i + (int)HOUSE_MULTI1);
-      pref_house = static_cast<HousesType>(IRandom(0, 1) + (int)HOUSE_GOOD);
+      pref_house = static_cast<HousesType>(GameRandomRange(0, 1) + (int)HOUSE_GOOD);
       for (;;) {
         color = Random_Pick(REMAP_FIRST, REMAP_LAST);
         if (!color_used[color]) {
@@ -1124,7 +1124,7 @@ static void Create_Units() {
     .....................................................................*/
     try_count = 0;
     while (1) {
-      j = IRandom(0, MPlayerMax - 1);
+      j = GameRandomRange(0, MPlayerMax - 1);
       if (sorted_waypts[j] != -1) {
         centroid = sorted_waypts[j];
         sorted_waypts[j] = -1;
@@ -1138,7 +1138,7 @@ static void Create_Units() {
       ..................................................................*/
       if (try_count > 200) {
         while (1) {
-          centroid = static_cast<CELL>(IRandom(0, MAP_CELL_TOTAL - 1));
+          centroid = static_cast<CELL>(GameRandomRange(0, MAP_CELL_TOTAL - 1));
           if (Map.In_Radar(centroid)) {
             break;
           }
@@ -1354,7 +1354,7 @@ int Scan_Place_Object(ObjectClass* obj, CELL cell) {
     /*.....................................................................
     Pick a random starting direction
     .....................................................................*/
-    rot = static_cast<FacingType>(IRandom(FACING_N, FACING_NW));
+    rot = static_cast<FacingType>(GameRandomRange(FACING_N, FACING_NW));
     /*.....................................................................
     Try all directions twice
     .....................................................................*/
@@ -1549,8 +1549,8 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
   /*------------------------------------------------------------------------
   Adjust the x-coordinate
   ------------------------------------------------------------------------*/
-  xdist = IRandom(0, maxdist);
-  if (IRandom(0, 1) == 0) {
+  xdist = GameRandomRange(0, maxdist);
+  if (GameRandomRange(0, 1) == 0) {
     x += xdist;
     x = std::min(x, xmax);
   } else {
@@ -1561,8 +1561,8 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
   /*------------------------------------------------------------------------
   Adjust the y-coordinate
   ------------------------------------------------------------------------*/
-  ydist = IRandom(0, maxdist);
-  if (IRandom(0, 1) == 0) {
+  ydist = GameRandomRange(0, maxdist);
+  if (GameRandomRange(0, 1) == 0) {
     y += ydist;
     y = std::min(y, ymax);
   } else {

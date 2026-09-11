@@ -2,6 +2,7 @@
 #include <cstdint>
 
 #include "gtest/gtest.h"
+#include "sdllib/ww_win.h"
 #include "td/abstract.h"
 #include "td/audio.h"
 #include "td/crew.h"
@@ -12,6 +13,7 @@
 #include "td/ftimer.h"
 #include "td/fuse.h"
 #include "td/monoc.h"
+#include "td/rand.h"
 #include "td/region.h"
 #include "td/serialize.h"
 #include "td/special.h"
@@ -26,6 +28,8 @@
 int64_t Frame = 0;
 SpecialClass Special{};
 void Speak(VoxType) {}
+// Linking the legacy byte RNG also pulls in the SDL event pump.
+void SDL_Event_Handler(SDL_Event*) {}
 void MonoClass::Set_Cursor(int, int) {}
 void MonoClass::Printf(const char*, ...) {}
 // Fly's legacy pointer-coding hooks are no-ops in ioobj.cc, which otherwise
@@ -371,4 +375,46 @@ TEST(TdSaveValuesTest, SuperweaponRejectsInvalidVoiceAndTruncation) {
   ArchiveReader short_reader(truncated);
   short_reader(loaded);
   EXPECT_FALSE(short_reader.ok());
+}
+
+TEST(TdSaveValuesTest, RandomStreamsResumeAfterMixedDraws) {
+  SeedGameRandom(12345);
+  for (int i = 0; i < 37; ++i) {
+    GameRandomRange(0, 1000);
+    Random();
+    Sim_Random();
+  }
+  auto state = CaptureRandomState();
+  const auto bytes = Save(state);
+  std::array<int, 90> expected{};
+  for (size_t i = 0; i < 30; ++i) {
+    expected[i * 3] = GameRandomRange(-30, 70);
+    expected[i * 3 + 1] = Random();
+    expected[i * 3 + 2] = Sim_Random();
+  }
+  SeedGameRandom(999);
+  Restore(state, bytes);
+  RestoreRandomState(state);
+  for (size_t i = 0; i < 30; ++i) {
+    EXPECT_EQ(GameRandomRange(-30, 70), expected[i * 3]);
+    EXPECT_EQ(Random(), expected[i * 3 + 1]);
+    EXPECT_EQ(Sim_Random(), expected[i * 3 + 2]);
+  }
+}
+
+TEST(TdSaveValuesTest, RandomStateRejectsInvalidIndexAndTruncation) {
+  for (int32_t index : {-1, 256}) {
+    TdRandomState state{1, 2, index};
+    auto bytes = Save(state);
+    BufferStraw source(bytes.data(), static_cast<int>(bytes.size()));
+    ArchiveReader reader(source);
+    reader(state);
+    EXPECT_FALSE(reader.ok());
+  }
+  TdRandomState state;
+  auto bytes = Save(state);
+  BufferStraw source(bytes.data(), 11);
+  ArchiveReader reader(source);
+  reader(state);
+  EXPECT_FALSE(reader.ok());
 }

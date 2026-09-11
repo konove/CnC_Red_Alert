@@ -985,7 +985,7 @@ void HouseClass::AI() {
         rlimit = 1000;
       }
 
-      if (IRandom(0, rlimit) == 0) {
+      if (GameRandomRange(0, rlimit) == 0) {
         UnitClass* obj = nullptr;
         CELL cell;
 
@@ -3548,7 +3548,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
   **	Randomly decide if we're going to search cells clockwise or counter-
   **	clockwise
   */
-  clockwise = IRandom(0, 1);
+  clockwise = GameRandomRange(0, 1);
 
   /*
   **	Only continue if this cell is a legal placement cell.
@@ -3578,7 +3578,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
         **	Clockwise search.
         */
         if (clockwise) {
-          rot = static_cast<FacingType>(IRandom(FACING_N, FACING_NW));
+          rot = static_cast<FacingType>(GameRandomRange(FACING_N, FACING_NW));
           for (fcounter = FACING_N; fcounter <= FACING_NW; fcounter++) {
             newcell = Coord_Cell(
                 Coord_Move(Cell_Coord(cell), Facing_Dir(rot), dist * 256));
@@ -3597,7 +3597,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
           /*
           **	Counter-clockwise search
           */
-          rot = static_cast<FacingType>(IRandom(FACING_N, FACING_NW));
+          rot = static_cast<FacingType>(GameRandomRange(FACING_N, FACING_NW));
           for (fcounter = FACING_NW; fcounter >= FACING_N; fcounter--) {
             newcell = Coord_Cell(
                 Coord_Move(Cell_Coord(cell), Facing_Dir(rot), dist * 256));
@@ -4061,7 +4061,7 @@ void HouseClass::Blowup_All() {
       count = 0;
       while (Infantry.Ptr(i) == iptr && iptr->Strength) {
         damage = 0x7fff;
-        warhead = static_cast<WarheadType>(IRandom(WARHEAD_SA, WARHEAD_FIRE));
+        warhead = static_cast<WarheadType>(GameRandomRange(WARHEAD_SA, WARHEAD_FIRE));
         Explosion_Damage(iptr->Center_Coord(), damage, nullptr, warhead);
         if (iptr->IsActive) {
           damage = 0x7fff;

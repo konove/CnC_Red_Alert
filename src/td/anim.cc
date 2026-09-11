@@ -93,11 +93,6 @@
 #include "td/unit.h"
 #include "td/vector.h"
 
-/*
-** This contains the value of the Virtual Function Table Pointer
-*/
-void* AnimClass::VTable;
-
 /***********************************************************************************************
  * AnimClass::Validate -- validates anim pointer
  **
@@ -510,15 +505,7 @@ const short* AnimClass::Occupy_List(bool) const {
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void AnimClass::Init() {
-  AnimClass* ptr;
-
-  Anims.Free_All();
-
-  ptr = new AnimClass();
-  VTable = ((void**)((char*)ptr + sizeof(AbstractClass) - 4))[0];
-  delete ptr;
-}
+void AnimClass::Init() { Anims.Free_All(); }
 
 /***********************************************************************************************
  * AnimClass::new -- Allocates an anim object from the pool. *

@@ -84,6 +84,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/rand.h"
 #include "td/foot.h"
 
 #include <algorithm>
@@ -737,7 +738,7 @@ int FootClass::Mission_Timed_Hunt() {
       rndmax = 1000;
     }
 
-    if (IRandom(0, rndmax) == 1) {
+    if (GameRandomRange(0, rndmax) == 1) {
       Assign_Mission(MISSION_HUNT);
       changed = 1;
     }

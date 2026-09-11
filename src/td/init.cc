@@ -71,6 +71,8 @@
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "td/anim.h"
+#include "td/bullet.h"
 #include "td/ccfile.h"
 #include "td/config.h"
 #include "td/conquer.h"
@@ -102,15 +104,21 @@
 #include "td/netdlg.h"
 #include "td/nulldlg.h"
 #include "td/nullmgr.h"
+#include "td/overlay.h"
 #include "td/palette.h"
 #include "td/queue.h"
+#include "td/rand.h"
 #include "td/saveload.h"
 #include "td/scenario.h"
+#include "td/smudge.h"
 #include "td/special.h"
 #include "td/tcpip.h"
 #include "td/team.h"
 #include "td/teamtype.h"
+#include "td/template.h"
+#include "td/terrain.h"
 #include "td/theme.h"
+#include "td/trigger.h"
 #include "td/type.h"
 #include "tech/crc.h"
 #include "tech/rawfile.h"
@@ -124,12 +132,6 @@
 **	Function prototypes for this module **
 *****************************************/
 static void Play_Intro(bool for_real = false);
-
-extern "C" {
-extern long RandNumb;
-}
-
-extern int SimRandIndex;
 
 #define ATTRACT_MODE_TIMEOUT 3600  // timeout for attract mode
 
@@ -1578,8 +1580,10 @@ bool Select_Game(bool fade) {
   // Seed = 1;
 
   srand(Seed);
-  RandNumb = Seed;
-  SimRandIndex = 0;
+  // Loading already restored the exact stream positions.
+  if (!gameloaded) {
+    SeedGameRandom(static_cast<uint32_t>(Seed));
+  }
 
   /*
   **	Load the scenario.  Specify variation 'A' for the editor; for the game,
@@ -1616,6 +1620,58 @@ bool Select_Game(bool fade) {
       return false;
     }
     DLOG(INFO) << "C&C95 - Scenario started OK.";
+    if (DebugWorldTest) {
+      if (Units.Count() == 0) {
+        LOG(ERROR) << "-WORLDTEST: scenario needs a unit";
+        return false;
+      }
+      UnitClass* owner = Units.Ptr(0);
+      // Keep normally short-lived placement objects in limbo across the save.
+      auto* ground = new TemplateClass(TEMPLATE_CLEAR1);
+      auto* overlay = new OverlayClass(OVERLAY_CONCRETE);
+      auto* smudge = new SmudgeClass(SMUDGE_CRATER1);
+      auto* terrain = new TerrainClass(TERRAIN_TREE1, -1);
+      auto* bullet = new BulletClass(BULLET_HE);
+      auto* trigger = new TriggerClass;
+      auto* anim = new AnimClass(ANIM_SMOKE_PUFF, owner->Coord, 90, 10);
+      if (!ground || !overlay || !smudge || !terrain || !bullet || !trigger ||
+          !anim) {
+        LOG(ERROR) << "-WORLDTEST: fixture allocation failed";
+        return false;
+      }
+      trigger->AttachCount = 5;
+      ground->Trigger = overlay->Trigger = smudge->Trigger = terrain->Trigger =
+          bullet->Trigger = trigger;
+      ground->Next = terrain;
+      overlay->Next = ground;
+      smudge->Next = terrain;
+      terrain->Next = owner;
+      terrain->Set_Stage(2);
+      terrain->Set_Rate(7);
+      bullet->Next = ground;
+      bullet->Payback = owner;
+      bullet->PrimaryFacing.Set(DIR_NE);
+      bullet->PrimaryFacing = DIR_SE;
+      bullet->Fly_Speed(127, MPH_FAST);
+      bullet->Arm_Fuse(owner->Coord, owner->Coord + 0x200, 95, 5);
+      bullet->Assign_Target(owner->As_Target());
+      auto* missile = new BulletClass(BULLET_SSM);
+      const COORDINATE destination = owner->Coord + 0x600;
+      if (missile == nullptr) {
+        return false;
+      }
+      missile->Payback = owner;
+      missile->Assign_Target(::As_Target(Coord_Cell(destination)));
+      if (!missile->Unlimbo(owner->Coord, DIR_E)) {
+        LOG(ERROR) << "-WORLDTEST: could not launch missile";
+        return false;
+      }
+      missile->Fly_Speed(127, MPH_SLOW);
+      missile->Arm_Fuse(owner->Coord, destination, 95, 5);
+      missile->Strength = 0;
+      anim->Attach_To(owner);
+      anim->Owner = owner->House->Class->House;
+    }
     if (DebugTeamTest) {
       UnitClass* member = nullptr;
       for (int i = 0; i < Units.Count(); ++i) {
@@ -1921,6 +1977,10 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     }
     if (strncmp(string, "-SAVESLOT", 9) == 0) {
       DebugSaveSlot = atoi(string + 9);
+      continue;
+    }
+    if (strcmp(string, "-WORLDTEST") == 0) {
+      DebugWorldTest = true;
       continue;
     }
     if (strcmp(string, "-TEAMTEST") == 0) {

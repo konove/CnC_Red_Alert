@@ -53,8 +53,6 @@ class ArchiveWriter;
 #include "td/stage.h"
 #include "td/techno.h"
 #include "td/type.h"
-#include "tech/noinit.h"
-#include "tech/wwfile.h"
 
 /****************************************************************************
 **	Each type of terrain has certain pieces of static information associated
@@ -62,7 +60,7 @@ class ArchiveWriter;
 */
 class TerrainClass final : public ObjectClass, public StageClass {
  public:
-  const TerrainTypeClass* Class;
+  const TerrainTypeClass* Class = nullptr;
   operator TerrainType() const { return Class->Type; }
 
   /*
@@ -71,9 +69,11 @@ class TerrainClass final : public ObjectClass, public StageClass {
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
-  TerrainClass();
+  TerrainClass() {
+    IsActive = true;
+    Strength = 0;
+  }
   TerrainClass(TerrainType id, CELL cell);
-  TerrainClass(const NoInitClass& x) : ObjectClass(x), StageClass(x) {}
   ~TerrainClass() override;
   RTTIType What_Am_I() const override { return RTTI_TERRAIN; }
 
@@ -146,10 +146,9 @@ class TerrainClass final : public ObjectClass, public StageClass {
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
   static const char* INI_Name() { return "TERRAIN"; }
-  bool Load(ArchiveReader& file);
-  bool Save(ArchiveWriter& file);
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
+  // Field-wise saved-game support, defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	Dee-buggin' support.
@@ -160,34 +159,29 @@ class TerrainClass final : public ObjectClass, public StageClass {
   /*
   **	If this terrain object is on fire, then this flag will be true.
   */
-  unsigned IsOnFire : 1;
+  unsigned IsOnFire : 1 = false;
 
   /*
   **	Is this a terrain object that undergoes crumbling animation and it is
   **	in fact crumbling at this time?
   */
-  unsigned IsCrumbling : 1;
+  unsigned IsCrumbling : 1 = false;
 
   /*
   ** If this is a tree that becomes a blossom tree, is it currently doing so?
   */
-  unsigned IsBlossoming : 1;
+  unsigned IsBlossoming : 1 = false;
 
   /*
   ** If this is a blossom tree, is it barnacled?
   */
-  unsigned IsBarnacled : 1;
+  unsigned IsBarnacled : 1 = false;
 
   /*
   ** If this is a blossom tree that is barnacled, is it pulsing and spewing
   ** out spores?
   */
-  unsigned IsSporing : 1;
-
-  /*
-  ** This contains the value of the Virtual Function Table Pointer
-  */
-  static void* VTable;
+  unsigned IsSporing : 1 = false;
 };
 
 #endif  // CNC_RED_ALERT_TD_TERRAIN_H_

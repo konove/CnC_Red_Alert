@@ -50,8 +50,6 @@ class ArchiveWriter;
 #include "td/globals.h"
 #include "td/object.h"
 #include "td/type.h"
-#include "tech/noinit.h"
-#include "tech/wwfile.h"
 
 /******************************************************************************
 **	This class controls the overlay object. Overlay objects function
@@ -66,9 +64,8 @@ class OverlayClass : public ObjectClass {
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
-  OverlayClass();
+  OverlayClass() { IsActive = true; }
   OverlayClass(OverlayType type, CELL pos = -1, HousesType = HOUSE_NONE);
-  OverlayClass(const NoInitClass& x) : ObjectClass(x) {}
   ~OverlayClass() override {
     if (GameActive) {
       OverlayClass::Limbo();
@@ -85,10 +82,9 @@ class OverlayClass : public ObjectClass {
   static void Read_INI(char*);
   static void Write_INI(char*);
   static const char* INI_Name() { return "OVERLAY"; }
-  bool Load(ArchiveReader& file);
-  bool Save(ArchiveWriter& file);
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
+  // Field-wise saved-game support, defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	Virtual support functionality.
@@ -113,12 +109,7 @@ class OverlayClass : public ObjectClass {
   /*
   **	This is a pointer to the overlay object's class.
   */
-  const OverlayTypeClass* Class;
-
-  /*
-  ** This contains the value of the Virtual Function Table Pointer
-  */
-  static void* VTable;
+  const OverlayTypeClass* Class = nullptr;
 };
 
 #endif  // CNC_RED_ALERT_TD_OVERLAY_H_

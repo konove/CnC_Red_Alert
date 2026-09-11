@@ -84,11 +84,6 @@
 
 #define GRAVITY 3
 
-/*
-** This contains the value of the Virtual Function Table Pointer
-*/
-void* BulletClass::VTable;
-
 /***********************************************************************************************
  * BulletClass::Validate -- validates bullet pointer
  **
@@ -136,16 +131,6 @@ int BulletClass::Validate() const {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-BulletClass::BulletClass() : Class(nullptr) {
-  Payback = nullptr;
-  IsToAnimate = false;
-  Altitude = 0;
-  Riser = 0;
-  TarCom = kTargetNone;
-  Strength = 0;
-  IsLocked = true;
-  IsInaccurate = false;
-}
 
 /***********************************************************************************************
  * BulletClass::new -- Allocates memory for bullet object. *
@@ -585,15 +570,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
  *                                                                                             *
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
-void BulletClass::Init() {
-  BulletClass* ptr;
-
-  Bullets.Free_All();
-
-  ptr = new BulletClass();
-  VTable = ((void**)((char*)ptr + sizeof(AbstractClass) - 4))[0];
-  delete ptr;
-}
+void BulletClass::Init() { Bullets.Free_All(); }
 
 /***********************************************************************************************
  * BulletClass::Detach -- Removes specified target from this bullet's targeting
@@ -771,7 +748,8 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     Riser = 0;
     if (Class->IsArcing) {
       Altitude = 1;
-      Riser = static_cast<signed char>(Distance(tcoord) / 2 / (speed + 1) * GRAVITY);
+      Riser = static_cast<signed char>(Distance(tcoord) / 2 / (speed + 1) *
+                                       GRAVITY);
       Riser = static_cast<signed char>(std::max<int>(Riser, 10));
     }
     if (Class->IsDropping) {

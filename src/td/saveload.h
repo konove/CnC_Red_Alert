@@ -10,7 +10,7 @@ class ArchiveWriter;
 #include "td/type.h"
 
 // Raw-object archive checkpoint; older layout-derived versions are rejected.
-inline constexpr int32_t kSaveGameVersion = 5;
+inline constexpr int32_t kSaveGameVersion = 6;
 
 bool Load_Misc_Values(ArchiveReader& file);
 bool Save_Misc_Values(ArchiveWriter& file);

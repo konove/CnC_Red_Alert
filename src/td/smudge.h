@@ -50,8 +50,6 @@ class ArchiveWriter;
 #include "td/globals.h"
 #include "td/object.h"
 #include "td/type.h"
-#include "tech/noinit.h"
-#include "tech/wwfile.h"
 
 /******************************************************************************
 **	This is the transitory form for smudges. They exist as independent
@@ -69,8 +67,7 @@ class SmudgeClass : public ObjectClass {
   void operator delete(void* ptr);
   SmudgeClass(SmudgeType type, COORDINATE pos = -1,
               HousesType house = HOUSE_NONE);
-  SmudgeClass(const NoInitClass& x) : ObjectClass(x) {}
-  SmudgeClass() : Class(nullptr) {}
+  SmudgeClass() { IsActive = true; }
   operator SmudgeType() const { return Class->Type; }
   ~SmudgeClass() override {
     if (GameActive) {
@@ -87,10 +84,9 @@ class SmudgeClass : public ObjectClass {
   static void Read_INI(char*);
   static void Write_INI(char*);
   static const char* INI_Name() { return "SMUDGE"; }
-  bool Load(ArchiveReader& file);
-  bool Save(ArchiveWriter& file);
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
+  // Field-wise saved-game support, defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   const ObjectTypeClass& Class_Of() const override { return *Class; }
   bool Mark(MarkType) override;
@@ -109,12 +105,7 @@ class SmudgeClass : public ObjectClass {
   /*
   **	This is a pointer to the template object's class.
   */
-  const SmudgeTypeClass* Class;
-
-  /*
-  ** This contains the value of the Virtual Function Table Pointer
-  */
-  static void* VTable;
+  const SmudgeTypeClass* Class = nullptr;
 };
 
 #endif  // CNC_RED_ALERT_TD_SMUDGE_H_

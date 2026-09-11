@@ -17,6 +17,18 @@
 #include "td/trigger.h"
 #include "td/unit.h"
 
+// Adding ObjectClass::Serialize must not migrate subclasses implicitly.
+static_assert(!Serializable<AircraftClass> && RawImage<AircraftClass>);
+static_assert(!Serializable<BuildingClass> && RawImage<BuildingClass>);
+static_assert(!Serializable<InfantryClass> && RawImage<InfantryClass>);
+static_assert(!Serializable<UnitClass> && RawImage<UnitClass>);
+static_assert(Serializable<AnimClass> && !RawImage<AnimClass>);
+static_assert(Serializable<BulletClass> && !RawImage<BulletClass>);
+static_assert(Serializable<TerrainClass> && !RawImage<TerrainClass>);
+static_assert(Serializable<TemplateClass> && !RawImage<TemplateClass>);
+static_assert(Serializable<OverlayClass> && !RawImage<OverlayClass>);
+static_assert(Serializable<SmudgeClass> && !RawImage<SmudgeClass>);
+
 template class TFixedIHeapClass<AircraftClass>;
 template class TFixedIHeapClass<AnimClass>;
 template class TFixedIHeapClass<BuildingClass>;

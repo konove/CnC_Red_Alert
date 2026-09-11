@@ -31,6 +31,18 @@ class ObjectPtr {
 template <class T>
 ObjectPtr(T*&) -> ObjectPtr<T>;
 
+class TriggerClass;
+// Trigger TARGETs refer to a fixed heap; validate the kind and slot bounds.
+class TriggerPtr {
+ public:
+  explicit TriggerPtr(TriggerClass*& ref) : ref_(ref) {}
+  void Serialize(ArchiveWriter& ar);
+  void Serialize(ArchiveReader& ar);
+
+ private:
+  TriggerClass*& ref_;
+};
+
 class TeamTypeClass;
 
 // A team definition lives in a heap, rather than a static type table. Preserve
