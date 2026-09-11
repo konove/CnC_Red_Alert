@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Steps 0–35b are complete; step 35a is `ed1f462c`; step 34b is `46ac7e12`; step 34a is `1cb944f7`; step 33 is `67677f6f`; step 32 is `d9a92318`; step 31 is `bf27db84`; step 30 is `fbb36dd1`; step 29 is `2689ff4c`; step 28 is `96f23c5b`; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
+- Steps 0–36 are complete; step 35b is `a40b98f7`; step 35a is `ed1f462c`; step 34b is `46ac7e12`; step 34a is `1cb944f7`; step 33 is `67677f6f`; step 32 is `d9a92318`; step 31 is `bf27db84`; step 30 is `fbb36dd1`; step 29 is `2689ff4c`; step 28 is `96f23c5b`; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -344,7 +344,19 @@
   matches **5,742** state records and rejects all **14** malformed globals; RA smoke matches **240**
   positions. The final online-metadata change also passes the single-check recheck. Real-display and
   live-multiplayer checks remain pending.
-  Next checkpoint is **36: enable the initialization checks, update clang-tidy documentation, and run the full sweep**.
+- Step 36 enables `cppcoreguidelines-pro-type-member-init` and removes the `hicpp-member-init` alias
+  exclusion. The check keeps its default array coverage and initializer style. The clang-tidy priorities
+  document now records the migration, corrected narrowing commit, historical versus post-migration counts,
+  retired raw-layout tests, and the **240** remaining exclusions (**15** legacy hicpp names).
+- The first full-config sweep exposed one follow-up defect from step 35b: giving CREATEGAMEINFO a valid
+  game-kind default made its remaining fields require defaults on implicitly generated construction.
+  Its confirmation/private/tournament flags, player counts, and password now initialize explicitly.
+  The valid RAGAME default and all existing dialog setup remain intact. No suppressions were added.
+- Step-36 validation: the final **full-config sweep of 878 translation units** reports **zero findings
+  and zero compilation errors**. Strict builds of both games and all **197 CTest tests** pass. TD globals
+  smoke matches **5,742** states and rejects all **14** malformed globals; RA smoke matches **240**
+  positions. Save versions remain **RA 16 / TD 10**.
+  Implementation checkpoints are complete; real-display and live-multiplayer validation remain pending.
 - Step-19 validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
   Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke

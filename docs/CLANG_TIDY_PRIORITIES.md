@@ -2,17 +2,17 @@
 
 ## Overview
 
-`.clang-tidy` enables all checks (`'*'`) and then disables **242** of them. This document prioritizes which of those 242
+`.clang-tidy` enables all checks (`'*'`) and then disables **240** of them. This document prioritizes which of those 240
 to re-enable, ordered by **measured bug yield per unit of fix effort**.
 
 Unlike the previous revision of this document, the tiers below are not guesses. They come from an actual measurement run
 (see [Methodology](#methodology)). Every count in the tables is a real diagnostic site in this repository.
 
-**Tier 1, §1.1, §1.2 and Tier 1.5 are complete, and Tier 2 is four checks of seven in.** All ten rows of the Tier 1
-table (13 checks) are enabled, 24 of the 26 checks in §1.1, the single §1.2 check, all six of Tier 1.5, and three of
-Tier 2 with a fourth reclassified; see [Progress](#progress). The two §1.1 checks left out are deliberate — see
-[1.1](#11-free-guards--the-name-was-wrong). `narrowing-conversions` was enabled in `e0e9d2bf`; what is left in Tier 2 is
-`pro-type-member-init` and `switch-missing-default-case`.
+**Tier 1, §1.1, §1.2 and Tier 1.5 are complete; six of seven Tier 2 entries are addressed.**
+Five Tier 2 checks are enabled and one was reclassified. The only remaining entry is
+`bugprone-switch-missing-default-case`. `narrowing-conversions` was enabled in `5d4b53ee`; member initialization
+is now enforced after the [save-game migration](SAVEGAME_MIGRATION_PLAN.md). The two §1.1 checks left out
+remain deliberate — see [1.1](#11-free-guards--the-name-was-wrong).
 
 Two toolchain moves have turned the strict build red for reasons unrelated to any tier below, and both are resolved. The
 21 → 22 move on 2026-08-20: see [clang-tidy 22 fallout](#clang-tidy-22-fallout). The move to 23 on 2026-08-29, which was
@@ -133,7 +133,7 @@ been red on an enabled check.
 | Check                                           | Commit     | Sites | Outcome                                                                                                                            |
 |-------------------------------------------------|------------|-------|------------------------------------------------------------------------------------------------------------------------------------|
 | `bugprone-raw-memory-call-on-non-trivial-type`  | `c580283d` | 0     | Free, and it guards nothing this document thought it did — see [1.2](#12-the-check-that-was-not-what-this-document-thought-it-was) |
-| — (no check; `src/{ra,td}/heap_layout_test.cc`) | `201cfb3c` | —     | `sizeof()` pinned for 44 RA and 35 TD byte-serialized types; the actual tripwire on the save format                                |
+| — (historical heap layout tests) | `201cfb3c` | — | Pinned raw-save type sizes; deleted after field-wise serialization replaced raw object images |
 
 ### 1.5
 
@@ -149,17 +149,25 @@ been red on an enabled check.
 
 ### 2
 
+Member-initialization enablement was validated on 2026-09-10 with clang-tidy 23.1.2: the full configuration
+reports zero findings and zero compilation errors across **878 translation units**. Strict builds of both
+games, all **197 CTest tests**, and TD/RA headless save/load checks pass. The full sweep caught one extra
+CREATEGAMEINFO default-constructor site after the 237-site cleanup; its fields now have explicit defaults.
+Real-display and live-multiplayer validation remain pending.
+
 | Check                                                 | Commit     | Sites | Outcome                                                                                                                                                          |
 |-------------------------------------------------------|------------|-------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `bugprone-implicit-widening-of-multiplication-result` | `c0045ac4` | 224   | Stride and buffer-size types, not casts; 3 timer macro definitions cleared 43 sites at once                                                                      |
 | `clang-diagnostic-sign-compare`                       | `35c51bbf` | 305   | 8 type changes cleared ~240; the cause was RA being migrated to signed sizes and TD not                                                                          |
 | `clang-diagnostic-shorten-64-to-32`                   | `cf44023c` | 439   | Much of it created by the two above — signedness work moves the mismatch from comparisons into assignments                                                       |
+| `bugprone-narrowing-conversions` | `5d4b53ee` | 510 | Enabled with `WarnOnEquivalentBitWidth: false`; preserved deliberate same-width conversions |
+| `cppcoreguidelines-pro-type-member-init` | [migration steps 31–36](SAVEGAME_MIGRATION_PLAN.md) | 383 originally | Removed NoInit constructors through field-wise saves, then cleared the 237-site post-migration baseline; fixed uninitialized event execution flags, no new suppressions |
 | — (`clang-diagnostic-switch`, not enabled)            | —          | 720   | Reclassified: 567 are `case ButtonKey(n):`, a deliberate idiom `-Wswitch` cannot model — see [Tier 2](#tier-2-valuable-but-these-are-the-type-migration-project) |
 
 Two supporting commits: `7553a5ce` replaced 34 timer and object-limit macros with `inline constexpr` constants, which is
 what made the timer durations typed enough to fix; `532aef0f` cleared the Tier 1.5 fallout.
 
-Three lessons worth carrying into the next tier:
+Lessons from the completed migrations:
 
 - **A "mechanical" check is not automatically safe.** `writable-strings` looked like a pure `const` sweep, yet three
   sites were genuinely writing through a literal: `Format_Window_String` rewrites its buffer in place, `TextLabelClass`
@@ -188,6 +196,14 @@ Three lessons worth carrying into the next tier:
   zero sites where the real count was 103. Run the compile database with its own flags (which already include
   `-Weverything`) and filter the output by warning name. Check for hard `error:` lines while filtering, too — a
   translation unit that fails to compile reports no warnings, which reads exactly like a clean one.
+
+- **Read the initialization check's matcher before choosing a fix.** Delegating constructors are exempt;
+  direct body assignments count, but `memset(this)` does not. Initialize base members at the base unless it
+  must remain trivial for a union; then value-initialize that base in the derived constructor. Heap
+  `operator new` writes `IsActive` before construction, so the constructor must preserve the true state.
+  A union can initialize only one variant; types stored in event unions must retain their trivial defaults.
+  The original 383-site count included 138 NoInit sites and 245 ordinary sites. After serialization and
+  cleanup, the recorded baseline was 237 ordinary sites; all were fixed before enabling the check.
 
 ---
 
@@ -288,7 +304,8 @@ survive the alias being retired. The trivially-copyable UB check the section act
 check, `bugprone-undefined-memory-manipulation`, which still exists in clang-tidy 22 and is also already enabled. It too
 measures 0.
 
-**Neither one can see the save path.** `src/ra/heap.cc:508` and `:568` are `file.Put(Ptr(i), sizeof(T))` and
+**Historical raw-save limitation (removed by the migration).** The following describes the old save path;
+current saves serialize explicit fields and no longer restore object images. Neither check could see that old path. `src/ra/heap.cc:508` and `:568` are `file.Put(Ptr(i), sizeof(T))` and
 `file.Get(ptr, sizeof(T))`, going through `Pipe::Put(const void*, int)` and `Straw::Get(void*, int)`. No `memcpy` is
 textually present and the `T*` decays to `void*` at the call boundary, so no class-typed pointer ever reaches a call the
 checks can match — and the matcher additionally carries `unless(isInTemplateInstantiation())`, which is exactly what
@@ -296,14 +313,15 @@ checks can match — and the matcher additionally carries `unless(isInTemplateIn
 `src/td/ioobj.cc` (~40 `Read_Object`/`Write_Object` pairs), `src/ra/saveload.cc` (`ScenarioClass`, `ScoreClass`,
 `CarryoverClass`, `SpecialClass`, `GameOptionsClass`) and `src/ra/vortex.cc`.
 
-**What guards it instead.** No standard trait works: `AbstractClass` declares a virtual destructor
+**What guarded it before migration.** No standard trait works: `AbstractClass` declares a virtual destructor
 (`src/ra/abstract.h:70`), so every serialized type fails both `is_trivially_copyable_v` and
 `is_trivially_destructible_v`, and there is no trait for "trivially copyable apart from the vptr that the placement-new
 restores". `sizeof(T)` is the closest observable proxy — a `std::string`, `std::vector` or
-`std::optional` member changes it. `src/ra/heap_layout_test.cc` and `src/td/heap_layout_test.cc` (added in `201cfb3c`)
-pin it for every byte-serialized type, so the failure names the type.
+`std::optional` member changes it. The RA/TD heap layout tests added in `201cfb3c` pinned every
+byte-serialized type. They were deleted in the save-game migration once field-wise serialization and archive
+round-trip tests replaced the raw-image contract.
 
-#### `SAVEGAME_VERSION` already does half of this, with gaps
+#### Historical `SAVEGAME_VERSION` guard and its gaps
 
 `SAVEGAME_VERSION` (`src/ra/saveload.cc:132-145`, `src/td/saveload.cc:99-112`) is a sum of `sizeof()` over the
 serialized types, so a layout change invalidates existing saves rather than corrupting loads. Neither sum is complete:
@@ -513,7 +531,7 @@ which reads as a clean audit.
 `clang-diagnostic-*` names never appear in `--list-checks` and are expected in the output; anything else is a line
 disabling a check that does not exist under the installed clang-tidy.
 
-Today it prints 17 names: 16 `hicpp-` plus `clang-analyzer-core.FixedAddressDereference`. **These are dead under 23 and
+Today it prints 16 names: 15 `hicpp-` plus `clang-analyzer-core.FixedAddressDereference`. **These are dead under 23 and
 deliberately kept**, because they are not dead under 22 — disabling a check's primary name does not disable its aliases,
 so dropping them lets the aliases fire. Measured over all 840 units under clang-tidy 22, removing them costs about
 14,000 findings across 18 checks; `hicpp-no-array-decay` alone is 4,027 and `hicpp-signed-bitwise` 4,617.
@@ -567,7 +585,8 @@ ordinary caller.
 
 ## TIER 2: Valuable, but these *are* the type-migration project
 
-Four of the seven are done. Measured tree-wide over all 840 translation units on 2026-08-28, the tier came to **3,568
+Six of the seven entries are addressed (five enabled, one reclassified). The historical measurement
+covered all 840 translation units on 2026-08-28 and found **3,568
 sites, not the ~5,700 the estimates said** — and the estimates were wrong in shape as well as size, which is why the
 order below is not the order of the counts.
 
@@ -577,8 +596,8 @@ order below is not the order of the counts.
 | `clang-diagnostic-sign-compare`                       | 40     | **305**   | ✅ Done, `35c51bbf`                                                     |
 | `clang-diagnostic-shorten-64-to-32`                   | 69     | **439**   | ✅ Done, `cf44023c` — 428 when first measured, before the two above     |
 | `clang-diagnostic-switch`                             | 20     | **720**   | ❌ Reclassified, see below — 567 of them are one deliberate idiom       |
-| `bugprone-narrowing-conversions`                      | 292    | **1424**  | Next, but read the option note below: 839 after excluding one sub-class |
-| `cppcoreguidelines-pro-type-member-init`              | 116    | **349**   | Collides with `NoInitClass`; decide the annotation first                |
+| `bugprone-narrowing-conversions` | 292 | **1424** originally | ✅ Done, `5d4b53ee`; 510 sites at implementation time |
+| `cppcoreguidelines-pro-type-member-init` | 116 | **383** before migration | ✅ Done, save-game migration steps 31–36; zero remaining |
 | `bugprone-switch-missing-default-case`                | 10     | **118**   | Mechanical, low yield, last                                             |
 
 `src/ra` and `src/td` held 3,243 of the 3,568; the support layers (`sdllib`, `tech`, `winvq`, `base`, `port`) held 325,
@@ -591,11 +610,11 @@ was tried and measured no different. Clearing them means rewriting 105 switch st
 `static_cast<unsigned>(input)`, which buys silence and nothing else, since those switches were never enumerator-based.
 The remaining ~153 are genuine "enumeration value not handled" findings and could be had per-directory.
 
-**Configure `bugprone-narrowing-conversions` before enabling it.** At its defaults it measures 1424, but 585 of those
+**The enabled narrowing check uses `WarnOnEquivalentBitWidth: false`.** At its defaults it measures 1424, but 585 of those
 are same-width `unsigned` → `signed` — `LEPTON` (`unsigned short`), `COORDINATE` (`uint32_t`) and friends flowing into
 `int`, which is exactly what `docs/TYPE_MIGRATION.md`'s do-not-touch list protects. `WarnOnEquivalentBitWidth: false`
-drops it to **839** real narrowing sites. Setting that option is better than accepting 585 findings already decided
-against.
+reduced that historical measurement to **839** real narrowing sites. The implementation sweep later fixed
+510 sites; the option preserves the deliberate equivalent-width conversions.
 
 ### What the three finished checks actually cost
 
@@ -642,9 +661,11 @@ file, so new and modernized code is held to Tier 2 while legacy code is not. Thi
 These checks are the enforcement mechanism for `docs/TYPE_MIGRATION.md` — turning one on for a directory is the natural
 way to *finish* a migration and keep it finished.
 
-⚠️ **`cppcoreguidelines-pro-type-member-init` conflicts with the `NoInitClass` pattern.** Constructors that deliberately
-leave members uninitialized so memcpy'd save data survives will need `// NOLINT` with a comment pointing at `heap.cc`.
-Budget for that before enabling it anywhere that serializes.
+**Member initialization is now enabled.** RA and TD saves use field-wise archives, so NoInitClass and its
+constructors were deleted. Initialization defaults no longer overwrite raw saved object images. The remaining
+constructors and local records were fixed without adding suppressions; all 23 defined non-default event
+constructors now delegate through their byte-clearing defaults so `IsExecuted` and unused payload bytes are
+initialized. See the [migration checkpoints](SAVEGAME_MIGRATION_PLAN.md) for validation and save versions.
 
 ---
 
@@ -686,12 +707,11 @@ The [Type Safety Profile](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuid
 | Type.3 | Don't use `const_cast`              | `cppcoreguidelines-pro-type-const-cast`           | Enabled  |
 | Type.4 | Don't use C-style casts             | `cppcoreguidelines-pro-type-cstyle-cast`          | Disabled |
 | Type.5 | Always initialize variables         | `cppcoreguidelines-init-variables`                | Disabled |
-| Type.6 | Always initialize member variables  | `cppcoreguidelines-pro-type-member-init`          | Disabled |
+| Type.6 | Always initialize member variables  | `cppcoreguidelines-pro-type-member-init`          | Enabled |
 | Type.7 | Avoid naked unions                  | `cppcoreguidelines-pro-type-union-access`         | Disabled |
 | Type.8 | Avoid varargs                       | `cppcoreguidelines-pro-type-vararg`               | Disabled |
 
-Rules 1–3 are already satisfied tree-wide. Rules 4–8 belong to the Tier 2 per-directory strategy; do not attempt them
-globally.
+Rules 1–3 and 6 are enforced tree-wide. Rules 4, 5, 7 and 8 remain disabled and need separate assessment.
 
 ---
 
@@ -726,15 +746,14 @@ globally.
 
 ### Phase C — Tier 2, in progress
 
-Three of the seven went in tree-wide rather than per-directory, because their counts turned out to be in the hundreds
-rather than the thousands the estimates predicted:
+Five checks went in tree-wide. The initialization check required migrating raw save games first:
 
 1. ~~`bugprone-implicit-widening-of-multiplication-result`~~ — done in `c0045ac4`, 224 sites.
 2. ~~`clang-diagnostic-sign-compare`~~ — done in `35c51bbf`, 305 sites.
 3. ~~`clang-diagnostic-shorten-64-to-32`~~ — done in `cf44023c`, 439 sites.
 4. ~~`clang-diagnostic-switch`~~ — reclassified, not enabled; 567 of its 720 sites are a deliberate idiom.
-5. ~~`bugprone-narrowing-conversions`, with `WarnOnEquivalentBitWidth: false`~~ — done in `e0e9d2bf`, 510 sites.
-6. `cppcoreguidelines-pro-type-member-init` after deciding how the `NoInitClass` constructors get annotated.
+5. ~~`bugprone-narrowing-conversions`, with `WarnOnEquivalentBitWidth: false`~~ — done in `5d4b53ee`, 510 sites.
+6. ~~`cppcoreguidelines-pro-type-member-init`~~ — enabled after field-wise save migration, NoInitClass deletion, and the 237-site cleanup ending in `a40b98f7`.
 7. `bugprone-switch-missing-default-case` last, or never.
 
 The per-directory idea still stands for what remains, but note `src/port` is already clean on all seven checks and
@@ -820,11 +839,11 @@ Seven traps, every one of which reports a clean tree that is not clean.
 |-----------|--------|-----------------|------------------------------------------------------------------------------------------|
 | 1 (table) | 13     | ~41             | ✅ **Done** — 206 files touched, 18 latent bugs surfaced                                 |
 | 1.1       | 26     | 0 (336 real)    | ✅ **Done** — 24 enabled (23 after 22), 7 more real bugs; 1 off for good, 1 moved to 1.5 |
-| 1.2       | 1      | 0               | ✅ **Done** — free, but it guards nothing; save layout pinned in tests                   |
+| 1.2       | 1      | 0               | ✅ **Done** — raw save images since replaced by field-wise archives                   |
 | 1.5       | 6      | 128 (265 real)  | ✅ **Done** — all six; `VirtualCall` alone found lost buffered writes                    |
-| 2         | 7      | 576 (3568 real) | 4 done, 1 reclassified; `pro-type-member-init` next                                      |
-| 3         | ~242   | —               | Keep disabled                                                                            |
+| 2         | 7      | 576 (3568 real) | 5 enabled, 1 reclassified; only `switch-missing-default-case` remains                                      |
+| 3         | ~240   | —               | Keep disabled                                                                            |
 
-Disabled-check count: **275 → 230 → 242**. The rise is the clang-tidy 23 round, not a retreat: most of the additions
+Disabled-check count: **275 → 230 → 242 → 240**. Member initialization removes its primary and alias exclusions. The rise is the clang-tidy 23 round, not a retreat: most of the additions
 carry forward decisions already made under names 23 deleted or renamed, and the rest are new style checks. See
 [clang-tidy 23 fallout](#clang-tidy-23-fallout).

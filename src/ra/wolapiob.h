@@ -165,15 +165,15 @@ struct CREATEGAMEINFO {
     AMGAME = 0x04000000,
   };
 
-  bool bCreateGame;  //	True if user confirms game creation.
-  int iPlayerMax;    //	NOT number of players, but maximum number allowed into
+  bool bCreateGame = false;  //	True if user confirms game creation.
+  int iPlayerMax = 0;    //	NOT number of players, but maximum number allowed into
                      // game channel.
-  int iPlayerCount;  //	Number of initial human players in game. Set at game
+  int iPlayerCount = 0;  //	Number of initial human players in game. Set at game
                      // launch, used for stats.
-  bool bTournament;
-  bool bPrivate;
+  bool bTournament = false;
+  bool bPrivate = false;
   GAMEKIND GameKind = RAGAME;
-  char szPassword[WOL_CHANKEY_LEN_MAX];  //	If not blank, key for private
+  char szPassword[WOL_CHANKEY_LEN_MAX]{};  //	If not blank, key for private
                                          // game.
 };
 
