@@ -1,0 +1,7 @@
+build*/
+cmake-build*/
+strict-build*/
+third_party/
+LICENSE.md
+src/td/LICENSE.md
+README-EA.md

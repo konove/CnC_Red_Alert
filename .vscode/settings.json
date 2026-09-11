@@ -9,6 +9,11 @@
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   // Language-specific settings
+  "[markdown]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "files.trimTrailingWhitespace": false
+  },
   "[cpp]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "ms-vscode.cpptools"

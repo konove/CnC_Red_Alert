@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+failed=0
+while IFS= read -r -d '' file; do
+  [[ "$file" == *.md ]] || continue
+
+  if ! command -v prettier >/dev/null 2>&1; then
+    echo 'Markdown check requires Prettier on PATH. Run: npm install --global prettier@3.6.2' >&2
+    exit 1
+  fi
+
+  # Check the index, including partial staging, without modifying any files.
+  # stdin-filepath lets Prettier apply the repository config and ignore rules.
+  if ! git show ":$file" | prettier --check --stdin-filepath "$file"; then
+    printf 'Markdown formatting check failed: %s\n' "$file" >&2
+    failed=1
+  fi
+done < <(git diff --cached --name-only --diff-filter=ACMR -z)
+
+if (( failed )); then
+  echo 'Format the listed files with Prettier, stage the fixes, and commit again.' >&2
+  exit 1
+fi

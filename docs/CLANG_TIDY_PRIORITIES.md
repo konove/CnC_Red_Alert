@@ -2,56 +2,61 @@
 
 Updated: 2026-09-11, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 237 currently excluded check names** and completed entries, in recommended work order.
-Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful fixes; they are judgments,
-not fresh finding counts. Start at P1 and work downward. Aliases stay beside their related check so a
-single cleanup can handle them together. Previously deferred checks are back on the list for review.
+This tracks **all 237 currently excluded check names** and completed entries, in recommended work
+order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
+fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
+beside their related check so a single cleanup can handle them together. Previously deferred checks
+are back on the list for review.
 
-Keep completed rows in place: change **Status** to **Enabled** and record the commit in **Reason / result**.
-Use **Skipped** with a short reason only after deciding against a check. P5 entries are recommendations
-to skip, not completed decisions. Add newly excluded checks when the configuration changes.
+Keep completed rows in place: change **Status** to **Enabled** and record the commit in **Reason /
+result**. Use **Skipped** with a short reason only after deciding against a check. P5 entries are
+recommendations to skip, not completed decisions. Add newly excluded checks when the configuration
+changes.
 
 - **Pending:** excluded and awaiting work.
 - **Enabled:** enforced by the configuration; the result records the enabling commit.
-- **Skipped:** reviewed but excluded for the recorded reason; revisit toolchain limitations after upgrades.
+- **Skipped:** reviewed but excluded for the recorded reason; revisit toolchain limitations after
+  upgrades.
 - **Covered:** this name is excluded, but an enabled equivalent already supplies the check.
 - **Legacy:** excluded name unavailable in the installed LLVM 23 toolchain; review older-toolchain
-  compatibility alongside the related check. Do not mistake zero findings for successful enforcement.
+  compatibility alongside the related check. Do not mistake zero findings for successful
+  enforcement.
 - **Skip proposed:** low expected value or an unsuitable platform/style policy.
 
-Alias relationships can be checked in the [LLVM check index](https://clang.llvm.org/extra/clang-tidy/checks/list.html).
-Availability above comes from the installed tool, since the online documentation follows LLVM development.
+Alias relationships can be checked in the
+[LLVM check index](https://clang.llvm.org/extra/clang-tidy/checks/list.html). Availability above
+comes from the installed tool, since the online documentation follows LLVM development.
 
 ## P1 — Direct correctness and memory safety
 
-| Check                                                         | Status  | Reason / result                                                                                                                                        |
-|---------------------------------------------------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `bugprone-suspicious-stringview-data-usage`                   | Enabled | Commit `Enable string-view data usage checking`: copy the RA title-screen filename to a terminated string before calling the PCX reader. |
+| Check                                                         | Status  | Reason / result                                                                                                                                                                                                                 |
+| ------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bugprone-suspicious-stringview-data-usage`                   | Enabled | Commit `Enable string-view data usage checking`: copy the RA title-screen filename to a terminated string before calling the PCX reader.                                                                                        |
 | `abseil-unchecked-statusor-access`                            | Skipped | Commit `Handle failed PCX byte reads`: guard both games' byte reads, but retain the exclusion because LLVM 23.1.2 crashes even on checked access with Abseil 20260107.0. Revisit after a toolchain fix; see reproduction below. |
-| `clang-analyzer-unix.cstring.UninitializedRead`               | Enabled | Commit `Enable uninitialized C-string read checking`: initialize the public-key generation self-test buffer while preserving the random-fill loop. |
-| `clang-analyzer-cplusplus.InnerPointer`                       | Enabled | Commit `Enable string inner-pointer checking`: detect string-buffer pointers used after invalidation. |
-| `bugprone-copy-constructor-init`                              | Pending | Prevent copied objects from silently losing base/member state.                                                                                         |
-| `bugprone-unchecked-string-to-number-conversion`              | Pending | Reject malformed and out-of-range input at parsing boundaries.                                                                                         |
-| `cert-err34-c`                                                | Pending | Alias of `bugprone-unchecked-string-to-number-conversion`; handle together.                                                                            |
-| `clang-analyzer-unix.StdCLibraryFunctions`                    | Pending | Find invalid arguments to modeled C library calls.                                                                                                     |
-| `clang-diagnostic-cast-align`                                 | Pending | Catch pointers cast to types requiring stronger alignment.                                                                                             |
-| `clang-diagnostic-uninitialized-const-pointer`                | Pending | Review pointer arguments that may expose uninitialized storage.                                                                                        |
-| `clang-diagnostic-reorder-ctor`                               | Pending | Make constructor order explicit; check dependencies between members.                                                                                   |
-| `bugprone-unhandled-code-paths`                               | Pending | Find missing outcomes in conditional control flow.                                                                                                     |
-| `bugprone-non-zero-enum-to-bool-conversion`                   | Pending | Catch enum tests that are always true.                                                                                                                 |
-| `clang-analyzer-optin.core.EnumCastOutOfRange`                | Pending | Validate integer-to-enum boundaries; distinguish bit masks.                                                                                            |
-| `clang-diagnostic-tautological-constant-out-of-range-compare` | Pending | Find impossible comparisons hiding range-check mistakes.                                                                                               |
-| `clang-diagnostic-tautological-unsigned-enum-zero-compare`    | Pending | Find enum checks that cannot detect invalid values.                                                                                                    |
-| `clang-diagnostic-tautological-unsigned-zero-compare`         | Pending | Find ineffective negative checks on unsigned values.                                                                                                   |
-| `clang-diagnostic-implicit-int-conversion`                    | Pending | Find remaining implicit loss of integer range or precision.                                                                                            |
-| `clang-diagnostic-implicit-int-conversion-on-negation`        | Pending | Review negation that changes range during conversion.                                                                                                  |
-| `clang-diagnostic-int-to-pointer-cast`                        | Pending | Find truncated or invalid addresses in legacy casts.                                                                                                   |
-| `bugprone-derived-method-shadowing-base-method`               | Pending | Find unintended hiding in the game class hierarchies.                                                                                                  |
+| `clang-analyzer-unix.cstring.UninitializedRead`               | Enabled | Commit `Enable uninitialized C-string read checking`: initialize the public-key generation self-test buffer while preserving the random-fill loop.                                                                              |
+| `clang-analyzer-cplusplus.InnerPointer`                       | Enabled | Commit `Enable string inner-pointer checking`: detect string-buffer pointers used after invalidation.                                                                                                                           |
+| `bugprone-copy-constructor-init`                              | Pending | Prevent copied objects from silently losing base/member state.                                                                                                                                                                  |
+| `bugprone-unchecked-string-to-number-conversion`              | Pending | Reject malformed and out-of-range input at parsing boundaries.                                                                                                                                                                  |
+| `cert-err34-c`                                                | Pending | Alias of `bugprone-unchecked-string-to-number-conversion`; handle together.                                                                                                                                                     |
+| `clang-analyzer-unix.StdCLibraryFunctions`                    | Pending | Find invalid arguments to modeled C library calls.                                                                                                                                                                              |
+| `clang-diagnostic-cast-align`                                 | Pending | Catch pointers cast to types requiring stronger alignment.                                                                                                                                                                      |
+| `clang-diagnostic-uninitialized-const-pointer`                | Pending | Review pointer arguments that may expose uninitialized storage.                                                                                                                                                                 |
+| `clang-diagnostic-reorder-ctor`                               | Pending | Make constructor order explicit; check dependencies between members.                                                                                                                                                            |
+| `bugprone-unhandled-code-paths`                               | Pending | Find missing outcomes in conditional control flow.                                                                                                                                                                              |
+| `bugprone-non-zero-enum-to-bool-conversion`                   | Pending | Catch enum tests that are always true.                                                                                                                                                                                          |
+| `clang-analyzer-optin.core.EnumCastOutOfRange`                | Pending | Validate integer-to-enum boundaries; distinguish bit masks.                                                                                                                                                                     |
+| `clang-diagnostic-tautological-constant-out-of-range-compare` | Pending | Find impossible comparisons hiding range-check mistakes.                                                                                                                                                                        |
+| `clang-diagnostic-tautological-unsigned-enum-zero-compare`    | Pending | Find enum checks that cannot detect invalid values.                                                                                                                                                                             |
+| `clang-diagnostic-tautological-unsigned-zero-compare`         | Pending | Find ineffective negative checks on unsigned values.                                                                                                                                                                            |
+| `clang-diagnostic-implicit-int-conversion`                    | Pending | Find remaining implicit loss of integer range or precision.                                                                                                                                                                     |
+| `clang-diagnostic-implicit-int-conversion-on-negation`        | Pending | Review negation that changes range during conversion.                                                                                                                                                                           |
+| `clang-diagnostic-int-to-pointer-cast`                        | Pending | Find truncated or invalid addresses in legacy casts.                                                                                                                                                                            |
+| `bugprone-derived-method-shadowing-base-method`               | Pending | Find unintended hiding in the game class hierarchies.                                                                                                                                                                           |
 
 ## P2 — Further correctness and targeted safety
 
 | Check                                                      | Status  | Reason / result                                                                                         |
-|------------------------------------------------------------|---------|---------------------------------------------------------------------------------------------------------|
+| ---------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------- |
 | `clang-diagnostic-lifetime-safety-use-after-free`          | Pending | Reassess dangling-pointer findings; verify fixed-heap false positives.                                  |
 | `clang-diagnostic-lifetime-safety-invalidation`            | Pending | Review container/storage invalidation against custom lifetimes.                                         |
 | `clang-diagnostic-lifetime-safety-use-after-scope-moved`   | Pending | Review escaping locals and ownership-transfer false positives.                                          |
@@ -107,7 +112,7 @@ Availability above comes from the installed tool, since the online documentation
 ## P3 — Broader safety and maintainability
 
 | Check                                                           | Status  | Reason / result                                                                                           |
-|-----------------------------------------------------------------|---------|-----------------------------------------------------------------------------------------------------------|
+| --------------------------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------- |
 | `clang-diagnostic-unsafe-buffer-usage`                          | Pending | Map remaining buffer hazards; requires staged API/container work.                                         |
 | `cppcoreguidelines-pro-bounds-avoid-unchecked-container-access` | Pending | Review unchecked indexing; choose bounds policy at real boundaries.                                       |
 | `cppcoreguidelines-pro-bounds-constant-array-index`             | Pending | Replace unverifiable C-array indexing where practical.                                                    |
@@ -178,7 +183,7 @@ Availability above comes from the installed tool, since the online documentation
 ## P4 — Cleanup and design consistency
 
 | Check                                                               | Status  | Reason / result                                                                                |
-|---------------------------------------------------------------------|---------|------------------------------------------------------------------------------------------------|
+| ------------------------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------- |
 | `readability-braces-around-statements`                              | Pending | Reduce ambiguity in future edits; mostly mechanical churn.                                     |
 | `hicpp-braces-around-statements`                                    | Legacy  | Unavailable in LLVM 23; review with `readability-braces-around-statements` on older tools.     |
 | `readability-inconsistent-ifelse-braces`                            | Pending | Keep related branches consistently braced.                                                     |
@@ -251,7 +256,7 @@ Availability above comes from the installed tool, since the online documentation
 ## P5 — Proposed skips
 
 | Check                                         | Status        | Reason / result                                                                    |
-|-----------------------------------------------|---------------|------------------------------------------------------------------------------------|
+| --------------------------------------------- | ------------- | ---------------------------------------------------------------------------------- |
 | `altera-id-dependent-backward-branch`         | Skip proposed | FPGA kernel execution rule; not a game-engine target.                              |
 | `altera-struct-pack-align`                    | Skip proposed | FPGA layout tuning conflicts with general-purpose layout needs.                    |
 | `altera-unroll-loops`                         | Skip proposed | FPGA loop-unrolling policy; no relevant target.                                    |
@@ -292,9 +297,9 @@ Availability above comes from the installed tool, since the online documentation
 ### StatusOr check toolchain limitation (2026-09-11)
 
 `abseil-unchecked-statusor-access` is available, but crashes with SIGSEGV in
-`clang::dataflow::statusor_model::getSyntheticFields` on both games' `Read_PCX_File`, before and after
-guarding the byte reads. The following checked access also reproduces it with LLVM 23.1.2 and the
-project's Abseil 20260107.0 headers:
+`clang::dataflow::statusor_model::getSyntheticFields` on both games' `Read_PCX_File`, before and
+after guarding the byte reads. The following checked access also reproduces it with LLVM 23.1.2 and
+the project's Abseil 20260107.0 headers:
 
 ```cpp
 #include "absl/status/statusor.h"
@@ -319,8 +324,8 @@ would crash strict builds; a crash is not a clean scan.
 The complete candidate sweep covered 879 project translation units (including 428 generated header
 checks): only the two PCX readers crashed, with no other findings. The full-config sweep passed with
 the check still excluded. Strict builds of both games and all 205 CTest tests passed. The new
-missing-pixel regression test aborts against the original TD reader
-with an unchecked `OUT_OF_RANGE` access and passes with the fix.
+missing-pixel regression test aborts against the original TD reader with an unchecked `OUT_OF_RANGE`
+access and passes with the fix.
 
 ### Completed validation
 
@@ -331,28 +336,29 @@ string buffer pointer after `clear()` confirmed the enabled check reports an err
 
 The 2026-09-11 C-string uninitialized-read cleanup covered 879 project translation units, including
 428 generated header checks. The isolated scan found one path from the key-generation self-test
-buffer into `PKey::Encrypt`; initializing that buffer preserves the existing random-fill loop.
-The affected file passed the isolated check, the full-config sweep passed, both strict game builds
+buffer into `PKey::Encrypt`; initializing that buffer preserves the existing random-fill loop. The
+affected file passed the isolated check, the full-config sweep passed, both strict game builds
 passed, and all 205 CTest tests passed. An uninitialized `memcpy` sample confirmed enforcement.
 
-The 2026-09-11 string-view check cleanup covered 878 project translation units, including 428 generated
-header checks. The isolated scan found one call; its fix passed the isolated check and the full-config
-sweep. Strict builds of both games and all 197 CTest tests passed. A deliberately unsafe sample confirmed
-the enabled check reports an error.
+The 2026-09-11 string-view check cleanup covered 878 project translation units, including 428
+generated header checks. The isolated scan found one call; its fix passed the isolated check and the
+full-config sweep. Strict builds of both games and all 197 CTest tests passed. A deliberately unsafe
+sample confirmed the enabled check reports an error.
 
 ### Workflow
 
-1. Measure the check across both games and shared code, including generated header checks and excluding
-   dependencies. Verify the check exists; handle aliases and options together.
-2. Fix findings, run the candidate and full-config sweeps, then strict-build both games and run CTest.
-   Add focused behavior tests and save/load checks when the changes warrant them.
-3. Remove the exclusion, verify enforcement, and mark the row **Enabled** with its commit. If enabling
-   is unsuitable, record the concrete reason rather than silently dropping the row.
+1. Measure the check across both games and shared code, including generated header checks and
+   excluding dependencies. Verify the check exists; handle aliases and options together.
+2. Fix findings, run the candidate and full-config sweeps, then strict-build both games and run
+   CTest. Add focused behavior tests and save/load checks when the changes warrant them.
+3. Remove the exclusion, verify enforcement, and mark the row **Enabled** with its commit. If
+   enabling is unsuitable, record the concrete reason rather than silently dropping the row.
 
 Compiler diagnostic filters also depend on warning flags. In particular, `sign-conversion`,
 `unsafe-buffer-usage`, `old-style-cast`, `padded`, and `covered-switch-default` are suppressed in
-[CMakeLists.txt](../CMakeLists.txt); removing their tidy exclusions alone does not enable them.
-An isolated diagnostic sweep needs its warning flag and at least one real clang-tidy check.
+[CMakeLists.txt](../CMakeLists.txt); removing their tidy exclusions alone does not enable them. An
+isolated diagnostic sweep needs its warning flag and at least one real clang-tidy check.
 
-Preserve the [type-migration policy](TYPE_MIGRATION.md), deterministic simulation RNG, and packet/recording
-layouts when applying broad rules. Field-wise savegames do not make all layout changes safe.
+Preserve the [type-migration policy](TYPE_MIGRATION.md), deterministic simulation RNG, and
+packet/recording layouts when applying broad rules. Field-wise savegames do not make all layout
+changes safe.
