@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Steps 0–32 are complete; step 31 is `bf27db84`; step 30 is `fbb36dd1`; step 29 is `2689ff4c`; step 28 is `96f23c5b`; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
+- Steps 0–33 are complete; step 32 is `d9a92318`; step 31 is `bf27db84`; step 30 is `fbb36dd1`; step 29 is `2689ff4c`; step 28 is `96f23c5b`; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -269,7 +269,19 @@
 - Step-32 validation: strict builds of both games and **196 CTest tests** pass. TD globals smoke
   matches **5,742** state records and rejects all **14** malformed globals; RA smoke matches **240**
   positions. No suppressions were added. Real-display and live-multiplayer checks remain pending.
-  Next checkpoint is **33: fix the 14 sdllib and one winvq initialization sites**.
+- Step 33 is complete: all **14 sdllib and one winvq initialization sites** are fixed. Viewport
+  geometry, backing pointers, and lock counts now start empty; keyboard storage, countdown delay,
+  modem buffer state, inactive audio volume, and mouse cursor state have explicit defaults. The modem
+  defaults to touch-tone dialing. File status, font headers, socket records, and select timeouts are
+  value-initialized, as are the VQA loader, drawer, and flipper aggregates. Existing setup routines
+  and assignments remain in place.
+- The single-check sweep of **60 sdllib/winvq translation units**, including generated header checks,
+  reports **zero** initialization sites and **zero** compilation errors. The historical step-31
+  baseline now has **195 sites** left in TD/RA. Save formats remain **RA 16 / TD 10**.
+- Step-33 validation: strict builds of both games and all **196 CTest tests** pass. TD globals smoke
+  matches **5,742** state records and rejects all **14** malformed globals; RA smoke matches **240**
+  positions. No suppressions were added. Real-display and live-multiplayer checks remain pending.
+  Next checkpoint is **34a: TD behavior-relevant initialization (event delegation, cells, deleted constructors)**.
 - Step-19 validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
   Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke

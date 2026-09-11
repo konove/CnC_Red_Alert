@@ -154,7 +154,7 @@ uint64_t Disk_Space_Available() {
 
 static bool Update_Find_Result(FindFileState& state) {
   auto* const glob_buf = static_cast<glob_t*>(state.data);
-  struct stat stat_buf;
+  struct stat stat_buf{};
 
   // Iterate through paths until we find a valid file or run out of items
   while (state.offset < glob_buf->gl_pathc) {
@@ -246,7 +246,7 @@ void End_Find_File(FindFileState& state) {
 }
 
 uint64_t Disk_Space_Available() {
-  struct statvfs fsbuf;
+  struct statvfs fsbuf{};
   char path[1024];
   if (!getcwd(path, 1000)) {
     return 0;

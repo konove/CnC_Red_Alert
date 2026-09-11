@@ -34,7 +34,7 @@ bool Socket_Register_Select(int socket, SocketCallback callback, void* data) {
   }
 
   // add to list
-  SocketInfo info;
+  SocketInfo info{};
   info.socket = socket;
   info.callback = callback;
   info.data = data;
@@ -73,7 +73,7 @@ void Socket_Select() {
     max_fd = std::max(sock.socket, max_fd);
   }
 
-  timeval timeout;
+  timeval timeout{};
   timeout.tv_sec = 0;
   timeout.tv_usec = 0;
 

@@ -67,7 +67,7 @@ struct ChannelState {
 
   int priority = 0;
   int local_volume = 255;  // per-sound volume [0, 255], set at play time
-  int raw_volume;          // local_volume * ScoreVolume
+  int raw_volume = 0;      // local_volume * ScoreVolume
   int fade = 0;
   uint32_t offset = 0;
   uint32_t length = 0;

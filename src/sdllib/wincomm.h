@@ -202,13 +202,13 @@ class WinModemClass {
   /*
   ** Pointer to the internal class circular buffer for incoming data
   */
-  unsigned char* SerialBuffer;
+  unsigned char* SerialBuffer = nullptr;
 
   /*
   ** Head and Tail pointers for our internal serial buffer
   */
-  int SerialBufferReadPtr;
-  int SerialBufferWritePtr;
+  int SerialBufferReadPtr = 0;
+  int SerialBufferWritePtr = 0;
 
   /*
   ** Windows handle to the COM port device
@@ -218,7 +218,7 @@ class WinModemClass {
   /*
   ** Dialing method - DIAL_TOUCH_TONE or DIAL_PULSE
   */
-  WinCommDialMethodType DialingMethod;
+  WinCommDialMethodType DialingMethod = WC_TOUCH_TONE;
 };
 
 /*

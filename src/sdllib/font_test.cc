@@ -60,7 +60,7 @@ std::vector<uint8_t> MakeTestFont() {
 TEST(FontHeaderTest, MatchesOnDiskLayout) {
   const std::vector<uint8_t> blob = MakeTestFont();
 
-  FontHeader header;
+  FontHeader header{};
   std::memcpy(&header, blob.data(), sizeof(header));
 
   EXPECT_EQ(header.size, 40);

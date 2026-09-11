@@ -108,8 +108,8 @@ class WWMouseClass {
   std::vector<uint8_t> MouseCursor;
   SDLCursorPtr sdl_cursor_;
   SDLSurfacePtr sdl_surface_;
-  int MouseXHot;
-  int MouseYHot;
+  int MouseXHot = 0;
+  int MouseYHot = 0;
 
   // Original unscaled cursor, retained for palette updates and rescaling.
   std::vector<uint8_t> OriginalCursor;
@@ -121,7 +121,7 @@ class WWMouseClass {
   int MaxHeight;
 
   // Tracks cursor identity to avoid redundant Set_Cursor work.
-  char* PrevCursor;
+  char* PrevCursor = nullptr;
 
   // Reference count for Hide/Show. Cursor visible when State == 0.
   int State;

@@ -105,7 +105,7 @@ class WWKeyboardClass {
   /*   Keyboard Class.
    */
   /*===================================================================*/
-  unsigned short Buffer[256];  // buffer which holds actual keypresses
+  unsigned short Buffer[256]{};  // buffer which holds actual keypresses
   long Head = 0;               // the head position in keyboard buffer
   long Tail = 0;               // the tail position in keyboard buffer
 };

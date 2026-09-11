@@ -408,9 +408,9 @@ struct VQAData {
   VQAFrameNode* FrameData = nullptr;  // Points to first node in FrameNodes
   VQACBNode* CBData = nullptr;        // Points to first node in CBNodes
   VQAAudio Audio;
-  VQALoader Loader;
-  VQADrawer Drawer;
-  VQAFlipper Flipper;
+  VQALoader Loader{};
+  VQADrawer Drawer{};
+  VQAFlipper Flipper{};
   unsigned long Flags = 0;
   long* Foff = nullptr;  // Points into FoffStorage
   long VBIBit = 0;

@@ -64,8 +64,7 @@ CountDownTimerClass::CountDownTimerClass(long set, bool on) : TimerClass(on) {
   Set(set, on);
 }
 
-CountDownTimerClass::CountDownTimerClass(bool on)
-    : TimerClass(false), DelayTime(0) {
+CountDownTimerClass::CountDownTimerClass(bool on) : TimerClass(false) {
   if (on) {
     Start();
   }

@@ -78,7 +78,7 @@ class FontView {
   // eagerly and the metric tables lazily.
   explicit FontView(const void* data)
       : font_(static_cast<const uint8_t*>(data)) {
-    FontHeader header;
+    FontHeader header{};
     std::memcpy(&header, font_, sizeof(header));
     info_ = font_ + header.info_block;
     offsets_ = font_ + header.offset_block;

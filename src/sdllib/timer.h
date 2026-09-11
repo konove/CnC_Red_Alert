@@ -91,7 +91,7 @@ class CountDownTimerClass : TimerClass {
   long Time();                            // Fetch current count down value.
 
  protected:
-  long DelayTime;  // Ticks remaining before countdown timer expires.
+  long DelayTime = 0;  // Ticks remaining before countdown timer expires.
 };
 
 inline long CountDownTimerClass::Stop() {

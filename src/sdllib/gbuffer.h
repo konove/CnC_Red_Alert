@@ -287,15 +287,15 @@ class GraphicViewPortClass {
   /* Define the data used by a GraphicViewPortClass
    */
   /*===================================================================*/
-  std::uint8_t* Offset;             // offset to graphic page
-  int Width;                        // width of graphic page
-  int Height;                       // height of graphic page
-  int XAdd;                         // xadd for graphic page (0)
-  int XPos;                         // x offset in relation to graphicbuff
-  int YPos;                         // y offset in relation to graphicbuff
-  long Pitch;                       // Distance from one line to the next
-  GraphicBufferClass* GraphicBuff;  // related graphic buff
-  int LockCount;  // Count for stacking locks if non-zero the buffer
+  std::uint8_t* Offset = nullptr;            // offset to graphic page
+  int Width = 0;                            // width of graphic page
+  int Height = 0;                           // height of graphic page
+  int XAdd = 0;                             // xadd for graphic page (0)
+  int XPos = 0;                             // x offset in relation to graphicbuff
+  int YPos = 0;                             // y offset in relation to graphicbuff
+  long Pitch = 0;                           // Distance from one line to the next
+  GraphicBufferClass* GraphicBuff = nullptr;  // related graphic buff
+  int LockCount = 0;  // Count for stacking locks if non-zero the buffer
 };
 
 /*=========================================================================*/
