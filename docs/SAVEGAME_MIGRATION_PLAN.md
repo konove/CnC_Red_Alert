@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Steps 0–28 are complete; steps 0–27 are committed; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
+- Steps 0–29 are complete; step 28 is `96f23c5b`; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -191,7 +191,32 @@
   linked buildings, and **6,152** with mobile/team fixtures. All **eight** malformed map saves,
   **six** malformed building saves, and **seven** malformed mobile saves are rejected before gameplay.
   RA matches **240** positions. Real-display and live-multiplayer checks remain pending.
-  Next checkpoint is **29: Score, Base, Layers, and remaining globals**.
+- Step 29 is complete: **Score, Base, Layers, and miscellaneous globals** use field-wise archives
+  (TD version **10**). SCOR saves every counter and an explicit int64 elapsed time; the presentation
+  pointer resets locally. BASE saves its house and checked node count, then building types/coordinates
+  without struct padding or a sizeof guard. LAYR preserves ordered TARGET lists after all heaps load.
+- MISC saves the player's heap index, scenario and movie names, ordered selection, waypoints,
+  direction/variant, carryover settings, build level, views, countdown, and briefing text. RNGS retains
+  the two previously migrated RNG streams. String buffers are terminated on read; scenario enums,
+  waypoints, views, and the allocated player house are checked. TD still has no Session/Special/Options
+  save path; this checkpoint migrates the existing miscellaneous field list.
+- Layer/selection readers reject negative/oversized counts, null, duplicate, wrong-kind, out-of-range,
+  and unallocated object references. Heap allocation is checked before dereferencing a slot; the
+  earlier forward-reference resolver remains available for map/object loads.
+- All remaining Code_All/Decode_All_Pointers and Read_Object/Write_Object helpers are removed.
+  Player/scenario naming and pending-placement fixups now run only at the load tail. Score, Base,
+  BaseNode, and Layer raw-layout test rows are removed; the leftover layout test is deleted in step 30.
+- `-GLOBALTEST` / `--globals` adds a wide elapsed time, score counters, two base nodes, reversed unit
+  selection, waypoints, carryover values, a view, and a countdown. Every TD smoke now also hashes
+  Score, Base, Layers, miscellaneous fields, and RNG state. Unit tests cover wide score round-trips,
+  truncated scores, and allocation queries for live, freed, and out-of-range heap slots.
+- Step-29 validation: strict builds of both games and **186 CTest tests** pass. TD smoke matches
+  **5,742** states with globals, **5,891** with map fixtures, **8,604** in GDI mission 2, **6,600**
+  in Nod, **6,212** with mobile/team fixtures, and **6,111** with buildings. All **14** malformed
+  globals, **eight** malformed maps, **seven** malformed mobile saves, and **six** malformed building
+  saves are rejected before gameplay. RA matches **240** positions. Real-display and live-multiplayer
+  checks remain pending.
+  Next checkpoint is **30: TD cleanup and broader archive round-trip tests**.
 - Step-19 validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
   Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke

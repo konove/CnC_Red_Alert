@@ -136,6 +136,7 @@
 #include "td/saveload.h"
 #include "td/scenario.h"
 #include "td/score.h"
+#include "td/base.h"
 #include "td/special.h"
 #include "td/target.h"
 #include "td/tcpip.h"
@@ -1783,6 +1784,15 @@ bool Main_Loop() {
     ArchiveWriter map_writer(map_sink);
     Map.Serialize(map_writer);
     LOG(INFO) << "frame " << Frame << " mapstate " << map_sink.hash;
+    MapHashPipe globals_sink;
+    ArchiveWriter globals_writer(globals_sink);
+    Score.Serialize(globals_writer);
+    Base.Serialize(globals_writer);
+    Logic.Serialize(globals_writer);
+    for (auto& layer : MouseClass::Layer) layer.Serialize(globals_writer);
+    Save_Misc_Values(globals_writer);
+    LOG(INFO) << "frame " << Frame << " globalstate " << globals_sink.hash;
+
     if (map_sink.trace && (Frame == 60 || Frame == 61)) {
       // Keep each record below the logger's message-size limit.
       for (size_t offset = 0; offset < map_sink.fields.size(); offset += 2048) {

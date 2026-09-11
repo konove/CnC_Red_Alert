@@ -47,6 +47,8 @@ class ArchiveWriter;
 #include <cstring>
 
 #include "sdllib/gbuffer.h"
+#include <cstdint>
+
 #include "sdllib/timer.h"
 #include "sdllib/wwstd.h"
 #include "tech/wwfile.h"
@@ -63,7 +65,7 @@ class ScoreClass {
   int NHarvested;
   int GHarvested;
   int CHarvested;
-  unsigned long ElapsedTime;
+  int64_t ElapsedTime;
 
   void Init() { memset(this, 0, sizeof(ScoreClass)); }
   void Presentation();
@@ -71,10 +73,10 @@ class ScoreClass {
   /*
   **	File I/O.
   */
-  bool Load(ArchiveReader& file);
-  bool Save(ArchiveWriter& file);
-  void Code_Pointers();
-  void Decode_Pointers();
+  template <class Archive>
+  void Serialize(Archive& ar);
+
+
 
  protected:
  private:

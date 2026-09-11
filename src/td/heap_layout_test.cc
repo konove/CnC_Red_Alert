@@ -1,19 +1,5 @@
-// Layout tripwire for the remaining raw save records.
-// Object heaps and Map/Cell are field-wise. Score, Base, and layer storage
-// retain byte-oriented paths until the globals migration; this file is removed
-// in the final TD cleanup. Static type layout guards are conservative leftovers.
-//
-// sizeof(T) is the closest observable proxy. Adding a std::string, std::vector,
-// std::optional or any other member that owns storage or points into itself
-// changes it, and this test names the type that changed.
-//
-// If a case here fails:
-//   1. Confirm the new member really can survive a memcpy and a placement-new
-//      that does not initialize it. If it cannot, the type must not be
-//      byte-serialized.
-//   2. Update the expected size below.
-//   3. Bump kSaveGameVersion in td/saveload.h. The raw-object checkpoint
-//      requires an explicit version bump whenever a serialized layout changes.
+// Legacy layout guards retained only until step 30 removes this test.
+// The save body is now field-wise and no longer depends on these sizes.
 
 #include <cstddef>
 
@@ -72,14 +58,8 @@ constexpr LayoutCase kSerializedTypes[] = {
     LAYOUT_CASE(TerrainTypeClass, 88),
     LAYOUT_CASE(UnitTypeClass, 152),
 
-    // Whole-object byte I/O outside the heaps.
-    LAYOUT_CASE(BaseClass, 56),
-    LAYOUT_CASE(LayerClass, 40),
-
-    // Raw layout remains guarded until this type migrates.
-    LAYOUT_CASE(BaseNodeClass, 8),
+    // Remaining conservative layout guards.
     LAYOUT_CASE(EventClass, 32),
-    LAYOUT_CASE(ScoreClass, 56),
     LAYOUT_CASE(WarheadTypeClass, 12),
     LAYOUT_CASE(WeaponTypeClass, 20),
 };

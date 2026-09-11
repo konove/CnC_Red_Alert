@@ -87,10 +87,10 @@ class BaseClass {
   void Read_INI(char* buffer);
   void Write_INI(char* buffer);
   static const char* INI_Name() { return "Base"; }
-  bool Load(ArchiveReader& file);
-  bool Save(ArchiveWriter& file);
-  virtual void Code_Pointers() {}
-  virtual void Decode_Pointers() {}
+  template <class Archive>
+  void Serialize(Archive& ar);
+
+
 
   /**********************************************************************
   ** Tells if the given node has been built or not

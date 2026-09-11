@@ -1,6 +1,8 @@
 #include "td/serialize.h"
 
+#include <bitset>
 #include <concepts>
+#include <cstdint>
 
 #include "td/aircraft.h"
 #include "td/anim.h"
@@ -21,13 +23,18 @@
 #include "td/trigger.h"
 #include "td/type.h"
 #include "td/unit.h"
+#include "td/vector.h"
 
 namespace {
 
 template <class T>
-ObjectClass* Slot(TFixedIHeapClass<T>& heap, int index, ArchiveReader& ar) {
+ObjectClass* Slot(TFixedIHeapClass<T>& heap, int index, ArchiveReader& ar, bool active_only) {
   if (index < 0 || index >= heap.Length()) {
     ar.Fail("saved object index outside its heap");
+    return nullptr;
+  }
+  if (active_only && !heap.Is_Allocated(index)) {
+    ar.Fail("saved object list references an unallocated slot");
     return nullptr;
   }
   return heap.Raw_Ptr(index);
@@ -47,28 +54,28 @@ bool KindFits(KindType kind) {
 
 }  // namespace
 
-ObjectClass* ResolveSavedObject(TARGET target, ArchiveReader& ar) {
+ObjectClass* ResolveSavedObject(TARGET target, ArchiveReader& ar, bool active_only) {
   if (target == kTargetNone) {
     return nullptr;
   }
   const int index = static_cast<int>(Target_Value(target));
   switch (Target_Kind(target)) {
     case KIND_INFANTRY:
-      return Slot(Infantry, index, ar);
+      return Slot(Infantry, index, ar, active_only);
     case KIND_UNIT:
-      return Slot(Units, index, ar);
+      return Slot(Units, index, ar, active_only);
     case KIND_BUILDING:
-      return Slot(Buildings, index, ar);
+      return Slot(Buildings, index, ar, active_only);
     case KIND_AIRCRAFT:
-      return Slot(Aircraft, index, ar);
+      return Slot(Aircraft, index, ar, active_only);
     case KIND_TERRAIN:
-      return Slot(Terrains, index, ar);
+      return Slot(Terrains, index, ar, active_only);
     case KIND_BULLET:
-      return Slot(Bullets, index, ar);
+      return Slot(Bullets, index, ar, active_only);
     case KIND_ANIMATION:
-      return Slot(Anims, index, ar);
+      return Slot(Anims, index, ar, active_only);
     case KIND_TEMPLATE:
-      return Slot(Templates, index, ar);
+      return Slot(Templates, index, ar, active_only);
     default:
       ar.Fail("saved target is not an object kind");
       return nullptr;
@@ -257,3 +264,46 @@ void TriggerPtr::Serialize(ArchiveReader& ar) {
   }
   ref_ = Triggers.Raw_Ptr(static_cast<int>(Target_Value(target)));
 }
+
+
+template <class Archive>
+void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects) {
+  int32_t count = static_cast<int32_t>(objects.Count());
+  ar(count);
+  if constexpr (Archive::kIsReading) {
+    if (!ar.ok() || count < 0 || count > 65536) {
+      ar.Fail("invalid saved object list count");
+      return;
+    }
+    objects.Clear();
+  }
+  std::bitset<65536> seen;
+  for (int32_t i = 0; i < count; ++i) {
+    ObjectClass* object = nullptr;
+    TARGET target = kTargetNone;
+    if constexpr (!Archive::kIsReading) {
+      object = objects[i];
+      if (object != nullptr && object->IsActive) target = object->As_Target();
+    }
+    ar(target);
+    if constexpr (Archive::kIsReading) {
+      if (!ar.ok()) return;
+      object = ResolveSavedObject(target, ar, true);
+      if (!ar.ok() || object == nullptr || !object->IsActive) {
+        ar.Fail("invalid saved object list reference");
+        return;
+      }
+      if (seen.test(target)) {
+        ar.Fail("duplicate saved object list reference");
+        return;
+      }
+      seen.set(target);
+      if (!objects.Add(object)) {
+        ar.Fail("cannot allocate saved object list");
+        return;
+      }
+    }
+  }
+}
+template void SerializeObjectList(ArchiveWriter&, DynamicVectorClass<ObjectClass*>&);
+template void SerializeObjectList(ArchiveReader&, DynamicVectorClass<ObjectClass*>&);

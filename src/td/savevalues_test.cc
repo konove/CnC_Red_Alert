@@ -16,6 +16,7 @@
 #include "td/monoc.h"
 #include "td/rand.h"
 #include "td/region.h"
+#include "td/score.h"
 #include "td/serialize.h"
 #include "td/special.h"
 #include "td/stage.h"
@@ -444,4 +445,23 @@ TEST(TdSaveValuesTest, PreviouslyOmittedCellFieldsRequireSaving) {
   check([](CellClass& value) { value.SmudgeData = 2; });
   check([](CellClass& value) { value.Owner = HOUSE_GOOD; });
   check([](CellClass& value) { value.InfType = HOUSE_BAD; });
+}
+
+
+TEST(TdSaveValuesTest, ScorePreservesEveryCounterAndWideElapsedTime) {
+  ScoreClass score{};
+  score.Score = 101;
+  score.NKilled = 2; score.GKilled = 3; score.CKilled = 4;
+  score.NBKilled = 5; score.GBKilled = 6; score.CBKilled = 7;
+  score.NHarvested = 8; score.GHarvested = 9; score.CHarvested = 10;
+  score.ElapsedTime = (int64_t{1} << 40) + 11;
+  const auto bytes = Save(score);
+  ScoreClass restored{};
+  Restore(restored, bytes);
+  EXPECT_EQ(Save(restored), bytes);
+  EXPECT_EQ(restored.ElapsedTime, score.ElapsedTime);
+  BufferStraw source(bytes.data(), 51);  // SCOR + ten int32 + uint64 needs 52.
+  ArchiveReader reader(source);
+  restored.Serialize(reader);
+  EXPECT_FALSE(reader.ok());
 }

@@ -77,6 +77,9 @@ class FixedHeapClass {
   int Count() { return ActiveCount; }
   int Length() { return TotalCount; }
   int Avail() { return TotalCount - ActiveCount; }
+  bool Is_Allocated(int index) const {
+    return index >= 0 && index < TotalCount && FreeFlag[index];
+  }
 
   virtual int Set_Heap(int count, void* buffer = nullptr);
   virtual void* Allocate();

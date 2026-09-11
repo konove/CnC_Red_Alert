@@ -61,10 +61,10 @@ class LayerClass : public DynamicVectorClass<ObjectClass*> {
   /*
   **	File I/O.
   */
-  bool Load(ArchiveReader& file);
-  bool Save(ArchiveWriter& file);
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  template <class Archive>
+  void Serialize(Archive& ar);
+
+
 };
 
 #endif  // CNC_RED_ALERT_TD_LAYER_H_

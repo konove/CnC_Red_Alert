@@ -34,18 +34,7 @@
  *                  Last Update : June 24, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * Code_All_Pointers -- Code all pointers. * Decode_All_Pointers --
- *Decodes all pointers.                                              *
- *   Get_Savefile_Info -- gets description, scenario #, house * Load_Game --
- *loads a saved game                                                           *
- *   Load_Misc_Values -- Loads miscellaneous variables. * Load_Misc_Values --
- *loads miscellaneous variables                                         *
- *   Read_Object -- reads an object from disk, in a safe way * Save_Game --
- *saves a game to disk                                                         *
- *   Save_Misc_Values -- saves miscellaneous variables * Write_Object
- *-- reads an object from disk, in a safe way                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+ */
 
 #include "td/saveload.h"
 
@@ -82,6 +71,7 @@
 #include "td/savepipe.h"
 #include "td/scenario.h"
 #include "td/score.h"
+#include "td/serialize.h"
 #include "td/smudge.h"
 #include "td/support.h"
 #include "td/target.h"
@@ -101,44 +91,7 @@
 ********************************** Defines **********************************
 */
 
-/***************************************************************************
- * Save_Game -- saves a game to disk                                       *
- *                                                                         *
- * Saving the Map:                                                         *
- *     DisplayClass::Save() invokes CellClass's Write() for every cell     *
- *     that needs to be saved.  A cell needs to be saved if it contains    *
- *     any special data at all, such as a TIcon, or an Occupier.           *
- *   The cell saves its own CellTrigger pointer, converted to a TARGET.    *
- *                                                                         *
- * Saving game objects:                                                    *
- *   - Any object stored in an ArrayOf class needs to be saved.  The ArrayOf*
- *     Save() routine invokes each object's Write() routine, if that       *
- *     object's IsActive is set.                                           *
- *                                                                         *
- * Saving the layers:                                                      *
- *   The Map's Layers (Ground, Air, etc) of things that are on the map,    *
- *     and the Logic's Layer of things to process both need to be saved.   *
- *     LayerClass::Save() writes the entire layer array to disk            *
- *                                                                         *
- * Saving the houses:                                                      *
- *   Each house needs to be saved, to record its Credits, Power, etc.      *
- *                                                                         *
- * Saving miscellaneous data:                                              *
- *   There are a lot of miscellaneous variables to save, such as the       *
- *     map's dimensions, the player's house, etc.                          *
- *                                                                         *
- * INPUT:                                                                  *
- *      id      numerical ID, for the file extension                       *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      true = OK, false = error                                           *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/28/1994 BR : Created.                                              *
- *=========================================================================*/
+// Write the theater/map, object heaps, ordered layers, and globals as fields.
 bool Save_Game(int id, char* descr) {
   RawFileClass file;
   char name[_MAX_FNAME + _MAX_EXT];
@@ -207,7 +160,6 @@ bool Save_Game(int id, char* descr) {
   ArchiveWriter writer(checked_sink);
   writer.Section(FourCC("FRAM"));
   writer(Frame);
-  Code_All_Pointers();
   const bool saved = [&] {
     Call_Back();
     /*
@@ -237,12 +189,14 @@ bool Save_Game(int id, char* descr) {
     /*
     **	Save the Logic & Map layers
     */
-    if (!Logic.Save(writer)) {
+    Logic.Serialize(writer);
+    if (!checked_sink.ok()) {
       return false;
     }
 
     for (i = 0; i < LAYER_COUNT; i++) {
-      if (!MouseClass::Layer[i].Save(writer)) {
+      MouseClass::Layer[i].Serialize(writer);
+      if (!checked_sink.ok()) {
         return false;
       }
     }
@@ -250,14 +204,16 @@ bool Save_Game(int id, char* descr) {
     /*
     **	Save the Score
     */
-    if (!Score.Save(writer)) {
+    Score.Serialize(writer);
+    if (!checked_sink.ok()) {
       return false;
     }
 
     /*
     **	Save the AI Base
     */
-    if (!Base.Save(writer)) {
+    Base.Serialize(writer);
+    if (!checked_sink.ok()) {
       return false;
     }
 
@@ -270,49 +226,10 @@ bool Save_Game(int id, char* descr) {
 
     return true;
   }();
-  Decode_All_Pointers();
   return saved && checked_sink.ok();
 }
 
-/***************************************************************************
- * Load_Game -- loads a saved game                                         *
- *                                                                         *
- * This routine loads the data in the same way it was saved out.           *
- *                                                                         *
- * Loading the Map:                                                        *
- *   - DisplayClass::Load() invokes CellClass's Load() for every cell      *
- *     that was saved.                                                     *
- * - The cell loads its own CellTrigger pointer.                           *
- *                                                                         *
- * Loading game objects:                                                   *
- * - IHeap's Load() routine loads the # of objects stored, and loads       *
- *   each object.                                                          *
- * - Triggers: Add themselves to the HouseTriggers if they're associated   *
- *   with a house                                                          *
- *                                                                         *
- * Loading the layers:                                                     *
- *     LayerClass::Load() reads the entire layer array to disk             *
- *                                                                         *
- * Loading the houses:                                                     *
- *   Each house is loaded in its entirety.                                 *
- *                                                                         *
- * Loading miscellaneous data:                                             *
- *   There are a lot of miscellaneous variables to load, such as the       *
- *     map's dimensions, the player's house, etc.                          *
- *                                                                         *
- * INPUT:                                                                  *
- *      id         numerical ID, for the file extension                    *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      true = OK, false = error                                           *
- *                                                                         *
- * WARNINGS:                                                               *
- *      If this routine returns false, the entire game will be in an       *
- *      unknown state, so the scenario will have to be re-initialized.     *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/28/1994 BR : Created.                                              *
- *=========================================================================*/
+// Load heaps before ordered object lists; rebuild runtime placement/UI state last.
 bool Load_Game(int id) {
   RawFileClass file;
   char name[_MAX_FNAME + _MAX_EXT];
@@ -466,12 +383,15 @@ bool Load_Game(int id) {
   /*
   **	Load the Logic & Map Layers
   */
-  if (!Logic.Load(reader)) {
+  Logic.Serialize(reader);
+  if (!reader.ok()) {
+    DLOG(ERROR) << "Cannot load saved state: " << reader.error();
     file.Close();
     return false;
   }
   for (i = 0; i < LAYER_COUNT; i++) {
-    if (!MouseClass::Layer[i].Load(reader)) {
+    MouseClass::Layer[i].Serialize(reader);
+    if (!reader.ok()) {
       file.Close();
       return false;
     }
@@ -481,7 +401,9 @@ bool Load_Game(int id) {
   /*
   **	Load the Score
   */
-  if (!Score.Load(reader)) {
+  Score.Serialize(reader);
+  if (!reader.ok()) {
+    DLOG(ERROR) << "Cannot load saved state: " << reader.error();
     file.Close();
     return false;
   }
@@ -489,7 +411,9 @@ bool Load_Game(int id) {
   /*
   **	Load the AI Base
   */
-  if (!Base.Load(reader)) {
+  Base.Serialize(reader);
+  if (!reader.ok()) {
+    DLOG(ERROR) << "Cannot load saved state: " << reader.error();
     file.Close();
     return false;
   }
@@ -498,12 +422,28 @@ bool Load_Game(int id) {
   **	Load miscellaneous variables, including the map size & the Theater
   */
   if (!Load_Misc_Values(reader)) {
+    DLOG(ERROR) << "Cannot load saved globals: " << reader.error();
     file.Close();
     return false;
   }
 
   file.Close();
-  Decode_All_Pointers();
+  Whom = PlayerPtr->Class->House;
+  switch (Whom) {
+    case HOUSE_GOOD: ScenPlayer = SCEN_PLAYER_GDI; break;
+    case HOUSE_BAD: ScenPlayer = SCEN_PLAYER_NOD; break;
+    case HOUSE_JP: ScenPlayer = SCEN_PLAYER_JP; break;
+    default: break;
+  }
+  Set_Scenario_Name(ScenarioName, Scenario, ScenPlayer, ScenDir, ScenVar);
+  // Placement type resources need every object heap to be loaded first.
+  if (Map.PendingObjectPtr) {
+    Map.PendingObject = &Map.PendingObjectPtr->Class_Of();
+    Map.Set_Cursor_Shape(Map.PendingObject->Occupy_List(true));
+  } else {
+    Map.PendingObject = nullptr;
+    Map.Set_Cursor_Shape(nullptr);
+  }
   Map.Init_IO();
   Map.Flag_To_Redraw(true);
 
@@ -519,412 +459,55 @@ bool Load_Game(int id) {
   return true;
 }
 
-/***************************************************************************
- * Save_Misc_Values -- saves miscellaneous variables                       *
- *                                                                         *
- * INPUT:                                                                  *
- *      file      file to use for writing                                  *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      true = success, false = failure                                    *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/29/1994 BR : Created.                                              *
- *=========================================================================*/
-bool Save_Misc_Values(ArchiveWriter& file) {
-  int i;
-  int count;         // # ptrs in 'CurrentObject'
-  ObjectClass* ptr;  // for saving 'CurrentObject' ptrs
-
-  /*
-  **	Player's House.
-  */
-  file.Bytes(static_cast<const void*>(&PlayerPtr), sizeof(void*));
-
-  /*
-  **	Save this scenario number.
-  */
-  file.Bytes(&Scenario, sizeof(Scenario));
-
-  /*
-  **	Save VQ Movie names.
-  */
-  file.Bytes(WinMovie, sizeof(WinMovie));
-
-  file.Bytes(LoseMovie, sizeof(LoseMovie));
-
-  /*
-  **	Save currently-selected objects list.
-  **	Save the # of ptrs in the list.
-  */
-  count = static_cast<int>(CurrentObject.Count());
-  file.Bytes(&count, sizeof(count));
-
-  /*
-  **	Save the pointers.
-  */
-  for (i = 0; i < count; i++) {
-    ptr = CurrentObject[i];
-    file.Bytes(static_cast<const void*>(&ptr), sizeof(void*));
-  }
-
-  /*
-  **	Save the list of waypoints.
-  */
-  file.Bytes(Waypoint, sizeof(Waypoint));
-
-  file.Bytes(&ScenDir, sizeof(ScenDir));
-  file.Bytes(&ScenVar, sizeof(ScenVar));
-  file.Bytes(&CarryOverMoney, sizeof(CarryOverMoney));
-  file.Bytes(&CarryOverPercent, sizeof(CarryOverPercent));
-  file.Bytes(&BuildLevel, sizeof(BuildLevel));
-  file.Bytes(BriefMovie, sizeof(BriefMovie));
-  file.Bytes(Views, sizeof(Views));
-  file.Bytes(&EndCountDown, sizeof(EndCountDown));
-  file.Bytes(BriefingText, sizeof(BriefingText));
-
-  // This is new...
-  file.Bytes(ActionMovie, sizeof(ActionMovie));
-  auto random_state = CaptureRandomState();
-  file.Section(FourCC("RNGS"));
-  file(random_state);
-
-  return true;
-}
-
-/***********************************************************************************************
- * Load_Misc_Values -- Loads miscellaneous variables. *
- *                                                                                             *
- * INPUT:   file  -- The file to load the misc values from. *
- *                                                                                             *
- * OUTPUT:  Was the misc load process successful? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/24/1995 BRR : Created. *
- *=============================================================================================*/
-bool Load_Misc_Values(ArchiveReader& file) {
-  int i;
-  int count;         // # ptrs in 'CurrentObject'
-  ObjectClass* ptr;  // for loading 'CurrentObject' ptrs
-
-  /*
-  **	Player's House.
-  */
-  file.Bytes(static_cast<void*>(&PlayerPtr), sizeof(void*));
-  if (!file.ok()) {
-    return false;
-  }
-
-  /*
-  **	Read this scenario number.
-  */
-  file.Bytes(&Scenario, sizeof(Scenario));
-  if (!file.ok()) {
-    return false;
-  }
-
-  /*
-  **	Load VQ Movie names.
-  */
-  file.Bytes(WinMovie, sizeof(WinMovie));
-  if (!file.ok()) {
-    return false;
-  }
-
-  file.Bytes(LoseMovie, sizeof(LoseMovie));
-  if (!file.ok()) {
-    return false;
-  }
-
-  /*
-  **	Load currently-selected objects list.
-  **	Load the # of ptrs in the list.
-  */
-  file.Bytes(&count, sizeof(count));
-  if (!file.ok()) {
-    return false;
-  }
-
-  /*
-  **	Load the pointers.
-  */
-  for (i = 0; i < count; i++) {
-    file.Bytes(static_cast<void*>(&ptr), sizeof(void*));
-    if (!file.ok()) {
-      return false;
+template <class Archive>
+void Serialize_Misc_Values(Archive& ar) {
+  ar.Section(FourCC("MISC"));
+  ar(HousePtr(PlayerPtr), Scenario, WinMovie, LoseMovie);
+  if constexpr (Archive::kIsReading) {
+    bool player_loaded = false;
+    for (int32_t i = 0; i < Houses.Count(); ++i) {
+      player_loaded |= PlayerPtr == Houses.Ptr(i);
     }
-    CurrentObject.Add(ptr);  // add to the list
+    if (!ar.ok() || !player_loaded) {
+      ar.Fail("invalid saved player house");
+      return;
+    }
   }
-
-  /*
-  **	Save the list of waypoints.
-  */
-  file.Bytes(Waypoint, sizeof(Waypoint));
-  if (!file.ok()) {
-    return false;
+  SerializeObjectList(ar, CurrentObject);
+  ar(Waypoint, ScenDir, ScenVar, CarryOverMoney, CarryOverPercent, BuildLevel,
+     BriefMovie, Views, EndCountDown, BriefingText, ActionMovie);
+  if constexpr (Archive::kIsReading) {
+    WinMovie[sizeof(WinMovie) - 1] = '\0';
+    LoseMovie[sizeof(LoseMovie) - 1] = '\0';
+    BriefMovie[sizeof(BriefMovie) - 1] = '\0';
+    ActionMovie[sizeof(ActionMovie) - 1] = '\0';
+    BriefingText[sizeof(BriefingText) - 1] = '\0';
+    if (ScenDir < SCEN_DIR_FIRST || ScenDir >= SCEN_DIR_COUNT ||
+        ScenVar < SCEN_VAR_FIRST || (ScenVar >= SCEN_VAR_COUNT && ScenVar != SCEN_VAR_LOSE)) {
+      ar.Fail("invalid saved scenario direction or variant");
+    }
+    for (CELL cell : Waypoint) {
+      if (cell < -1 || cell >= MAP_CELL_TOTAL) ar.Fail("invalid saved waypoint");
+    }
+    for (CELL cell : Views) {
+      if (cell < -1 || cell >= MAP_CELL_TOTAL) ar.Fail("invalid saved view");
+    }
   }
-
-  file.Bytes(&ScenDir, sizeof(ScenDir));
-  file.Bytes(&ScenVar, sizeof(ScenVar));
-  file.Bytes(&CarryOverMoney, sizeof(CarryOverMoney));
-  file.Bytes(&CarryOverPercent, sizeof(CarryOverPercent));
-  file.Bytes(&BuildLevel, sizeof(BuildLevel));
-  file.Bytes(BriefMovie, sizeof(BriefMovie));
-  file.Bytes(Views, sizeof(Views));
-  file.Bytes(&EndCountDown, sizeof(EndCountDown));
-  file.Bytes(BriefingText, sizeof(BriefingText));
-
-  file.Bytes(ActionMovie, sizeof(ActionMovie));
-  TdRandomState random_state;
-  file.Section(FourCC("RNGS"));
-  file(random_state);
-  if (file.ok()) {
-    RestoreRandomState(random_state);
-  }
-
-  return file.ok();
-}
-
-/***********************************************************************************************
- * Code_All_Pointers -- Code all pointers. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/24/1995 BRR : Created. *
- *=============================================================================================*/
-void Code_All_Pointers() {
-  int i;
-
-  /*
-  **	The Layers.
-  */
-  Logic.Code_Pointers();
-  for (i = 0; i < LAYER_COUNT; i++) {
-    MouseClass::Layer[i].Code_Pointers();
-  }
-
-  /*
-  **	The Score.
-  */
-  Score.Code_Pointers();
-
-  /*
-  **	The Base.
-  */
-  Base.Code_Pointers();
-
-  /*
-  **	PlayerPtr.
-  */
-  PlayerPtr = (HouseClass*)PlayerPtr->Class->House;
-
-  /*
-  **	Currently-selected objects.
-  */
-  for (i = 0; i < CurrentObject.Count(); i++) {
-    CurrentObject[i] = (ObjectClass*)CurrentObject[i]->As_Target();
+  auto random_state = CaptureRandomState();
+  ar.Section(FourCC("RNGS"));
+  ar(random_state);
+  if constexpr (Archive::kIsReading) {
+    if (ar.ok()) RestoreRandomState(random_state);
   }
 }
 
-/***********************************************************************************************
- * Decode_All_Pointers -- Decodes all pointers. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/24/1995 BRR : Created. *
- *=============================================================================================*/
-void Decode_All_Pointers() {
-  int i;
-
-  /*
-  **	The Layers.
-  */
-  Logic.Decode_Pointers();
-  for (i = 0; i < LAYER_COUNT; i++) {
-    MouseClass::Layer[i].Decode_Pointers();
-  }
-
-  /*
-  **	The Score.
-  */
-  Score.Decode_Pointers();
-
-  /*
-  **	The Base.
-  */
-  Base.Decode_Pointers();
-
-  /*
-  **	PlayerPtr.
-  */
-  PlayerPtr =
-      HouseClass::As_Pointer(static_cast<HousesType>((intptr_t)PlayerPtr));
-  Whom = PlayerPtr->Class->House;
-  switch (PlayerPtr->Class->House) {
-    case HOUSE_GOOD:
-      ScenPlayer = SCEN_PLAYER_GDI;
-      break;
-
-    case HOUSE_BAD:
-      ScenPlayer = SCEN_PLAYER_NOD;
-      break;
-
-    case HOUSE_JP:
-      ScenPlayer = SCEN_PLAYER_JP;
-      break;
-  }
-  Check_Ptr(PlayerPtr);
-
-  Set_Scenario_Name(ScenarioName, Scenario, ScenPlayer, ScenDir, ScenVar);
-
-  /*
-  **	Currently-selected objects.
-  */
-  for (i = 0; i < CurrentObject.Count(); i++) {
-    CurrentObject[i] =
-        As_Object(static_cast<TARGET>((uintptr_t)CurrentObject[i]));
-    Check_Ptr(CurrentObject[i]);
-  }
-
-  /*
-  **	Last-Minute Fixups; to resolve these pointers properly requires all
-  *other *	pointers to be loaded & decoded.
-  */
-  if (Map.PendingObjectPtr) {
-    Map.PendingObject = &Map.PendingObjectPtr->Class_Of();
-    Check_Ptr(Map.PendingObject);
-    Map.Set_Cursor_Shape(Map.PendingObject->Occupy_List(true));
-  } else {
-    Map.PendingObject = nullptr;
-    Map.Set_Cursor_Shape(nullptr);
-  }
-}
-
-/***********************************************************************************************
- * Read_Object -- reads an object from disk *
- *                                                                                             *
- * This routine reads in an object and fills in the virtual function table
- *pointer.            *
- *                                                                                             *
- * INPUT: * ptr            pointer to object to read * base_size      size of
- *object's absolute base class                                    * class_size
- *size of the class itself                                               * file
- *file to use for I/O                                                    *
- *      vtable         virtual function table pointer value, NULL if none *
- *                                                                                             *
- * OUTPUT: * true = OK, false = error *
- *                                                                                             *
- * WARNINGS: * This routine ASSUMES the program modules are compiled with: *
- *      -Vb-      Always make the virtual function table ptr 2 bytes long * -Vt
- *Put the virtual function table after the 1st class's data *
- *                                                                                             *
- *      ALSO, the class used to compute 'base_size' must come first in a
- *multiple-inheritence  * hierarchy.  AND, if your class multiply-inherits from
- *other classes, only ONE of those * classes can contain virtual functions!  If
- *you include virtual functions in the other  * classes, the compiler will
- *generate multiple virtual function tables, and this load/save * technique will
- *fail.                                                                   *
- *                                                                                             *
- *      Each class hierarchy is stored in memory as a chain: first the data for
- *the base-est   * class, then the virtual function table pointer for this
- *hierarchy, then the data for   * all derived classes.  If any of these derived
- *classes multiply-inherit, the base class * for the multiple inheritance is
- *stored as a separate chain following this chain.  The  * new chain will
- *contain its own virtual function table pointer, if the multiply-        *
- *      inherited hierarchy contains any virtual functions.  Thus, the
- *declaration             * class A * class B: public A * class C: public B, X *
- *      is stored as: * A data * A's Virtual Table Pointer * B data * X data *
- *         [X's Virtual Table Pointer] * C data *
- *                                                                                             *
- *      and * class A * class B: public A * class C: public X, B * is stored in
- *memory as:                                                                * X
- *data * [X's Virtual Table Pointer] * A data * A's Virtual Table Pointer * B
- *data * C data *
- *                                                                                             *
- *                                                                                             *
- * HISTORY: * 01/10/1995 BR : Created. *
- *=============================================================================================*/
-bool Read_Object(void* ptr, int base_size, int class_size, ArchiveReader& file,
-                 void* vtable) {
-  int size;  // object size in bytes
-
-  /*
-  **	Read size of this chunk.
-  */
-  file.Bytes(&size, sizeof(size));
-  if (!file.ok()) {
-    return false;
-  }
-
-  /*
-  **	Error if incorrect size.
-  */
-  if (size != class_size) {
-    return false;
-  }
-
-  /*
-  **	Read object data.
-  */
-  file.Bytes(ptr, class_size);
-  if (!file.ok()) {
-    return false;
-  }
-
-  /*
-  **	Fill in VTable.
-  */
-  if (vtable) {
-    ((void**)(static_cast<char*>(ptr) + base_size - 4))[0] = vtable;
-  }
-
-  return file.ok();
-}
-
-/***********************************************************************************************
- * Write_Object -- reads an object from disk, in a safe way *
- *                                                                                             *
- * This routine writes an object in 2 pieces, skipping the embedded * virtual
- *function table pointer. *
- *                                                                                             *
- * INPUT: * ptr            pointer to object to write * class_size      size of
- *the class itself                                               * file file to
- *use for I/O                                                    *
- *                                                                                             *
- * OUTPUT: * true = OK, false = error *
- *                                                                                             *
- * WARNINGS: * This routine ASSUMES the program modules are compiled with: *
- *      -Vb-      Always make the virtual function table ptr 2 bytes long * -Vt
- *Put the virtual function table after the 1st class's data *
- *                                                                                             *
- *    Also see warnings for Read_Object(). *
- *                                                                                             *
- * HISTORY: * 01/10/1995 BR : Created. *
- *=============================================================================================*/
-bool Write_Object(void* ptr, int class_size, ArchiveWriter& file) {
-  /*
-  **	Save size of this chunk.
-  */
-  file.Bytes(&class_size, sizeof(class_size));
-
-  /*
-  **	Save object data.
-  */
-  file.Bytes(ptr, class_size);
-
+bool Save_Misc_Values(ArchiveWriter& file) {
+  Serialize_Misc_Values(file);
   return true;
+}
+bool Load_Misc_Values(ArchiveReader& file) {
+  Serialize_Misc_Values(file);
+  return file.ok();
 }
 
 /***************************************************************************

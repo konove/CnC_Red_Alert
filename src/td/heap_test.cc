@@ -126,3 +126,16 @@ TEST(TdHeapTest, EmptyHeapRoundTripsWithoutObjects) {
 }
 
 }  // namespace
+
+
+TEST(TdHeapTest, AllocationQueryRejectsHolesAndOutOfRangeSlots) {
+  TFixedIHeapClass<FieldObject> heap;
+  heap.Set_Heap(3);
+  auto* object = new (heap.Alloc()) FieldObject();
+  EXPECT_TRUE(heap.Is_Allocated(0));
+  EXPECT_FALSE(heap.Is_Allocated(1));
+  EXPECT_FALSE(heap.Is_Allocated(-1));
+  EXPECT_FALSE(heap.Is_Allocated(3));
+  heap.Free(object);
+  EXPECT_FALSE(heap.Is_Allocated(0));
+}

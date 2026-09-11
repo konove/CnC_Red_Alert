@@ -86,6 +86,8 @@
 #include "td/externs.h"
 #include "td/factory.h"
 #include "td/globals.h"
+#include "td/base.h"
+#include "td/score.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -1623,6 +1625,31 @@ bool Select_Game(bool fade) {
       return false;
     }
     DLOG(INFO) << "C&C95 - Scenario started OK.";
+    if (DebugGlobalsTest) {
+      Score.Score = 101;
+      Score.NKilled = 2; Score.GKilled = 3; Score.CKilled = 4;
+      Score.NBKilled = 5; Score.GBKilled = 6; Score.CBKilled = 7;
+      Score.NHarvested = 8; Score.GHarvested = 9; Score.CHarvested = 10;
+      Score.ElapsedTime = int64_t{1} << 40;
+      Base.House = HOUSE_GOOD;
+      Base.Nodes.Clear();
+      BaseNodeClass node;
+      node.Type = STRUCT_POWER;
+      node.Coord = Cell_Coord(1000);
+      Base.Nodes.Add(node);
+      node.Type = STRUCT_REFINERY;
+      node.Coord = Cell_Coord(1200);
+      Base.Nodes.Add(node);
+      CurrentObject.Clear();
+      if (Units.Count() < 2) return false;
+      CurrentObject.Add(Units.Ptr(1));
+      CurrentObject.Add(Units.Ptr(0));
+      Waypoint[20] = 1234;
+      CarryOverMoney = 13579;
+      CarryOverPercent = 42;
+      Views[3] = 2345;
+      EndCountDown = 700;
+    }
     if (DebugMapTest) {
       for (CELL cell = 0; cell < 16; ++cell) {
         if (Map.In_Radar(cell)) {
@@ -2153,6 +2180,10 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     }
     if (strncmp(string, "-SAVESLOT", 9) == 0) {
       DebugSaveSlot = atoi(string + 9);
+      continue;
+    }
+    if (strcmp(string, "-GLOBALTEST") == 0) {
+      DebugGlobalsTest = true;
       continue;
     }
     if (strcmp(string, "-MAPTEST") == 0) {

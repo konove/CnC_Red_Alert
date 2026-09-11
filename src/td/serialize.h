@@ -9,10 +9,14 @@
 #include "tech/archive.h"
 
 class ObjectClass;
+template <class T> class DynamicVectorClass;
+// Ordered active object references, loaded only after all object heaps.
+template <class Archive>
+void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects);
 
 // Resolves an object TARGET by kind and heap bounds without dereferencing the
 // slot. A later heap may not have constructed the referenced object yet.
-ObjectClass* ResolveSavedObject(TARGET target, ArchiveReader& ar);
+ObjectClass* ResolveSavedObject(TARGET target, ArchiveReader& ar, bool active_only = false);
 
 // Saves active objects as TARGETs, null/inactive objects as kTargetNone.
 // Readers reject kinds that cannot be stored in T*. Defined for ObjectClass,
