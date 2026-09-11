@@ -2,7 +2,7 @@
 
 Updated: 2026-09-11, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 228 currently excluded check names** and completed entries, in recommended work
+This tracks **all 227 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -46,7 +46,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `bugprone-non-zero-enum-to-bool-conversion`                   | Enabled | Commit `Enable nonzero enum-to-bool conversion checking`: both games and shared code pass without source fixes.                                                                                                                 |
 | `clang-analyzer-optin.core.EnumCastOutOfRange`                | Skipped | Commit `Document enum cast range check policy`: LLVM 23.1.2 rejects intentional intermediate directions, flag combinations, and path-command sentinels; retain exclusion. See review below.                                     |
 | `clang-diagnostic-tautological-constant-out-of-range-compare` | Enabled | Commit `Preserve shutdown states and enable constant range comparison checking`: store RA shutdown states 0 through 3 in an integer instead of collapsing them to bool.                                                         |
-| `clang-diagnostic-tautological-unsigned-enum-zero-compare`    | Pending | Find enum checks that cannot detect invalid values.                                                                                                                                                                             |
+| `clang-diagnostic-tautological-unsigned-enum-zero-compare`    | Enabled | Commit `Simplify unsigned enum bounds and enable zero comparison checking`: use an unsigned event range check and remove an impossible negative template-ID check while preserving the no-template sentinel.                    |
 | `clang-diagnostic-tautological-unsigned-zero-compare`         | Pending | Find ineffective negative checks on unsigned values.                                                                                                                                                                            |
 | `clang-diagnostic-implicit-int-conversion`                    | Pending | Find remaining implicit loss of integer range or precision.                                                                                                                                                                     |
 | `clang-diagnostic-implicit-int-conversion-on-negation`        | Pending | Review negation that changes range during conversion.                                                                                                                                                                           |
@@ -396,6 +396,19 @@ Markdown formatting and whitespace checks passed; game builds and tests were not
 documentation-only decision.
 
 ### Completed validation
+
+The 2026-09-11 unsigned-enum zero comparison review found two diagnostics in the isolated sweep of
+889 project translation units, including 431 generated header checks. TD event execution now
+compares the event type as unsigned against `PROCESS_TIME`, preserving the upper-bound diagnostic
+without testing an unsigned enum for negativity. TD cell loading no longer tests the byte-sized
+`TemplateType` for negativity; it still rejects IDs at or above `TEMPLATE_COUNT` except for the
+explicit `TEMPLATE_NONE` sentinel (255). Enum declarations, wire formats, and saved data layouts are
+unchanged.
+
+Both affected files pass the isolated check, and the final full-config sweep passed all 889
+translation units. Both strict game builds and all 228 CTest tests passed. A deliberately invalid
+unsigned-enum comparison with zero confirms that the enabled diagnostic reports an error under the
+repository configuration and the strict build's existing `-Weverything` flag.
 
 The 2026-09-11 constant-out-of-range comparison review found one diagnostic in the isolated sweep of
 889 project translation units, including 431 generated header checks: RA's emergency shutdown

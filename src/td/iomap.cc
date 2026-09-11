@@ -62,12 +62,11 @@ void CellClass::Serialize(Archive& ar) {
     IsWaypoint = (flags & 32) != 0;
     IsRadarCursor = (flags & 64) != 0;
     IsFlagged = (flags & 128) != 0;
-    if ((TType != TEMPLATE_NONE && (TType < 0 || TType >= TEMPLATE_COUNT)) ||
+    if ((TType != TEMPLATE_NONE && TType >= TEMPLATE_COUNT) ||
         Overlay < OVERLAY_NONE || Overlay >= OVERLAY_COUNT ||
-        Smudge < SMUDGE_NONE || Smudge >= SMUDGE_COUNT ||
-        Owner < HOUSE_NONE || Owner >= HOUSE_COUNT ||
-        InfType < HOUSE_NONE || InfType >= HOUSE_COUNT ||
-        Land < LAND_CLEAR || Land >= LAND_COUNT) {
+        Smudge < SMUDGE_NONE || Smudge >= SMUDGE_COUNT || Owner < HOUSE_NONE ||
+        Owner >= HOUSE_COUNT || InfType < HOUSE_NONE ||
+        InfType >= HOUSE_COUNT || Land < LAND_CLEAR || Land >= LAND_COUNT) {
       ar.Fail("invalid saved cell attributes");
     }
   }

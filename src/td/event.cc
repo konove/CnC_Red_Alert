@@ -399,7 +399,7 @@ void EventClass::Execute() {
   char txt[80];
   int i;
   // #if (0)
-  if (Type < 0 || Type > PROCESS_TIME) {
+  if (static_cast<unsigned>(Type) > PROCESS_TIME) {
     char tempbuf[128];
     sprintf(tempbuf, "Packet type %d received\n", Type);
     CCDebugString(tempbuf);
