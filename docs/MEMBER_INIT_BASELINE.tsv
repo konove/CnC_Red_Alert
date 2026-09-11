@@ -1,0 +1,238 @@
+path	line	column	diagnostic
+src/ra/abstract.h	63	3	constructor does not initialize these fields: IsActive
+src/ra/abstract_type.cc	8	1	constructor does not initialize these fields: IniName
+src/ra/bdata.cc	2827	1	constructor does not initialize these fields: Anims
+src/ra/ccini.h	60	3	constructor does not initialize these fields: Digest
+src/ra/cell.cc	168	1	constructor does not initialize these fields: Zones, Overlappers, Flag
+src/ra/combuf.cc	79	1	constructor does not initialize these fields: DelaySum, NumDelay, MeanDelay, MaxDelay, SendCount, SendTotal, ReceiveCount, ReceiveTotal, DebugOffset, DebugSize, DebugNames, DebugNameStart, DebugNameCount
+src/ra/connect.cc	87	1	constructor does not initialize these fields: NumRecNoAck, NumRecAck, NumSendNoAck, NumSendAck, LastSeqID, LastReadID
+src/ra/coord.cc	47	3	uninitialized record type: 'left'
+src/ra/coord.cc	48	3	uninitialized record type: 'top'
+src/ra/coord.cc	49	3	uninitialized record type: 'right'
+src/ra/coord.cc	50	3	uninitialized record type: 'bottom'
+src/ra/coord.cc	237	3	uninitialized record type: 'cell'
+src/ra/defines.h	323	3	uninitialized record type: 'target'
+src/ra/defines.h	2816	8	constructor does not initialize these fields: Build
+src/ra/dial8.cc	74	1	constructor does not initialize these fields: FacePoint, FaceLine
+src/ra/dialog.cc	876	3	uninitialized record type: 'scheme'
+src/ra/dialog.cc	922	3	uninitialized record type: 'scheme'
+src/ra/edit.cc	37	1	constructor does not initialize these fields: EditFlags
+src/ra/event.cc	164	1	constructor does not initialize these fields: IsExecuted, Data
+src/ra/event.cc	188	1	constructor does not initialize these fields: IsExecuted, Data
+src/ra/event.cc	196	1	constructor does not initialize these fields: IsExecuted, Data
+src/ra/event.cc	218	1	constructor does not initialize these fields: IsExecuted, Data
+src/ra/event.cc	236	1	constructor does not initialize these fields: IsExecuted, Data
+src/ra/event.cc	263	1	constructor does not initialize these fields: IsExecuted, Data
+src/ra/event.cc	288	1	constructor does not initialize these fields: IsExecuted, Data
+src/ra/event.cc	318	1	constructor does not initialize these fields: IsExecuted, Data
+src/ra/event.cc	355	1	constructor does not initialize these fields: IsExecuted, Data
+src/ra/event.cc	388	1	constructor does not initialize these fields: IsExecuted, Data
+src/ra/event.cc	418	1	constructor does not initialize these fields: IsExecuted, Data
+src/ra/event.cc	445	1	constructor does not initialize these fields: IsExecuted, Data
+src/ra/event.cc	468	1	constructor does not initialize these fields: IsExecuted, Data
+src/ra/event.h	246	3	constructor does not initialize these fields: Type, Frame, ID, IsExecuted, Data
+src/ra/findpath.cc	468	3	uninitialized record type: 'pleft'
+src/ra/findpath.cc	468	3	uninitialized record type: 'pright'
+src/ra/foot.cc	144	1	constructor does not initialize these fields: NavQueue, Path
+src/ra/foot.cc	428	7	uninitialized record type: 'path1'
+src/ra/gadget.h	108	3	constructor does not initialize these fields: X, Y, Width, Height, IsToRepaint, IsSticky, IsDisabled, Flags
+src/ra/goptions.h	75	3	constructor does not initialize these fields: OptionWidth, OptionHeight, OptionX, OptionY, ButtonWidth, OButtonHeight, CaptionYPos, ButtonY, Border1Len, Border2Len, ButtonResumeY
+src/ra/hdata.cc	278	1	constructor does not initialize these fields: Suffix
+src/ra/house.cc	635	1	constructor does not initialize these fields: IsActive, ZoneInfo, IniName, InitialName
+src/ra/init.cc	2085	3	uninitialized record type: 'state'
+src/ra/inline.h	157	3	uninitialized record type: 'coord'
+src/ra/inline.h	235	3	uninitialized record type: 'cell'
+src/ra/inline.h	257	3	uninitialized record type: 'lepton'
+src/ra/inline.h	416	3	uninitialized record type: 'coord'
+src/ra/inline.h	439	3	uninitialized record type: 'coord'
+src/ra/inline.h	533	3	uninitialized record type: 'coord'
+src/ra/inline.h	563	3	uninitialized record type: 'coord'
+src/ra/inline.h	591	3	uninitialized record type: 'coord'
+src/ra/ipxaddr.cc	77	1	constructor does not initialize these fields: NetworkNumber, NodeAddress
+src/ra/ipxaddr.cc	111	1	constructor does not initialize these fields: NetworkNumber, NodeAddress
+src/ra/ipxaddr.cc	139	1	constructor does not initialize these fields: NetworkNumber, NodeAddress
+src/ra/ipxconn.cc	100	1	constructor does not initialize these fields: ImmediateAddress, Name
+src/ra/ipxgconn.cc	76	1	constructor does not initialize these fields: BridgeNet, BridgeNode, LastPacketID
+src/ra/ipxmgr.cc	110	1	constructor does not initialize these fields: Connection, NumBufs, PacketLen, Handler, ListenECB, FirstHeaderBuf, FirstDataBuf, SendECB, SendHeader, SendBuf, BufferFlags
+src/ra/loaddlg.cc	637	3	uninitialized record type: 'find_state'
+src/ra/map.h	62	3	constructor does not initialize these fields: MapCellX, MapCellY, MapCellWidth, MapCellHeight, TotalValue, XSize, YSize, Size, TiberiumGrowth, TiberiumGrowthCount, TiberiumGrowthExcess, TiberiumSpread, TiberiumSpreadCount, TiberiumSpreadExcess, TiberiumScan
+src/ra/mapedit.cc	122	1	constructor does not initialize these fields: Objects, GrabOffset, LastClickTime, NumType, TypeOffset, HouseList, MissionList, HealthGauge, FacingDial, MapArea, HealthText, Sellable, Rebuildable, BaseGauge, BaseLabel
+src/ra/monoc.cc	174	3	uninitialized record type: 'cell'
+src/ra/monoc.cc	283	3	uninitialized record type: 'cell'
+src/ra/monoc.cc	404	3	uninitialized record type: 'cell'
+src/ra/monoc.cc	478	3	uninitialized record type: 'cell'
+src/ra/monoc.cc	590	3	uninitialized record type: 'cell'
+src/ra/msglist.cc	97	1	constructor does not initialize these fields: EditBuf, OverflowBuf, Width, MessageBuffers, BufferAvail
+src/ra/nullmgr.cc	142	1	constructor does not initialize these fields: EchoCount, RXSize, RXCount
+src/ra/object.cc	1861	1	constructor does not initialize these fields: GraphicName
+src/ra/object.cc	1892	1	constructor does not initialize these fields: GraphicName
+src/ra/queue.h	142	1	constructor does not initialize these fields: Head, Tail
+src/ra/radar.cc	150	1	constructor does not initialize these fields: RadX, RadOffX, RadY, RadOffY, RadWidth, RadHeight, RadIWidth, RadIHeight, RadPWidth, RadPHeight, PixelStack
+src/ra/radio.h	80	3	constructor does not initialize these fields: Old
+src/ra/rawolapi.cc	88	1	constructor does not initialize these fields: bRequestConnectionWait, bRequestLogoutWait, bRequestChannelJoinWait, bRequestChannelLeaveWait, bRequestUserListWait, bRequestChannelCreateWait, bRequestFindWait, bRequestPageWait, ChannelFilter, hresRequestFindResult, OnFindChannel, hresRequestPageResult, hresRequestJoinResult
+src/ra/rawolapi.cc	1580	1	constructor does not initialize these fields: iBytesRead, iTotalSize, iTimeTaken, iTimeLeft, iStatus, bResumed
+src/ra/rules.h	47	7	constructor does not initialize these fields: IsBuildSlowdown, IsWallDestroyer, IsContentScan
+src/ra/scenario.cc	185	1	constructor does not initialize these fields: Waypoint, ScenarioName, Description, BriefingText, GlobalFlags, Views, bLocalProposesDraw, bOtherProposesDraw
+src/ra/search.h	566	5	uninitialized record type: 'fake'
+src/ra/search.h	648	3	uninitialized record type: 'node'
+src/ra/seditdlg.cc	44	1	constructor does not initialize these fields: szEdit, szEdit2
+src/ra/session.cc	169	1	constructor does not initialize these fields: Options, Handle, DesiredFrameRate, ProcessTimer, ProcessTicks, ProcessFrames, ScenarioFileName, ScenarioDigest, ScenarioFileLength, ScenarioIsOfficial, ScenarioRequests, RequestCount, LastMessage, Score, GamesPlayed, NumScores, Winner, CurGame, GameName, GPacket, GPacketlen, MetaPacket, SerialDefaults, TrapObject
+src/ra/session.cc	1013	3	uninitialized record type: 'state'
+src/ra/session.cc	1364	1	constructor does not initialize these fields: ScenarioDescription, Filename, Digest, IsOfficial, IsExpansion
+src/ra/session.h	269	16	constructor does not initialize these fields: Name, Game, Player, Chat
+src/ra/shapebtn.cc	67	1	constructor does not initialize these fields: ShapeData
+src/ra/shapebtn.cc	94	1	constructor does not initialize these fields: ShapeData
+src/ra/sidebar.cc	1002	1	constructor does not initialize these fields: LastSlid, Buildables
+src/ra/sidebar.h	121	5	constructor does not initialize these fields: X, Y, ID, IsToRedraw, IsBuilding, IsScrollingDown, IsScrolling, Flasher, TopIndex, Scroller, Slid, LastSlid, BuildableCount, Buildables
+src/ra/slider.cc	75	1	constructor does not initialize these fields: Thumb, ThumbSize, ThumbStart
+src/ra/startup.cc	212	5	uninitialized record type: 'wfd'
+src/ra/taction.h	129	3	constructor does not initialize these fields: Data
+src/ra/target.cc	92	1	constructor does not initialize these bases: xTargetClass
+src/ra/target.cc	94	1	constructor does not initialize these bases: xTargetClass
+src/ra/target.cc	103	1	constructor does not initialize these bases: xTargetClass
+src/ra/target.cc	112	1	constructor does not initialize these bases: xTargetClass
+src/ra/target.h	236	3	constructor does not initialize these bases: xTargetClass
+src/ra/target.h	237	3	constructor does not initialize these bases: xTargetClass
+src/ra/target.h	241	3	constructor does not initialize these bases: xTargetClass
+src/ra/teamtype.cc	201	1	constructor does not initialize these fields: MissionList
+src/ra/tevent.h	156	3	constructor does not initialize these fields: Data
+src/ra/tevent.h	157	3	constructor does not initialize these fields: Data
+src/ra/tooltip.cc	47	1	constructor does not initialize these fields: szTip, iLastIconListIndex, bLastShowNoText, xLastShow, yLastShow, wLastShow
+src/ra/version.cc	101	1	constructor does not initialize these fields: VersionName, VersionText
+src/ra/vortex.cc	116	1	constructor does not initialize these fields: Position, AnimateDir, AnimateFrame, Animate, State, VortexRemapTables, LightningRemap, StartShutdown, StartHiding, Hidden, LastAttackFrame, ZapFrame, TargetObject, TargetDistance, HiddenFrame, XDir, YDir, DesiredXDir, DesiredYDir
+src/ra/weapon.cc	82	1	constructor does not initialize these fields: IsTurboBoosted
+src/ra/wol_cgam.cc	59	3	uninitialized record type: 'cgiReturn'
+src/ra/wol_chat.cc	1288	5	uninitialized record type: 'CreateGameInfo'
+src/ra/wol_gsup.cc	156	1	constructor does not initialize these fields: d_dialog_w, d_dialog_h, d_dialog_x, d_dialog_y, d_dialog_cx, d_txt6_h, d_margin1, d_house_w, d_house_h, d_house_x, d_house_y, d_color_w, d_color_h, d_color_x, d_color_y, d_playerlist_w, d_playerlist_h, d_playerlist_x, d_playerlist_y, d_scenariolist_w, d_scenariolist_h, d_scenariolist_x, d_scenariolist_y, d_gamekind_w, d_gamekind_h, d_gamekind_x, d_gamekind_y, d_count_w, d_count_h, d_count_x, d_count_y, d_level_w, d_level_h, d_level_x, d_level_y, d_credits_w, d_credits_h, d_credits_x, d_credits_y, d_aiplayers_w, d_aiplayers_h, d_aiplayers_x, d_aiplayers_y, d_options_w, d_options_h, d_options_x, d_options_y, d_disc_w, d_disc_h, d_disc_x, d_disc_y, d_send_w, d_send_h, d_send_x, d_send_y, d_ok_w, d_ok_h, d_ok_x, d_ok_y, d_cancel_w, d_cancel_h, d_cancel_x, d_cancel_y, d_accept_w, d_accept_h, d_accept_x, d_accept_y, d_amunits_w, d_amunits_h, d_amunits_x, d_amunits_y, d_action_w, d_action_h, d_action_x, d_action_y, commands, szSendBuffer, pTextBtnOk, szHouseBuffer, GParamsLastSent, dwTimeNextParamRefresh, bProcess, ResultReturn, szNameOfHostWhoJustBailedOnUs, bRequestedScenarioDownload, szTriggerGameStartInfo, timeToolTipAppear, bAftermathUnits, bSlowUnitBuildRate, display
+src/ra/wol_gsup.cc	2415	3	uninitialized record type: 'GParamsNow'
+src/ra/wol_main.cc	218	7	uninitialized record type: 'wfd'
+src/ra/wolapiob.cc	92	1	constructor does not initialize these fields: pNetUtil, dwNetUtilAdvise, pNetUtilSink, szLadderServerHost, iLadderServerPort, szGameResServerHost1, iGameResServerPort1, szGameResServerHost2, iGameResServerPort2, LastUpdateChannelCallLevel, szMyName, szMyRecord, szMyRecordAM, szChannelListTitle, szChannelNameCurrent, szChannelReturnOnGameEnterFail, GameInfoCurrent, bEnableNewAftermathUnits, hresPatchResults, bConnectionDown, bGameServer, TournamentOpponentIP, szWebBrowser, bDisconnectPingingCompleted, iDisconnectPingCurrent, DisconnectPingResult_Server, DisconnectPingResult_Opponent, szExternalPager, pILChannels, fLatencyToIconWidth, iLatencyIconWidth, pChatSaveLast
+src/ra/wolapiob.cc	1491	9	uninitialized record type: 'inaddrUser'
+src/ra/wolapiob.cc	2130	3	uninitialized record type: 'si'
+src/ra/wolapiob.cc	2131	3	uninitialized record type: 'pi'
+src/ra/wolapiob.cc	3226	7	uninitialized record type: 'inaddr'
+src/ra/wolapiob.h	99	8	constructor does not initialize these fields: iGameType, szName, szURL
+src/ra/wolapiob.h	144	8	constructor does not initialize these fields: szFile
+src/ra/wolapiob.h	152	8	constructor does not initialize these fields: szText, next
+src/ra/wspipx.cc	73	1	constructor does not initialize these fields: BroadcastNet, BroadcastNode, MyNode
+src/ra/wsproto.cc	111	1	constructor does not initialize these fields: ReceiveBuffer, ConnectStatus
+src/ra/wspudp.cc	166	3	uninitialized record type: 'ling'
+src/ra/wspudp.cc	167	3	uninitialized record type: 'addr'
+src/ra/wspudp.cc	319	3	uninitialized record type: 'addr'
+src/sdllib/drawbuff.cc	1002	1	constructor does not initialize these fields: Offset, Width, Height, XAdd, XPos, YPos, Pitch, LockCount
+src/sdllib/drawbuff.cc	1073	1	constructor does not initialize these bases: GraphicViewPortClass
+src/sdllib/file.cc	157	3	uninitialized record type: 'stat_buf'
+src/sdllib/file.cc	249	3	uninitialized record type: 'fsbuf'
+src/sdllib/font.h	81	5	uninitialized record type: 'header'
+src/sdllib/font_test.cc	63	3	uninitialized record type: 'header'
+src/sdllib/keyboard.cc	20	1	constructor does not initialize these fields: Buffer
+src/sdllib/net_select.cc	37	3	uninitialized record type: 'info'
+src/sdllib/net_select.cc	76	3	uninitialized record type: 'timeout'
+src/sdllib/timer.cc	63	1	constructor does not initialize these fields: DelayTime
+src/sdllib/wincomm.h	72	7	constructor does not initialize these fields: SerialBuffer, SerialBufferReadPtr, SerialBufferWritePtr, DialingMethod
+src/sdllib/wincomm.h	74	3	constructor does not initialize these fields: SerialBuffer, SerialBufferReadPtr, SerialBufferWritePtr, DialingMethod
+src/sdllib/ww_audio.cc	63	8	constructor does not initialize these fields: raw_volume
+src/sdllib/ww_mouse.cc	94	1	constructor does not initialize these fields: MouseXHot, MouseYHot, PrevCursor
+src/td/abstract.cc	52	1	constructor does not initialize these fields: IniName
+src/td/abstract.h	77	3	constructor does not initialize these fields: IsActive
+src/td/base.h	58	3	constructor does not initialize these fields: Type, Coord
+src/td/base.h	76	3	constructor does not initialize these fields: House
+src/td/bdata.cc	3577	1	constructor does not initialize these fields: Anims, BuildupData
+src/td/ccfile.h	121	3	constructor does not initialize these fields: FromDisk, Pointer, Start, Position, Length
+src/td/cdata.cc	1242	1	constructor does not initialize these fields: FullName
+src/td/cell.h	267	3	constructor does not initialize these fields: IsPlot, IsCursorHere, IsMapped, IsVisible, IsTrigger, IsWaypoint, IsRadarCursor, IsFlagged, TType, TIcon, Overlay, OverlayData, Smudge, SmudgeData, Owner, InfType, OccupierPtr, Overlappers, Flag, Land
+src/td/cellvalues.cc	4	1	constructor does not initialize these fields: Flag
+src/td/combuf.cc	78	1	constructor does not initialize these fields: DelaySum, NumDelay, MeanDelay, MaxDelay, SendCount, SendTotal, ReceiveCount, ReceiveTotal, DebugOffset, DebugSize, DebugNames, DebugMaxNames
+src/td/dial8.cc	76	1	constructor does not initialize these fields: FacePoint, FaceLine
+src/td/display.cc	207	1	constructor does not initialize these fields: Theater, TacLeptonWidth, TacLeptonHeight, TacPixelX, TacPixelY, DesiredTacticalCoord, IsShadowPresent, BandX, BandY, NewX, NewY
+src/td/edit.cc	102	1	constructor does not initialize these fields: MaxLength, Length
+src/td/event.cc	139	1	constructor does not initialize these fields: IsExecuted, MPlayerID, Data
+src/td/event.cc	163	1	constructor does not initialize these fields: IsExecuted, MPlayerID, Data
+src/td/event.cc	185	1	constructor does not initialize these fields: IsExecuted, MPlayerID, Data
+src/td/event.cc	203	1	constructor does not initialize these fields: IsExecuted, MPlayerID, Data
+src/td/event.cc	230	1	constructor does not initialize these fields: IsExecuted, MPlayerID, Data
+src/td/event.cc	255	1	constructor does not initialize these fields: IsExecuted, MPlayerID, Data
+src/td/event.cc	285	1	constructor does not initialize these fields: IsExecuted, MPlayerID, Data
+src/td/event.cc	315	1	constructor does not initialize these fields: IsExecuted, MPlayerID, Data
+src/td/event.cc	345	1	constructor does not initialize these fields: IsExecuted, MPlayerID, Data
+src/td/event.cc	372	1	constructor does not initialize these fields: IsExecuted, MPlayerID, Data
+src/td/event.h	216	3	constructor does not initialize these fields: Type, Frame, ID, IsExecuted, MPlayerID, Data
+src/td/foot.cc	140	1	constructor does not initialize these fields: Path
+src/td/foot.cc	200	1	constructor does not initialize these fields: Path
+src/td/ftimer.h	59	3	constructor does not initialize these fields: Started, DelayTime
+src/td/gadget.h	108	3	constructor does not initialize these fields: X, Y, Width, Height, IsToRepaint, IsSticky, IsDisabled, Flags
+src/td/goptions.h	63	3	constructor does not initialize these fields: OptionWidth, OptionHeight, OptionX, OptionY, ButtonWidth, OButtonHeight, CaptionYPos, ButtonY, Border1Len, Border2Len, ButtonResumeY
+src/td/hdata.cc	222	1	constructor does not initialize these fields: Suffix
+src/td/help.cc	99	1	constructor does not initialize these fields: HelpX, HelpY, HelpWidth, DrawX, DrawY
+src/td/idata.cc	1448	1	constructor does not initialize these fields: DoControls
+src/td/init.cc	431	3	uninitialized record type: 'state'
+src/td/ipxaddr.cc	77	1	constructor does not initialize these fields: NetworkNumber, NodeAddress
+src/td/ipxaddr.cc	111	1	constructor does not initialize these fields: NetworkNumber, NodeAddress
+src/td/ipxaddr.cc	139	1	constructor does not initialize these fields: NetworkNumber, NodeAddress
+src/td/ipxconn.cc	103	1	constructor does not initialize these fields: ImmediateAddress, Name
+src/td/ipxgconn.cc	82	1	constructor does not initialize these fields: BridgeNet, BridgeNode
+src/td/ipxgconn.h	72	9	constructor does not initialize these fields: Header, ProductID
+src/td/ipxmgr.cc	107	1	constructor does not initialize these fields: Connection, PacketLen, Handler, ListenECB, FirstHeaderBuf, FirstDataBuf, SendECB, SendHeader, SendBuf
+src/td/link.cc	68	1	constructor does not initialize these fields: Next, Prev
+src/td/loaddlg.cc	559	3	uninitialized record type: 'find_state'
+src/td/map.cc	952	5	uninitialized record type: 'temp'
+src/td/map.h	56	3	constructor does not initialize these fields: MapCellX, MapCellY, MapCellWidth, MapCellHeight, TotalValue, XSize, YSize, Size, TiberiumGrowth, TiberiumGrowthCount, TiberiumSpread, TiberiumSpreadCount, TiberiumScan, IsForwardScan
+src/td/mapedit.cc	119	1	constructor does not initialize these fields: Objects, GrabOffset, LastClickTime, NumType, TypeOffset, CurTeam, GDIButton, NODButton, NeutralButton, Multi1Button, Multi2Button, Multi3Button, Multi4Button, MissionList, HealthGauge, FacingDial, MapArea, HealthText, BaseGauge, BaseLabel
+src/td/mouse.cc	262	1	constructor does not initialize these fields: IsSmall, Frame
+src/td/msglist.cc	88	1	constructor does not initialize these fields: Width
+src/td/nodename.h	9	16	constructor does not initialize these fields: Name, Game, Player
+src/td/noseqcon.cc	83	1	constructor does not initialize these fields: NumRecNoAck, NumRecAck, NumSendNoAck, NumSendAck, LastSeqID, LastReadID
+src/td/nullmgr.cc	144	1	constructor does not initialize these fields: EchoCount, RXSize, RXCount
+src/td/object.cc	152	1	constructor does not initialize these fields: RadarIcon
+src/td/odata.cc	631	1	constructor does not initialize these fields: FullName
+src/td/power.cc	87	1	constructor does not initialize these fields: PowX, PowY, PowWidth, PowHeight, PowLineSpace, PowLineWidth, IsActive
+src/td/queue.h	137	1	constructor does not initialize these fields: Head, Tail
+src/td/radar.cc	147	1	constructor does not initialize these fields: RadX, RadOffX, RadY, RadOffY, RadWidth, RadHeight, RadIWidth, RadIHeight, RadPWidth, RadPHeight, DoesRadarExist, IsRadarActivating, IsRadarDeactivating, RadarAnimFrame, RadarX, RadarY, RadarCell, BaseX, BaseY, RadarWidth, RadarCellWidth, RadarHeight, RadarCellHeight, ZoomFactor, PixelStack
+src/td/rawfile.h	223	1	constructor does not initialize these fields: Rights
+src/td/score.cc	295	1	constructor does not initialize these fields: Stage
+src/td/score.cc	581	1	constructor does not initialize these fields: BlitListo, Count
+src/td/sdata.cc	203	1	constructor does not initialize these fields: FullName
+src/td/shapebtn.cc	67	1	constructor does not initialize these fields: ShapeData
+src/td/shapebtn.cc	95	1	constructor does not initialize these fields: ShapeData
+src/td/sidebar.cc	196	1	constructor does not initialize these fields: SideX, SideY, SideBarWidth, SideWidth, SideHeight, TopHeight, MaxVisible, ButtonOneWidth, ButtonTwoWidth, ButtonThreeWidth, ButtonHeight
+src/td/sidebar.cc	1040	1	constructor does not initialize these fields: ObjectWidth, ObjectHeight, StripWidth, LeftEdgeOffset, ButtonSpacingOffset, X, Y, ID, IsToRedraw, Flasher, Scroller, Buildables
+src/td/sidebar.h	137	5	constructor does not initialize these fields: ObjectWidth, ObjectHeight, StripWidth, LeftEdgeOffset, ButtonSpacingOffset, X, Y, ID, IsToRedraw, IsBuilding, IsScrollingDown, IsScrolling, Flasher, TopIndex, Scroller, Slid, BuildableCount, Buildables
+src/td/slider.cc	76	1	constructor does not initialize these fields: Thumb, ThumbSize, ThumbStart
+src/td/sounddlg.h	112	3	constructor does not initialize these fields: Option_Width, Option_Height, Option_X, Option_Y, Listbox_X, Listbox_Y, Listbox_W, Listbox_H, Button_Width, Button_X, Button_Y, Stop_X, Stop_Y, Play_X, Play_Y, OnOff_Width, Shuffle_X, Shuffle_Y, Repeat_X, Repeat_Y, MSlider_X, MSlider_Y, MSlider_W, MSlider_Height, FXSlider_X, FXSlider_Y, FXSlider_W, FXSlider_Height
+src/td/tab.cc	79	1	constructor does not initialize these fields: Eva_Width, Tab_Height
+src/td/tcpip.cc	104	1	constructor does not initialize these fields: ListenSocket, ConnectSocket, UDPSocket, ClientIPAddress, ReceiveBuffer, IsServer, HostAddress, ConnectStatus, UDPIPAddress, ReceiveBuffers, TransmitBuffers, TXBufferHead, TXBufferTail, RXBufferHead, RXBufferTail
+src/td/tcpip.cc	370	3	uninitialized record type: 'addr'
+src/td/tcpip.cc	504	3	uninitialized record type: 'addr'
+src/td/tcpip.cc	586	3	uninitialized record type: 'ling'
+src/td/tdata.cc	607	1	constructor does not initialize these fields: FullName
+src/td/txtlabel.cc	63	1	constructor does not initialize these fields: CRC
+src/td/type.h	240	3	constructor does not initialize these fields: IniName, Name
+src/td/udata.cc	1272	1	constructor does not initialize these fields: MaxSize
+src/tech/b64straw.h	54	3	constructor does not initialize these fields: CBuffer, PBuffer
+src/tech/blowfish.h	55	7	constructor does not initialize these fields: P_Encrypt, P_Decrypt, bf_S
+src/tech/blowfish.h	57	3	constructor does not initialize these fields: P_Encrypt, P_Decrypt, bf_S
+src/tech/blowpipe.h	54	3	constructor does not initialize these fields: Buffer
+src/tech/blwstraw.h	57	3	constructor does not initialize these fields: Buffer
+src/tech/cdfile.cc	88	3	uninitialized record type: 'state'
+src/tech/field.cc	47	1	constructor does not initialize these fields: ID
+src/tech/field.cc	56	1	constructor does not initialize these fields: ID
+src/tech/field.cc	65	1	constructor does not initialize these fields: ID
+src/tech/field.cc	74	1	constructor does not initialize these fields: ID
+src/tech/field.cc	83	1	constructor does not initialize these fields: ID
+src/tech/field.cc	92	1	constructor does not initialize these fields: ID
+src/tech/field.cc	101	1	constructor does not initialize these fields: ID
+src/tech/field.cc	110	1	constructor does not initialize these fields: ID
+src/tech/int.h	63	3	constructor does not initialize these fields: reg
+src/tech/int.h	64	3	constructor does not initialize these fields: reg
+src/tech/int.h	356	5	constructor does not initialize these fields: table
+src/tech/lcwpipe.cc	66	1	constructor does not initialize these fields: BlockHeader
+src/tech/lcwstraw.cc	68	1	constructor does not initialize these fields: BlockHeader
+src/tech/lzopipe.cc	66	1	constructor does not initialize these fields: BlockHeader
+src/tech/lzostraw.cc	68	1	constructor does not initialize these fields: BlockHeader
+src/tech/lzw.cc	46	1	constructor does not initialize these fields: decode_stack
+src/tech/lzw.h	61	5	constructor does not initialize these fields: CodeValue, ParentCode, CharValue
+src/tech/lzwpipe.cc	67	1	constructor does not initialize these fields: BlockHeader
+src/tech/lzwstraw.cc	69	1	constructor does not initialize these fields: BlockHeader
+src/tech/mixfile.h	68	10	constructor does not initialize these fields: offset, size
+src/tech/sha.h	53	3	constructor does not initialize these fields: FinalResult, Acc, Partial
+src/winvq/vqa32/vqaplayp.h	393	8	constructor does not initialize these fields: Loader, Drawer, Flipper

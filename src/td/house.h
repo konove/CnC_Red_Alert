@@ -13,7 +13,7 @@
 **	GNU General Public License for more details.
 **
 **	You should have received a copy of the GNU General Public License
-**	aint64_t with this program.  If not, see <http://www.gnu.org/licenses/>.
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /* $Header:   F:\projects\c&c\vcs\code\house.h_v   2.21   16 Oct 1995 16:46:14

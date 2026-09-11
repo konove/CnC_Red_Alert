@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Steps 0–30 are complete; step 29 is `2689ff4c`; step 28 is `96f23c5b`; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
+- Steps 0–31 are complete; step 30 is `fbb36dd1`; step 29 is `2689ff4c`; step 28 is `96f23c5b`; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -232,7 +232,24 @@
   globals are rejected. A version-10 save produced by the pre-cleanup binary loads with **5,742**
   matching state records. RA matches **240** positions. Real-display and live-multiplayer checks remain
   pending.
-  Next checkpoint is **31: delete the shared NoInit header and rerun the initialization-check sweep**.
+- Step 31 is complete. The shared tech/noinit.h is deleted; no NoInit declarations or includes remain
+  anywhere in src. The previously listed ra/jshell.h include was already gone. Save formats remain
+  **RA 16 / TD 10**; the member-initialization checks stay disabled until step 36.
+- The single-check sweep (clang-tidy **23.1.2**, **877** distinct translation units from the strict
+  compilation database, including generated header checks) reports **237** remaining sites and **zero**
+  compilation errors: **27 tech**, **14 sdllib**, **1 winvq**, **75 TD**, **120 RA**. These measured
+  counts supersede the earlier estimate of roughly 245. Exact locations and diagnostics are recorded
+  in [MEMBER_INIT_BASELINE.tsv](MEMBER_INIT_BASELINE.tsv) for steps 32–35.
+- Comparing diagnostics with the pre-migration source identified one new constructor site:
+  RA's HouseClass loading shell. Its initializer list now sets IsActive=true and zeroes ZoneInfo,
+  IniName, and InitialName; its deserializer then restores the saved values. The moved TD Cell
+  constructor and changed timer parameter type retain their existing legacy findings. An accidental
+  word replacement in the TD house header's license comment is also corrected.
+- Step-31 validation: strict builds of both games and **191 CTest tests** pass. TD globals smoke
+  matches **5,742** state records and rejects all **14** malformed globals. RA smoke matches **240**
+  positions after the loading-shell fix. No suppressions were added. Real-display and live-multiplayer
+  checks remain pending.
+  Next checkpoint is **32: fix the 27 remaining tech initialization sites**.
 - Step-19 validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
   Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke
@@ -579,10 +596,10 @@ JOBS=$(($(getconf _NPROCESSORS_ONLN) / 2)); BUILD=cmake-build-strict-ra-clang
 grep -c -- -Weverything $BUILD/compile_commands.json      # must be > 0
 python3 -c "import json; d=json.load(open('$BUILD/compile_commands.json')); fs=sorted({e['file'] for e in d if '_deps' not in e['file'] and '/third_party/' not in e['file']}); open('/tmp/tidy_files.txt','w').write('\n'.join(fs)+'\n')"
 # single check, per-site list
-bash -c "xargs -a /tmp/tidy_files.txt -P $JOBS -I{} clang-tidy -p $BUILD --quiet --checks='-*,cppcoreguidelines-pro-type-member-init' --warnings-as-errors= {} 2>&1" \
+bash -c "xargs -a /tmp/tidy_files.txt -P $JOBS -I{} clang-tidy -p $BUILD --quiet --checks='-*,cppcoreguidelines-pro-type-member-init' --warnings-as-errors=-* {} 2>&1" \
   | grep -oE '^/home[^ ]+ (warning|error): .*\[[A-Za-z0-9._,-]+\]$' | sed -E 's/,-warnings-as-errors\]$/]/' | sort -u > /tmp/member_init_sites.txt
 # full config + the new check (no '-*' => appended), must print nothing before the enable commit
-bash -c "xargs -a /tmp/tidy_files.txt -P $JOBS -I{} clang-tidy -p $BUILD --quiet --checks='cppcoreguidelines-pro-type-member-init' --warnings-as-errors= {} 2>&1" \
+bash -c "xargs -a /tmp/tidy_files.txt -P $JOBS -I{} clang-tidy -p $BUILD --quiet --checks='cppcoreguidelines-pro-type-member-init' --warnings-as-errors=-* {} 2>&1" \
   | grep -oE '^/home[^ ]+ (warning|error): .*\[[A-Za-z0-9._,-]+\]$' | sed -E 's/,-warnings-as-errors\]$/]/' | sed -E 's/^([^ ]+) .*\[([A-Za-z0-9._,-]+)\]$/\2\t\1/' | sort -u | cut -f1 | sort | uniq -c | sort -rn
 cmake --build $BUILD --parallel $JOBS && ctest --test-dir $BUILD
 ```

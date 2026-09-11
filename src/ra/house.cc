@@ -737,9 +737,13 @@ HouseClass::HouseClass()
       ID(Houses.ID(this)),
       Difficulty(DIFF_NORMAL),
       ActLike(HOUSE_NONE),
+      IsActive(true),
       IQ(0),
       WhoLastHurtMe(HOUSE_NONE),
-      RemapColor(PCOLOR_NONE) {
+      ZoneInfo{},
+      RemapColor(PCOLOR_NONE),
+      IniName{},
+      InitialName{} {
   Init_Trackers();
 }
 
