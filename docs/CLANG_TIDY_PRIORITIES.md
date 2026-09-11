@@ -2,7 +2,7 @@
 
 Updated: 2026-09-11, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 239 currently excluded check names** and completed entries, in recommended work order.
+This tracks **all 238 currently excluded check names** and completed entries, in recommended work order.
 Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful fixes; they are judgments,
 not fresh finding counts. Start at P1 and work downward. Aliases stay beside their related check so a
 single cleanup can handle them together. Previously deferred checks are back on the list for review.
@@ -28,7 +28,7 @@ Availability above comes from the installed tool, since the online documentation
 |---------------------------------------------------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `bugprone-suspicious-stringview-data-usage`                   | Enabled | Commit `Enable string-view data usage checking`: copy the RA title-screen filename to a terminated string before calling the PCX reader. |
 | `abseil-unchecked-statusor-access`                            | Skipped | Commit `Handle failed PCX byte reads`: guard both games' byte reads, but retain the exclusion because LLVM 23.1.2 crashes even on checked access with Abseil 20260107.0. Revisit after a toolchain fix; see reproduction below. |
-| `clang-analyzer-unix.cstring.UninitializedRead`               | Pending | Find string operations reading uninitialized bytes.                                                                                                    |
+| `clang-analyzer-unix.cstring.UninitializedRead`               | Enabled | Commit `Enable uninitialized C-string read checking`: initialize the public-key generation self-test buffer while preserving the random-fill loop. |
 | `clang-analyzer-cplusplus.InnerPointer`                       | Pending | Find string-buffer pointers used after invalidation.                                                                                                   |
 | `bugprone-copy-constructor-init`                              | Pending | Prevent copied objects from silently losing base/member state.                                                                                         |
 | `bugprone-unchecked-string-to-number-conversion`              | Pending | Reject malformed and out-of-range input at parsing boundaries.                                                                                         |
@@ -323,6 +323,12 @@ missing-pixel regression test aborts against the original TD reader
 with an unchecked `OUT_OF_RANGE` access and passes with the fix.
 
 ### Completed validation
+
+The 2026-09-11 C-string uninitialized-read cleanup covered 879 project translation units, including
+428 generated header checks. The isolated scan found one path from the key-generation self-test
+buffer into `PKey::Encrypt`; initializing that buffer preserves the existing random-fill loop.
+The affected file passed the isolated check, the full-config sweep passed, both strict game builds
+passed, and all 205 CTest tests passed. An uninitialized `memcpy` sample confirmed enforcement.
 
 The 2026-09-11 string-view check cleanup covered 878 project translation units, including 428 generated
 header checks. The isolated scan found one call; its fix passed the isolated check and the full-config

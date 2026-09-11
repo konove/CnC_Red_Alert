@@ -235,7 +235,9 @@ void PKey::Generate(Straw& random, int bits, PKey& fastkey, PKey& slowkey) {
     **	Test the keys by encrypting a block of random bytes. If it decrypts
     **	correctly, then a valid key pair has been generated -- bail.
     */
-    char before[256];
+    // Initialize the full buffer while keeping random draws limited to the
+    // active plaintext block.
+    char before[256]{};
     char after[256];
 
     for (int index = 0; index < fastkey.Plain_Block_Size(); index++) {
