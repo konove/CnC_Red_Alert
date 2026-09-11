@@ -1,849 +1,303 @@
-# Clang-Tidy Check Prioritization Analysis
-
-## Overview
-
-`.clang-tidy` enables all checks (`'*'`) and then disables **240** of them. This document prioritizes which of those 240
-to re-enable, ordered by **measured bug yield per unit of fix effort**.
-
-Unlike the previous revision of this document, the tiers below are not guesses. They come from an actual measurement run
-(see [Methodology](#methodology)). Every count in the tables is a real diagnostic site in this repository.
-
-**Tier 1, §1.1, §1.2 and Tier 1.5 are complete; six of seven Tier 2 entries are addressed.**
-Five Tier 2 checks are enabled and one was reclassified. The only remaining entry is
-`bugprone-switch-missing-default-case`. `narrowing-conversions` was enabled in `5d4b53ee`; member initialization
-is now enforced after the [save-game migration](SAVEGAME_MIGRATION_PLAN.md). The two §1.1 checks left out
-remain deliberate — see [1.1](#11-free-guards--the-name-was-wrong).
-
-Two toolchain moves have turned the strict build red for reasons unrelated to any tier below, and both are resolved. The
-21 → 22 move on 2026-08-20: see [clang-tidy 22 fallout](#clang-tidy-22-fallout). The move to 23 on 2026-08-29, which was
-much larger at 7,360 sites because clang-tidy 23 deleted the whole `hicpp` module and renamed three other checks the
-disable list named: see [clang-tidy 23 fallout](#clang-tidy-23-fallout).
-
-### Two facts that shape everything below
-
-1. **`WarningsAsErrors: '*'`.** Enabling a check does not "start reporting" it — it *breaks the build* until every site
-   is fixed. Check selection is therefore a scheduling decision, not a reporting decision.
-2. **The clang build already passes `-Weverything`** (`CMakeLists.txt:130`). Every `clang-diagnostic-*` entry in the
-   disable list is *already being printed on every build*; disabling it in `.clang-tidy` only decides whether it is
-   fatal. For these checks the discovery cost is zero — you are choosing what to enforce, not what to find.
-
----
-
-## Methodology
-
-57 disabled checks were re-enabled and run over a 16-file sample (~49,700 lines, **~10% of `src/` by line count**),
-deduplicated by source location so shared headers count once.
-
-```bash
-# Sample: src/ra/{conquer,display,house,techno,infantry,building,cell,radar,init,saveload,scenario,ini,mission_id}.cc
-#         src/sdllib/{gbuffer,wsa}.cc  src/tech/lcw.cc
-clang-tidy -p cmake-build-strict-ra-clang --quiet \
-    --checks="-*,<comma-separated-candidates>" --warnings-as-errors= <file>
-```
-
-**Reading the counts:** "Sample" is the observed number of distinct sites. Tree-wide is roughly **10×** that, but the
-sample deliberately favours large, busy files, so treat 10× as an upper bound for `src/ra` — and note `src/td` (294
-files) will contribute its own, largely parallel, set.
-
-⚠️ **The 10× rule held for effort, not for counts.** Now that Tier 1 has actually been cleared, the sample turns out to
-be a poor predictor of volume:
-
-| Check                                | Sample said | Tree-wide actual                   |
-|--------------------------------------|-------------|------------------------------------|
-| `clang-diagnostic-writable-strings`  | 9           | **357** diagnostics over 244 lines |
-| `bugprone-suspicious-enum-usage`     | 1           | **617** call sites                 |
-| `clang-diagnostic-format`            | 10          | ~160                               |
-| `bugprone-too-small-loop-variable`   | 5           | 36 loops                           |
-| `bugprone-suspicious-string-compare` | 1           | 13                                 |
-| §1.1 as a whole                      | 0           | **336** sites across 26 checks     |
-
-§1.1 is the sharpest case: the sample saw zero hits in all 26 checks and the section was written up as free, but three
-of them alone (`conditional-uninitialized` 103, `optin.cplusplus.VirtualCall` 86, `implicit-fallthrough` 33) carry 222
-sites.
-
-Two effects the sample could not see. First, it contains no `src/td` files, and TD carries a near-duplicate copy of most
-of this code — `writable-strings` landed 115 sites in RA against 241 in TD. Second, a single declaration can carry an
-unbounded number of sites: `td/globals.cc` alone accounts for 126 of the 357 `writable-strings` diagnostics because
-`SerialPacketNames[]` is a 100-entry table of literals. Use the sample to rank checks, not to budget them.
-
-What did hold: every Tier 1 check was cheap *per site*, and each one paid for itself in real bugs.
-
-Last measured: 2026-07-25, clang-tidy 21.1.8. Tier 1 and §1.1 outcomes measured as each check was enabled, through
-2026-08-20; the §1.1 counts come from clang-tidy 22 over the full `cmake-build-strict-ra-clang-22` compile database
-rather than from the sample. The §1.2 and clang-tidy 22 counts are clang-tidy 22.1.8 over that same database, all 838
-project translation units (423 sources plus the 415 header-verification units).
-
----
-
-## Status Corrections
-
-An earlier revision of this document marked four checks "✅ DONE" while they were still disabled, and listed three as
-deferred that were in fact already enabled. All seven now agree with `.clang-tidy` — the four that were falsely claimed
-were enabled for real as part of §1.1:
-
-| Check                                | Once claimed     | Now                              |
-|--------------------------------------|------------------|----------------------------------|
-| `clang-diagnostic-uninitialized`     | Tier 1 ✅ DONE   | enabled in `c9bb3fb0` (13 sites) |
-| `clang-analyzer-cplusplus.NewDelete` | Tier 1 ✅ DONE   | enabled in `12f738d9`            |
-| `clang-diagnostic-self-assign`       | Tier 2.1 ✅ DONE | enabled in `12f738d9`            |
-| `misc-redundant-expression`          | Tier 2.1 ✅ DONE | enabled in `12f738d9`            |
-| `modernize-use-nullptr`              | Tier 3, "defer"  | was already enabled              |
-| `modernize-use-override`             | Tier 3, "defer"  | was already enabled              |
-| `readability-else-after-return`      | Tier 4, keep off | was already enabled              |
-
-The lesson stands even though the discrepancy is gone: this document is not the source of truth for what is enabled.
-`.clang-tidy` is. Check a claim against it before acting on it.
-
-Also, genuinely done and confirmed enabled: `clang-diagnostic-suggest-override`, `-return-stack-address`,
-`-mismatched-new-delete`, `-delete-incomplete`, `-sometimes-uninitialized`, `-unused-variable/-function/-parameter`,
-`clang-analyzer-core.NullDereference`, `clang-analyzer-core.uninitialized.*`, `clang-analyzer-deadcode.DeadStores`,
-`clang-analyzer-unix.MismatchedDeallocator`, `bugprone-not-null-terminated-result`,
-`readability-redundant-control-flow`, `readability-redundant-declaration`.
-
----
-
-## Progress
-
-Tier 1 is done. Each check was enabled in its own commit, with every site it flagged cleared first, so `main` has never
-been red on an enabled check.
-
-| Check                                                                   | Commit     | Outcome                                                                                                                                 |
-|-------------------------------------------------------------------------|------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| `clang-diagnostic-int-in-bool-context`                                  | `f7552ee3` | The `house.cc` `Make_Enemy` bug below; that was its only site tree-wide                                                                 |
-| `bugprone-suspicious-memory-comparison`                                 | `aee456e6` | `EventClass::operator==` (padding + union, both games) deleted — it had no callers; `CellClass::Should_Save` never worked at all        |
-| `clang-analyzer-security.ArrayBound`                                    | `2cc33f7a` | 4 real out-of-bounds accesses, incl. `buttons[-1]` in TD's multiplayer menu                                                             |
-| `bugprone-suspicious-enum-usage`                                        | `6a792756` | 617 sites via a new `ButtonKey()` helper; exposed the Alt+W cheat comparing `KA_W` instead of `KN_W`, so it never fired                 |
-| `bugprone-too-small-loop-variable`                                      | `c4571d27` | 36 map loops; `MAP_CELL_W/H/TOTAL` retyped as `CELL` so they cannot regress                                                             |
-| `bugprone-signed-char-misuse`                                           | `c4f61444` | 4 sign-extension bugs, incl. a truncated PCX RLE run and a read before `IsTranslucent[]`                                                |
-| `bugprone-multi-level-implicit-pointer-conversion`                      | `f7c93bc9` | `XMP_Is_Small_Prime` bsearching a stack address; `KeyFrameSlots` clearing half its allocation on 64-bit; `Stop_Speaking` never matching |
-| `clang-diagnostic-format` (+ `-nonliteral`, `-security`, `-signedness`) | `b1e57f20` | ~160 sites; runtime-only formats now funnel through `Format_Runtime_Text` in `jshell.h`                                                 |
-| `clang-diagnostic-writable-strings`                                     | `dd96637d` | 357 diagnostics; mostly mechanical `const`, but 3 were live writes into string literals                                                 |
-| `bugprone-suspicious-string-compare`                                    | `d58e3977` | 13 sites, all `!= 0`; no behaviour change                                                                                               |
-
-### §1.1
-
-| Checks                                                                            | Commit     | Sites | Outcome                                                                                                                                                                                               |
-|-----------------------------------------------------------------------------------|------------|-------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 18 checks — the cheap end (7 genuinely clean, 11 with 51 sites)                   | `12f738d9` | 51    | 4 real defects; `EventClass` now zeroes itself instead of 7 hand-written memsets; TD `TrackNumber`/`TrackIndex`/`Page` retyped `char` → `int` (bumps TD `SAVEGAME_VERSION`)                           |
-| `missing-field-initializers`, `implicit-fallthrough`, `conditional-uninitialized` | `c2121fa4` | 156   | `td/mapsel.cc` frame 23 fell into the frame that blacks out what it just drew; `sdllib/iff.cc` memcpy arguments reversed; `ra/nullmgr.cc` returned an uninitialized `DialStatusType` on modem timeout |
-| `clang-diagnostic-uninitialized`, `clang-analyzer-core.CallAndMessage`            | `c9bb3fb0` | 31    | 3 real null dereferences, each in both games (`sidebar.cc`, `display.cc`, `queue.cc`); TD's `NoInitClass` constructors no longer self-init a const member                                             |
-
-### §1.2
-
-| Check                                           | Commit     | Sites | Outcome                                                                                                                            |
-|-------------------------------------------------|------------|-------|------------------------------------------------------------------------------------------------------------------------------------|
-| `bugprone-raw-memory-call-on-non-trivial-type`  | `c580283d` | 0     | Free, and it guards nothing this document thought it did — see [1.2](#12-the-check-that-was-not-what-this-document-thought-it-was) |
-| — (historical heap layout tests) | `201cfb3c` | — | Pinned raw-save type sizes; deleted after field-wise serialization replaced raw object images |
-
-### 1.5
-
-| Check                                                                              | Commit     | Sites | Outcome                                                                                                                                   |
-|------------------------------------------------------------------------------------|------------|-------|-------------------------------------------------------------------------------------------------------------------------------------------|
-| `misc-unconventional-assign-operator`                                              | `7a9e933b` | 9     | `virtual` dropped from `VectorClass::operator=` in both games; TD's `LinkClass` brought in line with RA                                   |
-| `cert-oop58-cpp`                                                                   | `30cb1c6e` | 2     | `GenericNode`'s copy operations deleted — they spliced the destination into the source's list rather than copying                         |
-| `clang-diagnostic-overloaded-virtual`                                              | `bc3c370c` | 28    | 6 live bugs: vessel damage, TD turret-locked movement, anim/bullet refresh lists in both games, RA checklist items, 4 null-modem stubs    |
-| `cppcoreguidelines-virtual-class-destructor` + `clang-diagnostic-non-virtual-dtor` | `fdb3a9e8` | 33    | 6 edits — a virtual destructor on each hierarchy root; 3 of them only restore RA/TD parity. No layout change                              |
-| `clang-analyzer-optin.cplusplus.VirtualCall`                                       | `e3ad8275` | 81    | 17 classes and 8 methods marked `final`, 5 qualified calls, 4 restructures, 0 NOLINTs; found buffered writes lost in `~BufferIOFileClass` |
-
-`src/ra/vector.h` and `src/tech/listnode.h`, which Phase B named as the prerequisite, were cleared by the first two.
-
-### 2
-
-Member-initialization enablement was validated on 2026-09-10 with clang-tidy 23.1.2: the full configuration
-reports zero findings and zero compilation errors across **878 translation units**. Strict builds of both
-games, all **197 CTest tests**, and TD/RA headless save/load checks pass. The full sweep caught one extra
-CREATEGAMEINFO default-constructor site after the 237-site cleanup; its fields now have explicit defaults.
-Real-display and live-multiplayer validation remain pending.
-
-| Check                                                 | Commit     | Sites | Outcome                                                                                                                                                          |
-|-------------------------------------------------------|------------|-------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `bugprone-implicit-widening-of-multiplication-result` | `c0045ac4` | 224   | Stride and buffer-size types, not casts; 3 timer macro definitions cleared 43 sites at once                                                                      |
-| `clang-diagnostic-sign-compare`                       | `35c51bbf` | 305   | 8 type changes cleared ~240; the cause was RA being migrated to signed sizes and TD not                                                                          |
-| `clang-diagnostic-shorten-64-to-32`                   | `cf44023c` | 439   | Much of it created by the two above — signedness work moves the mismatch from comparisons into assignments                                                       |
-| `bugprone-narrowing-conversions` | `5d4b53ee` | 510 | Enabled with `WarnOnEquivalentBitWidth: false`; preserved deliberate same-width conversions |
-| `cppcoreguidelines-pro-type-member-init` | [migration steps 31–36](SAVEGAME_MIGRATION_PLAN.md) | 383 originally | Removed NoInit constructors through field-wise saves, then cleared the 237-site post-migration baseline; fixed uninitialized event execution flags, no new suppressions |
-| — (`clang-diagnostic-switch`, not enabled)            | —          | 720   | Reclassified: 567 are `case ButtonKey(n):`, a deliberate idiom `-Wswitch` cannot model — see [Tier 2](#tier-2-valuable-but-these-are-the-type-migration-project) |
-
-Two supporting commits: `7553a5ce` replaced 34 timer and object-limit macros with `inline constexpr` constants, which is
-what made the timer durations typed enough to fix; `532aef0f` cleared the Tier 1.5 fallout.
-
-Lessons from the completed migrations:
-
-- **A "mechanical" check is not automatically safe.** `writable-strings` looked like a pure `const` sweep, yet three
-  sites were genuinely writing through a literal: `Format_Window_String` rewrites its buffer in place, `TextLabelClass`
-  stores the pointer in a non-const member, and TD's serial dialog `strncpy`s into `CallWaitStrings[CALL_WAIT_CUSTOM]`.
-  Adding `const` to those would have moved the error, not fixed it. Read what the callee does before const-ing the
-  caller.
-- **RA and TD diverge.** RA's copy of that same call-waiting loop had already been reworked to `std::string`, so the two
-  ports needed opposite fixes. Never assume a fix ports across verbatim.
-- **A check name is not a check.** §1.2 was budgeted for two revisions of this document on the strength of its name.
-  `bugprone-raw-memory-call-on-non-trivial-type` is not the trivially-copyable UB check it sounds like; it is
-  `cert-oop57-cpp`, which was already enabled, and the check the section described
-  (`bugprone-undefined-memory-manipulation`) was already enabled too. Check names are also added, renamed and aliased
-  between releases. Confirm against `clang-tidy --list-checks` *and* the check's own documentation before writing a line
-  of this document about it.
-- **Adding a virtual destructor renumbers a vtable, so land it with a build nobody is racing.** `GScreenClass` had no
-  declared destructor and therefore no destructor slot; adding one shifts the index of every virtual after it, right
-  down the `GScreenClass → MapClass → DisplayClass → … → MapEditClass` chain. Ninja gets this right on its own, but a
-  build already running when the header is saved keeps objects it had already stat'ed, and the link silently mixes two
-  vtable layouts. The result is not a crash at the edit: it is one virtual call landing in a different virtual
-  entirely — a `Help_Text(TXT_NONE)` in `sidebar.cc` arriving in `MapEditClass::Scroll_Map`, which then read its
-  `int&` argument from `TXT_NONE`. A call that lands in the wrong function is a stale build, not a logic bug; rebuild
-  the directory before debugging it. `sizeof()` is untouched either way when the class already had virtual functions, so
-  the layout tests stay green and cannot catch this.
-- **Sweep with the project's own warning flags.** `clang++ -Wno-everything -W<name>` is not a reliable way to isolate
-  one diagnostic: `-Wconditional-uninitialized` needs `-Wuninitialized` enabled to fire at all, so that form reported
-  zero sites where the real count was 103. Run the compile database with its own flags (which already include
-  `-Weverything`) and filter the output by warning name. Check for hard `error:` lines while filtering, too — a
-  translation unit that fails to compile reports no warnings, which reads exactly like a clean one.
-
-- **Read the initialization check's matcher before choosing a fix.** Delegating constructors are exempt;
-  direct body assignments count, but `memset(this)` does not. Initialize base members at the base unless it
-  must remain trivial for a union; then value-initialize that base in the derived constructor. Heap
-  `operator new` writes `IsActive` before construction, so the constructor must preserve the true state.
-  A union can initialize only one variant; types stored in event unions must retain their trivial defaults.
-  The original 383-site count included 138 NoInit sites and 245 ordinary sites. After serialization and
-  cleanup, the recorded baseline was 237 ordinary sites; all were fixed before enabling the check.
-
----
-
-## TIER 1: Enable now — real bugs, negligible volume
-
-> **Status: complete.** Retained for the reasoning; the per-check outcomes are in [Progress](#progress).
-
-The measurement found a **live bug in shipped logic** on its first pass, `src/ra/house.cc:2367`:
-
-```cpp
-void HouseClass::Make_Enemy(HousesType house) {
-  ...
-  Allies &= ~(1L << house);
-  if (ScenarioInit) {
-    Control.Allies &= !(1L << house);   // '!' should be '~'
-  }
-```
-
-`1L << house` is always non-zero, so `!(...)` is `0` and the statement clears **every** ally bit instead of one. It is
-caught by `clang-diagnostic-int-in-bool-context`, which had exactly one hit in the entire sample — and, as it turned
-out, exactly one in the entire tree. Fixed in `f7552ee3`.
-
-| Check                                                    | Sample | What it caught                                                                                                        |
-|----------------------------------------------------------|--------|-----------------------------------------------------------------------------------------------------------------------|
-| `clang-diagnostic-int-in-bool-context`                   | 1      | the `house.cc:2367` bug above                                                                                         |
-| `bugprone-suspicious-memory-comparison` (`cert-flp37-c`) | 1      | `ra/event.h:265` — `EventClass::operator==` memcmps a type with padding; this is the **multiplayer event** comparison |
-| `clang-analyzer-security.ArrayBound`                     | 1      | heap-underflow path in `ra/search.h:515`                                                                              |
-| `bugprone-suspicious-enum-usage`                         | 1      | mixed enum families in `ra/conquer.cc:543`                                                                            |
-| `bugprone-too-small-loop-variable`                       | 5      | `CELL` loop counters against `int` bounds in `ra/display.cc` — truncation                                             |
-| `bugprone-signed-char-misuse` (`cert-str34-c`)           | 7      | `signed char`→`int` on file/INI data (`display.cc`, `infantry.cc`, `init.cc`)                                         |
-| `bugprone-multi-level-implicit-pointer-conversion`       | 5      | `ObjectClass**`→`void*` in `saveload.cc`, `cell.cc` — the save/load memcpy paths                                      |
-| `clang-diagnostic-format`                                | 10     | genuine `printf`/`scanf` type mismatches in `ini.cc`, `radar.cc`, `init.cc`                                           |
-| `clang-diagnostic-writable-strings`                      | 9      | string literal → `char*`; mostly a mechanical `const` fix                                                             |
-| `bugprone-suspicious-string-compare`                     | 1      | `stricmp` result used without comparison (`scenario.cc:1923`)                                                         |
-
-The sample predicted **~41 sites**, "realistically a few hundred tree-wide". Clearing the tier actually touched **206
-files under `src/`** and well over a thousand sites — see the volume caveat under [Methodology](#methodology). The
-estimate of *cost per site* was right; the estimate of *site count* was not.
-
-### 1.1 Free guards — the name was wrong
-
-These 26 checks were clean across the entire 10% sample, so this section was written up as free. Measured against every
-translation unit in `cmake-build-strict-ra-clang-22` (1001 entries: 586 regular plus 415 header-verification units) they
-cost **336 sites**. Twenty-four were enabled and cleared — see [Progress](#progress) for the three commits and what they
-turned up. Twenty-three are still on: clang-tidy 22 broadened
-`bugprone-unchecked-string-to-number-conversion` from clean to 200 sites, and it was disabled rather than swept — see
-[clang-tidy 22 fallout](#clang-tidy-22-fallout).
-
-Enabled, with their measured tree-wide counts:
-
-| Check                                         | Sites |
-|-----------------------------------------------|-------|
-| `clang-diagnostic-conditional-uninitialized`  | 103   |
-| `clang-diagnostic-implicit-fallthrough`       | 33    |
-| `clang-diagnostic-missing-field-initializers` | 20    |
-| `clang-analyzer-core.CallAndMessage`          | 18    |
-| `clang-diagnostic-uninitialized`              | 13    |
-| the other 19, together                        | 51    |
-
-The remaining 19 are `bugprone-unhandled-self-assignment`, `bugprone-sizeof-expression`,
-`bugprone-redundant-branch-condition`, `bugprone-inc-dec-in-conditions`,
-`bugprone-unchecked-string-to-number-conversion` (since disabled), `clang-diagnostic-self-assign`,
-`clang-diagnostic-char-subscripts`, `clang-diagnostic-null-arithmetic`, `clang-diagnostic-logical-not-parentheses`,
-`clang-diagnostic-format-security`, `clang-diagnostic-varargs`, `misc-redundant-expression`,
-`misc-definitions-in-headers`, `readability-misleading-indentation`, `cert-oop57-cpp`,
-`clang-analyzer-cplusplus.NewDelete`, `clang-analyzer-optin.cplusplus.UninitializedObject`,
-`clang-analyzer-unix.Stream`, `clang-analyzer-security.VAList` — seven of which really are clean tree-wide.
-
-**Two are deliberately left disabled.**
-
-`bugprone-parent-virtual-call` — 12 sites, all of them intentional grandparent dispatch:
-`TriColorGaugeClass::Draw_Me` reaches `ControlClass::Draw_Me` past `GaugeClass`, `ListClass::Draw_Me` reaches
-`GadgetClass::Draw_Me` past `ControlClass`, `UnitClass::Assign_Destination` reaches `FootClass::` past `DriveClass`, and
-`td/unit.cc` dumps `CargoClass`, `MissionClass` and `TarComClass` in a row on purpose. Enabling it would cost twelve
-NOLINTs and prevent nothing. This one should stay off permanently.
-
-`clang-analyzer-optin.cplusplus.VirtualCall` — 86 sites, virtual calls from constructors and destructors. Some are real
-(`LinkClass::Add` from a constructor and `RawFileClass::Close` from a destructor both mean a derived override never
-runs); most are benign because the class has no subclasses. Clearing it means restructuring constructors and destructors
-across `AbstractClass → ObjectClass → TechnoClass → …`, which is exactly the hierarchy refactoring `CLAUDE.md` says not
-to start unasked. It is listed under [Tier 1.5](#tier-15-small-counts-real-ub-in-a-deep-virtual-hierarchy) instead.
-
-### 1.2 The check that was not what this document thought it was
-
-**`bugprone-raw-memory-call-on-non-trivial-type`** — enabled in `c580283d`. 0 sites, measured with clang-tidy 22 over
-all 838 translation units in `cmake-build-strict-ra-clang-22` (423 project sources plus the 415 header-verification
-units).
-
-An earlier revision of this section called it "the single most valuable check in the whole list", on the grounds that it
-was the only automated guard on the `TFixedIHeapClass::Save/Load` memcpy contract in `src/ra/heap.cc`. Both halves of
-that were wrong.
-
-**It is a different check.** `bugprone-raw-memory-call-on-non-trivial-type` is clang-tidy 22's *primary* name for
-`cert-oop57-cpp` — the CERT OOP57-CPP style rule, "prefer special member functions and overloaded operators to C
-Standard Library functions", covering `memset`, `memcpy`, `memcmp`, `strcpy`, `strcmp` and friends. `cert-oop57-cpp`
-was never in the disable list, so the alias already had that coverage in force; enabling the primary name only makes it
-survive the alias being retired. The trivially-copyable UB check the section actually described is a **separate**
-check, `bugprone-undefined-memory-manipulation`, which still exists in clang-tidy 22 and is also already enabled. It too
-measures 0.
-
-**Historical raw-save limitation (removed by the migration).** The following describes the old save path;
-current saves serialize explicit fields and no longer restore object images. Neither check could see that old path. `src/ra/heap.cc:508` and `:568` are `file.Put(Ptr(i), sizeof(T))` and
-`file.Get(ptr, sizeof(T))`, going through `Pipe::Put(const void*, int)` and `Straw::Get(void*, int)`. No `memcpy` is
-textually present and the `T*` decays to `void*` at the call boundary, so no class-typed pointer ever reaches a call the
-checks can match — and the matcher additionally carries `unless(isInTemplateInstantiation())`, which is exactly what
-`heap.cc` is. The same holds for `src/td/heap.cc:485`, `src/ra/iomap.cc` (`CellClass`, `MouseClass`),
-`src/td/ioobj.cc` (~40 `Read_Object`/`Write_Object` pairs), `src/ra/saveload.cc` (`ScenarioClass`, `ScoreClass`,
-`CarryoverClass`, `SpecialClass`, `GameOptionsClass`) and `src/ra/vortex.cc`.
-
-**What guarded it before migration.** No standard trait works: `AbstractClass` declares a virtual destructor
-(`src/ra/abstract.h:70`), so every serialized type fails both `is_trivially_copyable_v` and
-`is_trivially_destructible_v`, and there is no trait for "trivially copyable apart from the vptr that the placement-new
-restores". `sizeof(T)` is the closest observable proxy — a `std::string`, `std::vector` or
-`std::optional` member changes it. The RA/TD heap layout tests added in `201cfb3c` pinned every
-byte-serialized type. They were deleted in the save-game migration once field-wise serialization and archive
-round-trip tests replaced the raw-image contract.
-
-#### Historical `SAVEGAME_VERSION` guard and its gaps
-
-`SAVEGAME_VERSION` (`src/ra/saveload.cc:132-145`, `src/td/saveload.cc:99-112`) is a sum of `sizeof()` over the
-serialized types, so a layout change invalidates existing saves rather than corrupting loads. Neither sum is complete:
-
-| Game | Byte-serialized but absent from the sum                                                                                                                                     |
-|------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| RA   | `VesselTypeClass`, `WeaponTypeClass`, `WarheadTypeClass`, `ScoreClass`, `CarryoverClass`, `SpecialClass`, `GameOptionsClass`, `NodeNameType`, `EventClass`, `BaseNodeClass` |
-| TD   | `TriggerClass`, `ScoreClass`, `EventClass`, `BaseNodeClass`, `WeaponTypeClass`, `WarheadTypeClass`                                                                          |
-
-For those types a layout change is caught by nothing but the new tests. Extending either sum would invalidate every
-existing save, so it has not been done; the gap is recorded here rather than closed.
-
----
-
-## clang-tidy 22 fallout
-
-The toolchain moved from clang-tidy 21 to 22 on 2026-08-20, which turned the strict build red. None of it came from
-§1.2 — the four checks below were all enabled through `'*'` and all four are either new in 22 or newly stronger in 22.
-Measured over the same 838 translation units, deduplicated by site. **All four are now resolved and the strict build is
-green again**: two swept, two disabled.
-
-| Check                                            | Sites | Files | Status                                                                                                                              |
-|--------------------------------------------------|-------|-------|-------------------------------------------------------------------------------------------------------------------------------------|
-| `bugprone-unchecked-string-to-number-conversion` | 200   | 47    | ✅ Disabled → [Tier 3](#tier-3-keep-disabled--high-volume-near-zero-bug-yield). Was clean under 21 as part of §1.1; 22 broadened it |
-| `readability-redundant-parentheses`              | 170   | 34    | ✅ Swept. New in 22. Almost all of it was the legacy `return (x);` idiom                                                            |
-| `llvm-prefer-static-over-anonymous-namespace`    | 5     | 2     | ✅ Disabled — style-only, and Google style permits both spellings                                                                   |
-| `readability-redundant-typename`                 | 1     | 1     | ✅ Fixed. New in 22 — `src/ra/search.h:626`                                                                                         |
-
-The two mechanical ones are done, and both now measure 0 sites tree-wide.
-`readability-redundant-parentheses` was swept with `clang-tidy --export-fixes` over all 840 units, applied with
-`clang-apply-replacements --format`. The 170 sites were `return (x);` → `return x;`, `case (KN_ESC):` →
-`case KN_ESC:`, and a handful of expression parens (`Stage * (12)`, `x + (WinX)`, `-(MAP_CELL_W)`). Formatting fallout
-was one re-wrap (`src/ra/mapeddlg.cc:236`) and two trailing-comment realignments (`src/td/const.cc:200`,
-`src/td/menus.cc:304`); nothing else moved. `readability-redundant-typename` was the single `src/ra/search.h:626`
-line, valid to drop since C++20 P0634.
-
-`llvm-prefer-static-over-anonymous-namespace` is **disabled** as style-only.
-[Google style](https://google.github.io/styleguide/cppguide.html#Internal_Linkage) explicitly permits either spelling (
-"put it in an unnamed namespace or declare it `static`") and `CLAUDE.md` makes Google style primary, so the check
-enforces an LLVM house preference this project has not adopted. All 5 sites are test helpers in
-`src/sdllib/font_test.cc` and `src/winvq/vqa32/vqaplay_test.cc`, and both files need their anonymous namespace anyway —
-it wraps the fixtures (`VqaPlayTest`) and the `TEST_F` bodies. Satisfying the check would move only the free helpers out
-to file-scope `static`, separating them from the fixtures they exist to serve. It would also fire on every future test
-helper written the idiomatic way.
-
-`bugprone-unchecked-string-to-number-conversion` is now **disabled**, joining `cert-err34-c` in Tier 3 — it is the same
-200 sites seen tree-wide rather than in a 19-file sample. Three findings decided it:
-
-- **Nothing remote reaches these calls.** All 200 read a local `.INI` (modem and sound-card settings, rules, scenario
-  data) or a UI edit box. The 24 in each `teamtype.cc` and every `MPlayerCredits` site in `netdlg.cc` /
-  `nulldlg.cc` are `Get_Text()` off a map-editor or lobby gadget, not packet data.
-- **The 18 `sscanf` sites cannot be fixed by checking the return value.** `src/ra/session.cc:1007` already reads
-  `if (sscanf(buf, "%x", &trap_target) == 1)` and is still flagged: the check's complaint is unreported *overflow*, not
-  match failure. Only a rewrite to `strtoul` silences them.
-- **Where a bad value would actually hurt, the check aims at the wrong thing.** The hazard is an out-of-range value
-  indexing a type array, and `atoi` → `strtol` does not help — a well-formed `"999"` is exactly as dangerous. Range
-  checking is the fix, and several sites already do it (`Bound(atoi(credbuf), 0, 9999)`,
-  `src/td/nulldlg.cc:4124`).
-
-Fixing all 200 was rejected on that basis, as was routing them through a behaviour-preserving `ParseInt` helper — that
-silences the check without changing what the code does, which is worse than saying so here. If the parsing is ever
-hardened for real, do it as range validation at the INI and gadget boundary, and re-enable this check afterwards as the
-regression guard.
-
-Reproduce with the sweep under [Re-measuring](#re-measuring), substituting these four check names.
-
----
-
-## clang-tidy 23 fallout
-
-The machine moved to clang 23 on 2026-08-29 by pointing the `clang` alternative at `/usr/bin/clang-23`
-(`update-alternatives --set clang`), which carries `clang-tidy` with it as a slave link — `CMakeLists.txt` still names
-the unversioned binary, so nothing in the build changed. **The tree was clean under 22 and would have been 7,360 sites
-across 379 of 840 translation units under 23.** All of it was regression from the version, none of it accumulated debt.
-
-The structural event is that **clang-tidy 23 deleted the entire `hicpp` module** — 31 checks in 22, none in 23 — and
-promoted three other checks to new primary names. `.clang-tidy` disabled those checks by names that no longer exist, so
-`'*'` re-enabled them under their new spellings. This is [trap 1](#re-measuring) firing against the disable list itself
-rather than against a measurement, and it is the second consecutive bump to break this way.
-
-| Check                                                      | Sites | Files | Status                                                                        |
-|------------------------------------------------------------|-------|-------|-------------------------------------------------------------------------------|
-| `bugprone-signed-bitwise`                                  | 4613  | 215   | ✅ Disabled — rename of `hicpp-signed-bitwise`, restores an existing decision |
-| `readability-trailing-comma`                               | 1653  | 174   | ✅ Disabled → Tier 3. New in 23, style-only                                   |
-| `readability-redundant-nested-if`                          | 465   | 125   | ✅ Disabled → Tier 3. New in 23, style-only                                   |
-| `cppcoreguidelines-explicit-constructor`                   | 252   | 144   | ✅ Disabled — new primary name for the disabled `google-explicit-constructor` |
-| `clang-diagnostic-lifetime-safety-*-suggestions` (4)       | 197   | —     | ✅ Disabled — annotation advice, not defect reports                           |
-| `bugprone-unhandled-code-paths`                            | 55    | 33    | ✅ Disabled — rename of `hicpp-multiway-paths-covered`                        |
-| `readability-redundant-parentheses`                        | 34    | 12    | ✅ Swept in `8a508285`. Broadened into templates                              |
-| `clang-diagnostic-lifetime-safety-dangling-{field,global}` | 10    | 8     | ✅ Fixed in `f820ac85`; both checks now enabled                               |
-| `clang-diagnostic-lifetime-safety-*` (other 3)             | 15    | —     | ✅ Disabled — false positives, see below                                      |
-| `readability-trivial-switch`                               | 23    | 20    | ✅ Disabled → Tier 3. New in 23, style-only                                   |
-| `readability-else-after-return`                            | 15    | 9     | ✅ Fixed in `82c69987`. Enabled check, broadened into `switch` cases          |
-| `performance-faster-string-find`                           | 6     | 3     | ✅ Fixed in `82c69987`. Enabled check, gained a new alias                     |
-| `readability-redundant-casting`                            | 2     | 1     | ✅ Fixed in `82c69987`. Enabled check, broadened                              |
-| `performance-string-view-conversions`                      | 2     | 2     | ✅ Disabled — new in 23                                                       |
-| `clang-diagnostic-unused-but-set-global`                   | 2     | 2     | ✅ Disabled — new in 23                                                       |
-| `clang-analyzer-optin.core.FixedAddressDereference`        | 1     | 1     | ✅ Disabled — rename of `clang-analyzer-core.FixedAddressDereference`         |
-| `clang-analyzer-optin.cplusplus.UninitializedObject`       | 1     | 1     | ✅ Fixed in `82c69987` — a real one, see below                                |
-| `clang-analyzer-cplusplus.NewDeleteLeaks`                  | 1     | 1     | ✅ Suppressed in `82c69987` with its reason — false positive                  |
-| `clang-analyzer-unix.cstring.UninitializedRead`            | 1     | 1     | ✅ Disabled — new in 23                                                       |
-
-**Four renames account for 4,921 of the 7,360 and cost nothing to fix.** Naming the 23 spelling restores a decision this
-project had already made; no game code changed. The remaining volume is three new style checks (2,141) and the
-lifetime-safety suggestions (197). Of everything left, **59 sites were real edits** — 34 parentheses, 25 lifetime and
-broadened-check fixes — and two of those were latent defects rather than style.
-
-**Two of the renames are aliases, and disabling an alias does not disable its primary.** That is the whole mechanism.
-`google-explicit-constructor` is still a valid name in 23, so the disable line looked fine — but 23 demoted it to an
-alias of the new `cppcoreguidelines-explicit-constructor`, and the primary came back on. Both names are needed:
-disabling only the `cppcoreguidelines` one leaves 137 sites reported under `misc-explicit-constructor`. Verified the
-same way for `hicpp-signed-bitwise` → `bugprone-signed-bitwise`, which matched its successor exactly at 4,613 sites.
-
-**The 18 dead `hicpp-` lines stay.** They are inert under 23, but removing them breaks 21 and 22: disabling a check's
-primary name does not disable its aliases, so without those lines the aliases fire. Verified on `modernize-use-auto` —
-`-modernize-use-auto` alone still reports under `hicpp-use-auto`. Sixteen of the eighteen were harmless only because
-their successors happen to be independently listed; the two that were not are in the table above.
-
-**Five of the checks are not 23 artefacts and were kept rather than disabled.** `readability-else-after-return`,
-`performance-faster-string-find`, `readability-redundant-casting`,
-`clang-analyzer-optin.cplusplus.UninitializedObject` and `clang-analyzer-cplusplus.NewDeleteLeaks` were all enabled and
-passing under 22, and fired only because 23 widened them. Disabling those would have given up coverage the project
-already had, so their 25 sites were cleared instead. `performance-prefer-single-char-overloads` is deliberately absent
-from the disable list for the same reason: it is a new alias reporting the same diagnostic as the enabled
-`performance-faster-string-find`, so disabling it alone changes nothing and disabling both would surrender a check that
-works.
-
-`FieldClass` was a real find. Its default constructor was `FieldClass() {}`, leaving every member indeterminate, and
-`src/tech/packet.cc:128` default-constructs a field then `memcpy`s `FIELD_HEADER_SIZE` bytes into it —
-`sizeof(FieldClass) - (sizeof(void*) * 2)` by its own definition, so `Data` and `Next` are deliberately outside it. Both
-happen to be assigned immediately afterwards, so nothing was broken on that path, but any other use of the default
-constructor read garbage. The members are value-initialized now.
-
-The `src/ra/queue.cc:3243` leak is a false positive and carries a `NOLINTNEXTLINE` with that reason. `eventdata` is
-declared outside the read loop and reused, so once `DoList.Add()` succeeds the list owns the buffer while `eventdata`
-still holds the pointer; the analyzer does not model the transfer and reads it as live at a later `return -1`. The only
-path that allocates already deletes on failure, two lines above.
-
-`readability-redundant-parentheses` has now regressed on two consecutive bumps. It was new in 22 and swept to zero then;
-23 looks inside dependent expressions, and every one of the 34 new sites is in a class template body or an instantiation
-of one — `src/ra/list.h` and `src/ra/drop.h` are 17 between them. Same `return (x);` idiom, same sweep.
-
-### The lifetime-safety family, reviewed
-
-The nine `clang-diagnostic-lifetime-safety-*` names were spelled `-Wexperimental-lifetime-safety-*` in 22, which is why
-none of them fired before. They are `-Weverything`-gated, so they reach the clang strict build and not the default GCC
-one. All 25 sites have now been read, and the family splits three ways rather than two:
-
-| Group                                                           | Sites | Outcome                                          |
-|-----------------------------------------------------------------|-------|--------------------------------------------------|
-| `dangling-field`, `dangling-global`                             | 10    | ✅ **Enabled** — sites cleared in `f820ac85`     |
-| `-suggestions` ×4 (`intra-tu`, `cross-tu`, both `-constructor`) | 197   | Disabled — annotation advice, not defect reports |
-| `use-after-free`, `invalidation`, `use-after-scope-moved`       | 15    | Disabled — false positives, reasons below        |
-
-**None of the 10 was a live bug, and each was one edit away from being one.** All ten were the same shape: a pointer to
-a stack local left in a member or a global after the function returned, safe only because nothing happened to read it
-out of window.
-
-- **`ipxmgr`, 4 sites.** `Service()` assigned `CurDataBuf` and `CurHeaderBuf` — *members* — from a 1024-byte stack
-  receive buffer, then read them three lines later. In RA the two were used nowhere else at all, so they became locals
-  and the member is gone. In TD they are a genuine cursor over `FirstHeaderBuf`/`FirstDataBuf`, but only in the legacy
-  DOS path; the Winsock branch was borrowing them as scratch. That branch uses locals now, and the declarations moved
-  under `#ifdef NOT_FOR_WIN95` to sit with their only remaining users.
-- **`nullmgr`, 4 sites.** `Commands` is a `static GadgetClass*` pointed at a local button and never cleared, so it
-  dangled from the moment `Dial_Modem()` returned. It worked because `Abort_Modem()` — the one reader outside the
-  function — is registered by `Setup_Abort_Modem()` and dropped by `Remove_Abort_Modem()` while the button is still
-  alive. The pointer is cleared alongside the deregistration now, so the invariant is in the code rather than in the
-  pairing.
-- **`mapsel`, 2 sites.** `InterpolationPalette` is a global read from `interpal.cc` in another translation unit, and
-  `Map_Selection()` pointed it at a 768-byte local. Clearing the global would have been the wrong fix — some path may
-  read it without setting it first, which turns a bad read into a null dereference. The buffer got static storage
-  instead. Every path fills it before reading, so nothing changes except that the pointer stays valid.
-
-The three disabled checks are false positives under this codebase's ownership model, and were left disabled rather than
-suppressed site by site:
-
-- **`use-after-free`, 3 sites** — all `new BulletClass`. `BulletClass` declares its own `operator new`/`operator delete`
-  (`ra/bullet.h:82-84`, `td/bullet.h:80-82`) and is allocated from the game's fixed heap, not the free store. The
-  analyzer sees an unmatched `new`.
-- **`invalidation`, 11 sites** — eight are global page buffers (`PseudoSeenBuff`, `TextPrintBuffer`, `Palette`,
-  `BackgroundPage`) on their intended per-screen `new`/`delete` cycle; the analyzer reports the delete as "later
-  invalidated". The other three are `std::string` and `std::vector` reallocating internally, with nobody holding an
-  interior pointer.
-- **`use-after-scope-moved`, 1 site** — `src/ra/udata.cc:1074`, which says so itself: "This could be a false positive as
-  the storage may have been moved later."
-
-Two notes for the next reviewer. `src/ra/findpath.cc:174` was listed here as a candidate on an earlier reading; it is
-not a lifetime-safety finding at all and was never one of the 25. And the sweep that cleared the 10 produced three *new*
-findings — `clang-diagnostic-unused-private-field` and `-unused-variable`, from members and locals whose only remaining
-references sat in dead preprocessor branches. A single-check sweep would have missed all three; see the full-config rule
-under [Re-measuring](#re-measuring).
-
-### The dead-name audit
-
-Run this at every toolchain bump; it is one command and it would have caught both of the last two:
-
-```bash
-comm -23 \
-  <(grep -oE '^ +-[a-z][A-Za-z0-9._-]*,' .clang-tidy | sed -E 's/^ +-//; s/,$//' | sort -u) \
-  <(clang-tidy --checks='*' --list-checks | tail -n +2 | sed 's/^ *//' | sort -u) \
-  | grep -v '^clang-diagnostic-'
-```
-
-Strip only the leading `-`, not every hyphen: `tr -d ' -'` mangles every name and the comparison then matches nothing,
-which reads as a clean audit.
-
-`clang-diagnostic-*` names never appear in `--list-checks` and are expected in the output; anything else is a line
-disabling a check that does not exist under the installed clang-tidy.
-
-Today it prints 16 names: 15 `hicpp-` plus `clang-analyzer-core.FixedAddressDereference`. **These are dead under 23 and
-deliberately kept**, because they are not dead under 22 — disabling a check's primary name does not disable its aliases,
-so dropping them lets the aliases fire. Measured over all 840 units under clang-tidy 22, removing them costs about
-14,000 findings across 18 checks; `hicpp-no-array-decay` alone is 4,027 and `hicpp-signed-bitwise` 4,617.
-
-Five entries were dropped in the cleanup after the 23 move: `cert-dcl21-cpp`, `clang-analyzer-valist.Unterminated` and
-`cppcoreguidelines-explicit-constructor-and-conversion`, which name checks that exist in neither 22 nor 23 — the residue
-of the 21 → 22 round nobody noticed because `google-explicit-constructor` still covered the third — plus
-`hicpp-avoid-goto` and `hicpp-static-assert`, which exist under 22 but measure 0 sites there. Note the latter two are
-free only as long as that stays true: adding a `goto`, or a comparison `static_assert` could express, breaks a
-clang-tidy 22 build. The config is verified clean under both 22 and 23.
-
-Reproduce with the sweep under [Re-measuring](#re-measuring), with no `--checks` at all — a single-check sweep cannot
-see the `clang-diagnostic-*` family.
-
----
-
-## TIER 1.5: Small counts, real UB in a deep virtual hierarchy
-
-The `AbstractClass → ObjectClass → TechnoClass → ...` hierarchy makes these more dangerous here than in typical code.
-
-| Check                                        | Sample | Tree-wide | Status                                                                |
-|----------------------------------------------|--------|-----------|-----------------------------------------------------------------------|
-| `misc-unconventional-assign-operator`        | 4      | 9         | ✅ Done, `7a9e933b`                                                   |
-| `cert-oop58-cpp`                             | 2      | 2         | ✅ Done, `30cb1c6e`                                                   |
-| `clang-diagnostic-overloaded-virtual`        | 10     | **28**    | ✅ Done, `bc3c370c` — silently shadowed virtuals, 6 of them live bugs |
-| `cppcoreguidelines-virtual-class-destructor` | 14     | **32**    | ✅ Done, `fdb3a9e8`, with the row below — 26 sites in common          |
-| `clang-diagnostic-non-virtual-dtor`          | 12     | **27**    | ✅ Done, `fdb3a9e8`                                                   |
-| `clang-analyzer-optin.cplusplus.VirtualCall` | **86** | **81**    | ✅ Done, `e3ad8275` — `final` did most of it, not the feared refactor |
-
-Tree-wide counts are over all 840 translation units in `cmake-build-strict-ra-clang-22`, deduplicated by site, measured
-2026-08-28. The sample under-predicted all of them except `cert-oop58-cpp`, as it did for Tier 1.
-
-The two destructor checks were done as one commit, as planned: they overlap on 26 sites, and both fire on every class in
-a hierarchy whose root lacks a virtual destructor, so 33 sites collapsed to six declarations — `GScreenClass`
-covering 11 RA sites and TD's `AbstractTypeClass` covering 13.
-
-**`VirtualCall` was not the refactor this document feared.** Two revisions predicted that clearing it meant
-restructuring constructors and destructors across `AbstractClass → ObjectClass → TechnoClass → …`. It did not.
-`final` cleared 55 of the 81 sites on its own — the checker stops warning once no override can exist — and the compiler
-validates the claim, since `final` on a class someone inherits does not build. Eight more went to method-level `final`
-where the class has subclasses but nothing overrides that particular slot. Five were calls sitting directly in a
-constructor or destructor, where qualifying the base version only writes down what already happened. Only four needed
-real restructuring, and each of those was a place where a derived override genuinely existed and was being skipped:
-`GaugeClass`'s constructor, `~GadgetClass`, `DisplayClass`'s view setup, and TD's
-`VectorClass` copy constructor. Reach for `final` before reaching for a refactor — and note that qualification is *not*
-a general remedy, because the checker flags calls reachable **from** a constructor, not only calls textually inside one.
-Qualifying inside `LinkClass::Remove` or `DisplayClass::Set_View_Dimensions` would have broken dispatch for every
-ordinary caller.
-
----
-
-## TIER 2: Valuable, but these *are* the type-migration project
-
-Six of the seven entries are addressed (five enabled, one reclassified). The historical measurement
-covered all 840 translation units on 2026-08-28 and found **3,568
-sites, not the ~5,700 the estimates said** — and the estimates were wrong in shape as well as size, which is why the
-order below is not the order of the counts.
-
-| Check                                                 | Sample | Tree-wide | Status                                                                  |
-|-------------------------------------------------------|--------|-----------|-------------------------------------------------------------------------|
-| `bugprone-implicit-widening-of-multiplication-result` | 29     | **224**   | ✅ Done, `c0045ac4`                                                     |
-| `clang-diagnostic-sign-compare`                       | 40     | **305**   | ✅ Done, `35c51bbf`                                                     |
-| `clang-diagnostic-shorten-64-to-32`                   | 69     | **439**   | ✅ Done, `cf44023c` — 428 when first measured, before the two above     |
-| `clang-diagnostic-switch`                             | 20     | **720**   | ❌ Reclassified, see below — 567 of them are one deliberate idiom       |
-| `bugprone-narrowing-conversions` | 292 | **1424** originally | ✅ Done, `5d4b53ee`; 510 sites at implementation time |
-| `cppcoreguidelines-pro-type-member-init` | 116 | **383** before migration | ✅ Done, save-game migration steps 31–36; zero remaining |
-| `bugprone-switch-missing-default-case`                | 10     | **118**   | Mechanical, low yield, last                                             |
-
-`src/ra` and `src/td` held 3,243 of the 3,568; the support layers (`sdllib`, `tech`, `winvq`, `base`, `port`) held 325,
-and `src/port` was clean on all seven. The per-directory strategy below is still right, but the split is that lopsided.
-
-**`clang-diagnostic-switch` is off the list, at 720 sites.** 567 of them say *"case value not in enumerated type
-`KeyNumType`"* and come from `case ButtonKey(200):` — the helper `6a792756` introduced. Clang's `-Wswitch` warns on any
-case label that is not a **named enumerator**, and giving `KeyNumType` a fixed underlying type does not change that; it
-was tried and measured no different. Clearing them means rewriting 105 switch statements across 43 files to switch on
-`static_cast<unsigned>(input)`, which buys silence and nothing else, since those switches were never enumerator-based.
-The remaining ~153 are genuine "enumeration value not handled" findings and could be had per-directory.
-
-**The enabled narrowing check uses `WarnOnEquivalentBitWidth: false`.** At its defaults it measures 1424, but 585 of those
-are same-width `unsigned` → `signed` — `LEPTON` (`unsigned short`), `COORDINATE` (`uint32_t`) and friends flowing into
-`int`, which is exactly what `docs/TYPE_MIGRATION.md`'s do-not-touch list protects. `WarnOnEquivalentBitWidth: false`
-reduced that historical measurement to **839** real narrowing sites. The implementation sweep later fixed
-510 sites; the option preserves the deliberate equivalent-width conversions.
-
-### What the three finished checks actually cost
-
-**The fixes were type changes, not casts.** `sign-compare` cleared roughly 240 of its 305 sites through eight
-declarations, and the recurring cause was not the comparisons: **RA had already been migrated to signed sizes and TD had
-not.** `DynamicVectorClass::Count()`, `VectorClass`, `TechnoTypeClass::Level`, the radar geometry — signed in one port,
-`size_t`/`unsigned` in the other, which is why TD carried 170 sites against RA's 103. The same held for
-`implicit-widening`: six `int` → `base::ssize` stride declarations in `drawbuff.cc` took that file from 23 sites to 8,
-and three timer macro definitions cleared 43 more.
-
-**Order matters, and it is sign-compare before truncation.** Making `Count()` return `base::ssize` moved the mismatch
-out of comparisons and into assignments, which is precisely what `shorten-64-to-32` catches — so a large share of its
-439 sites were created by the commit before it. That is the correct sequence, not an accident, but budget for it: the
-truncation count grows as the signedness work lands.
-
-**The layout tests stopped two member retypes.** Widening `td/vector.h`'s `VectorMax` to `base::ssize` changed
-`sizeof()` for three serialized types (56→64, 40→48, 1952→1960); narrowing `HouseClass::Tiberium` and `Capacity` to
-`int` shrank TD's `HouseClass` from 3368 to 3360. Both are the raw-byte save format. Both members keep their width with
-a comment saying why, and their call sites got casts instead. Full RA/TD type parity in those two classes needs a
-`SAVEGAME_VERSION` bump, which is a separate decision.
-
-**Do not bulk-wrap expressions using a diagnostic's column.** The last 151 `shorten-64-to-32` sites were wrapped by a
-script that read each diagnostic's line and column and inserted a cast around what it judged the expression to be. The
-column often points into the middle of an expression rather than at its start, so it produced about 25 malformed edits —
-`Array.static_cast<int>(ID(ptr))`, `x static_cast<int>(- y)`, `std::max<static_cast<int>(int>(...)` — all caught by the
-compiler, and **one that compiled and changed behaviour**:
-
-```cpp
-int graph = kRecordHeight * fixed(kTimerSecond - SpareTicks, kTimerSecond);
-int graph = kRecordHeight * static_cast<int>(fixed(kTimerSecond - SpareTicks), kTimerSecond);
-```
-
-The inserted paren landed on `fixed()`'s argument separator, turning a two-argument ratio into a one-argument
-construction followed by a comma operator, so `graph` became `kTimerSecond`. It compiled because `fixed` has a
-one-argument constructor, and only `clang-diagnostic-comma` caught it. Two audits over the other 150 wraps found no
-second instance — none has a top-level comma inside a cast, and every changed line reduces to its committed form once
-the inserted casts are stripped — but the technique is not worth repeating. Fix the type, or edit the site by hand.
-
-**Strategy — per-directory, not global.** Drop a stricter `.clang-tidy` into directories that are already clean
-(`src/base`, `src/port`) and into each directory as it completes type migration. clang-tidy applies the nearest config
-file, so new and modernized code is held to Tier 2 while legacy code is not. This is strictly better than
-`// NOLINTBEGIN` blocks, which rot silently.
-
-These checks are the enforcement mechanism for `docs/TYPE_MIGRATION.md` — turning one on for a directory is the natural
-way to *finish* a migration and keep it finished.
-
-**Member initialization is now enabled.** RA and TD saves use field-wise archives, so NoInitClass and its
-constructors were deleted. Initialization defaults no longer overwrite raw saved object images. The remaining
-constructors and local records were fixed without adding suppressions; all 23 defined non-default event
-constructors now delegate through their byte-clearing defaults so `IsExecuted` and unused payload bytes are
-initialized. See the [migration checkpoints](SAVEGAME_MIGRATION_PLAN.md) for validation and save versions.
-
----
-
-## TIER 3: Keep disabled — high volume, near-zero bug yield
-
-| Check                                            | Sample | Why not                                                  |
-|--------------------------------------------------|--------|----------------------------------------------------------|
-| `cppcoreguidelines-init-variables`               | 371    | Largest count in the list; almost entirely benign        |
-| `performance-enum-size`                          | 168    | Enum storage width is irrelevant at this scale           |
-| `bugprone-macro-parentheses`                     | 28     | 1990s macros; fixes risk changing behaviour              |
-| `cert-err34-c`                                   | 19     | Unchecked `atoi` in INI parsing; low real-world impact   |
-| `bugprone-unchecked-string-to-number-conversion` | 200    | Same sites as `cert-err34-c`, seen tree-wide — see below |
-| `llvm-prefer-static-over-anonymous-namespace`    | 5      | Style-only; Google style permits unnamed namespaces      |
-| `bugprone-branch-clone`                          | 9      | Intentionally parallel branches throughout game logic    |
-| `performance-no-int-to-ptr`                      | 1      | Legacy handle/pointer punning                            |
-
-Plus the standing architectural exclusions, unchanged and still correct:
-
-- **Not applicable to this project:** `altera-*` (3), `android-*` (4), `fuchsia-*` (6), `llvmlibc-*` (4)
-- **Would require a rewrite:** `cppcoreguidelines-avoid-non-const-global-variables` (the game *is* globals — see
-  `ra/externs.h`), `-no-malloc`, `-owning-memory`, `-avoid-c-arrays`, `-pro-bounds-pointer-arithmetic`,
-  `readability-magic-numbers`
-- **Style-only:** `readability-braces-around-statements`, `readability-identifier-length`, `llvm-else-after-return`
-- **False-positive prone:** `bugprone-easily-swappable-parameters`, `cert-err58-cpp`
-- **Cast checks:** `clang-diagnostic-old-style-cast`, `cppcoreguidelines-pro-type-cstyle-cast`,
-  `google-readability-casting` — thousands of sites; revisit only per-directory alongside Tier 2
-
----
-
-## C++ Core Guidelines Type Safety Profile
-
-The [Type Safety Profile](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#ss-type) maps directly onto
-`cppcoreguidelines-pro-type-*`. Current state:
-
-| Rule   | Description                         | Check                                             | State    |
-|--------|-------------------------------------|---------------------------------------------------|----------|
-| Type.1 | Don't use `reinterpret_cast`        | `cppcoreguidelines-pro-type-reinterpret-cast`     | Enabled  |
-| Type.2 | Don't use `static_cast` to downcast | `cppcoreguidelines-pro-type-static-cast-downcast` | Enabled  |
-| Type.3 | Don't use `const_cast`              | `cppcoreguidelines-pro-type-const-cast`           | Enabled  |
-| Type.4 | Don't use C-style casts             | `cppcoreguidelines-pro-type-cstyle-cast`          | Disabled |
-| Type.5 | Always initialize variables         | `cppcoreguidelines-init-variables`                | Disabled |
-| Type.6 | Always initialize member variables  | `cppcoreguidelines-pro-type-member-init`          | Enabled |
-| Type.7 | Avoid naked unions                  | `cppcoreguidelines-pro-type-union-access`         | Disabled |
-| Type.8 | Avoid varargs                       | `cppcoreguidelines-pro-type-vararg`               | Disabled |
-
-Rules 1–3 and 6 are enforced tree-wide. Rules 4, 5, 7 and 8 remain disabled and need separate assessment.
-
----
-
-## Action Plan
-
-### Phase A — Tier 1 ✅ done
-
-1. ~~Fix `src/ra/house.cc:2367` (`!` → `~`)~~ — done in `f7552ee3`.
-2. ~~Un-disable the Tier 1 table~~ — done, one check per commit; see [Progress](#progress).
-3. ~~Build `rasdl` **and** `tdsdl`; fix fallout.~~ The `src/td` tail did exceed `src/ra`, by roughly 2:1.
-
-### Phase A.2 — §1.1 ✅ done, §1.2 ✅ done
-
-1. ~~Enable the §1.1 guards in small batches~~ — done in `12f738d9`, `c2121fa4` and `c9bb3fb0`; 24 of 26 enabled, 336
-   sites cleared. Batching mattered: `conditional-uninitialized` alone was 103 sites and would have blocked the rest.
-2. `bugprone-parent-virtual-call` stays disabled permanently, and `clang-analyzer-optin.cplusplus.VirtualCall` moved to
-   Tier 1.5. See [1.1](#11-free-guards--the-name-was-wrong).
-3. ~~`bugprone-raw-memory-call-on-non-trivial-type` (§1.2)~~ — enabled in `c580283d` at 0 sites. It turned out to be
-   `cert-oop57-cpp` under a new name, and to have no visibility into the save path at all; the real guard is the pair of
-   layout tests added in `201cfb3c`. See [1.2](#12-the-check-that-was-not-what-this-document-thought-it-was).
-
-### Phase B — Tier 1.5, in progress
-
-1. ~~Fix `src/ra/vector.h` and `src/tech/listnode.h` first~~ — done in `7a9e933b` and `30cb1c6e`, which is what enabling
-   `misc-unconventional-assign-operator` and `cert-oop58-cpp` amounted to.
-2. ~~`clang-diagnostic-overloaded-virtual`~~ — done in `bc3c370c`, 28 sites.
-3. ~~`cppcoreguidelines-virtual-class-destructor` and `clang-diagnostic-non-virtual-dtor` together~~ — done in
-   `fdb3a9e8`, 33 sites in six edits.
-4. ~~`clang-analyzer-optin.cplusplus.VirtualCall` (86 sites) last~~ — done in `e3ad8275`, 81 sites, no suppressions. The
-   predicted hierarchy refactor did not materialise: see the note
-   under [Tier 1.5](#tier-15-small-counts-real-ub-in-a-deep-virtual-hierarchy).
-
-### Phase C — Tier 2, in progress
-
-Five checks went in tree-wide. The initialization check required migrating raw save games first:
-
-1. ~~`bugprone-implicit-widening-of-multiplication-result`~~ — done in `c0045ac4`, 224 sites.
-2. ~~`clang-diagnostic-sign-compare`~~ — done in `35c51bbf`, 305 sites.
-3. ~~`clang-diagnostic-shorten-64-to-32`~~ — done in `cf44023c`, 439 sites.
-4. ~~`clang-diagnostic-switch`~~ — reclassified, not enabled; 567 of its 720 sites are a deliberate idiom.
-5. ~~`bugprone-narrowing-conversions`, with `WarnOnEquivalentBitWidth: false`~~ — done in `5d4b53ee`, 510 sites.
-6. ~~`cppcoreguidelines-pro-type-member-init`~~ — enabled after field-wise save migration, NoInitClass deletion, and the 237-site cleanup ending in `a40b98f7`.
-7. `bugprone-switch-missing-default-case` last, or never.
-
-The per-directory idea still stands for what remains, but note `src/port` is already clean on all seven checks and
-`src/base` had four sites, so the two directories Phase C named as the starting point are worth almost nothing on their
-own. `src/ra` and `src/td` hold 91% of the tier.
-
----
-
-## Re-measuring
-
-Before enabling anything not listed above, measure it — the counts here are the whole basis of the tiering:
-
-```bash
-JOBS=$(($(getconf _NPROCESSORS_ONLN) / 2))
-
-# The file list. Take every entry the compile database has that is not a
-# dependency, which keeps the 415 header-verification units - they live under
-# the build directory, not under src/, so filtering on 'src/' silently drops
-# all header coverage (and picks up abseil, whose paths contain '/src/' too).
-python3 -c "
-import json
-d = json.load(open('cmake-build-strict-ra-clang-22/compile_commands.json'))
-fs = sorted({e['file'] for e in d
-             if '_deps' not in e['file'] and '/third_party/' not in e['file']})
-open('/tmp/tidy_files.txt', 'w').write('\n'.join(fs) + '\n')"
-
-# Cost of one or more checks, tallied per check and deduplicated by site,
-# since a diagnostic in a shared header repeats once per including TU.
-xargs -a /tmp/tidy_files.txt -P $JOBS -I{} clang-tidy \
-    -p cmake-build-strict-ra-clang-22 --quiet \
-    --checks='-*,check-a,check-b' --warnings-as-errors= {} 2>&1 \
-  | grep -oE '^/home[^ ]+ (warning|error): .*\[[a-z0-9-]+' \
-  | sed -E 's/^([^ ]+) .*\[([a-z0-9-]+)$/\2\t\1/' | sort -u \
-  | cut -f1 | sort | uniq -c | sort -rn
-```
-
-Note `--warnings-as-errors=` (empty) to override the config's `WarningsAsErrors: '*'` while measuring.
-
-**A check's own fix can be the next check's finding, and that is fine.** Enabling `sign-compare` created a large share
-of `shorten-64-to-32`'s sites, because making a count signed moves the mismatch from the comparison to the assignment.
-Sequence the signedness work before the truncation work and expect the second count to grow while you clear the first;
-do not read it as a regression.
-
-**Measure the check you are enabling, then sweep the whole config before committing.** Tier 1.5 was verified twice by
-sweeping only the check being enabled, and twice the strict build went red afterwards on a check that had never been
-measured: marking classes `final` for `VirtualCall` tripped
-`clang-diagnostic-unnecessary-virtual-specifier` in 46 declarations, and giving TD's `AbstractTypeClass` a virtual
-destructor made `~TeamTypeClass` an override, tripping `clang-diagnostic-suggest-destructor-override` and
-`modernize-use-override`. A single-check sweep cannot see fallout that lands on a different check. Run the sweep below
-once with the check under study, and once with no `--checks` at all — the full config, all 840 units — before
-committing. Both were fixed in `532aef0f`.
-
-Seven traps, every one of which reports a clean tree that is not clean.
-
-1. **Confirm the check name exists in the *installed* clang-tidy.** `clang-tidy --checks='-*,name' --list-checks`
-   prints `No checks enabled.` for a name it does not know, so a typo or a renamed check measures as zero.
-2. **A `clang-diagnostic-*` name on its own enables nothing.** `--checks='-*,clang-diagnostic-overloaded-virtual'`
-   prints `Error: no checks enabled.` once per file and reports zero sites — those entries only filter warnings the
-   compiler already emits, they do not select work. Always pair them with at least one real check; the sweep above works
-   because `cppcoreguidelines-virtual-class-destructor` is in the same list.
-3. **Check that `-p` names a directory that still has a `compile_commands.json` with `-Weverything` in it.**
-   Without the database clang-tidy falls back to default flags, real checks keep firing, and every
-   `clang-diagnostic-*` silently drops to zero — which looks exactly like success. `grep -c -- -Weverything
-   [dir]/compile_commands.json` before trusting a zero.
-4. **Watch for hard `error:` lines.** A translation unit that fails to compile reports no warnings, which reads exactly
-   like a clean one.
-5. **The tally regex must allow dots, commas and capitals.** `[a-z0-9-]+` truncates
-   `clang-analyzer-optin.core.FixedAddressDereference` at the first dot and mangles the multi-name tags 23 emits, such
-   as `cppcoreguidelines-explicit-constructor,misc-explicit-constructor`. Use `[A-Za-z0-9._,-]+` anchored with `\]$`,
-   and strip the `,-warnings-as-errors` suffix that appears even when `--warnings-as-errors=` is passed.
-6. **Trap 1 applies to `.clang-tidy` itself, not just to measurements.** A disable line naming a check the installed
-   clang-tidy does not know is silently ignored, so the check runs. That is how both of the last two toolchain bumps
-   broke the build. Run the [dead-name audit](#the-dead-name-audit) at every bump.
-7. **The shell here is zsh, which does not word-split unquoted `$VAR`.** `clang-tidy $FLAGS file.cc` passes the whole
-   string as one argument; `-p` and `--checks` never take effect and the run reports zero. Put sweep loops inside
-   `bash -c '...'`. Related: `/usr/bin/c++` is GCC, which rejects `-Weverything` outright.
-
----
-
-## Summary
-
-| Tier      | Checks | Sample sites    | Status                                                                                   |
-|-----------|--------|-----------------|------------------------------------------------------------------------------------------|
-| 1 (table) | 13     | ~41             | ✅ **Done** — 206 files touched, 18 latent bugs surfaced                                 |
-| 1.1       | 26     | 0 (336 real)    | ✅ **Done** — 24 enabled (23 after 22), 7 more real bugs; 1 off for good, 1 moved to 1.5 |
-| 1.2       | 1      | 0               | ✅ **Done** — raw save images since replaced by field-wise archives                   |
-| 1.5       | 6      | 128 (265 real)  | ✅ **Done** — all six; `VirtualCall` alone found lost buffered writes                    |
-| 2         | 7      | 576 (3568 real) | 5 enabled, 1 reclassified; only `switch-missing-default-case` remains                                      |
-| 3         | ~240   | —               | Keep disabled                                                                            |
-
-Disabled-check count: **275 → 230 → 242 → 240**. Member initialization removes its primary and alias exclusions. The rise is the clang-tidy 23 round, not a retreat: most of the additions
-carry forward decisions already made under names 23 deleted or renamed, and the rest are new style checks. See
-[clang-tidy 23 fallout](#clang-tidy-23-fallout).
+# Clang-tidy priorities
+
+Updated: 2026-09-11, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
+
+This tracks **all 240 currently excluded check names**, in recommended work order. Priorities reflect
+likely defect prevention, relevance to this engine, and the cost of useful fixes; they are judgments,
+not fresh finding counts. Start at P1 and work downward. Aliases stay beside their related check so a
+single cleanup can handle them together. Previously deferred checks are back on the list for review.
+
+Keep completed rows in place: change **Status** to **Enabled** and record the commit in **Reason / result**.
+Use **Skipped** with a short reason only after deciding against a check. P5 entries are recommendations
+to skip, not completed decisions. Add newly excluded checks when the configuration changes.
+
+- **Pending:** excluded and awaiting work.
+- **Covered:** this name is excluded, but an enabled equivalent already supplies the check.
+- **Legacy:** excluded name unavailable in the installed LLVM 23 toolchain; review older-toolchain
+  compatibility alongside the related check. Do not mistake zero findings for successful enforcement.
+- **Skip proposed:** low expected value or an unsuitable platform/style policy.
+
+Alias relationships can be checked in the [LLVM check index](https://clang.llvm.org/extra/clang-tidy/checks/list.html).
+Availability above comes from the installed tool, since the online documentation follows LLVM development.
+
+## P1 — Direct correctness and memory safety
+
+| Check                                                         | Status  | Reason / result                                                             |
+|---------------------------------------------------------------|---------|-----------------------------------------------------------------------------|
+| `bugprone-suspicious-stringview-data-usage`                   | Pending | Prevent reads past a view passed as a terminated C string.                  |
+| `abseil-unchecked-statusor-access`                            | Pending | Validate failed byte reads before accessing their values.                   |
+| `clang-analyzer-unix.cstring.UninitializedRead`               | Pending | Find string operations reading uninitialized bytes.                         |
+| `clang-analyzer-cplusplus.InnerPointer`                       | Pending | Find string-buffer pointers used after invalidation.                        |
+| `bugprone-copy-constructor-init`                              | Pending | Prevent copied objects from silently losing base/member state.              |
+| `bugprone-unchecked-string-to-number-conversion`              | Pending | Reject malformed and out-of-range input at parsing boundaries.              |
+| `cert-err34-c`                                                | Pending | Alias of `bugprone-unchecked-string-to-number-conversion`; handle together. |
+| `clang-analyzer-unix.StdCLibraryFunctions`                    | Pending | Find invalid arguments to modeled C library calls.                          |
+| `clang-diagnostic-cast-align`                                 | Pending | Catch pointers cast to types requiring stronger alignment.                  |
+| `clang-diagnostic-uninitialized-const-pointer`                | Pending | Review pointer arguments that may expose uninitialized storage.             |
+| `clang-diagnostic-reorder-ctor`                               | Pending | Make constructor order explicit; check dependencies between members.        |
+| `bugprone-unhandled-code-paths`                               | Pending | Find missing outcomes in conditional control flow.                          |
+| `bugprone-non-zero-enum-to-bool-conversion`                   | Pending | Catch enum tests that are always true.                                      |
+| `clang-analyzer-optin.core.EnumCastOutOfRange`                | Pending | Validate integer-to-enum boundaries; distinguish bit masks.                 |
+| `clang-diagnostic-tautological-constant-out-of-range-compare` | Pending | Find impossible comparisons hiding range-check mistakes.                    |
+| `clang-diagnostic-tautological-unsigned-enum-zero-compare`    | Pending | Find enum checks that cannot detect invalid values.                         |
+| `clang-diagnostic-tautological-unsigned-zero-compare`         | Pending | Find ineffective negative checks on unsigned values.                        |
+| `clang-diagnostic-implicit-int-conversion`                    | Pending | Find remaining implicit loss of integer range or precision.                 |
+| `clang-diagnostic-implicit-int-conversion-on-negation`        | Pending | Review negation that changes range during conversion.                       |
+| `clang-diagnostic-int-to-pointer-cast`                        | Pending | Find truncated or invalid addresses in legacy casts.                        |
+| `bugprone-derived-method-shadowing-base-method`               | Pending | Find unintended hiding in the game class hierarchies.                       |
+
+## P2 — Further correctness and targeted safety
+
+| Check                                                      | Status  | Reason / result                                                                                         |
+|------------------------------------------------------------|---------|---------------------------------------------------------------------------------------------------------|
+| `clang-diagnostic-lifetime-safety-use-after-free`          | Pending | Reassess dangling-pointer findings; verify fixed-heap false positives.                                  |
+| `clang-diagnostic-lifetime-safety-invalidation`            | Pending | Review container/storage invalidation against custom lifetimes.                                         |
+| `clang-diagnostic-lifetime-safety-use-after-scope-moved`   | Pending | Review escaping locals and ownership-transfer false positives.                                          |
+| `bugprone-parent-virtual-call`                             | Pending | Check skipped overrides; retain intentional grandparent dispatch.                                       |
+| `cppcoreguidelines-interfaces-global-init`                 | Pending | Find cross-unit global initialization dependencies.                                                     |
+| `bugprone-throwing-static-initialization`                  | Pending | Prevent failures before normal startup error handling.                                                  |
+| `cert-err58-cpp`                                           | Pending | Alias of `bugprone-throwing-static-initialization`; handle together.                                    |
+| `cppcoreguidelines-init-variables`                         | Pending | Review local initialization; avoid masking missing assignments with zeroes.                             |
+| `cppcoreguidelines-special-member-functions`               | Pending | Audit copy/move/destruction consistency for owning types.                                               |
+| `hicpp-special-member-functions`                           | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-special-member-functions` on older tools.        |
+| `clang-diagnostic-deprecated-copy-with-user-provided-copy` | Pending | Review implicit copy operations paired with custom copying.                                             |
+| `clang-diagnostic-deprecated-copy-with-user-provided-dtor` | Pending | Review implicit copying of types with custom destruction.                                               |
+| `clang-diagnostic-deprecated-copy-with-dtor`               | Pending | Complete the destructor/copy audit, including defaulted destructors.                                    |
+| `bugprone-macro-parentheses`                               | Pending | Prevent macro expansion from changing expression meaning.                                               |
+| `clang-diagnostic-logical-op-parentheses`                  | Pending | Review ambiguous conditions for precedence mistakes.                                                    |
+| `clang-diagnostic-bitwise-op-parentheses`                  | Pending | Review mixed bitwise expressions for precedence mistakes.                                               |
+| `clang-diagnostic-shift-op-parentheses`                    | Pending | Review ambiguous shifts, especially packed values.                                                      |
+| `readability-math-missing-parentheses`                     | Pending | Expose arithmetic grouping that is easy to misread.                                                     |
+| `bugprone-branch-clone`                                    | Pending | Review duplicate branches for copy/paste bugs; preserve intentional symmetry.                           |
+| `clang-diagnostic-sign-conversion`                         | Pending | Review signed sentinels and range changes; follow the type policy.                                      |
+| `bugprone-signed-bitwise`                                  | Pending | Review signed shifts and masks without breaking deliberate bit patterns.                                |
+| `hicpp-signed-bitwise`                                     | Legacy  | Unavailable in LLVM 23; review with `bugprone-signed-bitwise` on older tools.                           |
+| `clang-diagnostic-switch-enum`                             | Pending | Audit missing enum cases even when a default exists.                                                    |
+| `clang-diagnostic-switch`                                  | Pending | Review missing cases; intentional ButtonKey(n) labels need a policy.                                    |
+| `clang-diagnostic-switch-bool`                             | Pending | Find accidental boolean switch expressions.                                                             |
+| `clang-diagnostic-duplicate-enum`                          | Pending | Separate accidental duplicate values from deliberate aliases.                                           |
+| `clang-diagnostic-missing-braces`                          | Pending | Check aggregate/subobject initialization before adding braces.                                          |
+| `clang-diagnostic-cast-qual`                               | Pending | Review casts discarding const or volatile guarantees.                                                   |
+| `misc-explicit-constructor`                                | Pending | Prevent unintended implicit construction and conversions.                                               |
+| `cppcoreguidelines-explicit-constructor`                   | Pending | Alias of `misc-explicit-constructor`; handle together.                                                  |
+| `google-explicit-constructor`                              | Pending | Alias of `misc-explicit-constructor`; handle together.                                                  |
+| `hicpp-explicit-conversions`                               | Legacy  | Unavailable in LLVM 23; review with `misc-explicit-constructor` on older tools.                         |
+| `cppcoreguidelines-pro-type-vararg`                        | Pending | Audit untyped call boundaries and argument agreement.                                                   |
+| `hicpp-vararg`                                             | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-pro-type-vararg` on older tools.                 |
+| `modernize-avoid-variadic-functions`                       | Pending | Replace unsafe variadic interfaces where practical.                                                     |
+| `cert-dcl50-cpp`                                           | Pending | Alias of `modernize-avoid-variadic-functions`; handle together.                                         |
+| `clang-diagnostic-missing-format-attribute`                | Pending | Extend compiler format validation to project wrappers.                                                  |
+| `clang-diagnostic-undef`                                   | Pending | Catch misspelled or missing feature macros in conditional builds.                                       |
+| `clang-diagnostic-undefined-func-template`                 | Pending | Catch unavailable template definitions on instantiated paths.                                           |
+| `clang-diagnostic-undefined-var-template`                  | Pending | Catch template variables lacking required definitions.                                                  |
+| `clang-diagnostic-shadow-field`                            | Pending | Find locals or parameters accidentally hiding object state.                                             |
+| `clang-diagnostic-shadow`                                  | Pending | Find scope mistakes; expect more noise than field shadowing.                                            |
+| `concurrency-mt-unsafe`                                    | Pending | Audit audio/timer callbacks and shared library state.                                                   |
+| `clang-analyzer-optin.core.FixedAddressDereference`        | Pending | Review hard-coded addresses for invalid legacy assumptions.                                             |
+| `clang-analyzer-core.FixedAddressDereference`              | Legacy  | Unavailable in LLVM 23; review with `clang-analyzer-optin.core.FixedAddressDereference` on older tools. |
+| `bugprone-easily-swappable-parameters`                     | Pending | Improve error-prone APIs when names alone cannot prevent swaps.                                         |
+| `bugprone-random-generator-seed`                           | Pending | Review seed mistakes while preserving deterministic simulation RNG.                                     |
+| `cert-msc32-c`                                             | Pending | Alias of `bugprone-random-generator-seed`; handle together.                                             |
+| `cert-msc51-cpp`                                           | Pending | Alias of `bugprone-random-generator-seed`; handle together.                                             |
+| `modernize-use-integer-sign-comparison`                    | Pending | Use safe mixed-sign comparisons where still needed.                                                     |
+| `modernize-use-nodiscard`                                  | Pending | Make important results harder to discard accidentally.                                                  |
+
+## P3 — Broader safety and maintainability
+
+| Check                                                           | Status  | Reason / result                                                                                           |
+|-----------------------------------------------------------------|---------|-----------------------------------------------------------------------------------------------------------|
+| `clang-diagnostic-unsafe-buffer-usage`                          | Pending | Map remaining buffer hazards; requires staged API/container work.                                         |
+| `cppcoreguidelines-pro-bounds-avoid-unchecked-container-access` | Pending | Review unchecked indexing; choose bounds policy at real boundaries.                                       |
+| `cppcoreguidelines-pro-bounds-constant-array-index`             | Pending | Replace unverifiable C-array indexing where practical.                                                    |
+| `cppcoreguidelines-owning-memory`                               | Pending | Clarify ownership while preserving the custom heap model.                                                 |
+| `cppcoreguidelines-no-malloc`                                   | Pending | Move suitable allocations to typed lifetime management.                                                   |
+| `hicpp-no-malloc`                                               | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-no-malloc` on older tools.                         |
+| `cppcoreguidelines-pro-type-union-access`                       | Pending | Audit active members; coordinate/event unions need deliberate treatment.                                  |
+| `cppcoreguidelines-pro-bounds-array-to-pointer-decay`           | Pending | Preserve size information across buffer interfaces.                                                       |
+| `hicpp-no-array-decay`                                          | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-pro-bounds-array-to-pointer-decay` on older tools. |
+| `cppcoreguidelines-pro-bounds-pointer-arithmetic`               | Pending | Reduce unchecked pointer traversal after buffer APIs improve.                                             |
+| `modernize-avoid-c-arrays`                                      | Pending | Migrate arrays selectively after ownership and layout review.                                             |
+| `cppcoreguidelines-avoid-c-arrays`                              | Pending | Alias of `modernize-avoid-c-arrays`; handle together.                                                     |
+| `hicpp-avoid-c-arrays`                                          | Legacy  | Unavailable in LLVM 23; review with `modernize-avoid-c-arrays` on older tools.                            |
+| `cppcoreguidelines-use-enum-class`                              | Pending | Strengthen enum boundaries; account for flags and serialized values.                                      |
+| `modernize-avoid-c-style-cast`                                  | Pending | Make conversion intent visible across remaining casts.                                                    |
+| `google-readability-casting`                                    | Pending | Alias of `modernize-avoid-c-style-cast`; handle together.                                                 |
+| `cppcoreguidelines-pro-type-cstyle-cast`                        | Pending | Review C-style casts that bypass type safety.                                                             |
+| `clang-diagnostic-old-style-cast`                               | Pending | Finish compiler enforcement after the cast migration.                                                     |
+| `clang-diagnostic-deprecated-enum-enum-conversion`              | Pending | Separate arithmetic on unrelated enums from intentional flag use.                                         |
+| `clang-diagnostic-deprecated-anon-enum-enum-conversion`         | Pending | Replace anonymous-enum arithmetic with deliberate types/constants.                                        |
+| `clang-diagnostic-deprecated-enum-compare`                      | Pending | Review comparisons between unrelated enum domains.                                                        |
+| `google-runtime-int`                                            | Pending | Bring remaining integer spellings into the project's fixed-width policy.                                  |
+| `modernize-use-default-member-init`                             | Pending | Centralize common defaults and reduce constructor drift.                                                  |
+| `cppcoreguidelines-use-default-member-init`                     | Pending | Alias of `modernize-use-default-member-init`; handle together.                                            |
+| `cppcoreguidelines-prefer-member-initializer`                   | Pending | Initialize members directly; preserve construction-order semantics.                                       |
+| `modernize-use-equals-delete`                                   | Pending | Express prohibited operations explicitly.                                                                 |
+| `hicpp-use-equals-delete`                                       | Legacy  | Unavailable in LLVM 23; review with `modernize-use-equals-delete` on older tools.                         |
+| `modernize-use-equals-default`                                  | Pending | Let the compiler implement genuinely default operations.                                                  |
+| `hicpp-use-equals-default`                                      | Legacy  | Unavailable in LLVM 23; review with `modernize-use-equals-default` on older tools.                        |
+| `performance-noexcept-swap`                                     | Pending | Make non-throwing swap guarantees explicit where valid.                                                   |
+| `cppcoreguidelines-noexcept-swap`                               | Pending | Alias of `performance-noexcept-swap`; handle together.                                                    |
+| `bugprone-switch-missing-default-case`                          | Pending | Review fallback policy; empty defaults alone add little value.                                            |
+| `hicpp-multiway-paths-covered`                                  | Legacy  | Unavailable in LLVM 23; review with `bugprone-switch-missing-default-case` on older tools.                |
+| `clang-diagnostic-switch-default`                               | Pending | Align compiler fallback enforcement with the switch policy.                                               |
+| `clang-diagnostic-covered-switch-default`                       | Pending | Resolve tension between exhaustive switches and defensive defaults.                                       |
+| `readability-implicit-bool-conversion`                          | Pending | Clarify boolean intent at numeric and pointer boundaries.                                                 |
+| `readability-inconsistent-declaration-parameter-name`           | Pending | Remove declaration/definition mismatches that mislead callers.                                            |
+| `misc-const-correctness`                                        | Pending | Protect local values from unintended writes; avoid indiscriminate churn.                                  |
+| `readability-make-member-function-const`                        | Pending | Expose read-only operations for safer interfaces.                                                         |
+| `misc-override-with-different-visibility`                       | Pending | Review surprising access changes across virtual interfaces.                                               |
+| `misc-header-include-cycle`                                     | Pending | Reduce header coupling and fragile build dependencies.                                                    |
+| `misc-include-cleaner`                                          | Pending | Review missing/redundant includes alongside existing IWYU checks.                                         |
+| `clang-diagnostic-missing-prototypes`                           | Pending | Give externally visible functions consistent declarations.                                                |
+| `clang-diagnostic-missing-variable-declarations`                | Pending | Give shared variables an explicit interface.                                                              |
+| `misc-use-internal-linkage`                                     | Pending | Limit accidental symbol exposure and cross-unit coupling.                                                 |
+| `misc-use-anonymous-namespace`                                  | Pending | Keep implementation details local to their translation unit.                                              |
+| `clang-diagnostic-unneeded-internal-declaration`                | Pending | Remove unused internal declarations after configuration review.                                           |
+| `clang-diagnostic-unused-but-set-global`                        | Pending | Find dead global state or missing consumers.                                                              |
+| `misc-static-assert`                                            | Pending | Check compile-time invariants at compile time.                                                            |
+| `cert-dcl03-c`                                                  | Pending | Alias of `misc-static-assert`; handle together.                                                           |
+| `modernize-use-std-format`                                      | Pending | Improve format type safety where existing Abseil helpers do not suffice.                                  |
+| `modernize-use-std-print`                                       | Pending | Modernize direct printing where it improves type safety and clarity.                                      |
+| `performance-string-view-conversions`                           | Pending | Avoid unnecessary string copies at view boundaries.                                                       |
+| `modernize-loop-convert`                                        | Pending | Simplify traversal after reviewing mutation and iterator behavior.                                        |
+| `modernize-use-ranges`                                          | Pending | Simplify algorithms where ranges make intent clearer.                                                     |
+| `cppcoreguidelines-macro-usage`                                 | Pending | Replace avoidable macros with typed language constructs.                                                  |
+| `modernize-macro-to-enum`                                       | Pending | Replace suitable integral macro groups with typed constants/enums.                                        |
+| `cppcoreguidelines-macro-to-enum`                               | Pending | Alias of `modernize-macro-to-enum`; handle together.                                                      |
+| `bugprone-reserved-identifier`                                  | Pending | Avoid collisions with implementation-reserved identifiers.                                                |
+| `cert-dcl37-c`                                                  | Pending | Alias of `bugprone-reserved-identifier`; handle together.                                                 |
+| `cert-dcl51-cpp`                                                | Pending | Alias of `bugprone-reserved-identifier`; handle together.                                                 |
+| `clang-diagnostic-reserved-identifier`                          | Pending | Enforce compiler-detected reserved names.                                                                 |
+| `clang-diagnostic-reserved-macro-identifier`                    | Pending | Fix reserved macros; also reduce preprocessing warnings/cache misses.                                     |
+| `clang-diagnostic-invalid-source-encoding`                      | Pending | Keep source portable across compiler/platform encodings.                                                  |
+| `portability-template-virtual-member-function`                  | Pending | Review compiler-dependent template/virtual behavior.                                                      |
+| `portability-avoid-pragma-once`                                 | Pending | Align headers with the project's include-guard convention.                                                |
+
+## P4 — Cleanup and design consistency
+
+| Check                                                               | Status  | Reason / result                                                                                |
+|---------------------------------------------------------------------|---------|------------------------------------------------------------------------------------------------|
+| `readability-braces-around-statements`                              | Pending | Reduce ambiguity in future edits; mostly mechanical churn.                                     |
+| `hicpp-braces-around-statements`                                    | Legacy  | Unavailable in LLVM 23; review with `readability-braces-around-statements` on older tools.     |
+| `readability-inconsistent-ifelse-braces`                            | Pending | Keep related branches consistently braced.                                                     |
+| `readability-avoid-nested-conditional-operator`                     | Pending | Simplify conditional expressions that impede review.                                           |
+| `readability-function-cognitive-complexity`                         | Pending | Identify difficult control flow; refactor with behavior coverage.                              |
+| `readability-function-size`                                         | Pending | Identify oversized functions; size alone does not establish a defect.                          |
+| `google-readability-function-size`                                  | Pending | Alias of `readability-function-size`; handle together.                                         |
+| `hicpp-function-size`                                               | Legacy  | Unavailable in LLVM 23; review with `readability-function-size` on older tools.                |
+| `readability-magic-numbers`                                         | Pending | Name meaningful constants without naming every literal.                                        |
+| `cppcoreguidelines-avoid-magic-numbers`                             | Pending | Alias of `readability-magic-numbers`; handle together.                                         |
+| `readability-enum-initial-value`                                    | Pending | Make enum numbering policy explicit; preserve stored/wire values.                              |
+| `cert-int09-c`                                                      | Pending | Alias of `readability-enum-initial-value`; handle together.                                    |
+| `readability-named-parameter`                                       | Pending | Improve interface documentation through useful parameter names.                                |
+| `hicpp-named-parameter`                                             | Legacy  | Unavailable in LLVM 23; review with `readability-named-parameter` on older tools.              |
+| `readability-isolate-declaration`                                   | Pending | Separate declarations for clearer initialization and scope.                                    |
+| `readability-avoid-unconditional-preprocessor-if`                   | Pending | Remove obsolete scaffolding after platform review.                                             |
+| `readability-redundant-nested-if`                                   | Pending | Simplify equivalent conditions without obscuring intent.                                       |
+| `readability-trivial-switch`                                        | Pending | Simplify switches where the alternative reads better.                                          |
+| `modernize-use-bool-literals`                                       | Pending | Express boolean values directly.                                                               |
+| `readability-const-return-type`                                     | Pending | Remove ineffective top-level const on returned values.                                         |
+| `clang-diagnostic-ignored-qualifiers`                               | Pending | Remove qualifiers with no effect.                                                              |
+| `readability-convert-member-functions-to-static`                    | Pending | Mark operations independent of object state.                                                   |
+| `modernize-use-using`                                               | Pending | Modernize type aliases consistently.                                                           |
+| `modernize-use-auto`                                                | Pending | Reduce redundant type spelling where deduction stays clear.                                    |
+| `hicpp-use-auto`                                                    | Legacy  | Unavailable in LLVM 23; review with `modernize-use-auto` on older tools.                       |
+| `modernize-return-braced-init-list`                                 | Pending | Remove redundant return type spelling.                                                         |
+| `modernize-use-designated-initializers`                             | Pending | Make aggregate field selection explicit where useful.                                          |
+| `readability-uppercase-literal-suffix`                              | Pending | Make literal suffixes less ambiguous.                                                          |
+| `cert-dcl16-c`                                                      | Pending | Alias of `readability-uppercase-literal-suffix`; handle together.                              |
+| `hicpp-uppercase-literal-suffix`                                    | Legacy  | Unavailable in LLVM 23; review with `readability-uppercase-literal-suffix` on older tools.     |
+| `readability-trailing-comma`                                        | Pending | Reduce diff noise in lists; formatting preference.                                             |
+| `clang-diagnostic-missing-noreturn`                                 | Pending | Document functions that cannot return.                                                         |
+| `clang-diagnostic-nrvo`                                             | Pending | Review missed copy elision; optimize only where worthwhile.                                    |
+| `performance-no-int-to-ptr`                                         | Pending | Avoid integer/pointer round trips that hinder optimization.                                    |
+| `performance-enum-size`                                             | Pending | Consider storage savings only after packet/recording layout review.                            |
+| `clang-diagnostic-padded-bitfield`                                  | Pending | Review wasted bitfield space without changing wire layouts accidentally.                       |
+| `clang-diagnostic-ms-bitfield-padding`                              | Pending | Review ABI-dependent bitfield padding before layout changes.                                   |
+| `clang-diagnostic-weak-vtables`                                     | Pending | Consider vtable emission/build cost; little gameplay impact.                                   |
+| `cppcoreguidelines-avoid-const-or-ref-data-members`                 | Pending | Review assignment restrictions when redesigning affected types.                                |
+| `cppcoreguidelines-avoid-non-const-global-variables`                | Pending | Reduce global coupling gradually; substantial architecture work.                               |
+| `cppcoreguidelines-non-private-member-variables-in-classes`         | Pending | Improve encapsulation where it adds invariants, not boilerplate.                               |
+| `misc-non-private-member-variables-in-classes`                      | Pending | Review exposed mutable state alongside the Core Guidelines rule.                               |
+| `misc-multiple-inheritance`                                         | Pending | Review hierarchy complexity; inheritance alone is not a defect.                                |
+| `misc-no-recursion`                                                 | Pending | Review recursion depth where inputs can drive it.                                              |
+| `cppcoreguidelines-avoid-do-while`                                  | Pending | Consider clearer loops; do-while itself is valid.                                              |
+| `clang-diagnostic-global-constructors`                              | Pending | Reduce startup work where worthwhile; blanket removal is expensive.                            |
+| `clang-diagnostic-exit-time-destructors`                            | Pending | Review shutdown ordering after initialization dependencies.                                    |
+| `clang-diagnostic-lifetime-safety-intra-tu-suggestions`             | Pending | Add useful lifetime annotations after concrete findings are resolved.                          |
+| `clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions` | Pending | Annotate constructor lifetime relationships when useful.                                       |
+| `clang-diagnostic-lifetime-safety-cross-tu-suggestions`             | Pending | Extend annotations across translation-unit interfaces.                                         |
+| `clang-diagnostic-lifetime-safety-cross-tu-constructor-suggestions` | Pending | Extend constructor annotations across translation units.                                       |
+| `clang-diagnostic-date-time`                                        | Pending | Remove timestamp macros if reproducible builds require it.                                     |
+| `clang-diagnostic-documentation-unknown-command`                    | Pending | Fix unsupported documentation commands.                                                        |
+| `clang-diagnostic-pedantic`                                         | Pending | Review extension use individually against supported compilers.                                 |
+| `clang-diagnostic-c99-extensions`                                   | Pending | Review C99 constructs in C++ for portability.                                                  |
+| `clang-diagnostic-nested-anon-types`                                | Pending | Review anonymous nested types for portability.                                                 |
+| `clang-diagnostic-nullability-extension`                            | Pending | Review compiler-specific nullability syntax.                                                   |
+| `misc-confusable-identifiers`                                       | Pending | Avoid visually confusable names; low expected exposure here.                                   |
+| `bugprone-copy-constructor-mutates-argument`                        | Covered | Already enforced through `cert-oop58-cpp`; reconcile the excluded name.                        |
+| `cert-arr39-c`                                                      | Covered | Already enforced through `bugprone-sizeof-expression`; reconcile the excluded name.            |
+| `cert-err33-c`                                                      | Covered | Already enforced through `bugprone-unused-return-value`; reconcile the excluded name.          |
+| `cert-exp42-c`                                                      | Covered | Already enforced through `bugprone-suspicious-memory-comparison`; reconcile the excluded name. |
+| `cert-oop54-cpp`                                                    | Covered | Already enforced through `bugprone-unhandled-self-assignment`; reconcile the excluded name.    |
+| `cppcoreguidelines-c-copy-assignment-signature`                     | Covered | Already enforced through `misc-unconventional-assign-operator`; reconcile the excluded name.   |
+| `cppcoreguidelines-explicit-virtual-functions`                      | Covered | Already enforced through `modernize-use-override`; reconcile the excluded name.                |
+| `cppcoreguidelines-narrowing-conversions`                           | Covered | Already enforced through `bugprone-narrowing-conversions`; reconcile the excluded name.        |
+| `llvm-else-after-return`                                            | Covered | Already enforced through `readability-else-after-return`; reconcile the excluded name.         |
+| `llvm-qualified-auto`                                               | Covered | Already enforced through `readability-qualified-auto`; reconcile the excluded name.            |
+
+## P5 — Proposed skips
+
+| Check                                         | Status        | Reason / result                                                                    |
+|-----------------------------------------------|---------------|------------------------------------------------------------------------------------|
+| `altera-id-dependent-backward-branch`         | Skip proposed | FPGA kernel execution rule; not a game-engine target.                              |
+| `altera-struct-pack-align`                    | Skip proposed | FPGA layout tuning conflicts with general-purpose layout needs.                    |
+| `altera-unroll-loops`                         | Skip proposed | FPGA loop-unrolling policy; no relevant target.                                    |
+| `android-cloexec-accept`                      | Skip proposed | Low current priority; revisit descriptor inheritance if process launching expands. |
+| `android-cloexec-fopen`                       | Skip proposed | Low current priority; close-on-exec can matter on desktop Unix too.                |
+| `android-cloexec-open`                        | Skip proposed | Low current priority; revisit file descriptor leakage across exec.                 |
+| `android-cloexec-socket`                      | Skip proposed | Low current priority; revisit socket inheritance across exec.                      |
+| `llvm-header-guard`                           | Skip proposed | LLVM naming convention differs from this project's guards.                         |
+| `llvm-include-order`                          | Skip proposed | LLVM-specific include ordering adds little to existing tooling.                    |
+| `llvm-prefer-static-over-anonymous-namespace` | Skip proposed | LLVM-specific linkage preference; no clear project benefit.                        |
+| `llvm-use-ranges`                             | Skip proposed | Prefer the general ranges check over LLVM-library transformations.                 |
+| `llvmlibc-callee-namespace`                   | Skip proposed | Applies to LLVM libc implementation, not this project.                             |
+| `llvmlibc-implementation-in-namespace`        | Skip proposed | Applies to LLVM libc implementation, not this project.                             |
+| `llvmlibc-inline-function-decl`               | Skip proposed | LLVM libc declaration policy is unrelated to this codebase.                        |
+| `llvmlibc-restrict-system-libc-headers`       | Skip proposed | This project legitimately uses system C library headers.                           |
+| `boost-use-ranges`                            | Skip proposed | No reason to introduce Boost ranges when standard/Abseil facilities suffice.       |
+| `fuchsia-default-arguments-calls`             | Skip proposed | Blanket default-argument ban offers little project value.                          |
+| `fuchsia-default-arguments-declarations`      | Skip proposed | Blanket default-argument ban offers little project value.                          |
+| `fuchsia-multiple-inheritance`                | Skip proposed | Duplicates the general inheritance design review.                                  |
+| `fuchsia-overloaded-operator`                 | Skip proposed | Blanket operator-overload ban is unsuitable for game utility types.                |
+| `fuchsia-statically-constructed-objects`      | Skip proposed | Fuchsia static-object policy is too broad for this engine.                         |
+| `fuchsia-trailing-return`                     | Skip proposed | Fuchsia syntax policy adds no correctness protection.                              |
+| `google-default-arguments`                    | Skip proposed | Blanket default-argument restrictions have low expected value here.                |
+| `google-readability-todo`                     | Skip proposed | TODO ownership syntax is administrative style.                                     |
+| `misc-predictable-rand`                       | Skip proposed | Simulation randomness must remain deterministic; audit security uses separately.   |
+| `cert-msc30-c`                                | Skip proposed | Alias of `misc-predictable-rand`; handle together.                                 |
+| `cert-msc50-cpp`                              | Skip proposed | Alias of `misc-predictable-rand`; handle together.                                 |
+| `clang-analyzer-security.insecureAPI.rand`    | Skip proposed | Cryptographic RNG advice has low value for deterministic gameplay.                 |
+| `modernize-use-trailing-return-type`          | Skip proposed | Large syntax-only rewrite with no clear readability gain.                          |
+| `readability-identifier-length`               | Skip proposed | Short coordinates and loop indices are often appropriate.                          |
+| `clang-diagnostic-padded`                     | Skip proposed | Padding is normal; blanket packing risks performance and layout compatibility.     |
+| `clang-diagnostic-pre-c++17-compat`           | Skip proposed | The project requires C++23, so older-standard compatibility is unnecessary.        |
+| `clang-diagnostic-pre-c++20-compat`           | Skip proposed | The project requires C++23, so older-standard compatibility is unnecessary.        |
+| `clang-diagnostic-pre-c++23-compat`           | Skip proposed | The project requires C++23, so older-standard compatibility is unnecessary.        |
+
+## Completing a row
+
+1. Measure the check across both games and shared code, including generated header checks and excluding
+   dependencies. Verify the check exists; handle aliases and options together.
+2. Fix findings, run the candidate and full-config sweeps, then strict-build both games and run CTest.
+   Add focused behavior tests and save/load checks when the changes warrant them.
+3. Remove the exclusion, verify enforcement, and mark the row **Enabled** with its commit. If enabling
+   is unsuitable, record the concrete reason rather than silently dropping the row.
+
+Compiler diagnostic filters also depend on warning flags. In particular, `sign-conversion`,
+`unsafe-buffer-usage`, `old-style-cast`, `padded`, and `covered-switch-default` are suppressed in
+[CMakeLists.txt](../CMakeLists.txt); removing their tidy exclusions alone does not enable them.
+An isolated diagnostic sweep needs its warning flag and at least one real clang-tidy check.
+
+Preserve the [type-migration policy](TYPE_MIGRATION.md), deterministic simulation RNG, and packet/recording
+layouts when applying broad rules. Field-wise savegames do not make all layout changes safe.
