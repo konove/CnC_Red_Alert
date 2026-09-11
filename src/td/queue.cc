@@ -77,7 +77,6 @@
  *   Print_Framesync_Values -- displays frame-sync variables               *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "td/rand.h"
 #include "td/queue.h"
 
 #include <algorithm>
@@ -87,6 +86,7 @@
 #include <cstring>
 
 #include "port/safe_string.h"
+#include "port/unaligned.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/timer.h"
@@ -116,6 +116,7 @@
 #include "td/netdlg.h"
 #include "td/nulldlg.h"
 #include "td/nullmgr.h"
+#include "td/rand.h"
 #include "td/text.h"
 #include "td/type.h"
 #include "td/unit.h"
@@ -193,7 +194,7 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
                                           int packetlen, int* their_frame,
                                           unsigned short* their_sent,
                                           unsigned short* their_recv);
-static RetcodeType Process_Serial_Packet(char* multi_packet_buf,
+static RetcodeType Process_Serial_Packet(char* multi_packet_buf, int packetlen,
                                          int first_time);
 static int Can_Advance(ConnManClass* net, int max_ahead,
                        const int* their_frame,
@@ -986,7 +987,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
       //------------------------------------------------------------------
       if (GameToPlay == GAME_MODEM || GameToPlay == GAME_NULL_MODEM) {
         //|| GameToPlay == GAME_INTERNET) {
-        rc = Process_Serial_Packet(multi_packet_buf, first_time);
+        rc = Process_Serial_Packet(multi_packet_buf, packetlen, first_time);
         //...............................................................
         // SERIAL packet received & processed
         //...............................................................
@@ -1636,7 +1637,8 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
                                           int packetlen, int* their_frame,
                                           unsigned short* their_sent,
                                           unsigned short* their_recv) {
-  EventClass* event;
+  EventClass event_storage;
+  EventClass* event = &event_storage;
   int index;
   RetcodeType retcode = RC_NORMAL;
   int i;
@@ -1644,7 +1646,13 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
   //------------------------------------------------------------------------
   //	Get an event ptr to the incoming message
   //------------------------------------------------------------------------
-  event = (EventClass*)multi_packet_buf;
+  if (packetlen < static_cast<int>(offsetof(EventClass, Data) +
+                                   sizeof(event_storage.Data.FrameInfo))) {
+    return RC_NORMAL;
+  }
+  std::memcpy(
+      &event_storage, multi_packet_buf,
+      offsetof(EventClass, Data) + sizeof(event_storage.Data.FrameInfo));
 
   //------------------------------------------------------------------------
   //	Get the index of the sender
@@ -1748,11 +1756,14 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static RetcodeType Process_Serial_Packet(char* multi_packet_buf,
+static RetcodeType Process_Serial_Packet(char* multi_packet_buf, int packetlen,
                                          int first_time) {
-  SerialPacketType* serial_packet;  // for parsing serial packets
+  SerialPacketType serial_storage;
+  SerialPacketType* serial_packet =
+      &serial_storage;  // for parsing serial packets
   int player_gone;
-  EventClass* event;
+  EventClass event_storage;
+  EventClass* event = &event_storage;
   char txt[MAX_MESSAGE_LENGTH + 80];
   unsigned short magic_number;
   unsigned short crc;
@@ -1760,7 +1771,12 @@ static RetcodeType Process_Serial_Packet(char* multi_packet_buf,
   //------------------------------------------------------------------------
   //	Determine if this packet means that the other player has left the game
   //------------------------------------------------------------------------
-  serial_packet = (SerialPacketType*)multi_packet_buf;
+  if (packetlen < static_cast<int>(sizeof(serial_storage.Command))) {
+    return RC_SERIAL_PROCESSED;
+  }
+  std::memset(&serial_storage, 0, sizeof(serial_storage));
+  std::memcpy(&serial_storage, multi_packet_buf,
+              std::min(sizeof(serial_storage), static_cast<size_t>(packetlen)));
   player_gone = 0;
   //........................................................................
   // On Frame 0, only a SIGN_OFF means the other player left; the other
@@ -1794,10 +1810,10 @@ static RetcodeType Process_Serial_Packet(char* multi_packet_buf,
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
                         serial_packet->Name, serial_packet->Message);
 
-    magic_number =
-        *(unsigned short*)(serial_packet->Message + COMPAT_MESSAGE_LENGTH - 4);
-    crc =
-        *(unsigned short*)(serial_packet->Message + COMPAT_MESSAGE_LENGTH - 2);
+    magic_number = port::ReadUnaligned<uint16_t>(serial_packet->Message +
+                                                 COMPAT_MESSAGE_LENGTH - 4);
+    crc = port::ReadUnaligned<uint16_t>(serial_packet->Message +
+                                        COMPAT_MESSAGE_LENGTH - 2);
 
     Messages.Add_Message(
         txt, MPlayerTColors[MPlayerID_To_ColorIndex(serial_packet->ID)],
@@ -1832,7 +1848,13 @@ static RetcodeType Process_Serial_Packet(char* multi_packet_buf,
   //........................................................................
   //	are we getting our own packets back??
   //........................................................................
-  event = (EventClass*)multi_packet_buf;
+  if (packetlen < static_cast<int>(offsetof(EventClass, Data) +
+                                   sizeof(event_storage.Data.FrameInfo))) {
+    return RC_NORMAL;
+  }
+  std::memcpy(
+      &event_storage, multi_packet_buf,
+      offsetof(EventClass, Data) + sizeof(event_storage.Data.FrameInfo));
   if (event->ID == Houses.ID(PlayerPtr)) {
     return RC_HUNG_UP;
   }
@@ -2517,7 +2539,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
       //..................................................................
       case EventClass::RESPONSE_TIME:
 
-        *(EventClass::EventType*)(static_cast<char*>(buf) + size) = eventtype;
+        port::WriteUnaligned(static_cast<char*>(buf) + size, eventtype);
 
         memcpy(static_cast<char*>(buf) + size + sizeof(EventClass::EventType),
                &OutList.First().Data.FrameInfo.Delay, datasize);
@@ -2555,7 +2577,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
             *unitsptr = numunits;
           }
 
-          *(EventClass::EventType*)(static_cast<char*>(buf) + size) = eventtype;
+          port::WriteUnaligned(static_cast<char*>(buf) + size, eventtype);
 
           memcpy(static_cast<char*>(buf) + size +
                      sizeof(EventClass::EventType) + sizeof(numunits),
@@ -2569,7 +2591,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
       // Default case: Just copy over the data field from the union
       //..................................................................
       default:
-        *(EventClass::EventType*)(static_cast<char*>(buf) + size) = eventtype;
+        port::WriteUnaligned(static_cast<char*>(buf) + size, eventtype);
 
         memcpy(static_cast<char*>(buf) + size + sizeof(EventClass::EventType),
                &OutList.First().Data, datasize);
@@ -2664,13 +2686,15 @@ int Extract_Uncompressed_Events(void* buf, int bufsize) {
   int count = 0;
   int pos = 0;
   int leftover = bufsize;
-  EventClass* event;
+  EventClass event_storage;
+  EventClass* event = &event_storage;
 
   //------------------------------------------------------------------------
   // Loop until there are no more events in the packet
   //------------------------------------------------------------------------
   while (leftover >= static_cast<int>(sizeof(EventClass))) {
-    event = (EventClass*)(static_cast<char*>(buf) + pos);
+    event_storage =
+        port::ReadUnaligned<EventClass>(static_cast<char*>(buf) + pos);
 
     //.....................................................................
     // add event to the DoList, only if it's not a FRAMESYNC
@@ -2723,7 +2747,7 @@ int Extract_Uncompressed_Events(void* buf, int bufsize) {
 int Extract_Compressed_Events(void* buf, int bufsize) {
   int pos = 0;                 // current buffer parsing position
   int leftover = bufsize;      // # bytes left to process
-  EventClass* event;           // event ptr for parsing buffer
+  EventClass::EventType event_type{};  // event ptr for parsing buffer
   int count = 0;               // # events processed
   int datasize = 0;            // size of data to copy
   EventClass eventdata;        // stores Frame, ID, etc
@@ -2741,7 +2765,14 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
   //------------------------------------------------------------------------
   datasize = offsetof(EventClass, Data) + size_of(EventClass, Data.FrameInfo) -
              sizeof(EventClass::EventType);
-  event = (EventClass*)(static_cast<char*>(buf) + pos);
+  if (leftover < static_cast<int>(sizeof(EventClass::EventType))) {
+    return count;
+  }
+  event_type =
+      port::ReadUnaligned<EventClass::EventType>(static_cast<char*>(buf) + pos);
+  if (event_type < EventClass::EMPTY || event_type >= EventClass::LAST_EVENT) {
+    return count;
+  }
 
   while (leftover >=
          datasize + static_cast<int>(sizeof(EventClass::EventType))) {
@@ -2749,15 +2780,18 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
     // add event to the DoList, only if it's not a FRAMESYNC
     // (but FRAMEINFO's do get added.)
     //.....................................................................
-    if (event->Type != EventClass::FRAMESYNC) {
+    if (event_type != EventClass::FRAMESYNC) {
       //..................................................................
       // initialize the common data from the FRAMEINFO event
       // keeping IsExecuted 0
       //..................................................................
-      if (event->Type == EventClass::FRAMEINFO) {
-        eventdata.Frame = event->Frame;
-        eventdata.ID = event->ID;
-        eventdata.MPlayerID = event->MPlayerID;
+      if (event_type == EventClass::FRAMEINFO) {
+        EventClass frame_header;
+        std::memcpy(&frame_header, static_cast<char*>(buf) + pos,
+                    offsetof(EventClass, Data));
+        eventdata.Frame = frame_header.Frame;
+        eventdata.ID = frame_header.ID;
+        eventdata.MPlayerID = frame_header.MPlayerID;
 
         //...............................................................
         // Adjust position past the common data
@@ -2768,7 +2802,7 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
       //..................................................................
       // if MEGAMISSION event get the number of units (events to generate)
       //..................................................................
-      else if (event->Type == EventClass::MEGAMISSION) {
+      else if (event_type == EventClass::MEGAMISSION) {
         numunits =
             *(static_cast<unsigned char*>(buf) + pos + sizeof(eventdata.Type));
         pos += sizeof(numunits);
@@ -2779,7 +2813,7 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
       // clear the union data portion of the event
       //..................................................................
       memset(&eventdata.Data, 0, sizeof(eventdata.Data));
-      eventdata.Type = event->Type;
+      eventdata.Type = event_type;
       datasize = EventClass::EventLength[eventdata.Type];
 
       switch (eventdata.Type) {
@@ -2855,9 +2889,17 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
       leftover = static_cast<int>(leftover - (datasize + sizeof(EventClass::EventType)));
 
       if (leftover) {
-        event = (EventClass*)(static_cast<char*>(buf) + pos);
-        datasize = EventClass::EventLength[event->Type];
-        if (event->Type == EventClass::MEGAMISSION) {
+        if (leftover < static_cast<int>(sizeof(EventClass::EventType))) {
+          return count;
+        }
+        event_type = port::ReadUnaligned<EventClass::EventType>(
+            static_cast<char*>(buf) + pos);
+        if (event_type < EventClass::EMPTY ||
+            event_type >= EventClass::LAST_EVENT) {
+          return count;
+        }
+        datasize = EventClass::EventLength[event_type];
+        if (event_type == EventClass::MEGAMISSION) {
           datasize += sizeof(numunits);
         }
       }
@@ -2869,7 +2911,15 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
     else {
       pos = static_cast<int>(pos + (datasize + sizeof(EventClass::EventType)));
       leftover = static_cast<int>(leftover - (datasize + sizeof(EventClass::EventType)));
-      event = (EventClass*)(static_cast<char*>(buf) + pos);
+      if (leftover < static_cast<int>(sizeof(EventClass::EventType))) {
+        return count;
+      }
+      event_type = port::ReadUnaligned<EventClass::EventType>(
+          static_cast<char*>(buf) + pos);
+      if (event_type < EventClass::EMPTY ||
+          event_type >= EventClass::LAST_EVENT) {
+        return count;
+      }
 
       //..................................................................
       // size of FRAMESYNC event - EventType size

@@ -45,6 +45,8 @@
 
 #include <cstring>
 
+#include "port/aligned_buffer.h"
+#include "port/unaligned.h"
 #include "sdllib/wincomm.h"
 #include "td/connect.h"
 #include "td/defines.h"
@@ -91,6 +93,7 @@ NullModemConnClass::NullModemConnClass(int numsend, int numreceive, int maxlen,
   so we can use it in our computation.
   ------------------------------------------------------------------------*/
   //	SendBuf = new char [MaxPacketLen + sizeof(int) * 3];
+  // new char[] provides alignment for the packet headers stored at its base.
   SendBuf = new char[Actual_Max_Packet()];
 
 } /* end of NullModemConnClass */
@@ -162,7 +165,6 @@ void NullModemConnClass::Init(HANDLE port_handle) {
  *=========================================================================*/
 int NullModemConnClass::Send(char* buf, int buflen) {
   // int status;
-  int* ibuf;
   SerialHeaderType* header;
   unsigned long sendlen;
 
@@ -176,7 +178,7 @@ int NullModemConnClass::Send(char* buf, int buflen) {
   /*------------------------------------------------------------------------
   Package the data into the Send Buffer
   ------------------------------------------------------------------------*/
-  header = (SerialHeaderType*)SendBuf;
+  header = port::AlignedObject<SerialHeaderType>(SendBuf);
   header->MagicNumber = PACKET_SERIAL_START;
   header->Length = static_cast<short>(buflen);
   header->MagicNumber2 = PACKET_SERIAL_VERIFY;
@@ -184,8 +186,7 @@ int NullModemConnClass::Send(char* buf, int buflen) {
   sendlen = sizeof(SerialHeaderType);
   memcpy(SendBuf + sendlen, buf, buflen);
   sendlen += buflen;
-  ibuf = (int*)(SendBuf + sendlen);
-  *ibuf = Compute_CRC(buf, buflen);
+  port::WriteUnaligned(SendBuf + sendlen, Compute_CRC(buf, buflen));
   sendlen += sizeof(int);
 
   *(SendBuf + sendlen) = '\r';

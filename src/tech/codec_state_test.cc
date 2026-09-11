@@ -6,16 +6,20 @@
 
 #include "gtest/gtest.h"
 #include "tech/b64straw.h"
+#include "tech/lcw.h"
 #include "tech/lcwpipe.h"
 #include "tech/lcwstraw.h"
 #include "tech/lzopipe.h"
 #include "tech/lzostraw.h"
 #include "tech/lzwpipe.h"
 #include "tech/lzwstraw.h"
+#include "tech/mp.h"
 #include "tech/pipe.h"
 #include "tech/sha.h"
 #include "tech/straw.h"
 #include "tech/xstraw.h"
+
+int XMP_Prepare_Modulus(const uint32_t* modulus, int precision);
 
 namespace {
 class ByteSink : public Pipe {
@@ -128,3 +132,54 @@ TEST(CodecStateTest, ShaResetRestoresKnownDigestAfterPartialInput) {
   EXPECT_EQ(cached, actual);
 }
 }  // namespace
+
+TEST(CodecStateTest, LcwLongRunsRespectTheirLengthAtEveryAlignment) {
+  alignas(uint32_t) std::array<uint8_t, 48> output{};
+  for (int offset = 0; offset < 4; ++offset) {
+    for (int length = 4; length <= 20; ++length) {
+      output.fill(0xa5);
+      const std::array<uint8_t, 5> encoded = {
+          0xfe, static_cast<uint8_t>(length), 0, 0x6b, 0x80};
+      EXPECT_EQ(LCW_Uncomp(encoded.data(), output.data() + offset, length),
+                length);
+      for (int i = 0; i < static_cast<int>(output.size()); ++i) {
+        EXPECT_EQ(output[i], i >= offset && i < offset + length ? 0x6b : 0xa5);
+      }
+    }
+  }
+}
+
+TEST(CodecStateTest, ModularMultiplicationMatchesIndependentRemainder) {
+  // Three 16-bit digits exercise reduction windows with half-word offsets.
+  constexpr uint64_t kModulus = 0x10000000f;
+  constexpr int kPrecision = 3;
+  const std::array<uint32_t, kPrecision> modulus = {15, 1, 0};
+  ASSERT_EQ(XMP_Prepare_Modulus(modulus.data(), kPrecision), 0);
+  uint64_t seed = 17;
+  for (int trial = 0; trial < 256; ++trial) {
+    seed = (seed * 1664525 + 1013904223) % kModulus;
+    const uint64_t a = seed;
+    seed = (seed * 1664525 + 1013904223) % kModulus;
+    const uint64_t b = seed;
+    const std::array<uint32_t, kPrecision> left = {
+        static_cast<uint32_t>(a), static_cast<uint32_t>(a >> 32), 0};
+    const std::array<uint32_t, kPrecision> right = {
+        static_cast<uint32_t>(b), static_cast<uint32_t>(b >> 32), 0};
+    std::array<uint32_t, kPrecision> result{};
+    ASSERT_EQ(
+        XMP_Mod_Mult(result.data(), left.data(), right.data(), kPrecision), 0);
+    // Repeated doubling avoids overflowing a native 64-bit product.
+    uint64_t expected = 0;
+    uint64_t addend = a;
+    for (uint64_t multiplier = b; multiplier; multiplier >>= 1) {
+      if (multiplier & 1) {
+        expected = (expected + addend) % kModulus;
+      }
+      addend = (addend * 2) % kModulus;
+    }
+    EXPECT_EQ(result[0], static_cast<uint32_t>(expected));
+    EXPECT_EQ(result[1], static_cast<uint32_t>(expected >> 32));
+    EXPECT_EQ(result[2], 0);
+  }
+  XMP_Mod_Mult_Clear(kPrecision);
+}

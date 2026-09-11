@@ -2,7 +2,7 @@
 
 Updated: 2026-09-11, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 233 currently excluded check names** and completed entries, in recommended work
+This tracks **all 232 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -39,7 +39,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `bugprone-unchecked-string-to-number-conversion`              | Enabled | Commit `Enable checked string-to-number conversions`: replace unchecked decimal/hex conversions with range-checked parsing and explicit defaults; preserve legacy INI, coordinate, and protocol formats.                        |
 | `cert-err34-c`                                                | Enabled | Alias enabled with `bugprone-unchecked-string-to-number-conversion` in commit `Enable checked string-to-number conversions`.                                                                                                    |
 | `clang-analyzer-unix.StdCLibraryFunctions`                    | Enabled | Commit `Fix TCP socket option size and enable C library checking`: pass an integer TCP_NODELAY flag with its actual size, avoiding a read past a one-byte bool.                                                                 |
-| `clang-diagnostic-cast-align`                                 | Pending | Catch pointers cast to types requiring stronger alignment.                                                                                                                                                                      |
+| `clang-diagnostic-cast-align`                                 | Enabled | Commit `Fix buffer alignment and enable cast alignment checking`: copy unaligned packet/media values, check typed buffer access, align cached shape headers, and bound legacy byte fills.                                       |
 | `clang-diagnostic-uninitialized-const-pointer`                | Pending | Review pointer arguments that may expose uninitialized storage.                                                                                                                                                                 |
 | `clang-diagnostic-reorder-ctor`                               | Pending | Make constructor order explicit; check dependencies between members.                                                                                                                                                            |
 | `bugprone-unhandled-code-paths`                               | Pending | Find missing outcomes in conditional control flow.                                                                                                                                                                              |
@@ -328,6 +328,26 @@ missing-pixel regression test aborts against the original TD reader with an unch
 access and passes with the fix.
 
 ### Completed validation
+
+The 2026-09-11 cast-alignment cleanup found 147 diagnostic sites in 29 files across the initial
+884-unit sweep. Packet and serial headers, CRCs, event records, audio samples, video rows, and
+animation offsets now use byte copies where alignment is not guaranteed. Allocated packet buffers
+and opaque list entries use checked object recovery; cached shape headers advance at their native
+alignment. The multi-precision reduction copies half-word windows into aligned working storage. Byte
+fills replace manual word stores, including an LCW run loop that could overwrite its end. Native
+packet layouts and byte order are unchanged. Animation opening rejects misaligned caller storage
+instead of constructing a misaligned header.
+
+The final isolated sweep passed all 889 project translation units, including 431 generated header
+checks. The full-config sweep also passed, followed by checks of the final receive-header fixes.
+Both strict game builds and all 228 CTest tests passed. New regressions cover unaligned scalar
+access, checked object recovery, odd video strides, bounded LCW runs, real TD packet/event parsing,
+and modular multiplication against an independent remainder calculation. The original LCW code fails
+a sentinel-boundary probe; the fixed code passes. UBSan alignment probes fail against the original
+VQA, TD receive-header, and compressed-event code and pass with the fixes. Headless save/load checks
+matched 240 RA object positions and 5,951 TD game states. A deliberately unsafe cast confirmed
+enforcement under the repository configuration with `-Wcast-align`; strict compile commands already
+enable the warning through `-Weverything`.
 
 The 2026-09-11 standard C library argument check found one invalid socket option in the isolated
 884-unit sweep: TD passed a one-byte `bool` to `setsockopt` with a four-byte length. The TCP_NODELAY

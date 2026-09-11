@@ -43,6 +43,7 @@
 
 #include <cstdio>
 
+#include "port/unaligned.h"
 #include "ra/aircraft.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -401,12 +402,13 @@ void Send_Statistics_Packet() {
               if (pHostent)  //	else forget about trying
               {
                 int i = 0;
-                int* piAddress = (int*)pHostent->h_addr_list[i];
+                const char* piAddress = pHostent->h_addr_list[i];
                 while (piAddress) {
                   //	There is a non-null value for this h_addr_list entry.
                   char szAsciiIP[30];
-                  port::SafeCopy(szAsciiIP,
-                                 inet_ntoa(*((struct in_addr*)piAddress)));
+                  port::SafeCopy(
+                      szAsciiIP,
+                      inet_ntoa(port::ReadUnaligned<in_addr>(piAddress)));
                   //	We have an address in the right form.
                   //	Now, is it an address in a private network? If so we
                   // should ignore it.
@@ -422,7 +424,7 @@ void Send_Statistics_Packet() {
                     port::SafeCopy(szIPAddress, szAsciiIP);
                     break;
                   }
-                  piAddress = (int*)pHostent->h_addr_list[++i];
+                  piAddress = pHostent->h_addr_list[++i];
                 }
               }
               //						else

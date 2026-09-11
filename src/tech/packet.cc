@@ -41,6 +41,7 @@
 #include <cstring>
 
 #include "port/safe_string.h"
+#include "port/unaligned.h"
 
 // htons/ntohs
 #ifdef _WIN32
@@ -206,9 +207,9 @@ char* PacketClass::Create_Comms_Packet(int& size) {
   //
   // write the size into the packet header
   //
-  *(unsigned short*)curbuf = htons(static_cast<unsigned short>(size));
+  port::WriteUnaligned(curbuf, htons(static_cast<uint16_t>(size)));
   curbuf += sizeof(unsigned short);
-  *(short*)curbuf = htons(ID);
+  port::WriteUnaligned(curbuf, htons(ID));
   curbuf += sizeof(short);
 
   //

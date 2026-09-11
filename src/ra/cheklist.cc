@@ -51,7 +51,9 @@
 
 #include <cstdio>
 
+#include "port/aligned_buffer.h"
 #include "port/ex_string.h"
+#include "port/socket_bytes.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/jshell.h"
@@ -103,7 +105,8 @@ CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
  *=============================================================================================*/
 CheckListClass::~CheckListClass() {
   while (CheckListClass::Count()) {
-    CheckObject* obj = (CheckObject*)ListClass::Get_Item(0);
+    CheckObject* obj =
+        port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(0));
 
     ListClass::Remove_Item(0);
     delete obj;
@@ -125,11 +128,13 @@ CheckListClass::~CheckListClass() {
  *=============================================================================================*/
 int CheckListClass::Add_Item(const char* text) {
   CheckObject* obj = new CheckObject(text, false);
-  return ListClass::Add_Item((const char*)obj);
+  // The list stores this allocated object pointer opaquely; getters recover it.
+  return ListClass::Add_Item(SocketBytes(*obj));
 }
 
 const char* CheckListClass::Current_Item() const {
-  CheckObject* obj = (CheckObject*)ListClass::Current_Item();
+  CheckObject* obj =
+      port::RestoreMutableObject<CheckObject>(ListClass::Current_Item());
   if (obj) {
     return obj->Text;
   }
@@ -152,7 +157,8 @@ const char* CheckListClass::Current_Item() const {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 const char* CheckListClass::Get_Item(int index) const {
-  CheckObject* obj = (CheckObject*)ListClass::Get_Item(index);
+  CheckObject* obj =
+      port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(index));
   if (obj) {
     return obj->Text;
   }
@@ -177,7 +183,8 @@ const char* CheckListClass::Get_Item(int index) const {
  *=============================================================================================*/
 void CheckListClass::Remove_Item(const char* text) {
   for (int index = 0; index < Count(); index++) {
-    CheckObject* obj = (CheckObject*)ListClass::Get_Item(index);
+    CheckObject* obj =
+        port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(index));
     if (obj && stricmp(obj->Text, text) == 0) {
       ListClass::Remove_Item(index);
       delete obj;
@@ -205,7 +212,8 @@ void CheckListClass::Remove_Item(const char* text) {
  *=============================================================================================*/
 void CheckListClass::Set_Selected_Index(const char* text) {
   for (int index = 0; index < Count(); index++) {
-    CheckObject* obj = (CheckObject*)ListClass::Get_Item(index);
+    CheckObject* obj =
+        port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(index));
     if (obj && stricmp(obj->Text, text) == 0) {
       Set_Selected_Index(index);
       break;
@@ -231,7 +239,8 @@ void CheckListClass::Set_Selected_Index(const char* text) {
  *   02/14/1996 JLB : Revamped.                                            *
  *=========================================================================*/
 void CheckListClass::Check_Item(int index, bool checked) {
-  CheckObject* obj = (CheckObject*)ListClass::Get_Item(index);
+  CheckObject* obj =
+      port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(index));
   if (obj && obj->IsChecked != checked) {
     obj->IsChecked = checked;
     Flag_To_Redraw();
@@ -255,7 +264,8 @@ void CheckListClass::Check_Item(int index, bool checked) {
  *   02/14/1996 JLB : Revamped.                                            *
  *=========================================================================*/
 bool CheckListClass::Is_Checked(int index) const {
-  CheckObject* obj = (CheckObject*)ListClass::Get_Item(index);
+  CheckObject* obj =
+      port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(index));
   if (obj) {
     return obj->IsChecked;
   }
@@ -330,7 +340,8 @@ void CheckListClass::Draw_Entry(int index, int x, int y, int width,
     return;
   }
 
-  CheckObject* obj = (CheckObject*)ListClass::Get_Item(index);
+  CheckObject* obj =
+      port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(index));
 
   if (obj) {
     char buffer[100] = "";

@@ -38,6 +38,7 @@
 #include "tech/lcw.h"
 
 #include <cstdint>
+#include <cstring>
 
 /***************************************************************************
  * LCW_Uncomp -- Decompress an LCW encoded data block.                     *
@@ -74,7 +75,7 @@
  *=========================================================================*/
 int LCW_Uncomp(const void* source, void* dest, unsigned long) {
   unsigned char *source_ptr, *dest_ptr, *copy_ptr, op_code, data;
-  unsigned count, *word_dest_ptr, word_data;
+  unsigned count;
 
   /* Copy the source and destination ptrs. */
   source_ptr = (unsigned char*)source;
@@ -111,31 +112,10 @@ int LCW_Uncomp(const void* source, void* dest, unsigned long) {
         if (op_code == 0xfe) {
           /* Do a long run. */
           count = *source_ptr + (static_cast<unsigned>(*(source_ptr + 1)) << 8);
-          word_data = data = *(source_ptr + 2);
-          word_data = (word_data << 24) + (word_data << 16) + (word_data << 8) +
-                      word_data;
+          data = *(source_ptr + 2);
           source_ptr += 3;
-
-          copy_ptr = dest_ptr + 4 - ((uintptr_t)dest_ptr & 0x3);
-          count -= copy_ptr - dest_ptr;
-          while (dest_ptr < copy_ptr) {
-            *dest_ptr++ = data;
-          }
-
-          word_dest_ptr = (unsigned*)dest_ptr;
-
-          dest_ptr += count & 0xfffffffc;
-
-          while (word_dest_ptr < (unsigned*)dest_ptr) {
-            *word_dest_ptr = word_data;
-            *(word_dest_ptr + 1) = word_data;
-            word_dest_ptr += 2;
-          }
-
-          copy_ptr = dest_ptr + (count & 0x3);
-          while (dest_ptr < copy_ptr) {
-            *dest_ptr++ = data;
-          }
+          std::memset(dest_ptr, data, count);
+          dest_ptr += count;
 
         } else {
           if (op_code == 0xff) {

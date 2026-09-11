@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include "port/unaligned.h"
+
 void UnVQ_4x2(const unsigned char* codebook, const unsigned char* pointers,
               unsigned char* buffer, unsigned long blocksperrow,
               unsigned long numrows, unsigned long bufwidth) {
@@ -28,16 +30,19 @@ void UnVQ_4x2(const unsigned char* codebook, const unsigned char* pointers,
       {
         // Draw 1-color block
         uint32_t col32 = v | v << 8 | v << 16 | v << 24;  // Duplicate colour
-        *(uint32_t*)dst_ptr = col32;               // Write 1st row to dest
-        *(uint32_t*)(dst_ptr + bufwidth) = col32;  // Write 2st row to dest
+        port::WriteUnaligned(dst_ptr, col32);  // Write 1st row to dest
+        port::WriteUnaligned(dst_ptr + bufwidth,
+                             col32);  // Write 2st row to dest
       } else {
         // Draw multi-color block
         int index = (cb << 8 | v) * 8;
-        auto row1 = *(uint32_t*)(codebook + index);  // Read 1st row of codeword
-        auto row2 =
-            *(uint32_t*)(codebook + index + 4);   // Read 2nd row of codeword
-        *(uint32_t*)dst_ptr = row1;               // Write 1st row to dest
-        *(uint32_t*)(dst_ptr + bufwidth) = row2;  // Write 2st row to dest
+        auto row1 = port::ReadUnaligned<uint32_t>(
+            codebook + index);  // Read 1st row of codeword
+        auto row2 = port::ReadUnaligned<uint32_t>(
+            codebook + index + 4);            // Read 2nd row of codeword
+        port::WriteUnaligned(dst_ptr, row1);  // Write 1st row to dest
+        port::WriteUnaligned(dst_ptr + bufwidth,
+                             row2);  // Write 2st row to dest
       }
 
       dst_ptr += 4;
@@ -74,25 +79,32 @@ void UnVQ_4x4(const unsigned char* codebook, const unsigned char* pointers,
       {
         // Draw 1-color block
         uint32_t col32 = v | v << 8 | v << 16 | v << 24;  // Duplicate colour
-        *(uint32_t*)dst_ptr = col32;                   // Write 1st row to dest
-        *(uint32_t*)(dst_ptr + bufwidth) = col32;      // Write 2nd row to dest
-        *(uint32_t*)(dst_ptr + bufwidth * 2) = col32;  // Write 3rd row to dest
-        *(uint32_t*)(dst_ptr + bufwidth * 3) = col32;  // Write 4th row to dest
+        port::WriteUnaligned(dst_ptr, col32);  // Write 1st row to dest
+        port::WriteUnaligned(dst_ptr + bufwidth,
+                             col32);  // Write 2nd row to dest
+        port::WriteUnaligned(dst_ptr + bufwidth * 2,
+                             col32);  // Write 3rd row to dest
+        port::WriteUnaligned(dst_ptr + bufwidth * 3,
+                             col32);  // Write 4th row to dest
       } else {
         // Draw multi-color block
         int index = (cb << 8 | v) * 16;
-        auto row1 = *(uint32_t*)(codebook + index);  // Read 1st row of codeword
-        auto row2 =
-            *(uint32_t*)(codebook + index + 4);  // Read 2nd row of codeword
-        auto row3 =
-            *(uint32_t*)(codebook + index + 8);  // Read 3rd row of codeword
-        auto row4 =
-            *(uint32_t*)(codebook + index + 12);  // Read 4th row of codeword
+        auto row1 = port::ReadUnaligned<uint32_t>(
+            codebook + index);  // Read 1st row of codeword
+        auto row2 = port::ReadUnaligned<uint32_t>(
+            codebook + index + 4);  // Read 2nd row of codeword
+        auto row3 = port::ReadUnaligned<uint32_t>(
+            codebook + index + 8);  // Read 3rd row of codeword
+        auto row4 = port::ReadUnaligned<uint32_t>(
+            codebook + index + 12);  // Read 4th row of codeword
 
-        *(uint32_t*)dst_ptr = row1;                   // Write 1st row to dest
-        *(uint32_t*)(dst_ptr + bufwidth) = row2;      // Write 2nd row to dest
-        *(uint32_t*)(dst_ptr + bufwidth * 2) = row3;  // Write 3rt row to dest
-        *(uint32_t*)(dst_ptr + bufwidth * 3) = row4;  // Write 4th row to dest
+        port::WriteUnaligned(dst_ptr, row1);  // Write 1st row to dest
+        port::WriteUnaligned(dst_ptr + bufwidth,
+                             row2);  // Write 2nd row to dest
+        port::WriteUnaligned(dst_ptr + bufwidth * 2,
+                             row3);  // Write 3rt row to dest
+        port::WriteUnaligned(dst_ptr + bufwidth * 3,
+                             row4);  // Write 4th row to dest
       }
 
       dst_ptr += 4;

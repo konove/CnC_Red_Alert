@@ -50,6 +50,9 @@
 #include <chrono>
 #include <cstring>
 
+#include "port/aligned_buffer.h"
+#include "port/unaligned.h"
+
 /*
 ********************************* Globals ***********************************
 */
@@ -118,6 +121,7 @@ ConnectionClass::ConnectionClass(int numsend, int numreceive, int maxlen,
   /*------------------------------------------------------------------------
   Allocate the packet staging buffer.  This will be used to
   ------------------------------------------------------------------------*/
+  // new char[] provides alignment for the packet headers stored at its base.
   PacketBuf = new char[MaxPacketLen];
 
   /*------------------------------------------------------------------------
@@ -221,18 +225,20 @@ int ConnectionClass::Send_Packet(void* buf, int buflen, int ack_req) {
   /*------------------------------------------------------------------------
   Set the magic # for the packet
   ------------------------------------------------------------------------*/
-  ((CommHeaderType*)PacketBuf)->MagicNumber = MagicNum;
+  port::AlignedObject<CommHeaderType>(PacketBuf)->MagicNumber = MagicNum;
 
   /*------------------------------------------------------------------------
   Set the packet Code: DATA_ACK if it requires an ACK, NOACK if it doesn't
   Set the packet ID to the appropriate counter value.
   ------------------------------------------------------------------------*/
   if (ack_req) {
-    ((CommHeaderType*)PacketBuf)->Code = PACKET_DATA_ACK;
-    ((CommHeaderType*)PacketBuf)->PacketID = static_cast<std::uint32_t>(NumSendAck);
+    port::AlignedObject<CommHeaderType>(PacketBuf)->Code = PACKET_DATA_ACK;
+    port::AlignedObject<CommHeaderType>(PacketBuf)->PacketID =
+        static_cast<std::uint32_t>(NumSendAck);
   } else {
-    ((CommHeaderType*)PacketBuf)->Code = PACKET_DATA_NOACK;
-    ((CommHeaderType*)PacketBuf)->PacketID = static_cast<std::uint32_t>(NumSendNoAck);
+    port::AlignedObject<CommHeaderType>(PacketBuf)->Code = PACKET_DATA_NOACK;
+    port::AlignedObject<CommHeaderType>(PacketBuf)->PacketID =
+        static_cast<std::uint32_t>(NumSendNoAck);
   }
 
   /*------------------------------------------------------------------------
@@ -289,7 +295,11 @@ int ConnectionClass::Receive_Packet(void* buf, int buflen) {
   /*------------------------------------------------------------------------
   Check the magic #
   ------------------------------------------------------------------------*/
-  packet = static_cast<CommHeaderType*>(buf);
+  if (buflen < static_cast<int>(sizeof(CommHeaderType))) {
+    return false;
+  }
+  auto packet_storage = port::ReadUnaligned<CommHeaderType>(buf);
+  packet = &packet_storage;
   if (packet->MagicNumber != MagicNum) {
     return 0;
   }
@@ -308,7 +318,7 @@ int ConnectionClass::Receive_Packet(void* buf, int buflen) {
       If ptr is valid, get ptr to its data
       ..................................................................*/
       if (send_entry != nullptr) {
-        entry_data = (CommHeaderType*)send_entry->Buffer;
+        entry_data = port::AlignedObject<CommHeaderType>(send_entry->Buffer);
 
         /*...............................................................
         If ACK is for this entry, mark it
@@ -369,7 +379,7 @@ int ConnectionClass::Receive_Packet(void* buf, int buflen) {
         rec_entry = Queue->Get_Receive(i);
 
         if (rec_entry) {
-          entry_data = (CommHeaderType*)rec_entry->Buffer;
+          entry_data = port::AlignedObject<CommHeaderType>(rec_entry->Buffer);
 
           /*...........................................................
           Packet is found; it's a resend
@@ -425,7 +435,8 @@ int ConnectionClass::Receive_Packet(void* buf, int buflen) {
             rec_entry = Queue->Get_Receive(i);
 
             if (rec_entry) {
-              entry_data = (CommHeaderType*)rec_entry->Buffer;
+              entry_data =
+                  port::AlignedObject<CommHeaderType>(rec_entry->Buffer);
 
               /*......................................................
               Entry is found
@@ -494,7 +505,7 @@ int ConnectionClass::Get_Packet(void* buf, int* buflen) {
     Only read this entry if it hasn't been yet
     .....................................................................*/
     if (rec_entry && rec_entry->IsRead == 0) {
-      entry_data = (CommHeaderType*)rec_entry->Buffer;
+      entry_data = port::AlignedObject<CommHeaderType>(rec_entry->Buffer);
 
       /*..................................................................
       If this is a DATA_ACK packet, its ID must be one greater than
@@ -611,7 +622,7 @@ int ConnectionClass::Service_Send_Queue() {
       /*..................................................................
       Update this queue's response time
       ..................................................................*/
-      packet_hdr = (CommHeaderType*)send_entry->Buffer;
+      packet_hdr = port::AlignedObject<CommHeaderType>(send_entry->Buffer);
       if (packet_hdr->Code == PACKET_DATA_ACK) {
         Queue->Add_Delay(Time() - send_entry->FirstTime);
       }
@@ -662,7 +673,7 @@ int ConnectionClass::Service_Send_Queue() {
         require an ACK, mark it as ACK'd; then, the next time through,
         it will just be removed from the queue.
         ...............................................................*/
-        packet_hdr = (CommHeaderType*)send_entry->Buffer;
+        packet_hdr = port::AlignedObject<CommHeaderType>(send_entry->Buffer);
         if (packet_hdr->Code == PACKET_DATA_NOACK) {
           send_entry->IsACK = 1;
         }
@@ -731,7 +742,7 @@ int ConnectionClass::Service_Receive_Queue() {
     rec_entry = Queue->Get_Receive(i);
 
     if (rec_entry->IsRead) {
-      packet_hdr = (CommHeaderType*)rec_entry->Buffer;
+      packet_hdr = port::AlignedObject<CommHeaderType>(rec_entry->Buffer);
 
       if (packet_hdr->Code == PACKET_DATA_NOACK) {
         Queue->UnQueue_Receive(nullptr, nullptr, i, nullptr, nullptr);

@@ -129,6 +129,7 @@
 
 #include "port/ex_string.h"
 #include "port/safe_string.h"
+#include "port/unaligned.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -4690,7 +4691,7 @@ static int Net_Fake_New_Dialog() {
     for (i = 0; i < Players.Count(); i++) {
       char flopbuf[128];
       sprintf(flopbuf, "Sending 'GO' packet to address %d\n",
-              *(unsigned short*)&Players[i]->Address);
+              port::ReadUnaligned<uint16_t>(&Players[i]->Address));
       CCDebugString(flopbuf);
 
       Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 1,

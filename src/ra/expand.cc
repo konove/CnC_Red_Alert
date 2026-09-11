@@ -41,7 +41,9 @@
 
 #include <cstdio>
 
+#include "port/aligned_buffer.h"
 #include "port/safe_string.h"
+#include "port/socket_bytes.h"
 #include "ra/ccfile.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
@@ -247,13 +249,15 @@ class EListClass : public ListClass {
       : ListClass(id, x, y, w, h, flags, up, down) {}
 
   virtual int Add_Object(EObjectClass* obj) {
-    return ListClass::Add_Item((const char*)obj);
+    // Store the original object pointer opaquely; getters recover the same
+    // address.
+    return ListClass::Add_Item(SocketBytes(*obj));
   }
   virtual EObjectClass* Get_Object(int index) const {
-    return (EObjectClass*)ListClass::Get_Item(index);
+    return port::RestoreMutableObject<EObjectClass>(ListClass::Get_Item(index));
   }
   virtual EObjectClass* Current_Object() {
-    return (EObjectClass*)ListClass::Current_Item();
+    return port::RestoreMutableObject<EObjectClass>(ListClass::Current_Item());
   }
 
  protected:

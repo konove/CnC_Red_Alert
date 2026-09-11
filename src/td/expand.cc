@@ -44,6 +44,7 @@
 #include <string>
 
 #include "port/safe_string.h"
+#include "port/unaligned.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -245,7 +246,7 @@ bool Expansion_Dialog() {
         }
         ScenDir = SCEN_DIR_EAST;
         Whom = HOUSE_GOOD;
-        Scenario = *(int*)list.Current_Item();
+        Scenario = port::ReadUnaligned<int>(list.Current_Item());
         process = false;
         okval = true;
         break;
@@ -255,7 +256,7 @@ bool Expansion_Dialog() {
         ScenPlayer = SCEN_PLAYER_GDI;
         ScenDir = SCEN_DIR_EAST;
         Whom = HOUSE_GOOD;
-        Scenario = *(int*)list.Current_Item();
+        Scenario = port::ReadUnaligned<int>(list.Current_Item());
         process = false;
         okval = false;
         break;
@@ -405,7 +406,7 @@ bool Bonus_Dialog() {
         }
         ScenDir = SCEN_DIR_EAST;
         Whom = HOUSE_GOOD;
-        Scenario = *(int*)list.Current_Item();
+        Scenario = port::ReadUnaligned<int>(list.Current_Item());
         process = false;
         okval = true;
         break;
@@ -415,7 +416,7 @@ bool Bonus_Dialog() {
         ScenPlayer = SCEN_PLAYER_GDI;
         ScenDir = SCEN_DIR_EAST;
         Whom = HOUSE_GOOD;
-        Scenario = *(int*)list.Current_Item();
+        Scenario = port::ReadUnaligned<int>(list.Current_Item());
         process = false;
         okval = false;
         break;

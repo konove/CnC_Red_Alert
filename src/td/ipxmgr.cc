@@ -71,6 +71,8 @@
 
 #include <algorithm>
 
+#include "port/aligned_buffer.h"
+#include "port/unaligned.h"
 #include "td/combuf.h"
 #include "td/connect.h"
 #include "td/defines.h"
@@ -1007,7 +1009,8 @@ int IPXManagerClass::Get_Private_Message(void* buf, int* buflen, int* conn_id) {
 int IPXManagerClass::Service() {
   int rc = 1;
   int i;
-  CommHeaderType* packet;
+  CommHeaderType packet_storage;
+  CommHeaderType* packet = &packet_storage;
   int packetlen;
   IPXAddressClass address;
 
@@ -1059,7 +1062,7 @@ int IPXManagerClass::Service() {
       Examine the Magic Number of the received packet to determine if this
       packet goes into the Global Queue, or into one of the Private Queues
       .....................................................................*/
-      packet = (CommHeaderType*)cur_data_buf;
+      packet_storage = port::ReadUnaligned<CommHeaderType>(cur_data_buf);
       if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
         /*..................................................................
         Put the packet in the Global Queue
@@ -1109,7 +1112,7 @@ int IPXManagerClass::Service() {
       Examine the Magic Number of the received packet to determine if this
       packet goes into the Global Queue, or into one of the Private Queues
       .....................................................................*/
-      packet = (CommHeaderType*)cur_data_buf;
+      packet_storage = port::ReadUnaligned<CommHeaderType>(cur_data_buf);
 
       if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
         /*..................................................................
@@ -1593,7 +1596,7 @@ void* IPXManagerClass::Oldest_Send() {
     for (j = 0; j < Connection[i]->Queue->Num_Send(); j++) {
       send_entry = Connection[i]->Queue->Get_Send(j);
       if (send_entry) {
-        packet = (CommHeaderType*)send_entry->Buffer;
+        packet = port::AlignedObject<CommHeaderType>(send_entry->Buffer);
         if (packet->Code == ConnectionClass::PACKET_DATA_ACK &&
             send_entry->IsACK == 0) {
           break;

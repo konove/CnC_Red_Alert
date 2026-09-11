@@ -98,6 +98,7 @@ CommBufferClass::CommBufferClass(int numsend, int numreceive, int maxlen) {
   ---------------------- Allocate queue entry buffers ----------------------
   */
   for (i = 0; i < MaxSend; i++) {
+    // new char[] provides alignment for the packet headers stored at its base.
     SendQueue[i].Buffer = new char[maxlen];
   }
 

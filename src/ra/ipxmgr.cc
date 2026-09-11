@@ -72,7 +72,9 @@
 #include <algorithm>
 #include <cassert>
 
+#include "port/aligned_buffer.h"
 #include "port/safe_string.h"
+#include "port/unaligned.h"
 #include "ra/_wsproto.h"
 #include "ra/combuf.h"
 #include "ra/connect.h"
@@ -978,7 +980,8 @@ int IPXManagerClass::Get_Private_Message(void* buf, int* buflen, int* conn_id) {
 int IPXManagerClass::Service() {
   int rc = 1;
   int i;
-  CommHeaderType* packet;
+  CommHeaderType packet_storage;
+  CommHeaderType* packet = &packet_storage;
   int packetlen;
   IPXAddressClass address;
 
@@ -1003,7 +1006,7 @@ int IPXManagerClass::Service() {
         cur_data_buf = (char*)temp_receive_buffer;
         address = *(IPXAddressClass*)temp_address;
 
-        packet = (CommHeaderType*)cur_data_buf;
+        packet_storage = port::ReadUnaligned<CommHeaderType>(cur_data_buf);
         if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
           /*
           ** Put the packet in the Global Queue
@@ -1038,8 +1041,11 @@ int IPXManagerClass::Service() {
                   ** Magic number and packet code are valid. It's probably a C&C
                   *packet.
                   */
-                  EventClass* event =
-                      (EventClass*)((char*)packet + sizeof(CommHeaderType));
+                  EventClass event_storage;
+                  std::memcpy(&event_storage,
+                              cur_data_buf + sizeof(CommHeaderType),
+                              offsetof(EventClass, Data));
+                  const EventClass* event = &event_storage;
 
                   /*
                   ** If this is a framesync packet then grab the address and
@@ -1438,7 +1444,7 @@ void* IPXManagerClass::Oldest_Send() {
     for (j = 0; j < Connection[i]->Queue->Num_Send(); j++) {
       send_entry = Connection[i]->Queue->Get_Send(j);
       if (send_entry) {
-        packet = (CommHeaderType*)send_entry->Buffer;
+        packet = port::AlignedObject<CommHeaderType>(send_entry->Buffer);
         if (packet->Code == ConnectionClass::PACKET_DATA_ACK &&
             send_entry->IsACK == 0) {
           break;

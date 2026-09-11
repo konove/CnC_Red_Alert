@@ -60,7 +60,7 @@ include(Testing)
 # Real engine serializers, with startup helpers but no game entry point.
 add_gtest(
     NAME td_archive_roundtrip_test
-    SOURCES archive_roundtrip_test.cc pcx_test.cc number_parse_test.cc startup.cc
+    SOURCES archive_roundtrip_test.cc pcx_test.cc number_parse_test.cc queue_alignment_test.cc startup.cc
     LIBS td_engine
 )
 target_compile_definitions(td_archive_roundtrip_test PRIVATE TD_NO_ENTRY_POINT=1)

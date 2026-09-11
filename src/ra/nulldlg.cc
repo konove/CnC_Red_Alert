@@ -62,6 +62,7 @@
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
+#include "port/unaligned.h"
 #include "ra/ccfile.h"
 #include "ra/ccini.h"
 #include "ra/cheklist.h"
@@ -2789,7 +2790,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   int packetlen;
   static bool first_time = true;
   bool gameoptions = Session.Type == GAME_SKIRMISH;
-  EventClass* event;                 // event ptr
+  // event ptr
   unsigned long msg_timeout = 1200;  // init to 20 seconds
 
   CCFileClass loadfile("SAVEGAME.NET");
@@ -3840,8 +3841,9 @@ int Com_Scenario_Dialog(bool skirmish) {
           break;
         }
 
-        event = (EventClass*)&ReceivePacket;
-        if (event->Type <= EventClass::FRAMEINFO) {
+        const auto event_type =
+            port::ReadUnaligned<EventClass::EventType>(&ReceivePacket);
+        if (event_type <= EventClass::FRAMEINFO) {
           if (TickCount.Value() - lastredrawtime > PACKET_REDRAW_TIME) {
             lastredrawtime = TickCount.Value();
             display = std::max(display, REDRAW_MESSAGE);
@@ -4653,7 +4655,7 @@ int Com_Show_Scenario_Dialog() {
   unsigned long transmittime = 0;
   int packetlen;
   bool oppscorescreen = false;
-  EventClass* event;                 // event ptr
+  // event ptr
   unsigned long msg_timeout = 1200;  // init to 20 seconds
   bool load_game = false;            // 1 = load saved game
   NodeNameType* who;                 // node to add to Players
@@ -5390,8 +5392,9 @@ int Com_Show_Scenario_Dialog() {
         break;
       }
 
-      event = (EventClass*)&ReceivePacket;
-      if (event->Type <= EventClass::FRAMEINFO) {
+      const auto event_type =
+          port::ReadUnaligned<EventClass::EventType>(&ReceivePacket);
+      if (event_type <= EventClass::FRAMEINFO) {
         if (TickCount.Value() - lastredrawtime > PACKET_REDRAW_TIME) {
           lastredrawtime = TickCount.Value();
           oppscorescreen = true;

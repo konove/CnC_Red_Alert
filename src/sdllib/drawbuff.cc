@@ -753,31 +753,7 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
 
     int count = dx - sx + 1;
     auto* ptr = vp_dst->Get_Offset() + sx + bpr * sy;
-    if (count < 16) {
-      for (; count != 0; count--) {
-        *ptr++ = color;
-      }
-    } else {
-      // align
-      while (((uintptr_t)ptr & 3) != 0) {
-        *ptr++ = color;
-        count--;
-      }
-
-      // 32-bit fill
-      uint32_t color32 = color | color << 8 | color << 16 | color << 24;
-      auto* ptr32 = (uint32_t*)ptr;
-      for (int count32 = count >> 2; count32 != 0; count32--) {
-        *ptr32++ = color32;
-      }
-
-      ptr = (uint8_t*)ptr32;
-
-      // draw remainder
-      for (count = count & 3; count != 0; count--) {
-        *ptr++ = color;
-      }
-    }
+    std::memset(ptr, color, count);
 
     return;
   }

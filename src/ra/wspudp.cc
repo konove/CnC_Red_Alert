@@ -56,6 +56,7 @@
 #include <cstring>
 
 #include "port/socket_bytes.h"
+#include "port/unaligned.h"
 #include "ra/externs.h"
 #include "ra/jshell.h"
 #include "ra/vector.h"
@@ -237,7 +238,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
     OutputDebugString(temp);
 
     unsigned char* a = new unsigned char[4];
-    *(uint32_t*)a = address;
+    port::WriteUnaligned(a, address);
     if (!LocalAddresses.Add(a)) {
       delete[] a;
     }

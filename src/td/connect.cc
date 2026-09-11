@@ -115,6 +115,7 @@ ConnectionClass::ConnectionClass(int maxlen, unsigned short magicnum,
   /*------------------------------------------------------------------------
   Allocate the packet staging buffer.  This will be used to
   ------------------------------------------------------------------------*/
+  // new char[] provides alignment for the packet headers stored at its base.
   PacketBuf = new char[MaxPacketLen];
 
 } /* end of ConnectionClass */

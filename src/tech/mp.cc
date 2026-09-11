@@ -1992,8 +1992,12 @@ int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
         */
         if (!(*dmph & SEMI_UPPER_MOST_BIT)) {
           unsigned short* dmp = dmpl;
-          if (XMP_Sub((uint32_t*)dmp, (uint32_t*)dmp, _scratch_modulus, false,
-                      precision)) {
+          uint32_t aligned_digits[MAX_UNIT_PRECISION];
+          std::memcpy(aligned_digits, dmp, precision * sizeof(uint32_t));
+          const bool borrow = XMP_Sub(aligned_digits, aligned_digits,
+                                      _scratch_modulus, false, precision);
+          std::memcpy(dmp, aligned_digits, precision * sizeof(uint32_t));
+          if (borrow) {
             (*dmph)--;
           }
         }

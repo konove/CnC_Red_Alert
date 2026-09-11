@@ -59,7 +59,9 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "port/aligned_buffer.h"
 #include "port/safe_string.h"
+#include "port/unaligned.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -264,6 +266,7 @@ int NullModemClass::Init(int port, int, char* dev_name, int baud, char parity,
     RXSize = static_cast<int>(Connection->Actual_Max_Packet() * NumReceive);
     RXBuf = new char[RXSize];
 
+    // new char[] provides alignment for the packet headers stored at its base.
     BuildBuf = new char[MaxLen];
 
     EchoBuf = new char[EchoSize];
@@ -720,8 +723,8 @@ int NullModemClass::Service() {
   int i;    // loop counter
   // int status;
   unsigned short length;
-  SerialHeaderType* header;  // decoded packet start, length
-  SerialCRCType* crc;        // decoded packet CRC
+  SerialHeaderType header;  // decoded packet start, length
+  SerialCRCType crc;        // decoded packet CRC
   char moredata = 0;
 
   if (NumConnections == 0) {
@@ -752,7 +755,7 @@ int NullModemClass::Service() {
   ------------------------------------------------------------------------*/
   pos = -1;
   for (i = 0; i <= RXCount - static_cast<int>(sizeof(short)); i++) {
-    if (*(unsigned short*)(RXBuf + i) == PACKET_SERIAL_START) {
+    if (port::ReadUnaligned<uint16_t>(RXBuf + i) == PACKET_SERIAL_START) {
       pos = i;
       break;
     }
@@ -784,14 +787,14 @@ int NullModemClass::Service() {
   /*------------------------------------------------------------------------
   A start code was found; check the packet's length & CRC
   ------------------------------------------------------------------------*/
-  header = (SerialHeaderType*)(RXBuf + pos);
+  header = port::ReadUnaligned<SerialHeaderType>(RXBuf + pos);
 
   /*........................................................................
   If we lost a byte in the length, we may end up waiting a very long time
   for the buffer to get to the right length; check the verify value to
   make sure this didn't happen.
   ........................................................................*/
-  if (header->MagicNumber2 != PACKET_SERIAL_VERIFY) {
+  if (header.MagicNumber2 != PACKET_SERIAL_VERIFY) {
     // Smart_Printf( "Verify failed\n");
     //		Hex_Dump_Data( (RXBuf + pos), PACKET_SERIAL_OVERHEAD_SIZE );
 
@@ -801,7 +804,7 @@ int NullModemClass::Service() {
     return Connection->Service();
   }
 
-  length = header->Length;
+  length = header.Length;
 
   /*........................................................................
   Special case: if the length comes out too long for us to process:
@@ -845,9 +848,10 @@ int NullModemClass::Service() {
   start-code, move the rest to the front of the buffer, & return.
   We'll continue parsing this data when we're called next time.
   ........................................................................*/
-  crc = (SerialCRCType*)(RXBuf + pos + sizeof(SerialHeaderType) + length);
+  crc = port::ReadUnaligned<SerialCRCType>(RXBuf + pos +
+                                           sizeof(SerialHeaderType) + length);
   if (NullModemConnClass::Compute_CRC(RXBuf + pos + sizeof(SerialHeaderType),
-                                      length) != crc->SerialCRC) {
+                                      length) != crc.SerialCRC) {
     CRCErrors++;
 
 #if (CONN_DEBUG)
@@ -990,7 +994,7 @@ void* NullModemClass::Oldest_Send() {
   for (i = 0; i < Connection->Queue->Num_Send(); i++) {
     send_entry = Connection->Queue->Get_Send(i);
     if (send_entry) {
-      packet = (CommHeaderType*)send_entry->Buffer;
+      packet = port::AlignedObject<CommHeaderType>(send_entry->Buffer);
       if (packet->Code == ConnectionClass::PACKET_DATA_ACK &&
           send_entry->IsACK == 0) {
         buf = send_entry->Buffer;

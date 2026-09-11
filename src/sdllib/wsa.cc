@@ -1,10 +1,13 @@
 #include "sdllib/wsa.h"
 
+#include <bit>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
+#include "port/aligned_buffer.h"
+#include "port/unaligned.h"
 #include "sdllib/file.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/iff.h"
@@ -181,6 +184,12 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   max_buffer_size = min_buffer_size + file_buffer_size;
 
   // check to see if buffer size is big enough for at least min required
+  if (user_buffer &&
+      std::bit_cast<uintptr_t>(user_buffer) % alignof(SysAnimHeaderType) != 0) {
+    Close_File(fh);
+    return nullptr;
+  }
+
   if (user_buffer && user_buffer_size < min_buffer_size) {
     Close_File(fh);
     return nullptr;
@@ -249,7 +258,8 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   // current_frame is set to total_frames so that Animate_Frame() knows that
   // it needs to clear the target buffer.
 
-  sys_header = (SysAnimHeaderType*)sys_anim_header_buffer;
+  // Allocated storage is aligned; caller-provided storage was checked above.
+  sys_header = port::AlignedObject<SysAnimHeaderType>(sys_anim_header_buffer);
   sys_header->current_frame = sys_header->total_frames =
       file_header.total_frames;
   sys_header->pixel_x = file_header.pixel_x;
@@ -792,21 +802,18 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
 
 static unsigned long Get_Resident_Frame_Offset(char* file_buffer, int frame) {
   uint32_t frame0_size;
-  uint32_t* lptr;
-
-  // If there is a frame 0, the calculate its size.
-  lptr = (uint32_t*)file_buffer;
-
-  if (*lptr) {
-    frame0_size = lptr[1] - *lptr;
+  const auto first = port::ReadUnaligned<uint32_t>(file_buffer);
+  if (first) {
+    frame0_size =
+        port::ReadUnaligned<uint32_t>(file_buffer + sizeof(uint32_t)) - first;
   } else {
     frame0_size = 0;
   }
 
-  // Return the offset into RAM for the frame.
-  lptr += frame;
-  if (*lptr) {
-    return *lptr - (frame0_size + WSA_FILE_HEADER_SIZE);
+  const auto offset =
+      port::ReadUnaligned<uint32_t>(file_buffer + frame * sizeof(uint32_t));
+  if (offset) {
+    return offset - (frame0_size + WSA_FILE_HEADER_SIZE);
   }
   return 0L;
 }

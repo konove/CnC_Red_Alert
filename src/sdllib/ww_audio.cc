@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "port/unaligned.h"
 #include "sdllib/file.h"
 #include "sdllib/memflag.h"
 #include "sdllib/wwstd.h"
@@ -246,8 +247,8 @@ static bool RefillStream(ChannelState& chan) {
   // read blocks until we have enough samples
   while (samples_to_gen > 0) {
     // read a block
-    uint16_t block_in_size = *(uint16_t*)chan.in_ptr;
-    uint16_t block_out_size = *(uint16_t*)(chan.in_ptr + 2);
+    uint16_t block_in_size = port::ReadUnaligned<uint16_t>(chan.in_ptr);
+    uint16_t block_out_size = port::ReadUnaligned<uint16_t>(chan.in_ptr + 2);
     chan.in_ptr += 8;  // there's also a 0000DEAF magic value
 
     if (block_in_size == block_out_size)  // raw block
@@ -295,7 +296,6 @@ static void ResetStream(ChannelState& chan, const AUDHeaderType* header) {
 
 static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
   memset(stream, 0, len);
-  auto* stream16 = (int16_t*)stream;
 
   // let VQA do its thing
   if (ExtraCallback) {
@@ -336,9 +336,13 @@ static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
     int stream_len = SDL_AudioStreamGet(chan.stream, MixBuffer, len);
 
     // mix into buffer
-    auto* mix16 = (int16_t*)MixBuffer;
     for (int s = 0; s < static_cast<int>(stream_len / sizeof(int16_t)); s++) {
-      stream16[s] = static_cast<int16_t>(stream16[s] + ((mix16[s] * chan.volume) >> 15));
+      const auto offset = s * sizeof(int16_t);
+      const auto output = port::ReadUnaligned<int16_t>(stream + offset);
+      const auto input = port::ReadUnaligned<int16_t>(MixBuffer + offset);
+      port::WriteUnaligned(
+          stream + offset,
+          static_cast<int16_t>(output + ((input * chan.volume) >> 15)));
     }
   }
 }

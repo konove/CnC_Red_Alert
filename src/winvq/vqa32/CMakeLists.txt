@@ -24,6 +24,6 @@ target_link_libraries(vqa32 PRIVATE SDL2::SDL2)
 include(Testing)
 add_gtest(
     NAME vqa32_test
-    SOURCES vqaplay_test.cc
+    SOURCES vqaplay_test.cc unvq_test.cc
     LIBS vqa32
 )

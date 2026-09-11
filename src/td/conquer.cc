@@ -75,8 +75,10 @@
 
 #include "absl/log/log.h"
 #include "base/types.h"
+#include "port/aligned_buffer.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
+#include "port/unaligned.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -93,6 +95,7 @@
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/audio.h"
+#include "td/base.h"
 #include "td/building.h"
 #include "td/bullet.h"
 #include "td/ccfile.h"
@@ -136,7 +139,6 @@
 #include "td/saveload.h"
 #include "td/scenario.h"
 #include "td/score.h"
-#include "td/base.h"
 #include "td/special.h"
 #include "td/target.h"
 #include "td/tcpip.h"
@@ -953,7 +955,8 @@ static void Message_Input(KeyNumType& input) {
           CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
 
       while (sent_so_far < message_length) {
-        serial_packet = (SerialPacketType*)NullModem.BuildBuf;
+        serial_packet =
+            port::AlignedObject<SerialPacketType>(NullModem.BuildBuf);
 
         serial_packet->Command = SERIAL_MESSAGE;
         port::SafeCopy(serial_packet->Name, MPlayerName);
@@ -986,10 +989,10 @@ static void Message_Input(KeyNumType& input) {
         /*
         ** Flag this message segment as either a message head or a message tail.
         */
-        *(unsigned short*)(serial_packet->Message + COMPAT_MESSAGE_LENGTH - 4) =
-            magic_number;
-        *(unsigned short*)(serial_packet->Message + COMPAT_MESSAGE_LENGTH - 2) =
-            crc;
+        port::WriteUnaligned(serial_packet->Message + COMPAT_MESSAGE_LENGTH - 4,
+                             magic_number);
+        port::WriteUnaligned(serial_packet->Message + COMPAT_MESSAGE_LENGTH - 2,
+                             crc);
         serial_packet->ID = MPlayerLocalID;
 
         NullModem.Send_Message(NullModem.BuildBuf, sizeof(SerialPacketType), 1);
