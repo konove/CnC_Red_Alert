@@ -42,7 +42,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-cast-align`                                 | Enabled | Commit `Fix buffer alignment and enable cast alignment checking`: copy unaligned packet/media values, check typed buffer access, align cached shape headers, and bound legacy byte fills.                                       |
 | `clang-diagnostic-uninitialized-const-pointer`                | Enabled | Commit `Enable uninitialized const-pointer argument checking`: both games and shared code pass without source fixes.                                                                                                            |
 | `clang-diagnostic-reorder-ctor`                               | Enabled | Commit `Match constructor initialization order to declarations`: reorder 16 initializer lists while preserving expressions, member layouts, and actual initialization order.                                                    |
-| `bugprone-unhandled-code-paths`                               | Pending | Find missing outcomes in conditional control flow.                                                                                                                                                                              |
+| `bugprone-unhandled-code-paths`                               | Skipped | Commit `Document missing-default check policy`: default mode flags switches with valid post-switch fallbacks and bounded inputs; retain exclusion rather than require redundant defaults. See review below.                     |
 | `bugprone-non-zero-enum-to-bool-conversion`                   | Pending | Catch enum tests that are always true.                                                                                                                                                                                          |
 | `clang-analyzer-optin.core.EnumCastOutOfRange`                | Pending | Validate integer-to-enum boundaries; distinguish bit masks.                                                                                                                                                                     |
 | `clang-diagnostic-tautological-constant-out-of-range-compare` | Pending | Find impossible comparisons hiding range-check mistakes.                                                                                                                                                                        |
@@ -326,6 +326,32 @@ checks): only the two PCX readers crashed, with no other findings. The full-conf
 the check still excluded. Strict builds of both games and all 205 CTest tests passed. The new
 missing-pixel regression test aborts against the original TD reader with an unchecked `OUT_OF_RANGE`
 access and passes with the fix.
+
+### Missing-default check policy (2026-09-11)
+
+`bugprone-unhandled-code-paths` remains excluded after review. The isolated sweep of 889 project
+translation units, including 431 generated header checks, produced 61 distinct missing-default
+diagnostics across 54 translation units. This is a policy decision, not a clean candidate scan or a
+claim that every reported switch has been proven correct.
+
+Representative findings show why requiring this check would add little value here:
+
+- TD `Text_String` handles special strings in a switch and then returns the normal string-table
+  lookup. TD `RadarClass::Click_Cell_Calc` similarly delegates other results to the base class after
+  its switch. Both already have explicit fallbacks.
+- `Base64_Decode` switches on a counter constrained by its four-character packet loop; TD
+  `Shake_Screen` switches on a random value constrained to -1, 0, or 1. Both list their reachable
+  cases.
+- RA menu navigation handles wrapping and unavailable expansion buttons in a switch, then uses other
+  button indices unchanged. Its missing `default` is not a missing navigation action.
+
+A minimal switch with two returning cases followed by an unconditional fallback return reproduces
+the warning in LLVM 23.1.2. The installed default `WarnOnMissingElse=false` also means this scan
+does not assess missing final `else` branches; see the
+[LLVM check documentation](https://releases.llvm.org/23.1.0/tools/clang/tools/extra/docs/clang-tidy/checks/bugprone/unhandled-code-paths.html).
+Keep this excluded rather than enforce empty defaults or move valid fallbacks solely to satisfy the
+syntax rule. No source or configuration changes were made. The excluded-name count remains 230.
+Review actual enum coverage separately with the pending compiler switch diagnostics.
 
 ### Completed validation
 
