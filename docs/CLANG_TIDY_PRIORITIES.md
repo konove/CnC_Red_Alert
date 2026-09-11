@@ -13,6 +13,7 @@ to skip, not completed decisions. Add newly excluded checks when the configurati
 
 - **Pending:** excluded and awaiting work.
 - **Enabled:** enforced by the configuration; the result records the enabling commit.
+- **Skipped:** reviewed but excluded for the recorded reason; revisit toolchain limitations after upgrades.
 - **Covered:** this name is excluded, but an enabled equivalent already supplies the check.
 - **Legacy:** excluded name unavailable in the installed LLVM 23 toolchain; review older-toolchain
   compatibility alongside the related check. Do not mistake zero findings for successful enforcement.
@@ -26,7 +27,7 @@ Availability above comes from the installed tool, since the online documentation
 | Check                                                         | Status  | Reason / result                                                                                                                                        |
 |---------------------------------------------------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `bugprone-suspicious-stringview-data-usage`                   | Enabled | Commit `Enable string-view data usage checking`: copy the RA title-screen filename to a terminated string before calling the PCX reader. |
-| `abseil-unchecked-statusor-access`                            | Pending | Validate failed byte reads before accessing their values.                                                                                              |
+| `abseil-unchecked-statusor-access`                            | Skipped | Commit `Handle failed PCX byte reads`: guard both games' byte reads, but retain the exclusion because LLVM 23.1.2 crashes even on checked access with Abseil 20260107.0. Revisit after a toolchain fix; see reproduction below. |
 | `clang-analyzer-unix.cstring.UninitializedRead`               | Pending | Find string operations reading uninitialized bytes.                                                                                                    |
 | `clang-analyzer-cplusplus.InnerPointer`                       | Pending | Find string-buffer pointers used after invalidation.                                                                                                   |
 | `bugprone-copy-constructor-init`                              | Pending | Prevent copied objects from silently losing base/member state.                                                                                         |
@@ -288,10 +289,47 @@ Availability above comes from the installed tool, since the online documentation
 
 ## Completing a row
 
+### StatusOr check toolchain limitation (2026-09-11)
+
+`abseil-unchecked-statusor-access` is available, but crashes with SIGSEGV in
+`clang::dataflow::statusor_model::getSyntheticFields` on both games' `Read_PCX_File`, before and after
+guarding the byte reads. The following checked access also reproduces it with LLVM 23.1.2 and the
+project's Abseil 20260107.0 headers:
+
+```cpp
+#include "absl/status/statusor.h"
+int ReadChecked(const absl::StatusOr<int>& value) {
+  if (!value.ok()) return 0;
+  return *value;
+}
+```
+
+Save this as `/tmp/statusor-tidy-probe.cc` and run from the repository root:
+
+```sh
+clang-tidy /tmp/statusor-tidy-probe.cc --checks='-*,abseil-unchecked-statusor-access' -- \
+  -std=c++23 -isystem cmake-build-strict-ra-clang/_deps/abseil-cpp-src
+```
+
+Both PCX readers now reject failed pixel and trailing-data reads with `nullptr`, freeing the image
+buffer before returning. Regression tests exercise literal/RLE success and truncation, including
+trailing scanline bytes, through the real TD reader. The check remains excluded because enabling it
+would crash strict builds; a crash is not a clean scan.
+
+The complete candidate sweep covered 879 project translation units (including 428 generated header
+checks): only the two PCX readers crashed, with no other findings. The full-config sweep passed with
+the check still excluded. Strict builds of both games and all 205 CTest tests passed. The new
+missing-pixel regression test aborts against the original TD reader
+with an unchecked `OUT_OF_RANGE` access and passes with the fix.
+
+### Completed validation
+
 The 2026-09-11 string-view check cleanup covered 878 project translation units, including 428 generated
 header checks. The isolated scan found one call; its fix passed the isolated check and the full-config
 sweep. Strict builds of both games and all 197 CTest tests passed. A deliberately unsafe sample confirmed
 the enabled check reports an error.
+
+### Workflow
 
 1. Measure the check across both games and shared code, including generated header checks and excluding
    dependencies. Verify the check exists; handle aliases and options together.

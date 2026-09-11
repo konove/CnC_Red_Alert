@@ -240,10 +240,20 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
     for (unsigned scan_pos = 0, j = 0; j < static_cast<unsigned>(height);
          j++, scan_pos += width) {
       for (int i = 0; i < width;) {
-        unsigned rle = *reader.ReadByte();
+        const auto rle_result = reader.ReadByte();
+        if (!rle_result.ok()) {
+          delete pic;
+          return nullptr;
+        }
+        unsigned rle = *rle_result;
         if (rle > 192) {
           rle -= 192;
-          unsigned color = *reader.ReadByte();
+          const auto color_result = reader.ReadByte();
+          if (!color_result.ok()) {
+            delete pic;
+            return nullptr;
+          }
+          unsigned color = *color_result;
           memset(buffer + scan_pos + i, color, rle);
           i += rle;
         } else {
@@ -253,17 +263,35 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
     }
 
     // Consume any trailing RLE data for the scanline
-    unsigned rle = *reader.ReadByte();
+    const auto rle_result = reader.ReadByte();
+    if (!rle_result.ok()) {
+      delete pic;
+      return nullptr;
+    }
+    unsigned rle = *rle_result;
     if (rle > 192) {
-      (void)reader.ReadByte();
+      if (!reader.ReadByte().ok()) {
+        delete pic;
+        return nullptr;
+      }
     }
 
   } else {
     for (int i = 0; i < width * height;) {
-      unsigned rle = *reader.ReadByte() & 0xff;
+      const auto rle_result = reader.ReadByte();
+      if (!rle_result.ok()) {
+        delete pic;
+        return nullptr;
+      }
+      unsigned rle = *rle_result;
       if (rle > 192) {
         rle -= 192;
-        unsigned color = *reader.ReadByte();
+        const auto color_result = reader.ReadByte();
+        if (!color_result.ok()) {
+          delete pic;
+          return nullptr;
+        }
+        unsigned color = *color_result;
         memset(buffer + i, color, rle);
         i += rle;
       } else {
