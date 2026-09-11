@@ -2,7 +2,7 @@
 
 Updated: 2026-09-11, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 230 currently excluded check names** and completed entries, in recommended work
+This tracks **all 229 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -43,7 +43,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-uninitialized-const-pointer`                | Enabled | Commit `Enable uninitialized const-pointer argument checking`: both games and shared code pass without source fixes.                                                                                                            |
 | `clang-diagnostic-reorder-ctor`                               | Enabled | Commit `Match constructor initialization order to declarations`: reorder 16 initializer lists while preserving expressions, member layouts, and actual initialization order.                                                    |
 | `bugprone-unhandled-code-paths`                               | Skipped | Commit `Document missing-default check policy`: default mode flags switches with valid post-switch fallbacks and bounded inputs; retain exclusion rather than require redundant defaults. See review below.                     |
-| `bugprone-non-zero-enum-to-bool-conversion`                   | Pending | Catch enum tests that are always true.                                                                                                                                                                                          |
+| `bugprone-non-zero-enum-to-bool-conversion`                   | Enabled | Commit `Enable nonzero enum-to-bool conversion checking`: both games and shared code pass without source fixes.                                                                                                                 |
 | `clang-analyzer-optin.core.EnumCastOutOfRange`                | Pending | Validate integer-to-enum boundaries; distinguish bit masks.                                                                                                                                                                     |
 | `clang-diagnostic-tautological-constant-out-of-range-compare` | Pending | Find impossible comparisons hiding range-check mistakes.                                                                                                                                                                        |
 | `clang-diagnostic-tautological-unsigned-enum-zero-compare`    | Pending | Find enum checks that cannot detect invalid values.                                                                                                                                                                             |
@@ -354,6 +354,12 @@ syntax rule. No source or configuration changes were made. The excluded-name cou
 Review actual enum coverage separately with the pending compiler switch diagnostics.
 
 ### Completed validation
+
+The 2026-09-11 nonzero enum-to-bool conversion check passed both isolated and full-config sweeps
+across 889 project translation units, including 431 generated header checks, without findings or
+source fixes. No enum ignore list was added. Both strict game builds and all 228 CTest tests passed.
+A sample converting a scoped enum with only nonzero enumerators to `bool` confirmed the enabled
+check reports an error under the repository configuration.
 
 The 2026-09-11 constructor-order cleanup reordered 16 initializer lists across 15 files. The initial
 889-unit sweep reported diagnostics in 18 translation units, including repeated uses of the RA list
