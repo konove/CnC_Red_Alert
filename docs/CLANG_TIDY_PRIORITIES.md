@@ -2,7 +2,7 @@
 
 Updated: 2026-09-11, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 237 currently excluded check names** and completed entries, in recommended work
+This tracks **all 236 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -35,7 +35,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `abseil-unchecked-statusor-access`                            | Skipped | Commit `Handle failed PCX byte reads`: guard both games' byte reads, but retain the exclusion because LLVM 23.1.2 crashes even on checked access with Abseil 20260107.0. Revisit after a toolchain fix; see reproduction below. |
 | `clang-analyzer-unix.cstring.UninitializedRead`               | Enabled | Commit `Enable uninitialized C-string read checking`: initialize the public-key generation self-test buffer while preserving the random-fill loop.                                                                              |
 | `clang-analyzer-cplusplus.InnerPointer`                       | Enabled | Commit `Enable string inner-pointer checking`: detect string-buffer pointers used after invalidation.                                                                                                                           |
-| `bugprone-copy-constructor-init`                              | Pending | Prevent copied objects from silently losing base/member state.                                                                                                                                                                  |
+| `bugprone-copy-constructor-init`                              | Enabled | Commit `Enable copy-constructor base initialization checking`: both games and shared code already initialize copied base state correctly; no source fixes needed.                                                               |
 | `bugprone-unchecked-string-to-number-conversion`              | Pending | Reject malformed and out-of-range input at parsing boundaries.                                                                                                                                                                  |
 | `cert-err34-c`                                                | Pending | Alias of `bugprone-unchecked-string-to-number-conversion`; handle together.                                                                                                                                                     |
 | `clang-analyzer-unix.StdCLibraryFunctions`                    | Pending | Find invalid arguments to modeled C library calls.                                                                                                                                                                              |
@@ -328,6 +328,12 @@ missing-pixel regression test aborts against the original TD reader with an unch
 access and passes with the fix.
 
 ### Completed validation
+
+The 2026-09-11 copy-constructor base-initialization check cleanup covered 879 project translation
+units, including 428 generated header checks and excluding dependencies. Both the isolated and
+full-config sweeps passed without findings, so no source fixes were needed. Both strict game builds
+and all 205 CTest tests passed. A sample copy constructor that omitted copying its base confirmed
+the enabled check reports an error under the repository configuration.
 
 The 2026-09-11 inner-pointer check cleanup covered 879 project translation units, including 428
 generated header checks. Both the isolated and full-config sweeps passed without findings, so no
