@@ -2,7 +2,7 @@
 
 Updated: 2026-09-11, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 236 currently excluded check names** and completed entries, in recommended work
+This tracks **all 234 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -36,8 +36,8 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-analyzer-unix.cstring.UninitializedRead`               | Enabled | Commit `Enable uninitialized C-string read checking`: initialize the public-key generation self-test buffer while preserving the random-fill loop.                                                                              |
 | `clang-analyzer-cplusplus.InnerPointer`                       | Enabled | Commit `Enable string inner-pointer checking`: detect string-buffer pointers used after invalidation.                                                                                                                           |
 | `bugprone-copy-constructor-init`                              | Enabled | Commit `Enable copy-constructor base initialization checking`: both games and shared code already initialize copied base state correctly; no source fixes needed.                                                               |
-| `bugprone-unchecked-string-to-number-conversion`              | Pending | Reject malformed and out-of-range input at parsing boundaries.                                                                                                                                                                  |
-| `cert-err34-c`                                                | Pending | Alias of `bugprone-unchecked-string-to-number-conversion`; handle together.                                                                                                                                                     |
+| `bugprone-unchecked-string-to-number-conversion`              | Enabled | Commit `Enable checked string-to-number conversions`: replace unchecked decimal/hex conversions with range-checked parsing and explicit defaults; preserve legacy INI, coordinate, and protocol formats.                        |
+| `cert-err34-c`                                                | Enabled | Alias enabled with `bugprone-unchecked-string-to-number-conversion` in commit `Enable checked string-to-number conversions`.                                                                                                    |
 | `clang-analyzer-unix.StdCLibraryFunctions`                    | Pending | Find invalid arguments to modeled C library calls.                                                                                                                                                                              |
 | `clang-diagnostic-cast-align`                                 | Pending | Catch pointers cast to types requiring stronger alignment.                                                                                                                                                                      |
 | `clang-diagnostic-uninitialized-const-pointer`                | Pending | Review pointer arguments that may expose uninitialized storage.                                                                                                                                                                 |
@@ -328,6 +328,20 @@ missing-pixel regression test aborts against the original TD reader with an unch
 access and passes with the fix.
 
 ### Completed validation
+
+The 2026-09-11 string-to-number conversion cleanup found 258 conversion sites across 49 files in the
+initial 879-unit sweep. Shared checked decimal/hex parsers now reject malformed or overflowing
+tokens, with explicit defaults at callers. INI readers retain the caller's default; legacy fields
+without a supplied default generally use zero. The changes preserve signed/unsigned coordinate
+spellings, 64-bit trigger data, hexadecimal INI forms, and fixed-width protocol fields. Team counts,
+infantry sub-cell indices, and network address bytes also have bounds checks.
+
+The final isolated and full-config sweeps passed across 884 project translation units, including 429
+generated header checks; follow-up checks covered the 64-bit trigger/editor conversions. Both strict
+game builds and all 218 CTest tests passed. New INI regression tests fail against the original RA
+reader and pass with the fixes. The RA save/load smoke check matched 240 object positions; the TD
+team-fixture smoke check matched 5,951 game states. An unchecked `atoi` sample confirmed both check
+names report an error under the enabled repository configuration.
 
 The 2026-09-11 copy-constructor base-initialization check cleanup covered 879 project translation
 units, including 428 generated header checks and excluding dependencies. Both the isolated and

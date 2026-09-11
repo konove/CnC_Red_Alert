@@ -75,6 +75,7 @@
 #include "td/tcpip.h"
 #include "td/text.h"
 #include "td/textbtn.h"
+#include "tech/number_parse.h"
 #include "tech/rawfile.h"
 
 #ifdef _WIN32
@@ -183,7 +184,7 @@ void Check_From_WChat(char* wchat_name) {
       return;
     }
 
-    PlanetWestwoodPortNumber = atol(key_string);
+    PlanetWestwoodPortNumber = tech::ParseInteger<int>(key_string).value_or(0);
 
     /*
     ** Get host or client

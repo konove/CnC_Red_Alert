@@ -74,6 +74,7 @@
 #include "ra/vortex.h"
 #include "ra/warhead.h"
 #include "ra/weapon.h"
+#include "tech/number_parse.h"
 #include "tech/readline.h"
 
 /***********************************************************************************************
@@ -797,7 +798,7 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         char* token = strtok(buffer, ",");
         if (token) {
           strtrim(token);
-          CrateShares[crate] = atoi(token);
+          CrateShares[crate] = tech::ParseInteger<int>(token).value_or(0);
         }
 
         /*
@@ -818,7 +819,7 @@ bool RulesClass::Powerups(CCINIClass& ini) {
             CrateData[crate] = fixed::FromString(token) * 256;
           } else {
             strtrim(token);
-            CrateData[crate] = atoi(token);
+            CrateData[crate] = tech::ParseInteger<int>(token).value_or(0);
           }
         }
       }
@@ -899,7 +900,7 @@ bool RulesClass::Themes(CCINIClass& ini) {
                        sizeof(buffer));
         const char* token = strtok(buffer, ",");
         if (token != nullptr) {
-          scen = atoi(token);
+          scen = tech::ParseInteger<int>(token).value_or(0);
         }
 
         token = strtok(nullptr, ",");

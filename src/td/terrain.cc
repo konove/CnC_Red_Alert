@@ -94,6 +94,7 @@
 #include "td/target.h"
 #include "td/trigger.h"
 #include "td/vector.h"
+#include "tech/number_parse.h"
 
 #define BARNACLE_STAGE 22
 #define FIRST_SPORE_STAGE 30
@@ -798,7 +799,7 @@ void TerrainClass::Read_INI(char* buffer) {
     TerrainType terrain;  // Terrain type.
     CELL cell;
 
-    cell = static_cast<CELL>(atoi(tbuffer));
+    cell = tech::ParseInteger<CELL>(tbuffer).value_or(0);
     WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, buffer);
     terrain = TerrainTypeClass::From_Name(strtok(buf, ","));

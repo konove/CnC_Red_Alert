@@ -60,6 +60,7 @@
 #include "ra/session.h"
 #include "tech/lcwpipe.h"
 #include "tech/lcwstraw.h"
+#include "tech/number_parse.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
 
@@ -315,7 +316,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
     int len = ini.Entry_Count(INI_Name());
     for (int index = 0; index < len; index++) {
       const char* entry = ini.Get_Entry(INI_Name(), index);
-      CELL cell = static_cast<CELL>(atoi(entry));
+      CELL cell = tech::ParseInteger<CELL>(entry).value_or(0);
       OverlayType classid =
           ini.Get_OverlayType(INI_Name(), entry, OVERLAY_NONE);
 

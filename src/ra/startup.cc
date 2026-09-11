@@ -77,6 +77,7 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "tech/cdfile.h"
+#include "tech/number_parse.h"
 #include "tech/rawfile.h"
 #include "tech/wwfile.h"
 
@@ -594,13 +595,16 @@ void Read_Setup_Options(RawFileClass* config_file) {
       */
       int i = 0;
       char* p = strtok(netbuf, ".");
-      unsigned int x = 0;
       while (p != nullptr) {
-        sscanf(p, "%x", &x);  // convert from hex string to int
+        const auto byte = tech::ParseHex<uint8_t>(p);
+        if (!byte || i >= 10) {
+          i = 0;  // Reject the address instead of accepting a partial network.
+          break;
+        }
         if (i < 4) {
-          net[i] = static_cast<unsigned char>(x);  // fill NetNum
+          net[i] = *byte;  // fill NetNum
         } else {
-          node[i - 4] = static_cast<unsigned char>(x);  // fill NetNode
+          node[i - 4] = *byte;  // fill NetNode
         }
         i++;
         p = strtok(nullptr, ".");

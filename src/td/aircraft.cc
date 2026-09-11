@@ -147,6 +147,7 @@
 #include "td/type.h"
 #include "td/utracker.h"
 #include "td/vector.h"
+#include "tech/number_parse.h"
 
 /*
 ** This contains the value of the Virtual Function Table Pointer
@@ -527,9 +528,11 @@ void AircraftClass::Read_INI(char* buffer) {
           /*
           **	Read the raw data.
           */
-          strength = atoi(strtok(nullptr, ","));
-          coord = Cell_Coord(static_cast<CELL>(atoi(strtok(nullptr, ","))));
-          dir = static_cast<DirType>(atoi(strtok(nullptr, ",")));
+          strength = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+          coord = Cell_Coord(
+              tech::ParseInteger<CELL>(strtok(nullptr, ",")).value_or(0));
+          dir = static_cast<DirType>(
+              tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
 
           if (!Map.In_Radar(Coord_Cell(coord))) {
             delete air;

@@ -74,6 +74,7 @@
 #include "td/profile.h"
 #include "td/special.h"
 #include "tech/cdfile.h"
+#include "tech/number_parse.h"
 #include "tech/rawfile.h"
 
 #ifdef _WIN32
@@ -570,13 +571,16 @@ void Read_Setup_Options(RawFileClass* config_file) {
       */
       int i = 0;
       char* p = strtok(netbuf, ".");
-      unsigned int x = 0;
       while (p) {
-        sscanf(p, "%x", &x);  // convert from hex string to int
+        const auto byte = tech::ParseHex<uint8_t>(p);
+        if (!byte || i >= 10) {
+          i = 0;  // Reject the address instead of accepting a partial network.
+          break;
+        }
         if (i < 4) {
-          net[i] = static_cast<char>(x);  // fill NetNum
+          net[i] = static_cast<char>(*byte);  // fill NetNum
         } else {
-          node[i - 4] = static_cast<char>(x);  // fill NetNode
+          node[i - 4] = static_cast<char>(*byte);  // fill NetNode
         }
         i++;
         p = strtok(nullptr, ".");

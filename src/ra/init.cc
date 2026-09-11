@@ -60,12 +60,10 @@
  *pre-prolog "please wait" page.                      *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
-#include "sdllib/file_access.h"
-#include <span>
-#include <array>
 #include "ra/init.h"
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cctype>
 #include <cstdint>
@@ -75,11 +73,12 @@
 #include <ctime>
 #include <iterator>
 #include <memory>
+#include <span>
 #include <string>
 
 #include "absl/log/log.h"
-#include "magic_enum/magic_enum.hpp"
 #include "absl/strings/match.h"
+#include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/platform.h"
 #include "ra/_wsproto.h"
@@ -135,6 +134,7 @@
 #include "ra/wsproto.h"
 #include "ra/wspudp.h"
 #include "sdllib/file.h"
+#include "sdllib/file_access.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/iff.h"
@@ -144,21 +144,22 @@
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "tech/archive.h"
 #include "tech/bench.h"
 #include "tech/buff.h"
 #include "tech/crc.h"
-#include "tech/archive.h"
-#include "tech/xpipe.h"
-#include "tech/xstraw.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/mpu.h"
+#include "tech/number_parse.h"
 #include "tech/pk.h"
 #include "tech/ramfile.h"
 #include "tech/random.h"
 #include "tech/rawfile.h"
 #include "tech/rgb.h"
 #include "tech/rndstraw.h"
+#include "tech/xpipe.h"
+#include "tech/xstraw.h"
 #include "winvq/vqa32/vqaplay.h"
 
 RemapControlType SidebarScheme;
@@ -1422,13 +1423,15 @@ bool Parse_Command_Line(int argc, char* argv[]) {
       int i = 0;
       char* p = strtok(string + 8, ".");
       while (p) {
-        unsigned int x = 0;
-
-        sscanf(p, "%x", &x);  // convert from hex string to int
+        const auto byte = tech::ParseHex<uint8_t>(p);
+        if (!byte || i >= 10) {
+          i = 0;  // Reject the address instead of accepting a partial network.
+          break;
+        }
         if (i < 4) {
-          net[i] = static_cast<unsigned char>(x);  // fill NetNum
+          net[i] = *byte;  // fill NetNum
         } else {
-          node[i - 4] = static_cast<unsigned char>(x);  // fill NetNode
+          node[i - 4] = *byte;  // fill NetNode
         }
         i++;
         p = strtok(nullptr, ".");
@@ -1450,12 +1453,9 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     **	Specify socket ID, as an offset from 0x4000.
     */
     if (strstr(string, "-SOCKET")) {
-      unsigned short socket;
-
-      socket = static_cast<unsigned short>(atoi(string + strlen("SOCKET")));
-      socket += 0x4000;
-      if (socket >= 0x4000 && socket < 0x8000) {
-        Ipx.Set_Socket(socket);
+      const auto offset = tech::ParseInteger<int>(string + strlen("-SOCKET"));
+      if (offset && *offset >= 0 && *offset < 0x4000) {
+        Ipx.Set_Socket(*offset + 0x4000);
       }
       continue;
     }
@@ -1495,7 +1495,8 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     if constexpr (config::kCheatKeysEnabled) {
       // Specify the random number seed (for debugging)
       if (strstr(string, "-SEED")) {
-        CustomSeed = static_cast<unsigned short>(atoi(string + strlen("SEED")));
+        CustomSeed = tech::ParseInteger<uint16_t>(string + strlen("-SEED"))
+                         .value_or(CustomSeed);
         continue;
       }
     }
@@ -1511,11 +1512,11 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     // Developer switches for save-game checks; see Select_Game and
     // Main_Loop.
     if (strncmp(string, "-LOADGAME", 9) == 0) {
-      DebugLoadGame = atoi(string + 9);
+      DebugLoadGame = tech::ParseInteger<int>(string + 9).value_or(-1);
       continue;
     }
     if (strncmp(string, "-QUITFRAME", 10) == 0) {
-      DebugQuitAtFrame = atoi(string + 10);
+      DebugQuitAtFrame = tech::ParseInteger<int>(string + 10).value_or(-1);
       continue;
     }
     if (strncmp(string, "-NEWGAME", 8) == 0) {
@@ -1523,7 +1524,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
       continue;
     }
     if (strncmp(string, "-SAVESLOT", 9) == 0) {
-      DebugSaveSlot = atoi(string + 9);
+      DebugSaveSlot = tech::ParseInteger<int>(string + 9).value_or(-1);
       continue;
     }
 

@@ -51,9 +51,6 @@
  *- - - - - - - */
 
 #include "ra/session.h"
-#include "tech/archive.h"
-#include "tech/xpipe.h"
-#include "tech/xstraw.h"
 
 #include <algorithm>
 #include <array>
@@ -91,7 +88,11 @@
 #include "sdllib/file.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/wwstd.h"
+#include "tech/archive.h"
+#include "tech/number_parse.h"
 #include "tech/rawfile.h"
+#include "tech/xpipe.h"
+#include "tech/xstraw.h"
 
 // #include "WolDebug.h"
 
@@ -702,9 +703,8 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
       tokenptr = strtok(nullptr, "|");
       if (tokenptr) {
-        unsigned int port = 0;
-        if (sscanf(tokenptr, "%x", &port) == 1) {
-          phone->Settings.Port = static_cast<int>(port);
+        if (const auto value = tech::ParseHex<int>(tokenptr)) {
+          phone->Settings.Port = *value;
         }
       } else {
         phone->Settings.Port = 0;
@@ -712,14 +712,14 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
       tokenptr = strtok(nullptr, "|");
       if (tokenptr) {
-        phone->Settings.IRQ = atoi(tokenptr);
+        phone->Settings.IRQ = tech::ParseInteger<int>(tokenptr).value_or(0);
       } else {
         phone->Settings.IRQ = -1;
       }
 
       tokenptr = strtok(nullptr, "|");
       if (tokenptr) {
-        phone->Settings.Baud = atoi(tokenptr);
+        phone->Settings.Baud = tech::ParseInteger<int>(tokenptr).value_or(0);
       } else {
         phone->Settings.Baud = -1;
       }
@@ -754,16 +754,19 @@ void SessionClass::Read_MultiPlayer_Settings() {
         // if method not found set to touch tone
 
         if (i == DIAL_METHODS) {
-          phone->Settings.Compression = atoi(tokenptr);
+          phone->Settings.Compression =
+              tech::ParseInteger<int>(tokenptr).value_or(0);
 
           tokenptr = strtok(nullptr, "|");
           if (tokenptr) {
-            phone->Settings.ErrorCorrection = atoi(tokenptr);
+            phone->Settings.ErrorCorrection =
+                tech::ParseInteger<int>(tokenptr).value_or(0);
           }
 
           tokenptr = strtok(nullptr, "|");
           if (tokenptr) {
-            phone->Settings.HardwareFlowControl = atoi(tokenptr);
+            phone->Settings.HardwareFlowControl =
+                tech::ParseInteger<int>(tokenptr).value_or(0);
           }
 
           tokenptr = strtok(nullptr, "|");
@@ -791,14 +794,16 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
       tokenptr = strtok(nullptr, "|");
       if (tokenptr) {
-        phone->Settings.InitStringIndex = atoi(tokenptr);
+        phone->Settings.InitStringIndex =
+            tech::ParseInteger<int>(tokenptr).value_or(0);
       } else {
         phone->Settings.InitStringIndex = 0;
       }
 
       tokenptr = strtok(nullptr, "|");
       if (tokenptr) {
-        phone->Settings.CallWaitStringIndex = atoi(tokenptr);
+        phone->Settings.CallWaitStringIndex =
+            tech::ParseInteger<int>(tokenptr).value_or(0);
       } else {
         phone->Settings.CallWaitStringIndex = CALL_WAIT_CUSTOM;
       }
@@ -838,16 +843,13 @@ void SessionClass::Read_MultiPlayer_Settings() {
     }
 
     ini.Get_String("SyncBug", "Coord", "0", buf, 80);
-    sscanf(buf, "%x", &TrapCoord);
+    TrapCoord = tech::ParseHex<uint32_t>(buf).value_or(0);
 
     ini.Get_String("SyncBug", "Target", "0", buf, 80);
-    unsigned int trap_target = 0;
-    if (sscanf(buf, "%x", &trap_target) == 1) {
-      TrapTarget = static_cast<TARGET>(trap_target);
-    }
+    TrapTarget = tech::ParseHex<uint32_t>(buf).value_or(0);
 
     ini.Get_String("SyncBug", "Cell", "0", buf, 80);
-    cell = static_cast<CELL>(atoi(buf));
+    cell = tech::ParseInteger<CELL>(buf).value_or(0);
     if (cell) {
       TrapCell = &Map[cell];
     }

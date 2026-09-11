@@ -154,6 +154,7 @@
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
+#include "tech/number_parse.h"
 #include "tech/rawfile.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
@@ -4366,7 +4367,7 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
     */
     const char* cellentry = ini.Get_Entry("CellTriggers", index);
     TriggerTypeClass* tp = ini.Get_TriggerType("CellTriggers", cellentry);
-    CELL cell = static_cast<CELL>(atoi(cellentry));
+    CELL cell = tech::ParseInteger<CELL>(cellentry).value_or(0);
 
     if (tp != nullptr && !(*this)[cell].Trigger.Is_Valid()) {
       TriggerClass* tt = Find_Or_Make(tp);

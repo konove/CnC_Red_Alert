@@ -78,6 +78,7 @@
 #include "tech/b64pipe.h"
 #include "tech/b64straw.h"
 #include "tech/int.h"
+#include "tech/number_parse.h"
 #include "tech/readline.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
@@ -806,21 +807,7 @@ int INIClass::Get_Int(const char* section, const char* entry,
 
   INIEntry* entryptr = Find_Entry(section, entry);
   if (entryptr && entryptr->Value != nullptr) {
-    unsigned int value = 0;
-
-    if (*entryptr->Value == '$') {
-      if (sscanf(entryptr->Value, "$%x", &value) == 1) {
-        defvalue = static_cast<int>(value);
-      }
-    } else {
-      if (tolower(entryptr->Value[strlen(entryptr->Value) - 1]) == 'h') {
-        if (sscanf(entryptr->Value, "%xh", &value) == 1) {
-          defvalue = static_cast<int>(value);
-        }
-      } else {
-        defvalue = atoi(entryptr->Value);
-      }
-    }
+    return tech::ParseIniInteger(entryptr->Value).value_or(defvalue);
   }
   return defvalue;
 }
@@ -889,9 +876,8 @@ int INIClass::Get_Hex(const char* section, const char* entry,
 
   INIEntry* entryptr = Find_Entry(section, entry);
   if (entryptr && entryptr->Value != nullptr) {
-    unsigned int value = 0;
-    if (sscanf(entryptr->Value, "%x", &value) == 1) {
-      defvalue = static_cast<int>(value);
+    if (const auto value = tech::ParseHex<uint32_t>(entryptr->Value)) {
+      return static_cast<int>(*value);
     }
   }
   return defvalue;

@@ -97,6 +97,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "tech/number_parse.h"
 
 static void Do_All_To_Hunt();
 
@@ -1103,7 +1104,8 @@ void TriggerClass::Fill_In(char* name, char* entry) {
   /*
   **	3rd token: Data.
   */
-  DataCopy = Data = atol(strtok(nullptr, ","));
+  DataCopy = Data =
+      tech::ParseInteger<int64_t>(strtok(nullptr, ",")).value_or(0);
 
   /*
   **	4th token: House.
@@ -1124,7 +1126,8 @@ void TriggerClass::Fill_In(char* name, char* entry) {
   */
   p = strtok(nullptr, ",");
   if (p) {
-    IsPersistant = static_cast<PersistantType>(atoi(p));
+    IsPersistant =
+        static_cast<PersistantType>(tech::ParseInteger<int>(p).value_or(0));
   } else {
     IsPersistant = VOLATILE;
   }

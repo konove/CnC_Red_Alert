@@ -78,6 +78,7 @@
 #include "td/type.h"
 #include "td/vector.h"
 #include "tech/archive.h"
+#include "tech/number_parse.h"
 #include "tech/wwfile.h"
 
 int BaseNodeClass::operator==(const BaseNodeClass& node) {
@@ -167,7 +168,15 @@ void BaseClass::Read_INI(char* buffer) {
     /*
     ** Read & set the node's coordinate
     */
-    node.Coord = static_cast<COORDINATE>(atol(strtok(nullptr, ",")));
+    const char* coordinate_text = strtok(nullptr, ",");
+    if (coordinate_text == nullptr) {
+      continue;
+    }
+    const auto coordinate = tech::ParseDecimalBits(coordinate_text);
+    if (!coordinate) {
+      continue;
+    }
+    node.Coord = *coordinate;
 
     /*
     ** Add this node to the Base's list

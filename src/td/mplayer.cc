@@ -47,7 +47,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/rand.h"
 #include "td/mplayer.h"
 
 #include <algorithm>
@@ -85,10 +84,12 @@
 #include "td/nulldlg.h"
 #include "td/phone.h"
 #include "td/profile.h"
+#include "td/rand.h"
 #include "td/special.h"
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "td/vector.h"
+#include "tech/number_parse.h"
 
 static void Garble_Message(char* buf);
 
@@ -478,9 +479,8 @@ void Read_MultiPlayer_Settings() {
     SerialDefaults.ModemName[0] = 0;
   }
   WWGetPrivateProfileString("SerialDefaults", "Port", "0", buf, 5, buffer);
-  unsigned int default_port = 0;
-  if (sscanf(buf, "%x", &default_port) == 1) {
-    SerialDefaults.Port = static_cast<int>(default_port);
+  if (const auto value = tech::ParseHex<int>(buf)) {
+    SerialDefaults.Port = *value;
   }
   SerialDefaults.IRQ =
       WWGetPrivateProfileInt("SerialDefaults", "IRQ", -1, buffer);
@@ -617,9 +617,8 @@ void Read_MultiPlayer_Settings() {
 
     tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
-      unsigned int port = 0;
-      if (sscanf(tokenptr, "%x", &port) == 1) {
-        phone->Settings.Port = static_cast<int>(port);
+      if (const auto value = tech::ParseHex<int>(tokenptr)) {
+        phone->Settings.Port = *value;
       }
     } else {
       phone->Settings.Port = 0;
@@ -627,35 +626,38 @@ void Read_MultiPlayer_Settings() {
 
     tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
-      phone->Settings.IRQ = atoi(tokenptr);
+      phone->Settings.IRQ = tech::ParseInteger<int>(tokenptr).value_or(0);
     } else {
       phone->Settings.IRQ = -1;
     }
 
     tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
-      phone->Settings.Baud = atoi(tokenptr);
+      phone->Settings.Baud = tech::ParseInteger<int>(tokenptr).value_or(0);
     } else {
       phone->Settings.Baud = -1;
     }
 
     tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
-      phone->Settings.Compression = atoi(tokenptr);
+      phone->Settings.Compression =
+          tech::ParseInteger<int>(tokenptr).value_or(0);
     } else {
       phone->Settings.Compression = 0;
     }
 
     tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
-      phone->Settings.ErrorCorrection = atoi(tokenptr);
+      phone->Settings.ErrorCorrection =
+          tech::ParseInteger<int>(tokenptr).value_or(0);
     } else {
       phone->Settings.ErrorCorrection = 0;
     }
 
     tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
-      phone->Settings.HardwareFlowControl = atoi(tokenptr);
+      phone->Settings.HardwareFlowControl =
+          tech::ParseInteger<int>(tokenptr).value_or(0);
     } else {
       phone->Settings.HardwareFlowControl = 1;
     }
@@ -684,14 +686,16 @@ void Read_MultiPlayer_Settings() {
 
     tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
-      phone->Settings.InitStringIndex = atoi(tokenptr);
+      phone->Settings.InitStringIndex =
+          tech::ParseInteger<int>(tokenptr).value_or(0);
     } else {
       phone->Settings.InitStringIndex = 0;
     }
 
     tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
-      phone->Settings.CallWaitStringIndex = atoi(tokenptr);
+      phone->Settings.CallWaitStringIndex =
+          tech::ParseInteger<int>(tokenptr).value_or(0);
     } else {
       phone->Settings.CallWaitStringIndex = CALL_WAIT_CUSTOM;
     }
@@ -737,16 +741,15 @@ void Read_MultiPlayer_Settings() {
     }
 
     WWGetPrivateProfileString("SyncBug", "Coord", "0", buf, 80, buffer);
-    sscanf(buf, "%x", &TrapCoord);
+    TrapCoord = tech::ParseHex<uint32_t>(buf).value_or(0);
 
     WWGetPrivateProfileString("SyncBug", "this", "0", buf, 80, buffer);
-    uintptr_t trap_this = 0;
-    if (sscanf(buf, "%" SCNxPTR, &trap_this) == 1) {
-      TrapThis = std::bit_cast<void*>(trap_this);
+    if (const auto trap_this = tech::ParseHex<uintptr_t>(buf)) {
+      TrapThis = std::bit_cast<void*>(*trap_this);
     }
 
     WWGetPrivateProfileString("SyncBug", "Cell", "0", buf, 80, buffer);
-    cell = static_cast<CELL>(atoi(buf));
+    cell = tech::ParseInteger<CELL>(buf).value_or(0);
     if (cell) {
       TrapCell = &Map[cell];
     }

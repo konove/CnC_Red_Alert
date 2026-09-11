@@ -167,6 +167,7 @@
 #include "td/textbtn.h"
 #include "td/vector.h"
 #include "tech/crc.h"
+#include "tech/number_parse.h"
 
 #ifdef _WIN32
 #include "td/ccdde.h"
@@ -3241,7 +3242,7 @@ static int Net_New_Dialog() {
       case ButtonKey(BUTTON_SCENARIOLIST):
         if (scenariolist.Current_Index() != ScenarioIdx) {
           ScenarioIdx = scenariolist.Current_Index();
-          MPlayerCredits = atoi(credbuf);
+          MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
           transmit = 1;
         }
         break;
@@ -3320,7 +3321,7 @@ static int Net_New_Dialog() {
       User edits the credits value; retransmit new game options
       ------------------------------------------------------------------*/
       case ButtonKey(BUTTON_CREDITS):
-        MPlayerCredits = atoi(credbuf);
+        MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
         transmit = 1;
         break;
 
@@ -3354,7 +3355,7 @@ static int Net_New_Dialog() {
                                     MPlayerUnitCount - MPlayerCountMin[0])) +
               MPlayerCountMin[1];
         }
-        MPlayerCredits = atoi(credbuf);
+        MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
         countgauge.Set_Maximum(MPlayerCountMax[MPlayerBases] -
                                MPlayerCountMin[MPlayerBases]);
         countgauge.Set_Value(MPlayerUnitCount - MPlayerCountMin[MPlayerBases]);
@@ -3380,7 +3381,7 @@ static int Net_New_Dialog() {
           tiberiumbtn.Turn_On();
           tiberiumbtn.Set_Text(TXT_TIBERIUM_ON);
         }
-        MPlayerCredits = atoi(credbuf);
+        MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
         transmit = 1;
         break;
 
@@ -3397,7 +3398,7 @@ static int Net_New_Dialog() {
           goodiesbtn.Turn_On();
           goodiesbtn.Set_Text(TXT_CRATES_ON);
         }
-        MPlayerCredits = atoi(credbuf);
+        MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
         transmit = 1;
         break;
 
@@ -3427,7 +3428,7 @@ static int Net_New_Dialog() {
           }
         }
 
-        MPlayerCredits = atoi(credbuf);
+        MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
         transmit = 1;
         break;
 
@@ -3651,8 +3652,8 @@ static int Net_New_Dialog() {
     /*---------------------------------------------------------------------
     Detect editing of the credits buffer, transmit new values to players
     ---------------------------------------------------------------------*/
-    if (atoi(credbuf) != old_cred) {
-      old_cred = Bound(atoi(credbuf), 0, 9999);
+    if (tech::ParseInteger<int>(credbuf).value_or(0) != old_cred) {
+      old_cred = Bound(tech::ParseInteger<int>(credbuf).value_or(0), 0, 9999);
       MPlayerCredits = old_cred;
       transmit = 1;
       sprintf(credbuf, "%d", MPlayerCredits);

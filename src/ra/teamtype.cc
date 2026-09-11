@@ -106,6 +106,7 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "tech/number_parse.h"
 #include "tech/readline.h"
 
 TeamMissionClass TeamMissions[TMISSION_COUNT] = {
@@ -1142,7 +1143,8 @@ bool TeamTypeClass::Edit() {
               break;
 
             case NEED_NUMBER:
-              tm->Data.Value = atoi(arg_edt.Get_Text());
+              tm->Data.Value =
+                  tech::ParseInteger<int>(arg_edt.Get_Text()).value_or(0);
               break;
 
             case NEED_HEX_NUMBER:
@@ -1191,7 +1193,8 @@ bool TeamTypeClass::Edit() {
               break;
 
             case NEED_NUMBER:
-              tm->Data.Value = atoi(arg_edt.Get_Text());
+              tm->Data.Value =
+                  tech::ParseInteger<int>(arg_edt.Get_Text()).value_or(0);
               break;
 
             case NEED_HEX_NUMBER:
@@ -1241,7 +1244,8 @@ bool TeamTypeClass::Edit() {
               break;
 
             case NEED_NUMBER:
-              tm->Data.Value = atoi(arg_edt.Get_Text());
+              tm->Data.Value =
+                  tech::ParseInteger<int>(arg_edt.Get_Text()).value_or(0);
               break;
 
             case NEED_HEX_NUMBER:
@@ -1319,9 +1323,10 @@ bool TeamTypeClass::Edit() {
         IsPrebuilt = prebuildbtn.IsOn;
         IsReinforcable = reinforcebtn.IsOn;
 
-        RecruitPriority = atoi(recr_edt.Get_Text());
-        InitNum = atoi(initnum_edt.Get_Text());
-        MaxAllowed = atoi(maxnum_edt.Get_Text());
+        RecruitPriority =
+            tech::ParseInteger<int>(recr_edt.Get_Text()).value_or(0);
+        InitNum = tech::ParseInteger<int>(initnum_edt.Get_Text()).value_or(0);
+        MaxAllowed = tech::ParseInteger<int>(maxnum_edt.Get_Text()).value_or(0);
         House = HousesType(housebtn.Current_Index());
         Trigger = nullptr;
         if (triggerbtn.Current_Index() > 0) {
@@ -1658,12 +1663,13 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   */
   Set_Name(name);
 
-  House = static_cast<HousesType>(atoi(strtok(entry, ",")));
+  House = static_cast<HousesType>(
+      tech::ParseInteger<int>(strtok(entry, ",")).value_or(0));
 
   int code;
   switch (NewINIFormat) {
     default:
-      code = atoi(strtok(nullptr, ","));
+      code = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
       IsRoundAbout = (code & 0x0001) != 0;
       IsSuicide = (code & 0x0002) != 0;
       IsAutocreate = (code & 0x0004) != 0;
@@ -1673,22 +1679,24 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
 
     case 0:
     case 1:
-      IsRoundAbout = atoi(strtok(nullptr, ","));
-      IsSuicide = atoi(strtok(nullptr, ","));
-      IsAutocreate = atoi(strtok(nullptr, ","));
-      IsPrebuilt = atoi(strtok(nullptr, ","));
-      IsReinforcable = atoi(strtok(nullptr, ","));
+      IsRoundAbout = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+      IsSuicide = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+      IsAutocreate = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+      IsPrebuilt = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+      IsReinforcable =
+          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
       break;
   }
 
-  RecruitPriority = atoi(strtok(nullptr, ","));
-  InitNum = atoi(strtok(nullptr, ","));
-  MaxAllowed = atoi(strtok(nullptr, ","));
-  Origin = atoi(strtok(nullptr, ","));
+  RecruitPriority = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+  InitNum = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+  MaxAllowed = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+  Origin = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
   switch (NewINIFormat) {
     default:
-      Trigger.Set_Raw(atoi(strtok(nullptr, ",")));
+      Trigger.Set_Raw(
+          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
       break;
 
     case 0:
@@ -1701,10 +1709,20 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   /*
   **	Fetch the team member types and quantity values.
   */
-  ClassCount = atoi(strtok(nullptr, ","));
+  ClassCount = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(-1);
+  if (ClassCount < 0 || ClassCount > MAX_TEAM_CLASSCOUNT) {
+    ClassCount = 0;
+    MissionCount = 0;
+    return;
+  }
   for (int index = 0; index < ClassCount; index++) {
     char* p1 = strtok(nullptr, ",:");
     char* p2 = strtok(nullptr, ",:");
+    if (p1 == nullptr || p2 == nullptr) {
+      ClassCount = 0;
+      MissionCount = 0;
+      return;
+    }
     const TechnoTypeClass* otype = nullptr;
 
     /*
@@ -1744,7 +1762,7 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
     */
     if (otype) {
       Members[index].Class = otype;
-      Members[index].Quantity = atoi(p2);
+      Members[index].Quantity = tech::ParseInteger<int>(p2).value_or(0);
     } else {
       ClassCount--;
       if (index == 0) {
@@ -1757,18 +1775,24 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   /*
   **	Fetch the missions assigned to this team type.
   */
-  MissionCount = atoi(strtok(nullptr, ","));
+  MissionCount = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(-1);
+  if (MissionCount < 0 || MissionCount > MAX_TEAM_MISSIONS) {
+    ClassCount = 0;
+    MissionCount = 0;
+    return;
+  }
   for (int index = 0; index < MissionCount; index++) {
-    MissionList[index].Mission =
-        static_cast<TeamMissionType>(atoi(strtok(nullptr, ",:")));
-    MissionList[index].Data.Value = atoi(strtok(nullptr, ",:"));
+    MissionList[index].Mission = static_cast<TeamMissionType>(
+        tech::ParseInteger<int>(strtok(nullptr, ",:")).value_or(0));
+    MissionList[index].Data.Value =
+        tech::ParseInteger<int>(strtok(nullptr, ",:")).value_or(0);
   }
 
   if (NewINIFormat < 2) {
     /*
     **	Fetch the trigger ID.
     */
-    Trigger.Set_Raw(atoi(strtok(nullptr, ",")));
+    Trigger.Set_Raw(tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
   }
 }
 

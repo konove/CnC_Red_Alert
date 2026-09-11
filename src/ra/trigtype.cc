@@ -96,6 +96,7 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "tech/number_parse.h"
 
 /***********************************************************************************************
  * TriggerTypeClass::TriggerTypeClass -- Constructor for trigger class object. *
@@ -1489,11 +1490,13 @@ bool TriggerTypeClass::Edit() {
             break;
 
           case NEED_TIME:
-            Event1.Data.Value = atoi(event1data.Get_Text());
+            Event1.Data.Value =
+                tech::ParseInteger<int>(event1data.Get_Text()).value_or(0);
             break;
 
           case NEED_NUMBER:
-            Event1.Data.Value = atoi(event1data.Get_Text());
+            Event1.Data.Value =
+                tech::ParseInteger<int>(event1data.Get_Text()).value_or(0);
             break;
 
           case NEED_STRUCTURE:
@@ -1535,11 +1538,13 @@ bool TriggerTypeClass::Edit() {
             break;
 
           case NEED_TIME:
-            Event2.Data.Value = atoi(event2data.Get_Text());
+            Event2.Data.Value =
+                tech::ParseInteger<int>(event2data.Get_Text()).value_or(0);
             break;
 
           case NEED_NUMBER:
-            Event2.Data.Value = atoi(event2data.Get_Text());
+            Event2.Data.Value =
+                tech::ParseInteger<int>(event2data.Get_Text()).value_or(0);
             break;
 
           case NEED_STRUCTURE:
@@ -1595,7 +1600,8 @@ bool TriggerTypeClass::Edit() {
             break;
 
           case NEED_NUMBER:
-            Action1.Data.Value = atoi(action1data.Get_Text());
+            Action1.Data.Value =
+                tech::ParseInteger<int>(action1data.Get_Text()).value_or(0);
             break;
 
           case NEED_WAYPOINT:
@@ -1654,7 +1660,8 @@ bool TriggerTypeClass::Edit() {
             break;
 
           case NEED_NUMBER:
-            Action2.Data.Value = atoi(action2data.Get_Text());
+            Action2.Data.Value =
+                tech::ParseInteger<int>(action2data.Get_Text()).value_or(0);
             break;
 
           case NEED_WAYPOINT:
@@ -1950,10 +1957,14 @@ void TriggerTypeClass::Fill_In(char* name, char* entry) {
   */
   Set_Name(name);
 
-  IsPersistant = static_cast<PersistantType>(atoi(strtok(entry, ",")));
-  House = static_cast<HousesType>(atoi(strtok(nullptr, ",")));
-  EventControl = static_cast<MultiStyleType>(atoi(strtok(nullptr, ",")));
-  ActionControl = static_cast<MultiStyleType>(atoi(strtok(nullptr, ",")));
+  IsPersistant = static_cast<PersistantType>(
+      tech::ParseInteger<int>(strtok(entry, ",")).value_or(0));
+  House = static_cast<HousesType>(
+      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+  EventControl = static_cast<MultiStyleType>(
+      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+  ActionControl = static_cast<MultiStyleType>(
+      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
 
   Event1.Read_INI();
   Event2.Read_INI();

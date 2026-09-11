@@ -159,6 +159,7 @@
 #include "ra/ww_audio.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
+#include "tech/number_parse.h"
 
 /***********************************************************************************************
  * _Counts_As_Civ_Evac -- Is the specified object a candidate for civilian evac
@@ -622,21 +623,22 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
           */
           char* token = strtok(nullptr, ",");
           if (token) {
-            strength = atoi(token);
+            strength = tech::ParseInteger<int>(token).value_or(0);
           } else {
             strength = 0;
           }
 
           token = strtok(nullptr, ",");
           if (token) {
-            coord = Cell_Coord(static_cast<CELL>(atoi(token)));
+            coord = Cell_Coord(tech::ParseInteger<CELL>(token).value_or(0));
           } else {
             coord = 0xFFFFFFFFL;
           }
 
           token = strtok(nullptr, ",");
           if (token) {
-            dir = static_cast<DirType>(atoi(token));
+            dir = static_cast<DirType>(
+                tech::ParseInteger<int>(token).value_or(0));
           } else {
             dir = DIR_N;
           }

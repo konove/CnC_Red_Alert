@@ -64,6 +64,7 @@
 #include "td/mapedit.h"
 #include "td/profile.h"
 #include "td/vector.h"
+#include "tech/number_parse.h"
 
 HousesType SmudgeClass::ToOwn = HOUSE_NONE;
 
@@ -299,10 +300,10 @@ void SmudgeClass::Read_INI(char* buffer) {
       char* ptr = strtok(nullptr, ",");
       if (ptr) {
         int data = 0;
-        CELL cell = static_cast<CELL>(atoi(ptr));
+        CELL cell = tech::ParseInteger<CELL>(ptr).value_or(0);
         ptr = strtok(nullptr, ",");
         if (ptr) {
-          data = atoi(ptr);
+          data = tech::ParseInteger<int>(ptr).value_or(0);
         }
         new SmudgeClass(smudge, Cell_Coord(cell));
         if (Map[cell].Smudge == smudge && data) {

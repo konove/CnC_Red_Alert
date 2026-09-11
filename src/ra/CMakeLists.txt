@@ -117,6 +117,12 @@ install(TARGETS rasdl)
 # Tests
 include(Testing)
 add_gtest(
+    NAME ra_ini_number_test
+    SOURCES ini_number_test.cc ini.cc
+    LIBS tech port sdllib absl::strings absl::check absl::log magic_enum::magic_enum
+)
+
+add_gtest(
     NAME ra_mission_id_test
     SOURCES mission_id_test.cc mission_id.cc
     LIBS absl::strings

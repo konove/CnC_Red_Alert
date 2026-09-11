@@ -21,6 +21,8 @@
 
 #include "ra/wolapiob.h"
 
+#include "tech/number_parse.h"
+
 #ifdef _WIN32
 #include <winsock.h>
 #else
@@ -533,7 +535,8 @@ void WolapiObject::PrepareButtonsAndIcons() {
     int iMyIndex = 0;
     token = strtok(szSkus2, seps);
     while (token != nullptr) {
-      GetGameTypeInfo(atoi(token), GameTypeInfos[iMyIndex], Palette);
+      GetGameTypeInfo(tech::ParseInteger<int>(token).value_or(0),
+                      GameTypeInfos[iMyIndex], Palette);
       token = strtok(nullptr, seps);
       iMyIndex++;
     }
@@ -1510,7 +1513,7 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
 
   if (strlen(szMessage) > 4 && szMessage[0] == 63 && szMessage[1] == 97 &&
       szMessage[2] == 106 && szMessage[3] == 119) {
-    int i = atoi(szMessage + 4);
+    int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
     if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1) {
       Speak((VoxType)i);
     }
@@ -1518,7 +1521,7 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
   }
   if (strlen(szMessage) > 4 && szMessage[0] == 35 && szMessage[1] == 97 &&
       szMessage[2] == 106 && szMessage[3] == 119) {
-    int i = atoi(szMessage + 4);
+    int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
     if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1) {
       Speak((VoxType)i);
     }

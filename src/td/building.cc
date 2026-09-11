@@ -167,6 +167,7 @@
 #include "td/unit.h"
 #include "td/utracker.h"
 #include "td/vector.h"
+#include "tech/number_parse.h"
 
 enum SAMState {
   SAM_NONE = -1,    // Used for non SAM site buildings.
@@ -3039,17 +3040,18 @@ void BuildingClass::Read_INI(char* buffer) {
       /*
       **	3rd token: strength.
       */
-      strength = atoi(strtok(nullptr, ","));
+      strength = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
       /*
       **	4th token: cell #.
       */
-      cell = static_cast<CELL>(atoi(strtok(nullptr, ",")));
+      cell = tech::ParseInteger<CELL>(strtok(nullptr, ",")).value_or(0);
 
       /*
       **	5th token: facing.
       */
-      facing = static_cast<DirType>(atoi(strtok(nullptr, ",")));
+      facing = static_cast<DirType>(
+          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
 
       /*
       **	6th token: triggername (can be NULL).

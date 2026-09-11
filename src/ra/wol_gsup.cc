@@ -36,6 +36,7 @@
 #include "ra/vector_dynamic.h"
 #include "ra/wolstrng.h"
 #include "ra/wsproto.h"
+#include "tech/number_parse.h"
 
 extern const char* const* EngMisStr;
 
@@ -2144,12 +2145,25 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
   // WOL_GAMEOPT 	1 space 	2		color 	1
   // null-terminator 	debugprint( "ProcessGuestRequest. szRequest is '%s', len
   //%i.\n", szRequest, strlen( szRequest ) );
-  WOL_GAMEOPT opt = (WOL_GAMEOPT)atoi(szRequest);
+  if (szRequest == nullptr || strlen(szRequest) < 3 || szRequest[2] != ' ') {
+    return;
+  }
+  const auto option = tech::ParseInteger<int>(std::string_view{szRequest, 2});
+  if (!option) {
+    return;
+  }
+  WOL_GAMEOPT opt = static_cast<WOL_GAMEOPT>(*option);
   szRequest += 3;
 
   switch (opt) {
     case WOL_GAMEOPT_REQCOLOR: {
-      PlayerColorType ColorDesired = (PlayerColorType)atoi(szRequest);
+      const auto color = tech::ParseInteger<int>(szRequest);
+      if (!color || *color < 0 ||
+          *color >=
+              static_cast<int>(magic_enum::enum_count<PlayerColorType>())) {
+        return;
+      }
+      PlayerColorType ColorDesired = static_cast<PlayerColorType>(*color);
       if (pILPlayers->FindColor(&ColorRemaps[ColorDesired == PCOLOR_DIALOG_BLUE
                                                  ? PCOLOR_REALLY_BLUE
                                                  : ColorDesired]) == -1) {
@@ -2170,7 +2184,8 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
       break;
     }
     case WOL_GAMEOPT_REQHOUSE: {
-      HousesType HouseChoice = (HousesType)atoi(szRequest);
+      HousesType HouseChoice =
+          (HousesType)tech::ParseInteger<int>(szRequest).value_or(0);
       //		debugprint( "Host received: '%s' changed house to
       //%u.\n", (char*)pUser->name, HouseChoice );
       SetPlayerHouse((char*)pUser->name, HouseChoice);
@@ -2182,7 +2197,8 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
     case WOL_GAMEOPT_REQACCEPT:
       //	Does Param ID of accept request match the last param change ID
       // sent? See notes at top.
-      if (static_cast<unsigned int>(atoi(szRequest)) == nHostLastParamID) {
+      if (static_cast<unsigned int>(tech::ParseInteger<int>(szRequest).value_or(
+              0)) == nHostLastParamID) {
         //			debugprint( "Host received valid accept from
         //'%s'.\n", (char*)pUser->name );
         SetPlayerAccepted((char*)pUser->name, true);
@@ -2204,7 +2220,8 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
     case WOL_GAMEOPT_REQSTART:
       //	Does Param ID of accept request match the last param change ID
       // sent? See notes at top.
-      if (static_cast<unsigned int>(atoi(szRequest)) ==
+      if (static_cast<unsigned int>(
+              tech::ParseInteger<int>(szRequest).value_or(0)) ==
           nHostLastParamID)  //	Otherwise ignore - it's old and we don't care.
                              //(Incredibly unlikely to happen, actually.)
       {
@@ -2226,7 +2243,8 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
     case WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO:
       //	Does Param ID of accept request match the last param change ID
       // sent? See notes at top.
-      if (static_cast<unsigned int>(atoi(szRequest)) ==
+      if (static_cast<unsigned int>(
+              tech::ParseInteger<int>(szRequest).value_or(0)) ==
           nHostLastParamID)  //	Otherwise ignore - it's old and we don't care.
                              //(Incredibly unlikely to happen, actually.)
       {
@@ -2263,7 +2281,14 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
   //	Process inform message arriving from game host.
   //	debugprint( "ProcessInform: '%s'\n", szInform );
   if (!bHost) {
-    WOL_GAMEOPT opt = (WOL_GAMEOPT)atoi(szInform);
+    if (szInform == nullptr || strlen(szInform) < 3 || szInform[2] != ' ') {
+      return;
+    }
+    const auto option = tech::ParseInteger<int>(std::string_view{szInform, 2});
+    if (!option) {
+      return;
+    }
+    WOL_GAMEOPT opt = static_cast<WOL_GAMEOPT>(*option);
     szInform += 3;
     switch (opt) {
       case WOL_GAMEOPT_INFCOLOR: {
@@ -2273,7 +2298,17 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
         //	2		color
         //	1		space
         //	string	name of player
-        PlayerColorType Color = (PlayerColorType)atoi(szInform);
+        if (strlen(szInform) < 3 || szInform[2] != ' ') {
+          return;
+        }
+        const auto color =
+            tech::ParseInteger<int>(std::string_view{szInform, 2});
+        if (!color || *color < 0 ||
+            *color >=
+                static_cast<int>(magic_enum::enum_count<PlayerColorType>())) {
+          return;
+        }
+        PlayerColorType Color = static_cast<PlayerColorType>(*color);
         szInform += 3;
         SetPlayerColor(szInform, Color);  //	(szInform is now sitting at the
                                           // start of the name string.)
@@ -2284,9 +2319,23 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
                                   // it refers to me. I've already set my own
                                   // house.
       {
-        nGuestLastParamID = atoi(szInform);
+        if (strlen(szInform) < 10 || szInform[6] != ' ' || szInform[9] != ' ') {
+          return;
+        }
+        const auto param_id =
+            tech::ParseInteger<int>(std::string_view{szInform, 6});
+        if (!param_id || *param_id < 0) {
+          return;
+        }
+        nGuestLastParamID = static_cast<unsigned int>(*param_id);
         szInform += 7;
-        HousesType House = (HousesType)atoi(szInform);
+        const auto house =
+            tech::ParseInteger<int>(std::string_view{szInform, 2});
+        if (!house || *house < 0 ||
+            *house >= static_cast<int>(magic_enum::enum_count<HousesType>())) {
+          return;
+        }
+        HousesType House = static_cast<HousesType>(*house);
         szInform += 3;
         SetPlayerHouse(szInform, House);  //	(szInform is now sitting at the
                                           // start of the name string.)
@@ -2322,7 +2371,7 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
         //	Host tells us to wait for start of game.
         //			debugprint( "Guest received
         // WOL_GAMEOPT_INFSTART.\n" );
-        nGuestLastParamID = atoi(szInform);
+        nGuestLastParamID = tech::ParseInteger<int>(szInform).value_or(0);
         //	The following check is not necessary. Rules.ini, if manually
         // replaced by a cheater, is not reloaded. 	So prior checks (that
         // occur on game params receives) are sufficient.
@@ -2513,6 +2562,10 @@ void WOL_GameSetupDialog::SendParams() {
 
 //***********************************************************************************************
 bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
+  if (szParams == nullptr) {
+    return false;
+  }
+  const char* params_end = szParams + strlen(szParams);
   //	Reverse of SendParams() process. szParams has already been stripped of 2
   // bytes header. Guest only.
 
@@ -2525,14 +2578,19 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   char* szRemaining;
 
   szToken = strtok(szParams, szDelimiter);
-  nGuestLastParamID = atoi(szToken);
+  nGuestLastParamID = tech::ParseInteger<uint32_t>(szToken).value_or(0);
 
   //	Read in length of following string.
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  int iLen = atoi(szToken);
+  int iLen = tech::ParseInteger<int>(szToken).value_or(-1);
+  if (params_end - szToken <= 3 || strlen(szToken) != 3 || iLen < 0 ||
+      iLen >= static_cast<int>(sizeof(Session.Options.ScenarioDescription)) ||
+      static_cast<size_t>(iLen) >= strlen(szToken + 4)) {
+    return false;
+  }
   //	Set string pointer to start of string (length is 3 digits).
   szRemaining = szToken + 4;
   //	Read in string.
@@ -2550,7 +2608,7 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (!szToken) {
     return false;
   }
-  Session.ScenarioFileLength = atoi(szToken);
+  Session.ScenarioFileLength = tech::ParseInteger<int>(szToken).value_or(0);
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
@@ -2569,8 +2627,8 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (!szToken) {
     return false;
   }
-  iLen = atoi(
-      szToken);  //	1 or 0, indicating if there is a digest following.
+  iLen = tech::ParseInteger<int>(szToken).value_or(
+      0);  //	1 or 0, indicating if there is a digest following.
   if (iLen) {
     //		//	Set string pointer to start of string (previous field is
     // 1 digit). 		szRemaining = szToken + 2; 		iLen =
@@ -2597,109 +2655,117 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (!szToken) {
     return false;
   }
-  Session.ScenarioIsOfficial = (bool)atoi(szToken);
+  Session.ScenarioIsOfficial =
+      (bool)tech::ParseInteger<int>(szToken).value_or(0);
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  Session.Options.Credits = atoi(szToken);
+  Session.Options.Credits = tech::ParseInteger<int>(szToken).value_or(0);
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  Session.Options.Bases = atoi(szToken);
+  Session.Options.Bases = tech::ParseInteger<int>(szToken).value_or(0);
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  Session.Options.Tiberium = atoi(szToken);
+  Session.Options.Tiberium = tech::ParseInteger<int>(szToken).value_or(0);
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  Session.Options.Goodies = atoi(szToken);
+  Session.Options.Goodies = tech::ParseInteger<int>(szToken).value_or(0);
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  BuildLevel = atoi(szToken);
+  BuildLevel = tech::ParseInteger<int>(szToken).value_or(0);
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  Session.Options.UnitCount = atoi(szToken);
+  Session.Options.UnitCount = tech::ParseInteger<int>(szToken).value_or(0);
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  Session.Options.AIPlayers = atoi(szToken);
+  Session.Options.AIPlayers = tech::ParseInteger<int>(szToken).value_or(0);
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  Seed = atoi(szToken);
+  Seed = tech::ParseInteger<int>(szToken).value_or(0);
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  Special.IsShadowGrow = (atoi(szToken) == 0) ? 0 : 1;
+  Special.IsShadowGrow =
+      (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  Special.IsSpeedBuild = (atoi(szToken) == 0) ? 0 : 1;
+  Special.IsSpeedBuild =
+      (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  Special.IsFromInstall = (atoi(szToken) == 0) ? 0 : 1;
+  Special.IsFromInstall =
+      (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  Special.IsCaptureTheFlag = (atoi(szToken) == 0) ? 0 : 1;
+  Special.IsCaptureTheFlag =
+      (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  Special.IsInert = (atoi(szToken) == 0) ? 0 : 1;
+  Special.IsInert = (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  Special.IsThreePoint = (atoi(szToken) == 0) ? 0 : 1;
+  Special.IsThreePoint =
+      (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  Special.IsTGrowth = (atoi(szToken) == 0) ? 0 : 1;
+  Special.IsTGrowth =
+      (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  Special.IsTSpread = (atoi(szToken) == 0) ? 0 : 1;
+  Special.IsTSpread =
+      (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  Options.GameSpeed = atoi(szToken);
+  Options.GameSpeed = tech::ParseInteger<int>(szToken).value_or(0);
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
@@ -2711,19 +2777,19 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (!szToken) {
     return false;
   }
-  bAftermathUnits = (bool)atoi(szToken);
+  bAftermathUnits = (bool)tech::ParseInteger<int>(szToken).value_or(0);
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  bSlowUnitBuildRate = (bool)atoi(szToken);
+  bSlowUnitBuildRate = (bool)tech::ParseInteger<int>(szToken).value_or(0);
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
     return false;
   }
-  int iRulesID = atoi(szToken);
+  int iRulesID = tech::ParseInteger<int>(szToken).value_or(0);
 
   //	strtok( NULL, szDelimiter ) here should give NULL; nothing checks.
   //	if( szToken )
@@ -3110,6 +3176,10 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
 
 //***********************************************************************************************
 void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
+  if (szMsg == nullptr) {
+    return;
+  }
+  const char* message_end = szMsg + strlen(szMsg);
   //	Process a received WOL_GAMEOPT_INFNEWGUESTPLAYERINFO message.
   //	szMsg has already been stripped of 2 bytes header.
   char szDelimiter[] = " ";
@@ -3117,7 +3187,12 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
   char* szRemaining;
 
   szToken = strtok(szMsg, szDelimiter);
-  unsigned int nPlayers = atoi(szToken);
+  const auto player_count = tech::ParseInteger<int>(szToken);
+  if (!player_count || *player_count < 0 || *player_count > 8 ||
+      strlen(szToken) != 2 || message_end - szToken <= 2) {
+    return;
+  }
+  unsigned int nPlayers = static_cast<unsigned int>(*player_count);
 
   //	We have to assist strtok a bit because of calls below that may also call
   // strtok()...
@@ -3126,7 +3201,12 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
   for (unsigned int nPlayer = 0; nPlayer != nPlayers; ++nPlayer) {
     //	Read in length of following string.
     szToken = strtok(szRemaining, szDelimiter);
-    int iLen = atoi(szToken);
+    int iLen = tech::ParseInteger<int>(szToken).value_or(-1);
+    if (szToken == nullptr || message_end - szToken <= 2 ||
+        strlen(szToken) != 2 || iLen < 0 || iLen >= 50 ||
+        static_cast<size_t>(iLen) >= strlen(szToken + 3)) {
+      return;
+    }
 
     //	Set string pointer to start of string (length is 2 digits).
     szRemaining = szToken + 3;
@@ -3141,7 +3221,8 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
 
     //	Read color.
     szToken = strtok(szRemaining, szDelimiter);
-    PlayerColorType Color = (PlayerColorType)atoi(szToken);
+    PlayerColorType Color =
+        (PlayerColorType)tech::ParseInteger<int>(szToken).value_or(0);
     SetPlayerColor(szPlayerName, Color);
 
     //	SetPlayerColor may call strtok, so we can't use the strtok( NULL,
@@ -3150,12 +3231,13 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
 
     //	Read whether there is a house field.
     szToken = strtok(szRemaining, szDelimiter);
-    bool bHouseField = (bool)atoi(szToken);
+    bool bHouseField = (bool)tech::ParseInteger<int>(szToken).value_or(0);
 
     if (bHouseField) {
       //	Read house.
       szToken = strtok(nullptr, szDelimiter);
-      HousesType House = (HousesType)atoi(szToken);
+      HousesType House =
+          (HousesType)tech::ParseInteger<int>(szToken).value_or(0);
       SetPlayerHouse(szPlayerName, House);
       //	SetPlayerHouse may call strtok, so we can't use the strtok(
       // NULL, option... in the next call.
@@ -3487,7 +3569,8 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
     port::SafeCopy(szPlayerName, szToken);
     szToken = strtok(nullptr, szDelimiter);
 
-    PlayerColorType Color = (PlayerColorType)atoi(szToken);
+    PlayerColorType Color =
+        (PlayerColorType)tech::ParseInteger<int>(szToken).value_or(0);
     SetPlayerColor(szPlayerName, Color);  //	ajw note: inserts if not found.
     szToken = strtok(nullptr, szDelimiter);
   }

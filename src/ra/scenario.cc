@@ -154,6 +154,7 @@
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "tech/number_parse.h"
 #include "tech/rawfile.h"
 
 static void Remove_AI_Players();
@@ -1807,7 +1808,7 @@ void ScenarioClass::Set_Scenario_Name(const char* name) {
 
       Scenario = 36 * first + second;
     } else {
-      Scenario = atoi(buf);
+      Scenario = tech::ParseInteger<int>(buf).value_or(0);
     }
   }
 }
@@ -3193,7 +3194,7 @@ void Disect_Scenario_Name(const char* name, int& scenario,
   char first = buf[0];
   char second = buf[1];
   if (first <= '9' && second <= '9') {
-    scenario = atoi(buf);
+    scenario = tech::ParseInteger<int>(buf).value_or(0);
   } else {
     if (first <= '9') {
       first -= '0';

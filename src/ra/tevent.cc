@@ -69,6 +69,7 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
+#include "tech/number_parse.h"
 
 /*
 **	This is the text name for all of the trigger events. These are used by
@@ -566,16 +567,18 @@ void TEventClass::Read_INI() {
   const char* token;
   switch (NewINIFormat) {
     default:
-      Event = static_cast<TEventType>(atoi(strtok(nullptr, ",")));
-      Team.Set_Raw(atoi(strtok(nullptr, ",")));
-      Data.Value = atoi(strtok(nullptr, ","));
+      Event = static_cast<TEventType>(
+          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+      Team.Set_Raw(tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+      Data.Value = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
       break;
 
     case 1:
       token = strtok(nullptr, ",");
       Event = TEVENT_NONE;
       if (token) {
-        Event = static_cast<TEventType>(atoi(token));
+        Event =
+            static_cast<TEventType>(tech::ParseInteger<int>(token).value_or(0));
       }
 
       token = strtok(nullptr, ",");
@@ -583,21 +586,22 @@ void TEventClass::Read_INI() {
       Data.Value = -1;
       if (token) {
         if (Event_Needs(Event) == NEED_TEAM) {
-          Team = TeamTypes.Raw_Ptr(atoi(token));
+          Team = TeamTypes.Raw_Ptr(tech::ParseInteger<int>(token).value_or(0));
         } else {
-          Data.Value = atoi(token);
+          Data.Value = tech::ParseInteger<int>(token).value_or(0);
         }
       }
       break;
 
     case 0:
-      Event = static_cast<TEventType>(atoi(strtok(nullptr, ",")));
+      Event = static_cast<TEventType>(
+          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
 
       strtok(nullptr, ",");
       strtok(nullptr, ",");
 
       Team = TeamTypeClass::From_Name(strtok(nullptr, ","));
-      Data.Value = atoi(strtok(nullptr, ","));
+      Data.Value = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
       strtok(nullptr, ",");
       break;
   }

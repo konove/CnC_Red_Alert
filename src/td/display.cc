@@ -94,7 +94,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 
+#include "base/types.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -140,8 +142,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
-#include "base/types.h"
-#include <iterator>
+#include "tech/number_parse.h"
 
 /*
 **	These layer control elements are used to group the displayable objects
@@ -1249,7 +1250,7 @@ void DisplayClass::Read_INI(char* buffer) {
     /*
     **	Get cell # from entry name.
     */
-    cell = atoi(tbuffer);
+    cell = tech::ParseInteger<int>(tbuffer).value_or(0);
     if (cell > 0 && cell < MAP_CELL_TOTAL && !(*this)[cell].IsTrigger) {
       /*
       **	Assign trigger pointer using trigger name.

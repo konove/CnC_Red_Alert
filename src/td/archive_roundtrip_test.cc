@@ -83,6 +83,21 @@ class TdArchiveRoundTripTest : public testing::Test {
   }
 };
 
+TEST_F(TdArchiveRoundTripTest, TriggerIniPreserves64BitDataAndRejectsOverflow) {
+  auto* trigger = new TriggerClass;
+  char name[] = "CRED";
+  char entry[] = "Credits,None,4294967296,GoodGuy,None,0";
+  trigger->Fill_In(name, entry);
+  EXPECT_EQ(trigger->Data, INT64_C(4294967296));
+  EXPECT_EQ(trigger->DataCopy, INT64_C(4294967296));
+
+  char overflow[] = "Credits,None,9223372036854775808,GoodGuy,None,0";
+  trigger->Fill_In(name, overflow);
+  EXPECT_EQ(trigger->Data, 0);
+  EXPECT_EQ(trigger->DataCopy, 0);
+  delete trigger;
+}
+
 TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireBytes) {
   const auto check = [](auto configure, auto... args) {
     EventClass expected;

@@ -66,6 +66,7 @@
 #include "td/profile.h"
 #include "td/special.h"
 #include "td/vector.h"
+#include "tech/number_parse.h"
 
 HousesType OverlayClass::ToOwn = HOUSE_NONE;
 
@@ -355,7 +356,7 @@ void OverlayClass::Read_INI(char* buffer) {
     CELL cell;
     OverlayType classid;
 
-    cell = static_cast<CELL>(atoi(tbuffer));
+    cell = tech::ParseInteger<CELL>(tbuffer).value_or(0);
     WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, buffer);
     classid = OverlayTypeClass::From_Name(strtok(buf, ",\n\r"));

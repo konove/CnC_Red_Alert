@@ -99,6 +99,7 @@
 #include "td/theme.h"
 #include "td/vector.h"
 #include "tech/crc.h"
+#include "tech/number_parse.h"
 
 ModemRegistryEntryClass* ModemRegistry = nullptr;  // Ptr to modem registry data
 
@@ -2855,12 +2856,14 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
             break;
 
           default:
-            sscanf(irqbuf, "%d", &tempsettings.IRQ);
+            tempsettings.IRQ =
+                tech::ParseInteger<int>(irqbuf).value_or(tempsettings.IRQ);
             break;
         }
 #endif  // EDIT_IRQ
 
-        sscanf(baudbuf, "%d", &tempsettings.Baud);
+        tempsettings.Baud =
+            tech::ParseInteger<int>(baudbuf).value_or(tempsettings.Baud);
 
         tempsettings.InitStringIndex = initstr_index;
         tempsettings.CallWaitStringIndex = cwaitstr_index;
@@ -3676,7 +3679,7 @@ int Com_Scenario_Dialog() {
 
             name_edt.Set_Color(MPlayerTColors[MPlayerColorIdx]);
             name_edt.Flag_To_Redraw();
-            MPlayerCredits = atoi(credbuf);
+            MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
             port::SafeCopy(MPlayerName, namebuf);
             transmit = 1;
             changed = 1;
@@ -3691,7 +3694,7 @@ int Com_Scenario_Dialog() {
         if (!ready_to_go) {
           credit_edt.Clear_Focus();
           credit_edt.Flag_To_Redraw();
-          MPlayerCredits = atoi(credbuf);
+          MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
           port::SafeCopy(MPlayerName, namebuf);
           transmit = 1;
           changed = 1;
@@ -3706,7 +3709,7 @@ int Com_Scenario_Dialog() {
           MPlayerHouse = HOUSE_GOOD;
           gdibtn.Turn_On();
           nodbtn.Turn_Off();
-          MPlayerCredits = atoi(credbuf);
+          MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
           port::SafeCopy(MPlayerName, namebuf);
           transmit = 1;
         }
@@ -3717,7 +3720,7 @@ int Com_Scenario_Dialog() {
           MPlayerHouse = HOUSE_BAD;
           gdibtn.Turn_Off();
           nodbtn.Turn_On();
-          MPlayerCredits = atoi(credbuf);
+          MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
           port::SafeCopy(MPlayerName, namebuf);
           transmit = 1;
         }
@@ -3730,7 +3733,7 @@ int Com_Scenario_Dialog() {
         if (!ready_to_go) {
           name_edt.Clear_Focus();
           name_edt.Flag_To_Redraw();
-          MPlayerCredits = atoi(credbuf);
+          MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
           port::SafeCopy(MPlayerName, namebuf);
           transmit = 1;
         }
@@ -3742,7 +3745,7 @@ int Com_Scenario_Dialog() {
       case ButtonKey(BUTTON_SCENARIOLIST):
         if (scenariolist.Current_Index() != ScenarioIdx && !ready_to_go) {
           ScenarioIdx = scenariolist.Current_Index();
-          MPlayerCredits = atoi(credbuf);
+          MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
           port::SafeCopy(MPlayerName, namebuf);
           transmit = 1;
         }
@@ -3798,7 +3801,7 @@ int Com_Scenario_Dialog() {
                                       MPlayerUnitCount - MPlayerCountMin[0])) +
                 MPlayerCountMin[1];
           }
-          MPlayerCredits = atoi(credbuf);
+          MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
           countgauge.Set_Maximum(MPlayerCountMax[MPlayerBases] -
                                  MPlayerCountMin[MPlayerBases]);
           countgauge.Set_Value(MPlayerUnitCount -
@@ -3827,7 +3830,7 @@ int Com_Scenario_Dialog() {
             tiberiumbtn.Turn_On();
             tiberiumbtn.Set_Text(TXT_TIBERIUM_ON);
           }
-          MPlayerCredits = atoi(credbuf);
+          MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
           port::SafeCopy(MPlayerName, namebuf);
           transmit = 1;
         }
@@ -3847,7 +3850,7 @@ int Com_Scenario_Dialog() {
             goodiesbtn.Turn_On();
             goodiesbtn.Set_Text(TXT_CRATES_ON);
           }
-          MPlayerCredits = atoi(credbuf);
+          MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
           port::SafeCopy(MPlayerName, namebuf);
           transmit = 1;
         }
@@ -3875,7 +3878,7 @@ int Com_Scenario_Dialog() {
             ghostsbtn.Turn_Off();
             ghostsbtn.Set_Text(TXT_AI_PLAYERS_OFF);
           }
-          MPlayerCredits = atoi(credbuf);
+          MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
           port::SafeCopy(MPlayerName, namebuf);
           transmit = 1;
         }
@@ -4082,8 +4085,8 @@ int Com_Scenario_Dialog() {
     /*---------------------------------------------------------------------
     Detect editing of the credits buffer, transmit new values to players
     ---------------------------------------------------------------------*/
-    if (atoi(credbuf) != old_cred) {
-      old_cred = Bound(atoi(credbuf), 0, 9999);
+    if (tech::ParseInteger<int>(credbuf).value_or(0) != old_cred) {
+      old_cred = Bound(tech::ParseInteger<int>(credbuf).value_or(0), 0, 9999);
       MPlayerCredits = old_cred;
       transmit = 1;
       sprintf(credbuf, "%d", MPlayerCredits);

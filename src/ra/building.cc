@@ -181,6 +181,7 @@
 #include "ra/ww_audio.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
+#include "tech/number_parse.h"
 
 enum SAMState {
   SAM_READY,  // Launcher can be facing any direction tracking targets.
@@ -4985,17 +4986,18 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
       /*
       **	3rd token: strength.
       */
-      strength = atoi(strtok(nullptr, ","));
+      strength = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
       /*
       **	4th token: cell #.
       */
-      cell = static_cast<CELL>(atoi(strtok(nullptr, ",")));
+      cell = tech::ParseInteger<CELL>(strtok(nullptr, ",")).value_or(0);
 
       /*
       **	5th token: facing.
       */
-      facing = static_cast<DirType>(atoi(strtok(nullptr, ",")));
+      facing = static_cast<DirType>(
+          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
 
       /*
       **	6th token: triggername (can be nullptr).
@@ -5005,13 +5007,13 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
       bool sellable = false;
       char* token_pointer = strtok(nullptr, ",");
       if (token_pointer) {
-        sellable = atoi(token_pointer);
+        sellable = tech::ParseInteger<int>(token_pointer).value_or(0);
       }
 
       bool rebuild = false;
       token_pointer = strtok(nullptr, ",");
       if (token_pointer) {
-        rebuild = atoi(token_pointer);
+        rebuild = tech::ParseInteger<int>(token_pointer).value_or(0);
       }
 
       b = new BuildingClass(classid, bhouse);

@@ -52,6 +52,7 @@
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "td/defines.h"
+#include "tech/number_parse.h"
 #include "tech/readline.h"
 
 /***************************************************************************
@@ -91,21 +92,9 @@ bool Read_Private_Config_Struct(char* profile, NewConfigType* config) {
 unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
                                 char* profile) {
   char buffer[kMaxEntrySize];  // Integer staging buffer.
-  unsigned card;
-
-  memset(buffer, '0', kMaxEntrySize);  // kMaxEntrySize = 15
-  buffer[kMaxEntrySize - 1] = '\0';
-
-  WWGetPrivateProfileString(section, entry, "0", buffer, kMaxEntrySize,
+  WWGetPrivateProfileString(section, entry, "0", buffer, sizeof(buffer),
                             profile);
-
-  if (strlen(buffer) > 0) {
-    sscanf(buffer, "%x", &card);
-  } else {
-    card = 0;
-  }
-
-  return card;
+  return tech::ParseHex<uint32_t>(buffer).value_or(0);
 }
 
 /***********************************************************************************************
@@ -142,7 +131,7 @@ int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
   /*
   **	Convert to int & return.
   */
-  return atoi(buffer);
+  return tech::ParseInteger<int>(buffer).value_or(def);
 }
 
 /***********************************************************************************************

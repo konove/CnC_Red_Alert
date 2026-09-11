@@ -112,6 +112,7 @@
 #include "ra/weapon.h"
 #include "ra/ww_audio.h"
 #include "tech/fixed.h"
+#include "tech/number_parse.h"
 
 /***********************************************************************************************
  * VesselClass::VesselClass -- Constructor for vessel class objects. *
@@ -1957,13 +1958,16 @@ void VesselClass::Read_INI(CCINIClass& ini) {
           /*
           **	Read the raw data.
           */
-          int strength = atoi(strtok(nullptr, ",\r\n"));
+          int strength =
+              tech::ParseInteger<int>(strtok(nullptr, ",\r\n")).value_or(0);
 
-          CELL cell = static_cast<CELL>(atoi(strtok(nullptr, ",\r\n")));
+          CELL cell =
+              tech::ParseInteger<CELL>(strtok(nullptr, ",\r\n")).value_or(0);
 
           COORDINATE coord = Cell_Coord(cell);
 
-          DirType dir = static_cast<DirType>(atoi(strtok(nullptr, ",\r\n")));
+          DirType dir = static_cast<DirType>(
+              tech::ParseInteger<int>(strtok(nullptr, ",\r\n")).value_or(0));
           MissionType mission = Mission_From_Name(strtok(nullptr, ",\n\r"));
 
           vessel->Trigger = nullptr;

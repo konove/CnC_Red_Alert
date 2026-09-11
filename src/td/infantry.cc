@@ -138,6 +138,7 @@
 #include "td/unit.h"
 #include "td/utracker.h"
 #include "td/vector.h"
+#include "tech/number_parse.h"
 
 const int InfantryClass::HumanShape[32] = {0, 0, 7, 7, 7, 7, 6, 6, 6, 6, 5,
                                            5, 5, 5, 5, 4, 4, 4, 3, 3, 3, 3,
@@ -2984,25 +2985,30 @@ void InfantryClass::Read_INI(char* buffer) {
           /*
           **	3rd token: strength.
           */
-          int strength = atoi(strtok(nullptr, ",\n\r"));
+          int strength =
+              tech::ParseInteger<int>(strtok(nullptr, ",\n\r")).value_or(0);
 
           /*
           **	4th token: cell #.
           */
-          COORDINATE coord =
-              Cell_Coord(static_cast<CELL>(atoi(strtok(nullptr, ",\n\r"))));
+          COORDINATE coord = Cell_Coord(
+              tech::ParseInteger<CELL>(strtok(nullptr, ",\n\r")).value_or(0));
 
           /*
           **	5th token: cell sub-location.
           */
-          coord = Coord_Add(coord & 0xFF00FF00L,
-                            StoppingCoordAbs[atoi(strtok(nullptr, ","))]);
+          coord = Coord_Add(
+              coord & 0xFF00FF00L,
+              StoppingCoordAbs[std::clamp(
+                  tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0), 0,
+                  4)]);
 
           /*
           **	Fetch the mission and facing.
           */
           MissionType mission = Mission_From_Name(strtok(nullptr, ",\n\r"));
-          DirType dir = static_cast<DirType>(atoi(strtok(nullptr, ",\n\r")));
+          DirType dir = static_cast<DirType>(
+              tech::ParseInteger<int>(strtok(nullptr, ",\n\r")).value_or(0));
           infantry->Trigger =
               TriggerClass::As_Pointer(strtok(nullptr, ",\n\r"));
           if (infantry->Trigger) {

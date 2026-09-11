@@ -94,6 +94,7 @@
 #include "td/trigger.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "tech/number_parse.h"
 
 /***************************************************************************
  * MapEditClass::New_Scenario -- creates a new scenario                    *
@@ -882,7 +883,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   /*
   ------------------------ Save selections & return ------------------------
   */
-  (*scen_nump) = atoi(scen_buf);
+  (*scen_nump) = tech::ParseInteger<int>(scen_buf).value_or(0);
 
   return 0;
 }
@@ -2086,9 +2087,12 @@ int MapEditClass::Scenario_Dialog() {
     /*
     .............................. Credits ................................
     */
-    gdi_credits = atol(gdicred_buf);
-    nod_credits = atol(nodcred_buf);
-    neut_credits = atol(neutcred_buf);
+    gdi_credits =
+        tech::ParseInteger<decltype(gdi_credits)>(gdicred_buf).value_or(0);
+    nod_credits =
+        tech::ParseInteger<decltype(nod_credits)>(nodcred_buf).value_or(0);
+    neut_credits =
+        tech::ParseInteger<decltype(neut_credits)>(neutcred_buf).value_or(0);
     HouseClass::As_Pointer(HOUSE_GOOD)->Credits = gdi_credits * 1000L;
     HouseClass::As_Pointer(HOUSE_BAD)->Credits = nod_credits * 1000L;
     HouseClass::As_Pointer(HOUSE_NEUTRAL)->Credits = neut_credits * 1000L;
@@ -2102,7 +2106,7 @@ int MapEditClass::Scenario_Dialog() {
   /*
   ........................... Sidebar build level ..........................
   */
-  BuildLevel = atoi(level_buf);
+  BuildLevel = tech::ParseInteger<int>(level_buf).value_or(0);
 
   /*........................................................................
   Change the theater:
@@ -3219,7 +3223,7 @@ int MapEditClass::Edit_Trigger() {
     .............................. Set Data ...............................
     */
     if (TriggerClass::Event_Need_Data(event_idx)) {
-      CurTrigger->Data = atol(databuf);
+      CurTrigger->Data = tech::ParseInteger<int64_t>(databuf).value_or(0);
     }
 
     /*
@@ -3757,7 +3761,7 @@ int MapEditClass::Import_Teams() {
     for (i = 0; i < 9; i++) {
       strtok(nullptr, ",");
     }
-    numclasses = atoi(strtok(nullptr, ","));
+    numclasses = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
     /*
     ** Generate the descriptive string

@@ -85,6 +85,7 @@
 #include "sdllib/wincomm.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "tech/number_parse.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -2062,7 +2063,7 @@ int NullModemClass::Verify_And_Convert_To_Int(char* buffer) {
   }
 
   if (value == 0) {
-    value = atoi(buffer);
+    value = tech::ParseInteger<int>(buffer).value_or(0);
   }
 
   return value;

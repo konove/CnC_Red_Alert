@@ -101,6 +101,7 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "tech/number_parse.h"
 
 /***************************************************************************
  * MapEditClass::New_Scenario -- creates a new scenario                    *
@@ -902,7 +903,7 @@ int MapEditClass::Load_Scenario() {
     **	Save selections & return
     */
     if (scen_buf[0] <= '9' && scen_buf[1] <= '9') {
-      scen_nump = atoi(scen_buf);
+      scen_nump = tech::ParseInteger<int>(scen_buf).value_or(0);
     } else {
       char first = scen_buf[0];
       char second = scen_buf[1];

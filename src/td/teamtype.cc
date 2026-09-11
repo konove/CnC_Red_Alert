@@ -70,6 +70,7 @@
 #include "td/team.h"
 #include "td/trigger.h"
 #include "td/type.h"
+#include "tech/number_parse.h"
 
 /*
 ********************************** Globals **********************************
@@ -257,52 +258,57 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   /*
   -------------------------- 2nd token: RoundAbout -------------------------
   */
-  IsRoundAbout = atoi(strtok(nullptr, ","));
+  IsRoundAbout = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
   /*
   --------------------------- 3rd token: Learning --------------------------
   */
-  IsLearning = atoi(strtok(nullptr, ","));
+  IsLearning = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
   /*
   --------------------------- 4th token: Suicide ---------------------------
   */
-  IsSuicide = atoi(strtok(nullptr, ","));
+  IsSuicide = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
   /*
   ----------------------------- 5th token: Spy -----------------------------
   */
-  IsAutocreate = atoi(strtok(nullptr, ","));
+  IsAutocreate = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
   /*
   -------------------------- 6th token: Mercenary --------------------------
   */
-  IsMercenary = atoi(strtok(nullptr, ","));
+  IsMercenary = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
   /*
   ----------------------- 7th token: RecruitPriority -----------------------
   */
-  RecruitPriority = atoi(strtok(nullptr, ","));
+  RecruitPriority = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
   /*
   -------------------------- 8th token: MaxAllowed -------------------------
   */
-  MaxAllowed = atoi(strtok(nullptr, ","));
+  MaxAllowed = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
   /*
   --------------------------- 9th token: InitNum ---------------------------
   */
-  InitNum = atoi(strtok(nullptr, ","));
+  InitNum = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
   /*
   ------------------------- 10th token: Fear level -------------------------
   */
-  Fear = atoi(strtok(nullptr, ","));
+  Fear = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
   /*
   ------------------------ 11th token: Class count -------------------------
   */
-  num_classes = atoi(strtok(nullptr, ","));
+  num_classes = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(-1);
+  if (num_classes < 0 || num_classes > MAX_TEAM_CLASSCOUNT) {
+    ClassCount = 0;
+    MissionCount = 0;
+    return;
+  }
 
   /*
   -------------- Loop through entries, setting class ptr & num -------------
@@ -311,6 +317,11 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   for (i = 0; i < num_classes; i++) {
     p1 = strtok(nullptr, ",:");
     p2 = strtok(nullptr, ",:");
+    if (p1 == nullptr || p2 == nullptr) {
+      ClassCount = 0;
+      MissionCount = 0;
+      return;
+    }
     otype = nullptr;
 
     /*
@@ -342,7 +353,7 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
     */
     if (otype) {
       Class[ClassCount] = otype;
-      DesiredNum[ClassCount] = atoi(p2);
+      DesiredNum[ClassCount] = tech::ParseInteger<int>(p2).value_or(0);
       ClassCount++;
     }
   }
@@ -350,23 +361,33 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   /*
   ----------------------- next token: Mission count ------------------------
   */
-  MissionCount = atoi(strtok(nullptr, ","));
+  MissionCount = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(-1);
+  if (MissionCount < 0 || MissionCount > MAX_TEAM_MISSIONS) {
+    ClassCount = 0;
+    MissionCount = 0;
+    return;
+  }
 
   for (i = 0; i < MissionCount; i++) {
     p1 = strtok(nullptr, ",:");
     p2 = strtok(nullptr, ",:");
+    if (p1 == nullptr || p2 == nullptr) {
+      ClassCount = 0;
+      MissionCount = 0;
+      return;
+    }
     mission.Mission = Mission_From_Name(p1);
-    mission.Argument = atoi(p2);
+    mission.Argument = tech::ParseInteger<int>(p2).value_or(0);
     MissionList[i] = mission;
   }
 
   char* ptr = strtok(nullptr, ",");
   if (ptr) {
-    IsReinforcable = atoi(ptr);
+    IsReinforcable = tech::ParseInteger<int>(ptr).value_or(0);
   }
   ptr = strtok(nullptr, ",");
   if (ptr) {
-    IsPrebuilt = atoi(ptr);
+    IsPrebuilt = tech::ParseInteger<int>(ptr).value_or(0);
   }
 }
 
@@ -543,42 +564,48 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
     /*
     ........................ 2nd token: RoundAbout ........................
     */
-    team->IsRoundAbout = atoi(strtok(nullptr, ","));
+    team->IsRoundAbout =
+        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
     /*
     ......................... 3rd token: Learning .........................
     */
-    team->IsLearning = atoi(strtok(nullptr, ","));
+    team->IsLearning =
+        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
     /*
     ......................... 4th token: Suicide ..........................
     */
-    team->IsSuicide = atoi(strtok(nullptr, ","));
+    team->IsSuicide = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
     /*
     ........................... 5th token: Spy ............................
     */
-    team->IsAutocreate = atoi(strtok(nullptr, ","));
+    team->IsAutocreate =
+        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
     /*
     ........................ 6th token: Mercenary .........................
     */
-    team->IsMercenary = atoi(strtok(nullptr, ","));
+    team->IsMercenary =
+        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
     /*
     ..................... 7th token: RecruitPriority ......................
     */
-    team->RecruitPriority = atoi(strtok(nullptr, ","));
+    team->RecruitPriority =
+        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
     /*
     ........................ 8th token: MaxAllowed ........................
     */
-    team->MaxAllowed = atoi(strtok(nullptr, ","));
+    team->MaxAllowed =
+        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
     /*
     ......................... 9th token: InitNum ..........................
     */
-    team->InitNum = atoi(strtok(nullptr, ","));
+    team->InitNum = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
     /*
     ....................... 10th token: Mission name ......................
@@ -591,7 +618,7 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
     index = 0;
     p1 = strtok(nullptr, ",:");
     p2 = strtok(nullptr, ",:");
-    while (p1 && p2) {
+    while (p1 && p2 && index < MAX_TEAM_CLASSCOUNT) {
       otype = nullptr;
 
       /*
@@ -623,7 +650,7 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
       */
       if (otype) {
         team->Class[index] = otype;
-        team->DesiredNum[index] = atoi(p2);
+        team->DesiredNum[index] = tech::ParseInteger<int>(p2).value_or(0);
         index++;
         team->ClassCount = index;
       }

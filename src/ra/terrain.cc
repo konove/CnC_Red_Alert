@@ -68,6 +68,7 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "base/types.h"
 #include "ra/anim.h"
 #include "ra/cell.h"
 #include "ra/config.h"
@@ -86,7 +87,7 @@
 #include "ra/target.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
-#include "base/types.h"
+#include "tech/number_parse.h"
 
 /***********************************************************************************************
  * TerrainClass::~TerrainClass -- Default destructor for terrain class objects.
@@ -726,7 +727,7 @@ void TerrainClass::Read_INI(CCINIClass& ini) {
   for (int index = 0; index < len; index++) {
     const char* entry = ini.Get_Entry(INI_Name(), index);
     TerrainType terrain = ini.Get_TerrainType(INI_Name(), entry, TERRAIN_NONE);
-    CELL cell = static_cast<CELL>(atoi(entry));
+    CELL cell = tech::ParseInteger<CELL>(entry).value_or(0);
 
     if (terrain != TERRAIN_NONE) {
       new TerrainClass(terrain, cell);

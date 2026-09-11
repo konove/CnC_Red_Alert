@@ -98,6 +98,7 @@
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
+#include "tech/number_parse.h"
 
 /*
 **	These are the text names for the various actions. If the action name
@@ -295,16 +296,19 @@ void TActionClass::Build_INI_Entry(std::string& buffer) const {
 void TActionClass::Read_INI() {
   switch (NewINIFormat) {
     default: {
-      Action = static_cast<TActionType>(atoi(strtok(nullptr, ",")));
-      Team.Set_Raw(atoi(strtok(nullptr, ",")));
-      Trigger.Set_Raw(atoi(strtok(nullptr, ",")));
-      Data.Value = atoi(strtok(nullptr, ","));
+      Action = static_cast<TActionType>(
+          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+      Team.Set_Raw(tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+      Trigger.Set_Raw(
+          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+      Data.Value = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
       break;
     }
 
     case 1:
     case 0:
-      Action = static_cast<TActionType>(atoi(strtok(nullptr, ",")));
+      Action = static_cast<TActionType>(
+          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
 
       const char* ptr = strtok(nullptr, ",");
       Team = TeamTypeClass::From_Name(ptr);
@@ -318,7 +322,7 @@ void TActionClass::Read_INI() {
       char* trig_copy = port::CloneString(trig_name);
       Trigger.Set_Raw((long)trig_copy);
 
-      Data.Value = atoi(strtok(nullptr, ","));
+      Data.Value = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
       break;
   }
 

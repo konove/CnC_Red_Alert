@@ -75,6 +75,7 @@
 #include "td/teamtype.h"
 #include "td/textbtn.h"
 #include "td/type.h"
+#include "tech/number_parse.h"
 
 /***************************************************************************
  * MapEditClass::Handle_Teams -- main team-dialog-handling function        *
@@ -1280,7 +1281,7 @@ int MapEditClass::Edit_Team() {
               missions[i].Mission == TMISSION_UNLOAD) {
             missions[i].Argument = toupper(arg_buf[0]) - 'A';
           } else {
-            missions[i].Argument = atoi(arg_buf);
+            missions[i].Argument = tech::ParseInteger<int>(arg_buf).value_or(0);
           }
           missioncount++;
 
@@ -1406,9 +1407,9 @@ int MapEditClass::Edit_Team() {
   ------------------------ Save selections & return ------------------------
   */
   CurTeam->Set_Name(name_buf);
-  CurTeam->RecruitPriority = atoi(recr_buf);
-  CurTeam->MaxAllowed = atoi(maxnum_buf);
-  CurTeam->InitNum = atoi(initnum_buf);
+  CurTeam->RecruitPriority = tech::ParseInteger<int>(recr_buf).value_or(0);
+  CurTeam->MaxAllowed = tech::ParseInteger<int>(maxnum_buf).value_or(0);
+  CurTeam->InitNum = tech::ParseInteger<int>(initnum_buf).value_or(0);
   CurTeam->IsRoundAbout = roundabout;
   CurTeam->IsLearning = learning;
   CurTeam->IsSuicide = suicide;

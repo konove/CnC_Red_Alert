@@ -122,6 +122,7 @@
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
+#include "tech/number_parse.h"
 
 ModemRegistryEntryClass* ModemRegistry = nullptr;  // Ptr to modem registry data
 
@@ -2428,7 +2429,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
             break;
         }
 
-        sscanf(baudbuf, "%d", &tempsettings.Baud);
+        tempsettings.Baud =
+            tech::ParseInteger<int>(baudbuf).value_or(tempsettings.Baud);
 
         tempsettings.InitStringIndex = initstr_index;
         tempsettings.CallWaitStringIndex = cwaitstr_index;

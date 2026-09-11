@@ -140,6 +140,7 @@
 #include "ra/weapon.h"
 #include "ra/ww_audio.h"
 #include "tech/fixed.h"
+#include "tech/number_parse.h"
 #include "tech/rect.h"
 
 const int InfantryClass::HumanShape[32] = {0, 0, 7, 7, 7, 7, 6, 6, 6, 6, 5,
@@ -3149,18 +3150,21 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
           /*
           **	3rd token: strength.
           */
-          int strength = atoi(strtok(nullptr, ",\n\r"));
+          int strength =
+              tech::ParseInteger<int>(strtok(nullptr, ",\n\r")).value_or(0);
 
           /*
           **	4th token: cell #.
           */
-          CELL cell = static_cast<CELL>(atoi(strtok(nullptr, ",\n\r")));
+          CELL cell =
+              tech::ParseInteger<CELL>(strtok(nullptr, ",\n\r")).value_or(0);
           COORDINATE coord = Cell_Coord(cell);
 
           /*
           **	5th token: cell sub-location.
           */
-          int sub = atoi(strtok(nullptr, ","));
+          int sub = std::clamp(
+              tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0), 0, 4);
           coord = Coord_Add(Coord_Whole(coord), StoppingCoordAbs[sub]);
 
           /*
@@ -3169,7 +3173,8 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
           MissionType mission = Mission_From_Name(strtok(nullptr, ",\n\r"));
           validation = strtok(nullptr, ",\n\r");
           if (validation) {
-            dir = static_cast<DirType>(atoi(validation));
+            dir = static_cast<DirType>(
+                tech::ParseInteger<int>(validation).value_or(0));
             validation = strtok(nullptr, ",\n\r");
             if (validation) {
               tp = TriggerTypeClass::From_Name(validation);

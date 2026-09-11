@@ -49,16 +49,15 @@
  *-- greater-than operator                                        *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
-#include "base/types.h"
-#include "magic_enum/magic_enum.hpp"
-#include <cstdint>
 #include "ra/base.h"
-#include "tech/archive.h"
 
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
+#include "base/types.h"
+#include "magic_enum/magic_enum.hpp"
 #include "ra/building.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
@@ -73,6 +72,8 @@
 #include "ra/object.h"
 #include "ra/type.h"
 #include "ra/vector.h"
+#include "tech/archive.h"
+#include "tech/number_parse.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"
 
@@ -362,7 +363,7 @@ void BaseClass::Read_INI(CCINIClass& ini) {
     /*
     ** Read & set the node's coordinate
     */
-    node.Cell = static_cast<CELL>(atoi(strtok(nullptr, ",")));
+    node.Cell = tech::ParseInteger<CELL>(strtok(nullptr, ",")).value_or(0);
 
     /*
     ** Add this node to the Base's list

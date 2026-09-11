@@ -70,6 +70,7 @@
 #include "td/profile.h"
 #include "td/target.h"
 #include "td/vector.h"
+#include "tech/number_parse.h"
 
 /***********************************************************************************************
  * TemplateClass::Validate -- validates template pointer
@@ -129,7 +130,7 @@ void TemplateClass::Read_INI(char* buffer) {
   while (*tbuffer != '\0') {
     TemplateType temp;  // Terrain type.
 
-    cell = static_cast<CELL>(atoi(tbuffer));
+    cell = tech::ParseInteger<CELL>(tbuffer).value_or(0);
     WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, buffer);
     temp = TemplateTypeClass::From_Name(strtok(buf, ",\r\n"));

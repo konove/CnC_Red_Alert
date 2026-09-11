@@ -42,6 +42,7 @@
 #include "ra/ww_audio.h"
 #include "sdllib/timer.h"
 #include "tech/base64.h"
+#include "tech/number_parse.h"
 
 namespace {
 
@@ -186,7 +187,8 @@ STDMETHODIMP RAChatEventSink::OnServerList(HRESULT hRes, Server* pServerHead) {
         const char* szPort = strtok(nullptr, ";");
         if (szHost != nullptr && szPort != nullptr) {
           port::SafeCopy(pOwner->szLadderServerHost, szHost);
-          pOwner->iLadderServerPort = atoi(szPort);
+          pOwner->iLadderServerPort =
+              tech::ParseInteger<int>(szPort).value_or(0);
         }
         //				debugprint( "Ladder is at: %s, port
         //%i\n", pOwner->szLadderServerHost, pOwner->iLadderServerPort );
@@ -200,7 +202,8 @@ STDMETHODIMP RAChatEventSink::OnServerList(HRESULT hRes, Server* pServerHead) {
         const char* szPort = strtok(nullptr, ";");
         if (szHost != nullptr && szPort != nullptr) {
           port::SafeCopy(pOwner->szGameResServerHost1, szHost);
-          pOwner->iGameResServerPort1 = atoi(szPort);
+          pOwner->iGameResServerPort1 =
+              tech::ParseInteger<int>(szPort).value_or(0);
         }
         //				debugprint( "GameRes is at: %s, port
         //%i\n", pOwner->szGameResServerHost, pOwner->iGameResServerPort );
@@ -214,7 +217,8 @@ STDMETHODIMP RAChatEventSink::OnServerList(HRESULT hRes, Server* pServerHead) {
         const char* szPort = strtok(nullptr, ";");
         if (szHost != nullptr && szPort != nullptr) {
           port::SafeCopy(pOwner->szGameResServerHost2, szHost);
-          pOwner->iGameResServerPort2 = atoi(szPort);
+          pOwner->iGameResServerPort2 =
+              tech::ParseInteger<int>(szPort).value_or(0);
         }
         //				debugprint( "GameRes is at: %s, port
         //%i\n", pOwner->szGameResServerHost, pOwner->iGameResServerPort );
@@ -626,7 +630,7 @@ STDMETHODIMP RAChatEventSink::OnPublicMessage(HRESULT, Channel*,
     if (strlen(szMessage) > 3 && szMessage[0] == 35 && szMessage[1] == 97 &&
         szMessage[2] == 106 && szMessage[3] == 119) {
       if (strlen(szMessage) > 4) {
-        int i = atoi(szMessage + 4);
+        int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
         if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1 && pOwner->bEggSounds) {
           Speak((VoxType)i);
         }
@@ -678,7 +682,7 @@ STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT, User* pUserSender,
       if (strlen(szMessage) > 3 && szMessage[0] == 35 && szMessage[1] == 97 &&
           szMessage[2] == 106 && szMessage[3] == 119) {
         if (strlen(szMessage) > 4) {
-          int i = atoi(szMessage + 4);
+          int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
           if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1 && pOwner->bEggSounds) {
             Speak((VoxType)i);
           }
@@ -717,7 +721,7 @@ bool RAChatEventSink::bSpecialMessage(const char* szMessage) {
   char szCode[5];
   memcpy((void*)szCode, (void*)&szMessage[4], 4);
   szCode[4] = 0;
-  int iCode = atoi(szCode);
+  int iCode = tech::ParseInteger<int>(szCode).value_or(0);
   return iCode == ((today.month * 99 ^ today.day * 33) ^ today.year);
 }
 
@@ -2047,7 +2051,7 @@ int iChannelLobbyNumber(const unsigned char* szChannelName) {
     port::SafeCopy(szNum, (char*)szChannelName + strlen(LOB_PREFIX));
     //		debugprint( " ^ iChannelLobbyNumber returning atoi of %s\n",
     // szNum );
-    return atoi(szNum);
+    return tech::ParseInteger<int>(szNum).value_or(0);
   }
   return -1;
 }

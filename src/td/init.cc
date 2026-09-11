@@ -46,7 +46,6 @@
  *- - - - - - - */
 
 #include "td/init.h"
-#include "td/infantry.h"
 
 #include <algorithm>
 #include <cctype>
@@ -72,10 +71,11 @@
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "td/anim.h"
 #include "td/aircraft.h"
-#include "td/bullet.h"
+#include "td/anim.h"
+#include "td/base.h"
 #include "td/building.h"
+#include "td/bullet.h"
 #include "td/ccfile.h"
 #include "td/config.h"
 #include "td/conquer.h"
@@ -86,11 +86,10 @@
 #include "td/externs.h"
 #include "td/factory.h"
 #include "td/globals.h"
-#include "td/base.h"
-#include "td/score.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/house.h"
+#include "td/infantry.h"
 #include "td/ini.h"
 #include "td/intro.h"
 #include "td/ipx.h"
@@ -115,6 +114,7 @@
 #include "td/rand.h"
 #include "td/saveload.h"
 #include "td/scenario.h"
+#include "td/score.h"
 #include "td/smudge.h"
 #include "td/special.h"
 #include "td/tcpip.h"
@@ -126,6 +126,7 @@
 #include "td/trigger.h"
 #include "td/type.h"
 #include "tech/crc.h"
+#include "tech/number_parse.h"
 #include "tech/rawfile.h"
 #include "winvq/vqa32/vqaplay.h"
 
@@ -881,8 +882,10 @@ bool Select_Game(bool fade) {
     }
 
     while (process) {
-      if (!DebugNewGame.empty()) {
-        Scenario = atoi(DebugNewGame.c_str() + 3);
+      if (DebugNewGame.size() >= 5) {
+        Scenario =
+            tech::ParseInteger<int>(std::string_view{DebugNewGame}.substr(3, 2))
+                .value_or(0);
         ScenPlayer = DebugNewGame[2] == 'B' ? SCEN_PLAYER_NOD : SCEN_PLAYER_GDI;
         Whom = ScenPlayer == SCEN_PLAYER_NOD ? HOUSE_BAD : HOUSE_GOOD;
         GameToPlay = GAME_NORMAL;
@@ -1596,7 +1599,7 @@ bool Select_Game(bool fade) {
   *one. *	Skip this if we've already loaded a save-game.
   */
   if (!gameloaded) {
-    if (!DebugNewGame.empty()) {
+    if (DebugNewGame.size() >= 5) {
       port::SafeCopy(ScenarioName, DebugNewGame.c_str());
       DebugNewGame.clear();
     } else if (Debug_Map) {
@@ -2160,7 +2163,8 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     char* string = strupr(argv[index]);      // Pointer to argument.
 
     if (strncmp(string, "-SEED", 5) == 0) {
-      CustomSeed = static_cast<unsigned short>(atoi(string + 5));
+      CustomSeed =
+          tech::ParseInteger<uint16_t>(string + 5).value_or(CustomSeed);
       continue;
     }
     if (strncmp(string, "-NEWGAME", 8) == 0) {
@@ -2171,15 +2175,15 @@ bool Parse_Command_Line(int argc, char* argv[]) {
       continue;
     }
     if (strncmp(string, "-LOADGAME", 9) == 0) {
-      DebugLoadGame = atoi(string + 9);
+      DebugLoadGame = tech::ParseInteger<int>(string + 9).value_or(-1);
       continue;
     }
     if (strncmp(string, "-QUITFRAME", 10) == 0) {
-      DebugQuitAtFrame = atoi(string + 10);
+      DebugQuitAtFrame = tech::ParseInteger<int>(string + 10).value_or(-1);
       continue;
     }
     if (strncmp(string, "-SAVESLOT", 9) == 0) {
-      DebugSaveSlot = atoi(string + 9);
+      DebugSaveSlot = tech::ParseInteger<int>(string + 9).value_or(-1);
       continue;
     }
     if (strcmp(string, "-GLOBALTEST") == 0) {
@@ -2471,13 +2475,15 @@ bool Parse_Command_Line(int argc, char* argv[]) {
       int i = 0;
       char* p = strtok(string + 8, ".");
       while (p) {
-        unsigned int x = 0;
-
-        sscanf(p, "%x", &x);  // convert from hex string to int
+        const auto byte = tech::ParseHex<uint8_t>(p);
+        if (!byte || i >= 10) {
+          i = 0;  // Reject the address instead of accepting a partial network.
+          break;
+        }
         if (i < 4) {
-          net[i] = static_cast<char>(x);  // fill NetNum
+          net[i] = static_cast<char>(*byte);  // fill NetNum
         } else {
-          node[i - 4] = static_cast<char>(x);  // fill NetNode
+          node[i - 4] = static_cast<char>(*byte);  // fill NetNode
         }
         i++;
         p = strtok(nullptr, ".");
@@ -2499,12 +2505,9 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     **	Specify socket ID, as an offset from 0x4000.
     */
     if (strstr(string, "-SOCKET")) {
-      unsigned short socket;
-
-      socket = static_cast<unsigned short>(atoi(string + strlen("SOCKET")));
-      socket += 0x4000;
-      if (socket >= 0x4000 && socket < 0x8000) {
-        Ipx.Set_Socket(socket);
+      const auto offset = tech::ParseInteger<int>(string + strlen("-SOCKET"));
+      if (offset && *offset >= 0 && *offset < 0x4000) {
+        Ipx.Set_Socket(*offset + 0x4000);
       }
       continue;
     }
