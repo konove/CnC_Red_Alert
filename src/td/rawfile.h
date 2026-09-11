@@ -128,7 +128,7 @@ EZERO,                 // Non-error.
   **	This is a record of the access rights used to open the file. These
   *rights are *	used if the file object is duplicated.
   */
-  FileAccess Rights;
+  FileAccess Rights = FileAccess::kRead;
 
   RawFileClass(const char* filename);
   RawFileClass();

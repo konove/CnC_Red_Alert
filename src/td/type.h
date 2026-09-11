@@ -158,7 +158,7 @@ class HouseTypeClass {
   **	This is the filename suffix to use when creating a house specific
   **	file name. It is three characters long.
   */
-  char Suffix[4];
+  char Suffix[4]{};
 
   /*
   **	This is the "lemon percentage" to use when determining if a particular
@@ -216,7 +216,7 @@ class AbstractTypeClass {
   **	used in scenario control files and for other text based unique
   **	identification purposes.
   */
-  char IniName[9];
+  char IniName[9]{};
 
   /*
   **	The translated (language specific) text name number of this object.
@@ -224,7 +224,7 @@ class AbstractTypeClass {
   **	text file. Whenever the name of the object needs to be displayed,
   **	this is used to determine the text string.
   */
-  int Name;
+  int Name = 0;
 
   // Names are saved values; imagery and static type tables remain external.
   template <class Archive>
@@ -338,7 +338,7 @@ class ObjectTypeClass : public AbstractTypeClass {
   /*
   **	This points to the radar imagery for this object.
   */
-  const void* RadarIcon;
+  const void* RadarIcon = nullptr;
 
   //--------------------------------------------------------------------
   ObjectTypeClass(bool is_sentient, bool is_flammable, bool is_crushable,
@@ -672,7 +672,7 @@ class BuildingTypeClass : public TechnoTypeClass {
     int Count;  // Number of frames in this animation.
     int Rate;   // Number of ticks to delay between each frame.
   } AnimControlType;
-  AnimControlType Anims[BSTATE_COUNT];
+  AnimControlType Anims[BSTATE_COUNT]{};
 
   /*
   **	This is a mask flag used to determine if all the necessary prerequisite
@@ -757,7 +757,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	The construction animation graphic data pointer is
   **	pointed to by this element.
   */
-  const void* BuildupData;
+  const void* BuildupData = nullptr;
 
   void Init_Anim(BStateType state, int start, int count, int rate) const;
 };
@@ -892,7 +892,7 @@ class UnitTypeClass : public TechnoTypeClass {
   /*
   **	The width or height of the largest dimension for this unit.
   */
-  int MaxSize;
+  int MaxSize = 0;
 
   /*
   **	This is the explicit unit class constructor.
@@ -995,7 +995,7 @@ class InfantryTypeClass : public TechnoTypeClass {
   **	This is an array of the various animation frame data for the actions
   *that *	the infantry may perform.
   */
-  DoInfoStruct DoControls[DO_COUNT];
+  DoInfoStruct DoControls[DO_COUNT]{};
 
   /*
   **	There are certain units with special animation sequences built into the
@@ -1227,7 +1227,7 @@ class TerrainTypeClass : public ObjectTypeClass {
   /*
   **	This is the fully translated name for the terrain element.
   */
-  short FullName;
+  short FullName = 0;
 
   /*
   **	This is the coordinate offset (from upper left) of where the center base
@@ -1307,7 +1307,7 @@ class TemplateTypeClass : public ObjectTypeClass {
   /*
   **	This is the fully translated name for the terrain element.
   */
-  int FullName;
+  int FullName = 0;
 
   /*
   **	Raw dimensions of this template (in icons).
@@ -1631,7 +1631,7 @@ class OverlayTypeClass : public ObjectTypeClass {
   /*
   **	This is the fully translated name for the terrain element.
   */
-  int FullName;
+  int FullName = 0;
 
   /*
   **	What type of ground does this make the cell it occupies?
@@ -1742,7 +1742,7 @@ class SmudgeTypeClass : public ObjectTypeClass {
   /*
   **	This is the fully translated smudge name.
   */
-  int FullName;
+  int FullName = 0;
 
   /*
   **	Some smudges are larger than one cell. If this is the case, then

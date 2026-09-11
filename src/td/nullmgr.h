@@ -76,7 +76,7 @@ class NullModemClass : public ConnManClass {
 
   char* EchoBuf;
   int EchoSize;
-  int EchoCount;
+  int EchoCount = 0;
 
   int OldIRQPri;
 
@@ -208,8 +208,8 @@ class NullModemClass : public ConnManClass {
   **	RXCount is the # of characters we currently have in our buffer.
   */
   char* RXBuf;
-  int RXSize;
-  int RXCount;
+  int RXSize = 0;
+  int RXCount = 0;
 
   /*.....................................................................
   Timing parameters for all connections

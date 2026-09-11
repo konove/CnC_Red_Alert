@@ -182,7 +182,7 @@ class FootClass : public TechnoClass {
   *generations *	of path lists before the ultimate destination is
   *reached. The game logic *	handles regenerating the path list as necessary.
   */
-  FacingType Path[kConquerPathMax];
+  FacingType Path[kConquerPathMax]{};
 
   /*
   **	When there is a complete findpath failure, this timer is initialized so

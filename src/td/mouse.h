@@ -108,7 +108,7 @@ class MouseClass : public ScrollClass {
   **	If the small representation of the mouse is active, then this flag is
   *true.
   */
-  unsigned IsSmall : 1;
+  unsigned IsSmall : 1 = 0;
 
   /*
   **	This points to the loaded mouse shapes.
@@ -128,7 +128,7 @@ class MouseClass : public ScrollClass {
   **	For animating mouse shapes, this controls the frame and animation rate.
   */
   static CountDownTimerClass Timer;
-  int Frame;
+  int Frame = 0;
   //		StageClass Control;
 
 };

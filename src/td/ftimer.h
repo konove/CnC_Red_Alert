@@ -102,8 +102,8 @@ class TCountDownTimerClass {
   }  // Fetch current count down value.
 
  protected:
-  int64_t Started;    // Initial frame time start.
-  int64_t DelayTime;  // Ticks remaining before countdown timer expires.
+  int64_t Started = -1;  // Initial frame time start.
+  int64_t DelayTime = 0;  // Ticks remaining before countdown timer expires.
 };
 
 #endif  // CNC_RED_ALERT_TD_FTIMER_H_

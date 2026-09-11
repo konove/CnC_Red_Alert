@@ -40,8 +40,8 @@ class TextBlitClass {
     int Height;
   } BlitEntryType;
 
-  BlitEntryType BlitListo[MAX_ENTRIES];
-  int Count;
+  BlitEntryType BlitListo[MAX_ENTRIES]{};
+  int Count = 0;
 };
 
 extern GraphicBufferClass* TextPrintBuffer;

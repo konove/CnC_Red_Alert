@@ -55,16 +55,16 @@ class RadarClass : public DisplayClass {
   template <class Archive>
   void Serialize(Archive& ar);
 
-  int RadX;
-  int RadOffX;
-  int RadY;
-  int RadOffY;
-  int RadWidth;
-  int RadHeight;
-  int RadIWidth;
-  int RadIHeight;
-  int RadPWidth;
-  int RadPHeight;
+  int RadX = 0;
+  int RadOffX = 0;
+  int RadY = 0;
+  int RadOffY = 0;
+  int RadWidth = 0;
+  int RadHeight = 0;
+  int RadIWidth = 0;
+  int RadIHeight = 0;
+  int RadPWidth = 0;
+  int RadPHeight = 0;
 
   RadarClass();
 
@@ -133,10 +133,10 @@ class RadarClass : public DisplayClass {
   /*
   **	If the radar map is visible then this flag is true.
   */
-  unsigned DoesRadarExist : 1;
+  unsigned DoesRadarExist : 1 = 0;
   unsigned IsRadarActive : 1;
-  unsigned IsRadarActivating : 1;
-  unsigned IsRadarDeactivating : 1;
+  unsigned IsRadarActivating : 1 = 0;
+  unsigned IsRadarDeactivating : 1 = 0;
 
   /*
   ** Special radar frame is set when a new location is selected on the
@@ -145,7 +145,7 @@ class RadarClass : public DisplayClass {
   ** again.
   */
   unsigned SpecialRadarFrame : 3;
-  unsigned RadarAnimFrame : 6;
+  unsigned RadarAnimFrame : 6 = 0;
 
   static const void* RadarAnim;
 
@@ -178,9 +178,9 @@ class RadarClass : public DisplayClass {
   **	radar map display. The width and height is controlled by the
   **	actual dimensions of the radar map display box (in pixels).
   */
-  int RadarX;
-  int RadarY;
-  int RadarCell;
+  int RadarX = 0;
+  int RadarY = 0;
+  int RadarCell = 0;
 
   /*
   **	This is the origin (pixel offsets) for the upper left corner
@@ -188,13 +188,13 @@ class RadarClass : public DisplayClass {
   **	This is biased so that the radar map, when smaller than full
   **	size will appear centered.
   */
-  unsigned BaseX;
-  unsigned BaseY;
+  unsigned BaseX = 0;
+  unsigned BaseY = 0;
 
-  int RadarWidth;
-  int RadarCellWidth;
-  int RadarHeight;
-  int RadarCellHeight;
+  int RadarWidth = 0;
+  int RadarCellWidth = 0;
+  int RadarHeight = 0;
+  int RadarCellHeight = 0;
 
   /*
   **	If the radar map is in zoom mode, then this value will be true.
@@ -212,9 +212,9 @@ class RadarClass : public DisplayClass {
   **	list is maintained for maximum speed.
   */
   int PixelPtr;
-  int ZoomFactor;
+  int ZoomFactor = 0;
   enum PixelStackEnums { PIXELSTACK = 200 };
-  CELL PixelStack[PIXELSTACK];
+  CELL PixelStack[PIXELSTACK]{};
 };
 
 #endif  // CNC_RED_ALERT_TD_RADAR_H_

@@ -148,34 +148,34 @@ class CommBufferClass {
   /*
   ....................... Response time variables .......................
   */
-  unsigned long DelaySum;   // sum of last 4 delay times
-  unsigned long NumDelay;   // current # delay times summed
-  unsigned long MeanDelay;  // current average delay time
-  unsigned long MaxDelay;   // max delay ever for this queue
+  unsigned long DelaySum = 0;  // sum of last 4 delay times
+  unsigned long NumDelay = 0;  // current # delay times summed
+  unsigned long MeanDelay = 0;  // current average delay time
+  unsigned long MaxDelay = 0;  // max delay ever for this queue
 
   /*
   ........................ Send Queue variables .........................
   */
   SendQueueType* SendQueue;  // incoming packets
-  int SendCount;             // # packets in the queue
-  unsigned long SendTotal;   // total # added to send queue
+  int SendCount = 0;         // # packets in the queue
+  unsigned long SendTotal = 0;  // total # added to send queue
   int* SendIndex;            // array of Send entry indices
 
   /*
   ....................... Receive Queue variables .......................
   */
   ReceiveQueueType* ReceiveQueue;  // outgoing packets
-  int ReceiveCount;                // # packets in the queue
-  unsigned long ReceiveTotal;      // total # added to receive queue
+  int ReceiveCount = 0;            // # packets in the queue
+  unsigned long ReceiveTotal = 0;  // total # added to receive queue
   int* ReceiveIndex;               // array of Receive entry indices
 
   /*
   ......................... Debugging Variables .........................
   */
-  int DebugOffset;    // offset into app's packet for ID
-  int DebugSize;      // size of app's ID
-  const char** DebugNames;  // ptr to array of app-specific names
-  int DebugMaxNames;  // max # of names in array
+  int DebugOffset = 0;  // offset into app's packet for ID
+  int DebugSize = 0;  // size of app's ID
+  const char** DebugNames = nullptr;  // ptr to array of app-specific names
+  int DebugMaxNames = 0;  // max # of names in array
 };
 
 #endif  // CNC_RED_ALERT_TD_COMBUF_H_

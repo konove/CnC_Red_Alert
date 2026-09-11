@@ -100,7 +100,7 @@ class ScoreAnimClass {
  public:
   ScoreAnimClass(int x, int y, const void* data);
   int XPos;
-  int Stage;
+  int Stage = 0;
   int YPos;
   CountDownTimerClass Timer;
   const void* DataPtr;

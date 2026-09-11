@@ -106,7 +106,7 @@ class MessageListClass {
   char* EditBuf;                // ptr to current edit buffer
   int EditCurPos;               // current edit position
   int EditInitPos;              // initial edit position
-  int Width;                    // Maximum width in pixels of editable string
+  int Width = 0;                // Maximum width in pixels of editable string
 
   /*
   ** Static buffers provided for messages.  They must be long enough for

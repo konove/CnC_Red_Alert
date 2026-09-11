@@ -556,7 +556,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   char descr[kDescripMax];
   unsigned scenario;  // scenario #
   HousesType house;   // house
-  FindFileState find_state;
+  FindFileState find_state{};
   int id;
 
   /*

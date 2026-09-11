@@ -300,7 +300,7 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   Array of connection queues
   .....................................................................*/
-  IPXConnClass* Connection[CONNECT_MAX];  // array of connection object ptrs
+  IPXConnClass* Connection[CONNECT_MAX]{};  // array of connection object ptrs
   int NumConnections;                     // # connection objects in use
   IPXGlobalConnClass* GlobalChannel;      // the Global Channel
 
@@ -347,25 +347,25 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   The number & size of packet buffers in low memory
   .....................................................................*/
-  int PacketLen;  // size of packet without IPX header
+  int PacketLen = 0;  // size of packet without IPX header
 
   /*.....................................................................
   This is a real-mode pointer to the address of the real-mode assembly
   entry point.
   .....................................................................*/
-  long Handler;
+  long Handler = 0;
 
   /*.....................................................................
   Event Control Block for listening; contained within the real-mode
   assembly routine's data area
   .....................................................................*/
-  ECBType* ListenECB;  // ECB for listening
+  ECBType* ListenECB = nullptr;  // ECB for listening
 
   /*.....................................................................
   ptr to the 1st header & data buffers in the packet buffer array
   .....................................................................*/
-  IPXHeaderType* FirstHeaderBuf;  // array of packet headers & buffers
-  char* FirstDataBuf;             // 1st data buffer area
+  IPXHeaderType* FirstHeaderBuf = nullptr;  // array of packet headers & buffers
+  char* FirstDataBuf = nullptr;   // 1st data buffer area
 
   /*.....................................................................
   Current packet index & ptrs for parsing packets. Only the legacy DOS IPX
@@ -380,9 +380,9 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   ECB, header, & buffer for sending
   .....................................................................*/
-  ECBType* SendECB;           // ECB for sending
-  IPXHeaderType* SendHeader;  // Header for sending
-  char* SendBuf;              // buffer for sending
+  ECBType* SendECB = nullptr;  // ECB for sending
+  IPXHeaderType* SendHeader = nullptr;  // Header for sending
+  char* SendBuf = nullptr;    // buffer for sending
 
   /*.....................................................................
   Various Statistics

@@ -50,12 +50,12 @@
 class PowerClass : public RadarClass {
  public:
   void ResetTransientUiState();
-  int PowX;
-  int PowY;
-  int PowWidth;
-  int PowHeight;
-  int PowLineSpace;
-  int PowLineWidth;
+  int PowX = 0;
+  int PowY = 0;
+  int PowWidth = 0;
+  int PowHeight = 0;
+  int PowLineSpace = 0;
+  int PowLineWidth = 0;
 
   PowerClass();
 
@@ -106,7 +106,7 @@ class PowerClass : public RadarClass {
  private:
   int Power_Height(int value);
 
-  unsigned IsActive : 1;
+  unsigned IsActive : 1 = 0;
 
   int RecordedDrain;
   int RecordedPower;

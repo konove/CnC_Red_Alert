@@ -367,7 +367,7 @@ void TcpipManagerClass::Write(void* buffer, int buffer_len) {
  *=============================================================================================*/
 
 bool TcpipManagerClass::Add_Client() {
-  struct sockaddr_in addr;
+  struct sockaddr_in addr{};
   socklen_t addrsize;
   bool delay = true;
 
@@ -501,7 +501,7 @@ void TcpipManagerClass::Set_Host_Address(char* address) {
  *=============================================================================================*/
 
 void TcpipManagerClass::Start_Client() {
-  struct sockaddr_in addr;
+  struct sockaddr_in addr{};
   int i;
 
   addr.sin_family = AF_INET;
@@ -583,7 +583,7 @@ void TcpipManagerClass::Start_Client() {
  *=============================================================================================*/
 
 void TcpipManagerClass::Close_Socket(SOCKET s) {
-  linger ling;
+  linger ling{};
 
   ling.l_onoff = 0;   // linger off
   ling.l_linger = 0;  // timeout in seconds (ie close now)

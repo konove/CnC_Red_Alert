@@ -7,14 +7,14 @@
 // Node for lists of available games & players in multiplayer.
 // 'Game' structure is for games; 'Player' structure for players.
 typedef struct NodeNameTag {
-  char Name[MPLAYER_NAME_MAX];
+  char Name[MPLAYER_NAME_MAX]{};
   IPXAddressClass Address;
   union {
     struct {
       int Version;
       unsigned char IsOpen;
       unsigned long LastTime;
-    } Game;
+    } Game{};
     struct {
       HousesType House;
       unsigned char Color;

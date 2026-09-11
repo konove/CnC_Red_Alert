@@ -65,7 +65,7 @@ class DisplayClass : public MapClass {
   /*
   **	This indicates the theater that the display is to represent.
   */
-  TheaterType Theater;
+  TheaterType Theater = THEATER_NONE;
 
   /*
   ** The tactical map display position is indicated by the cell of the
@@ -78,8 +78,8 @@ class DisplayClass : public MapClass {
   **	The dimensions (in cells) of the visible window onto the game map. This
   *tactical *	map is how the player interacts and views the game world.
   */
-  int TacLeptonWidth;
-  int TacLeptonHeight;
+  int TacLeptonWidth = 0;
+  int TacLeptonHeight = 0;
 
   /*
   **	These layer control elements are used to group the displayable objects
@@ -213,14 +213,14 @@ class DisplayClass : public MapClass {
   /*
   **	This is the pixel offset for the upper left corner of the tactical map.
   */
-  int TacPixelX;
-  int TacPixelY;
+  int TacPixelX = 0;
+  int TacPixelY = 0;
 
   /*
   **	This is the coordinate that the tactical map should be in at next
   *available opportunity.
   */
-  COORDINATE DesiredTacticalCoord;
+  COORDINATE DesiredTacticalCoord = 0;
 
   /*
   **	If something in the tactical map is to be redrawn, this flag is set to
@@ -295,14 +295,16 @@ class DisplayClass : public MapClass {
   *then the shadow drawing *	will be skipped since it would perform no
   *function.
   */
-  unsigned IsShadowPresent : 1;
+  unsigned IsShadowPresent : 1 = 0;
 
   /*
   **	Rubber band mode consists of stretching a box from the anchor point
   *(specified *	here) to the current cursor position.
   */
-  int BandX, BandY;
-  int NewX, NewY;
+  int BandX = 0;
+  int BandY = 0;
+  int NewX = 0;
+  int NewY = 0;
 
   static const void* ShadowShapes;
   static unsigned char ShadowTrans[(SHADOW_COL_COUNT + 1) * 256];

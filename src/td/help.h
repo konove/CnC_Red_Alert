@@ -73,9 +73,9 @@ class HelpClass : public TabClass {
 
  private:
   static const char* HelpText;
-  int HelpX;
-  int HelpY;
-  int HelpWidth;
+  int HelpX = 0;
+  int HelpY = 0;
+  int HelpWidth = 0;
 
   void Set_Text(int text);
 
@@ -104,8 +104,8 @@ class HelpClass : public TabClass {
   **	This is the draw X and Y coordinate. This position is relative to the X
   *and *	Y coordinates but adjusted for screen edges as necessary.
   */
-  int DrawX;
-  int DrawY;
+  int DrawX = 0;
+  int DrawY = 0;
 
   /*
   **	The width of the help text (in pixels) is stored here. This is a

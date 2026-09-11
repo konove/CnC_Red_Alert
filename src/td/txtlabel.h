@@ -72,7 +72,7 @@ class TextLabelClass : public GadgetClass {
   int Color;
   int PixWidth;
   char Segments;
-  unsigned short CRC;
+  unsigned short CRC = 0;
 };
 
 #endif  // CNC_RED_ALERT_TD_TXTLABEL_H_

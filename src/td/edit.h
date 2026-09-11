@@ -82,13 +82,13 @@ class EditClass : public ControlClass {
   **	can contain.
   */
   char* String;
-  int MaxLength;
+  int MaxLength = 0;
 
   /*
   **	This is the current length of the string. This length will never exceed
   *the *	MaxLength allowed.
   */
-  int Length;
+  int Length = 0;
 
   /*
   **	This is the desired color of the edit control.

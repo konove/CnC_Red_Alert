@@ -69,11 +69,11 @@ IPX address field, so the application can get the address of the sender
 of this message.  This address field must be provided in by the IXP
 Connection Manager class, when it calls this class's Receive_Packet function.
 ---------------------------------------------------------------------------*/
-typedef struct {
-  CommHeaderType Header;
+struct GlobalHeaderType {
+  CommHeaderType Header{};
   IPXAddressClass Address;
-  unsigned short ProductID;
-} GlobalHeaderType;
+  unsigned short ProductID = 0;
+};
 
 /*
 ***************************** Class Declaration *****************************
@@ -140,8 +140,8 @@ class IPXGlobalConnClass : public IPXConnClass {
   supports crossing only one bridge.  Storing the bridge's network number
   allows us to obtain its local target address only once, then re-use it.
   .....................................................................*/
-  NetNumType BridgeNet;
-  NetNodeType BridgeNode;
+  NetNumType BridgeNet{};
+  NetNodeType BridgeNode{};
   int IsBridge;
 
   /*

@@ -155,31 +155,31 @@ class TcpipManagerClass {
 #ifdef _WIN32
   WSADATA WinsockInfo;
 #endif
-  SOCKET ListenSocket;
-  SOCKET ConnectSocket;
-  SOCKET UDPSocket;
-  IN_ADDR ClientIPAddress;
-  char ReceiveBuffer[WS_RECEIVE_BUFFER_LEN];
+  SOCKET ListenSocket = static_cast<SOCKET>(-1);
+  SOCKET ConnectSocket = static_cast<SOCKET>(-1);
+  SOCKET UDPSocket = static_cast<SOCKET>(-1);
+  IN_ADDR ClientIPAddress{};
+  char ReceiveBuffer[WS_RECEIVE_BUFFER_LEN]{};
   // char					InBuffer[WS_IN_BUFFER_LEN];
   // int					InBufferHead;
   // int					InBufferTail;
   // char					OutBuffer[WS_OUT_BUFFER_LEN];
   // int					OutBufferHead;
   // int					OutBufferTail;
-  bool IsServer;
+  bool IsServer = false;
   bool Connected;
-  char HostAddress[IP_ADDRESS_MAX];
-  ConnectStatusEnum ConnectStatus;
+  char HostAddress[IP_ADDRESS_MAX]{};
+  ConnectStatusEnum ConnectStatus = NOT_CONNECTING;
   bool UseUDP;
-  IN_ADDR UDPIPAddress;
+  IN_ADDR UDPIPAddress{};
   int SocketReceiveBuffer;
   int SocketSendBuffer;
-  InternetBufferType ReceiveBuffers[WS_NUM_TX_BUFFERS];
-  InternetBufferType TransmitBuffers[WS_NUM_RX_BUFFERS];
-  int TXBufferHead;
-  int TXBufferTail;
-  int RXBufferHead;
-  int RXBufferTail;
+  InternetBufferType ReceiveBuffers[WS_NUM_TX_BUFFERS]{};
+  InternetBufferType TransmitBuffers[WS_NUM_RX_BUFFERS]{};
+  int TXBufferHead = 0;
+  int TXBufferTail = 0;
+  int RXBufferHead = 0;
+  int RXBufferTail = 0;
 };
 
 extern TcpipManagerClass Winsock;

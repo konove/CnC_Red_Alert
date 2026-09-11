@@ -113,8 +113,8 @@ class QueueClass {
   int Add(const T&);
 
  private:
-  int Head;  // Index of element in list the longest.
-  int Tail;  // Index where next new addition will go.
+  int Head = 0;  // Index of element in list the longest.
+  int Tail = 0;  // Index where next new addition will go.
 
   T Array[size];  // Raw array of objects.
 };

@@ -77,8 +77,8 @@ class LinkClass {
   /*
   **	Pointers to previous and next link objects in chain.
   */
-  LinkClass* Next;
-  LinkClass* Prev;
+  LinkClass* Next = nullptr;
+  LinkClass* Prev = nullptr;
 };
 
 #endif  // CNC_RED_ALERT_TD_LINK_H_

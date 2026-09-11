@@ -952,7 +952,7 @@ bool MapClass::Read_Binary(const char* root, unsigned long* crc)
     struct {
       TemplateType TType;   // Template type.
       unsigned char TIcon;  // Template icon number.
-    } temp;
+    } temp{};
 
     if (file.Read(&temp, sizeof(temp)) != sizeof(temp)) {
       break;

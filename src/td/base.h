@@ -60,8 +60,8 @@ class BaseNodeClass {
   int operator!=(const BaseNodeClass& node);
   int operator>(const BaseNodeClass& node);
 
-  StructType Type;
-  COORDINATE Coord;
+  StructType Type = STRUCT_NONE;
+  COORDINATE Coord = 0;
 };
 
 /****************************************************************************
@@ -128,7 +128,7 @@ class BaseClass {
   /**********************************************************************
   ** This is the house this base belongs to.
   */
-  HousesType House;
+  HousesType House = HOUSE_NONE;
 };
 
 #endif  // CNC_RED_ALERT_TD_BASE_H_

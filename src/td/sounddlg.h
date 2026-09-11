@@ -114,44 +114,44 @@ class SoundControlsClass {
   int Init();
 
  private:
-  int Option_Width;
-  int Option_Height;
+  int Option_Width = 0;
+  int Option_Height = 0;
 
-  int Option_X;
-  int Option_Y;
+  int Option_X = 0;
+  int Option_Y = 0;
 
-  int Listbox_X;
-  int Listbox_Y;
-  int Listbox_W;
-  int Listbox_H;
+  int Listbox_X = 0;
+  int Listbox_Y = 0;
+  int Listbox_W = 0;
+  int Listbox_H = 0;
 
-  int Button_Width;
-  int Button_X;
-  int Button_Y;
+  int Button_Width = 0;
+  int Button_X = 0;
+  int Button_Y = 0;
 
-  int Stop_X;
-  int Stop_Y;
+  int Stop_X = 0;
+  int Stop_Y = 0;
 
-  int Play_X;
-  int Play_Y;
+  int Play_X = 0;
+  int Play_Y = 0;
 
-  int OnOff_Width;
+  int OnOff_Width = 0;
 
-  int Shuffle_X;
-  int Shuffle_Y;
+  int Shuffle_X = 0;
+  int Shuffle_Y = 0;
 
-  int Repeat_X;
-  int Repeat_Y;
+  int Repeat_X = 0;
+  int Repeat_Y = 0;
 
-  int MSlider_X;
-  int MSlider_Y;
-  int MSlider_W;
-  int MSlider_Height;
+  int MSlider_X = 0;
+  int MSlider_Y = 0;
+  int MSlider_W = 0;
+  int MSlider_Height = 0;
 
-  int FXSlider_X;
-  int FXSlider_Y;
-  int FXSlider_W;
-  int FXSlider_Height;
+  int FXSlider_X = 0;
+  int FXSlider_Y = 0;
+  int FXSlider_W = 0;
+  int FXSlider_Height = 0;
 };
 
 #endif  // CNC_RED_ALERT_TD_SOUNDDLG_H_

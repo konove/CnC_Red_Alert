@@ -428,7 +428,7 @@ bool Init_Game(int, char*[]) {
   /*
   **	Before all else, cache any additional mixfiles.
   */
-  FindFileState state;
+  FindFileState state{};
   if (Find_First_File("SC*.MIX", state)) {
     do {
       // don't cache scores

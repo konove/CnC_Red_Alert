@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Steps 0–34a are complete; step 33 is `67677f6f`; step 32 is `d9a92318`; step 31 is `bf27db84`; step 30 is `fbb36dd1`; step 29 is `2689ff4c`; step 28 is `96f23c5b`; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
+- Steps 0–34b are complete; step 34a is `1cb944f7`; step 33 is `67677f6f`; step 32 is `d9a92318`; step 31 is `bf27db84`; step 30 is `fbb36dd1`; step 29 is `2689ff4c`; step 28 is `96f23c5b`; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -294,7 +294,24 @@
 - Step-34a validation: strict builds of both games and all **197 CTest tests** pass. TD globals smoke
   matches **5,742** state records and rejects all **14** malformed globals; RA smoke matches **240**
   positions. Real-display and live-multiplayer checks remain pending.
-  Next checkpoint is **34b: remaining TD initialization sites**.
+- Step 34b is complete: the remaining **61 TD initialization sites** are fixed. Type metadata,
+  animation/path buffers, UI geometry and controls, map/editor state, communication queues and IPX/TCP
+  buffers now have explicit defaults. Search records, map-file records, and socket locals are
+  value-initialized. The multiplayer node union initializes its Game variant; existing setup,
+  reset, copy, and string-population routines remain in place.
+- Heap-object `IsActive` starts **true**, while the unrelated power UI flag starts false. Default
+  sockets use the invalid-handle sentinel, sequence IDs retain **0xffffffff**, sidebar flashing uses
+  **-1**, and base-building/house/theater enums use their none sentinels. Countdown initialization
+  still goes through Set, preserving its active-timer behavior.
+- The single-check sweep of **308 TD translation units** reports **zero initialization findings**
+  and **zero compilation errors**. Only the **120 RA sites** from the historical baseline remain.
+  Save formats stay **RA 16 / TD 10**; no suppressions were added.
+- The IPX global packet header now has a struct name so its member initializers remain valid under
+  the strict linkage diagnostic; its members and layout are unchanged.
+- Step-34b validation: strict builds of both games and all **197 CTest tests** pass. TD globals smoke
+  matches **5,742** state records and rejects all **14** malformed globals; RA smoke matches **240**
+  positions. Real-display and live-multiplayer checks remain pending.
+  Next checkpoint is **35a: RA behavior-relevant initialization**.
 - Step-19 validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
   Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke
