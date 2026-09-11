@@ -580,12 +580,6 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
   Object = nullptr;
   Owner = HOUSE_NONE;
 
-  if (Class->Stages == -1) {
-    (int&)Class->Stages = Get_Build_Frame_Count(Class->Get_Image_Data());
-  }
-  if (Class->LoopEnd == -1) {
-    (int&)Class->LoopEnd = Class->Stages;
-  }
   if (Class->IsNormalized) {
     Set_Rate(Options.Normalize_Delay(Class->Delay));
   } else {

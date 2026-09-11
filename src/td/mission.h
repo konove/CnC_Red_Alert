@@ -118,6 +118,10 @@ class MissionClass : public ObjectClass {
   /*
   **	File I/O.
   */
+  // Field-wise save support; NoInit remains for raw mobile subclasses.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   void Code_Pointers() override;
   void Decode_Pointers() override;
 

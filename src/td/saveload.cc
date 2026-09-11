@@ -54,6 +54,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/log/log.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "sdllib/misc.h"
@@ -438,6 +439,7 @@ bool Load_Game(int id) {
       !Smudges.Load(reader) || !Templates.Load(reader) ||
       !Terrains.Load(reader) || !Units.Load(reader) ||
       !Factories.Load(reader)) {
+    DLOG(ERROR) << "Cannot load saved heaps: " << reader.error();
     file.Close();
     return false;
   }

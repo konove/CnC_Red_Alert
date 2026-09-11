@@ -56,8 +56,6 @@ class ArchiveWriter;
 #include "td/radio.h"
 #include "td/techno.h"
 #include "td/type.h"
-#include "tech/noinit.h"
-#include "tech/wwfile.h"
 
 #define MAX_DOOR_STAGE 18  // # of frames of door opening on weapons factory
 #define DOOR_OPEN_STAGE 9  // frame on which the door is entirely open
@@ -71,27 +69,27 @@ class ArchiveWriter;
 */
 class BuildingClass final : public TechnoClass {
  public:
-  const BuildingTypeClass* Class;
+  const BuildingTypeClass* Class = nullptr;
   operator StructType() const { return Class->Type; }
 
   /*
   **	If this building is in the process of producing something, then this
   **	will point to the factory manager.
   */
-  FactoryClass* Factory;
+  FactoryClass* Factory = nullptr;
 
   /*
   **	This is the house that originally owned this factory. Objects buildable
   **	by this house type will be produced from this factory regardless of who
   **	the current owner is.
   */
-  HousesType ActLike;
+  HousesType ActLike = HOUSE_NONE;
 
   /*
   **	If the building is at a good point to change orders, then this
   **	flag will be set to true.
   */
-  unsigned IsReadyToCommence : 1;
+  unsigned IsReadyToCommence : 1 = false;
 
   /*
   **	If this building is currently spending money to repair itself, then
@@ -99,40 +97,40 @@ class BuildingClass final : public TechnoClass {
   *building *	has reached full strength, when money is exhausted, or if the
   *player *	specifically stops the repair process.
   */
-  unsigned IsRepairing : 1;
+  unsigned IsRepairing : 1 = false;
 
   /*
   **	If repair is currently in progress and this flag is true, then a wrench
   *graphic *	will be overlaid on the building to give visual feedback for the
   *repair process.
   */
-  unsigned IsWrenchVisible : 1;
+  unsigned IsWrenchVisible : 1 = false;
 
   /*
   ** This flag is set when a commando has raided the building and planted
   ** plastic explosives.  When the CommandoCountDown timer expires, the
   ** building takes massive damage.
   */
-  unsigned IsGoingToBlow : 1;
+  unsigned IsGoingToBlow : 1 = false;
 
   /*
   **	If this building was destroyed by some method that would prevent
   **	survivors, then this flag will be true.
   */
-  unsigned IsSurvivorless : 1;
+  unsigned IsSurvivorless : 1 = false;
 
   /*
   **	These state control variables are used by the oblisk for the charging
   **	animation.
   */
-  unsigned IsCharging : 1;
-  unsigned IsCharged : 1;
+  unsigned IsCharging : 1 = false;
+  unsigned IsCharged : 1 = false;
 
   /*
   **	A building that has been captured will not contain the full compliment
   **	of crew. This is true even if it subsiquently gets captured back.
   */
-  unsigned IsCaptured : 1;
+  unsigned IsCaptured : 1 = false;
 
   /*
   **	Special countdown to destruction value. If the building is destroyed,
@@ -145,27 +143,27 @@ class BuildingClass final : public TechnoClass {
   **	This is the current animation processing state that the building is
   **	in.
   */
-  BStateType BState;
-  BStateType QueueBState;
+  BStateType BState = BSTATE_NONE;
+  BStateType QueueBState = BSTATE_NONE;
 
   /*
   ** For multiplayer games, this keeps track of the last house to damage
   ** this building, so if it burns to death or otherwise gradually dies,
   ** proper credit can be given for the kill.
   */
-  HousesType WhoLastHurtMe;
+  HousesType WhoLastHurtMe = HOUSE_NONE;
 
   /*
   **	This is the saboteur responsible for this building's destruction.
   */
-  TARGET WhomToRepay;
+  TARGET WhomToRepay = kTargetNone;
 
   /*
   **	This is a record of the last strength of the building. Every so often,
   **	it will compare this strength to the current strength. If there is a
   **	discrepency, then the owner power is adjusted accordingly.
   */
-  int LastStrength;
+  int LastStrength = 0;
 
   /*
   **	This is the countdown timer that regulates placement retry logic
@@ -179,10 +177,8 @@ class BuildingClass final : public TechnoClass {
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
-  BuildingClass() : Class(nullptr) {}
+  BuildingClass() { IsActive = true; }
   BuildingClass(StructType type, HousesType house);
-  BuildingClass(const NoInitClass& x)
-      : TechnoClass(x), CountDown(x), PlacementDelay(x) {}
   ~BuildingClass() override;
   RTTIType What_Am_I() const override { return RTTI_BUILDING; }
 
@@ -297,10 +293,9 @@ class BuildingClass final : public TechnoClass {
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
   static const char* INI_Name() { return "STRUCTURES"; }
-  bool Load(ArchiveReader& file);
-  bool Save(ArchiveWriter& file);
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
+  // Saves building state and checked references without scenario side effects.
+  template <class Archive>
+  void Serialize(Archive& ar);
   void Update_Specials();
 
   /*
@@ -314,10 +309,6 @@ class BuildingClass final : public TechnoClass {
 
   static const COORDINATE CenterOffset[BSIZE_COUNT];
 
-  /*
-  ** This contains the value of the Virtual Function Table Pointer
-  */
-  static void* VTable;
 };
 
 #endif  // CNC_RED_ALERT_TD_BUILDING_H_

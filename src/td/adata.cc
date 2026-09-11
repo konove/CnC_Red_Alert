@@ -46,6 +46,7 @@
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/jshell.h"
+#include "td/keyframe.h"
 #include "td/type.h"
 #include "tech/rawfile.h"
 
@@ -2270,6 +2271,15 @@ void AnimTypeClass::One_Time() {
       (const void*&)As_Reference(index).ImageData = Load_Alloc_Data(file);
     } else {
       (const void*&)As_Reference(index).ImageData = MFCD::Retrieve(fullname);
+    }
+    // Load shells skip AnimClass's gameplay constructor. Derived frame limits
+    // must be ready for both restored animations and newly created ones.
+    const auto& type = As_Reference(index);
+    if (type.Stages == -1) {
+      type.Stages = Get_Build_Frame_Count(type.Get_Image_Data());
+    }
+    if (type.LoopEnd == -1) {
+      type.LoopEnd = type.Stages;
     }
   }
 }

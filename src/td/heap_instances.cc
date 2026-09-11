@@ -17,9 +17,9 @@
 #include "td/trigger.h"
 #include "td/unit.h"
 
-// Adding ObjectClass::Serialize must not migrate subclasses implicitly.
+// Shared base serializers must not migrate mobile subclasses implicitly.
 static_assert(!Serializable<AircraftClass> && RawImage<AircraftClass>);
-static_assert(!Serializable<BuildingClass> && RawImage<BuildingClass>);
+static_assert(Serializable<BuildingClass> && !RawImage<BuildingClass>);
 static_assert(!Serializable<InfantryClass> && RawImage<InfantryClass>);
 static_assert(!Serializable<UnitClass> && RawImage<UnitClass>);
 static_assert(Serializable<AnimClass> && !RawImage<AnimClass>);

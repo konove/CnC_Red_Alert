@@ -12,6 +12,7 @@ extern std::string DebugNewGame;
 extern bool DebugFactoryTest;
 extern bool DebugTeamTest;
 extern bool DebugWorldTest;
+extern bool DebugBuildingTest;
 extern int DebugLoadGame;
 extern int DebugQuitAtFrame;
 extern int DebugSaveSlot;

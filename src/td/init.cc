@@ -46,6 +46,7 @@
  *- - - - - - - */
 
 #include "td/init.h"
+#include "td/infantry.h"
 
 #include <algorithm>
 #include <cctype>
@@ -73,6 +74,7 @@
 #include "sdllib/wwstd.h"
 #include "td/anim.h"
 #include "td/bullet.h"
+#include "td/building.h"
 #include "td/ccfile.h"
 #include "td/config.h"
 #include "td/conquer.h"
@@ -1620,6 +1622,69 @@ bool Select_Game(bool fade) {
       return false;
     }
     DLOG(INFO) << "C&C95 - Scenario started OK.";
+    if (DebugBuildingTest) {
+      const HousesType house = PlayerPtr->Class->House;
+      // Limbo fixtures preserve non-default fields without building AI replacing
+      // them before the save. Campaign buildings exercise normal AI separately.
+      auto* building = new BuildingClass(STRUCT_WEAP, house);
+      auto* peer = new BuildingClass(STRUCT_REPAIR, house);
+      auto* passenger = new InfantryClass(INFANTRY_E1, house);
+      auto* factory = new FactoryClass;
+      if (!building || !peer || !passenger || !factory ||
+          !factory->Set(UnitTypeClass::As_Reference(UNIT_JEEP), *PlayerPtr) ||
+          !factory->Start() ||
+          building->Transmit_Message(RADIO_HELLO, peer) != RADIO_ROGER) {
+        LOG(ERROR) << "-BUILDINGTEST: could not create linked fixtures";
+        return false;
+      }
+      building->Factory = factory;
+      building->Attach(passenger);
+      building->Kills = 75;
+      building->PurchasePrice = 1234;
+      building->Mission = MISSION_REPAIR;
+      building->SuspendedMission = MISSION_GUARD;
+      building->MissionQueue = MISSION_UNLOAD;
+      building->Status = 3;
+      building->CountDown = 175;
+      building->PlacementDelay = 210;
+      building->LastStrength = building->Strength - 20;
+      building->WhomToRepay = peer->As_Target();
+      building->WhoLastHurtMe = HOUSE_BAD;
+      building->BState = BSTATE_ACTIVE;
+      building->QueueBState = BSTATE_IDLE;
+      building->IsCaptured = true;
+      building->IsRepairing = true;
+      building->IsWrenchVisible = true;
+      building->IsReadyToCommence = true;
+      building->IsGoingToBlow = true;
+      building->IsSurvivorless = true;
+      building->IsCharging = true;
+      building->IsCharged = true;
+      building->IsTickedOff = true;
+      building->IsCloakable = true;
+      building->IsLeader = true;
+      building->IsALoaner = true;
+      building->IsLocked = true;
+      building->IsInRecoilState = true;
+      building->IsTethered = true;
+      building->IsDiscoveredByComputer = true;
+      building->IsALemon = true;
+      building->IsSecondShot = true;
+      building->Cloak = CLOAKING;
+      building->CloakingDevice.Set_Stage(4);
+      building->CloakingDevice.Set_Rate(9);
+      building->TarCom = peer->As_Target();
+      building->SuspendedTarCom = passenger->As_Target();
+      building->PrimaryFacing.Set(DIR_NE);
+      building->PrimaryFacing = DIR_SW;
+      building->Arm = 19;
+      building->Ammo = 11;
+      building->FlashCount = 23;
+      building->IsBlushing = true;
+      building->Set_Stage(7);
+      building->Set_Rate(13);
+      building->Open_Door(7, 18);
+    }
     if (DebugWorldTest) {
       if (Units.Count() == 0) {
         LOG(ERROR) << "-WORLDTEST: scenario needs a unit";
@@ -1977,6 +2042,10 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     }
     if (strncmp(string, "-SAVESLOT", 9) == 0) {
       DebugSaveSlot = atoi(string + 9);
+      continue;
+    }
+    if (strcmp(string, "-BUILDINGTEST") == 0) {
+      DebugBuildingTest = true;
       continue;
     }
     if (strcmp(string, "-WORLDTEST") == 0) {

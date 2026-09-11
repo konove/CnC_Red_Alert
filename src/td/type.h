@@ -1463,13 +1463,13 @@ class AnimTypeClass : public ObjectTypeClass {
   *loops *	of the animation. The last loop of the animation will proceed
   *until the Stages *	has been fully completed.
   */
-  int LoopEnd;
+  mutable int LoopEnd;
 
   /*
   **	The number of stages that this animation sequence will progress through
   **	before it loops or ends.
   */
-  int Stages;
+  mutable int Stages;
 
   /*
   **	This is the normal loop count for this animation. Usually this is one,

@@ -12,6 +12,7 @@
 #include "td/heap.h"
 #include "td/infantry.h"
 #include "td/object.h"
+#include "td/radio.h"
 #include "td/target.h"
 #include "td/teamtype.h"
 #include "td/techno.h"
@@ -36,7 +37,7 @@ template <class T>
 bool KindFits(KindType kind) {
   if constexpr (std::derived_from<T, FootClass>) {
     return kind == KIND_UNIT || kind == KIND_INFANTRY || kind == KIND_AIRCRAFT;
-  } else if constexpr (std::derived_from<T, TechnoClass>) {
+  } else if constexpr (std::derived_from<T, RadioClass>) {
     return kind == KIND_UNIT || kind == KIND_INFANTRY ||
            kind == KIND_AIRCRAFT || kind == KIND_BUILDING;
   } else {
@@ -98,6 +99,7 @@ void ObjectPtr<T>::Serialize(ArchiveReader& ar) {
 
 template class ObjectPtr<ObjectClass>;
 template class ObjectPtr<TechnoClass>;
+template class ObjectPtr<RadioClass>;
 template class ObjectPtr<FootClass>;
 
 template <class Archive>

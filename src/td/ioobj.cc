@@ -45,10 +45,7 @@
  *   AircraftClass::Code_Pointers -- codes class's pointers for load/save *
  *   AircraftClass::Decode_Pointers -- decodes pointers for load/save *
  *   AnimClass::Serialize -- Read/write saved fields. *
- *   BuildingClass::Load -- Reads from a save game file. * BuildingClass::Save
- *-- Write to a save game file.                                         *
- *   BuildingClass::Code_Pointers -- codes class's pointers for load/save *
- *   BuildingClass::Decode_Pointers -- decodes pointers for load/save *
+ *   BuildingClass::Serialize -- Read/write saved fields. *
  *   BulletClass::Serialize -- Read/write saved fields. *
  *   InfantryClass::Load -- Reads from a save game file. * InfantryClass::Save
  *-- Write to a save game file.                                         *
@@ -235,109 +232,6 @@ void AircraftClass::Decode_Pointers() {
   */
   FootClass::Decode_Pointers();
   FlyClass::Decode_Pointers();
-}
-
-/***********************************************************************************************
- * BuildingClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool BuildingClass::Load(ArchiveReader& file) {
-  return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
-}
-
-/***********************************************************************************************
- * BuildingClass::Save -- Write to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool BuildingClass::Save(ArchiveWriter& file) {
-  return Write_Object(this, sizeof(*this), file);
-}
-
-/***********************************************************************************************
- * BuildingClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void BuildingClass::Code_Pointers() {
-  /*
-  ------------------------------ Code 'Class' ------------------------------
-  */
-  Class = (BuildingTypeClass*)Class->Type;
-
-  /*------------------------------------------------------------------------
-  Code the Factory value; there's not target conversion routine for factories,
-  so just use its Array ID, plus 1 so it doesn't look like a NULL value when
-  it's converted back
-  ------------------------------------------------------------------------*/
-  if (Factory) {
-    Factory = (FactoryClass*)(Factories.ID(Factory) + 1);
-  }
-
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  TechnoClass::Code_Pointers();
-}
-
-/***********************************************************************************************
- * BuildingClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void BuildingClass::Decode_Pointers() {
-  /*
-  ----------------------------- Decode 'Class' -----------------------------
-  */
-  Class = &BuildingTypeClass::As_Reference(
-      static_cast<StructType>((uintptr_t)Class));
-  Check_Ptr(Class);
-
-  /*------------------------------------------------------------------------
-  Decode the Factory value, subtracting off the '1' we added when coding it
-  ------------------------------------------------------------------------*/
-  if (Factory) {
-    Factory = Factories.Raw_Ptr(static_cast<int>((intptr_t)Factory - 1));
-    Check_Ptr(Factory);
-  }
-
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  TechnoClass::Decode_Pointers();
 }
 
 /***********************************************************************************************
@@ -1540,3 +1434,115 @@ void BulletClass::Serialize(Archive& ar) {
 }
 template void BulletClass::Serialize(ArchiveWriter&);
 template void BulletClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void MissionClass::Serialize(Archive& ar) {
+  ObjectClass::Serialize(ar);
+  ar(Mission, SuspendedMission, MissionQueue, Status, Timer);
+  if constexpr (Archive::kIsReading) {
+    for (MissionType mission : {Mission, SuspendedMission, MissionQueue}) {
+      if (mission < MISSION_NONE || mission >= MISSION_COUNT) {
+        ar.Fail("invalid saved mission");
+      }
+    }
+  }
+}
+template void MissionClass::Serialize(ArchiveWriter&);
+template void MissionClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void RadioClass::Serialize(Archive& ar) {
+  MissionClass::Serialize(ar);
+  ar(LastMessage, ObjectPtr(Radio));
+  if constexpr (Archive::kIsReading) {
+    if (LastMessage < RADIO_STATIC || LastMessage >= RADIO_COUNT) {
+      ar.Fail("invalid saved radio message");
+    }
+  }
+}
+template void RadioClass::Serialize(ArchiveWriter&);
+template void RadioClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void TechnoClass::Serialize(Archive& ar) {
+  RadioClass::Serialize(ar);
+  FlasherClass::Serialize(ar);
+  StageClass::Serialize(ar);
+  CargoClass::Serialize(ar);
+  DoorClass::Serialize(ar);
+  CrewClass::Serialize(ar);
+  bool ticked = IsTickedOff, cloakable = IsCloakable, leader = IsLeader;
+  bool loaner = IsALoaner, locked = IsLocked, recoil = IsInRecoilState;
+  bool tethered = IsTethered, owned = IsOwnedByPlayer;
+  bool player_discovered = IsDiscoveredByPlayer;
+  bool computer_discovered = IsDiscoveredByComputer;
+  bool lemon = IsALemon, second_shot = IsSecondShot;
+  ar(ticked, cloakable, leader, loaner, locked, recoil, tethered, owned,
+     player_discovered, computer_discovered, lemon, second_shot,
+     HousePtr(House), Cloak, CloakingDevice, TarCom, SuspendedTarCom,
+     PrimaryFacing, Arm, Ammo, PurchasePrice);
+  if constexpr (Archive::kIsReading) {
+    IsTickedOff = ticked;
+    IsCloakable = cloakable;
+    IsLeader = leader;
+    IsALoaner = loaner;
+    IsLocked = locked;
+    IsInRecoilState = recoil;
+    IsTethered = tethered;
+    IsOwnedByPlayer = owned;
+    IsDiscoveredByPlayer = player_discovered;
+    IsDiscoveredByComputer = computer_discovered;
+    IsALemon = lemon;
+    IsSecondShot = second_shot;
+    // Houses precede all Techno heaps, so active membership is available now.
+    if (House == nullptr || !House->IsActive ||
+        Cloak < UNCLOAKED || Cloak > UNCLOAKING) {
+      ar.Fail("invalid saved techno state");
+    }
+  }
+}
+template void TechnoClass::Serialize(ArchiveWriter&);
+template void TechnoClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void BuildingClass::Serialize(Archive& ar) {
+  TechnoClass::Serialize(ar);
+  int32_t factory_index = -1;
+  if constexpr (!Archive::kIsReading) {
+    if (Factory != nullptr) {
+      factory_index = Factories.ID(Factory);
+    }
+  }
+  bool ready = IsReadyToCommence, repairing = IsRepairing;
+  bool wrench = IsWrenchVisible, blow = IsGoingToBlow;
+  bool survivorless = IsSurvivorless, charging = IsCharging;
+  bool charged = IsCharged, captured = IsCaptured;
+  ar(TypePtr(Class), factory_index, ActLike, ready, repairing, wrench, blow,
+     survivorless, charging, charged, captured, CountDown, BState,
+     QueueBState, WhoLastHurtMe, WhomToRepay, LastStrength, PlacementDelay);
+  if constexpr (Archive::kIsReading) {
+    IsReadyToCommence = ready;
+    IsRepairing = repairing;
+    IsWrenchVisible = wrench;
+    IsGoingToBlow = blow;
+    IsSurvivorless = survivorless;
+    IsCharging = charging;
+    IsCharged = charged;
+    IsCaptured = captured;
+    Factory = nullptr;
+    if (factory_index < -1 || factory_index >= Factories.Length()) {
+      ar.Fail("invalid saved building factory index");
+    } else if (factory_index != -1) {
+      // Factories load later; resolve the address without inspecting the slot.
+      Factory = Factories.Raw_Ptr(factory_index);
+    }
+    if (Class == nullptr || ActLike < HOUSE_NONE || ActLike >= HOUSE_COUNT ||
+        WhoLastHurtMe < HOUSE_NONE || WhoLastHurtMe >= HOUSE_COUNT ||
+        BState < BSTATE_NONE || BState >= BSTATE_COUNT ||
+        QueueBState < BSTATE_NONE || QueueBState >= BSTATE_COUNT) {
+      ar.Fail("invalid saved building state");
+    }
+  }
+}
+template void BuildingClass::Serialize(ArchiveWriter&);
+template void BuildingClass::Serialize(ArchiveReader&);

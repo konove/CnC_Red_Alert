@@ -195,7 +195,6 @@ const COORDINATE BuildingClass::CenterOffset[BSIZE_COUNT] = {
 /*
 ** This contains the value of the Virtual Function Table Pointer
 */
-void* BuildingClass::VTable;
 
 /***********************************************************************************************
  * BuildingClass::Validate -- validates building pointer
@@ -2096,15 +2095,7 @@ void BuildingClass::Assign_Target(TARGET target) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-void BuildingClass::Init() {
-  BuildingClass* ptr;
-
-  Buildings.Free_All();
-
-  ptr = new BuildingClass();
-  VTable = ((void**)((char*)ptr + sizeof(AbstractClass) - 4))[0];
-  delete ptr;
-}
+void BuildingClass::Init() { Buildings.Free_All(); }
 
 /***********************************************************************************************
  * BuildingClass::Exit_Object -- Initiates an object to leave the building. *

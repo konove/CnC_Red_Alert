@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Step 25 is complete; steps 0–24 are committed; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
+- Step 26 is complete; steps 0–25 are committed; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -121,7 +121,27 @@
   **5,111** states with the world fixture, **4,631** with production, **4,691** with a populated team,
   and **3,480** in Nod. RA matches **240** vehicle/vessel positions. Real-display and live-multiplayer
   verification remains outstanding.
-  Next checkpoint is **26: MissionClass/RadioClass/TechnoClass and BuildingClass**; mobile objects follow.
+- Step 26 migrates **MissionClass, RadioClass, TechnoClass, and BuildingClass** (TD version **7**).
+  Mission queues/status/timers, checked radio TARGETs, all six Techno bases (including crew kills),
+  ownership, cloak/facing/weapon state, and every building field are serialized explicitly.
+  Building factory links use checked int32 indices, resolved without inspecting the later-loaded heap.
+  Building shells initialize active membership without changing house counts or scenario globals.
+- BuildingClass loses raw I/O, NoInit, and vtable capture. Shared bases retain their NoInit and
+  pointer-coding paths for aircraft, infantry, and units; compile-time guards keep those heaps raw.
+  Building fields now participate in every TD smoke comparison.
+- `-BUILDINGTEST` / `--building` creates linked building fixtures with production, radio contact,
+  infantry cargo, crew kills, non-default flags, timers, cloaking, facing, and door/stage progress.
+  The smoke also mutates the saved building payload and checks that the real loader rejects invalid
+  factory indices, missing types, unknown animation/mission enums, and a radio reference to a bullet.
+  Heap-load failures now log the archive error for diagnosis.
+- Expanded GDI mission coverage exposed animation frame limits initialized only by gameplay
+  constructors. AnimTypeClass now derives its frame/loop limits when assets load, so shell-loaded
+  animations resume at the saved stage; the cached limits are mutable fields on the static types.
+- Step-26 validation: strict builds of both games and **182 CTest tests** pass. TD smoke matches
+  **4,911** states with linked buildings, **5,291** with world objects, **4,782** in GDI mission 2,
+  and **4,260** in Nod. All **six** malformed building saves are rejected before gameplay.
+  RA matches **240** vehicle/vessel positions. Real-display and live-multiplayer checks remain pending.
+  Next checkpoint is **27: the remaining mobile-object hierarchy**.
 - Step-19 validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
   Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke

@@ -1758,6 +1758,7 @@ bool Main_Loop() {
     log_heap(Anims, "anim");
     log_heap(Terrains, "terrain");
     log_heap(Bullets, "bullet");
+    log_heap(Buildings, "building");
     for (int i = 0; i < TeamTypes.Count(); ++i) {
       const int id = TeamTypes.ID(TeamTypes.Ptr(i));
       LOG(INFO) << "frame " << Frame << " teamcount " << id << " "
