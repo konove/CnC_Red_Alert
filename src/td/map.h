@@ -44,14 +44,16 @@
 #include "td/defines.h"
 #include "td/gscreen.h"
 #include "td/object.h"
-#include "tech/noinit.h"
 
 #define BIGMAP 0
 
 class MapClass : public GScreenClass {
  public:
+  // Saved gameplay state; runtime UI resources remain local.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   MapClass() {}
-  MapClass(const NoInitClass& x) : GScreenClass(x) {}
 
   /*
   ** Initialization
@@ -90,8 +92,6 @@ class MapClass : public GScreenClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 
   /*
   ** Debug routine
@@ -111,7 +111,7 @@ class MapClass : public GScreenClass {
   /*
   **	This is the total value of all harvestable Tiberium on the map.
   */
-  long TotalValue;
+  int64_t TotalValue;
 
  protected:
   /*

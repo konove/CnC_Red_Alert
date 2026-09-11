@@ -54,10 +54,14 @@
 #include "td/object.h"
 #include "td/techno.h"
 #include "td/type.h"
-#include "tech/noinit.h"
 
 class DisplayClass : public MapClass {
  public:
+  void ResetTransientUiState();
+  // Saved gameplay state; runtime UI resources remain local.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   /*
   **	This indicates the theater that the display is to represent.
   */
@@ -119,7 +123,6 @@ class DisplayClass : public MapClass {
 
   //-------------------------------------------------------------------------
   DisplayClass();
-  DisplayClass(const NoInitClass& x) : MapClass(x) {}
 
   virtual void Read_INI(char* buffer);
   void Write_INI(char* buffer);
@@ -196,8 +199,6 @@ class DisplayClass : public MapClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 
  protected:
   virtual void Mouse_Right_Press();

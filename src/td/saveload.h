@@ -10,7 +10,7 @@ class ArchiveWriter;
 #include "td/type.h"
 
 // Field-wise object heaps; map and globals retain their staged legacy format.
-inline constexpr int32_t kSaveGameVersion = 8;
+inline constexpr int32_t kSaveGameVersion = 9;
 
 bool Load_Misc_Values(ArchiveReader& file);
 bool Save_Misc_Values(ArchiveWriter& file);

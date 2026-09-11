@@ -48,13 +48,16 @@ class ArchiveWriter;
 #include "sdllib/timer.h"
 #include "td/defines.h"
 #include "td/scroll.h"
-#include "tech/noinit.h"
 #include "tech/wwfile.h"
 
 class MouseClass : public ScrollClass {
  public:
+  void ResetTransientUiState();
+  // Saved gameplay state; runtime UI resources remain local.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   MouseClass();
-  MouseClass(const NoInitClass& x) : ScrollClass(x) {}
 
   /*
   ** Initialization
@@ -73,8 +76,6 @@ class MouseClass : public ScrollClass {
   */
   virtual bool Load(ArchiveReader& file);
   virtual bool Save(ArchiveWriter& file);
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 
   void Set_Default_Mouse(MouseType mouse, bool wwsmall = false) override;
 
@@ -130,10 +131,6 @@ class MouseClass : public ScrollClass {
   int Frame;
   //		StageClass Control;
 
-  /*
-  ** This contains the value of the Virtual Function Table Pointer
-  */
-  static void* VTable;
 };
 
 #endif  // CNC_RED_ALERT_TD_MOUSE_H_

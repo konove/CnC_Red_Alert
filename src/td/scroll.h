@@ -44,7 +44,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
 #include "td/help.h"
-#include "tech/noinit.h"
 
 class ScrollClass : public HelpClass {
   /*
@@ -74,8 +73,8 @@ class ScrollClass : public HelpClass {
   int Inertia;
 
  public:
+  void ResetTransientUiState();
   ScrollClass();
-  ScrollClass(const NoInitClass& x) : HelpClass(x) {}
 
   bool Set_Autoscroll(int control);
 
@@ -88,8 +87,6 @@ class ScrollClass : public HelpClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 };
 
 #endif  // CNC_RED_ALERT_TD_SCROLL_H_

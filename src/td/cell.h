@@ -52,7 +52,6 @@ class ArchiveWriter;
 #include "td/techno.h"
 #include "td/terrain.h"
 #include "td/unit.h"
-#include "tech/wwfile.h"
 
 /****************************************************************************
 **	Each cell on the map is controlled by the following structure.
@@ -237,10 +236,9 @@ class CellClass {
   **	File I/O.
   */
   bool Should_Save() const;
-  bool Save(ArchiveWriter& file);
-  bool Load(ArchiveReader& file);
-  void Code_Pointers();
-  void Decode_Pointers();
+  // Serializes cell fields and the corresponding CellTriggers entry.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   /*
   **	Display and rendering controls.

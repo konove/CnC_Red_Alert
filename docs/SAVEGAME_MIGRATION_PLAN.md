@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Step 27 is complete; steps 0–26 are committed; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
+- Steps 0–28 are complete; steps 0–27 are committed; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -163,7 +163,35 @@
   **6,092** states with mobile/team fixtures, **5,991** with linked buildings, **6,251** with world
   objects, **8,484** in GDI mission 2, and **6,480** in Nod. All **seven** malformed mobile saves
   and **six** malformed building saves are rejected before gameplay. RA matches **240** positions.
-  Real-display and live-multiplayer checks remain pending. Next checkpoint is **28: Map/Cell**.
+  Real-display and live-multiplayer checks remain pending.
+- Step 28 is complete: it migrates **Map/Cell and the saved display/radar/sidebar fields** (TD version **9**).
+  MAPS stores theater first; theater assets and empty cells are initialized before member reads.
+  Map dimensions, int64 TotalValue, populated tiberium scan lists/direction, placement state,
+  radar state, sidebar buildables, and sparse cells use archives. MCEL retains ascending CELL
+  indices and a checked count; duplicate/out-of-range indices are rejected.
+- Cells save all flags, enum/data/ownership fields, occupier and overlapper TARGETs, occupancy bits,
+  and land type. Trigger TARGETs explicitly reference the CellTriggers side table, including
+  forward references to the later-loaded trigger heap. Should_Save covers every non-default field.
+  Cell defaults/reset/predicate move to cellvalues.cc for independent regression tests.
+- Map/UI raw-image loading, map/cell pointer-coding passes, map vtable capture, map-chain NoInit
+  constructors, and the now-unused VectorClass/CreditClass NoInit constructors are removed.
+  Runtime graphics, screen geometry, and input resources remain local; load resets temporary modes,
+  redraw/scroll/tooltip/mouse state, and credits display. Pending placement fixups remain after heaps.
+- `-MAPTEST` / `--map` covers 16 isolated sparse cells, shared triggers, gapped overlappers,
+  a pending building, and a map value above 32 bits. Corrupted-map checks cover theater, dimensions,
+  scan counts, cell counts/indices, overlapper counts, land types, and trigger kinds.
+  Every TD smoke compares a hash of all saved map fields; `TD_MAP_TRACE=1` logs their hex bytes at
+  frames 60/61 to diagnose mismatches.
+- GDI mission 2 exposed stale overlap references to inactive infantry. ObjectPtr writes these as
+  null, but uninterrupted overlap insertion treated them as occupied and chose different slots.
+  Overlap_Down now reclaims inactive entries before choosing a free slot; live overlap ordering and
+  gaps remain serialized exactly.
+- Step-28 validation: strict builds of both games and **184 CTest tests** pass. TD smoke matches
+  **5,831** states with the map fixture, **8,544** in GDI mission 2, **6,540** in Nod, **6,051** with
+  linked buildings, and **6,152** with mobile/team fixtures. All **eight** malformed map saves,
+  **six** malformed building saves, and **seven** malformed mobile saves are rejected before gameplay.
+  RA matches **240** positions. Real-display and live-multiplayer checks remain pending.
+  Next checkpoint is **29: Score, Base, Layers, and remaining globals**.
 - Step-19 validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
   Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke

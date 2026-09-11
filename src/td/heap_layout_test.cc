@@ -1,19 +1,7 @@
-// Layout tripwire for the raw-byte save format.
-//
-// Saved games are not serialized field by field. TFixedIHeapClass<T>::Load
-// (td/heap.cc) reads sizeof(T) raw bytes per object and then repairs the vtable
-// pointer with a placement-new of T(NoInitClass()). td/ioobj.cc does the same
-// for every game object through Read_Object/Write_Object (td/saveload.cc),
-// which even patches the vtable pointer by hand, and td/iomap.cc does it for
-// CellClass and MouseClass.
-//
-// Nothing in the type system enforces that a T survives that round trip.
-// AbstractClass declares a virtual destructor, so every serialized type fails
-// both is_trivially_copyable_v and is_trivially_destructible_v and no standard
-// trait can express the real contract. clang-tidy cannot help either: the byte
-// copy goes through ArchiveReader::Bytes and Read_Object/Write_Object, all of
-// which take void*, so bugprone-raw-memory-call-on-non-trivial-type and
-// bugprone-undefined-memory-manipulation never see a class-typed pointer.
+// Layout tripwire for the remaining raw save records.
+// Object heaps and Map/Cell are field-wise. Score, Base, and layer storage
+// retain byte-oriented paths until the globals migration; this file is removed
+// in the final TD cleanup. Static type layout guards are conservative leftovers.
 //
 // sizeof(T) is the closest observable proxy. Adding a std::string, std::vector,
 // std::optional or any other member that owns storage or points into itself
@@ -86,9 +74,7 @@ constexpr LayoutCase kSerializedTypes[] = {
 
     // Whole-object byte I/O outside the heaps.
     LAYOUT_CASE(BaseClass, 56),
-    LAYOUT_CASE(CellClass, 56),
     LAYOUT_CASE(LayerClass, 40),
-    LAYOUT_CASE(MouseClass, 1952),
 
     // Raw layout remains guarded until this type migrates.
     LAYOUT_CASE(BaseNodeClass, 8),

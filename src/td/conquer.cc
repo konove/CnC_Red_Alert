@@ -1762,6 +1762,35 @@ bool Main_Loop() {
     log_heap(Units, "unitstate");
     log_heap(Infantry, "infantrystate");
     log_heap(Aircraft, "aircraftstate");
+    class MapHashPipe : public Pipe {
+     public:
+      bool trace = std::getenv("TD_MAP_TRACE") != nullptr;
+      std::string fields;
+      uint64_t hash = 14695981039346656037ULL;
+      int Put(const void* data, int length) override {
+        const auto* bytes = static_cast<const uint8_t*>(data);
+        for (int i = 0; i < length; ++i) {
+          hash = (hash ^ bytes[i]) * 1099511628211ULL;
+          if (trace) {
+            constexpr char hex[] = "0123456789abcdef";
+            fields += hex[bytes[i] >> 4];
+            fields += hex[bytes[i] & 15];
+          }
+        }
+        return length;
+      }
+    } map_sink;
+    ArchiveWriter map_writer(map_sink);
+    Map.Serialize(map_writer);
+    LOG(INFO) << "frame " << Frame << " mapstate " << map_sink.hash;
+    if (map_sink.trace && (Frame == 60 || Frame == 61)) {
+      // Keep each record below the logger's message-size limit.
+      for (size_t offset = 0; offset < map_sink.fields.size(); offset += 2048) {
+        LOG(INFO) << "frame " << Frame << " mapfields " << offset << " "
+                  << map_sink.fields.substr(offset, 2048);
+      }
+    }
+
     for (int i = 0; i < TeamTypes.Count(); ++i) {
       const int id = TeamTypes.ID(TeamTypes.Ptr(i));
       LOG(INFO) << "frame " << Frame << " teamcount " << id << " "

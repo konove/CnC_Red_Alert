@@ -46,10 +46,10 @@
 #include "td/gadget.h"
 #include "td/jshell.h"
 #include "td/radar.h"
-#include "tech/noinit.h"
 
 class PowerClass : public RadarClass {
  public:
+  void ResetTransientUiState();
   int PowX;
   int PowY;
   int PowWidth;
@@ -58,7 +58,6 @@ class PowerClass : public RadarClass {
   int PowLineWidth;
 
   PowerClass();
-  PowerClass(const NoInitClass& x) : RadarClass(x) {}
 
   /*
   ** Initialization
@@ -74,8 +73,6 @@ class PowerClass : public RadarClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 
   unsigned IsToRedraw : 1;
 

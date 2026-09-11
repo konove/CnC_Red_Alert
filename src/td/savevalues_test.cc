@@ -6,6 +6,7 @@
 #include "td/abstract.h"
 #include "td/audio.h"
 #include "td/crew.h"
+#include "td/cell.h"
 #include "td/door.h"
 #include "td/facing.h"
 #include "td/flasher.h"
@@ -412,4 +413,35 @@ TEST(TdSaveValuesTest, RandomStateRejectsInvalidIndexAndTruncation) {
   ArchiveReader reader(source);
   reader(state);
   EXPECT_FALSE(reader.ok());
+}
+
+
+TEST(TdSaveValuesTest, CellDefaultsAndResetNeedNoSparseRecord) {
+  CellClass cell;
+  EXPECT_FALSE(cell.Should_Save());
+  cell.Owner = HOUSE_GOOD;
+  cell.IsTrigger = true;
+  cell.Flag.Composite = 255;
+  cell.Reset();
+  EXPECT_FALSE(cell.Should_Save());
+  EXPECT_EQ(cell.Land_Type(), LAND_CLEAR);
+}
+
+TEST(TdSaveValuesTest, PreviouslyOmittedCellFieldsRequireSaving) {
+  CellClass cell;
+  const auto check = [&cell](auto change) {
+    cell.Reset();
+    change(cell);
+    EXPECT_TRUE(cell.Should_Save());
+  };
+  check([](CellClass& value) { value.IsPlot = true; });
+  check([](CellClass& value) { value.IsCursorHere = true; });
+  check([](CellClass& value) { value.IsWaypoint = true; });
+  check([](CellClass& value) { value.IsRadarCursor = true; });
+  check([](CellClass& value) { value.IsFlagged = true; });
+  check([](CellClass& value) { value.TIcon = 7; });
+  check([](CellClass& value) { value.OverlayData = 3; });
+  check([](CellClass& value) { value.SmudgeData = 2; });
+  check([](CellClass& value) { value.Owner = HOUSE_GOOD; });
+  check([](CellClass& value) { value.InfType = HOUSE_BAD; });
 }

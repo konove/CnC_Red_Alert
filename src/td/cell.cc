@@ -160,85 +160,6 @@ int CellClass::Validate() const {
 }
 
 /***********************************************************************************************
- * CellClass::CellClass -- Constructor for cell objects. *
- *                                                                                             *
- *    A cell object is constructed into an empty state. It contains no specific
- *objects,       * templates, or overlays. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/09/1994 JLB : Created. *
- *=============================================================================================*/
-CellClass::CellClass()
-    : IsPlot(false),
-      IsCursorHere(false),
-      IsMapped(false),
-      IsVisible(false),
-      IsTrigger(false),
-      IsWaypoint(false),
-      IsRadarCursor(false),
-      IsFlagged(false),
-      TType(TEMPLATE_NONE),
-      TIcon(0),
-      Overlay(OVERLAY_NONE),
-      OverlayData(0),
-      Smudge(SMUDGE_NONE),
-      SmudgeData(0),
-      Owner(HOUSE_NONE),
-      InfType(HOUSE_NONE),
-      OccupierPtr(nullptr),
-      Overlappers{nullptr, nullptr, nullptr},
-      Land(LAND_CLEAR) {
-  Flag.Composite = 0;
-}
-
-/***********************************************************************************************
- * CellClass::Reset -- Resets the cell to its default initial state. *
- *                                                                                             *
- *    This method resets all cell properties to their default values, equivalent
- * to a         * freshly constructed cell. This is more efficient than
- * destructor + placement new        * when re-initializing cells.
- *                                               *
- *                                                                                             *
- * INPUT:   none                *
- *                                                                                             *
- * OUTPUT:  none                *
- *                                                                                             *
- * WARNINGS:   none                *
- *                                                                                             *
- * HISTORY:                * 01/02/2026 : Created.
- *                                       *
- *=============================================================================================*/
-void CellClass::Reset() {
-  IsPlot = false;
-  IsCursorHere = false;
-  IsMapped = false;
-  IsVisible = false;
-  IsTrigger = false;
-  IsWaypoint = false;
-  IsRadarCursor = false;
-  IsFlagged = false;
-  TType = TEMPLATE_NONE;
-  TIcon = 0;
-  Overlay = OVERLAY_NONE;
-  OverlayData = 0;
-  Smudge = SMUDGE_NONE;
-  SmudgeData = 0;
-  Owner = HOUSE_NONE;
-  InfType = HOUSE_NONE;
-  OccupierPtr = nullptr;
-  Overlappers[0] = nullptr;
-  Overlappers[1] = nullptr;
-  Overlappers[2] = nullptr;
-  Flag.Composite = 0;
-  Land = LAND_CLEAR;
-}
-
-/***********************************************************************************************
  * CellClass::Cell_Color   -- Determine what radar color to use for this cell. *
  *                                                                                             *
  *    Use this routine to determine what radar color to render a radar * pixel
@@ -785,6 +706,11 @@ void CellClass::Overlap_Down(ObjectClass* object) {
   }
   for (int index = 0; index < std::ssize(Overlappers);
        index++) {
+    // Deleted objects can leave stale overlap entries outside the redraw area.
+    // Reclaim them just as the archive's null inactive TARGET does on load.
+    if (Overlappers[index] != nullptr && !Overlappers[index]->IsActive) {
+      Overlappers[index] = nullptr;
+    }
     if (Overlappers[index] == object) {
       return;
     }

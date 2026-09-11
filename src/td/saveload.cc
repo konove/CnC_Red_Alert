@@ -425,6 +425,7 @@ bool Load_Game(int id) {
   *created, so *	they'll be properly created.
   */
   if (!Map.Load(reader)) {
+    DLOG(ERROR) << "Cannot load saved map: " << reader.error();
     return false;
   }
 
@@ -703,11 +704,6 @@ void Code_All_Pointers() {
   int i;
 
   /*
-  **	The Map.
-  */
-  Map.Code_Pointers();
-
-  /*
   **	The Layers.
   */
   Logic.Code_Pointers();
@@ -751,11 +747,6 @@ void Code_All_Pointers() {
  *=============================================================================================*/
 void Decode_All_Pointers() {
   int i;
-
-  /*
-  **	The Map.
-  */
-  Map.Decode_Pointers();
 
   /*
   **	The Layers.

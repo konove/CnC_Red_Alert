@@ -47,12 +47,11 @@
 #include "td/defines.h"
 #include "td/gadget.h"
 #include "td/vector.h"
-#include "tech/noinit.h"
 
 class GScreenClass : public VectorClass<CellClass> {
  public:
+  void ResetTransientUiState();
   GScreenClass();
-  GScreenClass(const NoInitClass& x) : VectorClass<CellClass>(x) {}
 
   /*
   ** Initialization
@@ -104,8 +103,6 @@ class GScreenClass : public VectorClass<CellClass> {
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
 
   /*
   **	Misc routines.

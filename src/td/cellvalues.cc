@@ -1,0 +1,60 @@
+// Cell defaults and sparse-save selection, independent of the game session.
+#include "td/cell.h"
+
+CellClass::CellClass()
+    : IsPlot(false),
+      IsCursorHere(false),
+      IsMapped(false),
+      IsVisible(false),
+      IsTrigger(false),
+      IsWaypoint(false),
+      IsRadarCursor(false),
+      IsFlagged(false),
+      TType(TEMPLATE_NONE),
+      TIcon(0),
+      Overlay(OVERLAY_NONE),
+      OverlayData(0),
+      Smudge(SMUDGE_NONE),
+      SmudgeData(0),
+      Owner(HOUSE_NONE),
+      InfType(HOUSE_NONE),
+      OccupierPtr(nullptr),
+      Overlappers{nullptr, nullptr, nullptr},
+      Land(LAND_CLEAR) {
+  Flag.Composite = 0;
+}
+
+void CellClass::Reset() {
+  IsPlot = false;
+  IsCursorHere = false;
+  IsMapped = false;
+  IsVisible = false;
+  IsTrigger = false;
+  IsWaypoint = false;
+  IsRadarCursor = false;
+  IsFlagged = false;
+  TType = TEMPLATE_NONE;
+  TIcon = 0;
+  Overlay = OVERLAY_NONE;
+  OverlayData = 0;
+  Smudge = SMUDGE_NONE;
+  SmudgeData = 0;
+  Owner = HOUSE_NONE;
+  InfType = HOUSE_NONE;
+  OccupierPtr = nullptr;
+  Overlappers[0] = nullptr;
+  Overlappers[1] = nullptr;
+  Overlappers[2] = nullptr;
+  Flag.Composite = 0;
+  Land = LAND_CLEAR;
+}
+
+bool CellClass::Should_Save() const {
+  return IsPlot || IsCursorHere || IsMapped || IsVisible || IsTrigger ||
+         IsWaypoint || IsRadarCursor || IsFlagged || TType != TEMPLATE_NONE ||
+         TIcon != 0 || Overlay != OVERLAY_NONE || OverlayData != 0 ||
+         Smudge != SMUDGE_NONE || SmudgeData != 0 || Owner != HOUSE_NONE ||
+         InfType != HOUSE_NONE || OccupierPtr != nullptr || Overlappers[0] ||
+         Overlappers[1] || Overlappers[2] || Flag.Composite != 0 ||
+         Land != LAND_CLEAR;
+}

@@ -44,12 +44,11 @@
 #include "sdllib/keyboard.h"
 #include "td/credits.h"
 #include "td/sidebar.h"
-#include "tech/noinit.h"
 
 class TabClass : public SidebarClass {
  public:
+  void ResetTransientUiState();
   TabClass();
-  TabClass(const NoInitClass& x) : SidebarClass(x), Credits(x) {}
 
   void AI(KeyNumType& input, int x, int y) override;
   void Draw_It(bool complete = false) override;
@@ -65,8 +64,6 @@ class TabClass : public SidebarClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
   int Get_Tab_Height() { return Tab_Height; }
 
   CreditClass Credits;

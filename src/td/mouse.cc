@@ -73,7 +73,6 @@ CountDownTimerClass MouseClass::Timer;
 /*
 ** This contains the value of the Virtual Function Table Pointer
 */
-void* MouseClass::VTable;
 
 /***********************************************************************************************
  * MouseClass::Set_Default_Mouse -- Sets the mouse to match the shape specified.
@@ -295,7 +294,6 @@ void MouseClass::One_Time() {
     MouseShapes = MFCD::Retrieve("MOUSE.SHP");
   }
 
-  VTable = ((void**)((char*)this + sizeof(VectorClass<CellClass>) - 4))[0];
 }
 
 /***********************************************************************************************

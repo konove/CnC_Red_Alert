@@ -220,6 +220,7 @@ bool DebugTeamTest = false;
 bool DebugWorldTest = false;
 bool DebugBuildingTest = false;
 bool DebugMobileTest = false;
+bool DebugMapTest = false;
 int DebugLoadGame = -1;
 int DebugQuitAtFrame = -1;
 int DebugSaveSlot = -1;

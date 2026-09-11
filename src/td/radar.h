@@ -47,10 +47,14 @@
 #include "td/gadget.h"
 #include "td/house.h"
 #include "td/jshell.h"
-#include "tech/noinit.h"
 
 class RadarClass : public DisplayClass {
  public:
+  void ResetTransientUiState();
+  // Saved gameplay state; runtime UI resources remain local.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   int RadX;
   int RadOffX;
   int RadY;
@@ -63,7 +67,6 @@ class RadarClass : public DisplayClass {
   int RadPHeight;
 
   RadarClass();
-  RadarClass(const NoInitClass& x) : DisplayClass(x) {}
 
   /*
   ** Initialization
@@ -104,8 +107,6 @@ class RadarClass : public DisplayClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 
   /*
   ** Toggles player names on & off

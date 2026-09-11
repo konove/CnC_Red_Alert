@@ -59,7 +59,6 @@
 
 #include <cstddef>
 
-#include "tech/noinit.h"
 #include "base/types.h"
 
 // IWYU pragma: no_include "td/cell.h"
@@ -81,7 +80,6 @@
 template <class T>
 class VectorClass {
  public:
-  VectorClass(const NoInitClass&) {}
   VectorClass(base::ssize size = 0, const T* array = nullptr);
   VectorClass(const VectorClass&);  // Copy constructor.
   virtual ~VectorClass();

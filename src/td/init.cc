@@ -1623,6 +1623,48 @@ bool Select_Game(bool fade) {
       return false;
     }
     DLOG(INFO) << "C&C95 - Scenario started OK.";
+    if (DebugMapTest) {
+      for (CELL cell = 0; cell < 16; ++cell) {
+        if (Map.In_Radar(cell)) {
+          LOG(ERROR) << "-MAPTEST: fixture cells must be outside the playable map";
+          return false;
+        }
+        Map[cell].Reset();
+      }
+      // Isolate fields formerly omitted by the sparse-cell predicate.
+      Map[0].IsPlot = true;
+      Map[1].IsCursorHere = true;
+      Map[2].IsWaypoint = true;
+      Map[3].IsRadarCursor = true;
+      Map[4].IsFlagged = true;
+      Map[5].TIcon = 7;
+      Map[6].OverlayData = 3;
+      Map[7].SmudgeData = 2;
+      Map[8].Owner = HOUSE_GOOD;
+      Map[9].InfType = HOUSE_BAD;
+      Map[10].Overlay = OVERLAY_BRICK_WALL;
+      Map[10].Recalc_Attributes();
+      Map[10].Overlay = OVERLAY_NONE;
+      auto* trigger = new TriggerClass;
+      if (!trigger || Units.Count() == 0) {
+        return false;
+      }
+      trigger->AttachCount = 2;
+      Map[11].IsTrigger = Map[12].IsTrigger = true;
+      CellTriggers[11] = CellTriggers[12] = trigger;
+      Map[13].OccupierPtr = Units.Ptr(0);
+      Map[14].Overlappers[2] = Units.Ptr(0);
+      Map[15].Flag.Composite = 2;
+      Map.TotalValue = int64_t{1} << 35;
+      auto* pending = new BuildingClass(STRUCT_POWER, PlayerPtr->Class->House);
+      if (!pending) {
+        return false;
+      }
+      Map.PendingObjectPtr = pending;
+      Map.PendingObject = &pending->Class_Of();
+      Map.PendingHouse = PlayerPtr->Class->House;
+      Map.Set_Cursor_Shape(Map.PendingObject->Occupy_List(true));
+    }
     if (DebugMobileTest) {
       const HousesType house = PlayerPtr->Class->House;
       auto* vehicle = new UnitClass(UNIT_APC, house);
@@ -2111,6 +2153,10 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     }
     if (strncmp(string, "-SAVESLOT", 9) == 0) {
       DebugSaveSlot = atoi(string + 9);
+      continue;
+    }
+    if (strcmp(string, "-MAPTEST") == 0) {
+      DebugMapTest = true;
       continue;
     }
     if (strcmp(string, "-MOBILETEST") == 0) {

@@ -51,13 +51,17 @@ class ArchiveWriter;
 #include "td/power.h"
 #include "td/shapebtn.h"
 #include "td/stage.h"
-#include "tech/noinit.h"
 #include "tech/wwfile.h"
 
 class InitClass {};
 
 class SidebarClass : public PowerClass {
  public:
+  void ResetTransientUiState();
+  // Saved gameplay state; runtime UI resources remain local.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   /*
   **	These constants are used to control the sidebar rendering. They are
   *instantiated *	as enumerations since C++ cannot use "const" in this
@@ -82,7 +86,6 @@ class SidebarClass : public PowerClass {
   };
 
   SidebarClass();
-  SidebarClass(const NoInitClass& x) : PowerClass(x) {}
 
   /*
   ** Initialization
@@ -106,8 +109,6 @@ class SidebarClass : public PowerClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 
   /*
   **	Each side strip is managed by this class. It handles all strip specific
@@ -155,10 +156,8 @@ class SidebarClass : public PowerClass {
     /*
     **	File I/O.
     */
-    bool Load(ArchiveReader& file);
-    bool Save(ArchiveWriter& file);
-    void Code_Pointers();
-    void Decode_Pointers();
+    template <class Archive>
+    void Serialize(Archive& ar);
 
     /*
     **	Working numbers used when rendering and processing the side strip.

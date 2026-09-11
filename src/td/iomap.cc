@@ -16,882 +16,359 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\iomap.cpv   2.18   16 Oct 1995 16:50:34
- * JOE_BOSTIC  $ */
-/***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : IOMAP.CPP *
- *                                                                                             *
- *                   Programmer : Bill Randolph *
- *                                                                                             *
- *                   Start Date : January 16, 1995 *
- *                                                                                             *
- *                  Last Update : January 16, 1995   [BR] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * All map-related loading/saving routines should go in this module, so it can
- *be overlayed.   *
- *---------------------------------------------------------------------------------------------*
- * Functions: * CellClass::Code_Pointers -- codes class's pointers for load/save
- ** CellClass::Decode_Pointers -- decodes pointers for load/save *
- *   CellClass::Load -- Reads from a save game file. * CellClass::Save -- Write
- *to a save game file.                                             *
- *   CellClass::Should_Save -- Should the cell be written to disk? *
- *   DisplayClass::Code_Pointers -- codes class's pointers for load/save *
- *   DisplayClass::Decode_Pointers -- decodes pointers for load/save *
- *   GScreenClass::Code_Pointers -- codes class's pointers for load/save *
- *   GScreenClass::Decode_Pointers -- decodes pointers for load/save *
- *   HelpClass::Code_Pointers -- codes class's pointers for load/save *
- *   HelpClass::Decode_Pointers -- decodes pointers for load/save *
- *   MapClass::Code_Pointers -- codes class's pointers for load/save *
- *   MapClass::Decode_Pointers -- decodes pointers for load/save *
- *   MouseClass::Code_Pointers -- codes class's pointers for load/save *
- *   MouseClass::Decode_Pointers -- decodes pointers for load/save *
- *   MouseClass::Load -- Loads from a save game file. * MouseClass::Save --
- *Saves to a save game file.                                            *
- *   PowerClass::Code_Pointers -- codes class's pointers for load/save *
- *   PowerClass::Decode_Pointers -- decodes pointers for load/save *
- *   RadarClass::Code_Pointers -- codes class's pointers for load/save *
- *   RadarClass::Decode_Pointers -- decodes pointers for load/save *
- *   ScrollClass::Code_Pointers -- codes class's pointers for load/save *
- *   ScrollClass::Decode_Pointers -- decodes pointers for load/save *
- *   SidebarClass::Code_Pointers -- codes class's pointers for load/save *
- *   SidebarClass::Decode_Pointers -- decodes pointers for load/save *
- *   SidebarClass::StripClass::Code_Pointers -- codes class's pointers for
- *load/save           * SidebarClass::StripClass::Decode_Pointers -- decodes
- *pointers for load/save               * TabClass::Code_Pointers -- codes
- *class's pointers for load/save                           *
- *   TabClass::Decode_Pointers -- decodes pointers for load/save *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
 
+#include <algorithm>
 #include <cstdint>
-#include <cstdio>
-#include <new>
+#include <iterator>
 
-#include "saveload.h"
+#include "td/aircraft.h"
 #include "td/cell.h"
-#include "td/defines.h"
-#include "td/display.h"
+#include "td/credits.h"
 #include "td/externs.h"
-#include "td/gscreen.h"
-#include "td/help.h"
-#include "td/map.h"
-#include "td/mouse.h"
-#include "td/object.h"
-#include "td/power.h"
-#include "td/radar.h"
-#include "td/scroll.h"
-#include "td/sidebar.h"
-#include "td/support.h"
-#include "td/tab.h"
-#include "td/target.h"
-#include "td/trigger.h"
+#include "td/factory.h"
+#include "td/mapedit.h"
+#include "td/serialize.h"
+#include "td/text.h"
 #include "td/type.h"
-#include "td/vector.h"
 #include "tech/archive.h"
-#include "tech/noinit.h"
-#include "tech/wwfile.h"
 
-/***********************************************************************************************
- * CellClass::Should_Save -- Should the cell be written to disk? *
- *                                                                                             *
- *    This function will determine if the cell needs to be written to disk. Any
- *cell that      * contains special data should be written to disk. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  bool; Should this cell's data be written to disk? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool CellClass::Should_Save() const {
-  return Smudge != SMUDGE_NONE || TType != TEMPLATE_NONE ||
-         Overlay != OVERLAY_NONE || IsMapped || IsVisible || IsTrigger ||
-         Flag.Composite || OccupierPtr || Overlappers[0] || Overlappers[1] ||
-         Overlappers[2];
-}
 
-/***********************************************************************************************
- * CellClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool CellClass::Load(ArchiveReader& file) {
-  int rc;
-  TriggerClass* trig;
-
-  /*
-  -------------------------- Load the object data --------------------------
-  */
-  rc = Read_Object(this, sizeof(CellClass), sizeof(CellClass), file, nullptr);
-
-  /*
-  ------------------------ Load the trigger pointer ------------------------
-  */
-  if (rc) {
-    if (IsTrigger) {
-      file.Bytes(static_cast<void*>(&trig), sizeof(void*));
-      if (!file.ok()) {
-        return false;
+template <class Archive>
+void CellClass::Serialize(Archive& ar) {
+  uint8_t flags = IsPlot | IsCursorHere << 1 | IsMapped << 2 | IsVisible << 3 |
+                  IsTrigger << 4 | IsWaypoint << 5 | IsRadarCursor << 6 |
+                  IsFlagged << 7;
+  ar(flags, TType, TIcon, Overlay, OverlayData, Smudge, SmudgeData, Owner,
+     InfType, ObjectPtr(OccupierPtr));
+  int32_t overlapper_count = 3;
+  ar(overlapper_count);
+  if constexpr (Archive::kIsReading) {
+    if (overlapper_count < 0 || overlapper_count > 3) {
+      ar.Fail("invalid cell overlapper count");
+      return;
+    }
+    std::fill(std::begin(Overlappers), std::end(Overlappers), nullptr);
+  }
+  for (int32_t i = 0; i < overlapper_count; ++i) {
+    ar(ObjectPtr(Overlappers[i]));
+  }
+  ar(Flag.Composite, Land);
+  if constexpr (Archive::kIsReading) {
+    IsPlot = (flags & 1) != 0;
+    IsCursorHere = (flags & 2) != 0;
+    IsMapped = (flags & 4) != 0;
+    IsVisible = (flags & 8) != 0;
+    IsTrigger = (flags & 16) != 0;
+    IsWaypoint = (flags & 32) != 0;
+    IsRadarCursor = (flags & 64) != 0;
+    IsFlagged = (flags & 128) != 0;
+    if ((TType != TEMPLATE_NONE && (TType < 0 || TType >= TEMPLATE_COUNT)) ||
+        Overlay < OVERLAY_NONE || Overlay >= OVERLAY_COUNT ||
+        Smudge < SMUDGE_NONE || Smudge >= SMUDGE_COUNT ||
+        Owner < HOUSE_NONE || Owner >= HOUSE_COUNT ||
+        InfType < HOUSE_NONE || InfType >= HOUSE_COUNT ||
+        Land < LAND_CLEAR || Land >= LAND_COUNT) {
+      ar.Fail("invalid saved cell attributes");
+    }
+  }
+  auto& trigger = CellTriggers[Cell_Number()];
+  if (IsTrigger) {
+    ar(TriggerPtr(trigger));
+    if constexpr (Archive::kIsReading) {
+      if (trigger == nullptr) {
+        ar.Fail("missing saved cell trigger");
       }
-      CellTriggers[Cell_Number()] = trig;
+    }
+  } else if constexpr (Archive::kIsReading) {
+    trigger = nullptr;
+  }
+}
+template void CellClass::Serialize(ArchiveWriter&);
+template void CellClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void MapClass::Serialize(Archive& ar) {
+  bool forward = IsForwardScan;
+  ar(MapCellX, MapCellY, MapCellWidth, MapCellHeight, TotalValue,
+     TiberiumGrowthCount, TiberiumSpreadCount, TiberiumScan, forward);
+  if constexpr (Archive::kIsReading) {
+    if (MapCellX < 0 || MapCellY < 0 || MapCellWidth <= 0 ||
+        MapCellHeight <= 0 || MapCellWidth > MAP_CELL_W ||
+        MapCellHeight > MAP_CELL_H || MapCellX > MAP_CELL_W - MapCellWidth ||
+        MapCellY > MAP_CELL_H - MapCellHeight || TiberiumGrowthCount < 0 ||
+        TiberiumGrowthCount > 50 || TiberiumSpreadCount < 0 ||
+        TiberiumSpreadCount > 50 || TiberiumScan < 0 ||
+        TiberiumScan >= MAP_CELL_TOTAL) {
+      ar.Fail("invalid map dimensions or tiberium scan state");
+      return;
+    }
+    IsForwardScan = forward;
+    std::fill(std::begin(TiberiumGrowth), std::end(TiberiumGrowth), 0);
+    std::fill(std::begin(TiberiumSpread), std::end(TiberiumSpread), 0);
+  }
+  for (int i = 0; i < TiberiumGrowthCount; ++i) {
+    ar(TiberiumGrowth[i]);
+    if constexpr (Archive::kIsReading) {
+      if (TiberiumGrowth[i] < 0 || TiberiumGrowth[i] >= MAP_CELL_TOTAL) {
+        ar.Fail("invalid tiberium growth cell");
+      }
     }
   }
-
-  return rc;
-}
-
-/***********************************************************************************************
- * CellClass::Save -- Write to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool CellClass::Save(ArchiveWriter& file) {
-  int rc;
-  TriggerClass* trig;
-
-  /*
-  -------------------------- Save the object data --------------------------
-  */
-  rc = Write_Object(this, sizeof(CellClass), file);
-
-  /*
-  ------------------------ Save the trigger pointer ------------------------
-  */
-  if (rc) {
-    if (IsTrigger) {
-      trig = CellTriggers[Cell_Number()];
-      file.Bytes(static_cast<const void*>(&trig), sizeof(void*));
+  for (int i = 0; i < TiberiumSpreadCount; ++i) {
+    ar(TiberiumSpread[i]);
+    if constexpr (Archive::kIsReading) {
+      if (TiberiumSpread[i] < 0 || TiberiumSpread[i] >= MAP_CELL_TOTAL) {
+        ar.Fail("invalid tiberium spread cell");
+      }
     }
   }
-
-  return rc;
 }
+template void MapClass::Serialize(ArchiveWriter&);
+template void MapClass::Serialize(ArchiveReader&);
 
-/***********************************************************************************************
- * CellClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void CellClass::Code_Pointers() {
-  if (Cell_Occupier()) {
-    OccupierPtr = (ObjectClass*)OccupierPtr->As_Target();
-  }
-
-  if (Overlappers[0] && Overlappers[0]->IsActive) {
-    Overlappers[0] = (ObjectClass*)Overlappers[0]->As_Target();
-  } else {
-    Overlappers[0] = nullptr;
-  }
-
-  if (Overlappers[1] && Overlappers[1]->IsActive) {
-    Overlappers[1] = (ObjectClass*)Overlappers[1]->As_Target();
-  } else {
-    Overlappers[1] = nullptr;
-  }
-
-  if (Overlappers[2] && Overlappers[2]->IsActive) {
-    Overlappers[2] = (ObjectClass*)Overlappers[2]->As_Target();
-  } else {
-    Overlappers[2] = nullptr;
-  }
-
-  /*
-  ------------------------ Convert trigger pointer -------------------------
-  */
-  if (IsTrigger) {
-    CellTriggers[Cell_Number()] =
-        (TriggerClass*)CellTriggers[Cell_Number()]->As_Target();
+template <class Archive>
+void DisplayClass::Serialize(Archive& ar) {
+  MapClass::Serialize(ar);
+  ar(TacticalCoord, DesiredTacticalCoord, ZoneCell, ZoneOffset,
+     ObjectPtr(PendingObjectPtr), PendingHouse);
+  if constexpr (Archive::kIsReading) {
+    if (PendingHouse < HOUSE_NONE || PendingHouse >= HOUSE_COUNT) {
+      ar.Fail("invalid pending placement owner");
+    }
   }
 }
+template void DisplayClass::Serialize(ArchiveWriter&);
+template void DisplayClass::Serialize(ArchiveReader&);
 
-/***********************************************************************************************
- * CellClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void CellClass::Decode_Pointers() {
-  if (OccupierPtr) {
-    OccupierPtr = As_Object(static_cast<TARGET>((uintptr_t)OccupierPtr));
-    Check_Ptr(OccupierPtr);
+template <class Archive>
+void RadarClass::Serialize(Archive& ar) {
+  DisplayClass::Serialize(ar);
+  bool exists = DoesRadarExist, active = IsRadarActive;
+  bool zoomed = IsZoomed, names = IsPlayerNames;
+  ar(exists, active, zoomed, names, ZoomFactor, RadarX, RadarY, RadarCell,
+     RadarCellWidth, RadarCellHeight, BaseX, BaseY, RadarWidth, RadarHeight);
+  if constexpr (Archive::kIsReading) {
+    DoesRadarExist = exists;
+    IsRadarActive = active;
+    IsZoomed = zoomed;
+    IsPlayerNames = names;
   }
+}
+template void RadarClass::Serialize(ArchiveWriter&);
+template void RadarClass::Serialize(ArchiveReader&);
 
-  if (Overlappers[0]) {
-    Overlappers[0] = As_Object(static_cast<TARGET>((uintptr_t)Overlappers[0]));
-    Check_Ptr(Overlappers[0]);
+template <class Archive>
+void SidebarClass::StripClass::Serialize(Archive& ar) {
+  bool building = IsBuilding;
+  ar(building, Flasher, TopIndex, BuildableCount);
+  if constexpr (Archive::kIsReading) {
+    if (BuildableCount < 0 || BuildableCount > MAX_BUILDABLES ||
+        TopIndex < 0 || TopIndex >= MAX_BUILDABLES) {
+      ar.Fail("invalid sidebar count or scroll position");
+      return;
+    }
+    IsBuilding = building;
+    for (auto& item : Buildables) {
+      item = {0, RTTI_NONE, -1};
+    }
   }
-
-  if (Overlappers[1]) {
-    Overlappers[1] = As_Object(static_cast<TARGET>((uintptr_t)Overlappers[1]));
-    Check_Ptr(Overlappers[1]);
+  for (int i = 0; i < BuildableCount; ++i) {
+    auto& item = Buildables[i];
+    ar(item.BuildableID, item.BuildableType, item.Factory);
+    if constexpr (Archive::kIsReading) {
+      if (item.Factory < -1 || item.Factory >= Factories.Length() ||
+          item.BuildableID < 0 || item.BuildableType <= RTTI_NONE ||
+          item.BuildableType > RTTI_SPECIAL) {
+        ar.Fail("invalid sidebar buildable");
+      }
+    }
   }
+}
+template void SidebarClass::StripClass::Serialize(ArchiveWriter&);
+template void SidebarClass::StripClass::Serialize(ArchiveReader&);
 
-  if (Overlappers[2]) {
-    Overlappers[2] = As_Object(static_cast<TARGET>((uintptr_t)Overlappers[2]));
-    Check_Ptr(Overlappers[2]);
+template <class Archive>
+void SidebarClass::Serialize(Archive& ar) {
+  RadarClass::Serialize(ar);
+  bool active = IsSidebarActive;
+  ar(active, Column);
+  if constexpr (Archive::kIsReading) {
+    IsSidebarActive = active;
   }
+}
+template void SidebarClass::Serialize(ArchiveWriter&);
+template void SidebarClass::Serialize(ArchiveReader&);
 
-  /*
-  **	Convert trigger pointer.
-  */
-  if (IsTrigger) {
-    CellTriggers[Cell_Number()] =
-        As_Trigger(static_cast<TARGET>((uintptr_t)CellTriggers[Cell_Number()]));
-    Check_Ptr(CellTriggers[Cell_Number()]);
+void GScreenClass::ResetTransientUiState() {
+  IsToRedraw = true;
+  IsToUpdate = true;
+}
+
+void DisplayClass::ResetTransientUiState() {
+  GScreenClass::ResetTransientUiState();
+  PendingObject = nullptr;
+  CursorSize = nullptr;
+  ProximityCheck = false;
+  IsToRedraw = true;
+  IsRepairMode = false;
+  IsSellMode = false;
+  IsTargettingMode = 0;
+  IsRubberBand = false;
+  IsTentative = false;
+  IsShadowPresent = false;
+  BandX = BandY = NewX = NewY = 0;
+  std::fill(CellRedraw.begin(), CellRedraw.end(), true);
+}
+
+void RadarClass::ResetTransientUiState() {
+  DisplayClass::ResetTransientUiState();
+  IsToRedraw = true;
+  RadarCursorRedraw = true;
+  IsRadarActivating = false;
+  IsRadarDeactivating = false;
+  SpecialRadarFrame = 0;
+  RadarAnimFrame = IsRadarActive ? RADAR_ACTIVATED_FRAME : 0;
+  PixelPtr = 0;
+  std::fill(std::begin(PixelStack), std::end(PixelStack), 0);
+}
+
+void PowerClass::ResetTransientUiState() {
+  RadarClass::ResetTransientUiState();
+  IsToRedraw = true;
+  RecordedDrain = RecordedPower = -1;
+  DesiredDrainHeight = DesiredPowerHeight = 0;
+  DrainHeight = PowerHeight = DrainBounce = PowerBounce = 0;
+  PowerDir = DrainDir = 0;
+}
+
+void SidebarClass::ResetTransientUiState() {
+  PowerClass::ResetTransientUiState();
+  IsToRedraw = true;
+  IsRepairActive = IsUpgradeActive = IsDemolishActive = false;
+  for (auto& column : Column) {
+    column.IsToRedraw = true;
+    column.IsScrolling = column.IsScrollingDown = false;
+    column.Scroller = column.Slid = 0;
+    column.Set_Stage(0);
+    column.Set_Rate(0);
   }
 }
 
-/***********************************************************************************************
- * MouseClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * Loading the map is very complicated.  Here are the steps: *
- * - Read the Theater for this save-game *
- * - call Init_Theater to perform theater-specific inits *
- * - call Free_Cells to free the cell array, because loading the map object will
- *overwrite     * the pointer to the cell array *
- * - read the map object from disk *
- * - call Alloc_Cells to re-allocate the cell array *
- * - call Init_Cells to set the cells to a known state, because not every cell
- *will be loaded  *
- * - read the cell objects into the cell array *
- * - After the map & all objects have been loaded & the pointers decoded,
- *Init_IO() >MUST< be  * called to restore the map's button list to the proper
- *state.                              *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool MouseClass::Load(ArchiveReader& file) {
+void TabClass::ResetTransientUiState() {
+  SidebarClass::ResetTransientUiState();
+  Credits = CreditClass();
+  IsToRedraw = true;
+}
+
+void HelpClass::ResetTransientUiState() {
+  TabClass::ResetTransientUiState();
+  HelpText = nullptr;
+  IsRight = false;
+  Cost = X = Y = DrawX = DrawY = Width = 0;
+  Text = TXT_NONE;
+  Color = LTGREY;
+  CountDownTimer.Set(0);
+  OverlapList[0] = REFRESH_EOL;
+}
+
+void ScrollClass::ResetTransientUiState() {
+  HelpClass::ResetTransientUiState();
+  Inertia = 0;
+  // Autoscroll is a local preference, not saved-game state.
+  Counter.Set(0);
+}
+
+void MouseClass::ResetTransientUiState() {
+  ScrollClass::ResetTransientUiState();
+  Override_Mouse_Shape(MOUSE_NORMAL, false);
+  NormalMouseShape = MOUSE_NORMAL;
+  Frame = 0;
+  Timer.Set(0);
+}
+
+
+template <class Archive>
+void MouseClass::Serialize(Archive& ar) {
+  ar.Section(FourCC("MAPS"));
+  ar(Theater);
+  if constexpr (Archive::kIsReading) {
+    if (!ar.ok() || Theater < THEATER_FIRST || Theater >= THEATER_COUNT) {
+      ar.Fail("invalid saved theater");
+      return;
+    }
+    if (Theater != LastTheater) {
+      Reset_Theater_Shapes();
+    }
+    Init_Theater(Theater);
+    TerrainTypeClass::Init(Theater);
+    TemplateTypeClass::Init(Theater);
+    OverlayTypeClass::Init(Theater);
+    UnitTypeClass::Init(Theater);
+    InfantryTypeClass::Init(Theater);
+    BuildingTypeClass::Init(Theater);
+    BulletTypeClass::Init(Theater);
+    AnimTypeClass::Init(Theater);
+    AircraftTypeClass::Init(Theater);
+    SmudgeTypeClass::Init(Theater);
+    // Init_Cells clears TotalValue, so it must precede the member reads.
+    Init_Cells();
+    for (CELL cell = 0; cell < MAP_CELL_TOTAL; ++cell) {
+      CellTriggers[cell] = nullptr;
+    }
+  }
+  SidebarClass::Serialize(ar);
+  if constexpr (Archive::kIsReading) {
+    if (!ar.ok()) {
+      return;
+    }
+    ResetTransientUiState();
+  }
+  ar.Section(FourCC("MCEL"));
   int32_t count = 0;
-  CELL cell = 0;
-  int index;
-  //	int rc;
-  //	int i;
-  //	int j;
-
-  /*------------------------------------------------------------------------
-  Load Theater:  Even though this value is located in the DisplayClass,
-  it must be loaded first so initialization can be done before any other
-  map data is loaded.  If initialization isn't done first, data read from
-  disk will be over-written when initialization occurs.  This code must
-  go in the most-derived Map class.
-  ------------------------------------------------------------------------*/
-  file.Bytes(&Theater, sizeof(Theater));
-  if (!file.ok()) {
-    return false;
-  }
-
-  /*
-  ** Remove any old theater specific uncompressed shapes
-  */
-  if (Theater != LastTheater) {
-    Reset_Theater_Shapes();
-  }
-
-  /*
-  ------------------------- Init display mixfiles --------------------------
-  */
-  Init_Theater(Theater);
-  TerrainTypeClass::Init(Theater);
-  TemplateTypeClass::Init(Theater);
-  OverlayTypeClass::Init(Theater);
-  UnitTypeClass::Init(Theater);
-  InfantryTypeClass::Init(Theater);
-  BuildingTypeClass::Init(Theater);
-  BulletTypeClass::Init(Theater);
-  AnimTypeClass::Init(Theater);
-  AircraftTypeClass::Init(Theater);
-  SmudgeTypeClass::Init(Theater);
-
-  LastTheater = Theater;
-
-  /*
-  ** Free the cell array, because we're about to overwrite its pointers
-  */
-  Free_Cells();
-
-  /*
-  ** Read the entire map object in.  Only read in sizeof(MouseClass), so if
-  *we're
-  ** in editor mode, none of the map editor object is read in.
-  */
-  int size;
-  file.Bytes(&size, sizeof(size));
-  if (!file.ok() || size != sizeof(*this)) {
-    file.Fail("invalid raw map size");
-    return false;
-  }
-  file.Bytes(this, sizeof(*this));
-  if (!file.ok()) {
-    return false;
-  }
-  new (this) MapEditClass(NoInitClass());
-
-  /*
-  ** Reallocate the cell array
-  */
-  Alloc_Cells();
-
-  /*
-  ** Init all cells to empty
-  */
-  Init_Cells();
-
-  /*
-  --------------------------- Read # cells saved ---------------------------
-  */
-  file(count);
-  if (!file.ok()) {
-    return false;
-  }
-
-  /*
-  ------------------------------- Read cells -------------------------------
-  */
-  if (count < 0 || count > MAP_CELL_TOTAL) {
-    file.Fail("invalid saved cell count");
-    return false;
-  }
-  for (index = 0; index < count; index++) {
-    file.Bytes(&cell, sizeof(cell));
-    if (!file.ok()) {
-      return false;
-    }
-
-    if (cell < 0 || cell >= MAP_CELL_TOTAL) {
-      file.Fail("invalid saved cell index");
-      return false;
-    }
-    if (!(*this)[cell].Load(file)) {
-      return false;
+  if constexpr (!Archive::kIsReading) {
+    for (CELL cell = 0; cell < MAP_CELL_TOTAL; ++cell) {
+      if ((*this)[cell].Should_Save()) {
+        ++count;
+      }
     }
   }
+  ar(count);
+  if constexpr (Archive::kIsReading) {
+    if (!ar.ok() || count < 0 || count > MAP_CELL_TOTAL) {
+      ar.Fail("invalid saved cell count");
+      return;
+    }
+    CELL previous = -1;
+    for (int i = 0; i < count; ++i) {
+      CELL cell = 0;
+      ar(cell);
+      if (!ar.ok() || cell <= previous || cell >= MAP_CELL_TOTAL) {
+        ar.Fail("invalid or duplicate saved cell index");
+        return;
+      }
+      ar((*this)[cell]);
+      if (!ar.ok()) {
+        return;
+      }
+      previous = cell;
+    }
+    LastTheater = Theater;
+  } else {
+    for (CELL cell = 0; cell < MAP_CELL_TOTAL; ++cell) {
+      if ((*this)[cell].Should_Save()) {
+        ar(cell, (*this)[cell]);
+      }
+    }
+  }
+}
+template void MouseClass::Serialize(ArchiveWriter&);
+template void MouseClass::Serialize(ArchiveReader&);
 
+bool MouseClass::Load(ArchiveReader& file) {
+  Serialize(file);
   return file.ok();
 }
-
-/***********************************************************************************************
- * MouseClass::Save -- Save to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
 bool MouseClass::Save(ArchiveWriter& file) {
-  file.Bytes(&Theater, sizeof(Theater));
-  if (!Write_Object(this, sizeof(MouseClass), file)) {
-    return false;
-  }
-  int32_t count = 0;
-  for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-    if ((*this)[cell].Should_Save()) {
-      ++count;
-    }
-  }
-  file(count);
-  for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-    if ((*this)[cell].Should_Save()) {
-      file.Bytes(&cell, sizeof(cell));
-      if (!(*this)[cell].Save(file)) {
-        return false;
-      }
-    }
-  }
+  Serialize(file);
   return true;
 }
-
-/***********************************************************************************************
- * MouseClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void MouseClass::Code_Pointers() {
-  //	Control.Code_Pointers();
-
-  ScrollClass::Code_Pointers();
-}
-
-/***********************************************************************************************
- * MouseClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void MouseClass::Decode_Pointers() {
-  //	Control.Decode_Pointers();
-
-  ScrollClass::Decode_Pointers();
-}
-
-/***********************************************************************************************
- * ScrollClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void ScrollClass::Code_Pointers() { HelpClass::Code_Pointers(); }
-
-/***********************************************************************************************
- * ScrollClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void ScrollClass::Decode_Pointers() { HelpClass::Decode_Pointers(); }
-
-/***********************************************************************************************
- * HelpClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void HelpClass::Code_Pointers() { TabClass::Code_Pointers(); }
-
-/***********************************************************************************************
- * HelpClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void HelpClass::Decode_Pointers() { TabClass::Decode_Pointers(); }
-
-/***********************************************************************************************
- * TabClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TabClass::Code_Pointers() { SidebarClass::Code_Pointers(); }
-
-/***********************************************************************************************
- * TabClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TabClass::Decode_Pointers() { SidebarClass::Decode_Pointers(); }
-
-/***********************************************************************************************
- * PowerClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void PowerClass::Code_Pointers() { RadarClass::Code_Pointers(); }
-
-/***********************************************************************************************
- * PowerClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void PowerClass::Decode_Pointers() { RadarClass::Decode_Pointers(); }
-
-/***********************************************************************************************
- * SidebarClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void SidebarClass::Code_Pointers() {
-  for (int i = 0; i < COLUMNS; i++) {
-    Column[i].Code_Pointers();
-  }
-
-  PowerClass::Code_Pointers();
-}
-
-/***********************************************************************************************
- * SidebarClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void SidebarClass::Decode_Pointers() {
-  for (int i = 0; i < COLUMNS; i++) {
-    Column[i].Decode_Pointers();
-  }
-
-  PowerClass::Decode_Pointers();
-}
-
-/***********************************************************************************************
- * SidebarClass::StripClass::Code_Pointers -- codes class's pointers for
- *load/save             *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void SidebarClass::StripClass::Code_Pointers() {}
-
-/***********************************************************************************************
- * SidebarClass::StripClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void SidebarClass::StripClass::Decode_Pointers() {}
-
-/***********************************************************************************************
- * RadarClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void RadarClass::Code_Pointers() { DisplayClass::Code_Pointers(); }
-
-/***********************************************************************************************
- * RadarClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void RadarClass::Decode_Pointers() { DisplayClass::Decode_Pointers(); }
-
-/***********************************************************************************************
- * DisplayClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void DisplayClass::Code_Pointers() {
-  /*
-  **	Code PendingObjectPtr.
-  */
-  if (PendingObjectPtr) {
-    PendingObjectPtr = (ObjectClass*)PendingObjectPtr->As_Target();
-  }
-
-  /*
-  **	Chain to parent.
-  */
-  MapClass::Code_Pointers();
-}
-
-/***********************************************************************************************
- * DisplayClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void DisplayClass::Decode_Pointers() {
-  /*
-  **	Decode PendingObjectPtr.  We can't decode PendingObject here, because
-  *we'd *	have to reference PendingObjectPtr->Class_Of(), and the object
-  *that *	PendingObjectPtr is pointing to hasn't been decoded yet.  Since
-  *we can't *	decode PendingObjectPtr, we can't set the placement cursor shape
-  *here *	either.  These have to be done as last-minute fixups.
-  */
-  if (PendingObjectPtr) {
-    PendingObjectPtr =
-        As_Object(static_cast<TARGET>((intptr_t)PendingObjectPtr));
-    Check_Ptr(PendingObjectPtr);
-  }
-
-  /*
-  **	Chain to parent.
-  */
-  MapClass::Decode_Pointers();
-}
-
-/***********************************************************************************************
- * MapClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void MapClass::Code_Pointers() {
-  CELL cell;
-
-  /*
-  ------------------------- Code the cell pointers -------------------------
-  */
-  for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-    (*this)[cell].Code_Pointers();
-  }
-
-  GScreenClass::Code_Pointers();
-}
-
-/***********************************************************************************************
- * MapClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void MapClass::Decode_Pointers() {
-  CELL cell;
-
-  /*
-  ------------------------ Decode the cell pointers ------------------------
-  */
-  for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-    (*this)[cell].Decode_Pointers();
-  }
-
-  GScreenClass::Decode_Pointers();
-}
-
-/***********************************************************************************************
- * GScreenClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void GScreenClass::Code_Pointers() {}
-
-/***********************************************************************************************
- * GScreenClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void GScreenClass::Decode_Pointers() {}

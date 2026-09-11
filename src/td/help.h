@@ -46,12 +46,11 @@
 #include "sdllib/wwstd.h"
 #include "td/defines.h"
 #include "td/tab.h"
-#include "tech/noinit.h"
 
 class HelpClass : public TabClass {
  public:
+  void ResetTransientUiState();
   HelpClass();
-  HelpClass(const NoInitClass& x) : TabClass(x) {}
 
   /*
   ** Initialization
@@ -71,8 +70,6 @@ class HelpClass : public TabClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 
  private:
   static const char* HelpText;
