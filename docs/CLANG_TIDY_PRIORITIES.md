@@ -2,7 +2,7 @@
 
 Updated: 2026-09-11, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 232 currently excluded check names** and completed entries, in recommended work
+This tracks **all 231 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -40,7 +40,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `cert-err34-c`                                                | Enabled | Alias enabled with `bugprone-unchecked-string-to-number-conversion` in commit `Enable checked string-to-number conversions`.                                                                                                    |
 | `clang-analyzer-unix.StdCLibraryFunctions`                    | Enabled | Commit `Fix TCP socket option size and enable C library checking`: pass an integer TCP_NODELAY flag with its actual size, avoiding a read past a one-byte bool.                                                                 |
 | `clang-diagnostic-cast-align`                                 | Enabled | Commit `Fix buffer alignment and enable cast alignment checking`: copy unaligned packet/media values, check typed buffer access, align cached shape headers, and bound legacy byte fills.                                       |
-| `clang-diagnostic-uninitialized-const-pointer`                | Pending | Review pointer arguments that may expose uninitialized storage.                                                                                                                                                                 |
+| `clang-diagnostic-uninitialized-const-pointer`                | Enabled | Commit `Enable uninitialized const-pointer argument checking`: both games and shared code pass without source fixes.                                                                                                            |
 | `clang-diagnostic-reorder-ctor`                               | Pending | Make constructor order explicit; check dependencies between members.                                                                                                                                                            |
 | `bugprone-unhandled-code-paths`                               | Pending | Find missing outcomes in conditional control flow.                                                                                                                                                                              |
 | `bugprone-non-zero-enum-to-bool-conversion`                   | Pending | Catch enum tests that are always true.                                                                                                                                                                                          |
@@ -328,6 +328,12 @@ missing-pixel regression test aborts against the original TD reader with an unch
 access and passes with the fix.
 
 ### Completed validation
+
+The 2026-09-11 uninitialized const-pointer argument check passed both isolated and full-config
+sweeps across 889 project translation units, including 431 generated header checks, without findings
+or source fixes. Both strict game builds and all 228 CTest tests passed. A sample passing an
+uninitialized integer to a `const int*` parameter confirmed the diagnostic reports an error under
+the enabled repository configuration and the strict build's existing `-Weverything` flag.
 
 The 2026-09-11 cast-alignment cleanup found 147 diagnostic sites in 29 files across the initial
 884-unit sweep. Packet and serial headers, CRCs, event records, audio samples, video rows, and
