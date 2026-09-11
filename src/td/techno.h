@@ -54,7 +54,6 @@
 #include "td/radio.h"
 #include "td/stage.h"
 #include "td/type.h"
-#include "tech/noinit.h"
 
 /****************************************************************************
 **	This is the common data between building and units.
@@ -205,14 +204,6 @@ class TechnoClass : public RadioClass,
   */
   TechnoClass();
   TechnoClass(HousesType house);
-  TechnoClass(const NoInitClass& x)
-      : RadioClass(x),
-        FlasherClass(x),
-        StageClass(x),
-        CargoClass(x),
-        DoorClass(x),
-        CloakingDevice(x),
-        PrimaryFacing(x) {}
   ~TechnoClass() override {}
 
   /*
@@ -301,12 +292,10 @@ class TechnoClass : public RadioClass,
   /*
   **	File I/O.
   */
-  // Field-wise save support; NoInit remains for raw mobile subclasses.
+  // Field-wise saved-game support.
   template <class Archive>
   void Serialize(Archive& ar);
 
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how

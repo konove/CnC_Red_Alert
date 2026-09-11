@@ -53,8 +53,6 @@ class ArchiveWriter;
 #include "td/tarcom.h"
 #include "td/techno.h"
 #include "td/type.h"
-#include "tech/noinit.h"
-#include "tech/wwfile.h"
 
 /****************************************************************************
 **	For each instance of a unit (vehicle) in the game, there is one of
@@ -63,10 +61,14 @@ class ArchiveWriter;
 */
 class UnitClass final : public TarComClass {
  public:
+  // Field-wise state and checked references; load shells have no scenario effects.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   /*
   **	This records the house flag that this object is currently carrying.
   */
-  HousesType Flagged;
+  HousesType Flagged = HOUSE_NONE;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
@@ -74,9 +76,8 @@ class UnitClass final : public TarComClass {
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
-  UnitClass() {}
+  UnitClass() { IsActive = true; }
   UnitClass(UnitType classid, HousesType house);
-  UnitClass(const NoInitClass& x) : TarComClass(x) {}
   operator UnitType() const { return Class->Type; }
   ~UnitClass() override;
   RTTIType What_Am_I() const override;
@@ -192,10 +193,6 @@ class UnitClass final : public TarComClass {
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
   static const char* INI_Name() { return "UNITS"; }
-  bool Load(ArchiveReader& file);
-  bool Save(ArchiveWriter& file);
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 
   /*
   **	Dee-buggin' support.
@@ -203,10 +200,6 @@ class UnitClass final : public TarComClass {
   int Validate() const;
 
  private:
-  /*
-  ** This contains the value of the Virtual Function Table Pointer
-  */
-  static void* VTable;
 };
 
 #endif  // CNC_RED_ALERT_TD_UNIT_H_

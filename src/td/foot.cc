@@ -149,7 +149,9 @@ FootClass::FootClass() : Speed(0) {
   IsUnloading = false;
   NavCom = kTargetNone;
   SuspendedNavCom = kTargetNone;
-  Path[0] = FACING_NONE;
+  for (auto& facing : Path) {
+    facing = FACING_NONE;
+  }
   HeadToCoord = 0;
   Member = nullptr;
   Team = nullptr;
@@ -199,7 +201,9 @@ FootClass::FootClass(HousesType house) : TechnoClass(house), Speed(0) {
   ArchiveTarget = kTargetNone;
   Member = nullptr;
   Team = nullptr;
-  Path[0] = FACING_NONE;
+  for (auto& facing : Path) {
+    facing = FACING_NONE;
+  }
   NavCom = kTargetNone;
   SuspendedNavCom = kTargetNone;
   IsUnloading = false;

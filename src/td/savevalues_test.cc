@@ -32,11 +32,6 @@ void Speak(VoxType) {}
 void SDL_Event_Handler(SDL_Event*) {}
 void MonoClass::Set_Cursor(int, int) {}
 void MonoClass::Printf(const char*, ...) {}
-// Fly's legacy pointer-coding hooks are no-ops in ioobj.cc, which otherwise
-// needs the entire game. They are unrelated to the field-wise path under test.
-void FlyClass::Code_Pointers() {}
-void FlyClass::Decode_Pointers() {}
-
 namespace {
 
 template <class T>

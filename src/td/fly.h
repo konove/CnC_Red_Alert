@@ -81,8 +81,6 @@ class FlyClass {
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
 
  private:
   /*

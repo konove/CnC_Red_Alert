@@ -151,7 +151,6 @@
 /*
 ** This contains the value of the Virtual Function Table Pointer
 */
-void* AircraftClass::VTable;
 
 /***********************************************************************************************
  * AircraftClass::Validate -- validates aircraft pointer
@@ -1001,13 +1000,7 @@ const short* AircraftClass::Overlap_List() const {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Init() {
-  Aircraft.Free_All();
-
-  AircraftClass* ptr = new AircraftClass();
-  VTable = ((void**)((char*)ptr + sizeof(AbstractClass) - 4))[0];
-  delete ptr;
-}
+void AircraftClass::Init() { Aircraft.Free_All(); }
 
 /***********************************************************************************************
  * AircraftClass::Mission_Unload -- Handles unloading cargo. *

@@ -57,8 +57,6 @@ class ArchiveWriter;
 #include "td/radio.h"
 #include "td/techno.h"
 #include "td/type.h"
-#include "tech/noinit.h"
-#include "tech/wwfile.h"
 
 /**********************************************************************
 **	Infantry can be afraid. These defines are for the various infantry
@@ -72,7 +70,11 @@ class ArchiveWriter;
 
 class InfantryClass final : public FootClass {
  public:
-  const InfantryTypeClass* Class;
+  // Field-wise state and checked references; load shells have no scenario effects.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
+  const InfantryTypeClass* Class = nullptr;
   operator InfantryType() const { return Class->Type; }
 
   /*
@@ -82,7 +84,7 @@ class InfantryClass final : public FootClass {
   *performing an animation *	sequence, the infantry cannot perform anything
   *else (even move).
   */
-  DoType Doing;
+  DoType Doing = DO_NOTHING;
 
   /*
   **	Certain infantry will either perform some comment or say something after
@@ -96,21 +98,21 @@ class InfantryClass final : public FootClass {
   **	It should only be set for the civilian type infantry. Typically, the
   **	technician appears after a building is destroyed.
   */
-  unsigned IsTechnician : 1;
+  unsigned IsTechnician : 1 = false;
 
   /*
   **	If the infantry just performed some feat, then it may respond with an
   *action. *	This flag will be true if an action is to be performed when the
   *Comment timer *	has expired.
   */
-  unsigned IsStoked : 1;
+  unsigned IsStoked : 1 = false;
 
   /*
   **	This flag indicates if the infantry unit is prone. Prone infantry become
   *that way *	when they are fired upon. Infantry in the prone position are
   *less vulnerable to *	combat.
   */
-  unsigned IsProne : 1;
+  unsigned IsProne : 1 = false;
 
   /*
   ** This flag is set when the infantryman is engaged in hand-to-hand
@@ -118,13 +120,13 @@ class InfantryClass final : public FootClass {
   ** sequence only once, and it'll know to pick up the gun when the
   ** fight is over.
   */
-  unsigned IsBoxing : 1;
+  unsigned IsBoxing : 1 = false;
 
   /*
   **	The fear rating of this infantry unit. The more afraid the infantry, the
   *more *	likely it is to panic and seek cover.
   */
-  unsigned char Fear;
+  unsigned char Fear = 0;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
@@ -134,7 +136,6 @@ class InfantryClass final : public FootClass {
   void operator delete(void* ptr);
   InfantryClass();
   InfantryClass(InfantryType classid, HousesType house);
-  InfantryClass(const NoInitClass& x) : FootClass(x), Comment(x) {}
   ~InfantryClass() override;
   RTTIType What_Am_I() const override;
 
@@ -231,10 +232,6 @@ class InfantryClass final : public FootClass {
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
   static const char* INI_Name() { return "INFANTRY"; }
-  bool Load(ArchiveReader& file);
-  bool Save(ArchiveWriter& file);
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 
   /*
   **	Movement and animation.
@@ -261,10 +258,6 @@ class InfantryClass final : public FootClass {
  private:
   static const DoStruct MasterDoControls[DO_COUNT];
 
-  /*
-  ** This contains the value of the Virtual Function Table Pointer
-  */
-  static void* VTable;
 };
 
 #endif  // CNC_RED_ALERT_TD_INFANTRY_H_

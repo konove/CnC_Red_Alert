@@ -149,7 +149,6 @@ int Infantry_Punch_Damage[] = {4, 7};
 /*
 ** This contains the value of the Virtual Function Table Pointer
 */
-void* InfantryClass::VTable;
 
 /***************************************************************************
 ** This is the array of constant data associated with infantry maneuvers. It
@@ -311,8 +310,7 @@ void InfantryClass::Debug_Dump(MonoClass* mono) const {
   }
 }
 
-InfantryClass::InfantryClass()
-    : Class(nullptr) {};  // Default constructor does nothing.
+InfantryClass::InfantryClass() { IsActive = true; }
 
 /***********************************************************************************************
  * InfantryClass::InfantryClass -- The constructor for infantry objects. *
@@ -906,15 +904,7 @@ TARGET InfantryClass::As_Target() const {
  *                                                                                             *
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Init() {
-  InfantryClass* ptr;
-
-  Infantry.Free_All();
-
-  ptr = new InfantryClass();
-  VTable = ((void**)((char*)ptr + sizeof(AbstractClass) - 4))[0];
-  delete ptr;
-}
+void InfantryClass::Init() { Infantry.Free_All(); }
 
 /***********************************************************************************************
  * InfantryClass::Look -- The infantry performs a look operation. *

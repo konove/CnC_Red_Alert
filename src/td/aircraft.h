@@ -35,18 +35,18 @@ class ArchiveWriter;
 #include "td/radio.h"
 #include "td/techno.h"
 #include "td/type.h"
-#include "tech/noinit.h"
-#include "tech/wwfile.h"
 
 class AircraftClass : public FootClass, public FlyClass {
  public:
+  // Field-wise state and checked references; load shells have no scenario effects.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void*);
   operator AircraftType() const { return Class->Type; }
-  AircraftClass() : Class(nullptr) {}
-  AircraftClass(const NoInitClass& x)
-      : FootClass(x), FlyClass(x), SecondaryFacing(x), SightTimer(x) {}
+  AircraftClass() { IsActive = true; }
   AircraftClass(AircraftType classid, HousesType house);
   ~AircraftClass() override;
   RTTIType What_Am_I() const override { return RTTI_AIRCRAFT; }
@@ -144,16 +144,12 @@ class AircraftClass : public FootClass, public FlyClass {
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
   static const char* INI_Name() { return "AIRCRAFT"; }
-  bool Load(ArchiveReader& file);
-  bool Save(ArchiveWriter& file);
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 
   // Debugging support.
   int Validate() const;
 
   // This is a pointer to the class control structure for the aircraft.
-  const AircraftTypeClass* Class;
+  const AircraftTypeClass* Class = nullptr;
 
   /*
   **	This is the facing used for the body of the aircraft. Typically, this is
@@ -168,7 +164,7 @@ class AircraftClass : public FootClass, public FlyClass {
   **	the aircraft has landed. The altitude for normal aircraft is at
   **	Flight_Level().
   */
-  int Altitude;
+  int Altitude = FLIGHT_LEVEL;
 
  private:
   /*
@@ -177,8 +173,8 @@ class AircraftClass : public FootClass, public FlyClass {
   *landing. It is *	necessary to handle the transition in this manner so
   *that it occurs smoothly *	during the graphic processing section.
   */
-  unsigned IsLanding : 1;
-  unsigned IsTakingOff : 1;
+  unsigned IsLanding : 1 = false;
+  unsigned IsTakingOff : 1 = false;
 
   /*
   **	It is very common for aircraft to be homing in on a target. When this
@@ -190,7 +186,7 @@ class AircraftClass : public FootClass, public FlyClass {
   *mode. Example: Transport helicopters go into a hovering into correct position
   **	mode when the target is reached.
   */
-  unsigned IsHoming : 1;
+  unsigned IsHoming : 1 = false;
 
   /*
   **	Helicopters that are about to land must hover into a position exactly
@@ -201,13 +197,13 @@ class AircraftClass : public FootClass, public FlyClass {
   **	zone. When the position is over the landing zone, then this flag is set
   *to false.
   */
-  unsigned IsHovering : 1;
+  unsigned IsHovering : 1 = false;
 
   /*
   **	This is the jitter tracker to be used when the aircraft is a helicopter
   *and *	is flying. It is most noticable when the helicopter is hovering.
   */
-  unsigned char Jitter;
+  unsigned char Jitter = 0;
 
   /*
   **	This timer controls when the aircraft will reveal the terrain around
@@ -221,12 +217,8 @@ class AircraftClass : public FootClass, public FlyClass {
   *the *	number of attack runs the aircraft has left. When this value
   *reaches *	zero then the aircraft is technically out of ammo.
   */
-  char AttacksRemaining;
+  char AttacksRemaining = 3;
 
-  /*
-  ** This contains the value of the Virtual Function Table Pointer
-  */
-  static void* VTable;
 };
 
 #endif  // CNC_RED_ALERT_TD_AIRCRAFT_H_

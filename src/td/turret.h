@@ -47,10 +47,13 @@
 #include "td/facing.h"
 #include "td/ftimer.h"
 #include "td/monoc.h"
-#include "tech/noinit.h"
 
 class TurretClass : public DriveClass {
  public:
+  // Field-wise state and checked references; load shells have no scenario effects.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   /*
   **	This is the timer that controls the reload rate. The MSAM rocket
   **	launcher is the primary user of this.
@@ -69,16 +72,12 @@ class TurretClass : public DriveClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 
   ~TurretClass() override = default;
 
  protected:
   TurretClass(UnitType classid, HousesType house);
   TurretClass() = default;
-  TurretClass(const NoInitClass& x)
-      : DriveClass(x), Reload(x), SecondaryFacing(x) {}
 
   BulletClass* Fire_At(TARGET target, int which) override;
 

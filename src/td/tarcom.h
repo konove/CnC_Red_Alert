@@ -44,7 +44,6 @@
 #include "td/defines.h"
 #include "td/monoc.h"
 #include "td/turret.h"
-#include "tech/noinit.h"
 
 /****************************************************************************
 **	Units that can perform combat are handled by this class. It performs
@@ -53,13 +52,16 @@
 */
 class TarComClass : public TurretClass {
  public:
+  // Field-wise state and checked references; load shells have no scenario effects.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
   TarComClass() {}
   TarComClass(UnitType classid, HousesType house)
       : TurretClass(classid, house) {}
-  TarComClass(const NoInitClass& x) : TurretClass(x) {}
   ~TarComClass() override;
 
   /*---------------------------------------------------------------------
@@ -73,8 +75,6 @@ class TarComClass : public TurretClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 };
 
 #endif  // CNC_RED_ALERT_TD_TARCOM_H_

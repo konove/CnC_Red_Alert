@@ -37,68 +37,8 @@
  * All object-related loading/saving routines should go in this module, so it
  *can be overlayed.*
  *---------------------------------------------------------------------------------------------*
- * Functions: * TeamTypeClass::Serialize -- Read/write team definitions. *
- *   TeamClass::Serialize -- Read/write team state. *
- *   TriggerClass::Serialize -- Read/write saved fields. *
- *   AircraftClass::Load -- Reads from a save game file. * AircraftClass::Save
- *-- Write to a save game file.                                         *
- *   AircraftClass::Code_Pointers -- codes class's pointers for load/save *
- *   AircraftClass::Decode_Pointers -- decodes pointers for load/save *
- *   AnimClass::Serialize -- Read/write saved fields. *
- *   BuildingClass::Serialize -- Read/write saved fields. *
- *   BulletClass::Serialize -- Read/write saved fields. *
- *   InfantryClass::Load -- Reads from a save game file. * InfantryClass::Save
- *-- Write to a save game file.                                         *
- *   InfantryClass::Code_Pointers -- codes class's pointers for load/save *
- *   InfantryClass::Decode_Pointers -- decodes pointers for load/save *
- *   OverlayClass::Serialize -- Read/write saved fields. *
- *   ReinforcementClass::Load -- Reads from a save game file. *
- *   ReinforcementClass::Save -- Write to a save game file. *
- *   ReinforcementClass::Code_Pointers -- codes class's pointers for load/save *
- *   ReinforcementClass::Decode_Pointers -- decodes pointers for load/save *
- *   SmudgeClass::Serialize -- Read/write saved fields. *
- *   TemplateClass::Serialize -- Read/write saved fields. *
- *   TerrainClass::Serialize -- Read/write saved fields. *
- *   UnitClass::Load -- Reads from a save game file. * UnitClass::Save -- Write
- *to a save game file.                                             *
- *   UnitClass::Code_Pointers -- codes class's pointers for load/save *
- *   UnitClass::Decode_Pointers -- decodes pointers for load/save *
- *   FactoryClass::Serialize -- Read/write saved fields. *
- *   LayerClass::Load -- Reads from a save game file. * LayerClass::Save --
- *Write to a save game file.                                            *
- *   LayerClass::Code_Pointers -- codes class's pointers for load/save *
- *   LayerClass::Decode_Pointers -- decodes pointers for load/save *
- *   HouseClass::Serialize -- Read/write house state. *
- *   ScoreClass::Load -- Reads from a save game file. * ScoreClass::Save --
- *Write to a save game file.                                            *
- *   ScoreClass::Code_Pointers -- codes class's pointers for load/save *
- *   ScoreClass::Decode_Pointers -- decodes pointers for load/save *
- *   FlyClass::Code_Pointers -- codes class's pointers for load/save *
- *   FlyClass::Decode_Pointers -- decodes pointers for load/save *
- *   FuseClass::Code_Pointers -- codes class's pointers for load/save *
- *   FuseClass::Decode_Pointers -- decodes pointers for load/save *
- *   TarComClass::Code_Pointers -- codes class's pointers for load/save *
- *   TarComClass::Decode_Pointers -- decodes pointers for load/save *
- *   TurretClass::Code_Pointers -- codes class's pointers for load/save *
- *   TurretClass::Decode_Pointers -- decodes pointers for load/save *
- *   DriveClass::Code_Pointers -- codes class's pointers for load/save *
- *   DriveClass::Decode_Pointers -- decodes pointers for load/save *
- *   FootClass::Code_Pointers -- codes class's pointers for load/save *
- *   FootClass::Decode_Pointers -- decodes pointers for load/save *
- *   RadioClass::Code_Pointers -- codes class's pointers for load/save *
- *   RadioClass::Decode_Pointers -- decodes pointers for load/save *
- *   TechnoClass::Code_Pointers -- codes class's pointers for load/save *
- *   TechnoClass::Decode_Pointers -- decodes pointers for load/save *
- *   FlasherClass::Code_Pointers -- codes class's pointers for load/save *
- *   FlasherClass::Decode_Pointers -- decodes pointers for load/save *
- *   CargoClass::Code_Pointers -- codes class's pointers for load/save *
- *   CargoClass::Decode_Pointers -- decodes pointers for load/save *
- *   MissionClass::Code_Pointers -- codes class's pointers for load/save *
- *   MissionClass::Decode_Pointers -- decodes pointers for load/save *
- *   ObjectClass::Code_Pointers -- codes class's pointers for load/save *
- *   ObjectClass::Decode_Pointers -- decodes pointers for load/save *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+ * Field-wise heap serializers and remaining layer/score I/O.
+ */
 
 #include <cstdint>
 
@@ -146,243 +86,29 @@
 #include "tech/archive.h"
 #include "tech/wwfile.h"
 
-/***********************************************************************************************
- * AircraftClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool AircraftClass::Load(ArchiveReader& file) {
-  return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
-}
 
-/***********************************************************************************************
- * AircraftClass::Save -- Write to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool AircraftClass::Save(ArchiveWriter& file) {
-  return Write_Object(this, sizeof(*this), file);
-}
 
-/***********************************************************************************************
- * AircraftClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void AircraftClass::Code_Pointers() {
-  /*
-  ------------------------------ Code 'Class' ------------------------------
-  */
-  (AircraftTypeClass*&)Class = (AircraftTypeClass*)Class->Type;
 
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  FootClass::Code_Pointers();
-  FlyClass::Code_Pointers();
-}
 
-/***********************************************************************************************
- * AircraftClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void AircraftClass::Decode_Pointers() {
-  /*
-  ----------------------------- Decode 'Class' -----------------------------
-  */
-  Class = &AircraftTypeClass::As_Reference(
-      static_cast<AircraftType>((uintptr_t)Class));
-  Check_Ptr(Class);
 
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  FootClass::Decode_Pointers();
-  FlyClass::Decode_Pointers();
-}
 
-/***********************************************************************************************
- * InfantryClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool InfantryClass::Load(ArchiveReader& file) {
-  return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
-}
 
-/***********************************************************************************************
- * InfantryClass::Save -- Write to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool InfantryClass::Save(ArchiveWriter& file) {
-  return Write_Object(this, sizeof(*this), file);
-}
 
-/***********************************************************************************************
- * InfantryClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void InfantryClass::Code_Pointers() {
-  /*
-  ------------------------------ Code 'Class' ------------------------------
-  */
-  (InfantryTypeClass*&)Class = (InfantryTypeClass*)Class->Type;
 
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  FootClass::Code_Pointers();
-}
 
-/***********************************************************************************************
- * InfantryClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void InfantryClass::Decode_Pointers() {
-  /*
-  ----------------------------- Decode 'Class' -----------------------------
-  */
-  Class = &InfantryTypeClass::As_Reference(
-      static_cast<InfantryType>((uintptr_t)Class));
-  Check_Ptr(Class);
 
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  FootClass::Decode_Pointers();
-}
 
-/***********************************************************************************************
- * UnitClass::Load -- Loads from a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to read the cell's data from. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool UnitClass::Load(ArchiveReader& file) {
-  return Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable);
-}
 
-/***********************************************************************************************
- * UnitClass::Save -- Write to a save game file. *
- *                                                                                             *
- * INPUT:   file  -- The file to write the cell's data to. *
- *                                                                                             *
- * OUTPUT:  true = success, false = failure *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/19/1994 JLB : Created. *
- *=============================================================================================*/
-bool UnitClass::Save(ArchiveWriter& file) {
-  return Write_Object(this, sizeof(*this), file);
-}
 
-/***********************************************************************************************
- * UnitClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void UnitClass::Code_Pointers() { TarComClass::Code_Pointers(); }
 
-/***********************************************************************************************
- * UnitClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void UnitClass::Decode_Pointers() { TarComClass::Decode_Pointers(); }
+
+
+
+
+
+
+
+
 
 /***********************************************************************************************
  * LayerClass::Load -- Loads from a save game file. *
@@ -565,534 +291,53 @@ void ScoreClass::Code_Pointers() {}
  *=============================================================================================*/
 void ScoreClass::Decode_Pointers() {}
 
-/***********************************************************************************************
- * FlyClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void FlyClass::Code_Pointers() {}
 
-/***********************************************************************************************
- * FlyClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void FlyClass::Decode_Pointers() {}
 
-/***********************************************************************************************
- * FuseClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void FuseClass::Code_Pointers() {}
 
-/***********************************************************************************************
- * FuseClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void FuseClass::Decode_Pointers() {}
 
-/***********************************************************************************************
- * TarComClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TarComClass::Code_Pointers() { TurretClass::Code_Pointers(); }
 
-/***********************************************************************************************
- * TarComClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TarComClass::Decode_Pointers() { TurretClass::Decode_Pointers(); }
 
-/***********************************************************************************************
- * TurretClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TurretClass::Code_Pointers() { DriveClass::Code_Pointers(); }
 
-/***********************************************************************************************
- * TurretClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TurretClass::Decode_Pointers() { DriveClass::Decode_Pointers(); }
 
-/***********************************************************************************************
- * DriveClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void DriveClass::Code_Pointers() {
-  /*
-  ------------------------------ Code 'Class' ------------------------------
-  */
-  (UnitTypeClass*&)Class = (UnitTypeClass*)Class->Type;
 
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  FootClass::Code_Pointers();
-}
 
-/***********************************************************************************************
- * DriveClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void DriveClass::Decode_Pointers() {
-  /*
-  ----------------------------- Decode 'Class' -----------------------------
-  */
-  Class = &UnitTypeClass::As_Reference(static_cast<UnitType>((uintptr_t)Class));
-  Check_Ptr(Class);
 
-  /*
-  ---------------------------- Chain to parent -----------------------------
-  */
-  FootClass::Decode_Pointers();
-}
 
-/***********************************************************************************************
- * FootClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void FootClass::Code_Pointers() {
-  if (Team) {
-    Team = (TeamClass*)Team->As_Target();
-  }
 
-  if (Member) {
-    Member = (FootClass*)Member->As_Target();
-  }
 
-  TechnoClass::Code_Pointers();
-}
 
-/***********************************************************************************************
- * FootClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void FootClass::Decode_Pointers() {
-  if (Team) {
-    Team = As_Team(static_cast<TARGET>((uintptr_t)Team));
-    Check_Ptr(Team);
-  }
 
-  if (Member) {
-    Member = dynamic_cast<FootClass*>(As_Techno((TARGET)(uintptr_t)Member));
-    Check_Ptr(Member);
-  }
 
-  TechnoClass::Decode_Pointers();
-}
 
-/***********************************************************************************************
- * RadioClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void RadioClass::Code_Pointers() {
-  /*
-  ------------------------------ Code 'Radio' ------------------------------
-  */
-  if (Radio) {
-    Radio = (RadioClass*)Radio->As_Target();
-  }
 
-  MissionClass::Code_Pointers();
-}
 
-/***********************************************************************************************
- * RadioClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void RadioClass::Decode_Pointers() {
-  /*
-  ----------------------------- Decode 'Radio' -----------------------------
-  */
-  if (Radio) {
-    Radio = As_Techno(static_cast<TARGET>((uintptr_t)Radio));
-    Check_Ptr((void*)Radio);
-  }
 
-  MissionClass::Decode_Pointers();
-}
 
-/***********************************************************************************************
- * TechnoClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TechnoClass::Code_Pointers() {
-  /*
-  ------------------------------ Code 'House' ------------------------------
-  */
-  House = (HouseClass*)House->Class->House;
 
-  FlasherClass::Code_Pointers();
-  StageClass::Code_Pointers();
-  CargoClass::Code_Pointers();
-  DoorClass::Code_Pointers();
 
-  RadioClass::Code_Pointers();
-}
 
-/***********************************************************************************************
- * TechnoClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void TechnoClass::Decode_Pointers() {
-  /*
-  ----------------------------- Decode 'House' -----------------------------
-  */
-  House = HouseClass::As_Pointer(static_cast<HousesType>((uintptr_t)House));
-  Check_Ptr((void*)House);
 
-  FlasherClass::Decode_Pointers();
-  StageClass::Decode_Pointers();
-  CargoClass::Decode_Pointers();
-  DoorClass::Decode_Pointers();
 
-  RadioClass::Decode_Pointers();
-}
 
-/***********************************************************************************************
- * FlasherClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void FlasherClass::Code_Pointers() {}
 
-/***********************************************************************************************
- * FlasherClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void FlasherClass::Decode_Pointers() {}
 
-/***********************************************************************************************
- * CargoClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void CargoClass::Code_Pointers() {
-  /*
-  ---------------------------- Code 'CargoHold' ----------------------------
-  */
-  if (CargoHold) {
-    CargoHold = (FootClass*)CargoHold->As_Target();
-  }
-}
 
-/***********************************************************************************************
- * CargoClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void CargoClass::Decode_Pointers() {
-  /*
-  --------------------------- Decode 'CargoHold' ---------------------------
-  */
-  if (CargoHold) {
-    CargoHold =
-        dynamic_cast<FootClass*>(As_Techno((TARGET)(uintptr_t)CargoHold));
-    Check_Ptr((void*)CargoHold);
-  }
-}
 
-/***********************************************************************************************
- * MissionClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void MissionClass::Code_Pointers() { ObjectClass::Code_Pointers(); }
 
-/***********************************************************************************************
- * MissionClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void MissionClass::Decode_Pointers() { ObjectClass::Decode_Pointers(); }
 
-/***********************************************************************************************
- * ObjectClass::Code_Pointers -- codes class's pointers for load/save *
- *                                                                                             *
- * This routine "codes" the pointers in the class by converting them to a number
- ** that still represents the object pointed to, but isn't actually a pointer.
- *This            * allows a saved game to properly load without relying on the
- *games data still                * being in the exact same location. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void ObjectClass::Code_Pointers() {
-  if (Next) {
-    Next = (ObjectClass*)Next->As_Target();
-  }
 
-  if (Trigger) {
-    Trigger = (TriggerClass*)Trigger->As_Target();
-  }
-}
 
-/***********************************************************************************************
- * ObjectClass::Decode_Pointers -- decodes pointers for load/save *
- *                                                                                             *
- * This routine "decodes" the pointers coded in Code_Pointers by converting the
- ** code values back into object pointers. *
- *                                                                                             *
- * INPUT: * none. *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 01/02/1995 BR : Created. *
- *=============================================================================================*/
-void ObjectClass::Decode_Pointers() {
-  if (Next) {
-    Next = As_Object(static_cast<TARGET>((uintptr_t)Next));
-    Check_Ptr((void*)Next);
-  }
 
-  if (Trigger) {
-    Trigger = As_Trigger(static_cast<TARGET>((uintptr_t)Trigger));
-    Check_Ptr((void*)Trigger);
-  }
-}
+
+
+
+
+
+
+
+
+
+
 
 // These objects stay live while the remaining raw heaps code their pointers.
 // House IDs and heap TARGETs avoid looking through any coded type pointers.
@@ -1546,3 +791,149 @@ void BuildingClass::Serialize(Archive& ar) {
 }
 template void BuildingClass::Serialize(ArchiveWriter&);
 template void BuildingClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void FootClass::Serialize(Archive& ar) {
+  TechnoClass::Serialize(ar);
+  bool initiated = IsInitiated, new_nav = IsNewNavCom, look = IsPlanningToLook;
+  bool deploying = IsDeploying, firing = IsFiring, rotating = IsRotating;
+  bool driving = IsDriving, unloading = IsUnloading;
+  int32_t team_index = -1;
+  if constexpr (!Archive::kIsReading) {
+    if (Team != nullptr) {
+      team_index = Teams.ID(Team);
+    }
+  }
+  ar(initiated, new_nav, look, deploying, firing, rotating, driving, unloading,
+     Speed, ArchiveTarget, NavCom, SuspendedNavCom, team_index, Group,
+     ObjectPtr(Member));
+  // Movement shifts this buffer even past the first FACING_NONE, so the tail
+  // affects later path state and must also survive the round trip.
+  int32_t path_length = kConquerPathMax;
+  ar(path_length);
+  if constexpr (Archive::kIsReading) {
+    if (path_length != kConquerPathMax) {
+      ar.Fail("invalid saved path length");
+      return;
+    }
+  }
+  for (int32_t i = 0; i < path_length; ++i) {
+    ar(Path[i]);
+    if constexpr (Archive::kIsReading) {
+      if (Path[i] < FACING_NONE || Path[i] >= FACING_COUNT) {
+        ar.Fail("invalid saved path facing");
+      }
+    }
+  }
+  ar(PathDelay, TryTryAgain, BaseAttackTimer, HeadToCoord);
+  if constexpr (Archive::kIsReading) {
+    IsInitiated = initiated;
+    IsNewNavCom = new_nav;
+    IsPlanningToLook = look;
+    IsDeploying = deploying;
+    IsFiring = firing;
+    IsRotating = rotating;
+    IsDriving = driving;
+    IsUnloading = unloading;
+    Team = nullptr;
+    if (team_index < -1 || team_index >= Teams.Length()) {
+      ar.Fail("invalid saved mobile team index");
+    } else if (team_index != -1) {
+      Team = Teams.Raw_Ptr(team_index);
+      if (!Team->IsActive) {
+        ar.Fail("inactive saved mobile team");
+      }
+    }
+  }
+}
+template void FootClass::Serialize(ArchiveWriter&);
+template void FootClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void DriveClass::Serialize(Archive& ar) {
+  FootClass::Serialize(ar);
+  bool harvesting = IsHarvesting, returning = IsReturning;
+  bool locked = IsTurretLockedDown, short_track = IsOnShortTrack;
+  ar(TypePtr(Class), Tiberium, harvesting, returning, locked, short_track,
+     SpeedAccum, TrackNumber, TrackIndex);
+  if constexpr (Archive::kIsReading) {
+    IsHarvesting = harvesting;
+    IsReturning = returning;
+    IsTurretLockedDown = locked;
+    IsOnShortTrack = short_track;
+    if (Class == nullptr || TrackNumber < -1 || TrackNumber >= 67 ||
+        TrackIndex < 0) {
+      ar.Fail("invalid saved drive state");
+    }
+  }
+}
+template void DriveClass::Serialize(ArchiveWriter&);
+template void DriveClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void TurretClass::Serialize(Archive& ar) {
+  DriveClass::Serialize(ar);
+  ar(Reload, SecondaryFacing);
+}
+template void TurretClass::Serialize(ArchiveWriter&);
+template void TurretClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void TarComClass::Serialize(Archive& ar) {
+  TurretClass::Serialize(ar);
+}
+template void TarComClass::Serialize(ArchiveWriter&);
+template void TarComClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void UnitClass::Serialize(Archive& ar) {
+  TarComClass::Serialize(ar);
+  ar(Flagged);
+  if constexpr (Archive::kIsReading) {
+    if (Flagged < HOUSE_NONE || Flagged >= HOUSE_COUNT) {
+      ar.Fail("invalid saved unit flag owner");
+    }
+  }
+}
+template void UnitClass::Serialize(ArchiveWriter&);
+template void UnitClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void InfantryClass::Serialize(Archive& ar) {
+  FootClass::Serialize(ar);
+  bool technician = IsTechnician, stoked = IsStoked;
+  bool prone = IsProne, boxing = IsBoxing;
+  ar(TypePtr(Class), Doing, Comment, technician, stoked, prone, boxing, Fear);
+  if constexpr (Archive::kIsReading) {
+    IsTechnician = technician;
+    IsStoked = stoked;
+    IsProne = prone;
+    IsBoxing = boxing;
+    if (Class == nullptr || Doing < DO_NOTHING || Doing >= DO_COUNT) {
+      ar.Fail("invalid saved infantry state");
+    }
+  }
+}
+template void InfantryClass::Serialize(ArchiveWriter&);
+template void InfantryClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void AircraftClass::Serialize(Archive& ar) {
+  FootClass::Serialize(ar);
+  FlyClass::Serialize(ar);
+  bool landing = IsLanding, taking_off = IsTakingOff;
+  bool homing = IsHoming, hovering = IsHovering;
+  ar(TypePtr(Class), SecondaryFacing, Altitude, landing, taking_off,
+     homing, hovering, Jitter, SightTimer, AttacksRemaining);
+  if constexpr (Archive::kIsReading) {
+    IsLanding = landing;
+    IsTakingOff = taking_off;
+    IsHoming = homing;
+    IsHovering = hovering;
+    if (Class == nullptr) {
+      ar.Fail("missing saved aircraft type");
+    }
+  }
+}
+template void AircraftClass::Serialize(ArchiveWriter&);
+template void AircraftClass::Serialize(ArchiveReader&);

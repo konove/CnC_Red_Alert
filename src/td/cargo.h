@@ -82,8 +82,6 @@ class CargoClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers();
-  void Decode_Pointers();
 
  private:
   /*

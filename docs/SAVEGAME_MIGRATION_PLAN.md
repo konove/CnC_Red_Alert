@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Step 26 is complete; steps 0–25 are committed; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
+- Step 27 is complete; steps 0–26 are committed; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -141,7 +141,29 @@
   **4,911** states with linked buildings, **5,291** with world objects, **4,782** in GDI mission 2,
   and **4,260** in Nod. All **six** malformed building saves are rejected before gameplay.
   RA matches **240** vehicle/vessel positions. Real-display and live-multiplayer checks remain pending.
-  Next checkpoint is **27: the remaining mobile-object hierarchy**.
+- Step 27 migrates **FootClass, DriveClass, TurretClass, TarComClass, InfantryClass, AircraftClass,
+  and UnitClass** (TD version **8**). Saved state includes navigation targets and full path
+  buffers, team/member links, retry/attack timers, vehicle tracks and harvest state, turret reload,
+  infantry action/fear state, and aircraft flight/landing/sight state. Crew kills now survive loads
+  for mobile objects as well as buildings.
+- Full mobile comparisons exposed movement reusing path entries beyond the first FACING_NONE.
+  Both Foot constructors now initialize every path slot, and saves preserve the entire buffer.
+- All object heaps are field-wise. RawImage dispatch, raw-object heap sizes, object pointer-coding
+  methods/passes, vtable capture, and the object hierarchy's NoInit constructors are removed.
+  Heap counts and sparse slot indices use explicit int32 archive values. Raw-only heap tests are
+  replaced by empty-heap and malformed-header coverage; sparse-slot tests check hole reuse.
+- `-MOBILETEST` / `--mobile` adds non-default vehicle/cargo state and a flying aircraft alongside
+  the populated team fixture. Every mobile field now participates in all TD smoke comparisons.
+  Corrupted-save checks cover path lengths/directions, team indices, drive tracks, flag owners,
+  infantry actions, and aircraft types.
+- Map and score still call Read_Object/Write_Object, so those helpers remain until steps 28–29;
+  unused Get_VTable/Set_VTable are deleted. Map/layer/global pointer-coding passes and leaf NoInit
+  constructors needed by the remaining raw UI chain stay for their planned migrations.
+- Step-27 validation: strict builds of both games and **182 CTest tests** pass. TD smoke matches
+  **6,092** states with mobile/team fixtures, **5,991** with linked buildings, **6,251** with world
+  objects, **8,484** in GDI mission 2, and **6,480** in Nod. All **seven** malformed mobile saves
+  and **six** malformed building saves are rejected before gameplay. RA matches **240** positions.
+  Real-display and live-multiplayer checks remain pending. Next checkpoint is **28: Map/Cell**.
 - Step-19 validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
   Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke

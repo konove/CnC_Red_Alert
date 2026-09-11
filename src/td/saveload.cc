@@ -708,24 +708,6 @@ void Code_All_Pointers() {
   Map.Code_Pointers();
 
   /*
-  **	The ArrayOf's.
-  */
-  TeamTypes.Code_Pointers();
-  Teams.Code_Pointers();
-  Triggers.Code_Pointers();
-  Aircraft.Code_Pointers();
-  Anims.Code_Pointers();
-  Buildings.Code_Pointers();
-  Bullets.Code_Pointers();
-  Infantry.Code_Pointers();
-  Overlays.Code_Pointers();
-  Smudges.Code_Pointers();
-  Templates.Code_Pointers();
-  Terrains.Code_Pointers();
-  Units.Code_Pointers();
-  Factories.Code_Pointers();
-
-  /*
   **	The Layers.
   */
   Logic.Code_Pointers();
@@ -774,30 +756,6 @@ void Decode_All_Pointers() {
   **	The Map.
   */
   Map.Decode_Pointers();
-
-  /*
-  ** Decode houses first, so we can properly decode all other objects'
-  ** House pointers
-  */
-  Houses.Decode_Pointers();
-
-  /*
-  **	The ArrayOf's.
-  */
-  TeamTypes.Decode_Pointers();
-  Teams.Decode_Pointers();
-  Triggers.Decode_Pointers();
-  Aircraft.Decode_Pointers();
-  Anims.Decode_Pointers();
-  Buildings.Decode_Pointers();
-  Bullets.Decode_Pointers();
-  Infantry.Decode_Pointers();
-  Overlays.Decode_Pointers();
-  Smudges.Decode_Pointers();
-  Templates.Decode_Pointers();
-  Terrains.Decode_Pointers();
-  Units.Decode_Pointers();
-  Factories.Decode_Pointers();
 
   /*
   **	The Layers.
@@ -1056,44 +1014,4 @@ bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
     return true;
   }
   return false;
-}
-
-/***************************************************************************
- * Get_VTable -- gets the VTable pointer for the given object              *
- *                                                                         *
- * INPUT:                                                                  *
- *      ptr      pointer to check                                          *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      none                                                               *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none                                                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   01/12/1995 BR : Created.                                              *
- *=========================================================================*/
-void* Get_VTable(void* ptr, int base_size) {
-  return ((void**)(static_cast<char*>(ptr) + base_size - 4))[0];
-}
-
-/***************************************************************************
- * Set_VTable -- sets the VTable pointer for the given object              *
- *                                                                         *
- * INPUT:                                                                  *
- *      ptr         pointer to check                                       *
- *      base_size   size of base class                                     *
- *      vtable      value of VTable to plug in                             *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      none                                                               *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none                                                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   01/12/1995 BR : Created.                                              *
- *=========================================================================*/
-void Set_VTable(void* ptr, int base_size, void* vtable) {
-  ((void**)(static_cast<char*>(ptr) + base_size - 4))[0] = vtable;
 }

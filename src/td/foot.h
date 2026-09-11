@@ -48,7 +48,6 @@
 #include "td/radio.h"
 #include "td/target.h"
 #include "td/techno.h"
-#include "tech/noinit.h"
 
 /****************************************************************************
 **	Movable objects are handled by this class definition. Moveable objects
@@ -56,6 +55,10 @@
 */
 class FootClass : public TechnoClass {
  public:
+  // Field-wise state and checked references; load shells have no scenario effects.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   /*
   **	If this unit has officially joined the team's group, then this flag is
   **	true. A newly assigned unit to a team is not considered part of the
@@ -201,8 +204,6 @@ class FootClass : public TechnoClass {
   */
   FootClass();
   ~FootClass() override;
-  FootClass(const NoInitClass& x)
-      : TechnoClass(x), PathDelay(x), BaseAttackTimer(x) {}
   FootClass(HousesType house);
 
   /*---------------------------------------------------------------------
@@ -291,8 +292,6 @@ class FootClass : public TechnoClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 
   CELL Safety_Point(CELL src, CELL dst, int start, int max);
   int Rescue_Mission(TARGET tarcom);

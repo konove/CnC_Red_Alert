@@ -13,6 +13,7 @@ extern bool DebugFactoryTest;
 extern bool DebugTeamTest;
 extern bool DebugWorldTest;
 extern bool DebugBuildingTest;
+extern bool DebugMobileTest;
 extern int DebugLoadGame;
 extern int DebugQuitAtFrame;
 extern int DebugSaveSlot;

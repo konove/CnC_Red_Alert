@@ -91,8 +91,6 @@ class FlasherClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers();
-  void Decode_Pointers();
 };
 
 #endif  // CNC_RED_ALERT_TD_FLASHER_H_

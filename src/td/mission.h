@@ -44,7 +44,6 @@
 #include "td/defines.h"
 #include "td/ftimer.h"
 #include "td/object.h"
-#include "tech/noinit.h"
 
 /****************************************************************************
 **	This handles order assignment and tracking. The order is used to guide
@@ -73,7 +72,6 @@ class MissionClass : public ObjectClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   MissionClass();
-  MissionClass(const NoInitClass& x) : ObjectClass(x), Timer(x) {}
   ~MissionClass() override {}
 
   /*---------------------------------------------------------------------
@@ -118,12 +116,10 @@ class MissionClass : public ObjectClass {
   /*
   **	File I/O.
   */
-  // Field-wise save support; NoInit remains for raw mobile subclasses.
+  // Field-wise saved-game support.
   template <class Archive>
   void Serialize(Archive& ar);
 
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 
  private:
   /*

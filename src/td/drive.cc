@@ -91,7 +91,7 @@
 #include "td/unit.h"
 #include "td/vector.h"
 
-DriveClass::DriveClass() : Class(nullptr) {};
+DriveClass::DriveClass() = default;
 
 /***********************************************************************************************
  * DriveClass::Do_Turn -- Tries to turn the vehicle to the specified direction.

@@ -43,7 +43,6 @@
 
 #include "td/defines.h"
 #include "td/inline.h"
-#include "tech/noinit.h"
 
 class AbstractClass {
  public:
@@ -76,8 +75,7 @@ class AbstractClass {
   }
 
   AbstractClass() { Coord = 0L; }
-  AbstractClass(const NoInitClass& x) { x(); }
-  virtual ~AbstractClass() {}
+  virtual ~AbstractClass() = default;
 
   /*
   **	Query functions.

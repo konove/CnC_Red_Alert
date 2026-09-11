@@ -102,8 +102,6 @@ class DoorClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers() {}
-  void Decode_Pointers() {}
 };
 
 #endif  // CNC_RED_ALERT_TD_DOOR_H_

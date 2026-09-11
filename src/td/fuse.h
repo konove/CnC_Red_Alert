@@ -67,8 +67,6 @@ class FuseClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers();
-  void Decode_Pointers();
 
   /*
   **	Fuses can detonate if enough time has elapsed. This value counts

@@ -44,7 +44,6 @@
 #include "td/abstract.h"
 #include "td/defines.h"
 #include "td/monoc.h"
-#include "tech/noinit.h"
 
 class TechnoClass;
 class ObjectTypeClass;
@@ -133,11 +132,10 @@ class ObjectClass : public AbstractClass {
   /*-----------------------------------------------------------------------------------
   **	Constructor & destructors.
   */
-  // Shared fields; raw Techno subclasses still need NoInit and pointer coding.
+  // Shared object fields and checked references.
   template <class Archive>
   void Serialize(Archive& ar);
   ObjectClass();
-  ObjectClass(const NoInitClass& x) : AbstractClass(x) {}
   ~ObjectClass() override {}
   virtual RTTIType What_Am_I() const;
   int operator<(const ObjectClass& object) const {
@@ -245,8 +243,6 @@ class ObjectClass : public AbstractClass {
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
 
   /*
   **	Scenario and debug support.

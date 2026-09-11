@@ -45,7 +45,6 @@
 #include "td/foot.h"
 #include "td/monoc.h"
 #include "td/type.h"
-#include "tech/noinit.h"
 
 /****************************************************************************
 **	Movable objects are handled by this class definition. Moveable objects
@@ -53,24 +52,28 @@
 */
 class DriveClass : public FootClass {
  public:
+  // Field-wise state and checked references; load shells have no scenario effects.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
   /*
   **	This points to the static control data that gives 'this' unit its
   *characteristics.
   */
-  const UnitTypeClass* Class;
+  const UnitTypeClass* Class = nullptr;
 
   /*
   **	This records the number of "loads" of Tiberium the unit is carrying.
   *Only *	harvesters use this field.
   */
-  unsigned char Tiberium;
+  unsigned char Tiberium = 0;
 
   /*
   **	If this unit performing harvesting action, then this flag is true. The
   *flag *	is located here because the other bit flags here give it a free
   *place to *	reside.
   */
-  unsigned IsHarvesting : 1;
+  unsigned IsHarvesting : 1 = false;
 
   /*
   **	This flags when a transport vehicle could not unload at its designated
@@ -78,7 +81,7 @@ class DriveClass : public FootClass {
   *true, the *	transport unit is allowed to disappear when it reaches the edge
   *of the map.
   */
-  unsigned IsReturning : 1;
+  unsigned IsReturning : 1 = false;
 
   /*
   **	Some units must have their turret locked down to face their body
@@ -87,20 +90,19 @@ class DriveClass : public FootClass {
   *may be *	rotating into position so that a pending track may start. During
   *this process *	the track number does not indicate anything.
   */
-  unsigned IsTurretLockedDown : 1;
+  unsigned IsTurretLockedDown : 1 = false;
 
   /*
   **	This vehicle could be processing a "short track". A short track is one
   *that *	doesn't actually go anywhere. Kind of like turning in place.
   */
-  unsigned IsOnShortTrack : 1;
+  unsigned IsOnShortTrack : 1 = false;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
   DriveClass();
   DriveClass(UnitType classid, HousesType house);
-  DriveClass(const NoInitClass& x) : FootClass(x) {}
   ~DriveClass() override {}
   operator UnitType() const { return Class->Type; }
 
@@ -125,8 +127,6 @@ class DriveClass : public FootClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 
   /**********************************************************************
   **	These enumerations are used as working constants that exist only
@@ -176,7 +176,7 @@ class DriveClass : public FootClass {
   **	convert them into pixel "steps" that are then translated through
   **	the currently running track so that the unit will move.
   */
-  unsigned char SpeedAccum;
+  unsigned char SpeedAccum = 0;
 
   /*
   **	This the track control logic (used for ground vehicles only). The
@@ -184,8 +184,8 @@ class DriveClass : public FootClass {
   *track). The *	'TrackIndex' variable holds the current index into the
   *specified track *	(starts at 0).
   */
-  int TrackNumber;
-  int TrackIndex;
+  int TrackNumber = -1;
+  int TrackIndex = 0;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.

@@ -45,7 +45,6 @@
 #include "td/globals.h"
 #include "td/mission.h"
 #include "td/object.h"
-#include "tech/noinit.h"
 
 /****************************************************************************
 **	Radio contact is controlled by this class. It handles the mundane chore
@@ -82,7 +81,6 @@ class RadioClass : public MissionClass {
     Radio = nullptr;
     LastMessage = RADIO_STATIC;
   }
-  RadioClass(const NoInitClass& x) : MissionClass(x) {}
   ~RadioClass() override {}
 
   /*---------------------------------------------------------------------
@@ -106,12 +104,10 @@ class RadioClass : public MissionClass {
   /*
   **	File I/O.
   */
-  // Field-wise save support; NoInit remains for raw mobile subclasses.
+  // Field-wise saved-game support.
   template <class Archive>
   void Serialize(Archive& ar);
 
-  void Code_Pointers() override;
-  void Decode_Pointers() override;
 };
 
 #endif  // CNC_RED_ALERT_TD_RADIO_H_

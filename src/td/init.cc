@@ -73,6 +73,7 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "td/anim.h"
+#include "td/aircraft.h"
 #include "td/bullet.h"
 #include "td/building.h"
 #include "td/ccfile.h"
@@ -1622,6 +1623,74 @@ bool Select_Game(bool fade) {
       return false;
     }
     DLOG(INFO) << "C&C95 - Scenario started OK.";
+    if (DebugMobileTest) {
+      const HousesType house = PlayerPtr->Class->House;
+      auto* vehicle = new UnitClass(UNIT_APC, house);
+      auto* passenger = new InfantryClass(INFANTRY_E1, house);
+      auto* plane = new AircraftClass(AIRCRAFT_ORCA, house);
+      if (!vehicle || !passenger || !plane) {
+        LOG(ERROR) << "-MOBILETEST: fixture allocation failed";
+        return false;
+      }
+      // Non-default limbo state supplements the campaign's moving/firing units.
+      vehicle->Attach(passenger);
+      vehicle->Kills = 51;
+      passenger->Kills = 73;
+      plane->Kills = 95;
+      vehicle->Flagged = HOUSE_BAD;
+      vehicle->Tiberium = 7;
+      vehicle->IsHarvesting = true;
+      vehicle->IsReturning = true;
+      vehicle->IsTurretLockedDown = true;
+      vehicle->Reload = 173;
+      vehicle->SecondaryFacing.Set(DIR_NE);
+      vehicle->SecondaryFacing = DIR_SW;
+      vehicle->Path[0] = FACING_NE;
+      vehicle->Path[1] = FACING_E;
+      vehicle->Path[2] = FACING_NONE;
+      vehicle->PathDelay = 181;
+      vehicle->BaseAttackTimer = 217;
+      vehicle->TryTryAgain = 3;
+      vehicle->ArchiveTarget = plane->As_Target();
+      vehicle->NavCom = plane->As_Target();
+      vehicle->SuspendedNavCom = passenger->As_Target();
+      vehicle->IsNewNavCom = true;
+      vehicle->IsPlanningToLook = true;
+      vehicle->IsDeploying = true;
+      vehicle->IsRotating = true;
+      vehicle->IsFiring = true;
+      vehicle->IsUnloading = true;
+      vehicle->Speed = 103;
+      vehicle->Group = 4;
+      passenger->Doing = DO_PRONE;
+      passenger->Comment = 193;
+      passenger->IsTechnician = true;
+      passenger->IsStoked = true;
+      passenger->IsProne = true;
+      passenger->IsBoxing = true;
+      passenger->Fear = 81;
+      plane->SecondaryFacing.Set(DIR_SE);
+      plane->SecondaryFacing = DIR_N;
+      bool launched = false;
+      if (Units.Count() != 0) {
+        const CELL start = Coord_Cell(Units.Ptr(0)->Coord);
+        for (int offset = 1; offset <= 16; ++offset) {
+          const CELL cell = static_cast<CELL>(start + offset);
+          if (cell < MAP_CELL_TOTAL && Map.In_Radar(cell) &&
+              plane->Unlimbo(Cell_Coord(cell), DIR_E)) {
+            launched = true;
+            break;
+          }
+        }
+      }
+      if (!launched) {
+        LOG(ERROR) << "-MOBILETEST: could not launch aircraft";
+        return false;
+      }
+      plane->Assign_Destination(::As_Target(Coord_Cell(plane->Coord + 0x800)));
+      plane->Assign_Mission(MISSION_MOVE);
+      plane->Set_Speed(123);
+    }
     if (DebugBuildingTest) {
       const HousesType house = PlayerPtr->Class->House;
       // Limbo fixtures preserve non-default fields without building AI replacing
@@ -2042,6 +2111,10 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     }
     if (strncmp(string, "-SAVESLOT", 9) == 0) {
       DebugSaveSlot = atoi(string + 9);
+      continue;
+    }
+    if (strcmp(string, "-MOBILETEST") == 0) {
+      DebugMobileTest = true;
       continue;
     }
     if (strcmp(string, "-BUILDINGTEST") == 0) {
