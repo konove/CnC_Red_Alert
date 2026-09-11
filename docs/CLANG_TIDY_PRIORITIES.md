@@ -2,7 +2,7 @@
 
 Updated: 2026-09-11, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 229 currently excluded check names** and completed entries, in recommended work
+This tracks **all 228 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -45,7 +45,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `bugprone-unhandled-code-paths`                               | Skipped | Commit `Document missing-default check policy`: default mode flags switches with valid post-switch fallbacks and bounded inputs; retain exclusion rather than require redundant defaults. See review below.                     |
 | `bugprone-non-zero-enum-to-bool-conversion`                   | Enabled | Commit `Enable nonzero enum-to-bool conversion checking`: both games and shared code pass without source fixes.                                                                                                                 |
 | `clang-analyzer-optin.core.EnumCastOutOfRange`                | Skipped | Commit `Document enum cast range check policy`: LLVM 23.1.2 rejects intentional intermediate directions, flag combinations, and path-command sentinels; retain exclusion. See review below.                                     |
-| `clang-diagnostic-tautological-constant-out-of-range-compare` | Pending | Find impossible comparisons hiding range-check mistakes.                                                                                                                                                                        |
+| `clang-diagnostic-tautological-constant-out-of-range-compare` | Enabled | Commit `Preserve shutdown states and enable constant range comparison checking`: store RA shutdown states 0 through 3 in an integer instead of collapsing them to bool.                                                         |
 | `clang-diagnostic-tautological-unsigned-enum-zero-compare`    | Pending | Find enum checks that cannot detect invalid values.                                                                                                                                                                             |
 | `clang-diagnostic-tautological-unsigned-zero-compare`         | Pending | Find ineffective negative checks on unsigned values.                                                                                                                                                                            |
 | `clang-diagnostic-implicit-int-conversion`                    | Pending | Find remaining implicit loss of integer range or precision.                                                                                                                                                                     |
@@ -396,6 +396,18 @@ Markdown formatting and whitespace checks passed; game builds and tests were not
 documentation-only decision.
 
 ### Completed validation
+
+The 2026-09-11 constant-out-of-range comparison review found one diagnostic in the isolated sweep of
+889 project translation units, including 431 generated header checks: RA's emergency shutdown
+compared the boolean `ReadyToQuit` with 3. The existing shutdown protocol uses states 0 (running), 1
+(clean shutdown), 2 (complete), and 3 (emergency). Its declaration and definition now use `int` so
+those states remain distinct; initialization is still the running state. The existing state
+assignments, comparisons, and SDL event handling are unchanged.
+
+The affected startup file passes the isolated check, and the final full-config sweep passed all 889
+translation units. A deliberately impossible comparison of an unsigned byte with 256 confirms that
+the enabled diagnostic reports an error under the repository configuration and the strict build's
+existing `-Weverything` flag.
 
 The 2026-09-11 nonzero enum-to-bool conversion check passed both isolated and full-config sweeps
 across 889 project translation units, including 431 generated header checks, without findings or

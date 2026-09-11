@@ -756,7 +756,7 @@ Stopwatch<SystemTickSource> TickCount;
 */
 
 bool InDebugger = false;
-bool ReadyToQuit = false;
+int ReadyToQuit = 0;
 
 GetCDClass CDList;
 int UnitBuildPenalty = 100;

@@ -370,7 +370,8 @@ void Coordinate_Remap(GraphicViewPortClass* inbuffer, int x, int y, int width,
                       int height, unsigned char* remap_table);
 void Do_Vortex(int x, int y, int frame);
 
-extern bool ReadyToQuit;      // Are we about to exit cleanly
+// Shutdown state: 0 = running, 1 = clean shutdown, 2 = complete, 3 = emergency.
+extern int ReadyToQuit;
 extern bool InDebugger;       // Are we being run from a debugger
 void Memory_Error_Handler();  // Memory error handler function
 void WWDebugString(const char* string);
