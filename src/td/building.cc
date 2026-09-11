@@ -1816,7 +1816,7 @@ void BuildingClass::operator delete(void* ptr) {
  *to match expected value.                            *
  *=============================================================================================*/
 BuildingClass::BuildingClass(StructType type, HousesType house)
-    : Class(&BuildingTypeClass::As_Reference(type)), TechnoClass(house) {
+    : TechnoClass(house), Class(&BuildingTypeClass::As_Reference(type)) {
   PlacementDelay = 0;
   LastStrength = 0;
   ActLike = House->ActLike;

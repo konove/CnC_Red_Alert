@@ -457,7 +457,7 @@ void TechnoClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
-TechnoClass::TechnoClass() : TarCom(kTargetNone), House(nullptr) {
+TechnoClass::TechnoClass() : House(nullptr), TarCom(kTargetNone) {
   Arm = 0;
   Ammo = -1;
   PurchasePrice = 0;

@@ -319,7 +319,7 @@ void DriveClass::Overrun_Square(CELL cell, bool threaten) {
  * HISTORY: * 07/13/1994 JLB : Created. *
  *=============================================================================================*/
 DriveClass::DriveClass(UnitType classid, HousesType house)
-    : Class(&UnitTypeClass::As_Reference(classid)), FootClass(house) {
+    : FootClass(house), Class(&UnitTypeClass::As_Reference(classid)) {
   /*
   **	For two shooters, clear out the second shot flag -- it will be set the
   *first time *	the object fires. For non two shooters, set the flag since it

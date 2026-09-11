@@ -2,7 +2,7 @@
 
 Updated: 2026-09-11, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 231 currently excluded check names** and completed entries, in recommended work
+This tracks **all 230 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -41,7 +41,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-analyzer-unix.StdCLibraryFunctions`                    | Enabled | Commit `Fix TCP socket option size and enable C library checking`: pass an integer TCP_NODELAY flag with its actual size, avoiding a read past a one-byte bool.                                                                 |
 | `clang-diagnostic-cast-align`                                 | Enabled | Commit `Fix buffer alignment and enable cast alignment checking`: copy unaligned packet/media values, check typed buffer access, align cached shape headers, and bound legacy byte fills.                                       |
 | `clang-diagnostic-uninitialized-const-pointer`                | Enabled | Commit `Enable uninitialized const-pointer argument checking`: both games and shared code pass without source fixes.                                                                                                            |
-| `clang-diagnostic-reorder-ctor`                               | Pending | Make constructor order explicit; check dependencies between members.                                                                                                                                                            |
+| `clang-diagnostic-reorder-ctor`                               | Enabled | Commit `Match constructor initialization order to declarations`: reorder 16 initializer lists while preserving expressions, member layouts, and actual initialization order.                                                    |
 | `bugprone-unhandled-code-paths`                               | Pending | Find missing outcomes in conditional control flow.                                                                                                                                                                              |
 | `bugprone-non-zero-enum-to-bool-conversion`                   | Pending | Catch enum tests that are always true.                                                                                                                                                                                          |
 | `clang-analyzer-optin.core.EnumCastOutOfRange`                | Pending | Validate integer-to-enum boundaries; distinguish bit masks.                                                                                                                                                                     |
@@ -328,6 +328,18 @@ missing-pixel regression test aborts against the original TD reader with an unch
 access and passes with the fix.
 
 ### Completed validation
+
+The 2026-09-11 constructor-order cleanup reordered 16 initializer lists across 15 files. The initial
+889-unit sweep reported diagnostics in 18 translation units, including repeated uses of the RA list
+template. Initializer expressions, base/member declarations, layouts, and actual C++ initialization
+order are unchanged. The changes cover RA UI, rules, scenario, and type constructors and TD object
+and file constructors. The templated list fix was applied manually because Clang's suggested
+replacement ranges omitted closing parentheses.
+
+The final isolated and full-config sweeps passed all 889 project translation units, including 431
+generated header checks. Both strict game builds and all 228 CTest tests passed. A deliberately
+reordered constructor confirmed the diagnostic reports an error under the enabled repository
+configuration and the strict build's existing `-Weverything` flag.
 
 The 2026-09-11 uninitialized const-pointer argument check passed both isolated and full-config
 sweeps across 889 project translation units, including 431 generated header checks, without findings

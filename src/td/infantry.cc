@@ -330,7 +330,7 @@ InfantryClass::InfantryClass() { IsActive = true; }
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 InfantryClass::InfantryClass(InfantryType classid, HousesType house)
-    : Class(&InfantryTypeClass::As_Reference(classid)), FootClass(house) {
+    : FootClass(house), Class(&InfantryTypeClass::As_Reference(classid)) {
   /*
   **	For two shooters, clear out the second shot flag -- it will be set the
   *first time *	the object fires. For non two shooters, set the flag since it

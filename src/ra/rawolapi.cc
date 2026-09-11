@@ -87,25 +87,25 @@ bool operator<(const User& u1, const User& u2);
 
 //***********************************************************************************************
 RAChatEventSink::RAChatEventSink(WolapiObject* pOwnerIn)
-    : m_cRef(0),  //	init the reference count
-      bRequestServerListWait(false),
-      pOwner(pOwnerIn),
+    : bRequestServerListWait(false),
+      bRequestChannelListForLobbiesWait(false),
+      bIgnoreChannelLists(false),
+      bRequestGameStartWait(false),
       pServer(nullptr),
       bConnected(false),
-      hresRequestConnectionError(0),
+      bJoined(false),
       pChannelList(nullptr),
       pUserList(nullptr),
       pUserTail(nullptr),
       szMotd(nullptr),
-      bJoined(false),
+      hresRequestConnectionError(0),
       bGotKickedTrigger(false),
-      bIgnoreChannelLists(false),
-      bRequestChannelListForLobbiesWait(false),
       pGameUserList(nullptr),
-      bRequestGameStartWait(false),
+      iGameID(0),
       pUserIPList(nullptr),
       pUserIPListTail(nullptr),
-      iGameID(0) {}
+      pOwner(pOwnerIn),
+      m_cRef(0) {}
 
 //***********************************************************************************************
 RAChatEventSink::~RAChatEventSink() {
@@ -1688,12 +1688,12 @@ STDMETHODIMP RADownloadEventSink::OnQueryResume() {
 //***********************************************************************************************
 //***********************************************************************************************
 RANetUtilEventSink::RANetUtilEventSink(WolapiObject* pOwnerIn)
-    : m_cRef(0),  //	init the reference count
-      pOwner(pOwnerIn),
-      pLadderList(nullptr),
+    : pLadderList(nullptr),
       pLadderTail(nullptr),
       pLadderListAM(nullptr),
-      pLadderTailAM(nullptr) {
+      pLadderTailAM(nullptr),
+      pOwner(pOwnerIn),
+      m_cRef(0) {
   //	debugprint( "RANetUtilEventSink constructor\n" );
 }
 

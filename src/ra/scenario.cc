@@ -219,8 +219,8 @@ ScenarioClass::ScenarioClass()
       IsTruckCrate(false),
       IsMoneyTiberium(false),
 #define AUTOSONAR_PERIOD (int64_t{kTicksPerSecond} * 40)
-      AutoSonarTimer(AUTOSONAR_PERIOD),
-      FadeTimer(0) {
+      FadeTimer(0),
+      AutoSonarTimer(AUTOSONAR_PERIOD) {
   for (int index = 0; index < std::ssize(Waypoint); index++) {
     Waypoint[index] = -1;
   }

@@ -155,9 +155,10 @@ other data being out of sync.
 //--------------------------------------------------------------------------
 //***********************************************************************************************
 WOL_GameSetupDialog::WOL_GameSetupDialog(WolapiObject* wolapi, bool bIsHost)
-    : pWO(wolapi),
-      bHost(bIsHost),
-      HousePrevious(HOUSE_NONE),
+    : bHost(bIsHost),
+      bHostSayGo(false),
+      bHostWaitingForGoTrigger(false),
+      bExitForGameTrigger(false),
       pILPlayers(nullptr),
       pILScens(nullptr),
       pILDisc(nullptr),
@@ -178,24 +179,23 @@ WOL_GameSetupDialog::WOL_GameSetupDialog(WolapiObject* wolapi, bool bIsHost)
       pStaticAIPlayers(nullptr),
       pDropListHouse(nullptr),
       pCheckAftermathUnits(nullptr),
-      nHostLastParamID(0),
-      nGuestLastParamID(0),
-      bWaitingToStart(false),
-      bParamsReceived(false),
-      bHostSayGo(false),
-      bExitForGameTrigger(false),
-      pToolTipHead(nullptr),
-      pToolTipHitLast(nullptr),
-      pTTipAcceptStart(nullptr),
-      pTTipCancel(nullptr),
-      pTTipAction(nullptr),
-      ScenKindCurrent(SCENARIO_UNINITIALIZED),
       pShpBtnScenarioRA(nullptr),
       pShpBtnScenarioCS(nullptr),
       pShpBtnScenarioAM(nullptr),
       pShpBtnScenarioUser(nullptr),
+      pTTipAcceptStart(nullptr),
+      pTTipCancel(nullptr),
+      pTTipAction(nullptr),
+      pWO(wolapi),
+      HousePrevious(HOUSE_NONE),
+      nHostLastParamID(0),
+      nGuestLastParamID(0),
+      bWaitingToStart(false),
+      bParamsReceived(false),
       bLeaveDueToRulesMismatchTrigger(false),
-      bHostWaitingForGoTrigger(false) {
+      pToolTipHead(nullptr),
+      pToolTipHitLast(nullptr),
+      ScenKindCurrent(SCENARIO_UNINITIALIZED) {
   *szSendBuffer = 0;
   *szHouseBuffer = 0;
   memset(&GParamsLastSent, 0, sizeof(GAMEPARAMS));

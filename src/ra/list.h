@@ -261,12 +261,12 @@ template <class T>
 TListClass<T>::TListClass(int id, int x, int y, int w, int h,
                           TextPrintType flags, const void* up, const void* down)
     : ControlClass(id, x, y, w, h, LEFTPRESS | LEFTRELEASE | KEYBOARD, false),
-      UpGadget(0, up, x + w, y),
-      DownGadget(0, down, x + w, y + h),
-      ScrollGadget(0, x + w, y, 0, h, true),
       TextFlags(flags),
       Tabs(nullptr),
       IsScrollActive(false),
+      UpGadget(0, up, x + w, y),
+      DownGadget(0, down, x + w, y + h),
+      ScrollGadget(0, x + w, y, 0, h, true),
       SelectedIndex(0),
       CurrentTopIndex(0) {
   /*

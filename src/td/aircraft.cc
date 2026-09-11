@@ -266,7 +266,7 @@ void AircraftClass::operator delete(void* ptr) {
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 AircraftClass::AircraftClass(AircraftType classid, HousesType house)
-    : Class(&AircraftTypeClass::As_Reference(classid)), FootClass(house) {
+    : FootClass(house), Class(&AircraftTypeClass::As_Reference(classid)) {
   /*
   **	For two shooters, clear out the second shot flag -- it will be set the
   *first time *	the object fires. For non two shooters, set the flag since it

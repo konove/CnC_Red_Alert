@@ -150,13 +150,13 @@ static GraphicBufferClass _TileStage(24, 24);
 RadarClass::RadarClass()
     : IsToRedraw(false),
       RadarCursorRedraw(false),
-      IsPulseActive(false),
-      RadarPulseFrame(0),
       DoesRadarExist(false),
       IsRadarActive(false),
       IsRadarActivating(false),
       IsRadarDeactivating(false),
       IsRadarJammed(false),
+      IsPulseActive(false),
+      RadarPulseFrame(0),
       SpecialRadarFrame(0),
       RadarAnimFrame(0),
       RadarX(0),
@@ -169,9 +169,9 @@ RadarClass::RadarClass()
       RadarWidth(0),
       RadarHeight(0),
       IsZoomed(true),
-      ZoomFactor(0),
       IsPlayerNames(false),
       IsHouseSpy(false),
+      ZoomFactor(0),
       SpyingOn(HOUSE_SPAIN),
       PixelPtr(0) {}
 

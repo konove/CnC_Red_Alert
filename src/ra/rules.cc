@@ -224,7 +224,6 @@ RulesClass::RulesClass()
       ShroudRate(4),
       CrateTime(10),
       TimerWarning(2),
-      ChronoTechLevel(1),
       SonarTime(14),
       ChronoTime(3),
       ParaBombTime(14),
@@ -288,6 +287,7 @@ RulesClass::RulesClass()
       RepairThreshhold(1000),
       PathDelay(fixed::FromString(".016")),
       MovieTime(fixed(1, 4)),
+      ChronoTechLevel(1),
       TiberiumShortScan(0x0600),
       TiberiumLongScan(0x2000) {
   NewUnitsEnabled = SecretUnitsEnabled = 0;

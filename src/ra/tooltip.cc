@@ -47,13 +47,13 @@ IconListClass* AsIconList(GadgetClass* gadget) {
 ToolTipClass::ToolTipClass(GadgetClass* gadget, const char* szText, int x_show,
                            int y_show, bool right_align /* = false */,
                            bool icon_list /*= false */)
-    : pGadget(gadget),
-      xShow(x_show),
-      yShow(y_show),
-      next(nullptr),
+    : next(nullptr),
+      pGadget(gadget),
+      bRightAlign(right_align),
       bShowing(false),
       bIconList(icon_list),
-      bRightAlign(right_align)
+      xShow(x_show),
+      yShow(y_show)
 
 {
   if (szText != nullptr && strlen(szText) > TOOLTIPTEXT_MAX_LEN) {
