@@ -45,7 +45,6 @@
 
 #include "td/defines.h"
 #include "td/object.h"
-#include "tech/noinit.h"
 
 /**********************************************************************
 **	This is the constant data associated with a weapon. Some objects
@@ -240,7 +239,6 @@ class AbstractTypeClass {
 
   AbstractTypeClass() {}
   AbstractTypeClass(int name, const char* ini);
-  AbstractTypeClass(const NoInitClass&) {}
   virtual ~AbstractTypeClass() = default;
 
   virtual RTTIType What_Am_I() const;

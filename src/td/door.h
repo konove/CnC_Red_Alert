@@ -42,7 +42,6 @@
 #define CNC_RED_ALERT_TD_DOOR_H_
 
 #include "td/stage.h"
-#include "tech/noinit.h"
 
 class DoorClass {
  private:
@@ -85,7 +84,6 @@ class DoorClass {
   }
 
   DoorClass();
-  DoorClass(const NoInitClass& x) : Control(x) {}
 
   bool Time_To_Redraw() { return IsToRedraw; }
   void Clear_Redraw_Flag() { IsToRedraw = false; }

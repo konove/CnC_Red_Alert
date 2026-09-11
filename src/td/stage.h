@@ -42,7 +42,6 @@
 #define CNC_RED_ALERT_TD_STAGE_H_
 
 #include "td/monoc.h"
-#include "tech/noinit.h"
 
 class StageClass {
   /*
@@ -66,7 +65,7 @@ class StageClass {
   unsigned char Rate;
 
  public:
-  // Field-wise saved-game support; raw-image owners still need NoInit.
+  // Field-wise saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
     ar(Stage, StageTimer, Rate);
@@ -78,7 +77,6 @@ class StageClass {
     Stage = 0;
     Rate = 0;
   }
-  StageClass(const NoInitClass&) {}
 
   int Fetch_Stage() const { return Stage; }
   int Fetch_Rate() const { return Rate; }

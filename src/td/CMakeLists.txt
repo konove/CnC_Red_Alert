@@ -1,10 +1,12 @@
-add_executable(tdsdl WIN32)
+add_executable(tdsdl WIN32 startup.cc)
+add_library(td_engine OBJECT)
 
 file(GLOB_RECURSE TD_SOURCES
         CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cc"
 )
 list(FILTER TD_SOURCES EXCLUDE REGEX "_test\\.cc$")
 list(REMOVE_ITEM TD_SOURCES
+        "${CMAKE_CURRENT_SOURCE_DIR}/startup.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/ccdde.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/cdfile.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/dde.cc"
@@ -20,15 +22,13 @@ list(REMOVE_ITEM TD_HEADERS
         "${CMAKE_CURRENT_SOURCE_DIR}/externs.h" # Removed since it is crashing IWYU.
         "${CMAKE_CURRENT_SOURCE_DIR}/phone.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/screen.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/session.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/wwfile.h"
 )
 
-target_sources(tdsdl PRIVATE
+target_sources(td_engine PRIVATE
         ${TD_SOURCES}
 )
 
-target_sources(tdsdl PUBLIC
+target_sources(td_engine PUBLIC
         FILE_SET HEADERS
         BASE_DIRS ${CMAKE_SOURCE_DIR}/src
         FILES ${TD_HEADERS}
@@ -39,30 +39,32 @@ set_target_properties(tdsdl PROPERTIES
 )
 
 if (WIN32)
-    target_sources(tdsdl PRIVATE
+    target_sources(td_engine PRIVATE
             dde.cc
             ccdde.cc
-            cc_icon.rc
     )
-    target_link_libraries(tdsdl PRIVATE wsock32)
+    target_sources(tdsdl PRIVATE cc_icon.rc)
+    target_link_libraries(td_engine PUBLIC wsock32)
 endif ()
 
-target_compile_definitions(tdsdl PRIVATE
-        TD=1
-)
+target_compile_definitions(td_engine PUBLIC TD=1)
+apply_dotenv_settings(td_engine)
 apply_dotenv_settings(tdsdl)
-target_link_libraries(tdsdl PUBLIC absl::strings PRIVATE tech port sdllib vqa32 absl::algorithm absl::check absl::core_headers absl::log absl::log_initialize absl::random_random absl::span absl::status absl::statusor)
+target_link_libraries(td_engine PUBLIC tech port sdllib vqa32 absl::strings absl::algorithm absl::check absl::core_headers absl::log absl::log_initialize absl::random_random absl::span absl::status absl::statusor)
+target_link_libraries(tdsdl PRIVATE td_engine)
 
 install(TARGETS tdsdl)
 
 # Tests
 include(Testing)
+# Real engine serializers, with startup helpers but no game entry point.
 add_gtest(
-    NAME td_heap_layout_test
-    SOURCES heap_layout_test.cc
-    LIBS base tech port sdllib vqa32 absl::strings absl::check absl::log
+    NAME td_archive_roundtrip_test
+    SOURCES archive_roundtrip_test.cc startup.cc
+    LIBS td_engine
 )
-target_compile_definitions(td_heap_layout_test PRIVATE TD=1)
+target_compile_definitions(td_archive_roundtrip_test PRIVATE TD_NO_ENTRY_POINT=1)
+apply_dotenv_settings(td_archive_roundtrip_test)
 
 add_gtest(
     NAME td_saveload_test

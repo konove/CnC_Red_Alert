@@ -47,7 +47,7 @@
 */
 class CrewClass {
  public:
-  // Field-wise saved-game support; raw-image owners still need NoInit.
+  // Field-wise saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
     ar(Kills);

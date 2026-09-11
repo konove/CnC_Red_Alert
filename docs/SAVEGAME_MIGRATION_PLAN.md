@@ -2,7 +2,7 @@
 
 ## Resume checkpoint (2026-09-10)
 
-- Steps 0–29 are complete; step 28 is `96f23c5b`; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
+- Steps 0–30 are complete; step 29 is `2689ff4c`; step 28 is `96f23c5b`; step 27 is `b9991065`; step 26 is `1af8d7be`; step 25 is `77e818ab`; step 24 is `3e5db85d`, step 23 is `b24cad08`, step 22 is `f5d3cfb0`, step 21 is `401409ae`, step 20 is `6799acbe` (TD plumbing), step 19 is `1121d8e6`.
 - Step 18 is complete. Save version is **16**.
   Scenario, score, Carryover, vortex, layers, selection, trigger lists, and multiplayer globals now use
   field-wise serialization. Carryover is a vector, and the top-level pointer-coding passes are removed.
@@ -216,7 +216,23 @@
   globals, **eight** malformed maps, **seven** malformed mobile saves, and **six** malformed building
   saves are rejected before gameplay. RA matches **240** positions. Real-display and live-multiplayer
   checks remain pending.
-  Next checkpoint is **30: TD cleanup and broader archive round-trip tests**.
+- Step 30 is complete. TD has no remaining NoInit constructors or includes. The unused legacy
+  session.h and wwfile.h copies and the obsolete heap-layout test are deleted. Save format stays **10**;
+  the shared tech/noinit.h remains for the explicit step-31 deletion and initialization-check sweep.
+- A shared td_engine object target compiles the game implementation once for tdsdl and the new
+  td_archive_roundtrip_test. Startup helpers are shared while TD_NO_ENTRY_POINT excludes the game
+  entry point in the test executable. This separate target keeps real game globals apart from the
+  existing td_saveload_test's standalone stubs; no game data files or SDL startup are needed.
+- Six BufferPipe-to-BufferStraw tests cover Cell flags and gapped object/trigger references, Map
+  members and private scan arrays from an independently authored field stream, oversized scan counts,
+  House type/remap identity and wide economy/timer state, Unit inherited fields and path tails, and
+  truncated Cell/House/Unit records. Fixtures release their allocated objects and buffers.
+- Step-30 validation: strict builds of both games and **191 CTest tests** pass. TD matches **5,891**
+  states with map fixtures and **5,742** with globals; all **eight** malformed maps and **14** malformed
+  globals are rejected. A version-10 save produced by the pre-cleanup binary loads with **5,742**
+  matching state records. RA matches **240** positions. Real-display and live-multiplayer checks remain
+  pending.
+  Next checkpoint is **31: delete the shared NoInit header and rerun the initialization-check sweep**.
 - Step-19 validation: strict build of both games and all **154 CTest tests** pass. Headless save/load checks pass
   for SCG01EA and SCU01EA (240 matching unit/vessel positions each) and SCG02EA (120).
   Step 19 also loads a pre-cleanup version-16 save with 240 matching positions. The SCU01EA smoke

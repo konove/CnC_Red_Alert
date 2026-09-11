@@ -42,7 +42,6 @@
 #define CNC_RED_ALERT_TD_CARGO_H_
 
 #include "td/monoc.h"
-#include "tech/noinit.h"
 
 class FootClass;
 
@@ -63,7 +62,6 @@ class CargoClass {
     Quantity = 0;
     CargoHold = nullptr;
   }
-  CargoClass(const NoInitClass&) {}
   virtual ~CargoClass() { CargoHold = nullptr; }
 
   /*---------------------------------------------------------------------

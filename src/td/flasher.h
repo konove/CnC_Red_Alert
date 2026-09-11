@@ -44,7 +44,6 @@
 #include <cstdint>
 
 #include "td/monoc.h"
-#include "tech/noinit.h"
 
 class FlasherClass {
  public:
@@ -82,7 +81,6 @@ class FlasherClass {
     FlashCount = 0;
     IsBlushing = false;
   }
-  FlasherClass(const NoInitClass&) {}
   virtual ~FlasherClass() = default;
 
   virtual void Debug_Dump(MonoClass* mono) const;

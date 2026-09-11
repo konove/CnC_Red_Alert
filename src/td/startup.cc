@@ -128,6 +128,7 @@ void Move_Point(short& x, short& y, DirType dir, unsigned short distance);
 
 void Check_Use_Compressed_Shapes();
 
+#ifndef TD_NO_ENTRY_POINT
 #ifdef _WIN32
 int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char* command_line,
                    int command_show)
@@ -457,6 +458,8 @@ int main(int argc, char* argv[])
 
   return EXIT_SUCCESS;
 }
+
+#endif  // TD_NO_ENTRY_POINT
 
 /***********************************************************************************************
  * Prog_End -- Cleans up library systems in prep for game exit. *

@@ -42,7 +42,6 @@
 #define CNC_RED_ALERT_TD_FLY_H_
 
 #include "td/defines.h"
-#include "tech/noinit.h"
 
 typedef enum ImpactType {
   IMPACT_NONE,    // No movement (of significance) occurred.
@@ -55,7 +54,7 @@ typedef enum ImpactType {
 */
 class FlyClass {
  public:
-  // Field-wise saved-game support; raw-image owners still need NoInit.
+  // Field-wise saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
     ar(SpeedAccum, SpeedAdd);
@@ -68,7 +67,6 @@ class FlyClass {
     SpeedAdd = MPH_IMMOBILE;
     SpeedAccum = 0;
   }
-  FlyClass(const NoInitClass&) {}
   virtual ~FlyClass() = default;
 
   /*---------------------------------------------------------------------

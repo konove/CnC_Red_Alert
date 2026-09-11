@@ -45,7 +45,6 @@
 #include <cstdint>
 
 #include "td/globals.h"
-#include "tech/noinit.h"
 
 /*
 **	This timer class is based around an external tick system. As such, it is
@@ -58,7 +57,6 @@ class TCountDownTimerClass {
   // Constructor.  Timers set before low level init has been done will not
   // be able to be 'Started' or 'on' until timer system is in place.
   TCountDownTimerClass(int64_t set = 0) { Set(set); }
-  TCountDownTimerClass(const NoInitClass&) {}
 
   // Saves remaining ticks and whether the timer is active. Restore Frame
   // before reading; the timer re-anchors to it instead of an old frame origin.

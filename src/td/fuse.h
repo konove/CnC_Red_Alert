@@ -42,7 +42,6 @@
 #define CNC_RED_ALERT_TD_FUSE_H_
 
 #include "td/defines.h"
-#include "tech/noinit.h"
 
 /****************************************************************************
 **	The fuse is used by projectiles to determine whether detonation should
@@ -51,14 +50,13 @@
 */
 class FuseClass {
  public:
-  // Field-wise saved-game support; raw-image owners still need NoInit.
+  // Field-wise saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
     ar(Timer, Arming, HeadTo, Proximity);
   }
 
   FuseClass();
-  FuseClass(const NoInitClass&) {}
   void Arm_Fuse(COORDINATE location, COORDINATE target, int time = 0xFF,
                 int arming = 0);
   bool Fuse_Checkup(COORDINATE newlocation);

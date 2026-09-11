@@ -42,7 +42,6 @@
 #define CNC_RED_ALERT_TD_FACING_H_
 
 #include "td/defines.h"
-#include "tech/noinit.h"
 
 /*
 **	This is a general facing handler class. It is used in those cases where
@@ -53,7 +52,7 @@
 */
 class FacingClass {
  public:
-  // Field-wise saved-game support; raw-image owners still need NoInit.
+  // Field-wise saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
     ar(CurrentFacing, DesiredFacing);
@@ -61,7 +60,6 @@ class FacingClass {
 
   FacingClass();
   FacingClass(DirType dir) { CurrentFacing = DesiredFacing = dir; }
-  FacingClass(const NoInitClass&) {}
 
   operator DirType() const { return CurrentFacing; }
 

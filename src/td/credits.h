@@ -41,7 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_CREDITS_H_
 #define CNC_RED_ALERT_TD_CREDITS_H_
 
-#include "../tech/noinit.h"
 
 /****************************************************************************
 **	The animating credit counter display is controlled by this class.
