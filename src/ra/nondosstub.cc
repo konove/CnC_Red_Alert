@@ -21,6 +21,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <string>
 #include <string_view>
 
 #include "absl/status/status.h"
@@ -115,7 +116,7 @@ void Load_Title_Screen(std::string_view name, GraphicViewPortClass* video_page,
                        unsigned char* palette) {
   GraphicBufferClass* load_buffer;
 
-  load_buffer = Read_PCX_File(name.data(), (char*)palette, nullptr, 0);
+  load_buffer = Read_PCX_File(std::string(name).c_str(), (char*)palette, nullptr, 0);
 
   if (load_buffer) {
     load_buffer->Blit(*video_page);
