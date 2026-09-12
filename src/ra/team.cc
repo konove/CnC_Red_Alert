@@ -1553,7 +1553,8 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     if (quantity) {
       x /= quantity;
       y /= quantity;
-      COORDINATE coord = XY_Coord(static_cast<int>(x), static_cast<int>(y));
+      COORDINATE coord =
+          XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y));
       center = ::As_Target(coord);
 
       /*
@@ -2517,7 +2518,7 @@ int TeamClass::TMission_Formation() {
       break;
     case FORMATION_TIGHT:
       while (member != nullptr) {
-        member->Group = group;
+        member->Group = static_cast<unsigned char>(group);
         member->XFormOffset = 0;
         member->YFormOffset = 0;
         member->IsFormationMove = true;
@@ -2530,7 +2531,7 @@ int TeamClass::TMission_Formation() {
       ydir = -(Total / 2);
       xdir = 0;
       while (member != nullptr) {
-        member->Group = group;
+        member->Group = static_cast<unsigned char>(group);
         member->XFormOffset = xdir;
         member->YFormOffset = ydir;
         member->IsFormationMove = true;
@@ -2547,7 +2548,7 @@ int TeamClass::TMission_Formation() {
       xdir = Total / 2;
       ydir = 0;
       while (member != nullptr) {
-        member->Group = group;
+        member->Group = static_cast<unsigned char>(group);
         member->XFormOffset = xdir;
         member->YFormOffset = ydir;
         member->IsFormationMove = true;
@@ -2564,7 +2565,7 @@ int TeamClass::TMission_Formation() {
       ydir = Total / 2;
       xdir = 0;
       while (member != nullptr) {
-        member->Group = group;
+        member->Group = static_cast<unsigned char>(group);
         member->XFormOffset = xdir;
         member->YFormOffset = ydir;
         member->IsFormationMove = true;
@@ -2581,7 +2582,7 @@ int TeamClass::TMission_Formation() {
       xdir = -(Total / 2);
       ydir = 0;
       while (member != nullptr) {
-        member->Group = group;
+        member->Group = static_cast<unsigned char>(group);
         member->XFormOffset = xdir;
         member->YFormOffset = ydir;
         member->IsFormationMove = true;
@@ -2597,7 +2598,7 @@ int TeamClass::TMission_Formation() {
     case FORMATION_LINE_NS:
       ydir = -(Total / 2);
       while (member != nullptr) {
-        member->Group = group;
+        member->Group = static_cast<unsigned char>(group);
         member->XFormOffset = 0;
         member->YFormOffset = ydir;
         member->IsFormationMove = true;
@@ -2608,7 +2609,7 @@ int TeamClass::TMission_Formation() {
     case FORMATION_LINE_EW:
       xdir = -(Total / 2);
       while (member != nullptr) {
-        member->Group = group;
+        member->Group = static_cast<unsigned char>(group);
         member->XFormOffset = xdir;
         member->YFormOffset = 0;
         member->IsFormationMove = true;

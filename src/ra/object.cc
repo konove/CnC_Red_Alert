@@ -513,7 +513,7 @@ bool ObjectClass::Can_Player_Move() const {
 COORDINATE ObjectClass::Target_Coord() const {
   assert(IsActive);
 
-  return Coord_Add(XY_Coord(0, -Height), Center_Coord());
+  return Coord_Add(XY_Coord(0, static_cast<LEPTON>(-Height)), Center_Coord());
   //	return(Center_Coord());
 }
 
@@ -1775,11 +1775,15 @@ bool ObjectClass::Paradrop(COORDINATE coord) {
     AnimClass* anim = nullptr;
 
     if (What_Am_I() == RTTI_BULLET) {
-      anim = new AnimClass(ANIM_PARA_BOMB,
-                           Coord_Move(Center_Coord(), DIR_N, 0x0030 + Height));
+      anim = new AnimClass(
+          ANIM_PARA_BOMB,
+          Coord_Move(Center_Coord(), DIR_N,
+                     static_cast<unsigned short>(0x0030 + Height)));
     } else {
-      anim = new AnimClass(ANIM_PARACHUTE,
-                           Coord_Move(Center_Coord(), DIR_N, 0x0030 + Height));
+      anim = new AnimClass(
+          ANIM_PARACHUTE,
+          Coord_Move(Center_Coord(), DIR_N,
+                     static_cast<unsigned short>(0x0030 + Height)));
     }
 
     /*

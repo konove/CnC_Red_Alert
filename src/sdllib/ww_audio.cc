@@ -158,7 +158,7 @@ static uint8_t* DecodeWestwoodBlock(ChannelState& chan, int block_size,
 
         prev_sample += v;
 
-        sample_buf[0] = prev_sample;
+        sample_buf[0] = static_cast<uint8_t>(prev_sample);
         SDL_AudioStreamPut(chan.stream, sample_buf, 1);
       } else {
         // The lower 5 bits hold a count of the number of raw
@@ -194,7 +194,7 @@ static uint8_t* DecodeWestwoodBlock(ChannelState& chan, int block_size,
               prev_sample = 0xFF;
             }
 
-            sample_buf[i] = prev_sample;
+            sample_buf[i] = static_cast<uint8_t>(prev_sample);
           }
 
           SDL_AudioStreamPut(chan.stream, sample_buf, 2);
@@ -216,7 +216,7 @@ static uint8_t* DecodeWestwoodBlock(ChannelState& chan, int block_size,
               prev_sample = 0xFF;
             }
 
-            sample_buf[i] = prev_sample;
+            sample_buf[i] = static_cast<uint8_t>(prev_sample);
           }
 
           SDL_AudioStreamPut(chan.stream, sample_buf, 4);
@@ -225,7 +225,7 @@ static uint8_t* DecodeWestwoodBlock(ChannelState& chan, int block_size,
         // There is a run of zero deltas.  Zero deltas merely duplicate
         // the 'previous' sample the requested number of times.
         do {
-          sample_buf[0] = prev_sample;
+          sample_buf[0] = static_cast<uint8_t>(prev_sample);
           SDL_AudioStreamPut(chan.stream, sample_buf, 1);
         } while (--data);
       }
@@ -286,9 +286,10 @@ static void ResetStream(ChannelState& chan, const AUDHeaderType* header) {
       SDL_FreeAudioStream(chan.stream);
     }
 
-    chan.stream = SDL_NewAudioStream(
-        bits == 16 ? AUDIO_S16 : AUDIO_U8, channels, header->Rate,
-        ObtainedSpec.format, ObtainedSpec.channels, ObtainedSpec.freq);
+    chan.stream = SDL_NewAudioStream(bits == 16 ? AUDIO_S16 : AUDIO_U8,
+                                     static_cast<Uint8>(channels), header->Rate,
+                                     ObtainedSpec.format, ObtainedSpec.channels,
+                                     ObtainedSpec.freq);
   } else {
     SDL_AudioStreamClear(chan.stream);
   }
@@ -393,8 +394,8 @@ int File_Stream_Sample_Vol(const char* filename, int volume,
 
   ResetStream(chan, &header);
 
-  chan.channels = channels;
-  chan.bits = bits;
+  chan.channels = static_cast<uint8_t>(channels);
+  chan.bits = static_cast<uint8_t>(bits);
   chan.sample_rate = header.Rate;
 
   chan.offset = 0;
@@ -591,8 +592,8 @@ int Play_Sample_Handle(const void* sample, int priority, int volume,
 
   ResetStream(chan, header);
 
-  chan.channels = channels;
-  chan.bits = bits;
+  chan.channels = static_cast<uint8_t>(channels);
+  chan.bits = static_cast<uint8_t>(bits);
   chan.sample_rate = header->Rate;
 
   chan.offset = 0;

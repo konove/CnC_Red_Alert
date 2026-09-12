@@ -1042,9 +1042,9 @@ int MapEditClass::Place_Object() {
         save_ticon = (*this)[template_cell].TIcon;
         (*this)[template_cell].TType =
             ((TemplateTypeClass*)PendingObject)->Type;
-        (*this)[template_cell].TIcon =
+        (*this)[template_cell].TIcon = static_cast<unsigned char>(
             Cell_X(*occupy) +
-            Cell_Y(*occupy) * ((TemplateTypeClass*)PendingObject)->Width;
+            Cell_Y(*occupy) * ((TemplateTypeClass*)PendingObject)->Width);
         (*this)[template_cell].Recalc_Attributes();
         /*
         ................ Try to put the object back down ................

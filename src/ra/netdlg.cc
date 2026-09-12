@@ -4911,12 +4911,18 @@ static int Net_New_Dialog() {
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official();
 
         Session.GPacket.ScenarioInfo.Credits = Session.Options.Credits;
-        Session.GPacket.ScenarioInfo.IsBases = Session.Options.Bases;
-        Session.GPacket.ScenarioInfo.IsTiberium = Session.Options.Tiberium;
-        Session.GPacket.ScenarioInfo.IsGoodies = Session.Options.Goodies;
-        Session.GPacket.ScenarioInfo.BuildLevel = BuildLevel;
-        Session.GPacket.ScenarioInfo.UnitCount = Session.Options.UnitCount;
-        Session.GPacket.ScenarioInfo.AIPlayers = Session.Options.AIPlayers;
+        Session.GPacket.ScenarioInfo.IsBases =
+            static_cast<uint8_t>(Session.Options.Bases);
+        Session.GPacket.ScenarioInfo.IsTiberium =
+            static_cast<uint8_t>(Session.Options.Tiberium);
+        Session.GPacket.ScenarioInfo.IsGoodies =
+            static_cast<uint8_t>(Session.Options.Goodies);
+        Session.GPacket.ScenarioInfo.BuildLevel =
+            static_cast<unsigned char>(BuildLevel);
+        Session.GPacket.ScenarioInfo.UnitCount =
+            static_cast<unsigned char>(Session.Options.UnitCount);
+        Session.GPacket.ScenarioInfo.AIPlayers =
+            static_cast<unsigned char>(Session.Options.AIPlayers);
         Session.GPacket.ScenarioInfo.Seed = Seed;
         Session.GPacket.ScenarioInfo.Special = Special;
         Session.GPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;

@@ -333,7 +333,7 @@ auto VQA_SetStop(VQAHandle* vqa, int64_t stop) -> int64_t {
 
   if (stop > 0 && header->Frames >= stop) {
     oldstop = header->Frames;
-    header->Frames = stop;
+    header->Frames = static_cast<uint16_t>(stop);
   }
 
   return oldstop;

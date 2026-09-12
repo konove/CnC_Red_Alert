@@ -288,17 +288,20 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   /*
   -------------------------- 8th token: MaxAllowed -------------------------
   */
-  MaxAllowed = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+  MaxAllowed = static_cast<unsigned char>(
+      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
 
   /*
   --------------------------- 9th token: InitNum ---------------------------
   */
-  InitNum = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+  InitNum = static_cast<unsigned char>(
+      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
 
   /*
   ------------------------- 10th token: Fear level -------------------------
   */
-  Fear = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+  Fear = static_cast<unsigned char>(
+      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
 
   /*
   ------------------------ 11th token: Class count -------------------------
@@ -353,7 +356,8 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
     */
     if (otype) {
       Class[ClassCount] = otype;
-      DesiredNum[ClassCount] = tech::ParseInteger<int>(p2).value_or(0);
+      DesiredNum[ClassCount] =
+          static_cast<unsigned char>(tech::ParseInteger<int>(p2).value_or(0));
       ClassCount++;
     }
   }
@@ -599,13 +603,14 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
     /*
     ........................ 8th token: MaxAllowed ........................
     */
-    team->MaxAllowed =
-        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+    team->MaxAllowed = static_cast<unsigned char>(
+        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
 
     /*
     ......................... 9th token: InitNum ..........................
     */
-    team->InitNum = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+    team->InitNum = static_cast<unsigned char>(
+        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
 
     /*
     ....................... 10th token: Mission name ......................
@@ -650,9 +655,10 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
       */
       if (otype) {
         team->Class[index] = otype;
-        team->DesiredNum[index] = tech::ParseInteger<int>(p2).value_or(0);
+        team->DesiredNum[index] =
+            static_cast<unsigned char>(tech::ParseInteger<int>(p2).value_or(0));
         index++;
-        team->ClassCount = index;
+        team->ClassCount = static_cast<unsigned char>(index);
       }
 
       /*

@@ -509,7 +509,7 @@ bool FactoryClass::Start() {
       rate /= STEP_COUNT;
       rate = Bound(rate, 1, 255);
 
-      Set_Rate(rate);
+      Set_Rate(static_cast<unsigned char>(rate));
       IsSuspended = false;
       return true;
     }

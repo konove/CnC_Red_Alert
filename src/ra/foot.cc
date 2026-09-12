@@ -282,7 +282,7 @@ void FootClass::Set_Speed(int speed) {
   assert(IsActive);
 
   speed &= 0xFF;
-  (unsigned char&)Speed = speed;
+  Speed = speed;
 }
 
 /***********************************************************************************************
@@ -901,7 +901,8 @@ void FootClass::Approach_Target() {
                                 32, -32, 48, -48, 64,  -64};
 
         for (int index = 0; index < std::ssize(_angles); index++) {
-          trycoord = Coord_Move(tcoord, dir + _angles[index], range);
+          trycoord = Coord_Move(tcoord, dir + _angles[index],
+                                static_cast<unsigned short>(range));
 
           if (::Distance(trycoord, tcoord) < range) {
             trycell = Coord_Cell(trycoord);

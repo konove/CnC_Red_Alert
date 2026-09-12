@@ -140,28 +140,35 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
     if (style.Filler == CC_GREEN_BKGD) {
       CC_Texture_Fill(MFCD::Retrieve("BTEXTURE.SHP"), InMainLoop, x, y, w, h);
     } else {
-      LogicPage->Fill_Rect(x, y, x + w, y + h, style.Filler);
+      LogicPage->Fill_Rect(x, y, x + w, y + h,
+                           static_cast<unsigned char>(style.Filler));
     }
   }
 
   switch (up) {
     case BOXSTYLE_GREEN_BOX:
-      LogicPage->Draw_Rect(x, y, x + w, y + h, style.Highlight);
+      LogicPage->Draw_Rect(x, y, x + w, y + h,
+                           static_cast<unsigned char>(style.Highlight));
       break;
 
     case BOXSTYLE_GREEN_BORDER:
-      LogicPage->Draw_Rect(x + 1, y + 1, x + w - 1, y + h - 1, style.Highlight);
+      LogicPage->Draw_Rect(x + 1, y + 1, x + w - 1, y + h - 1,
+                           static_cast<unsigned char>(style.Highlight));
       break;
 
     default:
-      LogicPage->Draw_Line(x, y + h, x + w, y + h, style.Shadow);
-      LogicPage->Draw_Line(x + w, y, x + w, y + h, style.Shadow);
+      LogicPage->Draw_Line(x, y + h, x + w, y + h,
+                           static_cast<unsigned char>(style.Shadow));
+      LogicPage->Draw_Line(x + w, y, x + w, y + h,
+                           static_cast<unsigned char>(style.Shadow));
 
-      LogicPage->Draw_Line(x, y, x + w, y, style.Highlight);
-      LogicPage->Draw_Line(x, y, x, y + h, style.Highlight);
+      LogicPage->Draw_Line(x, y, x + w, y,
+                           static_cast<unsigned char>(style.Highlight));
+      LogicPage->Draw_Line(x, y, x, y + h,
+                           static_cast<unsigned char>(style.Highlight));
 
-      LogicPage->Put_Pixel(x, y + h, style.Corner);
-      LogicPage->Put_Pixel(x + w, y, style.Corner);
+      LogicPage->Put_Pixel(x, y + h, static_cast<unsigned char>(style.Corner));
+      LogicPage->Put_Pixel(x + w, y, static_cast<unsigned char>(style.Corner));
       break;
   }
 }
@@ -495,8 +502,8 @@ void Simple_Text_Print(const char* text, int x, int y, unsigned fore,
     **	The text is rendered plain.
     */
     case TPF_NOSHADOW:
-      fontpalette[2] = back;
-      fontpalette[3] = back;
+      fontpalette[2] = static_cast<unsigned char>(back);
+      fontpalette[3] = static_cast<unsigned char>(back);
       xspace -= 1;
       yspace -= 2;
       break;
@@ -507,7 +514,7 @@ void Simple_Text_Print(const char* text, int x, int y, unsigned fore,
     */
     case TPF_DROPSHADOW:
       fontpalette[2] = BLACK;
-      fontpalette[3] = back;
+      fontpalette[3] = static_cast<unsigned char>(back);
       xspace -= 1;
       break;
 
@@ -517,7 +524,7 @@ void Simple_Text_Print(const char* text, int x, int y, unsigned fore,
     */
     case TPF_LIGHTSHADOW:
       fontpalette[2] = 14 * 16 + 7 + 1;
-      fontpalette[3] = back;
+      fontpalette[3] = static_cast<unsigned char>(back);
       xspace -= 1;
       break;
 
@@ -534,8 +541,8 @@ void Simple_Text_Print(const char* text, int x, int y, unsigned fore,
     default:
       break;
   }
-  fontpalette[0] = back;
-  fontpalette[1] = fore;
+  fontpalette[0] = static_cast<unsigned char>(back);
+  fontpalette[1] = static_cast<unsigned char>(fore);
 
   /*
   **	Set the font and spacing according to the values they should be.

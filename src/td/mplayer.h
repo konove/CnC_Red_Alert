@@ -10,7 +10,7 @@ inline HousesType MPlayerID_To_HousesType(unsigned short id) {
   return static_cast<HousesType>(id & 0x000f);
 }
 inline unsigned short Build_MPlayerID(int c_idx, HousesType htype) {
-  return c_idx << 4 | htype;
+  return static_cast<unsigned short>(c_idx << 4 | htype);
 }
 
 GameType Select_MPlayer_Game();

@@ -267,7 +267,7 @@ long Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
   /*
   **	Decompress the data.
   */
-  size = static_cast<unsigned int>(Uncompress_Data(sptr, dptr));
+  const size_t uncompressed_size = Uncompress_Data(sptr, dptr);
 
   /*
   **	Close the file if necessary.
@@ -275,7 +275,7 @@ long Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
   if (opened) {
     file.Close();
   }
-  return size;
+  return static_cast<long>(uncompressed_size);
 }
 
 int Load_Picture(const char* filename, BufferClass& scratchbuf,
@@ -384,7 +384,8 @@ void* Build_Translucent_Table(const PaletteClass& palette,
       **	Build the individual remap tables for each translucent color.
       */
       for (index = 0; index < count; index++) {
-        static_cast<unsigned char*>(buffer)[control[index].SourceColor] = index;
+        static_cast<unsigned char*>(buffer)[control[index].SourceColor] =
+            static_cast<unsigned char>(index);
         Build_Fading_Table(palette, (void*)table, control[index].DestColor,
                            control[index].Fading);
         table = (unsigned char*)table + 256;
@@ -441,7 +442,8 @@ void* Conquer_Build_Translucent_Table(const PaletteClass& palette,
       **	Build the individual remap tables for each translucent color.
       */
       for (int index = 0; index < count; index++) {
-        static_cast<unsigned char*>(buffer)[control[index].SourceColor] = index;
+        static_cast<unsigned char*>(buffer)[control[index].SourceColor] =
+            static_cast<unsigned char>(index);
         Conquer_Build_Fading_Table(palette, (void*)table,
                                    control[index].DestColor,
                                    control[index].Fading);
@@ -475,7 +477,7 @@ void* Make_Fading_Table(const PaletteClass& palette, void* dest, int color,
       *remapped *	to. This special range is used for shadows or other
       *effects that are *	not compounded if additively applied.
       */
-      *ptr++ = palette.Closest_Color(trycolor);
+      *ptr++ = static_cast<unsigned char>(palette.Closest_Color(trycolor));
     }
   }
   return dest;
@@ -498,7 +500,7 @@ void* Conquer_Build_Fading_Table(const PaletteClass& palette, void* dest,
       *a remap *	to itself. This is effectively no remap.
       */
       if (index > PaletteClass::COLOR_COUNT - 16 || index == 0) {
-        *ptr++ = index;
+        *ptr++ = static_cast<unsigned char>(index);
       } else {
         /*
         **	Find the color that, ideally, the working color should be
@@ -522,7 +524,7 @@ void* Conquer_Build_Fading_Table(const PaletteClass& palette, void* dest,
             bvalue = diff;
           }
         }
-        *ptr++ = best;
+        *ptr++ = static_cast<unsigned char>(best);
       }
     }
   }

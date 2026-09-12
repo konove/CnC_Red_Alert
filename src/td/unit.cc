@@ -528,7 +528,7 @@ void UnitClass::AI() {
     // Only animate if they're walking
     if (IsDriving || IsFiring) {
       if (!Fetch_Rate()) {
-        Set_Rate(Options.Normalize_Delay(2));
+        Set_Rate(static_cast<unsigned char>(Options.Normalize_Delay(2)));
         Set_Stage(0);
       }
       Graphic_Logic();
@@ -581,7 +581,8 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
         UnitClass* nonconst;
 
         nonconst = (UnitClass*)this;
-        nonconst->Set_Rate(Options.Normalize_Delay(2));
+        nonconst->Set_Rate(
+            static_cast<unsigned char>(Options.Normalize_Delay(2)));
         nonconst->Set_Stage(0);
         IsFiring = true;
         cf = FIRE_BUSY;
@@ -917,8 +918,8 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
         }
         if (i) {
           if (i->Unlimbo(Coord, DIR_N)) {
-            i->Strength =
-                Random_Pick(5, static_cast<int>(i->Class->MaxStrength) / 2);
+            i->Strength = static_cast<short>(
+                Random_Pick(5, static_cast<int>(i->Class->MaxStrength) / 2));
             i->Scatter(0, true);
             if (!House->IsHuman) {
               i->Assign_Mission(MISSION_HUNT);
@@ -1162,7 +1163,7 @@ UnitClass::UnitClass(UnitType classid, HousesType house)
   Ammo = Class->MaxAmmo;
   IsCloakable = Class->IsCloakable;
   if (Class->IsAnimating) {
-    Set_Rate(Options.Normalize_Delay(3));
+    Set_Rate(static_cast<unsigned char>(Options.Normalize_Delay(3)));
   }
 
   /*
@@ -1824,7 +1825,7 @@ void UnitClass::Per_Cell_Process(bool center) {
   if (Special.IsDefenderAdvantage && /*center &&*/ !Target_Legal(NavCom) &&
       Path[0] == FACING_NONE) {
     if (*this == UNIT_MLRS || *this == UNIT_ARTY || *this == UNIT_MSAM) {
-      Arm = Rearm_Delay(false) * 2;
+      Arm = static_cast<unsigned char>(Rearm_Delay(false) * 2);
     }
   }
 

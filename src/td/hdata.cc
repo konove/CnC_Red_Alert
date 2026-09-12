@@ -231,8 +231,8 @@ HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
   strncpy(Suffix, ext, 3);
   Suffix[3] = '\0';
   Lemon = lemon;
-  Color = color;
-  BrightColor = bright_color;
+  Color = static_cast<unsigned char>(color);
+  BrightColor = static_cast<unsigned char>(bright_color);
   Prefix = prefix;
 }
 

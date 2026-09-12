@@ -328,12 +328,21 @@ void Debug_Key(unsigned input) {
             DirType r1 = (DirType)r;
             DirType r2 = (DirType)((r + 10) & 0xFF);
 
-            if (Map.Coord_To_Pixel(Coord_Move(center, r1, sight), x, y)) {
-              Map.Coord_To_Pixel(Coord_Move(center, r2, sight), x1, y1);
+            if (Map.Coord_To_Pixel(
+                    Coord_Move(center, r1, static_cast<unsigned short>(sight)),
+                    x, y)) {
+              Map.Coord_To_Pixel(
+                  Coord_Move(center, r2, static_cast<unsigned short>(sight)),
+                  x1, y1);
               LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, WHITE);
             }
-            if (Map.Coord_To_Pixel(Coord_Move(center2, r1, weapon), x, y)) {
-              Map.Coord_To_Pixel(Coord_Move(center2, r2, weapon), x1, y1);
+            if (Map.Coord_To_Pixel(
+                    Coord_Move(center2, r1,
+                               static_cast<unsigned short>(weapon)),
+                    x, y)) {
+              Map.Coord_To_Pixel(
+                  Coord_Move(center2, r2, static_cast<unsigned short>(weapon)),
+                  x1, y1);
               LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, RED);
             }
           }

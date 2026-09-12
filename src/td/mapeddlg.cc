@@ -258,7 +258,7 @@ int MapEditClass::Load_Scenario() {
     into working properly.
   ------------------------------------------------------------------------*/
   if (ScenPlayer == SCEN_PLAYER_MPLAYER) {
-    MPlayerLocalID = Build_MPlayerID(2, HOUSE_GOOD);
+    MPlayerLocalID = static_cast<unsigned char>(Build_MPlayerID(2, HOUSE_GOOD));
     MPlayerCount = 1;
     LastHouse = HOUSE_MULTI1;
   } else if (ScenPlayer == SCEN_PLAYER_JP) {
@@ -1178,7 +1178,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
           if (occupier == nullptr) {
             color = Ground[(*this)[cell].Land_Type()].Color;
             LogicPage->Put_Pixel(D_BORD_X1 + Cell_X(cell) + 1,
-                                 D_BORD_Y1 + Cell_Y(cell) + 1, color);
+                                 D_BORD_Y1 + Cell_Y(cell) + 1,
+                                 static_cast<unsigned char>(color));
           }
         }
 
@@ -1230,7 +1231,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
               color = HouseClass::As_Pointer(occupier->Owner())->Class->Color;
             }
             LogicPage->Put_Pixel(D_BORD_X1 + Cell_X(cell) + 1,
-                                 D_BORD_Y1 + Cell_Y(cell) + 1, color);
+                                 D_BORD_Y1 + Cell_Y(cell) + 1,
+                                 static_cast<unsigned char>(color));
           }
         }
 

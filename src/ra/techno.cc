@@ -619,13 +619,16 @@ COORDINATE TechnoClass::Fire_Coord(int which) const {
   }
 
   COORDINATE coord =
-      Coord_Move(Center_Coord(), DIR_N, tclass->VerticalOffset + Height);
+      Coord_Move(Center_Coord(), DIR_N,
+                 static_cast<unsigned short>(tclass->VerticalOffset + Height));
   if (IsSecondShot) {
-    coord = Coord_Move(coord, dir + DIR_E, lateral);
+    coord =
+        Coord_Move(coord, dir + DIR_E, static_cast<unsigned short>(lateral));
   } else {
-    coord = Coord_Move(coord, dir + DIR_W, lateral);
+    coord =
+        Coord_Move(coord, dir + DIR_W, static_cast<unsigned short>(lateral));
   }
-  coord = Coord_Move(coord, dir, dist);
+  coord = Coord_Move(coord, dir, static_cast<unsigned short>(dist));
 
   return coord;
 }
@@ -1278,7 +1281,8 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) const {
       if (ratio <= Rule.ConditionRed) {
         color = RED;
       }
-      draw_window.Fill_Rect(xx + 1, yy + 1, xx + pwidth, yy + (3 - 1), color);
+      draw_window.Fill_Rect(xx + 1, yy + 1, xx + pwidth, yy + (3 - 1),
+                            static_cast<unsigned char>(color));
     }
 
     /*
@@ -4024,7 +4028,8 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
                       Center_Coord());
         int radius = damage * Rule.ExplosionSpread;
         //				int radius = damage/2;
-        Wide_Area_Damage(Center_Coord(), radius, damage, source, wh);
+        Wide_Area_Damage(Center_Coord(), static_cast<LEPTON>(radius), damage,
+                         source, wh);
       }
 
       if (this ==
@@ -4426,7 +4431,7 @@ void TechnoClass::Techno_Draw_Object(const void* shapefile, int shapenum, int x,
       shadow = MouseClass::UnitShadowAir;
     }
 
-    y -= Lepton_To_Pixel(Height);
+    y -= Lepton_To_Pixel(static_cast<LEPTON>(Height));
 
     // If they're viewing a spy, and the spy belongs to some other house, make
     // it look like an infantryman from our house
@@ -6404,7 +6409,8 @@ bool TechnoTypeClass::Read_INI(CCINIClass& ini) {
     IsScanner = ini.Get_Bool(Name(), "Sensors", IsScanner);
     Armor = ini.Get_ArmorType(Name(), "Armor", Armor);
     Prerequisite = ini.Get_Buildings(Name(), "Prerequisite", Prerequisite);
-    MaxStrength = ini.Get_Int(Name(), "Strength", MaxStrength);
+    MaxStrength = static_cast<unsigned short>(
+        ini.Get_Int(Name(), "Strength", MaxStrength));
     SightRange = ini.Get_Int(Name(), "Sight", SightRange);
     Level = ini.Get_Int(Name(), "TechLevel", Level);
     MaxSpeed = static_cast<MPHType>(_Scale_To_256(

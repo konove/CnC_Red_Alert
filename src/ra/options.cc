@@ -514,7 +514,9 @@ void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
       **	Replace the working palette entry according to the newly
       *calculated *	hue, saturation, and value.
       */
-      newpal[index] = HSVClass(h, s, v);
+      newpal[index] =
+          HSVClass(static_cast<unsigned char>(h), static_cast<unsigned char>(s),
+                   static_cast<unsigned char>(v));
     }
   }
 }

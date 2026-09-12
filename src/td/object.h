@@ -158,7 +158,7 @@ class ObjectClass : public AbstractClass {
   virtual LayerType In_Which_Layer() const;
   virtual bool Is_Infantry() const;
   virtual bool Is_Techno() const;
-  virtual unsigned char Get_Ownable() const;
+  virtual int Get_Ownable() const;
   virtual const ObjectTypeClass& Class_Of() const = 0;
   virtual int Full_Name() const;
   virtual bool Can_Repair() const;

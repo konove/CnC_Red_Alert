@@ -881,14 +881,15 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
 
       } else {
         if (LogicPage->Lock()) {
-          Fat_Put_Pixel(x, y, cellptr->Cell_Color(false), ZoomFactor,
-                        *LogicPage);
+          Fat_Put_Pixel(x, y, static_cast<uint8_t>(cellptr->Cell_Color(false)),
+                        ZoomFactor, *LogicPage);
           LogicPage->Unlock();
         }
       }
     } else {
       if (LogicPage->Lock()) {
-        Fat_Put_Pixel(x, y, color, ZoomFactor, *LogicPage);
+        Fat_Put_Pixel(x, y, static_cast<uint8_t>(color), ZoomFactor,
+                      *LogicPage);
         LogicPage->Unlock();
       }
     }
@@ -1939,7 +1940,7 @@ void RadarClass::Draw_Names() {
       **	- Compute the multiplayer ID for this house
       **	- find the name for this player
       */
-      id = Build_MPlayerID(c_idx, ptr->ActLike);
+      id = static_cast<unsigned char>(Build_MPlayerID(c_idx, ptr->ActLike));
       for (i = 0; i < MPlayerCount; i++) {
         if (id == MPlayerID[i]) {
           sprintf(txt, "%s", MPlayerNames[i]);

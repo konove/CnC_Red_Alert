@@ -546,8 +546,8 @@ void Simple_Text_Print(const char* text, int x, int y,
     **	The text is rendered plain.
     */
     case TPF_NOSHADOW:
-      fontpalette[2] = back;
-      fontpalette[3] = back;
+      fontpalette[2] = static_cast<unsigned char>(back);
+      fontpalette[3] = static_cast<unsigned char>(back);
       xspace -= 1;
       yspace -= 2;
       break;
@@ -558,7 +558,7 @@ void Simple_Text_Print(const char* text, int x, int y,
     */
     case TPF_DROPSHADOW:
       fontpalette[2] = BLACK;
-      fontpalette[3] = back;
+      fontpalette[3] = static_cast<unsigned char>(back);
       xspace -= 1;
       break;
 
@@ -568,7 +568,7 @@ void Simple_Text_Print(const char* text, int x, int y,
     */
     case TPF_LIGHTSHADOW:
       fontpalette[2] = 14 * 16 + 7 + 1;
-      fontpalette[3] = back;
+      fontpalette[3] = static_cast<unsigned char>(back);
       xspace -= 1;
       break;
 
@@ -586,7 +586,7 @@ void Simple_Text_Print(const char* text, int x, int y,
       break;
   }
   if (point != TPF_TYPE) {
-    fontpalette[0] = back;
+    fontpalette[0] = static_cast<unsigned char>(back);
     fontpalette[1] = fore->Color;
   }
 
@@ -877,16 +877,16 @@ void Plain_Text_Print(int text, unsigned x, unsigned y, unsigned fore,
 
   memset(&scheme.FontRemap[4], fore, 12);
 
-  scheme.BrightColor = fore;
-  scheme.Color = fore;
-  scheme.Shadow = fore;
-  scheme.Background = fore;
-  scheme.Corners = fore;
-  scheme.Highlight = fore;
-  scheme.Box = fore;
-  scheme.Bright = fore;
-  scheme.Underline = fore;
-  scheme.Bar = fore;
+  scheme.BrightColor = static_cast<unsigned char>(fore);
+  scheme.Color = static_cast<unsigned char>(fore);
+  scheme.Shadow = static_cast<unsigned char>(fore);
+  scheme.Background = static_cast<unsigned char>(fore);
+  scheme.Corners = static_cast<unsigned char>(fore);
+  scheme.Highlight = static_cast<unsigned char>(fore);
+  scheme.Box = static_cast<unsigned char>(fore);
+  scheme.Bright = static_cast<unsigned char>(fore);
+  scheme.Underline = static_cast<unsigned char>(fore);
+  scheme.Bar = static_cast<unsigned char>(fore);
 
   Fancy_Text_Print(text, x, y, &scheme, back, flag);
 }
@@ -922,16 +922,16 @@ void Plain_Text_Print(const char* text, unsigned x, unsigned y, unsigned fore,
 
   memset(&scheme.FontRemap[4], fore, 12);
 
-  scheme.BrightColor = fore;
-  scheme.Color = fore;
-  scheme.Shadow = fore;
-  scheme.Background = fore;
-  scheme.Corners = fore;
-  scheme.Highlight = fore;
-  scheme.Box = fore;
-  scheme.Bright = fore;
-  scheme.Underline = fore;
-  scheme.Bar = fore;
+  scheme.BrightColor = static_cast<unsigned char>(fore);
+  scheme.Color = static_cast<unsigned char>(fore);
+  scheme.Shadow = static_cast<unsigned char>(fore);
+  scheme.Background = static_cast<unsigned char>(fore);
+  scheme.Corners = static_cast<unsigned char>(fore);
+  scheme.Highlight = static_cast<unsigned char>(fore);
+  scheme.Box = static_cast<unsigned char>(fore);
+  scheme.Bright = static_cast<unsigned char>(fore);
+  scheme.Underline = static_cast<unsigned char>(fore);
+  scheme.Bar = static_cast<unsigned char>(fore);
 
   Fancy_Text_Print(text, x, y, &scheme, back, flag);
 }

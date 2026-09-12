@@ -265,7 +265,7 @@ AircraftTypeClass::AircraftTypeClass(
   IsLandable = is_landable;
   IsFixedWing = is_fixedwing;
   Type = airtype;
-  ROT = rot;
+  ROT = static_cast<unsigned char>(rot);
   Mission = deforder;
 }
 

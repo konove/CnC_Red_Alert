@@ -1032,9 +1032,9 @@ void BuildingClass::AI() {
   if (toloop) {
     const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
     if (BState == BSTATE_CONSTRUCTION || BState == BSTATE_IDLE) {
-      Set_Rate(Options.Normalize_Delay(ctrl->Rate));
+      Set_Rate(static_cast<unsigned char>(Options.Normalize_Delay(ctrl->Rate)));
     } else {
-      Set_Rate(ctrl->Rate);
+      Set_Rate(static_cast<unsigned char>(ctrl->Rate));
     }
     Set_Stage(ctrl->Start);
     Mark(MARK_CHANGE);
@@ -1101,9 +1101,10 @@ void BuildingClass::AI() {
       BState = QueueBState;
       const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
       if (BState == BSTATE_CONSTRUCTION || BState == BSTATE_IDLE) {
-        Set_Rate(Options.Normalize_Delay(ctrl->Rate));
+        Set_Rate(
+            static_cast<unsigned char>(Options.Normalize_Delay(ctrl->Rate)));
       } else {
-        Set_Rate(ctrl->Rate);
+        Set_Rate(static_cast<unsigned char>(ctrl->Rate));
       }
       Set_Stage(ctrl->Start);
     }
@@ -1578,16 +1579,18 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
           if (Random_Pick(0, 1) == 0) {
             new AnimClass(ANIM_FIRE_SMALL,
                           Coord_Scatter(Cell_Coord(cell), 0x0080),
-                          Random_Pick(0, 7), Random_Pick(1, 3));
+                          static_cast<unsigned char>(Random_Pick(0, 7)),
+                          static_cast<unsigned char>(Random_Pick(1, 3)));
             if (Random_Pick(0, 1) == 0) {
               new AnimClass(ANIM_FIRE_MED,
                             Coord_Scatter(Cell_Coord(cell), 0x0040),
-                            Random_Pick(0, 7), Random_Pick(1, 3));
+                            static_cast<unsigned char>(Random_Pick(0, 7)),
+                            static_cast<unsigned char>(Random_Pick(1, 3)));
             }
           }
           // Start_Profiler();
           new AnimClass(ANIM_FBALL1, Coord_Scatter(Cell_Coord(cell), 0x0040),
-                        Random_Pick(0, 3));
+                        static_cast<unsigned char>(Random_Pick(0, 3)));
         }
 
         shakes = Class->Cost_Of() / 400;
@@ -1637,17 +1640,17 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
               case 2:
               case 3:
               case 4:
-                anim = new AnimClass(ANIM_ON_FIRE_SMALL,
-                                     Coord_Scatter(Cell_Coord(cell), 0x0060), 0,
-                                     Random_Pick(1, 3));
+                anim = new AnimClass(
+                    ANIM_ON_FIRE_SMALL, Coord_Scatter(Cell_Coord(cell), 0x0060),
+                    0, static_cast<unsigned char>(Random_Pick(1, 3)));
                 break;
 
               case 5:
               case 6:
               case 7:
-                anim = new AnimClass(ANIM_ON_FIRE_MED,
-                                     Coord_Scatter(Cell_Coord(cell), 0x0060), 0,
-                                     Random_Pick(1, 3));
+                anim = new AnimClass(
+                    ANIM_ON_FIRE_MED, Coord_Scatter(Cell_Coord(cell), 0x0060),
+                    0, static_cast<unsigned char>(Random_Pick(1, 3)));
                 break;
 
               case 8:
@@ -1665,9 +1668,10 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
             }
           } else {
             if (Random_Pick(0, 1) == 0) {
-              anim = new AnimClass(ANIM_FIRE_SMALL,
-                                   Coord_Scatter(Cell_Coord(cell), 0x0060),
-                                   Random_Pick(0, 7), Random_Pick(1, 3));
+              anim = new AnimClass(
+                  ANIM_FIRE_SMALL, Coord_Scatter(Cell_Coord(cell), 0x0060),
+                  static_cast<unsigned char>(Random_Pick(0, 7)),
+                  static_cast<unsigned char>(Random_Pick(1, 3)));
             }
           }
 
@@ -1913,7 +1917,8 @@ void BuildingClass::Drop_Debris(TARGET source) {
     ScenarioInit++;
     if (i->Unlimbo(Center_Coord(), DIR_N)) {
       i->Trigger = TriggerClass::As_Pointer("CHAN");
-      i->Strength = Random_Pick(5, static_cast<int>(i->Class->MaxStrength));
+      i->Strength = static_cast<short>(
+          Random_Pick(5, static_cast<int>(i->Class->MaxStrength)));
       ScenarioInit--;
       i->Scatter(0, true);
       ScenarioInit++;
@@ -1955,8 +1960,8 @@ void BuildingClass::Drop_Debris(TARGET source) {
           }
           ScenarioInit++;
           if (i->Unlimbo(Cell_Coord(newcell), DIR_N)) {
-            i->Strength =
-                Random_Pick(5, static_cast<int>(i->Class->MaxStrength));
+            i->Strength = static_cast<short>(
+                Random_Pick(5, static_cast<int>(i->Class->MaxStrength)));
             i->Scatter(0, true);
             if (source != kTargetNone && !House->Is_Ally(As_Object(source))) {
               i->Assign_Mission(MISSION_ATTACK);
@@ -1985,7 +1990,8 @@ void BuildingClass::Drop_Debris(TARGET source) {
       case 2:
         new AnimClass(ANIM_SMOKE_M,
                       Coord_Scatter(Cell_Coord(newcell), 0x0050, false),
-                      Random_Pick(0, 5), Random_Pick(1, 2));
+                      static_cast<unsigned char>(Random_Pick(0, 5)),
+                      static_cast<unsigned char>(Random_Pick(1, 2)));
         break;
 
       default:
@@ -2974,7 +2980,7 @@ void BuildingClass::Begin_Mode(BStateType bstate) {
     if (Class->IsRegulated && bstate != BSTATE_CONSTRUCTION) {
       rate = Options.Normalize_Delay(rate);
     }
-    Set_Rate(rate);
+    Set_Rate(static_cast<unsigned char>(rate));
     Set_Stage(ctrl->Start);
   }
 }

@@ -56,7 +56,8 @@ inline int Lepton_To_Cell(int lepton) {
 }
 inline CELL XY_Cell(int x, int y) { return static_cast<CELL>(y << 6 | x); }
 inline COORDINATE XY_Coord(int x, int y) {
-  return static_cast<COORDINATE>(MakeLong(y, x));
+  return static_cast<COORDINATE>(
+      MakeLong(static_cast<uint16_t>(y), static_cast<uint16_t>(x)));
 }
 inline int Coord_X(COORDINATE coord) {
   return static_cast<short>(LowWord(coord));
@@ -96,14 +97,15 @@ inline COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) {
 }
 inline COORDINATE Cell_Coord(CELL cell) {
   return static_cast<COORDINATE>(
-      MakeLong((cell & 0x0FC0) << 2 | 0x80, (((cell & 0x003F) << 1) + 1) << 7));
+      MakeLong(static_cast<uint16_t>((cell & 0x0FC0) << 2 | 0x80),
+               static_cast<uint16_t>((((cell & 0x003F) << 1) + 1) << 7)));
 }
 inline COORDINATE XYPixel_Coord(int x, int y) {
   return static_cast<COORDINATE>(
-      MakeLong((int)((long)y * (long)ICON_LEPTON_H /
-                     (long)ICON_PIXEL_H) /*+LEPTON_OFFSET_Y*/,
-               (int)((long)x * (long)ICON_LEPTON_W /
-                     (long)ICON_PIXEL_W) /*+LEPTON_OFFSET_X*/));
+      MakeLong(static_cast<uint16_t>((long)y * (long)ICON_LEPTON_H /
+                                     (long)ICON_PIXEL_H) /*+LEPTON_OFFSET_Y*/,
+               static_cast<uint16_t>((long)x * (long)ICON_LEPTON_W /
+                                     (long)ICON_PIXEL_W) /*+LEPTON_OFFSET_X*/));
 }
 inline int Facing_To_32(DirType facing) { return Facing32[facing]; }
 inline DirType Direction256(COORDINATE coord1, COORDINATE coord2) {

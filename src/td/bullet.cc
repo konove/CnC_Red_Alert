@@ -669,7 +669,8 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
         dir = static_cast<DirType>(dir + (Random_Pick(0, 10) - 5) & 0x00FF);
         tcoord = Coord_Scatter(tcoord, Random_Pick(0, scatterdist));
       } else {
-        tcoord = Coord_Move(tcoord, dir, Random_Pick(0, 0x0100));
+        tcoord = Coord_Move(
+            tcoord, dir, static_cast<unsigned short>(Random_Pick(0, 0x0100)));
       }
 
       /*
@@ -677,10 +678,11 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       */
       if (Payback) {
         if (!Payback->In_Range(tcoord, 0) && !Payback->In_Range(tcoord, 1)) {
-          tcoord =
-              Coord_Move(tcoord, ::Direction(tcoord, Coord),
-                         Distance(tcoord) - std::max(Payback->Weapon_Range(0),
-                                                     Payback->Weapon_Range(1)));
+          tcoord = Coord_Move(
+              tcoord, ::Direction(tcoord, Coord),
+              static_cast<unsigned short>(Distance(tcoord) -
+                                          std::max(Payback->Weapon_Range(0),
+                                                   Payback->Weapon_Range(1))));
         }
       }
     }

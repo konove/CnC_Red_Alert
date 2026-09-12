@@ -573,7 +573,7 @@ void Read_Setup_Options(RawFileClass* config_file) {
     if (socket > 0) {
       socket += 0x4000;
       if (socket >= 0x4000 && socket < 0x8000) {
-        Ipx.Set_Socket(socket);
+        Ipx.Set_Socket(static_cast<unsigned short>(socket));
       }
     }
 

@@ -94,7 +94,7 @@ static void Setup_Shape_Header(int pixel_width, int pixel_height, char* src,
       line_flags = BLIT_SKIP;
     }
 
-    *ptr++ = line_flags;
+    *ptr++ = static_cast<uint8_t>(line_flags);
   } while (--pixel_height != 0);
 }
 

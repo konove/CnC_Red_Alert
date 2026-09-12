@@ -14,9 +14,9 @@ void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
   int matchvalue;
   uint8_t targetred;
   uint8_t targetgreen;
-  uint8_t idealred;
-  uint8_t idealgreen;
-  uint8_t matchcolor;
+  int idealred;
+  int idealgreen;
+  int matchcolor;
 
   const int ALLOWED_COUNT = 16;
   const int ALLOWED_START = 256 - ALLOWED_COUNT;
@@ -47,7 +47,7 @@ void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
     uint8_t origred = pal8[remap_index * 3 + 0];
     uint8_t origgreen = pal8[remap_index * 3 + 1];
 
-    uint16_t tmp = (origred - targetred) * (frac >> 1);
+    int tmp = (origred - targetred) * (frac >> 1);
     idealred = origred - (tmp >> 7);
 
     tmp = (origgreen - targetgreen) * (frac >> 1);
@@ -88,13 +88,13 @@ void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
     }
 
     // When the loop exits, we have found the closest match.
-    *dptr++ = matchcolor;
+    *dptr++ = static_cast<uint8_t>(matchcolor);
   }
 
   // Fill the remainder of the remap table with values
   // that will remap the color to itself.
   for (; remap_index < 256; remap_index++) {
-    *dptr++ = remap_index;
+    *dptr++ = static_cast<uint8_t>(remap_index);
   }
 
   return dest;

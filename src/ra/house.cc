@@ -3491,7 +3491,7 @@ void HouseClass::MPlayer_Defeated() {
 
   char txt[80];
   int i, j;
-  unsigned char id;
+  int id;
   HouseClass* hptr;
   HouseClass* hptr2;
   int num_alive;
@@ -4402,7 +4402,7 @@ void HouseClass::Recalc_Center() {
       x /= count;
       y /= count;
 
-      Center = XY_Coord(x, y);
+      Center = XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y));
     }
 
     /*
@@ -5239,7 +5239,9 @@ int HouseClass::AI_Building() {
     */
     int current = BQuantity[STRUCT_REFINERY];
     if (!IsTiberiumShort &&
-        current < (Rule.RefineryRatio * fixed(CurBuildings)).Round_Up() &&
+        current <
+            (Rule.RefineryRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+                .Round_Up() &&
         current < Rule.RefineryLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_REFINERY);
       if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome)) {
@@ -5257,7 +5259,9 @@ int HouseClass::AI_Building() {
     **	will be sufficient money to train troopers.
     */
     current = BQuantity[STRUCT_BARRACKS] + BQuantity[STRUCT_TENT];
-    if (current < (Rule.BarracksRatio * fixed(CurBuildings)).Round_Up() &&
+    if (current <
+            (Rule.BarracksRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+                .Round_Up() &&
         current < Rule.BarracksLimit && (money > 300 || hasincome)) {
       b = &BuildingTypeClass::As_Reference(STRUCT_BARRACKS);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
@@ -5311,7 +5315,8 @@ int HouseClass::AI_Building() {
     **	be sufficient money to build vehicles.
     */
     current = BQuantity[STRUCT_WEAP];
-    if (current < (Rule.WarRatio * fixed(CurBuildings)).Round_Up() &&
+    if (current < (Rule.WarRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+                      .Round_Up() &&
         current < Rule.WarLimit && (money > 2000 || hasincome)) {
       b = &BuildingTypeClass::As_Reference(STRUCT_WEAP);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
@@ -5328,7 +5333,9 @@ int HouseClass::AI_Building() {
     */
     current = BQuantity[STRUCT_PILLBOX] + BQuantity[STRUCT_CAMOPILLBOX] +
               BQuantity[STRUCT_TURRET] + BQuantity[STRUCT_FLAME_TURRET];
-    if (current < (Rule.DefenseRatio * fixed(CurBuildings)).Round_Up() &&
+    if (current <
+            (Rule.DefenseRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+                .Round_Up() &&
         current < Rule.DefenseLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_FLAME_TURRET);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
@@ -5361,7 +5368,8 @@ int HouseClass::AI_Building() {
     **	Build some air defense.
     */
     current = BQuantity[STRUCT_SAM] + BQuantity[STRUCT_AAGUN];
-    if (current < (Rule.AARatio * fixed(CurBuildings)).Round_Up() &&
+    if (current < (Rule.AARatio * fixed(static_cast<uint8_t>(CurBuildings)))
+                      .Round_Up() &&
         current < Rule.AALimit) {
       /*
       **	Building air defense only makes sense if the opponent has
@@ -5420,7 +5428,8 @@ int HouseClass::AI_Building() {
     **	Advanced base defense would be good.
     */
     current = BQuantity[STRUCT_TESLA];
-    if (current < (Rule.TeslaRatio * fixed(CurBuildings)).Round_Up() &&
+    if (current < (Rule.TeslaRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+                      .Round_Up() &&
         current < Rule.TeslaLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_TESLA);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) &&
@@ -5460,7 +5469,9 @@ int HouseClass::AI_Building() {
     **	A helipad would be good.
     */
     current = BQuantity[STRUCT_HELIPAD];
-    if (current < (Rule.HelipadRatio * fixed(CurBuildings)).Round_Up() &&
+    if (current <
+            (Rule.HelipadRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+                .Round_Up() &&
         current < Rule.HelipadLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
@@ -5482,7 +5493,9 @@ int HouseClass::AI_Building() {
     **	An airstrip would be good.
     */
     current = BQuantity[STRUCT_AIRSTRIP];
-    if (current < (Rule.AirstripRatio * fixed(CurBuildings)).Round_Up() &&
+    if (current <
+            (Rule.AirstripRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+                .Round_Up() &&
         current < Rule.AirstripLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_AIRSTRIP);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
@@ -6649,16 +6662,20 @@ CELL HouseClass::Zone_Cell(ZoneType zone) const {
       return Coord_Cell(Center);
 
     case ZONE_NORTH:
-      return Coord_Cell(Coord_Move(Center, DIR_N, Radius * 3));
+      return Coord_Cell(
+          Coord_Move(Center, DIR_N, static_cast<unsigned short>(Radius * 3)));
 
     case ZONE_EAST:
-      return Coord_Cell(Coord_Move(Center, DIR_E, Radius * 3));
+      return Coord_Cell(
+          Coord_Move(Center, DIR_E, static_cast<unsigned short>(Radius * 3)));
 
     case ZONE_WEST:
-      return Coord_Cell(Coord_Move(Center, DIR_W, Radius * 3));
+      return Coord_Cell(
+          Coord_Move(Center, DIR_W, static_cast<unsigned short>(Radius * 3)));
 
     case ZONE_SOUTH:
-      return Coord_Cell(Coord_Move(Center, DIR_S, Radius * 3));
+      return Coord_Cell(
+          Coord_Move(Center, DIR_S, static_cast<unsigned short>(Radius * 3)));
 
     default:
       break;
@@ -7550,10 +7567,10 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       if (maxdist < 0) {
         break;
       }
-      coord = Coord_Move(Center,
-                         Random_Pick(DIR_N, DIR_E) - static_cast<DirType>(32),
-                         Random_Pick(std::min(Radius * 2, maxdist),
-                                     std::min(Radius * 3, maxdist)));
+      coord = Coord_Move(
+          Center, Random_Pick(DIR_N, DIR_E) - static_cast<DirType>(32),
+          static_cast<unsigned short>(Random_Pick(
+              std::min(Radius * 2, maxdist), std::min(Radius * 3, maxdist))));
       break;
 
     case ZONE_EAST:
@@ -7563,9 +7580,10 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       if (maxdist < 0) {
         break;
       }
-      coord = Coord_Move(Center, Random_Pick(DIR_NE, DIR_SE),
-                         Random_Pick(std::min(Radius * 2, maxdist),
-                                     std::min(Radius * 3, maxdist)));
+      coord = Coord_Move(
+          Center, Random_Pick(DIR_NE, DIR_SE),
+          static_cast<unsigned short>(Random_Pick(
+              std::min(Radius * 2, maxdist), std::min(Radius * 3, maxdist))));
       break;
 
     case ZONE_SOUTH:
@@ -7575,9 +7593,10 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       if (maxdist < 0) {
         break;
       }
-      coord = Coord_Move(Center, Random_Pick(DIR_SE, DIR_SW),
-                         Random_Pick(std::min(Radius * 2, maxdist),
-                                     std::min(Radius * 3, maxdist)));
+      coord = Coord_Move(
+          Center, Random_Pick(DIR_SE, DIR_SW),
+          static_cast<unsigned short>(Random_Pick(
+              std::min(Radius * 2, maxdist), std::min(Radius * 3, maxdist))));
       break;
 
     case ZONE_WEST:
@@ -7587,9 +7606,10 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       if (maxdist < 0) {
         break;
       }
-      coord = Coord_Move(Center, Random_Pick(DIR_SW, DIR_NW),
-                         Random_Pick(std::min(Radius * 2, maxdist),
-                                     std::min(Radius * 3, maxdist)));
+      coord = Coord_Move(
+          Center, Random_Pick(DIR_SW, DIR_NW),
+          static_cast<unsigned short>(Random_Pick(
+              std::min(Radius * 2, maxdist), std::min(Radius * 3, maxdist))));
       break;
   }
 

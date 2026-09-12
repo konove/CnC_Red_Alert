@@ -432,7 +432,7 @@ bool ObjectClass::Is_Techno() const { return false; }
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-unsigned char ObjectClass::Get_Ownable() const { return 0xff; }
+int ObjectClass::Get_Ownable() const { return 0xffff; }
 
 /***********************************************************************************************
  * ObjectClass::Can_Repair -- Queries whether this object can be repaired. *

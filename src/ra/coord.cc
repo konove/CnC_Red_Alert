@@ -48,8 +48,10 @@ const short* Coord_Spillage_List(const COORDINATE coord, const Rect& rect,
   LEPTON_COMPOSITE top{};
   LEPTON_COMPOSITE right{};
   LEPTON_COMPOSITE bottom{};
-  left.Raw = static_cast<int>(x) + static_cast<short>(Pixel_To_Lepton(rect.X));
-  top.Raw = static_cast<int>(y) + static_cast<short>(Pixel_To_Lepton(rect.Y));
+  left.Raw = static_cast<LEPTON>(static_cast<int>(x) +
+                                 static_cast<short>(Pixel_To_Lepton(rect.X)));
+  top.Raw = static_cast<LEPTON>(static_cast<int>(y) +
+                                static_cast<short>(Pixel_To_Lepton(rect.Y)));
   right.Raw = left.Raw + Pixel_To_Lepton(rect.Width - 1);
   bottom.Raw = top.Raw + Pixel_To_Lepton(rect.Height - 1);
 
@@ -91,7 +93,8 @@ COORDINATE Coord_Move(const COORDINATE start, const DirType facing,
 
 COORDINATE Coord_Scatter(const COORDINATE coord, const unsigned distance,
                          const bool lock) {
-  COORDINATE result = Coord_Move(coord, Random_Pick(DIR_N, DIR_MAX), distance);
+  COORDINATE result = Coord_Move(coord, Random_Pick(DIR_N, DIR_MAX),
+                                 static_cast<unsigned short>(distance));
 
   // If the move overflowed the valid coordinate range, discard it.
   if (result & kHighCoordMask) {

@@ -236,10 +236,10 @@ void PowerClass::Draw_It(bool complete) {
               drain_height * (152 + 1) / (106 + 1);
           bottom = 350 + 1;
 
-          LogicPage->Fill_Rect(490, bottom - power_height,
-                               490 + 1, bottom, color2);
-          LogicPage->Fill_Rect(492, bottom - power_height,
-                               492 + 1, bottom, color1);
+          LogicPage->Fill_Rect(490, bottom - power_height, 490 + 1, bottom,
+                               static_cast<unsigned char>(color2));
+          LogicPage->Fill_Rect(492, bottom - power_height, 492 + 1, bottom,
+                               static_cast<unsigned char>(color1));
         }
 
         /*

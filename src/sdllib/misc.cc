@@ -72,16 +72,16 @@ void* Build_Fading_Table(const void* palette, void* dest, long int color,
     uint8_t origred = pal8[remap_index * 3 + 0];
     uint8_t origgreen = pal8[remap_index * 3 + 1];
 
-    uint16_t tmp = (origred - targetred) * (frac >> 1);
-    idealred = origred - (tmp >> 7);
+    uint16_t tmp = static_cast<uint16_t>((origred - targetred) * (frac >> 1));
+    idealred = static_cast<uint8_t>(origred - (tmp >> 7));
 
-    tmp = (origgreen - targetgreen) * (frac >> 1);
-    idealgreen = origgreen - (tmp >> 7);
+    tmp = static_cast<uint16_t>((origgreen - targetgreen) * (frac >> 1));
+    idealgreen = static_cast<uint8_t>(origgreen - (tmp >> 7));
 
     // Sweep through the entire existing palette to find the closest
     // matching color.  Never matches with color 0.
 
-    matchcolor = color;  // Default color (self).
+    matchcolor = static_cast<uint8_t>(color);  // Default color (self).
     matchvalue = INT_MAX;  // Ridiculous match value init.
 
     const auto* palptr = pal8 + 3;
@@ -101,12 +101,12 @@ void* Build_Fading_Table(const void* palette, void* dest, long int color,
 
         if (compval == 0)  // If perfect match found then quit early.
         {
-          matchcolor = color_index;
+          matchcolor = static_cast<uint8_t>(color_index);
           break;
         }
 
         if (compval < matchvalue) {
-          matchcolor = color_index;
+          matchcolor = static_cast<uint8_t>(color_index);
           matchvalue = compval;
         }
       }
@@ -184,15 +184,15 @@ uint8_t Random() {
   tmp >>= 1;
 
   int c1 = r[2] & 0x80;
-  r[2] = r[2] << 1 | c;
+  r[2] = static_cast<uint8_t>(r[2] << 1 | c);
 
   int c2 = r[1] & 0x80;
-  r[1] = r[1] << 1 | c1 >> 7;
+  r[1] = static_cast<uint8_t>(r[1] << 1 | c1 >> 7);
 
-  tmp = tmp - ((RandNumb & 0xFF) + (1 - c2));
+  tmp = static_cast<uint8_t>(tmp - ((RandNumb & 0xFF) + (1 - c2)));
   int c3 = tmp & 1;
 
-  r[0] = r[0] >> 1 | c3 << 7;
+  r[0] = static_cast<uint8_t>(r[0] >> 1 | c3 << 7);
 
   return r[0] ^ r[1];
 }

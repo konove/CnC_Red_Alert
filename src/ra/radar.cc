@@ -745,7 +745,7 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
   while (obj) {
     if (obj->Is_Techno() &&
         dynamic_cast<TechnoClass*>(obj)->Is_Visible_On_Radar()) {
-      int color =
+      unsigned char color =
           ColorRemaps[dynamic_cast<TechnoClass*>(obj)->House->RemapColor].Bar;
       int xoff;
       int yoff;
@@ -1068,10 +1068,12 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
       } else {
         //				LogicPage->Fill_Rect(x, y,
         // x+ZoomFactor-1, y+ZoomFactor-1, cellptr->Cell_Color(false));
-        /*BG*/ LogicPage->Put_Pixel(x, y, cellptr->Cell_Color(false));
+        /*BG*/ LogicPage->Put_Pixel(
+            x, y, static_cast<unsigned char>(cellptr->Cell_Color(false)));
       }
     } else {
-      LogicPage->Fill_Rect(x, y, x + ZoomFactor - 1, y + ZoomFactor - 1, color);
+      LogicPage->Fill_Rect(x, y, x + ZoomFactor - 1, y + ZoomFactor - 1,
+                           static_cast<unsigned char>(color));
       ///*BG*/		LogicPage->Put_Pixel(x, y, color);
     }
     if (color != BLACK) {
@@ -1338,7 +1340,7 @@ void RadarClass::Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x, int& y) {
  * HISTORY: * 11/09/1995 BWG : Created. *
  *=============================================================================================*/
 bool RadarClass::Jam_Cell(CELL cell, HouseClass* house /*KO, bool shadeit*/) {
-  unsigned short jam = 1 << house->Class->House;
+  unsigned short jam = static_cast<unsigned short>(1 << house->Class->House);
   (*this)[cell].Jammed |= jam;
   if (house != PlayerPtr) {
     Shroud_Cell(cell /*KO, shadeit*/);
@@ -1364,7 +1366,7 @@ bool RadarClass::Jam_Cell(CELL cell, HouseClass* house /*KO, bool shadeit*/) {
  * HISTORY: * 11/09/1995 BWG : Created. *
  *=============================================================================================*/
 bool RadarClass::UnJam_Cell(CELL cell, HouseClass* house) {
-  unsigned short jam = 1 << house->Class->House;
+  unsigned short jam = static_cast<unsigned short>(1 << house->Class->House);
   (*this)[cell].Redraw_Objects();
   (*this)[cell].Jammed &= 0xFFFF - jam;
   Radar_Pixel(cell);

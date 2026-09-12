@@ -237,11 +237,13 @@ int GaugeClass::Draw_Me(bool forced) {
       int color = CC_BRIGHT_GREEN;
       if (IsHorizontal) {
         if (middle >= X + 1) {
-          LogicPage->Fill_Rect(X + 1, Y + 1, middle, Y + Height - 2, color);
+          LogicPage->Fill_Rect(X + 1, Y + 1, middle, Y + Height - 2,
+                               static_cast<unsigned char>(color));
         }
       } else {
         if (middle >= Y + 1) {
-          LogicPage->Fill_Rect(X + 1, Y + 1, X + Width - 2, middle, color);
+          LogicPage->Fill_Rect(X + 1, Y + 1, X + Width - 2, middle,
+                               static_cast<unsigned char>(color));
         }
       }
     }

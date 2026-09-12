@@ -276,7 +276,7 @@ long Load_Uncompress(FileClass& file, BufferClass& uncomp_buff,
   /*
   **	Decompress the data.
   */
-  size = static_cast<unsigned int>(Uncompress_Data(sptr, dptr));
+  const size_t uncompressed_size = Uncompress_Data(sptr, dptr);
 
   /*
   **	Close the file if necessary.
@@ -284,7 +284,7 @@ long Load_Uncompress(FileClass& file, BufferClass& uncomp_buff,
   if (opened) {
     file.Close();
   }
-  return size;
+  return static_cast<long>(uncompressed_size);
 }
 
 int Load_Picture(const char* filename, BufferClass& scratchbuf,
@@ -364,7 +364,8 @@ void* Build_Translucent_Table(const void* palette, const TLucentType* control,
       **	Build the individual remap tables for each translucent color.
       */
       for (index = 0; index < count; index++) {
-        static_cast<unsigned char*>(buffer)[control[index].SourceColor] = index;
+        static_cast<unsigned char*>(buffer)[control[index].SourceColor] =
+            static_cast<unsigned char>(index);
         Build_Fading_Table(palette, (void*)table, control[index].DestColor,
                            control[index].Fading);
         table = static_cast<unsigned char*>(Add_Long_To_Pointer(table, 256));
@@ -422,7 +423,8 @@ void* Conquer_Build_Translucent_Table(const void* palette,
       **	Build the individual remap tables for each translucent color.
       */
       for (index = 0; index < count; index++) {
-        static_cast<unsigned char*>(buffer)[control[index].SourceColor] = index;
+        static_cast<unsigned char*>(buffer)[control[index].SourceColor] =
+            static_cast<unsigned char>(index);
         Conquer_Build_Fading_Table(palette, (void*)table,
                                    control[index].DestColor,
                                    control[index].Fading);

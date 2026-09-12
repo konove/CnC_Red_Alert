@@ -265,7 +265,7 @@ BulletTypeClass& BulletTypeClass::As_Reference(BulletType type) {
 bool BulletTypeClass::Read_INI(CCINIClass& ini) {
   if (ini.Is_Present(Name())) {
     Arming = ini.Get_Int(Name(), "Arm", Arming);
-    ROT = ini.Get_Int(Name(), "ROT", ROT);
+    ROT = static_cast<unsigned char>(ini.Get_Int(Name(), "ROT", ROT));
     Tumble = ini.Get_Int(Name(), "Frames", Tumble);
     IsHigh = ini.Get_Bool(Name(), "High", IsHigh);
     IsShadow = ini.Get_Bool(Name(), "Shadow", IsShadow);

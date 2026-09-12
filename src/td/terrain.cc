@@ -580,7 +580,7 @@ void TerrainClass::AI() {
         } else {
           if (Random() == 255) {  // is it time to start sporing?
             IsSporing = true;
-            Set_Rate(Options.Normalize_Delay(1));
+            Set_Rate(static_cast<unsigned char>(Options.Normalize_Delay(1)));
           }
         }
       }
@@ -589,7 +589,7 @@ void TerrainClass::AI() {
       if (Random_Picky(1, 5000, nullptr, 0) == 1) {
         IsBlossoming = true;
         Set_Stage(1);
-        Set_Rate(Options.Normalize_Delay(1));
+        Set_Rate(static_cast<unsigned char>(Options.Normalize_Delay(1)));
       }
     }
   }

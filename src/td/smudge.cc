@@ -219,15 +219,16 @@ bool SmudgeClass::Mark(MarkType mark) {
 
             if (Class->IsBib) {
               cell->Smudge = Class->Type;
-              cell->SmudgeData = w + h * Class->Width;
+              cell->SmudgeData =
+                  static_cast<unsigned char>(w + h * Class->Width);
               cell->Owner = ToOwn;
             } else {
               if (cell->Is_Generally_Clear()) {
                 if (Class->IsCrater && cell->Smudge != SMUDGE_NONE &&
                     SmudgeTypeClass::As_Reference(cell->Smudge).IsCrater) {
                   cell->SmudgeData++;
-                  cell->SmudgeData =
-                      static_cast<int>(std::min((int)cell->SmudgeData, 4));
+                  cell->SmudgeData = static_cast<unsigned char>(
+                      std::min(int{cell->SmudgeData}, 4));
                 }
 
                 if (cell->Smudge == SMUDGE_NONE) {
@@ -307,7 +308,7 @@ void SmudgeClass::Read_INI(char* buffer) {
         }
         new SmudgeClass(smudge, Cell_Coord(cell));
         if (Map[cell].Smudge == smudge && data) {
-          Map[cell].SmudgeData = data;
+          Map[cell].SmudgeData = static_cast<unsigned char>(data);
         }
       }
     }

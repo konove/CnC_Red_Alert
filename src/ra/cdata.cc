@@ -1235,7 +1235,7 @@ TemplateTypeClass::TemplateTypeClass(TemplateType iconset, int theater,
     : ObjectTypeClass(RTTI_TEMPLATETYPE, static_cast<int>(iconset), false, true,
                       false, false, true, true, false, fullname, ininame),
       Type(iconset),
-      Theater(theater),
+      Theater(static_cast<unsigned char>(theater)),
       Width(0),
       Height(0) {}
 
@@ -1848,8 +1848,8 @@ void TemplateTypeClass::Init(TheaterType theater) {
       // Register icon set for video memory caching
       Register_Icon_Set(ptr, true);
 
-      tplate.Width = Get_IconSet_MapWidth(ptr);
-      tplate.Height = Get_IconSet_MapHeight(ptr);
+      tplate.Width = static_cast<unsigned char>(Get_IconSet_MapWidth(ptr));
+      tplate.Height = static_cast<unsigned char>(Get_IconSet_MapHeight(ptr));
     }
   }
 }

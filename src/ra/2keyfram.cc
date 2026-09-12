@@ -242,10 +242,10 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
     if (keyfr->x != kUncompressMagicNumber) {
       keyfr->x = kUncompressMagicNumber;
       if (IsTheaterShape) {
-        keyfr->y = TheaterSlotsUsed;
+        keyfr->y = static_cast<uint16_t>(TheaterSlotsUsed);
         TheaterSlotsUsed++;
       } else {
-        keyfr->y = TotalSlotsUsed;
+        keyfr->y = static_cast<uint16_t>(TotalSlotsUsed);
         TotalSlotsUsed++;
       }
       /*

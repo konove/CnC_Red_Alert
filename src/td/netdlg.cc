@@ -1149,9 +1149,10 @@ static int Net_Join_Dialog() {
       ..................................................................*/
       if (display >= REDRAW_COLORS) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          LogicPage->Fill_Rect(
-              cbox_x[i] + 1, d_color_y + 1, cbox_x[i] + 1 + d_color_w - 2,
-              d_color_y + 1 + d_color_h - 2, MPlayerGColors[i]);
+          LogicPage->Fill_Rect(cbox_x[i] + 1, d_color_y + 1,
+                               cbox_x[i] + 1 + d_color_w - 2,
+                               d_color_y + 1 + d_color_h - 2,
+                               static_cast<unsigned char>(MPlayerGColors[i]));
 
           if (i == MPlayerColorIdx) {
             Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h,
@@ -1620,8 +1621,8 @@ static int Net_Join_Dialog() {
                                    4) = magic_number;
                 *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH -
                                    2) = crc;
-                GPacket.Message.ID =
-                    Build_MPlayerID(MPlayerColorIdx, MPlayerHouse);
+                GPacket.Message.ID = static_cast<unsigned char>(
+                    Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
                 GPacket.Message.NameCRC = Compute_Name_CRC(MPlayerGameName);
 
                 /*..................................................................
@@ -1697,7 +1698,7 @@ static int Net_Join_Dialog() {
           port::SafeCopy(who->Name, MPlayerName);
           who->Address = IPXAddressClass();
           who->Player.House = MPlayerHouse;
-          who->Player.Color = MPlayerColorIdx;
+          who->Player.Color = static_cast<unsigned char>(MPlayerColorIdx);
           Players.Add(who);
 
           Send_Join_Queries(game_index, 0, 1);
@@ -1873,7 +1874,8 @@ static int Net_Join_Dialog() {
       Set the number of players in this game, and my ID
       ..................................................................*/
       MPlayerCount = static_cast<int>(Players.Count());
-      MPlayerLocalID = Build_MPlayerID(MPlayerColorIdx, MPlayerHouse);
+      MPlayerLocalID = static_cast<unsigned char>(
+          Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
 
       /*..................................................................
       Get the scenario number
@@ -1891,8 +1893,8 @@ static int Net_Join_Dialog() {
         Only create the connection if it's not myself!
         ...............................................................*/
         if (strcmp(MPlayerName, Players[i]->Name) != 0) {
-          id = Build_MPlayerID(Players[i]->Player.Color,
-                               Players[i]->Player.House);
+          id = static_cast<unsigned char>(Build_MPlayerID(
+              Players[i]->Player.Color, Players[i]->Player.House));
 
           tmp_id[i] = id;
 
@@ -2415,7 +2417,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       if (Players[i]->Address == GAddress) {
         port::SafeCopy(Players[i]->Name, GPacket.Name);
         Players[i]->Player.House = GPacket.PlayerInfo.House;
-        Players[i]->Player.Color = GPacket.PlayerInfo.Color;
+        Players[i]->Player.Color =
+            static_cast<unsigned char>(GPacket.PlayerInfo.Color);
         playerlist->Colors[i] = static_cast<char>(MPlayerTColors[GPacket.PlayerInfo.Color]);
         found = 1;
         break;
@@ -2448,7 +2451,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       port::SafeCopy(who->Name, GPacket.Name);
       who->Address = GAddress;
       who->Player.House = GPacket.PlayerInfo.House;
-      who->Player.Color = GPacket.PlayerInfo.Color;
+      who->Player.Color = static_cast<unsigned char>(GPacket.PlayerInfo.Color);
       Players.Add(who);
 
       /*..................................................................
@@ -3621,7 +3624,8 @@ static int Net_New_Dialog() {
                                4) = magic_number;
             *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH -
                                2) = crc;
-            GPacket.Message.ID = Build_MPlayerID(MPlayerColorIdx, MPlayerHouse);
+            GPacket.Message.ID = static_cast<unsigned char>(
+                Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
             GPacket.Message.NameCRC = Compute_Name_CRC(MPlayerGameName);
 
             /*..................................................................
@@ -3682,14 +3686,17 @@ static int Net_New_Dialog() {
         memset(&GPacket, 0, sizeof(GlobalPacketType));
 
         GPacket.Command = NET_GAME_OPTIONS;
-        GPacket.ScenarioInfo.Scenario = MPlayerFilenum[ScenarioIdx];
+        GPacket.ScenarioInfo.Scenario =
+            static_cast<unsigned char>(MPlayerFilenum[ScenarioIdx]);
         GPacket.ScenarioInfo.Credits = MPlayerCredits;
         GPacket.ScenarioInfo.IsBases = MPlayerBases;
         GPacket.ScenarioInfo.IsTiberium = MPlayerTiberium;
         GPacket.ScenarioInfo.IsGoodies = MPlayerGoodies;
         GPacket.ScenarioInfo.IsGhosties = MPlayerGhosts;
-        GPacket.ScenarioInfo.BuildLevel = BuildLevel;
-        GPacket.ScenarioInfo.UnitCount = MPlayerUnitCount;
+        GPacket.ScenarioInfo.BuildLevel =
+            static_cast<unsigned char>(BuildLevel);
+        GPacket.ScenarioInfo.UnitCount =
+            static_cast<unsigned char>(MPlayerUnitCount);
         GPacket.ScenarioInfo.Seed = Seed;
         GPacket.ScenarioInfo.Special = Special;
         GPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;
@@ -3735,7 +3742,8 @@ static int Net_New_Dialog() {
     Set the number of players in this game, and my ID
     .....................................................................*/
     MPlayerCount = static_cast<int>(Players.Count()) + 1;
-    MPlayerLocalID = Build_MPlayerID(MPlayerColorIdx, MPlayerHouse);
+    MPlayerLocalID = static_cast<unsigned char>(
+        Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
 
     /*.....................................................................
     Get the scenario filename
@@ -3774,7 +3782,8 @@ static int Net_New_Dialog() {
     Fill in 'tmp_id' while we're doing this.
     .....................................................................*/
     for (i = 0; i < Players.Count(); i++) {
-      id = Build_MPlayerID(Players[i]->Player.Color, Players[i]->Player.House);
+      id = static_cast<unsigned char>(
+          Build_MPlayerID(Players[i]->Player.Color, Players[i]->Player.House));
 
       tmp_id[i] = id;
 
@@ -3947,11 +3956,12 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
       give him as used.
       ..................................................................*/
       if (ColorUsed[GPacket.PlayerInfo.Color] == 0) {
-        who->Player.Color = GPacket.PlayerInfo.Color;
+        who->Player.Color =
+            static_cast<unsigned char>(GPacket.PlayerInfo.Color);
       } else {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
           if (ColorUsed[i] == 0) {
-            who->Player.Color = i;
+            who->Player.Color = static_cast<unsigned char>(i);
             break;
           }
         }
@@ -4608,15 +4618,17 @@ static int Net_Fake_New_Dialog() {
         memset(&GPacket, 0, sizeof(GlobalPacketType));
 
         GPacket.Command = NET_GAME_OPTIONS;
-        GPacket.ScenarioInfo.Scenario =
-            ScenarioIdx;  // MPlayerFilenum[ScenarioIdx];
+        GPacket.ScenarioInfo.Scenario = static_cast<unsigned char>(
+            ScenarioIdx);  // MPlayerFilenum[ScenarioIdx];
         GPacket.ScenarioInfo.Credits = MPlayerCredits;
         GPacket.ScenarioInfo.IsBases = MPlayerBases;
         GPacket.ScenarioInfo.IsTiberium = MPlayerTiberium;
         GPacket.ScenarioInfo.IsGoodies = MPlayerGoodies;
         GPacket.ScenarioInfo.IsGhosties = MPlayerGhosts;
-        GPacket.ScenarioInfo.BuildLevel = BuildLevel;
-        GPacket.ScenarioInfo.UnitCount = MPlayerUnitCount;
+        GPacket.ScenarioInfo.BuildLevel =
+            static_cast<unsigned char>(BuildLevel);
+        GPacket.ScenarioInfo.UnitCount =
+            static_cast<unsigned char>(MPlayerUnitCount);
         GPacket.ScenarioInfo.Seed = Seed;
         GPacket.ScenarioInfo.Special = Special;
         GPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;
@@ -4664,7 +4676,8 @@ static int Net_Fake_New_Dialog() {
     Set the number of players in this game, and my ID
     .....................................................................*/
     MPlayerCount = static_cast<int>(Players.Count()) + 1;
-    MPlayerLocalID = Build_MPlayerID(MPlayerColorIdx, MPlayerHouse);
+    MPlayerLocalID = static_cast<unsigned char>(
+        Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
 
     /*.....................................................................
     Get the scenario filename
@@ -4711,7 +4724,8 @@ static int Net_Fake_New_Dialog() {
     Fill in 'tmp_id' while we're doing this.
     .....................................................................*/
     for (i = 0; i < Players.Count(); i++) {
-      id = Build_MPlayerID(Players[i]->Player.Color, Players[i]->Player.House);
+      id = static_cast<unsigned char>(
+          Build_MPlayerID(Players[i]->Player.Color, Players[i]->Player.House));
 
       tmp_id[i] = id;
 
@@ -5172,7 +5186,7 @@ static int Net_Fake_Join_Dialog() {
           port::SafeCopy(who->Name, MPlayerName);
           who->Address = IPXAddressClass();
           who->Player.House = MPlayerHouse;
-          who->Player.Color = MPlayerColorIdx;
+          who->Player.Color = static_cast<unsigned char>(MPlayerColorIdx);
           Players.Add(who);
 
           Send_Join_Queries(game_index, 0, 1);
@@ -5351,7 +5365,8 @@ static int Net_Fake_Join_Dialog() {
       Set the number of players in this game, and my ID
       ..................................................................*/
       MPlayerCount = static_cast<int>(Players.Count());
-      MPlayerLocalID = Build_MPlayerID(MPlayerColorIdx, MPlayerHouse);
+      MPlayerLocalID = static_cast<unsigned char>(
+          Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
 
       /*..................................................................
       Get the scenario number
@@ -5370,8 +5385,8 @@ static int Net_Fake_Join_Dialog() {
         Only create the connection if it's not myself!
         ...............................................................*/
         if (strcmp(MPlayerName, Players[i]->Name) != 0) {
-          id = Build_MPlayerID(Players[i]->Player.Color,
-                               Players[i]->Player.House);
+          id = static_cast<unsigned char>(Build_MPlayerID(
+              Players[i]->Player.Color, Players[i]->Player.House));
 
           tmp_id[i] = id;
 

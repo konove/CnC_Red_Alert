@@ -869,7 +869,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
     LogicPage->Fill_Rect(Map.TacPixelX + x, Map.TacPixelY + y,
                          Map.TacPixelX + x + ICON_PIXEL_W - 1,
                          Map.TacPixelY + y + ICON_PIXEL_H - 1,
-                         Sim_Random_Pick(1, 254));
+                         static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
     FontXSpacing -= 2;
     Fancy_Text_Print("%d\r%2X%c\r%02X.%02X",
                      Map.TacPixelX + x + (ICON_PIXEL_W >> 1), Map.TacPixelY + y,
@@ -1314,7 +1314,7 @@ void CellClass::Concrete_Calc() {
   **	Update the icon on the map.
   */
   if (icon != C_NONE && OverlayData != icon) {
-    OverlayData = icon;
+    OverlayData = static_cast<unsigned char>(icon);
     // Array[cell].Base = 0;
     Redraw_Objects();
   }
@@ -1360,7 +1360,8 @@ void CellClass::Wall_Update() {
           icon |= 1 << i;
         }
       }
-      newcell.OverlayData = newcell.OverlayData & 0xFFF0 | icon;
+      newcell.OverlayData =
+          static_cast<unsigned char>(newcell.OverlayData & 0xFFF0 | icon);
       //			newcell.OverlayData = icon;
 
       /*
@@ -1830,7 +1831,7 @@ long CellClass::Tiberium_Adjust(bool pregame) {
         }
       }
 
-      OverlayData = _adj[count];
+      OverlayData = static_cast<unsigned char>(_adj[count]);
       return (static_cast<long>(OverlayData + 1)) * UnitTypeClass::TIBERIUM_STEP;
     }
   }

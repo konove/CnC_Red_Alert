@@ -1236,7 +1236,8 @@ int MapEditClass::Load_Scenario() {
               if (occupier == nullptr) {
                 color = GroundColor[(*this)[cell].Land_Type()];
                 LogicPage->Put_Pixel(D_BORD_X1 + Cell_X(cell) + 1,
-                                     D_BORD_Y1 + Cell_Y(cell) + 1, color);
+                                     D_BORD_Y1 + Cell_Y(cell) + 1,
+                                     static_cast<unsigned char>(color));
               }
             }
 
@@ -1288,7 +1289,8 @@ int MapEditClass::Load_Scenario() {
                               .Color;
                 }
                 LogicPage->Put_Pixel(D_BORD_X1 + Cell_X(cell) + 1,
-                                     D_BORD_Y1 + Cell_Y(cell) + 1, color);
+                                     D_BORD_Y1 + Cell_Y(cell) + 1,
+                                     static_cast<unsigned char>(color));
               }
             }
 
@@ -2440,7 +2442,7 @@ int MapEditClass::Load_Scenario() {
     */
     TheaterType theater = TheaterType(theaterbtn.Current_Index());
     if (theater != orig_theater) {
-      unsigned char theater_mask;  // template/terrain mask
+      int theater_mask;            // template/terrain mask
       TerrainClass* terrain;       // cell's terrain pointer
 
       /*

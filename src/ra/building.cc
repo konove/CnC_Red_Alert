@@ -1360,15 +1360,17 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
           if (Percent_Chance(50)) {
             new AnimClass(ANIM_FIRE_SMALL,
                           Coord_Scatter(Cell_Coord(cell), 0x0080),
-                          Random_Pick(0, 7), Random_Pick(1, 3));
+                          static_cast<unsigned char>(Random_Pick(0, 7)),
+                          static_cast<unsigned char>(Random_Pick(1, 3)));
             if (Percent_Chance(50)) {
               new AnimClass(ANIM_FIRE_MED,
                             Coord_Scatter(Cell_Coord(cell), 0x0040),
-                            Random_Pick(0, 7), Random_Pick(1, 3));
+                            static_cast<unsigned char>(Random_Pick(0, 7)),
+                            static_cast<unsigned char>(Random_Pick(1, 3)));
             }
           }
           new AnimClass(ANIM_FBALL1, Coord_Scatter(Cell_Coord(cell), 0x0040),
-                        Random_Pick(0, 3));
+                        static_cast<unsigned char>(Random_Pick(0, 3)));
         }
 
         shakes = Class->Cost_Of() / 400;
@@ -1511,17 +1513,17 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
               case 3:
               case 4:
               case 5:
-                anim = new AnimClass(ANIM_ON_FIRE_SMALL,
-                                     Coord_Scatter(Cell_Coord(cell), 0x0060), 0,
-                                     Random_Pick(1, 3));
+                anim = new AnimClass(
+                    ANIM_ON_FIRE_SMALL, Coord_Scatter(Cell_Coord(cell), 0x0060),
+                    0, static_cast<unsigned char>(Random_Pick(1, 3)));
                 break;
 
               case 6:
               case 7:
               case 8:
-                anim = new AnimClass(ANIM_ON_FIRE_MED,
-                                     Coord_Scatter(Cell_Coord(cell), 0x0060), 0,
-                                     Random_Pick(1, 3));
+                anim = new AnimClass(
+                    ANIM_ON_FIRE_MED, Coord_Scatter(Cell_Coord(cell), 0x0060),
+                    0, static_cast<unsigned char>(Random_Pick(1, 3)));
                 break;
 
               case 9:
@@ -1541,9 +1543,10 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
               */
               if (source == nullptr || source->What_Am_I() != RTTI_INFANTRY ||
                   *dynamic_cast<InfantryClass*>(source) != INFANTRY_RENOVATOR) {
-                anim = new AnimClass(ANIM_FIRE_SMALL,
-                                     Coord_Scatter(Cell_Coord(cell), 0x0060),
-                                     Random_Pick(0, 7), Random_Pick(1, 3));
+                anim = new AnimClass(
+                    ANIM_FIRE_SMALL, Coord_Scatter(Cell_Coord(cell), 0x0060),
+                    static_cast<unsigned char>(Random_Pick(0, 7)),
+                    static_cast<unsigned char>(Random_Pick(1, 3)));
               }
             }
           }
@@ -1822,7 +1825,8 @@ void BuildingClass::Drop_Debris(TARGET source) {
         case 2:
           new AnimClass(ANIM_SMOKE_M,
                         Coord_Scatter(Cell_Coord(newcell), 0x0050, false),
-                        Random_Pick(0, 5), Random_Pick(1, 2));
+                        static_cast<unsigned char>(Random_Pick(0, 5)),
+                        static_cast<unsigned char>(Random_Pick(1, 2)));
           break;
 
         default:
@@ -3212,7 +3216,8 @@ COORDINATE BuildingClass::Sort_Y() const {
     return Coord_Move(Center_Coord(), DIR_N, CELL_LEPTON_H);
   }
 
-  return Coord_Add(Center_Coord(), XY_Coord(0, Class->Height() * 256 / 3));
+  return Coord_Add(Center_Coord(),
+                   XY_Coord(0, static_cast<LEPTON>(Class->Height() * 256 / 3)));
 }
 
 /***********************************************************************************************

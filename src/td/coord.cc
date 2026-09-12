@@ -249,7 +249,8 @@ COORDINATE Coord_Move(COORDINATE start, DirType dir, unsigned short distance) {
 COORDINATE Coord_Scatter(COORDINATE coord, unsigned distance, bool lock) {
   COORDINATE newcoord;
 
-  newcoord = Coord_Move(coord, Random_Pick(DIR_N, DIR_MAX), distance);
+  newcoord = Coord_Move(coord, Random_Pick(DIR_N, DIR_MAX),
+                        static_cast<unsigned short>(distance));
 
   if (newcoord & 0xC000C000L) {
     newcoord = coord;

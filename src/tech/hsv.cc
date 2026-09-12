@@ -81,13 +81,14 @@ void HSVClass::Adjust(int ratio, const HSVClass& hsv) {
   **	destination color.
   */
   int value = hsv.Value_Component() - Value_Component();
-  Value = Value_Component() + value * ratio / 256;
+  Value = static_cast<unsigned char>(Value_Component() + value * ratio / 256);
 
   int saturation = hsv.Saturation_Component() - Saturation_Component();
-  Saturation = Saturation_Component() + saturation * ratio / 256;
+  Saturation = static_cast<unsigned char>(Saturation_Component() +
+                                          saturation * ratio / 256);
 
   int hue = hsv.Hue_Component() - Hue_Component();
-  Hue = Hue_Component() + hue * ratio / 256;
+  Hue = static_cast<unsigned char>(Hue_Component() + hue * ratio / 256);
 }
 
 /***********************************************************************************************

@@ -1073,7 +1073,7 @@ int MessageListClass::Input(KeyNumType& input) {
         bool overflowed = false;
         if (ascii >= ' ' && ascii <= 127) {
           if (EditCurPos - EditInitPos < MaxChars - 1) {
-            EditBuf[EditCurPos] = ascii;
+            EditBuf[EditCurPos] = static_cast<char>(ascii);
             EditCurPos++;
             EditBuf[EditCurPos] = 0;
             retcode = 1;
@@ -1105,7 +1105,7 @@ int MessageListClass::Input(KeyNumType& input) {
             numchars = Trim_Message(OverflowBuf, EditBuf + EditInitPos,
                                     OverflowStart, OverflowEnd, 1);
             EditCurPos -= numchars;
-            EditBuf[EditCurPos] = ascii;
+            EditBuf[EditCurPos] = static_cast<char>(ascii);
             EditCurPos++;
             EditBuf[EditCurPos] = 0;
             retcode = 4;

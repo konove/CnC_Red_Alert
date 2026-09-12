@@ -808,8 +808,9 @@ void MapClass::Jam_From(CELL cell, int jamrange, HouseClass* house) {
 
   //	PlayerPtr->IsToLook = true;
   if (!house->IsPlayerControl) {
-    Map.Constrained_Look(Cell_Coord(cell),
-                         Rule.GapShroudRadius * CELL_LEPTON_W);
+    Map.Constrained_Look(
+        Cell_Coord(cell),
+        static_cast<LEPTON>(Rule.GapShroudRadius * CELL_LEPTON_W));
   }
 
 }
@@ -1870,7 +1871,7 @@ int MapClass::Zone_Span(CELL cell, int zone, MZoneType check) {
   *values *	for the entire span.
   */
   for (int x = xbegin; x <= xend; x++) {
-    (*this)[XY_Cell(x, y)].Zones[check] = zone;
+    (*this)[XY_Cell(x, y)].Zones[check] = static_cast<unsigned char>(zone);
     filled++;
   }
 

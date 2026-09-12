@@ -696,7 +696,7 @@ int MessageListClass::Input(KeyNumType& input) {
       default:
         if (EditCurPos - EditInitPos < MaxChars - 1) {
           if (!(input & WWKEY_VK_BIT) && ascii >= ' ' && ascii <= 127) {
-            EditBuf[EditCurPos] = ascii;
+            EditBuf[EditCurPos] = static_cast<char>(ascii);
             EditCurPos++;
             retcode = 1;
 

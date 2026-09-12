@@ -366,9 +366,11 @@ COORDINATE TurretClass::Fire_Coord(int which) const {
         lateral = 0x0040;
       }
       if (IsSecondShot) {
-        coord = Coord_Move(coord, dir + DIR_E, lateral);
+        coord = Coord_Move(coord, dir + DIR_E,
+                           static_cast<unsigned short>(lateral));
       } else {
-        coord = Coord_Move(coord, dir + DIR_W, lateral);
+        coord = Coord_Move(coord, dir + DIR_W,
+                           static_cast<unsigned short>(lateral));
       }
       break;
 
@@ -391,7 +393,7 @@ COORDINATE TurretClass::Fire_Coord(int which) const {
   }
 
   if (dist) {
-    coord = Coord_Move(coord, dir, dist);
+    coord = Coord_Move(coord, dir, static_cast<unsigned short>(dist));
   }
 
   return coord;

@@ -207,7 +207,7 @@ void OptionsClass::Set_Repeat(int on) { IsScoreRepeat = on; }
  *=============================================================================================*/
 void OptionsClass::Set_Score_Volume(int volume) {
   volume = Bound(volume, 0, 255);
-  ScoreVolume = volume;
+  ScoreVolume = static_cast<unsigned char>(volume);
   Set_Score_Vol(ScoreVolume);
 }
 
@@ -230,7 +230,7 @@ void OptionsClass::Set_Score_Volume(int volume) {
  *=============================================================================================*/
 void OptionsClass::Set_Sound_Volume(int volume, int feedback) {
   volume = Bound(volume, 0, 255);
-  Volume = volume;
+  Volume = static_cast<unsigned char>(volume);
   if (feedback) {
     Sound_Effect(VOC_BLEEPY3, TXT_NONE);
   }
@@ -253,7 +253,8 @@ void OptionsClass::Set_Sound_Volume(int volume, int feedback) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void OptionsClass::Set_Brightness(int brightness) {
-  Brightness = 0x40 + Fixed_To_Cardinal(0x80, brightness);
+  Brightness =
+      static_cast<unsigned char>(0x40 + Fixed_To_Cardinal(0x80, brightness));
   Adjust_Palette(OriginalPalette, GamePalette, Brightness, Color, Tint,
                  Contrast);
   if (InMainLoop) {
@@ -296,7 +297,7 @@ int OptionsClass::Get_Brightness() const {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void OptionsClass::Set_Color(int color) {
-  Color = color;
+  Color = static_cast<unsigned char>(color);
   Adjust_Palette(OriginalPalette, GamePalette, Brightness, Color, Tint,
                  Contrast);
   if (InMainLoop) {
@@ -336,7 +337,8 @@ int OptionsClass::Get_Color() const { return Color; }
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void OptionsClass::Set_Contrast(int contrast) {
-  Contrast = 0x40 + Fixed_To_Cardinal(0x80, contrast);
+  Contrast =
+      static_cast<unsigned char>(0x40 + Fixed_To_Cardinal(0x80, contrast));
   Adjust_Palette(OriginalPalette, GamePalette, Brightness, Color, Tint,
                  Contrast);
   if (InMainLoop) {
@@ -379,7 +381,7 @@ int OptionsClass::Get_Contrast() const {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void OptionsClass::Set_Tint(int tint) {
-  Tint = tint;
+  Tint = static_cast<unsigned char>(tint);
   Adjust_Palette(OriginalPalette, GamePalette, Brightness, Color, Tint,
                  Contrast);
   if (InMainLoop) {

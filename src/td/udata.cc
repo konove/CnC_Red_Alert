@@ -1303,7 +1303,7 @@ UnitTypeClass::UnitTypeClass(
   IsTracked = is_tracked;
   IsAnimating = is_animating;
   Mission = order;
-  ROT = rot;
+  ROT = static_cast<unsigned char>(rot);
   Speed = speed;
   TurretOffset = static_cast<signed char>(toffset);
   Type = type;

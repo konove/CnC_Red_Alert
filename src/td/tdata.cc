@@ -620,7 +620,7 @@ TerrainTypeClass::TerrainTypeClass(TerrainType terrain, int theater,
   IsTiberiumSpawn = is_spawn;
   IsDestroyable = is_destroyable;
   IsTransformable = is_transformable;
-  Theater = theater;
+  Theater = static_cast<unsigned char>(theater);
   Type = terrain;
   Occupy = occupy;
   Overlap = overlap;

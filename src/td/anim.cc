@@ -581,7 +581,7 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
   Owner = HOUSE_NONE;
 
   if (Class->IsNormalized) {
-    Set_Rate(Options.Normalize_Delay(Class->Delay));
+    Set_Rate(static_cast<unsigned char>(Options.Normalize_Delay(Class->Delay)));
   } else {
     Set_Rate(Class->Delay);
   }
@@ -814,7 +814,8 @@ void AnimClass::AI() {
             Class = &AnimTypeClass::As_Reference(Class->ChainTo);
 
             if (Class->IsNormalized) {
-              Set_Rate(Options.Normalize_Delay(Class->Delay));
+              Set_Rate(static_cast<unsigned char>(
+                  Options.Normalize_Delay(Class->Delay)));
             } else {
               Set_Rate(Class->Delay);
             }

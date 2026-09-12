@@ -140,7 +140,9 @@ static inline void Draw_Cell_Point(CELL cell, bool passable, int threat_stage,
         if (threat_stage > 2) {
           SeenBuff.Put_Pixel(x, y, passable ? LTGREEN : RED);
         } else {
-          SeenBuff.Put_Pixel(x, y, passable ? 9 + threat_stage : RED);
+          SeenBuff.Put_Pixel(
+              x, y,
+              static_cast<unsigned char>(passable ? 9 + threat_stage : RED));
         }
       }
     } else {
@@ -150,7 +152,8 @@ static inline void Draw_Cell_Point(CELL cell, bool passable, int threat_stage,
         SeenBuff.Put_Pixel(64 + x * 3 + 1, 8 + y * 3 + 1,
                            passable ? WHITE : BLACK);
       } else {
-        SeenBuff.Put_Pixel(64 + x * 3 + 1, 8 + y * 3 + 1, overide);
+        SeenBuff.Put_Pixel(64 + x * 3 + 1, 8 + y * 3 + 1,
+                           static_cast<unsigned char>(overide));
       }
     }
   }
@@ -1606,7 +1609,8 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
       if (static_cast<CELL>((y << 6) + x) == dest) {
         color = BLUE;
       }
-      Fat_Put_Pixel(64 + x * 3, 8 + y * 3, color, 3, SeenBuff);
+      Fat_Put_Pixel(64 + x * 3, 8 + y * 3, static_cast<uint8_t>(color), 3,
+                    SeenBuff);
     }
   }
   Set_Logic_Page(page);

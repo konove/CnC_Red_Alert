@@ -1408,8 +1408,10 @@ int MapEditClass::Edit_Team() {
   */
   CurTeam->Set_Name(name_buf);
   CurTeam->RecruitPriority = tech::ParseInteger<int>(recr_buf).value_or(0);
-  CurTeam->MaxAllowed = tech::ParseInteger<int>(maxnum_buf).value_or(0);
-  CurTeam->InitNum = tech::ParseInteger<int>(initnum_buf).value_or(0);
+  CurTeam->MaxAllowed = static_cast<unsigned char>(
+      tech::ParseInteger<int>(maxnum_buf).value_or(0));
+  CurTeam->InitNum = static_cast<unsigned char>(
+      tech::ParseInteger<int>(initnum_buf).value_or(0));
   CurTeam->IsRoundAbout = roundabout;
   CurTeam->IsLearning = learning;
   CurTeam->IsSuicide = suicide;
@@ -1958,11 +1960,11 @@ int MapEditClass::Team_Members(HousesType house) {
   **	Copy data into team.
   */
   if (!cancel) {
-    CurTeam->ClassCount = numclasses;
+    CurTeam->ClassCount = static_cast<unsigned char>(numclasses);
     i = 0;  // current team class index
     for (j = 0; j < maxclasses; j++) {
       if (teamcount[j] > 0) {
-        CurTeam->DesiredNum[i] = teamcount[j];
+        CurTeam->DesiredNum[i] = static_cast<unsigned char>(teamcount[j]);
         CurTeam->Class[i] = teamclass[j];
         i++;
       }

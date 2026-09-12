@@ -51,6 +51,7 @@
 #include "td/nulldlg.h"
 
 #include <algorithm>
+#include <bit>
 #include <cstdarg>
 #include <cstdint>
 #include <cstdio>
@@ -396,7 +397,9 @@ int Test_Null_Modem() {
     // put time from start of game for determining the host in case of tie.
     //
     SendPacket.Seed = static_cast<int>(TickCount.Time());
-    SendPacket.ID = (intptr_t)buffer;  // address of buffer for more uniqueness.
+    // address of buffer for more uniqueness.
+    SendPacket.ID =
+        static_cast<unsigned char>(std::bit_cast<uintptr_t>(&buffer[0]));
 
     // Smart_Printf( "Sending SERIAL_CONNECT %d, ID %d \n", SendPacket.Seed,
     // SendPacket.ID );
@@ -3577,7 +3580,7 @@ int Com_Scenario_Dialog() {
           LogicPage->Fill_Rect(cbox_x[i] + 1 * factor, d_color_y + 1 * factor,
                                cbox_x[i] + 1 * factor + d_color_w - 2 * factor,
                                d_color_y + 1 * factor + d_color_h - 2 * factor,
-                               MPlayerGColors[i]);
+                               static_cast<unsigned char>(MPlayerGColors[i]));
 
           if (i == MPlayerColorIdx) {
             Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h,
@@ -4024,7 +4027,8 @@ int Com_Scenario_Dialog() {
           while (sent_so_far < message_length) {
             SendPacket.Command = SERIAL_MESSAGE;
             port::SafeCopy(SendPacket.Name, MPlayerName);
-            SendPacket.ID = Build_MPlayerID(MPlayerColorIdx, MPlayerHouse);
+            SendPacket.ID = static_cast<unsigned char>(
+                Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
             memcpy(SendPacket.Message, Messages.Get_Edit_Buf() + sent_so_far,
                    COMPAT_MESSAGE_LENGTH - 5);
 
@@ -4121,17 +4125,18 @@ int Com_Scenario_Dialog() {
       SendPacket.Version = Version_Number();
 #endif
       SendPacket.House = MPlayerHouse;
-      SendPacket.Color = MPlayerColorIdx;
+      SendPacket.Color = static_cast<unsigned char>(MPlayerColorIdx);
 
-      SendPacket.Scenario = MPlayerFilenum[ScenarioIdx];
+      SendPacket.Scenario =
+          static_cast<unsigned char>(MPlayerFilenum[ScenarioIdx]);
 
       SendPacket.Credits = MPlayerCredits;
       SendPacket.IsBases = MPlayerBases;
       SendPacket.IsTiberium = MPlayerTiberium;
       SendPacket.IsGoodies = MPlayerGoodies;
       SendPacket.IsGhosties = MPlayerGhosts;
-      SendPacket.BuildLevel = BuildLevel;
-      SendPacket.UnitCount = MPlayerUnitCount;
+      SendPacket.BuildLevel = static_cast<unsigned char>(BuildLevel);
+      SendPacket.UnitCount = static_cast<unsigned char>(MPlayerUnitCount);
       SendPacket.Seed = Seed;
       SendPacket.Special = Special;
       SendPacket.GameSpeed = Options.GameSpeed;
@@ -4379,9 +4384,11 @@ int Com_Scenario_Dialog() {
     Set the number of players in this game, and my ID
     .....................................................................*/
     MPlayerCount = 2;
-    MPlayerLocalID = Build_MPlayerID(MPlayerColorIdx, MPlayerHouse);
+    MPlayerLocalID = static_cast<unsigned char>(
+        Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
 
-    TheirID = Build_MPlayerID(TheirColor, TheirHouse);
+    TheirID =
+        static_cast<unsigned char>(Build_MPlayerID(TheirColor, TheirHouse));
 
     /*.....................................................................
     Store every player's ID in the MPlayerID[] array.  This array will
@@ -4842,7 +4849,7 @@ int Com_Show_Scenario_Dialog() {
           LogicPage->Fill_Rect(cbox_x[i] + 1 * factor, d_color_y + 1 * factor,
                                cbox_x[i] + 1 * factor + d_color_w - 2 * factor,
                                d_color_y + 1 * factor + d_color_h - 2 * factor,
-                               MPlayerGColors[i]);
+                               static_cast<unsigned char>(MPlayerGColors[i]));
 
           if (i == MPlayerColorIdx) {
             Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h,
@@ -5218,8 +5225,8 @@ int Com_Show_Scenario_Dialog() {
                 while (sent_so_far < message_length) {
                   SendPacket.Command = SERIAL_MESSAGE;
                   port::SafeCopy(SendPacket.Name, MPlayerName);
-                  SendPacket.ID =
-                      Build_MPlayerID(MPlayerColorIdx, MPlayerHouse);
+                  SendPacket.ID = static_cast<unsigned char>(
+                      Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
                   memcpy(SendPacket.Message,
                          Messages.Get_Edit_Buf() + sent_so_far,
                          COMPAT_MESSAGE_LENGTH - 5);
@@ -5308,7 +5315,7 @@ int Com_Show_Scenario_Dialog() {
       SendPacket.Version = Version_Number();
 #endif
       SendPacket.House = MPlayerHouse;
-      SendPacket.Color = MPlayerColorIdx;
+      SendPacket.Color = static_cast<unsigned char>(MPlayerColorIdx);
       SendPacket.ID = ModemGameToPlay;
 
       NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
@@ -5591,9 +5598,11 @@ int Com_Show_Scenario_Dialog() {
     Set the number of players in this game, and my ID
     .....................................................................*/
     MPlayerCount = 2;
-    MPlayerLocalID = Build_MPlayerID(MPlayerColorIdx, MPlayerHouse);
+    MPlayerLocalID = static_cast<unsigned char>(
+        Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
 
-    TheirID = Build_MPlayerID(TheirColor, TheirHouse);
+    TheirID =
+        static_cast<unsigned char>(Build_MPlayerID(TheirColor, TheirHouse));
 
     /*.....................................................................
     Store every player's ID in the MPlayerID[] array.  This array will

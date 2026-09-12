@@ -152,16 +152,16 @@ void Write_Pcx_ScanLine(int file_handle, int scansize, char* ptr) {
       rle++;
       if (rle == 63) {
         write_char(255);
-        write_char(color);
+        write_char(static_cast<unsigned char>(color));
         rle = 0;
       }
     } else {
       if (rle) {
         if (rle == 1 && (192 != (192 & last))) {
-          write_char(last);
+          write_char(static_cast<unsigned char>(last));
         } else {
-          write_char(rle | 192);
-          write_char(last);
+          write_char(static_cast<unsigned char>(rle | 192));
+          write_char(static_cast<unsigned char>(last));
         }
       }
       last = color;
@@ -170,10 +170,10 @@ void Write_Pcx_ScanLine(int file_handle, int scansize, char* ptr) {
   }
   if (rle) {
     if (rle == 1 && (192 != (192 & last))) {
-      write_char(last);
+      write_char(static_cast<unsigned char>(last));
     } else {
-      write_char(rle | 192);
-      write_char(last);
+      write_char(static_cast<unsigned char>(rle | 192));
+      write_char(static_cast<unsigned char>(last));
     }
   }
 

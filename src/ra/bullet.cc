@@ -311,7 +311,8 @@ const short* BulletClass::Occupy_List(bool) const {
       index++;
     }
 
-    COORDINATE coord = Coord_Move(Coord, DIR_N, Height);
+    COORDINATE coord =
+        Coord_Move(Coord, DIR_N, static_cast<unsigned short>(Height));
     CELL cell2 = Coord_Cell(coord);
     ptr = Coord_Spillage_List(coord, 5);
     while (*ptr != kRefreshEol) {
@@ -577,7 +578,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) const {
     if (Class->IsParachuted) {
       CC_Draw_Shape(
           AnimTypeClass::As_Reference(ANIM_PARA_BOMB).Get_Image_Data(), 1,
-          x + Lepton_To_Pixel(Height / 2), y + 10, window,
+          x + Lepton_To_Pixel(static_cast<LEPTON>(Height / 2)), y + 10, window,
           SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, nullptr,
           DisplayClass::UnitShadow);
     } else {
@@ -586,7 +587,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) const {
           SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, nullptr,
           DisplayClass::UnitShadow);
     }
-    y -= Lepton_To_Pixel(Height);
+    y -= Lepton_To_Pixel(static_cast<LEPTON>(Height));
   }
 
   /*
@@ -738,7 +739,9 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
         scatterdist =
             std::min(scatterdist, static_cast<int>(Rule.BallisticScatter));
         scatterdist = std::max(scatterdist, 0);
-        tcoord = Coord_Move(tcoord, dir, Random_Pick(0, scatterdist));
+        tcoord = Coord_Move(
+            tcoord, dir,
+            static_cast<unsigned short>(Random_Pick(0, scatterdist)));
       }
     }
 
@@ -844,7 +847,7 @@ COORDINATE BulletClass::Target_Coord() const {
   assert(Bullets.ID(this) == ID);
   assert(IsActive);
 
-  return Coord_Add(XY_Coord(0, -Height), Coord);
+  return Coord_Add(XY_Coord(0, static_cast<LEPTON>(-Height)), Coord);
 }
 
 /***********************************************************************************************

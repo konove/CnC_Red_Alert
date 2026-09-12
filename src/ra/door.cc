@@ -117,7 +117,7 @@ bool DoorClass::Open_Door(int rate, int stages) {
     case IS_CLOSED:
     case IS_CLOSING:
       State = IS_OPENING;
-      Stages = stages - 1;
+      Stages = static_cast<unsigned char>(stages - 1);
       Control.Set_Stage(0);
       Control.Set_Rate(rate);
       return true;
@@ -148,7 +148,7 @@ bool DoorClass::Close_Door(int rate, int stages) {
     case IS_OPEN:
     case IS_OPENING:
       State = IS_CLOSING;
-      Stages = stages - 1;
+      Stages = static_cast<unsigned char>(stages - 1);
       Control.Set_Stage(0);
       Control.Set_Rate(rate);
       return true;

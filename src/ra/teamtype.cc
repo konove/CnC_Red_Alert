@@ -1325,8 +1325,10 @@ bool TeamTypeClass::Edit() {
 
         RecruitPriority =
             tech::ParseInteger<int>(recr_edt.Get_Text()).value_or(0);
-        InitNum = tech::ParseInteger<int>(initnum_edt.Get_Text()).value_or(0);
-        MaxAllowed = tech::ParseInteger<int>(maxnum_edt.Get_Text()).value_or(0);
+        InitNum = static_cast<unsigned char>(
+            tech::ParseInteger<int>(initnum_edt.Get_Text()).value_or(0));
+        MaxAllowed = static_cast<unsigned char>(
+            tech::ParseInteger<int>(maxnum_edt.Get_Text()).value_or(0));
         House = HousesType(housebtn.Current_Index());
         Trigger = nullptr;
         if (triggerbtn.Current_Index() > 0) {
@@ -1689,8 +1691,10 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   }
 
   RecruitPriority = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
-  InitNum = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
-  MaxAllowed = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+  InitNum = static_cast<unsigned char>(
+      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+  MaxAllowed = static_cast<unsigned char>(
+      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
   Origin = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
 
   switch (NewINIFormat) {

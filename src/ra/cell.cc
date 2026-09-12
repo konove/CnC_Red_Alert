@@ -1028,7 +1028,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       LogicPage->Fill_Rect(Map.TacPixelX + x, Map.TacPixelY + y,
                            Map.TacPixelX + x + ICON_PIXEL_W - 1,
                            Map.TacPixelY + y + ICON_PIXEL_H - 1,
-                           Sim_Random_Pick(1, 254));
+                           static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
       FontXSpacing -= 2;
       Fancy_Text_Print(
           "%02X%02X\r%d%d%d\r%d %d", Map.TacPixelX + x + (ICON_PIXEL_W >> 1),
@@ -1199,10 +1199,11 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                 auto* tptr = (TemplateTypeClass*)Map.PendingObject;
                 if (tptr->Get_Image_Data()) {
                   CELL cell = Cell_Number();
-                  icon =
-                      (Cell_X(cell) - Cell_X(static_cast<CELL>(Map.ZoneCell + Map.ZoneOffset))) +
-                      (Cell_Y(cell) - Cell_Y(static_cast<CELL>(Map.ZoneCell + Map.ZoneOffset))) *
-                          tptr->Width;
+                  icon = (Cell_X(cell) - Cell_X(static_cast<CELL>(
+                                             Map.ZoneCell + Map.ZoneOffset))) +
+                         (Cell_Y(cell) - Cell_Y(static_cast<CELL>(
+                                             Map.ZoneCell + Map.ZoneOffset))) *
+                             tptr->Width;
                   LogicPage->Draw_Stamp(tptr->Get_Image_Data(), icon, x, y,
                                         nullptr, WINDOW_TACTICAL);
                 }
@@ -1241,9 +1242,9 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       if (IsFlagged) {
         const void* flag_remap =
             HouseClass::As_Pointer(Owner)->Remap_Table(false, REMAP_NORMAL);
-        CC_Draw_Shape(MFCD::Retrieve("FLAGFLY.SHP"), static_cast<int>(Frame % 14),
-                      x + ICON_PIXEL_W / 2, y + ICON_PIXEL_H / 2,
-                      WINDOW_TACTICAL,
+        CC_Draw_Shape(MFCD::Retrieve("FLAGFLY.SHP"),
+                      static_cast<int>(Frame % 14), x + ICON_PIXEL_W / 2,
+                      y + ICON_PIXEL_H / 2, WINDOW_TACTICAL,
                       SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING, flag_remap,
                       DisplayClass::UnitShadow);
       }
@@ -1375,8 +1376,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
  *                                                                                             *
  * HISTORY: * 08/01/1994 JLB : Created. *
  *=============================================================================================*/
-void CellClass::Concrete_Calc() {
-}
+void CellClass::Concrete_Calc() {}
 
 /***********************************************************************************************
  * CellClass::Wall_Update -- Updates the imagery for wall objects in cell. *
@@ -1419,7 +1419,8 @@ void CellClass::Wall_Update() {
           icon |= 1 << i;
         }
       }
-      newcell.OverlayData = newcell.OverlayData & 0xFFF0 | icon;
+      newcell.OverlayData =
+          static_cast<unsigned char>(newcell.OverlayData & 0xFFF0 | icon);
 
       /*
       **	Handle special cases for the incomplete damaged wall sets. If a
@@ -1922,10 +1923,11 @@ long CellClass::Tiberium_Adjust(bool pregame) {
       }
 
       if (gems) {
-        OverlayData = _adjgem[count];
-        OverlayData = std::min(static_cast<int>(OverlayData), 2);
+        OverlayData = static_cast<unsigned char>(_adjgem[count]);
+        OverlayData = static_cast<unsigned char>(
+            std::min(static_cast<int>(OverlayData), 2));
       } else {
-        OverlayData = _adj[count];
+        OverlayData = static_cast<unsigned char>(_adj[count]);
       }
       return (static_cast<long>(OverlayData + 1)) * value;
     }

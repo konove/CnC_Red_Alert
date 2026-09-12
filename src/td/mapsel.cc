@@ -1628,7 +1628,8 @@ void Bit_It_In(const int x, const int y, const int w, const int h,
           row_offset = 0;
         }
 
-        dest->Buffer_Put_Pixel(px, py, Buffer_Get_Pixel(src, px, py));
+        dest->Buffer_Put_Pixel(
+            px, py, static_cast<unsigned char>(Buffer_Get_Pixel(src, px, py)));
       }
       if (dagger) {
         // Overlay a downward-pointing wedge from screen center (x=160),
@@ -1640,10 +1641,12 @@ void Bit_It_In(const int x, const int y, const int w, const int h,
           const unsigned offset = line - row;
           const unsigned x_left = 160 - offset;
           const unsigned x_right = 160 + offset;
-          dest->Buffer_Put_Pixel(x_left, row,
-                                 Buffer_Get_Pixel(src, x_left, row));
-          dest->Buffer_Put_Pixel(x_right, row,
-                                 Buffer_Get_Pixel(src, x_right, row));
+          dest->Buffer_Put_Pixel(
+              x_left, row,
+              static_cast<unsigned char>(Buffer_Get_Pixel(src, x_left, row)));
+          dest->Buffer_Put_Pixel(
+              x_right, row,
+              static_cast<unsigned char>(Buffer_Get_Pixel(src, x_right, row)));
         }
       }
     }

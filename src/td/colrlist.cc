@@ -250,7 +250,8 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     **	BOX: Draw a box around the item in the current select color
     */
     case SELECT_BOX:
-      LogicPage->Draw_Rect(x, y, x + width - 2, y + LineHeight - 2, color);
+      LogicPage->Draw_Rect(x, y, x + width - 2, y + LineHeight - 2,
+                           static_cast<unsigned char>(color));
       Conquer_Clip_Text_Print(List[index], x, y, Colors[index], TBLACK,
                               TextFlags, width, Tabs);
       break;
@@ -261,12 +262,12 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     case SELECT_BAR:
       if (TextFlags & TPF_6PT_GRAD) {
         LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
-                             SelectColor);
+                             static_cast<unsigned char>(SelectColor));
         Conquer_Clip_Text_Print(List[index], x, y, Colors[index], TBLACK,
                                 TextFlags | TPF_BRIGHT_COLOR, width, Tabs);
       } else {
         LogicPage->Fill_Rect(x, y, x + width - 2, y + LineHeight - 2,
-                             SelectColor);
+                             static_cast<unsigned char>(SelectColor));
         Conquer_Clip_Text_Print(List[index], x, y, Colors[index], TBLACK,
                                 TextFlags, width, Tabs);
       }

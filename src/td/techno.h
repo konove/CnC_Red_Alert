@@ -218,7 +218,7 @@ class TechnoClass : public RadioClass,
     return dynamic_cast<const TechnoTypeClass*>(&Class_Of());
   }
   CELL Nearby_Location(const TechnoClass* from = nullptr) const;
-  unsigned char Get_Ownable() const override;
+  int Get_Ownable() const override;
   bool Can_Player_Fire() const override;
   bool Can_Player_Move() const override;
   virtual bool Is_Weapon_Equipped() const;

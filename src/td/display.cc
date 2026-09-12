@@ -275,7 +275,8 @@ void DisplayClass::One_Time() {
       switch (fade) {
         case 0:
           for (color = 0; color < 256; color++) {
-            RemapTables[hindex][fade][color] = color;
+            RemapTables[hindex][fade][color] =
+                static_cast<unsigned char>(color);
           }
           break;
 
@@ -1407,7 +1408,8 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
   /*
   **	Determine the coordinate that it wants to scroll to.
   */
-  COORDINATE coord = Coord_Move(TacticalCoord, facing, distance);
+  COORDINATE coord =
+      Coord_Move(TacticalCoord, facing, static_cast<unsigned short>(distance));
 
   /*
   **	Clip the new coordinate to the edges of the game world.

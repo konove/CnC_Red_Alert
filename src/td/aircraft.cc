@@ -2439,8 +2439,9 @@ TARGET AircraftClass::New_LZ(TARGET oldlz) const {
       *to *	find a cell that is allowed to be a legal LZ.
       */
       for (FacingType facing = FACING_N; facing < FACING_COUNT; facing++) {
-        CELL newcell = Coord_Cell(Coord_Move(
-            coord, Facing_Dir(facing + modifier), radius * ICON_LEPTON_W));
+        CELL newcell = Coord_Cell(
+            Coord_Move(coord, Facing_Dir(facing + modifier),
+                       static_cast<unsigned short>(radius * ICON_LEPTON_W)));
         if (Map.In_Radar(newcell)) {
           TARGET newtarget = ::As_Target(newcell);
 
@@ -2536,8 +2537,9 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
     */
     case RADIO_MOVE_HERE:
       FootClass::Receive_Message(from, message, param);
-      if (Is_Target_Building(param)) {
-        if (Transmit_Message(RADIO_CAN_LOAD, As_Techno(param)) != RADIO_ROGER) {
+      if (Is_Target_Building(static_cast<TARGET>(param))) {
+        if (Transmit_Message(RADIO_CAN_LOAD, As_Techno(static_cast<TARGET>(
+                                                 param))) != RADIO_ROGER) {
           return RADIO_NEGATIVE;
         }
         Assign_Mission(MISSION_ENTER);
@@ -2840,7 +2842,8 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
 
     for (int r = range - 0x0180; r > 0x0180; r -= 0x0100) {
       for (int face = 0; face < 255; face += 16) {
-        COORDINATE newcoord = Coord_Move(tcoord, static_cast<DirType>(face), r);
+        COORDINATE newcoord = Coord_Move(tcoord, static_cast<DirType>(face),
+                                         static_cast<unsigned short>(r));
         CELL newcell = Coord_Cell(newcoord);
 
         if (Map.In_Radar(newcell) &&

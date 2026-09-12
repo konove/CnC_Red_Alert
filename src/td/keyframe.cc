@@ -283,10 +283,10 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
     if (keyfr->x != UNCOMPRESS_MAGIC_NUMBER) {
       keyfr->x = UNCOMPRESS_MAGIC_NUMBER;
       if (IsTheaterShape) {
-        keyfr->y = TheaterSlotsUsed;
+        keyfr->y = static_cast<unsigned short>(TheaterSlotsUsed);
         TheaterSlotsUsed++;
       } else {
-        keyfr->y = TotalSlotsUsed;
+        keyfr->y = static_cast<unsigned short>(TotalSlotsUsed);
         TotalSlotsUsed++;
       }
       /*

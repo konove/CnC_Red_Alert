@@ -2819,12 +2819,18 @@ void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) {
   GParams.GPacket.ScenarioInfo.OfficialScenario =
       Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official();
   GParams.GPacket.ScenarioInfo.Credits = Session.Options.Credits;
-  GParams.GPacket.ScenarioInfo.IsBases = Session.Options.Bases;
-  GParams.GPacket.ScenarioInfo.IsTiberium = Session.Options.Tiberium;
-  GParams.GPacket.ScenarioInfo.IsGoodies = Session.Options.Goodies;
-  GParams.GPacket.ScenarioInfo.BuildLevel = BuildLevel;
-  GParams.GPacket.ScenarioInfo.UnitCount = Session.Options.UnitCount;
-  GParams.GPacket.ScenarioInfo.AIPlayers = Session.Options.AIPlayers;
+  GParams.GPacket.ScenarioInfo.IsBases =
+      static_cast<uint8_t>(Session.Options.Bases);
+  GParams.GPacket.ScenarioInfo.IsTiberium =
+      static_cast<uint8_t>(Session.Options.Tiberium);
+  GParams.GPacket.ScenarioInfo.IsGoodies =
+      static_cast<uint8_t>(Session.Options.Goodies);
+  GParams.GPacket.ScenarioInfo.BuildLevel =
+      static_cast<unsigned char>(BuildLevel);
+  GParams.GPacket.ScenarioInfo.UnitCount =
+      static_cast<unsigned char>(Session.Options.UnitCount);
+  GParams.GPacket.ScenarioInfo.AIPlayers =
+      static_cast<unsigned char>(Session.Options.AIPlayers);
   GParams.GPacket.ScenarioInfo.Seed = Seed;
   GParams.GPacket.ScenarioInfo.Special = Special;
   GParams.GPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;

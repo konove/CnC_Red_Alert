@@ -1229,7 +1229,8 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     // Debug output
     //---------------------------------------------------------------------
     Print_Framesync_Values(Frame, Session.MaxAhead, net->Num_Connections(),
-                           their_recv, their_sent, my_sent);
+                           their_recv, their_sent,
+                           static_cast<unsigned short>(my_sent));
 
     //---------------------------------------------------------------------
     //	Attempt to advance to the next frame.
@@ -1342,10 +1343,10 @@ static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
       // multiple of the FrameSendRate.
       //..................................................................
       if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-        ev.Data.FrameInfo.Delay =
+        ev.Data.FrameInfo.Delay = static_cast<unsigned char>(
             std::max((resp_time / 8 + (Session.FrameSendRate - 1)) /
                          Session.FrameSendRate * Session.FrameSendRate,
-                     Session.FrameSendRate * 2);
+                     Session.FrameSendRate * 2));
       }
       //..................................................................
       // For sending packets every frame, just use the 1-way connection
@@ -1353,11 +1354,11 @@ static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
       //..................................................................
       else {
         if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
-          ev.Data.FrameInfo.Delay = std::max(
-              static_cast<unsigned>(resp_time / 8), MODEM_MIN_MAX_AHEAD);
+          ev.Data.FrameInfo.Delay = static_cast<unsigned char>(std::max(
+              static_cast<unsigned>(resp_time / 8), MODEM_MIN_MAX_AHEAD));
         } else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
-          ev.Data.FrameInfo.Delay = std::max(
-              static_cast<unsigned>(resp_time / 8), NETWORK_MIN_MAX_AHEAD);
+          ev.Data.FrameInfo.Delay = static_cast<unsigned char>(std::max(
+              static_cast<unsigned>(resp_time / 8), NETWORK_MIN_MAX_AHEAD));
         }
       }
       OutList.Add(ev);
@@ -1468,8 +1469,9 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
       std::max<int>(maxahead, static_cast<int>(Session.FrameSendRate * 3));
 
   ev.Type = EventClass::TIMING;
-  ev.Data.Timing.DesiredFrameRate = Session.DesiredFrameRate;
-  ev.Data.Timing.MaxAhead = maxahead;
+  ev.Data.Timing.DesiredFrameRate =
+      static_cast<unsigned short>(Session.DesiredFrameRate);
+  ev.Data.Timing.MaxAhead = static_cast<unsigned short>(maxahead);
 
   OutList.Add(ev);
 
@@ -1541,7 +1543,7 @@ static void Generate_Process_Time_Event(ConnManClass* net) {
   avgticks = static_cast<int>(Session.ProcessTicks / Session.ProcessFrames);
 
   ev.Type = EventClass::PROCESS_TIME;
-  ev.Data.ProcessTime.AverageTicks = avgticks;
+  ev.Data.ProcessTime.AverageTicks = static_cast<unsigned short>(avgticks);
   OutList.Add(ev);
 
   Session.ProcessTicks = 0;
@@ -1763,8 +1765,8 @@ static void Send_FrameSync(ConnManClass* net, int cmd_count) {
   }
   packet.ID = PlayerPtr->ID;
   packet.Data.FrameInfo.CRC = static_cast<std::uint32_t>(ScenarioCRC);
-  packet.Data.FrameInfo.CommandCount = cmd_count;
-  packet.Data.FrameInfo.Delay = Session.MaxAhead;
+  packet.Data.FrameInfo.CommandCount = static_cast<unsigned short>(cmd_count);
+  packet.Data.FrameInfo.Delay = static_cast<unsigned char>(Session.MaxAhead);
 
   //------------------------------------------------------------------------
   // Send the event.  For modem, this just sends to the other player;
@@ -2441,8 +2443,8 @@ static int Build_Send_Packet(void* buf, int bufsize, int frame_delay,
   //........................................................................
   finfo->ID = PlayerPtr->ID;
   finfo->Data.FrameInfo.CRC = GameCRC;
-  finfo->Data.FrameInfo.CommandCount = num_cmds;
-  finfo->Data.FrameInfo.Delay = frame_delay;
+  finfo->Data.FrameInfo.CommandCount = static_cast<unsigned short>(num_cmds);
+  finfo->Data.FrameInfo.Delay = static_cast<unsigned char>(frame_delay);
 
   //------------------------------------------------------------------------
   // Initialize the # of bytes processed; this is protocol-specific

@@ -410,7 +410,7 @@ bool TcpipManagerClass::Add_Client() {
   ** Bind our UDP socket to our UDP port number
   */
   addr.sin_family = AF_INET;
-  addr.sin_port = htons(PlanetWestwoodPortNumber);
+  addr.sin_port = htons(static_cast<uint16_t>(PlanetWestwoodPortNumber));
   addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
   if (bind(UDPSocket, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR) {
@@ -551,7 +551,7 @@ void TcpipManagerClass::Start_Client() {
   ** Bind our UDP socket to our UDP port number
   */
   addr.sin_family = AF_INET;
-  addr.sin_port = htons(PlanetWestwoodPortNumber);
+  addr.sin_port = htons(static_cast<uint16_t>(PlanetWestwoodPortNumber));
   addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
   if (bind(UDPSocket, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR) {

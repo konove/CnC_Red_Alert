@@ -973,8 +973,8 @@ void ChronalVortexClass::Render() {
       int source_width = CELL_PIXEL_W * 4;
       int source_height = CELL_PIXEL_H * 4;
 
-      int dest_x = Lepton_To_Pixel(xoff);
-      int dest_y = Lepton_To_Pixel(yoff);
+      int dest_x = Lepton_To_Pixel(static_cast<LEPTON>(xoff));
+      int dest_y = Lepton_To_Pixel(static_cast<LEPTON>(yoff));
       int dest_width = source_width;
       int dest_height = source_height;
 
@@ -1091,7 +1091,7 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
   ** Set up the remap table for the lightning
   */
   for (i = 0; i < 256; i++) {
-    LightningRemap[i] = i;
+    LightningRemap[i] = static_cast<unsigned char>(i);
   }
   LightningRemap[192] = 208;
   LightningRemap[193] = 209;
@@ -1136,7 +1136,7 @@ void ChronalVortexClass::Build_Fading_Table(const PaletteClass& palette,
           (index >= kCycleColorStart &&
            index < kCycleColorStart + kCycleColorCount) ||
           index == kPulseColor || index == kEmberColor) {
-        *ptr++ = index;
+        *ptr++ = static_cast<unsigned char>(index);
       } else {
         /*
         **	Find the color that, ideally, the working color should be
@@ -1163,7 +1163,7 @@ void ChronalVortexClass::Build_Fading_Table(const PaletteClass& palette,
             }
           }
         }
-        *ptr++ = best;
+        *ptr++ = static_cast<unsigned char>(best);
       }
     }
   }

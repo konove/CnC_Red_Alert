@@ -589,13 +589,13 @@ void DisplayClass::Update_View_Dimensions(int x, int y, int width, int height,
   if (width == -1) {
     TacLeptonWidth = Pixel_To_Lepton(SeenBuff.Get_Width() - x);
   } else {
-    TacLeptonWidth = width * CELL_LEPTON_W;
+    TacLeptonWidth = static_cast<LEPTON>(width * CELL_LEPTON_W);
   }
 
   if (height == -1) {
     height = (SeenBuff.Get_Height() - y) / CELL_PIXEL_H;
   }
-  TacLeptonHeight = height * CELL_LEPTON_H;
+  TacLeptonHeight = static_cast<LEPTON>(height * CELL_LEPTON_H);
 
   /*
   **	Adjust the tactical cell if it is now in an invalid position
@@ -609,7 +609,8 @@ void DisplayClass::Update_View_Dimensions(int x, int y, int width, int height,
 
   if (reposition) {
     Set_Tactical_Position(
-        XY_Coord(xx + MapCellX * CELL_LEPTON_W, yy + MapCellY * CELL_LEPTON_H));
+        XY_Coord(static_cast<LEPTON>(xx + MapCellX * CELL_LEPTON_W),
+                 static_cast<LEPTON>(yy + MapCellY * CELL_LEPTON_H)));
   }
 
   TacPixelX = x;
@@ -1182,7 +1183,8 @@ CELL DisplayClass::Click_Cell_Calc(int x, int y) const {
     COORDINATE tcoord =
         XY_Coord(Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(TacticalCoord))),
                  Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(TacticalCoord))));
-    return Coord_Cell(Coord_Add(tcoord, XY_Coord(x, y)));
+    return Coord_Cell(Coord_Add(
+        tcoord, XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y))));
   }
   return -1;
 }
@@ -1260,7 +1262,8 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
   /*
   **	Determine the coordinate that it wants to scroll to.
   */
-  COORDINATE coord = Coord_Move(TacticalCoord, facing, distance);
+  COORDINATE coord =
+      Coord_Move(TacticalCoord, facing, static_cast<unsigned short>(distance));
 
   /*
   **	Clip the new coordinate to the edges of the game world.
@@ -1280,8 +1283,8 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
     yy = 0;
     shifted = true;
   }
-  coord =
-      XY_Coord(xx + Cell_To_Lepton(MapCellX), yy + Cell_To_Lepton(MapCellY));
+  coord = XY_Coord(static_cast<LEPTON>(xx + Cell_To_Lepton(MapCellX)),
+                   static_cast<LEPTON>(yy + Cell_To_Lepton(MapCellY)));
 
   /*
   **	If the desired scroll was bound by the edge of the map, then adjust the
@@ -1598,8 +1601,8 @@ bool DisplayClass::Coord_To_Pixel(COORDINATE coord, int& x, int& y) const {
 
       yoff = yoff + EDGE_ZONE - ytac;
       if (static_cast<unsigned>(yoff) <= TacLeptonHeight + EDGE_ZONE * 2) {
-        x = Lepton_To_Pixel(xoff) - CELL_PIXEL_W * 2;
-        y = Lepton_To_Pixel(yoff) - CELL_PIXEL_H * 2;
+        x = Lepton_To_Pixel(static_cast<LEPTON>(xoff)) - CELL_PIXEL_W * 2;
+        y = Lepton_To_Pixel(static_cast<LEPTON>(yoff)) - CELL_PIXEL_H * 2;
         return true;
       }
     }
@@ -1656,8 +1659,8 @@ bool DisplayClass::Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest) {
   y1 = Bound(y1, top, bottom);
   y2 = Bound(y2, top, bottom);
 
-  source = XY_Coord(x1, y1);
-  dest = XY_Coord(x2, y2);
+  source = XY_Coord(static_cast<LEPTON>(x1), static_cast<LEPTON>(y1));
+  dest = XY_Coord(static_cast<LEPTON>(x2), static_cast<LEPTON>(y2));
   return true;
 }
 
@@ -1840,8 +1843,10 @@ void DisplayClass::Draw_It(bool forced) {
         *copied.
         **
         */
-        int startx = -Lepton_To_Pixel(Coord_XLepton(TacticalCoord));
-        int starty = -Lepton_To_Pixel(Coord_YLepton(TacticalCoord));
+        int startx =
+            -Lepton_To_Pixel(static_cast<LEPTON>(Coord_XLepton(TacticalCoord)));
+        int starty =
+            -Lepton_To_Pixel(static_cast<LEPTON>(Coord_YLepton(TacticalCoord)));
         oldw -= 24;
         oldh -= 24;
 
@@ -1949,8 +1954,10 @@ void DisplayClass::Draw_It(bool forced) {
           **	Set the 'redraw stamp' bit for any cells that could not be
           *copied.
           */
-          int startx = -Lepton_To_Pixel(Coord_XLepton(TacticalCoord));
-          int starty = -Lepton_To_Pixel(Coord_YLepton(TacticalCoord));
+          int startx = -Lepton_To_Pixel(
+              static_cast<LEPTON>(Coord_XLepton(TacticalCoord)));
+          int starty = -Lepton_To_Pixel(
+              static_cast<LEPTON>(Coord_YLepton(TacticalCoord)));
           oldw -= 24;
           oldh -= 24;
           for (y = starty;
@@ -2141,7 +2148,9 @@ void DisplayClass::Redraw_Icons() {
        y += CELL_LEPTON_H) {
     for (int x = -Coord_XLepton(TacticalCoord); x <= TacLeptonWidth;
          x += CELL_LEPTON_W) {
-      COORDINATE coord = Coord_Add(TacticalCoord, XY_Coord(x, y));
+      COORDINATE coord =
+          Coord_Add(TacticalCoord,
+                    XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y)));
       CELL cell = Coord_Cell(coord);
       coord = Coord_Whole(Cell_Coord(cell));
 
@@ -2182,7 +2191,9 @@ void DisplayClass::Redraw_OIcons() {
        y += CELL_LEPTON_H) {
     for (int x = -Coord_XLepton(TacticalCoord); x <= TacLeptonWidth;
          x += CELL_LEPTON_W) {
-      COORDINATE coord = Coord_Add(TacticalCoord, XY_Coord(x, y));
+      COORDINATE coord =
+          Coord_Add(TacticalCoord,
+                    XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y)));
       CELL cell = Coord_Cell(coord);
       coord = Coord_Whole(Cell_Coord(cell));
 
@@ -2230,7 +2241,9 @@ void DisplayClass::Redraw_Shadow() {
          y += CELL_LEPTON_H) {
       for (int x = -Coord_XLepton(TacticalCoord); x <= TacLeptonWidth;
            x += CELL_LEPTON_W) {
-        COORDINATE coord = Coord_Add(TacticalCoord, XY_Coord(x, y));
+        COORDINATE coord =
+            Coord_Add(TacticalCoord,
+                      XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y)));
         CELL cell = Coord_Cell(coord);
         coord = Coord_Whole(Cell_Coord(cell));
 
@@ -2396,7 +2409,8 @@ COORDINATE DisplayClass::Pixel_To_Coord(int x, int y) const {
   */
   if (static_cast<unsigned>(x) < TacLeptonWidth &&
       static_cast<unsigned>(y) < TacLeptonHeight) {
-    return Coord_Add(TacticalCoord, XY_Coord(x, y));
+    return Coord_Add(TacticalCoord,
+                     XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y)));
   }
   return 0;
 }
@@ -3822,8 +3836,8 @@ void DisplayClass::Set_Tactical_Position(COORDINATE coord) {
 
   Confine_Rect(&xx, &yy, TacLeptonWidth, TacLeptonHeight,
                Cell_To_Lepton(MapCellWidth), Cell_To_Lepton(MapCellHeight));
-  coord =
-      XY_Coord(xx + Cell_To_Lepton(MapCellX), yy + Cell_To_Lepton(MapCellY));
+  coord = XY_Coord(static_cast<LEPTON>(xx + Cell_To_Lepton(MapCellX)),
+                   static_cast<LEPTON>(yy + Cell_To_Lepton(MapCellY)));
 
   if (ScenarioInit) {
     TacticalCoord = coord;
@@ -4154,7 +4168,8 @@ void DisplayClass::Center_Map(COORDINATE center) {
     y = y - static_cast<int>(TacLeptonHeight) / 2;
     y = std::max<int>(y, Cell_To_Lepton(MapCellY));
 
-    Set_Tactical_Position(XY_Coord(x, y));
+    Set_Tactical_Position(
+        XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y)));
   }
 }
 

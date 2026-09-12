@@ -35,9 +35,9 @@
 
 template <class Archive>
 void CellClass::Serialize(Archive& ar) {
-  uint8_t flags = IsPlot | IsCursorHere << 1 | IsMapped << 2 | IsVisible << 3 |
-                  IsTrigger << 4 | IsWaypoint << 5 | IsRadarCursor << 6 |
-                  IsFlagged << 7;
+  uint8_t flags = static_cast<uint8_t>(
+      IsPlot | IsCursorHere << 1 | IsMapped << 2 | IsVisible << 3 |
+      IsTrigger << 4 | IsWaypoint << 5 | IsRadarCursor << 6 | IsFlagged << 7);
   ar(flags, TType, TIcon, Overlay, OverlayData, Smudge, SmudgeData, Owner,
      InfType, ObjectPtr(OccupierPtr));
   int32_t overlapper_count = 3;

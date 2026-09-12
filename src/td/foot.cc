@@ -306,7 +306,7 @@ void FootClass::Debug_Dump(MonoClass* mono) const {
  *=============================================================================================*/
 void FootClass::Set_Speed(int speed) {
   speed &= 0xFF;
-  Speed = speed;
+  Speed = static_cast<unsigned char>(speed);
 }
 
 /***********************************************************************************************
@@ -951,7 +951,8 @@ void FootClass::Approach_Target() {
 
         for (int index = 0; index < std::ssize(_angles);
              index++) {
-          trycoord = Coord_Move(tcoord, dir + _angles[index], range);
+          trycoord = Coord_Move(tcoord, dir + _angles[index],
+                                static_cast<unsigned short>(range));
 
           if (::Distance(trycoord, tcoord) < range) {
             trycell = Coord_Cell(trycoord);

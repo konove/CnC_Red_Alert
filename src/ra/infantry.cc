@@ -3633,7 +3633,7 @@ void InfantryClass::Movement_AI() {
         **	toward the unit. Shorten the precalculated path to be no longer
         **	than the distance to the target.
         */
-        int d = Lepton_To_Cell(Distance(NavCom));
+        int d = Lepton_To_Cell(static_cast<LEPTON>(Distance(NavCom)));
         if (d < kConquerPathMax) {
           Path[d] = FACING_NONE;
         }
@@ -3851,8 +3851,9 @@ void InfantryClass::Movement_AI() {
           maxspeed = FormationMaxSpeed;
         }
 
-        Coord = Coord_Move(Coord, Direction(Head_To_Coord()),
-                           maxspeed * fixed(movespeed, 256));
+        Coord = Coord_Move(
+            Coord, Direction(Head_To_Coord()),
+            static_cast<unsigned short>(maxspeed * fixed(movespeed, 256)));
       }
       Mark(MARK_DOWN);
     }

@@ -124,9 +124,9 @@ void GraphicBufferClass::Update_Palette(const uint8_t* palette) {
     changed = changed || sdl_pal->colors[i].r != new_r ||
               sdl_pal->colors[i].g != new_g || sdl_pal->colors[i].b != new_b;
 
-    sdl_pal->colors[i].r = new_r;
-    sdl_pal->colors[i].g = new_g;
-    sdl_pal->colors[i].b = new_b;
+    sdl_pal->colors[i].r = static_cast<Uint8>(new_r);
+    sdl_pal->colors[i].g = static_cast<Uint8>(new_g);
+    sdl_pal->colors[i].b = static_cast<Uint8>(new_b);
   }
 
   if (!changed) {

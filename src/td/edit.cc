@@ -430,7 +430,8 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
       **	Don't add a character if the length is greater than edit width.
       */
       if (static_cast<int>(String_Pixel_Width(String) +
-                       Char_Pixel_Width(ascii)) >= Width - 2) {
+                           Char_Pixel_Width(static_cast<char>(ascii))) >=
+          Width - 2) {
         break;
       }
 
@@ -473,7 +474,7 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
       *gadget's ID *	number from being returned just because the gadget has
       *been edited.
       */
-      String[Length++] = ascii;
+      String[Length++] = static_cast<char>(ascii);
       String[Length] = '\0';
       Flag_To_Redraw();
       break;

@@ -301,7 +301,7 @@ bool TemplateClass::Mark(MarkType mark) {
                 cellptr->TType = Class->Type;
                 //							cellptr->TIcon
                 //= real;
-                cellptr->TIcon = number;
+                cellptr->TIcon = static_cast<unsigned char>(number);
               }
             }
 

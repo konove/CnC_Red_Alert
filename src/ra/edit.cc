@@ -193,7 +193,8 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
 
     default:
       if (static_cast<int>(String_Pixel_Width(String) +
-                       Char_Pixel_Width(ascii)) >= Width - 2) {
+                           Char_Pixel_Width(static_cast<char>(ascii))) >=
+          Width - 2) {
         break;
       }
       if (Length >= MaxLength) {
@@ -222,7 +223,7 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
 
       // Manual redraw needed because the event flag was cleared to prevent
       // the gadget ID from being returned on every keystroke.
-      String[Length++] = ascii;
+      String[Length++] = static_cast<char>(ascii);
       String[Length] = '\0';
       Flag_To_Redraw();
       break;

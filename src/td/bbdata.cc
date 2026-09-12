@@ -557,7 +557,7 @@ BulletTypeClass::BulletTypeClass(
   Type = type;
   Warhead = warhead;
   MaxSpeed = maxspeed;
-  ROT = rot;
+  ROT = static_cast<unsigned char>(rot);
   Arming = arming;
   Range = range;
 }

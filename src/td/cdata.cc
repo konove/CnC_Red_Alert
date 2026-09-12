@@ -1245,13 +1245,13 @@ TemplateTypeClass::TemplateTypeClass(TemplateType iconset, int theater,
                                      LandType altland, const char* alticons)
     : ObjectTypeClass(false, false, false, true, false, false, true, true,
                       fullname, ininame, ARMOR_NONE, 0) {
-  Theater = theater;
+  Theater = static_cast<unsigned char>(theater);
   AltIcons = alticons;
   AltLand = altland;
   Type = iconset;
   Land = land;
-  Width = width;
-  Height = height;
+  Width = static_cast<unsigned char>(width);
+  Height = static_cast<unsigned char>(height);
 }
 
 /***********************************************************************************************

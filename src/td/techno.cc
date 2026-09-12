@@ -241,9 +241,9 @@ TechnoTypeClass::TechnoTypeClass(
   IsRepairable = is_repairable;
   IsTurretEquipped = is_turret_equipped;
   IsNominal = is_nominal;
-  Ownable = ownable;
+  Ownable = static_cast<unsigned short>(ownable);
   Reward = reward;
-  Scenario = scenario;
+  Scenario = static_cast<unsigned char>(scenario);
   SightRange = sightrange;
 
   /*
@@ -641,7 +641,7 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
     */
     case RADIO_ATTACK_THIS:
       if (Techno_Type_Class()->Primary != WEAPON_NONE) {
-        Assign_Target(param);
+        Assign_Target(static_cast<TARGET>(param));
         Assign_Mission(MISSION_ATTACK);
         return RADIO_ROGER;
       }
@@ -917,7 +917,8 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
       if (ratio < 0x3F) {
         color = RED;
       }
-      draw_window.Fill_Rect(xx + 1, yy + 1, xx + pwidth, yy + (3 - 1), color);
+      draw_window.Fill_Rect(xx + 1, yy + 1, xx + pwidth, yy + (3 - 1),
+                            static_cast<unsigned char>(color));
     }
 
     /*
@@ -2105,7 +2106,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
     if (!bullet->Class->IsFueled) {
       IsInRecoilState = true;
     }
-    Arm = Rearm_Delay(IsSecondShot);
+    Arm = static_cast<unsigned char>(Rearm_Delay(IsSecondShot));
     if (tclass.IsTwoShooter) {
       IsSecondShot = !static_cast<bool>(IsSecondShot);
     }
@@ -3521,7 +3522,7 @@ void TechnoClass::Base_Is_Attacked(const TechnoClass* enemy) {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-unsigned char TechnoClass::Get_Ownable() const {
+int TechnoClass::Get_Ownable() const {
   return dynamic_cast<const TechnoTypeClass&>(Class_Of()).Ownable;
 }
 

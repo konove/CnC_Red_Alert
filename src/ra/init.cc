@@ -1455,7 +1455,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     if (strstr(string, "-SOCKET")) {
       const auto offset = tech::ParseInteger<int>(string + strlen("-SOCKET"));
       if (offset && *offset >= 0 && *offset < 0x4000) {
-        Ipx.Set_Socket(*offset + 0x4000);
+        Ipx.Set_Socket(static_cast<unsigned short>(*offset + 0x4000));
       }
       continue;
     }
@@ -1907,40 +1907,50 @@ static void Init_Color_Remaps() {
     unsigned char* ptr = ColorRemaps[pcolor].RemapTable;
 
     for (int color = 0; color < 256; color++) {
-      ptr[color] = color;
+      ptr[color] = static_cast<unsigned char>(color);
     }
 
     for (int index = 0; index < 16; index++) {
-      ptr[HidPage.Get_Pixel(index, 0)] = HidPage.Get_Pixel(index, pcolor);
+      ptr[HidPage.Get_Pixel(index, 0)] =
+          static_cast<unsigned char>(HidPage.Get_Pixel(index, pcolor));
     }
     for (int index = 0; index < 6; index++) {
       ColorRemaps[pcolor].FontRemap[10 + index] =
-          HidPage.Get_Pixel(2 + index, pcolor);
+          static_cast<unsigned char>(HidPage.Get_Pixel(2 + index, pcolor));
     }
     ColorRemaps[pcolor].BrightColor = WHITE;
     //		ColorRemaps[pcolor].BrightColor = HidPage.Get_Pixel(1, pcolor);
-    ColorRemaps[pcolor].Color = HidPage.Get_Pixel(4, pcolor);
+    ColorRemaps[pcolor].Color =
+        static_cast<unsigned char>(HidPage.Get_Pixel(4, pcolor));
 
-    ColorRemaps[pcolor].Shadow = HidPage.Get_Pixel(10, pcolor);
-    ColorRemaps[pcolor].Background = HidPage.Get_Pixel(9, pcolor);
-    ColorRemaps[pcolor].Corners = HidPage.Get_Pixel(7, pcolor);
-    ColorRemaps[pcolor].Highlight = HidPage.Get_Pixel(4, pcolor);
-    ColorRemaps[pcolor].Bright = HidPage.Get_Pixel(0, pcolor);
-    ColorRemaps[pcolor].Underline = HidPage.Get_Pixel(0, pcolor);
-    ColorRemaps[pcolor].Bar = HidPage.Get_Pixel(6, pcolor);
+    ColorRemaps[pcolor].Shadow =
+        static_cast<unsigned char>(HidPage.Get_Pixel(10, pcolor));
+    ColorRemaps[pcolor].Background =
+        static_cast<unsigned char>(HidPage.Get_Pixel(9, pcolor));
+    ColorRemaps[pcolor].Corners =
+        static_cast<unsigned char>(HidPage.Get_Pixel(7, pcolor));
+    ColorRemaps[pcolor].Highlight =
+        static_cast<unsigned char>(HidPage.Get_Pixel(4, pcolor));
+    ColorRemaps[pcolor].Bright =
+        static_cast<unsigned char>(HidPage.Get_Pixel(0, pcolor));
+    ColorRemaps[pcolor].Underline =
+        static_cast<unsigned char>(HidPage.Get_Pixel(0, pcolor));
+    ColorRemaps[pcolor].Bar =
+        static_cast<unsigned char>(HidPage.Get_Pixel(6, pcolor));
 
     /*
     **	This must grab from column 4 because the multiplayer color dialog
     *palette counts *	on this to be true.
     */
-    ColorRemaps[pcolor].Box = HidPage.Get_Pixel(4, pcolor);
+    ColorRemaps[pcolor].Box =
+        static_cast<unsigned char>(HidPage.Get_Pixel(4, pcolor));
   }
 
   /*
   ** Now do the special dim grey scheme
   */
   for (int color = 0; color < 256; color++) {
-    GreyScheme.RemapTable[color] = color;
+    GreyScheme.RemapTable[color] = static_cast<unsigned char>(color);
   }
   for (int index = 0; index < 6; index++) {
     GreyScheme.FontRemap[10 + index] =
@@ -1977,7 +1987,8 @@ static void Init_Color_Remaps() {
   */
   memset(&MetalScheme, 4, sizeof(MetalScheme));
   for (int color_counter = 0; color_counter < 16; color_counter++) {
-    MetalScheme.FontRemap[color_counter] = color_counter;
+    MetalScheme.FontRemap[color_counter] =
+        static_cast<unsigned char>(color_counter);
   }
   MetalScheme.FontRemap[1] = 128;
   MetalScheme.FontRemap[2] = 12;
@@ -1992,7 +2003,7 @@ static void Init_Color_Remaps() {
   */
   for (int colr = 0; colr < 16; colr++) {
     ColorRemaps[PCOLOR_TYPE].FontRemap[colr] =
-        HidPage.Get_Pixel(colr, PCOLOR_TYPE);
+        static_cast<unsigned char>(HidPage.Get_Pixel(colr, PCOLOR_TYPE));
   }
 
   ColorRemaps[PCOLOR_TYPE].Shadow = 11;
@@ -2646,7 +2657,7 @@ static void Init_Bulk_Data() {
     sprintf(num, "%d", index);
     int textoffset = static_cast<int>(textptr - TutorialTextData);
     if (ini.Get_String("Tutorial", num, "", textptr, totallen - textoffset)) {
-      TutorialTextOffsets[index] = textoffset;
+      TutorialTextOffsets[index] = static_cast<uint16_t>(textoffset);
       textptr += strlen(textptr) + 1;
     }
   }

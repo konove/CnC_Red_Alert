@@ -310,7 +310,8 @@ int Read_Game_Options(const char* name) {
 
   Options.GameSpeed = 0;
 
-  MPlayerLocalID = Build_MPlayerID(MPlayerColorIdx, MPlayerHouse);
+  MPlayerLocalID = static_cast<unsigned char>(
+      Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
 
   MPlayerMaxAhead = WChatMaxAhead =
       WWGetPrivateProfileInt("Timing", "MaxAhead", 9, buffer);

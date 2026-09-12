@@ -477,7 +477,7 @@ void TeamClass::AI() {
           break;
 
         case TMISSION_ATTACKTARCOM:
-          Assign_Mission_Target(mission->Argument);
+          Assign_Mission_Target(static_cast<TARGET>(mission->Argument));
           break;
 
         default:

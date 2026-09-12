@@ -518,7 +518,8 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
   /*
   **	This draws any overlay graphics on the aircraft.
   */
-  FootClass::Draw_It(x, y - Lepton_To_Pixel(Height), window);
+  FootClass::Draw_It(x, y - Lepton_To_Pixel(static_cast<LEPTON>(Height)),
+                     window);
 }
 
 /***********************************************************************************************
@@ -560,7 +561,8 @@ void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
     **	Dual rotors offset along flight axis.
     */
     short xx = static_cast<short>(x);
-    short yy = static_cast<short>(y - Lepton_To_Pixel(Height));
+    short yy =
+        static_cast<short>(y - Lepton_To_Pixel(static_cast<LEPTON>(Height)));
     FacingType face = Dir_Facing(SecondaryFacing);
     base::MovePoint(xx, yy, SecondaryFacing.Current(), static_cast<int16_t>(_stretch[face]));
     CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
@@ -576,8 +578,8 @@ void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
     **	Single rotor centered about shape.
     */
     CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, x,
-                  y - Lepton_To_Pixel(Height) - 2, window, flags, nullptr,
-                  DisplayClass::UnitShadow);
+                  y - Lepton_To_Pixel(static_cast<LEPTON>(Height)) - 2, window,
+                  flags, nullptr, DisplayClass::UnitShadow);
   }
 }
 
@@ -786,8 +788,9 @@ int AircraftClass::Mission_Hunt() {
         TARGET targ;
         switch (Can_Fire(TarCom, 0)) {
           case FIRE_OK:
-            targ = ::As_Target(Coord_Move(Center_Coord(), SecondaryFacing,
-                                          Weapon_Range(0) - 0x0200));
+            targ = ::As_Target(Coord_Move(
+                Center_Coord(), SecondaryFacing,
+                static_cast<unsigned short>(Weapon_Range(0) - 0x0200)));
             if (Class->PrimaryWeapon != nullptr) {
               if (Class->PrimaryWeapon->IsCamera) {
                 Status = REGROUP;
@@ -2654,8 +2657,9 @@ TARGET AircraftClass::New_LZ(TARGET oldlz) const {
       *to *	find a cell that is allowed to be a legal LZ.
       */
       for (FacingType facing : magic_enum::enum_values<FacingType>()) {
-        CELL newcell = Coord_Cell(Coord_Move(
-            coord, Facing_Dir(facing + modifier), radius * ICON_LEPTON_W));
+        CELL newcell = Coord_Cell(
+            Coord_Move(coord, Facing_Dir(facing + modifier),
+                       static_cast<unsigned short>(radius * ICON_LEPTON_W)));
         if (Map.In_Radar(newcell)) {
           TARGET newtarget = ::As_Target(newcell);
 
@@ -3112,7 +3116,8 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
 
     for (int r = range - 0x0100; r > 0x0100; r -= 0x0100) {
       for (int face = 0; face < 255; face += 16) {
-        COORDINATE newcoord = Coord_Move(tcoord, static_cast<DirType>(face), r);
+        COORDINATE newcoord = Coord_Move(tcoord, static_cast<DirType>(face),
+                                         static_cast<unsigned short>(r));
         CELL newcell = Coord_Cell(newcoord);
 
         if (Map.In_Radar(newcell) &&

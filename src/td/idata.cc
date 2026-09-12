@@ -1473,8 +1473,8 @@ InfantryTypeClass::InfantryTypeClass(
 
   for (int i = 0; i < DO_COUNT; i++) {
     DoControls[i].Frame = *do_table++;
-    DoControls[i].Count = *do_table++;
-    DoControls[i].Jump = *do_table++;
+    DoControls[i].Count = static_cast<unsigned char>(*do_table++);
+    DoControls[i].Jump = static_cast<unsigned char>(*do_table++);
   }
 
 #ifdef cuts  // ST - 10/3/95 10:09AM

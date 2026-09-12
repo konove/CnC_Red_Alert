@@ -2362,7 +2362,9 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
     ** just need to skip past this set of icons and try to build the
     ** next frame.
     */
-    ptr = Build_Frame(shapefile, shapenum + framelp, SysMemPage.Get_Buffer());
+    ptr =
+        Build_Frame(shapefile, static_cast<unsigned short>(shapenum + framelp),
+                    SysMemPage.Get_Buffer());
     if (ptr != nullptr) {
       ptr = Get_Shape_Header_Data(ptr);
       /*
@@ -2414,7 +2416,8 @@ void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
     /*
     ** Build frame returns a pointer now instead of the shapes length
     */
-    shape_size = Build_Frame(shapefile, shapenum, _ShapeBuffer);
+    shape_size = Build_Frame(shapefile, static_cast<unsigned short>(shapenum),
+                             _ShapeBuffer);
     if (Get_Last_Frame_Length() > _ShapeBufferSize) {
       Mono_Printf(
           "Attempt to use shape buffer for size %d buffer is only size %d",
@@ -2507,7 +2510,8 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
     /*
     ** Build frame returns a pointer now instead of the shapes length
     */
-    shape_size = Build_Frame(shapefile, shapenum, _ShapeBuffer);
+    shape_size = Build_Frame(shapefile, static_cast<unsigned short>(shapenum),
+                             _ShapeBuffer);
     if (Get_Last_Frame_Length() > _ShapeBufferSize) {
       Mono_Printf(
           "Attempt to use shape buffer for size %d buffer is only size %d",
@@ -2942,7 +2946,7 @@ void Handle_Team(int team, int action) {
             obj->Group = -1;
           }
           if (obj->IsSelected) {
-            obj->Group = team;
+            obj->Group = static_cast<unsigned char>(team);
           }
         }
       }
@@ -2953,7 +2957,7 @@ void Handle_Team(int team, int action) {
             obj->Group = -1;
           }
           if (obj->IsSelected) {
-            obj->Group = team;
+            obj->Group = static_cast<unsigned char>(team);
           }
         }
       }
@@ -2964,7 +2968,7 @@ void Handle_Team(int team, int action) {
             obj->Group = -1;
           }
           if (obj->IsSelected) {
-            obj->Group = team;
+            obj->Group = static_cast<unsigned char>(team);
           }
         }
       }

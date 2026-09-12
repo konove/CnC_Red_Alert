@@ -751,7 +751,7 @@ void AnimClass::AI() {
             }
 
             IsToDelete = false;
-            Loops = Class->Loops;
+            Loops = static_cast<unsigned char>(Class->Loops);
             Accum = fixed(0);
             if (Class->IsNormalized) {
               Set_Rate(Options.Normalize_Delay(Class->Delay));
@@ -937,25 +937,25 @@ void AnimClass::Middle() {
       new AnimClass(
           ANIM_FIRE_SMALL,
           Map.Closest_Free_Spot(Coord_Scatter(Center_Coord(), 0x0040), true), 0,
-          Random_Pick(1, 2));
+          static_cast<unsigned char>(Random_Pick(1, 2)));
       if (Percent_Chance(50)) {
         new AnimClass(
             ANIM_FIRE_SMALL,
             Map.Closest_Free_Spot(Coord_Scatter(Center_Coord(), 0x00A0), true),
-            0, Random_Pick(1, 2));
+            0, static_cast<unsigned char>(Random_Pick(1, 2)));
       }
       if (Percent_Chance(50)) {
         new AnimClass(
             ANIM_FIRE_MED,
             Map.Closest_Free_Spot(Coord_Scatter(Center_Coord(), 0x0070), true),
-            0, Random_Pick(1, 2));
+            0, static_cast<unsigned char>(Random_Pick(1, 2)));
       }
       break;
 
     case ANIM_FIRE_MED:
     case ANIM_FIRE_MED2:
-      newanim =
-          new AnimClass(ANIM_FIRE_SMALL, Center_Coord(), 0, Random_Pick(1, 2));
+      newanim = new AnimClass(ANIM_FIRE_SMALL, Center_Coord(), 0,
+                              static_cast<unsigned char>(Random_Pick(1, 2)));
       if (newanim != nullptr && xObject != kTargetNone) {
         newanim->Attach_To(As_Object(xObject));
       }
@@ -1053,7 +1053,8 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
     rawdamage = Rule.AtomDamage / 5;
   }
 
-  Wide_Area_Damage(Cell_Coord(cell), radius * CELL_LEPTON_W, rawdamage,
+  Wide_Area_Damage(Cell_Coord(cell),
+                   static_cast<LEPTON>(radius * CELL_LEPTON_W), rawdamage,
                    building, WARHEAD_FIRE);
   Shake_The_Screen(3);
   if (Session.Type == GAME_NORMAL) {

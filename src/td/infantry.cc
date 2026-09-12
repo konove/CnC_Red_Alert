@@ -624,7 +624,8 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
         if (Health_Ratio() > 0x0080) {
           morefear /= 4;
         }
-        Fear = std::min(static_cast<int>(Fear) + morefear, FEAR_MAXIMUM);
+        Fear = static_cast<unsigned char>(
+            std::min(static_cast<int>(Fear) + morefear, FEAR_MAXIMUM));
       }
 #ifdef BOXING
     }
@@ -784,7 +785,7 @@ void InfantryClass::Per_Cell_Process(bool center) {
       Special.IsScatter = true;
       NavCom = kTargetNone;
       Do_Uncloak();
-      Arm = Rearm_Delay(true);
+      Arm = static_cast<unsigned char>(Rearm_Delay(true));
       Scatter(building->Center_Coord(), true);  // RUN AWAY!
       Special.IsScatter = temp;
       return;
@@ -1501,7 +1502,8 @@ void InfantryClass::AI() {
         **	Advance the infantry as far as it should go.
         */
         Coord = Coord_Move(Coord, Direction(Head_To_Coord()),
-                           Fixed_To_Cardinal(Class->MaxSpeed, movespeed));
+                           static_cast<unsigned short>(
+                               Fixed_To_Cardinal(Class->MaxSpeed, movespeed)));
       }
       Mark(MARK_DOWN);
     }
@@ -2177,7 +2179,8 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
     Doing = todo;
     // Mark(MARK_OVERLAP_DOWN);
     if (todo == DO_IDLE1 || todo == DO_IDLE2) {
-      Set_Rate(Options.Normalize_Delay(MasterDoControls[Doing].Rate));
+      Set_Rate(static_cast<unsigned char>(
+          Options.Normalize_Delay(MasterDoControls[Doing].Rate)));
     } else {
       Set_Rate(MasterDoControls[Doing].Rate);
     }

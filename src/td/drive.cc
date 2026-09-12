@@ -764,7 +764,7 @@ bool DriveClass::While_Moving() {
   **	Replace any remainder back into the unit's movement
   **	accumulator to be processed next pass.
   */
-  SpeedAccum = actual;
+  SpeedAccum = static_cast<unsigned char>(actual);
   return true;
 }
 

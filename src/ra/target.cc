@@ -470,7 +470,7 @@ COORDINATE As_Coord(TARGET target) {
 
       int x = ((v & 0x0FFF) << 4) + 0x0008;
       int y = ((v >> 12 & 0x0FFF) << 4) + 0x0008;
-      return XY_Coord(x, y);
+      return XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y));
     }
 
     /*

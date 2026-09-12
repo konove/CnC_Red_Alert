@@ -50,6 +50,7 @@
 #include "ra/nulldlg.h"
 
 #include <algorithm>
+#include <bit>
 #include <cinttypes>
 #include <cstdarg>
 #include <cstdint>
@@ -400,7 +401,8 @@ int Test_Null_Modem() {
     // put time from start of game for determining the host in case of tie.
     //
     SendPacket.ScenarioInfo.Seed = static_cast<int>(TickCount.Value());
-    SendPacket.ID = (intptr_t)buffer;  // address of buffer for more uniqueness.
+    SendPacket.ID = static_cast<unsigned char>(std::bit_cast<uintptr_t>(
+        &buffer[0]));  // address of buffer for more uniqueness.
 
     NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
 
@@ -3737,9 +3739,12 @@ int Com_Scenario_Dialog(bool skirmish) {
         SendPacket.ScenarioInfo.IsBases = Session.Options.Bases;
         SendPacket.ScenarioInfo.IsTiberium = Session.Options.Tiberium;
         SendPacket.ScenarioInfo.IsGoodies = Session.Options.Goodies;
-        SendPacket.ScenarioInfo.AIPlayers = Session.Options.AIPlayers;
-        SendPacket.ScenarioInfo.BuildLevel = BuildLevel;
-        SendPacket.ScenarioInfo.UnitCount = Session.Options.UnitCount;
+        SendPacket.ScenarioInfo.AIPlayers =
+            static_cast<unsigned char>(Session.Options.AIPlayers);
+        SendPacket.ScenarioInfo.BuildLevel =
+            static_cast<unsigned char>(BuildLevel);
+        SendPacket.ScenarioInfo.UnitCount =
+            static_cast<unsigned char>(Session.Options.UnitCount);
         SendPacket.ScenarioInfo.Seed = Seed;
         SendPacket.ScenarioInfo.Special = Special;
         SendPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;

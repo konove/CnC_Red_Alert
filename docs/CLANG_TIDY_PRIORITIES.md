@@ -2,7 +2,7 @@
 
 Updated: 2026-09-11, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 226 currently excluded check names** and completed entries, in recommended work
+This tracks **all 224 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -29,29 +29,29 @@ comes from the installed tool, since the online documentation follows LLVM devel
 
 ## P1 — Direct correctness and memory safety
 
-| Check                                                         | Status  | Reason / result                                                                                                                                                                                                                        |
-| ------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `bugprone-suspicious-stringview-data-usage`                   | Enabled | Commit `Enable string-view data usage checking`: copy the RA title-screen filename to a terminated string before calling the PCX reader.                                                                                               |
-| `abseil-unchecked-statusor-access`                            | Skipped | Commit `Handle failed PCX byte reads`: guard both games' byte reads, but retain the exclusion because LLVM 23.1.2 crashes even on checked access with Abseil 20260107.0. Revisit after a toolchain fix; see reproduction below.        |
-| `clang-analyzer-unix.cstring.UninitializedRead`               | Enabled | Commit `Enable uninitialized C-string read checking`: initialize the public-key generation self-test buffer while preserving the random-fill loop.                                                                                     |
-| `clang-analyzer-cplusplus.InnerPointer`                       | Enabled | Commit `Enable string inner-pointer checking`: detect string-buffer pointers used after invalidation.                                                                                                                                  |
-| `bugprone-copy-constructor-init`                              | Enabled | Commit `Enable copy-constructor base initialization checking`: both games and shared code already initialize copied base state correctly; no source fixes needed.                                                                      |
-| `bugprone-unchecked-string-to-number-conversion`              | Enabled | Commit `Enable checked string-to-number conversions`: replace unchecked decimal/hex conversions with range-checked parsing and explicit defaults; preserve legacy INI, coordinate, and protocol formats.                               |
-| `cert-err34-c`                                                | Enabled | Alias enabled with `bugprone-unchecked-string-to-number-conversion` in commit `Enable checked string-to-number conversions`.                                                                                                           |
-| `clang-analyzer-unix.StdCLibraryFunctions`                    | Enabled | Commit `Fix TCP socket option size and enable C library checking`: pass an integer TCP_NODELAY flag with its actual size, avoiding a read past a one-byte bool.                                                                        |
-| `clang-diagnostic-cast-align`                                 | Enabled | Commit `Fix buffer alignment and enable cast alignment checking`: copy unaligned packet/media values, check typed buffer access, align cached shape headers, and bound legacy byte fills.                                              |
-| `clang-diagnostic-uninitialized-const-pointer`                | Enabled | Commit `Enable uninitialized const-pointer argument checking`: both games and shared code pass without source fixes.                                                                                                                   |
-| `clang-diagnostic-reorder-ctor`                               | Enabled | Commit `Match constructor initialization order to declarations`: reorder 16 initializer lists while preserving expressions, member layouts, and actual initialization order.                                                           |
-| `bugprone-unhandled-code-paths`                               | Skipped | Commit `Document missing-default check policy`: default mode flags switches with valid post-switch fallbacks and bounded inputs; retain exclusion rather than require redundant defaults. See review below.                            |
-| `bugprone-non-zero-enum-to-bool-conversion`                   | Enabled | Commit `Enable nonzero enum-to-bool conversion checking`: both games and shared code pass without source fixes.                                                                                                                        |
-| `clang-analyzer-optin.core.EnumCastOutOfRange`                | Skipped | Commit `Document enum cast range check policy`: LLVM 23.1.2 rejects intentional intermediate directions, flag combinations, and path-command sentinels; retain exclusion. See review below.                                            |
-| `clang-diagnostic-tautological-constant-out-of-range-compare` | Enabled | Commit `Preserve shutdown states and enable constant range comparison checking`: store RA shutdown states 0 through 3 in an integer instead of collapsing them to bool.                                                                |
-| `clang-diagnostic-tautological-unsigned-enum-zero-compare`    | Enabled | Commit `Simplify unsigned enum bounds and enable zero comparison checking`: use an unsigned event range check and remove an impossible negative template-ID check while preserving the no-template sentinel.                           |
-| `clang-diagnostic-tautological-unsigned-zero-compare`         | Enabled | Commit `Remove impossible icon checks and enable unsigned zero comparison checking`: drop the always-false negative test on the unsigned template icon index in both map validators while keeping the upper bound and icon-map checks. |
-| `clang-diagnostic-implicit-int-conversion`                    | Pending | Find remaining implicit loss of integer range or precision.                                                                                                                                                                            |
-| `clang-diagnostic-implicit-int-conversion-on-negation`        | Pending | Review negation that changes range during conversion.                                                                                                                                                                                  |
-| `clang-diagnostic-int-to-pointer-cast`                        | Pending | Find truncated or invalid addresses in legacy casts.                                                                                                                                                                                   |
-| `bugprone-derived-method-shadowing-base-method`               | Pending | Find unintended hiding in the game class hierarchies.                                                                                                                                                                                  |
+| Check                                                         | Status  | Reason / result                                                                                                                                                                                                                                   |
+| ------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bugprone-suspicious-stringview-data-usage`                   | Enabled | Commit `Enable string-view data usage checking`: copy the RA title-screen filename to a terminated string before calling the PCX reader.                                                                                                          |
+| `abseil-unchecked-statusor-access`                            | Skipped | Commit `Handle failed PCX byte reads`: guard both games' byte reads, but retain the exclusion because LLVM 23.1.2 crashes even on checked access with Abseil 20260107.0. Revisit after a toolchain fix; see reproduction below.                   |
+| `clang-analyzer-unix.cstring.UninitializedRead`               | Enabled | Commit `Enable uninitialized C-string read checking`: initialize the public-key generation self-test buffer while preserving the random-fill loop.                                                                                                |
+| `clang-analyzer-cplusplus.InnerPointer`                       | Enabled | Commit `Enable string inner-pointer checking`: detect string-buffer pointers used after invalidation.                                                                                                                                             |
+| `bugprone-copy-constructor-init`                              | Enabled | Commit `Enable copy-constructor base initialization checking`: both games and shared code already initialize copied base state correctly; no source fixes needed.                                                                                 |
+| `bugprone-unchecked-string-to-number-conversion`              | Enabled | Commit `Enable checked string-to-number conversions`: replace unchecked decimal/hex conversions with range-checked parsing and explicit defaults; preserve legacy INI, coordinate, and protocol formats.                                          |
+| `cert-err34-c`                                                | Enabled | Alias enabled with `bugprone-unchecked-string-to-number-conversion` in commit `Enable checked string-to-number conversions`.                                                                                                                      |
+| `clang-analyzer-unix.StdCLibraryFunctions`                    | Enabled | Commit `Fix TCP socket option size and enable C library checking`: pass an integer TCP_NODELAY flag with its actual size, avoiding a read past a one-byte bool.                                                                                   |
+| `clang-diagnostic-cast-align`                                 | Enabled | Commit `Fix buffer alignment and enable cast alignment checking`: copy unaligned packet/media values, check typed buffer access, align cached shape headers, and bound legacy byte fills.                                                         |
+| `clang-diagnostic-uninitialized-const-pointer`                | Enabled | Commit `Enable uninitialized const-pointer argument checking`: both games and shared code pass without source fixes.                                                                                                                              |
+| `clang-diagnostic-reorder-ctor`                               | Enabled | Commit `Match constructor initialization order to declarations`: reorder 16 initializer lists while preserving expressions, member layouts, and actual initialization order.                                                                      |
+| `bugprone-unhandled-code-paths`                               | Skipped | Commit `Document missing-default check policy`: default mode flags switches with valid post-switch fallbacks and bounded inputs; retain exclusion rather than require redundant defaults. See review below.                                       |
+| `bugprone-non-zero-enum-to-bool-conversion`                   | Enabled | Commit `Enable nonzero enum-to-bool conversion checking`: both games and shared code pass without source fixes.                                                                                                                                   |
+| `clang-analyzer-optin.core.EnumCastOutOfRange`                | Skipped | Commit `Document enum cast range check policy`: LLVM 23.1.2 rejects intentional intermediate directions, flag combinations, and path-command sentinels; retain exclusion. See review below.                                                       |
+| `clang-diagnostic-tautological-constant-out-of-range-compare` | Enabled | Commit `Preserve shutdown states and enable constant range comparison checking`: store RA shutdown states 0 through 3 in an integer instead of collapsing them to bool.                                                                           |
+| `clang-diagnostic-tautological-unsigned-enum-zero-compare`    | Enabled | Commit `Simplify unsigned enum bounds and enable zero comparison checking`: use an unsigned event range check and remove an impossible negative template-ID check while preserving the no-template sentinel.                                      |
+| `clang-diagnostic-tautological-unsigned-zero-compare`         | Enabled | Commit `Remove impossible icon checks and enable unsigned zero comparison checking`: drop the always-false negative test on the unsigned template icon index in both map validators while keeping the upper bound and icon-map checks.            |
+| `clang-diagnostic-implicit-int-conversion`                    | Enabled | Commit `Make integer narrowing explicit and enable implicit conversion checking`: cast intentional narrowing at 518 sites, return full uncompressed image sizes, assign the RA foot speed directly, and widen the TD ownable-house mask accessor. |
+| `clang-diagnostic-implicit-int-conversion-on-negation`        | Enabled | Enabled with `clang-diagnostic-implicit-int-conversion` in commit `Make integer narrowing explicit and enable implicit conversion checking`: three negated heights packed into coordinates use explicit `LEPTON` casts.                           |
+| `clang-diagnostic-int-to-pointer-cast`                        | Pending | Find truncated or invalid addresses in legacy casts.                                                                                                                                                                                              |
+| `bugprone-derived-method-shadowing-base-method`               | Pending | Find unintended hiding in the game class hierarchies.                                                                                                                                                                                             |
 
 ## P2 — Further correctness and targeted safety
 
@@ -396,6 +396,31 @@ Markdown formatting and whitespace checks passed; game builds and tests were not
 documentation-only decision.
 
 ### Completed validation
+
+The 2026-09-11 implicit integer conversion cleanup found 518 narrowing sites in 115 files in the
+isolated sweep of 908 project translation units, including 431 generated header checks, plus three
+negation sites for the companion diagnostic. Most sites are intentional narrowing into byte and
+16-bit storage: palette and remap indices, cell-lepton coordinate math into `LEPTON`, `Random_Pick`
+results into animation parameters, and multiplayer packet fields. They now carry `static_cast` to
+the destination's own type; class members, packet layouts, and saved data layouts are unchanged. A
+few needlessly narrow locals are widened instead, and the null-modem connect ID now derives from
+`std::bit_cast` of the buffer address rather than a C-style pointer cast.
+
+Three defects were corrected along the way. Both games' `Load_Uncompress` stored the decompressed
+byte count back into the 16-bit on-disk size field, truncating the return value for images over
+65,535 bytes; the count is now returned from a separate variable. RA's `FootClass::Set_Speed` wrote
+its byte through a reinterpreting reference into the `int` speed member and now assigns directly.
+TD's `Get_Ownable` virtual returned a byte although the ownable mask covers ten houses; the
+`ObjectClass` and `TechnoClass` overrides now return `int`, matching RA. Two fading-table builders
+(`sdllib/misc.cc` and `td/support.cc`) read the red gun for the green target; that pre-existing
+defect is noted here and left for separate review.
+
+The final isolated and full-config sweeps passed all 908 translation units. Both strict game builds
+and all 228 CTest tests passed. Headless save/load checks matched 240 RA object positions and 5,742
+and 5,951 TD game states in the default and team fixtures. A sample narrowing an `int` to
+`unsigned char` and a negated `unsigned short` confirms that both enabled diagnostics report errors
+under the repository configuration and the strict build's existing `-Weverything` flag, and stay
+silent with the previous exclusions restored.
 
 The 2026-09-11 unsigned zero comparison review found two diagnostics in the isolated sweep of 908
 project translation units, including 431 generated header checks: both games' `MapClass::Validate`
