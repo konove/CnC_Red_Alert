@@ -51,7 +51,7 @@
 class PowerClass : public RadarClass {
  public:
   // Resets transient UI state after loading, preserving saved game state.
-  void ResetTransientUiState();
+  void ResetTransientUiState() override;
 
   PowerClass();
 

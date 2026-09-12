@@ -71,8 +71,6 @@ class RAMFileClass final : public FileClass {
   bool Set_Date_Time(unsigned long) override { return true; }
   void Error(int, int = false, const char* = nullptr) override {}
 
-  operator const char*() { return File_Name(); }
-
  protected:
   int Do_Is_Available(AvailabilityCheck mode) override;
 

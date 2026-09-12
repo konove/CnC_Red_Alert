@@ -56,7 +56,7 @@ extern COORDINATE Coord_Add(COORDINATE a, COORDINATE b);
 class DisplayClass : public MapClass {
  public:
   // Resets transient UI state after loading, preserving saved game state.
-  void ResetTransientUiState();
+  void ResetTransientUiState() override;
 
   // Saved-game state; defined in iomap.cc.
   template <class Archive>

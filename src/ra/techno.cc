@@ -4104,7 +4104,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
   }
 
   if (source != nullptr) {
-    Crew.Made_A_Kill();
+    Crew.Add_Kill();
 
     House->WhoLastHurtMe = source->Owner();
 

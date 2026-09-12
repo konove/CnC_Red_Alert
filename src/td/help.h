@@ -49,7 +49,7 @@
 
 class HelpClass : public TabClass {
  public:
-  void ResetTransientUiState();
+  void ResetTransientUiState() override;
   HelpClass();
 
   /*

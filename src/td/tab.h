@@ -47,7 +47,7 @@
 
 class TabClass : public SidebarClass {
  public:
-  void ResetTransientUiState();
+  void ResetTransientUiState() override;
   TabClass();
 
   void AI(KeyNumType& input, int x, int y) override;

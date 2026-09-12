@@ -48,7 +48,7 @@
 class GScreenClass {
  public:
   // Resets transient UI state after loading, preserving saved game state.
-  void ResetTransientUiState();
+  virtual void ResetTransientUiState();
 
   GScreenClass();
   virtual ~GScreenClass() = default;

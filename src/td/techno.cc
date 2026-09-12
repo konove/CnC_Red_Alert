@@ -2731,23 +2731,13 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
 
   if (source) {
     /*
-    **	Call the explicity cast versions of the Made_A_Kill function. This
-    **	is necessary because we don't want to add a virtual function to the
-    **	CrewClass. Doing so would complicate the save/load process.
+    **	Only the combat object types score kills; terrain and other objects
+    **	that can destroy something do not keep a tally.
     */
     switch (source->What_Am_I()) {
       case RTTI_INFANTRY:
-        dynamic_cast<InfantryClass*>(source)->Made_A_Kill();
-        break;
-
       case RTTI_UNIT:
-        source->Made_A_Kill();
-        break;
-
       case RTTI_BUILDING:
-        source->Made_A_Kill();
-        break;
-
       case RTTI_AIRCRAFT:
         source->Made_A_Kill();
         break;

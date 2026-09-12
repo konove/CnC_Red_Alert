@@ -53,7 +53,7 @@ class InitClass {};
 class SidebarClass : public PowerClass {
  public:
   // Resets transient UI state after loading, preserving saved game state.
-  void ResetTransientUiState();
+  void ResetTransientUiState() override;
 
   // Saved-game state; defined in iomap.cc.
   template <class Archive>

@@ -49,7 +49,7 @@
 
 class PowerClass : public RadarClass {
  public:
-  void ResetTransientUiState();
+  void ResetTransientUiState() override;
   int PowX = 0;
   int PowY = 0;
   int PowWidth = 0;

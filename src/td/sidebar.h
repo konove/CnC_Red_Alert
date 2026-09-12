@@ -57,7 +57,7 @@ class InitClass {};
 
 class SidebarClass : public PowerClass {
  public:
-  void ResetTransientUiState();
+  void ResetTransientUiState() override;
   // Saved gameplay state; runtime UI resources remain local.
   template <class Archive>
   void Serialize(Archive& ar);

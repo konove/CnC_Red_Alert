@@ -78,7 +78,6 @@ class UnitClass final : public TarComClass {
   void operator delete(void* ptr);
   UnitClass() { IsActive = true; }
   UnitClass(UnitType classid, HousesType house);
-  operator UnitType() const { return Class->Type; }
   ~UnitClass() override;
   RTTIType What_Am_I() const override;
 

@@ -206,11 +206,8 @@ class MapEditClass : public MouseClass {
   void Draw_It(bool forced = true) override;
   bool Scroll_Map(DirType facing, int& distance, bool really = true) override;
   void Read_INI(CCINIClass& ini) override;
-  virtual void Write_INI(CCINIClass& ini);
   void Detach(ObjectClass* object) override;
-  void Detach(const TARGET target, const bool all = true) {
-    MouseClass::Detach(target, all);
-  }
+  using MouseClass::Detach;
   void Clear_List();
   bool Add_To_List(const ObjectTypeClass* object);
   void Main_Menu();

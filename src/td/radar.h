@@ -50,7 +50,7 @@
 
 class RadarClass : public DisplayClass {
  public:
-  void ResetTransientUiState();
+  void ResetTransientUiState() override;
   // Saved gameplay state; runtime UI resources remain local.
   template <class Archive>
   void Serialize(Archive& ar);

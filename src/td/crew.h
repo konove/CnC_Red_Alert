@@ -64,7 +64,8 @@ class CrewClass {
   */
   CrewClass() { Kills = 0; }
 
-  int Made_A_Kill() {
+  // Increments the crew's kill tally and returns the new total.
+  int Add_Kill() {
     Kills++;
     return Kills;
   }

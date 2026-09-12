@@ -164,26 +164,6 @@ void TriggerTypeClass::operator delete(void* ptr) {
 }
 
 /***********************************************************************************************
- * TriggerTypeClass::As_Target -- Convert this trigger type object into a target
- *value.        *
- *                                                                                             *
- *    Use this routine to take this trigger type class object and convert it
- *into a            * target number. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the target number that represents this trigger type
- *class object.     *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/09/1996 JLB : Created. *
- *=============================================================================================*/
-TARGET TriggerTypeClass::As_Target() const {
-  return Build_Target(RTTI_TRIGGERTYPE, ID);
-}
-
-/***********************************************************************************************
  * TriggerTypeClass::Detach -- Removes attachments to the target object
  *specified.             *
  *                                                                                             *

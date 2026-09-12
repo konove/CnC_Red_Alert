@@ -57,7 +57,7 @@
 
 class DisplayClass : public MapClass {
  public:
-  void ResetTransientUiState();
+  void ResetTransientUiState() override;
   // Saved gameplay state; runtime UI resources remain local.
   template <class Archive>
   void Serialize(Archive& ar);
@@ -125,7 +125,7 @@ class DisplayClass : public MapClass {
   DisplayClass();
 
   virtual void Read_INI(char* buffer);
-  void Write_INI(char* buffer);
+  virtual void Write_INI(char* buffer);
 
   /*
   ** Initialization

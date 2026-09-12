@@ -73,7 +73,7 @@ class ScrollClass : public HelpClass {
   int Inertia;
 
  public:
-  void ResetTransientUiState();
+  void ResetTransientUiState() override;
   ScrollClass();
 
   bool Set_Autoscroll(int control);

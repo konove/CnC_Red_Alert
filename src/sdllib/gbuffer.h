@@ -340,8 +340,11 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
   void Init(int w, int h, void* buffer, long size, GBC_Enum flags);
   void Un_Init();
 
-  bool Lock();
-  bool Unlock();
+  // Locks and unlocks the underlying SDL surface. Callers normally use the
+  // inherited GraphicViewPortClass::Lock/Unlock, which also reattach the
+  // viewport to the freshly locked pixels.
+  bool Lock_Surface();
+  bool Unlock_Surface();
 
   // Draws `bmp` scaled and rotated onto this buffer, centered at `pt`.
   // `scale` is 24.8 fixed point (0x100 = 1.0). `angle` is 0-255 (full circle).
@@ -409,7 +412,7 @@ inline bool GraphicViewPortClass::Get_IsDirectDraw() {
  *functionality to GraphicBuffer                            *
  *=============================================================================================*/
 inline bool GraphicViewPortClass::Lock() {
-  bool lock = GraphicBuff->Lock();
+  bool lock = GraphicBuff->Lock_Surface();
   if (!lock) {
     return false;
   }
@@ -434,7 +437,9 @@ inline bool GraphicViewPortClass::Lock() {
  * HISTORY: * 09-19-95 02:20pm ST : Created * 10/09/1995     : Moved actually
  *functionality to GraphicBuffer                            *
  *=============================================================================================*/
-inline bool GraphicViewPortClass::Unlock() { return GraphicBuff->Unlock(); }
+inline bool GraphicViewPortClass::Unlock() {
+  return GraphicBuff->Unlock_Surface();
+}
 
 /***************************************************************************
  * GVPC::GET_OFFSET -- Get offset for virtual view port class instance     *

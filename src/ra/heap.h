@@ -143,30 +143,6 @@ class FixedHeapClass {
   FixedHeapClass(const FixedHeapClass&);
 };
 
-// Type-safe wrapper around FixedHeapClass that provides automatic type
-// conversion. Eliminates the need for manual casting when allocating/freeing
-// objects of type T. No runtime overhead - all type conversions happen at
-// compile time.
-template <class T>
-class TFixedHeapClass : public FixedHeapClass {
- public:
-  TFixedHeapClass() : FixedHeapClass(sizeof(T)) {}
-  ~TFixedHeapClass() override {}
-
-  int ID(const T* pointer) const override {
-    return FixedHeapClass::ID(pointer);
-  }
-  virtual T* Alloc() { return static_cast<T*>(FixedHeapClass::Allocate()); }
-  int Free(T* pointer) override { return FixedHeapClass::Free(pointer); }
-
-  T& operator[](int index) {
-    return *static_cast<T*>((char*)Buffer + index * Size);
-  }
-  const T& operator[](int index) const {
-    return *static_cast<T*>((char*)Buffer + index * Size);
-  }
-};
-
 // Fixed-size block allocator with fast iteration over active (allocated)
 // objects. Extends FixedHeapClass by maintaining an array of pointers to all
 // allocated blocks, enabling efficient iteration without scanning the entire

@@ -53,7 +53,7 @@
 class HelpClass : public TabClass {
  public:
   // Resets transient UI state after loading, preserving saved game state.
-  void ResetTransientUiState();
+  void ResetTransientUiState() override;
 
   HelpClass();
 

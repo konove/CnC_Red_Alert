@@ -48,7 +48,6 @@ class OptionsClass {
   OptionsClass();
 
   void One_Time();
-  void Process();
 
   void Fixup_Palette() const;
   void Set_Shuffle(int on);

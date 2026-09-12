@@ -178,7 +178,7 @@ TEST(TdSaveValuesTest, FlashStateAndCrewKillsSurviveRoundTrip) {
   crew.Kills = 50000;
   CrewClass loaded_crew;
   Restore(loaded_crew, Save(crew));
-  EXPECT_EQ(loaded_crew.Made_A_Kill(), 50001);
+  EXPECT_EQ(loaded_crew.Add_Kill(), 50001);
 }
 
 TEST(TdSaveValuesTest, FlashCountCannotOverflowItsBitfield) {

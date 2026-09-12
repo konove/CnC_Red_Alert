@@ -2,7 +2,7 @@
 
 Updated: 2026-09-11, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 223 currently excluded check names** and completed entries, in recommended work
+This tracks **all 222 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -51,7 +51,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-implicit-int-conversion`                    | Enabled | Commit `Make integer narrowing explicit and enable implicit conversion checking`: cast intentional narrowing at 518 sites, return full uncompressed image sizes, assign the RA foot speed directly, and widen the TD ownable-house mask accessor. |
 | `clang-diagnostic-implicit-int-conversion-on-negation`        | Enabled | Enabled with `clang-diagnostic-implicit-int-conversion` in commit `Make integer narrowing explicit and enable implicit conversion checking`: three negated heights packed into coordinates use explicit `LEPTON` casts.                           |
 | `clang-diagnostic-int-to-pointer-cast`                        | Enabled | Commit `Enable integer-to-pointer cast checking`: both games and shared code pass without source fixes.                                                                                                                                           |
-| `bugprone-derived-method-shadowing-base-method`               | Pending | Find unintended hiding in the game class hierarchies.                                                                                                                                                                                             |
+| `bugprone-derived-method-shadowing-base-method`               | Enabled | Commit `Turn hidden base methods into overrides and enable shadowing checking`: make the UI reset and INI writing chains virtual, drop redundant redeclarations, rename the buffer lock, and annotate the typed interface classes.                |
 
 ## P2 — Further correctness and targeted safety
 
@@ -396,6 +396,45 @@ Markdown formatting and whitespace checks passed; game builds and tests were not
 documentation-only decision.
 
 ### Completed validation
+
+The 2026-09-11 derived-method shadowing cleanup found 38 distinct hiding sites in the isolated sweep
+of 908 project translation units, including 431 generated header checks. `Map` is always a
+`MapEditClass`, so every reported call already dispatched statically to the most derived version;
+the changes make that relationship explicit rather than altering it.
+
+Two chains became real virtual chains. Both games' `ResetTransientUiState`, which each screen layer
+redeclares and forwards up through `GScreenClass`, is now virtual with `override` on all eight
+derived layers. TD's `DisplayClass::Write_INI` is likewise virtual so the map editor's version
+overrides it. TD's `TechnoClass` gained a virtual `Made_A_Kill` delegating to its crew base, letting
+`InfantryClass` override it; the kill dispatch in `TechnoClass::Record_The_Kill` no longer needs its
+`dynamic_cast`, and `CrewClass::Made_A_Kill` is renamed `Add_Kill` in both games so the tally helper
+and the virtual no longer share a name. The original comment claiming a virtual would complicate
+save/load predates field-wise serialization; adding one to an already polymorphic class changes no
+object layout.
+
+Redundant redeclarations are gone: the unused `TFixedHeapClass` template in both games, the empty
+`OptionsClass::Process` stub whose only caller reaches `GameOptionsClass::Process`, RA's
+`KeyboardClass::Clear` and `MapEditClass::Write_INI` forwarders, RA's `TriggerTypeClass::As_Target`
+(its `RTTI` is always `RTTI_TRIGGERTYPE`), TD's `UnitClass::operator UnitType`, and
+`RAMFileClass::operator const char*`. RA's `MapEditClass` now unhides the other `Detach` overload
+with a using-declaration instead of a forwarder. `GraphicBufferClass::Lock`/`Unlock` are renamed
+`Lock_Surface`/`Unlock_Surface`; the 109 existing call sites keep calling the viewport versions,
+which delegate to them, so the reattach step still runs exactly where it did.
+
+Three hiding sites remain deliberate and carry `NOLINTNEXTLINE` with the reason: `Node`/`List` in
+`tech/listnode.h` and RA's `KeyboardClass::Get`/`Check` exist only to narrow the base return types,
+and giving them virtual dispatch would add vtables to types the raw-image loader still copies.
+
+The final isolated and full-config sweeps passed all 889 unique project translation units. Both
+strict game builds and all 228 CTest tests passed. The RA save/load smoke check matched 240 object
+positions; the TD smoke check matched 5,742 to 6,371 game states across its default, team, world,
+building, mobile, map, globals, and factory fixtures, with the corrupt-save rejections intact. A
+deliberately hidden base method confirmed the enabled check reports an error under the repository
+configuration and is silent with the previous exclusion restored.
+
+Separately noted for later review: `WWKeyboardClass::Check` returns `bool`, so RA's
+`KeyboardClass::Check` cannot actually deliver the key number its `KeyNumType` return type promises.
+That predates this change and is left alone here.
 
 The 2026-09-11 integer-to-pointer cast check passed both isolated and full-config sweeps across 908
 project translation units, including 431 generated header checks, without findings or source fixes.

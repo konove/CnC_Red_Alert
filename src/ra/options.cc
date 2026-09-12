@@ -186,23 +186,6 @@ OptionsClass::OptionsClass()
 void OptionsClass::One_Time() { Set_Score_Vol(ScoreVolume * 256); }
 
 /***********************************************************************************************
- * OptionsClass::Process -- Handles all the options graphic interface. *
- *                                                                                             *
- *    This routine is the main control for the visual representation of the
- *options            * screen. It handles the visual overlay and the player
- *input.                              *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/21/1994 JLB : Created. *
- *=============================================================================================*/
-void OptionsClass::Process() {}
-
-/***********************************************************************************************
  * OptionsClass::Set_Shuffle -- Controls the play shuffle setting. *
  *                                                                                             *
  *    This routine will control the score shuffle flag. The setting to use is

@@ -67,7 +67,7 @@ class ScrollClass : public HelpClass {
 
  public:
   // Resets transient UI state after loading, preserving saved game state.
-  void ResetTransientUiState();
+  void ResetTransientUiState() override;
 
   ScrollClass();
 

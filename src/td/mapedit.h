@@ -198,7 +198,7 @@ class MapEditClass : public MouseClass {
   bool Scroll_Map(DirType facing, int& distance, bool really = true) override;
   //		virtual void Flag_To_Redraw(bool complete);
   void Read_INI(char* buffer) override;
-  virtual void Write_INI(char* buffer);
+  void Write_INI(char* buffer) override;
   void Detach(ObjectClass* object) override;
   void Clear_List();
   bool Add_To_List(const ObjectTypeClass* object);

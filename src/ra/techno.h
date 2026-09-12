@@ -358,7 +358,7 @@ class TechnoClass : public RadioClass,
   **	Combat related.
   */
   fixed Area_Modify(CELL cell) const;
-  virtual int Made_A_Kill() { return Crew.Made_A_Kill(); }
+  virtual int Made_A_Kill() { return Crew.Add_Kill(); }
   void Base_Is_Attacked(const TechnoClass* enemy);
   void Kill_Cargo(TechnoClass* source);
   void Record_The_Kill(TechnoClass* source) override;

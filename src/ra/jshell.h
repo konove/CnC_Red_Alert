@@ -73,12 +73,15 @@ struct KeyboardClass : public WWKeyboardClass {
   unsigned IsLibrary;
 
   KeyboardClass() : IsLibrary(true) {}
+  // These deliberately hide the library's int-returning versions; narrowing to
+  // the game's key enums is the only reason this interface class exists.
+  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
   KeyNumType Get() { return (KeyNumType)WWKeyboardClass::Get(); }
+  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
   KeyNumType Check() { return (KeyNumType)WWKeyboardClass::Check(); }
   KeyASCIIType To_ASCII(KeyNumType key) {
     return (KeyASCIIType)WWKeyboardClass::To_ASCII(key);
   }
-  void Clear() { WWKeyboardClass::Clear(); }
   int Down(KeyNumType key) { return WWKeyboardClass::Down(key); }
 
   int Mouse_X() { return Get_Mouse_X(); }

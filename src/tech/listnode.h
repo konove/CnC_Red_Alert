@@ -155,10 +155,15 @@ class List;
 template <class T>
 class Node : public GenericNode {
  public:
+  // Hiding the generic accessors is the entire purpose of this interface
+  // class: it narrows their return types without adding virtual dispatch.
+  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
   List<T>* Main_List() const {
     return static_cast<List<T>*>(GenericNode::Main_List());
   }
+  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
   T* Next() const { return static_cast<T*>(GenericNode::Next()); }
+  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
   T* Prev() const { return static_cast<T*>(GenericNode::Prev()); }
 
  private:
@@ -174,7 +179,10 @@ class Node : public GenericNode {
 template <class T>
 class List : public GenericList {
  public:
+  // As in Node, the narrowed return types are the point of the hiding.
+  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
   T* First() const { return static_cast<T*>(GenericList::First()); }
+  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
   T* Last() const { return static_cast<T*>(GenericList::Last()); }
 };
 

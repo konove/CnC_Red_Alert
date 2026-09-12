@@ -185,7 +185,7 @@ class InfantryClass final : public FootClass {
   /*
   **	Combat related.
   */
-  int Made_A_Kill();
+  int Made_A_Kill() override;
   ActionType What_Action(ObjectClass* object) override;
   ActionType What_Action(CELL cell) const override;
   void Assign_Mission(MissionType order) override;

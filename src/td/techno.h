@@ -250,6 +250,7 @@ class TechnoClass : public RadioClass,
   /*
   **	Combat related.
   */
+  virtual int Made_A_Kill() { return CrewClass::Add_Kill(); }
   void Base_Is_Attacked(const TechnoClass* enemy);
   void Kill_Cargo(TechnoClass* source);
   void Record_The_Kill(TechnoClass* source) override;

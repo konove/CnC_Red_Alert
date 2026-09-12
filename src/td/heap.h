@@ -133,28 +133,6 @@ class FixedHeapClass {
 };
 
 /**************************************************************************
-**	This template serves only as an interface to the heap manager class. By
-**	using this template, the object pointers are automatically converted
-**	to the correct type without any code overhead.
-*/
-template <class T>
-class TFixedHeapClass : public FixedHeapClass {
- public:
-  TFixedHeapClass() : FixedHeapClass(sizeof(T)) {}
-  ~TFixedHeapClass() override = default;
-
-  virtual int ID(const T* pointer) { return FixedHeapClass::ID(pointer); }
-
-  virtual T* Alloc() { return static_cast<T*>(FixedHeapClass::Allocate()); }
-  virtual int Free(T* pointer) { return FixedHeapClass::Free(pointer); }
-
- protected:
-  T& operator[](int index) {
-    return *(static_cast<char*>(Buffer) + index * Size);
-  }
-};
-
-/**************************************************************************
 **	This is a derivative of the fixed heap class. This class adds the
 **	ability to quickly iterate through the active (allocated) objects. Since
 *the *	active array is a sequence of pointers, the overhead of this class

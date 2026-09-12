@@ -2083,8 +2083,3 @@ void MapEditClass::Read_INI(CCINIClass& ini) {
 
   //	BaseGauge->Set_Value(Scen.Percent);
 }
-
-void MapEditClass::Write_INI(CCINIClass& ini) {
-  MouseClass::Write_INI(ini);
-  //	ini.Put_Int("Basic", "Percent", Scen.Percent);
-}

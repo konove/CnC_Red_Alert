@@ -50,7 +50,7 @@
 
 class GScreenClass : public VectorClass<CellClass> {
  public:
-  void ResetTransientUiState();
+  virtual void ResetTransientUiState();
   GScreenClass();
 
   /*
