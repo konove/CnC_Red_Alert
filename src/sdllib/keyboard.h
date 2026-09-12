@@ -59,7 +59,10 @@ class WWKeyboardClass {
   /* Define the functions which work with the Keyboard Class
    */
   /*===================================================================*/
-  bool Check();       // checks keybuff for meta key
+  // Returns the key number at the head of the buffer without removing it, or 0
+  // when no key is pending. Also pumps the SDL event loop, so callers that only
+  // need that side effect may discard the result.
+  int Check();
   int Get();          // gets a meta key from the keybuffer
   bool Put(int key);  // dumps a key into the keybuffer
   bool Put_Key_Message(
@@ -112,6 +115,9 @@ class WWKeyboardClass {
 
 extern WWKeyboardClass* _Kbd;
 
+// Both peek at the pending key number. Check_Key deliberately does not mirror
+// Get_Key's ASCII translation: its callers test whether any key is waiting, and
+// To_ASCII reports 0 for key releases and every non-alphanumeric key.
 inline int Check_Key() { return _Kbd->Check(); }
 inline int Check_Key_Num() { return _Kbd->Check(); }
 inline int Get_Key() { return _Kbd->To_ASCII(_Kbd->Get()); }

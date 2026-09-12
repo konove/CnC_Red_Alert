@@ -30,6 +30,14 @@ add_gtest(
         LIBS sdllib
 )
 
+# Compiles keyboard.cc directly and stubs its two hooks, so the key buffer can
+# be tested without linking the event loop and mouse cursor code.
+add_gtest(
+        NAME sdllib_keyboard_test
+        SOURCES keyboard_test.cc keyboard.cc
+        LIBS base SDL2::SDL2 absl::strings absl::check absl::log
+)
+
 # optional serial port support
 find_library(LIBSERIALPORT_LIBRARIES serialport)
 find_path(LIBSERIALPORT_INCLUDE_DIR libserialport.h)

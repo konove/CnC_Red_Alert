@@ -6,8 +6,6 @@
 #include <SDL_mouse.h>
 #include <SDL_scancode.h>
 
-#include <cstring>
-
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 
@@ -17,19 +15,18 @@
 constexpr SDL_Keymod kInputModifierMask =
     static_cast<SDL_Keymod>(KMOD_SHIFT | KMOD_CTRL | KMOD_ALT | KMOD_GUI);
 
-WWKeyboardClass::WWKeyboardClass() {
-  // clear buffer
-  memset(Buffer, 0, 256);
-}
+WWKeyboardClass::WWKeyboardClass() = default;
 
-bool WWKeyboardClass::Check() {
+int WWKeyboardClass::Check() {
   // poll for events, return key if any pressed
   SDL_Event_Loop();
 
   if (Head == Tail) {
-    return false;
+    return 0;
   }
 
+  // Head always addresses a key entry: Buff_Get steps past the two coordinate
+  // entries that follow a mouse key, so a click at x or y 0 is never read here.
   return Buffer[Head];
 }
 
@@ -84,6 +81,11 @@ bool WWKeyboardClass::Put_Key_Message(unsigned vk_key, bool release) {
   // Finally use the put command to enter the key into the keyboard
   // system.
   //
+  // A zero key would be indistinguishable from Check's empty-buffer result and
+  // would leave Get spinning, so drop the unknown scancode instead.
+  if (vk_key == 0) {
+    return false;
+  }
   return Put(vk_key);
 }
 
