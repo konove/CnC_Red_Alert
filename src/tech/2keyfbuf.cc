@@ -61,8 +61,7 @@ static void Setup_Shape_Header(int pixel_width, int pixel_height, char* src,
                                ShapeHeaderType* headers, int flags,
                                uint8_t* /*Translucent*/,
                                const uint8_t* IsTranslucent) {
-  headers->draw_flags =
-      flags & (SHAPE_TRANS | SHAPE_FADING | SHAPE_PREDATOR | SHAPE_GHOST);
+  headers->draw_flags = static_cast<unsigned>(ShapeEffectFlags(flags));
   auto* ptr = (uint8_t*)headers + sizeof(ShapeHeaderType);
   do {
     int line_flags = 0;
@@ -205,10 +204,9 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
 
   bool use_all_flags = false;
 
-  if (use_new_draw &&
-      (header_pointer->draw_flags == ~0U ||
-       header_pointer->draw_flags != ((flags & SHAPE_TRANS) | SHAPE_FADING |
-                                      SHAPE_PREDATOR | SHAPE_GHOST))) {
+  if (use_new_draw && (header_pointer->draw_flags == ~0U ||
+                       header_pointer->draw_flags !=
+                           static_cast<unsigned>(ShapeEffectFlags(flags)))) {
     Setup_Shape_Header(w, h, static_cast<char*>(src), header_pointer, flags,
                        Translucent, IsTranslucent);
     // ShapeJumpTableAddress = AllFlagsJumpTable;

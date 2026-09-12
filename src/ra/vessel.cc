@@ -776,8 +776,8 @@ ActionType VesselClass::What_Action(const ObjectClass* object) const {
           }
           CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
           CellClass* cell = &Map[cellnum];
-          if ((Map.In_Radar(cellnum) &&
-               Ground[cell->Land_Type()].Cost[SPEED_FOOT] == 0) ||
+          if (!Map.In_Radar(cellnum) ||
+              Ground[cell->Land_Type()].Cost[SPEED_FOOT] == 0 ||
               cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
               cell->Flag.Occupy.Monolith ||
               (cell->Flag.Composite & 0x01F) == 0x01F) {

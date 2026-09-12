@@ -709,24 +709,35 @@ icon and coordinate packing in both games' `cell.cc` and TD's `Coord_Snap`, TD's
 destroyed" trigger masks, and the `||`-of-`&&` conditions in `Init_Random`, `MapClass::Logic`,
 `TeamClass::AI` and `InfantryClass::Assign_Target`.
 
-Three groupings look like they may not match intent, and are left exactly as they were rather than
-changed in a parentheses commit, because each would alter gameplay or rendering:
+Three groupings looked like they may not match intent, and were left exactly as they were in that
+commit rather than changed alongside a parentheses cleanup. They were then investigated separately
+and resolved in commit `Fix the shape header cache key and two mis-grouped conditions`:
 
-- `ra/house.cc` `Update_Spied_Power_Plants` reads
-  `(!IsOwnedByPlayer && *bldg == STRUCT_POWER) || *bldg == STRUCT_ADVANCED_POWER`, where
-  `!IsOwnedByPlayer && (POWER || ADVANCED_POWER)` is the more likely intent. The inner
-  `SpiedBy & 1 << PlayerPtr->Class->House` guard probably makes the two equivalent, since a house
-  does not spy its own building, but that is an argument for checking it in game rather than
-  assuming it.
-- `ra/vessel.cc` `What_Action` tests
+- `ra/house.cc` `Update_Spied_Power_Plants` read
+  `(!IsOwnedByPlayer && *bldg == STRUCT_POWER) || *bldg == STRUCT_ADVANCED_POWER`. The ownership
+  filter is meant to apply to both plant types, and the regrouping is safe: the only case the two
+  forms disagree on is a player-owned advanced power plant, and the loop body is
+  `bldg->Mark(MARK_CHANGE)`, which `ObjectClass::Mark` resolves to `Mark_For_Redraw()` alone. No
+  simulation state is touched, so nothing can desync, and the divergence needs the player's own spy
+  bit on their own building besides. Regrouped to `!IsOwnedByPlayer && (POWER || ADVANCED)`.
+- `ra/vessel.cc` `What_Action` tested
   `(In_Radar(cellnum) && Cost[SPEED_FOOT] == 0) || Occupy.Building || ...` for an unsuitable unload
-  cell. The same list appears without the `In_Radar` term at `vessel.cc:1580` and `unit.cc:3706`,
-  which suggests `In_Radar` was meant to guard the whole test. As written, an off-map adjacent cell
-  counts as suitable when its occupancy flags happen to be clear.
-- `tech/2keyfbuf.cc` compares `draw_flags` against
-  `(flags & SHAPE_TRANS) | SHAPE_FADING | SHAPE_PREDATOR | SHAPE_GHOST`, where masking `flags` with
-  all four looks intended. As written the right-hand side always carries three of the bits, so the
-  comparison nearly always differs and the all-flags shape path is taken.
+  cell. `MapClass::In_Radar` is a pure playfield-bounds test — out-of-range cell number, then left
+  or right of `MapCellX`/`MapCellWidth`, then top or bottom — with no shroud involved, so it is the
+  validity guard for the whole test rather than one term of it. The same occupancy list appears
+  without an `In_Radar` term at `vessel.cc:1580` and `unit.cc:3706`, where the cell is already known
+  good. As written a cell outside the playfield counted as suitable whenever its occupancy flags
+  happened to be clear, which offered the unload action to a loaded transport sitting against the
+  map border. Now `!In_Radar(cellnum) || impassable || occupied`.
+- `tech/2keyfbuf.cc` compared `draw_flags` against
+  `(flags & SHAPE_TRANS) | SHAPE_FADING | SHAPE_PREDATOR | SHAPE_GHOST`. This one is a definite bug,
+  and the proof is nine lines up in the same file: `Setup_Shape_Header` _stores_
+  `flags & (SHAPE_TRANS | SHAPE_FADING | SHAPE_PREDATOR | SHAPE_GHOST)`. The reading expression adds
+  the other three bits unconditionally, so the stored key could only equal the computed one when a
+  draw requested all four effects at once. Every other draw saw a mismatch, re-ran
+  `Setup_Shape_Header` — a full per-pixel pass over the shape — and took the all-flags blit path.
+  Both sides now call one `ShapeEffectFlags()` helper in `2keyfbuf.h`, and `tech/2keyfbuf_test.cc`
+  pins it: all five of its tests fail against the old expression and pass against the helper.
 
 Applying the fix-its pushed a few conditions past the column limit; only those ranges were
 reformatted, and the touched files gain no formatting violations they did not already have.
