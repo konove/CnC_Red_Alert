@@ -2,7 +2,7 @@
 
 Updated: 2026-09-12, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 205 currently excluded check names** and completed entries, in recommended work
+This tracks **all 195 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -81,7 +81,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `hicpp-signed-bitwise`                                     | Legacy  | Unavailable in LLVM 23; review with `bugprone-signed-bitwise` on older tools.                                                                                                                                                                                         |
 | `clang-diagnostic-switch-enum`                             | Pending | Audit missing enum cases even when a default exists.                                                                                                                                                                                                                  |
 | `clang-diagnostic-switch`                                  | Pending | Review missing cases; intentional ButtonKey(n) labels need a policy.                                                                                                                                                                                                  |
-| `clang-diagnostic-switch-bool`                             | Pending | Find accidental boolean switch expressions.                                                                                                                                                                                                                           |
+| `clang-diagnostic-switch-bool`                             | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                         |
 | `clang-diagnostic-duplicate-enum`                          | Pending | Separate accidental duplicate values from deliberate aliases.                                                                                                                                                                                                         |
 | `clang-diagnostic-missing-braces`                          | Pending | Check aggregate/subobject initialization before adding braces.                                                                                                                                                                                                        |
 | `clang-diagnostic-cast-qual`                               | Pending | Review casts discarding const or volatile guarantees.                                                                                                                                                                                                                 |
@@ -93,7 +93,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `hicpp-vararg`                                             | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-pro-type-vararg` on older tools.                                                                                                                                                                               |
 | `modernize-avoid-variadic-functions`                       | Pending | Replace unsafe variadic interfaces where practical.                                                                                                                                                                                                                   |
 | `cert-dcl50-cpp`                                           | Pending | Alias of `modernize-avoid-variadic-functions`; handle together.                                                                                                                                                                                                       |
-| `clang-diagnostic-missing-format-attribute`                | Pending | Extend compiler format validation to project wrappers.                                                                                                                                                                                                                |
+| `clang-diagnostic-missing-format-attribute`                | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                         |
 | `clang-diagnostic-undef`                                   | Pending | Catch misspelled or missing feature macros in conditional builds.                                                                                                                                                                                                     |
 | `clang-diagnostic-undefined-func-template`                 | Pending | Catch unavailable template definitions on instantiated paths.                                                                                                                                                                                                         |
 | `clang-diagnostic-undefined-var-template`                  | Pending | Catch template variables lacking required definitions.                                                                                                                                                                                                                |
@@ -111,74 +111,74 @@ comes from the installed tool, since the online documentation follows LLVM devel
 
 ## P3 — Broader safety and maintainability
 
-| Check                                                           | Status  | Reason / result                                                                                           |
-| --------------------------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------- |
-| `clang-diagnostic-unsafe-buffer-usage`                          | Pending | Map remaining buffer hazards; requires staged API/container work.                                         |
-| `cppcoreguidelines-pro-bounds-avoid-unchecked-container-access` | Pending | Review unchecked indexing; choose bounds policy at real boundaries.                                       |
-| `cppcoreguidelines-pro-bounds-constant-array-index`             | Pending | Replace unverifiable C-array indexing where practical.                                                    |
-| `cppcoreguidelines-owning-memory`                               | Pending | Clarify ownership while preserving the custom heap model.                                                 |
-| `cppcoreguidelines-no-malloc`                                   | Pending | Move suitable allocations to typed lifetime management.                                                   |
-| `hicpp-no-malloc`                                               | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-no-malloc` on older tools.                         |
-| `cppcoreguidelines-pro-type-union-access`                       | Pending | Audit active members; coordinate/event unions need deliberate treatment.                                  |
-| `cppcoreguidelines-pro-bounds-array-to-pointer-decay`           | Pending | Preserve size information across buffer interfaces.                                                       |
-| `hicpp-no-array-decay`                                          | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-pro-bounds-array-to-pointer-decay` on older tools. |
-| `cppcoreguidelines-pro-bounds-pointer-arithmetic`               | Pending | Reduce unchecked pointer traversal after buffer APIs improve.                                             |
-| `modernize-avoid-c-arrays`                                      | Pending | Migrate arrays selectively after ownership and layout review.                                             |
-| `cppcoreguidelines-avoid-c-arrays`                              | Pending | Alias of `modernize-avoid-c-arrays`; handle together.                                                     |
-| `hicpp-avoid-c-arrays`                                          | Legacy  | Unavailable in LLVM 23; review with `modernize-avoid-c-arrays` on older tools.                            |
-| `cppcoreguidelines-use-enum-class`                              | Pending | Strengthen enum boundaries; account for flags and serialized values.                                      |
-| `modernize-avoid-c-style-cast`                                  | Pending | Make conversion intent visible across remaining casts.                                                    |
-| `google-readability-casting`                                    | Pending | Alias of `modernize-avoid-c-style-cast`; handle together.                                                 |
-| `cppcoreguidelines-pro-type-cstyle-cast`                        | Pending | Review C-style casts that bypass type safety.                                                             |
-| `clang-diagnostic-old-style-cast`                               | Pending | Finish compiler enforcement after the cast migration.                                                     |
-| `clang-diagnostic-deprecated-enum-enum-conversion`              | Pending | Separate arithmetic on unrelated enums from intentional flag use.                                         |
-| `clang-diagnostic-deprecated-anon-enum-enum-conversion`         | Pending | Replace anonymous-enum arithmetic with deliberate types/constants.                                        |
-| `clang-diagnostic-deprecated-enum-compare`                      | Pending | Review comparisons between unrelated enum domains.                                                        |
-| `google-runtime-int`                                            | Pending | Bring remaining integer spellings into the project's fixed-width policy.                                  |
-| `modernize-use-default-member-init`                             | Pending | Centralize common defaults and reduce constructor drift.                                                  |
-| `cppcoreguidelines-use-default-member-init`                     | Pending | Alias of `modernize-use-default-member-init`; handle together.                                            |
-| `cppcoreguidelines-prefer-member-initializer`                   | Pending | Initialize members directly; preserve construction-order semantics.                                       |
-| `modernize-use-equals-delete`                                   | Pending | Express prohibited operations explicitly.                                                                 |
-| `hicpp-use-equals-delete`                                       | Legacy  | Unavailable in LLVM 23; review with `modernize-use-equals-delete` on older tools.                         |
-| `modernize-use-equals-default`                                  | Pending | Let the compiler implement genuinely default operations.                                                  |
-| `hicpp-use-equals-default`                                      | Legacy  | Unavailable in LLVM 23; review with `modernize-use-equals-default` on older tools.                        |
-| `performance-noexcept-swap`                                     | Pending | Make non-throwing swap guarantees explicit where valid.                                                   |
-| `cppcoreguidelines-noexcept-swap`                               | Pending | Alias of `performance-noexcept-swap`; handle together.                                                    |
-| `bugprone-switch-missing-default-case`                          | Pending | Review fallback policy; empty defaults alone add little value.                                            |
-| `hicpp-multiway-paths-covered`                                  | Legacy  | Unavailable in LLVM 23; review with `bugprone-switch-missing-default-case` on older tools.                |
-| `clang-diagnostic-switch-default`                               | Pending | Align compiler fallback enforcement with the switch policy.                                               |
-| `clang-diagnostic-covered-switch-default`                       | Pending | Resolve tension between exhaustive switches and defensive defaults.                                       |
-| `readability-implicit-bool-conversion`                          | Pending | Clarify boolean intent at numeric and pointer boundaries.                                                 |
-| `readability-inconsistent-declaration-parameter-name`           | Pending | Remove declaration/definition mismatches that mislead callers.                                            |
-| `misc-const-correctness`                                        | Pending | Protect local values from unintended writes; avoid indiscriminate churn.                                  |
-| `readability-make-member-function-const`                        | Pending | Expose read-only operations for safer interfaces.                                                         |
-| `misc-override-with-different-visibility`                       | Pending | Review surprising access changes across virtual interfaces.                                               |
-| `misc-header-include-cycle`                                     | Pending | Reduce header coupling and fragile build dependencies.                                                    |
-| `misc-include-cleaner`                                          | Pending | Review missing/redundant includes alongside existing IWYU checks.                                         |
-| `clang-diagnostic-missing-prototypes`                           | Pending | Give externally visible functions consistent declarations.                                                |
-| `clang-diagnostic-missing-variable-declarations`                | Pending | Give shared variables an explicit interface.                                                              |
-| `misc-use-internal-linkage`                                     | Pending | Limit accidental symbol exposure and cross-unit coupling.                                                 |
-| `misc-use-anonymous-namespace`                                  | Pending | Keep implementation details local to their translation unit.                                              |
-| `clang-diagnostic-unneeded-internal-declaration`                | Pending | Remove unused internal declarations after configuration review.                                           |
-| `clang-diagnostic-unused-but-set-global`                        | Pending | Find dead global state or missing consumers.                                                              |
-| `misc-static-assert`                                            | Pending | Check compile-time invariants at compile time.                                                            |
-| `cert-dcl03-c`                                                  | Pending | Alias of `misc-static-assert`; handle together.                                                           |
-| `modernize-use-std-format`                                      | Pending | Improve format type safety where existing Abseil helpers do not suffice.                                  |
-| `modernize-use-std-print`                                       | Pending | Modernize direct printing where it improves type safety and clarity.                                      |
-| `performance-string-view-conversions`                           | Pending | Avoid unnecessary string copies at view boundaries.                                                       |
-| `modernize-loop-convert`                                        | Pending | Simplify traversal after reviewing mutation and iterator behavior.                                        |
-| `modernize-use-ranges`                                          | Pending | Simplify algorithms where ranges make intent clearer.                                                     |
-| `cppcoreguidelines-macro-usage`                                 | Pending | Replace avoidable macros with typed language constructs.                                                  |
-| `modernize-macro-to-enum`                                       | Pending | Replace suitable integral macro groups with typed constants/enums.                                        |
-| `cppcoreguidelines-macro-to-enum`                               | Pending | Alias of `modernize-macro-to-enum`; handle together.                                                      |
-| `bugprone-reserved-identifier`                                  | Pending | Avoid collisions with implementation-reserved identifiers.                                                |
-| `cert-dcl37-c`                                                  | Pending | Alias of `bugprone-reserved-identifier`; handle together.                                                 |
-| `cert-dcl51-cpp`                                                | Pending | Alias of `bugprone-reserved-identifier`; handle together.                                                 |
-| `clang-diagnostic-reserved-identifier`                          | Pending | Enforce compiler-detected reserved names.                                                                 |
-| `clang-diagnostic-reserved-macro-identifier`                    | Pending | Fix reserved macros; also reduce preprocessing warnings/cache misses.                                     |
-| `clang-diagnostic-invalid-source-encoding`                      | Pending | Keep source portable across compiler/platform encodings.                                                  |
-| `portability-template-virtual-member-function`                  | Pending | Review compiler-dependent template/virtual behavior.                                                      |
-| `portability-avoid-pragma-once`                                 | Pending | Align headers with the project's include-guard convention.                                                |
+| Check                                                           | Status  | Reason / result                                                                                                               |
+| --------------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `clang-diagnostic-unsafe-buffer-usage`                          | Pending | Map remaining buffer hazards; requires staged API/container work.                                                             |
+| `cppcoreguidelines-pro-bounds-avoid-unchecked-container-access` | Pending | Review unchecked indexing; choose bounds policy at real boundaries.                                                           |
+| `cppcoreguidelines-pro-bounds-constant-array-index`             | Pending | Replace unverifiable C-array indexing where practical.                                                                        |
+| `cppcoreguidelines-owning-memory`                               | Pending | Clarify ownership while preserving the custom heap model.                                                                     |
+| `cppcoreguidelines-no-malloc`                                   | Pending | Move suitable allocations to typed lifetime management.                                                                       |
+| `hicpp-no-malloc`                                               | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-no-malloc` on older tools.                                             |
+| `cppcoreguidelines-pro-type-union-access`                       | Pending | Audit active members; coordinate/event unions need deliberate treatment.                                                      |
+| `cppcoreguidelines-pro-bounds-array-to-pointer-decay`           | Pending | Preserve size information across buffer interfaces.                                                                           |
+| `hicpp-no-array-decay`                                          | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-pro-bounds-array-to-pointer-decay` on older tools.                     |
+| `cppcoreguidelines-pro-bounds-pointer-arithmetic`               | Pending | Reduce unchecked pointer traversal after buffer APIs improve.                                                                 |
+| `modernize-avoid-c-arrays`                                      | Pending | Migrate arrays selectively after ownership and layout review.                                                                 |
+| `cppcoreguidelines-avoid-c-arrays`                              | Pending | Alias of `modernize-avoid-c-arrays`; handle together.                                                                         |
+| `hicpp-avoid-c-arrays`                                          | Legacy  | Unavailable in LLVM 23; review with `modernize-avoid-c-arrays` on older tools.                                                |
+| `cppcoreguidelines-use-enum-class`                              | Pending | Strengthen enum boundaries; account for flags and serialized values.                                                          |
+| `modernize-avoid-c-style-cast`                                  | Pending | Make conversion intent visible across remaining casts.                                                                        |
+| `google-readability-casting`                                    | Pending | Alias of `modernize-avoid-c-style-cast`; handle together.                                                                     |
+| `cppcoreguidelines-pro-type-cstyle-cast`                        | Pending | Review C-style casts that bypass type safety.                                                                                 |
+| `clang-diagnostic-old-style-cast`                               | Pending | Finish compiler enforcement after the cast migration.                                                                         |
+| `clang-diagnostic-deprecated-enum-enum-conversion`              | Pending | Separate arithmetic on unrelated enums from intentional flag use.                                                             |
+| `clang-diagnostic-deprecated-anon-enum-enum-conversion`         | Pending | Replace anonymous-enum arithmetic with deliberate types/constants.                                                            |
+| `clang-diagnostic-deprecated-enum-compare`                      | Pending | Review comparisons between unrelated enum domains.                                                                            |
+| `google-runtime-int`                                            | Pending | Bring remaining integer spellings into the project's fixed-width policy.                                                      |
+| `modernize-use-default-member-init`                             | Pending | Centralize common defaults and reduce constructor drift.                                                                      |
+| `cppcoreguidelines-use-default-member-init`                     | Pending | Alias of `modernize-use-default-member-init`; handle together.                                                                |
+| `cppcoreguidelines-prefer-member-initializer`                   | Pending | Initialize members directly; preserve construction-order semantics.                                                           |
+| `modernize-use-equals-delete`                                   | Pending | Express prohibited operations explicitly.                                                                                     |
+| `hicpp-use-equals-delete`                                       | Legacy  | Unavailable in LLVM 23; review with `modernize-use-equals-delete` on older tools.                                             |
+| `modernize-use-equals-default`                                  | Pending | Let the compiler implement genuinely default operations.                                                                      |
+| `hicpp-use-equals-default`                                      | Legacy  | Unavailable in LLVM 23; review with `modernize-use-equals-default` on older tools.                                            |
+| `performance-noexcept-swap`                                     | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports. |
+| `cppcoreguidelines-noexcept-swap`                               | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports. |
+| `bugprone-switch-missing-default-case`                          | Pending | Review fallback policy; empty defaults alone add little value.                                                                |
+| `hicpp-multiway-paths-covered`                                  | Legacy  | Unavailable in LLVM 23; review with `bugprone-switch-missing-default-case` on older tools.                                    |
+| `clang-diagnostic-switch-default`                               | Pending | Align compiler fallback enforcement with the switch policy.                                                                   |
+| `clang-diagnostic-covered-switch-default`                       | Pending | Resolve tension between exhaustive switches and defensive defaults.                                                           |
+| `readability-implicit-bool-conversion`                          | Pending | Clarify boolean intent at numeric and pointer boundaries.                                                                     |
+| `readability-inconsistent-declaration-parameter-name`           | Pending | Remove declaration/definition mismatches that mislead callers.                                                                |
+| `misc-const-correctness`                                        | Pending | Protect local values from unintended writes; avoid indiscriminate churn.                                                      |
+| `readability-make-member-function-const`                        | Pending | Expose read-only operations for safer interfaces.                                                                             |
+| `misc-override-with-different-visibility`                       | Pending | Review surprising access changes across virtual interfaces.                                                                   |
+| `misc-header-include-cycle`                                     | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports. |
+| `misc-include-cleaner`                                          | Pending | Review missing/redundant includes alongside existing IWYU checks.                                                             |
+| `clang-diagnostic-missing-prototypes`                           | Pending | Give externally visible functions consistent declarations.                                                                    |
+| `clang-diagnostic-missing-variable-declarations`                | Pending | Give shared variables an explicit interface.                                                                                  |
+| `misc-use-internal-linkage`                                     | Pending | Limit accidental symbol exposure and cross-unit coupling.                                                                     |
+| `misc-use-anonymous-namespace`                                  | Pending | Keep implementation details local to their translation unit.                                                                  |
+| `clang-diagnostic-unneeded-internal-declaration`                | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports. |
+| `clang-diagnostic-unused-but-set-global`                        | Pending | Find dead global state or missing consumers.                                                                                  |
+| `misc-static-assert`                                            | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports. |
+| `cert-dcl03-c`                                                  | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports. |
+| `modernize-use-std-format`                                      | Pending | Improve format type safety where existing Abseil helpers do not suffice.                                                      |
+| `modernize-use-std-print`                                       | Pending | Modernize direct printing where it improves type safety and clarity.                                                          |
+| `performance-string-view-conversions`                           | Pending | Avoid unnecessary string copies at view boundaries.                                                                           |
+| `modernize-loop-convert`                                        | Pending | Simplify traversal after reviewing mutation and iterator behavior.                                                            |
+| `modernize-use-ranges`                                          | Pending | Simplify algorithms where ranges make intent clearer.                                                                         |
+| `cppcoreguidelines-macro-usage`                                 | Pending | Replace avoidable macros with typed language constructs.                                                                      |
+| `modernize-macro-to-enum`                                       | Pending | Replace suitable integral macro groups with typed constants/enums.                                                            |
+| `cppcoreguidelines-macro-to-enum`                               | Pending | Alias of `modernize-macro-to-enum`; handle together.                                                                          |
+| `bugprone-reserved-identifier`                                  | Pending | Avoid collisions with implementation-reserved identifiers.                                                                    |
+| `cert-dcl37-c`                                                  | Pending | Alias of `bugprone-reserved-identifier`; handle together.                                                                     |
+| `cert-dcl51-cpp`                                                | Pending | Alias of `bugprone-reserved-identifier`; handle together.                                                                     |
+| `clang-diagnostic-reserved-identifier`                          | Pending | Enforce compiler-detected reserved names.                                                                                     |
+| `clang-diagnostic-reserved-macro-identifier`                    | Pending | Fix reserved macros; also reduce preprocessing warnings/cache misses.                                                         |
+| `clang-diagnostic-invalid-source-encoding`                      | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports. |
+| `portability-template-virtual-member-function`                  | Pending | Review compiler-dependent template/virtual behavior.                                                                          |
+| `portability-avoid-pragma-once`                                 | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports. |
 
 ## P4 — Cleanup and design consistency
 
