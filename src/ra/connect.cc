@@ -744,11 +744,8 @@ int ConnectionClass::Service_Receive_Queue() {
     if (rec_entry->IsRead) {
       packet_hdr = port::AlignedObject<CommHeaderType>(rec_entry->Buffer);
 
-      if (packet_hdr->Code == PACKET_DATA_NOACK) {
-        Queue->UnQueue_Receive(nullptr, nullptr, i, nullptr, nullptr);
-        i--;
-
-      } else if (packet_hdr->PacketID < LastSeqID) {
+      if (packet_hdr->Code == PACKET_DATA_NOACK ||
+          packet_hdr->PacketID < LastSeqID) {
         Queue->UnQueue_Receive(nullptr, nullptr, i, nullptr, nullptr);
         i--;
       }

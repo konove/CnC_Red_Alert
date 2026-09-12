@@ -3176,9 +3176,6 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
         break;
 
       case ACTION_DAMAGE:
-        Set_Default_Mouse(MOUSE_NORMAL, wsmall);
-        break;
-
       case ACTION_GREPAIR:
         Set_Default_Mouse(MOUSE_NORMAL, wsmall);
         break;

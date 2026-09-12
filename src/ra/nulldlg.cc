@@ -1004,10 +1004,8 @@ GameType Select_Serial_Dialog() {
   Set_Logic_Page(SeenBuff);
 
   if (Session.SerialDefaults.Port == 0 || Session.SerialDefaults.IRQ == -1 ||
-      Session.SerialDefaults.Baud == -1) {
-    selectsettings = true;
-
-  } else if (NullModem.Detect_Port(&Session.SerialDefaults) != PORT_VALID) {
+      Session.SerialDefaults.Baud == -1 ||
+      NullModem.Detect_Port(&Session.SerialDefaults) != PORT_VALID) {
     selectsettings = true;
   }
 
@@ -1249,14 +1247,11 @@ GameType Select_Serial_Dialog() {
           break;
 
         case BUTTON_NULLMODEM:
-
-          if (selectsettings) {
-            WWMessageBox().Process(TXT_SELECT_SETTINGS);
-
-            /*
-            ** Otherwise, remote-connect; save values if we're recording
-            */
-          } else if (Init_Null_Modem(&Session.SerialDefaults)) {
+          /*
+          ** Remote-connect unless the settings still need selecting; save
+          ** values if we're recording
+          */
+          if (!selectsettings && Init_Null_Modem(&Session.SerialDefaults)) {
             rc = Test_Null_Modem();
             switch (rc) {
               case 1:
@@ -3636,21 +3631,12 @@ int Com_Scenario_Dialog(bool skirmish) {
             i = Session.Messages.Input(input);
 
             /*...............................................................
-            If 'Input' returned 1, it means refresh the message display.
-            (We have to redraw the edit line, to erase the cursor.)
+            If 'Input' returned 1, it means refresh the message display; 2
+            means redraw it. Rather than setting 'display', which would redraw
+            all msgs, we only need to erase & redraw the edit box here (which
+            also erases the cursor).
             ...............................................................*/
-            if (i == 1) {
-              Hide_Mouse();
-              Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
-                       true);
-              Session.Messages.Draw();
-              Show_Mouse();
-            } else if (i == 2) {
-              /*...............................................................
-              If 'Input' returned 2, it means redraw the message display.
-              Rather than setting 'display', which would redraw all msgs,
-              we only need to erase & redraw the edit box here.
-              ...............................................................*/
+            if (i == 1 || i == 2) {
               Hide_Mouse();
               Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
                        true);
@@ -5237,20 +5223,12 @@ int Com_Show_Scenario_Dialog() {
         i = Session.Messages.Input(input);
 
         /*...............................................................
-        If 'Input' returned 1, it means refresh the message display.
-        (We have to redraw the edit line, to erase the cursor.)
+        If 'Input' returned 1, it means refresh the message display; 2
+        means redraw it. Rather than setting 'display', which would redraw
+        all msgs, we only need to erase & redraw the edit box here (which
+        also erases the cursor).
         ...............................................................*/
-        if (i == 1) {
-          Hide_Mouse();
-          Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX, true);
-          Session.Messages.Draw();
-          Show_Mouse();
-        } else if (i == 2) {
-          /*...............................................................
-          If 'Input' returned 2, it means redraw the message display.
-          Rather than setting 'display', which would redraw all msgs,
-          we only need to erase & redraw the edit box here.
-          ...............................................................*/
+        if (i == 1 || i == 2) {
           Hide_Mouse();
           Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX, true);
           Session.Messages.Draw();

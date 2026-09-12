@@ -371,9 +371,6 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
       if (Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER) {
         switch (Class->Type) {
           case STRUCT_AIRSTRIP:
-            param = As_Target();
-            break;
-
           case STRUCT_HELIPAD:
             param = As_Target();
             break;
@@ -1560,8 +1557,6 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
         break;
 
       case RESULT_NONE:
-        break;
-
       case RESULT_LIGHT:
         break;
     }

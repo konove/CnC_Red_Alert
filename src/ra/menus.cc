@@ -724,39 +724,16 @@ int Main_Menu(unsigned long) {
     */
     switch (input) {
       case ButtonKey(BUTTON_EXPAND):
-        retval = (input & 0x7FFF) - BUTTON_EXPAND;
-        process = false;
-        break;
-
       case ButtonKey(BUTTON_EXPAND_AM):
-        retval = (input & 0x7FFF) - BUTTON_EXPAND;
-        process = false;
-        break;
-
       case ButtonKey(BUTTON_START):
-        retval = (input & 0x7FFF) - BUTTON_EXPAND;
-        process = false;
-        break;
-
       case ButtonKey(BUTTON_LOAD):
-        retval = (input & 0x7FFF) - BUTTON_EXPAND;
-        process = false;
-        break;
-
       case ButtonKey(BUTTON_MULTI):
-        retval = (input & 0x7FFF) - BUTTON_EXPAND;
-        process = false;
-        break;
-
       case ButtonKey(BUTTON_INTRO):
-        retval = (input & 0x7FFF) - BUTTON_EXPAND;
-        process = false;
-        break;
-
       case ButtonKey(BUTTON_EXIT):
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
+
       case KN_UP:
         buttons[curbutton]->Turn_Off();
         buttons[curbutton]->Flag_To_Redraw();

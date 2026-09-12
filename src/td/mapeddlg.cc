@@ -859,8 +859,6 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
         break;
 
       case ButtonKey(BUTTON_SCENARIO):
-        break;
-
       default:
         break;
     }
@@ -1973,11 +1971,7 @@ int MapEditClass::Scenario_Dialog() {
       Credit edit boxes: no need for any action
       ..................................................................*/
       case ButtonKey(TEDIT_GDICRED):
-        break;
-
       case ButtonKey(TEDIT_NODCRED):
-        break;
-
       case ButtonKey(TEDIT_NEUTCRED):
         break;
 
@@ -3130,8 +3124,6 @@ int MapEditClass::Edit_Trigger() {
         break;
 
       case ButtonKey(NAME_EDIT):
-        break;
-
       case ButtonKey(DATA_EDIT):
         break;
 

@@ -1115,17 +1115,9 @@ int MapEditClass::Edit_Team() {
     */
     switch (input) {
       case ButtonKey(BUTTON_NAME):
-        break;
-
       case ButtonKey(BUTTON_RECRUIT):
-        break;
-
       case ButtonKey(BUTTON_MAXNUM):
-        break;
-
       case ButtonKey(BUTTON_INITNUM):
-        break;
-
       case ButtonKey(BUTTON_FEAR):
         break;
 

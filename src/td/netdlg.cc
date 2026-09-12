@@ -2656,17 +2656,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   }
 
   /*------------------------------------------------------------------------
-  NET_PING: Someone is pinging me to get a response time measure (will only
-  happen after I've joined a game).  Do nothing; the IPX Manager will handle
-  sending an ACK, and updating the response time measurements.
-  ------------------------------------------------------------------------*/
-  else if (GPacket.Command == NET_PING) {
-    retcode = EV_NONE;
-  }
-
-  /*------------------------------------------------------------------------
   Default case: nothing happened.  (This case will be hit every time I
-  receive my own NET_QUERY_GAME or NET_QUERY_PLAYER packets.)
+  receive my own NET_QUERY_GAME or NET_QUERY_PLAYER packets.)  It also covers
+  NET_PING: someone pinging me to get a response time measure (will only
+  happen after I've joined a game); the IPX Manager will handle sending an
+  ACK, and updating the response time measurements.
   ------------------------------------------------------------------------*/
   else {
     retcode = EV_NONE;
@@ -5231,39 +5225,33 @@ static int Net_Fake_Join_Dialog() {
       } else
 
         /*.....................................................................
-        If the game options have changed, print them.
+        If the game options have changed, print them; likewise draw an
+        incoming message.
         .....................................................................*/
-        if (event == EV_GAME_OPTIONS) {
+        if (event == EV_GAME_OPTIONS || event == EV_MESSAGE) {
           display = REDRAW_MESSAGE;
         } else
 
           /*.....................................................................
-          Draw an incoming message
+          A game before the one I've selected is gone, so we have a new index
+          now. 'game_index' must be kept set to the currently-selected list
+          item, so we send out queries for the currently-selected game.  It's
+          therefore imperative that we detect any changes to the game list. If
+          we're joined in a game, we must decrement our game_index to keep it
+          aligned with the game we're joined to.
           .....................................................................*/
-          if (event == EV_MESSAGE) {
-            display = REDRAW_MESSAGE;
-          } else
-
-            /*.....................................................................
-            A game before the one I've selected is gone, so we have a new index
-            now. 'game_index' must be kept set to the currently-selected list
-            item, so we send out queries for the currently-selected game.  It's
-            therefore imperative that we detect any changes to the game list. If
-            we're joined in a game, we must decrement our game_index to keep it
-            aligned with the game we're joined to.
-            .....................................................................*/
-            if (event == EV_GAME_SIGNOFF) {
-              if (joinstate == JOIN_CONFIRMED) {
-                game_index--;
-                join_index--;
-                gamelist.Set_Selected_Index(join_index);
-              } else {
-                gamelist.Flag_To_Redraw();
-                Clear_Player_List(&playerlist);
-                game_index = gamelist.Current_Index();
-                Send_Join_Queries(game_index, 0, 1);
-              }
+          if (event == EV_GAME_SIGNOFF) {
+            if (joinstate == JOIN_CONFIRMED) {
+              game_index--;
+              join_index--;
+              gamelist.Set_Selected_Index(join_index);
+            } else {
+              gamelist.Flag_To_Redraw();
+              Clear_Player_List(&playerlist);
+              game_index = gamelist.Current_Index();
+              Send_Join_Queries(game_index, 0, 1);
             }
+          }
 
     /*---------------------------------------------------------------------
     Service the Ipx connections

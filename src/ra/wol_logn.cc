@@ -531,10 +531,9 @@ bool bSaveNick(WolapiObject* pWO, const char* szNickToSave,
       bPushSlot1 = false;
       break;
     case S_OK:
-      if (*szNick == 0) {
-        bPushSlot1 = false;  //	We can use this blank slot.
-      } else if (strcmp(szNick, szNickToSave) == 0) {
-        bPushSlot1 = false;  //	We can use this slot as the name is the same.
+      // We can use this blank slot, or this slot as the name is the same.
+      if (*szNick == 0 || strcmp(szNick, szNickToSave) == 0) {
+        bPushSlot1 = false;
       }
       break;
   }

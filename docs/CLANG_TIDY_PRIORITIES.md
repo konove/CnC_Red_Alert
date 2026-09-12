@@ -2,7 +2,7 @@
 
 Updated: 2026-09-12, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 206 currently excluded check names** and completed entries, in recommended work
+This tracks **all 205 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -75,7 +75,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-bitwise-op-parentheses`                  | Enabled | Commit `Fix the shifted window origin and make operator precedence explicit`: seventeen `&` inside `                                                                                                                                                                  | `, including the SHA-1 round functions; grouping preserved. |
 | `clang-diagnostic-shift-op-parentheses`                    | Enabled | Commit `Fix the shifted window origin and make operator precedence explicit`: two real bugs -- TD shifted the window origin by `3 + Get_XPos()` instead of adding it.                                                                                                 |
 | `readability-math-missing-parentheses`                     | Enabled | Commit `Parenthesize mixed-precedence arithmetic`: 2,513 sites, applied with the check's own fix-its plus 16 manual edits the fix-its could not reach; no behavior change (see the review below).                                                                     |
-| `bugprone-branch-clone`                                    | Pending | Review duplicate branches for copy/paste bugs; preserve intentional symmetry.                                                                                                                                                                                         |
+| `bugprone-branch-clone`                                    | Enabled | Commit `Merge duplicate branches and enable branch clone checking`: 43 sites, none a copy/paste bug; stack identical case labels, join repeated condition bodies, and collapse four identical if/else pairs. See review below.                                        |
 | `clang-diagnostic-sign-conversion`                         | Pending | Review signed sentinels and range changes; follow the type policy.                                                                                                                                                                                                    |
 | `bugprone-signed-bitwise`                                  | Pending | Review signed shifts and masks without breaking deliberate bit patterns.                                                                                                                                                                                              |
 | `hicpp-signed-bitwise`                                     | Legacy  | Unavailable in LLVM 23; review with `bugprone-signed-bitwise` on older tools.                                                                                                                                                                                         |
@@ -779,6 +779,56 @@ constants, which moved when lines were reflowed.
 
 The full-config strict build of both games is clean, the isolated sweep now reports nothing, and all
 242 CTest tests pass. The excluded-name count drops from 207 to 206.
+
+### Branch clone review (2026-09-12)
+
+`bugprone-branch-clone` is now enforced. The check has no options. The isolated sweep of the 460
+project translation units produced 43 findings, in both games and in `sdllib` and `winvq`:
+
+| Finding                                  | Sites |
+| ---------------------------------------- | ----- |
+| Consecutive identical `switch` branches  | 26    |
+| Repeated body in an `if`/`else if` chain | 13    |
+| `if` with identical then and else        | 4     |
+
+Every site was read against its surroundings, and where the duplication looked like it might hide a
+slip, against EA's original source in the initial commit. None is a copy/paste bug. The ones worth
+recording:
+
+- `ra/display.cc` `Mouse_Left_Up` shows `MOUSE_NORMAL` for both `ACTION_DAMAGE` and `ACTION_GREPAIR`
+  in its shadow branch, while the unshadowed switch below uses `MOUSE_DAMAGE` and `MOUSE_GREPAIR`.
+  That reads like a missed edit, but it is EA's code verbatim: over shroud the cursor does not
+  reveal what is underneath, the same reason `ACTION_NONE` is normal there too.
+- RA's message dialogs (`netdlg.cc` and `nulldlg.cc`, four sites) handle `MessageListClass::Input`
+  results 1 (refresh) and 2 (redraw) identically. TD distinguishes them, drawing for 1 and setting
+  `REDRAW_MESSAGE` for 2; RA's own comment explains it only needs to redraw the edit box for either.
+- `winvq/vqa32/audio.cc` `VQA_StopTimerInt` clears the shared `AudioFlags` timer bits in both
+  branches. EA's DOS player cleared the caller's `audio->Flags` in the else branch, but the Windows
+  player this port descends from already cleared the shared flag both ways. `VQA_StartTimerInt` has
+  no callers, so the use count is always zero; the branch is collapsed and the DOS difference noted.
+- `ra/wolapiob.cc` sends "back" from both `WOL_LEVEL_GAMESOFTYPE` and `WOL_LEVEL_LOBBIES` to the
+  games list, consistent with `WOL_LEVEL_INLOBBY` going back to the lobbies list.
+- `td/cell.cc` `Incoming` scattered infantry and other objects identically; a commented-out
+  `Scatter(threat, false)` shows the non-infantry case once differed. Collapsed to one call.
+
+The switch findings became stacked case labels, including `default:` where an explicit case only
+broke out. Two needed more than stacking. TD's cheat-key parameters in `init.cc` were each wrapped
+in an `#ifdef` of their own `PARM_*` name, all of which `td/defines.h` defines unconditionally, so
+the guards were dropped. TD's main menu gave four buttons an extra `retval += 1` under `DEMO`; the
+merged body applies it to every button except Start, which is exact for every configuration that
+compiles (a `DEMO` build already cannot, because `BONUS_MISSIONS` is unconditional and
+`BUTTON_BONUS` exists only under `NEWMENU`).
+
+The chain findings were joined with `||`, keeping each condition's order so short-circuiting still
+skips the same calls (`NullModem.Detect_Port`, `Init_Null_Modem`, `strcmp`). The `NET_PING` branch
+in both games' `Get_Join_Responses` set the same `EV_NONE` as the default and was removed, with its
+explanation moved into the default comment. `sdllib/wsa.cc` chose between the minimum and maximum
+animation buffer in four branches; it is now one condition, from disk or a nonzero size below the
+maximum, with the original rules restated in its comment.
+
+A probe with identical then and else branches confirms the check reports an error under the
+repository configuration. The isolated sweep now reports nothing, both strict game builds are clean,
+and all 242 CTest tests pass. The excluded-name count drops from 206 to 205.
 
 ### Completed validation
 

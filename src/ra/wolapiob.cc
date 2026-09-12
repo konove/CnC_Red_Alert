@@ -900,9 +900,6 @@ void WolapiObject::ListChannels() {
   pILChannels->Clear();
   switch (CurrentLevel) {
     case WOL_LEVEL_GAMESOFTYPE:
-      pILChannels->Add_Item(TXT_WOL_CHANNEL_BACK, CHANNELTYPE_GAMES, nullptr,
-                            ICON_SHAPE, CHANNELTYPE_GAMES);
-      break;
     case WOL_LEVEL_LOBBIES:
       pILChannels->Add_Item(TXT_WOL_CHANNEL_BACK, CHANNELTYPE_GAMES, nullptr,
                             ICON_SHAPE, CHANNELTYPE_GAMES);
@@ -2460,9 +2457,6 @@ bool WolapiObject::OnEnteringChatChannel(const char* szChannelName,
                               nullptr, ICON_SHAPE, CHANNELTYPE_OFFICIALCHAT);
         break;
       case WOL_LEVEL_USERCHAT:
-        pILChannels->Add_Item(TXT_WOL_CHANNEL_BACK, CHANNELTYPE_USERCHAT,
-                              nullptr, ICON_SHAPE, CHANNELTYPE_USERCHAT);
-        break;
       default:
         //	If entering a channel from anywhere else, user must have created
         // the channel. 	Make "back" take them to user channels list.

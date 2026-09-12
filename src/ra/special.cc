@@ -450,14 +450,8 @@ const char* Fetch_Password(int caption, int message, int btext) {
     }
     switch (input) {
       case 1 | BUTTON_FLAG:
-        process = false;
-        break;
-
       case KN_ESC:
       case 2 | BUTTON_FLAG:
-        process = false;
-        break;
-
       case KN_RETURN:
         process = false;
         break;

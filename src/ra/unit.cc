@@ -1627,8 +1627,6 @@ void UnitClass::Per_Cell_Process(PCPType why) {
         if (whom == Map[static_cast<CELL>(cell - MAP_CELL_W)].Cell_Building()) {
           switch (Transmit_Message(RADIO_IM_IN, whom)) {
             case RADIO_ROGER:
-              break;
-
             case RADIO_ATTACH:
               break;
 

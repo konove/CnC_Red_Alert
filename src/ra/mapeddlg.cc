@@ -878,8 +878,6 @@ int MapEditClass::Load_Scenario() {
           break;
 
         case ButtonKey(BUTTON_SCENARIO):
-          break;
-
         default:
           break;
       }

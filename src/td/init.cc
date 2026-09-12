@@ -2338,72 +2338,23 @@ bool Parse_Command_Line(int argc, char* argv[]) {
         }
         break;
 
-#ifdef PARM_CHEATERIK
       case PARM_CHEATERIK:
-        Debug_Playtest = true;
-        Debug_Flag = true;
-        break;
-#endif
-
-#ifdef PARM_CHEATADAM
       case PARM_CHEATADAM:
-        Debug_Playtest = true;
-        Debug_Flag = true;
-        break;
-#endif
-
-#ifdef PARM_CHEATMIKE
       case PARM_CHEATMIKE:
-        Debug_Playtest = true;
-        Debug_Flag = true;
-        break;
-#endif
-
-#ifdef PARM_CHEATDAVID
       case PARM_CHEATDAVID:
-        Debug_Playtest = true;
-        Debug_Flag = true;
-        break;
-#endif
-
-#ifdef PARM_CHEATPHIL
       case PARM_CHEATPHIL:
-        Debug_Playtest = true;
-        Debug_Flag = true;
-        break;
-#endif
-
-#ifdef PARM_CHEATBILL
       case PARM_CHEATBILL:
-        Debug_Playtest = true;
-        Debug_Flag = true;
-        break;
-#endif
-
-#ifdef PARM_CHEAT_STEVET
-
       case PARM_CHEAT_STEVET:
         Debug_Playtest = true;
         Debug_Flag = true;
         break;
 
-#endif
-
-#ifdef PARM_EDITORBILL
       case PARM_EDITORBILL:
-        Debug_Map = true;
-        Debug_Unshroud = true;
-        Debug_Flag = true;
-        break;
-#endif
-
-#ifdef PARM_EDITORERIK
       case PARM_EDITORERIK:
         Debug_Map = true;
         Debug_Unshroud = true;
         Debug_Flag = true;
         break;
-#endif
 
       case PARM_SPECIAL:
         Special.IsJurassic = true;

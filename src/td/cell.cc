@@ -1714,12 +1714,7 @@ void CellClass::Incoming(COORDINATE threat, bool forced) {
     if (Special.IsScatter ||
         (object->Is_Techno() &&
          !dynamic_cast<TechnoClass*>(object)->House->IsHuman)) {
-      if (object->What_Am_I() == RTTI_INFANTRY) {
-        object->Scatter(threat, forced);
-      } else {
-        object->Scatter(threat, forced);
-        //				object->Scatter(threat, false);
-      }
+      object->Scatter(threat, forced);
     }
     object = object->Next;
   }

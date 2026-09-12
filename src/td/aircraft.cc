@@ -1426,12 +1426,10 @@ int AircraftClass::Mission_Retreat() {
       break;
 
     /*
-    **	Just do nothing since we are headed toward the map edge. When the edge
-    *is *	reached, the aircraft should be automatically eliminated.
+    **	Just do nothing since we are headed toward the map edge. When the
+    **	edge is reached, the aircraft should be automatically eliminated.
     */
     case KEEP_FLYING:
-      break;
-
     default:
       break;
   }

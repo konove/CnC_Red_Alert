@@ -465,8 +465,6 @@ bool Read_Scenario(char* name) {
         readini = false;
         break;
       case GAME_SKIRMISH:
-        readini = bAftermathMultiplayer;
-        break;
       case GAME_INTERNET:
       default:
         readini = bAftermathMultiplayer;

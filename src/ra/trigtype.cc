@@ -1468,10 +1468,6 @@ bool TriggerTypeClass::Edit() {
             break;
 
           case NEED_TIME:
-            Event1.Data.Value =
-                tech::ParseInteger<int>(event1data.Get_Text()).value_or(0);
-            break;
-
           case NEED_NUMBER:
             Event1.Data.Value =
                 tech::ParseInteger<int>(event1data.Get_Text()).value_or(0);
@@ -1516,10 +1512,6 @@ bool TriggerTypeClass::Edit() {
             break;
 
           case NEED_TIME:
-            Event2.Data.Value =
-                tech::ParseInteger<int>(event2data.Get_Text()).value_or(0);
-            break;
-
           case NEED_NUMBER:
             Event2.Data.Value =
                 tech::ParseInteger<int>(event2data.Get_Text()).value_or(0);

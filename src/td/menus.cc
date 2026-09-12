@@ -911,59 +911,24 @@ int Main_Menu(unsigned long timeout) {
     switch (input) {
 #ifdef NEWMENU
       case ButtonKey(BUTTON_EXPAND):
-        retval = (input & 0x7FFF) - BUTTON_EXPAND;
-        process = false;
-        break;
-
       case ButtonKey(BUTTON_INTERNET):
-        retval = (input & 0x7FFF) - BUTTON_EXPAND;
-        process = false;
-        break;
-
 #else
 #define BUTTON_EXPAND BUTTON_START
 #endif
-
       case ButtonKey(BUTTON_START):
-        retval = (input & 0x7FFF) - BUTTON_EXPAND;
-        process = false;
-        break;
-
 #ifdef BONUS_MISSIONS
       case ButtonKey(BUTTON_BONUS):
-        retval = (input & 0x7FFF) - BUTTON_EXPAND;
-        process = false;
-        break;
 #endif  // BONUS_MISSIONS
-
       case ButtonKey(BUTTON_LOAD):
-        retval = (input & 0x7FFF) - BUTTON_EXPAND;
-#ifdef DEMO
-        retval += 1;
-#endif  // DEMO
-        process = false;
-        break;
-
       case ButtonKey(BUTTON_MULTI):
-        retval = (input & 0x7FFF) - BUTTON_EXPAND;
-#ifdef DEMO
-        retval += 1;
-#endif  // DEMO
-        process = false;
-        break;
-
       case ButtonKey(BUTTON_INTRO):
-        retval = (input & 0x7FFF) - BUTTON_EXPAND;
-#ifdef DEMO
-        retval += 1;
-#endif  // DEMO
-        process = false;
-        break;
-
       case ButtonKey(BUTTON_EXIT):
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
 #ifdef DEMO
-        retval += 1;
+        // The demo shifts every button after Start up by one.
+        if (input != ButtonKey(BUTTON_START)) {
+          retval += 1;
+        }
 #endif  // DEMO
         process = false;
         break;

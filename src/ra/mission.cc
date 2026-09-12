@@ -235,12 +235,9 @@ void MissionClass::AI() {
   BStart(BENCH_MISSION);
   if (MissionTimer.IsFinished() && Strength > 0) {
     switch (Mission) {
-      default:
-        MissionTimer.Set(Mission_Sleep());
-        break;
-
       case MISSION_HARMLESS:
       case MISSION_SLEEP:
+      default:
         MissionTimer.Set(Mission_Sleep());
         break;
 

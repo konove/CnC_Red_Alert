@@ -197,21 +197,13 @@ void* Open_Animation(const char* file_name, char* user_buffer,
 
   // A buffer was not passed in, so do allocations
   if (user_buffer == nullptr) {
-    // If the user wants it from the disk, then let us give it to him,
-    // otherwise, try to give a max allocation he can have.
-    if (user_flags & WSA_OPEN_FROM_DISK) {
+    // If the user wants it from the disk, or specified a buffer less than
+    // the max needed, give them the min. Otherwise (no buffer size, or
+    // enough for the max configuration) allocate what we need.
+    if ((user_flags & WSA_OPEN_FROM_DISK) ||
+        (user_buffer_size != 0 && user_buffer_size < max_buffer_size)) {
       user_buffer_size = min_buffer_size;
-    }
-    // else no buffer size, then try max configuration.
-    else if (!user_buffer_size) {
-      user_buffer_size = max_buffer_size;
-    }
-    // else if buffer specified is less then max needed, give min.
-    else if (user_buffer_size < max_buffer_size) {
-      user_buffer_size = min_buffer_size;
-    }
-    // otherwise we only want to alloc what we need.
-    else {
+    } else {
       user_buffer_size = max_buffer_size;
     }
 

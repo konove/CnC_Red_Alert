@@ -2352,20 +2352,12 @@ static int Net_Join_Dialog() {
         i = Session.Messages.Input(input);
 
         //...............................................................
-        //	If 'Input' returned 1, it means refresh the message display.
-        // (We have to redraw the edit line, to erase the cursor.)
+        //	If 'Input' returned 1, it means refresh the message display; 2
+        // means redraw it. Rather than setting 'display', which would redraw
+        // all msgs, we only need to erase & redraw the edit box here (which
+        // also erases the cursor).
         //...............................................................
-        if (i == 1) {
-          Hide_Mouse();
-          Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX, true);
-          Session.Messages.Draw();
-          Show_Mouse();
-        } else if (i == 2) {
-          //...............................................................
-          //	If 'Input' returned 2, it means redraw the message display.
-          // Rather than setting 'display', which would redraw all msgs,
-          // we only need to erase & redraw the edit box here.
-          //...............................................................
+        if (i == 1 || i == 2) {
           Hide_Mouse();
           Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX, true);
           Session.Messages.Draw();
@@ -3971,18 +3963,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   }
 
   //------------------------------------------------------------------------
-  //	NET_PING: Someone is pinging me to get a response time measure (will
-  // only 	happen after I've joined a game).  Do nothing; the IPX Manager
-  // will handle 	sending an ACK, and updating the response time
-  // measurements.
-  //------------------------------------------------------------------------
-  else if (Session.GPacket.Command == NET_PING) {
-    retcode = EV_NONE;
-  }
-
-  //------------------------------------------------------------------------
   //	Default case: nothing happened.  (This case will be hit every time I
-  //	receive my own NET_QUERY_GAME or NET_QUERY_PLAYER packets.)
+  //	receive my own NET_QUERY_GAME or NET_QUERY_PLAYER packets.)  It also
+  // covers NET_PING: someone pinging me to get a response time measure (will
+  // only happen after I've joined a game); the IPX Manager will handle
+  // sending an ACK, and updating the response time measurements.
   //------------------------------------------------------------------------
   else {
     retcode = EV_NONE;
@@ -4777,18 +4762,10 @@ static int Net_New_Dialog() {
         i = Session.Messages.Input(input);
 
         //...............................................................
-        //	If 'Input' returned 1, it means refresh the message display.
+        //	If 'Input' returned 1 or 2, it means refresh or redraw the
+        // message display.
         //...............................................................
-        if (i == 1) {
-          Hide_Mouse();
-          Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
-                   true);  // (erase the cursor)
-          Session.Messages.Draw();
-          Show_Mouse();
-        } else if (i == 2) {
-          //...............................................................
-          //	If 'Input' returned 2, it means redraw the message display.
-          //...............................................................
+        if (i == 1 || i == 2) {
           Hide_Mouse();
           Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
                    true);  // (erase the cursor)

@@ -231,16 +231,12 @@ void VQA_StopTimerInt(VQAHandle* /*vqap*/) {
     TimerIntCount--;
   }
 
-  /* Remove the timer interrrupt if it is initialized and the use count is
-   * zero. Otherwise, clear the callers timer interrupt availability flag.
+  /* Remove the timer interrupt if it is initialized and the use count is
+   * zero. The Windows player clears the shared availability flag either way
+   * (the DOS player cleared only the caller's).
    */
-  if ((AudioFlags & VQAAUDF_HMITIMER) == HMI_VQAINIT << VQAAUDB_HMITIMER &&
-      TimerIntCount == 0) {
-    // TODO: remove timer
-    AudioFlags &= ~VQAAUDF_HMITIMER;
-  } else {
-    AudioFlags &= ~VQAAUDF_HMITIMER;
-  }
+  // TODO: remove timer
+  AudioFlags &= ~VQAAUDF_HMITIMER;
 }
 
 /****************************************************************************

@@ -878,8 +878,6 @@ NeedType Action_Needs(TActionType action) {
       return NEED_TRIGGER;
 
     case TACTION_DZ:
-      return NEED_WAYPOINT;
-
     case TACTION_REVEAL_SOME:
     case TACTION_REVEAL_ZONE:
       return NEED_WAYPOINT;

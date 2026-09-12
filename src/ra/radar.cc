@@ -2128,12 +2128,7 @@ bool RadarClass::Cell_On_Radar(CELL cell) {
 void RadarClass::Player_Names(bool on) {
   IsPlayerNames = on;
   IsToRedraw = true;
-  if (on) {
-    Flag_To_Redraw(true);
-    //		Flag_To_Redraw(false);
-  } else {
-    Flag_To_Redraw(true);  // force drawing of the plate
-  }
+  Flag_To_Redraw(true);  // force drawing of the plate
 }
 
 /***********************************************************************************************

@@ -565,9 +565,6 @@ void TeamClass::AI() {
         break;
 
       case TMISSION_MOVE:
-        Coordinate_Move();
-        break;
-
       case TMISSION_RETREAT:
         Coordinate_Move();
         break;
