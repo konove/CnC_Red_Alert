@@ -59,7 +59,6 @@
 #include <filesystem>
 #include <span>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "magic_enum/magic_enum.hpp"
@@ -1062,8 +1061,6 @@ void UnitTypeClass::One_Time() {
     UnitTypeClass& uclass = As_Reference(index);
     CCFileClass file;
 
-    const void* ptr;  // Shape pointer and set pointer.
-
     int largest = 0;
     //		if (uclass.Level != -1) {
     //		if (uclass.IsBuildable) {
@@ -1095,19 +1092,16 @@ void UnitTypeClass::One_Time() {
 #ifndef NDEBUG
     RawFileClass shpfile(fullname.c_str());
     if (shpfile.Is_Available()) {
-      auto owned_data = LoadAllocData(shpfile);
-      ptr = owned_data.data();
-      uclass.SetOwnedImage(std::move(owned_data));
+      uclass.SetOwnedImage(LoadAllocData(shpfile));
     } else {
-      auto borrowed_data = MFCD::RetrieveData(fullname);
-      ptr = borrowed_data.data();
-      uclass.SetBorrowedImage(borrowed_data);
+      uclass.SetBorrowedImage(MFCD::RetrieveData(fullname));
     }
 #else
-    auto borrowed_data = MFCD::RetrieveData(fullname);
-    ptr = borrowed_data.data();
-    uclass.SetBorrowedImage(borrowed_data);
+    uclass.SetBorrowedImage(MFCD::RetrieveData(fullname));
 #endif
+    // Read the shape pointer back from the owner rather than from a local the
+    // store just moved from.
+    const void* ptr = uclass.GetImageSpan().data();
     if (ptr != nullptr) {
       largest = std::max(largest, static_cast<int>(Get_Build_Frame_Width(ptr)));
       largest =

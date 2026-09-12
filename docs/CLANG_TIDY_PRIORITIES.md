@@ -2,7 +2,7 @@
 
 Updated: 2026-09-11, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 221 currently excluded check names** and completed entries, in recommended work
+This tracks **all 220 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -59,7 +59,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | ---------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `clang-diagnostic-lifetime-safety-use-after-free`          | Enabled | Commit `Stop returning freed projectiles from the firing code`: clear the bullet pointer when unlimbo fails and read the recoil flag before the free.                                                         |
 | `clang-diagnostic-lifetime-safety-invalidation`            | Skipped | Commit `Clear the screen buffer globals their owners delete`: fix the eight dangling-global findings, but retain the exclusion because LLVM 23.1.2 flags two consecutive `push_back` calls. See review below. |
-| `clang-diagnostic-lifetime-safety-use-after-scope-moved`   | Pending | Review escaping locals and ownership-transfer false positives.                                                                                                                                                |
+| `clang-diagnostic-lifetime-safety-use-after-scope-moved`   | Enabled | Commit `Take the unit shape pointer from its owner and enable moved-storage checking`: store the shape data first, then read the pointer back, instead of holding one into a moved-from local.                |
 | `bugprone-parent-virtual-call`                             | Pending | Check skipped overrides; retain intentional grandparent dispatch.                                                                                                                                             |
 | `cppcoreguidelines-interfaces-global-init`                 | Pending | Find cross-unit global initialization dependencies.                                                                                                                                                           |
 | `bugprone-throwing-static-initialization`                  | Pending | Prevent failures before normal startup error handling.                                                                                                                                                        |
@@ -442,6 +442,30 @@ CTest tests passed. The RA save/load smoke check matched 240 object positions; t
 5,742 to 6,371 game states across all eight fixtures. The excluded-name count remains 221.
 
 ### Completed validation
+
+The 2026-09-11 moved-storage review found one finding in the isolated sweep of 890 project
+translation units, including 431 generated header checks: RA's `UnitTypeClass::One_Time` took a
+pointer into the shape vector it was about to move into the type object, and used it after the
+enclosing scope ended. The diagnostic hedges in its own text, and it was right to: `SetOwnedImage`
+moves a `std::vector<std::byte>` into the type's variant, so the heap buffer and therefore the
+pointer survive. The load now stores the data first and reads the pointer back through
+`GetImageSpan`, which removes the loan into a moved-from local and drops the local's two `#ifdef`
+spellings down to one expression each. `ptr` moves to its point of use and `<utility>` is no longer
+needed.
+
+An instrumented run confirmed the rewrite is byte for byte equivalent: with the exclusion
+temporarily restored to build the original, both versions report the same non-null pointer and the
+same shape size for all 22 unit types, so `MaxSize` is unchanged.
+
+Note that plain `clang-diagnostic-lifetime-safety-use-after-scope` was never excluded and is already
+enforced; this row covers only the narrower moved-storage case, which requires the pointer's owner
+to be moved from and the pointee scope to end.
+
+The final isolated and full-config sweeps passed all 890 project translation units. Both strict game
+builds and all 237 CTest tests passed. The RA save/load smoke check matched 240 object positions;
+the TD default and team fixtures matched 5,742 and 5,951 game states. A pointer taken into a vector
+that is then moved out of an inner scope confirms the enabled diagnostic reports an error under the
+repository configuration and is silent with the previous exclusion restored.
 
 The 2026-09-11 use-after-free review found three findings in the isolated sweep of 890 project
 translation units, including 431 generated header checks. All three are real defects on the same
