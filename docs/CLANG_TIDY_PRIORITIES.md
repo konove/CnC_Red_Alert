@@ -2,7 +2,7 @@
 
 Updated: 2026-09-11, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 224 currently excluded check names** and completed entries, in recommended work
+This tracks **all 223 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -50,7 +50,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-tautological-unsigned-zero-compare`         | Enabled | Commit `Remove impossible icon checks and enable unsigned zero comparison checking`: drop the always-false negative test on the unsigned template icon index in both map validators while keeping the upper bound and icon-map checks.            |
 | `clang-diagnostic-implicit-int-conversion`                    | Enabled | Commit `Make integer narrowing explicit and enable implicit conversion checking`: cast intentional narrowing at 518 sites, return full uncompressed image sizes, assign the RA foot speed directly, and widen the TD ownable-house mask accessor. |
 | `clang-diagnostic-implicit-int-conversion-on-negation`        | Enabled | Enabled with `clang-diagnostic-implicit-int-conversion` in commit `Make integer narrowing explicit and enable implicit conversion checking`: three negated heights packed into coordinates use explicit `LEPTON` casts.                           |
-| `clang-diagnostic-int-to-pointer-cast`                        | Pending | Find truncated or invalid addresses in legacy casts.                                                                                                                                                                                              |
+| `clang-diagnostic-int-to-pointer-cast`                        | Enabled | Commit `Enable integer-to-pointer cast checking`: both games and shared code pass without source fixes.                                                                                                                                           |
 | `bugprone-derived-method-shadowing-base-method`               | Pending | Find unintended hiding in the game class hierarchies.                                                                                                                                                                                             |
 
 ## P2 — Further correctness and targeted safety
@@ -396,6 +396,12 @@ Markdown formatting and whitespace checks passed; game builds and tests were not
 documentation-only decision.
 
 ### Completed validation
+
+The 2026-09-11 integer-to-pointer cast check passed both isolated and full-config sweeps across 908
+project translation units, including 431 generated header checks, without findings or source fixes.
+Both strict game builds and all 228 CTest tests passed. A sample casting an `int` to `char*`
+confirmed the enabled diagnostic reports an error under the repository configuration and the strict
+build's existing `-Weverything` flag, and is silent with the previous exclusion restored.
 
 The 2026-09-11 implicit integer conversion cleanup found 518 narrowing sites in 115 files in the
 isolated sweep of 908 project translation units, including 431 generated header checks, plus three
