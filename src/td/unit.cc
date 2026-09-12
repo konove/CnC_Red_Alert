@@ -364,8 +364,11 @@ void UnitClass::Debug_Dump(MonoClass* mono) const {
         "       \n");
     mono->Set_Cursor(1, 1);
     mono->Printf("%s:%s", House->Class->IniName, Class->IniName);
+    // TechnoClass dumps its flasher, stage and radio bases but not its cargo
+    // base, so the cargo section has to be requested directly. Everything else,
+    // MissionClass included, is reached through the TarComClass chain.
+    // NOLINTNEXTLINE(bugprone-parent-virtual-call)
     CargoClass::Debug_Dump(mono);
-    MissionClass::Debug_Dump(mono);
     TarComClass::Debug_Dump(mono);
   }
 }

@@ -2553,6 +2553,9 @@ TARGET InfantryClass::Greatest_Threat(ThreatType threat) const {
           (Mission == MISSION_GUARD || Mission == MISSION_GUARD_AREA)) {
         return kTargetNone;
       }
+      // A sniper hunts infantry and buildings only. FootClass would add
+      // THREAT_GROUND and put vehicles back in range.
+      // NOLINTNEXTLINE(bugprone-parent-virtual-call)
       return TechnoClass::Greatest_Threat(threat | THREAT_INFANTRY |
                                           THREAT_BUILDINGS);
   }

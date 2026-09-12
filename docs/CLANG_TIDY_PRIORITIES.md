@@ -2,7 +2,7 @@
 
 Updated: 2026-09-11, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 220 currently excluded check names** and completed entries, in recommended work
+This tracks **all 219 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -60,7 +60,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-lifetime-safety-use-after-free`          | Enabled | Commit `Stop returning freed projectiles from the firing code`: clear the bullet pointer when unlimbo fails and read the recoil flag before the free.                                                         |
 | `clang-diagnostic-lifetime-safety-invalidation`            | Skipped | Commit `Clear the screen buffer globals their owners delete`: fix the eight dangling-global findings, but retain the exclusion because LLVM 23.1.2 flags two consecutive `push_back` calls. See review below. |
 | `clang-diagnostic-lifetime-safety-use-after-scope-moved`   | Enabled | Commit `Take the unit shape pointer from its owner and enable moved-storage checking`: store the shape data first, then read the pointer back, instead of holding one into a moved-from local.                |
-| `bugprone-parent-virtual-call`                             | Pending | Check skipped overrides; retain intentional grandparent dispatch.                                                                                                                                             |
+| `bugprone-parent-virtual-call`                             | Enabled | Commit `Document the deliberate grandparent dispatches and enable parent virtual call checking`: drop TD's duplicate mission dump; the other twelve skips are intentional and now say why.                    |
 | `cppcoreguidelines-interfaces-global-init`                 | Pending | Find cross-unit global initialization dependencies.                                                                                                                                                           |
 | `bugprone-throwing-static-initialization`                  | Pending | Prevent failures before normal startup error handling.                                                                                                                                                        |
 | `cert-err58-cpp`                                           | Pending | Alias of `bugprone-throwing-static-initialization`; handle together.                                                                                                                                          |
@@ -442,6 +442,41 @@ CTest tests passed. The RA save/load smoke check matched 240 object positions; t
 5,742 to 6,371 game states across all eight fixtures. The excluded-name count remains 221.
 
 ### Completed validation
+
+The 2026-09-11 parent virtual call review found 13 sites in the isolated sweep of 890 project
+translation units, including 431 generated header checks. Twelve are deliberate, and the row's own
+note anticipated that; they now carry `NOLINTNEXTLINE` with the reason rather than staying invisible
+behind a blanket exclusion.
+
+Three kinds of deliberate skip appear. The gadget classes replace an intermediate override rather
+than extend it: `TriColorGaugeClass::Draw_Me` draws its own three-colour body instead of
+`GaugeClass`'s single-colour one and wants only `ControlClass`'s repaint-flag and peer handling,
+`SliderClass::Draw_Me` draws a thumb when it belongs to a list and still delegates to `GaugeClass`
+when it does not, and `WOLEditClass::Action` reimplements `EditClass::Action` with its own key
+handling and finishes exactly as `EditClass` does. `ListClass::Draw_Me` and `TListClass::Draw_Me`
+skip `ControlClass::Draw_Me` because it redraws the peer gadget, and a list's peer is the drop list
+that owns it; events still reach the peer through `ControlClass::Action`. Finally, the game logic
+reaches past an override for a base primitive it specifically wants: RA's
+`UnitClass::Assign_Destination` calls `FootClass::Assign_Destination` once docking with a service
+depot is already arranged, because `DriveClass` would run its refinery logic over the top and its
+path reset is done by hand on the next line; TD's sniper case calls `TechnoClass::Greatest_Threat`
+because `FootClass` would add `THREAT_GROUND` and put vehicles back in range; and RA's carrier calls
+`TechnoClass::Receive_Message` for `RADIO_DOCKING`, which `FootClass::Receive_Message` has no case
+for and would only forward.
+
+One site was redundant. TD's `UnitClass::Debug_Dump` called `CargoClass::Debug_Dump`,
+`MissionClass::Debug_Dump` and `TarComClass::Debug_Dump` in turn, but every link from `TarComClass`
+up through `TurretClass`, `DriveClass`, `FootClass`, `TechnoClass` and `RadioClass` calls its base
+unconditionally under the same `kCheatKeysEnabled` guard, so the mission section was already dumped
+by the chain. The duplicate call is removed; RA's equivalent already used the single-chain form. The
+cargo call stays, because `TechnoClass::Debug_Dump` dumps its flasher, stage and radio bases but not
+its cargo base.
+
+The final isolated and full-config sweeps passed all 890 project translation units. Both strict game
+builds and all 237 CTest tests passed. The RA save/load smoke check matched 240 object positions;
+the TD default, team and mobile fixtures matched 5,742, 5,951 and 6,212 game states. A leaf class
+calling its grandparent's virtual confirms the enabled check reports an error under the repository
+configuration and is silent with the previous exclusion restored.
 
 The 2026-09-11 moved-storage review found one finding in the isolated sweep of 890 project
 translation units, including 431 generated header checks: RA's `UnitTypeClass::One_Time` took a

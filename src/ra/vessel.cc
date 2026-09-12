@@ -1494,6 +1494,9 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
       }
       if (Class->Max_Passengers() > 0 && *this == VESSEL_CARRIER &&
           How_Many() < Class->Max_Passengers()) {
+        // FootClass::Receive_Message has no RADIO_DOCKING case and would only
+        // forward this on, so the carrier asks TechnoClass directly.
+        // NOLINTNEXTLINE(bugprone-parent-virtual-call)
         TechnoClass::Receive_Message(from, message, param);
         /*
         **	Establish contact with the object if this building isn't already

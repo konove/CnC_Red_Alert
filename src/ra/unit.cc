@@ -4477,6 +4477,11 @@ void UnitClass::Assign_Destination(TARGET target) {
         if (Ground[Map[cell].Land_Type()].Cost[Techno_Type_Class()->Speed] >
             0) {
           if (Transmit_Message(RADIO_DOCKING) == RADIO_ROGER) {
+            // Docking with the service depot is already arranged, so this wants
+            // only FootClass's "record the destination" step. DriveClass would
+            // run its refinery and docking logic over the top, and its path
+            // reset is done by hand on the next line.
+            // NOLINTNEXTLINE(bugprone-parent-virtual-call)
             FootClass::Assign_Destination(target);
             Path[0] = FACING_NONE;
             return;

@@ -468,6 +468,9 @@ int TriColorGaugeClass::Set_Yellow_Limit(int value) {
  * HISTORY:    01/16/1995 MML : Created. *
  *=============================================================================================*/
 int TriColorGaugeClass::Draw_Me(bool forced) {
+  // The tri-colour body below replaces GaugeClass's single-colour one, so this
+  // takes only the repaint-flag and peer handling from ControlClass.
+  // NOLINTNEXTLINE(bugprone-parent-virtual-call)
   if (ControlClass::Draw_Me(forced)) {
     /*
     ===================== Hide the mouse =====================

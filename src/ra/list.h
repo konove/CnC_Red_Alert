@@ -435,6 +435,9 @@ int TListClass<T>::Action(unsigned flags, KeyNumType& key) {
 
 template <class T>
 int TListClass<T>::Draw_Me(bool forced) {
+  // As in ListClass::Draw_Me: skipping ControlClass avoids asking the peer
+  // drop list to redraw from inside the list's own draw.
+  // NOLINTNEXTLINE(bugprone-parent-virtual-call)
   if (GadgetClass::Draw_Me(forced)) {
     /*
     **	Turn off the mouse.

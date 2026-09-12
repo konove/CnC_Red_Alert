@@ -150,5 +150,8 @@ int WOLEditClass::Action(unsigned flags, KeyNumType& key) {
     //		}
   }
 
+  // This reimplements EditClass::Action with WOL-specific key handling rather
+  // than extending it, and finishes the same way EditClass does.
+  // NOLINTNEXTLINE(bugprone-parent-virtual-call)
   return ControlClass::Action(flags, key);
 }

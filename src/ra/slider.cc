@@ -339,6 +339,9 @@ void SliderClass::Draw_Thumb() {
  *=============================================================================================*/
 int SliderClass::Draw_Me(bool forced) {
   if (BelongToList) {
+    // A list-attached slider draws a thumb instead of a gauge body; the
+    // stand-alone case still goes through GaugeClass below.
+    // NOLINTNEXTLINE(bugprone-parent-virtual-call)
     if (ControlClass::Draw_Me(forced)) {
       /*
       **	Hide the mouse.

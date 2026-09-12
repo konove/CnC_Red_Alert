@@ -307,6 +307,11 @@ int ListClass::Action(unsigned flags, KeyNumType& key) {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 int ListClass::Draw_Me(bool forced) {
+  // ControlClass::Draw_Me redraws the peer gadget. A list's peer is the drop
+  // list that owns it, so going through ControlClass would have the list ask
+  // its owner to redraw in the middle of its own draw. Events still reach the
+  // peer through ControlClass::Action.
+  // NOLINTNEXTLINE(bugprone-parent-virtual-call)
   if (GadgetClass::Draw_Me(forced)) {
     /*
     **	Turn off the mouse.
