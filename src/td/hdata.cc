@@ -62,6 +62,11 @@ const int COLOR_BRIGHT_BAD = 127;      // RED;
 const int COLOR_NEUTRAL = 205;         // WHITE;
 const int COLOR_BRIGHT_NEUTRAL = 202;  // WHITE;
 
+// The Remap* tables these pass are const arrays with constant initializers, so
+// they are ready before any dynamic initialization runs, and the constructor
+// only stores the pointer without reading through it. The check cannot see
+// either fact, so it reads every house here as a cross-unit ordering risk.
+// NOLINTBEGIN(cppcoreguidelines-interfaces-global-init)
 static const HouseTypeClass HouseGood(
     HOUSE_GOOD,
     "GoodGuy",          //	NAME:			House name.
@@ -191,6 +196,7 @@ static const HouseTypeClass HouseMulti6(
     RemapRed,              // Default remap table.
     'M'                    // VOICE:		Voice prefix character.
 );
+// NOLINTEND(cppcoreguidelines-interfaces-global-init)
 
 const HouseTypeClass* const HouseTypeClass::Pointers[HOUSE_COUNT] = {
     &HouseGood,   &HouseBad,    &HouseCivilian, &HouseJP,     &HouseMulti1,

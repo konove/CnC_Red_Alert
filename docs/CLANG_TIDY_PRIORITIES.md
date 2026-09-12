@@ -2,7 +2,7 @@
 
 Updated: 2026-09-11, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 219 currently excluded check names** and completed entries, in recommended work
+This tracks **all 218 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -61,7 +61,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-lifetime-safety-invalidation`            | Skipped | Commit `Clear the screen buffer globals their owners delete`: fix the eight dangling-global findings, but retain the exclusion because LLVM 23.1.2 flags two consecutive `push_back` calls. See review below. |
 | `clang-diagnostic-lifetime-safety-use-after-scope-moved`   | Enabled | Commit `Take the unit shape pointer from its owner and enable moved-storage checking`: store the shape data first, then read the pointer back, instead of holding one into a moved-from local.                |
 | `bugprone-parent-virtual-call`                             | Enabled | Commit `Document the deliberate grandparent dispatches and enable parent virtual call checking`: drop TD's duplicate mission dump; the other twelve skips are intentional and now say why.                    |
-| `cppcoreguidelines-interfaces-global-init`                 | Pending | Find cross-unit global initialization dependencies.                                                                                                                                                           |
+| `cppcoreguidelines-interfaces-global-init`                 | Enabled | Commit `Enable cross-unit global initialization checking`: TD's house table is the only report and is safe on two counts; it is annotated, and the check now guards the rest of the tree.                     |
 | `bugprone-throwing-static-initialization`                  | Pending | Prevent failures before normal startup error handling.                                                                                                                                                        |
 | `cert-err58-cpp`                                           | Pending | Alias of `bugprone-throwing-static-initialization`; handle together.                                                                                                                                          |
 | `cppcoreguidelines-init-variables`                         | Pending | Review local initialization; avoid masking missing assignments with zeroes.                                                                                                                                   |
@@ -442,6 +442,31 @@ CTest tests passed. The RA save/load smoke check matched 240 object positions; t
 5,742 to 6,371 game states across all eight fixtures. The excluded-name count remains 221.
 
 ### Completed validation
+
+The 2026-09-11 cross-unit global initialization review found 10 reports in the isolated sweep of 890
+project translation units, including 431 generated header checks. All 10 are the same construct in
+one file: TD's `hdata.cc` builds its ten `HouseTypeClass` objects passing a `Remap*` table declared
+in `const.h` and defined in `const.cc`.
+
+The construct is safe on two independent counts, neither of which the check models. The `Remap*`
+arrays are `const unsigned char[256]` with all-integer-constant initializers, so they are
+constant-initialized and sit in read-only data before any dynamic initialization runs; and
+`HouseTypeClass`'s constructor stores the pointer in `RemapTable` without reading through it, so
+nothing would depend on the contents even if the ordering were in doubt. RA reports nothing here
+because its `HouseTypeClass` takes only a `PCOLOR_*` identifier and looks the table up later.
+
+The ten reports are contiguous, so a single `NOLINTBEGIN`/`NOLINTEND` pair around the house table
+carries the explanation once rather than repeating it ten times. Making the constructor `constexpr`
+would remove the dynamic initialization altogether and retire the reports honestly, but it needs the
+`strncpy` of the file suffix replaced and touches the table identity that `ioobj.cc` encodes in
+saved games; that is a separate change.
+
+Enabling the check is worth it because it catches the real thing: a probe whose global is
+initialized from another translation unit's dynamically initialized global is reported. The final
+isolated and full-config sweeps passed all 890 project translation units. Both strict game builds
+and all 237 CTest tests passed. The RA save/load smoke check matched 240 object positions and the TD
+default fixture matched 5,742 game states, though the change is comment-only. The probe is silent
+with the previous exclusion restored.
 
 The 2026-09-11 parent virtual call review found 13 sites in the isolated sweep of 890 project
 translation units, including 431 generated header checks. Twelve are deliberate, and the row's own
