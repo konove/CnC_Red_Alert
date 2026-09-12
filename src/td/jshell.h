@@ -101,7 +101,7 @@ T operator--(T& a, int) {
   return aa;
 }
 template <class T>
-constexpr T operator|(T t1, T t2) {
+constexpr T operator|(T t1, T t2) noexcept {
   return static_cast<T>((int)t1 | (int)t2);
 }
 template <class T>

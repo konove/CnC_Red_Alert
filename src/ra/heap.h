@@ -81,7 +81,7 @@
 //   heap.Free(ptr);  // Return block to pool
 class FixedHeapClass {
  public:
-  FixedHeapClass(int size);
+  FixedHeapClass(int size) noexcept;
   virtual ~FixedHeapClass();
 
   int Count() const { return ActiveCount; }
@@ -150,7 +150,7 @@ class FixedHeapClass {
 // (pointer size) in ActivePointers vector.
 class FixedIHeapClass : public FixedHeapClass {
  public:
-  FixedIHeapClass(int size) : FixedHeapClass(size) {}
+  FixedIHeapClass(int size) noexcept : FixedHeapClass(size) {}
   ~FixedIHeapClass() override {}
 
   int Set_Heap(int count, void* buffer = nullptr) override;
@@ -187,7 +187,7 @@ class FixedIHeapClass : public FixedHeapClass {
 template <class T>
 class TFixedIHeapClass : public FixedIHeapClass {
  public:
-  TFixedIHeapClass() : FixedIHeapClass(sizeof(T)) {}
+  TFixedIHeapClass() noexcept : FixedIHeapClass(sizeof(T)) {}
   ~TFixedIHeapClass() override {}
 
   using FixedIHeapClass::ID;

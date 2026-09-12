@@ -50,7 +50,7 @@
 */
 class RandomStraw : public Straw {
  public:
-  RandomStraw() = default;
+  RandomStraw() noexcept = default;
   ~RandomStraw() override;
 
   RandomStraw(const RandomStraw&) = delete;

@@ -6,7 +6,7 @@
 class PaletteClass {
  public:
   PaletteClass() = default;
-  PaletteClass(const RGBClass&);
+  PaletteClass(const RGBClass&) noexcept;
 
   void Set(int fade = 0, void (*callback)() = nullptr);
 
@@ -20,7 +20,7 @@ class PaletteClass {
   RGBClass& operator[](int index);
   const RGBClass& operator[](int index) const;
 
-  operator unsigned char*();
+  operator unsigned char*() noexcept;
   operator const unsigned char*() const;
 
   static const int COLOR_COUNT = 256;

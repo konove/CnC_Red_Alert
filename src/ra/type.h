@@ -87,7 +87,7 @@ class AbstractTypeClass {
   */
   int FullName;
 
-  AbstractTypeClass(RTTIType rtti, int id, int name, const char* ini);
+  AbstractTypeClass(RTTIType rtti, int id, int name, const char* ini) noexcept;
   virtual ~AbstractTypeClass() = default;
 
   // Saved-game support for the base part; derived classes call it first.
@@ -172,7 +172,7 @@ class HouseTypeClass : public AbstractTypeClass {
   //------------------------------------------------------------------------
   HouseTypeClass(HousesType house, const char* ini, int fullname,
                  const char* ext, int lemon, PlayerColorType remapcolor,
-                 char prefix);
+                 char prefix) noexcept;
 
   const unsigned char* Remap_Table() const;
 
@@ -291,7 +291,7 @@ class ObjectTypeClass : public AbstractTypeClass {
   ObjectTypeClass(RTTIType rtti, int id, bool is_sentient, bool is_stealthy,
                   bool is_selectable, bool is_legal_target,
                   bool is_insignificant, bool is_immune, bool is_footprint,
-                  int fullname, const char* name);
+                  int fullname, const char* name) noexcept;
   ~ObjectTypeClass() override;
   ObjectTypeClass(const ObjectTypeClass& other);
   ObjectTypeClass& operator=(const ObjectTypeClass&) = delete;
@@ -588,7 +588,7 @@ class TechnoTypeClass : public ObjectTypeClass {
                   bool is_nominal, bool is_stealthy, bool is_selectable,
                   bool is_legal_target, bool is_insignificant, bool is_immune,
                   bool is_theater, bool is_turret_equipped, bool is_remappable,
-                  bool is_footprint, int rotation, SpeedType speed);
+                  bool is_footprint, int rotation, SpeedType speed) noexcept;
 
   bool Is_Two_Shooter() const;
   int Legal_Placement(CELL pos) const;
@@ -776,7 +776,7 @@ class BuildingTypeClass : public TechnoTypeClass {
                     bool is_turret_equipped, bool is_remappable,
                     RTTIType tobuild, DirType sframe, BSizeType size,
                     const short* exitlist, const short* sizelist,
-                    const short* overlap);
+                    const short* overlap) noexcept;
   operator StructType() const { return Type; }
 
   void* operator new(size_t) noexcept;
@@ -960,7 +960,7 @@ class UnitTypeClass : public TechnoTypeClass {
                 bool is_turret_equipped, bool is_radar_equipped,
                 bool is_fire_anim, bool is_lock_turret, bool is_gigundo,
                 bool is_animating, bool is_jammer, bool is_gapper, int rotation,
-                int toffset, MissionType order, bool is_aftermath);
+                int toffset, MissionType order, bool is_aftermath) noexcept;
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
@@ -1052,7 +1052,7 @@ class VesselTypeClass : public TechnoTypeClass {
                   int verticaloffset, int primaryoffset, int primarylateral,
                   int secondaryoffset, int secondarylateral, bool is_eight,
                   bool is_nominal, bool is_turret_equipped, int rotation,
-                  int toffset, bool is_aftermath);
+                  int toffset, bool is_aftermath) noexcept;
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
@@ -1184,7 +1184,7 @@ class InfantryTypeClass : public TechnoTypeClass {
                     bool is_nominal, bool is_theater, PipEnum pip,
                     const DoInfoStruct* controls, int firelaunch,
                     int pronelaunch, const unsigned char* override_remap,
-                    bool is_aftermath);
+                    bool is_aftermath) noexcept;
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
@@ -1269,7 +1269,8 @@ class AircraftTypeClass : public TechnoTypeClass {
                     bool is_rotorcustom, bool is_landable, bool is_stealthy,
                     bool is_selectable, bool is_legal_target,
                     bool is_insignificant, bool is_immune, StructType building,
-                    int landingspeed, int rotation, MissionType deforder);
+                    int landingspeed, int rotation,
+                    MissionType deforder) noexcept;
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
@@ -1447,7 +1448,7 @@ class BulletTypeClass : public ObjectTypeClass {
   int Tumble;
 
   //---------------------------------------------------------------------
-  BulletTypeClass(const char* name);
+  BulletTypeClass(const char* name) noexcept;
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
@@ -1498,7 +1499,8 @@ class TerrainTypeClass : public ObjectTypeClass {
   //----------------------------------------------------------------
   TerrainTypeClass(TerrainType terrain, int theater, COORDINATE centerbase,
                    bool is_immune, bool is_water, const char* ininame,
-                   int fullname, const short* occupy, const short* overlap);
+                   int fullname, const short* occupy,
+                   const short* overlap) noexcept;
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
@@ -1552,7 +1554,7 @@ class TemplateTypeClass : public ObjectTypeClass {
 
   //----------------------------------------------------------
   TemplateTypeClass(TemplateType iconset, int theater, const char* ininame,
-                    int fullname);
+                    int fullname) noexcept;
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
@@ -1731,7 +1733,7 @@ class AnimTypeClass : public ObjectTypeClass {
                 bool iscrater, bool issticky, bool ground, bool istrans,
                 bool isflame, fixed damage, int delaytime, int start,
                 int loopstart, int loopend, int stages, int loops,
-                VocType sound, AnimType chainto);
+                VocType sound, AnimType chainto) noexcept;
 
   static void Init_Heap();
   void* operator new(size_t) noexcept;
@@ -1827,7 +1829,7 @@ class OverlayTypeClass : public ObjectTypeClass {
                    LandType ground, int damagelevels, int damagepoints,
                    bool isradarinvisible, bool iswooden, bool istarget,
                    bool iscrushable, bool istiberium, bool high, bool theater,
-                   bool iswall, bool iscrate);
+                   bool iswall, bool iscrate) noexcept;
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
@@ -1887,7 +1889,7 @@ class SmudgeTypeClass : public ObjectTypeClass {
 
   //----------------------------------------------------------
   SmudgeTypeClass(SmudgeType smudge, const char* ininame, int fullname,
-                  int width, int height, bool isbib, bool iscrater);
+                  int width, int height, bool isbib, bool iscrater) noexcept;
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }

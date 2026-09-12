@@ -1242,7 +1242,8 @@ const TemplateTypeClass* const TemplateTypeClass::Pointers[TEMPLATE_COUNT] = {
 TemplateTypeClass::TemplateTypeClass(TemplateType iconset, int theater,
                                      const char* ininame, int fullname,
                                      LandType land, int width, int height,
-                                     LandType altland, const char* alticons)
+                                     LandType altland,
+                                     const char* alticons) noexcept
     : ObjectTypeClass(false, false, false, true, false, false, true, true,
                       fullname, ininame, ARMOR_NONE, 0) {
   Theater = static_cast<unsigned char>(theater);

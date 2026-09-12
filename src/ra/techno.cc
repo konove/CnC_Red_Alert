@@ -6122,7 +6122,7 @@ TechnoTypeClass::TechnoTypeClass(
     bool is_stealthy, bool is_selectable, bool is_legal_target,
     bool is_insignificant, bool is_immune, bool is_theater,
     bool is_turret_equipped, bool is_remappable, bool is_footprint,
-    int rotation, SpeedType speed)
+    int rotation, SpeedType speed) noexcept
     : ObjectTypeClass(rtti, id, true, is_stealthy, is_selectable,
                       is_legal_target, is_insignificant, is_immune,
                       is_footprint, name, ininame),

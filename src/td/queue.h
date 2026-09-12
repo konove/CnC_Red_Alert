@@ -79,7 +79,7 @@ class QueueClass {
   const int Count;
 
   //-------------- Functions --------------------
-  QueueClass();  // Default constructor.
+  QueueClass() noexcept;  // Default constructor.
 
   /*
   **	The bracket subscript operator functions similarly to the way a normal
@@ -135,7 +135,7 @@ class QueueClass {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 template <class T, int size>
-QueueClass<T, size>::QueueClass() : Count(0) {
+QueueClass<T, size>::QueueClass() noexcept : Count(0) {
   Init();
 }
 

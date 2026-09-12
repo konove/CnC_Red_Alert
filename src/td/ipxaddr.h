@@ -60,7 +60,7 @@ class IPXAddressClass {
   /*.....................................................................
   Constructors:
   .....................................................................*/
-  IPXAddressClass();
+  IPXAddressClass() noexcept;
   IPXAddressClass(NetNumType net, NetNodeType node);
   IPXAddressClass(IPXHeaderType* header);
 

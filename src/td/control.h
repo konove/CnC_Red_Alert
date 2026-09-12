@@ -65,7 +65,8 @@
 class ControlClass : public GadgetClass {
  public:
   ControlClass(unsigned id, int x, int y, int w, int h,
-               unsigned flags = LEFTPRESS | RIGHTPRESS, int sticky = false);
+               unsigned flags = LEFTPRESS | RIGHTPRESS,
+               int sticky = false) noexcept;
   //		static ControlClass * Create_One_Of(unsigned id, int x, int y,
   // int w, int h, unsigned flags=LEFTPRESS|RIGHTPRESS, int sticky=false);
 

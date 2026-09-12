@@ -170,7 +170,7 @@ class RadarClass : public DisplayClass {
   */
   class RTacticalClass : public GadgetClass {
    public:
-    RTacticalClass()
+    RTacticalClass() noexcept
         : GadgetClass(0, 0, 0, 0,
                       LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
                       true) {}

@@ -525,7 +525,7 @@ OverlayTypeClass::OverlayTypeClass(OverlayType iconset, const char* ininame,
                                    bool isradarvisible, bool iswooden,
                                    bool istarget, bool iscrushable,
                                    bool istiberium, bool high, bool theater,
-                                   bool walltype, bool iscrate)
+                                   bool walltype, bool iscrate) noexcept
     : ObjectTypeClass(RTTI_OVERLAYTYPE, static_cast<int>(iconset), false, true,
                       false, istarget, true, false, false, fullname, ininame),
       Type(iconset),

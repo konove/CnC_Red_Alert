@@ -21,7 +21,7 @@
 #include <bit>
 #include <utility>
 
-RandomClass::RandomClass(const uint32_t seed) : seed_(seed) {}
+RandomClass::RandomClass(const uint32_t seed) noexcept : seed_(seed) {}
 
 int RandomClass::Next() {
   // Advance the seed to the next state in the linear congruential sequence,

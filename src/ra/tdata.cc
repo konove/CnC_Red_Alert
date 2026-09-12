@@ -357,7 +357,7 @@ TerrainTypeClass::TerrainTypeClass(TerrainType terrain, int theater,
                                    COORDINATE centerbase, bool is_immune,
                                    bool is_water, const char* ininame,
                                    int fullname, const short* occupy,
-                                   const short* overlap)
+                                   const short* overlap) noexcept
     : ObjectTypeClass(RTTI_TERRAINTYPE, static_cast<int>(terrain), true, true,
                       false, false, true, is_immune, true, fullname, ininame),
       Type(terrain),

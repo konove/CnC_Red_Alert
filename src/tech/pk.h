@@ -61,7 +61,7 @@
 */
 class PKey {
  public:
-  PKey() : Modulus(0), Exponent(0), BitPrecision(0) {}
+  PKey() noexcept : Modulus(0), Exponent(0), BitPrecision(0) {}
   PKey(const void* exponent, const void* modulus);  // DER initialization.
 
   int Encrypt(const void* source, int slen, void* dest) const;

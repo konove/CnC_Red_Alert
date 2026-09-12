@@ -277,7 +277,7 @@ static const HouseTypeClass HouseMulti8(
  *=============================================================================================*/
 HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
                                const char* ext, int lemon,
-                               PlayerColorType remapcolor, char prefix)
+                               PlayerColorType remapcolor, char prefix) noexcept
     : AbstractTypeClass(RTTI_HOUSETYPE, house, fullname, ini),
       //	RTTI(RTTI_HOUSETYPE),
       //	ID(house),

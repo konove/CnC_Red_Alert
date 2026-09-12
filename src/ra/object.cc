@@ -1866,7 +1866,7 @@ ObjectTypeClass::ObjectTypeClass(RTTIType rtti, int id, bool is_sentient,
                                  bool is_stealthy, bool is_selectable,
                                  bool is_legal_target, bool is_insignificant,
                                  bool is_immune, bool is_footprint, int name,
-                                 const char* ini)
+                                 const char* ini) noexcept
     : AbstractTypeClass(rtti, id, name, ini),
       IsCrushable(false),
       IsStealthy(is_stealthy),

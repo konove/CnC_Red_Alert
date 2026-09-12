@@ -219,7 +219,7 @@ TechnoTypeClass::TechnoTypeClass(
     bool is_repairable, bool is_buildable, bool is_crew, int ammo,
     unsigned short strength, MPHType maxspeed, int sightrange, int cost,
     int scenario, int /*risk*/, int reward, int ownable, WeaponType primary,
-    WeaponType secondary, ArmorType armor)
+    WeaponType secondary, ArmorType armor) noexcept
     : ObjectTypeClass(true, is_flammable, is_crushable, is_stealthy,
                       is_selectable, is_legal_target, is_insignificant,
                       is_immune, name, ininame, armor, strength) {

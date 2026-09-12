@@ -74,7 +74,7 @@
 
 #include "td/ipx.h"
 
-IPXAddressClass::IPXAddressClass() {
+IPXAddressClass::IPXAddressClass() noexcept {
   NetworkNumber[0] = 0xff;
   NetworkNumber[1] = 0xff;
   NetworkNumber[2] = 0xff;

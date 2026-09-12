@@ -202,7 +202,7 @@ const SmudgeTypeClass* const SmudgeTypeClass::Pointers[SMUDGE_COUNT] = {
  *=============================================================================================*/
 SmudgeTypeClass::SmudgeTypeClass(SmudgeType smudge, const char* ininame,
                                  int fullname, int width, int height,
-                                 bool isbib, bool iscrater)
+                                 bool isbib, bool iscrater) noexcept
     : ObjectTypeClass(false, false, false, true, false, false, true, true,
                       fullname, ininame, ARMOR_NONE, 0) {
   IsBib = isbib;

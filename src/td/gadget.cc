@@ -118,7 +118,7 @@ GadgetClass* GadgetClass::Focused = nullptr;
  * HISTORY: * 01/03/1995 MML : Created. *
  *=============================================================================================*/
 GadgetClass::GadgetClass(int x, int y, int w, int h, unsigned flags,
-                         int sticky) {
+                         int sticky) noexcept {
   X = x;
   Y = y;
   Width = w;

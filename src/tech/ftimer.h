@@ -46,7 +46,7 @@ template <TickSource T>
 class Stopwatch {
  public:
   // Creates a running timer starting at zero elapsed ticks.
-  Stopwatch();
+  Stopwatch() noexcept;
 
   // Returns the current elapsed tick count, accounting for paused time.
   int64_t Value() const;
@@ -80,7 +80,7 @@ class Stopwatch {
 };
 
 template <TickSource T>
-Stopwatch<T>::Stopwatch()
+Stopwatch<T>::Stopwatch() noexcept
     : start_tick_(static_cast<int64_t>(T::Tick())),
       accumulated_ticks_(0),
       running_(true) {}
@@ -149,7 +149,7 @@ template <TickSource T>
 class Timer {
  public:
   // Starts counting down from `set` ticks.
-  explicit Timer(int64_t set = 0);
+  explicit Timer(int64_t set = 0) noexcept;
 
   // Returns the ticks remaining, or 0 if the countdown has finished.
   int64_t Value() const;
@@ -186,7 +186,7 @@ class Timer {
 };
 
 template <TickSource T>
-Timer<T>::Timer(int64_t set)
+Timer<T>::Timer(int64_t set) noexcept
     : start_tick_(static_cast<int64_t>(T::Tick())),
       delay_time_(set),
       running_(true) {}

@@ -56,7 +56,7 @@ class TCountDownTimerClass {
  public:
   // Constructor.  Timers set before low level init has been done will not
   // be able to be 'Started' or 'on' until timer system is in place.
-  TCountDownTimerClass(int64_t set = 0) { Set(set); }
+  TCountDownTimerClass(int64_t set = 0) noexcept { Set(set); }
 
   // Saves remaining ticks and whether the timer is active. Restore Frame
   // before reading; the timer re-anchors to it instead of an old frame origin.

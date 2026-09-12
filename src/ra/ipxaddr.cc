@@ -74,7 +74,7 @@
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-IPXAddressClass::IPXAddressClass() {
+IPXAddressClass::IPXAddressClass() noexcept {
   NetworkNumber[0] = 0xff;
   NetworkNumber[1] = 0xff;
   NetworkNumber[2] = 0xff;

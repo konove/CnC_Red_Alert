@@ -82,7 +82,7 @@ class PowerClass : public RadarClass {
   */
   class PowerButtonClass : public GadgetClass {
    public:
-    PowerButtonClass()
+    PowerButtonClass() noexcept
         : GadgetClass(0, 0, 0, 0,
                       LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
                       true) {}

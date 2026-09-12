@@ -846,7 +846,7 @@ UnitTypeClass::UnitTypeClass(
     bool is_turret_equipped, bool is_radar_equipped, bool is_fire_anim,
     bool is_lock_turret, bool is_gigundo, bool is_animating, bool is_jammer,
     bool is_gapper, int rotation, int toffset, MissionType order,
-    bool is_aftermath)
+    bool is_aftermath) noexcept
     : TechnoTypeClass(RTTI_UNITTYPE, static_cast<int>(type), name, ininame,
                       remap, verticaloffset, primaryoffset, primarylateral,
                       secondaryoffset, secondarylateral, is_nominal,

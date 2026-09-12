@@ -2832,7 +2832,7 @@ BuildingTypeClass::BuildingTypeClass(
     bool is_selectable, bool is_legal_target, bool is_insignificant,
     bool is_theater, bool is_turret_equipped, bool is_remappable,
     RTTIType tobuild, DirType sframe, BSizeType size, const short* exitlist,
-    const short* sizelist, const short* overlap)
+    const short* sizelist, const short* overlap) noexcept
     : TechnoTypeClass(RTTI_BUILDINGTYPE, static_cast<int>(type), name, ininame,
                       remap, verticaloffset, primaryoffset, primarylateral,
                       primaryoffset, primarylateral, is_nominal, is_stealthy,

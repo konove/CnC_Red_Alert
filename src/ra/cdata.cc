@@ -1231,7 +1231,7 @@ static const TemplateTypeClass AntHill(TEMPLATE_HILL01, kTheaterFlagTemperate,
  * HISTORY: * 07/29/1994 JLB : Created. *
  *=============================================================================================*/
 TemplateTypeClass::TemplateTypeClass(TemplateType iconset, int theater,
-                                     const char* ininame, int fullname)
+                                     const char* ininame, int fullname) noexcept
     : ObjectTypeClass(RTTI_TEMPLATETYPE, static_cast<int>(iconset), false, true,
                       false, false, true, true, false, fullname, ininame),
       Type(iconset),

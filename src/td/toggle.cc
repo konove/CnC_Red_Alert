@@ -66,7 +66,7 @@
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-ToggleClass::ToggleClass(unsigned id, int x, int y, int w, int h)
+ToggleClass::ToggleClass(unsigned id, int x, int y, int w, int h) noexcept
     : ControlClass(id, x, y, w, h, LEFTPRESS | LEFTRELEASE, true) {
   IsPressed = false;
   IsOn = false;

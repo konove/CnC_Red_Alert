@@ -17,7 +17,6 @@ Checks: '*,
          -bugprone-reserved-identifier,
          -bugprone-signed-bitwise,
          -bugprone-switch-missing-default-case,
-         -bugprone-throwing-static-initialization,
          -bugprone-unhandled-code-paths,
          -cert-arr39-c,
          -cert-dcl03-c,
@@ -26,7 +25,6 @@ Checks: '*,
          -cert-dcl50-cpp,
          -cert-dcl51-cpp,
          -cert-err33-c,
-         -cert-err58-cpp,
          -cert-exp42-c,
          -cert-int09-c,
          -cert-msc30-c,
@@ -229,3 +227,14 @@ CheckOptions:
   # 585 findings the project has already decided against; real narrowing is not
   # affected.
   bugprone-narrowing-conversions.WarnOnEquivalentBitWidth: false
+  # The engine's singleton globals allocate while constructing: screen buffers,
+  # the dynamic vectors behind the trigger and player lists, the INI parsers,
+  # the network managers and the map/display chain that owns them. They are
+  # defined once per game in globals.cc and their construction order is load
+  # bearing, so they cannot become function-local statics. Every other static
+  # object -- the whole game-data type table -- is nothrow constructible, and
+  # the check still guards a static of any type not named here.
+  bugprone-throwing-static-initialization.AllowedTypes: 'BaseClass;CCFileClass;CCINIClass;ChronalVortexClass;CreditClass;DynamicVectorClass<.*>;GameOptionsClass;GraphicBufferClass;GraphicViewPortClass;IPXManagerClass;LayerClass;LogicClass;MapEditClass;MessageListClass;MissionControlClass;MonoClass;NullModemClass;RulesClass;ScenarioClass;SessionClass;TcpipManagerClass;TextBlitClass;ThemeClass;VersionClass;WWKeyboardClass'
+  # cert-err58-cpp is the same check under another name and needs its own
+  # copy of the list.
+  cert-err58-cpp.AllowedTypes: 'BaseClass;CCFileClass;CCINIClass;ChronalVortexClass;CreditClass;DynamicVectorClass<.*>;GameOptionsClass;GraphicBufferClass;GraphicViewPortClass;IPXManagerClass;LayerClass;LogicClass;MapEditClass;MessageListClass;MissionControlClass;MonoClass;NullModemClass;RulesClass;ScenarioClass;SessionClass;TcpipManagerClass;TextBlitClass;ThemeClass;VersionClass;WWKeyboardClass'

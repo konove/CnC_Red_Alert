@@ -153,7 +153,7 @@ inline LEPTON Pixel_To_Lepton(int pixel) {
  *                                                                                             *
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
-inline COORDINATE XY_Coord(LEPTON x, LEPTON y) {
+inline COORDINATE XY_Coord(LEPTON x, LEPTON y) noexcept {
   COORD_COMPOSITE coord{};
 
   coord.Sub.X.Raw = x;
@@ -177,7 +177,7 @@ inline COORDINATE XY_Coord(LEPTON x, LEPTON y) {
  *                                                                                             *
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
-inline COORDINATE XYP_COORD(int x, int y) {
+inline COORDINATE XYP_COORD(int x, int y) noexcept {
   return XY_Coord(Pixel_To_Lepton(x), Pixel_To_Lepton(y));
 }
 

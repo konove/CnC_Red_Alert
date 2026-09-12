@@ -46,7 +46,7 @@ class TimerClass {
  public:
   // Constructor.  Timers set before low level init has been done will not
   // be able to be 'Started' or 'on' until timer system is in place.
-  TimerClass(bool start = false);
+  TimerClass(bool start = false) noexcept;
   ~TimerClass() = default;
   TimerClass(const TimerClass&) = default;
   TimerClass& operator=(const TimerClass&) = default;
@@ -76,8 +76,8 @@ class CountDownTimerClass : TimerClass {
  public:
   // Constructor.  Timers set before low level init has been done will not
   // be able to be 'Started' or 'on' until timer system is in place.
-  CountDownTimerClass(long set, bool on = false);
-  CountDownTimerClass(bool on = false);
+  CountDownTimerClass(long set, bool on = false) noexcept;
+  CountDownTimerClass(bool on = false) noexcept;
   ~CountDownTimerClass() = default;
   CountDownTimerClass(const CountDownTimerClass&) = default;
   CountDownTimerClass& operator=(const CountDownTimerClass&) = default;

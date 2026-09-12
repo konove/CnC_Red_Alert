@@ -154,7 +154,7 @@ ObjectTypeClass::ObjectTypeClass(bool is_sentient, bool is_flammable,
                                  bool is_selectable, bool is_legal_target,
                                  bool is_insignificant, bool is_immune,
                                  int name, const char* ini, ArmorType armor,
-                                 unsigned short strength)
+                                 unsigned short strength) noexcept
     : AbstractTypeClass(name, ini) {
   IsSentient = is_sentient;
   IsFlammable = is_flammable;

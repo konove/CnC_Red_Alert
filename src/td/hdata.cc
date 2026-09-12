@@ -228,7 +228,8 @@ const HouseTypeClass* const HouseTypeClass::Pointers[HOUSE_COUNT] = {
 HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
                                const char* ext, int lemon, int color,
                                int bright_color, PlayerColorType remapcolor,
-                               const unsigned char* remap, char prefix) {
+                               const unsigned char* remap,
+                               char prefix) noexcept {
   RemapTable = remap;
   RemapColor = remapcolor;
   House = house;

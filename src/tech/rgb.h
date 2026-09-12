@@ -32,7 +32,8 @@ class RGBClass {
   constexpr RGBClass() = default;
 
   // Handles the bit-shift conversion from 8-bit (0-255) to VGA 6-bit (0-63)
-  constexpr RGBClass(const uint8_t red, const uint8_t green, const uint8_t blue)
+  constexpr RGBClass(const uint8_t red, const uint8_t green,
+                     const uint8_t blue) noexcept
       : red_(red >> 2), green_(green >> 2), blue_(blue >> 2) {}
 
   // Converts this RGB color to the HSV color space.

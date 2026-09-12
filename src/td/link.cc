@@ -65,7 +65,7 @@
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass::LinkClass() { LinkClass::Zap(); }
+LinkClass::LinkClass() noexcept { LinkClass::Zap(); }
 
 /***********************************************************************************************
  * LinkClass::~LinkClass -- Default destructor for linked list object. *

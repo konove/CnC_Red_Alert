@@ -1995,7 +1995,8 @@ AnimTypeClass::AnimTypeClass(AnimType anim, const char* name, int size,
                              bool issticky, bool ground, bool istrans,
                              bool isflame, fixed damage, int delaytime,
                              int start, int loopstart, int loopend, int stages,
-                             int loops, VocType soundid, AnimType chainto)
+                             int loops, VocType soundid,
+                             AnimType chainto) noexcept
     : ObjectTypeClass(RTTI_ANIMTYPE, static_cast<int>(anim), true, true, false,
                       false, true, true, false, TXT_NONE, name),
       IsNormalized(isnormal),

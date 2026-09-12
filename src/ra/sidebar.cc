@@ -1842,7 +1842,7 @@ bool SidebarClass::StripClass::Recalc() {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-SidebarClass::StripClass::SelectClass::SelectClass()
+SidebarClass::StripClass::SelectClass::SelectClass() noexcept
     : ControlClass(0, 0, 0, (kObjectWidth - 1) * 2, kObjectHeight * 2,
                    LEFTPRESS | RIGHTPRESS | LEFTUP),
       Strip(nullptr),

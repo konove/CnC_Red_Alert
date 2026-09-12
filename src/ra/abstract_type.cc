@@ -6,7 +6,7 @@
 #include "ra/type.h"
 
 AbstractTypeClass::AbstractTypeClass(const RTTIType rtti, const int id,
-                                     const int name, const char* ini)
+                                     const int name, const char* ini) noexcept
     : RTTI(rtti), ID(id), FullName(name) {
   strncpy(IniName, ini, sizeof(IniName));
   IniName[sizeof(IniName) - 1] = '\0';

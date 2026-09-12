@@ -1452,7 +1452,7 @@ InfantryTypeClass::InfantryTypeClass(
     bool is_theater, int ammo, int* do_table, int firelaunch, int pronelaunch,
     unsigned short strength, int sightrange, int cost, int scenario, int risk,
     int reward, int ownable, WeaponType primary, WeaponType secondary,
-    MPHType maxspeed)
+    MPHType maxspeed) noexcept
     : TechnoTypeClass(name, ininame, level, pre, is_leader, true, is_nominal,
                       false, false, true, true, true, true, false, false,
                       is_theater, false, false, false, true, false, ammo,

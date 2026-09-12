@@ -111,7 +111,7 @@ class GenericNode {
 */
 class GenericList {
  public:
-  GenericList() { FirstNode.Link(&LastNode); }
+  GenericList() noexcept { FirstNode.Link(&LastNode); }
   ~GenericList() {
     FirstNode.NextNode = nullptr;
     FirstNode.PrevNode = nullptr;

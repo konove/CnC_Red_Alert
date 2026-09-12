@@ -146,7 +146,8 @@ struct TActionClass {
 
 class ActionChoiceClass {
  public:
-  ActionChoiceClass(TActionType event = TACTION_NONE) : Action(event) {}
+  ActionChoiceClass(TActionType event = TACTION_NONE) noexcept
+      : Action(event) {}
 
   operator TActionType() const { return Action; }
   bool operator==(const ActionChoiceClass& rvalue) const {

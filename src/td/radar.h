@@ -155,7 +155,7 @@ class RadarClass : public DisplayClass {
   */
   class TacticalClass : public GadgetClass {
    public:
-    TacticalClass()
+    TacticalClass() noexcept
         : GadgetClass(0, 0, 0, 0,
                       LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
                       true) {}

@@ -70,7 +70,7 @@
 // without type information, making it suitable for overloading new/delete.
 class FixedHeapClass {
  public:
-  FixedHeapClass(int size);
+  FixedHeapClass(int size) noexcept;
   virtual ~FixedHeapClass();
 
   virtual int ID(const void* pointer);
@@ -140,7 +140,7 @@ class FixedHeapClass {
 */
 class FixedIHeapClass : public FixedHeapClass {
  public:
-  FixedIHeapClass(int size) : FixedHeapClass(size) {}
+  FixedIHeapClass(int size) noexcept : FixedHeapClass(size) {}
   ~FixedIHeapClass() override = default;
 
   int Set_Heap(int count, void* buffer = nullptr) override;
@@ -168,7 +168,7 @@ class FixedIHeapClass : public FixedHeapClass {
 template <class T>
 class TFixedIHeapClass : public FixedIHeapClass {
  public:
-  TFixedIHeapClass() : FixedIHeapClass(sizeof(T)) {}
+  TFixedIHeapClass() noexcept : FixedIHeapClass(sizeof(T)) {}
   ~TFixedIHeapClass() override = default;
 
   using FixedIHeapClass::ID;

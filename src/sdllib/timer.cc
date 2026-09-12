@@ -20,7 +20,7 @@ static Uint32 TimerCallback(Uint32 interval, void* param) {
 
 // TimerClass/CountDownTimerClass are mostly used by TD
 // (RA has its own impl)
-TimerClass::TimerClass(bool start) {
+TimerClass::TimerClass(bool start) noexcept {
   if (start && TimerSystemOn) {
     Start();
   }
@@ -60,11 +60,12 @@ long TimerClass::Get_Ticks() {
   return 0;
 }
 
-CountDownTimerClass::CountDownTimerClass(long set, bool on) : TimerClass(on) {
+CountDownTimerClass::CountDownTimerClass(long set, bool on) noexcept
+    : TimerClass(on) {
   Set(set, on);
 }
 
-CountDownTimerClass::CountDownTimerClass(bool on) : TimerClass(false) {
+CountDownTimerClass::CountDownTimerClass(bool on) noexcept : TimerClass(false) {
   if (on) {
     Start();
   }

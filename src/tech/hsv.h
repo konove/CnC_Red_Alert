@@ -52,8 +52,9 @@ class HSVClass {
   static const HSVClass BlackColor;
 
  public:
-  HSVClass() : Hue(0), Saturation(0), Value(0) {}
-  HSVClass(unsigned char hue, unsigned char saturation, unsigned char value)
+  HSVClass() noexcept : Hue(0), Saturation(0), Value(0) {}
+  HSVClass(unsigned char hue, unsigned char saturation,
+           unsigned char value) noexcept
       : Hue(hue), Saturation(saturation), Value(value) {}
   operator RGBClass() const;
 

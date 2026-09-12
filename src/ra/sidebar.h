@@ -106,7 +106,7 @@ class SidebarClass : public PowerClass {
   class StripClass : public StageClass {
     class SelectClass : public ControlClass {
      public:
-      SelectClass();
+      SelectClass() noexcept;
 
       void Set_Owner(StripClass& strip, int index);
 
@@ -317,7 +317,7 @@ class SidebarClass : public PowerClass {
 
   class SBGadgetClass : public GadgetClass {
    public:
-    SBGadgetClass()
+    SBGadgetClass() noexcept
         : GadgetClass((kSideX + 8) * 2, kSideY * 2, (kSideWidth - 1) * 2 - 1,
                       (kSideHeight - 1) * 2, LEFTUP) {}
 

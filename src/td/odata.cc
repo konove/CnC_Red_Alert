@@ -634,7 +634,7 @@ OverlayTypeClass::OverlayTypeClass(OverlayType iconset, const char* ininame,
                                    bool isradarvisible, bool iswooden,
                                    bool istarget, bool iscrushable,
                                    bool istiberium, bool high, bool theater,
-                                   bool walltype, bool iscrate)
+                                   bool walltype, bool iscrate) noexcept
     : ObjectTypeClass(false, false, iscrushable, true, false, istarget, true,
                       false, fullname, ininame, ARMOR_NONE, 0) {
   IsRadarVisible = isradarvisible;

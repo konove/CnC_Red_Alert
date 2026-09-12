@@ -3587,7 +3587,7 @@ BuildingTypeClass::BuildingTypeClass(
     int scenario, int risk, int reward, int ownable, WeaponType primary,
     WeaponType secondary, ArmorType armor, unsigned long canenter,
     unsigned capacity, int power, int drain, BSizeType size,
-    const short* exitlist, const short* sizelist, const short* overlap)
+    const short* exitlist, const short* sizelist, const short* overlap) noexcept
     : TechnoTypeClass(name, ininame, level, pre, false, is_scanner, is_nominal,
                       false, is_flammable, false, is_stealthy, is_selectable,
                       is_legal_target, is_insignificant, is_immune, is_theater,

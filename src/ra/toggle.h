@@ -52,7 +52,7 @@
 */
 class ToggleClass : public ControlClass {
  public:
-  ToggleClass(unsigned id, int x, int y, int w, int h);
+  ToggleClass(unsigned id, int x, int y, int w, int h) noexcept;
   void Turn_On();
   void Turn_Off();
 

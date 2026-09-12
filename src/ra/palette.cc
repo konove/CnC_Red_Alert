@@ -16,7 +16,7 @@ PaletteClass PaletteClass::CurrentPalette;
 
 unsigned char* CurrentPalette = PaletteClass::CurrentPalette;
 
-PaletteClass::PaletteClass(const RGBClass& col) {
+PaletteClass::PaletteClass(const RGBClass& col) noexcept {
   for (int i = 0; i < COLOR_COUNT; i++) {
     data_[i] = col;
   }
@@ -106,7 +106,9 @@ const RGBClass& PaletteClass::operator[](int index) const {
   return data_[index];
 }
 
-PaletteClass::operator unsigned char*() { return (unsigned char*)data_; }
+PaletteClass::operator unsigned char*() noexcept {
+  return (unsigned char*)data_;
+}
 
 PaletteClass::operator const unsigned char*() const {
   return (const unsigned char*)data_;

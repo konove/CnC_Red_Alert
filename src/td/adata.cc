@@ -2221,7 +2221,7 @@ AnimTypeClass::AnimTypeClass(AnimType anim, const char* name, int size,
                              bool ground, bool istrans, bool isflame,
                              unsigned int damage, int delaytime, int start,
                              int loopstart, int loopend, int stages, int loops,
-                             VocType sound, AnimType chainto)
+                             VocType sound, AnimType chainto) noexcept
     : ObjectTypeClass(true, false, false, true, false, false, true, true,
                       TXT_NONE, name, ARMOR_NONE, 0) {
   Biggest = biggest;

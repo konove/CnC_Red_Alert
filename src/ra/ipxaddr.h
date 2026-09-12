@@ -59,7 +59,7 @@ class IPXAddressClass {
   /*.....................................................................
   Constructors:
   .....................................................................*/
-  IPXAddressClass();
+  IPXAddressClass() noexcept;
 
   // Network and node bytes are already in wire order.
   template <class Archive>

@@ -33,7 +33,7 @@
 //   int roll = rng.InRange(1, 6);
 class RandomClass {
  public:
-  explicit RandomClass(uint32_t seed = 0);
+  explicit RandomClass(uint32_t seed = 0) noexcept;
 
   // Advances the generator and returns the next raw value in [0, 32767].
   int Next();

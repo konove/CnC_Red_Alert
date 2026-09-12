@@ -949,7 +949,7 @@ InfantryTypeClass::InfantryTypeClass(
     int primaryoffset, bool is_female, bool is_crawling, bool is_civilian,
     bool is_remap_override, bool is_nominal, bool is_theater, PipEnum pip,
     const DoInfoStruct* control, int firelaunch, int pronelaunch,
-    const unsigned char* override_remap, bool is_aftermath)
+    const unsigned char* override_remap, bool is_aftermath) noexcept
     : TechnoTypeClass(RTTI_INFANTRYTYPE, static_cast<int>(type), name, ininame,
                       REMAP_NORMAL, verticaloffset, primaryoffset, 0x0000,
                       0x0000, 0x0000, is_nominal, true, true, true, false,

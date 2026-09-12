@@ -75,7 +75,7 @@
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-FixedHeapClass::FixedHeapClass(int size)
+FixedHeapClass::FixedHeapClass(int size) noexcept
     : IsAllocated(false),
       Size(size),
       TotalCount(0),

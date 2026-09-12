@@ -104,8 +104,9 @@ class GadgetClass : public LinkClass {
     KEYBOARD = 0x0100       // Keyboard input processing (maybe).
   } FlagEnum;
 
-  GadgetClass(int x, int y, int w, int h, unsigned flags, int sticky = false);
-  GadgetClass() {}
+  GadgetClass(int x, int y, int w, int h, unsigned flags,
+              int sticky = false) noexcept;
+  GadgetClass() noexcept {}
   // Not copyable -- see LinkClass.
   GadgetClass(const GadgetClass&) = delete;
   ~GadgetClass() override;

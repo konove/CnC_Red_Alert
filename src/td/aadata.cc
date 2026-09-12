@@ -252,7 +252,7 @@ AircraftTypeClass::AircraftTypeClass(
     bool is_theater, bool is_repairable, bool is_buildable, bool is_crew,
     int ammo, unsigned short strength, int sightrange, int cost, int scenario,
     int risk, int reward, int ownable, WeaponType primary, WeaponType secondary,
-    ArmorType armor, MPHType maxspeed, int rot, MissionType deforder)
+    ArmorType armor, MPHType maxspeed, int rot, MissionType deforder) noexcept
     : TechnoTypeClass(name, ininame, level, pre, is_leader, false, false,
                       is_transporter, false, is_crushable, is_stealthy,
                       is_selectable, is_legal_target, is_insignificant,

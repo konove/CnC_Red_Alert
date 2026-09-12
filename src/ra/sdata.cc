@@ -181,7 +181,7 @@ static const SmudgeTypeClass Bibx3(SMUDGE_BIB3, "BIB3", TXT_BIB, 2,
  *=============================================================================================*/
 SmudgeTypeClass::SmudgeTypeClass(SmudgeType smudge, const char* ininame,
                                  int fullname, int width, int height,
-                                 bool isbib, bool iscrater)
+                                 bool isbib, bool iscrater) noexcept
     : ObjectTypeClass(RTTI_SMUDGETYPE, static_cast<int>(smudge), false, true,
                       false, false, true, true, false, fullname, ininame),
       Type(smudge),

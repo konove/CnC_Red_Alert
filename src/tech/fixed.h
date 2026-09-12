@@ -36,17 +36,17 @@
 class fixed {
  public:
   // Default-constructs to zero.
-  constexpr fixed() : raw_(0) {}
+  constexpr fixed() noexcept : raw_(0) {}
 
   // Constructs from a fraction (e.g., fixed(3, 4) = 0.75). Zero denominator
   // yields zero.
-  constexpr fixed(const int numerator, const int denominator)
+  constexpr fixed(const int numerator, const int denominator) noexcept
       : raw_(denominator == 0
                  ? uint16_t{0}
                  : static_cast<uint16_t>((numerator << 8) / denominator)) {}
 
   // Constructs from a whole number (fractional part set to zero).
-  explicit fixed(const uint8_t value)
+  explicit fixed(const uint8_t value) noexcept
       : raw_(static_cast<uint16_t>(value << 8)) {}
 
   // Parses a decimal string ("1.5") or a percentage string ("75%").

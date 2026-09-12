@@ -186,7 +186,7 @@ AttachType Attaches_To(TEventType event);
 
 class EventChoiceClass {
  public:
-  EventChoiceClass(TEventType event = TEVENT_NONE) : Event(event) {}
+  EventChoiceClass(TEventType event = TEVENT_NONE) noexcept : Event(event) {}
 
   operator TEventType() const { return Event; }
   bool operator==(const EventChoiceClass& rvalue) const {

@@ -257,7 +257,7 @@ AircraftTypeClass::AircraftTypeClass(
     bool is_rotorequipped, bool is_rotorcustom, bool is_landable,
     bool is_stealthy, bool is_selectable, bool is_legal_target,
     bool is_insignificant, bool is_immune, StructType building,
-    int landingspeed, int rotation, MissionType deforder)
+    int landingspeed, int rotation, MissionType deforder) noexcept
     : TechnoTypeClass(RTTI_AIRCRAFTTYPE, static_cast<int>(airtype), name,
                       ininame, REMAP_NORMAL, verticaloffset, primaryoffset,
                       primarylateral, primaryoffset, primarylateral, false,

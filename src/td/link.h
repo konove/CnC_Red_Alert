@@ -48,7 +48,7 @@
 */
 class LinkClass {
  public:
-  LinkClass();
+  LinkClass() noexcept;
   virtual ~LinkClass();
 
   virtual LinkClass* Get_Next() const;

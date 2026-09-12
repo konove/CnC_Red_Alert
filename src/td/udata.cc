@@ -1281,7 +1281,7 @@ UnitTypeClass::UnitTypeClass(
     bool is_cloakable, bool is_animating, int ammo, unsigned short strength,
     int sightrange, int cost, int scenario, int risk, int reward, int ownable,
     WeaponType primary, WeaponType secondary, ArmorType armor, SpeedType speed,
-    MPHType maxSpeed, unsigned rot, int toffset, MissionType order)
+    MPHType maxSpeed, unsigned rot, int toffset, MissionType order) noexcept
     : TechnoTypeClass(name, ininame, level, pre, is_leader, false, is_nominal,
                       is_transporter, false, is_crushable, is_stealthy,
                       is_selectable, is_legal_target, is_insignificant,

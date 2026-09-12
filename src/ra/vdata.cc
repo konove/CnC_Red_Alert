@@ -232,7 +232,7 @@ VesselTypeClass::VesselTypeClass(VesselType type, int name, const char* ininame,
                                  int secondaryoffset, int secondarylateral,
                                  bool is_eight, bool is_nominal,
                                  bool is_turret_equipped, int rotation,
-                                 int toffset, bool is_aftermath)
+                                 int toffset, bool is_aftermath) noexcept
     : TechnoTypeClass(RTTI_VESSELTYPE, static_cast<int>(type), name, ininame,
                       REMAP_NORMAL, verticaloffset, primaryoffset,
                       primarylateral, secondaryoffset, secondarylateral,

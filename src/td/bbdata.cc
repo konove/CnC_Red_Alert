@@ -538,7 +538,7 @@ BulletTypeClass::BulletTypeClass(
     bool is_proximity_armed, bool is_flame_equipped, bool is_fueled,
     bool is_faceless, bool is_inaccurate, bool is_translucent,
     bool is_antiaircraft, int arming, int range, MPHType maxspeed, unsigned rot,
-    WarheadType warhead, AnimType explosion)
+    WarheadType warhead, AnimType explosion) noexcept
     : ObjectTypeClass(true, false, false, true, false, false, true, true,
                       TXT_NONE, ininame, ARMOR_NONE, 0) {
   Explosion = explosion;

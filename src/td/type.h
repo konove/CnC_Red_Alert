@@ -193,7 +193,7 @@ class HouseTypeClass {
   HouseTypeClass(HousesType house, const char* ini, int fullname,
                  const char* ext, int lemon, int color, int bright_color,
                  PlayerColorType remapcolor, const unsigned char* remap,
-                 char prefix);
+                 char prefix) noexcept;
 
   static HousesType From_Name(const char* name);
   static const HouseTypeClass& As_Reference(HousesType house);
@@ -237,8 +237,8 @@ class AbstractTypeClass {
     }
   }
 
-  AbstractTypeClass() {}
-  AbstractTypeClass(int name, const char* ini);
+  AbstractTypeClass() noexcept {}
+  AbstractTypeClass(int name, const char* ini) noexcept;
   virtual ~AbstractTypeClass() = default;
 
   virtual RTTIType What_Am_I() const;
@@ -344,7 +344,8 @@ class ObjectTypeClass : public AbstractTypeClass {
   ObjectTypeClass(bool is_sentient, bool is_flammable, bool is_crushable,
                   bool is_stealthy, bool is_selectable, bool is_legal_target,
                   bool is_insignificant, bool is_immune, int fullname,
-                  const char* name, ArmorType armor, unsigned short strength);
+                  const char* name, ArmorType armor,
+                  unsigned short strength) noexcept;
 
   static void One_Time();
 
@@ -518,7 +519,8 @@ class TechnoTypeClass : public ObjectTypeClass {
                   bool is_repairable, bool is_buildable, bool is_crew, int ammo,
                   unsigned short strength, MPHType maxspeed, int sightrange,
                   int cost, int scenario, int risk, int reward, int ownable,
-                  WeaponType primary, WeaponType secondary, ArmorType armor);
+                  WeaponType primary, WeaponType secondary,
+                  ArmorType armor) noexcept;
 
   virtual int Raw_Cost() const;
   virtual int Max_Passengers() const;
@@ -698,7 +700,7 @@ class BuildingTypeClass : public TechnoTypeClass {
                     WeaponType primary, WeaponType secondary, ArmorType armor,
                     unsigned long canenter, unsigned capacity, int power,
                     int drain, BSizeType size, const short* exitlist,
-                    const short* sizelist, const short* overlap);
+                    const short* sizelist, const short* overlap) noexcept;
   RTTIType What_Am_I() const override { return RTTI_BUILDINGTYPE; }
   operator StructType() const { return Type; }
 
@@ -910,7 +912,8 @@ class UnitTypeClass : public TechnoTypeClass {
                 unsigned short strength, int sightrange, int cost, int scenario,
                 int risk, int reward, int ownable, WeaponType primary,
                 WeaponType secondary, ArmorType armor, SpeedType speed,
-                MPHType maxSpeed, unsigned rot, int toffset, MissionType order);
+                MPHType maxSpeed, unsigned rot, int toffset,
+                MissionType order) noexcept;
   RTTIType What_Am_I() const override { return RTTI_UNITTYPE; }
 
   static UnitType From_Name(const char* name);
@@ -1015,7 +1018,8 @@ class InfantryTypeClass : public TechnoTypeClass {
                     bool is_theater, int ammo, int* do_table, int firelaunch,
                     int pronelaunch, unsigned short strength, int sightrange,
                     int cost, int scenario, int risk, int reward, int ownable,
-                    WeaponType primary, WeaponType secondary, MPHType maxSpeed);
+                    WeaponType primary, WeaponType secondary,
+                    MPHType maxSpeed) noexcept;
   RTTIType What_Am_I() const override { return RTTI_INFANTRYTYPE; }
 
   static InfantryType From_Name(const char* name);
@@ -1176,7 +1180,7 @@ class BulletTypeClass : public ObjectTypeClass {
                   bool is_flame_equipped, bool is_fueled, bool is_faceless,
                   bool is_inaccurate, bool is_translucent, bool is_antiair,
                   int arming, int range, MPHType maxspeed, unsigned rot,
-                  WarheadType warhead, AnimType explosion);
+                  WarheadType warhead, AnimType explosion) noexcept;
 
   RTTIType What_Am_I() const override { return RTTI_BULLETTYPE; }
 
@@ -1249,7 +1253,8 @@ class TerrainTypeClass : public ObjectTypeClass {
                    bool is_flammable, bool is_crushable, bool is_selectable,
                    bool is_legal_target, bool is_insignificant, bool is_immune,
                    const char* ininame, int fullname, unsigned short strength,
-                   ArmorType armor, const short* occupy, const short* overlap);
+                   ArmorType armor, const short* occupy,
+                   const short* overlap) noexcept;
   RTTIType What_Am_I() const override { return RTTI_TERRAINTYPE; }
 
   static TerrainType From_Name(const char* name);
@@ -1320,7 +1325,7 @@ class TemplateTypeClass : public ObjectTypeClass {
   //----------------------------------------------------------
   TemplateTypeClass(TemplateType iconset, int theater, const char* ininame,
                     int fullname, LandType land, int width, int height,
-                    LandType altland, const char* alticons);
+                    LandType altland, const char* alticons) noexcept;
   RTTIType What_Am_I() const override { return RTTI_TEMPLATETYPE; }
 
   static TemplateType From_Name(const char* name);
@@ -1493,7 +1498,7 @@ class AnimTypeClass : public ObjectTypeClass {
                 bool issticky, bool ground, bool istrans, bool isflame,
                 unsigned int damage, int delaytime, int start, int loopstart,
                 int loopend, int stages, int loops, VocType sound,
-                AnimType chainto);
+                AnimType chainto) noexcept;
   RTTIType What_Am_I() const override { return RTTI_ANIMTYPE; }
 
   static const AnimTypeClass& As_Reference(AnimType type) {
@@ -1559,7 +1564,7 @@ class AircraftTypeClass : public TechnoTypeClass {
                     int ammo, unsigned short strength, int sightrange, int cost,
                     int scenario, int risk, int reward, int ownable,
                     WeaponType primary, WeaponType secondary, ArmorType armor,
-                    MPHType MaxSpeed, int ROT, MissionType deforder);
+                    MPHType MaxSpeed, int ROT, MissionType deforder) noexcept;
   RTTIType What_Am_I() const override;
 
   // Returns the AircraftType matching the given INI name (case-insensitive),
@@ -1697,7 +1702,7 @@ class OverlayTypeClass : public ObjectTypeClass {
                    LandType ground, int damagelevels, int damagepoints,
                    bool isradarinvisible, bool iswooden, bool istarget,
                    bool iscrushable, bool istiberium, bool high, bool theater,
-                   bool iswall, bool iscrate);
+                   bool iswall, bool iscrate) noexcept;
   RTTIType What_Am_I() const override { return RTTI_OVERLAYTYPE; }
 
   static OverlayType From_Name(const char* name);
@@ -1765,7 +1770,7 @@ class SmudgeTypeClass : public ObjectTypeClass {
 
   //----------------------------------------------------------
   SmudgeTypeClass(SmudgeType smudge, const char* ininame, int fullname,
-                  int width, int height, bool isbib, bool iscrater);
+                  int width, int height, bool isbib, bool iscrater) noexcept;
   RTTIType What_Am_I() const override { return RTTI_SMUDGETYPE; }
 
   static SmudgeType From_Name(const char* name);

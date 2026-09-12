@@ -604,15 +604,13 @@ const TerrainTypeClass* const TerrainTypeClass::Pointers[TERRAIN_COUNT] = {
  *                                                                                             *
  * HISTORY: * 07/19/1994 JLB : Created. *
  *=============================================================================================*/
-TerrainTypeClass::TerrainTypeClass(TerrainType terrain, int theater,
-                                   COORDINATE centerbase, bool is_spawn,
-                                   bool is_destroyable, bool is_transformable,
-                                   bool is_flammable, bool is_crushable,
-                                   bool is_selectable, bool is_legal_target,
-                                   bool is_insignificant, bool is_immune,
-                                   const char* ininame, int fullname,
-                                   unsigned short strength, ArmorType armor,
-                                   const short* occupy, const short* overlap)
+TerrainTypeClass::TerrainTypeClass(
+    TerrainType terrain, int theater, COORDINATE centerbase, bool is_spawn,
+    bool is_destroyable, bool is_transformable, bool is_flammable,
+    bool is_crushable, bool is_selectable, bool is_legal_target,
+    bool is_insignificant, bool is_immune, const char* ininame, int fullname,
+    unsigned short strength, ArmorType armor, const short* occupy,
+    const short* overlap) noexcept
     : ObjectTypeClass(true, is_flammable, is_crushable, true, is_selectable,
                       is_legal_target, is_insignificant, is_immune, fullname,
                       ininame, armor, strength) {
