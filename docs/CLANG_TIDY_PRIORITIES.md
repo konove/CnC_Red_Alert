@@ -55,59 +55,59 @@ comes from the installed tool, since the online documentation follows LLVM devel
 
 ## P2 — Further correctness and targeted safety
 
-| Check                                                      | Status  | Reason / result                                                                                                                                       |
-| ---------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `clang-diagnostic-lifetime-safety-use-after-free`          | Enabled | Commit `Stop returning freed projectiles from the firing code`: clear the bullet pointer when unlimbo fails and read the recoil flag before the free. |
-| `clang-diagnostic-lifetime-safety-invalidation`            | Pending | Review container/storage invalidation against custom lifetimes.                                                                                       |
-| `clang-diagnostic-lifetime-safety-use-after-scope-moved`   | Pending | Review escaping locals and ownership-transfer false positives.                                                                                        |
-| `bugprone-parent-virtual-call`                             | Pending | Check skipped overrides; retain intentional grandparent dispatch.                                                                                     |
-| `cppcoreguidelines-interfaces-global-init`                 | Pending | Find cross-unit global initialization dependencies.                                                                                                   |
-| `bugprone-throwing-static-initialization`                  | Pending | Prevent failures before normal startup error handling.                                                                                                |
-| `cert-err58-cpp`                                           | Pending | Alias of `bugprone-throwing-static-initialization`; handle together.                                                                                  |
-| `cppcoreguidelines-init-variables`                         | Pending | Review local initialization; avoid masking missing assignments with zeroes.                                                                           |
-| `cppcoreguidelines-special-member-functions`               | Pending | Audit copy/move/destruction consistency for owning types.                                                                                             |
-| `hicpp-special-member-functions`                           | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-special-member-functions` on older tools.                                                      |
-| `clang-diagnostic-deprecated-copy-with-user-provided-copy` | Pending | Review implicit copy operations paired with custom copying.                                                                                           |
-| `clang-diagnostic-deprecated-copy-with-user-provided-dtor` | Pending | Review implicit copying of types with custom destruction.                                                                                             |
-| `clang-diagnostic-deprecated-copy-with-dtor`               | Pending | Complete the destructor/copy audit, including defaulted destructors.                                                                                  |
-| `bugprone-macro-parentheses`                               | Pending | Prevent macro expansion from changing expression meaning.                                                                                             |
-| `clang-diagnostic-logical-op-parentheses`                  | Pending | Review ambiguous conditions for precedence mistakes.                                                                                                  |
-| `clang-diagnostic-bitwise-op-parentheses`                  | Pending | Review mixed bitwise expressions for precedence mistakes.                                                                                             |
-| `clang-diagnostic-shift-op-parentheses`                    | Pending | Review ambiguous shifts, especially packed values.                                                                                                    |
-| `readability-math-missing-parentheses`                     | Pending | Expose arithmetic grouping that is easy to misread.                                                                                                   |
-| `bugprone-branch-clone`                                    | Pending | Review duplicate branches for copy/paste bugs; preserve intentional symmetry.                                                                         |
-| `clang-diagnostic-sign-conversion`                         | Pending | Review signed sentinels and range changes; follow the type policy.                                                                                    |
-| `bugprone-signed-bitwise`                                  | Pending | Review signed shifts and masks without breaking deliberate bit patterns.                                                                              |
-| `hicpp-signed-bitwise`                                     | Legacy  | Unavailable in LLVM 23; review with `bugprone-signed-bitwise` on older tools.                                                                         |
-| `clang-diagnostic-switch-enum`                             | Pending | Audit missing enum cases even when a default exists.                                                                                                  |
-| `clang-diagnostic-switch`                                  | Pending | Review missing cases; intentional ButtonKey(n) labels need a policy.                                                                                  |
-| `clang-diagnostic-switch-bool`                             | Pending | Find accidental boolean switch expressions.                                                                                                           |
-| `clang-diagnostic-duplicate-enum`                          | Pending | Separate accidental duplicate values from deliberate aliases.                                                                                         |
-| `clang-diagnostic-missing-braces`                          | Pending | Check aggregate/subobject initialization before adding braces.                                                                                        |
-| `clang-diagnostic-cast-qual`                               | Pending | Review casts discarding const or volatile guarantees.                                                                                                 |
-| `misc-explicit-constructor`                                | Pending | Prevent unintended implicit construction and conversions.                                                                                             |
-| `cppcoreguidelines-explicit-constructor`                   | Pending | Alias of `misc-explicit-constructor`; handle together.                                                                                                |
-| `google-explicit-constructor`                              | Pending | Alias of `misc-explicit-constructor`; handle together.                                                                                                |
-| `hicpp-explicit-conversions`                               | Legacy  | Unavailable in LLVM 23; review with `misc-explicit-constructor` on older tools.                                                                       |
-| `cppcoreguidelines-pro-type-vararg`                        | Pending | Audit untyped call boundaries and argument agreement.                                                                                                 |
-| `hicpp-vararg`                                             | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-pro-type-vararg` on older tools.                                                               |
-| `modernize-avoid-variadic-functions`                       | Pending | Replace unsafe variadic interfaces where practical.                                                                                                   |
-| `cert-dcl50-cpp`                                           | Pending | Alias of `modernize-avoid-variadic-functions`; handle together.                                                                                       |
-| `clang-diagnostic-missing-format-attribute`                | Pending | Extend compiler format validation to project wrappers.                                                                                                |
-| `clang-diagnostic-undef`                                   | Pending | Catch misspelled or missing feature macros in conditional builds.                                                                                     |
-| `clang-diagnostic-undefined-func-template`                 | Pending | Catch unavailable template definitions on instantiated paths.                                                                                         |
-| `clang-diagnostic-undefined-var-template`                  | Pending | Catch template variables lacking required definitions.                                                                                                |
-| `clang-diagnostic-shadow-field`                            | Pending | Find locals or parameters accidentally hiding object state.                                                                                           |
-| `clang-diagnostic-shadow`                                  | Pending | Find scope mistakes; expect more noise than field shadowing.                                                                                          |
-| `concurrency-mt-unsafe`                                    | Pending | Audit audio/timer callbacks and shared library state.                                                                                                 |
-| `clang-analyzer-optin.core.FixedAddressDereference`        | Pending | Review hard-coded addresses for invalid legacy assumptions.                                                                                           |
-| `clang-analyzer-core.FixedAddressDereference`              | Legacy  | Unavailable in LLVM 23; review with `clang-analyzer-optin.core.FixedAddressDereference` on older tools.                                               |
-| `bugprone-easily-swappable-parameters`                     | Pending | Improve error-prone APIs when names alone cannot prevent swaps.                                                                                       |
-| `bugprone-random-generator-seed`                           | Pending | Review seed mistakes while preserving deterministic simulation RNG.                                                                                   |
-| `cert-msc32-c`                                             | Pending | Alias of `bugprone-random-generator-seed`; handle together.                                                                                           |
-| `cert-msc51-cpp`                                           | Pending | Alias of `bugprone-random-generator-seed`; handle together.                                                                                           |
-| `modernize-use-integer-sign-comparison`                    | Pending | Use safe mixed-sign comparisons where still needed.                                                                                                   |
-| `modernize-use-nodiscard`                                  | Pending | Make important results harder to discard accidentally.                                                                                                |
+| Check                                                      | Status  | Reason / result                                                                                                                                                                                               |
+| ---------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `clang-diagnostic-lifetime-safety-use-after-free`          | Enabled | Commit `Stop returning freed projectiles from the firing code`: clear the bullet pointer when unlimbo fails and read the recoil flag before the free.                                                         |
+| `clang-diagnostic-lifetime-safety-invalidation`            | Skipped | Commit `Clear the screen buffer globals their owners delete`: fix the eight dangling-global findings, but retain the exclusion because LLVM 23.1.2 flags two consecutive `push_back` calls. See review below. |
+| `clang-diagnostic-lifetime-safety-use-after-scope-moved`   | Pending | Review escaping locals and ownership-transfer false positives.                                                                                                                                                |
+| `bugprone-parent-virtual-call`                             | Pending | Check skipped overrides; retain intentional grandparent dispatch.                                                                                                                                             |
+| `cppcoreguidelines-interfaces-global-init`                 | Pending | Find cross-unit global initialization dependencies.                                                                                                                                                           |
+| `bugprone-throwing-static-initialization`                  | Pending | Prevent failures before normal startup error handling.                                                                                                                                                        |
+| `cert-err58-cpp`                                           | Pending | Alias of `bugprone-throwing-static-initialization`; handle together.                                                                                                                                          |
+| `cppcoreguidelines-init-variables`                         | Pending | Review local initialization; avoid masking missing assignments with zeroes.                                                                                                                                   |
+| `cppcoreguidelines-special-member-functions`               | Pending | Audit copy/move/destruction consistency for owning types.                                                                                                                                                     |
+| `hicpp-special-member-functions`                           | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-special-member-functions` on older tools.                                                                                                              |
+| `clang-diagnostic-deprecated-copy-with-user-provided-copy` | Pending | Review implicit copy operations paired with custom copying.                                                                                                                                                   |
+| `clang-diagnostic-deprecated-copy-with-user-provided-dtor` | Pending | Review implicit copying of types with custom destruction.                                                                                                                                                     |
+| `clang-diagnostic-deprecated-copy-with-dtor`               | Pending | Complete the destructor/copy audit, including defaulted destructors.                                                                                                                                          |
+| `bugprone-macro-parentheses`                               | Pending | Prevent macro expansion from changing expression meaning.                                                                                                                                                     |
+| `clang-diagnostic-logical-op-parentheses`                  | Pending | Review ambiguous conditions for precedence mistakes.                                                                                                                                                          |
+| `clang-diagnostic-bitwise-op-parentheses`                  | Pending | Review mixed bitwise expressions for precedence mistakes.                                                                                                                                                     |
+| `clang-diagnostic-shift-op-parentheses`                    | Pending | Review ambiguous shifts, especially packed values.                                                                                                                                                            |
+| `readability-math-missing-parentheses`                     | Pending | Expose arithmetic grouping that is easy to misread.                                                                                                                                                           |
+| `bugprone-branch-clone`                                    | Pending | Review duplicate branches for copy/paste bugs; preserve intentional symmetry.                                                                                                                                 |
+| `clang-diagnostic-sign-conversion`                         | Pending | Review signed sentinels and range changes; follow the type policy.                                                                                                                                            |
+| `bugprone-signed-bitwise`                                  | Pending | Review signed shifts and masks without breaking deliberate bit patterns.                                                                                                                                      |
+| `hicpp-signed-bitwise`                                     | Legacy  | Unavailable in LLVM 23; review with `bugprone-signed-bitwise` on older tools.                                                                                                                                 |
+| `clang-diagnostic-switch-enum`                             | Pending | Audit missing enum cases even when a default exists.                                                                                                                                                          |
+| `clang-diagnostic-switch`                                  | Pending | Review missing cases; intentional ButtonKey(n) labels need a policy.                                                                                                                                          |
+| `clang-diagnostic-switch-bool`                             | Pending | Find accidental boolean switch expressions.                                                                                                                                                                   |
+| `clang-diagnostic-duplicate-enum`                          | Pending | Separate accidental duplicate values from deliberate aliases.                                                                                                                                                 |
+| `clang-diagnostic-missing-braces`                          | Pending | Check aggregate/subobject initialization before adding braces.                                                                                                                                                |
+| `clang-diagnostic-cast-qual`                               | Pending | Review casts discarding const or volatile guarantees.                                                                                                                                                         |
+| `misc-explicit-constructor`                                | Pending | Prevent unintended implicit construction and conversions.                                                                                                                                                     |
+| `cppcoreguidelines-explicit-constructor`                   | Pending | Alias of `misc-explicit-constructor`; handle together.                                                                                                                                                        |
+| `google-explicit-constructor`                              | Pending | Alias of `misc-explicit-constructor`; handle together.                                                                                                                                                        |
+| `hicpp-explicit-conversions`                               | Legacy  | Unavailable in LLVM 23; review with `misc-explicit-constructor` on older tools.                                                                                                                               |
+| `cppcoreguidelines-pro-type-vararg`                        | Pending | Audit untyped call boundaries and argument agreement.                                                                                                                                                         |
+| `hicpp-vararg`                                             | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-pro-type-vararg` on older tools.                                                                                                                       |
+| `modernize-avoid-variadic-functions`                       | Pending | Replace unsafe variadic interfaces where practical.                                                                                                                                                           |
+| `cert-dcl50-cpp`                                           | Pending | Alias of `modernize-avoid-variadic-functions`; handle together.                                                                                                                                               |
+| `clang-diagnostic-missing-format-attribute`                | Pending | Extend compiler format validation to project wrappers.                                                                                                                                                        |
+| `clang-diagnostic-undef`                                   | Pending | Catch misspelled or missing feature macros in conditional builds.                                                                                                                                             |
+| `clang-diagnostic-undefined-func-template`                 | Pending | Catch unavailable template definitions on instantiated paths.                                                                                                                                                 |
+| `clang-diagnostic-undefined-var-template`                  | Pending | Catch template variables lacking required definitions.                                                                                                                                                        |
+| `clang-diagnostic-shadow-field`                            | Pending | Find locals or parameters accidentally hiding object state.                                                                                                                                                   |
+| `clang-diagnostic-shadow`                                  | Pending | Find scope mistakes; expect more noise than field shadowing.                                                                                                                                                  |
+| `concurrency-mt-unsafe`                                    | Pending | Audit audio/timer callbacks and shared library state.                                                                                                                                                         |
+| `clang-analyzer-optin.core.FixedAddressDereference`        | Pending | Review hard-coded addresses for invalid legacy assumptions.                                                                                                                                                   |
+| `clang-analyzer-core.FixedAddressDereference`              | Legacy  | Unavailable in LLVM 23; review with `clang-analyzer-optin.core.FixedAddressDereference` on older tools.                                                                                                       |
+| `bugprone-easily-swappable-parameters`                     | Pending | Improve error-prone APIs when names alone cannot prevent swaps.                                                                                                                                               |
+| `bugprone-random-generator-seed`                           | Pending | Review seed mistakes while preserving deterministic simulation RNG.                                                                                                                                           |
+| `cert-msc32-c`                                             | Pending | Alias of `bugprone-random-generator-seed`; handle together.                                                                                                                                                   |
+| `cert-msc51-cpp`                                           | Pending | Alias of `bugprone-random-generator-seed`; handle together.                                                                                                                                                   |
+| `modernize-use-integer-sign-comparison`                    | Pending | Use safe mixed-sign comparisons where still needed.                                                                                                                                                           |
+| `modernize-use-nodiscard`                                  | Pending | Make important results harder to discard accidentally.                                                                                                                                                        |
 
 ## P3 — Broader safety and maintainability
 
@@ -394,6 +394,52 @@ the exclusion and revisit if the checker gains suitable range semantics or those
 redesigned. No source or configuration changes were made; the excluded-name count remains 229.
 Markdown formatting and whitespace checks passed; game builds and tests were not rerun for this
 documentation-only decision.
+
+### Container invalidation check policy (2026-09-11)
+
+`clang-diagnostic-lifetime-safety-invalidation` remains excluded after review. The isolated sweep of
+890 project translation units, including 431 generated header checks, produced 13 findings in 9
+files. Eight were real and are fixed; the remaining five are a blanket false positive that makes the
+check unusable as it stands.
+
+In LLVM 23.1.2 the diagnostic treats any mutating member call as invalidating the container object
+itself, rather than the references and iterators into it. Two consecutive `push_back` calls are
+enough:
+
+```cpp
+#include <vector>
+void f(std::vector<int>& v) {
+  v.push_back(1);
+  v.push_back(2);
+}
+```
+
+```sh
+clang++ -std=c++23 -Wlifetime-safety-invalidation -fsyntax-only /tmp/inval-probe.cc
+```
+
+Assigning to a `std::string&` and then reading it, and `resize` followed by `std::ssize`, reproduce
+it the same way. That accounts for all five remaining findings: the byte-appending helpers in
+`ra/dib_test.cc` and `winvq/vqa32/vqaplay_test.cc`, `TriggerTypeClass::Build_INI_Entry` assigning
+its output string before appending to it, and the cached credits frames in `ra/conquer.cc`. Enabling
+the check would require rewriting ordinary container code. Retain the exclusion and revisit when the
+diagnostic distinguishes a container from references into it.
+
+The eight genuine findings were a separate pattern the checker reports well: a global left holding a
+freed pointer. Both games' full-screen sequences allocate `PseudoSeenBuff`, `TextPrintBuffer`,
+`BackgroundPage`, and TD's `Palette` into globals and delete them on the way out without clearing
+the pointer. Two of the five screens already cleared `TextPrintBuffer`, so the convention existed
+and the other sites had drifted from it; every site now follows it. No current reader sees a
+dangling value, because each screen assigns before use.
+
+TD's `Map_Selection` also allocated `PseudoSeenBuff` and never released it, leaking a 320x200 buffer
+per visit. The checker cannot see a leak, so this was found while tracing the same four globals; it
+is fixed alongside them because it is the missing half of the same cleanup.
+
+The final isolated sweep reports only the five container false positives, and the full-config sweep
+passed all 890 translation units with the check still excluded. Both strict game builds and all 237
+CTest tests passed. The RA save/load smoke check matched 240 object positions; the TD checks matched
+5,742 to 6,371 game states across all eight fixtures. The excluded-name count remains 221.
 
 ### Completed validation
 

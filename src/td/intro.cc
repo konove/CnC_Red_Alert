@@ -331,6 +331,7 @@ void Choose_Side() {
   FontXSpacing = oldfontxspacing;
 
   delete PseudoSeenBuff;
+  PseudoSeenBuff = nullptr;
   delete TextPrintBuffer;
   TextPrintBuffer = nullptr;
   BlitList.Clear();

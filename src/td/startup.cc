@@ -302,6 +302,7 @@ int main(int argc, char* argv[])
         CCDebugString("C&C95 - Failed to set video mode.\n");
         ShutdownTickTimer();
         delete[] Palette;
+        Palette = nullptr;
         return EXIT_FAILURE;
       }
 

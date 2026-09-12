@@ -848,9 +848,11 @@ void Show_Who_Was_Responsible() {
 
   for (int index = 0; index < NUM_SLIDES; index++) {
     delete SlideBuffers[index];
+    SlideBuffers[index] = nullptr;
   }
 
   delete BackgroundPage;
+  BackgroundPage = nullptr;
 
   delete[] credits;
 

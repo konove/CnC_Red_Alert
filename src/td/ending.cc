@@ -238,6 +238,7 @@ void Nod_Ending() {
   delete satpic;
 #else
   delete PseudoSeenBuff;
+  PseudoSeenBuff = nullptr;
 #endif  // NOT_FOR_WIN95
 
   /* get rid of all the animating objects */
@@ -297,6 +298,7 @@ void Nod_Ending() {
 
   delete[] static_cast<char*>(localpal);
   delete TextPrintBuffer;
+  TextPrintBuffer = nullptr;
   BlitList.Clear();
 }
 #endif

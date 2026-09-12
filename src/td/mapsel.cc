@@ -1205,6 +1205,8 @@ void Map_Selection() {
   delete europe;
   delete[] progresspalette;
   delete[] grey2palette;
+  delete PseudoSeenBuff;
+  PseudoSeenBuff = nullptr;
   delete TextPrintBuffer;
   TextPrintBuffer = nullptr;
   BlitList.Clear();

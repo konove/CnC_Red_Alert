@@ -1088,6 +1088,7 @@ void ScoreClass::Presentation() {
   Set_Logic_Page(SeenBuff);
 
   delete PseudoSeenBuff;
+  PseudoSeenBuff = nullptr;
   delete TextPrintBuffer;
   TextPrintBuffer = nullptr;
   BlitList.Clear();
@@ -2208,7 +2209,9 @@ void Multi_Score_Presentation() {
   Set_Logic_Page(SeenBuff);
 
   delete PseudoSeenBuff;
+  PseudoSeenBuff = nullptr;
   delete TextPrintBuffer;
+  TextPrintBuffer = nullptr;
   BlitList.Clear();
 
   Set_Font(oldfont);
