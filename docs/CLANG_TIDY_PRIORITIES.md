@@ -2,7 +2,7 @@
 
 Updated: 2026-09-12, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 214 currently excluded check names** and completed entries, in recommended work
+This tracks **all 211 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -67,9 +67,9 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `cppcoreguidelines-init-variables`                         | Skipped | Commit `Document local initialization check policy`: the check's own fix hides findings the eleven enabled uninitialized-use checks already report, and those report nothing across the tree. See review below.                                                       |
 | `cppcoreguidelines-special-member-functions`               | Enabled | Commit `Declare copy and move intent on the classes that own a destructor`: annotate 170 class declarations; the compiler found the five classes that are genuinely copied. See review below.                                                                         |
 | `hicpp-special-member-functions`                           | Enabled | Exclusion removed with `cppcoreguidelines-special-member-functions` in the same commit. The name does nothing on LLVM 23, so the alias enforces the same rule wherever it exists.                                                                                     |
-| `clang-diagnostic-deprecated-copy-with-user-provided-copy` | Pending | Review implicit copy operations paired with custom copying.                                                                                                                                                                                                           |
-| `clang-diagnostic-deprecated-copy-with-user-provided-dtor` | Pending | Review implicit copying of types with custom destruction.                                                                                                                                                                                                             |
-| `clang-diagnostic-deprecated-copy-with-dtor`               | Pending | Complete the destructor/copy audit, including defaulted destructors.                                                                                                                                                                                                  |
+| `clang-diagnostic-deprecated-copy-with-user-provided-copy` | Enabled | Commit `Enable deprecated implicit copy checking`: no reports; the declarations added for `cppcoreguidelines-special-member-functions` removed every implicit copy definition. See review below.                                                                      |
+| `clang-diagnostic-deprecated-copy-with-user-provided-dtor` | Enabled | Commit `Enable deprecated implicit copy checking`: the three reports were `CellClass` in both games and TD's `TCountDownTimerClass`, already resolved by the preceding commit.                                                                                        |
+| `clang-diagnostic-deprecated-copy-with-dtor`               | Enabled | Commit `Enable deprecated implicit copy checking`: the one report was `AbstractTypeClass`, already resolved by the preceding commit.                                                                                                                                  |
 | `bugprone-macro-parentheses`                               | Pending | Prevent macro expansion from changing expression meaning.                                                                                                                                                                                                             |
 | `clang-diagnostic-logical-op-parentheses`                  | Pending | Review ambiguous conditions for precedence mistakes.                                                                                                                                                                                                                  |
 | `clang-diagnostic-bitwise-op-parentheses`                  | Pending | Review mixed bitwise expressions for precedence mistakes.                                                                                                                                                                                                             |
@@ -587,6 +587,53 @@ rather than private undeclared ones.
 
 The isolated sweep now reports nothing, the full-config strict build of both games is clean, and all
 237 CTest tests pass. The excluded-name count drops from 216 to 214.
+
+### Deprecated implicit copy review (2026-09-12)
+
+All three `clang-diagnostic-deprecated-copy-*` names are now enforced. The isolated sweep of 890
+project translation units reports nothing, and the preceding commit is why.
+
+Measured against the commit before it, the sweep found four reports, and they are exactly the four
+classes that commit had to resolve by hand rather than by deleting copies:
+
+| Report                                              | Class                                   |
+| --------------------------------------------------- | --------------------------------------- |
+| implicit copy assignment, user-provided destructor  | `ra/cell.h` and `td/cell.h` `CellClass` |
+| implicit copy assignment, user-provided destructor  | `td/ftimer.h` `TCountDownTimerClass`    |
+| implicit copy constructor, user-declared destructor | `ra/type.h` `AbstractTypeClass`         |
+
+These diagnostics fire only where an implicit copy is actually defined, so declaring copy and move
+explicitly on every class that owns a destructor retired all four at once: `CellClass` now defaults
+its copy assignment and deletes construction, `AbstractTypeClass` defaults its copy constructor for
+`HouseTypeClass::Init_Heap`, and `TCountDownTimerClass` lost the empty destructor that was
+suppressing its implicit operations.
+
+Zero findings here is a real result rather than a silent no-op. All three diagnostics reproduce on a
+probe under the same invocation, one per flag:
+
+```cpp
+struct UserDtor { ~UserDtor() {} };
+struct UserCopy { UserCopy() = default; UserCopy(const UserCopy&) {} };
+struct DefaultedDtor { ~DefaultedDtor() = default; };
+void Use() {
+  UserDtor a; UserDtor b = a;              // deprecated-copy-with-user-provided-dtor
+  UserCopy c, d; d = c;                    // deprecated-copy-with-user-provided-copy
+  DefaultedDtor e; DefaultedDtor f = e;    // deprecated-copy-with-dtor
+  (void)b; (void)f;
+}
+```
+
+```sh
+clang-tidy --checks='-*,misc-unused-using-decls,clang-diagnostic-deprecated-copy-with-user-provided-copy,clang-diagnostic-deprecated-copy-with-user-provided-dtor,clang-diagnostic-deprecated-copy-with-dtor' \
+  /tmp/dep.cc -- -std=c++23 -Weverything
+```
+
+A `clang-diagnostic-*` filter needs its warning flag and at least one real clang-tidy check in the
+same run, which is what `misc-unused-using-decls` supplies above; `-Weverything` is already in the
+strict compile database.
+
+The full-config sweep passes all 890 translation units, both strict game builds are clean, and all
+237 CTest tests pass. No source changes were needed. The excluded-name count drops from 214 to 211.
 
 ### Completed validation
 
