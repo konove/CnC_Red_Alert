@@ -108,7 +108,7 @@ struct VQAHeader {
 /* FINF related defines and macros. */
 #define VQAFINF_OFFSET 0x0FFFFFFFL
 #define VQAFINF_FLAGS 0xF0000000L
-#define VQAFRAME_OFFSET(a) (((a & VQAFINF_OFFSET) << 1))
+#define VQAFRAME_OFFSET(a) ((((a) & VQAFINF_OFFSET) << 1))
 
 /* VQ vector pointer codes. */
 #define VPC_ONE_SINGLE 0xF000    /* One single color block */

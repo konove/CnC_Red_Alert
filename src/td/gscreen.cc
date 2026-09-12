@@ -425,7 +425,7 @@ void GScreenClass::Render() {
   }
 }
 
-#define MAX_SCREENS_SAVED 30 * 15  // Enough for 30 seconds @ 15 fps
+#define MAX_SCREENS_SAVED (30 * 15)  // Enough for 30 seconds @ 15 fps
 
 GraphicBufferClass* ScreenList[MAX_SCREENS_SAVED];
 int CurrentScreen = 0;

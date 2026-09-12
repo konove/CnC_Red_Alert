@@ -95,10 +95,10 @@ typedef struct _IFFHandle {
  * IFFERR_WRITE - Write error.
  * IFFERR_NOMEM - Unable to allocate memory.
  */
-#define IFFERR_EOF -1
-#define IFFERR_READ -2
-#define IFFERR_WRITE -3
-#define IFFERR_NOMEM -4
+#define IFFERR_EOF (-1)
+#define IFFERR_READ (-2)
+#define IFFERR_WRITE (-3)
+#define IFFERR_NOMEM (-4)
 
 /* Macros to make things easier. */
 #define REVERSE_LONG(id)                                        \

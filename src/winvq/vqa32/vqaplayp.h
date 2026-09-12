@@ -63,7 +63,7 @@
 #define VQA_REQUIRES "VQM32 2.12 or better."
 
 /* Block dimensions macro and identifiers. */
-#define BLOCK_DIM(a, b) (((a & 0xFF) << 8) | (b & 0xFF))
+#define BLOCK_DIM(a, b) ((((a) & 0xFF) << 8) | ((b) & 0xFF))
 #define BLOCK_2X2 BLOCK_DIM(2, 2)
 #define BLOCK_2X3 BLOCK_DIM(2, 3)
 #define BLOCK_4X2 BLOCK_DIM(4, 2)

@@ -76,28 +76,28 @@ extern void Debug_Printf(char* format_string, ...);
 #define VQAMODE_STOP 3  /* Stop the movie. */
 
 /* Playback timer methods */
-#define VQA_TMETHOD_DEFAULT -1 /* Use default timer method. */
-#define VQA_TMETHOD_DOS 1      /* DOS timer method */
-#define VQA_TMETHOD_INT 2      /* Interrupt timer method */
-#define VQA_TMETHOD_AUDIO 3    /* Audio timer method */
+#define VQA_TMETHOD_DEFAULT (-1) /* Use default timer method. */
+#define VQA_TMETHOD_DOS 1        /* DOS timer method */
+#define VQA_TMETHOD_INT 2        /* Interrupt timer method */
+#define VQA_TMETHOD_AUDIO 3      /* Audio timer method */
 
 #define VQA_TIMETICKS 60 /* Clock ticks per second */
 
 /* Error/Status conditions */
-#define VQAERR_NONE 0       /* No error */
-#define VQAERR_EOF -1       /* Valid end of file */
-#define VQAERR_OPEN -2      /* Unable to open */
-#define VQAERR_READ -3      /* Read error */
-#define VQAERR_WRITE -4     /* Write error */
-#define VQAERR_SEEK -5      /* Seek error */
-#define VQAERR_NOTVQA -6    /* Not a valid VQA file. */
-#define VQAERR_NOMEM -7     /* Unable to allocate memory */
-#define VQAERR_NOBUFFER -8  /* No buffer avail for load/draw */
-#define VQAERR_NOT_TIME -9  /* Not time for frame yet */
-#define VQAERR_SLEEPING -10 /* Function is in a sleep state */
-#define VQAERR_VIDEO -11    /* Video related error. */
-#define VQAERR_AUDIO -12    /* Audio related error. */
-#define VQAERR_PAUSED -13   /* In paused state. */
+#define VQAERR_NONE 0         /* No error */
+#define VQAERR_EOF (-1)       /* Valid end of file */
+#define VQAERR_OPEN (-2)      /* Unable to open */
+#define VQAERR_READ (-3)      /* Read error */
+#define VQAERR_WRITE (-4)     /* Write error */
+#define VQAERR_SEEK (-5)      /* Seek error */
+#define VQAERR_NOTVQA (-6)    /* Not a valid VQA file. */
+#define VQAERR_NOMEM (-7)     /* Unable to allocate memory */
+#define VQAERR_NOBUFFER (-8)  /* No buffer avail for load/draw */
+#define VQAERR_NOT_TIME (-9)  /* Not time for frame yet */
+#define VQAERR_SLEEPING (-10) /* Function is in a sleep state */
+#define VQAERR_VIDEO (-11)    /* Video related error. */
+#define VQAERR_AUDIO (-12)    /* Audio related error. */
+#define VQAERR_PAUSED (-13)   /* In paused state. */
 
 /* Event flags. */
 #define VQAEVENT_PALETTE (1 << 0)

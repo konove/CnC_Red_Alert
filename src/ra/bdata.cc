@@ -105,7 +105,7 @@
 
 #define MCW MAP_CELL_W
 
-#define XYCELL(x, y) (y * MAP_CELL_W + x)
+#define XYCELL(x, y) ((y) * MAP_CELL_W + (x))
 static const short ExitPyle[] = {
     XYCELL(1, 2),  XYCELL(2, 2),  XYCELL(0, 2),  XYCELL(-1, 2), XYCELL(-1, -1),
     XYCELL(0, -1), XYCELL(1, -1), XYCELL(2, -1), XYCELL(2, -1), XYCELL(-1, 0),

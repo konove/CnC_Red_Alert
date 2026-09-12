@@ -49,7 +49,7 @@
  *=========================================================================*/
 
 #define MAX_CD_DRIVES 26
-#define NO_CD_DRIVE -1
+#define NO_CD_DRIVE (-1)
 
 class GetCDClass {
  public:

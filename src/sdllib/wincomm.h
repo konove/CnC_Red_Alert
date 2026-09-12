@@ -52,8 +52,8 @@ typedef enum WinCommDialMethodType {
 } WinCommDialMethodType;
 
 #define COMMSUCCESS 0
-#define ASTIMEOUT -10
-#define COMMUSERABORT -16
+#define ASTIMEOUT (-10)
+#define COMMUSERABORT (-16)
 #define ASSUCCESS COMMSUCCESS
 #define ASUSERABORT COMMUSERABORT
 typedef void* HANDLE;

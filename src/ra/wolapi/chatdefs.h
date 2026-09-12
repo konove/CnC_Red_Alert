@@ -120,7 +120,7 @@
 // Channel list filter values
 //
 
-#define CHAT_CHANNEL_LIST_ALL -99999
+#define CHAT_CHANNEL_LIST_ALL (-99999)
 
 //
 // User flags (bit field)

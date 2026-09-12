@@ -51,7 +51,7 @@
 #include "tech/wwfile.h"
 
 #ifndef WWERROR
-#define WWERROR -1
+#define WWERROR (-1)
 #endif
 
 /*

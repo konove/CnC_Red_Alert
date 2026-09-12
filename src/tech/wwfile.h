@@ -40,12 +40,12 @@
 #ifndef CNC_RED_ALERT_TECH_WWFILE_H_
 #define CNC_RED_ALERT_TECH_WWFILE_H_
 
-#define YEAR(dt) (((dt & 0xFE000000) >> (9 + 16)) + 1980)
-#define MONTH(dt) ((dt & 0x01E00000) >> (5 + 16))
-#define DAY(dt) ((dt & 0x001F0000) >> (0 + 16))
-#define HOUR(dt) ((dt & 0x0000F800) >> 11)
-#define MINUTE(dt) ((dt & 0x000007E0) >> 5)
-#define SECOND(dt) ((dt & 0x0000001F) << 1)
+#define YEAR(dt) ((((dt) & 0xFE000000) >> (9 + 16)) + 1980)
+#define MONTH(dt) (((dt) & 0x01E00000) >> (5 + 16))
+#define DAY(dt) (((dt) & 0x001F0000) >> (0 + 16))
+#define HOUR(dt) (((dt) & 0x0000F800) >> 11)
+#define MINUTE(dt) (((dt) & 0x000007E0) >> 5)
+#define SECOND(dt) (((dt) & 0x0000001F) << 1)
 
 #include <cstdio>
 

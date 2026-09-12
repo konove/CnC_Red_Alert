@@ -165,9 +165,9 @@ void SHAEngine::Hash(const void* data, long length) {
   Process_Partial(data, length);
 }
 
-#define Reverse_LONG(a)                                  \
-  ((a >> 24) & 0x000000FFL) | ((a >> 8) & 0x0000FF00L) | \
-      ((a << 8) & 0x00FF0000L) | ((a << 24) & 0xFF000000L)
+#define Reverse_LONG(a)                                       \
+  ((((a) >> 24) & 0x000000FFL) | (((a) >> 8) & 0x0000FF00L) | \
+   (((a) << 8) & 0x00FF0000L) | (((a) << 24) & 0xFF000000L))
 
 /***********************************************************************************************
  * SHAEngine::Result -- Fetch the current digest. *

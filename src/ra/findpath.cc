@@ -79,8 +79,8 @@
 **	When an edge search is started, it can be performed CLOCKwise or
 **	COUNTERCLOCKwise direction.
 */
-#define CLOCK (FacingType)1            // Clockwise.
-#define COUNTERCLOCK (FacingType) - 1  // Counterclockwise.
+#define CLOCK (FacingType)1              // Clockwise.
+#define COUNTERCLOCK ((FacingType) - 1)  // Counterclockwise.
 
 /*
 **	If defined, diagonal moves are allowed, else no diagonals.
@@ -1068,7 +1068,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
  * HISTORY: * 07/08/1991  CY : Created. * 06/01/1992  JLB : Optimized and
  *commented.                                                *
  *=============================================================================================*/
-#define EMPTY (FacingType) - 2
+#define EMPTY ((FacingType) - 2)
 int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
 // int Optimize_Moves(PathType *path, int (*callback)(CELL, FacingType), int
 // threshold)

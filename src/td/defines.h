@@ -268,9 +268,9 @@ typedef enum SpecialWeaponType {
 /**********************************************************************
 **	These defines control the rate of ion cannon and airstrike recharging.
 */
-#define NUKE_GONE_TIME 14 * kTicksPerMinute
-#define ION_CANNON_GONE_TIME 10 * kTicksPerMinute
-#define AIR_CANNON_GONE_TIME 8 * kTicksPerMinute
+#define NUKE_GONE_TIME (14 * kTicksPerMinute)
+#define ION_CANNON_GONE_TIME (10 * kTicksPerMinute)
+#define AIR_CANNON_GONE_TIME (8 * kTicksPerMinute)
 #define OBELISK_ANIMATION_RATE 15
 
 /**********************************************************************
@@ -2358,7 +2358,8 @@ typedef enum CommProtocolEnum {
 // Room for the "CUSTOM - " prefix plus a CWAITSTRBUF_MAX user string.
 #define CALL_WAIT_STRING_MAX (9 + CWAITSTRBUF_MAX)
 #define CREDITSBUF_MAX 5
-#define MODEM_NAME_MAX PORTBUF_MAX - 1  // Max length of modem name in list box
+// Max length of modem name in list box.
+#define MODEM_NAME_MAX (PORTBUF_MAX - 1)
 
 typedef enum DetectPortType {
   PORT_VALID = 0,

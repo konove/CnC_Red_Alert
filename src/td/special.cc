@@ -63,7 +63,7 @@
 #define OPTION_WIDTH 236
 #define OPTION_HEIGHT 162
 #define OPTION_X ((320 - OPTION_WIDTH) / 2)
-#define OPTION_Y (200 - OPTION_HEIGHT) / 2
+#define OPTION_Y ((200 - OPTION_HEIGHT) / 2)
 
 void Special_Dialog() {
   SpecialClass oldspecial = Special;

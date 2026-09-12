@@ -111,8 +111,9 @@
 #define INITSTRBUF_MAX 41
 #define CWAITSTRBUF_MAX 16
 #define CREDITSBUF_MAX 5
-#define PACKET_TIMING_TIMEOUT 40        // ticks b/w sending a timing packet
-#define MODEM_NAME_MAX PORTBUF_MAX - 1  // Max length of modem name in list box
+#define PACKET_TIMING_TIMEOUT 40  // ticks b/w sending a timing packet
+// Max length of modem name in list box.
+#define MODEM_NAME_MAX (PORTBUF_MAX - 1)
 
 //---------------------------------------------------------------------------
 // Enums
@@ -351,7 +352,7 @@ static_assert(sizeof(SerialPacketType) == 160);
 //...........................................................................
 // Other packet sent over the serial global channel (for file transfers)
 //...........................................................................
-#define MAX_SEND_FILE_PACKET_SIZE MAX_SERIAL_PACKET_SIZE - 64
+#define MAX_SEND_FILE_PACKET_SIZE (MAX_SERIAL_PACKET_SIZE - 64)
 typedef struct {
   SerialCommandType
       Command;  // Enum defined above. Should be a file transfer enum.

@@ -3594,7 +3594,7 @@ void UnitClass::Write_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 04/03/1995 BWG : Created. *
  *=============================================================================================*/
-#define XYCELL(x, y) (y * MAP_CELL_W + x)
+#define XYCELL(x, y) ((y) * MAP_CELL_W + (x))
 void UnitClass::Exit_Repair() {
   Validate();
   int i;

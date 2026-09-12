@@ -2,7 +2,7 @@
 
 Updated: 2026-09-12, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 211 currently excluded check names** and completed entries, in recommended work
+This tracks **all 210 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -70,7 +70,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-deprecated-copy-with-user-provided-copy` | Enabled | Commit `Enable deprecated implicit copy checking`: no reports; the declarations added for `cppcoreguidelines-special-member-functions` removed every implicit copy definition. See review below.                                                                      |
 | `clang-diagnostic-deprecated-copy-with-user-provided-dtor` | Enabled | Commit `Enable deprecated implicit copy checking`: the three reports were `CellClass` in both games and TD's `TCountDownTimerClass`, already resolved by the preceding commit.                                                                                        |
 | `clang-diagnostic-deprecated-copy-with-dtor`               | Enabled | Commit `Enable deprecated implicit copy checking`: the one report was `AbstractTypeClass`, already resolved by the preceding commit.                                                                                                                                  |
-| `bugprone-macro-parentheses`                               | Pending | Prevent macro expansion from changing expression meaning.                                                                                                                                                                                                             |
+| `bugprone-macro-parentheses`                               | Enabled | Commit `Parenthesize macro bodies and arguments`: 85 sites, applied with the check's own fix-its; no current expansion changes meaning. See review below.                                                                                                             |
 | `clang-diagnostic-logical-op-parentheses`                  | Pending | Review ambiguous conditions for precedence mistakes.                                                                                                                                                                                                                  |
 | `clang-diagnostic-bitwise-op-parentheses`                  | Pending | Review mixed bitwise expressions for precedence mistakes.                                                                                                                                                                                                             |
 | `clang-diagnostic-shift-op-parentheses`                    | Pending | Review ambiguous shifts, especially packed values.                                                                                                                                                                                                                    |
@@ -634,6 +634,51 @@ strict compile database.
 
 The full-config sweep passes all 890 translation units, both strict game builds are clean, and all
 237 CTest tests pass. No source changes were needed. The excluded-name count drops from 214 to 211.
+
+### Macro parentheses review (2026-09-12)
+
+`bugprone-macro-parentheses` is now enforced. The isolated sweep of 890 project translation units
+produced 85 findings at macro definition sites: 60 replacement lists and 25 macro arguments. They
+split into two shapes.
+
+Sixty are object-like macros whose body is an unparenthesized expression, and they are dominated by
+two patterns: negative sentinels (`INVALID_SOCKET -1`, `WWERROR -1`, the thirteen `VQAERR_*` codes,
+`IFFERR_*`, `NO_CD_DRIVE`, `VSS_ID`, `CHAT_CHANNEL_LIST_ALL`) and arithmetic constants
+(`OPTION_WIDTH 236 * 2`, `NUKE_GONE_TIME 14 * kTicksPerMinute`, `SOCKET_BUFFER_SIZE 1024 * 128`, the
+nine `TXT_WINSOCK_* 4567 + n` string numbers, `MODEM_NAME_MAX PORTBUF_MAX - 1`).
+
+Twenty-five are function-like macros that do not parenthesize their parameters. These are the ones
+with real teeth: both games' `XYCELL(x, y)` expanding to `y * MAP_CELL_W + x`, the six date field
+macros in `tech/wwfile.h`, `BLOCK_DIM`, `VQAFRAME_OFFSET`, `Reverse_LONG` in `tech/sha.cc`, and
+`RP_SET`/`RP_INCR`/`MK_PTR` in the VESA real-mode helpers.
+
+The fixes are the check's own fix-its, exported per translation unit and applied with
+`clang-apply-replacements`, so the parenthesization is the tool's rather than hand-written:
+
+```sh
+clang-tidy -p "$BUILD" --checks='-*,bugprone-macro-parentheses' --export-fixes=fixes/$n.yaml <tu>
+clang-apply-replacements-23 --format=false --style=none fixes
+```
+
+No current expansion changes meaning, which was checked rather than assumed. For the object-like
+macros, every use in a larger expression still groups the same way: `10 + MODEM_NAME_MAX` and
+`OPTION_Y + OPTION_HEIGHT - 15` are unaffected because `-` and `/` already bound as the parentheses
+now say, and the rest are used as plain array bounds, comparisons or single arguments. For the
+function-like macros, no call site passes a compound argument: `XYCELL` is called only with integer
+literals, where unary minus already binds tighter than `*`; `BLOCK_DIM(header->BlockWidth, ...)` and
+`VQAFRAME_OFFSET(vqabuf->Foff[i])` pass member and subscript expressions, which bind tighter than
+the `&` and `<<` inside; `Reverse_LONG((length * 8))` was already parenthesized by its caller; and
+the `wwfile.h` date macros and `RP_INCR` have no call sites at all. So this commit removes latent
+hazards rather than fixing live bugs.
+
+Applying the fix-its lengthened some definitions past the column limit, which pulled their
+neighbours' trailing-comment alignment out of true. Only the disturbed ranges were reformatted
+(`clang-format --lines`), and both games' `MODEM_NAME_MAX` moved its comment above the definition
+rather than let clang-format split the replacement list across a line continuation. The touched
+files gain no formatting violations they did not already have.
+
+The isolated and full-config sweeps now report nothing, both strict game builds are clean, and all
+237 CTest tests pass. The excluded-name count drops from 211 to 210.
 
 ### Completed validation
 

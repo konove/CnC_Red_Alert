@@ -228,7 +228,7 @@ inline constexpr int kMissionNameOffset = 20;
 #define OPTION_WIDTH 560
 #define OPTION_HEIGHT 332
 #define OPTION_X ((640 - OPTION_WIDTH) / 2)
-#define OPTION_Y (400 - OPTION_HEIGHT) / 2
+#define OPTION_Y ((400 - OPTION_HEIGHT) / 2)
 
 struct EObjectClass {
   HousesType House;

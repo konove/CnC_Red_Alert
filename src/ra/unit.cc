@@ -3541,7 +3541,7 @@ ActionType UnitClass::What_Action(CELL cell) const {
  *                                                                                             *
  * HISTORY: * 04/03/1995 BWG : Created. *
  *=============================================================================================*/
-#define XYCELL(x, y) (y * MAP_CELL_W + x)
+#define XYCELL(x, y) ((y) * MAP_CELL_W + (x))
 void UnitClass::Exit_Repair() {
   assert(Units.ID(this) == ID);
   assert(IsActive);

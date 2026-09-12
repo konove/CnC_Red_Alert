@@ -3048,8 +3048,8 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
  *                                                                         						  *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-#define TXT_HOST_INTERNET_GAME 4567 + 1
-#define TXT_JOIN_INTERNET_GAME 4567 + 2
+#define TXT_HOST_INTERNET_GAME (4567 + 1)
+#define TXT_JOIN_INTERNET_GAME (4567 + 2)
 int Com_Scenario_Dialog() {
   int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   /*........................................................................

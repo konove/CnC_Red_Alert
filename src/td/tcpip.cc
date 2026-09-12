@@ -76,8 +76,8 @@ typedef int socklen_t;
 #include <unistd.h>
 
 #define closesocket close
-#define INVALID_SOCKET -1
-#define SOCKET_ERROR -1
+#define INVALID_SOCKET (-1)
+#define SOCKET_ERROR (-1)
 #endif
 
 #ifdef FORCE_WINSOCK

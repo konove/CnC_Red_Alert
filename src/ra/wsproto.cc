@@ -82,7 +82,7 @@ typedef int socklen_t;
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define INVALID_SOCKET -1
+#define INVALID_SOCKET (-1)
 // #define INVALID_HANDLE_VALUE NULL
 
 #define closesocket close
