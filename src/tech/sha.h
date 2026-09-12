@@ -120,7 +120,7 @@ class SHAEngine {
 
   // Used for 0..19
   uint32_t Function1(uint32_t X, uint32_t Y, uint32_t Z) const {
-    return Z ^ X & (Y ^ Z);
+    return Z ^ (X & (Y ^ Z));
   }
 
   // Used for 20..39
@@ -130,7 +130,7 @@ class SHAEngine {
 
   // Used for 40..59
   uint32_t Function3(uint32_t X, uint32_t Y, uint32_t Z) const {
-    return X & Y | Z & (X | Y);
+    return (X & Y) | (Z & (X | Y));
   }
 
   // Used for 60..79

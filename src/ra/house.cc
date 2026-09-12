@@ -7450,7 +7450,7 @@ void HouseClass::Update_Spied_Power_Plants() {
       const ObjectClass* tech = CurrentObject[index];
       if (tech && tech->What_Am_I() == RTTI_BUILDING) {
         BuildingClass* bldg = (BuildingClass*)tech;
-        if (!bldg->IsOwnedByPlayer && *bldg == STRUCT_POWER ||
+        if ((!bldg->IsOwnedByPlayer && *bldg == STRUCT_POWER) ||
             *bldg == STRUCT_ADVANCED_POWER) {
           if (bldg->SpiedBy & 1 << PlayerPtr->Class->House) {
             bldg->Mark(MARK_CHANGE);

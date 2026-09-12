@@ -207,7 +207,7 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
 
   if (use_new_draw &&
       (header_pointer->draw_flags == ~0U ||
-       header_pointer->draw_flags != (flags & SHAPE_TRANS | SHAPE_FADING |
+       header_pointer->draw_flags != ((flags & SHAPE_TRANS) | SHAPE_FADING |
                                       SHAPE_PREDATOR | SHAPE_GHOST))) {
     Setup_Shape_Header(w, h, static_cast<char*>(src), header_pointer, flags,
                        Translucent, IsTranslucent);
@@ -253,7 +253,7 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
     offset <<= 1;
 
     if (offset < 0) {
-      offset = -offset & PRED_MASK | 0xFFFFFF00;  // will be ffffff00-ffffff0E
+      offset = (-offset & PRED_MASK) | 0xFFFFFF00;  // will be ffffff00-ffffff0E
     } else {
       offset &= PRED_MASK;
     }

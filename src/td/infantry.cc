@@ -1048,7 +1048,7 @@ void InfantryClass::Assign_Target(TARGET target) {
     const BuildingClass* building = As_Building(target);
     if (building && building->Class->IsCaptureable &&
         (GameToPlay != GAME_NORMAL ||
-         *building != STRUCT_EYE && Scenario < 13)) {
+         (*building != STRUCT_EYE && Scenario < 13))) {
       Assign_Destination(target);
     }
   }

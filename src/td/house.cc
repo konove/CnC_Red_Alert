@@ -1354,9 +1354,9 @@ void HouseClass::AI() {
       /*
       **	All units destroyed checker.
       */
-      if (!(ActiveUScan & ~(UNITF_GUNBOAT) | IScan |
-            ActiveAScan &
-                ~(AIRCRAFTF_TRANSPORT | AIRCRAFTF_CARGO | AIRCRAFTF_A10))) {
+      if (!((ActiveUScan & ~(UNITF_GUNBOAT)) | IScan |
+            (ActiveAScan &
+             ~(AIRCRAFTF_TRANSPORT | AIRCRAFTF_CARGO | AIRCRAFTF_A10)))) {
         if (t->Spring(EVENT_UNITS_DESTROYED, Class->House)) {
           continue;
         }
@@ -1365,9 +1365,9 @@ void HouseClass::AI() {
       /*
       **	All buildings AND units destroyed checker.
       */
-      if (!(ActiveBScan | ActiveUScan & ~(UNITF_GUNBOAT) | IScan |
-            ActiveAScan &
-                ~(AIRCRAFTF_TRANSPORT | AIRCRAFTF_CARGO | AIRCRAFTF_A10))) {
+      if (!(ActiveBScan | (ActiveUScan & ~(UNITF_GUNBOAT)) | IScan |
+            (ActiveAScan &
+             ~(AIRCRAFTF_TRANSPORT | AIRCRAFTF_CARGO | AIRCRAFTF_A10)))) {
         if (t->Spring(EVENT_ALL_DESTROYED, Class->House)) {
           continue;
         }

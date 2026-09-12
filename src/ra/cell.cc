@@ -1420,7 +1420,7 @@ void CellClass::Wall_Update() {
         }
       }
       newcell.OverlayData =
-          static_cast<unsigned char>(newcell.OverlayData & 0xFFF0 | icon);
+          static_cast<unsigned char>((newcell.OverlayData & 0xFFF0) | icon);
 
       /*
       **	Handle special cases for the incomplete damaged wall sets. If a
@@ -1741,7 +1741,7 @@ int CellClass::Clear_Icon() const {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   CELL cell = Cell_Number();
-  return Cell_X(cell) & 0x03 | (Cell_Y(cell) & 0x03) << 2;
+  return (Cell_X(cell) & 0x03) | (Cell_Y(cell) & 0x03) << 2;
   //	return((cell & 0x03) | ((unsigned(cell)>>5) & 0x0C));
 }
 

@@ -87,8 +87,8 @@ inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
 }
 inline COORDINATE Coord_Snap(COORDINATE coord) {
   return static_cast<COORDINATE>(
-      MakeLong(*((unsigned short*)&coord + 1) & 0xFF00 | 0x80,
-               *(unsigned short*)&coord & 0xFF00 | 0x80));
+      MakeLong((*((unsigned short*)&coord + 1) & 0xFF00) | 0x80,
+               (*(unsigned short*)&coord & 0xFF00) | 0x80));
 }
 inline COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) {
   return static_cast<COORDINATE>(MakeLong(

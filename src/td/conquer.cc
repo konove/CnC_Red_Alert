@@ -2522,7 +2522,7 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
     if (shape_size) {
       GraphicViewPortClass draw_window(
           LogicPage->Get_Graphic_Buffer(),
-          WindowList[window][WINDOWX] << 3 + LogicPage->Get_XPos(),
+          (WindowList[window][WINDOWX] << 3) + LogicPage->Get_XPos(),
           WindowList[window][WINDOWY] + LogicPage->Get_YPos(),
           WindowList[window][WINDOWWIDTH] << 3,
           WindowList[window][WINDOWHEIGHT]);

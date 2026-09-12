@@ -1832,7 +1832,7 @@ void Init_Random() {
   ** back a recording, init the Seed to a random value.
   */
   if (Session.Type == GAME_NORMAL ||
-      Session.Type == GAME_SKIRMISH && !Session.Play) {
+      (Session.Type == GAME_SKIRMISH && !Session.Play)) {
     /*
     ** Set the optional user-specified seed
     */

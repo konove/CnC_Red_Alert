@@ -2,7 +2,7 @@
 
 Updated: 2026-09-12, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 210 currently excluded check names** and completed entries, in recommended work
+This tracks **all 207 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -56,7 +56,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 ## P2 — Further correctness and targeted safety
 
 | Check                                                      | Status  | Reason / result                                                                                                                                                                                                                                                       |
-| ---------------------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ---------------------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | -------------------------------------------------------------------- |
 | `clang-diagnostic-lifetime-safety-use-after-free`          | Enabled | Commit `Stop returning freed projectiles from the firing code`: clear the bullet pointer when unlimbo fails and read the recoil flag before the free.                                                                                                                 |
 | `clang-diagnostic-lifetime-safety-invalidation`            | Skipped | Commit `Clear the screen buffer globals their owners delete`: fix the eight dangling-global findings, but retain the exclusion because LLVM 23.1.2 flags two consecutive `push_back` calls. See review below.                                                         |
 | `clang-diagnostic-lifetime-safety-use-after-scope-moved`   | Enabled | Commit `Take the unit shape pointer from its owner and enable moved-storage checking`: store the shape data first, then read the pointer back, instead of holding one into a moved-from local.                                                                        |
@@ -71,9 +71,9 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-deprecated-copy-with-user-provided-dtor` | Enabled | Commit `Enable deprecated implicit copy checking`: the three reports were `CellClass` in both games and TD's `TCountDownTimerClass`, already resolved by the preceding commit.                                                                                        |
 | `clang-diagnostic-deprecated-copy-with-dtor`               | Enabled | Commit `Enable deprecated implicit copy checking`: the one report was `AbstractTypeClass`, already resolved by the preceding commit.                                                                                                                                  |
 | `bugprone-macro-parentheses`                               | Enabled | Commit `Parenthesize macro bodies and arguments`: 85 sites, applied with the check's own fix-its; no current expansion changes meaning. See review below.                                                                                                             |
-| `clang-diagnostic-logical-op-parentheses`                  | Pending | Review ambiguous conditions for precedence mistakes.                                                                                                                                                                                                                  |
-| `clang-diagnostic-bitwise-op-parentheses`                  | Pending | Review mixed bitwise expressions for precedence mistakes.                                                                                                                                                                                                             |
-| `clang-diagnostic-shift-op-parentheses`                    | Pending | Review ambiguous shifts, especially packed values.                                                                                                                                                                                                                    |
+| `clang-diagnostic-logical-op-parentheses`                  | Enabled | Commit `Fix the shifted window origin and make operator precedence explicit`: six `&&` inside `                                                                                                                                                                       |                                                             | `, all parenthesized to keep the current grouping. See review below. |
+| `clang-diagnostic-bitwise-op-parentheses`                  | Enabled | Commit `Fix the shifted window origin and make operator precedence explicit`: seventeen `&` inside `                                                                                                                                                                  | `, including the SHA-1 round functions; grouping preserved. |
+| `clang-diagnostic-shift-op-parentheses`                    | Enabled | Commit `Fix the shifted window origin and make operator precedence explicit`: two real bugs -- TD shifted the window origin by `3 + Get_XPos()` instead of adding it.                                                                                                 |
 | `readability-math-missing-parentheses`                     | Pending | Expose arithmetic grouping that is easy to misread.                                                                                                                                                                                                                   |
 | `bugprone-branch-clone`                                    | Pending | Review duplicate branches for copy/paste bugs; preserve intentional symmetry.                                                                                                                                                                                         |
 | `clang-diagnostic-sign-conversion`                         | Pending | Review signed sentinels and range changes; follow the type policy.                                                                                                                                                                                                    |
@@ -679,6 +679,60 @@ files gain no formatting violations they did not already have.
 
 The isolated and full-config sweeps now report nothing, both strict game builds are clean, and all
 237 CTest tests pass. The excluded-name count drops from 211 to 210.
+
+### Operator precedence parentheses review (2026-09-12)
+
+The three `clang-diagnostic-*-op-parentheses` names are now enforced. The isolated sweep of 890
+project translation units produced 25 findings: 17 for `&` inside `|`, 6 for `&&` inside `||`, and 2
+for `+` inside `<<`. (`readability-math-missing-parentheses` was measured in the same run and
+produced 2,532; it stays on the list as its own decision.)
+
+The two shift findings are real bugs, in TD only:
+
+```cpp
+WindowList[window][WINDOWX] << 3 + LogicPage->Get_XPos(),
+WindowList[window][WINDOWY] + LogicPage->Get_YPos(),
+```
+
+`+` binds tighter than `<<`, so this shifted the window's X origin left by `3 + Get_XPos()` places
+instead of converting the 8-pixel units and then adding the viewport offset. The `WINDOWY` line
+immediately below shows the intent, `cdata.cc`, `sdata.cc` and `dialog.cc` all write
+`WindowList[window][WINDOWX] << 3` and add separately, and RA's counterpart stores `WINDOWX` in
+pixels and simply adds. Both sites — `td/conquer.cc` in the shape-drawing helper and `td/techno.cc`
+in `Draw_It` — are now `(WindowList[window][WINDOWX] << 3) + LogicPage->Get_XPos()`. The bug is
+invisible whenever `Get_XPos()` is zero, which is the usual case for a full-screen logic page.
+
+The other 23 are parenthesized to preserve the grouping they already had, applied from the check's
+own fix-its. Most are plainly intentional once written out: the SHA-1 round functions in
+`tech/sha.h` (`Z ^ (X & (Y ^ Z))` and `(X & Y) | (Z & (X | Y))` are the standard forms), the cell
+icon and coordinate packing in both games' `cell.cc` and TD's `Coord_Snap`, TD's "all units
+destroyed" trigger masks, and the `||`-of-`&&` conditions in `Init_Random`, `MapClass::Logic`,
+`TeamClass::AI` and `InfantryClass::Assign_Target`.
+
+Three groupings look like they may not match intent, and are left exactly as they were rather than
+changed in a parentheses commit, because each would alter gameplay or rendering:
+
+- `ra/house.cc` `Update_Spied_Power_Plants` reads
+  `(!IsOwnedByPlayer && *bldg == STRUCT_POWER) || *bldg == STRUCT_ADVANCED_POWER`, where
+  `!IsOwnedByPlayer && (POWER || ADVANCED_POWER)` is the more likely intent. The inner
+  `SpiedBy & 1 << PlayerPtr->Class->House` guard probably makes the two equivalent, since a house
+  does not spy its own building, but that is an argument for checking it in game rather than
+  assuming it.
+- `ra/vessel.cc` `What_Action` tests
+  `(In_Radar(cellnum) && Cost[SPEED_FOOT] == 0) || Occupy.Building || ...` for an unsuitable unload
+  cell. The same list appears without the `In_Radar` term at `vessel.cc:1580` and `unit.cc:3706`,
+  which suggests `In_Radar` was meant to guard the whole test. As written, an off-map adjacent cell
+  counts as suitable when its occupancy flags happen to be clear.
+- `tech/2keyfbuf.cc` compares `draw_flags` against
+  `(flags & SHAPE_TRANS) | SHAPE_FADING | SHAPE_PREDATOR | SHAPE_GHOST`, where masking `flags` with
+  all four looks intended. As written the right-hand side always carries three of the bits, so the
+  comparison nearly always differs and the all-flags shape path is taken.
+
+Applying the fix-its pushed a few conditions past the column limit; only those ranges were
+reformatted, and the touched files gain no formatting violations they did not already have.
+
+Both isolated and full-config sweeps now report nothing, both strict game builds are clean, and all
+237 CTest tests pass. The excluded-name count drops from 210 to 207.
 
 ### Completed validation
 

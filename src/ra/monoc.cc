@@ -374,7 +374,7 @@ void MonoClass::Set_Cursor(int x, int y) {
   */
   int pos = (y + SubY) * COLUMNS + (x + SubX);
   if (Page == 0) {
-    output(CONTROL_PORT, static_cast<short>(0x0E | pos & 0xFF00));
+    output(CONTROL_PORT, static_cast<short>(0x0E | (pos & 0xFF00)));
     output(CONTROL_PORT, static_cast<short>(0x0F | pos << 8));
   }
 }

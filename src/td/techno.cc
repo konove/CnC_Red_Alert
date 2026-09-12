@@ -863,7 +863,7 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
   if (IsSelected || Special.IsBarOn) {
     GraphicViewPortClass draw_window(
         LogicPage->Get_Graphic_Buffer(),
-        WindowList[window][WINDOWX] << 3 + LogicPage->Get_XPos(),
+        (WindowList[window][WINDOWX] << 3) + LogicPage->Get_XPos(),
         WindowList[window][WINDOWY] + LogicPage->Get_YPos(),
         WindowList[window][WINDOWWIDTH] << 3, WindowList[window][WINDOWHEIGHT]);
 

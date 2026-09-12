@@ -435,7 +435,7 @@ void TeamClass::AI() {
   **	Only try to recruit members for a non player controlled team.
   */
   if (!IsMoving ||
-      !IsFullStrength && Class->IsReinforcable && !House->IsHuman) {
+      (!IsFullStrength && Class->IsReinforcable && !House->IsHuman)) {
     for (int index = 0; index < Class->ClassCount; index++) {
       if (Quantity[index] < Class->DesiredNum[index]) {
         Recruit(index);

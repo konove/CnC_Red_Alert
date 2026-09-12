@@ -1110,8 +1110,8 @@ void MapClass::Logic() {
     **	Heavy Tiberium growth can spread.
     */
     TerrainClass* terrain = ptr->Cell_Terrain();
-    if (Special.IsTSpread && ptr->Land_Type() == LAND_TIBERIUM &&
-            ptr->OverlayData > 6 ||
+    if ((Special.IsTSpread && ptr->Land_Type() == LAND_TIBERIUM &&
+         ptr->OverlayData > 6) ||
         (terrain && terrain->Class->IsTiberiumSpawn)) {
       int tries = 1;
       if (terrain) {

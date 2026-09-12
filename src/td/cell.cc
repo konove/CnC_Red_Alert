@@ -1361,7 +1361,7 @@ void CellClass::Wall_Update() {
         }
       }
       newcell.OverlayData =
-          static_cast<unsigned char>(newcell.OverlayData & 0xFFF0 | icon);
+          static_cast<unsigned char>((newcell.OverlayData & 0xFFF0) | icon);
       //			newcell.OverlayData = icon;
 
       /*
@@ -1679,7 +1679,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
 int CellClass::Clear_Icon() const {
   Validate();
   CELL cell = Cell_Number();
-  return cell & 0x03 | cell >> 4 & 0x0C;
+  return (cell & 0x03) | (cell >> 4 & 0x0C);
 }
 
 /***********************************************************************************************
