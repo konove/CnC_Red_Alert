@@ -396,6 +396,10 @@ class HouseClass {
   HouseClass() { Init_Trackers(); }
   HouseClass(HousesType house);
   ~HouseClass();
+  HouseClass(const HouseClass&) = delete;
+  HouseClass& operator=(const HouseClass&) = delete;
+  HouseClass(HouseClass&&) = delete;
+  HouseClass& operator=(HouseClass&&) = delete;
   operator HousesType() const;
 
   /*---------------------------------------------------------------------

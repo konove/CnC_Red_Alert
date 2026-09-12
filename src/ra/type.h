@@ -89,6 +89,10 @@ class AbstractTypeClass {
 
   AbstractTypeClass(RTTIType rtti, int id, int name, const char* ini) noexcept;
   virtual ~AbstractTypeClass() = default;
+  AbstractTypeClass(const AbstractTypeClass&) = default;
+  AbstractTypeClass& operator=(const AbstractTypeClass&) = delete;
+  AbstractTypeClass(AbstractTypeClass&&) = default;
+  AbstractTypeClass& operator=(AbstractTypeClass&&) = default;
 
   // Saved-game support for the base part; derived classes call it first.
   template <class Archive>

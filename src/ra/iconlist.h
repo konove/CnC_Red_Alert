@@ -97,6 +97,10 @@ class IconListClass : public ListClass {
                 int iMaxItemsSaved = 0);
   //		IconListClass( const IconListClass& list );
   ~IconListClass() override;
+  IconListClass(const IconListClass&) = delete;
+  IconListClass& operator=(const IconListClass&) = delete;
+  IconListClass(IconListClass&&) = delete;
+  IconListClass& operator=(IconListClass&&) = delete;
 
   int Add_Item(const char* text) override;
   virtual int Add_Item(const char* text, const char* szHelp, void* pIcon0,

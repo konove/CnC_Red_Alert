@@ -82,6 +82,10 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   BulletClass(BulletType id, TARGET target, TechnoClass* Payback, int strength,
               WarheadType warhead, int speed);
   ~BulletClass() override;
+  BulletClass(const BulletClass&) = delete;
+  BulletClass& operator=(const BulletClass&) = delete;
+  BulletClass(BulletClass&&) = delete;
+  BulletClass& operator=(BulletClass&&) = delete;
   operator BulletType() const { return Class->Type; }
 
   /*---------------------------------------------------------------------

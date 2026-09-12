@@ -47,6 +47,8 @@ class PcxFile {
     std::error_code ignored;
     std::filesystem::remove(path_, ignored);
   }
+  PcxFile(PcxFile&&) = delete;
+  PcxFile& operator=(PcxFile&&) = delete;
 
   // Load without a palette so EOF is exactly the end of the encoded pixels.
   std::unique_ptr<GraphicBufferClass> Load() const {

@@ -86,6 +86,10 @@ class NullModemConnClass : public NonSequencedConnClass {
   NullModemConnClass(int numsend, int numrecieve, int maxlen,
                      unsigned short magicnum);
   ~NullModemConnClass() override;
+  NullModemConnClass(const NullModemConnClass&) = delete;
+  NullModemConnClass& operator=(const NullModemConnClass&) = delete;
+  NullModemConnClass(NullModemConnClass&&) = delete;
+  NullModemConnClass& operator=(NullModemConnClass&&) = delete;
 
   /*.....................................................................
   Initialization.

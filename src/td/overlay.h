@@ -71,6 +71,10 @@ class OverlayClass : public ObjectClass {
       OverlayClass::Limbo();
     }
   }
+  OverlayClass(const OverlayClass&) = delete;
+  OverlayClass& operator=(const OverlayClass&) = delete;
+  OverlayClass(OverlayClass&&) = delete;
+  OverlayClass& operator=(OverlayClass&&) = delete;
   operator OverlayType() const { return Class->Type; }
   RTTIType What_Am_I() const override { return RTTI_OVERLAY; }
 

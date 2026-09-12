@@ -234,6 +234,10 @@ class BuildingClass : public TechnoClass {
   void operator delete(void* ptr);
   BuildingClass(StructType type, HousesType house);
   ~BuildingClass() override;
+  BuildingClass(const BuildingClass&) = delete;
+  BuildingClass& operator=(const BuildingClass&) = delete;
+  BuildingClass(BuildingClass&&) = delete;
+  BuildingClass& operator=(BuildingClass&&) = delete;
   operator StructType() const { return Class->Type; }
 
   /*---------------------------------------------------------------------

@@ -61,6 +61,10 @@ class INIClass {
  public:
   INIClass() {}
   ~INIClass();
+  INIClass(const INIClass&) = delete;
+  INIClass& operator=(const INIClass&) = delete;
+  INIClass(INIClass&&) = delete;
+  INIClass& operator=(INIClass&&) = delete;
 
   /*
   **	Fetch and store INI data.
@@ -144,6 +148,10 @@ class INIClass {
       free(Value);
       Value = nullptr;
     }
+    INIEntry(const INIEntry&) = delete;
+    INIEntry& operator=(const INIEntry&) = delete;
+    INIEntry(INIEntry&&) = delete;
+    INIEntry& operator=(INIEntry&&) = delete;
     int Index_ID() const { return CrcEngine::Compute(Entry); }
 
     char* Entry;
@@ -161,6 +169,10 @@ class INIClass {
       Section = nullptr;
       EntryList.Delete();
     }
+    INISection(const INISection&) = delete;
+    INISection& operator=(const INISection&) = delete;
+    INISection(INISection&&) = delete;
+    INISection& operator=(INISection&&) = delete;
     INIEntry* Find_Entry(const char* entry) const;
     int Index_ID() const { return CrcEngine::Compute(Section); }
 

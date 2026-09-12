@@ -2,7 +2,7 @@
 
 Updated: 2026-09-12, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 216 currently excluded check names** and completed entries, in recommended work
+This tracks **all 214 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -65,8 +65,8 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `bugprone-throwing-static-initialization`                  | Enabled | Commit `Make the game data tables nothrow constructible and enable throwing static initialization checking`: mark the type-class, value-type, timer, heap and gadget constructors `noexcept`, and allow the engine's allocating singletons by type. See review below. |
 | `cert-err58-cpp`                                           | Enabled | Alias enabled with `bugprone-throwing-static-initialization` in the same commit; the alias needs its own `AllowedTypes` copy.                                                                                                                                         |
 | `cppcoreguidelines-init-variables`                         | Skipped | Commit `Document local initialization check policy`: the check's own fix hides findings the eleven enabled uninitialized-use checks already report, and those report nothing across the tree. See review below.                                                       |
-| `cppcoreguidelines-special-member-functions`               | Pending | Audit copy/move/destruction consistency for owning types.                                                                                                                                                                                                             |
-| `hicpp-special-member-functions`                           | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-special-member-functions` on older tools.                                                                                                                                                                      |
+| `cppcoreguidelines-special-member-functions`               | Enabled | Commit `Declare copy and move intent on the classes that own a destructor`: annotate 170 class declarations; the compiler found the five classes that are genuinely copied. See review below.                                                                         |
+| `hicpp-special-member-functions`                           | Enabled | Exclusion removed with `cppcoreguidelines-special-member-functions` in the same commit. The name does nothing on LLVM 23, so the alias enforces the same rule wherever it exists.                                                                                     |
 | `clang-diagnostic-deprecated-copy-with-user-provided-copy` | Pending | Review implicit copy operations paired with custom copying.                                                                                                                                                                                                           |
 | `clang-diagnostic-deprecated-copy-with-user-provided-dtor` | Pending | Review implicit copying of types with custom destruction.                                                                                                                                                                                                             |
 | `clang-diagnostic-deprecated-copy-with-dtor`               | Pending | Complete the destructor/copy audit, including defaulted destructors.                                                                                                                                                                                                  |
@@ -542,6 +542,51 @@ subset, not even the 738 pointers.
 
 Retain the exclusion. No source or configuration changes were made; the excluded-name count
 remains 216.
+
+### Special member function review (2026-09-12)
+
+`cppcoreguidelines-special-member-functions` is now enforced, and the
+`hicpp-special-member-functions` exclusion is removed alongside it. The isolated sweep of 890
+project translation units, including 431 generated header checks, produced 249 findings covering 111
+distinct classes at 170 declaration sites (91 RA, 71 TD, 8 shared). Every finding is a class that
+declares a destructor -- usually a virtual one -- and leaves copying and moving to the implicit
+rules.
+
+The engine's classes fall into groups where copying is meaningless: the battlefield object hierarchy
+from `AbstractClass` down through `TechnoClass`, `FootClass` and the leaf unit classes, whose
+identity is their slot in a fixed heap; the gadget hierarchy behind the sidebar, radar and dialog
+controls, which is threaded onto linked lists; the file, INI and network classes, which own handles
+and buffers; and the Win32 COM interface shims. Those sites now declare the copy and move operations
+deleted next to the destructor, which is the spelling already used in `Straw`, `RandomStraw` and
+`GadgetClass`.
+
+Deleting a copy that is actually performed is a compile error, so the build located every exception
+rather than leaving it to inspection. There were five:
+
+- `HouseTypeClass::Init_Heap` copy-constructs its heap entries from the static house prototypes, so
+  `AbstractTypeClass` and `HouseTypeClass` keep a defaulted copy constructor. `ObjectTypeClass`
+  already declared defaulted moves, so the base keeps defaulted moves too; deleting them made the
+  derived declarations ill-formed, which `clang-diagnostic-defaulted-function-deleted` reported on
+  the first strict build.
+- Both games' `CellClass` is copy-assigned by `VectorClass` when the map array grows, so assignment
+  is defaulted while construction stays deleted. Each also carried a private undeclared copy
+  constructor, the pre-C++11 spelling of the same intent; that is now a plain `= delete` beside the
+  other four.
+- TD's `TCountDownTimerClass` is assigned from a tick count (`SightTimer = kTicksPerSecond`), which
+  needs the implicit move assignment its empty destructor was suppressing. Deleting that empty
+  destructor restores the value semantics the callers rely on and takes the class off the check's
+  list entirely.
+
+Two smaller traps came out of the same builds. A deleted copy constructor suppresses the implicit
+default constructor, which broke `VqaIo` and the three COM interface shims until each regained an
+explicit `= default` default constructor. And seven classes declare their destructor through a macro
+or in a `.cc` file, so they were annotated by hand: the three WOL event sinks behind
+`COM_SINK_DESTRUCTOR`, both games' `BufferedFileReader`, `VQAHandle`, and `IconsetClass` -- a
+reinterpret-cast overlay on shape data that is never constructed, now saying so with deleted members
+rather than private undeclared ones.
+
+The isolated sweep now reports nothing, the full-config strict build of both games is clean, and all
+237 CTest tests pass. The excluded-name count drops from 216 to 214.
 
 ### Completed validation
 

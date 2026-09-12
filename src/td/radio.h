@@ -82,6 +82,10 @@ class RadioClass : public MissionClass {
     LastMessage = RADIO_STATIC;
   }
   ~RadioClass() override {}
+  RadioClass(const RadioClass&) = delete;
+  RadioClass& operator=(const RadioClass&) = delete;
+  RadioClass(RadioClass&&) = delete;
+  RadioClass& operator=(RadioClass&&) = delete;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.

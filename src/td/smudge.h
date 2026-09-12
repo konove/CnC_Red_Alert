@@ -74,6 +74,10 @@ class SmudgeClass : public ObjectClass {
       SmudgeClass::Limbo();
     }
   }
+  SmudgeClass(const SmudgeClass&) = delete;
+  SmudgeClass& operator=(const SmudgeClass&) = delete;
+  SmudgeClass(SmudgeClass&&) = delete;
+  SmudgeClass& operator=(SmudgeClass&&) = delete;
   RTTIType What_Am_I() const override { return RTTI_SMUDGE; }
 
   static void Init();

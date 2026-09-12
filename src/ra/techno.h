@@ -254,6 +254,10 @@ class TechnoClass : public RadioClass,
   */
   TechnoClass(RTTIType rtti, int id, HousesType house = HOUSE_NONE);
   ~TechnoClass() override { House = nullptr; }
+  TechnoClass(const TechnoClass&) = delete;
+  TechnoClass& operator=(const TechnoClass&) = delete;
+  TechnoClass(TechnoClass&&) = delete;
+  TechnoClass& operator=(TechnoClass&&) = delete;
 
   // Saved-game support for the base part; defined in ioobj.cc.
   template <class Archive>

@@ -162,6 +162,10 @@ class ObjectClass : public AbstractClass {
 
  public:
   ~ObjectClass() override { Next = nullptr; }
+  ObjectClass(const ObjectClass&) = delete;
+  ObjectClass& operator=(const ObjectClass&) = delete;
+  ObjectClass(ObjectClass&&) = delete;
+  ObjectClass& operator=(ObjectClass&&) = delete;
   int operator<(const ObjectClass& object) const {
     return Sort_Y() < object.Sort_Y();
   }

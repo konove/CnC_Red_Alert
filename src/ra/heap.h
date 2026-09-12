@@ -83,6 +83,8 @@ class FixedHeapClass {
  public:
   FixedHeapClass(int size) noexcept;
   virtual ~FixedHeapClass();
+  FixedHeapClass(FixedHeapClass&&) = delete;
+  FixedHeapClass& operator=(FixedHeapClass&&) = delete;
 
   int Count() const { return ActiveCount; }
   int Length() const { return TotalCount; }
@@ -152,6 +154,10 @@ class FixedIHeapClass : public FixedHeapClass {
  public:
   FixedIHeapClass(int size) noexcept : FixedHeapClass(size) {}
   ~FixedIHeapClass() override {}
+  FixedIHeapClass(const FixedIHeapClass&) = delete;
+  FixedIHeapClass& operator=(const FixedIHeapClass&) = delete;
+  FixedIHeapClass(FixedIHeapClass&&) = delete;
+  FixedIHeapClass& operator=(FixedIHeapClass&&) = delete;
 
   int Set_Heap(int count, void* buffer = nullptr) override;
   void* Allocate() override;
@@ -189,6 +195,10 @@ class TFixedIHeapClass : public FixedIHeapClass {
  public:
   TFixedIHeapClass() noexcept : FixedIHeapClass(sizeof(T)) {}
   ~TFixedIHeapClass() override {}
+  TFixedIHeapClass(const TFixedIHeapClass&) = delete;
+  TFixedIHeapClass& operator=(const TFixedIHeapClass&) = delete;
+  TFixedIHeapClass(TFixedIHeapClass&&) = delete;
+  TFixedIHeapClass& operator=(TFixedIHeapClass&&) = delete;
 
   using FixedIHeapClass::ID;
   using FixedIHeapClass::Logical_ID;

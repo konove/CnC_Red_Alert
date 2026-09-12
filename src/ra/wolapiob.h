@@ -223,6 +223,10 @@ class WolapiObject {
  public:
   WolapiObject();
   virtual ~WolapiObject();
+  WolapiObject(const WolapiObject&) = delete;
+  WolapiObject& operator=(const WolapiObject&) = delete;
+  WolapiObject(WolapiObject&&) = delete;
+  WolapiObject& operator=(WolapiObject&&) = delete;
 
   IChat* pChat;
   IDownload* pDownload;

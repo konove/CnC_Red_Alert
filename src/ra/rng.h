@@ -47,6 +47,10 @@
 class RandomNumberGenerator {
  public:
   virtual ~RandomNumberGenerator() {}
+  RandomNumberGenerator(const RandomNumberGenerator&) = delete;
+  RandomNumberGenerator& operator=(const RandomNumberGenerator&) = delete;
+  RandomNumberGenerator(RandomNumberGenerator&&) = delete;
+  RandomNumberGenerator& operator=(RandomNumberGenerator&&) = delete;
 
   virtual void Get_Block(void* output, unsigned int size) = 0;
 };

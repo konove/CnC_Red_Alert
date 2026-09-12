@@ -34,6 +34,10 @@ class ToolTipClass {
   ToolTipClass(GadgetClass* pGadget, const char* szText, int xShow, int yShow,
                bool bRightAlign = false, bool bIconList = false);
   ~ToolTipClass() { delete[] pSaveRect; }
+  ToolTipClass(const ToolTipClass&) = delete;
+  ToolTipClass& operator=(const ToolTipClass&) = delete;
+  ToolTipClass(ToolTipClass&&) = delete;
+  ToolTipClass& operator=(ToolTipClass&&) = delete;
 
   ToolTipClass* GetToolTipHit();
   void Show();

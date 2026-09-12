@@ -72,6 +72,8 @@ class MonoClass {
 
   MonoClass();
   ~MonoClass();
+  MonoClass(MonoClass&&) = delete;
+  MonoClass& operator=(MonoClass&&) = delete;
 
   static void Enable() { Enabled = true; }
   static void Disable() { Enabled = false; }

@@ -83,6 +83,8 @@ class VectorClass {
   VectorClass(base::ssize size = 0, const T* array = nullptr);
   VectorClass(const VectorClass&);  // Copy constructor.
   virtual ~VectorClass();
+  VectorClass(VectorClass&&) = delete;
+  VectorClass& operator=(VectorClass&&) = delete;
 
   T& operator[](base::ssize index) { return Vector[index]; }
   const T& operator[](base::ssize index) const { return Vector[index]; }

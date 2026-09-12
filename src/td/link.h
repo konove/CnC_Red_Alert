@@ -50,6 +50,8 @@ class LinkClass {
  public:
   LinkClass() noexcept;
   virtual ~LinkClass();
+  LinkClass(LinkClass&&) = delete;
+  LinkClass& operator=(LinkClass&&) = delete;
 
   virtual LinkClass* Get_Next() const;
   virtual LinkClass* Get_Prev() const;

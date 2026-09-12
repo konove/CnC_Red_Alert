@@ -132,6 +132,10 @@ class TriggerClass {
   */
   TriggerClass() = default;
   ~TriggerClass();
+  TriggerClass(const TriggerClass&) = delete;
+  TriggerClass& operator=(const TriggerClass&) = delete;
+  TriggerClass(TriggerClass&&) = delete;
+  TriggerClass& operator=(TriggerClass&&) = delete;
 
   /*
   **	Initialization: clears all triggers in preparation for new scenario

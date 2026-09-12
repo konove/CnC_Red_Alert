@@ -110,6 +110,9 @@ class GadgetClass : public LinkClass {
   // Not copyable -- see LinkClass.
   GadgetClass(const GadgetClass&) = delete;
   ~GadgetClass() override;
+  GadgetClass& operator=(const GadgetClass&) = delete;
+  GadgetClass(GadgetClass&&) = delete;
+  GadgetClass& operator=(GadgetClass&&) = delete;
 
   /*
   **	Gadget list management functions.

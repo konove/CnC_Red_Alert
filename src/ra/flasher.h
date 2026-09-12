@@ -75,6 +75,10 @@ class FlasherClass {
     IsBlushing = is_blushing;
   }
   virtual ~FlasherClass() = default;
+  FlasherClass(const FlasherClass&) = delete;
+  FlasherClass& operator=(const FlasherClass&) = delete;
+  FlasherClass(FlasherClass&&) = delete;
+  FlasherClass& operator=(FlasherClass&&) = delete;
 
   virtual void Debug_Dump(MonoClass* mono) const;
   bool Process();

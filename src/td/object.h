@@ -137,6 +137,10 @@ class ObjectClass : public AbstractClass {
   void Serialize(Archive& ar);
   ObjectClass();
   ~ObjectClass() override {}
+  ObjectClass(const ObjectClass&) = delete;
+  ObjectClass& operator=(const ObjectClass&) = delete;
+  ObjectClass(ObjectClass&&) = delete;
+  ObjectClass& operator=(ObjectClass&&) = delete;
   virtual RTTIType What_Am_I() const;
   int operator<(const ObjectClass& object) const {
     return Sort_Y() < object.Sort_Y();

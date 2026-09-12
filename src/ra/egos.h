@@ -50,6 +50,10 @@ class EgoClass {
  public:
   EgoClass(int x, int y, char* text, TextPrintType flags);
   ~EgoClass();
+  EgoClass(const EgoClass&) = delete;
+  EgoClass& operator=(const EgoClass&) = delete;
+  EgoClass(EgoClass&&) = delete;
+  EgoClass& operator=(EgoClass&&) = delete;
 
   bool Scroll(int distance);
   void Render();

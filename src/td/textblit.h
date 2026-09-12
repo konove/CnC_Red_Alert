@@ -25,6 +25,10 @@ class TextBlitClass {
  public:
   TextBlitClass();
   ~TextBlitClass() {}
+  TextBlitClass(const TextBlitClass&) = delete;
+  TextBlitClass& operator=(const TextBlitClass&) = delete;
+  TextBlitClass(TextBlitClass&&) = delete;
+  TextBlitClass& operator=(TextBlitClass&&) = delete;
 
   void Add(int x, int y, int dx, int dy, int w, int h);
   void Clear();

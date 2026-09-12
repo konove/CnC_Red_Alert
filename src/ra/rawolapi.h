@@ -100,6 +100,10 @@ class RAChatEventSink
  public:
   RAChatEventSink(WolapiObject* pOwner);
   COM_SINK_DESTRUCTOR(RAChatEventSink);
+  RAChatEventSink(const RAChatEventSink&) = delete;
+  RAChatEventSink& operator=(const RAChatEventSink&) = delete;
+  RAChatEventSink(RAChatEventSink&&) = delete;
+  RAChatEventSink& operator=(RAChatEventSink&&) = delete;
 
   //    BEGIN_COM_MAP(RAChatEventSink)
   //	  COM_INTERFACE_ENTRY(IChatEvent)
@@ -231,6 +235,10 @@ class RADownloadEventSink :
  public:
   RADownloadEventSink();
   COM_SINK_DESTRUCTOR(RADownloadEventSink) = default;
+  RADownloadEventSink(const RADownloadEventSink&) = delete;
+  RADownloadEventSink& operator=(const RADownloadEventSink&) = delete;
+  RADownloadEventSink(RADownloadEventSink&&) = delete;
+  RADownloadEventSink& operator=(RADownloadEventSink&&) = delete;
 
   //  BEGIN_COM_MAP(RADownloadEventSink)
   //    COM_INTERFACE_ENTRY(IDownloadEvent)
@@ -272,6 +280,10 @@ class RANetUtilEventSink :
  public:
   RANetUtilEventSink(WolapiObject* pOwner);
   COM_SINK_DESTRUCTOR(RANetUtilEventSink);
+  RANetUtilEventSink(const RANetUtilEventSink&) = delete;
+  RANetUtilEventSink& operator=(const RANetUtilEventSink&) = delete;
+  RANetUtilEventSink(RANetUtilEventSink&&) = delete;
+  RANetUtilEventSink& operator=(RANetUtilEventSink&&) = delete;
 
   // BEGIN_COM_MAP(CNetUtilEventSink)
   //	COM_INTERFACE_ENTRY(INetUtilEvent)

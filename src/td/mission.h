@@ -73,6 +73,10 @@ class MissionClass : public ObjectClass {
   */
   MissionClass();
   ~MissionClass() override {}
+  MissionClass(const MissionClass&) = delete;
+  MissionClass& operator=(const MissionClass&) = delete;
+  MissionClass(MissionClass&&) = delete;
+  MissionClass& operator=(MissionClass&&) = delete;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.

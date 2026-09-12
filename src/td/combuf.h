@@ -94,6 +94,10 @@ class CommBufferClass {
   */
   CommBufferClass(int numsend, int numrecieve, int maxlen);
   virtual ~CommBufferClass();
+  CommBufferClass(const CommBufferClass&) = delete;
+  CommBufferClass& operator=(const CommBufferClass&) = delete;
+  CommBufferClass(CommBufferClass&&) = delete;
+  CommBufferClass& operator=(CommBufferClass&&) = delete;
   void Init();
   void Init_Send_Queue();
 

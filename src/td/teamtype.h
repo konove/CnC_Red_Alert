@@ -106,6 +106,10 @@ class TeamTypeClass : public AbstractTypeClass {
   */
   TeamTypeClass() : AbstractTypeClass(0, "") {}
   ~TeamTypeClass() override {}
+  TeamTypeClass(const TeamTypeClass&) = delete;
+  TeamTypeClass& operator=(const TeamTypeClass&) = delete;
+  TeamTypeClass(TeamTypeClass&&) = delete;
+  TeamTypeClass& operator=(TeamTypeClass&&) = delete;
 
   /*
   **	Initialization: clears all team types in preparation for new scenario

@@ -101,6 +101,10 @@ class ScoreAnimClass {
   const void* DataPtr;
   virtual void Update() {}
   virtual ~ScoreAnimClass() { DataPtr = nullptr; }
+  ScoreAnimClass(const ScoreAnimClass&) = delete;
+  ScoreAnimClass& operator=(const ScoreAnimClass&) = delete;
+  ScoreAnimClass(ScoreAnimClass&&) = delete;
+  ScoreAnimClass& operator=(ScoreAnimClass&&) = delete;
 };
 
 class ScoreCredsClass : public ScoreAnimClass {
@@ -117,6 +121,10 @@ class ScoreCredsClass : public ScoreAnimClass {
     CashTurn = nullptr;
     Clock1 = nullptr;
   }
+  ScoreCredsClass(const ScoreCredsClass&) = delete;
+  ScoreCredsClass& operator=(const ScoreCredsClass&) = delete;
+  ScoreCredsClass(ScoreCredsClass&&) = delete;
+  ScoreCredsClass& operator=(ScoreCredsClass&&) = delete;
 };
 
 class ScoreTimeClass : public ScoreAnimClass {
@@ -127,6 +135,10 @@ class ScoreTimeClass : public ScoreAnimClass {
   void Update() override;
   ScoreTimeClass(int xpos, int ypos, const void* data, int max, int timer);
   ~ScoreTimeClass() override {}
+  ScoreTimeClass(const ScoreTimeClass&) = delete;
+  ScoreTimeClass& operator=(const ScoreTimeClass&) = delete;
+  ScoreTimeClass(ScoreTimeClass&&) = delete;
+  ScoreTimeClass& operator=(ScoreTimeClass&&) = delete;
 };
 
 class ScorePrintClass : public ScoreAnimClass {
@@ -140,6 +152,10 @@ class ScorePrintClass : public ScoreAnimClass {
   ScorePrintClass(int string, int xpos, int ypos, const void* palette,
                   int background = TBLACK);
   ~ScorePrintClass() override { PrimaryPalette = nullptr; }
+  ScorePrintClass(const ScorePrintClass&) = delete;
+  ScorePrintClass& operator=(const ScorePrintClass&) = delete;
+  ScorePrintClass(ScorePrintClass&&) = delete;
+  ScorePrintClass& operator=(ScorePrintClass&&) = delete;
 };
 
 class ScoreScaleClass : public ScoreAnimClass {
@@ -150,6 +166,10 @@ class ScoreScaleClass : public ScoreAnimClass {
   ScoreScaleClass(const void* data, int xpos, int ypos,
                   const unsigned char pal[]);
   ~ScoreScaleClass() override { Palette = nullptr; }
+  ScoreScaleClass(const ScoreScaleClass&) = delete;
+  ScoreScaleClass& operator=(const ScoreScaleClass&) = delete;
+  ScoreScaleClass(ScoreScaleClass&&) = delete;
+  ScoreScaleClass& operator=(ScoreScaleClass&&) = delete;
 };
 
 #define MAXSCOREOBJS 8

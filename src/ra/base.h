@@ -77,6 +77,10 @@ class BaseClass {
   */
   BaseClass() = default;
   virtual ~BaseClass() { Nodes.Clear(); }
+  BaseClass(const BaseClass&) = delete;
+  BaseClass& operator=(const BaseClass&) = delete;
+  BaseClass(BaseClass&&) = delete;
+  BaseClass& operator=(BaseClass&&) = delete;
 
   /*
   ** Initialization

@@ -108,6 +108,10 @@ class GadgetClass : public LinkClass {
               int sticky = false) noexcept;
   GadgetClass() noexcept {}
   ~GadgetClass() override;
+  GadgetClass(const GadgetClass&) = delete;
+  GadgetClass& operator=(const GadgetClass&) = delete;
+  GadgetClass(GadgetClass&&) = delete;
+  GadgetClass& operator=(GadgetClass&&) = delete;
   //		static GadgetClass * Create_One_Of(int x, int y, int w, int h,
   // unsigned flags, int sticky=false);
 

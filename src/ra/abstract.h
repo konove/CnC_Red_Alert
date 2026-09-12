@@ -84,6 +84,10 @@ class AbstractClass {
 
  public:
   virtual ~AbstractClass() {}
+  AbstractClass(const AbstractClass&) = delete;
+  AbstractClass& operator=(const AbstractClass&) = delete;
+  AbstractClass(AbstractClass&&) = delete;
+  AbstractClass& operator=(AbstractClass&&) = delete;
 
   virtual const char* Name() const { return ""; }
   virtual HousesType Owner() const { return HOUSE_NONE; }

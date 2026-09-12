@@ -451,6 +451,7 @@ struct VQAData {
  */
 struct VQAHandle {
   VQAHandle() = default;
+  ~VQAHandle() = default;
   VQAHandle(const VQAHandle&) = delete;
   VQAHandle& operator=(const VQAHandle&) = delete;
   VQAHandle(VQAHandle&&) = delete;

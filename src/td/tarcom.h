@@ -63,6 +63,10 @@ class TarComClass : public TurretClass {
   TarComClass(UnitType classid, HousesType house)
       : TurretClass(classid, house) {}
   ~TarComClass() override;
+  TarComClass(const TarComClass&) = delete;
+  TarComClass& operator=(const TarComClass&) = delete;
+  TarComClass(TarComClass&&) = delete;
+  TarComClass& operator=(TarComClass&&) = delete;
 
   /*---------------------------------------------------------------------
    **	Member function prototypes.

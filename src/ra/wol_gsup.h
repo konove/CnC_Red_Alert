@@ -67,6 +67,10 @@ class WOL_GameSetupDialog {
  public:
   WOL_GameSetupDialog(WolapiObject* wolapi, bool bHost);
   ~WOL_GameSetupDialog();
+  WOL_GameSetupDialog(const WOL_GameSetupDialog&) = delete;
+  WOL_GameSetupDialog& operator=(const WOL_GameSetupDialog&) = delete;
+  WOL_GameSetupDialog(WOL_GameSetupDialog&&) = delete;
+  WOL_GameSetupDialog& operator=(WOL_GameSetupDialog&&) = delete;
 
   RESULT_WOLGSUP Run();
 

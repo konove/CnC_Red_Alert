@@ -81,6 +81,10 @@ class SmudgeClass : public ObjectClass {
     }
     Class = nullptr;
   }
+  SmudgeClass(const SmudgeClass&) = delete;
+  SmudgeClass& operator=(const SmudgeClass&) = delete;
+  SmudgeClass(SmudgeClass&&) = delete;
+  SmudgeClass& operator=(SmudgeClass&&) = delete;
 
   static void Init();
 

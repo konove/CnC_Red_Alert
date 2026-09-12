@@ -91,6 +91,10 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
       BulletClass::Limbo();
     }
   }
+  BulletClass(const BulletClass&) = delete;
+  BulletClass& operator=(const BulletClass&) = delete;
+  BulletClass(BulletClass&&) = delete;
+  BulletClass& operator=(BulletClass&&) = delete;
   RTTIType What_Am_I() const override { return RTTI_BULLET; }
 
   /*---------------------------------------------------------------------

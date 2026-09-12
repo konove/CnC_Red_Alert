@@ -65,6 +65,10 @@ class ColorListClass : public ListClass {
   ColorListClass(int id, int x, int y, int w, int h, TextPrintType flags,
                  const void* up, const void* down);
   ~ColorListClass() override;
+  ColorListClass(const ColorListClass&) = delete;
+  ColorListClass& operator=(const ColorListClass&) = delete;
+  ColorListClass(ColorListClass&&) = delete;
+  ColorListClass& operator=(ColorListClass&&) = delete;
 
   int Add_Item(const char* text) override { return Add_Item(text, WHITE); }
   int Add_Item(int text) override { return Add_Item(text, WHITE); }

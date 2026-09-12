@@ -204,6 +204,10 @@ class FootClass : public TechnoClass {
   */
   FootClass();
   ~FootClass() override;
+  FootClass(const FootClass&) = delete;
+  FootClass& operator=(const FootClass&) = delete;
+  FootClass(FootClass&&) = delete;
+  FootClass& operator=(FootClass&&) = delete;
   FootClass(HousesType house);
 
   /*---------------------------------------------------------------------

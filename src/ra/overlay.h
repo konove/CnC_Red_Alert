@@ -78,6 +78,10 @@ class OverlayClass : public ObjectClass {
     }
     Class = nullptr;
   }
+  OverlayClass(const OverlayClass&) = delete;
+  OverlayClass& operator=(const OverlayClass&) = delete;
+  OverlayClass(OverlayClass&&) = delete;
+  OverlayClass& operator=(OverlayClass&&) = delete;
   operator OverlayType() const { return Class->Type; }
 
   static void Init();

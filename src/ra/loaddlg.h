@@ -71,6 +71,10 @@ class LoadOptionsClass {
 
   LoadOptionsClass(LoadStyleType style = NONE);
   ~LoadOptionsClass();
+  LoadOptionsClass(const LoadOptionsClass&) = delete;
+  LoadOptionsClass& operator=(const LoadOptionsClass&) = delete;
+  LoadOptionsClass(LoadOptionsClass&&) = delete;
+  LoadOptionsClass& operator=(LoadOptionsClass&&) = delete;
   int Process();
 
  protected:

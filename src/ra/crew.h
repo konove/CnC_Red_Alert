@@ -63,6 +63,10 @@ class CrewClass {
     ar(Kills);
   }
   ~CrewClass() {}
+  CrewClass(const CrewClass&) = delete;
+  CrewClass& operator=(const CrewClass&) = delete;
+  CrewClass(CrewClass&&) = delete;
+  CrewClass& operator=(CrewClass&&) = delete;
 
   // Increments the crew's kill tally and returns the new total.
   int Add_Kill() {

@@ -180,6 +180,10 @@ class BuildingClass final : public TechnoClass {
   BuildingClass() { IsActive = true; }
   BuildingClass(StructType type, HousesType house);
   ~BuildingClass() override;
+  BuildingClass(const BuildingClass&) = delete;
+  BuildingClass& operator=(const BuildingClass&) = delete;
+  BuildingClass(BuildingClass&&) = delete;
+  BuildingClass& operator=(BuildingClass&&) = delete;
   RTTIType What_Am_I() const override { return RTTI_BUILDING; }
 
   /*---------------------------------------------------------------------

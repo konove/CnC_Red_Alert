@@ -215,8 +215,11 @@ class BufferedFileReader {
   explicit BufferedFileReader(CCFileClass& file) : file_(file) {}
 
   // Delete copy/move to prevent accidental state duplication.
+  ~BufferedFileReader() = default;
   BufferedFileReader(const BufferedFileReader&) = delete;
   BufferedFileReader& operator=(const BufferedFileReader&) = delete;
+  BufferedFileReader(BufferedFileReader&&) = delete;
+  BufferedFileReader& operator=(BufferedFileReader&&) = delete;
 
   // Returns the next byte, or an OutOfRange error on EOF.
   absl::StatusOr<uint8_t> ReadByte() {

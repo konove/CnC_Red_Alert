@@ -79,7 +79,6 @@ class TCountDownTimerClass {
   }
 
   // No destructor.
-  ~TCountDownTimerClass() {}
 
   operator int64_t() const { return Time(); }
 

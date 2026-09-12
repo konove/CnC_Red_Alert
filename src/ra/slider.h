@@ -65,6 +65,10 @@ class SliderClass final : public GaugeClass {
   SliderClass(unsigned id, int x, int y, int w, int h,
               int belong_to_list = false);
   ~SliderClass() override;
+  SliderClass(const SliderClass&) = delete;
+  SliderClass& operator=(const SliderClass&) = delete;
+  SliderClass(SliderClass&&) = delete;
+  SliderClass& operator=(SliderClass&&) = delete;
 
   void Set_Thumb_Size(int value);
   int Set_Maximum(int value) override;

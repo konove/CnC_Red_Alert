@@ -74,6 +74,10 @@ class TurretClass : public DriveClass {
   */
 
   ~TurretClass() override = default;
+  TurretClass(const TurretClass&) = delete;
+  TurretClass& operator=(const TurretClass&) = delete;
+  TurretClass(TurretClass&&) = delete;
+  TurretClass& operator=(TurretClass&&) = delete;
 
  protected:
   TurretClass(UnitType classid, HousesType house);

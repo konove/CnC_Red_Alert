@@ -70,6 +70,10 @@ class ListClass : public ControlClass {
   ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
             const void* up, const void* down);
   ~ListClass() override;
+  ListClass(const ListClass&) = delete;
+  ListClass& operator=(const ListClass&) = delete;
+  ListClass(ListClass&&) = delete;
+  ListClass& operator=(ListClass&&) = delete;
 
   //		static ListClass * Create_One_Of(int id, int x, int y, int w,
   // int h, TextPrintType flags, void const * up, void const * down);

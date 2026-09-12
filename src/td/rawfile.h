@@ -135,6 +135,8 @@ EZERO,                 // Non-error.
   RawFileClass(const RawFileClass& f);
   RawFileClass& operator=(const RawFileClass& f);
   ~RawFileClass() override;
+  RawFileClass(RawFileClass&&) = delete;
+  RawFileClass& operator=(RawFileClass&&) = delete;
 
   const char* File_Name() const override;
   const char* Set_Name(const char* filename) override;

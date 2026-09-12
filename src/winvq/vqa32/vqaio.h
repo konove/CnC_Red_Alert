@@ -13,7 +13,12 @@
 // (the player maps failures to VQAERR_* codes).
 class VqaIo {
  public:
+  VqaIo() = default;
   virtual ~VqaIo() = default;
+  VqaIo(const VqaIo&) = delete;
+  VqaIo& operator=(const VqaIo&) = delete;
+  VqaIo(VqaIo&&) = delete;
+  VqaIo& operator=(VqaIo&&) = delete;
 
   // Opens the named movie file for reading.
   virtual int Open(const char* filename) = 0;

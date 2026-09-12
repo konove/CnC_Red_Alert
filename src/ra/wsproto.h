@@ -97,6 +97,10 @@ class WinsockInterfaceClass {
  public:
   WinsockInterfaceClass();
   virtual ~WinsockInterfaceClass();
+  WinsockInterfaceClass(const WinsockInterfaceClass&) = delete;
+  WinsockInterfaceClass& operator=(const WinsockInterfaceClass&) = delete;
+  WinsockInterfaceClass(WinsockInterfaceClass&&) = delete;
+  WinsockInterfaceClass& operator=(WinsockInterfaceClass&&) = delete;
 
   bool Init();
   void Close();

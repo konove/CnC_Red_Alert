@@ -89,6 +89,10 @@ class RadioClass : public MissionClass {
 
  public:
   ~RadioClass() override { Radio = nullptr; }
+  RadioClass(const RadioClass&) = delete;
+  RadioClass& operator=(const RadioClass&) = delete;
+  RadioClass(RadioClass&&) = delete;
+  RadioClass& operator=(RadioClass&&) = delete;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.

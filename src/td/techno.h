@@ -205,6 +205,10 @@ class TechnoClass : public RadioClass,
   TechnoClass();
   TechnoClass(HousesType house);
   ~TechnoClass() override {}
+  TechnoClass(const TechnoClass&) = delete;
+  TechnoClass& operator=(const TechnoClass&) = delete;
+  TechnoClass(TechnoClass&&) = delete;
+  TechnoClass& operator=(TechnoClass&&) = delete;
 
   /*
   **	Query functions.

@@ -36,6 +36,8 @@ class VectorClass {
   VectorClass(base::ssize size = 0, const T* array = nullptr);
   VectorClass(const VectorClass&);  // Copy constructor.
   virtual ~VectorClass();
+  VectorClass(VectorClass&&) = delete;
+  VectorClass& operator=(VectorClass&&) = delete;
 
   T& operator[](base::ssize index) {
     DCHECK(index >= 0 && index < VectorMax);

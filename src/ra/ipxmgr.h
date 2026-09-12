@@ -178,6 +178,10 @@ class IPXManagerClass : public ConnManClass {
                   int pvt_num_packets, unsigned short socket,
                   unsigned short product_id);
   ~IPXManagerClass() override;  // stop listening
+  IPXManagerClass(const IPXManagerClass&) = delete;
+  IPXManagerClass& operator=(const IPXManagerClass&) = delete;
+  IPXManagerClass(IPXManagerClass&&) = delete;
+  IPXManagerClass& operator=(IPXManagerClass&&) = delete;
 
   /*.....................................................................
   Initialization routines.

@@ -183,6 +183,12 @@ class CellClass {
   //----------------------------------------------------------------
   CellClass();
   ~CellClass() {}
+  CellClass(const CellClass&) = delete;
+  // VectorClass copies the cells across when the map array grows, so
+  // assignment stays available even though construction does not.
+  CellClass& operator=(const CellClass&) = default;
+  CellClass(CellClass&&) = delete;
+  CellClass& operator=(CellClass&&) = delete;
 
   // Resets the cell to its default initial state.
   void Reset();
@@ -264,8 +270,6 @@ class CellClass {
   int Validate() const;
 
  private:
-  CellClass(const CellClass&) = delete;
-
   LandType Land;  // The land type of this cell.
 };
 

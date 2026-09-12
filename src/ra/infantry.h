@@ -131,6 +131,10 @@ class InfantryClass final : public FootClass {
   void operator delete(void* ptr);
   InfantryClass(InfantryType classid, HousesType house);
   ~InfantryClass() override;
+  InfantryClass(const InfantryClass&) = delete;
+  InfantryClass& operator=(const InfantryClass&) = delete;
+  InfantryClass(InfantryClass&&) = delete;
+  InfantryClass& operator=(InfantryClass&&) = delete;
   operator InfantryType() const { return Class->Type; }
 
   /*---------------------------------------------------------------------

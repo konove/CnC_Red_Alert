@@ -96,6 +96,10 @@ class ConnManClass {
   .....................................................................*/
   ConnManClass() {}
   virtual ~ConnManClass() {}
+  ConnManClass(const ConnManClass&) = delete;
+  ConnManClass& operator=(const ConnManClass&) = delete;
+  ConnManClass(ConnManClass&&) = delete;
+  ConnManClass& operator=(ConnManClass&&) = delete;
 
   /*.....................................................................
   The Service routine:

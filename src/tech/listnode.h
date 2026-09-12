@@ -53,6 +53,8 @@ class GenericNode {
   friend class GenericList;
   GenericNode() : NextNode(nullptr), PrevNode(nullptr) {}
   virtual ~GenericNode() { Unlink(); }
+  GenericNode(GenericNode&&) = delete;
+  GenericNode& operator=(GenericNode&&) = delete;
 
   // Not copyable. The original copy constructor and assignment operator did
   // not copy -- they linked the destination into the source's list, mutating
@@ -118,6 +120,8 @@ class GenericList {
     LastNode.NextNode = nullptr;
     LastNode.PrevNode = nullptr;
   }
+  GenericList(GenericList&&) = delete;
+  GenericList& operator=(GenericList&&) = delete;
 
   GenericNode* First() const { return FirstNode.Next(); }
   GenericNode* Last() const { return LastNode.Prev(); }

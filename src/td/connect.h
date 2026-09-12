@@ -270,6 +270,10 @@ class ConnectionClass {
                   unsigned long retry_delta, unsigned long max_retries,
                   unsigned long timeout);
   virtual ~ConnectionClass();
+  ConnectionClass(const ConnectionClass&) = delete;
+  ConnectionClass& operator=(const ConnectionClass&) = delete;
+  ConnectionClass(ConnectionClass&&) = delete;
+  ConnectionClass& operator=(ConnectionClass&&) = delete;
 
   /*.....................................................................
   Initialization.

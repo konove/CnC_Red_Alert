@@ -76,6 +76,10 @@ class AbstractClass {
 
   AbstractClass() { Coord = 0L; }
   virtual ~AbstractClass() = default;
+  AbstractClass(const AbstractClass&) = delete;
+  AbstractClass& operator=(const AbstractClass&) = delete;
+  AbstractClass(AbstractClass&&) = delete;
+  AbstractClass& operator=(AbstractClass&&) = delete;
 
   /*
   **	Query functions.

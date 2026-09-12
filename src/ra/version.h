@@ -95,6 +95,10 @@ class VersionClass {
   //.....................................................................
   VersionClass();
   virtual ~VersionClass() {}
+  VersionClass(const VersionClass&) = delete;
+  VersionClass& operator=(const VersionClass&) = delete;
+  VersionClass(VersionClass&&) = delete;
+  VersionClass& operator=(VersionClass&&) = delete;
 
   //.....................................................................
   // These routines return the current version number.  The long version

@@ -181,6 +181,10 @@ class TeamClass : public AbstractClass {
   }
   TeamClass(const TeamTypeClass* team, HouseClass* owner);
   ~TeamClass() override;
+  TeamClass(const TeamClass&) = delete;
+  TeamClass& operator=(const TeamClass&) = delete;
+  TeamClass(TeamClass&&) = delete;
+  TeamClass& operator=(TeamClass&&) = delete;
   virtual RTTIType What_Am_I() const { return RTTI_TEAM; }
   void operator delete(void* ptr);
   void* operator new(size_t size) noexcept;

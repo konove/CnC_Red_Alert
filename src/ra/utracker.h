@@ -47,6 +47,10 @@ class UnitTrackerClass {
  public:
   UnitTrackerClass(int unit_count);
   ~UnitTrackerClass();
+  UnitTrackerClass(const UnitTrackerClass&) = delete;
+  UnitTrackerClass& operator=(const UnitTrackerClass&) = delete;
+  UnitTrackerClass(UnitTrackerClass&&) = delete;
+  UnitTrackerClass& operator=(UnitTrackerClass&&) = delete;
 
   void Increment_Unit_Total(int unit_type);
   void Decrement_Unit_Total(int unit_type);

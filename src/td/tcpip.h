@@ -101,6 +101,10 @@ class TcpipManagerClass {
  public:
   TcpipManagerClass();
   ~TcpipManagerClass();
+  TcpipManagerClass(const TcpipManagerClass&) = delete;
+  TcpipManagerClass& operator=(const TcpipManagerClass&) = delete;
+  TcpipManagerClass(TcpipManagerClass&&) = delete;
+  TcpipManagerClass& operator=(TcpipManagerClass&&) = delete;
 
   bool Init();
   void Start_Server();

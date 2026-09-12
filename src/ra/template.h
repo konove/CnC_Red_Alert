@@ -77,6 +77,10 @@ class TemplateClass : public ObjectClass {
     }
     Class = nullptr;
   }
+  TemplateClass(const TemplateClass&) = delete;
+  TemplateClass& operator=(const TemplateClass&) = delete;
+  TemplateClass(TemplateClass&&) = delete;
+  TemplateClass& operator=(TemplateClass&&) = delete;
   operator TemplateType() const { return Class->Type; }
 
   static void Init();

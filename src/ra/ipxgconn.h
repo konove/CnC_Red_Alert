@@ -139,6 +139,10 @@ class IPXGlobalConnClass : public IPXConnClass {
   IPXGlobalConnClass(int numsend, int numrecieve, int maxlen,
                      unsigned short product_id);
   ~IPXGlobalConnClass() override {}
+  IPXGlobalConnClass(const IPXGlobalConnClass&) = delete;
+  IPXGlobalConnClass& operator=(const IPXGlobalConnClass&) = delete;
+  IPXGlobalConnClass(IPXGlobalConnClass&&) = delete;
+  IPXGlobalConnClass& operator=(IPXGlobalConnClass&&) = delete;
 
   //.....................................................................
   // Send/Receive routines.

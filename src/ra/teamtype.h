@@ -127,6 +127,10 @@ class TeamTypeClass : public AbstractTypeClass {
   */
   TeamTypeClass();
   ~TeamTypeClass() override {}
+  TeamTypeClass(const TeamTypeClass&) = delete;
+  TeamTypeClass& operator=(const TeamTypeClass&) = delete;
+  TeamTypeClass(TeamTypeClass&&) = delete;
+  TeamTypeClass& operator=(TeamTypeClass&&) = delete;
 
   void* operator new(size_t);
   void* operator new(size_t, void* ptr) noexcept { return ptr; }

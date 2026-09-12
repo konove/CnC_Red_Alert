@@ -68,6 +68,10 @@ class FlyClass {
     SpeedAccum = 0;
   }
   virtual ~FlyClass() = default;
+  FlyClass(const FlyClass&) = delete;
+  FlyClass& operator=(const FlyClass&) = delete;
+  FlyClass(FlyClass&&) = delete;
+  FlyClass& operator=(FlyClass&&) = delete;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.

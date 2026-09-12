@@ -67,6 +67,10 @@ class ControlClass : public GadgetClass {
                int sticky = false) noexcept;
 
   ~ControlClass() override = default;
+  ControlClass(const ControlClass&) = delete;
+  ControlClass& operator=(const ControlClass&) = delete;
+  ControlClass(ControlClass&&) = delete;
+  ControlClass& operator=(ControlClass&&) = delete;
 
   virtual void Make_Peer(GadgetClass& gadget);
 

@@ -56,6 +56,8 @@ class DropListClass : public EditClass {
   DropListClass(int id, char* text, int max_len, TextPrintType flags, int x,
                 int y, int w, int h, const void* up, const void* down);
   ~DropListClass() override {}
+  DropListClass(DropListClass&&) = delete;
+  DropListClass& operator=(DropListClass&&) = delete;
 
   DropListClass& Add(LinkClass& object) override;
   DropListClass& Add_Tail(LinkClass& object) override;
@@ -112,6 +114,8 @@ class TDropListClass : public EditClass {
                  int y, int w, int h, const void* up, const void* down);
   TDropListClass(const TDropListClass<T>&) = delete;
   ~TDropListClass() override {}
+  TDropListClass(TDropListClass&&) = delete;
+  TDropListClass& operator=(TDropListClass&&) = delete;
 
   T operator[](int index) const { return List[index]; }
   T& operator[](int index) { return List[index]; }

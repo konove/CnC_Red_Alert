@@ -85,6 +85,8 @@ class IndexClass {
  public:
   IndexClass();
   ~IndexClass();
+  IndexClass(IndexClass&&) = delete;
+  IndexClass& operator=(IndexClass&&) = delete;
 
   /*
   **	Add element to index table.

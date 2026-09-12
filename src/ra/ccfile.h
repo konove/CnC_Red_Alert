@@ -58,6 +58,8 @@ class CCFileClass : public CDFileClass {
   CCFileClass(const char* filename);
   CCFileClass();
   ~CCFileClass() override { Position = 0; }
+  CCFileClass(CCFileClass&&) = delete;
+  CCFileClass& operator=(CCFileClass&&) = delete;
 
   // Delete should be overloaded here as well. Don't allow deletes of mixfiles.
 

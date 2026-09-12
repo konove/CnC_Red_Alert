@@ -143,6 +143,10 @@ class UnitClass final : public DriveClass {
   UnitClass(UnitType classid, HousesType house);
   operator UnitType() const { return Class->Type; }
   ~UnitClass() override;
+  UnitClass(const UnitClass&) = delete;
+  UnitClass& operator=(const UnitClass&) = delete;
+  UnitClass(UnitClass&&) = delete;
+  UnitClass& operator=(UnitClass&&) = delete;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.

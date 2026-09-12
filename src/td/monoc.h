@@ -107,6 +107,8 @@ class MonoClass {
 
   MonoClass();
   ~MonoClass();
+  MonoClass(MonoClass&&) = delete;
+  MonoClass& operator=(MonoClass&&) = delete;
 
   static void Enable() { Enabled = 1; }
   static void Disable() { Enabled = 0; }

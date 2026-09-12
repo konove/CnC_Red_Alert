@@ -202,6 +202,10 @@ class TeamClass : public AbstractClass {
   //------------------------------------------------------------
   TeamClass(const TeamTypeClass* team, HouseClass* owner = nullptr);
   ~TeamClass() override;
+  TeamClass(const TeamClass&) = delete;
+  TeamClass& operator=(const TeamClass&) = delete;
+  TeamClass(TeamClass&&) = delete;
+  TeamClass& operator=(TeamClass&&) = delete;
   void operator delete(void* ptr);
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }

@@ -137,6 +137,10 @@ class InfantryClass final : public FootClass {
   InfantryClass();
   InfantryClass(InfantryType classid, HousesType house);
   ~InfantryClass() override;
+  InfantryClass(const InfantryClass&) = delete;
+  InfantryClass& operator=(const InfantryClass&) = delete;
+  InfantryClass(InfantryClass&&) = delete;
+  InfantryClass& operator=(InfantryClass&&) = delete;
   RTTIType What_Am_I() const override;
 
   /*---------------------------------------------------------------------

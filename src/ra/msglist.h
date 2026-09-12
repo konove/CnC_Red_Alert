@@ -131,6 +131,10 @@ class MessageListClass {
   //.....................................................................
   MessageListClass();
   ~MessageListClass();
+  MessageListClass(const MessageListClass&) = delete;
+  MessageListClass& operator=(const MessageListClass&) = delete;
+  MessageListClass(MessageListClass&&) = delete;
+  MessageListClass& operator=(MessageListClass&&) = delete;
 
   //.....................................................................
   // Initialization

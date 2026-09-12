@@ -129,7 +129,12 @@ interface IUnknown {
 
   // Defined out of line so each interface has a key function and its vtable is
   // emitted once rather than in every translation unit.
+  IUnknown() = default;
   virtual ~IUnknown();
+  IUnknown(const IUnknown&) = delete;
+  IUnknown& operator=(const IUnknown&) = delete;
+  IUnknown(IUnknown&&) = delete;
+  IUnknown& operator=(IUnknown&&) = delete;
 };
 
 // Event sinks are attached to a COM object through these two. The WOL client
@@ -137,13 +142,24 @@ interface IUnknown {
 interface IConnectionPoint : public IUnknown {
   virtual HRESULT Advise(IUnknown * sink, DWORD * cookie) = 0;
   virtual HRESULT Unadvise(DWORD cookie) = 0;
+  IConnectionPoint() = default;
   ~IConnectionPoint() override;
+  IConnectionPoint(const IConnectionPoint&) = delete;
+  IConnectionPoint& operator=(const IConnectionPoint&) = delete;
+  IConnectionPoint(IConnectionPoint&&) = delete;
+  IConnectionPoint& operator=(IConnectionPoint&&) = delete;
 };
 
 interface IConnectionPointContainer : public IUnknown {
   virtual HRESULT FindConnectionPoint(REFIID iid,
                                       IConnectionPoint * *point) = 0;
+  IConnectionPointContainer() = default;
   ~IConnectionPointContainer() override;
+  IConnectionPointContainer(const IConnectionPointContainer&) = delete;
+  IConnectionPointContainer& operator=(const IConnectionPointContainer&) =
+      delete;
+  IConnectionPointContainer(IConnectionPointContainer&&) = delete;
+  IConnectionPointContainer& operator=(IConnectionPointContainer&&) = delete;
 };
 
 extern const IID IID_IUnknown;

@@ -36,6 +36,10 @@ class SimpleEditDlgClass {
                      const char* szPrompt2 = nullptr,
                      int iEditCharsAccept2 = 0);
   virtual ~SimpleEditDlgClass();
+  SimpleEditDlgClass(const SimpleEditDlgClass&) = delete;
+  SimpleEditDlgClass& operator=(const SimpleEditDlgClass&) = delete;
+  SimpleEditDlgClass(SimpleEditDlgClass&&) = delete;
+  SimpleEditDlgClass& operator=(SimpleEditDlgClass&&) = delete;
 
   const char* Show();  //	Shows dialog, returns text of button pressed.
                        //	Unless SetButtons() is used, value will be

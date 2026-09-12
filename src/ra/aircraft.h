@@ -78,6 +78,10 @@ class AircraftClass : public FootClass, public FlyClass {
   operator AircraftType() const { return Class->Type; }
   AircraftClass(AircraftType classid, HousesType house);
   ~AircraftClass() override;
+  AircraftClass(const AircraftClass&) = delete;
+  AircraftClass& operator=(const AircraftClass&) = delete;
+  AircraftClass(AircraftClass&&) = delete;
+  AircraftClass& operator=(AircraftClass&&) = delete;
 
   static void Init();
 

@@ -72,6 +72,10 @@ class StageClass {
   }
 
   virtual ~StageClass() = default;
+  StageClass(const StageClass&) = delete;
+  StageClass& operator=(const StageClass&) = delete;
+  StageClass(StageClass&&) = delete;
+  StageClass& operator=(StageClass&&) = delete;
   StageClass() {
     StageTimer = 0;
     Stage = 0;

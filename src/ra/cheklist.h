@@ -64,6 +64,10 @@ class CheckListClass : public ListClass {
   CheckListClass(int id, int x, int y, int w, int h, TextPrintType flags,
                  const void* up, const void* down);
   ~CheckListClass() override;
+  CheckListClass(const CheckListClass&) = delete;
+  CheckListClass& operator=(const CheckListClass&) = delete;
+  CheckListClass(CheckListClass&&) = delete;
+  CheckListClass& operator=(CheckListClass&&) = delete;
 
   int Add_Item(int text) override { return ListClass::Add_Item(text); }
   int Add_Item(const char* text) override;

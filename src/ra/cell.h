@@ -213,6 +213,12 @@ class CellClass {
   //----------------------------------------------------------------
   CellClass();
   ~CellClass() { OccupierPtr = nullptr; }
+  CellClass(const CellClass&) = delete;
+  // VectorClass::Resize copy-assigns the cells across when the map array
+  // grows, so assignment stays available even though construction does not.
+  CellClass& operator=(const CellClass&) = default;
+  CellClass(CellClass&&) = delete;
+  CellClass& operator=(CellClass&&) = delete;
 
   int operator==(const CellClass& cell) const { return &cell == this; }
 
@@ -300,8 +306,6 @@ class CellClass {
   int operator!=(const CellClass&) const { return 0; }
 
  private:
-  CellClass(const CellClass&);
-
   LandType Land;  // The land type of this cell.
 };
 

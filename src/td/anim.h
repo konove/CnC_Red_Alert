@@ -65,6 +65,10 @@ class AnimClass final : public ObjectClass, private StageClass {
   AnimClass(AnimType animnum, COORDINATE coord, unsigned char timedelay = 0,
             unsigned char loop = 1, bool alt = false);
   ~AnimClass() override;
+  AnimClass(const AnimClass&) = delete;
+  AnimClass& operator=(const AnimClass&) = delete;
+  AnimClass(AnimClass&&) = delete;
+  AnimClass& operator=(AnimClass&&) = delete;
   operator AnimType() const { return Class->Type; }
   RTTIType What_Am_I() const override { return RTTI_ANIM; }
 

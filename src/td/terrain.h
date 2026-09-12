@@ -75,6 +75,10 @@ class TerrainClass final : public ObjectClass, public StageClass {
   }
   TerrainClass(TerrainType id, CELL cell);
   ~TerrainClass() override;
+  TerrainClass(const TerrainClass&) = delete;
+  TerrainClass& operator=(const TerrainClass&) = delete;
+  TerrainClass(TerrainClass&&) = delete;
+  TerrainClass& operator=(TerrainClass&&) = delete;
   RTTIType What_Am_I() const override { return RTTI_TERRAIN; }
 
   static void Init();

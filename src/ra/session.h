@@ -496,6 +496,10 @@ class SessionClass {
   //.....................................................................
   SessionClass();
   ~SessionClass();
+  SessionClass(const SessionClass&) = delete;
+  SessionClass& operator=(const SessionClass&) = delete;
+  SessionClass(SessionClass&&) = delete;
+  SessionClass& operator=(SessionClass&&) = delete;
 
   //.....................................................................
   // Initialization

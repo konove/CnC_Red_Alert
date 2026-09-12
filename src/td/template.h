@@ -71,6 +71,10 @@ class TemplateClass : public ObjectClass {
       TemplateClass::Limbo();
     }
   }
+  TemplateClass(const TemplateClass&) = delete;
+  TemplateClass& operator=(const TemplateClass&) = delete;
+  TemplateClass(TemplateClass&&) = delete;
+  TemplateClass& operator=(TemplateClass&&) = delete;
   operator TemplateType() const { return Class->Type; }
   RTTIType What_Am_I() const override { return RTTI_TEMPLATE; }
 

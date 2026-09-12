@@ -79,6 +79,10 @@ class UnitClass final : public TarComClass {
   UnitClass() { IsActive = true; }
   UnitClass(UnitType classid, HousesType house);
   ~UnitClass() override;
+  UnitClass(const UnitClass&) = delete;
+  UnitClass& operator=(const UnitClass&) = delete;
+  UnitClass(UnitClass&&) = delete;
+  UnitClass& operator=(UnitClass&&) = delete;
   RTTIType What_Am_I() const override;
 
   /*---------------------------------------------------------------------

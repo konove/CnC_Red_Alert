@@ -31,6 +31,8 @@ class TempFile {
     std::error_code ignored;
     std::filesystem::remove(path_, ignored);
   }
+  TempFile(TempFile&&) = delete;
+  TempFile& operator=(TempFile&&) = delete;
 
   const char* c_str() const { return path_.c_str(); }
   const std::filesystem::path& path() const { return path_; }

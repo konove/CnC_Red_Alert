@@ -74,6 +74,10 @@ class IPXConnClass : public ConnectionClass {
                IPXAddressClass* address, int id, const char* name,
                int extralen = 0);
   ~IPXConnClass() override {}
+  IPXConnClass(const IPXConnClass&) = delete;
+  IPXConnClass& operator=(const IPXConnClass&) = delete;
+  IPXConnClass(IPXConnClass&&) = delete;
+  IPXConnClass& operator=(IPXConnClass&&) = delete;
 
   /*.....................................................................
   Initialization.

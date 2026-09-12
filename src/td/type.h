@@ -240,6 +240,10 @@ class AbstractTypeClass {
   AbstractTypeClass() noexcept {}
   AbstractTypeClass(int name, const char* ini) noexcept;
   virtual ~AbstractTypeClass() = default;
+  AbstractTypeClass(const AbstractTypeClass&) = default;
+  AbstractTypeClass& operator=(const AbstractTypeClass&) = delete;
+  AbstractTypeClass(AbstractTypeClass&&) = default;
+  AbstractTypeClass& operator=(AbstractTypeClass&&) = default;
 
   virtual RTTIType What_Am_I() const;
 

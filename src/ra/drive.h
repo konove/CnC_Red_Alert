@@ -109,6 +109,10 @@ class DriveClass : public FootClass {
 
  public:
   ~DriveClass() override {}
+  DriveClass(const DriveClass&) = delete;
+  DriveClass& operator=(const DriveClass&) = delete;
+  DriveClass(DriveClass&&) = delete;
+  DriveClass& operator=(DriveClass&&) = delete;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.

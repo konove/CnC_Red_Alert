@@ -49,6 +49,10 @@ class AircraftClass : public FootClass, public FlyClass {
   AircraftClass() { IsActive = true; }
   AircraftClass(AircraftType classid, HousesType house);
   ~AircraftClass() override;
+  AircraftClass(const AircraftClass&) = delete;
+  AircraftClass& operator=(const AircraftClass&) = delete;
+  AircraftClass(AircraftClass&&) = delete;
+  AircraftClass& operator=(AircraftClass&&) = delete;
   RTTIType What_Am_I() const override { return RTTI_AIRCRAFT; }
 
   static void Init();

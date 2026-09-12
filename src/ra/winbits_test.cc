@@ -44,6 +44,8 @@ class TestScreen {
   TestScreen& operator=(const TestScreen&) = delete;
 
   ~TestScreen() { Set_Logic_Page(previous_); }
+  TestScreen(TestScreen&&) = delete;
+  TestScreen& operator=(TestScreen&&) = delete;
 
   std::uint8_t Pixel(int x, int y) const { return pixels_[Offset(x, y)]; }
   void SetPixel(int x, int y, std::uint8_t value) {

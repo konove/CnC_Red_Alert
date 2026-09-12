@@ -63,6 +63,10 @@ class EditClass : public ControlClass {
   EditClass(int id, char* text, int max_len, TextPrintType flags, int x, int y,
             int w = -1, int h = -1, EditStyle style = kAlphanumeric);
   ~EditClass() override;
+  EditClass(const EditClass&) = delete;
+  EditClass& operator=(const EditClass&) = delete;
+  EditClass(EditClass&&) = delete;
+  EditClass& operator=(EditClass&&) = delete;
 
   void Set_Focus() override;
   int Draw_Me(bool forced) override;

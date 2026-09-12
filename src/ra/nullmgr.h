@@ -95,6 +95,10 @@ class NullModemClass : public ConnManClass {
   NullModemClass(int numsend, int numreceive, int maxlen,
                  unsigned short magicnum);
   ~NullModemClass() override;
+  NullModemClass(const NullModemClass&) = delete;
+  NullModemClass& operator=(const NullModemClass&) = delete;
+  NullModemClass(NullModemClass&&) = delete;
+  NullModemClass& operator=(NullModemClass&&) = delete;
 
   /*
   **	This is the main initialization routine.

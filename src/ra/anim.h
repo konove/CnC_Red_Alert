@@ -65,6 +65,10 @@ class AnimClass final : public ObjectClass, public StageClass {
   AnimClass(AnimType animnum, COORDINATE coord, unsigned char timedelay = 0,
             unsigned char loop = 1);
   ~AnimClass() override;
+  AnimClass(const AnimClass&) = delete;
+  AnimClass& operator=(const AnimClass&) = delete;
+  AnimClass(AnimClass&&) = delete;
+  AnimClass& operator=(AnimClass&&) = delete;
 
   operator AnimType() const { return Class->Type; }
 

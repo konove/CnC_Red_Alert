@@ -60,6 +60,10 @@ class FuseClass {
     ar(Timer, Arming, HeadTo, Proximity);
   }
   ~FuseClass() {}
+  FuseClass(const FuseClass&) = delete;
+  FuseClass& operator=(const FuseClass&) = delete;
+  FuseClass(FuseClass&&) = delete;
+  FuseClass& operator=(FuseClass&&) = delete;
 
   void Arm_Fuse(COORDINATE location, COORDINATE target, int time = 0xFF,
                 int arming = 0);

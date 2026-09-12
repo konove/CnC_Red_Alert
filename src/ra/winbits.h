@@ -36,6 +36,8 @@ class LockedWindow {
   LockedWindow& operator=(const LockedWindow&) = delete;
 
   ~LockedWindow();
+  LockedWindow(LockedWindow&&) = delete;
+  LockedWindow& operator=(LockedWindow&&) = delete;
 
   // False when the surface could not be locked; Row() must not be called then.
   bool bLocked() const { return locked_; }

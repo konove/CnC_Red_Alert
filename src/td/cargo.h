@@ -63,6 +63,10 @@ class CargoClass {
     CargoHold = nullptr;
   }
   virtual ~CargoClass() { CargoHold = nullptr; }
+  CargoClass(const CargoClass&) = delete;
+  CargoClass& operator=(const CargoClass&) = delete;
+  CargoClass(CargoClass&&) = delete;
+  CargoClass& operator=(CargoClass&&) = delete;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.

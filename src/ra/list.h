@@ -73,6 +73,9 @@ class ListClass : public ControlClass {
   // Not copyable -- see LinkClass.
   ListClass(const ListClass&) = delete;
   ~ListClass() override;
+  ListClass& operator=(const ListClass&) = delete;
+  ListClass(ListClass&&) = delete;
+  ListClass& operator=(ListClass&&) = delete;
 
   virtual int Add_Item(const char* text);
   virtual int Add_Item(int text);
@@ -169,6 +172,9 @@ class TListClass final : public ControlClass {
              const void* up, const void* down);
   TListClass(const TListClass<T>&) = delete;
   ~TListClass() override;
+  TListClass& operator=(const TListClass&) = delete;
+  TListClass(TListClass&&) = delete;
+  TListClass& operator=(TListClass&&) = delete;
   T operator[](int index) const { return List[index]; }
   T& operator[](int index) { return List[index]; }
 

@@ -152,8 +152,12 @@ class IconsetClass : protected IControl_Type {
   **	Disallow these operations with an IconsetClass object.
   */
  private:
-  IconsetClass& operator=(const IconsetClass&);
-  IconsetClass();
+  IconsetClass() = delete;
+  ~IconsetClass() = delete;
+  IconsetClass(const IconsetClass&) = delete;
+  IconsetClass& operator=(const IconsetClass&) = delete;
+  IconsetClass(IconsetClass&&) = delete;
+  IconsetClass& operator=(IconsetClass&&) = delete;
   void* operator new(size_t);
 };
 

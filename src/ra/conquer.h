@@ -775,6 +775,10 @@ class MixFileVqaIo final : public VqaIo {
  public:
   MixFileVqaIo();
   ~MixFileVqaIo() override;  // Out-of-line: CCFileClass is incomplete here.
+  MixFileVqaIo(const MixFileVqaIo&) = delete;
+  MixFileVqaIo& operator=(const MixFileVqaIo&) = delete;
+  MixFileVqaIo(MixFileVqaIo&&) = delete;
+  MixFileVqaIo& operator=(MixFileVqaIo&&) = delete;
 
   int Open(const char* filename) override;
   int Read(void* buffer, int64_t bytes) override;

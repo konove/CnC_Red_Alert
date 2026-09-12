@@ -60,6 +60,10 @@ class CDFileClass : public RawFileClass {
   CDFileClass(const char* filename);
   CDFileClass();
   ~CDFileClass() override {}
+  CDFileClass(const CDFileClass&) = delete;
+  CDFileClass& operator=(const CDFileClass&) = delete;
+  CDFileClass(CDFileClass&&) = delete;
+  CDFileClass& operator=(CDFileClass&&) = delete;
 
   const char* Set_Name(const char* filename) override;
   int Open(const char* filename,

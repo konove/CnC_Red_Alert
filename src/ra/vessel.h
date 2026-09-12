@@ -97,6 +97,10 @@ class VesselClass : public DriveClass {
   static void Init();
 
   ~VesselClass() override;
+  VesselClass(const VesselClass&) = delete;
+  VesselClass& operator=(const VesselClass&) = delete;
+  VesselClass(VesselClass&&) = delete;
+  VesselClass& operator=(VesselClass&&) = delete;
   const ObjectTypeClass& Class_Of() const override;
 
   virtual MZoneType Zone_Check_Type() const { return MZONE_WATER; }

@@ -56,6 +56,10 @@ class WeaponTypeClass {
  public:
   WeaponTypeClass(const char* name);
   ~WeaponTypeClass();
+  WeaponTypeClass(const WeaponTypeClass&) = delete;
+  WeaponTypeClass& operator=(const WeaponTypeClass&) = delete;
+  WeaponTypeClass(WeaponTypeClass&&) = delete;
+  WeaponTypeClass& operator=(WeaponTypeClass&&) = delete;
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }

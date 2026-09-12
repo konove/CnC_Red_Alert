@@ -74,6 +74,10 @@ class NonSequencedConnClass : public ConnectionClass {
                         unsigned short magicnum, unsigned long retry_delta,
                         unsigned long max_retries, unsigned long timeout);
   ~NonSequencedConnClass() override;
+  NonSequencedConnClass(const NonSequencedConnClass&) = delete;
+  NonSequencedConnClass& operator=(const NonSequencedConnClass&) = delete;
+  NonSequencedConnClass(NonSequencedConnClass&&) = delete;
+  NonSequencedConnClass& operator=(NonSequencedConnClass&&) = delete;
 
   /*.....................................................................
   Initialization.

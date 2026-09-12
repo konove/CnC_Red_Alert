@@ -61,6 +61,10 @@ class ChronalVortexClass {
   */
   ChronalVortexClass();
   ~ChronalVortexClass();
+  ChronalVortexClass(const ChronalVortexClass&) = delete;
+  ChronalVortexClass& operator=(const ChronalVortexClass&) = delete;
+  ChronalVortexClass(ChronalVortexClass&&) = delete;
+  ChronalVortexClass& operator=(ChronalVortexClass&&) = delete;
 
   void Detach(TARGET target);
 
