@@ -379,11 +379,11 @@ void BlowfishEngine::Process_Block(const void* plaintext, void* cyphertext,
   */
   for (int index = 0; index < ROUNDS / 2; index++) {
     left.Long ^= *ptable++;
-    right.Long ^= (bf_S[0][left.Char.C0] + bf_S[1][left.Char.C1] ^
+    right.Long ^= ((bf_S[0][left.Char.C0] + bf_S[1][left.Char.C1]) ^
                    bf_S[2][left.Char.C2]) +
                   bf_S[3][left.Char.C3];
     right.Long ^= *ptable++;
-    left.Long ^= (bf_S[0][right.Char.C0] + bf_S[1][right.Char.C1] ^
+    left.Long ^= ((bf_S[0][right.Char.C0] + bf_S[1][right.Char.C1]) ^
                   bf_S[2][right.Char.C2]) +
                  bf_S[3][right.Char.C3];
   }
@@ -446,10 +446,10 @@ void BlowfishEngine::Sub_Key_Encrypt(unsigned long& left,
 
   for (int index = 0; index < ROUNDS; index += 2) {
     l.Long ^= P_Encrypt[index];
-    r.Long ^= (bf_S[0][l.Char.C0] + bf_S[1][l.Char.C1] ^ bf_S[2][l.Char.C2]) +
+    r.Long ^= ((bf_S[0][l.Char.C0] + bf_S[1][l.Char.C1]) ^ bf_S[2][l.Char.C2]) +
               bf_S[3][l.Char.C3];
     r.Long ^= P_Encrypt[index + 1];
-    l.Long ^= (bf_S[0][r.Char.C0] + bf_S[1][r.Char.C1] ^ bf_S[2][r.Char.C2]) +
+    l.Long ^= ((bf_S[0][r.Char.C0] + bf_S[1][r.Char.C1]) ^ bf_S[2][r.Char.C2]) +
               bf_S[3][r.Char.C3];
   }
   left = r.Long ^ P_Encrypt[ROUNDS + 1];

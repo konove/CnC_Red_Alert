@@ -370,8 +370,8 @@ void Do_Win() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  int x = Map.TacPixelX + Lepton_To_Pixel(Map.TacLeptonWidth) / 2;
-  int y = Map.TacPixelY + Lepton_To_Pixel(Map.TacLeptonHeight) / 2 - 32;
+  int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
+  int y = Map.TacPixelY + (Lepton_To_Pixel(Map.TacLeptonHeight) / 2) - 32;
 
   /*
   **	Announce win to player.
@@ -592,8 +592,8 @@ void Do_Lose() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  int x = Map.TacPixelX + Lepton_To_Pixel(Map.TacLeptonWidth) / 2;
-  int y = Map.TacPixelY + Lepton_To_Pixel(Map.TacLeptonHeight) / 2 - 32;
+  int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
+  int y = Map.TacPixelY + (Lepton_To_Pixel(Map.TacLeptonHeight) / 2) - 32;
 
   /*
   **	Announce win to player.

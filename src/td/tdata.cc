@@ -76,8 +76,8 @@ static const short _List001011100110[] = {2,
                                           MAP_CELL_W,
                                           MAP_CELL_W + 1,
                                           MAP_CELL_W + 2,
-                                          MAP_CELL_W * 2 + 1,
-                                          MAP_CELL_W * 2 + 2,
+                                          (MAP_CELL_W * 2) + 1,
+                                          (MAP_CELL_W * 2) + 2,
                                           REFRESH_EOL};
 static const short _List0010[] = {MAP_CELL_W, REFRESH_EOL};
 static const short _List0011[] = {MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL};
@@ -88,16 +88,20 @@ static const short _List1001[] = {0, MAP_CELL_W + 1, REFRESH_EOL};
 static const short _List101001[] = {0, 2, MAP_CELL_W + 2, REFRESH_EOL};
 static const short _List10[] = {0, REFRESH_EOL};
 static const short _List110000011001[] = {
-    0, 1, MAP_CELL_W + 3, MAP_CELL_W * 2, MAP_CELL_W * 2 + 3, REFRESH_EOL};
+    0, 1, MAP_CELL_W + 3, MAP_CELL_W * 2, (MAP_CELL_W * 2) + 3, REFRESH_EOL};
 static const short _List110000[] = {0, 1, REFRESH_EOL};
 static const short _List110001[] = {0, 1, MAP_CELL_W + 2, REFRESH_EOL};
 static const short _List1100[] = {0, 1, REFRESH_EOL};
 static const short _List110110[] = {0, 1, MAP_CELL_W, MAP_CELL_W + 1,
                                     REFRESH_EOL};
 static const short _List1101[] = {0, 1, MAP_CELL_W + 1, REFRESH_EOL};
-static const short _List111000010110[] = {
-    0,          1, 2, MAP_CELL_W + 3, MAP_CELL_W * 2 + 1, MAP_CELL_W * 2 + 2,
-    REFRESH_EOL};
+static const short _List111000010110[] = {0,
+                                          1,
+                                          2,
+                                          MAP_CELL_W + 3,
+                                          (MAP_CELL_W * 2) + 1,
+                                          (MAP_CELL_W * 2) + 2,
+                                          REFRESH_EOL};
 static const short _List111001[] = {0, 1, 2, MAP_CELL_W + 2, REFRESH_EOL};
 static const short _List111101[] = {
     0, 1, 2, MAP_CELL_W, MAP_CELL_W + 2, REFRESH_EOL};

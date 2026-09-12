@@ -645,8 +645,8 @@ bool bAftermathMultiplayer;  //	Is multiplayer game being played with Aftermath
 */
 NullModemClass NullModem(16,  // number of send entries
                          16,  // number of receive entries
-                         MAX_SERIAL_PACKET_SIZE / sizeof(EventClass) *
-                                 sizeof(EventClass) +
+                         (MAX_SERIAL_PACKET_SIZE / sizeof(EventClass) *
+                          sizeof(EventClass)) +
                              sizeof(CommHeaderType),
                          0x1234);  // Magic number must have each digit unique
                                    // and different from the queue magic number

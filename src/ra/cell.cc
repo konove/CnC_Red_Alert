@@ -1132,7 +1132,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                   waypt[1] = static_cast<char>('A' + (i % 26));
                   waypt[2] = 0;
                 }
-                Fancy_Text_Print(waypt, Map.TacPixelX + x + CELL_PIXEL_W / 2,
+                Fancy_Text_Print(waypt, Map.TacPixelX + x + (CELL_PIXEL_W / 2),
                                  Map.TacPixelY + y + (CELL_PIXEL_H / 2) - 3,
                                  &ColorRemaps[PCOLOR_RED], TBLACK,
                                  TPF_EFNT | TPF_CENTER | TPF_FULLSHADOW);
@@ -1201,9 +1201,9 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                   CELL cell = Cell_Number();
                   icon = (Cell_X(cell) - Cell_X(static_cast<CELL>(
                                              Map.ZoneCell + Map.ZoneOffset))) +
-                         (Cell_Y(cell) - Cell_Y(static_cast<CELL>(
-                                             Map.ZoneCell + Map.ZoneOffset))) *
-                             tptr->Width;
+                         ((Cell_Y(cell) - Cell_Y(static_cast<CELL>(
+                                              Map.ZoneCell + Map.ZoneOffset))) *
+                          tptr->Width);
                   LogicPage->Draw_Stamp(tptr->Get_Image_Data(), icon, x, y,
                                         nullptr, WINDOW_TACTICAL);
                 }
@@ -1243,8 +1243,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         const void* flag_remap =
             HouseClass::As_Pointer(Owner)->Remap_Table(false, REMAP_NORMAL);
         CC_Draw_Shape(MFCD::Retrieve("FLAGFLY.SHP"),
-                      static_cast<int>(Frame % 14), x + ICON_PIXEL_W / 2,
-                      y + ICON_PIXEL_H / 2, WINDOW_TACTICAL,
+                      static_cast<int>(Frame % 14), x + (ICON_PIXEL_W / 2),
+                      y + (ICON_PIXEL_H / 2), WINDOW_TACTICAL,
                       SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING, flag_remap,
                       DisplayClass::UnitShadow);
       }

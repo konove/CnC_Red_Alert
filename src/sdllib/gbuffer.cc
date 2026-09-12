@@ -50,14 +50,14 @@ void GraphicBufferClass::Scale_Rotate(const BitmapClass& bmp,
 
       // Inverse transform: undo rotation, then undo scale.
       const int bx =
-          static_cast<int>((sin_a * rx + cos_a * ry) * inv_S + cx_bmp);
+          static_cast<int>((((sin_a * rx) + (cos_a * ry)) * inv_S) + cx_bmp);
       const int by =
-          static_cast<int>((-cos_a * rx + sin_a * ry) * inv_S + cy_bmp);
+          static_cast<int>((((-cos_a * rx) + (sin_a * ry)) * inv_S) + cy_bmp);
 
       if (bx >= 0 && bx < bmp.Width && by >= 0 && by < bmp.Height) {
-        const uint8_t pixel = bmp.Data[by * bmp.Width + bx];
+        const uint8_t pixel = bmp.Data[(by * bmp.Width) + bx];
         if (pixel != 0) {
-          dst_buf[dy * Width + dx] = pixel;
+          dst_buf[(dy * Width) + dx] = pixel;
         }
       }
     }

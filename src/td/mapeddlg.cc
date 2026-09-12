@@ -192,9 +192,9 @@ int MapEditClass::New_Scenario() {
   ------ Set the Home & Reinforcement Cells to the center of the map -------
   */
   Waypoint[WAYPT_REINF] =
-      XY_Cell(MapCellX + MapCellWidth / 2, MapCellY + MapCellHeight / 2);
+      XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
   Waypoint[WAYPT_HOME] =
-      XY_Cell(MapCellX + MapCellWidth / 2, MapCellY + MapCellHeight / 2);
+      XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
   (*this)[Coord_Cell(TacticalCoord)].IsWaypoint = 1;
   Flag_Cell(Coord_Cell(TacticalCoord));
 
@@ -443,10 +443,10 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
     D_SCEN_X = D_DIALOG_CX + 5,  // Scenario # x
     D_SCEN_Y = D_DIALOG_Y + D_MARGIN + D_TXT8_H + D_MARGIN,  // Scenario # y
 
-    D_VARA_W = 26,                                // Version A width
-    D_VARA_H = 18,                                // Version A height
-    D_VARA_X = D_DIALOG_CX - (D_VARA_W * 5) / 2,  // Version A x
-    D_VARA_Y = D_SCEN_Y + D_SCEN_H + D_MARGIN,    // Version A y
+    D_VARA_W = 26,                                  // Version A width
+    D_VARA_H = 18,                                  // Version A height
+    D_VARA_X = D_DIALOG_CX - ((D_VARA_W * 5) / 2),  // Version A x
+    D_VARA_Y = D_SCEN_Y + D_SCEN_H + D_MARGIN,      // Version A y
 
     D_VARB_W = 26,                              // Version B width
     D_VARB_H = 18,                              // Version B height
@@ -946,7 +946,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
     D_TXT8_H = 22,  // ht of 8-pt text
     D_MARGIN = 14,  // margin width/height
 
-    D_BORD_X1 = D_DIALOG_X + (D_DIALOG_W / 2 - MAP_CELL_W) / 2,
+    D_BORD_X1 = D_DIALOG_X + (((D_DIALOG_W / 2) - MAP_CELL_W) / 2),
     D_BORD_Y1 = D_DIALOG_Y + 10,
     D_BORD_X2 = D_BORD_X1 + MAP_CELL_W + 1,
     D_BORD_Y2 = D_BORD_Y1 + MAP_CELL_H + 1,
@@ -1022,13 +1022,13 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   Set up the actual map area relative to the map's border coords
   ........................................................................*/
   if (x == -1) {
-    map_x1 = D_BORD_X1 + (MAP_CELL_W - w) / 2 + 1;
+    map_x1 = D_BORD_X1 + ((MAP_CELL_W - w) / 2) + 1;
   } else {
     map_x1 = D_BORD_X1 + x + 1;
   }
 
   if (y == -1) {
-    map_y1 = D_BORD_Y1 + (MAP_CELL_H - h) / 2 + 1;
+    map_y1 = D_BORD_Y1 + ((MAP_CELL_H - h) / 2) + 1;
   } else {
     map_y1 = D_BORD_Y1 + y + 1;
   }
@@ -1129,7 +1129,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         /*
         .................. Draw the coordinate labels ...................
         */
-        txt_x = D_DIALOG_X + D_DIALOG_W / 8;
+        txt_x = D_DIALOG_X + (D_DIALOG_W / 8);
         txt_y = D_DIALOG_Y + D_DIALOG_H - D_OK_H - 10 - 33;
         Fancy_Text_Print(
             "X", txt_x, txt_y, CC_GREEN, TBLACK,
@@ -1254,7 +1254,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         /*
         ..................... Draw the coordinates ......................
         */
-        txt_x = D_DIALOG_X + D_DIALOG_W / 8;
+        txt_x = D_DIALOG_X + (D_DIALOG_W / 8);
         txt_y = D_DIALOG_Y + D_DIALOG_H - D_OK_H - 10 - 22;
         sprintf(txt, "%d", map_x1 - D_BORD_X1 - 1);
         Fancy_Text_Print(
@@ -1598,18 +1598,18 @@ int MapEditClass::Scenario_Dialog() {
 
     D_GDIN_W = 26,
     D_GDIN_H = 18,
-    D_GDIN_X = D_DIALOG_CX - 5 - D_GDIN_W * 2,
-    D_GDIN_Y =
-        D_LEVEL_Y + D_LEVEL_H + D_MARGIN + D_TXT8_H + D_MARGIN + D_TXT8_H,
+    D_GDIN_X = D_DIALOG_CX - 5 - (D_GDIN_W * 2),
+    D_GDIN_Y = D_LEVEL_Y + D_LEVEL_H + D_MARGIN + D_TXT8_H + D_MARGIN +
+        D_TXT8_H,
 
     D_GDIS_W = 26,
     D_GDIS_H = 18,
     D_GDIS_X = D_GDIN_X,
-    D_GDIS_Y = D_GDIN_Y + D_GDIN_H * 2,
+    D_GDIS_Y = D_GDIN_Y + (D_GDIN_H * 2),
 
     D_GDIW_W = 26,
     D_GDIW_H = 18,
-    D_GDIW_X = D_DIALOG_CX - 5 - D_GDIN_W * 3,
+    D_GDIW_X = D_DIALOG_CX - 5 - (D_GDIN_W * 3),
     D_GDIW_Y = D_GDIN_Y + D_GDIN_H,
 
     D_GDIE_W = 26,
@@ -1620,13 +1620,13 @@ int MapEditClass::Scenario_Dialog() {
     D_NODN_W = 26,
     D_NODN_H = 18,
     D_NODN_X = D_DIALOG_CX + 5 + D_NODN_W,
-    D_NODN_Y =
-        D_LEVEL_Y + D_LEVEL_H + D_MARGIN + D_TXT8_H + D_MARGIN + D_TXT8_H,
+    D_NODN_Y = D_LEVEL_Y + D_LEVEL_H + D_MARGIN + D_TXT8_H + D_MARGIN +
+        D_TXT8_H,
 
     D_NODS_W = 26,
     D_NODS_H = 18,
     D_NODS_X = D_NODN_X,
-    D_NODS_Y = D_NODN_Y + D_NODN_H * 2,
+    D_NODS_Y = D_NODN_Y + (D_NODN_H * 2),
 
     D_NODW_W = 26,
     D_NODW_H = 18,
@@ -1635,7 +1635,7 @@ int MapEditClass::Scenario_Dialog() {
 
     D_NODE_W = 26,
     D_NODE_H = 18,
-    D_NODE_X = D_DIALOG_CX + 5 + D_NODN_W * 2,
+    D_NODE_X = D_DIALOG_CX + 5 + (D_NODN_W * 2),
     D_NODE_Y = D_NODN_Y + D_NODN_H,
 
     D_OK_W = 90,
@@ -1916,7 +1916,7 @@ int MapEditClass::Scenario_Dialog() {
         ....................... Draw the labels .........................
         */
         Fancy_Text_Print(
-            "Theater", D_THEATER_X + D_THEATER_W / 2, D_THEATER_Y - D_TXT8_H,
+            "Theater", D_THEATER_X + (D_THEATER_W / 2), D_THEATER_Y - D_TXT8_H,
             CC_GREEN, TBLACK,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -1925,7 +1925,7 @@ int MapEditClass::Scenario_Dialog() {
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Credits/1000", D_GDICRED_X + D_GDICRED_W / 2,
+            "Credits/1000", D_GDICRED_X + (D_GDICRED_W / 2),
             D_GDICRED_Y - D_TXT8_H, CC_GREEN, TBLACK,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -1947,12 +1947,12 @@ int MapEditClass::Scenario_Dialog() {
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "GDI", D_GDIN_X + D_GDIN_W / 2, D_GDIN_Y - D_TXT8_H, CC_GREEN,
+            "GDI", D_GDIN_X + (D_GDIN_W / 2), D_GDIN_Y - D_TXT8_H, CC_GREEN,
             TBLACK,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "NOD", D_NODN_X + D_NODN_W / 2, D_NODN_Y - D_TXT8_H, CC_GREEN,
+            "NOD", D_NODN_X + (D_NODN_W / 2), D_NODN_Y - D_TXT8_H, CC_GREEN,
             TBLACK,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
@@ -2329,17 +2329,17 @@ int MapEditClass::Select_Trigger() {
 
     D_NEW_W = 90,
     D_NEW_H = 18,
-    D_NEW_X = D_DIALOG_X + (D_DIALOG_W / 8) * 3 - (D_NEW_W / 2),
+    D_NEW_X = D_DIALOG_X + ((D_DIALOG_W / 8) * 3) - (D_NEW_W / 2),
     D_NEW_Y = D_DIALOG_Y + D_DIALOG_H - D_MARGIN - D_NEW_H,
 
     D_DELETE_W = 90,
     D_DELETE_H = 18,
-    D_DELETE_X = D_DIALOG_X + (D_DIALOG_W / 8) * 5 - (D_DELETE_W / 2),
+    D_DELETE_X = D_DIALOG_X + ((D_DIALOG_W / 8) * 5) - (D_DELETE_W / 2),
     D_DELETE_Y = D_DIALOG_Y + D_DIALOG_H - D_MARGIN - D_DELETE_H,
 
     D_OK_W = 90,
     D_OK_H = 18,
-    D_OK_X = D_DIALOG_X + (D_DIALOG_W / 8) * 7 - (D_OK_W / 2),
+    D_OK_X = D_DIALOG_X + ((D_DIALOG_W / 8) * 7) - (D_OK_W / 2),
     D_OK_Y = D_DIALOG_Y + D_DIALOG_H - D_MARGIN - D_OK_H,
 
   };
@@ -3012,12 +3012,12 @@ int MapEditClass::Edit_Trigger() {
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Events", D_EVENT_X + D_EVENT_W / 2, D_EVENT_Y - D_TXT8_H, CC_GREEN,
-            TBLACK,
+            "Events", D_EVENT_X + (D_EVENT_W / 2), D_EVENT_Y - D_TXT8_H,
+            CC_GREEN, TBLACK,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Actions", D_ACTION_X + D_ACTION_W / 2, D_ACTION_Y - D_TXT8_H,
+            "Actions", D_ACTION_X + (D_ACTION_W / 2), D_ACTION_Y - D_TXT8_H,
             CC_GREEN, TBLACK,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 

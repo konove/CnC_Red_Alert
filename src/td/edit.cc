@@ -117,7 +117,7 @@ EditClass::EditClass(int id, char* text, int max_len, TextPrintType flags,
       if (strlen(String) > 0) {
         Width = String_Pixel_Width(String) + 6;
       } else {
-        Width = (Char_Pixel_Width('X') + FontXSpacing) * (MaxLength + 1) + 2;
+        Width = ((Char_Pixel_Width('X') + FontXSpacing) * (MaxLength + 1)) + 2;
       }
     }
   }

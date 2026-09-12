@@ -118,7 +118,7 @@ void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
             // pick up a color offset a pseudo-random amount from the current
             // viewport address
             pixel = dst_offset[BFPredTable[BFPredOffset >> 1]];
-            BFPredOffset = BFPredOffset + 2 & PRED_MASK;
+            BFPredOffset = (BFPredOffset + 2) & PRED_MASK;
           }
         }
 
@@ -316,12 +316,12 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
 
   // do blit
   auto* src_offset = static_cast<uint8_t*>(src) + src_x0 +
-                     static_cast<base::ssize>(src_y0) * w;
+                     (static_cast<base::ssize>(src_y0) * w);
   int src_adjust_width = w - (dst_x1 - dst_x0);
 
   base::ssize dst_area =
       dest.Get_XAdd() + dest.Get_Width() + dest.Get_Pitch();
-  auto* dst_offset = dest.Get_Offset() + dst_x0 + dst_y0 * dst_area;
+  auto* dst_offset = dest.Get_Offset() + dst_x0 + (dst_y0 * dst_area);
   int dst_adjust_width = static_cast<int>(dst_area - (dst_x1 - dst_x0));
 
   if (!use_new_draw) {

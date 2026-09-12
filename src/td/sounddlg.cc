@@ -96,7 +96,7 @@ int SoundControlsClass::Init() {
   Listbox_H = 73 * factor;
 
   Button_Width = 85 * factor;
-  Button_X = Option_Width - (Button_Width + 7 * factor);
+  Button_X = Option_Width - (Button_Width + (7 * factor));
   Button_Y = 130 * factor;
 
   Stop_X = 5 * factor;

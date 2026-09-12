@@ -129,7 +129,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
           }
           altx = std::max(altx, 0);
           if (altx > (320 - 50) * 2) {
-            altx += altx - (320 - 50) * 2;
+            altx += altx - ((320 - 50) * 2);
           }
           altx = std::min(altx, 640);
           if (altx > 100 && altx < (320 - 50) * 2) {

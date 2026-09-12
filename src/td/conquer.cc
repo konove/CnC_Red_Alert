@@ -2014,7 +2014,7 @@ void MixFileVqaIo::Close() {
 void Rebuild_Interpolated_Palette(unsigned char* interpal) {
   for (int y = 0; y < 255; y++) {
     for (int x = y + 1; x < 256; x++) {
-      *(interpal + (y * 256 + x)) = *(interpal + (x * 256 + y));
+      *(interpal + ((y * 256) + x)) = *(interpal + ((x * 256) + y));
     }
   }
 }
@@ -2057,7 +2057,7 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
     InterpolatedPalettes[i + start_palette] = new unsigned char[65536]();
     for (int y = 0; y < 256; y++) {
       file.Read(InterpolatedPalettes[i + start_palette] +
-                    static_cast<base::ssize>(y) * 256,
+                    (static_cast<base::ssize>(y) * 256),
                 y + 1);
     }
 
@@ -2342,7 +2342,7 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
   ** Allocate a position to store our icons.  If the alloc fails then
   ** we dont add these icons to the set.
   **/
-  buffer = new char[icon_width * icon_height * 9 * frames + 2];
+  buffer = new char[(icon_width * icon_height * 9 * frames) + 2];
   if (!buffer) {
     return nullptr;
   }
@@ -2376,13 +2376,13 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
         for (int iconx = 0; iconx < icon_width; iconx++) {
           for (int y = 0; y < zoomfactor; y++) {
             for (int x = 0; x < zoomfactor; x++) {
-              int getx = iconx * 24 + x * val + zoomfactor / 2;
-              int gety = icony * 24 + y * val + zoomfactor / 2;
+              int getx = (iconx * 24) + (x * val) + (zoomfactor / 2);
+              int gety = (icony * 24) + (y * val) + (zoomfactor / 2);
               if (getx < pixel_width && gety < pixel_height) {
                 for (lp = 0; lp < 9; lp++) {
                   pixel = *static_cast<char*>(Add_Long_To_Pointer(
                       ptr,
-                      (gety - _offy[lp]) * pixel_width + getx - _offx[lp]));
+                      ((gety - _offy[lp]) * pixel_width) + getx - _offx[lp]));
                   if (pixel == LTGREEN) {
                     pixel = 0;
                   }
@@ -2438,7 +2438,7 @@ void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
       if (LogicPage->Lock()) {
         unsigned char* shape_end =
             shape_pointer +
-            static_cast<base::ssize>(source_width) * source_height;
+            (static_cast<base::ssize>(source_width) * source_height);
 
         for (int y = ypos; y < ypos + height; y++) {
           unsigned char* shape_save = shape_pointer;

@@ -391,8 +391,8 @@ static void Toggle_Formation() {
   // Offsets are taken from where each unit already stands, so the formation
   // locks in the group's current shape rather than imposing a canned one.
   if (set_form) {
-    int center_x = static_cast<int>((maxx - minx) / 2 + minx);
-    int center_y = static_cast<int>((maxy - miny) / 2 + miny);
+    int center_x = static_cast<int>(((maxx - minx) / 2) + minx);
+    int center_y = static_cast<int>(((maxy - miny) / 2) + miny);
 
     for (int i = 0; i < Units.Count(); i++) {
       UnitClass* obj = Units.Ptr(i);
@@ -1980,7 +1980,7 @@ void MixFileVqaIo::Close() {
 void Rebuild_Interpolated_Palette(unsigned char* interpal) {
   for (int y = 0; y < 255; y++) {
     for (int x = y + 1; x < 256; x++) {
-      *(interpal + (y * 256 + x)) = *(interpal + (x * 256 + y));
+      *(interpal + ((y * 256) + x)) = *(interpal + ((x * 256) + y));
     }
   }
 }
@@ -2024,7 +2024,7 @@ int Load_Interpolated_Palettes(const char* filename, const bool add) {
       // Rebuild_Interpolated_Palette() mirrors it to fill the rest.
       for (int y = 0; y < 256; y++) {
         file.Read(InterpolatedPalettes[i + start_palette] +
-                      static_cast<base::ssize>(y) * 256,
+                      (static_cast<base::ssize>(y) * 256),
                   y + 1);
       }
 
@@ -2215,7 +2215,7 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile,
   // Allocate a position to store our icons.  If the alloc fails then
   // we don't add these icons to the set.
   auto result =
-      std::make_unique<char[]>(icon_width * icon_height * 9 * frames + 2);
+      std::make_unique<char[]>((icon_width * icon_height * 9 * frames) + 2);
   char* buffer = result.get();
   *buffer++ = static_cast<char>(icon_width);
   *buffer++ = static_cast<char>(icon_height);
@@ -2238,14 +2238,14 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile,
         for (int icon_x = 0; icon_x < icon_width; icon_x++) {
           for (int y = 0; y < zoom_factor; y++) {
             for (int x = 0; x < zoom_factor; x++) {
-              int getx = icon_x * 24 + x * val + zoom_factor / 2;
-              int gety = icon_y * 24 + y * val + zoom_factor / 2;
+              int getx = (icon_x * 24) + (x * val) + (zoom_factor / 2);
+              int gety = (icon_y * 24) + (y * val) + (zoom_factor / 2);
               if (getx < pixel_width && gety < pixel_height) {
                 char pixel = 0;
                 for (int lp = 0; lp < 9; ++lp) {
                   pixel = *(static_cast<char*>(ptr) +
-                            static_cast<base::ssize>(gety - off_y[lp]) *
-                                pixel_width +
+                            (static_cast<base::ssize>(gety - off_y[lp]) *
+                             pixel_width) +
                             getx - off_x[lp]);
 
                   if (pixel == LTGREEN) {
@@ -2416,7 +2416,7 @@ Rect Shape_Dimensions(const void* shapedata, const int shape_num) {
   // Find top edge of the shape.
   for (int y = 0; y <= y_limit; y++) {
     for (int x = 0; x <= x_limit; x++) {
-      if (shape[y * width + x] != 0) {
+      if (shape[(y * width) + x] != 0) {
         rect.Y = y;
         rect.X = x;
         // Pushing y past the limit breaks the outer loop too -- the first row
@@ -2430,7 +2430,7 @@ Rect Shape_Dimensions(const void* shapedata, const int shape_num) {
   // Find bottom edge of the shape.
   for (int y = y_limit; y >= rect.Y; y--) {
     for (int x = x_limit; x >= 0; x--) {
-      if (shape[y * width + x] != 0) {
+      if (shape[(y * width) + x] != 0) {
         rect.Height = y - rect.Y + 1;
         x_limit = x;
         y = rect.Y - 1;
@@ -2442,7 +2442,7 @@ Rect Shape_Dimensions(const void* shapedata, const int shape_num) {
   // Find left edge of the shape.
   for (int x = 0; x < rect.X; x++) {
     for (int y = rect.Y; y < rect.Y + rect.Height; y++) {
-      if (shape[y * width + x] != 0) {
+      if (shape[(y * width) + x] != 0) {
         rect.X = x;
         x = rect.X;
         break;
@@ -2453,7 +2453,7 @@ Rect Shape_Dimensions(const void* shapedata, const int shape_num) {
   // Find the right edge of the shape.
   for (int x = width - 1; x >= x_limit; x--) {
     for (int y = rect.Y; y < rect.Y + rect.Height; y++) {
-      if (shape[y * width + x] != 0) {
+      if (shape[(y * width) + x] != 0) {
         rect.Width = x - rect.X + 1;
         x = x_limit - 1;
         break;
@@ -2810,14 +2810,14 @@ void Handle_View(const int view, const int action) {
   if (static_cast<unsigned>(view) < std::ssize(Scen.Views)) {
     if (action == 0) {
       Map.Set_Tactical_Position(Coord_Whole(Cell_Coord(
-          static_cast<CELL>(Scen.Views[view] - MAP_CELL_W * 8 - 10))));
+          static_cast<CELL>(Scen.Views[view] - (MAP_CELL_W * 8) - 10))));
 
       // Win95 scrolling logic cant handle just jumps in screen position so
       // redraw the lot.
       Map.Flag_To_Redraw(true);
     } else {
       Scen.Views[view] = static_cast<CELL>(Coord_Cell(Map.TacticalCoord) +
-                                           MAP_CELL_W * 8 + 10);
+                                           (MAP_CELL_W * 8) + 10);
     }
   }
 }

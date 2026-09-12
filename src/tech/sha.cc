@@ -253,7 +253,7 @@ int SHAEngine::Result(void* result) const {
 */
 template <class T>
 T _rotl(T X, int n) {
-  return static_cast<T>(X << n | (unsigned)X >> (sizeof(T) * 8 - n));
+  return static_cast<T>(X << n | (unsigned)X >> ((sizeof(T) * 8) - n));
 }
 // unsigned long _RTLENTRY _rotl(unsigned long X, int n)
 //{

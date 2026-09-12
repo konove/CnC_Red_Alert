@@ -123,7 +123,7 @@ class fixed {
     return temp;
   }
   int operator*(const int rvalue) const {
-    return (raw_ * rvalue + kRoundingBias) / 256;
+    return ((raw_ * rvalue) + kRoundingBias) / 256;
   }
   fixed operator/(const fixed& rvalue) const {
     fixed temp = *this;
@@ -196,13 +196,13 @@ class fixed {
     if (rvalue.raw_ == 0 || rvalue.raw_ == 256) {
       return lvalue;
     }
-    return (lvalue * 256 + kRoundingBias) / rvalue.raw_;
+    return ((lvalue * 256) + kRoundingBias) / rvalue.raw_;
   }
   friend int operator+(const int lvalue, const fixed& rvalue) {
     return rvalue + lvalue;
   }
   friend int operator-(const int lvalue, const fixed& rvalue) {
-    return (lvalue * 256 - rvalue.raw_ + kRoundingBias) / 256;
+    return ((lvalue * 256) - rvalue.raw_ + kRoundingBias) / 256;
   }
   friend bool operator<(const unsigned lvalue, const fixed& rvalue) {
     return lvalue * 256 < rvalue.raw_;
@@ -276,7 +276,7 @@ class fixed {
   }
   fixed& Sub_Saturate(const unsigned cap) {
     if (raw_ >= cap * 256) {
-      raw_ = static_cast<uint16_t>(cap * 256 - 1);
+      raw_ = static_cast<uint16_t>((cap * 256) - 1);
     }
     return *this;
   }

@@ -115,7 +115,7 @@ static uint8_t* DecodeADPCMBlock(ChannelState& chan, int block_size,
     int step = ima_adpcm_step_table[chan.step];
     chan.step = static_cast<int8_t>(clamp(chan.step + ima_adpcm_index_table[nibble], 0, 88));
 
-    int diff = ((((nibble & 7) * 2 + 1) * step) >> 3) * (nibble & 8 ? -1 : 1);
+    int diff = (((((nibble & 7) * 2) + 1) * step) >> 3) * (nibble & 8 ? -1 : 1);
     chan.predictor = static_cast<int16_t>(clamp(chan.predictor + diff, -32768, 32767));
 
     samples[0] = chan.predictor;
@@ -124,7 +124,7 @@ static uint8_t* DecodeADPCMBlock(ChannelState& chan, int block_size,
     step = ima_adpcm_step_table[chan.step];
     chan.step = static_cast<int8_t>(clamp(chan.step + ima_adpcm_index_table[nibble], 0, 88));
 
-    diff = ((((nibble & 7) * 2 + 1) * step) >> 3) * (nibble & 8 ? -1 : 1);
+    diff = (((((nibble & 7) * 2) + 1) * step) >> 3) * (nibble & 8 ? -1 : 1);
     chan.predictor = static_cast<int16_t>(clamp(chan.predictor + diff, -32768, 32767));
 
     samples[1] = chan.predictor;

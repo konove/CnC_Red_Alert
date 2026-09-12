@@ -141,7 +141,7 @@ int RandomStraw::Seed_Bits_Needed() const {
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
 void RandomStraw::Seed_Bit(int seed) {
-  char* ptr = (char*)&Random[0] + SeedBits / CHAR_BIT % sizeof(Random);
+  char* ptr = (char*)&Random[0] + (SeedBits / CHAR_BIT % sizeof(Random));
   char frac = static_cast<char>(1 << (SeedBits & CHAR_BIT - 1));
 
   if (seed & 0x01) {

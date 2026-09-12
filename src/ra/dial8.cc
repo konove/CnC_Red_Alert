@@ -76,8 +76,8 @@ Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
   /*
   **	Center coordinates.
   */
-  FaceX = X + Width / 2;
-  FaceY = Y + Height / 2;
+  FaceX = X + (Width / 2);
+  FaceY = Y + (Height / 2);
 
   /*
   **	Init directions.
@@ -93,52 +93,52 @@ Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
   **	Height/2 for y-radius.
   */
   FacePoint[0][0] = FaceX;
-  FacePoint[0][1] = FaceY - h * 8 / 2 / 10;
+  FacePoint[0][1] = FaceY - (h * 8 / 2 / 10);
 
-  FacePoint[1][0] = FaceX + w * 7 * 8 / 2 / 100;
-  FacePoint[1][1] = FaceY - h * 7 * 8 / 2 / 100;
+  FacePoint[1][0] = FaceX + (w * 7 * 8 / 2 / 100);
+  FacePoint[1][1] = FaceY - (h * 7 * 8 / 2 / 100);
 
-  FacePoint[2][0] = FaceX + w * 8 / 2 / 10;
+  FacePoint[2][0] = FaceX + (w * 8 / 2 / 10);
   FacePoint[2][1] = FaceY;
 
-  FacePoint[3][0] = FaceX + w * 7 * 8 / 2 / 100;
-  FacePoint[3][1] = FaceY + h * 7 * 8 / 2 / 100;
+  FacePoint[3][0] = FaceX + (w * 7 * 8 / 2 / 100);
+  FacePoint[3][1] = FaceY + (h * 7 * 8 / 2 / 100);
 
   FacePoint[4][0] = FaceX;
-  FacePoint[4][1] = FaceY + h * 8 / 2 / 10;
+  FacePoint[4][1] = FaceY + (h * 8 / 2 / 10);
 
-  FacePoint[5][0] = FaceX - w * 7 * 8 / 2 / 100;
-  FacePoint[5][1] = FaceY + h * 7 * 8 / 2 / 100;
+  FacePoint[5][0] = FaceX - (w * 7 * 8 / 2 / 100);
+  FacePoint[5][1] = FaceY + (h * 7 * 8 / 2 / 100);
 
-  FacePoint[6][0] = FaceX - w * 8 / 2 / 10;
+  FacePoint[6][0] = FaceX - (w * 8 / 2 / 10);
   FacePoint[6][1] = FaceY;
 
-  FacePoint[7][0] = FaceX - w * 7 * 8 / 2 / 100;
-  FacePoint[7][1] = FaceY - h * 7 * 8 / 2 / 100;
+  FacePoint[7][0] = FaceX - (w * 7 * 8 / 2 / 100);
+  FacePoint[7][1] = FaceY - (h * 7 * 8 / 2 / 100);
 
   FaceLine[0][0] = FaceX;
-  FaceLine[0][1] = FaceY - h * 6 / 2 / 10;
+  FaceLine[0][1] = FaceY - (h * 6 / 2 / 10);
 
-  FaceLine[1][0] = FaceX + w * 7 * 6 / 2 / 100;
-  FaceLine[1][1] = FaceY - h * 7 * 6 / 2 / 100;
+  FaceLine[1][0] = FaceX + (w * 7 * 6 / 2 / 100);
+  FaceLine[1][1] = FaceY - (h * 7 * 6 / 2 / 100);
 
-  FaceLine[2][0] = FaceX + w * 6 / 2 / 10;
+  FaceLine[2][0] = FaceX + (w * 6 / 2 / 10);
   FaceLine[2][1] = FaceY;
 
-  FaceLine[3][0] = FaceX + w * 7 * 6 / 2 / 100;
-  FaceLine[3][1] = FaceY + h * 7 * 6 / 2 / 100;
+  FaceLine[3][0] = FaceX + (w * 7 * 6 / 2 / 100);
+  FaceLine[3][1] = FaceY + (h * 7 * 6 / 2 / 100);
 
   FaceLine[4][0] = FaceX;
-  FaceLine[4][1] = FaceY + h * 6 / 2 / 10;
+  FaceLine[4][1] = FaceY + (h * 6 / 2 / 10);
 
-  FaceLine[5][0] = FaceX - w * 7 * 6 / 2 / 100;
-  FaceLine[5][1] = FaceY + h * 7 * 6 / 2 / 100;
+  FaceLine[5][0] = FaceX - (w * 7 * 6 / 2 / 100);
+  FaceLine[5][1] = FaceY + (h * 7 * 6 / 2 / 100);
 
-  FaceLine[6][0] = FaceX - w * 6 / 2 / 10;
+  FaceLine[6][0] = FaceX - (w * 6 / 2 / 10);
   FaceLine[6][1] = FaceY;
 
-  FaceLine[7][0] = FaceX - w * 7 * 6 / 2 / 100;
-  FaceLine[7][1] = FaceY - h * 7 * 6 / 2 / 100;
+  FaceLine[7][0] = FaceX - (w * 7 * 6 / 2 / 100);
+  FaceLine[7][1] = FaceY - (h * 7 * 6 / 2 / 100);
 }
 
 /***************************************************************************

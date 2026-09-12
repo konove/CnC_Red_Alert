@@ -206,7 +206,7 @@ void Setup_Menu(int menu, const char* text[], unsigned long field, int index,
   Hide_Mouse();
   for (lp = 0; lp < num; lp++) {
     idx = Select_To_Entry(lp, field, index);
-    drawy = menuy + lp * FontHeight + lp * skip;
+    drawy = menuy + (lp * FontHeight) + (lp * skip);
     Plain_Text_Print(text[idx], menux, drawy,
                      menuptr[idx == item && MenuUpdate ? HILITE : NORMCOL],
                      TBLACK, TPF_8POINT | TPF_DROPSHADOW);
@@ -260,13 +260,13 @@ int Check_Menu(int menu, const char* text[], char*, long field, int index) {
   **	the heck outta here. If we are somewhere on the menu, then figure
   **	out the new selected item, and continue forward.
   */
-  mx1 = WinX + menuptr[MENUX] * FontWidth; /* get menu coords
-                                            */
+  mx1 = WinX + (menuptr[MENUX] * FontWidth); /* get menu coords
+                                              */
   my1 = WinY + menuptr[MENUY] -
         halfskip; /*		from the menu		*/
-  mx2 = mx1 + menuptr[ITEMWIDTH] * FontWidth -
+  mx2 = mx1 + (menuptr[ITEMWIDTH] * FontWidth) -
         1; /*		structure as		*/
-  my2 = my1 + menuptr[ITEMSHIGH] * menuskip -
+  my2 = my1 + (menuptr[ITEMSHIGH] * menuskip) -
         1; /*		necessary			*/
 
   tempy = Get_Mouse_Y();
@@ -347,11 +347,11 @@ int Check_Menu(int menu, const char* text[], char*, long field, int index) {
   if (newitem != item) {
     Hide_Mouse();
     idx = Select_To_Entry(item, field, index);
-    drawy = menuy + item * menuskip;
+    drawy = menuy + (item * menuskip);
     Plain_Text_Print(text[idx], menux, drawy, normcol, TBLACK,
                      TPF_8POINT | TPF_DROPSHADOW);
     idx = Select_To_Entry(newitem, field, index);
-    drawy = menuy + newitem * menuskip;
+    drawy = menuy + (newitem * menuskip);
     Plain_Text_Print(text[idx], menux, drawy, litcol, TBLACK,
                      TPF_8POINT | TPF_DROPSHADOW);
     Show_Mouse(); /* resurrect the mouse	*/
@@ -360,7 +360,7 @@ int Check_Menu(int menu, const char* text[], char*, long field, int index) {
   if (select != -1) {
     idx = Select_To_Entry(select, field, index);
     Hide_Mouse(); /* get rid of the mouse	*/
-    drawy = menuy + newitem * menuskip;
+    drawy = menuy + (newitem * menuskip);
     Flash_Line(text[idx], menux, drawy, normcol, litcol, TBLACK);
     Show_Mouse();
     select = idx;
@@ -440,7 +440,7 @@ int Do_Menu(const char** strings, bool) {
       174 - static_cast<unsigned>(MenuList[0][ITEMSHIGH] *
                                   (FontHeight + FontYSpacing));
   WindowList[WINDOW_MENU][WINDOWHEIGHT] =
-      MenuList[0][ITEMSHIGH] * FontHeight + 5 /*11*/;
+      (MenuList[0][ITEMSHIGH] * FontHeight) + 5 /*11*/;
 
   /*
   **	Display the menu.

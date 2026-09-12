@@ -2,7 +2,7 @@
 
 Updated: 2026-09-12, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 207 currently excluded check names** and completed entries, in recommended work
+This tracks **all 206 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -74,7 +74,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-logical-op-parentheses`                  | Enabled | Commit `Fix the shifted window origin and make operator precedence explicit`: six `&&` inside `                                                                                                                                                                       |                                                             | `, all parenthesized to keep the current grouping. See review below. |
 | `clang-diagnostic-bitwise-op-parentheses`                  | Enabled | Commit `Fix the shifted window origin and make operator precedence explicit`: seventeen `&` inside `                                                                                                                                                                  | `, including the SHA-1 round functions; grouping preserved. |
 | `clang-diagnostic-shift-op-parentheses`                    | Enabled | Commit `Fix the shifted window origin and make operator precedence explicit`: two real bugs -- TD shifted the window origin by `3 + Get_XPos()` instead of adding it.                                                                                                 |
-| `readability-math-missing-parentheses`                     | Pending | Expose arithmetic grouping that is easy to misread.                                                                                                                                                                                                                   |
+| `readability-math-missing-parentheses`                     | Enabled | Commit `Parenthesize mixed-precedence arithmetic`: 2,513 sites, applied with the check's own fix-its plus 16 manual edits the fix-its could not reach; no behavior change (see the review below).                                                                     |
 | `bugprone-branch-clone`                                    | Pending | Review duplicate branches for copy/paste bugs; preserve intentional symmetry.                                                                                                                                                                                         |
 | `clang-diagnostic-sign-conversion`                         | Pending | Review signed sentinels and range changes; follow the type policy.                                                                                                                                                                                                    |
 | `bugprone-signed-bitwise`                                  | Pending | Review signed shifts and masks without breaking deliberate bit patterns.                                                                                                                                                                                              |
@@ -685,7 +685,7 @@ The isolated and full-config sweeps now report nothing, both strict game builds 
 The three `clang-diagnostic-*-op-parentheses` names are now enforced. The isolated sweep of 890
 project translation units produced 25 findings: 17 for `&` inside `|`, 6 for `&&` inside `||`, and 2
 for `+` inside `<<`. (`readability-math-missing-parentheses` was measured in the same run and
-produced 2,532; it stays on the list as its own decision.)
+produced 2,532; it was handled separately in the review below.)
 
 The two shift findings are real bugs, in TD only:
 
@@ -744,6 +744,41 @@ reformatted, and the touched files gain no formatting violations they did not al
 
 Both isolated and full-config sweeps now report nothing, both strict game builds are clean, and all
 237 CTest tests pass. The excluded-name count drops from 210 to 207.
+
+### Arithmetic precedence parentheses review (2026-09-12)
+
+`readability-math-missing-parentheses` is now enforced. The isolated sweep of the 460 project
+translation units produced 2,513 unique sites. The check has no options, so it is all-or-nothing:
+
+| Grouping                                         | Sites |
+| ------------------------------------------------ | ----- |
+| `*` `/` `%` inside `+` `-` (ordinary precedence) | 2,458 |
+| `+` `-` inside `&` `^` (arithmetic and bitwise)  | 55    |
+
+All 55 mixed arithmetic/bitwise sites were read individually and none is a bug. They are deliberate
+engine idioms: `(Tail + 1) & (size - 1)` ring wrap in both games' `queue.h` and the keyboard buffer,
+`(n + 16) & 0xFFFFFFF0` rounding in the radar and the VQA loader, the Blowfish F-function
+`((S0[a] + S1[b]) ^ S2[c]) + S3[d]`, and `celljammed & (0xFFFF - housebit)`, which clears one house
+bit by subtracting it from an all-ones mask. Adding the parentheses makes each of those readable
+without changing any of them. This is the Core Guidelines ES.41 subset, and the reason the check
+earns its place despite the bulk of the findings being ordinary precedence.
+
+The check's fix-its were applied with `run-clang-tidy -fix`, then only the changed lines were
+reformatted with `git clang-format`. Sixteen sites needed hand edits because the fix-it landed
+inside a macro expansion and was discarded: thirteen inside `EXPECT_EQ` arguments in five test
+files, and three `sizeof(a) / sizeof(a[0]) - 1` and `(BuildLevel - 1) / 3 + 1` expressions in TD. A
+further 128 findings across seven TD files came from one macro body, `XYP_COORD` in
+[td/inline.h](../src/td/inline.h); parenthesizing its division retired all of them at once. RA has
+no counterpart because its `XYP_COORD` is already an inline function.
+
+Because the diff is large, the absence of behavior change was verified rather than assumed. Every
+changed file is textually identical to its `HEAD` version once parentheses and whitespace are
+removed, and all 181 changed translation units were compiled to `-O2` LLVM IR from both trees: 172
+are bit-identical, and the nine that differ do so only in `__assert_fail` and GoogleTest line-number
+constants, which moved when lines were reflowed.
+
+The full-config strict build of both games is clean, the isolated sweep now reports nothing, and all
+242 CTest tests pass. The excluded-name count drops from 207 to 206.
 
 ### Completed validation
 

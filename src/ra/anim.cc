@@ -357,12 +357,14 @@ const short* AnimClass::Overlap_List(bool) const {
   assert(Anims.ID(this) == ID);
   assert(IsActive);
   static const short OverlapAtom[] = {
-      -MAP_CELL_W * 2 - 1, (-MAP_CELL_W * 2), -MAP_CELL_W * 2 + 1,
-      -MAP_CELL_W * 1 - 1, (-MAP_CELL_W * 1), -MAP_CELL_W * 1 + 1,
-      -MAP_CELL_W * 0 - 1, (-MAP_CELL_W * 0), -MAP_CELL_W * 0 + 1,
-      MAP_CELL_W * 1 - 1,  (MAP_CELL_W * 1),  MAP_CELL_W * 1 + 1,
-      MAP_CELL_W * 2 - 1,  (MAP_CELL_W * 2),  MAP_CELL_W * 2 + 1,
-      kRefreshEol};
+      (-MAP_CELL_W * 2) - 1, (-MAP_CELL_W * 2),
+      (-MAP_CELL_W * 2) + 1, (-MAP_CELL_W * 1) - 1,
+      (-MAP_CELL_W * 1),     (-MAP_CELL_W * 1) + 1,
+      (-MAP_CELL_W * 0) - 1, (-MAP_CELL_W * 0),
+      (-MAP_CELL_W * 0) + 1, (MAP_CELL_W * 1) - 1,
+      (MAP_CELL_W * 1),      (MAP_CELL_W * 1) + 1,
+      (MAP_CELL_W * 2) - 1,  (MAP_CELL_W * 2),
+      (MAP_CELL_W * 2) + 1,  kRefreshEol};
 
   if (IsToDelete) {
     static const short _list[] = {kRefreshEol};

@@ -1795,7 +1795,7 @@ TemplateType TemplateTypeClass::From_Name(const char* name) {
  *access to iconset data.                             *
  *=============================================================================================*/
 const short* TemplateTypeClass::Occupy_List(bool) const {
-  static short _occupy[13 * 8 + 5];
+  static short _occupy[(13 * 8) + 5];
   short* ptr;
 
   const IconsetClass* iconset =
@@ -1805,7 +1805,8 @@ const short* TemplateTypeClass::Occupy_List(bool) const {
   ptr = &_occupy[0];
   for (int index = 0; index < Width * Height; index++) {
     if (*map++ != 0xFF) {
-      *ptr++ = static_cast<short>(index % Width + index / Width * MAP_CELL_W);
+      *ptr++ =
+          static_cast<short>((index % Width) + (index / Width * MAP_CELL_W));
     }
   }
   *ptr = kRefreshEol;

@@ -716,7 +716,7 @@ unsigned char* OverlayTypeClass::Radar_Icon(int data) const {
   unsigned char* icon =
       (unsigned char*)Get_Radar_Data();  // Get pointer to radar icons
   if (icon != nullptr) {
-    icon += data * 9 + 2;  // move icon ptr to correct icon
+    icon += (data * 9) + 2;  // move icon ptr to correct icon
   }
   return icon;  // Return the correct icon
 }

@@ -86,35 +86,36 @@ void GameControlsClass::Process() {
   int d_dialog_x = (SeenBuff.Get_Width() - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y =
       (SeenBuff.Get_Height() - d_dialog_h) / 2;   // centered y-coord
-  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;  // center x-coord
+  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
   int d_top_margin = 30 * factor;
 
   int d_txt6_h = 7 * factor;   // ht of 6-pt text
   int d_margin1 = 5 * factor;  // large margin
 
-  int d_speed_w = d_dialog_w - 20 * factor;
+  int d_speed_w = d_dialog_w - (20 * factor);
   int d_speed_h = 6 * factor;
-  int d_speed_x = d_dialog_x + 10 * factor;
+  int d_speed_x = d_dialog_x + (10 * factor);
   int d_speed_y = d_dialog_y + d_top_margin + d_margin1 + d_txt6_h;
 
-  int d_scroll_w = d_dialog_w - 20 * factor;
+  int d_scroll_w = d_dialog_w - (20 * factor);
   int d_scroll_h = 6 * factor;
-  int d_scroll_x = d_dialog_x + 10 * factor;
-  int d_scroll_y = d_speed_y + d_speed_h + d_txt6_h + d_margin1 * 2 + d_txt6_h;
+  int d_scroll_x = d_dialog_x + (10 * factor);
+  int d_scroll_y =
+      d_speed_y + d_speed_h + d_txt6_h + (d_margin1 * 2) + d_txt6_h;
 
-  int d_visual_w = d_dialog_w - 40 * factor;
+  int d_visual_w = d_dialog_w - (40 * factor);
   int d_visual_h = 9 * factor;
-  int d_visual_x = d_dialog_x + 20 * factor;
-  int d_visual_y = d_scroll_y + d_scroll_h + d_txt6_h + d_margin1 * 2;
+  int d_visual_x = d_dialog_x + (20 * factor);
+  int d_visual_y = d_scroll_y + d_scroll_h + d_txt6_h + (d_margin1 * 2);
 
-  int d_sound_w = d_dialog_w - 40 * factor;
+  int d_sound_w = d_dialog_w - (40 * factor);
   int d_sound_h = 9 * factor;
-  int d_sound_x = d_dialog_x + 20 * factor;
+  int d_sound_x = d_dialog_x + (20 * factor);
   int d_sound_y = d_visual_y + d_visual_h + d_margin1;
 
   int d_ok_w = 20 * factor;
   int d_ok_h = 9 * factor;
-  int d_ok_x = d_dialog_cx - d_ok_w / 2;
+  int d_ok_x = d_dialog_cx - (d_ok_w / 2);
   int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1;
 
   /*

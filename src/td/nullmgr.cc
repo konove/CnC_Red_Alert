@@ -1183,8 +1183,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   Dialog_Box(x, y, width, height);
   Draw_Caption(TXT_NONE, x, y, width);
 
-  Fancy_Text_Print(buffer, x + 20 * factor, y + 25 * factor, CC_GREEN, TBLACK,
-                   TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+  Fancy_Text_Print(buffer, x + (20 * factor), y + (25 * factor), CC_GREEN,
+                   TBLACK, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   Show_Mouse();
 
@@ -1471,9 +1471,9 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
       BUTTON_CANCEL, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       x + ((width -
-            (String_Pixel_Width(Text_String(TXT_CANCEL)) + 8 * factor)) >>
+            (String_Pixel_Width(Text_String(TXT_CANCEL)) + (8 * factor))) >>
            1),
-      y + height - (FontHeight + FontYSpacing + 2 * factor) - 5 * factor);
+      y + height - (FontHeight + FontYSpacing + (2 * factor)) - (5 * factor));
 
   // Timer_Test(__LINE__, __FILE__);
 
@@ -1508,8 +1508,8 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
 
   // Timer_Test(__LINE__, __FILE__);
 
-  Fancy_Text_Print(buffer, SeenBuff.Get_Width() / 2 - text_width / 2,
-                   y + 25 * factor, CC_GREEN, TBLACK,
+  Fancy_Text_Print(buffer, (SeenBuff.Get_Width() / 2) - (text_width / 2),
+                   y + (25 * factor), CC_GREEN, TBLACK,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   // Timer_Test(__LINE__, __FILE__);
@@ -1716,9 +1716,9 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
       BUTTON_CANCEL, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       x + ((width -
-            (String_Pixel_Width(Text_String(TXT_CANCEL)) + 8 * factor)) >>
+            (String_Pixel_Width(Text_String(TXT_CANCEL)) + (8 * factor))) >>
            1),
-      y + height - (FontHeight + FontYSpacing + 2 * factor) - 5 * factor);
+      y + height - (FontHeight + FontYSpacing + (2 * factor)) - (5 * factor));
 
   /*
   ------------------------------- Initialize -------------------------------
@@ -1784,8 +1784,9 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         */
         Draw_Caption(TXT_NONE, x, y, width);
 
-        Fancy_Text_Print(text_buffer, SeenBuff.Get_Width() / 2 - text_width / 2,
-                         y + 25 * factor, CC_GREEN, TBLACK,
+        Fancy_Text_Print(text_buffer,
+                         (SeenBuff.Get_Width() / 2) - (text_width / 2),
+                         y + (25 * factor), CC_GREEN, TBLACK,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Commands->Draw_All();

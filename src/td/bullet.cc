@@ -703,7 +703,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     int range = 0xFF;
     if (!Class->Range) {
       if (!Class->IsDropping) {
-        range = ::Distance(tcoord, Coord) / Class->MaxSpeed + 4;
+        range = (::Distance(tcoord, Coord) / Class->MaxSpeed) + 4;
       }
     } else {
       range = Class->Range;

@@ -487,7 +487,7 @@ NullModemClass NullModem(16,  // number of send entries
                          64,  // number of receive entries
                               //	sizeof (EventClass) * MAX_EVENTS,
                               //// maxlen of entry buffer
-                         200 / sizeof(EventClass) * sizeof(EventClass) +
+                         (200 / sizeof(EventClass) * sizeof(EventClass)) +
                              sizeof(CommHeaderType),
                          0x1234);  // Magic number must have each digit unique
                                    // and different from the queue magic number

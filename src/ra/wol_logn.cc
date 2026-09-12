@@ -104,13 +104,13 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   int d_delete_y = d_list_y + d_list_h - d_delete_h;
 
   int d_connect_w = config::kIsFrench ? 90 : 80;
-  int d_connect_x = d_name_x + d_name_w / 2 - d_connect_w / 2;
+  int d_connect_x = d_name_x + (d_name_w / 2) - (d_connect_w / 2);
   int d_connect_y = d_dialog_y + top_margin +
                     130;  // d_dialog_y + d_dialog_h - d_connect_h - d_margin;
 
   int d_cancel_w = 80;
   int d_cancel_x =
-      d_pass_x + d_pass_w / 2 - d_cancel_w / 2;  // d_dialog_cx + d_margin;
+      d_pass_x + (d_pass_w / 2) - (d_cancel_w / 2);  // d_dialog_cx + d_margin;
   int d_cancel_y = d_connect_y;
 
   /*

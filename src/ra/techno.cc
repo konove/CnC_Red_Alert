@@ -1256,8 +1256,8 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) const {
       int pwidth;  // Pixel width of bar interior.
       int color;   // The color to give the interior of the bargraph.
 
-      int xx = x - width / 2;
-      int yy = y - height / 2;
+      int xx = x - (width / 2);
+      int yy = y - (height / 2);
 
       /*
       **	Draw the outline of the bargraph.
@@ -1906,7 +1906,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   if (value) {
     //	if (rawval) {
 
-    value = value * 32000 / (dist / ICON_LEPTON_W + 1);
+    value = value * 32000 / ((dist / ICON_LEPTON_W) + 1);
     //		value = (value * 32000) /
     //(((dist/ICON_LEPTON_W)*(dist/ICON_LEPTON_W))+1);
 
@@ -5593,7 +5593,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
         }
         object = object->Next;
       }
-      CC_Draw_Shape(ObjectTypeClass::PipShapes, pip, x + index * 3, y, window,
+      CC_Draw_Shape(ObjectTypeClass::PipShapes, pip, x + (index * 3), y, window,
                     SHAPE_CENTER | SHAPE_WIN_REL);
     }
 
@@ -5635,7 +5635,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
             graypips--;
           }
         }
-        CC_Draw_Shape(ObjectTypeClass::PipShapes, shape, x + index * 3, y,
+        CC_Draw_Shape(ObjectTypeClass::PipShapes, shape, x + (index * 3), y,
                       window, SHAPE_CENTER | SHAPE_WIN_REL);
       }
     }
@@ -5664,7 +5664,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
               break;
           }
         }
-        CC_Draw_Shape(ObjectTypeClass::PipShapes, shape, x + index * 3, y,
+        CC_Draw_Shape(ObjectTypeClass::PipShapes, shape, x + (index * 3), y,
                       window, SHAPE_CENTER | SHAPE_WIN_REL);
       }
     } else {
@@ -5686,11 +5686,11 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
       for (int index = 0; index < (building ? 5 : Class_Of().Max_Pips());
            index++) {
         if (building) {
-          CC_Draw_Shape(ObjectTypeClass::PipShapes, pip, x, y - index * 3,
+          CC_Draw_Shape(ObjectTypeClass::PipShapes, pip, x, y - (index * 3),
                         window, SHAPE_CENTER | SHAPE_WIN_REL);
         } else {
           CC_Draw_Shape(ObjectTypeClass::PipShapes,
-                        index < pips ? PIP_FULL : PIP_EMPTY, x + index * 3, y,
+                        index < pips ? PIP_FULL : PIP_EMPTY, x + (index * 3), y,
                         window, SHAPE_CENTER | SHAPE_WIN_REL);
         }
       }
@@ -5805,7 +5805,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
           factor *= 10;
         }
 
-        int startx = x + 6 * digits - 3;  // + 6 * 8;
+        int startx = x + (6 * digits) - 3;  // + 6 * 8;
         while (money) {
           int xdigit = static_cast<int>(money % 10);
           money /= 10;
@@ -6369,7 +6369,7 @@ static inline int _Scale_To_256(int val) {
 bool TechnoTypeClass::Read_INI(CCINIClass& ini) {
   if (ini.Is_Present(Name())) {
     char buffer[256];
-    int id = (RTTI + 1) * 100 + ID;
+    int id = ((RTTI + 1) * 100) + ID;
 
     ini.Get_String(Name(), "Name", "", buffer, sizeof(buffer));
     if (strlen(buffer) > 0) {

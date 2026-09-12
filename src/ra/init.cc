@@ -1640,7 +1640,7 @@ uint32_t Obfuscate(const char* string) {
   */
   for (int index = 0; index < length; index++) {
     if (!isgraph(buffer[index])) {
-      buffer[index] = static_cast<char>('A' + index % 26);
+      buffer[index] = static_cast<char>('A' + (index % 26));
     }
   }
 
@@ -1652,11 +1652,11 @@ uint32_t Obfuscate(const char* string) {
   **	This is necessary to support the cypher process that occurs later.
   */
   if (length < 16 || length & 0x03) {
-    int maxlen = std::max(length + 3 & 0x00FC, 16);
+    int maxlen = std::max((length + 3) & 0x00FC, 16);
     int index;
     for (index = length; index < maxlen; index++) {
       buffer[index] = static_cast<char>(
-          'A' + (('?' ^ buffer[index - length]) + index) % 26);
+          'A' + ((('?' ^ buffer[index - length]) + index) % 26));
     }
     length = index;
     buffer[length] = '\0';

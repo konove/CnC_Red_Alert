@@ -1035,7 +1035,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
       **	Tiberium they are carrying.
       */
       if (Tiberium > 0 && Rule.IsExplosiveHarvester) {
-        Wide_Area_Damage(Coord, CELL_LEPTON_W + CELL_LEPTON_W / 2,
+        Wide_Area_Damage(Coord, CELL_LEPTON_W + (CELL_LEPTON_W / 2),
                          Credit_Load() + Class->MaxStrength, this, WARHEAD_HE);
       }
 
@@ -1404,11 +1404,11 @@ bool UnitClass::Goto_Clear_Spot() {
         -MAP_CELL_W * 4, -(MAP_CELL_W * 4) + 1, -(MAP_CELL_W * 4) - 1,
         -(MAP_CELL_W * 4) + 2, -(MAP_CELL_W * 4) - 2,
         // BG: Added south scanning
-        MAP_CELL_W * 1, MAP_CELL_W * 2, MAP_CELL_W * 2 + 1, MAP_CELL_W * 2 - 1,
-        MAP_CELL_W * 3, MAP_CELL_W * 3 + 1, MAP_CELL_W * 3 - 1,
-        MAP_CELL_W * 3 + 2, MAP_CELL_W * 3 - 2, MAP_CELL_W * 4,
-        MAP_CELL_W * 4 + 1, MAP_CELL_W * 4 - 1, MAP_CELL_W * 4 + 2,
-        MAP_CELL_W * 4 - 2,
+        MAP_CELL_W * 1, MAP_CELL_W * 2, (MAP_CELL_W * 2) + 1,
+        (MAP_CELL_W * 2) - 1, MAP_CELL_W * 3, (MAP_CELL_W * 3) + 1,
+        (MAP_CELL_W * 3) - 1, (MAP_CELL_W * 3) + 2, (MAP_CELL_W * 3) - 2,
+        MAP_CELL_W * 4, (MAP_CELL_W * 4) + 1, (MAP_CELL_W * 4) - 1,
+        (MAP_CELL_W * 4) + 2, (MAP_CELL_W * 4) - 2,
 
         // BG: Added some token east/west scanning
         -1, -2, -3, -4,
@@ -1905,20 +1905,21 @@ int UnitClass::Shape_Number() const {
     /*
     **	The starting frame is based on the facing of the unit.
     */
-    shapenum = (BodyShape[facing] + 2) / 4 & 0x07;
+    shapenum = ((BodyShape[facing] + 2) / 4) & 0x07;
 
     /*
     **	If the unit is driving, then it has an animation adjustment to the frame
     *number.
     */
     if (IsDriving) {
-      shapenum = static_cast<int>(8 + shapenum * 8 + (Frame + ID) / 2 % 8);
+      shapenum = static_cast<int>(8 + (shapenum * 8) + ((Frame + ID) / 2 % 8));
     } else {
       /*
       **	If in combat, then do combat anims.
       */
       if (Arm.HasTimeLeft()) {
-        shapenum = static_cast<int>(8 + 64 + shapenum * 4 + (Frame + ID) / 2 % 4);
+        shapenum =
+            static_cast<int>(8 + 64 + (shapenum * 4) + ((Frame + ID) / 2 % 4));
       }
     }
   } else {
@@ -1934,7 +1935,7 @@ int UnitClass::Shape_Number() const {
       }
       shapenum =
           32 +
-          (BodyShape[facing] + 2) / 4 * UnitTypeClass::Harvester_Load_Count +
+          ((BodyShape[facing] + 2) / 4 * UnitTypeClass::Harvester_Load_Count) +
           UnitTypeClass::Harvester_Load_List[stage];
     } else {
       /*
@@ -1946,7 +1947,7 @@ int UnitClass::Shape_Number() const {
           if (stage >= 8) {
             stage = 7;
           }
-          shapenum = 32 + stage + BodyShape[facing] / 4 * 8;
+          shapenum = 32 + stage + (BodyShape[facing] / 4 * 8);
         } else {
           if (stage >= std::ssize(UnitTypeClass::Harvester_Dump_List)) {
             stage = std::ssize(UnitTypeClass::Harvester_Dump_List) - 1;
@@ -2062,7 +2063,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
         Class->Turret_Adjust(PrimaryFacing, x2, y2);
         Techno_Draw_Object(shapefile, shapenum, x2, y2, window);
       } else {
-        shapenum = static_cast<int>(32 + Frame % 32);
+        shapenum = static_cast<int>(32 + (Frame % 32));
         if (*this == UNIT_TESLATANK) {
           Techno_Draw_Object(shapefile, shapenum, x, y, window);
         } else {
@@ -4674,7 +4675,7 @@ void UnitClass::Write_INI(CCINIClass& ini) {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 int UnitClass::Credit_Load() const {
-  return Gold * Rule.GoldValue + Gems * Rule.GemValue;
+  return (Gold * Rule.GoldValue) + (Gems * Rule.GemValue);
 }
 
 /***********************************************************************************************

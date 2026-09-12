@@ -435,9 +435,9 @@ void OptionsClass::Adjust_Palette(void* oldpal, void* newpal,
       memcpy(&static_cast<char*>(newpal)[static_cast<base::ssize>(index) * 3],
              &static_cast<char*>(oldpal)[static_cast<base::ssize>(index) * 3], 3);
     } else {
-      r = static_cast<unsigned char*>(oldpal)[index * 3 + 0];
-      g = static_cast<unsigned char*>(oldpal)[index * 3 + 1];
-      b = static_cast<unsigned char*>(oldpal)[index * 3 + 2];
+      r = static_cast<unsigned char*>(oldpal)[(index * 3) + 0];
+      g = static_cast<unsigned char*>(oldpal)[(index * 3) + 1];
+      b = static_cast<unsigned char*>(oldpal)[(index * 3) + 2];
       Convert_RGB_To_HSV(r, g, b, &h, &s, &v);
 
       /*
@@ -449,7 +449,8 @@ void OptionsClass::Adjust_Palette(void* oldpal, void* newpal,
       temp = v * brightness / 0x80;  // Brightness
       temp = Bound(temp, 0, 0xFF);
       v = temp;
-      temp = (static_cast<int>(v) - 0x80) * contrast / 0x80 + 0x80;  // Contrast
+      temp =
+          ((static_cast<int>(v) - 0x80) * contrast / 0x80) + 0x80;  // Contrast
       temp = Bound(temp, 0, 0xFF);
       v = temp;
       temp = s * color / 0x80;  // Color
@@ -459,9 +460,9 @@ void OptionsClass::Adjust_Palette(void* oldpal, void* newpal,
       temp = Bound(temp, 0, 0xFF);
       h = temp;
       Convert_HSV_To_RGB(h, s, v, &r, &g, &b);
-      static_cast<char*>(newpal)[index * 3 + 0] = static_cast<char>(r);
-      static_cast<char*>(newpal)[index * 3 + 1] = static_cast<char>(g);
-      static_cast<char*>(newpal)[index * 3 + 2] = static_cast<char>(b);
+      static_cast<char*>(newpal)[(index * 3) + 0] = static_cast<char>(r);
+      static_cast<char*>(newpal)[(index * 3) + 1] = static_cast<char>(g);
+      static_cast<char*>(newpal)[(index * 3) + 2] = static_cast<char>(b);
     }
   }
 }

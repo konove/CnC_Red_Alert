@@ -277,7 +277,7 @@ void WOL_GameSetupDialog::Initialize() {
   d_disc_h = 337 - d_disc_y;
 
   d_playerlist_w = 248;
-  d_playerlist_h = d_text_h * 4 + 4;
+  d_playerlist_h = (d_text_h * 4) + 4;
   d_playerlist_x = d_dialog_x + d_margin1;
   d_playerlist_y = 75;  // d_dialog_y + d_margin1 + d_txt6_h + 6 + 36;
 
@@ -318,7 +318,7 @@ void WOL_GameSetupDialog::Initialize() {
   d_aiplayers_y = d_credits_y + d_credits_h;
 
   d_options_w = config::kIsGerman ? 186 : 180;
-  d_options_h = ((6 * 6) + 4) * 2 + 1;
+  d_options_h = (((6 * 6) + 4) * 2) + 1;
   d_options_x = d_dialog_x + d_dialog_w - d_options_w - d_margin1;
   d_options_y = 127 - d_txt6_h + 2;
 
@@ -415,7 +415,7 @@ void WOL_GameSetupDialog::Initialize() {
       new TextButtonClass(BUTTON_CANCEL, TXT_WOL_CANCELGAME, kTpfButton,
                           d_cancel_x, d_cancel_y, d_cancel_w);
   pTTipCancel = new ToolTipClass(pTextBtnCancel, TXT_WOL_TTIP_CANCELGAME,
-                                 d_cancel_x + d_cancel_w / 2, d_cancel_y - 6);
+                                 d_cancel_x + (d_cancel_w / 2), d_cancel_y - 6);
 
   if (bHost) {
     pTextBtnAcceptStart =
@@ -423,14 +423,14 @@ void WOL_GameSetupDialog::Initialize() {
                             d_accept_x, d_accept_y, d_accept_w);
     pTTipAcceptStart =
         new ToolTipClass(pTextBtnAcceptStart, TXT_WOL_TTIP_START,
-                         d_accept_x + d_accept_w / 2, d_accept_y - 6);
+                         d_accept_x + (d_accept_w / 2), d_accept_y - 6);
   } else {
     pTextBtnAcceptStart =
         new TextButtonClass(BUTTON_ACCEPTSTART, TXT_WOL_ACCEPTBUTTON,
                             kTpfButton, d_accept_x, d_accept_y, d_accept_w);
     pTTipAcceptStart =
         new ToolTipClass(pTextBtnAcceptStart, TXT_WOL_TTIP_ACCEPT,
-                         d_accept_x + d_accept_w / 2, d_accept_y - 6);
+                         d_accept_x + (d_accept_w / 2), d_accept_y - 6);
   }
 
   pTextBtnAction =
@@ -438,7 +438,7 @@ void WOL_GameSetupDialog::Initialize() {
                           d_action_y, d_action_w);
   pTTipAction =
       new ToolTipClass(pTextBtnAction, TXT_WOL_TTIP_ACTION,
-                       d_action_x + d_action_w / 2, d_action_y - 6, true);
+                       d_action_x + (d_action_w / 2), d_action_y - 6, true);
 
   pToolTip = pToolTip->next;
   pToolTip->next = pTTipCancel;
@@ -509,7 +509,7 @@ void WOL_GameSetupDialog::Initialize() {
       (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::RAGAME &&
        Is_Aftermath_Installed() && !pWO->GameInfoCurrent.bTournament)) {
     //	Place user tab in the third tab position. (It may still not be present.)
-    iScenarioUserTabPos = d_scenariolist_x + TABSPACING * 2;
+    iScenarioUserTabPos = d_scenariolist_x + (TABSPACING * 2);
   } else {
     iScenarioUserTabPos = d_scenariolist_x + TABSPACING;
   }
@@ -1030,7 +1030,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             //					d_house_x + (d_house_w / 2),
             d_house_x + ((d_house_w + 16) / 2), d_house_y - d_txt6_h, scheme,
             TBLACK, TPF_CENTER | kTpfText);
-        Fancy_Text_Print(TXT_COLOR_COLON, d_color_x + d_color_w * 4,
+        Fancy_Text_Print(TXT_COLOR_COLON, d_color_x + (d_color_w * 4),
                          d_color_y - d_txt6_h, scheme, TBLACK,
                          TPF_CENTER | kTpfText);
 
@@ -1063,21 +1063,21 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         int iGameInfoSecondColumnX = 0;  // 170;
         //	Game kind.
         Fancy_Text_Print(szGameKind, d_gamekind_x,
-                         d_gamekind_y - iGameInfoSpacingY * 1, scheme, TBLACK,
+                         d_gamekind_y - (iGameInfoSpacingY * 1), scheme, TBLACK,
                          TPF_TYPE);
         //	Game kind icon.
         if (pIcon != nullptr) {
           DrawDib(*pIcon, d_gamekind_x - 16,
-                  d_gamekind_y - iGameInfoSpacingY * 1 - 2, 100, WINDOW_MAIN);
+                  d_gamekind_y - (iGameInfoSpacingY * 1) - 2, 100, WINDOW_MAIN);
         }
         //	"Tournament."
         if (pWO->GameInfoCurrent.bTournament) {
           Fancy_Text_Print(
               TXT_WOL_CG_TOURNAMENT, d_gamekind_x + iGameInfoSecondColumnX,
-              d_gamekind_y + iGameInfoSpacingY * 1, scheme, TBLACK, TPF_TYPE);
+              d_gamekind_y + (iGameInfoSpacingY * 1), scheme, TBLACK, TPF_TYPE);
           DrawDibIfLoaded(pWO->DibIconInfos[DIBICON_TOURNAMENT],
                           d_gamekind_x + iGameInfoSecondColumnX - 16,
-                          d_gamekind_y + iGameInfoSpacingY * 1 - 2, 100,
+                          d_gamekind_y + (iGameInfoSpacingY * 1) - 2, 100,
                           WINDOW_MAIN);
         }
         //	"Password: ..."
@@ -1088,10 +1088,10 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                               pWO->GameInfoCurrent.szPassword);
           Fancy_Text_Print(
               szPrivatePassword, d_gamekind_x + iGameInfoSecondColumnX,
-              d_gamekind_y + iGameInfoSpacingY * 2, scheme, TBLACK, TPF_TYPE);
+              d_gamekind_y + (iGameInfoSpacingY * 2), scheme, TBLACK, TPF_TYPE);
           DrawDibIfLoaded(pWO->DibIconInfos[DIBICON_PRIVATE],
                           d_gamekind_x + iGameInfoSecondColumnX - 16,
-                          d_gamekind_y + iGameInfoSpacingY * 2 - 2, 100,
+                          d_gamekind_y + (iGameInfoSpacingY * 2) - 2, 100,
                           WINDOW_MAIN);
         }
         //	"Scenario:" - scenario name is drawn separately.
@@ -3411,7 +3411,7 @@ void WOL_GameSetupDialog::HostSaysGo() {
   // haphazardly at the end of setup, 	without causing "unacceptedness". This
   // means that the colors everyone thinks everyone else is might not 	be
   // sync'ed. Host sets everyone straight here.
-  char szSend[(WOL_NAME_LEN_MAX + 10) * 4 + 50] = "";
+  char szSend[((WOL_NAME_LEN_MAX + 10) * 4) + 50] = "";
   sprintf(szSend, "%02i", WOL_GAMEOPT_INFGO);
 
   User* pUser = pWO->pChatSink->pGameUserList;

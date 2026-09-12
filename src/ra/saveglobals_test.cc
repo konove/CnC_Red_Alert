@@ -117,7 +117,8 @@ TEST(SaveGlobalsTest, PlayerRecordPreservesNameAddressAndPlayerFields) {
   GlobalsPipe pipe;
   ArchiveWriter writer(pipe);
   writer(player);
-  EXPECT_EQ(pipe.bytes.size(), sizeof(player.Name) + 10 + 4 * sizeof(int32_t));
+  EXPECT_EQ(pipe.bytes.size(),
+            sizeof(player.Name) + 10 + (4 * sizeof(int32_t)));
 
   NodeNameType loaded{};
   ASSERT_TRUE(ReadValue(loaded, pipe.bytes));

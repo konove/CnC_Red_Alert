@@ -1156,7 +1156,7 @@ static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
   //	than 5 commands, so I know I have a measure of the response time.
   //------------------------------------------------------------------------
   if (my_sent > 5) {
-    net->Set_Timing(resp_time + 10, -1, resp_time * 4 + 15);
+    net->Set_Timing(resp_time + 10, -1, (resp_time * 4) + 15);
 
     //.....................................................................
     // If I'm the network "master", I'm also responsible for updating the
@@ -1170,7 +1170,7 @@ static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
       //..................................................................
       if (CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
         ev.Data.FrameInfo.Delay = static_cast<unsigned char>(
-            std::max((resp_time / 8 + (FrameSendRate - 1)) / FrameSendRate *
+            std::max(((resp_time / 8) + (FrameSendRate - 1)) / FrameSendRate *
                          FrameSendRate,
                      FrameSendRate * 2));
         char flip[128];
@@ -1310,7 +1310,7 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
   // to just over one round-trip time, the 'maxretries' to -1, and the
   // connection timeout to allow for about 4 retries.
   //
-  net->Set_Timing(resp_time + 10, -1, resp_time * 4 + 15);
+  net->Set_Timing(resp_time + 10, -1, (resp_time * 4) + 15);
 }
 
 /***************************************************************************
@@ -1349,7 +1349,7 @@ static void Generate_Process_Time_Event(ConnManClass* net) {
   // to just over one round-trip time, the 'maxretries' to -1, and the
   // connection timeout to allow for about 4 retries.
   //
-  net->Set_Timing(resp_time + 10, -1, resp_time * 4 + 15);
+  net->Set_Timing(resp_time + 10, -1, (resp_time * 4) + 15);
 
   if (IsMono) {
     MonoClass::Enable();
@@ -1488,7 +1488,7 @@ static int Send_Packets(ConnManClass* net, char* multi_packet_buf,
   //........................................................................
   // Make sure we don't send so many events that our DoList fills up
   //........................................................................
-  cap = std::min(cap, MAX_EVENTS * 8 - DoList.Count);
+  cap = std::min(cap, (MAX_EVENTS * 8) - DoList.Count);
 
   /*
   ** No cap for internet game
@@ -3148,7 +3148,7 @@ static int Execute_DoList(int, HousesType, ConnManClass* net,
 #ifndef DEMO
         else if (DoList[j].Type == EventClass::FRAMEINFO) {
           if (DoList[j].Frame == Frame && DoList[j].Data.FrameInfo.Delay < 32) {
-            index = DoList[j].Frame - DoList[j].Data.FrameInfo.Delay & 0x001f;
+            index = (DoList[j].Frame - DoList[j].Data.FrameInfo.Delay) & 0x001f;
             if (CRC[index] != DoList[j].Data.FrameInfo.CRC) {
               Print_CRCs(&DoList[j]);
               if (CCMessageBox().Process(TXT_OUT_OF_SYNC, TXT_CONTINUE,
@@ -4160,12 +4160,12 @@ static void Print_Framesync_Values(long curframe, unsigned long max_ahead,
     Mono_Printf("%d", max_ahead);
 
     for (i = 0; i < num_connections; i++) {
-      Mono_Set_Cursor(35 + i * 5, 11);
+      Mono_Set_Cursor(35 + (i * 5), 11);
       Mono_Printf("%4d", static_cast<int>(their_recv[i]));
     }
 
     for (i = 0; i < num_connections; i++) {
-      Mono_Set_Cursor(35 + i * 5, 12);
+      Mono_Set_Cursor(35 + (i * 5), 12);
       Mono_Printf("%4d", static_cast<int>(their_sent[i]));
     }
 

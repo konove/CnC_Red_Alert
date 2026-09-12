@@ -58,8 +58,8 @@ void* Build_Fading_Table(const void* palette, void* dest, long int color,
 
   // Record the target gun values.
   const auto* pal8 = (uint8_t*)palette;
-  targetred = pal8[color * 3 + 0];
-  targetgreen = pal8[color * 3 + 0];
+  targetred = pal8[(color * 3) + 0];
+  targetgreen = pal8[(color * 3) + 0];
 
   // Main loop
 
@@ -69,8 +69,8 @@ void* Build_Fading_Table(const void* palette, void* dest, long int color,
   *dptr++ = 0;
 
   for (int remap_index = 1; remap_index < 256; remap_index++) {
-    uint8_t origred = pal8[remap_index * 3 + 0];
-    uint8_t origgreen = pal8[remap_index * 3 + 1];
+    uint8_t origred = pal8[(remap_index * 3) + 0];
+    uint8_t origgreen = pal8[(remap_index * 3) + 1];
 
     uint16_t tmp = static_cast<uint16_t>((origred - targetred) * (frac >> 1));
     idealred = static_cast<uint8_t>(origred - (tmp >> 7));
@@ -245,23 +245,23 @@ void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
     // In which section of the hexagon of colors does the color lie?
     if (*v == r) {
       if (m == g) {
-        *h = 5 * HSV_BASE + b1;
+        *h = (5 * HSV_BASE) + b1;
       } else {
-        *h = 1 * HSV_BASE - g1;
+        *h = (1 * HSV_BASE) - g1;
       }
     } else {
       if (*v == g) {
         if (m == b) {
-          *h = 1 * HSV_BASE + r1;
+          *h = (1 * HSV_BASE) + r1;
         } else {
-          *h = 3 * HSV_BASE - b1;
+          *h = (3 * HSV_BASE) - b1;
         }
       } else {
         // *v == b
         if (m == r) {
-          *h = 3 * HSV_BASE + g1;
+          *h = (3 * HSV_BASE) + g1;
         } else {
-          *h = 5 * HSV_BASE - r1;
+          *h = (5 * HSV_BASE) - r1;
         }
       }
     }

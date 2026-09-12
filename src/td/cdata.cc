@@ -1300,7 +1300,7 @@ TemplateType TemplateTypeClass::From_Name(const char* name) {
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
 const short* TemplateTypeClass::Occupy_List(bool) const {
-  static short _occupy[13 * 8 + 5];
+  static short _occupy[(13 * 8) + 5];
   unsigned char map[13 * 8];
   short* ptr;
   int index;
@@ -1310,7 +1310,8 @@ const short* TemplateTypeClass::Occupy_List(bool) const {
   ptr = &_occupy[0];
   for (index = 0; index < Width * Height; index++) {
     if (map[index] != 0xFF) {
-      *ptr++ = static_cast<short>(index % Width + index / Width * MAP_CELL_W);
+      *ptr++ =
+          static_cast<short>((index % Width) + (index / Width * MAP_CELL_W));
     }
   }
   *ptr = REFRESH_EOL;

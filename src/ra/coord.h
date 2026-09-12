@@ -52,7 +52,7 @@ constexpr uint32_t Cardinal_To_Fixed(const uint32_t base,
 
 constexpr uint32_t Fixed_To_Cardinal(const uint32_t base,
                                      const uint32_t fixed) {
-  const uint32_t ret = base * fixed + 0x80;
+  const uint32_t ret = (base * fixed) + 0x80;
   if (ret > 0x00FFFFFF) {
     return 0xFFFF;
   }
@@ -70,7 +70,7 @@ constexpr uint32_t Rescale(const uint32_t value, const uint32_t old_base,
   // Use uint64_t for intermediate product to prevent 32-bit overflow.
   // This is critical for maintainability and correctness.
   const uint64_t intermediate = static_cast<uint64_t>(value) * new_base;
-  const uint64_t rounded = (intermediate + old_base / 2) / old_base;
+  const uint64_t rounded = (intermediate + (old_base / 2)) / old_base;
 
   // Cast back to uint32_t, ensuring we don't exceed the original sentinel
   // range.

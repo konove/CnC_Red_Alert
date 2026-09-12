@@ -127,7 +127,7 @@ void DriveClass::Do_Turn(DirType dir) {
         face = Dir_Facing(PrimaryFacing);
 
         IsOnShortTrack = true;
-        Force_Track(face * FACING_COUNT + (face + facediff), Coord);
+        Force_Track((face * FACING_COUNT) + (face + facediff), Coord);
 
         Path[0] = FACING_NONE;
         Set_Speed(0xFF);  // Full speed.
@@ -687,7 +687,7 @@ bool DriveClass::While_Moving() {
           const TurnTrackType* newtrack;  // Proposed jump-to track.
           int tnum;
 
-          tnum = Dir_Facing(track->Facing) * FACING_COUNT + nextface;
+          tnum = (Dir_Facing(track->Facing) * FACING_COUNT) + nextface;
           newtrack = &TrackControl[tnum];
           if (newtrack->Track && RawTracks[newtrack->Track - 1].Entry) {
             COORDINATE c = Head_To_Coord();
@@ -1123,7 +1123,7 @@ bool DriveClass::Start_Of_Move() {
     }
 
     IsOnShortTrack = false;
-    TrackNumber = facing * FACING_COUNT + nextface;
+    TrackNumber = (facing * FACING_COUNT) + nextface;
     if (TrackControl[TrackNumber].Track == 0) {
       Path[0] = FACING_NONE;
       TrackNumber = -1;
@@ -1586,7 +1586,7 @@ int DriveClass::Offload_Tiberium_Bail() {
       return UnitTypeClass::FULL_LOAD_CREDITS / UnitTypeClass::STEP_COUNT;
     }
     return UnitTypeClass::FULL_LOAD_CREDITS +
-           UnitTypeClass::FULL_LOAD_CREDITS / 3 / UnitTypeClass::STEP_COUNT;
+           (UnitTypeClass::FULL_LOAD_CREDITS / 3 / UnitTypeClass::STEP_COUNT);
   }
   return 0;
 }

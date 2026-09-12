@@ -131,8 +131,8 @@ TEST(WinBitsTest, SaveAndRestoreRoundTripsARectangle) {
   }
   ASSERT_TRUE(RestoreSurfaceRect(2, 1, 2, 3, saved, WINDOW_MAIN));
 
-  EXPECT_EQ(screen.Pixel(2, 1), 2 * 1 + 8 + 1);
-  EXPECT_EQ(screen.Pixel(3, 3), 3 * 8 + 3 + 1);
+  EXPECT_EQ(screen.Pixel(2, 1), (2 * 1) + 8 + 1);
+  EXPECT_EQ(screen.Pixel(3, 3), (3 * 8) + 3 + 1);
   EXPECT_EQ(screen.Pixel(4, 1), 8 + 4 + 1)
       << "the column beside it is untouched";
 }

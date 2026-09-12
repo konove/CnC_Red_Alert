@@ -133,7 +133,7 @@ void TabClass::Draw_It(bool complete) {
                      TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL);
     if (IsSidebarActive) {
     } else {
-      CC_Draw_Shape(TabShape, 0, width - EVA_WIDTH * 2, 0, WINDOW_MAIN,
+      CC_Draw_Shape(TabShape, 0, width - (EVA_WIDTH * 2), 0, WINDOW_MAIN,
                     SHAPE_NORMAL);
       Fancy_Text_Print(
           TXT_TAB_SIDEBAR, width - EVA_WIDTH, 0,

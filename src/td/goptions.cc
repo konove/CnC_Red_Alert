@@ -94,7 +94,7 @@ void GameOptionsClass::Adjust_Variables_For_Resolution() {
   ButtonY = 21 * factor;
   Border1Len = 72 * factor;
   Border2Len = 16 * factor;
-  ButtonResumeY = OptionHeight - 15 * factor;
+  ButtonResumeY = OptionHeight - (15 * factor);
 }
 /***********************************************************************************************
  * OptionsClass::Process -- Handles all the options graphic interface. *
@@ -161,8 +161,8 @@ void GameOptionsClass::Process() {
     }
 
     if (index < 5) {
-      y = (SeenBuff.Get_Height() - OptionHeight) / 2 + ButtonY +
-          (OButtonHeight + 2) * index;
+      y = ((SeenBuff.Get_Height() - OptionHeight) / 2) + ButtonY +
+          ((OButtonHeight + 2) * index);
     } else {
       y = OptionY + ButtonResumeY;
     }
@@ -189,7 +189,7 @@ void GameOptionsClass::Process() {
   GadgetClass* g = buttons;
   while (g) {
     g->Width = std::max(maxwidth, 90 * resfactor);
-    g->X = OptionX + (OptionWidth - g->Width) / 2;
+    g->X = OptionX + ((OptionWidth - g->Width) / 2);
     g = g->Get_Next();
   }
 #ifdef FRENCH
@@ -197,13 +197,13 @@ void GameOptionsClass::Process() {
 #else
   buttonsel[BUTTON_RESUME - 1]->Width = 90 * resfactor;
 #endif
-  buttonsel[BUTTON_RESUME - 1]->X = OptionX + 5 * resfactor;
+  buttonsel[BUTTON_RESUME - 1]->X = OptionX + (5 * resfactor);
 
   if (GameToPlay == GAME_NORMAL) {
     buttonsel[BUTTON_RESTATE - 1]->Width = 90 * resfactor;
     buttonsel[BUTTON_RESTATE - 1]->X =
         OptionX + OptionWidth -
-        (buttonsel[BUTTON_RESTATE - 1]->Width + 5 * resfactor);
+        (buttonsel[BUTTON_RESTATE - 1]->Width + (5 * resfactor));
   }
 
   /*
@@ -306,7 +306,7 @@ void GameOptionsClass::Process() {
           ((WindowList[WINDOW_EDITOR][WINDOWX] +
             WindowList[WINDOW_EDITOR][WINDOWWIDTH])
            << 3) -
-              3 * resfactor,
+              (3 * resfactor),
           WindowList[WINDOW_EDITOR][WINDOWY] +
               WindowList[WINDOW_EDITOR][WINDOWHEIGHT] -
               (GameToPlay == GAME_NORMAL ? 32 * resfactor : 24 * resfactor),
@@ -632,13 +632,14 @@ void Draw_Caption(int text, int x, int y, int w) {
   */
   if (text != TXT_NONE) {
     Fancy_Text_Print(
-        text, w / 2 + x, 5 * factor + y, CC_GREEN, TBLACK,
+        text, (w / 2) + x, (5 * factor) + y, CC_GREEN, TBLACK,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     int length = String_Pixel_Width(Text_String(text));
-    LogicPage->Draw_Line(x + w / 2 - length / 2,
-                         y + FontHeight + FontYSpacing + 5 * factor,
-                         x + w / 2 + length / 2,
-                         y + FontHeight + FontYSpacing + 5 * factor, CC_GREEN);
+    LogicPage->Draw_Line(x + (w / 2) - (length / 2),
+                         y + FontHeight + FontYSpacing + (5 * factor),
+                         x + (w / 2) + (length / 2),
+                         y + FontHeight + FontYSpacing + (5 * factor),
+                         CC_GREEN);
   }
 }

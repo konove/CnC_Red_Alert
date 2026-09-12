@@ -98,10 +98,12 @@ class FixedHeapClass {
   virtual int Free_All();
 
   void* operator[](int index) {
-    return static_cast<char*>(Buffer) + static_cast<base::ssize>(index) * Size;
+    return static_cast<char*>(Buffer) +
+           (static_cast<base::ssize>(index) * Size);
   }
   const void* operator[](int index) const {
-    return static_cast<char*>(Buffer) + static_cast<base::ssize>(index) * Size;
+    return static_cast<char*>(Buffer) +
+           (static_cast<base::ssize>(index) * Size);
   }
 
  protected:

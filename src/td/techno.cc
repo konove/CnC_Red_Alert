@@ -325,7 +325,7 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const {
   *delivered to *	an airfield.
   */
   if (What_Am_I() == RTTI_UNITTYPE && !(Ownable & HOUSEF_GOOD)) {
-    return cost - cost / 4;
+    return cost - (cost / 4);
   }
 
   return cost;
@@ -892,8 +892,8 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
       int pwidth;  // Pixel width of bar interior.
       int color;   // The color to give the interior of the bargraph.
 
-      int xx = x - width / 2;
-      int yy = y - height / 2;
+      int xx = x - (width / 2);
+      int yy = y - (height / 2);
 
       /*
       **	Draw the outline of the bargraph.
@@ -3871,7 +3871,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
         }
         object = object->Next;
       }
-      CC_Draw_Shape(ObjectTypeClass::PipShapes, pip, x + index * 3, y, window,
+      CC_Draw_Shape(ObjectTypeClass::PipShapes, pip, x + (index * 3), y, window,
                     SHAPE_CENTER | SHAPE_WIN_REL);
     }
 
@@ -3883,7 +3883,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
     int pips = Pip_Count();
     for (int index = 0; index < Class_Of().Max_Pips(); index++) {
       CC_Draw_Shape(ObjectTypeClass::PipShapes,
-                    index < pips ? PIP_FULL : PIP_EMPTY, x + index * 3, y,
+                    index < pips ? PIP_FULL : PIP_EMPTY, x + (index * 3), y,
                     window, SHAPE_CENTER | SHAPE_WIN_REL);
     }
   }

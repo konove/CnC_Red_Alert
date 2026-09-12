@@ -1140,7 +1140,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   Draw_Caption(TXT_NONE, x, y, width);
 
   if (lines == 1) {
-    Fancy_Text_Print(buffer, x + width / 2, y + 25,
+    Fancy_Text_Print(buffer, x + (width / 2), y + 25,
                      GadgetClass::Get_Color_Scheme(), TBLACK,
                      kTpfText | TPF_CENTER);
   } else {
@@ -1384,8 +1384,9 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   Dialog_Box(x, y, width, height);
   Draw_Caption(TXT_NONE, x, y, width);
 
-  Fancy_Text_Print(buffer.c_str(), SeenBuff.Get_Width() / 2 - text_width / 2,
-                   y + 50, GadgetClass::Get_Color_Scheme(), TBLACK, kTpfText);
+  Fancy_Text_Print(buffer.c_str(),
+                   (SeenBuff.Get_Width() / 2) - (text_width / 2), y + 50,
+                   GadgetClass::Get_Color_Scheme(), TBLACK, kTpfText);
 
   Commands->Draw_All();
   Show_Mouse();
@@ -1617,9 +1618,9 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         ...............................................................*/
         Draw_Caption(TXT_NONE, x, y, width);
 
-        Fancy_Text_Print(text_buffer, SeenBuff.Get_Width() / 2 - text_width / 2,
-                         y + 50, GadgetClass::Get_Color_Scheme(), TBLACK,
-                         kTpfText);
+        Fancy_Text_Print(text_buffer,
+                         (SeenBuff.Get_Width() / 2) - (text_width / 2), y + 50,
+                         GadgetClass::Get_Color_Scheme(), TBLACK, kTpfText);
 
         Commands->Draw_All();
       }

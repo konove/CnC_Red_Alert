@@ -601,16 +601,16 @@ void DisplayClass::Update_View_Dimensions(int x, int y, int width, int height,
   **	Adjust the tactical cell if it is now in an invalid position
   **	because of the changed dimensions.
   */
-  int xx = Coord_X(TacticalCoord) - MapCellX * CELL_LEPTON_W;
-  int yy = Coord_Y(TacticalCoord) - MapCellY * CELL_LEPTON_H;
+  int xx = Coord_X(TacticalCoord) - (MapCellX * CELL_LEPTON_W);
+  int yy = Coord_Y(TacticalCoord) - (MapCellY * CELL_LEPTON_H);
 
   Confine_Rect(&xx, &yy, TacLeptonWidth, TacLeptonHeight,
                MapCellWidth * CELL_LEPTON_W, MapCellHeight * CELL_LEPTON_H);
 
   if (reposition) {
     Set_Tactical_Position(
-        XY_Coord(static_cast<LEPTON>(xx + MapCellX * CELL_LEPTON_W),
-                 static_cast<LEPTON>(yy + MapCellY * CELL_LEPTON_H)));
+        XY_Coord(static_cast<LEPTON>(xx + (MapCellX * CELL_LEPTON_W)),
+                 static_cast<LEPTON>(yy + (MapCellY * CELL_LEPTON_H))));
   }
 
   TacPixelX = x;
@@ -667,7 +667,7 @@ void DisplayClass::Set_Cursor_Shape(const short* list) {
 
     CursorSize = _list;
     Get_Occupy_Dimensions(w, h, CursorSize);
-    ZoneOffset = static_cast<short>(-(h / 2 * MAP_CELL_W + w / 2));
+    ZoneOffset = static_cast<short>(-((h / 2 * MAP_CELL_W) + (w / 2)));
     Cursor_Mark(static_cast<CELL>(ZoneCell + ZoneOffset), true);
   } else {
     CursorSize = nullptr;
@@ -1595,14 +1595,14 @@ bool DisplayClass::Coord_To_Pixel(COORDINATE coord, int& x, int& y) const {
     int xoff = Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(coord)));
 
     xoff = xoff + EDGE_ZONE - xtac;
-    if (static_cast<unsigned>(xoff) <= TacLeptonWidth + EDGE_ZONE * 2) {
+    if (static_cast<unsigned>(xoff) <= TacLeptonWidth + (EDGE_ZONE * 2)) {
       int ytac = Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(TacticalCoord)));
       int yoff = Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(coord)));
 
       yoff = yoff + EDGE_ZONE - ytac;
-      if (static_cast<unsigned>(yoff) <= TacLeptonHeight + EDGE_ZONE * 2) {
-        x = Lepton_To_Pixel(static_cast<LEPTON>(xoff)) - CELL_PIXEL_W * 2;
-        y = Lepton_To_Pixel(static_cast<LEPTON>(yoff)) - CELL_PIXEL_H * 2;
+      if (static_cast<unsigned>(yoff) <= TacLeptonHeight + (EDGE_ZONE * 2)) {
+        x = Lepton_To_Pixel(static_cast<LEPTON>(xoff)) - (CELL_PIXEL_W * 2);
+        y = Lepton_To_Pixel(static_cast<LEPTON>(yoff)) - (CELL_PIXEL_H * 2);
         return true;
       }
     }
@@ -1754,7 +1754,7 @@ void DisplayClass::Draw_It(bool forced) {
       const int width = Lepton_To_Cell(TacLeptonWidth) + 1;
       const int first = Coord_Cell(TacticalCoord);
       for (int row = 0; row < rows; row++) {
-        const int start = first + row * MAP_CELL_W;
+        const int start = first + (row * MAP_CELL_W);
         for (int offset = 0; offset < width; offset++) {
           (*this)[static_cast<CELL>(start + offset)].Redraw_Objects();
         }
@@ -1861,10 +1861,10 @@ void DisplayClass::Draw_It(bool forced) {
           ** Flag the cells across the top of the visible area if required
           */
           if (redraw_top) {
-            for (y = starty; y <= starty + CELL_PIXEL_H * extra_y;
+            for (y = starty; y <= starty + (CELL_PIXEL_H * extra_y);
                  y += CELL_PIXEL_H) {
               for (x = startx;
-                   x <= Lepton_To_Pixel(TacLeptonWidth) + CELL_PIXEL_W * 2;
+                   x <= Lepton_To_Pixel(TacLeptonWidth) + (CELL_PIXEL_W * 2);
                    x += CELL_PIXEL_W) {
                 CELL c = Click_Cell_Calc(
                     Bound(x, 0, Lepton_To_Pixel(TacLeptonWidth) - 1) +
@@ -1884,11 +1884,11 @@ void DisplayClass::Draw_It(bool forced) {
           */
           if (redraw_bottom) {
             for (y = Lepton_To_Pixel(TacLeptonHeight) -
-                     CELL_PIXEL_H * (1 + extra_y);
-                 y <= Lepton_To_Pixel(TacLeptonHeight) + CELL_PIXEL_H * 3;
+                     (CELL_PIXEL_H * (1 + extra_y));
+                 y <= Lepton_To_Pixel(TacLeptonHeight) + (CELL_PIXEL_H * 3);
                  y += CELL_PIXEL_H) {
               for (x = startx;
-                   x <= Lepton_To_Pixel(TacLeptonWidth) + CELL_PIXEL_W * 2;
+                   x <= Lepton_To_Pixel(TacLeptonWidth) + (CELL_PIXEL_W * 2);
                    x += CELL_PIXEL_W) {
                 CELL c = Click_Cell_Calc(
                     Bound(x, 0, Lepton_To_Pixel(TacLeptonWidth) - 1) +
@@ -1907,10 +1907,10 @@ void DisplayClass::Draw_It(bool forced) {
           ** Flag the cells down the left of the visible area if required
           */
           if (redraw_left) {
-            for (x = startx; x <= startx + CELL_PIXEL_W * extra_x;
+            for (x = startx; x <= startx + (CELL_PIXEL_W * extra_x);
                  x += CELL_PIXEL_W) {
               for (y = starty;
-                   y <= Lepton_To_Pixel(TacLeptonHeight) + CELL_PIXEL_H * 2;
+                   y <= Lepton_To_Pixel(TacLeptonHeight) + (CELL_PIXEL_H * 2);
                    y += CELL_PIXEL_H) {
                 CELL c = Click_Cell_Calc(
                     Bound(x, 0, Lepton_To_Pixel(TacLeptonWidth) - 1) +
@@ -1930,11 +1930,11 @@ void DisplayClass::Draw_It(bool forced) {
           */
           if (redraw_right) {
             for (x = Lepton_To_Pixel(TacLeptonWidth) -
-                     CELL_PIXEL_W * (extra_x + 1);
-                 x <= Lepton_To_Pixel(TacLeptonWidth) + CELL_PIXEL_W * 3;
+                     (CELL_PIXEL_W * (extra_x + 1));
+                 x <= Lepton_To_Pixel(TacLeptonWidth) + (CELL_PIXEL_W * 3);
                  x += CELL_PIXEL_W) {
               for (y = starty;
-                   y <= Lepton_To_Pixel(TacLeptonHeight) + CELL_PIXEL_H * 2;
+                   y <= Lepton_To_Pixel(TacLeptonHeight) + (CELL_PIXEL_H * 2);
                    y += CELL_PIXEL_H) {
                 CELL c = Click_Cell_Calc(
                     Bound(x, 0, Lepton_To_Pixel(TacLeptonWidth) - 1) +
@@ -1961,10 +1961,10 @@ void DisplayClass::Draw_It(bool forced) {
           oldw -= 24;
           oldh -= 24;
           for (y = starty;
-               y <= Lepton_To_Pixel(TacLeptonHeight) + CELL_PIXEL_H * 2;
+               y <= Lepton_To_Pixel(TacLeptonHeight) + (CELL_PIXEL_H * 2);
                y += CELL_PIXEL_H) {
             for (x = startx;
-                 x <= Lepton_To_Pixel(TacLeptonWidth) + CELL_PIXEL_W * 2;
+                 x <= Lepton_To_Pixel(TacLeptonWidth) + (CELL_PIXEL_W * 2);
                  x += CELL_PIXEL_W) {
               if (x <= oldx || x >= oldx + oldw || y <= oldy ||
                   y >= oldy + oldh) {
@@ -2561,7 +2561,7 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, WAYPOINT waypoint, CELL cell,
 
     for (int index = 0; index < MapCellHeight; index++) {
       CELL trycell =
-          XY_Cell(x + MapCellX, (y + index) % MapCellHeight + MapCellY);
+          XY_Cell(x + MapCellX, ((y + index) % MapCellHeight) + MapCellY);
 
       if (Good_Reinforcement_Cell(trycell,
                                   static_cast<CELL>(trycell + modifier), loco,
@@ -2576,7 +2576,7 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, WAYPOINT waypoint, CELL cell,
 
     for (int index = 0; index < MapCellWidth; index++) {
       CELL trycell =
-          XY_Cell((x + index) % MapCellWidth + MapCellX, y + MapCellY);
+          XY_Cell(((x + index) % MapCellWidth) + MapCellX, y + MapCellY);
 
       if (Good_Reinforcement_Cell(trycell,
                                   static_cast<CELL>(trycell + modifier), loco,
@@ -3939,7 +3939,7 @@ void DisplayClass::Compute_Start_Pos() {
           XY_Cell(static_cast<int>(x), static_cast<int>(y));
 
   Map.Set_Tactical_Position(Coord_Whole(
-      Cell_Coord(static_cast<CELL>(Scen.Views[0] - MAP_CELL_W * 8 - 10))));
+      Cell_Coord(static_cast<CELL>(Scen.Views[0] - (MAP_CELL_W * 8) - 10))));
   //	Set_Tactical_Position(Cell_Coord(XY_Cell(x, y)));
 }
 
@@ -4162,10 +4162,10 @@ void DisplayClass::Center_Map(COORDINATE center) {
   }
 
   if (centerit) {
-    x = x - static_cast<int>(TacLeptonWidth) / 2;
+    x = x - (static_cast<int>(TacLeptonWidth) / 2);
     x = std::max<int>(x, Cell_To_Lepton(MapCellX));
 
-    y = y - static_cast<int>(TacLeptonHeight) / 2;
+    y = y - (static_cast<int>(TacLeptonHeight) / 2);
     y = std::max<int>(y, Cell_To_Lepton(MapCellY));
 
     Set_Tactical_Position(
@@ -4370,7 +4370,7 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   Scen.Views[0] = Scen.Views[1] = Scen.Views[2] = Scen.Views[3] =
       Scen.Waypoint[ScenarioClass::kHomeWaypoint];
   Set_Tactical_Position(Cell_Coord(static_cast<CELL>(
-      Scen.Waypoint[ScenarioClass::kHomeWaypoint] - MAP_CELL_W * 8 - 10)));
+      Scen.Waypoint[ScenarioClass::kHomeWaypoint] - (MAP_CELL_W * 8) - 10)));
 
   /*
   **	Loop through all CellTrigger entries.
@@ -4532,7 +4532,7 @@ void DisplayClass::Constrained_Look(COORDINATE center, LEPTON distance) {
       if (tech->House->IsPlayerControl) {
         if (tech->IsDiscoveredByPlayer &&
             Distance(tech->Center_Coord(), center) <=
-                tech->Techno_Type_Class()->SightRange * CELL_LEPTON_W +
+                (tech->Techno_Type_Class()->SightRange * CELL_LEPTON_W) +
                     distance) {
           object->Look();
         }
@@ -4540,7 +4540,7 @@ void DisplayClass::Constrained_Look(COORDINATE center, LEPTON distance) {
         if (tech->What_Am_I() == RTTI_BUILDING && Rule.IsAllyReveal &&
             tech->House->Is_Ally(PlayerPtr) &&
             Distance(tech->Center_Coord(), center) <=
-                tech->Techno_Type_Class()->SightRange * CELL_LEPTON_W +
+                (tech->Techno_Type_Class()->SightRange * CELL_LEPTON_W) +
                     distance) {
           tech->Look();
         }

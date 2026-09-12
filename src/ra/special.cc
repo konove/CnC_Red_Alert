@@ -141,7 +141,7 @@ void Special_Dialog(bool simple) {
 
   for (int index = 0; index < std::ssize(_options); index++) {
     _options[index].Button = new CheckBoxClass(100 + index, OPTION_X + 34,
-                                               OPTION_Y + 40 + index * 20);
+                                               OPTION_Y + 40 + (index * 20));
     if (_options[index].Button) {
       _options[index].Button->Add(*buttons);
 
@@ -385,7 +385,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   static char pbuffer[45];
   memset(pbuffer, '\0', sizeof(pbuffer));
   int editx = x + 52;
-  int editwidth = (SeenBuff.Get_Width() / 2 - editx) * 2;
+  int editwidth = ((SeenBuff.Get_Width() / 2) - editx) * 2;
   PWEditClass button2(2, &pbuffer[0], sizeof(pbuffer),
                       TPF_6PT_GRAD | TPF_NOSHADOW, editx, y + height - 70,
                       editwidth, 20);
@@ -488,8 +488,8 @@ const char* Fetch_Password(int caption, int message, int btext) {
 int Fetch_Difficulty(bool amath) {
   const int w = 500;
   const int h = 160;
-  const int x = 640 / 2 - w / 2;
-  const int y = 400 / 2 - h / 2;
+  const int x = (640 / 2) - (w / 2);
+  const int y = (400 / 2) - (h / 2);
   const int bwidth = 60;
 
   /*
@@ -569,7 +569,7 @@ int Fetch_Difficulty(bool amath) {
       Fancy_Text_Print(TXT_EASY, slider.X, slider.Y - 18,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_6PT_GRAD | TPF_DROPSHADOW);
-      Fancy_Text_Print(TXT_NORMAL, slider.X + slider.Width / 2, slider.Y - 18,
+      Fancy_Text_Print(TXT_NORMAL, slider.X + (slider.Width / 2), slider.Y - 18,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
 

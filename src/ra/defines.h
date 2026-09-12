@@ -57,7 +57,7 @@ inline constexpr uint32_t kParmInstall = 0xD95C68A2;   // "FROMINSTALL"
 **	Defines for verifying free disk space
 */
 inline constexpr int kInitFreeDiskSpace = 8388608;
-inline constexpr int kSaveGameDiskSpace = kInitFreeDiskSpace - 1024 * 4096;
+inline constexpr int kSaveGameDiskSpace = kInitFreeDiskSpace - (1024 * 4096);
 
 /**********************************************************************
 **	This is the complete list of VQs allowed to be played in the game.
@@ -338,9 +338,9 @@ inline constexpr int kRegionHeight = 4;
 // Region grid size: the map rounded up to whole regions, plus a one-region
 // border on every side.
 inline constexpr int kMapRegionWidth =
-    (MAP_CELL_W + kRegionWidth - 1) / kRegionWidth + 2;
+    ((MAP_CELL_W + kRegionWidth - 1) / kRegionWidth) + 2;
 inline constexpr int kMapRegionHeight =
-    (MAP_CELL_H + kRegionHeight - 1) / kRegionHeight + 2;
+    ((MAP_CELL_H + kRegionHeight - 1) / kRegionHeight) + 2;
 inline constexpr int kMapTotalRegions = kMapRegionWidth * kMapRegionHeight;
 
 /**********************************************************************

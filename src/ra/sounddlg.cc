@@ -112,7 +112,7 @@ void SoundControlsClass::Process() {
   int listbox_x = LISTBOX_X * 2;
   int listbox_y = LISTBOX_Y * 2;
   int listbox_w = LISTBOX_W * 2;
-  int listbox_h = LISTBOX_H * 2 + 2;
+  int listbox_h = (LISTBOX_H * 2) + 2;
 
   int button_width = BUTTON_WIDTH * 2;
   int button_x = BUTTON_X * 2;

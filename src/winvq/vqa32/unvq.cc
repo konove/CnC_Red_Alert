@@ -82,9 +82,9 @@ void UnVQ_4x4(const unsigned char* codebook, const unsigned char* pointers,
         port::WriteUnaligned(dst_ptr, col32);  // Write 1st row to dest
         port::WriteUnaligned(dst_ptr + bufwidth,
                              col32);  // Write 2nd row to dest
-        port::WriteUnaligned(dst_ptr + bufwidth * 2,
+        port::WriteUnaligned(dst_ptr + (bufwidth * 2),
                              col32);  // Write 3rd row to dest
-        port::WriteUnaligned(dst_ptr + bufwidth * 3,
+        port::WriteUnaligned(dst_ptr + (bufwidth * 3),
                              col32);  // Write 4th row to dest
       } else {
         // Draw multi-color block
@@ -101,9 +101,9 @@ void UnVQ_4x4(const unsigned char* codebook, const unsigned char* pointers,
         port::WriteUnaligned(dst_ptr, row1);  // Write 1st row to dest
         port::WriteUnaligned(dst_ptr + bufwidth,
                              row2);  // Write 2nd row to dest
-        port::WriteUnaligned(dst_ptr + bufwidth * 2,
+        port::WriteUnaligned(dst_ptr + (bufwidth * 2),
                              row3);  // Write 3rt row to dest
-        port::WriteUnaligned(dst_ptr + bufwidth * 3,
+        port::WriteUnaligned(dst_ptr + (bufwidth * 3),
                              row4);  // Write 4th row to dest
       }
 

@@ -318,8 +318,8 @@ void Slide_Show(int slide, int frame) {
     for (int index = 0; index < 256; index++) {
       if (PaletteLUT[index]) {
         ComboPalPtr[static_cast<base::ssize>(index) * 3] = SlidePals[slide][static_cast<base::ssize>(index) * 3];
-        ComboPalPtr[index * 3 + 1] = SlidePals[slide][index * 3 + 1];
-        ComboPalPtr[index * 3 + 2] = SlidePals[slide][index * 3 + 2];
+        ComboPalPtr[(index * 3) + 1] = SlidePals[slide][(index * 3) + 1];
+        ComboPalPtr[(index * 3) + 2] = SlidePals[slide][(index * 3) + 2];
       }
     }
     return;
@@ -362,8 +362,8 @@ void Slide_Show(int slide, int frame) {
       for (int index = 0; index < 256; index++) {
         if (PaletteLUT[index]) {
           ccpalptr[static_cast<base::ssize>(index) * 3] = 0;
-          ccpalptr[index * 3 + 1] = 0;
-          ccpalptr[index * 3 + 2] = 0;
+          ccpalptr[(index * 3) + 1] = 0;
+          ccpalptr[(index * 3) + 2] = 0;
         }
       }
       Set_Pal((char*)&CCPalette);
@@ -558,7 +558,7 @@ void Show_Who_Was_Responsible() {
         /*
         ** Create the new class and add it to our list.
         */
-        ego = new EgoClass(x, y + line * 16, strstart, flags);
+        ego = new EgoClass(x, y + (line * 16), strstart, flags);
 
         if (!EgoList.Add(ego)) {
           delete ego;
@@ -634,8 +634,8 @@ void Show_Who_Was_Responsible() {
   for (int index = 0; index < 256; index++) {
     if (PaletteLUT[index]) {
       ComboPalPtr[static_cast<base::ssize>(index) * 3] = 0;
-      ComboPalPtr[index * 3 + 1] = 0;
-      ComboPalPtr[index * 3 + 2] = 0;
+      ComboPalPtr[(index * 3) + 1] = 0;
+      ComboPalPtr[(index * 3) + 2] = 0;
     }
   }
 

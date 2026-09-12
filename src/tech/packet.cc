@@ -146,7 +146,7 @@ PacketClass::PacketClass(char* curbuf) {
     //
     // Make sure we allow for the pad bytes.
     //
-    int pad = 4 - (ntohs(field->Size) & 3) & 3;
+    int pad = (4 - (ntohs(field->Size) & 3)) & 3;
     curbuf += pad;
     remaining_size -= pad;
 
@@ -194,7 +194,8 @@ char* PacketClass::Create_Comms_Packet(int& size) {
     size += static_cast<unsigned short>(
         FIELD_HEADER_SIZE);      // add in packet header size
     size += current->Size;       // add in data size
-    size += 4 - (size & 3) & 3;  // add in pad value to dword align next packet
+    size +=
+        (4 - (size & 3)) & 3;  // add in pad value to dword align next packet
   }
 
   //
@@ -238,7 +239,7 @@ char* PacketClass::Create_Comms_Packet(int& size) {
     //
     // Finally take care of any pad bytes by setting them to 0
     //
-    int pad = 4 - (ntohs(current->Size) & 3) & 3;
+    int pad = (4 - (ntohs(current->Size) & 3)) & 3;
 
     //
     //	If there is any pad left over, make sure you memset it

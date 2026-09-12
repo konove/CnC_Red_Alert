@@ -134,12 +134,13 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     /*
     **	Build the button list.
     */
-    bheight = FontHeight + FontYSpacing + 2 * factor;
-    bwidth = std::max<int>(String_Pixel_Width(b1txt) + 8 * factor, 30 * factor);
+    bheight = FontHeight + FontYSpacing + (2 * factor);
+    bwidth =
+        std::max<int>(String_Pixel_Width(b1txt) + (8 * factor), 30 * factor);
 
     if (b2txt) {
       numbuttons = 2;
-      bwidth = std::max<int>(String_Pixel_Width(b2txt) + 8 * factor, bwidth);
+      bwidth = std::max<int>(String_Pixel_Width(b2txt) + (8 * factor), bwidth);
 
       if (b3txt) {
         numbuttons = 3;
@@ -194,16 +195,16 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   TextButtonClass button1(
       BUTTON_1, b1txt, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       x + (numbuttons == 1 ? (width - bwidth) >> 1 : 10 * factor),
-      y + height - (bheight + 5 * factor), bwidth);
+      y + height - (bheight + (5 * factor)), bwidth);
 
   TextButtonClass button2(BUTTON_2, b2txt,
                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                          x + width - (bwidth + 10 * factor),
-                          y + height - (bheight + 5 * factor), bwidth);
+                          x + width - (bwidth + (10 * factor)),
+                          y + height - (bheight + (5 * factor)), bwidth);
 
   TextButtonClass button3(BUTTON_3, b3txt,
                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, 0,
-                          y + height - (bheight + 5 * factor));
+                          y + height - (bheight + (5 * factor)));
   button3.X = x + ((width - button3.Width) >> 1);
 
   TextButtonClass* buttonlist = nullptr;
@@ -253,8 +254,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     /*
     **	Draw the caption.
     */
-    Fancy_Text_Print(buffer, x + 20 * factor, y + 25 * factor, CC_GREEN, TBLACK,
-                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+    Fancy_Text_Print(buffer, x + (20 * factor), y + (25 * factor), CC_GREEN,
+                     TBLACK, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 #ifdef JAPANESE
   }
 #endif
@@ -301,8 +302,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           /*
           **	Draw the caption.
           */
-          Fancy_Text_Print(buffer, x + 20 * factor, y + 25 * factor, CC_GREEN,
-                           TBLACK,
+          Fancy_Text_Print(buffer, x + (20 * factor), y + (25 * factor),
+                           CC_GREEN, TBLACK,
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 #ifdef JAPANESE
         }

@@ -1664,8 +1664,8 @@ void UnitTypeClass::Dimensions(int& width, int& height) const {
     width = 46;
     height = 18;
   } else {
-    width = MaxSize - MaxSize / 4;
-    height = MaxSize - MaxSize / 4;
+    width = MaxSize - (MaxSize / 4);
+    height = MaxSize - (MaxSize / 4);
   }
 }
 

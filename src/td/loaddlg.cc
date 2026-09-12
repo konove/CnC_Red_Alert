@@ -141,14 +141,14 @@ int LoadOptionsClass::Process() {
   int d_txt8_h = 11 * factor;
   int d_margin = 7 * factor;
 
-  int d_list_w = d_dialog_w - d_margin * 2;
+  int d_list_w = d_dialog_w - (d_margin * 2);
   int d_list_h = 104 * factor;
   int d_list_x = d_dialog_x + d_margin;
   int d_list_y = d_dialog_y + d_margin + d_txt8_h + d_margin;
 
-  int d_edit_w = d_dialog_w - d_margin * 2;
+  int d_edit_w = d_dialog_w - (d_margin * 2);
   int d_edit_x = d_dialog_x + d_margin;
-  int d_edit_y = d_list_y + d_list_h - 30 * factor + d_margin + d_txt8_h;
+  int d_edit_y = d_list_y + d_list_h - (30 * factor) + d_margin + d_txt8_h;
 
 #ifdef german
   int d_button_w = 50 * factor;

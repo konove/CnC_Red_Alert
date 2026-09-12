@@ -274,8 +274,9 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
             raw_string = s2;
             current_string = s1;
             if (raw_string++ && current_string++) {
-              memcpy(current_string + static_cast<base::ssize>(position) * (COMPAT_MESSAGE_LENGTH -
-                                                  5) /*+from_adjust*/,
+              memcpy(current_string +
+                         (static_cast<base::ssize>(position) *
+                          (COMPAT_MESSAGE_LENGTH - 5)) /*+from_adjust*/,
                      raw_string, COMPAT_MESSAGE_LENGTH - 4);
               /*
               ** Flag this string segment as complete
@@ -404,20 +405,20 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
         if (raw_string++) {
           for (j = 0; j < 3; j++) {
             if (!(magic_number - j == MESSAGE_HEAD_MAGIC_NUMBER)) {
-              memset(
-                  dest_str + static_cast<base::ssize>(j) * (COMPAT_MESSAGE_LENGTH - 4) /*+from_adjust*/,
-                  32, COMPAT_MESSAGE_LENGTH - 4);
+              memset(dest_str + (static_cast<base::ssize>(j) *
+                                 (COMPAT_MESSAGE_LENGTH - 4)) /*+from_adjust*/,
+                     32, COMPAT_MESSAGE_LENGTH - 4);
             } else {
               // This whole segment needs to be rewritten. Impossible to guess
               // safe length.
               // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
-              strcpy(
-                  dest_str + static_cast<base::ssize>(j) * (COMPAT_MESSAGE_LENGTH - 4) /*+from_adjust*/,
-                  raw_string);
+              strcpy(dest_str + (static_cast<base::ssize>(j) *
+                                 (COMPAT_MESSAGE_LENGTH - 4)) /*+from_adjust*/,
+                     raw_string);
             }
           }
           *(dest_str +
-            ((COMPAT_MESSAGE_LENGTH - 4) * MAX_MESSAGE_SEGMENTS - 1)) = 0;
+            (((COMPAT_MESSAGE_LENGTH - 4) * MAX_MESSAGE_SEGMENTS) - 1)) = 0;
         }
         position = magic_number - MESSAGE_HEAD_MAGIC_NUMBER;
         txtlabel->Segments = static_cast<char>(1 << position);

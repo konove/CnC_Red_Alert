@@ -80,8 +80,8 @@ static const short _List001011100110[] = {2,
                                           MAP_CELL_W,
                                           MAP_CELL_W + 1,
                                           MAP_CELL_W + 2,
-                                          MAP_CELL_W * 2 + 1,
-                                          MAP_CELL_W * 2 + 2,
+                                          (MAP_CELL_W * 2) + 1,
+                                          (MAP_CELL_W * 2) + 2,
                                           kRefreshEol};
 static const short _List0010[] = {MAP_CELL_W, kRefreshEol};
 static const short _List0011[] = {MAP_CELL_W, MAP_CELL_W + 1, kRefreshEol};
@@ -94,7 +94,7 @@ static const short _List1010[] = {0, MAP_CELL_W, kRefreshEol};
 static const short _List101001[] = {0, 2, MAP_CELL_W + 2, kRefreshEol};
 static const short _List10[] = {0, kRefreshEol};
 static const short _List110000011001[] = {
-    0, 1, MAP_CELL_W + 3, MAP_CELL_W * 2, MAP_CELL_W * 2 + 3, kRefreshEol};
+    0, 1, MAP_CELL_W + 3, MAP_CELL_W * 2, (MAP_CELL_W * 2) + 3, kRefreshEol};
 static const short _List110001[] = {0, 1, MAP_CELL_W + 2, kRefreshEol};
 static const short _List1100[] = {0, 1, kRefreshEol};
 static const short _List110110[] = {0, 1, MAP_CELL_W, MAP_CELL_W + 1,
@@ -102,9 +102,13 @@ static const short _List110110[] = {0, 1, MAP_CELL_W, MAP_CELL_W + 1,
 static const short _List1101[] = {0, 1, MAP_CELL_W + 1, kRefreshEol};
 static const short _List1111[] = {0, 1, MAP_CELL_W, MAP_CELL_W + 1,
                                   kRefreshEol};
-static const short _List111000010110[] = {
-    0,          1, 2, MAP_CELL_W + 3, MAP_CELL_W * 2 + 1, MAP_CELL_W * 2 + 2,
-    kRefreshEol};
+static const short _List111000010110[] = {0,
+                                          1,
+                                          2,
+                                          MAP_CELL_W + 3,
+                                          (MAP_CELL_W * 2) + 1,
+                                          (MAP_CELL_W * 2) + 2,
+                                          kRefreshEol};
 
 static const TerrainTypeClass Mine(
     TERRAIN_MINE, kTheaterFlagTemperate | kTheaterFlagSnow,

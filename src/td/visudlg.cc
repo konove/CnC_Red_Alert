@@ -126,7 +126,7 @@ void VisualControlsClass::Process() {
   **	Brightness (value) control.
   */
   SliderClass brightness(BUTTON_BRIGHTNESS, slider_x,
-                         slider_y + slider_y_spacing * 0, slider_width,
+                         slider_y + (slider_y_spacing * 0), slider_width,
                          slider_height);
   brightness.Set_Thumb_Size(40);
   brightness.Set_Value(Options.Get_Brightness());
@@ -135,7 +135,7 @@ void VisualControlsClass::Process() {
   /*
   **	Color (saturation) control.
   */
-  SliderClass color(BUTTON_COLOR, slider_x, slider_y + slider_y_spacing * 1,
+  SliderClass color(BUTTON_COLOR, slider_x, slider_y + (slider_y_spacing * 1),
                     slider_width, slider_height);
   color.Set_Thumb_Size(40);
   color.Set_Value(Options.Get_Color());
@@ -145,7 +145,7 @@ void VisualControlsClass::Process() {
   **	Contrast control.
   */
   SliderClass contrast(BUTTON_CONTRAST, slider_x,
-                       slider_y + slider_y_spacing * 2, slider_width,
+                       slider_y + (slider_y_spacing * 2), slider_width,
                        slider_height);
   contrast.Set_Thumb_Size(40);
   contrast.Set_Value(Options.Get_Contrast());
@@ -154,7 +154,7 @@ void VisualControlsClass::Process() {
   /*
   **	Tint (hue) control.
   */
-  SliderClass tint(BUTTON_TINT, slider_x, slider_y + slider_y_spacing * 3,
+  SliderClass tint(BUTTON_TINT, slider_x, slider_y + (slider_y_spacing * 3),
                    slider_width, slider_height);
   tint.Set_Thumb_Size(40);
   tint.Set_Value(Options.Get_Tint());
@@ -244,7 +244,7 @@ void VisualControlsClass::Process() {
       */
       for (int i = 0; i < std::ssize(_titles); i++) {
         Fancy_Text_Print(
-            _titles[i], slider_x - 16, text_y + i * slider_y_spacing,
+            _titles[i], slider_x - 16, text_y + (i * slider_y_spacing),
             CC_GREEN, TBLACK,
             TPF_6PT_GRAD | TPF_RIGHT | TPF_NOSHADOW |
                 (curbutton == i ? TPF_BRIGHT_COLOR : TPF_USE_GRAD_PAL));

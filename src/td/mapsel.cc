@@ -856,8 +856,8 @@ void Map_Selection() {
   TextPrintBuffer->Fill_Rect(xcoord * 2, 0, 2 * (xcoord + 6 * 16 + 10), 16,
                              BLACK);
 #else
-  PseudoSeenBuff->Fill_Rect(xcoord, 0, xcoord + 6 * 16, 8, BLACK);
-  TextPrintBuffer->Fill_Rect(2 * xcoord, 0, 2 * (xcoord + 6 * 16), 16, BLACK);
+  PseudoSeenBuff->Fill_Rect(xcoord, 0, xcoord + (6 * 16), 8, BLACK);
+  TextPrintBuffer->Fill_Rect(2 * xcoord, 0, 2 * (xcoord + (6 * 16)), 16, BLACK);
 #endif
 
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
@@ -886,8 +886,9 @@ void Map_Selection() {
   TextPrintBuffer->Fill_Rect(2 * xcoord, 24, 2 * (xcoord + 6 * 16 + 10), 40,
                              BLACK);
 #else
-  PseudoSeenBuff->Fill_Rect(xcoord, 12, xcoord + 6 * 16, 20, BLACK);
-  TextPrintBuffer->Fill_Rect(2 * xcoord, 24, 2 * (xcoord + 6 * 16), 40, BLACK);
+  PseudoSeenBuff->Fill_Rect(xcoord, 12, xcoord + (6 * 16), 20, BLACK);
+  TextPrintBuffer->Fill_Rect(2 * xcoord, 24, 2 * (xcoord + (6 * 16)), 40,
+                             BLACK);
 #endif
 
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
@@ -1122,10 +1123,10 @@ void Map_Selection() {
 
     Hide_Mouse();
     // erase "Select country to attack"
-    PseudoSeenBuff->Fill_Rect(attackxcoord, 160, attackxcoord + 17 * 6, 178,
+    PseudoSeenBuff->Fill_Rect(attackxcoord, 160, attackxcoord + (17 * 6), 178,
                               BLACK);
     TextPrintBuffer->Fill_Rect(2 * attackxcoord, 320,
-                               2 * (attackxcoord + 17 * 6), 2 * 178, BLACK);
+                               2 * (attackxcoord + (17 * 6)), 2 * 178, BLACK);
 #if (GERMAN | FRENCH)
     PseudoSeenBuff->Fill_Rect(attackxcoord + (17 * 6), 160,
                               attackxcoord + (21 * 6), 178, BLACK);
@@ -1184,10 +1185,10 @@ void Map_Selection() {
     TextPrintBuffer->Fill_Rect(2 * attackxcoord, 320, 639, 356,
                                BLACK);  // erase "Select country to attack"
 #else
-    PseudoSeenBuff->Fill_Rect(attackxcoord, 160, attackxcoord + 17 * 6, 199,
+    PseudoSeenBuff->Fill_Rect(attackxcoord, 160, attackxcoord + (17 * 6), 199,
                               BLACK);  // erase "Select country to attack"
     TextPrintBuffer->Fill_Rect(2 * attackxcoord, 320,
-                               2 * (attackxcoord + 17 * 6), 398,
+                               2 * (attackxcoord + (17 * 6)), 398,
                                BLACK);  // erase "Select country to attack"
 #endif
     Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
@@ -1286,7 +1287,8 @@ void Print_Statistics(int country, int xpos, int ypos) {
       Alloc_Object(
           new ScorePrintClass(_gdistatnames[index], xpos, ypos, _greenpal));
       Call_Back_Delay(static_cast<int>(strlen(Text_String(_gdistatnames[index] + 3))));
-      newx = xpos + 6 * static_cast<int>(strlen(Text_String(_gdistatnames[index])));
+      newx = xpos +
+             (6 * static_cast<int>(strlen(Text_String(_gdistatnames[index]))));
       switch (index) {
         case 0:
           Alloc_Object(new ScorePrintClass(GDIStats[country].pop, newx, ypos,
@@ -1338,7 +1340,8 @@ void Print_Statistics(int country, int xpos, int ypos) {
       Alloc_Object(
           new ScorePrintClass(_nodstatnames[index], xpos, ypos, _greenpal));
       Call_Back_Delay(static_cast<int>(strlen(Text_String(_nodstatnames[index] + 3))));
-      newx = xpos + 6 * static_cast<int>(strlen(Text_String(_nodstatnames[index])));
+      newx = xpos +
+             (6 * static_cast<int>(strlen(Text_String(_nodstatnames[index]))));
       switch (index) {
         case 0:
           Alloc_Object(new ScorePrintClass(NodStats[country].pop, newx, ypos,
@@ -1390,7 +1393,7 @@ void Print_Statistics(int country, int xpos, int ypos) {
   Alloc_Object(new ScorePrintClass(TXT_MAP_CLICK2, 94, 193 - 6, _greenpal));
 #else
   Alloc_Object(
-      new ScorePrintClass(TXT_MAP_CLICK2, 160 - 17 * 3, 193 - 6, _greenpal));
+      new ScorePrintClass(TXT_MAP_CLICK2, 160 - (17 * 3), 193 - 6, _greenpal));
 #endif
 
   int done = 0;
@@ -1530,18 +1533,18 @@ void Cycle_Call_Back_Delay(int time, unsigned char* pal) {
     _counter = ++_counter & 3;
 
     if (!(_counter & 3)) {
-      r = pal[249 * 3 + 0];
-      g = pal[249 * 3 + 1];
-      b = pal[249 * 3 + 2];
+      r = pal[(249 * 3) + 0];
+      g = pal[(249 * 3) + 1];
+      b = pal[(249 * 3) + 2];
 
       for (i = 249; i < 254; i++) {
-        pal[i * 3 + 0] = pal[(i + 1) * 3 + 0];
-        pal[i * 3 + 1] = pal[(i + 1) * 3 + 1];
-        pal[i * 3 + 2] = pal[(i + 1) * 3 + 2];
+        pal[(i * 3) + 0] = pal[((i + 1) * 3) + 0];
+        pal[(i * 3) + 1] = pal[((i + 1) * 3) + 1];
+        pal[(i * 3) + 2] = pal[((i + 1) * 3) + 2];
       }
-      pal[254 * 3 + 0] = r;
-      pal[254 * 3 + 1] = g;
-      pal[254 * 3 + 2] = b;
+      pal[(254 * 3) + 0] = r;
+      pal[(254 * 3) + 1] = g;
+      pal[(254 * 3) + 2] = b;
 
       Set_Palette(pal);
     }

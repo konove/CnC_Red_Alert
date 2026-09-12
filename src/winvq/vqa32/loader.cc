@@ -1032,17 +1032,17 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
 
   /* Set maximum codebook size. */
   vqa->Max_CB_Size =
-      header->CBentries * header->BlockWidth * header->BlockHeight + 250 &
+      ((header->CBentries * header->BlockWidth * header->BlockHeight) + 250) &
       0xFFFC;
 
   /* Set maximum palette size. */
-  vqa->Max_Pal_Size = 768 + 1024 & 0xFFFC;
+  vqa->Max_Pal_Size = (768 + 1024) & 0xFFFC;
 
   /* Set maximum vector pointers size. */
   vqa->Max_Ptr_Size =
-      static_cast<long>(header->ImageWidth / header->BlockWidth) *
-              (header->ImageHeight / header->BlockHeight) * sizeof(short) +
-          1024 &
+      ((static_cast<long>(header->ImageWidth / header->BlockWidth) *
+        (header->ImageHeight / header->BlockHeight) * sizeof(short)) +
+       1024) &
       0xFFFC;
 
   /* Set the frame number of the frame containing the last codebook. */
@@ -1181,7 +1181,7 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
        * 1.5 seconds of audio data.
        */
       auto i =
-          (audio->BytesPerSec + audio->BytesPerSec / 2) / config->HMIBufSize;
+          (audio->BytesPerSec + (audio->BytesPerSec / 2)) / config->HMIBufSize;
       config->AudioBufSize = config->HMIBufSize * i;
     }
 
@@ -1209,7 +1209,7 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
       vqa->MemUsed += audio->NumAudBlocks * sizeof(short);
 
       /* Allocate temporary staging buffer for the audio frames. */
-      audio->TempBufSize = audio->BytesPerSec / header->FPS * 2 + 100;
+      audio->TempBufSize = (audio->BytesPerSec / header->FPS * 2) + 100;
       audio->TempBufStorage.resize(audio->TempBufSize);
       audio->TempBuf = audio->TempBufStorage.data();
 
@@ -1726,7 +1726,7 @@ static long Load_CBPZ(VQAHandle* vqap, unsigned long iffsize) {
    */
   if (loader->PartialCBSize == 0) {
     curcb->CBOffset =
-        vqabuf->Max_CB_Size - (padsize * vqap->header.Groupsize + 100);
+        vqabuf->Max_CB_Size - ((padsize * vqap->header.Groupsize) + 100);
   }
 
   /*-------------------------------------------------------------------------

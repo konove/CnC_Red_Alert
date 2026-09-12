@@ -121,9 +121,9 @@ int Distance(const COORDINATE coord1, const COORDINATE coord2) {
   }
 
   if (diff1 > diff2) {
-    return diff1 + static_cast<unsigned>(diff2) / 2;
+    return diff1 + (static_cast<unsigned>(diff2) / 2);
   }
-  return diff2 + static_cast<unsigned>(diff1) / 2;
+  return diff2 + (static_cast<unsigned>(diff1) / 2);
 }
 
 int Distance(const TARGET target1, const TARGET target2) {
@@ -155,19 +155,19 @@ const short* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
   // Objects larger than 2 tiles use a prebuilt 5x5 cell region.
   if (maxsize > ICON_PIXEL_W * 2) {
     static constexpr short _gigundo[] = {
-        -(2 * MAP_CELL_W - 2), -(2 * MAP_CELL_W - 1),
-        -(2 * MAP_CELL_W),     -(2 * MAP_CELL_W + 1),
-        -(2 * MAP_CELL_W + 2), -(1 * MAP_CELL_W - 2),
-        -(1 * MAP_CELL_W - 1), -(1 * MAP_CELL_W),
-        -(1 * MAP_CELL_W + 1), -(1 * MAP_CELL_W + 2),
-        -(0 * MAP_CELL_W - 2), -(0 * MAP_CELL_W - 1),
-        -(0 * MAP_CELL_W),     -(0 * MAP_CELL_W + 1),
-        -(0 * MAP_CELL_W + 2), (1 * MAP_CELL_W - 2),
-        (1 * MAP_CELL_W - 1),  (1 * MAP_CELL_W),
-        (1 * MAP_CELL_W + 1),  (1 * MAP_CELL_W + 2),
-        +(2 * MAP_CELL_W - 2), +(2 * MAP_CELL_W - 1),
-        +(2 * MAP_CELL_W),     +(2 * MAP_CELL_W + 1),
-        +(2 * MAP_CELL_W + 2), kRefreshEol};
+        -((2 * MAP_CELL_W) - 2), -((2 * MAP_CELL_W) - 1),
+        -(2 * MAP_CELL_W),       -((2 * MAP_CELL_W) + 1),
+        -((2 * MAP_CELL_W) + 2), -((1 * MAP_CELL_W) - 2),
+        -((1 * MAP_CELL_W) - 1), -(1 * MAP_CELL_W),
+        -((1 * MAP_CELL_W) + 1), -((1 * MAP_CELL_W) + 2),
+        -((0 * MAP_CELL_W) - 2), -((0 * MAP_CELL_W) - 1),
+        -(0 * MAP_CELL_W),       -((0 * MAP_CELL_W) + 1),
+        -((0 * MAP_CELL_W) + 2), (1 * MAP_CELL_W - 2),
+        (1 * MAP_CELL_W - 1),    (1 * MAP_CELL_W),
+        (1 * MAP_CELL_W + 1),    (1 * MAP_CELL_W + 2),
+        +((2 * MAP_CELL_W) - 2), +((2 * MAP_CELL_W) - 1),
+        +(2 * MAP_CELL_W),       +((2 * MAP_CELL_W) + 1),
+        +((2 * MAP_CELL_W) + 2), kRefreshEol};
     return &_gigundo[0];
   }
 

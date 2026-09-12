@@ -1948,8 +1948,9 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
             break;
         }
 
-        CC_Draw_Shape(UnitTypeClass::WakeShapes, shapestart + Fetch_Stage() % 6,
-                      xx - 1, yy + 3, window, SHAPE_CENTER | SHAPE_WIN_REL);
+        CC_Draw_Shape(UnitTypeClass::WakeShapes,
+                      shapestart + (Fetch_Stage() % 6), xx - 1, yy + 3, window,
+                      SHAPE_CENTER | SHAPE_WIN_REL);
 
         if (Health_Ratio() < 0x0080) {
           shapenum += 32;
@@ -1974,7 +1975,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
       if (IsHarvesting && !PrimaryFacing.Is_Rotating() && !NavCom &&
           !IsDriving) {
         static char _hstage[6] = {0, 1, 2, 3, 2, 1};
-        shapenum = 32 + (BodyShape[facing] + 2) / 4 * 4 +
+        shapenum = 32 + ((BodyShape[facing] + 2) / 4 * 4) +
                    _hstage[Fetch_Stage() % sizeof(_hstage)];
       } else {
         shapenum = BodyShape[facing];
@@ -1987,12 +1988,12 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
             shapenum = BodyShape[24 + facing];
           }
           if (IsDriving) {
-            shapenum = Fetch_Stage() + 16 + shapenum * 8;
+            shapenum = Fetch_Stage() + 16 + (shapenum * 8);
           }
           if (IsFiring) {
-            shapenum =
-                Fetch_Stage() + 80 +
-                shapenum * (*this == UNIT_TREX || *this == UNIT_RAPT ? 8 : 12);
+            shapenum = Fetch_Stage() + 80 +
+                       (shapenum *
+                        (*this == UNIT_TREX || *this == UNIT_RAPT ? 8 : 12));
           }
         } else {
           /*
@@ -2035,7 +2036,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
     **	If there is a rotating radar dish, draw it now.
     */
     if (Class->IsRadarEquipped) {
-      shapenum = static_cast<int>(32 + Frame % 32);
+      shapenum = static_cast<int>(32 + (Frame % 32));
       Techno_Draw_Object(shapefile, shapenum, x, y - 5, window);
     }
 
@@ -2251,7 +2252,7 @@ bool UnitClass::Harvesting() {
     **	is a partial level, then lift that instead. Never lift more
     **	than the harvester can carry.
     */
-    int reducer = ptr->OverlayData % 6 + 1;
+    int reducer = (ptr->OverlayData % 6) + 1;
     reducer = ptr->Reduce_Tiberium(
         std::min(reducer, UnitTypeClass::STEP_COUNT - Tiberium));
     Tiberium += reducer;

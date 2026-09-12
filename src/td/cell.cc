@@ -999,8 +999,8 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
               if (Waypoint[i] == Cell_Number()) {
                 waypt[0] = static_cast<char>('A' + i);
                 waypt[1] = 0;
-                Fancy_Text_Print(waypt, Map.TacPixelX + x + CELL_PIXEL_W / 2,
-                                 Map.TacPixelY + y + CELL_PIXEL_H / 2 - 3,
+                Fancy_Text_Print(waypt, Map.TacPixelX + x + (CELL_PIXEL_W / 2),
+                                 Map.TacPixelY + y + (CELL_PIXEL_H / 2) - 3,
                                  YELLOW, TBLACK,
                                  TPF_NOSHADOW | TPF_6POINT | TPF_CENTER);
                 break;
@@ -1054,9 +1054,11 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
                 tptr = (TemplateTypeClass*)Map.PendingObject;
                 if (tptr->Get_Image_Data()) {
                   icon =
-                      Cell_X(cell) - Cell_X(static_cast<CELL>(Map.ZoneCell + Map.ZoneOffset)) +
-                      (Cell_Y(cell) - Cell_Y(static_cast<CELL>(Map.ZoneCell + Map.ZoneOffset))) *
-                          tptr->Width;
+                      Cell_X(cell) -
+                      Cell_X(static_cast<CELL>(Map.ZoneCell + Map.ZoneOffset)) +
+                      ((Cell_Y(cell) - Cell_Y(static_cast<CELL>(
+                                           Map.ZoneCell + Map.ZoneOffset))) *
+                       tptr->Width);
                   LogicPage->Draw_Stamp(tptr->Get_Image_Data(), icon, x, y,
                                         nullptr, WINDOW_TACTICAL);
                 }
@@ -1091,9 +1093,9 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
       if (IsFlagged) {
         const void* remap =
             HouseClass::As_Pointer(Owner)->Remap_Table(false, false);
-        CC_Draw_Shape(MFCD::Retrieve("FLAGFLY.SHP"), static_cast<int>(Frame % 14),
-                      x + ICON_PIXEL_W / 2, y + ICON_PIXEL_H / 2,
-                      WINDOW_TACTICAL,
+        CC_Draw_Shape(MFCD::Retrieve("FLAGFLY.SHP"),
+                      static_cast<int>(Frame % 14), x + (ICON_PIXEL_W / 2),
+                      y + (ICON_PIXEL_H / 2), WINDOW_TACTICAL,
                       SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING, remap,
                       MouseClass::UnitShadow);
       }
@@ -1937,7 +1939,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
 
         while (what == -1) {
           what = _what[Random_Pick(
-              0, static_cast<int>(sizeof(_what) / sizeof(_what[0]) - 1))];
+              0, static_cast<int>((sizeof(_what) / sizeof(_what[0])) - 1))];
 
           if (what == REVEAL && object->House->IsVisionary) {
             what = -1;
@@ -1989,7 +1991,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
             HouseClass::As_Pointer(object->Owner())->Refund_Money(2000);
           } else {
             HouseClass::As_Pointer(object->Owner())
-                ->Refund_Money(100 + Random_Pick(0, 19) * 100);
+                ->Refund_Money(100 + (Random_Pick(0, 19) * 100));
           }
           break;
 
@@ -2094,7 +2096,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
                 INFANTRY_E4, INFANTRY_E5, INFANTRY_E7, INFANTRY_RAMBO};
             InfantryTypeClass::As_Reference(
                 _inf[Random_Pick(
-                    0, static_cast<int>(sizeof(_inf) / sizeof(_inf[0]) - 1))])
+                    0, static_cast<int>((sizeof(_inf) / sizeof(_inf[0])) - 1))])
                 .Create_And_Place(Cell_Number(), object->Owner());
           }
           return false;

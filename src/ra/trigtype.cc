@@ -397,9 +397,8 @@ bool TriggerTypeClass::Edit() {
       sprintf(way1data.Get_Text(), "%c",
               static_cast<int>(Event1.Data.Value) + 'A');
     } else {
-      sprintf(way1data.Get_Text(), "%c%c",
-              Event1.Data.Value / 26 + 'A' - 1,
-              Event1.Data.Value % 26 + 'A');
+      sprintf(way1data.Get_Text(), "%c%c", (Event1.Data.Value / 26) + 'A' - 1,
+              (Event1.Data.Value % 26) + 'A');
     }
   }
 
@@ -411,9 +410,8 @@ bool TriggerTypeClass::Edit() {
       sprintf(way2data.Get_Text(), "%c",
               static_cast<int>(Event2.Data.Value) + 'A');
     } else {
-      sprintf(way2data.Get_Text(), "%c%c",
-              Event2.Data.Value / 26 + 'A' - 1,
-              Event2.Data.Value % 26 + 'A');
+      sprintf(way2data.Get_Text(), "%c%c", (Event2.Data.Value / 26) + 'A' - 1,
+              (Event2.Data.Value % 26) + 'A');
     }
   }
 
@@ -1775,9 +1773,8 @@ const char* TriggerTypeClass::Description() const {
         if (Event1.Data.Value < 26) {
           sprintf(tbuf, "'%c'", static_cast<int>(Event1.Data.Value) + 'A');
         } else {
-          sprintf(tbuf, "'%c%c'",
-                  Event1.Data.Value / 26 + 'A' - 1,
-                  Event1.Data.Value % 26 + 'A');
+          sprintf(tbuf, "'%c%c'", (Event1.Data.Value / 26) + 'A' - 1,
+                  (Event1.Data.Value % 26) + 'A');
         }
         added = tbuf;
         break;

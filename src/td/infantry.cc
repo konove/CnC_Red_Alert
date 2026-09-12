@@ -1460,7 +1460,7 @@ void InfantryClass::AI() {
       Mark(MARK_UP);
       if (Distance(Head_To_Coord()) < 0x0010) {
         memmove(&Path[0], &Path[1], sizeof(Path) - sizeof(Path[0]));
-        Path[sizeof(Path) / sizeof(Path[0]) - 1] = FACING_NONE;
+        Path[(sizeof(Path) / sizeof(Path[0])) - 1] = FACING_NONE;
         Coord = Head_To_Coord();
         Stop_Driver();
         Per_Cell_Process(true);

@@ -299,7 +299,7 @@ class WOL_GameSetupDialog {
 
   bool bRequestedScenarioDownload = false;
 
-  char szTriggerGameStartInfo[(WOL_NAME_LEN_MAX + 10) * 4 + 60]{};
+  char szTriggerGameStartInfo[((WOL_NAME_LEN_MAX + 10) * 4) + 60]{};
 
   //	Tooltips...
   DWORD timeToolTipAppear = 0;

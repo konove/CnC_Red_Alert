@@ -1211,9 +1211,9 @@ UnitTypeClass& UnitTypeClass::As_Reference(UnitType type) {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 void UnitTypeClass::Dimensions(int& width, int& height) const {
-  width = MaxSize - MaxSize / 4;
+  width = MaxSize - (MaxSize / 4);
   width = std::min(width, 48);
-  height = MaxSize - MaxSize / 4;
+  height = MaxSize - (MaxSize / 4);
   height = std::min(height, 48);
 }
 

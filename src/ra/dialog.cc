@@ -114,7 +114,7 @@ void Dialog_Box(int x, int y, int w, int h) {
   shapedata = MFCD::Retrieve("DD-EDGE.SHP");
   for (int yy = 0; yy < h; yy += 6) {
     CC_Draw_Shape(shapedata, 0, 14, yy, WINDOW_PARTIAL, SHAPE_WIN_REL);
-    CC_Draw_Shape(shapedata, 1, w - (7 + 8) * 2, yy, WINDOW_PARTIAL,
+    CC_Draw_Shape(shapedata, 1, w - ((7 + 8) * 2), yy, WINDOW_PARTIAL,
                   SHAPE_WIN_REL);
   }
 
@@ -567,7 +567,7 @@ void Simple_Text_Print(const char* text, int x, int y,
     **	dialog system.
     */
     case TPF_LIGHTSHADOW:
-      fontpalette[2] = 14 * 16 + 7 + 1;
+      fontpalette[2] = (14 * 16) + 7 + 1;
       fontpalette[3] = static_cast<unsigned char>(back);
       xspace -= 1;
       break;
@@ -836,7 +836,7 @@ void Conquer_Clip_Text_Print(const char* text, int x, int y,
           }
           offset = *tabs;
         } else {
-          offset = (offset + 1 / 50 + 1) * 50;
+          offset = (offset + (1 / 50) + 1) * 50;
         }
         source = ptr + 1;
       } else {
@@ -973,16 +973,17 @@ void Draw_Caption(const char* text, int x, int y, int w) {
   */
   if (text != nullptr && *text != '\0') {
     if (MapEditorActive) {
-      Fancy_Text_Print(text, w / 2 + x, 4 + y, GadgetClass::Get_Color_Scheme(),
-                       TBLACK,
+      Fancy_Text_Print(text, (w / 2) + x, 4 + y,
+                       GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_CENTER | TPF_EFNT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
     } else {
-      Fancy_Text_Print(text, w / 2 + x, 16 + y, GadgetClass::Get_Color_Scheme(),
-                       TBLACK, TPF_CENTER | kTpfText);
+      Fancy_Text_Print(text, (w / 2) + x, 16 + y,
+                       GadgetClass::Get_Color_Scheme(), TBLACK,
+                       TPF_CENTER | kTpfText);
       int length = String_Pixel_Width(text);
       LogicPage->Draw_Line(
-          x + w / 2 - length / 2, y + FontHeight + FontYSpacing + 16,
-          x + w / 2 + length / 2, y + FontHeight + FontYSpacing + 16,
+          x + (w / 2) - (length / 2), y + FontHeight + FontYSpacing + 16,
+          x + (w / 2) + (length / 2), y + FontHeight + FontYSpacing + 16,
           GadgetClass::Get_Color_Scheme()->Box);
     }
   }

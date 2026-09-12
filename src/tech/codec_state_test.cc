@@ -157,9 +157,9 @@ TEST(CodecStateTest, ModularMultiplicationMatchesIndependentRemainder) {
   ASSERT_EQ(XMP_Prepare_Modulus(modulus.data(), kPrecision), 0);
   uint64_t seed = 17;
   for (int trial = 0; trial < 256; ++trial) {
-    seed = (seed * 1664525 + 1013904223) % kModulus;
+    seed = ((seed * 1664525) + 1013904223) % kModulus;
     const uint64_t a = seed;
-    seed = (seed * 1664525 + 1013904223) % kModulus;
+    seed = ((seed * 1664525) + 1013904223) % kModulus;
     const uint64_t b = seed;
     const std::array<uint32_t, kPrecision> left = {
         static_cast<uint32_t>(a), static_cast<uint32_t>(a >> 32), 0};

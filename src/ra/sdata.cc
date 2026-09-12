@@ -319,7 +319,7 @@ const short* SmudgeTypeClass::Occupy_List(bool) const {
 
   for (int x = 0; x < Width; x++) {
     for (int y = 0; y < Height; y++) {
-      *ptr++ = static_cast<short>(x + y * MAP_CELL_W);
+      *ptr++ = static_cast<short>(x + (y * MAP_CELL_W));
     }
   }
   *ptr = kRefreshEol;
@@ -380,8 +380,8 @@ void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
   if (ptr != nullptr) {
     for (int w = 0; w < Width; w++) {
       for (int h = 0; h < Height; h++) {
-        CC_Draw_Shape(ptr, w + (h * Width), x + w * ICON_PIXEL_W,
-                      y + h * ICON_PIXEL_H, WINDOW_TACTICAL, SHAPE_WIN_REL);
+        CC_Draw_Shape(ptr, w + (h * Width), x + (w * ICON_PIXEL_W),
+                      y + (h * ICON_PIXEL_H), WINDOW_TACTICAL, SHAPE_WIN_REL);
       }
     }
   }

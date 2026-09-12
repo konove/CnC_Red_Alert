@@ -698,8 +698,8 @@ bool DriveClass::While_Moving() {
           const TurnTrackType* newtrack;  // Proposed jump-to track.
           int tnum;
 
-          tnum = Dir_Facing(track->Facing) *
-                     static_cast<int>(magic_enum::enum_count<FacingType>()) +
+          tnum = (Dir_Facing(track->Facing) *
+                  static_cast<int>(magic_enum::enum_count<FacingType>())) +
                  static_cast<int>(nextface);
           newtrack = &TrackControl[tnum];
           if (newtrack->Track && RawTracks[newtrack->Track - 1].Entry) {
@@ -1148,7 +1148,7 @@ bool DriveClass::Start_Of_Move() {
 
     IsOnShortTrack = false;
     TrackNumber =
-        facing * static_cast<int>(magic_enum::enum_count<FacingType>()) +
+        (facing * static_cast<int>(magic_enum::enum_count<FacingType>())) +
         static_cast<int>(nextface);
     if (TrackControl[TrackNumber].Track == 0) {
       Path[0] = FACING_NONE;

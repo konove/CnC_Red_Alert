@@ -226,17 +226,17 @@ int MapEditClass::Select_Team(const char* caption) {
 
     D_NEW_W = 90,
     D_NEW_H = 18,
-    D_NEW_X = D_DIALOG_X + (D_DIALOG_W / 8) * 3 - (D_NEW_W / 2),
+    D_NEW_X = D_DIALOG_X + ((D_DIALOG_W / 8) * 3) - (D_NEW_W / 2),
     D_NEW_Y = D_DIALOG_Y + D_DIALOG_H - D_MARGIN - D_NEW_H,
 
     D_DELETE_W = 90,
     D_DELETE_H = 18,
-    D_DELETE_X = D_DIALOG_X + (D_DIALOG_W / 8) * 5 - (D_DELETE_W / 2),
+    D_DELETE_X = D_DIALOG_X + ((D_DIALOG_W / 8) * 5) - (D_DELETE_W / 2),
     D_DELETE_Y = D_DIALOG_Y + D_DIALOG_H - D_MARGIN - D_DELETE_H,
 
     D_OK_W = 90,
     D_OK_H = 18,
-    D_OK_X = D_DIALOG_X + (D_DIALOG_W / 8) * 7 - (D_OK_W / 2),
+    D_OK_X = D_DIALOG_X + ((D_DIALOG_W / 8) * 7) - (D_OK_W / 2),
     D_OK_Y = D_DIALOG_Y + D_DIALOG_H - D_MARGIN - D_OK_H,
 
     TEAMTXT_LEN = 43,  // max length of a team entry
@@ -593,7 +593,7 @@ int MapEditClass::Edit_Team() {
     D_GDI_W = 100,
     D_GDI_H = 18,
     D_GDI_X = D_NAME_X + D_NAME_W + D_MARGIN,
-    D_GDI_Y = D_NAME_Y + D_NAME_H + D_NAME_H / 2,
+    D_GDI_Y = D_NAME_Y + D_NAME_H + (D_NAME_H / 2),
 
     D_NOD_W = 100,
     D_NOD_H = 18,
@@ -692,17 +692,17 @@ int MapEditClass::Edit_Team() {
 
     D_MEMBERS_W = 100,
     D_MEMBERS_H = 18,
-    D_MEMBERS_X = D_DIALOG_X + (D_DIALOG_W / 6) - D_MEMBERS_W / 2,
+    D_MEMBERS_X = D_DIALOG_X + (D_DIALOG_W / 6) - (D_MEMBERS_W / 2),
     D_MEMBERS_Y = D_DIALOG_Y + D_DIALOG_H - D_MARGIN - D_MEMBERS_H,
 
     D_CANCEL_W = 100,
     D_CANCEL_H = 18,
-    D_CANCEL_X = D_DIALOG_X + (D_DIALOG_W / 6) * 3 - D_CANCEL_W / 2,
+    D_CANCEL_X = D_DIALOG_X + ((D_DIALOG_W / 6) * 3) - (D_CANCEL_W / 2),
     D_CANCEL_Y = D_DIALOG_Y + D_DIALOG_H - D_MARGIN - D_CANCEL_H,
 
     D_OK_W = 100,
     D_OK_H = 18,
-    D_OK_X = D_DIALOG_X + (D_DIALOG_W / 6) * 5 - D_OK_W / 2,
+    D_OK_X = D_DIALOG_X + ((D_DIALOG_W / 6) * 5) - (D_OK_W / 2),
     D_OK_Y = D_DIALOG_Y + D_DIALOG_H - D_MARGIN - D_OK_H,
   };
 
@@ -1777,7 +1777,7 @@ int MapEditClass::Team_Members(HousesType house) {
 
         if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
           Fancy_Text_Print(
-              teamclass[curclass]->Full_Name(), D_DIALOG_X + D_DIALOG_W / 2,
+              teamclass[curclass]->Full_Name(), D_DIALOG_X + (D_DIALOG_W / 2),
               msg_y, CC_TAN, TBLACK,
               TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
         }
@@ -1848,8 +1848,8 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Compute new 'curclass' based on mouse position.
         */
-        i = (Get_Mouse_X() - 16 - D_DIALOG_X) / D_PICTURE_W +
-            ((Get_Mouse_Y() - dlg_picture_top) / D_ROW_H) * numcols;
+        i = ((Get_Mouse_X() - 16 - D_DIALOG_X) / D_PICTURE_W) +
+            (((Get_Mouse_Y() - dlg_picture_top) / D_ROW_H) * numcols);
 
         /*
         **	If it's changed, update class label.
@@ -1867,7 +1867,7 @@ int MapEditClass::Team_Members(HousesType house) {
 
           if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
             Fancy_Text_Print(
-                teamclass[curclass]->Full_Name(), D_DIALOG_X + D_DIALOG_W / 2,
+                teamclass[curclass]->Full_Name(), D_DIALOG_X + (D_DIALOG_W / 2),
                 msg_y, CC_GREEN, TBLACK,
                 TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
@@ -2016,8 +2016,8 @@ void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
   int numcols = (D_DIALOG_W - 32) / D_PICTURE_W;
   int col = index % numcols;
   int row = index / numcols;
-  int x = pic_x + col * D_PICTURE_W;
-  int y = pic_y + row * D_ROW_H;
+  int x = pic_x + (col * D_PICTURE_W);
+  int y = pic_y + (row * D_ROW_H);
 
   WindowList[WINDOW_EDITOR][WINDOWX] = 0;
   WindowList[WINDOW_EDITOR][WINDOWY] = 0;
@@ -2028,7 +2028,8 @@ void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
   Hide_Mouse();
   Draw_Box(x, y, D_PICTURE_W, D_PICTURE_H, BOXSTYLE_GREEN_DOWN, true);
 
-  ptr->Display(x + D_PICTURE_W / 2, y + D_PICTURE_H / 2, WINDOW_EDITOR, house);
+  ptr->Display(x + (D_PICTURE_W / 2), y + (D_PICTURE_H / 2), WINDOW_EDITOR,
+               house);
 
   if (quant > 0) {
     Fancy_Text_Print("%d", x + 1, y + D_PICTURE_H - 16, CC_GREEN, TBLACK,

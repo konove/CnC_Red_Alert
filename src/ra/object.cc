@@ -378,7 +378,7 @@ ActionType ObjectClass::What_Action(CELL) const {
 LayerType ObjectClass::In_Which_Layer() const {
   assert(IsActive);
 
-  if (Height < FLIGHT_LEVEL - FLIGHT_LEVEL / 3) {
+  if (Height < FLIGHT_LEVEL - (FLIGHT_LEVEL / 3)) {
     return LAYER_GROUND;
   }
   return LAYER_TOP;

@@ -261,7 +261,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
                                   12);
   StaticButtonClass userlistTitle(0, TXT_WOL_NOUSERLIST, TPF_TYPE,
                                   d_userlist_x + 2, d_userlist_y - 16 + 4,
-                                  d_userlist_w - 4 - 16 * 4, 12);
+                                  d_userlist_w - 4 - (16 * 4), 12);
 
   char szSendBuffer[MAXCHATSENDLENGTH] = "";
   EditClass sendedit(BUTTON_SENDEDIT, szSendBuffer, MAXCHATSENDLENGTH, kTpfText,
@@ -270,10 +270,10 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   char* pShpRankRA = (char*)MFCD::Retrieve("rank_ra.shp");
   char* pShpRankAM = (char*)MFCD::Retrieve("rank_am.shp");
   ShapeButtonClass RankRABtn(BUTTON_RANKRA, pShpRankRA,
-                             d_userlist_x + d_userlist_w - (16 * 4 + 1),
+                             d_userlist_x + d_userlist_w - ((16 * 4) + 1),
                              d_userlist_y - 14);
   ShapeButtonClass RankAMBtn(BUTTON_RANKAM, pShpRankAM,
-                             d_userlist_x + d_userlist_w - (16 * 3 + 1),
+                             d_userlist_x + d_userlist_w - ((16 * 3) + 1),
                              d_userlist_y - 14);
   //	Change draw behavior of toggle buttons.
   RankRABtn.ReflectButtonState = true;
@@ -344,20 +344,20 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
                             true, true);
   pToolTip->next = &TTipChanList;
   pToolTip = pToolTip->next;
-  ToolTipClass TTipJoin(&JoinBtn, TXT_WOL_TTIP_JOIN, d_join_x + d_join_w / 2,
+  ToolTipClass TTipJoin(&JoinBtn, TXT_WOL_TTIP_JOIN, d_join_x + (d_join_w / 2),
                         d_join_y - 6);
   pToolTip->next = &TTipJoin;
   pToolTip = pToolTip->next;
-  ToolTipClass TTipBack(&BackBtn, TXT_WOL_TTIP_BACK, d_back_x + d_back_w / 2,
+  ToolTipClass TTipBack(&BackBtn, TXT_WOL_TTIP_BACK, d_back_x + (d_back_w / 2),
                         d_back_y - 6);
   pToolTip->next = &TTipBack;
   pToolTip = pToolTip->next;
   ToolTipClass TTipCreate(&CreateBtn, TXT_WOL_TTIP_CREATE,
-                          d_create_x + d_create_w / 2, d_create_y - 6);
+                          d_create_x + (d_create_w / 2), d_create_y - 6);
   pToolTip->next = &TTipCreate;
   pToolTip = pToolTip->next;
   ToolTipClass TTipAction(&ActionBtn, TXT_WOL_TTIP_ACTION,
-                          d_action_x + d_action_w / 2, d_action_y - 6, true);
+                          d_action_x + (d_action_w / 2), d_action_y - 6, true);
   pToolTip->next = &TTipAction;
   pToolTip = pToolTip->next;
   ToolTipClass TTipRankRA(&RankRABtn, TXT_WOL_TTIP_RANKRA, RankRABtn.X + 8,

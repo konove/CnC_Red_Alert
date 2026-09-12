@@ -133,9 +133,10 @@ int Write_PCX_File(FileClass& file, GraphicBufferClass& pic,
   */
   VP_Scan_Line = pic.Get_Width() + pic.Get_XAdd();
   ptr = static_cast<char*>(pic.Get_Buffer());
-  ptr += pic.Get_YPos() * VP_Scan_Line + pic.Get_XPos();
+  ptr += (pic.Get_YPos() * VP_Scan_Line) + pic.Get_XPos();
   for (int line = 0; line < header.height + 1; line++) {
-    Write_Pcx_ScanLine(file, header.byte_per_line, ptr + static_cast<base::ssize>(line) * VP_Scan_Line);
+    Write_Pcx_ScanLine(file, header.byte_per_line,
+                       ptr + (static_cast<base::ssize>(line) * VP_Scan_Line));
   }
 
   /*

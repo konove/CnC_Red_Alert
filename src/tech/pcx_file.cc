@@ -93,7 +93,7 @@ int Write_PCX_File(char* name, GraphicViewPortClass& pic,
 
   for (i = 0; i < static_cast<unsigned>(header.height) + 1; i++) {
     Write_Pcx_ScanLine(file_handle, header.byte_per_line,
-                       ptr + static_cast<base::ssize>(i) * VP_Scan_Line);
+                       ptr + (static_cast<base::ssize>(i) * VP_Scan_Line));
   }
 
   Mem_Copy(palette, palcopy, 256UL * 3);

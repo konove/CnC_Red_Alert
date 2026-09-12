@@ -1927,7 +1927,7 @@ bool Select_Game(bool fade) {
   DLOG(INFO) << "C&C95 - Initialising message system.";
   int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   Messages.Init(Map.TacPixelX, Map.TacPixelY, 6, MAX_MESSAGE_LENGTH,
-                6 * factor + 1);
+                (6 * factor) + 1);
 
   /*
   **	Hide the SeenBuff; force the map to render one frame.  The caller can
@@ -3076,7 +3076,7 @@ long Obfuscate(const char* string) {
   */
   for (int index = 0; index < length; index++) {
     if (!isgraph(buffer[index])) {
-      buffer[index] = static_cast<char>('A' + index % 26);
+      buffer[index] = static_cast<char>('A' + (index % 26));
     }
   }
 
@@ -3088,11 +3088,11 @@ long Obfuscate(const char* string) {
   **	This is necessary to support the cypher process that occurs later.
   */
   if (length < 16 || length & 0x03) {
-    int maxlen = std::max(length + 3 & 0x00FC, 16);
+    int maxlen = std::max((length + 3) & 0x00FC, 16);
     int index;
     for (index = length; index < maxlen; index++) {
       buffer[index] = static_cast<char>(
-          'A' + (('?' ^ buffer[index - length]) + index) % 26);
+          'A' + ((('?' ^ buffer[index - length]) + index) % 26));
     }
     length = index;
     buffer[length] = '\0';

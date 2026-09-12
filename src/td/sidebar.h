@@ -174,9 +174,9 @@ class SidebarClass : public PowerClass {
       SCROLL_RATE = 8,  // The pixel jump while scrolling (larger is faster).
       BUTTON_SPACING_OFFSET = 4,  // spacing info for buttons
       UP_X_OFFSET = 2,            // Scroll up arrow coordinates.
-      UP_Y_OFFSET = MAX_VISIBLE * OBJECT_HEIGHT + 1,
+      UP_Y_OFFSET = (MAX_VISIBLE * OBJECT_HEIGHT) + 1,
       DOWN_X_OFFSET = 18,  // Scroll down arrow coordinates.
-      DOWN_Y_OFFSET = MAX_VISIBLE * OBJECT_HEIGHT + 1,
+      DOWN_Y_OFFSET = (MAX_VISIBLE * OBJECT_HEIGHT) + 1,
       BUTTON_WIDTH = 16,   // Width of the mini-scroll button.
       BUTTON_HEIGHT = 12,  // Height of the mini-scroll button.
       // LEFT_EDGE_OFFSET=2,			// Offset from left edge for

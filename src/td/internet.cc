@@ -434,9 +434,9 @@ bool Do_The_Internet_Menu_Thang() {
   */
   int d_dialog_w = 120 * factor;                     // dialog width
   int d_dialog_h = 80 * factor;                      // dialog height
-  int d_dialog_x = (320 * factor - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = (200 * factor - d_dialog_h) / 2;  // centered y-coord
-  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;     // center x-coord
+  int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
 
 #if (GERMAN | FRENCH)
   int d_cancel_w = 50 * factor;
@@ -444,8 +444,8 @@ bool Do_The_Internet_Menu_Thang() {
   int d_cancel_w = 40 * factor;
 #endif
   int d_cancel_h = 9 * factor;
-  int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
-  int d_cancel_y = d_dialog_y + d_dialog_h - 20 * factor;
+  int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
+  int d_cancel_y = d_dialog_y + d_dialog_h - (20 * factor);
 
 #if (GERMAN | FRENCH)
   int width = 160 * factor;
@@ -565,8 +565,8 @@ bool Do_The_Internet_Menu_Thang() {
       */
       Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-      Fancy_Text_Print(TXT_CONNECTING, d_dialog_cx - width / 2,
-                       d_dialog_y + 25 * factor, CC_GREEN, TBLACK,
+      Fancy_Text_Print(TXT_CONNECTING, d_dialog_cx - (width / 2),
+                       d_dialog_y + (25 * factor), CC_GREEN, TBLACK,
                        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
       // cancelbtn.Zap();

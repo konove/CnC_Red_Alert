@@ -523,7 +523,7 @@ void Simple_Text_Print(const char* text, int x, int y, unsigned fore,
     **	dialog system.
     */
     case TPF_LIGHTSHADOW:
-      fontpalette[2] = 14 * 16 + 7 + 1;
+      fontpalette[2] = (14 * 16) + 7 + 1;
       fontpalette[3] = static_cast<unsigned char>(back);
       xspace -= 1;
       break;
@@ -789,7 +789,7 @@ void Conquer_Clip_Text_Print(const char* text, int x, int y, unsigned fore,
           }
           offset = *tabs;
         } else {
-          offset = (offset + 1 / 50 + 1) * 50;
+          offset = (offset + (1 / 50) + 1) * 50;
         }
         source = ptr + 1;
       } else {

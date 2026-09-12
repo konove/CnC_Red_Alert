@@ -149,10 +149,10 @@ static inline void Draw_Cell_Point(CELL cell, bool passable, int threat_stage,
       int x = cell & 63;
       int y = cell / 64;
       if (!overide) {
-        SeenBuff.Put_Pixel(64 + x * 3 + 1, 8 + y * 3 + 1,
+        SeenBuff.Put_Pixel(64 + (x * 3) + 1, 8 + (y * 3) + 1,
                            passable ? WHITE : BLACK);
       } else {
-        SeenBuff.Put_Pixel(64 + x * 3 + 1, 8 + y * 3 + 1,
+        SeenBuff.Put_Pixel(64 + (x * 3) + 1, 8 + (y * 3) + 1,
                            static_cast<unsigned char>(overide));
       }
     }
@@ -245,10 +245,10 @@ static void Clear_Overlap(PathType* path, CELL cell) {
  *   10/28/1994 SKB : Created.                                             *
  *=========================================================================*/
 int Point_Relative_To_Line(int x, int z, int x1, int z1, int x2, int z2) {
-  return static_cast<int>((static_cast<long>(x) - static_cast<long>(x2)) *
-                              (static_cast<long>(z1) - static_cast<long>(z2)) -
-                          (static_cast<long>(z) - static_cast<long>(z2)) *
-                              (static_cast<long>(x1) - static_cast<long>(x2)));
+  return static_cast<int>(((static_cast<long>(x) - static_cast<long>(x2)) *
+                           (static_cast<long>(z1) - static_cast<long>(z2))) -
+                          ((static_cast<long>(z) - static_cast<long>(z2)) *
+                           (static_cast<long>(x1) - static_cast<long>(x2))));
 }
 
 /***************************************************************************
@@ -1609,7 +1609,7 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
       if (static_cast<CELL>((y << 6) + x) == dest) {
         color = BLUE;
       }
-      Fat_Put_Pixel(64 + x * 3, 8 + y * 3, static_cast<uint8_t>(color), 3,
+      Fat_Put_Pixel(64 + (x * 3), 8 + (y * 3), static_cast<uint8_t>(color), 3,
                     SeenBuff);
     }
   }

@@ -722,7 +722,7 @@ bool RAChatEventSink::bSpecialMessage(const char* szMessage) {
   memcpy((void*)szCode, (void*)&szMessage[4], 4);
   szCode[4] = 0;
   int iCode = tech::ParseInteger<int>(szCode).value_or(0);
-  return iCode == ((today.month * 99 ^ today.day * 33) ^ today.year);
+  return iCode == (((today.month * 99) ^ (today.day * 33)) ^ today.year);
 }
 
 //***********************************************************************************************
@@ -1074,7 +1074,7 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
     } else if (i == 1) {
       Sound_Effect(VOC_ANTDIE);
     } else {
-      Sound_Effect((VocType)(VOC_SCREAM1 + rand() % 9));
+      Sound_Effect((VocType)(VOC_SCREAM1 + (rand() % 9)));
     }
   } else if (strstr(szMessage, "<<whines>>") ||
              strstr(szMessage, "<<whining>>") ||

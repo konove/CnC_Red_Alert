@@ -413,7 +413,7 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
     direct_to_dest = false;
   } else {
     frame_buffer = (char*)view.Get_Offset();
-    frame_buffer += y_pixel * dest_width + x_pixel;
+    frame_buffer += (y_pixel * dest_width) + x_pixel;
     direct_to_dest = true;
   }
   //
@@ -811,7 +811,7 @@ static unsigned long Get_Resident_Frame_Offset(char* file_buffer, int frame) {
   }
 
   const auto offset =
-      port::ReadUnaligned<uint32_t>(file_buffer + frame * sizeof(uint32_t));
+      port::ReadUnaligned<uint32_t>(file_buffer + (frame * sizeof(uint32_t)));
   if (offset) {
     return offset - (frame0_size + WSA_FILE_HEADER_SIZE);
   }

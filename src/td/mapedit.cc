@@ -234,7 +234,7 @@ void MapEditClass::One_Time() {
   ........................................................................*/
   HealthBuf[0] = 0;
   HealthText = new TextLabelClass(
-      HealthBuf, POPUP_HEALTH_X + POPUP_HEALTH_W / 2,
+      HealthBuf, POPUP_HEALTH_X + (POPUP_HEALTH_W / 2),
       POPUP_HEALTH_Y + POPUP_HEALTH_H + 1, CC_GREEN,
       TPF_CENTER | TPF_FULLSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
 

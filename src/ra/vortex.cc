@@ -476,14 +476,14 @@ void ChronalVortexClass::Movement() {
     }
   }
 
-  if (x < CELL_LEPTON_W * Map.MapCellX + 2 * CELL_LEPTON_W) {
+  if (x < (CELL_LEPTON_W * Map.MapCellX) + (2 * CELL_LEPTON_W)) {
     newpick = false;
     if (DesiredXDir < 0) {
       DesiredXDir = -DesiredXDir;
     }
   }
 
-  if (y < CELL_LEPTON_H * Map.MapCellY + 2 * CELL_LEPTON_W) {
+  if (y < (CELL_LEPTON_H * Map.MapCellY) + (2 * CELL_LEPTON_W)) {
     newpick = false;
     if (DesiredYDir < 0) {
       DesiredYDir = -DesiredYDir;
@@ -748,10 +748,10 @@ void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass* inbuffer, int x,
     /*
     ** Get a pointer to the section of buffer we are going to work on.
     */
-    unsigned char* bufptr =
-        inbuffer->Get_Offset() + destx +
-        static_cast<base::ssize>(desty) * (inbuffer->Get_Width() + inbuffer->Get_XAdd() +
-                 inbuffer->Get_Pitch());
+    unsigned char* bufptr = inbuffer->Get_Offset() + destx +
+                            (static_cast<base::ssize>(desty) *
+                             (inbuffer->Get_Width() + inbuffer->Get_XAdd() +
+                              inbuffer->Get_Pitch()));
 
     int modulo =
         inbuffer->Get_Pitch() + inbuffer->Get_XAdd() + inbuffer->Get_Width();
@@ -765,7 +765,8 @@ void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass* inbuffer, int x,
         gety = *remap_table++;
         remap_color = *remap_table++;
 
-        pixel_color = *(bufptr + getx + static_cast<base::ssize>(gety) * modulo);
+        pixel_color =
+            *(bufptr + getx + (static_cast<base::ssize>(gety) * modulo));
 
         *destptr++ = VortexRemapTables[remap_color][pixel_color];
       }
@@ -910,8 +911,8 @@ void ChronalVortexClass::Render() {
                   otype.IsTheater);  // Tell Build_Frame if this overlay is
                                      // theater specific
               CC_Draw_Shape(otype.Get_Image_Data(), cellptr->OverlayData,
-                            x * CELL_PIXEL_W + (CELL_PIXEL_W >> 1),
-                            y * CELL_PIXEL_H + (CELL_PIXEL_H >> 1),
+                            (x * CELL_PIXEL_W) + (CELL_PIXEL_W >> 1),
+                            (y * CELL_PIXEL_H) + (CELL_PIXEL_H >> 1),
                             WINDOW_TACTICAL,
                             SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
                             DisplayClass::UnitShadow);
@@ -1080,7 +1081,7 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
     } else {
       for (i = 0; i < MAX_REMAP_SHADES; i++) {
         Build_Fading_Table(GamePalette, &VortexRemapTables[i][0], 0,
-                           240 - i * 256 / MAX_REMAP_SHADES);
+                           240 - (i * 256 / MAX_REMAP_SHADES));
       }
 
       file.Write(VortexRemapTables, int64_t{MAX_REMAP_SHADES} * 256);

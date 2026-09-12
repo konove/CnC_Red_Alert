@@ -524,8 +524,8 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	Add time to the mission timer.
     */
     case TACTION_ADD_TIMER:
-      Scen.MissionTimer.Set(
-          Scen.MissionTimer.Value() + Data.Value * (kTicksPerMinute / 10));
+      Scen.MissionTimer.Set(Scen.MissionTimer.Value() +
+                            (Data.Value * (kTicksPerMinute / 10)));
       Map.Redraw_Tab();
       break;
 
@@ -536,8 +536,8 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
       if (Scen.MissionTimer.Value() <= Data.Value * (kTicksPerMinute / 10)) {
         Scen.MissionTimer.Set(0);
       } else {
-        Scen.MissionTimer.Set(
-            Scen.MissionTimer.Value() - Data.Value * (kTicksPerMinute / 10));
+        Scen.MissionTimer.Set(Scen.MissionTimer.Value() -
+                              (Data.Value * (kTicksPerMinute / 10)));
       }
       Map.Redraw_Tab();
       break;

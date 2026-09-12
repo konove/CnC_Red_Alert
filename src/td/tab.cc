@@ -124,7 +124,7 @@ void TabClass::Draw_It(bool complete) {
 
       Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, Eva_Width / 2, 0, 11, TBLACK,
                        TPF_GREEN12_GRAD | TPF_CENTER | TPF_USE_GRAD_PAL);
-      Fancy_Text_Print(TXT_TAB_SIDEBAR, width - Eva_Width / 2, 0, 11, TBLACK,
+      Fancy_Text_Print(TXT_TAB_SIDEBAR, width - (Eva_Width / 2), 0, 11, TBLACK,
                        TPF_GREEN12_GRAD | TPF_CENTER | TPF_USE_GRAD_PAL);
     }
     LogicPage->Unlock();

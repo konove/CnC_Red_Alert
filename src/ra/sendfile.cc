@@ -236,16 +236,16 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
   int d_dialog_h = 180;                      // dialog height
   int d_dialog_x = (640 - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y = (400 - d_dialog_h) / 2;  // centered y-coord
-  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
+  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
 
   int d_cancel_w = config::kIsEnglish ? 80 : 100;
   int d_cancel_h = 18;
-  int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
+  int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
   int d_cancel_y = d_dialog_y + d_dialog_h - 40;
 
   int d_progress_w = 200;
   int d_progress_h = 20;
-  int d_progress_x = SeenBuff.Get_Width() / 2 - d_progress_w / 2;
+  int d_progress_x = (SeenBuff.Get_Width() / 2) - (d_progress_w / 2);
   int d_progress_y = d_dialog_y + 90;
 
   int width;
@@ -369,9 +369,9 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
         */
         Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(info_string, d_dialog_cx - width / 2,
-                         d_dialog_y + 50,
-                         GadgetClass::Get_Color_Scheme(), TBLACK,
+        Fancy_Text_Print(info_string, d_dialog_cx - (width / 2),
+                         d_dialog_y + 50, GadgetClass::Get_Color_Scheme(),
+                         TBLACK,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Show_Mouse();
@@ -501,19 +501,19 @@ bool Send_Remote_File(char* file_name, int gametype) {
 
   int d_dialog_w = 240 * factor;                     // dialog width
   int d_dialog_h = 90 * factor;                      // dialog height
-  int d_dialog_x = (320 * factor - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = (200 * factor - d_dialog_h) / 2;  // centered y-coord
-  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;     // center x-coord
+  int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
 
   int d_cancel_w = (config::kIsEnglish ? 40 : 50) * factor;
   int d_cancel_h = 9 * factor;
-  int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
-  int d_cancel_y = d_dialog_y + d_dialog_h - 20 * factor;
+  int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
+  int d_cancel_y = d_dialog_y + d_dialog_h - (20 * factor);
 
   int d_progress_w = 100 * factor;
   int d_progress_h = 10 * factor;
-  int d_progress_x = SeenBuff.Get_Width() / 2 - d_progress_w / 2;
-  int d_progress_y = d_dialog_y + 45 * factor;
+  int d_progress_x = (SeenBuff.Get_Width() / 2) - (d_progress_w / 2);
+  int d_progress_y = d_dialog_y + (45 * factor);
 
   int width;
   int height;
@@ -675,8 +675,8 @@ bool Send_Remote_File(char* file_name, int gametype) {
         */
         Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(info_string, d_dialog_cx - width / 2,
-                         d_dialog_y + 25 * factor,
+        Fancy_Text_Print(info_string, d_dialog_cx - (width / 2),
+                         d_dialog_y + (25 * factor),
                          GadgetClass::Get_Color_Scheme(), TBLACK,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 

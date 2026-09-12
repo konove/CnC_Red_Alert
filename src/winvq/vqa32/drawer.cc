@@ -237,7 +237,7 @@ void VQA_Set_DrawBuffer(VQAHandle* vqa, unsigned char* buffer,
   }
 
   /* Pre-compute the draw offset for speed. */
-  drawer->ScreenOffset = width * drawer->Y1 + drawer->X1;
+  drawer->ScreenOffset = (width * drawer->Y1) + drawer->X1;
 }
 
 /****************************************************************************
@@ -352,7 +352,7 @@ void VQA_Configure_Drawer(VQAHandle* vqap) {
       vqabuf->Draw_Frame = DrawFrame_Buffer;
 
       /* Pre-compute the draw offset for speed. */
-      drawer->ScreenOffset = drawer->ImageWidth * drawer->Y1 + drawer->X1;
+      drawer->ScreenOffset = (drawer->ImageWidth * drawer->Y1) + drawer->X1;
       break;
   }
 }

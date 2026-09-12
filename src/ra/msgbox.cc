@@ -156,7 +156,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   height += numbuttons == 0 ? 80 : 120;
 
   // make sure dialog is wide enough for the buttons
-  width = std::max(bwidth * numbuttons + 80, width);
+  width = std::max((bwidth * numbuttons) + 80, width);
 
   int x = (SeenBuff.Get_Width() - width) / 2;
   int y = (SeenBuff.Get_Height() - height) / 2;
@@ -166,7 +166,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   **	Special hack to center a one line dialog box text.
   */
   if (lines == 1) {
-    printx = x + width / 2;
+    printx = x + (width / 2);
     tpf = tpf | TPF_CENTER;
   }
 

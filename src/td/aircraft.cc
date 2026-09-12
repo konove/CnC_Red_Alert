@@ -445,7 +445,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
     **	or not. A landed helicopter uses slow moving "idling" blades.
     */
     if (Altitude == 0) {
-      shapenum = Fetch_Stage() % 8 + 4;
+      shapenum = (Fetch_Stage() % 8) + 4;
       flags = flags | SHAPE_GHOST;
     } else {
       shapenum = Fetch_Stage() % 4;
@@ -974,12 +974,12 @@ const short* AircraftClass::Overlap_List() const {
                                 (MAP_CELL_W - 1),
                                 MAP_CELL_W,
                                 (MAP_CELL_W + 1),
-                                -(MAP_CELL_W * 2 - 1),
+                                -((MAP_CELL_W * 2) - 1),
                                 -(MAP_CELL_W * 2),
-                                -(MAP_CELL_W * 2 + 1),
-                                -(MAP_CELL_W * 3 - 1),
+                                -((MAP_CELL_W * 2) + 1),
+                                -((MAP_CELL_W * 3) - 1),
                                 -(MAP_CELL_W * 3),
-                                -(MAP_CELL_W * 3 + 1),
+                                -((MAP_CELL_W * 3) + 1),
                                 REFRESH_EOL};
 
   if (Altitude) {
@@ -1337,7 +1337,7 @@ LayerType AircraftClass::In_Which_Layer() const {
     return LAYER_TOP;
   }
 
-  if (Altitude < FLIGHT_LEVEL - FLIGHT_LEVEL / 3) {
+  if (Altitude < FLIGHT_LEVEL - (FLIGHT_LEVEL / 3)) {
     return LAYER_GROUND;
   }
   return LAYER_TOP;
@@ -2721,12 +2721,12 @@ bool AircraftClass::Process_Take_Off() {
       PrimaryFacing.Set_Desired(Direction(NavCom));
       break;
 
-    case FLIGHT_LEVEL - FLIGHT_LEVEL / 3:
+    case FLIGHT_LEVEL - (FLIGHT_LEVEL / 3):
       SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
       Set_Speed(0x20);
       break;
 
-    case FLIGHT_LEVEL - FLIGHT_LEVEL / 5:
+    case FLIGHT_LEVEL - (FLIGHT_LEVEL / 5):
       Set_Speed(0x40);
       break;
 

@@ -92,9 +92,9 @@ void* Small_Icon(const void* iconptr, int iconnum) {
     //		data = &iptr->Icons[iconnum*(24*24)];
 
     for (int index = 0; index < 9; index++) {
-      int _offsets[9] = {4 + 4 * 24,  12 + 4 * 24,  20 + 4 * 24,
-                         4 + 12 * 24, 12 + 12 * 24, 20 + 12 * 24,
-                         4 + 20 * 24, 12 + 20 * 24, 20 + 20 * 24};
+      int _offsets[9] = {4 + (4 * 24),  12 + (4 * 24),  20 + (4 * 24),
+                         4 + (12 * 24), 12 + (12 * 24), 20 + (12 * 24),
+                         4 + (20 * 24), 12 + (20 * 24), 20 + (20 * 24)};
       _icon[index] = data[_offsets[index]];
     }
   }
@@ -337,7 +337,7 @@ std::vector<std::byte> LoadAllocData(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 04/02/1994 JLB : Created. *
  *=============================================================================================*/
-long Translucent_Table_Size(int count) { return 256L + 256L * count; }
+long Translucent_Table_Size(int count) { return 256L + (256L * count); }
 
 /***********************************************************************************************
  * Build_Translucent_Table -- Creates a translucent control table. *

@@ -228,9 +228,9 @@ int MapEditClass::New_Scenario() {
   **	Set the Home & Reinforcement Cells to the center of the map
   */
   Scen.Waypoint[ScenarioClass::kReinforcementWaypoint] =
-      XY_Cell(MapCellX + MapCellWidth / 2, MapCellY + MapCellHeight / 2);
+      XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
   Scen.Waypoint[ScenarioClass::kHomeWaypoint] =
-      XY_Cell(MapCellX + MapCellWidth / 2, MapCellY + MapCellHeight / 2);
+      XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
   (*this)[TacticalCoord].IsWaypoint = 1;
   Flag_Cell(Coord_Cell(TacticalCoord));
 
@@ -497,10 +497,10 @@ int MapEditClass::Load_Scenario() {
       D_SCEN_X = D_DIALOG_CX + 5,  // Scenario # x
       D_SCEN_Y = D_DIALOG_Y + D_MARGIN + D_TXT8_H + D_MARGIN,  // Scenario # y
 
-      D_VARA_W = 13,                                // Version A width
-      D_VARA_H = 9,                                 // Version A height
-      D_VARA_X = D_DIALOG_CX - (D_VARA_W * 5) / 2,  // Version A x
-      D_VARA_Y = D_SCEN_Y + D_SCEN_H + D_MARGIN,    // Version A y
+      D_VARA_W = 13,                                  // Version A width
+      D_VARA_H = 9,                                   // Version A height
+      D_VARA_X = D_DIALOG_CX - ((D_VARA_W * 5) / 2),  // Version A x
+      D_VARA_Y = D_SCEN_Y + D_SCEN_H + D_MARGIN,      // Version A y
 
       D_VARB_W = 13,                              // Version B width
       D_VARB_H = 9,                               // Version B height
@@ -560,8 +560,8 @@ int MapEditClass::Load_Scenario() {
       D_CANCEL_W = 45,               // Cancel width
       D_CANCEL_H = 9,                // Cancel height
       D_CANCEL_X = D_DIALOG_CX + 5,  // Cancel x
-      D_CANCEL_Y =
-          D_DIALOG_Y + D_DIALOG_H - D_CANCEL_H - (D_MARGIN + 15),  // Cancel y
+      D_CANCEL_Y = D_DIALOG_Y + D_DIALOG_H - D_CANCEL_H -
+          (D_MARGIN + 15),  // Cancel y
 
     };
 
@@ -1072,13 +1072,13 @@ int MapEditClass::Load_Scenario() {
     **	Set up the actual map area relative to the map's border coords
     */
     if (x == -1) {
-      map_x1 = D_BORD_X1 + (MAP_CELL_W - w) / 2 + 1;
+      map_x1 = D_BORD_X1 + ((MAP_CELL_W - w) / 2) + 1;
     } else {
       map_x1 = D_BORD_X1 + x + 1;
     }
 
     if (y == -1) {
-      map_y1 = D_BORD_Y1 + (MAP_CELL_H - h) / 2 + 1;
+      map_y1 = D_BORD_Y1 + ((MAP_CELL_H - h) / 2) + 1;
     } else {
       map_y1 = D_BORD_Y1 + y + 1;
     }
@@ -1187,7 +1187,7 @@ int MapEditClass::Load_Scenario() {
             /*
             **	Draw the coordinate labels
             */
-            txt_x = D_DIALOG_X + D_DIALOG_W / 8;
+            txt_x = D_DIALOG_X + (D_DIALOG_W / 8);
             txt_y = D_DIALOG_Y + D_DIALOG_H - D_OK_H - 43;
             Fancy_Text_Print("  X", txt_x, txt_y,
                              GadgetClass::Get_Color_Scheme(), TBLACK,
@@ -1316,7 +1316,7 @@ int MapEditClass::Load_Scenario() {
             /*
             **	Draw the coordinates
             */
-            txt_x = D_DIALOG_X + D_DIALOG_W / 8;
+            txt_x = D_DIALOG_X + (D_DIALOG_W / 8);
             txt_y = D_DIALOG_Y + D_DIALOG_H - D_OK_H - 32;
             Fancy_Text_Print(
                 "%5d", txt_x, txt_y, GadgetClass::Get_Color_Scheme(), BLACK,
@@ -2665,7 +2665,7 @@ int MapEditClass::Load_Scenario() {
 
       D_LIST_W = (D_DIALOG_W - (D_MARGIN * 2)) - 10,
       D_LIST_H = D_DIALOG_H - 70,
-      D_LIST_X = D_DIALOG_X + (D_DIALOG_W - D_LIST_W) / 2,
+      D_LIST_X = D_DIALOG_X + ((D_DIALOG_W - D_LIST_W) / 2),
       D_LIST_Y = D_DIALOG_Y + 25,
 
       BUTTON_W = 45,

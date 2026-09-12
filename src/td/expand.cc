@@ -126,8 +126,8 @@ bool Expansion_Dialog() {
 
   int option_width = 236 * factor;
   int option_height = 162 * factor;
-  int option_x = (320 * factor - option_width) / 2;
-  int option_y = (200 * factor - option_height) / 2;
+  int option_x = ((320 * factor) - option_width) / 2;
+  int option_y = ((200 * factor) - option_height) / 2;
 
   GadgetClass* buttons = nullptr;
 
@@ -143,13 +143,13 @@ bool Expansion_Dialog() {
   }
 
   TextButtonClass ok(200, TXT_OK, TPF_6PT_GRAD | TPF_NOSHADOW,
-                     option_x + 25 * factor,
-                     option_y + option_height - 15 * factor);
+                     option_x + (25 * factor),
+                     option_y + option_height - (15 * factor));
   TextButtonClass cancel(201, TXT_CANCEL, TPF_6PT_GRAD | TPF_NOSHADOW,
-                         option_x + option_width - 50 * factor,
-                         option_y + option_height - 15 * factor);
-  EListClass list(202, option_x + 10 * factor, option_y + 20 * factor,
-                  option_width - 20 * factor, option_height - 40 * factor,
+                         option_x + option_width - (50 * factor),
+                         option_y + option_height - (15 * factor));
+  EListClass list(202, option_x + (10 * factor), option_y + (20 * factor),
+                  option_width - (20 * factor), option_height - (40 * factor),
                   TPF_6PT_GRAD | TPF_NOSHADOW, up_button, down_button);
 
   buttons = &ok;
@@ -294,8 +294,8 @@ bool Bonus_Dialog() {
 
   int option_width = 236 * factor;
   int option_height = 162 * factor;
-  int option_x = (320 * factor - option_width) / 2;
-  int option_y = (200 * factor - option_height) / 2;
+  int option_x = ((320 * factor) - option_width) / 2;
+  int option_y = ((200 * factor) - option_height) / 2;
 
   GadgetClass* buttons = nullptr;
 
@@ -311,13 +311,13 @@ bool Bonus_Dialog() {
   }
 
   TextButtonClass ok(200, TXT_OK, TPF_6PT_GRAD | TPF_NOSHADOW,
-                     option_x + 25 * factor,
-                     option_y + option_height - 15 * factor);
+                     option_x + (25 * factor),
+                     option_y + option_height - (15 * factor));
   TextButtonClass cancel(201, TXT_CANCEL, TPF_6PT_GRAD | TPF_NOSHADOW,
-                         option_x + option_width - 50 * factor,
-                         option_y + option_height - 15 * factor);
-  EListClass list(202, option_x + 10 * factor, option_y + 20 * factor,
-                  option_width - 20 * factor, option_height - 40 * factor,
+                         option_x + option_width - (50 * factor),
+                         option_y + option_height - (15 * factor));
+  EListClass list(202, option_x + (10 * factor), option_y + (20 * factor),
+                  option_width - (20 * factor), option_height - (40 * factor),
                   TPF_6PT_GRAD | TPF_NOSHADOW, up_button, down_button);
 
   buttons = &ok;

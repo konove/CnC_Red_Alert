@@ -144,7 +144,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
           }
           altx = std::min(altx, SeenBuff.Get_Width());
           if (altx > 50 && altx < SeenBuff.Get_Width() - 50) {
-            altx += (SeenBuff.Get_Width() / 2 - altx) / 2;
+            altx += ((SeenBuff.Get_Width() / 2) - altx) / 2;
           }
 
           int alty = y;

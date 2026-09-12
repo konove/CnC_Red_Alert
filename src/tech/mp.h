@@ -155,12 +155,12 @@ inline bool XMP_Test_Eq_Int(const uint32_t* r, int i, int p) {
 }
 
 inline void XMP_Set_Bit(uint32_t* r, unsigned bit) {
-  r[bit >> LOG_UNITSIZE] |= static_cast<uint32_t>(1) << (bit & UNITSIZE - 1);
+  r[bit >> LOG_UNITSIZE] |= static_cast<uint32_t>(1) << (bit & (UNITSIZE - 1));
 }
 
 inline bool XMP_Test_Bit(const uint32_t* r, unsigned bit) {
   return r[bit >> LOG_UNITSIZE] & static_cast<uint32_t>(1)
-                                      << (bit & UNITSIZE - 1);
+                                      << (bit & (UNITSIZE - 1));
 }
 
 // Misc functions.

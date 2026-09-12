@@ -741,8 +741,8 @@ void RadarClass::Zoom_Mode(CELL cell) {
   ** Find the amount of remainder because this will let us calculate
   ** how to center the thing.
   */
-  int rem_x = RadIWidth - map_c_width * ZoomFactor;
-  int rem_y = RadIHeight - map_c_height * ZoomFactor;
+  int rem_x = RadIWidth - (map_c_width * ZoomFactor);
+  int rem_y = RadIHeight - (map_c_height * ZoomFactor);
 
   /*
   ** Finally mark the map so it shows just as much as it is supposed
@@ -826,8 +826,8 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
 
   if (LogicPage->Lock()) {
     CellClass* cellptr = &(*this)[cell];
-    x = RadX + RadOffX + BaseX + x * ZoomFactor;
-    y = RadY + RadOffY + BaseY + y * ZoomFactor;
+    x = RadX + RadOffX + BaseX + (x * ZoomFactor);
+    y = RadY + RadOffY + BaseY + (y * ZoomFactor);
 
     /*
     **	Determine what (if any) vehicle or unit should be rendered in this blip.
@@ -872,7 +872,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         icon &= 0x00FF;
 
         Mem_Copy(Add_Long_To_Pointer(ptr, 12), &offset, sizeof(offset));
-        ptr = Add_Long_To_Pointer(ptr, offset + icon * (24 * 24));
+        ptr = Add_Long_To_Pointer(ptr, offset + (icon * (24 * 24)));
 
         unsigned char* data = (unsigned char*)ptr;
         Buffer_To_Page(0, 0, 24, 24, data, _TileStage);
@@ -969,8 +969,8 @@ int RadarClass::Click_In_Radar(int& ptr_x, int& ptr_y, bool change) {
 
     if (static_cast<unsigned>(x) < static_cast<unsigned>(RadarWidth) &&
         static_cast<unsigned>(y) < static_cast<unsigned>(RadarHeight)) {
-      x = RadarX + x / ZoomFactor;
-      y = RadarY + y / ZoomFactor;
+      x = RadarX + (x / ZoomFactor);
+      y = RadarY + (y / ZoomFactor);
       if (change) {
         ptr_x = x;
         ptr_y = y;
@@ -1064,15 +1064,15 @@ void RadarClass::Mark_Radar(int x1, int y1, int x2, int y2, int value,
   /*
   ** First step is to convert pixel coordinates back to a CellX and CellY.
   */
-  x1 = RadarX + x1 / ZoomFactor;
-  y1 = RadarY + y1 / ZoomFactor;
-  x2 = RadarX + x2 / ZoomFactor;
-  y2 = RadarY + y2 / ZoomFactor;
+  x1 = RadarX + (x1 / ZoomFactor);
+  y1 = RadarY + (y1 / ZoomFactor);
+  x2 = RadarX + (x2 / ZoomFactor);
+  y2 = RadarY + (y2 / ZoomFactor);
 
   /*
   ** Now we need to convert the Pixel length to a cell length.
   */
-  barlen = barlen / ZoomFactor + 1;
+  barlen = (barlen / ZoomFactor) + 1;
 
   /*
   ** Now lets loop through and mark the map with the proper value.
@@ -1659,10 +1659,10 @@ void RadarClass::Set_Radar_Position(CELL cell) {
         if (OverlappedVideoBlits || !HidPage.Get_IsDirectDraw()) {
           HidPage.Blit(
               HidPage,
-              (radx < 0 ? -radx : 0) * ZoomFactor + RadX + RadOffX + BaseX,
-              (rady < 0 ? -rady : 0) * ZoomFactor + RadY + RadOffY + BaseY,
-              (radx < 0 ? 0 : radx) * ZoomFactor + RadX + RadOffX + BaseX,
-              (rady < 0 ? 0 : rady) * ZoomFactor + RadY + RadOffY + BaseY,
+              ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
+              ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY,
+              ((radx < 0 ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
+              ((rady < 0 ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY,
               radw * ZoomFactor, radh * ZoomFactor);
         } else {
           /*
@@ -1670,20 +1670,20 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           ** Blit it in 2 stages using an intermediate buffer.
           */
           GraphicBufferClass temp_surface;
-          temp_surface.Init(RadarWidth + 16 & 0xfffffff0,
-                            RadarHeight + 16 & 0xfffffff0, nullptr, 0,
+          temp_surface.Init((RadarWidth + 16) & 0xfffffff0,
+                            (RadarHeight + 16) & 0xfffffff0, nullptr, 0,
                             GBC_VIDEOMEM);
 
           HidPage.Blit(
               temp_surface,
-              (radx < 0 ? -radx : 0) * ZoomFactor + RadX + RadOffX + BaseX,
-              (rady < 0 ? -rady : 0) * ZoomFactor + RadY + RadOffY + BaseY, 0,
+              ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
+              ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY, 0,
               0, RadarWidth, RadarHeight);
 
           temp_surface.Blit(
               HidPage, 0, 0,
-              (radx < 0 ? 0 : radx) * ZoomFactor + RadX + RadOffX + BaseX,
-              (rady < 0 ? 0 : rady) * ZoomFactor + RadY + RadOffY + BaseY,
+              ((radx < 0 ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
+              ((rady < 0 ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY,
               radw * ZoomFactor, radh * ZoomFactor);
         }
 
@@ -1897,7 +1897,7 @@ void RadarClass::Draw_Names() {
                    TBLACK,
                    TPF_RIGHT | TPF_6PT_GRAD | TPF_NOSHADOW | TPF_USE_GRAD_PAL);
 
-  y += 6 * factor + 1;
+  y += (6 * factor) + 1;
 
   LogicPage->Draw_Line(RadX + RadOffX, y, RadX + RadOffX + RadIWidth - 1, y,
                        LTGREY);
@@ -1968,7 +1968,7 @@ void RadarClass::Draw_Names() {
       Fancy_Text_Print(txt, RadX + RadOffX + RadIWidth - 2, y, color, BLACK,
                        style | TPF_RIGHT);
 
-      y += 6 * factor + 1;
+      y += (6 * factor) + 1;
     }
   }
 }

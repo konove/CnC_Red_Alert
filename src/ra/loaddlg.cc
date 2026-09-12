@@ -141,18 +141,18 @@ int LoadOptionsClass::Process() {
   int d_dialog_h = 312;                           // dialog height
   int d_dialog_x = (640 - d_dialog_w) / 2;        // centered x-coord
   int d_dialog_y = (400 - d_dialog_h) / 2;        // centered y-coord
-  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;  // coord of x-center
+  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // coord of x-center
 
   int d_txt8_h = 22;  // ht of 8-pt text
   int d_margin = 14;  // margin width/height
   int x_margin = 32;  // margin width/height
 
-  int d_list_w = d_dialog_w - x_margin * 2;
+  int d_list_w = d_dialog_w - (x_margin * 2);
   int d_list_h = 208;
   int d_list_x = d_dialog_x + x_margin;
   int d_list_y = d_dialog_y + d_margin + d_txt8_h + d_margin;
 
-  int d_edit_w = d_dialog_w - x_margin * 2;
+  int d_edit_w = d_dialog_w - (x_margin * 2);
   int d_edit_x = d_dialog_x + x_margin;
   int d_edit_y = d_list_y + d_list_h - 60 + d_margin + d_txt8_h;
 

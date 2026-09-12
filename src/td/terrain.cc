@@ -762,8 +762,8 @@ unsigned char* TerrainClass::Radar_Icon(CELL cell) {
   int xdiff =
       static_cast<CELL>(Cell_X(cell) - Cell_X(static_cast<CELL>(basecell)));
   if (xdiff < width && ydiff < height) {
-    int iconnum = ydiff * width + xdiff;
-    return icon + static_cast<base::ssize>(iconnum) * 9;
+    int iconnum = (ydiff * width) + xdiff;
+    return icon + (static_cast<base::ssize>(iconnum) * 9);
   }
   return nullptr;
 }

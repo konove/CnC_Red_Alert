@@ -143,7 +143,7 @@ void PowerClass::One_Time() {
   RadarClass::One_Time();
   PowerButton.X = POWER_X * 2;
   PowerButton.Y = POWER_Y * 2;
-  PowerButton.Width = POWER_WIDTH * 2 - 1;
+  PowerButton.Width = (POWER_WIDTH * 2) - 1;
   PowerButton.Height = POWER_HEIGHT * 2;
   PowerShape = MFCD::Retrieve("POWER.SHP");
   PowerBarShape = MFCD::Retrieve("POWERBAR.SHP");
@@ -176,7 +176,7 @@ void PowerClass::Draw_It(bool complete) {
         ShapeFlags_Type flags = SHAPE_NORMAL;
         const void* remap = nullptr;
 
-        if (FlashTimer.Value() > 1 && (FlashTimer.Value() % 3 & 0x01) != 0) {
+        if (FlashTimer.Value() > 1 && ((FlashTimer.Value() % 3) & 0x01) != 0) {
           flags = flags | SHAPE_FADING;
           remap = FadingRed;
         }
@@ -198,12 +198,14 @@ void PowerClass::Draw_It(bool complete) {
         **	of power demands.
         */
         int bottom = (POWER_Y + POWER_HEIGHT - 1) * 2;
-        int power_height = PowerHeight == DesiredPowerHeight
-                               ? PowerHeight + _modtable[PowerBounce] * PowerDir
-                               : PowerHeight;
-        int drain_height = DrainHeight == DesiredDrainHeight
-                               ? DrainHeight + _modtable[DrainBounce] * DrainDir
-                               : DrainHeight;
+        int power_height =
+            PowerHeight == DesiredPowerHeight
+                ? PowerHeight + (_modtable[PowerBounce] * PowerDir)
+                : PowerHeight;
+        int drain_height =
+            DrainHeight == DesiredDrainHeight
+                ? DrainHeight + (_modtable[DrainBounce] * DrainDir)
+                : DrainHeight;
         power_height = Bound(power_height, 0, POWER_HEIGHT - 2);
         drain_height = Bound(drain_height, 0, POWER_HEIGHT - 2);
 
@@ -245,7 +247,7 @@ void PowerClass::Draw_It(bool complete) {
         /*
         **	Draw the power drain threshold marker.
         */
-        CC_Draw_Shape(PowerShape, 0, POWER_X * 2 + 2,
+        CC_Draw_Shape(PowerShape, 0, (POWER_X * 2) + 2,
                       bottom - (drain_height + 4), WINDOW_MAIN,
                       flags | SHAPE_NORMAL, remap);
       }
@@ -405,7 +407,7 @@ int PowerClass::Power_Height(int value) {
   ** of each.
   */
   for (int lp = 0; lp < num; lp++) {
-    retval = retval + (POWER_HEIGHT - 2 - retval) / POWER_STEP_FACTOR;
+    retval = retval + ((POWER_HEIGHT - 2 - retval) / POWER_STEP_FACTOR);
     value -= POWER_STEP_LEVEL;
   }
 
@@ -413,8 +415,8 @@ int PowerClass::Power_Height(int value) {
   ** Adjust the retval to factor in the remainder
   */
   if (value) {
-    retval = retval + (POWER_HEIGHT - 2 - retval) / POWER_STEP_FACTOR * value /
-                          POWER_STEP_LEVEL;
+    retval = retval + ((POWER_HEIGHT - 2 - retval) / POWER_STEP_FACTOR * value /
+                       POWER_STEP_LEVEL);
   }
 
   retval = Bound(retval, 0, POWER_HEIGHT - 2);

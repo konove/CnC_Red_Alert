@@ -636,7 +636,7 @@ bool TeamTypeClass::Edit() {
 
     D_OK_W = 50,
     D_OK_H = 9,
-    D_OK_X = D_DIALOG_X + D_DIALOG_W - (D_OK_W + 18) * 2,
+    D_OK_X = D_DIALOG_X + D_DIALOG_W - ((D_OK_W + 18) * 2),
     D_OK_Y = D_CANCEL_Y
   };
 
@@ -752,7 +752,7 @@ bool TeamTypeClass::Edit() {
       sprintf(originbtn.Get_Text(), "%c", Origin + 'A');
     } else {
       sprintf(originbtn.Get_Text(), "%c%c", (Origin / 26) + 'A' - 1,
-              Origin % 26 + 'A');
+              (Origin % 26) + 'A');
     }
   }
   originbtn.Add(*commands);
@@ -1108,9 +1108,10 @@ bool TeamTypeClass::Edit() {
                 sprintf(arg_edt.Get_Text(), "%c",
                         missionlist2.Current_Item()->Data.Value + 'A');
               } else {
-                sprintf(arg_edt.Get_Text(), "%c%c",
-                        missionlist2.Current_Item()->Data.Value / 26 + 'A' - 1,
-                        (missionlist2.Current_Item()->Data.Value % 26) + 'A');
+                sprintf(
+                    arg_edt.Get_Text(), "%c%c",
+                    (missionlist2.Current_Item()->Data.Value / 26) + 'A' - 1,
+                    (missionlist2.Current_Item()->Data.Value % 26) + 'A');
               }
               break;
           }
@@ -1494,8 +1495,8 @@ const char* TeamTypeClass::Description() const {
       if (Origin < 26) {
         loc[0] = static_cast<char>('A' + Origin);
       } else {
-        loc[0] = static_cast<char>(Origin / 26 + 'A' - 1);
-        loc[1] = static_cast<char>(Origin % 26 + 'A');
+        loc[0] = static_cast<char>((Origin / 26) + 'A' - 1);
+        loc[1] = static_cast<char>((Origin % 26) + 'A');
       }
     }
 

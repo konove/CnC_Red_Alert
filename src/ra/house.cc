@@ -1044,7 +1044,7 @@ void HouseClass::AI() {
     /*
     **	Adjusted to reduce maximum number of teams created.
     */
-    int maxteams = Random_Pick(2, (Control.TechLevel - 1) / 3 + 1);
+    int maxteams = Random_Pick(2, ((Control.TechLevel - 1) / 3) + 1);
     for (int index = 0; index < maxteams; index++) {
       const TeamTypeClass* ttype = Suggested_New_Team(true);
       if (ttype != nullptr) {
@@ -4382,7 +4382,7 @@ void HouseClass::Recalc_Center() {
         *is that cheap *	buildings don't affect the base disposition as
         *much as the more expensive *	buildings do.
         */
-        int weight = b->Class->Cost_Of() / 1000 + 1;
+        int weight = (b->Class->Cost_Of() / 1000) + 1;
         for (int i = 0; i < weight; i++) {
           x += Coord_X(b->Center_Coord());
           y += Coord_Y(b->Center_Coord());
@@ -4525,7 +4525,7 @@ int HouseClass::Expert_AI() {
         *the *	candidate base. The higher the value, the better the candidate
         *house *	is to becoming the preferred enemy for this house.
         */
-        int value = MAP_CELL_W * 2 - Distance(Center, h->Center);
+        int value = (MAP_CELL_W * 2) - Distance(Center, h->Center);
         value *= 2;
 
         /*
@@ -4733,7 +4733,7 @@ int HouseClass::Expert_AI() {
     }
   }
 
-  return kTicksPerSecond * 5 + Random_Pick(1, kTicksPerSecond / 2);
+  return (kTicksPerSecond * 5) + Random_Pick(1, kTicksPerSecond / 2);
 }
 
 UrgencyType HouseClass::Check_Build_Power() const {

@@ -1330,7 +1330,7 @@ static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
   //	than 5 commands, so I know I have a measure of the response time.
   //------------------------------------------------------------------------
   if (my_sent > 5) {
-    net->Set_Timing(resp_time + 10, -1, resp_time * 4 + 15);
+    net->Set_Timing(resp_time + 10, -1, (resp_time * 4) + 15);
 
     //.....................................................................
     // If I'm the network "master", I'm also responsible for updating the
@@ -1344,7 +1344,7 @@ static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
       //..................................................................
       if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
         ev.Data.FrameInfo.Delay = static_cast<unsigned char>(
-            std::max((resp_time / 8 + (Session.FrameSendRate - 1)) /
+            std::max(((resp_time / 8) + (Session.FrameSendRate - 1)) /
                          Session.FrameSendRate * Session.FrameSendRate,
                      Session.FrameSendRate * 2));
       }
@@ -1483,9 +1483,9 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
   // net->Set_Timing (resp_time + 10, -1, (resp_time * 4)+15);
 
   if (Session.Type == GAME_INTERNET) {
-    net->Set_Timing(resp_time + 10, -1, (resp_time + 10) * 8 + 15);
+    net->Set_Timing(resp_time + 10, -1, ((resp_time + 10) * 8) + 15);
   } else {
-    net->Set_Timing(resp_time + 10, -1, resp_time * 4 + 15);
+    net->Set_Timing(resp_time + 10, -1, (resp_time * 4) + 15);
   }
 }
 
@@ -1527,9 +1527,9 @@ static void Generate_Process_Time_Event(ConnManClass* net) {
   //
   // net->Set_Timing (resp_time + 10, -1, (resp_time * 4)+15);
   if (Session.Type == GAME_INTERNET) {
-    net->Set_Timing(resp_time + 10, -1, (resp_time + 10) * 8 + 15);
+    net->Set_Timing(resp_time + 10, -1, ((resp_time + 10) * 8) + 15);
   } else {
-    net->Set_Timing(resp_time + 10, -1, resp_time * 4 + 15);
+    net->Set_Timing(resp_time + 10, -1, (resp_time * 4) + 15);
   }
 
   if (IsMono) {
@@ -1667,7 +1667,7 @@ static int Send_Packets(ConnManClass* net, char* multi_packet_buf,
   //........................................................................
   // Make sure we don't send so many events that our DoList fills up
   //........................................................................
-  cap = std::min(cap, kMaxEvents * 64 - DoList.Count);
+  cap = std::min(cap, (kMaxEvents * 64) - DoList.Count);
 
   //
   // 10/21/96 5:12PM - ST
@@ -3498,7 +3498,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
           }
           if (check_crc && DoList[j].Frame == Frame &&
               DoList[j].Data.FrameInfo.Delay < 32) {
-            index = DoList[j].Frame - DoList[j].Data.FrameInfo.Delay & 0x001f;
+            index = (DoList[j].Frame - DoList[j].Data.FrameInfo.Delay) & 0x001f;
             if (CRC[index] != DoList[j].Data.FrameInfo.CRC) {
               Print_CRCs(&DoList[j]);
 

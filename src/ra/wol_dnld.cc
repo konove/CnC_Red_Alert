@@ -74,12 +74,12 @@ bool WOL_Download_Dialog(IDownload* pDownload,
 
   int d_cancel_w = config::kIsEnglish ? 80 : 100;
   int d_cancel_h = 18;
-  int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
+  int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
   int d_cancel_y = d_dialog_y + d_dialog_h - 40;
 
   int d_progress_w = 200;
   int d_progress_h = 20;
-  int d_progress_x = (SeenBuff.Get_Width() / 2) - d_progress_w / 2;
+  int d_progress_x = (SeenBuff.Get_Width() / 2) - (d_progress_w / 2);
   int d_progress_y = d_dialog_y + 90;
 
   //	int	width;
@@ -114,16 +114,16 @@ bool WOL_Download_Dialog(IDownload* pDownload,
 
   StaticButtonClass StatTitle(0, szTitle, TPF_CENTER | kTpfText,
                               d_dialog_x + d_margin, d_dialog_y + 28,
-                              d_dialog_w - 2 * d_margin, d_txt6_h);
+                              d_dialog_w - (2 * d_margin), d_txt6_h);
   StaticButtonClass StatStatus(0, "", TPF_CENTER | kTpfText,
                                d_dialog_x + d_margin, d_dialog_y + 49,
-                               d_dialog_w - 2 * d_margin, d_txt6_h);
+                               d_dialog_w - (2 * d_margin), d_txt6_h);
   StaticButtonClass StatBytes(0, "", TPF_CENTER | kTpfText,
                               d_dialog_x + d_margin, d_dialog_y + 71,
-                              d_dialog_w - 2 * d_margin, d_txt6_h);
+                              d_dialog_w - (2 * d_margin), d_txt6_h);
   StaticButtonClass StatTime(0, "", TPF_CENTER | kTpfText,
                              d_dialog_x + d_margin, d_dialog_y + 117,
-                             d_dialog_w - 2 * d_margin, d_txt6_h);
+                             d_dialog_w - (2 * d_margin), d_txt6_h);
 
   typedef enum {
     REDRAW_NONE = 0,

@@ -410,7 +410,7 @@ T Generate_Prime(Straw& rng, int pbits, const T*) {
 
   do {
     q.Randomize(rng, minQ, maxQ);
-    p = q * 2 + static_cast<unsigned short>(1);
+    p = (q * 2) + static_cast<unsigned short>(1);
 
     typename T::RemainderTable rtQ(q);
     typename T::RemainderTable rtP(p);

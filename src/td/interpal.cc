@@ -193,7 +193,7 @@ void Create_Palette_Interpolation_Table() {
         diff_b = static_cast<int>(*match_pal_ptr) - dest_b;
         match_pal_ptr++;
 
-        distance = diff_r * diff_r + diff_g * diff_g + diff_b * diff_b;
+        distance = (diff_r * diff_r) + (diff_g * diff_g) + (diff_b * diff_b);
         if (distance < closest_distance) {
           closest_distance = distance;
           index_of_closest_color = p;

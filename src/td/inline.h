@@ -41,8 +41,8 @@ template <std::integral T>
 /*
 **	Inline miscellaneous functions.
 */
-#define XYP_COORD(x, y)                             \
-  COORDINATE(((x) * ICON_LEPTON_W) / CELL_PIXEL_W + \
+#define XYP_COORD(x, y)                               \
+  COORDINATE((((x) * ICON_LEPTON_W) / CELL_PIXEL_W) + \
              ((((y) * ICON_LEPTON_H) / CELL_PIXEL_H) << 16))
 inline FacingType Dir_Facing(DirType facing) {
   return static_cast<FacingType>(((unsigned char)(facing + 0x10) & 0xFF) >> 5);
@@ -139,10 +139,10 @@ inline CELL Adjacent_Cell(CELL cell, DirType dir) {
   return static_cast<CELL>(cell + AdjacentCell[Dir_Facing(dir)]);
 }
 inline int Lepton_To_Pixel(int lepton) {
-  return (lepton * ICON_PIXEL_W + ICON_LEPTON_W / 2) / ICON_LEPTON_W;
+  return ((lepton * ICON_PIXEL_W) + (ICON_LEPTON_W / 2)) / ICON_LEPTON_W;
 }
 inline int Pixel_To_Lepton(int pixel) {
-  return (pixel * ICON_LEPTON_W + ICON_PIXEL_W / 2) / ICON_PIXEL_W;
+  return ((pixel * ICON_LEPTON_W) + (ICON_PIXEL_W / 2)) / ICON_PIXEL_W;
 }
 inline COORDINATE XYP_Coord(int x, int y) {
   return XY_Coord(Pixel_To_Lepton(x), Pixel_To_Lepton(y));

@@ -67,7 +67,7 @@ bool DecompressVqaSosData(SosCompressInfo* info, std::size_t uncomp_size) {
       // Formula: ( (nibble * 2 + 1) * step ) / 8
       // Note: The logic (nibble & 7) masks out the sign bit for calculation
       const int sign = nibble & 8 ? -1 : 1;
-      const int diff = ((((nibble & 7) * 2 + 1) * step) >> 3) * sign;
+      const int diff = (((((nibble & 7) * 2) + 1) * step) >> 3) * sign;
 
       // 5. Update and Clamp Predicted Value
       info->predicted = std::clamp(info->predicted + diff, -32768, 32767);

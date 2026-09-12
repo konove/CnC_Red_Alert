@@ -91,7 +91,8 @@ class FixedHeapClass {
 
  protected:
   void* operator[](int index) {
-    return static_cast<char*>(Buffer) + static_cast<base::ssize>(index) * Size;
+    return static_cast<char*>(Buffer) +
+           (static_cast<base::ssize>(index) * Size);
   }
 
   /*

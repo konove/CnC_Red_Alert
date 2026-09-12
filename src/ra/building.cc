@@ -2885,7 +2885,7 @@ COORDINATE BuildingClass::Docking_Coord() const {
     return Coord_Add(Coord, XYP_COORD(24, 18));
   }
   if (*this == STRUCT_AIRSTRIP) {
-    return Coord_Add(Coord, XYP_COORD(ICON_PIXEL_W + ICON_PIXEL_W / 2, 28));
+    return Coord_Add(Coord, XYP_COORD(ICON_PIXEL_W + (ICON_PIXEL_W / 2), 28));
   }
   return TechnoClass::Docking_Coord();
 }
@@ -3368,7 +3368,7 @@ int BuildingClass::Mission_Guard() {
     if (*this == STRUCT_REPAIR) {
       return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
     }
-    return MissionControl[Mission].Normal_Delay() * 3 + Random_Pick(0, 2);
+    return (MissionControl[Mission].Normal_Delay() * 3) + Random_Pick(0, 2);
   }
   return MissionControl[Mission].AA_Delay() + Random_Pick(0, 2);
 }
@@ -4789,11 +4789,11 @@ CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
     y1 = -1;
     y2 = Class->Height();
     for (x1 = -1; x1 <= Class->Width(); x1++) {
-      cell = static_cast<CELL>(origin + x1 + y1 * MAP_CELL_W);
+      cell = static_cast<CELL>(origin + x1 + (y1 * MAP_CELL_W));
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
         return cell;
       }
-      cell = static_cast<CELL>(origin + x1 + y2 * MAP_CELL_W);
+      cell = static_cast<CELL>(origin + x1 + (y2 * MAP_CELL_W));
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
         return cell;
       }
@@ -4802,11 +4802,11 @@ CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
     x1 = -1;
     x2 = Class->Width();
     for (y1 = -1; y1 <= Class->Height(); y1++) {
-      cell = static_cast<CELL>(origin + y1 * MAP_CELL_W + x1);
+      cell = static_cast<CELL>(origin + (y1 * MAP_CELL_W) + x1);
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
         return cell;
       }
-      cell = static_cast<CELL>(origin + y1 * MAP_CELL_W + x2);
+      cell = static_cast<CELL>(origin + (y1 * MAP_CELL_W) + x2);
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
         return cell;
       }
@@ -5650,8 +5650,8 @@ void BuildingClass::Remove_Gap_Effect() {
 const short* BuildingClass::Overlap_List(bool redraw) const {
   if ((SpiedBy & 1 << PlayerPtr->Class->House) != 0 && IsSelected &&
       (*this == STRUCT_BARRACKS || *this == STRUCT_TENT)) {
-    static const short _list[] = {-1, 2, MAP_CELL_W * 1 - 1, MAP_CELL_W * 1 + 2,
-                                  kRefreshEol};
+    static const short _list[] = {-1, 2, (MAP_CELL_W * 1) - 1,
+                                  (MAP_CELL_W * 1) + 2, kRefreshEol};
     return _list;
   }
   return TechnoClass::Overlap_List(redraw);

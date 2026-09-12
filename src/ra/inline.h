@@ -114,8 +114,8 @@
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
 inline int Lepton_To_Pixel(LEPTON lepton) {
-  return (static_cast<int>((signed short)lepton) * ICON_PIXEL_W +
-          ICON_LEPTON_W / 2) /
+  return ((static_cast<int>((signed short)lepton) * ICON_PIXEL_W) +
+          (ICON_LEPTON_W / 2)) /
          ICON_LEPTON_W;
 }
 
@@ -134,7 +134,7 @@ inline int Lepton_To_Pixel(LEPTON lepton) {
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
 inline LEPTON Pixel_To_Lepton(int pixel) {
-  return static_cast<LEPTON>((pixel * ICON_LEPTON_W + ICON_PIXEL_W / 2) /
+  return static_cast<LEPTON>(((pixel * ICON_LEPTON_W) + (ICON_PIXEL_W / 2)) /
                              ICON_PIXEL_W);
 }
 
@@ -996,9 +996,9 @@ inline int Distance(int x1, int y1, int x2, int y2) {
     diff2 = -diff2;
   }
   if (diff1 > diff2) {
-    return diff1 + static_cast<unsigned>(diff2) / 2;
+    return diff1 + (static_cast<unsigned>(diff2) / 2);
   }
-  return diff2 + static_cast<unsigned>(diff1) / 2;
+  return diff2 + (static_cast<unsigned>(diff1) / 2);
 }
 
 #endif  // CNC_RED_ALERT_RA_INLINE_H_

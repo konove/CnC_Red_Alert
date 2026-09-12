@@ -117,9 +117,9 @@ void GraphicBufferClass::Update_Palette(const uint8_t* palette) {
 
   for (int i = 0; i < sdl_pal->ncolors; i++) {
     // convert from 6-bit
-    int new_r = palette[i * 3 + 0] << 2 | palette[i * 3 + 0] >> 4;
-    int new_g = palette[i * 3 + 1] << 2 | palette[i * 3 + 1] >> 4;
-    int new_b = palette[i * 3 + 2] << 2 | palette[i * 3 + 2] >> 4;
+    int new_r = palette[(i * 3) + 0] << 2 | palette[(i * 3) + 0] >> 4;
+    int new_g = palette[(i * 3) + 1] << 2 | palette[(i * 3) + 1] >> 4;
+    int new_b = palette[(i * 3) + 2] << 2 | palette[(i * 3) + 2] >> 4;
 
     changed = changed || sdl_pal->colors[i].r != new_r ||
               sdl_pal->colors[i].g != new_g || sdl_pal->colors[i].b != new_b;
@@ -182,12 +182,12 @@ void GraphicBufferClass::Render_Scaled_Frame(const uint8_t* paletted_data,
   auto* dest = static_cast<uint32_t*>(pixels);
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++) {
-      uint8_t idx = paletted_data[y * width + x];
+      uint8_t idx = paletted_data[(y * width) + x];
       // Use palette already converted to 8-bit by Update_Palette
       uint8_t r = sdl_pal->colors[idx].r;
       uint8_t g = sdl_pal->colors[idx].g;
       uint8_t b = sdl_pal->colors[idx].b;
-      dest[y * (pitch / 4) + x] = 0xFFU << 24 | b << 16 | g << 8 | r;
+      dest[(y * (pitch / 4)) + x] = 0xFFU << 24 | b << 16 | g << 8 | r;
     }
   }
   SDL_UnlockTexture(static_cast<SDL_Texture*>(VQATexture));

@@ -105,7 +105,7 @@ void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
   int iheight = IconHeight;
 
   // Fetch pointer to start of icon's data.
-  auto* ptr = StampPtr + static_cast<base::ssize>(icon) * IconSize;
+  auto* ptr = StampPtr + (static_cast<base::ssize>(icon) * IconSize);
 
   // Update the clipping window coordinates to be valid maxes instead of width &
   // height , and change the coordinates to be window-relative
@@ -164,7 +164,7 @@ void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
   auto* vp_dst = (GraphicViewPortClass*)thisptr;
   base::ssize dst_area =
       vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
-  auto* dst_offset = vp_dst->Get_Offset() + x_pixel + y_pixel * dst_area;
+  auto* dst_offset = vp_dst->Get_Offset() + x_pixel + (y_pixel * dst_area);
 
   // Determine row modulo for advancing to next line.
   int modulo = vp_dst->Get_Width() - iwidth;

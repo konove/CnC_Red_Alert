@@ -386,16 +386,16 @@ TEST(TdSaveValuesTest, RandomStreamsResumeAfterMixedDraws) {
   std::array<int, 90> expected{};
   for (size_t i = 0; i < 30; ++i) {
     expected[i * 3] = GameRandomRange(-30, 70);
-    expected[i * 3 + 1] = Random();
-    expected[i * 3 + 2] = Sim_Random();
+    expected[(i * 3) + 1] = Random();
+    expected[(i * 3) + 2] = Sim_Random();
   }
   SeedGameRandom(999);
   Restore(state, bytes);
   RestoreRandomState(state);
   for (size_t i = 0; i < 30; ++i) {
     EXPECT_EQ(GameRandomRange(-30, 70), expected[i * 3]);
-    EXPECT_EQ(Random(), expected[i * 3 + 1]);
-    EXPECT_EQ(Sim_Random(), expected[i * 3 + 2]);
+    EXPECT_EQ(Random(), expected[(i * 3) + 1]);
+    EXPECT_EQ(Sim_Random(), expected[(i * 3) + 2]);
   }
 }
 

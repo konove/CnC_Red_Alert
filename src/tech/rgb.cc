@@ -83,10 +83,10 @@ HSVClass RGBClass::ToHSV() const {
       segment_numerator = g - b;
     } else if (max_val == g) {
       // Segment 2: Green is dominant. Offset is 2.0 * delta
-      segment_numerator = 2 * delta + (b - r);
+      segment_numerator = (2 * delta) + (b - r);
     } else {
       // Segment 4: Blue is dominant. Offset is 4.0 * delta
-      segment_numerator = 4 * delta + (r - g);
+      segment_numerator = (4 * delta) + (r - g);
     }
 
     // Convert to 0-255 range.

@@ -80,12 +80,12 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
 
   int d_gaugeplayers_w = 140;
   int d_gaugeplayers_h = 18;
-  int d_gaugeplayers_x = d_dialog_cx - d_gaugeplayers_w / 2;
+  int d_gaugeplayers_x = d_dialog_cx - (d_gaugeplayers_w / 2);
   int d_gaugeplayers_y = d_dialog_y + d_margin + 42;
 
   int d_checktourn_w = 150;
   int d_checktourn_h = 18;
-  int d_checktourn_x = d_dialog_cx - d_checktourn_w / 2;
+  int d_checktourn_x = d_dialog_cx - (d_checktourn_w / 2);
   int d_checktourn_y = d_gaugeplayers_y + d_gaugeplayers_h + 10;
 
   int d_checkpriv_w = d_checktourn_w;

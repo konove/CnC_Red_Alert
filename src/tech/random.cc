@@ -28,7 +28,7 @@ int RandomClass::Next() {
   // then return the significant bits. The arithmetic is intentionally 32-bit
   // modular: the recurrence and a bit extraction must match across platforms so
   // that the sequence stays identical for multiplayer sync and saved games.
-  seed_ = seed_ * kMultiplier + kAddend;
+  seed_ = (seed_ * kMultiplier) + kAddend;
   return static_cast<int>(seed_ >> kThrowAwayBits & kSignificantMask);
 }
 
@@ -50,7 +50,7 @@ int RandomClass::InRange(int low, int high) {
   // gives the highest set bit plus one, so the mask is the smallest 2^n - 1
   // that covers the (windowed) magnitude. The width floors at one bit so the
   // mask is never empty even when the magnitude has no bits inside the window.
-  const int magnitude = high - low & kSignificantMask;
+  const int magnitude = (high - low) & kSignificantMask;
   const int high_bit = magnitude == 0 ? 1 : std::bit_width<unsigned>(magnitude);
   const int mask = (1 << high_bit) - 1;
 

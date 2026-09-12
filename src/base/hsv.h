@@ -19,7 +19,7 @@ struct Rgb8 {
 // This reproduces the original WWLIB Divide_With_Round; the palette
 // conversions depend on its exact rounding.
 constexpr int DivideWithRound(int numerator, int denominator) {
-  return numerator / denominator +
+  return (numerator / denominator) +
          (numerator % denominator >= (denominator + 1) / 2 ? 1 : 0);
 }
 

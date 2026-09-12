@@ -480,7 +480,7 @@ bool FootClass::Basic_Path() {
         */
         path = Find_Path(cell, &workpath2[0], sizeof(workpath2), MOVE_CLOAK);
         if (path && path->Cost &&
-            path->Cost < std::max(path1.Cost + path1.Cost / 2, 3)) {
+            path->Cost < std::max(path1.Cost + (path1.Cost / 2), 3)) {
           memcpy(&path1, path, sizeof(path1));
           memcpy(workpath1, workpath2, sizeof(workpath1));
         } else {
@@ -492,7 +492,7 @@ bool FootClass::Basic_Path() {
           for (MoveType move = MOVE_MOVING_BLOCK; move < maxtype; move++) {
             path = Find_Path(cell, &workpath2[0], sizeof(workpath2), move);
             if (path && path->Cost &&
-                path->Cost < std::max(path1.Cost + path1.Cost / 2, 3)) {
+                path->Cost < std::max(path1.Cost + (path1.Cost / 2), 3)) {
               memcpy(&path1, path, sizeof(path1));
               memcpy(workpath1, workpath2, sizeof(workpath1));
             }

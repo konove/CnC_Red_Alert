@@ -357,16 +357,16 @@ const short* AnimClass::Overlap_List() const {
                                    -(MAP_CELL_W + 1),
                                    -(MAP_CELL_W - 1),
                                    -(2 * MAP_CELL_W),
-                                   -(2 * MAP_CELL_W - 1),
-                                   -(2 * MAP_CELL_W + 1),
+                                   -((2 * MAP_CELL_W) - 1),
+                                   -((2 * MAP_CELL_W) + 1),
                                    REFRESH_EOL};
   static const short OverlapNW[] = {0,
                                     -1,
                                     -MAP_CELL_W,
                                     -(MAP_CELL_W + 1),
                                     -(MAP_CELL_W + 2),
-                                    -(MAP_CELL_W * 2 + 2),
-                                    -(MAP_CELL_W * 2 + 1),
+                                    -((MAP_CELL_W * 2) + 2),
+                                    -((MAP_CELL_W * 2) + 1),
                                     REFRESH_EOL};
   static const short OverlapW[] = {
       0, -1, -2, -(MAP_CELL_W + 1), -(MAP_CELL_W + 2), REFRESH_EOL};
@@ -382,9 +382,9 @@ const short* AnimClass::Overlap_List() const {
                                    MAP_CELL_W - 1,
                                    MAP_CELL_W,
                                    MAP_CELL_W + 1,
-                                   2 * MAP_CELL_W + 1,
+                                   (2 * MAP_CELL_W) + 1,
                                    2 * MAP_CELL_W,
-                                   2 * MAP_CELL_W - 1,
+                                   (2 * MAP_CELL_W) - 1,
                                    REFRESH_EOL};
   static const short OverlapSE[] = {0,
                                     1,
@@ -401,27 +401,44 @@ const short* AnimClass::Overlap_List() const {
                                     -MAP_CELL_W,
                                     -(MAP_CELL_W - 1),
                                     -(MAP_CELL_W - 2),
-                                    -(MAP_CELL_W * 2 - 2),
-                                    -(MAP_CELL_W * 2 - 1),
+                                    -((MAP_CELL_W * 2) - 2),
+                                    -((MAP_CELL_W * 2) - 1),
                                     REFRESH_EOL};
-  static const short OverlapIon[] = {
-      -MAP_CELL_W * 7 - 1, (-MAP_CELL_W * 7), -MAP_CELL_W * 7 + 1,
-      -MAP_CELL_W * 6 - 1, (-MAP_CELL_W * 6), -MAP_CELL_W * 6 + 1,
-      -MAP_CELL_W * 5 - 1, (-MAP_CELL_W * 5), -MAP_CELL_W * 5 + 1,
-      -MAP_CELL_W * 4 - 1, (-MAP_CELL_W * 4), -MAP_CELL_W * 4 + 1,
-      -MAP_CELL_W * 3 - 1, (-MAP_CELL_W * 3), -MAP_CELL_W * 3 + 1,
-      -MAP_CELL_W * 2 - 1, (-MAP_CELL_W * 2), -MAP_CELL_W * 2 + 1,
-      -MAP_CELL_W * 1 - 1, (-MAP_CELL_W * 1), -MAP_CELL_W * 1 + 1,
-      -MAP_CELL_W * 0 - 1, (-MAP_CELL_W * 0), -MAP_CELL_W * 0 + 1,
-      REFRESH_EOL};
+  static const short OverlapIon[] = {(-MAP_CELL_W * 7) - 1,
+                                     (-MAP_CELL_W * 7),
+                                     (-MAP_CELL_W * 7) + 1,
+                                     (-MAP_CELL_W * 6) - 1,
+                                     (-MAP_CELL_W * 6),
+                                     (-MAP_CELL_W * 6) + 1,
+                                     (-MAP_CELL_W * 5) - 1,
+                                     (-MAP_CELL_W * 5),
+                                     (-MAP_CELL_W * 5) + 1,
+                                     (-MAP_CELL_W * 4) - 1,
+                                     (-MAP_CELL_W * 4),
+                                     (-MAP_CELL_W * 4) + 1,
+                                     (-MAP_CELL_W * 3) - 1,
+                                     (-MAP_CELL_W * 3),
+                                     (-MAP_CELL_W * 3) + 1,
+                                     (-MAP_CELL_W * 2) - 1,
+                                     (-MAP_CELL_W * 2),
+                                     (-MAP_CELL_W * 2) + 1,
+                                     (-MAP_CELL_W * 1) - 1,
+                                     (-MAP_CELL_W * 1),
+                                     (-MAP_CELL_W * 1) + 1,
+                                     (-MAP_CELL_W * 0) - 1,
+                                     (-MAP_CELL_W * 0),
+                                     (-MAP_CELL_W * 0) + 1,
+                                     REFRESH_EOL};
 
   static const short OverlapAtom[] = {
-      -MAP_CELL_W * 2 - 1, (-MAP_CELL_W * 2), -MAP_CELL_W * 2 + 1,
-      -MAP_CELL_W * 1 - 1, (-MAP_CELL_W * 1), -MAP_CELL_W * 1 + 1,
-      -MAP_CELL_W * 0 - 1, (-MAP_CELL_W * 0), -MAP_CELL_W * 0 + 1,
-      MAP_CELL_W * 1 - 1,  (MAP_CELL_W * 1),  MAP_CELL_W * 1 + 1,
-      MAP_CELL_W * 2 - 1,  (MAP_CELL_W * 2),  MAP_CELL_W * 2 + 1,
-      REFRESH_EOL};
+      (-MAP_CELL_W * 2) - 1, (-MAP_CELL_W * 2),
+      (-MAP_CELL_W * 2) + 1, (-MAP_CELL_W * 1) - 1,
+      (-MAP_CELL_W * 1),     (-MAP_CELL_W * 1) + 1,
+      (-MAP_CELL_W * 0) - 1, (-MAP_CELL_W * 0),
+      (-MAP_CELL_W * 0) + 1, (MAP_CELL_W * 1) - 1,
+      (MAP_CELL_W * 1),      (MAP_CELL_W * 1) + 1,
+      (MAP_CELL_W * 2) - 1,  (MAP_CELL_W * 2),
+      (MAP_CELL_W * 2) + 1,  REFRESH_EOL};
 
   switch (Class->Type) {
     case ANIM_CHEM_N:
@@ -1010,7 +1027,7 @@ void AnimClass::Middle() {
           continue;
         }
 
-        int damage = rawdamage / (std::abs(radius) / 2 + 1);
+        int damage = rawdamage / ((std::abs(radius) / 2) + 1);
         Explosion_Damage(Cell_Coord(tcell), damage, building, WARHEAD_FIRE);
         new SmudgeClass(Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
                         Cell_Coord(tcell));

@@ -46,23 +46,23 @@ bool Get_Broadcast_Addresses() {
   int d_dialog_h = 320;                     // dialog height
   int d_dialog_x = (640 - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y = (400 - d_dialog_h) / 2;  // centered y-coord
-  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
+  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
 
   int d_margin2 = 14;  // small margin
 
   int d_ip_address_list_w = 600;
-  int d_ip_address_list_h = (20 * 6 + 3) * 2;  // 6 rows high
-  int d_ip_address_list_x = d_dialog_cx - d_ip_address_list_w / 2;
+  int d_ip_address_list_h = ((20 * 6) + 3) * 2;  // 6 rows high
+  int d_ip_address_list_x = d_dialog_cx - (d_ip_address_list_w / 2);
   int d_ip_address_list_y = d_margin2 + d_dialog_y;
 
   int d_ok_w = 80;
   int d_ok_h = 18;
-  int d_ok_x = d_dialog_cx + d_dialog_w / 4;
+  int d_ok_x = d_dialog_cx + (d_dialog_w / 4);
   int d_ok_y = d_dialog_y + d_dialog_h - 40;
 
   int d_cancel_w = config::kIsEnglish ? 80 : 100;
   int d_cancel_h = 18;
-  int d_cancel_x = d_dialog_cx - d_dialog_w / 4;
+  int d_cancel_x = d_dialog_cx - (d_dialog_w / 4);
   int d_cancel_y = d_dialog_y + d_dialog_h - 40;
 
   //------------------------------------------------------------------------
@@ -177,7 +177,7 @@ bool Get_Broadcast_Addresses() {
         //...............................................................
         //	Dialog & Field labels
         //...............................................................
-        Fancy_Text_Print("IP Addresses", d_dialog_cx - width / 2,
+        Fancy_Text_Print("IP Addresses", d_dialog_cx - (width / 2),
                          d_dialog_y + 50, scheme, TBLACK, kTpfText);
 
         //...............................................................

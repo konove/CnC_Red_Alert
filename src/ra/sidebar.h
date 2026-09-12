@@ -68,7 +68,7 @@ class SidebarClass : public PowerClass {
       13;  // Section with the repair/sell buttons.
   static constexpr int kColumnOneX = 320 - 80 + 8;  // Side strip corners.
   static constexpr int kColumnOneY = kSideY + kTopHeight;
-  static constexpr int kColumnTwoX = 320 - 80 + 8 + (80 - 16) / 2 + 3;
+  static constexpr int kColumnTwoX = 320 - 80 + 8 + ((80 - 16) / 2) + 3;
   static constexpr int kColumnTwoY = 7 + 70 + 13;
   static constexpr int kColumns = 2;  // Side strips on the sidebar.
 
@@ -157,7 +157,7 @@ class SidebarClass : public PowerClass {
     static constexpr int kMaxVisible = 4;      // Object slots visible at once.
     static constexpr int kScrollRate = 12;     // Pixel jump while scrolling.
     static constexpr int kUpXOffset = 2;       // Scroll arrow coordinates.
-    static constexpr int kUpYOffset = kMaxVisible * kObjectHeight + 1;
+    static constexpr int kUpYOffset = (kMaxVisible * kObjectHeight) + 1;
     static constexpr int kDownXOffset = 18;
     static constexpr int kDownYOffset = kUpYOffset;
     static constexpr int kLeftEdgeOffset = 2;  // Building shapes, from the
@@ -318,7 +318,7 @@ class SidebarClass : public PowerClass {
   class SBGadgetClass : public GadgetClass {
    public:
     SBGadgetClass() noexcept
-        : GadgetClass((kSideX + 8) * 2, kSideY * 2, (kSideWidth - 1) * 2 - 1,
+        : GadgetClass((kSideX + 8) * 2, kSideY * 2, ((kSideWidth - 1) * 2) - 1,
                       (kSideHeight - 1) * 2, LEFTUP) {}
 
    protected:

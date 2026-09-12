@@ -148,7 +148,7 @@ int MapEditClass::Placement_Dialog() {
     D_PICTURE_H = 210,
     D_PICTURE_X = D_DIALOG_X + 16,  // must start on a byte boundary!
     D_PICTURE_Y = D_DIALOG_Y + D_MARGIN + D_TXT8_H + D_MARGIN,
-    D_PICTURE_CX = D_PICTURE_X + D_PICTURE_W / 2,
+    D_PICTURE_CX = D_PICTURE_X + (D_PICTURE_W / 2),
 
     D_GDI_W = 90,
     D_GDI_H = 18,
@@ -532,9 +532,9 @@ int MapEditClass::Placement_Dialog() {
         /*
         ........................ Erase the grid .........................
         */
-        LogicPage->Fill_Rect(D_GRID_X - GRIDBLOCK_W * 2, D_GRID_Y,
-                             D_GRID_X + GRIDSIZE * GRIDBLOCK_W,
-                             D_GRID_Y + GRIDSIZE * GRIDBLOCK_H, BLACK);
+        LogicPage->Fill_Rect(D_GRID_X - (GRIDBLOCK_W * 2), D_GRID_Y,
+                             D_GRID_X + (GRIDSIZE * GRIDBLOCK_W),
+                             D_GRID_Y + (GRIDSIZE * GRIDBLOCK_H), BLACK);
 
         /*
         .............. Draw a box for every cell occupied ...............
@@ -554,14 +554,14 @@ int MapEditClass::Placement_Dialog() {
         */
         for (y = 0; y <= GRIDSIZE; y++) {
           for (x = 0; x <= GRIDSIZE; x++) {
-            LogicPage->Draw_Line(D_GRID_X + x * GRIDBLOCK_W, D_GRID_Y,
-                                 D_GRID_X + x * GRIDBLOCK_W,
-                                 D_GRID_Y + GRIDSIZE * GRIDBLOCK_H,
+            LogicPage->Draw_Line(D_GRID_X + (x * GRIDBLOCK_W), D_GRID_Y,
+                                 D_GRID_X + (x * GRIDBLOCK_W),
+                                 D_GRID_Y + (GRIDSIZE * GRIDBLOCK_H),
                                  CC_GREEN_SHADOW);
           }
-          LogicPage->Draw_Line(D_GRID_X, D_GRID_Y + y * GRIDBLOCK_H,
-                               D_GRID_X + GRIDSIZE * GRIDBLOCK_W,
-                               D_GRID_Y + y * GRIDBLOCK_H, CC_GREEN_SHADOW);
+          LogicPage->Draw_Line(D_GRID_X, D_GRID_Y + (y * GRIDBLOCK_H),
+                               D_GRID_X + (GRIDSIZE * GRIDBLOCK_W),
+                               D_GRID_Y + (y * GRIDBLOCK_H), CC_GREEN_SHADOW);
         }
 
         /*...............................................................
@@ -1044,7 +1044,7 @@ int MapEditClass::Place_Object() {
             ((TemplateTypeClass*)PendingObject)->Type;
         (*this)[template_cell].TIcon = static_cast<unsigned char>(
             Cell_X(*occupy) +
-            Cell_Y(*occupy) * ((TemplateTypeClass*)PendingObject)->Width);
+            (Cell_Y(*occupy) * ((TemplateTypeClass*)PendingObject)->Width));
         (*this)[template_cell].Recalc_Attributes();
         /*
         ................ Try to put the object back down ................

@@ -193,12 +193,14 @@ void PowerClass::Draw_It(bool complete) {
         ** 1st get the height of the filled section of the power bar
         */
         int bottom = PowY + PowHeight - 1;
-        int power_height = PowerHeight == DesiredPowerHeight
-                               ? PowerHeight + _modtable[PowerBounce] * PowerDir
-                               : PowerHeight;
-        int drain_height = DrainHeight == DesiredDrainHeight
-                               ? DrainHeight + _modtable[DrainBounce] * DrainDir
-                               : DrainHeight;
+        int power_height =
+            PowerHeight == DesiredPowerHeight
+                ? PowerHeight + (_modtable[PowerBounce] * PowerDir)
+                : PowerHeight;
+        int drain_height =
+            DrainHeight == DesiredDrainHeight
+                ? DrainHeight + (_modtable[DrainBounce] * DrainDir)
+                : DrainHeight;
         power_height = Bound(power_height, 0, PowHeight - 2);
         drain_height = Bound(drain_height, 0, PowHeight - 2);
 
@@ -408,7 +410,7 @@ int PowerClass::Power_Height(int value) {
   ** of each.
   */
   for (int lp = 0; lp < num; lp++) {
-    retval = retval + (PowHeight - 2 - retval) / POWER_STEP_FACTOR;
+    retval = retval + ((PowHeight - 2 - retval) / POWER_STEP_FACTOR);
     value -= POWER_STEP_LEVEL;
   }
 
@@ -416,8 +418,8 @@ int PowerClass::Power_Height(int value) {
   ** Adjust the retval to factor in the remainder
   */
   if (value) {
-    retval = retval + (PowHeight - 2 - retval) / POWER_STEP_FACTOR * value /
-                          POWER_STEP_LEVEL;
+    retval = retval + ((PowHeight - 2 - retval) / POWER_STEP_FACTOR * value /
+                       POWER_STEP_LEVEL);
   }
 
   retval = Bound(retval, 0, PowHeight - 2);

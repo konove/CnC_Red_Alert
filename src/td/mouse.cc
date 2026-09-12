@@ -126,7 +126,7 @@ void MouseClass::Mouse_Small(bool wwsmall) {
     if (control->SmallFrame != -1) {
       Set_Mouse_Cursor(
           control->X, control->Y,
-          Extract_Shape(MouseShapes, control->SmallFrame + Frame / 4));
+          Extract_Shape(MouseShapes, control->SmallFrame + (Frame / 4)));
     } else {
       Set_Mouse_Cursor(MouseControl[MOUSE_NORMAL].X,
                        MouseControl[MOUSE_NORMAL].Y,
@@ -135,7 +135,7 @@ void MouseClass::Mouse_Small(bool wwsmall) {
   } else {
     Set_Mouse_Cursor(
         control->X, control->Y,
-        Extract_Shape(MouseShapes, control->StartFrame + Frame / 4));
+        Extract_Shape(MouseShapes, control->StartFrame + (Frame / 4)));
   }
 }
 
@@ -190,7 +190,7 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
     baseshp = wwsmall ? control->SmallFrame : control->StartFrame;
 
     Set_Mouse_Cursor(control->X, control->Y,
-                     Extract_Shape(MouseShapes, baseshp + Frame / 4));
+                     Extract_Shape(MouseShapes, baseshp + (Frame / 4)));
     CurrentMouseShape = mouse;
     IsSmall = wwsmall;
     return true;

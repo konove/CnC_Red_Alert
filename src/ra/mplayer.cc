@@ -94,35 +94,35 @@ GameType Select_MPlayer_Game() {
   int d_dialog_h = config::kWolapiEnabled ? 178 : 156;  //	ajw
   int d_dialog_y = config::kWolapiEnabled ? (510 - d_dialog_h) / 2 : 180;
   int d_dialog_x = (640 - d_dialog_w) / 2;
-  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;
+  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);
 
   int d_txt6_h = 14;
   int d_margin = 14;
 
   int d_modemserial_w = 160;
   int d_modemserial_h = 18;
-  int d_modemserial_x = d_dialog_cx - d_modemserial_w / 2;
+  int d_modemserial_x = d_dialog_cx - (d_modemserial_w / 2);
   int d_modemserial_y = d_dialog_y + d_margin + d_txt6_h + d_margin;
 
   int d_skirmish_w = 160;
   int d_skirmish_h = 18;
-  int d_skirmish_x = d_dialog_cx - d_skirmish_w / 2;
+  int d_skirmish_x = d_dialog_cx - (d_skirmish_w / 2);
   int d_skirmish_y = d_modemserial_y + d_modemserial_h + 4;
 
   int d_ipx_w = 160;
   int d_ipx_h = 18;
-  int d_ipx_x = d_dialog_cx - d_ipx_w / 2;
+  int d_ipx_x = d_dialog_cx - (d_ipx_w / 2);
   int d_ipx_y = d_skirmish_y + d_skirmish_h + 4;
 
   //	ajw 7/2/98 - added button
   int d_wol_w = 160;
   int d_wol_h = 18;
-  int d_wol_x = d_dialog_cx - d_wol_w / 2;
+  int d_wol_x = d_dialog_cx - (d_wol_w / 2);
   int d_wol_y = d_ipx_y + d_ipx_h + 4;
 
   int d_cancel_w = 120;
   int d_cancel_h = 18;
-  int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
+  int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
   int d_cancel_y = config::kWolapiEnabled ? d_wol_y + d_wol_h + d_margin
                                           : d_ipx_y + d_ipx_h + d_margin;
 
@@ -534,26 +534,26 @@ int Surrender_Dialog(const char* text) {
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
   enum {
-    D_DIALOG_W = 480,                           // dialog width
-    D_DIALOG_H = 126,                           // dialog height
-    D_DIALOG_X = (640 - D_DIALOG_W) / 2,        // centered x-coord
-    D_DIALOG_Y = (400 - D_DIALOG_H) / 2,        // centered y-coord
-    D_DIALOG_CX = D_DIALOG_X + D_DIALOG_W / 2,  // coord of x-center
+    D_DIALOG_W = 480,                             // dialog width
+    D_DIALOG_H = 126,                             // dialog height
+    D_DIALOG_X = (640 - D_DIALOG_W) / 2,          // centered x-coord
+    D_DIALOG_Y = (400 - D_DIALOG_H) / 2,          // centered y-coord
+    D_DIALOG_CX = D_DIALOG_X + (D_DIALOG_W / 2),  // coord of x-center
 
     D_TXT6_H = 14,     // ht of 6-pt text
     D_MARGIN = 10,     // margin width/height
     D_TOPMARGIN = 40,  // top margin
 
-    D_OK_W = 90,                                               // OK width
-    D_OK_H = 18,                                               // OK height
-    D_OK_X = D_DIALOG_CX - D_OK_W - 10,                        // OK x
-    D_OK_Y = D_DIALOG_Y + D_DIALOG_H - D_OK_H - D_MARGIN * 2,  // OK y
+    D_OK_W = 90,                                                 // OK width
+    D_OK_H = 18,                                                 // OK height
+    D_OK_X = D_DIALOG_CX - D_OK_W - 10,                          // OK x
+    D_OK_Y = D_DIALOG_Y + D_DIALOG_H - D_OK_H - (D_MARGIN * 2),  // OK y
 
     D_CANCEL_W = 90,                // Cancel width
     D_CANCEL_H = 18,                // Cancel height
     D_CANCEL_X = D_DIALOG_CX + 10,  // Cancel x
     D_CANCEL_Y = D_DIALOG_Y + D_DIALOG_H - D_CANCEL_H -
-        D_MARGIN * 2,  // Cancel y
+        (D_MARGIN * 2),  // Cancel y
   };
 
   //------------------------------------------------------------------------
@@ -727,25 +727,25 @@ int Abort_Dialog() {
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
   enum {
-    D_DIALOG_W = 340,                           // dialog width
-    D_DIALOG_H = 126,                           // dialog height
-    D_DIALOG_X = (640 - D_DIALOG_W) / 2,        // centered x-coord
-    D_DIALOG_Y = (400 - D_DIALOG_H) / 2,        // centered y-coord
-    D_DIALOG_CX = D_DIALOG_X + D_DIALOG_W / 2,  // coord of x-center
+    D_DIALOG_W = 340,                             // dialog width
+    D_DIALOG_H = 126,                             // dialog height
+    D_DIALOG_X = (640 - D_DIALOG_W) / 2,          // centered x-coord
+    D_DIALOG_Y = (400 - D_DIALOG_H) / 2,          // centered y-coord
+    D_DIALOG_CX = D_DIALOG_X + (D_DIALOG_W / 2),  // coord of x-center
 
     D_TXT6_H = 14,     // ht of 6-pt text
     D_MARGIN = 10,     // margin width/height
     D_TOPMARGIN = 40,  // top margin
 
-    D_YES_W = 90,                                                // YES width
-    D_YES_H = 18,                                                // YES height
-    D_YES_X = D_DIALOG_CX - D_YES_W - 10,                        // YES x
-    D_YES_Y = D_DIALOG_Y + D_DIALOG_H - D_YES_H - D_MARGIN * 2,  // YES y
+    D_YES_W = 90,                                                  // YES width
+    D_YES_H = 18,                                                  // YES height
+    D_YES_X = D_DIALOG_CX - D_YES_W - 10,                          // YES x
+    D_YES_Y = D_DIALOG_Y + D_DIALOG_H - D_YES_H - (D_MARGIN * 2),  // YES y
 
-    D_NO_W = 90,                                               // Cancel width
-    D_NO_H = 18,                                               // Cancel height
-    D_NO_X = D_DIALOG_CX + 10,                                 // Cancel x
-    D_NO_Y = D_DIALOG_Y + D_DIALOG_H - D_NO_H - D_MARGIN * 2,  // Cancel y
+    D_NO_W = 90,                // Cancel width
+    D_NO_H = 18,                // Cancel height
+    D_NO_X = D_DIALOG_CX + 10,  // Cancel x
+    D_NO_Y = D_DIALOG_Y + D_DIALOG_H - D_NO_H - (D_MARGIN * 2),  // Cancel y
   };
 
   //------------------------------------------------------------------------

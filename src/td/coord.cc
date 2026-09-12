@@ -113,19 +113,19 @@ const short* Coord_Spillage_List(COORDINATE coord, int maxsize) {
   */
   if (maxsize > ICON_PIXEL_W * 2) {
     static const short _gigundo[] = {
-        -(2 * MAP_CELL_W - 2), -(2 * MAP_CELL_W - 1),
-        -(2 * MAP_CELL_W),     -(2 * MAP_CELL_W + 1),
-        -(2 * MAP_CELL_W + 2), -(1 * MAP_CELL_W - 2),
-        -(1 * MAP_CELL_W - 1), -(1 * MAP_CELL_W),
-        -(1 * MAP_CELL_W + 1), -(1 * MAP_CELL_W + 2),
-        -(0 * MAP_CELL_W - 2), -(0 * MAP_CELL_W - 1),
-        -(0 * MAP_CELL_W),     -(0 * MAP_CELL_W + 1),
-        -(0 * MAP_CELL_W + 2), (1 * MAP_CELL_W - 2),
-        (1 * MAP_CELL_W - 1),  (1 * MAP_CELL_W),
-        (1 * MAP_CELL_W + 1),  (1 * MAP_CELL_W + 2),
-        +(2 * MAP_CELL_W - 2), +(2 * MAP_CELL_W - 1),
-        +(2 * MAP_CELL_W),     +(2 * MAP_CELL_W + 1),
-        +(2 * MAP_CELL_W + 2), REFRESH_EOL};
+        -((2 * MAP_CELL_W) - 2), -((2 * MAP_CELL_W) - 1),
+        -(2 * MAP_CELL_W),       -((2 * MAP_CELL_W) + 1),
+        -((2 * MAP_CELL_W) + 2), -((1 * MAP_CELL_W) - 2),
+        -((1 * MAP_CELL_W) - 1), -(1 * MAP_CELL_W),
+        -((1 * MAP_CELL_W) + 1), -((1 * MAP_CELL_W) + 2),
+        -((0 * MAP_CELL_W) - 2), -((0 * MAP_CELL_W) - 1),
+        -(0 * MAP_CELL_W),       -((0 * MAP_CELL_W) + 1),
+        -((0 * MAP_CELL_W) + 2), (1 * MAP_CELL_W - 2),
+        (1 * MAP_CELL_W - 1),    (1 * MAP_CELL_W),
+        (1 * MAP_CELL_W + 1),    (1 * MAP_CELL_W + 2),
+        +((2 * MAP_CELL_W) - 2), +((2 * MAP_CELL_W) - 1),
+        +(2 * MAP_CELL_W),       +((2 * MAP_CELL_W) + 1),
+        +((2 * MAP_CELL_W) + 2), REFRESH_EOL};
     return &_gigundo[0];
   }
 

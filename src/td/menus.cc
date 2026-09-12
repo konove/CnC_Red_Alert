@@ -243,7 +243,7 @@ void Setup_Menu(const MenuConfig& menu, const char* labels[],
   Hide_Mouse();
   for (int i = 0; i < item_count; i++) {
     const int text_index = Select_To_Entry(i, visible_items, bit_offset);
-    const int draw_y = menu_y + i * FontHeight + i * line_spacing;
+    const int draw_y = menu_y + (i * FontHeight) + (i * line_spacing);
     Fancy_Text_Print(labels[text_index], menu_x, draw_y,
                      text_index == selected_entry && MenuUpdate
                          ? menu.highlight_color
@@ -478,7 +478,7 @@ int Do_Menu(const char** strings, bool blue) {
   WindowList[WINDOW_MENU][WINDOWY] =
       174 - (unsigned)(menu_config.item_count * (FontHeight + FontYSpacing));
   WindowList[WINDOW_MENU][WINDOWHEIGHT] =
-      menu_config.item_count * FontHeight + 5 /*11*/;
+      (menu_config.item_count * FontHeight) + 5 /*11*/;
 
   /*
   **	Display the menu.
@@ -534,7 +534,7 @@ int Main_Menu(unsigned long timeout) {
     D_DIALOG_H = 272,
     D_DIALOG_X = 170,
     D_DIALOG_Y = 0,
-    D_DIALOG_CX = D_DIALOG_X + D_DIALOG_W / 2,
+    D_DIALOG_CX = D_DIALOG_X + (D_DIALOG_W / 2),
 
     D_START_W = 250,
     D_START_H = 18,

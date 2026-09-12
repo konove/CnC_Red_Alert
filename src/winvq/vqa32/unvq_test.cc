@@ -18,7 +18,7 @@ TEST(UnvqTest, DecodesUnalignedCodewordsToOddStrideRows) {
   UnVQ_4x4(codebook.data() + 1, pointers.data(), output.data() + 1, 1, 1, 5);
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
-      EXPECT_EQ(output[1 + row * 5 + col], 1 + row * 4 + col);
+      EXPECT_EQ(output[1 + (row * 5) + col], 1 + (row * 4) + col);
     }
     EXPECT_EQ(output[static_cast<size_t>(row * 5)], 0xa5);
   }
@@ -28,7 +28,7 @@ TEST(UnvqTest, DecodesUnalignedCodewordsToOddStrideRows) {
   UnVQ_4x2(codebook.data() + 1, pointers.data(), output.data() + 1, 1, 1, 5);
   for (int row = 0; row < 2; ++row) {
     for (int col = 0; col < 4; ++col) {
-      EXPECT_EQ(output[1 + row * 5 + col], 1 + row * 4 + col);
+      EXPECT_EQ(output[1 + (row * 5) + col], 1 + (row * 4) + col);
     }
     EXPECT_EQ(output[static_cast<size_t>(row * 5)], 0xa5);
   }
@@ -43,7 +43,7 @@ TEST(UnvqTest, FillsSolidBlocksWithoutTouchingRowPadding) {
   UnVQ_4x4(nullptr, pointers4.data(), output.data() + 1, 1, 1, 5);
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
-      EXPECT_EQ(output[1 + row * 5 + col], 0x81);
+      EXPECT_EQ(output[1 + (row * 5) + col], 0x81);
     }
     EXPECT_EQ(output[static_cast<size_t>(row * 5)], 0xa5);
   }
@@ -52,7 +52,7 @@ TEST(UnvqTest, FillsSolidBlocksWithoutTouchingRowPadding) {
   UnVQ_4x2(nullptr, pointers2.data(), output.data() + 1, 1, 1, 5);
   for (int row = 0; row < 2; ++row) {
     for (int col = 0; col < 4; ++col) {
-      EXPECT_EQ(output[1 + row * 5 + col], 0x81);
+      EXPECT_EQ(output[1 + (row * 5) + col], 0x81);
     }
     EXPECT_EQ(output[static_cast<size_t>(row * 5)], 0xa5);
   }

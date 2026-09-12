@@ -745,7 +745,7 @@ int IconListClass::IndexUnderMouse() {
   // hitting valid index. 	Assumes that x position of mouse is already
   // known to be over the iconlist.
   int index = Get_Mouse_Y() - (Y + 1);
-  index = index / LineHeight + CurrentTopIndex;
+  index = (index / LineHeight) + CurrentTopIndex;
   if (index > List.Count() - 1 || index < 0) {
     return -1;
   }
@@ -756,7 +756,7 @@ int IconListClass::IndexUnderMouse() {
 int IconListClass::OffsetToIndex(int iIndex, int y) {
   //	Finds the current offset of item iIndex from the current top view index,
   // in pixels, and add it to y.
-  return y + (iIndex - CurrentTopIndex) * LineHeight;
+  return y + ((iIndex - CurrentTopIndex) * LineHeight);
 }
 
 //***********************************************************************************************

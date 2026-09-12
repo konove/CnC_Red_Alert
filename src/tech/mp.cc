@@ -189,7 +189,7 @@ int XMP_DER_Encode(const uint32_t* from, unsigned char* output, int precision) {
   assert(output != nullptr);
   assert(precision > 0);
 
-  unsigned char buffer[MAX_UNIT_PRECISION * sizeof(uint32_t) + 1];
+  unsigned char buffer[(MAX_UNIT_PRECISION * sizeof(uint32_t)) + 1];
   int header_count = 0;
 
   unsigned number_count = XMP_Encode(buffer, from, precision);
@@ -379,7 +379,7 @@ void XMP_Signed_Decode(uint32_t* result, const unsigned char* from,
 
   unsigned char filler = static_cast<unsigned char>(*from & 0x80 ? 0xff : 0);
 
-  int fillcount = static_cast<int>(precision * sizeof(uint32_t) - frombytes);
+  int fillcount = static_cast<int>((precision * sizeof(uint32_t)) - frombytes);
   unsigned char* dest = (unsigned char*)&result[precision];
 
   /*
@@ -427,7 +427,7 @@ void XMP_Unsigned_Decode(uint32_t* result, const unsigned char* from,
   assert(frombytes > 0);
   assert(precision > 0);
 
-  int fillcount = static_cast<int>(precision * sizeof(uint32_t) - frombytes);
+  int fillcount = static_cast<int>((precision * sizeof(uint32_t)) - frombytes);
   unsigned char* dest = (unsigned char*)&result[precision];
 
   /*
@@ -1228,7 +1228,7 @@ int XMP_Unsigned_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
   unsigned short* pr = (unsigned short*)prod;
   unsigned long carry = 0;
   for (int i = 0; i < precision * 2; ++i) {
-    unsigned long p = static_cast<unsigned long>(multiplier) * *m2 + carry;
+    unsigned long p = (static_cast<unsigned long>(multiplier) * *m2) + carry;
     *pr = static_cast<unsigned short>(p);
     carry = p >> 16;
     m2++;
@@ -1846,7 +1846,7 @@ static int _modulus_bit_count;      //	number of modulus significant bits
 static uint32_t _scratch_modulus[MAX_UNIT_PRECISION];  // modulus
 
 // The double precision modulus staging buffer.
-static uint32_t _double_staging_number[MAX_UNIT_PRECISION * 2 + 2];
+static uint32_t _double_staging_number[(MAX_UNIT_PRECISION * 2) + 2];
 
 // most significant digits of modulus.
 static uint32_t _mod_quotient[4];
@@ -1887,14 +1887,14 @@ int XMP_Prepare_Modulus(const uint32_t* n_modulus, int precision) {
   int sub_precision = XMP_Significance(
       _scratch_modulus, precision);  // significant digits in modulus
   XMP_Move(_mod_divisor, &_scratch_modulus[sub_precision - 2], 2);
-  _modulus_shift = XMP_Count_Bits(_mod_divisor, 2) - 2 * 16;
+  _modulus_shift = XMP_Count_Bits(_mod_divisor, 2) - (2 * 16);
   XMP_Shift_Right_Bits(_mod_divisor, _modulus_shift, 2);
 
   XMP_Reciprocal(_mod_quotient, _mod_divisor, 2);
   XMP_Shift_Right_Bits(_mod_quotient, 1, 2);
 
   /* Reduce to:   0 < _modulus_shift <= 16 */
-  _modulus_shift = (_modulus_shift + (16 - 1)) % 16 + 1;
+  _modulus_shift = ((_modulus_shift + (16 - 1)) % 16) + 1;
 
   /* round up */
   XMP_Inc(_mod_quotient, 2);
@@ -1935,7 +1935,7 @@ int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
                  const uint32_t* multiplier, int precision) {
   XMP_Double_Mul(_double_staging_number, multiplicand, multiplier, precision);
 
-  int double_precision = precision * 2 + 1;
+  int double_precision = (precision * 2) + 1;
 
   _double_staging_number[double_precision - 1] = 0; /* leading 0 uint32_t */
 
@@ -2073,11 +2073,11 @@ unsigned short mp_quo_digit(const unsigned short* dividend) {
    * The last terms of q1 and q2 perform upward rounding, which is
    * needed to guarantee that the result not be too small.
    */
-  q1 = (dividend[-2] ^ SEMI_MASK) *
-           static_cast<unsigned long>(_reciprical_high_digit) +
+  q1 = ((dividend[-2] ^ SEMI_MASK) *
+        static_cast<unsigned long>(_reciprical_high_digit)) +
        _reciprical_high_digit;
-  q2 = (dividend[-1] ^ SEMI_MASK) *
-           static_cast<unsigned long>(_reciprical_low_digit) +
+  q2 = ((dividend[-1] ^ SEMI_MASK) *
+        static_cast<unsigned long>(_reciprical_low_digit)) +
        (1L << 16);
   q0 = (q1 >> 1) + (q2 >> 1) + 1;
 
@@ -2428,7 +2428,7 @@ void XMP_Randomize(uint32_t* result, Straw& rng, int total_bits,
 
   total_bits = std::min(total_bits, precision * 32);
 
-  unsigned nbytes = total_bits / 8 + 1;
+  unsigned nbytes = (total_bits / 8) + 1;
 
   XMP_Init(result, 0, precision);
   rng.Get(result, nbytes);

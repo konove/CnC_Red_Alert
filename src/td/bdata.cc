@@ -128,28 +128,28 @@ static const short ListWestwood[] = {1,       2,       3,          MCW + 1,
 static const short OListWestwood[] = {0, MCW, REFRESH_EOL};
 static const short ComList[] = {0, MCW, MCW + 1, REFRESH_EOL};
 static const short List21[] = {0, 1, REFRESH_EOL};
-static const short ListWeap[] = {(MCW * 1),  MCW * 1 + 1, MCW * 1 + 2,
-                                 (MCW * 2),  MCW * 2 + 1, MCW * 2 + 2,
+static const short ListWeap[] = {(MCW * 1),  (MCW * 1) + 1, (MCW * 1) + 2,
+                                 (MCW * 2),  (MCW * 2) + 1, (MCW * 2) + 2,
                                  REFRESH_EOL};
 static const short List12[] = {MCW, REFRESH_EOL};
-static const short ListHand[] = {MCW, MCW + 1, MCW * 2 + 1, REFRESH_EOL};
-static const short ListTmpl[] = {MCW,         MCW + 1,     MCW + 2,    MCW * 2,
-                                 MCW * 2 + 1, MCW * 2 + 2, REFRESH_EOL};
-static const short List0011[] = {(MCW * 1), MCW * 1 + 1, REFRESH_EOL};
-static const short List1101[] = {0, 1, MCW * 1 + 1, REFRESH_EOL};
+static const short ListHand[] = {MCW, MCW + 1, (MCW * 2) + 1, REFRESH_EOL};
+static const short ListTmpl[] = {
+    MCW, MCW + 1, MCW + 2, MCW * 2, (MCW * 2) + 1, (MCW * 2) + 2, REFRESH_EOL};
+static const short List0011[] = {(MCW * 1), (MCW * 1) + 1, REFRESH_EOL};
+static const short List1101[] = {0, 1, (MCW * 1) + 1, REFRESH_EOL};
 static const short List11[] = {0, 1, REFRESH_EOL};
 static const short List1[] = {0, REFRESH_EOL};
 static const short List1100[] = {0, 1, REFRESH_EOL};
 static const short List0010[] = {MCW, REFRESH_EOL};
 static const short List1000[] = {0, REFRESH_EOL};
 static const short List0100[] = {1, REFRESH_EOL};
-static const short List0111[] = {1, (MCW * 1), MCW * 1 + 1, REFRESH_EOL};
+static const short List0111[] = {1, (MCW * 1), (MCW * 1) + 1, REFRESH_EOL};
 // static short const List1111[] = {0, 1, (MCW*1), (MCW*1)+1, REFRESH_EOL};
-static const short List1011[] = {0, (MCW * 1), MCW * 1 + 1, REFRESH_EOL};
-static const short List010111000[] = {1, (MCW * 1), MCW * 1 + 1, MCW * 1 + 2,
-                                      REFRESH_EOL};
-static const short List101000111[] = {0,           2,           (MCW * 2),
-                                      MCW * 2 + 1, MCW * 2 + 2, REFRESH_EOL};
+static const short List1011[] = {0, (MCW * 1), (MCW * 1) + 1, REFRESH_EOL};
+static const short List010111000[] = {1, (MCW * 1), (MCW * 1) + 1,
+                                      (MCW * 1) + 2, REFRESH_EOL};
+static const short List101000111[] = {
+    0, 2, (MCW * 2), (MCW * 2) + 1, (MCW * 2) + 2, REFRESH_EOL};
 
 static const short OListFix[] = {0, 2, MCW + MCW, MCW + MCW + 2, REFRESH_EOL};
 static const short OListWeap[] = {0, 1, 2, REFRESH_EOL};

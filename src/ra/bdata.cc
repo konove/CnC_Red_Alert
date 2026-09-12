@@ -119,19 +119,19 @@ static const short ExitWeap[] = {XYCELL(1, 2), XYCELL(-1, 3), XYCELL(0, 3),
                                  kRefreshEol};
 
 static const short ComList[] = {0, 1, MCW, MCW + 1, kRefreshEol};
-static const short List000111111[] = {(MCW * 1),  MCW * 1 + 1, MCW * 1 + 2,
-                                      (MCW * 2),  MCW * 2 + 1, MCW * 2 + 2,
+static const short List000111111[] = {(MCW * 1),  (MCW * 1) + 1, (MCW * 1) + 2,
+                                      (MCW * 2),  (MCW * 2) + 1, (MCW * 2) + 2,
                                       kRefreshEol};
 static const short List0010[] = {MCW, kRefreshEol};
-static const short List0011[] = {(MCW * 1), MCW * 1 + 1, kRefreshEol};
-static const short List010111100[] = {1,           (MCW * 1), MCW * 1 + 1,
-                                      MCW * 1 + 2, (MCW * 2), kRefreshEol};
-static const short List0111[] = {1, (MCW * 1), MCW * 1 + 1, kRefreshEol};
+static const short List0011[] = {(MCW * 1), (MCW * 1) + 1, kRefreshEol};
+static const short List010111100[] = {
+    1, (MCW * 1), (MCW * 1) + 1, (MCW * 1) + 2, (MCW * 2), kRefreshEol};
+static const short List0111[] = {1, (MCW * 1), (MCW * 1) + 1, kRefreshEol};
 static const short List1000[] = {0, kRefreshEol};
-static const short List101000011[] = {0, 2, MCW * 2 + 1, MCW * 2 + 2,
+static const short List101000011[] = {0, 2, (MCW * 2) + 1, (MCW * 2) + 2,
                                       kRefreshEol};
 static const short List1100[] = {0, 1, kRefreshEol};
-static const short List1101[] = {0, 1, MCW * 1 + 1, kRefreshEol};
+static const short List1101[] = {0, 1, (MCW * 1) + 1, kRefreshEol};
 static const short List11[] = {0, 1, kRefreshEol};
 static const short List12[] = {MCW, kRefreshEol};
 static const short List1[] = {0, kRefreshEol};
@@ -146,7 +146,7 @@ static const short List32[] = {0, 1, 2, MCW, MCW + 1, MCW + 2, kRefreshEol};
 static const short ListFix[] = {1,       MCW,           MCW + 1,
                                 MCW + 2, MCW + MCW + 1, kRefreshEol};
 static const short ListWeap[] = {
-    0, 1, 2, (MCW * 1), MCW * 1 + 1, MCW * 1 + 2, kRefreshEol};
+    0, 1, 2, (MCW * 1), (MCW * 1) + 1, (MCW * 1) + 2, kRefreshEol};
 static const short ListWestwood[] = {1,       2,       3,          MCW + 1,
                                      MCW + 2, MCW + 3, kRefreshEol};
 static const short OListSAM[] = {-MCW, -(MCW - 1), kRefreshEol};
@@ -170,9 +170,16 @@ static const short OListSPen[] = {0, 2, MCW + MCW, MCW + MCW + 2, kRefreshEol};
 static const short OListWestwood[] = {0, MCW, kRefreshEol};
 static const short StoreList[] = {0, kRefreshEol};
 
-static const short ListFactory[] = {
-    0,           1,         2,           (MCW * 1),   MCW * 1 + 1,
-    MCW * 1 + 2, (MCW * 2), MCW * 2 + 1, MCW * 2 + 2, kRefreshEol};
+static const short ListFactory[] = {0,
+                                    1,
+                                    2,
+                                    (MCW * 1),
+                                    (MCW * 1) + 1,
+                                    (MCW * 1) + 2,
+                                    (MCW * 2),
+                                    (MCW * 2) + 1,
+                                    (MCW * 2) + 2,
+                                    kRefreshEol};
 
 static const short OListFix[] = {0, 2, MCW + MCW, MCW + MCW + 2, kRefreshEol};
 static const short OListWeap[] = {kRefreshEol};
@@ -429,7 +436,7 @@ static const BuildingTypeClass ClassWeapon(
                          // structure.
     "WEAP",              // NAME:			Short name of the structure.
     FACING_NONE,         // Foundation direction from center of building.
-    XY_Coord(CELL_LEPTON_W + CELL_LEPTON_W / 2,
+    XY_Coord(CELL_LEPTON_W + (CELL_LEPTON_W / 2),
              CELL_LEPTON_H),  // Exit point for produced units.
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
@@ -460,11 +467,11 @@ static const BuildingTypeClass ClassShipYard(
     TXT_SHIP_YARD,  // NAME:			Short name of the structure.
     "SYRD",         // NAME:			Short name of the structure.
     FACING_NONE,    // Foundation direction from center of building.
-    XYP_COORD(22 + CELL_PIXEL_W / 2,
-              CELL_PIXEL_H * 2 -
-                  CELL_PIXEL_H / 2),  // Exit point for produced units.
-    REMAP_ALTERNATE,                  // Sidebar remap logic.
-    0x0000,                           //	Vertical offset.
+    XYP_COORD(22 + (CELL_PIXEL_W / 2),
+              (CELL_PIXEL_H * 2) -
+                  (CELL_PIXEL_H / 2)),  // Exit point for produced units.
+    REMAP_ALTERNATE,                    // Sidebar remap logic.
+    0x0000,                             //	Vertical offset.
     0x0000,           // Primary weapon offset along turret centerline.
     0x0000,           // Primary weapon lateral offset along turret centerline.
     false,            // Is this building a fake (decoy?)
@@ -492,11 +499,11 @@ static const BuildingTypeClass ClassSubPen(
     TXT_SUB_PEN,  // NAME:			Short name of the structure.
     "SPEN",       // NAME:			Short name of the structure.
     FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(22 + CELL_PIXEL_W / 2,
-              CELL_PIXEL_H * 2 -
-                  CELL_PIXEL_H / 2),  // Exit point for produced units.
-    REMAP_ALTERNATE,                  // Sidebar remap logic.
-    0x0000,                           //	Vertical offset.
+    XYP_COORD(22 + (CELL_PIXEL_W / 2),
+              (CELL_PIXEL_H * 2) -
+                  (CELL_PIXEL_H / 2)),  // Exit point for produced units.
+    REMAP_ALTERNATE,                    // Sidebar remap logic.
+    0x0000,                             //	Vertical offset.
     0x0000,           // Primary weapon offset along turret centerline.
     0x0000,           // Primary weapon lateral offset along turret centerline.
     false,            // Is this building a fake (decoy?)
@@ -764,8 +771,8 @@ static const BuildingTypeClass ClassFakeWeapon(
     TXT_FAKE_WEAP,  // NAME:			Short name of the structure.
     "WEAF",         // NAME:			Short name of the structure.
     FACING_NONE,    // Foundation direction from center of building.
-    XYP_COORD(10 + CELL_PIXEL_W / 2,
-              CELL_PIXEL_H * 3 - CELL_PIXEL_H / 2 -
+    XYP_COORD(10 + (CELL_PIXEL_W / 2),
+              (CELL_PIXEL_H * 3) - (CELL_PIXEL_H / 2) -
                   21),  // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
@@ -1282,11 +1289,11 @@ static const BuildingTypeClass ClassFakeShipYard(
     TXT_FAKE_YARD,  // NAME:			Short name of the structure.
     "SYRF",         // NAME:			Short name of the structure.
     FACING_NONE,    // Foundation direction from center of building.
-    XYP_COORD(22 + CELL_PIXEL_W / 2,
-              CELL_PIXEL_H * 2 -
-                  CELL_PIXEL_H / 2),  // Exit point for produced units.
-    REMAP_ALTERNATE,                  // Sidebar remap logic.
-    0x0000,                           //	Vertical offset.
+    XYP_COORD(22 + (CELL_PIXEL_W / 2),
+              (CELL_PIXEL_H * 2) -
+                  (CELL_PIXEL_H / 2)),  // Exit point for produced units.
+    REMAP_ALTERNATE,                    // Sidebar remap logic.
+    0x0000,                             //	Vertical offset.
     0x0000,     // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     true,       // Is this building a fake (decoy?)
@@ -1314,11 +1321,11 @@ static const BuildingTypeClass ClassFakeSubPen(
     TXT_FAKE_PEN,  // NAME:			Short name of the structure.
     "SPEF",        // NAME:			Short name of the structure.
     FACING_NONE,   // Foundation direction from center of building.
-    XYP_COORD(22 + CELL_PIXEL_W / 2,
-              CELL_PIXEL_H * 2 -
-                  CELL_PIXEL_H / 2),  // Exit point for produced units.
-    REMAP_ALTERNATE,                  // Sidebar remap logic.
-    0x0000,                           //	Vertical offset.
+    XYP_COORD(22 + (CELL_PIXEL_W / 2),
+              (CELL_PIXEL_H * 2) -
+                  (CELL_PIXEL_H / 2)),  // Exit point for produced units.
+    REMAP_ALTERNATE,                    // Sidebar remap logic.
+    0x0000,                             //	Vertical offset.
     0x0000,     // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     true,       // Is this building a fake (decoy?)

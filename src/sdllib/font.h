@@ -102,7 +102,7 @@ class FontView {
   // The glyph's pixel data: two 4-bit palette indices per byte, low nibble
   // first, GlyphWidth x GlyphHeight pixels.
   const uint8_t* GlyphData(uint8_t ch) const {
-    return font_ + ReadWord(offsets_ + base::ssize{2} * ch);
+    return font_ + ReadWord(offsets_ + (base::ssize{2} * ch));
   }
 
  private:
@@ -115,7 +115,7 @@ class FontView {
 
   // Blank rows above the glyph in the low byte, drawn rows in the high byte.
   int PackedHeight(uint8_t ch) const {
-    return ReadWord(heights_ + base::ssize{2} * ch);
+    return ReadWord(heights_ + (base::ssize{2} * ch));
   }
 
   const uint8_t* font_;     // Start of the font data.

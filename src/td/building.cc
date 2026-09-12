@@ -4277,7 +4277,7 @@ int BuildingClass::Mission_Repair() {
           int time = Bound(
               Fixed_To_Cardinal(kTicksPerSecond, House->Power_Fraction()), 0,
               kTicksPerSecond);
-          time = kTicksPerSecond * 3 - time;
+          time = (kTicksPerSecond * 3) - time;
           IsReadyToCommence = false;
           return time;
         }

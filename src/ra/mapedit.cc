@@ -206,7 +206,7 @@ void MapEditClass::One_Time() {
   */
   HealthBuf[0] = 0;
   HealthText = new TextLabelClass(
-      HealthBuf, POPUP_HEALTH_X + POPUP_HEALTH_W / 2,
+      HealthBuf, POPUP_HEALTH_X + (POPUP_HEALTH_W / 2),
       POPUP_HEALTH_Y + POPUP_HEALTH_H + 1, GadgetClass::Get_Color_Scheme(),
       TPF_CENTER | TPF_FULLSHADOW | TPF_EFNT);
 
@@ -901,7 +901,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
           if (wayname[0] >= 'A' && wayname[0] <= 'Z') {
             waynm = wayname[0] - 'A';
             if (wayname[1] >= 'A' && wayname[1] <= 'Z') {
-              waynm = (waynm + 1) * 26 + (wayname[1] - 'A');
+              waynm = ((waynm + 1) * 26) + (wayname[1] - 'A');
             }
             if (waynm < ScenarioClass::kHomeWaypoint) {
               Update_Waypoint(waynm);

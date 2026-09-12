@@ -53,7 +53,7 @@ static WWMouseClass* _Mouse = nullptr;
     int src_y = y / scale;
     for (int x = 0; x < dst_w; ++x) {
       int src_x = x / scale;
-      dst[y * dst_w + x] = src[src_y * src_w + src_x];
+      dst[(y * dst_w) + x] = src[(src_y * src_w) + src_x];
     }
   }
 
@@ -185,8 +185,8 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
   // SDL surface pitch may include padding, so copy row by row.
   for (int y = 0; y < scaled_height; ++y) {
     memcpy(static_cast<uint8_t*>(sdl_surf->pixels) +
-               static_cast<base::ssize>(y) * sdl_surf->pitch,
-           scaled_cursor + static_cast<base::ssize>(y) * scaled_width,
+               (static_cast<base::ssize>(y) * sdl_surf->pitch),
+           scaled_cursor + (static_cast<base::ssize>(y) * scaled_width),
            scaled_width);
   }
   delete[] scaled_cursor;

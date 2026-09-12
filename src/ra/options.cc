@@ -483,7 +483,7 @@ void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
       temp = hsv.Value_Component() * (brightness * 256) / 0x80;  // Brightness
       temp = Bound(temp, 0, 0xFF);
       int v = temp;
-      temp = (v - 0x80) * (contrast * 256) / 0x80 + 0x80;  // Contrast
+      temp = ((v - 0x80) * (contrast * 256) / 0x80) + 0x80;  // Contrast
       temp = Bound(temp, 0, 0xFF);
       v = temp;
       temp = hsv.Saturation_Component() * (color * 256) / 0x80;  // Color

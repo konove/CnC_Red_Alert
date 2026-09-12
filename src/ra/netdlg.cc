@@ -1337,7 +1337,7 @@ static int Net_Join_Dialog() {
   int d_dialog_h = 400;                           // dialog height
   int d_dialog_x = (640 - d_dialog_w) / 2;        // dialog x-coord
   int d_dialog_y = (400 - d_dialog_h) / 2;        // centered y-coord
-  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;  // center x-coord
+  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
 
   int d_txt6_h = 12 + 1;  // ht of 6-pt text
   int d_margin1 = 34;     // large margin
@@ -1345,7 +1345,7 @@ static int Net_Join_Dialog() {
 
   int d_name_w = 140;
   int d_name_h = 18;
-  int d_name_x = d_dialog_x + d_dialog_w / 4 - d_name_w / 2;
+  int d_name_x = d_dialog_x + (d_dialog_w / 4) - (d_name_w / 2);
   int d_name_y = d_dialog_y + d_margin2 + d_txt6_h + 4;
 
 #ifdef OLDWAY
@@ -1361,24 +1361,24 @@ static int Net_Join_Dialog() {
 #else
   int d_house_w = 120;
   int d_house_h = 8 * 10;
-  int d_house_x = d_dialog_cx - d_house_w / 2;
+  int d_house_x = d_dialog_cx - (d_house_w / 2);
   int d_house_y = d_name_y;
 #endif
 
   int d_color_w = 20;
   int d_color_h = 18;
   int d_color_y = d_name_y;
-  int d_color_x = d_dialog_x + d_dialog_w / 4 * 3 - d_color_w * 3;
+  int d_color_x = d_dialog_x + (d_dialog_w / 4 * 3) - (d_color_w * 3);
 
   int d_gamelist_w = 310;
-  int d_gamelist_h = (6 * 6 + 3) * 2;  // 6 rows high
+  int d_gamelist_h = ((6 * 6) + 3) * 2;  // 6 rows high
   int d_gamelist_x = d_dialog_x + d_margin1 - 4;
   int d_gamelist_y =
       d_color_y + d_color_h + d_margin2 + 4 /*KO + d_txt6_h + d_margin2*/;
 
   // BG		int d_playerlist_w = 113 *2;
   int d_playerlist_w = 236;
-  int d_playerlist_h = (6 * 6 + 3) * 2;  // 6 rows high
+  int d_playerlist_h = ((6 * 6) + 3) * 2;  // 6 rows high
   int d_playerlist_x =
       d_dialog_x + d_dialog_w - (d_margin1 + d_playerlist_w - 4);
   int d_playerlist_y =
@@ -1386,50 +1386,50 @@ static int Net_Join_Dialog() {
 
   int d_count_w = 50;
   int d_count_h = d_txt6_h;
-  int d_count_x = d_gamelist_x + d_gamelist_w / 2;
+  int d_count_x = d_gamelist_x + (d_gamelist_w / 2);
   int d_count_y = d_gamelist_y + d_gamelist_h + d_margin2;
 
   int d_level_w = 50;
   int d_level_h = d_txt6_h;
-  int d_level_x = d_gamelist_x + d_gamelist_w / 2;
+  int d_level_x = d_gamelist_x + (d_gamelist_w / 2);
   int d_level_y = d_count_y + d_count_h;
 
   int d_credits_w = 50;
   int d_credits_h = d_txt6_h;
-  int d_credits_x = d_gamelist_x + d_gamelist_w / 2;
+  int d_credits_x = d_gamelist_x + (d_gamelist_w / 2);
   int d_credits_y = d_level_y + d_level_h;
 
   int d_aiplayers_w = 50;
   int d_aiplayers_h = d_txt6_h;
-  int d_aiplayers_x = d_gamelist_x + d_gamelist_w / 2;
+  int d_aiplayers_x = d_gamelist_x + (d_gamelist_w / 2);
   int d_aiplayers_y = d_credits_y + d_level_h;
 
   int d_options_w = d_playerlist_w;
-  int d_options_h = (5 * 6 + 4) * 2;
+  int d_options_h = ((5 * 6) + 4) * 2;
   int d_options_x = d_playerlist_x;
   int d_options_y = d_playerlist_y + d_playerlist_h + d_margin2 - 4;
 
-  int d_message1_w = d_dialog_w - d_margin1 * 2 + 8;
-  int d_message1_h = 14 * d_txt6_h + 6;
-  int d_message1_x = d_dialog_x + (d_dialog_w - d_message1_w) / 2;
+  int d_message1_w = d_dialog_w - (d_margin1 * 2) + 8;
+  int d_message1_h = (14 * d_txt6_h) + 6;
+  int d_message1_x = d_dialog_x + ((d_dialog_w - d_message1_w) / 2);
   int d_message1_y = d_dialog_y + d_dialog_h - (54 + d_message1_h);
 
   int d_message2_w = d_message1_w;
-  int d_message2_h = 8 * d_txt6_h + 6;
+  int d_message2_h = (8 * d_txt6_h) + 6;
   int d_message2_x = d_message1_x;
   int d_message2_y = d_dialog_y + d_dialog_h - (54 + d_message2_h);
 
   int d_join_w = config::kIsFrench ? 120 : 80;
   int d_join_h = 18;
-  int d_join_x = d_dialog_x + d_dialog_w / 6 - d_join_w / 2;
+  int d_join_x = d_dialog_x + (d_dialog_w / 6) - (d_join_w / 2);
   int d_join_y = d_dialog_y + d_dialog_h - d_join_h - 16;
 
   int d_cancel_w = 100;
-  int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
+  int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
   int d_cancel_y = d_join_y;
 
   int d_new_w = config::kIsFrench ? 120 : 80;
-  int d_new_x = d_dialog_x + d_dialog_w * 5 / 6 - d_new_w / 2;
+  int d_new_x = d_dialog_x + (d_dialog_w * 5 / 6) - (d_new_w / 2);
   int d_new_y = d_join_y;
 
   int d_send_w = d_message1_w;
@@ -1482,12 +1482,12 @@ static int Net_Join_Dialog() {
   int cbox_x[] = {
       d_color_x,
       d_color_x + d_color_w,
-      d_color_x + d_color_w * 2,
-      d_color_x + d_color_w * 3,
-      d_color_x + d_color_w * 4,
-      d_color_x + d_color_w * 5,
-      d_color_x + d_color_w * 6,
-      d_color_x + d_color_w * 7,
+      d_color_x + (d_color_w * 2),
+      d_color_x + (d_color_w * 3),
+      d_color_x + (d_color_w * 4),
+      d_color_x + (d_color_w * 5),
+      d_color_x + (d_color_w * 6),
+      d_color_x + (d_color_w * 7),
   };
   char housetext[25] = "";  // buffer for house droplist
 
@@ -1766,10 +1766,10 @@ static int Net_Join_Dialog() {
         //...............................................................
         //	Dialog & Field labels
         //...............................................................
-        Fancy_Text_Print(TXT_CHANNEL_GAMES, d_gamelist_x + d_gamelist_w / 2,
+        Fancy_Text_Print(TXT_CHANNEL_GAMES, d_gamelist_x + (d_gamelist_w / 2),
                          d_gamelist_y - d_txt6_h, scheme, TBLACK,
                          TPF_CENTER | kTpfText);
-        Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + d_playerlist_w / 2,
+        Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
                          d_playerlist_y - d_txt6_h, scheme, TBLACK,
                          TPF_CENTER | kTpfText);
 
@@ -1777,7 +1777,7 @@ static int Net_Join_Dialog() {
         // For game-browsing, label the name, side, & color buttons:
         //...............................................................
         if (joinstate < JOIN_CONFIRMED) {
-          Fancy_Text_Print(TXT_YOUR_NAME, d_name_x + d_name_w / 2,
+          Fancy_Text_Print(TXT_YOUR_NAME, d_name_x + (d_name_w / 2),
                            d_name_y - d_txt6_h, scheme, TBLACK,
                            TPF_CENTER | kTpfText);
 
@@ -1786,12 +1786,12 @@ static int Net_Join_Dialog() {
                            d_gdi_y - d_txt6_h, scheme, TBLACK,
                            TPF_CENTER | kTpfText);
 #else
-          Fancy_Text_Print(TXT_SIDE_COLON, d_house_x + d_house_w / 2,
+          Fancy_Text_Print(TXT_SIDE_COLON, d_house_x + (d_house_w / 2),
                            d_house_y - d_txt6_h, scheme, TBLACK,
                            TPF_CENTER | kTpfText);
 #endif
 
-          Fancy_Text_Print(TXT_COLOR_COLON, d_dialog_x + d_dialog_w / 4 * 3,
+          Fancy_Text_Print(TXT_COLOR_COLON, d_dialog_x + (d_dialog_w / 4 * 3),
                            d_color_y - d_txt6_h, scheme, TBLACK,
                            TPF_CENTER | kTpfText);
         } else {
@@ -4025,7 +4025,7 @@ static int Net_New_Dialog() {
   int d_dialog_h = 400;                           // dialog height
   int d_dialog_x = (640 - d_dialog_w) / 2;        // dialog x-coord
   int d_dialog_y = (400 - d_dialog_h) / 2;        // centered y-coord
-  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;  // center x-coord
+  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
 
   int d_txt6_h = 12 + 1;  // ht of 6-pt text
   int d_margin1 = 10;     // margin width/height
@@ -4033,70 +4033,70 @@ static int Net_New_Dialog() {
 
   // BG	int d_playerlist_w = 118*2;
   int d_playerlist_w = 248;
-  int d_playerlist_h = 6 * d_txt6_h + 6;  // 6 rows high
+  int d_playerlist_h = (6 * d_txt6_h) + 6;  // 6 rows high
   int d_playerlist_x = d_dialog_x + d_margin1 + d_margin1 + 10;
   int d_playerlist_y = d_dialog_y + d_margin1 + d_txt6_h + 6;
 
   int d_scenariolist_w = 324;
-  int d_scenariolist_h = 6 * d_txt6_h + 6;  // 6 rows high
+  int d_scenariolist_h = (6 * d_txt6_h) + 6;  // 6 rows high
   int d_scenariolist_x =
       d_dialog_x + d_dialog_w - d_margin1 - d_margin1 - d_scenariolist_w - 10;
   int d_scenariolist_y = d_playerlist_y;
 
   int d_reject_w = 110;
   int d_reject_h = 18;
-  int d_reject_x = d_playerlist_x + d_playerlist_w / 2 - d_reject_w / 2;
+  int d_reject_x = d_playerlist_x + (d_playerlist_w / 2) - (d_reject_w / 2);
   int d_reject_y = d_playerlist_y + d_playerlist_h + d_margin2;
 
   int d_count_w = 50;
   int d_count_h = d_txt6_h;
-  int d_count_x = d_playerlist_x + d_playerlist_w / 2 + 40;  // (fudged)
+  int d_count_x = d_playerlist_x + (d_playerlist_w / 2) + 40;  // (fudged)
   int d_count_y = d_reject_y + d_reject_h /*KO+ d_margin2*/;
 
   int d_level_w = 50;
   int d_level_h = d_txt6_h;
-  int d_level_x = d_playerlist_x + d_playerlist_w / 2 + 40;  // (fudged)
+  int d_level_x = d_playerlist_x + (d_playerlist_w / 2) + 40;  // (fudged)
   int d_level_y = d_count_y + d_count_h;
 
   int d_credits_w = 50;
   int d_credits_h = d_txt6_h;
-  int d_credits_x = d_playerlist_x + d_playerlist_w / 2 + 40;  // (fudged)
+  int d_credits_x = d_playerlist_x + (d_playerlist_w / 2) + 40;  // (fudged)
   int d_credits_y = d_level_y + d_level_h;
 
   int d_aiplayers_w = 50;
   int d_aiplayers_h = d_txt6_h;
-  int d_aiplayers_x = d_playerlist_x + d_playerlist_w / 2 + 40;  // (fudged)
+  int d_aiplayers_x = d_playerlist_x + (d_playerlist_w / 2) + 40;  // (fudged)
   int d_aiplayers_y = d_credits_y + d_credits_h;
 
   int d_options_w = 212;
-  int d_options_h = (5 * 6 + 4) * 2;
-  int d_options_x = d_scenariolist_x + (d_scenariolist_w - d_options_w) / 2;
+  int d_options_h = ((5 * 6) + 4) * 2;
+  int d_options_x = d_scenariolist_x + ((d_scenariolist_w - d_options_w) / 2);
   int d_options_y = d_scenariolist_y + d_scenariolist_h + d_margin1;
 
-  int d_message_w = d_dialog_w - d_margin1 * 2 - 40;
-  int d_message_h = kNumMessages * d_txt6_h + 6;  // 10 rows high
+  int d_message_w = d_dialog_w - (d_margin1 * 2) - 40;
+  int d_message_h = (kNumMessages * d_txt6_h) + 6;  // 10 rows high
   int d_message_x = d_dialog_x + d_margin1 + 20;
   int d_message_y = d_dialog_y + d_dialog_h - (54 + d_message_h);
   //	int d_message_y = d_options_y + d_options_h + d_margin1;
 
-  int d_send_w = d_dialog_w - d_margin1 * 2 - 40;
+  int d_send_w = d_dialog_w - (d_margin1 * 2) - 40;
   int d_send_h = 18;
   int d_send_x = d_dialog_x + d_margin1 + 20;
   int d_send_y = d_message_y + d_message_h;
 
   int d_ok_w = 100;
   int d_ok_h = 18;
-  int d_ok_x = d_dialog_x + d_dialog_w / 6 - d_ok_w / 2;
+  int d_ok_x = d_dialog_x + (d_dialog_w / 6) - (d_ok_w / 2);
   int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1 - 6;
 
   int d_cancel_w = 100;
   int d_cancel_h = 18;
-  int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
+  int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
   int d_cancel_y = d_dialog_y + d_dialog_h - d_cancel_h - d_margin1 - 6;
 
   int d_load_w = 100;
   int d_load_h = 18;
-  int d_load_x = d_dialog_x + d_dialog_w * 5 / 6 - d_load_w / 2;
+  int d_load_x = d_dialog_x + (d_dialog_w * 5 / 6) - (d_load_w / 2);
   int d_load_y = d_dialog_y + d_dialog_h - d_load_h - d_margin1 - 6;
 
   //------------------------------------------------------------------------
@@ -4416,12 +4416,12 @@ static int Net_New_Dialog() {
         //...............................................................
         //	Dialog & Field labels
         //...............................................................
-        Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + d_playerlist_w / 2,
+        Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
                          d_playerlist_y - d_txt6_h, scheme, TBLACK,
                          kTpfText | TPF_CENTER);
-        Fancy_Text_Print(TXT_SCENARIOS, d_scenariolist_x + d_scenariolist_w / 2,
-                         d_scenariolist_y - d_txt6_h, scheme, TBLACK,
-                         kTpfText | TPF_CENTER);
+        Fancy_Text_Print(
+            TXT_SCENARIOS, d_scenariolist_x + (d_scenariolist_w / 2),
+            d_scenariolist_y - d_txt6_h, scheme, TBLACK, kTpfText | TPF_CENTER);
         Fancy_Text_Print(TXT_COUNT, d_count_x - 4, d_count_y, scheme, TBLACK,
                          kTpfText | TPF_RIGHT);
         Fancy_Text_Print(TXT_LEVEL, d_level_x - 4, d_level_y, scheme, TBLACK,
@@ -4996,7 +4996,7 @@ static int Net_New_Dialog() {
     //.....................................................................
     if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
       Session.MaxAhead = static_cast<int>(std::max(
-          (Ipx.Global_Response_Time() / 8 + (Session.FrameSendRate - 1)) /
+          ((Ipx.Global_Response_Time() / 8) + (Session.FrameSendRate - 1)) /
               Session.FrameSendRate * Session.FrameSendRate,
           Session.FrameSendRate * 2));
     } else {
@@ -5586,22 +5586,22 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
       w += d_margin * 5;
     }
 
-    h = d_txt6_h * 3 + d_margin * 6;
-    x = 320 - w / 2;
-    y = 200 - h / 2;
+    h = (d_txt6_h * 3) + (d_margin * 6);
+    x = 320 - (w / 2);
+    y = 200 - (h / 2);
 
     Hide_Mouse();
     Set_Logic_Page(SeenBuff);
     Dialog_Box(x, y, w, h);
 
-    Fancy_Text_Print(buf1, 320, y + d_margin * 2, scheme, TBLACK,
+    Fancy_Text_Print(buf1, 320, y + (d_margin * 2), scheme, TBLACK,
                      TPF_CENTER | kTpfText);
 
-    Fancy_Text_Print(buf2, 320, y + d_margin * 2 + d_txt6_h + d_margin, scheme,
-                     TBLACK, TPF_CENTER | kTpfText);
+    Fancy_Text_Print(buf2, 320, y + (d_margin * 2) + d_txt6_h + d_margin,
+                     scheme, TBLACK, TPF_CENTER | kTpfText);
 
     Fancy_Text_Print(bForfeitWarning ? szNewCancelMessage : buf3, 320,
-                     y + d_margin * 2 + (d_txt6_h + d_margin) * 2, scheme,
+                     y + (d_margin * 2) + ((d_txt6_h + d_margin) * 2), scheme,
                      TBLACK, TPF_CENTER | kTpfText);
 
     Show_Mouse();
@@ -5616,14 +5616,14 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
     Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
                         timeval + 1);
 
-    int fillx = 320 - String_Pixel_Width(buf2) / 2 - 6;
-    LogicPage->Fill_Rect(fillx, y + d_margin * 2 + d_txt6_h + d_margin,
-                         fillx + String_Pixel_Width(buf2) + 12,
-                         y + d_margin * 2 + d_txt6_h + d_margin + d_txt6_h + 2,
-                         BLACK);
+    int fillx = 320 - (String_Pixel_Width(buf2) / 2) - 6;
+    LogicPage->Fill_Rect(
+        fillx, y + (d_margin * 2) + d_txt6_h + d_margin,
+        fillx + String_Pixel_Width(buf2) + 12,
+        y + (d_margin * 2) + d_txt6_h + d_margin + d_txt6_h + 2, BLACK);
 
-    Fancy_Text_Print(buf2, 320, y + d_margin * 2 + d_txt6_h + d_margin, scheme,
-                     BLACK, TPF_CENTER | kTpfText);
+    Fancy_Text_Print(buf2, 320, y + (d_margin * 2) + d_txt6_h + d_margin,
+                     scheme, BLACK, TPF_CENTER | kTpfText);
 
     Show_Mouse();
   }

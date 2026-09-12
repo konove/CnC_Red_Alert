@@ -622,7 +622,7 @@ void RadarClass::Draw_It(bool forced) {
         Fancy_Text_Print(
             Text_String(
                 HouseTypeClass::As_Reference(PlayerPtr->ActLike).Full_Name()),
-            RadX + RadWidth / 2, RadY + RadHeight - 20,
+            RadX + (RadWidth / 2), RadY + RadHeight - 20,
             &ColorRemaps[PlayerPtr->RemapColor], TBLACK,
             TPF_CENTER | kTpfText | TPF_DROPSHADOW);
       }
@@ -753,12 +753,12 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
 
       switch (obj->What_Am_I()) {
         case RTTI_INFANTRY:
-          xoff = Coord_XLepton(obj->Coord) / (CELL_LEPTON_W / (size + 1)) -
-                 subsize / 2;
+          xoff = (Coord_XLepton(obj->Coord) / (CELL_LEPTON_W / (size + 1))) -
+                 (subsize / 2);
           xoff = std::max(xoff, 0);
           xoff = std::min(xoff, size - subsize);
-          yoff = Coord_YLepton(obj->Coord) / (CELL_LEPTON_H / (size + 1)) -
-                 subsize / 2;
+          yoff = (Coord_YLepton(obj->Coord) / (CELL_LEPTON_H / (size + 1))) -
+                 (subsize / 2);
           yoff = std::max(yoff, 0);
           yoff = std::min(yoff, size - subsize);
 
@@ -886,8 +886,8 @@ void RadarClass::Zoom_Mode(CELL cell) {
   ** Find the amount of remainder because this will let us calculate
   ** how to center the thing.
   */
-  int rem_x = RadIWidth - map_c_width * ZoomFactor;
-  int rem_y = RadIHeight - map_c_height * ZoomFactor;
+  int rem_x = RadIWidth - (map_c_width * ZoomFactor);
+  int rem_y = RadIHeight - (map_c_height * ZoomFactor);
 
   /*
   ** Finally mark the map so it shows just as much as it is supposed
@@ -1001,8 +1001,8 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
   bool usjamming = false;
   if (LogicPage->Lock()) {
     CellClass* cellptr = &(*this)[cell];
-    x = RadX + RadOffX + BaseX + x * ZoomFactor;
-    y = RadY + RadOffY + BaseY + y * ZoomFactor;
+    x = RadX + RadOffX + BaseX + (x * ZoomFactor);
+    y = RadY + RadOffY + BaseY + (y * ZoomFactor);
 
     /*
     **	Determine what (if any) vehicle or unit should be rendered in this blip.
@@ -1010,7 +1010,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
     int color = TBLACK;  // Color of the pixel to plot.
     int housebit = 1 << PlayerPtr->Class->House;
     int celljammed = (*this)[cell].Jammed;
-    int jammed = celljammed & 0xFFFF - housebit;
+    int jammed = celljammed & (0xFFFF - housebit);
     if (!jammed && ((*this)[cell].IsMapped || Debug_Unshroud)) {
       // 		if (!jammed && ((*this)[cell].IsVisible ||
       // Debug_Unshroud)) {
@@ -1061,7 +1061,9 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         icon &= 0x00FF;
         icon = *(iconset->Map_Data() + icon);
 
-        unsigned char* data = (unsigned char*)icondata + static_cast<base::ssize>(icon) * (base::ssize{24} * 24);
+        unsigned char* data =
+            (unsigned char*)icondata +
+            (static_cast<base::ssize>(icon) * (base::ssize{24} * 24));
         Buffer_To_Page(0, 0, 24, 24, data, _TileStage);
         _TileStage.Scale(*LogicPage, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor,
                          true);
@@ -1160,8 +1162,8 @@ int RadarClass::Click_In_Radar(int& ptr_x, int& ptr_y, bool change) const {
             static_cast<unsigned>(RadarHeight + (ZoomFactor - 1))) {
       //		if ((unsigned)x < RadarWidth && (unsigned)y <
       // RadarHeight) {
-      x = RadarX + x / ZoomFactor;
-      y = RadarY + y / ZoomFactor;
+      x = RadarX + (x / ZoomFactor);
+      y = RadarY + (y / ZoomFactor);
       if (change) {
         ptr_x = x;
         ptr_y = y;
@@ -1258,15 +1260,15 @@ void RadarClass::Mark_Radar(int x1, int y1, int x2, int y2, int value,
   /*
   ** First step is to convert pixel coordinates back to a CellX and CellY.
   */
-  x1 = RadarX + x1 / ZoomFactor;
-  y1 = RadarY + y1 / ZoomFactor;
-  x2 = RadarX + x2 / ZoomFactor;
-  y2 = RadarY + y2 / ZoomFactor;
+  x1 = RadarX + (x1 / ZoomFactor);
+  y1 = RadarY + (y1 / ZoomFactor);
+  x2 = RadarX + (x2 / ZoomFactor);
+  y2 = RadarY + (y2 / ZoomFactor);
 
   /*
   ** Now we need to convert the Pixel length to a cell length.
   */
-  barlen = barlen / ZoomFactor + 1;
+  barlen = (barlen / ZoomFactor) + 1;
 
   /*
   ** Now lets loop through and mark the map with the proper value.
@@ -1945,10 +1947,10 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           */
           HidPage.Blit(
               HidPage,
-              (radx < 0 ? -radx : 0) * ZoomFactor + RadX + RadOffX + BaseX,
-              (rady < 0 ? -rady : 0) * ZoomFactor + RadY + RadOffY + BaseY,
-              (radx < 0 ? 0 : radx) * ZoomFactor + RadX + RadOffX + BaseX,
-              (rady < 0 ? 0 : rady) * ZoomFactor + RadY + RadOffY + BaseY,
+              ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
+              ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY,
+              ((radx < 0 ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
+              ((rady < 0 ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY,
               radw * ZoomFactor, radh * ZoomFactor);
 
         } else {
@@ -1956,8 +1958,8 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           ** Create a temporary intermediate surface
           */
           GraphicBufferClass temp_surface;
-          temp_surface.Init(RadarWidth + 16 & 0xfffffff0,
-                            RadarHeight + 16 & 0xfffffff0, nullptr, 0,
+          temp_surface.Init((RadarWidth + 16) & 0xfffffff0,
+                            (RadarHeight + 16) & 0xfffffff0, nullptr, 0,
                             GBC_VIDEOMEM);
 
           /*
@@ -1965,14 +1967,14 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           */
           HidPage.Blit(
               temp_surface,
-              (radx < 0 ? -radx : 0) * ZoomFactor + RadX + RadOffX + BaseX,
-              (rady < 0 ? -rady : 0) * ZoomFactor + RadY + RadOffY + BaseY, 0,
+              ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
+              ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY, 0,
               0, RadarWidth, RadarHeight);
 
           temp_surface.Blit(
               HidPage, 0, 0,
-              (radx < 0 ? 0 : radx) * ZoomFactor + RadX + RadOffX + BaseX,
-              (rady < 0 ? 0 : rady) * ZoomFactor + RadY + RadOffY + BaseY,
+              ((radx < 0 ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
+              ((rady < 0 ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY,
               radw * ZoomFactor, radh * ZoomFactor);
         }
 

@@ -350,7 +350,7 @@ int ListClass::Draw_Me(bool forced) {
           /*
           **	Prints the text and handles right edge clipping and tabs.
           */
-          Draw_Entry(line, X + 1, Y + LineHeight * index + 1, Width - 2,
+          Draw_Entry(line, X + 1, Y + (LineHeight * index) + 1, Width - 2,
                      line == SelectedIndex);
         }
       }

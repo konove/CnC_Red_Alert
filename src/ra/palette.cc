@@ -40,8 +40,8 @@ void PaletteClass::Set(int fade, void (*callback)()) {
       for (int c = 0; c < COLOR_COUNT * 3; c++) {
         int new_val = *new_ptr++ & 0x3F;
         int old_val = *old_ptr++ & 0x3F;
-        *out_ptr++ = static_cast<unsigned char>(old_val + (new_val - old_val) *
-                                                              cur_time / fade);
+        *out_ptr++ = static_cast<unsigned char>(
+            old_val + ((new_val - old_val) * cur_time / fade));
       }
 
       Do_Set_Palette(fade_palette);

@@ -67,7 +67,7 @@
  *=============================================================================================*/
 LCWStraw::LCWStraw(CompControl control, int blocksize)
     : Control(control), BlockSize(blocksize) {
-  SafetyMargin = BlockSize / 128 + 1;
+  SafetyMargin = (BlockSize / 128) + 1;
   Buffer = new char[BlockSize + SafetyMargin];
   if (control == COMPRESS) {
     Buffer2 = new char[BlockSize + SafetyMargin];

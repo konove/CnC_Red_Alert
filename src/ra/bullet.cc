@@ -276,21 +276,21 @@ const short* BulletClass::Occupy_List(bool) const {
     static short _list[] = {-1,
                             0,
                             1,
-                            MAP_CELL_W * 1 - 1,
+                            (MAP_CELL_W * 1) - 1,
                             MAP_CELL_W * 1,
-                            MAP_CELL_W * 1 + 1,
-                            -MAP_CELL_W * 1 - 1,
+                            (MAP_CELL_W * 1) + 1,
+                            (-MAP_CELL_W * 1) - 1,
                             -MAP_CELL_W * 1,
-                            -MAP_CELL_W * 1 + 1,
-                            MAP_CELL_W * 2 - 1,
+                            (-MAP_CELL_W * 1) + 1,
+                            (MAP_CELL_W * 2) - 1,
                             MAP_CELL_W * 2,
-                            MAP_CELL_W * 2 + 1,
-                            -MAP_CELL_W * 2 - 1,
+                            (MAP_CELL_W * 2) + 1,
+                            (-MAP_CELL_W * 2) - 1,
                             -MAP_CELL_W * 2,
-                            -MAP_CELL_W * 2 + 1,
-                            -MAP_CELL_W * 3 - 1,
+                            (-MAP_CELL_W * 2) + 1,
+                            (-MAP_CELL_W * 3) - 1,
                             -MAP_CELL_W * 3,
-                            -MAP_CELL_W * 3 + 1,
+                            (-MAP_CELL_W * 3) + 1,
                             kRefreshEol};
     return _list;
     //		return(Coord_Spillage_List(Coord, 64));
@@ -519,8 +519,8 @@ int BulletClass::Shape_Number() const {
   **	For tumbling projectiles, fetch offset stage.
   */
   if (Class->Tumble > 0) {
-    shapenum = static_cast<int>(shapenum +
-                                static_cast<long>(Frame) % Class->Tumble);
+    shapenum =
+        static_cast<int>(shapenum + (static_cast<long>(Frame) % Class->Tumble));
   }
 
   return shapenum;
@@ -727,7 +727,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       *the straight line flight.
       */
       if (/*Class->ROT != 0 ||*/ Class->IsArcing) {
-        int scatterdist = ::Distance(coord, tcoord) / 16 - 0x0040;
+        int scatterdist = (::Distance(coord, tcoord) / 16) - 0x0040;
         scatterdist =
             std::min(scatterdist, static_cast<int>(Rule.HomingScatter));
         scatterdist = std::max(scatterdist, 0);
@@ -735,7 +735,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
         dir = static_cast<DirType>(dir + (Random_Pick(0, 10) - 5) & 0x00FF);
         tcoord = Coord_Scatter(tcoord, Random_Pick(0, scatterdist));
       } else {
-        int scatterdist = ::Distance(coord, tcoord) / 16 - 0x0040;
+        int scatterdist = (::Distance(coord, tcoord) / 16) - 0x0040;
         scatterdist =
             std::min(scatterdist, static_cast<int>(Rule.BallisticScatter));
         scatterdist = std::max(scatterdist, 0);
@@ -760,7 +760,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     */
     int range = 0xFF;
     if (!Class->IsDropping) {
-      range = ::Distance(tcoord, Coord) / MaxSpeed + 4;
+      range = (::Distance(tcoord, Coord) / MaxSpeed) + 4;
     }
 
     /*
@@ -773,7 +773,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       speed = MPH_IMMOBILE;
     }
     if (Class->IsArcing) {
-      speed = MaxSpeed + Distance(tcoord) / 32;
+      speed = MaxSpeed + (Distance(tcoord) / 32);
 
       /*
       **	Set minimum speed (i.e., distance) for arcing projectiles.

@@ -238,7 +238,7 @@ void ScorePrintClass::Update() {
   if (AnimTimer.IsFinished()) {
     AnimTimer.Set(1);
 
-    int pos = XPos + Stage * 12;
+    int pos = XPos + (Stage * 12);
     // print the letter properly
     if (Stage) {
       Set_Font_Palette(PrimaryPalette);
@@ -494,7 +494,7 @@ void ScoreClass::Presentation() {
                 static_cast<unsigned>(PlayerPtr->Control.InitialCredits) + 1);
   economy = std::min(economy, 150);
 
-  int total = uspoints * leadership / 100 + uspoints * economy / 100;
+  int total = (uspoints * leadership / 100) + (uspoints * economy / 100);
   total = std::clamp(total, -9999, 99999);
 
   Keyboard->Clear();
@@ -660,19 +660,19 @@ void ScoreClass::Presentation() {
   for (i = 0; i < NUMFAMENAMES; i++) {
     pal = hallfame[i].side ? _redpal : _bluepal;
     Alloc_Object(new ScorePrintClass(hallfame[i].name, HALLFAME_X,
-                                     HALLFAME_Y + i * 8, pal));
+                                     HALLFAME_Y + (i * 8), pal));
     if (hallfame[i].score) {
-      char* str = maststr + static_cast<base::ssize>(i) * 32;
+      char* str = maststr + (static_cast<base::ssize>(i) * 32);
       sprintf(str, "%d", hallfame[i].score);
-      Alloc_Object(new ScorePrintClass(str, HALLFAME_X + 6 * 14,
-                                       HALLFAME_Y + i * 8, pal, BLACK));
+      Alloc_Object(new ScorePrintClass(str, HALLFAME_X + (6 * 14),
+                                       HALLFAME_Y + (i * 8), pal, BLACK));
       if (hallfame[i].level < 20) {
         sprintf(str + 16, "%d", hallfame[i].level);
       } else {
         sprintf(str + 16, "**");
       }
-      Alloc_Object(new ScorePrintClass(str + 16, HALLFAME_X + 6 * 11,
-                                       HALLFAME_Y + i * 8, pal, BLACK));
+      Alloc_Object(new ScorePrintClass(str + 16, HALLFAME_X + (6 * 11),
+                                       HALLFAME_Y + (i * 8), pal, BLACK));
       Call_Back_Delay(13);
     }
   }
@@ -687,7 +687,7 @@ void ScoreClass::Presentation() {
 
   if (index < NUMFAMENAMES) {
     pal = hallfame[index].side ? _redpal : _bluepal;
-    Input_Name(hallfame[index].name, HALLFAME_X, HALLFAME_Y + index * 8, pal);
+    Input_Name(hallfame[index].name, HALLFAME_X, HALLFAME_Y + (index * 8), pal);
 
     file.Open(FileAccess::kWrite);
     for (i = 0; i < NUMFAMENAMES; i++) {
@@ -848,9 +848,9 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     */
     CC_Draw_Shape(tanya_shape,
                   ramboclass->DoControls[DO_WALK].Frame +
-                      ramboclass->DoControls[DO_WALK].Jump * 6 +
-                      (static_cast<unsigned>(i) >> 1) %
-                          ramboclass->DoControls[DO_WALK].Count,
+                      (ramboclass->DoControls[DO_WALK].Jump * 6) +
+                      ((static_cast<unsigned>(i) >> 1) %
+                       ramboclass->DoControls[DO_WALK].Count),
                   i + 32, 40, WINDOW_MAIN,
                   SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST,
                   ColorRemaps[PCOLOR_RED].RemapTable, DisplayClass::UnitShadow);
@@ -1005,7 +1005,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   */
   int r = NUMINFANTRYMEN / 2;
   for (i = 0; i < NUMINFANTRYMEN / 2; i++) {
-    InfantryMan[i + 0].xpos = InfantryMan[i + r].xpos = i * 10 + 7;
+    InfantryMan[i + 0].xpos = InfantryMan[i + r].xpos = (i * 10) + 7;
     InfantryMan[i + 0].ypos = 11;
     InfantryMan[i + r].ypos = 21;
     InfantryMan[i + 0].shapefile = InfantryMan[i + r].shapefile = e1ptr;
@@ -1145,7 +1145,7 @@ void ScoreClass::Print_Minutes(int minutes) {
   char str[20];
   if (minutes >= 60) {
     if (minutes / 60 > 9) {
-      minutes = 9 * 60 + 59;
+      minutes = (9 * 60) + 59;
     }
     Format_Runtime_Text(str, sizeof(str), Text_String(TXT_SCORE_TIMEFORMAT1),
                         minutes / 60, minutes % 60);
@@ -1247,7 +1247,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
         if (index) {
           str[--index] = 0;
 
-          int xposindex6 = (xpos + index * 6) * 2;
+          int xposindex6 = (xpos + (index * 6)) * 2;
           HidPage.Blit(SeenBuff, xposindex6, (ypos - 100) * 2, xposindex6,
                        ypos * 2, 12, 12);
           HidPage.Blit(HidPage, xposindex6, (ypos - 100) * 2, xposindex6,
@@ -1261,17 +1261,17 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
           ascii -= 'a' - 'A';
         }
         if ((ascii >= '!' && ascii <= KA_TILDA) || ascii == ' ') {
-          HidPage.Blit(SeenBuff, (xpos + index * 6) * 2, (ypos - 100) * 2,
-                       (xpos + index * 6) * 2, ypos * 2, 12, 12);
-          HidPage.Blit(HidPage, (xpos + index * 6) * 2, (ypos - 100) * 2,
-                       (xpos + index * 6) * 2, ypos * 2, 12, 12);
+          HidPage.Blit(SeenBuff, (xpos + (index * 6)) * 2, (ypos - 100) * 2,
+                       (xpos + (index * 6)) * 2, ypos * 2, 12, 12);
+          HidPage.Blit(HidPage, (xpos + (index * 6)) * 2, (ypos - 100) * 2,
+                       (xpos + (index * 6)) * 2, ypos * 2, 12, 12);
           str[index] = static_cast<char>(ascii);
           str[index + 1] = 0;
 
           int objindex;
           Play_Sample(keystrok, 255, Options.Normalize_Volume(150));
           objindex = Alloc_Object(
-              new ScoreScaleClass(str + index, xpos + index * 6, ypos, pal));
+              new ScoreScaleClass(str + index, xpos + (index * 6), ypos, pal));
           while (ScoreObjs[objindex]) {
             Call_Back_Delay(1);
           }
@@ -1298,13 +1298,13 @@ void Animate_Cursor(int pos, int ypos) {
   // If they moved the cursor, erase old one and force state=0, to make green
   // draw right away
   if (pos != _lastpos) {
-    HidPage.Blit(SeenBuff, (HALLFAME_X + _lastpos * 6) * 2, ypos - 200,
-                 (HALLFAME_X + _lastpos * 6) * 2, ypos, 12, 2);
+    HidPage.Blit(SeenBuff, (HALLFAME_X + (_lastpos * 6)) * 2, ypos - 200,
+                 (HALLFAME_X + (_lastpos * 6)) * 2, ypos, 12, 2);
     _lastpos = pos;
     _state = 0;
   }
-  SeenBuff.Draw_Line((HALLFAME_X + pos * 6) * 2, ypos,
-                     (HALLFAME_X + pos * 6 + 5) * 2, ypos,
+  SeenBuff.Draw_Line((HALLFAME_X + (pos * 6)) * 2, ypos,
+                     (HALLFAME_X + (pos * 6) + 5) * 2, ypos,
                      _state ? LTBLUE : TBLACK);
   /*
   ** Toggle the color of the cursor, green or black, if it's time to do so.
@@ -1446,7 +1446,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
   // Top bar. Widths are doubled because the graph is drawn at hi-res (the
   // coordinates above are in the original 320-wide space).
   if (gkilled) {
-    LogicPage->Fill_Rect(0, 0 + 8, 0 + std::min(i, gkilled) * 2, 0 + 10, RED);
+    LogicPage->Fill_Rect(0, 0 + 8, 0 + (std::min(i, gkilled) * 2), 0 + 10, RED);
     LogicPage->Draw_Line(0 + 2, 0 + 12, (0 + std::min(i, gkilled) + 1) * 2,
                          0 + 12, TBLACK);
     LogicPage->Draw_Line((0 + std::min(i, gkilled) + 1) * 2, 0 + 10,
@@ -1470,20 +1470,20 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
   // Bottom bar. Same logic as the top bar, drawn 24 rows lower and indexing the
   // second half of InfantryMan[] (hence the NUMINFANTRYMEN / 2 offset).
   if (nkilled) {
-    LogicPage->Fill_Rect(0, 0 + 32, 0 + std::min(i, nkilled) * 2, 0 + 34,
+    LogicPage->Fill_Rect(0, 0 + 32, 0 + (std::min(i, nkilled) * 2), 0 + 34,
                          LTCYAN);
     LogicPage->Draw_Line(0 + 2, 0 + 36, (0 + std::min(i, nkilled) + 1) * 2,
                          0 + 36, TBLACK);
     LogicPage->Draw_Line((0 + std::min(i, nkilled) + 1) * 2, 0 + 34,
                          (0 + std::min(i, nkilled) + 1) * 2, 0 + 34, TBLACK);
     if (i <= nkilled) {
-      int anim = InfantryMan[NUMINFANTRYMEN / 2 + i / 11].anim;
+      int anim = InfantryMan[(NUMINFANTRYMEN / 2) + (i / 11)].anim;
       if (anim != -1 && anim < DO_GUN_DEATH) {
         if (i / 11) {
-          New_Infantry_Anim(NUMINFANTRYMEN / 2 + i / 11,
+          New_Infantry_Anim((NUMINFANTRYMEN / 2) + (i / 11),
                             DO_GUN_DEATH + (local_rng.Next() & 3));
         } else {
-          New_Infantry_Anim(NUMINFANTRYMEN / 2 + i / 11, DO_GUN_DEATH);
+          New_Infantry_Anim((NUMINFANTRYMEN / 2) + (i / 11), DO_GUN_DEATH);
         }
       }
     }
@@ -1655,7 +1655,7 @@ void Multi_Score_Presentation() {
       for (k = 0; k <= std::min(Session.CurGame, MAX_MULTI_GAMES - 2); k++) {
         if (Session.Score[i].Kills[k] >= 0) {
           Alloc_Object(new ScorePrintClass(Int_Print(Session.Score[i].Kills[k]),
-                                           225 + 24 * k, y, remap));
+                                           225 + (24 * k), y, remap));
           Call_Back_Delay(6);
         }
       }

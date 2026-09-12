@@ -52,7 +52,7 @@ class SoundControlsClass {
 
     LISTBOX_X = 17,
     LISTBOX_Y = 54,
-    LISTBOX_W = OPTION_WIDTH - LISTBOX_X * 2,
+    LISTBOX_W = OPTION_WIDTH - (LISTBOX_X * 2),
     LISTBOX_H = 72,
 
     BUTTON_WIDTH = 70,
@@ -66,7 +66,9 @@ class SoundControlsClass {
     PLAY_Y = 128,
 
     ONOFF_WIDTH = 25,
-    SHUFFLE_X = config::kIsGerman ? 79 : config::kIsFrench ? 99 : 97,
+    SHUFFLE_X = config::kIsGerman ? 79
+    : config::kIsFrench           ? 99
+                                  : 97,
     SHUFFLE_Y = 128,
 
     REPEAT_X = config::kIsFrench ? 169 : 164,

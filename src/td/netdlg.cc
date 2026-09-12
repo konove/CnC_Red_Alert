@@ -778,22 +778,22 @@ static int Net_Join_Dialog() {
   /* ###Change collision detected! C:\PROJECTS\CODE\NETDLG.CPP... */
   int d_dialog_w = 287 * factor;                     // dialog width
   int d_dialog_h = 198 * factor;                     // dialog height
-  int d_dialog_x = (320 * factor - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = (200 * factor - d_dialog_h) / 2;  // centered y-coord
-  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;     // center x-coord
+  int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
 
-  int d_txt6_h = 6 * factor + 1;  // ht of 6-pt text
+  int d_txt6_h = (6 * factor) + 1;  // ht of 6-pt text
   int d_margin1 = 5 * factor;     // large margin
   int d_margin2 = 2 * factor;     // small margin
 
   int d_name_w = 70 * factor;
   int d_name_h = 9 * factor;
-  int d_name_x = d_dialog_cx - 10 * factor;
+  int d_name_x = d_dialog_cx - (10 * factor);
   int d_name_y = d_dialog_y + d_margin1 + d_txt6_h + d_txt6_h;
 
   int d_gdi_w = 30 * factor;
   int d_gdi_h = 9 * factor;
-  int d_gdi_x = d_dialog_cx - 10 * factor;
+  int d_gdi_x = d_dialog_cx - (10 * factor);
   int d_gdi_y = d_name_y + d_name_h + d_margin2;
 
   int d_nod_w = 30 * factor;
@@ -823,7 +823,7 @@ static int Net_Join_Dialog() {
 
   int d_join_w = 40 * factor;
   int d_join_h = 9 * factor;
-  int d_join_x = d_dialog_x + d_dialog_w / 6 - d_join_w / 2;
+  int d_join_x = d_dialog_x + (d_dialog_w / 6) - (d_join_w / 2);
   int d_join_y = d_msg5_y + d_txt6_h + d_margin1;
 
 #if (GERMAN | FRENCH)
@@ -832,22 +832,22 @@ static int Net_Join_Dialog() {
   int d_cancel_w = 40 * factor;
 #endif
   int d_cancel_h = 9 * factor;
-  int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
+  int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
   int d_cancel_y = d_msg5_y + d_txt6_h + d_margin1;
 
   int d_new_w = 40 * factor;
   int d_new_h = 9 * factor;
-  int d_new_x = d_dialog_x + d_dialog_w * 5 / 6 - d_new_w / 2;
+  int d_new_x = d_dialog_x + (d_dialog_w * 5 / 6) - (d_new_w / 2);
   int d_new_y = d_msg5_y + d_txt6_h + d_margin1;
 
-  int d_message_w = d_dialog_w - d_margin1 * 2;
+  int d_message_w = d_dialog_w - (d_margin1 * 2);
   int d_message_h = 34 * factor;
   int d_message_x = d_dialog_x + d_margin1;
   int d_message_y = d_cancel_y + d_cancel_h + d_margin1;
 
   int d_send_w = 80 * factor;
   int d_send_h = 9 * factor;
-  int d_send_x = d_dialog_cx - d_send_w / 2;
+  int d_send_x = d_dialog_cx - (d_send_w / 2);
   int d_send_y = d_message_y + d_message_h + d_margin2;
 
   /*........................................................................
@@ -885,10 +885,10 @@ static int Net_Join_Dialog() {
   KeyNumType input;
   int cbox_x[] = {d_gdi_x,
                   d_gdi_x + d_color_w,
-                  d_gdi_x + d_color_w * 2,
-                  d_gdi_x + d_color_w * 3,
-                  d_gdi_x + d_color_w * 4,
-                  d_gdi_x + d_color_w * 5};
+                  d_gdi_x + (d_color_w * 2),
+                  d_gdi_x + (d_color_w * 3),
+                  d_gdi_x + (d_color_w * 4),
+                  d_gdi_x + (d_color_w * 5)};
 
   JoinStateType joinstate = JOIN_NOTHING;  // current "state" of this dialog
   char namebuf[MPLAYER_NAME_MAX] = {0};    // buffer for player's name
@@ -1082,12 +1082,12 @@ static int Net_Join_Dialog() {
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            TXT_GAMES, d_gamelist_x + d_gamelist_w / 2, d_gamelist_y - d_txt6_h,
-            CC_GREEN, TBLACK,
+            TXT_GAMES, d_gamelist_x + (d_gamelist_w / 2),
+            d_gamelist_y - d_txt6_h, CC_GREEN, TBLACK,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            TXT_PLAYERS, d_playerlist_x + d_playerlist_w / 2,
+            TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
             d_playerlist_y - d_txt6_h, CC_GREEN, TBLACK,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -1213,10 +1213,10 @@ static int Net_Join_Dialog() {
           ............................................................*/
           p = Text_String(TXT_COUNT);
           sprintf(txt, "%s %d", p, MPlayerUnitCount);
-          Fancy_Text_Print(txt,
-                           d_dialog_x + d_dialog_w / 4 - String_Pixel_Width(p),
-                           d_msg3_y, CC_GREEN, TBLACK,
-                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          Fancy_Text_Print(
+              txt, d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p),
+              d_msg3_y, CC_GREEN, TBLACK,
+              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           p = Text_String(TXT_LEVEL);
           if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
@@ -1224,11 +1224,11 @@ static int Net_Join_Dialog() {
           } else {
             sprintf(txt, "%s **", p);
           }
-          Fancy_Text_Print(
-              txt,
-              d_dialog_x + d_dialog_w - d_dialog_w / 4 - String_Pixel_Width(p),
-              d_msg3_y, CC_GREEN, TBLACK,
-              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          Fancy_Text_Print(txt,
+                           d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
+                               String_Pixel_Width(p),
+                           d_msg3_y, CC_GREEN, TBLACK,
+                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
           Bases
@@ -1239,10 +1239,10 @@ static int Net_Join_Dialog() {
           } else {
             sprintf(txt, "%s %s", p, Text_String(TXT_OFF));
           }
-          Fancy_Text_Print(txt,
-                           d_dialog_x + d_dialog_w / 4 - String_Pixel_Width(p),
-                           d_msg4_y, CC_GREEN, TBLACK,
-                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          Fancy_Text_Print(
+              txt, d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p),
+              d_msg4_y, CC_GREEN, TBLACK,
+              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
           Tiberium
@@ -1254,10 +1254,10 @@ static int Net_Join_Dialog() {
             sprintf(txt, "%s %s", p, Text_String(TXT_OFF));
           }
 
-          Fancy_Text_Print(txt,
-                           d_dialog_x + d_dialog_w / 4 - String_Pixel_Width(p),
-                           d_msg5_y, CC_GREEN, TBLACK,
-                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          Fancy_Text_Print(
+              txt, d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p),
+              d_msg5_y, CC_GREEN, TBLACK,
+              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
           Goody boxes
@@ -1269,11 +1269,11 @@ static int Net_Join_Dialog() {
             sprintf(txt, "%s %s", p, Text_String(TXT_OFF));
           }
 
-          Fancy_Text_Print(
-              txt,
-              d_dialog_x + d_dialog_w - d_dialog_w / 4 - String_Pixel_Width(p),
-              d_msg4_y, CC_GREEN, TBLACK,
-              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          Fancy_Text_Print(txt,
+                           d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
+                               String_Pixel_Width(p),
+                           d_msg4_y, CC_GREEN, TBLACK,
+                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
           Computer AI players
@@ -1289,11 +1289,11 @@ static int Net_Join_Dialog() {
               sprintf(txt, "%s %s", p, Text_String(TXT_OFF));
             }
           }
-          Fancy_Text_Print(
-              txt,
-              d_dialog_x + d_dialog_w - d_dialog_w / 4 - String_Pixel_Width(p),
-              d_msg5_y, CC_GREEN, TBLACK,
-              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          Fancy_Text_Print(txt,
+                           d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
+                               String_Pixel_Width(p),
+                           d_msg5_y, CC_GREEN, TBLACK,
+                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         } else {
           /*...............................................................
@@ -1526,7 +1526,7 @@ static int Net_Join_Dialog() {
 
             Messages.Add_Edit(MPlayerTColors[MPlayerColorIdx],
                               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-                              txt, d_message_w - 70 * factor);
+                              txt, d_message_w - (70 * factor));
 
             if (joinstate <= JOIN_NOTHING) {
               name_edt.Clear_Focus();
@@ -2730,11 +2730,11 @@ static int Net_New_Dialog() {
   // // dialog width
   int d_dialog_w = 287 * factor;                     // dialog width
   int d_dialog_h = 177 * factor;                     // dialog height
-  int d_dialog_x = (320 * factor - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = (200 * factor - d_dialog_h) / 2;  // centered y-coord
-  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;     // center x-coord
+  int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
 
-  int d_txt6_h = 6 * factor + 1;  // ht of 6-pt text
+  int d_txt6_h = (6 * factor) + 1;  // ht of 6-pt text
   int d_margin1 = 5 * factor;     // margin width/height
   int d_margin2 = 2 * factor;     // margin width/height
 
@@ -2742,12 +2742,12 @@ static int Net_New_Dialog() {
   int d_playerlist_w = 106 * factor;
   int d_playerlist_h = 27 * factor;
   int d_playerlist_x = d_dialog_x + d_margin1;
-  int d_playerlist_y = d_dialog_y + d_margin1 + d_txt6_h * 3;
+  int d_playerlist_y = d_dialog_y + d_margin1 + (d_txt6_h * 3);
 
   int d_scenariolist_w = 162 * factor;
   int d_scenariolist_h = 27 * factor;
   int d_scenariolist_x = d_dialog_x + d_dialog_w - d_margin1 - d_scenariolist_w;
-  int d_scenariolist_y = d_dialog_y + d_margin1 + d_txt6_h * 3;
+  int d_scenariolist_y = d_dialog_y + d_margin1 + (d_txt6_h * 3);
 
 #if (GERMAN | FRENCH)
   int d_reject_w = 55 * factor;
@@ -2755,23 +2755,23 @@ static int Net_New_Dialog() {
   int d_reject_w = 45 * factor;
 #endif
   int d_reject_h = 9 * factor;
-  int d_reject_x = d_playerlist_x + d_playerlist_w / 2 - d_reject_w / 2;
+  int d_reject_x = d_playerlist_x + (d_playerlist_w / 2) - (d_reject_w / 2);
   int d_reject_y = d_playerlist_y + d_playerlist_h + d_margin2;
 
   int d_count_w = 25 * factor;
   int d_count_h = d_txt6_h;
-  int d_count_x = d_scenariolist_x + d_scenariolist_w / 2;
+  int d_count_x = d_scenariolist_x + (d_scenariolist_w / 2);
   int d_count_y = d_scenariolist_y + d_scenariolist_h + d_margin2;
 
   int d_level_w = 25 * factor;
   int d_level_h = d_txt6_h;
-  int d_level_x = d_scenariolist_x + d_scenariolist_w / 2;
+  int d_level_x = d_scenariolist_x + (d_scenariolist_w / 2);
   int d_level_y = d_count_y + d_count_h;
 
-  int d_credits_w = (CREDITSBUF_MAX - 1) * 7 * factor + 4 * factor;
+  int d_credits_w = ((CREDITSBUF_MAX - 1) * 7 * factor) + (4 * factor);
   // int d_credits_w = ((CREDITSBUF_MAX - 1) * 6*factor) + 3*factor;
   int d_credits_h = 9 * factor;
-  int d_credits_x = d_dialog_cx + 2 * factor;
+  int d_credits_x = d_dialog_cx + (2 * factor);
   int d_credits_y = d_level_y + d_level_h + d_margin1;
 
 #if (GERMAN | FRENCH)
@@ -2812,7 +2812,7 @@ static int Net_New_Dialog() {
 
   int d_ok_w = 45 * factor;
   int d_ok_h = 9 * factor;
-  int d_ok_x = d_dialog_cx - d_margin2 - d_bases_w / 2 - d_ok_w / 2;
+  int d_ok_x = d_dialog_cx - d_margin2 - (d_bases_w / 2) - (d_ok_w / 2);
   int d_ok_y = d_ghosts_y + d_ghosts_h + d_margin1;
 
 #if (GERMAN | FRENCH)
@@ -2821,17 +2821,18 @@ static int Net_New_Dialog() {
   int d_cancel_w = 45 * factor;
 #endif
   int d_cancel_h = 9 * factor;
-  int d_cancel_x = d_dialog_cx + d_margin2 + d_goodies_w / 2 - d_cancel_w / 2;
+  int d_cancel_x =
+      d_dialog_cx + d_margin2 + (d_goodies_w / 2) - (d_cancel_w / 2);
   int d_cancel_y = d_ghosts_y + d_ghosts_h + d_margin1;
 
-  int d_message_w = d_dialog_w - d_margin1 * 2;
+  int d_message_w = d_dialog_w - (d_margin1 * 2);
   int d_message_h = 34 * factor;
   int d_message_x = d_dialog_x + d_margin1;
   int d_message_y = d_cancel_y + d_cancel_h + d_margin1;
 
   int d_send_w = 80 * factor;
   int d_send_h = 9 * factor;
-  int d_send_x = d_dialog_cx - d_send_w / 2;
+  int d_send_x = d_dialog_cx - (d_send_w / 2);
   int d_send_y = d_message_y + d_message_h + d_margin2;
 
   /*........................................................................
@@ -3095,7 +3096,7 @@ static int Net_New_Dialog() {
   /*........................................................................
   Init the message display system
   ........................................................................*/
-  Messages.Init(d_message_x + 2 * factor, d_message_y + 2 * factor, 4,
+  Messages.Init(d_message_x + (2 * factor), d_message_y + (2 * factor), 4,
                 MAX_MESSAGE_LENGTH, d_txt6_h);
 
   /*------------------------------------------------------------------------
@@ -3140,11 +3141,11 @@ static int Net_New_Dialog() {
       /*
       ** Wipe the background behind the unit count then reprint it
       */
-      LogicPage->Fill_Rect(d_count_x + d_count_w + 2 * factor, d_count_y,
-                           d_count_x + d_count_w + 2 * factor + 20,
+      LogicPage->Fill_Rect(d_count_x + d_count_w + (2 * factor), d_count_y,
+                           d_count_x + d_count_w + (2 * factor) + 20,
                            d_count_y + 12, 0);
       sprintf(txt, "%d", MPlayerUnitCount);
-      Fancy_Text_Print(txt, d_count_x + d_count_w + 2 * factor, d_count_y,
+      Fancy_Text_Print(txt, d_count_x + d_count_w + (2 * factor), d_count_y,
                        CC_GREEN, TBLACK,
                        TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
       display = REDRAW_NONE;
@@ -3170,26 +3171,26 @@ static int Net_New_Dialog() {
         Draw_Caption(TXT_NETGAME_SETUP, d_dialog_x, d_dialog_y, d_dialog_w);
 
         Fancy_Text_Print(
-            TXT_PLAYERS, d_playerlist_x + d_playerlist_w / 2,
+            TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
             d_playerlist_y - d_txt6_h, CC_GREEN, TBLACK,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_CENTER);
 
         Fancy_Text_Print(
-            TXT_SCENARIOS, d_scenariolist_x + d_scenariolist_w / 2,
+            TXT_SCENARIOS, d_scenariolist_x + (d_scenariolist_w / 2),
             d_scenariolist_y - d_txt6_h, CC_GREEN, TBLACK,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_CENTER);
 
         Fancy_Text_Print(
-            TXT_COUNT, d_count_x - 2 * factor, d_count_y, CC_GREEN, TBLACK,
+            TXT_COUNT, d_count_x - (2 * factor), d_count_y, CC_GREEN, TBLACK,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
 
         sprintf(txt, "%d", MPlayerUnitCount);
-        Fancy_Text_Print(txt, d_count_x + d_count_w + 2 * factor, d_count_y,
+        Fancy_Text_Print(txt, d_count_x + d_count_w + (2 * factor), d_count_y,
                          CC_GREEN, TBLACK,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
 
         Fancy_Text_Print(
-            TXT_LEVEL, d_level_x - 2 * factor, d_level_y, CC_GREEN, TBLACK,
+            TXT_LEVEL, d_level_x - (2 * factor), d_level_y, CC_GREEN, TBLACK,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
 
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
@@ -3197,13 +3198,13 @@ static int Net_New_Dialog() {
         } else {
           sprintf(txt, "**");
         }
-        Fancy_Text_Print(txt, d_level_x + d_level_w + 2 * factor, d_level_y,
+        Fancy_Text_Print(txt, d_level_x + d_level_w + (2 * factor), d_level_y,
                          CC_GREEN, TBLACK,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
 
         Fancy_Text_Print(
-            TXT_START_CREDITS_COLON, d_credits_x - 5 * factor,
-            d_credits_y + 1 * factor, CC_GREEN, TBLACK,
+            TXT_START_CREDITS_COLON, d_credits_x - (5 * factor),
+            d_credits_y + (1 * factor), CC_GREEN, TBLACK,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
       }
 
@@ -3283,12 +3284,12 @@ static int Net_New_Dialog() {
             countgauge.Get_Value() + MPlayerCountMin[MPlayerBases];
 
         Hide_Mouse();
-        LogicPage->Fill_Rect(d_count_x + d_count_w + 2 * factor, d_count_y,
-                             d_count_x + d_count_w + 14 * factor,
-                             d_count_y + 6 * factor, BLACK);
+        LogicPage->Fill_Rect(d_count_x + d_count_w + (2 * factor), d_count_y,
+                             d_count_x + d_count_w + (14 * factor),
+                             d_count_y + (6 * factor), BLACK);
 
         sprintf(txt, "%d", MPlayerUnitCount);
-        Fancy_Text_Print(txt, d_count_x + d_count_w + 2 * factor, d_count_y,
+        Fancy_Text_Print(txt, d_count_x + d_count_w + (2 * factor), d_count_y,
                          CC_GREEN, TBLACK,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
         Show_Mouse();
@@ -3304,16 +3305,16 @@ static int Net_New_Dialog() {
                                             MPLAYER_BUILD_LEVEL_MAX);
 
         Hide_Mouse();
-        LogicPage->Fill_Rect(d_level_x + d_level_w + 2 * factor, d_level_y,
-                             d_level_x + d_level_w + 14 * factor,
-                             d_level_y + 6 * factor, BLACK);
+        LogicPage->Fill_Rect(d_level_x + d_level_w + (2 * factor), d_level_y,
+                             d_level_x + d_level_w + (14 * factor),
+                             d_level_y + (6 * factor), BLACK);
 
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
           sprintf(txt, "%d", BuildLevel);
         } else {
           sprintf(txt, "**");
         }
-        Fancy_Text_Print(txt, d_level_x + d_level_w + 2 * factor, d_level_y,
+        Fancy_Text_Print(txt, d_level_x + d_level_w + (2 * factor), d_level_y,
                          CC_GREEN, TBLACK,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
         Show_Mouse();
@@ -3531,7 +3532,7 @@ static int Net_New_Dialog() {
 
             Messages.Add_Edit(MPlayerTColors[MPlayerColorIdx],
                               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-                              txt, d_message_w - 70 * factor);
+                              txt, d_message_w - (70 * factor));
 
             credit_edt.Clear_Focus();
             credit_edt.Flag_To_Redraw();
@@ -4110,7 +4111,7 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
 
   int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
-  int d_txt6_h = 6 * factor + 1;
+  int d_txt6_h = (6 * factor) + 1;
   int d_margin = 5 * factor;
 
   /*------------------------------------------------------------------------
@@ -4136,24 +4137,24 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
     w = std::max<int>(String_Pixel_Width(buf1), String_Pixel_Width(buf2));
     w = std::max<int>(String_Pixel_Width(buf3), w);
     w += d_margin * 4;
-    h = d_txt6_h * 3 + d_margin * 6;
-    x = 160 * factor - w / 2;
-    y = 100 * factor - h / 2;
+    h = (d_txt6_h * 3) + (d_margin * 6);
+    x = (160 * factor) - (w / 2);
+    y = (100 * factor) - (h / 2);
 
     Hide_Mouse();
     Set_Logic_Page(SeenBuff);
     Dialog_Box(x, y, w, h);
 
     Fancy_Text_Print(
-        buf1, 160 * factor, y + d_margin * 2, CC_GREEN, BLACK,
+        buf1, 160 * factor, y + (d_margin * 2), CC_GREEN, BLACK,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     Fancy_Text_Print(
-        buf2, 160 * factor, y + d_margin * 2 + d_txt6_h + d_margin, CC_GREEN,
+        buf2, 160 * factor, y + (d_margin * 2) + d_txt6_h + d_margin, CC_GREEN,
         BLACK, TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     Fancy_Text_Print(
-        buf3, 160 * factor, y + d_margin * 2 + (d_txt6_h + d_margin) * 2,
+        buf3, 160 * factor, y + (d_margin * 2) + ((d_txt6_h + d_margin) * 2),
         CC_GREEN, BLACK,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -4169,12 +4170,13 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
     Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
                         timeval + 1);
     int pixwidth = String_Pixel_Width(buf2);
-    LogicPage->Fill_Rect(160 * factor - pixwidth / 2 - 12,
-                         y + d_margin * 2 + d_txt6_h + d_margin,
-                         160 * factor + pixwidth / 2 + 12,
-                         y + d_margin * 2 + d_txt6_h * 2 + d_margin, TBLACK);
+    LogicPage->Fill_Rect((160 * factor) - (pixwidth / 2) - 12,
+                         y + (d_margin * 2) + d_txt6_h + d_margin,
+                         (160 * factor) + (pixwidth / 2) + 12,
+                         y + (d_margin * 2) + (d_txt6_h * 2) + d_margin,
+                         TBLACK);
     Fancy_Text_Print(
-        buf2, 160 * factor, y + d_margin * 2 + d_txt6_h + d_margin, CC_GREEN,
+        buf2, 160 * factor, y + (d_margin * 2) + d_txt6_h + d_margin, CC_GREEN,
         BLACK, TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     Show_Mouse();
@@ -4238,9 +4240,9 @@ static int Net_Fake_New_Dialog() {
 
   int d_dialog_w = 120 * factor;                     // dialog width
   int d_dialog_h = 80 * factor;                      // dialog height
-  int d_dialog_x = (320 * factor - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = (200 * factor - d_dialog_h) / 2;  // centered y-coord
-  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;     // center x-coord
+  int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
 
   // d_playerlist_w = 100;
   int d_playerlist_w = 106 * factor;
@@ -4255,8 +4257,8 @@ static int Net_Fake_New_Dialog() {
   int d_cancel_w = 45 * factor;
 #endif
   int d_cancel_h = 9 * factor;
-  int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
-  int d_cancel_y = d_dialog_y + d_dialog_h - 20 * factor;
+  int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
+  int d_cancel_y = d_dialog_y + d_dialog_h - (20 * factor);
 
 #if (GERMAN | FRENCH)
   int width = 160 * factor;
@@ -4471,8 +4473,8 @@ static int Net_Fake_New_Dialog() {
         ...............................................................*/
         Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(TXT_CONNECTING, d_dialog_cx - width / 2,
-                         d_dialog_y + 25 * factor, CC_GREEN, TBLACK,
+        Fancy_Text_Print(TXT_CONNECTING, d_dialog_cx - (width / 2),
+                         d_dialog_y + (25 * factor), CC_GREEN, TBLACK,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
@@ -4830,9 +4832,9 @@ static int Net_Fake_Join_Dialog() {
   /* ###Change collision detected! C:\PROJECTS\CODE\NETDLG.CPP... */
   int d_dialog_w = 120 * factor;                     // dialog width
   int d_dialog_h = 80 * factor;                      // dialog height
-  int d_dialog_x = (320 * factor - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = (200 * factor - d_dialog_h) / 2;  // centered y-coord
-  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;     // center x-coord
+  int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
 
   int d_gamelist_w = 160 * factor;
   int d_gamelist_h = 27 * factor;
@@ -4850,8 +4852,8 @@ static int Net_Fake_Join_Dialog() {
   int d_cancel_w = 45 * factor;
 #endif
   int d_cancel_h = 9 * factor;
-  int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
-  int d_cancel_y = d_dialog_y + d_dialog_h - 20 * factor;
+  int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
+  int d_cancel_y = d_dialog_y + d_dialog_h - (20 * factor);
 
   bool ready_to_go = false;
 
@@ -5029,8 +5031,8 @@ static int Net_Fake_Join_Dialog() {
         ...............................................................*/
         Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(TXT_CONNECTING, d_dialog_cx - width / 2,
-                         d_dialog_y + 25 * factor, CC_GREEN, TBLACK,
+        Fancy_Text_Print(TXT_CONNECTING, d_dialog_cx - (width / 2),
+                         d_dialog_y + (25 * factor), CC_GREEN, TBLACK,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         /*

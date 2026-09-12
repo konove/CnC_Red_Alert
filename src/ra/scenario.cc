@@ -555,7 +555,7 @@ void Fill_In_Data() {
     Scen.Views[0] = Scen.Views[1] = Scen.Views[2] = Scen.Views[3] =
         Scen.Waypoint[ScenarioClass::kHomeWaypoint];
     Map.Set_Tactical_Position(Cell_Coord(static_cast<CELL>(
-        Scen.Waypoint[ScenarioClass::kHomeWaypoint] - MAP_CELL_W * 8 - 10)));
+        Scen.Waypoint[ScenarioClass::kHomeWaypoint] - (MAP_CELL_W * 8) - 10)));
     //		}
   }
 
@@ -812,7 +812,7 @@ void Do_Win() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  int x = Map.TacPixelX + Lepton_To_Pixel(Map.TacLeptonWidth) / 2;
+  int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
 
   /*
   ** Hack section.  If it's allied scenario 10, variation A, then skip the
@@ -1036,7 +1036,7 @@ void Do_Lose() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  int x = Map.TacPixelX + Lepton_To_Pixel(Map.TacLeptonWidth) / 2;
+  int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
 
   /*
   **	Announce win to player.
@@ -1125,7 +1125,7 @@ void Do_Draw() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  int x = Map.TacPixelX + Lepton_To_Pixel(Map.TacLeptonWidth) / 2;
+  int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
 
   /*
   **	Announce win to player.
@@ -1769,7 +1769,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
   if (scenario < 100) {
     sprintf(ScenarioName, "SC%c%02d%c%c.INI", c_player, scenario, c_dir, c_var);
   } else {
-    char first = static_cast<char>(scenario / 36 + 'A');
+    char first = static_cast<char>((scenario / 36) + 'A');
     char second = static_cast<char>(scenario % 36);
 
     if (second < 10) {
@@ -1806,7 +1806,7 @@ void ScenarioClass::Set_Scenario_Name(const char* name) {
         second = static_cast<char>(second - 'A' + 10);
       }
 
-      Scenario = 36 * first + second;
+      Scenario = (36 * first) + second;
     } else {
       Scenario = tech::ParseInteger<int>(buf).value_or(0);
     }
@@ -3214,7 +3214,7 @@ void Disect_Scenario_Name(const char* name, int& scenario,
         second = static_cast<char>(second - 'A' + 10);
       }
     }
-    scenario = 36 * first + second;
+    scenario = (36 * first) + second;
   }
 
   /*

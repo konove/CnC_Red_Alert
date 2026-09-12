@@ -1123,15 +1123,15 @@ void SidebarClass::StripClass::Init_IO(int id) {
 
   UpButton[ID].IsSticky = true;
   UpButton[ID].ID = kButtonUp + id;
-  UpButton[ID].X = X + kUpXOffset * 2;
-  UpButton[ID].Y = Y + kUpYOffset * 2;
+  UpButton[ID].X = X + (kUpXOffset * 2);
+  UpButton[ID].Y = Y + (kUpYOffset * 2);
 
   UpButton[ID].Set_Shape(MFCD::Retrieve("STRIPUP.SHP"));
 
   DownButton[ID].IsSticky = true;
   DownButton[ID].ID = kButtonDown + id;
-  DownButton[ID].X = X + kDownXOffset * 2;
-  DownButton[ID].Y = Y + kDownYOffset * 2;
+  DownButton[ID].X = X + (kDownXOffset * 2);
+  DownButton[ID].Y = Y + (kDownYOffset * 2);
 
   /*
   ** Buttons are in a slightly different position in the new sidebar
@@ -1145,7 +1145,7 @@ void SidebarClass::StripClass::Init_IO(int id) {
     SelectClass& g = SelectButton[ID][index];
     g.ID = kButtonSelect;
     g.X = X;
-    g.Y = Y + kObjectHeight * index * 2;
+    g.Y = Y + (kObjectHeight * index * 2);
     g.Width = kObjectWidth * 2;
     g.Height = kObjectHeight * 2;
     g.Set_Owner(*this, index);
@@ -1591,7 +1591,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       FactoryClass* factory = nullptr;
       int index = i + TopIndex;
       int x = X;
-      int y = Y + i * kObjectHeight * 2;
+      int y = Y + (i * kObjectHeight * 2);
 
       /*
       **	If the strip is scrolling, then the offset is adjusted
@@ -1699,7 +1699,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       if (shapenum != SB_BLANK || shapefile != LogoShapes) {
         CC_Draw_Shape(
             shapefile, shapenum,
-            x - WindowList[WINDOW_SIDEBAR][WINDOWX] + kLeftEdgeOffset * 2,
+            x - WindowList[WINDOW_SIDEBAR][WINDOWX] + (kLeftEdgeOffset * 2),
             y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
             SHAPE_NORMAL | SHAPE_WIN_REL |
                 (remapper ? SHAPE_FADING : SHAPE_NORMAL),
@@ -1712,7 +1712,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
         if (darken) {
           CC_Draw_Shape(
               ClockShapes, 0,
-              x - WindowList[WINDOW_SIDEBAR][WINDOWX] + kLeftEdgeOffset * 2,
+              x - WindowList[WINDOW_SIDEBAR][WINDOWX] + (kLeftEdgeOffset * 2),
               y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
               SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
               ClockTranslucentTable);
@@ -1731,13 +1731,13 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           */
           CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_READY,
                         x - WindowList[WINDOW_SIDEBAR][WINDOWX] +
-                            (kLeftEdgeOffset + 15) * 2,
+                            ((kLeftEdgeOffset + 15) * 2),
                         y - WindowList[WINDOW_SIDEBAR][WINDOWY] + 8,
                         WINDOW_SIDEBAR, SHAPE_CENTER);
         } else {
           CC_Draw_Shape(
               ClockShapes, stage + 1,
-              x - WindowList[WINDOW_SIDEBAR][WINDOWX] + kLeftEdgeOffset * 2,
+              x - WindowList[WINDOW_SIDEBAR][WINDOWX] + (kLeftEdgeOffset * 2),
               y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
               SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
               ClockTranslucentTable);
@@ -1749,7 +1749,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           if (factory && !factory->Is_Building()) {
             CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_HOLDING,
                           x - WindowList[WINDOW_SIDEBAR][WINDOWX] +
-                              (kLeftEdgeOffset + 15) * 2,
+                              ((kLeftEdgeOffset + 15) * 2),
                           y - WindowList[WINDOW_SIDEBAR][WINDOWY] + 8,
                           WINDOW_SIDEBAR, SHAPE_CENTER);
           }
@@ -1873,7 +1873,7 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
   Strip = &strip;
   Index = index;
   X = strip.X;
-  Y = strip.Y + index * kObjectHeight * 2;
+  Y = strip.Y + (index * kObjectHeight * 2);
 }
 
 /***********************************************************************************************

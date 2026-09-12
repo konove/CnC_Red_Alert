@@ -72,7 +72,7 @@ class PKey {
   int Plain_Block_Size() const { return (BitPrecision - 1) / 8; }
   int Crypt_Block_Size() const { return Plain_Block_Size() + 1; }
   int Block_Count(int plaintext_length) const {
-    return (plaintext_length - 1) / Plain_Block_Size() + 1;
+    return ((plaintext_length - 1) / Plain_Block_Size()) + 1;
   }
 
   int Encode_Modulus(void* buffer) const;

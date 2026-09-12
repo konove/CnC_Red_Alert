@@ -894,7 +894,7 @@ void HouseClass::AI() {
     /*
     **	Adjusted to reduce maximum number of teams created.
     */
-    int maxteams = Random_Pick(2, static_cast<int>((BuildLevel - 1) / 3 + 1));
+    int maxteams = Random_Pick(2, static_cast<int>(((BuildLevel - 1) / 3) + 1));
     for (int index = 0; index < maxteams; index++) {
       const TeamTypeClass* ttype = Suggested_New_Team(true);
       if (ttype) {

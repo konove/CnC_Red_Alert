@@ -56,7 +56,7 @@ EditClass::EditClass(const int id, char* text, const int max_len,
       if (strlen(String) > 0) {
         Width = String_Pixel_Width(String) + 6;
       } else {
-        Width = (Char_Pixel_Width('X') + FontXSpacing) * (MaxLength + 1) + 2;
+        Width = ((Char_Pixel_Width('X') + FontXSpacing) * (MaxLength + 1)) + 2;
       }
     }
   }

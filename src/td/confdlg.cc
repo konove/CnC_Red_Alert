@@ -95,8 +95,8 @@ bool ConfirmationClass::Process(const char* string) {
   Format_Window_String(buffer, 200 * factor, width, height);
   width += 60 * factor;
   height += 60 * factor;
-  int x = (320 * factor - width) / 2;
-  int y = (200 * factor - height) / 2;
+  int x = ((320 * factor) - width) / 2;
+  int y = ((200 * factor) - height) / 2;
 
   Set_Logic_Page(SeenBuff);
 
@@ -109,12 +109,12 @@ bool ConfirmationClass::Process(const char* string) {
 
   TextButtonClass yesbtn(
       BUTTON_YES, TXT_YES, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      x + 10 * factor, y + height - (bheight + 5 * factor), bwidth);
+      x + (10 * factor), y + height - (bheight + (5 * factor)), bwidth);
 
   TextButtonClass nobtn(BUTTON_NO, TXT_NO,
                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                        x + width - (bwidth + 10 * factor),
-                        y + height - (bheight + 5 * factor), bwidth);
+                        x + width - (bwidth + (10 * factor)),
+                        y + height - (bheight + (5 * factor)), bwidth);
 
   nobtn.Add_Tail(yesbtn);
 
@@ -179,7 +179,7 @@ bool ConfirmationClass::Process(const char* string) {
       */
       Dialog_Box(x, y, width, height);
       Draw_Caption(TXT_CONFIRMATION, x, y, width);
-      Fancy_Text_Print(buffer, x + 20 * factor, y + 30 * factor, CC_GREEN,
+      Fancy_Text_Print(buffer, x + (20 * factor), y + (30 * factor), CC_GREEN,
                        TBLACK, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
       /*

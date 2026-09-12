@@ -212,7 +212,7 @@ int MapEditClass::Select_Team(const char*) {
     D_MARGIN = 25,  // margin width/height
 
     D_LIST_W = (D_DIALOG_W - (D_MARGIN * 2)) - 20,
-    D_LIST_X = D_DIALOG_X + (D_DIALOG_W - D_LIST_W) / 2,
+    D_LIST_X = D_DIALOG_X + ((D_DIALOG_W - D_LIST_W) / 2),
     D_LIST_Y = D_DIALOG_Y + 20,
     D_LIST_H = (D_DIALOG_H - 50) - D_LIST_Y,
 
@@ -696,7 +696,7 @@ int MapEditClass::Team_Members(HousesType house) {
 
         if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
           Fancy_Text_Print(teamclass[curclass]->Full_Name(),
-                           D_DIALOG_X + D_DIALOG_W / 2, msg_y,
+                           D_DIALOG_X + (D_DIALOG_W / 2), msg_y,
                            &ColorRemaps[PCOLOR_BROWN], TBLACK,
                            TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
         }
@@ -767,8 +767,8 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Compute new 'curclass' based on mouse position.
         */
-        i = (Get_Mouse_X() - 32 - D_DIALOG_X) / D_PICTURE_W +
-            ((Get_Mouse_Y() - (dlg_y + 8 + 11)) / D_ROW_H) * numcols;
+        i = ((Get_Mouse_X() - 32 - D_DIALOG_X) / D_PICTURE_W) +
+            (((Get_Mouse_Y() - (dlg_y + 8 + 11)) / D_ROW_H) * numcols);
 
         /*
         **	If it's changed, update class label.
@@ -786,8 +786,8 @@ int MapEditClass::Team_Members(HousesType house) {
 
           if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
             Fancy_Text_Print(teamclass[curclass]->Full_Name(),
-                             D_DIALOG_X + D_DIALOG_W / 2, msg_y, scheme, TBLACK,
-                             TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
+                             D_DIALOG_X + (D_DIALOG_W / 2), msg_y, scheme,
+                             TBLACK, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
           }
 
           /*
@@ -930,8 +930,8 @@ void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
   int col = index % numcols;
   int row = index / numcols;
   int dlg_y = 0;
-  int x = D_DIALOG_X + 32 + col * D_PICTURE_W;
-  int y = dlg_y + 8 + 13 + row * D_ROW_H;
+  int x = D_DIALOG_X + 32 + (col * D_PICTURE_W);
+  int y = dlg_y + 8 + 13 + (row * D_ROW_H);
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*
