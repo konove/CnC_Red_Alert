@@ -1547,8 +1547,7 @@ int MapClass::Validate() {
       ticon = (*this)[cell].TIcon;
       Mem_Copy(Get_Icon_Set_Map(tclass->Get_Image_Data()), map,
                static_cast<unsigned long>(tclass->Width) * tclass->Height);
-      if (ticon < 0 || ticon >= tclass->Width * tclass->Height ||
-          map[ticon] == 0xff) {
+      if (ticon >= tclass->Width * tclass->Height || map[ticon] == 0xff) {
         return false;
       }
     }
