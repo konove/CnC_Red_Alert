@@ -3291,9 +3291,11 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
       bullet->IsInaccurate = true;
     }
 
-    if (bullet->Unlimbo(fire_coord, dir)) {
-    } else {
+    if (!bullet->Unlimbo(fire_coord, dir)) {
+      // The projectile never reached the map, so report no shot rather than
+      // hand callers a pointer into the recycled heap block.
       delete bullet;
+      bullet = nullptr;
     }
     if (tclass.IsTurretEquipped) {
       IsInRecoilState = true;

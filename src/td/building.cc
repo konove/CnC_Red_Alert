@@ -4376,7 +4376,11 @@ int BuildingClass::Mission_Missile() {
           bullet->Payback = nullptr;
           bullet->Strength = 1;
           if (!bullet->Unlimbo(start, DIR_S)) {
+            // The missile never reached the map. Clear the pointer so the
+            // launch-complete test below sees the failure instead of reading
+            // the recycled heap block.
             delete bullet;
+            bullet = nullptr;
           } else {
             bullet->PrimaryFacing.Set_Current(DIR_S);
           }

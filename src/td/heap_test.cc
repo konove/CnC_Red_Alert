@@ -127,6 +127,23 @@ TEST(TdHeapTest, EmptyHeapRoundTripsWithoutObjects) {
 
 }  // namespace
 
+// Freeing an object hands its slot straight back to the next allocation, so a
+// pointer read after Free addresses whatever was allocated next rather than a
+// dead block. That is what makes reading a projectile pointer after a failed
+// unlimbo a live-object read instead of a harmless one.
+TEST(TdHeapTest, FreedSlotIsHandedToTheNextAllocation) {
+  TFixedIHeapClass<FieldObject> heap;
+  heap.Set_Heap(2);
+  auto* first = new (heap.Alloc()) FieldObject();
+  first->value = 4242;
+  heap.Free(first);
+
+  auto* second = new (heap.Alloc()) FieldObject();
+  second->value = -7;
+
+  EXPECT_EQ(second, first);
+  EXPECT_EQ(first->value, -7);
+}
 
 TEST(TdHeapTest, AllocationQueryRejectsHolesAndOutOfRangeSlots) {
   TFixedIHeapClass<FieldObject> heap;
