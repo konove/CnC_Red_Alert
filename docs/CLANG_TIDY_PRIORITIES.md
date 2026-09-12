@@ -64,7 +64,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `cppcoreguidelines-interfaces-global-init`                 | Enabled | Commit `Enable cross-unit global initialization checking`: TD's house table is the only report and is safe on two counts; it is annotated, and the check now guards the rest of the tree.                                                                             |
 | `bugprone-throwing-static-initialization`                  | Enabled | Commit `Make the game data tables nothrow constructible and enable throwing static initialization checking`: mark the type-class, value-type, timer, heap and gadget constructors `noexcept`, and allow the engine's allocating singletons by type. See review below. |
 | `cert-err58-cpp`                                           | Enabled | Alias enabled with `bugprone-throwing-static-initialization` in the same commit; the alias needs its own `AllowedTypes` copy.                                                                                                                                         |
-| `cppcoreguidelines-init-variables`                         | Pending | Review local initialization; avoid masking missing assignments with zeroes.                                                                                                                                                                                           |
+| `cppcoreguidelines-init-variables`                         | Skipped | Commit `Document local initialization check policy`: the check's own fix hides findings the eleven enabled uninitialized-use checks already report, and those report nothing across the tree. See review below.                                                       |
 | `cppcoreguidelines-special-member-functions`               | Pending | Audit copy/move/destruction consistency for owning types.                                                                                                                                                                                                             |
 | `hicpp-special-member-functions`                           | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-special-member-functions` on older tools.                                                                                                                                                                      |
 | `clang-diagnostic-deprecated-copy-with-user-provided-copy` | Pending | Review implicit copy operations paired with custom copying.                                                                                                                                                                                                           |
@@ -484,6 +484,64 @@ including a new one added to `globals.cc`. The alias does not share the option, 
 Both isolated sweeps now report nothing for either name, and the full-config sweep passes all 890
 translation units. Both strict game builds are clean and all 237 CTest tests pass. The excluded-name
 count drops from 218 to 216.
+
+### Local initialization check policy (2026-09-12)
+
+`cppcoreguidelines-init-variables` remains excluded after review. The isolated sweep of 890 project
+translation units, including 431 generated header checks, produced 2,998 findings across both games
+and the shared libraries — 738 of them pointer declarations. Every sampled finding is the same 1990s
+construct: locals declared at the top of a block and assigned before they are read (`int x, y;` in
+`ra/scenario.cc`, `int num;` in `td/team.cc`, `const TechnoTypeClass* otype;` in `td/teamtype.cc`).
+
+The problem is not the volume, it is that the check's fix works against the checks already in place.
+Eleven checks that do report a genuine uninitialized read are enforced today:
+`clang-analyzer-core.uninitialized.ArraySubscript`, `.Assign`, `.Branch`, `.NewArraySize`,
+`.UndefReturn`, `clang-analyzer-core.UndefinedBinaryOperatorResult`,
+`clang-analyzer-core.CallAndMessage`, `clang-analyzer-optin.cplusplus.UninitializedObject`,
+`clang-analyzer-unix.cstring.UninitializedRead`, and the `uninitialized` and
+`conditional-uninitialized` compiler diagnostics. An isolated sweep of all eleven over the same 890
+translation units reports nothing, so the declare-then-assign style is not currently hiding a real
+uninitialized read anywhere in the tree.
+
+Adding an initializer silences those checks without fixing anything. Both halves of this probe
+reproduce in LLVM 23.1.2:
+
+```cpp
+int Missing_Else(bool c) {
+  int x;
+  if (c) {
+    x = 1;
+  }
+  return x;  // reported by clang-analyzer-core.uninitialized.UndefReturn
+}
+int Zero_Initialized(bool c) {
+  int x = 0;  // satisfies cppcoreguidelines-init-variables; nothing is reported
+  if (c) {
+    x = 1;
+  }
+  return x;  // still the wrong value when c is false
+}
+```
+
+```sh
+clang-tidy --checks='-*,cppcoreguidelines-init-variables,clang-analyzer-core.uninitialized.UndefReturn' \
+  /tmp/probe.cc -- -std=c++23
+```
+
+The first function draws both warnings; the second draws none, and the missing `else` survives. So
+applying this check across 2,998 sites would trade a working defect check for a declaration style
+rule, and would have to be audited site by site to avoid writing a zero over a path that should have
+assigned something else.
+
+The valuable version of this cleanup is declaring each local at its point of first use, which
+shortens the live range and removes the reports honestly. That is a restructuring of 2,998 sites in
+long legacy functions, not a mechanical annotation, and it belongs with whatever modernization
+touches those functions rather than with a tidy sweep. The check has no option to narrow its scope —
+`IncludeStyle` and `MathHeader` only configure its NaN fix-it — so there is no smaller enforceable
+subset, not even the 738 pointers.
+
+Retain the exclusion. No source or configuration changes were made; the excluded-name count
+remains 216.
 
 ### Completed validation
 
