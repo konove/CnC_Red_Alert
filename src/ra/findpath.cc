@@ -157,7 +157,6 @@ static unsigned long
 
 // static CELL MoveMask = 0;
 static CELL DestLocation;
-static CELL StartLocation;
 
 /*
 **	The overlap lists above are bitmaps with one bit per map cell, marking
@@ -491,7 +490,6 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
     unit_threat = threat = -1;
   }
 
-  StartLocation = source;
   DestLocation = dest;
 
   /*
