@@ -169,26 +169,27 @@ class NullModemClass : public ConnManClass {
     return Num_Receive();
   }
 
-  DetectPortType Detect_Port(SerialSettingsType* settings);
+  static DetectPortType Detect_Port(SerialSettingsType* settings);
   int Detect_Modem(SerialSettingsType* settings, bool reconnect = false);
   DialStatusType Dial_Modem(char* string, DialMethodType method,
                             bool reconnect = false);
   DialStatusType Answer_Modem(bool reconnect = false);
   bool Hangup_Modem();
-  void Setup_Modem_Echo(void (*func)(char c));
-  void Remove_Modem_Echo();
-  void Print_EchoBuf();
+  static void Setup_Modem_Echo(void (*func)(char c));
+  static void Remove_Modem_Echo();
+  static void Print_EchoBuf();
   void Reset_EchoBuf();
   // static int Abort_Modem(PORT *);
   static int Abort_Modem();
-  void Setup_Abort_Modem();
-  void Remove_Abort_Modem();
+  static void Setup_Abort_Modem();
+  static void Remove_Abort_Modem();
 
-  int Change_IRQ_Priority(int irq);
-  int Get_Modem_Status();
-  int Send_Modem_Command(const char* command, char terminator, char* buffer,
-                         int buflen, int delay, int retries);
-  int Verify_And_Convert_To_Int(char* buffer);
+  static int Change_IRQ_Priority(int irq);
+  static int Get_Modem_Status();
+  static int Send_Modem_Command(const char* command, char terminator,
+                                char* buffer, int buflen, int delay,
+                                int retries);
+  static int Verify_And_Convert_To_Int(char* buffer);
 
   /*
   **	Private Interface.

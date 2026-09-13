@@ -23,6 +23,7 @@
 #include <string_view>
 #include <vector>
 
+#include "absl/base/attributes.h"
 #include "tech/bfiofile.h"
 #include "tech/wwfile.h"
 
@@ -56,7 +57,8 @@ class CDFileClass : public BufferIOFileClass {
   CDFileClass(CDFileClass&&) = delete;
   CDFileClass& operator=(CDFileClass&&) = delete;
 
-  const char* Set_Name(const char* filename) override;
+  const char* Set_Name(const char* filename)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   int Open(const char* filename,
            FileAccess rights = FileAccess::kRead) override;
   int Open(FileAccess rights = FileAccess::kRead) override;

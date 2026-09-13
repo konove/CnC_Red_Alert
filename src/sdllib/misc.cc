@@ -71,7 +71,7 @@ void* Build_Fading_Table(const void* palette, void* dest, long int color,
     uint8_t origred = pal8[(remap_index * 3) + 0];
     uint8_t origgreen = pal8[(remap_index * 3) + 1];
 
-    uint16_t tmp = static_cast<uint16_t>((origred - targetred) * (frac >> 1));
+    auto tmp = static_cast<uint16_t>((origred - targetred) * (frac >> 1));
     idealred = static_cast<uint8_t>(origred - (tmp >> 7));
 
     tmp = static_cast<uint16_t>((origgreen - targetgreen) * (frac >> 1));
@@ -161,7 +161,8 @@ static int Get_Random_Mask(unsigned int maxval) {
 void randomize() { std::srand(std::random_device{}()); }
 
 int IRandom(int minval, int maxval) {
-  int num, mask;
+  int num;
+  int mask;
 
   // Keep minval and maxval straight.
   if (minval > maxval) {
@@ -172,7 +173,8 @@ int IRandom(int minval, int maxval) {
 
   mask = Get_Random_Mask(maxval - minval);
 
-  while ((num = (rand() & mask) + minval) > maxval);
+  while ((num = (rand() & mask) + minval) > maxval) {
+  }
   return num;
 }
 
@@ -210,7 +212,11 @@ static unsigned Divide_With_Round(unsigned num, unsigned den) {
 
 void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
                         unsigned int* h, unsigned int* s, unsigned int* v) {
-  unsigned int m, r1, g1, b1, tmp;
+  unsigned int m;
+  unsigned int r1;
+  unsigned int g1;
+  unsigned int b1;
+  unsigned int tmp;
 
   // Convert RGB base to HSV base.
   r = Divide_With_Round(r * HSV_BASE, RGB_BASE);

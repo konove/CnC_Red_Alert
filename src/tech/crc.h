@@ -28,6 +28,8 @@
 #include <span>
 #include <string_view>
 
+#include "absl/base/attributes.h"
+
 // Modern constexpr CRC accumulator engine for computing checksums.
 //
 // Type-safe replacement for CRCEngine that avoids union type punning.
@@ -45,7 +47,8 @@ class CrcEngine {
       : crc_(initial) {}
 
   // Submits a single byte to the accumulator.
-  constexpr CrcEngine& Update(const uint8_t datum) noexcept {
+  constexpr CrcEngine& Update(const uint8_t datum) noexcept
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     buffer_[index_++] = datum;
     if (index_ == sizeof(uint32_t)) {
       crc_ = std::rotl(crc_, 1) + CurrentBufferAsInt();
@@ -56,7 +59,8 @@ class CrcEngine {
   }
 
   // Submits a string view to the accumulator.
-  constexpr CrcEngine& Update(const std::string_view str) noexcept {
+  constexpr CrcEngine& Update(const std::string_view str) noexcept
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     for (const char c : str) {
       Update(static_cast<uint8_t>(c));
     }
@@ -64,7 +68,8 @@ class CrcEngine {
   }
 
   // Submits a span of bytes to the accumulator.
-  constexpr CrcEngine& Update(const std::span<const uint8_t> data) noexcept {
+  constexpr CrcEngine& Update(const std::span<const uint8_t> data) noexcept
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     for (const auto& byte : data) {
       Update(byte);
     }

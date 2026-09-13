@@ -603,12 +603,11 @@ void EventClass::Execute() {
     */
     case ANIMATION:
       anim = new AnimClass(Data.Anim.What, Data.Anim.Where);
-      if (anim) {
-        if (Data.Anim.Owner != HOUSE_NONE &&
-            PlayerPtr->Class->House != Data.Anim.Owner) {
-          anim->Make_Invisible();
-        }
+      if (anim && (Data.Anim.Owner != HOUSE_NONE &&
+                   PlayerPtr->Class->House != Data.Anim.Owner)) {
+        anim->Make_Invisible();
       }
+
       break;
 
     /*
@@ -735,10 +734,8 @@ void EventClass::Execute() {
           }
         }
 
-        if (object != nullptr) {
-          if (PlayerPtr->Is_Ally(techno)) {
-            object->Clicked_As_Target();
-          }
+        if ((object != nullptr) && PlayerPtr->Is_Ally(techno)) {
+          object->Clicked_As_Target();
         }
 
         /*
@@ -792,7 +789,7 @@ void EventClass::Execute() {
         if (rt == RTTI_VESSEL && techno != nullptr &&
             techno->What_Am_I() == RTTI_VESSEL &&
             Data.MegaMission.Mission == MISSION_MOVE) {
-          VesselClass* ship = dynamic_cast<VesselClass*>(techno);
+          auto* ship = dynamic_cast<VesselClass*>(techno);
           if (object != nullptr) {
             if (object->What_Am_I() == RTTI_BUILDING &&
                 //						if

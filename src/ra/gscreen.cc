@@ -258,8 +258,8 @@ void GScreenClass::Flag_To_Redraw(bool complete) {
 void GScreenClass::Input(KeyNumType& key, int& x, int& y) {
   key = Keyboard->Check();
 
-  x = Keyboard->Mouse_X();
-  y = Keyboard->Mouse_Y();
+  x = KeyboardClass::Mouse_X();
+  y = KeyboardClass::Mouse_Y();
 
   if (Buttons != nullptr) {
     /*
@@ -387,10 +387,8 @@ void GScreenClass::Render() {
       /*
       ** Draw the Editor's buttons
       */
-      if (MapEditorActive) {
-        if (Buttons) {
-          Buttons->Draw_All();
-        }
+      if (MapEditorActive && Buttons) {
+        Buttons->Draw_All();
       }
     }
     /*

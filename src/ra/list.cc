@@ -380,11 +380,9 @@ int ListClass::Draw_Me(bool forced) {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 void ListClass::Bump(int up) {
-  if (IsScrollActive) {
-    if (ScrollGadget.Step(up)) {
-      CurrentTopIndex = ScrollGadget.Get_Value();
-      Flag_To_Redraw();
-    }
+  if (IsScrollActive && ScrollGadget.Step(up)) {
+    CurrentTopIndex = ScrollGadget.Get_Value();
+    Flag_To_Redraw();
   }
 }
 
@@ -403,11 +401,9 @@ void ListClass::Bump(int up) {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 void ListClass::Step(int up) {
-  if (IsScrollActive) {
-    if (ScrollGadget.Step(up)) {
-      CurrentTopIndex = ScrollGadget.Get_Value();
-      Flag_To_Redraw();
-    }
+  if (IsScrollActive && ScrollGadget.Step(up)) {
+    CurrentTopIndex = ScrollGadget.Get_Value();
+    Flag_To_Redraw();
   }
 }
 

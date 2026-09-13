@@ -50,8 +50,8 @@
 class LogicClass : public LayerClass {
  public:
   void AI();
-  void Detach(TARGET target, bool all = true);
-  void Debug_Dump(MonoClass* mono) const;
+  static void Detach(TARGET target, bool all = true);
+  static void Debug_Dump(MonoClass* mono);
 };
 
 #endif  // CNC_RED_ALERT_RA_LOGIC_H_

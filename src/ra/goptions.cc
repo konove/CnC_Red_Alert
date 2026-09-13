@@ -543,7 +543,7 @@ void GameOptionsClass::Process() {
 
         case BUTTON_GAME:
           display = true;
-          GameControlsClass().Process();
+          GameControlsClass::Process();
           break;
 
         case BUTTON_RESUME:

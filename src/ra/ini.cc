@@ -213,7 +213,7 @@ bool INIClass::Load(Straw& file)
       *ptr = '\0';
     }
     strtrim(buffer);
-    INISection* secptr = new INISection(buffer);
+    auto* secptr = new INISection(buffer);
     if (secptr == nullptr) {
       Clear();
       return false;
@@ -266,7 +266,7 @@ bool INIClass::Load(Straw& file)
         continue;
       }
 
-      INIEntry* entryptr = new INIEntry(buffer, divider);
+      auto* entryptr = new INIEntry(buffer, divider);
       if (entryptr == nullptr) {
         delete secptr;
         Clear();

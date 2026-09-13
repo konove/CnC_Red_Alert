@@ -3,6 +3,7 @@
 #ifndef CNC_RED_ALERT_TECH_TEEPIPE_H_
 #define CNC_RED_ALERT_TECH_TEEPIPE_H_
 
+#include "absl/base/attributes.h"
 #include "tech/pipe.h"
 
 // Forwards bytes to the main sink and copies them to a diagnostic sink.
@@ -12,7 +13,8 @@
 class TeePipe : public Pipe {
  public:
   // A null copy sink disables copying.
-  TeePipe(Pipe& main_sink, Pipe* copy_sink) : copy_sink_(copy_sink) {
+  TeePipe(Pipe& main_sink, Pipe* copy_sink ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : copy_sink_(copy_sink) {
     SetSink(main_sink);
   }
 

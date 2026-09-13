@@ -195,19 +195,21 @@ bool WWWritePrivateProfileInt(const char* section, const char* entry, int value,
  * WARNINGS: * On the PC, the "\n" (10) is translated to "\r\n" (13,10) when
  *it's written             * to disk. This routine must take this into
  *consideration, by searching                  * for \n when scanning backward,
- *and for \r when scanning forward.                       *
+ *and for CR when scanning forward.                       *
  *                                                                                             *
  * HISTORY: * 08/05/1992 JLB : Created. *
  *=============================================================================================*/
 char* WWGetPrivateProfileString(const char* section, const char* key,
                                 const char* def, char* dest, int dest_len,
                                 char* ini_data) {
-  char *workptr,              // Working pointer into profile block.
-      *altworkptr = nullptr;  // Alternate work pointer.
+  char* workptr;
+  char                         // Working pointer into profile block.
+      * altworkptr = nullptr;  // Alternate work pointer.
   char sec[50];       // Working section buffer.
   char* retval;       // Start of section or entry pointer.
   char* next;         // Pointer to start of next section (or EOF).
-  char c, c2;         // Working character values.
+  char c;
+  char c2;            // Working character values.
   int len;            // Working substring length value.
   int entrylen;       // Byte length of specified entry.
   char* orig_retbuf = nullptr;  // original dest ptr
@@ -283,10 +285,9 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
       **	a blank line between this section's name & 1st entry. So, check
       **	for 2 newlines in a row & step backward.
       */
-      if (workptr - ini_data > 4) {
-        if (*(workptr - 1) == '\n' && *(workptr - 3) == '\n') {
-          workptr -= 2;
-        }
+      if ((workptr - ini_data > 4) &&
+          (*(workptr - 1) == '\n' && *(workptr - 3) == '\n')) {
+        workptr -= 2;
       }
 
       /*
@@ -485,7 +486,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
  *                                                                                             *
  * OUTPUT: * true = success, false = failure *
  *                                                                                             *
- * WARNINGS: * This function has to translate newlines into \r\n sequences. *
+ * WARNINGS: * This function has to translate newlines into CR LF sequences. *
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/

@@ -130,7 +130,7 @@ ThemeClass::ThemeControl ThemeClass::_themes[THEME_COUNT] = {
  *                                                                                             *
  * HISTORY: * 05/29/1995 JLB : Created. *
  *=============================================================================================*/
-const char* ThemeClass::Base_Name(ThemeType theme) const {
+const char* ThemeClass::Base_Name(ThemeType theme) {
   if (theme != THEME_NONE) {
     return _themes[theme].Name;
   }
@@ -167,7 +167,7 @@ ThemeClass::ThemeClass() = default;
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-const char* ThemeClass::Full_Name(ThemeType theme) const {
+const char* ThemeClass::Full_Name(ThemeType theme) {
   if (theme != THEME_NONE) {
     return Text_String(_themes[theme].Fullname);
   }
@@ -404,13 +404,11 @@ int ThemeClass::Track_Length(ThemeType theme) {
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
 void ThemeClass::Stop() {
-  if (ScoresPresent && SampleType && !Debug_Quiet) {
-    if (Current != -1) {
-      Stop_Sample(Current);
-      Current = -1;
-      Score = THEME_NONE;
-      Pending = THEME_NONE;
-    }
+  if ((ScoresPresent && SampleType && !Debug_Quiet) && (Current != -1)) {
+    Stop_Sample(Current);
+    Current = -1;
+    Score = THEME_NONE;
+    Pending = THEME_NONE;
   }
 }
 
@@ -450,7 +448,7 @@ int ThemeClass::Still_Playing() {
  *                                                                                             *
  * HISTORY: * 05/09/1995 JLB : Created. *
  *=============================================================================================*/
-bool ThemeClass::Is_Allowed(ThemeType index) const {
+bool ThemeClass::Is_Allowed(ThemeType index) {
 #ifdef DEMO
   char buffer[128];
 

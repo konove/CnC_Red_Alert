@@ -249,11 +249,9 @@ void Explosion_Damage(COORDINATE coord, unsigned strength, TechnoClass* source,
     const OverlayTypeClass* optr =
         &OverlayTypeClass::As_Reference(cellptr->Overlay);
 
-    if (optr->IsWall) {
-      if (whead->IsWallDestroyer ||
-          (whead->IsWoodDestroyer && optr->IsWooden)) {
-        Map[cell].Reduce_Wall(strength);
-      }
+    if (optr->IsWall && (whead->IsWallDestroyer ||
+                         (whead->IsWoodDestroyer && optr->IsWooden))) {
+      Map[cell].Reduce_Wall(strength);
     }
   }
 }

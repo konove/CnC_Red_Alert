@@ -202,10 +202,8 @@ long CCFileClass::Write(const void* buffer, long size) {
 long CCFileClass::Read(void* buffer, long size) {
   int opened = false;
 
-  if (!Is_Open()) {
-    if (Open()) {
-      opened = true;
-    }
+  if ((!Is_Open()) && Open()) {
+    opened = true;
   }
 
   /*

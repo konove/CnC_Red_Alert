@@ -1655,7 +1655,7 @@ ObjectClass* InfantryTypeClass::Create_One_Of(HouseClass* house) const {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
-  InfantryClass* i = new InfantryClass(Type, house);
+  auto* i = new InfantryClass(Type, house);
   if (i) {
     COORDINATE coord = Map[cell].Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {
@@ -1842,29 +1842,26 @@ void InfantryTypeClass::One_Time() {
  *=============================================================================================*/
 
 void InfantryTypeClass::Init(TheaterType theater) {
-  if (Get_Resolution_Factor()) {
-    if (theater != LastTheater) {
-      InfantryType index;
-      const void* cameo_ptr;
+  if (Get_Resolution_Factor() && (theater != LastTheater)) {
+    InfantryType index;
+    const void* cameo_ptr;
 
-      for (index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
-        const InfantryTypeClass* uclass;
-        CCFileClass file;
+    for (index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
+      const InfantryTypeClass* uclass;
+      CCFileClass file;
 
-        uclass = &As_Reference(index);
+      uclass = &As_Reference(index);
 
-        (const void*&)uclass->CameoData = nullptr;
+      (const void*&)uclass->CameoData = nullptr;
 
-        const auto filename =
-            std::string(uclass->IniName).substr(0, 4) + "ICNH";
+      const auto filename = std::string(uclass->IniName).substr(0, 4) + "ICNH";
 
-        auto fullname = std::filesystem::path(filename)
-                            .replace_extension(Theaters[theater].Suffix)
-                            .string();
-        cameo_ptr = MFCD::Retrieve(fullname);
-        if (cameo_ptr) {
-          (const void*&)uclass->CameoData = cameo_ptr;
-        }
+      auto fullname = std::filesystem::path(filename)
+                          .replace_extension(Theaters[theater].Suffix)
+                          .string();
+      cameo_ptr = MFCD::Retrieve(fullname);
+      if (cameo_ptr) {
+        (const void*&)uclass->CameoData = cameo_ptr;
       }
     }
   }

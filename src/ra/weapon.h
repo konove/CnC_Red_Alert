@@ -42,6 +42,7 @@
 
 #include <cstddef>
 
+#include "absl/base/attributes.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/type.h"
@@ -54,7 +55,7 @@
 */
 class WeaponTypeClass {
  public:
-  explicit WeaponTypeClass(const char* name);
+  explicit WeaponTypeClass(const char* name ABSL_ATTRIBUTE_LIFETIME_BOUND);
   ~WeaponTypeClass();
   WeaponTypeClass(const WeaponTypeClass&) = delete;
   WeaponTypeClass& operator=(const WeaponTypeClass&) = delete;
@@ -62,7 +63,10 @@ class WeaponTypeClass {
   WeaponTypeClass& operator=(WeaponTypeClass&&) = delete;
 
   void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* pointer);
 
   [[nodiscard]] const char* Name() const { return IniName; }

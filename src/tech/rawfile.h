@@ -49,6 +49,7 @@
 #include <limits>
 #include <string>
 
+#include "absl/base/attributes.h"
 #include "tech/wwfile.h"
 
 #ifndef WWERROR
@@ -84,8 +85,10 @@ class RawFileClass : public FileClass {
   RawFileClass& operator=(RawFileClass&&) = delete;
   ~RawFileClass() override;
 
-  [[nodiscard]] const char* File_Name() const override;
-  const char* Set_Name(const char* filename) override;
+  [[nodiscard]] const char* File_Name() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  const char* Set_Name(const char* filename)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   int Create() override;
   int Delete() override;
   [[nodiscard]] int Is_Open() const override;
@@ -122,7 +125,7 @@ class RawFileClass : public FileClass {
   **	perform. Larger file transfers are performed in chunks of this size or
   *less.
   */
-  long Transfer_Block_Size() {
+  static long Transfer_Block_Size() {
     return static_cast<long>(std::numeric_limits<unsigned int>::max()) - 16L;
   }
 

@@ -139,7 +139,7 @@ static bool Get_Section(Straw& straw, uint32_t tag) {
 // Trigger lists load after the trigger heap, so targets can resolve directly.
 template <class Archive>
 static void SerializeTriggerList(Archive& ar, DynamicVectorClass<TriggerClass*>& list) {
-  int32_t count = static_cast<int32_t>(list.Count());
+  auto count = static_cast<int32_t>(list.Count());
   ar(count);
   if constexpr (Archive::kIsReading) {
     if (!ar.ok() || count < 0 || count > Triggers.Length()) {
@@ -176,7 +176,7 @@ static void SerializeTriggerLists(Archive& ar) {
 
 template <class Archive>
 static void SerializeCarryover(Archive& ar) {
-  int32_t count = static_cast<int32_t>(Carryover.size());
+  auto count = static_cast<int32_t>(Carryover.size());
   ar(count);
   if constexpr (Archive::kIsReading) {
     if (!ar.ok() || count < 0 || count > MAP_CELL_TOTAL) {
@@ -489,7 +489,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
     ArchiveWriter header(fpipe);
     uint32_t magic = kSaveGameMagic;
     int32_t version = kSaveGameVersion;
-    int32_t scenario32 = static_cast<int32_t>(scenario);
+    auto scenario32 = static_cast<int32_t>(scenario);
     header(magic, version, scenario32, house);
   }
 
@@ -1025,7 +1025,7 @@ bool Load_Game(int id) {
     Session.LoadGame = true;
   }
 
-  Map.Reload_Sidebar();  // re-load sidebar art.
+  SidebarClass::Reload_Sidebar();  // re-load sidebar art.
 
   /*
   **	Rescan the scenario file for any rules updates.
@@ -1040,20 +1040,20 @@ bool Load_Game(int id) {
   Rule.General(RuleINI);
   Rule.Recharge(RuleINI);
   Rule.AI(RuleINI);
-  Rule.Powerups(RuleINI);
-  Rule.Land_Types(RuleINI);
-  Rule.Themes(RuleINI);
+  RulesClass::Powerups(RuleINI);
+  RulesClass::Land_Types(RuleINI);
+  RulesClass::Themes(RuleINI);
   Rule.IQ(RuleINI);
-  Rule.Objects(RuleINI);
+  RulesClass::Objects(RuleINI);
   Rule.Difficulty(RuleINI);
   Rule.General(AftermathINI);
   Rule.Recharge(AftermathINI);
   Rule.AI(AftermathINI);
-  Rule.Powerups(AftermathINI);
-  Rule.Land_Types(AftermathINI);
-  Rule.Themes(AftermathINI);
+  RulesClass::Powerups(AftermathINI);
+  RulesClass::Land_Types(AftermathINI);
+  RulesClass::Themes(AftermathINI);
   Rule.IQ(AftermathINI);
-  Rule.Objects(AftermathINI);
+  RulesClass::Objects(AftermathINI);
   Rule.Difficulty(AftermathINI);
 
   /*
@@ -1063,11 +1063,11 @@ bool Load_Game(int id) {
   Rule.General(ini);
   Rule.Recharge(ini);
   Rule.AI(ini);
-  Rule.Powerups(ini);
-  Rule.Land_Types(ini);
-  Rule.Themes(ini);
+  RulesClass::Powerups(ini);
+  RulesClass::Land_Types(ini);
+  RulesClass::Themes(ini);
   Rule.IQ(ini);
-  Rule.Objects(ini);
+  RulesClass::Objects(ini);
   Rule.Difficulty(ini);
   if (load_net) {
     bool readini = false;
@@ -1099,11 +1099,11 @@ bool Load_Game(int id) {
         Rule.General(mpini);
         Rule.Recharge(mpini);
         Rule.AI(mpini);
-        Rule.Powerups(mpini);
-        Rule.Land_Types(mpini);
-        Rule.Themes(mpini);
+        RulesClass::Powerups(mpini);
+        RulesClass::Land_Types(mpini);
+        RulesClass::Themes(mpini);
         Rule.IQ(mpini);
-        Rule.Objects(mpini);
+        RulesClass::Objects(mpini);
         Rule.Difficulty(mpini);
       }
     }

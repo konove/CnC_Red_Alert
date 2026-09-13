@@ -85,7 +85,7 @@ class SidebarClass : public PowerClass {
   void Init_Clear() override;                       // Clears all to known state
   void Init_IO() override;                          // Inits button list
   void Init_Theater(TheaterType theater) override;  // Theater-specific inits
-  void Reload_Sidebar();  // Loads house-specific sidebar art
+  static void Reload_Sidebar();  // Loads house-specific sidebar art
 
   void AI(KeyNumType& input, int x, int y) override;
   void Draw_It(bool complete) override;
@@ -126,17 +126,17 @@ class SidebarClass : public PowerClass {
     bool Scroll(bool up);
     bool AI(KeyNumType& input, int x, int y);
     void Draw_It(bool complete);
-    void One_Time(int id);
+    static void One_Time(int id);
     void Init_Clear();
     void Init_IO(int id);
-    void Init_Theater(TheaterType theater);
-    void Reload_LogoShapes();
+    static void Init_Theater(TheaterType theater);
+    static void Reload_LogoShapes();
     bool Recalc();
     void Activate();
     void Deactivate();
     void Flag_To_Redraw();
     bool Factory_Link(int factory, RTTIType type, int id);
-    const void* Get_Special_Cameo(SpecialWeaponType type);
+    static const void* Get_Special_Cameo(SpecialWeaponType type);
 
     /*
     **	File I/O.
@@ -340,7 +340,7 @@ class SidebarClass : public PowerClass {
   bool Activate_Repair(int control);
   bool Activate_Upgrade(int control);
   bool Activate_Demolish(int control);
-  int Which_Column(RTTIType type);
+  static int Which_Column(RTTIType type);
 
   unsigned IsRepairActive : 1 {false};
   unsigned IsUpgradeActive : 1 {false};

@@ -158,11 +158,9 @@ void MapEditClass::Handle_Teams(const char* caption) {
         .............................. 'Delete'
         ...............................
         */
-        if (rc == 3) {
-          if (CurTeam) {
-            CurTeam->Remove();
-            CurTeam = nullptr;
-          }
+        if ((rc == 3) && CurTeam) {
+          CurTeam->Remove();
+          CurTeam = nullptr;
         }
       }
     }
@@ -783,7 +781,8 @@ int MapEditClass::Edit_Team() {
 
   char arg_buf[4] = {0};
   static int tabs[] = {130, 180};  // list box tab stops
-  int i, j;
+  int i;
+  int j;
 
   /*........................................................................
   Buttons:
@@ -1581,7 +1580,8 @@ int MapEditClass::Team_Members(HousesType house) {
                       // (is based on current mouse position)
   int numclasses;     // current # classes in the team (limited to <=5)
   int maxclasses;     // max # classes available
-  int i, j;
+  int i;
+  int j;
 
   /*
   **	Values for timing when mouse held down.
@@ -1917,36 +1917,34 @@ int MapEditClass::Team_Members(HousesType house) {
       }
 
     } else {
-      if (rheld) {
-        /*
-        **	The first time in, TickCount - heldtime will be larger than
-        **	tdelay[2], so we increment the count immediately; then, we
-        *decrement *	tindex to go to the next time delay, which is longer;
-        *then, decr. *	again to go to the 1st time delay which is the shortest.
-        */
-        if (TickCount.Time() - heldtime > tdelay[tindex]) {
-          if (tindex) {
-            tindex--;
-          }
-          heldtime = TickCount.Time();
+      /*
+      **	The first time in, TickCount - heldtime will be larger than
+      **	tdelay[2], so we increment the count immediately; then, we
+      *decrement *	tindex to go to the next time delay, which is longer;
+      *then, decr. *	again to go to the 1st time delay which is the shortest.
+      */
+      if (rheld && (TickCount.Time() - heldtime > tdelay[tindex])) {
+        if (tindex) {
+          tindex--;
+        }
+        heldtime = TickCount.Time();
 
-          if (teamcount[curclass] > 0) {
-            teamcount[curclass]--;
-
-            /*
-            **	Detect removal of a class.
-            */
-            if (teamcount[curclass] == 0) {
-              numclasses--;
-            }
-          }
+        if (teamcount[curclass] > 0) {
+          teamcount[curclass]--;
 
           /*
-          **	Update number label.
+          **	Detect removal of a class.
           */
-          Draw_Member(teamclass[curclass], curclass, teamcount[curclass], house,
-                      D_DIALOG_X + 16, dlg_picture_top);
+          if (teamcount[curclass] == 0) {
+            numclasses--;
+          }
         }
+
+        /*
+        **	Update number label.
+        */
+        Draw_Member(teamclass[curclass], curclass, teamcount[curclass], house,
+                    D_DIALOG_X + 16, dlg_picture_top);
       }
     }
   }

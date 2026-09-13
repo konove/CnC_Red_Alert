@@ -41,6 +41,7 @@
 #ifndef CNC_RED_ALERT_TD_EDIT_H_
 #define CNC_RED_ALERT_TD_EDIT_H_
 
+#include "absl/base/attributes.h"
 #include "sdllib/keyboard.h"
 #include "td/control.h"
 #include "td/defines.h"
@@ -55,8 +56,9 @@ class EditClass : public ControlClass {
     ALPHANUMERIC = ALPHA | NUMERIC | MISC,
   } EditStyle;
 
-  EditClass(int id, char* text, int max_len, TextPrintType flags, int x, int y,
-            int w = -1, int h = -1, EditStyle style = ALPHANUMERIC);
+  EditClass(int id, char* text ABSL_ATTRIBUTE_LIFETIME_BOUND, int max_len,
+            TextPrintType flags, int x, int y, int w = -1, int h = -1,
+            EditStyle style = ALPHANUMERIC);
   ~EditClass() override;
   EditClass(const EditClass&) = delete;
   EditClass& operator=(const EditClass&) = delete;

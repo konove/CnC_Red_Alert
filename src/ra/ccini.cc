@@ -1174,7 +1174,7 @@ ThemeType CCINIClass::Get_ThemeType(const char* section, const char* entry,
   char buffer[128];
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    return Theme.From_Name(buffer);
+    return ThemeClass::From_Name(buffer);
   }
   return defvalue;
 }
@@ -1200,7 +1200,7 @@ ThemeType CCINIClass::Get_ThemeType(const char* section, const char* entry,
  *=============================================================================================*/
 bool CCINIClass::Put_ThemeType(const char* section, const char* entry,
                                ThemeType value) {
-  return Put_String(section, entry, Theme.Base_Name(value));
+  return Put_String(section, entry, ThemeClass::Base_Name(value));
 }
 
 /***********************************************************************************************

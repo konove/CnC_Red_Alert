@@ -374,7 +374,7 @@ void Do_Vortex(int x, int y, int frame);
 // Shutdown state: 0 = running, 1 = clean shutdown, 2 = complete, 3 = emergency.
 extern int ReadyToQuit;
 extern bool InDebugger;       // Are we being run from a debugger
-void Memory_Error_Handler();  // Memory error handler function
+[[noreturn]] void Memory_Error_Handler();  // Memory error handler function
 void WWDebugString(const char* string);
 void Check_For_Focus_Loss();  // Pumps the event queue while focus is lost
 void Create_Main_Window(void* instance, int command_show, int width,

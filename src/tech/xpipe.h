@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_TECH_XPIPE_H_
 #define CNC_RED_ALERT_TECH_XPIPE_H_
 
+#include "absl/base/attributes.h"
 #include "tech/buff.h"
 #include "tech/pipe.h"
 #include "tech/wwfile.h"
@@ -55,6 +56,9 @@ class BufferPipe : public Pipe {
   // Creates a non-owning view into the buffer.
   explicit BufferPipe(const Buffer& buffer)
       : BufferPtr(buffer.Get_Buffer(), buffer.Get_Size()), Index(0) {}
+  // clang suggests lifetimebound here, but its lifetimebound-violation check
+  // cannot verify it.
+  // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
   BufferPipe(void* buffer, int length) : BufferPtr(buffer, length), Index(0) {}
   ~BufferPipe() override = default;
 
@@ -79,8 +83,10 @@ class BufferPipe : public Pipe {
 */
 class FilePipe : public Pipe {
  public:
-  explicit FilePipe(FileClass* file) : File(file), HasOpened(false) {}
-  explicit FilePipe(FileClass& file) : File(&file), HasOpened(false) {}
+  explicit FilePipe(FileClass* file ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : File(file), HasOpened(false) {}
+  explicit FilePipe(FileClass& file ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : File(&file), HasOpened(false) {}
   ~FilePipe() override;
 
   FilePipe(const FilePipe&) = delete;

@@ -38,6 +38,8 @@
 
 #include <cstddef>
 
+#include "absl/base/attributes.h"
+
 // Memory Flags
 /*
 **	Memory allocation flags.  These are the flags that are passed into Alloc
@@ -89,7 +91,8 @@ extern "C" {
 void Mem_Copy(const void* source, void* dest, unsigned long bytes_to_copy);
 }
 
-inline void* Add_Long_To_Pointer(const void* ptr, long size) {
+inline void* Add_Long_To_Pointer(const void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                                 long size) {
   return (void*)(static_cast<const char*>(ptr) + size);
 }
 

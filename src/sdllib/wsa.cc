@@ -92,15 +92,20 @@ static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
 void* Open_Animation(const char* file_name, char* user_buffer,
                      long user_buffer_size, WSAOpenType user_flags,
                      unsigned char* palette) {
-  int fh, anim_flags;
+  int fh;
+  int anim_flags;
   int palette_adjust;
   unsigned int offsets_size;
   unsigned int frame0_size;
-  long target_buffer_size, delta_buffer_size, file_buffer_size;
-  long max_buffer_size, min_buffer_size;
+  long target_buffer_size;
+  long delta_buffer_size;
+  long file_buffer_size;
+  long max_buffer_size;
+  long min_buffer_size;
   char* sys_anim_header_buffer;
   char* target_buffer;
-  char *delta_buffer, *delta_back;
+  char* delta_buffer;
+  char* delta_back;
   SysAnimHeaderType* sys_header;
   WSA_FileHeaderType file_header;
 
@@ -826,9 +831,12 @@ static unsigned long Get_File_Frame_Offset(int file_handle, int frame,
 
 static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
                         char* dest_ptr, int dest_w) {
-  char *data_ptr, *delta_back;
-  int file_handle, palette_adjust;
-  unsigned long frame_data_size, frame_offset;
+  char* data_ptr;
+  char* delta_back;
+  int file_handle;
+  int palette_adjust;
+  unsigned long frame_data_size;
+  unsigned long frame_offset;
 
   palette_adjust = sys_header->flags & WSA_PALETTE_PRESENT ? 768 : 0;
   delta_back = sys_header->delta_buffer;

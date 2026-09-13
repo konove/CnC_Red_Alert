@@ -400,38 +400,38 @@ bool FactoryClass::Suspend() {
 bool FactoryClass::Start() {
   assert(Factories.ID(this) == ID);
 
-  if ((Object || SpecialItem) && IsSuspended && !Has_Completed()) {
-    if (House->Available_Money() >= Cost_Per_Tick()) {
-      int time = 0;
+  if (((Object || SpecialItem) && IsSuspended && !Has_Completed()) &&
+      (House->Available_Money() >= Cost_Per_Tick())) {
+    int time = 0;
 
-      if (Object) {
-        time = Object->Time_To_Build();
-        //			} else {
-        //				time = kTicksPerMinute * 5;
-      }
-
-      /*
-      **	Adjust time according to IQ setting of computer controlled
-      *house. The *	build time will range from double normal time at the
-      *slowest to *	just normal time at the fastest.
-      */
-      if (!House->IsHuman && Rule.Diff[House->Difficulty].IsBuildSlowdown) {
-        time = time * fixed(House->IQ + Rule.MaxIQ, Rule.MaxIQ * 2).Inverse();
-      }
-
-      int rate = time / Bound(House->Power_Fraction(), fixed(1, 16), fixed(1));
-      //			int frac = House->Power_Fraction();
-      //			frac = Bound(frac, 0x0010, 0x0100);
-      //			int rate = (time*256) / frac;
-
-      rate /= STEP_COUNT;
-      rate = Bound(rate, 1, 255);
-
-      Set_Rate(rate);
-      IsSuspended = false;
-      return true;
+    if (Object) {
+      time = Object->Time_To_Build();
+      //			} else {
+      //				time = kTicksPerMinute * 5;
     }
+
+    /*
+    **	Adjust time according to IQ setting of computer controlled
+    *house. The *	build time will range from double normal time at the
+    *slowest to *	just normal time at the fastest.
+    */
+    if (!House->IsHuman && Rule.Diff[House->Difficulty].IsBuildSlowdown) {
+      time = time * fixed(House->IQ + Rule.MaxIQ, Rule.MaxIQ * 2).Inverse();
+    }
+
+    int rate = time / Bound(House->Power_Fraction(), fixed(1, 16), fixed(1));
+    //			int frac = House->Power_Fraction();
+    //			frac = Bound(frac, 0x0010, 0x0100);
+    //			int rate = (time*256) / frac;
+
+    rate /= STEP_COUNT;
+    rate = Bound(rate, 1, 255);
+
+    Set_Rate(rate);
+    IsSuspended = false;
+    return true;
   }
+
   return false;
 }
 

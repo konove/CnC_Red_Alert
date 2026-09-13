@@ -80,7 +80,8 @@ bool ConfirmationClass::Process(const char* string) {
   char buffer[80 * 3];
   int result = true;
   int width;
-  int bwidth, bheight;  // button width and height
+  int bwidth;
+  int bheight;  // button width and height
   int height;
   int selection = 0;
   bool pressed;

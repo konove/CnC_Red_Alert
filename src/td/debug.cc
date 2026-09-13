@@ -108,37 +108,33 @@ void Self_Regulate() {
       MonoClass* mono = MonoClass::Get_Current();
       mono->Set_Default_Attribute(2);
 
-      switch (MonoPage) {
-        case 0:
-          mono = &MonoArray[0];
-          mono->Clear();
+      if (MonoPage == 0) {
+        mono = &MonoArray[0];
+        mono->Clear();
 
-          /*
-          **	Display the status of the currently selected object.
-          */
-          if (CurrentObject.Count()) {
-            _lastobject = CurrentObject[0];
-          }
-          if (_lastobject && !_lastobject->IsActive) {
-            _lastobject = nullptr;
-          }
-          if (_lastobject) {
-            _lastobject->Debug_Dump(mono);
-          }
-          Logic.Debug_Dump(mono);
-          mono->Set_Cursor(0, 20);
-          mono->Printf(
-              "Heap size:%10ld \r"
-              "Largest:  %10ld \r"
-              "Ttl Free: %10ld \r"
-              "Frag:     %10ld \r",
-              Heap_Size(MEM_NORMAL), Ram_Free(MEM_NORMAL),
-              Total_Ram_Free(MEM_NORMAL),
-              Total_Ram_Free(MEM_NORMAL) - Ram_Free(MEM_NORMAL));
-          *MonoClass::Get_Current() = *mono;
-          break;
-        default:
-          break;
+        /*
+        **	Display the status of the currently selected object.
+        */
+        if (CurrentObject.Count()) {
+          _lastobject = CurrentObject[0];
+        }
+        if (_lastobject && !_lastobject->IsActive) {
+          _lastobject = nullptr;
+        }
+        if (_lastobject) {
+          _lastobject->Debug_Dump(mono);
+        }
+        LogicClass::Debug_Dump(mono);
+        mono->Set_Cursor(0, 20);
+        mono->Printf(
+            "Heap size:%10ld \r"
+            "Largest:  %10ld \r"
+            "Ttl Free: %10ld \r"
+            "Frag:     %10ld \r",
+            Heap_Size(MEM_NORMAL), Ram_Free(MEM_NORMAL),
+            Total_Ram_Free(MEM_NORMAL),
+            Total_Ram_Free(MEM_NORMAL) - Ram_Free(MEM_NORMAL));
+        *MonoClass::Get_Current() = *mono;
       }
 
       MonoArray[MonoPage] = *mono;
@@ -229,8 +225,7 @@ void Debug_Key(unsigned input) {
         break;
 
       case KN_O: {
-        AircraftClass* air =
-            new AircraftClass(AIRCRAFT_ORCA, PlayerPtr->Class->House);
+        auto* air = new AircraftClass(AIRCRAFT_ORCA, PlayerPtr->Class->House);
         if (air) {
           air->Altitude = 0;
           air->Unlimbo(Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()), DIR_N);
@@ -241,7 +236,7 @@ void Debug_Key(unsigned input) {
         Debug_Instant_Build ^= 1;
       } break;
       case KN_B: {
-        AircraftClass* air =
+        auto* air =
             new AircraftClass(AIRCRAFT_HELICOPTER, PlayerPtr->Class->House);
         if (air) {
           air->Altitude = 0;
@@ -250,7 +245,7 @@ void Debug_Key(unsigned input) {
       } break;
 
       case KN_T: {
-        AircraftClass* air =
+        auto* air =
             new AircraftClass(AIRCRAFT_TRANSPORT, PlayerPtr->Class->House);
         if (air) {
           air->Altitude = 0;
@@ -658,7 +653,7 @@ void Debug_Key(unsigned input) {
       */
       case KN_F7:
         if (CurrentObject.Count() && CurrentObject[0]->Is_Techno()) {
-          const TechnoTypeClass& ttype =
+          const auto& ttype =
               (const TechnoTypeClass&)CurrentObject[0]->Class_Of();
           int sight = ((int)ttype.SightRange) << 8;
           int weapon = 0;
@@ -670,9 +665,12 @@ void Debug_Key(unsigned input) {
           COORDINATE center2 = CurrentObject[0]->Fire_Coord(0);
 
           for (int r = 0; r < 255; r += 10) {
-            int x, y, x1, y1;
-            DirType r1 = (DirType)r;
-            DirType r2 = (DirType)((r + 10) & 0xFF);
+            int x;
+            int y;
+            int x1;
+            int y1;
+            auto r1 = (DirType)r;
+            auto r2 = (DirType)((r + 10) & 0xFF);
 
             if (Map.Coord_To_Pixel(
                     Coord_Move(center, r1, static_cast<unsigned short>(sight)),

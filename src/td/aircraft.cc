@@ -176,7 +176,6 @@ int AircraftClass::Validate() const {
     num = Aircraft.ID(this);
     if (num < 0 || num >= kAircraftMax) {
       Validate_Error("AIRCRAFT");
-      return 0;
     }
     return 1;
   } else {
@@ -454,8 +453,8 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
       /*
       **	Dual rotors offset along flight axis.
       */
-      short xx = static_cast<short>(x);
-      short yy = static_cast<short>(y - Altitude);
+      auto xx = static_cast<short>(x);
+      auto yy = static_cast<short>(y - Altitude);
       FacingType face = Dir_Facing(SecondaryFacing);
       base::MovePoint(xx, yy, SecondaryFacing.Current(), static_cast<int16_t>(_stretch[face]));
       CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
@@ -732,19 +731,19 @@ void AircraftClass::AI() {
   **	Handle any body rotation at this time. Body rotation can occur even if
   *the *	flying object is not actually moving.
   */
-  if (PrimaryFacing.Is_Rotating()) {
-    if (PrimaryFacing.Rotation_Adjust(Class->ROT)) {
-      Mark();
-    }
+  if (PrimaryFacing.Is_Rotating() &&
+      PrimaryFacing.Rotation_Adjust(Class->ROT)) {
+    Mark();
   }
+
   if (Class->IsFixedWing) {
     SecondaryFacing = PrimaryFacing;
   }
-  if (SecondaryFacing.Is_Rotating()) {
-    if (SecondaryFacing.Rotation_Adjust(Class->ROT)) {
-      Mark();
-    }
+  if (SecondaryFacing.Is_Rotating() &&
+      SecondaryFacing.Rotation_Adjust(Class->ROT)) {
+    Mark();
   }
+
   if (Physics(Coord, PrimaryFacing) != IMPACT_NONE) {
     Mark();
   }
@@ -774,11 +773,11 @@ void AircraftClass::AI() {
       if (!Altitude) {
         IsLanding = false;
         Set_Speed(0);
-        if (Target_Legal(NavCom) && As_Techno(NavCom) == Contact_With_Whom()) {
-          if (In_Radio_Contact() &&
-              Transmit_Message(RADIO_IM_IN) != RADIO_ROGER) {
-            Scatter(0, true);
-          }
+        if ((Target_Legal(NavCom) &&
+             As_Techno(NavCom) == Contact_With_Whom()) &&
+            (In_Radio_Contact() &&
+             Transmit_Message(RADIO_IM_IN) != RADIO_ROGER)) {
+          Scatter(0, true);
         }
       }
     }
@@ -802,12 +801,11 @@ void AircraftClass::AI() {
       **	change of plans.
       */
       bool ok = true;
-      if (In_Which_Layer() == LAYER_GROUND) {
-        if (!Is_LZ_Clear(::As_Target(Coord_Cell(Coord)))) {
-          IsTakingOff = true;
-          Altitude++;
-          ok = false;
-        }
+      if ((In_Which_Layer() == LAYER_GROUND) &&
+          (!Is_LZ_Clear(::As_Target(Coord_Cell(Coord))))) {
+        IsTakingOff = true;
+        Altitude++;
+        ok = false;
       }
 
       if (ok) {
@@ -815,8 +813,8 @@ void AircraftClass::AI() {
         **	If landing in a cell that already contains an object, then
         **	the landing attempt must be aborted.
         */
-        Map.Remove(this, layer);
-        Map.Submit(this, In_Which_Layer());
+        MapEditClass::Remove(this, layer);
+        MapEditClass::Submit(this, In_Which_Layer());
 
         /*
         **	When the aircraft is close to the ground, it should exist as a
@@ -1032,15 +1030,14 @@ int AircraftClass::Mission_Unload() {
       case PICK_AIRSTRIP:
         if (!Target_Legal(NavCom) || !In_Radio_Contact()) {
           BuildingClass* building = Find_Docking_Bay(STRUCT_AIRSTRIP, false);
-          if (building) {
-            if (Transmit_Message(RADIO_HELLO, building) == RADIO_ROGER) {
-              Set_Speed(0xFF);
-              Assign_Destination(building->As_Target());
-              if (Team) {
-                Team->Target = NavCom;
-              }
-              Status = FLY_TO_AIRSTRIP;
+          if (building &&
+              (Transmit_Message(RADIO_HELLO, building) == RADIO_ROGER)) {
+            Set_Speed(0xFF);
+            Assign_Destination(building->As_Target());
+            if (Team) {
+              Team->Target = NavCom;
             }
+            Status = FLY_TO_AIRSTRIP;
           }
 
           /*
@@ -1749,11 +1746,10 @@ int AircraftClass::Mission_Move() {
         Assign_Destination(New_LZ(NavCom));
         Status = TAKE_OFF;
       }
-      if (Process_Landing()) {
-        if (MissionQueue == MISSION_NONE) {
-          Enter_Idle_Mode();
-        }
+      if (Process_Landing() && (MissionQueue == MISSION_NONE)) {
+        Enter_Idle_Mode();
       }
+
       return 1;
     default:
       break;
@@ -1821,10 +1817,8 @@ void AircraftClass::Enter_Idle_Mode(bool /*initial*/) {
       **	If this transport is a loaner and part of a team, then remove it
       *from *	the team it is attached to.
       */
-      if (IsALoaner) {
-        if (Team) {
-          Team->Remove(this);
-        }
+      if (IsALoaner && Team) {
+        Team->Remove(this);
       }
 
       if (Class->Primary != WEAPON_NONE) {
@@ -2809,13 +2803,13 @@ MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
 
   CellClass* cellptr = &Map[cell];
 
-  if (!cellptr->Cell_Occupier() || !cellptr->Cell_Occupier()->Is_Techno() ||
-      dynamic_cast<TechnoClass*>(cellptr->Cell_Occupier())
-          ->House->Is_Ally(House) ||
-      dynamic_cast<TechnoClass*>(cellptr->Cell_Occupier())->Cloak != CLOAKED) {
-    if (!cellptr->Is_Generally_Clear()) {
-      return MOVE_NO;
-    }
+  if ((!cellptr->Cell_Occupier() || !cellptr->Cell_Occupier()->Is_Techno() ||
+       dynamic_cast<TechnoClass*>(cellptr->Cell_Occupier())
+           ->House->Is_Ally(House) ||
+       dynamic_cast<TechnoClass*>(cellptr->Cell_Occupier())->Cloak !=
+           CLOAKED) &&
+      (!cellptr->Is_Generally_Clear())) {
+    return MOVE_NO;
   }
 
   if (GameToPlay == GAME_NORMAL && IsOwnedByPlayer && !cellptr->IsVisible) {
@@ -2923,10 +2917,9 @@ bool AircraftClass::Cell_Seems_Ok(CELL cell, bool strict) const {
   TARGET astarget = ::As_Target(cell);
   for (int index = 0; index < Aircraft.Count(); index++) {
     AircraftClass* air = Aircraft.Ptr(index);
-    if (air && (strict || air != this) && !air->IsInLimbo) {
-      if (Coord_Cell(air->Coord) == cell || air->NavCom == astarget) {
-        return false;
-      }
+    if ((air && (strict || air != this) && !air->IsInLimbo) &&
+        (Coord_Cell(air->Coord) == cell || air->NavCom == astarget)) {
+      return false;
     }
   }
   return true;
@@ -3367,18 +3360,16 @@ int AircraftClass::Mission_Guard() {
   **	abort any normal guard logic in order to look for a helipad
   **	to rearm.
   */
-  if (Ammo == 0 && Class->Primary != WEAPON_NONE) {
-    if (!In_Radio_Contact()) {
-      BuildingClass* building = Find_Docking_Bay(STRUCT_HELIPAD, false);
-      if (building) {
-        Assign_Destination(building->As_Target());
-        Assign_Target(kTargetNone);
-        Assign_Mission(MISSION_ENTER);
-        return 1;
-      }
+  if ((Ammo == 0 && Class->Primary != WEAPON_NONE) && (!In_Radio_Contact())) {
+    BuildingClass* building = Find_Docking_Bay(STRUCT_HELIPAD, false);
+    if (building) {
+      Assign_Destination(building->As_Target());
+      Assign_Target(kTargetNone);
+      Assign_Mission(MISSION_ENTER);
+      return 1;
     }
-    //		return(kTicksPerSecond*3);
   }
+  //		return(kTicksPerSecond*3);
 
   /*
   **	If the aircraft already has a target, then attack it if possible.

@@ -398,7 +398,7 @@ bool FootClass::Basic_Path() {
     //		IsFindPath = true;
     if (Can_Enter_Cell(cell) == MOVE_NO && Distance(NavCom) > 0x0300) {
       static int _faceadjust[8] = {0, 1, -1, 2, -2, 3, -3, 4};
-      FacingType f2 = static_cast<FacingType>(
+      auto f2 = static_cast<FacingType>(
           (unsigned)::Direction(cell, Coord_Cell(Coord)) >> 5);
 
       for (int index : _faceadjust) {
@@ -1119,11 +1119,10 @@ void FootClass::Assign_Mission(MissionType order) {
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
 bool FootClass::Limbo() {
-  if (!IsInLimbo) {
-    if (Team) {
-      Team->Remove(this);
-    }
+  if ((!IsInLimbo) && Team) {
+    Team->Remove(this);
   }
+
   return TechnoClass::Limbo();
 }
 
@@ -1527,11 +1526,10 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     *away!
     */
     case RADIO_RUN_AWAY:
-      if (In_Radio_Contact()) {
-        if (NavCom == Contact_With_Whom()->As_Target()) {
-          Assign_Destination(kTargetNone);
-        }
+      if (In_Radio_Contact() && (NavCom == Contact_With_Whom()->As_Target())) {
+        Assign_Destination(kTargetNone);
       }
+
       break;
 
     /*
@@ -1873,10 +1871,8 @@ TARGET FootClass::Greatest_Threat(ThreatType method) const {
 void FootClass::Detach(TARGET target, bool all) {
   TechnoClass::Detach(target, all);
 
-  if (!SpecialFlag) {
-    if (ArchiveTarget == target) {
-      ArchiveTarget = kTargetNone;
-    }
+  if ((!SpecialFlag) && (ArchiveTarget == target)) {
+    ArchiveTarget = kTargetNone;
   }
 
   if (SuspendedNavCom == target) {

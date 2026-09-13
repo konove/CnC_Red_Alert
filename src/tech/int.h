@@ -45,6 +45,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "absl/base/attributes.h"
 #include "tech/mp.h"
 #include "tech/straw.h"
 
@@ -82,10 +83,12 @@ class Int {
   */
   // legacy C interfaces take the object where a pointer or name is expected.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  operator uint32_t*() { return &reg[0]; }
+  operator uint32_t*() ABSL_ATTRIBUTE_LIFETIME_BOUND { return &reg[0]; }
   // legacy C interfaces take the object where a pointer or name is expected.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  operator const uint32_t*() const { return &reg[0]; }
+  operator const uint32_t*() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return &reg[0];
+  }
 
   /*
   **	Array access operator (references bit position). Bit 0 is the first bit.

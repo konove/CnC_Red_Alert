@@ -266,10 +266,10 @@ void SoundControlsClass::Process() {
   **	and then stored into allocated EMS memory blocks.
   */
   for (ThemeType index : magic_enum::enum_values<ThemeType>()) {
-    if (Theme.Is_Allowed(index)) {
+    if (ThemeClass::Is_Allowed(index)) {
       char buffer[100];
-      int length = Theme.Track_Length(index);
-      const char* fullname = Theme.Full_Name(index);
+      int length = ThemeClass::Track_Length(index);
+      const char* fullname = ThemeClass::Full_Name(index);
 
       void* ptr = new char[sizeof(buffer)];
       if (ptr) {

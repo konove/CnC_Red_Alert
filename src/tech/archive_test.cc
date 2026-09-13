@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "absl/base/attributes.h"
 #include "gtest/gtest.h"
 #include "tech/xstraw.h"
 
@@ -16,7 +17,10 @@ class VectorPipe : public Pipe {
     bytes_.insert(bytes_.end(), begin, begin + slen);
     return slen;
   }
-  [[nodiscard]] const std::vector<uint8_t>& bytes() const { return bytes_; }
+  [[nodiscard]] const std::vector<uint8_t>& bytes() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return bytes_;
+  }
 
  private:
   std::vector<uint8_t> bytes_;

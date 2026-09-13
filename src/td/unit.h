@@ -46,6 +46,7 @@ class ArchiveWriter;
 
 #include <cstddef>
 
+#include "absl/base/attributes.h"
 #include "td/defines.h"
 #include "td/monoc.h"
 #include "td/object.h"
@@ -74,7 +75,10 @@ class UnitClass final : public TarComClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* ptr);
   UnitClass() { IsActive = true; }
   UnitClass(UnitType classid, HousesType house);

@@ -42,11 +42,12 @@
 
 #include <cstdio>
 
+#include "absl/base/attributes.h"
 #include "tech/wwfile.h"
 
 class RAMFileClass final : public FileClass {
  public:
-  RAMFileClass(void* buffer, int len);
+  RAMFileClass(void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND, int len);
   ~RAMFileClass() override;
 
   RAMFileClass(const RAMFileClass&) = delete;

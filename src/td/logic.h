@@ -52,6 +52,6 @@
 class LogicClass : public LayerClass {
  public:
   void AI();
-  void Debug_Dump(MonoClass* mono) const;
+  static void Debug_Dump(MonoClass* mono);
 };
 #endif  // CNC_RED_ALERT_TD_LOGIC_H_

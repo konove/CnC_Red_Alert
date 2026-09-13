@@ -610,7 +610,7 @@ void TeamClass::AI() {
             b->Class->PrimaryWeapon == nullptr) {
           CELL cell = Coord_Cell(b->Center_Coord());
           int dist = ::Distance(b->Center_Coord(), As_Coord(Zone)) *
-                     (Map.Cell_Threat(cell, House->Class->House) + 1);
+                     (MapEditClass::Cell_Threat(cell, House->Class->House) + 1);
 
           if (*b == STRUCT_REPAIR) {
             dist /= 2;
@@ -741,12 +741,12 @@ void TeamClass::AI() {
               Member != nullptr) {
             FootClass* leader = Fetch_A_Leader();
             CELL movecell = Scen.Waypoint[mission->Data.Value];
-            if (!Is_Leaving_Map()) {
-              if (leader->Can_Enter_Cell(movecell) != MOVE_OK) {
-                movecell = Map.Nearby_Location(
-                    movecell, leader->Techno_Type_Class()->Speed);
-              }
+            if ((!Is_Leaving_Map()) &&
+                (leader->Can_Enter_Cell(movecell) != MOVE_OK)) {
+              movecell = Map.Nearby_Location(
+                  movecell, leader->Techno_Type_Class()->Speed);
             }
+
             Assign_Mission_Target(::As_Target(movecell));
             Target = ::As_Target(movecell);
           }
@@ -876,15 +876,9 @@ void TeamClass::AI() {
     **	Check for mission time out condition. If the mission does in fact time
     *out, then *	flag it so that the team mission list will advance.
     */
-    switch (mission->Mission) {
-        //			case TMISSION_UNLOAD:
-      case TMISSION_GUARD:
-        if (TimeOut.IsFinished()) {
-          IsNextMission = true;
-        }
-        break;
-      default:
-        break;
+    //			case TMISSION_UNLOAD:
+    if (mission->Mission == TMISSION_GUARD && TimeOut.IsFinished()) {
+      IsNextMission = true;
     }
 
   } else {
@@ -1638,12 +1632,11 @@ void TeamClass::Took_Damage(FootClass* /*unused*/, ResultType result,
           if (Target_Legal(Target)) {
             TechnoClass* techno = As_Techno(Target);
 
-            if (techno &&
-                dynamic_cast<const TechnoTypeClass&>(techno->Class_Of())
-                        .PrimaryWeapon != nullptr) {
-              if (techno->In_Range(As_Coord(Zone), 0)) {
-                return;
-              }
+            if ((techno &&
+                 dynamic_cast<const TechnoTypeClass&>(techno->Class_Of())
+                         .PrimaryWeapon != nullptr) &&
+                techno->In_Range(As_Coord(Zone), 0)) {
+              return;
             }
           }
 
@@ -1737,7 +1730,7 @@ void TeamClass::Coordinate_Attack() {
           if (mission->Mission == TMISSION_SPY &&
               unit->What_Am_I() == RTTI_UNIT &&
               *dynamic_cast<UnitClass*>(unit) == UNIT_CHRONOTANK) {
-            UnitClass* tank = dynamic_cast<UnitClass*>(unit);
+            auto* tank = dynamic_cast<UnitClass*>(unit);
             tank->Teleport_To(As_Cell(Target));
             tank->MoebiusCountDown.Set(ChronoTankDuration * kTicksPerMinute);
             Scen.Do_BW_Fade();
@@ -1954,10 +1947,9 @@ void TeamClass::Coordinate_Move() {
           found = true;
 
           int dist = unit->Distance(Target);
-          if (unit->IsFormationMove) {
-            if (::As_Target(Coord_Cell(unit->Coord)) != unit->NavCom) {
-              dist = Rule.StrayDistance + 1;  // formation moves must be exact.
-            }
+          if (unit->IsFormationMove &&
+              (::As_Target(Coord_Cell(unit->Coord)) != unit->NavCom)) {
+            dist = Rule.StrayDistance + 1;  // formation moves must be exact.
           }
 
           if (dist > stray ||
@@ -2659,12 +2651,11 @@ int TeamClass::TMission_Formation() {
         speedcheck = true;
       }
 
-      if (speedcheck) {
-        if (memmax < TeamMaxSpeed[group]) {
-          TeamMaxSpeed[group] = memmax;
-          TeamSpeed[group] = memspeed;
-        }
+      if (speedcheck && (memmax < TeamMaxSpeed[group])) {
+        TeamMaxSpeed[group] = memmax;
+        TeamSpeed[group] = memspeed;
       }
+
       member = member->Member;
     }
 

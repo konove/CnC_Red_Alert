@@ -724,11 +724,14 @@ void ChronalVortexClass::Zap_Target() {
 void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass* inbuffer, int x,
                                           int y, int width, int height,
                                           unsigned char* remap_table) {
-  unsigned char getx, gety, remap_color, pixel_color;
+  unsigned char getx;
+  unsigned char gety;
+  unsigned char remap_color;
+  unsigned char pixel_color;
 
   BufferClass destbuf(static_cast<long>(width) * height);
 
-  unsigned char* destptr = static_cast<unsigned char*>(destbuf.Get_Buffer());
+  auto* destptr = static_cast<unsigned char*>(destbuf.Get_Buffer());
 
   int destx = x;
   int desty = y;
@@ -1115,7 +1118,7 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
 void ChronalVortexClass::Build_Fading_Table(const PaletteClass& palette,
                                             void* dest, int color, int frac) {
   if (dest) {
-    unsigned char* ptr = static_cast<unsigned char*>(dest);
+    auto* ptr = static_cast<unsigned char*>(dest);
 
     /*
     **	Find an appropriate remap color index for every color in the palette.

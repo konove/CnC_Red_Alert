@@ -69,9 +69,9 @@ class WWKeyboardClass {
       unsigned vk_key,
       bool release = false);  // handles keyboard related message
                               //   and mouse clicks and dbl clicks
-  int To_ASCII(int num);      // converts keynum to ascii value
+  static int To_ASCII(int num);  // converts keynum to ascii value
   void Clear();               // clears all keys from keybuffer
-  int Down(int key);          // tests to see if a key is down
+  static int Down(int key);   // tests to see if a key is down
 
   /*===================================================================*/
   /* Define the main hook for the message processing loop.
@@ -83,7 +83,7 @@ class WWKeyboardClass {
   /* Define public routines which can be used on keys in general.
    */
   /*===================================================================*/
-  bool Is_Mouse_Key(int key);
+  static bool Is_Mouse_Key(int key);
 
   bool Event_Handler(SDL_Event* event);
 
@@ -120,11 +120,13 @@ extern WWKeyboardClass* ActiveKeyboard;
 // To_ASCII reports 0 for key releases and every non-alphanumeric key.
 inline int Check_Key() { return ActiveKeyboard->Check(); }
 inline int Check_Key_Num() { return ActiveKeyboard->Check(); }
-inline int Get_Key() { return ActiveKeyboard->To_ASCII(ActiveKeyboard->Get()); }
+inline int Get_Key() {
+  return WWKeyboardClass::To_ASCII(ActiveKeyboard->Get());
+}
 inline int Get_Key_Num() { return ActiveKeyboard->Get(); }
-inline bool Key_Down(int key) { return ActiveKeyboard->Down(key); }
+inline bool Key_Down(int key) { return WWKeyboardClass::Down(key); }
 inline void Clear_KeyBuffer() { ActiveKeyboard->Clear(); }
-inline int KN_To_KA(int key) { return ActiveKeyboard->To_ASCII(key); }
+inline int KN_To_KA(int key) { return WWKeyboardClass::To_ASCII(key); }
 inline int KN_To_VK(int key) { return key; }
 
 // these are (mostly) SDL_SCANCODE_x values
@@ -304,13 +306,16 @@ typedef enum KeyASCIIType {
   KA_F = 70,  /* F */
   KA_G = 71,  /* G */
   KA_H = 72,  /* H */
-  KA_I = 73,  /* I */
-  KA_J = 74,  /* J */
-  KA_K = 75,  /* K */
-  KA_L = 76,  /* L */
-  KA_M = 77,  /* M */
-  KA_N = 78,  /* N */
-  KA_O = 79,  /* O */
+  // Key names spell their key's label, so I/1, O/0 and l/1 look alike by
+  // design. NOLINTNEXTLINE(misc-confusable-identifiers)
+  KA_I = 73, /* I */
+  KA_J = 74, /* J */
+  KA_K = 75, /* K */
+  KA_L = 76, /* L */
+  KA_M = 77, /* M */
+  KA_N = 78, /* N */
+  // NOLINTNEXTLINE(misc-confusable-identifiers)
+  KA_O = 79, /* O */
 
   KA_P = 80,         /* P */
   KA_Q = 81,         /* Q */
@@ -341,10 +346,11 @@ typedef enum KeyASCIIType {
   KA_i = 105,    /* i */
   KA_j = 106,    /* j */
   KA_k = 107,    /* k */
-  KA_l = 108,    /* l */
-  KA_m = 109,    /* m */
-  KA_n = 110,    /* n */
-  KA_o = 111,    /* o */
+  // NOLINTNEXTLINE(misc-confusable-identifiers)
+  KA_l = 108, /* l */
+  KA_m = 109, /* m */
+  KA_n = 110, /* n */
+  KA_o = 111, /* o */
 
   KA_p = 112,      /* p */
   KA_q = 113,      /* q */
@@ -430,6 +436,7 @@ typedef enum KeyNumType {
   KN_GRAVE = VK_OEM_3,
   KN_H = VK_H,
   KN_HOME = VK_HOME,
+  // NOLINTNEXTLINE(misc-confusable-identifiers)
   KN_I = VK_I,
   KN_INSERT = VK_INSERT,
   KN_J = VK_J,
@@ -450,6 +457,7 @@ typedef enum KeyNumType {
   KN_MINUS = VK_OEM_MINUS,
   KN_N = VK_N,
   KN_NUMLOCK = VK_NUMLOCK,
+  // NOLINTNEXTLINE(misc-confusable-identifiers)
   KN_O = VK_O,
   KN_P = VK_P,
   KN_PAUSE = VK_PAUSE,

@@ -152,7 +152,7 @@ BulletClass::~BulletClass() {
     */
     if (Payback != nullptr && Payback->What_Am_I() == RTTI_INFANTRY &&
         dynamic_cast<InfantryClass*>(Payback)->Class->IsDog) {
-      InfantryClass* dog = dynamic_cast<InfantryClass*>(Payback);
+      auto* dog = dynamic_cast<InfantryClass*>(Payback);
       if (dog) {
         bool unlimbo = false;
         COORDINATE newcoord = Coord;
@@ -455,14 +455,12 @@ void BulletClass::AI() {
       //			if(Class->Type == BULLET_NUKE_DOWN) {
       //				Render(true);
       //			}
-      if (Class->Type == BULLET_NUKE_UP) {
-        if (Payback != nullptr) {
-          if (Distance(Payback->As_Target()) > 0x0C00) {
-            delete this;
-            return;
-          }
-        }
+      if ((Class->Type == BULLET_NUKE_UP) && (Payback != nullptr) &&
+          (Distance(Payback->As_Target()) > 0x0C00)) {
+        delete this;
+        return;
       }
+
       Coord = coord;
 
       /*
@@ -651,15 +649,15 @@ void BulletClass::Detach(TARGET target, bool all) {
   assert(IsActive);
 
   ObjectClass* obj = As_Object(target);
-  if (Payback != nullptr && obj == Payback) {
-    /*
-    ** If we're being called as a result of the dog that fired us being put
-    ** in limbo, then don't detach.  If for any other reason, detach.
-    */
-    if (Payback->What_Am_I() != RTTI_INFANTRY ||
-        !dynamic_cast<InfantryClass*>(Payback)->Class->IsDog) {
-      Payback = nullptr;
-    }
+  if ((Payback != nullptr && obj == Payback) &&
+      (Payback->What_Am_I() != RTTI_INFANTRY ||
+       !dynamic_cast<InfantryClass*>(Payback)->Class->IsDog))
+  /*
+  ** If we're being called as a result of the dog that fired us being put
+  ** in limbo, then don't detach.  If for any other reason, detach.
+  */
+  {
+    Payback = nullptr;
   }
 
   if (all && target == TarCom) {
@@ -699,7 +697,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     Height = 0;
   }
   if (ObjectClass::Unlimbo(coord)) {
-    Map.Remove(this, In_Which_Layer());
+    MapEditClass::Remove(this, In_Which_Layer());
 
     COORDINATE tcoord = As_Coord(TarCom);
 
@@ -813,7 +811,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       //			Height = Pixel_To_Lepton(24);
       Riser = 0;
       if (Class->IsParachuted) {
-        AnimClass* anim = new AnimClass(ANIM_PARA_BOMB, Target_Coord());
+        auto* anim = new AnimClass(ANIM_PARA_BOMB, Target_Coord());
         //				AnimClass * anim = new
         // AnimClass(ANIM_PARACHUTE, Target_Coord());
         if (anim) {
@@ -821,7 +819,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
         }
       }
     }
-    Map.Submit(this, In_Which_Layer());
+    MapEditClass::Submit(this, In_Which_Layer());
 
     PrimaryFacing = dir;
     return true;
@@ -1051,15 +1049,14 @@ void BulletClass::Bullet_Explodes(bool forced) {
   ** If it's a water explosion that's going to play, don't play it
   ** if its cell is the same as the center cell of the target ship.
   */
-  if (anim >= ANIM_WATER_EXP1 && anim <= ANIM_WATER_EXP3 &&
-      Is_Target_Vessel(TarCom)) {
-    if (Coord_Cell(Coord) == Coord_Cell(As_Vessel(TarCom)->Center_Coord())) {
-      anim = static_cast<AnimType>(ANIM_VEH_HIT1 + (anim - ANIM_WATER_EXP1));
-    }
+  if ((anim >= ANIM_WATER_EXP1 && anim <= ANIM_WATER_EXP3 &&
+       Is_Target_Vessel(TarCom)) &&
+      (Coord_Cell(Coord) == Coord_Cell(As_Vessel(TarCom)->Center_Coord()))) {
+    anim = static_cast<AnimType>(ANIM_VEH_HIT1 + (anim - ANIM_WATER_EXP1));
   }
 
   if (anim != ANIM_NONE) {
-    AnimClass* aptr = new AnimClass(anim, Coord);
+    auto* aptr = new AnimClass(anim, Coord);
     /*
     ** Special case trap: if they're making the nuclear explosion,
     ** and no anim is available, force the nuclear damage anyway

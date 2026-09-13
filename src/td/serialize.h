@@ -5,6 +5,7 @@
 
 #include <cstdint>
 
+#include "absl/base/attributes.h"
 #include "td/defines.h"
 #include "tech/archive.h"
 
@@ -24,7 +25,7 @@ ObjectClass* ResolveSavedObject(TARGET target, ArchiveReader& ar, bool active_on
 template <class T>
 class ObjectPtr {
  public:
-  explicit ObjectPtr(T*& ref) : ref_(ref) {}
+  explicit ObjectPtr(T*& ref ABSL_ATTRIBUTE_LIFETIME_BOUND) : ref_(ref) {}
   void Serialize(ArchiveWriter& ar);
   void Serialize(ArchiveReader& ar);
 
@@ -39,7 +40,8 @@ class TriggerClass;
 // Trigger TARGETs refer to a fixed heap; validate the kind and slot bounds.
 class TriggerPtr {
  public:
-  explicit TriggerPtr(TriggerClass*& ref) : ref_(ref) {}
+  explicit TriggerPtr(TriggerClass*& ref ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : ref_(ref) {}
   void Serialize(ArchiveWriter& ar);
   void Serialize(ArchiveReader& ar);
 
@@ -54,7 +56,7 @@ class TeamTypeClass;
 template <class T>
 class TeamTypePtr {
  public:
-  explicit TeamTypePtr(T*& ref) : ref_(ref) {}
+  explicit TeamTypePtr(T*& ref ABSL_ATTRIBUTE_LIFETIME_BOUND) : ref_(ref) {}
   void Serialize(ArchiveWriter& ar);
   void Serialize(ArchiveReader& ar);
 
@@ -69,7 +71,8 @@ class HouseClass;
 // House heap indices stay usable while HouseClass::Class is pointer-coded.
 class HousePtr {
  public:
-  explicit HousePtr(HouseClass*& ref) : ref_(ref) {}
+  explicit HousePtr(HouseClass*& ref ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : ref_(ref) {}
   void Serialize(ArchiveWriter& ar);
   void Serialize(ArchiveReader& ar);
 
@@ -81,7 +84,9 @@ class TechnoTypeClass;
 // A heterogeneous static type reference: kind plus checked table index.
 class TechnoTypePtr {
  public:
-  explicit TechnoTypePtr(const TechnoTypeClass*& ref) : ref_(ref) {}
+  explicit TechnoTypePtr(
+      const TechnoTypeClass*& ref ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : ref_(ref) {}
   void Serialize(ArchiveWriter& ar);
   void Serialize(ArchiveReader& ar);
 
@@ -113,7 +118,7 @@ constexpr int TypeCount(SmudgeType /*unused*/) { return SMUDGE_COUNT; }
 template <class T>
 class TypePtr {
  public:
-  explicit TypePtr(const T*& ref) : ref_(ref) {}
+  explicit TypePtr(const T*& ref ABSL_ATTRIBUTE_LIFETIME_BOUND) : ref_(ref) {}
 
   template <class Archive>
   void Serialize(Archive& ar) {

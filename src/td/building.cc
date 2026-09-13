@@ -220,7 +220,6 @@ int BuildingClass::Validate() const {
     num = Buildings.ID(this);
     if (num < 0 || num >= kBuildingMax) {
       Validate_Error("BUILDING");
-      return 0;
     }
     return 1;
   } else {
@@ -792,7 +791,7 @@ bool BuildingClass::Mark(MarkType mark) {
       case MARK_UP:
         Map.Pick_Up(cell, this);
         if (Class->Bib_And_Offset(bib, cell)) {
-          SmudgeClass* smudge = new SmudgeClass(bib);
+          auto* smudge = new SmudgeClass(bib);
           if (smudge) {
             smudge->Disown(cell);
             delete smudge;
@@ -892,7 +891,7 @@ BulletClass* BuildingClass::Fire_At(TARGET target, int which) {
   bullet = TechnoClass::Fire_At(target, which);
   if (bullet) {
     if (*this == STRUCT_SAM) {
-      AnimClass* anim = new AnimClass(
+      auto* anim = new AnimClass(
           static_cast<AnimType>(ANIM_SAM_N + static_cast<int>(Dir_Facing(
                                                  PrimaryFacing.Current()))),
           Center_Coord());
@@ -913,8 +912,12 @@ BulletClass* BuildingClass::Fire_At(TARGET target, int which) {
             Fire_Coord(which));
       } else {
         if (weapon->Fires == BULLET_LASER) {
-          int x, y, x1, y1;
-          COORDINATE source, dest;
+          int x;
+          int y;
+          int x1;
+          int y1;
+          COORDINATE source;
+          COORDINATE dest;
           source = Fire_Coord(which);
           dest = As_Coord(target);
           IsCharging = false;
@@ -1054,16 +1057,14 @@ void BuildingClass::AI() {
   *change for the building. *	Such outside requests (player input) must be
   *initiated BEFORE the normal AI process.
   */
-  if (IsReadyToCommence && BState != BSTATE_CONSTRUCTION) {
-    /*
-    **	Clear the commencement flag ONLY if something actually occured. By
-    *acting *	this way, a building can set the IsReadyToCommence flag before
-    *it goes *	to "sleep" knowing that it will wake up as soon as a new mission
-    *comes *	along.
-    */
-    if (Commence()) {
-      IsReadyToCommence = false;
-    }
+  /*
+  **	Clear the commencement flag ONLY if something actually occured. By
+  *acting *	this way, a building can set the IsReadyToCommence flag before
+  *it goes *	to "sleep" knowing that it will wake up as soon as a new mission
+  *comes *	along.
+  */
+  if ((IsReadyToCommence && BState != BSTATE_CONSTRUCTION) && Commence()) {
+    IsReadyToCommence = false;
   }
 
   /*
@@ -1085,16 +1086,14 @@ void BuildingClass::AI() {
   *(usually from another mission *	state machine). This must occur here
   *before it has a chance to render.
   */
-  if (IsReadyToCommence) {
-    /*
-    **	Clear the commencement flag ONLY if something actually occured. By
-    *acting *	this way, a building can set the IsReadyToCommence flag before
-    *it goes *	to "sleep" knowing that it will wake up as soon as a new mission
-    *comes *	along.
-    */
-    if (Commence()) {
-      IsReadyToCommence = false;
-    }
+  /*
+  **	Clear the commencement flag ONLY if something actually occured. By
+  *acting *	this way, a building can set the IsReadyToCommence flag before
+  *it goes *	to "sleep" knowing that it will wake up as soon as a new mission
+  *comes *	along.
+  */
+  if (IsReadyToCommence && Commence()) {
+    IsReadyToCommence = false;
   }
 
   /*
@@ -1182,28 +1181,26 @@ void BuildingClass::AI() {
   /*
   **	Handle any repair process that may be going on.
   */
-  if (IsRepairing) {
-    if (Frame % 15 == 0) {
-      IsWrenchVisible = !static_cast<bool>(IsWrenchVisible);
-      Mark(MARK_CHANGE);
-      int cost = Class->Repair_Cost();
-      int step = Class->Repair_Step();
+  if (IsRepairing && (Frame % 15 == 0)) {
+    IsWrenchVisible = !static_cast<bool>(IsWrenchVisible);
+    Mark(MARK_CHANGE);
+    int cost = Class->Repair_Cost();
+    int step = Class->Repair_Step();
 
-      /*
-      **	Check for and expend any necessary monies to continue the
-      *repair.
-      */
-      if (House->Available_Money() >= cost) {
-        House->Spend_Money(cost);
-        Strength = static_cast<short>(Strength + step);
+    /*
+    **	Check for and expend any necessary monies to continue the
+    *repair.
+    */
+    if (House->Available_Money() >= cost) {
+      House->Spend_Money(cost);
+      Strength = static_cast<short>(Strength + step);
 
-        if (std::cmp_greater_equal(Strength, Class->MaxStrength)) {
-          Strength = Class->MaxStrength;
-          IsRepairing = false;
-        }
-      } else {
+      if (std::cmp_greater_equal(Strength, Class->MaxStrength)) {
+        Strength = Class->MaxStrength;
         IsRepairing = false;
       }
+    } else {
+      IsRepairing = false;
     }
   }
 
@@ -1339,20 +1336,20 @@ void BuildingClass::AI() {
   *entails *	rotating the turret to the desired facing as well as figuring
   *out what that *	desired facing should be.
   */
-  if (Class->IsTurretEquipped && Mission != MISSION_CONSTRUCTION &&
-      Mission != MISSION_DECONSTRUCTION) {
-    /*
-    **	Rotate turret to match desired facing.
-    */
-    if (PrimaryFacing.Is_Rotating()) {
-      if (*this == STRUCT_SAM) {
-        if (PrimaryFacing.Rotation_Adjust(15)) {
-          Mark(MARK_CHANGE);
-        }
-      } else {
-        if (PrimaryFacing.Rotation_Adjust(12)) {
-          Mark(MARK_CHANGE);
-        }
+  if ((Class->IsTurretEquipped && Mission != MISSION_CONSTRUCTION &&
+       Mission != MISSION_DECONSTRUCTION) &&
+      PrimaryFacing.Is_Rotating())
+  /*
+  **	Rotate turret to match desired facing.
+  */
+  {
+    if (*this == STRUCT_SAM) {
+      if (PrimaryFacing.Rotation_Adjust(15)) {
+        Mark(MARK_CHANGE);
+      }
+    } else {
+      if (PrimaryFacing.Rotation_Adjust(12)) {
+        Mark(MARK_CHANGE);
       }
     }
   }
@@ -1627,8 +1624,8 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
       case RESULT_HALF:
         if (*this == STRUCT_PUMP) {
-          AnimClass* anim = new AnimClass(ANIM_OILFIELD_BURN,
-                                          Coord_Add(Coord, 0x00400130L), 1);
+          auto* anim = new AnimClass(ANIM_OILFIELD_BURN,
+                                     Coord_Add(Coord, 0x00400130L), 1);
           if (anim) {
             anim->Attach_To(this);
           }
@@ -1919,7 +1916,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
   */
   if (GameToPlay == GAME_NORMAL && *this == STRUCT_MISSION &&
       PlayerPtr->ActLike == HOUSE_BAD && Scenario == 10) {
-    InfantryClass* i = new InfantryClass(INFANTRY_CHAN, House->Class->House);
+    auto* i = new InfantryClass(INFANTRY_CHAN, House->Class->House);
 
     ScenarioInit++;
     if (i->Unlimbo(Center_Coord(), DIR_N)) {
@@ -2142,8 +2139,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
     return 0;
   }
 
-  const TechnoTypeClass* ttype =
-      dynamic_cast<const TechnoTypeClass*>(&base->Class_Of());
+  const auto* ttype = dynamic_cast<const TechnoTypeClass*>(&base->Class_Of());
 
   /*
   **	A unit exiting a building is always considered to be "locked". That
@@ -2159,7 +2155,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
   switch (base->What_Am_I()) {
     case RTTI_AIRCRAFT:
       if (!In_Radio_Contact()) {
-        AircraftClass* air = dynamic_cast<AircraftClass*>(base);
+        auto* air = dynamic_cast<AircraftClass*>(base);
 
         air->Altitude = 0;
         ScenarioInit++;
@@ -2171,7 +2167,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         }
         ScenarioInit--;
       } else {
-        AircraftClass* air = dynamic_cast<AircraftClass*>(base);
+        auto* air = dynamic_cast<AircraftClass*>(base);
 
         CELL cell;
         if (Cell_X(Coord_Cell(Center_Coord())) - Map.MapCellX <
@@ -2202,7 +2198,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         case STRUCT_REFINERY:
           if (base->What_Am_I() == RTTI_UNIT) {
             CELL cell = Coord_Cell(Center_Coord());
-            UnitClass* unit = dynamic_cast<UnitClass*>(base);
+            auto* unit = dynamic_cast<UnitClass*>(base);
 
             cell = Adjacent_Cell(cell, FACING_SW);
             ScenarioInit++;
@@ -2690,7 +2686,7 @@ void BuildingClass::Grand_Opening(bool captured) {
        PurchasePrice > Class->Raw_Cost())) {
     CELL cell = Coord_Cell(Adjacent_Cell(Center_Coord(), DIR_SW));
     //		if (!Map[cell].Cell_Unit()) {
-    UnitClass* unit = new UnitClass(UNIT_HARVESTER, House->Class->House);
+    auto* unit = new UnitClass(UNIT_HARVESTER, House->Class->House);
     if (unit) {
       /*
       **	Try to place down the harvesters. If it could not be placed,
@@ -3430,7 +3426,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     SmudgeType bib;
     CELL cell = Coord_Cell(Coord);
     if (Class->Bib_And_Offset(bib, cell)) {
-      SmudgeClass* smudge = new SmudgeClass(bib);
+      auto* smudge = new SmudgeClass(bib);
       if (smudge) {
         smudge->Disown(cell);
         delete smudge;
@@ -3770,8 +3766,7 @@ int BuildingClass::Mission_Deconstruction() {
               engine = true;
             }
 
-            InfantryClass* infantry =
-                new InfantryClass(typ, House->Class->House);
+            auto* infantry = new InfantryClass(typ, House->Class->House);
             if (infantry) {
               ScenarioInit++;
               COORDINATE coord = Coord_Add(Center_Coord(), XYP_COORD(0, -12));
@@ -3815,7 +3810,7 @@ int BuildingClass::Mission_Deconstruction() {
         */
         if (Special.IsMCVDeploy && *this == STRUCT_CONST && House->IsHuman) {
           ScenarioInit++;
-          UnitClass* unit = new UnitClass(UNIT_MCV, House->Class->House);
+          auto* unit = new UnitClass(UNIT_MCV, House->Class->House);
           ScenarioInit--;
           if (unit) {
             /*
@@ -4373,7 +4368,7 @@ int BuildingClass::Mission_Missile() {
       ** actually handles launching the missile into the air.
       */
       case LAUNCH_UP: {
-        BulletClass* bullet = new BulletClass(BULLET_NUKE_UP);
+        auto* bullet = new BulletClass(BULLET_NUKE_UP);
         if (bullet) {
           COORDINATE launch =
               Coord_Move(Center_Coord(), static_cast<DirType>(1), 0x1A0);
@@ -4405,7 +4400,7 @@ int BuildingClass::Mission_Missile() {
       ** over the target.
       */
       case LAUNCH_DOWN: {
-        BulletClass* bullet = new BulletClass(BULLET_NUKE_DOWN);
+        auto* bullet = new BulletClass(BULLET_NUKE_DOWN);
         if (bullet) {
           //						Theme.Queue_Song(THEME_NONE);
           COORDINATE start = Cell_Coord(XY_Cell(Cell_X(House->NukeDest), 1));

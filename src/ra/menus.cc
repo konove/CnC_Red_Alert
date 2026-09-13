@@ -193,8 +193,14 @@ static int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
 /*=========================================================================*/
 void Setup_Menu(int menu, const char* text[], unsigned long field, int index,
                 int skip) {
-  int *menuptr, lp;
-  int menuy, menux, idx, item, num, drawy;
+  int* menuptr;
+  int lp;
+  int menuy;
+  int menux;
+  int idx;
+  int item;
+  int num;
+  int drawy;
 
   menuptr = &MenuList[menu][0];  /* get pointer to menu	*/
   menuy = WinY + menuptr[MENUY]; /* get the absolute 		*/
@@ -221,10 +227,24 @@ void Setup_Menu(int menu, const char* text[], unsigned long field, int index,
 
 int Check_Menu(int menu, const char* text[], char* /*unused*/, long field,
                int index) {
-  int maxitem, select, key, menuy, menux;
-  int mx1, mx2, my1, my2, tempy;
-  int drawy, menuskip, halfskip;
-  int normcol, litcol, item, newitem, idx;
+  int maxitem;
+  int select;
+  int key;
+  int menuy;
+  int menux;
+  int mx1;
+  int mx2;
+  int my1;
+  int my2;
+  int tempy;
+  int drawy;
+  int menuskip;
+  int halfskip;
+  int normcol;
+  int litcol;
+  int item;
+  int newitem;
+  int idx;
   int* menuptr;
 
   // selection++;
@@ -336,7 +356,8 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, long field,
     default:
       for (idx = 0; idx < menuptr[ITEMSHIGH]; idx++) {
         if (toupper(*text[Select_To_Entry(idx, field, index)]) ==
-            toupper(Keyboard->To_ASCII(static_cast<KeyNumType>(key & 0x0FF)))) {
+            toupper(KeyboardClass::To_ASCII(
+                static_cast<KeyNumType>(key & 0x0FF)))) {
           newitem = select = idx;
           break;
         }
@@ -621,7 +642,13 @@ int Main_Menu(unsigned long /*unused*/) {
   /*
   **	Fill array of button ptrs
   */
-  curbutton = bExpansionCS ? 0 : bExpansionAM ? 1 : 2;
+  if (bExpansionCS) {
+    curbutton = 0;
+  } else if (bExpansionAM) {
+    curbutton = 1;
+  } else {
+    curbutton = 2;
+  }
 
   buttons[0] = &expandbtnCS;
   buttons[1] = &expandbtnAM;
@@ -801,16 +828,16 @@ int Main_Menu(unsigned long /*unused*/) {
 
           break;
         }
-        if (Is_Counterstrike_Installed()) {
-          if ((Keyboard->Down(KN_LSHIFT) || Keyboard->Down(KN_RSHIFT)) &&
-              Coordinates_In_Region(Keyboard->MouseQX, Keyboard->MouseQY,
-                                    520, 0, 640,
-                                    100)) {
-            AntsEnabled = true;
-            process = false;
-            retval = 2;  //	To match SEL_START_NEW_GAME
-          }
+        if (Is_Counterstrike_Installed() &&
+            ((KeyboardClass::Down(KN_LSHIFT) ||
+              KeyboardClass::Down(KN_RSHIFT)) &&
+             Coordinates_In_Region(Keyboard->MouseQX, Keyboard->MouseQY, 520, 0,
+                                   640, 100))) {
+          AntsEnabled = true;
+          process = false;
+          retval = 2;  //	To match SEL_START_NEW_GAME
         }
+
         [[fallthrough]];
 
       default:

@@ -598,7 +598,7 @@ HRESULT WolapiObject::GetChatServer() {
          Get_Time_Ms() - dwTimeLimit < 60000) {
     while (Get_Time_Ms() < dwTimeNextPump) {
       Call_Back();
-      if (Keyboard->Down(KN_ESC)) {
+      if (KeyboardClass::Down(KN_ESC)) {
         bCancel = true;
         break;
       }
@@ -688,7 +688,7 @@ HRESULT WolapiObject::AttemptLogin(const char* szName, const char* szPass,
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
     while (Get_Time_Ms() < dwTimeNextPump) {
       Call_Back();
-      if (Keyboard->Down(KN_ESC)) {
+      if (KeyboardClass::Down(KN_ESC)) {
         bCancel = true;
         break;
       }
@@ -886,7 +886,7 @@ void WolapiObject::ListChannels() {
       void* pGameKindIcon;
       if (pChannel->type == GAME_TYPE) {
         //	Get RedAlert GameKind.
-        CREATEGAMEINFO::GAMEKIND GameKind =
+        auto GameKind =
             (CREATEGAMEINFO::GAMEKIND)(pChannel->reserved & 0xFF000000);
         switch (GameKind) {
           case CREATEGAMEINFO::RAGAME:
@@ -1247,14 +1247,13 @@ bool WolapiObject::ListChannelUsers() {
                                 pUsersSaved[iUser].House);
             pListToUse->Set_Item(iFind, szItem);
           }
-          if (pUsersSaved[iUser].bAccept) {
-            //	Player was marked "accepted" before. If he has one now, it's
-            // because he is the host. 	Else it was an accepted icon before, so
-            // put one in again now. (a-hacking-we-will-go)
-            if (!bItemMarkedAccepted(iFind)) {
-              MarkItemAccepted(iFind, true);
-            }
+          //	Player was marked "accepted" before. If he has one now, it's
+          // because he is the host. 	Else it was an accepted icon before, so
+          // put one in again now. (a-hacking-we-will-go)
+          if (pUsersSaved[iUser].bAccept && (!bItemMarkedAccepted(iFind))) {
+            MarkItemAccepted(iFind, true);
           }
+
           if (*pUsersSaved[iUser].szExtra) {
             pListToUse->Set_Item_ExtraDataString(iFind,
                                                  pUsersSaved[iUser].szExtra);
@@ -1531,7 +1530,7 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
       PrintMessage(szPrint, WOLCOLORREMAP_SELFSPEAKING);
     } else {
       PrintMessage(szPrint, WOLCOLORREMAP_ACTION);
-      pChatSink->ActionEggSound(szMessage);
+      RAChatEventSink::ActionEggSound(szMessage);
     }
     delete[] szPrint;
   } else {
@@ -1575,7 +1574,7 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
     } else {
       sprintf(szPrint, "%s %s", szMyName, szMessage);
       PrintMessage(szPrint, WOLCOLORREMAP_ACTION);
-      pChatSink->ActionEggSound(szMessage);
+      RAChatEventSink::ActionEggSound(szMessage);
     }
     delete[] szPrint;
   }
@@ -1742,7 +1741,7 @@ void WolapiObject::DoFindPage() {
   } else {
     //	Page user.
     //	Ask user for text to send.
-    SimpleEditDlgClass* pMessDlg =
+    auto* pMessDlg =
         new SimpleEditDlgClass(600, TXT_WOL_PAGEMESSAGETITLE,
                                TXT_WOL_PAGEMESSAGEPROMPT, MAXCHATSENDLENGTH);
     bPump_In_Call_Back = true;
@@ -2079,45 +2078,44 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
     BlackPalette.Set(kFadePaletteFast, Call_Back);
     //		::ShowWindow( MainWindow, SW_SHOWMINIMIZED );
     SeenBuff.Clear();
-    if (::CreateProcess(
-            nullptr,
-            szCommandLine,  //	Command line.
-            nullptr,        //	Process handle not inheritable.
-            nullptr,        //	Thread handle not inheritable.
-            false,          //	Set handle inheritance to false.
-            0,              //	No creation flags.
-            nullptr,        //	Use parent�s environment block.
-            nullptr,        //	Use parent�s starting directory.
-            &si,            //	Pointer to STARTUPINFO structure.
-            &pi))           //	Pointer to PROCESS_INFORMATION structure.
+    if (::CreateProcess(nullptr,
+                        szCommandLine,  //	Command line.
+                        nullptr,        //	Process handle not inheritable.
+                        nullptr,        //	Thread handle not inheritable.
+                        false,          //	Set handle inheritance to false.
+                        0,              //	No creation flags.
+                        nullptr,        //	Use parent�s environment block.
+                        nullptr,        //	Use parent�s starting directory.
+                        &si,            //	Pointer to STARTUPINFO structure.
+                        &pi) &&
+        pi.hProcess)  //	Pointer to PROCESS_INFORMATION structure.
+
     {
-      if (pi.hProcess) {
-        //				debugprint( "CreateProcess: '%s'\n",
-        // szCommandLine );
-        bSuccess = true;
-        ::WaitForInputIdle(pi.hProcess, 5000);
-        bPump_In_Call_Back = true;
-        for (;;) {
-          DWORD dwActive;
-          Call_Back();
-          port::SleepMs(200);
-          ::GetExitCodeProcess(pi.hProcess, &dwActive);
-          if (dwActive != STILL_ACTIVE || cancel_current_msgbox) {
-            //	Either user closed the browser app, or game is starting and we
-            // should return focus to game.
-            cancel_current_msgbox = false;
-            Restore_Game_Window();
-            break;
-          }
-          if (Game_Window_Has_Focus()) {
-            Restore_Game_Window();  //	In case it was topmost but minimized.
-            break;
-          }
+      //				debugprint( "CreateProcess: '%s'\n",
+      // szCommandLine );
+      bSuccess = true;
+      ::WaitForInputIdle(pi.hProcess, 5000);
+      bPump_In_Call_Back = true;
+      for (;;) {
+        DWORD dwActive;
+        Call_Back();
+        port::SleepMs(200);
+        ::GetExitCodeProcess(pi.hProcess, &dwActive);
+        if (dwActive != STILL_ACTIVE || cancel_current_msgbox) {
+          //	Either user closed the browser app, or game is starting and we
+          // should return focus to game.
+          cancel_current_msgbox = false;
+          Restore_Game_Window();
+          break;
         }
-        bPump_In_Call_Back = false;
-        GamePalette.Set(kFadePaletteFast, Call_Back);
-        Show_Mouse();
+        if (Game_Window_Has_Focus()) {
+          Restore_Game_Window();  //	In case it was topmost but minimized.
+          break;
+        }
       }
+      bPump_In_Call_Back = false;
+      GamePalette.Set(kFadePaletteFast, Call_Back);
+      Show_Mouse();
     }
   }
 
@@ -2638,21 +2636,19 @@ void WolapiObject::OnFailedToEnterGameChannel() {
   //	Because we don't save the channel key as well, assume the usual lobby
   // password. If we fail, we'll return to top level.
   HRESULT hRes = ChannelJoin(szChannelReturnOnGameEnterFail, LOBBYPASSWORD);
-  switch (hRes) {
-    case S_OK:
-      OnEnteringChatChannel(
-          szChannelReturnOnGameEnterFail, false,
-          iChannelLobbyNumber((unsigned char*)szChannelReturnOnGameEnterFail));
-      break;
-    default:
-      //	ChannelJoin returned fail value.
-      //	(Now only applies if you could ever enter a game channel from a
-      // non-lobby.) 	There is the possibility that the channel we were in
-      // disappeared in the instant between leaving it and 	failing to join
-      // the game channel. <sigh> Or, the channel has a password, that we didn't
-      // record. In either 	case, go back to the top level.
-      GenericErrorMessage();
-      EnterLevel_Top();
+  if (hRes == S_OK) {
+    OnEnteringChatChannel(
+        szChannelReturnOnGameEnterFail, false,
+        iChannelLobbyNumber((unsigned char*)szChannelReturnOnGameEnterFail));
+  } else {
+    //	ChannelJoin returned fail value.
+    //	(Now only applies if you could ever enter a game channel from a
+    // non-lobby.) 	There is the possibility that the channel we were in
+    // disappeared in the instant between leaving it and 	failing to join
+    // the game channel. <sigh> Or, the channel has a password, that we didn't
+    // record. In either 	case, go back to the top level.
+    GenericErrorMessage();
+    EnterLevel_Top();
   }
 }
 
@@ -2694,17 +2690,14 @@ void WolapiObject::RejoinLobbyAfterGame() {
     // debugprint( "RejoinLobbyAfterGame, channel is %s\n", szChannelToJoin );
 
     HRESULT hRes = ChannelJoin(szChannelToJoin, LOBBYPASSWORD);
-    switch (hRes) {
-      case S_OK:
-        // OnEnteringChatChannel( szChannelToJoin, false );		Done
-        // automatically now in wol_chat.
-        break;
-      default:
-        //	Something went wrong when trying to rejoin the lobby we were in.
-        //	We'll go back to the top level instead, which happens
-        // automatically if we do this...
-        iLobbyReturnAfterGame = -1;
-        break;
+    if (hRes == S_OK) {
+      // OnEnteringChatChannel( szChannelToJoin, false );		Done
+      // automatically now in wol_chat.
+    } else {
+      //	Something went wrong when trying to rejoin the lobby we were in.
+      //	We'll go back to the top level instead, which happens
+      // automatically if we do this...
+      iLobbyReturnAfterGame = -1;
     }
   }
 }
@@ -2812,13 +2805,13 @@ bool WolapiObject::RequestIPs(const char* szName) {
 
   User* pUser = pChatSink->pUserList;
   while (pUser) {
-    if (!(pUser->flags & CHAT_USER_MYSELF)) {
-      if (!SUCCEEDED(pChat->RequestUserIP(pUser))) {
-        //				debugprint( "RequestUserIP() call
-        // failed\n" );
-        return false;
-      }
+    if ((!(pUser->flags & CHAT_USER_MYSELF)) &&
+        (!SUCCEEDED(pChat->RequestUserIP(pUser)))) {
+      //				debugprint( "RequestUserIP() call
+      // failed\n" );
+      return false;
     }
+
     pUser = pUser->next;
   }
   return true;

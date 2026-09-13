@@ -46,6 +46,7 @@ class ArchiveWriter;
 
 #include <cstddef>
 
+#include "absl/base/attributes.h"
 #include "td/defines.h"
 #include "td/globals.h"
 #include "td/object.h"
@@ -62,7 +63,10 @@ class TemplateClass : public ObjectClass {
   **	Constructors and destructors.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* ptr);
   TemplateClass() { IsActive = true; }
   explicit TemplateClass(TemplateType type, CELL pos = -1);

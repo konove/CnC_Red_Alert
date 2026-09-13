@@ -605,11 +605,9 @@ void MapClass::Sight_From(CELL cell, int sightrange, HouseClass* house,
   */
   count = RadiusCount[sightrange];
   ptr = &RadiusOffset[0];
-  if (incremental) {
-    if (sightrange > 2) {
-      ptr += RadiusCount[sightrange - 3];
-      count -= RadiusCount[sightrange - 3];
-    }
+  if (incremental && (sightrange > 2)) {
+    ptr += RadiusCount[sightrange - 3];
+    count -= RadiusCount[sightrange - 3];
   }
 
   /*
@@ -806,7 +804,7 @@ void MapClass::Jam_From(CELL cell, int jamrange, HouseClass* house) {
 
   //	PlayerPtr->IsToLook = true;
   if (!house->IsPlayerControl) {
-    Map.Constrained_Look(
+    MapEditClass::Constrained_Look(
         Cell_Coord(cell),
         static_cast<LEPTON>(Rule.GapShroudRadius * CELL_LEPTON_W));
   }
@@ -1400,7 +1398,7 @@ int MapClass::Cell_Region(CELL cell) {
  *=========================================================================*/
 int MapClass::Cell_Threat(CELL cell, HousesType house) {
   int threat = HouseClass::As_Pointer(house)
-                   ->Regions[Map.Cell_Region(Map[cell].Cell_Number())]
+                   ->Regions[MapEditClass::Cell_Region(Map[cell].Cell_Number())]
                    .Threat_Value();
   if (!threat && Map[cell].IsVisible) {
     threat = 1;
@@ -1442,7 +1440,7 @@ bool MapClass::Place_Random_Crate() {
   **	Give a good effort to scan for and place a crate down on the map.
   */
   for (int index = 0; index < 1000; index++) {
-    CELL cell = Map.Pick_Random_Location();
+    CELL cell = MapEditClass::Pick_Random_Location();
 
     if (Crates[crateindex].Create_Crate(cell)) {
       return true;
@@ -1583,11 +1581,9 @@ int MapClass::Validate() {
     **	Validate Occupier
     */
     obj = (*this)[cell].Cell_Occupier();
-    if (obj) {
-      if (obj->IsInLimbo ||
-          static_cast<unsigned int>(Coord_Cell(obj->Coord)) >= MAP_CELL_TOTAL) {
-        return false;
-      }
+    if (obj && (obj->IsInLimbo || static_cast<unsigned int>(Coord_Cell(
+                                      obj->Coord)) >= MAP_CELL_TOTAL)) {
+      return false;
     }
 
     /*
@@ -1595,11 +1591,9 @@ int MapClass::Validate() {
     */
     for (i = 0; i < std::ssize((*this)[cell].CellClass::Overlappers); i++) {
       obj = (*this)[cell].Overlappers[i];
-      if (obj) {
-        if (obj->IsInLimbo || static_cast<unsigned int>(
-                                  Coord_Cell(obj->Coord)) >= MAP_CELL_TOTAL) {
-          return false;
-        }
+      if (obj && (obj->IsInLimbo || static_cast<unsigned int>(Coord_Cell(
+                                        obj->Coord)) >= MAP_CELL_TOTAL)) {
+        return false;
       }
     }
   }
@@ -2248,7 +2242,9 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
           cellptr->TType == TEMPLATE_BRIDGE_2C ||
           (cellptr->TType >= TEMPLATE_BRIDGE_3C &&
            cellptr->TType <= TEMPLATE_BRIDGE_3E)) {
-        int x, y, tdata = 0;
+        int x;
+        int y;
+        int tdata = 0;
         for (y = 0; y < h; y++) {
           for (x = 0; x < w; x++) {
             CellClass* ptr = &(*this)[static_cast<CELL>(cell + x)];
@@ -2377,7 +2373,7 @@ int MapClass::Intact_Bridge_Count() const {
  *                                                                                             *
  * HISTORY: * 09/25/1996 JLB : Created. *
  *=============================================================================================*/
-CELL MapClass::Pick_Random_Location() const {
+CELL MapClass::Pick_Random_Location() {
   int x = Map.MapCellX + Random_Pick(0, Map.MapCellWidth - 1);
   int y = Map.MapCellY + Random_Pick(0, Map.MapCellHeight - 1);
 

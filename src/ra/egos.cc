@@ -318,8 +318,8 @@ static void Slide_Show(int slide, int frame) {
     memcpy(save_palette, CCPalette, sizeof(save_palette));
     // CCPalette.Partial_Adjust (std::min (6*(frame-5), 255), ComboPalette,
     // PaletteLUT);
-    CCPalette.Partial_Adjust(std::min(255 / FADE_DELAY * (frame - 10), 255),
-                             ComboPalette, PaletteLUT);
+    PaletteClass::Partial_Adjust(std::min(255 / FADE_DELAY * (frame - 10), 255),
+                                 ComboPalette, PaletteLUT);
     Set_Pal((char*)&CCPalette);
     if (frame != 9 + FADE_DELAY) {
       memcpy(CCPalette, save_palette, sizeof(save_palette));
@@ -334,7 +334,7 @@ static void Slide_Show(int slide, int frame) {
     ** Fade down the picture in the background. The text colors never fade.
     */
     memcpy(save_palette, CCPalette, sizeof(save_palette));
-    CCPalette.Partial_Adjust(
+    PaletteClass::Partial_Adjust(
         std::min(255 / FADE_DELAY * (frame - FRAME_DELAY), 255), PaletteLUT);
     if (frame != FRAME_DELAY + FADE_DELAY - 1) {
       Set_Pal((char*)&CCPalette);
@@ -411,10 +411,15 @@ void Show_Who_Was_Responsible() {
   int line = 0;
   int column = 0;
   char* cptr = credits;
-  char ch, lastchar, oldchar;
-  char *strstart, *strparse;
+  char ch;
+  char lastchar;
+  char oldchar;
+  char* strstart;
+  char* strparse;
   bool gotendstr;
-  int startcolumn, endcolumn, x;
+  int startcolumn;
+  int endcolumn;
+  int x;
   int y = SeenBuff.Get_Height() + 2;
   EgoClass* ego;
   TextPrintType flags;

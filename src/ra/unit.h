@@ -41,9 +41,9 @@
 #define CNC_RED_ALERT_RA_UNIT_H_
 
 #include <cstddef>
-
 #include <cstdint>
 
+#include "absl/base/attributes.h"
 #include "ra/bullet.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
@@ -138,7 +138,10 @@ class UnitClass final : public DriveClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* ptr);
   UnitClass(UnitType classid, HousesType house);
   // objects compare directly against their type ID.
@@ -221,7 +224,8 @@ class UnitClass final : public DriveClass {
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                          TechnoClass* source = nullptr,
                          bool forced = false) override;
-  BulletClass* Fire_At(TARGET target, int which = 0) override;
+  BulletClass* Fire_At(TARGET target,
+                       int which = 0) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
 
   /*
   **	Driver control support functions. These are used to control cell

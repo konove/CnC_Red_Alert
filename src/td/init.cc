@@ -734,6 +734,8 @@ extern int ShowCommand;
 extern int Com_Fake_Scenario_Dialog();
 extern int Com_Show_Fake_Scenario_Dialog();
 
+// A single legacy dialog loop; splitting it is a refactor of its own.
+// NOLINTNEXTLINE(readability-function-size,google-readability-function-size)
 bool Select_Game(bool fade) {
   if (DebugQuitAtFrame >= 0 && DebugNewGame.empty() && DebugLoadGame < 0) {
     return false;
@@ -1634,7 +1636,9 @@ bool Select_Game(bool fade) {
       node.Coord = Cell_Coord(1200);
       Base.Nodes.Add(node);
       CurrentObject.Clear();
-      if (Units.Count() < 2) return false;
+      if (Units.Count() < 2) {
+        return false;
+      }
       CurrentObject.Add(Units.Ptr(1));
       CurrentObject.Add(Units.Ptr(0));
       Waypoint[20] = 1234;
@@ -3073,7 +3077,7 @@ long Obfuscate(const char* string) {
   strrev(buffer);  // Restore original string order.
   for (int index = 0; index < length; index++) {
     code ^= static_cast<unsigned char>(buffer[index]);
-    unsigned char temp = static_cast<unsigned char>(code);
+    auto temp = static_cast<unsigned char>(code);
     buffer[index] = static_cast<char>(buffer[index] ^ temp);
     code >>= 8;
     code = static_cast<int>(code | static_cast<long>(temp) << 24);

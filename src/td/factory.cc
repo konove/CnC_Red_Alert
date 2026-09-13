@@ -99,7 +99,6 @@ int FactoryClass::Validate() const {
     num = Factories.ID(this);
     if (num < 0 || num >= kFactoryMax) {
       Validate_Error("FACTORY");
-      return 0;
     }
     return 1;
   } else {
@@ -494,28 +493,28 @@ bool FactoryClass::Suspend() {
  *=============================================================================================*/
 bool FactoryClass::Start() {
   Validate();
-  if ((Object || SpecialItem) && IsSuspended && !Has_Completed()) {
-    if (Get_House()->Available_Money() >= Cost_Per_Tick()) {
-      int time;
+  if (((Object || SpecialItem) && IsSuspended && !Has_Completed()) &&
+      (Get_House()->Available_Money() >= Cost_Per_Tick())) {
+    int time;
 
-      if (Object) {
-        time = Object->Class_Of().Time_To_Build(Get_House()->Class->House);
-      } else {
-        time = kTicksPerMinute * 5;
-      }
-
-      int frac = Get_House()->Power_Fraction();
-      frac = Bound(frac, 0x0010, 0x0100);
-      int rate = time * 256 / frac;
-
-      rate /= STEP_COUNT;
-      rate = Bound(rate, 1, 255);
-
-      Set_Rate(static_cast<unsigned char>(rate));
-      IsSuspended = false;
-      return true;
+    if (Object) {
+      time = Object->Class_Of().Time_To_Build(Get_House()->Class->House);
+    } else {
+      time = kTicksPerMinute * 5;
     }
+
+    int frac = Get_House()->Power_Fraction();
+    frac = Bound(frac, 0x0010, 0x0100);
+    int rate = time * 256 / frac;
+
+    rate /= STEP_COUNT;
+    rate = Bound(rate, 1, 255);
+
+    Set_Rate(static_cast<unsigned char>(rate));
+    IsSuspended = false;
+    return true;
   }
+
   return false;
 }
 

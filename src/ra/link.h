@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_LINK_H_
 #define CNC_RED_ALERT_RA_LINK_H_
 
+#include "absl/base/attributes.h"
 
 /*
 **	This implements a simple linked list. It is possible to add, remove, and
@@ -55,13 +56,13 @@ class LinkClass {
 
   [[nodiscard]] virtual LinkClass* Get_Next() const;
   [[nodiscard]] virtual LinkClass* Get_Prev() const;
-  virtual LinkClass& Add(LinkClass& list);
-  virtual LinkClass& Add_Tail(LinkClass& list);
-  virtual LinkClass& Add_Head(LinkClass& list);
-  virtual LinkClass& Head_Of_List() final;
-  virtual LinkClass& Tail_Of_List() final;
+  virtual LinkClass& Add(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  virtual LinkClass& Add_Tail(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  virtual LinkClass& Add_Head(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  virtual LinkClass& Head_Of_List() ABSL_ATTRIBUTE_LIFETIME_BOUND final;
+  virtual LinkClass& Tail_Of_List() ABSL_ATTRIBUTE_LIFETIME_BOUND final;
   virtual void Zap();
-  virtual LinkClass* Remove();
+  virtual LinkClass* Remove() ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // Not copyable. The original copy operations did not copy: they spliced the
   // destination into the source object's list, which mutates the source. Use

@@ -1119,7 +1119,7 @@ bool TeamTypeClass::Edit() {
       */
       case ButtonKey(BUTTON_INSERT):
         if (missionlist2.Count() < MAX_TEAM_MISSIONS) {
-          TeamMissionClass* tm = new TeamMissionClass;
+          auto* tm = new TeamMissionClass;
           tm->Mission = TeamMissionType(missionlist1.Current_Index());
           tm->Data.Value = 0;
           switch (TeamMission_Needs(tm->Mission)) {
@@ -1169,7 +1169,7 @@ bool TeamTypeClass::Edit() {
       */
       case ButtonKey(BUTTON_ADD):
         if (missionlist2.Count() < MAX_TEAM_MISSIONS) {
-          TeamMissionClass* tm = new TeamMissionClass;
+          auto* tm = new TeamMissionClass;
           tm->Mission = TeamMissionType(missionlist1.Current_Index());
           tm->Data.Value = 0;
           switch (TeamMission_Needs(tm->Mission)) {

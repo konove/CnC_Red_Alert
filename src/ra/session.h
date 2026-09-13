@@ -41,6 +41,7 @@
 
 #include <cstdint>
 
+#include "absl/base/attributes.h"
 #include "port/ex_string.h"
 #include "ra/ccfile.h"
 #include "ra/connect.h"
@@ -456,9 +457,15 @@ class MultiMission {
   void Set_Expansion(bool expansion);
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
-  [[nodiscard]] const char* Description() const { return ScenarioDescription; }
-  [[nodiscard]] const char* Get_Filename() const { return Filename; }
-  [[nodiscard]] const char* Get_Digest() const { return Digest; }
+  [[nodiscard]] const char* Description() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return ScenarioDescription;
+  }
+  [[nodiscard]] const char* Get_Filename() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return Filename;
+  }
+  [[nodiscard]] const char* Get_Digest() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return Digest;
+  }
   bool Get_Official() { return IsOfficial; }
   bool Get_Expansion() {
     return IsExpansion;
@@ -520,8 +527,8 @@ class SessionClass {
   // Utility functions
   //.....................................................................
   int Create_Connections();
-  bool Am_I_Master();
-  unsigned long Compute_Unique_ID();
+  static bool Am_I_Master();
+  static unsigned long Compute_Unique_ID();
 
   //.....................................................................
   // File I/O

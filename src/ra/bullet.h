@@ -42,6 +42,7 @@
 
 #include <cstddef>
 
+#include "absl/base/attributes.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/face.h"
@@ -77,9 +78,13 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* ptr);
-  BulletClass(BulletType id, TARGET target, TechnoClass* Payback, int strength,
+  BulletClass(BulletType id, TARGET target,
+              TechnoClass* Payback ABSL_ATTRIBUTE_LIFETIME_BOUND, int strength,
               WarheadType warhead, int speed);
   ~BulletClass() override;
   BulletClass(const BulletClass&) = delete;

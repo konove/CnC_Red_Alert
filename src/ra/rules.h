@@ -73,11 +73,11 @@ class RulesClass {
   bool Recharge(CCINIClass& ini);
   bool Heap_Maximums(CCINIClass& ini);
   bool AI(CCINIClass& ini);
-  bool Powerups(CCINIClass& ini);
-  bool Land_Types(CCINIClass& ini);
-  bool Themes(CCINIClass& ini);
+  static bool Powerups(CCINIClass& ini);
+  static bool Land_Types(CCINIClass& ini);
+  static bool Themes(CCINIClass& ini);
   bool IQ(CCINIClass& ini);
-  bool Objects(CCINIClass& ini);
+  static bool Objects(CCINIClass& ini);
   bool Difficulty(CCINIClass& ini);
 
   /*
@@ -417,12 +417,12 @@ class RulesClass {
   */
   int MPDefaultMoney{3000};
   int MPMaxMoney{10000};
-  unsigned IsMPShadowGrow : 1 {true};
-  unsigned IsMPBasesOn : 1 {true};
-  unsigned IsMPTiberiumGrow : 1 {true};
-  unsigned IsMPCrates : 1 {true};
-  unsigned IsMPAIPlayers : 1 {false};
-  unsigned IsMPCaptureTheFlag : 1 {false};
+  bool IsMPShadowGrow : 1 {true};
+  bool IsMPBasesOn : 1 {true};
+  bool IsMPTiberiumGrow : 1 {true};
+  bool IsMPCrates : 1 {true};
+  bool IsMPAIPlayers : 1 {false};
+  bool IsMPCaptureTheFlag : 1 {false};
 
   /*
   **	Drop zone reveal radius.
@@ -543,82 +543,82 @@ class RulesClass {
   **	If the harvester is to explode more violently than normal
   **	if it is carrying cargo, then this flag will be true.
   */
-  unsigned IsExplosiveHarvester : 1 {false};
+  bool IsExplosiveHarvester : 1 {false};
 
   /*
   **	Show the health bar on the enemy units?
   */
-  unsigned IsHealthBar : 1 {true};
+  bool IsHealthBar : 1 {true};
 
   /*
   **	If this flag is true, then the construction yard can undeploy back into
   *an MCV.
   */
-  unsigned IsMCVDeploy : 1 {false};
+  bool IsMCVDeploy : 1 {false};
 
   /*
   **	If the base is to be revealed to a new ally, then this
   **	flag will be true.
   */
-  unsigned IsAllyReveal : 1 {true};
+  bool IsAllyReveal : 1 {true};
 
   /*
   **	Can the helipad (and airfield) be purchased separately from the
   *associated *	aircraft.
   */
-  unsigned IsSeparate : 1 {false};
+  bool IsSeparate : 1 {false};
 
   /*
   **	Give target cursor for trees? Doing this will make targetting of trees
   *easier.
   */
-  unsigned IsTreeTarget : 1 {false};
+  bool IsTreeTarget : 1 {false};
 
   /*
   **	Are friendly units automatically aware of mines so that they can avoid
   *them?
   */
-  unsigned IsMineAware : 1 {true};
+  bool IsMineAware : 1 {true};
 
   /*
   **	If Tiberium is allowed to grow, then this flag will be true.
   */
-  unsigned IsTGrowth : 1 {true};
+  bool IsTGrowth : 1 {true};
 
   /*
   **	If Tiberium is allowed to spread, then this flag will be true.
   */
-  unsigned IsTSpread : 1 {true};
+  bool IsTSpread : 1 {true};
 
   /*
   **	Should civilan buildings and civilians display their true name rather
   *than *	the generic "Civilian Building" and "Civilain"?
   */
-  unsigned IsNamed : 1 {false};
+  bool IsNamed : 1 {false};
 
   /*
   **	Should player controlled vehicles automatically try to crush nearby
   *infantry *	instead of required the player to manually direct them to crush.
   */
-  unsigned IsAutoCrush : 1 {false};
+  bool IsAutoCrush : 1 {false};
 
   /*
   **	Should the player controlled buildings and units automatically return
   *fire when *	fired upon?
   */
-  unsigned IsSmartDefense : 1 {false};
+  bool IsSmartDefense : 1 {false};
 
   /*
   **	Should player controlled units try to scatter more easily in order to
   **	avoid damage or threats?
   */
-  unsigned IsScatter : 1 {false};
+  bool IsScatter : 1 {false};
 
   /*
   **	If the chronoshift effect should kill all cargo, then this flag will
   **	be set to true.
   */
-  unsigned IsChronoKill : 1 {true};
+  bool IsChronoKill : 1 {true};
 
   /*
   **	When infantry are prone or when civilians are running around like crazy,

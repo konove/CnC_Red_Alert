@@ -42,6 +42,7 @@
 
 #include <cstddef>
 
+#include "absl/base/attributes.h"
 #include "ra/bullet.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
@@ -73,7 +74,10 @@ class AircraftClass : public FootClass, public FlyClass {
 
   //-----------------------------------------------------------------------------
   void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* /*ptr*/);
   // objects compare directly against their type ID.
   // NOLINTNEXTLINE(*-explicit-constructor)
@@ -173,7 +177,8 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                          TechnoClass* source, bool forced = false) override;
-  BulletClass* Fire_At(TARGET target, int which) override;
+  BulletClass* Fire_At(TARGET target,
+                       int which) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
 
   /*
   **	AI.

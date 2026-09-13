@@ -38,6 +38,7 @@
 #include <cstring>
 #include <string>
 
+#include "absl/base/attributes.h"
 #include "base/types.h"
 #include "port/safe_string.h"
 #include "ra/conquer.h"
@@ -58,7 +59,7 @@ constexpr int kNoIconWidthLimit = 9999;
 
 // The icon behind one of IconList_ItemExtras' type-erased `pIcon` slots, for
 // the slots whose ICONKIND says ICON_DIB.
-const dib::Image& AsImage(const void* icon) {
+const dib::Image& AsImage(const void* icon ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   return *static_cast<const dib::Image*>(icon);
 }
 
@@ -200,7 +201,8 @@ int IconListClass::Add_Item(
       char* szText = new char[iTextSize];
       port::SafeCopy(szText, text, iTextSize);
 
-      int iWidthMax, iHeight;
+      int iWidthMax;
+      int iHeight;
       //	Stupid usage of globals for font stuff... <grumble>
       if (TextFlags == TPF_TYPE) {
         const void* pFontBefore = Set_Font(TypeFontPtr);
@@ -527,20 +529,17 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
 //***********************************************************************************************
 int IconListClass::Action(unsigned flags, KeyNumType& key) {
   //	Overriding of function is for the sake of MultiSelecting only.
-  if (iSelectType == 2) {
-    if (!(flags & LEFTRELEASE)) {
-      if (!(flags & KEYBOARD)) {
-        int index = Get_Mouse_Y() - (Y + 1);
-        index = index / LineHeight;
-        base::ssize iSelected = CurrentTopIndex + index;
-        iSelected = std::min(iSelected, List.Count() - 1);
-        if (iSelected >= 0) {
-          ExtrasList[iSelected]->bMultiSelected =
-              !ExtrasList[iSelected]->bMultiSelected;
-        }
-      }
+  if ((iSelectType == 2) && (!(flags & LEFTRELEASE)) && (!(flags & KEYBOARD))) {
+    int index = Get_Mouse_Y() - (Y + 1);
+    index = index / LineHeight;
+    base::ssize iSelected = CurrentTopIndex + index;
+    iSelected = std::min(iSelected, List.Count() - 1);
+    if (iSelected >= 0) {
+      ExtrasList[iSelected]->bMultiSelected =
+          !ExtrasList[iSelected]->bMultiSelected;
     }
   }
+
   return ListClass::Action(flags, key);
 }
 

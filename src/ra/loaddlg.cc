@@ -515,7 +515,7 @@ int LoadOptionsClass::Process() {
           if (listbtn.Count() == 0) {
             process = false;
           } else {
-            ToggleClass* toggle = dynamic_cast<ToggleClass*>(
+            auto* toggle = dynamic_cast<ToggleClass*>(
                 commands->Extract_Gadget(BUTTON_DELETE));
             if (toggle != nullptr) {
               //							toggle->IsOn

@@ -104,31 +104,31 @@ int WOLEditClass::Action(unsigned flags, KeyNumType& key) {
       flags = 0;
 
     } else {
-      KeyASCIIType ascii = (KeyASCIIType)(Keyboard->To_ASCII(key) & 0xff);
+      auto ascii = (KeyASCIIType)(KeyboardClass::To_ASCII(key) & 0xff);
 
       //
       // Allow numeric keypad presses to map to ascii numbers
       //
       if ((key & WWKEY_VK_BIT) && ascii >= '0' && ascii <= '9') {
         key = (KeyNumType)(key & ~WWKEY_VK_BIT);
-        if ((!(flags & LEFTRELEASE)) && (!(flags & RIGHTRELEASE))) {
-          if (Handle_Key(ascii)) {
-            flags &= ~KEYBOARD;
-            key = KN_NONE;
-          }
+        if (((!(flags & LEFTRELEASE)) && (!(flags & RIGHTRELEASE))) &&
+            Handle_Key(ascii)) {
+          flags &= ~KEYBOARD;
+          key = KN_NONE;
         }
+
       } else {
         //
         // Filter out all special keys except return and backspace
         //
         if ((!(key & WWKEY_VK_BIT) && ascii >= ' ' && ascii <= 255) ||
             key == KN_RETURN || key == KN_BACKSPACE) {
-          if ((!(flags & LEFTRELEASE)) && (!(flags & RIGHTRELEASE))) {
-            if (Handle_Key(Keyboard->To_ASCII(key))) {
-              flags &= ~KEYBOARD;
-              key = KN_NONE;
-            }
+          if (((!(flags & LEFTRELEASE)) && (!(flags & RIGHTRELEASE))) &&
+              Handle_Key(KeyboardClass::To_ASCII(key))) {
+            flags &= ~KEYBOARD;
+            key = KN_NONE;
           }
+
         } else {
           if (key == KN_TAB) {
             bTabKeyPressedHack = true;

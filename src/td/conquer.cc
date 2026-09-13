@@ -508,7 +508,7 @@ void Keyboard_Process(KeyNumType& input) {
   ** Use WWKEY values because KN values have WWKEY_VK_BIT or'd in with them
   ** and we need WWKEY_VK_BIT to still be set if it is.
   */
-  KeyNumType plain = static_cast<KeyNumType>(
+  auto plain = static_cast<KeyNumType>(
       input & ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT | WWKEY_CTRL_BIT));
 
   if constexpr (config::kCheatKeysEnabled) {
@@ -632,11 +632,11 @@ void Keyboard_Process(KeyNumType& input) {
     */
     case VK_N:
       if (action) {
-        obj =
-            Map.Prev_Object(CurrentObject.Count() ? CurrentObject[0] : nullptr);
+        obj = MapEditClass::Prev_Object(CurrentObject.Count() ? CurrentObject[0]
+                                                              : nullptr);
       } else {
-        obj =
-            Map.Next_Object(CurrentObject.Count() ? CurrentObject[0] : nullptr);
+        obj = MapEditClass::Next_Object(CurrentObject.Count() ? CurrentObject[0]
+                                                              : nullptr);
       }
       if (obj) {
         Unselect_All();
@@ -660,14 +660,12 @@ void Keyboard_Process(KeyNumType& input) {
     **	Handle making and breaking alliances.
     */
     case VK_A:
-      if (GameToPlay != GAME_NORMAL || Debug_Flag) {
-        if (CurrentObject.Count() && !PlayerPtr->IsDefeated) {
-          if (CurrentObject[0]->Owner() != PlayerPtr->Class->House) {
-            OutList.Add(
-                EventClass(EventClass::ALLY, CurrentObject[0]->Owner()));
-          }
-        }
+      if ((GameToPlay != GAME_NORMAL || Debug_Flag) &&
+          (CurrentObject.Count() && !PlayerPtr->IsDefeated) &&
+          (CurrentObject[0]->Owner() != PlayerPtr->Class->House)) {
+        OutList.Add(EventClass(EventClass::ALLY, CurrentObject[0]->Owner()));
       }
+
       break;
 
     /*
@@ -863,20 +861,18 @@ static void Message_Input(KeyNumType& input) {
 
           Map.Flag_To_Redraw(false);
         } else {
-          if (Messages.Get_Edit_Buf() == nullptr) {
-            if (input - KN_F1 < Ipx.Num_Connections() && !MPlayerObiWan) {
-              id = Ipx.Connection_ID(input - KN_F1);
-              MessageAddress = *Ipx.Connection_Address(id);
-              Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_TO),
-                                  Ipx.Connection_Name(id));
+          if ((Messages.Get_Edit_Buf() == nullptr) &&
+              (input - KN_F1 < Ipx.Num_Connections() && !MPlayerObiWan)) {
+            id = Ipx.Connection_ID(input - KN_F1);
+            MessageAddress = *Ipx.Connection_Address(id);
+            Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_TO),
+                                Ipx.Connection_Name(id));
 
-              Messages.Add_Edit(
-                  MPlayerTColors[MPlayerColorIdx],
-                  TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt,
-                  180 * factor);
+            Messages.Add_Edit(MPlayerTColors[MPlayerColorIdx],
+                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+                              txt, 180 * factor);
 
-              Map.Flag_To_Redraw(false);
-            }
+            Map.Flag_To_Redraw(false);
           }
         }
       }
@@ -1217,75 +1213,73 @@ void Call_Back() {
     ** Read packets only if the game is "closed", so we don't steal global
     ** messages from the connection dialogs.
     */
-    if (!NetOpen) {
-      if (Ipx.Get_Global_Message(&GPacket, &GPacketlen, &GAddress,
-                                 &GProductID)) {
-        if (GProductID == IPXGlobalConnClass::COMMAND_AND_CONQUER) {
+    if ((!NetOpen) &&
+        Ipx.Get_Global_Message(&GPacket, &GPacketlen, &GAddress, &GProductID) &&
+        (GProductID == IPXGlobalConnClass::COMMAND_AND_CONQUER))
+
+    {
+      /*
+      **	If this is another player signing off, remove the connection &
+      **	mark that player's house as non-human, so the computer will take
+      **	it over.
+      */
+      if (GPacket.Command == NET_SIGN_OFF) {
+        for (i = 0; i < Ipx.Num_Connections(); i++) {
+          id = Ipx.Connection_ID(i);
+
+          if (!strcmp(GPacket.Name, Ipx.Connection_Name(id)) &&
+              GAddress == *Ipx.Connection_Address(id)) {
+            CCDebugString("C&C95 = Destroying connection due to sign off\n");
+            Destroy_Connection(id, 0);
+          }
+        }
+      } else {
+        /*
+        **	Process a message from another user.
+        */
+        if (GPacket.Command == NET_MESSAGE) {
+          bool msg_ok = false;
+          char txt[80];
+
           /*
-          **	If this is another player signing off, remove the connection &
-          **	mark that player's house as non-human, so the computer will take
-          **	it over.
+          ** If NetProtect is set, make sure this message came from within
+          ** this game.
           */
-          if (GPacket.Command == NET_SIGN_OFF) {
-            for (i = 0; i < Ipx.Num_Connections(); i++) {
-              id = Ipx.Connection_ID(i);
-
-              if (!strcmp(GPacket.Name, Ipx.Connection_Name(id)) &&
-                  GAddress == *Ipx.Connection_Address(id)) {
-                CCDebugString(
-                    "C&C95 = Destroying connection due to sign off\n");
-                Destroy_Connection(id, 0);
-              }
-            }
+          if (!NetProtect) {
+            msg_ok = true;
           } else {
+            msg_ok =
+                GPacket.Message.NameCRC == Compute_Name_CRC(MPlayerGameName);
+          }
+
+          if (msg_ok) {
+            Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
+                                GPacket.Name, GPacket.Message.Buf);
+            magic_number = *(unsigned short*)(GPacket.Message.Buf +
+                                              COMPAT_MESSAGE_LENGTH - 4);
+            crc = *(unsigned short*)(GPacket.Message.Buf +
+                                     COMPAT_MESSAGE_LENGTH - 2);
+            color = MPlayerID_To_ColorIndex(GPacket.Message.ID);
+            Messages.Add_Message(
+                txt, MPlayerTColors[color],
+                TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600,
+                magic_number, crc);
+
             /*
-            **	Process a message from another user.
+            **	Tell the map to do a partial update (just to force the
+            *messages *	to redraw).
             */
-            if (GPacket.Command == NET_MESSAGE) {
-              bool msg_ok = false;
-              char txt[80];
+            Map.Flag_To_Redraw(false);
 
-              /*
-              ** If NetProtect is set, make sure this message came from within
-              ** this game.
-              */
-              if (!NetProtect) {
-                msg_ok = true;
-              } else {
-                msg_ok = GPacket.Message.NameCRC ==
-                         Compute_Name_CRC(MPlayerGameName);
-              }
-
-              if (msg_ok) {
-                Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
-                                    GPacket.Name, GPacket.Message.Buf);
-                magic_number = *(unsigned short*)(GPacket.Message.Buf +
-                                                  COMPAT_MESSAGE_LENGTH - 4);
-                crc = *(unsigned short*)(GPacket.Message.Buf +
-                                         COMPAT_MESSAGE_LENGTH - 2);
-                color = MPlayerID_To_ColorIndex(GPacket.Message.ID);
-                Messages.Add_Message(
-                    txt, MPlayerTColors[color],
-                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600,
-                    magic_number, crc);
-
-                /*
-                **	Tell the map to do a partial update (just to force the
-                *messages *	to redraw).
-                */
-                Map.Flag_To_Redraw(false);
-
-                /*
-                **	Save this message in our last-message buffer
-                */
-                if (strlen(GPacket.Message.Buf)) {
-                  port::SafeCopy(LastMessage, GPacket.Message.Buf);
-                }
-              }
-            } else {
-              Process_Global_Packet(&GPacket, &GAddress);
+            /*
+            **	Save this message in our last-message buffer
+            */
+            if (strlen(GPacket.Message.Buf)) {
+              port::SafeCopy(LastMessage, GPacket.Message.Buf);
             }
           }
+        } else {
+          Process_Global_Packet(&GPacket, &GAddress);
         }
       }
     }
@@ -1483,7 +1477,8 @@ static void Sync_Delay() {
     if (SpecialDialog == SDLG_NONE) {
       WWMouse->Erase_Mouse(&HidPage, true);
       KeyNumType input = KN_NONE;
-      int x, y;
+      int x;
+      int y;
       WWMouse->Erase_Mouse(&HidPage, true);
       Map.Input(input, x, y);
       if (input) {
@@ -1583,17 +1578,15 @@ bool Main_Loop() {
   /*
   **	Update the display, unless we're inside a dialog.
   */
-  if (!PlaybackGame) {
-    if (SpecialDialog == SDLG_NONE && GameInFocus) {
-      WWMouse->Erase_Mouse(&HidPage, true);
-      Map.Input(input, x, y);
-      if (input) {
-        Keyboard_Process(input);
-      }
-      //			HidPage.Lock();
-      Map.Render();
-      //			HidPage.Unlock();
+  if ((!PlaybackGame) && (SpecialDialog == SDLG_NONE && GameInFocus)) {
+    WWMouse->Erase_Mouse(&HidPage, true);
+    Map.Input(input, x, y);
+    if (input) {
+      Keyboard_Process(input);
     }
+    //			HidPage.Lock();
+    Map.Render();
+    //			HidPage.Unlock();
   }
 
   /*
@@ -1785,7 +1778,9 @@ bool Main_Loop() {
     Score.Serialize(globals_writer);
     Base.Serialize(globals_writer);
     Logic.Serialize(globals_writer);
-    for (auto& layer : MouseClass::Layer) layer.Serialize(globals_writer);
+    for (auto& layer : MouseClass::Layer) {
+      layer.Serialize(globals_writer);
+    }
     Save_Misc_Values(globals_writer);
     LOG(INFO) << "frame " << Frame << " globalstate " << globals_sink.hash;
 
@@ -1825,30 +1820,28 @@ bool Main_Loop() {
   /*
   ** Is there a memory trasher altering the map??
   */
-  if (Debug_Check_Map) {
-    if (!Map.Validate()) {
-      const char* error_msg;
-      const char* stop_msg;
-      const char* continue_msg;
-      if constexpr (config::kBuildLanguage == config::BuildLanguage::German) {
-        error_msg = "Kartenfehler!";
-        stop_msg = "Halt";
-        continue_msg = "Weiter";
-      } else if constexpr (config::kBuildLanguage ==
-                           config::BuildLanguage::French) {
-        error_msg = "Erreur de carte!";
-        stop_msg = "Stop";
-        continue_msg = "Continuer";
-      } else {
-        error_msg = "Map Error!";
-        stop_msg = "Stop";
-        continue_msg = "Continue";
-      }
-      if (CCMessageBox().Process(error_msg, stop_msg, continue_msg) == 0) {
-        GameActive = false;
-      }
-      Map.Validate();  // give debugger a chance to catch it
+  if (Debug_Check_Map && (!Map.Validate())) {
+    const char* error_msg;
+    const char* stop_msg;
+    const char* continue_msg;
+    if constexpr (config::kBuildLanguage == config::BuildLanguage::German) {
+      error_msg = "Kartenfehler!";
+      stop_msg = "Halt";
+      continue_msg = "Weiter";
+    } else if constexpr (config::kBuildLanguage ==
+                         config::BuildLanguage::French) {
+      error_msg = "Erreur de carte!";
+      stop_msg = "Stop";
+      continue_msg = "Continuer";
+    } else {
+      error_msg = "Map Error!";
+      stop_msg = "Stop";
+      continue_msg = "Continue";
     }
+    if (CCMessageBox().Process(error_msg, stop_msg, continue_msg) == 0) {
+      GameActive = false;
+    }
+    Map.Validate();  // give debugger a chance to catch it
   }
 
   Sync_Delay();
@@ -2292,7 +2285,8 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
                            int zoomfactor) {
   static int _offx[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
   static int _offy[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
-  int lp, framelp;
+  int lp;
+  int framelp;
   char pixel = 0;
 
   char* retval = nullptr;
@@ -2492,7 +2486,6 @@ void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
 void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
                    WindowNumberType window, ShapeFlags_Type flags,
                    const void* fadingdata, const void* ghostdata) {
-#if (true)
   int predoffset;
   char* shape_pointer;
   void* shape_size;
@@ -2569,7 +2562,6 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
       //			Mono_Printf( "Overrun ShapeBuffer!!!!!!!!!\n" );
     }
   }
-#endif
 }
 
 /***********************************************************************************************
@@ -2856,32 +2848,29 @@ void Handle_Team(int team, int action) {
       }
       for (index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
-        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-            obj->House == PlayerPtr) {
-          if (!obj->IsSelected) {
-            obj->Select();
-            AllowVoice = false;
-          }
+        if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
+             obj->House == PlayerPtr) &&
+            (!obj->IsSelected)) {
+          obj->Select();
+          AllowVoice = false;
         }
       }
       for (index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
-        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-            obj->House == PlayerPtr) {
-          if (!obj->IsSelected) {
-            obj->Select();
-            AllowVoice = false;
-          }
+        if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
+             obj->House == PlayerPtr) &&
+            (!obj->IsSelected)) {
+          obj->Select();
+          AllowVoice = false;
         }
       }
       for (index = 0; index < Aircraft.Count(); index++) {
         AircraftClass* obj = Aircraft.Ptr(index);
-        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-            obj->House == PlayerPtr) {
-          if (!obj->IsSelected) {
-            obj->Select();
-            AllowVoice = false;
-          }
+        if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
+             obj->House == PlayerPtr) &&
+            (!obj->IsSelected)) {
+          obj->Select();
+          AllowVoice = false;
         }
       }
 
@@ -2900,32 +2889,29 @@ void Handle_Team(int team, int action) {
     case 1:
       for (index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
-        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-            obj->House == PlayerPtr) {
-          if (!obj->IsSelected) {
-            obj->Select();
-            AllowVoice = false;
-          }
+        if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
+             obj->House == PlayerPtr) &&
+            (!obj->IsSelected)) {
+          obj->Select();
+          AllowVoice = false;
         }
       }
       for (index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
-        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-            obj->House == PlayerPtr) {
-          if (!obj->IsSelected) {
-            obj->Select();
-            AllowVoice = false;
-          }
+        if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
+             obj->House == PlayerPtr) &&
+            (!obj->IsSelected)) {
+          obj->Select();
+          AllowVoice = false;
         }
       }
       for (index = 0; index < Aircraft.Count(); index++) {
         AircraftClass* obj = Aircraft.Ptr(index);
-        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-            obj->House == PlayerPtr) {
-          if (!obj->IsSelected) {
-            obj->Select();
-            AllowVoice = false;
-          }
+        if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
+             obj->House == PlayerPtr) &&
+            (!obj->IsSelected)) {
+          obj->Select();
+          AllowVoice = false;
         }
       }
       break;
@@ -3087,13 +3073,11 @@ bool Force_CD_Available(int cd) {
   */
   current_drive = CCFileClass::Get_CD_Drive();
   cd_index = Get_CD_Index(current_drive, 1 * 60);
-  if (cd_index >= 0) {
-    if (cd == cd_index || cd == -1) {
-      /*
-      ** The required CD is still in the CD drive we used last time
-      */
-      new_cd_drive = current_drive;
-    }
+  if ((cd_index >= 0) && (cd == cd_index || cd == -1)) {
+    /*
+    ** The required CD is still in the CD drive we used last time
+    */
+    new_cd_drive = current_drive;
   }
 
   /*
@@ -3117,13 +3101,11 @@ bool Force_CD_Available(int cd) {
       ** Give it a nice big timeout so the CD changer has time to swap the discs
       */
       cd_index = Get_CD_Index(last_drive, 10 * 60);
-      if (cd_index >= 0) {
-        if (cd == cd_index || cd == -1) {
-          /*
-          ** The required CD is in the CD drive we used last time
-          */
-          new_cd_drive = last_drive;
-        }
+      if ((cd_index >= 0) && (cd == cd_index || cd == -1)) {
+        /*
+        ** The required CD is in the CD drive we used last time
+        */
+        new_cd_drive = last_drive;
       }
     }
   }
@@ -3145,18 +3127,16 @@ bool Force_CD_Available(int cd) {
       for (int i = 0; i < CDList.Get_Number_Of_Drives(); i++) {
         cd_drive = CDList.Get_Next_CD_Drive();
         cd_index = Get_CD_Index(cd_drive, drive_search_timeout);
-        if (cd_index >= 0) {
+        /*
+        ** We found a C&C cd - lets see if it was the one we were looking for
+        */
+        if ((cd_index >= 0) && (cd == cd_index || cd == -1)) {
           /*
-          ** We found a C&C cd - lets see if it was the one we were looking for
+          ** Woohoo! The disk was in a different cd drive. Refresh the search
+          *path list and return.
           */
-          if (cd == cd_index || cd == -1) {
-            /*
-            ** Woohoo! The disk was in a different cd drive. Refresh the search
-            *path list and return.
-            */
-            new_cd_drive = cd_drive;
-            break;
-          }
+          new_cd_drive = cd_drive;
+          break;
         }
       }
 
@@ -3364,10 +3344,9 @@ static void Do_Record_Playback() {
     /*.....................................................................
     Read & set the map's location.
     .....................................................................*/
-    if (RecordFile.Read(&coord, sizeof(coord)) == sizeof(coord)) {
-      if (coord != Map.DesiredTacticalCoord) {
-        Map.Set_Tactical_Position(coord);
-      }
+    if ((RecordFile.Read(&coord, sizeof(coord)) == sizeof(coord)) &&
+        (coord != Map.DesiredTacticalCoord)) {
+      Map.Set_Tactical_Position(coord);
     }
 
     if (RecordFile.Read(&count, sizeof(count)) == sizeof(count)) {

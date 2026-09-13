@@ -53,7 +53,9 @@ bool Restore(T& object, const std::vector<uint8_t>& bytes) {
   BufferStraw source(bytes.data(), static_cast<int>(bytes.size()));
   ArchiveReader reader(source);
   object.Serialize(reader);
-  if (!reader.ok()) ADD_FAILURE() << reader.error();
+  if (!reader.ok()) {
+    ADD_FAILURE() << reader.error();
+  }
   return reader.ok();
 }
 
@@ -75,8 +77,12 @@ class TdArchiveRoundTripTest : public testing::Test {
   static void TearDownTestSuite() {
     Map.Init_Cells();
     CellTriggers.Clear();
-    while (Units.Count() != 0) delete Units.Ptr(0);
-    while (Triggers.Count() != 0) delete Triggers.Ptr(0);
+    while (Units.Count() != 0) {
+      delete Units.Ptr(0);
+    }
+    while (Triggers.Count() != 0) {
+      delete Triggers.Ptr(0);
+    }
     delete PlayerPtr;
     PlayerPtr = nullptr;
     Map.Clear();
@@ -203,9 +209,15 @@ std::vector<uint8_t> MapFields(int32_t growth_count = 2) {
   std::vector<uint8_t> bytes(128);
   CountingBufferPipe sink(bytes.data(), static_cast<int>(bytes.size()));
   ArchiveWriter writer(sink);
-  int32_t x = 1, y = 2, width = 60, height = 59, spread_count = 1;
+  int32_t x = 1;
+  int32_t y = 2;
+  int32_t width = 60;
+  int32_t height = 59;
+  int32_t spread_count = 1;
   int64_t total = (int64_t{1} << 40) + 17;
-  int16_t scan = 3072, growth[] = {100, 200}, spread = 300;
+  int16_t scan = 3072;
+  int16_t growth[] = {100, 200};
+  int16_t spread = 300;
   bool forward = true;
   writer(x, y, width, height, total, growth_count, spread_count, scan, forward);
   writer(growth, spread);

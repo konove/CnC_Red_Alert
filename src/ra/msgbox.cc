@@ -115,7 +115,8 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   **	Examine the optional button parameters. Fetch the width and starting
   **	characters for each.
   */
-  int bwidth = 0, bheight = 0;  // button width and height
+  int bwidth = 0;
+  int bheight = 0;  // button width and height
   int numbuttons = 0;
   if (b1txt != nullptr) {
     /*
@@ -391,7 +392,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         */
         if (selection == BUTTON_1 || selection == BUTTON_2 ||
             selection == BUTTON_3) {
-          TextButtonClass* button = dynamic_cast<TextButtonClass*>(
+          auto* button = dynamic_cast<TextButtonClass*>(
               buttonlist->Extract_Gadget(selection));
           if (button != nullptr) {
             button->Turn_On();

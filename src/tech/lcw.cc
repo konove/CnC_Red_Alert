@@ -74,7 +74,11 @@
  *    03/20/1995 IML : Created.                                            *
  *=========================================================================*/
 int LCW_Uncomp(const void* source, void* dest, unsigned long /*unused*/) {
-  unsigned char *source_ptr, *dest_ptr, *copy_ptr, op_code, data;
+  unsigned char* source_ptr;
+  unsigned char* dest_ptr;
+  unsigned char* copy_ptr;
+  unsigned char op_code;
+  unsigned char data;
   unsigned count;
 
   /* Copy the source and destination ptrs. */

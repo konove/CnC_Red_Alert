@@ -24,6 +24,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/base/attributes.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "td/ccfile.h"
@@ -61,15 +62,14 @@ static ThemeType OldTheme = THEME_NONE;
  *=============================================================================================*/
 
 void Focus_Loss() {
-  if (SoundOn) {
-    if (OldTheme == THEME_NONE) {
-      OldTheme = Theme.What_Is_Playing();
-    }
+  if (SoundOn && (OldTheme == THEME_NONE)) {
+    OldTheme = Theme.What_Is_Playing();
   }
+
   Theme.Stop();
   Stop_Primary_Sound_Buffer();
   if (WWMouse) {
-    WWMouse->Clear_Cursor_Clip();
+    WWMouseClass::Clear_Cursor_Clip();
   }
 }
 
@@ -84,7 +84,7 @@ void Focus_Restore() {
   }
 
   if (WWMouse) {
-    WWMouse->Set_Cursor_Clip();
+    WWMouseClass::Set_Cursor_Clip();
   }
 }
 
@@ -186,7 +186,8 @@ class BufferedFileReader {
  public:
   static constexpr size_t kBufferSize = 2048;
 
-  explicit BufferedFileReader(CCFileClass& file) : file_(file) {}
+  explicit BufferedFileReader(CCFileClass& file ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : file_(file) {}
 
   // Delete copy/move to prevent accidental state duplication.
   ~BufferedFileReader() = default;
@@ -197,11 +198,10 @@ class BufferedFileReader {
 
   // Returns the next byte, or an OutOfRange error on EOF.
   absl::StatusOr<uint8_t> ReadByte() {
-    if (cursor_ >= bytes_in_buffer_) {
-      if (!RefillBuffer()) {
-        return absl::OutOfRangeError("End of file reached.");
-      }
+    if ((cursor_ >= bytes_in_buffer_) && (!RefillBuffer())) {
+      return absl::OutOfRangeError("End of file reached.");
     }
+
     return buffer_[cursor_++];
   }
 
@@ -300,11 +300,9 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
       return nullptr;
     }
     unsigned rle = *rle_result;
-    if (rle > 192) {
-      if (!reader.ReadByte().ok()) {
-        delete pic;
-        return nullptr;
-      }
+    if ((rle > 192) && (!reader.ReadByte().ok())) {
+      delete pic;
+      return nullptr;
     }
 
   } else {

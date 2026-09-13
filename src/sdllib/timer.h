@@ -69,7 +69,7 @@ class TimerClass {
   long Accumulated = 0;  // Total accumulated ticks.
 
  private:
-  long Get_Ticks();
+  static long Get_Ticks();
 };
 
 class CountDownTimerClass : TimerClass {

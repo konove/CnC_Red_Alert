@@ -256,7 +256,10 @@ int Format_Window_String(char* string, int maxlinelen, int& width,
  *appropriate enumeration parameters.                                *
  *=============================================================================================*/
 void Window_Box(WindowNumberType window, BoxStyleEnum style) {
-  int x, y, w, h;  // Window dimensions.
+  int x;
+  int y;
+  int w;
+  int h;           // Window dimensions.
   int border;      // Width of border.
 
   static int _border[BOXSTYLE_COUNT][2] = {

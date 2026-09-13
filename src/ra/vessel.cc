@@ -453,7 +453,7 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
       **	is any firing animation in progress.
       */
       int shapenum;
-      DirType turdir = static_cast<DirType>(Dir_To_16(PrimaryFacing) * 16);
+      auto turdir = static_cast<DirType>(Dir_To_16(PrimaryFacing) * 16);
 
       switch (Class->Type) {
         case VESSEL_CA:
@@ -651,16 +651,16 @@ void VesselClass::AI() {
     return;
   }
 
-  if (Class->Max_Passengers() > 0) {
-    /*
-    **	Double check that there is a passenger that is trying to load or unload.
-    **	If not, then close the door.
-    */
-    if (!Is_Door_Closed() && Mission != MISSION_UNLOAD &&
-        Transmit_Message(RADIO_TRYING_TO_LOAD) != RADIO_ROGER &&
-        DoorShutCountDown.IsFinished()) {
-      LST_Close_Door();
-    }
+  if ((Class->Max_Passengers() > 0) &&
+      (!Is_Door_Closed() && Mission != MISSION_UNLOAD &&
+       Transmit_Message(RADIO_TRYING_TO_LOAD) != RADIO_ROGER &&
+       DoorShutCountDown.IsFinished()))
+  /*
+  **	Double check that there is a passenger that is trying to load or unload.
+  **	If not, then close the door.
+  */
+  {
+    LST_Close_Door();
   }
 
   /*
@@ -798,7 +798,7 @@ ActionType VesselClass::What_Action(const ObjectClass* object) const {
   */
   if (House->IsPlayerControl && action == ACTION_SELECT &&
       object->What_Am_I() == RTTI_BUILDING) {
-    BuildingClass* building = (BuildingClass*)object;
+    auto* building = (BuildingClass*)object;
 
     if (building->Class->ToBuild == RTTI_VESSELTYPE &&
         building->House->Is_Ally(this)) {
@@ -845,15 +845,11 @@ void VesselClass::Active_Click_With(ActionType action, ObjectClass* object) {
 
   //	if (action != What_Action(object)) {
   action = What_Action(object);
-  switch (action) {
-    case ACTION_ENTER:
-      action = ACTION_MOVE;
-      // BRR 10/18/96 IsToSelfRepair = true;
-      break;
-
-    default:
-      //				action = ACTION_NONE;
-      break;
+  if (action == ACTION_ENTER) {
+    action = ACTION_MOVE;
+    // BRR 10/18/96 IsToSelfRepair = true;
+  } else {
+    //				action = ACTION_NONE;
   }
   //	}
   //	if (action == ACTION_ENTER) {
@@ -988,7 +984,7 @@ ResultType VesselClass::Take_Damage(int& damage, int distance,
     */
     if (Health_Ratio() <= Rule.ConditionYellow && !IsAnimAttached &&
         *this != VESSEL_SS && *this != VESSEL_MISSILESUB) {
-      AnimClass* anim =
+      auto* anim =
           new AnimClass(ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
       if (anim != nullptr) {
         anim->Attach_To(this);
@@ -1070,10 +1066,8 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
         int totaldist = ::Distance(coord, obj->Center_Coord());
         while (totaldist > CELL_LEPTON_W) {
           coord = Coord_Move(coord, dir, CELL_LEPTON_W);
-          if (Map[coord].Land_Type() != LAND_WATER) {
-            if (!isbridgetarget) {
-              return FIRE_RANGE;
-            }
+          if ((Map[coord].Land_Type() != LAND_WATER) && (!isbridgetarget)) {
+            return FIRE_RANGE;
           }
 
           /*
@@ -1440,57 +1434,55 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
           How_Many() < Class->Max_Passengers()) {
         DriveClass::Receive_Message(from, message, param);
 
-        if (!IsDriving && !IsRotating) {
-          //				if (!IsDriving && !IsRotating &&
-          //! IsTethered) {
+        //				if (!IsDriving && !IsRotating &&
+        //! IsTethered) {
+        /*
+        **	If the potential passenger needs someplace to go, then figure
+        *out a good *	spot and tell it to go.
+        */
+        if ((!IsDriving && !IsRotating) &&
+            (Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER)) {
+          CELL cell;
+          Desired_Load_Dir(from, cell);
 
           /*
-          **	If the potential passenger needs someplace to go, then figure
-          *out a good *	spot and tell it to go.
+          **	If no adjacent free cells are detected, then passenger loading
+          **	cannot occur. Break radio contact.
           */
-          if (Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER) {
-            CELL cell;
-            Desired_Load_Dir(from, cell);
+          if (cell == 0) {
+            Transmit_Message(RADIO_OVER_OUT, from);
+          } else {
+            param = static_cast<long>(::As_Target(cell));
 
             /*
-            **	If no adjacent free cells are detected, then passenger loading
-            **	cannot occur. Break radio contact.
+            **	If it is now facing the correct direction, then open the
+            **	transport doors. Close the doors if the transport is
+            *full or needs *	to rotate.
             */
-            if (cell == 0) {
-              Transmit_Message(RADIO_OVER_OUT, from);
-            } else {
-              param = static_cast<long>(::As_Target(cell));
+            if (!Is_Door_Open()) {
+              LST_Open_Door();
+            }
 
-              /*
-              **	If it is now facing the correct direction, then open the
-              **	transport doors. Close the doors if the transport is
-              *full or needs *	to rotate.
-              */
-              if (!Is_Door_Open()) {
-                LST_Open_Door();
-              }
-
-              /*
-              **	Tell the potential passenger where it should go. If the
-              *passenger is *	already at the staging location, then tell it to
-              *move onto the transport *	directly.
-              */
-              if (Transmit_Message(RADIO_MOVE_HERE, param, from) ==
-                  RADIO_YEA_NOW_WHAT) {
-                if (Is_Door_Open()) {
-                  param = static_cast<long>(As_Target());
-                  Transmit_Message(RADIO_TETHER);
-                  if (Transmit_Message(RADIO_MOVE_HERE, param, from) !=
-                      RADIO_ROGER) {
-                    Transmit_Message(RADIO_OVER_OUT, from);
-                  } else {
-                    Contact_With_Whom()->Unselect();
-                  }
-                }
+            /*
+            **	Tell the potential passenger where it should go. If the
+            *passenger is *	already at the staging location, then tell it to
+            *move onto the transport *	directly.
+            */
+            if ((Transmit_Message(RADIO_MOVE_HERE, param, from) ==
+                 RADIO_YEA_NOW_WHAT) &&
+                Is_Door_Open()) {
+              param = static_cast<long>(As_Target());
+              Transmit_Message(RADIO_TETHER);
+              if (Transmit_Message(RADIO_MOVE_HERE, param, from) !=
+                  RADIO_ROGER) {
+                Transmit_Message(RADIO_OVER_OUT, from);
+              } else {
+                Contact_With_Whom()->Unselect();
               }
             }
           }
         }
+
         return RADIO_ROGER;
       }
       if (Class->Max_Passengers() > 0 && *this == VESSEL_CARRIER &&
@@ -1686,126 +1678,121 @@ int VesselClass::Mission_Unload() {
   DirType dir;
   CELL cell;
 
-  switch (Class->Type) {
-    case VESSEL_TRANSPORT:
-      switch (Status) {
-        case INITIAL_CHECK:
-          dir = Desired_Load_Dir(nullptr, cell);
-          if (How_Many() > 0 && cell != 0) {
-            Do_Turn(dir);
-            Status = MANEUVERING;
+  if (Class->Type == VESSEL_TRANSPORT) {
+    switch (Status) {
+      case INITIAL_CHECK:
+        dir = Desired_Load_Dir(nullptr, cell);
+        if (How_Many() > 0 && cell != 0) {
+          Do_Turn(dir);
+          Status = MANEUVERING;
+          return 1;
+        }
+        if (!How_Many()) {  // don't break out if still carrying passengers
+          Assign_Mission(MISSION_GUARD);
+        }
+        break;
+
+      case MANEUVERING:
+        if (!IsRotating) {
+          LST_Open_Door();
+          if (Is_Door_Opening()) {
+            Status = OPENING_DOOR;
             return 1;
           }
-          if (!How_Many()) {  // don't break out if still carrying passengers
-            Assign_Mission(MISSION_GUARD);
+        }
+        break;
+
+      case OPENING_DOOR:
+        if (Is_Door_Open()) {
+          Status = UNLOADING;
+          return 1;
+        }
+        if (!Is_Door_Opening()) {
+          Status = INITIAL_CHECK;
+        }
+        break;
+
+      case UNLOADING:
+        if (How_Many()) {
+          /*
+          **	Don't do anything if still in radio contact.
+          */
+          if (In_Radio_Contact()) {
+            return kTicksPerSecond;
           }
-          break;
 
-        case MANEUVERING:
-          if (!IsRotating) {
-            LST_Open_Door();
-            if (Is_Door_Opening()) {
-              Status = OPENING_DOOR;
-              return 1;
-            }
-          }
-          break;
+          FootClass* passenger = Detach_Object();
 
-        case OPENING_DOOR:
-          if (Is_Door_Open()) {
-            Status = UNLOADING;
-            return 1;
-          }
-          if (!Is_Door_Opening()) {
-            Status = INITIAL_CHECK;
-          }
-          break;
+          if (passenger != nullptr) {
+            DirType toface = DIR_S + PrimaryFacing;
+            bool placed = false;
 
-        case UNLOADING:
-          if (How_Many()) {
-            /*
-            **	Don't do anything if still in radio contact.
-            */
-            if (In_Radio_Contact()) {
-              return kTicksPerSecond;
-            }
+            for (FacingType face : magic_enum::enum_values<FacingType>()) {
+              DirType newface = toface + Facing_Dir(face);
+              CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
-            FootClass* passenger = Detach_Object();
-
-            if (passenger != nullptr) {
-              DirType toface = DIR_S + PrimaryFacing;
-              bool placed = false;
-
-              for (FacingType face : magic_enum::enum_values<FacingType>()) {
-                DirType newface = toface + Facing_Dir(face);
-                CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
-
-                if (passenger->Can_Enter_Cell(newcell) == MOVE_OK) {
-                  ScenarioInit++;
-                  passenger->Unlimbo(
-                      Coord_Move(Coord, newface, CELL_LEPTON_W / 2), newface);
-                  ScenarioInit--;
-                  passenger->Assign_Mission(MISSION_MOVE);
-                  passenger->Assign_Destination(::As_Target(newcell));
-                  passenger->Commence();
-                  Transmit_Message(RADIO_HELLO, passenger);
-                  Transmit_Message(RADIO_TETHER, passenger);
-                  if (passenger->What_Am_I() == RTTI_UNIT) {
-                    dynamic_cast<UnitClass*>(passenger)->IsToScatter = true;
-                  }
-                  placed = true;
-                  break;
+              if (passenger->Can_Enter_Cell(newcell) == MOVE_OK) {
+                ScenarioInit++;
+                passenger->Unlimbo(
+                    Coord_Move(Coord, newface, CELL_LEPTON_W / 2), newface);
+                ScenarioInit--;
+                passenger->Assign_Mission(MISSION_MOVE);
+                passenger->Assign_Destination(::As_Target(newcell));
+                passenger->Commence();
+                Transmit_Message(RADIO_HELLO, passenger);
+                Transmit_Message(RADIO_TETHER, passenger);
+                if (passenger->What_Am_I() == RTTI_UNIT) {
+                  dynamic_cast<UnitClass*>(passenger)->IsToScatter = true;
                 }
+                placed = true;
+                break;
               }
+            }
+
+            /*
+            ** If the attached unit could NOT be deployed, then re-attach
+            **	it and then bail out of this deploy process.
+            */
+            if (!placed) {
+              Attach(passenger);
 
               /*
-              ** If the attached unit could NOT be deployed, then re-attach
-              **	it and then bail out of this deploy process.
+              **	Tell everyone around the transport to scatter.
               */
-              if (!placed) {
-                Attach(passenger);
-
-                /*
-                **	Tell everyone around the transport to scatter.
-                */
-                for (FacingType face : magic_enum::enum_values<FacingType>()) {
-                  CellClass* cellptr = &Map[Coord].Adjacent_Cell(face);
-                  if (cellptr->Is_Clear_To_Move(SPEED_TRACK, true, true)) {
-                    cellptr->Incoming(0, true);
-                  }
+              for (FacingType face : magic_enum::enum_values<FacingType>()) {
+                CellClass* cellptr = &Map[Coord].Adjacent_Cell(face);
+                if (cellptr->Is_Clear_To_Move(SPEED_TRACK, true, true)) {
+                  cellptr->Incoming(0, true);
                 }
-
-                //								Status
-                //= CLOSING_DOOR;
               }
+
+              //								Status
+              //= CLOSING_DOOR;
             }
+          }
+        } else {
+          Status = CLOSING_DOOR;
+        }
+        break;
+
+      /*
+      **	Close LST door in preparation for normal operation.
+      */
+      case CLOSING_DOOR:
+        if (Is_Door_Open()) {
+          LST_Close_Door();
+        }
+        if (Is_Door_Closed()) {
+          if (IsALoaner) {
+            Assign_Mission(MISSION_RETREAT);
           } else {
-            Status = CLOSING_DOOR;
+            Assign_Mission(MISSION_GUARD);
           }
-          break;
-
-        /*
-        **	Close LST door in preparation for normal operation.
-        */
-        case CLOSING_DOOR:
-          if (Is_Door_Open()) {
-            LST_Close_Door();
-          }
-          if (Is_Door_Closed()) {
-            if (IsALoaner) {
-              Assign_Mission(MISSION_RETREAT);
-            } else {
-              Assign_Mission(MISSION_GUARD);
-            }
-          }
-          break;
-        default:
-          break;
-      }
-      break;
-
-    default:
-      break;
+        }
+        break;
+      default:
+        break;
+    }
   }
   return MissionControl[Mission].Normal_Delay();
 }
@@ -2147,20 +2134,18 @@ void VesselClass::Rotation_AI() {
   }
 
   IsRotating = false;
-  if (Class->IsTurretEquipped) {
-    if (SecondaryFacing.Is_Rotating()) {
+  if (Class->IsTurretEquipped && SecondaryFacing.Is_Rotating()) {
+    Mark(MARK_CHANGE_REDRAW);
+    if (SecondaryFacing.Rotation_Adjust(Class->ROT * House->GroundspeedBias +
+                                        1)) {
       Mark(MARK_CHANGE_REDRAW);
-      if (SecondaryFacing.Rotation_Adjust(Class->ROT * House->GroundspeedBias +
-                                          1)) {
-        Mark(MARK_CHANGE_REDRAW);
-      }
-
-      /*
-      **	If no further rotation is necessary, flag that the rotation
-      **	has stopped.
-      */
-      IsRotating = SecondaryFacing.Is_Rotating();
     }
+
+    /*
+    **	If no further rotation is necessary, flag that the rotation
+    **	has stopped.
+    */
+    IsRotating = SecondaryFacing.Is_Rotating();
   }
 }
 
@@ -2263,21 +2248,19 @@ bool VesselClass::Edge_Of_World_AI() {
  * HISTORY: * 07/29/1996 BWG : Created. *
  *=============================================================================================*/
 void VesselClass::Repair_AI() {
-  if (IsSelfRepairing) {
-    if (Frame % (kTicksPerMinute * Rule.RepairRate) == 0) {
-      Mark(MARK_CHANGE);
-      int cost = Class->Repair_Cost();
-      int step = Class->Repair_Step();
+  if (IsSelfRepairing && (Frame % (kTicksPerMinute * Rule.RepairRate) == 0)) {
+    Mark(MARK_CHANGE);
+    int cost = Class->Repair_Cost();
+    int step = Class->Repair_Step();
 
-      if (House->Available_Money() >= cost) {
-        House->Spend_Money(cost);
-        Strength = static_cast<short>(Strength + step);
-        if (std::cmp_greater_equal(Strength, Class->MaxStrength)) {
-          Strength = Class->MaxStrength;
-          IsSelfRepairing = IsToSelfRepair = false;
-          if (IsOwnedByPlayer) {
-            Speak(VOX_UNIT_REPAIRED);
-          }
+    if (House->Available_Money() >= cost) {
+      House->Spend_Money(cost);
+      Strength = static_cast<short>(Strength + step);
+      if (std::cmp_greater_equal(Strength, Class->MaxStrength)) {
+        Strength = Class->MaxStrength;
+        IsSelfRepairing = IsToSelfRepair = false;
+        if (IsOwnedByPlayer) {
+          Speak(VOX_UNIT_REPAIRED);
         }
       }
     }

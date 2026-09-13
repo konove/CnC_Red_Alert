@@ -24,6 +24,7 @@ class ArchiveWriter;
 
 #include <cstddef>
 
+#include "absl/base/attributes.h"
 #include "td/bullet.h"
 #include "td/defines.h"
 #include "td/facing.h"
@@ -43,7 +44,10 @@ class AircraftClass : public FootClass, public FlyClass {
   void Serialize(Archive& ar);
 
   void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* /*ptr*/);
   // objects compare directly against their type ID.
   // NOLINTNEXTLINE(*-explicit-constructor)

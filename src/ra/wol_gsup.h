@@ -30,6 +30,7 @@
 // class that would handle common input behavior and so forth (one that this
 // class could derive from) 	wasn't written 5 years ago, I don't know...
 
+#include "absl/base/attributes.h"
 #include "ra/session.h"
 #include "ra/wolapiob.h"
 // class WolapiObject;
@@ -65,7 +66,8 @@ struct GAMEPARAMS {
 //***********************************************************************************************
 class WOL_GameSetupDialog {
  public:
-  WOL_GameSetupDialog(WolapiObject* wolapi, bool bIsHost);
+  WOL_GameSetupDialog(WolapiObject* wolapi ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                      bool bIsHost);
   ~WOL_GameSetupDialog();
   WOL_GameSetupDialog(const WOL_GameSetupDialog&) = delete;
   WOL_GameSetupDialog& operator=(const WOL_GameSetupDialog&) = delete;

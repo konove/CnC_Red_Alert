@@ -98,9 +98,15 @@ inline constexpr LanguageText kFrenchText{
 
 // The texts for this build's language.
 inline constexpr const LanguageText& kLanguageText =
-    config::kIsGerman   ? kGermanText
-    : config::kIsFrench ? kFrenchText
-                        : kEnglishText;
+    [] noexcept -> const LanguageText& {
+  if (config::kIsGerman) {
+    return kGermanText;
+  }
+  if (config::kIsFrench) {
+    return kFrenchText;
+  }
+  return kEnglishText;
+}();
 
 // "You must have %d megabytes of free disk space." in the build language.
 inline std::string MustHaveDiskSpaceText(int megabytes) {

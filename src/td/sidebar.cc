@@ -411,8 +411,8 @@ void SidebarClass::Init_IO() {
 void SidebarClass::Init_Theater(TheaterType theater) {
   PowerClass::Init_Theater(theater);
 
-  Column[0].Init_Theater(theater);
-  Column[1].Init_Theater(theater);
+  SidebarClass::StripClass::Init_Theater(theater);
+  SidebarClass::StripClass::Init_Theater(theater);
 }
 
 /***********************************************************************************************
@@ -1554,14 +1554,12 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
   *object *	and provides the visual feedback of a recognized and legal
   *selection.
   */
-  if (Flasher != -1) {
-    if (Graphic_Logic()) {
-      redraw = true;
-      if (Fetch_Stage() >= 7) {
-        Set_Rate(0);
-        Set_Stage(0);
-        Flasher = -1;
-      }
+  if ((Flasher != -1) && Graphic_Logic()) {
+    redraw = true;
+    if (Fetch_Stage() >= 7) {
+      Set_Rate(0);
+      Set_Stage(0);
+      Flasher = -1;
     }
   }
 
@@ -2211,32 +2209,30 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
       /*
       **	A right mouse button signals "cancel".
       */
-      if (flags & RIGHTPRESS) {
+      /*
+      **	If production is in progress, put it on hold. If production is
+      *already *	on hold, then abandon it. Money will be refunded, the
+      *factory *	manager deleted, and the object under construction is
+      *returned to *	the free pool.
+      */
+      if ((flags & RIGHTPRESS) && factory) {
         /*
-        **	If production is in progress, put it on hold. If production is
-        *already *	on hold, then abandon it. Money will be refunded, the
-        *factory *	manager deleted, and the object under construction is
-        *returned to *	the free pool.
+        **	Cancels placement mode if the sidebar factory is abandoned or
+        **	suspended.
         */
-        if (factory) {
-          /*
-          **	Cancels placement mode if the sidebar factory is abandoned or
-          **	suspended.
-          */
-          if (Map.PendingObjectPtr && Map.PendingObjectPtr->Is_Techno()) {
-            Map.PendingObjectPtr = nullptr;
-            Map.PendingObject = nullptr;
-            Map.PendingHouse = HOUSE_NONE;
-            Map.Set_Cursor_Shape(nullptr);
-          }
+        if (Map.PendingObjectPtr && Map.PendingObjectPtr->Is_Techno()) {
+          Map.PendingObjectPtr = nullptr;
+          Map.PendingObject = nullptr;
+          Map.PendingHouse = HOUSE_NONE;
+          Map.Set_Cursor_Shape(nullptr);
+        }
 
-          if (!factory->Is_Building()) {
-            Speak(VOX_CANCELED);
-            OutList.Add(EventClass(EventClass::ABANDON, otype, oid));
-          } else {
-            Speak(VOX_SUSPENDED);
-            OutList.Add(EventClass(EventClass::SUSPEND, otype, oid));
-          }
+        if (!factory->Is_Building()) {
+          Speak(VOX_CANCELED);
+          OutList.Add(EventClass(EventClass::ABANDON, otype, oid));
+        } else {
+          Speak(VOX_SUSPENDED);
+          OutList.Add(EventClass(EventClass::SUSPEND, otype, oid));
         }
       }
 

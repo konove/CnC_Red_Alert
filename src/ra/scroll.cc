@@ -175,7 +175,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         //			if (Keyboard->Down(KN_LMOUSE)) {
         //				rate = Bound(rate-3, 0, 4);
         //			}
-        if (Keyboard->Down(KN_RMOUSE)) {
+        if (KeyboardClass::Down(KN_RMOUSE)) {
           rate = Bound(rate + 1, 4,
                        static_cast<int>(sizeof(_rate) / sizeof(_rate[0])) - 1);
         }
@@ -204,7 +204,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
           **	If the mouse button is pressed or auto scrolling is active, then
           *scroll *	the map if the delay counter indicates.
           */
-          if (Keyboard->Down(KN_LMOUSE) || IsAutoScroll) {
+          if (KeyboardClass::Down(KN_LMOUSE) || IsAutoScroll) {
             distance = _rate[rate];
 
             if (MapEditorActive) {
@@ -223,14 +223,12 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         }
       }
 
-      if (!MapEditorActive && !player_scrolled) {
-        if (Counter.IsFinished()) {
-          Inertia--;
-          if (Inertia < 0) {
-            Inertia++;
-          }
-          Counter.Set(SCROLL_DELAY);
+      if ((!MapEditorActive && !player_scrolled) && Counter.IsFinished()) {
+        Inertia--;
+        if (Inertia < 0) {
+          Inertia++;
         }
+        Counter.Set(SCROLL_DELAY);
       }
     }
   }
@@ -258,14 +256,10 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
 bool ScrollClass::Set_Autoscroll(int control) {
   bool old = IsAutoScroll;
 
-  switch (control) {
-    case -1:
-      IsAutoScroll = !IsAutoScroll;
-      break;
-
-    default:
-      IsAutoScroll = control;
-      break;
+  if (control == -1) {
+    IsAutoScroll = !IsAutoScroll;
+  } else {
+    IsAutoScroll = control;
   }
   return old;
 }

@@ -196,7 +196,7 @@ static void Write_Pcx_ScanLine(FileClass& file, int scansize, char* ptr) {
   unsigned char rle = 1;
   unsigned char c;
   for (int i = 1; i < scansize; i++) {
-    unsigned char color = static_cast<unsigned char>(0xff & *++ptr);
+    auto color = static_cast<unsigned char>(0xff & *++ptr);
     if (color == last) {
       rle++;
       if (rle == rle_max_run) {

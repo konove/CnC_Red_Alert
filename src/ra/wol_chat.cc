@@ -447,9 +447,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     //	Regularly check for incoming messages from wolapi.
     if (Get_Time_Ms() > pWO->dwTimeNextWolapiPump) {
       /*
-                              if( pToolTipHitLast && pToolTipHitLast->bShowing )
-         //	Lame hack. Problem is draws that occur in callbacks.
-                              {
+                              //	Lame hack. Problem is draws that occur
+         in callbacks. if( pToolTipHitLast && pToolTipHitLast->bShowing ) {
                                       pToolTipHitLast->Unshow();
                                       pWO->pChat->PumpMessages();
                                       pWO->pNetUtil->PumpMessages();
@@ -658,7 +657,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    if (Keyboard->Down(KN_LMOUSE) || Keyboard->Down(KN_RMOUSE)) {
+    if (KeyboardClass::Down(KN_LMOUSE) || KeyboardClass::Down(KN_RMOUSE)) {
       //	Mouse button is down.
       timeToolTipAppear = Get_Time_Ms() + TOOLTIPDELAY;
       if (pToolTipHitLast && pToolTipHitLast->bShowing) {
@@ -697,7 +696,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
                                                           // in controls list.)
         {
           if (!pToolTipHit->bShowing && Get_Time_Ms() > timeToolTipAppear &&
-              !(Keyboard->Down(KN_LMOUSE) || Keyboard->Down(KN_RMOUSE))) {
+              !(KeyboardClass::Down(KN_LMOUSE) ||
+                KeyboardClass::Down(KN_RMOUSE))) {
             pToolTipHit->Show();
           } else if (pToolTipHit->bIconList &&
                      pToolTipHit->bOverDifferentLine()) {
@@ -878,12 +878,12 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
             pWO->bPump_In_Call_Back = true;
             CREATEGAMEINFO CreateGameInfo = WOL_CreateGame_Dialog(pWO);
             pWO->bPump_In_Call_Back = false;
-            if (CreateGameInfo.bCreateGame) {
-              if (CreateGameChannel(pWO, CreateGameInfo)) {
-                rc = 1;
-                process = false;
-              }
+            if (CreateGameInfo.bCreateGame &&
+                CreateGameChannel(pWO, CreateGameInfo)) {
+              rc = 1;
+              process = false;
             }
+
             break;
           }
           case WOL_LEVEL_GAMES:
@@ -1141,7 +1141,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist,
 
   //	We've stored the channel pointer in the hidden extra data field.
   //	( Be careful about calling RAChatEventSink::DeleteChannelList()! )
-  Channel* pChannel = (Channel*)chanlist.Get_Item_ExtraDataPtr(iIndex);
+  auto* pChannel = (Channel*)chanlist.Get_Item_ExtraDataPtr(iIndex);
   return EnterChannel(pWO, chatlist, pChannel, nullptr, bGame);
 }
 
@@ -1173,19 +1173,19 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
     return false;
   }
 
-  if (bGame) {
-    //	It is possible to enter a game channel while currently in a chat
-    // channel. (A lobby, presumably.)
-    if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
-        pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
-      if (!pWO->ExitChatChannelForGameChannel()) {
-        *pWO->szChannelReturnOnGameEnterFail = 0;
-        //				debugprint(
-        //"ExitChatChannelForGameChannel on join failed" );
-        pWO->bSelfDestruct = true;
-        return false;
-      }
-    }
+  if (bGame &&
+      (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
+       pWO->CurrentLevel == WOL_LEVEL_INLOBBY) &&
+      (!pWO->ExitChatChannelForGameChannel()))
+  //	It is possible to enter a game channel while currently in a chat
+  // channel. (A lobby, presumably.)
+
+  {
+    *pWO->szChannelReturnOnGameEnterFail = 0;
+    //				debugprint(
+    //"ExitChatChannelForGameChannel on join failed" );
+    pWO->bSelfDestruct = true;
+    return false;
   }
 
   /*	The following doesn't work because the needpw field is not currently
@@ -1219,10 +1219,16 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
         Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
                          kTpfText);  //	Required before String_Pixel_Width()
                                      // call, for god's sake.
-        SimpleEditDlgClass* pEditDlg = new SimpleEditDlgClass(
-            config::kIsEnglish  ? 300
-            : config::kIsGerman ? 400
-                                : 500,
+        auto* pEditDlg = new SimpleEditDlgClass(
+            [] {
+              if (config::kIsEnglish) {
+                return 300;
+              }
+              if (config::kIsGerman) {
+                return 400;
+              }
+              return 500;
+            }(),
             TXT_WOL_JOINPRIVATETITLE, TXT_WOL_JOINPRIVATEPROMPT,
             WOL_CHANKEY_LEN_MAX);
         pWO->bPump_In_Call_Back = true;
@@ -1380,15 +1386,14 @@ bool CreateGameChannel(WolapiObject* pWO, const CREATEGAMEINFO& cgi) {
   char szNewChannelName[WOL_CHANNAME_LEN_MAX];
   sprintf(szNewChannelName, "%s's_game", pWO->szMyName);
 
-  if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
-      pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
-    if (!pWO->ExitChatChannelForGameChannel()) {
-      *pWO->szChannelReturnOnGameEnterFail = 0;
-      //			debugprint( "ExitChatChannelForGameChannel in
-      // CreateGameChannel() error" );
-      pWO->bSelfDestruct = true;
-      return false;
-    }
+  if ((pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
+       pWO->CurrentLevel == WOL_LEVEL_INLOBBY) &&
+      (!pWO->ExitChatChannelForGameChannel())) {
+    *pWO->szChannelReturnOnGameEnterFail = 0;
+    //			debugprint( "ExitChatChannelForGameChannel in
+    // CreateGameChannel() error" );
+    pWO->bSelfDestruct = true;
+    return false;
   }
 
   const char* szKey;
@@ -1427,47 +1432,47 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
   if (szChannelType) {
     // debugprint( "szChannelType %s\n", szChannelType );
     if (strcmp(szChannelType, CHANNELTYPE_OFFICIALCHAT) == 0) {
-      if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) {
-        if (!ExitChatChannel(pWO)) {
-          pWO->bSelfDestruct = true;
-          return false;
-        }
+      if ((pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) &&
+          (!ExitChatChannel(pWO))) {
+        pWO->bSelfDestruct = true;
+        return false;
       }
+
       pWO->EnterLevel_OfficialChat();
     } else if (strcmp(szChannelType, CHANNELTYPE_USERCHAT) == 0) {
-      if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) {
-        if (!ExitChatChannel(pWO)) {
-          pWO->bSelfDestruct = true;
-          return false;
-        }
+      if ((pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) &&
+          (!ExitChatChannel(pWO))) {
+        pWO->bSelfDestruct = true;
+        return false;
       }
+
       pWO->EnterLevel_UserChat();
     } else if (strcmp(szChannelType, CHANNELTYPE_TOP) == 0) {
-      if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) {
-        //	Now not possible.
-        if (!ExitChatChannel(pWO)) {
-          pWO->bSelfDestruct = true;
-          return false;
-        }
+      //	Now not possible.
+      if ((pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) &&
+          (!ExitChatChannel(pWO))) {
+        pWO->bSelfDestruct = true;
+        return false;
       }
+
       pWO->EnterLevel_Top();
     } else if (strcmp(szChannelType, CHANNELTYPE_GAMES) == 0) {
-      if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) {
-        //	Now not possible.
-        if (!ExitChatChannel(pWO)) {
-          pWO->bSelfDestruct = true;
-          return false;
-        }
+      //	Now not possible.
+      if ((pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) &&
+          (!ExitChatChannel(pWO))) {
+        pWO->bSelfDestruct = true;
+        return false;
       }
+
       pWO->EnterLevel_Games();
     } else if (strcmp(szChannelType, CHANNELTYPE_GAMESOFTYPE) == 0) {
-      if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) {
-        //	Now not possible.
-        if (!ExitChatChannel(pWO)) {
-          pWO->bSelfDestruct = true;
-          return false;
-        }
+      //	Now not possible.
+      if ((pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) &&
+          (!ExitChatChannel(pWO))) {
+        pWO->bSelfDestruct = true;
+        return false;
       }
+
       void* pExtraData = chanlist.Get_Item_ExtraDataPtr(iIndex);
       pWO->EnterLevel_GamesOfType((WOL_GAMETYPEINFO*)pExtraData);
     } else if (strcmp(szChannelType, CHANNELTYPE_CHATCHANNEL) == 0) {
@@ -1490,10 +1495,10 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
         return false;
       }
       //	Check if local user is allowed to join GameKind.
-      Channel* pChannel = (Channel*)chanlist.Get_Item_ExtraDataPtr(iIndex);
+      auto* pChannel = (Channel*)chanlist.Get_Item_ExtraDataPtr(iIndex);
       if (pChannel->type == GAME_TYPE) {
         //	It is a game of our type, at least.
-        CREATEGAMEINFO::GAMEKIND GameKind =
+        auto GameKind =
             (CREATEGAMEINFO::GAMEKIND)(pChannel->reserved & 0xFF000000);
         switch (GameKind) {
           case CREATEGAMEINFO::RAGAME:
@@ -1538,12 +1543,11 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
         pWO->bSelfDestruct = true;
         return false;
       }
-      if (pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
-        if (!ExitChatChannel(pWO)) {
-          pWO->bSelfDestruct = true;
-          return false;
-        }
+      if ((pWO->CurrentLevel == WOL_LEVEL_INLOBBY) && (!ExitChatChannel(pWO))) {
+        pWO->bSelfDestruct = true;
+        return false;
       }
+
       pWO->EnterLevel_Lobbies();
     } else if (strcmp(szChannelType, CHANNELTYPE_LOBBYCHANNEL) == 0) {
       if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||

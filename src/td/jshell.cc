@@ -86,7 +86,7 @@
  *=============================================================================================*/
 void* Small_Icon(const void* iconptr, int iconnum) {
   static unsigned char _icon[9];
-  const IControl_Type* iptr = static_cast<const IControl_Type*>(iconptr);
+  const auto* iptr = static_cast<const IControl_Type*>(iconptr);
   unsigned char* data;
 
   if (iconptr) {
@@ -296,7 +296,7 @@ int Load_Picture(const char* filename, BufferClass& scratchbuf,
 }
 
 void* Load_Alloc_Data(FileClass& file) {
-  const int32_t size = static_cast<int>(file.Size());
+  const auto size = static_cast<int>(file.Size());
   auto* ptr = new char[size + 1];
   file.Read(ptr, size);
   ptr[size] = '\0';  // Null-terminate so text parsers don't read past the data.

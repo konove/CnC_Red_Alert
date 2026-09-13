@@ -69,7 +69,7 @@ class VisualControlsClass {
 
  public:
   VisualControlsClass() = default;
-  void Process();
+  static void Process();
 };
 
 #endif  // CNC_RED_ALERT_RA_VISUDLG_H_

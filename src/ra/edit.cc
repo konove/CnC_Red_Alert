@@ -117,27 +117,27 @@ int EditClass::Action(unsigned flags, KeyNumType& key) {
 
     } else {
       const auto ascii =
-          static_cast<KeyASCIIType>(Keyboard->To_ASCII(key) & 0xff);
+          static_cast<KeyASCIIType>(KeyboardClass::To_ASCII(key) & 0xff);
 
       // Allow numeric keypad presses to map to ascii numbers.
       if (key & WWKEY_VK_BIT && ascii >= '0' && ascii <= '9') {
         key = static_cast<KeyNumType>(key & ~WWKEY_VK_BIT);
-        if (!(flags & LEFTRELEASE) && !(flags & RIGHTRELEASE)) {
-          if (Handle_Key(ascii)) {
-            flags &= ~KEYBOARD;
-            key = KN_NONE;
-          }
+        if ((!(flags & LEFTRELEASE) && !(flags & RIGHTRELEASE)) &&
+            Handle_Key(ascii)) {
+          flags &= ~KEYBOARD;
+          key = KN_NONE;
         }
+
       } else {
         // Filter out all special keys except return and backspace.
         if ((!(key & WWKEY_VK_BIT) && ascii >= ' ' && ascii <= 255) ||
             key == KN_RETURN || key == KN_BACKSPACE) {
-          if (!(flags & LEFTRELEASE) && !(flags & RIGHTRELEASE)) {
-            if (Handle_Key(Keyboard->To_ASCII(key))) {
-              flags &= ~KEYBOARD;
-              key = KN_NONE;
-            }
+          if ((!(flags & LEFTRELEASE) && !(flags & RIGHTRELEASE)) &&
+              Handle_Key(KeyboardClass::To_ASCII(key))) {
+            flags &= ~KEYBOARD;
+            key = KN_NONE;
           }
+
         } else {
           flags &= ~KEYBOARD;
           key = KN_NONE;

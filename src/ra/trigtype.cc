@@ -474,24 +474,16 @@ bool TriggerTypeClass::Edit() {
   EditClass action1data(DATA_GENERAL3, actionbuf1, sizeof(actionbuf1),
                         TPF_EFNT | TPF_NOSHADOW, AD1_X, AD1_Y, ED_WIDTH, 9,
                         EditClass::kNumeric);
-  switch (Action_Needs(Action1.Action)) {
-    case NEED_NUMBER:
-      sprintf(action1data.Get_Text(), "%d", Action1.Data.Value);
-      break;
-    default:
-      break;
+  if (Action_Needs(Action1.Action) == NEED_NUMBER) {
+    sprintf(action1data.Get_Text(), "%d", Action1.Data.Value);
   }
 
   char actionbuf2[GENERAL_SIZE] = "";
   EditClass action2data(DATA_GENERAL4, actionbuf2, sizeof(actionbuf2),
                         TPF_EFNT | TPF_NOSHADOW, AD2_X, AD2_Y, ED_WIDTH, 9,
                         EditClass::kNumeric);
-  switch (Action_Needs(Action2.Action)) {
-    case NEED_NUMBER:
-      sprintf(action2data.Get_Text(), "%d", Action2.Data.Value);
-      break;
-    default:
-      break;
+  if (Action_Needs(Action2.Action) == NEED_NUMBER) {
+    sprintf(action2data.Get_Text(), "%d", Action2.Data.Value);
   }
 
   /*
@@ -613,8 +605,8 @@ bool TriggerTypeClass::Edit() {
                                MFCD::Retrieve("EBTN-DN.SHP"));
 
   for (ThemeType theme : magic_enum::enum_values<ThemeType>()) {
-    themetype1list.Add_Item(Theme.Full_Name(theme));
-    themetype2list.Add_Item(Theme.Full_Name(theme));
+    themetype1list.Add_Item(ThemeClass::Full_Name(theme));
+    themetype2list.Add_Item(ThemeClass::Full_Name(theme));
   }
 
   if (Action_Needs(Action1.Action) == NEED_THEME) {
@@ -1904,12 +1896,16 @@ void TriggerTypeClass::Read_INI(CCINIClass& ini) {
     for (int trig_index = 0; trig_index < TriggerTypes.Count(); trig_index++) {
       TriggerTypeClass* indexed_trigger = TriggerTypes.Ptr(trig_index);
 
+      // While the INI loads, the trigger reference's ID holds a new[]'d name
+      // string. NOLINTNEXTLINE(performance-no-int-to-ptr)
       char* ptr = (char*)indexed_trigger->Action1.Trigger.Raw();
       if (ptr) {
         indexed_trigger->Action1.Trigger = From_Name(ptr);
         delete[] ptr;
       }
 
+      // While the INI loads, the trigger reference's ID holds a new[]'d name
+      // string. NOLINTNEXTLINE(performance-no-int-to-ptr)
       ptr = (char*)indexed_trigger->Action2.Trigger.Raw();
       if (ptr) {
         indexed_trigger->Action2.Trigger = From_Name(ptr);

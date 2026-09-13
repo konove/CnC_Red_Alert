@@ -23,6 +23,7 @@
 #include <string>
 #include <string_view>
 
+#include "absl/base/attributes.h"
 
 // Unsigned 8.8 fixed-point number (whole: 0-255, fraction: 1/256 precision).
 //
@@ -55,7 +56,9 @@ class fixed {
   // Overload for const char* to handle null pointers safely. Callers passing
   // strtok() results or other potentially-null C strings use this overload.
   static fixed FromString(const char* str) {
-    if (str == nullptr) return {};
+    if (str == nullptr) {
+      return {};
+    }
     return FromString(std::string_view(str));
   }
 
@@ -152,11 +155,11 @@ class fixed {
   int operator-(const int rvalue) const { return ToInt() - rvalue; }
 
   // Shift operators for efficient multiply/divide by powers of 2.
-  fixed& operator>>=(const unsigned rvalue) {
+  fixed& operator>>=(const unsigned rvalue) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     raw_ >>= rvalue;
     return *this;
   }
-  fixed& operator<<=(const unsigned rvalue) {
+  fixed& operator<<=(const unsigned rvalue) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     raw_ <<= rvalue;
     return *this;
   }
@@ -244,49 +247,49 @@ class fixed {
   // Ceiling: rounds up only if there is a fractional part. Adding 255
   // (not 256) avoids carrying into the whole part when fraction is zero.
   // Values above 255.0 are left unchanged to prevent uint16_t overflow.
-  fixed& Round_Up() {
+  fixed& Round_Up() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (raw_ < 0xFF00) {
       raw_ += 255;
       raw_ &= 0xFF00;
     }
     return *this;
   }
-  fixed& Round_Down() {
+  fixed& Round_Down() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     raw_ &= 0xFF00;
     return *this;
   }
-  fixed& Round() {
+  fixed& Round() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (fraction() >= kRoundingBias) {
       Round_Up();
     }
     Round_Down();
     return *this;
   }
-  fixed& Saturate(const unsigned cap) {
+  fixed& Saturate(const unsigned cap) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (raw_ > cap * 256) {
       raw_ = static_cast<uint16_t>(cap * 256);
     }
     return *this;
   }
-  fixed& Saturate(const fixed& cap) {
+  fixed& Saturate(const fixed& cap) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (*this > cap) {
       *this = cap;
     }
     return *this;
   }
-  fixed& Sub_Saturate(const unsigned cap) {
+  fixed& Sub_Saturate(const unsigned cap) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (raw_ >= cap * 256) {
       raw_ = static_cast<uint16_t>((cap * 256) - 1);
     }
     return *this;
   }
-  fixed& Sub_Saturate(const fixed& cap) {
+  fixed& Sub_Saturate(const fixed& cap) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (*this >= cap) {
       raw_ = static_cast<uint16_t>(cap.raw_ - 1);
     }
     return *this;
   }
-  fixed& Inverse() {
+  fixed& Inverse() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     *this = fixed(1) / *this;
     return *this;
   }

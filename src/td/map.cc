@@ -606,11 +606,9 @@ void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
   */
   count = RadiusCount[sightrange];
   ptr = &RadiusOffset[0];
-  if (incremental) {
-    if (sightrange > 1) {
-      ptr += RadiusCount[sightrange - 2];
-      count -= RadiusCount[sightrange - 2];
-    }
+  if (incremental && (sightrange > 1)) {
+    ptr += RadiusCount[sightrange - 2];
+    count -= RadiusCount[sightrange - 2];
   }
 
   /*
@@ -669,7 +667,8 @@ void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
  *function.                                            *
  *=============================================================================================*/
 int MapClass::Cell_Distance(CELL cell1, CELL cell2) {
-  int x, y;  // Difference on X and Y axis.
+  int x;
+  int y;  // Difference on X and Y axis.
 
   x = Cell_X(cell1) - Cell_X(cell2);
   y = Cell_Y(cell1) - Cell_Y(cell2);
@@ -1234,7 +1233,7 @@ int MapClass::Cell_Region(CELL cell) {
  *=========================================================================*/
 int MapClass::Cell_Threat(CELL cell, HousesType house) {
   int threat = HouseClass::As_Pointer(house)
-                   ->Regions[Map.Cell_Region(Map[cell].Cell_Number())]
+                   ->Regions[MapEditClass::Cell_Region(Map[cell].Cell_Number())]
                    .Threat_Value();
   if (!threat && Map[cell].IsVisible) {
     threat = 1;
@@ -1365,12 +1364,11 @@ int MapClass::Validate() {
     Validate Occupier
     .....................................................................*/
     obj = (*this)[cell].Cell_Occupier();
-    if (obj) {
-      if ((uintptr_t)obj & 0xff000000 || (uintptr_t)obj->Next & 0xff000000 ||
-          (uintptr_t)obj->Trigger & 0xff000000 || obj->IsInLimbo ||
-          static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095) {
-        return false;
-      }
+    if (obj &&
+        ((uintptr_t)obj & 0xff000000 || (uintptr_t)obj->Next & 0xff000000 ||
+         (uintptr_t)obj->Trigger & 0xff000000 || obj->IsInLimbo ||
+         static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095)) {
+      return false;
     }
 
     /*.....................................................................
@@ -1378,12 +1376,11 @@ int MapClass::Validate() {
     .....................................................................*/
     for (i = 0; i < 3; i++) {
       obj = (*this)[cell].Overlappers[i];
-      if (obj) {
-        if ((uintptr_t)obj & 0xff000000 || (uintptr_t)obj->Next & 0xff000000 ||
-            (uintptr_t)obj->Trigger & 0xff000000 || obj->IsInLimbo ||
-            static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095) {
-          return false;
-        }
+      if (obj &&
+          ((uintptr_t)obj & 0xff000000 || (uintptr_t)obj->Next & 0xff000000 ||
+           (uintptr_t)obj->Trigger & 0xff000000 || obj->IsInLimbo ||
+           static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095)) {
+        return false;
       }
     }
   }

@@ -157,30 +157,30 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
     do {
       NullModem.Service();
 
-      if (NullModem.Get_Message(&receive_packet, (int*)&packet_len) > 0) {
-        if (receive_packet.Command == SERIAL_FILE_INFO) {
-          strncpy(return_name, receive_packet.ScenarioInfo.ShortFileName,
-                  dest_size);
-          file_length = receive_packet.ScenarioInfo.FileLength;
-          break;
-        }
+      if ((NullModem.Get_Message(&receive_packet, (int*)&packet_len) > 0) &&
+          (receive_packet.Command == SERIAL_FILE_INFO)) {
+        strncpy(return_name, receive_packet.ScenarioInfo.ShortFileName,
+                dest_size);
+        file_length = receive_packet.ScenarioInfo.FileLength;
+        break;
       }
+
     } while (response_timer.HasTimeLeft());
   } else {
     do {
       Ipx.Service();
       int receive_packet_length = sizeof(net_receive_packet);
       if (Ipx.Get_Global_Message(&net_receive_packet, &receive_packet_length,
-                                 &sender_address, &product_id)) {
-// WWDebugString ("RA95 - Got packet from host\n");
-        if (net_receive_packet.Command == NET_FILE_INFO &&
-            sender_address == Session.HostAddress) {
-          strncpy(return_name, net_receive_packet.ScenarioInfo.ShortFileName,
-                  dest_size);
-          file_length = net_receive_packet.ScenarioInfo.FileLength;
-          // WWDebugString ("RA95 - Got file info packet from host\n");
-          break;
-        }
+                                 &sender_address, &product_id) &&
+          (net_receive_packet.Command == NET_FILE_INFO &&
+           sender_address == Session.HostAddress))
+      // WWDebugString ("RA95 - Got packet from host\n");
+      {
+        strncpy(return_name, net_receive_packet.ScenarioInfo.ShortFileName,
+                dest_size);
+        file_length = net_receive_packet.ScenarioInfo.FileLength;
+        // WWDebugString ("RA95 - Got file info packet from host\n");
+        break;
       }
 
       PumpWolapi();
@@ -391,56 +391,55 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
     if (!gametype) {
       NullModem.Service();
 
-      if (NullModem.Get_Message(&receive_packet, (int*)&packet_len) > 0) {
-        if (receive_packet.Command == SERIAL_FILE_CHUNK) {
-          if (receive_packet.BlockNumber == last_received_block + 1) {
-            save_file.Write(receive_packet.RawData, receive_packet.BlockLength);
-            total_length += receive_packet.BlockLength;
-            last_received_block++;
+      if ((NullModem.Get_Message(&receive_packet, (int*)&packet_len) > 0) &&
+          (receive_packet.Command == SERIAL_FILE_CHUNK) &&
+          (receive_packet.BlockNumber == last_received_block + 1)) {
+        save_file.Write(receive_packet.RawData, receive_packet.BlockLength);
+        total_length += receive_packet.BlockLength;
+        last_received_block++;
 
-            update_time++;
-            if (update_time > 7) {
-              progress_meter.Set_Value(total_length * 100 / file_length);
-              display = REDRAW_PROGRESS;
-              update_time = 0;
-            }
+        update_time++;
+        if (update_time > 7) {
+          progress_meter.Set_Value(total_length * 100 / file_length);
+          display = REDRAW_PROGRESS;
+          update_time = 0;
+        }
 
-            if (total_length >= file_length) {
-              process = false;
-              return_code = true;
-              progress_meter.Set_Value(100);
-              progress_meter.Draw_Me(true);
-            }
-          }
+        if (total_length >= file_length) {
+          process = false;
+          return_code = true;
+          progress_meter.Set_Value(100);
+          progress_meter.Draw_Me(true);
         }
       }
+
     } else {
       Ipx.Service();
 
       int receive_packet_len = sizeof(receive_packet);
       if (Ipx.Get_Global_Message(&receive_packet, &receive_packet_len,
-                                 &sender_address, &product_id)) {
-        if (receive_packet.Command == SERIAL_FILE_CHUNK &&
-            sender_address == Session.HostAddress) {
-          if (receive_packet.BlockNumber == last_received_block + 1) {
-            save_file.Write(receive_packet.RawData, receive_packet.BlockLength);
-            total_length += receive_packet.BlockLength;
-            last_received_block++;
+                                 &sender_address, &product_id) &&
+          (receive_packet.Command == SERIAL_FILE_CHUNK &&
+           sender_address == Session.HostAddress) &&
+          (receive_packet.BlockNumber == last_received_block + 1))
 
-            update_time++;
-            if (update_time > 7) {
-              progress_meter.Set_Value(total_length * 100 / file_length);
-              display = REDRAW_PROGRESS;
-              update_time = 0;
-            }
+      {
+        save_file.Write(receive_packet.RawData, receive_packet.BlockLength);
+        total_length += receive_packet.BlockLength;
+        last_received_block++;
 
-            if (total_length >= file_length) {
-              process = false;
-              return_code = true;
-              progress_meter.Set_Value(100);
-              progress_meter.Draw_Me(true);
-            }
-          }
+        update_time++;
+        if (update_time > 7) {
+          progress_meter.Set_Value(total_length * 100 / file_length);
+          display = REDRAW_PROGRESS;
+          update_time = 0;
+        }
+
+        if (total_length >= file_length) {
+          process = false;
+          return_code = true;
+          progress_meter.Set_Value(100);
+          progress_meter.Draw_Me(true);
         }
       }
     }

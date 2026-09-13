@@ -151,7 +151,6 @@ int CellClass::Validate() const {
     const int num = Cell_Number();
     if (num < 0 || num > 4095) {
       Validate_Error("CELL");
-      return 0;
     }
 
     return 1;
@@ -378,7 +377,7 @@ void CellClass::Redraw_Objects(bool forced) {
   Validate();
   CELL cell = Cell_Number();
 
-  if (Map.In_View(cell) && (forced || !Map.Is_Cell_Flagged(cell))) {
+  if (Map.In_View(cell) && (forced || !MapEditClass::Is_Cell_Flagged(cell))) {
     /*
     **	Flag the icon to be redrawn.
     */
@@ -1766,7 +1765,7 @@ const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
  *=========================================================================*/
 void CellClass::Adjust_Threat(HousesType house, int threat_value) {
   Validate();
-  int region = Map.Cell_Region(Cell_Number());
+  int region = MapEditClass::Cell_Region(Cell_Number());
 
   for (HousesType lp = HOUSE_FIRST; lp < HOUSE_COUNT; lp++) {
     if (lp == house) {
@@ -1805,35 +1804,35 @@ void CellClass::Adjust_Threat(HousesType house, int threat_value) {
  *=============================================================================================*/
 long CellClass::Tiberium_Adjust(bool pregame) {
   Validate();
-  if (Overlay != OVERLAY_NONE) {
-    if (OverlayTypeClass::As_Reference(Overlay).Land == LAND_TIBERIUM) {
-      static int _adj[9] = {0, 1, 3, 4, 6, 7, 8, 10, 11};
-      int count = 0;
+  if ((Overlay != OVERLAY_NONE) &&
+      (OverlayTypeClass::As_Reference(Overlay).Land == LAND_TIBERIUM)) {
+    static int _adj[9] = {0, 1, 3, 4, 6, 7, 8, 10, 11};
+    int count = 0;
 
-      /*
-      **	Mixup the Tiberium overlays so that they don't look the same.
-      */
-      if (pregame) {
-        Overlay = Random_Pick(OVERLAY_TIBERIUM1, OVERLAY_TIBERIUM12);
-      }
-
-      /*
-      **	Add up all adjacent cells that contain tiberium.
-      ** (Skip those cells which aren't on the map)
-      */
-      for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
-        CellClass& adj = Adjacent_Cell(face);
-
-        if (adj.Overlay != OVERLAY_NONE &&
-            OverlayTypeClass::As_Reference(adj.Overlay).Land == LAND_TIBERIUM) {
-          count++;
-        }
-      }
-
-      OverlayData = static_cast<unsigned char>(_adj[count]);
-      return (static_cast<long>(OverlayData + 1)) * UnitTypeClass::TIBERIUM_STEP;
+    /*
+    **	Mixup the Tiberium overlays so that they don't look the same.
+    */
+    if (pregame) {
+      Overlay = Random_Pick(OVERLAY_TIBERIUM1, OVERLAY_TIBERIUM12);
     }
+
+    /*
+    **	Add up all adjacent cells that contain tiberium.
+    ** (Skip those cells which aren't on the map)
+    */
+    for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+      CellClass& adj = Adjacent_Cell(face);
+
+      if (adj.Overlay != OVERLAY_NONE &&
+          OverlayTypeClass::As_Reference(adj.Overlay).Land == LAND_TIBERIUM) {
+        count++;
+      }
+    }
+
+    OverlayData = static_cast<unsigned char>(_adj[count]);
+    return (static_cast<long>(OverlayData + 1)) * UnitTypeClass::TIBERIUM_STEP;
   }
+
   return 0;
 }
 
@@ -2072,7 +2071,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
             }
           }
 
-          UnitClass* new_unit =
+          auto* new_unit =
               dynamic_cast<UnitClass*>(utp->Create_One_Of(object->House));
           if (new_unit) {
             if (new_unit->Unlimbo(Cell_Coord())) {
@@ -2117,12 +2116,12 @@ bool CellClass::Goodie_Check(FootClass* object) {
         */
         case NUKE_MISSILE:
           new AnimClass(ANIM_CRATE_MISSILE, Cell_Coord());
-          if (object->House->NukeStrike.Enable(true)) {
-            if (object->IsOwnedByPlayer) {
-              Map.Add(RTTI_SPECIAL, SPC_NUCLEAR_BOMB);
-              Map.Column[1].Flag_To_Redraw();
-            }
+          if (object->House->NukeStrike.Enable(true) &&
+              object->IsOwnedByPlayer) {
+            Map.Add(RTTI_SPECIAL, SPC_NUCLEAR_BOMB);
+            Map.Column[1].Flag_To_Redraw();
           }
+
           break;
 
         /*
@@ -2130,12 +2129,12 @@ bool CellClass::Goodie_Check(FootClass* object) {
         */
         case ION_BLAST:
           new AnimClass(ANIM_CRATE_EARTH, Cell_Coord());
-          if (object->House->IonCannon.Enable(true)) {
-            if (object->IsOwnedByPlayer) {
-              Map.Add(RTTI_SPECIAL, SPC_ION_CANNON);
-              Map.Column[1].Flag_To_Redraw();
-            }
+          if (object->House->IonCannon.Enable(true) &&
+              object->IsOwnedByPlayer) {
+            Map.Add(RTTI_SPECIAL, SPC_ION_CANNON);
+            Map.Column[1].Flag_To_Redraw();
           }
+
           break;
 
         /*
@@ -2143,12 +2142,12 @@ bool CellClass::Goodie_Check(FootClass* object) {
         */
         case AIR_STRIKE:
           new AnimClass(ANIM_CRATE_DEVIATOR, Cell_Coord());
-          if (object->House->AirStrike.Enable(true)) {
-            if (object->IsOwnedByPlayer) {
-              Map.Add(RTTI_SPECIAL, SPC_AIR_STRIKE);
-              Map.Column[1].Flag_To_Redraw();
-            }
+          if (object->House->AirStrike.Enable(true) &&
+              object->IsOwnedByPlayer) {
+            Map.Add(RTTI_SPECIAL, SPC_AIR_STRIKE);
+            Map.Column[1].Flag_To_Redraw();
           }
+
           break;
 
         /*

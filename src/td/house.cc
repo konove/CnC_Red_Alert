@@ -193,7 +193,6 @@ int HouseClass::Validate() const {
     num = Houses.ID(this);
     if (num < 0 || num >= kHouseMax) {
       Validate_Error("HOUSE");
-      return 0;
     }
     return 1;
   } else {
@@ -949,11 +948,10 @@ void HouseClass::AI() {
           **	If the techno doesn't have a valid NavCom, he's not moving,
           **	so blow him up.
           */
-          if (techno->What_Am_I() == RTTI_INFANTRY ||
-              techno->What_Am_I() == RTTI_UNIT) {
-            if (Target_Legal(dynamic_cast<FootClass*>(techno)->NavCom)) {
-              moving = true;
-            }
+          if ((techno->What_Am_I() == RTTI_INFANTRY ||
+               techno->What_Am_I() == RTTI_UNIT) &&
+              Target_Legal(dynamic_cast<FootClass*>(techno)->NavCom)) {
+            moving = true;
           }
 
           /*
@@ -993,10 +991,8 @@ void HouseClass::AI() {
         if (Special.IsJurassic && AreThingiesEnabled) {
           obj = new UnitClass(Random_Pick(UNIT_TRIC, UNIT_STEG), HOUSE_JP);
         } else {
-          if (BuildLevel >= 7) {
-            if (!(UScan & UNITF_VICE)) {
-              obj = new UnitClass(UNIT_VICE, HOUSE_JP);
-            }
+          if ((BuildLevel >= 7) && (!(UScan & UNITF_VICE))) {
+            obj = new UnitClass(UNIT_VICE, HOUSE_JP);
           }
         }
 
@@ -1144,10 +1140,8 @@ void HouseClass::AI() {
       **	Process the ion cannon AI and if something changed that would
       *affect *	the sidebar, then flag the sidebar to be redrawn.
       */
-      if (IonCannon.AI(this == PlayerPtr)) {
-        if (this == PlayerPtr) {
-          Map.Column[1].Flag_To_Redraw();
-        }
+      if (IonCannon.AI(this == PlayerPtr) && (this == PlayerPtr)) {
+        Map.Column[1].Flag_To_Redraw();
       }
     }
 
@@ -1208,10 +1202,8 @@ void HouseClass::AI() {
       **	Process the nuke strike AI and if something changed that would
       *affect *	the sidebar, then flag the sidebar to be redrawn.
       */
-      if (NukeStrike.AI(this == PlayerPtr)) {
-        if (this == PlayerPtr) {
-          Map.Column[1].Flag_To_Redraw();
-        }
+      if (NukeStrike.AI(this == PlayerPtr) && (this == PlayerPtr)) {
+        Map.Column[1].Flag_To_Redraw();
       }
     }
 
@@ -1245,10 +1237,8 @@ void HouseClass::AI() {
   **	the sidebar, then flag the sidebar to be redrawn.
   */
   if (AirStrike.Is_Present()) {
-    if (AirStrike.AI(this == PlayerPtr)) {
-      if (this == PlayerPtr) {
-        Map.Column[1].Flag_To_Redraw();
-      }
+    if (AirStrike.AI(this == PlayerPtr) && (this == PlayerPtr)) {
+      Map.Column[1].Flag_To_Redraw();
     }
 
     /*
@@ -1302,11 +1292,10 @@ void HouseClass::AI() {
     /*
     **	Check for just built the building trigger event.
     */
-    if (JustBuilt != STRUCT_NONE) {
-      if (t->Spring(EVENT_BUILD, Class->House, JustBuilt)) {
-        JustBuilt = STRUCT_NONE;
-        continue;
-      }
+    if ((JustBuilt != STRUCT_NONE) &&
+        t->Spring(EVENT_BUILD, Class->House, JustBuilt)) {
+      JustBuilt = STRUCT_NONE;
+      continue;
     }
 
     /*
@@ -1346,32 +1335,29 @@ void HouseClass::AI() {
       /*
       **	All buildings destroyed checker.
       */
-      if (!ActiveBScan) {
-        if (t->Spring(EVENT_BUILDINGS_DESTROYED, Class->House)) {
-          continue;
-        }
+      if ((!ActiveBScan) &&
+          t->Spring(EVENT_BUILDINGS_DESTROYED, Class->House)) {
+        continue;
       }
 
       /*
       **	All units destroyed checker.
       */
-      if (!((ActiveUScan & ~(UNITF_GUNBOAT)) | IScan |
-            (ActiveAScan &
-             ~(AIRCRAFTF_TRANSPORT | AIRCRAFTF_CARGO | AIRCRAFTF_A10)))) {
-        if (t->Spring(EVENT_UNITS_DESTROYED, Class->House)) {
-          continue;
-        }
+      if ((!((ActiveUScan & ~(UNITF_GUNBOAT)) | IScan |
+             (ActiveAScan &
+              ~(AIRCRAFTF_TRANSPORT | AIRCRAFTF_CARGO | AIRCRAFTF_A10)))) &&
+          t->Spring(EVENT_UNITS_DESTROYED, Class->House)) {
+        continue;
       }
 
       /*
       **	All buildings AND units destroyed checker.
       */
-      if (!(ActiveBScan | (ActiveUScan & ~(UNITF_GUNBOAT)) | IScan |
-            (ActiveAScan &
-             ~(AIRCRAFTF_TRANSPORT | AIRCRAFTF_CARGO | AIRCRAFTF_A10)))) {
-        if (t->Spring(EVENT_ALL_DESTROYED, Class->House)) {
-          continue;
-        }
+      if ((!(ActiveBScan | (ActiveUScan & ~(UNITF_GUNBOAT)) | IScan |
+             (ActiveAScan &
+              ~(AIRCRAFTF_TRANSPORT | AIRCRAFTF_CARGO | AIRCRAFTF_A10)))) &&
+          t->Spring(EVENT_ALL_DESTROYED, Class->House)) {
+        continue;
       }
     }
 
@@ -1913,10 +1899,9 @@ void HouseClass::Make_Ally(HousesType house) {
 
         if (object && !object->IsInLimbo && object->Owner() == Class->House) {
           TARGET target = dynamic_cast<TechnoClass*>(object)->TarCom;
-          if (Target_Legal(target) && As_Techno(target)) {
-            if (Is_Ally(As_Techno(target))) {
-              dynamic_cast<TechnoClass*>(object)->TarCom = kTargetNone;
-            }
+          if ((Target_Legal(target) && As_Techno(target)) &&
+              Is_Ally(As_Techno(target))) {
+            dynamic_cast<TechnoClass*>(object)->TarCom = kTargetNone;
           }
         }
       }
@@ -2386,11 +2371,10 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
     ** If the building is valid, not in limbo, not in the process of
     ** being destroyed and not our ally, then we can consider it.
     */
-    if (b && !b->IsInLimbo && b->Strength && !Is_Ally(b)) {
-      if (b->Value() > best || best == -1) {
-        best = b->Value();
-        bestptr = b;
-      }
+    if ((b && !b->IsInLimbo && b->Strength && !Is_Ally(b)) &&
+        (b->Value() > best || best == -1)) {
+      best = b->Value();
+      bestptr = b;
     }
   }
 
@@ -2490,7 +2474,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           **	Since no launch site was found, just bring the missile in
           **	directly from the North map edge.
           */
-          BulletClass* bullet = new BulletClass(BULLET_NUKE_DOWN);
+          auto* bullet = new BulletClass(BULLET_NUKE_DOWN);
           if (bullet) {
             COORDINATE start = Cell_Coord(XY_Cell(Cell_X(cell), 0));
             bullet->Assign_Target(As_Target(cell));
@@ -2629,34 +2613,34 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
     } else {
       if (tech) {
         TechnoClass* builder = tech->Who_Can_Build_Me(false, false);
-        if (builder) {
-          /*
-          **	Ensures that the proximity check is performed even when the
-          *building is *	placed by way of a remote event.
-          */
-          if (tech->What_Am_I() != RTTI_BUILDING ||
-              dynamic_cast<BuildingClass*>(tech)->Passes_Proximity_Check(
-                  cell)) {
-            builder->Transmit_Message(RADIO_HELLO, tech);
-            if (tech->Unlimbo(Cell_Coord(cell))) {
-              factory->Completed();
-              Abandon_Production(type);
+        if (builder &&
+            (tech->What_Am_I() != RTTI_BUILDING ||
+             dynamic_cast<BuildingClass*>(tech)->Passes_Proximity_Check(cell)))
+        /*
+        **	Ensures that the proximity check is performed even when the
+        *building is *	placed by way of a remote event.
+        */
+        {
+          builder->Transmit_Message(RADIO_HELLO, tech);
+          if (tech->Unlimbo(Cell_Coord(cell))) {
+            factory->Completed();
+            Abandon_Production(type);
 
-              if (PlayerPtr == this) {
-                Sound_Effect(VOC_SLAM);
-                Map.Set_Cursor_Shape(nullptr);
-                Map.PendingObjectPtr = nullptr;
-                Map.PendingObject = nullptr;
-                Map.PendingHouse = HOUSE_NONE;
-              }
-              return true;
+            if (PlayerPtr == this) {
+              Sound_Effect(VOC_SLAM);
+              Map.Set_Cursor_Shape(nullptr);
+              Map.PendingObjectPtr = nullptr;
+              Map.PendingObject = nullptr;
+              Map.PendingHouse = HOUSE_NONE;
             }
-            if (this == PlayerPtr) {
-              Speak(VOX_DEPLOY);
-            }
-            builder->Transmit_Message(RADIO_OVER_OUT);
+            return true;
           }
+          if (this == PlayerPtr) {
+            Speak(VOX_DEPLOY);
+          }
+          builder->Transmit_Message(RADIO_OVER_OUT);
         }
+
         return false;
       }
       // Play a bad sound here?
@@ -3273,18 +3257,16 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         */
         for (int index = 0; index < TeamTypes.Count(); index++) {
           const TeamTypeClass* team = TeamTypes.Ptr(index);
-          if (team) {
-            if (team->House == Class->House && team->IsPrebuilt &&
-                (!team->IsAutocreate || IsAlerted)) {
-              for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
-                   subindex++) {
-                if (team->Class[subindex]->What_Am_I() == RTTI_UNITTYPE) {
-                  int subtype =
-                      dynamic_cast<const UnitTypeClass*>(team->Class[subindex])
-                          ->Type;
-                  counter[subtype] = std::max<int>(counter[subtype],
-                                                   team->DesiredNum[subindex]);
-                }
+          if (team && (team->House == Class->House && team->IsPrebuilt &&
+                       (!team->IsAutocreate || IsAlerted))) {
+            for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
+                 subindex++) {
+              if (team->Class[subindex]->What_Am_I() == RTTI_UNITTYPE) {
+                int subtype =
+                    dynamic_cast<const UnitTypeClass*>(team->Class[subindex])
+                        ->Type;
+                counter[subtype] =
+                    std::max<int>(counter[subtype], team->DesiredNum[subindex]);
               }
             }
           }
@@ -3389,21 +3371,19 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         */
         for (int index = 0; index < TeamTypes.Count(); index++) {
           const TeamTypeClass* team = TeamTypes.Ptr(index);
-          if (team) {
-            if (team->House == Class->House && team->IsPrebuilt &&
-                (!team->IsAutocreate || IsAlerted)) {
-              for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
-                   subindex++) {
-                if (team->Class[subindex]->What_Am_I() == RTTI_INFANTRYTYPE) {
-                  int subtype = dynamic_cast<const InfantryTypeClass*>(
-                                    team->Class[subindex])
-                                    ->Type;
-                  //									counter[subtype]
-                  //= 1;
-                  counter[subtype] = std::max<int>(counter[subtype],
-                                                   team->DesiredNum[subindex]);
-                  counter[subtype] = std::min(counter[subtype], 5);
-                }
+          if (team && (team->House == Class->House && team->IsPrebuilt &&
+                       (!team->IsAutocreate || IsAlerted))) {
+            for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
+                 subindex++) {
+              if (team->Class[subindex]->What_Am_I() == RTTI_INFANTRYTYPE) {
+                int subtype = dynamic_cast<const InfantryTypeClass*>(
+                                  team->Class[subindex])
+                                  ->Type;
+                //									counter[subtype]
+                //= 1;
+                counter[subtype] =
+                    std::max<int>(counter[subtype], team->DesiredNum[subindex]);
+                counter[subtype] = std::min(counter[subtype], 5);
               }
             }
           }
@@ -3524,12 +3504,10 @@ bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
     **	Handle the flag home cell:
     **	If 'set_home' is set, clear the home value & the cell's overlay
     */
-    if (set_home) {
-      if (FlagHome) {
-        Map[FlagHome].Overlay = OVERLAY_NONE;
-        Map.Flag_Cell(FlagHome);
-        FlagHome = 0;
-      }
+    if (set_home && FlagHome) {
+      Map[FlagHome].Overlay = OVERLAY_NONE;
+      Map.Flag_Cell(FlagHome);
+      FlagHome = 0;
     }
 
     return rc;
@@ -3706,7 +3684,9 @@ bool HouseClass::Flag_Attach(UnitClass* object, bool set_home) {
 void HouseClass::MPlayer_Defeated() {
   Validate();
   char txt[80];
-  int i, j, k;
+  int i;
+  int j;
+  int k;
   unsigned char id;
   HousesType house;
   HouseClass* hptr;

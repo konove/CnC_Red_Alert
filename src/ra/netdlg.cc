@@ -898,9 +898,15 @@ static const char* const kFrenchMissionNames[] = {
     // #endif
     nullptr};
 
-const char* const* EngMisStr = config::kIsGerman   ? kGermanMissionNames
-                               : config::kIsFrench ? kFrenchMissionNames
-                                                   : kEnglishMissionNames;
+const char* const* EngMisStr = [] noexcept -> const char* const* {
+  if (config::kIsGerman) {
+    return kGermanMissionNames;
+  }
+  if (config::kIsFrench) {
+    return kFrenchMissionNames;
+  }
+  return kEnglishMissionNames;
+}();
 
 /*
 ******************************** Prototypes *********************************
@@ -959,11 +965,9 @@ bool Init_Network() {
   //------------------------------------------------------------------------
   //	Set up the IPX manager to cross a bridge
   //------------------------------------------------------------------------
-  if (Session.Type != GAME_INTERNET) {
-    if (Session.IsBridge) {
-      Session.BridgeNet.Get_Address(net, node);
-      Ipx.Set_Bridge(net);
-    }
+  if ((Session.Type != GAME_INTERNET) && Session.IsBridge) {
+    Session.BridgeNet.Get_Address(net, node);
+    Ipx.Set_Bridge(net);
   }
 
   return true;
@@ -1255,18 +1259,16 @@ bool Remote_Connect() {
     //.....................................................................
     //	1 = user requests New Network Game
     //.....................................................................
-    if (rc == 1) {
-      //..................................................................
-      //	Pop up the New Network Game dialog; if user selects OK, return
-      //	'true'; otherwise, return to the Join Dialog.
-      //..................................................................
-      if (Net_New_Dialog()) {
-        Session.Write_MultiPlayer_Settings();
-        Session.NetStealth = stealth;
-        Session.NetOpen = false;
+    //..................................................................
+    //	Pop up the New Network Game dialog; if user selects OK, return
+    //	'true'; otherwise, return to the Join Dialog.
+    //..................................................................
+    if ((rc == 1) && Net_New_Dialog()) {
+      Session.Write_MultiPlayer_Settings();
+      Session.NetStealth = stealth;
+      Session.NetOpen = false;
 
-        return true;
-      }
+      return true;
     }
   }
 
@@ -2277,7 +2279,8 @@ static int Net_Join_Dialog() {
                                     0, &Session.BridgeNet);
           }
 
-          while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
+          while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+          }
 
           //............................................................
           // exit the dialog
@@ -2481,18 +2484,17 @@ static int Net_Join_Dialog() {
             int current_drive = CCFileClass::Get_CD_Drive();
             int index = Get_CD_Index(current_drive, 1 * 60);
             bool needcd = false;
-            if (IsMissionCounterstrike(Session.ScenarioFileName)) {
-              if (index != 2 && index != 3) {
-                RequiredCD = 2;
-                needcd = true;
-              }
+            if (IsMissionCounterstrike(Session.ScenarioFileName) &&
+                (index != 2 && index != 3)) {
+              RequiredCD = 2;
+              needcd = true;
             }
-            if (IsMissionAftermath(Session.ScenarioFileName)) {
-              if (index != 3) {
-                RequiredCD = 3;
-                needcd = true;
-              }
+
+            if (IsMissionAftermath(Session.ScenarioFileName) && (index != 3)) {
+              RequiredCD = 3;
+              needcd = true;
             }
+
             if (needcd) {
               /*
               ** We should have the scenario but the wrong disk is in.
@@ -2503,7 +2505,8 @@ static int Net_Join_Dialog() {
               Ipx.Send_Global_Message(&Session.GPacket,
                                       sizeof(GlobalPacketType), 1,
                                       &Session.HostAddress);
-              while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
+              while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+              }
               ready_packet_was_sent = true;
 
               if (!Force_CD_Available(RequiredCD)) {
@@ -2543,7 +2546,8 @@ static int Net_Join_Dialog() {
             Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType),
                                     1, &Session.HostAddress);
 
-            while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
+            while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+            }
           }
         } else {
           Session.Options.ScenarioIndex = 1;  // We dont care what it
@@ -2895,7 +2899,8 @@ static int Net_Join_Dialog() {
                                 &Session.BridgeNet);
       }
 
-      while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
+      while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+      }
 
       rc = -1;
 
@@ -3049,13 +3054,16 @@ static int Request_To_Join(char* playername, int join_index, HousesType house,
   // presence of Aftermath expansion.
   if (Is_Aftermath_Installed()) {
     //		debugprint( "Guest tells host 'I have Aftermath'\n" );
-    Session.GPacket.PlayerInfo.MinVersion = static_cast<int>(VerNum.Min_Version()) | 0x80000000;
+    Session.GPacket.PlayerInfo.MinVersion =
+        static_cast<int>(VersionClass::Min_Version()) | 0x80000000;
   } else {
     //		debugprint( "Guest tells host 'I don't have
     // Aftermath'\n" );
-    Session.GPacket.PlayerInfo.MinVersion = static_cast<int>(VerNum.Min_Version());
+    Session.GPacket.PlayerInfo.MinVersion =
+        static_cast<int>(VersionClass::Min_Version());
   }
-  Session.GPacket.PlayerInfo.MaxVersion = static_cast<std::uint32_t>(VerNum.Max_Version());
+  Session.GPacket.PlayerInfo.MaxVersion =
+      static_cast<std::uint32_t>(VersionClass::Max_Version());
   Session.GPacket.PlayerInfo.CheatCheck = RuleINI.Get_Unique_ID();
 
   Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
@@ -3644,7 +3652,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                 &Session.BridgeNet);
       }
 
-      while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
+      while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+      }
 
       Session.GameName[0] = 0;
 
@@ -3697,7 +3706,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       // presence of Aftermath expansion.
       unsigned long lVersion = Session.GPacket.ScenarioInfo.Version &
                                ~0x80000000;  //	Actual version number.
-      Session.CommProtocol = VerNum.Version_Protocol(lVersion);
+      Session.CommProtocol = VersionClass::Version_Protocol(lVersion);
       bAftermathMultiplayer = Session.GPacket.ScenarioInfo.Version & 0x80000000;
       //			if( bAftermathMultiplayer )
       //				debugprint( "Guest hears host say 'This
@@ -3708,14 +3717,14 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
 
       if (Session.Options.Tiberium) {
         Special.IsTGrowth = 1;
-        Rule.IsTGrowth = 1;
+        Rule.IsTGrowth = true;
         Special.IsTSpread = 1;
-        Rule.IsTSpread = 1;
+        Rule.IsTSpread = true;
       } else {
         Special.IsTGrowth = 0;
-        Rule.IsTGrowth = 0;
+        Rule.IsTGrowth = false;
         Special.IsTSpread = 0;
-        Rule.IsTSpread = 0;
+        Rule.IsTSpread = false;
       }
 
       /*...............................................................
@@ -4126,7 +4135,8 @@ static int Net_New_Dialog() {
   long ok_timer = 0;  // for timing OK button
   int index;          // index for rejecting a player
   int rc = 0;
-  int i, j;
+  int i;
+  int j;
   char* item;
   int tabs[] = {77 * 2};       // tabs for player list box
   int optiontabs[] = {8 * 2};  // tabs for option list box
@@ -4281,17 +4291,17 @@ static int Net_New_Dialog() {
         break;
       }
     }
-    if (EngMisStr[j] == nullptr) {
-      // ajw Added Aftermath installed checks (before, it was
-      // assumed). Added officialness check. Add mission if
-      // it's available to us.
-      if (!Session.Scenarios[i]->Get_Official() ||
-          ((!IsMissionCounterstrike(Session.Scenarios[i]->Get_Filename()) ||
-            Is_Counterstrike_Installed()) &&
-           (!IsMissionAftermath(Session.Scenarios[i]->Get_Filename()) ||
-            Is_Aftermath_Installed()))) {
-        scenariolist.Add_Item(Session.Scenarios[i]->Description());
-      }
+    if ((EngMisStr[j] == nullptr) &&
+        (!Session.Scenarios[i]->Get_Official() ||
+         ((!IsMissionCounterstrike(Session.Scenarios[i]->Get_Filename()) ||
+           Is_Counterstrike_Installed()) &&
+          (!IsMissionAftermath(Session.Scenarios[i]->Get_Filename()) ||
+           Is_Aftermath_Installed()))))
+    // ajw Added Aftermath installed checks (before, it was
+    // assumed). Added officialness check. Add mission if
+    // it's available to us.
+    {
+      scenariolist.Add_Item(Session.Scenarios[i]->Description());
     }
   }
 
@@ -4715,7 +4725,8 @@ static int Net_New_Dialog() {
                                 nullptr);
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
                                 nullptr);
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
+        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        }
 
         //...............................................................
         //	Broadcast my sign-off over a bridged network if there is one
@@ -4726,7 +4737,8 @@ static int Net_New_Dialog() {
           Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
                                   &Session.BridgeNet);
         }
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
+        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        }
 
         //...............................................................
         //	And now, just be absolutely sure, send my sign-off to each
@@ -4742,7 +4754,8 @@ static int Net_New_Dialog() {
                                   &Session.Players[i]->Address);
           Ipx.Service();
         }
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
+        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        }
         Session.GameName[0] = 0;
         process = false;
         rc = false;
@@ -5029,17 +5042,16 @@ static int Net_New_Dialog() {
       if (retcode &&
           Session.GProductID == IPXGlobalConnClass::COMMAND_AND_CONQUER0) {
         for (i = 1; i < Session.Players.Count(); i++) {
-          if (Session.Players[i]->Address == Session.GAddress) {
-            if (!responses[i]) {
-              if (Session.GPacket.Command == NET_REQ_SCENARIO) {
-                responses[i] = Session.GPacket.Command;
-                send_scenario = true;
-                num_responses++;
-              }
-              if (Session.GPacket.Command == NET_READY_TO_GO) {
-                responses[i] = Session.GPacket.Command;
-                num_responses++;
-              }
+          if ((Session.Players[i]->Address == Session.GAddress) &&
+              (!responses[i])) {
+            if (Session.GPacket.Command == NET_REQ_SCENARIO) {
+              responses[i] = Session.GPacket.Command;
+              send_scenario = true;
+              num_responses++;
+            }
+            if (Session.GPacket.Command == NET_READY_TO_GO) {
+              responses[i] = Session.GPacket.Command;
+              num_responses++;
             }
           }
         }
@@ -5047,10 +5059,9 @@ static int Net_New_Dialog() {
     } while (num_responses < Session.Players.Count() - 1 &&
              response_timer.HasTimeLeft());
 
-    if (Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official()) {
-      if (!Force_Scenario_Available(Scen.ScenarioName)) {
-        Emergency_Exit(EXIT_FAILURE);
-      }
+    if (Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official() &&
+        (!Force_Scenario_Available(Scen.ScenarioName))) {
+      Emergency_Exit(EXIT_FAILURE);
     }
 
     /*
@@ -5297,7 +5308,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       // If the player is accepted, our mutually-accepted version may be
       // different; set the CommProtocol accordingly.
       //..................................................................
-      Session.CommProtocol = VerNum.Version_Protocol(version);
+      Session.CommProtocol = VersionClass::Version_Protocol(version);
 
       //..................................................................
       //	Add node to the Vector list
@@ -5493,7 +5504,10 @@ uint32_t Compute_Name_CRC(char* name) {
  *=========================================================================*/
 void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
                           unsigned long timeval) {
-  static int x, y, w, h;
+  static int x;
+  static int y;
+  static int w;
+  static int h;
   int id;
   char buf1[40] = {0};
   char buf2[40] = {0};

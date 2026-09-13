@@ -46,6 +46,7 @@ class ArchiveWriter;
 
 #include <cstddef>
 
+#include "absl/base/attributes.h"
 #include "td/defines.h"
 #include "td/object.h"
 #include "td/stage.h"
@@ -59,7 +60,10 @@ class ArchiveWriter;
 class AnimClass final : public ObjectClass, private StageClass {
  public:
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* ptr);
   AnimClass() { IsActive = true; }
   AnimClass(AnimType animnum, COORDINATE coord, unsigned char timedelay = 0,
@@ -82,7 +86,7 @@ class AnimClass final : public ObjectClass, private StageClass {
   void Attach_To(ObjectClass* obj);
   void Make_Invisible() { IsInvisible = true; }
 
-  [[nodiscard]] bool Can_Place_Here(COORDINATE /*unused*/) const {
+  [[nodiscard]] static bool Can_Place_Here(COORDINATE /*unused*/) {
     return true;
   }
   bool Mark(MarkType mark = MARK_CHANGE) override;

@@ -5,6 +5,7 @@
 #include <bit>
 #include <cstdint>
 
+#include "absl/base/attributes.h"
 #include "absl/log/check.h"
 
 namespace port {
@@ -15,7 +16,7 @@ namespace port {
 // ReadUnaligned for byte offsets whose alignment and object lifetime are not
 // guaranteed.
 template <typename T>
-T* AlignedObject(void* storage) {
+T* AlignedObject(void* storage ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   CHECK_EQ(std::bit_cast<uintptr_t>(storage) % alignof(T), 0);
   return static_cast<T*>(storage);
 }
@@ -23,7 +24,7 @@ T* AlignedObject(void* storage) {
 // Recovers a mutable object whose pointer was stored opaquely as const void*.
 // The original object must be mutable and remain alive. Null is permitted.
 template <typename T>
-T* RestoreMutableObject(const void* storage) {
+T* RestoreMutableObject(const void* storage ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   // The const qualifier belongs to the opaque view, not the original object.
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
   return AlignedObject<T>(const_cast<void*>(storage));

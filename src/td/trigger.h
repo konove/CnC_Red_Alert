@@ -47,6 +47,7 @@ class ArchiveWriter;
 #include <cstdint>
 #include <cstring>
 
+#include "absl/base/attributes.h"
 #include "td/defines.h"
 #include "td/object.h"
 #include "td/teamtype.h"
@@ -175,7 +176,9 @@ class TriggerClass {
   //		void Set_House(HousesType house) {House = house;}
   //		long Get_Data() const {return(Data);}
   //		void Set_Data(long credits) {Data = credits;}
-  [[nodiscard]] const char* Get_Name() const { return Name; }
+  [[nodiscard]] const char* Get_Name() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return Name;
+  }
   void Set_Name(const char* buf) {
     strncpy(Name, buf, sizeof(Name));
     Name[sizeof(Name) - 1] = '\0';
@@ -198,7 +201,10 @@ class TriggerClass {
   **	Overloaded operators
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* ptr);
 
   /*

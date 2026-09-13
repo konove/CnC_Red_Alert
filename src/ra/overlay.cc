@@ -172,81 +172,80 @@ bool OverlayClass::Mark(MarkType mark) {
   assert(Overlays.ID(this) == ID);
   assert(IsActive);
 
-  if (ObjectClass::Mark(mark)) {
-    if (mark == MARK_DOWN) {
-      CELL cell = Coord_Cell(Coord);
-      CellClass* cellptr = &Map[cell];
+  if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
+    CELL cell = Coord_Cell(Coord);
+    CellClass* cellptr = &Map[cell];
 
-      /*
-      **	Walls have special logic when they are marked down.
-      */
-      if (Class->IsWall) {
-        if (cellptr->Is_Clear_To_Build()) {
-          cellptr->Overlay = Class->Type;
-          cellptr->OverlayData = 0;
-          cellptr->Redraw_Objects();
-          cellptr->Wall_Update();
-          Map.Zone_Reset(Class->IsCrushable ? MZONE_NORMAL
-                                            : MZONE_NORMAL | MZONE_CRUSHER);
+    /*
+    **	Walls have special logic when they are marked down.
+    */
+    if (Class->IsWall) {
+      if (cellptr->Is_Clear_To_Build()) {
+        cellptr->Overlay = Class->Type;
+        cellptr->OverlayData = 0;
+        cellptr->Redraw_Objects();
+        cellptr->Wall_Update();
+        Map.Zone_Reset(Class->IsCrushable ? MZONE_NORMAL
+                                          : MZONE_NORMAL | MZONE_CRUSHER);
 
-          /*
-          **	Flag ownership of the cell if the 'global' ownership flag
-          *indicates that this *	is necessary for the overlay.
-          */
-          if (ToOwn != HOUSE_NONE) {
-            cellptr->Owner = ToOwn;
-          }
+        /*
+        **	Flag ownership of the cell if the 'global' ownership flag
+        *indicates that this *	is necessary for the overlay.
+        */
+        if (ToOwn != HOUSE_NONE) {
+          cellptr->Owner = ToOwn;
+        }
 
+      } else {
+        delete this;
+        return false;
+      }
+    } else {
+      bool clear = false;
+      if (!ScenarioInit) {
+        if (Class->Type == OVERLAY_WATER_CRATE) {
+          clear = cellptr->Is_Clear_To_Move(SPEED_FLOAT, false, false);
         } else {
-          delete this;
-          return false;
+          if (Class->Type == OVERLAY_STEEL_CRATE ||
+              Class->Type == OVERLAY_WOOD_CRATE) {
+            clear = cellptr->Is_Clear_To_Move(SPEED_TRACK, false, false);
+          } else {
+            clear = cellptr->Is_Clear_To_Move(SPEED_TRACK, true, true);
+          }
         }
       } else {
-        bool clear = false;
-        if (!ScenarioInit) {
-          if (Class->Type == OVERLAY_WATER_CRATE) {
-            clear = cellptr->Is_Clear_To_Move(SPEED_FLOAT, false, false);
-          } else {
-            if (Class->Type == OVERLAY_STEEL_CRATE ||
-                Class->Type == OVERLAY_WOOD_CRATE) {
-              clear = cellptr->Is_Clear_To_Move(SPEED_TRACK, false, false);
-            } else {
-              clear = cellptr->Is_Clear_To_Move(SPEED_TRACK, true, true);
-            }
-          }
-        } else {
-          clear = true;
-        }
-
-        if ((ScenarioInit || cellptr->Overlay == OVERLAY_NONE) && clear) {
-          cellptr->Overlay = Class->Type;
-          cellptr->OverlayData = 0;
-
-          cellptr->Redraw_Objects();
-          if (Class->Land == LAND_TIBERIUM) {
-            cellptr->OverlayData = 1;
-            cellptr->Tiberium_Adjust();
-          }
-        }
+        clear = true;
       }
 
-      /*
-      **	*****  Is this really needed?
-      */
-      cellptr->Recalc_Attributes();
+      if ((ScenarioInit || cellptr->Overlay == OVERLAY_NONE) && clear) {
+        cellptr->Overlay = Class->Type;
+        cellptr->OverlayData = 0;
 
-      /*
-      **	Remove the overlay and make sure the system thinks it was never
-      *placed down!
-      */
-      Map.Overlap_Up(Coord_Cell(Coord), this);
-      IsDown = false;
-      IsInLimbo = true;
-
-      delete this;
-      return true;
+        cellptr->Redraw_Objects();
+        if (Class->Land == LAND_TIBERIUM) {
+          cellptr->OverlayData = 1;
+          cellptr->Tiberium_Adjust();
+        }
+      }
     }
+
+    /*
+    **	*****  Is this really needed?
+    */
+    cellptr->Recalc_Attributes();
+
+    /*
+    **	Remove the overlay and make sure the system thinks it was never
+    *placed down!
+    */
+    Map.Overlap_Up(Coord_Cell(Coord), this);
+    IsDown = false;
+    IsInLimbo = true;
+
+    delete this;
+    return true;
   }
+
   return false;
 }
 
@@ -280,32 +279,32 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
 
         uncomp.Get(&classid, sizeof(classid));
 
-        if (classid != OVERLAY_NONE) {
-          if (Session.Type == GAME_NORMAL ||
-              !OverlayTypeClass::As_Reference(classid).IsCrate) {
-            /*
-            **	Don't allow placement of overlays on the top or bottom rows of
-            **	the map.
-            */
-            if (cell >= MAP_CELL_W && cell <= MAP_CELL_TOTAL - MAP_CELL_W) {
-              new OverlayClass(classid, cell);
+        if ((classid != OVERLAY_NONE) &&
+            (Session.Type == GAME_NORMAL ||
+             !OverlayTypeClass::As_Reference(classid).IsCrate) &&
+            (cell >= MAP_CELL_W && cell <= MAP_CELL_TOTAL - MAP_CELL_W))
 
-              // Assign house ownership to cells with walls in 'em.
-              if (OverlayTypeClass::As_Reference(classid).IsWall) {
-                HousesType owner = HOUSE_NONE;
-                int distance = 0x7FFFFFFF;
-                for (int index = 0; index < Buildings.Count(); index++) {
-                  BuildingClass* building = Buildings.Ptr(index);
-                  int newdist =
-                      ::Distance(building->Center_Coord(), Cell_Coord(cell));
-                  if (newdist < distance) {
-                    distance = newdist;
-                    owner = building->Owner();
-                  }
-                }
-                Map[cell].Owner = owner;
+        /*
+        **	Don't allow placement of overlays on the top or bottom rows of
+        **	the map.
+        */
+        {
+          new OverlayClass(classid, cell);
+
+          // Assign house ownership to cells with walls in 'em.
+          if (OverlayTypeClass::As_Reference(classid).IsWall) {
+            HousesType owner = HOUSE_NONE;
+            int distance = 0x7FFFFFFF;
+            for (int index = 0; index < Buildings.Count(); index++) {
+              BuildingClass* building = Buildings.Ptr(index);
+              int newdist =
+                  ::Distance(building->Center_Coord(), Cell_Coord(cell));
+              if (newdist < distance) {
+                distance = newdist;
+                owner = building->Owner();
               }
             }
+            Map[cell].Owner = owner;
           }
         }
       }
@@ -323,31 +322,31 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
       /*
       **	Don't allow placement of crates in the multiplayer scenarios.
       */
-      if (classid != OVERLAY_NONE &&
-          (Session.Type == GAME_NORMAL ||
-           !OverlayTypeClass::As_Reference(classid).IsCrate)) {
-        /*
-        **	Don't allow placement of overlays on the top or bottom rows of
-        **	the map.
-        */
-        if (cell >= MAP_CELL_W && cell <= MAP_CELL_TOTAL - MAP_CELL_W) {
-          new OverlayClass(classid, cell);
+      if ((classid != OVERLAY_NONE &&
+           (Session.Type == GAME_NORMAL ||
+            !OverlayTypeClass::As_Reference(classid).IsCrate)) &&
+          (cell >= MAP_CELL_W && cell <= MAP_CELL_TOTAL - MAP_CELL_W))
+      /*
+      **	Don't allow placement of overlays on the top or bottom rows of
+      **	the map.
+      */
+      {
+        new OverlayClass(classid, cell);
 
-          // Assign house ownership to cells with walls in 'em.
-          if (OverlayTypeClass::As_Reference(classid).IsWall) {
-            HousesType owner = HOUSE_NONE;
-            int distance = 0x7FFFFFFF;
-            for (int j = 0; j < Buildings.Count(); j++) {
-              BuildingClass* building = Buildings.Ptr(j);
-              int newdist =
-                  ::Distance(building->Center_Coord(), Cell_Coord(cell));
-              if (newdist < distance) {
-                distance = newdist;
-                owner = building->Owner();
-              }
+        // Assign house ownership to cells with walls in 'em.
+        if (OverlayTypeClass::As_Reference(classid).IsWall) {
+          HousesType owner = HOUSE_NONE;
+          int distance = 0x7FFFFFFF;
+          for (int j = 0; j < Buildings.Count(); j++) {
+            BuildingClass* building = Buildings.Ptr(j);
+            int newdist =
+                ::Distance(building->Center_Coord(), Cell_Coord(cell));
+            if (newdist < distance) {
+              distance = newdist;
+              owner = building->Owner();
             }
-            Map[cell].Owner = owner;
           }
+          Map[cell].Owner = owner;
         }
       }
     }

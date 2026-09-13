@@ -33,6 +33,7 @@
 // from Red Alert's global of that name, then had to take it out again --
 // "Can't use namespaces in Watcom 10.5 it seems". The global has since been
 // renamed IsNetworkHost, so there is nothing left to collide with.
+#include "absl/base/attributes.h"
 #include "port/win32/win32_com.h"
 #include "port/win32/win32_types.h"
 #include "ra/config.h"
@@ -98,7 +99,7 @@ class RAChatEventSink
     :  /////public CComObjectRoot, /////public IConnectionPoint,
        public IChatEvent {
  public:
-  explicit RAChatEventSink(WolapiObject* pOwner);
+  explicit RAChatEventSink(WolapiObject* pOwner ABSL_ATTRIBUTE_LIFETIME_BOUND);
   COM_SINK_DESTRUCTOR(RAChatEventSink);
   RAChatEventSink(const RAChatEventSink&) = delete;
   RAChatEventSink& operator=(const RAChatEventSink&) = delete;
@@ -167,7 +168,7 @@ class RAChatEventSink
   void DeleteUserIPList();
   unsigned long GetUserIP(const char* szName) const;
 
-  void ActionEggSound(const char* szMessage);
+  static void ActionEggSound(const char* szMessage);
 
   //	These vars are rather hackish. Basically, they are set before a callback
   // is expected to be fired, and 	then checked immediately afterwards. The
@@ -237,8 +238,8 @@ class RAChatEventSink
 
   void DeleteChannelList();  //	Deletes from heap all channels pointed to
                              // through pChannelList.
-  bool DownloadUpdates(Update* pUpdateList, int iUpdates);
-  bool bSpecialMessage(const char* szMessage);
+  static bool DownloadUpdates(Update* pUpdateList, int iUpdates);
+  static bool bSpecialMessage(const char* szMessage);
   void InsertUserSorted(User* pUserNew);
 
  private:
@@ -295,7 +296,8 @@ class RANetUtilEventSink :
     //    public CComObjectRoot,
     public INetUtilEvent {
  public:
-  explicit RANetUtilEventSink(WolapiObject* pOwner);
+  explicit RANetUtilEventSink(
+      WolapiObject* pOwner ABSL_ATTRIBUTE_LIFETIME_BOUND);
   COM_SINK_DESTRUCTOR(RANetUtilEventSink);
   RANetUtilEventSink(const RANetUtilEventSink&) = delete;
   RANetUtilEventSink& operator=(const RANetUtilEventSink&) = delete;
@@ -342,8 +344,15 @@ class RANetUtilEventSink :
 
 // SKU reported to WOLAPI for the purpose of finding patches: one per
 // language release.
-inline constexpr int kGameSku =
-    config::kIsEnglish ? 0x1500 : config::kIsGerman ? 0x1502 : 0x1503;
+inline constexpr int kGameSku = [] {
+  if (config::kIsEnglish) {
+    return 0x1500;
+  }
+  if (config::kIsGerman) {
+    return 0x1502;
+  }
+  return 0x1503;
+}();
 
 inline constexpr int kGameVersion = 0x00030003;
 #define GAME_TYPE 21

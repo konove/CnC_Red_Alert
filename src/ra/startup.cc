@@ -91,7 +91,7 @@
 
 // #include "ra/woldebug.h"
 
-static void Print_Error_Exit(char* string);
+[[noreturn]] static void Print_Error_Exit(char* string);
 
 extern bool RA95AlreadyRunning;
 #ifdef _WIN32

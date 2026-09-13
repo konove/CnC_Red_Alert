@@ -43,13 +43,15 @@
 #ifndef CNC_RED_ALERT_RA_CHEKLIST_H_
 #define CNC_RED_ALERT_RA_CHEKLIST_H_
 
+#include "absl/base/attributes.h"
 #include "ra/defines.h"
 #include "ra/list.h"
 #include "sdllib/keyboard.h"
 
 class CheckObject {
  public:
-  explicit CheckObject(const char* text = nullptr, bool checked = false)
+  explicit CheckObject(const char* text ABSL_ATTRIBUTE_LIFETIME_BOUND = nullptr,
+                       bool checked = false)
       : Text(text), IsChecked(checked) {}
 
   const char* Text;

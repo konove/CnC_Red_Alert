@@ -282,7 +282,8 @@ void ScoreScaleClass::Update() {
 }
 
 int Alloc_Object(ScoreAnimClass* obj) {
-  int i, ret;
+  int i;
+  int ret;
 
   for (i = ret = 0; i < MAXSCOREOBJS; i++) {
     if (!ScoreObjs[i]) {
@@ -878,7 +879,8 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
 
 void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
                               int gkilled, int nkilled, int ypos) {
-  int i, maxval;
+  int i;
+  int maxval;
   int xpos = 174;
   int house = PlayerPtr->Class->House == HOUSE_USSR ||
               PlayerPtr->Class->House == HOUSE_UKRAINE;  // 0 or 1
@@ -890,7 +892,8 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
     yellowptr = redptr;
     redptr = tempptr;
   }
-  int gdikilled = gkilled, nodkilled = nkilled;
+  int gdikilled = gkilled;
+  int nodkilled = nkilled;
 
   maxval = std::max(gdikilled, nodkilled);
   if (!maxval) {
@@ -965,7 +968,10 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
 }
 
 void ScoreClass::Do_Nod_Casualties_Graph() {
-  int i, gdikilled, nodkilled, maxval;
+  int i;
+  int gdikilled;
+  int nodkilled;
+  int maxval;
 
   const void* e1ptr = MFCD::Retrieve("E1.SHP");
 
@@ -1070,8 +1076,10 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
                            config::kIsGerman ? 162 : 182};
   static int _credty[2] = {config::kIsGerman ? 173 : 179 - 12, 62};
 
-  int credobj, i;
-  int minval, add;
+  int credobj;
+  int i;
+  int minval;
+  int add;
 
   const void* credshape =
       MFCD::Retrieve(house ? "CREDSUHR.SHP" : "CREDSAHR.SHP");
@@ -1192,7 +1200,8 @@ void ScoreClass::Count_Up_Print(const char* str, int percent, int maxval,
 void ScoreClass::Input_Name(char str[], int xpos, int ypos,
                             const unsigned char pal[]) {
   int key = 0;
-  int ascii, index = 0;
+  int ascii;
+  int index = 0;
 
   const void* keystrok = MFCD::Retrieve("KEYSTROK.AUD");
 
@@ -1213,7 +1222,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
     Animate_Score_Objs();
     Animate_Cursor(index, ypos);
     if (Keyboard->Check()) {
-      key = Keyboard->To_ASCII(Keyboard->Get()) & 0xFF;
+      key = KeyboardClass::To_ASCII(Keyboard->Get()) & 0xFF;
       Call_Back();
 
       if (index == MAX_FAMENAME_LENGTH - 2) {
@@ -1226,11 +1235,11 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
       ** If they hit 'backspace' when they're on the last letter,
       ** turn it into a space instead.
       */
-      if (key == KA_BACKSPACE && index == MAX_FAMENAME_LENGTH - 2) {
-        if (str[index] && str[index] != 32) {
-          key = 32;
-        }
+      if ((key == KA_BACKSPACE && index == MAX_FAMENAME_LENGTH - 2) &&
+          (str[index] && str[index] != 32)) {
+        key = 32;
       }
+
       if (key == KA_BACKSPACE) {  // if (key == KN_BACKSPACE) {
         if (index) {
           str[--index] = 0;
@@ -1276,7 +1285,8 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
 }
 
 void Animate_Cursor(int pos, int ypos) {
-  static int _lastpos = 0, _state;
+  static int _lastpos = 0;
+  static int _state;
   static Timer<SystemTickSource> _timer;
 
   ypos += 6;  // move cursor to bottom of letter
@@ -1498,12 +1508,12 @@ void Call_Back_Delay(int time) {
   time = std::clamp(time, 0, 60);
   Timer<SystemTickSource> callbackcd{0};
 
-  if (!ControlQ) {
-    if (Keyboard->Down(KN_LCTRL) && Keyboard->Down(KN_Q)) {
-      ControlQ = 1;
-      Keyboard->Clear();
-    }
+  if ((!ControlQ) &&
+      (KeyboardClass::Down(KN_LCTRL) && KeyboardClass::Down(KN_Q))) {
+    ControlQ = 1;
+    Keyboard->Clear();
   }
+
   if (ControlQ) {
     time = 0;
   }
@@ -1556,10 +1566,11 @@ static char* Int_Print(int a) {
 
 void Multi_Score_Presentation() {
   char remap[16];
-  GraphicBufferClass* pseudoseenbuff =
+  auto* pseudoseenbuff =
       new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
 
-  int i, k;
+  int i;
+  int k;
   const void* oldfont;
   int oldfontxspacing = FontXSpacing;
 
@@ -1604,11 +1615,18 @@ void Multi_Score_Presentation() {
   Call_Back_Delay(5);
   Alloc_Object(new ScorePrintClass(TXT_COMMANDER, 27, 31, greenpal));
   Call_Back_Delay(10);
-  Alloc_Object(new ScorePrintClass(TXT_BATTLES_WON,
-                                   config::kIsFrench   ? 113
-                                   : config::kIsGerman ? 118
-                                                       : 126,
-                                   31, greenpal));
+  Alloc_Object(new ScorePrintClass(
+      TXT_BATTLES_WON,
+      [] {
+        if (config::kIsFrench) {
+          return 113;
+        }
+        if (config::kIsGerman) {
+          return 118;
+        }
+        return 126;
+      }(),
+      31, greenpal));
   Call_Back_Delay(13);
   Alloc_Object(new ScorePrintClass(TXT_KILLS_COLON, 249, 31, greenpal));
   Call_Back_Delay(6);

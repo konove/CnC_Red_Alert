@@ -84,7 +84,7 @@ static unsigned AverageFramesPerSecond;
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void LogicClass::Debug_Dump(MonoClass* mono) const {
+void LogicClass::Debug_Dump(MonoClass* mono) {
 #define RECORDCOUNT 40
 #define RECORDHEIGHT 21
   static struct {

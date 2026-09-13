@@ -92,17 +92,16 @@
  * HISTORY: * 07/28/1995 JLB : Created. *
  *=============================================================================================*/
 bool SuperClass::Suspend(bool on) {
-  if (IsPresent && !IsReady && !IsOneTime) {
-    if (on != IsSuspended) {
-      if (on) {
-        SuspendTime = static_cast<int>(Control);
-      } else {
-        Control = SuspendTime;
-      }
-      IsSuspended = on;
-      return true;
+  if ((IsPresent && !IsReady && !IsOneTime) && (on != IsSuspended)) {
+    if (on) {
+      SuspendTime = static_cast<int>(Control);
+    } else {
+      Control = SuspendTime;
     }
+    IsSuspended = on;
+    return true;
   }
+
   return false;
 }
 

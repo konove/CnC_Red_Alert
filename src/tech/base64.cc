@@ -146,8 +146,8 @@ int Base64_Encode(const void* source, int slen, void* dest, int dlen) {
   **	during the decode process).
   */
   int total = 0;
-  const unsigned char* sptr = static_cast<const unsigned char*>(source);
-  unsigned char* dptr = static_cast<unsigned char*>(dest);
+  const auto* sptr = static_cast<const unsigned char*>(source);
+  auto* dptr = static_cast<unsigned char*>(dest);
   while (slen > 0 && dlen >= PacketChars) {
     /*
     **	Fetch 24 bits of source data.
@@ -241,8 +241,8 @@ int Base64_Decode(const void* source, int slen, void* dest, int dlen) {
   }
 
   int total = 0;
-  const unsigned char* sptr = static_cast<const unsigned char*>(source);
-  unsigned char* dptr = static_cast<unsigned char*>(dest);
+  const auto* sptr = static_cast<const unsigned char*>(source);
+  auto* dptr = static_cast<unsigned char*>(dest);
   while (slen > 0 && dlen > 0) {
     PacketType packet;
     packet.Raw = 0;

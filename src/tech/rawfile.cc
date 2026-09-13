@@ -457,10 +457,8 @@ long RawFileClass::Write(const void* buffer, long size) {
   /*
   **	Fixup the bias length if necessary.
   */
-  if (BiasLength != -1) {
-    if (Raw_Seek(0) > BiasStart + BiasLength) {
-      BiasLength = static_cast<int>(Raw_Seek(0) - BiasStart);
-    }
+  if ((BiasLength != -1) && (Raw_Seek(0) > BiasStart + BiasLength)) {
+    BiasLength = static_cast<int>(Raw_Seek(0) - BiasStart);
   }
 
   /*

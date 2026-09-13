@@ -252,13 +252,13 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     //	My hack for triggering escape and return on key up instead of down...
     //	The problem that was occurring was that the calling dialog would act on
     // the key up, 	though this dialog handled the key down. ajw
-    if (Keyboard->Down(KN_ESC)) {
+    if (KeyboardClass::Down(KN_ESC)) {
       bEscapeDown = true;
     } else if (bEscapeDown) {
       input = ButtonKey(BUTTON_CANCEL);
       bEscapeDown = false;
     }
-    if (Keyboard->Down(KN_RETURN)) {
+    if (KeyboardClass::Down(KN_RETURN)) {
       bReturnDown = true;
     } else if (bReturnDown) {
       input = ButtonKey(BUTTON_OK);
@@ -355,7 +355,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
                      kTpfText);  //	Required before String_Pixel_Width()
                                  // call, for god's sake.
-    SimpleEditDlgClass* pEditDlg =
+    auto* pEditDlg =
         new SimpleEditDlgClass(300, TXT_WOL_CREATEPRIVGAMETITLE,
                                TXT_WOL_PASSPROMPT, WOL_CHANKEY_LEN_MAX);
     pWO->bPump_In_Call_Back = true;

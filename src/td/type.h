@@ -43,6 +43,7 @@
 
 #include <cstring>
 
+#include "absl/base/attributes.h"
 #include "td/defines.h"
 #include "td/object.h"
 
@@ -190,9 +191,11 @@ class HouseTypeClass {
   char Prefix;
 
   //------------------------------------------------------------------------
-  HouseTypeClass(HousesType house, const char* ini, int fullname,
+  HouseTypeClass(HousesType house,
+                 const char* ini ABSL_ATTRIBUTE_LIFETIME_BOUND, int fullname,
                  const char* ext, int lemon, int color, int bright_color,
-                 PlayerColorType remapcolor, const unsigned char* remap,
+                 PlayerColorType remapcolor,
+                 const unsigned char* remap ABSL_ATTRIBUTE_LIFETIME_BOUND,
                  char prefix) noexcept;
 
   static HousesType From_Name(const char* name);
@@ -694,22 +697,22 @@ class BuildingTypeClass : public TechnoTypeClass {
   /*---------------------------------------------------------------------------
   **	This is the building type explicit constructor.
   */
-  BuildingTypeClass(StructType type, int name, const char* ininame,
-                    COORDINATE exitpoint, unsigned char level, long pre,
-                    bool is_scanner, bool is_regulated, bool is_bibbed,
-                    bool is_nominal, bool is_wall, bool is_factory,
-                    bool is_captureable, bool is_flammable,
-                    bool is_simpledamage, bool is_stealthy, bool is_selectable,
-                    bool is_legal_target, bool is_insignificant, bool is_immune,
-                    bool is_theater, bool is_turret_equipped,
-                    bool is_twoshooter, bool is_repairable, bool is_buildable,
-                    bool is_crew, bool is_sturdy, RTTIType tobuild,
-                    DirType sframe, unsigned short strength, int sightrange,
-                    int cost, int scenario, int risk, int reward, int ownable,
-                    WeaponType primary, WeaponType secondary, ArmorType armor,
-                    unsigned long canenter, unsigned capacity, int power,
-                    int drain, BSizeType size, const short* exitlist,
-                    const short* sizelist, const short* overlap) noexcept;
+  BuildingTypeClass(
+      StructType type, int name, const char* ininame, COORDINATE exitpoint,
+      unsigned char level, long pre, bool is_scanner, bool is_regulated,
+      bool is_bibbed, bool is_nominal, bool is_wall, bool is_factory,
+      bool is_captureable, bool is_flammable, bool is_simpledamage,
+      bool is_stealthy, bool is_selectable, bool is_legal_target,
+      bool is_insignificant, bool is_immune, bool is_theater,
+      bool is_turret_equipped, bool is_twoshooter, bool is_repairable,
+      bool is_buildable, bool is_crew, bool is_sturdy, RTTIType tobuild,
+      DirType sframe, unsigned short strength, int sightrange, int cost,
+      int scenario, int risk, int reward, int ownable, WeaponType primary,
+      WeaponType secondary, ArmorType armor, unsigned long canenter,
+      unsigned capacity, int power, int drain, BSizeType size,
+      const short* exitlist ABSL_ATTRIBUTE_LIFETIME_BOUND,
+      const short* sizelist ABSL_ATTRIBUTE_LIFETIME_BOUND,
+      const short* overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
   [[nodiscard]] RTTIType What_Am_I() const override {
     return RTTI_BUILDINGTYPE;
   }
@@ -1281,8 +1284,9 @@ class TerrainTypeClass : public ObjectTypeClass {
                    bool is_flammable, bool is_crushable, bool is_selectable,
                    bool is_legal_target, bool is_insignificant, bool is_immune,
                    const char* ininame, int fullname, unsigned short strength,
-                   ArmorType armor, const short* occupy,
-                   const short* overlap) noexcept;
+                   ArmorType armor,
+                   const short* occupy ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                   const short* overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
   [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_TERRAINTYPE; }
 
   static TerrainType From_Name(const char* name);
@@ -1353,9 +1357,10 @@ class TemplateTypeClass : public ObjectTypeClass {
   const char* AltIcons;
 
   //----------------------------------------------------------
-  TemplateTypeClass(TemplateType iconset, int theater, const char* ininame,
-                    int fullname, LandType land, int width, int height,
-                    LandType altland, const char* alticons) noexcept;
+  TemplateTypeClass(
+      TemplateType iconset, int theater, const char* ininame, int fullname,
+      LandType land, int width, int height, LandType altland,
+      const char* alticons ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
   [[nodiscard]] RTTIType What_Am_I() const override {
     return RTTI_TEMPLATETYPE;
   }

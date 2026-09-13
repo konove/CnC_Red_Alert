@@ -294,8 +294,8 @@ void ObjectClass::AI() {
     }
 
     if (layer != In_Which_Layer()) {
-      Map.Remove(this, layer);
-      Map.Submit(this, In_Which_Layer());
+      MapEditClass::Remove(this, layer);
+      MapEditClass::Submit(this, In_Which_Layer());
 
       if (Class_Of().IsFootprint) {
         if (In_Which_Layer() == LAYER_GROUND) {
@@ -1148,7 +1148,8 @@ bool ObjectClass::Render(bool forced)  // const
 {
   assert(IsActive);
 
-  int x, y;
+  int x;
+  int y;
   COORDINATE coord = Render_Coord();
 
   if (MapEditorActive || Debug_Unshroud ||
@@ -1291,7 +1292,7 @@ bool ObjectClass::Limbo() {
     /*
     **	Remove the object from the appropriate display list.
     */
-    Map.Remove(this, In_Which_Layer());
+    MapEditClass::Remove(this, In_Which_Layer());
 
     /*
     **	Remove the object from the logic processing list.
@@ -1328,31 +1329,31 @@ bool ObjectClass::Limbo() {
  *=============================================================================================*/
 bool ObjectClass::Unlimbo(COORDINATE coord, DirType /*unused*/) {
   assert(IsActive);
-  if (GameActive && IsInLimbo && !IsDown) {
-    if (ScenarioInit ||
-        Can_Enter_Cell(Coord_Cell(coord), FACING_NONE) == MOVE_OK) {
-      IsInLimbo = false;
-      IsToDisplay = false;
-      Coord = Class_Of().Coord_Fixup(coord);
+  if ((GameActive && IsInLimbo && !IsDown) &&
+      (ScenarioInit ||
+       Can_Enter_Cell(Coord_Cell(coord), FACING_NONE) == MOVE_OK)) {
+    IsInLimbo = false;
+    IsToDisplay = false;
+    Coord = Class_Of().Coord_Fixup(coord);
 
-      if (Mark(MARK_DOWN)) {
-        if (IsActive) {
-          /*
-          **	Add the object to the appropriate map layer. This layer is used
-          **	for rendering purposes.
-          */
-          if (In_Which_Layer() != LAYER_NONE) {
-            Map.Submit(this, In_Which_Layer());
-          }
-
-          if (Class_Of().IsSentient) {
-            Logic.Submit(this);
-          }
+    if (Mark(MARK_DOWN)) {
+      if (IsActive) {
+        /*
+        **	Add the object to the appropriate map layer. This layer is used
+        **	for rendering purposes.
+        */
+        if (In_Which_Layer() != LAYER_NONE) {
+          MapEditClass::Submit(this, In_Which_Layer());
         }
-        return true;
+
+        if (Class_Of().IsSentient) {
+          Logic.Submit(this);
+        }
       }
+      return true;
     }
   }
+
   return false;
 }
 
@@ -1438,19 +1439,15 @@ RadioMessageType ObjectClass::Receive_Message(RadioClass* /*unused*/,
                                               long& /*unused*/) {
   assert(IsActive);
 
-  switch (message) {
-    /*
-    **	This message serves as a rendering convenience. It lets the system
-    **	know that there might be a visual conflict and the unit in radio
-    **	contact should be redrawn. This typically occurs when a vehicle
-    **	is being unloaded from a hover lander.
-    */
-    case RADIO_REDRAW:
-      Mark(MARK_CHANGE);
-      return RADIO_ROGER;
-
-    default:
-      break;
+  /*
+  **	This message serves as a rendering convenience. It lets the system
+  **	know that there might be a visual conflict and the unit in radio
+  **	contact should be redrawn. This typically occurs when a vehicle
+  **	is being unloaded from a hover lander.
+  */
+  if (message == RADIO_REDRAW) {
+    Mark(MARK_CHANGE);
+    return RADIO_ROGER;
   }
   return RADIO_STATIC;
 }
@@ -1572,13 +1569,13 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
       case 0:
         Record_The_Kill(source);
         result = RESULT_DESTROYED;
-        if (this->Is_Techno()) {
-          if (this ==
-              As_Object(
-                  dynamic_cast<TechnoClass*>(this)->House->UnitToTeleport)) {
-            dynamic_cast<TechnoClass*>(this)->House->UnitToTeleport = 0;
-          }
+        if (this->Is_Techno() &&
+            (this ==
+             As_Object(
+                 dynamic_cast<TechnoClass*>(this)->House->UnitToTeleport))) {
+          dynamic_cast<TechnoClass*>(this)->House->UnitToTeleport = 0;
         }
+
         Detach_All();
         break;
 
@@ -1653,23 +1650,20 @@ bool ObjectClass::Mark(MarkType mark) {
     /*
     ** Handle adding or removing the object in the cells' overlap lists
     */
-    if (mark == MARK_OVERLAP_UP) {
-      if (static_cast<bool>(IsDown)) {
-        if (Class_Of().IsFootprint) {
-          Map.Overlap_Up(Coord_Cell(Coord), this);
-        }
-        Mark_For_Redraw();
-        return true;
+    if ((mark == MARK_OVERLAP_UP) && (static_cast<bool>(IsDown))) {
+      if (Class_Of().IsFootprint) {
+        Map.Overlap_Up(Coord_Cell(Coord), this);
       }
+      Mark_For_Redraw();
+      return true;
     }
-    if (mark == MARK_OVERLAP_DOWN) {
-      if (static_cast<bool>(IsDown)) {
-        if (Class_Of().IsFootprint) {
-          Map.Overlap_Down(Coord_Cell(Coord), this);
-        }
-        Mark_For_Redraw();
-        return true;
+
+    if ((mark == MARK_OVERLAP_DOWN) && (static_cast<bool>(IsDown))) {
+      if (Class_Of().IsFootprint) {
+        Map.Overlap_Down(Coord_Cell(Coord), this);
       }
+      Mark_For_Redraw();
+      return true;
     }
 
     /*
@@ -2131,7 +2125,7 @@ BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
       // BG: Hack so only kennels can build dogs, and no other, and barracks can
       //     only build humans and no other.
       if (What_Am_I() == RTTI_INFANTRYTYPE) {
-        InfantryTypeClass* me = (InfantryTypeClass*)this;
+        auto* me = (InfantryTypeClass*)this;
         if (me->IsDog) {
           if (*building == STRUCT_KENNEL) {
             if (building->IsLeader) {
@@ -2153,7 +2147,7 @@ BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
         **	fixed wing craft only.
         */
         if (What_Am_I() == RTTI_AIRCRAFTTYPE) {
-          AircraftTypeClass* air = (AircraftTypeClass*)this;
+          auto* air = (AircraftTypeClass*)this;
           if ((*building == STRUCT_HELIPAD && !air->IsFixedWing) ||
               (*building == STRUCT_AIRSTRIP && air->IsFixedWing)) {
             if (building->IsLeader) {

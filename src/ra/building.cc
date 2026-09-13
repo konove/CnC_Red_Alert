@@ -267,12 +267,12 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
           break;
 
         case STRUCT_REPAIR:
-          if (from->What_Am_I() == RTTI_UNIT ||
-              from->What_Am_I() == RTTI_AIRCRAFT) {
-            if (Transmit_Message(RADIO_ON_DEPOT, from) != RADIO_ROGER) {
-              return RADIO_ROGER;
-            }
+          if ((from->What_Am_I() == RTTI_UNIT ||
+               from->What_Am_I() == RTTI_AIRCRAFT) &&
+              (Transmit_Message(RADIO_ON_DEPOT, from) != RADIO_ROGER)) {
+            return RADIO_ROGER;
           }
+
           return RADIO_NEGATIVE;
 
         case STRUCT_REFINERY:
@@ -341,11 +341,11 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
       */
       if (*this == STRUCT_REPAIR) {
         if (Contact_With_Whom() != from) {
-          if (Transmit_Message(RADIO_ON_DEPOT) == RADIO_ROGER) {
-            if (Transmit_Message(RADIO_NEED_REPAIR) == RADIO_NEGATIVE) {
-              Transmit_Message(RADIO_RUN_AWAY);
-              return RADIO_ROGER;
-            }
+          if ((Transmit_Message(RADIO_ON_DEPOT) == RADIO_ROGER) &&
+              (Transmit_Message(RADIO_NEED_REPAIR) == RADIO_NEGATIVE)) {
+            Transmit_Message(RADIO_RUN_AWAY);
+            return RADIO_ROGER;
+          }
             //					} else {
             //						if
             //(Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER) {
@@ -353,7 +353,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
             //(long)As_Target();
             // Transmit_Message(RADIO_MOVE_HERE, param, from);
             //						}
-          }
+
         } else {
           if (Transmit_Message(RADIO_NEED_REPAIR) == RADIO_NEGATIVE) {
             return RADIO_NEGATIVE;
@@ -822,7 +822,7 @@ bool BuildingClass::Mark(MarkType mark) {
       case MARK_UP:
         Map.Pick_Up(cell, this);
         if (Class->Bib_And_Offset(bib, cell)) {
-          SmudgeClass* smudge = new SmudgeClass(bib);
+          auto* smudge = new SmudgeClass(bib);
           if (smudge != nullptr) {
             smudge->Disown(cell);
             delete smudge;
@@ -937,16 +937,14 @@ void BuildingClass::AI() {
   *change for the building. *	Such outside requests (player input) must be
   *initiated BEFORE the normal AI process.
   */
-  if (IsReadyToCommence && BState != BSTATE_CONSTRUCTION) {
-    /*
-    **	Clear the commencement flag ONLY if something actually occurred. By
-    *acting *	this way, a building can set the IsReadyToCommence flag before
-    *it goes *	to "sleep" knowing that it will wake up as soon as a new mission
-    *comes *	along.
-    */
-    if (Commence()) {
-      IsReadyToCommence = false;
-    }
+  /*
+  **	Clear the commencement flag ONLY if something actually occurred. By
+  *acting *	this way, a building can set the IsReadyToCommence flag before
+  *it goes *	to "sleep" knowing that it will wake up as soon as a new mission
+  *comes *	along.
+  */
+  if ((IsReadyToCommence && BState != BSTATE_CONSTRUCTION) && Commence()) {
+    IsReadyToCommence = false;
   }
 
   /*
@@ -978,16 +976,14 @@ void BuildingClass::AI() {
   *(usually from another mission *	state machine). This must occur here
   *before it has a chance to render.
   */
-  if (IsReadyToCommence) {
-    /*
-    **	Clear the commencement flag ONLY if something actually occurred. By
-    *acting *	this way, a building can set the IsReadyToCommence flag before
-    *it goes *	to "sleep" knowing that it will wake up as soon as a new mission
-    *comes *	along.
-    */
-    if (Commence()) {
-      IsReadyToCommence = false;
-    }
+  /*
+  **	Clear the commencement flag ONLY if something actually occurred. By
+  *acting *	this way, a building can set the IsReadyToCommence flag before
+  *it goes *	to "sleep" knowing that it will wake up as soon as a new mission
+  *comes *	along.
+  */
+  if (IsReadyToCommence && Commence()) {
+    IsReadyToCommence = false;
   }
 
   /*
@@ -1087,13 +1083,15 @@ void BuildingClass::AI() {
 
     if (!IsJamming) {
       if (House->Power_Fraction() >= 1) {
-        Map.Jam_From(Coord_Cell(Center_Coord()), Rule.GapShroudRadius, House);
+        MapEditClass::Jam_From(Coord_Cell(Center_Coord()), Rule.GapShroudRadius,
+                               House);
         IsJamming = true;
       }
     } else {
       if (House->Power_Fraction() < 1) {
         IsJamming = false;
-        Map.UnJam_From(Coord_Cell(Center_Coord()), Rule.GapShroudRadius, House);
+        MapEditClass::UnJam_From(Coord_Cell(Center_Coord()),
+                                 Rule.GapShroudRadius, House);
       }
     }
   }
@@ -1428,13 +1426,11 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
         if (*this == STRUCT_SHIP_YARD || *this == STRUCT_SUB_PEN) {
           for (int index = 0; index < Vessels.Count(); index++) {
             VesselClass* obj = Vessels.Ptr(index);
-            if (obj && !obj->IsInLimbo && obj->House == House) {
-              if (obj->IsSelfRepairing) {
-                if (::Distance(Center_Coord(), obj->Center_Coord()) < 0x0200) {
-                  obj->IsSelfRepairing = false;
-                  obj->IsToSelfRepair = false;
-                }
-              }
+            if ((obj && !obj->IsInLimbo && obj->House == House) &&
+                obj->IsSelfRepairing &&
+                (::Distance(Center_Coord(), obj->Center_Coord()) < 0x0200)) {
+              obj->IsSelfRepairing = false;
+              obj->IsToSelfRepair = false;
             }
           }
         }
@@ -1485,8 +1481,8 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
       case RESULT_HALF:
         if (*this == STRUCT_PUMP) {
-          AnimClass* anim = new AnimClass(ANIM_OILFIELD_BURN,
-                                          Coord_Add(Coord, 0x00400130L), 1);
+          auto* anim = new AnimClass(ANIM_OILFIELD_BURN,
+                                     Coord_Add(Coord, 0x00400130L), 1);
           if (anim) {
             anim->Attach_To(this);
           }
@@ -2001,7 +1997,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
   switch (base->What_Am_I()) {
     case RTTI_AIRCRAFT:
       if (!In_Radio_Contact()) {
-        AircraftClass* air = dynamic_cast<AircraftClass*>(base);
+        auto* air = dynamic_cast<AircraftClass*>(base);
 
         air->Height = 0;
         ScenarioInit++;
@@ -2013,7 +2009,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         }
         ScenarioInit--;
       } else {
-        AircraftClass* air = dynamic_cast<AircraftClass*>(base);
+        auto* air = dynamic_cast<AircraftClass*>(base);
 
         if (Cell_X(Coord_Cell(Center_Coord())) - Map.MapCellX <
             Map.MapCellWidth / 2) {
@@ -2063,7 +2059,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         case STRUCT_REFINERY:
           if (base->What_Am_I() == RTTI_UNIT) {
             cell = Coord_Cell(Center_Coord());
-            UnitClass* unit = dynamic_cast<UnitClass*>(base);
+            auto* unit = dynamic_cast<UnitClass*>(base);
 
             cell = Adjacent_Cell(cell, FACING_SW);
             ScenarioInit++;
@@ -2492,7 +2488,7 @@ void BuildingClass::Grand_Opening(bool captured) {
          PurchasePrice > Class->Raw_Cost())) {
       CELL cell = Coord_Cell(Adjacent_Cell(Center_Coord(), DIR_S));
 
-      UnitClass* unit = new UnitClass(UNIT_HARVESTER, House->Class->House);
+      auto* unit = new UnitClass(UNIT_HARVESTER, House->Class->House);
       if (unit != nullptr) {
         /*
         **	Try to place down the harvesters. If it could not be placed,
@@ -3123,7 +3119,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     SmudgeType bib;
     CELL cell = Coord_Cell(Coord);
     if (Class->Bib_And_Offset(bib, cell)) {
-      SmudgeClass* smudge = new SmudgeClass(bib);
+      auto* smudge = new SmudgeClass(bib);
       if (smudge) {
         smudge->Disown(cell);
         delete smudge;
@@ -3481,13 +3477,11 @@ int BuildingClass::Mission_Deconstruction() {
       if (*this == STRUCT_SHIP_YARD || *this == STRUCT_SUB_PEN) {
         for (int index = 0; index < Vessels.Count(); index++) {
           VesselClass* obj = Vessels.Ptr(index);
-          if (obj && !obj->IsInLimbo && obj->House == House) {
-            if (obj->IsSelfRepairing) {
-              if (::Distance(Center_Coord(), obj->Center_Coord()) < 0x0200) {
-                obj->IsSelfRepairing = false;
-                obj->IsToSelfRepair = false;
-              }
-            }
+          if ((obj && !obj->IsInLimbo && obj->House == House) &&
+              obj->IsSelfRepairing &&
+              (::Distance(Center_Coord(), obj->Center_Coord()) < 0x0200)) {
+            obj->IsSelfRepairing = false;
+            obj->IsToSelfRepair = false;
           }
         }
       }
@@ -3575,7 +3569,7 @@ int BuildingClass::Mission_Deconstruction() {
         if (Target_Legal(ArchiveTarget) && *this == STRUCT_CONST &&
             House->IsHuman && Strength > 0) {
           ScenarioInit++;
-          UnitClass* unit = new UnitClass(UNIT_MCV, House->Class->House);
+          auto* unit = new UnitClass(UNIT_MCV, House->Class->House);
           ScenarioInit--;
           if (unit != nullptr) {
             /*
@@ -3916,13 +3910,13 @@ int BuildingClass::Mission_Repair() {
         ** distance check.  Fixed-wing aircraft are very inaccurate with
         ** their landings.
         */
-        if (tech->What_Am_I() == RTTI_AIRCRAFT) {
-          if (dynamic_cast<AircraftClass*>(tech)->Class->IsFixedWing &&
-              dynamic_cast<AircraftClass*>(tech)->In_Which_Layer() ==
-                  LAYER_GROUND) {
-            distance = 0x80;
-          }
+        if ((tech->What_Am_I() == RTTI_AIRCRAFT) &&
+            (dynamic_cast<AircraftClass*>(tech)->Class->IsFixedWing &&
+             dynamic_cast<AircraftClass*>(tech)->In_Which_Layer() ==
+                 LAYER_GROUND)) {
+          distance = 0x80;
         }
+
         if (Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER &&
             Distance(Contact_With_Whom()) < distance) {
           Status = IDLE;
@@ -4125,7 +4119,7 @@ int BuildingClass::Mission_Missile() {
       case DOOR_OPENING: {
         COORDINATE door =
             Coord_Move(Center_Coord(), static_cast<DirType>(0xC0), 0x30);
-        AnimClass* sput = new AnimClass(ANIM_SPUTDOOR, door);
+        auto* sput = new AnimClass(ANIM_SPUTDOOR, door);
         if (sput) {
           IsReadyToCommence = false;
           Status = LAUNCH_UP;
@@ -4140,27 +4134,24 @@ int BuildingClass::Mission_Missile() {
       */
       case LAUNCH_UP: {
         AnimClass* sput = As_Animation(AnimToTrack);
-        if (sput) {
-          if (sput->Fetch_Stage() >= 19) {
-            CELL center = Coord_Cell(Center_Coord());
-            CELL cell = XY_Cell(Cell_X(center), 1);
-            TARGET targ = ::As_Target(cell);
+        if (sput && (sput->Fetch_Stage() >= 19)) {
+          CELL center = Coord_Cell(Center_Coord());
+          CELL cell = XY_Cell(Cell_X(center), 1);
+          TARGET targ = ::As_Target(cell);
 
-            BulletClass* bullet =
-                new BulletClass(BULLET_GPS_SATELLITE, targ, this, 200,
-                                WARHEAD_FIRE, MPH_ROCKET);
-            if (bullet) {
-              COORDINATE launch =
-                  Coord_Move(Center_Coord(), static_cast<DirType>(0xC0), 0x30);
-              if (!bullet->Unlimbo(launch, DIR_N)) {
-                delete bullet;
-                bullet = nullptr;
-              }
+          auto* bullet = new BulletClass(BULLET_GPS_SATELLITE, targ, this, 200,
+                                         WARHEAD_FIRE, MPH_ROCKET);
+          if (bullet) {
+            COORDINATE launch =
+                Coord_Move(Center_Coord(), static_cast<DirType>(0xC0), 0x30);
+            if (!bullet->Unlimbo(launch, DIR_N)) {
+              delete bullet;
+              bullet = nullptr;
             }
+          }
 
-            if (bullet) {
-              Assign_Mission(MISSION_GUARD);
-            }
+          if (bullet) {
+            Assign_Mission(MISSION_GUARD);
           }
         }
       }
@@ -4204,8 +4195,8 @@ int BuildingClass::Mission_Missile() {
         CELL center = Coord_Cell(Center_Coord());
         CELL cell = XY_Cell(Cell_X(center), 1);
         TARGET targ = ::As_Target(cell);
-        BulletClass* bullet = new BulletClass(BULLET_NUKE_UP, targ, this, 200,
-                                              WARHEAD_HE, MPH_VERY_FAST);
+        auto* bullet = new BulletClass(BULLET_NUKE_UP, targ, this, 200,
+                                       WARHEAD_HE, MPH_VERY_FAST);
         if (bullet) {
           COORDINATE launch =
               Coord_Move(Center_Coord(), static_cast<DirType>(28), 0xA0);
@@ -4785,8 +4776,10 @@ CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
       }
     }
   } else {
-    int x1, x2;
-    int y1, y2;
+    int x1;
+    int x2;
+    int y1;
+    int y2;
     CELL cell;
 
     y1 = -1;
@@ -5228,49 +5221,49 @@ void BuildingClass::Factory_AI() {
   /*
   **	Pick something to create for this factory.
   */
-  if (House->IsStarted && Mission != MISSION_CONSTRUCTION &&
-      Mission != MISSION_DECONSTRUCTION) {
-    /*
-    **	Buildings that produce other objects have special factory logic handled
-    *here.
-    */
-    if (Class->ToBuild != RTTI_NONE) {
-      if (Factory.Is_Valid()) {
-        /*
-        **	If production has halted, then just abort production and make
-        *the *	funds available for something else.
-        */
-        if (PlacementDelay.IsFinished() && !Factory->Is_Building()) {
-          Factory->Abandon();
-          delete static_cast<FactoryClass*>(Factory);
-          Factory = nullptr;
-        }
+  if ((House->IsStarted && Mission != MISSION_CONSTRUCTION &&
+       Mission != MISSION_DECONSTRUCTION) &&
+      (Class->ToBuild != RTTI_NONE))
+  /*
+  **	Buildings that produce other objects have special factory logic handled
+  *here.
+  */
+  {
+    if (Factory.Is_Valid()) {
+      /*
+      **	If production has halted, then just abort production and make
+      *the *	funds available for something else.
+      */
+      if (PlacementDelay.IsFinished() && !Factory->Is_Building()) {
+        Factory->Abandon();
+        delete static_cast<FactoryClass*>(Factory);
+        Factory = nullptr;
+      }
 
-      } else {
-        /*
-        **	Only look to start production if there is at least a small
-        *amount of *	money available. In cases where there is no practical
-        *money left, then *	production can never complete -- don't bother
-        *starting it.
-        */
-        if (House->IsStarted && House->Available_Money() > 10) {
-          const TechnoTypeClass* techno =
-              House->Suggest_New_Object(Class->ToBuild, *this == STRUCT_KENNEL);
+    } else {
+      /*
+      **	Only look to start production if there is at least a small
+      *amount of *	money available. In cases where there is no practical
+      *money left, then *	production can never complete -- don't bother
+      *starting it.
+      */
+      if (House->IsStarted && House->Available_Money() > 10) {
+        const TechnoTypeClass* techno =
+            House->Suggest_New_Object(Class->ToBuild, *this == STRUCT_KENNEL);
 
-          /*
-          **	If a suitable object type was selected for production, then
-          *start *	producing it now.
-          */
-          if (techno != nullptr) {
-            Factory = new FactoryClass;
-            if (Factory.Is_Valid()) {
-              if (!Factory->Set(*techno, *House)) {
-                delete static_cast<FactoryClass*>(Factory);
-                Factory = nullptr;
-              } else {
-                House->Production_Begun(Factory->Get_Object());
-                Factory->Start();
-              }
+        /*
+        **	If a suitable object type was selected for production, then
+        *start *	producing it now.
+        */
+        if (techno != nullptr) {
+          Factory = new FactoryClass;
+          if (Factory.Is_Valid()) {
+            if (!Factory->Set(*techno, *House)) {
+              delete static_cast<FactoryClass*>(Factory);
+              Factory = nullptr;
+            } else {
+              House->Production_Begun(Factory->Get_Object());
+              Factory->Start();
             }
           }
         }
@@ -5296,17 +5289,16 @@ void BuildingClass::Factory_AI() {
  *occur if power and no power avail.                     *
  *=============================================================================================*/
 void BuildingClass::Rotation_AI() {
-  if (Class->IsTurretEquipped && Mission != MISSION_CONSTRUCTION &&
-      Mission != MISSION_DECONSTRUCTION &&
-      (!Class->IsPowered || House->Power_Fraction() >= 1)) {
-    /*
-    **	Rotate turret to match desired facing.
-    */
-    if (PrimaryFacing.Is_Rotating()) {
-      if (PrimaryFacing.Rotation_Adjust(Class->ROT)) {
-        Mark(MARK_CHANGE);
-      }
-    }
+  if ((Class->IsTurretEquipped && Mission != MISSION_CONSTRUCTION &&
+       Mission != MISSION_DECONSTRUCTION &&
+       (!Class->IsPowered || House->Power_Fraction() >= 1)) &&
+      PrimaryFacing.Is_Rotating() && PrimaryFacing.Rotation_Adjust(Class->ROT))
+  /*
+  **	Rotate turret to match desired facing.
+  */
+
+  {
+    Mark(MARK_CHANGE);
   }
 }
 
@@ -5377,36 +5369,36 @@ void BuildingClass::Charging_AI() {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Repair_AI() {
-  if (House->IQ >= Rule.IQRepairSell && Mission != MISSION_CONSTRUCTION &&
-      Mission != MISSION_DECONSTRUCTION) {
-    /*
-    **	Possibly start repair process if the building is below half strength.
-    */
-    //		unsigned ratio = std::min(House->Smartness, 0x00F0);
-    if (Can_Repair()) {
-      if (House->Available_Money() >= Rule.RepairThreshhold) {
-        if (!House->DidRepair) {
-          if (!IsRepairing && (IsCaptured || IsToRepair || House->IsHuman ||
-                               Session.Type != GAME_NORMAL)) {
-            House->DidRepair = true;  // flag that this house did its repair
-                                      // allocation for this frame
-            Repair(1);
+  if ((House->IQ >= Rule.IQRepairSell && Mission != MISSION_CONSTRUCTION &&
+       Mission != MISSION_DECONSTRUCTION) &&
+      Can_Repair())
+  /*
+  **	Possibly start repair process if the building is below half strength.
+  */
+  //		unsigned ratio = std::min(House->Smartness, 0x00F0);
+  {
+    if (House->Available_Money() >= Rule.RepairThreshhold) {
+      if ((!House->DidRepair) &&
+          (!IsRepairing && (IsCaptured || IsToRepair || House->IsHuman ||
+                            Session.Type != GAME_NORMAL))) {
+        House->DidRepair = true;  // flag that this house did its repair
+                                  // allocation for this frame
+        Repair(1);
 
-            if (!House->IsHuman) {
-              House->RepairTimer.Set(
-                  Random_Pick(House->RepairDelay * (kTicksPerMinute / 4),
-                              House->RepairDelay * kTicksPerMinute * 2));
-            }
-          }
+        if (!House->IsHuman) {
+          House->RepairTimer.Set(
+              Random_Pick(House->RepairDelay * (kTicksPerMinute / 4),
+                          House->RepairDelay * kTicksPerMinute * 2));
         }
-      } else {
-        if ((Session.Type != GAME_NORMAL || IsAllowedToSell) && IsTickedOff &&
-            House->Control.TechLevel >= Rule.IQSellBack &&
-            Random_Pick(0, 50) < House->Control.TechLevel &&
-            !Trigger.Is_Valid() && *this != STRUCT_CONST &&
-            Health_Ratio() < Rule.ConditionRed) {
-          Sell_Back(1);
-        }
+      }
+
+    } else {
+      if ((Session.Type != GAME_NORMAL || IsAllowedToSell) && IsTickedOff &&
+          House->Control.TechLevel >= Rule.IQSellBack &&
+          Random_Pick(0, 50) < House->Control.TechLevel &&
+          !Trigger.Is_Valid() && *this != STRUCT_CONST &&
+          Health_Ratio() < Rule.ConditionRed) {
+        Sell_Back(1);
       }
     }
   }
@@ -5633,7 +5625,8 @@ int BuildingClass::Value() const {
  *=============================================================================================*/
 void BuildingClass::Remove_Gap_Effect() {
   // unjam this one's field...
-  Map.UnJam_From(Coord_Cell(Center_Coord()), Rule.GapShroudRadius, House);
+  MapEditClass::UnJam_From(Coord_Cell(Center_Coord()), Rule.GapShroudRadius,
+                           House);
   if (!House->IsPlayerControl && PlayerPtr->IsGPSActive) {
     Map.Sight_From(Coord_Cell(Center_Coord()), Rule.GapShroudRadius, PlayerPtr);
   }

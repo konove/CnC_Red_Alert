@@ -367,13 +367,12 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
       this packet will let us increment our LastSeqID; otherwise, we'll get
       stuck, forever unable to increment LastSeqID.
       ------------------------------------------------------------------*/
-      if (Queue->Max_Receive() - Queue->Num_Receive() <= 1) {
-        if (packet->PacketID != LastSeqID + 1) {
-          // Smart_Printf( "One slot left not what we looking for max=%d,num=%d
-          // \n",
-          //	Queue->Max_Receive(), Queue->Num_Receive() );
-          return 0;
-        }
+      if ((Queue->Max_Receive() - Queue->Num_Receive() <= 1) &&
+          (packet->PacketID != LastSeqID + 1)) {
+        // Smart_Printf( "One slot left not what we looking for max=%d,num=%d
+        // \n",
+        //	Queue->Max_Receive(), Queue->Num_Receive() );
+        return 0;
       }
 
       /*------------------------------------------------------------------

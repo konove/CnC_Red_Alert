@@ -399,10 +399,8 @@ void GScreenClass::Render() {
       /*
       ** Draw the Editor's buttons
       */
-      if (Debug_Map) {
-        if (Buttons) {
-          Buttons->Draw_All();
-        }
+      if (Debug_Map && Buttons) {
+        Buttons->Draw_All();
       }
     }
     /*

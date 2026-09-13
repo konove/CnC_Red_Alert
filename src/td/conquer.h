@@ -862,7 +862,7 @@ void Bubba_Print(char* format, ...);
 
 void Heap_Dump_Check(const char* string);
 
-void Validate_Error(const char* name);
+[[noreturn]] void Validate_Error(const char* name);
 const void* Hires_Retrieve(const char* name);
 int Get_Resolution_Factor();
 

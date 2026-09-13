@@ -42,6 +42,7 @@
 
 #include <cstddef>
 
+#include "absl/base/attributes.h"
 #include "ra/abstract.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -208,7 +209,10 @@ class TeamClass : public AbstractClass {
   TeamClass& operator=(TeamClass&&) = delete;
   void operator delete(void* ptr);
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   static void Init();
   static void Suspend_Teams(int priority, const HouseClass* house);
   void Debug_Dump(MonoClass* mono) const override;

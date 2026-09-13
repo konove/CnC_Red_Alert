@@ -334,32 +334,30 @@ void SliderClass::Draw_Thumb() {
  * HISTORY:    01/16/1995 JLB : Created. *
  *=============================================================================================*/
 int SliderClass::Draw_Me(bool forced) {
-  if (BelongToList) {
-    // A list-attached slider draws a thumb instead of a gauge body; the
-    // stand-alone case still goes through GaugeClass below.
-    // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-    if (ControlClass::Draw_Me(forced)) {
-      /*
-      **	Hide the mouse.
-      */
-      if (LogicPage == &SeenBuff) {
-        Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
-      }
-
-      /*
-      **	Draw the body & set text color.
-      */
-      Draw_Box(X, Y, Width, Height, BOXSTYLE_DOWN, true);
-      Draw_Thumb();
-
-      /*
-      **	Display the mouse.
-      */
-      if (LogicPage == &SeenBuff) {
-        Conditional_Show_Mouse();
-      }
-      return true;
+  // A list-attached slider draws a thumb instead of a gauge body; the
+  // stand-alone case still goes through GaugeClass below.
+  // NOLINTNEXTLINE(bugprone-parent-virtual-call)
+  if (BelongToList && ControlClass::Draw_Me(forced)) {
+    /*
+    **	Hide the mouse.
+    */
+    if (LogicPage == &SeenBuff) {
+      Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
+
+    /*
+    **	Draw the body & set text color.
+    */
+    Draw_Box(X, Y, Width, Height, BOXSTYLE_DOWN, true);
+    Draw_Thumb();
+
+    /*
+    **	Display the mouse.
+    */
+    if (LogicPage == &SeenBuff) {
+      Conditional_Show_Mouse();
+    }
+    return true;
   }
 
   /*

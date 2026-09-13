@@ -38,6 +38,8 @@
 #include <cstdint>
 #include <span>
 
+#include "absl/base/attributes.h"
+
 /*
 *********************************** Types ***********************************
 */
@@ -98,6 +100,8 @@ typedef struct {
 */
 typedef struct {
   unsigned short NumShapes;  // number of shapes in the block
+  // Offsets follow the count in the file image; the struct is only ever read in
+  // place. NOLINTNEXTLINE(clang-diagnostic-c99-extensions)
   uint32_t Offsets[];        // array of offsets to shape data
                              //  (offsets within the shape block, with
                              //  0 being the first offset value, not the
@@ -121,7 +125,8 @@ extern char* ShapeBuffer;
 */
 int Extract_Shape_Count(const void* buffer);
 int Extract_Shape_Count(std::span<const std::byte> span);
-void* Extract_Shape(const void* buffer, int shape);
+void* Extract_Shape(const void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                    int shape);
 
 /*
 ------------------------------- setshape.asm --------------------------------

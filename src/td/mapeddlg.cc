@@ -990,10 +990,13 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   int map_x2;           // map coords x2, pixel coords
   int map_y1;           // map coords y1, pixel coords
   int map_y2;           // map coords y2, pixel coords
-  int delta1, delta2;   // mouse-click proximity
-  int mx = 0, my = 0;   // last-saved mouse coords
+  int delta1;
+  int delta2;  // mouse-click proximity
+  int mx = 0;
+  int my = 0;  // last-saved mouse coords
   char txt[40];
-  int txt_x, txt_y;       // for displaying text
+  int txt_x;
+  int txt_y;              // for displaying text
   unsigned index;         // for drawing map symbology
   CELL cell;              // for drawing map symbology
   int color;              // for drawing map symbology
@@ -1381,91 +1384,87 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         value while the button is being held down, so this case must be
         trapped as a default.
       .....................................................................*/
-      switch (static_cast<int>(input)) {
-        case ((int)KN_LMOUSE | (int)KN_RLSE_BIT):
-          grabbed = 0;
+      if (static_cast<int>(input) == ((int)KN_LMOUSE | (int)KN_RLSE_BIT)) {
+        grabbed = 0;
+        display = REDRAW_MAP;
+      } else {
+        delta1 = Get_Mouse_X() - mx;
+        delta2 = Get_Mouse_Y() - my;
+        if (delta1 == 0 && delta2 == 0) {
+          break;
+        }
+
+        /*
+        ....................... Move top left ........................
+        */
+        if (grabbed == 1) {
+          map_x1 += delta1;
+          map_x1 = std::clamp(map_x1, D_BORD_X1 + 2, map_x2 - 2);
+          map_y1 += delta2;
+          map_y1 = std::clamp(map_y1, D_BORD_Y1 + 2, map_y2 - 2);
           display = REDRAW_MAP;
-          break;
+          mx = Get_Mouse_X();
+          my = Get_Mouse_Y();
+        }
 
-        default:
-          delta1 = Get_Mouse_X() - mx;
-          delta2 = Get_Mouse_Y() - my;
-          if (delta1 == 0 && delta2 == 0) {
-            break;
-          }
+        /*
+        ....................... Move top right .......................
+        */
+        if (grabbed == 2) {
+          map_x2 += delta1;
+          map_x2 = std::clamp(map_x2, map_x1 + 2, D_BORD_X2 - 2);
+          map_y1 += delta2;
+          map_y1 = std::clamp(map_y1, D_BORD_Y1 + 2, map_y2 - 2);
+          display = REDRAW_MAP;
+          mx = Get_Mouse_X();
+          my = Get_Mouse_Y();
+        }
 
-          /*
-          ....................... Move top left ........................
-          */
-          if (grabbed == 1) {
+        /*
+        ..................... Move bottom right ......................
+        */
+        if (grabbed == 3) {
+          map_x2 += delta1;
+          map_x2 = std::clamp(map_x2, map_x1 + 2, D_BORD_X2 - 2);
+          map_y2 += delta2;
+          map_y2 = std::clamp(map_y2, map_y1 + 2, D_BORD_Y2 - 2);
+          display = REDRAW_MAP;
+          mx = Get_Mouse_X();
+          my = Get_Mouse_Y();
+        }
+
+        /*
+        ...................... Move bottom left ......................
+        */
+        if (grabbed == 4) {
+          map_x1 += delta1;
+          map_x1 = std::clamp(map_x1, D_BORD_X1 + 2, map_x2 - 2);
+          map_y2 += delta2;
+          map_y2 = std::clamp(map_y2, map_y1 + 2, D_BORD_Y2 - 2);
+          display = REDRAW_MAP;
+          mx = Get_Mouse_X();
+          my = Get_Mouse_Y();
+        }
+
+        /*
+        ....................... Move whole map .......................
+        */
+        if (grabbed == 5) {
+          if (map_x1 + delta1 > D_BORD_X1 + 1 &&
+              map_x2 + delta1 < D_BORD_X2 - 1) {
             map_x1 += delta1;
-            map_x1 = std::clamp(map_x1, D_BORD_X1 + 2, map_x2 - 2);
-            map_y1 += delta2;
-            map_y1 = std::clamp(map_y1, D_BORD_Y1 + 2, map_y2 - 2);
-            display = REDRAW_MAP;
-            mx = Get_Mouse_X();
-            my = Get_Mouse_Y();
-          }
-
-          /*
-          ....................... Move top right .......................
-          */
-          if (grabbed == 2) {
             map_x2 += delta1;
-            map_x2 = std::clamp(map_x2, map_x1 + 2, D_BORD_X2 - 2);
+          }
+
+          if (map_y1 + delta2 > D_BORD_Y1 + 1 &&
+              map_y2 + delta2 < D_BORD_Y2 - 1) {
             map_y1 += delta2;
-            map_y1 = std::clamp(map_y1, D_BORD_Y1 + 2, map_y2 - 2);
-            display = REDRAW_MAP;
-            mx = Get_Mouse_X();
-            my = Get_Mouse_Y();
-          }
-
-          /*
-          ..................... Move bottom right ......................
-          */
-          if (grabbed == 3) {
-            map_x2 += delta1;
-            map_x2 = std::clamp(map_x2, map_x1 + 2, D_BORD_X2 - 2);
             map_y2 += delta2;
-            map_y2 = std::clamp(map_y2, map_y1 + 2, D_BORD_Y2 - 2);
-            display = REDRAW_MAP;
-            mx = Get_Mouse_X();
-            my = Get_Mouse_Y();
           }
-
-          /*
-          ...................... Move bottom left ......................
-          */
-          if (grabbed == 4) {
-            map_x1 += delta1;
-            map_x1 = std::clamp(map_x1, D_BORD_X1 + 2, map_x2 - 2);
-            map_y2 += delta2;
-            map_y2 = std::clamp(map_y2, map_y1 + 2, D_BORD_Y2 - 2);
-            display = REDRAW_MAP;
-            mx = Get_Mouse_X();
-            my = Get_Mouse_Y();
-          }
-
-          /*
-          ....................... Move whole map .......................
-          */
-          if (grabbed == 5) {
-            if (map_x1 + delta1 > D_BORD_X1 + 1 &&
-                map_x2 + delta1 < D_BORD_X2 - 1) {
-              map_x1 += delta1;
-              map_x2 += delta1;
-            }
-
-            if (map_y1 + delta2 > D_BORD_Y1 + 1 &&
-                map_y2 + delta2 < D_BORD_Y2 - 1) {
-              map_y1 += delta2;
-              map_y2 += delta2;
-            }
-            display = REDRAW_MAP;
-            mx = Get_Mouse_X();
-            my = Get_Mouse_Y();
-          }
-          break;
+          display = REDRAW_MAP;
+          mx = Get_Mouse_X();
+          my = Get_Mouse_Y();
+        }
       }
     }
   }
@@ -2206,10 +2205,8 @@ void MapEditClass::Handle_Triggers() {
     /*
     ............................... 'Edit' ................................
     */
-    if (rc == 1 && CurTrigger) {
-      if (Edit_Trigger() == 0) {
-        Changed = 1;
-      }
+    if ((rc == 1 && CurTrigger) && (Edit_Trigger() == 0)) {
+      Changed = 1;
     }
 
     /*
@@ -2245,12 +2242,10 @@ void MapEditClass::Handle_Triggers() {
     /*
     .............................. 'Delete' ...............................
     */
-    if (rc == 3) {
-      if (CurTrigger) {
-        CurTrigger->Remove();
-        CurTrigger = nullptr;
-        Changed = 1;
-      }
+    if ((rc == 3) && CurTrigger) {
+      CurTrigger->Remove();
+      CurTrigger = nullptr;
+      Changed = 1;
     }
   }
 
@@ -2258,10 +2253,8 @@ void MapEditClass::Handle_Triggers() {
   Don't allow trigger placement if the trigger is house-specific; such
   triggers cannot be "placed".
   ------------------------------------------------------------------------*/
-  if (CurTrigger) {
-    if (!TriggerClass::Event_Need_Object(CurTrigger->Event)) {
-      CurTrigger = nullptr;
-    }
+  if (CurTrigger && (!TriggerClass::Event_Need_Object(CurTrigger->Event))) {
+    CurTrigger = nullptr;
   }
 }
 

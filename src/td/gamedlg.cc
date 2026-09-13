@@ -437,7 +437,7 @@ void GameControlsClass::Process() {
       */
       switch (selection) {
         case BUTTON_VISUAL:
-          VisualControlsClass().Process();
+          VisualControlsClass::Process();
           process = true;
           display = true;
           refresh = true;

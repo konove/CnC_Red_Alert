@@ -102,7 +102,7 @@ class PowerClass : public RadarClass {
   };
 
  private:
-  int Power_Height(int value);
+  static int Power_Height(int value);
 
   /*
   **	If the power bar should be rendered with some flash effect then

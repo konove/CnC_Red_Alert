@@ -90,7 +90,6 @@ int SmudgeClass::Validate() const {
     num = Smudges.ID(this);
     if (num < 0 || num >= kSmudgeMax) {
       Validate_Error("SMUDGE");
-      return 0;
     }
     return 1;
   } else {
@@ -207,64 +206,63 @@ void SmudgeClass::Init() { Smudges.Free_All(); }
  *=============================================================================================*/
 bool SmudgeClass::Mark(MarkType mark) {
   Validate();
-  if (ObjectClass::Mark(mark)) {
-    if (mark == MARK_DOWN) {
-      CELL origin = Coord_Cell(Coord);
+  if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
+    CELL origin = Coord_Cell(Coord);
 
-      for (int w = 0; w < Class->Width; w++) {
-        for (int h = 0; h < Class->Height; h++) {
-          CELL newcell = static_cast<CELL>(origin + w + (h * MAP_CELL_W));
-          if (Map.In_Radar(newcell)) {
-            CellClass* cell = &Map[newcell];
+    for (int w = 0; w < Class->Width; w++) {
+      for (int h = 0; h < Class->Height; h++) {
+        CELL newcell = static_cast<CELL>(origin + w + (h * MAP_CELL_W));
+        if (Map.In_Radar(newcell)) {
+          CellClass* cell = &Map[newcell];
 
-            if (Class->IsBib) {
-              cell->Smudge = Class->Type;
-              cell->SmudgeData =
-                  static_cast<unsigned char>(w + (h * Class->Width));
-              cell->Owner = ToOwn;
-            } else {
-              if (cell->Is_Generally_Clear()) {
-                if (Class->IsCrater && cell->Smudge != SMUDGE_NONE &&
-                    SmudgeTypeClass::As_Reference(cell->Smudge).IsCrater) {
-                  cell->SmudgeData++;
-                  cell->SmudgeData = static_cast<unsigned char>(
-                      std::min(int{cell->SmudgeData}, 4));
+          if (Class->IsBib) {
+            cell->Smudge = Class->Type;
+            cell->SmudgeData =
+                static_cast<unsigned char>(w + (h * Class->Width));
+            cell->Owner = ToOwn;
+          } else {
+            if (cell->Is_Generally_Clear()) {
+              if (Class->IsCrater && cell->Smudge != SMUDGE_NONE &&
+                  SmudgeTypeClass::As_Reference(cell->Smudge).IsCrater) {
+                cell->SmudgeData++;
+                cell->SmudgeData = static_cast<unsigned char>(
+                    std::min(int{cell->SmudgeData}, 4));
+              }
+
+              if (cell->Smudge == SMUDGE_NONE) {
+                /*
+                **	Special selection of a crater that starts as close to
+                *the *	specified coordinate as possible.
+                */
+                if (Class->IsCrater) {
+                  cell->Smudge = static_cast<SmudgeType>(
+                      SMUDGE_CRATER1 + CellClass::Spot_Index(Coord));
+                } else {
+                  cell->Smudge = Class->Type;
                 }
-
-                if (cell->Smudge == SMUDGE_NONE) {
-                  /*
-                  **	Special selection of a crater that starts as close to
-                  *the *	specified coordinate as possible.
-                  */
-                  if (Class->IsCrater) {
-                    cell->Smudge = static_cast<SmudgeType>(
-                        SMUDGE_CRATER1 + CellClass::Spot_Index(Coord));
-                  } else {
-                    cell->Smudge = Class->Type;
-                  }
-                  cell->SmudgeData = 0;
-                }
+                cell->SmudgeData = 0;
               }
             }
-
-            /*
-            **	Flag everything that might be overlapping this cell to redraw
-            *itself.
-            */
-            cell->Redraw_Objects();
           }
+
+          /*
+          **	Flag everything that might be overlapping this cell to redraw
+          *itself.
+          */
+          cell->Redraw_Objects();
         }
       }
-
-      /*
-      **	Whether it was successful in placing, or not, delete the smudge
-      *object. It isn't *	needed once the map has been updated with the
-      *proper smudge data.
-      */
-      delete this;
-      return true;
     }
+
+    /*
+    **	Whether it was successful in placing, or not, delete the smudge
+    *object. It isn't *	needed once the map has been updated with the
+    *proper smudge data.
+    */
+    delete this;
+    return true;
   }
+
   return false;
 }
 

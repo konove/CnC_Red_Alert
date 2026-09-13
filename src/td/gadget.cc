@@ -417,7 +417,8 @@ void GadgetClass::Draw_All(bool forced) {
  * HISTORY:    01/03/1995 MML : Created.                                   *
  *=========================================================================*/
 KeyNumType GadgetClass::Input() {
-  int mousex, mousey;
+  int mousex;
+  int mousey;
   KeyNumType key;
   unsigned flags;
   int forced = false;
@@ -573,19 +574,18 @@ KeyNumType GadgetClass::Input() {
         */
         next_button->Draw_Me(forced);
 
-        if (!next_button->IsDisabled) {
+        /*
+        **	Process this button. If the button was recognized and action was
+        **	performed, then bail from further processing (speed reasons?).
+        */
+        if ((!next_button->IsDisabled) &&
+            next_button->Clicked_On(key, flags, mousex, mousey)) {
           /*
-          **	Process this button. If the button was recognized and action was
-          **	performed, then bail from further processing (speed reasons?).
+          **	Some buttons will require repainting when they perform some
+          *action. *	Do so at this time.
           */
-          if (next_button->Clicked_On(key, flags, mousex, mousey)) {
-            /*
-            **	Some buttons will require repainting when they perform some
-            *action. *	Do so at this time.
-            */
-            next_button->Draw_Me(false);
-            break;
-          }
+          next_button->Draw_Me(false);
+          break;
         }
 
         next_button = next_button->Get_Next();

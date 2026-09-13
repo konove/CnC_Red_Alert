@@ -215,7 +215,6 @@ int InfantryClass::Validate() const {
     num = Infantry.ID(this);
     if (num < 0 || num >= kInfantryMax) {
       Validate_Error("INFANTRY");
-      return 0;
     }
     return 1;
   } else {
@@ -926,13 +925,11 @@ void InfantryClass::Look(bool incremental) {
   Validate();
   int sight;  // Number of cells to sight.
 
-  if (!IsInLimbo) {
-    if (IsOwnedByPlayer) {
-      sight = Class->SightRange;
+  if ((!IsInLimbo) && IsOwnedByPlayer) {
+    sight = Class->SightRange;
 
-      if (sight) {
-        Map.Sight_From(Coord_Cell(Coord), sight, incremental);
-      }
+    if (sight) {
+      Map.Sight_From(Coord_Cell(Coord), sight, incremental);
     }
   }
 }
@@ -1633,10 +1630,8 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
       return MOVE_NO;
     }
 
-    if (otype.IsWall) {
-      if (cellptr->OverlayData / 16 != otype.DamageLevels) {
-        return MOVE_NO;
-      }
+    if (otype.IsWall && (cellptr->OverlayData / 16 != otype.DamageLevels)) {
+      return MOVE_NO;
     }
   }
 
@@ -1647,108 +1642,103 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   MoveType retval = MOVE_OK;
   ObjectClass* obj = cellptr->Cell_Occupier();
   while (obj) {
-    if (obj != this) {
+    if ((obj != this) &&
+        ((Mission != MISSION_CAPTURE && Mission != MISSION_SABOTAGE) ||
+         obj->What_Am_I() != RTTI_AIRCRAFT ||
+         !dynamic_cast<AircraftClass*>(obj)->In_Radio_Contact()))
+    /*
+    **	Special case check so that a landed aircraft that is in radio
+    *contact, will not block *	a capture attempt. It is presumed that
+    *this case happens when a helicopter is landed *	at a helipad.
+    */
+    {
       /*
-      **	Special case check so that a landed aircraft that is in radio
-      *contact, will not block *	a capture attempt. It is presumed that
-      *this case happens when a helicopter is landed *	at a helipad.
+      **	Special check to always allow entry into the building that this
+      *infantry *	is trying to capture.
       */
-      if ((Mission != MISSION_CAPTURE && Mission != MISSION_SABOTAGE) ||
-          obj->What_Am_I() != RTTI_AIRCRAFT ||
-          !dynamic_cast<AircraftClass*>(obj)->In_Radio_Contact()) {
-        /*
-        **	Special check to always allow entry into the building that this
-        *infantry *	is trying to capture.
-        */
-        if (obj->What_Am_I() == RTTI_BUILDING ||
-            obj->What_Am_I() == RTTI_AIRCRAFT) {
-          if ((Mission == MISSION_CAPTURE || Mission == MISSION_SABOTAGE) &&
-              (obj->As_Target() == NavCom || obj->As_Target() == TarCom)) {
-            return MOVE_OK;
-          }
-        }
+      if ((obj->What_Am_I() == RTTI_BUILDING ||
+           obj->What_Am_I() == RTTI_AIRCRAFT) &&
+          ((Mission == MISSION_CAPTURE || Mission == MISSION_SABOTAGE) &&
+           (obj->As_Target() == NavCom || obj->As_Target() == TarCom))) {
+        return MOVE_OK;
+      }
 
-        /*
-        **	Special check to always allow entry into the building that this
-        *infantry *	is trying to capture.
-        */
-        if (Mission == MISSION_ENTER && obj->As_Target() == NavCom &&
-            IsTethered) {
-          return MOVE_OK;
-        }
+      /*
+      **	Special check to always allow entry into the building that this
+      *infantry *	is trying to capture.
+      */
+      if (Mission == MISSION_ENTER && obj->As_Target() == NavCom &&
+          IsTethered) {
+        return MOVE_OK;
+      }
 
-        /*
-        **	Allied objects block movement using different rules than for
-        *enemy *	objects.
-        */
-        if (House->Is_Ally(obj)) {
-          switch (obj->What_Am_I()) {
-            /*
-            **	A unit blocks as either a moving blockage or a stationary temp
-            *blockage. *	This depends on whether the unit is currently
-            *moving or not.
-            */
-            case RTTI_UNIT:
-              if (dynamic_cast<UnitClass*>(obj)->IsDriving ||
-                  Target_Legal(dynamic_cast<UnitClass*>(obj)->NavCom)) {
-                retval = std::max(retval, MOVE_MOVING_BLOCK);
-              } else {
-                retval = std::max(retval, MOVE_TEMP);
-              }
-              break;
-
-            /*
-            **	Aircraft and buildings always block movement. If for some reason
-            *there is an *	allied terrain object, that blocks movement as
-            *well.
-            */
-            case RTTI_TERRAIN:
-            case RTTI_AIRCRAFT:
-            case RTTI_BUILDING:
-              return MOVE_NO;
-
-            default:
-              break;
-          }
-
-        } else {
+      /*
+      **	Allied objects block movement using different rules than for
+      *enemy *	objects.
+      */
+      if (House->Is_Ally(obj)) {
+        switch (obj->What_Am_I()) {
           /*
-          **	Cloaked enemy objects are not considered if this is a
-          *Find_Path() *	call.
+          **	A unit blocks as either a moving blockage or a stationary temp
+          *blockage. *	This depends on whether the unit is currently
+          *moving or not.
           */
-          if (!obj->Is_Techno() ||
-              dynamic_cast<TechnoClass*>(obj)->Cloak != CLOAKED) {
-            /*
-            **	Any non-allied blockage is considered impassible if the infantry
-            **	is not equipped with a weapon.
-            */
-            if (Class->Primary == WEAPON_NONE) {
-              return MOVE_NO;
+          case RTTI_UNIT:
+            if (dynamic_cast<UnitClass*>(obj)->IsDriving ||
+                Target_Legal(dynamic_cast<UnitClass*>(obj)->NavCom)) {
+              retval = std::max(retval, MOVE_MOVING_BLOCK);
+            } else {
+              retval = std::max(retval, MOVE_TEMP);
             }
+            break;
 
-            /*
-            **	Some kinds of terrain are considered destroyable if the infantry
-            *is equipped *	with the weapon that can destroy it. Otherwise,
-            *the terrain is considered *	impassable.
-            */
-            switch (obj->What_Am_I()) {
-              case RTTI_TERRAIN:
-                if (dynamic_cast<TerrainClass*>(obj)->Class->IsFlammable &&
-                    BulletTypeClass::As_Reference(Weapons[Class->Primary].Fires)
-                            .Warhead == WARHEAD_FIRE) {
-                  retval = std::max(retval, MOVE_DESTROYABLE);
-                } else {
-                  return MOVE_NO;
-                }
-                break;
+          /*
+          **	Aircraft and buildings always block movement. If for some reason
+          *there is an *	allied terrain object, that blocks movement as
+          *well.
+          */
+          case RTTI_TERRAIN:
+          case RTTI_AIRCRAFT:
+          case RTTI_BUILDING:
+            return MOVE_NO;
 
-              default:
-                retval = std::max(retval, MOVE_DESTROYABLE);
-                break;
+          default:
+            break;
+        }
+
+      } else {
+        /*
+        **	Cloaked enemy objects are not considered if this is a
+        *Find_Path() *	call.
+        */
+        if (!obj->Is_Techno() ||
+            dynamic_cast<TechnoClass*>(obj)->Cloak != CLOAKED) {
+          /*
+          **	Any non-allied blockage is considered impassible if the infantry
+          **	is not equipped with a weapon.
+          */
+          if (Class->Primary == WEAPON_NONE) {
+            return MOVE_NO;
+          }
+
+          /*
+          **	Some kinds of terrain are considered destroyable if the infantry
+          *is equipped *	with the weapon that can destroy it. Otherwise,
+          *the terrain is considered *	impassable.
+          */
+          if (obj->What_Am_I() == RTTI_TERRAIN) {
+            if (dynamic_cast<TerrainClass*>(obj)->Class->IsFlammable &&
+                BulletTypeClass::As_Reference(Weapons[Class->Primary].Fires)
+                        .Warhead == WARHEAD_FIRE) {
+              retval = std::max(retval, MOVE_DESTROYABLE);
+            } else {
+              return MOVE_NO;
             }
           } else {
-            retval = std::max(retval, MOVE_CLOAK);
+            retval = std::max(retval, MOVE_DESTROYABLE);
           }
+        } else {
+          retval = std::max(retval, MOVE_CLOAK);
         }
       }
     }
@@ -1985,13 +1975,8 @@ void InfantryClass::Random_Animate() {
     *animations.
     */
     if (*this == INFANTRY_C10) {
-      switch (Random_Pick(0, 3)) {
-        case 0:
-          Do_Action(DO_IDLE2);
-          break;
-
-        default:
-          break;
+      if (Random_Pick(0, 3) == 0) {
+        Do_Action(DO_IDLE2);
       }
     }
 

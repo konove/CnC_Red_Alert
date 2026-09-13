@@ -46,6 +46,7 @@ class ArchiveWriter;
 
 #include <cstddef>
 
+#include "absl/base/attributes.h"
 #include "td/abstract.h"
 #include "td/defines.h"
 #include "td/foot.h"
@@ -179,7 +180,8 @@ class TeamClass : public AbstractClass {
     IsActive = true;
     SuspendTimer.Clear();
   }
-  TeamClass(const TeamTypeClass* type, HouseClass* owner);
+  TeamClass(const TeamTypeClass* type ABSL_ATTRIBUTE_LIFETIME_BOUND,
+            HouseClass* owner ABSL_ATTRIBUTE_LIFETIME_BOUND);
   ~TeamClass() override;
   TeamClass(const TeamClass&) = delete;
   TeamClass& operator=(const TeamClass&) = delete;
@@ -188,7 +190,10 @@ class TeamClass : public AbstractClass {
   [[nodiscard]] virtual RTTIType What_Am_I() const { return RTTI_TEAM; }
   void operator delete(void* ptr);
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   static void Init();
   static void Suspend_Teams(int priority);
 

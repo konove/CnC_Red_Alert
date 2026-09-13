@@ -426,7 +426,7 @@ void BaseClass::Write_INI(CCINIClass& ini) {
 template <class Archive>
 void BaseClass::Serialize(Archive& ar) {
   ar(House);
-  int32_t count = static_cast<int32_t>(Nodes.Count());
+  auto count = static_cast<int32_t>(Nodes.Count());
   ar(count);
   if constexpr (Archive::kIsReading) {
     if (!ar.ok() || count < 0 || count > MAP_CELL_TOTAL) {

@@ -205,10 +205,11 @@ class MapEditClass : public MouseClass {
   void Main_Menu();
   void AI_Menu();
   bool Mouse_Moved();
-  bool Verify_House(HousesType house, const ObjectTypeClass* objtype);
-  HousesType Cycle_House(HousesType curhouse, const ObjectTypeClass* objtype);
+  static bool Verify_House(HousesType house, const ObjectTypeClass* objtype);
+  static HousesType Cycle_House(HousesType curhouse,
+                                const ObjectTypeClass* objtype);
   //		int Trigger_Needs_Team(TriggerClass *trigger);
-  void Fatal(int txt);
+  [[noreturn]] static void Fatal(int txt);
 
   /*
   ............................ mapeddlg.cpp .............................
@@ -239,13 +240,14 @@ class MapEditClass : public MouseClass {
   void Place_Prev_Category();
   void Place_Home();
   void Toggle_House();
-  void Set_House_Buttons(HousesType house, GadgetClass* btnlist, int base_id);
+  static void Set_House_Buttons(HousesType house, GadgetClass* btnlist,
+                                int base_id);
   void Start_Trigger_Placement();
   void Stop_Trigger_Placement();
   void Place_Trigger();
   void Start_Base_Building();
   void Cancel_Base_Building();
-  void Build_Base_To(int percent);
+  static void Build_Base_To(int percent);
 
   /*
   ............................ mapedsel.cpp .............................
@@ -255,20 +257,20 @@ class MapEditClass : public MouseClass {
   void Popup_Controls();
   void Grab_Object();
   int Move_Grabbed_Object();
-  bool Change_House(HousesType newhouse);
+  static bool Change_House(HousesType newhouse);
 
   /*
   ............................. mapedtm.cpp .............................
   */
-  void Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
-                   HousesType house, int pic_x, int pic_y);
+  static void Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
+                          HousesType house, int pic_x, int pic_y);
   void Handle_Teams(const char* caption);
   int Select_Team(const char* caption);
   int Edit_Team();
   int Team_Members(HousesType house);
-  void Build_Mission_List(int missioncount, TeamMissionStruct* missions,
-                          char missionbuf[TeamTypeClass::MAX_TEAM_MISSIONS][20],
-                          ListClass* list);
+  static void Build_Mission_List(
+      int missioncount, TeamMissionStruct* missions,
+      char missionbuf[TeamTypeClass::MAX_TEAM_MISSIONS][20], ListClass* list);
 
   /*
   --------------------------- Private Interface ----------------------------

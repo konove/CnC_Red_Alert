@@ -76,7 +76,7 @@ class TabClass : public SidebarClass {
   unsigned IsTabToRedraw : 1 {false};
 
  private:
-  void Set_Active(int select);
+  static void Set_Active(int select);
 
   Timer<FrameTickSource> MoneyFlashTimer;
 

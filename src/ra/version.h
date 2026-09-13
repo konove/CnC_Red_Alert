@@ -39,6 +39,8 @@
 #ifndef CNC_RED_ALERT_RA_VERSION_H_
 #define CNC_RED_ALERT_RA_VERSION_H_
 
+#include "absl/base/attributes.h"
+
 #define VERSION_RED_ALERT_104 0x00010000  // Shipped US version number
 #define VERSION_RED_ALERT_107 0x00011000  // Shipped Counterstrike number
 #define VERSION_RED_ALERT_106 0x00010500  // Patch without CS installed
@@ -113,17 +115,17 @@ class VersionClass {
   // Retrieves a pointer to the version # as a text string (#.#), with
   // the trailing 0's trimmed off.
   //.....................................................................
-  char* Version_Name();
+  char* Version_Name() ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   //.....................................................................
   // Retrieves a pointer to the current version text.
   //.....................................................................
-  char* Version_Text() { return VersionText; }
+  char* Version_Text() ABSL_ATTRIBUTE_LIFETIME_BOUND { return VersionText; }
 
   //.....................................................................
   // Returns the default comm protocol for a given version number.
   //.....................................................................
-  CommProtocolType Version_Protocol(unsigned long version);
+  static CommProtocolType Version_Protocol(unsigned long version);
 
   //.....................................................................
   // These routines support "version clipping".
@@ -137,8 +139,8 @@ class VersionClass {
   // that this program will connect to; this does not take any previous
   // version clipping into account.
   //.....................................................................
-  unsigned long Min_Version();
-  unsigned long Max_Version();
+  static unsigned long Min_Version();
+  static unsigned long Max_Version();
 
  private:
   //.....................................................................

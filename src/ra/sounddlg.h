@@ -66,9 +66,15 @@ class SoundControlsClass {
     PLAY_Y = 128,
 
     ONOFF_WIDTH = 25,
-    SHUFFLE_X = config::kIsGerman ? 79
-    : config::kIsFrench           ? 99
-                                  : 97,
+    SHUFFLE_X = [] {
+      if (config::kIsGerman) {
+        return 79;
+      }
+      if (config::kIsFrench) {
+        return 99;
+      }
+      return 97;
+    }(),
     SHUFFLE_Y = 128,
 
     REPEAT_X = config::kIsFrench ? 169 : 164,
@@ -96,7 +102,7 @@ class SoundControlsClass {
 
  public:
   SoundControlsClass() = default;
-  void Process();
+  static void Process();
 };
 
 #endif  // CNC_RED_ALERT_RA_SOUNDDLG_H_

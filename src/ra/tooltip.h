@@ -23,6 +23,7 @@
 
 #include <cstdint>
 
+#include "absl/base/attributes.h"
 #include "ra/gadget.h"
 
 #define TOOLTIPTEXT_MAX_LEN 100
@@ -31,7 +32,8 @@
 
 class ToolTipClass {
  public:
-  ToolTipClass(GadgetClass* pGadget, const char* szText, int x_show, int y_show,
+  ToolTipClass(GadgetClass* pGadget ABSL_ATTRIBUTE_LIFETIME_BOUND,
+               const char* szText, int x_show, int y_show,
                bool right_align = false, bool icon_list = false);
   ~ToolTipClass() { delete[] pSaveRect; }
   ToolTipClass(const ToolTipClass&) = delete;
@@ -39,7 +41,7 @@ class ToolTipClass {
   ToolTipClass(ToolTipClass&&) = delete;
   ToolTipClass& operator=(ToolTipClass&&) = delete;
 
-  ToolTipClass* GetToolTipHit();
+  ToolTipClass* GetToolTipHit() ABSL_ATTRIBUTE_LIFETIME_BOUND;
   void Show();
   void Unshow();
   void Move(int x_show, int y_show);

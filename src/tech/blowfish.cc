@@ -136,7 +136,7 @@ void BlowfishEngine::Submit_Key(const void* key, int length) {
   **	into a long by using endian independent means.
   */
   int j = 0;
-  const unsigned char* key_ptr = static_cast<const unsigned char*>(key);
+  const auto* key_ptr = static_cast<const unsigned char*>(key);
   unsigned long* p_ptr = &P_Encrypt[0];
   for (int index = 0; index < ROUNDS + 2; index++) {
     unsigned long data = 0;
@@ -358,7 +358,7 @@ void BlowfishEngine::Process_Block(const void* plaintext, void* cyphertext,
   **	biased toward "big endian" architecture and some optimizations
   **	could be done for big endian processors in that case.
   */
-  const unsigned char* source = static_cast<const unsigned char*>(plaintext);
+  const auto* source = static_cast<const unsigned char*>(plaintext);
   Int left;
   left.Char.C0 = *source++;
   left.Char.C1 = *source++;
@@ -403,7 +403,7 @@ void BlowfishEngine::Process_Block(const void* plaintext, void* cyphertext,
   **	superfluous exchange that occurs as a side effect of the
   **	encryption rounds.
   */
-  unsigned char* out = static_cast<unsigned char*>(cyphertext);
+  auto* out = static_cast<unsigned char*>(cyphertext);
   *out++ = right.Char.C0;
   *out++ = right.Char.C1;
   *out++ = right.Char.C2;

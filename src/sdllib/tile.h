@@ -21,6 +21,8 @@
 
 #include <cstdint>
 
+#include "absl/base/attributes.h"
+
 typedef struct {
   short Width;      // Width of icons (pixels).
   short Height;     // Height of icons (pixels).
@@ -41,7 +43,8 @@ typedef struct {
   int32_t Map;  // Icon map offset (if present).
 } IControl_Type;
 
-inline void* Get_Icon_Set_Map(const void* iconset) {
+inline void* Get_Icon_Set_Map(
+    const void* iconset ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   if (iconset != nullptr) {
     return (char*)iconset + ((IControl_Type*)iconset)->Map;
   }

@@ -43,6 +43,8 @@
 #include <algorithm>
 #include <cstddef>
 
+#include "absl/base/attributes.h"
+#include "base/types.h"
 #include "ra/conquer.h"
 #include "ra/control.h"
 #include "ra/defines.h"
@@ -59,7 +61,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "base/types.h"
 
 // Scrollable list box widget similar to a Windows ListBox control.
 // Displays a list of text items with support for selection, scrolling, and tab
@@ -107,9 +108,9 @@ class ListClass : public ControlClass {
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  LinkClass& Add(LinkClass& list) override;
-  LinkClass& Add_Tail(LinkClass& list) override;
-  LinkClass& Add_Head(LinkClass& list) override;
+  LinkClass& Add(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  LinkClass& Add_Tail(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  LinkClass& Add_Head(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   GadgetClass* Remove() override;
 
  protected:
@@ -208,9 +209,9 @@ class TListClass final : public ControlClass {
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  LinkClass& Add(LinkClass& list) override;
-  LinkClass& Add_Tail(LinkClass& list) override;
-  LinkClass& Add_Head(LinkClass& list) override;
+  LinkClass& Add(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  LinkClass& Add_Tail(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  LinkClass& Add_Head(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   GadgetClass* Remove() override;
 
  protected:
@@ -488,21 +489,17 @@ int TListClass<T>::Draw_Me(bool forced) {
 
 template <class T>
 void TListClass<T>::Bump(int up) {
-  if (IsScrollActive) {
-    if (ScrollGadget.Step(up)) {
-      CurrentTopIndex = ScrollGadget.Get_Value();
-      Flag_To_Redraw();
-    }
+  if (IsScrollActive && ScrollGadget.Step(up)) {
+    CurrentTopIndex = ScrollGadget.Get_Value();
+    Flag_To_Redraw();
   }
 }
 
 template <class T>
 void TListClass<T>::Step(int up) {
-  if (IsScrollActive) {
-    if (ScrollGadget.Step(up)) {
-      CurrentTopIndex = ScrollGadget.Get_Value();
-      Flag_To_Redraw();
-    }
+  if (IsScrollActive && ScrollGadget.Step(up)) {
+    CurrentTopIndex = ScrollGadget.Get_Value();
+    Flag_To_Redraw();
   }
 }
 

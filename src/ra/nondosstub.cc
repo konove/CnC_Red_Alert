@@ -25,6 +25,7 @@
 #include <string_view>
 #include <utility>
 
+#include "absl/base/attributes.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "ra/ccfile.h"
@@ -61,7 +62,7 @@ void Focus_Loss() {
   Theme.Suspend();
   Stop_Primary_Sound_Buffer();
   if (WWMouse) {
-    WWMouse->Clear_Cursor_Clip();
+    WWMouseClass::Clear_Cursor_Clip();
   }
 }
 
@@ -70,7 +71,7 @@ void Focus_Restore() {
   Map.Flag_To_Redraw(true);
   Start_Primary_Sound_Buffer(true);
   if (WWMouse) {
-    WWMouse->Set_Cursor_Clip();
+    WWMouseClass::Set_Cursor_Clip();
   }
 }
 
@@ -157,7 +158,8 @@ class BufferedFileReader {
  public:
   static constexpr size_t kBufferSize = 2048;
 
-  explicit BufferedFileReader(CCFileClass& file) : file_(file) {}
+  explicit BufferedFileReader(CCFileClass& file ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : file_(file) {}
 
   // Delete copy/move to prevent accidental state duplication.
   ~BufferedFileReader() = default;
@@ -168,11 +170,10 @@ class BufferedFileReader {
 
   // Returns the next byte, or an OutOfRange error on EOF.
   absl::StatusOr<uint8_t> ReadByte() {
-    if (cursor_ >= bytes_in_buffer_) {
-      if (!RefillBuffer()) {
-        return absl::OutOfRangeError("End of file reached.");
-      }
+    if ((cursor_ >= bytes_in_buffer_) && (!RefillBuffer())) {
+      return absl::OutOfRangeError("End of file reached.");
     }
+
     return buffer_[cursor_++];
   }
 
@@ -220,7 +221,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
 
   if (Buff) {
     buffer = static_cast<char*>(Buff);
-    int32_t max_lines = static_cast<int32_t>(Size / width);
+    auto max_lines = static_cast<int32_t>(Size / width);
     height = std::min(max_lines - 1, height);
     pic = new GraphicBufferClass(width, height, buffer, Size);
     if (!pic->Get_Buffer()) {
@@ -271,11 +272,9 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
       return nullptr;
     }
     unsigned rle = *rle_result;
-    if (rle > 192) {
-      if (!reader.ReadByte().ok()) {
-        delete pic;
-        return nullptr;
-      }
+    if ((rle > 192) && (!reader.ReadByte().ok())) {
+      delete pic;
+      return nullptr;
     }
 
   } else {

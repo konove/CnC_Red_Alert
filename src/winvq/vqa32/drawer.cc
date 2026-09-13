@@ -197,14 +197,12 @@ void VQA_Configure_Drawer(VQAHandle* vqap) {
   }
 
   /* Initialize the draw vectors for the specified video mode. */
-  switch (config->Vmode) {
-    /* Purely buffered (Video refresh is up to the client. */
-    default:
-      vqabuf->Draw_Frame = DrawFrame_Buffer;
+  /* Purely buffered (Video refresh is up to the client. */
+  {
+    vqabuf->Draw_Frame = DrawFrame_Buffer;
 
-      /* Pre-compute the draw offset for speed. */
-      drawer->ScreenOffset = (drawer->ImageWidth * drawer->Y1) + drawer->X1;
-      break;
+    /* Pre-compute the draw offset for speed. */
+    drawer->ScreenOffset = (drawer->ImageWidth * drawer->Y1) + drawer->X1;
   }
 }
 
@@ -341,10 +339,9 @@ static long Select_Frame(VQAHandle* vqap) {
       }
 
       /* Invoke callback with nullptr screen ptr */
-      if (config->DrawerCallback != nullptr) {
-        if (config->DrawerCallback(nullptr, curframe->FrameNum) != 0) {
-          return VQAERR_EOF;
-        }
+      if ((config->DrawerCallback != nullptr) &&
+          (config->DrawerCallback(nullptr, curframe->FrameNum) != 0)) {
+        return VQAERR_EOF;
       }
 
       /* Skip the frame */
@@ -511,10 +508,9 @@ static long DrawFrame_Buffer(VQAHandle* vqa) {
   vqabuf->Flags |= VQADATF_UPDATE;
 
   /* Invoke user's callback routine */
-  if (config->DrawerCallback != nullptr) {
-    if (config->DrawerCallback(drawer->ImageBuf, curframe->FrameNum) != 0) {
-      return VQAERR_EOF;
-    }
+  if ((config->DrawerCallback != nullptr) &&
+      (config->DrawerCallback(drawer->ImageBuf, curframe->FrameNum) != 0)) {
+    return VQAERR_EOF;
   }
 
   /* Move to the next frame */

@@ -244,9 +244,9 @@ void ScenarioClass::Do_Fade_AI() {
     fixed newsat = Options.Get_Saturation() *
                    fixed(static_cast<int>(kGrayFadeTime - FadeTimer.Value()),
                          static_cast<int>(kGrayFadeTime));
-    Options.Adjust_Palette(OriginalPalette, GamePalette,
-                           Options.Get_Brightness(), newsat, Options.Get_Tint(),
-                           Options.Get_Contrast());
+    GameOptionsClass::Adjust_Palette(
+        OriginalPalette, GamePalette, Options.Get_Brightness(), newsat,
+        Options.Get_Tint(), Options.Get_Contrast());
     GamePalette.Set();
   }
   if (IsFadingBW) {
@@ -255,9 +255,9 @@ void ScenarioClass::Do_Fade_AI() {
     }
     fixed newsat =
         Options.Get_Saturation() * fixed(static_cast<int>(FadeTimer.Value()), kGrayFadeTime);
-    Options.Adjust_Palette(OriginalPalette, GamePalette,
-                           Options.Get_Brightness(), newsat, Options.Get_Tint(),
-                           Options.Get_Contrast());
+    GameOptionsClass::Adjust_Palette(
+        OriginalPalette, GamePalette, Options.Get_Brightness(), newsat,
+        Options.Get_Tint(), Options.Get_Contrast());
     GamePalette.Set();
     if (!IsFadingBW) {
       IsFadingColor = true;
@@ -460,11 +460,11 @@ bool Read_Scenario(char* name) {
         Rule.General(ini);
         Rule.Recharge(ini);
         Rule.AI(ini);
-        Rule.Powerups(ini);
-        Rule.Land_Types(ini);
-        Rule.Themes(ini);
+        RulesClass::Powerups(ini);
+        RulesClass::Land_Types(ini);
+        RulesClass::Themes(ini);
         Rule.IQ(ini);
-        Rule.Objects(ini);
+        RulesClass::Objects(ini);
         Rule.Difficulty(ini);
       }
     }
@@ -558,7 +558,8 @@ void Fill_In_Data() {
   ** Now go through and set all the cells ringing the map to be visible, so
   ** we won't get the wall of shadow at the edge of the map.
   */
-  int x, y;
+  int x;
+  int y;
   for (x = Map.MapCellX - 1;
        x < Map.MapCellX + Map.MapCellWidth + 1; x++) {
     Map[XY_Cell(x, Map.MapCellY - 1)].IsVisible =
@@ -618,7 +619,7 @@ void Fill_In_Data() {
   */
   Scen.BridgeCount = Map.Intact_Bridge_Count();
 
-  Map.All_To_Look(true);
+  MapEditClass::All_To_Look(true);
 }
 
 /***********************************************************************************************
@@ -1233,9 +1234,15 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
   const char* b1txt = Text_String(left_btn);
   const char* b2txt = Text_String(right_btn);
-  const char* b3txt = config::kIsFrench   ? "SUITE"
-                      : config::kIsGerman ? "MEHR"
-                                          : "MORE";
+  const char* b3txt = [] {
+    if (config::kIsFrench) {
+      return "SUITE";
+    }
+    if (config::kIsGerman) {
+      return "MEHR";
+    }
+    return "MORE";
+  }();
 
   const void* briefsnd = MFCD::Retrieve("BRIEFING.AUD");
 
@@ -1286,7 +1293,9 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   **	Examine the optional button parameters. Fetch the width and starting
   **	characters for each.
   */
-  char b1char = '\0', b2char = '\0', b3char = '\0';  // 1st char of each string
+  char b1char = '\0';
+  char b2char = '\0';
+  char b3char = '\0';           // 1st char of each string
   int bwidth = 0;               // button width and height
   int bheight = 0;
   int numbuttons = 0;
@@ -1528,17 +1537,17 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
         // Check 'input' to see if it's the 1st char of button text
         default:
-          if (b1char == toupper(Keyboard->To_ASCII(
+          if (b1char == toupper(KeyboardClass::To_ASCII(
                             static_cast<KeyNumType>(input & 0xFF)))) {
             selection = kButton1;
             pressed = true;
           } else if (b2txt != nullptr &&
-                     b2char == toupper(Keyboard->To_ASCII(
+                     b2char == toupper(KeyboardClass::To_ASCII(
                                    static_cast<KeyNumType>(input & 0xFF)))) {
             selection = kButton2;
             pressed = true;
           } else if (b3txt != nullptr &&
-                     b3char == toupper(Keyboard->To_ASCII(
+                     b3char == toupper(KeyboardClass::To_ASCII(
                                    static_cast<KeyNumType>(input & 0xFF)))) {
             selection = kButton3;
             pressed = true;
@@ -1924,19 +1933,17 @@ bool Read_Scenario_INI(char* fname, bool /*unused*/) {
   /*
   ** If the scenario digest is wrong then the return code will be a 2.
   */
-  if (result == 2) {
-    //		if (Session.Type == GAME_NORMAL || Session.ScenarioIsOfficial) {
-    /*
-    **	Make a special exception so that multiplayer maps from 1 through
-    **	24 will not care if the message digest is in error. All other
-    **	maps will abort the scenario load.
-    */
-    if (Scen.ScenarioName[2] != 'M' || Scen.Scenario >= 25) {
-      GamePalette.Set();
-      WWMessageBox().Process(TXT_SCENARIO_ERROR, TXT_OK);
-      if constexpr (config::kReleaseVersion) {
-        return false;
-      }
+  //		if (Session.Type == GAME_NORMAL || Session.ScenarioIsOfficial) {
+  /*
+  **	Make a special exception so that multiplayer maps from 1 through
+  **	24 will not care if the message digest is in error. All other
+  **	maps will abort the scenario load.
+  */
+  if ((result == 2) && (Scen.ScenarioName[2] != 'M' || Scen.Scenario >= 25)) {
+    GamePalette.Set();
+    WWMessageBox().Process(TXT_SCENARIO_ERROR, TXT_OK);
+    if constexpr (config::kReleaseVersion) {
+      return false;
     }
   }
 
@@ -1982,20 +1989,20 @@ bool Read_Scenario_INI(char* fname, bool /*unused*/) {
   Rule.General(RuleINI);
   Rule.Recharge(RuleINI);
   Rule.AI(RuleINI);
-  Rule.Powerups(RuleINI);
-  Rule.Land_Types(RuleINI);
-  Rule.Themes(RuleINI);
+  RulesClass::Powerups(RuleINI);
+  RulesClass::Land_Types(RuleINI);
+  RulesClass::Themes(RuleINI);
   Rule.IQ(RuleINI);
-  Rule.Objects(RuleINI);
+  RulesClass::Objects(RuleINI);
   Rule.Difficulty(RuleINI);
   Rule.General(AftermathINI);
   Rule.Recharge(AftermathINI);
   Rule.AI(AftermathINI);
-  Rule.Powerups(AftermathINI);
-  Rule.Land_Types(AftermathINI);
-  Rule.Themes(AftermathINI);
+  RulesClass::Powerups(AftermathINI);
+  RulesClass::Land_Types(AftermathINI);
+  RulesClass::Themes(AftermathINI);
   Rule.IQ(AftermathINI);
-  Rule.Objects(AftermathINI);
+  RulesClass::Objects(AftermathINI);
   Rule.Difficulty(AftermathINI);
   /*
   **	Override any rules values specified in this
@@ -2004,11 +2011,11 @@ bool Read_Scenario_INI(char* fname, bool /*unused*/) {
   Rule.General(ini);
   Rule.Recharge(ini);
   Rule.AI(ini);
-  Rule.Powerups(ini);
-  Rule.Land_Types(ini);
-  Rule.Themes(ini);
+  RulesClass::Powerups(ini);
+  RulesClass::Land_Types(ini);
+  RulesClass::Themes(ini);
   Rule.IQ(ini);
-  Rule.Objects(ini);
+  RulesClass::Objects(ini);
   Rule.Difficulty(ini);
   /*
   ** Init the Scenario CRC value
@@ -2220,11 +2227,10 @@ bool Read_Scenario_INI(char* fname, bool /*unused*/) {
   /*
   **	Return with flag saying that the scenario file was read.
   */
-  if (Is_Aftermath_Installed()) {
-    if (Session.Type == GAME_SKIRMISH) {
-      bAftermathMultiplayer = NewUnitsEnabled = true;
-    }
+  if (Is_Aftermath_Installed() && (Session.Type == GAME_SKIRMISH)) {
+    bAftermathMultiplayer = NewUnitsEnabled = true;
   }
+
   ScenarioInit--;
   return true;
 }
@@ -2330,7 +2336,8 @@ void Write_Scenario_INI(char* fname) {
 void Assign_Houses() {
   int assigned[kMaxPlayers];
   int color_used[8];
-  int i, j;
+  int i;
+  int j;
   HousesType house;
   HouseClass* housep;
   int lowest_color;
@@ -2562,7 +2569,9 @@ static void Create_Units(bool official) {
   int u_limit = 0;   // last allowable index of units for this BuildLevel
   int i_limit = 0;   // last allowable index of infantry for this BuildLevel
   TechnoClass* obj;  // newly-created object
-  int i, j, k;       // loop counters
+  int i;
+  int j;
+  int k;             // loop counters
   int scaleval;      // value to scale # units or infantry
 
   /*
@@ -2778,12 +2787,12 @@ static void Create_Units(bool official) {
       */
       scaleval = 1;
       obj = new UnitClass(UNIT_MCV, house);
-      if (!obj->Unlimbo(Cell_Coord(centroid), DIR_N)) {
-        if (!Scan_Place_Object(obj, centroid)) {
-          delete obj;
-          obj = nullptr;
-        }
+      if ((!obj->Unlimbo(Cell_Coord(centroid), DIR_N)) &&
+          (!Scan_Place_Object(obj, centroid))) {
+        delete obj;
+        obj = nullptr;
       }
+
       if (obj != nullptr) {
         hptr->FlagHome = 0;
         hptr->FlagLocation = 0;
@@ -2931,11 +2940,10 @@ int Scan_Place_Object(ObjectClass* obj, CELL cell) {
   */
   if (Map.In_Radar(cell)) {
     techno = Map[cell].Cell_Techno();
-    if (!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
-                    obj->What_Am_I() == RTTI_INFANTRY)) {
-      if (obj->Unlimbo(Cell_Coord(cell), DIR_N)) {
-        return true;
-      }
+    if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
+                     obj->What_Am_I() == RTTI_INFANTRY)) &&
+        obj->Unlimbo(Cell_Coord(cell), DIR_N)) {
+      return true;
     }
   }
 
@@ -2991,11 +2999,10 @@ int Scan_Place_Object(ObjectClass* obj, CELL cell) {
           **	- the techno in the cell & the object are both infantry
           */
           techno = Map[newcell].Cell_Techno();
-          if (!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
-                          obj->What_Am_I() == RTTI_INFANTRY)) {
-            if (obj->Unlimbo(Cell_Coord(newcell), DIR_N)) {
-              return true;
-            }
+          if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
+                           obj->What_Am_I() == RTTI_INFANTRY)) &&
+              obj->Unlimbo(Cell_Coord(newcell), DIR_N)) {
+            return true;
           }
         }
 
@@ -3022,11 +3029,14 @@ int Scan_Place_Object(ObjectClass* obj, CELL cell) {
  * HISTORY: * 07/30/1995 BRR : Created. *
  *=============================================================================================*/
 static CELL Clip_Scatter(CELL cell, int maxdist) {
-  int x, y;
+  int x;
+  int y;
   int xdist;
   int ydist;
-  int xmin, xmax;
-  int ymin, ymax;
+  int xmin;
+  int xmax;
+  int ymin;
+  int ymax;
 
   /*
   **	Get X & Y coords of given starting cell
@@ -3082,9 +3092,12 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
  * HISTORY: * 07/30/1995 BRR : Created. *
  *=============================================================================================*/
 static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
-  int x, y;
-  int xmin, xmax;
-  int ymin, ymax;
+  int x;
+  int y;
+  int xmin;
+  int xmax;
+  int ymin;
+  int ymax;
 
   /*
   **	Get X & Y coords of given starting cell

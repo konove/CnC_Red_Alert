@@ -10,6 +10,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/base/attributes.h"
 #include "port/unaligned.h"
 #include "sdllib/file.h"
 #include "sdllib/memflag.h"
@@ -103,10 +104,9 @@ static int ToMixerAmplitude(const int raw_volume) {
 }
 
 static uint8_t* DecodeADPCMBlock(ChannelState& chan, int block_size,
-                                 uint8_t* in_ptr) {
-  auto clamp = [](int v, int min, int max) {
-    return v < min ? min : v > max ? max : v;
-  };
+                                 uint8_t* in_ptr
+                                     ABSL_ATTRIBUTE_LIFETIME_BOUND) {
+  auto clamp = [](int v, int min, int max) { return std::clamp(v, min, max); };
 
   for (int i = 0; i < block_size; i++) {
     int16_t samples[2];
@@ -137,7 +137,8 @@ static uint8_t* DecodeADPCMBlock(ChannelState& chan, int block_size,
 }
 
 static uint8_t* DecodeWestwoodBlock(ChannelState& chan, int block_size,
-                                    uint8_t* in_ptr) {
+                                    uint8_t* in_ptr
+                                        ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   int prev_sample = 0x80;  // Previous sample (starting value).
 
   const auto* in_end = in_ptr + block_size;
@@ -155,8 +156,7 @@ static uint8_t* DecodeWestwoodBlock(ChannelState& chan, int block_size,
       if (data & 0x20U) {
         // The lower 5 bits are actually a signed delta.
         // Sign extend the delta and add it to the stream.
-        int8_t v =
-            static_cast<int8_t>(data & 0x10U ? data | 0xE0U : data & 0xFU);
+        auto v = static_cast<int8_t>(data & 0x10U ? data | 0xE0U : data & 0xFU);
 
         prev_sample += v;
 
@@ -249,8 +249,8 @@ static bool RefillStream(ChannelState& chan) {
   // read blocks until we have enough samples
   while (samples_to_gen > 0) {
     // read a block
-    uint16_t block_in_size = port::ReadUnaligned<uint16_t>(chan.in_ptr);
-    uint16_t block_out_size = port::ReadUnaligned<uint16_t>(chan.in_ptr + 2);
+    auto block_in_size = port::ReadUnaligned<uint16_t>(chan.in_ptr);
+    auto block_out_size = port::ReadUnaligned<uint16_t>(chan.in_ptr + 2);
     chan.in_ptr += 8;  // there's also a 0000DEAF magic value
 
     if (block_in_size == block_out_size)  // raw block
@@ -455,7 +455,7 @@ void Sound_Callback() {
       // read block
       auto in_size = block_header[0];
 
-      uint8_t* buf = new uint8_t[in_size];
+      auto* buf = new uint8_t[in_size];
 
       Read_File(chan.file_handle, buf, in_size);
 

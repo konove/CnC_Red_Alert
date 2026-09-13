@@ -54,6 +54,7 @@
 #define HIDBUFF ((void*)(0xA0000))
 #define Size_Of_Region(a, b) ((a) * (b))
 
+#include "absl/base/attributes.h"
 #include "sdllib/tile.h"
 
 #ifndef SEEK_SET
@@ -103,7 +104,8 @@ inline short Get_IconSet_MapHeight(const void* data) {
   return 0;
 }
 
-inline const unsigned char* Get_IconSet_ControlMap(const void* data) {
+inline const unsigned char* Get_IconSet_ControlMap(
+    const void* data ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   if (data) {
     return (const unsigned char*)((char*)data +
                                   ((IControl_Type*)data)->ColorMap);
@@ -118,34 +120,52 @@ class IconsetClass : protected IControl_Type {
   */
   [[nodiscard]] int Map_Width() const { return MapWidth; }
   [[nodiscard]] int Map_Height() const { return MapHeight; }
-  unsigned char* Control_Map() { return (unsigned char*)this + ColorMap; }
-  [[nodiscard]] const unsigned char* Control_Map() const {
+  unsigned char* Control_Map() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return (unsigned char*)this + ColorMap;
+  }
+  [[nodiscard]] const unsigned char* Control_Map() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return (const unsigned char*)this + ColorMap;
   }
   [[nodiscard]] int Icon_Count() const { return Count; }
   [[nodiscard]] int Pixel_Width() const { return Width; }
   [[nodiscard]] int Pixel_Height() const { return Height; }
   [[nodiscard]] int Total_Size() const { return Size; }
-  [[nodiscard]] const unsigned char* Palette_Data() const {
+  [[nodiscard]] const unsigned char* Palette_Data() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return (const unsigned char*)this + Palettes;
   }
-  unsigned char* Palette_Data() { return (unsigned char*)this + Palettes; }
-  [[nodiscard]] const unsigned char* Icon_Data() const {
+  unsigned char* Palette_Data() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return (unsigned char*)this + Palettes;
+  }
+  [[nodiscard]] const unsigned char* Icon_Data() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return (const unsigned char*)this + Icons;
   }
-  unsigned char* Icon_Data() { return (unsigned char*)this + Icons; }
-  [[nodiscard]] const unsigned char* Map_Data() const {
+  unsigned char* Icon_Data() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return (unsigned char*)this + Icons;
+  }
+  [[nodiscard]] const unsigned char* Map_Data() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return (const unsigned char*)this + Map;
   }
-  unsigned char* Map_Data() { return (unsigned char*)this + Map; }
-  [[nodiscard]] const unsigned char* Remap_Data() const {
+  unsigned char* Map_Data() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return (unsigned char*)this + Map;
+  }
+  [[nodiscard]] const unsigned char* Remap_Data() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return (const unsigned char*)this + Remaps;
   }
-  unsigned char* Remap_Data() { return (unsigned char*)this + Remaps; }
-  [[nodiscard]] const unsigned char* Trans_Data() const {
+  unsigned char* Remap_Data() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return (unsigned char*)this + Remaps;
+  }
+  [[nodiscard]] const unsigned char* Trans_Data() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return (const unsigned char*)this + TransFlag;
   }
-  unsigned char* Trans_Data() { return (unsigned char*)this + TransFlag; }
+  unsigned char* Trans_Data() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return (unsigned char*)this + TransFlag;
+  }
 
   /*
   **	Disallow these operations with an IconsetClass object.

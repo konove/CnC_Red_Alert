@@ -152,9 +152,9 @@ class OptionsClass {
   KeyNumType KeyTeam9{KN_9};
   KeyNumType KeyTeam10{KN_0};
 
-  void Adjust_Palette(const PaletteClass& oldpal, PaletteClass& newpal,
-                      fixed brightness, fixed color, fixed tint,
-                      fixed contrast) const;
+  static void Adjust_Palette(const PaletteClass& oldpal, PaletteClass& newpal,
+                             fixed brightness, fixed color, fixed tint,
+                             fixed contrast);
 
  protected:
  private:

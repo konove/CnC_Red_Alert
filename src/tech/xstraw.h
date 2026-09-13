@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_TECH_XSTRAW_H_
 #define CNC_RED_ALERT_TECH_XSTRAW_H_
 
+#include "absl/base/attributes.h"
 #include "tech/buff.h"
 #include "tech/straw.h"
 #include "tech/wwfile.h"
@@ -53,7 +54,7 @@ class BufferStraw : public Straw {
   // Creates a non-owning view into the buffer.
   explicit BufferStraw(const Buffer& buffer)
       : BufferPtr(buffer.Get_Buffer(), buffer.Get_Size()), Index(0) {}
-  BufferStraw(const void* buffer, int length)
+  BufferStraw(const void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND, int length)
       : BufferPtr((void*)buffer, length), Index(0) {}
   ~BufferStraw() override = default;
 
@@ -77,8 +78,10 @@ class BufferStraw : public Straw {
 */
 class FileStraw : public Straw {
  public:
-  explicit FileStraw(FileClass* file) : File(file), HasOpened(false) {}
-  explicit FileStraw(FileClass& file) : File(&file), HasOpened(false) {}
+  explicit FileStraw(FileClass* file ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : File(file), HasOpened(false) {}
+  explicit FileStraw(FileClass& file ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : File(&file), HasOpened(false) {}
   ~FileStraw() override;
 
   FileStraw(const FileStraw&) = delete;

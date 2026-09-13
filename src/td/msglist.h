@@ -57,6 +57,7 @@
 #ifndef CNC_RED_ALERT_TD_MSGLIST_H_
 #define CNC_RED_ALERT_TD_MSGLIST_H_
 
+#include "absl/base/attributes.h"
 #include "sdllib/keyboard.h"
 #include "td/defines.h"
 #include "td/txtlabel.h"
@@ -80,14 +81,15 @@ class MessageListClass {
   **	Initialization
   */
   void Init(int x, int y, int max_msg, int maxchars, int height);
-  TextLabelClass* Add_Message(char* txt, int color, TextPrintType style,
-                              int timeout, unsigned short magic_number,
-                              unsigned short crc);
+  TextLabelClass* Add_Message(char* txt ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                              int color, TextPrintType style, int timeout,
+                              unsigned short magic_number, unsigned short crc);
 
   /*
   **	Message-editing routines
   */
-  TextLabelClass* Add_Edit(int color, TextPrintType style, char* to, int width);
+  TextLabelClass* Add_Edit(int color, TextPrintType style,
+                           char* to ABSL_ATTRIBUTE_LIFETIME_BOUND, int width);
   char* Get_Edit_Buf();
 
   /*

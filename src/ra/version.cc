@@ -360,7 +360,8 @@ void VersionClass::Read_Text_String() {
  *   10/26/1995 BRR : Created.                                             *
  *=========================================================================*/
 CommProtocolType VersionClass::Version_Protocol(unsigned long version) {
-  int i, j;
+  int i;
+  int j;
 
   //------------------------------------------------------------------------
   // Compute # entries in the VersionProtocol table
@@ -558,7 +559,15 @@ const char* Version_Name() {
 
   version = "3.03";
 
-  version += config::kIsEnglish ? 'E' : config::kIsGerman ? 'G' : 'F';
+  version += [] {
+    if (config::kIsEnglish) {
+      return 'E';
+    }
+    if (config::kIsGerman) {
+      return 'G';
+    }
+    return 'F';
+  }();
 
   if (Is_Counterstrike_Installed()) {
     version += "CS";

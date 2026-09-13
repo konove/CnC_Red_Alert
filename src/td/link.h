@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_LINK_H_
 #define CNC_RED_ALERT_TD_LINK_H_
 
+#include "absl/base/attributes.h"
+
 /*
 **	This implements a simple linked list. It is possible to add, remove, and
 *traverse the *	list. Since this is a doubly linked list, it is possible to
@@ -55,19 +57,21 @@ class LinkClass {
 
   [[nodiscard]] virtual LinkClass* Get_Next() const;
   [[nodiscard]] virtual LinkClass* Get_Prev() const;
-  virtual LinkClass& Add(LinkClass& list);
-  virtual LinkClass& Add_Tail(LinkClass& list);
-  virtual LinkClass& Add_Head(LinkClass& list);
-  [[nodiscard]] virtual const LinkClass& Head_Of_List() const final;
-  virtual LinkClass& Head_Of_List() final {
+  virtual LinkClass& Add(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  virtual LinkClass& Add_Tail(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  virtual LinkClass& Add_Head(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  [[nodiscard]] virtual const LinkClass& Head_Of_List() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND final;
+  virtual LinkClass& Head_Of_List() ABSL_ATTRIBUTE_LIFETIME_BOUND final {
     return (LinkClass&)static_cast<const LinkClass*>(this)->Head_Of_List();
   }
-  [[nodiscard]] virtual const LinkClass& Tail_Of_List() const final;
-  virtual LinkClass& Tail_Of_List() final {
+  [[nodiscard]] virtual const LinkClass& Tail_Of_List() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND final;
+  virtual LinkClass& Tail_Of_List() ABSL_ATTRIBUTE_LIFETIME_BOUND final {
     return (LinkClass&)static_cast<const LinkClass*>(this)->Tail_Of_List();
   }
   virtual void Zap();
-  virtual LinkClass* Remove();
+  virtual LinkClass* Remove() ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // Not copyable. The original copy operations did not copy: they spliced the
   // destination into the source object's list, which mutates the source. Use

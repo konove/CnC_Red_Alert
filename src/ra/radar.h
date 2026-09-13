@@ -104,7 +104,7 @@ class RadarClass : public DisplayClass {
   void Radar_Cursor(int forced = false);
   void Render_Terrain(CELL cell, int x, int y, int size);
   bool Cell_On_Radar(CELL cell);
-  void Render_Infantry(CELL cell, int x, int y, int size);
+  static void Render_Infantry(CELL cell, int x, int y, int size);
   void Render_Overlay(CELL cell, int x, int y, int size);
   void Radar_Anim();
   bool Is_Radar_Active();

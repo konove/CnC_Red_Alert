@@ -105,7 +105,8 @@ const short* Coord_Spillage_List(COORDINATE coord, int maxsize) {
   static const int SpillTable[16] = {8, 6, 2, -1, 0,  7,  1,  -1,
                                      4, 5, 3, -1, -1, -1, -1, -1};
   int index = 0;
-  int x, y;
+  int x;
+  int y;
 
   /*
   **	For mondo-enourmo-gigundo objects, use a prebuilt mammoth table
@@ -217,8 +218,8 @@ const short* Coord_Spillage_List(COORDINATE coord, int maxsize) {
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
 COORDINATE Coord_Move(COORDINATE start, DirType dir, unsigned short distance) {
-  short x = static_cast<short>(Coord_X(start));
-  short y = static_cast<short>(Coord_Y(start));
+  auto x = static_cast<short>(Coord_X(start));
+  auto y = static_cast<short>(Coord_Y(start));
 
   base::MovePoint(x, y, dir, distance);
   return XY_Coord(x, y);

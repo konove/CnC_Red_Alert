@@ -17,7 +17,7 @@
 
   const size_t uncompressed_size = header.Size;
   // Number of leading data to skip.
-  const size_t skip = static_cast<size_t>(header.Skip);
+  const auto skip = static_cast<size_t>(header.Skip);
   // Compression method used.
   const auto method = static_cast<CompressionType>(header.Method);
 

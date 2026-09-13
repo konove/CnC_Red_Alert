@@ -61,7 +61,7 @@ include(Testing)
 add_gtest(
     NAME td_archive_roundtrip_test
     SOURCES archive_roundtrip_test.cc pcx_test.cc number_parse_test.cc queue_alignment_test.cc startup.cc
-    LIBS td_engine
+    LIBS td_engine absl::core_headers
 )
 target_compile_definitions(td_archive_roundtrip_test PRIVATE TD_NO_ENTRY_POINT=1)
 apply_dotenv_settings(td_archive_roundtrip_test)

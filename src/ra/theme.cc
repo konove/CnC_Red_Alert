@@ -150,7 +150,7 @@ ThemeClass::ThemeControl ThemeClass::_themes[magic_enum::enum_count<
  *                                                                                             *
  * HISTORY: * 05/29/1995 JLB : Created. *
  *=============================================================================================*/
-const char* ThemeClass::Base_Name(ThemeType theme) const {
+const char* ThemeClass::Base_Name(ThemeType theme) {
   if (theme != THEME_NONE) {
     return _themes[theme].Name;
   }
@@ -187,7 +187,7 @@ ThemeClass::ThemeClass() = default;
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-const char* ThemeClass::Full_Name(ThemeType theme) const {
+const char* ThemeClass::Full_Name(ThemeType theme) {
   if (static_cast<unsigned>(theme) < magic_enum::enum_count<ThemeType>()) {
     return Text_String(_themes[theme].Fullname);
   }
@@ -248,7 +248,7 @@ void ThemeClass::AI() {
  * HISTORY: * 01/16/1995 JLB : Created. * 01/19/1995 JLB : Will not play the
  *same song twice when in shuffle mode.                  *
  *=============================================================================================*/
-ThemeType ThemeClass::Next_Song(ThemeType theme) const {
+ThemeType ThemeClass::Next_Song(ThemeType theme) {
   if (theme == THEME_NONE || theme == THEME_PICK_ANOTHER ||
       (theme != THEME_QUIET && !_themes[theme].Repeat &&
        !Options.IsScoreRepeat)) {
@@ -409,7 +409,7 @@ const char* ThemeClass::Theme_File_Name(ThemeType theme) {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int ThemeClass::Track_Length(ThemeType theme) const {
+int ThemeClass::Track_Length(ThemeType theme) {
   if (static_cast<unsigned>(theme) < magic_enum::enum_count<ThemeType>()) {
     return _themes[theme].Duration;
   }
@@ -485,7 +485,7 @@ int ThemeClass::Still_Playing() const {
  * HISTORY: * 05/09/1995 JLB : Created. * 07/04/1996 JLB : Handles alternate
  *playlist checking.                                     *
  *=============================================================================================*/
-bool ThemeClass::Is_Allowed(ThemeType index) const {
+bool ThemeClass::Is_Allowed(ThemeType index) {
   if (static_cast<unsigned>(index) >= magic_enum::enum_count<ThemeType>()) {
     return true;
   }
@@ -547,7 +547,7 @@ bool ThemeClass::Is_Allowed(ThemeType index) const {
  *                                                                                             *
  * HISTORY: * 05/29/1995 JLB : Created. *
  *=============================================================================================*/
-ThemeType ThemeClass::From_Name(const char* name) const {
+ThemeType ThemeClass::From_Name(const char* name) {
   if (name && strlen(name) > 0) {
     /*
     **	First search for an exact name match with the filename

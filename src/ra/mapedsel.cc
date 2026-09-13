@@ -94,7 +94,8 @@
  *=========================================================================*/
 int MapEditClass::Select_Object() {
   ObjectClass* object = nullptr;  // Generic object clicked on.
-  int x, y;
+  int x;
+  int y;
   CELL cell;  // Cell that was selected.
   int rc = 0;
 
@@ -198,7 +199,7 @@ void MapEditClass::Select_Next() {
   /*
   **	Get next object on the map
   */
-  obj = Map.Next_Object(CurrentObject[0]);
+  obj = MapEditClass::Next_Object(CurrentObject[0]);
 
   if (obj) {
     /*

@@ -115,7 +115,6 @@ int AnimClass::Validate() const {
     num = Anims.ID(this);
     if (num < 0 || num >= kAnimMax) {
       Validate_Error("ANIM");
-      return 0;
     }
     return 1;
   } else {
@@ -870,9 +869,9 @@ void AnimClass::Attach_To(ObjectClass* obj) {
   obj->Mark(MARK_OVERLAP_UP);
   obj->IsAnimAttached = true;
   obj->Mark(MARK_OVERLAP_DOWN);
-  Map.Remove(this, In_Which_Layer());
+  MapEditClass::Remove(this, In_Which_Layer());
   Object = obj;
-  Map.Submit(this, In_Which_Layer());
+  MapEditClass::Submit(this, In_Which_Layer());
   Coord = Coord_Sub(Coord, obj->Center_Coord());
 }
 
@@ -1079,21 +1078,20 @@ void AnimClass::Middle() {
         true);
 
     c2 = Map.Closest_Free_Spot(c2, true);
-    if (c3 && Random_Pick(0, 1) == 1) {
-      if (!Map[Coord_Cell(c3)].Cell_Terrain()) {
-        new AnimClass(ANIM_FIRE_SMALL, c3, 0, 2);
-      }
+    if ((c3 && Random_Pick(0, 1) == 1) &&
+        (!Map[Coord_Cell(c3)].Cell_Terrain())) {
+      new AnimClass(ANIM_FIRE_SMALL, c3, 0, 2);
     }
-    if (c2 && Random_Pick(0, 1) == 1) {
-      if (!Map[Coord_Cell(c2)].Cell_Terrain()) {
-        new AnimClass(ANIM_FIRE_SMALL, c2, 0, 2);
-      }
+
+    if ((c2 && Random_Pick(0, 1) == 1) &&
+        (!Map[Coord_Cell(c2)].Cell_Terrain())) {
+      new AnimClass(ANIM_FIRE_SMALL, c2, 0, 2);
     }
+
     new SmudgeClass(SMUDGE_SCORCH1, c2);
-    if (c3 && Random_Pick(0, 1) == 1) {
-      if (!Map[Coord_Cell(c3)].Cell_Terrain()) {
-        new AnimClass(ANIM_SMOKE_M, c3);
-      }
+    if ((c3 && Random_Pick(0, 1) == 1) &&
+        (!Map[Coord_Cell(c3)].Cell_Terrain())) {
+      new AnimClass(ANIM_SMOKE_M, c3);
     }
   }
 
@@ -1195,16 +1193,14 @@ TARGET AnimClass::As_Target() const {
  *=========================================================================*/
 COORDINATE AnimClass::Adjust_Coord(COORDINATE coord) {
   Validate();
-  int x, y;
+  int x;
+  int y;
 
-  switch (Class->Type) {
-    case ANIM_ATOM_DOOR:
-      x = -1;
-      y = -36;
-      break;
-
-    default:
-      return coord;
+  if (Class->Type == ANIM_ATOM_DOOR) {
+    x = -1;
+    y = -36;
+  } else {
+    return coord;
   }
   COORDINATE addval = XYPixel_Coord(x, y);
   coord = Coord_Add(coord, addval);
@@ -1234,7 +1230,7 @@ COORDINATE AnimClass::Adjust_Coord(COORDINATE coord) {
 void AnimClass::Detach(TARGET target, bool all) {
   Validate();
   if (Object && Object->As_Target() == target && all) {
-    Map.Remove(this, In_Which_Layer());
+    MapEditClass::Remove(this, In_Which_Layer());
     Object = nullptr;
     IsToDelete = true;
   }

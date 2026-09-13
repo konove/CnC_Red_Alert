@@ -3,6 +3,8 @@
 
 #include <cstdio>
 
+#include "absl/base/attributes.h"
+
 // Path component buffer sizes, matching the Microsoft CRT's _MAX_* limits.
 inline constexpr int kMaxPath = 260;
 inline constexpr int kMaxFname = 256;
@@ -20,9 +22,9 @@ int strnicmp(const char* string1, const char* string2, std::size_t count);
 int memicmp(const void* buffer1, const void* buffer2, std::size_t count);
 
 // in-place modification
-char* strupr(char* str);
-char* strlwr(char* str);
-char* strrev(char* str);
+char* strupr(char* str ABSL_ATTRIBUTE_LIFETIME_BOUND);
+char* strlwr(char* str ABSL_ATTRIBUTE_LIFETIME_BOUND);
+char* strrev(char* str ABSL_ATTRIBUTE_LIFETIME_BOUND);
 #endif  // _WIN32
 
 #endif  // CNC_RED_ALERT_PORT_EX_STRING_H_

@@ -498,13 +498,11 @@ void RadarClass::Draw_It(bool forced) {
             for (int y = 0; y < MapCellHeight; y++) {
               for (int x = 0; x < MapCellWidth; x++) {
                 CELL cell = XY_Cell(MapCellX + x, MapCellY + y);
-                if (Cell_On_Radar(cell)) {
-                  if ((*this)[cell].IsPlot) {
-                    PixelStack[PixelPtr++] = cell;
-                    IsRadarToRedraw = true;
-                    if (PixelPtr == PIXELSTACK) {
-                      break;
-                    }
+                if (Cell_On_Radar(cell) && (*this)[cell].IsPlot) {
+                  PixelStack[PixelPtr++] = cell;
+                  IsRadarToRedraw = true;
+                  if (PixelPtr == PIXELSTACK) {
+                    break;
                   }
                 }
               }
@@ -624,7 +622,8 @@ void RadarClass::Draw_It(bool forced) {
 void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
   TerrainClass* list[4] = {nullptr, nullptr, nullptr, nullptr};
   int listidx = 0;
-  int lp, lp2;
+  int lp;
+  int lp2;
 
   ObjectClass* obj = Map[cell].Cell_Occupier();
 
@@ -948,7 +947,8 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
     cell = 1;
   }
 
-  int x, y;  // Coordinate of cell location.
+  int x;
+  int y;  // Coordinate of cell location.
 
   /*
   **	Perform any clipping on the cell coordinate.
@@ -1026,7 +1026,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
           icon = cellptr->Clear_Icon();
         }
 
-        const IconsetClass* iconset = static_cast<const IconsetClass*>(ptr);
+        const auto* iconset = static_cast<const IconsetClass*>(ptr);
         const unsigned char* icondata = iconset->Icon_Data();
 
         /*
@@ -1230,7 +1230,8 @@ void RadarClass::Cursor_Cell(CELL cell, int value) {
 
 void RadarClass::Mark_Radar(int x1, int y1, int x2, int y2, int value,
                             int barlen) {
-  int x, y;
+  int x;
+  int y;
   /*
   ** First step is to convert pixel coordinates back to a CellX and CellY.
   */
@@ -1316,7 +1317,7 @@ void RadarClass::Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x, int& y) {
  * HISTORY: * 11/09/1995 BWG : Created. *
  *=============================================================================================*/
 bool RadarClass::Jam_Cell(CELL cell, HouseClass* house /*KO, bool shadeit*/) {
-  unsigned short jam = static_cast<unsigned short>(1 << house->Class->House);
+  auto jam = static_cast<unsigned short>(1 << house->Class->House);
   (*this)[cell].Jammed |= jam;
   if (house != PlayerPtr) {
     Shroud_Cell(cell /*KO, shadeit*/);
@@ -1342,7 +1343,7 @@ bool RadarClass::Jam_Cell(CELL cell, HouseClass* house /*KO, bool shadeit*/) {
  * HISTORY: * 11/09/1995 BWG : Created. *
  *=============================================================================================*/
 bool RadarClass::UnJam_Cell(CELL cell, HouseClass* house) {
-  unsigned short jam = static_cast<unsigned short>(1 << house->Class->House);
+  auto jam = static_cast<unsigned short>(1 << house->Class->House);
   (*this)[cell].Redraw_Objects();
   (*this)[cell].Jammed &= 0xFFFF - jam;
   Radar_Pixel(cell);
@@ -1370,7 +1371,10 @@ void RadarClass::Radar_Cursor(int forced) {
   static int _last_pos = -1;
   static int _last_frame = -1;
   GraphicViewPortClass* oldpage;
-  int x1, y1, x2, y2;
+  int x1;
+  int y1;
+  int x2;
+  int y2;
 
   /*
   ** figure out these function calls as we will need to call them multiple
@@ -1636,8 +1640,10 @@ void RadarClass::AI(KeyNumType& input, int x, int y) {
  *=============================================================================================*/
 int RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
   CELL cell;                      // cell num click happened over
-  int x, y;                       // Sub cell pixel coordinates.
-  int cellx, celly;               // Sub cell pixel coordinates.
+  int x;
+  int y;  // Sub cell pixel coordinates.
+  int cellx;
+  int celly;                      // Sub cell pixel coordinates.
   bool shadow;                    // is the cell in shadow or not
   ObjectClass* object = nullptr;  // what object is in the cell
   ActionType action =
@@ -1861,8 +1867,10 @@ void RadarClass::Refresh_Cells(CELL cell, const short* list) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 void RadarClass::Set_Radar_Position(CELL cell) {
-  int oldx, oldy;
-  int newx, newy;
+  int oldx;
+  int oldy;
+  int newx;
+  int newy;
   int newcell;
 
   if (ZoomFactor != 1) {
@@ -2146,13 +2154,13 @@ bool RadarClass::Spy_Next_House() {
 
   while (house < maxhouse && !tospy) {
     HouseClass* hptr = HouseClass::As_Pointer(house);
-    if (hptr && hptr->IsActive && hptr != PlayerPtr) {
-      if (hptr->RadarSpied & spiedby) {
-        tospy = true;
-        SpyingOn = house;
-        break;
-      }
+    if ((hptr && hptr->IsActive && hptr != PlayerPtr) &&
+        (hptr->RadarSpied & spiedby)) {
+      tospy = true;
+      SpyingOn = house;
+      break;
     }
+
     house++;
   }
 

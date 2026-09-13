@@ -561,7 +561,7 @@ void Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
   // Glyph pixels are palette indices into FontPalette: entry 0 is the
   // background (0 also means transparent) and entry 1 the foreground;
   // multi-colour fonts fill entries 2-15 via Set_Font_Palette_Range().
-  const uint8_t background = static_cast<uint8_t>(bcolor);
+  const auto background = static_cast<uint8_t>(bcolor);
   FontPalette[1] = static_cast<uint8_t>(fcolor);
   FontPalette[0] = background;
 
@@ -569,7 +569,7 @@ void Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
 
   while (true) {
     // Unsigned so characters >= 128 index the metric tables correctly.
-    const uint8_t ch = static_cast<uint8_t>(*str++);
+    const auto ch = static_cast<uint8_t>(*str++);
     if (ch == '\0') {
       return;
     }

@@ -46,6 +46,7 @@ class ArchiveWriter;
 
 #include <cstddef>
 
+#include "absl/base/attributes.h"
 #include "td/bullet.h"
 #include "td/cell.h"
 #include "td/defines.h"
@@ -134,7 +135,10 @@ class InfantryClass final : public FootClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* ptr);
   InfantryClass();
   InfantryClass(InfantryType classid, HousesType house);

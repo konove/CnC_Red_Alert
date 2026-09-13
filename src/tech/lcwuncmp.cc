@@ -81,7 +81,12 @@ unsigned long __cdecl LCW_Uncompress(void* source, void* dest,
 // unsigned long LCW_Uncompress (void * source, void * dest, unsigned long
 // length)
 {
-  unsigned char *source_ptr, *dest_ptr, *copy_ptr, *dest_end, op_code, data;
+  unsigned char* source_ptr;
+  unsigned char* dest_ptr;
+  unsigned char* copy_ptr;
+  unsigned char* dest_end;
+  unsigned char op_code;
+  unsigned char data;
   unsigned count;
 
   /* Copy the source and destination ptrs. */

@@ -152,7 +152,7 @@ void TechnoTypePtr::Serialize(ArchiveReader& ar) {
 
 template <class Archive>
 void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects) {
-  int32_t count = static_cast<int32_t>(objects.Count());
+  auto count = static_cast<int32_t>(objects.Count());
   ar(count);
   if constexpr (Archive::kIsReading) {
     const int capacity = Aircraft.Length() + Anims.Length() + Buildings.Length() +

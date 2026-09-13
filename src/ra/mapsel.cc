@@ -272,15 +272,13 @@ std::string Map_Selection() {
           hotspot_x, hotspot_y,
           Extract_Shape(MouseClass::MouseShapes, start + cursor_frame));
     }
-    if (Keyboard->Check()) {
-      if ((Keyboard->Get() & 0x10FF) == KN_LMOUSE) {
-        if (hovering_over_choice) {
-          mission_selected = true;
-          selection = choice;
-          Play_Sample(country1, 255, Options.Normalize_Volume(170));
-        } else {
-          Play_Sample(scold1, 255, Options.Normalize_Volume(170));
-        }
+    if (Keyboard->Check() && ((Keyboard->Get() & 0x10FF) == KN_LMOUSE)) {
+      if (hovering_over_choice) {
+        mission_selected = true;
+        selection = choice;
+        Play_Sample(country1, 255, Options.Normalize_Volume(170));
+      } else {
+        Play_Sample(scold1, 255, Options.Normalize_Volume(170));
       }
     }
   }

@@ -501,14 +501,12 @@ bool ReadSavedNicks(WolapiObject* pWO, IconListClass& NickList,
   bool bReturn = false;
 
   for (int i = 1; i != 3; i++) {
-    if (pWO->pChat->GetNick(i, &szNick, &szPass) == S_OK) {
-      if (*szNick) {
-        NickList.Add_Item(szNick, nullptr, nullptr, ICON_SHAPE, szPass);
-        if (i == 1) {
-          port::SafeCopy(szNameBuffer, szNick, WOL_NAME_LEN_MAX);
-          port::SafeCopy(szPassBuffer, szPass, WOL_PASSWORD_LEN);
-          bReturn = true;
-        }
+    if ((pWO->pChat->GetNick(i, &szNick, &szPass) == S_OK) && (*szNick)) {
+      NickList.Add_Item(szNick, nullptr, nullptr, ICON_SHAPE, szPass);
+      if (i == 1) {
+        port::SafeCopy(szNameBuffer, szNick, WOL_NAME_LEN_MAX);
+        port::SafeCopy(szPassBuffer, szPass, WOL_PASSWORD_LEN);
+        bReturn = true;
       }
     }
   }

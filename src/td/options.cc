@@ -406,11 +406,14 @@ int OptionsClass::Get_Tint() const { return Tint; }
  *=============================================================================================*/
 void OptionsClass::Adjust_Palette(void* oldpal, void* newpal,
                                   unsigned char brightness, unsigned char color,
-                                  unsigned char tint,
-                                  unsigned char contrast) const {
+                                  unsigned char tint, unsigned char contrast) {
   int index;
-  unsigned h, s, v;
-  unsigned r, g, b;
+  unsigned h;
+  unsigned s;
+  unsigned v;
+  unsigned r;
+  unsigned g;
+  unsigned b;
 
   if (!oldpal || !newpal) {
     return;

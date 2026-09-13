@@ -392,24 +392,22 @@ bool AircraftTypeClass::Create_And_Place(CELL /*unused*/,
 }
 
 void AircraftTypeClass::Init(TheaterType theater) {
-  if (theater != LastTheater) {
-    if (Get_Resolution_Factor()) {
-      for (AircraftType index = AIRCRAFT_TRANSPORT; index < AIRCRAFT_COUNT;
-           ++index) {
-        const AircraftTypeClass& uclass = As_Reference(index);
+  if ((theater != LastTheater) && Get_Resolution_Factor()) {
+    for (AircraftType index = AIRCRAFT_TRANSPORT; index < AIRCRAFT_COUNT;
+         ++index) {
+      const AircraftTypeClass& uclass = As_Reference(index);
 
-        (const void*&)uclass.CameoData = nullptr;
+      (const void*&)uclass.CameoData = nullptr;
 
-        const auto filename = std::string(uclass.IniName).substr(0, 4) + "ICNH";
+      const auto filename = std::string(uclass.IniName).substr(0, 4) + "ICNH";
 
-        auto fullname = std::filesystem::path(filename)
-                            .replace_extension(Theaters[theater].Suffix)
-                            .string();
+      auto fullname = std::filesystem::path(filename)
+                          .replace_extension(Theaters[theater].Suffix)
+                          .string();
 
-        const void* cameo_ptr = MFCD::Retrieve(fullname);
-        if (cameo_ptr) {
-          (const void*&)uclass.CameoData = cameo_ptr;
-        }
+      const void* cameo_ptr = MFCD::Retrieve(fullname);
+      if (cameo_ptr) {
+        (const void*&)uclass.CameoData = cameo_ptr;
       }
     }
   }

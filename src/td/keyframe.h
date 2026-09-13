@@ -1,9 +1,11 @@
 #ifndef CNC_RED_ALERT_TD_KEYFRAME_H_
 #define CNC_RED_ALERT_TD_KEYFRAME_H_
 
+#include "absl/base/attributes.h"
+
 int Get_Last_Frame_Length();
 void* Build_Frame(const void* dataptr, unsigned short framenumber,
-                  void* buffptr);
+                  void* buffptr ABSL_ATTRIBUTE_LIFETIME_BOUND);
 unsigned short Get_Build_Frame_Count(const void* dataptr);
 unsigned short Get_Build_Frame_X(const void* dataptr);
 unsigned short Get_Build_Frame_Y(const void* dataptr);
@@ -15,6 +17,6 @@ void Check_Use_Compressed_Shapes();
 void Disable_Uncompressed_Shapes();
 void Enable_Uncompressed_Shapes();
 void Reallocate_Big_Shape_Buffer();
-void* Get_Shape_Header_Data(void* ptr);
+void* Get_Shape_Header_Data(void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND);
 
 #endif  // CNC_RED_ALERT_TD_KEYFRAME_H_

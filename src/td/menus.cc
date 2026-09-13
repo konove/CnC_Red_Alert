@@ -267,10 +267,24 @@ void Setup_Menu(const MenuConfig& menu, const char* labels[],
  */
 /*=========================================================================*/
 int Check_Menu(MenuConfig& menu, const char* text[], long field, int index) {
-  int maxitem, select, key, menuy, menux;
-  int mx1, mx2, my1, my2, tempy;
-  int drawy, menuskip, halfskip;
-  int normcol, litcol, item, newitem, idx;
+  int maxitem;
+  int select;
+  int key;
+  int menuy;
+  int menux;
+  int mx1;
+  int mx2;
+  int my1;
+  int my2;
+  int tempy;
+  int drawy;
+  int menuskip;
+  int halfskip;
+  int normcol;
+  int litcol;
+  int item;
+  int newitem;
+  int idx;
 
   maxitem = menu.item_count - 1;                  /* find max items			*/
   newitem = item = menu.selected % (maxitem + 1); /* find selected */

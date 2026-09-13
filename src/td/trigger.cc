@@ -155,7 +155,6 @@ int TriggerClass::Validate() const {
     num = Triggers.ID(this);
     if (num < 0 || num >= kTriggerMax) {
       Validate_Error("TRIGGER");
-      return 0;
     }
     return 1;
   } else {
@@ -765,10 +764,10 @@ bool TriggerClass::Spring(EventType event, HousesType house, long data) {
   **	the correct number of objects have been destroyed, then this trigger
   **	will succeed.
   */
-  if (Event == EVENT_NBUILDINGS_DESTROYED || Event == EVENT_NUNITS_DESTROYED) {
-    if (data < Data) {
-      return false;
-    }
+  if ((Event == EVENT_NBUILDINGS_DESTROYED ||
+       Event == EVENT_NUNITS_DESTROYED) &&
+      (data < Data)) {
+    return false;
   }
 
   /*
@@ -927,11 +926,9 @@ bool TriggerClass::Remove() {
   **	Loop through all cells; remove any reference to this trigger
   */
   for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-    if (Map[cell].IsTrigger) {
-      if (CellTriggers[cell] == this) {
-        Map[cell].IsTrigger = 0;
-        CellTriggers[cell] = nullptr;
-      }
+    if (Map[cell].IsTrigger && (CellTriggers[cell] == this)) {
+      Map[cell].IsTrigger = 0;
+      CellTriggers[cell] = nullptr;
     }
   }
 

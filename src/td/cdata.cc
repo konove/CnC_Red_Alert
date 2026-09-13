@@ -1374,7 +1374,8 @@ void TemplateTypeClass::Init(TheaterType theater) {
  *=============================================================================================*/
 void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
                                 HousesType /*unused*/) const {
-  int w, h;
+  int w;
+  int h;
   int index;
   unsigned char map[13 * 8];
   bool scale;  // Should the template be half sized?

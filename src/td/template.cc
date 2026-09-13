@@ -95,7 +95,6 @@ int TemplateClass::Validate() const {
     num = Templates.ID(this);
     if (num < 0 || num >= kTemplateMax) {
       Validate_Error("TEMPLATE");
-      return 0;
     }
     return 1;
   } else {
@@ -284,12 +283,11 @@ bool TemplateClass::Mark(MarkType mark) {
             /*
             **	Lift the terrain object from the map.
             */
-            if (mark == MARK_UP && !noup) {
-              if (cellptr->TType == Class->Type &&
-                  std::cmp_equal(cellptr->TIcon, number)) {
-                cellptr->TType = TEMPLATE_NONE;
-                cellptr->TIcon = 0;
-              }
+            if ((mark == MARK_UP && !noup) &&
+                (cellptr->TType == Class->Type &&
+                 std::cmp_equal(cellptr->TIcon, number))) {
+              cellptr->TType = TEMPLATE_NONE;
+              cellptr->TIcon = 0;
             }
 
             /*

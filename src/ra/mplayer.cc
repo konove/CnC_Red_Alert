@@ -606,11 +606,9 @@ int Surrender_Dialog(const char* text) {
     //.....................................................................
     //	Invoke game callback
     //.....................................................................
-    if (Session.Type != GAME_SKIRMISH) {
-      if (Main_Loop()) {
-        retcode = 0;
-        process = false;
-      }
+    if ((Session.Type != GAME_SKIRMISH) && Main_Loop()) {
+      retcode = 0;
+      process = false;
     }
 
     //.....................................................................
@@ -798,11 +796,9 @@ int Abort_Dialog() {
     //.....................................................................
     //	Invoke game callback
     //.....................................................................
-    if (Session.Type != GAME_SKIRMISH) {
-      if (Main_Loop()) {
-        retcode = 0;
-        process = false;
-      }
+    if ((Session.Type != GAME_SKIRMISH) && Main_Loop()) {
+      retcode = 0;
+      process = false;
     }
 
     //.....................................................................

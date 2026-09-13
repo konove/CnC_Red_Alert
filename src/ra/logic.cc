@@ -92,7 +92,7 @@ static unsigned FramesPerSecond = 0;
  * HISTORY: * 05/31/1994 JLB : Created. * 01/26/1996 JLB : Prints game time
  *value.                                                  *
  *=============================================================================================*/
-void LogicClass::Debug_Dump(MonoClass* mono) const {
+void LogicClass::Debug_Dump(MonoClass* mono) {
   if constexpr (config::kCheatKeysEnabled) {
     constexpr int kRecordHeight = 21;
 
@@ -265,10 +265,8 @@ void LogicClass::AI() {
     /*
     **	Bridge change event.
     */
-    if (Scen.IsBridgeChanged) {
-      if (trig->Spring(TEVENT_ALL_BRIDGES_DESTROYED)) {
-        continue;
-      }
+    if (Scen.IsBridgeChanged && trig->Spring(TEVENT_ALL_BRIDGES_DESTROYED)) {
+      continue;
     }
 
     /*
@@ -282,10 +280,9 @@ void LogicClass::AI() {
     **	The mission timer expiration trigger event might spring if the timer is
     *active *	but at a value of zero.
     */
-    if (Scen.MissionTimer.IsRunning() && Scen.MissionTimer.IsFinished()) {
-      if (trig->Spring(TEVENT_MISSION_TIMER_EXPIRED)) {
-        continue;
-      }
+    if ((Scen.MissionTimer.IsRunning() && Scen.MissionTimer.IsFinished()) &&
+        trig->Spring(TEVENT_MISSION_TIMER_EXPIRED)) {
+      continue;
     }
   }
 

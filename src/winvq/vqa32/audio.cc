@@ -492,7 +492,8 @@ long CopyAudio(VQAHandle* vqap) {
   VQAConfig* config;
   long startblock;
   long endblock;
-  long len1, len2;
+  long len1;
+  long len2;
   long i;
 
   /* Dereference commonly used data members for quicker access. */
@@ -576,19 +577,17 @@ long CopyAudio(VQAHandle* vqap) {
 }
 
 void VQA_PauseAudio() {
-  if (VQAP && VQAP->data) {
-    if (AudioFlags & VQAAUDF_ISPLAYING && !VQAAudioPaused) {
-      VQAAudioPaused = true;
-    }
+  if ((VQAP && VQAP->data) &&
+      (AudioFlags & VQAAUDF_ISPLAYING && !VQAAudioPaused)) {
+    VQAAudioPaused = true;
   }
 }
 
 void VQA_ResumeAudio() {
-  if (VQAP && VQAP->data) {
-    if (AudioFlags & VQAAUDF_ISPLAYING && VQAAudioPaused) {
-      // TODO: resume
-      VQAAudioPaused = false;
-    }
+  if ((VQAP && VQAP->data) &&
+      (AudioFlags & VQAAUDF_ISPLAYING && VQAAudioPaused)) {
+    // TODO: resume
+    VQAAudioPaused = false;
   }
 }
 

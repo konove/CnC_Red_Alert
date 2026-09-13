@@ -65,7 +65,7 @@ const short* Coord_Spillage_List(const COORDINATE coord, const Rect& rect,
   short* ptr = offsets;
   for (int yy = cell_top; yy <= cell_bottom; yy++) {
     for (int xx = cell_left; xx <= cell_right; xx++) {
-      if (const short offset = static_cast<short>(XY_Cell(xx, yy) - origin_cell);
+      if (const auto offset = static_cast<short>(XY_Cell(xx, yy) - origin_cell);
           !no_center || offset != 0) {
         *ptr++ = offset;
         count++;
@@ -150,7 +150,8 @@ const short* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
   static constexpr signed char kSpillToFacing[16] = {
       8, 6, 2, -1, 0, 7, 1, -1, 4, 5, 3, -1, -1, -1, -1, -1};
   int index = 0;
-  int x, y;
+  int x;
+  int y;
 
   // Objects larger than 2 tiles use a prebuilt 5x5 cell region.
   if (maxsize > ICON_PIXEL_W * 2) {

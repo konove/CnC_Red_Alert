@@ -493,13 +493,12 @@ void EventClass::Execute() {
     */
     case ANIMATION:
       anim = new AnimClass(Data.Anim.What, Data.Anim.Where);
-      if (anim) {
-        if (Data.Anim.Owner != HOUSE_NONE &&
-            PlayerPtr->Class->House != Data.Anim.Owner &&
-            !Special.IsVisibleTarget) {
-          anim->Make_Invisible();
-        }
+      if (anim && (Data.Anim.Owner != HOUSE_NONE &&
+                   PlayerPtr->Class->House != Data.Anim.Owner &&
+                   !Special.IsVisibleTarget)) {
+        anim->Make_Invisible();
       }
+
       break;
 
     /*
@@ -590,11 +589,10 @@ void EventClass::Execute() {
             break;
         }
 
-        if (object) {
-          if (PlayerPtr->Is_Ally(techno) || Special.IsVisibleTarget) {
-            object->Clicked_As_Target();
-          }
+        if (object && (PlayerPtr->Is_Ally(techno) || Special.IsVisibleTarget)) {
+          object->Clicked_As_Target();
         }
+
         techno->Assign_Mission(Data.MegaMission.Mission);
 
         /*

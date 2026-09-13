@@ -43,6 +43,7 @@
 #include <cstddef>
 #include <string>
 
+#include "absl/base/attributes.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/object.h"
@@ -114,7 +115,10 @@ class TriggerTypeClass : public AbstractTypeClass {
   TriggerTypeClass& operator=(TriggerTypeClass&&) = delete;
 
   void* operator new(size_t /*unused*/);
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* ptr);
 
   /*

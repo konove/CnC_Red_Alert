@@ -71,10 +71,10 @@ bool CellClass::Should_Save() const {
 
 template <class Archive>
 void CellClass::Serialize(Archive& ar) {
-  uint8_t flags = static_cast<uint8_t>(
-      IsPlot | (IsCursorHere << 1) | (IsMapped << 2) | (IsVisible << 3) |
-      (IsWaypoint << 4) | (IsRadarCursor << 5) | (IsFlagged << 6) |
-      (IsToShroud << 7));
+  auto flags = static_cast<uint8_t>(IsPlot | (IsCursorHere << 1) |
+                                    (IsMapped << 2) | (IsVisible << 3) |
+                                    (IsWaypoint << 4) | (IsRadarCursor << 5) |
+                                    (IsFlagged << 6) | (IsToShroud << 7));
   ar(flags, Jammed, Trigger, TType, TIcon, Overlay, OverlayData, Smudge,
      SmudgeData, Owner, InfType, ObjectPtr(OccupierPtr));
   if constexpr (Archive::kIsReading) {
@@ -88,7 +88,7 @@ void CellClass::Serialize(Archive& ar) {
     IsToShroud = (flags & 128) != 0;
     std::ranges::fill(Overlappers, nullptr);
   }
-  int32_t count = static_cast<int32_t>(kOverlapperCount);
+  auto count = static_cast<int32_t>(kOverlapperCount);
   ar(count);
   if constexpr (Archive::kIsReading) {
     if (!ar.ok() || count < 0 || count > kOverlapperCount) {

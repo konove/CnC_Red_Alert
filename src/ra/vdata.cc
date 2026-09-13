@@ -439,7 +439,7 @@ ObjectClass* VesselTypeClass::Create_One_Of(HouseClass* house) const {
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 bool VesselTypeClass::Create_And_Place(CELL cell, HousesType house) const {
-  VesselClass* unit = new VesselClass(Type, house);
+  auto* unit = new VesselClass(Type, house);
   if (unit != nullptr) {
     return unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX));
   }
@@ -529,8 +529,8 @@ void VesselTypeClass::One_Time() {
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
-  short xx = static_cast<short>(x);
-  short yy = static_cast<short>(y);
+  auto xx = static_cast<short>(x);
+  auto yy = static_cast<short>(y);
 
   switch (Type) {
     case VESSEL_CA:

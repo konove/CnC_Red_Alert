@@ -20,35 +20,45 @@
 
 #include <string>
 
+#include "absl/base/attributes.h"
+
 class ModemRegistryEntryClass {
  public:
   explicit ModemRegistryEntryClass(int modem_number);
 
-  const char* Get_Modem_Name() { return ModemName_.c_str(); }
+  const char* Get_Modem_Name() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return ModemName_.c_str();
+  }
 
-  const char* Get_Modem_Device_Name() { return ModemDeviceName_.c_str(); }
+  const char* Get_Modem_Device_Name() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return ModemDeviceName_.c_str();
+  }
 
-  const char* Get_Modem_Error_Correction_Enable() {
+  const char* Get_Modem_Error_Correction_Enable()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return ErrorCorrectionEnable_.c_str();
   }
 
-  const char* Get_Modem_Error_Correction_Disable() {
+  const char* Get_Modem_Error_Correction_Disable()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return ErrorCorrectionDisable_.c_str();
   }
 
-  const char* Get_Modem_Compression_Enable() {
+  const char* Get_Modem_Compression_Enable() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return CompressionEnable_.c_str();
   }
 
-  const char* Get_Modem_Compression_Disable() {
+  const char* Get_Modem_Compression_Disable() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return CompressionDisable_.c_str();
   }
 
-  const char* Get_Modem_Hardware_Flow_Control() {
+  const char* Get_Modem_Hardware_Flow_Control() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return HardwareFlowControl_.c_str();
   }
 
-  const char* Get_Modem_No_Flow_Control() { return NoFlowControl_.c_str(); }
+  const char* Get_Modem_No_Flow_Control() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return NoFlowControl_.c_str();
+  }
 
  private:
   std::string ModemName_;

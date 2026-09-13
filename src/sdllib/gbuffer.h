@@ -122,8 +122,9 @@
 
 #include <cstdint>
 
-#include "base/types.h"
+#include "absl/base/attributes.h"
 #include "absl/strings/str_cat.h"
+#include "base/types.h"
 #include "sdllib/bitmap.h"
 #include "sdllib/buffer.h"
 #include "sdllib/drawbuff.h"
@@ -160,8 +161,10 @@ constexpr int DEFAULT_SCREEN_HEIGHT = 200;
 /*=========================================================================*/
 class GraphicBufferClass;
 
-GraphicViewPortClass* Set_Logic_Page(GraphicViewPortClass* ptr);
-GraphicViewPortClass* Set_Logic_Page(GraphicViewPortClass& ptr);
+GraphicViewPortClass* Set_Logic_Page(
+    GraphicViewPortClass* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND);
+GraphicViewPortClass* Set_Logic_Page(
+    GraphicViewPortClass& ptr ABSL_ATTRIBUTE_LIFETIME_BOUND);
 
 /*=========================================================================*/
 /* GraphicViewPortClass - Holds viewport information on a viewport which

@@ -47,6 +47,7 @@ class ArchiveWriter;
 #include <cstddef>
 #include <cstdint>
 
+#include "absl/base/attributes.h"
 #include "td/defines.h"
 #include "td/ftimer.h"
 #include "td/jshell.h"
@@ -390,7 +391,10 @@ class HouseClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* ptr);
   // Load shell: allocate runtime trackers without touching scenario state.
   HouseClass() { Init_Trackers(); }

@@ -1,9 +1,11 @@
 #ifndef CNC_RED_ALERT_SDLLIB_BITMAP_H_
 #define CNC_RED_ALERT_SDLLIB_BITMAP_H_
 
+#include "absl/base/attributes.h"
+
 class BitmapClass {
  public:
-  BitmapClass(int w, int h, unsigned char* data)
+  BitmapClass(int w, int h, unsigned char* data ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : Width(w), Height(h), Data(data) {}
 
   int Width;

@@ -184,10 +184,8 @@ int Init_Null_Modem(SerialSettingsType* settings) {
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 void Shutdown_Modem() {
-  if (!PlaybackGame) {
-    if (GameToPlay == GAME_MODEM) {
-      NullModem.Hangup_Modem();
-    }
+  if ((!PlaybackGame) && (GameToPlay == GAME_MODEM)) {
+    NullModem.Hangup_Modem();
   }
 
   //
@@ -271,7 +269,10 @@ int Test_Null_Modem() {
   unsigned long starttime;
   int packetlen;
 
-  int x, y, width, height;  // dialog dimensions
+  int x;
+  int y;
+  int width;
+  int height;  // dialog dimensions
   char buffer[80 * 3];
 
   /*........................................................................
@@ -372,18 +373,17 @@ int Test_Null_Modem() {
   starttime = TickCount.Time();
   while (TickCount.Time() - starttime < 80) {
     NullModem.Service();
-    if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
-      if (ReceivePacket.Command == SERIAL_CONNECT) {
-        // Smart_Printf( "Received SERIAL_CONNECT %d, ID %d \n",
-        // ReceivePacket.Seed, ReceivePacket.ID );
-        starttime = TickCount.Time();
-        while (TickCount.Time() - starttime < 30) {
-          NullModem.Service();
-        }
-        process = false;
-        retval = 2;
-        break;
+    if ((NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) &&
+        (ReceivePacket.Command == SERIAL_CONNECT)) {
+      // Smart_Printf( "Received SERIAL_CONNECT %d, ID %d \n",
+      // ReceivePacket.Seed, ReceivePacket.ID );
+      starttime = TickCount.Time();
+      while (TickCount.Time() - starttime < 30) {
+        NullModem.Service();
       }
+      process = false;
+      retval = 2;
+      break;
     }
   }
 
@@ -409,39 +409,38 @@ int Test_Null_Modem() {
     starttime = TickCount.Time();
     while (TickCount.Time() - starttime < 80) {
       NullModem.Service();
-      if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
-        if (ReceivePacket.Command == SERIAL_CONNECT) {
-          // Smart_Printf( "Received2 SERIAL_CONNECT %d, ID %d \n",
-          // ReceivePacket.Seed, ReceivePacket.ID );
-          starttime = TickCount.Time();
-          while (TickCount.Time() - starttime < 30) {
-            NullModem.Service();
-          }
-
-          //
-          // whoever has the highest time is the host
-          //
-          if (ReceivePacket.Seed > SendPacket.Seed) {
-            process = false;
-            retval = 2;
-          } else {
-            if (ReceivePacket.Seed == SendPacket.Seed) {
-              if (ReceivePacket.ID > SendPacket.ID) {
-                process = false;
-                retval = 2;
-              } else
-                //
-                // if they are equal then it's a loopback cable or a modem
-                //
-                if (ReceivePacket.ID == SendPacket.ID) {
-                  process = false;
-                  retval = 3;
-                }
-            }
-          }
-
-          break;
+      if ((NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) &&
+          (ReceivePacket.Command == SERIAL_CONNECT)) {
+        // Smart_Printf( "Received2 SERIAL_CONNECT %d, ID %d \n",
+        // ReceivePacket.Seed, ReceivePacket.ID );
+        starttime = TickCount.Time();
+        while (TickCount.Time() - starttime < 30) {
+          NullModem.Service();
         }
+
+        //
+        // whoever has the highest time is the host
+        //
+        if (ReceivePacket.Seed > SendPacket.Seed) {
+          process = false;
+          retval = 2;
+        } else {
+          if (ReceivePacket.Seed == SendPacket.Seed) {
+            if (ReceivePacket.ID > SendPacket.ID) {
+              process = false;
+              retval = 2;
+            } else
+              //
+              // if they are equal then it's a loopback cable or a modem
+              //
+              if (ReceivePacket.ID == SendPacket.ID) {
+                process = false;
+                retval = 3;
+              }
+          }
+        }
+
+        break;
       }
     }
   }
@@ -573,7 +572,7 @@ int Reconnect_Modem() {
       break;
 
     case MODEM_DIALER:
-      modemstatus = NullModem.Get_Modem_Status();
+      modemstatus = NullModemClass::Get_Modem_Status();
       if (modemstatus & CD_SET) {
         // Smart_Printf( "Dial Modem connection error!  Attempting
         // reconnect....\n" );
@@ -584,7 +583,7 @@ int Reconnect_Modem() {
       break;
 
     case MODEM_ANSWERER:
-      modemstatus = NullModem.Get_Modem_Status();
+      modemstatus = NullModemClass::Get_Modem_Status();
       if (modemstatus & CD_SET) {
         // Smart_Printf( "Answer Modem connection error!  Attempting
         // reconnect....\n" );
@@ -638,7 +637,10 @@ static int Reconnect_Null_Modem() {
   unsigned long lastmsgtime;
   int packetlen;
 
-  int x, y, width, height;  // dialog dimensions
+  int x;
+  int y;
+  int width;
+  int height;  // dialog dimensions
   char buffer[80 * 3];
 
   /*........................................................................
@@ -814,7 +816,9 @@ static int Reconnect_Null_Modem() {
  * HISTORY: * 07/31/1995 DRD : Created. *
  *=============================================================================================*/
 void Destroy_Null_Connection(int id, int error) {
-  int i, j, idx;
+  int i;
+  int j;
+  int idx;
   HousesType house;
   HouseClass* housep;
   char txt[80];
@@ -1052,7 +1056,7 @@ GameType Select_Serial_Dialog() {
       SerialDefaults.Baud == -1) {
     selectsettings = true;
   } else {
-    if (NullModem.Detect_Port(&SerialDefaults) != PORT_VALID) {
+    if (NullModemClass::Detect_Port(&SerialDefaults) != PORT_VALID) {
       selectsettings = true;
     }
   }
@@ -1252,7 +1256,7 @@ GameType Select_Serial_Dialog() {
               }
 
               if (process) {  // restore to default
-                NullModem.Change_IRQ_Priority(0);
+                NullModemClass::Change_IRQ_Priority(0);
               }
             } else {
               CCMessageBox().Process(TXT_SELECT_SETTINGS);
@@ -1290,7 +1294,7 @@ GameType Select_Serial_Dialog() {
               }
 
               if (process) {  // restore to default
-                NullModem.Change_IRQ_Priority(0);
+                NullModemClass::Change_IRQ_Priority(0);
               }
             } else {
               CCMessageBox().Process(TXT_SELECT_SETTINGS);
@@ -1344,7 +1348,7 @@ GameType Select_Serial_Dialog() {
               }
 
               if (process) {  // restore to default
-                NullModem.Change_IRQ_Priority(0);
+                NullModemClass::Change_IRQ_Priority(0);
               }
             } else {
               CCMessageBox().Process(TXT_SELECT_SETTINGS);
@@ -1365,11 +1369,10 @@ GameType Select_Serial_Dialog() {
 
             selectsettings = true;
 
-            if (SerialDefaults.Port != 0 && SerialDefaults.IRQ != -1 &&
-                SerialDefaults.Baud != -1) {
-              if (NullModem.Detect_Port(&SerialDefaults) == PORT_VALID) {
-                selectsettings = false;
-              }
+            if ((SerialDefaults.Port != 0 && SerialDefaults.IRQ != -1 &&
+                 SerialDefaults.Baud != -1) &&
+                (NullModemClass::Detect_Port(&SerialDefaults) == PORT_VALID)) {
+              selectsettings = false;
             }
           }
 
@@ -2894,7 +2897,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
         strncpy(tempsettings.CallWaitString, cwaitstrbuf, CWAITSTRBUF_MAX);
 
-        dpstatus = NullModem.Detect_Port(&tempsettings);
+        dpstatus = NullModemClass::Detect_Port(&tempsettings);
 
         if (dpstatus == PORT_VALID) {
           process = false;
@@ -2968,7 +2971,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
  *=========================================================================*/
 static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
                                       char* buf, int* index) {
-  int i, curidx;
+  int i;
+  int curidx;
   char* item;
 
   curidx = *index;
@@ -3687,25 +3691,24 @@ int Com_Scenario_Dialog() {
       User clicks on a color button
       ------------------------------------------------------------------*/
       case KN_LMOUSE:
-        if (ActiveKeyboard->MouseQX > cbox_x[0] &&
-            ActiveKeyboard->MouseQX <
-                cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
-            ActiveKeyboard->MouseQY > d_color_y &&
-            ActiveKeyboard->MouseQY < d_color_y + d_color_h) {
-          if (!ready_to_go) {
-            MPlayerPrefColor =
-                (ActiveKeyboard->MouseQX - cbox_x[0]) / d_color_w;
-            MPlayerColorIdx = MPlayerPrefColor;
-            display = REDRAW_COLORS;
+        if ((ActiveKeyboard->MouseQX > cbox_x[0] &&
+             ActiveKeyboard->MouseQX <
+                 cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
+             ActiveKeyboard->MouseQY > d_color_y &&
+             ActiveKeyboard->MouseQY < d_color_y + d_color_h) &&
+            (!ready_to_go)) {
+          MPlayerPrefColor = (ActiveKeyboard->MouseQX - cbox_x[0]) / d_color_w;
+          MPlayerColorIdx = MPlayerPrefColor;
+          display = REDRAW_COLORS;
 
-            name_edt.Set_Color(MPlayerTColors[MPlayerColorIdx]);
-            name_edt.Flag_To_Redraw();
-            MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
-            port::SafeCopy(MPlayerName, namebuf);
-            transmit = 1;
-            changed = 1;
-          }
+          name_edt.Set_Color(MPlayerTColors[MPlayerColorIdx]);
+          name_edt.Flag_To_Redraw();
+          MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
+          port::SafeCopy(MPlayerName, namebuf);
+          transmit = 1;
+          changed = 1;
         }
+
         break;
 
       /*------------------------------------------------------------------
@@ -3952,13 +3955,12 @@ int Com_Scenario_Dialog() {
       CANCEL: send a SIGN_OFF, bail out with error code
       ------------------------------------------------------------------*/
       case KN_ESC:
-        if (!ready_to_go) {
-          if (Messages.Get_Edit_Buf() != nullptr) {
-            Messages.Input(input);
-            display = std::max(display, REDRAW_MESSAGE);
-            break;
-          }
+        if ((!ready_to_go) && (Messages.Get_Edit_Buf() != nullptr)) {
+          Messages.Input(input);
+          display = std::max(display, REDRAW_MESSAGE);
+          break;
         }
+
         [[fallthrough]];
       case ButtonKey(BUTTON_CANCEL):
         if (!ready_to_go) {
@@ -4489,14 +4491,14 @@ int Com_Scenario_Dialog() {
         NullModem.Mono_Debug_Print(0);
 #endif
 
-        if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
-          // are we getting our own packets back??
+        if ((NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) &&
+            (ReceivePacket.Command == SERIAL_SIGN_OFF &&
+             ReceivePacket.ID == ModemGameToPlay))
+        // are we getting our own packets back??
 
-          if (ReceivePacket.Command == SERIAL_SIGN_OFF &&
-              ReceivePacket.ID == ModemGameToPlay) {
-            // exit while
-            break;
-          }
+        {
+          // exit while
+          break;
         }
 
         NullModem.Service();
@@ -5088,36 +5090,34 @@ int Com_Show_Scenario_Dialog() {
       User clicks on a color button
       ------------------------------------------------------------------*/
       case KN_LMOUSE:
-        if (ActiveKeyboard->MouseQX > cbox_x[0] &&
-            ActiveKeyboard->MouseQX <
-                cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
-            ActiveKeyboard->MouseQY > d_color_y &&
-            ActiveKeyboard->MouseQY < d_color_y + d_color_h) {
-          if (!ready_to_go) {
-            /*.........................................................
-            Compute my preferred color as the one I clicked on.
-            .........................................................*/
-            MPlayerPrefColor =
-                (ActiveKeyboard->MouseQX - cbox_x[0]) / d_color_w;
-            changed = 1;
-            /*.........................................................
-            If 'TheirColor' is set to the other player's color, make
-            sure we can't pick that color.
-            .........................................................*/
-            if (parms_received) {
-              if (std::cmp_equal(MPlayerPrefColor, TheirColor)) {
-                break;
-              }
-            }
-            MPlayerColorIdx = MPlayerPrefColor;
-
-            name_edt.Set_Color(MPlayerTColors[MPlayerColorIdx]);
-            name_edt.Flag_To_Redraw();
-            display = REDRAW_COLORS;
-            port::SafeCopy(MPlayerName, namebuf);
-            transmit = 1;
+        if ((ActiveKeyboard->MouseQX > cbox_x[0] &&
+             ActiveKeyboard->MouseQX <
+                 cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
+             ActiveKeyboard->MouseQY > d_color_y &&
+             ActiveKeyboard->MouseQY < d_color_y + d_color_h) &&
+            (!ready_to_go)) {
+          /*.........................................................
+          Compute my preferred color as the one I clicked on.
+          .........................................................*/
+          MPlayerPrefColor = (ActiveKeyboard->MouseQX - cbox_x[0]) / d_color_w;
+          changed = 1;
+          /*.........................................................
+          If 'TheirColor' is set to the other player's color, make
+          sure we can't pick that color.
+          .........................................................*/
+          if (parms_received && std::cmp_equal(MPlayerPrefColor, TheirColor)) {
+            break;
           }
+
+          MPlayerColorIdx = MPlayerPrefColor;
+
+          name_edt.Set_Color(MPlayerTColors[MPlayerColorIdx]);
+          name_edt.Flag_To_Redraw();
+          display = REDRAW_COLORS;
+          port::SafeCopy(MPlayerName, namebuf);
+          transmit = 1;
         }
+
         break;
 
       /*------------------------------------------------------------------
@@ -5158,13 +5158,12 @@ int Com_Show_Scenario_Dialog() {
       CANCEL: send a SIGN_OFF, bail out with error code
       ------------------------------------------------------------------*/
       case KN_ESC:
-        if (!ready_to_go) {
-          if (Messages.Get_Edit_Buf() != nullptr) {
-            Messages.Input(input);
-            display = REDRAW_MESSAGE;
-            break;
-          }
+        if ((!ready_to_go) && (Messages.Get_Edit_Buf() != nullptr)) {
+          Messages.Input(input);
+          display = REDRAW_MESSAGE;
+          break;
         }
+
         [[fallthrough]];
       case ButtonKey(BUTTON_CANCEL):
         if (!ready_to_go) {
@@ -5678,14 +5677,14 @@ int Com_Show_Scenario_Dialog() {
         NullModem.Mono_Debug_Print(0);
 #endif
 
-        if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
-          // are we getting our own packets back??
+        if ((NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) &&
+            (ReceivePacket.Command == SERIAL_SIGN_OFF &&
+             ReceivePacket.ID == ModemGameToPlay))
+        // are we getting our own packets back??
 
-          if (ReceivePacket.Command == SERIAL_SIGN_OFF &&
-              ReceivePacket.ID == ModemGameToPlay) {
-            // exit while
-            break;
-          }
+        {
+          // exit while
+          break;
         }
 
         NullModem.Service();
@@ -6674,7 +6673,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
 
   DialSettings = settings;
 
-  modemstatus = NullModem.Get_Modem_Status();
+  modemstatus = NullModemClass::Get_Modem_Status();
   if (reconnect) {
     if (modemstatus & CD_SET) {
       connected = true;
@@ -6688,12 +6687,12 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     }
   }
 
-  NullModem.Setup_Modem_Echo(Modem_Echo);
+  NullModemClass::Setup_Modem_Echo(Modem_Echo);
 
   modemstatus = NullModem.Detect_Modem(settings, reconnect);
   if (!modemstatus) {
-    NullModem.Remove_Modem_Echo();
-    NullModem.Print_EchoBuf();
+    NullModemClass::Remove_Modem_Echo();
+    NullModemClass::Print_EchoBuf();
     NullModem.Reset_EchoBuf();
 
     /*
@@ -6705,11 +6704,11 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
         settings->Baud = 19200;
         Shutdown_Modem();
         Init_Null_Modem(settings);
-        NullModem.Setup_Modem_Echo(Modem_Echo);
+        NullModemClass::Setup_Modem_Echo(Modem_Echo);
         modemstatus = NullModem.Detect_Modem(settings, reconnect);
         if (!modemstatus) {
-          NullModem.Remove_Modem_Echo();
-          NullModem.Print_EchoBuf();
+          NullModemClass::Remove_Modem_Echo();
+          NullModemClass::Print_EchoBuf();
           NullModem.Reset_EchoBuf();
           CCMessageBox().Process(TXT_UNABLE_FIND_MODEM);
           ModemService = true;
@@ -6721,11 +6720,11 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
         settings->Baud = 38400;
         Shutdown_Modem();
         Init_Null_Modem(settings);
-        NullModem.Setup_Modem_Echo(Modem_Echo);
+        NullModemClass::Setup_Modem_Echo(Modem_Echo);
         modemstatus = NullModem.Detect_Modem(settings, reconnect);
         if (!modemstatus) {
-          NullModem.Remove_Modem_Echo();
-          NullModem.Print_EchoBuf();
+          NullModemClass::Remove_Modem_Echo();
+          NullModemClass::Print_EchoBuf();
           NullModem.Reset_EchoBuf();
           CCMessageBox().Process(TXT_UNABLE_FIND_MODEM);
           ModemService = true;
@@ -6739,8 +6738,8 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
         return connected;
     }
   } else if (modemstatus == -1) {
-    NullModem.Remove_Modem_Echo();
-    NullModem.Print_EchoBuf();
+    NullModemClass::Remove_Modem_Echo();
+    NullModemClass::Print_EchoBuf();
     NullModem.Reset_EchoBuf();
     CCMessageBox().Process(TXT_ERROR_IN_INITSTRING);
     ModemService = true;
@@ -6816,8 +6815,8 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
       break;
   }
 
-  NullModem.Remove_Modem_Echo();
-  NullModem.Print_EchoBuf();
+  NullModemClass::Remove_Modem_Echo();
+  NullModemClass::Print_EchoBuf();
   NullModem.Reset_EchoBuf();
 
   /*
@@ -6848,7 +6847,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
 
   DialSettings = settings;
 
-  modemstatus = NullModem.Get_Modem_Status();
+  modemstatus = NullModemClass::Get_Modem_Status();
   if (reconnect) {
     if (modemstatus & CD_SET) {
       connected = true;
@@ -6862,12 +6861,12 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     }
   }
 
-  NullModem.Setup_Modem_Echo(Modem_Echo);
+  NullModemClass::Setup_Modem_Echo(Modem_Echo);
 
   modemstatus = NullModem.Detect_Modem(settings, reconnect);
   if (!modemstatus) {
-    NullModem.Remove_Modem_Echo();
-    NullModem.Print_EchoBuf();
+    NullModemClass::Remove_Modem_Echo();
+    NullModemClass::Print_EchoBuf();
     NullModem.Reset_EchoBuf();
 
     /*
@@ -6879,11 +6878,11 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
         settings->Baud = 19200;
         Shutdown_Modem();
         Init_Null_Modem(settings);
-        NullModem.Setup_Modem_Echo(Modem_Echo);
+        NullModemClass::Setup_Modem_Echo(Modem_Echo);
         modemstatus = NullModem.Detect_Modem(settings, reconnect);
         if (!modemstatus) {
-          NullModem.Remove_Modem_Echo();
-          NullModem.Print_EchoBuf();
+          NullModemClass::Remove_Modem_Echo();
+          NullModemClass::Print_EchoBuf();
           NullModem.Reset_EchoBuf();
           CCMessageBox().Process(TXT_UNABLE_FIND_MODEM);
           ModemService = true;
@@ -6895,11 +6894,11 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
         settings->Baud = 38400;
         Shutdown_Modem();
         Init_Null_Modem(settings);
-        NullModem.Setup_Modem_Echo(Modem_Echo);
+        NullModemClass::Setup_Modem_Echo(Modem_Echo);
         modemstatus = NullModem.Detect_Modem(settings, reconnect);
         if (!modemstatus) {
-          NullModem.Remove_Modem_Echo();
-          NullModem.Print_EchoBuf();
+          NullModemClass::Remove_Modem_Echo();
+          NullModemClass::Print_EchoBuf();
           NullModem.Reset_EchoBuf();
           CCMessageBox().Process(TXT_UNABLE_FIND_MODEM);
           ModemService = true;
@@ -6914,8 +6913,8 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     }
 
   } else if (modemstatus == -1) {
-    NullModem.Remove_Modem_Echo();
-    NullModem.Print_EchoBuf();
+    NullModemClass::Remove_Modem_Echo();
+    NullModemClass::Print_EchoBuf();
     NullModem.Reset_EchoBuf();
     CCMessageBox().Process(TXT_ERROR_IN_INITSTRING);
     ModemService = true;
@@ -6979,8 +6978,8 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
       break;
   }
 
-  NullModem.Remove_Modem_Echo();
-  NullModem.Print_EchoBuf();
+  NullModemClass::Remove_Modem_Echo();
+  NullModemClass::Print_EchoBuf();
   NullModem.Reset_EchoBuf();
 
   /*

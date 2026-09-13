@@ -43,6 +43,7 @@
 #ifndef CNC_RED_ALERT_TD_TXTLABEL_H_
 #define CNC_RED_ALERT_TD_TXTLABEL_H_
 
+#include "absl/base/attributes.h"
 #include "td/defines.h"
 #include "td/gadget.h"
 
@@ -51,7 +52,8 @@ class TextLabelClass : public GadgetClass {
   /*
   ** Constructor/Destructor
   */
-  TextLabelClass(char* txt, int x, int y, int color, TextPrintType style);
+  TextLabelClass(char* txt ABSL_ATTRIBUTE_LIFETIME_BOUND, int x, int y,
+                 int color, TextPrintType style);
 
   /*
   ** Overloaded draw routine

@@ -48,6 +48,7 @@
 #include <variant>
 #include <vector>
 
+#include "absl/base/attributes.h"
 #include "port/ex_string.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
@@ -111,7 +112,9 @@ class AbstractTypeClass {
   // the NameOverride table for scenario-specific replacements first.
   [[nodiscard]] virtual int Full_Name() const;
 
-  [[nodiscard]] const char* Name() const { return IniName; }
+  [[nodiscard]] const char* Name() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return IniName;
+  }
   void Set_Name(const char* buf) {
     strncpy(IniName, buf, sizeof(IniName));
     IniName[sizeof(IniName) - 1] = '\0';
@@ -180,7 +183,10 @@ class HouseTypeClass : public AbstractTypeClass {
   [[nodiscard]] const unsigned char* Remap_Table() const;
 
   void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* ptr);
 
   static HousesType From_Name(const char* name);
@@ -307,7 +313,7 @@ class ObjectTypeClass : public AbstractTypeClass {
     return RTTI == RTTI_INFANTRYTYPE || RTTI == RTTI_UNITTYPE ||
            RTTI == RTTI_VESSELTYPE || RTTI == RTTI_AIRCRAFTTYPE;
   }
-  [[nodiscard]] const char* Graphic_Name() const {
+  [[nodiscard]] const char* Graphic_Name() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (GraphicName[0] != '\0') {
       return GraphicName;
     }
@@ -331,12 +337,18 @@ class ObjectTypeClass : public AbstractTypeClass {
   // Legacy API: returns raw pointer for backward compatibility.
   [[nodiscard]] const void* Get_Image_Data() const {
     return std::visit(
+        // clang suggests lifetimebound here, but its lifetimebound-violation
+        // check cannot verify it.
+        // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-intra-tu-suggestions)
         [](auto&& d) -> const void* { return d.empty() ? nullptr : d.data(); },
         image_data_);
   }
 
   // New typed API for modern code.
   [[nodiscard]] std::span<const std::byte> GetImageSpan() const {
+    // clang suggests lifetimebound here, but its lifetimebound-violation check
+    // cannot verify it.
+    // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-intra-tu-suggestions)
     return std::visit([](auto&& d) { return std::span<const std::byte>(d); },
                       image_data_);
   }
@@ -352,7 +364,10 @@ class ObjectTypeClass : public AbstractTypeClass {
   // Clear image data.
   void ClearImage() { image_data_ = std::span<const std::byte>{}; }
 
-  [[nodiscard]] const void* Get_Radar_Data() const { return RadarIcon.get(); }
+  [[nodiscard]] const void* Get_Radar_Data() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return RadarIcon.get();
+  }
 
   virtual void Display(int /*unused*/, int /*unused*/,
                        WindowNumberType /*unused*/,
@@ -774,23 +789,26 @@ class BuildingTypeClass : public TechnoTypeClass {
   /*---------------------------------------------------------------------------
   **	This is the building type explicit constructor.
   */
-  BuildingTypeClass(StructType type, int name, const char* ininame,
-                    FacingType foundation, COORDINATE exitpoint,
-                    RemapType remap, int verticaloffset, int primaryoffset,
-                    int primarylateral, bool is_fake, bool is_regulated,
-                    bool is_nominal, bool is_wall, bool is_simpledamage,
-                    bool is_stealthy, bool is_selectable, bool is_legal_target,
-                    bool is_insignificant, bool is_theater,
-                    bool is_turret_equipped, bool is_remappable,
-                    RTTIType tobuild, DirType sframe, BSizeType size,
-                    const short* exitlist, const short* sizelist,
-                    const short* overlap) noexcept;
+  BuildingTypeClass(
+      StructType type, int name, const char* ininame, FacingType foundation,
+      COORDINATE exitpoint, RemapType remap, int verticaloffset,
+      int primaryoffset, int primarylateral, bool is_fake, bool is_regulated,
+      bool is_nominal, bool is_wall, bool is_simpledamage, bool is_stealthy,
+      bool is_selectable, bool is_legal_target, bool is_insignificant,
+      bool is_theater, bool is_turret_equipped, bool is_remappable,
+      RTTIType tobuild, DirType sframe, BSizeType size,
+      const short* exitlist ABSL_ATTRIBUTE_LIFETIME_BOUND,
+      const short* sizelist ABSL_ATTRIBUTE_LIFETIME_BOUND,
+      const short* overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
   // objects compare directly against their type ID.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator StructType() const { return Type; }
 
   void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* ptr);
 
   static void Init_Heap();
@@ -977,7 +995,10 @@ class UnitTypeClass : public TechnoTypeClass {
                 int toffset, MissionType order, bool is_aftermath) noexcept;
 
   void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* pointer);
 
   static void Init_Heap();
@@ -1071,7 +1092,10 @@ class VesselTypeClass : public TechnoTypeClass {
                   int toffset, bool is_aftermath) noexcept;
 
   void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* pointer);
 
   static void Init_Heap();
@@ -1196,16 +1220,20 @@ class InfantryTypeClass : public TechnoTypeClass {
   /*
   **	This is the explicit unit class constructor.
   */
-  InfantryTypeClass(InfantryType type, int name, const char* ininame,
-                    int verticaloffset, int primaryoffset, bool is_female,
-                    bool is_crawling, bool is_civilian, bool is_remap_override,
-                    bool is_nominal, bool is_theater, PipEnum pip,
-                    const DoInfoStruct* controls, int firelaunch,
-                    int pronelaunch, const unsigned char* override_remap,
-                    bool is_aftermath) noexcept;
+  InfantryTypeClass(
+      InfantryType type, int name, const char* ininame, int verticaloffset,
+      int primaryoffset, bool is_female, bool is_crawling, bool is_civilian,
+      bool is_remap_override, bool is_nominal, bool is_theater, PipEnum pip,
+      const DoInfoStruct* controls ABSL_ATTRIBUTE_LIFETIME_BOUND,
+      int firelaunch, int pronelaunch,
+      const unsigned char* override_remap ABSL_ATTRIBUTE_LIFETIME_BOUND,
+      bool is_aftermath) noexcept;
 
   void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* pointer);
 
   static void Init_Heap();
@@ -1293,7 +1321,10 @@ class AircraftTypeClass : public TechnoTypeClass {
                     MissionType deforder) noexcept;
 
   void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* pointer);
 
   static void Init_Heap();
@@ -1473,7 +1504,10 @@ class BulletTypeClass : public ObjectTypeClass {
   explicit BulletTypeClass(const char* name) noexcept;
 
   void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* ptr);
 
   static void Init_Heap();
@@ -1526,11 +1560,15 @@ class TerrainTypeClass : public ObjectTypeClass {
   //----------------------------------------------------------------
   TerrainTypeClass(TerrainType terrain, int theater, COORDINATE centerbase,
                    bool is_immune, bool is_water, const char* ininame,
-                   int fullname, const short* occupy,
-                   const short* overlap) noexcept;
+                   int fullname,
+                   const short* occupy ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                   const short* overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
 
   void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* pointer);
 
   static void Init_Heap();
@@ -1586,7 +1624,10 @@ class TemplateTypeClass : public ObjectTypeClass {
                     int fullname) noexcept;
 
   void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* ptr);
 
   static void Init_Heap();
@@ -1768,7 +1809,10 @@ class AnimTypeClass : public ObjectTypeClass {
 
   static void Init_Heap();
   void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* pointer);
 
   static AnimTypeClass& As_Reference(AnimType type);
@@ -1868,7 +1912,10 @@ class OverlayTypeClass : public ObjectTypeClass {
                    bool walltype, bool iscrate) noexcept;
 
   void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* pointer);
 
   static void Init_Heap();
@@ -1886,7 +1933,8 @@ class OverlayTypeClass : public ObjectTypeClass {
   ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
   [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
   virtual void Draw_It(int x, int y, int data) const;
-  [[nodiscard]] virtual unsigned char* Radar_Icon(int data) const;
+  [[nodiscard]] virtual unsigned char* Radar_Icon(int data) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   void Display(int x, int y, WindowNumberType window,
                HousesType house = HOUSE_NONE) const override;
@@ -1930,7 +1978,10 @@ class SmudgeTypeClass : public ObjectTypeClass {
                   int width, int height, bool isbib, bool iscrater) noexcept;
 
   void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* pointer);
 
   static void Init_Heap();

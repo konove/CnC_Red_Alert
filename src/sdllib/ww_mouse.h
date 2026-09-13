@@ -89,8 +89,8 @@ class WWMouseClass {
   void Erase_Mouse(GraphicViewPortClass* scr, bool forced = false);
 
   // Controls mouse confinement to the game window.
-  void Set_Cursor_Clip();
-  void Clear_Cursor_Clip();
+  static void Set_Cursor_Clip();
+  static void Clear_Cursor_Clip();
 
   // Recreates the SDL cursor with the current game palette.
   void Update_Palette();

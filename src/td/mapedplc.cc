@@ -298,7 +298,8 @@ int MapEditClass::Placement_Dialog() {
   bool process;                   // loop while true
   bool cancel = false;            // true = user cancels
   const ObjectTypeClass* curobj;  // Working object pointer.
-  int x, y;                       // for drawing the grid
+  int x;
+  int y;                          // for drawing the grid
   KeyNumType input;               // user input
   const short* occupy;            // ptr into object's OccupyList
   int cell;                       // cell index for parsing OccupyList
@@ -1838,7 +1839,8 @@ void MapEditClass::Stop_Trigger_Placement() {
  *=========================================================================*/
 void MapEditClass::Place_Trigger() {
   ObjectClass* object = nullptr;  // Generic object clicked on.
-  int x, y;
+  int x;
+  int y;
   CELL cell;  // Cell that was selected.
 
   /*

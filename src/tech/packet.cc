@@ -125,7 +125,7 @@ PacketClass::PacketClass(char* curbuf) : Head(nullptr) {
   // create a field for each.
   //
   while (remaining_size > 0) {
-    FieldClass* field = new FieldClass;
+    auto* field = new FieldClass;
 
     //
     // Copy the adjusted header into the buffer and then advance the buffer

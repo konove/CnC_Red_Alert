@@ -145,13 +145,13 @@ class SidebarClass : public PowerClass {
     void One_Time(int id);
     void Init_Clear();
     void Init_IO(int id);
-    void Init_Theater(TheaterType theater);
+    static void Init_Theater(TheaterType theater);
     bool Recalc();
     void Activate();
     void Deactivate();
     void Flag_To_Redraw();
     bool Factory_Link(int factory, RTTIType type, int id);
-    const void* Get_Special_Cameo(int type);
+    static const void* Get_Special_Cameo(int type);
 
     /*
     **	File I/O.
@@ -366,7 +366,7 @@ class SidebarClass : public PowerClass {
   bool Activate_Upgrade(int control);
   bool Activate_Demolish(int control);
   bool Scroll(bool up, int column);
-  int Which_Column(RTTIType type);
+  static int Which_Column(RTTIType type);
 
   unsigned IsRepairActive : 1 {false};
   unsigned IsUpgradeActive : 1 {false};

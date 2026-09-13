@@ -397,18 +397,18 @@ STDMETHODIMP RAChatEventSink::OnChannelJoin(HRESULT hRes, Channel* /*pChannel*/,
         DeleteUserList();
       }
     } else {
-      if (pOwner->CurrentLevel == WOL_LEVEL_INGAMECHANNEL) {
-        if (pOwner->pGSupDlg &&
-            (pOwner->pGSupDlg->bHostSayGo ||
-             pOwner->pGSupDlg->bHostWaitingForGoTrigger ||
-             pOwner->pGSupDlg->bExitForGameTrigger || iGameID)) {
-          //	A game has this moment entered the "must start" phase. We can
-          // ignore the fact that others are leaving the channel.
-          //					debugprint( "Ignoring leave
-          // because game is starting.\n" );
-          return S_OK;
-        }
+      if ((pOwner->CurrentLevel == WOL_LEVEL_INGAMECHANNEL) &&
+          (pOwner->pGSupDlg &&
+           (pOwner->pGSupDlg->bHostSayGo ||
+            pOwner->pGSupDlg->bHostWaitingForGoTrigger ||
+            pOwner->pGSupDlg->bExitForGameTrigger || iGameID))) {
+        //	A game has this moment entered the "must start" phase. We can
+        // ignore the fact that others are leaving the channel.
+        //					debugprint( "Ignoring leave
+        // because game is starting.\n" );
+        return S_OK;
       }
+
       //	Add user to our current channel users list.
       if (!pUserList) {
         //				debugprint( "pUserList is null in
@@ -536,18 +536,18 @@ STDMETHODIMP RAChatEventSink::OnChannelLeave(HRESULT hRes, Channel* /*channel*/,
         // OnChannelLeave - ignoring %s leave... \n", (char*)pUser->name );
         return S_OK;
       }
-      if (pOwner->CurrentLevel == WOL_LEVEL_INGAMECHANNEL) {
-        if (pOwner->pGSupDlg &&
-            (pOwner->pGSupDlg->bHostSayGo ||
-             pOwner->pGSupDlg->bHostWaitingForGoTrigger ||
-             pOwner->pGSupDlg->bExitForGameTrigger || iGameID)) {
-          //	A game has this moment entered the "must start" phase. We must
-          // ignore the fact that others are leaving the channel.
-          //					debugprint( "Ignoring leave
-          // because game is starting.\n" );
-          return S_OK;
-        }
+      if ((pOwner->CurrentLevel == WOL_LEVEL_INGAMECHANNEL) &&
+          (pOwner->pGSupDlg &&
+           (pOwner->pGSupDlg->bHostSayGo ||
+            pOwner->pGSupDlg->bHostWaitingForGoTrigger ||
+            pOwner->pGSupDlg->bExitForGameTrigger || iGameID))) {
+        //	A game has this moment entered the "must start" phase. We must
+        // ignore the fact that others are leaving the channel.
+        //					debugprint( "Ignoring leave
+        // because game is starting.\n" );
+        return S_OK;
       }
+
       User* pUserSearch = pUserList;
       User* pUserPrevious = nullptr;
       bool bFound = false;
@@ -776,16 +776,15 @@ STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT /*res*/,
   // not one arriving from an earlier Request for games. 	This
   // OnChannelList might not actually match the Request in GetLobbyChannels(),
   // but as long as it's type 0 it'll do.
-  if (bRequestChannelListForLobbiesWait) {
-    if (pChannelListIn && pChannelListIn->type != 0) {
-      //			debugprint( ">>> IGNORED OnChannelList,
-      // bRequestChannelListForLobbiesWait if\n" );
-      return S_OK;
-    }
+  if (bRequestChannelListForLobbiesWait &&
+      (pChannelListIn && pChannelListIn->type != 0)) {
+    //			debugprint( ">>> IGNORED OnChannelList,
+    // bRequestChannelListForLobbiesWait if\n" );
+    return S_OK;
+  }
     //	Note: if no channels in list, can't tell what kind of Request call gave
     // us this list. 	(In our case assume it was the one asking for lobbies
     // and allow to fail later naturally due to no lobbies available.)
-  }
 
   DeleteChannelList();
   //	debugprint( ">>> OnChannelList, filter = %i, WO's
@@ -844,7 +843,7 @@ STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT /*res*/,
       default:
         break;
     }
-    Channel* pChannelNew = new Channel;
+    auto* pChannelNew = new Channel;
     *pChannelNew = *pChannelListIn;
     pChannelNew->next =
         nullptr;  //	(We don't want the value that was just copied!)
@@ -974,7 +973,7 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
   CoCreateInstance(CLSID_Download, nullptr, CLSCTX_INPROC_SERVER, IID_IDownload,
                    (void**)&pDownload);
   DCHECK(pDownload);
-  RADownloadEventSink* pDownloadSink = new RADownloadEventSink();
+  auto* pDownloadSink = new RADownloadEventSink();
   pDownloadSink->AddRef();
   IConnectionPoint* pConnectionPoint = nullptr;
   IConnectionPointContainer* pContainer = nullptr;
@@ -1529,17 +1528,16 @@ STDMETHODIMP RAChatEventSink::OnUserFlags(HRESULT hRes, LPCSTR name,
   //	debugprint( ">>> OnUserFlags got: " );
   DebugChatDef(hRes);
 
-  if (pOwner->CurrentLevel == WOL_LEVEL_INGAMECHANNEL) {
-    if (pOwner->pGSupDlg &&
-        (pOwner->pGSupDlg->bHostSayGo ||
-         pOwner->pGSupDlg->bHostWaitingForGoTrigger ||
-         pOwner->pGSupDlg->bExitForGameTrigger || iGameID)) {
-      //	A game has this moment entered the "must start" phase. We must
-      // ignore the fact that others are leaving the channel.
-      //			debugprint( "Ignoring OnUserFlags because game
-      // is starting.\n" );		//	(Shouldn't ever happen.)
-      return S_OK;
-    }
+  if ((pOwner->CurrentLevel == WOL_LEVEL_INGAMECHANNEL) &&
+      (pOwner->pGSupDlg &&
+       (pOwner->pGSupDlg->bHostSayGo ||
+        pOwner->pGSupDlg->bHostWaitingForGoTrigger ||
+        pOwner->pGSupDlg->bExitForGameTrigger || iGameID))) {
+    //	A game has this moment entered the "must start" phase. We must
+    // ignore the fact that others are leaving the channel.
+    //			debugprint( "Ignoring OnUserFlags because game
+    // is starting.\n" );		//	(Shouldn't ever happen.)
+    return S_OK;
   }
 
   //	Find user in our current users list.
@@ -1777,9 +1775,9 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(HRESULT hRes,
       //			debugprint( "OnLadderList got %s, rung %u\n",
       // pLadderListIn->login_name, pLadderListIn->rung );
       // rung is unsigned; -1 is the "unranked" sentinel the server sends.
-      constexpr unsigned int kUnranked = static_cast<unsigned int>(-1);
+      constexpr auto kUnranked = static_cast<unsigned int>(-1);
       if (*pLadderListIn->login_name != 0 && pLadderListIn->rung != kUnranked) {
-        Ladder* pLadderNew = new Ladder;
+        auto* pLadderNew = new Ladder;
         *pLadderNew = *pLadderListIn;
         pLadderNew->next =
             nullptr;  //	(We don't want the value that was just copied!)

@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_TECH_BUFF_H_
 #define CNC_RED_ALERT_TECH_BUFF_H_
 
+#include "absl/base/attributes.h"
+
 /*
 **	A general purpose buffer pointer handler object. It holds not only the
 *pointer to the *	buffer, but its size as well. By using this class
@@ -48,9 +50,11 @@
 */
 class Buffer {
  public:
-  explicit Buffer(char* buffer, long size = 0);
-  explicit Buffer(void* buffer = nullptr, long size = 0);
-  explicit Buffer(const void* buffer, long size = 0);
+  explicit Buffer(char* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND, long size = 0);
+  explicit Buffer(void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND = nullptr,
+                  long size = 0);
+  explicit Buffer(const void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                  long size = 0);
   explicit Buffer(long size);
   Buffer(const Buffer&) = delete;
   Buffer& operator=(const Buffer&) = delete;

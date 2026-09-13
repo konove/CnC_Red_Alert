@@ -260,8 +260,10 @@ static void Toggle_Formation() {
   int team = kNoGroup;
   // Seeded inverted -- min at the largest possible value, max at the smallest
   // -- so the first cell examined replaces both.
-  long minx = 0x7FFFFFFFL, miny = 0x7FFFFFFFL;
-  long maxx = 0, maxy = 0;
+  long minx = 0x7FFFFFFFL;
+  long miny = 0x7FFFFFFFL;
+  long maxx = 0;
+  long maxy = 0;
   bool set_form = false;
 
   // Recording support
@@ -768,10 +770,9 @@ static void Do_Record_Playback() {
   // Play back a game ("attract" mode)
   if (Session.Play) {
     // Read & set the map's location.
-    if (Session.RecordFile.Read(&coord, sizeof(coord)) == sizeof(coord)) {
-      if (coord != Map.DesiredTacticalCoord) {
-        Map.Set_Tactical_Position(coord);
-      }
+    if ((Session.RecordFile.Read(&coord, sizeof(coord)) == sizeof(coord)) &&
+        (coord != Map.DesiredTacticalCoord)) {
+      Map.Set_Tactical_Position(coord);
     }
 
     if (Session.RecordFile.Read(&count, sizeof(count)) == sizeof(count)) {
@@ -967,10 +968,8 @@ void Main_Game(const int argc, char* argv[]) {
         Modem_Signoff();
       }
     } else {
-      if (Session.Type == GAME_IPX) {
-        if (!Session.Play) {
-          Shutdown_Network();
-        }
+      if ((Session.Type == GAME_IPX) && (!Session.Play)) {
+        Shutdown_Network();
       }
     }
 
@@ -1041,11 +1040,10 @@ void Keyboard_Process(KeyNumType& input) {
       PlayerPtr->Flag_To_Win();
     }
 
-    if ((Debug_Flag || Debug_Playtest) && plain == KN_F4) {
-      if (Session.Type == GAME_NORMAL) {
-        Debug_Unshroud = !Debug_Unshroud;
-        Map.Flag_To_Redraw(true);
-      }
+    if (((Debug_Flag || Debug_Playtest) && plain == KN_F4) &&
+        (Session.Type == GAME_NORMAL)) {
+      Debug_Unshroud = !Debug_Unshroud;
+      Map.Flag_To_Redraw(true);
     }
 
     if (Debug_Flag && input == KN_SLASH) {
@@ -1075,9 +1073,11 @@ void Keyboard_Process(KeyNumType& input) {
   // If the "N" key is pressed, then select the next object.
   if (key != 0 && key == Options.KeyNext) {
     if (action) {
-      obj = Map.Prev_Object(CurrentObject.Count() ? CurrentObject[0] : nullptr);
+      obj = MapEditClass::Prev_Object(CurrentObject.Count() ? CurrentObject[0]
+                                                            : nullptr);
     } else {
-      obj = Map.Next_Object(CurrentObject.Count() ? CurrentObject[0] : nullptr);
+      obj = MapEditClass::Next_Object(CurrentObject.Count() ? CurrentObject[0]
+                                                            : nullptr);
     }
     if (obj != nullptr) {
       Unselect_All();
@@ -1089,9 +1089,11 @@ void Keyboard_Process(KeyNumType& input) {
   }
   if (key != 0 && key == Options.KeyPrevious) {
     if (action) {
-      obj = Map.Next_Object(CurrentObject.Count() ? CurrentObject[0] : nullptr);
+      obj = MapEditClass::Next_Object(CurrentObject.Count() ? CurrentObject[0]
+                                                            : nullptr);
     } else {
-      obj = Map.Prev_Object(CurrentObject.Count() ? CurrentObject[0] : nullptr);
+      obj = MapEditClass::Prev_Object(CurrentObject.Count() ? CurrentObject[0]
+                                                            : nullptr);
     }
     if (obj != nullptr) {
       Unselect_All();
@@ -1218,13 +1220,12 @@ void Keyboard_Process(KeyNumType& input) {
 
   // Handle making and breaking alliances.
   if (key != 0 && key == Options.KeyAlliance) {
-    if (Session.Type != GAME_NORMAL || Debug_Flag) {
-      if (CurrentObject.Count() && !PlayerPtr->IsDefeated) {
-        if (CurrentObject[0]->Owner() != PlayerPtr->Class->House) {
-          OutList.Add(EventClass(EventClass::ALLY, CurrentObject[0]->Owner()));
-        }
-      }
+    if ((Session.Type != GAME_NORMAL || Debug_Flag) &&
+        (CurrentObject.Count() && !PlayerPtr->IsDefeated) &&
+        (CurrentObject[0]->Owner() != PlayerPtr->Class->House)) {
+      OutList.Add(EventClass(EventClass::ALLY, CurrentObject[0]->Owner()));
     }
+
     input = KN_NONE;
   }
 
@@ -1442,65 +1443,65 @@ void IPX_Call_Back() {
 
   // Read packets only if the game is "closed", so we don't steal global
   // messages from the connection dialogs.
-  if (!Session.NetOpen) {
-    if (Ipx.Get_Global_Message(&Session.GPacket, &Session.GPacketlen,
-                               &Session.GAddress, &Session.GProductID)) {
-      if (Session.GProductID == IPXGlobalConnClass::COMMAND_AND_CONQUER0) {
-        // If this is another player signing off, remove the connection &
-        // mark that player's house as non-human, so the computer will take
-        // it over.
-        if (Session.GPacket.Command == NET_SIGN_OFF) {
-          for (int i = 0; i < Ipx.Num_Connections(); i++) {
-            int id = Ipx.Connection_ID(i);
+  if ((!Session.NetOpen) &&
+      Ipx.Get_Global_Message(&Session.GPacket, &Session.GPacketlen,
+                             &Session.GAddress, &Session.GProductID) &&
+      (Session.GProductID == IPXGlobalConnClass::COMMAND_AND_CONQUER0))
 
-            if (Session.GAddress == *Ipx.Connection_Address(id)) {
-              Destroy_Connection(id, 0);
-            }
-          }
-        } else {
-          // Process a message from another user.
-          if (Session.GPacket.Command == NET_MESSAGE) {
-            bool msg_ok = false;
+  {
+    // If this is another player signing off, remove the connection &
+    // mark that player's house as non-human, so the computer will take
+    // it over.
+    if (Session.GPacket.Command == NET_SIGN_OFF) {
+      for (int i = 0; i < Ipx.Num_Connections(); i++) {
+        int id = Ipx.Connection_ID(i);
 
-            // If NetProtect is set, make sure this message came from within
-            // this game.
-            if (!Session.NetProtect) {
-              msg_ok = true;
-            } else {
-              msg_ok = Session.GPacket.Message.NameCRC ==
-                       Compute_Name_CRC(Session.GameName);
-            }
-
-            if (msg_ok) {
-              if (!Session.Messages.Concat_Message(
-                      Session.GPacket.Name, Session.GPacket.Message.Color,
-                      Session.GPacket.Message.Buf,
-                      Rule.MessageDelay * kTicksPerMinute)) {
-                if (NewUnitsEnabled && !strncmp(Session.GPacket.Message.Buf,
-                                                "XECRET UNITS ON ", 15)) {
-                  Session.GPacket.Message.Buf[0] = 'S';
-                  Enable_Secret_Units();
-                }
-                Session.Messages.Add_Message(
-                    Session.GPacket.Name, Session.GPacket.Message.Color,
-                    Session.GPacket.Message.Buf, Session.GPacket.Message.Color,
-                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-                    Rule.MessageDelay * kTicksPerMinute);
-
-                Sound_Effect(VOC_INCOMING_MESSAGE);
-              }
-
-              // Tell the map to do a partial update (just to force the
-              // messages to redraw).
-              Map.Flag_To_Redraw(true);
-
-              // Save this message in our last-message buffer
-              port::SafeCopy(Session.LastMessage, Session.GPacket.Message.Buf);
-            }
-          } else {
-            Process_Global_Packet(&Session.GPacket, &Session.GAddress);
-          }
+        if (Session.GAddress == *Ipx.Connection_Address(id)) {
+          Destroy_Connection(id, 0);
         }
+      }
+    } else {
+      // Process a message from another user.
+      if (Session.GPacket.Command == NET_MESSAGE) {
+        bool msg_ok = false;
+
+        // If NetProtect is set, make sure this message came from within
+        // this game.
+        if (!Session.NetProtect) {
+          msg_ok = true;
+        } else {
+          msg_ok = Session.GPacket.Message.NameCRC ==
+                   Compute_Name_CRC(Session.GameName);
+        }
+
+        if (msg_ok) {
+          if (!Session.Messages.Concat_Message(
+                  Session.GPacket.Name, Session.GPacket.Message.Color,
+                  Session.GPacket.Message.Buf,
+                  Rule.MessageDelay * kTicksPerMinute)) {
+            if (NewUnitsEnabled &&
+                !strncmp(Session.GPacket.Message.Buf, "XECRET UNITS ON ", 15)) {
+              Session.GPacket.Message.Buf[0] = 'S';
+              Enable_Secret_Units();
+            }
+            Session.Messages.Add_Message(
+                Session.GPacket.Name, Session.GPacket.Message.Color,
+                Session.GPacket.Message.Buf, Session.GPacket.Message.Color,
+                TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+                Rule.MessageDelay * kTicksPerMinute);
+
+            Sound_Effect(VOC_INCOMING_MESSAGE);
+          }
+
+          // Tell the map to do a partial update (just to force the
+          // messages to redraw).
+          Map.Flag_To_Redraw(true);
+
+          // Save this message in our last-message buffer
+          port::SafeCopy(Session.LastMessage, Session.GPacket.Message.Buf);
+        }
+      } else {
+        Process_Global_Packet(&Session.GPacket, &Session.GAddress);
       }
     }
   }
@@ -1592,7 +1593,8 @@ static void Sync_Delay() {
     if (SpecialDialog == SDLG_NONE) {
       WWMouse->Erase_Mouse(&HidPage, true);
       KeyNumType input = KN_NONE;
-      int x, y;
+      int x;
+      int y;
       Map.Input(input, x, y);
       if (input) {
         Keyboard_Process(input);
@@ -1679,18 +1681,16 @@ bool Main_Loop() {
   // Skipped entirely during playback: the recording drives the view instead,
   // and Do_Record_Playback() renders below once it has restored the
   // position.
-  if (!Session.Play) {
-    if (SpecialDialog == SDLG_NONE && GameInFocus) {
-      WWMouse->Erase_Mouse(&HidPage, true);
-      KeyNumType input = KN_NONE;
-      int x = 0;
-      int y = 0;
-      Map.Input(input, x, y);
-      if (input != KN_NONE) {
-        Keyboard_Process(input);
-      }
-      Map.Render();
+  if ((!Session.Play) && (SpecialDialog == SDLG_NONE && GameInFocus)) {
+    WWMouse->Erase_Mouse(&HidPage, true);
+    KeyNumType input = KN_NONE;
+    int x = 0;
+    int y = 0;
+    Map.Input(input, x, y);
+    if (input != KN_NONE) {
+      Keyboard_Process(input);
     }
+    Map.Render();
   }
 
   // Save map's position & selected objects, if we're recording the game.
@@ -1838,14 +1838,12 @@ bool Main_Loop() {
   }
 
   // Is there a memory trasher altering the map??
-  if (Debug_Check_Map) {
-    if (!Map.Validate()) {
-      if (WWMessageBox().Process(kLanguageText.map_error, kLanguageText.stop,
-                                 kLanguageText.continue_button) == 0) {
-        GameActive = false;
-      }
-      Map.Validate();  // give debugger a chance to catch it
+  if (Debug_Check_Map && (!Map.Validate())) {
+    if (WWMessageBox().Process(kLanguageText.map_error, kLanguageText.stop,
+                               kLanguageText.continue_button) == 0) {
+      GameActive = false;
     }
+    Map.Validate();  // give debugger a chance to catch it
   }
 
   if (Debug_MotionCapture) {
@@ -2584,51 +2582,47 @@ void Handle_Team(const int team, const int action) {
 
       // If a non team member is currently selected, then deselect all
       // objects before selecting this team.
-      if (CurrentObject.Count()) {
-        if (CurrentObject[0]->Is_Foot() &&
-            std::cmp_not_equal(
-                dynamic_cast<FootClass*>(CurrentObject[0])->Group, team)) {
-          Unselect_All();
-        }
+      if (CurrentObject.Count() &&
+          (CurrentObject[0]->Is_Foot() &&
+           std::cmp_not_equal(dynamic_cast<FootClass*>(CurrentObject[0])->Group,
+                              team))) {
+        Unselect_All();
       }
+
       for (index = 0; index < Vessels.Count(); index++) {
         VesselClass* obj = Vessels.Ptr(index);
-        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-            obj->House->IsPlayerControl) {
-          if (!obj->IsSelected) {
-            obj->Select();
-            AllowVoice = false;
-          }
+        if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
+             obj->House->IsPlayerControl) &&
+            (!obj->IsSelected)) {
+          obj->Select();
+          AllowVoice = false;
         }
       }
       for (index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
-        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-            obj->House->IsPlayerControl) {
-          if (!obj->IsSelected) {
-            obj->Select();
-            AllowVoice = false;
-          }
+        if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
+             obj->House->IsPlayerControl) &&
+            (!obj->IsSelected)) {
+          obj->Select();
+          AllowVoice = false;
         }
       }
       for (index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
-        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-            obj->House->IsPlayerControl) {
-          if (!obj->IsSelected) {
-            obj->Select();
-            AllowVoice = false;
-          }
+        if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
+             obj->House->IsPlayerControl) &&
+            (!obj->IsSelected)) {
+          obj->Select();
+          AllowVoice = false;
         }
       }
       for (index = 0; index < Aircraft.Count(); index++) {
         AircraftClass* obj = Aircraft.Ptr(index);
-        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-            obj->House->IsPlayerControl) {
-          if (!obj->IsSelected) {
-            obj->Select();
-            AllowVoice = false;
-          }
+        if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
+             obj->House->IsPlayerControl) &&
+            (!obj->IsSelected)) {
+          obj->Select();
+          AllowVoice = false;
         }
       }
 
@@ -2643,42 +2637,38 @@ void Handle_Team(const int team, const int action) {
     case 1:
       for (index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
-        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-            obj->House->IsPlayerControl) {
-          if (!obj->IsSelected) {
-            obj->Select();
-            AllowVoice = false;
-          }
+        if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
+             obj->House->IsPlayerControl) &&
+            (!obj->IsSelected)) {
+          obj->Select();
+          AllowVoice = false;
         }
       }
       for (index = 0; index < Vessels.Count(); index++) {
         VesselClass* obj = Vessels.Ptr(index);
-        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-            obj->House->IsPlayerControl) {
-          if (!obj->IsSelected) {
-            obj->Select();
-            AllowVoice = false;
-          }
+        if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
+             obj->House->IsPlayerControl) &&
+            (!obj->IsSelected)) {
+          obj->Select();
+          AllowVoice = false;
         }
       }
       for (index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
-        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-            obj->House->IsPlayerControl) {
-          if (!obj->IsSelected) {
-            obj->Select();
-            AllowVoice = false;
-          }
+        if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
+             obj->House->IsPlayerControl) &&
+            (!obj->IsSelected)) {
+          obj->Select();
+          AllowVoice = false;
         }
       }
       for (index = 0; index < Aircraft.Count(); index++) {
         AircraftClass* obj = Aircraft.Ptr(index);
-        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-            obj->House->IsPlayerControl) {
-          if (!obj->IsSelected) {
-            obj->Select();
-            AllowVoice = false;
-          }
+        if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
+             obj->House->IsPlayerControl) &&
+            (!obj->IsSelected)) {
+          obj->Select();
+          AllowVoice = false;
         }
       }
       break;
@@ -2686,8 +2676,10 @@ void Handle_Team(const int team, const int action) {
     // Create the team.
     case 2: {
       // Seeded inverted so the first member examined replaces both bounds.
-      long minx = 0x7FFFFFFFL, miny = 0x7FFFFFFFL;
-      long maxx = 0, maxy = 0;
+      long minx = 0x7FFFFFFFL;
+      long miny = 0x7FFFFFFFL;
+      long maxx = 0;
+      long maxy = 0;
       TeamSpeed[team] = SPEED_WHEEL;
       TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
       for (index = 0; index < Units.Count(); index++) {
@@ -2897,13 +2889,13 @@ bool Force_CD_Available(int cd_desired)  // ajw
   }
 
   if (cd_current >= 0) {
-    if (cd_desired == CD_CS_OR_AM) {
-      // If the current cd is CS or AM then change request to whatever
-      // is present.
-      if (cd_current == CD_COUNTERSTRIKE || cd_current == CD_AFTERMATH) {
-        cd_desired = cd_current;
-      }
+    // If the current cd is CS or AM then change request to whatever
+    // is present.
+    if ((cd_desired == CD_CS_OR_AM) &&
+        (cd_current == CD_COUNTERSTRIKE || cd_current == CD_AFTERMATH)) {
+      cd_desired = cd_current;
     }
+
     // If the current CD is requested or any CD will work
     if (cd_desired == cd_current || cd_desired == CD_ANY) {
       // The required CD is still in the CD drive we used last time, so the
@@ -2930,13 +2922,13 @@ bool Force_CD_Available(int cd_desired)  // ajw
       cd_current = Get_CD_Index(last_drive, 10 * 60);
 
       if (cd_current >= 0) {
-        if (cd_desired == CD_CS_OR_AM) {
-          // If the cd is CS or AM then change request to whatever
-          // is present.
-          if (cd_current == CD_COUNTERSTRIKE || cd_current == CD_AFTERMATH) {
-            cd_desired = cd_current;
-          }
+        // If the cd is CS or AM then change request to whatever
+        // is present.
+        if ((cd_desired == CD_CS_OR_AM) &&
+            (cd_current == CD_COUNTERSTRIKE || cd_current == CD_AFTERMATH)) {
+          cd_desired = cd_current;
         }
+
         // If the cd is present or any cd will work
         if (cd_desired == cd_current || cd_desired == CD_ANY) {
           // The required CD is in the CD drive we used last time
@@ -2962,12 +2954,11 @@ bool Force_CD_Available(int cd_desired)  // ajw
         if (cd_current >= 0) {
           // We found a C&C cd - lets see if it was the one we were looking for
           // Require CS or AM
-          if (cd_desired == CD_CS_OR_AM) {
-            // If the cd is CS or AM then change request to whatever
-            // is present.
-            if (cd_current == CD_COUNTERSTRIKE || cd_current == CD_AFTERMATH) {
-              cd_desired = cd_current;
-            }
+          // If the cd is CS or AM then change request to whatever
+          // is present.
+          if ((cd_desired == CD_CS_OR_AM) &&
+              (cd_current == CD_COUNTERSTRIKE || cd_current == CD_AFTERMATH)) {
+            cd_desired = cd_current;
           }
 
           if (cd_desired == cd_current || cd_desired == CD_ANY) {

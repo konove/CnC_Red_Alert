@@ -3,8 +3,10 @@
 
 #include <cstdint>
 
+#include "absl/base/attributes.h"
+
 void* Build_Frame(const void* dataptr, uint16_t framenumber,
-                  void* buffptr);
+                  void* buffptr ABSL_ATTRIBUTE_LIFETIME_BOUND);
 uint16_t Get_Build_Frame_Count(const void* dataptr);
 uint16_t Get_Build_Frame_X(const void* dataptr);
 uint16_t Get_Build_Frame_Y(const void* dataptr);
@@ -22,7 +24,7 @@ void Reallocate_Big_Shape_Buffer();
 // buffer base, so the pointer has to be rebased before it can be read. When
 // the big shape buffer is disabled the shape is its own data, and `ptr` is
 // returned unchanged.
-void* Get_Shape_Header_Data(void* ptr);
+void* Get_Shape_Header_Data(void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND);
 
 void Check_Use_Compressed_Shapes();
 void Disable_Uncompressed_Shapes();

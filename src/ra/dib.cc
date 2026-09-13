@@ -52,8 +52,8 @@ std::optional<Image> Image::FromBmp(std::span<const std::uint8_t> bmp) {
   }
 
   const auto info = bmp.subspan(static_cast<std::size_t>(kFileHeaderSize));
-  const std::int32_t width = static_cast<std::int32_t>(ReadU32(info, 4));
-  const std::int32_t height = static_cast<std::int32_t>(ReadU32(info, 8));
+  const auto width = static_cast<std::int32_t>(ReadU32(info, 4));
+  const auto height = static_cast<std::int32_t>(ReadU32(info, 8));
   const std::uint16_t bit_count = ReadU16(info, 14);
   const std::uint32_t compression = ReadU32(info, 16);
 

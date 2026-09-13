@@ -42,6 +42,7 @@
 #define CNC_RED_ALERT_TD_MONOC_H_
 
 #include <cstddef>
+#include <cstring>
 
 // #include	"dpmi.h"
 // #include	"function.h"
@@ -158,7 +159,8 @@ class MonoClass {
   }
   void Scroll(int lines);
   void Store_Cell(CellType& cell, int x, int y) {
-    *(CellType*)((long)MonoSegment + Offset(x, y)) = cell;
+    std::memcpy(static_cast<char*>(MonoSegment) + Offset(x, y), &cell,
+                sizeof(cell));
   }
 
   /*

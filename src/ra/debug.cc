@@ -147,8 +147,7 @@ void Debug_Key(unsigned input) {
       } break;
 
       case KN_O: {
-        AircraftClass* air =
-            new AircraftClass(AIRCRAFT_HIND, PlayerPtr->Class->House);
+        auto* air = new AircraftClass(AIRCRAFT_HIND, PlayerPtr->Class->House);
         if (air) {
           air->Height = 0;
           air->Unlimbo(Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()), DIR_N);
@@ -156,7 +155,7 @@ void Debug_Key(unsigned input) {
       } break;
 
       case KN_B: {
-        AircraftClass* air =
+        auto* air =
             new AircraftClass(AIRCRAFT_LONGBOW, PlayerPtr->Class->House);
         if (air) {
           air->Height = 0;
@@ -310,7 +309,7 @@ void Debug_Key(unsigned input) {
       */
       case KN_F7:
         if (CurrentObject.Count() && CurrentObject[0]->Is_Techno()) {
-          const TechnoTypeClass& ttype =
+          const auto& ttype =
               (const TechnoTypeClass&)CurrentObject[0]->Class_Of();
           int sight = ((int)ttype.SightRange) << 8;
           int weapon = 0;
@@ -322,9 +321,12 @@ void Debug_Key(unsigned input) {
           COORDINATE center2 = CurrentObject[0]->Fire_Coord(0);
 
           for (int r = 0; r < 255; r += 10) {
-            int x, y, x1, y1;
-            DirType r1 = (DirType)r;
-            DirType r2 = (DirType)((r + 10) & 0xFF);
+            int x;
+            int y;
+            int x1;
+            int y1;
+            auto r1 = (DirType)r;
+            auto r2 = (DirType)((r + 10) & 0xFF);
 
             if (Map.Coord_To_Pixel(
                     Coord_Move(center, r1, static_cast<unsigned short>(sight)),
@@ -526,7 +528,7 @@ void Self_Regulate() {
       **	Always update the stress tracking mono display even if it
       **	currently isn't visible.
       */
-      Logic.Debug_Dump(&MonoArray[DMONO_STRESS]);
+      LogicClass::Debug_Dump(&MonoArray[DMONO_STRESS]);
 
       MonoClass* mono = &MonoArray[MonoPage];
       mono->Set_Default_Attribute(MonoClass::NORMAL);

@@ -6,6 +6,7 @@
 #include <fstream>
 #include <string>
 
+#include "absl/base/attributes.h"
 #include "gtest/gtest.h"
 #include "port/win32/win32_registry.h"
 
@@ -35,7 +36,10 @@ class TempFile {
   TempFile& operator=(TempFile&&) = delete;
 
   [[nodiscard]] const char* c_str() const { return path_.c_str(); }
-  [[nodiscard]] const std::filesystem::path& path() const { return path_; }
+  [[nodiscard]] const std::filesystem::path& path() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return path_;
+  }
 
  private:
   std::filesystem::path path_;

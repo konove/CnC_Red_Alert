@@ -114,14 +114,12 @@ void DropListClass::Clear_Focus() { Collapse(); }
 
 void DropListClass::Peer_To_Peer(unsigned flags, KeyNumType& key,
                                  ControlClass& whom) {
-  if (&whom == &DropButton) {
-    if (flags & LEFTRELEASE) {
-      if (IsDropped) {
-        Collapse();
-        key = ButtonKey(static_cast<int>(ID));
-      } else {
-        Expand();
-      }
+  if ((&whom == &DropButton) && (flags & LEFTRELEASE)) {
+    if (IsDropped) {
+      Collapse();
+      key = ButtonKey(static_cast<int>(ID));
+    } else {
+      Expand();
     }
   }
 

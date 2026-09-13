@@ -162,7 +162,7 @@ inline int First_True_Bit(const void* array) {
           "jz	again"					\
           "add	eax,ebx"
   */
-  const uint32_t* array32 = static_cast<const uint32_t*>(array);
+  const auto* array32 = static_cast<const uint32_t*>(array);
   int off = 0;
   while (true) {
     const uint32_t v = *array32++;
@@ -175,7 +175,7 @@ inline int First_True_Bit(const void* array) {
 }
 
 inline int First_False_Bit(const void* array) {
-  const uint32_t* array32 = static_cast<const uint32_t*>(array);
+  const auto* array32 = static_cast<const uint32_t*>(array);
   int off = 0;
   while (true) {
     const uint32_t v = *array32++;
@@ -198,7 +198,8 @@ unsigned Cardinal_To_Fixed(unsigned base, unsigned cardinal);
 // Prints a printf-style message to stderr and exits with a failure code. The
 // format attribute both type-checks every call site and tells the compiler the
 // forwarded format string inside Fatal() is intentionally non-literal.
-extern void Fatal(const char* message, ...) ABSL_PRINTF_ATTRIBUTE(1, 2);
+[[noreturn]] extern void Fatal(const char* message, ...)
+    ABSL_PRINTF_ATTRIBUTE(1, 2);
 
 // Formats "format" and its arguments into "buffer", which holds "size" bytes.
 // The result is always null terminated and is truncated rather than allowed to
@@ -233,9 +234,10 @@ long Load_Uncompress(FileClass& file, BufferClass& uncomp_buff,
                      BufferClass& dest_buff, void* reserved_data);
 long Translucent_Table_Size(int count);
 void* Build_Translucent_Table(const void* palette, const TLucentType* control,
-                              int count, void* buffer);
-void* Conquer_Build_Translucent_Table(const void* palette,
-                                      const TLucentType* control, int count,
-                                      void* buffer);
+                              int count,
+                              void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
+void* Conquer_Build_Translucent_Table(
+    const void* palette, const TLucentType* control, int count,
+    void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
 
 #endif  // CNC_RED_ALERT_TD_JSHELL_H_

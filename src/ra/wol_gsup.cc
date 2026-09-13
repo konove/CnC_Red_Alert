@@ -1203,7 +1203,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    if (Keyboard->Down(KN_LMOUSE) || Keyboard->Down(KN_RMOUSE)) {
+    if (KeyboardClass::Down(KN_LMOUSE) || KeyboardClass::Down(KN_RMOUSE)) {
       timeToolTipAppear = Get_Time_Ms() + TOOLTIPDELAY;
       if (pToolTipHitLast && pToolTipHitLast->bShowing) {
         pToolTipHitLast->Unshow();
@@ -1225,7 +1225,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       if (pToolTipHit == pToolTipHitLast) {
         if (pToolTipHit && !pToolTipHit->bShowing &&
             Get_Time_Ms() > timeToolTipAppear &&
-            !(Keyboard->Down(KN_LMOUSE) || Keyboard->Down(KN_RMOUSE))) {
+            !(KeyboardClass::Down(KN_LMOUSE) ||
+              KeyboardClass::Down(KN_RMOUSE))) {
           pToolTipHit->Show();
         }
       } else {
@@ -1255,28 +1256,27 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       case KN_LMOUSE:
         if (!bWaitingToStart) {
           //	Check for mouse down on a control when player is not host.
-          if (!bHost) {
-            if ((Get_Mouse_X() >= d_count_x &&
-                 Get_Mouse_X() <= d_count_x + d_count_w &&
-                 Get_Mouse_Y() >= d_count_y &&
-                 Get_Mouse_Y() <= d_aiplayers_y + d_aiplayers_h) ||
-                (Get_Mouse_X() >= d_options_x &&
-                 Get_Mouse_X() <= d_options_x + d_options_w &&
-                 Get_Mouse_Y() >= d_options_y &&
-                 Get_Mouse_Y() <= d_options_y + d_options_h) ||
-                (Get_Mouse_X() >= d_scenariolist_x &&
-                 Get_Mouse_X() <= d_scenariolist_x + d_scenariolist_w &&
-                 Get_Mouse_Y() >= d_scenariolist_y &&
-                 Get_Mouse_Y() <= d_scenariolist_y + d_scenariolist_h)) {
-              // Session.Messages.Add_Message(NULL, 0, (char
-              // *)Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
-              // kTpfText, 1200);
-              WOL_PrintMessage(*pILDisc, Text_String(TXT_ONLY_HOST_CAN_MODIFY),
-                               WOLCOLORREMAP_LOCALMACHINEMESS);
-              Sound_Effect(WOLSOUND_ERROR);
-              display = std::max(display, REDRAW_MESSAGE);
-              break;
-            }
+          if ((!bHost) &&
+              ((Get_Mouse_X() >= d_count_x &&
+                Get_Mouse_X() <= d_count_x + d_count_w &&
+                Get_Mouse_Y() >= d_count_y &&
+                Get_Mouse_Y() <= d_aiplayers_y + d_aiplayers_h) ||
+               (Get_Mouse_X() >= d_options_x &&
+                Get_Mouse_X() <= d_options_x + d_options_w &&
+                Get_Mouse_Y() >= d_options_y &&
+                Get_Mouse_Y() <= d_options_y + d_options_h) ||
+               (Get_Mouse_X() >= d_scenariolist_x &&
+                Get_Mouse_X() <= d_scenariolist_x + d_scenariolist_w &&
+                Get_Mouse_Y() >= d_scenariolist_y &&
+                Get_Mouse_Y() <= d_scenariolist_y + d_scenariolist_h))) {
+            // Session.Messages.Add_Message(NULL, 0, (char
+            // *)Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
+            // kTpfText, 1200);
+            WOL_PrintMessage(*pILDisc, Text_String(TXT_ONLY_HOST_CAN_MODIFY),
+                             WOLCOLORREMAP_LOCALMACHINEMESS);
+            Sound_Effect(WOLSOUND_ERROR);
+            display = std::max(display, REDRAW_MESSAGE);
+            break;
           }
 
           if (Keyboard->MouseQX > cbox_x[0] &&
@@ -1581,26 +1581,26 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           //	If we have changes just made and not yet sent, don't say start,
           // because we're about to send changes 	that will unaccept
           // everyone.
-          if (!bParamsUnfresh()) {
-            //	Force user to put the correct disk in before proceeding. (Not
-            // crucial, but can lead to ugly 	timeouts if the scenario has to
-            // be downloaded before game start.)
-            if (!Session.Scenarios[Session.Options.ScenarioIndex]
-                     ->Get_Official() ||
-                Force_Scenario_Available(
-                    Session.Scenarios[Session.Options.ScenarioIndex]
-                        ->Get_Filename())) {
-              //	Go into "waiting to start" mode, tell guests to, and
-              // wait for responses.
-              bWaitingToStart = true;
-              timeWaitingToStartTimeout = Get_Time_Ms() + 30000;
-              nHostLastParamID++;
-              InformAboutStart();
-              WWMessageBox().Process(TXT_WOL_WAITINGTOSTART, TXT_NONE);
-              BindControls(false);
-              SetPlayerReadyToGo(pWO->szMyName, "ready");
-              Sound_Effect(VOC_GAME_CLOSED);
-            }
+          if ((!bParamsUnfresh()) &&
+              (!Session.Scenarios[Session.Options.ScenarioIndex]
+                    ->Get_Official() ||
+               Force_Scenario_Available(
+                   Session.Scenarios[Session.Options.ScenarioIndex]
+                       ->Get_Filename())))
+          //	Force user to put the correct disk in before proceeding. (Not
+          // crucial, but can lead to ugly 	timeouts if the scenario has to
+          // be downloaded before game start.)
+          {
+            //	Go into "waiting to start" mode, tell guests to, and
+            // wait for responses.
+            bWaitingToStart = true;
+            timeWaitingToStartTimeout = Get_Time_Ms() + 30000;
+            nHostLastParamID++;
+            InformAboutStart();
+            WWMessageBox().Process(TXT_WOL_WAITINGTOSTART, TXT_NONE);
+            BindControls(false);
+            SetPlayerReadyToGo(pWO->szMyName, "ready");
+            Sound_Effect(VOC_GAME_CLOSED);
           }
         }
         break;
@@ -2011,7 +2011,7 @@ HousesType WOL_GameSetupDialog::GetPlayerHouse(const char* szName) {
     return HOUSE_NONE;
   }
 
-  return pWO->PullPlayerHouse_From(pILPlayers->Get_Item(iItem));
+  return WolapiObject::PullPlayerHouse_From(pILPlayers->Get_Item(iItem));
 }
 
 //***********************************************************************************************
@@ -2112,7 +2112,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
   if (!option) {
     return;
   }
-  WOL_GAMEOPT opt = static_cast<WOL_GAMEOPT>(*option);
+  auto opt = static_cast<WOL_GAMEOPT>(*option);
   szRequest += 3;
 
   switch (opt) {
@@ -2123,7 +2123,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
                                  magic_enum::enum_count<PlayerColorType>())) {
         return;
       }
-      PlayerColorType ColorDesired = static_cast<PlayerColorType>(*color);
+      auto ColorDesired = static_cast<PlayerColorType>(*color);
       if (pILPlayers->FindColor(&ColorRemaps[ColorDesired == PCOLOR_DIALOG_BLUE
                                                  ? PCOLOR_REALLY_BLUE
                                                  : ColorDesired]) == -1) {
@@ -2181,45 +2181,47 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
       //	Does Param ID of accept request match the last param change ID
       // sent? See notes at top.
       if (std::cmp_equal(tech::ParseInteger<int>(szRequest).value_or(0),
-                         nHostLastParamID))  //	Otherwise ignore - it's old and
-                                             // we don't care. (Incredibly
-                                             // unlikely to happen, actually.)
+                         nHostLastParamID) &&
+          bWaitingToStart)  //	Otherwise ignore - it's old and
+                            // we don't care. (Incredibly
+                            // unlikely to happen, actually.)
+
+      //			debugprint( "Host received valid
+      // WOL_GAMEOPT_REQSTART from '%s'.\n", (char*)pUser->name );
+      //			WOL_PrintMessage( *pILDisc,
+      //"WOL_GAMEOPT_REQSTART response", WOLCOLORREMAP_LOCALMACHINEMESS );
+      //			WOL_PrintMessage( *pILDisc, (char*)pUser->name,
+      // WOLCOLORREMAP_LOCALMACHINEMESS );
       {
-        //			debugprint( "Host received valid
-        // WOL_GAMEOPT_REQSTART from '%s'.\n", (char*)pUser->name );
-        //			WOL_PrintMessage( *pILDisc,
-        //"WOL_GAMEOPT_REQSTART response", WOLCOLORREMAP_LOCALMACHINEMESS );
-        //			WOL_PrintMessage( *pILDisc, (char*)pUser->name,
-        // WOLCOLORREMAP_LOCALMACHINEMESS );
-        if (bWaitingToStart) {
-          //	If all responses are in, start the game!
-          GuestIsReadyToPlay((char*)pUser->name, "ready");
-        }
+        //	If all responses are in, start the game!
+        GuestIsReadyToPlay((char*)pUser->name, "ready");
+      }
         //			else
         //				debugprint( "Ignoring - I am no longer
         // waiting to start a game.\n" );
-      }
+
       break;
     case WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO:
       //	Does Param ID of accept request match the last param change ID
       // sent? See notes at top.
       if (std::cmp_equal(tech::ParseInteger<int>(szRequest).value_or(0),
-                         nHostLastParamID))  //	Otherwise ignore - it's old and
-                                             // we don't care. (Incredibly
-                                             // unlikely to happen, actually.)
+                         nHostLastParamID) &&
+          bWaitingToStart)  //	Otherwise ignore - it's old and
+                            // we don't care. (Incredibly
+                            // unlikely to happen, actually.)
+
+      //			debugprint( "Host received valid
+      // WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO from '%s'.\n",
+      // (char*)pUser->name
+      //);
       {
-        //			debugprint( "Host received valid
-        // WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO from '%s'.\n",
-        // (char*)pUser->name
-        //);
-        if (bWaitingToStart) {
-          //	If all responses are in, start the game!
-          GuestIsReadyToPlay((char*)pUser->name, "need scenario");
-        }
+        //	If all responses are in, start the game!
+        GuestIsReadyToPlay((char*)pUser->name, "need scenario");
+      }
         //			else
         //				debugprint( "Ignoring - I am no longer
         // waiting to start a game.\n" );
-      }
+
       break;
     case WOL_GAMEOPT_INFGO:
       //	I have told myself to start game right now.
@@ -2248,7 +2250,7 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
     if (!option) {
       return;
     }
-    WOL_GAMEOPT opt = static_cast<WOL_GAMEOPT>(*option);
+    auto opt = static_cast<WOL_GAMEOPT>(*option);
     szInform += 3;
     switch (opt) {
       case WOL_GAMEOPT_INFCOLOR: {
@@ -2268,7 +2270,7 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
                                    magic_enum::enum_count<PlayerColorType>())) {
           return;
         }
-        PlayerColorType Color = static_cast<PlayerColorType>(*color);
+        auto Color = static_cast<PlayerColorType>(*color);
         szInform += 3;
         SetPlayerColor(szInform, Color);  //	(szInform is now sitting at the
                                           // start of the name string.)
@@ -2296,7 +2298,7 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
                                    magic_enum::enum_count<HousesType>())) {
           return;
         }
-        HousesType House = static_cast<HousesType>(*house);
+        auto House = static_cast<HousesType>(*house);
         szInform += 3;
         SetPlayerHouse(szInform, House);  //	(szInform is now sitting at the
                                           // start of the name string.)
@@ -2412,7 +2414,6 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
         // Unhandled value in ProcessInform!!!", WOLCOLORREMAP_LOCALMACHINEMESS
         // );
         Fatal("Error - Unhandled value in ProcessInform!");
-        break;
     }
   }
   //	debugprint( "* END of ProcessInform: '%s'\n", szInform );
@@ -3094,8 +3095,8 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
     for (int i = 0; i < pILPlayers->Count(); i++) {
       char szSendPiece[100];
       char szPlayerName[WOL_NAME_LEN_MAX];
-      pWO->PullPlayerName_Into_From(szPlayerName, sizeof(szPlayerName),
-                                    pILPlayers->Get_Item(i));
+      WolapiObject::PullPlayerName_Into_From(szPlayerName, sizeof(szPlayerName),
+                                             pILPlayers->Get_Item(i));
       //			InformAboutPlayerColor( szPlayerName,
       // PlayerColorTypeOf( pILPlayers->Get_Item_Color( i ) ), pUser );
       sprintf(szSendPiece, " %02i %s %02i",
@@ -3103,7 +3104,8 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
               PlayerColorTypeOf(pILPlayers->Get_Item_Color(i)));
 
       if (strcmp(szPlayerName, (char*)pUser->name) != 0) {
-        HousesType House = pWO->PullPlayerHouse_From(pILPlayers->Get_Item(i));
+        HousesType House =
+            WolapiObject::PullPlayerHouse_From(pILPlayers->Get_Item(i));
         if (House != HOUSE_NONE) {
           //				InformAboutPlayerHouse( szPlayerName,
           // House, pUser );
@@ -3160,7 +3162,7 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
       strlen(szToken) != 2 || message_end - szToken <= 2) {
     return;
   }
-  unsigned int nPlayers = static_cast<unsigned int>(*player_count);
+  auto nPlayers = static_cast<unsigned int>(*player_count);
 
   //	We have to assist strtok a bit because of calls below that may also call
   // strtok()...
@@ -3546,7 +3548,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   //	Add myself to Session.Players list.
   DCHECK(pILPlayers->Find(pWO->szMyName) != -1);
 
-  NodeNameType* pPlayerNew = new NodeNameType;
+  auto* pPlayerNew = new NodeNameType;
   port::SafeCopy(pPlayerNew->Name, pWO->szMyName);  //	"Name" is 12 chars max.
   // pPlayerNew->Address = Session.GAddress;
   pPlayerNew->Player.House = GetPlayerHouse(pWO->szMyName);
@@ -3569,8 +3571,8 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   for (int iItem = 0; iItem < pILPlayers->Count(); iItem++) {
     //	The following is not very efficient, but doesn't have to be. Better in
     // this case to keep it clear and simple.
-    pWO->PullPlayerName_Into_From(szPlayerName, sizeof(szPlayerName),
-                                  pILPlayers->Get_Item(iItem));
+    WolapiObject::PullPlayerName_Into_From(szPlayerName, sizeof(szPlayerName),
+                                           pILPlayers->Get_Item(iItem));
     if (strcmp(szPlayerName, pWO->szMyName) != 0 &&
         GetPlayerColor(szPlayerName) != PCOLOR_NONE) {
       //			debugprint( "Creating player node '%s'\n",
@@ -3772,14 +3774,14 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   Ipx.Set_Timing(25, (unsigned long)-1, 1000);
 
   if (bHost) {
-    if (Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official()) {
-      if (!Force_Scenario_Available(Scen.ScenarioName)) {
-        bExitForGameTrigger = false;
-        *szTriggerGameStartInfo = 0;
-        pWO->bSelfDestruct = true;
-        return;
-      }
+    if (Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official() &&
+        (!Force_Scenario_Available(Scen.ScenarioName))) {
+      bExitForGameTrigger = false;
+      *szTriggerGameStartInfo = 0;
+      pWO->bSelfDestruct = true;
+      return;
     }
+
     if (Session.RequestCount) {
       //	Send the scenario to any guests that requested a download.
       // debugprint( "Send the scenario to any guests that requested a

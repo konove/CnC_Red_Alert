@@ -41,14 +41,16 @@
 #ifndef CNC_RED_ALERT_TD_TEXTBTN_H_
 #define CNC_RED_ALERT_TD_TEXTBTN_H_
 
+#include "absl/base/attributes.h"
 #include "td/defines.h"
 #include "td/toggle.h"
 
 class TextButtonClass final : public ToggleClass {
  public:
   TextButtonClass();
-  TextButtonClass(unsigned id, const char* text, TextPrintType style, int x,
-                  int y, int w = -1, int h = -1, int blackborder = false);
+  TextButtonClass(unsigned id, const char* text ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                  TextPrintType style, int x, int y, int w = -1, int h = -1,
+                  int blackborder = false);
   TextButtonClass(unsigned id, int text, TextPrintType style, int x, int y,
                   int w = -1, int h = -1, int blackborder = false);
   int Draw_Me(bool forced = false) override;

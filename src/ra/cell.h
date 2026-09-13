@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_CELL_H_
 #define CNC_RED_ALERT_RA_CELL_H_
 
+#include "absl/base/attributes.h"
 #include "base/types.h"
 #include "ra/ccptr.h"
 #include "ra/config.h"
@@ -229,7 +230,7 @@ class CellClass {
   [[nodiscard]] bool Can_Tiberium_Grow() const;
   [[nodiscard]] bool Can_Tiberium_Spread() const;
   [[nodiscard]] bool Is_Bridge_Here() const;
-  [[nodiscard]] RTTIType What_Am_I() const { return RTTI_CELL; }
+  [[nodiscard]] static RTTIType What_Am_I() { return RTTI_CELL; }
   [[nodiscard]] BuildingClass* Cell_Building() const;
   [[nodiscard]] CELL Cell_Number() const { return ID; }
   [[nodiscard]] COORDINATE Cell_Coord() const;
@@ -238,11 +239,12 @@ class CellClass {
   [[nodiscard]] COORDINATE Free_Spot() const {
     return Closest_Free_Spot(Cell_Coord());
   }
-  CellClass& Adjacent_Cell(FacingType face) {
+  CellClass& Adjacent_Cell(FacingType face) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return (CellClass&)(*static_cast<const CellClass*>(this))
         .Adjacent_Cell(face);
   }
-  [[nodiscard]] const CellClass& Adjacent_Cell(FacingType face) const;
+  [[nodiscard]] const CellClass& Adjacent_Cell(FacingType face) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
   [[nodiscard]] InfantryClass* Cell_Infantry() const;
   [[nodiscard]] LandType Land_Type() const { return Land; }
   [[nodiscard]] ObjectClass* Cell_Find_Object(RTTIType rtti) const;

@@ -549,18 +549,14 @@ int TechnoClass::Combat_Damage(int which) const {
   int divisor = 0;
   int value = 0;
 
-  if (which == 0 || which == -1) {
-    if (ttype->PrimaryWeapon != nullptr) {
-      value += ttype->PrimaryWeapon->Attack;
-      divisor += 1;
-    }
+  if ((which == 0 || which == -1) && (ttype->PrimaryWeapon != nullptr)) {
+    value += ttype->PrimaryWeapon->Attack;
+    divisor += 1;
   }
 
-  if (which == 1 || which == -1) {
-    if (ttype->SecondaryWeapon != nullptr) {
-      value += ttype->SecondaryWeapon->Attack;
-      divisor += 1;
-    }
+  if ((which == 1 || which == -1) && (ttype->SecondaryWeapon != nullptr)) {
+    value += ttype->SecondaryWeapon->Attack;
+    divisor += 1;
   }
 
   if (divisor > 1) {
@@ -1249,7 +1245,8 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) const {
     **	Fetch the dimensions of the object. These dimensions will be used to
     *draw *	the selection box and the health bar.
     */
-    int width, height;
+    int width;
+    int height;
     Class_Of().Dimensions(width, height);
 
     if (Strength && (House->Is_Ally(PlayerPtr) || Rule.IsHealthBar)) {
@@ -1418,8 +1415,7 @@ bool TechnoClass::In_Range(const ObjectClass* target, int which) const {
   if (IsLocked && target) {
     int range = Weapon_Range(which);
     if (target->What_Am_I() == RTTI_BUILDING) {
-      const BuildingClass* building =
-          dynamic_cast<const BuildingClass*>(target);
+      const auto* building = dynamic_cast<const BuildingClass*>(target);
       range += (building->Class->Width() + building->Class->Height()) *
                (ICON_LEPTON_W / 4);
     }
@@ -1867,20 +1863,18 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   **	If factories are to be considered a greater threat, then don't
   **	consider any non-factory building.
   */
-  if (method & THREAT_FACTORIES && otype == RTTI_BUILDING) {
-    if (dynamic_cast<const BuildingTypeClass*>(tclass)->ToBuild == RTTI_NONE) {
-      value = 0;
-    }
+  if ((method & THREAT_FACTORIES && otype == RTTI_BUILDING) &&
+      (dynamic_cast<const BuildingTypeClass*>(tclass)->ToBuild == RTTI_NONE)) {
+    value = 0;
   }
 
   /*
   **	If base defensive structures are to be considered a greater threat, then
   **	don't consider an unarmed building to be a threat.
   */
-  if (method & THREAT_BASE_DEFENSE /*&& otype == RTTI_BUILDING*/) {
-    if (tclass->PrimaryWeapon == nullptr) {
-      value = 0;
-    }
+  if ((method & THREAT_BASE_DEFENSE /*&& otype == RTTI_BUILDING*/) &&
+      (tclass->PrimaryWeapon == nullptr)) {
+    value = 0;
   }
 
   /*
@@ -1993,23 +1987,22 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, int mask, CELL cell,
     return false;
   }
 
-  const TechnoClass* tentative =
+  const auto* tentative =
       dynamic_cast<const TechnoClass*>(cellptr->Cell_Occupier());
   while (tentative != nullptr) {
-    if (tentative != this) {
-      if (tentative->Is_Techno()) {
-        if (Combat_Damage() < 0) {
-          if (tentative->Health_Ratio() < Rule.ConditionGreen &&
-              House->Is_Ally(tentative)) {
-            break;
-          }
-        } else {
-          if (!House->Is_Ally(tentative)) {
-            break;
-          }
+    if ((tentative != this) && tentative->Is_Techno()) {
+      if (Combat_Damage() < 0) {
+        if (tentative->Health_Ratio() < Rule.ConditionGreen &&
+            House->Is_Ally(tentative)) {
+          break;
+        }
+      } else {
+        if (!House->Is_Ally(tentative)) {
+          break;
         }
       }
     }
+
     tentative = dynamic_cast<const TechnoClass*>((ObjectClass*)tentative->Next);
   }
 
@@ -2185,14 +2178,13 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
   ** Hack for dogs, 'cause they can only consider infantrymen to be a
   ** threat.  Medics also.
   */
-  if (What_Am_I() == RTTI_INFANTRY) {
-    if (dynamic_cast<InfantryClass*>(this)->Class->IsDog ||
-        Combat_Damage() < 0) {
-      method = THREAT_INFANTRY | method & (THREAT_RANGE | THREAT_AREA);
-      if (*dynamic_cast<InfantryClass*>(this) == INFANTRY_MECHANIC) {
-        method = THREAT_VEHICLES | THREAT_AIR |
-                 method & (THREAT_RANGE | THREAT_AREA);
-      }
+  if ((What_Am_I() == RTTI_INFANTRY) &&
+      (dynamic_cast<InfantryClass*>(this)->Class->IsDog ||
+       Combat_Damage() < 0)) {
+    method = THREAT_INFANTRY | method & (THREAT_RANGE | THREAT_AREA);
+    if (*dynamic_cast<InfantryClass*>(this) == INFANTRY_MECHANIC) {
+      method =
+          THREAT_VEHICLES | THREAT_AIR | method & (THREAT_RANGE | THREAT_AREA);
     }
   }
 
@@ -2261,12 +2253,11 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
         TechnoClass* object = Aircraft.Ptr(index);
 
         int value = 0;
-        if (object->In_Which_Layer() != LAYER_GROUND &&
-            Evaluate_Object(method, mask, range, object, value)) {
-          if (value > bestval) {
-            bestobject = object;
-            bestval = value;
-          }
+        if ((object->In_Which_Layer() != LAYER_GROUND &&
+             Evaluate_Object(method, mask, range, object, value)) &&
+            (value > bestval)) {
+          bestobject = object;
+          bestval = value;
         }
       }
     }
@@ -2312,11 +2303,11 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
         if (Cell_Y(cell) - radius >= Map.MapCellY) {
           newcell = XY_Cell(Cell_X(cell) + x, Cell_Y(cell) - radius);
           if (Evaluate_Cell(method, mask, newcell, range, &object, value,
-                            zone)) {
-            if (bestval < value) {
-              bestobject = object;
-            }
+                            zone) &&
+              (bestval < value)) {
+            bestobject = object;
           }
+
           if (bestobject == nullptr) {
             value = Evaluate_Just_Cell(newcell);
             if (bestcellvalue < value) {
@@ -2329,11 +2320,11 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
         if (Cell_Y(cell) + radius < Map.MapCellY + Map.MapCellHeight) {
           newcell = XY_Cell(Cell_X(cell) + x, Cell_Y(cell) + radius);
           if (Evaluate_Cell(method, mask, newcell, range, &object, value,
-                            zone)) {
-            if (bestval < value) {
-              bestobject = object;
-            }
+                            zone) &&
+              (bestval < value)) {
+            bestobject = object;
           }
+
           if (bestobject == nullptr) {
             value = Evaluate_Just_Cell(newcell);
             if (bestcellvalue < value) {
@@ -2360,11 +2351,11 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
         if (Cell_X(cell) - radius >= Map.MapCellX) {
           newcell = XY_Cell(Cell_X(cell) - radius, Cell_Y(cell) + y);
           if (Evaluate_Cell(method, mask, newcell, range, &object, value,
-                            zone)) {
-            if (bestval < value) {
-              bestobject = object;
-            }
+                            zone) &&
+              (bestval < value)) {
+            bestobject = object;
           }
+
           if (bestobject == nullptr) {
             value = Evaluate_Just_Cell(newcell);
             if (bestcellvalue < value) {
@@ -2377,11 +2368,11 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
         if (Cell_X(cell) + radius < Map.MapCellX + Map.MapCellWidth) {
           newcell = XY_Cell(Cell_X(cell) + radius, Cell_Y(cell) + y);
           if (Evaluate_Cell(method, mask, newcell, range, &object, value,
-                            zone)) {
-            if (bestval < value) {
-              bestobject = object;
-            }
+                            zone) &&
+              (bestval < value)) {
+            bestobject = object;
           }
+
           if (bestobject == nullptr) {
             value = Evaluate_Just_Cell(newcell);
             if (bestcellvalue < value) {
@@ -2420,11 +2411,10 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
         TechnoClass* object = Aircraft.Ptr(index);
 
         int value = 0;
-        if (Evaluate_Object(method, mask, -1, object, value)) {
-          if (value > bestval) {
-            bestobject = object;
-            bestval = value;
-          }
+        if (Evaluate_Object(method, mask, -1, object, value) &&
+            (value > bestval)) {
+          bestobject = object;
+          bestval = value;
         }
       }
     }
@@ -2447,14 +2437,13 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
       const ObjectClass* object = MouseClass::Layer[LAYER_GROUND][index];
 
       int value = 0;
-      if (object->Is_Techno() &&
-          Evaluate_Object(method, mask, -1,
-                          dynamic_cast<const TechnoClass*>(object), value,
-                          zone)) {
-        if (value > bestval) {
-          bestobject = object;
-          bestval = value;
-        }
+      if ((object->Is_Techno() &&
+           Evaluate_Object(method, mask, -1,
+                           dynamic_cast<const TechnoClass*>(object), value,
+                           zone)) &&
+          (value > bestval)) {
+        bestobject = object;
+        bestval = value;
       }
     }
   }
@@ -3096,7 +3085,10 @@ int TechnoClass::Rearm_Delay(bool second, int which) const {
  *=============================================================================================*/
 bool TechnoClass::Electric_Zap(TARGET target, int which,
                                COORDINATE source_coord, unsigned char* remap) {
-  int x = 0, y = 0, x1 = 0, y1 = 0;
+  int x = 0;
+  int y = 0;
+  int x1 = 0;
+  int y1 = 0;
   COORDINATE source;
 
   if (source_coord != 0) {
@@ -3134,7 +3126,8 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
       {0, 0, 0, 8, 8, 8, 0, 0},      {-8, -8, -8, 0, 0, 0, -8, -8}};
 
   if (gonnadraw) {
-    int savex = x, savey = y;
+    int savex = x;
+    int savey = y;
     for (int shots = 0; shots < 3; shots++) {
       x = savex;
       y = savey;
@@ -3344,7 +3337,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
     *it *	now.
     */
     if (a != ANIM_NONE) {
-      AnimClass* anim = new AnimClass(a, Fire_Coord(which));
+      auto* anim = new AnimClass(a, Fire_Coord(which));
       if (anim != nullptr) {
         anim->Attach_To(this);
       }
@@ -3458,8 +3451,9 @@ void TechnoClass::Player_Assign_Mission(MissionType mission, TARGET target,
     **	Cooerce the movement mission into a queued movement mission if
     *the ALT key was *	held down.
     */
-    if (mission == MISSION_MOVE && (Keyboard->Down(Options.KeyQueueMove1) ||
-                                    Keyboard->Down(Options.KeyQueueMove2))) {
+    if (mission == MISSION_MOVE &&
+        (KeyboardClass::Down(Options.KeyQueueMove1) ||
+         KeyboardClass::Down(Options.KeyQueueMove2))) {
       mission = MISSION_QMOVE;
     }
 
@@ -3500,12 +3494,12 @@ ActionType TechnoClass::What_Action(const ObjectClass* object) const {
       return ACTION_SELF;
     }
 
-    bool altdown = Keyboard->Down(Options.KeyForceMove1) ||
-                   Keyboard->Down(Options.KeyForceMove2);
-    bool ctrldown = Keyboard->Down(Options.KeyForceAttack1) ||
-                    Keyboard->Down(Options.KeyForceAttack2);
-    bool shiftdown = Keyboard->Down(Options.KeySelect1) ||
-                     Keyboard->Down(Options.KeySelect2);
+    bool altdown = KeyboardClass::Down(Options.KeyForceMove1) ||
+                   KeyboardClass::Down(Options.KeyForceMove2);
+    bool ctrldown = KeyboardClass::Down(Options.KeyForceAttack1) ||
+                    KeyboardClass::Down(Options.KeyForceAttack2);
+    bool shiftdown = KeyboardClass::Down(Options.KeySelect1) ||
+                     KeyboardClass::Down(Options.KeySelect2);
 
     /*
     **	Special guard area mission is possible if both the control and
@@ -3522,20 +3516,16 @@ ActionType TechnoClass::What_Action(const ObjectClass* object) const {
     **	Special override to force a move regardless of what is occupying
     *the location.
     */
-    if (altdown) {
-      if (House->IsPlayerControl && Can_Player_Move()) {
-        return ACTION_MOVE;
-      }
+    if (altdown && (House->IsPlayerControl && Can_Player_Move())) {
+      return ACTION_MOVE;
     }
 
     /*
     **	Override so that toggled select state can be performed while the
     *<SHIFT> key *	is held down.
     */
-    if (shiftdown) {
-      if (House->IsPlayerControl && !IsALoaner) {
-        return ACTION_TOGGLE_SELECT;
-      }
+    if (shiftdown && (House->IsPlayerControl && !IsALoaner)) {
+      return ACTION_TOGGLE_SELECT;
     }
 
     /*
@@ -3553,27 +3543,26 @@ ActionType TechnoClass::What_Action(const ObjectClass* object) const {
       **	If firing is possible and legal, then return this action
       *potential.
       */
-      if (House->IsPlayerControl && (ctrldown || !House->Is_Ally(object)) &&
-          (ctrldown || object->Class_Of().IsLegalTarget ||
-           (Rule.IsTreeTarget && object->What_Am_I() == RTTI_TERRAIN))) {
-        if (Is_Weapon_Equipped() ||
-            (What_Am_I() == RTTI_INFANTRY &&
-             (((const InfantryTypeClass*)ttype)->IsBomber ||
-              ((const InfantryTypeClass*)ttype)->IsCapture))) {
-          int primary = What_Weapon_Should_I_Use(object->As_Target());
-          if (Can_Player_Move() || In_Range(object, primary)) {
-            if (In_Range(object, primary) ||
-                (What_Am_I() == RTTI_INFANTRY &&
-                 ((InfantryClass*)this)->Class->IsCapture &&
-                 object->What_Am_I() == RTTI_BUILDING &&
-                 ((BuildingClass*)object)->Class->IsCaptureable)) {
-              return ACTION_ATTACK;
-            }
-            if (!Can_Player_Move()) {
-              return ACTION_NONE;
-            }
+      if ((House->IsPlayerControl && (ctrldown || !House->Is_Ally(object)) &&
+           (ctrldown || object->Class_Of().IsLegalTarget ||
+            (Rule.IsTreeTarget && object->What_Am_I() == RTTI_TERRAIN))) &&
+          (Is_Weapon_Equipped() ||
+           (What_Am_I() == RTTI_INFANTRY &&
+            (((const InfantryTypeClass*)ttype)->IsBomber ||
+             ((const InfantryTypeClass*)ttype)->IsCapture)))) {
+        int primary = What_Weapon_Should_I_Use(object->As_Target());
+        if (Can_Player_Move() || In_Range(object, primary)) {
+          if (In_Range(object, primary) ||
+              (What_Am_I() == RTTI_INFANTRY &&
+               ((InfantryClass*)this)->Class->IsCapture &&
+               object->What_Am_I() == RTTI_BUILDING &&
+               ((BuildingClass*)object)->Class->IsCaptureable)) {
             return ACTION_ATTACK;
           }
+          if (!Can_Player_Move()) {
+            return ACTION_NONE;
+          }
+          return ACTION_ATTACK;
         }
       }
     }
@@ -3620,12 +3609,12 @@ ActionType TechnoClass::What_Action(CELL cell) const {
   const CellClass* cellptr = &Map[cell];
   const OverlayTypeClass* optr = nullptr;
 
-  bool ctrldown = Keyboard->Down(Options.KeyForceAttack1) ||
-                  Keyboard->Down(Options.KeyForceAttack2);
-  bool shiftdown =
-      Keyboard->Down(Options.KeySelect1) || Keyboard->Down(Options.KeySelect2);
-  bool altdown = Keyboard->Down(Options.KeyForceMove1) ||
-                 Keyboard->Down(Options.KeyForceMove2);
+  bool ctrldown = KeyboardClass::Down(Options.KeyForceAttack1) ||
+                  KeyboardClass::Down(Options.KeyForceAttack2);
+  bool shiftdown = KeyboardClass::Down(Options.KeySelect1) ||
+                   KeyboardClass::Down(Options.KeySelect2);
+  bool altdown = KeyboardClass::Down(Options.KeyForceMove1) ||
+                 KeyboardClass::Down(Options.KeyForceMove2);
 
   /*
   **	Disable recognizing the <CTRL> key forced fire option when dealing with
@@ -4673,15 +4662,14 @@ int TechnoClass::Value() const {
   **	In early missions, contents of transports are not figured
   **	into the total value.
   */
-  if (Rule.Diff[House->Difficulty].IsContentScan ||
-      House->IQ >= Rule.IQContentScan) {
-    if (Is_Something_Attached()) {
-      FootClass* object = Attached_Object();
+  if ((Rule.Diff[House->Difficulty].IsContentScan ||
+       House->IQ >= Rule.IQContentScan) &&
+      Is_Something_Attached()) {
+    FootClass* object = Attached_Object();
 
-      while (object != nullptr) {
-        value += object->Value();
-        object = dynamic_cast<FootClass*>(object->Next);
-      }
+    while (object != nullptr) {
+      value += object->Value();
+      object = dynamic_cast<FootClass*>(object->Next);
     }
   }
 
@@ -5191,7 +5179,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
   *target. Don't retaliate *	if it is currently attacking the greater threat.
   */
   if (!House->IsHuman && Percent_Chance(50)) {
-    fixed source_val = fixed(0);
+    auto source_val = fixed(0);
     int primary = What_Weapon_Should_I_Use(source->As_Target());
     const WeaponTypeClass* weapon =
         primary == 0 ? source->Techno_Type_Class()->PrimaryWeapon
@@ -5201,7 +5189,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
       source_val = weapon->WarheadPtr->Modifier[Techno_Type_Class()->Armor];
     }
 
-    fixed current_val = fixed(0);
+    auto current_val = fixed(0);
     const TechnoClass* tech = As_Techno(TarCom);
     if (tech != nullptr) {
       primary = What_Weapon_Should_I_Use(tech->As_Target());
@@ -5451,12 +5439,10 @@ bool TechnoClass::Target_Something_Nearby(ThreatType threat) {
   **	Determine that if there is an existing target it is still legal
   **	and within range.
   */
-  if (Target_Legal(TarCom)) {
-    if (threat & THREAT_RANGE) {
-      int primary = What_Weapon_Should_I_Use(TarCom);
-      if (!In_Range(TarCom, primary)) {
-        Assign_Target(kTargetNone);
-      }
+  if (Target_Legal(TarCom) && (threat & THREAT_RANGE)) {
+    int primary = What_Weapon_Should_I_Use(TarCom);
+    if (!In_Range(TarCom, primary)) {
+      Assign_Target(kTargetNone);
     }
   }
 
@@ -5596,7 +5582,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
         if (What_Am_I() == RTTI_VESSEL &&
             *(VesselClass*)this == VESSEL_CARRIER) {
           if (object->What_Am_I() == RTTI_AIRCRAFT) {
-            AircraftClass* heli = (AircraftClass*)object;
+            auto* heli = (AircraftClass*)object;
             if (heli->Ammo != heli->Techno_Type_Class()->MaxAmmo) {
               pip = PIP_ENGINEER;
               if (!heli->Ammo) {
@@ -5623,7 +5609,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
     ** various minerals it could have harvested.
     */
     if (What_Am_I() == RTTI_UNIT && *(UnitClass*)this == UNIT_HARVESTER) {
-      UnitClass* harv = (UnitClass*)this;
+      auto* harv = (UnitClass*)this;
 
       int iron = harv->Gems;
       int nickel = harv->Gold;
@@ -5793,40 +5779,37 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
     /*
     ** Print word "Decoy" above buildings that are spied upon or fake
     */
-    if (((BuildingClass*)this)->Class->IsFake) {
-      if (spiedby || IsOwnedByPlayer) {
-        CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_DECOY, x, y - 16, window,
-                      SHAPE_WIN_REL);
-      }
+    if (((BuildingClass*)this)->Class->IsFake && (spiedby || IsOwnedByPlayer)) {
+      CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_DECOY, x, y - 16, window,
+                    SHAPE_WIN_REL);
     }
+
     /*
     ** See if we should print the credits for a spied refinery
     */
-    if (spiedby) {
-      // If it's a refinery/silo, print the enemy's money
-      if (((BuildingClass*)this)->Class->Capacity) {
-        long money = House->Available_Money();
+    // If it's a refinery/silo, print the enemy's money
+    if (spiedby && ((BuildingClass*)this)->Class->Capacity) {
+      long money = House->Available_Money();
 
-        /*
-        **	Determine how many digits will be printed.
-        */
-        int digits;
-        int factor = 10;
-        for (digits = 1; digits < 9; digits++) {
-          if (money < factor) {
-            break;
-          }
-          factor *= 10;
+      /*
+      **	Determine how many digits will be printed.
+      */
+      int digits;
+      int factor = 10;
+      for (digits = 1; digits < 9; digits++) {
+        if (money < factor) {
+          break;
         }
+        factor *= 10;
+      }
 
-        int startx = x + (6 * digits) - 3;  // + 6 * 8;
-        while (money) {
-          int xdigit = static_cast<int>(money % 10);
-          money /= 10;
-          CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_NUMBERS + xdigit,
-                        startx, y - 6, window, SHAPE_CENTER | SHAPE_WIN_REL);
-          startx -= 6;
-        }
+      int startx = x + (6 * digits) - 3;  // + 6 * 8;
+      while (money) {
+        int xdigit = static_cast<int>(money % 10);
+        money /= 10;
+        CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_NUMBERS + xdigit, startx,
+                      y - 6, window, SHAPE_CENTER | SHAPE_WIN_REL);
+        startx -= 6;
       }
     }
   }

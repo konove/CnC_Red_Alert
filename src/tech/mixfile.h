@@ -49,6 +49,7 @@
 #include <string_view>
 #include <vector>
 
+#include "absl/base/attributes.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
 #include "tech/crc.h"
@@ -87,7 +88,10 @@ class MixFileClass : public Node<MixFileClass<T>> {
   MixFileClass(MixFileClass&&) = delete;
   MixFileClass& operator=(MixFileClass&&) = delete;
 
-  [[nodiscard]] const std::string& Filename() const { return filename_; }
+  [[nodiscard]] const std::string& Filename() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return filename_;
+  }
 
   static bool Free(std::string_view filename);
   void Free();

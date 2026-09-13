@@ -95,6 +95,7 @@
 #ifndef CNC_RED_ALERT_RA_MSGLIST_H_
 #define CNC_RED_ALERT_RA_MSGLIST_H_
 
+#include "absl/base/attributes.h"
 #include "ra/defines.h"
 #include "sdllib/keyboard.h"
 
@@ -145,7 +146,7 @@ class MessageListClass {
             int width = 640);
   TextLabelClass* Add_Message(const char* name, int id, const char* txt,
                               PlayerColorType color, TextPrintType style,
-                              int timeout);
+                              int timeout) ABSL_ATTRIBUTE_LIFETIME_BOUND;
   int Concat_Message(const char* name, int id, const char* txt, int timeout);
 
   //.....................................................................
@@ -158,10 +159,11 @@ class MessageListClass {
   // Message-editing support routines
   //.....................................................................
   TextLabelClass* Add_Edit(PlayerColorType color, TextPrintType style,
-                           const char* to, char cursor = 0, int width = 640);
+                           const char* to, char cursor = 0,
+                           int width = 640) ABSL_ATTRIBUTE_LIFETIME_BOUND;
   void Remove_Edit();
-  char* Get_Edit_Buf();
-  char* Get_Overflow_Buf() { return OverflowBuf; }
+  char* Get_Edit_Buf() ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  char* Get_Overflow_Buf() ABSL_ATTRIBUTE_LIFETIME_BOUND { return OverflowBuf; }
   void Clear_Overflow_Buf() { OverflowBuf[0] = 0; }
   int Is_Edit() { return IsEdit; }
   void Set_Edit_Color(PlayerColorType color);
@@ -181,8 +183,8 @@ class MessageListClass {
   //.....................................................................
   // Message parsing
   //.....................................................................
-  int Trim_Message(char* dest, char* src, int min_chars, int max_chars,
-                   int scandir);
+  static int Trim_Message(char* dest, char* src, int min_chars, int max_chars,
+                          int scandir);
 
   //.....................................................................
   // Compute the y-coord of the message list

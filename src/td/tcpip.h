@@ -109,7 +109,7 @@ class TcpipManagerClass {
   bool Init();
   void Start_Server();
   void Start_Client();
-  void Close_Socket(SOCKET s);
+  static void Close_Socket(SOCKET s);
 #ifdef _WIN32
   void Message_Handler(HWND window, UINT message, UINT wParam, LONG lParam);
 #endif
@@ -120,7 +120,7 @@ class TcpipManagerClass {
   void Close();
   void Set_Host_Address(char* address);
   void Set_Protocol_UDP(bool state);
-  void Clear_Socket_Error(SOCKET socket);
+  static void Clear_Socket_Error(SOCKET socket);
 
   bool Get_Connected() { return Connected; }
 

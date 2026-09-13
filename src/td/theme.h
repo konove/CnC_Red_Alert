@@ -69,11 +69,11 @@ class ThemeClass {
  public:
   ThemeClass();
 
-  ThemeType From_Name(const char* name);
-  int Track_Length(ThemeType theme);
-  int Max_Themes() { return THEME_COUNT; }
-  [[nodiscard]] const char* Full_Name(ThemeType theme) const;
-  [[nodiscard]] const char* Base_Name(ThemeType theme) const;
+  static ThemeType From_Name(const char* name);
+  static int Track_Length(ThemeType theme);
+  static int Max_Themes() { return THEME_COUNT; }
+  [[nodiscard]] static const char* Full_Name(ThemeType theme);
+  [[nodiscard]] static const char* Base_Name(ThemeType theme);
   void AI();
   void Queue_Song(ThemeType theme);
   int Play_Song(ThemeType theme);
@@ -82,7 +82,7 @@ class ThemeClass {
   void Fade_Out() { Queue_Song(THEME_NONE); }
   int Still_Playing();
   ThemeType Next_Song(ThemeType theme);
-  [[nodiscard]] bool Is_Allowed(ThemeType index) const;
+  [[nodiscard]] static bool Is_Allowed(ThemeType index);
   static void Scan();
 };
 

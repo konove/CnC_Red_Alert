@@ -263,11 +263,9 @@ bool Init_Network() {
   /*------------------------------------------------------------------------
   Set up the IPX manager to cross a bridge
   ------------------------------------------------------------------------*/
-  if (!(GameToPlay == GAME_INTERNET)) {
-    if (IsBridge) {
-      BridgeNet.Get_Address(net, node);
-      Ipx.Set_Bridge(net);
-    }
+  if ((!(GameToPlay == GAME_INTERNET)) && IsBridge) {
+    BridgeNet.Get_Address(net, node);
+    Ipx.Set_Bridge(net);
   }
 
   return true;
@@ -412,7 +410,8 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
  * HISTORY: * 04/22/1995 BR : Created. *
  *=============================================================================================*/
 void Destroy_Connection(int id, int error) {
-  int i, j;
+  int i;
+  int j;
   HousesType house;
   HouseClass* housep;
   char txt[80];
@@ -560,19 +559,18 @@ bool Remote_Connect() {
     /*---------------------------------------------------------------------
           1 = user requests New Network Game
           ---------------------------------------------------------------------*/
-    if (rc == 1) {
-      /*..................................................................
-      Pop up the New Network Game dialog; if user selects OK, return
-      'true'; otherwise, return to the Join Dialog.
-      ..................................................................*/
-      if (Net_New_Dialog()) {
-        Write_MultiPlayer_Settings();
-        NetOpen = false;
-        NetStealth = stealth;
-        NetOpen = false;
+    if ((rc == 1) && Net_New_Dialog())
+    /*..................................................................
+    Pop up the New Network Game dialog; if user selects OK, return
+    'true'; otherwise, return to the Join Dialog.
+    ..................................................................*/
+    {
+      Write_MultiPlayer_Settings();
+      NetOpen = false;
+      NetStealth = stealth;
+      NetOpen = false;
 
-        return true;
-      }
+      return true;
     }
   }
 }
@@ -898,7 +896,8 @@ static int Net_Join_Dialog() {
   int join_index = -1;                     // index of game we're joining
   int rc = 0;                              // -1 = user cancelled, 1 = New
   JoinEventType event;                     // event from incoming packet
-  int i, j;                                // loop counter
+  int i;
+  int j;  // loop counter
   char txt[80];
   const char* p;
   int parms_received = 0;  // 1 = game options received
@@ -1460,7 +1459,8 @@ static int Net_Join_Dialog() {
                                   &BridgeNet);
         }
 
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
+        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        }
 
         if (joinstate != JOIN_CONFIRMED) {
           process = false;
@@ -1867,7 +1867,8 @@ static int Net_Join_Dialog() {
                                 &BridgeNet);
       }
 
-      while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
+      while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+      }
 
       rc = -1;
 
@@ -2509,7 +2510,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                 &BridgeNet);
       }
 
-      while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
+      while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+      }
 
       MPlayerGameName[0] = 0;
 
@@ -2877,7 +2879,8 @@ static int Net_New_Dialog() {
   long ok_timer = 0;  // for timing OK button
   int index;          // index for rejecting a player
   int rc = 0;
-  int i, j;
+  int i;
+  int j;
   char* item;
   int tabs[] = {77 * factor};  // tabs for player list box
 
@@ -3481,7 +3484,8 @@ static int Net_New_Dialog() {
         ...............................................................*/
         Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
         Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
+        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        }
 
         /*...............................................................
         Broadcast my sign-off over a bridged network if there is one
@@ -3492,7 +3496,8 @@ static int Net_New_Dialog() {
           Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0,
                                   &BridgeNet);
         }
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
+        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        }
 
         /*...............................................................
         And now, just be absolutely sure, send my sign-off to each
@@ -3507,7 +3512,8 @@ static int Net_New_Dialog() {
                                   &Players[i]->Address);
           Ipx.Service();
         }
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
+        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        }
         MPlayerGameName[0] = 0;
         process = false;
         rc = false;
@@ -4100,7 +4106,10 @@ unsigned long Compute_Name_CRC(char* name) {
  *=========================================================================*/
 void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
                           unsigned long timeval) {
-  static int x, y, w, h;
+  static int x;
+  static int y;
+  static int w;
+  static int h;
   int id;
   char buf1[40] = {0};
   char buf2[40] = {0};
@@ -4307,7 +4316,8 @@ static int Net_Fake_New_Dialog() {
 
   long ok_timer = 0;  // for timing OK button
   int rc = 0;
-  int i, j;
+  int i;
+  int j;
   char* item;
   int tabs[] = {77 * factor};  // tabs for player list box
 
@@ -4508,12 +4518,14 @@ static int Net_Fake_New_Dialog() {
         ...............................................................*/
         Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
         Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
+        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        }
 
         /*...............................................................
         Broadcast my sign-off over a bridged network if there is one
         ...............................................................*/
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
+        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        }
 
         /*...............................................................
         And now, just be absolutely sure, send my sign-off to each
@@ -4528,7 +4540,8 @@ static int Net_Fake_New_Dialog() {
                                   &Players[i]->Address);
           Ipx.Service();
         }
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
+        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        }
         MPlayerGameName[0] = 0;
         process = false;
         rc = false;
@@ -4903,7 +4916,8 @@ static int Net_Fake_Join_Dialog() {
   int join_index = -1;                     // index of game we're joining
   int rc = 0;                              // -1 = user cancelled, 1 = New
   JoinEventType event;                     // event from incoming packet
-  int i, j;                                // loop counter
+  int i;
+  int j;  // loop counter
 
   unsigned char tmp_id[MAX_PLAYERS] =
       {};                    // temp storage for sorting player ID's
@@ -5114,7 +5128,8 @@ static int Net_Fake_Join_Dialog() {
                                   &BridgeNet);
         }
 
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
+        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        }
 
 #ifdef _WIN32
         Send_Data_To_DDE_Server("Hello", strlen("Hello"),
@@ -5347,7 +5362,8 @@ static int Net_Fake_Join_Dialog() {
                                 &BridgeNet);
       }
 
-      while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
+      while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+      }
 
       rc = -1;
 

@@ -106,7 +106,7 @@ static int Length;
 
 void* Get_Shape_Header_Data(void* ptr) {
   if (UseBigShapeBuffer) {
-    ShapeHeaderType* header = static_cast<ShapeHeaderType*>(ptr);
+    auto* header = static_cast<ShapeHeaderType*>(ptr);
     return header->shape_data + (long)(header->shape_buffer
                                            ? TheaterShapeBufferStart
                                            : BigShapeBufferStart);
@@ -194,9 +194,13 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
   char* lockptr = nullptr;
   // char *uncomp_ptr;
   uint32_t offset[SUBFRAMEOFFS];
-  unsigned long offcurr, off16, offdiff;
+  unsigned long offcurr;
+  unsigned long off16;
+  unsigned long offdiff;
   KeyFrameHeaderType* keyfr;
-  unsigned short buffsize, currframe = 0, subframe;
+  unsigned short buffsize;
+  unsigned short currframe = 0;
+  unsigned short subframe;
   unsigned long length = 0;
   char frameflags;
   void* return_value;
@@ -423,7 +427,9 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
       ** align the actual shape data
       */
       if (3 & (uintptr_t)temp_shape_ptr) {
-        temp_shape_ptr = (char*)((uintptr_t)(temp_shape_ptr + 3) & ~3);
+        temp_shape_ptr =
+            temp_shape_ptr +
+            ((4 - (std::bit_cast<uintptr_t>(temp_shape_ptr) & 3)) & 3);
       }
 
       memcpy(temp_shape_ptr, buffptr, length);
@@ -436,7 +442,7 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
           ->shape_buffer = 1;  // Theater buffer
       *(KeyFrameSlots[keyfr->y] + framenumber) =
           TheaterShapeBufferPtr - (uintptr_t)TheaterShapeBufferStart;
-      TheaterShapeBufferPtr = (char*)(length + (uintptr_t)temp_shape_ptr);
+      TheaterShapeBufferPtr = temp_shape_ptr + length;
       /*
       ** Align the next shape for ShapeHeaderType, which contains a native
       * pointer.
@@ -457,7 +463,9 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
     ** align the actual shape data
     */
     if (3 & (uintptr_t)temp_shape_ptr) {
-      temp_shape_ptr = (char*)((uintptr_t)(temp_shape_ptr + 3) & ~3);
+      temp_shape_ptr =
+          temp_shape_ptr +
+          ((4 - (std::bit_cast<uintptr_t>(temp_shape_ptr) & 3)) & 3);
     }
     memcpy(temp_shape_ptr, buffptr, length);
     port::AlignedObject<ShapeHeaderType>(BigShapeBufferPtr)->draw_flags =
@@ -469,7 +477,7 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
         0;  // Normal Big Shape Buffer
     *(KeyFrameSlots[keyfr->y] + framenumber) =
         BigShapeBufferPtr - (uintptr_t)BigShapeBufferStart;
-    BigShapeBufferPtr = (char*)(length + (uintptr_t)temp_shape_ptr);
+    BigShapeBufferPtr = temp_shape_ptr + length;
     // Align the next shape for ShapeHeaderType, which contains a native
     // pointer.
     if ((alignof(ShapeHeaderType) - 1) & (uintptr_t)BigShapeBufferPtr) {

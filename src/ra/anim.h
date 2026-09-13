@@ -42,6 +42,7 @@
 
 #include <cstddef>
 
+#include "absl/base/attributes.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/object.h"
@@ -75,7 +76,10 @@ class AnimClass final : public ObjectClass, public StageClass {
   operator AnimType() const { return Class->Type; }
 
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* ptr);
 
   /*---------------------------------------------------------------------
@@ -87,7 +91,7 @@ class AnimClass final : public ObjectClass, public StageClass {
   void Make_Invisible() { IsInvisible = true; }
   static void Do_Atom_Damage(HousesType ownerhouse, CELL cell);
 
-  [[nodiscard]] bool Can_Place_Here(COORDINATE /*unused*/) const {
+  [[nodiscard]] static bool Can_Place_Here(COORDINATE /*unused*/) {
     return true;
   }
   bool Mark(MarkType mark = MARK_CHANGE) override;

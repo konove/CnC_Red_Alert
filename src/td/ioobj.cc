@@ -130,10 +130,15 @@ template void TriggerClass::Serialize(ArchiveReader&);
 template <class Archive>
 void TeamTypeClass::Serialize(Archive& ar) {
   AbstractTypeClass::Serialize(ar);
-  bool active = IsActive, roundabout = IsRoundAbout, learning = IsLearning;
-  bool suicide = IsSuicide, autocreate = IsAutocreate, mercenary = IsMercenary;
-  bool prebuilt = IsPrebuilt, reinforcable = IsReinforcable,
-       transient = IsTransient;
+  bool active = IsActive;
+  bool roundabout = IsRoundAbout;
+  bool learning = IsLearning;
+  bool suicide = IsSuicide;
+  bool autocreate = IsAutocreate;
+  bool mercenary = IsMercenary;
+  bool prebuilt = IsPrebuilt;
+  bool reinforcable = IsReinforcable;
+  bool transient = IsTransient;
   ar(active, roundabout, learning, suicide, autocreate, mercenary, prebuilt,
      reinforcable, transient, RecruitPriority, InitNum, MaxAllowed, Fear, House,
      MissionCount, ClassCount);
@@ -173,10 +178,16 @@ template void TeamTypeClass::Serialize(ArchiveReader&);
 template <class Archive>
 void TeamClass::Serialize(Archive& ar) {
   AbstractClass::Serialize(ar);
-  bool forced = IsForcedActive, has_been = IsHasBeen, full = IsFullStrength;
-  bool under = IsUnderStrength, reforming = IsReforming, lagging = IsLagging;
-  bool altered = IsAltered, moving = IsMoving, next = IsNextMission,
-       suspended = Suspended;
+  bool forced = IsForcedActive;
+  bool has_been = IsHasBeen;
+  bool full = IsFullStrength;
+  bool under = IsUnderStrength;
+  bool reforming = IsReforming;
+  bool lagging = IsLagging;
+  bool altered = IsAltered;
+  bool moving = IsMoving;
+  bool next = IsNextMission;
+  bool suspended = Suspended;
   ar(TeamTypePtr(Class), HousePtr(House), forced, has_been, full, under,
      reforming, lagging, altered, moving, next, suspended, Center,
      ObjectiveCenter, MissionTarget, Target, Total, Risk, SuspendTimer,
@@ -309,8 +320,12 @@ template void HouseClass::Serialize(ArchiveReader&);
 template <class Archive>
 void ObjectClass::Serialize(Archive& ar) {
   AbstractClass::Serialize(ar);
-  bool down = IsDown, damage = IsToDamage, display = IsToDisplay;
-  bool limbo = IsInLimbo, selected = IsSelected, attached = IsAnimAttached;
+  bool down = IsDown;
+  bool damage = IsToDamage;
+  bool display = IsToDisplay;
+  bool limbo = IsInLimbo;
+  bool selected = IsSelected;
+  bool attached = IsAnimAttached;
   ar(down, damage, display, limbo, selected, attached, ObjectPtr(Next),
      TriggerPtr(Trigger), Strength);
   if constexpr (Archive::kIsReading) {
@@ -368,8 +383,10 @@ template <class Archive>
 void AnimClass::Serialize(Archive& ar) {
   ObjectClass::Serialize(ar);
   StageClass::Serialize(ar);
-  bool to_delete = IsToDelete, brand_new = IsBrandNew;
-  bool alternate = IsAlternate, invisible = IsInvisible;
+  bool to_delete = IsToDelete;
+  bool brand_new = IsBrandNew;
+  bool alternate = IsAlternate;
+  bool invisible = IsInvisible;
   ar(ObjectPtr(Object), Owner, Loops, to_delete, brand_new, alternate,
      invisible, TypePtr(Class), Delay, Accum);
   if constexpr (Archive::kIsReading) {
@@ -389,8 +406,11 @@ template <class Archive>
 void TerrainClass::Serialize(Archive& ar) {
   ObjectClass::Serialize(ar);
   StageClass::Serialize(ar);
-  bool fire = IsOnFire, crumbling = IsCrumbling, blossoming = IsBlossoming;
-  bool barnacled = IsBarnacled, sporing = IsSporing;
+  bool fire = IsOnFire;
+  bool crumbling = IsCrumbling;
+  bool blossoming = IsBlossoming;
+  bool barnacled = IsBarnacled;
+  bool sporing = IsSporing;
   ar(TypePtr(Class), fire, crumbling, blossoming, barnacled, sporing);
   if constexpr (Archive::kIsReading) {
     IsOnFire = fire;
@@ -411,7 +431,9 @@ void BulletClass::Serialize(Archive& ar) {
   ObjectClass::Serialize(ar);
   FlyClass::Serialize(ar);
   FuseClass::Serialize(ar);
-  bool inaccurate = IsInaccurate, animate = IsToAnimate, locked = IsLocked;
+  bool inaccurate = IsInaccurate;
+  bool animate = IsToAnimate;
+  bool locked = IsLocked;
   ar(TypePtr(Class), ObjectPtr(Payback), PrimaryFacing, inaccurate, animate,
      Altitude, Riser, TarCom, locked);
   if constexpr (Archive::kIsReading) {
@@ -462,12 +484,18 @@ void TechnoClass::Serialize(Archive& ar) {
   CargoClass::Serialize(ar);
   DoorClass::Serialize(ar);
   CrewClass::Serialize(ar);
-  bool ticked = IsTickedOff, cloakable = IsCloakable, leader = IsLeader;
-  bool loaner = IsALoaner, locked = IsLocked, recoil = IsInRecoilState;
-  bool tethered = IsTethered, owned = IsOwnedByPlayer;
+  bool ticked = IsTickedOff;
+  bool cloakable = IsCloakable;
+  bool leader = IsLeader;
+  bool loaner = IsALoaner;
+  bool locked = IsLocked;
+  bool recoil = IsInRecoilState;
+  bool tethered = IsTethered;
+  bool owned = IsOwnedByPlayer;
   bool player_discovered = IsDiscoveredByPlayer;
   bool computer_discovered = IsDiscoveredByComputer;
-  bool lemon = IsALemon, second_shot = IsSecondShot;
+  bool lemon = IsALemon;
+  bool second_shot = IsSecondShot;
   ar(ticked, cloakable, leader, loaner, locked, recoil, tethered, owned,
      player_discovered, computer_discovered, lemon, second_shot,
      HousePtr(House), Cloak, CloakingDevice, TarCom, SuspendedTarCom,
@@ -504,10 +532,14 @@ void BuildingClass::Serialize(Archive& ar) {
       factory_index = Factories.ID(Factory);
     }
   }
-  bool ready = IsReadyToCommence, repairing = IsRepairing;
-  bool wrench = IsWrenchVisible, blow = IsGoingToBlow;
-  bool survivorless = IsSurvivorless, charging = IsCharging;
-  bool charged = IsCharged, captured = IsCaptured;
+  bool ready = IsReadyToCommence;
+  bool repairing = IsRepairing;
+  bool wrench = IsWrenchVisible;
+  bool blow = IsGoingToBlow;
+  bool survivorless = IsSurvivorless;
+  bool charging = IsCharging;
+  bool charged = IsCharged;
+  bool captured = IsCaptured;
   ar(TypePtr(Class), factory_index, ActLike, ready, repairing, wrench, blow,
      survivorless, charging, charged, captured, CountDown, BState,
      QueueBState, WhoLastHurtMe, WhomToRepay, LastStrength, PlacementDelay);
@@ -541,9 +573,14 @@ template void BuildingClass::Serialize(ArchiveReader&);
 template <class Archive>
 void FootClass::Serialize(Archive& ar) {
   TechnoClass::Serialize(ar);
-  bool initiated = IsInitiated, new_nav = IsNewNavCom, look = IsPlanningToLook;
-  bool deploying = IsDeploying, firing = IsFiring, rotating = IsRotating;
-  bool driving = IsDriving, unloading = IsUnloading;
+  bool initiated = IsInitiated;
+  bool new_nav = IsNewNavCom;
+  bool look = IsPlanningToLook;
+  bool deploying = IsDeploying;
+  bool firing = IsFiring;
+  bool rotating = IsRotating;
+  bool driving = IsDriving;
+  bool unloading = IsUnloading;
   int32_t team_index = -1;
   if constexpr (!Archive::kIsReading) {
     if (Team != nullptr) {
@@ -598,8 +635,10 @@ template void FootClass::Serialize(ArchiveReader&);
 template <class Archive>
 void DriveClass::Serialize(Archive& ar) {
   FootClass::Serialize(ar);
-  bool harvesting = IsHarvesting, returning = IsReturning;
-  bool locked = IsTurretLockedDown, short_track = IsOnShortTrack;
+  bool harvesting = IsHarvesting;
+  bool returning = IsReturning;
+  bool locked = IsTurretLockedDown;
+  bool short_track = IsOnShortTrack;
   ar(TypePtr(Class), Tiberium, harvesting, returning, locked, short_track,
      SpeedAccum, TrackNumber, TrackIndex);
   if constexpr (Archive::kIsReading) {
@@ -647,8 +686,10 @@ template void UnitClass::Serialize(ArchiveReader&);
 template <class Archive>
 void InfantryClass::Serialize(Archive& ar) {
   FootClass::Serialize(ar);
-  bool technician = IsTechnician, stoked = IsStoked;
-  bool prone = IsProne, boxing = IsBoxing;
+  bool technician = IsTechnician;
+  bool stoked = IsStoked;
+  bool prone = IsProne;
+  bool boxing = IsBoxing;
   ar(TypePtr(Class), Doing, Comment, technician, stoked, prone, boxing, Fear);
   if constexpr (Archive::kIsReading) {
     IsTechnician = technician;
@@ -667,8 +708,10 @@ template <class Archive>
 void AircraftClass::Serialize(Archive& ar) {
   FootClass::Serialize(ar);
   FlyClass::Serialize(ar);
-  bool landing = IsLanding, taking_off = IsTakingOff;
-  bool homing = IsHoming, hovering = IsHovering;
+  bool landing = IsLanding;
+  bool taking_off = IsTakingOff;
+  bool homing = IsHoming;
+  bool hovering = IsHovering;
   ar(TypePtr(Class), SecondaryFacing, Altitude, landing, taking_off,
      homing, hovering, Jitter, SightTimer, AttacksRemaining);
   if constexpr (Archive::kIsReading) {

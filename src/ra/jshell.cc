@@ -83,7 +83,7 @@
  *=============================================================================================*/
 void* Small_Icon(const void* iconptr, int iconnum) {
   static unsigned char _icon[9];
-  const IControl_Type* iptr = static_cast<const IControl_Type*>(iconptr);
+  const auto* iptr = static_cast<const IControl_Type*>(iconptr);
   unsigned char* data;
 
   if (iconptr) {
@@ -457,7 +457,7 @@ void* Conquer_Build_Translucent_Table(const PaletteClass& palette,
 void* Make_Fading_Table(const PaletteClass& palette, void* dest, int color,
                         int frac) {
   if (dest) {
-    unsigned char* ptr = static_cast<unsigned char*>(dest);
+    auto* ptr = static_cast<unsigned char*>(dest);
 
     /*
     **	Find an appropriate remap color index for every color in the palette.
@@ -486,7 +486,7 @@ void* Make_Fading_Table(const PaletteClass& palette, void* dest, int color,
 void* Conquer_Build_Fading_Table(const PaletteClass& palette, void* dest,
                                  int color, int frac) {
   if (dest) {
-    unsigned char* ptr = static_cast<unsigned char*>(dest);
+    auto* ptr = static_cast<unsigned char*>(dest);
     //		HSVClass desthsv = palette[color];
 
     /*

@@ -42,6 +42,8 @@
 
 #include <cassert>
 
+#include "absl/base/attributes.h"
+
 /*
 **	This is a doubly linked list node. Typical use of this node is to derive
 **	objects from this node. The interface class for this node can be used
@@ -75,7 +77,7 @@ class GenericNode {
     }
   }
 
-  [[nodiscard]] GenericList* Main_List() const {
+  [[nodiscard]] GenericList* Main_List() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     const GenericNode* node = this;
     while (node->PrevNode) {
       node = PrevNode;

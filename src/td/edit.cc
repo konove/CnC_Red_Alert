@@ -261,8 +261,7 @@ int EditClass::Action(unsigned flags, KeyNumType& key) {
       flags = 0;
 
     } else {
-      KeyASCIIType ascii =
-          static_cast<KeyASCIIType>(Keyboard::To_ASCII(key) & 0x00ff);
+      auto ascii = static_cast<KeyASCIIType>(Keyboard::To_ASCII(key) & 0x00ff);
 
       /*
       ** Allow numeric keypad presses to map to ascii numbers
@@ -270,11 +269,10 @@ int EditClass::Action(unsigned flags, KeyNumType& key) {
       if (key & WWKEY_VK_BIT && ascii >= '0' && ascii <= '9') {
         key = static_cast<KeyNumType>(key & ~WWKEY_VK_BIT);
 
-        if (!(flags & LEFTRELEASE) && !(flags & RIGHTRELEASE)) {
-          if (Handle_Key(ascii)) {
-            flags &= ~KEYBOARD;
-            key = KN_NONE;
-          }
+        if ((!(flags & LEFTRELEASE) && !(flags & RIGHTRELEASE)) &&
+            Handle_Key(ascii)) {
+          flags &= ~KEYBOARD;
+          key = KN_NONE;
         }
 
       } else {
@@ -283,12 +281,12 @@ int EditClass::Action(unsigned flags, KeyNumType& key) {
         */
         if ((!(key & WWKEY_VK_BIT) && ascii >= ' ' && ascii <= 127) ||
             key == KN_RETURN || key == KN_BACKSPACE) {
-          if (!(flags & LEFTRELEASE) && !(flags & RIGHTRELEASE)) {
-            if (Handle_Key(Keyboard::To_ASCII(key))) {
-              flags &= ~KEYBOARD;
-              key = KN_NONE;
-            }
+          if ((!(flags & LEFTRELEASE) && !(flags & RIGHTRELEASE)) &&
+              Handle_Key(Keyboard::To_ASCII(key))) {
+            flags &= ~KEYBOARD;
+            key = KN_NONE;
           }
+
         } else {
           // if (key & WWKEY_RLS_BIT){
           //	if ( (!(flags & LEFTRELEASE)) && (!(flags & RIGHTRELEASE))){

@@ -281,11 +281,9 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
     if (optr->IsTiberium && whead->IsTiberiumDestroyer) {
       cellptr->Reduce_Tiberium(strength / 10);
     }
-    if (optr->IsWall) {
-      if (whead->IsWallDestroyer ||
-          (whead->IsWoodDestroyer && optr->IsWooden)) {
-        Map[cell].Reduce_Wall(strength);
-      }
+    if (optr->IsWall && (whead->IsWallDestroyer ||
+                         (whead->IsWoodDestroyer && optr->IsWooden))) {
+      Map[cell].Reduce_Wall(strength);
     }
   }
 
@@ -293,20 +291,19 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   **	If there is a bridge at this location, then it may be destroyed by the
   **	combat damage.
   */
-  if (cellptr->TType == TEMPLATE_BRIDGE1 ||
-      cellptr->TType == TEMPLATE_BRIDGE2 ||
-      cellptr->TType == TEMPLATE_BRIDGE1H ||
-      cellptr->TType == TEMPLATE_BRIDGE2H ||
-      cellptr->TType == TEMPLATE_BRIDGE_1A ||
-      cellptr->TType == TEMPLATE_BRIDGE_1B ||
-      cellptr->TType == TEMPLATE_BRIDGE_2A ||
-      cellptr->TType == TEMPLATE_BRIDGE_2B ||
-      cellptr->TType == TEMPLATE_BRIDGE_3A ||
-      cellptr->TType == TEMPLATE_BRIDGE_3B) {
-    if ((warhead == WARHEAD_AP || warhead == WARHEAD_HE) &&
-        Random_Pick(1, Rule.BridgeStrength) < strength) {
-      Map.Destroy_Bridge_At(cell);
-    }
+  if ((cellptr->TType == TEMPLATE_BRIDGE1 ||
+       cellptr->TType == TEMPLATE_BRIDGE2 ||
+       cellptr->TType == TEMPLATE_BRIDGE1H ||
+       cellptr->TType == TEMPLATE_BRIDGE2H ||
+       cellptr->TType == TEMPLATE_BRIDGE_1A ||
+       cellptr->TType == TEMPLATE_BRIDGE_1B ||
+       cellptr->TType == TEMPLATE_BRIDGE_2A ||
+       cellptr->TType == TEMPLATE_BRIDGE_2B ||
+       cellptr->TType == TEMPLATE_BRIDGE_3A ||
+       cellptr->TType == TEMPLATE_BRIDGE_3B) &&
+      ((warhead == WARHEAD_AP || warhead == WARHEAD_HE) &&
+       Random_Pick(1, Rule.BridgeStrength) < strength)) {
+    Map.Destroy_Bridge_At(cell);
   }
 }
 

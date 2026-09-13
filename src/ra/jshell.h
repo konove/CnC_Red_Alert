@@ -79,13 +79,13 @@ struct KeyboardClass : public WWKeyboardClass {
   KeyNumType Get() { return (KeyNumType)WWKeyboardClass::Get(); }
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
   KeyNumType Check() { return (KeyNumType)WWKeyboardClass::Check(); }
-  KeyASCIIType To_ASCII(KeyNumType key) {
+  static KeyASCIIType To_ASCII(KeyNumType key) {
     return (KeyASCIIType)WWKeyboardClass::To_ASCII(key);
   }
-  int Down(KeyNumType key) { return WWKeyboardClass::Down(key); }
+  static int Down(KeyNumType key) { return WWKeyboardClass::Down(key); }
 
-  int Mouse_X() { return Get_Mouse_X(); }
-  int Mouse_Y() { return Get_Mouse_Y(); }
+  static int Mouse_X() { return Get_Mouse_X(); }
+  static int Mouse_Y() { return Get_Mouse_Y(); }
 };
 
 /*
@@ -153,7 +153,7 @@ inline int Get_Bit(const void* array, int bit) {
 }
 
 inline int First_True_Bit(const void* array) {
-  const uint32_t* array32 = (const uint32_t*)array;
+  const auto* array32 = (const uint32_t*)array;
   int off = 0;
   while (true) {
     const uint32_t v = *array32++;
@@ -165,7 +165,7 @@ inline int First_True_Bit(const void* array) {
   }
 }
 inline int First_False_Bit(const void* array) {
-  const uint32_t* array32 = (const uint32_t*)array;
+  const auto* array32 = (const uint32_t*)array;
   int off = 0;
   while (true) {
     const uint32_t v = *array32++;
@@ -256,7 +256,8 @@ typedef struct {
 int Load_Picture(const char* filename, BufferClass& scratchbuf,
                  BufferClass& destbuf, unsigned char* palette,
                  PicturePlaneType format);
-void* Conquer_Build_Fading_Table(const PaletteClass& palette, void* dest,
+void* Conquer_Build_Fading_Table(const PaletteClass& palette,
+                                 void* dest ABSL_ATTRIBUTE_LIFETIME_BOUND,
                                  int color, int frac);
 void* Small_Icon(const void* iconptr, int iconnum);
 void Set_Window(int window, int x, int y, int w, int h);
@@ -268,17 +269,18 @@ long Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
 long Translucent_Table_Size(int count);
 void* Build_Translucent_Table(const PaletteClass& palette,
                               const TLucentType* control, int count,
-                              void* buffer);
-void* Conquer_Build_Translucent_Table(const PaletteClass& palette,
-                                      const TLucentType* control, int count,
-                                      void* buffer);
-void* Make_Fading_Table(const PaletteClass& palette, void* dest, int color,
+                              void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
+void* Conquer_Build_Translucent_Table(
+    const PaletteClass& palette, const TLucentType* control, int count,
+    void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
+void* Make_Fading_Table(const PaletteClass& palette,
+                        void* dest ABSL_ATTRIBUTE_LIFETIME_BOUND, int color,
                         int frac);
 
 // Prints a printf-style message to stderr and exits with a failure code. The
 // format attribute both type-checks every call site and tells the compiler the
 // forwarded format string inside Fatal() is intentionally non-literal.
-void Fatal(const char* message, ...) ABSL_PRINTF_ATTRIBUTE(1, 2);
+[[noreturn]] void Fatal(const char* message, ...) ABSL_PRINTF_ATTRIBUTE(1, 2);
 
 // Formats "format" and its arguments into "buffer", which holds "size" bytes.
 // The result is always null terminated and is truncated rather than allowed to

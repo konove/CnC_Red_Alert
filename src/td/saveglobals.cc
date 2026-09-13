@@ -10,7 +10,7 @@
 template <class Archive>
 void BaseClass::Serialize(Archive& ar) {
   ar.Section(FourCC("BASE"));
-  int32_t count = static_cast<int32_t>(Nodes.Count());
+  auto count = static_cast<int32_t>(Nodes.Count());
   ar(House, count);
   if constexpr (Archive::kIsReading) {
     if (!ar.ok() || House < HOUSE_NONE || House >= HOUSE_COUNT ||
@@ -22,7 +22,9 @@ void BaseClass::Serialize(Archive& ar) {
   }
   for (int32_t i = 0; i < count; ++i) {
     BaseNodeClass node;
-    if constexpr (!Archive::kIsReading) node = Nodes[i];
+    if constexpr (!Archive::kIsReading) {
+      node = Nodes[i];
+    }
     ar(node.Type, node.Coord);
     if constexpr (Archive::kIsReading) {
       if (!ar.ok() || node.Type < STRUCT_WEAP || node.Type >= STRUCT_COUNT) {

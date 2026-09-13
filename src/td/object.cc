@@ -732,12 +732,12 @@ bool ObjectClass::Select() {
   **	If selecting an object of a different house than the player's, make sure
   *that *	the entire selection list is cleared.
   */
-  if (CurrentObject.Count() > 0) {
-    if (Owner() != CurrentObject[0]->Owner() ||
-        CurrentObject[0]->Owner() != PlayerPtr->Class->House) {
-      Unselect_All();
-    }
+  if ((CurrentObject.Count() > 0) &&
+      (Owner() != CurrentObject[0]->Owner() ||
+       CurrentObject[0]->Owner() != PlayerPtr->Class->House)) {
+    Unselect_All();
   }
+
   if (dynamic_cast<const TechnoTypeClass&>(Class_Of()).IsLeader) {
     CurrentObject.Add_Head(this);
   } else {
@@ -773,7 +773,8 @@ bool ObjectClass::Select() {
  * HISTORY: * 06/19/1994 JLB : Created. *
  *=============================================================================================*/
 bool ObjectClass::Render(bool forced) {
-  int x, y;
+  int x;
+  int y;
   COORDINATE coord = Render_Coord();
 
   if (Debug_Map || Debug_Unshroud ||
@@ -791,9 +792,10 @@ bool ObjectClass::Render(bool forced) {
 
         case RTTI_INFANTRY:
         case RTTI_UNIT:
-          FootClass* foot = dynamic_cast<FootClass*>(this);
+          auto* foot = dynamic_cast<FootClass*>(this);
           CELL cell;
-          int oldx, oldy;
+          int oldx;
+          int oldy;
 
           if (foot->Head_To_Coord() && foot->Path[0] != FACING_NONE) {
             cell = Adjacent_Cell(Coord_Cell(foot->Head_To_Coord()),
@@ -999,7 +1001,7 @@ bool ObjectClass::Limbo() {
     /*
     **	Remove the object from the appropriate display list.
     */
-    Map.Remove(this, In_Which_Layer());
+    MapEditClass::Remove(this, In_Which_Layer());
 
     /*
     **	Remove the object from the logic processing list.
@@ -1035,31 +1037,31 @@ bool ObjectClass::Limbo() {
  **
  *=============================================================================================*/
 bool ObjectClass::Unlimbo(COORDINATE coord, DirType /*unused*/) {
-  if (GameActive && IsInLimbo && !IsDown) {
-    if (ScenarioInit ||
-        Can_Enter_Cell(Coord_Cell(coord), FACING_NONE) == MOVE_OK) {
-      IsInLimbo = false;
-      IsToDisplay = false;
-      Coord = Class_Of().Coord_Fixup(coord);
+  if ((GameActive && IsInLimbo && !IsDown) &&
+      (ScenarioInit ||
+       Can_Enter_Cell(Coord_Cell(coord), FACING_NONE) == MOVE_OK)) {
+    IsInLimbo = false;
+    IsToDisplay = false;
+    Coord = Class_Of().Coord_Fixup(coord);
 
-      if (Mark(MARK_DOWN)) {
-        if (IsActive) {
-          /*
-          **	Add the object to the appropriate map layer. This layer is used
-          **	for rendering purposes.
-          */
-          if (In_Which_Layer() != LAYER_NONE) {
-            Map.Submit(this, In_Which_Layer());
-          }
-
-          if (Class_Of().IsSentient) {
-            Logic.Submit(this);
-          }
+    if (Mark(MARK_DOWN)) {
+      if (IsActive) {
+        /*
+        **	Add the object to the appropriate map layer. This layer is used
+        **	for rendering purposes.
+        */
+        if (In_Which_Layer() != LAYER_NONE) {
+          MapEditClass::Submit(this, In_Which_Layer());
         }
-        return true;
+
+        if (Class_Of().IsSentient) {
+          Logic.Submit(this);
+        }
       }
+      return true;
     }
   }
+
   return false;
 }
 
@@ -1163,19 +1165,15 @@ void ObjectClass::Detach_This_From_All(TARGET target, bool all) {
 RadioMessageType ObjectClass::Receive_Message(RadioClass* /*unused*/,
                                               RadioMessageType message,
                                               long& /*unused*/) {
-  switch (message) {
-    /*
-    **	This message serves as a rendering convenience. It lets the system
-    **	know that there might be a visual conflict and the unit in radio
-    **	contact should be redrawn. This typically occurs when a vehicle
-    **	is being unloaded from a hover lander.
-    */
-    case RADIO_REDRAW:
-      Mark(MARK_CHANGE);
-      return RADIO_ROGER;
-
-    default:
-      break;
+  /*
+  **	This message serves as a rendering convenience. It lets the system
+  **	know that there might be a visual conflict and the unit in radio
+  **	contact should be redrawn. This typically occurs when a vehicle
+  **	is being unloaded from a hover lander.
+  */
+  if (message == RADIO_REDRAW) {
+    Mark(MARK_CHANGE);
+    return RADIO_ROGER;
   }
   return RADIO_STATIC;
 }
@@ -1336,19 +1334,16 @@ bool ObjectClass::Mark(MarkType mark) {
     /*
     ** Handle adding or removing the object in the cells' overlap lists
     */
-    if (mark == MARK_OVERLAP_UP) {
-      if (static_cast<bool>(IsDown)) {
-        Map.Overlap_Up(Coord_Cell(Coord), this);
-        Mark_For_Redraw();
-        return true;
-      }
+    if ((mark == MARK_OVERLAP_UP) && (static_cast<bool>(IsDown))) {
+      Map.Overlap_Up(Coord_Cell(Coord), this);
+      Mark_For_Redraw();
+      return true;
     }
-    if (mark == MARK_OVERLAP_DOWN) {
-      if (static_cast<bool>(IsDown)) {
-        Map.Overlap_Down(Coord_Cell(Coord), this);
-        Mark_For_Redraw();
-        return true;
-      }
+
+    if ((mark == MARK_OVERLAP_DOWN) && (static_cast<bool>(IsDown))) {
+      Map.Overlap_Down(Coord_Cell(Coord), this);
+      Mark_For_Redraw();
+      return true;
     }
 
     /*

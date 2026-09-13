@@ -46,6 +46,7 @@
 #ifndef CNC_RED_ALERT_SDLLIB_WSA_H_
 #define CNC_RED_ALERT_SDLLIB_WSA_H_
 
+#include "absl/base/attributes.h"
 #include "sdllib/gbuffer.h"
 
 typedef enum {
@@ -78,7 +79,8 @@ typedef enum {
  */
 /*=========================================================================*/
 
-void* Open_Animation(const char* file_name, char* user_buffer,
+void* Open_Animation(const char* file_name,
+                     char* user_buffer ABSL_ATTRIBUTE_LIFETIME_BOUND,
                      long user_buffer_size, WSAOpenType user_flags,
                      unsigned char* palette = nullptr);
 void Close_Animation(void* handle);

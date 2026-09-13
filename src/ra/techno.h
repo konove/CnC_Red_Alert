@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_TECHNO_H_
 #define CNC_RED_ALERT_RA_TECHNO_H_
 
+#include "absl/base/attributes.h"
 #include "ra/bullet.h"
 #include "ra/cargo.h"
 #include "ra/ccptr.h"
@@ -384,7 +385,8 @@ class TechnoClass : public RadioClass,
   void Override_Mission(MissionType mission, TARGET tarcom,
                         TARGET navcom) override;
   bool Restore_Mission() override;
-  virtual BulletClass* Fire_At(TARGET target, int which = 0);
+  virtual BulletClass* Fire_At(TARGET target,
+                               int which = 0) ABSL_ATTRIBUTE_LIFETIME_BOUND;
   [[nodiscard]] int Weapon_Range(int which) const override;
   virtual bool Captured(HouseClass* newowner);
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,

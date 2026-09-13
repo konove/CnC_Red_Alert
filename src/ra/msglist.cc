@@ -397,15 +397,6 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   //------------------------------------------------------------------------
   //	Create the message
   //------------------------------------------------------------------------
-  txtlabel = new TextLabelClass(message, MessageX, MessageY,
-                                &ColorRemaps[color], style);
-  if (timeout == -1) {
-    txtlabel->UserData1 = 0;
-  } else {
-    txtlabel->UserData1 = TickCount.Value() + timeout;
-  }
-  txtlabel->UserData2 = id;
-
   //------------------------------------------------------------------------
   //	Find a buffer to store our message in; if there are none, don't add the
   //	message.
@@ -416,15 +407,24 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
       BufferAvail[i] = 0;
       memset(MessageBuffers[i], 0, MAX_MESSAGE_LENGTH + 30);
       port::SafeCopy(MessageBuffers[i], message);
-      txtlabel->Text = MessageBuffers[i];
       found = 1;
       break;
     }
   }
   if (!found) {
-    delete txtlabel;
     return nullptr;
   }
+
+  // The label keeps a pointer to its text, so it is built on the message
+  // buffer, never on the local copy.
+  txtlabel = new TextLabelClass(MessageBuffers[i], MessageX, MessageY,
+                                &ColorRemaps[color], style);
+  if (timeout == -1) {
+    txtlabel->UserData1 = 0;
+  } else {
+    txtlabel->UserData1 = TickCount.Value() + timeout;
+  }
+  txtlabel->UserData2 = id;
 
   Sound_Effect(VOC_INCOMING_MESSAGE);
 
@@ -978,7 +978,7 @@ int MessageListClass::Input(KeyNumType& input) {
   //	If we're in 'edit mode', handle keys
   //------------------------------------------------------------------------
   if (IsEdit) {
-    ascii = static_cast<KeyASCIIType>(Keyboard->To_ASCII(input) & 0x00ff);
+    ascii = static_cast<KeyASCIIType>(KeyboardClass::To_ASCII(input) & 0x00ff);
 
     /*
     ** Allow numeric keypad presses to map to ascii numbers

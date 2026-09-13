@@ -24,6 +24,7 @@
 #include <span>
 #include <vector>
 
+#include "absl/base/attributes.h"
 #include "base/types.h"
 
 namespace dib {
@@ -63,15 +64,25 @@ class Image {
   }
 
   // The pixels, bottom row first, Stride() bytes per row.
-  [[nodiscard]] std::span<const std::uint8_t> Bits() const { return bits_; }
+  [[nodiscard]] std::span<const std::uint8_t> Bits() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return bits_;
+  }
 
   // The colour table. Mutable because the lobby remaps downloaded artwork onto
   // the game's own palette in place.
-  [[nodiscard]] std::span<const Color> Colors() const { return colors_; }
-  std::span<Color> MutableColors() { return colors_; }
+  [[nodiscard]] std::span<const Color> Colors() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return colors_;
+  }
+  std::span<Color> MutableColors() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return colors_;
+  }
 
   // The pixels, for RemapToPalette to rewrite in place.
-  std::span<std::uint8_t> MutableBits() { return bits_; }
+  std::span<std::uint8_t> MutableBits() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return bits_;
+  }
 
  private:
   Image() = default;

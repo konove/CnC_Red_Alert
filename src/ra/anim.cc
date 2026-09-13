@@ -563,7 +563,7 @@ AnimClass::~AnimClass() {
       /*
       **	Remove the object from the appropriate display list.
       */
-      Map.Remove(this, In_Which_Layer());
+      MapEditClass::Remove(this, In_Which_Layer());
 
       /*
       **	Scan for any other animations that are attached to the object
@@ -799,9 +799,9 @@ void AnimClass::Attach_To(ObjectClass* obj) {
   obj->Mark(MARK_OVERLAP_UP);
   obj->IsAnimAttached = true;
   obj->Mark(MARK_OVERLAP_DOWN);
-  Map.Remove(this, In_Which_Layer());
+  MapEditClass::Remove(this, In_Which_Layer());
   xObject = obj->As_Target();
-  Map.Submit(this, In_Which_Layer());
+  MapEditClass::Submit(this, In_Which_Layer());
   Coord = Coord_Sub(Coord, obj->Target_Coord());
 }
 
@@ -936,21 +936,21 @@ void AnimClass::Middle() {
     case ANIM_NAPALM1:
     case ANIM_NAPALM2:
     case ANIM_NAPALM3:
-      new AnimClass(
-          ANIM_FIRE_SMALL,
-          Map.Closest_Free_Spot(Coord_Scatter(Center_Coord(), 0x0040), true), 0,
-          static_cast<unsigned char>(Random_Pick(1, 2)));
+      new AnimClass(ANIM_FIRE_SMALL,
+                    MapEditClass::Closest_Free_Spot(
+                        Coord_Scatter(Center_Coord(), 0x0040), true),
+                    0, static_cast<unsigned char>(Random_Pick(1, 2)));
       if (Percent_Chance(50)) {
-        new AnimClass(
-            ANIM_FIRE_SMALL,
-            Map.Closest_Free_Spot(Coord_Scatter(Center_Coord(), 0x00A0), true),
-            0, static_cast<unsigned char>(Random_Pick(1, 2)));
+        new AnimClass(ANIM_FIRE_SMALL,
+                      MapEditClass::Closest_Free_Spot(
+                          Coord_Scatter(Center_Coord(), 0x00A0), true),
+                      0, static_cast<unsigned char>(Random_Pick(1, 2)));
       }
       if (Percent_Chance(50)) {
-        new AnimClass(
-            ANIM_FIRE_MED,
-            Map.Closest_Free_Spot(Coord_Scatter(Center_Coord(), 0x0070), true),
-            0, static_cast<unsigned char>(Random_Pick(1, 2)));
+        new AnimClass(ANIM_FIRE_MED,
+                      MapEditClass::Closest_Free_Spot(
+                          Coord_Scatter(Center_Coord(), 0x0070), true),
+                      0, static_cast<unsigned char>(Random_Pick(1, 2)));
       }
       break;
 
@@ -993,7 +993,7 @@ void AnimClass::Detach(TARGET target, bool all) {
   assert(IsActive);
 
   if (xObject == target && all) {
-    Map.Remove(this, In_Which_Layer());
+    MapEditClass::Remove(this, In_Which_Layer());
     xObject = kTargetNone;
     IsToDelete = true;
     Mark(MARK_UP);

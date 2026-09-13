@@ -1,6 +1,7 @@
 #ifndef CNC_RED_ALERT_TD_PROFILE_H_
 #define CNC_RED_ALERT_TD_PROFILE_H_
 
+#include "absl/base/attributes.h"
 #include "td/defines.h"  // NewConfigType is an anonymous struct typedef.
 
 int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
@@ -13,8 +14,9 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
 // names in the section to dest (null-separated, double-null terminated).
 // Returns pointer to the value in ini_data, or nullptr if not found.
 char* WWGetPrivateProfileString(const char* section, const char* key,
-                                const char* def, char* dest, int dest_len,
-                                char* ini_data);
+                                const char* def,
+                                char* dest ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                                int dest_len, char* ini_data);
 unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
                                 char* profile);
 

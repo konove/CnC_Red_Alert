@@ -1147,7 +1147,7 @@ void UnitTypeClass::One_Time() {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 bool UnitTypeClass::Create_And_Place(CELL cell, HousesType house) const {
-  UnitClass* unit = new UnitClass(Type, house);
+  auto* unit = new UnitClass(Type, house);
   if (unit != nullptr) {
     return unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX));
   }

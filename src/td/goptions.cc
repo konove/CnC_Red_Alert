@@ -167,8 +167,8 @@ void GameOptionsClass::Process() {
       y = OptionY + ButtonResumeY;
     }
 
-    TextButtonClass* g = new TextButtonClass(_constants[index].ID, text,
-                                             TPF_6PT_GRAD | TPF_NOSHADOW, 0, y);
+    auto* g = new TextButtonClass(_constants[index].ID, text,
+                                  TPF_6PT_GRAD | TPF_NOSHADOW, 0, y);
 
     maxwidth = std::max(g->Width, maxwidth);
     if (!buttons) {
@@ -497,7 +497,7 @@ void GameOptionsClass::Process() {
                 break;
             }
           } else {
-            if (ConfirmationClass().Process(TXT_CONFIRM_EXIT)) {
+            if (ConfirmationClass::Process(TXT_CONFIRM_EXIT)) {
               process = false;
               Queue_Exit();
             } else {
@@ -508,7 +508,7 @@ void GameOptionsClass::Process() {
 
         case BUTTON_GAME:
           display = true;
-          GameControlsClass().Process();
+          GameControlsClass::Process();
           break;
 
         case BUTTON_RESUME:

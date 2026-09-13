@@ -133,7 +133,7 @@ int LZWEngine::Uncompress(const Buffer& input, const Buffer& output) {
     return outcount;
   }
 
-  unsigned char character = static_cast<unsigned char>(old_code);
+  auto character = static_cast<unsigned char>(old_code);
   outcount += outpipe.Put(&character, sizeof(character));
 
   unsigned int count;

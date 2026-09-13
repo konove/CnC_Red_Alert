@@ -16,6 +16,7 @@
 
 #include <cstdint>
 
+#include "absl/base/attributes.h"
 #include "tech/archive.h"
 
 template <class T>
@@ -38,7 +39,7 @@ ObjectClass* ResolveSavedObject(int32_t target, ArchiveReader& ar);
 template <class T>
 class ObjectPtr {
  public:
-  explicit ObjectPtr(T*& ref) : ref_(ref) {}
+  explicit ObjectPtr(T*& ref ABSL_ATTRIBUTE_LIFETIME_BOUND) : ref_(ref) {}
 
   void Serialize(ArchiveWriter& ar);
   void Serialize(ArchiveReader& ar);
@@ -55,7 +56,9 @@ ObjectPtr(T*&) -> ObjectPtr<T>;
 // directly on read.
 class TechnoTypePtr {
  public:
-  explicit TechnoTypePtr(const TechnoTypeClass*& ref) : ref_(ref) {}
+  explicit TechnoTypePtr(
+      const TechnoTypeClass*& ref ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : ref_(ref) {}
 
   void Serialize(ArchiveWriter& ar);
   void Serialize(ArchiveReader& ar);

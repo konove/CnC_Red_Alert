@@ -797,12 +797,12 @@ bool RulesClass::Themes(CCINIClass& ini) {
 
   if (ini.Is_Present(THEMECONTROL)) {
     for (ThemeType theme : magic_enum::enum_values<ThemeType>()) {
-      if (ini.Is_Present(THEMECONTROL, Theme.Base_Name(theme))) {
+      if (ini.Is_Present(THEMECONTROL, ThemeClass::Base_Name(theme))) {
         char buffer[128];
         int scen = 1;
         int owners = kHouseFlagAllies | kHouseFlagSoviet | kHouseFlagOthers;
 
-        ini.Get_String(THEMECONTROL, Theme.Base_Name(theme), "", buffer,
+        ini.Get_String(THEMECONTROL, ThemeClass::Base_Name(theme), "", buffer,
                        sizeof(buffer));
         const char* token = strtok(buffer, ",");
         if (token != nullptr) {
@@ -814,7 +814,7 @@ bool RulesClass::Themes(CCINIClass& ini) {
           owners = Owner_From_Name(token);
         }
 
-        Theme.Set_Theme_Data(theme, scen, owners);
+        ThemeClass::Set_Theme_Data(theme, scen, owners);
       }
     }
     return true;

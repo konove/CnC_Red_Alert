@@ -122,7 +122,6 @@ int TerrainClass::Validate() const {
     num = Terrains.ID(this);
     if (num < 0 || num >= kTerrainMax) {
       Validate_Error("TERRAIN");
-      return 0;
     }
     return 1;
   } else {
@@ -297,11 +296,10 @@ void TerrainClass::operator delete(void* ptr) {
 TerrainClass::TerrainClass(TerrainType type, CELL cell)
     : Class(&TerrainTypeClass::As_Reference(type)) {
   Strength = Class->MaxStrength;
-  if (cell != -1) {
-    if (!Unlimbo(Cell_Coord(cell))) {
-      delete this;
-    }
+  if ((cell != -1) && (!Unlimbo(Cell_Coord(cell)))) {
+    delete this;
   }
+
   Set_Rate(0);  // turn off animation
 }
 
@@ -470,8 +468,7 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
 bool TerrainClass::Catch_Fire() {
   Validate();
   if (!IsCrumbling && !IsOnFire && Class->IsFlammable) {
-    AnimClass* anim =
-        new AnimClass(ANIM_BURN_BIG, Coord_Add(Sort_Y(), 0xFFB00000L));
+    auto* anim = new AnimClass(ANIM_BURN_BIG, Coord_Add(Sort_Y(), 0xFFB00000L));
     if (anim) {
       anim->Attach_To(this);
     }
@@ -740,7 +737,7 @@ COORDINATE TerrainClass::Center_Coord() const {
  *=============================================================================================*/
 unsigned char* TerrainClass::Radar_Icon(CELL cell) {
   Validate();
-  unsigned char* icon =
+  auto* icon =
       (unsigned char*)Class->Get_Radar_Data();  // get a pointer to radar icons
   int width = *icon++;                          // extract the width from data
   int height = *icon++;                         // extract the width from data

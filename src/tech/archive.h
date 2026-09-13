@@ -30,6 +30,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "absl/base/attributes.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"
 
@@ -120,7 +121,8 @@ class ArchiveWriter : public ArchiveBase<ArchiveWriter> {
  public:
   static constexpr bool kIsReading = false;
 
-  explicit ArchiveWriter(Pipe& sink) : sink_(sink) {}
+  explicit ArchiveWriter(Pipe& sink ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : sink_(sink) {}
 
   // Writes a four-byte marker that the reader checks with Section().
   void Section(uint32_t tag) { Scalar(tag); }
@@ -150,7 +152,8 @@ class ArchiveReader : public ArchiveBase<ArchiveReader> {
  public:
   static constexpr bool kIsReading = true;
 
-  explicit ArchiveReader(Straw& source) : source_(source) {}
+  explicit ArchiveReader(Straw& source ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : source_(source) {}
 
   // Reads a marker and compares it with the expected tag. Returns false and
   // records an error on mismatch.
@@ -167,7 +170,9 @@ class ArchiveReader : public ArchiveBase<ArchiveReader> {
   void Bytes(void* data, int size) { Raw(data, size); }
 
   [[nodiscard]] bool ok() const { return error_.empty(); }
-  [[nodiscard]] std::string_view error() const { return error_; }
+  [[nodiscard]] std::string_view error() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return error_;
+  }
 
   // Records the first failure. Later reads become no-ops.
   void Fail(std::string_view why) {

@@ -92,7 +92,6 @@ int OverlayClass::Validate() const {
     num = Overlays.ID(this);
     if (num < 0 || num >= kOverlayMax) {
       Validate_Error("OVERLAY");
-      return 0;
     }
     return 1;
   } else {
@@ -206,124 +205,122 @@ OverlayClass::OverlayClass(OverlayType type, CELL pos, HousesType house)
  *=============================================================================================*/
 bool OverlayClass::Mark(MarkType mark) {
   Validate();
-  if (ObjectClass::Mark(mark)) {
-    if (mark == MARK_DOWN) {
-      CELL cell = Coord_Cell(Coord);
-      CellClass* cellptr = &Map[cell];
+  if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
+    CELL cell = Coord_Cell(Coord);
+    CellClass* cellptr = &Map[cell];
 
+    /*
+    **	Road placement occurs in two steps. First the foundation is
+    *placed, but only *	on buildable terrain. Second, the road is
+    *completed, but only if the foundation *	was previously placed.
+    */
+    if (*this == OVERLAY_ROAD) {
+      if ((cellptr->Overlay == OVERLAY_ROAD && cellptr->OverlayData == 0) ||
+          (cellptr->Overlay == OVERLAY_NONE && cellptr->Is_Generally_Clear())) {
+        if (cellptr->Overlay == OVERLAY_ROAD) {
+          cellptr->OverlayData = 1;
+        } else {
+          cellptr->OverlayData = 0;
+        }
+        cellptr->Overlay = Class->Type;
+        cellptr->Redraw_Objects();
+      }
+    } else {
       /*
-      **	Road placement occurs in two steps. First the foundation is
-      *placed, but only *	on buildable terrain. Second, the road is
-      *completed, but only if the foundation *	was previously placed.
+      **	Walls have special logic when they are marked down.
       */
-      if (*this == OVERLAY_ROAD) {
-        if ((cellptr->Overlay == OVERLAY_ROAD && cellptr->OverlayData == 0) ||
-            (cellptr->Overlay == OVERLAY_NONE &&
-             cellptr->Is_Generally_Clear())) {
-          if (cellptr->Overlay == OVERLAY_ROAD) {
-            cellptr->OverlayData = 1;
-          } else {
-            cellptr->OverlayData = 0;
-          }
+      if (Class->IsWall) {
+        if (cellptr->Is_Generally_Clear() &&
+            cellptr->Overlay != OVERLAY_FLAG_SPOT) {
           cellptr->Overlay = Class->Type;
+          cellptr->OverlayData = 0;
           cellptr->Redraw_Objects();
+          cellptr->Wall_Update();
+
+          /*
+          **	Flag ownership of the cell if the 'global' ownership flag
+          *indicates that this *	is necessary for the overlay.
+          */
+          if (ToOwn != HOUSE_NONE) {
+            cellptr->Owner = ToOwn;
+          }
+
+        } else {
+          delete this;
+          return false;
         }
       } else {
-        /*
-        **	Walls have special logic when they are marked down.
-        */
-        if (Class->IsWall) {
-          if (cellptr->Is_Generally_Clear() &&
-              cellptr->Overlay != OVERLAY_FLAG_SPOT) {
+        if ((cellptr->Overlay == OVERLAY_NONE ||
+             cellptr->Overlay == OVERLAY_SQUISH) &&
+            !cellptr->Cell_Terrain() && Ground[cellptr->Land_Type()].Build) {
+          /*
+          **	Increment the global crate counter. This is used to regulate
+          **	the crate generation.
+          */
+          if (Class->IsCrate) {
+            CrateCount++;
+          }
+
+          /*
+          **	Don't show the squish unless the gross flag is active.
+          */
+          if (!Special.IsGross && Class->Type != OVERLAY_SQUISH) {
             cellptr->Overlay = Class->Type;
             cellptr->OverlayData = 0;
-            cellptr->Redraw_Objects();
-            cellptr->Wall_Update();
-
-            /*
-            **	Flag ownership of the cell if the 'global' ownership flag
-            *indicates that this *	is necessary for the overlay.
-            */
-            if (ToOwn != HOUSE_NONE) {
-              cellptr->Owner = ToOwn;
-            }
-
-          } else {
-            delete this;
-            return false;
           }
-        } else {
-          if ((cellptr->Overlay == OVERLAY_NONE ||
-               cellptr->Overlay == OVERLAY_SQUISH) &&
-              !cellptr->Cell_Terrain() && Ground[cellptr->Land_Type()].Build) {
-            /*
-            **	Increment the global crate counter. This is used to regulate
-            **	the crate generation.
-            */
-            if (Class->IsCrate) {
-              CrateCount++;
-            }
+          cellptr->Redraw_Objects();
+          if (Class->Land == LAND_TIBERIUM) {
+            cellptr->OverlayData = 1;
+            cellptr->Tiberium_Adjust();
+          } else {
+            if (*this == OVERLAY_CONCRETE) {
+              CELL newcell;
 
-            /*
-            **	Don't show the squish unless the gross flag is active.
-            */
-            if (!Special.IsGross && Class->Type != OVERLAY_SQUISH) {
-              cellptr->Overlay = Class->Type;
-              cellptr->OverlayData = 0;
-            }
-            cellptr->Redraw_Objects();
-            if (Class->Land == LAND_TIBERIUM) {
-              cellptr->OverlayData = 1;
-              cellptr->Tiberium_Adjust();
-            } else {
-              if (*this == OVERLAY_CONCRETE) {
-                CELL newcell;
+              /*
+              **	Smudges go away when concrete is laid down.
+              */
+              cellptr->Smudge = SMUDGE_NONE;
+              cellptr->SmudgeData = 0;
+              cellptr->Concrete_Calc();
 
-                /*
-                **	Smudges go away when concrete is laid down.
-                */
-                cellptr->Smudge = SMUDGE_NONE;
-                cellptr->SmudgeData = 0;
-                cellptr->Concrete_Calc();
+              /*
+              **	Possibly add concrete to adjacent cells depending on
+              *whether this *	concrete is in an odd or even row.
+              */
+              if (Cell_X(cell) & 0x01) {
+                newcell = Adjacent_Cell(cellptr->Cell_Number(), FACING_W);
+              } else {
+                newcell = Adjacent_Cell(cellptr->Cell_Number(), FACING_E);
+              }
+              if (Map[newcell].Overlay != OVERLAY_CONCRETE) {
+                Class->Create_And_Place(newcell);
+              }
 
-                /*
-                **	Possibly add concrete to adjacent cells depending on
-                *whether this *	concrete is in an odd or even row.
-                */
-                if (Cell_X(cell) & 0x01) {
-                  newcell = Adjacent_Cell(cellptr->Cell_Number(), FACING_W);
-                } else {
-                  newcell = Adjacent_Cell(cellptr->Cell_Number(), FACING_E);
-                }
-                if (Map[newcell].Overlay != OVERLAY_CONCRETE) {
-                  Class->Create_And_Place(newcell);
-                }
+              /*
+              **	The display attributes must be recalculated for all
+              *adjacent *	cells since their shape can be altered by the
+              *presence of *	concrete at this location.
+              */
+              static FacingType _face[4] = {FACING_N, FACING_E, FACING_S,
+                                            FACING_W};
 
-                /*
-                **	The display attributes must be recalculated for all
-                *adjacent *	cells since their shape can be altered by the
-                *presence of *	concrete at this location.
-                */
-                static FacingType _face[4] = {FACING_N, FACING_E, FACING_S,
-                                              FACING_W};
-
-                for (auto& index : _face) {
-                  cellptr->Adjacent_Cell(index).Concrete_Calc();
-                }
+              for (auto& index : _face) {
+                cellptr->Adjacent_Cell(index).Concrete_Calc();
               }
             }
           }
         }
-
-        /*
-        **	*****  Is this really needed?
-        */
-        cellptr->Recalc_Attributes();
       }
-      delete this;
-      return true;
+
+      /*
+      **	*****  Is this really needed?
+      */
+      cellptr->Recalc_Attributes();
     }
+    delete this;
+    return true;
   }
+
   return false;
 }
 
@@ -364,17 +361,18 @@ void OverlayClass::Read_INI(char* buffer) {
     /*
     **	Don't allow placement of crates in the multiplayer scenarios.
     */
-    if (classid != OVERLAY_NONE &&
-        (GameToPlay == GAME_NORMAL ||
-         !OverlayTypeClass::As_Reference(classid).IsCrate)) {
-      /*
-      **	Don't allow placement of overlays on the top or bottom rows of
-      **	the map.
-      */
-      if (cell >= MAP_CELL_W && cell <= MAP_CELL_TOTAL - MAP_CELL_W) {
-        new OverlayClass(classid, cell);
-      }
+    if ((classid != OVERLAY_NONE &&
+         (GameToPlay == GAME_NORMAL ||
+          !OverlayTypeClass::As_Reference(classid).IsCrate)) &&
+        (cell >= MAP_CELL_W && cell <= MAP_CELL_TOTAL - MAP_CELL_W))
+    /*
+    **	Don't allow placement of overlays on the top or bottom rows of
+    **	the map.
+    */
+    {
+      new OverlayClass(classid, cell);
     }
+
     tbuffer += strlen(tbuffer) + 1;
   }
 }

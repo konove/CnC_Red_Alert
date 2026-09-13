@@ -48,8 +48,8 @@ class ConfirmationClass {
 
  public:
   ConfirmationClass() = default;
-  bool Process(const char* string);
-  bool Process(int text);
+  static bool Process(const char* string);
+  static bool Process(int text);
 };
 
 #endif  // CNC_RED_ALERT_TD_CONFDLG_H_

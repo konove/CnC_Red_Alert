@@ -129,8 +129,8 @@ class DisplayClass : public MapClass {
   /*
   **	Added functionality.
   */
-  void All_To_Look(bool units_only = false);
-  void Constrained_Look(COORDINATE center, LEPTON distance);
+  static void All_To_Look(bool units_only = false);
+  static void Constrained_Look(COORDINATE center, LEPTON distance);
   void Shroud_Cell(CELL cell /*KO, bool shadeit = false*/);
   void Encroach_Shadow();
   void Center_Map(COORDINATE center = 0L);
@@ -164,7 +164,7 @@ class DisplayClass : public MapClass {
   void Cursor_Mark(CELL pos, bool on);
   void Set_Cursor_Shape(const short* list);
   CELL Set_Cursor_Pos(CELL pos = -1);
-  void Get_Occupy_Dimensions(int& w, int& h, const short* list) const;
+  static void Get_Occupy_Dimensions(int& w, int& h, const short* list);
 
   /*
   **	Tactical map only functionality.
@@ -175,8 +175,8 @@ class DisplayClass : public MapClass {
   [[nodiscard]] COORDINATE Pixel_To_Coord(int x, int y) const;
   bool Coord_To_Pixel(COORDINATE coord, int& x, int& y) const;
   bool Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest);
-  void Remove(const ObjectClass* object, LayerType layer);
-  void Submit(const ObjectClass* object, LayerType layer);
+  static void Remove(const ObjectClass* object, LayerType layer);
+  static void Submit(const ObjectClass* object, LayerType layer);
   [[nodiscard]] CELL Calculated_Cell(SourceType dir, WAYPOINT waypoint = -1,
                                      CELL cell = -1,
                                      SpeedType loco = SPEED_FOOT,
@@ -186,18 +186,18 @@ class DisplayClass : public MapClass {
   bool Passes_Proximity_Check(const ObjectTypeClass* object, HousesType house,
                               const short* list, CELL trycell) const;
   [[nodiscard]] ObjectClass* Cell_Object(CELL cell, int x = 0, int y = 0) const;
-  ObjectClass* Next_Object(ObjectClass* object) const;
-  ObjectClass* Prev_Object(ObjectClass* object) const;
+  static ObjectClass* Next_Object(ObjectClass* object);
+  static ObjectClass* Prev_Object(ObjectClass* object);
   [[nodiscard]] int Cell_Shadow(CELL cell) const;
   const short* Text_Overlap_List(const char* text, int x, int y) const;
-  [[nodiscard]] bool Is_Spot_Free(COORDINATE coord) const;
-  [[nodiscard]] COORDINATE Closest_Free_Spot(COORDINATE coord,
-                                             bool any = false) const;
+  [[nodiscard]] static bool Is_Spot_Free(COORDINATE coord);
+  [[nodiscard]] static COORDINATE Closest_Free_Spot(COORDINATE coord,
+                                                    bool any = false);
   void Sell_Mode_Control(int control);
   void Repair_Mode_Control(int control);
 
   virtual void Flag_Cell(CELL cell);
-  [[nodiscard]] bool Is_Cell_Flagged(CELL cell) const {
+  [[nodiscard]] static bool Is_Cell_Flagged(CELL cell) {
     return CellRedraw[cell];
   }
 

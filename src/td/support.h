@@ -5,13 +5,15 @@
 #include <cstdlib>
 #include <source_location>
 
+#include "absl/base/attributes.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/misc.h"
 #include "td/config.h"
 #include "td/monoc.h"
 
-void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
-                                 int frac);
+void* Conquer_Build_Fading_Table(const void* palette,
+                                 void* dest ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                                 int color, int frac);
 void Fat_Put_Pixel(int x, int y, std::uint8_t color, int size,
                    GraphicViewPortClass& /*gpage*/);
 void strtrim(char* buffer);

@@ -62,7 +62,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   bool bReturnDown = false;
 
   bool bIgnoreReturnDown = false;
-  if (Keyboard->Down(KN_RETURN)) {
+  if (KeyboardClass::Down(KN_RETURN)) {
     //	The return key is already down, as we enter the dialog.
     //	Until it comes up again, ignore this fact, so that we don't act on a
     // return press that's not valid.
@@ -196,13 +196,13 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
     //	My hack for triggering escape and return on key up instead of down...
     //	The problem that was occurring was that the calling dialog would act on
     // the key up, 	though this dialog handled the key down. ajw
-    if (Keyboard->Down(KN_ESC)) {
+    if (KeyboardClass::Down(KN_ESC)) {
       bEscapeDown = true;
     } else if (bEscapeDown) {
       input = ButtonKey(BUTTON_OK);
       bEscapeDown = false;
     }
-    if (Keyboard->Down(KN_RETURN)) {
+    if (KeyboardClass::Down(KN_RETURN)) {
       if (!bIgnoreReturnDown) {
         bReturnDown = true;
       }

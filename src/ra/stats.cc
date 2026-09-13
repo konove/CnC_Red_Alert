@@ -839,13 +839,12 @@ void Send_Statistics_Packet() {
       iPort = pWolapi->iGameResServerPort1;
     }
 
-    if (*szGameResServer) {
-      if (pWolapi->pNetUtil->RequestGameresSend(szGameResServer, iPort,
-                                                (unsigned char*)packet,
-                                                packet_size) != S_OK) {
-        // debugprint( "RequestGameresSend( %s, %i ) failed!!!\n",
-        // szGameResServer, iPort );
-      }
+    if ((*szGameResServer) &&
+        (pWolapi->pNetUtil->RequestGameresSend(szGameResServer, iPort,
+                                               (unsigned char*)packet,
+                                               packet_size) != S_OK)) {
+      // debugprint( "RequestGameresSend( %s, %i ) failed!!!\n",
+      // szGameResServer, iPort );
     }
   }
 

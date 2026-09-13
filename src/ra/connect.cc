@@ -403,10 +403,9 @@ int ConnectionClass::Receive_Packet(void* buf, int buflen) {
       if this packet will let us increment our LastSeqID; otherwise, we'll
       get stuck, forever unable to increment LastSeqID.
       ..................................................................*/
-      if (Queue->Max_Receive() - Queue->Num_Receive() <= 1) {
-        if (packet->PacketID != LastSeqID + 1) {
-          return 0;
-        }
+      if ((Queue->Max_Receive() - Queue->Num_Receive() <= 1) &&
+          (packet->PacketID != LastSeqID + 1)) {
+        return 0;
       }
 
       /*..................................................................

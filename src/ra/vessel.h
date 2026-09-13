@@ -42,6 +42,7 @@
 
 #include <cstddef>
 
+#include "absl/base/attributes.h"
 #include "ra/bullet.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
@@ -90,7 +91,10 @@ class VesselClass : public DriveClass {
 
   VesselClass(VesselType classid, HousesType house);
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* ptr);
   // objects compare directly against their type ID.
   // NOLINTNEXTLINE(*-explicit-constructor)
@@ -148,7 +152,8 @@ class VesselClass : public DriveClass {
   void Active_Click_With(ActionType action, ObjectClass* object) override;
   TARGET Greatest_Threat(ThreatType threat) override;  // const;
   [[nodiscard]] bool Is_Allowed_To_Recloak() const override;
-  BulletClass* Fire_At(TARGET target, int which = 0) override;
+  BulletClass* Fire_At(TARGET target,
+                       int which = 0) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   /*
   **	File I/O.
   */

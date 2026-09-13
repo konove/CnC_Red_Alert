@@ -13,5 +13,5 @@ include(Testing)
 add_gtest(
         NAME base_test
         SOURCES hsv_test.cc
-        LIBS base
+        LIBS base absl::core_headers
 )

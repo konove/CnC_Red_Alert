@@ -226,14 +226,12 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
           }
         }
       }
-      if (!player_scrolled) {
-        if (Counter.Time() == 0) {
-          Inertia--;
-          if (Inertia < 0) {
-            Inertia++;
-          }
-          Counter.Set(SCROLL_DELAY);
+      if ((!player_scrolled) && (Counter.Time() == 0)) {
+        Inertia--;
+        if (Inertia < 0) {
+          Inertia++;
         }
+        Counter.Set(SCROLL_DELAY);
       }
     }
   }
@@ -261,14 +259,10 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
 bool ScrollClass::Set_Autoscroll(int control) {
   bool old = IsAutoScroll;
 
-  switch (control) {
-    case -1:
-      IsAutoScroll = !IsAutoScroll;
-      break;
-
-    default:
-      IsAutoScroll = control;
-      break;
+  if (control == -1) {
+    IsAutoScroll = !IsAutoScroll;
+  } else {
+    IsAutoScroll = control;
   }
   return old;
 }

@@ -38,9 +38,11 @@
 #ifndef CNC_RED_ALERT_SDLLIB_FONT_H_
 #define CNC_RED_ALERT_SDLLIB_FONT_H_
 
-#include "base/types.h"
 #include <cstdint>
 #include <cstring>
+
+#include "absl/base/attributes.h"
+#include "base/types.h"
 
 //////////////////////////////////////// Defines
 /////////////////////////////////////////////
@@ -76,7 +78,7 @@ class FontView {
  public:
   // data must point at a complete font file; the view reads the header
   // eagerly and the metric tables lazily.
-  explicit FontView(const void* data)
+  explicit FontView(const void* data ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : font_(static_cast<const uint8_t*>(data)) {
     FontHeader header{};
     std::memcpy(&header, font_, sizeof(header));

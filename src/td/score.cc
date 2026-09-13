@@ -562,7 +562,8 @@ void ScoreScaleClass::Update() {
 }
 
 int Alloc_Object(ScoreAnimClass* obj) {
-  int i, ret;
+  int i;
+  int ret;
 
   for (i = ret = 0; i < MAXSCOREOBJS; i++) {
     if (!ScoreObjs[i]) {
@@ -592,17 +593,14 @@ void TextBlitClass::Add(int x, int y, int dx, int dy, int w, int h) {
 void TextBlitClass::Clear() { Count = 0; }
 
 void TextBlitClass::Update() {
-  if (TextPrintBuffer) {
-    if (HidPage.Lock()) {
-      for (int i = 0; i < Count; i++) {
-        TextPrintBuffer->Blit(HidPage, BlitListo[i].SourceX,
-                              BlitListo[i].SourceY, BlitListo[i].DestX,
-                              BlitListo[i].DestY, BlitListo[i].Width,
-                              BlitListo[i].Height, true);
-      }
-
-      HidPage.Unlock();
+  if (TextPrintBuffer && HidPage.Lock()) {
+    for (int i = 0; i < Count; i++) {
+      TextPrintBuffer->Blit(HidPage, BlitListo[i].SourceX, BlitListo[i].SourceY,
+                            BlitListo[i].DestX, BlitListo[i].DestY,
+                            BlitListo[i].Width, BlitListo[i].Height, true);
     }
+
+    HidPage.Unlock();
   }
 }
 
@@ -1130,7 +1128,9 @@ void Cycle_Wait_Click() {
     counter = (counter + 1) & 7;
 
     if (counter == 0) {
-      unsigned char r, g, b;
+      unsigned char r;
+      unsigned char g;
+      unsigned char b;
 
       r = Palette[(233 * 3) + 0];
       g = Palette[(233 * 3) + 1];
@@ -1288,8 +1288,10 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
 
 void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
                               int gkilled, int nkilled, int ypos) {
-  int i, max;
-  int gdikilled = gkilled, nodkilled = nkilled;
+  int i;
+  int max;
+  int gdikilled = gkilled;
+  int nodkilled = nkilled;
 
   max = std::max(gdikilled, nodkilled);
   if (!max) {
@@ -1368,7 +1370,11 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
 }
 
 void ScoreClass::Do_Nod_Casualties_Graph() {
-  int i, gdikilled, nodkilled, civkilled, max;
+  int i;
+  int gdikilled;
+  int nodkilled;
+  int civkilled;
+  int max;
 
   const void* e1ptr = MFCD::Retrieve("E1.SHP");
   const void* c1ptr = MFCD::Retrieve("C1.SHP");
@@ -1513,8 +1519,10 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
   static int _credty[2] = {179 - 12, 62};
 #endif
 
-  int credobj, i;
-  int min, add;
+  int credobj;
+  int i;
+  int min;
+  int add;
 
   const void* credshape = MFCD::Retrieve("CREDS.SHP");
 
@@ -1659,7 +1667,9 @@ void ScoreClass::Count_Up_Print(const char* str, int percent, int max, int xpos,
  *=============================================================================================*/
 void ScoreClass::Input_Name(char str[], int xpos, int ypos,
                             const unsigned char pal[]) {
-  int key = 0, ascii = 0, index = 0;
+  int key = 0;
+  int ascii = 0;
+  int index = 0;
 
   const void* keystrok = MFCD::Retrieve("KEYSTROK.AUD");
 
@@ -1692,11 +1702,11 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
       ** If they hit 'backspace' when they're on the last letter,
       ** turn it into a space instead.
       */
-      if (key == KA_BACKSPACE && index == MAX_FAMENAME_LENGTH - 2) {
-        if (str[index] && str[index] != 32) {
-          key = 32;
-        }
+      if ((key == KA_BACKSPACE && index == MAX_FAMENAME_LENGTH - 2) &&
+          (str[index] && str[index] != 32)) {
+        key = 32;
       }
+
       if (key == KA_BACKSPACE) {  // if (key == KN_BACKSPACE) {
         if (index) {
           str[--index] = 0;
@@ -1750,7 +1760,8 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
 }
 
 void Animate_Cursor(int pos, int ypos) {
-  static int _lastpos, _state;
+  static int _lastpos;
+  static int _state;
   static CountDownTimerClass _timer;
 
   ypos += 7;  // move cursor to bottom of letter
@@ -1991,12 +2002,11 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
 void Call_Back_Delay(int time) {
   CountDownTimerClass cd;
 
-  if (!ControlQ) {
-    if (Keyboard::Down(KN_LCTRL) && Keyboard::Down(KN_Q)) {
-      ControlQ = 1;
-      Keyboard::Clear();
-    }
+  if ((!ControlQ) && (Keyboard::Down(KN_LCTRL) && Keyboard::Down(KN_Q))) {
+    ControlQ = 1;
+    Keyboard::Clear();
   }
+
   if (ControlQ) {
     time = 0;
   }
@@ -2091,7 +2101,8 @@ void Multi_Score_Presentation() {
   static const unsigned char* _colors[] = {yellowpal,  redpal,   bluepal,
                                            _orangepal, greenpal, _graypal};
 
-  int i, k;
+  int i;
+  int k;
   void* anim;
   const void* oldfont;
   int oldfontxspacing = FontXSpacing;

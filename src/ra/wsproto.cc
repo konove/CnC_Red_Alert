@@ -423,7 +423,7 @@ void WinsockInterfaceClass::WriteTo(void* buffer, int buffer_len,
   /*
   ** Create a temporary holding area for the packet.
   */
-  WinsockBufferType* packet = new WinsockBufferType;
+  auto* packet = new WinsockBufferType;
 
   /*
   ** Copy the packet into the holding buffer.
@@ -471,7 +471,7 @@ void WinsockInterfaceClass::Broadcast(void* buffer, int buffer_len) {
   /*
   ** Create a temporary holding area for the packet.
   */
-  WinsockBufferType* packet = new WinsockBufferType;
+  auto* packet = new WinsockBufferType;
 
   /*
   ** Copy the packet into the holding buffer.

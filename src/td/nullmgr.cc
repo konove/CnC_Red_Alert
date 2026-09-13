@@ -303,12 +303,12 @@ int NullModemClass::Init(int port, int /*unused*/, char* dev_name, int baud,
       }
       for (i = 0; i < 10; i++) {
         ModemRegistry = new ModemRegistryEntryClass(i);
-        if (ModemRegistry->Get_Modem_Name()) {
-          if (!strcmp(dev_name, ModemRegistry->Get_Modem_Name())) {
-            device = ModemRegistry->Get_Modem_Device_Name();
-            break;
-          }
+        if (ModemRegistry->Get_Modem_Name() &&
+            (!strcmp(dev_name, ModemRegistry->Get_Modem_Name()))) {
+          device = ModemRegistry->Get_Modem_Device_Name();
+          break;
         }
+
         delete ModemRegistry;
         ModemRegistry = nullptr;
       }
@@ -490,15 +490,15 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
       }
       for (i = 0; i < 10; i++) {
         ModemRegistry = new ModemRegistryEntryClass(i);
-        if (ModemRegistry->Get_Modem_Name()) {
-          if (!strcmp(device, ModemRegistry->Get_Modem_Name())) {
-            /*
-            ** Got a match. Break out leaving the registry info intact.
-            */
-            device = ModemRegistry->Get_Modem_Device_Name();
-            break;
-          }
+        if (ModemRegistry->Get_Modem_Name() &&
+            (!strcmp(device, ModemRegistry->Get_Modem_Name()))) {
+          /*
+          ** Got a match. Break out leaving the registry info intact.
+          */
+          device = ModemRegistry->Get_Modem_Device_Name();
+          break;
         }
+
         delete ModemRegistry;
         ModemRegistry = nullptr;
       }
@@ -708,7 +708,7 @@ int NullModemClass::Service() {
   First, copy all the bytes we can from the Greenleaf RX buffer to our
   own buffer.
   ------------------------------------------------------------------------*/
-  RXCount += SerialPort->Read_From_Serial_Port(
+  RXCount += WinModemClass::Read_From_Serial_Port(
       (unsigned char*)(RXBuf + RXCount), RXSize - RXCount);
 
   //	if (RXCount){
@@ -1102,7 +1102,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   int status;
   int error_count = 0;
 
-  int x, y, width, height;  // dialog dimensions
+  int x;
+  int y;
+  int width;
+  int height;  // dialog dimensions
   char buffer[80 * 3];
 
   int factor = SeenBuff.Get_Width() / 320;
@@ -1246,11 +1249,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
                          ModemRegistry->Get_Modem_Hardware_Flow_Control());
         status = Send_Modem_Command(send_string, '\r', buffer, 81,
                                     DEFAULT_TIMEOUT, 1);
-        if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
-          if (CCMessageBox().Process(TXT_NO_FLOW_CONTROL_RESPONSE, TXT_IGNORE,
-                                     TXT_CANCEL)) {
-            return false;
-          }
+        if ((status != MODEM_CMD_OK && status != MODEM_CMD_0) &&
+            CCMessageBox().Process(TXT_NO_FLOW_CONTROL_RESPONSE, TXT_IGNORE,
+                                   TXT_CANCEL)) {
+          return false;
         }
       }
     } else {
@@ -1262,11 +1264,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
                          ModemRegistry->Get_Modem_No_Flow_Control());
         status = Send_Modem_Command(send_string, '\r', buffer, 81,
                                     DEFAULT_TIMEOUT, 1);
-        if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
-          if (CCMessageBox().Process(TXT_NO_FLOW_CONTROL_RESPONSE, TXT_IGNORE,
-                                     TXT_CANCEL)) {
-            return false;
-          }
+        if ((status != MODEM_CMD_OK && status != MODEM_CMD_0) &&
+            CCMessageBox().Process(TXT_NO_FLOW_CONTROL_RESPONSE, TXT_IGNORE,
+                                   TXT_CANCEL)) {
+          return false;
         }
       }
     }
@@ -1279,11 +1280,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         port::SafeAppend(send_string,
                          ModemRegistry->Get_Modem_Compression_Enable());
         Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
-        if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
-          if (CCMessageBox().Process(TXT_NO_COMPRESSION_RESPONSE, TXT_IGNORE,
-                                     TXT_CANCEL)) {
-            return false;
-          }
+        if ((status != MODEM_CMD_OK && status != MODEM_CMD_0) &&
+            CCMessageBox().Process(TXT_NO_COMPRESSION_RESPONSE, TXT_IGNORE,
+                                   TXT_CANCEL)) {
+          return false;
         }
       }
     } else {
@@ -1291,11 +1291,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         port::SafeAppend(send_string,
                          ModemRegistry->Get_Modem_Compression_Disable());
         Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
-        if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
-          if (CCMessageBox().Process(TXT_NO_COMPRESSION_RESPONSE, TXT_IGNORE,
-                                     TXT_CANCEL)) {
-            return false;
-          }
+        if ((status != MODEM_CMD_OK && status != MODEM_CMD_0) &&
+            CCMessageBox().Process(TXT_NO_COMPRESSION_RESPONSE, TXT_IGNORE,
+                                   TXT_CANCEL)) {
+          return false;
         }
       }
     }
@@ -1308,11 +1307,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         port::SafeAppend(send_string,
                          ModemRegistry->Get_Modem_Error_Correction_Enable());
         Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
-        if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
-          if (CCMessageBox().Process(TXT_NO_ERROR_CORRECTION_RESPONSE,
-                                     TXT_IGNORE, TXT_CANCEL)) {
-            return false;
-          }
+        if ((status != MODEM_CMD_OK && status != MODEM_CMD_0) &&
+            CCMessageBox().Process(TXT_NO_ERROR_CORRECTION_RESPONSE, TXT_IGNORE,
+                                   TXT_CANCEL)) {
+          return false;
         }
       }
     } else {
@@ -1320,11 +1318,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         port::SafeAppend(send_string,
                          ModemRegistry->Get_Modem_Error_Correction_Disable());
         Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
-        if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
-          if (CCMessageBox().Process(TXT_NO_ERROR_CORRECTION_RESPONSE,
-                                     TXT_IGNORE, TXT_CANCEL)) {
-            return false;
-          }
+        if ((status != MODEM_CMD_OK && status != MODEM_CMD_0) &&
+            CCMessageBox().Process(TXT_NO_ERROR_CORRECTION_RESPONSE, TXT_IGNORE,
+                                   TXT_CANCEL)) {
+          return false;
         }
       }
     }
@@ -1392,7 +1389,10 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   int delay;
   DialStatusType dialstatus = DIAL_ERROR;
 
-  int x, y, width, height;  // dialog dimensions
+  int x;
+  int y;
+  int width;
+  int height;  // dialog dimensions
   char buffer[80 * 3];
 
   Input = KN_NONE;
@@ -1640,7 +1640,10 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   DialStatusType dialstatus = DIAL_ERROR;
   bool ring = false;
 
-  int x, y, width, height;  // dialog dimensions
+  int x;
+  int y;
+  int width;
+  int height;  // dialog dimensions
   char text_buffer[80 * 3];
   char comm_buffer[80 * 3];
 

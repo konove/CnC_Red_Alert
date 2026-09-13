@@ -746,13 +746,12 @@ static void Queue_AI_Multiplayer() {
   //------------------------------------------------------------------------
   // Only process every 'FrameSendRate' frames
   //------------------------------------------------------------------------
-  if (CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-    if (!Process_Send_Period(net)) {
-      if (IsMono) {
-        MonoClass::Disable();
-      }
-      return;
+  if ((CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) &&
+      (!Process_Send_Period(net))) {
+    if (IsMono) {
+      MonoClass::Disable();
     }
+    return;
   }
 
   //------------------------------------------------------------------------
@@ -892,7 +891,8 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   // Other misc variables
   //........................................................................
   KeyNumType input;  // for user input
-  int x, y;          // for map input
+  int x;
+  int y;  // for map input
   RetcodeType rc;
 
   //------------------------------------------------------------------------
@@ -1978,7 +1978,8 @@ static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
   static int displayed_time = 0;  // time value currently displayed
   int new_time;
   int oldest_index = 0;  // index of person requiring a reconnect
-  int i, j;
+  int i;
+  int j;
 
   //------------------------------------------------------------------------
   // Convert the timer to seconds
@@ -2018,10 +2019,8 @@ static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
   //........................................................................
   //	If user hits ESC, bail out
   //........................................................................
-  if (Check_Key()) {
-    if (Get_Key_Num() == KN_ESC) {
-      return 1;
-    }
+  if (Check_Key() && (Get_Key_Num() == KN_ESC)) {
+    return 1;
   }
 
   return 0;
@@ -2068,7 +2067,8 @@ static int Handle_Timeout(ConnManClass* net, int* their_frame,
                           unsigned short* their_sent,
                           unsigned short* their_recv) {
   int oldest_index;  // index of person requiring a reconnect
-  int i, j;
+  int i;
+  int j;
   int id;
 
   //------------------------------------------------------------------------
@@ -2646,14 +2646,10 @@ static int Breakup_Receive_Packet(void* buf, int bufsize) {
   /*
   ** is there enough leftover for another record
   */
-  switch (CommProtocol) {
-    case COMM_PROTOCOL_SINGLE_NO_COMP:
-      count = Extract_Uncompressed_Events(buf, bufsize);
-      break;
-
-    default:
-      count = Extract_Compressed_Events(buf, bufsize);
-      break;
+  if (CommProtocol == COMM_PROTOCOL_SINGLE_NO_COMP) {
+    count = Extract_Uncompressed_Events(buf, bufsize);
+  } else {
+    count = Extract_Compressed_Events(buf, bufsize);
   }
 
   return count;
@@ -2973,7 +2969,10 @@ static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
                           ConnManClass* net, TCountDownTimerClass* /*unused*/,
                           int* their_frame, unsigned short* their_sent,
                           unsigned short* their_recv) {
-  int i, j, k, wibble;
+  int i;
+  int j;
+  int k;
+  int wibble;
   int index;
 
   //------------------------------------------------------------------------
@@ -3269,7 +3268,8 @@ static void Clean_DoList(ConnManClass* net) {
  *   08/14/1995 BRR : Created.                                             *
  *=========================================================================*/
 static void Queue_Record() {
-  int i, j;
+  int i;
+  int j;
 
   //------------------------------------------------------------------------
   //	Compute # of events to save this frame
@@ -3326,7 +3326,8 @@ static void Queue_Playback() {
   EventClass event;
   int i;
   int ok;
-  static int mx, my;
+  static int mx;
+  static int my;
   int max_houses;
   HousesType base_house;
   int key;
@@ -3380,10 +3381,10 @@ static void Queue_Playback() {
   testframe = static_cast<int>((Frame + (FrameSendRate - 1)) / FrameSendRate *
                                FrameSendRate);
 
-  if (GameToPlay != GAME_NORMAL && CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-    if (Frame != testframe) {
-      return;
-    }
+  if ((GameToPlay != GAME_NORMAL &&
+       CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) &&
+      (Frame != testframe)) {
+    return;
   }
 
   //------------------------------------------------------------------------

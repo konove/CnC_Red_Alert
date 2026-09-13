@@ -403,7 +403,7 @@ void CellClass::Redraw_Objects(bool forced) {
 
   CELL cell = Cell_Number();
 
-  if (Map.In_View(cell) && (forced || !Map.Is_Cell_Flagged(cell))) {
+  if (Map.In_View(cell) && (forced || !MapEditClass::Is_Cell_Flagged(cell))) {
     /*
     **	Flag the icon to be redrawn.
     */
@@ -562,11 +562,10 @@ void CellClass::Recalc_Attributes() {
   **	Special override for interior terrain set so that a non-template or a
   *clear template *	is equivalent to impassable rock.
   */
-  if (LastTheater == THEATER_INTERIOR) {
-    if (TType == TEMPLATE_NONE || TType == TEMPLATE_CLEAR1) {
-      Land = LAND_ROCK;
-      return;
-    }
+  if ((LastTheater == THEATER_INTERIOR) &&
+      (TType == TEMPLATE_NONE || TType == TEMPLATE_CLEAR1)) {
+    Land = LAND_ROCK;
+    return;
   }
 
   /*
@@ -1148,12 +1147,10 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       */
       if (IsCursorHere) {
         SpeedType loco = SPEED_NONE;
-        if (Map.PendingObjectPtr) {
-          if (Map.PendingObjectPtr->What_Am_I() == RTTI_BUILDING) {
-            BuildingClass* obj =
-                dynamic_cast<BuildingClass*>(Map.PendingObjectPtr);
-            loco = obj->Class->Speed;
-          }
+        if (Map.PendingObjectPtr &&
+            (Map.PendingObjectPtr->What_Am_I() == RTTI_BUILDING)) {
+          auto* obj = dynamic_cast<BuildingClass*>(Map.PendingObjectPtr);
+          loco = obj->Class->Speed;
         }
 
         /*
@@ -1322,18 +1319,18 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       */
       for (int index = 0; index < count; index++) {
         object = optr[index];
-        int xx, yy;
-        if (object->IsToDisplay &&
-            (!object->Is_Techno() ||
-             ((TechnoClass*)object)->Visual_Character() == VISUAL_NORMAL) &&
-            Map.Coord_To_Pixel(object->Render_Coord(), xx, yy)) {
-          if (Calc_Partial_Window(x, y, xx, yy)) {
-            object->Draw_It(xx, yy, WINDOW_PARTIAL);
-            // IsToDisplay clearing moved to frame end in DisplayClass::Draw_It
-            // to prevent flickering when render rate exceeds logic tick rate.
-            if (MapEditorActive) {
-              object->IsToDisplay = true;
-            }
+        int xx;
+        int yy;
+        if ((object->IsToDisplay &&
+             (!object->Is_Techno() ||
+              ((TechnoClass*)object)->Visual_Character() == VISUAL_NORMAL) &&
+             Map.Coord_To_Pixel(object->Render_Coord(), xx, yy)) &&
+            Calc_Partial_Window(x, y, xx, yy)) {
+          object->Draw_It(xx, yy, WINDOW_PARTIAL);
+          // IsToDisplay clearing moved to frame end in DisplayClass::Draw_It
+          // to prevent flickering when render rate exceeds logic tick rate.
+          if (MapEditorActive) {
+            object->IsToDisplay = true;
           }
         }
       }
@@ -1813,7 +1810,7 @@ const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
 void CellClass::Adjust_Threat(HousesType house, int threat_value) {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  int region = Map.Cell_Region(Cell_Number());
+  int region = MapEditClass::Cell_Region(Cell_Number());
 
   for (HousesType lp : magic_enum::enum_values<HousesType>()) {
     if (lp == house) {
@@ -1853,66 +1850,66 @@ void CellClass::Adjust_Threat(HousesType house, int threat_value) {
  *=============================================================================================*/
 long CellClass::Tiberium_Adjust(bool pregame) {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
-  if (Overlay != OVERLAY_NONE) {
-    if (OverlayTypeClass::As_Reference(Overlay).Land == LAND_TIBERIUM) {
-      static int _adj[9] = {0, 1, 3, 4, 6, 7, 8, 10, 11};
-      static int _adjgem[9] = {0, 0, 0, 1, 1, 1, 2, 2, 2};
-      int count = 0;
+  if ((Overlay != OVERLAY_NONE) &&
+      (OverlayTypeClass::As_Reference(Overlay).Land == LAND_TIBERIUM)) {
+    static int _adj[9] = {0, 1, 3, 4, 6, 7, 8, 10, 11};
+    static int _adjgem[9] = {0, 0, 0, 1, 1, 1, 2, 2, 2};
+    int count = 0;
 
-      /*
-      **	Mixup the Tiberium overlays so that they don't look the same.
-      **	Since the type of ore is known, also record the nominal
-      **	value per step of that ore type.
-      */
-      bool gems = false;
-      int value = 0;
-      if (pregame) {
-        switch (Overlay) {
-          case OVERLAY_GOLD1:
-          case OVERLAY_GOLD2:
-          case OVERLAY_GOLD3:
-          case OVERLAY_GOLD4:
-            value = Rule.GoldValue;
-            Overlay = Random_Pick(OVERLAY_GOLD1, OVERLAY_GOLD4);
-            break;
+    /*
+    **	Mixup the Tiberium overlays so that they don't look the same.
+    **	Since the type of ore is known, also record the nominal
+    **	value per step of that ore type.
+    */
+    bool gems = false;
+    int value = 0;
+    if (pregame) {
+      switch (Overlay) {
+        case OVERLAY_GOLD1:
+        case OVERLAY_GOLD2:
+        case OVERLAY_GOLD3:
+        case OVERLAY_GOLD4:
+          value = Rule.GoldValue;
+          Overlay = Random_Pick(OVERLAY_GOLD1, OVERLAY_GOLD4);
+          break;
 
-          case OVERLAY_GEMS1:
-          case OVERLAY_GEMS2:
-          case OVERLAY_GEMS3:
-          case OVERLAY_GEMS4:
-            gems = true;
-            value = Rule.GemValue * 4;
-            Overlay = Random_Pick(OVERLAY_GEMS1, OVERLAY_GEMS4);
-            break;
+        case OVERLAY_GEMS1:
+        case OVERLAY_GEMS2:
+        case OVERLAY_GEMS3:
+        case OVERLAY_GEMS4:
+          gems = true;
+          value = Rule.GemValue * 4;
+          Overlay = Random_Pick(OVERLAY_GEMS1, OVERLAY_GEMS4);
+          break;
 
-          default:
-            break;
-        }
+        default:
+          break;
       }
-
-      /*
-      **	Add up all adjacent cells that contain tiberium.
-      ** (Skip those cells which aren't on the map)
-      */
-      for (FacingType face : magic_enum::enum_values<FacingType>()) {
-        CellClass& adj = Adjacent_Cell(face);
-
-        if (adj.Overlay != OVERLAY_NONE &&
-            OverlayTypeClass::As_Reference(adj.Overlay).Land == LAND_TIBERIUM) {
-          count++;
-        }
-      }
-
-      if (gems) {
-        OverlayData = static_cast<unsigned char>(_adjgem[count]);
-        OverlayData = static_cast<unsigned char>(
-            std::min(static_cast<int>(OverlayData), 2));
-      } else {
-        OverlayData = static_cast<unsigned char>(_adj[count]);
-      }
-      return (static_cast<long>(OverlayData + 1)) * value;
     }
+
+    /*
+    **	Add up all adjacent cells that contain tiberium.
+    ** (Skip those cells which aren't on the map)
+    */
+    for (FacingType face : magic_enum::enum_values<FacingType>()) {
+      CellClass& adj = Adjacent_Cell(face);
+
+      if (adj.Overlay != OVERLAY_NONE &&
+          OverlayTypeClass::As_Reference(adj.Overlay).Land == LAND_TIBERIUM) {
+        count++;
+      }
+    }
+
+    if (gems) {
+      OverlayData = static_cast<unsigned char>(_adjgem[count]);
+      OverlayData = static_cast<unsigned char>(
+          std::min(static_cast<int>(OverlayData), 2));
+    } else {
+      OverlayData = static_cast<unsigned char>(_adj[count]);
+    }
+    return (static_cast<long>(OverlayData + 1)) * value;
   }
+
   return 0;
 }
 
@@ -2069,7 +2066,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
           ** but as time goes on the chance goes up.
           */
           if (Session.Type != GAME_NORMAL) {
-            int i, ucount;
+            int i;
+            int ucount;
             int minunits = 1000;
             bool found_spot = false;
             unsigned long minutes = Score.ElapsedTime / kTimerMinute;
@@ -2291,7 +2289,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         }
 
         if (utp != nullptr) {
-          UnitClass* goodie_unit =
+          auto* goodie_unit =
               dynamic_cast<UnitClass*>(utp->Create_One_Of(object->House));
           if (goodie_unit != nullptr) {
             if (goodie_unit->Unlimbo(Cell_Coord())) {
@@ -2323,13 +2321,12 @@ bool CellClass::Goodie_Check(FootClass* object) {
               INFANTRY_E1, INFANTRY_E1, INFANTRY_E1,
               INFANTRY_E1, INFANTRY_E1, INFANTRY_E1,
               INFANTRY_E2, INFANTRY_E3, INFANTRY_RENOVATOR};
-          if (!InfantryTypeClass::As_Reference(
-                   _inf[Random_Pick<int>(0, std::ssize(_inf) - 1)])
-                   .Create_And_Place(Cell_Number(), object->Owner())) {
-            if (index == 0) {
-              give_crate_money();
-              break;
-            }
+          if ((!InfantryTypeClass::As_Reference(
+                    _inf[Random_Pick<int>(0, std::ssize(_inf) - 1)])
+                    .Create_And_Place(Cell_Number(), object->Owner())) &&
+              (index == 0)) {
+            give_crate_money();
+            break;
           }
         }
         return false;
@@ -2338,24 +2335,24 @@ bool CellClass::Goodie_Check(FootClass* object) {
       **	A one para-bomb mission.
       */
       case CRATE_PARA_BOMB:
-        if (object->House->SuperWeapon[SPC_PARA_BOMB].Enable(true)) {
-          if (object->IsOwnedByPlayer) {
-            Map.Add(RTTI_SPECIAL, SPC_PARA_BOMB);
-            Map.Column[1].Flag_To_Redraw();
-          }
+        if (object->House->SuperWeapon[SPC_PARA_BOMB].Enable(true) &&
+            object->IsOwnedByPlayer) {
+          Map.Add(RTTI_SPECIAL, SPC_PARA_BOMB);
+          Map.Column[1].Flag_To_Redraw();
         }
+
         break;
 
       /*
       **	A one time sonar pulse
       */
       case CRATE_SONAR:
-        if (object->House->SuperWeapon[SPC_SONAR_PULSE].Enable(true)) {
-          if (object->IsOwnedByPlayer) {
-            Map.Add(RTTI_SPECIAL, SPC_SONAR_PULSE);
-            Map.Column[1].Flag_To_Redraw();
-          }
+        if (object->House->SuperWeapon[SPC_SONAR_PULSE].Enable(true) &&
+            object->IsOwnedByPlayer) {
+          Map.Add(RTTI_SPECIAL, SPC_SONAR_PULSE);
+          Map.Column[1].Flag_To_Redraw();
         }
+
         break;
 
       /*
@@ -2423,12 +2420,12 @@ bool CellClass::Goodie_Check(FootClass* object) {
         break;
 
       case CRATE_ICBM:
-        if (object->House->SuperWeapon[SPC_NUCLEAR_BOMB].Enable(true)) {
-          if (object->IsOwnedByPlayer) {
-            Map.Add(RTTI_SPECIAL, SPC_NUCLEAR_BOMB);
-            Map.Column[1].Flag_To_Redraw();
-          }
+        if (object->House->SuperWeapon[SPC_NUCLEAR_BOMB].Enable(true) &&
+            object->IsOwnedByPlayer) {
+          Map.Add(RTTI_SPECIAL, SPC_NUCLEAR_BOMB);
+          Map.Column[1].Flag_To_Redraw();
         }
+
         break;
 
       case CRATE_ARMOR:
@@ -2461,7 +2458,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
               Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius &&
               dynamic_cast<FootClass*>(obj)->SpeedBias == 1 &&
               obj->What_Am_I() != RTTI_AIRCRAFT) {
-            FootClass* foot = dynamic_cast<FootClass*>(obj);
+            auto* foot = dynamic_cast<FootClass*>(obj);
 
             fixed val = foot->SpeedBias * fixed(CrateData[powerup], 256);
             foot->SpeedBias = val;
@@ -2655,10 +2652,8 @@ bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
   **	If a zone was specified, then see if the cell is in a legal
   **	zone to allow movement.
   */
-  if (zone != -1) {
-    if (std::cmp_not_equal(zone, Zones[check])) {
-      return false;
-    }
+  if ((zone != -1) && std::cmp_not_equal(zone, Zones[check])) {
+    return false;
   }
 
   /*
@@ -2778,10 +2773,8 @@ bool CellClass::Can_Tiberium_Grow() const {
     return false;
   }
 
-  if (Session.Type != GAME_NORMAL) {
-    if (!Session.Options.Tiberium) {
-      return false;
-    }
+  if ((Session.Type != GAME_NORMAL) && (!Session.Options.Tiberium)) {
+    return false;
   }
 
   if (Land_Type() != LAND_TIBERIUM) {
@@ -2822,10 +2815,8 @@ bool CellClass::Can_Tiberium_Spread() const {
     return false;
   }
 
-  if (Session.Type != GAME_NORMAL) {
-    if (!Session.Options.Tiberium) {
-      return false;
-    }
+  if ((Session.Type != GAME_NORMAL) && (!Session.Options.Tiberium)) {
+    return false;
   }
 
   if (Land_Type() != LAND_TIBERIUM) {
@@ -2883,11 +2874,10 @@ bool CellClass::Grow_Tiberium() {
  * HISTORY: * 08/14/1996 JLB : Created. *
  *=============================================================================================*/
 bool CellClass::Spread_Tiberium(bool forced) {
-  if (!forced) {
-    if (!Can_Tiberium_Spread()) {
-      return false;
-    }
+  if ((!forced) && (!Can_Tiberium_Spread())) {
+    return false;
   }
+
   FacingType offset = Random_Pick(FACING_N, FACING_NW);
   // Placing the overlay is the point of the search, so not any_of.
   // NOLINTNEXTLINE(readability-use-anyofallof)

@@ -120,7 +120,7 @@ class CCFileClass : public CDFileClass {
 
  public:
   // Force these to never be invoked.
-  CCFileClass operator=(const CCFileClass& c) = delete;
+  CCFileClass& operator=(const CCFileClass& c) = delete;
   CCFileClass(const CCFileClass&) = delete;
 };
 

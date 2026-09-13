@@ -580,35 +580,33 @@ long BufferIOFileClass::Write(const void* buffer, long size) {
           sizetowrite = size;
         }
 
-        if (sizetowrite != BufferSize) {
-          if (!IsCached) {
-            long readsize;
+        if ((sizetowrite != BufferSize) && (!IsCached)) {
+          long readsize;
 
-            if (FileSize < BufferSize) {
-              readsize = FileSize;
-              BufferFilePos = 0;
-            } else {
-              readsize = BufferSize;
-              BufferFilePos = FilePos;
-            }
-
-            if (TrueFileStart) {
-              UseBuffer = false;
-              Seek(FilePos, SEEK_SET);
-              Read(Buffer, BufferSize);
-              Seek(FilePos, SEEK_SET);
-              UseBuffer = true;
-            } else {
-              RawFileClass::Seek(BufferFilePos, SEEK_SET);
-              RawFileClass::Read(Buffer, readsize);
-            }
-
-            BufferPos = 0;
-            BufferChangeBeg = -1;
-            BufferChangeEnd = -1;
-
-            IsCached = true;
+          if (FileSize < BufferSize) {
+            readsize = FileSize;
+            BufferFilePos = 0;
+          } else {
+            readsize = BufferSize;
+            BufferFilePos = FilePos;
           }
+
+          if (TrueFileStart) {
+            UseBuffer = false;
+            Seek(FilePos, SEEK_SET);
+            Read(Buffer, BufferSize);
+            Seek(FilePos, SEEK_SET);
+            UseBuffer = true;
+          } else {
+            RawFileClass::Seek(BufferFilePos, SEEK_SET);
+            RawFileClass::Read(Buffer, readsize);
+          }
+
+          BufferPos = 0;
+          BufferChangeBeg = -1;
+          BufferChangeEnd = -1;
+
+          IsCached = true;
         }
 
         memmove(static_cast<char*>(Buffer) + BufferPos,
@@ -694,11 +692,9 @@ long BufferIOFileClass::Write(const void* buffer, long size) {
 long BufferIOFileClass::Read(void* buffer, long size) {
   int opened = false;
 
-  if (!Is_Open()) {
-    if (Open()) {
-      TrueFileStart = RawFileClass::Seek(0);
-      opened = true;
-    }
+  if ((!Is_Open()) && Open()) {
+    TrueFileStart = RawFileClass::Seek(0);
+    opened = true;
   }
 
   if (UseBuffer) {
@@ -832,11 +828,9 @@ long BufferIOFileClass::Seek(long pos, int dir) {
         break;
     }
 
-    if (TrueFileStart) {
-      if (pos >= TrueFileStart) {
-        pos -= TrueFileStart;
-        adjusted = true;
-      }
+    if (TrueFileStart && (pos >= TrueFileStart)) {
+      pos -= TrueFileStart;
+      adjusted = true;
     }
 
     FilePos += pos;

@@ -102,12 +102,19 @@ void Choose_Side() {
                                            0x0,  0x0,  0x1C, 0x0};
 
   void* anim;
-  VqaPlayer gdibrief_player, nodbrief_player;
-  MixFileVqaIo gdibrief_io, nodbrief_io;  // Must outlive the open players.
-  bool gdibrief = false, nodbrief = false;  // Movie opened successfully?
-  const void *staticaud, *oldfont;
-  const void *speechg, *speechn, *speech = nullptr;
-  int statichandle, speechplaying = 0;
+  VqaPlayer gdibrief_player;
+  VqaPlayer nodbrief_player;
+  MixFileVqaIo gdibrief_io;
+  MixFileVqaIo nodbrief_io;  // Must outlive the open players.
+  bool gdibrief = false;
+  bool nodbrief = false;  // Movie opened successfully?
+  const void* staticaud;
+  const void* oldfont;
+  const void* speechg;
+  const void* speechn;
+  const void* speech = nullptr;
+  int statichandle;
+  int speechplaying = 0;
   int oldfontxspacing = FontXSpacing;
   int setpalette = 0;
   int gdi_start_palette;
@@ -118,7 +125,9 @@ void Choose_Side() {
   BlitList.Clear();
   PseudoSeenBuff =
       new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
-  int frame = 0, endframe = 255, lettersdone = 0;
+  int frame = 0;
+  int endframe = 255;
+  int lettersdone = 0;
 
   Hide_Mouse();
   /* Change to the six-point font for Text_Print */
@@ -231,29 +240,27 @@ void Choose_Side() {
     if (frame >= Get_Animation_Frame_Count(anim)) {
       frame = 0;
     }
-    if (Keyboard::Check() && endframe == 255) {
-      if ((Keyboard::Get() & 0x10FF) == KN_LMOUSE) {
-        if (ActiveKeyboard->MouseQY > 96 && ActiveKeyboard->MouseQY < 300) {
-          if (ActiveKeyboard->MouseQX > 36 && ActiveKeyboard->MouseQX < 296) {
-            // Chose GDI
-            Whom = HOUSE_GOOD;
-            ScenPlayer = SCEN_PLAYER_GDI;
-            endframe = 0;
-            Play_Sample(speechg);
-            speechplaying = true;
-            speech = speechg;
+    if ((Keyboard::Check() && endframe == 255) &&
+        ((Keyboard::Get() & 0x10FF) == KN_LMOUSE) &&
+        (ActiveKeyboard->MouseQY > 96 && ActiveKeyboard->MouseQY < 300)) {
+      if (ActiveKeyboard->MouseQX > 36 && ActiveKeyboard->MouseQX < 296) {
+        // Chose GDI
+        Whom = HOUSE_GOOD;
+        ScenPlayer = SCEN_PLAYER_GDI;
+        endframe = 0;
+        Play_Sample(speechg);
+        speechplaying = true;
+        speech = speechg;
 
-          } else if (ActiveKeyboard->MouseQX > 320 &&
-                     ActiveKeyboard->MouseQX < 600) {
-            // Chose Nod
-            endframe = 14;
-            Whom = HOUSE_BAD;
-            ScenPlayer = SCEN_PLAYER_NOD;
-            Play_Sample(speechn);
-            speechplaying = true;
-            speech = speechn;
-          }
-        }
+      } else if (ActiveKeyboard->MouseQX > 320 &&
+                 ActiveKeyboard->MouseQX < 600) {
+        // Chose Nod
+        endframe = 14;
+        Whom = HOUSE_BAD;
+        ScenPlayer = SCEN_PLAYER_NOD;
+        Play_Sample(speechn);
+        speechplaying = true;
+        speech = speechn;
       }
     }
   }

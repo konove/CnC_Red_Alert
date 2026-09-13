@@ -42,7 +42,7 @@ class VectorPipe : public Pipe {
 };
 
 Widget* Allocate(TFixedIHeapClass<Widget>& heap, int32_t value) {
-  Widget* w = new (heap.Alloc()) Widget();
+  auto* w = new (heap.Alloc()) Widget();
   w->ID = heap.ID(w);
   w->value = value;
   return w;

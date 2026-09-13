@@ -43,6 +43,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "absl/base/attributes.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -644,7 +645,10 @@ class HouseClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* ptr);
   explicit HouseClass(HousesType house);
   ~HouseClass();
@@ -664,7 +668,7 @@ class HouseClass {
   [[nodiscard]] bool Is_Allowed_To_Ally(HousesType house) const;
   void Do_All_To_Hunt() const;
   void Super_Weapon_Handler();
-  int* Factory_Counter(RTTIType rtti);
+  int* Factory_Counter(RTTIType rtti) ABSL_ATTRIBUTE_LIFETIME_BOUND;
   [[nodiscard]] int Factory_Count(RTTIType rtti) const;
   DiffType Assign_Handicap(DiffType handicap);
   [[nodiscard]] TARGET Find_Juicy_Target(COORDINATE coord) const;
@@ -743,7 +747,7 @@ class HouseClass {
   void Attacked();
   void Adjust_Power(int adjust);
   void Adjust_Drain(int adjust);
-  void Update_Spied_Power_Plants();
+  static void Update_Spied_Power_Plants();
   int Adjust_Capacity(int adjust, bool inanger = false);
   [[nodiscard]] fixed Power_Fraction() const;
   [[nodiscard]] fixed Tiberium_Fraction() const;
@@ -849,7 +853,7 @@ class HouseClass {
   /*
   ** When the game's over, this routine assigns everyone their score.
   */
-  void Tally_Score();
+  static void Tally_Score();
 
   friend class MapEditClass;
 
@@ -899,7 +903,10 @@ class HouseClass {
   **	the house AI processing. Higher priority build requests take precidence.
   */
   struct BuildChoiceClass {
-    void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+    void* operator new(size_t /*unused*/,
+                       void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+      return ptr;
+    }
     UrgencyType Urgency;   // The urgency of the build request
     StructType Structure;  // The type of building to produce.
 

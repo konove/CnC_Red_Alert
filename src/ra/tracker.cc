@@ -117,7 +117,7 @@ void Detach_This_From_All(TARGET target, bool all) {
 
     Map.Detach(target, all);
 
-    Logic.Detach(target, all);
+    LogicClass::Detach(target, all);
 
     ChronalVortex.Detach(target);
 

@@ -133,7 +133,7 @@ add_gtest(
 add_gtest(
     NAME ra_dib_test
     SOURCES dib_test.cc dib.cc
-    LIBS base
+    LIBS base absl::core_headers
 )
 
 add_gtest(

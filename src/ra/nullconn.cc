@@ -217,7 +217,8 @@ int NullModemConnClass::Send(char* buf, int buflen, void* /*extrabuf*/,
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int NullModemConnClass::Compute_CRC(const char* buf, int buflen) {
-  unsigned int sum, hibit;
+  unsigned int sum;
+  unsigned int hibit;
 
   sum = 0;
   for (int i = 0; i < buflen; i++) {

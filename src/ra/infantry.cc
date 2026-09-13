@@ -725,7 +725,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
               tech->House->IsThieved = true;
 
               if (tech->What_Am_I() == RTTI_BUILDING) {
-                BuildingClass* bldg = dynamic_cast<BuildingClass*>(tech);
+                auto* bldg = dynamic_cast<BuildingClass*>(tech);
                 if (bldg->Class->Capacity) {
                   /*
                   ** If we just raided a storage facility (refinery or silo)
@@ -1060,11 +1060,11 @@ void InfantryClass::Assign_Target(TARGET target) {
   assert(IsActive);
 
   Path[0] = FACING_NONE;
-  if (Class->IsDog) {
-    if (As_Object(target) && As_Object(target)->What_Am_I() != RTTI_INFANTRY) {
-      target = kTargetNone;
-    }
+  if (Class->IsDog &&
+      (As_Object(target) && As_Object(target)->What_Am_I() != RTTI_INFANTRY)) {
+    target = kTargetNone;
   }
+
   FootClass::Assign_Target(target);
 
   /*
@@ -1234,17 +1234,15 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
       return MOVE_NO;
     }
 
-    if (otype.IsWall) {
-      if (cellptr->OverlayData / 16 != otype.DamageLevels) {
-        /*
-        **	If the wall can be destroyed, then return this fact instead of
-        **	a complete failure to enter.
-        */
-        if (Is_Weapon_Equipped() && Class->PrimaryWeapon->Is_Wall_Destroyer()) {
-          return MOVE_DESTROYABLE;
-        }
-        return MOVE_NO;
+    if (otype.IsWall && (cellptr->OverlayData / 16 != otype.DamageLevels)) {
+      /*
+      **	If the wall can be destroyed, then return this fact instead of
+      **	a complete failure to enter.
+      */
+      if (Is_Weapon_Equipped() && Class->PrimaryWeapon->Is_Wall_Destroyer()) {
+        return MOVE_DESTROYABLE;
       }
+      return MOVE_NO;
     }
   }
 
@@ -2075,18 +2073,17 @@ BulletClass* InfantryClass::Fire_At(TARGET target, int which) {
   Mark(MARK_OVERLAP_DOWN);
 
   BulletClass* bullet = FootClass::Fire_At(target, which);
-  if (bullet != nullptr && !IsInLimbo) {
-    /*
-    **	For fraidycat infantry that run out of ammo, always go into
-    **	a maximum fear state at that time.
-    */
-    if (Class->IsFraidyCat && !Ammo) {
-      Fear = FEAR_MAXIMUM;
-      if (Mission == MISSION_ATTACK || Mission == MISSION_HUNT) {
-        Assign_Mission(MISSION_GUARD);
-      }
+  /*
+  **	For fraidycat infantry that run out of ammo, always go into
+  **	a maximum fear state at that time.
+  */
+  if ((bullet != nullptr && !IsInLimbo) && (Class->IsFraidyCat && !Ammo)) {
+    Fear = FEAR_MAXIMUM;
+    if (Mission == MISSION_ATTACK || Mission == MISSION_HUNT) {
+      Assign_Mission(MISSION_GUARD);
     }
   }
+
   return bullet;
 }
 
@@ -2696,8 +2693,8 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
           // If it's a mechanic force-moving into an APC, don't try to heal it.
           if (*this == INFANTRY_MECHANIC && object->What_Am_I() == RTTI_UNIT &&
               *(UnitClass*)object == UNIT_APC &&
-              (Keyboard->Down(Options.KeyForceMove1) ||
-               Keyboard->Down(Options.KeyForceMove2))) {
+              (KeyboardClass::Down(Options.KeyForceMove1) ||
+               KeyboardClass::Down(Options.KeyForceMove2))) {
           } else {
             return ACTION_HEAL;
           }
@@ -3052,10 +3049,9 @@ ActionType InfantryClass::What_Action(CELL cell) const {
   ** If this is a medic, and the cursor's over a friendly infantryman,
   ** execute an action-attack.
   */
-  if (Combat_Damage() < 0 && House->IsPlayerControl) {
-    if (action == ACTION_ATTACK) {
-      action = ACTION_NOMOVE;
-    }
+  if ((Combat_Damage() < 0 && House->IsPlayerControl) &&
+      (action == ACTION_ATTACK)) {
+    action = ACTION_NOMOVE;
   }
 
   /*
@@ -3607,16 +3603,16 @@ void InfantryClass::Movement_AI() {
       *into a zone *	that it can't travel to. In such a case, abort the
       *movement process by clearing *	the navigation computer.
       */
-      if ((!IsZoneCheat || Can_Enter_Cell(Coord_Cell(Coord)) != MOVE_NO) &&
-          !IsDriving && !IsTethered && Target_Legal(NavCom) && IsLocked &&
-          Map[Coord].Zones[Class->MZone] !=
-              Map[As_Cell(NavCom)].Zones[Class->MZone]) {
-        // hack: if it's tanya, spy, or engineer, let 'em move there anyway.
-        if (!Class->IsCapture && Mission != MISSION_ENTER) {
-          //				if (*this != INFANTRY_TANYA && *this !=
-          // INFANTRY_SPY && *this != INFANTRY_RENOVATOR) {
-          Assign_Destination(kTargetNone);
-        }
+      if (((!IsZoneCheat || Can_Enter_Cell(Coord_Cell(Coord)) != MOVE_NO) &&
+           !IsDriving && !IsTethered && Target_Legal(NavCom) && IsLocked &&
+           Map[Coord].Zones[Class->MZone] !=
+               Map[As_Cell(NavCom)].Zones[Class->MZone]) &&
+          (!Class->IsCapture && Mission != MISSION_ENTER))
+      // hack: if it's tanya, spy, or engineer, let 'em move there anyway.
+      {
+        //				if (*this != INFANTRY_TANYA && *this !=
+        // INFANTRY_SPY && *this != INFANTRY_RENOVATOR) {
+        Assign_Destination(kTargetNone);
       }
 
       /*

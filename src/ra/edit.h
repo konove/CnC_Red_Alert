@@ -20,6 +20,7 @@
 
 #ifndef CNC_RED_ALERT_RA_EDIT_H_
 #define CNC_RED_ALERT_RA_EDIT_H_
+#include "absl/base/attributes.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "sdllib/keyboard.h"
@@ -60,8 +61,9 @@ class EditClass : public ControlClass {
   // Constructs an edit gadget. |text| is a caller-owned buffer that will be
   // modified in place. |max_len| is the buffer size including the null
   // terminator. |w| and |h| default to -1, meaning auto-sized from the text.
-  EditClass(int id, char* text, int max_len, TextPrintType flags, int x, int y,
-            int w = -1, int h = -1, EditStyle style = kAlphanumeric);
+  EditClass(int id, char* text ABSL_ATTRIBUTE_LIFETIME_BOUND, int max_len,
+            TextPrintType flags, int x, int y, int w = -1, int h = -1,
+            EditStyle style = kAlphanumeric);
   ~EditClass() override;
   EditClass(const EditClass&) = delete;
   EditClass& operator=(const EditClass&) = delete;

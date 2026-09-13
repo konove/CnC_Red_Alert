@@ -272,8 +272,8 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   These routines allocate & free the DOS Real-mode memory block.
   .....................................................................*/
-  int Alloc_RealMode_Mem();
-  int Free_RealMode_Mem();
+  static int Alloc_RealMode_Mem();
+  static int Free_RealMode_Mem();
 
   /*.....................................................................
   Misc variables

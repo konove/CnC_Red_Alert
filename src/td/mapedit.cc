@@ -521,49 +521,47 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
   /*------------------------------------------------------------------------
   Trap 'F2' regardless of whether we're in game or editor mode
   ------------------------------------------------------------------------*/
-  if (Debug_Flag) {
-    if (/*(input == KN_F2 && Session == GAME_SOLO) ||*/ input ==
-        (KN_F2 | KN_CTRL_BIT)) {
-      ScenarioInit = 0;
+  if (Debug_Flag && (/*(input == KN_F2 && Session == GAME_SOLO) ||*/ input ==
+                     (KN_F2 | KN_CTRL_BIT))) {
+    ScenarioInit = 0;
 
+    /*
+    ** If we're in editor mode & Changed is set, prompt for saving changes
+    */
+    if (Debug_Map && Changed) {
+      rc = CCMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
+      HiddenPage.Clear();
+      Flag_To_Redraw(true);
+      Render();
       /*
-      ** If we're in editor mode & Changed is set, prompt for saving changes
+      ........................ User wants to save ........................
       */
-      if (Debug_Map && Changed) {
-        rc = CCMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
-        HiddenPage.Clear();
-        Flag_To_Redraw(true);
-        Render();
+      if (rc == 0) {
         /*
-        ........................ User wants to save ........................
+        ................ If save cancelled, abort game ..................
         */
-        if (rc == 0) {
-          /*
-          ................ If save cancelled, abort game ..................
-          */
-          if (Save_Scenario() != 0) {
-            input = KN_NONE;
-          } else {
-            Changed = 0;
-            Go_Editor(!Debug_Map);
-          }
+        if (Save_Scenario() != 0) {
+          input = KN_NONE;
         } else {
-          /*
-          .................... User doesn't want to save .....................
-          */
+          Changed = 0;
           Go_Editor(!Debug_Map);
         }
       } else {
         /*
-        ** If we're in game mode, set Changed to 0 (so if we didn't save our
-        ** changes above, they won't keep coming back to haunt us with continual
-        ** Save Changes? prompts!)
+        .................... User doesn't want to save .....................
         */
-        if (!Debug_Map) {
-          Changed = 0;
-        }
         Go_Editor(!Debug_Map);
       }
+    } else {
+      /*
+      ** If we're in game mode, set Changed to 0 (so if we didn't save our
+      ** changes above, they won't keep coming back to haunt us with continual
+      ** Save Changes? prompts!)
+      */
+      if (!Debug_Map) {
+        Changed = 0;
+      }
+      Go_Editor(!Debug_Map);
     }
   }
 
@@ -1176,17 +1174,15 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         ................. Remove trigger from current cell .................
         */
-        if (CurrentCell) {
-          if ((*this)[CurrentCell].IsTrigger) {
-            (*this)[CurrentCell].IsTrigger = 0;
-            CellTriggers[CurrentCell] = nullptr;
-            /*
-            ...................... Force a redraw ........................
-            */
-            HiddenPage.Clear();
-            Flag_To_Redraw(true);
-            Changed = 1;
-          }
+        if (CurrentCell && (*this)[CurrentCell].IsTrigger) {
+          (*this)[CurrentCell].IsTrigger = 0;
+          CellTriggers[CurrentCell] = nullptr;
+          /*
+          ...................... Force a redraw ........................
+          */
+          HiddenPage.Clear();
+          Flag_To_Redraw(true);
+          Changed = 1;
         }
       }
       input = KN_NONE;
@@ -1217,11 +1213,10 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       /*..................................................................
       If that house doesn't own this object, try to transfer it
       ..................................................................*/
-      if (CurrentObject[0]->Owner() != house) {
-        if (Change_House(house)) {
-          Changed = 1;
-        }
+      if ((CurrentObject[0]->Owner() != house) && Change_House(house)) {
+        Changed = 1;
       }
+
       Set_House_Buttons(CurrentObject[0]->Owner(), Buttons, POPUP_GDI);
       HiddenPage.Clear();
       Flag_To_Redraw(true);
@@ -1287,31 +1282,32 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     Object-Editing button: Facing
     ---------------------------------------------------------------------*/
     case ButtonKey(POPUP_FACINGDIAL):
-      if (CurrentObject[0]->Is_Techno()) {
+      if (CurrentObject[0]->Is_Techno() &&
+          (FacingDial->Get_Direction() !=
+           ((TechnoClass*)CurrentObject[0])->PrimaryFacing.Get()))
+      /*
+      ........................ Set new facing .........................
+      */
+      {
         /*
-        ........................ Set new facing .........................
+        ..................... Set body's facing ......................
         */
-        if (FacingDial->Get_Direction() !=
-            ((TechnoClass*)CurrentObject[0])->PrimaryFacing.Get()) {
-          /*
-          ..................... Set body's facing ......................
-          */
-          ((TechnoClass*)CurrentObject[0])
-              ->PrimaryFacing.Set(FacingDial->Get_Direction());
+        ((TechnoClass*)CurrentObject[0])
+            ->PrimaryFacing.Set(FacingDial->Get_Direction());
 
-          /*
-          ............. Set turret facing, if there is one .............
-          */
-          if (CurrentObject[0]->What_Am_I() == RTTI_UNIT) {
-            ((UnitClass*)CurrentObject[0])
-                ->SecondaryFacing.Set(FacingDial->Get_Direction());
-          }
-
-          HiddenPage.Clear();
-          Flag_To_Redraw(true);
-          Changed = 1;
+        /*
+        ............. Set turret facing, if there is one .............
+        */
+        if (CurrentObject[0]->What_Am_I() == RTTI_UNIT) {
+          ((UnitClass*)CurrentObject[0])
+              ->SecondaryFacing.Set(FacingDial->Get_Direction());
         }
+
+        HiddenPage.Clear();
+        Flag_To_Redraw(true);
+        Changed = 1;
       }
+
       input = KN_NONE;
       break;
 
@@ -1389,25 +1385,24 @@ void MapEditClass::Draw_It(bool forced) {
   the HIDPAGE; then, update the buttons & text labels onto HIDPAGE;
   then invoke the parent's Redraw to blit the HIDPAGE to SEENPAGE.
   ------------------------------------------------------------------------*/
-  if (forced) {
+  if (forced && CurrentObject.Count())
+  /*
+  ....................... Update the text labels ........................
+  */
+  {
     /*
-    ....................... Update the text labels ........................
+    ------------------ Display the object's name & ID ------------------
     */
-    if (CurrentObject.Count()) {
-      /*
-      ------------------ Display the object's name & ID ------------------
-      */
-      label = Text_String(CurrentObject[0]->Full_Name());
-      tptr = label;
-      sprintf(buf, "%s (%d)", tptr, CurrentObject[0]->As_Target());
+    label = Text_String(CurrentObject[0]->Full_Name());
+    tptr = label;
+    sprintf(buf, "%s (%d)", tptr, CurrentObject[0]->As_Target());
 
-      /*
-      ......................... print the label ..........................
-      */
-      Fancy_Text_Print(
-          buf, 320, 0, CC_TAN, TBLACK,
-          TPF_CENTER | TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
-    }
+    /*
+    ......................... print the label ..........................
+    */
+    Fancy_Text_Print(
+        buf, 320, 0, CC_TAN, TBLACK,
+        TPF_CENTER | TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   }
 }
 
@@ -1880,14 +1875,13 @@ void MapEditClass::Fatal(int txt) {
 }
 
 bool MapEditClass::Scroll_Map(DirType facing, int& distance, bool really) {
-  if (Debug_Map) {
-    /*
-    ** The popup gadgets require the entire map to be redrawn if we scroll.
-    */
-    if (really) {
-      Flag_To_Redraw(true);
-    }
+  /*
+  ** The popup gadgets require the entire map to be redrawn if we scroll.
+  */
+  if (Debug_Map && really) {
+    Flag_To_Redraw(true);
   }
+
   return MouseClass::Scroll_Map(facing, distance, really);
 }
 

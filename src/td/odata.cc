@@ -730,8 +730,7 @@ const short* OverlayTypeClass::Occupy_List(bool /*placement*/) const {
  *   04/19/1995 PWG : Created.                                             *
  *=========================================================================*/
 unsigned char* OverlayTypeClass::Radar_Icon(int data) const {
-  unsigned char* icon =
-      (unsigned char*)Get_Radar_Data();  // Get pointer to radar icons
+  auto* icon = (unsigned char*)Get_Radar_Data();  // Get pointer to radar icons
   icon += (data * 9) + 2;                // move icon ptr to correct icon
   return icon;                           // Return the correct icon
 }

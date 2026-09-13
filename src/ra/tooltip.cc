@@ -115,11 +115,10 @@ void ToolTipClass::Move(int x_show, int y_show) {
     Unshow();
   }
   this->xShow = x_show;
-  if (!bIconList) {
-    if (bRightAlign) {
-      this->xShow -= wShow;
-    }
+  if ((!bIconList) && bRightAlign) {
+    this->xShow -= wShow;
   }
+
   this->yShow = y_show;
   if (bRestoreShow) {
     Show();
@@ -130,7 +129,9 @@ void ToolTipClass::Move(int x_show, int y_show) {
 void ToolTipClass::Show() {
   if (!bShowing) {
     Set_Font(TypeFontPtr);
-    int xShowUse = xShow, yShowUse, wShowUse;
+    int xShowUse = xShow;
+    int yShowUse;
+    int wShowUse;
     const char* szTipUse;
     if (!bIconList) {
       yShowUse = yShow;
@@ -194,7 +195,9 @@ void ToolTipClass::Show() {
 //***********************************************************************************************
 void ToolTipClass::Unshow() {
   if (bShowing) {
-    int xShowUse, yShowUse, wShowUse;
+    int xShowUse;
+    int yShowUse;
+    int wShowUse;
     if (!bIconList) {
       xShowUse = xShow;
       wShowUse = wShow;

@@ -42,6 +42,7 @@ class ArchiveWriter;
 
 #include <cstddef>
 
+#include "absl/base/attributes.h"
 #include "td/defines.h"
 #include "td/house.h"
 #include "td/target.h"
@@ -138,7 +139,7 @@ class TeamTypeClass : public AbstractTypeClass {
   void Remove();
   // the heap owns the new object; many callers create without keeping it.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  TeamClass* Create_One_Of() const;
+  TeamClass* Create_One_Of() const ABSL_ATTRIBUTE_LIFETIME_BOUND;
   void Destroy_All_Of() const;
 
   /*
@@ -155,7 +156,10 @@ class TeamTypeClass : public AbstractTypeClass {
   **	Overloaded operators
   */
   void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* ptr);
 
   /*

@@ -186,7 +186,6 @@ int UnitClass::Validate() const {
     num = Units.ID(this);
     if (num < 0 || num >= kUnitMax) {
       Validate_Error("UNIT");
-      return 0;
     }
     return 1;
   } else {
@@ -483,15 +482,15 @@ void UnitClass::AI() {
   *MISSION_WAIT_FOR_PASSENGERS *	mission that they can follow. Passenger
   *loading is merely a part of their normal operation.
   */
-  if (Class->IsTransporter) {
-    /*
-    **	Double check that there is a passenger that is trying to load or unload.
-    **	If not, then close the door.
-    */
-    if (!Is_Door_Closed() && Mission != MISSION_UNLOAD &&
-        Transmit_Message(RADIO_TRYING_TO_LOAD) != RADIO_ROGER) {
-      APC_Close_Door();
-    }
+  if (Class->IsTransporter &&
+      (!Is_Door_Closed() && Mission != MISSION_UNLOAD &&
+       Transmit_Message(RADIO_TRYING_TO_LOAD) != RADIO_ROGER))
+  /*
+  **	Double check that there is a passenger that is trying to load or unload.
+  **	If not, then close the door.
+  */
+  {
+    APC_Close_Door();
   }
 
   /*
@@ -527,21 +526,20 @@ void UnitClass::AI() {
   /*
   ** for Jurassic objects, animate them if they're walking
   */
-  if (Class->IsPieceOfEight && Special.IsJurassic && AreThingiesEnabled) {
-    // Only animate if they're walking
-    if (IsDriving || IsFiring) {
-      if (!Fetch_Rate()) {
-        Set_Rate(static_cast<unsigned char>(Options.Normalize_Delay(2)));
-        Set_Stage(0);
-      }
-      Graphic_Logic();
-      if (Fetch_Stage() >=
-          (IsDriving || *this == UNIT_TREX || *this == UNIT_RAPT ? 8 : 12)) {
-        Set_Stage(0);
-        if (IsFiring) {
-          Set_Rate(0);
-          IsFiring = false;
-        }
+  // Only animate if they're walking
+  if ((Class->IsPieceOfEight && Special.IsJurassic && AreThingiesEnabled) &&
+      (IsDriving || IsFiring)) {
+    if (!Fetch_Rate()) {
+      Set_Rate(static_cast<unsigned char>(Options.Normalize_Delay(2)));
+      Set_Stage(0);
+    }
+    Graphic_Logic();
+    if (Fetch_Stage() >=
+        (IsDriving || *this == UNIT_TREX || *this == UNIT_RAPT ? 8 : 12)) {
+      Set_Stage(0);
+      if (IsFiring) {
+        Set_Rate(0);
+        IsFiring = false;
       }
     }
   }
@@ -573,29 +571,28 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
   FireErrorType cf;
 
   cf = TarComClass::Can_Fire(target, which);
-  if (cf == FIRE_OK) {
-    /*
-    ** If it's a dinosaur, when it's OK to fire we should start the firing
-    ** animation, but wait for the proper attack stage before starting the
-    ** bullet, so things won't die prematurely.
-    */
-    if (Class->IsFireAnim) {
-      if (!IsFiring) {
-        UnitClass* nonconst;
+  /*
+  ** If it's a dinosaur, when it's OK to fire we should start the firing
+  ** animation, but wait for the proper attack stage before starting the
+  ** bullet, so things won't die prematurely.
+  */
+  if ((cf == FIRE_OK) && Class->IsFireAnim) {
+    if (!IsFiring) {
+      UnitClass* nonconst;
 
-        nonconst = (UnitClass*)this;
-        nonconst->Set_Rate(
-            static_cast<unsigned char>(Options.Normalize_Delay(2)));
-        nonconst->Set_Stage(0);
-        IsFiring = true;
+      nonconst = (UnitClass*)this;
+      nonconst->Set_Rate(
+          static_cast<unsigned char>(Options.Normalize_Delay(2)));
+      nonconst->Set_Stage(0);
+      IsFiring = true;
+      cf = FIRE_BUSY;
+    } else {
+      if (Fetch_Stage() < 4) {
         cf = FIRE_BUSY;
-      } else {
-        if (Fetch_Stage() < 4) {
-          cf = FIRE_BUSY;
-        }
       }
     }
   }
+
   return cf;
 }
 
@@ -670,61 +667,60 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
           How_Many() < Class->Max_Passengers()) {
         TarComClass::Receive_Message(from, message, param);
 
-        if (!IsDriving && !IsRotating && !IsTethered) {
+        /*
+        **	If the potential passenger needs someplace to go, then figure
+        *out a good *	spot and tell it to go.
+        */
+        if ((!IsDriving && !IsRotating && !IsTethered) &&
+            (Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER)) {
+          CELL cell;
+          DirType dir = Desired_Load_Dir(from, cell);
+
           /*
-          **	If the potential passenger needs someplace to go, then figure
-          *out a good *	spot and tell it to go.
+          **	If no adjacent free cells are detected, then passenger loading
+          **	cannot occur. Break radio contact.
           */
-          if (Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER) {
-            CELL cell;
-            DirType dir = Desired_Load_Dir(from, cell);
+          if (cell == 0) {
+            Transmit_Message(RADIO_OVER_OUT, from);
+          } else {
+            param = static_cast<long>(::As_Target(cell));
+            Do_Turn(dir);
 
             /*
-            **	If no adjacent free cells are detected, then passenger loading
-            **	cannot occur. Break radio contact.
+            **	If it is now facing the correct direction, then open the
+            **	transport doors. Close the doors if the transport is or
+            *needs *	to rotate.
             */
-            if (cell == 0) {
-              Transmit_Message(RADIO_OVER_OUT, from);
-            } else {
-              param = static_cast<long>(::As_Target(cell));
-              Do_Turn(dir);
-
-              /*
-              **	If it is now facing the correct direction, then open the
-              **	transport doors. Close the doors if the transport is or
-              *needs *	to rotate.
-              */
-              if (IsRotating) {
-                if (!Is_Door_Closed()) {
-                  APC_Close_Door();
-                }
-              } else {
-                if (!Is_Door_Open()) {
-                  APC_Open_Door();
-                }
+            if (IsRotating) {
+              if (!Is_Door_Closed()) {
+                APC_Close_Door();
               }
+            } else {
+              if (!Is_Door_Open()) {
+                APC_Open_Door();
+              }
+            }
 
-              /*
-              **	Tell the potential passenger where it should go. If the
-              *passenger is *	already at the staging location, then tell it to
-              *move onto the transport *	directly.
-              */
-              if (Transmit_Message(RADIO_MOVE_HERE, param, from) ==
-                  RADIO_YEA_NOW_WHAT) {
-                if (Is_Door_Open()) {
-                  param = static_cast<long>(As_Target());
-                  Transmit_Message(RADIO_TETHER);
-                  if (Transmit_Message(RADIO_MOVE_HERE, param, from) !=
-                      RADIO_ROGER) {
-                    Transmit_Message(RADIO_OVER_OUT, from);
-                  } else {
-                    Contact_With_Whom()->Unselect();
-                  }
-                }
+            /*
+            **	Tell the potential passenger where it should go. If the
+            *passenger is *	already at the staging location, then tell it to
+            *move onto the transport *	directly.
+            */
+            if ((Transmit_Message(RADIO_MOVE_HERE, param, from) ==
+                 RADIO_YEA_NOW_WHAT) &&
+                Is_Door_Open()) {
+              param = static_cast<long>(As_Target());
+              Transmit_Message(RADIO_TETHER);
+              if (Transmit_Message(RADIO_MOVE_HERE, param, from) !=
+                  RADIO_ROGER) {
+                Transmit_Message(RADIO_OVER_OUT, from);
+              } else {
+                Contact_With_Whom()->Unselect();
               }
             }
           }
         }
+
         return RADIO_ROGER;
       }
       break;
@@ -990,7 +986,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
     if (Health_Ratio() < 0x0080 && !IsAnimAttached && *this != UNIT_VICE &&
         *this != UNIT_STEG && *this != UNIT_TREX && *this != UNIT_TRIC &&
         *this != UNIT_RAPT) {
-      AnimClass* anim =
+      auto* anim =
           new AnimClass(ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
       if (anim) {
         anim->Attach_To(this);
@@ -1002,7 +998,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
     */
     if (res == RESULT_HALF) {
       if (*this == UNIT_GUNBOAT) {
-        AnimClass* anim = new AnimClass(
+        auto* anim = new AnimClass(
             ANIM_ON_FIRE_MED,
             Coord_Add(Coord, XYP_Coord(Random_Pick(0, 16) - 8, -2)));
         if (anim) {
@@ -1570,8 +1566,7 @@ bool UnitClass::Try_To_Deploy() {
       *delete the *	unit, just mark it as not deploying.
       */
       Mark(MARK_UP);
-      BuildingClass* building =
-          new BuildingClass(STRUCT_CONST, House->Class->House);
+      auto* building = new BuildingClass(STRUCT_CONST, House->Class->House);
       if (building) {
         if (building->Unlimbo(Adjacent_Cell(Coord, FACING_NW))) {
           /*
@@ -1641,26 +1636,24 @@ void UnitClass::Per_Cell_Process(bool center) {
   *enter *	the building as the final step.
   */
   whom = Contact_With_Whom();
-  if (IsTethered && whom && center) {
-    if (whom->What_Am_I() == RTTI_BUILDING && Mission == MISSION_ENTER) {
-      if (whom == Map[cell].Cell_Building()) {
-        switch (Transmit_Message(RADIO_IM_IN, whom)) {
-          case RADIO_ROGER:
-            break;
+  if ((IsTethered && whom && center) &&
+      (whom->What_Am_I() == RTTI_BUILDING && Mission == MISSION_ENTER) &&
+      (whom == Map[cell].Cell_Building())) {
+    switch (Transmit_Message(RADIO_IM_IN, whom)) {
+      case RADIO_ROGER:
+        break;
 
-          case RADIO_ATTACH:
-            Mark(MARK_UP);
-            SpecialFlag = true;
-            Limbo();
-            SpecialFlag = false;
-            whom->Attach(this);
-            return;
+      case RADIO_ATTACH:
+        Mark(MARK_UP);
+        SpecialFlag = true;
+        Limbo();
+        SpecialFlag = false;
+        whom->Attach(this);
+        return;
 
-          default:
-            Scatter(true);
-            break;
-        }
-      }
+      default:
+        Scatter(true);
+        break;
     }
   }
 
@@ -1836,10 +1829,9 @@ void UnitClass::Per_Cell_Process(bool center) {
   /*
   **	If there is a house flag here, then this unit just might pick it up.
   */
-  if (center && Flagged == HOUSE_NONE) {
-    if (Map[cell].IsFlagged && Map[cell].Owner != House->Class->House) {
-      HouseClass::As_Pointer(Map[cell].Owner)->Flag_Attach(this);
-    }
+  if ((center && Flagged == HOUSE_NONE) &&
+      (Map[cell].IsFlagged && Map[cell].Owner != House->Class->House)) {
+    HouseClass::As_Pointer(Map[cell].Owner)->Flag_Attach(this);
   }
 
   /*
@@ -1928,7 +1920,8 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
       */
       if (*this == UNIT_GUNBOAT) {
         int shapestart;
-        int xx, yy;
+        int xx;
+        int yy;
 
         xx = x;
         yy = y;
@@ -2101,7 +2094,8 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
 
       int counter = 0;
       for (;;) {
-        int x1, y1;
+        int x1;
+        int y1;
 
         if (Map.Coord_To_Pixel(Coord_Add(Coord_Add(Coord, 0xFF80FF80L),
                                          StoppingCoordAbs[counter++]),
@@ -2168,13 +2162,10 @@ bool UnitClass::Tiberium_Check(CELL& center, int x, int y) {
 
   center = XY_Cell(Cell_X(center) + x, Cell_Y(center) + y);
 
-  if (GameToPlay != GAME_NORMAL || !IsOwnedByPlayer || Map[center].IsVisible) {
-    if (!Map[center].Cell_Techno() &&
-        Map[center].Land_Type() == LAND_TIBERIUM) {
-      return true;
-    }
-  }
-  return false;
+  return (GameToPlay != GAME_NORMAL || !IsOwnedByPlayer ||
+          Map[center].IsVisible) &&
+         (!Map[center].Cell_Techno() &&
+          Map[center].Land_Type() == LAND_TIBERIUM);
 }
 
 bool UnitClass::Goto_Tiberium() {
@@ -2585,11 +2576,10 @@ int UnitClass::Mission_Hunt() {
       *the correct *	direction and then commencing the deployment operation.
       */
       case 0:
-        if (Goto_Clear_Spot()) {
-          if (Try_To_Deploy()) {
-            Status = 1;
-          }
+        if (Goto_Clear_Spot() && Try_To_Deploy()) {
+          Status = 1;
         }
+
         break;
 
       /*
@@ -2968,20 +2958,16 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
             *equipped *	with the weapon that can destroy it. Otherwise, the
             *terrain is considered *	impassable.
             */
-            switch (obj->What_Am_I()) {
-              case RTTI_TERRAIN:
-                if (dynamic_cast<TerrainClass*>(obj)->Class->IsFlammable &&
-                    BulletTypeClass::As_Reference(Weapons[Class->Primary].Fires)
-                            .Warhead == WARHEAD_FIRE) {
-                  retval = std::max(retval, MOVE_DESTROYABLE);
-                } else {
-                  return MOVE_NO;
-                }
-                break;
-
-              default:
+            if (obj->What_Am_I() == RTTI_TERRAIN) {
+              if (dynamic_cast<TerrainClass*>(obj)->Class->IsFlammable &&
+                  BulletTypeClass::As_Reference(Weapons[Class->Primary].Fires)
+                          .Warhead == WARHEAD_FIRE) {
                 retval = std::max(retval, MOVE_DESTROYABLE);
-                break;
+              } else {
+                return MOVE_NO;
+              }
+            } else {
+              retval = std::max(retval, MOVE_DESTROYABLE);
             }
           } else {
             crushable = true;
@@ -3390,15 +3376,14 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
   /*
   **	Special return to friendly refinery action.
   */
-  if (IsOwnedByPlayer && object->Is_Techno() &&
-      dynamic_cast<const TechnoClass*>(object)->House->Is_Ally(this)) {
-    if (object->What_Am_I() == RTTI_BUILDING &&
-        ((UnitClass*)this)
-                ->Transmit_Message(RADIO_CAN_LOAD,
-                                   dynamic_cast<TechnoClass*>(object)) ==
-            RADIO_ROGER) {
-      action = ACTION_ENTER;
-    }
+  if ((IsOwnedByPlayer && object->Is_Techno() &&
+       dynamic_cast<const TechnoClass*>(object)->House->Is_Ally(this)) &&
+      (object->What_Am_I() == RTTI_BUILDING &&
+       ((UnitClass*)this)
+               ->Transmit_Message(RADIO_CAN_LOAD,
+                                  dynamic_cast<TechnoClass*>(object)) ==
+           RADIO_ROGER)) {
+    action = ACTION_ENTER;
   }
 
   /*
@@ -3406,7 +3391,7 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
   */
   if (IsOwnedByPlayer && action == ACTION_SELECT &&
       object->What_Am_I() == RTTI_BUILDING) {
-    BuildingClass* building = dynamic_cast<BuildingClass*>(object);
+    auto* building = dynamic_cast<BuildingClass*>(object);
     if (building->Class->Type == STRUCT_REPAIR &&
         !building->In_Radio_Contact() && !building->Is_Something_Attached()) {
       action = ACTION_MOVE;

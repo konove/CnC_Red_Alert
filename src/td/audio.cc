@@ -329,7 +329,8 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
   distance = 0xFF;
   pan_value = 0;
   if (coord && !Map.In_View(cell_pos)) {
-    distance = Map.Cell_Distance(cell_pos, Coord_Cell(Map.TacticalCoord));
+    distance =
+        MapEditClass::Cell_Distance(cell_pos, Coord_Cell(Map.TacticalCoord));
     distance = static_cast<unsigned int>(std::min<int>(distance, MAP_CELL_W));
     distance = Cardinal_To_Fixed(MAP_CELL_W, distance);
     distance = std::min(distance, 0xFFU);

@@ -289,14 +289,13 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   **	true just by the fact that this routine is called with the appropriate
   **	event identifier.
   */
-  if (Event == TEVENT_ATTACKED || Event == TEVENT_DESTROYED ||
-      Event == TEVENT_DISCOVERED || Event == TEVENT_SPIED ||
-      Event == TEVENT_NONE || Event == TEVENT_CROSS_HORIZONTAL ||
-      Event == TEVENT_CROSS_VERTICAL || Event == TEVENT_ENTERS_ZONE ||
-      Event == TEVENT_PLAYER_ENTERED) {
-    if (event != Event && event != TEVENT_ANY) {
-      return false;
-    }
+  if ((Event == TEVENT_ATTACKED || Event == TEVENT_DESTROYED ||
+       Event == TEVENT_DISCOVERED || Event == TEVENT_SPIED ||
+       Event == TEVENT_NONE || Event == TEVENT_CROSS_HORIZONTAL ||
+       Event == TEVENT_CROSS_VERTICAL || Event == TEVENT_ENTERS_ZONE ||
+       Event == TEVENT_PLAYER_ENTERED) &&
+      (event != Event && event != TEVENT_ANY)) {
+    return false;
   }
 
   /*

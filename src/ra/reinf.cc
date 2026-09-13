@@ -192,7 +192,7 @@ static bool Need_To_Take(const AircraftClass* air) {
 static FootClass* Create_Group(const TeamTypeClass* teamtype) {
   assert(teamtype != nullptr);
 
-  TeamClass* team = new TeamClass(teamtype);
+  auto* team = new TeamClass(teamtype);
   if (team != nullptr) {
     team->Force_Active();
   }
@@ -216,7 +216,7 @@ static FootClass* Create_Group(const TeamTypeClass* teamtype) {
 
     for (int sub = 0; sub < teamtype->Members[index].Quantity; sub++) {
       ScenarioInit++;
-      FootClass* temp = dynamic_cast<FootClass*>(
+      auto* temp = dynamic_cast<FootClass*>(
           tclass->Create_One_Of(HouseClass::As_Pointer(teamtype->House)));
       ScenarioInit--;
 
@@ -231,7 +231,7 @@ static FootClass* Create_Group(const TeamTypeClass* teamtype) {
           temp->IsInitiated = true;
         }
 
-        const AircraftClass* air = dynamic_cast<const AircraftClass*>(temp);
+        const auto* air = dynamic_cast<const AircraftClass*>(temp);
         if (air != nullptr && !Need_To_Take(air)) {
           temp->IsALoaner = true;
         }
@@ -280,7 +280,7 @@ static FootClass* Create_Group(const TeamTypeClass* teamtype) {
   **	For JUST transport helicopters, consider the loaner a gift if there are
   **	no passengers.
   */
-  AircraftClass* air_transport = dynamic_cast<AircraftClass*>(transport);
+  auto* air_transport = dynamic_cast<AircraftClass*>(transport);
   if (air_transport != nullptr && object == nullptr &&
       *air_transport == AIRCRAFT_TRANSPORT) {
     transport->IsALoaner = false;
@@ -405,7 +405,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   *location of this *	team if there are no team missions previously assigned.
   */
   if (teamtype->MissionCount == 0) {
-    TeamTypeClass* tt = (TeamTypeClass*)teamtype;
+    auto* tt = (TeamTypeClass*)teamtype;
     tt->MissionCount = 1;
     tt->MissionList[0].Mission = TMISSION_ATT_WAYPT;
     tt->MissionList[0].Data.Value = teamtype->Origin;
@@ -456,28 +456,25 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   **	Pick the location where the reinforcements appear and then place
   **	them there.
   */
-  FacingType eface =
-      static_cast<FacingType>(source << 1);  // Facing to enter map.
+  auto eface = static_cast<FacingType>(source << 1);  // Facing to enter map.
 
   CELL cell = Map.Calculated_Cell(source, teamtype->Origin, -1,
                                   object->Techno_Type_Class()->Speed);
   /*
   **	For the ants, they will pop out of the ant hill directly.
   */
-  UnitClass* unit = dynamic_cast<UnitClass*>(object);
+  auto* unit = dynamic_cast<UnitClass*>(object);
   if (teamtype->Origin != -1 && unit != nullptr &&
       (*unit == UNIT_ANT1 || *unit == UNIT_ANT2 || *unit == UNIT_ANT3)) {
     CELL newcell = Scen.Waypoint[teamtype->Origin];
-    if (newcell != -1) {
-      if (Map[newcell].TType == TEMPLATE_HILL01) {
-        cell = newcell;
-      }
+    if ((newcell != -1) && (Map[newcell].TType == TEMPLATE_HILL01)) {
+      cell = newcell;
     }
   }
 
   CELL newcell = cell;
 
-  FootClass* o = dynamic_cast<FootClass*>(object->Next);
+  auto* o = dynamic_cast<FootClass*>(object->Next);
   object->Next = nullptr;
   bool okvoice = false;
   while (newcell > 0 && object != nullptr) {
@@ -587,7 +584,7 @@ bool Create_Special_Reinforcement(HouseClass* house,
   assert(type != nullptr);
 
   if (house && type) {
-    TeamTypeClass* team = new TeamTypeClass();
+    auto* team = new TeamTypeClass();
 
     if (team) {
       /*
@@ -692,7 +689,7 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
     ** a real problem.
     */
     ScenarioInit++;
-    TechnoClass* obj = dynamic_cast<TechnoClass*>(type->Create_One_Of(house));
+    auto* obj = dynamic_cast<TechnoClass*>(type->Create_One_Of(house));
     ScenarioInit--;
     if (!obj) {
       return sub;
@@ -753,7 +750,7 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
       *determine *	if this aircraft should drop parachute reinforcements.
       */
       if (obj->What_Am_I() == RTTI_AIRCRAFT) {
-        AircraftClass* aircraft = (AircraftClass*)obj;
+        auto* aircraft = (AircraftClass*)obj;
         if (passenger != INFANTRY_NONE) {
           aircraft->Passenger = passenger;
         }

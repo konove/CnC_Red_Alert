@@ -342,11 +342,10 @@ int IPXManagerClass::Init() {
   //------------------------------------------------------------------------
   //	Start Listening
   //------------------------------------------------------------------------
-  if (Session.Type != GAME_INTERNET) {
-    if (!IPXConnClass::Start_Listening()) {
-      return 0;
-    }
+  if ((Session.Type != GAME_INTERNET) && (!IPXConnClass::Start_Listening())) {
+    return 0;
   }
+
   Listening = 1;
 
   return 1;
@@ -500,7 +499,8 @@ int IPXManagerClass::Create_Connection(int id, char* name,
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXManagerClass::Delete_Connection(int id) {
-  int i, j;
+  int i;
+  int j;
 
   //------------------------------------------------------------------------
   //	Error if IPX not installed
@@ -1029,52 +1029,48 @@ int IPXManagerClass::Service() {
                 break;
               }
             }
-            if (Session.Type == GAME_INTERNET) {
+            /*
+            ** This packet came from an unknown source. If it looks like one
+            *of our players
+            ** packets then it might be from a player whos IP has changed.
+            */
+            if ((Session.Type == GAME_INTERNET) && (!found_address) &&
+                (packet->Code == ConnectionClass::PACKET_DATA_NOACK)) {
               /*
-              ** This packet came from an unknown source. If it looks like one
-              *of our players
-              ** packets then it might be from a player whos IP has changed.
+              ** Magic number and packet code are valid. It's probably a C&C
+              *packet.
               */
-              if (!found_address) {
-                if (packet->Code == ConnectionClass::PACKET_DATA_NOACK) {
-                  /*
-                  ** Magic number and packet code are valid. It's probably a C&C
-                  *packet.
-                  */
-                  EventClass event_storage;
-                  std::memcpy(&event_storage,
-                              cur_data_buf + sizeof(CommHeaderType),
-                              offsetof(EventClass, Data));
-                  const EventClass* event = &event_storage;
+              EventClass event_storage;
+              std::memcpy(&event_storage, cur_data_buf + sizeof(CommHeaderType),
+                          offsetof(EventClass, Data));
+              const EventClass* event = &event_storage;
 
-                  /*
-                  ** If this is a framesync packet then grab the address and
-                  *match it to an existing player.
-                  */
-                  if (event->Type == EventClass::FRAMESYNC) {
-                    int id = event->ID;
+              /*
+              ** If this is a framesync packet then grab the address and
+              *match it to an existing player.
+              */
+              if (event->Type == EventClass::FRAMESYNC) {
+                int id = event->ID;
 
-                    assert(id != PlayerPtr->ID);
-                    for (int k = 1; k < Session.Players.Count(); k++) {
-                      if (Session.Players[k]->Player.ID == id) {
-                        int iConnectionIndex = Connection_Index(id);
-                        if (iConnectionIndex !=
-                            CONNECTION_NONE)  //	(else
-                                              // Create_Connections() has not
-                                              // yet been called)
-                        {
-                          /*
-                          ** Found a likely candidate. Update his address. It
-                          *should be OK to drop this
-                          ** packet since it's a framesync packet and will will
-                          *pick up the next one.
-                          */
-                          Session.Players[k]->Address = address;
-                          Connection[iConnectionIndex]->Address = address;
-                        }
-                        break;
-                      }
+                assert(id != PlayerPtr->ID);
+                for (int k = 1; k < Session.Players.Count(); k++) {
+                  if (Session.Players[k]->Player.ID == id) {
+                    int iConnectionIndex = Connection_Index(id);
+                    if (iConnectionIndex !=
+                        CONNECTION_NONE)  //	(else
+                                          // Create_Connections() has not
+                                          // yet been called)
+                    {
+                      /*
+                      ** Found a likely candidate. Update his address. It
+                      *should be OK to drop this
+                      ** packet since it's a framesync packet and will will
+                      *pick up the next one.
+                      */
+                      Session.Players[k]->Address = address;
+                      Connection[iConnectionIndex]->Address = address;
                     }
+                    break;
                   }
                 }
               }
@@ -1092,12 +1088,11 @@ int IPXManagerClass::Service() {
   //	send entry that's holding things up.  This will keep the Global Channel
   //	from being clogged by one un-ACK'd outgoing packet.
   //------------------------------------------------------------------------
-  if (GlobalChannel) {
-    if (!GlobalChannel->Service()) {
-      GlobalChannel->Queue->UnQueue_Send(nullptr, nullptr, 0);
-      rc = 0;
-    }
+  if (GlobalChannel && (!GlobalChannel->Service())) {
+    GlobalChannel->Queue->UnQueue_Send(nullptr, nullptr, 0);
+    rc = 0;
   }
+
   for (i = 0; i < NumConnections; i++) {
     if (!Connection[i]->Service()) {
       rc = 0;
@@ -1431,7 +1426,8 @@ void IPXManagerClass::Reset_Response_Time() {
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
 void* IPXManagerClass::Oldest_Send() {
-  int i, j;
+  int i;
+  int j;
   unsigned long time;
   unsigned long mintime = 0xffffffff;
   SendQueueType* send_entry;  // ptr to send entry header
@@ -1565,12 +1561,10 @@ void IPXManagerClass::Mono_Debug_Print(int index, int refresh) {
   char txt[80];
   int i;
 
-  if (index == -1) {
-    GlobalChannel->Queue->Mono_Debug_Print(refresh);
-  }
-
-  else if (Connection[index]) {
-    Connection[index]->Queue->Mono_Debug_Print(refresh);
+  // Both branches print the shared comm-buffer state; the connection only has
+  // to exist.
+  if (index == -1 || Connection[index]) {
+    CommBufferClass::Mono_Debug_Print(refresh);
   }
 
   if (refresh) {

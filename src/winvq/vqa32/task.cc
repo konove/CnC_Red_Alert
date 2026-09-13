@@ -205,10 +205,10 @@ long VQA_Play(VQAHandle* vqa, long mode) {
         vqabuf->Flags &= ~VQADATF_PAUSED;
 
         /* Start the audio if it was previously on. */
-        if ((config->OptionFlags & VQAOPTF_AUDIO) != 0) {
-          if (VQA_StartAudio(vqa) != 0) {
-            /* Stop audio, if it's playing. */
-            VQA_StopAudio(vqa);
+        if (((config->OptionFlags & VQAOPTF_AUDIO) != 0) &&
+            (VQA_StartAudio(vqa) != 0)) {
+          /* Stop audio, if it's playing. */
+          VQA_StopAudio(vqa);
 #ifdef _WIN32
             /*
             ** Restore the process priority level
@@ -216,7 +216,6 @@ long VQA_Play(VQAHandle* vqa, long mode) {
             SetPriorityClass(GetCurrentProcess(), process_priority);
 #endif  // _WIN32
             return VQAERR_EOF;
-          }
         }
 
         VQA_SetTimer(vqa, vqabuf->EndTime, config->TimerMethod);

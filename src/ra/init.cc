@@ -1568,14 +1568,11 @@ bool Parse_Command_Line(int argc, char* argv[]) {
           }
         }
 
-        switch (code) {
-          case 'Q':
-            Debug_Quiet = true;
-            break;
-
-          default:
-            puts(kLanguageText.invalid_option);
-            return false;
+        if (code == 'Q') {
+          Debug_Quiet = true;
+        } else {
+          puts(kLanguageText.invalid_option);
+          return false;
         }
       }
     }
@@ -1699,7 +1696,7 @@ uint32_t Obfuscate(const char* string) {
   strrev(buffer);  // Restore original string order.
   for (int index = 0; index < length; index++) {
     code ^= static_cast<unsigned char>(buffer[index]);
-    unsigned char temp = static_cast<unsigned char>(code);
+    auto temp = static_cast<unsigned char>(code);
     buffer[index] = static_cast<char>(buffer[index] ^ temp);
     code >>= 8;
     code = static_cast<int>(code | static_cast<long>(temp) << 24);

@@ -120,7 +120,6 @@ int TeamClass::Validate() const {
     num = Teams.ID(this);
     if (num < 0 || num >= kTeamMax) {
       Validate_Error("TEAM");
-      return 0;
     }
     return 1;
   } else {
@@ -367,8 +366,8 @@ void TeamClass::AI() {
         if (b && !b->IsInLimbo && b->House == House &&
             b->Class->Primary == WEAPON_NONE) {
           CELL cell = Coord_Cell(b->Center_Coord());
-          int dist = Map.Cell_Distance(cell, Center) *
-                     (Map.Cell_Threat(cell, House->Class->House) + 1);
+          int dist = MapEditClass::Cell_Distance(cell, Center) *
+                     (MapEditClass::Cell_Threat(cell, House->Class->House) + 1);
 
           if (*b == STRUCT_REPAIR) {
             dist >>= 1;
@@ -877,11 +876,10 @@ int TeamClass::Recruit(int typeindex) {
       for (int index = 0; index < Infantry.Count(); index++) {
         InfantryClass* infantry = Infantry.Ptr(index);
 
-        if (infantry->House == House &&
-            infantry->Class == Class->Class[typeindex]) {
-          if (Add(infantry, typeindex)) {
-            added++;
-          }
+        if ((infantry->House == House &&
+             infantry->Class == Class->Class[typeindex]) &&
+            Add(infantry, typeindex)) {
+          added++;
         }
 
         /*
@@ -898,19 +896,18 @@ int TeamClass::Recruit(int typeindex) {
       for (int index = 0; index < Units.Count(); index++) {
         UnitClass* unit = Units.Ptr(index);
 
-        if (unit->House == House && unit->Class == Class->Class[typeindex]) {
-          if (Add(unit, typeindex)) {
-            added++;
+        if ((unit->House == House && unit->Class == Class->Class[typeindex]) &&
+            Add(unit, typeindex)) {
+          added++;
 
-            /*
-            **	If a transport is added to the team, the occupants
-            **	are added by default.
-            */
-            FootClass* f = unit->Attached_Object();
-            while (f) {
-              Add(f);
-              f = dynamic_cast<FootClass*>(f->Next);
-            }
+          /*
+          **	If a transport is added to the team, the occupants
+          **	are added by default.
+          */
+          FootClass* f = unit->Attached_Object();
+          while (f) {
+            Add(f);
+            f = dynamic_cast<FootClass*>(f->Next);
           }
         }
 
@@ -1060,27 +1057,25 @@ void TeamClass::Took_Damage(FootClass* /*unused*/, ResultType result,
       // Should run to a better hiding place or disband into a group of hunting
       // units.
     } else {
-      if (source && !Is_A_Member(source) && Member &&
-          Member->What_Am_I() != RTTI_AIRCRAFT) {
-        if (Target != source->As_Target()) {
-          /*
-          **	Don't change target if the team's target is one that can fire as
-          *well. There is *	no point in endlessly shuffling between targets
-          *that have firepower.
-          */
-          if (Target_Legal(Target)) {
-            TechnoClass* techno = As_Techno(Target);
+      if ((source && !Is_A_Member(source) && Member &&
+           Member->What_Am_I() != RTTI_AIRCRAFT) &&
+          (Target != source->As_Target())) {
+        /*
+        **	Don't change target if the team's target is one that can fire as
+        *well. There is *	no point in endlessly shuffling between targets
+        *that have firepower.
+        */
+        if (Target_Legal(Target)) {
+          TechnoClass* techno = As_Techno(Target);
 
-            if (techno &&
-                dynamic_cast<const TechnoTypeClass&>(techno->Class_Of())
-                        .Primary != WEAPON_NONE) {
-              if (techno->In_Range(Cell_Coord(Center), 0)) {
-                return;
-              }
-            }
+          if ((techno &&
+               dynamic_cast<const TechnoTypeClass&>(techno->Class_Of())
+                       .Primary != WEAPON_NONE) &&
+              techno->In_Range(Cell_Coord(Center), 0)) {
+            return;
           }
-          Target = source->As_Target();
         }
+        Target = source->As_Target();
       }
     }
   }
@@ -1345,27 +1340,26 @@ void TeamClass::Coordinate_Unload() {
   while (unit) {
     Coordinate_Conscript(unit);
 
-    if (unit->IsInitiated && !unit->IsInLimbo) {
-      if (unit->Is_Something_Attached()) {
-        /*
-        **	Loaner transports will break off of the team at this time. The
-        *normal *	unload logic for the transport will proceed normally.
-        *The rest of the team *	members will be in a dormant state until they
-        *are unloaded.
-        */
-        if (unit->IsALoaner) {
-          Remove(unit);
-          unit->Commence();
+    if ((unit->IsInitiated && !unit->IsInLimbo) &&
+        unit->Is_Something_Attached()) {
+      /*
+      **	Loaner transports will break off of the team at this time. The
+      *normal *	unload logic for the transport will proceed normally.
+      *The rest of the team *	members will be in a dormant state until they
+      *are unloaded.
+      */
+      if (unit->IsALoaner) {
+        Remove(unit);
+        unit->Commence();
+        unit->Assign_Mission(MISSION_UNLOAD);
+        unit->Assign_Destination(Target);
+      } else {
+        if (unit->Mission != MISSION_UNLOAD) {
           unit->Assign_Mission(MISSION_UNLOAD);
           unit->Assign_Destination(Target);
-        } else {
-          if (unit->Mission != MISSION_UNLOAD) {
-            unit->Assign_Mission(MISSION_UNLOAD);
-            unit->Assign_Destination(Target);
-          }
         }
-        finished = false;
       }
+      finished = false;
     }
 
     unit = unit->Member;

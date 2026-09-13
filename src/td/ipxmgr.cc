@@ -337,10 +337,8 @@ int IPXManagerClass::Init() {
   /*------------------------------------------------------------------------
   Start Listening
   ------------------------------------------------------------------------*/
-  if (!(GameToPlay == GAME_INTERNET)) {
-    if (!IPXConnClass::Start_Listening()) {
-      return false;
-    }
+  if ((!(GameToPlay == GAME_INTERNET)) && (!IPXConnClass::Start_Listening())) {
+    return false;
   }
 
   Listening = 1;
@@ -495,7 +493,8 @@ bool IPXManagerClass::Create_Connection(int id, char* name,
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 bool IPXManagerClass::Delete_Connection(int id) {
-  int i, j;
+  int i;
+  int j;
 
   /*
   ----------------------- Error if IPX not installed -----------------------
@@ -1228,12 +1227,11 @@ int IPXManagerClass::Service() {
   send entry that's holding things up.  This will keep the Global Channel
   from being clogged by one un-ACK'd outgoing packet.
   ------------------------------------------------------------------------*/
-  if (GlobalChannel) {
-    if (!GlobalChannel->Service()) {
-      GlobalChannel->Queue->UnQueue_Send(nullptr, nullptr, 0);
-      rc = 0;
-    }
+  if (GlobalChannel && (!GlobalChannel->Service())) {
+    GlobalChannel->Queue->UnQueue_Send(nullptr, nullptr, 0);
+    rc = 0;
   }
+
   for (i = 0; i < NumConnections; i++) {
     if (!Connection[i]->Service()) {
 #ifdef VIRTUAL_SUBNET_SERVER
@@ -1583,7 +1581,8 @@ void IPXManagerClass::Reset_Response_Time() {
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
 void* IPXManagerClass::Oldest_Send() {
-  int i, j;
+  int i;
+  int j;
   unsigned long time;
   unsigned long mintime = 0xffffffff;
   SendQueueType* send_entry;  // ptr to send entry header

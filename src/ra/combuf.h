@@ -141,8 +141,8 @@ class CommBufferClass {
   */
   void Configure_Debug(int type_offset, int type_size, const char** names,
                        int namestart, int namecount);
-  void Mono_Debug_Print(int refresh = 0);
-  void Mono_Debug_Print2(int refresh = 0);
+  static void Mono_Debug_Print(int refresh = 0);
+  static void Mono_Debug_Print2(int refresh = 0);
 
   /*
   --------------------------- Private Interface ----------------------------

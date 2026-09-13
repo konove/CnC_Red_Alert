@@ -268,7 +268,7 @@ void TriggerPtr::Serialize(ArchiveReader& ar) {
 
 template <class Archive>
 void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects) {
-  int32_t count = static_cast<int32_t>(objects.Count());
+  auto count = static_cast<int32_t>(objects.Count());
   ar(count);
   if constexpr (Archive::kIsReading) {
     if (!ar.ok() || count < 0 || count > 65536) {
@@ -283,11 +283,15 @@ void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects)
     TARGET target = kTargetNone;
     if constexpr (!Archive::kIsReading) {
       object = objects[i];
-      if (object != nullptr && object->IsActive) target = object->As_Target();
+      if (object != nullptr && object->IsActive) {
+        target = object->As_Target();
+      }
     }
     ar(target);
     if constexpr (Archive::kIsReading) {
-      if (!ar.ok()) return;
+      if (!ar.ok()) {
+        return;
+      }
       object = ResolveSavedObject(target, ar, true);
       if (!ar.ok() || object == nullptr || !object->IsActive) {
         ar.Fail("invalid saved object list reference");

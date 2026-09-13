@@ -103,7 +103,7 @@ class WinModemClass {
   **
   ** Replacement for Greenleaf function: ReadBuffer
   */
-  int Read_From_Serial_Port(unsigned char* dest_ptr, int buffer_len);
+  static int Read_From_Serial_Port(unsigned char* dest_ptr, int buffer_len);
 
   /*
   ** Write chars to the serial port

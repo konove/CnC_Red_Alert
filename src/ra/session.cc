@@ -403,7 +403,7 @@ template void SessionClass::Serialize(ArchiveReader&);
 
 template <class Archive>
 void SessionClass::SerializePlayers(Archive& ar) {
-  int32_t count = static_cast<int32_t>(Players.Count());
+  auto count = static_cast<int32_t>(Players.Count());
   ar(count);
   if constexpr (Archive::kIsReading) {
     if (!ar.ok() || count < 0 || count > MAX_MULTI_NAMES) {

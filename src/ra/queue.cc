@@ -820,7 +820,7 @@ static void Queue_AI_Multiplayer() {
       //
       // The game "host" will transmit timing adjustment events.
       //
-      if (Session.Am_I_Master()) {
+      if (SessionClass::Am_I_Master()) {
         Generate_Real_Timing_Event(net, my_sent);
       }
     } else {
@@ -834,13 +834,12 @@ static void Queue_AI_Multiplayer() {
   //------------------------------------------------------------------------
   // Only process every 'FrameSendRate' frames
   //------------------------------------------------------------------------
-  if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-    if (!Process_Send_Period(net)) {  //, 0)) {
-      if (IsMono) {
-        MonoClass::Disable();
-      }
-      return;
+  if ((Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) &&
+      (!Process_Send_Period(net))) {  //, 0)) {
+    if (IsMono) {
+      MonoClass::Disable();
     }
+    return;
   }
 
   //------------------------------------------------------------------------
@@ -996,7 +995,8 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   // Other misc variables
   //........................................................................
   KeyNumType input;  // for user input
-  int x, y;          // for map input
+  int x;
+  int y;  // for map input
   RetcodeType rc;
 
   //------------------------------------------------------------------------
@@ -1337,7 +1337,7 @@ static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
     // If I'm the network "master", I'm also responsible for updating the
     // MaxAhead value on all systems, so do that here too.
     //.....................................................................
-    if (Session.Am_I_Master()) {
+    if (SessionClass::Am_I_Master()) {
       ev.Type = EventClass::RESPONSE_TIME;
       //..................................................................
       // For multi-frame compressed events, the MaxAhead must be an even
@@ -2239,10 +2239,8 @@ static int Process_Reconnect_Dialog(Timer<SystemTickSource>* timeout_timer,
   //........................................................................
   //	If user hits ESC, bail out
   //........................................................................
-  if (Keyboard->Check()) {
-    if (Keyboard->Get() == KN_ESC) {
-      return 1;
-    }
+  if (Keyboard->Check() && (Keyboard->Get() == KN_ESC)) {
+    return 1;
   }
 
   return 0;
@@ -2950,14 +2948,10 @@ static int Breakup_Receive_Packet(void* buf, int bufsize) {
   /*
   ** is there enough leftover for another record
   */
-  switch (Session.CommProtocol) {
-    case COMM_PROTOCOL_SINGLE_NO_COMP:
-      count = Extract_Uncompressed_Events(buf, bufsize);
-      break;
-
-    default:
-      count = Extract_Compressed_Events(buf, bufsize);
-      break;
+  if (Session.CommProtocol == COMM_PROTOCOL_SINGLE_NO_COMP) {
+    count = Extract_Uncompressed_Events(buf, bufsize);
+  } else {
+    count = Extract_Compressed_Events(buf, bufsize);
   }
 
   return count;
@@ -3318,7 +3312,9 @@ static int Execute_DoList(int max_houses, HousesType base_house,
                           unsigned short* their_recv) {
   HousesType house;
   HouseClass* hptr;
-  int i, j, k;
+  int i;
+  int j;
+  int k;
   int index;
   int check_crc;
 
@@ -3433,15 +3429,12 @@ static int Execute_DoList(int max_houses, HousesType base_house,
             }
           }
 
-          if (Debug_Print_Events) {
-            if (DoList[j].Type == EventClass::EXIT) {
-              printf(
-                  "(%" PRId64 ") Executing EXIT, ID:%d (%s), EvFrame:%d\\n",
-                  Frame, DoList[j].ID,
-                  HouseClass::As_Pointer(static_cast<HousesType>(DoList[j].ID))
-                      ->IniName,
-                  DoList[j].Frame);
-            }
+          if (Debug_Print_Events && (DoList[j].Type == EventClass::EXIT)) {
+            printf("(%" PRId64 ") Executing EXIT, ID:%d (%s), EvFrame:%d\\n",
+                   Frame, DoList[j].ID,
+                   HouseClass::As_Pointer(static_cast<HousesType>(DoList[j].ID))
+                       ->IniName,
+                   DoList[j].Frame);
           }
 
           if (std::cmp_equal(DoList[j].ID, PlayerPtr->ID)) {
@@ -3618,7 +3611,8 @@ static void Clean_DoList(ConnManClass* net) {
  *   08/14/1995 BRR : Created.                                             *
  *=========================================================================*/
 static void Queue_Record() {
-  int i, j;
+  int i;
+  int j;
 
   //------------------------------------------------------------------------
   //	Compute # of events to save this frame
@@ -3675,7 +3669,8 @@ static void Queue_Playback() {
   EventClass event;
   int i;
   int ok;
-  static int mx, my;
+  static int mx;
+  static int my;
   int max_houses;
   HousesType base_house;
   int key;
@@ -3733,11 +3728,10 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   testframe = static_cast<int>((Frame + (Session.FrameSendRate - 1)) /
                                Session.FrameSendRate * Session.FrameSendRate);
-  if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
-      Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-    if (Frame != testframe) {
-      return;
-    }
+  if ((Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
+       Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) &&
+      (Frame != testframe)) {
+    return;
   }
 
   //------------------------------------------------------------------------
@@ -3808,7 +3802,8 @@ static void Queue_Playback() {
  *   05/09/1995 BRR : Created.                                             *
  *=========================================================================*/
 static void Compute_Game_CRC() {
-  int i, j;
+  int i;
+  int j;
   VesselClass* vessp;
   InfantryClass* infp;
   UnitClass* unitp;
@@ -3951,7 +3946,8 @@ void Add_CRC(uint32_t* crc, uint32_t val) {
  *   05/09/1995 BRR : Created.                                             *
  *=========================================================================*/
 static void Print_CRCs(EventClass* ev) {
-  int i, j;
+  int i;
+  int j;
   InfantryClass* infp;
   UnitClass* unitp;
   VesselClass* vesselp;

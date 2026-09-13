@@ -318,44 +318,42 @@ void SliderClass::Draw_Thumb() {
  * HISTORY:    01/16/1995 JLB : Created. *
  *=============================================================================================*/
 int SliderClass::Draw_Me(bool forced) {
-  if (BelongToList) {
-    // A list-attached slider draws a thumb instead of a gauge body; the
-    // stand-alone case still goes through GaugeClass below.
-    // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-    if (ControlClass::Draw_Me(forced)) {
-      /*
-      ===================== Hide the mouse =====================
-      */
-      if (LogicPage == &SeenBuff) {
-        Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
-      }
-
-      /*
-      =========== Draw the body & set text color ===============
-      */
-      Draw_Box(X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, true);
-      //			if (IsHorizontal) {
-      //				LogicPage->Fill_Rect(X, Y+1, X+Width-1,
-      // Y+Height-2, 141); 				LogicPage->Draw_Line(X,
-      // Y, X+Width-1, Y,  140);  // top
-      // LogicPage->Draw_Line(X, Y+Height, X+Width, Y+Height, 159); // bottom
-      // }
-      // else { 				LogicPage->Fill_Rect(X+1, Y,
-      // X+Width-2, Y+Height-1, 141);
-      // LogicPage->Draw_Line(X, Y, X, Y+Height, 140);  // left
-      //				LogicPage->Draw_Line(X+Width-1,  Y,
-      // X+Width-1, Y+Height, 159);	// right
-      //			}
-      Draw_Thumb();
-
-      /*
-      =================== Display the mouse ===================
-      */
-      if (LogicPage == &SeenBuff) {
-        Conditional_Show_Mouse();
-      }
-      return true;
+  // A list-attached slider draws a thumb instead of a gauge body; the
+  // stand-alone case still goes through GaugeClass below.
+  // NOLINTNEXTLINE(bugprone-parent-virtual-call)
+  if (BelongToList && ControlClass::Draw_Me(forced)) {
+    /*
+    ===================== Hide the mouse =====================
+    */
+    if (LogicPage == &SeenBuff) {
+      Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
+
+    /*
+    =========== Draw the body & set text color ===============
+    */
+    Draw_Box(X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, true);
+    //			if (IsHorizontal) {
+    //				LogicPage->Fill_Rect(X, Y+1, X+Width-1,
+    // Y+Height-2, 141); 				LogicPage->Draw_Line(X,
+    // Y, X+Width-1, Y,  140);  // top
+    // LogicPage->Draw_Line(X, Y+Height, X+Width, Y+Height, 159); // bottom
+    // }
+    // else { 				LogicPage->Fill_Rect(X+1, Y,
+    // X+Width-2, Y+Height-1, 141);
+    // LogicPage->Draw_Line(X, Y, X, Y+Height, 140);  // left
+    //				LogicPage->Draw_Line(X+Width-1,  Y,
+    // X+Width-1, Y+Height, 159);	// right
+    //			}
+    Draw_Thumb();
+
+    /*
+    =================== Display the mouse ===================
+    */
+    if (LogicPage == &SeenBuff) {
+      Conditional_Show_Mouse();
+    }
+    return true;
   }
 
   /*

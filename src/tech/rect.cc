@@ -103,95 +103,78 @@ bool Rect::Is_Valid() const { return Width > 0 && Height > 0; }
  * HISTORY: * 07/22/1996 JLB : Created. *
  *=============================================================================================*/
 Rect Rect::Intersect(const Rect& rectangle, int* x, int* y) const {
-  Rect rect(0, 0, 0, 0);  // Dummy (illegal) rectangle.
-  Rect r = rectangle;     // Working rectangle.
-
   /*
   **	Both rectangles must be valid or else no intersection can occur. In such
   **	a case, return an illegal rectangle.
   */
   if (!Is_Valid() || !rectangle.Is_Valid()) {
-    return rect;
+    return Rect(0, 0, 0, 0);
   }
 
+  Rect r = rectangle;  // Working rectangle.
+
   /*
-  **	The rectangle spills past the left edge.
+  **	Clip against each edge in turn. Every clip can only shrink the working
+  **	rectangle, so one validity test after all four covers them all.
   */
   if (r.X < X) {
     r.Width -= X - r.X;
     r.X = X;
   }
-  if (r.Width < 1) {
-    return rect;
-  }
-
-  /*
-  **	The rectangle spills past top edge.
-  */
   if (r.Y < Y) {
     r.Height -= Y - r.Y;
     r.Y = Y;
   }
-  if (r.Height < 1) {
-    return rect;
-  }
-
-  /*
-  **	The rectangle spills past the right edge.
-  */
   if (r.X + r.Width > X + Width) {
     r.Width -= r.X + r.Width - (X + Width);
   }
-  if (r.Width < 1) {
-    return rect;
-  }
-
-  /*
-  **	The rectangle spills past the bottom edge.
-  */
   if (r.Y + r.Height > Y + Height) {
     r.Height -= r.Y + r.Height - (Y + Height);
   }
-  if (r.Height < 1) {
-    return rect;
+
+  if (r.Width < 1 || r.Height < 1) {
+    // No overlap: return the dummy (illegal) rectangle, leaving x and y alone.
+    r = Rect(0, 0, 0, 0);
+  } else {
+    /*
+    **	Adjust the relative draw position by how far the clip moved the origin.
+    */
+    if (x != nullptr) {
+      *x -= r.X - X;
+    }
+    if (y != nullptr) {
+      *y -= r.Y - Y;
+    }
   }
 
-  /*
-  **	Adjust Height relative draw position according to Height new rectangle
-  **	union.
-  */
-  if (x != nullptr) {
-    *x -= r.X - X;
-  }
-  if (y != nullptr) {
-    *y -= r.Y - Y;
-  }
-
+  // One named result on every path, so the copy is elided.
   return r;
 }
 
 Rect Union(const Rect& rect1, const Rect& rect2) {
-  if (rect1.Is_Valid()) {
-    if (rect2.Is_Valid()) {
-      Rect result = rect1;
-
-      if (result.X > rect2.X) {
-        result.Width += result.X - rect2.X;
-        result.X = rect2.X;
-      }
-      if (result.Y > rect2.Y) {
-        result.Height += result.Y - rect2.Y;
-        result.Y = rect2.Y;
-      }
-      if (result.X + result.Width < rect2.X + rect2.Width) {
-        result.Width = rect2.X + rect2.Width - result.X + 1;
-      }
-      if (result.Y + result.Height < rect2.Y + rect2.Height) {
-        result.Height = rect2.Y + rect2.Height - result.Y + 1;
-      }
-      return result;
-    }
+  // An invalid rectangle contributes nothing; the other one is the union.
+  if (!rect1.Is_Valid()) {
+    return rect2;
+  }
+  if (!rect2.Is_Valid()) {
     return rect1;
   }
-  return rect2;
+
+  Rect result = rect1;
+
+  if (result.X > rect2.X) {
+    result.Width += result.X - rect2.X;
+    result.X = rect2.X;
+  }
+  if (result.Y > rect2.Y) {
+    result.Height += result.Y - rect2.Y;
+    result.Y = rect2.Y;
+  }
+  if (result.X + result.Width < rect2.X + rect2.Width) {
+    result.Width = rect2.X + rect2.Width - result.X + 1;
+  }
+  if (result.Y + result.Height < rect2.Y + rect2.Height) {
+    result.Height = rect2.Y + rect2.Height - result.Y + 1;
+  }
+  return result;
 }

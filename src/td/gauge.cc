@@ -379,7 +379,7 @@ void GaugeClass::Draw_Thumb() {
 
 /***********************************************************************************************
  * TriColorGaugeClass::TriColorGaugeClass -- Constructor for 3 color
- *(red\yellow\green) gauge. *
+ *(red/yellow/green) gauge. *
  *                                                                                             *
  *    This routine will draw the body of the gauge if necessary. *
  *                                                                                             *

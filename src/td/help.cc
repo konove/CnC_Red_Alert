@@ -271,31 +271,29 @@ void HelpClass::Help_Text(int text, int x, int y, int color, bool quick,
 void HelpClass::Draw_It(bool forced) {
   TabClass::Draw_It(forced);
 
-  if (Text != TXT_NONE && (forced || !CountDownTimer.Time())) {
-    if (LogicPage->Lock()) {
-      Fancy_Text_Print(Text, DrawX, DrawY, Color, BLACK,
+  if ((Text != TXT_NONE && (forced || !CountDownTimer.Time())) &&
+      LogicPage->Lock()) {
+    Fancy_Text_Print(Text, DrawX, DrawY, Color, BLACK, TPF_MAP | TPF_NOSHADOW);
+    LogicPage->Draw_Rect(DrawX - 1, DrawY - 1, DrawX + Width + 1,
+                         DrawY + FontHeight, static_cast<unsigned char>(Color));
+
+    if (Cost) {
+      char buffer[15];
+      sprintf(buffer, "$%d", Cost);
+      int width = String_Pixel_Width(buffer);
+      Fancy_Text_Print(buffer, DrawX, DrawY + FontHeight, Color, BLACK,
                        TPF_MAP | TPF_NOSHADOW);
-      LogicPage->Draw_Rect(DrawX - 1, DrawY - 1, DrawX + Width + 1,
-                           DrawY + FontHeight,
+      LogicPage->Draw_Rect(DrawX - 1, DrawY + FontHeight, DrawX + width + 1,
+                           DrawY + FontHeight + FontHeight - 1,
                            static_cast<unsigned char>(Color));
-
-      if (Cost) {
-        char buffer[15];
-        sprintf(buffer, "$%d", Cost);
-        int width = String_Pixel_Width(buffer);
-        Fancy_Text_Print(buffer, DrawX, DrawY + FontHeight, Color, BLACK,
-                         TPF_MAP | TPF_NOSHADOW);
-        LogicPage->Draw_Rect(DrawX - 1, DrawY + FontHeight, DrawX + width + 1,
-                             DrawY + FontHeight + FontHeight - 1,
-                             static_cast<unsigned char>(Color));
-        LogicPage->Draw_Line(DrawX, DrawY + FontHeight,
-                             DrawX + std::min(width + 1, Width) - 1,
-                             DrawY + FontHeight, BLACK);
-      }
-
-      LogicPage->Unlock();
+      LogicPage->Draw_Line(DrawX, DrawY + FontHeight,
+                           DrawX + std::min(width + 1, Width) - 1,
+                           DrawY + FontHeight, BLACK);
     }
+
+    LogicPage->Unlock();
   }
+
   //	if (!In_Debugger) HidPage.Unlock();
 }
 

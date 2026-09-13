@@ -42,6 +42,7 @@
 
 #include <cstddef>
 
+#include "absl/base/attributes.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/object.h"
@@ -60,7 +61,10 @@ class FactoryClass : private StageClass {
   FactoryClass(FactoryClass&&) = delete;
   FactoryClass& operator=(FactoryClass&&) = delete;
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* ptr);
 
   static void Init();
@@ -87,7 +91,7 @@ class FactoryClass : private StageClass {
   void AI();
   void Set(TechnoClass& object);
   HouseClass* Get_House() { return House; }
-  const char* Name() { return "Factory"; }
+  static const char* Name() { return "Factory"; }
 
   /*
   **	This flag is used to maintain the pool of factory class objects. If the

@@ -41,6 +41,7 @@
 #include <cstdlib>
 #include <ctime>
 
+#include "absl/base/attributes.h"
 #include "sdllib/ww_win.h"
 
 /*========================= C++ Routines ==================================*/
@@ -107,8 +108,9 @@ extern "C" {
 // Legacy byte generator state behind Random(); the games seed it.
 extern long RandNumb;
 
-void* Build_Fading_Table(const void* palette, void* dest, long int color,
-                         long int frac);
+void* Build_Fading_Table(const void* palette,
+                         void* dest ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                         long int color, long int frac);
 
 extern int Clip_Rect(int* x, int* y, int* dw, int* dh, int width, int height);
 extern int Confine_Rect(int* x, int* y, int dw, int dh, int width, int height);

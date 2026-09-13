@@ -240,11 +240,10 @@ TerrainClass::TerrainClass(TerrainType type, CELL cell)
     : ObjectClass(RTTI_TERRAIN, Terrains.ID(this)),
       Class(TerrainTypes.Ptr(type)) {
   Strength = Class->MaxStrength;
-  if (cell != -1) {
-    if (!Unlimbo(Cell_Coord(cell))) {
-      delete this;
-    }
+  if ((cell != -1) && (!Unlimbo(Cell_Coord(cell)))) {
+    delete this;
   }
+
   Set_Rate(0);  // turn off animation
 }
 
@@ -429,8 +428,7 @@ bool TerrainClass::Catch_Fire() {
   assert(IsActive);
 
   if (!IsCrumbling && !IsOnFire && Class->Armor == ARMOR_WOOD) {
-    AnimClass* anim =
-        new AnimClass(ANIM_BURN_BIG, Coord_Add(Sort_Y(), 0xFFB00000L));
+    auto* anim = new AnimClass(ANIM_BURN_BIG, Coord_Add(Sort_Y(), 0xFFB00000L));
     if (anim) {
       anim->Attach_To(this);
     }
@@ -664,7 +662,7 @@ unsigned char* TerrainClass::Radar_Icon(CELL cell) {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
-  unsigned char* icon =
+  auto* icon =
       (unsigned char*)Class->Get_Radar_Data();  // get a pointer to radar icons
   int width = *icon++;                          // extract the width from data
   int height = *icon++;                         // extract the width from data

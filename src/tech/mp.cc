@@ -279,7 +279,7 @@ unsigned XMP_Encode(unsigned char* to, unsigned tobytes, const uint32_t* from,
   assert(precision > 0);
 
   unsigned frombytes = precision * sizeof(uint32_t);
-  unsigned char filler =
+  auto filler =
       static_cast<unsigned char>(XMP_Is_Negative(from, precision) ? 0xff : 0);
 
   int index;
@@ -322,10 +322,10 @@ unsigned XMP_Encode(unsigned char* to, const uint32_t* from, int precision) {
   assert(precision > 0);
 
   bool is_negative = XMP_Is_Negative(from, precision);
-  unsigned char filler = static_cast<unsigned char>(is_negative ? 0xff : 0);
+  auto filler = static_cast<unsigned char>(is_negative ? 0xff : 0);
   unsigned char* number_ptr;
 
-  unsigned char* const end = (unsigned char*)from;
+  auto* const end = (unsigned char*)from;
   for (number_ptr = static_cast<unsigned char*>(end) + precision - 1;
        number_ptr > static_cast<unsigned char*>(end); number_ptr--) {
     if (*number_ptr != filler) {
@@ -377,10 +377,10 @@ void XMP_Signed_Decode(uint32_t* result, const unsigned char* from,
   assert(frombytes > 0);
   assert(precision > 0);
 
-  unsigned char filler = static_cast<unsigned char>(*from & 0x80 ? 0xff : 0);
+  auto filler = static_cast<unsigned char>(*from & 0x80 ? 0xff : 0);
 
   int fillcount = static_cast<int>((precision * sizeof(uint32_t)) - frombytes);
-  unsigned char* dest = (unsigned char*)&result[precision];
+  auto* dest = (unsigned char*)&result[precision];
 
   /*
   **	Fill in any excess significant bytes.
@@ -428,7 +428,7 @@ void XMP_Unsigned_Decode(uint32_t* result, const unsigned char* from,
   assert(precision > 0);
 
   int fillcount = static_cast<int>((precision * sizeof(uint32_t)) - frombytes);
-  unsigned char* dest = (unsigned char*)&result[precision];
+  auto* dest = (unsigned char*)&result[precision];
 
   /*
   **	Fill in any excess significant bytes.
@@ -902,7 +902,7 @@ unsigned XMP_Count_Bits(const uint32_t* number, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 int XMP_Count_Bytes(const uint32_t* number, int precision) {
-  unsigned char* ptr = (unsigned char*)number;
+  auto* ptr = (unsigned char*)number;
   int count = 0;
   for (unsigned index = 0; index < precision * sizeof(uint32_t); index++) {
     if (!*ptr) {
@@ -1082,9 +1082,9 @@ bool XMP_Add_Int(uint32_t* result, const uint32_t* left_number,
  *=============================================================================================*/
 bool XMP_Sub(uint32_t* result, const uint32_t* left_number,
              const uint32_t* right_number, bool borrow, int precision) {
-  const unsigned short* left_number_ptr = (const unsigned short*)left_number;
-  const unsigned short* right_number_ptr = (const unsigned short*)right_number;
-  unsigned short* result_ptr = (unsigned short*)result;
+  const auto* left_number_ptr = (const unsigned short*)left_number;
+  const auto* right_number_ptr = (const unsigned short*)right_number;
+  auto* result_ptr = (unsigned short*)result;
 
   precision *= 2;
   while (precision--) {
@@ -1127,8 +1127,8 @@ bool XMP_Sub(uint32_t* result, const uint32_t* left_number,
  *=============================================================================================*/
 bool XMP_Sub_Int(uint32_t* result, const uint32_t* left_number,
                  unsigned short right_number, bool borrow, int precision) {
-  const unsigned short* left_number_ptr = (const unsigned short*)left_number;
-  unsigned short* result_ptr = (unsigned short*)result;
+  const auto* left_number_ptr = (const unsigned short*)left_number;
+  auto* result_ptr = (unsigned short*)result;
 
   precision *= 2;
   while (precision--) {
@@ -1224,8 +1224,8 @@ int XMP_Unsigned_Mult(uint32_t* prod, const uint32_t* multiplicand,
  *=============================================================================================*/
 int XMP_Unsigned_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
                           short multiplier, int precision) {
-  const unsigned short* m2 = (const unsigned short*)multiplicand;
-  unsigned short* pr = (unsigned short*)prod;
+  const auto* m2 = (const unsigned short*)multiplicand;
+  auto* pr = (unsigned short*)prod;
   unsigned long carry = 0;
   for (int i = 0; i < precision * 2; ++i) {
     unsigned long p = (static_cast<unsigned long>(multiplier) * *m2) + carry;
@@ -1827,8 +1827,8 @@ void XMP_Double_Mul(uint32_t* prod, const uint32_t* multiplicand,
   */
   XMP_Init(prod, 0, precision * 2);
 
-  const unsigned short* multiplier_ptr = (const unsigned short*)multiplier;
-  unsigned short* product_ptr = (unsigned short*)prod;
+  const auto* multiplier_ptr = (const unsigned short*)multiplier;
+  auto* product_ptr = (unsigned short*)prod;
 
   // Multiply multiplicand by each word in multiplier, accumulating prod.
   for (int i = 0; i < precision * 2; ++i) {
@@ -1902,7 +1902,7 @@ int XMP_Prepare_Modulus(const uint32_t* n_modulus, int precision) {
     XMP_Shift_Right_Bits(mod_quotient, 1, 2);
     modulus_shift--; /* now  0 <= _modulus_shift <= 16 */
   }
-  unsigned short* mpm = (unsigned short*)mod_quotient;
+  auto* mpm = (unsigned short*)mod_quotient;
   reciprical_low_digit = *mpm++;
   reciprical_high_digit = *mpm;
 
@@ -2066,7 +2066,10 @@ void XMP_Mod_Mult_Clear(int precision) {
 **      modulus.
 */
 unsigned short mp_quo_digit(const unsigned short* dividend) {
-  unsigned long q, q0, q1, q2;
+  unsigned long q;
+  unsigned long q0;
+  unsigned long q1;
+  unsigned long q2;
 
   /*
    * Compute the least significant product group.

@@ -41,6 +41,7 @@
 #ifndef CNC_RED_ALERT_TD_LIST_H_
 #define CNC_RED_ALERT_TD_LIST_H_
 
+#include "absl/base/attributes.h"
 #include "sdllib/keyboard.h"
 #include "td/control.h"
 #include "td/defines.h"
@@ -101,9 +102,9 @@ class ListClass : public ControlClass {
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  LinkClass& Add(LinkClass& list) override;
-  LinkClass& Add_Tail(LinkClass& list) override;
-  LinkClass& Add_Head(LinkClass& list) override;
+  LinkClass& Add(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  LinkClass& Add_Tail(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  LinkClass& Add_Head(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   GadgetClass* Remove() override;
 
  protected:

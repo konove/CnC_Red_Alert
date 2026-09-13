@@ -192,14 +192,17 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
                                               unsigned short crc) {
   int num_msg;
   TextLabelClass* txtlabel;
-  int x, y;
+  int x;
+  int y;
   GadgetClass* gadg;
-  int i, j;
+  int i;
+  int j;
   int found;
   int position;
   char* raw_string;
   char* current_string;
-  char *s1, *s2;
+  char* s1;
+  char* s2;
   bool same;
 
   /*------------------------------------------------------------------------
@@ -212,12 +215,12 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
       /*
       ** Dont check for duplicates in multi-segment strings
       */
-      if (!txtlabel->Segments) {
-        if (!strcmp(txtlabel->Text, txt) && txtlabel->Color == color &&
-            txtlabel->Style == style) {
-          return txtlabel;
-        }
+      if ((!txtlabel->Segments) &&
+          (!strcmp(txtlabel->Text, txt) && txtlabel->Color == color &&
+           txtlabel->Style == style)) {
+        return txtlabel;
       }
+
       txtlabel = dynamic_cast<TextLabelClass*>(txtlabel->Get_Next());
     }
   }
@@ -684,25 +687,25 @@ int MessageListClass::Input(KeyNumType& input) {
       character, after the "To:" prefix.
       ------------------------------------------------------------------*/
       default:
-        if (EditCurPos - EditInitPos < MaxChars - 1) {
-          if (!(input & WWKEY_VK_BIT) && ascii >= ' ' && ascii <= 127) {
-            EditBuf[EditCurPos] = static_cast<char>(ascii);
-            EditCurPos++;
-            retcode = 1;
+        if ((EditCurPos - EditInitPos < MaxChars - 1) &&
+            (!(input & WWKEY_VK_BIT) && ascii >= ' ' && ascii <= 127)) {
+          EditBuf[EditCurPos] = static_cast<char>(ascii);
+          EditCurPos++;
+          retcode = 1;
 
-            /*
-            ** Verify that the additional character would not overrun the on
-            *screen edit box.
-            */
-            Fancy_Text_Print(TXT_NONE, 0, 0, EditLabel->Color, TBLACK,
-                             EditLabel->Style);
-            int width = String_Pixel_Width(EditBuf);
-            if (width >= Width) {
-              EditBuf[EditCurPos--] = 0;
-              retcode = 0;
-            }
+          /*
+          ** Verify that the additional character would not overrun the on
+          *screen edit box.
+          */
+          Fancy_Text_Print(TXT_NONE, 0, 0, EditLabel->Color, TBLACK,
+                           EditLabel->Style);
+          int width = String_Pixel_Width(EditBuf);
+          if (width >= Width) {
+            EditBuf[EditCurPos--] = 0;
+            retcode = 0;
           }
         }
+
         input = KN_NONE;
         break;
     }

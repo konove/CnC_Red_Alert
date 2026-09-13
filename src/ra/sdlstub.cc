@@ -46,10 +46,15 @@ void Memory_Error_Handler() {
   exit(0);
 }
 
-static constexpr const char* kWindowName = config::kIsFrench ? "Alerte Rouge"
-                                           : config::kIsGerman
-                                               ? "Alarmstufe Rot"
-                                               : "Red Alert";
+static constexpr const char* kWindowName = [] {
+  if (config::kIsFrench) {
+    return "Alerte Rouge";
+  }
+  if (config::kIsGerman) {
+    return "Alarmstufe Rot";
+  }
+  return "Red Alert";
+}();
 
 void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
                         int height) {

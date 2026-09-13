@@ -134,7 +134,8 @@ static inline void Draw_Cell_Point(CELL cell, bool passable, int threat_stage,
                                    int overide = 0) {
   if (DrawPath) {
     if (!Debug_Find_Path) {
-      int x, y;
+      int x;
+      int y;
 
       if (Map.Coord_To_Pixel(Cell_Coord(cell), x, y)) {
         if (threat_stage > 2) {
@@ -571,15 +572,18 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
   FacingType direction;             // Working direction of look ahead.
   FacingType newdir;                // Tentative facing value.
 
-  bool left = false,  // Was leftward path legal?
+  bool left = false;
+  bool                // Was leftward path legal?
       right = false;  // Was rightward path legal?
 
   int len;                                    // Length of detour command list.
   int unit_threat;                            // Calculated unit threat rating
   int cost;                                   // Cost to enter the square
-  FacingType moves_left[MAX_MLIST_SIZE + 2],  // Counterclockwise move list.
-      moves_right[MAX_MLIST_SIZE + 2];        // Clockwise move list.
-  PathType pleft, pright;                     // Path control structures.
+  FacingType moves_left[MAX_MLIST_SIZE + 2];
+  FacingType                            // Counterclockwise move list.
+      moves_right[MAX_MLIST_SIZE + 2];  // Clockwise move list.
+  PathType pleft;
+  PathType pright;                            // Path control structures.
   PathType* which;                            // Which path to actually use.
   int threat;
   int threat_stage = 0;
@@ -979,7 +983,8 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
                             int threat_stage, int max_cells,
                             MoveType threshhold) {
   FacingType newdir;  // Direction of facing before surrounding cell check.
-  CELL oldcell,       // Current cell.
+  CELL oldcell;
+  CELL                // Current cell.
       newcell;        // Tentative new cell.
   int cost = 0;       // Working cost value.
   int startx;
@@ -990,7 +995,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
   int oldval = 0;
   int cellcount = 0;
   int forceout = false;
-  FacingType firstdir = static_cast<FacingType>(-1);
+  auto firstdir = static_cast<FacingType>(-1);
   CELL firstcell = -1;
   startx = Cell_X(start);
   starty = Cell_Y(start);
@@ -1270,8 +1275,10 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       (FacingType)0, (FacingType)0,  (FacingType)0, (FacingType)2,
       (FacingType)3, (FacingType)-2, (FacingType)0, (FacingType)0};
 #endif
-  FacingType *cmd1,   // Floating first command pointer.
-      *cmd2,          // Floating second command pointer.
+  FacingType* cmd1;
+  FacingType  // Floating first command pointer.
+      * cmd2;
+  FacingType          // Floating second command pointer.
       newcmd;         // Calculated new optimized command.
   FacingType newdir;  // Tentative new direction for smoothing.
   CELL cell;          // Working cell (as it moves along path).
@@ -1508,8 +1515,8 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
 
   if (GameToPlay == GAME_NORMAL) {
     if (threat != -1) {
-      if (Map.Cell_Distance(cell, DestLocation) > THREAT_THRESHOLD) {
-        if (Map.Cell_Threat(cell, Owner()) > threat) {
+      if (MapEditClass::Cell_Distance(cell, DestLocation) > THREAT_THRESHOLD) {
+        if (MapEditClass::Cell_Threat(cell, Owner()) > threat) {
           return 0;
         }
       }

@@ -260,13 +260,13 @@ const char* SimpleEditDlgClass::Show() {
     //	My hack for triggering escape and return on key up instead of down...
     //	The problem that was occurring was that the calling dialog would act on
     // the key up, 	though this dialog handled the key down. ajw
-    if (Keyboard->Down(KN_ESC)) {
+    if (KeyboardClass::Down(KN_ESC)) {
       bEscapeDown = true;
     } else if (bEscapeDown) {
       input = ButtonKey(BUTTON_CANCEL);
       bEscapeDown = false;
     }
-    if (Keyboard->Down(KN_RETURN)) {
+    if (KeyboardClass::Down(KN_RETURN)) {
       bReturnDown = true;
     } else if (bReturnDown) {
       input = ButtonKey(BUTTON_OK);

@@ -33,6 +33,7 @@
 #include <optional>
 #include <span>
 
+#include "absl/base/attributes.h"
 #include "ra/dib.h"
 #include "ra/iconlist.h"
 #include "ra/rawolapi.h"
@@ -181,14 +182,15 @@ struct CREATEGAMEINFO {
 // IconListClass and DrawDib take, or null when there is none. The matching
 // ICONKIND is always ICON_DIB.
 template <typename IconInfo>
-void* IconPointer(IconInfo& Info) {
+void* IconPointer(IconInfo& Info ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   return Info.Icon.has_value() ? &*Info.Icon : nullptr;
 }
 
 // The same icon, typed, for the drawing code that does not go through
 // IconListClass.
 template <typename IconInfo>
-const dib::Image* IconImage(const IconInfo& Info) {
+const dib::Image* IconImage(
+    const IconInfo& Info ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   return Info.Icon.has_value() ? &*Info.Icon : nullptr;
 }
 
@@ -410,9 +412,9 @@ class WolapiObject {
   bool bItemMarkedNeedScenario(int iIndex);
   //	Copies the player name out of a game-channel list item into szDest,
   //	truncating to iSize rather than overflowing.
-  void PullPlayerName_Into_From(char* szDest, std::size_t iSize,
-                                const char* szSource);
-  HousesType PullPlayerHouse_From(const char* szSource);
+  static void PullPlayerName_Into_From(char* szDest, std::size_t iSize,
+                                       const char* szSource);
+  static HousesType PullPlayerHouse_From(const char* szSource);
   //	Writes a game-channel player list item into szDest, truncating to
   //	iSize rather than overflowing.
   void WritePlayerListItem(char* szDest, std::size_t iSize, const char* szName,

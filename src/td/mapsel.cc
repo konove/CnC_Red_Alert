@@ -476,13 +476,17 @@ struct nodstats {
  * HISTORY: * 04/17/1995 BWG : Created. *
  *=============================================================================================*/
 void Map_Selection() {
-  void *anim, *progress, *greyearth, *greyearth2;
+  void* anim;
+  void* progress;
+  void* greyearth;
+  void* greyearth2;
   // Static: InterpolationPalette is a global that keeps pointing here after
   // this function returns, and interpal.cc reads it from another
   // translation unit. Every path fills the buffer before reading it, so
   // persisting it between calls changes nothing.
   static unsigned char localpalette[768];
-  int scenario, lastscenario;
+  int scenario;
+  int lastscenario;
   int house = PlayerPtr->Class->House;
   int attackxcoord = 0;
 
@@ -506,8 +510,8 @@ void Map_Selection() {
                                  8, 9, 10, 11, 12, 13, 14, 15};
   GraphicBufferClass backpage(20 * 6, 8);
 
-  unsigned char* grey2palette = new unsigned char[768];
-  unsigned char* progresspalette = new unsigned char[768];
+  auto* grey2palette = new unsigned char[768];
+  auto* progresspalette = new unsigned char[768];
 
   Keyboard::Clear();
   Set_Font(ScoreFontPtr);
@@ -812,7 +816,7 @@ void Map_Selection() {
   Increase_Palette_Luminance(InterpolationPalette, 30, 30, 30, 63);
   Read_Interpolation_Palette("MAP_PROG.PAL");
 
-  GraphicBufferClass* europe =
+  auto* europe =
       new GraphicBufferClass(SysMemPage.Get_Width(), SysMemPage.Get_Height());
   SysMemPage.Blit(*europe);
 
@@ -1034,7 +1038,8 @@ void Map_Selection() {
     }
   }
 
-  int selection = 0, color = 0;
+  int selection = 0;
+  int color = 0;
   // erase the "Locating Coordinates" message...
   Play_Sample(beepy6, 255, Options.Normalize_Sound(90));
   if (!lastscenario) {
@@ -1085,29 +1090,25 @@ void Map_Selection() {
     Cycle_Call_Back_Delay(1, progresspalette);
 
     // Check for the mouse button
-    if (Keyboard::Check()) {
-      if ((Keyboard::Get() & 0x10FF) == KN_LMOUSE) {
-        for (selection = 0; selection < CountryArray[scenario].Choices[ScenDir];
-             selection++) {
-          color = SysMemPage.Get_Pixel(Get_Mouse_X() / 2, Get_Mouse_Y() / 2);
+    if (Keyboard::Check() && ((Keyboard::Get() & 0x10FF) == KN_LMOUSE)) {
+      for (selection = 0; selection < CountryArray[scenario].Choices[ScenDir];
+           selection++) {
+        color = SysMemPage.Get_Pixel(Get_Mouse_X() / 2, Get_Mouse_Y() / 2);
 
-          /*
-          ** Special hack for Egypt the second time through
-          */
-          if (CountryArray[scenario].CountryColor[ScenDir][selection] == 0xA0) {
-            if (color == 0x80 || color == 0x81) {
-              color = 0xA0;
-            }
-          }
-
-          if (CountryArray[scenario].CountryColor[ScenDir][selection] ==
-              color) {
-            Play_Sample(world2, 255, Options.Normalize_Sound(90));
-            done = 1;
-            break;
-          }
-          Play_Sample(scold1, 255, Options.Normalize_Sound(90));
+        /*
+        ** Special hack for Egypt the second time through
+        */
+        if ((CountryArray[scenario].CountryColor[ScenDir][selection] == 0xA0) &&
+            (color == 0x80 || color == 0x81)) {
+          color = 0xA0;
         }
+
+        if (CountryArray[scenario].CountryColor[ScenDir][selection] == color) {
+          Play_Sample(world2, 255, Options.Normalize_Sound(90));
+          done = 1;
+          break;
+        }
+        Play_Sample(scold1, 255, Options.Normalize_Sound(90));
       }
     }
   }
@@ -1230,7 +1231,8 @@ void Map_Selection() {
  *   04/27/1995 BWG : Created.                                             *
  *=========================================================================*/
 void Print_Statistics(int country, int xpos, int ypos) {
-  int index, newx;
+  int index;
+  int newx;
   const void* oldfont;
   static const int _gdistatnames[] = {
       TXT_MAP_GDISTAT0, TXT_MAP_GDISTAT1, TXT_MAP_GDISTAT2, TXT_MAP_GDISTAT3,
@@ -1532,7 +1534,9 @@ void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
 
 void Cycle_Call_Back_Delay(int time, unsigned char* pal) {
   static int _counter;
-  unsigned char r, g, b;
+  unsigned char r;
+  unsigned char g;
+  unsigned char b;
   int i;
 
   while (time--) {

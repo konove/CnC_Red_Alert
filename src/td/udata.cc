@@ -1505,24 +1505,22 @@ void UnitTypeClass::One_Time() {
  *=============================================================================================*/
 
 void UnitTypeClass::Init(TheaterType theater) {
-  if (Get_Resolution_Factor()) {
-    if (theater != LastTheater) {
-      const void* cameo_ptr;
+  if (Get_Resolution_Factor() && (theater != LastTheater)) {
+    const void* cameo_ptr;
 
-      for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
-        const UnitTypeClass& uclass = As_Reference(index);
+    for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
+      const UnitTypeClass& uclass = As_Reference(index);
 
-        (const void*&)uclass.CameoData = nullptr;
+      (const void*&)uclass.CameoData = nullptr;
 
-        if (uclass.IsBuildable) {
-          auto fullname =
-              std::filesystem::path(std::string(uclass.IniName) + "ICNH")
-                  .replace_extension(".VQA")
-                  .string();
-          cameo_ptr = MFCD::Retrieve(fullname);
-          if (cameo_ptr) {
-            (const void*&)uclass.CameoData = cameo_ptr;
-          }
+      if (uclass.IsBuildable) {
+        auto fullname =
+            std::filesystem::path(std::string(uclass.IniName) + "ICNH")
+                .replace_extension(".VQA")
+                .string();
+        cameo_ptr = MFCD::Retrieve(fullname);
+        if (cameo_ptr) {
+          (const void*&)uclass.CameoData = cameo_ptr;
         }
       }
     }
@@ -1547,7 +1545,7 @@ void UnitTypeClass::Init(TheaterType theater) {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 bool UnitTypeClass::Create_And_Place(CELL cell, HousesType house) const {
-  UnitClass* unit = new UnitClass(Type, house);
+  auto* unit = new UnitClass(Type, house);
   if (unit) {
     return unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX));
   }

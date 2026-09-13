@@ -1719,8 +1719,7 @@ void TemplateTypeClass::Init_Heap() {
  * HISTORY: * 12/12/1995 JLB : Created. *
  *=============================================================================================*/
 LandType TemplateTypeClass::Land_Type(int icon) const {
-  const IconsetClass* icontrol =
-      static_cast<const IconsetClass*>(Get_Image_Data());
+  const auto* icontrol = static_cast<const IconsetClass*>(Get_Image_Data());
 
   if (icontrol != nullptr) {
     const unsigned char* map = icontrol->Control_Map();
@@ -1796,8 +1795,7 @@ const short* TemplateTypeClass::Occupy_List(bool /*placement*/) const {
   static short _occupy[(13 * 8) + 5];
   short* ptr;
 
-  const IconsetClass* iconset =
-      static_cast<const IconsetClass*>(Get_Image_Data());
+  const auto* iconset = static_cast<const IconsetClass*>(Get_Image_Data());
   const unsigned char* map = iconset->Map_Data();
 
   ptr = &_occupy[0];
@@ -1872,7 +1870,8 @@ void TemplateTypeClass::Init(TheaterType theater) {
  *=============================================================================================*/
 void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
                                 HousesType /*unused*/) const {
-  int w, h;
+  int w;
+  int h;
   int index;
   bool scale;  // Should the template be half sized?
 
@@ -1889,7 +1888,7 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
   x += WindowList[window][WINDOWX];
   y += WindowList[window][WINDOWY];
 
-  const IconsetClass* iconset = (const IconsetClass*)Get_Image_Data();
+  const auto* iconset = (const IconsetClass*)Get_Image_Data();
   const unsigned char* map = iconset->Map_Data();
 
   for (index = 0; index < w * h; index++) {

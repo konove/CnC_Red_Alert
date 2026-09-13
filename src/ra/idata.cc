@@ -1104,7 +1104,7 @@ ObjectClass* InfantryTypeClass::Create_One_Of(HouseClass* house) const {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
-  InfantryClass* i = new InfantryClass(Type, house);
+  auto* i = new InfantryClass(Type, house);
   if (i != nullptr) {
     COORDINATE coord = Map[cell].Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {

@@ -48,6 +48,7 @@
 
 #include <cstdint>
 
+#include "absl/base/attributes.h"
 #include "ra/defines.h"
 #include "ra/target.h"
 
@@ -88,12 +89,12 @@ class QueueClass {
   *and entry *	[Count-1] matches the last-in-line. This is ensured regardless
   *of the actual position *	of the object in the circular internal list.
   */
-  T& operator[](int /*index*/);
+  T& operator[](int /*index*/) ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   /*
   **	This function will return a reference to the "head of the line" object.
   */
-  T& First();
+  T& First() ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   /*
   **	This function clears the list of objects.

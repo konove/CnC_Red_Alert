@@ -635,7 +635,8 @@ void DisplayClass::Set_Cursor_Shape(const short* list) {
   ZoneOffset = 0;
 
   if (list) {
-    int w, h;
+    int w;
+    int h;
     static short _list[50];
 
     for (int i = 0; !i || list[i - 1] != kRefreshEol; i++) {
@@ -709,8 +710,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
     return true;
   }
 
-  const BuildingTypeClass* building =
-      dynamic_cast<const BuildingTypeClass*>(object);
+  const auto* building = dynamic_cast<const BuildingTypeClass*>(object);
 
   /*
   **	Scan through all cells that the building foundation would cover. If any
@@ -748,13 +748,12 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
         // BG: Modified so only walls can be placed next to walls - buildings
         // can't. JLB: Except for bibs, in which case buildings can be placed
         // next to these.
-        if (building->IsWall ||
-            ((*this)[newcell].Smudge != SMUDGE_NONE &&
-             SmudgeTypeClass::As_Reference((*this)[newcell].Smudge).IsBib)) {
-          if ((*this)[newcell].Owner == house) {
-            retval = true;
-            break;
-          }
+        if ((building->IsWall ||
+             ((*this)[newcell].Smudge != SMUDGE_NONE &&
+              SmudgeTypeClass::As_Reference((*this)[newcell].Smudge).IsBib)) &&
+            ((*this)[newcell].Owner == house)) {
+          retval = true;
+          break;
         }
 
         // we've found a building...
@@ -781,14 +780,13 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
         for (FacingType newface : magic_enum::enum_values<FacingType>()) {
           CELL newercell = Adjacent_Cell(newcell, newface);
 
-          if (building->IsWall ||
-              ((*this)[newercell].Smudge != SMUDGE_NONE &&
-               SmudgeTypeClass::As_Reference((*this)[newercell].Smudge)
-                   .IsBib)) {
-            if ((*this)[newercell].Owner == house) {
-              retval = true;
-              break;
-            }
+          if ((building->IsWall ||
+               ((*this)[newercell].Smudge != SMUDGE_NONE &&
+                SmudgeTypeClass::As_Reference((*this)[newercell].Smudge)
+                    .IsBib)) &&
+              ((*this)[newercell].Owner == house)) {
+            retval = true;
+            break;
           }
 
           TechnoClass* newbase = (*this)[newercell].Cell_Techno();
@@ -822,20 +820,19 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
   *bother to check if *	it hasn't already been given permission to be placed
   *down.
   */
-  if (!retval && !noradar && object->What_Am_I() == RTTI_BUILDINGTYPE) {
-    // For land mines, let's make it check proximity within 10 squares
-    if (building->Adjacent > 1) {
-      for (int index = 0; index < Buildings.Count(); index++) {
-        BuildingClass* obj = Buildings.Ptr(index);
-        if (obj != nullptr && !obj->IsInLimbo &&
-            obj->House->Class->House == house && obj->Class->IsBase) {
-          int centdist = Distance(obj->Center_Coord(), Cell_Coord(cell));
-          centdist /= CELL_LEPTON_W;
-          centdist -= (obj->Class->Width() + obj->Class->Height()) / 2;
-          if (centdist <= building->Adjacent) {
-            retval = true;
-            break;
-          }
+  // For land mines, let's make it check proximity within 10 squares
+  if ((!retval && !noradar && object->What_Am_I() == RTTI_BUILDINGTYPE) &&
+      (building->Adjacent > 1)) {
+    for (int index = 0; index < Buildings.Count(); index++) {
+      BuildingClass* obj = Buildings.Ptr(index);
+      if (obj != nullptr && !obj->IsInLimbo &&
+          obj->House->Class->House == house && obj->Class->IsBase) {
+        int centdist = Distance(obj->Center_Coord(), Cell_Coord(cell));
+        centdist /= CELL_LEPTON_W;
+        centdist -= (obj->Class->Width() + obj->Class->Height()) / 2;
+        if (centdist <= building->Adjacent) {
+          retval = true;
+          break;
         }
       }
     }
@@ -885,7 +882,8 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   **	Adjusts the position so that the placement cursor is never part way off
   *the *	tactical map.
   */
-  int w, h;
+  int w;
+  int h;
   Get_Occupy_Dimensions(w, h, CursorSize);
 
   int x = static_cast<CELL>(Cell_X(static_cast<CELL>(pos + ZoneOffset)));
@@ -951,13 +949,13 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
  *                                                                                             *
  * HISTORY: * 03/31/1995 BRR : Created. *
  *=============================================================================================*/
-void DisplayClass::Get_Occupy_Dimensions(int& w, int& h,
-                                         const short* list) const {
+void DisplayClass::Get_Occupy_Dimensions(int& w, int& h, const short* list) {
   int min_x = MAP_CELL_W;
   int max_x = -MAP_CELL_W;
   int min_y = MAP_CELL_H;
   int max_y = -MAP_CELL_H;
-  int x, y;
+  int x;
+  int y;
 
   w = 0;
   h = 0;
@@ -1374,7 +1372,8 @@ int DisplayClass::Cell_Shadow(CELL cell) const {
       9,  9,  11, 11, 22, 22, 11, 11, 13, 13, -2, -2, 13, 13, -2, -2,
       9,  9,  11, 11, 22, 22, 11, 11, 13, 13, -2, -2, 13, 13, -2, -2};
 
-  int index = 0, value = -1;
+  int index = 0;
+  int value = -1;
 
   /*
   **	Don't map cells that are at the top or bottom edge. This solves
@@ -1698,7 +1697,8 @@ ObjectClass* DisplayClass::Cell_Object(CELL cell, int x, int y) const {
  *Rubber band drawing.                                                     *
  *=============================================================================================*/
 void DisplayClass::Draw_It(bool forced) {
-  int x, y;  // Working cell index values.
+  int x;
+  int y;  // Working cell index values.
 
   MapClass::Draw_It(forced);
 
@@ -2280,7 +2280,7 @@ void DisplayClass::Redraw_Shadow() {
  *                                                                                             *
  * HISTORY: * 06/20/1994 JLB : Created. *
  *=============================================================================================*/
-ObjectClass* DisplayClass::Next_Object(ObjectClass* object) const {
+ObjectClass* DisplayClass::Next_Object(ObjectClass* object) {
   ObjectClass* firstobj = nullptr;
   bool foundmatch = false;
 
@@ -2326,7 +2326,7 @@ ObjectClass* DisplayClass::Next_Object(ObjectClass* object) const {
  *                                                                                             *
  * HISTORY: * 08/24/1995 JLB : Created. *
  *=============================================================================================*/
-ObjectClass* DisplayClass::Prev_Object(ObjectClass* object) const {
+ObjectClass* DisplayClass::Prev_Object(ObjectClass* object) {
   ObjectClass* firstobj = nullptr;
   bool foundmatch = false;
 
@@ -2694,12 +2694,11 @@ void DisplayClass::Select_These(COORDINATE coord1, COORDINATE coord2) {
     *be *	selected, and are within the bounding box.
     */
     HouseClass* hptr = HouseClass::As_Pointer(obj->Owner());
-    if (hptr != nullptr && hptr->IsPlayerControl &&
-        obj->Class_Of().IsSelectable && obj->What_Am_I() != RTTI_BUILDING &&
-        x >= x1 && x <= x2 && y >= y1 && y <= y2) {
-      if (obj->Select()) {
-        AllowVoice = false;
-      }
+    if ((hptr != nullptr && hptr->IsPlayerControl &&
+         obj->Class_Of().IsSelectable && obj->What_Am_I() != RTTI_BUILDING &&
+         x >= x1 && x <= x2 && y >= y1 && y <= y2) &&
+        obj->Select()) {
+      AllowVoice = false;
     }
   }
 
@@ -2716,11 +2715,10 @@ void DisplayClass::Select_These(COORDINATE coord1, COORDINATE coord2) {
     **	Only try to select objects that are owned by the player, are allowed to
     *be *	selected, and are within the bounding box.
     */
-    if (aircraft->House->IsPlayerControl && aircraft->Class->IsSelectable &&
-        !aircraft->IsSelected && x >= x1 && x <= x2 && y >= y1 && y <= y2) {
-      if (aircraft->Select()) {
-        AllowVoice = false;
-      }
+    if ((aircraft->House->IsPlayerControl && aircraft->Class->IsSelectable &&
+         !aircraft->IsSelected && x >= x1 && x <= x2 && y >= y1 && y <= y2) &&
+        aircraft->Select()) {
+      AllowVoice = false;
     }
   }
 
@@ -2828,7 +2826,8 @@ void DisplayClass::Refresh_Band() {
  * HISTORY: * 02/17/1995 JLB : Created. *
  *=============================================================================================*/
 int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
-  int x, y;  // Sub cell pixel coordinates.
+  int x;
+  int y;  // Sub cell pixel coordinates.
   bool shadow;
   ObjectClass* object = nullptr;
   ActionType action =
@@ -2965,8 +2964,7 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
         *cell.
         */
         if (tobject != nullptr && tobject->Is_Techno()) {
-          const TechnoClass* uobject =
-              dynamic_cast<const TechnoClass*>(tobject);
+          const auto* uobject = dynamic_cast<const TechnoClass*>(tobject);
           if (!uobject->Can_Teleport_Here(cell)) {
             //					if (((UnitClass
             //*)As_Object(PlayerPtr->UnitToTeleport))->Can_Enter_Cell(cell,
@@ -3013,10 +3011,8 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     *processed. *	The shape changes depending on what object the mouse is
     *currently over and what *	object is currently selected.
     */
-    if (!edge) {
-      if (flags & LEFTUP) {
-        Map.Mouse_Left_Up(cell, shadow, object, action);
-      }
+    if ((!edge) && (flags & LEFTUP)) {
+      Map.Mouse_Left_Up(cell, shadow, object, action);
     }
 
     /*
@@ -3374,25 +3370,25 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
       **	the exact identity is glossed over with a generic text.
       */
       text = object->Full_Name();
-      if (object->Is_Techno() &&
-          !dynamic_cast<const TechnoTypeClass&>(object->Class_Of()).IsNominal) {
-        if (!dynamic_cast<TechnoClass*>(object)->House->Is_Ally(PlayerPtr)) {
-          //				if (!PlayerPtr->Is_Ally(object)) {
-          switch (object->What_Am_I()) {
-            case RTTI_INFANTRY:
-              text = TXT_ENEMY_SOLDIER;
-              break;
+      if ((object->Is_Techno() &&
+           !dynamic_cast<const TechnoTypeClass&>(object->Class_Of())
+                .IsNominal) &&
+          (!dynamic_cast<TechnoClass*>(object)->House->Is_Ally(PlayerPtr))) {
+        //				if (!PlayerPtr->Is_Ally(object)) {
+        switch (object->What_Am_I()) {
+          case RTTI_INFANTRY:
+            text = TXT_ENEMY_SOLDIER;
+            break;
 
-            case RTTI_UNIT:
-              text = TXT_ENEMY_VEHICLE;
-              break;
+          case RTTI_UNIT:
+            text = TXT_ENEMY_VEHICLE;
+            break;
 
-            case RTTI_BUILDING:
-              text = TXT_ENEMY_STRUCTURE;
-              break;
-            default:
-              break;
-          }
+          case RTTI_BUILDING:
+            text = TXT_ENEMY_STRUCTURE;
+            break;
+          default:
+            break;
         }
       }
 
@@ -3623,7 +3619,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
             CELL newmove = cell;
             if (action == ACTION_MOVE && tobject->Is_Foot()) {
               int oldisform;
-              FootClass* foot = dynamic_cast<FootClass*>(tobject);
+              auto* foot = dynamic_cast<FootClass*>(tobject);
               oldisform = foot->IsFormationMove;
               foot->IsFormationMove = FormMove;
               if (FormMove && foot->Group != kNoGroup) {
@@ -3757,29 +3753,27 @@ void DisplayClass::Mouse_Left_Held(int x, int y) {
     *possible, then *	check to see if the mouse has moved a sufficient
     *distance in order to activate *	extended select mode.
     */
-    if (IsTentative) {
-      /*
-      **	The mouse must have moved a minimum distance before rubber band
-      *mode can be *	initiated.
-      */
-      if (std::abs(x - BandX) > 4 || std::abs(y - BandY) > 4) {
-        IsRubberBand = true;
-        x = Bound(x, 0, Lepton_To_Pixel(TacLeptonWidth) - 1);
-        y = Bound(y, 0, Lepton_To_Pixel(TacLeptonHeight) - 1);
-        NewX = x;
-        NewY = y;
-        IsDisplayToRedraw = true;
-        Flag_To_Redraw(false);
+    /*
+    **	The mouse must have moved a minimum distance before rubber band
+    *mode can be *	initiated.
+    */
+    if (IsTentative && (std::abs(x - BandX) > 4 || std::abs(y - BandY) > 4)) {
+      IsRubberBand = true;
+      x = Bound(x, 0, Lepton_To_Pixel(TacLeptonWidth) - 1);
+      y = Bound(y, 0, Lepton_To_Pixel(TacLeptonHeight) - 1);
+      NewX = x;
+      NewY = y;
+      IsDisplayToRedraw = true;
+      Flag_To_Redraw(false);
 
-        /*
-        **	Stretching the rubber band requires all objects to be redrawn.
-        */
-        for (int index = 0; index < Layer[LAYER_TOP].Count(); index++) {
-          Layer[LAYER_TOP][index]->Mark(MARK_CHANGE);
-        }
-        for (int index = 0; index < Layer[LAYER_AIR].Count(); index++) {
-          Layer[LAYER_AIR][index]->Mark(MARK_CHANGE);
-        }
+      /*
+      **	Stretching the rubber band requires all objects to be redrawn.
+      */
+      for (int index = 0; index < Layer[LAYER_TOP].Count(); index++) {
+        Layer[LAYER_TOP][index]->Mark(MARK_CHANGE);
+      }
+      for (int index = 0; index < Layer[LAYER_AIR].Count(); index++) {
+        Layer[LAYER_AIR][index]->Mark(MARK_CHANGE);
       }
     }
   }
@@ -4062,7 +4056,7 @@ bool DisplayClass::In_View(CELL cell) const {
  *                                                                                             *
  * HISTORY: * 09/22/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE DisplayClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
+COORDINATE DisplayClass::Closest_Free_Spot(COORDINATE coord, bool any) {
   if (coord & kHighCoordMask) {
     return 0x00800080;
   }
@@ -4087,7 +4081,7 @@ COORDINATE DisplayClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
  *                                                                                             *
  * HISTORY: * 09/22/1995 JLB : Created. *
  *=============================================================================================*/
-bool DisplayClass::Is_Spot_Free(COORDINATE coord) const {
+bool DisplayClass::Is_Spot_Free(COORDINATE coord) {
   if (coord & kHighCoordMask) {
     return true;
   }
@@ -4221,11 +4215,11 @@ void DisplayClass::Encroach_Shadow() {
  *the new shadow pieces.                                *
  *=============================================================================================*/
 void DisplayClass::Shroud_Cell(CELL cell /*KO, bool shadeit*/) {
-  if (PlayerPtr->IsGPSActive) {
-    if ((*this)[cell].Jammed & 1 << PlayerPtr->Class->House) {
-      return;
-    }
+  if (PlayerPtr->IsGPSActive &&
+      ((*this)[cell].Jammed & 1 << PlayerPtr->Class->House)) {
+    return;
   }
+
   if (!In_Radar(cell)) {
     return;
   }
@@ -4478,7 +4472,7 @@ void DisplayClass::All_To_Look(bool units_only) {
   for (int index = 0; index < Layer[LAYER_GROUND].Count(); index++) {
     ObjectClass* object = Layer[LAYER_GROUND][index];
     if (object != nullptr && object->Is_Techno()) {
-      TechnoClass* tech = dynamic_cast<TechnoClass*>(object);
+      auto* tech = dynamic_cast<TechnoClass*>(object);
 
       if (tech->What_Am_I() == RTTI_BUILDING && units_only) {
         continue;
@@ -4502,7 +4496,7 @@ void DisplayClass::Constrained_Look(COORDINATE center, LEPTON distance) {
   for (int index = 0; index < Layer[LAYER_GROUND].Count(); index++) {
     ObjectClass* object = Layer[LAYER_GROUND][index];
     if (object != nullptr && object->Is_Techno()) {
-      TechnoClass* tech = dynamic_cast<TechnoClass*>(object);
+      auto* tech = dynamic_cast<TechnoClass*>(object);
 
       //			if (tech->What_Am_I() == RTTI_BUILDING &&
       // units_only) continue;

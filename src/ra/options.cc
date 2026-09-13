@@ -399,8 +399,7 @@ fixed OptionsClass::Get_Tint() const { return Tint; }
  *=============================================================================================*/
 void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
                                   PaletteClass& newpal, fixed brightness,
-                                  fixed color, fixed tint,
-                                  fixed contrast) const {
+                                  fixed color, fixed tint, fixed contrast) {
   if (!oldpal || !newpal) {
     return;
   }

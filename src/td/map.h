@@ -71,17 +71,17 @@ class MapClass : public GScreenClass {
   */
   [[nodiscard]] ObjectClass* Close_Object(COORDINATE coord) const;
   virtual void Detach(ObjectClass* /*unused*/) {}
-  int Cell_Region(CELL cell);
-  int Cell_Threat(CELL cell, HousesType house);
-  int Cell_Distance(CELL cell1, CELL cell2);
+  static int Cell_Region(CELL cell);
+  static int Cell_Threat(CELL cell, HousesType house);
+  static int Cell_Distance(CELL cell1, CELL cell2);
   [[nodiscard]] bool In_Radar(CELL cell) const;
   void Sight_From(CELL cell, int sightrange, bool incremental = false);
   void Place_Down(CELL cell, ObjectClass* object);
   void Pick_Up(CELL cell, ObjectClass* object);
   void Overlap_Down(CELL cell, ObjectClass* object);
   void Overlap_Up(CELL cell, ObjectClass* object);
-  bool Read_Binary(const char* root, unsigned long* crc);
-  bool Write_Binary(const char* root);
+  static bool Read_Binary(const char* root, unsigned long* crc);
+  static bool Write_Binary(const char* root);
   bool Place_Random_Crate();
 
   long Overpass();

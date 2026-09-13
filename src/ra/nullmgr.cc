@@ -307,12 +307,12 @@ int NullModemClass::Init(int port, int /*irq*/, char* dev_name, int baud,
       }
       for (i = 0; i < 10; i++) {
         ModemRegistry = new ModemRegistryEntryClass(i);
-        if (ModemRegistry->Get_Modem_Name()) {
-          if (!strcmp(dev_name, ModemRegistry->Get_Modem_Name())) {
-            device = ModemRegistry->Get_Modem_Device_Name();
-            break;
-          }
+        if (ModemRegistry->Get_Modem_Name() &&
+            (!strcmp(dev_name, ModemRegistry->Get_Modem_Name()))) {
+          device = ModemRegistry->Get_Modem_Device_Name();
+          break;
         }
+
         delete ModemRegistry;
         ModemRegistry = nullptr;
       }
@@ -493,15 +493,15 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
       }
       for (i = 0; i < 10; i++) {
         ModemRegistry = new ModemRegistryEntryClass(i);
-        if (ModemRegistry->Get_Modem_Name()) {
-          if (!strcmp(device, ModemRegistry->Get_Modem_Name())) {
-            /*
-            ** Got a match. Break out leaving the registry info intact.
-            */
-            device = ModemRegistry->Get_Modem_Device_Name();
-            break;
-          }
+        if (ModemRegistry->Get_Modem_Name() &&
+            (!strcmp(device, ModemRegistry->Get_Modem_Name()))) {
+          /*
+          ** Got a match. Break out leaving the registry info intact.
+          */
+          device = ModemRegistry->Get_Modem_Device_Name();
+          break;
         }
+
         delete ModemRegistry;
         ModemRegistry = nullptr;
       }
@@ -700,7 +700,7 @@ int NullModemClass::Service() {
     return false;
   }
 
-  RXCount += SerialPort->Read_From_Serial_Port(
+  RXCount += WinModemClass::Read_From_Serial_Port(
       (unsigned char*)(RXBuf + RXCount), RXSize - RXCount);
 
   // minimum packet size
@@ -1031,7 +1031,7 @@ void NullModemClass::Mono_Debug_Print(int /*index*/, int refresh) {
       return;
     }
 
-    Connection->Queue->Mono_Debug_Print(refresh);
+    CommBufferClass::Mono_Debug_Print(refresh);
 
     DLOG(INFO) << "Serial Port Queues: "
                << "AvgResponseTime=" << Connection->Queue->Avg_Response_Time()
@@ -1070,7 +1070,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   int status;
   int error_count = 0;
 
-  int x, y, width, height;  // dialog dimensions
+  int x;
+  int y;
+  int width;
+  int height;  // dialog dimensions
   char buffer[80 * 3];
 
   /*
@@ -1204,13 +1207,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
       int result =
           Send_Modem_Command(fullCommand.c_str(), '\r', buffer, 81, timeout, 1);
 
-      if (result != MODEM_CMD_OK && result != MODEM_CMD_0) {
-        // Process returns true if the user clicked "Cancel"
-        if (WWMessageBox().Process(errorMsgId, TXT_IGNORE, TXT_CANCEL)) {
-          return false;  // Stop initialization
-        }
-      }
-      return true;  // Success or User clicked "Ignore"
+      // Stop initialization only when the command failed and the user clicked
+      // "Cancel" (Process returns true for it); success or "Ignore" continues.
+      return result == MODEM_CMD_OK || result == MODEM_CMD_0 ||
+             !WWMessageBox().Process(errorMsgId, TXT_IGNORE, TXT_CANCEL);
     };
 
     // 1. Flow Control
@@ -1307,7 +1307,10 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   int delay;
   DialStatusType dialstatus = DIAL_ERROR;
 
-  int x, y, width, height;  // dialog dimensions
+  int x;
+  int y;
+  int width;
+  int height;  // dialog dimensions
   /*------------------------------------------------------------------------
   Determine the dimensions of the text to be used for the dialog box.
   These dimensions will control how the dialog box looks.
@@ -1499,7 +1502,10 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   DialStatusType dialstatus = DIAL_ERROR;
   bool ring = false;
 
-  int x, y, width, height;  // dialog dimensions
+  int x;
+  int y;
+  int width;
+  int height;  // dialog dimensions
   int text_width;
   char text_buffer[80 * 3];
   char comm_buffer[80 * 3];

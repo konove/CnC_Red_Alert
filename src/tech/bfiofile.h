@@ -42,6 +42,7 @@
 
 #include <cstdio>
 
+#include "absl/base/attributes.h"
 #include "tech/rawfile.h"
 #include "tech/wwfile.h"
 
@@ -65,7 +66,8 @@ class BufferIOFileClass : public RawFileClass {
   bool Cache(long size = 0, void* ptr = nullptr);
   void Free();
   bool Commit();
-  const char* Set_Name(const char* filename) override;
+  const char* Set_Name(const char* filename)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   [[nodiscard]] int Is_Open() const override;
   int Open(const char* filename,
            FileAccess rights = FileAccess::kRead) override;

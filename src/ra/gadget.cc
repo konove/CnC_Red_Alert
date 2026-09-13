@@ -441,7 +441,8 @@ void GadgetClass::Draw_All(bool forced) {
  * HISTORY:    01/03/1995 MML : Created.                                   *
  *=========================================================================*/
 KeyNumType GadgetClass::Input() {
-  int mousex, mousey;
+  int mousex;
+  int mousey;
   KeyNumType key;
   unsigned flags;
   int forced = false;
@@ -466,32 +467,31 @@ KeyNumType GadgetClass::Input() {
   }
 
   if constexpr (config::kCheatKeysEnabled) {
-    if (key == KN_K && !MapEditorActive && (Debug_Flag || Debug_Playtest)) {
-      /*
-      ** time to create a screen shot using the PCX code (if it works)
-      */
-      if (!Debug_MotionCapture) {
-        GraphicBufferClass temp_page(
-            SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
-            static_cast<long>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
-        CDFileClass file;
-        char filename[30];
+    /*
+    ** time to create a screen shot using the PCX code (if it works)
+    */
+    if ((key == KN_K && !MapEditorActive && (Debug_Flag || Debug_Playtest)) &&
+        (!Debug_MotionCapture)) {
+      GraphicBufferClass temp_page(
+          SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
+          static_cast<long>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
+      CDFileClass file;
+      char filename[30];
 
-        //			Hide_Mouse();
-        SeenBuff.Blit(temp_page);
-        //			Show_Mouse();
-        for (int lp = 0; lp < 99; lp++) {
-          sprintf(filename, "scrsht%02d.pcx", lp);
-          file.Set_Name(filename);
-          if (!file.Is_Available()) {
-            break;
-          }
+      //			Hide_Mouse();
+      SeenBuff.Blit(temp_page);
+      //			Show_Mouse();
+      for (int lp = 0; lp < 99; lp++) {
+        sprintf(filename, "scrsht%02d.pcx", lp);
+        file.Set_Name(filename);
+        if (!file.Is_Available()) {
+          break;
         }
-
-        file.Cache(200000);
-        Write_PCX_File(file, temp_page, &GamePalette);
-        Sound_Effect(VOC_BEEP);
       }
+
+      file.Cache(200000);
+      Write_PCX_File(file, temp_page, &GamePalette);
+      Sound_Effect(VOC_BEEP);
     }
   }
 
@@ -551,12 +551,12 @@ KeyNumType GadgetClass::Input() {
     *isn't being *	held down, then we automatically know that it must be up
     *-- set the flag *	accordingly.
     */
-    if (Keyboard->Down(KN_LMOUSE)) {
+    if (KeyboardClass::Down(KN_LMOUSE)) {
       flags |= LEFTHELD;
     } else {
       flags |= LEFTUP;
     }
-    if (Keyboard->Down(KN_RMOUSE)) {
+    if (KeyboardClass::Down(KN_RMOUSE)) {
       flags |= RIGHTHELD;
     } else {
       flags |= RIGHTUP;
@@ -603,19 +603,18 @@ KeyNumType GadgetClass::Input() {
         */
         next_button->Draw_Me(forced);
 
-        if (!next_button->IsDisabled) {
+        /*
+        **	Process this button. If the button was recognized and action was
+        **	performed, then bail from further processing (speed reasons?).
+        */
+        if ((!next_button->IsDisabled) &&
+            next_button->Clicked_On(key, flags, mousex, mousey)) {
           /*
-          **	Process this button. If the button was recognized and action was
-          **	performed, then bail from further processing (speed reasons?).
+          **	Some buttons will require repainting when they perform some
+          *action. *	Do so at this time.
           */
-          if (next_button->Clicked_On(key, flags, mousex, mousey)) {
-            /*
-            **	Some buttons will require repainting when they perform some
-            *action. *	Do so at this time.
-            */
-            next_button->Draw_Me(false);
-            break;
-          }
+          next_button->Draw_Me(false);
+          break;
         }
 
         next_button = next_button->Get_Next();

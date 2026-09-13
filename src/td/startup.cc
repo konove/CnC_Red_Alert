@@ -86,8 +86,8 @@
 #endif
 
 void Delete_Swap_Files();
-[[maybe_unused]] static void Print_Error_End_Exit(char* string);
-[[maybe_unused]] static void Print_Error_Exit(char* string);
+[[maybe_unused]] [[noreturn]] static void Print_Error_End_Exit(char* string);
+[[maybe_unused]] [[noreturn]] static void Print_Error_Exit(char* string);
 
 [[maybe_unused]] static void Read_Setup_Options(RawFileClass* config_file);
 
@@ -474,7 +474,7 @@ int main(int argc, char* argv[])
 void __cdecl Prog_End() {
 #ifndef DEMO
   if (GameToPlay == GAME_MODEM || GameToPlay == GAME_NULL_MODEM) {
-    NullModem.Change_IRQ_Priority(0);
+    NullModemClass::Change_IRQ_Priority(0);
   }
 #endif
   CCDebugString("C&C95 - About to call Sound_End.\n");

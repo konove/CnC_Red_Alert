@@ -106,7 +106,6 @@ int BulletClass::Validate() const {
     num = Bullets.ID(this);
     if (num < 0 || num >= kBulletMax) {
       Validate_Error("BULLET");
-      return 0;
     }
     return 1;
   } else {
@@ -670,14 +669,13 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       /*
       **	Limit scatter to the weapon range of the firer.
       */
-      if (Payback) {
-        if (!Payback->In_Range(tcoord, 0) && !Payback->In_Range(tcoord, 1)) {
-          tcoord = Coord_Move(
-              tcoord, ::Direction(tcoord, Coord),
-              static_cast<unsigned short>(Distance(tcoord) -
-                                          std::max(Payback->Weapon_Range(0),
-                                                   Payback->Weapon_Range(1))));
-        }
+      if (Payback &&
+          (!Payback->In_Range(tcoord, 0) && !Payback->In_Range(tcoord, 1))) {
+        tcoord = Coord_Move(
+            tcoord, ::Direction(tcoord, Coord),
+            static_cast<unsigned short>(
+                Distance(tcoord) -
+                std::max(Payback->Weapon_Range(0), Payback->Weapon_Range(1))));
       }
     }
 

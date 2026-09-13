@@ -58,7 +58,9 @@ void Socket_Check_Write(int socket, bool check) {
 void Socket_Select() {
   // something something poll something
 
-  fd_set read_set, write_set, err_set;
+  fd_set read_set;
+  fd_set write_set;
+  fd_set err_set;
   int max_fd = -1;
   FD_ZERO(&read_set);
   FD_ZERO(&write_set);

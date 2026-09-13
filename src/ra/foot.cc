@@ -398,7 +398,7 @@ bool FootClass::Basic_Path() {
       ObjectClass* obj = Map[mycell].Cell_Occupier();
       while (obj) {
         if (obj != this && obj->What_Am_I() == RTTI_INFANTRY) {
-          InfantryClass* inf = dynamic_cast<InfantryClass*>(obj);
+          auto* inf = dynamic_cast<InfantryClass*>(obj);
           if (inf->NavCom == NavCom && inf->Path[0] != FACING_NONE) {
             if (Coord_Cell(inf->Head_To_Coord()) == Coord_Cell(inf->Coord)) {
               Mem_Copy(&inf->Path[1], Path, sizeof(Path) - sizeof(Path[0]));
@@ -1144,12 +1144,11 @@ ResultType FootClass::Take_Damage(int& damage, int distance,
         /*
         **	If this object isn't doing anything important, then scatter.
         */
-        if (MissionControl[Mission].IsScatter && !IsTethered && !IsDriving &&
-            !Target_Legal(TarCom) && !Target_Legal(NavCom) &&
-            What_Am_I() != RTTI_AIRCRAFT && What_Am_I() != RTTI_VESSEL) {
-          if (!House->IsHuman || Rule.IsScatter) {
-            Scatter(0, true);
-          }
+        if ((MissionControl[Mission].IsScatter && !IsTethered && !IsDriving &&
+             !Target_Legal(TarCom) && !Target_Legal(NavCom) &&
+             What_Am_I() != RTTI_AIRCRAFT && What_Am_I() != RTTI_VESSEL) &&
+            (!House->IsHuman || Rule.IsScatter)) {
+          Scatter(0, true);
         }
       }
     }
@@ -1426,14 +1425,13 @@ void FootClass::Per_Cell_Process(PCPType why) {
       int y = Cell_Y(Coord_Cell(Coord));
       for (int index = 0; index < Map.MapCellWidth; index++) {
         trigger = Map[XY_Cell(index + Map.MapCellX, y)].Trigger;
-        if (trigger != nullptr) {
-          if (trigger->Class->Event1.Event == TEVENT_CROSS_HORIZONTAL ||
-              (trigger->Class->EventControl != MULTI_ONLY &&
-               trigger->Class->Event2.Event == TEVENT_CROSS_HORIZONTAL)) {
-            trigger->Spring(TEVENT_CROSS_HORIZONTAL, this, Coord_Cell(Coord));
-            if (!IsActive) {
-              return;
-            }
+        if ((trigger != nullptr) &&
+            (trigger->Class->Event1.Event == TEVENT_CROSS_HORIZONTAL ||
+             (trigger->Class->EventControl != MULTI_ONLY &&
+              trigger->Class->Event2.Event == TEVENT_CROSS_HORIZONTAL))) {
+          trigger->Spring(TEVENT_CROSS_HORIZONTAL, this, Coord_Cell(Coord));
+          if (!IsActive) {
+            return;
           }
         }
       }
@@ -1443,14 +1441,13 @@ void FootClass::Per_Cell_Process(PCPType why) {
       */
       for (int index = 0; index < Map.MapCellHeight; index++) {
         trigger = Map[XY_Cell(x, index + Map.MapCellY)].Trigger;
-        if (trigger != nullptr) {
-          if (trigger->Class->Event1.Event == TEVENT_CROSS_VERTICAL ||
-              (trigger->Class->EventControl != MULTI_ONLY &&
-               trigger->Class->Event2.Event == TEVENT_CROSS_VERTICAL)) {
-            trigger->Spring(TEVENT_CROSS_VERTICAL, this, Coord_Cell(Coord));
-            if (!IsActive) {
-              return;
-            }
+        if ((trigger != nullptr) &&
+            (trigger->Class->Event1.Event == TEVENT_CROSS_VERTICAL ||
+             (trigger->Class->EventControl != MULTI_ONLY &&
+              trigger->Class->Event2.Event == TEVENT_CROSS_VERTICAL))) {
+          trigger->Spring(TEVENT_CROSS_VERTICAL, this, Coord_Cell(Coord));
+          if (!IsActive) {
+            return;
           }
         }
       }
@@ -1461,15 +1458,14 @@ void FootClass::Per_Cell_Process(PCPType why) {
       for (MapTriggerID = 0; MapTriggerID < MapTriggers.Count();
            MapTriggerID++) {
         trigger = MapTriggers[MapTriggerID];
-        if (trigger->Class->Event1.Event == TEVENT_ENTERS_ZONE ||
-            (trigger->Class->EventControl != MULTI_ONLY &&
-             trigger->Class->Event2.Event == TEVENT_ENTERS_ZONE)) {
-          if (Map[trigger->Cell].Zones[Techno_Type_Class()->MZone] ==
-              Map[Coord].Zones[Techno_Type_Class()->MZone]) {
-            trigger->Spring(TEVENT_ENTERS_ZONE, this, Coord_Cell(Coord));
-            if (!IsActive) {
-              return;
-            }
+        if ((trigger->Class->Event1.Event == TEVENT_ENTERS_ZONE ||
+             (trigger->Class->EventControl != MULTI_ONLY &&
+              trigger->Class->Event2.Event == TEVENT_ENTERS_ZONE)) &&
+            (Map[trigger->Cell].Zones[Techno_Type_Class()->MZone] ==
+             Map[Coord].Zones[Techno_Type_Class()->MZone])) {
+          trigger->Spring(TEVENT_ENTERS_ZONE, this, Coord_Cell(Coord));
+          if (!IsActive) {
+            return;
           }
         }
       }
@@ -1594,11 +1590,10 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     *away!
     */
     case RADIO_RUN_AWAY:
-      if (In_Radio_Contact()) {
-        if (NavCom == Contact_With_Whom()->As_Target()) {
-          Assign_Destination(kTargetNone);
-        }
+      if (In_Radio_Contact() && (NavCom == Contact_With_Whom()->As_Target())) {
+        Assign_Destination(kTargetNone);
       }
+
       if (Mission == MISSION_SLEEP) {
         Assign_Mission(MISSION_GUARD);
         Commence();
@@ -1968,10 +1963,8 @@ void FootClass::Detach(TARGET target, bool all) {
 
   TechnoClass::Detach(target, all);
 
-  if (!SpecialFlag) {
-    if (ArchiveTarget == target) {
-      ArchiveTarget = kTargetNone;
-    }
+  if ((!SpecialFlag) && (ArchiveTarget == target)) {
+    ArchiveTarget = kTargetNone;
   }
 
   if (SuspendedNavCom == target) {

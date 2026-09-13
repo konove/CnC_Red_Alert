@@ -35,7 +35,7 @@
 
 template <class Archive>
 void CellClass::Serialize(Archive& ar) {
-  uint8_t flags = static_cast<uint8_t>(
+  auto flags = static_cast<uint8_t>(
       IsPlot | IsCursorHere << 1 | IsMapped << 2 | IsVisible << 3 |
       IsTrigger << 4 | IsWaypoint << 5 | IsRadarCursor << 6 | IsFlagged << 7);
   ar(flags, TType, TIcon, Overlay, OverlayData, Smudge, SmudgeData, Owner,
@@ -142,8 +142,10 @@ template void DisplayClass::Serialize(ArchiveReader&);
 template <class Archive>
 void RadarClass::Serialize(Archive& ar) {
   DisplayClass::Serialize(ar);
-  bool exists = DoesRadarExist, active = IsRadarActive;
-  bool zoomed = IsZoomed, names = IsPlayerNames;
+  bool exists = DoesRadarExist;
+  bool active = IsRadarActive;
+  bool zoomed = IsZoomed;
+  bool names = IsPlayerNames;
   ar(exists, active, zoomed, names, ZoomFactor, RadarX, RadarY, RadarCell,
      RadarCellWidth, RadarCellHeight, BaseX, BaseY, RadarWidth, RadarHeight);
   if constexpr (Archive::kIsReading) {

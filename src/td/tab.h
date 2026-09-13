@@ -77,7 +77,7 @@ class TabClass : public SidebarClass {
   int Tab_Height = 0;
 
  private:
-  void Set_Active(int select);
+  static void Set_Active(int select);
 
   static const void* TabShape;
 };

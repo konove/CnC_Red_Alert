@@ -173,7 +173,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
 
     for (int sub = 0; std::cmp_less(sub, teamtype->DesiredNum[index]); sub++) {
       ScenarioInit++;
-      FootClass* temp = dynamic_cast<FootClass*>(
+      auto* temp = dynamic_cast<FootClass*>(
           tclass->Create_One_Of(HouseClass::As_Pointer(teamtype->House)));
       ScenarioInit--;
 
@@ -183,7 +183,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
         *transports. The one *	exception is for the hover lander which never
         *becomes part of the team.
         */
-        UnitClass* unit = dynamic_cast<UnitClass*>(temp);
+        auto* unit = dynamic_cast<UnitClass*>(temp);
         if (team && (unit == nullptr || *unit != UNIT_HOVER)) {
           ScenarioInit++;
           team->Add(temp);
@@ -214,7 +214,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
           **	A-10s are always considered loaners since the player should
           **	never be allowed to control them.
           */
-          AircraftClass* air = dynamic_cast<AircraftClass*>(temp);
+          auto* air = dynamic_cast<AircraftClass*>(temp);
           if (air != nullptr && *air == AIRCRAFT_A10) {
             temp->IsALoaner = true;
           }
@@ -297,7 +297,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
       }
       CELL newcell = cell;
 
-      FootClass* o = dynamic_cast<FootClass*>(object->Next);
+      auto* o = dynamic_cast<FootClass*>(object->Next);
       object->Next = nullptr;
       bool ok = true;
       while (newcell > 0 && object) {
@@ -373,9 +373,9 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
     **	Bring out the aircraft as separate "groups" of one.
     */
     case SOURCE_AIR: {
-      AircraftClass* thisone = dynamic_cast<AircraftClass*>(object);
+      auto* thisone = dynamic_cast<AircraftClass*>(object);
       while (thisone) {
-        AircraftClass* next = dynamic_cast<AircraftClass*>(thisone->Next);
+        auto* next = dynamic_cast<AircraftClass*>(thisone->Next);
 
         /*
         **	Find a suitable map entry location. Cargo planes will try to
@@ -504,7 +504,7 @@ bool Create_Special_Reinforcement(HouseClass* house,
                                   const TechnoTypeClass* another,
                                   TeamMissionType mission, int argument) {
   if (house && type) {
-    TeamTypeClass* team = new TeamTypeClass();
+    auto* team = new TeamTypeClass();
 
     if (team) {
       /*
@@ -642,7 +642,7 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
     ** a real problem.
     */
     ScenarioInit++;
-    TechnoClass* obj = dynamic_cast<TechnoClass*>(type->Create_One_Of(house));
+    auto* obj = dynamic_cast<TechnoClass*>(type->Create_One_Of(house));
     ScenarioInit--;
     if (!obj) {
       return sub;

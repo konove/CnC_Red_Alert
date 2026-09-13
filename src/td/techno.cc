@@ -823,7 +823,7 @@ void TechnoClass::Per_Cell_Process(bool /*unused*/) {
   */
   if (Map.In_Radar(cell)) {
     if (What_Am_I() == RTTI_UNIT) {
-      UnitClass* u = dynamic_cast<UnitClass*>(this);
+      auto* u = dynamic_cast<UnitClass*>(this);
 
       if (*u != UNIT_HOVER && *u != UNIT_GUNBOAT) {
         IsLocked = true;
@@ -886,7 +886,8 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
     **	Fetch the dimensions of the object. These dimensions will be used to
     *draw *	the selection box and the health bar.
     */
-    int width, height;
+    int width;
+    int height;
     Class_Of().Dimensions(width, height);
 
     if (Strength && (House->Is_Ally(PlayerPtr) || Special.IsHealthBar)) {
@@ -1046,8 +1047,7 @@ bool TechnoClass::In_Range(const ObjectClass* target, int which) const {
   if (IsLocked && target) {
     int range = Weapon_Range(which);
     if (target->What_Am_I() == RTTI_BUILDING) {
-      const BuildingClass* building =
-          dynamic_cast<const BuildingClass*>(target);
+      const auto* building = dynamic_cast<const BuildingClass*>(target);
       range += (building->Class->Width() + building->Class->Height()) *
                (ICON_LEPTON_W / 4);
     }
@@ -1355,7 +1355,7 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, int mask, CELL cell,
   **	techno object there, then bail.
   */
   CellClass* cellptr = &Map[cell];
-  const TechnoClass* tentative =
+  const auto* tentative =
       dynamic_cast<const TechnoClass*>(cellptr->Cell_Occupier());
   while (tentative) {
     if (tentative->Is_Techno() && !House->Is_Ally(tentative)) {
@@ -1451,11 +1451,10 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
         TechnoClass* object = Aircraft.Ptr(index);
 
         int value = 0;
-        if (Evaluate_Object(method, mask, range, object, value)) {
-          if (value > bestval) {
-            bestobject = object;
-            bestval = value;
-          }
+        if (Evaluate_Object(method, mask, range, object, value) &&
+            (value > bestval)) {
+          bestobject = object;
+          bestval = value;
         }
       }
     }
@@ -1491,19 +1490,17 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
 
         if (Cell_Y(cell) - radius >= Map.MapCellY) {
           newcell = XY_Cell(Cell_X(cell) + x, Cell_Y(cell) - radius);
-          if (Evaluate_Cell(method, mask, newcell, range, &object, value)) {
-            if (bestval < value) {
-              bestobject = object;
-            }
+          if (Evaluate_Cell(method, mask, newcell, range, &object, value) &&
+              (bestval < value)) {
+            bestobject = object;
           }
         }
 
         if (Cell_Y(cell) + radius < Map.MapCellY + Map.MapCellHeight) {
           newcell = XY_Cell(Cell_X(cell) + x, Cell_Y(cell) + radius);
-          if (Evaluate_Cell(method, mask, newcell, range, &object, value)) {
-            if (bestval < value) {
-              bestobject = object;
-            }
+          if (Evaluate_Cell(method, mask, newcell, range, &object, value) &&
+              (bestval < value)) {
+            bestobject = object;
           }
         }
       }
@@ -1523,19 +1520,17 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
 
         if (Cell_X(cell) - radius >= Map.MapCellX) {
           newcell = XY_Cell(Cell_X(cell) - radius, Cell_Y(cell) + y);
-          if (Evaluate_Cell(method, mask, newcell, range, &object, value)) {
-            if (bestval < value) {
-              bestobject = object;
-            }
+          if (Evaluate_Cell(method, mask, newcell, range, &object, value) &&
+              (bestval < value)) {
+            bestobject = object;
           }
         }
 
         if (Cell_X(cell) + radius < Map.MapCellX + Map.MapCellWidth) {
           newcell = XY_Cell(Cell_X(cell) + radius, Cell_Y(cell) + y);
-          if (Evaluate_Cell(method, mask, newcell, range, &object, value)) {
-            if (bestval < value) {
-              bestobject = object;
-            }
+          if (Evaluate_Cell(method, mask, newcell, range, &object, value) &&
+              (bestval < value)) {
+            bestobject = object;
           }
         }
       }
@@ -1564,11 +1559,10 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
       TechnoClass* object = Aircraft.Ptr(index);
 
       int value = 0;
-      if (Evaluate_Object(method, mask, -1, object, value)) {
-        if (value > bestval) {
-          bestobject = object;
-          bestval = value;
-        }
+      if (Evaluate_Object(method, mask, -1, object, value) &&
+          (value > bestval)) {
+        bestobject = object;
+        bestval = value;
       }
     }
 
@@ -1581,13 +1575,12 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
       const ObjectClass* object = MouseClass::Layer[LAYER_GROUND][index];
 
       int value = 0;
-      if (object->Is_Techno() &&
-          Evaluate_Object(method, mask, -1,
-                          dynamic_cast<const TechnoClass*>(object), value)) {
-        if (value > bestval) {
-          bestobject = object;
-          bestval = value;
-        }
+      if ((object->Is_Techno() &&
+           Evaluate_Object(method, mask, -1,
+                           dynamic_cast<const TechnoClass*>(object), value)) &&
+          (value > bestval)) {
+        bestobject = object;
+        bestval = value;
       }
     }
   }
@@ -1779,10 +1772,8 @@ void TechnoClass::AI() {
   **	changes, then flag the object to be redrawn as well as  determine
   **	if the current animation process needs to change.
   */
-  if (What_Am_I() != RTTI_BUILDING) {
-    if (Graphic_Logic() || Time_To_Redraw()) {
-      Mark(MARK_CHANGE);
-    }
+  if ((What_Am_I() != RTTI_BUILDING) && (Graphic_Logic() || Time_To_Redraw())) {
+    Mark(MARK_CHANGE);
   }
 
   /*
@@ -2137,7 +2128,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
     **	now.
     */
     if (a != ANIM_NONE) {
-      AnimClass* anim = new AnimClass(a, Fire_Coord(which));
+      auto* anim = new AnimClass(a, Fire_Coord(which));
       if (anim) {
         anim->Attach_To(this);
       }
@@ -2263,31 +2254,26 @@ ActionType TechnoClass::What_Action(ObjectClass* object) {
     **	Special override to force a move regardless of what is occupying the
     *location.
     */
-    if (altdown) {
-      if (IsOwnedByPlayer && Can_Player_Move()) {
-        return ACTION_MOVE;
-      }
+    if (altdown && (IsOwnedByPlayer && Can_Player_Move())) {
+      return ACTION_MOVE;
     }
 
     /*
     **	Override so that toggled select state can be performed while the <SHIFT>
     *key *	is held down.
     */
-    if (shiftdown) {
-      if (IsOwnedByPlayer && !IsALoaner) {
-        return ACTION_TOGGLE_SELECT;
-      }
+    if (shiftdown && (IsOwnedByPlayer && !IsALoaner)) {
+      return ACTION_TOGGLE_SELECT;
     }
 
     /*
     **	If firing is possible and legal, then return this action potential.
     */
-    if (IsOwnedByPlayer && (ctrldown || !House->Is_Ally(object)) &&
-        (ctrldown || object->Class_Of().IsLegalTarget ||
-         (Special.IsTreeTarget && object->What_Am_I() == RTTI_TERRAIN))) {
-      if (Can_Player_Move() || In_Range(object, 0)) {
-        return ACTION_ATTACK;
-      }
+    if ((IsOwnedByPlayer && (ctrldown || !House->Is_Ally(object)) &&
+         (ctrldown || object->Class_Of().IsLegalTarget ||
+          (Special.IsTreeTarget && object->What_Am_I() == RTTI_TERRAIN))) &&
+        (Can_Player_Move() || In_Range(object, 0))) {
+      return ACTION_ATTACK;
     }
 
     /*
@@ -2359,12 +2345,11 @@ ActionType TechnoClass::What_Action(CELL cell) const {
         &Warheads[BulletTypeClass::As_Reference(
                       Weapons[Techno_Type_Class()->Primary].Fires)
                       .Warhead];
-    if (!optr ||
-        (optr->IsWall && (whead->IsWallDestroyer ||
-                          (whead->IsWoodDestroyer && optr->IsWooden)))) {
-      if (Can_Player_Move() || In_Range(::As_Target(cell), 0)) {
-        return ACTION_ATTACK;
-      }
+    if ((!optr ||
+         (optr->IsWall && (whead->IsWallDestroyer ||
+                           (whead->IsWoodDestroyer && optr->IsWooden)))) &&
+        (Can_Player_Move() || In_Range(::As_Target(cell), 0))) {
+      return ACTION_ATTACK;
     }
   }
 
@@ -3233,16 +3218,16 @@ int TechnoClass::Value() const {
   **	In early missions, contents of transports are not figured
   **	into the total value. - 8/16/95
   */
-  if (BuildLevel > 8 || GameToPlay != GAME_NORMAL) {
-    if (Is_Something_Attached()) {
-      FootClass* object = Attached_Object();
+  if ((BuildLevel > 8 || GameToPlay != GAME_NORMAL) &&
+      Is_Something_Attached()) {
+    FootClass* object = Attached_Object();
 
-      while (object) {
-        value += object->Value();
-        object = dynamic_cast<FootClass*>(object->Next);
-      }
+    while (object) {
+      value += object->Value();
+      object = dynamic_cast<FootClass*>(object->Next);
     }
   }
+
   return Risk() + Techno_Type_Class()->Reward + value;
 }
 
@@ -3726,10 +3711,8 @@ bool TechnoClass::Target_Something_Nearby(ThreatType threat) {
   **	Determine that if there is an existing target it is still legal
   **	and within range.
   */
-  if (Target_Legal(TarCom)) {
-    if (threat & THREAT_RANGE && !In_Range(TarCom)) {
-      Assign_Target(kTargetNone);
-    }
+  if (Target_Legal(TarCom) && (threat & THREAT_RANGE && !In_Range(TarCom))) {
+    Assign_Target(kTargetNone);
   }
 
   /*

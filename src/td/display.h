@@ -164,7 +164,7 @@ class DisplayClass : public MapClass {
   void Cursor_Mark(CELL pos, bool on);
   void Set_Cursor_Shape(const short* list);
   CELL Set_Cursor_Pos(CELL pos = -1);
-  void Get_Occupy_Dimensions(int& w, int& h, const short* list);
+  static void Get_Occupy_Dimensions(int& w, int& h, const short* list);
 
   /*
   **	Tactical map only functionality.
@@ -175,14 +175,14 @@ class DisplayClass : public MapClass {
   COORDINATE Pixel_To_Coord(int x, int y);
   bool Coord_To_Pixel(COORDINATE coord, int& x, int& y);
   bool Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest);
-  void Remove(const ObjectClass* object, LayerType layer);
-  void Submit(const ObjectClass* object, LayerType layer);
+  static void Remove(const ObjectClass* object, LayerType layer);
+  static void Submit(const ObjectClass* object, LayerType layer);
   CELL Calculated_Cell(SourceType dir, HousesType house);
   bool In_View(CELL cell);
   bool Passes_Proximity_Check(const ObjectTypeClass* object);
   ObjectClass* Cell_Object(CELL cell, int x = 0, int y = 0);
-  ObjectClass* Next_Object(ObjectClass* object);
-  ObjectClass* Prev_Object(ObjectClass* object);
+  static ObjectClass* Next_Object(ObjectClass* object);
+  static ObjectClass* Prev_Object(ObjectClass* object);
   int Cell_Shadow(CELL cell);
   const short* Text_Overlap_List(const char* text, int x, int y, int lines = 1);
   [[nodiscard]] bool Is_Spot_Free(COORDINATE coord) const;
@@ -192,7 +192,7 @@ class DisplayClass : public MapClass {
   void Repair_Mode_Control(int control);
 
   virtual void Flag_Cell(CELL cell);
-  [[nodiscard]] bool Is_Cell_Flagged(CELL cell) const {
+  [[nodiscard]] static bool Is_Cell_Flagged(CELL cell) {
     return CellRedraw[cell];
   }
 

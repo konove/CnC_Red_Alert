@@ -353,7 +353,8 @@ const char* Fetch_Password(int caption, int message, int btext) {
   **	Examine the optional button parameters. Fetch the width and starting
   **	characters for each.
   */
-  int bwidth, bheight;  // button width and height
+  int bwidth;
+  int bheight;  // button width and height
 
   /*
   **	Build the button list.

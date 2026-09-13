@@ -145,7 +145,7 @@ class WinsockInterfaceClass {
   ConnectStatusEnum Get_Connection_Status() { return ConnectStatus; }
 
  protected:
-  int Get_Last_Error();
+  static int Get_Last_Error();
 
   /*
   ** This struct contains the information needed for each incoming and outgoing

@@ -388,7 +388,7 @@ extern HANDLE hInstance;
 extern int AllDone;
 extern "C" bool MMXAvailable;
 extern int Get_CD_Index(int cd_drive, int timeout);
-void Memory_Error_Handler();
+[[noreturn]] void Memory_Error_Handler();
 extern bool GameStatisticsPacketSent;
 extern bool ConnectionLost;
 extern bool InMainLoop;  // True if in game state rather than menu state

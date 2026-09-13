@@ -59,8 +59,10 @@ class SuperClass {
   // frame.
   template <class Archive>
   void Serialize(Archive& ar) {
-    bool present = IsPresent, one_time = IsOneTime, ready = IsReady,
-         suspended = IsSuspended;
+    bool present = IsPresent;
+    bool one_time = IsOneTime;
+    bool ready = IsReady;
+    bool suspended = IsSuspended;
     ar(present, one_time, ready, suspended, Control, OldStage, SuspendTime,
        VoxRecharge, VoxCharging, VoxImpatient, VoxSuspend, RechargeTime);
     if constexpr (Archive::kIsReading) {

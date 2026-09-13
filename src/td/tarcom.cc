@@ -115,12 +115,10 @@ void TarComClass::AI() {
     const WeaponTypeClass* weapon = &Weapons[Class->Primary];
     int primary = 0;
     FireErrorType ok = Can_Fire(TarCom, 0);
-    if (ok != FIRE_OK) {
-      if (Can_Fire(TarCom, 1) == FIRE_OK) {
-        ok = FIRE_OK;
-        primary = 1;
-        weapon = &Weapons[Class->Secondary];
-      }
+    if ((ok != FIRE_OK) && (Can_Fire(TarCom, 1) == FIRE_OK)) {
+      ok = FIRE_OK;
+      primary = 1;
+      weapon = &Weapons[Class->Secondary];
     }
 
     switch (ok) {

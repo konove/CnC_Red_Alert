@@ -283,7 +283,7 @@ bool IndexClass<T>::Increase_Table_Size(int amount) {
     return false;
   }
 
-  NodeElement* table = new NodeElement[IndexSize + amount];
+  auto* table = new NodeElement[IndexSize + amount];
   if (table != nullptr) {
     /*
     **	Copy all valid nodes into the new table.

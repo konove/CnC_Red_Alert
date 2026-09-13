@@ -197,7 +197,7 @@ class MapEditClass : public MouseClass {
   **	mapedit.cpp
   */
   MapEditClass();
-  bool Get_Waypoint_Name(char wayptname[]);
+  static bool Get_Waypoint_Name(char wayptname[]);
   void Update_Waypoint(int waypt_idx);
 
   void One_Time() override;  // One-time init
@@ -213,10 +213,11 @@ class MapEditClass : public MouseClass {
   void Main_Menu();
   void AI_Menu();
   bool Mouse_Moved();
-  bool Verify_House(HousesType house, const ObjectTypeClass* objtype);
-  HousesType Cycle_House(HousesType curhouse, const ObjectTypeClass* objtype);
+  static bool Verify_House(HousesType house, const ObjectTypeClass* objtype);
+  static HousesType Cycle_House(HousesType curhouse,
+                                const ObjectTypeClass* objtype);
   //		int Trigger_Needs_Team(TriggerClass *trigger);
-  void Fatal(int txt);
+  [[noreturn]] static void Fatal(int txt);
 
   /*
   **	mapeddlg.cpp
@@ -251,7 +252,7 @@ class MapEditClass : public MouseClass {
   void Place_Trigger();
   void Start_Base_Building();
   void Cancel_Base_Building();
-  void Build_Base_To(int percent);
+  static void Build_Base_To(int percent);
 
   /*
   **	mapedsel.cpp
@@ -261,13 +262,13 @@ class MapEditClass : public MouseClass {
   void Popup_Controls();
   void Grab_Object();
   int Move_Grabbed_Object();
-  bool Change_House(HousesType newhouse);
+  static bool Change_House(HousesType newhouse);
 
   /*
   **	mapedtm.cpp
   */
-  void Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
-                   HousesType house);
+  static void Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
+                          HousesType house);
   void Handle_Teams(const char* caption);
   int Select_Team(const char* caption);
   int Team_Members(HousesType house);

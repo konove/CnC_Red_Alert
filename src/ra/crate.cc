@@ -135,7 +135,7 @@ bool CrateClass::Put_Crate(CELL& cell) {
     while (cellptr->Overlay != OVERLAY_NONE &&
            !cellptr->Is_Clear_To_Build(SPEED_FLOAT) &&
            !cellptr->Is_Clear_To_Build(SPEED_FOOT)) {
-      cell = Map.Pick_Random_Location();
+      cell = MapEditClass::Pick_Random_Location();
 
       if (Percent_Chance(100 * Rule.WaterCrateChance)) {
         cell = Map.Nearby_Location(cell, SPEED_FLOAT);

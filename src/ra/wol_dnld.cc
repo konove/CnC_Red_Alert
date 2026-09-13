@@ -258,14 +258,12 @@ bool WOL_Download_Dialog(IDownload* pDownload,
         }
         display = std::max(display, REDRAW_BUTTONS);
       }
-      if (pDownloadSink->bFlagQueryResume) {
-        if (pDownloadSink->bResumed) {
-          char szTitleNew[200];
-          Format_Runtime_Text(szTitleNew, sizeof(szTitleNew),
-                              TXT_WOL_DOWNLOADRESUMED, szTitle);
-          StatTitle.Set_Text(szTitleNew);
-          display = std::max(display, REDRAW_BUTTONS);
-        }
+      if (pDownloadSink->bFlagQueryResume && pDownloadSink->bResumed) {
+        char szTitleNew[200];
+        Format_Runtime_Text(szTitleNew, sizeof(szTitleNew),
+                            TXT_WOL_DOWNLOADRESUMED, szTitle);
+        StatTitle.Set_Text(szTitleNew);
+        display = std::max(display, REDRAW_BUTTONS);
       }
 
       dwTimeNextPump = Get_Time_Ms() + WOLAPIPUMPWAIT;

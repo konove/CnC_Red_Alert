@@ -488,17 +488,23 @@ static void Serialize_Misc_Values(Archive& ar) {
       ar.Fail("invalid saved scenario direction or variant");
     }
     for (CELL cell : Waypoint) {
-      if (cell < -1 || cell >= MAP_CELL_TOTAL) ar.Fail("invalid saved waypoint");
+      if (cell < -1 || cell >= MAP_CELL_TOTAL) {
+        ar.Fail("invalid saved waypoint");
+      }
     }
     for (CELL cell : Views) {
-      if (cell < -1 || cell >= MAP_CELL_TOTAL) ar.Fail("invalid saved view");
+      if (cell < -1 || cell >= MAP_CELL_TOTAL) {
+        ar.Fail("invalid saved view");
+      }
     }
   }
   auto random_state = CaptureRandomState();
   ar.Section(FourCC("RNGS"));
   ar(random_state);
   if constexpr (Archive::kIsReading) {
-    if (ar.ok()) RestoreRandomState(random_state);
+    if (ar.ok()) {
+      RestoreRandomState(random_state);
+    }
   }
 }
 

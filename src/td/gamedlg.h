@@ -44,7 +44,7 @@
 class GameControlsClass {
  public:
   GameControlsClass() = default;
-  void Process();
+  static void Process();
 };
 
 #endif  // CNC_RED_ALERT_TD_GAMEDLG_H_

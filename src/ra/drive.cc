@@ -206,29 +206,28 @@ void DriveClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
     return;
   }
 
-  if ((What_Am_I() != RTTI_UNIT ||
-       !dynamic_cast<UnitClass*>(this)->IsDumping) &&
-      (!Target_Legal(NavCom) || (nokidding && !IsRotating))) {
-    if (!Target_Legal(TarCom) || forced || Random_Pick(1, 4) == 1) {
-      FacingType toface;
-      FacingType newface;
-      CELL newcell;
+  if (((What_Am_I() != RTTI_UNIT ||
+        !dynamic_cast<UnitClass*>(this)->IsDumping) &&
+       (!Target_Legal(NavCom) || (nokidding && !IsRotating))) &&
+      (!Target_Legal(TarCom) || forced || Random_Pick(1, 4) == 1)) {
+    FacingType toface;
+    FacingType newface;
+    CELL newcell;
 
-      if (threat != 0) {
-        toface = Dir_Facing(Direction8(threat, Coord));
-        toface = toface + static_cast<FacingType>(Random_Pick(0, 2) - 1);
-      } else {
-        toface = Dir_Facing(PrimaryFacing.Current());
-        toface = toface + static_cast<FacingType>(Random_Pick(0, 2) - 1);
-      }
+    if (threat != 0) {
+      toface = Dir_Facing(Direction8(threat, Coord));
+      toface = toface + static_cast<FacingType>(Random_Pick(0, 2) - 1);
+    } else {
+      toface = Dir_Facing(PrimaryFacing.Current());
+      toface = toface + static_cast<FacingType>(Random_Pick(0, 2) - 1);
+    }
 
-      for (FacingType face : magic_enum::enum_values<FacingType>()) {
-        newface = toface + face;
-        newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
+    for (FacingType face : magic_enum::enum_values<FacingType>()) {
+      newface = toface + face;
+      newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
-        if (Map.In_Radar(newcell) && Can_Enter_Cell(newcell) == MOVE_OK) {
-          Assign_Destination(::As_Target(newcell));
-        }
+      if (Map.In_Radar(newcell) && Can_Enter_Cell(newcell) == MOVE_OK) {
+        Assign_Destination(::As_Target(newcell));
       }
     }
   }
@@ -482,7 +481,8 @@ COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType& dir) {
   assert(IsActive);
 
   DirType workdir = dir;
-  int x, y;
+  int x;
+  int y;
   int temp;
   TrackControlType flags = TrackControl[TrackNumber].Flag;
 
@@ -1272,15 +1272,15 @@ void DriveClass::AI() {
   ** Is this a unit that's been teleported using the chronosphere, and if so,
   ** has his timer expired such that he needs to teleport back?
   */
-  if (IsMoebius) {
-    if (What_Am_I() != RTTI_UNIT ||
-        dynamic_cast<UnitClass*>(this)->Class->Type != UNIT_CHRONOTANK) {
-      if (MoebiusCountDown.IsFinished()) {
-        IsMoebius = false;
-        Teleport_To(MoebiusCell);
-        MoebiusCell = 0;
-      }
-    }
+  if (IsMoebius &&
+      (What_Am_I() != RTTI_UNIT ||
+       dynamic_cast<UnitClass*>(this)->Class->Type != UNIT_CHRONOTANK) &&
+      MoebiusCountDown.IsFinished())
+
+  {
+    IsMoebius = false;
+    Teleport_To(MoebiusCell);
+    MoebiusCell = 0;
   }
 
   /*

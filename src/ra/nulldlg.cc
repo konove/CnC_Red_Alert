@@ -218,13 +218,11 @@ int Init_Null_Modem(SerialSettingsType* settings) {
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 void Shutdown_Modem() {
-  if (!Session.Play) {
-    if (Session.Type == GAME_MODEM) {
-      NullModem.Hangup_Modem();
-    }
+  if ((!Session.Play) && (Session.Type == GAME_MODEM)) {
+    NullModem.Hangup_Modem();
   }
 
-  NullModem.Change_IRQ_Priority(0);  // reset priority of interrupts
+  NullModemClass::Change_IRQ_Priority(0);  // reset priority of interrupts
 
   //
   // close port
@@ -308,7 +306,10 @@ int Test_Null_Modem() {
   unsigned long starttime;
   int packetlen;
 
-  int x, y, width, height;  // dialog dimensions
+  int x;
+  int y;
+  int width;
+  int height;  // dialog dimensions
   char buffer[80 * 3];
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
@@ -377,16 +378,15 @@ int Test_Null_Modem() {
   starttime = TickCount.Value();
   while (TickCount.Value() - starttime < 80) {
     NullModem.Service();
-    if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
-      if (ReceivePacket.Command == SERIAL_CONNECT) {
-        starttime = TickCount.Value();
-        while (TickCount.Value() - starttime < 30) {
-          NullModem.Service();
-        }
-        process = false;
-        retval = 2;
-        break;
+    if ((NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) &&
+        (ReceivePacket.Command == SERIAL_CONNECT)) {
+      starttime = TickCount.Value();
+      while (TickCount.Value() - starttime < 30) {
+        NullModem.Service();
       }
+      process = false;
+      retval = 2;
+      break;
     }
   }
 
@@ -409,35 +409,34 @@ int Test_Null_Modem() {
     starttime = TickCount.Value();
     while (TickCount.Value() - starttime < 80) {
       NullModem.Service();
-      if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
-        if (ReceivePacket.Command == SERIAL_CONNECT) {
-          starttime = TickCount.Value();
-          while (TickCount.Value() - starttime < 30) {
-            NullModem.Service();
-          }
+      if ((NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) &&
+          (ReceivePacket.Command == SERIAL_CONNECT)) {
+        starttime = TickCount.Value();
+        while (TickCount.Value() - starttime < 30) {
+          NullModem.Service();
+        }
 
-          //
-          // whoever has the highest time is the host
-          //
-          if (ReceivePacket.ScenarioInfo.Seed > SendPacket.ScenarioInfo.Seed) {
+        //
+        // whoever has the highest time is the host
+        //
+        if (ReceivePacket.ScenarioInfo.Seed > SendPacket.ScenarioInfo.Seed) {
+          process = false;
+          retval = 2;
+        } else if (ReceivePacket.ScenarioInfo.Seed ==
+                   SendPacket.ScenarioInfo.Seed) {
+          if (ReceivePacket.ID > SendPacket.ID) {
             process = false;
             retval = 2;
-          } else if (ReceivePacket.ScenarioInfo.Seed ==
-                     SendPacket.ScenarioInfo.Seed) {
-            if (ReceivePacket.ID > SendPacket.ID) {
-              process = false;
-              retval = 2;
-              //
-              // if they are equal then it's a loopback cable or a modem
-              //
-            } else if (ReceivePacket.ID == SendPacket.ID) {
-              process = false;
-              retval = 3;
-            }
+            //
+            // if they are equal then it's a loopback cable or a modem
+            //
+          } else if (ReceivePacket.ID == SendPacket.ID) {
+            process = false;
+            retval = 3;
           }
-
-          break;
         }
+
+        break;
       }
     }
   }
@@ -563,7 +562,7 @@ int Reconnect_Modem() {
       break;
 
     case MODEM_DIALER:
-      modemstatus = NullModem.Get_Modem_Status();
+      modemstatus = NullModemClass::Get_Modem_Status();
       if (modemstatus & CD_SET) {
         status = Reconnect_Null_Modem();
       } else {
@@ -572,7 +571,7 @@ int Reconnect_Modem() {
       break;
 
     case MODEM_ANSWERER:
-      modemstatus = NullModem.Get_Modem_Status();
+      modemstatus = NullModemClass::Get_Modem_Status();
       if (modemstatus & CD_SET) {
         status = Reconnect_Null_Modem();
       } else {
@@ -625,7 +624,10 @@ static int Reconnect_Null_Modem() {
   int packetlen;
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
-  int x, y, width, height;  // dialog dimensions
+  int x;
+  int y;
+  int width;
+  int height;  // dialog dimensions
   char buffer[80 * 3];
 
   /*
@@ -1009,7 +1011,7 @@ GameType Select_Serial_Dialog() {
 
   if (Session.SerialDefaults.Port == 0 || Session.SerialDefaults.IRQ == -1 ||
       Session.SerialDefaults.Baud == -1 ||
-      NullModem.Detect_Port(&Session.SerialDefaults) != PORT_VALID) {
+      NullModemClass::Detect_Port(&Session.SerialDefaults) != PORT_VALID) {
     selectsettings = true;
   }
 
@@ -1199,7 +1201,7 @@ GameType Select_Serial_Dialog() {
               }
 
               if (process) {  // restore to default
-                NullModem.Change_IRQ_Priority(0);
+                NullModemClass::Change_IRQ_Priority(0);
               }
             } else {
               WWMessageBox().Process(TXT_SELECT_SETTINGS);
@@ -1235,7 +1237,7 @@ GameType Select_Serial_Dialog() {
               }
 
               if (process) {  // restore to default
-                NullModem.Change_IRQ_Priority(0);
+                NullModemClass::Change_IRQ_Priority(0);
               }
             } else {
               WWMessageBox().Process(TXT_SELECT_SETTINGS);
@@ -1282,7 +1284,7 @@ GameType Select_Serial_Dialog() {
             }
 
             if (process) {  // restore to default
-              NullModem.Change_IRQ_Priority(0);
+              NullModemClass::Change_IRQ_Priority(0);
             }
           } else {
             WWMessageBox().Process(TXT_SELECT_SETTINGS);
@@ -1302,13 +1304,12 @@ GameType Select_Serial_Dialog() {
 
             selectsettings = true;
 
-            if (Session.SerialDefaults.Port != 0 &&
-                Session.SerialDefaults.IRQ != -1 &&
-                Session.SerialDefaults.Baud != -1) {
-              if (NullModem.Detect_Port(&Session.SerialDefaults) ==
-                  PORT_VALID) {
-                selectsettings = false;
-              }
+            if ((Session.SerialDefaults.Port != 0 &&
+                 Session.SerialDefaults.IRQ != -1 &&
+                 Session.SerialDefaults.Baud != -1) &&
+                (NullModemClass::Detect_Port(&Session.SerialDefaults) ==
+                 PORT_VALID)) {
+              selectsettings = false;
             }
           }
 
@@ -2418,21 +2419,18 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       SAVE: save the com settings
       ------------------------------------------------------------------*/
       case KN_RETURN:
-      case ButtonKey(BUTTON_SAVE):
-        switch (port_index) {
-          default:
-            if (port_index == port_custom_index) {
-              port::SafeCopy(tempsettings.ModemName, portbuf);
-              tempsettings.Port = 1;
-            } else {
-              /*
-              ** Must be a modem name index
-              */
-              port::SafeCopy(tempsettings.ModemName, portlist.Current_Item());
-              tempsettings.Port = 1;
-            }
-            break;
+      case ButtonKey(BUTTON_SAVE): {
+        if (port_index == port_custom_index) {
+          port::SafeCopy(tempsettings.ModemName, portbuf);
+          tempsettings.Port = 1;
+        } else {
+          /*
+          ** Must be a modem name index
+          */
+          port::SafeCopy(tempsettings.ModemName, portlist.Current_Item());
+          tempsettings.Port = 1;
         }
+      }
 
         tempsettings.Baud =
             tech::ParseInteger<int>(baudbuf).value_or(tempsettings.Baud);
@@ -2453,7 +2451,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
         port::SafeCopy(tempsettings.CallWaitString, cwaitstrbuf);
 
-        dpstatus = NullModem.Detect_Port(&tempsettings);
+        dpstatus = NullModemClass::Detect_Port(&tempsettings);
 
         if (dpstatus == PORT_VALID) {
           process = false;
@@ -2529,7 +2527,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
  *=========================================================================*/
 static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
                                       char* buf, int* index) {
-  int i, curidx;
+  int i;
+  int curidx;
   char* item;
 
   curidx = *index;
@@ -2602,6 +2601,8 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
  * HISTORY: * 02/14/1995 BR : Created. 01/21/97 V.Grippi added check for CS
  *before sending scenario file *
  *=============================================================================================*/
+// A single legacy dialog loop; splitting it is a refactor of its own.
+// NOLINTNEXTLINE(readability-function-size,google-readability-function-size)
 int Com_Scenario_Dialog(bool skirmish) {
   /*........................................................................
   Dialog & button dimensions
@@ -3047,17 +3048,17 @@ int Com_Scenario_Dialog(bool skirmish) {
         break;
       }
     }
-    if (EngMisStr[j] == nullptr) {
-      // ajw Added Aftermath installed checks (before, it was
-      // assumed). Added officialness check. Add mission if
-      // it's available to us.
-      if (!Session.Scenarios[i]->Get_Official() ||
-          ((!IsMissionCounterstrike(Session.Scenarios[i]->Get_Filename()) ||
-            Is_Counterstrike_Installed()) &&
-           (!IsMissionAftermath(Session.Scenarios[i]->Get_Filename()) ||
-            Is_Aftermath_Installed()))) {
-        scenariolist.Add_Item(Session.Scenarios[i]->Description());
-      }
+    if ((EngMisStr[j] == nullptr) &&
+        (!Session.Scenarios[i]->Get_Official() ||
+         ((!IsMissionCounterstrike(Session.Scenarios[i]->Get_Filename()) ||
+           Is_Counterstrike_Installed()) &&
+          (!IsMissionAftermath(Session.Scenarios[i]->Get_Filename()) ||
+           Is_Aftermath_Installed()))))
+    // ajw Added Aftermath installed checks (before, it was
+    // assumed). Added officialness check. Add mission if
+    // it's available to us.
+    {
+      scenariolist.Add_Item(Session.Scenarios[i]->Description());
     }
   }
 
@@ -3132,15 +3133,14 @@ int Com_Scenario_Dialog(bool skirmish) {
       }
 #endif
 
-      if (!skirmish) {
-        if (!ok_button_added && gameoptions && kludge_timer.IsFinished()) {
-          okbtn.Add_Tail(*commands);
-          ok_button_added = true;
-          if (loadfile.Is_Available()) {
-            loadbtn.Add_Tail(*commands);
-          }
-          display = std::max(display, REDRAW_BUTTONS);
+      if ((!skirmish) &&
+          (!ok_button_added && gameoptions && kludge_timer.IsFinished())) {
+        okbtn.Add_Tail(*commands);
+        ok_button_added = true;
+        if (loadfile.Is_Available()) {
+          loadbtn.Add_Tail(*commands);
         }
+        display = std::max(display, REDRAW_BUTTONS);
       }
 
       /*
@@ -3338,14 +3338,12 @@ int Com_Scenario_Dialog(bool skirmish) {
       ** Sort out the input focus between the name edit box and the message
       * system
       */
-      if (!skirmish) {
-        if (messages_have_focus) {
-          if (!name_edt.Has_Focus()) {
-            Session.Messages.Set_Edit_Focus();
-          } else {
-            messages_have_focus = false;
-            display = REDRAW_MESSAGE;
-          }
+      if ((!skirmish) && messages_have_focus) {
+        if (!name_edt.Has_Focus()) {
+          Session.Messages.Set_Edit_Focus();
+        } else {
+          messages_have_focus = false;
+          display = REDRAW_MESSAGE;
         }
       }
 
@@ -3356,11 +3354,9 @@ int Com_Scenario_Dialog(bool skirmish) {
         display = REDRAW_BACKGROUND;
       }
 
-      if (input & KN_BUTTON) {
-        if (housebtn.IsDropped) {
-          housebtn.Collapse();
-          display = REDRAW_BACKGROUND;
-        }
+      if ((input & KN_BUTTON) && housebtn.IsDropped) {
+        housebtn.Collapse();
+        display = REDRAW_BACKGROUND;
       }
 
       /*
@@ -3721,8 +3717,10 @@ int Com_Scenario_Dialog(bool skirmish) {
         SendPacket.Command = SERIAL_GAME_OPTIONS;
         port::SafeCopy(SendPacket.Name, namebuf);
         SendPacket.ScenarioInfo.CheatCheck = RuleINI.Get_Unique_ID();
-        SendPacket.ScenarioInfo.MinVersion = static_cast<int>(VerNum.Min_Version());
-        SendPacket.ScenarioInfo.MaxVersion = static_cast<std::uint32_t>(VerNum.Max_Version());
+        SendPacket.ScenarioInfo.MinVersion =
+            static_cast<int>(VersionClass::Min_Version());
+        SendPacket.ScenarioInfo.MaxVersion =
+            static_cast<std::uint32_t>(VersionClass::Max_Version());
         SendPacket.ScenarioInfo.House = Session.House;
         SendPacket.ScenarioInfo.Color = Session.ColorIdx;
         SendPacket.ScenarioInfo.Credits = Session.Options.Credits;
@@ -3926,7 +3924,8 @@ int Com_Scenario_Dialog(bool skirmish) {
                   // Otherwise, 'version' is the highest version we have in
                   // common; look up the protocol that goes with this version.
                   // ........................................................
-                  Session.CommProtocol = VerNum.Version_Protocol(version);
+                  Session.CommProtocol =
+                      VersionClass::Version_Protocol(version);
                 }
               }
               /*.........................................................
@@ -4207,11 +4206,11 @@ int Com_Scenario_Dialog(bool skirmish) {
           if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
             if (ReceivePacket.Command == SERIAL_READY_TO_GO) {
               if (Session.Scenarios[Session.Options.ScenarioIndex]
-                      ->Get_Official()) {
-                if (!Force_Scenario_Available(Scen.ScenarioName)) {
-                  Emergency_Exit(EXIT_FAILURE);
-                }
+                      ->Get_Official() &&
+                  (!Force_Scenario_Available(Scen.ScenarioName))) {
+                Emergency_Exit(EXIT_FAILURE);
               }
+
               break;
             }
 
@@ -4230,12 +4229,10 @@ int Com_Scenario_Dialog(bool skirmish) {
             if (ReceivePacket.Command == SERIAL_REQ_SCENARIO) {
               WWDebugString("RA95 - About to call 'Send_Remote_File'.\n");
 
-
               if (Session.Scenarios[Session.Options.ScenarioIndex]
-                      ->Get_Official()) {
-                if (!Force_Scenario_Available(Scen.ScenarioName)) {
-                  Emergency_Exit(EXIT_FAILURE);
-                }
+                      ->Get_Official() &&
+                  (!Force_Scenario_Available(Scen.ScenarioName))) {
+                Emergency_Exit(EXIT_FAILURE);
               }
 
               Send_Remote_File(Scen.ScenarioName, 0);
@@ -4255,37 +4252,36 @@ int Com_Scenario_Dialog(bool skirmish) {
       }
 
     } else {
-      if (!recsignedoff) {
-        /*.....................................................................
-        Broadcast my sign-off over my network
-        .....................................................................*/
-        if (!skirmish) {
-          memset(&SendPacket, 0, sizeof(SerialPacketType));
-          SendPacket.Command = SERIAL_SIGN_OFF;
-          SendPacket.ScenarioInfo.Color = Session.ColorIdx;  // use Color for ID
-          SendPacket.ID = Session.ModemType;
-          NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
+      if ((!recsignedoff) && (!skirmish))
+      /*.....................................................................
+      Broadcast my sign-off over my network
+      .....................................................................*/
+      {
+        memset(&SendPacket, 0, sizeof(SerialPacketType));
+        SendPacket.Command = SERIAL_SIGN_OFF;
+        SendPacket.ScenarioInfo.Color = Session.ColorIdx;  // use Color for ID
+        SendPacket.ID = Session.ModemType;
+        NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
 
-          starttime = TickCount.Value();
-          while ((NullModem.Num_Send() &&
-                  TickCount.Value() - starttime < PACKET_CANCEL_TIMEOUT) ||
-                 TickCount.Value() - starttime < 60) {
+        starttime = TickCount.Value();
+        while ((NullModem.Num_Send() &&
+                TickCount.Value() - starttime < PACKET_CANCEL_TIMEOUT) ||
+               TickCount.Value() - starttime < 60) {
 #if (SHOW_MONO)
             NullModem.Mono_Debug_Print(0);
 #endif
 
-            if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
-              // are we getting our own packets back??
+            if ((NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) &&
+                (ReceivePacket.Command == SERIAL_SIGN_OFF &&
+                 ReceivePacket.ID == Session.ModemType))
+            // are we getting our own packets back??
 
-              if (ReceivePacket.Command == SERIAL_SIGN_OFF &&
-                  ReceivePacket.ID == Session.ModemType) {
-                // exit while
-                break;
-              }
+            {
+              // exit while
+              break;
             }
 
             NullModem.Service();
-          }
         }
       }
 
@@ -4384,53 +4380,52 @@ bool Find_Local_Scenario(char* description, char* filename, unsigned int length,
       /*
       ** Possible rejection on the basis of availability.
       */
-      if (file.Is_Available()) {
-        // debugprint("file is available.\n");
+      // debugprint("file is available.\n");
+      /*
+      ** Possible rejection on the basis of size.
+      */
+      if (file.Is_Available() && (file.Size() == length)) {
+        // debugprint("length matches.\n");
         /*
-        ** Possible rejection on the basis of size.
+        ** We don't know the digest for 'official' scenarios so assume its
+        *correct
         */
-        if (file.Size() == length) {
-          // debugprint("length matches.\n");
+        if (!official) {
+          // debugprint("!official.\n");
           /*
-          ** We don't know the digest for 'official' scenarios so assume its
-          *correct
+          ** Possible rejection on the basis of digest
           */
-          if (!official) {
-            // debugprint("!official.\n");
-            /*
-            ** Possible rejection on the basis of digest
-            */
-            INIClass ini;
-            ini.Load(file);
-            ini.Get_String("Digest", "1", "No digest here mate. Nope.",
-                           digest_buffer, sizeof(digest_buffer));
-          }
-          // debugprint("digest = %s, digest_buffer = %s.\n", digest,
-          // digest_buffer);
-          // But don't know why this happens.
-          // Because of autodownload?
-          /*
-          ** If this is an aftermath scenario then ignore the digest and return
-          *success.
-          */
-          if (IsMissionAftermath(Session.Scenarios[index]->Get_Filename())) {
-            // debugprint("a 1match!\n");
-            port::SafeCopy(filename, Session.Scenarios[index]->Get_Filename(),
-                           kMaxFname + kMaxExt + 1);
-            return true;
-          }
+          INIClass ini;
+          ini.Load(file);
+          ini.Get_String("Digest", "1", "No digest here mate. Nope.",
+                         digest_buffer, sizeof(digest_buffer));
+        }
+        // debugprint("digest = %s, digest_buffer = %s.\n", digest,
+        // digest_buffer);
+        // But don't know why this happens.
+        // Because of autodownload?
+        /*
+        ** If this is an aftermath scenario then ignore the digest and return
+        *success.
+        */
+        if (IsMissionAftermath(Session.Scenarios[index]->Get_Filename())) {
+          // debugprint("a 1match!\n");
+          port::SafeCopy(filename, Session.Scenarios[index]->Get_Filename(),
+                         kMaxFname + kMaxExt + 1);
+          return true;
+        }
 
-          /*
-          ** This must be the same scenario. Copy the name and return true.
-          */
-          if (official || !strcmp(digest, digest_buffer)) {
-            // debugprint("a match!\n");
-            port::SafeCopy(filename, Session.Scenarios[index]->Get_Filename(),
-                           kMaxFname + kMaxExt + 1);
-            return true;
-          }
+        /*
+        ** This must be the same scenario. Copy the name and return true.
+        */
+        if (official || !strcmp(digest, digest_buffer)) {
+          // debugprint("a match!\n");
+          port::SafeCopy(filename, Session.Scenarios[index]->Get_Filename(),
+                         kMaxFname + kMaxExt + 1);
+          return true;
         }
       }
+
       //			else
       //				debugprint("file not available '%s'.\n",
       // Session.Scenarios[index]->Get_Filename());
@@ -5130,11 +5125,10 @@ int Com_Show_Scenario_Dialog() {
           If 'TheirColor' is set to the other player's color, make
           sure we can't pick that color.
           .........................................................*/
-          if (parms_received) {
-            if (Session.PrefColor == TheirColor) {
-              break;
-            }
+          if (parms_received && (Session.PrefColor == TheirColor)) {
+            break;
           }
+
           Session.ColorIdx = Session.PrefColor;
 
           name_edt.Set_Color(&ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
@@ -5304,8 +5298,10 @@ int Com_Show_Scenario_Dialog() {
       SendPacket.Command = SERIAL_GAME_OPTIONS;
       port::SafeCopy(SendPacket.Name, namebuf);
       SendPacket.ScenarioInfo.CheatCheck = RuleINI.Get_Unique_ID();
-      SendPacket.ScenarioInfo.MinVersion = static_cast<int>(VerNum.Min_Version());
-      SendPacket.ScenarioInfo.MaxVersion = static_cast<std::uint32_t>(VerNum.Max_Version());
+      SendPacket.ScenarioInfo.MinVersion =
+          static_cast<int>(VersionClass::Min_Version());
+      SendPacket.ScenarioInfo.MaxVersion =
+          static_cast<std::uint32_t>(VersionClass::Max_Version());
       SendPacket.ScenarioInfo.House = Session.House;
       SendPacket.ScenarioInfo.Color = Session.ColorIdx;
       SendPacket.ID = Session.ModemType;
@@ -5567,7 +5563,7 @@ int Com_Show_Scenario_Dialog() {
                 process = false;
                 rc = false;
               } else {
-                Session.CommProtocol = VerNum.Version_Protocol(version);
+                Session.CommProtocol = VersionClass::Version_Protocol(version);
               }
             }
 
@@ -5689,18 +5685,18 @@ int Com_Show_Scenario_Dialog() {
                   int current_drive = CCFileClass::Get_CD_Drive();
                   int index = Get_CD_Index(current_drive, 1 * 60);
                   bool needcd = false;
-                  if (IsMissionCounterstrike(Session.ScenarioFileName)) {
-                    if (index != 2 && index != 3) {
-                      RequiredCD = 2;
-                      needcd = true;
-                    }
+                  if (IsMissionCounterstrike(Session.ScenarioFileName) &&
+                      (index != 2 && index != 3)) {
+                    RequiredCD = 2;
+                    needcd = true;
                   }
-                  if (IsMissionAftermath(Session.ScenarioFileName)) {
-                    if (index != 3) {
-                      RequiredCD = 3;
-                      needcd = true;
-                    }
+
+                  if (IsMissionAftermath(Session.ScenarioFileName) &&
+                      (index != 3)) {
+                    RequiredCD = 3;
+                    needcd = true;
                   }
+
                   if (needcd) {
                     WWDebugString("RA95 - Counterstrike CD is not in drive\n");
 
@@ -5958,14 +5954,14 @@ int Com_Show_Scenario_Dialog() {
         NullModem.Mono_Debug_Print(0);
 #endif
 
-        if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
-          // are we getting our own packets back??
+        if ((NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) &&
+            (ReceivePacket.Command == SERIAL_SIGN_OFF &&
+             ReceivePacket.ID == Session.ModemType))
+        // are we getting our own packets back??
 
-          if (ReceivePacket.Command == SERIAL_SIGN_OFF &&
-              ReceivePacket.ID == Session.ModemType) {
-            // exit while
-            break;
-          }
+        {
+          // exit while
+          break;
         }
 
         NullModem.Service();
@@ -6261,15 +6257,15 @@ static int Phone_Dialog() {
         Detect a change in the selected item; update CurPhoneIdx, and
         the edit box buffer.
         ...............................................................*/
-        if (Session.CurPhoneIdx != -1) {
-          if (phonelist.Current_Index() != Session.CurPhoneIdx) {
-            Session.CurPhoneIdx = phonelist.Current_Index();
-            port::SafeCopy(phone_num,
-                           Session.PhoneBook[Session.CurPhoneIdx]->Number);
-            numedit.Set_Text(phone_num, PhoneEntryClass::PHONE_MAX_NUM);
-            changed = true;
-          }
+        if ((Session.CurPhoneIdx != -1) &&
+            (phonelist.Current_Index() != Session.CurPhoneIdx)) {
+          Session.CurPhoneIdx = phonelist.Current_Index();
+          port::SafeCopy(phone_num,
+                         Session.PhoneBook[Session.CurPhoneIdx]->Number);
+          numedit.Set_Text(phone_num, PhoneEntryClass::PHONE_MAX_NUM);
+          changed = true;
         }
+
         break;
 
       /*------------------------------------------------------------------
@@ -6909,7 +6905,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
 
   DialSettings = settings;
 
-  modemstatus = NullModem.Get_Modem_Status();
+  modemstatus = NullModemClass::Get_Modem_Status();
   if (reconnect) {
     if (modemstatus & CD_SET) {
       connected = true;
@@ -6921,12 +6917,12 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     Session.ModemService = false;
   }
 
-  NullModem.Setup_Modem_Echo(Modem_Echo);
+  NullModemClass::Setup_Modem_Echo(Modem_Echo);
 
   modemstatus = NullModem.Detect_Modem(settings, reconnect);
   if (!modemstatus) {
-    NullModem.Remove_Modem_Echo();
-    NullModem.Print_EchoBuf();
+    NullModemClass::Remove_Modem_Echo();
+    NullModemClass::Print_EchoBuf();
     NullModem.Reset_EchoBuf();
     /*
     ** If our first attempt to detect the modem failed, and we're at
@@ -6937,11 +6933,11 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
         settings->Baud = 19200;
         Shutdown_Modem();
         Init_Null_Modem(settings);
-        NullModem.Setup_Modem_Echo(Modem_Echo);
+        NullModemClass::Setup_Modem_Echo(Modem_Echo);
         modemstatus = NullModem.Detect_Modem(settings, reconnect);
         if (!modemstatus) {
-          NullModem.Remove_Modem_Echo();
-          NullModem.Print_EchoBuf();
+          NullModemClass::Remove_Modem_Echo();
+          NullModemClass::Print_EchoBuf();
           NullModem.Reset_EchoBuf();
           WWMessageBox().Process(TXT_UNABLE_FIND_MODEM);
           Session.ModemService = true;
@@ -6953,11 +6949,11 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
         settings->Baud = 38400;
         Shutdown_Modem();
         Init_Null_Modem(settings);
-        NullModem.Setup_Modem_Echo(Modem_Echo);
+        NullModemClass::Setup_Modem_Echo(Modem_Echo);
         modemstatus = NullModem.Detect_Modem(settings, reconnect);
         if (!modemstatus) {
-          NullModem.Remove_Modem_Echo();
-          NullModem.Print_EchoBuf();
+          NullModemClass::Remove_Modem_Echo();
+          NullModemClass::Print_EchoBuf();
           NullModem.Reset_EchoBuf();
           WWMessageBox().Process(TXT_UNABLE_FIND_MODEM);
           Session.ModemService = true;
@@ -6972,8 +6968,8 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     }
 
   } else if (modemstatus == -1) {
-    NullModem.Remove_Modem_Echo();
-    NullModem.Print_EchoBuf();
+    NullModemClass::Remove_Modem_Echo();
+    NullModemClass::Print_EchoBuf();
     NullModem.Reset_EchoBuf();
     WWMessageBox().Process(TXT_ERROR_IN_INITSTRING);
     //		WWMessageBox().Process( "Error in the InitString." );
@@ -7052,8 +7048,8 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
       break;
   }
 
-  NullModem.Remove_Modem_Echo();
-  NullModem.Print_EchoBuf();
+  NullModemClass::Remove_Modem_Echo();
+  NullModemClass::Print_EchoBuf();
   NullModem.Reset_EchoBuf();
 
   /*
@@ -7083,7 +7079,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
 
   DialSettings = settings;
 
-  modemstatus = NullModem.Get_Modem_Status();
+  modemstatus = NullModemClass::Get_Modem_Status();
   if (reconnect) {
     if (modemstatus & CD_SET) {
       connected = true;
@@ -7095,12 +7091,12 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     Session.ModemService = false;
   }
 
-  NullModem.Setup_Modem_Echo(Modem_Echo);
+  NullModemClass::Setup_Modem_Echo(Modem_Echo);
 
   modemstatus = NullModem.Detect_Modem(settings, reconnect);
   if (!modemstatus) {
-    NullModem.Remove_Modem_Echo();
-    NullModem.Print_EchoBuf();
+    NullModemClass::Remove_Modem_Echo();
+    NullModemClass::Print_EchoBuf();
     NullModem.Reset_EchoBuf();
     /*
     ** If our first attempt to detect the modem failed, and we're at
@@ -7111,11 +7107,11 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
         settings->Baud = 19200;
         Shutdown_Modem();
         Init_Null_Modem(settings);
-        NullModem.Setup_Modem_Echo(Modem_Echo);
+        NullModemClass::Setup_Modem_Echo(Modem_Echo);
         modemstatus = NullModem.Detect_Modem(settings, reconnect);
         if (!modemstatus) {
-          NullModem.Remove_Modem_Echo();
-          NullModem.Print_EchoBuf();
+          NullModemClass::Remove_Modem_Echo();
+          NullModemClass::Print_EchoBuf();
           NullModem.Reset_EchoBuf();
           WWMessageBox().Process(TXT_UNABLE_FIND_MODEM);
           Session.ModemService = true;
@@ -7127,11 +7123,11 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
         settings->Baud = 38400;
         Shutdown_Modem();
         Init_Null_Modem(settings);
-        NullModem.Setup_Modem_Echo(Modem_Echo);
+        NullModemClass::Setup_Modem_Echo(Modem_Echo);
         modemstatus = NullModem.Detect_Modem(settings, reconnect);
         if (!modemstatus) {
-          NullModem.Remove_Modem_Echo();
-          NullModem.Print_EchoBuf();
+          NullModemClass::Remove_Modem_Echo();
+          NullModemClass::Print_EchoBuf();
           NullModem.Reset_EchoBuf();
           WWMessageBox().Process(TXT_UNABLE_FIND_MODEM);
           Session.ModemService = true;
@@ -7145,8 +7141,8 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
         return connected;
     }
   } else if (modemstatus == -1) {
-    NullModem.Remove_Modem_Echo();
-    NullModem.Print_EchoBuf();
+    NullModemClass::Remove_Modem_Echo();
+    NullModemClass::Print_EchoBuf();
     NullModem.Reset_EchoBuf();
     WWMessageBox().Process(TXT_ERROR_IN_INITSTRING);
     Session.ModemService = true;
@@ -7207,8 +7203,8 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
       break;
   }
 
-  NullModem.Remove_Modem_Echo();
-  NullModem.Print_EchoBuf();
+  NullModemClass::Remove_Modem_Echo();
+  NullModemClass::Print_EchoBuf();
   NullModem.Reset_EchoBuf();
 
   /*
@@ -7337,7 +7333,8 @@ void Hex_Dump_Data(char* buffer, int length) {
 } /* end of Hex_Dump_Data */
 
 void itoh(int i, char* s) {
-  int nibble, loop;
+  int nibble;
+  int loop;
 
   //	*s++ = '0';
   //	*s++ = 'x';

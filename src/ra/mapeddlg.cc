@@ -1056,10 +1056,13 @@ int MapEditClass::Load_Scenario() {
     int map_x2;             // map coords x2, pixel coords
     int map_y1;             // map coords y1, pixel coords
     int map_y2;             // map coords y2, pixel coords
-    int delta1, delta2;     // mouse-click proximity
-    int mx = 0, my = 0;     // last-saved mouse coords
-                            //	char txt[40];
-    int txt_x, txt_y;       // for displaying text
+    int delta1;
+    int delta2;  // mouse-click proximity
+    int mx = 0;
+    int my = 0;  // last-saved mouse coords
+                 //	char txt[40];
+    int txt_x;
+    int txt_y;              // for displaying text
                             //	unsigned index;
                             //// for drawing map symbology
     CELL cell;              // for drawing map symbology
@@ -1235,125 +1238,123 @@ int MapEditClass::Load_Scenario() {
         /*
         **	Redraw the map symbology & location
         */
-        if (display >= REDRAW_MAP) {
-          if (LogicPage->Lock()) {
-            /*
-            **	Erase the map interior
-            */
-            LogicPage->Fill_Rect(D_BORD_X1 + 1, D_BORD_Y1 + 1, D_BORD_X2 - 1,
-                                 D_BORD_Y2 - 1, BLACK);
+        if ((display >= REDRAW_MAP) && LogicPage->Lock()) {
+          /*
+          **	Erase the map interior
+          */
+          LogicPage->Fill_Rect(D_BORD_X1 + 1, D_BORD_Y1 + 1, D_BORD_X2 - 1,
+                               D_BORD_Y2 - 1, BLACK);
 
-            /*
-            **	Draw Land map symbols (use color according to Ground[] array).
-            */
-            for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-              occupier = (*this)[cell].Cell_Occupier();
-              if (occupier == nullptr) {
-                color = GroundColor[(*this)[cell].Land_Type()];
-                LogicPage->Put_Pixel(D_BORD_X1 + Cell_X(cell) + 1,
-                                     D_BORD_Y1 + Cell_Y(cell) + 1,
-                                     static_cast<unsigned char>(color));
-              }
+          /*
+          **	Draw Land map symbols (use color according to Ground[] array).
+          */
+          for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+            occupier = (*this)[cell].Cell_Occupier();
+            if (occupier == nullptr) {
+              color = GroundColor[(*this)[cell].Land_Type()];
+              LogicPage->Put_Pixel(D_BORD_X1 + Cell_X(cell) + 1,
+                                   D_BORD_Y1 + Cell_Y(cell) + 1,
+                                   static_cast<unsigned char>(color));
             }
-
-            /*
-            **	Draw the actual map location
-            */
-            LogicPage->Draw_Rect(map_x1, map_y1, map_x2, map_y2, WHITE);
-            switch (grabbed) {
-              case 1:
-                LogicPage->Draw_Line(map_x1, map_y1, map_x1 + 5, map_y1, BLUE);
-                LogicPage->Draw_Line(map_x1, map_y1, map_x1, map_y1 + 5, BLUE);
-                break;
-
-              case 2:
-                LogicPage->Draw_Line(map_x2, map_y1, map_x2 - 5, map_y1, BLUE);
-                LogicPage->Draw_Line(map_x2, map_y1, map_x2, map_y1 + 5, BLUE);
-                break;
-
-              case 3:
-                LogicPage->Draw_Line(map_x2, map_y2, map_x2 - 5, map_y2, BLUE);
-                LogicPage->Draw_Line(map_x2, map_y2, map_x2, map_y2 - 5, BLUE);
-                break;
-
-              case 4:
-                LogicPage->Draw_Line(map_x1, map_y2, map_x1 + 5, map_y2, BLUE);
-                LogicPage->Draw_Line(map_x1, map_y2, map_x1, map_y2 - 5, BLUE);
-                break;
-
-              case 5:
-                LogicPage->Draw_Rect(map_x1, map_y1, map_x2, map_y2, BLUE);
-                break;
-
-              default:
-                break;
-            }
-
-            /*
-            **	Draw Unit map symbols (Use the radar map color according to
-            **	that specified in the house type class object.
-            **	DKGREEN = terrain object
-            */
-            for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-              occupier = (*this)[cell].Cell_Occupier();
-              if (occupier) {
-                color = DKGREEN;
-                if (occupier && occupier->Owner() != HOUSE_NONE) {
-                  color = ColorRemaps[HouseClass::As_Pointer(occupier->Owner())
-                                          ->RemapColor]
-                              .Color;
-                }
-                LogicPage->Put_Pixel(D_BORD_X1 + Cell_X(cell) + 1,
-                                     D_BORD_Y1 + Cell_Y(cell) + 1,
-                                     static_cast<unsigned char>(color));
-              }
-            }
-
-            /*
-            **	Draw Home location
-            */
-            LogicPage->Put_Pixel(
-                D_BORD_X1 +
-                    Cell_X(Scen.Waypoint[ScenarioClass::kHomeWaypoint]) + 1,
-                D_BORD_Y1 +
-                    Cell_Y(Scen.Waypoint[ScenarioClass::kHomeWaypoint]) + 1,
-                WHITE);
-
-            /*
-            **	Erase old coordinates
-            */
-            //					LogicPage->Fill_Rect( D_DIALOG_X
-            //+ 7, 						D_DIALOG_Y +
-            // D_DIALOG_H - D_OK_H - 22,
-            // D_DIALOG_X + D_DIALOG_W - 7,
-            // D_DIALOG_Y + D_DIALOG_H - D_OK_H - 22 + 10, BLACK);
-
-            /*
-            **	Draw the coordinates
-            */
-            txt_x = D_DIALOG_X + (D_DIALOG_W / 8);
-            txt_y = D_DIALOG_Y + D_DIALOG_H - D_OK_H - 32;
-            Fancy_Text_Print(
-                "%5d", txt_x, txt_y, GadgetClass::Get_Color_Scheme(), BLACK,
-                TPF_CENTER | TPF_EFNT | TPF_NOSHADOW, map_x1 - D_BORD_X1 - 1);
-
-            txt_x += (D_DIALOG_W - 20) / 4;
-            Fancy_Text_Print(
-                "%5d", txt_x, txt_y, GadgetClass::Get_Color_Scheme(), BLACK,
-                TPF_CENTER | TPF_EFNT | TPF_NOSHADOW, map_y1 - D_BORD_Y1 - 1);
-
-            txt_x += (D_DIALOG_W - 20) / 4;
-            Fancy_Text_Print(
-                "%5d", txt_x, txt_y, GadgetClass::Get_Color_Scheme(), BLACK,
-                TPF_CENTER | TPF_EFNT | TPF_NOSHADOW, map_x2 - map_x1 + 1);
-
-            txt_x += (D_DIALOG_W - 20) / 4;
-            Fancy_Text_Print(
-                "%5d", txt_x, txt_y, GadgetClass::Get_Color_Scheme(), BLACK,
-                TPF_CENTER | TPF_EFNT | TPF_NOSHADOW, map_y2 - map_y1 + 1);
-
-            LogicPage->Unlock();
           }
+
+          /*
+          **	Draw the actual map location
+          */
+          LogicPage->Draw_Rect(map_x1, map_y1, map_x2, map_y2, WHITE);
+          switch (grabbed) {
+            case 1:
+              LogicPage->Draw_Line(map_x1, map_y1, map_x1 + 5, map_y1, BLUE);
+              LogicPage->Draw_Line(map_x1, map_y1, map_x1, map_y1 + 5, BLUE);
+              break;
+
+            case 2:
+              LogicPage->Draw_Line(map_x2, map_y1, map_x2 - 5, map_y1, BLUE);
+              LogicPage->Draw_Line(map_x2, map_y1, map_x2, map_y1 + 5, BLUE);
+              break;
+
+            case 3:
+              LogicPage->Draw_Line(map_x2, map_y2, map_x2 - 5, map_y2, BLUE);
+              LogicPage->Draw_Line(map_x2, map_y2, map_x2, map_y2 - 5, BLUE);
+              break;
+
+            case 4:
+              LogicPage->Draw_Line(map_x1, map_y2, map_x1 + 5, map_y2, BLUE);
+              LogicPage->Draw_Line(map_x1, map_y2, map_x1, map_y2 - 5, BLUE);
+              break;
+
+            case 5:
+              LogicPage->Draw_Rect(map_x1, map_y1, map_x2, map_y2, BLUE);
+              break;
+
+            default:
+              break;
+          }
+
+          /*
+          **	Draw Unit map symbols (Use the radar map color according to
+          **	that specified in the house type class object.
+          **	DKGREEN = terrain object
+          */
+          for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+            occupier = (*this)[cell].Cell_Occupier();
+            if (occupier) {
+              color = DKGREEN;
+              if (occupier && occupier->Owner() != HOUSE_NONE) {
+                color = ColorRemaps[HouseClass::As_Pointer(occupier->Owner())
+                                        ->RemapColor]
+                            .Color;
+              }
+              LogicPage->Put_Pixel(D_BORD_X1 + Cell_X(cell) + 1,
+                                   D_BORD_Y1 + Cell_Y(cell) + 1,
+                                   static_cast<unsigned char>(color));
+            }
+          }
+
+          /*
+          **	Draw Home location
+          */
+          LogicPage->Put_Pixel(
+              D_BORD_X1 + Cell_X(Scen.Waypoint[ScenarioClass::kHomeWaypoint]) +
+                  1,
+              D_BORD_Y1 + Cell_Y(Scen.Waypoint[ScenarioClass::kHomeWaypoint]) +
+                  1,
+              WHITE);
+
+          /*
+          **	Erase old coordinates
+          */
+          //					LogicPage->Fill_Rect( D_DIALOG_X
+          //+ 7, 						D_DIALOG_Y +
+          // D_DIALOG_H - D_OK_H - 22,
+          // D_DIALOG_X + D_DIALOG_W - 7,
+          // D_DIALOG_Y + D_DIALOG_H - D_OK_H - 22 + 10, BLACK);
+
+          /*
+          **	Draw the coordinates
+          */
+          txt_x = D_DIALOG_X + (D_DIALOG_W / 8);
+          txt_y = D_DIALOG_Y + D_DIALOG_H - D_OK_H - 32;
+          Fancy_Text_Print("%5d", txt_x, txt_y, GadgetClass::Get_Color_Scheme(),
+                           BLACK, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
+                           map_x1 - D_BORD_X1 - 1);
+
+          txt_x += (D_DIALOG_W - 20) / 4;
+          Fancy_Text_Print("%5d", txt_x, txt_y, GadgetClass::Get_Color_Scheme(),
+                           BLACK, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
+                           map_y1 - D_BORD_Y1 - 1);
+
+          txt_x += (D_DIALOG_W - 20) / 4;
+          Fancy_Text_Print("%5d", txt_x, txt_y, GadgetClass::Get_Color_Scheme(),
+                           BLACK, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
+                           map_x2 - map_x1 + 1);
+
+          txt_x += (D_DIALOG_W - 20) / 4;
+          Fancy_Text_Print("%5d", txt_x, txt_y, GadgetClass::Get_Color_Scheme(),
+                           BLACK, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
+                           map_y2 - map_y1 + 1);
+
+          LogicPage->Unlock();
         }
 
         Show_Mouse();
@@ -1461,127 +1462,123 @@ int MapEditClass::Load_Scenario() {
         *WWLIB doesn't pass through a KN_MOUSE_MOVE *	  value while the button
         *is being held down, so this case must be *	  trapped as a default.
         */
-        switch (static_cast<int>(input)) {
-          case ((int)KN_LMOUSE | (int)KN_RLSE_BIT):
-            grabbed = 0;
+        if (static_cast<int>(input) == ((int)KN_LMOUSE | (int)KN_RLSE_BIT)) {
+          grabbed = 0;
+          display = REDRAW_MAP;
+        } else {
+          delta1 = Get_Mouse_X() - mx;
+          delta2 = Get_Mouse_Y() - my;
+          if (delta1 == 0 && delta2 == 0) {
+            break;
+          }
+
+          /*
+          **	Move top left
+          */
+          if (grabbed == 1) {
+            map_x1 += delta1;
+            if (map_x1 > map_x2 - 2) {
+              map_x1 = map_x2 - 2;
+            } else {
+              map_x1 = std::max(map_x1, D_BORD_X1 + 2);
+            }
+
+            map_y1 += delta2;
+            if (map_y1 > map_y2 - 2) {
+              map_y1 = map_y2 - 2;
+            } else {
+              map_y1 = std::max(map_y1, D_BORD_Y1 + 2);
+            }
             display = REDRAW_MAP;
-            break;
+            mx = Get_Mouse_X();
+            my = Get_Mouse_Y();
+          }
 
-          default:
-            delta1 = Get_Mouse_X() - mx;
-            delta2 = Get_Mouse_Y() - my;
-            if (delta1 == 0 && delta2 == 0) {
-              break;
+          /*
+          **	Move top right
+          */
+          if (grabbed == 2) {
+            map_x2 += delta1;
+            if (map_x2 < map_x1 + 2) {
+              map_x2 = map_x1 + 2;
+            } else {
+              map_x2 = std::min(map_x2, D_BORD_X2 - 2);
             }
 
-            /*
-            **	Move top left
-            */
-            if (grabbed == 1) {
+            map_y1 += delta2;
+            if (map_y1 > map_y2 - 2) {
+              map_y1 = map_y2 - 2;
+            } else {
+              map_y1 = std::max(map_y1, D_BORD_Y1 + 2);
+            }
+            display = REDRAW_MAP;
+            mx = Get_Mouse_X();
+            my = Get_Mouse_Y();
+          }
+
+          /*
+          **	Move bottom right
+          */
+          if (grabbed == 3) {
+            map_x2 += delta1;
+            if (map_x2 < map_x1 + 2) {
+              map_x2 = map_x1 + 2;
+            } else {
+              map_x2 = std::min(map_x2, D_BORD_X2 - 2);
+            }
+
+            map_y2 += delta2;
+            if (map_y2 < map_y1 + 2) {
+              map_y2 = map_y1 + 2;
+            } else {
+              map_y2 = std::min(map_y2, D_BORD_Y2 - 2);
+            }
+            display = REDRAW_MAP;
+            mx = Get_Mouse_X();
+            my = Get_Mouse_Y();
+          }
+
+          /*
+          **	Move bottom left
+          */
+          if (grabbed == 4) {
+            map_x1 += delta1;
+            if (map_x1 > map_x2 - 2) {
+              map_x1 = map_x2 - 2;
+            } else {
+              map_x1 = std::max(map_x1, D_BORD_X1 + 2);
+            }
+
+            map_y2 += delta2;
+            if (map_y2 < map_y1 + 2) {
+              map_y2 = map_y1 + 2;
+            } else {
+              map_y2 = std::min(map_y2, D_BORD_Y2 - 2);
+            }
+            display = REDRAW_MAP;
+            mx = Get_Mouse_X();
+            my = Get_Mouse_Y();
+          }
+
+          /*
+          **	Move whole map
+          */
+          if (grabbed == 5) {
+            if (map_x1 + delta1 > D_BORD_X1 + 1 &&
+                map_x2 + delta1 < D_BORD_X2 - 1) {
               map_x1 += delta1;
-              if (map_x1 > map_x2 - 2) {
-                map_x1 = map_x2 - 2;
-              } else {
-                map_x1 = std::max(map_x1, D_BORD_X1 + 2);
-              }
-
-              map_y1 += delta2;
-              if (map_y1 > map_y2 - 2) {
-                map_y1 = map_y2 - 2;
-              } else {
-                map_y1 = std::max(map_y1, D_BORD_Y1 + 2);
-              }
-              display = REDRAW_MAP;
-              mx = Get_Mouse_X();
-              my = Get_Mouse_Y();
-            }
-
-            /*
-            **	Move top right
-            */
-            if (grabbed == 2) {
               map_x2 += delta1;
-              if (map_x2 < map_x1 + 2) {
-                map_x2 = map_x1 + 2;
-              } else {
-                map_x2 = std::min(map_x2, D_BORD_X2 - 2);
-              }
+            }
 
+            if (map_y1 + delta2 > D_BORD_Y1 + 1 &&
+                map_y2 + delta2 < D_BORD_Y2 - 1) {
               map_y1 += delta2;
-              if (map_y1 > map_y2 - 2) {
-                map_y1 = map_y2 - 2;
-              } else {
-                map_y1 = std::max(map_y1, D_BORD_Y1 + 2);
-              }
-              display = REDRAW_MAP;
-              mx = Get_Mouse_X();
-              my = Get_Mouse_Y();
-            }
-
-            /*
-            **	Move bottom right
-            */
-            if (grabbed == 3) {
-              map_x2 += delta1;
-              if (map_x2 < map_x1 + 2) {
-                map_x2 = map_x1 + 2;
-              } else {
-                map_x2 = std::min(map_x2, D_BORD_X2 - 2);
-              }
-
               map_y2 += delta2;
-              if (map_y2 < map_y1 + 2) {
-                map_y2 = map_y1 + 2;
-              } else {
-                map_y2 = std::min(map_y2, D_BORD_Y2 - 2);
-              }
-              display = REDRAW_MAP;
-              mx = Get_Mouse_X();
-              my = Get_Mouse_Y();
             }
-
-            /*
-            **	Move bottom left
-            */
-            if (grabbed == 4) {
-              map_x1 += delta1;
-              if (map_x1 > map_x2 - 2) {
-                map_x1 = map_x2 - 2;
-              } else {
-                map_x1 = std::max(map_x1, D_BORD_X1 + 2);
-              }
-
-              map_y2 += delta2;
-              if (map_y2 < map_y1 + 2) {
-                map_y2 = map_y1 + 2;
-              } else {
-                map_y2 = std::min(map_y2, D_BORD_Y2 - 2);
-              }
-              display = REDRAW_MAP;
-              mx = Get_Mouse_X();
-              my = Get_Mouse_Y();
-            }
-
-            /*
-            **	Move whole map
-            */
-            if (grabbed == 5) {
-              if (map_x1 + delta1 > D_BORD_X1 + 1 &&
-                  map_x2 + delta1 < D_BORD_X2 - 1) {
-                map_x1 += delta1;
-                map_x2 += delta1;
-              }
-
-              if (map_y1 + delta2 > D_BORD_Y1 + 1 &&
-                  map_y2 + delta2 < D_BORD_Y2 - 1) {
-                map_y1 += delta2;
-                map_y2 += delta2;
-              }
-              display = REDRAW_MAP;
-              mx = Get_Mouse_X();
-              my = Get_Mouse_Y();
-            }
-            break;
+            display = REDRAW_MAP;
+            mx = Get_Mouse_X();
+            my = Get_Mouse_Y();
+          }
         }
       }
     }
@@ -1968,7 +1965,7 @@ int MapEditClass::Load_Scenario() {
         MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
     themebtn.Add_Item("<none>");
     for (ThemeType th : magic_enum::enum_values<ThemeType>()) {
-      themebtn.Add_Item(Theme.Full_Name(th));
+      themebtn.Add_Item(ThemeClass::Full_Name(th));
     }
     if (Scen.TransitTheme != THEME_NONE) {
       themebtn.Set_Selected_Index(Scen.TransitTheme + 1);
@@ -2455,7 +2452,7 @@ int MapEditClass::Load_Scenario() {
     **	  theater; if not compatible, set TType to TEMPLATE_NONE & TIcon to 0
     **	- Then, re-initialize the TypeClasses for the new Theater
     */
-    TheaterType theater = TheaterType(theaterbtn.Current_Index());
+    auto theater = TheaterType(theaterbtn.Current_Index());
     if (theater != orig_theater) {
       int theater_mask;            // template/terrain mask
       TerrainClass* terrain;       // cell's terrain pointer
@@ -2609,14 +2606,12 @@ int MapEditClass::Load_Scenario() {
       /*
       **	'Delete'
       */
-      if (rc == 3) {
-        if (CurTrigger) {
-          Detach_This_From_All(CurTrigger->As_Target(), true);
-          delete CurTrigger;
-          // CurTrigger->Remove();
-          CurTrigger = nullptr;
-          Changed = 1;
-        }
+      if ((rc == 3) && CurTrigger) {
+        Detach_This_From_All(CurTrigger->As_Target(), true);
+        delete CurTrigger;
+        // CurTrigger->Remove();
+        CurTrigger = nullptr;
+        Changed = 1;
       }
     }
 

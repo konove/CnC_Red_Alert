@@ -42,6 +42,7 @@
 
 #include <cstdint>
 
+#include "absl/base/attributes.h"
 #include "ra/jshell.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/wwstd.h"
@@ -81,20 +82,21 @@ class ScoreClass {
   void ScoreDelay(int ticks);
   void Pulse_Bar_Graph();
   void Print_Graph_Title(int, int);
-  void Print_Minutes(int minutes);
-  void Count_Up_Print(const char* str, int percent, int max, int xpos,
-                      int ypos);
-  void Show_Credits(int house, const unsigned char pal[]);
-  void Do_GDI_Graph(const void* yellowptr, const void* redptr, int gkilled,
-                    int nkilled, int ypos);
+  static void Print_Minutes(int minutes);
+  static void Count_Up_Print(const char* str, int percent, int max, int xpos,
+                             int ypos);
+  static void Show_Credits(int house, const unsigned char pal[]);
+  static void Do_GDI_Graph(const void* yellowptr, const void* redptr,
+                           int gkilled, int nkilled, int ypos);
   void Do_Nod_Casualties_Graph();
   void Do_Nod_Buildings_Graph();
-  void Input_Name(char str[], int xpos, int ypos, const unsigned char pal[]);
+  static void Input_Name(char str[], int xpos, int ypos,
+                         const unsigned char pal[]);
 };
 
 class ScoreAnimClass {
  public:
-  ScoreAnimClass(int x, int y, const void* data);
+  ScoreAnimClass(int x, int y, const void* data ABSL_ATTRIBUTE_LIFETIME_BOUND);
   int XPos;
   int YPos;
   Timer<SystemTickSource> AnimTimer;
@@ -147,9 +149,11 @@ class ScorePrintClass : public ScoreAnimClass {
   int Stage;
   const void* PrimaryPalette;
   void Update() override;
-  ScorePrintClass(const void* string, int xpos, int ypos, const void* palette,
+  ScorePrintClass(const void* string, int xpos, int ypos,
+                  const void* palette ABSL_ATTRIBUTE_LIFETIME_BOUND,
                   int background = TBLACK);
-  ScorePrintClass(int string, int xpos, int ypos, const void* palette,
+  ScorePrintClass(int string, int xpos, int ypos,
+                  const void* palette ABSL_ATTRIBUTE_LIFETIME_BOUND,
                   int background = TBLACK);
   ~ScorePrintClass() override { PrimaryPalette = nullptr; }
   ScorePrintClass(const ScorePrintClass&) = delete;
@@ -164,7 +168,7 @@ class ScoreScaleClass : public ScoreAnimClass {
   const unsigned char* Palette;
   void Update() override;
   ScoreScaleClass(const void* string, int xpos, int ypos,
-                  const unsigned char pal[]);
+                  const unsigned char* pal ABSL_ATTRIBUTE_LIFETIME_BOUND);
   ~ScoreScaleClass() override { Palette = nullptr; }
   ScoreScaleClass(const ScoreScaleClass&) = delete;
   ScoreScaleClass& operator=(const ScoreScaleClass&) = delete;

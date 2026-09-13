@@ -1076,7 +1076,8 @@ static void Garble_Message(char* buf) {
   char* p;          // working ptr
   int numwords;     // # words in the phrase
   char* words[40];  // ptrs to various words in the phrase
-  int i, j;
+  int i;
+  int j;
 
   /*------------------------------------------------------------------------
   Pull off any trailing punctuation

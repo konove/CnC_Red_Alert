@@ -44,6 +44,7 @@
 class ArchiveReader;
 class ArchiveWriter;
 
+#include "absl/base/attributes.h"
 #include "td/building.h"
 #include "td/defines.h"
 #include "td/foot.h"
@@ -211,8 +212,9 @@ class CellClass {
   [[nodiscard]] bool Is_Generally_Clear() const;
   [[nodiscard]] TARGET As_Target() const { return ::As_Target(Cell_Number()); }
   [[nodiscard]] BuildingClass* Cell_Building() const;
-  [[nodiscard]] const CellClass& Adjacent_Cell(FacingType face) const;
-  CellClass& Adjacent_Cell(FacingType face) {
+  [[nodiscard]] const CellClass& Adjacent_Cell(FacingType face) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  CellClass& Adjacent_Cell(FacingType face) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return (CellClass&)(*static_cast<const CellClass*>(this))
         .Adjacent_Cell(face);
   }

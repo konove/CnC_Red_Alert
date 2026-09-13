@@ -374,7 +374,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
   TransitTheme = THEME_NONE;
   WWGetPrivateProfileString("Basic", "Theme", "No Theme", buf, sizeof(buf),
                             buffer);
-  TransitTheme = Theme.From_Name(buf);
+  TransitTheme = ThemeClass::From_Name(buf);
 
   /*
   **	Read in the team-type data. The team types must be created before any
@@ -451,11 +451,10 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
   **	Attempt to read the map's binary image file; if fails, read the
   **	template data from the INI, for backward compatibility
   */
-  if (fresh) {
-    if (!Map.Read_Binary(root, &ScenarioCRC)) {
-      TemplateClass::Read_INI(buffer);
-    }
+  if (fresh && (!MapEditClass::Read_Binary(root, &ScenarioCRC))) {
+    TemplateClass::Read_INI(buffer);
   }
+
   Call_Back();
 
   /*
@@ -599,7 +598,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
         }
 
         for (int i = 0; i < MPlayerMax; i++) {
-          HousesType house = static_cast<HousesType>(i + (int)HOUSE_MULTI1);
+          auto house = static_cast<HousesType>(i + (int)HOUSE_MULTI1);
           HouseClass* housep = HouseClass::As_Pointer(house);
           housep->BlitzTime = GameRandomRange(rndmin, rndmax);
         }
@@ -708,8 +707,8 @@ void Write_Scenario_Ini(char* root) {
     WWWritePrivateProfileString("Basic", "Action", ActionMovie, buffer);
     WWWritePrivateProfileString("Basic", "Player", PlayerPtr->Class->IniName,
                                 buffer);
-    WWWritePrivateProfileString("Basic", "Theme", Theme.Base_Name(TransitTheme),
-                                buffer);
+    WWWritePrivateProfileString("Basic", "Theme",
+                                ThemeClass::Base_Name(TransitTheme), buffer);
     WWWritePrivateProfileInt("Basic", "BuildLevel", BuildLevel, buffer);
     WWWritePrivateProfileInt("Basic", "CarryOverMoney",
                              Fixed_To_Cardinal(100, CarryOverPercent), buffer);
@@ -718,7 +717,7 @@ void Write_Scenario_Ini(char* root) {
     TeamTypeClass::Write_INI(buffer, true);
     TriggerClass::Write_INI(buffer, true);
     Map.Write_INI(buffer);
-    Map.Write_Binary(root);
+    MapEditClass::Write_Binary(root);
     HouseClass::Write_INI(buffer);
     UnitClass::Write_INI(buffer);
     InfantryClass::Write_INI(buffer);
@@ -778,7 +777,8 @@ static void Assign_Houses() {
   HouseClass* housep;
   bool house_used[MAX_PLAYERS];  // true = this house is in use
   bool color_used[6];            // true = this color is in use
-  int i, j;
+  int i;
+  int j;
   PlayerColorType color;
   HousesType house2;
   HouseClass* housep2;
@@ -1015,7 +1015,9 @@ static void Create_Units() {
   int u_limit = 0;   // last allowable index of units for this BuildLevel
   int i_limit = 0;   // last allowable index of infantry for this BuildLevel
   TechnoClass* obj;  // newly-created object
-  int i, j, k;       // loop counters
+  int i;
+  int j;
+  int k;             // loop counters
   int scaleval;      // value to scale # units or infantry
 
   /*------------------------------------------------------------------------
@@ -1160,12 +1162,12 @@ static void Create_Units() {
       if (hptr->IsHuman) {
         scaleval = 1;
         obj = new UnitClass(UNIT_MCV, h);
-        if (!obj->Unlimbo(Cell_Coord(centroid), DIR_N)) {
-          if (!Scan_Place_Object(obj, centroid)) {
-            delete obj;
-            obj = nullptr;
-          }
+        if ((!obj->Unlimbo(Cell_Coord(centroid), DIR_N)) &&
+            (!Scan_Place_Object(obj, centroid))) {
+          delete obj;
+          obj = nullptr;
         }
+
         if (obj) {
           hptr->FlagHome = 0;
           hptr->FlagLocation = 0;
@@ -1186,12 +1188,12 @@ static void Create_Units() {
 
         if (Special.IsCaptureTheFlag) {
           obj = new UnitClass(UNIT_MHQ, h);
-          if (!obj->Unlimbo(Cell_Coord(centroid), DIR_N)) {
-            if (!Scan_Place_Object(obj, centroid)) {
-              delete obj;
-              obj = nullptr;
-            }
+          if ((!obj->Unlimbo(Cell_Coord(centroid), DIR_N)) &&
+              (!Scan_Place_Object(obj, centroid))) {
+            delete obj;
+            obj = nullptr;
           }
+
           hptr->FlagHome = 0;  // turn house's flag off
           hptr->FlagLocation = 0;
         }
@@ -1335,11 +1337,10 @@ int Scan_Place_Object(ObjectClass* obj, CELL cell) {
   ------------------------------------------------------------------------*/
   if (Map.In_Radar(cell)) {
     techno = Map[cell].Cell_Techno();
-    if (!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
-                    obj->What_Am_I() == RTTI_INFANTRY)) {
-      if (obj->Unlimbo(Cell_Coord(cell), DIR_N)) {
-        return true;
-      }
+    if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
+                     obj->What_Am_I() == RTTI_INFANTRY)) &&
+        obj->Unlimbo(Cell_Coord(cell), DIR_N)) {
+      return true;
     }
   }
 
@@ -1393,11 +1394,10 @@ int Scan_Place_Object(ObjectClass* obj, CELL cell) {
           - the techno in the cell & the object are both infantry
           ............................................................*/
           techno = Map[newcell].Cell_Techno();
-          if (!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
-                          obj->What_Am_I() == RTTI_INFANTRY)) {
-            if (obj->Unlimbo(Cell_Coord(newcell), DIR_N)) {
-              return true;
-            }
+          if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
+                           obj->What_Am_I() == RTTI_INFANTRY)) &&
+              obj->Unlimbo(Cell_Coord(newcell), DIR_N)) {
+            return true;
           }
         }
 
@@ -1425,7 +1425,9 @@ int Scan_Place_Object(ObjectClass* obj, CELL cell) {
  * HISTORY: * 07/19/1995 BRR : Created. *
  *=============================================================================================*/
 static void Sort_Cells(CELL* cells, int numcells, CELL* outcells) {
-  int i, j, k;
+  int i;
+  int j;
+  int k;
   int num_sorted = 0;
   int num_unsorted = numcells;
 
@@ -1526,11 +1528,14 @@ static int Furthest_Cell(CELL* ref_cells, int num_ref_cells, CELL* test_cells,
  * HISTORY: * 07/30/1995 BRR : Created. *
  *=============================================================================================*/
 static CELL Clip_Scatter(CELL cell, int maxdist) {
-  int x, y;
+  int x;
+  int y;
   int xdist;
   int ydist;
-  int xmin, xmax;
-  int ymin, ymax;
+  int xmin;
+  int xmax;
+  int ymin;
+  int ymax;
 
   /*------------------------------------------------------------------------
   Get X & Y coords of given starting cell
@@ -1586,9 +1591,12 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
  * HISTORY: * 07/30/1995 BRR : Created. *
  *=============================================================================================*/
 static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
-  int x, y;
-  int xmin, xmax;
-  int ymin, ymax;
+  int x;
+  int y;
+  int xmin;
+  int xmax;
+  int ymin;
+  int ymax;
 
   /*------------------------------------------------------------------------
   Get X & Y coords of given starting cell

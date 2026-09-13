@@ -42,6 +42,7 @@
 
 #include <cstddef>
 
+#include "absl/base/attributes.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "tech/fixed.h"
@@ -52,10 +53,13 @@
 */
 class WarheadTypeClass {
  public:
-  explicit WarheadTypeClass(const char* name);
+  explicit WarheadTypeClass(const char* name ABSL_ATTRIBUTE_LIFETIME_BOUND);
 
   void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
   void operator delete(void* pointer);
 
   [[nodiscard]] const char* Name() const { return IniName; }

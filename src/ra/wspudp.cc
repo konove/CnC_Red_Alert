@@ -139,7 +139,7 @@ void UDPInterfaceClass::Set_Broadcast_Address(void* address) {
   char* ip_addr = static_cast<char*>(address);
   assert(strlen(ip_addr) <= strlen("xxx.xxx.xxx.xxx"));
 
-  unsigned char* baddr = new unsigned char[4];
+  auto* baddr = new unsigned char[4];
 
   uint32_t addr = inet_addr(ip_addr);
   memcpy(baddr, &addr, 4);
@@ -169,10 +169,8 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
   /*
   ** If Winsock is not initialised then do it now.
   */
-  if (!WinsockInitialised) {
-    if (!Init()) {
-      return false;
-    }
+  if ((!WinsockInitialised) && (!Init())) {
+    return false;
   }
 
   /*
@@ -218,7 +216,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
   *any packets that
   ** we send to ourselves.
   */
-  uint32_t** addresses = (uint32_t**)host_info->h_addr_list;
+  auto** addresses = (uint32_t**)host_info->h_addr_list;
 
   for (;;) {
     if (!*addresses) {
@@ -236,7 +234,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
              static_cast<int>((address & 0xff000000) >> 24));
     OutputDebugString(temp);
 
-    unsigned char* a = new unsigned char[4];
+    auto* a = new unsigned char[4];
     port::WriteUnaligned(a, address);
     if (!LocalAddresses.Add(a)) {
       delete[] a;
@@ -277,7 +275,7 @@ void UDPInterfaceClass::Broadcast(void* buffer, int buffer_len) {
     /*
     ** Create a temporary holding area for the packet.
     */
-    WinsockBufferType* packet = new WinsockBufferType;
+    auto* packet = new WinsockBufferType;
 
     /*
     ** Copy the packet into the holding buffer.

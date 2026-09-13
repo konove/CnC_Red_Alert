@@ -33,6 +33,9 @@
 template <typename T>
 class VectorClass {
  public:
+  // clang suggests lifetimebound here, but its lifetimebound-violation check
+  // cannot verify it.
+  // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
   explicit VectorClass(base::ssize size = 0, T* array = nullptr);
   VectorClass(const VectorClass& /*vector*/);  // Copy constructor.
   virtual ~VectorClass();

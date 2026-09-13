@@ -53,7 +53,9 @@ void CheckBlocks() {
   ByteSink encoded;
   CodecPipe compressor(CodecPipe::COMPRESS, 128);
   compressor.SetSink(encoded);
-  for (const auto& byte : source) compressor.Put(&byte, 1);
+  for (const auto& byte : source) {
+    compressor.Put(&byte, 1);
+  }
   compressor.Flush();
   ASSERT_FALSE(encoded.bytes.empty());
   BufferStraw compressed(encoded.bytes.data(), static_cast<int>(encoded.bytes.size()));
@@ -70,7 +72,9 @@ void CheckBlocks() {
   ByteSink decoded;
   CodecPipe decompressing_pipe(CodecPipe::DECOMPRESS, 128);
   decompressing_pipe.SetSink(decoded);
-  for (const auto& byte : straw_encoded) decompressing_pipe.Put(&byte, 1);
+  for (const auto& byte : straw_encoded) {
+    decompressing_pipe.Put(&byte, 1);
+  }
   decompressing_pipe.Flush();
   EXPECT_EQ(decoded.bytes, expected);
 }
@@ -88,7 +92,9 @@ TEST(CodecStateTest, LcwDecodesLiteralAndRunBlocksWithFragmentedHeaders) {
   ByteSink decoded;
   LCWPipe pipe(LCWPipe::DECOMPRESS, 128);
   pipe.SetSink(decoded);
-  for (const auto& byte : encoded) pipe.Put(&byte, 1);
+  for (const auto& byte : encoded) {
+    pipe.Put(&byte, 1);
+  }
   pipe.Flush();
   EXPECT_EQ(decoded.bytes, expected);
 }

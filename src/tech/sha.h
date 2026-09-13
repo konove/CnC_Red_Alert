@@ -106,7 +106,7 @@ class SHAEngine {
   static constexpr int PROC_BLOCK_SIZE =
       80 * static_cast<int>(sizeof(uint32_t));
 
-  uint32_t Get_Constant(int index) const {
+  static uint32_t Get_Constant(int index) {
     if (index < 20) {
       return K1;
     }
@@ -120,26 +120,26 @@ class SHAEngine {
   }
 
   // Used for 0..19
-  uint32_t Function1(uint32_t X, uint32_t Y, uint32_t Z) const {
+  static uint32_t Function1(uint32_t X, uint32_t Y, uint32_t Z) {
     return Z ^ (X & (Y ^ Z));
   }
 
   // Used for 20..39
-  uint32_t Function2(uint32_t X, uint32_t Y, uint32_t Z) const {
+  static uint32_t Function2(uint32_t X, uint32_t Y, uint32_t Z) {
     return X ^ Y ^ Z;
   }
 
   // Used for 40..59
-  uint32_t Function3(uint32_t X, uint32_t Y, uint32_t Z) const {
+  static uint32_t Function3(uint32_t X, uint32_t Y, uint32_t Z) {
     return (X & Y) | (Z & (X | Y));
   }
 
   // Used for 60..79
-  uint32_t Function4(uint32_t X, uint32_t Y, uint32_t Z) const {
+  static uint32_t Function4(uint32_t X, uint32_t Y, uint32_t Z) {
     return X ^ Y ^ Z;
   }
 
-  uint32_t Do_Function(int index, uint32_t X, uint32_t Y, uint32_t Z) const {
+  static uint32_t Do_Function(int index, uint32_t X, uint32_t Y, uint32_t Z) {
     if (index < 20) {
       return Function1(X, Y, Z);
     }
@@ -153,7 +153,7 @@ class SHAEngine {
   }
 
   // Process a full source data block.
-  void Process_Block(const void* source, SHADigest& acc) const;
+  static void Process_Block(const void* source, SHADigest& acc);
 
   // Processes a partially filled source accumulator buffer.
   void Process_Partial(const void*& data, long& length);

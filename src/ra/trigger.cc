@@ -169,23 +169,21 @@ TriggerClass::TriggerClass() : RTTI(RTTI_TRIGGER), ID(Triggers.ID(this)) {}
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 TriggerClass::~TriggerClass() {
-  if (GameActive && Class.Is_Valid() &&
-      (Class->Attaches_To() & ATTACH_GENERAL) != 0) {
-    if (LogicTriggerID >= LogicTriggers.ID(this)) {
-      LogicTriggerID--;
-      if (LogicTriggerID < 0 && LogicTriggers.Count() == 0) {
-        LogicTriggerID = 0;
-      }
+  if ((GameActive && Class.Is_Valid() &&
+       (Class->Attaches_To() & ATTACH_GENERAL) != 0) &&
+      (LogicTriggerID >= LogicTriggers.ID(this))) {
+    LogicTriggerID--;
+    if (LogicTriggerID < 0 && LogicTriggers.Count() == 0) {
+      LogicTriggerID = 0;
     }
   }
 
-  if (GameActive && Class.Is_Valid() &&
-      (Class->Attaches_To() & ATTACH_MAP) != 0) {
-    if (MapTriggerID >= MapTriggers.ID(this)) {
-      MapTriggerID--;
-      if (MapTriggerID < 0 && MapTriggers.Count() == 0) {
-        MapTriggerID = 0;
-      }
+  if ((GameActive && Class.Is_Valid() &&
+       (Class->Attaches_To() & ATTACH_MAP) != 0) &&
+      (MapTriggerID >= MapTriggers.ID(this))) {
+    MapTriggerID--;
+    if (MapTriggerID < 0 && MapTriggers.Count() == 0) {
+      MapTriggerID = 0;
     }
   }
 
@@ -474,7 +472,7 @@ TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype) {
   /*
   **	No trigger was found, so make one.
   */
-  TriggerClass* trig = new TriggerClass(trigtype);
+  auto* trig = new TriggerClass(trigtype);
   return trig;
 }
 
