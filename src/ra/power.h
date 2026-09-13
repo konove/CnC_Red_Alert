@@ -66,7 +66,7 @@ class PowerClass : public RadarClass {
   void Refresh_Cells(CELL cell, const short* list) override;
   void Flash_Power();
 
-  unsigned IsToRedraw : 1;
+  unsigned IsPowerToRedraw : 1;
 
  protected:
   /*

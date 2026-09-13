@@ -2,7 +2,7 @@
 
 Updated: 2026-09-12, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 173 currently excluded check names** and completed entries, in recommended work
+This tracks **all 172 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -97,7 +97,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-undef`                                   | Enabled | Commit `Test language and debug macros with defined()`: 105 reports; TD's `FRENCH`/`GERMAN`/`JAPANESE` builds and two WOL `SHOW_MONO` blocks tested undefined macros with `#if`, now `defined()` with the same result.                                                                                                                                                                                                                                                                                  |
 | `clang-diagnostic-undefined-func-template`                 | Enabled | Commit `Declare the explicitly instantiated templates`: 121 reports; `extern template` declarations now sit beside `CCPtr`, TD's vectors, `ObjectPtr` and the out-of-line `Serialize` members whose definitions live in one `.cc` file.                                                                                                                                                                                                                                                                 |
 | `clang-diagnostic-undefined-var-template`                  | Enabled | Commit `Declare the CCPtr heap specializations`: the 27 `CCPtr<T>::Heap` explicit specializations defined in `globals.cc` are now declared in `ccptr.h`, which also removes an ill-formed use-before-declaration.                                                                                                                                                                                                                                                                                       |
-| `clang-diagnostic-shadow-field`                            | Pending | Find locals or parameters accidentally hiding object state.                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `clang-diagnostic-shadow-field`                            | Enabled | Commit `Name each map layer's redraw flag after its layer`: the eight reports were one `IsToRedraw` bit-field redeclared at every step of both games' `GScreenClass` → `TabClass` chain; each layer's flag now has its own name, and every use was rebound by the compiler to the layer it already meant. See review below.                                                                                                                                                                             |
 | `clang-diagnostic-shadow`                                  | Pending | Find scope mistakes; expect more noise than field shadowing.                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `concurrency-mt-unsafe`                                    | Skipped | Commit `Document variadic and thread-safety check policy`: 323 reports, 222 `strtok` in INI and text parsing plus `exit`, `rand`, `inet_ntoa`, `gethostbyname`, `getenv` and `glob`; every call runs on the main game thread, and the SDL audio callback and VQA timer paths call none of them. See review below.                                                                                                                                                                                       |
 | `clang-analyzer-optin.core.FixedAddressDereference`        | Enabled | Commit `Keep mono pages in memory and bound the box drawing`: the port addressed the DOS mono card at 0xB0000; the pages now live in memory, which exposed and fixed an off-by-one box clamp, an unclamped view size and `Fill_Attrib` testing `h` for `y` without the enable check.                                                                                                                                                                                                                    |
@@ -928,6 +928,21 @@ the fallback GCC's `-Wswitch-default` already requires in `CMakeLists.txt`, and 
 unhandled value's path explicit rather than implied. No case body changed. One report comes from the
 switch inside GoogleTest's `EXPECT_DEATH` expansion in `port/unaligned_test.cc` and is suppressed at
 that line.
+
+### Map layer redraw flag review (2026-09-12)
+
+`clang-diagnostic-shadow-field` is now enforced. All eight reports were the same construct: both
+games' map display chain, `GScreenClass` → `DisplayClass` → `RadarClass` → `PowerClass` →
+`SidebarClass` → `TabClass`, declares a one-bit `IsToRedraw` at every level. Each layer's methods
+set and test the nearest one, so the six bits are independent flags that only look like one.
+
+Renaming a single layer's member would have been silently wrong: its methods would still compile,
+now reading the base layer's bit. All six were renamed at once (`IsScreenToRedraw`,
+`IsDisplayToRedraw`, `IsRadarToRedraw`, `IsPowerToRedraw`, `IsSidebarToRedraw`, `IsTabToRedraw`), so
+no fallback remained and the compiler reported every use. Each use was then given the name of the
+nearest chain class at or above its member function's class, or of the object's static type, exactly
+the member the old lookup found. The unrelated `IsToRedraw` flags in `DoorClass`, `CreditClass` and
+the sidebar's `StripClass` are unchanged.
 
 ### Completed validation
 

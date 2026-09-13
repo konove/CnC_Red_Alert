@@ -991,7 +991,7 @@ void AircraftClass::AI() {
   */
   if (Map.In_View(Coord_Cell(Coord))) {
     Map.Flag_To_Redraw(false);
-    Map.DisplayClass::IsToRedraw = true;
+    Map.DisplayClass::IsDisplayToRedraw = true;
   }
 
   /*

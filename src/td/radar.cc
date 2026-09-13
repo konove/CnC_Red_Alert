@@ -147,7 +147,7 @@ static GraphicBufferClass _TileStage(24, 24);
 RadarClass::RadarClass() {
   IsZoomed = true;
   IsRadarActive = false;
-  IsToRedraw = false;
+  IsRadarToRedraw = false;
   RadarCursorRedraw = false;
   PixelPtr = 0;
   SpecialRadarFrame = 0;
@@ -217,7 +217,7 @@ void RadarClass::One_Time() {
 void RadarClass::Init_Clear() {
   DisplayClass::Init_Clear();
   IsRadarActive = false;
-  IsToRedraw = true;
+  IsRadarToRedraw = true;
   RadarCursorRedraw = true;
   IsRadarActivating = false;
   IsRadarDeactivating = false;
@@ -331,14 +331,14 @@ bool RadarClass::Radar_Activate(int control) {
       IsRadarDeactivating = false;
       DoesRadarExist = false;
       Flag_To_Redraw(false);
-      IsToRedraw = true;
+      IsRadarToRedraw = true;
       break;
     default:
       break;
   }
 
   if (IsRadarActive != old) {
-    IsToRedraw = true;
+    IsRadarToRedraw = true;
     Flag_To_Redraw(false);
   }
   FullRedraw = IsRadarActive;
@@ -368,7 +368,7 @@ void RadarClass::Draw_It(bool forced) {
   /*
   **	Don't perform any rendering if none is requested.
   */
-  if (!forced && !IsToRedraw && !FullRedraw) {
+  if (!forced && !IsRadarToRedraw && !FullRedraw) {
     return;
   }
 
@@ -393,13 +393,13 @@ void RadarClass::Draw_It(bool forced) {
   */
   if (IsPlayerNames) {
     Draw_Names();
-    IsToRedraw = false;
+    IsRadarToRedraw = false;
     return;
   }
 
   if (IsRadarActivating || IsRadarDeactivating) {
     Radar_Anim();
-    IsToRedraw = false;
+    IsRadarToRedraw = false;
     return;
   }
 
@@ -412,8 +412,8 @@ void RadarClass::Draw_It(bool forced) {
       **	If only a few of the radar pixels need to be redrawn, then find
       *and redraw *	only these.
       */
-      if (!forced && IsToRedraw && !FullRedraw) {
-        IsToRedraw = false;
+      if (!forced && IsRadarToRedraw && !FullRedraw) {
+        IsRadarToRedraw = false;
 
         if (PixelPtr) {
           /*
@@ -442,7 +442,7 @@ void RadarClass::Draw_It(bool forced) {
                 if (Cell_On_Radar(cell)) {
                   if ((*this)[cell].IsPlot) {
                     PixelStack[PixelPtr++] = cell;
-                    IsToRedraw = true;
+                    IsRadarToRedraw = true;
                     if (PixelPtr == PIXELSTACK) {
                       break;
                     }
@@ -483,7 +483,7 @@ void RadarClass::Draw_It(bool forced) {
         }
         Radar_Cursor(true);
         FullRedraw = false;
-        IsToRedraw = false;
+        IsRadarToRedraw = false;
         LogicPage->Unlock();
         if (oldpage == &SeenBuff) {
           Hide_Mouse();
@@ -506,7 +506,7 @@ void RadarClass::Draw_It(bool forced) {
       int val = DoesRadarExist ? MAX_RADAR_FRAMES : 0;
       CC_Draw_Shape(RadarAnim, val, RadX, RadY + 1, WINDOW_MAIN, SHAPE_NORMAL);
       FullRedraw = false;
-      IsToRedraw = false;
+      IsRadarToRedraw = false;
       //			}
     }
 
@@ -768,7 +768,7 @@ void RadarClass::Zoom_Mode(CELL cell) {
   ** When zoom mode changes then we need to redraw the radar
   ** area.
   */
-  IsToRedraw = true;
+  IsRadarToRedraw = true;
 
   /*
   ** Notify the map that we need to redraw a portion
@@ -924,7 +924,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
  *=============================================================================================*/
 void RadarClass::Radar_Pixel(CELL cell) {
   if (IsRadarActive && Map.IsSidebarActive && Cell_On_Radar(cell)) {
-    IsToRedraw = true;
+    IsRadarToRedraw = true;
     (*this)[cell].IsPlot = true;
     if (PixelPtr < PIXELSTACK) {
       PixelStack[PixelPtr++] = cell;
@@ -1342,7 +1342,7 @@ void RadarClass::AI(KeyNumType& input, int x, int y) {
   if (IsRadarActive && Map.IsSidebarActive && SpecialRadarFrame) {
     SpecialRadarFrame--;
     RadarCursorRedraw = true;
-    IsToRedraw = true;
+    IsRadarToRedraw = true;
     Flag_To_Redraw(false);
   }
 
@@ -1353,7 +1353,7 @@ void RadarClass::AI(KeyNumType& input, int x, int y) {
     if (!DoesRadarExist) {
       RadarAnimFrame++;
       if (RadarAnimFrame < RADAR_ACTIVATED_FRAME) {
-        IsToRedraw = true;
+        IsRadarToRedraw = true;
         Flag_To_Redraw(false);
       } else {
         DoesRadarExist = true;
@@ -1362,7 +1362,7 @@ void RadarClass::AI(KeyNumType& input, int x, int y) {
     } else {
       RadarAnimFrame--;
       if (RadarAnimFrame > RADAR_ACTIVATED_FRAME) {
-        IsToRedraw = true;
+        IsRadarToRedraw = true;
         Flag_To_Redraw(false);
       } else {
         Radar_Activate(3);
@@ -1374,7 +1374,7 @@ void RadarClass::AI(KeyNumType& input, int x, int y) {
     if (RadarAnimFrame == MAX_RADAR_FRAMES) {
       IsRadarDeactivating = false;
     } else {
-      IsToRedraw = true;
+      IsRadarToRedraw = true;
       Flag_To_Redraw(false);
     }
   }
@@ -1543,7 +1543,7 @@ int RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
             cell = XY_Cell(cellx, celly);
             Map.Set_Tactical_Position(Cell_Coord(cell));
             cell = Coord_Cell(Map.DesiredTacticalCoord);
-            Map.DisplayClass::IsToRedraw = true;
+            Map.DisplayClass::IsDisplayToRedraw = true;
             Map.Flag_To_Redraw(true);
             Map.SpecialRadarFrame = 4;
           }
@@ -1589,7 +1589,7 @@ int RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
  *=============================================================================================*/
 void RadarClass::Refresh_Cells(CELL cell, const short* list) {
   if (*list == REFRESH_SIDEBAR) {
-    IsToRedraw = true;
+    IsRadarToRedraw = true;
     Flag_To_Redraw(false);
   }
   DisplayClass::Refresh_Cells(cell, list);
@@ -1731,14 +1731,14 @@ void RadarClass::Set_Radar_Position(CELL cell) {
       }
     }
     RadarCursorRedraw = IsRadarActive;
-    IsToRedraw = IsRadarActive;
+    IsRadarToRedraw = IsRadarActive;
     Flag_To_Redraw(false);
     if (ZoomFactor > 4) {
       FullRedraw = forced;
     }
   } else {
     RadarCursorRedraw = IsRadarActive;
-    IsToRedraw = IsRadarActive;
+    IsRadarToRedraw = IsRadarActive;
     Flag_To_Redraw(false);
   }
 }
@@ -1847,7 +1847,7 @@ bool RadarClass::Cell_On_Radar(CELL cell) {
  *=============================================================================================*/
 void RadarClass::Player_Names(bool on) {
   IsPlayerNames = on;
-  IsToRedraw = true;
+  IsRadarToRedraw = true;
   Flag_To_Redraw(true);  // force drawing of the plate
 }
 

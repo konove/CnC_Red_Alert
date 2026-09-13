@@ -80,7 +80,7 @@ const void* TabClass::TabShape = nullptr;
  *                                                                                             *
  * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
-TabClass::TabClass() : FlasherTimer(0), IsToRedraw(false), MoneyFlashTimer(0) {}
+TabClass::TabClass() : FlasherTimer(0), IsTabToRedraw(false), MoneyFlashTimer(0) {}
 
 /***********************************************************************************************
  * TabClass::Draw_It -- Displays the tab buttons as necessary. *
@@ -112,7 +112,7 @@ void TabClass::Draw_It(bool complete) {
   **	Redraw the top bar imagery if flagged to do so or if the entire display
   *needs *	to be redrawn.
   */
-  if ((complete || IsToRedraw) && LogicPage->Lock()) {
+  if ((complete || IsTabToRedraw) && LogicPage->Lock()) {
     int width = SeenBuff.Get_Width();
     int rightx = width - 1;
     int tab_height = TAB_HEIGHT * 2;
@@ -143,8 +143,8 @@ void TabClass::Draw_It(bool complete) {
 
     LogicPage->Unlock();
   }
-  Credits.Graphic_Logic(complete || IsToRedraw);
-  IsToRedraw = false;
+  Credits.Graphic_Logic(complete || IsTabToRedraw);
+  IsTabToRedraw = false;
 }
 
 void TabClass::Draw_Credits_Tab() {
@@ -231,7 +231,7 @@ void TabClass::AI(KeyNumType& input, int x, int y) {
   }
 
   if (MoneyFlashTimer.Value() == 1) {
-    IsToRedraw = true;
+    IsTabToRedraw = true;
     Flag_To_Redraw(false);
   }
 
@@ -293,7 +293,7 @@ void TabClass::One_Time() {
 }
 
 void TabClass::Flash_Money() {
-  IsToRedraw = true;
+  IsTabToRedraw = true;
   Flag_To_Redraw(false);
   MoneyFlashTimer.Set(7);
 }

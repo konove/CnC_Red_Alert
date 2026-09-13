@@ -61,7 +61,7 @@ class TabClass : public SidebarClass {
 
   void One_Time() override;  // One-time inits
   void Redraw_Tab() {
-    IsToRedraw = true;
+    IsTabToRedraw = true;
     Flag_To_Redraw(false);
   }
 
@@ -73,7 +73,7 @@ class TabClass : public SidebarClass {
   /*
   **	If the tab graphic is to be redrawn, then this flag is true.
   */
-  unsigned IsToRedraw : 1;
+  unsigned IsTabToRedraw : 1;
 
  private:
   void Set_Active(int select);

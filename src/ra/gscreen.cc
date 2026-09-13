@@ -85,7 +85,7 @@ GraphicBufferClass* GScreenClass::ShadowPage = nullptr;
  *=============================================================================================*/
 GScreenClass::GScreenClass() {
   IsToUpdate = true;
-  IsToRedraw = true;
+  IsScreenToRedraw = true;
 }
 
 /***********************************************************************************************
@@ -172,7 +172,7 @@ void GScreenClass::Init_Clear() {
 
   HidPage.Clear();
 
-  IsToRedraw = true;
+  IsScreenToRedraw = true;
 }
 
 /***********************************************************************************************
@@ -237,7 +237,7 @@ void GScreenClass::Init_IO() {
 void GScreenClass::Flag_To_Redraw(bool complete) {
   IsToUpdate = true;
   if (complete) {
-    IsToRedraw = true;
+    IsScreenToRedraw = true;
   }
 }
 
@@ -375,12 +375,12 @@ void GScreenClass::Render() {
   //	IsToRedraw = true;
   // }
 
-  if (IsToUpdate || IsToRedraw) {
+  if (IsToUpdate || IsScreenToRedraw) {
     BStart(BENCH_GSCREEN_RENDER);
 
     GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
 
-    Draw_It(IsToRedraw);
+    Draw_It(IsScreenToRedraw);
 
     if (Buttons) {
       Buttons->Draw_All(false);
@@ -408,7 +408,7 @@ void GScreenClass::Render() {
 
     Blit_Display();
     IsToUpdate = false;
-    IsToRedraw = false;
+    IsScreenToRedraw = false;
 
     BEnd(BENCH_GSCREEN_RENDER);
     Set_Logic_Page(oldpage);

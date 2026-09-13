@@ -77,7 +77,7 @@ const void* TabClass::TabShape = nullptr;
  * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
 TabClass::TabClass() {
-  IsToRedraw = false;
+  IsTabToRedraw = false;
   //	Select = -1;
 }
 
@@ -113,7 +113,7 @@ void TabClass::Draw_It(bool complete) {
   int width = SeenBuff.Get_Width();
   int rightx = width - 1;
 
-  if (complete || IsToRedraw) {
+  if (complete || IsTabToRedraw) {
     if (LogicPage->Lock()) {
       LogicPage->Fill_Rect(0, 0, rightx, Tab_Height - 2, BLACK);
       CC_Draw_Shape(TabShape, 0, 0, 0, WINDOW_MAIN, SHAPE_NORMAL);
@@ -130,8 +130,8 @@ void TabClass::Draw_It(bool complete) {
     LogicPage->Unlock();
   }
 
-  Credits.Graphic_Logic(complete || IsToRedraw);
-  IsToRedraw = false;
+  Credits.Graphic_Logic(complete || IsTabToRedraw);
+  IsTabToRedraw = false;
 }
 
 void TabClass::Draw_Credits_Tab() {

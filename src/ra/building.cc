@@ -1227,7 +1227,7 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
     }
 
     if (IsOwnedByPlayer) {
-      Map.PowerClass::IsToRedraw = true;
+      Map.PowerClass::IsPowerToRedraw = true;
       Map.Flag_To_Redraw(false);
     }
 
@@ -2360,7 +2360,7 @@ bool BuildingClass::Limbo() {
     House->Adjust_Drain(-Class->Drain);
     House->Adjust_Capacity(-Class->Capacity, true);
     if (House == PlayerPtr) {
-      Map.PowerClass::IsToRedraw = true;
+      Map.PowerClass::IsPowerToRedraw = true;
       Map.Flag_To_Redraw(false);
     }
 
@@ -3037,7 +3037,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     }
 
     if (House == PlayerPtr) {
-      Map.PowerClass::IsToRedraw = true;
+      Map.PowerClass::IsPowerToRedraw = true;
       Map.Flag_To_Redraw(false);
     }
 

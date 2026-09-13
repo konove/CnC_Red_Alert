@@ -57,7 +57,7 @@ class TabClass : public SidebarClass {
   static void Draw_Credits_Tab();
   static void Hilite_Tab(int tab);
   void Redraw_Tab() {
-    IsToRedraw = true;
+    IsTabToRedraw = true;
     Flag_To_Redraw(false);
   }
 
@@ -72,7 +72,7 @@ class TabClass : public SidebarClass {
   /*
   **	If the tab graphic is to be redrawn, then this flag is true.
   */
-  unsigned IsToRedraw : 1;
+  unsigned IsTabToRedraw : 1;
   int Eva_Width = 0;
   int Tab_Height = 0;
 

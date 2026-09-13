@@ -85,7 +85,7 @@ PowerClass::PowerButtonClass PowerClass::PowerButton;
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
 PowerClass::PowerClass() {
-  IsToRedraw = false;
+  IsPowerToRedraw = false;
   RecordedDrain = -1;
   RecordedPower = -1;
   DesiredDrainHeight = 0;
@@ -181,13 +181,13 @@ void PowerClass::Draw_It(bool complete) {
   static int _modtable[] = {0, -1, 0, 1, 0, -1, -2, -1, 0, 1, 2, 1, 0};
   int power_color;
 
-  if (complete || IsToRedraw) {
+  if (complete || IsPowerToRedraw) {
     //		PowX = TacPixelX + TacWidth*ICON_PIXEL_W;	// X position of
     // upper left corner of power bar.
 
     if (LogicPage->Lock()) {
       if (Map.IsSidebarActive) {
-        IsToRedraw = false;
+        IsPowerToRedraw = false;
 
         /*
         ** 1st get the height of the filled section of the power bar
@@ -328,7 +328,7 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
     }
 
     if (DrainBounce && DrainHeight == DesiredDrainHeight) {
-      IsToRedraw = true;
+      IsPowerToRedraw = true;
       Flag_To_Redraw(false);
       DrainBounce--;
     } else {
@@ -341,7 +341,7 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
     }
 
     if (PowerBounce && PowerHeight == DesiredPowerHeight) {
-      IsToRedraw = true;
+      IsPowerToRedraw = true;
       Flag_To_Redraw(false);
       PowerBounce--;
     } else {
@@ -354,7 +354,7 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
     }
 
     if (olddrain != DrainHeight || oldpower != PowerHeight) {
-      IsToRedraw = true;
+      IsPowerToRedraw = true;
       Flag_To_Redraw(false);
     }
   }
@@ -382,7 +382,7 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
  *=============================================================================================*/
 void PowerClass::Refresh_Cells(CELL cell, const short* list) {
   if (*list == REFRESH_SIDEBAR) {
-    IsToRedraw = true;
+    IsPowerToRedraw = true;
     Flag_To_Redraw(false);
   }
   RadarClass::Refresh_Cells(cell, list);

@@ -133,7 +133,7 @@ class RadarClass : public DisplayClass {
   // If the radar map must be completely redrawn, then this flag will be true.
   // Typical causes of this would be when the radar first appears, or when the
   // screen has been damaged.
-  unsigned IsToRedraw : 1;
+  unsigned IsRadarToRedraw : 1;
   unsigned RadarCursorRedraw : 1;
 
   /*

@@ -313,7 +313,7 @@ class SidebarClass : public PowerClass {
   **	This flag tells the rendering system that the sidebar needs to be
   *redrawn.
   */
-  unsigned IsToRedraw : 1;
+  unsigned IsSidebarToRedraw : 1;
 
   class SBGadgetClass : public GadgetClass {
    public:

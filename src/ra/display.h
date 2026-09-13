@@ -237,7 +237,7 @@ class DisplayClass : public MapClass {
 
   // If something in the tactical map is to be redrawn, this flag is set to
   // true.
-  unsigned IsToRedraw : 1;
+  unsigned IsDisplayToRedraw : 1;
 
   /*
   **	If the player is currently wielding a wrench (to select buildings for

@@ -192,7 +192,7 @@ const void* SidebarClass::StripClass::SpecialShapes
  *=============================================================================================*/
 SidebarClass::SidebarClass()
     : IsSidebarActive(false),
-      IsToRedraw(true),
+      IsSidebarToRedraw(true),
       IsRepairActive(false),
       IsUpgradeActive(false),
       IsDemolishActive(false) {
@@ -291,7 +291,7 @@ void SidebarClass::One_Time() {
 void SidebarClass::Init_Clear() {
   PowerClass::Init_Clear();
 
-  IsToRedraw = true;
+  IsSidebarToRedraw = true;
   IsRepairActive = false;
   IsUpgradeActive = false;
   IsDemolishActive = false;
@@ -500,7 +500,7 @@ bool SidebarClass::Factory_Link(int factory, RTTIType type, int id) {
  *=============================================================================================*/
 void SidebarClass::Refresh_Cells(CELL cell, const short* list) {
   if (*list == kRefreshSidebar) {
-    IsToRedraw = true;
+    IsSidebarToRedraw = true;
     Column[0].IsToRedraw = true;
     Column[1].IsToRedraw = true;
     Flag_To_Redraw(false);
@@ -543,7 +543,7 @@ bool SidebarClass::Activate_Repair(int control) {
   }
   if (old != IsRepairActive) {
     Flag_To_Redraw(false);
-    IsToRedraw = true;
+    IsSidebarToRedraw = true;
 
     if (!IsRepairActive) {
       Help_Text(TXT_NONE);
@@ -588,7 +588,7 @@ bool SidebarClass::Activate_Upgrade(int control) {
   }
   if (old != IsUpgradeActive) {
     Flag_To_Redraw(false);
-    IsToRedraw = true;
+    IsSidebarToRedraw = true;
     if (!IsUpgradeActive) {
       Set_Default_Mouse(MOUSE_NORMAL, false);
     }
@@ -632,7 +632,7 @@ bool SidebarClass::Activate_Demolish(int control) {
   }
   if (old != IsDemolishActive) {
     Flag_To_Redraw(false);
-    IsToRedraw = true;
+    IsSidebarToRedraw = true;
     if (!IsDemolishActive) {
       Set_Default_Mouse(MOUSE_NORMAL, false);
     }
@@ -666,7 +666,7 @@ bool SidebarClass::Add(RTTIType type, int id) {
 
     if (Column[column].Add(type, id)) {
       Activate(1);
-      IsToRedraw = true;
+      IsSidebarToRedraw = true;
       Flag_To_Redraw(false);
       return true;
     }
@@ -703,7 +703,7 @@ bool SidebarClass::Scroll(bool up, int column) {
       Sound_Effect(VOC_SCOLD);
     }
     if (scr) {
-      IsToRedraw = true;
+      IsSidebarToRedraw = true;
       Flag_To_Redraw(false);
       return true;
     }
@@ -739,8 +739,8 @@ void SidebarClass::Draw_It(bool complete) {
 
   BStart(BENCH_SIDEBAR);
 
-  if (IsSidebarActive && (IsToRedraw || complete) && !MapEditorActive) {
-    IsToRedraw = false;
+  if (IsSidebarActive && (IsSidebarToRedraw || complete) && !MapEditorActive) {
+    IsSidebarToRedraw = false;
 
     if (LogicPage->Lock()) {
       /*
@@ -773,13 +773,13 @@ void SidebarClass::Draw_It(bool complete) {
     Column[0].Draw_It(complete);
     Column[1].Draw_It(complete);
 
-    if (complete || IsToRedraw) {
+    if (complete || IsSidebarToRedraw) {
       Repair.Draw_Me(true);
       Upgrade.Draw_Me(true);
       Zoom.Draw_Me(true);
     }
   }
-  IsToRedraw = false;
+  IsSidebarToRedraw = false;
 
   BEnd(BENCH_SIDEBAR);
 }
@@ -889,7 +889,7 @@ void SidebarClass::Recalc() {
   redraw |= Column[1].Recalc();
 
   if (redraw) {
-    IsToRedraw = true;
+    IsSidebarToRedraw = true;
     Flag_To_Redraw(false);
   }
 }
@@ -946,7 +946,7 @@ bool SidebarClass::Activate(int control) {
     */
     if (IsSidebarActive /*&& X*/) {
       Set_View_Dimensions(0, 16, (320 - kSideWidth) / ICON_PIXEL_W * 2);
-      IsToRedraw = true;
+      IsSidebarToRedraw = true;
       Help_Text(TXT_NONE);
       Repair.Zap();
       Add_A_Button(Repair);

@@ -2499,7 +2499,7 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
   **	Tell the sidebar that it needs to be redrawn because of this.
   */
   if (PlayerPtr == this) {
-    Map.SidebarClass::IsToRedraw = true;
+    Map.SidebarClass::IsSidebarToRedraw = true;
     Map.Flag_To_Redraw(false);
   }
 

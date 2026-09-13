@@ -81,7 +81,7 @@ PowerClass::PowerButtonClass PowerClass::PowerButton;
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
 PowerClass::PowerClass()
-    : IsToRedraw(false),
+    : IsPowerToRedraw(false),
       FlashTimer(0),
       RecordedDrain(-1),
       RecordedPower(-1),
@@ -167,12 +167,12 @@ void PowerClass::One_Time() {
 void PowerClass::Draw_It(bool complete) {
   static int _modtable[] = {0, -1, 0, 1, 0, -1, -2, -1, 0, 1, 2, 1, 0};
 
-  if (complete || IsToRedraw) {
+  if (complete || IsPowerToRedraw) {
     BStart(BENCH_POWER);
 
     if (LogicPage->Lock()) {
       if (Map.IsSidebarActive) {
-        IsToRedraw = false;
+        IsPowerToRedraw = false;
         ShapeFlags_Type flags = SHAPE_NORMAL;
         const void* remap = nullptr;
 
@@ -316,7 +316,7 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
     }
 
     if (DrainBounce && DrainHeight == DesiredDrainHeight) {
-      IsToRedraw = true;
+      IsPowerToRedraw = true;
       Flag_To_Redraw(false);
       DrainBounce--;
     } else {
@@ -329,7 +329,7 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
     }
 
     if (PowerBounce && PowerHeight == DesiredPowerHeight) {
-      IsToRedraw = true;
+      IsPowerToRedraw = true;
       Flag_To_Redraw(false);
       PowerBounce--;
     } else {
@@ -342,7 +342,7 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
     }
 
     if (olddrain != DrainHeight || oldpower != PowerHeight) {
-      IsToRedraw = true;
+      IsPowerToRedraw = true;
       Flag_To_Redraw(false);
     }
 
@@ -351,7 +351,7 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
     */
     //		if (FlashTimer == 1) {
     if (FlashTimer.HasTimeLeft()) {
-      IsToRedraw = true;
+      IsPowerToRedraw = true;
       Flag_To_Redraw(false);
     }
   }
@@ -379,7 +379,7 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
  *=============================================================================================*/
 void PowerClass::Refresh_Cells(CELL cell, const short* list) {
   if (*list == kRefreshSidebar) {
-    IsToRedraw = true;
+    IsPowerToRedraw = true;
     Flag_To_Redraw(false);
   }
   RadarClass::Refresh_Cells(cell, list);
@@ -478,6 +478,6 @@ int PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key) {
  *=============================================================================================*/
 void PowerClass::Flash_Power() {
   FlashTimer.Set(kTicksPerSecond);
-  IsToRedraw = true;
+  IsPowerToRedraw = true;
   Flag_To_Redraw(false);
 }

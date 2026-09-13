@@ -235,7 +235,7 @@ template void SidebarClass::Serialize(ArchiveWriter&);
 template void SidebarClass::Serialize(ArchiveReader&);
 
 void GScreenClass::ResetTransientUiState() {
-  IsToRedraw = true;
+  IsScreenToRedraw = true;
   IsToUpdate = true;
 }
 
@@ -244,7 +244,7 @@ void DisplayClass::ResetTransientUiState() {
   PendingObject = nullptr;
   CursorSize = nullptr;
   ProximityCheck = false;
-  IsToRedraw = true;
+  IsDisplayToRedraw = true;
   IsRepairMode = false;
   IsSellMode = false;
   IsTargettingMode = SPC_NONE;
@@ -257,7 +257,7 @@ void DisplayClass::ResetTransientUiState() {
 
 void RadarClass::ResetTransientUiState() {
   DisplayClass::ResetTransientUiState();
-  IsToRedraw = true;
+  IsRadarToRedraw = true;
   RadarCursorRedraw = true;
   IsRadarActivating = false;
   IsRadarDeactivating = false;
@@ -271,7 +271,7 @@ void RadarClass::ResetTransientUiState() {
 
 void PowerClass::ResetTransientUiState() {
   RadarClass::ResetTransientUiState();
-  IsToRedraw = true;
+  IsPowerToRedraw = true;
   FlashTimer.Set(0);
   RecordedDrain = RecordedPower = -1;
   DesiredDrainHeight = DesiredPowerHeight = 0;
@@ -281,7 +281,7 @@ void PowerClass::ResetTransientUiState() {
 
 void SidebarClass::ResetTransientUiState() {
   PowerClass::ResetTransientUiState();
-  IsToRedraw = true;
+  IsSidebarToRedraw = true;
   IsRepairActive = IsUpgradeActive = IsDemolishActive = false;
   for (auto& column : Column) {
     column.IsToRedraw = true;
@@ -295,7 +295,7 @@ void SidebarClass::ResetTransientUiState() {
 void TabClass::ResetTransientUiState() {
   SidebarClass::ResetTransientUiState();
   Credits = CreditClass();
-  IsToRedraw = true;
+  IsTabToRedraw = true;
   FlasherTimer.Set(0);
   MoneyFlashTimer.Set(0);
 }

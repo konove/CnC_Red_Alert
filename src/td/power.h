@@ -74,7 +74,7 @@ class PowerClass : public RadarClass {
   **	File I/O.
   */
 
-  unsigned IsToRedraw : 1;
+  unsigned IsPowerToRedraw : 1;
 
  protected:
   /*

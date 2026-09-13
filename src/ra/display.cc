@@ -227,7 +227,7 @@ DisplayClass::DisplayClass()
       TacPixelX(0),
       TacPixelY(0),
       DesiredTacticalCoord(0),
-      IsToRedraw(true),
+      IsDisplayToRedraw(true),
       IsRepairMode(false),
       IsSellMode(false),
       IsTargettingMode(SPC_NONE),
@@ -623,7 +623,7 @@ void DisplayClass::Update_View_Dimensions(int x, int y, int width, int height,
     Change_Window(0);
     Change_Window(Window);
   }
-  IsToRedraw = true;
+  IsDisplayToRedraw = true;
   Flag_To_Redraw(false);
 
   TacButton.X = TacPixelX;
@@ -1308,7 +1308,7 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
   */
   if (really) {
     Set_Tactical_Position(coord);
-    IsToRedraw = true;
+    IsDisplayToRedraw = true;
     Flag_To_Redraw(false);
 
     /*
@@ -1726,9 +1726,9 @@ void DisplayClass::Draw_It(bool forced) {
 
   MapClass::Draw_It(forced);
 
-  if (IsToRedraw || forced) {
+  if (IsDisplayToRedraw || forced) {
     BStart(BENCH_TACTICAL);
-    IsToRedraw = false;
+    IsDisplayToRedraw = false;
 
     /*
     **	In rubber band mode, mark all cells under the "rubber band" to be
@@ -3481,7 +3481,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
       Set_Default_Mouse(MOUSE_NORMAL, wsmall);
       IsRubberBand = false;
       IsTentative = false;
-      Map.DisplayClass::IsToRedraw = true;
+      Map.DisplayClass::IsDisplayToRedraw = true;
       Map.Flag_To_Redraw(false);
 
     } else {
@@ -3773,7 +3773,7 @@ void DisplayClass::Mouse_Left_Held(int x, int y) {
       Refresh_Band();
       NewX = x;
       NewY = y;
-      IsToRedraw = true;
+      IsDisplayToRedraw = true;
       Flag_To_Redraw(false);
     }
   } else {
@@ -3793,7 +3793,7 @@ void DisplayClass::Mouse_Left_Held(int x, int y) {
         y = Bound(y, 0, Lepton_To_Pixel(TacLeptonHeight) - 1);
         NewX = x;
         NewY = y;
-        IsToRedraw = true;
+        IsDisplayToRedraw = true;
         Flag_To_Redraw(false);
 
         /*
@@ -3843,7 +3843,7 @@ void DisplayClass::Set_Tactical_Position(COORDINATE coord) {
   }
   DesiredTacticalCoord = coord;
 
-  IsToRedraw = true;
+  IsDisplayToRedraw = true;
   Flag_To_Redraw(false);
 }
 
@@ -4567,6 +4567,6 @@ void DisplayClass::Constrained_Look(COORDINATE center, LEPTON distance) {
  *=============================================================================================*/
 void DisplayClass::Flag_Cell(CELL cell) {
   Flag_To_Redraw(false);
-  IsToRedraw = true;
+  IsDisplayToRedraw = true;
   CellRedraw[cell] = true;
 }
