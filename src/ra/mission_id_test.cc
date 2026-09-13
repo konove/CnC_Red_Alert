@@ -36,7 +36,7 @@ TEST(IsMissionCounterstrikeTest, NonMatchingNames) {
 }
 
 TEST(IsMissionCounterstrikeTest, AcceptsStdString) {
-  EXPECT_TRUE(IsMissionCounterstrike(std::string("SCM25EA.INI")));
+  EXPECT_TRUE(IsMissionCounterstrike("SCM25EA.INI"));
 }
 
 TEST(IsMissionAftermathTest, AlphabeticalName) {

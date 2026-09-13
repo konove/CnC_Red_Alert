@@ -20,8 +20,8 @@ struct SocketInfo {
 static std::forward_list<SocketInfo> Sockets;
 
 static std::forward_list<SocketInfo>::iterator Find_Socket(int socket) {
-  return std::find_if(Sockets.begin(), Sockets.end(),
-                      [socket](SocketInfo& s) { return s.socket == socket; });
+  return std::ranges::find_if(
+      Sockets, [socket](SocketInfo& s) { return s.socket == socket; });
 }
 
 bool Socket_Register_Select(int socket, SocketCallback callback, void* data) {

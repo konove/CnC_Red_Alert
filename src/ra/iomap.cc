@@ -86,7 +86,7 @@ void CellClass::Serialize(Archive& ar) {
     IsRadarCursor = (flags & 32) != 0;
     IsFlagged = (flags & 64) != 0;
     IsToShroud = (flags & 128) != 0;
-    std::fill(std::begin(Overlappers), std::end(Overlappers), nullptr);
+    std::ranges::fill(Overlappers, nullptr);
   }
   int32_t count = static_cast<int32_t>(kOverlapperCount);
   ar(count);
@@ -252,7 +252,7 @@ void DisplayClass::ResetTransientUiState() {
   IsTentative = false;
   IsShadowPresent = false;
   BandX = BandY = NewX = NewY = 0;
-  std::fill(CellRedraw.begin(), CellRedraw.end(), true);
+  std::ranges::fill(CellRedraw, true);
 }
 
 void RadarClass::ResetTransientUiState() {
@@ -266,7 +266,7 @@ void RadarClass::ResetTransientUiState() {
   SpecialRadarFrame = 0;
   RadarAnimFrame = IsRadarActive ? RADAR_ACTIVATED_FRAME : 0;
   PixelPtr = 0;
-  std::fill(std::begin(PixelStack), std::end(PixelStack), 0);
+  std::ranges::fill(PixelStack, 0);
 }
 
 void PowerClass::ResetTransientUiState() {

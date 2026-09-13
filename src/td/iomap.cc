@@ -47,7 +47,7 @@ void CellClass::Serialize(Archive& ar) {
       ar.Fail("invalid cell overlapper count");
       return;
     }
-    std::fill(std::begin(Overlappers), std::end(Overlappers), nullptr);
+    std::ranges::fill(Overlappers, nullptr);
   }
   for (int32_t i = 0; i < overlapper_count; ++i) {
     ar(ObjectPtr(Overlappers[i]));
@@ -102,8 +102,8 @@ void MapClass::Serialize(Archive& ar) {
       return;
     }
     IsForwardScan = forward;
-    std::fill(std::begin(TiberiumGrowth), std::end(TiberiumGrowth), 0);
-    std::fill(std::begin(TiberiumSpread), std::end(TiberiumSpread), 0);
+    std::ranges::fill(TiberiumGrowth, 0);
+    std::ranges::fill(TiberiumSpread, 0);
   }
   for (int i = 0; i < TiberiumGrowthCount; ++i) {
     ar(TiberiumGrowth[i]);
@@ -216,7 +216,7 @@ void DisplayClass::ResetTransientUiState() {
   IsTentative = false;
   IsShadowPresent = false;
   BandX = BandY = NewX = NewY = 0;
-  std::fill(CellRedraw.begin(), CellRedraw.end(), true);
+  std::ranges::fill(CellRedraw, true);
 }
 
 void RadarClass::ResetTransientUiState() {
@@ -228,7 +228,7 @@ void RadarClass::ResetTransientUiState() {
   SpecialRadarFrame = 0;
   RadarAnimFrame = IsRadarActive ? RADAR_ACTIVATED_FRAME : 0;
   PixelPtr = 0;
-  std::fill(std::begin(PixelStack), std::end(PixelStack), 0);
+  std::ranges::fill(PixelStack, 0);
 }
 
 void PowerClass::ResetTransientUiState() {
@@ -291,7 +291,7 @@ void MouseClass::Serialize(Archive& ar) {
   ar.Section(FourCC("MAPS"));
   ar(Theater);
   if constexpr (Archive::kIsReading) {
-    if (!ar.ok() || Theater < THEATER_FIRST || Theater >= THEATER_COUNT) {
+    if (!ar.ok() || Theater < THEATER_DESERT || Theater >= THEATER_COUNT) {
       ar.Fail("invalid saved theater");
       return;
     }
