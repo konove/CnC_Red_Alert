@@ -2,6 +2,8 @@
 #include <string>
 
 #include "gtest/gtest.h"
+#include "td/config.h"
+#include "td/externs.h"
 #include "td/profile.h"
 #include "td/teamtype.h"
 
@@ -19,10 +21,20 @@ TEST(TdNumberParseTest, InvalidProfileNumbersKeepTheDefault) {
   EXPECT_EQ(WWGetPrivateProfileHex("Values", "BadHex", profile), 0U);
 }
 
-TEST(TdNumberParseTest, RejectsInvalidTeamClassAndMissionCounts) {
+// Team types validate that they live in the TeamTypes heap, so the tests
+// allocate them there rather than on the stack.
+class TdTeamTypeParseTest : public testing::Test {
+ protected:
+  static void SetUpTestSuite() { TeamTypes.Set_Heap(4); }
+  static void TearDownTestSuite() { TeamTypes.Set_Heap(0); }
+};
+
+TEST_F(TdTeamTypeParseTest, RejectsInvalidTeamClassAndMissionCounts) {
   char name[] = "TestTeam";
   for (const char* count : {"-1", "999999", "2147483648", "1tail"}) {
-    TeamTypeClass team;
+    auto* heap_team = new TeamTypeClass();
+    ASSERT_NE(heap_team, nullptr);
+    TeamTypeClass& team = *heap_team;
     std::string entry = std::string{"GoodGuy,0,0,0,0,0,7,2,1,0,"} + count;
     team.Fill_In(name, entry.data());
     EXPECT_EQ(team.ClassCount, 0) << count;
@@ -32,13 +44,16 @@ TEST(TdNumberParseTest, RejectsInvalidTeamClassAndMissionCounts) {
     team.Fill_In(name, entry.data());
     EXPECT_EQ(team.ClassCount, 0) << count;
     EXPECT_EQ(team.MissionCount, 0) << count;
+    delete heap_team;
   }
 }
 
-TEST(TdNumberParseTest, PreservesValidEmptyTeamAndRejectsTruncatedMembers) {
+TEST_F(TdTeamTypeParseTest, PreservesValidEmptyTeamAndRejectsTruncatedMembers) {
   char name[] = "TestTeam";
   char entry[] = "GoodGuy,0,0,0,0,0,7,2,1,0,0,0";
-  TeamTypeClass team;
+  auto* heap_team = new TeamTypeClass();
+  ASSERT_NE(heap_team, nullptr);
+  TeamTypeClass& team = *heap_team;
   team.Fill_In(name, entry);
   EXPECT_EQ(team.RecruitPriority, 7);
   EXPECT_EQ(team.MaxAllowed, 2);
@@ -50,6 +65,20 @@ TEST(TdNumberParseTest, PreservesValidEmptyTeamAndRejectsTruncatedMembers) {
   team.Fill_In(name, truncated);
   EXPECT_EQ(team.ClassCount, 0);
   EXPECT_EQ(team.MissionCount, 0);
+  delete heap_team;
+}
+
+TEST_F(TdTeamTypeParseTest, TeamTypeOutsideItsHeapFailsValidation) {
+  if (!config::kCheatKeysEnabled) {
+    GTEST_SKIP() << "Object validation only runs with cheat keys enabled.";
+  }
+  // Validation used to exit(0), which ended the test binary as a success.
+  char name[] = "TestTeam";
+  char entry[] = "GoodGuy,0,0,0,0,0,7,2,1,0,0,0";
+  TeamTypeClass stack_team;
+  // The switch is inside GoogleTest's macro.
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default)
+  EXPECT_DEATH(stack_team.Fill_In(name, entry), "TEAMTYPE object error");
 }
 
 }  // namespace

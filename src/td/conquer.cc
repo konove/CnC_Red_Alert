@@ -3257,11 +3257,11 @@ bool Force_CD_Available(int cd) {
  * HISTORY: * 08/15/1995 BRR : Created. *
  *=============================================================================================*/
 void Validate_Error(const char* name) {
-  if constexpr (config::kCheatKeysEnabled) {
-    Prog_End();
-    printf("%s object error!\n", name);
-    exit(0);
-  }
+  // Callers only validate in cheat-key builds, where a bad object pointer is a
+  // programmer error. Abort rather than exit(0), so the failure is visible to
+  // shells and test runners instead of looking like a clean shutdown.
+  Prog_End();
+  LOG(FATAL) << name << " object error!";
 }
 
 /***********************************************************************************************

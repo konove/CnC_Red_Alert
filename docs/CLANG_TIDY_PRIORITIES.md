@@ -935,10 +935,21 @@ kept their widths; the headless RA and TD save/load checks pass. Two consequence
 64-bit build now sends RA's unit tracker totals as the 4-byte values the stats packet declares, and
 the VQA frame clock goes negative instead of wrapping to a huge tick count.
 
-Reviewing the code turned up suspected defects that are marked, not fixed: `// Suspicious:` comments
-where a `CELL` is used as a `COORDINATE` or `TARGET`; the VQA FINF seek table stored in 8-byte
-`long` entries on 64-bit Linux; a codebook offset in `Load_CBPZ` that can go negative; a bottom-left
-drawer origin that reads `Y2` before setting it; and a WSA buffer clear truncated to 16 bits.
+Reviewing the code turned up suspected defects, which were then fixed with tests:
+
+- `CELL` values used as a `COORDINATE` or `TARGET` in the chronal vortex, fallback build placement,
+  editor Home key, house defeat and TD edge reinforcements; the pathfinding overlap words are now
+  32-bit, TD's `Overlap_Bit` no longer shifts by -1, and `Adjacent_Cell` checks the index before
+  forming the pointer.
+- The VQA FINF seek table read into 8-byte `long` entries, codebook, palette and pointer chunks that
+  could overflow their buffers, drawer origins other than top-left, and chunk sizes of 2 GiB.
+- TD packet IDs, which were 64-bit on Linux and so never wrapped to the first packet: acknowledged
+  packets were never delivered. The oldest unacknowledged packet search no longer stops working
+  after 2^32 ticks.
+- A WSA clear truncated to 16 bits and unchecked frame sizes, corrupt MIX headers, LZO/LCW/LZW block
+  counts trusted from the stream, an unchecked LZO decoder, and the stubbed LCW compressor, which
+  wrote empty map packs.
+- TD object validation exited with status 0, which ended the TD test binary early as a success.
 
 ### Switch fallback review (2026-09-12)
 
