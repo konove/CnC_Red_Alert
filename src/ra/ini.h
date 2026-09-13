@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_RA_INI_H_
 
 #include <cstdlib>
+#include <string>
 
 #include "ra/defines.h"
 #include "ra/object.h"
@@ -140,22 +141,17 @@ class INIClass {
   **	The entry identifier and value string are combined into this object.
   */
   struct INIEntry : Node<INIEntry> {
-    explicit INIEntry(char* entry = nullptr, char* value = nullptr)
+    explicit INIEntry(const char* entry = "", const char* value = "")
         : Entry(entry), Value(value) {}
-    ~INIEntry() override {
-      free(Entry);
-      Entry = nullptr;
-      free(Value);
-      Value = nullptr;
-    }
+    ~INIEntry() override = default;
     INIEntry(const INIEntry&) = delete;
     INIEntry& operator=(const INIEntry&) = delete;
     INIEntry(INIEntry&&) = delete;
     INIEntry& operator=(INIEntry&&) = delete;
     [[nodiscard]] int Index_ID() const { return CrcEngine::Compute(Entry); }
 
-    char* Entry;
-    char* Value;
+    std::string Entry;
+    std::string Value;
   };
 
   /*
@@ -163,12 +159,8 @@ class INIClass {
   *entries *	subordinate to this section are attached.
   */
   struct INISection : Node<INISection> {
-    explicit INISection(char* section) : Section(section) {}
-    ~INISection() override {
-      free(Section);
-      Section = nullptr;
-      EntryList.Delete();
-    }
+    explicit INISection(const char* section) : Section(section) {}
+    ~INISection() override { EntryList.Delete(); }
     INISection(const INISection&) = delete;
     INISection& operator=(const INISection&) = delete;
     INISection(INISection&&) = delete;
@@ -176,7 +168,7 @@ class INIClass {
     INIEntry* Find_Entry(const char* entry) const;
     [[nodiscard]] int Index_ID() const { return CrcEngine::Compute(Section); }
 
-    char* Section;
+    std::string Section;
     List<INIEntry> EntryList;
     IndexClass<INIEntry*> EntryIndex;
   };

@@ -213,7 +213,7 @@ bool INIClass::Load(Straw& file)
       *ptr = '\0';
     }
     strtrim(buffer);
-    INISection* secptr = new INISection(strdup(buffer));
+    INISection* secptr = new INISection(buffer);
     if (secptr == nullptr) {
       Clear();
       return false;
@@ -266,7 +266,7 @@ bool INIClass::Load(Straw& file)
         continue;
       }
 
-      INIEntry* entryptr = new INIEntry(strdup(buffer), strdup(divider));
+      INIEntry* entryptr = new INIEntry(buffer, divider);
       if (entryptr == nullptr) {
         delete secptr;
         Clear();
@@ -332,7 +332,8 @@ int INIClass::Save(Pipe& pipe) const {
     **	Output the section identifier.
     */
     total += pipe.Put("[", 1);
-    total += pipe.Put(secptr->Section, static_cast<int>(strlen(secptr->Section)));
+    total += pipe.Put(secptr->Section.data(),
+                      static_cast<int>(secptr->Section.size()));
     total += pipe.Put("]", 1);
     total += pipe.Put("\r\n", static_cast<int>(strlen("\r\n")));
 
@@ -341,9 +342,11 @@ int INIClass::Save(Pipe& pipe) const {
     */
     INIEntry* entryptr = secptr->EntryList.First();
     while (entryptr && entryptr->Is_Valid()) {
-      total += pipe.Put(entryptr->Entry, static_cast<int>(strlen(entryptr->Entry)));
+      total += pipe.Put(entryptr->Entry.data(),
+                        static_cast<int>(entryptr->Entry.size()));
       total += pipe.Put("=", 1);
-      total += pipe.Put(entryptr->Value, static_cast<int>(strlen(entryptr->Value)));
+      total += pipe.Put(entryptr->Value.data(),
+                        static_cast<int>(entryptr->Value.size()));
       total += pipe.Put("\r\n", static_cast<int>(strlen("\r\n")));
 
       entryptr = entryptr->Next();
@@ -483,7 +486,7 @@ const char* INIClass::Get_Entry(const char* section, int index) const {
 
     while (entryptr != nullptr && entryptr->Is_Valid()) {
       if (index == 0) {
-        return entryptr->Entry;
+        return entryptr->Entry.c_str();
       }
       index--;
       entryptr = entryptr->Next();
@@ -806,7 +809,7 @@ int INIClass::Get_Int(const char* section, const char* entry,
   }
 
   INIEntry* entryptr = Find_Entry(section, entry);
-  if (entryptr && entryptr->Value != nullptr) {
+  if (entryptr) {
     return tech::ParseIniInteger(entryptr->Value).value_or(defvalue);
   }
   return defvalue;
@@ -875,7 +878,7 @@ int INIClass::Get_Hex(const char* section, const char* entry,
   }
 
   INIEntry* entryptr = Find_Entry(section, entry);
-  if (entryptr && entryptr->Value != nullptr) {
+  if (entryptr) {
     if (const auto value = tech::ParseHex<uint32_t>(entryptr->Value)) {
       return static_cast<int>(*value);
     }
@@ -911,7 +914,7 @@ bool INIClass::Put_String(const char* section, const char* entry,
   INISection* secptr = Find_Section(section);
 
   if (secptr == nullptr) {
-    secptr = new INISection(strdup(section));
+    secptr = new INISection(section);
     if (secptr == nullptr) {
       return false;
     }
@@ -932,7 +935,7 @@ bool INIClass::Put_String(const char* section, const char* entry,
   **	Create and add the new entry.
   */
   if (string != nullptr && strlen(string) > 0) {
-    entryptr = new INIEntry(strdup(entry), strdup(string));
+    entryptr = new INIEntry(entry, string);
 
     if (entryptr == nullptr) {
       return false;
@@ -989,8 +992,8 @@ int INIClass::Get_String(const char* section, const char* entry,
   */
   INIEntry* entryptr = Find_Entry(section, entry);
   if (entryptr) {
-    if (entryptr->Value) {
-      defvalue = entryptr->Value;
+    {
+      defvalue = entryptr->Value.c_str();
     }
   }
 
@@ -1067,8 +1070,8 @@ bool INIClass::Get_Bool(const char* section, const char* entry,
   }
 
   INIEntry* entryptr = Find_Entry(section, entry);
-  if (entryptr && entryptr->Value != nullptr) {
-    switch (toupper(*entryptr->Value)) {
+  if (entryptr) {
+    switch (toupper(entryptr->Value[0])) {
       case 'Y':
       case 'T':
       case '1':
