@@ -54,11 +54,11 @@ class RAMFileClass final : public FileClass {
   RAMFileClass(RAMFileClass&&) = delete;
   RAMFileClass& operator=(RAMFileClass&&) = delete;
 
-  const char* File_Name() const override { return "UNKNOWN"; }
+  [[nodiscard]] const char* File_Name() const override { return "UNKNOWN"; }
   const char* Set_Name(const char*) override { return File_Name(); }
   int Create() override;
   int Delete() override;
-  int Is_Open() const override;
+  [[nodiscard]] int Is_Open() const override;
   int Open(const char* filename,
            FileAccess access = FileAccess::kRead) override;
   int Open(FileAccess access = FileAccess::kRead) override;

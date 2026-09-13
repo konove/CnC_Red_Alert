@@ -63,10 +63,10 @@ class HSVClass {
   enum { MAX_VALUE = 255 };
 
   void Adjust(int ratio, const HSVClass& hsv);
-  int Difference(const HSVClass& hsv) const;
-  int Hue_Component() const { return Hue; }
-  int Saturation_Component() const { return Saturation; }
-  int Value_Component() const { return Value; }
+  [[nodiscard]] int Difference(const HSVClass& hsv) const;
+  [[nodiscard]] int Hue_Component() const { return Hue; }
+  [[nodiscard]] int Saturation_Component() const { return Saturation; }
+  [[nodiscard]] int Value_Component() const { return Value; }
 
  private:
   unsigned char Hue;

@@ -49,7 +49,7 @@ class Stopwatch {
   Stopwatch() noexcept;
 
   // Returns the current elapsed tick count, accounting for paused time.
-  int64_t Value() const;
+  [[nodiscard]] int64_t Value() const;
 
   // Resets the timer to zero and activates it.
   void Reset();
@@ -60,7 +60,7 @@ class Stopwatch {
   // Starts (resumes) a stopped timer from where it left off.
   void Start();
 
-  bool IsRunning() const;
+  [[nodiscard]] bool IsRunning() const;
 
   // Saved-game support. Writes the elapsed value and the running flag, not
   // the anchor tick, so the format does not depend on the tick source. On
@@ -71,7 +71,7 @@ class Stopwatch {
 
  private:
   // Returns ticks elapsed since start_tick_ was last anchored.
-  int64_t Elapsed() const;
+  [[nodiscard]] int64_t Elapsed() const;
 
   int64_t start_tick_;
   // Total ticks accumulated across stop/start cycles.
@@ -152,7 +152,7 @@ class Timer {
   explicit Timer(int64_t set = 0) noexcept;
 
   // Returns the ticks remaining, or 0 if the countdown has finished.
-  int64_t Value() const;
+  [[nodiscard]] int64_t Value() const;
 
   // Resets the countdown to `duration` ticks and restarts it.
   void Set(int64_t duration);
@@ -166,9 +166,9 @@ class Timer {
   // Starts (resumes) a stopped countdown from where it left off.
   void Start();
 
-  bool IsRunning() const;
-  bool IsFinished() const;
-  bool HasTimeLeft() const;
+  [[nodiscard]] bool IsRunning() const;
+  [[nodiscard]] bool IsFinished() const;
+  [[nodiscard]] bool HasTimeLeft() const;
 
   // Saved-game support. Writes the remaining value and the running flag and
   // re-anchors on read; see Stopwatch::Serialize for the Frame precondition.
@@ -177,7 +177,7 @@ class Timer {
 
  private:
   // Returns ticks elapsed since start_tick_ was last anchored.
-  int64_t Elapsed() const;
+  [[nodiscard]] int64_t Elapsed() const;
 
   int64_t start_tick_;
   // Ticks remaining as of the last anchor point (Set, Stop, or construction).

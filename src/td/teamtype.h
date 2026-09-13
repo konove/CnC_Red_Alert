@@ -136,6 +136,8 @@ class TeamTypeClass : public AbstractTypeClass {
   **	Processing routines
   */
   void Remove();
+  // the heap owns the new object; many callers create without keeping it.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   TeamClass* Create_One_Of() const;
   void Destroy_All_Of() const;
 
@@ -147,7 +149,7 @@ class TeamTypeClass : public AbstractTypeClass {
   static const TeamTypeClass* Suggested_New_Team(HouseClass* house, long utypes,
                                                  long itypes, bool alerted);
 
-  TARGET As_Target() const;
+  [[nodiscard]] TARGET As_Target() const;
 
   /*
   **	Overloaded operators
@@ -159,6 +161,8 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	Dee-buggin' support.
   */
+  // debug self-check; callers run it for its assertions and ignore the count.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   int Validate() const;
 
   /*

@@ -72,7 +72,7 @@ class AnimClass final : public ObjectClass, private StageClass {
   // objects compare directly against their type ID.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator AnimType() const { return Class->Type; }
-  RTTIType What_Am_I() const override { return RTTI_ANIM; }
+  [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_ANIM; }
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -82,18 +82,20 @@ class AnimClass final : public ObjectClass, private StageClass {
   void Attach_To(ObjectClass* obj);
   void Make_Invisible() { IsInvisible = true; }
 
-  bool Can_Place_Here(COORDINATE) const { return true; }
+  [[nodiscard]] bool Can_Place_Here(COORDINATE) const { return true; }
   bool Mark(MarkType mark = MARK_CHANGE) override;
   bool Render(bool forced) override;
-  COORDINATE Center_Coord() const override;
-  COORDINATE Sort_Y() const override;
-  LayerType In_Which_Layer() const override;
-  const ObjectTypeClass& Class_Of() const override { return *Class; }
-  const short* Occupy_List(bool = false) const override;
-  const short* Overlap_List() const override;
+  [[nodiscard]] COORDINATE Center_Coord() const override;
+  [[nodiscard]] COORDINATE Sort_Y() const override;
+  [[nodiscard]] LayerType In_Which_Layer() const override;
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
+    return *Class;
+  }
+  [[nodiscard]] const short* Occupy_List(bool = false) const override;
+  [[nodiscard]] const short* Overlap_List() const override;
   void Draw_It(int x, int y, WindowNumberType window) override;
   void AI() override;
-  TARGET As_Target() const override;
+  [[nodiscard]] TARGET As_Target() const override;
   void Detach(TARGET target, bool all) override;
 
   /*
@@ -106,6 +108,8 @@ class AnimClass final : public ObjectClass, private StageClass {
   /*
   **	Dee-buggin' support.
   */
+  // debug self-check; callers run it for its assertions and ignore the count.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   int Validate() const;
 
   /*

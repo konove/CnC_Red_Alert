@@ -69,12 +69,12 @@ class MapClass : public GScreenClass {
   *with the cell
   ** as it relates to the map - not what the cell contains.
   */
-  ObjectClass* Close_Object(COORDINATE coord) const;
+  [[nodiscard]] ObjectClass* Close_Object(COORDINATE coord) const;
   virtual void Detach(ObjectClass*) {}
   int Cell_Region(CELL cell);
   int Cell_Threat(CELL cell, HousesType house);
   int Cell_Distance(CELL cell1, CELL cell2);
-  bool In_Radar(CELL cell) const;
+  [[nodiscard]] bool In_Radar(CELL cell) const;
   void Sight_From(CELL cell, int sightrange, bool incremental = false);
   void Place_Down(CELL cell, ObjectClass* object);
   void Pick_Up(CELL cell, ObjectClass* object);

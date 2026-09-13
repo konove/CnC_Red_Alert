@@ -102,7 +102,9 @@ class OverlayClass : public ObjectClass {
   **	Virtual support functionality.
   */
   bool Mark(MarkType) override;
-  const ObjectTypeClass& Class_Of() const override { return *Class; }
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
+    return *Class;
+  }
   void Draw_It(int, int, WindowNumberType) const override {}
 
  private:

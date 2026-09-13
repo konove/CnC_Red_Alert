@@ -149,11 +149,11 @@ class InfantryClass final : public FootClass {
   /*
   **	Query functions.
   */
-  bool Is_Ready_To_Random_Animate() const override;
-  const void* Get_Image_Data() const override;
-  int Shape_Number() const;
-  const ObjectTypeClass& Class_Of() const override;
-  int Full_Name() const override;
+  [[nodiscard]] bool Is_Ready_To_Random_Animate() const override;
+  [[nodiscard]] const void* Get_Image_Data() const override;
+  [[nodiscard]] int Shape_Number() const;
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override;
+  [[nodiscard]] int Full_Name() const override;
 
   /*
   **	Object entry and exit from the game system.
@@ -167,7 +167,7 @@ class InfantryClass final : public FootClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  const short* Overlap_List(bool redraw = false) const override;
+  [[nodiscard]] const short* Overlap_List(bool redraw = false) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
 
   /*
@@ -185,12 +185,12 @@ class InfantryClass final : public FootClass {
   **	Combat related.
   */
   ActionType What_Action(const ObjectClass* object) const override;
-  ActionType What_Action(CELL cell) const override;
+  [[nodiscard]] ActionType What_Action(CELL cell) const override;
   BulletClass* Fire_At(TARGET target, int which) override;
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                          TechnoClass* source = nullptr,
                          bool forced = false) override;
-  FireErrorType Can_Fire(TARGET target, int which) const override;
+  [[nodiscard]] FireErrorType Can_Fire(TARGET target, int which) const override;
   void Assign_Target(TARGET) override;
   void Set_Occupy_Bit(COORDINATE coord) {
     Set_Occupy_Bit(Coord_Cell(coord), CellClass::Spot_Index(coord));
@@ -240,7 +240,8 @@ class InfantryClass final : public FootClass {
   */
   bool Do_Action(DoType todo, bool force = false);
   bool Random_Animate() override;
-  MoveType Can_Enter_Cell(CELL, FacingType = FACING_NONE) const override;
+  [[nodiscard]] MoveType Can_Enter_Cell(
+      CELL, FacingType = FACING_NONE) const override;
   void Per_Cell_Process(PCPType why) override;
   void Enter_Idle_Mode(bool initial = false) override;
   void Scatter(COORDINATE threat, bool forced = false,

@@ -94,11 +94,11 @@ class TriggerClass {
   /*
   **	Utility routines
   */
-  TARGET As_Target() const;
-  const char* Description() const;
+  [[nodiscard]] TARGET As_Target() const;
+  [[nodiscard]] const char* Description() const;
   void Draw_It(int, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
-  const char* Name() const { return Class->Name(); }
+  [[nodiscard]] const char* Name() const { return Class->Name(); }
 
   /*
   **	Overloaded operators

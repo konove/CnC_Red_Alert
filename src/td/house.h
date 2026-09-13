@@ -435,30 +435,31 @@ class HouseClass {
       Make_Enemy(object->Owner());
     }
   }
-  bool Is_Ally(HousesType house) const;
+  [[nodiscard]] bool Is_Ally(HousesType house) const;
   bool Is_Ally(const HouseClass* house) const;
   bool Is_Ally(const ObjectClass* object) const;
   void Debug_Dump(MonoClass* mono) const;
   void AI();
-  bool Can_Build(StructType structure, HousesType house) const;
-  bool Can_Build(InfantryType infantry, HousesType house) const;
-  bool Can_Build(UnitType unit, HousesType) const;
-  bool Can_Build(AircraftType aircraft, HousesType house) const;
+  [[nodiscard]] bool Can_Build(StructType structure, HousesType house) const;
+  [[nodiscard]] bool Can_Build(InfantryType infantry, HousesType house) const;
+  [[nodiscard]] bool Can_Build(UnitType unit, HousesType) const;
+  [[nodiscard]] bool Can_Build(AircraftType aircraft, HousesType house) const;
   bool Can_Build(const TechnoTypeClass* type, HousesType house) const;
-  const unsigned char* Remap_Table(bool blushing = false,
-                                   bool unit = false) const;
+  [[nodiscard]] const unsigned char* Remap_Table(bool blushing = false,
+                                                 bool unit = false) const;
 
-  const TechnoTypeClass* Suggest_New_Object(RTTIType objectype) const;
-  bool Does_Enemy_Building_Exist(StructType) const;
+  [[nodiscard]] const TechnoTypeClass* Suggest_New_Object(
+      RTTIType objectype) const;
+  [[nodiscard]] bool Does_Enemy_Building_Exist(StructType) const;
   void Harvested(unsigned tiberium);
-  int64_t Available_Money() const;
+  [[nodiscard]] int64_t Available_Money() const;
   void Spend_Money(unsigned money);
   void Refund_Money(unsigned money);
   void Attacked();
   void Adjust_Power(int adjust) { Power += adjust; }
   void Adjust_Drain(int adjust) { Drain += adjust; }
   int Adjust_Capacity(int adjust, bool inanger = false);
-  int Power_Fraction() const;
+  [[nodiscard]] int Power_Fraction() const;
   int Tiberium_Fraction() {
     return !static_cast<int>(Tiberium)
                ? 0
@@ -487,6 +488,8 @@ class HouseClass {
   /*
   **	Dee-buggin' support.
   */
+  // debug self-check; callers run it for its assertions and ignore the count.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   int Validate() const;
 
   /*

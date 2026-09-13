@@ -65,11 +65,11 @@ class WeaponTypeClass {
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* pointer);
 
-  const char* Name() const { return IniName; }
+  [[nodiscard]] const char* Name() const { return IniName; }
   bool Read_INI(CCINIClass& ini);
   static WeaponTypeClass* As_Pointer(WeaponType weapon);
-  ThreatType Allowed_Threats() const;
-  bool Is_Wall_Destroyer() const;
+  [[nodiscard]] ThreatType Allowed_Threats() const;
+  [[nodiscard]] bool Is_Wall_Destroyer() const;
 
   /*
   **	This is both the weapon type number and the index number into

@@ -131,7 +131,7 @@ class CCINIClass : public INIClass {
   bool Put_WeaponType(const char* section, const char* entry, WeaponType value);
   bool Put_CrateType(const char* section, const char* entry, CrateType value);
 
-  int Get_Unique_ID() const;
+  [[nodiscard]] int Get_Unique_ID() const;
 
  private:
   void Calculate_Message_Digest();

@@ -64,8 +64,8 @@ class LZWEngine {
 
     enum { UNUSED = -1 };
     void Make_Unused() { CodeValue = UNUSED; }
-    bool Is_Unused() const { return CodeValue == UNUSED; }
-    bool Is_Matching(CodeType code, char c) const {
+    [[nodiscard]] bool Is_Unused() const { return CodeValue == UNUSED; }
+    [[nodiscard]] bool Is_Matching(CodeType code, char c) const {
       return ParentCode == code && CharValue == c;
     }
   };

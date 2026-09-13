@@ -54,20 +54,20 @@ class Image {
   // not a BMP, or are not an 8-bit uncompressed one.
   static std::optional<Image> FromBmp(std::span<const std::uint8_t> bmp);
 
-  int Width() const { return width_; }
-  int Height() const { return height_; }
+  [[nodiscard]] int Width() const { return width_; }
+  [[nodiscard]] int Height() const { return height_; }
 
   // Bytes per row including the padding to a four-byte boundary.
-  base::ssize Stride() const {
+  [[nodiscard]] base::ssize Stride() const {
     return (static_cast<base::ssize>(width_) + 3) & ~base::ssize{3};
   }
 
   // The pixels, bottom row first, Stride() bytes per row.
-  std::span<const std::uint8_t> Bits() const { return bits_; }
+  [[nodiscard]] std::span<const std::uint8_t> Bits() const { return bits_; }
 
   // The colour table. Mutable because the lobby remaps downloaded artwork onto
   // the game's own palette in place.
-  std::span<const Color> Colors() const { return colors_; }
+  [[nodiscard]] std::span<const Color> Colors() const { return colors_; }
   std::span<Color> MutableColors() { return colors_; }
 
   // The pixels, for RemapToPalette to rewrite in place.

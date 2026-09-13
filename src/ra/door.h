@@ -84,14 +84,14 @@ class DoorClass {
   bool Time_To_Redraw() { return IsToRedraw; }
   void Clear_Redraw_Flag() { IsToRedraw = false; }
   void AI();
-  int Door_Stage() const;
-  bool Is_Door_Opening() const { return State == IS_OPENING; }
-  bool Is_Door_Closing() const { return State == IS_CLOSING; }
+  [[nodiscard]] int Door_Stage() const;
+  [[nodiscard]] bool Is_Door_Opening() const { return State == IS_OPENING; }
+  [[nodiscard]] bool Is_Door_Closing() const { return State == IS_CLOSING; }
   bool Open_Door(int rate, int stages);
   bool Close_Door(int rate, int stages);
-  bool Is_Door_Open() const { return State == IS_OPEN; }
-  bool Is_Door_Closed() const { return State == IS_CLOSED; }
-  bool Is_Ready_To_Open() const;
+  [[nodiscard]] bool Is_Door_Open() const { return State == IS_OPEN; }
+  [[nodiscard]] bool Is_Door_Closed() const { return State == IS_CLOSED; }
+  [[nodiscard]] bool Is_Ready_To_Open() const;
 };
 
 #endif  // CNC_RED_ALERT_RA_DOOR_H_

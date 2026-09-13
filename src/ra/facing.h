@@ -59,8 +59,8 @@ class FacingClass {
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator DirType() const { return CurrentFacing; }
 
-  DirType Current() const { return CurrentFacing; }
-  DirType Desired() const { return DesiredFacing; }
+  [[nodiscard]] DirType Current() const { return CurrentFacing; }
+  [[nodiscard]] DirType Desired() const { return DesiredFacing; }
 
   // Saved-game support.
   template <class Archive>
@@ -76,13 +76,15 @@ class FacingClass {
     Set_Desired(facing);
   }
 
-  DirType Get() const { return CurrentFacing; }
+  [[nodiscard]] DirType Get() const { return CurrentFacing; }
 
-  int Is_Rotating() const { return DesiredFacing != CurrentFacing; }
-  int Difference() const {
+  [[nodiscard]] int Is_Rotating() const {
+    return DesiredFacing != CurrentFacing;
+  }
+  [[nodiscard]] int Difference() const {
     return static_cast<signed char>((int)DesiredFacing - (int)CurrentFacing);
   }
-  int Difference(DirType facing) const {
+  [[nodiscard]] int Difference(DirType facing) const {
     return static_cast<signed char>((int)facing - (int)CurrentFacing);
   }
   int Rotation_Adjust(int rate);

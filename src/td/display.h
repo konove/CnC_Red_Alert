@@ -149,7 +149,7 @@ class DisplayClass : public MapClass {
   virtual CELL Click_Cell_Calc(int x, int y);
   virtual void Help_Text(int, int = -1, int = -1, int = YELLOW, bool = false,
                          int = 0) {}
-  virtual MouseType Get_Mouse_Shape() const = 0;
+  [[nodiscard]] virtual MouseType Get_Mouse_Shape() const = 0;
   virtual bool Scroll_Map(DirType facing, int& distance, bool really);
   virtual void Refresh_Cells(CELL cell, const short* list);
   virtual void Set_View_Dimensions(int x, int y, int width = -1,
@@ -183,13 +183,16 @@ class DisplayClass : public MapClass {
   ObjectClass* Prev_Object(ObjectClass* object);
   int Cell_Shadow(CELL cell);
   const short* Text_Overlap_List(const char* text, int x, int y, int lines = 1);
-  bool Is_Spot_Free(COORDINATE coord) const;
-  COORDINATE Closest_Free_Spot(COORDINATE coord, bool any = false) const;
+  [[nodiscard]] bool Is_Spot_Free(COORDINATE coord) const;
+  [[nodiscard]] COORDINATE Closest_Free_Spot(COORDINATE coord,
+                                             bool any = false) const;
   void Sell_Mode_Control(int control);
   void Repair_Mode_Control(int control);
 
   virtual void Flag_Cell(CELL cell);
-  bool Is_Cell_Flagged(CELL cell) const { return CellRedraw[cell]; }
+  [[nodiscard]] bool Is_Cell_Flagged(CELL cell) const {
+    return CellRedraw[cell];
+  }
 
   /*
   ** Computes starting position based on player's units' Coords.

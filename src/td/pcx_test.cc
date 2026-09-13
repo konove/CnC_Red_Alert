@@ -51,7 +51,7 @@ class PcxFile {
   PcxFile& operator=(PcxFile&&) = delete;
 
   // Load without a palette so EOF is exactly the end of the encoded pixels.
-  std::unique_ptr<GraphicBufferClass> Load() const {
+  [[nodiscard]] std::unique_ptr<GraphicBufferClass> Load() const {
     return std::unique_ptr<GraphicBufferClass>(
         Read_PCX_File(path_.string().c_str(), nullptr, nullptr, 0));
   }

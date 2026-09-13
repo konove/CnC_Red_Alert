@@ -86,9 +86,9 @@ class FixedHeapClass {
   FixedHeapClass(FixedHeapClass&&) = delete;
   FixedHeapClass& operator=(FixedHeapClass&&) = delete;
 
-  int Count() const { return ActiveCount; }
-  int Length() const { return TotalCount; }
-  int Avail() const { return TotalCount - ActiveCount; }
+  [[nodiscard]] int Count() const { return ActiveCount; }
+  [[nodiscard]] int Length() const { return TotalCount; }
+  [[nodiscard]] int Avail() const { return TotalCount - ActiveCount; }
 
   virtual int ID(const void* pointer) const;
   virtual int Set_Heap(int count, void* buffer = nullptr);
@@ -167,10 +167,12 @@ class FixedIHeapClass : public FixedHeapClass {
   int Free(void* pointer) override;
   int Free_All() override;
   virtual int Logical_ID(const void* pointer) const;
-  virtual int Logical_ID(int id) const { return Logical_ID((*this)[id]); }
+  [[nodiscard]] virtual int Logical_ID(int id) const {
+    return Logical_ID((*this)[id]);
+  }
 
   virtual void* Active_Ptr(int index) { return ActivePointers[index]; }
-  virtual const void* Active_Ptr(int index) const {
+  [[nodiscard]] virtual const void* Active_Ptr(int index) const {
     return ActivePointers[index];
   }
 
@@ -211,7 +213,7 @@ class TFixedIHeapClass : public FixedIHeapClass {
   virtual int Logical_ID(const T* pointer) const {
     return FixedIHeapClass::Logical_ID(pointer);
   }
-  int Logical_ID(int id) const override {
+  [[nodiscard]] int Logical_ID(int id) const override {
     return FixedIHeapClass::Logical_ID(id);
   }
   virtual T* Alloc() { return static_cast<T*>(FixedIHeapClass::Allocate()); }
@@ -224,7 +226,7 @@ class TFixedIHeapClass : public FixedIHeapClass {
   // malformed stream; the heap is then partially populated.
   int Load(Straw& file)
     requires Serializable<T>;
-  virtual T* Ptr(std::size_t index) const {
+  [[nodiscard]] virtual T* Ptr(std::size_t index) const {
     return static_cast<T*>(ActivePointers[index]);
   }
   virtual T* Raw_Ptr(std::size_t index) {

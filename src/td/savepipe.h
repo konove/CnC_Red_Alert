@@ -21,7 +21,7 @@ class SaveGamePipe : public Pipe {
     return written;
   }
 
-  bool ok() const { return ok_; }
+  [[nodiscard]] bool ok() const { return ok_; }
 
  private:
   bool ok_ = true;

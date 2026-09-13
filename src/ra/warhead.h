@@ -58,7 +58,7 @@ class WarheadTypeClass {
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* pointer);
 
-  const char* Name() const { return IniName; }
+  [[nodiscard]] const char* Name() const { return IniName; }
   bool Read_INI(CCINIClass& ini);
   static WarheadTypeClass* As_Pointer(WarheadType weapon);
 

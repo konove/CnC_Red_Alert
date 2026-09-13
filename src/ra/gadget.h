@@ -123,15 +123,15 @@ class GadgetClass : public LinkClass {
   virtual ControlClass* Extract_Gadget(unsigned id);
   virtual void Flag_List_To_Redraw() { LastList = nullptr; }
   GadgetClass* Remove() override;
-  GadgetClass* Get_Next() const override;
-  GadgetClass* Get_Prev() const override;
+  [[nodiscard]] GadgetClass* Get_Next() const override;
+  [[nodiscard]] GadgetClass* Get_Prev() const override;
 
   /*
   **	Manages individual gadget states and actions.
   */
   virtual void Disable();
   virtual void Enable();
-  virtual unsigned Get_ID() const { return 0; }
+  [[nodiscard]] virtual unsigned Get_ID() const { return 0; }
   virtual void Flag_To_Redraw();
   virtual void Peer_To_Peer(unsigned, KeyNumType&, ControlClass&) {}
   virtual void Set_Focus();

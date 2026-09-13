@@ -75,16 +75,16 @@ class MapClass : public GScreenClass {
   *with the cell
   ** as it relates to the map - not what the cell contains.
   */
-  CELL Pick_Random_Location() const;
-  int Intact_Bridge_Count() const;
+  [[nodiscard]] CELL Pick_Random_Location() const;
+  [[nodiscard]] int Intact_Bridge_Count() const;
   bool Base_Region(CELL cell, HousesType& house, ZoneType& zone) const;
-  CELL Nearby_Location(CELL cell, SpeedType speed, int zone = -1,
-                       MZoneType check = MZONE_NORMAL) const;
-  ObjectClass* Close_Object(COORDINATE coord) const;
+  [[nodiscard]] CELL Nearby_Location(CELL cell, SpeedType speed, int zone = -1,
+                                     MZoneType check = MZONE_NORMAL) const;
+  [[nodiscard]] ObjectClass* Close_Object(COORDINATE coord) const;
   virtual void Detach(ObjectClass*) {}
   int Cell_Region(CELL cell);
   int Cell_Threat(CELL cell, HousesType house);
-  bool In_Radar(CELL cell) const;
+  [[nodiscard]] bool In_Radar(CELL cell) const;
   void Sight_From(CELL cell, int sightrange, HouseClass* house,
                   bool incremental = false);
   void Jam_From(CELL cell, int jamrange, HouseClass* house);

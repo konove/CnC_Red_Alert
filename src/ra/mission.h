@@ -105,7 +105,7 @@ class MissionClass : public ObjectClass {
   void Debug_Dump(MonoClass* mono) const override;
 
   void Shorten_Mission_Timer() { MissionTimer.Set(0); }
-  MissionType Get_Mission() const override;
+  [[nodiscard]] MissionType Get_Mission() const override;
   virtual void Assign_Mission(MissionType mission);
   virtual bool Commence();
   void AI() override;
@@ -159,15 +159,15 @@ class MissionControlClass {
   MissionControlClass();
 
   bool Read_INI(CCINIClass& ini);
-  int Normal_Delay() const { return kTicksPerMinute * Rate; }
-  int AA_Delay() const { return kTicksPerMinute * AARate; }
+  [[nodiscard]] int Normal_Delay() const { return kTicksPerMinute * Rate; }
+  [[nodiscard]] int AA_Delay() const { return kTicksPerMinute * AARate; }
 
   /*
   **	This is the mission identifier that this mission represents.
   */
   MissionType Mission;
 
-  const char* Name() const;
+  [[nodiscard]] const char* Name() const;
 
   /*
   **	If the object should not be considered a threat when it

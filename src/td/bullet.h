@@ -97,7 +97,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   BulletClass& operator=(const BulletClass&) = delete;
   BulletClass(BulletClass&&) = delete;
   BulletClass& operator=(BulletClass&&) = delete;
-  RTTIType What_Am_I() const override { return RTTI_BULLET; }
+  [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_BULLET; }
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -106,15 +106,19 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
 
   virtual void Assign_Target(TARGET target) { TarCom = target; }
   bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
-  LayerType In_Which_Layer() const override { return LAYER_TOP; }
-  const ObjectTypeClass& Class_Of() const override { return *Class; }
+  [[nodiscard]] LayerType In_Which_Layer() const override { return LAYER_TOP; }
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
+    return *Class;
+  }
   void Detach(TARGET target, bool all) override;
   void Draw_It(int x, int y, WindowNumberType window) override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
   void AI() override;
-  const short* Occupy_List(bool = false) const override;
-  const short* Overlap_List() const override { return Occupy_List(); }
-  TARGET As_Target() const override;
+  [[nodiscard]] const short* Occupy_List(bool = false) const override;
+  [[nodiscard]] const short* Overlap_List() const override {
+    return Occupy_List();
+  }
+  [[nodiscard]] TARGET As_Target() const override;
 
   /*
   **	File I/O.
@@ -126,6 +130,8 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   /*
   **	Dee-buggin' support.
   */
+  // debug self-check; callers run it for its assertions and ignore the count.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   int Validate() const;
 
   /*

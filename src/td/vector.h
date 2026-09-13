@@ -101,7 +101,7 @@ class VectorClass {
   virtual int operator==(const VectorClass&) const;
   virtual int Resize(base::ssize newsize, T* array = nullptr);
   virtual void Clear();
-  base::ssize Length() const { return VectorMax; }
+  [[nodiscard]] base::ssize Length() const { return VectorMax; }
   virtual int ID(const T* ptr);  // Pointer based identification.
   virtual int ID(const T& ptr);  // Value based identification.
 
@@ -151,7 +151,7 @@ class DynamicVectorClass : public VectorClass<T> {
   }
 
   // Fetch number of "allocated" vector objects.
-  base::ssize Count() const { return ActiveCount; }
+  [[nodiscard]] base::ssize Count() const { return ActiveCount; }
 
   // Add object to vector (growing as necessary).
   int Add(const T& object);

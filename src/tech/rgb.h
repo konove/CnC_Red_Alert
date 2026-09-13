@@ -57,7 +57,7 @@ class RGBClass {
   //
   // This is used to find the closest color match without calculating square
   // roots. A result of 0 indicates the colors are identical.
-  int Difference(const RGBClass& other) const;
+  [[nodiscard]] int Difference(const RGBClass& other) const;
 
   // Logic: Restores 6-bit storage to 8-bit range using original bitwise logic.
   [[nodiscard]] constexpr int Red_Component() const {

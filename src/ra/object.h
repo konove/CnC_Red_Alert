@@ -181,41 +181,41 @@ class ObjectClass : public AbstractClass {
   /*
   **	Query functions.
   */
-  virtual bool Is_Players_Army() const { return false; }
-  virtual const void* Get_Image_Data() const;
+  [[nodiscard]] virtual bool Is_Players_Army() const { return false; }
+  [[nodiscard]] virtual const void* Get_Image_Data() const;
   virtual ActionType What_Action(const ObjectClass*) const;
-  virtual ActionType What_Action(CELL) const;
-  virtual LayerType In_Which_Layer() const;
-  bool Is_Infantry() const { return RTTI == RTTI_INFANTRY; }
-  bool Is_Foot() const {
+  [[nodiscard]] virtual ActionType What_Action(CELL) const;
+  [[nodiscard]] virtual LayerType In_Which_Layer() const;
+  [[nodiscard]] bool Is_Infantry() const { return RTTI == RTTI_INFANTRY; }
+  [[nodiscard]] bool Is_Foot() const {
     return RTTI == RTTI_INFANTRY || RTTI == RTTI_UNIT || RTTI == RTTI_VESSEL ||
            RTTI == RTTI_AIRCRAFT;
   }
-  bool Is_Techno() const {
+  [[nodiscard]] bool Is_Techno() const {
     return RTTI == RTTI_BUILDING || RTTI == RTTI_UNIT ||
            RTTI == RTTI_INFANTRY || RTTI == RTTI_VESSEL ||
            RTTI == RTTI_AIRCRAFT;
   }
-  virtual int Get_Ownable() const;
-  virtual const ObjectTypeClass& Class_Of() const = 0;
-  const char* Name() const override;
-  virtual int Full_Name() const;
-  virtual bool Can_Repair() const;
-  virtual bool Can_Demolish() const;
-  virtual bool Can_Player_Fire() const;
-  virtual bool Can_Player_Move() const;
+  [[nodiscard]] virtual int Get_Ownable() const;
+  [[nodiscard]] virtual const ObjectTypeClass& Class_Of() const = 0;
+  [[nodiscard]] const char* Name() const override;
+  [[nodiscard]] virtual int Full_Name() const;
+  [[nodiscard]] virtual bool Can_Repair() const;
+  [[nodiscard]] virtual bool Can_Demolish() const;
+  [[nodiscard]] virtual bool Can_Player_Fire() const;
+  [[nodiscard]] virtual bool Can_Player_Move() const;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  virtual COORDINATE Docking_Coord() const;
-  COORDINATE Target_Coord() const override;
-  COORDINATE Center_Coord() const override;
-  virtual COORDINATE Render_Coord() const;
-  virtual COORDINATE Sort_Y() const;
-  virtual COORDINATE Fire_Coord(int which) const;
-  virtual COORDINATE Exit_Coord() const;
+  [[nodiscard]] virtual COORDINATE Docking_Coord() const;
+  [[nodiscard]] COORDINATE Target_Coord() const override;
+  [[nodiscard]] COORDINATE Center_Coord() const override;
+  [[nodiscard]] virtual COORDINATE Render_Coord() const;
+  [[nodiscard]] virtual COORDINATE Sort_Y() const;
+  [[nodiscard]] virtual COORDINATE Fire_Coord(int which) const;
+  [[nodiscard]] virtual COORDINATE Exit_Coord() const;
 
   /*
   **	Object entry and exit from the game system.
@@ -235,9 +235,9 @@ class ObjectClass : public AbstractClass {
   virtual void Do_Shimmer();
   virtual int Exit_Object(TechnoClass*);
   virtual bool Render(bool forced);  // const;
-  virtual const short* Occupy_List(bool placement = false) const;
-  virtual const short* Overlap_List(bool redraw = false) const;
-  virtual fixed Health_Ratio() const;
+  [[nodiscard]] virtual const short* Occupy_List(bool placement = false) const;
+  [[nodiscard]] virtual const short* Overlap_List(bool redraw = false) const;
+  [[nodiscard]] virtual fixed Health_Ratio() const;
   virtual void Draw_It(int x, int y, WindowNumberType) const = 0;
   virtual void Hidden();
   virtual void Look(bool incremental = false);
@@ -259,22 +259,23 @@ class ObjectClass : public AbstractClass {
   /*
   **	Combat related.
   */
-  virtual bool In_Range(COORDINATE, int = 0) const;
-  virtual int Weapon_Range(int = 0) const;
+  [[nodiscard]] virtual bool In_Range(COORDINATE, int = 0) const;
+  [[nodiscard]] virtual int Weapon_Range(int = 0) const;
   virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                  TechnoClass* source = nullptr,
                                  bool forced = false);
   virtual void Scatter(COORDINATE, bool forced = false, bool nokidding = false);
   virtual bool Catch_Fire();
   virtual void Fire_Out();
-  virtual int Value() const;
-  virtual MissionType Get_Mission() const;
+  [[nodiscard]] virtual int Value() const;
+  [[nodiscard]] virtual MissionType Get_Mission() const;
 
   /*
   **	AI.
   */
   virtual void Per_Cell_Process(PCPType) {}
-  virtual BuildingClass* Who_Can_Build_Me(bool intheory, bool legal) const;
+  [[nodiscard]] virtual BuildingClass* Who_Can_Build_Me(bool intheory,
+                                                        bool legal) const;
   virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
                                            long& param);

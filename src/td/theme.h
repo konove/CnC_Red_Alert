@@ -72,8 +72,8 @@ class ThemeClass {
   ThemeType From_Name(const char* name);
   int Track_Length(ThemeType index);
   int Max_Themes() { return THEME_COUNT; }
-  const char* Full_Name(ThemeType index) const;
-  const char* Base_Name(ThemeType index) const;
+  [[nodiscard]] const char* Full_Name(ThemeType index) const;
+  [[nodiscard]] const char* Base_Name(ThemeType index) const;
   void AI();
   void Queue_Song(ThemeType index);
   int Play_Song(ThemeType index);
@@ -82,7 +82,7 @@ class ThemeClass {
   void Fade_Out() { Queue_Song(THEME_NONE); }
   int Still_Playing();
   ThemeType Next_Song(ThemeType index);
-  bool Is_Allowed(ThemeType index) const;
+  [[nodiscard]] bool Is_Allowed(ThemeType index) const;
   static void Scan();
 };
 

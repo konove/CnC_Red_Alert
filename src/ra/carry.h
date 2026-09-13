@@ -51,6 +51,8 @@ class CarryoverClass {
 
   explicit CarryoverClass(TechnoClass* techno = nullptr);
 
+  // carryover objects are recreated for their side effect.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create() const;
 
  protected:

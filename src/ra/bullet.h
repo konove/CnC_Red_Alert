@@ -97,21 +97,23 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
 
   bool Is_Forced_To_Explode(COORDINATE& coord) const;
   void Bullet_Explodes(bool forced);
-  int Shape_Number() const;
-  LayerType In_Which_Layer() const override;
-  COORDINATE Sort_Y() const override;
+  [[nodiscard]] int Shape_Number() const;
+  [[nodiscard]] LayerType In_Which_Layer() const override;
+  [[nodiscard]] COORDINATE Sort_Y() const override;
   virtual void Assign_Target(TARGET target) { TarCom = target; }
   bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
-  const ObjectTypeClass& Class_Of() const override { return *Class; }
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
+    return *Class;
+  }
   void Detach(TARGET target, bool all) override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
   void AI() override;
-  const short* Occupy_List(bool = false) const override;
-  const short* Overlap_List(bool = false) const override {
+  [[nodiscard]] const short* Occupy_List(bool = false) const override;
+  [[nodiscard]] const short* Overlap_List(bool = false) const override {
     return Occupy_List(false);
   }
-  COORDINATE Target_Coord() const override;
+  [[nodiscard]] COORDINATE Target_Coord() const override;
 
   /*
   **	File I/O.

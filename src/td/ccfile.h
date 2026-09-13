@@ -68,7 +68,7 @@ class CCFileClass : public CDFileClass {
     return Open(rights);
   }
   int Open(FileAccess rights = FileAccess::kRead) override;
-  int Is_Open() const override;
+  [[nodiscard]] int Is_Open() const override;
   long Read(void* buffer, long size) override;
   long Seek(long pos, int dir = SEEK_CUR) override;
   long Size() override;

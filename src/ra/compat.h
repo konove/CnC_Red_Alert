@@ -117,33 +117,33 @@ class IconsetClass : protected IControl_Type {
   /*
   **	Query functions.
   */
-  int Map_Width() const { return MapWidth; }
-  int Map_Height() const { return MapHeight; }
+  [[nodiscard]] int Map_Width() const { return MapWidth; }
+  [[nodiscard]] int Map_Height() const { return MapHeight; }
   unsigned char* Control_Map() { return (unsigned char*)this + ColorMap; }
-  const unsigned char* Control_Map() const {
+  [[nodiscard]] const unsigned char* Control_Map() const {
     return (const unsigned char*)this + ColorMap;
   }
-  int Icon_Count() const { return Count; }
-  int Pixel_Width() const { return Width; }
-  int Pixel_Height() const { return Height; }
-  int Total_Size() const { return Size; }
-  const unsigned char* Palette_Data() const {
+  [[nodiscard]] int Icon_Count() const { return Count; }
+  [[nodiscard]] int Pixel_Width() const { return Width; }
+  [[nodiscard]] int Pixel_Height() const { return Height; }
+  [[nodiscard]] int Total_Size() const { return Size; }
+  [[nodiscard]] const unsigned char* Palette_Data() const {
     return (const unsigned char*)this + Palettes;
   }
   unsigned char* Palette_Data() { return (unsigned char*)this + Palettes; }
-  const unsigned char* Icon_Data() const {
+  [[nodiscard]] const unsigned char* Icon_Data() const {
     return (const unsigned char*)this + Icons;
   }
   unsigned char* Icon_Data() { return (unsigned char*)this + Icons; }
-  const unsigned char* Map_Data() const {
+  [[nodiscard]] const unsigned char* Map_Data() const {
     return (const unsigned char*)this + Map;
   }
   unsigned char* Map_Data() { return (unsigned char*)this + Map; }
-  const unsigned char* Remap_Data() const {
+  [[nodiscard]] const unsigned char* Remap_Data() const {
     return (const unsigned char*)this + Remaps;
   }
   unsigned char* Remap_Data() { return (unsigned char*)this + Remaps; }
-  const unsigned char* Trans_Data() const {
+  [[nodiscard]] const unsigned char* Trans_Data() const {
     return (const unsigned char*)this + TransFlag;
   }
   unsigned char* Trans_Data() { return (unsigned char*)this + TransFlag; }

@@ -60,7 +60,7 @@ class CRCPipe : public Pipe {
   int Put(const void* source, int slen) override;
 
   // Fetch the CRC value.
-  long Result() const;
+  [[nodiscard]] long Result() const;
 
  protected:
   CrcEngine crc_;

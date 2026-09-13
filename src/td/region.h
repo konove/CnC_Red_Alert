@@ -72,7 +72,7 @@ class RegionClass {
       Threat += threat;
     }
   }
-  int Threat_Value() const { return static_cast<int>(Threat); }
+  [[nodiscard]] int Threat_Value() const { return static_cast<int>(Threat); }
 
  protected:
   int64_t Threat;

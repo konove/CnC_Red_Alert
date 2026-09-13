@@ -40,13 +40,13 @@ class LockedWindow {
   LockedWindow& operator=(LockedWindow&&) = delete;
 
   // False when the surface could not be locked; Row() must not be called then.
-  bool bLocked() const { return locked_; }
+  [[nodiscard]] bool bLocked() const { return locked_; }
 
   // Bytes from the start of one row to the start of the next.
-  base::ssize Stride() const { return stride_; }
+  [[nodiscard]] base::ssize Stride() const { return stride_; }
 
   // The first pixel of row `y`, counting down from the top of the window.
-  std::uint8_t* Row(int y) const { return bits_ + (y * stride_); }
+  [[nodiscard]] std::uint8_t* Row(int y) const { return bits_ + (y * stride_); }
 
  private:
   GraphicViewPortClass view_;

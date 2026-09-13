@@ -107,35 +107,39 @@ class AircraftClass : public FootClass, public FlyClass {
   /*
   **	Query functions.
   */
-  LayerType In_Which_Layer() const override;
-  DirType Turret_Facing() const override { return SecondaryFacing.Current(); }
-  int Shape_Number() const;
-  MoveType Can_Enter_Cell(CELL cell,
-                          FacingType facing = FACING_NONE) const override;
-  const ObjectTypeClass& Class_Of() const override { return *Class; }
+  [[nodiscard]] LayerType In_Which_Layer() const override;
+  [[nodiscard]] DirType Turret_Facing() const override {
+    return SecondaryFacing.Current();
+  }
+  [[nodiscard]] int Shape_Number() const;
+  [[nodiscard]] MoveType Can_Enter_Cell(
+      CELL cell, FacingType facing = FACING_NONE) const override;
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
+    return *Class;
+  }
   ActionType What_Action(const ObjectClass* target) const override;
-  ActionType What_Action(CELL cell) const override;
+  [[nodiscard]] ActionType What_Action(CELL cell) const override;
   DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
-  int Pip_Count() const override;
-  TARGET Good_Fire_Location(TARGET target) const;
-  bool Cell_Seems_Ok(CELL cell, bool landing = false) const;
-  DirType Pose_Dir() const;
-  TARGET Good_LZ() const;
-  DirType Fire_Direction() const override;
-  FireErrorType Can_Fire(TARGET target, int which) const override;
+  [[nodiscard]] int Pip_Count() const override;
+  [[nodiscard]] TARGET Good_Fire_Location(TARGET target) const;
+  [[nodiscard]] bool Cell_Seems_Ok(CELL cell, bool landing = false) const;
+  [[nodiscard]] DirType Pose_Dir() const;
+  [[nodiscard]] TARGET Good_LZ() const;
+  [[nodiscard]] DirType Fire_Direction() const override;
+  [[nodiscard]] FireErrorType Can_Fire(TARGET target, int which) const override;
 
   /*
   **	Landing zone support functionality.
   */
   void Per_Cell_Process(PCPType why) override;
-  bool Is_LZ_Clear(TARGET target) const;
-  TARGET New_LZ(TARGET oldlz) const;
+  [[nodiscard]] bool Is_LZ_Clear(TARGET target) const;
+  [[nodiscard]] TARGET New_LZ(TARGET oldlz) const;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  COORDINATE Sort_Y() const override;
+  [[nodiscard]] COORDINATE Sort_Y() const override;
 
   /*
   **	Object entry and exit from the game system.
@@ -149,7 +153,7 @@ class AircraftClass : public FootClass, public FlyClass {
   void Look(bool incremental = false) override;
   void Draw_Rotors(int x, int y, WindowNumberType window) const;
   int Exit_Object(TechnoClass*) override;
-  const short* Overlap_List(bool redraw = false) const override;
+  [[nodiscard]] const short* Overlap_List(bool redraw = false) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
   void Set_Speed(int speed) override;
 

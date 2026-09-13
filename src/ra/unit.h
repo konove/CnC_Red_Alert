@@ -153,7 +153,7 @@ class UnitClass final : public DriveClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  const ObjectTypeClass& Class_Of() const override;
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override;
   static void Init();
 
   bool Goto_Clear_Spot();
@@ -173,26 +173,26 @@ class UnitClass final : public DriveClass {
   **	Query functions.
   */
   bool Should_Crush_It(const TechnoClass* it) const;
-  int Credit_Load() const;
-  DirType Turret_Facing() const override {
+  [[nodiscard]] int Credit_Load() const;
+  [[nodiscard]] DirType Turret_Facing() const override {
     if (Class->IsTurretEquipped) {
       return SecondaryFacing.Current();
     }
     return PrimaryFacing.Current();
   }
-  int Shape_Number() const;
-  int Pip_Count() const override;
-  InfantryType Crew_Type() const override;
-  DirType Fire_Direction() const override;
-  bool Ok_To_Move(DirType facing) const override;
-  FireErrorType Can_Fire(TARGET target, int which) const override;
-  fixed Tiberium_Load() const override;
+  [[nodiscard]] int Shape_Number() const;
+  [[nodiscard]] int Pip_Count() const override;
+  [[nodiscard]] InfantryType Crew_Type() const override;
+  [[nodiscard]] DirType Fire_Direction() const override;
+  [[nodiscard]] bool Ok_To_Move(DirType facing) const override;
+  [[nodiscard]] FireErrorType Can_Fire(TARGET target, int which) const override;
+  [[nodiscard]] fixed Tiberium_Load() const override;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  COORDINATE Sort_Y() const override;
+  [[nodiscard]] COORDINATE Sort_Y() const override;
 
   /*
   **	Object entry and exit from the game system.
@@ -204,13 +204,13 @@ class UnitClass final : public DriveClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  const short* Overlap_List(bool redraw = false) const override;
+  [[nodiscard]] const short* Overlap_List(bool redraw = false) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
 
   /*
   **	User I/O.
   */
-  ActionType What_Action(CELL cell) const override;
+  [[nodiscard]] ActionType What_Action(CELL cell) const override;
   ActionType What_Action(const ObjectClass* object) const override;
   void Active_Click_With(ActionType action, ObjectClass* object) override;
   void Active_Click_With(ActionType action, CELL cell) override;
@@ -261,8 +261,8 @@ class UnitClass final : public DriveClass {
   void Overrun_Square(CELL cell, bool threaten = true) override;
   void Approach_Target() override;
   void Enter_Idle_Mode(bool initial = false) override;
-  MoveType Can_Enter_Cell(CELL cell,
-                          FacingType facing = FACING_NONE) const override;
+  [[nodiscard]] MoveType Can_Enter_Cell(
+      CELL cell, FacingType facing = FACING_NONE) const override;
   void Per_Cell_Process(PCPType why) override;
   void Exit_Repair();
   void Shroud_Regen();

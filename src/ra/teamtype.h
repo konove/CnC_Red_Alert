@@ -86,7 +86,7 @@ class TeamMissionClass {
     ar(Mission, Data.Value);
   }
 
-  const char* Description(int index) const;
+  [[nodiscard]] const char* Description(int index) const;
   // legacy C interfaces take the object where a pointer or name is expected.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator const char*() const { return Description(0); }
@@ -162,6 +162,8 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	Processing routines
   */
+  // the heap owns the new object; many callers create without keeping it.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   TeamClass* Create_One_Of() const;
   void Destroy_All_Of() const;
   void Detach(TARGET target, bool all = true);
@@ -178,8 +180,8 @@ class TeamTypeClass : public AbstractTypeClass {
                                                  long vtypes, bool alerted);
   static TeamTypeClass* From_Name(const char* name);
   bool Edit();
-  const char* Member_Description() const;
-  const char* Description() const;
+  [[nodiscard]] const char* Member_Description() const;
+  [[nodiscard]] const char* Description() const;
   // legacy C interfaces take the object where a pointer or name is expected.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator const char*() const { return Description(); }

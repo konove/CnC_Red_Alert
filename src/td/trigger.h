@@ -175,7 +175,7 @@ class TriggerClass {
   //		void Set_House(HousesType house) {House = house;}
   //		long Get_Data() const {return(Data);}
   //		void Set_Data(long credits) {Data = credits;}
-  const char* Get_Name() const { return Name; }
+  [[nodiscard]] const char* Get_Name() const { return Name; }
   void Set_Name(const char* buf) {
     strncpy(Name, buf, sizeof(Name));
     Name[sizeof(Name) - 1] = '\0';
@@ -184,7 +184,7 @@ class TriggerClass {
   /*
   **	Utility routines
   */
-  TARGET As_Target() const;
+  [[nodiscard]] TARGET As_Target() const;
   static bool Event_Need_Object(EventType event);
   static bool Event_Need_House(EventType event);
   static bool Event_Need_Data(EventType event);
@@ -204,6 +204,8 @@ class TriggerClass {
   /*
   **	Dee-buggin' support.
   */
+  // debug self-check; callers run it for its assertions and ignore the count.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   int Validate() const;
 
   /*

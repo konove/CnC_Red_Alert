@@ -25,7 +25,7 @@ class DynamicVectorClass : public VectorClass<T> {
   }
 
   // Fetch number of "allocated" vector objects.
-  base::ssize Count() const { return ActiveCount; }
+  [[nodiscard]] base::ssize Count() const { return ActiveCount; }
 
   // Add object to vector (growing as necessary).
   bool Add(const T& object);
@@ -49,7 +49,7 @@ class DynamicVectorClass : public VectorClass<T> {
   base::ssize Set_Growth_Step(base::ssize step) { return GrowthStep = step; }
 
   // Fetch current growth step rate.
-  base::ssize Growth_Step() const { return GrowthStep; }
+  [[nodiscard]] base::ssize Growth_Step() const { return GrowthStep; }
 
   base::ssize ID(const T* ptr) override { return VectorClass<T>::ID(ptr); }
   base::ssize ID(const T& ptr) override;

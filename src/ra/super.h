@@ -57,7 +57,7 @@ class SuperClass {
   bool AI(bool player = false);
   bool Remove();
   void Impatient_Click() const;
-  int Anim_Stage() const;
+  [[nodiscard]] int Anim_Stage() const;
   bool Discharged(bool player);
 
   // Saved-game support.
@@ -74,10 +74,10 @@ class SuperClass {
     IsOneTime = is_one_time;
     IsReady = is_ready;
   }
-  bool Is_Ready() const { return IsReady; }
-  bool Is_Present() const { return IsPresent; }
-  bool Is_One_Time() const { return IsOneTime && IsPresent; }
-  bool Is_Powered() const { return IsPowered; }
+  [[nodiscard]] bool Is_Ready() const { return IsReady; }
+  [[nodiscard]] bool Is_Present() const { return IsPresent; }
+  [[nodiscard]] bool Is_One_Time() const { return IsOneTime && IsPresent; }
+  [[nodiscard]] bool Is_Powered() const { return IsPowered; }
 
  private:
   bool Recharge(bool player = false);

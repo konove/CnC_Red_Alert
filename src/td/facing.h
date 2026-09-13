@@ -67,8 +67,8 @@ class FacingClass {
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator DirType() const { return CurrentFacing; }
 
-  DirType Current() const { return CurrentFacing; }
-  DirType Desired() const { return DesiredFacing; }
+  [[nodiscard]] DirType Current() const { return CurrentFacing; }
+  [[nodiscard]] DirType Desired() const { return DesiredFacing; }
 
   int Set_Desired(DirType facing);
   int Set_Current(DirType facing);
@@ -78,15 +78,17 @@ class FacingClass {
     Set_Desired(facing);
   }
 
-  DirType Get() const { return CurrentFacing; }
+  [[nodiscard]] DirType Get() const { return CurrentFacing; }
 
-  int Is_Rotating() const { return DesiredFacing != CurrentFacing; }
+  [[nodiscard]] int Is_Rotating() const {
+    return DesiredFacing != CurrentFacing;
+  }
 
-  int Difference() const {
+  [[nodiscard]] int Difference() const {
     return static_cast<signed char>(*(unsigned char*)&DesiredFacing -
                                     *(unsigned char*)&CurrentFacing);
   }
-  int Difference(DirType facing) const {
+  [[nodiscard]] int Difference(DirType facing) const {
     return static_cast<signed char>(*(signed char*)&facing -
                                     *(signed char*)&CurrentFacing);
   }

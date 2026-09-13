@@ -84,13 +84,13 @@ class AbstractClass {
   /*
   **	Query functions.
   */
-  virtual HousesType Owner() const { return HOUSE_NONE; }
+  [[nodiscard]] virtual HousesType Owner() const { return HOUSE_NONE; }
 
   /*
   **	Coordinate query support functions.
   */
-  virtual COORDINATE Center_Coord() const { return Coord; }
-  virtual COORDINATE Target_Coord() const { return Coord; }
+  [[nodiscard]] virtual COORDINATE Center_Coord() const { return Coord; }
+  [[nodiscard]] virtual COORDINATE Target_Coord() const { return Coord; }
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
@@ -99,18 +99,18 @@ class AbstractClass {
   DirType Direction(const AbstractClass* object) const {
     return ::Direction(Center_Coord(), object->Target_Coord());
   }
-  DirType Direction(COORDINATE coord) const {
+  [[nodiscard]] DirType Direction(COORDINATE coord) const {
     return ::Direction(Center_Coord(), coord);
   }
-  DirType Direction(TARGET target) const;
-  DirType Direction(CELL cell) const {
+  [[nodiscard]] DirType Direction(TARGET target) const;
+  [[nodiscard]] DirType Direction(CELL cell) const {
     return ::Direction(Coord_Cell(Center_Coord()), cell);
   }
-  int Distance(TARGET target) const;
-  int Distance(COORDINATE coord) const {
+  [[nodiscard]] int Distance(TARGET target) const;
+  [[nodiscard]] int Distance(COORDINATE coord) const {
     return ::Distance(Center_Coord(), coord);
   }
-  int Distance(CELL cell) const {
+  [[nodiscard]] int Distance(CELL cell) const {
     return ::Distance(Coord_Cell(Center_Coord()), cell);
   }
   int Distance(const AbstractClass* object) const {
@@ -120,7 +120,8 @@ class AbstractClass {
   /*
   **	Object entry and exit from the game system.
   */
-  virtual MoveType Can_Enter_Cell(CELL, FacingType = FACING_NONE) const {
+  [[nodiscard]] virtual MoveType Can_Enter_Cell(
+      CELL, FacingType = FACING_NONE) const {
     return MOVE_OK;
   }
 

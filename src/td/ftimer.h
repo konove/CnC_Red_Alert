@@ -96,11 +96,11 @@ class TCountDownTimerClass {
     Started = -1;
     DelayTime = 0;
   }
-  int64_t Get_Start() const { return Started; }
-  int64_t Get_Delay() const { return DelayTime; }
-  bool Active() const { return Started != -1; }
-  int Expired() const { return Time() == 0; }
-  int64_t Time() const {
+  [[nodiscard]] int64_t Get_Start() const { return Started; }
+  [[nodiscard]] int64_t Get_Delay() const { return DelayTime; }
+  [[nodiscard]] bool Active() const { return Started != -1; }
+  [[nodiscard]] int Expired() const { return Time() == 0; }
+  [[nodiscard]] int64_t Time() const {
     return std::max<int64_t>(DelayTime - (Frame - Started), 0);
   }  // Fetch current count down value.
 

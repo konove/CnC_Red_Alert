@@ -43,8 +43,8 @@ class Benchmark {
   void End();
 
   void Reset();
-  int64_t Value() const;
-  int64_t Count() const { return TotalCount; }
+  [[nodiscard]] int64_t Value() const;
+  [[nodiscard]] int64_t Count() const { return TotalCount; }
 
  private:
   // Maximum number of events in the running average. Older events drop off

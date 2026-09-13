@@ -82,7 +82,7 @@ class RadarClass : public DisplayClass {
   bool Map_Cell(CELL cell, HouseClass* house) override;
   virtual bool Jam_Cell(CELL cell, HouseClass* house);
   virtual bool UnJam_Cell(CELL cell, HouseClass* house);
-  CELL Click_Cell_Calc(int x, int y) const override;
+  [[nodiscard]] CELL Click_Cell_Calc(int x, int y) const override;
   void AI(KeyNumType& input, int x, int y) override;
   void Draw_It(bool complete = false) override;
   void Refresh_Cells(CELL cell, const short* list) override;
@@ -92,7 +92,7 @@ class RadarClass : public DisplayClass {
   int Click_In_Radar(int& x, int& y, bool change = false) const;
   void Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x, int& y);
 
-  bool Is_Zoomable() const;
+  [[nodiscard]] bool Is_Zoomable() const;
   void Set_Radar_Position(CELL cell);
   CELL Radar_Position();
   bool Radar_Activate(int control);

@@ -78,14 +78,16 @@ class TemplateClass : public ObjectClass {
   // objects compare directly against their type ID.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator TemplateType() const { return Class->Type; }
-  RTTIType What_Am_I() const override { return RTTI_TEMPLATE; }
+  [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_TEMPLATE; }
 
   static void Init();
 
   /*
   **	Query functions.
   */
-  const ObjectTypeClass& Class_Of() const override { return *Class; }
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
+    return *Class;
+  }
   int Icon_Number(CELL cell);
 
   /*
@@ -106,7 +108,7 @@ class TemplateClass : public ObjectClass {
   /*
   **	Combat related.
   */
-  TARGET As_Target() const override;
+  [[nodiscard]] TARGET As_Target() const override;
 
   /*
   **	File I/O.
@@ -121,6 +123,8 @@ class TemplateClass : public ObjectClass {
   /*
   **	Dee-buggin' support.
   */
+  // debug self-check; callers run it for its assertions and ignore the count.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   int Validate() const;
 
  private:

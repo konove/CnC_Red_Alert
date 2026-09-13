@@ -158,20 +158,21 @@ class IconListClass : public ListClass {
   //		virtual GadgetClass * Remove();
 
   virtual void Show_Last_Item();
-  virtual bool bItemIsMultiSelected(int index) const;
+  [[nodiscard]] virtual bool bItemIsMultiSelected(int index) const;
   virtual void MultiSelect(int index, bool bSelect);
   //	The extra string stored with an item, or nullptr when the item has
   //	none and when the index is out of range.
-  virtual const char* Get_Item_ExtraDataString(int index) const;
+  [[nodiscard]] virtual const char* Get_Item_ExtraDataString(int index) const;
   virtual void Set_Item_ExtraDataString(int index, const char* szNewString);
-  virtual void* Get_Item_ExtraDataPtr(int index) const;
+  [[nodiscard]] virtual void* Get_Item_ExtraDataPtr(int index) const;
   virtual void Set_Item_ExtraDataPtr(int index, void* pNewValue);
   //	The item's tooltip text, or nullptr when it has none and when the
   //	index is out of range.
-  const char* Get_Item_Help(int index) const;
+  [[nodiscard]] const char* Get_Item_Help(int index) const;
   virtual RemapControlType* Get_Item_Color(int index);
   virtual void Set_Item_Color(int index, RemapControlType* pColorRemap);
-  virtual const IconList_ItemExtras* Get_ItemExtras(int index) const;
+  [[nodiscard]] virtual const IconList_ItemExtras* Get_ItemExtras(
+      int index) const;
   virtual void Clear();
   virtual int Get_View_Index() { return CurrentTopIndex; }
   bool bScrollBeingDragged() {

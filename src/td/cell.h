@@ -198,35 +198,38 @@ class CellClass {
   /*
   **	Query functions.
   */
-  ObjectClass* Cell_Occupier() const;
+  [[nodiscard]] ObjectClass* Cell_Occupier() const;
   static int Spot_Index(COORDINATE coord);
-  bool Is_Spot_Free(int spot_index) const {
+  [[nodiscard]] bool Is_Spot_Free(int spot_index) const {
     return !(Flag.Composite & 1 << spot_index);
   }
-  COORDINATE Closest_Free_Spot(COORDINATE coord, bool any = false) const;
-  COORDINATE Free_Spot() const { return Closest_Free_Spot(Cell_Coord()); }
-  bool Is_Generally_Clear() const;
-  TARGET As_Target() const { return ::As_Target(Cell_Number()); }
-  BuildingClass* Cell_Building() const;
-  const CellClass& Adjacent_Cell(FacingType face) const;
+  [[nodiscard]] COORDINATE Closest_Free_Spot(COORDINATE coord,
+                                             bool any = false) const;
+  [[nodiscard]] COORDINATE Free_Spot() const {
+    return Closest_Free_Spot(Cell_Coord());
+  }
+  [[nodiscard]] bool Is_Generally_Clear() const;
+  [[nodiscard]] TARGET As_Target() const { return ::As_Target(Cell_Number()); }
+  [[nodiscard]] BuildingClass* Cell_Building() const;
+  [[nodiscard]] const CellClass& Adjacent_Cell(FacingType face) const;
   CellClass& Adjacent_Cell(FacingType face) {
     return (CellClass&)(*static_cast<const CellClass*>(this))
         .Adjacent_Cell(face);
   }
-  COORDINATE Cell_Coord() const;
-  int Cell_Color(bool override = false) const;
-  CELL Cell_Number() const;
-  LandType Land_Type() const { return Land; }
-  ObjectClass* Cell_Find_Object(RTTIType rtti) const;
-  ObjectClass* Cell_Object(int x = 0, int y = 0) const;
-  TechnoClass* Cell_Techno(int x = 0, int y = 0) const;
-  TerrainClass* Cell_Terrain() const;
-  UnitClass* Cell_Unit() const;
-  InfantryClass* Cell_Infantry() const;
-  TriggerClass* Get_Trigger() const;
-  int Clear_Icon() const;
+  [[nodiscard]] COORDINATE Cell_Coord() const;
+  [[nodiscard]] int Cell_Color(bool override = false) const;
+  [[nodiscard]] CELL Cell_Number() const;
+  [[nodiscard]] LandType Land_Type() const { return Land; }
+  [[nodiscard]] ObjectClass* Cell_Find_Object(RTTIType rtti) const;
+  [[nodiscard]] ObjectClass* Cell_Object(int x = 0, int y = 0) const;
+  [[nodiscard]] TechnoClass* Cell_Techno(int x = 0, int y = 0) const;
+  [[nodiscard]] TerrainClass* Cell_Terrain() const;
+  [[nodiscard]] UnitClass* Cell_Unit() const;
+  [[nodiscard]] InfantryClass* Cell_Infantry() const;
+  [[nodiscard]] TriggerClass* Get_Trigger() const;
+  [[nodiscard]] int Clear_Icon() const;
   bool Goodie_Check(FootClass* object);
-  ObjectClass* Fetch_Occupier() const;
+  [[nodiscard]] ObjectClass* Fetch_Occupier() const;
 
   /*
   **	Object placement and removal flag operations.
@@ -241,7 +244,7 @@ class CellClass {
   /*
   **	File I/O.
   */
-  bool Should_Save() const;
+  [[nodiscard]] bool Should_Save() const;
   // Serializes cell fields and the corresponding CellTriggers entry.
   template <class Archive>
   void Serialize(Archive& ar);
@@ -267,6 +270,8 @@ class CellClass {
 
   int operator!=(const CellClass&) const { return 0; }
 
+  // debug self-check; callers run it for its assertions and ignore the count.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   int Validate() const;
 
  private:

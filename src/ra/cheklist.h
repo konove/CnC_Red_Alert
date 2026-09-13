@@ -71,8 +71,8 @@ class CheckListClass : public ListClass {
 
   int Add_Item(int text) override { return ListClass::Add_Item(text); }
   int Add_Item(const char* text) override;
-  const char* Current_Item() const override;
-  const char* Get_Item(int index) const override;
+  [[nodiscard]] const char* Current_Item() const override;
+  [[nodiscard]] const char* Get_Item(int index) const override;
   void Remove_Item(const char* text) override;
   void Remove_Item(int text) override { ListClass::Remove_Item(text); }
   void Set_Selected_Index(const char* text) override;
@@ -84,7 +84,7 @@ class CheckListClass : public ListClass {
   **	Checkmark utility functions
   */
   void Check_Item(int index, bool checked);  // sets checked state of item
-  bool Is_Checked(int index) const;          // gets checked state of item
+  [[nodiscard]] bool Is_Checked(int index) const;  // gets checked state of item
 
   void Set_Read_Only(int rdonly) { IsReadOnly = rdonly; }
 

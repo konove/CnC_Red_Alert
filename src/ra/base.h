@@ -100,12 +100,12 @@ class BaseClass {
   /*
   ** Tells if the given node has been built or not
   */
-  bool Is_Built(int index) const;
+  [[nodiscard]] bool Is_Built(int index) const;
 
   /*
   ** Returns a pointer to the object for the given node
   */
-  BuildingClass* Get_Building(int index) const;
+  [[nodiscard]] BuildingClass* Get_Building(int index) const;
 
   /*
   ** Tells if the given building ptr is a node in this base's list.

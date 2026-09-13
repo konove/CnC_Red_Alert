@@ -66,7 +66,7 @@ class BufferIOFileClass : public RawFileClass {
   void Free();
   bool Commit();
   const char* Set_Name(const char* filename) override;
-  int Is_Open() const override;
+  [[nodiscard]] int Is_Open() const override;
   int Open(const char* filename,
            FileAccess rights = FileAccess::kRead) override;
   int Open(FileAccess rights = FileAccess::kRead) override;

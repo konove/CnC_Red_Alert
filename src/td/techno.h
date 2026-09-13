@@ -213,31 +213,32 @@ class TechnoClass : public RadioClass,
   /*
   **	Query functions.
   */
-  virtual int Refund_Amount() const;
+  [[nodiscard]] virtual int Refund_Amount() const;
   virtual CELL Find_Exit_Cell(const TechnoClass* techno) const;
-  virtual BuildingClass* Find_Docking_Bay(StructType b, bool friendly) const;
-  virtual int Threat_Range(int control) const;
-  virtual InfantryType Crew_Type() const;
-  const TechnoTypeClass* Techno_Type_Class() const {
+  [[nodiscard]] virtual BuildingClass* Find_Docking_Bay(StructType b,
+                                                        bool friendly) const;
+  [[nodiscard]] virtual int Threat_Range(int control) const;
+  [[nodiscard]] virtual InfantryType Crew_Type() const;
+  [[nodiscard]] const TechnoTypeClass* Techno_Type_Class() const {
     return dynamic_cast<const TechnoTypeClass*>(&Class_Of());
   }
   CELL Nearby_Location(const TechnoClass* from = nullptr) const;
-  int Get_Ownable() const override;
-  bool Can_Player_Fire() const override;
-  bool Can_Player_Move() const override;
-  virtual bool Is_Weapon_Equipped() const;
-  bool Can_Repair() const override;
-  bool Is_Techno() const override;
-  HousesType Owner() const override;
-  virtual int Risk() const;
-  int Value() const override;
-  virtual int Rearm_Delay(bool second = true) const;
+  [[nodiscard]] int Get_Ownable() const override;
+  [[nodiscard]] bool Can_Player_Fire() const override;
+  [[nodiscard]] bool Can_Player_Move() const override;
+  [[nodiscard]] virtual bool Is_Weapon_Equipped() const;
+  [[nodiscard]] bool Can_Repair() const override;
+  [[nodiscard]] bool Is_Techno() const override;
+  [[nodiscard]] HousesType Owner() const override;
+  [[nodiscard]] virtual int Risk() const;
+  [[nodiscard]] int Value() const override;
+  [[nodiscard]] virtual int Rearm_Delay(bool second = true) const;
   ActionType What_Action(ObjectClass* target) override;
-  ActionType What_Action(CELL cell) const override;
-  virtual int Tiberium_Load() const;
+  [[nodiscard]] ActionType What_Action(CELL cell) const override;
+  [[nodiscard]] virtual int Tiberium_Load() const;
   virtual DirType Desired_Load_Dir(ObjectClass*, CELL& moveto) const;
-  virtual int Pip_Count() const;
-  virtual DirType Fire_Direction() const;
+  [[nodiscard]] virtual int Pip_Count() const;
+  [[nodiscard]] virtual DirType Fire_Direction() const;
 
   /*
   **	User I/O.
@@ -260,19 +261,20 @@ class TechnoClass : public RadioClass,
   void Record_The_Kill(TechnoClass* source) override;
   virtual bool Target_Something_Nearby(ThreatType threat = THREAT_NORMAL);
   virtual void Stun();
-  bool In_Range(COORDINATE coord, int which = 0) const override;
-  virtual bool In_Range(TARGET target, int which = 0) const;
+  [[nodiscard]] bool In_Range(COORDINATE coord, int which = 0) const override;
+  [[nodiscard]] virtual bool In_Range(TARGET target, int which = 0) const;
   virtual bool In_Range(const ObjectClass* target, int which = 0) const;
   virtual void Death_Announcement(
       const TechnoClass* source = nullptr) const = 0;
-  virtual FireErrorType Can_Fire(TARGET target, int which = 0) const;
-  virtual TARGET Greatest_Threat(ThreatType threat) const;
+  [[nodiscard]] virtual FireErrorType Can_Fire(TARGET target,
+                                               int which = 0) const;
+  [[nodiscard]] virtual TARGET Greatest_Threat(ThreatType threat) const;
   virtual void Assign_Target(TARGET target);
   void Override_Mission(MissionType mission, TARGET tarcom,
                         TARGET navcom) override;
   bool Restore_Mission() override;
   virtual BulletClass* Fire_At(TARGET target, int which = 0);
-  int Weapon_Range(int which) const override;
+  [[nodiscard]] int Weapon_Range(int which) const override;
   virtual bool Captured(HouseClass* newowner);
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                          TechnoClass* source) override;

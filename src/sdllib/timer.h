@@ -123,7 +123,7 @@ class TickTimer {
   }
 
   // Returns the current tick count.
-  int64_t TickCount() const {
+  [[nodiscard]] int64_t TickCount() const {
     return tick_count_.load(std::memory_order_relaxed);
   }
 

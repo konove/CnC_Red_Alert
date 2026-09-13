@@ -88,7 +88,7 @@ class DoorClass {
   bool Time_To_Redraw() { return IsToRedraw; }
   void Clear_Redraw_Flag() { IsToRedraw = false; }
   void AI();
-  int Door_Stage() const;
+  [[nodiscard]] int Door_Stage() const;
   bool Is_Door_Opening() { return State == IS_OPENING; }
   bool Is_Door_Closing() { return State == IS_CLOSING; }
   bool Open_Door(int rate, int stages);

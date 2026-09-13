@@ -23,7 +23,7 @@ class TeePipe : public Pipe {
     return Pipe::Put(source, length);
   }
 
-  bool copy_ok() const { return copy_ok_; }
+  [[nodiscard]] bool copy_ok() const { return copy_ok_; }
 
  private:
   Pipe* copy_sink_;  // nullptr when copying is disabled.

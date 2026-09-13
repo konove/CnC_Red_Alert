@@ -76,14 +76,14 @@ class FactoryClass : private StageClass {
   bool Completed();
   bool Has_Changed();
   bool Has_Completed();
-  bool Is_Building() const { return Fetch_Rate() != 0; }
+  [[nodiscard]] bool Is_Building() const { return Fetch_Rate() != 0; }
   bool Set(const TechnoTypeClass& object, HouseClass& house);
   bool Set(const int& type, HouseClass& house);
   bool Start();
   bool Suspend();
   int Completion();
-  TechnoClass* Get_Object() const;
-  int Get_Special_Item() const;
+  [[nodiscard]] TechnoClass* Get_Object() const;
+  [[nodiscard]] int Get_Special_Item() const;
   void AI();
   void Set(TechnoClass& object);
   HouseClass* Get_House() { return House; }

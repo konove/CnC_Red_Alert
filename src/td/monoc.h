@@ -128,8 +128,8 @@ class MonoClass {
                   char attrib = DEFAULT_ATTRIBUTE);
   void Text_Print(int text, int x, int y, char attrib = DEFAULT_ATTRIBUTE);
   void View();
-  int Get_X() const { return X; }
-  int Get_Y() const { return Y; }
+  [[nodiscard]] int Get_X() const { return X; }
+  [[nodiscard]] int Get_Y() const { return Y; }
 
   /*
   **	Handles deep copies for the mono class objects. This performs what is
@@ -152,7 +152,7 @@ class MonoClass {
   /*
   **	Helper functions to help with display operations.
   */
-  int Offset(int x = 0, int y = 0) const {
+  [[nodiscard]] int Offset(int x = 0, int y = 0) const {
     return static_cast<int>((static_cast<std::size_t>(SIZE_OF_PAGE) * Page) +
                             (sizeof(CellType) * (x + (y * COLUMNS))));
   }

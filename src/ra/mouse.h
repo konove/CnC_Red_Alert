@@ -68,7 +68,9 @@ class MouseClass : public ScrollClass {
   void AI(KeyNumType& input, int x, int y) override;
   bool Override_Mouse_Shape(MouseType mouse, bool wsmall = false) override;
   void Revert_Mouse_Shape() override;
-  MouseType Get_Mouse_Shape() const override { return NormalMouseShape; }
+  [[nodiscard]] MouseType Get_Mouse_Shape() const override {
+    return NormalMouseShape;
+  }
   void Mouse_Small(bool wsmall) override;
 
   /*

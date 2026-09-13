@@ -134,88 +134,90 @@ class xTargetClass {
   }
 
   // conversion operator to regular TARGET type
-  TARGET As_TARGET() const { return Target.Target; }
+  [[nodiscard]] TARGET As_TARGET() const { return Target.Target; }
 
-  unsigned Value() const { return Target.Sub.Mantissa; }
+  [[nodiscard]] unsigned Value() const { return Target.Sub.Mantissa; }
 
   void Invalidate() {
     Target.Sub.Exponent = RTTI_NONE;
     Target.Sub.Mantissa = (1 << kTargetMantissaBits) - 1;
   }
-  bool Is_Valid() const { return Target.Sub.Exponent != RTTI_NONE; }
+  [[nodiscard]] bool Is_Valid() const {
+    return Target.Sub.Exponent != RTTI_NONE;
+  }
 
-  TARGET As_Target() const { return Target.Target; }
-  AbstractTypeClass* As_TypeClass() const;
-  AbstractClass* As_Abstract() const;
-  TechnoClass* As_Techno() const;
-  ObjectClass* As_Object() const;
-  CellClass* As_Cell() const;
+  [[nodiscard]] TARGET As_Target() const { return Target.Target; }
+  [[nodiscard]] AbstractTypeClass* As_TypeClass() const;
+  [[nodiscard]] AbstractClass* As_Abstract() const;
+  [[nodiscard]] TechnoClass* As_Techno() const;
+  [[nodiscard]] ObjectClass* As_Object() const;
+  [[nodiscard]] CellClass* As_Cell() const;
 
   /*
   **	Helper routines to combine testing for, and fetching a pointer to, the
   **	type of object indicated.
   */
-  TriggerTypeClass* As_TriggerType() const {
+  [[nodiscard]] TriggerTypeClass* As_TriggerType() const {
     if (*this == RTTI_TRIGGERTYPE) {
       return (TriggerTypeClass*)As_TypeClass();
     }
     return nullptr;
   }
-  TeamTypeClass* As_TeamType() const {
+  [[nodiscard]] TeamTypeClass* As_TeamType() const {
     if (*this == RTTI_TEAMTYPE) {
       return (TeamTypeClass*)As_TypeClass();
     }
     return nullptr;
   }
-  TerrainClass* As_Terrain() const {
+  [[nodiscard]] TerrainClass* As_Terrain() const {
     if (*this == RTTI_TERRAIN) {
       return (TerrainClass*)As_Abstract();
     }
     return nullptr;
   }
-  BulletClass* As_Bullet() const {
+  [[nodiscard]] BulletClass* As_Bullet() const {
     if (*this == RTTI_BULLET) {
       return (BulletClass*)As_Abstract();
     }
     return nullptr;
   }
-  AnimClass* As_Anim() const {
+  [[nodiscard]] AnimClass* As_Anim() const {
     if (*this == RTTI_ANIM) {
       return (AnimClass*)As_Abstract();
     }
     return nullptr;
   }
-  TeamClass* As_Team() const {
+  [[nodiscard]] TeamClass* As_Team() const {
     if (*this == RTTI_TEAM) {
       return (TeamClass*)As_Abstract();
     }
     return nullptr;
   }
-  InfantryClass* As_Infantry() const {
+  [[nodiscard]] InfantryClass* As_Infantry() const {
     if (*this == RTTI_INFANTRY) {
       return (InfantryClass*)As_Techno();
     }
     return nullptr;
   }
-  UnitClass* As_Unit() const {
+  [[nodiscard]] UnitClass* As_Unit() const {
     if (*this == RTTI_UNIT) {
       return (UnitClass*)As_Techno();
     }
     return nullptr;
   }
-  BuildingClass* As_Building() const {
+  [[nodiscard]] BuildingClass* As_Building() const {
     if (*this == RTTI_BUILDING) {
       return (BuildingClass*)As_Techno();
     }
     return nullptr;
   }
-  AircraftClass* As_Aircraft() const {
+  [[nodiscard]] AircraftClass* As_Aircraft() const {
     if (*this == RTTI_AIRCRAFT) {
       return (AircraftClass*)As_Techno();
     }
     return nullptr;
   }
-  VesselClass* As_Vessel() const {
+  [[nodiscard]] VesselClass* As_Vessel() const {
     if (*this == RTTI_VESSEL) {
       return (VesselClass*)As_Techno();
     }

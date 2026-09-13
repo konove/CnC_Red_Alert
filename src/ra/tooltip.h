@@ -43,7 +43,7 @@ class ToolTipClass {
   void Show();
   void Unshow();
   void Move(int x_show, int y_show);
-  bool bOverDifferentLine() const;
+  [[nodiscard]] bool bOverDifferentLine() const;
 
   ToolTipClass* next;  //	Next tooltip in list of which *this is a part.
 
@@ -56,7 +56,7 @@ class ToolTipClass {
                    // are to be used.
 
  protected:
-  bool bGadgetHit() const;
+  [[nodiscard]] bool bGadgetHit() const;
 
   int xShow;
   int yShow;

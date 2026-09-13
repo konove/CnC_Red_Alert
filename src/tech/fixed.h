@@ -60,11 +60,11 @@ class fixed {
   }
 
   // Returns the value rounded to the nearest whole integer.
-  int ToInt() const { return (raw_ + kRoundingBias) >> 8; }
+  [[nodiscard]] int ToInt() const { return (raw_ + kRoundingBias) >> 8; }
 
   // Accessors for the whole and fractional parts.
-  uint8_t whole() const { return raw_ >> 8; }
-  uint8_t fraction() const { return raw_ & 0xFF; }
+  [[nodiscard]] uint8_t whole() const { return raw_ >> 8; }
+  [[nodiscard]] uint8_t fraction() const { return raw_ & 0xFF; }
 
   // Resets the value to zero.
   void Clear() { raw_ = 0; }
@@ -292,7 +292,7 @@ class fixed {
   }
 
   // Returns the decimal string representation (e.g., "1.5", "0.75", "3").
-  std::string AsString() const;
+  [[nodiscard]] std::string AsString() const;
 
   // Common fixed-point constants (defined after the class is complete).
   static const fixed _1_2;  // 1/2

@@ -53,16 +53,16 @@ class LinkClass {
   LinkClass(LinkClass&&) = delete;
   LinkClass& operator=(LinkClass&&) = delete;
 
-  virtual LinkClass* Get_Next() const;
-  virtual LinkClass* Get_Prev() const;
+  [[nodiscard]] virtual LinkClass* Get_Next() const;
+  [[nodiscard]] virtual LinkClass* Get_Prev() const;
   virtual LinkClass& Add(LinkClass& object);
   virtual LinkClass& Add_Tail(LinkClass& object);
   virtual LinkClass& Add_Head(LinkClass& object);
-  virtual const LinkClass& Head_Of_List() const final;
+  [[nodiscard]] virtual const LinkClass& Head_Of_List() const final;
   virtual LinkClass& Head_Of_List() final {
     return (LinkClass&)static_cast<const LinkClass*>(this)->Head_Of_List();
   }
-  virtual const LinkClass& Tail_Of_List() const final;
+  [[nodiscard]] virtual const LinkClass& Tail_Of_List() const final;
   virtual LinkClass& Tail_Of_List() final {
     return (LinkClass&)static_cast<const LinkClass*>(this)->Tail_Of_List();
   }

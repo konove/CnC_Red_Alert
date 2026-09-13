@@ -85,7 +85,7 @@ class ListClass : public ControlClass {
   virtual int Current_Index();
   virtual const char* Current_Item();
   int Draw_Me(bool forced) override;
-  virtual const char* Get_Item(int index) const;
+  [[nodiscard]] virtual const char* Get_Item(int index) const;
   virtual int Step_Selected_Index(int forward);
 
   void Peer_To_Peer(unsigned flags, KeyNumType& key,

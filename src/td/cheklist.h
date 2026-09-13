@@ -65,7 +65,7 @@ class CheckListClass : public ListClass {
   Checkmark utility functions
   ---------------------------------------------------------------------*/
   void Check_Item(int index, int checked);  // sets checked state of item
-  int Is_Checked(int index) const;          // gets checked state of item
+  [[nodiscard]] int Is_Checked(int index) const;  // gets checked state of item
 
   /*---------------------------------------------------------------------
   This defines the ASCII value of the checkmark character & non-checkmark

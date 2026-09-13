@@ -83,7 +83,7 @@ class MissionClass : public ObjectClass {
   */
   void Debug_Dump(MonoClass* mono) const override;
 
-  MissionType Get_Mission() const override;
+  [[nodiscard]] MissionType Get_Mission() const override;
   virtual void Assign_Mission(MissionType mission);
   virtual bool Commence();
   void AI() override;

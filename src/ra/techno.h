@@ -301,50 +301,54 @@ class TechnoClass : public RadioClass,
   **	Query functions.
   */
   bool Is_Allowed_To_Retaliate(const TechnoClass* source) const;
-  bool Can_Teleport_Here(CELL cell) const;
-  bool Is_In_Same_Zone(CELL cell) const;
-  bool Is_Players_Army() const override;
-  int Combat_Damage(int which = -1) const;
-  bool Is_Ready_To_Cloak() const;
+  [[nodiscard]] bool Can_Teleport_Here(CELL cell) const;
+  [[nodiscard]] bool Is_In_Same_Zone(CELL cell) const;
+  [[nodiscard]] bool Is_Players_Army() const override;
+  [[nodiscard]] int Combat_Damage(int which = -1) const;
+  [[nodiscard]] bool Is_Ready_To_Cloak() const;
 
   // Returns the number of infantry that emerge when this object is sold or
   // destroyed. Captured buildings yield fewer survivors. Result is clamped
   // to [1, 5], or 0 if the object cannot produce survivors.
-  virtual int How_Many_Survivors() const;
+  [[nodiscard]] virtual int How_Many_Survivors() const;
 
-  virtual DirType Turret_Facing() const { return PrimaryFacing.Current(); }
+  [[nodiscard]] virtual DirType Turret_Facing() const {
+    return PrimaryFacing.Current();
+  }
   CELL Nearby_Location(const TechnoClass* from = nullptr) const;
-  TechnoTypeClass* Techno_Type_Class() const {
+  [[nodiscard]] TechnoTypeClass* Techno_Type_Class() const {
     return (TechnoTypeClass*)&Class_Of();
   }
-  bool Is_Visible_On_Radar() const;
-  int Anti_Air() const;
-  int Anti_Armor() const;
-  int Anti_Infantry() const;
-  int Time_To_Build() const;
-  int What_Weapon_Should_I_Use(TARGET target) const;
-  ActionType What_Action(CELL cell) const override;
+  [[nodiscard]] bool Is_Visible_On_Radar() const;
+  [[nodiscard]] int Anti_Air() const;
+  [[nodiscard]] int Anti_Armor() const;
+  [[nodiscard]] int Anti_Infantry() const;
+  [[nodiscard]] int Time_To_Build() const;
+  [[nodiscard]] int What_Weapon_Should_I_Use(TARGET target) const;
+  [[nodiscard]] ActionType What_Action(CELL cell) const override;
   ActionType What_Action(const ObjectClass* target) const override;
-  virtual BuildingClass* Find_Docking_Bay(StructType b, bool friendly) const;
+  [[nodiscard]] virtual BuildingClass* Find_Docking_Bay(StructType b,
+                                                        bool friendly) const;
   virtual CELL Find_Exit_Cell(const TechnoClass* techno) const;
-  COORDINATE Fire_Coord(int which) const override;
+  [[nodiscard]] COORDINATE Fire_Coord(int which) const override;
   virtual DirType Desired_Load_Dir(ObjectClass*, CELL& moveto) const;
-  virtual DirType Fire_Direction() const;
-  HousesType Owner() const override;
-  virtual InfantryType Crew_Type() const;
-  bool Can_Player_Fire() const override;
-  bool Can_Player_Move() const override;
-  virtual bool Is_Allowed_To_Recloak() const;
-  bool Can_Repair() const override;
-  virtual bool Is_Weapon_Equipped() const;
-  virtual fixed Tiberium_Load() const;
-  virtual int Pip_Count() const;
-  virtual int Rearm_Delay(bool second = true, int which = 0) const;
-  virtual int Refund_Amount() const;
-  virtual int Risk() const;
-  virtual int Threat_Range(int control) const;
-  int Value() const override;
-  int Get_Ownable() const override;
+  [[nodiscard]] virtual DirType Fire_Direction() const;
+  [[nodiscard]] HousesType Owner() const override;
+  [[nodiscard]] virtual InfantryType Crew_Type() const;
+  [[nodiscard]] bool Can_Player_Fire() const override;
+  [[nodiscard]] bool Can_Player_Move() const override;
+  [[nodiscard]] virtual bool Is_Allowed_To_Recloak() const;
+  [[nodiscard]] bool Can_Repair() const override;
+  [[nodiscard]] virtual bool Is_Weapon_Equipped() const;
+  [[nodiscard]] virtual fixed Tiberium_Load() const;
+  [[nodiscard]] virtual int Pip_Count() const;
+  [[nodiscard]] virtual int Rearm_Delay(bool second = true,
+                                        int which = 0) const;
+  [[nodiscard]] virtual int Refund_Amount() const;
+  [[nodiscard]] virtual int Risk() const;
+  [[nodiscard]] virtual int Threat_Range(int control) const;
+  [[nodiscard]] int Value() const override;
+  [[nodiscard]] int Get_Ownable() const override;
 
   /*
   **	User I/O.
@@ -361,26 +365,27 @@ class TechnoClass : public RadioClass,
   /*
   **	Combat related.
   */
-  fixed Area_Modify(CELL cell) const;
+  [[nodiscard]] fixed Area_Modify(CELL cell) const;
   virtual int Made_A_Kill() { return Crew.Add_Kill(); }
   void Base_Is_Attacked(const TechnoClass* enemy);
   void Kill_Cargo(TechnoClass* source);
   void Record_The_Kill(TechnoClass* source) override;
   virtual bool Target_Something_Nearby(ThreatType threat = THREAT_NORMAL);
   virtual void Stun();
-  bool In_Range(COORDINATE coord, int which = 0) const override;
-  virtual bool In_Range(TARGET target, int which = 0) const;
+  [[nodiscard]] bool In_Range(COORDINATE coord, int which = 0) const override;
+  [[nodiscard]] virtual bool In_Range(TARGET target, int which = 0) const;
   virtual bool In_Range(const ObjectClass* target, int which = 0) const;
   virtual void Death_Announcement(
       const TechnoClass* source = nullptr) const = 0;
-  virtual FireErrorType Can_Fire(TARGET target, int which = 0) const;
+  [[nodiscard]] virtual FireErrorType Can_Fire(TARGET target,
+                                               int which = 0) const;
   virtual TARGET Greatest_Threat(ThreatType threat);  // const;
   virtual void Assign_Target(TARGET target);
   void Override_Mission(MissionType mission, TARGET tarcom,
                         TARGET navcom) override;
   bool Restore_Mission() override;
   virtual BulletClass* Fire_At(TARGET target, int which = 0);
-  int Weapon_Range(int which) const override;
+  [[nodiscard]] int Weapon_Range(int which) const override;
   virtual bool Captured(HouseClass* newowner);
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                          TechnoClass* source = nullptr,
@@ -391,7 +396,7 @@ class TechnoClass : public RadioClass,
   bool Evaluate_Object(ThreatType method, int mask, int range,
                        const TechnoClass* object, int& value,
                        int zone = -1) const;
-  int Evaluate_Just_Cell(CELL cell) const;
+  [[nodiscard]] int Evaluate_Just_Cell(CELL cell) const;
   virtual bool Electric_Zap(TARGET target, int which,
                             COORDINATE target_coord = 0L,
                             unsigned char* remap = nullptr);
@@ -417,8 +422,8 @@ class TechnoClass : public RadioClass,
   */
   // Returns the color remap table for rendering this object. Remappable
   // objects use their house color; non-remappable objects use gold.
-  virtual const void* Remap_Table() const;
-  VisualType Visual_Character(bool raw = false) const;
+  [[nodiscard]] virtual const void* Remap_Table() const;
+  [[nodiscard]] VisualType Visual_Character(bool raw = false) const;
 
   // Draws the object with appropriate remapping, cloaking, and shadow effects.
   // Handles spy disguise (enemy spies render with the player's house colors),
@@ -441,7 +446,7 @@ class TechnoClass : public RadioClass,
   /*
   **	Movement and animation.
   */
-  virtual bool Is_Ready_To_Random_Animate() const;
+  [[nodiscard]] virtual bool Is_Ready_To_Random_Animate() const;
   virtual bool Random_Animate() { return false; }
   virtual void Assign_Destination(TARGET target);
   void Per_Cell_Process(PCPType why) override;

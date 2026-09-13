@@ -75,7 +75,7 @@ class GenericNode {
     }
   }
 
-  GenericList* Main_List() const {
+  [[nodiscard]] GenericList* Main_List() const {
     const GenericNode* node = this;
     while (node->PrevNode) {
       node = PrevNode;
@@ -98,9 +98,11 @@ class GenericNode {
   // PrevNode/NextNode, and reports the next walk of the list as a
   // use-after-free.
   // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDelete)
-  GenericNode* Next() const { return NextNode; }
-  GenericNode* Prev() const { return PrevNode; }
-  bool Is_Valid() const { return NextNode != nullptr && PrevNode != nullptr; }
+  [[nodiscard]] GenericNode* Next() const { return NextNode; }
+  [[nodiscard]] GenericNode* Prev() const { return PrevNode; }
+  [[nodiscard]] bool Is_Valid() const {
+    return NextNode != nullptr && PrevNode != nullptr;
+  }
 
  protected:
   GenericNode* NextNode;
@@ -123,9 +125,9 @@ class GenericList {
   GenericList(GenericList&&) = delete;
   GenericList& operator=(GenericList&&) = delete;
 
-  GenericNode* First() const { return FirstNode.Next(); }
-  GenericNode* Last() const { return LastNode.Prev(); }
-  bool Is_Empty() const { return !FirstNode.Next()->Is_Valid(); }
+  [[nodiscard]] GenericNode* First() const { return FirstNode.Next(); }
+  [[nodiscard]] GenericNode* Last() const { return LastNode.Prev(); }
+  [[nodiscard]] bool Is_Empty() const { return !FirstNode.Next()->Is_Valid(); }
   void Add_Head(GenericNode* node) { FirstNode.Link(node); }
   void Add_Tail(GenericNode* node) { LastNode.Prev()->Link(node); }
   void Delete() {
@@ -162,13 +164,13 @@ class Node : public GenericNode {
   // Hiding the generic accessors is the entire purpose of this interface
   // class: it narrows their return types without adding virtual dispatch.
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
-  List<T>* Main_List() const {
+  [[nodiscard]] List<T>* Main_List() const {
     return static_cast<List<T>*>(GenericNode::Main_List());
   }
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
-  T* Next() const { return static_cast<T*>(GenericNode::Next()); }
+  [[nodiscard]] T* Next() const { return static_cast<T*>(GenericNode::Next()); }
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
-  T* Prev() const { return static_cast<T*>(GenericNode::Prev()); }
+  [[nodiscard]] T* Prev() const { return static_cast<T*>(GenericNode::Prev()); }
 
  private:
   Node() = default;
@@ -185,9 +187,11 @@ class List : public GenericList {
  public:
   // As in Node, the narrowed return types are the point of the hiding.
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
-  T* First() const { return static_cast<T*>(GenericList::First()); }
+  [[nodiscard]] T* First() const {
+    return static_cast<T*>(GenericList::First());
+  }
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
-  T* Last() const { return static_cast<T*>(GenericList::Last()); }
+  [[nodiscard]] T* Last() const { return static_cast<T*>(GenericList::Last()); }
 };
 
 #endif  // CNC_RED_ALERT_TECH_LISTNODE_H_

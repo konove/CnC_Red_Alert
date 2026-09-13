@@ -245,15 +245,15 @@ class AbstractTypeClass {
   AbstractTypeClass(AbstractTypeClass&&) = default;
   AbstractTypeClass& operator=(AbstractTypeClass&&) = default;
 
-  virtual RTTIType What_Am_I() const;
+  [[nodiscard]] virtual RTTIType What_Am_I() const;
 
-  virtual COORDINATE Coord_Fixup(COORDINATE coord) const;
-  virtual int Full_Name() const;
+  [[nodiscard]] virtual COORDINATE Coord_Fixup(COORDINATE coord) const;
+  [[nodiscard]] virtual int Full_Name() const;
   void Set_Name(const char* buf) {
     strncpy(IniName, buf, sizeof(IniName));
     IniName[sizeof(IniName) - 1] = '\0';
   }
-  virtual unsigned short Get_Ownable() const;
+  [[nodiscard]] virtual unsigned short Get_Ownable() const;
 };
 
 /***************************************************************************
@@ -353,18 +353,21 @@ class ObjectTypeClass : public AbstractTypeClass {
 
   static void One_Time();
 
-  virtual int Max_Pips() const;
+  [[nodiscard]] virtual int Max_Pips() const;
   virtual void Dimensions(int& width, int& height) const;
+  // placement can fail silently by design, as in crate and editor drops.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   virtual bool Create_And_Place(CELL, HousesType = HOUSE_NONE) const = 0;
-  virtual int Cost_Of() const;
-  virtual int Time_To_Build(HousesType house) const;
+  [[nodiscard]] virtual int Cost_Of() const;
+  [[nodiscard]] virtual int Time_To_Build(HousesType house) const;
   virtual ObjectClass* Create_One_Of(HouseClass*) const = 0;
-  virtual const short* Occupy_List(bool placement = false) const;
-  virtual const short* Overlap_List() const;
-  virtual BuildingClass* Who_Can_Build_Me(bool, bool, HousesType) const;
-  virtual const void* Get_Cameo_Data() const;
-  const void* Get_Image_Data() const { return ImageData; }
-  const void* Get_Radar_Data() const { return RadarIcon; }
+  [[nodiscard]] virtual const short* Occupy_List(bool placement = false) const;
+  [[nodiscard]] virtual const short* Overlap_List() const;
+  [[nodiscard]] virtual BuildingClass* Who_Can_Build_Me(bool, bool,
+                                                        HousesType) const;
+  [[nodiscard]] virtual const void* Get_Cameo_Data() const;
+  [[nodiscard]] const void* Get_Image_Data() const { return ImageData; }
+  [[nodiscard]] const void* Get_Radar_Data() const { return RadarIcon; }
 
   virtual void Display(int, int, WindowNumberType, HousesType) const {}
 
@@ -526,14 +529,14 @@ class TechnoTypeClass : public ObjectTypeClass {
                   WeaponType primary, WeaponType secondary,
                   ArmorType armor) noexcept;
 
-  virtual int Raw_Cost() const;
-  virtual int Max_Passengers() const;
-  virtual int Repair_Cost() const;
-  virtual int Repair_Step() const;
-  const void* Get_Cameo_Data() const override;
-  int Cost_Of() const override;
-  int Time_To_Build(HousesType house) const override;
-  unsigned short Get_Ownable() const override;
+  [[nodiscard]] virtual int Raw_Cost() const;
+  [[nodiscard]] virtual int Max_Passengers() const;
+  [[nodiscard]] virtual int Repair_Cost() const;
+  [[nodiscard]] virtual int Repair_Step() const;
+  [[nodiscard]] const void* Get_Cameo_Data() const override;
+  [[nodiscard]] int Cost_Of() const override;
+  [[nodiscard]] int Time_To_Build(HousesType house) const override;
+  [[nodiscard]] unsigned short Get_Ownable() const override;
 };
 
 /***************************************************************************
@@ -705,7 +708,9 @@ class BuildingTypeClass : public TechnoTypeClass {
                     unsigned long canenter, unsigned capacity, int power,
                     int drain, BSizeType size, const short* exitlist,
                     const short* sizelist, const short* overlap) noexcept;
-  RTTIType What_Am_I() const override { return RTTI_BUILDINGTYPE; }
+  [[nodiscard]] RTTIType What_Am_I() const override {
+    return RTTI_BUILDINGTYPE;
+  }
   // objects compare directly against their type ID.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator StructType() const { return Type; }
@@ -716,28 +721,32 @@ class BuildingTypeClass : public TechnoTypeClass {
   static void One_Time();
   static void Prep_For_Add();
 
-  int Width() const;
-  int Height() const;
+  [[nodiscard]] int Width() const;
+  [[nodiscard]] int Height() const;
 
-  int Cost_Of() const override;
-  int Full_Name() const override;
-  COORDINATE Coord_Fixup(COORDINATE coord) const override {
+  [[nodiscard]] int Cost_Of() const override;
+  [[nodiscard]] int Full_Name() const override;
+  [[nodiscard]] COORDINATE Coord_Fixup(COORDINATE coord) const override {
     return coord & 0xFF00FF00L;
   }
-  int Max_Pips() const override;
+  [[nodiscard]] int Max_Pips() const override;
   void Dimensions(int& width, int& height) const override;
-  virtual int Legal_Placement(CELL pos) const;
+  [[nodiscard]] virtual int Legal_Placement(CELL pos) const;
+  // placement can fail silently by design, as in crate and editor drops.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
-  const short* Occupy_List(bool placement = false) const override;
-  const short* Overlap_List() const override;
-  BuildingClass* Who_Can_Build_Me(bool intheory, bool legal,
-                                  HousesType house) const override;
-  virtual const void* Get_Buildup_Data() const { return BuildupData; }
+  [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
+  [[nodiscard]] const short* Overlap_List() const override;
+  [[nodiscard]] BuildingClass* Who_Can_Build_Me(
+      bool intheory, bool legal, HousesType house) const override;
+  [[nodiscard]] virtual const void* Get_Buildup_Data() const {
+    return BuildupData;
+  }
 
-  int Raw_Cost() const override;
-  int Repair_Cost() const override;
-  int Repair_Step() const override;
+  [[nodiscard]] int Raw_Cost() const override;
+  [[nodiscard]] int Repair_Cost() const override;
+  [[nodiscard]] int Repair_Step() const override;
   bool Bib_And_Offset(SmudgeType& bib, CELL& cell) const;
 
   void Display(int x, int y, WindowNumberType window,
@@ -920,7 +929,7 @@ class UnitTypeClass : public TechnoTypeClass {
                 WeaponType secondary, ArmorType armor, SpeedType speed,
                 MPHType maxSpeed, unsigned rot, int toffset,
                 MissionType order) noexcept;
-  RTTIType What_Am_I() const override { return RTTI_UNITTYPE; }
+  [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_UNITTYPE; }
 
   static UnitType From_Name(const char* name);
   static const UnitTypeClass& As_Reference(UnitType type);
@@ -929,15 +938,17 @@ class UnitTypeClass : public TechnoTypeClass {
   static void Prep_For_Add();
 
   void Dimensions(int& width, int& height) const override;
+  // placement can fail silently by design, as in crate and editor drops.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
-  const short* Occupy_List(bool placement = false) const override;
-  BuildingClass* Who_Can_Build_Me(bool intheory, bool legal,
-                                  HousesType house) const override;
-  int Max_Pips() const override;
+  [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
+  [[nodiscard]] BuildingClass* Who_Can_Build_Me(
+      bool intheory, bool legal, HousesType house) const override;
+  [[nodiscard]] int Max_Pips() const override;
 
-  int Repair_Cost() const override;
-  int Repair_Step() const override;
+  [[nodiscard]] int Repair_Cost() const override;
+  [[nodiscard]] int Repair_Step() const override;
 
   void Display(int x, int y, WindowNumberType window,
                HousesType house) const override;
@@ -1026,7 +1037,9 @@ class InfantryTypeClass : public TechnoTypeClass {
                     int cost, int scenario, int risk, int reward, int ownable,
                     WeaponType primary, WeaponType secondary,
                     MPHType maxSpeed) noexcept;
-  RTTIType What_Am_I() const override { return RTTI_INFANTRYTYPE; }
+  [[nodiscard]] RTTIType What_Am_I() const override {
+    return RTTI_INFANTRYTYPE;
+  }
 
   static InfantryType From_Name(const char* name);
   static const InfantryTypeClass& As_Reference(InfantryType type) {
@@ -1040,12 +1053,14 @@ class InfantryTypeClass : public TechnoTypeClass {
     width = 12;
     height = 16;
   }
+  // placement can fail silently by design, as in crate and editor drops.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
-  const short* Occupy_List(bool placement = false) const override;
-  BuildingClass* Who_Can_Build_Me(bool intheory, bool legal,
-                                  HousesType house) const override;
-  int Full_Name() const override;
+  [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
+  [[nodiscard]] BuildingClass* Who_Can_Build_Me(
+      bool intheory, bool legal, HousesType house) const override;
+  [[nodiscard]] int Full_Name() const override;
 
   void Display(int x, int y, WindowNumberType window,
                HousesType house) const override;
@@ -1188,7 +1203,7 @@ class BulletTypeClass : public ObjectTypeClass {
                   int arming, int range, MPHType maxspeed, unsigned rot,
                   WarheadType warhead, AnimType explosion) noexcept;
 
-  RTTIType What_Am_I() const override { return RTTI_BULLETTYPE; }
+  [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_BULLETTYPE; }
 
   static const BulletTypeClass& As_Reference(BulletType type) {
     return *Pointers[type];
@@ -1196,6 +1211,8 @@ class BulletTypeClass : public ObjectTypeClass {
   static void Init(TheaterType) {}
   static void One_Time();
 
+  // placement can fail silently by design, as in crate and editor drops.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL, HousesType = HOUSE_NONE) const override {
     return false;
   }
@@ -1261,7 +1278,7 @@ class TerrainTypeClass : public ObjectTypeClass {
                    const char* ininame, int fullname, unsigned short strength,
                    ArmorType armor, const short* occupy,
                    const short* overlap) noexcept;
-  RTTIType What_Am_I() const override { return RTTI_TERRAINTYPE; }
+  [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_TERRAINTYPE; }
 
   static TerrainType From_Name(const char* name);
   static const TerrainTypeClass& As_Reference(TerrainType type) {
@@ -1271,13 +1288,15 @@ class TerrainTypeClass : public ObjectTypeClass {
   static void One_Time() {}
   static void Prep_For_Add();
 
-  COORDINATE Coord_Fixup(COORDINATE coord) const override {
+  [[nodiscard]] COORDINATE Coord_Fixup(COORDINATE coord) const override {
     return coord & 0xFF00FF00L;
   }
+  // placement can fail silently by design, as in crate and editor drops.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass*) const override;
-  const short* Occupy_List(bool placement = false) const override;
-  const short* Overlap_List() const override;
+  [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
+  [[nodiscard]] const short* Overlap_List() const override;
 
   void Display(int x, int y, WindowNumberType window,
                HousesType house = HOUSE_NONE) const override;
@@ -1332,7 +1351,9 @@ class TemplateTypeClass : public ObjectTypeClass {
   TemplateTypeClass(TemplateType iconset, int theater, const char* ininame,
                     int fullname, LandType land, int width, int height,
                     LandType altland, const char* alticons) noexcept;
-  RTTIType What_Am_I() const override { return RTTI_TEMPLATETYPE; }
+  [[nodiscard]] RTTIType What_Am_I() const override {
+    return RTTI_TEMPLATETYPE;
+  }
 
   static TemplateType From_Name(const char* name);
   static const TemplateTypeClass& As_Reference(TemplateType type) {
@@ -1342,13 +1363,15 @@ class TemplateTypeClass : public ObjectTypeClass {
   static void One_Time();
   static void Prep_For_Add();
 
-  COORDINATE Coord_Fixup(COORDINATE coord) const override {
+  [[nodiscard]] COORDINATE Coord_Fixup(COORDINATE coord) const override {
     return coord & 0xFF00FF00L;
   }
+  // placement can fail silently by design, as in crate and editor drops.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell,
                         HousesType house = HOUSE_NONE) const override;
   ObjectClass* Create_One_Of(HouseClass*) const override;
-  const short* Occupy_List(bool placement = false) const override;
+  [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
 
   void Display(int x, int y, WindowNumberType window,
                HousesType house = HOUSE_NONE) const override;
@@ -1571,7 +1594,7 @@ class AircraftTypeClass : public TechnoTypeClass {
                     int scenario, int risk, int reward, int ownable,
                     WeaponType primary, WeaponType secondary, ArmorType armor,
                     MPHType MaxSpeed, int ROT, MissionType deforder) noexcept;
-  RTTIType What_Am_I() const override;
+  [[nodiscard]] RTTIType What_Am_I() const override;
 
   // Returns the AircraftType matching the given INI name (case-insensitive),
   // or AIRCRAFT_NONE if no match is found.
@@ -1590,29 +1613,31 @@ class AircraftTypeClass : public TechnoTypeClass {
   static void Prep_For_Add();
 
   // Returns the credit cost for each repair step.
-  int Repair_Cost() const override;
+  [[nodiscard]] int Repair_Cost() const override;
 
   // Returns the number of health points restored per repair step.
-  int Repair_Step() const override;
+  [[nodiscard]] int Repair_Step() const override;
   void Dimensions(int& width, int& height) const override;
 
   // Aircraft cannot be placed directly; always returns false.
+  // placement can fail silently by design, as in crate and editor drops.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL, HousesType) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
 
   // Occupation and overlap lists are only meaningful when the aircraft is
   // landed.
-  const short* Occupy_List(bool placement = false) const override;
-  const short* Overlap_List() const override;
+  [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
+  [[nodiscard]] const short* Overlap_List() const override;
 
   // Scans all buildings to find a factory that can produce this aircraft type.
   // Returns the leader building if available, otherwise any eligible building,
   // or nullptr if none qualifies.
-  BuildingClass* Who_Can_Build_Me(bool intheory, bool legal,
-                                  HousesType house) const override;
+  [[nodiscard]] BuildingClass* Who_Can_Build_Me(
+      bool intheory, bool legal, HousesType house) const override;
 
   // Returns max passengers for transports, 5 for armed aircraft, 0 otherwise.
-  int Max_Pips() const override;
+  [[nodiscard]] int Max_Pips() const override;
 
   void Display(int x, int y, WindowNumberType window,
                HousesType house) const override;
@@ -1709,7 +1734,7 @@ class OverlayTypeClass : public ObjectTypeClass {
                    bool isradarinvisible, bool iswooden, bool istarget,
                    bool iscrushable, bool istiberium, bool high, bool theater,
                    bool iswall, bool iscrate) noexcept;
-  RTTIType What_Am_I() const override { return RTTI_OVERLAYTYPE; }
+  [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_OVERLAYTYPE; }
 
   static OverlayType From_Name(const char* name);
   static const OverlayTypeClass& As_Reference(OverlayType type) {
@@ -1719,15 +1744,17 @@ class OverlayTypeClass : public ObjectTypeClass {
   static void One_Time();
   static void Prep_For_Add();
 
-  COORDINATE Coord_Fixup(COORDINATE coord) const override {
+  [[nodiscard]] COORDINATE Coord_Fixup(COORDINATE coord) const override {
     return coord & 0xFF00FF00L;
   }
+  // placement can fail silently by design, as in crate and editor drops.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell,
                         HousesType house = HOUSE_NONE) const override;
   ObjectClass* Create_One_Of(HouseClass*) const override;
-  const short* Occupy_List(bool placement = false) const override;
+  [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
   virtual void Draw_It(int x, int y, int data) const;
-  virtual unsigned char* Radar_Icon(int data) const;
+  [[nodiscard]] virtual unsigned char* Radar_Icon(int data) const;
 
   void Display(int x, int y, WindowNumberType window,
                HousesType house = HOUSE_NONE) const override;
@@ -1777,7 +1804,7 @@ class SmudgeTypeClass : public ObjectTypeClass {
   //----------------------------------------------------------
   SmudgeTypeClass(SmudgeType smudge, const char* ininame, int fullname,
                   int width, int height, bool isbib, bool iscrater) noexcept;
-  RTTIType What_Am_I() const override { return RTTI_SMUDGETYPE; }
+  [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_SMUDGETYPE; }
 
   static SmudgeType From_Name(const char* name);
   static const SmudgeTypeClass& As_Reference(SmudgeType type) {
@@ -1787,11 +1814,15 @@ class SmudgeTypeClass : public ObjectTypeClass {
   static void One_Time();
   static void Prep_For_Add();
 
+  // placement can fail silently by design, as in crate and editor drops.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell,
                         HousesType house = HOUSE_NONE) const override;
   ObjectClass* Create_One_Of(HouseClass*) const override;
-  const short* Occupy_List(bool placement = false) const override;
-  const short* Overlap_List() const override { return Occupy_List(); }
+  [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
+  [[nodiscard]] const short* Overlap_List() const override {
+    return Occupy_List();
+  }
   virtual void Draw_It(int x, int y, int data) const;
 
   void Display(int x, int y, WindowNumberType window,

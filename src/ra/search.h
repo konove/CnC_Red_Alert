@@ -101,17 +101,17 @@ class IndexClass {
   /*
   **	Check to see if index is present.
   */
-  bool Is_Present(int id) const;
+  [[nodiscard]] bool Is_Present(int id) const;
 
   /*
   **	Fetch number of indexes in the table.
   */
-  int Count() const;
+  [[nodiscard]] int Count() const;
 
   /*
   **	Actually a fetch an index data element from the table.
   */
-  T Fetch_Index(int id) const;
+  [[nodiscard]] T Fetch_Index(int id) const;
 
   /*
   **	Clear out the index table to null (empty) state.
@@ -171,7 +171,7 @@ class IndexClass {
   /*
   **	Check if archive pointer is the same as that requested.
   */
-  bool Is_Archive_Same(int id) const;
+  [[nodiscard]] bool Is_Archive_Same(int id) const;
 
   /*
   **	Invalidate the archive pointer.
@@ -186,7 +186,7 @@ class IndexClass {
   /*
   **	Search for the node in the index table.
   */
-  const NodeElement* Search_For_Node(int id) const;
+  [[nodiscard]] const NodeElement* Search_For_Node(int id) const;
 
   static int _USERENTRY search_compfunc(const void* ptr, const void* ptr2);
 };

@@ -63,8 +63,10 @@ class CCFileClass : public CDFileClass {
 
   // Delete should be overloaded here as well. Don't allow deletes of mixfiles.
 
-  bool Is_Resident() const { return Data.Get_Buffer() != nullptr; }
-  int Is_Open() const override;
+  [[nodiscard]] bool Is_Resident() const {
+    return Data.Get_Buffer() != nullptr;
+  }
+  [[nodiscard]] int Is_Open() const override;
   int Open(const char* filename,
            FileAccess rights = FileAccess::kRead) override {
     Set_Name(filename);

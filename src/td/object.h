@@ -141,7 +141,7 @@ class ObjectClass : public AbstractClass {
   ObjectClass& operator=(const ObjectClass&) = delete;
   ObjectClass(ObjectClass&&) = delete;
   ObjectClass& operator=(ObjectClass&&) = delete;
-  virtual RTTIType What_Am_I() const;
+  [[nodiscard]] virtual RTTIType What_Am_I() const;
   int operator<(const ObjectClass& object) const {
     return Sort_Y() < object.Sort_Y();
   }
@@ -158,28 +158,28 @@ class ObjectClass : public AbstractClass {
   **	Query functions.
   */
   virtual ActionType What_Action(ObjectClass*);
-  virtual ActionType What_Action(CELL) const;
-  virtual LayerType In_Which_Layer() const;
-  virtual bool Is_Infantry() const;
-  virtual bool Is_Techno() const;
-  virtual int Get_Ownable() const;
-  virtual const ObjectTypeClass& Class_Of() const = 0;
-  virtual int Full_Name() const;
-  virtual bool Can_Repair() const;
-  virtual bool Can_Demolish() const;
-  virtual bool Can_Player_Fire() const;
-  virtual bool Can_Player_Move() const;
+  [[nodiscard]] virtual ActionType What_Action(CELL) const;
+  [[nodiscard]] virtual LayerType In_Which_Layer() const;
+  [[nodiscard]] virtual bool Is_Infantry() const;
+  [[nodiscard]] virtual bool Is_Techno() const;
+  [[nodiscard]] virtual int Get_Ownable() const;
+  [[nodiscard]] virtual const ObjectTypeClass& Class_Of() const = 0;
+  [[nodiscard]] virtual int Full_Name() const;
+  [[nodiscard]] virtual bool Can_Repair() const;
+  [[nodiscard]] virtual bool Can_Demolish() const;
+  [[nodiscard]] virtual bool Can_Player_Fire() const;
+  [[nodiscard]] virtual bool Can_Player_Move() const;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  virtual COORDINATE Docking_Coord() const;
-  COORDINATE Target_Coord() const override;
-  COORDINATE Center_Coord() const override;
-  virtual COORDINATE Render_Coord() const;
-  virtual COORDINATE Sort_Y() const;
-  virtual COORDINATE Fire_Coord(int) const;
+  [[nodiscard]] virtual COORDINATE Docking_Coord() const;
+  [[nodiscard]] COORDINATE Target_Coord() const override;
+  [[nodiscard]] COORDINATE Center_Coord() const override;
+  [[nodiscard]] virtual COORDINATE Render_Coord() const;
+  [[nodiscard]] virtual COORDINATE Sort_Y() const;
+  [[nodiscard]] virtual COORDINATE Fire_Coord(int) const;
 
   /*
   **	Object entry and exit from the game system.
@@ -198,9 +198,9 @@ class ObjectClass : public AbstractClass {
   virtual void Do_Shimmer();
   virtual int Exit_Object(TechnoClass*);
   virtual bool Render(bool forced);
-  virtual const short* Occupy_List(bool placement = false) const;
-  virtual const short* Overlap_List() const;
-  virtual unsigned Health_Ratio() const;
+  [[nodiscard]] virtual const short* Occupy_List(bool placement = false) const;
+  [[nodiscard]] virtual const short* Overlap_List() const;
+  [[nodiscard]] virtual unsigned Health_Ratio() const;
   virtual void Draw_It(int x, int y, WindowNumberType) = 0;
   virtual void Hidden();
   virtual void Look(bool = false);
@@ -222,21 +222,22 @@ class ObjectClass : public AbstractClass {
   /*
   **	Combat related.
   */
-  virtual bool In_Range(COORDINATE, int = 0) const;
-  virtual int Weapon_Range(int = 0) const;
+  [[nodiscard]] virtual bool In_Range(COORDINATE, int = 0) const;
+  [[nodiscard]] virtual int Weapon_Range(int = 0) const;
   virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                  TechnoClass* source = nullptr);
-  virtual TARGET As_Target() const;
+  [[nodiscard]] virtual TARGET As_Target() const;
   virtual void Scatter(COORDINATE, bool = false);
   virtual bool Catch_Fire();
   virtual void Fire_Out();
-  virtual int Value() const;
-  virtual MissionType Get_Mission() const;
+  [[nodiscard]] virtual int Value() const;
+  [[nodiscard]] virtual MissionType Get_Mission() const;
 
   /*
   **	AI.
   */
-  virtual BuildingClass* Who_Can_Build_Me(bool intheory, bool legal) const;
+  [[nodiscard]] virtual BuildingClass* Who_Can_Build_Me(bool intheory,
+                                                        bool legal) const;
   virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
                                            long& param);

@@ -34,8 +34,8 @@ class TempFile {
   TempFile(TempFile&&) = delete;
   TempFile& operator=(TempFile&&) = delete;
 
-  const char* c_str() const { return path_.c_str(); }
-  const std::filesystem::path& path() const { return path_; }
+  [[nodiscard]] const char* c_str() const { return path_.c_str(); }
+  [[nodiscard]] const std::filesystem::path& path() const { return path_; }
 
  private:
   std::filesystem::path path_;

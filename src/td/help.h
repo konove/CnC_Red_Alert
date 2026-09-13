@@ -65,7 +65,7 @@ class HelpClass : public TabClass {
   void Help_Text(int text, int x = -1, int y = -1, int color = LTGREY,
                  bool quick = false, int cost = 0) override;
   void Set_Cost(int cost);
-  const short* Overlap_List() const;
+  [[nodiscard]] const short* Overlap_List() const;
 
   /*
   **	File I/O.

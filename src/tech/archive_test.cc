@@ -16,7 +16,7 @@ class VectorPipe : public Pipe {
     bytes_.insert(bytes_.end(), begin, begin + slen);
     return slen;
   }
-  const std::vector<uint8_t>& bytes() const { return bytes_; }
+  [[nodiscard]] const std::vector<uint8_t>& bytes() const { return bytes_; }
 
  private:
   std::vector<uint8_t> bytes_;

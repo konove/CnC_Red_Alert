@@ -81,11 +81,13 @@ class ListClass : public ControlClass {
   virtual int Add_Item(int text);
   virtual int Add_Scroll_Bar();
   virtual void Bump(int up);
-  virtual int Count() const { return static_cast<int>(List.Count()); }
-  virtual int Current_Index() const;
-  virtual const char* Current_Item() const;
+  [[nodiscard]] virtual int Count() const {
+    return static_cast<int>(List.Count());
+  }
+  [[nodiscard]] virtual int Current_Index() const;
+  [[nodiscard]] virtual const char* Current_Item() const;
   int Draw_Me(bool forced) override;
-  virtual const char* Get_Item(int index) const;
+  [[nodiscard]] virtual const char* Get_Item(int index) const;
   virtual int Step_Selected_Index(int forward);
   void Flag_To_Redraw() final;
 
@@ -182,13 +184,13 @@ class TListClass final : public ControlClass {
   int Add_Scroll_Bar();
   void Insert_Item(T item);
   void Bump(int up);
-  int Count() const { return static_cast<int>(List.Count()); }
-  int Current_Index() const;
+  [[nodiscard]] int Count() const { return static_cast<int>(List.Count()); }
+  [[nodiscard]] int Current_Index() const;
   T Current_Item() const;
   int Draw_Me(bool forced) override;
   int Step_Selected_Index(int forward);
   void Flag_To_Redraw() override;
-  T Get_Item(int index) const { return List[index]; }
+  [[nodiscard]] T Get_Item(int index) const { return List[index]; }
 
   void Peer_To_Peer(unsigned flags, KeyNumType& key,
                     ControlClass& whom) override;

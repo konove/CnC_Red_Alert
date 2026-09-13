@@ -87,21 +87,25 @@ class FontView {
   }
 
   // Tallest glyph in pixels; the height of one text line.
-  int MaxHeight() const { return info_[kFontInfoMaxHeight]; }
+  [[nodiscard]] int MaxHeight() const { return info_[kFontInfoMaxHeight]; }
   // Widest glyph in pixels.
-  int MaxWidth() const { return info_[kFontInfoMaxWidth]; }
+  [[nodiscard]] int MaxWidth() const { return info_[kFontInfoMaxWidth]; }
 
   // Width in pixels of the glyph for character ch.
-  int GlyphWidth(uint8_t ch) const { return widths_[ch]; }
+  [[nodiscard]] int GlyphWidth(uint8_t ch) const { return widths_[ch]; }
 
   // Number of drawn pixel rows in the glyph.
-  int GlyphHeight(uint8_t ch) const { return PackedHeight(ch) >> 8; }
+  [[nodiscard]] int GlyphHeight(uint8_t ch) const {
+    return PackedHeight(ch) >> 8;
+  }
   // Number of blank rows between the top of the line and the drawn rows.
-  int GlyphBlankRowsAbove(uint8_t ch) const { return PackedHeight(ch) & 0xFF; }
+  [[nodiscard]] int GlyphBlankRowsAbove(uint8_t ch) const {
+    return PackedHeight(ch) & 0xFF;
+  }
 
   // The glyph's pixel data: two 4-bit palette indices per byte, low nibble
   // first, GlyphWidth x GlyphHeight pixels.
-  const uint8_t* GlyphData(uint8_t ch) const {
+  [[nodiscard]] const uint8_t* GlyphData(uint8_t ch) const {
     return font_ + ReadWord(offsets_ + (base::ssize{2} * ch));
   }
 
@@ -114,7 +118,7 @@ class FontView {
   }
 
   // Blank rows above the glyph in the low byte, drawn rows in the high byte.
-  int PackedHeight(uint8_t ch) const {
+  [[nodiscard]] int PackedHeight(uint8_t ch) const {
     return ReadWord(heights_ + (base::ssize{2} * ch));
   }
 

@@ -85,7 +85,7 @@ class ControlClass : public GadgetClass {
   */
   unsigned ID;
 
-  unsigned Get_ID() const override;
+  [[nodiscard]] unsigned Get_ID() const override;
 
  protected:
   int Action(unsigned flags, KeyNumType& key) override;

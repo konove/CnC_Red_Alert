@@ -60,10 +60,14 @@ class CrateClass {
   }
   void Init() { Make_Invalid(); }
   bool Create_Crate(CELL cell);
-  bool Is_Here(CELL cell) const { return Is_Valid() && cell == Cell; }
+  [[nodiscard]] bool Is_Here(CELL cell) const {
+    return Is_Valid() && cell == Cell;
+  }
   bool Remove_It();
-  bool Is_Expired() const { return Is_Valid() && CrateTimer.IsFinished(); }
-  bool Is_Valid() const { return Cell != -1; }
+  [[nodiscard]] bool Is_Expired() const {
+    return Is_Valid() && CrateTimer.IsFinished();
+  }
+  [[nodiscard]] bool Is_Valid() const { return Cell != -1; }
 
  private:
   static bool Put_Crate(CELL& cell);

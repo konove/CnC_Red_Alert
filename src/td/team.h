@@ -185,14 +185,14 @@ class TeamClass : public AbstractClass {
   TeamClass& operator=(const TeamClass&) = delete;
   TeamClass(TeamClass&&) = delete;
   TeamClass& operator=(TeamClass&&) = delete;
-  virtual RTTIType What_Am_I() const { return RTTI_TEAM; }
+  [[nodiscard]] virtual RTTIType What_Am_I() const { return RTTI_TEAM; }
   void operator delete(void* ptr);
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   static void Init();
   static void Suspend_Teams(int priority);
 
-  TARGET As_Target() const;
+  [[nodiscard]] TARGET As_Target() const;
 
   /*
   **	File I/O.
@@ -215,6 +215,8 @@ class TeamClass : public AbstractClass {
   /*
   **	Dee-buggin' support.
   */
+  // debug self-check; callers run it for its assertions and ignore the count.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   int Validate() const;
 
   /*

@@ -62,15 +62,15 @@ class OptionsClass {
   void Set_Score_Volume(fixed volume, bool feedback);
   void Set_Sound_Volume(fixed volume, bool feedback);
   void Set_Brightness(fixed brightness);
-  fixed Get_Brightness() const;
+  [[nodiscard]] fixed Get_Brightness() const;
   void Set_Saturation(fixed color);
-  fixed Get_Saturation() const;
+  [[nodiscard]] fixed Get_Saturation() const;
   void Set_Contrast(fixed contrast);
-  fixed Get_Contrast() const;
+  [[nodiscard]] fixed Get_Contrast() const;
   void Set_Tint(fixed tint);
-  fixed Get_Tint() const;
-  int Normalize_Delay(int delay) const;
-  int Normalize_Volume(int volume) const;
+  [[nodiscard]] fixed Get_Tint() const;
+  [[nodiscard]] int Normalize_Delay(int delay) const;
+  [[nodiscard]] int Normalize_Volume(int volume) const;
 
   /*
   ** File I/O routines

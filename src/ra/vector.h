@@ -51,7 +51,7 @@ class VectorClass {
   virtual bool operator==(const VectorClass&) const;   // Equality operator.
   virtual bool Resize(base::ssize newsize, T* array = nullptr);
   virtual void Clear();
-  base::ssize Length() const { return VectorMax; }
+  [[nodiscard]] base::ssize Length() const { return VectorMax; }
   virtual base::ssize ID(const T* ptr);  // Pointer based identification.
   virtual base::ssize ID(const T& ptr);  // Value based identification.
 

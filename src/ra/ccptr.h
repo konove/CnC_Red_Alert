@@ -72,7 +72,7 @@ class CCPtr {
     return static_cast<T*>((*Heap)[ID]);
   }
 
-  bool Is_Valid() const { return ID != -1; }
+  [[nodiscard]] bool Is_Valid() const { return ID != -1; }
 
   bool operator==(const CCPtr& rvalue) const { return ID == rvalue.ID; }
   bool operator!=(const CCPtr& rvalue) const { return ID != rvalue.ID; }
@@ -85,7 +85,7 @@ class CCPtr {
     return *this == rvalue || rvalue > *this;
   }
 
-  long Raw() const { return ID; }
+  [[nodiscard]] long Raw() const { return ID; }
   void Set_Raw(const long value) { ID = static_cast<int>(value); }
 
   // Saved-game support. The ID is the whole state; a loaded ID outside the

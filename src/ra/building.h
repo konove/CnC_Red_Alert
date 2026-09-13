@@ -255,33 +255,35 @@ class BuildingClass : public TechnoClass {
   /*
   **	Query functions.
   */
-  int Value() const override;
-  const void* Get_Image_Data() const override;
-  int How_Many_Survivors() const override;
-  DirType Turret_Facing() const override;
+  [[nodiscard]] int Value() const override;
+  [[nodiscard]] const void* Get_Image_Data() const override;
+  [[nodiscard]] int How_Many_Survivors() const override;
+  [[nodiscard]] DirType Turret_Facing() const override;
   CELL Find_Exit_Cell(const TechnoClass* techno) const override;
-  InfantryType Crew_Type() const override;
-  int Pip_Count() const override;
-  bool Can_Player_Move() const override;
+  [[nodiscard]] InfantryType Crew_Type() const override;
+  [[nodiscard]] int Pip_Count() const override;
+  [[nodiscard]] bool Can_Player_Move() const override;
   ActionType What_Action(const ObjectClass* target) const override;
-  ActionType What_Action(CELL cell) const override;
-  bool Can_Demolish() const override;
-  const ObjectTypeClass& Class_Of() const override { return *Class; }
-  DirType Fire_Direction() const override;
-  const short* Overlap_List(bool redraw = false) const override;
-  int Shape_Number() const;
-  int Power_Output() const;
-  CELL Check_Point(CheckPointType cp) const;
+  [[nodiscard]] ActionType What_Action(CELL cell) const override;
+  [[nodiscard]] bool Can_Demolish() const override;
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
+    return *Class;
+  }
+  [[nodiscard]] DirType Fire_Direction() const override;
+  [[nodiscard]] const short* Overlap_List(bool redraw = false) const override;
+  [[nodiscard]] int Shape_Number() const;
+  [[nodiscard]] int Power_Output() const;
+  [[nodiscard]] CELL Check_Point(CheckPointType cp) const;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  COORDINATE Target_Coord() const override;
-  COORDINATE Docking_Coord() const override;
-  COORDINATE Center_Coord() const override;
-  COORDINATE Sort_Y() const override;
-  COORDINATE Exit_Coord() const override;
+  [[nodiscard]] COORDINATE Target_Coord() const override;
+  [[nodiscard]] COORDINATE Docking_Coord() const override;
+  [[nodiscard]] COORDINATE Center_Coord() const override;
+  [[nodiscard]] COORDINATE Sort_Y() const override;
+  [[nodiscard]] COORDINATE Exit_Coord() const override;
 
   /*
   **	Object entry and exit from the game system.
@@ -290,7 +292,8 @@ class BuildingClass : public TechnoClass {
   void Detach_All(bool all = true) override;
   virtual void Grand_Opening(bool captured = false);
   virtual void Update_Buildables();
-  MoveType Can_Enter_Cell(CELL cell, FacingType = FACING_NONE) const override;
+  [[nodiscard]] MoveType Can_Enter_Cell(
+      CELL cell, FacingType = FACING_NONE) const override;
   bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
   bool Limbo() override;
 
@@ -314,7 +317,7 @@ class BuildingClass : public TechnoClass {
   **	Combat related.
   */
   void Death_Announcement(const TechnoClass* source = nullptr) const override;
-  FireErrorType Can_Fire(TARGET, int which) const override;
+  [[nodiscard]] FireErrorType Can_Fire(TARGET, int which) const override;
   TARGET Greatest_Threat(ThreatType threat) override;  // const;
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                          TechnoClass* source = nullptr,

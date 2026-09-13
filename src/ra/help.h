@@ -70,7 +70,7 @@ class HelpClass : public TabClass {
   void Help_Text(int text, int x = -1, int y = -1, int color = LTGREY,
                  bool quick = false) override;
   void Set_Cost(int cost);
-  const short* Overlap_List() const;
+  [[nodiscard]] const short* Overlap_List() const;
 
  private:
   static const char* HelpText;

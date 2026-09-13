@@ -48,8 +48,8 @@ class Rect {
                        int* y = nullptr) const;
   friend const Rect Union(const Rect& rect1, const Rect& rect2);
 
-  bool Is_Valid() const;
-  int Size() const { return Width * Height; }
+  [[nodiscard]] bool Is_Valid() const;
+  [[nodiscard]] int Size() const { return Width * Height; }
 
   //	private:
   int X;

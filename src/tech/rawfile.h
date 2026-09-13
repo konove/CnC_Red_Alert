@@ -84,11 +84,11 @@ class RawFileClass : public FileClass {
   RawFileClass& operator=(RawFileClass&&) = delete;
   ~RawFileClass() override;
 
-  const char* File_Name() const override;
+  [[nodiscard]] const char* File_Name() const override;
   const char* Set_Name(const char* filename) override;
   int Create() override;
   int Delete() override;
-  int Is_Open() const override;
+  [[nodiscard]] int Is_Open() const override;
   int Open(const char* filename,
            FileAccess rights = FileAccess::kRead) override;
   int Open(FileAccess rights = FileAccess::kRead) override;

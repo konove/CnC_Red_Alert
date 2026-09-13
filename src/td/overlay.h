@@ -78,7 +78,7 @@ class OverlayClass : public ObjectClass {
   // objects compare directly against their type ID.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator OverlayType() const { return Class->Type; }
-  RTTIType What_Am_I() const override { return RTTI_OVERLAY; }
+  [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_OVERLAY; }
 
   static void Init();
 
@@ -96,12 +96,16 @@ class OverlayClass : public ObjectClass {
   **	Virtual support functionality.
   */
   bool Mark(MarkType) override;
-  const ObjectTypeClass& Class_Of() const override { return *Class; }
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
+    return *Class;
+  }
   void Draw_It(int, int, WindowNumberType) override {}
 
   /*
   **	Dee-buggin' support.
   */
+  // debug self-check; callers run it for its assertions and ignore the count.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   int Validate() const;
 
  private:

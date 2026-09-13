@@ -138,6 +138,8 @@ class TriggerTypeClass : public AbstractTypeClass {
   /*
   **	Processing routines
   */
+  // the heap owns the new object; many callers create without keeping it.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   TriggerClass* Create_One_Of() const;
   void Destroy_All_Of() const;
 
@@ -145,10 +147,10 @@ class TriggerTypeClass : public AbstractTypeClass {
   **	Utility routines
   */
   void Detach(TARGET target, bool all = true);
-  AttachType Attaches_To() const;
+  [[nodiscard]] AttachType Attaches_To() const;
   static TriggerTypeClass* From_Name(const char* name);
   bool Edit();
-  const char* Description() const;
+  [[nodiscard]] const char* Description() const;
   // legacy C interfaces take the object where a pointer or name is expected.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator const char*() const { return Description(); }

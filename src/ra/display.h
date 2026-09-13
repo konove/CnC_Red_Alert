@@ -146,9 +146,9 @@ class DisplayClass : public MapClass {
   void Encroach_Shadow();
   void Center_Map(COORDINATE center = 0L);
   virtual bool Map_Cell(CELL cell, HouseClass* house);
-  virtual CELL Click_Cell_Calc(int x, int y) const;
+  [[nodiscard]] virtual CELL Click_Cell_Calc(int x, int y) const;
   virtual void Help_Text(int, int = -1, int = -1, int = YELLOW, bool = false) {}
-  virtual MouseType Get_Mouse_Shape() const = 0;
+  [[nodiscard]] virtual MouseType Get_Mouse_Shape() const = 0;
   virtual bool Scroll_Map(DirType facing, int& distance, bool really);
   virtual void Refresh_Cells(CELL cell, const short* list);
   virtual void Set_View_Dimensions(int x, int y, int width = -1,
@@ -180,29 +180,34 @@ class DisplayClass : public MapClass {
   virtual void Set_Tactical_Position(COORDINATE coord);
   void Refresh_Band();
   void Select_These(COORDINATE coord1, COORDINATE coord2);
-  COORDINATE Pixel_To_Coord(int x, int y) const;
+  [[nodiscard]] COORDINATE Pixel_To_Coord(int x, int y) const;
   bool Coord_To_Pixel(COORDINATE coord, int& x, int& y) const;
   bool Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest);
   void Remove(const ObjectClass* object, LayerType layer);
   void Submit(const ObjectClass* object, LayerType layer);
-  CELL Calculated_Cell(SourceType dir, WAYPOINT waypoint = -1, CELL cell = -1,
-                       SpeedType loco = SPEED_FOOT, bool zonecheck = true,
-                       MZoneType mzone = MZONE_NORMAL) const;
-  bool In_View(CELL cell) const;
+  [[nodiscard]] CELL Calculated_Cell(SourceType dir, WAYPOINT waypoint = -1,
+                                     CELL cell = -1,
+                                     SpeedType loco = SPEED_FOOT,
+                                     bool zonecheck = true,
+                                     MZoneType mzone = MZONE_NORMAL) const;
+  [[nodiscard]] bool In_View(CELL cell) const;
   bool Passes_Proximity_Check(const ObjectTypeClass* object, HousesType house,
                               const short* list, CELL trycell) const;
-  ObjectClass* Cell_Object(CELL cell, int x = 0, int y = 0) const;
+  [[nodiscard]] ObjectClass* Cell_Object(CELL cell, int x = 0, int y = 0) const;
   ObjectClass* Next_Object(ObjectClass* object) const;
   ObjectClass* Prev_Object(ObjectClass* object) const;
-  int Cell_Shadow(CELL cell) const;
+  [[nodiscard]] int Cell_Shadow(CELL cell) const;
   const short* Text_Overlap_List(const char* text, int x, int y) const;
-  bool Is_Spot_Free(COORDINATE coord) const;
-  COORDINATE Closest_Free_Spot(COORDINATE coord, bool any = false) const;
+  [[nodiscard]] bool Is_Spot_Free(COORDINATE coord) const;
+  [[nodiscard]] COORDINATE Closest_Free_Spot(COORDINATE coord,
+                                             bool any = false) const;
   void Sell_Mode_Control(int control);
   void Repair_Mode_Control(int control);
 
   virtual void Flag_Cell(CELL cell);
-  bool Is_Cell_Flagged(CELL cell) const { return CellRedraw[cell]; }
+  [[nodiscard]] bool Is_Cell_Flagged(CELL cell) const {
+    return CellRedraw[cell];
+  }
 
   /*
   ** Computes starting position based on player's units' Coords.
@@ -328,8 +333,9 @@ class DisplayClass : public MapClass {
   */
   static std::vector<bool> CellRedraw;
 
-  bool Good_Reinforcement_Cell(CELL outcell, CELL incell, SpeedType loco,
-                               int zone, MZoneType mzone) const;
+  [[nodiscard]] bool Good_Reinforcement_Cell(CELL outcell, CELL incell,
+                                             SpeedType loco, int zone,
+                                             MZoneType mzone) const;
 };
 
 class ArchiveReader;

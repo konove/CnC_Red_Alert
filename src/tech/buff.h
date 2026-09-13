@@ -65,9 +65,9 @@ class Buffer {
   operator char*() const { return static_cast<char*>(BufferPtr); }
 
   void Reset();
-  void* Get_Buffer() const { return BufferPtr; }
-  long Get_Size() const { return Size; }
-  bool Is_Valid() const { return BufferPtr != nullptr; }
+  [[nodiscard]] void* Get_Buffer() const { return BufferPtr; }
+  [[nodiscard]] long Get_Size() const { return Size; }
+  [[nodiscard]] bool Is_Valid() const { return BufferPtr != nullptr; }
 
  protected:
   /*

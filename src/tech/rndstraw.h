@@ -65,7 +65,7 @@ class RandomStraw : public Straw {
   void Seed_Short(short seed);
   void Seed_Long(long seed);
 
-  int Seed_Bits_Needed() const;
+  [[nodiscard]] int Seed_Bits_Needed() const;
 
  private:
   /*

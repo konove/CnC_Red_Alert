@@ -128,7 +128,7 @@ class DriveClass : public FootClass {
   virtual void Overrun_Square(CELL, bool = true) {}
   void Assign_Destination(TARGET target) override;
   void Per_Cell_Process(PCPType why) override;
-  virtual bool Ok_To_Move(DirType) const;
+  [[nodiscard]] virtual bool Ok_To_Move(DirType) const;
   void AI() override;
   void Debug_Dump(MonoClass* mono) const override;
   void Force_Track(int track, COORDINATE coord);

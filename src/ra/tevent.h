@@ -212,7 +212,9 @@ class EventChoiceClass {
     return Event == rvalue.Event ||
            stricmp(Description(), rvalue.Description()) > 0;
   }
-  const char* Description() const { return Name_From_Event(Event); }
+  [[nodiscard]] const char* Description() const {
+    return Name_From_Event(Event);
+  }
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
 

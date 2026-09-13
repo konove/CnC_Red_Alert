@@ -82,8 +82,8 @@ class StageClass {
     Rate = 0;
   }
 
-  int Fetch_Stage() const { return Stage; }
-  int Fetch_Rate() const { return Rate; }
+  [[nodiscard]] int Fetch_Stage() const { return Stage; }
+  [[nodiscard]] int Fetch_Rate() const { return Rate; }
   void Set_Stage(int stage) { Stage = static_cast<unsigned short>(stage); }
   void Set_Rate(unsigned char rate) { Rate = StageTimer = rate; }
   void AI() {}

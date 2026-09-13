@@ -90,7 +90,9 @@ class TemplateClass : public ObjectClass {
   /*
   **	Query functions.
   */
-  const ObjectTypeClass& Class_Of() const override { return *Class; }
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
+    return *Class;
+  }
   int Icon_Number(CELL cell);
 
   /*

@@ -91,26 +91,28 @@ class TerrainClass final : public ObjectClass, public StageClass {
   /*
   **	Query functions.
   */
-  const ObjectTypeClass& Class_Of() const override { return *Class; }
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
+    return *Class;
+  }
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  COORDINATE Center_Coord() const override;
-  COORDINATE Render_Coord() const override { return Coord; }
-  COORDINATE Sort_Y() const override {
+  [[nodiscard]] COORDINATE Center_Coord() const override;
+  [[nodiscard]] COORDINATE Render_Coord() const override { return Coord; }
+  [[nodiscard]] COORDINATE Sort_Y() const override {
     return Coord_Add(Coord, Class->CenterBase);
   }
-  COORDINATE Target_Coord() const override;
+  [[nodiscard]] COORDINATE Target_Coord() const override;
 
   /*
   **	Object entry and exit from the game system.
   */
   bool Unlimbo(COORDINATE coord, DirType dir = DIR_N) override;
   bool Limbo() override;
-  MoveType Can_Enter_Cell(CELL cell,
-                          FacingType facing = FACING_NONE) const override;
+  [[nodiscard]] MoveType Can_Enter_Cell(
+      CELL cell, FacingType facing = FACING_NONE) const override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how

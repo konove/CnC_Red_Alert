@@ -485,8 +485,8 @@ class WolapiObject {
   void GetGameTypeInfo(int iGameType, WOL_GAMETYPEINFO& GameTypeInfo,
                        std::span<const dib::Color> palette);
   void* IconForGameType(int iGameType);
-  const char* NameOfGameType(int iGameType) const;
-  const char* URLForGameType(int iGameType) const;
+  [[nodiscard]] const char* NameOfGameType(int iGameType) const;
+  [[nodiscard]] const char* URLForGameType(int iGameType) const;
 
   //	Used by the general chat dialog.
   IconListClass* pILChat;      //	Main messages list.

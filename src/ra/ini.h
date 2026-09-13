@@ -80,8 +80,8 @@ class INIClass {
   bool Clear(const char* section = nullptr, const char* entry = nullptr);
 
   int Line_Count(const char* section) const;
-  bool Is_Loaded() const { return !SectionList.Is_Empty(); }
-  int Size() const;
+  [[nodiscard]] bool Is_Loaded() const { return !SectionList.Is_Empty(); }
+  [[nodiscard]] int Size() const;
   bool Is_Present(const char* section, const char* entry = nullptr) const {
     if (entry == nullptr) {
       return Find_Section(section) != nullptr;
@@ -93,7 +93,7 @@ class INIClass {
   **	Fetch the number of sections in the INI file or verify if a specific
   **	section is present.
   */
-  int Section_Count() const;
+  [[nodiscard]] int Section_Count() const;
   bool Section_Present(const char* section) const {
     return Find_Section(section) != nullptr;
   }
@@ -116,7 +116,7 @@ class INIClass {
                 bool defvalue = false) const;
   int Get_TextBlock(const char* section, char* buffer, int len) const;
   int Get_UUBlock(const char* section, void* buffer, int len) const;
-  PKey Get_PKey(bool fast) const;
+  [[nodiscard]] PKey Get_PKey(bool fast) const;
   fixed Get_Fixed(const char* section, const char* entry, fixed defvalue) const;
 
   /*
@@ -152,7 +152,7 @@ class INIClass {
     INIEntry& operator=(const INIEntry&) = delete;
     INIEntry(INIEntry&&) = delete;
     INIEntry& operator=(INIEntry&&) = delete;
-    int Index_ID() const { return CrcEngine::Compute(Entry); }
+    [[nodiscard]] int Index_ID() const { return CrcEngine::Compute(Entry); }
 
     char* Entry;
     char* Value;
@@ -174,7 +174,7 @@ class INIClass {
     INISection(INISection&&) = delete;
     INISection& operator=(INISection&&) = delete;
     INIEntry* Find_Entry(const char* entry) const;
-    int Index_ID() const { return CrcEngine::Compute(Section); }
+    [[nodiscard]] int Index_ID() const { return CrcEngine::Compute(Section); }
 
     char* Section;
     List<INIEntry> EntryList;

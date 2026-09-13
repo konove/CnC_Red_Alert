@@ -103,15 +103,17 @@ class VesselClass : public DriveClass {
   VesselClass& operator=(const VesselClass&) = delete;
   VesselClass(VesselClass&&) = delete;
   VesselClass& operator=(VesselClass&&) = delete;
-  const ObjectTypeClass& Class_Of() const override;
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override;
 
-  virtual MZoneType Zone_Check_Type() const { return MZONE_WATER; }
-  int Shape_Number() const;
+  [[nodiscard]] virtual MZoneType Zone_Check_Type() const {
+    return MZONE_WATER;
+  }
+  [[nodiscard]] int Shape_Number() const;
   void Rotation_AI();
   void Combat_AI();
   bool Edge_Of_World_AI();
   void Repair_AI();
-  DirType Turret_Facing() const override {
+  [[nodiscard]] DirType Turret_Facing() const override {
     if (Class->IsTurretEquipped) {
       return SecondaryFacing.Current();
     }
@@ -122,11 +124,11 @@ class VesselClass : public DriveClass {
   int Mission_Unload() override;
   void LST_Open_Door();
   void LST_Close_Door();
-  COORDINATE Fire_Coord(int which) const override;
-  MoveType Can_Enter_Cell(CELL cell,
-                          FacingType from = FACING_NONE) const override;
+  [[nodiscard]] COORDINATE Fire_Coord(int which) const override;
+  [[nodiscard]] MoveType Can_Enter_Cell(
+      CELL cell, FacingType from = FACING_NONE) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
-  const short* Overlap_List(bool redraw = false) const override;
+  [[nodiscard]] const short* Overlap_List(bool redraw = false) const override;
   DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    long& param) override;
@@ -137,15 +139,15 @@ class VesselClass : public DriveClass {
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                          TechnoClass* source = nullptr,
                          bool forced = false) override;
-  FireErrorType Can_Fire(TARGET target, int which) const override;
+  [[nodiscard]] FireErrorType Can_Fire(TARGET target, int which) const override;
 
   void Enter_Idle_Mode(bool initial = false) override;
   ActionType What_Action(const ObjectClass* object) const override;
-  ActionType What_Action(CELL cell) const override;
+  [[nodiscard]] ActionType What_Action(CELL cell) const override;
   void Active_Click_With(ActionType action, CELL cell) override;
   void Active_Click_With(ActionType action, ObjectClass* object) override;
   TARGET Greatest_Threat(ThreatType threat) override;  // const;
-  bool Is_Allowed_To_Recloak() const override;
+  [[nodiscard]] bool Is_Allowed_To_Recloak() const override;
   BulletClass* Fire_At(TARGET target, int which = 0) override;
   /*
   **	File I/O.

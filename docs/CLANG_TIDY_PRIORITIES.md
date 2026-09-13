@@ -2,7 +2,7 @@
 
 Updated: 2026-09-12, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 170 currently excluded check names** and completed entries, in recommended work
+This tracks **all 169 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -107,7 +107,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `cert-msc32-c`                                             | Enabled | Alias enabled with `bugprone-random-generator-seed` in the same commit.                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `cert-msc51-cpp`                                           | Enabled | Alias enabled with `bugprone-random-generator-seed` in the same commit.                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `modernize-use-integer-sign-comparison`                    | Enabled | Commit `Compare mixed-sign integers with std::cmp functions`: 238 reports, applied with the check's fix-its (`std::cmp_less` and friends, with `<utility>`); the values compared are unchanged, and the comparisons are now correct for negative operands.                                                                                                                                                                                                                                              |
-| `modernize-use-nodiscard`                                  | Pending | Make important results harder to discard accidentally.                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `modernize-use-nodiscard`                                  | Enabled | Commit `Mark value-returning functions nodiscard`: 927 reports, applied with the check's fix-its; 47 declarations whose results the engine deliberately ignores (`Validate`, `Create_And_Place`, `Create_One_Of`, the `AI_*` helpers) keep no attribute under a reasoned suppression, and no call site discards a result. See review below.                                                                                                                                                             |
 
 ## P3 — Broader safety and maintainability
 
@@ -1028,6 +1028,25 @@ already enforced, rejects each of them. The two checks together require the writ
 `const` type-class tables that are patched at load time, list nodes that hand out mutable parents
 from `const` accessors, and blitters that decode into buffers typed as `const`. That is API work to
 do module by module, after which this check can be revisited.
+
+### Nodiscard review (2026-09-12)
+
+`modernize-use-nodiscard` is now enforced. Its fix-its add `[[nodiscard]]` to 927 value-returning
+functions. Before applying them to the tree, the whole change was built in a separate worktree and
+every translation unit compiled with `-Wunused-result`, against a probe that confirms a discarded
+`[[nodiscard]]` call is reported. That found 235 discarded results, and they came from five
+functions whose results the engine ignores on purpose:
+
+| Function                        | Discards | Why the result is ignored                           |
+| ------------------------------- | -------- | --------------------------------------------------- |
+| `Validate`                      | 215      | Debug self-check run for its assertions.            |
+| `Create_One_Of`                 | 8        | The object heap owns what it creates.               |
+| `AI_Build_*`, `AI_Raise_*`, ... | 8        | The planner does not act on whether a helper acted. |
+| `Create_And_Place`              | 3        | Crate and editor drops tolerate a failed placement. |
+| `CarryoverClass::Create`        | 1        | Recreated for its side effect.                      |
+
+Those 47 declarations keep no attribute, each under a `NOLINTNEXTLINE` that says why. With them
+excluded, no call site in either game discards a `[[nodiscard]]` result.
 
 ### Completed validation
 

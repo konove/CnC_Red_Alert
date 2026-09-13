@@ -166,8 +166,8 @@ class ArchiveReader : public ArchiveBase<ArchiveReader> {
   // Reads bytes verbatim; see ArchiveWriter::Bytes.
   void Bytes(void* data, int size) { Raw(data, size); }
 
-  bool ok() const { return error_.empty(); }
-  std::string_view error() const { return error_; }
+  [[nodiscard]] bool ok() const { return error_.empty(); }
+  [[nodiscard]] std::string_view error() const { return error_; }
 
   // Records the first failure. Later reads become no-ops.
   void Fail(std::string_view why) {

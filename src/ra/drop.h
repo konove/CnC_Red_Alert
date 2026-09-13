@@ -72,8 +72,10 @@ class DropListClass : public EditClass {
   virtual void Set_Selected_Index(const char* text);
   void Peer_To_Peer(unsigned flags, KeyNumType&, ControlClass& whom) override;
   void Clear_Focus() override;
-  virtual int Count() const { return List.Count(); }
-  virtual const char* Get_Item(int index) const { return List.Get_Item(index); }
+  [[nodiscard]] virtual int Count() const { return List.Count(); }
+  [[nodiscard]] virtual const char* Get_Item(int index) const {
+    return List.Get_Item(index);
+  }
 
   void Flag_To_Redraw() override;
 
@@ -133,8 +135,10 @@ class TDropListClass : public EditClass {
   virtual void Set_Selected_Index(T item);
   void Peer_To_Peer(unsigned flags, KeyNumType&, ControlClass& whom) override;
   void Clear_Focus() override;
-  virtual int Count() const { return List.Count(); }
-  virtual T Get_Item(int index) const { return List.Get_Item(index); }
+  [[nodiscard]] virtual int Count() const { return List.Count(); }
+  [[nodiscard]] virtual T Get_Item(int index) const {
+    return List.Get_Item(index);
+  }
 
   void Expand();
   void Collapse();

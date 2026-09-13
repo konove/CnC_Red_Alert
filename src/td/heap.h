@@ -79,7 +79,7 @@ class FixedHeapClass {
   int Count() { return ActiveCount; }
   int Length() { return TotalCount; }
   int Avail() { return TotalCount - ActiveCount; }
-  bool Is_Allocated(int index) const {
+  [[nodiscard]] bool Is_Allocated(int index) const {
     return index >= 0 && index < TotalCount && FreeFlag[index];
   }
 

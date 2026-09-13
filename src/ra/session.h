@@ -456,9 +456,9 @@ class MultiMission {
   void Set_Expansion(bool expansion);
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
-  const char* Description() const { return ScenarioDescription; }
-  const char* Get_Filename() const { return Filename; }
-  const char* Get_Digest() const { return Digest; }
+  [[nodiscard]] const char* Description() const { return ScenarioDescription; }
+  [[nodiscard]] const char* Get_Filename() const { return Filename; }
+  [[nodiscard]] const char* Get_Digest() const { return Digest; }
   bool Get_Official() { return IsOfficial; }
   bool Get_Expansion() {
     return IsExpansion;

@@ -97,9 +97,11 @@ class RadioClass : public MissionClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  bool In_Radio_Contact() const { return Radio != nullptr; }
+  [[nodiscard]] bool In_Radio_Contact() const { return Radio != nullptr; }
   void Radio_Off() { Radio = nullptr; }
-  TechnoClass* Contact_With_Whom() const { return (TechnoClass*)Radio; }
+  [[nodiscard]] TechnoClass* Contact_With_Whom() const {
+    return (TechnoClass*)Radio;
+  }
 
   // Inherited from base class(es).
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,

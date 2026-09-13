@@ -84,11 +84,11 @@ class SuperClass {
   bool AI(bool player = false);
   bool Remove(bool forced = false);
   void Impatient_Click() const;
-  int Anim_Stage() const;
+  [[nodiscard]] int Anim_Stage() const;
   bool Discharged(bool player);
-  bool Is_Ready() const { return IsReady; }
-  bool Is_Present() const { return IsPresent; }
-  bool Is_One_Time() const { return IsOneTime && IsPresent; }
+  [[nodiscard]] bool Is_Ready() const { return IsReady; }
+  [[nodiscard]] bool Is_Present() const { return IsPresent; }
+  [[nodiscard]] bool Is_One_Time() const { return IsOneTime && IsPresent; }
 
  private:
   bool Recharge(bool player = false);

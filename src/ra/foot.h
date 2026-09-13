@@ -330,26 +330,26 @@ class FootClass : public TechnoClass {
 
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    long& param) override;
-  bool Can_Demolish() const override;
+  [[nodiscard]] bool Can_Demolish() const override;
   bool Is_Recruitable(const HouseClass* house = nullptr) const;
-  bool Is_On_Priority_Mission() const;
+  [[nodiscard]] bool Is_On_Priority_Mission() const;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  COORDINATE Sort_Y() const override;
-  virtual COORDINATE Likely_Coord() const;
+  [[nodiscard]] COORDINATE Sort_Y() const override;
+  [[nodiscard]] virtual COORDINATE Likely_Coord() const;
 
   /*
   **	Driver control support functions. These are used to control cell
   **	occupation flags and driver instructions.
   */
-  COORDINATE Head_To_Coord() const { return HeadToCoord; }
+  [[nodiscard]] COORDINATE Head_To_Coord() const { return HeadToCoord; }
   virtual bool Start_Driver(COORDINATE& headto);
   virtual bool Stop_Driver();
   void Assign_Destination(TARGET target) override;
-  bool Is_Allowed_To_Leave_Map() const;
+  [[nodiscard]] bool Is_Allowed_To_Leave_Map() const;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
@@ -405,13 +405,13 @@ class FootClass : public TechnoClass {
   void Per_Cell_Process(PCPType why) override;
   virtual void Approach_Target();
   virtual void Set_Speed(int speed);
-  MoveType Can_Enter_Cell(CELL cell,
-                          FacingType from = FACING_NONE) const override;
+  [[nodiscard]] MoveType Can_Enter_Cell(
+      CELL cell, FacingType from = FACING_NONE) const override;
   int Optimize_Moves(PathType* path, MoveType threshhold);
   void Override_Mission(MissionType mission, TARGET tarcom,
                         TARGET navcom) override;
   bool Restore_Mission() override;
-  CELL Adjust_Dest(CELL cell) const;
+  [[nodiscard]] CELL Adjust_Dest(CELL cell) const;
 
   CELL Safety_Point(CELL src, CELL dst, int start, int max);
   int Rescue_Mission(TARGET tarcom);

@@ -117,20 +117,30 @@ class Int {
   /*
   **	Attribute query functions.
   */
-  int ByteCount() const { return XMP_Count_Bytes(&reg[0], PRECISION); }
-  int BitCount() const { return XMP_Count_Bits(&reg[0], PRECISION); }
-  bool Is_Negative() const { return XMP_Is_Negative(&reg[0], PRECISION); }
-  unsigned MaxBitPrecision() const {
+  [[nodiscard]] int ByteCount() const {
+    return XMP_Count_Bytes(&reg[0], PRECISION);
+  }
+  [[nodiscard]] int BitCount() const {
+    return XMP_Count_Bits(&reg[0], PRECISION);
+  }
+  [[nodiscard]] bool Is_Negative() const {
+    return XMP_Is_Negative(&reg[0], PRECISION);
+  }
+  [[nodiscard]] unsigned MaxBitPrecision() const {
     return PRECISION * (sizeof(uint32_t) * CHAR_BIT);
   }
-  bool IsSmallPrime() const { return XMP_Is_Small_Prime(&reg[0], PRECISION); }
-  bool SmallDivisorsTest() const {
+  [[nodiscard]] bool IsSmallPrime() const {
+    return XMP_Is_Small_Prime(&reg[0], PRECISION);
+  }
+  [[nodiscard]] bool SmallDivisorsTest() const {
     return XMP_Small_Divisors_Test(&reg[0], PRECISION);
   }
-  bool FermatTest(unsigned rounds) const {
+  [[nodiscard]] bool FermatTest(unsigned rounds) const {
     return XMP_Fermat_Test(&reg[0], rounds, PRECISION);
   }
-  bool IsPrime() const { return XMP_Is_Prime(&reg[0], PRECISION); }
+  [[nodiscard]] bool IsPrime() const {
+    return XMP_Is_Prime(&reg[0], PRECISION);
+  }
   bool RabinMillerTest(Straw& rng, unsigned int rounds) const {
     return XMP_Rabin_Miller_Test(rng, &reg[0], rounds, PRECISION);
   }
@@ -274,7 +284,8 @@ class Int {
     XMP_Abs(&reg[0], PRECISION);
     return *this;
   }
-  Int times_b_mod_c(const Int& multiplier, const Int& modulus) const {
+  [[nodiscard]] Int times_b_mod_c(const Int& multiplier,
+                                  const Int& modulus) const {
     Int result;
     Error = xmp_stage_modulus(modulus, PRECISION);
     Error = XMP_Mod_Mult(result, &reg[0], multiplier, PRECISION);
@@ -282,7 +293,7 @@ class Int {
     return result;
   }
 
-  Int exp_b_mod_c(const Int& e, const Int& m) const {
+  [[nodiscard]] Int exp_b_mod_c(const Int& e, const Int& m) const {
     Int result;
     Error = xmp_exponent_mod(result, &reg[0], e, m, PRECISION);
     return result;
@@ -302,7 +313,7 @@ class Int {
                             const Int& divisor) {
     XMP_Signed_Div(remainder, quotient, dividend, divisor, PRECISION);
   }
-  Int Inverse(const Int& modulus) const {
+  [[nodiscard]] Int Inverse(const Int& modulus) const {
     Int result;
     XMP_Inverse_A_Mod_B(result, &reg[0], modulus, PRECISION);
     return result;
@@ -366,7 +377,7 @@ class Int {
         table[i] = p % primeTable[i];
       }
     }
-    bool HasZero() const { return HasZeroEntry; }
+    [[nodiscard]] bool HasZero() const { return HasZeroEntry; }
     void Increment(unsigned short increment = 1) {
       HasZeroEntry = false;
       for (unsigned int i = 0; i < std::ssize(primeTable); i++) {

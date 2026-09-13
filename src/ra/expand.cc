@@ -253,7 +253,7 @@ class EListClass : public ListClass {
     // address.
     return ListClass::Add_Item(SocketBytes(*obj));
   }
-  virtual EObjectClass* Get_Object(int index) const {
+  [[nodiscard]] virtual EObjectClass* Get_Object(int index) const {
     return port::RestoreMutableObject<EObjectClass>(ListClass::Get_Item(index));
   }
   virtual EObjectClass* Current_Object() {
@@ -262,10 +262,10 @@ class EListClass : public ListClass {
 
   int Add_Item(const char* text) override { return ListClass::Add_Item(text); }
   int Add_Item(int text) override { return ListClass::Add_Item(text); }
-  const char* Current_Item() const override {
+  [[nodiscard]] const char* Current_Item() const override {
     return ListClass::Current_Item();
   }
-  const char* Get_Item(int index) const override {
+  [[nodiscard]] const char* Get_Item(int index) const override {
     return ListClass::Get_Item(index);
   }
 

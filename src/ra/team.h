@@ -220,8 +220,10 @@ class TeamClass : public AbstractClass {
   template <class Archive>
   void Serialize(Archive& ar);
 
-  bool Is_Empty() const { return Member == static_cast<void*>(nullptr); }
-  bool Has_Entered_Map() const;
+  [[nodiscard]] bool Is_Empty() const {
+    return Member == static_cast<void*>(nullptr);
+  }
+  [[nodiscard]] bool Has_Entered_Map() const;
   void Force_Active() {
     IsForcedActive = true;
     IsUnderStrength = false;
@@ -233,7 +235,7 @@ class TeamClass : public AbstractClass {
   bool Add(FootClass*);
   bool Can_Add(FootClass* obj, int& typeindex) const;
   void Assign_Mission_Target(TARGET new_target);
-  bool Is_Leaving_Map() const;
+  [[nodiscard]] bool Is_Leaving_Map() const;
   void Scan_Limit();
 
  private:
@@ -268,7 +270,7 @@ class TeamClass : public AbstractClass {
   int Recruit(int typeindex);
   bool Is_A_Member(const void* who) const;
   bool Lagging_Units();
-  FootClass* Fetch_A_Leader() const;
+  [[nodiscard]] FootClass* Fetch_A_Leader() const;
 
   /*
   **	Points to the first member in the list of members for this team.

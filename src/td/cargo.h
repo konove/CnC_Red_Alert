@@ -75,9 +75,11 @@ class CargoClass {
   virtual void Debug_Dump(MonoClass* mono) const;
   void AI() {}
 
-  int How_Many() const { return Quantity; }
-  bool Is_Something_Attached() const { return CargoHold != nullptr; }
-  FootClass* Attached_Object() const;
+  [[nodiscard]] int How_Many() const { return Quantity; }
+  [[nodiscard]] bool Is_Something_Attached() const {
+    return CargoHold != nullptr;
+  }
+  [[nodiscard]] FootClass* Attached_Object() const;
   FootClass* Detach_Object();
   void Attach(FootClass* object);
 

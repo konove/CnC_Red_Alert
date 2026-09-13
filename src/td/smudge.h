@@ -80,7 +80,7 @@ class SmudgeClass : public ObjectClass {
   SmudgeClass& operator=(const SmudgeClass&) = delete;
   SmudgeClass(SmudgeClass&&) = delete;
   SmudgeClass& operator=(SmudgeClass&&) = delete;
-  RTTIType What_Am_I() const override { return RTTI_SMUDGE; }
+  [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_SMUDGE; }
 
   static void Init();
 
@@ -94,7 +94,9 @@ class SmudgeClass : public ObjectClass {
   template <class Archive>
   void Serialize(Archive& ar);
 
-  const ObjectTypeClass& Class_Of() const override { return *Class; }
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
+    return *Class;
+  }
   bool Mark(MarkType) override;
   void Draw_It(int, int, WindowNumberType) override {}
 
@@ -103,6 +105,8 @@ class SmudgeClass : public ObjectClass {
   /*
   **	Dee-buggin' support.
   */
+  // debug self-check; callers run it for its assertions and ignore the count.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   int Validate() const;
 
  private:

@@ -100,7 +100,9 @@ class SmudgeClass : public ObjectClass {
   template <class Archive>
   void Serialize(Archive& ar);
 
-  const ObjectTypeClass& Class_Of() const override { return *Class; }
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
+    return *Class;
+  }
   bool Mark(MarkType) override;
   void Draw_It(int, int, WindowNumberType) const override {}
 

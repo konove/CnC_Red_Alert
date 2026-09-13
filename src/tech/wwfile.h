@@ -67,7 +67,7 @@ class FileClass {
   FileClass(FileClass&&) = delete;
   FileClass& operator=(FileClass&&) = delete;
 
-  virtual const char* File_Name() const = 0;
+  [[nodiscard]] virtual const char* File_Name() const = 0;
   virtual const char* Set_Name(const char* filename) = 0;
   virtual int Create() = 0;
   virtual int Delete() = 0;
@@ -81,7 +81,7 @@ class FileClass {
     return Do_Is_Available(AvailabilityCheck::kBlocking);
   }
 
-  virtual int Is_Open() const = 0;
+  [[nodiscard]] virtual int Is_Open() const = 0;
   virtual int Open(const char* filename,
                    FileAccess rights = FileAccess::kRead) = 0;
   virtual int Open(FileAccess rights = FileAccess::kRead) = 0;

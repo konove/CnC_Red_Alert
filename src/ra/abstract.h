@@ -89,38 +89,39 @@ class AbstractClass {
   AbstractClass(AbstractClass&&) = delete;
   AbstractClass& operator=(AbstractClass&&) = delete;
 
-  virtual const char* Name() const { return ""; }
-  virtual HousesType Owner() const { return HOUSE_NONE; }
-  TARGET As_Target() const { return Build_Target(RTTI, ID); }
-  RTTIType What_Am_I() const { return RTTI; }
+  [[nodiscard]] virtual const char* Name() const { return ""; }
+  [[nodiscard]] virtual HousesType Owner() const { return HOUSE_NONE; }
+  [[nodiscard]] TARGET As_Target() const { return Build_Target(RTTI, ID); }
+  [[nodiscard]] RTTIType What_Am_I() const { return RTTI; }
 
   virtual void Debug_Dump(MonoClass* mono) const;
 
-  virtual COORDINATE Center_Coord() const { return Coord; }
-  virtual COORDINATE Target_Coord() const { return Coord; }
+  [[nodiscard]] virtual COORDINATE Center_Coord() const { return Coord; }
+  [[nodiscard]] virtual COORDINATE Target_Coord() const { return Coord; }
 
   DirType Direction(const AbstractClass* object) const {
     return ::Direction(Center_Coord(), object->Target_Coord());
   }
-  DirType Direction(const COORDINATE coord) const {
+  [[nodiscard]] DirType Direction(const COORDINATE coord) const {
     return ::Direction(Center_Coord(), coord);
   }
-  DirType Direction(TARGET target) const;
-  DirType Direction(const CELL cell) const {
+  [[nodiscard]] DirType Direction(TARGET target) const;
+  [[nodiscard]] DirType Direction(const CELL cell) const {
     return ::Direction(Coord_Cell(Center_Coord()), cell);
   }
 
   // Returns distance in leptons to the target. For buildings, subtracts
   // the building's average radius so range checks measure to the edge.
-  int Distance(TARGET target) const;
-  int Distance(const COORDINATE coord) const {
+  [[nodiscard]] int Distance(TARGET target) const;
+  [[nodiscard]] int Distance(const COORDINATE coord) const {
     return ::Distance(Center_Coord(), coord);
   }
   int Distance(const AbstractClass* object) const {
     return ::Distance(Center_Coord(), object->Target_Coord());
   }
 
-  virtual MoveType Can_Enter_Cell(CELL, FacingType = FACING_NONE) const {
+  [[nodiscard]] virtual MoveType Can_Enter_Cell(
+      CELL, FacingType = FACING_NONE) const {
     return MOVE_OK;
   }
 

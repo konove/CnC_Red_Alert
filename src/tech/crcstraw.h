@@ -61,7 +61,7 @@ class CRCStraw : public Straw {
   int Get(void* source, int slen) override;
 
   // Calculate and return the CRC value.
-  long Result() const;
+  [[nodiscard]] long Result() const;
 
  protected:
   CrcEngine crc_;

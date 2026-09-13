@@ -53,8 +53,8 @@ class LinkClass {
   LinkClass(LinkClass&&) = delete;
   LinkClass& operator=(LinkClass&&) = delete;
 
-  virtual LinkClass* Get_Next() const;
-  virtual LinkClass* Get_Prev() const;
+  [[nodiscard]] virtual LinkClass* Get_Next() const;
+  [[nodiscard]] virtual LinkClass* Get_Prev() const;
   virtual LinkClass& Add(LinkClass& object);
   virtual LinkClass& Add_Tail(LinkClass& object);
   virtual LinkClass& Add_Head(LinkClass& object);

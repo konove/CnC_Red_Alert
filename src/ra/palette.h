@@ -17,7 +17,7 @@ class PaletteClass {
   void Partial_Adjust(int, char*);
   void Partial_Adjust(int, PaletteClass&, char*);
 
-  int Closest_Color(const RGBClass&) const;
+  [[nodiscard]] int Closest_Color(const RGBClass&) const;
 
   RGBClass& operator[](int index);
   const RGBClass& operator[](int index) const;

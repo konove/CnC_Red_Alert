@@ -43,7 +43,7 @@ class RandomClass {
   // skews non-random.
   int InRange(int low, int high);
 
-  uint32_t seed() const { return seed_; }
+  [[nodiscard]] uint32_t seed() const { return seed_; }
   void set_seed(const uint32_t seed) { seed_ = seed; }
 
  private:

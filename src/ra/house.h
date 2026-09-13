@@ -659,21 +659,21 @@ class HouseClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  CELL Random_Cell_In_Zone(ZoneType zone) const;
+  [[nodiscard]] CELL Random_Cell_In_Zone(ZoneType zone) const;
   static void Computer_Paranoid();
-  bool Is_Allowed_To_Ally(HousesType house) const;
+  [[nodiscard]] bool Is_Allowed_To_Ally(HousesType house) const;
   void Do_All_To_Hunt() const;
   void Super_Weapon_Handler();
   int* Factory_Counter(RTTIType rtti);
-  int Factory_Count(RTTIType rtti) const;
+  [[nodiscard]] int Factory_Count(RTTIType rtti) const;
   DiffType Assign_Handicap(DiffType handicap);
-  TARGET Find_Juicy_Target(COORDINATE coord) const;
+  [[nodiscard]] TARGET Find_Juicy_Target(COORDINATE coord) const;
   void Print_Zone_Stats(int x, int y, ZoneType zone, MonoClass* mono) const;
   CELL Where_To_Go(const FootClass* object) const;
-  CELL Zone_Cell(ZoneType zone) const;
-  ZoneType Which_Zone(COORDINATE coord) const;
+  [[nodiscard]] CELL Zone_Cell(ZoneType zone) const;
+  [[nodiscard]] ZoneType Which_Zone(COORDINATE coord) const;
   ZoneType Which_Zone(const ObjectClass* object) const;
-  ZoneType Which_Zone(CELL cell) const;
+  [[nodiscard]] ZoneType Which_Zone(CELL cell) const;
   CELL Find_Cell_In_Zone(const TechnoClass* techno, ZoneType zone) const;
   ProdFailType Begin_Production(RTTIType type, int id);
   ProdFailType Suspend_Production(RTTIType type);
@@ -687,13 +687,13 @@ class HouseClass {
   bool Flag_Remove(TARGET target, bool set_home = false);
   void Init_Data(PlayerColorType color, HousesType house, int credits);
   COORDINATE Find_Build_Location(BuildingClass* building) const;
-  BuildingClass* Find_Building(StructType type,
-                               ZoneType zone = ZONE_NONE) const;
-  const char* Name() const { return Class->Name(); }
+  [[nodiscard]] BuildingClass* Find_Building(StructType type,
+                                             ZoneType zone = ZONE_NONE) const;
+  [[nodiscard]] const char* Name() const { return Class->Name(); }
 
   bool Fire_Sale();
-  bool Is_Hack_Prevented(RTTIType rtti, int value) const;
-  bool Is_No_YakMig() const;
+  [[nodiscard]] bool Is_Hack_Prevented(RTTIType rtti, int value) const;
+  [[nodiscard]] bool Is_No_YakMig() const;
   int Expert_AI();
   void Production_Begun(const TechnoClass* rtti);
   void Sell_Wall(CELL cell);
@@ -712,32 +712,32 @@ class HouseClass {
       Make_Enemy(object->Owner());
     }
   }
-  bool Is_Ally(HousesType house) const;
+  [[nodiscard]] bool Is_Ally(HousesType house) const;
   bool Is_Ally(const HouseClass* house) const;
   bool Is_Ally(const ObjectClass* object) const;
   void Debug_Dump(MonoClass* mono) const;
   void AI();
-  bool Can_Build(RTTIType rtti, int type, HousesType house) const;
+  [[nodiscard]] bool Can_Build(RTTIType rtti, int type, HousesType house) const;
 
   // Factory controls.
-  FactoryClass* Fetch_Factory(RTTIType rtti) const;
+  [[nodiscard]] FactoryClass* Fetch_Factory(RTTIType rtti) const;
   void Set_Factory(RTTIType rtti, FactoryClass* factory);
 
   bool Can_Build(const ObjectTypeClass* type, HousesType house) const;
 
   int Get_Quantity(AircraftType aircraft);
   int Get_Quantity(StructType building);
-  const unsigned char* Remap_Table(bool blushing = false,
-                                   RemapType remap = REMAP_NORMAL) const;
+  [[nodiscard]] const unsigned char* Remap_Table(
+      bool blushing = false, RemapType remap = REMAP_NORMAL) const;
 
-  const TechnoTypeClass* Suggest_New_Object(RTTIType objectype,
-                                            bool kennel = false) const;
-  const BuildingTypeClass* Suggest_New_Building() const;
+  [[nodiscard]] const TechnoTypeClass* Suggest_New_Object(
+      RTTIType objectype, bool kennel = false) const;
+  [[nodiscard]] const BuildingTypeClass* Suggest_New_Building() const;
   void Recalc_Center();
-  bool Does_Enemy_Building_Exist(StructType) const;
+  [[nodiscard]] bool Does_Enemy_Building_Exist(StructType) const;
   void Harvested(unsigned tiberium);
   void Stole(unsigned worth);
-  long Available_Money() const;
+  [[nodiscard]] long Available_Money() const;
   void Spend_Money(unsigned money);
   void Refund_Money(unsigned money);
   void Attacked();
@@ -745,8 +745,8 @@ class HouseClass {
   void Adjust_Drain(int adjust);
   void Update_Spied_Power_Plants();
   int Adjust_Capacity(int adjust, bool inanger = false);
-  fixed Power_Fraction() const;
-  fixed Tiberium_Fraction() const;
+  [[nodiscard]] fixed Power_Fraction() const;
+  [[nodiscard]] fixed Tiberium_Fraction() const;
   void Begin_Production() { IsStarted = true; }
   const TeamTypeClass* Suggested_New_Team(bool alertcheck = false);
   void Adjust_Threat(int region, int threat);
@@ -755,29 +755,45 @@ class HouseClass {
   void Active_Remove(const TechnoClass* techno);
   void Active_Add(const TechnoClass* techno);
 
-  UrgencyType Check_Attack() const;
-  UrgencyType Check_Build_Power() const;
-  UrgencyType Check_Build_Defense() const;
-  UrgencyType Check_Build_Offense() const;
-  UrgencyType Check_Build_Income() const;
-  UrgencyType Check_Fire_Sale() const;
-  UrgencyType Check_Build_Engineer() const;
-  UrgencyType Check_Raise_Money() const;
-  UrgencyType Check_Raise_Power() const;
-  UrgencyType Check_Lower_Power() const;
+  [[nodiscard]] UrgencyType Check_Attack() const;
+  [[nodiscard]] UrgencyType Check_Build_Power() const;
+  [[nodiscard]] UrgencyType Check_Build_Defense() const;
+  [[nodiscard]] UrgencyType Check_Build_Offense() const;
+  [[nodiscard]] UrgencyType Check_Build_Income() const;
+  [[nodiscard]] UrgencyType Check_Fire_Sale() const;
+  [[nodiscard]] UrgencyType Check_Build_Engineer() const;
+  [[nodiscard]] UrgencyType Check_Raise_Money() const;
+  [[nodiscard]] UrgencyType Check_Raise_Power() const;
+  [[nodiscard]] UrgencyType Check_Lower_Power() const;
 
   bool AI_Attack(UrgencyType urgency);
+  // AI helpers report whether they acted; the planner ignores it.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool AI_Build_Power(UrgencyType urgency) const;
+  // AI helpers report whether they acted; the planner ignores it.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool AI_Build_Defense(UrgencyType urgency) const;
+  // AI helpers report whether they acted; the planner ignores it.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool AI_Build_Offense(UrgencyType urgency) const;
+  // AI helpers report whether they acted; the planner ignores it.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool AI_Build_Income(UrgencyType urgency) const;
   bool AI_Fire_Sale(UrgencyType urgency);
+  // AI helpers report whether they acted; the planner ignores it.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool AI_Build_Engineer(UrgencyType urgency) const;
+  // AI helpers report whether they acted; the planner ignores it.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool AI_Raise_Money(UrgencyType urgency) const;
+  // AI helpers report whether they acted; the planner ignores it.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool AI_Raise_Power(UrgencyType urgency) const;
+  // AI helpers report whether they acted; the planner ignores it.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool AI_Lower_Power(UrgencyType urgency) const;
 
-  bool Can_Make_Money() const {
+  [[nodiscard]] bool Can_Make_Money() const {
     return Available_Money() > 300 || BScan & kStructFlagRefinery;
   }
 
