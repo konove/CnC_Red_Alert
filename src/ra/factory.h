@@ -100,7 +100,7 @@ class FactoryClass : private StageClass {
   */
   // operator new sets this before the constructor runs, so the initializer
   // must agree with it; a false here would deactivate every new factory.
-  unsigned IsActive : 1 = true;
+  bool IsActive : 1 = true;
 
   enum StepCountEnum {
     STEP_COUNT = 54  // Number of steps to break production down into.
@@ -117,7 +117,7 @@ class FactoryClass : private StageClass {
   *Suspended production is not *	abandoned. It may be resumed with a call
   *to Start().
   */
-  unsigned IsSuspended : 1 = false;
+  bool IsSuspended : 1 = false;
 
   /*
   **	If the AI process detected that the production process has advanced far
@@ -125,7 +125,7 @@ class FactoryClass : private StageClass {
   *will be true. *	Examination of this flag (through the Has_Changed
   *function) allows intelligent *	updating of any production graphic.
   */
-  unsigned IsDifferent : 1 = false;
+  bool IsDifferent : 1 = false;
 
   /*
   **	This records the balance due on the current production item. This value

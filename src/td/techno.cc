@@ -1629,7 +1629,7 @@ HousesType TechnoClass::Owner() const { return House->Class->House; }
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::Clicked_As_Target(int count) {
-  FlashCount = static_cast<unsigned>(count);
+  FlashCount = static_cast<uint8_t>(count);
 }
 
 /***********************************************************************************************

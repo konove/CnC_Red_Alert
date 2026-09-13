@@ -93,7 +93,7 @@ class DropListClass : public EditClass {
   /*
   **	Indicates whether the list box has dropped down or not.
   */
-  unsigned IsDropped : 1 {false};
+  bool IsDropped : 1 {false};
 
   /*
   **	Height of list box when it is expanded.
@@ -153,7 +153,7 @@ class TDropListClass : public EditClass {
   /*
   **	Indicates whether the list box has dropped down or not.
   */
-  unsigned IsDropped : 1 {false};
+  bool IsDropped : 1 {false};
 
   /*
   **	Height of list box when it is expanded.

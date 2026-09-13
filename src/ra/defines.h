@@ -1844,9 +1844,9 @@ enum DoType {
 *the *	maneuver can be interrupted and the frame rate.
 */
 struct DoStruct {
-  unsigned Interrupt : 1;    // Can it be interrupted?
-  unsigned IsMobile : 1;     // Can it move while doing this?
-  unsigned RandomStart : 1;  // Should animation be "randomized"?
+  bool Interrupt : 1;        // Can it be interrupted?
+  bool IsMobile : 1;         // Can it move while doing this?
+  bool RandomStart : 1;      // Should animation be "randomized"?
   unsigned char Rate;        // Frame rate.
 };
 

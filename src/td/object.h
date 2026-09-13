@@ -72,7 +72,7 @@ class ObjectClass : public AbstractClass {
   *not. If the *	object is placed down on the map, then this flag will be
   *true.
   */
-  unsigned IsDown : 1 {false};  // Limboed units cannot be on the map.
+  bool IsDown : 1 {false};  // Limboed units cannot be on the map.
 
   /*
   **	This is a support flag that is only used while building a list of
@@ -81,7 +81,7 @@ class ObjectClass : public AbstractClass {
   *damage is applied to the *	object, this flag is cleared again. This process
   *ensures that an object is never *	subject to "double jeopardy".
   */
-  unsigned IsToDamage : 1 {false};
+  bool IsToDamage : 1 {false};
 
   //	private:
   /*
@@ -89,7 +89,7 @@ class ObjectClass : public AbstractClass {
   *process?  This *	flag could be set by many different circumstances. It is
   *automatically cleared *	when the object is rerendered.
   */
-  unsigned IsToDisplay : 1 {false};  // Redraw is presumed unnecessary.
+  bool IsToDisplay : 1 {false};  // Redraw is presumed unnecessary.
 
   /*
   **	An object in the game may be valid yet held in a state of "limbo". Units
@@ -97,7 +97,7 @@ class ObjectClass : public AbstractClass {
   *"inside" another unit. They can *	also be in limbo if they have been
   *created but are being held until the proper time *	for delivery.
   */
-  unsigned IsInLimbo : 1 {true};  // Always presumed to start in limbo state.
+  bool IsInLimbo : 1 {true};  // Always presumed to start in limbo state.
 
   /*
   **	When an object is "selected" it is given a floating bar graph or other
@@ -106,12 +106,12 @@ class ObjectClass : public AbstractClass {
   *object. For quick checking purposes, *	if this object is the one that
   *is "selected", this flag will be true.
   */
-  unsigned IsSelected : 1 {false};  // Limboed units cannot be selected.
+  bool IsSelected : 1 {false};  // Limboed units cannot be selected.
 
   /*
   **	If an animation is attached to this object, then this flag will be true.
   */
-  unsigned IsAnimAttached : 1 {false};  // Anim is not attached.
+  bool IsAnimAttached : 1 {false};  // Anim is not attached.
 
   /*
   **	Several objects could exist in the same cell list. This is a pointer to

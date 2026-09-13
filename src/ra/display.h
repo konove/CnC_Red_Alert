@@ -236,21 +236,21 @@ class DisplayClass : public MapClass {
 
   // If something in the tactical map is to be redrawn, this flag is set to
   // true.
-  unsigned IsDisplayToRedraw : 1 {true};
+  bool IsDisplayToRedraw : 1 {true};
 
   /*
   **	If the player is currently wielding a wrench (to select buildings for
   *repair), *	then this flag is true. In such a state, normal movement and
   *combat orders *	are preempted.
   */
-  unsigned IsRepairMode : 1 {false};
+  bool IsRepairMode : 1 {false};
 
   /*
   **	If the player is currently in "sell back" mode, then this flag will be
   **	true. While in this mode, anything clicked on will be sold back to the
   **	"factory".
   */
-  unsigned IsSellMode : 1 {false};
+  bool IsSellMode : 1 {false};
 
   /*
   **	If the player is currently in ion cannon targeting mode, then this
@@ -265,7 +265,7 @@ class DisplayClass : public MapClass {
   **	flag will be true. While in such a mode, normal input is preempted while
   **	the extended selection is in progress.
   */
-  unsigned IsRubberBand : 1 {false};
+  bool IsRubberBand : 1 {false};
 
   /*
   **	The moment the mouse is held down, this flag gets set. If the mouse is
@@ -273,7 +273,7 @@ class DisplayClass : public MapClass {
   *mode selection *	can begin. Using a minimum distance prevents accidental
   *rubber band selection *	mode from being initiated.
   */
-  unsigned IsTentative : 1 {false};
+  bool IsTentative : 1 {false};
 
   /*
   **	This gadget class is used for capturing input to the tactical map. All
@@ -305,7 +305,7 @@ class DisplayClass : public MapClass {
   *then the shadow drawing *	will be skipped since it would perform no
   *function.
   */
-  unsigned IsShadowPresent : 1 {false};
+  bool IsShadowPresent : 1 {false};
 
   /*
   **	Rubber band mode consists of stretching a box from the anchor point

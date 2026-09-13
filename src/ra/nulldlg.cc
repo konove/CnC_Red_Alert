@@ -4836,7 +4836,7 @@ int Com_Show_Scenario_Dialog() {
                                 ? PCOLOR_REALLY_BLUE
                                 : Session.ColorIdx,
                             kTpfText, nullptr, '_', d_message_w);
-  Session.WWChat = 0;
+  Session.WWChat = false;
 
   /*........................................................................
   Init version number clipping system

@@ -112,7 +112,7 @@ void MapEditClass::Handle_Teams(const char* caption) {
      */
     if (rc == 1 && CurTeam) {
       if (CurTeam->Edit()) {
-        Changed = 1;
+        Changed = true;
       }
       HidPage.Clear();
       Flag_To_Redraw(true);
@@ -134,7 +134,7 @@ void MapEditClass::Handle_Teams(const char* caption) {
             delete CurTeam;
             CurTeam = nullptr;
           } else {
-            Changed = 1;
+            Changed = true;
           }
           HidPage.Clear();
           Flag_To_Redraw(true);

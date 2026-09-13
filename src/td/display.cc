@@ -299,7 +299,7 @@ void DisplayClass::Init_Clear() {
   PendingObject = nullptr;
   PendingHouse = HOUSE_NONE;
   CursorSize = nullptr;
-  IsTargettingMode = false;
+  IsTargettingMode = 0;
   IsRepairMode = false;
   IsRubberBand = false;
   IsTentative = false;
@@ -1102,7 +1102,7 @@ void DisplayClass::Read_INI(char* buffer) {
     sprintf(buf, "%d", i);
     Waypoint[i] = static_cast<CELL>(WWGetPrivateProfileInt("Waypoints", buf, -1, buffer));
     if (Waypoint[i] != -1) {
-      (*this)[Waypoint[i]].IsWaypoint = 1;
+      (*this)[Waypoint[i]].IsWaypoint = true;
     }
   }
 
@@ -1148,7 +1148,7 @@ void DisplayClass::Read_INI(char* buffer) {
       */
       CellTriggers[cell] = TriggerClass::As_Pointer(buf);
       if (CellTriggers[cell]) {
-        (*this)[cell].IsTrigger = 1;
+        (*this)[cell].IsTrigger = true;
         if (CellTriggers[cell]) {
           CellTriggers[cell]->AttachCount++;
         }
@@ -2975,7 +2975,7 @@ void DisplayClass::Mouse_Right_Press() {
         IsSellMode = false;
       } else {
         if (IsTargettingMode) {
-          IsTargettingMode = false;
+          IsTargettingMode = 0;
         } else {
           Unselect_All();
         }

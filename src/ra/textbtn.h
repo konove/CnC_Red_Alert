@@ -61,7 +61,7 @@ class TextButtonClass final : public ToggleClass {
   void Draw_Background();
   void Draw_Text(const char* text);
 
-  unsigned IsBlackBorder : 1;
+  bool IsBlackBorder : 1;
 
   /*
   **	This points to a constant string that is used for the button's text.

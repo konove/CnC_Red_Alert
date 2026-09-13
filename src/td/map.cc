@@ -481,7 +481,7 @@ void MapClass::Alloc_Cells() {
   */
   Vector = nullptr;
   VectorMax = 0;
-  IsAllocated = 0;
+  IsAllocated = false;
   Resize(Size);
 }
 

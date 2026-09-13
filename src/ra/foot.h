@@ -82,7 +82,7 @@ class FootClass : public TechnoClass {
   *within range. It will also *	toggle when path limiting is true, but there is
   *not target found within *	the limited range.
   */
-  unsigned IsScanLimited : 1;
+  bool IsScanLimited : 1;
 
   /*
   **	If this unit has officially joined the team's group, then this flag is
@@ -92,7 +92,7 @@ class FootClass : public TechnoClass {
   **	a target without falling back to regroup the moment a distant member
   **	joins.
   */
-  unsigned IsInitiated : 1;
+  bool IsInitiated : 1;
 
   /*
   **	When the player gives this object a navigation target AND that target
@@ -101,7 +101,7 @@ class FootClass : public TechnoClass {
   **	movement. This flag is cleared if any movement was able to be performed.
   **	It never gets set for computer controlled units.
   */
-  unsigned IsNewNavCom : 1;
+  bool IsNewNavCom : 1;
 
   /*
   **	There are certain cases where a unit should perform a full scan rather
@@ -109,7 +109,7 @@ class FootClass : public TechnoClass {
   *unit first *	appears on the map or when it finishes a multiple cell movement
   *track.
   */
-  unsigned IsPlanningToLook : 1;
+  bool IsPlanningToLook : 1;
 
   /*
   **	Certain units have the ability to metamorphize into a building. When
@@ -117,20 +117,20 @@ class FootClass : public TechnoClass {
   *operations, this *	flag will be true. This ensures that any necessary
   *special case code gets *	properly executed for this unit.
   */
-  unsigned IsDeploying : 1;
+  bool IsDeploying : 1;
 
   /*
   **	This flag tells the system that the unit is doing a firing animation.
   *This is *	critical to the firing logic.
   */
-  unsigned IsFiring : 1;
+  bool IsFiring : 1;
 
   /*
   **	This unit could be either rotating its body or rotating its turret.
   *During the *	process of rotation, this flag is set. By examining this flag,
   *unnecessary logic *	can be avoided.
   */
-  unsigned IsRotating : 1;
+  bool IsRotating : 1;
 
   /*
   **	If this object is current driving to a short range destination, this
@@ -140,7 +140,7 @@ class FootClass : public TechnoClass {
   *when infantry wish to *	head to a different destination, they are
   *allowed to start immediately.
   */
-  unsigned IsDriving : 1;
+  bool IsDriving : 1;
 
   /*
   **	If this object is unloading from a hover transport, then this flag will
@@ -149,28 +149,28 @@ class FootClass : public TechnoClass {
   *an overlapping *	position. This flag will be cleared automatically when
   *the object moves to the *	center of a cell.
   */
-  unsigned IsUnloading : 1;
+  bool IsUnloading : 1;
 
   /*
   ** If this object is part of a formation, this bit will be set.  The
   ** formation only occurs when every member of a team is selected, and
   ** only those members of the team are the ones selected.
   */
-  unsigned IsFormationMove : 1;
+  bool IsFormationMove : 1;
 
   /*
   **	If the navigation movement queue is to be looped rather than consumed,
   *then *	this flag will be true. By looping, the unit will travel through
   *the locations *	in the queue indefinately.
   */
-  unsigned IsNavQueueLoop : 1;
+  bool IsNavQueueLoop : 1;
 
   /*
   **	If this object is scattering, then this flag will be true. While true,
   *the *	NavCom should not be arbitrarily changed. This flag will
   *automatcially be *	cleared when the object moves one cell.
   */
-  unsigned IsScattering : 1;
+  bool IsScattering : 1;
 
   /*
   **	This is the "throttle setting" of the unit. It is a fractional value

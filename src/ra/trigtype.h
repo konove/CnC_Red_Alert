@@ -67,7 +67,7 @@ class TriggerTypeClass : public AbstractTypeClass {
  public:
   // operator new sets this before the constructor runs; the initializer
   // must agree with it.
-  unsigned IsActive : 1 = true;
+  bool IsActive : 1 = true;
 
   typedef enum PersistantType {
     VOLATILE = 0,

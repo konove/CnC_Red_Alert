@@ -126,23 +126,19 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
   PacketTransport = new WinsockInterfaceClass;
   assert(PacketTransport != nullptr);
 
-  if (PacketTransport->Init()) {
-    IPXStatus = 1;
-  } else {
-    IPXStatus = 0;
-  }
+  IPXStatus = PacketTransport->Init();
   delete PacketTransport;
   PacketTransport = nullptr;
 
   //........................................................................
   //	Set listening state flag to off
   //........................................................................
-  Listening = 0;
+  Listening = false;
 
   //........................................................................
   //	No memory has been alloc'd yet
   //........................................................................
-  RealMemAllocd = 0;
+  RealMemAllocd = false;
 
   //........................................................................
   //	Set max packet sizes, for allocating real-mode memory
@@ -217,7 +213,7 @@ IPXManagerClass::~IPXManagerClass() {
   //------------------------------------------------------------------------
   if (Listening) {
     IPXConnClass::Stop_Listening();
-    Listening = 0;
+    Listening = false;
   }
 
   //------------------------------------------------------------------------
@@ -238,7 +234,7 @@ IPXManagerClass::~IPXManagerClass() {
   //------------------------------------------------------------------------
   if (RealMemAllocd) {
     Free_RealMode_Mem();
-    RealMemAllocd = 0;
+    RealMemAllocd = false;
   }
 } /* end of ~IPXManagerClass */
 
@@ -280,7 +276,7 @@ int IPXManagerClass::Init() {
     //------------------------------------------------------------------------
     if (Listening) {
       IPXConnClass::Stop_Listening();
-      Listening = 0;
+      Listening = false;
     }
 
     //------------------------------------------------------------------------
@@ -288,14 +284,14 @@ int IPXManagerClass::Init() {
     //------------------------------------------------------------------------
     if (RealMemAllocd) {
       Free_RealMode_Mem();
-      RealMemAllocd = 0;
+      RealMemAllocd = false;
     }
 
   } else {
     /*
     ** Pretend IPX is available for Internet games whether it is or not
     */
-    IPXStatus = 1;
+    IPXStatus = true;
   }
 
   //------------------------------------------------------------------------
@@ -318,7 +314,7 @@ int IPXManagerClass::Init() {
     if (!Alloc_RealMode_Mem()) {
       return 0;
     }
-    RealMemAllocd = 1;
+    RealMemAllocd = true;
   }
 
   //------------------------------------------------------------------------
@@ -348,7 +344,7 @@ int IPXManagerClass::Init() {
     return 0;
   }
 
-  Listening = 1;
+  Listening = true;
 
   return 1;
 

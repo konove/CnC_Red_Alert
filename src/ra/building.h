@@ -93,25 +93,25 @@ class BuildingClass : public TechnoClass {
   **	This building should be rebuilt if it is destroyed. This is in spite
   **	of the condition of the prebuilt base list.
   */
-  unsigned IsToRebuild : 1 = false;
+  bool IsToRebuild : 1 = false;
 
   /*
   **	Is the building allowed to repair itself?
   */
-  unsigned IsToRepair : 1 = false;
+  bool IsToRepair : 1 = false;
 
   /*
   **	If the computer owns this building, then it is allowed to sell it if
   **	the situation warrants it. In the other case, it cannot sell the
   **	building regardless of conditions.
   */
-  unsigned IsAllowedToSell : 1 = true;
+  bool IsAllowedToSell : 1 = true;
 
   /*
   **	If the building is at a good point to change orders, then this
   **	flag will be set to true.
   */
-  unsigned IsReadyToCommence : 1 = false;
+  bool IsReadyToCommence : 1 = false;
 
   /*
   **	If this building is currently spending money to repair itself, then
@@ -119,64 +119,64 @@ class BuildingClass : public TechnoClass {
   *building *	has reached full strength, when money is exhausted, or if the
   *player *	specifically stops the repair process.
   */
-  unsigned IsRepairing : 1 = false;
+  bool IsRepairing : 1 = false;
 
   /*
   **	If repair is currently in progress and this flag is true, then a wrench
   *graphic *	will be overlaid on the building to give visual feedback for the
   *repair process.
   */
-  unsigned IsWrenchVisible : 1 = false;
+  bool IsWrenchVisible : 1 = false;
 
   /*
   ** This flag is set when a commando has raided the building and planted
   ** plastic explosives.  When the CommandoCountDown timer expires, the
   ** building takes massive damage.
   */
-  unsigned IsGoingToBlow : 1 = false;
+  bool IsGoingToBlow : 1 = false;
 
   /*
   **	If this building was destroyed by some method that would prevent
   **	survivors, then this flag will be true.
   */
-  unsigned IsSurvivorless : 1 = false;
+  bool IsSurvivorless : 1 = false;
 
   /*
   **	These state control variables are used by the obelisk for the charging
   **	animation.
   */
-  unsigned IsCharging : 1 = false;
-  unsigned IsCharged : 1 = false;
+  bool IsCharging : 1 = false;
+  bool IsCharged : 1 = false;
 
   /*
   **	A building that has been captured will not contain the full compliment
   **	of crew. This is true even if it subsequently gets captured back.
   */
-  unsigned IsCaptured : 1 = false;
+  bool IsCaptured : 1 = false;
 
   /*
   ** Used by the gap generator to decide if it should jam or unjam
   */
-  unsigned IsJamming : 1 = false;
+  bool IsJamming : 1 = false;
 
   /*
   ** Used by radar facilities to know if they're being jammed by a mobile
   ** radar jammer
   */
-  unsigned IsJammed : 1 = false;
+  bool IsJammed : 1 = false;
 
   /*
   ** Used only by advanced tech center, this keeps track of whether the
   ** GPS satellite has been fired or not.
   */
-  unsigned HasFired : 1 = false;
+  bool HasFired : 1 = false;
 
   /*
   **	If Grand_Opening was already called for this building, then this
   **	flag will be true. By utilizing this flag, multiple inadvertant
   **	calls to Grand_Opening won't cause problems.
   */
-  unsigned HasOpened : 1 = false;
+  bool HasOpened : 1 = false;
 
   /*
   **	Special countdown to destruction value. If the building is destroyed,

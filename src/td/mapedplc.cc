@@ -1877,7 +1877,7 @@ void MapEditClass::Place_Trigger() {
     ------------------------ Assign trigger to a cell ------------------------
     */
     if (CurTrigger->Event <= EVENT_OBJECTFIRST) {
-      Map[cell].IsTrigger = 1;
+      Map[cell].IsTrigger = true;
       CellTriggers[cell] = CurTrigger;
     }
   }
@@ -1913,7 +1913,7 @@ void MapEditClass::Start_Base_Building() {
   /*
   ** Start placement mode
   */
-  BaseBuilding = 1;
+  BaseBuilding = true;
   Start_Placement();
 
   /*
@@ -1948,7 +1948,7 @@ void MapEditClass::Cancel_Base_Building() {
   ** Cancel placement mode
   */
   Cancel_Placement();
-  BaseBuilding = 0;
+  BaseBuilding = false;
 
   /*
   ** Force map to redraw

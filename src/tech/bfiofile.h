@@ -85,12 +85,12 @@ class BufferIOFileClass : public RawFileClass {
   int Do_Is_Available(AvailabilityCheck mode) override;
 
  private:
-  unsigned IsAllocated : 1;
-  unsigned IsOpen : 1;
-  unsigned IsDiskOpen : 1;
-  unsigned IsCached : 1;
-  unsigned IsChanged : 1;
-  unsigned UseBuffer : 1;
+  bool IsAllocated : 1;
+  bool IsOpen : 1;
+  bool IsDiskOpen : 1;
+  bool IsCached : 1;
+  bool IsChanged : 1;
+  bool UseBuffer : 1;
 
   FileAccess BufferRights;
 

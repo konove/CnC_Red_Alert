@@ -116,7 +116,7 @@ class MouseClass : public ScrollClass {
   **	If the small representation of the mouse is active, then this flag is
   *true.
   */
-  unsigned IsSmall : 1 {false};
+  bool IsSmall : 1 {false};
 
  private:
   /*

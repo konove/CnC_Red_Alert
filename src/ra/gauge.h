@@ -58,18 +58,18 @@ class GaugeClass : public ControlClass {
   **	If this gauge has a color to the left of the current setting, then this
   **	flag will be true.
   */
-  unsigned IsColorized : 1 {true};
+  bool IsColorized : 1 {true};
 
  protected:
   /*
   **	If a thumb is desired, set to true.
   */
-  unsigned HasThumb : 1 {true};
+  bool HasThumb : 1 {true};
 
   /*
   **	Is this a horizontal slider?
   */
-  unsigned IsHorizontal : 1;
+  bool IsHorizontal : 1;
 
   int MaxValue{255};  // maximum value (in application units)
   int CurValue{0};    // index of 1st displayed string in box

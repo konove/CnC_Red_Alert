@@ -197,10 +197,10 @@ class VersionClass {
   // Bitfield Flags
   // IsInitialized: is set if the VERSION.TXT file has been read
   //.....................................................................
-  unsigned VersionInit : 1 {false};
-  unsigned MajorInit : 1 {false};
-  unsigned MinorInit : 1 {false};
-  unsigned TextInit : 1 {false};
+  bool VersionInit : 1 {false};
+  bool MajorInit : 1 {false};
+  bool MinorInit : 1 {false};
+  bool TextInit : 1 {false};
 };
 
 const char* Version_Name();

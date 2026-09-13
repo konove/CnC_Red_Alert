@@ -229,8 +229,8 @@ class AircraftClass : public FootClass, public FlyClass {
   *landing. It is *	necessary to handle the transition in this manner so
   *that it occurs smoothly *	during the graphic processing section.
   */
-  unsigned IsLanding : 1 = false;
-  unsigned IsTakingOff : 1 = false;
+  bool IsLanding : 1 = false;
+  bool IsTakingOff : 1 = false;
 
   /*
   **	It is very common for aircraft to be homing in on a target. When this
@@ -242,7 +242,7 @@ class AircraftClass : public FootClass, public FlyClass {
   *mode. Example: Transport helicopters go into a hovering into correct position
   **	mode when the target is reached.
   */
-  unsigned IsHoming : 1 = false;
+  bool IsHoming : 1 = false;
 
   /*
   **	Helicopters that are about to land must hover into a position exactly
@@ -253,7 +253,7 @@ class AircraftClass : public FootClass, public FlyClass {
   **	zone. When the position is over the landing zone, then this flag is set
   *to false.
   */
-  unsigned IsHovering : 1 = false;
+  bool IsHovering : 1 = false;
 
   /*
   **	This is the jitter tracker to be used when the aircraft is a helicopter

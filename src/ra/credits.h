@@ -64,9 +64,9 @@ class CreditClass {
 
   int64_t Current{0};  // Credit value currently displayed.
 
-  unsigned IsToRedraw : 1 {false};
-  unsigned IsUp : 1 {false};
-  unsigned IsAudible : 1 {false};
+  bool IsToRedraw : 1 {false};
+  bool IsUp : 1 {false};
+  bool IsAudible : 1 {false};
 
  private:
   int Countdown{0};  // Delay between ticks.

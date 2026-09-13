@@ -2155,7 +2155,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
     ** mode then we don't want to be any more.
     */
     if (flags & RIGHTPRESS) {
-      Map.IsTargettingMode = false;
+      Map.IsTargettingMode = 0;
     }
     /*
     **	A left mouse press signal "activate".  If our weapon type is
@@ -2165,7 +2165,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
       switch (spc) {
         case SPC_ION_CANNON:
           if (PlayerPtr->IonCannon.Is_Ready()) {
-            Map.IsTargettingMode = static_cast<unsigned>(spc);
+            Map.IsTargettingMode = static_cast<uint8_t>(spc);
             Unselect_All();
             Speak(VOX_SELECT_TARGET);
           } else {
@@ -2175,7 +2175,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
 
         case SPC_AIR_STRIKE:
           if (PlayerPtr->AirStrike.Is_Ready()) {
-            Map.IsTargettingMode = static_cast<unsigned>(spc);
+            Map.IsTargettingMode = static_cast<uint8_t>(spc);
             Unselect_All();
             Speak(VOX_SELECT_TARGET);
           } else {
@@ -2185,7 +2185,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
 
         case SPC_NUCLEAR_BOMB:
           if (PlayerPtr->NukeStrike.Is_Ready()) {
-            Map.IsTargettingMode = static_cast<unsigned>(spc);
+            Map.IsTargettingMode = static_cast<uint8_t>(spc);
             Unselect_All();
             Speak(VOX_SELECT_TARGET);
           } else {
@@ -2268,7 +2268,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
                 // A factory with no object of its own is producing a special
                 // weapon; with neither there is nothing to place.
                 if (factory->Get_Special_Item()) {
-                  Map.IsTargettingMode = true;
+                  Map.IsTargettingMode = 1;
                 }
               } else {
                 BuildingClass* builder =

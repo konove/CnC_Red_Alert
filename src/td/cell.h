@@ -67,20 +67,20 @@ class CellClass {
   *this flag will be set. It gets cleared *	when the cell graphic is updated
   *to the radar map.
   */
-  unsigned IsPlot : 1 {false};
+  bool IsPlot : 1 {false};
 
   /*
   **	Does this cell contain the special placement cursor graphic?  This
   *graphic is *	present when selecting a site for building placement.
   */
-  unsigned IsCursorHere : 1 {false};
+  bool IsCursorHere : 1 {false};
 
   /*
   **	Is this cell mapped by the player?  A mapped cell is visible. An
   *unmapped cell *	is covered in a dark shroud. In addition to visibility,
   *mapped cells are the only *	legal place for transports to land.
   */
-  unsigned IsMapped : 1 {false};
+  bool IsMapped : 1 {false};
 
   /*
   **	If any part of this cell is visible (even just peeking out from under
@@ -88,33 +88,33 @@ class CellClass {
   *this flag set, but unmapped *	cells might not -- it depends on where
   *the shadow edge is located.
   */
-  unsigned IsVisible : 1 {false};
+  bool IsVisible : 1 {false};
 
   /*
   ** Every cell can be assigned a trigger. The same trigger can be assigned to
   ** multiple cells. This bitflag indicates whether this cell has a trigger.
   ** The trigger pointers for all cells must be stored elsewhere.
   */
-  unsigned IsTrigger : 1 {false};
+  bool IsTrigger : 1 {false};
 
   /*
   ** Every cell can be assigned a waypoint.  A waypoint can only be assigned
   ** to one cell, and vice-versa.  This bit simply indicates whether this
   ** cell is assigned a waypoint or not.
   */
-  unsigned IsWaypoint : 1 {false};
+  bool IsWaypoint : 1 {false};
 
   /*
   ** Is this cell currently under the radar map cursor?  If so then it
   **   needs to be updated whenever the map is updated.
   */
-  unsigned IsRadarCursor : 1 {false};
+  bool IsRadarCursor : 1 {false};
 
   /*
   **	If this cell contains a house flag, then this will be true. The actual
   *house *	flag it contains is specified by the Owner field.
   */
-  unsigned IsFlagged : 1 {false};
+  bool IsFlagged : 1 {false};
 
   /*
   **	This contains the icon number and set to use for the base

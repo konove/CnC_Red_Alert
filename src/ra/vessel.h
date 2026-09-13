@@ -71,13 +71,13 @@ class VesselClass : public DriveClass {
   ** Has this sea vessel been told to move to a shipyard?  If so, then
   ** when we get there, start the repair process.
   */
-  unsigned IsToSelfRepair : 1 = false;
+  bool IsToSelfRepair : 1 = false;
 
   /*
   ** Is this sea vessel parked next to a shipyard/subpen, and therefore
   ** in the special self-repair mode?
   */
-  unsigned IsSelfRepairing : 1 = false;
+  bool IsSelfRepairing : 1 = false;
 
   /*
   ** If this is an LST, is it time to shut the door?

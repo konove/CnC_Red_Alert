@@ -94,10 +94,10 @@ class OptionsClass {
   fixed Tint;                    // Hue
   fixed Saturation;              // Saturation
   fixed Contrast;                // Value
-  unsigned AutoScroll : 1 {true};       // Does map autoscroll?
-  unsigned IsScoreRepeat : 1 {false};   // Score should repeat?
-  unsigned IsScoreShuffle : 1 {false};  // Score list should shuffle?
-  unsigned IsPaletteScroll : 1 {true};  // Allow palette scrolling?
+  bool AutoScroll : 1 {true};    // Does map autoscroll?
+  bool IsScoreRepeat : 1 {false};   // Score should repeat?
+  bool IsScoreShuffle : 1 {false};  // Score list should shuffle?
+  bool IsPaletteScroll : 1 {true};  // Allow palette scrolling?
 
   /*
   **	These are the hotkeys used for keyboard control.

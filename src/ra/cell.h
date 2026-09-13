@@ -71,51 +71,51 @@ class CellClass {
   *this flag will be set. It gets cleared *	when the cell graphic is updated
   *to the radar map.
   */
-  unsigned IsPlot : 1 {false};
+  bool IsPlot : 1 {false};
 
   /*
   **	Does this cell contain the special placement cursor graphic?  This
   *graphic is *	present when selecting a site for building placement.
   */
-  unsigned IsCursorHere : 1 {false};
+  bool IsCursorHere : 1 {false};
 
   /*
   **	A mapped cell has some portion of it visible. Maybe it has a shroud
   *piece *	over it and maybe not.
   */
-  unsigned IsMapped : 1 {false};
+  bool IsMapped : 1 {false};
 
   /*
   **	A visible cell means that it is completely visible with no shroud over
   **	it at all.
   */
-  unsigned IsVisible : 1 {false};
+  bool IsVisible : 1 {false};
 
   /*
   ** Every cell can be assigned a waypoint.  A waypoint can only be assigned
   ** to one cell, and vice-versa.  This bit simply indicates whether this
   ** cell is assigned a waypoint or not.
   */
-  unsigned IsWaypoint : 1 {false};
+  bool IsWaypoint : 1 {false};
 
   /*
   ** Is this cell currently under the radar map cursor?  If so then it
   **   needs to be updated whenever the map is updated.
   */
-  unsigned IsRadarCursor : 1 {false};
+  bool IsRadarCursor : 1 {false};
 
   /*
   **	If this cell contains a house flag, then this will be true. The actual
   *house *	flag it contains is specified by the Owner field.
   */
-  unsigned IsFlagged : 1 {false};
+  bool IsFlagged : 1 {false};
 
   /*
   **	This is a working flag used to help keep track of what cells should be
   **	shrouded. By using this flag it allows a single pass through the map
   **	cells for determining shadow regrowth logic.
   */
-  unsigned IsToShroud : 1 {false};
+  bool IsToShroud : 1 {false};
 
   /*
   **	This records the movement zone for this map. Movement zones share the

@@ -70,7 +70,7 @@ class DoorClass {
   **	If the animation for this door indicates that the object it is
   **	attached to should be redrawn, then this flag will be true.
   */
-  unsigned IsToRedraw : 1 {false};
+  bool IsToRedraw : 1 {false};
 
  public:
   // Saves the animation phase, door state, and pending redraw flag.

@@ -112,7 +112,7 @@ TextButtonClass::TextButtonClass(unsigned id, const char* text,
  *=============================================================================================*/
 TextButtonClass::TextButtonClass()
     : ToggleClass(0, 0, 0, 0, 0),
-      IsBlackBorder(0),
+      IsBlackBorder(false),
       String(nullptr),
       PrintFlags(TPF_8POINT) {
   X = Y = 0;

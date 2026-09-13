@@ -135,22 +135,22 @@ class RadarClass : public DisplayClass {
   // If the radar map must be completely redrawn, then this flag will be true.
   // Typical causes of this would be when the radar first appears, or when the
   // screen has been damaged.
-  unsigned IsRadarToRedraw : 1 {false};
-  unsigned RadarCursorRedraw : 1 {false};
+  bool IsRadarToRedraw : 1 {false};
+  bool RadarCursorRedraw : 1 {false};
 
   /*
   **	If the radar map is visible then this flag is true.
   */
-  unsigned DoesRadarExist : 1 {false};
-  unsigned IsRadarActive : 1 {false};
-  unsigned IsRadarActivating : 1 {false};
-  unsigned IsRadarDeactivating : 1 {false};
-  unsigned IsRadarJammed : 1 {false};
+  bool DoesRadarExist : 1 {false};
+  bool IsRadarActive : 1 {false};
+  bool IsRadarActivating : 1 {false};
+  bool IsRadarDeactivating : 1 {false};
+  bool IsRadarJammed : 1 {false};
 
   /*
   ** Flag to tell whether sonar pulse should be displayed on radar map
   */
-  unsigned IsPulseActive : 1 {false};
+  bool IsPulseActive : 1 {false};
   int RadarPulseFrame{0};
 
   /*
@@ -216,19 +216,19 @@ class RadarClass : public DisplayClass {
   /*
   **	If the radar map is in zoom mode, then this value will be true.
   */
-  unsigned IsZoomed : 1 {true};
+  bool IsZoomed : 1 {true};
 
   /*
   ** This flag is true if the radar map is in its special show-the-player
   ** names mode.
   */
-  unsigned IsPlayerNames : 1 {false};
+  bool IsPlayerNames : 1 {false};
 
   /*
   ** This flag is true if the radar map is in its special show-the-units
   ** of-another-house mode.
   */
-  unsigned IsHouseSpy : 1 {false};
+  bool IsHouseSpy : 1 {false};
 
   /*
   **	This is the zoom factor to use. This value is the number of pixels wide

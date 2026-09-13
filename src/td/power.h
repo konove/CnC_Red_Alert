@@ -76,7 +76,7 @@ class PowerClass : public RadarClass {
   **	File I/O.
   */
 
-  unsigned IsPowerToRedraw : 1 {false};
+  bool IsPowerToRedraw : 1 {false};
 
  protected:
   /*
@@ -108,7 +108,7 @@ class PowerClass : public RadarClass {
  private:
   int Power_Height(int value);
 
-  unsigned IsActive : 1 = 0;
+  bool IsActive : 1 = false;
 
   int RecordedDrain{-1};
   int RecordedPower{-1};

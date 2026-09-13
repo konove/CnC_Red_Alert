@@ -124,7 +124,7 @@ void MapEditClass::Handle_Teams(const char* caption) {
           */
     if (rc == 1 && CurTeam) {
       if (Edit_Team() == 0) {
-        Changed = 1;
+        Changed = true;
       }
     } else {
       /*
@@ -143,7 +143,7 @@ void MapEditClass::Handle_Teams(const char* caption) {
             delete CurTeam;
             CurTeam = nullptr;
           } else {
-            Changed = 1;
+            Changed = true;
           }
         } else {
           /*

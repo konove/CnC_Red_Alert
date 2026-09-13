@@ -122,7 +122,7 @@ class GScreenClass : public VectorClass<CellClass> {
   *flag *	is set by the Flag_To_Redraw function. Typically, this occurs
   *when the screen *	has been trashed or is first created.
   */
-  unsigned IsScreenToRedraw : 1 {true};
+  bool IsScreenToRedraw : 1 {true};
 
   /*
   **	If only a sub-system of the map must be redrawn, then this flag will be
@@ -131,7 +131,7 @@ class GScreenClass : public VectorClass<CellClass> {
   *the entire display is not *	necessary, but the Draw_It function should still
   *be called so that the appropriate *	class can perform it's rendering.
   */
-  unsigned IsToUpdate : 1 {true};
+  bool IsToUpdate : 1 {true};
 
   /*
   **	Pointer to an exact copy of the visible graphic page. This copy is used

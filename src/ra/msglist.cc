@@ -210,13 +210,13 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars, int height,
   // coords.
   //------------------------------------------------------------------------
   EnableOverflow = overflow_on != 0;
-  IsEdit = 0;
+  IsEdit = false;
   if (edit_x == -1 || edit_y == -1) {
-    AdjustEdit = 1;
+    AdjustEdit = true;
     EditX = x;
     EditY = y;
   } else {
-    AdjustEdit = 0;
+    AdjustEdit = false;
     EditX = edit_x;
     EditY = edit_y;
   }
@@ -286,7 +286,7 @@ void MessageListClass::Reset() {
   //------------------------------------------------------------------------
   MessageList = nullptr;
   EditLabel = nullptr;
-  IsEdit = 0;
+  IsEdit = false;
 }
 
 /***************************************************************************
@@ -770,10 +770,10 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
   Width = width;
 
   if (EditLabel) {
-    IsEdit = 1;
+    IsEdit = true;
     EditLabel->Set_Focus();
   } else {
-    IsEdit = 0;
+    IsEdit = false;
   }
 
   //------------------------------------------------------------------------
@@ -813,7 +813,7 @@ void MessageListClass::Remove_Edit() {
   // If the edit field is active, delete it
   //------------------------------------------------------------------------
   if (IsEdit) {
-    IsEdit = 0;
+    IsEdit = false;
     delete EditLabel;
 
     //.....................................................................

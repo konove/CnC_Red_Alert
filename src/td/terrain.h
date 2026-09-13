@@ -173,29 +173,29 @@ class TerrainClass final : public ObjectClass, public StageClass {
   /*
   **	If this terrain object is on fire, then this flag will be true.
   */
-  unsigned IsOnFire : 1 = false;
+  bool IsOnFire : 1 = false;
 
   /*
   **	Is this a terrain object that undergoes crumbling animation and it is
   **	in fact crumbling at this time?
   */
-  unsigned IsCrumbling : 1 = false;
+  bool IsCrumbling : 1 = false;
 
   /*
   ** If this is a tree that becomes a blossom tree, is it currently doing so?
   */
-  unsigned IsBlossoming : 1 = false;
+  bool IsBlossoming : 1 = false;
 
   /*
   ** If this is a blossom tree, is it barnacled?
   */
-  unsigned IsBarnacled : 1 = false;
+  bool IsBarnacled : 1 = false;
 
   /*
   ** If this is a blossom tree that is barnacled, is it pulsing and spewing
   ** out spores?
   */
-  unsigned IsSporing : 1 = false;
+  bool IsSporing : 1 = false;
 };
 
 extern template void TerrainClass::Serialize<ArchiveWriter>(ArchiveWriter&);

@@ -86,7 +86,7 @@ class HelpClass : public TabClass {
   **	If the help text is right justified (as with the help text that pops up
   *over the *	sidebar icons), then this flag is set to true.
   */
-  unsigned IsRight : 1 {false};
+  bool IsRight : 1 {false};
 
   /*
   **	If the optional second line of text that displays cost is desired, then

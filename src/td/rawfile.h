@@ -174,7 +174,7 @@ EZERO,                 // Non-error.
   **	This value will be non-zero if the filename has be allocated
   **	(using strdup()).
   */
-  unsigned Allocated : 1;
+  bool Allocated : 1;
 };
 
 /***********************************************************************************************

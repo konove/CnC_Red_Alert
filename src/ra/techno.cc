@@ -2499,7 +2499,7 @@ HousesType TechnoClass::Owner() const {
 void TechnoClass::Clicked_As_Target(int count) {
   assert(IsActive);
 
-  FlashCount = static_cast<unsigned>(count);
+  FlashCount = static_cast<uint8_t>(count);
 }
 
 /***********************************************************************************************

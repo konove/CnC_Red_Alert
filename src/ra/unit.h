@@ -82,21 +82,21 @@ class UnitClass final : public DriveClass {
   ** This flag is used for when the harvester dumps ore, to track its
   ** special animation.
   */
-  unsigned IsDumping : 1 = false;
+  bool IsDumping : 1 = false;
 
   /*
   ** This is a count of the # of loads of the various minerals that the
   ** unit has harvested.
   */
-  unsigned Gold : 5 = 0;
-  unsigned Gems : 5 = 0;
+  uint8_t Gold : 5 = 0;
+  uint8_t Gems : 5 = 0;
 
   /*
   ** This flag tells a unit that, if after reaching its destination, it
   ** should scatter away.  It's meant to help a LST unload its units by
   ** having its previous passengers get out of the way.
   */
-  unsigned IsToScatter : 1 = false;
+  bool IsToScatter : 1 = false;
 
   /*
   **	This records the number of "loads" of Tiberium the unit is carrying.

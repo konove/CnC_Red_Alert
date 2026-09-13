@@ -264,7 +264,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
 void TeamClass::AI() {
   Validate();
   int desired = 0;
-  int old_under = IsUnderStrength;
+  bool old_under = IsUnderStrength;
 
   /*
   ** If the team has been suspended then we need to check if its time for
@@ -337,7 +337,7 @@ void TeamClass::AI() {
     ** If the team has gone from under strength to no longer under
     ** strength than the team needs to reform.
     */
-    if (std::cmp_not_equal(old_under, IsUnderStrength)) {
+    if (old_under != IsUnderStrength) {
       IsReforming = true;
     }
   }

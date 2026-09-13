@@ -194,26 +194,26 @@ class SidebarClass : public PowerClass {
     **	If this particular side strip needs to be redrawn, then this flag
     **	will be true.
     */
-    unsigned IsToRedraw : 1 = 0;
+    bool IsToRedraw : 1 = false;
 
     /*
     **	If construction is in progress (no other objects in this strip can
     **	be started), then this flag will be true. It will be cleared when
     **	the strip is free to start production again.
     */
-    unsigned IsBuilding : 1 = 0;
+    bool IsBuilding : 1 = false;
 
     /*
     **	This controls the sidebar slide direction. If this is true, then the
     *sidebar *	will scroll downward -- revealing previous objects.
     */
-    unsigned IsScrollingDown : 1 = 0;
+    bool IsScrollingDown : 1 = false;
 
     /*
     **	If the sidebar is scrolling, then this flag is true. Otherwise it is
     *false.
     */
-    unsigned IsScrolling : 1 = 0;
+    bool IsScrolling : 1 = false;
 
     /*
     **	This is the object (sidebar slot) that is flashing. Only one slot can be
@@ -309,13 +309,13 @@ class SidebarClass : public PowerClass {
   /*
   **	If the sidebar is active then this flag is true.
   */
-  unsigned IsSidebarActive : 1 {false};
+  bool IsSidebarActive : 1 {false};
 
   /*
   **	This flag tells the rendering system that the sidebar needs to be
   *redrawn.
   */
-  unsigned IsSidebarToRedraw : 1 {true};
+  bool IsSidebarToRedraw : 1 {true};
 
   class SBGadgetClass : public GadgetClass {
    public:
@@ -344,9 +344,9 @@ class SidebarClass : public PowerClass {
   bool Activate_Demolish(int control);
   static int Which_Column(RTTIType type);
 
-  unsigned IsRepairActive : 1 {false};
-  unsigned IsUpgradeActive : 1 {false};
-  unsigned IsDemolishActive : 1 {false};
+  bool IsRepairActive : 1 {false};
+  bool IsUpgradeActive : 1 {false};
+  bool IsDemolishActive : 1 {false};
 };
 
 class ArchiveReader;

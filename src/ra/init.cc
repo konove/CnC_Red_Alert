@@ -1556,10 +1556,10 @@ bool Parse_Command_Line(int argc, char* argv[]) {
               Special.IsSpeedBuild = true;
               continue;
             case 'X':
-              Session.Record = 1;
+              Session.Record = true;
               continue;
             case 'Y':
-              Session.Play = 1;
+              Session.Play = true;
               continue;
             case 'P':
               Debug_Print_Events = true;

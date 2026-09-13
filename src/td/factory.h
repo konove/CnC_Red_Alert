@@ -105,7 +105,7 @@ class FactoryClass : StageClass {
   *object has *	been allocated, then this flag is true. Otherwise, the object is
   *free to be *	allocated.
   */
-  unsigned IsActive : 1 = true;
+  bool IsActive : 1 = true;
 
  protected:
   enum StepCountEnum {
@@ -122,7 +122,7 @@ class FactoryClass : StageClass {
   *Suspended production is not *	abandoned. It may be resumed with a call
   *to Start().
   */
-  unsigned IsSuspended : 1 = false;
+  bool IsSuspended : 1 = false;
 
   /*
   **	If the AI process detected that the production process has advanced far
@@ -130,7 +130,7 @@ class FactoryClass : StageClass {
   *will be true. *	Examination of this flag (through the Has_Chaged
   *function) allows intelligent *	updating of any production graphic.
   */
-  unsigned IsDifferent : 1 = false;
+  bool IsDifferent : 1 = false;
 
   /*
   **	This records the balance due on the current production item. This value

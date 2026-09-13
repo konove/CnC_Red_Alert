@@ -199,45 +199,45 @@ class TeamTypeClass : public AbstractTypeClass {
   */
   // operator new sets this before the constructor runs; the initializer
   // must agree with it.
-  unsigned IsActive : 1 = true;
+  bool IsActive : 1 = true;
 
   /*
   **	If RoundAbout, the team avoids high-threat areas
   */
-  unsigned IsRoundAbout : 1 = false;
+  bool IsRoundAbout : 1 = false;
 
   /*
   **	If Suicide, the team won't stop until it achieves its mission or it's
   **	dead
   */
-  unsigned IsSuicide : 1 = false;
+  bool IsSuicide : 1 = false;
 
   /*
   **	Is this team type allowed to be created automatically by the computer
   **	when the appropriate trigger indicates?
   */
-  unsigned IsAutocreate : 1 = false;
+  bool IsAutocreate : 1 = false;
 
   /*
   **	This flag tells the computer that it should build members to fill
   **	a team of this type regardless of whether there actually is a team
   **	of this type active.
   */
-  unsigned IsPrebuilt : 1 = true;
+  bool IsPrebuilt : 1 = true;
 
   /*
   **	If this team should allow recruitment of new members, then this flag
   **	will be true. A false value results in a team that fights until it
   **	is dead. This is similar to IsSuicide, but they will defend themselves.
   */
-  unsigned IsReinforcable : 1 = true;
+  bool IsReinforcable : 1 = true;
 
   /*
   **	A transient team type was created exclusively to bring on reinforcements
   **	as a result of some special event. As soon as there are no teams
   **	existing of this type, then this team type should be deleted.
   */
-  unsigned IsTransient : 1 = false;
+  bool IsTransient : 1 = false;
 
   /*
   **	Priority given the team for recruiting purposes; higher priority means

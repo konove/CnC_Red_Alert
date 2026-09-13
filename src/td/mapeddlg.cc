@@ -196,7 +196,7 @@ int MapEditClass::New_Scenario() {
       XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
   Waypoint[WAYPT_HOME] =
       XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
-  (*this)[Coord_Cell(TacticalCoord)].IsWaypoint = 1;
+  (*this)[Coord_Cell(TacticalCoord)].IsWaypoint = true;
   Flag_Cell(Coord_Cell(TacticalCoord));
 
   ScenarioInit++;
@@ -2207,7 +2207,7 @@ void MapEditClass::Handle_Triggers() {
     ............................... 'Edit' ................................
     */
     if ((rc == 1 && CurTrigger) && (Edit_Trigger() == 0)) {
-      Changed = 1;
+      Changed = true;
     }
 
     /*
@@ -2226,7 +2226,7 @@ void MapEditClass::Handle_Triggers() {
           delete CurTrigger;
           CurTrigger = nullptr;
         } else {
-          Changed = 1;
+          Changed = true;
         }
 
       } else {
@@ -2246,7 +2246,7 @@ void MapEditClass::Handle_Triggers() {
     if ((rc == 3) && CurTrigger) {
       CurTrigger->Remove();
       CurTrigger = nullptr;
-      Changed = 1;
+      Changed = true;
     }
   }
 

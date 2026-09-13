@@ -71,7 +71,7 @@ class ObjectClass : public AbstractClass {
   *not. If the *	object is placed down on the map, then this flag will be
   *true.
   */
-  unsigned IsDown : 1;
+  bool IsDown : 1;
 
   /*
   **	This is a support flag that is only used while building a list of
@@ -80,14 +80,14 @@ class ObjectClass : public AbstractClass {
   *damage is applied to the *	object, this flag is cleared again. This process
   *ensures that an object is never *	subject to "double jeopardy".
   */
-  unsigned IsToDamage : 1;
+  bool IsToDamage : 1;
 
   /*
   **	Is this object flagged to be displayed during the next rendering
   *process?  This *	flag could be set by many different circumstances. It is
   *automatically cleared *	when the object is rerendered.
   */
-  unsigned IsToDisplay : 1;
+  bool IsToDisplay : 1;
 
   /*
   **	An object in the game may be valid yet held in a state of "limbo". Units
@@ -95,7 +95,7 @@ class ObjectClass : public AbstractClass {
   *"inside" another unit. They can *	also be in limbo if they have been
   *created but are being held until the proper time *	for delivery.
   */
-  unsigned IsInLimbo : 1;
+  bool IsInLimbo : 1;
 
   /*
   **	When an object is "selected" it is given a floating bar graph or other
@@ -104,19 +104,19 @@ class ObjectClass : public AbstractClass {
   *object. For quick checking purposes, *	if this object is the one that
   *is "selected", this flag will be true.
   */
-  unsigned IsSelected : 1;
+  bool IsSelected : 1;
 
   /*
   **	If an animation is attached to this object, then this flag will be true.
   */
-  unsigned IsAnimAttached : 1;
+  bool IsAnimAttached : 1;
 
   /*
   **	If this object should process falling logic, then this flag will be
   *true. Such *	objects might be ballistic projectiles, grenades, or
   *parachuters.
   */
-  unsigned IsFalling : 1;
+  bool IsFalling : 1;
   int Riser;
 
   /*

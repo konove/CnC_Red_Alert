@@ -166,7 +166,7 @@ uint32_t VersionClass::Version_Number() {
   //------------------------------------------------------------------------
   if (!TextInit) {
     Read_Text_String();
-    TextInit = 1;
+    TextInit = true;
   }
 
   //------------------------------------------------------------------------
@@ -180,7 +180,7 @@ uint32_t VersionClass::Version_Number() {
   // Generate the version #
   //------------------------------------------------------------------------
   Version = uint32_t{Major_Version()} << 16 | Minor_Version();
-  VersionInit = 1;
+  VersionInit = true;
 
   return Version;
 
@@ -210,7 +210,7 @@ uint16_t VersionClass::Major_Version() {
   //------------------------------------------------------------------------
   if (!TextInit) {
     Read_Text_String();
-    TextInit = 1;
+    TextInit = true;
   }
 
   //------------------------------------------------------------------------
@@ -222,7 +222,7 @@ uint16_t VersionClass::Major_Version() {
 
   MajorVer = MAJOR_VERSION;
 
-  MajorInit = 1;
+  MajorInit = true;
 
   return MajorVer;
 
@@ -252,7 +252,7 @@ uint16_t VersionClass::Minor_Version() {
   //------------------------------------------------------------------------
   if (!TextInit) {
     Read_Text_String();
-    TextInit = 1;
+    TextInit = true;
   }
 
   //------------------------------------------------------------------------
@@ -264,7 +264,7 @@ uint16_t VersionClass::Minor_Version() {
 
   MinorVer = MINOR_VERSION;
 
-  MinorInit = 1;
+  MinorInit = true;
 
   return MinorVer;
 

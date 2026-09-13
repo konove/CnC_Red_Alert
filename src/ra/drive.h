@@ -58,14 +58,14 @@ class DriveClass : public FootClass {
   *flag *	is located here because the other bit flags here give it a free
   *place to *	reside.
   */
-  unsigned IsHarvesting : 1 = false;
+  bool IsHarvesting : 1 = false;
 
   /*
   ** This flag controls whether the unit has been moebius'd into a
   ** different location, and whether the MoebiusCountDown timer should be
   ** used to take him back where he belongs.
   */
-  unsigned IsMoebius : 1 = false;
+  bool IsMoebius : 1 = false;
 
   /*
   ** This controls how long a unit can exist in its alternate location
@@ -86,13 +86,13 @@ class DriveClass : public FootClass {
   *may be *	rotating into position so that a pending track may start. During
   *this process *	the track number does not indicate anything.
   */
-  unsigned IsTurretLockedDown : 1 = false;
+  bool IsTurretLockedDown : 1 = false;
 
   /*
   **	This vehicle could be processing a "short track". A short track is one
   *that *	doesn't actually go anywhere. Kind of like turning in place.
   */
-  unsigned IsOnShortTrack : 1 = false;
+  bool IsOnShortTrack : 1 = false;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.

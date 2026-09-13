@@ -111,49 +111,17 @@
  *=========================================================================*/
 IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
                                  int glb_num_packets, int pvt_num_packets,
-                                 uint16_t socket, uint16_t product_id) {
+                                 uint16_t socket, uint16_t product_id)
+    // IPX requires socket IDs stored high/low, so the socket is byte-swapped.
+    : IPXStatus(IPX_SPX_Installed() != 0),
+      Glb_MaxPacketLen(glb_maxlen),
+      Glb_NumPackets(glb_num_packets),
+      Pvt_MaxPacketLen(pvt_maxlen),
+      Pvt_NumPackets(pvt_num_packets),
+      ProductID(product_id),
+      Socket(static_cast<uint16_t>((socket & 0x00ff) << 8 |
+                                   (socket & 0xff00) >> 8)) {
   int i;
-
-  /*------------------------------------------------------------------------
-  Initialize data members
-  ------------------------------------------------------------------------*/
-  /*........................................................................
-  IPXStatus = 1 if IPX is installed, 0 if not
-  ........................................................................*/
-  if (IPX_SPX_Installed() == 0) {
-    IPXStatus = 0;
-  } else {
-    IPXStatus = 1;
-  }
-
-  /*........................................................................
-  Set listening state flag to off
-  ........................................................................*/
-  Listening = 0;
-
-  /*........................................................................
-  No memory has been alloc'd yet
-  ........................................................................*/
-  RealMemAllocd = 0;
-
-  /*........................................................................
-  Set max packet sizes, for allocating real-mode memory
-  ........................................................................*/
-  Glb_MaxPacketLen = glb_maxlen;
-  Glb_NumPackets = glb_num_packets;
-  Pvt_MaxPacketLen = pvt_maxlen;
-  Pvt_NumPackets = pvt_num_packets;
-
-  /*........................................................................
-  Save the app's product ID
-  ........................................................................*/
-  ProductID = product_id;
-
-  /*........................................................................
-  Save our socket ID number
-  ........................................................................*/
-  Socket = static_cast<uint16_t>(((uint32_t)socket & 0x00ff) << 8 |
-                                 ((uint32_t)socket & 0xff00) >> 8);
 
   /*........................................................................
   Get the user's IPX local connection number
@@ -213,7 +181,7 @@ IPXManagerClass::~IPXManagerClass() {
   ------------------------------------------------------------------------*/
   if (Listening) {
     IPXConnClass::Stop_Listening();
-    Listening = 0;
+    Listening = false;
   }
 
   /*------------------------------------------------------------------------
@@ -234,7 +202,7 @@ IPXManagerClass::~IPXManagerClass() {
   ------------------------------------------------------------------------*/
   if (RealMemAllocd) {
     Free_RealMode_Mem();
-    RealMemAllocd = 0;
+    RealMemAllocd = false;
   }
 
 } /* end of ~IPXManagerClass */
@@ -276,7 +244,7 @@ int IPXManagerClass::Init() {
     ------------------------------------------------------------------------*/
     if (Listening) {
       IPXConnClass::Stop_Listening();
-      Listening = 0;
+      Listening = false;
     }
 
     /*------------------------------------------------------------------------
@@ -284,13 +252,13 @@ int IPXManagerClass::Init() {
     ------------------------------------------------------------------------*/
     if (RealMemAllocd) {
       Free_RealMode_Mem();
-      RealMemAllocd = 0;
+      RealMemAllocd = false;
     }
   } else {
     /*
     ** Pretend IPX is available for Internet games whether it is or not
     */
-    IPXStatus = 1;
+    IPXStatus = true;
   }
 
   /*------------------------------------------------------------------------
@@ -313,7 +281,7 @@ int IPXManagerClass::Init() {
     if (!Alloc_RealMode_Mem()) {
       return false;
     }
-    RealMemAllocd = 1;
+    RealMemAllocd = true;
   }
 
   /*------------------------------------------------------------------------
@@ -343,7 +311,7 @@ int IPXManagerClass::Init() {
     return false;
   }
 
-  Listening = 1;
+  Listening = true;
 
   return true;
 }

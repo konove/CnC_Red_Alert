@@ -979,7 +979,7 @@ void Main_Game(const int argc, char* argv[]) {
     if (Session.Play) {
       Show_Mouse();
       Session.Type = GAME_NORMAL;
-      Session.Play = 0;
+      Session.Play = false;
     }
   }
 

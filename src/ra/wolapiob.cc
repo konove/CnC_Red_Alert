@@ -1613,7 +1613,7 @@ bool WolapiObject::ChannelCreate(
   } else {
     ChannelNew.type = GAME_TYPE;
     ChannelNew.maxUsers = static_cast<unsigned int>(iMaxPlayers);
-    ChannelNew.tournament = bTournament;
+    ChannelNew.tournament = static_cast<unsigned int>(bTournament);
     //	Channel 'reserved' stores GameKind in the highest byte, and
     //	lobby number to return to in the lower three bytes.
     //	Note: If lobby number is -1 (no lobby to return to), it's encoded as

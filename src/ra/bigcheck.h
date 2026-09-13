@@ -41,7 +41,7 @@ class BigCheckBoxClass : public ToggleClass {
     if (bInitiallyChecked) {
       Turn_On();
     }
-    IsToggleType = 1;
+    IsToggleType = true;
   }
 
   int Draw_Me(bool forced = false) override;

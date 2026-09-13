@@ -181,44 +181,44 @@ class HouseClass {
   **	Is this player active?  Usually that answer is true, but for civilians,
   *it *	might possibly be false.
   */
-  unsigned IsActive : 1 = true;
+  bool IsActive : 1 = true;
 
   /*
   **	If this house is controlled by the player, then this flag will be true.
   *The *	computer controls all other active houses.
   */
-  unsigned IsHuman : 1 = false;
+  bool IsHuman : 1 = false;
 
   /*
   **	If the player can control units of this house even if the player doesn't
   **	own units of this house, then this flag will be true.
   */
-  unsigned IsPlayerControl : 1 = false;
+  bool IsPlayerControl : 1 = false;
 
   /*
   **	This flag enables production. If the flag is false, production is
   *disabled. *	By timing when this flag gets set, the player can be given some
   *breathing room.
   */
-  unsigned IsStarted : 1 = false;
+  bool IsStarted : 1 = false;
 
   /*
   **	When alerted, the house will create teams of the special "auto" type and
   **	will generate appropriate units to fill those team types.
   */
-  unsigned IsAlerted : 1 = false;
+  bool IsAlerted : 1 = false;
 
   /*
   **	If automatic base building is on, then this flag will be set to true.
   */
-  unsigned IsBaseBuilding : 1 = false;
+  bool IsBaseBuilding : 1 = false;
 
   /*
   **	If the house has been discovered, then this flag will be set
   **	to true. However, the trigger even associated with discovery
   **	will only be executed during the next house AI process.
   */
-  unsigned IsDiscovered : 1 = false;
+  bool IsDiscovered : 1 = false;
 
   /*
   **	If Tiberium storage is maxed out, then this flag will be set. At some
@@ -226,13 +226,13 @@ class HouseClass {
   *This allows the *	player to be told, but only occasionally rather than
   *continuously.
   */
-  unsigned IsMaxedOut : 1 = false;
+  bool IsMaxedOut : 1 = false;
 
   /*
   ** If this house is played by a human in a multiplayer game, this flag
   ** keeps track of whether this house has been defeated or not.
   */
-  unsigned IsDefeated : 1 = false;
+  bool IsDefeated : 1 = false;
 
   /*
   **	These flags are used in conjunction with the BorrowedTime timer. When
@@ -240,30 +240,30 @@ class HouseClass {
   **	applied to the house. This allows a dramatic pause between the event
   **	trigger and the result.
   */
-  unsigned IsToDie : 1 = false;
-  unsigned IsToWin : 1 = false;
-  unsigned IsToLose : 1 = false;
+  bool IsToDie : 1 = false;
+  bool IsToWin : 1 = false;
+  bool IsToLose : 1 = false;
 
   /*
   **	This flag is set when a transport carrying a civilian has been
   **	successfully evacuated. It is presumed that a possible trigger
   **	event will be sprung by this event.
   */
-  unsigned IsCivEvacuated : 1 = false;
+  bool IsCivEvacuated : 1 = false;
 
   /*
   **	If potentially something changed that might affect the sidebar list of
   **	buildable objects, then this flag indicates that at the first LEGAL
   *opportunity, *	the sidebar will be recalculated.
   */
-  unsigned IsRecalcNeeded : 1 = true;
+  bool IsRecalcNeeded : 1 = true;
 
   /*
   **	If the map has been completely revealed to the player, then this flag
   **	will be set to true. By examining this flag, a second "reveal all map"
   **	crate won't be given to the player.
   */
-  unsigned IsVisionary : 1 = false;
+  bool IsVisionary : 1 = false;
 
   /*
   **	This flag is set to true when the house has determined that
@@ -272,58 +272,58 @@ class HouseClass {
   **	should cease. This is one of the first signs that the endgame
   **	has begun.
   */
-  unsigned IsTiberiumShort : 1 = false;
+  bool IsTiberiumShort : 1 = false;
 
   /*
   **	These flags are used for the general house trigger events of being
   **	spied and thieved. The appropriate flag will be set when the event
   **	occurs.
   */
-  unsigned IsSpied : 1 = false;
-  unsigned IsThieved : 1 = false;
+  bool IsSpied : 1 = false;
+  bool IsThieved : 1 = false;
 
   /*
   ** This flag is used to control non-human repairing of buildings.  Each
   ** house gets to repair one building per loop, and this flag controls
   ** whether this house has 'spent' its repair option this time through.
   */
-  unsigned DidRepair : 1 = false;
+  bool DidRepair : 1 = false;
 
   /*
   ** This flag is used to control whether or not this house has the GPS
   ** satellite in orbit.  If the satellite's there, they have unlimited
   ** radar and the map is fully revealed.
   */
-  unsigned IsGPSActive : 1 = false;
+  bool IsGPSActive : 1 = false;
 
   /*
   **	If the JustBuilt??? variable has changed, then this flag will
   **	be set to true.
   */
-  unsigned IsBuiltSomething : 1 = false;
+  bool IsBuiltSomething : 1 = false;
 
   /*
   ** Did this house lose via resignation?
   */
-  unsigned IsResigner : 1 = false;
+  bool IsResigner : 1 = false;
 
   /*
   ** Did this house lose because the player quit?
   */
-  unsigned IsGiverUpper : 1 = false;
+  bool IsGiverUpper : 1 = false;
 
   /*
   **	If this computer controlled house has reason to be mad at humans,
   **	then this flag will be true. Such a condition prevents alliances with
   **	a human and encourages the computers players to ally amongst themselves.
   */
-  unsigned IsParanoid : 1 = false;
+  bool IsParanoid : 1 = false;
 
   /*
   **	A gap generator shrouded cells and all units of this house must perform
   **	a look just in case their look radius intersects the shroud area.
   */
-  unsigned IsToLook : 1 = true;
+  bool IsToLook : 1 = true;
 
   /*
   **	This value indicates the degree of smartness to assign to this house.

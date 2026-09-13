@@ -154,7 +154,7 @@ class MapClass : public GScreenClass {
   **	will be true. It alternates between forward and backward scanning
   **	in order to avoid the "Tiberium Creep".
   */
-  unsigned IsForwardScan : 1 = 0;
+  bool IsForwardScan : 1 = false;
 
   enum MapEnum { SCAN_AMOUNT = MAP_CELL_TOTAL };
 };

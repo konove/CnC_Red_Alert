@@ -332,9 +332,9 @@ class MapEditClass : public MouseClass {
   /*.....................................................................
   Bitfields for flags & such
   .....................................................................*/
-  unsigned int Changed : 1;       // 1 = changes are unsaved
-  unsigned int LMouseDown : 1;    // 1 = left mouse is held down
-  unsigned int BaseBuilding : 1;  // 1 = we're in base-building mode
+  bool Changed : 1;       // 1 = changes are unsaved
+  bool LMouseDown : 1;    // 1 = left mouse is held down
+  bool BaseBuilding : 1;  // 1 = we're in base-building mode
 
   /*.....................................................................
   Variables for pre-building a base

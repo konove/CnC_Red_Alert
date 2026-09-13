@@ -1662,7 +1662,7 @@ static int Net_Join_Dialog() {
                                 ? PCOLOR_REALLY_BLUE
                                 : Session.ColorIdx,
                             kTpfText, nullptr, '_', d_message2_w);
-  Session.WWChat = 0;
+  Session.WWChat = false;
 
   lastclick_timer.Reset();
 
@@ -2160,7 +2160,7 @@ static int Net_Join_Dialog() {
                                           ? PCOLOR_REALLY_BLUE
                                           : Session.ColorIdx,
                                       kTpfText, nullptr, '_', d_message2_w);
-            Session.WWChat = 0;
+            Session.WWChat = false;
             display = REDRAW_ALL;
           }
         } else {
@@ -2407,7 +2407,7 @@ static int Net_Join_Dialog() {
               Ipx.Service();
             }
             if (Obfuscate(Session.GPacket.Message.Buf) == 0x72A47EF6) {
-              Session.WWChat = 1;
+              Session.WWChat = true;
               Clear_Listbox(&playerlist);
               Start_WWChat(&playerlist);
             }

@@ -130,9 +130,9 @@ MapEditClass::MapEditClass() {
   Waypoint[WAYPT_HOME] = 0;
   CurrentCell = 0;
   CurTrigger = nullptr;
-  Changed = 0;
-  LMouseDown = 0;
-  BaseBuilding = 0;
+  Changed = false;
+  LMouseDown = false;
+  BaseBuilding = false;
   BasePercent = 100;
 }
 
@@ -545,7 +545,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         if (Save_Scenario() != 0) {
           input = KN_NONE;
         } else {
-          Changed = 0;
+          Changed = false;
           Go_Editor(!Debug_Map);
         }
       } else {
@@ -561,7 +561,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       ** Save Changes? prompts!)
       */
       if (!Debug_Map) {
-        Changed = 0;
+        Changed = false;
       }
       Go_Editor(!Debug_Map);
     }
@@ -625,7 +625,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     if (PendingObject) {
       Flag_To_Redraw(true);
       if (Place_Object() == 0) {
-        Changed = 1;
+        Changed = true;
         Start_Placement();
       }
     } else {
@@ -635,7 +635,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       if (GrabbedObject) {
         GrabbedObject->Mark(MARK_CHANGE);
         if (Move_Grabbed_Object() == 0) {
-          Changed = 1;
+          Changed = true;
         }
       }
     }
@@ -767,7 +767,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
             input = KN_NONE;
             break;
           }
-          Changed = 0;
+          Changed = false;
         }
       }
       Prog_End();
@@ -856,7 +856,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         }
 
         if (found == 0) {
-          (*this)[cell].IsWaypoint = 0;
+          (*this)[cell].IsWaypoint = false;
           Flag_Cell(cell);
         }
       }
@@ -865,9 +865,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       ** Now set the new Home cell
       */
       Waypoint[WAYPT_HOME] = Coord_Cell(TacticalCoord);
-      (*this)[Coord_Cell(TacticalCoord)].IsWaypoint = 1;
+      (*this)[Coord_Cell(TacticalCoord)].IsWaypoint = true;
       Flag_Cell(Coord_Cell(TacticalCoord));
-      Changed = 1;
+      Changed = true;
       input = KN_NONE;
       break;
 
@@ -895,7 +895,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         }
 
         if (found == 0) {
-          (*this)[cell].IsWaypoint = 0;
+          (*this)[cell].IsWaypoint = false;
           Flag_Cell(cell);
         }
       }
@@ -903,9 +903,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       ** Now set the new Reinforcement cell
       */
       Waypoint[WAYPT_REINF] = CurrentCell;
-      (*this)[CurrentCell].IsWaypoint = 1;
+      (*this)[CurrentCell].IsWaypoint = true;
       Flag_Cell(CurrentCell);
-      Changed = 1;
+      Changed = true;
       input = KN_NONE;
       break;
 
@@ -946,13 +946,13 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         cell = Waypoint[waypt_idx];
         if (cell != -1) {
           if (Waypoint[WAYPT_HOME] != cell && Waypoint[WAYPT_REINF] != cell) {
-            (*this)[cell].IsWaypoint = 0;
+            (*this)[cell].IsWaypoint = false;
           }
           Flag_Cell(cell);
         }
         Waypoint[waypt_idx] = CurrentCell;
-        (*this)[CurrentCell].IsWaypoint = 1;
-        Changed = 1;
+        (*this)[CurrentCell].IsWaypoint = true;
+        Changed = true;
         Flag_Cell(CurrentCell);
       }
       input = KN_NONE;
@@ -1026,9 +1026,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         ...............................................................*/
         if (Waypoint[WAYPT_HOME] != CurrentCell &&
             Waypoint[WAYPT_REINF] != CurrentCell) {
-          (*this)[CurrentCell].IsWaypoint = 0;
+          (*this)[CurrentCell].IsWaypoint = false;
         }
-        Changed = 1;
+        Changed = true;
         Flag_Cell(CurrentCell);
       }
       input = KN_NONE;
@@ -1062,13 +1062,13 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       ------------------------- Left Button DOWN -------------------------
       */
       if (Keyboard::Down(KN_LMOUSE)) {
-        LMouseDown = 1;
+        LMouseDown = true;
         /*
         ............... Placement mode: place an object .................
         */
         if (PendingObject) {
           if (Place_Object() == 0) {
-            Changed = 1;
+            Changed = true;
             Start_Placement();
           }
         } else {
@@ -1077,7 +1077,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
           */
           if (CurTrigger) {
             Place_Trigger();
-            Changed = 1;
+            Changed = true;
           } else {
             /*
             ................. Select an object or a cell .................
@@ -1111,7 +1111,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         -------------------------- Left Button UP --------------------------
         */
-        LMouseDown = 0;
+        LMouseDown = false;
         GrabbedObject = nullptr;
         input = KN_NONE;
       }
@@ -1126,7 +1126,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     case (int)KN_RIGHT | (int)KN_ALT_BIT | (int)KN_SHIFT_BIT:
       if (CurrentObject.Count()) {
         CurrentObject[0]->Move(KN_To_Facing(input));
-        Changed = 1;
+        Changed = true;
       }
       input = KN_NONE;
       break;
@@ -1171,20 +1171,20 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         */
         HiddenPage.Clear();
         Flag_To_Redraw(true);
-        Changed = 1;
+        Changed = true;
       } else {
         /*
         ................. Remove trigger from current cell .................
         */
         if (CurrentCell && (*this)[CurrentCell].IsTrigger) {
-          (*this)[CurrentCell].IsTrigger = 0;
+          (*this)[CurrentCell].IsTrigger = false;
           CellTriggers[CurrentCell] = nullptr;
           /*
           ...................... Force a redraw ........................
           */
           HiddenPage.Clear();
           Flag_To_Redraw(true);
-          Changed = 1;
+          Changed = true;
         }
       }
       input = KN_NONE;
@@ -1216,7 +1216,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       If that house doesn't own this object, try to transfer it
       ..................................................................*/
       if ((CurrentObject[0]->Owner() != house) && Change_House(house)) {
-        Changed = 1;
+        Changed = true;
       }
 
       Set_House_Buttons(CurrentObject[0]->Owner(), Buttons, POPUP_GDI);
@@ -1236,7 +1236,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         mission = MapEditMissions[base::ToSize(MissionList->Current_Index())];
         if (CurrentObject[0]->Get_Mission() != mission) {
           ((TechnoClass*)CurrentObject[0])->Set_Mission(mission);
-          Changed = 1;
+          Changed = true;
         }
       }
       Flag_To_Redraw(true);
@@ -1269,7 +1269,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
           CurrentObject[0]->Strength = static_cast<int16_t>(strength);
           HiddenPage.Clear();
           Flag_To_Redraw(true);
-          Changed = 1;
+          Changed = true;
         }
 
         /*
@@ -1307,7 +1307,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
 
         HiddenPage.Clear();
         Flag_To_Redraw(true);
-        Changed = 1;
+        Changed = true;
       }
 
       input = KN_NONE;
@@ -1553,12 +1553,12 @@ void MapEditClass::Main_Menu() {
             if (Save_Scenario() != 0) {
               break;
             }
-            Changed = 0;
+            Changed = false;
           }
         }
         if (New_Scenario() == 0) {
           CarryOverMoney = 0;
-          Changed = 1;
+          Changed = true;
         }
         process = false;
         break;
@@ -1576,12 +1576,12 @@ void MapEditClass::Main_Menu() {
             if (Save_Scenario() != 0) {
               break;
             }
-            Changed = 0;
+            Changed = false;
           }
         }
         if (Load_Scenario() == 0) {
           CarryOverMoney = 0;
-          Changed = 0;
+          Changed = false;
         }
         process = false;
         break;
@@ -1591,7 +1591,7 @@ void MapEditClass::Main_Menu() {
       */
       case 2:
         if (Save_Scenario() == 0) {
-          Changed = 0;
+          Changed = false;
         }
         process = false;
         break;
@@ -1602,7 +1602,7 @@ void MapEditClass::Main_Menu() {
       case 3:
         if (Size_Map(MapCellX, MapCellY, MapCellWidth, MapCellHeight) == 0) {
           process = false;
-          Changed = 1;
+          Changed = true;
         }
         break;
 
@@ -1621,7 +1621,7 @@ void MapEditClass::Main_Menu() {
       */
       case 5:
         if (Scenario_Dialog() == 0) {
-          Changed = 1;
+          Changed = true;
           process = false;
         }
         break;
@@ -1647,10 +1647,10 @@ void MapEditClass::Main_Menu() {
             if (Save_Scenario() != 0) {
               break;
             }
-            Changed = 0;
+            Changed = false;
           }
         }
-        Changed = 0;
+        Changed = false;
         Debug_Map = false;
         Start_Scenario(ScenarioName);
         return;

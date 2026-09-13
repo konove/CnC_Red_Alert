@@ -2426,7 +2426,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           anim->Owner = Class->House;
         }
         if (this == PlayerPtr) {
-          Map.IsTargettingMode = false;
+          Map.IsTargettingMode = 0;
         }
         IonCannon.Discharged(PlayerPtr == this);
         IsRecalcNeeded = true;
@@ -2499,7 +2499,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           }
         }
         if (this == PlayerPtr) {
-          Map.IsTargettingMode = false;
+          Map.IsTargettingMode = 0;
         }
         NukeStrike.Discharged(this == PlayerPtr);
         IsRecalcNeeded = true;
@@ -2517,7 +2517,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
         Create_Air_Reinforcement(this, AIRCRAFT_A10, strike, MISSION_HUNT,
                                  As_Target(cell), kTargetNone);
         if (this == PlayerPtr) {
-          Map.IsTargettingMode = false;
+          Map.IsTargettingMode = 0;
         }
         AirStrike.Discharged(this == PlayerPtr);
         IsRecalcNeeded = true;

@@ -134,7 +134,7 @@ class VectorClass {
   *manually *	allocated? If so, then this class is responsible for deleting
   *it.
   */
-  unsigned IsAllocated : 1 {false};
+  bool IsAllocated : 1 {false};
 };
 
 /**************************************************************************

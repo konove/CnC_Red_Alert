@@ -92,7 +92,7 @@ class SliderClass final : public GaugeClass {
   /*
   **	If I belong to a listbox, I have to draw myself differently...
   **/
-  unsigned BelongToList : 1;
+  bool BelongToList : 1;
 
   /*
   **	This is the logical size of the thumb. This value is used when drawing

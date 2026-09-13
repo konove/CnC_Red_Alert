@@ -639,7 +639,7 @@ class SessionClass {
   MessageListClass Messages;
   IPXAddressClass MessageAddress;
   char LastMessage[MAX_MESSAGE_LENGTH]{};
-  unsigned WWChat : 1 {0};  // 1 = go into special WW Chat mode
+  bool WWChat : 1 {false};  // 1 = go into special WW Chat mode
 
   //.....................................................................
   // This is the multiplayer scorekeeping system
@@ -663,9 +663,9 @@ class SessionClass {
   // For Recording & Playing back a file
   //.....................................................................
   CCFileClass RecordFile;
-  unsigned Record : 1 {0};  // set via command line
-  unsigned Play : 1 {0};
-  unsigned Attract : 1 {0};
+  bool Record : 1 {false};  // set via command line
+  bool Play : 1 {false};
+  bool Attract : 1 {false};
 
   //.....................................................................
   // IPX-specific variables
@@ -689,7 +689,7 @@ class SessionClass {
   //.....................................................................
   // Modem-specific variables
   //.....................................................................
-  unsigned ModemService : 1 {true};     // 1 = service modem in Call_Back
+  bool ModemService : 1 {true};         // 1 = service modem in Call_Back
   int CurPhoneIdx{0};                   // phone listing index
   SerialSettingsType SerialDefaults{};  // default serial settings
   ModemGameType ModemType{MODEM_NULL_HOST};  // caller or answerer?

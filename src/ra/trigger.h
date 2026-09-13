@@ -118,7 +118,7 @@ class TriggerClass {
   */
   // operator new sets this before the constructor runs; the initializer
   // must agree with it.
-  unsigned IsActive : 1 = true;
+  bool IsActive : 1 = true;
 
   /*
   **	This value tells how many objects or cells this trigger is attached

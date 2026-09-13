@@ -100,7 +100,7 @@ class FixedHeapClass {
   **	If the memory block buffer was allocated by this class, then this flag
   **	will be true. The block must be deallocated by this class if true.
   */
-  unsigned IsAllocated : 1 {false};
+  bool IsAllocated : 1 {false};
 
   /*
   **	This is the size of each sub-block within the buffer.

@@ -279,9 +279,9 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   Misc variables
   .....................................................................*/
-  unsigned int IPXStatus : 1;      // 0 = no IPX, 1 = IPX found
-  unsigned int Listening : 1;      // 1 = Listening is on
-  unsigned int RealMemAllocd : 1;  // 1 = Real-mode memory has been alloc'd
+  bool IPXStatus : 1;      // 0 = no IPX, 1 = IPX found
+  bool Listening : 1;      // 1 = Listening is on
+  bool RealMemAllocd : 1;  // 1 = Real-mode memory has been alloc'd
 
   /*.....................................................................
   Packet Sizes, used for allocating real-mode memory

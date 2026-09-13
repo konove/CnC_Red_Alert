@@ -144,11 +144,11 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   **	If this bullet is forced to be inaccurate because of some outside means.
   *A tank *	firing while moving is a good example.
   */
-  unsigned IsInaccurate : 1 = false;
+  bool IsInaccurate : 1 = false;
 
  private:
   // Crude animation flag.
-  unsigned IsToAnimate : 1 = false;
+  bool IsToAnimate : 1 = false;
 
   /*
   **	This is the height of the projectile. It starts at a low height, rises
@@ -174,7 +174,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   /*
   ** Is this missle allowed to come in from out of bounds?
   */
-  unsigned IsLocked : 1 = true;
+  bool IsLocked : 1 = true;
 };
 
 extern template void BulletClass::Serialize<ArchiveWriter>(ArchiveWriter&);

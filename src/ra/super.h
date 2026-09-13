@@ -82,10 +82,10 @@ class SuperClass {
  private:
   bool Recharge(bool player = false);
 
-  unsigned IsPowered : 1 = false;
-  unsigned IsPresent : 1 = false;
-  unsigned IsOneTime : 1 = false;
-  unsigned IsReady : 1 = false;
+  bool IsPowered : 1 = false;
+  bool IsPresent : 1 = false;
+  bool IsOneTime : 1 = false;
+  bool IsReady : 1 = false;
 
   Timer<FrameTickSource> Control;
   int OldStage = -1;

@@ -85,7 +85,7 @@ class CDFileClass : public RawFileClass {
   /*
   **	Is multi-drive searching disabled for this file object?
   */
-  unsigned IsDisabled : 1;
+  bool IsDisabled : 1;
 
   /*
   **	This is the control record for each of the drives specified in the

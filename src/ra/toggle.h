@@ -60,14 +60,14 @@ class ToggleClass : public ControlClass {
   **	Is this button in a pressed down state? This occurs when the mouse is
   *clicked on the *	button and the mouse is still being held down.
   */
-  unsigned IsPressed : 1 {false};
+  bool IsPressed : 1 {false};
 
   /*
   **	This is the button on/off state. Sometimes a button that is "on" has a
   *different *	imagery than one that is "off". If the on/off state is not
   *necessary, then just *	ignore this flag.
   */
-  unsigned IsOn : 1 {false};
+  bool IsOn : 1 {false};
 
   /*
   **	If this button can be turned "on" or "off", then this flag should be set
@@ -76,7 +76,7 @@ class ToggleClass : public ControlClass {
   *flag is false, then the *	IsOn flag will not be changed, regardless of
   *button clicking.
   */
-  unsigned IsToggleType : 1 {false};
+  bool IsToggleType : 1 {false};
 
  protected:
   int Action(unsigned flags, KeyNumType& key) override;

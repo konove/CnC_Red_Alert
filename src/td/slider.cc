@@ -99,7 +99,7 @@ SliderClass::SliderClass(unsigned id, int x, int y, int w, int h,
   /*
   ** Gauges have at least 2 colors, but sliders should only have one.
   */
-  IsColorized = 0;
+  IsColorized = false;
 }
 
 SliderClass::~SliderClass() {

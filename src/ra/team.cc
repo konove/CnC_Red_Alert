@@ -487,7 +487,7 @@ void TeamClass::AI() {
   assert(Teams.ID(this) == ID);
 
   int desired = 0;
-  int old_under = IsUnderStrength;
+  bool old_under = IsUnderStrength;
 
   /*
   ** If the team has been suspended then we need to check if it's time for
@@ -580,7 +580,7 @@ void TeamClass::AI() {
     ** If the team has gone from under strength to no longer under
     ** strength than the team needs to reform.
     */
-    if (std::cmp_not_equal(old_under, IsUnderStrength)) {
+    if (old_under != IsUnderStrength) {
       IsReforming = true;
     }
   }

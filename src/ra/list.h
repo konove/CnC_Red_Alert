@@ -152,7 +152,7 @@ class ListClass : public ControlClass {
   **	If the slider bar has been created, these point to the respective
   *gadgets *	that it is composed of.
   */
-  unsigned IsScrollActive : 1 {false};
+  bool IsScrollActive : 1 {false};
   ShapeButtonClass UpGadget;
   ShapeButtonClass DownGadget;
   SliderClass ScrollGadget;
@@ -250,7 +250,7 @@ class TListClass final : public ControlClass {
   **	If the slider bar has been created, these point to the respective
   *gadgets *	that it is composed of.
   */
-  unsigned IsScrollActive : 1 {false};
+  bool IsScrollActive : 1 {false};
   ShapeButtonClass UpGadget;
   ShapeButtonClass DownGadget;
   SliderClass ScrollGadget;

@@ -93,7 +93,7 @@ class BuildingClass final : public TechnoClass {
   **	If the building is at a good point to change orders, then this
   **	flag will be set to true.
   */
-  unsigned IsReadyToCommence : 1 = false;
+  bool IsReadyToCommence : 1 = false;
 
   /*
   **	If this building is currently spending money to repair itself, then
@@ -101,40 +101,40 @@ class BuildingClass final : public TechnoClass {
   *building *	has reached full strength, when money is exhausted, or if the
   *player *	specifically stops the repair process.
   */
-  unsigned IsRepairing : 1 = false;
+  bool IsRepairing : 1 = false;
 
   /*
   **	If repair is currently in progress and this flag is true, then a wrench
   *graphic *	will be overlaid on the building to give visual feedback for the
   *repair process.
   */
-  unsigned IsWrenchVisible : 1 = false;
+  bool IsWrenchVisible : 1 = false;
 
   /*
   ** This flag is set when a commando has raided the building and planted
   ** plastic explosives.  When the CommandoCountDown timer expires, the
   ** building takes massive damage.
   */
-  unsigned IsGoingToBlow : 1 = false;
+  bool IsGoingToBlow : 1 = false;
 
   /*
   **	If this building was destroyed by some method that would prevent
   **	survivors, then this flag will be true.
   */
-  unsigned IsSurvivorless : 1 = false;
+  bool IsSurvivorless : 1 = false;
 
   /*
   **	These state control variables are used by the oblisk for the charging
   **	animation.
   */
-  unsigned IsCharging : 1 = false;
-  unsigned IsCharged : 1 = false;
+  bool IsCharging : 1 = false;
+  bool IsCharged : 1 = false;
 
   /*
   **	A building that has been captured will not contain the full compliment
   **	of crew. This is true even if it subsiquently gets captured back.
   */
-  unsigned IsCaptured : 1 = false;
+  bool IsCaptured : 1 = false;
 
   /*
   **	Special countdown to destruction value. If the building is destroyed,

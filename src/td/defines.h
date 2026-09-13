@@ -1417,12 +1417,12 @@ typedef enum DoType {
 **	This structure is associated with each maneuver type. It tells whether
 *the *	maneuver can be interrupted and the frame rate.
 */
-typedef struct {
-  unsigned Interrupt : 1;    // Can it be interrupted?
-  unsigned IsMobile : 1;     // Can it move while doing this?
-  unsigned RandomStart : 1;  // Should animation be "randomized"?
-  unsigned char Rate;        // Frame rate.
-} DoStruct;
+struct DoStruct {
+  bool Interrupt : 1;    // Can it be interrupted?
+  bool IsMobile : 1;     // Can it move while doing this?
+  bool RandomStart : 1;  // Should animation be "randomized"?
+  unsigned char Rate;    // Frame rate.
+};
 
 typedef struct {
   int Frame;            // Starting frame of the animation.

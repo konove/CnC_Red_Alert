@@ -526,7 +526,7 @@ void Do_Win() {
   Set_Scenario_Name(ScenarioName, Scenario, ScenPlayer, ScenDir, ScenVar);
   Start_Scenario(ScenarioName);
 
-  PlayerPtr->NukePieces = pieces;
+  PlayerPtr->NukePieces = static_cast<uint8_t>(pieces);
 
   /*
   **	Destroy the building that was sabotaged in the previous scenario. This

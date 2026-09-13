@@ -86,11 +86,11 @@ class OptionsClass {
   unsigned char Contrast{0x80};          // Value
   unsigned char Color{0x80};             // Saturation
   unsigned char Tint{0x80};              // Hue
-  unsigned AutoScroll : 1 {true};        // Does map autoscroll?
-  unsigned IsScoreRepeat : 1 {false};    // Score should repeat?
-  unsigned IsScoreShuffle : 1 {false};   // Score list should shuffle?
-  unsigned IsDeathAnnounce : 1 {false};  // Announce enemy deaths?
-  unsigned IsFreeScroll : 1 {false};     // Allow free direction scrolling?
+  bool AutoScroll : 1 {true};            // Does map autoscroll?
+  bool IsScoreRepeat : 1 {false};        // Score should repeat?
+  bool IsScoreShuffle : 1 {false};       // Score list should shuffle?
+  bool IsDeathAnnounce : 1 {false};      // Announce enemy deaths?
+  bool IsFreeScroll : 1 {false};         // Allow free direction scrolling?
 
  protected:
   static void Adjust_Palette(void* oldpal, void* newpal,

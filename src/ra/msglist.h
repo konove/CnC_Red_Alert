@@ -206,9 +206,9 @@ class MessageListClass {
   // exact coordinates specified by the application, or it will appear
   // vertically above the other messages.
   //.....................................................................
-  unsigned EnableOverflow : 1 {0};          // 1 = enable overflow feature
-  unsigned IsEdit : 1 {0};                  // 1 = there's an edit field
-  unsigned AdjustEdit : 1 {0};              // 1 = edit field appears over msgs
+  bool EnableOverflow : 1 {false};          // 1 = enable overflow feature
+  bool IsEdit : 1 {false};                  // 1 = there's an edit field
+  bool AdjustEdit : 1 {false};              // 1 = edit field appears over msgs
   int EditX{0};                             // x-coord of edit field
   int EditY{0};                             // y-coord of edit field
   TextLabelClass* EditLabel{nullptr};       // ptr to current edit label

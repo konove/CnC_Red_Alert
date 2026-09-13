@@ -134,16 +134,16 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   **	If this bullet is forced to be inaccurate because of some outside means.
   *A tank *	firing while moving is a good example.
   */
-  unsigned IsInaccurate : 1 = false;
+  bool IsInaccurate : 1 = false;
 
  private:
   // Crude animation flag.
-  unsigned IsToAnimate : 1 = false;
+  bool IsToAnimate : 1 = false;
 
   /*
   ** Is this missile allowed to come in from out of bounds?
   */
-  unsigned IsLocked : 1 = true;
+  bool IsLocked : 1 = true;
 
   /*
   **	This is the target of the projectile. It is especially significant for

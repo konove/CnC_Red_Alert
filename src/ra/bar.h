@@ -92,7 +92,7 @@ class ProgressBarClass {
   **	If the bargraph has been drawn at least once, then this flag will
   **	be true.
   */
-  unsigned IsDrawn : 1 {false};
+  bool IsDrawn : 1 {false};
 };
 
 #endif  // CNC_RED_ALERT_RA_BAR_H_

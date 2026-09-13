@@ -57,7 +57,7 @@ class AbstractClass {
   *This flag *	is used to indicate which objects are free to be reused and
   *which are currently *	in use by the game.
   */
-  unsigned IsActive : 1 = true;
+  bool IsActive : 1 = true;
 
   /*-----------------------------------------------------------------------------------
   **	Constructor & destructors.

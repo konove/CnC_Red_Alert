@@ -56,7 +56,7 @@ class ShapeButtonClass final : public ToggleClass {
     DISABLED_SHAPE  // Shape to use when button is disabled.
   };
 
-  unsigned ReflectButtonState : 1;
+  bool ReflectButtonState : 1;
 
  protected:
   /*

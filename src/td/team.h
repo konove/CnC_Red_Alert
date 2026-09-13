@@ -78,27 +78,27 @@ class TeamClass : public AbstractClass {
   **	This flag forces the team into active state regardless of whether it
   **	is understrength or not.
   */
-  unsigned IsForcedActive : 1 = false;
+  bool IsForcedActive : 1 = false;
 
   /*
   **	This flag is set to true when the team initiates into active mode. The
   **	flag is never cleared. By examining this flag, it is possible to
   *determine *	if the team has ever launched into active mode.
   */
-  unsigned IsHasBeen : 1 = false;
+  bool IsHasBeen : 1 = false;
 
   /*
   **	If the team is full strength, then this flag is true. A full strength
   **	team will not try to recruit members.
   */
-  unsigned IsFullStrength : 1 = false;
+  bool IsFullStrength : 1 = false;
 
   /*
   **	A team that is below half strength has this flag true. It means that the
   **	the team should hide back at the owner's base and try to recruit
   **	members.
   */
-  unsigned IsUnderStrength : 1 = true;
+  bool IsUnderStrength : 1 = true;
 
   /*
   **	If a team is not understrength but is not yet full strength, then
@@ -106,13 +106,13 @@ class TeamClass : public AbstractClass {
   **	full strength, the all members of the team will become initiated
   ** and this flag will be reset.
   */
-  unsigned IsReforming : 1 = false;
+  bool IsReforming : 1 = false;
 
   /*
   ** This bit should be set if a team is determined to have lagging
   ** units in its formation.
   */
-  unsigned IsLagging : 1 = false;
+  bool IsLagging : 1 = false;
 
  private:
   /*
@@ -122,25 +122,25 @@ class TeamClass : public AbstractClass {
   *need to occur *	EVERY time a unit added or deleted from a team, just
   *every so often if the *	team has been changed.
   */
-  unsigned IsAltered : 1 = true;
+  bool IsAltered : 1 = true;
 
   /*
   **	If the team is working on it's primary mission (it is past the build up
   *stage) *	then this flag will be true. The transition between "moving" and
   *"stationary" *	stages usually requires some action on the team's part.
   */
-  unsigned IsMoving : 1 = false;
+  bool IsMoving : 1 = false;
 
   /*
   **	When the team determines that the next mission should be advanced to, it
   *will *	set this flag to true. Mission advance will either change the
   *behavior of the *	team or cause it to disband.
   */
-  unsigned IsNextMission : 1 = true;
+  bool IsNextMission : 1 = true;
   /*
   ** Records whether the team is suspended from production.
   */
-  unsigned Suspended : 1 = false;
+  bool Suspended : 1 = false;
 
  public:
   /*

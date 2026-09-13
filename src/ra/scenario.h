@@ -240,90 +240,90 @@ class ScenarioClass {
   **	If a bridge has been destroyed, then this flag will be set to true.
   **	If there is a trigger that depends on this, it might be triggered.
   */
-  unsigned IsBridgeChanged : 1 {false};
+  bool IsBridgeChanged : 1 {false};
 
   /*
   **	If a global has changed and global change trigger events must be
   **	processed, then this flag will be set to true.
   */
-  unsigned IsGlobalChanged : 1 {false};
+  bool IsGlobalChanged : 1 {false};
 
   /*
   **	Are the buildings and units in this scenario to carry over into
   **	some (unspecified) later scenario and thus have to be recorded
   **	at the end?
   */
-  unsigned IsToCarryOver : 1 {false};
+  bool IsToCarryOver : 1 {false};
 
   /*
   **	Is this scenario to begin by taking the previously recorded
   **	carryover objects and creating them onto the map?
   */
-  unsigned IsToInherit : 1 {false};
+  bool IsToInherit : 1 {false};
 
   /*
   **	If Tanya or a civilian is to be automatically evacuated when they enter
   **	a transport vehicle, then this flag will be true.
   */
-  unsigned IsTanyaEvac : 1 {false};
+  bool IsTanyaEvac : 1 {false};
 
   /*
   ** These variables are assigned to the chronosphere effect, and control
   ** whether the palette should be fading towards b&w or towards color.
   */
-  unsigned IsFadingBW : 1 {false};
-  unsigned IsFadingColor : 1 {false};
+  bool IsFadingBW : 1 {false};
+  bool IsFadingColor : 1 {false};
 
   /*
   **	If this scenario is to be the last mission of the game (for this side),
   *then *	this flag will be true.
   */
-  unsigned IsEndOfGame : 1 {false};
+  bool IsEndOfGame : 1 {false};
 
   /*
   **	If the mission countdown timer is to be inherited from the previous
   **	scenario, then this flag will be set to true.
   */
-  unsigned IsInheritTimer : 1 {false};
+  bool IsInheritTimer : 1 {false};
 
   /*
   **	If the spy plane is to be disabled in this scenario even though
   *circumstances *	might otherwise indicate that it should appear, then
   *this flag will be true.
   */
-  unsigned IsNoSpyPlane : 1 {false};
+  bool IsNoSpyPlane : 1 {false};
 
   /*
   **	If the score screen (and "mission accomplished" voice) is to be skipped
   *when *	this scenario is finished, then this flag will be true.
   */
-  unsigned IsSkipScore : 1 {false};
+  bool IsSkipScore : 1 {false};
 
   /*
   **	If this is to be a one time only mission such that when it is completed,
   *the game *	will return to the main menu, then this flag will be set to
   *true.
   */
-  unsigned IsOneTimeOnly : 1 {false};
+  bool IsOneTimeOnly : 1 {false};
 
   /*
   **	If the map selection is to be skipped then this flag will be true. If
   *this *	ins't a one time only scenario, then the next scenario will have
   *the same *	name as the current one but will be for variation "B".
   */
-  unsigned IsNoMapSel : 1 {false};
+  bool IsNoMapSel : 1 {false};
 
   /*
   **	If trucks are supposed to drop wood crates when they explode, then this
   *flag *	will be set to true.
   */
-  unsigned IsTruckCrate : 1 {false};
+  bool IsTruckCrate : 1 {false};
 
   /*
   **	If the initial money is to be assigned as ore in available silos, then
   **	this flag will be set to true.
   */
-  unsigned IsMoneyTiberium : 1 {false};
+  bool IsMoneyTiberium : 1 {false};
 
   /*
   **	This is the fading countdown timer.  As this timer counts down, the

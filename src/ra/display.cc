@@ -4328,7 +4328,7 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
     Scen.Waypoint[i] = static_cast<CELL>(ini.Get_Int("Waypoints", buf, -1));
 
     if (Scen.Waypoint[i] != -1) {
-      (*this)[Scen.Waypoint[i]].IsWaypoint = 1;
+      (*this)[Scen.Waypoint[i]].IsWaypoint = true;
     }
   }
 

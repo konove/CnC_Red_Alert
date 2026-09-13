@@ -83,33 +83,33 @@ class HouseClass {
   **	Is this player active?  Usually that answer is true, but for civilians,
   *it *	might possibly be false.
   */
-  unsigned IsActive : 1 = true;
+  bool IsActive : 1 = true;
 
   /*
   **	If this house is controlled by the player, then this flag will be true.
   *The *	computer controls all other active houses.
   */
-  unsigned IsHuman : 1 = false;
+  bool IsHuman : 1 = false;
 
   /*
   **	When the computer becomes alerted to the presence of the player's
   *forces, it *	begins production and attack logic. This flag is set to true if
   *the human *	player has been discovered by the computer.
   */
-  unsigned IsStarted : 1 = false;
+  bool IsStarted : 1 = false;
 
   /*
   **	When alerted, the house will create teams of the special "auto" type and
   **	will generate appropriate units to fill those team types.
   */
-  unsigned IsAlerted : 1 = false;
+  bool IsAlerted : 1 = false;
 
   /*
   **	If the house has been discovered, then this flag will be set
   **	to true. However, the trigger even associated with discovery
   **	will only be executed during the next house AI process.
   */
-  unsigned IsDiscovered : 1 = false;
+  bool IsDiscovered : 1 = false;
 
   /*
   **	If Tiberium storage is maxed out, then this flag will be set. At some
@@ -117,13 +117,13 @@ class HouseClass {
   *This allows the *	player to be told, but only occationally rather than
   *continuously.
   */
-  unsigned IsMaxedOut : 1 = false;
+  bool IsMaxedOut : 1 = false;
 
   /*
   ** If this house is played by a human in a multiplayer game, this flag
   ** keeps track of whether this house has been defeated or not.
   */
-  unsigned IsDefeated : 1 = false;
+  bool IsDefeated : 1 = false;
 
   /*
   **	These flags are used in conjunction with the BorrowedTime timer. When
@@ -131,48 +131,48 @@ class HouseClass {
   **	applied to the house. This allows a dramatic pause between the event
   **	trigger and the result.
   */
-  unsigned IsToDie : 1 = false;
-  unsigned IsToWin : 1 = false;
-  unsigned IsToLose : 1 = false;
+  bool IsToDie : 1 = false;
+  bool IsToWin : 1 = false;
+  bool IsToLose : 1 = false;
 
   /*
   **	This flag is set when a transport carrying a civilian has been
   **	successfully evacuated. It is presumed that a possible trigger
   **	event will be sprung by this event.
   */
-  unsigned IsCivEvacuated : 1 = false;
+  bool IsCivEvacuated : 1 = false;
 
   /*
   **	If potentially something changed that might affect the sidebar list of
   **	buildable objects, then this flag indicates that at the first LEGAL
   *opportunity, *	the sidebar will be recalculated.
   */
-  unsigned IsRecalcNeeded : 1 = false;
+  bool IsRecalcNeeded : 1 = false;
 
   /*
   **	If the map has been completely revealed to the player, then this flag
   **	will be set to true. By examining this flag, a second "reveal all map"
   **	crate won't be given to the player.
   */
-  unsigned IsVisionary : 1 = false;
+  bool IsVisionary : 1 = false;
 
   /*
   **	If a trigger has indicated that the airstrike option should appear, this
   *flag *	will be set to true. It is up to the normal house AI processing
   *to actually *	add the airstrike to the sidebar.
   */
-  unsigned IsAirstrikePending : 1 = false;
+  bool IsAirstrikePending : 1 = false;
 
   /*
   **	This records the existance of the three nuke weapon pieces.
   */
-  unsigned NukePieces : 3 = 0;
+  uint8_t NukePieces : 3 = 0;
 
   /*
   **	This flag indicates that a free harvester is pending and will be
   **	created when the FreeHarvester timer expires.
   */
-  unsigned IsFreeHarvester : 1 = false;
+  bool IsFreeHarvester : 1 = false;
 
   TCountDownTimerClass FreeHarvester;
 
@@ -284,12 +284,12 @@ class HouseClass {
   /*
   ** Did this house lose via resignation?
   */
-  unsigned Resigned : 1 = false;
+  bool Resigned : 1 = false;
 
   /*
   ** Did this house lose because the player quit?
   */
-  unsigned IGaveUp : 1 = false;
+  bool IGaveUp : 1 = false;
 
   /*
   ** Stuff to keep track of the total number of units built by this house.

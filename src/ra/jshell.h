@@ -70,7 +70,7 @@ struct KeyboardClass : public WWKeyboardClass {
   **	the keyboard or not. If not, then the normal console input
   **	takes precedence.
   */
-  unsigned IsLibrary{true};
+  bool IsLibrary{true};
 
   KeyboardClass() = default;
   // These deliberately hide the library's int-returning versions; narrowing to

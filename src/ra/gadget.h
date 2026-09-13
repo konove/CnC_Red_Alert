@@ -202,7 +202,7 @@ class GadgetClass : public LinkClass {
   *element needs *	to be redrawn. This flag is set by default if the Action
   *function is called.
   */
-  unsigned IsToRepaint : 1 = 0;
+  bool IsToRepaint : 1 = false;
 
  public
      :  // HACK HACK HACK.. this is here because the sidebar buttons are static.
@@ -212,7 +212,7 @@ class GadgetClass : public LinkClass {
   *mouse continues *	to remain pressed. This is the standard behavior for all
   *normal Windows style *	buttons.
   */
-  unsigned IsSticky : 1 = 0;
+  bool IsSticky : 1 = false;
 
   //	ajw - Publicized StuckOn 7/30/98 (was protected)
   /*
@@ -230,7 +230,7 @@ class GadgetClass : public LinkClass {
   *perform no action -- just return. Or, *	just remove the button from the
   *list.
   */
-  unsigned IsDisabled : 1 = 0;
+  bool IsDisabled : 1 = false;
 
   /*
   **	These are the action flags that are used to determine when the action

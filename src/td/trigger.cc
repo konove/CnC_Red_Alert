@@ -576,7 +576,7 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
     /*
     ** Detach ourselves from the cell
     */
-    Map[cell].IsTrigger = 0;
+    Map[cell].IsTrigger = false;
 
     /*
     ** Decrement our attachment counter
@@ -928,7 +928,7 @@ bool TriggerClass::Remove() {
   */
   for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     if (Map[cell].IsTrigger && (CellTriggers[cell] == this)) {
-      Map[cell].IsTrigger = 0;
+      Map[cell].IsTrigger = false;
       CellTriggers[cell] = nullptr;
     }
   }

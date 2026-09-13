@@ -84,21 +84,21 @@ class InfantryClass final : public FootClass {
   **	It should only be set for the civilian type infantry. Typically, the
   **	technician appears after a building is destroyed.
   */
-  unsigned IsTechnician : 1 = false;
+  bool IsTechnician : 1 = false;
 
   /*
   **	If the infantry just performed some feat, then it may respond with an
   *action. *	This flag will be true if an action is to be performed when the
   *Comment timer *	has expired.
   */
-  unsigned IsStoked : 1 = false;
+  bool IsStoked : 1 = false;
 
   /*
   **	This flag indicates if the infantry unit is prone. Prone infantry become
   *that way *	when they are fired upon. Infantry in the prone position are
   *less vulnerable to *	combat.
   */
-  unsigned IsProne : 1 = false;
+  bool IsProne : 1 = false;
 
   /*
   **	If the infantry is allowed to move one cell from one zone to another,
@@ -106,14 +106,14 @@ class InfantryClass final : public FootClass {
   *destroyed, the bomb *	placer is allowed to run from the destroyed
   *bridge cell back onto a real cell.
   */
-  unsigned IsZoneCheat : 1 = false;
+  bool IsZoneCheat : 1 = false;
 
   /*
   ** This flag is set for the dogs, when they launch into bullet mode.
   ** it's to remember if the unit was selected, and if it was, then
   ** when the dog is re-enabled, he'll reselect himself.
   */
-  unsigned WasSelected : 1 = false;
+  bool WasSelected : 1 = false;
 
   /*
   **	The fear rating of this infantry unit. The more afraid the infantry, the

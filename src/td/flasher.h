@@ -52,14 +52,14 @@ class FlasherClass {
   *the *	flash control number. It counts down to zero and then stops. Odd
   *values *	cause the object to be rendered in a lighter color.
   */
-  unsigned FlashCount : 7 {0};
+  uint8_t FlashCount : 7 {0};
 
   /*
   **	When an object is targeted, it flashes several times to give visual
   *feedback *	to the player. Every other game "frame", this flag is true until
   *the flashing *	is determined to be completed.
   */
-  unsigned IsBlushing : 1 {false};
+  bool IsBlushing : 1 {false};
 
   // Preserves both halves of the flashing state without serializing bitfields.
   template <class Archive>

@@ -271,7 +271,7 @@ class ObjectTypeClass : public AbstractTypeClass {
   **	Is this object squashable by heavy vehicles?  If it is, then the vehicle
   **	can travel over this object and destroy it in the process.
   */
-  unsigned IsCrushable : 1;
+  bool IsCrushable : 1;
 
   /*
   **	Does this object type NOT show up on radar scans?  If true, then in any
@@ -279,7 +279,7 @@ class ObjectTypeClass : public AbstractTypeClass {
   **	Most terrain falls into this category, but only a few special real
   *units/buildings *	do.
   */
-  unsigned IsStealthy : 1;
+  bool IsStealthy : 1;
 
   /*
   **	It is legal to "select" some objects in the game. If it is legal to
@@ -287,34 +287,34 @@ class ObjectTypeClass : public AbstractTypeClass {
   *objects typically display *	a floating health bar and allows special user
   *I/O control.
   */
-  unsigned IsSelectable : 1;
+  bool IsSelectable : 1;
 
   /*
   **	Can this object be the target of an attack or move command?  Typically,
   *only objects *	that take damage or can be destroyed are allowed to be a
   *target.
   */
-  unsigned IsLegalTarget : 1;
+  bool IsLegalTarget : 1;
 
   /*
   **	"Insignificant" objects will not be announced when they are destroyed or
   *when they *	appear. Terrain elements and some lesser vehicles have this
   *characteristic.
   */
-  unsigned IsInsignificant : 1;
+  bool IsInsignificant : 1;
 
   /*
   **	Is this object immune to normal combat damage?  Rocks and other inert
   *type terrain *	object are typically of this type.
   */
-  unsigned IsImmune : 1;
+  bool IsImmune : 1;
 
   /*
   **	If this terrain object is flammable (such as trees are) then this
   **	flag will be true. Flammable objects can catch fire if damaged by
   **	flame type weapons.
   */
-  unsigned IsFlammable : 1;
+  bool IsFlammable : 1;
 
   /*
   **	"Sentient" objects are ones that have logic AI processing performed on
@@ -322,7 +322,7 @@ class ObjectTypeClass : public AbstractTypeClass {
   *Terrain elements also *	fall under this category, but only because
   *certain animation effects require this.
   */
-  unsigned IsSentient : 1;
+  bool IsSentient : 1;
 
   /*
   **	The defense of this object is greatly affected by the type of armor
@@ -395,47 +395,47 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	series of objects, then this flag will be true. Unarmed or
   **	ability challenged units do not make good leaders.
   */
-  unsigned IsLeader : 1;
+  bool IsLeader : 1;
 
   /*
   **	Does this object have the ability to detect the presence of a nearby
   **	cloaked object?
   */
-  unsigned IsScanner : 1;
+  bool IsScanner : 1;
 
   /*
   **	If this object is always given its proper name rather than a generic
   **	name, then this flag will be true. Typically, civilians and Dr. Mobius
   **	fall under this catagory.
   */
-  unsigned IsNominal : 1;
+  bool IsNominal : 1;
 
   /*
   **	If the artwork for this object (only for generics) is theater specific,
   *then *	this flag will be true. Civilian buildings are a good example of
   *this.
   */
-  unsigned IsTheater : 1;
+  bool IsTheater : 1;
 
   /*
   **	Does this object type contain a rotating turret?  Gun emplacements, SAM
   *launchers, *	and many vehicles contain a turret. If a turret is present,
   *special rendering and *	combat logic must be performed.
   */
-  unsigned IsTurretEquipped : 1;
+  bool IsTurretEquipped : 1;
 
   /*
   **	Certain units and buildings fire two shots in quick succession. If this
   *is *	the case, then this flag is true.
   */
-  unsigned IsTwoShooter : 1;
+  bool IsTwoShooter : 1;
 
   /*
   **	Certain objects can be repaired. For buildings, they repair "in place".
   *For units, *	they must travel to a repair center to be repaired. If this flag
   *is true, then *	allow the player or computer AI to repair the object.
   */
-  unsigned IsRepairable : 1;
+  bool IsRepairable : 1;
 
   /*
   **	Is this object possible to be constructed?  Certain buildings and units
@@ -444,21 +444,21 @@ class TechnoTypeClass : public ObjectTypeClass {
   *scheduling. Civilian buildings and *	vehicles are typical examples of this
   *type of object. They would set this flag to *	false.
   */
-  unsigned IsBuildable : 1;
+  bool IsBuildable : 1;
 
   /*
   **	Does this object contain a crew?  If it does, then when the object is
   *destroyed, there *	is a distinct possibility that infantry will "pop out".
   *Only units with crews can *	become "heros".
   */
-  unsigned IsCrew : 1;
+  bool IsCrew : 1;
 
   /*
   **	Is this object typically used to transport reinforcements or other
   *cargo? *	Transport aircraft, helicopters, and hovercraft are typicall
   *examples of *	this.
   */
-  unsigned IsTransporter : 1;
+  bool IsTransporter : 1;
 
   /*
   **	Most objects have the ability to reveal the terrain around themselves.
@@ -564,20 +564,20 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	bib or not. A building with a bib has a dirt patch automatically
   **	attached to the structure when it is placed.
   */
-  unsigned IsBibbed : 1;
+  bool IsBibbed : 1;
 
   /*
   **	If this building is a special wall type, such that it exists as a
   *building *	for purposes of construction but transforms into an overlay wall
   *object when *	it is placed on the map, then this flag will be true.
   */
-  unsigned IsWall : 1;
+  bool IsWall : 1;
 
   /*
   **	Some buildings are producers. This flag will be true in that case.
   *Producer, *	or factory, type buildings have special logic performed.
   */
-  unsigned IsFactory : 1;
+  bool IsFactory : 1;
 
   /*
   **	Buildings can have either simple or complex damage stages. If simple,
@@ -586,7 +586,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	have a complete animation set for damaged as well as undamaged
   *condition. *	Turrets, oil pumps, and repair facilities are a few examples.
   */
-  unsigned IsSimpleDamage : 1;
+  bool IsSimpleDamage : 1;
 
   /*
   **	Some buildings can be placed directly on raw ground. Such buildings
@@ -596,21 +596,21 @@ class BuildingTypeClass : public TechnoTypeClass {
   *are greatly affected by lack of concrete and thus *	would have this flag set
   *to false.
   */
-  unsigned IsSturdy : 1;
+  bool IsSturdy : 1;
 
   /*
   **	Certain building types can be captures by enemy infantry. For those
   **	building types, this flag will be true. Typically, military or hardened
   **	structures such as turrets cannot be captured.
   */
-  unsigned IsCaptureable : 1;
+  bool IsCaptureable : 1;
 
   /*
   **	If this building really only has cosmetic idle animation, then this flag
   *will be *	true if this animation should run at a relatively constant rate
   *regardless of game *	speed setting.
   */
-  unsigned IsRegulated : 1;
+  bool IsRegulated : 1;
 
   /*
   **	This flag specifies the type of object this factory building can
@@ -805,26 +805,26 @@ class UnitTypeClass : public TechnoTypeClass {
   /*
   **	If this unit can appear out of a crate, then this flag will be true.
   */
-  unsigned IsCrateGoodie : 1;
+  bool IsCrateGoodie : 1;
 
   /*
   **	Does this unit have only 8 facings? Special test units have limited
   **	facings.
   */
-  unsigned IsPieceOfEight : 1;
+  bool IsPieceOfEight : 1;
 
   /*
   **	Can this unit squash infantry?  If it can then if the player selects
   **	an (enemy) infantry unit as the movement target, it will ride over and
   **	squish the infantry unit.
   */
-  unsigned IsCrusher : 1;
+  bool IsCrusher : 1;
 
   /*
   **	Does this unit go into harvesting mode when it stops on a tiberium
   **	field?  Typically, only one unit does this and that is the harvester.
   */
-  unsigned IsToHarvest : 1;
+  bool IsToHarvest : 1;
 
   /*
   **	Does this unit's shape data consist of "chunky" facings?  This kind of
@@ -833,50 +833,50 @@ class UnitTypeClass : public TechnoTypeClass {
   *clockwise from north). *	This will result in 32 x 4 = 128 unit shapes in
   *the shape data file.
   */
-  unsigned IsChunkyShape : 1;
+  bool IsChunkyShape : 1;
 
   /*
   **	Some units are equipped with a rotating radar dish. These units have
   *special *	animation processing. The rotating radar dish is similar to a
   *turret, but *	always rotates and does not affect combat.
   */
-  unsigned IsRadarEquipped : 1;
+  bool IsRadarEquipped : 1;
 
   /*
   **	If this unit has a firing animation, this flag is true. Infantry and
   *some special *	vehicles are the ones with firing animations.
   */
-  unsigned IsFireAnim : 1;
+  bool IsFireAnim : 1;
 
   /*
   **	Many vehicles have a turret with restricted motion. These vehicles must
   *move the *	turret into a locked down position while travelling. Rocket
   *launchers and artillery *	are good examples of this kind of unit.
   */
-  unsigned IsLockTurret : 1;
+  bool IsLockTurret : 1;
 
   /*
   **	Does this unit lay tracks when it travels?  Most tracked vehicles and
   *some wheeled *	vehicles have this ability.
   */
-  unsigned IsTracked : 1;
+  bool IsTracked : 1;
 
   /*
   **	Is this unit of the humongous size?  Harvesters and mobile construction
   *vehicles are *	of this size. If the vehicle is greater than 24 x 24 but
   *less than 48 x 48, it is *	considered "Gigundo".
   */
-  unsigned IsGigundo : 1;
+  bool IsGigundo : 1;
 
   /*
   ** Is the unit capable of cloaking?  Only Stealth Tank can do so now.
   */
-  unsigned IsCloakable : 1;
+  bool IsCloakable : 1;
 
   /*
   ** Does this unit have a constant animation (like Visceroid?)
   */
-  unsigned IsAnimating : 1;
+  bool IsAnimating : 1;
 
   /*
   **	This value represents the unit class. It can serve as a unique
@@ -986,33 +986,33 @@ class InfantryTypeClass : public TechnoTypeClass {
   **	will be true. This information is used to get the correct
   **	voice response.
   */
-  unsigned IsFemale : 1;
+  bool IsFemale : 1;
 
   /*
   **	Does this infantry unit have crawling animation? If not, then this
   **	means that the "crawling" frames are actually running animation frames.
   */
-  unsigned IsCrawling : 1;
+  bool IsCrawling : 1;
 
   /*
   **	For those infantry types that can capture buildings, this flag
   **	will be set to true. Typically, this is minigun soldiers.
   */
-  unsigned IsCapture : 1;
+  bool IsCapture : 1;
 
   /*
   **	For infantry types that will run away from any damage causing
   **	events, this flag will be true. Typically, this is so for all
   **	civilians as well as the flame thrower guys.
   */
-  unsigned IsFraidyCat : 1;
+  bool IsFraidyCat : 1;
 
   /*
   **	This flags whether this infantry is actually a civilian. A
   **	civilian uses different voice responses, has less ammunition,
   **	and runs from danger more often.
   */
-  unsigned IsCivilian : 1;
+  bool IsCivilian : 1;
 
   /*
   **	This value represents the unit class. It can serve as a unique
@@ -1085,21 +1085,21 @@ class BulletTypeClass : public ObjectTypeClass {
   /*
   **	Does this bullet type fly over walls?
   */
-  unsigned IsHigh : 1;
+  bool IsHigh : 1;
 
   /*
   **	If this projecile is one that balistically arcs from ground level, up
   *into the air and *	then back to the ground, where it explodes. Typical uses
   *of this are for grenades and *	artillery shells.
   */
-  unsigned IsArcing : 1;
+  bool IsArcing : 1;
 
   /*
   **	If the projectile changes course as it flies in order to home in on the
   **	projectile's target, then this flag is true. Missiles are typically ones
   **	that do this.
   */
-  unsigned IsHoming : 1;
+  bool IsHoming : 1;
 
   /*
   **	Certain projectiles do not travel horizontally, but rather, vertically
@@ -1107,7 +1107,7 @@ class BulletTypeClass : public ObjectTypeClass {
   *have this value set to *	true. Dropping projectiles do not calculate
   *collision with terrain (such as walls).
   */
-  unsigned IsDropping : 1;
+  bool IsDropping : 1;
 
   /*
   **	Is this projectile invisible?  Some bullets and weapon effects are not
@@ -1115,51 +1115,51 @@ class BulletTypeClass : public ObjectTypeClass {
   *treated like *	normal projectiles for damage purposes, but are
   *displayed using custom *	rules.
   */
-  unsigned IsInvisible : 1;
+  bool IsInvisible : 1;
 
   /*
   **	Does this bullet explode when near the target?  Some bullets only
   *explode if *	it actually hits the target. Some explode even if nearby.
   */
-  unsigned IsProximityArmed : 1;
+  bool IsProximityArmed : 1;
 
   /*
   **	Does this projectile spew puffs of smoke out its tail while it
   **	travels? Missiles are prime examples of this projectile type.
   */
-  unsigned IsFlameEquipped : 1;
+  bool IsFlameEquipped : 1;
 
   /*
   **	Should fuel consumption be tracked for this projectile?  Rockets are the
   *primary *	projectile with this characteristic, but even for bullets it
   *should be checked so that *	bullets don't travel too far.
   */
-  unsigned IsFueled : 1;
+  bool IsFueled : 1;
 
   /*
   **	Is this projectile without different facing visuals?  Most plain bullets
   *do not change *	visual imagery if their facing changes. Rockets, on the
   *other hand, are equipped with *	the full 32 facing imagery.
   */
-  unsigned IsFaceless : 1;
+  bool IsFaceless : 1;
 
   /*
   **	If this is a typically inaccurate projectile, then this flag will be
   *true. Artillery *	is a prime example of this type.
   */
-  unsigned IsInaccurate : 1;
+  bool IsInaccurate : 1;
 
   /*
   **	If the bullet contains translucent pixels, then this flag will be true.
   *These *	translucent pixels really are "shadow" pixels in the same style
   *as the shadow *	cast by regular ground units.
   */
-  unsigned IsTranslucent : 1;
+  bool IsTranslucent : 1;
 
   /*
   **	If this bullet can be fired on aircraft, then this flag will be true.
   */
-  unsigned IsAntiAircraft : 1;
+  bool IsAntiAircraft : 1;
 
   /*
   **	This element is a unique identification number for the bullet
@@ -1250,19 +1250,19 @@ class TerrainTypeClass : public ObjectTypeClass {
   **	Does this terrain element consist of a normal frame followed by a
   **	series of crumble frames?  Trees fall under this case.
   */
-  unsigned IsDestroyable : 1;
+  bool IsDestroyable : 1;
 
   /*
   ** Does this object have the capability to transform after a period
   ** of time (such as a blossom tree?
   */
-  unsigned IsTransformable : 1;
+  bool IsTransformable : 1;
 
   /*
   **	Does this terrain object spawn the growth of Tiberium? Blossom trees are
   **	a good example of this.
   */
-  unsigned IsTiberiumSpawn : 1;
+  bool IsTiberiumSpawn : 1;
 
   /*
   **	This is the fully translated name for the terrain element.
@@ -1407,53 +1407,53 @@ class AnimTypeClass : public ObjectTypeClass {
   **	If this animation should run at a constant apparent rate regardless
   **	of game speed setting, then this flag will be set to true.
   */
-  unsigned IsNormalized : 1;
+  bool IsNormalized : 1;
 
   /*
   **	If this animation should be rendered and sorted with the other ground
   **	units, then this flag is true. Typical of this would be fire and other
   **	low altitude animation effects.
   */
-  unsigned IsGroundLayer : 1;
+  bool IsGroundLayer : 1;
 
   /*
   **	If this animation should be rendered in a translucent fashion, this flag
   **	will be true. Translucent colors are some of the reds and some of the
   **	greys. Typically, smoke and some fire effects have this flag set.
   */
-  unsigned IsTranslucent : 1;
+  bool IsTranslucent : 1;
 
   /*
   **	If this animation uses the white translucent table, then this flag
   **	will be true.
   */
-  unsigned IsWhiteTrans : 1;
+  bool IsWhiteTrans : 1;
 
   /*
   **	If this is the special flame thrower animation, then custom affects
   **	occur as it is playing. Specifically, scorch marks and little fire
   **	pieces appear as the flame jets forth.
   */
-  unsigned IsFlameThrower : 1;
+  bool IsFlameThrower : 1;
 
   /*
   **	Some animations leave a scorch mark behind. Napalm and other flame
   **	type explosions are typical of this type.
   */
-  unsigned IsScorcher : 1;
+  bool IsScorcher : 1;
 
   /*
   **	Some explosions are of such violence that they leave craters behind.
   **	This flag will be true for those types.
   */
-  unsigned IsCraterForming : 1;
+  bool IsCraterForming : 1;
 
   /*
   **	If this animation should attach itself to any unit that is in the same
   **	location as itself, then this flag will be true. Most vehicle impact
   **	explosions are of this type.
   */
-  unsigned IsSticky : 1;
+  bool IsSticky : 1;
 
   /*
   **	This is the type number for this animation kind. It can be used as
@@ -1579,24 +1579,24 @@ class AircraftTypeClass : public TechnoTypeClass {
   **	Fixed wing aircraft (ones that cannot hover) have this flag set to true.
   **	Such aircraft will not vary speed while it is flying.
   */
-  unsigned IsFixedWing : 1;
+  bool IsFixedWing : 1;
 
   /*
   **	Can this aircraft land?  If it can land it is presumed to be
   *controllable by the player.
   */
-  unsigned IsLandable : 1;
+  bool IsLandable : 1;
 
   /*
   **	Does this aircraft have a rotor blade (helicopter) type propulsion?
   */
-  unsigned IsRotorEquipped : 1;  // Is a rotor attached?
+  bool IsRotorEquipped : 1;  // Is a rotor attached?
 
   /*
   **	Is there a custom rotor animation stage set for each facing of the
   *aircraft?
   */
-  unsigned IsRotorCustom : 1;  // Custom rotor sets for each facing?
+  bool IsRotorCustom : 1;  // Custom rotor sets for each facing?
 
   AircraftType Type;
   unsigned char ROT;
@@ -1712,42 +1712,42 @@ class OverlayTypeClass : public ObjectTypeClass {
   **	custom art for this overlay that varies between different theaters, then
   **	this flag will be true.
   */
-  unsigned IsTheater : 1;
+  bool IsTheater : 1;
 
   /*
   **	Is this a wall type overlay?  Wall types change their shape
   **	depending on the existence of adjacent walls of the same type.
   */
-  unsigned IsWall : 1;
+  bool IsWall : 1;
 
   /*
   **	If this overlay is actually a wall and this wall type is tall enough
   *that *	normal ground based straight line weapons will be blocked by it,
   *then this *	flag will be true. Brick fences are typical of this type.
   */
-  unsigned IsHigh : 1;
+  bool IsHigh : 1;
 
   /*
   **	If this overlay represents harvestable tiberium, then this flag
   **	will be true.
   */
-  unsigned IsTiberium : 1;
+  bool IsTiberium : 1;
 
   /*
   **	If this is a wall that is made of wood, then this flag will be
   **	true. Such walls are affected by fire damage.
   */
-  unsigned IsWooden : 1;
+  bool IsWooden : 1;
 
   /*
   **	Is this a crate? If it is, then goodies may come out of it.
   */
-  unsigned IsCrate : 1;
+  bool IsCrate : 1;
 
   /*
   **	If this is true, then the overlay will not show up on the radar map.
   */
-  unsigned IsRadarVisible : 1;
+  bool IsRadarVisible : 1;
 
   //----------------------------------------------------------
   OverlayTypeClass(OverlayType iconset, const char* ininame, int fullname,
@@ -1816,12 +1816,12 @@ class SmudgeTypeClass : public ObjectTypeClass {
   **	Is this smudge a crater type? If so, then a second crater can be added
   *to *	this smudge so that a more cratered landscape results.
   */
-  unsigned IsCrater : 1;
+  bool IsCrater : 1;
 
   /*
   **	Is this overlay used as the attached road piece for buildings (bib)?
   */
-  unsigned IsBib : 1;
+  bool IsBib : 1;
 
   //----------------------------------------------------------
   SmudgeTypeClass(SmudgeType smudge, const char* ininame, int fullname,

@@ -78,7 +78,7 @@ class TechnoClass : public RadioClass,
   **	purpose, then this flag will be true. Such object will either
   **	be sold or sacrificed at the first opportunity.
   */
-  unsigned IsUseless : 1;
+  bool IsUseless : 1;
 
   /*
   **	This flag will be true if the object has been damaged with malice.
@@ -86,20 +86,20 @@ class TechnoClass : public RadioClass,
   **	The computer is not allowed to sell a building unless it has been
   **	damaged with malice.
   */
-  unsigned IsTickedOff : 1;
+  bool IsTickedOff : 1;
 
   /*
   **	If this object has inherited the ability to cloak, then this bit will
   **	be set to true.
   */
-  unsigned IsCloakable : 1;
+  bool IsCloakable : 1;
 
   /*
   **	If this object is designated as special then this flag will be true. For
   **	buildings, this means that it is the primary factory. For units, it
   *means *	that the unit is the team leader.
   */
-  unsigned IsLeader : 1;
+  bool IsLeader : 1;
 
   /*
   **	Certain units are flagged as "loaners".  These units are typically
@@ -108,13 +108,13 @@ class TechnoClass : public RadioClass,
   *thus cannot be directly controlled.  These *	units will leave the game as
   *soon as they have fulfilled their purpose.
   */
-  unsigned IsALoaner : 1;
+  bool IsALoaner : 1;
 
   /*
   **	Once a unit enters the map, then this flag is set. This flag is used to
   *make *	sure that a unit doesn't leave the map once it enters the map.
   */
-  unsigned IsLocked : 1;
+  bool IsLocked : 1;
 
   /*
   **	Buildings and units with turrets usually have a recoil animation when
@@ -122,7 +122,7 @@ class TechnoClass : public RadioClass,
   *object will be *	in the "recoil state". The flag will then be cleared
   *pending the next *	firing event.
   */
-  unsigned IsInRecoilState : 1;
+  bool IsInRecoilState : 1;
 
   /*
   **	If this unit is "loosely attached" to another unit it is given special
@@ -132,14 +132,14 @@ class TechnoClass : public RadioClass,
   **	At that time it radios the transport object and the "tether" is broken -
   **	freeing both the unit and the transport object.
   */
-  unsigned IsTethered : 1;
+  bool IsTethered : 1;
 
   /*
   **	Is this object owned by the player?  If not, then it is owned by the
   *computer *	or remote opponent. This flag facilitates the many logic
   *differences when dealing *	with player's or computer's units or buildings.
   */
-  unsigned IsOwnedByPlayer : 1;
+  bool IsOwnedByPlayer : 1;
 
   /*
   **	The more sophisticated game objects must keep track of whether they are
@@ -147,19 +147,19 @@ class TechnoClass : public RadioClass,
   *how the object *	behaves. In addition, this fact is used in radar and
   *user I/O processing.
   */
-  unsigned IsDiscoveredByPlayer : 1;
+  bool IsDiscoveredByPlayer : 1;
 
   /*
   **	This is used to control the computer recognizing this object.
   */
-  unsigned IsDiscoveredByComputer : 1;
+  bool IsDiscoveredByComputer : 1;
 
   /*
   **	Some game objects can be of the "lemon" variety. This means that they
   *take damage *	even when everything is ok. This adds a little variety
   *to the game.
   */
-  unsigned IsALemon : 1;
+  bool IsALemon : 1;
 
   /*
   **	This flag is used to control second shot processing for those units or
@@ -168,7 +168,7 @@ class TechnoClass : public RadioClass,
   *fired, regular rearm timing *	is used rather than the short rearm
   *time.
   */
-  unsigned IsSecondShot : 1;
+  bool IsSecondShot : 1;
 
   /*
   **	This is the firepower and armor modifiers for this techno object.

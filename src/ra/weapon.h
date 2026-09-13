@@ -89,20 +89,20 @@ class WeaponTypeClass {
   /*
   **	Increase the weapon speed if the target is flying.
   */
-  unsigned IsTurboBoosted : 1 = 0;
+  bool IsTurboBoosted : 1 = false;
 
   /*
   **	If potential targets of this weapon should be scanned for
   **	nearby friendly structures and if found, firing upon the target
   **	would be discouraged, then this flag will be true.
   */
-  unsigned IsSupressed : 1 {false};
+  bool IsSupressed : 1 {false};
 
   /*
   **	If this weapon is equipped with a camera that reveals the
   **	area around the firer, then this flag will be true.
   */
-  unsigned IsCamera : 1 {false};
+  bool IsCamera : 1 {false};
 
   /*
   **	If this weapon requires charging before it can fire, then this
@@ -110,7 +110,7 @@ class WeaponTypeClass {
   **	which has specific charging animation. The normal rate of fire
   **	value suffices for all other cases.
   */
-  unsigned IsElectric : 1 {false};
+  bool IsElectric : 1 {false};
 
   /*
   **	This is the number of shots this weapon first (in rapid succession).

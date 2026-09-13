@@ -163,13 +163,13 @@ class TerrainClass final : public ObjectClass, public StageClass {
   /*
   **	If this terrain object is on fire, then this flag will be true.
   */
-  unsigned IsOnFire : 1 = false;
+  bool IsOnFire : 1 = false;
 
   /*
   **	Is this a terrain object that undergoes crumbling animation and it is
   **	in fact crumbling at this time?
   */
-  unsigned IsCrumbling : 1 = false;
+  bool IsCrumbling : 1 = false;
 
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   TerrainClass() = default;

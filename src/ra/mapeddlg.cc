@@ -234,7 +234,7 @@ int MapEditClass::New_Scenario() {
       XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
   Scen.Waypoint[ScenarioClass::kHomeWaypoint] =
       XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
-  (*this)[TacticalCoord].IsWaypoint = 1;
+  (*this)[TacticalCoord].IsWaypoint = true;
   Flag_Cell(Coord_Cell(TacticalCoord));
 
   Set_Tactical_Position(Cell_Coord(static_cast<CELL>(
@@ -2565,7 +2565,7 @@ int MapEditClass::Load_Scenario() {
       */
       if (rc == 1 && CurTrigger) {
         if (CurTrigger->Edit()) {
-          Changed = 1;
+          Changed = true;
         }
         HidPage.Clear();
         Flag_To_Redraw(true);
@@ -2588,7 +2588,7 @@ int MapEditClass::Load_Scenario() {
             delete CurTrigger;
             CurTrigger = nullptr;
           } else {
-            Changed = 1;
+            Changed = true;
           }
           HidPage.Clear();
           Flag_To_Redraw(true);
@@ -2613,7 +2613,7 @@ int MapEditClass::Load_Scenario() {
         delete CurTrigger;
         // CurTrigger->Remove();
         CurTrigger = nullptr;
-        Changed = 1;
+        Changed = true;
       }
     }
 

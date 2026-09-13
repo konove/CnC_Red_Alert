@@ -155,23 +155,23 @@ class AnimClass final : public ObjectClass, private StageClass {
   **	Delete this animation at the next opportunity. This is flagged when the
   **	animation is to be prematurely ended as a result of some outside event.
   */
-  unsigned IsToDelete : 1 = false;
+  bool IsToDelete : 1 = false;
 
   /*
   **	If the animation has just been created, then don't do any animation
   **	processing until it has been through the render loop at least once.
   */
-  unsigned IsBrandNew : 1 = true;
+  bool IsBrandNew : 1 = true;
 
   // Use alternate color when drawing?
-  unsigned IsAlternate : 1 = false;
+  bool IsAlternate : 1 = false;
 
   /*
   **	If this animation is invisible, then this flag will be true. An
   *invisible *	animation is one that is created for the sole purpose of keeping
   *all *	machines syncronised. It will not be displayed.
   */
-  unsigned IsInvisible : 1 = false;
+  bool IsInvisible : 1 = false;
 
   /*
   **	This points to the type of animation object this is.

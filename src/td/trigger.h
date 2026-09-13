@@ -227,7 +227,7 @@ class TriggerClass {
   **	objects that are not active are either not yet created or have been
   **	deleted after fulfilling their action.
   */
-  unsigned IsActive : 1 = true;
+  bool IsActive : 1 = true;
 
   /*
   **	This flag controls whether the trigger destroys itself after it goes
