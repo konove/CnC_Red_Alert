@@ -86,6 +86,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   BulletClass& operator=(const BulletClass&) = delete;
   BulletClass(BulletClass&&) = delete;
   BulletClass& operator=(BulletClass&&) = delete;
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator BulletType() const { return Class->Type; }
 
   /*---------------------------------------------------------------------
@@ -154,9 +155,9 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   friend class TFixedIHeapClass<BulletClass>;
 };
 
-#endif  // CNC_RED_ALERT_RA_BULLET_H_
 class ArchiveReader;
 class ArchiveWriter;
 extern template void BulletClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void BulletClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_RA_BULLET_H_

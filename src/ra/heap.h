@@ -81,7 +81,7 @@
 //   heap.Free(ptr);  // Return block to pool
 class FixedHeapClass {
  public:
-  FixedHeapClass(int size) noexcept;
+  explicit FixedHeapClass(int size) noexcept;
   virtual ~FixedHeapClass();
   FixedHeapClass(FixedHeapClass&&) = delete;
   FixedHeapClass& operator=(FixedHeapClass&&) = delete;
@@ -154,7 +154,7 @@ class FixedHeapClass {
 // (pointer size) in ActivePointers vector.
 class FixedIHeapClass : public FixedHeapClass {
  public:
-  FixedIHeapClass(int size) noexcept : FixedHeapClass(size) {}
+  explicit FixedIHeapClass(int size) noexcept : FixedHeapClass(size) {}
   ~FixedIHeapClass() override {}
   FixedIHeapClass(const FixedIHeapClass&) = delete;
   FixedIHeapClass& operator=(const FixedIHeapClass&) = delete;

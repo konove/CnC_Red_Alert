@@ -69,7 +69,7 @@ class LoadOptionsClass {
     WWDELETE
   } LoadStyleType;
 
-  LoadOptionsClass(LoadStyleType style = NONE);
+  explicit LoadOptionsClass(LoadStyleType style = NONE);
   ~LoadOptionsClass();
   LoadOptionsClass(const LoadOptionsClass&) = delete;
   LoadOptionsClass& operator=(const LoadOptionsClass&) = delete;

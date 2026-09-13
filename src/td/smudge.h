@@ -65,9 +65,10 @@ class SmudgeClass : public ObjectClass {
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
-  SmudgeClass(SmudgeType type, COORDINATE pos = -1,
+  explicit SmudgeClass(SmudgeType type, COORDINATE pos = -1,
               HousesType house = HOUSE_NONE);
   SmudgeClass() { IsActive = true; }
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator SmudgeType() const { return Class->Type; }
   ~SmudgeClass() override {
     if (GameActive) {
@@ -112,7 +113,7 @@ class SmudgeClass : public ObjectClass {
   const SmudgeTypeClass* Class = nullptr;
 };
 
-#endif  // CNC_RED_ALERT_TD_SMUDGE_H_
 extern template void SmudgeClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void SmudgeClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_TD_SMUDGE_H_

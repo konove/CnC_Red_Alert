@@ -65,7 +65,7 @@ class OverlayClass : public ObjectClass {
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   OverlayClass() { IsActive = true; }
-  OverlayClass(OverlayType type, CELL pos = -1, HousesType = HOUSE_NONE);
+  explicit OverlayClass(OverlayType type, CELL pos = -1, HousesType = HOUSE_NONE);
   ~OverlayClass() override {
     if (GameActive) {
       OverlayClass::Limbo();
@@ -75,6 +75,7 @@ class OverlayClass : public ObjectClass {
   OverlayClass& operator=(const OverlayClass&) = delete;
   OverlayClass(OverlayClass&&) = delete;
   OverlayClass& operator=(OverlayClass&&) = delete;
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator OverlayType() const { return Class->Type; }
   RTTIType What_Am_I() const override { return RTTI_OVERLAY; }
 
@@ -116,7 +117,7 @@ class OverlayClass : public ObjectClass {
   const OverlayTypeClass* Class = nullptr;
 };
 
-#endif  // CNC_RED_ALERT_TD_OVERLAY_H_
 extern template void OverlayClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void OverlayClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_TD_OVERLAY_H_

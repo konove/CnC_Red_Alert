@@ -42,7 +42,7 @@
 
 class Rect {
  public:
-  Rect(int x = 0, int y = 0, int w = 0, int h = 0);
+  explicit Rect(int x = 0, int y = 0, int w = 0, int h = 0);
 
   const Rect Intersect(const Rect& rectangle, int* x = nullptr,
                        int* y = nullptr) const;

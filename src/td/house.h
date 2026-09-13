@@ -394,12 +394,13 @@ class HouseClass {
   void operator delete(void* ptr);
   // Load shell: allocate runtime trackers without touching scenario state.
   HouseClass() { Init_Trackers(); }
-  HouseClass(HousesType house);
+  explicit HouseClass(HousesType house);
   ~HouseClass();
   HouseClass(const HouseClass&) = delete;
   HouseClass& operator=(const HouseClass&) = delete;
   HouseClass(HouseClass&&) = delete;
   HouseClass& operator=(HouseClass&&) = delete;
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator HousesType() const;
 
   /*---------------------------------------------------------------------
@@ -601,7 +602,7 @@ class HouseClass {
   TCountDownTimerClass SpeakMoneyDelay;
   TCountDownTimerClass SpeakMaxedDelay;
 };
-#endif  // CNC_RED_ALERT_TD_HOUSE_H_
 extern template void HouseClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void HouseClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_TD_HOUSE_H_

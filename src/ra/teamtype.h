@@ -87,6 +87,7 @@ class TeamMissionClass {
   }
 
   const char* Description(int index) const;
+  // NOLINTNEXTLINE(*-explicit-constructor): legacy C interfaces take the object where a pointer or name is expected.
   operator const char*() const { return Description(0); }
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags);
@@ -178,6 +179,7 @@ class TeamTypeClass : public AbstractTypeClass {
   bool Edit();
   const char* Member_Description() const;
   const char* Description() const;
+  // NOLINTNEXTLINE(*-explicit-constructor): legacy C interfaces take the object where a pointer or name is expected.
   operator const char*() const { return Description(); }
 
   /*
@@ -287,7 +289,6 @@ class TeamTypeClass : public AbstractTypeClass {
 
 NeedType TeamMission_Needs(TeamMissionType tmtype);
 
-#endif  // CNC_RED_ALERT_RA_TEAMTYPE_H_
 class ArchiveReader;
 class ArchiveWriter;
 extern template void TeamMemberClass::Serialize<ArchiveWriter>(ArchiveWriter&);
@@ -295,3 +296,4 @@ extern template void TeamMemberClass::Serialize<ArchiveReader>(ArchiveReader&);
 extern template void TeamTypeClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TeamTypeClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_RA_TEAMTYPE_H_

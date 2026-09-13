@@ -76,7 +76,7 @@ class RawFileClass : public FileClass {
   */
   FileAccess Rights;
 
-  RawFileClass(const char* filename);
+  explicit RawFileClass(const char* filename);
   RawFileClass();
   RawFileClass(const RawFileClass& f);
   RawFileClass& operator=(const RawFileClass& f);

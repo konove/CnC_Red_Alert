@@ -53,7 +53,7 @@
 */
 class BufferIOFileClass : public RawFileClass {
  public:
-  BufferIOFileClass(const char* filename);
+  explicit BufferIOFileClass(const char* filename);
   BufferIOFileClass();
   ~BufferIOFileClass() override;
 

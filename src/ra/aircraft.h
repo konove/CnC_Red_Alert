@@ -75,6 +75,7 @@ class AircraftClass : public FootClass, public FlyClass {
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void*);
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator AircraftType() const { return Class->Type; }
   AircraftClass(AircraftType classid, HousesType house);
   ~AircraftClass() override;
@@ -271,9 +272,9 @@ class AircraftClass : public FootClass, public FlyClass {
 
 bool Building_Check();
 
-#endif  // CNC_RED_ALERT_RA_AIRCRAFT_H_
 class ArchiveReader;
 class ArchiveWriter;
 extern template void AircraftClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void AircraftClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_RA_AIRCRAFT_H_

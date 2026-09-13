@@ -49,7 +49,7 @@
 
 class CheckObject {
  public:
-  CheckObject(const char* text = nullptr, bool checked = false)
+  explicit CheckObject(const char* text = nullptr, bool checked = false)
       : Text(text), IsChecked(checked) {}
 
   const char* Text;

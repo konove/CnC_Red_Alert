@@ -70,6 +70,7 @@ class ArchiveWriter;
 class BuildingClass final : public TechnoClass {
  public:
   const BuildingTypeClass* Class = nullptr;
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator StructType() const { return Class->Type; }
 
   /*
@@ -316,7 +317,7 @@ class BuildingClass final : public TechnoClass {
 
 };
 
-#endif  // CNC_RED_ALERT_TD_BUILDING_H_
 extern template void BuildingClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void BuildingClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_TD_BUILDING_H_

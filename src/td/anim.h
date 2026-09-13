@@ -69,6 +69,7 @@ class AnimClass final : public ObjectClass, private StageClass {
   AnimClass& operator=(const AnimClass&) = delete;
   AnimClass(AnimClass&&) = delete;
   AnimClass& operator=(AnimClass&&) = delete;
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator AnimType() const { return Class->Type; }
   RTTIType What_Am_I() const override { return RTTI_ANIM; }
 
@@ -182,7 +183,7 @@ class AnimClass final : public ObjectClass, private StageClass {
 
 void Shorten_Attached_Anims(ObjectClass* obj);
 
-#endif  // CNC_RED_ALERT_TD_ANIM_H_
 extern template void AnimClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void AnimClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_TD_ANIM_H_

@@ -77,6 +77,7 @@ class TerrainClass final : public ObjectClass, public StageClass {
   TerrainClass& operator=(const TerrainClass&) = delete;
   TerrainClass(TerrainClass&&) = delete;
   TerrainClass& operator=(TerrainClass&&) = delete;
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator TerrainType() const { return Class->Type; }
 
   static void Init();
@@ -168,9 +169,9 @@ class TerrainClass final : public ObjectClass, public StageClass {
   friend class TFixedIHeapClass<TerrainClass>;
 };
 
-#endif  // CNC_RED_ALERT_RA_TERRAIN_H_
 class ArchiveReader;
 class ArchiveWriter;
 extern template void TerrainClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TerrainClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_RA_TERRAIN_H_

@@ -62,7 +62,7 @@ class IPXAddressClass {
   .....................................................................*/
   IPXAddressClass() noexcept;
   IPXAddressClass(NetNumType net, NetNodeType node);
-  IPXAddressClass(IPXHeaderType* header);
+  explicit IPXAddressClass(IPXHeaderType* header);
 
   /*.....................................................................
   Set the address from explicit variables, or from the SOURCE values

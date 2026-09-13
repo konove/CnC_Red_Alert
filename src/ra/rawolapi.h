@@ -98,7 +98,7 @@ class RAChatEventSink
     :  /////public CComObjectRoot, /////public IConnectionPoint,
        public IChatEvent {
  public:
-  RAChatEventSink(WolapiObject* pOwner);
+  explicit RAChatEventSink(WolapiObject* pOwner);
   COM_SINK_DESTRUCTOR(RAChatEventSink);
   RAChatEventSink(const RAChatEventSink&) = delete;
   RAChatEventSink& operator=(const RAChatEventSink&) = delete;
@@ -278,7 +278,7 @@ class RANetUtilEventSink :
     //    public CComObjectRoot,
     public INetUtilEvent {
  public:
-  RANetUtilEventSink(WolapiObject* pOwner);
+  explicit RANetUtilEventSink(WolapiObject* pOwner);
   COM_SINK_DESTRUCTOR(RANetUtilEventSink);
   RANetUtilEventSink(const RANetUtilEventSink&) = delete;
   RANetUtilEventSink& operator=(const RANetUtilEventSink&) = delete;

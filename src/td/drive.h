@@ -108,6 +108,7 @@ class DriveClass : public FootClass {
   DriveClass& operator=(const DriveClass&) = delete;
   DriveClass(DriveClass&&) = delete;
   DriveClass& operator=(DriveClass&&) = delete;
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator UnitType() const { return Class->Type; }
 
   /*---------------------------------------------------------------------
@@ -217,9 +218,9 @@ class DriveClass : public FootClass {
   static const TrackType Track1[24];
 };
 
-#endif  // CNC_RED_ALERT_TD_DRIVE_H_
 class ArchiveReader;
 class ArchiveWriter;
 extern template void DriveClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void DriveClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_TD_DRIVE_H_

@@ -55,7 +55,7 @@
 */
 class CCFileClass : public CDFileClass {
  public:
-  CCFileClass(const char* filename);
+  explicit CCFileClass(const char* filename);
   CCFileClass();
   ~CCFileClass() override { Position = 0; }
   CCFileClass(CCFileClass&&) = delete;

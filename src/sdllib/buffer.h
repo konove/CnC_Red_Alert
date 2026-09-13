@@ -29,7 +29,7 @@ class BufferClass {
  public:
   // Define the base constructor and destructors for the class
   BufferClass() : Buffer(nullptr), Size(0), Allocated(false) {}
-  BufferClass(long size)
+  explicit BufferClass(long size)
       : Buffer(new uint8_t[size]), Size(size), Allocated(true) {}
   ~BufferClass() {
     if (Allocated) {

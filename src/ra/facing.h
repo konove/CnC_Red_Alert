@@ -51,8 +51,10 @@
 class FacingClass {
  public:
   FacingClass();
+  // NOLINTNEXTLINE(*-explicit-constructor): a facing reads and assigns as its direction.
   FacingClass(DirType dir) : CurrentFacing(dir), DesiredFacing(dir) {}
 
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator DirType() const { return CurrentFacing; }
 
   DirType Current() const { return CurrentFacing; }

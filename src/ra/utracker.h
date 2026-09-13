@@ -45,7 +45,7 @@
 
 class UnitTrackerClass {
  public:
-  UnitTrackerClass(int unit_count);
+  explicit UnitTrackerClass(int unit_count);
   ~UnitTrackerClass();
   UnitTrackerClass(const UnitTrackerClass&) = delete;
   UnitTrackerClass& operator=(const UnitTrackerClass&) = delete;

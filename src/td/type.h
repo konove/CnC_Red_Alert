@@ -706,6 +706,7 @@ class BuildingTypeClass : public TechnoTypeClass {
                     int drain, BSizeType size, const short* exitlist,
                     const short* sizelist, const short* overlap) noexcept;
   RTTIType What_Am_I() const override { return RTTI_BUILDINGTYPE; }
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator StructType() const { return Type; }
 
   static const BuildingTypeClass& As_Reference(StructType type);

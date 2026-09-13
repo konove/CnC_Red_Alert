@@ -70,7 +70,7 @@ class TemplateClass : public ObjectClass {
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
-  TemplateClass(TemplateType type, CELL pos = -1);
+  explicit TemplateClass(TemplateType type, CELL pos = -1);
   ~TemplateClass() override {
     if (GameActive) {
       TemplateClass::Limbo();
@@ -81,6 +81,7 @@ class TemplateClass : public ObjectClass {
   TemplateClass& operator=(const TemplateClass&) = delete;
   TemplateClass(TemplateClass&&) = delete;
   TemplateClass& operator=(TemplateClass&&) = delete;
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator TemplateType() const { return Class->Type; }
 
   static void Init();
@@ -106,9 +107,9 @@ class TemplateClass : public ObjectClass {
   void Serialize(Archive& ar);
 };
 
-#endif  // CNC_RED_ALERT_RA_TEMPLATE_H_
 class ArchiveReader;
 class ArchiveWriter;
 extern template void TemplateClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TemplateClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_RA_TEMPLATE_H_

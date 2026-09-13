@@ -238,6 +238,7 @@ class BuildingClass : public TechnoClass {
   BuildingClass& operator=(const BuildingClass&) = delete;
   BuildingClass(BuildingClass&&) = delete;
   BuildingClass& operator=(BuildingClass&&) = delete;
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator StructType() const { return Class->Type; }
 
   /*---------------------------------------------------------------------
@@ -370,9 +371,9 @@ class BuildingClass : public TechnoClass {
   static const COORDINATE CenterOffset[magic_enum::enum_count<BSizeType>()];
 };
 
-#endif  // CNC_RED_ALERT_RA_BUILDING_H_
 class ArchiveReader;
 class ArchiveWriter;
 extern template void BuildingClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void BuildingClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_RA_BUILDING_H_

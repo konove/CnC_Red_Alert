@@ -203,7 +203,7 @@ class TechnoClass : public RadioClass,
   **	Constructors, Destructors, and overloaded operators.
   */
   TechnoClass();
-  TechnoClass(HousesType house);
+  explicit TechnoClass(HousesType house);
   ~TechnoClass() override {}
   TechnoClass(const TechnoClass&) = delete;
   TechnoClass& operator=(const TechnoClass&) = delete;

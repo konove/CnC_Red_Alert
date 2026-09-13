@@ -208,7 +208,7 @@ class FootClass : public TechnoClass {
   FootClass& operator=(const FootClass&) = delete;
   FootClass(FootClass&&) = delete;
   FootClass& operator=(FootClass&&) = delete;
-  FootClass(HousesType house);
+  explicit FootClass(HousesType house);
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.

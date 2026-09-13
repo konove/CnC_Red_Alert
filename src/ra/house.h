@@ -646,12 +646,13 @@ class HouseClass {
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
-  HouseClass(HousesType house);
+  explicit HouseClass(HousesType house);
   ~HouseClass();
   HouseClass(const HouseClass&) = delete;
   HouseClass& operator=(const HouseClass&) = delete;
   HouseClass(HouseClass&&) = delete;
   HouseClass& operator=(HouseClass&&) = delete;
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator HousesType() const;
 
   /*---------------------------------------------------------------------
@@ -943,9 +944,9 @@ class HouseClass {
   }
 };
 
-#endif  // CNC_RED_ALERT_RA_HOUSE_H_
 class ArchiveReader;
 class ArchiveWriter;
 extern template void HouseClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void HouseClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_RA_HOUSE_H_

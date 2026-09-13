@@ -61,6 +61,7 @@ class ArchiveWriter;
 class TerrainClass final : public ObjectClass, public StageClass {
  public:
   const TerrainTypeClass* Class = nullptr;
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator TerrainType() const { return Class->Type; }
 
   /*
@@ -188,7 +189,7 @@ class TerrainClass final : public ObjectClass, public StageClass {
   unsigned IsSporing : 1 = false;
 };
 
-#endif  // CNC_RED_ALERT_TD_TERRAIN_H_
 extern template void TerrainClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TerrainClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_TD_TERRAIN_H_

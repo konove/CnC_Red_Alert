@@ -149,14 +149,15 @@ class TriggerTypeClass : public AbstractTypeClass {
   static TriggerTypeClass* From_Name(const char* name);
   bool Edit();
   const char* Description() const;
+  // NOLINTNEXTLINE(*-explicit-constructor): legacy C interfaces take the object where a pointer or name is expected.
   operator const char*() const { return Description(); }
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
 };
 
-#endif  // CNC_RED_ALERT_RA_TRIGTYPE_H_
 class ArchiveReader;
 class ArchiveWriter;
 extern template void TriggerTypeClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TriggerTypeClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_RA_TRIGTYPE_H_

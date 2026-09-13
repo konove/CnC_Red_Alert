@@ -135,7 +135,7 @@ class SidebarClass : public PowerClass {
     int ButtonSpacingOffset = 0;
 
     StripClass() {}
-    StripClass(const InitClass&);
+    explicit StripClass(const InitClass&);
 
     bool Add(RTTIType type, int ID);
     bool Abandon_Production(int factory);

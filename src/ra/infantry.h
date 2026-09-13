@@ -135,6 +135,7 @@ class InfantryClass final : public FootClass {
   InfantryClass& operator=(const InfantryClass&) = delete;
   InfantryClass(InfantryClass&&) = delete;
   InfantryClass& operator=(InfantryClass&&) = delete;
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator InfantryType() const { return Class->Type; }
 
   /*---------------------------------------------------------------------
@@ -255,9 +256,9 @@ class InfantryClass final : public FootClass {
   static const DoStruct MasterDoControls[magic_enum::enum_count<DoType>()];
 };
 
-#endif  // CNC_RED_ALERT_RA_INFANTRY_H_
 class ArchiveReader;
 class ArchiveWriter;
 extern template void InfantryClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void InfantryClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_RA_INFANTRY_H_

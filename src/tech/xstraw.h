@@ -51,7 +51,7 @@
 class BufferStraw : public Straw {
  public:
   // Creates a non-owning view into the buffer.
-  BufferStraw(const Buffer& buffer)
+  explicit BufferStraw(const Buffer& buffer)
       : BufferPtr(buffer.Get_Buffer(), buffer.Get_Size()), Index(0) {}
   BufferStraw(const void* buffer, int length)
       : BufferPtr((void*)buffer, length), Index(0) {}
@@ -77,8 +77,8 @@ class BufferStraw : public Straw {
 */
 class FileStraw : public Straw {
  public:
-  FileStraw(FileClass* file) : File(file), HasOpened(false) {}
-  FileStraw(FileClass& file) : File(&file), HasOpened(false) {}
+  explicit FileStraw(FileClass* file) : File(file), HasOpened(false) {}
+  explicit FileStraw(FileClass& file) : File(&file), HasOpened(false) {}
   ~FileStraw() override;
 
   FileStraw(const FileStraw&) = delete;

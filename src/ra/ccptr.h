@@ -47,8 +47,10 @@ template <class T>
 class CCPtr {
  public:
   CCPtr() : ID(-1) {}
+  // NOLINTNEXTLINE(*-explicit-constructor): a CCPtr stands in for the raw object pointer.
   CCPtr(T* ptr);
 
+  // NOLINTNEXTLINE(*-explicit-constructor): a CCPtr stands in for the raw object pointer.
   operator T*() const {
     if (ID == -1) {
       return nullptr;
@@ -218,7 +220,6 @@ FixedIHeapClass* CCPtr<OverlayTypeClass>::Heap;
 template <>
 FixedIHeapClass* CCPtr<SmudgeTypeClass>::Heap;
 
-#endif  // CNC_RED_ALERT_RA_CCPTR_H_
 // ccptr.cc instantiates CCPtr for these types; the declarations stop every
 // other translation unit from instantiating members it has no definition for.
 extern template class CCPtr<AircraftClass>;
@@ -249,3 +250,4 @@ extern template class CCPtr<TerrainTypeClass>;
 extern template class CCPtr<OverlayTypeClass>;
 extern template class CCPtr<SmudgeTypeClass>;
 
+#endif  // CNC_RED_ALERT_RA_CCPTR_H_

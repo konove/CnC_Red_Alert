@@ -95,6 +95,7 @@ class FileClass {
   virtual void Error(int error, int canretry = false,
                      const char* filename = nullptr) = 0;
 
+  // NOLINTNEXTLINE(*-explicit-constructor): legacy C interfaces take the object where a pointer or name is expected.
   operator const char*() { return File_Name(); }
 
  protected:

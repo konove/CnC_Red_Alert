@@ -153,7 +153,7 @@ struct TEventClass {
   } Data{};
 
   TEventClass() : Event(TEVENT_NONE) { Data.Value = 0; }
-  TEventClass(TEventType event) : Event(event) { Data.Value = 0; }
+  explicit TEventClass(TEventType event) : Event(event) { Data.Value = 0; }
 
   // Saved-game support. The union travels through its widest member.
   template <class Archive>
@@ -185,8 +185,10 @@ AttachType Attaches_To(TEventType event);
 
 class EventChoiceClass {
  public:
+  // NOLINTNEXTLINE(*-explicit-constructor): choice tables are brace lists of event types.
   EventChoiceClass(TEventType event = TEVENT_NONE) noexcept : Event(event) {}
 
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator TEventType() const { return Event; }
   bool operator==(const EventChoiceClass& rvalue) const {
     return Event == rvalue.Event;

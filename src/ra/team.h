@@ -200,7 +200,7 @@ class TeamClass : public AbstractClass {
   CCPtr<TriggerClass> Trigger;
 
   //------------------------------------------------------------
-  TeamClass(const TeamTypeClass* team, HouseClass* owner = nullptr);
+  explicit TeamClass(const TeamTypeClass* team, HouseClass* owner = nullptr);
   ~TeamClass() override;
   TeamClass(const TeamClass&) = delete;
   TeamClass& operator=(const TeamClass&) = delete;

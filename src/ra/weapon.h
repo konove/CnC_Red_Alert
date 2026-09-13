@@ -54,7 +54,7 @@
 */
 class WeaponTypeClass {
  public:
-  WeaponTypeClass(const char* name);
+  explicit WeaponTypeClass(const char* name);
   ~WeaponTypeClass();
   WeaponTypeClass(const WeaponTypeClass&) = delete;
   WeaponTypeClass& operator=(const WeaponTypeClass&) = delete;

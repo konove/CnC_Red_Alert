@@ -92,6 +92,7 @@ class VesselClass : public DriveClass {
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator VesselType() const { return Class->Type; }
 
   static void Init();
@@ -172,9 +173,9 @@ class VesselClass : public DriveClass {
   friend class TFixedIHeapClass<VesselClass>;
 };
 
-#endif  // CNC_RED_ALERT_RA_VESSEL_H_
 class ArchiveReader;
 class ArchiveWriter;
 extern template void VesselClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void VesselClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_RA_VESSEL_H_

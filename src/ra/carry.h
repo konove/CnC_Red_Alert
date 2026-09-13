@@ -49,7 +49,7 @@ class CarryoverClass {
   template <class Archive>
   void Serialize(Archive& ar);
 
-  CarryoverClass(TechnoClass* techno = nullptr);
+  explicit CarryoverClass(TechnoClass* techno = nullptr);
 
   bool Create() const;
 

@@ -70,6 +70,7 @@ class AnimClass final : public ObjectClass, public StageClass {
   AnimClass(AnimClass&&) = delete;
   AnimClass& operator=(AnimClass&&) = delete;
 
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator AnimType() const { return Class->Type; }
 
   void* operator new(size_t size) noexcept;
@@ -172,9 +173,9 @@ class AnimClass final : public ObjectClass, public StageClass {
 void Shorten_Attached_Anims(ObjectClass* obj);
 AnimType Anim_From_Name(const char* name);
 
-#endif  // CNC_RED_ALERT_RA_ANIM_H_
 class ArchiveReader;
 class ArchiveWriter;
 extern template void AnimClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void AnimClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_RA_ANIM_H_

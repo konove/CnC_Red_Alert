@@ -244,9 +244,9 @@ class EventClass {
   // delegates here to clear IsExecuted and all unused payload bytes.
   // NOLINTNEXTLINE(cert-oop57-cpp)
   EventClass() { std::memset(this, 0, sizeof(EventClass)); }
-  EventClass(SpecialClass data);
+  explicit EventClass(SpecialClass data);
   EventClass(EventType type, TargetClass target);
-  EventClass(EventType type);
+  explicit EventClass(EventType type);
   EventClass(EventType type, int val);
   EventClass(EventType type, CELL cell);
   EventClass(EventType type, TargetClass src, TargetClass dest);

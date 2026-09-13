@@ -70,7 +70,7 @@
 // without type information, making it suitable for overloading new/delete.
 class FixedHeapClass {
  public:
-  FixedHeapClass(int size) noexcept;
+  explicit FixedHeapClass(int size) noexcept;
   virtual ~FixedHeapClass();
   FixedHeapClass(FixedHeapClass&&) = delete;
   FixedHeapClass& operator=(FixedHeapClass&&) = delete;
@@ -143,7 +143,7 @@ class FixedHeapClass {
 */
 class FixedIHeapClass : public FixedHeapClass {
  public:
-  FixedIHeapClass(int size) noexcept : FixedHeapClass(size) {}
+  explicit FixedIHeapClass(int size) noexcept : FixedHeapClass(size) {}
   ~FixedIHeapClass() override = default;
   FixedIHeapClass(const FixedIHeapClass&) = delete;
   FixedIHeapClass& operator=(const FixedIHeapClass&) = delete;

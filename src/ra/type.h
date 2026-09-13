@@ -781,6 +781,7 @@ class BuildingTypeClass : public TechnoTypeClass {
                     RTTIType tobuild, DirType sframe, BSizeType size,
                     const short* exitlist, const short* sizelist,
                     const short* overlap) noexcept;
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator StructType() const { return Type; }
 
   void* operator new(size_t) noexcept;
@@ -1452,7 +1453,7 @@ class BulletTypeClass : public ObjectTypeClass {
   int Tumble;
 
   //---------------------------------------------------------------------
-  BulletTypeClass(const char* name) noexcept;
+  explicit BulletTypeClass(const char* name) noexcept;
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }

@@ -33,7 +33,7 @@
 template <typename T>
 class VectorClass {
  public:
-  VectorClass(base::ssize size = 0, const T* array = nullptr);
+  explicit VectorClass(base::ssize size = 0, const T* array = nullptr);
   VectorClass(const VectorClass&);  // Copy constructor.
   virtual ~VectorClass();
   VectorClass(VectorClass&&) = delete;

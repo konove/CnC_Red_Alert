@@ -13,7 +13,7 @@
 template <typename T>
 class DynamicVectorClass : public VectorClass<T> {
  public:
-  DynamicVectorClass(base::ssize size = 0, const T* array = nullptr);
+  explicit DynamicVectorClass(base::ssize size = 0, const T* array = nullptr);
 
   // Change maximum size of vector.
   bool Resize(base::ssize newsize, const T* array = nullptr) override;

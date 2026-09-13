@@ -52,7 +52,7 @@ class LZWPipe : public Pipe {
  public:
   typedef enum CompControl { COMPRESS, DECOMPRESS } CompControl;
 
-  LZWPipe(CompControl, int blocksize = 1024 * 8);
+  explicit LZWPipe(CompControl, int blocksize = 1024 * 8);
   ~LZWPipe() override;
 
   int Flush() override;

@@ -46,7 +46,7 @@
 
 class SuperClass {
  public:
-  SuperClass(int recharge = 0, VoxType ready = VOX_NONE,
+  explicit SuperClass(int recharge = 0, VoxType ready = VOX_NONE,
              VoxType charging = VOX_NONE, VoxType impatient = VOX_NONE,
              VoxType suspend = VOX_NONE)
       : VoxRecharge(ready),

@@ -62,6 +62,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   *this variable.
   */
   const BulletTypeClass* Class = nullptr;
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator BulletType() const { return Class->Type; }
 
   /*
@@ -85,7 +86,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
     IsActive = true;
     Strength = 0;
   }
-  BulletClass(BulletType id);
+  explicit BulletClass(BulletType id);
   ~BulletClass() override {
     if (GameActive) {
       BulletClass::Limbo();
@@ -163,7 +164,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   unsigned IsLocked : 1 = true;
 };
 
-#endif  // CNC_RED_ALERT_TD_BULLET_H_
 extern template void BulletClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void BulletClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_TD_BULLET_H_

@@ -140,7 +140,7 @@ class INIClass {
   **	The entry identifier and value string are combined into this object.
   */
   struct INIEntry : Node<INIEntry> {
-    INIEntry(char* entry = nullptr, char* value = nullptr)
+    explicit INIEntry(char* entry = nullptr, char* value = nullptr)
         : Entry(entry), Value(value) {}
     ~INIEntry() override {
       free(Entry);
@@ -163,7 +163,7 @@ class INIClass {
   *entries *	subordinate to this section are attached.
   */
   struct INISection : Node<INISection> {
-    INISection(char* section) : Section(section) {}
+    explicit INISection(char* section) : Section(section) {}
     ~INISection() override {
       free(Section);
       Section = nullptr;

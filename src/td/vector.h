@@ -80,7 +80,7 @@
 template <class T>
 class VectorClass {
  public:
-  VectorClass(base::ssize size = 0, const T* array = nullptr);
+  explicit VectorClass(base::ssize size = 0, const T* array = nullptr);
   VectorClass(const VectorClass&);  // Copy constructor.
   virtual ~VectorClass();
   VectorClass(VectorClass&&) = delete;
@@ -139,7 +139,7 @@ class VectorClass {
 template <class T>
 class DynamicVectorClass : public VectorClass<T> {
  public:
-  DynamicVectorClass(base::ssize size = 0, const T* array = nullptr);
+  explicit DynamicVectorClass(base::ssize size = 0, const T* array = nullptr);
 
   // Change maximum size of vector.
   int Resize(base::ssize newsize, const T* array = nullptr) override;

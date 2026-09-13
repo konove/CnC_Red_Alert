@@ -57,7 +57,9 @@ class Buffer {
   Buffer(Buffer&& buffer) noexcept;
   Buffer& operator=(Buffer&& buffer) noexcept;
   ~Buffer();
+  // NOLINTNEXTLINE(*-explicit-constructor): legacy C interfaces take the object where a pointer or name is expected.
   operator void*() const { return BufferPtr; }
+  // NOLINTNEXTLINE(*-explicit-constructor): legacy C interfaces take the object where a pointer or name is expected.
   operator char*() const { return static_cast<char*>(BufferPtr); }
 
   void Reset();

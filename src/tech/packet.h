@@ -49,8 +49,8 @@
 
 class PacketClass {
  public:
-  PacketClass(short id = 0) : Size(0), ID(id), Head(nullptr) {}
-  PacketClass(char* cur_buf);
+  explicit PacketClass(short id = 0) : Size(0), ID(id), Head(nullptr) {}
+  explicit PacketClass(char* cur_buf);
   ~PacketClass();
 
   PacketClass(const PacketClass&) = delete;

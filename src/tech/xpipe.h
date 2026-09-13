@@ -53,7 +53,7 @@
 class BufferPipe : public Pipe {
  public:
   // Creates a non-owning view into the buffer.
-  BufferPipe(const Buffer& buffer)
+  explicit BufferPipe(const Buffer& buffer)
       : BufferPtr(buffer.Get_Buffer(), buffer.Get_Size()), Index(0) {}
   BufferPipe(void* buffer, int length) : BufferPtr(buffer, length), Index(0) {}
   ~BufferPipe() override = default;
@@ -79,8 +79,8 @@ class BufferPipe : public Pipe {
 */
 class FilePipe : public Pipe {
  public:
-  FilePipe(FileClass* file) : File(file), HasOpened(false) {}
-  FilePipe(FileClass& file) : File(&file), HasOpened(false) {}
+  explicit FilePipe(FileClass* file) : File(file), HasOpened(false) {}
+  explicit FilePipe(FileClass& file) : File(&file), HasOpened(false) {}
   ~FilePipe() override;
 
   FilePipe(const FilePipe&) = delete;

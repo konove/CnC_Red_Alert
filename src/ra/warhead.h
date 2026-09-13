@@ -52,7 +52,7 @@
 */
 class WarheadTypeClass {
  public:
-  WarheadTypeClass(const char* name);
+  explicit WarheadTypeClass(const char* name);
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }

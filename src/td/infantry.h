@@ -75,6 +75,7 @@ class InfantryClass final : public FootClass {
   void Serialize(Archive& ar);
 
   const InfantryTypeClass* Class = nullptr;
+  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
   operator InfantryType() const { return Class->Type; }
 
   /*
@@ -264,7 +265,7 @@ class InfantryClass final : public FootClass {
 
 };
 
-#endif  // CNC_RED_ALERT_TD_INFANTRY_H_
 extern template void InfantryClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void InfantryClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+#endif  // CNC_RED_ALERT_TD_INFANTRY_H_

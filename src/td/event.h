@@ -214,9 +214,9 @@ class EventClass {
   // here so fresh commands also clear IsExecuted and all unused payload bytes.
   // NOLINTNEXTLINE(cert-oop57-cpp)
   EventClass() { std::memset(this, 0, sizeof(EventClass)); }
-  EventClass(SpecialClass data);
+  explicit EventClass(SpecialClass data);
   EventClass(EventType type, TARGET target);
-  EventClass(EventType type);
+  explicit EventClass(EventType type);
   EventClass(EventType type, int val);
   EventClass(EventType type, TARGET src, TARGET dest);
   //		EventClass(TARGET src, MissionType mission);
