@@ -354,7 +354,8 @@ int main(int argc, char* argv[])
       WWGetPrivateProfileString("Intro", "PlayIntro", "Yes", tempbuff, 4,
                                 buffer);
       Special.IsFromInstall = stricmp(tempbuff, "No") != 0 && !SpawnedFromWChat;
-      SlowPalette = WWGetPrivateProfileInt("Options", "SlowPalette", 1, buffer);
+      SlowPalette =
+          WWGetPrivateProfileInt("Options", "SlowPalette", 1, buffer) != 0;
 
 #ifdef DEMO
       /*
@@ -412,7 +413,7 @@ int main(int argc, char* argv[])
       SDL_Send_Quit();
       do {
         Keyboard::Check();
-      } while (ReadyToQuit == 1);
+      } while (ReadyToQuit);
 
       CCDebugString("C&C95 - Returned from final message loop.\n");
       // Prog_End();
@@ -532,10 +533,10 @@ void Read_Setup_Options(RawFileClass* config_file) {
     config_file->Read(buffer, config_file->Size());
 
     AllowHardwareBlitFills =
-        WWGetPrivateProfileInt("Options", "HardwareFills", 1, buffer);
+        WWGetPrivateProfileInt("Options", "HardwareFills", 1, buffer) != 0;
     ScreenHeight =
         WWGetPrivateProfileInt("Options", "Resolution", 0, buffer) ? 480 : 400;
-    IsV107 = WWGetPrivateProfileInt("Options", "Compatibility", 0, buffer);
+    IsV107 = WWGetPrivateProfileInt("Options", "Compatibility", 0, buffer) != 0;
 
     /*
     ** See if an alternative socket number has been specified

@@ -215,8 +215,8 @@ constexpr size_t kGameListItemSize = MPLAYER_NAME_MAX + 9;
 static int Net_Join_Dialog();
 static void Clear_Game_List(ListClass* gamelist);
 static void Clear_Player_List(ListClass* playerlist);
-static int Request_To_Join(char* playername, int join_index,
-                           ListClass* playerlist, HousesType house, int color);
+static bool Request_To_Join(char* playername, int join_index,
+                            ListClass* playerlist, HousesType house, int color);
 static void Send_Join_Queries(int curgame, int gamenow, int playernow);
 static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                         ListClass* gamelist,
@@ -343,7 +343,7 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
   /*
   ---------------- Another system asking what game this is -----------------
   */
-  if (packet->Command == NET_QUERY_GAME && NetStealth == 0) {
+  if (packet->Command == NET_QUERY_GAME && !NetStealth) {
     /*.....................................................................
     If the game is closed, let every player respond, and let the sender of
     the query sort it all out.  This way, if the game's host exits the game,
@@ -376,7 +376,7 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
       */
   if (packet->Command == NET_QUERY_PLAYER &&
       !strcmp(packet->Name, MPlayerGameName) && strlen(MPlayerGameName) > 0 &&
-      NetStealth == 0) {
+      !NetStealth) {
     memset(packet, 0, sizeof(GlobalPacketType));
 
     mypacket.Command = NET_ANSWER_PLAYER;
@@ -497,7 +497,7 @@ void Destroy_Connection(int id, int error) {
  *=============================================================================================*/
 bool Remote_Connect() {
   int rc;
-  int stealth;  // original state of NetStealth flag
+  bool stealth;  // original state of NetStealth flag
 
   /*------------------------------------------------------------------------
   Init network timing parameters; these values should work for both a "real"
@@ -592,7 +592,7 @@ bool Remote_Connect() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 bool Server_Remote_Connect() {
-  int stealth;  // original state of NetStealth flag
+  bool stealth;  // original state of NetStealth flag
 
   /*------------------------------------------------------------------------
   Init network timing parameters; these values should work for both a "real"
@@ -648,7 +648,7 @@ bool Server_Remote_Connect() {
  *=============================================================================================*/
 bool Client_Remote_Connect() {
   int rc;
-  int stealth;  // original state of NetStealth flag
+  bool stealth;  // original state of NetStealth flag
 
   /*------------------------------------------------------------------------
   Init network timing parameters; these values should work for both a "real"
@@ -2088,9 +2088,9 @@ static void Clear_Player_List(ListClass* playerlist) {
  *                                                                         *
  * HISTORY:                                                                *
  *=========================================================================*/
-static int Request_To_Join(char* playername, int join_index,
-                           ListClass* /*playerlist*/, HousesType house,
-                           int color) {
+static bool Request_To_Join(char* playername, int join_index,
+                            ListClass* /*playerlist*/, HousesType house,
+                            int color) {
   int i;
 
   /*
@@ -2323,7 +2323,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   don't answer standard queries.
   ------------------------------------------------------------------------*/
   if (*joinstate == JOIN_CONFIRMED &&
-      Process_Global_Packet(&GPacket, &GAddress) != 0) {
+      Process_Global_Packet(&GPacket, &GAddress)) {
     return EV_NONE;
   }
 
@@ -3456,7 +3456,7 @@ static int Net_New_Dialog() {
         If there are at least 2 players, go ahead & play; error otherwise
         ...............................................................*/
         if (MPlayerSolo || Players.Count() > 0) {
-          rc = true;
+          rc = 1;
           process = false;
         } else {
           CCMessageBox().Process(TXT_ONLY_ONE, TXT_OOPS, TXT_NONE);
@@ -3517,7 +3517,7 @@ static int Net_New_Dialog() {
         }
         MPlayerGameName[0] = 0;
         process = false;
-        rc = false;
+        rc = 0;
         break;
 
       /*------------------------------------------------------------------
@@ -3903,7 +3903,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
   /*------------------------------------------------------------------------
   Try to handle the packet in a standard way
   ------------------------------------------------------------------------*/
-  if (Process_Global_Packet(&GPacket, &GAddress) != 0) {
+  if (Process_Global_Packet(&GPacket, &GAddress)) {
     return EV_NONE;
   }
 
@@ -4110,7 +4110,7 @@ uint32_t Compute_Name_CRC(char* name) {
  * HISTORY:                                                                *
  *   07/08/1995 BRR : Created.                                             *
  *=========================================================================*/
-void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
+void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
                           int timeval) {
   static int x;
   static int y;
@@ -4550,7 +4550,7 @@ static int Net_Fake_New_Dialog() {
         }
         MPlayerGameName[0] = 0;
         process = false;
-        rc = false;
+        rc = 0;
 #ifdef _WIN32
         Send_Data_To_DDE_Server("Hello", strlen("Hello"),
                                 DDEServerClass::DDE_CONNECTION_FAILED);
@@ -4603,7 +4603,7 @@ static int Net_Fake_New_Dialog() {
           If there are at least 2 players, go ahead & play; error otherwise
           ...............................................................*/
           if (MPlayerSolo || Players.Count() > 0) {
-            rc = true;
+            rc = 1;
             process = false;
           } else {
             CCMessageBox().Process(TXT_ONLY_ONE, TXT_OOPS, TXT_NONE);

@@ -261,7 +261,7 @@ void Nod_Ending() {
   Free_Sample(loopie6m);
 
   sprintf(fname, "NODEND%d", selection);
-  PreserveVQAScreen = 1;
+  PreserveVQAScreen = true;
   Play_Movie(fname);
 
   CountDownTimerClass count;

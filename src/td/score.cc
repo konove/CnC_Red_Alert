@@ -131,7 +131,7 @@ static void Cycle_Wait_Click();
 
 static const void* Beepy6;
 
-int ControlQ;  // cheat key to skip past score/mapsel screens
+bool ControlQ;  // cheat key to skip past score/mapsel screens
 
 static bool StillUpdating;
 
@@ -682,7 +682,7 @@ void ScoreClass::Presentation() {
   BlitList.Clear();
   Disable_Uncompressed_Shapes();
 
-  ControlQ = 0;
+  ControlQ = false;
   FontXSpacing = 0;
   Map.Override_Mouse_Shape(MOUSE_NORMAL);
   Theme.Queue_Song(THEME_WIN1);
@@ -1078,7 +1078,7 @@ void ScoreClass::Presentation() {
 
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;
-  ControlQ = 0;
+  ControlQ = false;
 
   Set_Logic_Page(SeenBuff);
 
@@ -1570,7 +1570,7 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
   } while (i < PlayerPtr->Available_Money());
 
   // Make sure the credits object doesn't freeze on the white stage
-  while (ScoreObjs[credobj]->Stage >= 20 && ControlQ == 0) {
+  while (ScoreObjs[credobj]->Stage >= 20 && !ControlQ) {
     Call_Back_Delay(1);
   }
   delete ScoreObjs[credobj];
@@ -2007,7 +2007,7 @@ void Call_Back_Delay(int time) {
   CountDownTimerClass cd;
 
   if ((!ControlQ) && (Keyboard::Down(KN_LCTRL) && Keyboard::Down(KN_Q))) {
-    ControlQ = 1;
+    ControlQ = true;
     Keyboard::Clear();
   }
 
@@ -2227,6 +2227,6 @@ void Multi_Score_Presentation() {
 
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;
-  ControlQ = 0;
+  ControlQ = false;
   Show_Mouse();
 }

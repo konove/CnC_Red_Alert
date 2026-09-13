@@ -935,7 +935,7 @@ void HouseClass::AI() {
       TechnoClass* techno;
       int damage;
       int count;
-      int moving;
+      bool moving;
 
       /*
       **	If this house's flag waypoint is a valid cell, see if there's
@@ -2054,7 +2054,7 @@ void HouseClass::Adjust_Threat(int region, int threat) {
       -MAP_REGION_WIDTH - 1, -MAP_REGION_WIDTH, -MAP_REGION_WIDTH + 1, -1, 0, 1,
       MAP_REGION_WIDTH - 1,  MAP_REGION_WIDTH,  MAP_REGION_WIDTH + 1};
   static int _thr[] = {2, 1, 2, 1, 0, 1, 2, 1, 2};
-  int neg;
+  bool neg;
   int* val = &_val[0];
   int* thr = &_thr[0];
 
@@ -2093,7 +2093,7 @@ void HouseClass::Adjust_Threat(int region, int threat) {
 ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
   Validate();
   int* factory = nullptr;
-  int result = true;
+  bool result = true;
   FactoryClass* fptr;
   const TechnoTypeClass* tech = Fetch_Techno_Type(type, id);
 
@@ -3483,7 +3483,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
  *=============================================================================================*/
 bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
   Validate();
-  int rc = 0;
+  bool rc = false;
 
   if (Target_Legal(target)) {
     /*
@@ -3554,7 +3554,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
   **	Randomly decide if we're going to search cells clockwise or counter-
   **	clockwise
   */
-  clockwise = GameRandomRange(0, 1);
+  clockwise = GameRandomRange(0, 1) != 0;
 
   /*
   **	Only continue if this cell is a legal placement cell.
@@ -3733,7 +3733,7 @@ void HouseClass::MPlayer_Defeated() {
   - Add my defeat message
   ------------------------------------------------------------------------*/
   if (PlayerPtr == this) {
-    MPlayerObiWan = 1;
+    MPlayerObiWan = true;
     Debug_Unshroud = true;
     HiddenPage.Clear();
     Map.Flag_To_Redraw(true);

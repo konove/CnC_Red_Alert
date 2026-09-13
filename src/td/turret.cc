@@ -180,7 +180,7 @@ void TurretClass::AI() {
         **	If no further rotation is necessary, flag that the rotation
         **	has stopped.
         */
-        IsRotating = SecondaryFacing.Is_Rotating() != 0;
+        IsRotating = SecondaryFacing.Is_Rotating();
       } else {
         if (!IsTurretLockedDown && !Target_Legal(TarCom)) {
           if (!Target_Legal(NavCom)) {

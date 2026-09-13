@@ -385,7 +385,7 @@ bool FootClass::Mark(MarkType mark) {
 bool FootClass::Basic_Path() {
   PathType* path;  // Pointer to path control structure.
   CELL cell;
-  int skip_path = false;
+  bool skip_path = false;
 
   Path[0] = FACING_NONE;
 

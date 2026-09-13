@@ -29,7 +29,7 @@ class CheckBoxClass : public ToggleClass {
 
   // Draws the checkbox as a filled or empty box.
   // Returns true if the checkbox was actually rendered.
-  int Draw_Me(bool forced = false) override;
+  bool Draw_Me(bool forced = false) override;
 };
 
 #endif  // CNC_RED_ALERT_TD_CHECKBOX_H_

@@ -217,7 +217,7 @@ int32_t Load_Uncompress(FileClass& file, BufferClass& uncomp_buff,
   uint16_t size;
   void* sptr = uncomp_buff.Get_Buffer();
   void* dptr = dest_buff.Get_Buffer();
-  int opened = false;
+  bool opened = false;
   CompHeaderType header;
 
   /*

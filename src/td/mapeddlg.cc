@@ -278,7 +278,7 @@ int MapEditClass::Load_Scenario() {
   /*
   ------------------------------ Read the INI ------------------------------
   */
-  if (Read_Scenario_Ini(ScenarioName) == 0) {
+  if (!Read_Scenario_Ini(ScenarioName)) {
     CCMessageBox().Process("Unable to read scenario!");
     HiddenPage.Clear();
     Flag_To_Redraw(true);

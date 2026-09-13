@@ -110,7 +110,7 @@ void CheckListClass::Check_Item(int index, int checked) {
  * HISTORY:                                                                *
  *   02/16/1995 BR : Created.                                              *
  *=========================================================================*/
-int CheckListClass::Is_Checked(int index) const {
+bool CheckListClass::Is_Checked(int index) const {
   if (List[index]) {
     return List[index][0] == CHECK_CHAR;
   }
@@ -133,8 +133,8 @@ int CheckListClass::Is_Checked(int index) const {
  * HISTORY:                                                                *
  *   02/16/1995 BR : Created.                                              *
  *=========================================================================*/
-int CheckListClass::Action(unsigned flags, KeyNumType& key) {
-  int rc;
+bool CheckListClass::Action(unsigned flags, KeyNumType& key) {
+  bool rc;
 
   /*
   ** If this is a read-only list, it's a display-only device

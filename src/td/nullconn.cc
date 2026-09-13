@@ -174,7 +174,7 @@ int NullModemConnClass::Send(char* buf, int buflen) {
   Error if we haven't been properly initialized
   ------------------------------------------------------------------------*/
   if (PortHandle == nullptr) {
-    return false;
+    return 0;
   }
 
   /*------------------------------------------------------------------------
@@ -210,7 +210,7 @@ int NullModemConnClass::Send(char* buf, int buflen) {
 #endif  // WINSOCK
 
   // if ( status == ASSUCCESS ) {
-  return true;
+  return 1;
   //} else {
   // Smart_Printf( "Write Buffer status %d, Port->status %d, sendlen %d \n",
   // status, Port->status, sendlen );

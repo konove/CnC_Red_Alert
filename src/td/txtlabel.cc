@@ -62,7 +62,10 @@
 
 TextLabelClass::TextLabelClass(char* txt, int x, int y, int color,
                                TextPrintType style)
-    : GadgetClass(x, y, 1, 1, 0, 0), Style(style), Text(txt), Color(color) {}
+    : GadgetClass(x, y, 1, 1, 0, false),
+      Style(style),
+      Text(txt),
+      Color(color) {}
 
 /***********************************************************************************************
  * Draw_Me -- Graphical update routine *
@@ -76,7 +79,7 @@ TextLabelClass::TextLabelClass(char* txt, int x, int y, int color,
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-int TextLabelClass::Draw_Me(bool forced) {
+bool TextLabelClass::Draw_Me(bool forced) {
   if (GadgetClass::Draw_Me(forced)) {
     if (PixWidth == -1) {
       Fancy_Text_Print("%s", X, Y, Color, TBLACK, Style, Text);

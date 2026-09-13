@@ -152,7 +152,7 @@ static const char* ColorNames[6] = {
 #ifndef DEMO
 int NetMonoMode = 1;
 int NewMonoMode = 1;
-static int IsMono = 0;
+static bool IsMono = false;
 #endif  // DEMO
 
 //---------------------------------------------------------------------------
@@ -200,7 +200,7 @@ static int Can_Advance(ConnManClass* net, int max_ahead, const int* their_frame,
                        const uint16_t* their_sent, const uint16_t* their_recv);
 static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
                                     const int* their_frame, int num_conn,
-                                    int reconn, int fresh);
+                                    bool reconn, bool fresh);
 static int Handle_Timeout(ConnManClass* net, int* their_frame,
                           uint16_t* their_sent, uint16_t* their_recv);
 static void Stop_Game();
@@ -279,7 +279,7 @@ static void Dump_Packet_Too_Late_Stuff(EventClass* event);
  *=========================================================================*/
 bool Queue_Mission(TARGET whom, MissionType mission, TARGET target,
                    TARGET destination) {
-  return OutList.Add(EventClass(whom, mission, target, destination)) != 0;
+  return OutList.Add(EventClass(whom, mission, target, destination));
 
 } /* end of Queue_Mission */
 
@@ -301,7 +301,7 @@ bool Queue_Mission(TARGET whom, MissionType mission, TARGET target,
  *   09/21/1995 JLB : Created.                                             *
  *=========================================================================*/
 bool Queue_Options() {
-  return OutList.Add(EventClass(EventClass::OPTIONS)) != 0;
+  return OutList.Add(EventClass(EventClass::OPTIONS));
 
 } /* end of Queue_Options */
 
@@ -323,7 +323,7 @@ bool Queue_Options() {
  *   09/21/1995 JLB : Created.                                             *
  *=========================================================================*/
 bool Queue_Exit() {
-  return OutList.Add(EventClass(EventClass::EXIT)) != 0;
+  return OutList.Add(EventClass(EventClass::EXIT));
 
 } /* end of Queue_Exit */
 
@@ -1973,7 +1973,7 @@ static int Can_Advance(ConnManClass* net, int max_ahead, const int* their_frame,
  *=========================================================================*/
 static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
                                     const int* their_frame, int num_conn,
-                                    int reconn, int fresh) {
+                                    bool reconn, bool fresh) {
   static int displayed_time = 0;  // time value currently displayed
   int new_time;
   int oldest_index = 0;  // index of person requiring a reconnect

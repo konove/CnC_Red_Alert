@@ -1142,7 +1142,9 @@ void InfantryClass::AI() {
   */
   if (Class->IsFraidyCat && Fear > FEAR_ANXIOUS && !IsDriving &&
       !Target_Legal(NavCom)) {
-    Scatter(true);
+    // The original passed `true` as the threat coordinate; that value (1) is
+    // kept.
+    Scatter(static_cast<COORDINATE>(1));
   }
 
   /*
@@ -2457,7 +2459,7 @@ bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
   /*
   **	Make sure that the infantry start in a legal position on the map.
   */
-  coord = Map[Coord_Cell(coord)].Closest_Free_Spot(coord, ScenarioInit);
+  coord = Map[Coord_Cell(coord)].Closest_Free_Spot(coord, ScenarioInit != 0);
   if (coord == 0) {
     return false;
   }

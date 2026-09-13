@@ -120,7 +120,7 @@ FixedHeapClass::~FixedHeapClass() { FixedHeapClass::Clear(); }
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-int FixedHeapClass::Set_Heap(int count, void* buffer) {
+bool FixedHeapClass::Set_Heap(int count, void* buffer) {
   /*
   **	Clear out the old heap data.
   */
@@ -204,7 +204,7 @@ void* FixedHeapClass::Allocate() {
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-int FixedHeapClass::Free(void* pointer) {
+bool FixedHeapClass::Free(void* pointer) {
   if (pointer && ActiveCount) {
     int index = ID(pointer);
 
@@ -287,7 +287,7 @@ void FixedHeapClass::Clear() {
  *                                                                                             *
  * HISTORY: * 05/22/1995 JLB : Created. *
  *=============================================================================================*/
-int FixedHeapClass::Free_All() {
+bool FixedHeapClass::Free_All() {
   ActiveCount = 0;
   FreeFlag.assign(FreeFlag.size(), false);
   return true;
@@ -309,7 +309,7 @@ int FixedHeapClass::Free_All() {
  *                                                                                             *
  * HISTORY: * 05/22/1995 JLB : Created. *
  *=============================================================================================*/
-int FixedIHeapClass::Free_All() {
+bool FixedIHeapClass::Free_All() {
   ActivePointers.Delete_All();
   return FixedHeapClass::Free_All();
 }
@@ -319,7 +319,7 @@ void FixedIHeapClass::Clear() {
   ActivePointers.Clear();
 }
 
-int FixedIHeapClass::Set_Heap(int count, void* buffer) {
+bool FixedIHeapClass::Set_Heap(int count, void* buffer) {
   Clear();
   if (FixedHeapClass::Set_Heap(count, buffer)) {
     ActivePointers.Resize(count);
@@ -353,7 +353,7 @@ void* FixedIHeapClass::Allocate() {
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-int FixedIHeapClass::Free(void* pointer) {
+bool FixedIHeapClass::Free(void* pointer) {
   if (FixedHeapClass::Free(pointer)) {
     ActivePointers.Delete(pointer);
   }

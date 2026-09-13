@@ -327,7 +327,7 @@ int NullModemClass::Init(int port, int /*unused*/, char* dev_name, int baud,
                                             stopbits, flowcontrol);
   if (PortHandle == nullptr) {
     Shutdown();
-    return false;
+    return 0;
   }
 
   /*------------------------------------------------------------------------
@@ -337,7 +337,7 @@ int NullModemClass::Init(int port, int /*unused*/, char* dev_name, int baud,
 
   NumConnections = 1;
 
-  return true;
+  return 1;
 }
 
 /***********************************************************************************************
@@ -368,7 +368,7 @@ int NullModemClass::Num_Connections() { return NumConnections; }
  *                                                                                             *
  * HISTORY: * 8/2/96 11:44AM ST : Documented / Win32 support *
  *=============================================================================================*/
-int NullModemClass::Delete_Connection() {
+bool NullModemClass::Delete_Connection() {
   if (Connection) {
     delete Connection;
     Connection = nullptr;
@@ -407,7 +407,7 @@ int NullModemClass::Delete_Connection() {
  *                                                                                             *
  * HISTORY: * 8/2/96 11:46AM ST : Documented / Win32 support *
  *=============================================================================================*/
-int NullModemClass::Init_Send_Queue() {
+bool NullModemClass::Init_Send_Queue() {
   /*---------------------------------------------------------------
   Init the send queue
   -----------------------------------------------------------------*/
@@ -514,7 +514,7 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
   ** Open the com port
   */
   HANDLE porthandle = SerialPort->Serial_Port_Open(
-      device, baud, 0, 8, 1, settings->HardwareFlowControl);
+      device, baud, 0, 8, 1, settings->HardwareFlowControl ? 1 : 0);
 
   if (porthandle == nullptr) {
     return PORT_INVALID;
@@ -634,7 +634,7 @@ int NullModemClass::Send_Message(void* buf, int buflen, int ack_req) {
   int rc;
 
   if (NumConnections == 0) {
-    return false;
+    return 0;
   }
 
   rc = Connection->Send_Packet(buf, buflen, ack_req);
@@ -668,7 +668,7 @@ int NullModemClass::Send_Message(void* buf, int buflen, int ack_req) {
  *=========================================================================*/
 int NullModemClass::Get_Message(void* buf, int* buflen) {
   if (NumConnections == 0) {
-    return false;
+    return 0;
   }
   return Connection->Get_Packet(buf, buflen);
 }
@@ -702,7 +702,7 @@ int NullModemClass::Service() {
   char moredata = 0;
 
   if (NumConnections == 0) {
-    return false;
+    return 0;
   }
 
   /*------------------------------------------------------------------------
@@ -1191,7 +1191,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
     *19200) and
     ** try again.
     */
-    return false;
+    return 0;
   }
 
   /*
@@ -1223,7 +1223,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
       if (status < ASSUCCESS) {
         if (CCMessageBox().Process(TXT_ERROR_NO_INIT, TXT_IGNORE, TXT_CANCEL)) {
           delete[] istr;
-          return false;
+          return 0;
         }
         error_count++;
         break;
@@ -1253,7 +1253,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         if ((status != MODEM_CMD_OK && status != MODEM_CMD_0) &&
             CCMessageBox().Process(TXT_NO_FLOW_CONTROL_RESPONSE, TXT_IGNORE,
                                    TXT_CANCEL)) {
-          return false;
+          return 0;
         }
       }
     } else {
@@ -1268,7 +1268,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         if ((status != MODEM_CMD_OK && status != MODEM_CMD_0) &&
             CCMessageBox().Process(TXT_NO_FLOW_CONTROL_RESPONSE, TXT_IGNORE,
                                    TXT_CANCEL)) {
-          return false;
+          return 0;
         }
       }
     }
@@ -1284,7 +1284,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         if ((status != MODEM_CMD_OK && status != MODEM_CMD_0) &&
             CCMessageBox().Process(TXT_NO_COMPRESSION_RESPONSE, TXT_IGNORE,
                                    TXT_CANCEL)) {
-          return false;
+          return 0;
         }
       }
     } else {
@@ -1295,7 +1295,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         if ((status != MODEM_CMD_OK && status != MODEM_CMD_0) &&
             CCMessageBox().Process(TXT_NO_COMPRESSION_RESPONSE, TXT_IGNORE,
                                    TXT_CANCEL)) {
-          return false;
+          return 0;
         }
       }
     }
@@ -1311,7 +1311,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         if ((status != MODEM_CMD_OK && status != MODEM_CMD_0) &&
             CCMessageBox().Process(TXT_NO_ERROR_CORRECTION_RESPONSE, TXT_IGNORE,
                                    TXT_CANCEL)) {
-          return false;
+          return 0;
         }
       }
     } else {
@@ -1322,7 +1322,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         if ((status != MODEM_CMD_OK && status != MODEM_CMD_0) &&
             CCMessageBox().Process(TXT_NO_ERROR_CORRECTION_RESPONSE, TXT_IGNORE,
                                    TXT_CANCEL)) {
-          return false;
+          return 0;
         }
       }
     }
@@ -1334,7 +1334,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
                               INIT_COMMAND_RETRIES);
   if (status != MODEM_CMD_OK) {
     if (CCMessageBox().Process(TXT_ERROR_NO_DISABLE, TXT_IGNORE, TXT_CANCEL)) {
-      return false;
+      return 0;
     }
     error_count++;
   }
@@ -1344,10 +1344,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   */
   if (error_count >= 3) {
     CCMessageBox().Process(TXT_ERROR_TOO_MANY, TXT_OK);
-    return false;
+    return 0;
   }
 
-  return true;
+  return 1;
 }
 
 /***************************************************************************

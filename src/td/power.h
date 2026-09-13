@@ -90,7 +90,7 @@ class PowerClass : public RadarClass {
                       true) {}
 
    protected:
-    int Action(unsigned flags, KeyNumType& key) override;
+    bool Action(unsigned flags, KeyNumType& key) override;
     friend class PowerClass;
   };
 

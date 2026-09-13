@@ -65,7 +65,7 @@ class CheckListClass : public ListClass {
   Checkmark utility functions
   ---------------------------------------------------------------------*/
   void Check_Item(int index, int checked);  // sets checked state of item
-  [[nodiscard]] int Is_Checked(int index) const;  // gets checked state of item
+  [[nodiscard]] bool Is_Checked(int index) const;  // gets checked state of item
 
   /*---------------------------------------------------------------------
   This defines the ASCII value of the checkmark character & non-checkmark
@@ -76,10 +76,10 @@ class CheckListClass : public ListClass {
     UNCHECK_CHAR = ' ',
   };
 
-  void Set_Read_Only(int rdonly) { IsReadOnly = rdonly; }
+  void Set_Read_Only(bool rdonly) { IsReadOnly = rdonly; }
 
  protected:
-  int Action(unsigned flags, KeyNumType& key) override;
+  bool Action(unsigned flags, KeyNumType& key) override;
 
  private:
   bool IsReadOnly{false};

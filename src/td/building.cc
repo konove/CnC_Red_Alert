@@ -2213,7 +2213,9 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
             }
             ScenarioInit--;
           } else {
-            base->Scatter(true);
+            base->  // The original passed `true` as the threat coordinate; that
+                    // value (1) is kept.
+                Scatter(static_cast<COORDINATE>(1));
           }
           break;
 

@@ -113,7 +113,7 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
                                  int glb_num_packets, int pvt_num_packets,
                                  uint16_t socket, uint16_t product_id)
     // IPX requires socket IDs stored high/low, so the socket is byte-swapped.
-    : IPXStatus(IPX_SPX_Installed() != 0),
+    : IPXStatus(IPX_SPX_Installed()),
       Glb_MaxPacketLen(glb_maxlen),
       Glb_NumPackets(glb_num_packets),
       Pvt_MaxPacketLen(pvt_maxlen),
@@ -236,7 +236,7 @@ int IPXManagerClass::Init() {
     ----------------------- Error if IPX not installed -----------------------
     */
     if (!IPXStatus) {
-      return false;
+      return 0;
     }
 
     /*------------------------------------------------------------------------
@@ -279,7 +279,7 @@ int IPXManagerClass::Init() {
     Allocate real-mode memory
     ------------------------------------------------------------------------*/
     if (!Alloc_RealMode_Mem()) {
-      return false;
+      return 0;
     }
     RealMemAllocd = true;
   }
@@ -290,7 +290,7 @@ int IPXManagerClass::Init() {
   GlobalChannel = new IPXGlobalConnClass(Glb_NumPackets, Glb_NumPackets,
                                          Glb_MaxPacketLen, ProductID);
   if (!GlobalChannel) {
-    return false;
+    return 0;
   }
   GlobalChannel->Init();
   GlobalChannel->Set_Retry_Delta(RetryDelta);
@@ -308,12 +308,12 @@ int IPXManagerClass::Init() {
   Start Listening
   ------------------------------------------------------------------------*/
   if ((!(GameToPlay == GAME_INTERNET)) && (!IPXConnClass::Start_Listening())) {
-    return false;
+    return 0;
   }
 
   Listening = true;
 
-  return true;
+  return 1;
 }
 
 /***************************************************************************
@@ -699,7 +699,7 @@ int IPXManagerClass::Send_Global_Message(void* buf, int buflen, int ack_req,
   ------------ Error if IPX not installed or not Listening -----------------
   */
   if (!IPXStatus || !Listening) {
-    return false;
+    return 0;
   }
 
   rc = GlobalChannel->Send_Packet(buf, buflen, address, ack_req);
@@ -739,7 +739,7 @@ int IPXManagerClass::Get_Global_Message(void* buf, int* buflen,
   ------------ Error if IPX not installed or not Listening -----------------
   */
   if (!IPXStatus || !Listening) {
-    return false;
+    return 0;
   }
 
   return GlobalChannel->Get_Packet(buf, buflen, address, product_id);
@@ -776,7 +776,7 @@ int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
   ------------ Error if IPX not installed or not Listening -----------------
   */
   if (!IPXStatus || !Listening || NumConnections == 0) {
-    return false;
+    return 0;
   }
 
   /*------------------------------------------------------------------------
@@ -802,7 +802,7 @@ int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
           if (Connection[i]->Queue->Num_Send() ==
               Connection[i]->Queue->Max_Send()) {
             SendOverflows++;
-            return false;
+            return 0;
           }
 #ifdef VIRTUAL_SUBNET_SERVER
         }
@@ -838,7 +838,7 @@ int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
     }
 #endif  // VIRTUAL_SUBNET_SERVER
 
-    return true;
+    return 1;
   }
   /*------------------------------------------------------------------------
       Send the message to the specified connection
@@ -846,7 +846,7 @@ int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
   connect_idx = Connection_Index(conn_id);
   if (connect_idx == IPXConnClass::CONNECTION_NONE) {
     SendOverflows++;
-    return false;
+    return 0;
   }
 
   /*.....................................................................
@@ -855,14 +855,14 @@ int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
   if (Connection[connect_idx]->Queue->Num_Send() ==
       Connection[connect_idx]->Queue->Max_Send()) {
     SendOverflows++;
-    return false;
+    return 0;
   }
 
   /*.....................................................................
   Send the packet to that connection
   .....................................................................*/
   Connection[connect_idx]->Send_Packet(buf, buflen, ack_req);
-  return true;
+  return 1;
 }
 
 /***************************************************************************
@@ -898,7 +898,7 @@ int IPXManagerClass::Get_Private_Message(void* buf, int* buflen, int* conn_id) {
   ------------ Error if IPX not installed or not Listening -----------------
   */
   if (!IPXStatus || !Listening || NumConnections == 0) {
-    return false;
+    return 0;
   }
 
 #ifdef VIRTUAL_SUBNET_SERVER
@@ -949,11 +949,11 @@ int IPXManagerClass::Get_Private_Message(void* buf, int* buflen, int* conn_id) {
     .....................................................................*/
     if (rc) {
       *conn_id = c_id;
-      return true;
+      return 1;
     }
   }
 
-  return false;
+  return 0;
 }
 
 /***************************************************************************
@@ -1333,7 +1333,7 @@ int IPXManagerClass::Private_Num_Send(int id) {
   ------------ Error if IPX not installed or not Listening -----------------
   */
   if (!IPXStatus || !Listening || NumConnections == 0) {
-    return false;
+    return 0;
   }
 
   /*------------------------------------------------------------------------
@@ -1344,7 +1344,7 @@ int IPXManagerClass::Private_Num_Send(int id) {
     if (i != IPXConnClass::CONNECTION_NONE) {
       return Connection[i]->Queue->Num_Send();
     }
-    return false;
+    return 0;
   }
   /*------------------------------------------------------------------------
       Otherwise, return the max # of all connections
@@ -1891,7 +1891,7 @@ int IPXManagerClass::Alloc_RealMode_Mem() {
   }
 #else  // NOT_FOR_WIN95
 
-  return true;
+  return 1;
 
 #endif  // NOT_FOR_WIN95
 }

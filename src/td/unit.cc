@@ -1653,7 +1653,9 @@ void UnitClass::Per_Cell_Process(bool center) {
         return;
 
       default:
-        Scatter(true);
+        // The original passed `true` as the threat coordinate; that value (1)
+        // is kept.
+        Scatter(static_cast<COORDINATE>(1));
         break;
     }
   }
@@ -2165,7 +2167,7 @@ bool UnitClass::Tiberium_Check(CELL& center, int x, int y) {
 
   return (GameToPlay != GAME_NORMAL || !IsOwnedByPlayer ||
           Map[center].IsVisible) &&
-         (!Map[center].Cell_Techno() &&
+         (Map[center].Cell_Techno() == nullptr &&
           Map[center].Land_Type() == LAND_TIBERIUM);
 }
 

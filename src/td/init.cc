@@ -2606,7 +2606,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
           */
           case 'X':
             if constexpr (config::kCheatKeysEnabled) {
-              RecordGame = 1;
+              RecordGame = true;
             }
             break;
 
@@ -2615,7 +2615,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
           */
           case 'Y':
             if constexpr (config::kCheatKeysEnabled) {
-              PlaybackGame = 1;
+              PlaybackGame = true;
             }
             break;
 

@@ -283,7 +283,7 @@ void SidebarClass::Init_Clear() {
   Column[0].Init_Clear();
   Column[1].Init_Clear();
 
-  Activate(false);
+  Activate(0);
 }
 
 /***********************************************************************************************
@@ -804,9 +804,9 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
     *repair *	option.
     */
     if (PlayerPtr->BScan) {
-      Activate_Repair(true);
+      Activate_Repair(1);
     } else {
-      Activate_Repair(false);
+      Activate_Repair(0);
     }
 
     if (input == ButtonKey(BUTTON_REPAIR)) {
@@ -1885,7 +1885,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
  *sidebar when buildables removed.                        *
  *=============================================================================================*/
 bool SidebarClass::StripClass::Recalc() {
-  int ok;
+  bool ok;
 
   if (Debug_Map || !BuildableCount) {
     return false;
@@ -2069,8 +2069,8 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
-                                                  KeyNumType& key) {
+bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
+                                                   KeyNumType& key) {
   int index = Strip->TopIndex + Index;
   RTTIType otype = Strip->Buildables[index].BuildableType;
   int oid = Strip->Buildables[index].BuildableID;
@@ -2350,8 +2350,8 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
  *                                                                                             *
  * HISTORY: * 03/28/1995 JLB : Created. *
  *=============================================================================================*/
-int SidebarClass::SBGadgetClass::Action(unsigned /*flags*/,
-                                        KeyNumType& /*key*/) {
+bool SidebarClass::SBGadgetClass::Action(unsigned /*flags*/,
+                                         KeyNumType& /*key*/) {
   Map.Help_Text(TXT_NONE);
   Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
   return true;

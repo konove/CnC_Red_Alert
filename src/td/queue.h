@@ -113,7 +113,7 @@ class QueueClass {
   **	This will add an object to the tail of the line. If there is no more
   *room to add *	the object, then false will be returned.
   */
-  int Add(const T& /*q*/);
+  bool Add(const T& /*q*/);
 
  private:
   int Head = 0;  // Index of element in list the longest.
@@ -179,7 +179,7 @@ void QueueClass<T, size>::Init() {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 template <class T, int size>
-int QueueClass<T, size>::Add(const T& q) {
+bool QueueClass<T, size>::Add(const T& q) {
   if (Count < size) {
     Array[Tail] = q;
     Tail = (Tail + 1) & (size - 1);

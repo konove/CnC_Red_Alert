@@ -56,9 +56,9 @@ class ArchiveWriter;
 class BaseNodeClass {
  public:
   BaseNodeClass() = default;
-  int operator==(const BaseNodeClass& node);
-  int operator!=(const BaseNodeClass& node);
-  int operator>(const BaseNodeClass& node);
+  bool operator==(const BaseNodeClass& node);
+  bool operator!=(const BaseNodeClass& node);
+  bool operator>(const BaseNodeClass& node);
 
   StructType Type = STRUCT_NONE;
   COORDINATE Coord = 0;

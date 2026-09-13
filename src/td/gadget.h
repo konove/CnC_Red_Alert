@@ -105,7 +105,7 @@ class GadgetClass : public LinkClass {
   } FlagEnum;
 
   GadgetClass(int x, int y, int w, int h, unsigned flags,
-              int sticky = false) noexcept;
+              bool sticky = false) noexcept;
   GadgetClass() noexcept = default;
   ~GadgetClass() override;
   GadgetClass(const GadgetClass&) = delete;
@@ -113,7 +113,7 @@ class GadgetClass : public LinkClass {
   GadgetClass(GadgetClass&&) = delete;
   GadgetClass& operator=(GadgetClass&&) = delete;
   //		static GadgetClass * Create_One_Of(int x, int y, int w, int h,
-  // unsigned flags, int sticky=false);
+  // unsigned flags, bool sticky=false);
 
   /*
   **	Gadget list management functions.
@@ -139,12 +139,12 @@ class GadgetClass : public LinkClass {
   virtual void Set_Focus();
   virtual void Clear_Focus();
   virtual bool Has_Focus();
-  virtual int Is_List_To_Redraw();
+  virtual bool Is_List_To_Redraw();
 
   /*
   **	General render function.
   */
-  virtual int Draw_Me(bool forced = false);
+  virtual bool Draw_Me(bool forced = false);
 
   /*
   **	This is the coordinates and dimensions of the gadget region. These are
@@ -170,7 +170,7 @@ class GadgetClass : public LinkClass {
   *mouse *	input indicates. This is the main method by which this button
   *performs a useful *	function.
   */
-  virtual int Action(unsigned flags, KeyNumType& key);
+  virtual bool Action(unsigned flags, KeyNumType& key);
 
   /*
   **	If there is a sticky button being processed, then this will point to it.
@@ -230,7 +230,7 @@ class GadgetClass : public LinkClass {
   unsigned Flags = 0;
 
  private:
-  virtual int Clicked_On(KeyNumType& key, unsigned flags, int x, int y);
+  virtual bool Clicked_On(KeyNumType& key, unsigned flags, int x, int y);
 };
 
 #endif  // CNC_RED_ALERT_TD_GADGET_H_

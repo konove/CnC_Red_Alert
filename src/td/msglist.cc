@@ -248,7 +248,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
           *s1 = 0;
           *s2 = 0;
 
-          same = !strcmp(txtlabel->Text, txt);
+          same = strcmp(txtlabel->Text, txt) == 0;
 
           *s1 = ':';
           *s2 = ':';

@@ -114,7 +114,7 @@ void LayerClass::Sort() {
  *                                                                                             *
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
-int LayerClass::Sorted_Add(const ObjectClass* const object) {
+bool LayerClass::Sorted_Add(const ObjectClass* const object) {
   if (ActiveCount >= Length()) {
     if ((IsAllocated || !VectorMax) && GrowthStep > 0) {
       if (!Resize(Length() + GrowthStep)) {

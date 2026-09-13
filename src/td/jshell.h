@@ -135,7 +135,7 @@ inline void Set_Bit(void* array, int bit, int value) {
   }
 }
 
-inline int Get_Bit(const void* array, int bit) {
+inline bool Get_Bit(const void* array, int bit) {
   /*
           "mov	ebx,eax"					\
           "shr	ebx,5"					\
@@ -143,9 +143,8 @@ inline int Get_Bit(const void* array, int bit) {
           "bt	[esi+ebx*4],eax"		\
           "setc	al"
   */
-  return !!(
-      static_cast<const uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] &
-      1 << (bit & 0x1F));
+  return (static_cast<const uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] &
+          1 << (bit & 0x1F)) != 0;
 }
 
 inline int First_True_Bit(const void* array) {

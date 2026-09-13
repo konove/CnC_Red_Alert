@@ -1326,14 +1326,14 @@ static void Create_Units() {
  *                                                                                             *
  * HISTORY: * 06/09/1995 BRR : Created. *
  *=============================================================================================*/
-int Scan_Place_Object(ObjectClass* obj, CELL cell) {
+bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
   int dist;             // for object placement
   FacingType rot;       // for object placement
   FacingType fcounter;  // for object placement
   int tryval;
   CELL newcell;
   TechnoClass* techno;
-  int skipit;
+  bool skipit;
 
   /*------------------------------------------------------------------------
   First try to unlimbo the object in the given cell.

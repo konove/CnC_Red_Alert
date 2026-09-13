@@ -3,7 +3,7 @@
 
 #include "td/defines.h"
 
-int Init_Null_Modem(SerialSettingsType* settings);
+bool Init_Null_Modem(SerialSettingsType* settings);
 void Shutdown_Modem();
 void Modem_Signoff();
 int Test_Null_Modem();

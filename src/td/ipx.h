@@ -172,7 +172,7 @@ error codes if there's an error, EXCEPT:
 /*
 .................................. ipx.cpp ..................................
 */
-int IPX_SPX_Installed();
+bool IPX_SPX_Installed();
 int IPX_Open_Socket(uint16_t socket);
 int IPX_Close_Socket(uint16_t socket);
 int IPX_Get_Connection_Number();

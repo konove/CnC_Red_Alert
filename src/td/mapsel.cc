@@ -487,7 +487,7 @@ void Map_Selection() {
   // persisting it between calls changes nothing.
   static unsigned char localpalette[768];
   int scenario;
-  int lastscenario;
+  bool lastscenario;
   int house = PlayerPtr->Class->House;
   int attackxcoord = 0;
 

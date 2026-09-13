@@ -491,13 +491,15 @@ void Read_MultiPlayer_Settings() {
   SerialDefaults.Baud =
       WWGetPrivateProfileInt("SerialDefaults", "Baud", -1, buffer);
   SerialDefaults.Init =
-      WWGetPrivateProfileInt("SerialDefaults", "Init", 0, buffer);
+      WWGetPrivateProfileInt("SerialDefaults", "Init", 0, buffer) != 0;
   SerialDefaults.Compression =
-      WWGetPrivateProfileInt("SerialDefaults", "Compression", 0, buffer);
+      WWGetPrivateProfileInt("SerialDefaults", "Compression", 0, buffer) != 0;
   SerialDefaults.ErrorCorrection =
-      WWGetPrivateProfileInt("SerialDefaults", "ErrorCorrection", 0, buffer);
-  SerialDefaults.HardwareFlowControl = WWGetPrivateProfileInt(
-      "SerialDefaults", "HardwareFlowControl", 1, buffer);
+      WWGetPrivateProfileInt("SerialDefaults", "ErrorCorrection", 0, buffer) !=
+      0;
+  SerialDefaults.HardwareFlowControl =
+      WWGetPrivateProfileInt("SerialDefaults", "HardwareFlowControl", 1,
+                             buffer) != 0;
   WWGetPrivateProfileString("SerialDefaults", "DialMethod", "T", buf, 2,
                             buffer);
 
@@ -645,7 +647,7 @@ void Read_MultiPlayer_Settings() {
     tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
       phone->Settings.Compression =
-          tech::ParseInteger<int>(tokenptr).value_or(0);
+          tech::ParseInteger<int>(tokenptr).value_or(0) != 0;
     } else {
       phone->Settings.Compression = false;
     }
@@ -653,7 +655,7 @@ void Read_MultiPlayer_Settings() {
     tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
       phone->Settings.ErrorCorrection =
-          tech::ParseInteger<int>(tokenptr).value_or(0);
+          tech::ParseInteger<int>(tokenptr).value_or(0) != 0;
     } else {
       phone->Settings.ErrorCorrection = false;
     }
@@ -661,7 +663,7 @@ void Read_MultiPlayer_Settings() {
     tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
       phone->Settings.HardwareFlowControl =
-          tech::ParseInteger<int>(tokenptr).value_or(0);
+          tech::ParseInteger<int>(tokenptr).value_or(0) != 0;
     } else {
       phone->Settings.HardwareFlowControl = true;
     }
@@ -814,8 +816,8 @@ void Write_MultiPlayer_Settings() {
                            SerialDefaults.CallWaitStringIndex, buffer);
   WWWritePrivateProfileInt("SerialDefaults", "InitStringIndex",
                            SerialDefaults.InitStringIndex, buffer);
-  WWWritePrivateProfileInt("SerialDefaults", "Init", SerialDefaults.Init,
-                           buffer);
+  WWWritePrivateProfileInt("SerialDefaults", "Init",
+                           SerialDefaults.Init ? 1 : 0, buffer);
   WWWritePrivateProfileString("SerialDefaults", "DialMethod",
                               DialMethodCheck[SerialDefaults.DialMethod],
                               buffer);
@@ -827,11 +829,11 @@ void Write_MultiPlayer_Settings() {
   WWWritePrivateProfileString("SerialDefaults", "ModemName",
                               SerialDefaults.ModemName, buffer);
   WWWritePrivateProfileInt("SerialDefaults", "Compression",
-                           SerialDefaults.Compression, buffer);
+                           SerialDefaults.Compression ? 1 : 0, buffer);
   WWWritePrivateProfileInt("SerialDefaults", "ErrorCorrection",
-                           SerialDefaults.ErrorCorrection, buffer);
+                           SerialDefaults.ErrorCorrection ? 1 : 0, buffer);
   WWWritePrivateProfileInt("SerialDefaults", "HardwareFlowControl",
-                           SerialDefaults.HardwareFlowControl, buffer);
+                           SerialDefaults.HardwareFlowControl ? 1 : 0, buffer);
 
   /*------------------------------------------------------------------------
   Clear all existing InitString entries.
@@ -860,14 +862,14 @@ void Write_MultiPlayer_Settings() {
     snprintf(buf, sizeof(buf), "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s",
              PhoneBook[i]->Name, PhoneBook[i]->Number,
              static_cast<unsigned int>(PhoneBook[i]->Settings.Port),
-            PhoneBook[i]->Settings.IRQ, PhoneBook[i]->Settings.Baud,
-            PhoneBook[i]->Settings.Compression,
-            PhoneBook[i]->Settings.ErrorCorrection,
-            PhoneBook[i]->Settings.HardwareFlowControl,
-            DialMethodCheck[PhoneBook[i]->Settings.DialMethod],
-            PhoneBook[i]->Settings.InitStringIndex,
-            PhoneBook[i]->Settings.CallWaitStringIndex,
-            PhoneBook[i]->Settings.CallWaitString);
+             PhoneBook[i]->Settings.IRQ, PhoneBook[i]->Settings.Baud,
+             PhoneBook[i]->Settings.Compression ? 1 : 0,
+             PhoneBook[i]->Settings.ErrorCorrection ? 1 : 0,
+             PhoneBook[i]->Settings.HardwareFlowControl ? 1 : 0,
+             DialMethodCheck[PhoneBook[i]->Settings.DialMethod],
+             PhoneBook[i]->Settings.InitStringIndex,
+             PhoneBook[i]->Settings.CallWaitStringIndex,
+             PhoneBook[i]->Settings.CallWaitString);
     sprintf(entrytext, "%03d", i);
     WWWritePrivateProfileString("PhoneBook", entrytext, buf, buffer);
   }

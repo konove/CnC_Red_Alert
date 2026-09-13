@@ -201,7 +201,7 @@ void OptionsClass::Set_Score_Volume(int volume) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::Set_Sound_Volume(int volume, int feedback) {
+void OptionsClass::Set_Sound_Volume(int volume, bool feedback) {
   volume = Bound(volume, 0, 255);
   Volume = static_cast<unsigned char>(volume);
   if (feedback) {
@@ -515,7 +515,8 @@ void OptionsClass::Load_Settings() {
       WWGetPrivateProfileInt("Options", "DeathAnnounce", 0, buffer) != 0;
   IsFreeScroll =
       WWGetPrivateProfileInt("Options", "FreeScrolling", 0, buffer) != 0;
-  SlowPalette = WWGetPrivateProfileInt("Options", "SlowPalette", 1, buffer);
+  SlowPalette =
+      WWGetPrivateProfileInt("Options", "SlowPalette", 1, buffer) != 0;
 
   char workbuf[128];
 

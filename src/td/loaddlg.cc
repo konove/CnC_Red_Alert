@@ -127,7 +127,7 @@ LoadOptionsClass::~LoadOptionsClass() {
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-int LoadOptionsClass::Process() {
+bool LoadOptionsClass::Process() {
   /*
   **	Dialog & button dimensions
   */

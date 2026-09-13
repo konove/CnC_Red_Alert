@@ -110,11 +110,11 @@ class NullModemClass : public ConnManClass {
   */
   int Init(int port, int irq, char* dev_name, int baud, char parity,
            int wordlength, int stopbits, int flowcontrol);
-  int Delete_Connection();
+  bool Delete_Connection();
   int Num_Connections() override;
   int Connection_ID(int /*index*/) override { return 0; }
   int Connection_Index(int /*id*/) override { return 0; }
-  int Init_Send_Queue();
+  bool Init_Send_Queue();
   void Shutdown();
 
   void Set_Timing(int32_t retrydelta, int32_t maxretries,

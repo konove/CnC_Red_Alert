@@ -738,7 +738,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   }
   [[nodiscard]] int Max_Pips() const override;
   void Dimensions(int& width, int& height) const override;
-  [[nodiscard]] virtual int Legal_Placement(CELL pos) const;
+  [[nodiscard]] virtual bool Legal_Placement(CELL pos) const;
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell, HousesType house) const override;

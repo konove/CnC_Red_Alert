@@ -70,8 +70,8 @@ class FacingClass {
   [[nodiscard]] DirType Current() const { return CurrentFacing; }
   [[nodiscard]] DirType Desired() const { return DesiredFacing; }
 
-  int Set_Desired(DirType facing);
-  int Set_Current(DirType facing);
+  bool Set_Desired(DirType facing);
+  bool Set_Current(DirType facing);
 
   void Set(DirType facing) {
     Set_Current(facing);
@@ -80,7 +80,7 @@ class FacingClass {
 
   [[nodiscard]] DirType Get() const { return CurrentFacing; }
 
-  [[nodiscard]] int Is_Rotating() const {
+  [[nodiscard]] bool Is_Rotating() const {
     return DesiredFacing != CurrentFacing;
   }
 
@@ -92,7 +92,7 @@ class FacingClass {
     return static_cast<signed char>(*(signed char*)&facing -
                                     *(signed char*)&CurrentFacing);
   }
-  int Rotation_Adjust(int rate);
+  bool Rotation_Adjust(int rate);
 
  private:
   DirType CurrentFacing;

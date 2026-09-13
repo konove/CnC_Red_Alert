@@ -161,7 +161,7 @@ char VersionText[16];
 */
 VQAConfig AnimControl;
 
-int PreserveVQAScreen;        // Used for screen mode transition control.
+bool PreserveVQAScreen;       // Used for screen mode transition control.
 bool BreakoutAllowed = true;  // "true" if aborting of movies is allowed.
 bool Brokeout;                // Was the movie broken out of?
 bool SlowPalette = true;      // Slow palette flag set?
@@ -468,10 +468,10 @@ CommProtocolType CommProtocol;
 **	These values are used for recording & playing back a game.
 */
 CCFileClass RecordFile("RECORD.BIN");
-int RecordGame = 0;    // 1 = record a game
+bool RecordGame = false;  // 1 = record a game
 int SuperRecord = 0;   // 1 = reopen record file with every write
-int PlaybackGame = 0;  // 1 = play back a game
-int AllowAttract = 0;  // 1 = allow attract mode
+bool PlaybackGame = false;  // 1 = play back a game
+bool AllowAttract = false;  // 1 = allow attract mode
 
 /***************************************************************************
 **	This is the null modem manager class.  Declaring this class doesn't
@@ -567,7 +567,7 @@ int MPlayerCredits;            // # credits everyone gets
 int MPlayerTiberium;           // 1 = tiberium enabled for this scenario
 int MPlayerGoodies;            // 1 = goodies enabled for this scenario
 int MPlayerGhosts;             // 1 = houses with no players will still play
-int MPlayerSolo = 0;           // 1 = allows a single-player net game
+bool MPlayerSolo = false;      // 1 = allows a single-player net game
 int MPlayerUnitCount = 10;     // # units for non-base multiplayer scenarios
 
 /*---------------------------------------------------------------------------
@@ -626,7 +626,7 @@ int MPlayerBlitz = 0;
 ** If this flag is set, we can move around the map, but we can't do anything.
 ** It means we've been defeated, but we're still allowed to watch the action.
 */
-int MPlayerObiWan = 0;
+bool MPlayerObiWan = false;
 
 /***************************************************************************
 ** These variables keep track of the multiplayer game scores.
@@ -903,7 +903,7 @@ GraphicViewPortClass SeenBuff(&VisiblePage, 0, 0, 640, 480);
 GraphicBufferClass ModeXBuff;
 GraphicViewPortClass HidPage(&HiddenPage, 0, 0, 640, 480);
 GraphicBufferClass SysMemPage(kDefaultScreenWidth, 200, nullptr);
-int SoundOn;
+bool SoundOn;
 CountDownTimerClass FrameTimer{0L};
 static CountDownTimerClass DebugTimer{0L};
 CountDownTimerClass CountDownTimer{0L};
@@ -958,14 +958,14 @@ int RequiredCD = -2;
 #else
 int RequiredCD = -1;
 #endif
-int MouseInstalled;
+bool MouseInstalled;
 
 /*
 ** Certain options must be enabled by both a command-line option, and an
 ** an entry in an INI file.  If this flag is 'true', those options have been
 ** enabled by the INI file.
 */
-int AreThingiesEnabled = false;
+bool AreThingiesEnabled = false;
 
 WWKeyboardClass Kbd;
 int ScreenWidth = 640;

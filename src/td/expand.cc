@@ -94,10 +94,10 @@ class EListClass : public ListClass {
       : ListClass(id, x, y, w, h, flags, up, down) {}
 
  protected:
-  void Draw_Entry(int index, int x, int y, int width, int selected) override;
+  void Draw_Entry(int index, int x, int y, int width, bool selected) override;
 };
 
-void EListClass::Draw_Entry(int index, int x, int y, int width, int selected) {
+void EListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
   if (TextFlags & TPF_6PT_GRAD) {
     TextPrintType flags = TextFlags;
 

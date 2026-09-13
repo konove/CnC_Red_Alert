@@ -76,7 +76,7 @@ bool Read_Private_Config_Struct(char* profile, NewConfigType* config) {
       WWGetPrivateProfileInt("Sound", "BitsPerSample", 0, profile));
   config->Channels = static_cast<unsigned>(
       WWGetPrivateProfileInt("Sound", "Channels", 0, profile));
-  config->Reverse = WWGetPrivateProfileInt("Sound", "Reverse", 0, profile);
+  config->Reverse = WWGetPrivateProfileInt("Sound", "Reverse", 0, profile) != 0;
   config->Speed = static_cast<unsigned>(
       WWGetPrivateProfileInt("Sound", "Speed", 0, profile));
   WWGetPrivateProfileString("Language", "Language", nullptr, config->Language,

@@ -75,7 +75,7 @@
 #include "td/gadget.h"
 
 ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
-                           unsigned flags, int sticky) noexcept
+                           unsigned flags, bool sticky) noexcept
     : GadgetClass(x, y, w, h, flags, sticky), ID(id) {}
 
 /***********************************************************************************************
@@ -98,7 +98,7 @@ ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-int ControlClass::Action(unsigned flags, KeyNumType& key) {
+bool ControlClass::Action(unsigned flags, KeyNumType& key) {
   /*
   **	If there is a peer link established, inform that gadget of this
   **	action call.
@@ -185,7 +185,7 @@ unsigned ControlClass::Get_ID() const { return ID; }
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int ControlClass::Draw_Me(bool forced) {
+bool ControlClass::Draw_Me(bool forced) {
   if (Peer) {
     Peer->Draw_Me();
   }

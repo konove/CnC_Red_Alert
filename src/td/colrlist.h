@@ -84,7 +84,7 @@ class ColorListClass : public ListClass {
   DynamicVectorClass<char> Colors;
 
  protected:
-  void Draw_Entry(int index, int x, int y, int width, int selected) override;
+  void Draw_Entry(int index, int x, int y, int width, bool selected) override;
 
   /*
   **	This tells how to draw the selected item.

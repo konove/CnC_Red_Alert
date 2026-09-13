@@ -144,10 +144,10 @@ class ObjectClass : public AbstractClass {
   ObjectClass(ObjectClass&&) = delete;
   ObjectClass& operator=(ObjectClass&&) = delete;
   [[nodiscard]] virtual RTTIType What_Am_I() const;
-  int operator<(const ObjectClass& object) const {
+  bool operator<(const ObjectClass& object) const {
     return Sort_Y() < object.Sort_Y();
   }
-  int operator>(const ObjectClass& object) const {
+  bool operator>(const ObjectClass& object) const {
     return Sort_Y() > object.Sort_Y();
   }
 

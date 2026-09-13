@@ -457,7 +457,7 @@ int IPXConnClass::Open_Socket(uint16_t socket) {
 
   if (Winsock.Get_Connected()) {
     SocketOpen = 1;
-    return true;
+    return 1;
   }
 
   SocketOpen = 0;
@@ -479,14 +479,14 @@ int IPXConnClass::Open_Socket(uint16_t socket) {
       .................. Still can't open: return error ..................
       */
       if (rc) {
-        return false;
+        return 0;
       }
     }
   }
 
   SocketOpen = 1;
 
-  return true;
+  return 1;
 }
 
 /***************************************************************************
@@ -592,7 +592,7 @@ int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
     Winsock.Write(buf, buflen);
 #endif  // VIRTUAL_SUBNET_SERVER
 
-    return true;
+    return 1;
   }
 
   if (immed) {
@@ -609,7 +609,7 @@ int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
     if (ConnectionNum != 0) {
       rc = IPX_Get_Local_Target(net, node, Socket, &send_address[0]);
       if (rc != 0) {
-        return false;
+        return 0;
       }
     } else {
       /*.....................................................................
@@ -656,7 +656,7 @@ int IPXConnClass::Broadcast(char* buf, int buflen) {
 #else   // VIRTUAL_SUBNET_SERVER
     Winsock.Write(buf, buflen);
 #endif  // VIRTUAL_SUBNET_SERVER
-    return true;
+    return 1;
   }
   return IPX_Broadcast_Packet95((unsigned char*)buf, buflen);
 }

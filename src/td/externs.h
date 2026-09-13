@@ -139,7 +139,7 @@ extern bool PlayerRestarts;
 extern StructType SabotagedType;
 extern bool TempleIoned;
 extern void* SpeechBuffer;
-extern int PreserveVQAScreen;
+extern bool PreserveVQAScreen;
 extern bool BreakoutAllowed;
 extern bool Brokeout;
 extern CELL Views[4];
@@ -237,10 +237,10 @@ extern GameType GameToPlay;
 extern CommProtocolType CommProtocol;
 
 extern CCFileClass RecordFile;
-extern int RecordGame;
+extern bool RecordGame;
 extern int SuperRecord;
-extern int PlaybackGame;
-extern int AllowAttract;
+extern bool PlaybackGame;
+extern bool AllowAttract;
 
 extern GetCDClass CDList;
 
@@ -281,7 +281,7 @@ extern int MPlayerCredits;
 extern int MPlayerTiberium;
 extern int MPlayerGoodies;
 extern int MPlayerGhosts;
-extern int MPlayerSolo;
+extern bool MPlayerSolo;
 extern int MPlayerUnitCount;
 extern int MPlayerCountMin[2];
 extern int MPlayerCountMax[2];
@@ -294,7 +294,7 @@ extern MessageListClass Messages;
 extern IPXAddressClass MessageAddress;
 extern char LastMessage[MAX_MESSAGE_LENGTH];
 extern int MPlayerBlitz;
-extern int MPlayerObiWan;
+extern bool MPlayerObiWan;
 extern MPlayerScoreType MPlayerScore[MAX_MULTI_NAMES];
 extern int MPlayerGamesPlayed;
 extern int MPlayerNumScores;
@@ -357,7 +357,7 @@ extern int NewMaxAheadFrame2;
 **	Constant externs (data is not modified during game play).
 */
 
-extern int SoundOn;
+extern bool SoundOn;
 // extern GraphicBufferClass	SeenPage;
 extern GraphicBufferClass VisiblePage;
 extern GraphicBufferClass HiddenPage;
@@ -380,8 +380,8 @@ extern SpecialDialogType SpecialDialog;
 extern char* DebugFname;  // for stoopid debugging purposes
 extern int DebugLine;     // for stoopid debugging purposes
 extern int RequiredCD;
-extern int MouseInstalled;
-extern int AreThingiesEnabled;
+extern bool MouseInstalled;
+extern bool AreThingiesEnabled;
 
 extern WWKeyboardClass Kbd;
 extern int In_Debugger;

@@ -66,16 +66,16 @@ class ControlClass : public GadgetClass {
  public:
   ControlClass(unsigned id, int x, int y, int w, int h,
                unsigned flags = LEFTPRESS | RIGHTPRESS,
-               int sticky = false) noexcept;
+               bool sticky = false) noexcept;
   //		static ControlClass * Create_One_Of(unsigned id, int x, int y,
-  // int w, int h, unsigned flags=LEFTPRESS|RIGHTPRESS, int sticky=false);
+  // int w, int h, unsigned flags=LEFTPRESS|RIGHTPRESS, bool sticky=false);
 
   virtual void Make_Peer(GadgetClass& gadget);
 
   /*
   **	Render support function.
   */
-  int Draw_Me(bool forced = false) override;
+  bool Draw_Me(bool forced = false) override;
 
   /*
   **	This is the ID number for this control gadget. This number is used to
@@ -86,7 +86,7 @@ class ControlClass : public GadgetClass {
   [[nodiscard]] unsigned Get_ID() const override;
 
  protected:
-  int Action(unsigned flags, KeyNumType& key) override;
+  bool Action(unsigned flags, KeyNumType& key) override;
 
   /*
   **	This points to the peer button to inform when something happens to this

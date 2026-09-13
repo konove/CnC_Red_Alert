@@ -237,7 +237,7 @@ void ListClass::Remove_Item(const char* text) {
       CurrentTopIndex--;
       CurrentTopIndex = std::max(CurrentTopIndex, 0);
       if (IsScrollActive) {
-        ScrollGadget.Step(1);
+        ScrollGadget.Step(true);
       }
     }
   }
@@ -255,7 +255,7 @@ void ListClass::Remove_Item(const char* text) {
  *                                                                         *
  * HISTORY:          01/05/1995 MML : Created.                             *
  *=========================================================================*/
-int ListClass::Action(unsigned flags, KeyNumType& key) {
+bool ListClass::Action(unsigned flags, KeyNumType& key) {
   if (flags & LEFTRELEASE) {
     key = KN_NONE;
     flags &= ~LEFTRELEASE;
@@ -304,7 +304,7 @@ int ListClass::Action(unsigned flags, KeyNumType& key) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-int ListClass::Draw_Me(bool forced) {
+bool ListClass::Draw_Me(bool forced) {
   // ControlClass::Draw_Me redraws the peer gadget. A list's peer is the drop
   // list that owns it, so going through ControlClass would have the list ask
   // its owner to redraw in the middle of its own draw. Events still reach the
@@ -363,7 +363,7 @@ int ListClass::Draw_Me(bool forced) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-void ListClass::Bump(int up) {
+void ListClass::Bump(bool up) {
   if (IsScrollActive && ScrollGadget.Step(up)) {
     CurrentTopIndex = ScrollGadget.Get_Value();
     Flag_To_Redraw();
@@ -384,7 +384,7 @@ void ListClass::Bump(int up) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-void ListClass::Step(int up) {
+void ListClass::Step(bool up) {
   if (IsScrollActive && ScrollGadget.Step(up)) {
     CurrentTopIndex = ScrollGadget.Get_Value();
     Flag_To_Redraw();
@@ -501,7 +501,7 @@ void ListClass::Peer_To_Peer(unsigned flags, KeyNumType& /*unused*/,
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int ListClass::Set_View_Index(int index) {
+bool ListClass::Set_View_Index(int index) {
   index = Bound(index, 0, static_cast<int>(List.Count()) - LineCount);
   if (index != CurrentTopIndex) {
     CurrentTopIndex = index;
@@ -529,7 +529,7 @@ int ListClass::Set_View_Index(int index) {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int ListClass::Add_Scroll_Bar() {
+bool ListClass::Add_Scroll_Bar() {
   if (!IsScrollActive) {
     IsScrollActive = true;
 
@@ -595,7 +595,7 @@ int ListClass::Add_Scroll_Bar() {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int ListClass::Remove_Scroll_Bar() {
+bool ListClass::Remove_Scroll_Bar() {
   if (IsScrollActive) {
     IsScrollActive = false;
     Width += ScrollGadget.Width;
@@ -646,7 +646,7 @@ void ListClass::Set_Tabs(const int* tabs) { Tabs = tabs; }
  *                                                                                             *
  * OUTPUT:  none * WARNINGS:   none * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-void ListClass::Draw_Entry(int index, int x, int y, int width, int selected) {
+void ListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
   if (TextFlags & TPF_6PT_GRAD) {
     TextPrintType flags = TextFlags;
 

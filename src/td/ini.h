@@ -9,6 +9,6 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
                        ScenarioVarType var = SCEN_VAR_NONE);
 void Write_Scenario_Ini(char* root);
 bool Read_Scenario_Ini(char* root, bool fresh = true);
-int Scan_Place_Object(ObjectClass* obj, CELL cell);
+bool Scan_Place_Object(ObjectClass* obj, CELL cell);
 
 #endif  // CNC_RED_ALERT_TD_INI_H_

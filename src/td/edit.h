@@ -65,11 +65,11 @@ class EditClass : public ControlClass {
   EditClass(EditClass&&) = delete;
   EditClass& operator=(EditClass&&) = delete;
 
-  int Draw_Me(bool forced) override;
+  bool Draw_Me(bool forced) override;
   virtual void Set_Text(char* text, int max_len);
   void Set_Color(int color) { Color = color; }
 
-  void Set_Read_Only(int rdonly) { IsReadOnly = rdonly; }
+  void Set_Read_Only(bool rdonly) { IsReadOnly = rdonly; }
 
  protected:
   /*
@@ -101,13 +101,13 @@ class EditClass : public ControlClass {
   */
   int Color{CC_GREEN};
 
-  int Action(unsigned flags, KeyNumType& key) override;
+  bool Action(unsigned flags, KeyNumType& key) override;
   virtual void Draw_Background();
   virtual void Draw_Text(const char* text);
   virtual bool Handle_Key(KeyASCIIType ascii);
 
  private:
-  int IsReadOnly;
+  bool IsReadOnly = false;
 };
 
 #endif  // CNC_RED_ALERT_TD_EDIT_H_

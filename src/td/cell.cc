@@ -1474,7 +1474,7 @@ int CellClass::Reduce_Tiberium(int levels) {
  * HISTORY: * 03/15/1995 BWG : Created. * 03/19/1995 JLB : Updates cell
  *information if wall was destroyed.                          *
  *=============================================================================================*/
-int CellClass::Reduce_Wall(int damage) {
+bool CellClass::Reduce_Wall(int damage) {
   Validate();
   if (Overlay != OVERLAY_NONE) {
     bool destroyed = false;

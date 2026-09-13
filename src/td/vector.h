@@ -108,8 +108,8 @@ class VectorClass {
   void Copy_From(const VectorClass& vector);
 
  public:
-  virtual int operator==(const VectorClass& /*vector*/) const;
-  virtual int Resize(base::ssize newsize, T* array = nullptr);
+  virtual bool operator==(const VectorClass& /*vector*/) const;
+  virtual bool Resize(base::ssize newsize, T* array = nullptr);
   virtual void Clear();
   [[nodiscard]] base::ssize Length() const { return VectorMax; }
   virtual int ID(const T* ptr);  // Pointer based identification.
@@ -152,7 +152,7 @@ class DynamicVectorClass : public VectorClass<T> {
   explicit DynamicVectorClass(base::ssize size = 0, T* array = nullptr);
 
   // Change maximum size of vector.
-  int Resize(base::ssize newsize, T* array = nullptr) override;
+  bool Resize(base::ssize newsize, T* array = nullptr) override;
 
   // Resets and frees the vector array.
   void Clear() override {
@@ -164,14 +164,14 @@ class DynamicVectorClass : public VectorClass<T> {
   [[nodiscard]] base::ssize Count() const { return ActiveCount; }
 
   // Add object to vector (growing as necessary).
-  int Add(const T& object);
-  int Add_Head(const T& object);
+  bool Add(const T& object);
+  bool Add_Head(const T& object);
 
   // Delete object just like this from vector.
-  int Delete(const T& object);
+  bool Delete(const T& object);
 
   // Delete object at this vector index.
-  int Delete(int index);
+  bool Delete(int index);
 
   // Deletes all objects in the vector.
   void Delete_All() { ActiveCount = 0; }
@@ -206,7 +206,7 @@ class DynamicVectorClass : public VectorClass<T> {
 // would be ambiguous, so that overload is specialized away. The
 // specialization must precede the instantiation declarations below.
 template <>
-inline int DynamicVectorClass<int>::Delete(const int& /*object*/) {
+inline bool DynamicVectorClass<int>::Delete(const int& /*object*/) {
   return false;
 }
 

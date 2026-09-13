@@ -80,7 +80,7 @@ class ThemeClass {
   ThemeType What_Is_Playing() { return Score; }
   void Stop();
   void Fade_Out() { Queue_Song(THEME_NONE); }
-  int Still_Playing();
+  bool Still_Playing();
   ThemeType Next_Song(ThemeType theme);
   [[nodiscard]] static bool Is_Allowed(ThemeType index);
   static void Scan();

@@ -212,11 +212,11 @@ int NonSequencedConnClass::Send_Packet(void* buf, int buflen, int ack_req) {
       // *)PacketBuf)->PacketID );
       NumSendNoAck++;
     }
-    return true;
+    return 1;
   }
   // Smart_Printf( "Packet not Queued ID %d \n", ((CommHeaderType
   // *)PacketBuf)->PacketID );
-  return false;
+  return 0;
 }
 
 /***************************************************************************
@@ -254,13 +254,13 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
   --------------------------- Check the magic # ----------------------------
   */
   if (std::cmp_less(buflen, sizeof(CommHeaderType))) {
-    return false;
+    return 0;
   }
   auto packet_storage = port::ReadUnaligned<CommHeaderType>(buf);
   packet = &packet_storage;
   if (packet->MagicNumber != MagicNum) {
     // Smart_Printf( "Bad Magic Number\n" );
-    return false;
+    return 0;
   }
 
   /*------------------------------------------------------------------------
@@ -295,7 +295,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
     //		}
     //}
 
-    return true;
+    return 1;
   }
 
   /*------------------------------------------------------------------------
@@ -308,7 +308,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
     if (Queue->Max_Receive() - Queue->Num_Receive() <= 1) {
       // Smart_Printf( "Only one slot left don't tie up with DATA NOACK packet
       // %d \n", packet->PacketID );
-      return false;
+      return 0;
     }
 
     /*---------------------------------------------------------------------
@@ -316,13 +316,13 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
     ---------------------------------------------------------------------*/
     if (!Queue->Queue_Receive(buf, buflen)) {
       // Smart_Printf( "Can't Queue the packet %d \n", packet->PacketID );
-      return false;
+      return 0;
     }
 
     // Smart_Printf( "Queued DATA NOACK for %d \n", packet->PacketID );
     NumRecNoAck++;
 
-    return true;
+    return 1;
   }
 
   /*------------------------------------------------------------------------
@@ -434,11 +434,11 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
     // Smart_Printf( "Sending ACK for %d \n", packet->PacketID );
     Send((char*)&ackpacket, sizeof(CommHeaderType));
 
-    return true;
+    return 1;
   }
   // Smart_Printf( "invalid packet type %d \n", packet->Code );
 
-  return false;
+  return 0;
 }
 
 /***************************************************************************
@@ -495,7 +495,7 @@ int NonSequencedConnClass::Get_Packet(void* buf, int* buflen) {
                  base::ToSize(packetlen));
         }
         *buflen = packetlen;
-        return true;
+        return 1;
       }
       /*..................................................................
       If this is a DATA_NOACK packet, who cares what the ID is?
@@ -509,12 +509,12 @@ int NonSequencedConnClass::Get_Packet(void* buf, int* buflen) {
                  base::ToSize(packetlen));
         }
         *buflen = packetlen;
-        return true;
+        return 1;
       }
     }
   }
 
-  return false;
+  return 0;
 }
 
 /***************************************************************************
@@ -636,7 +636,7 @@ int NonSequencedConnClass::Service_Send_Queue() {
   /*------------------------------------------------------------------------
   If the connection is going bad, return an error
   ------------------------------------------------------------------------*/
-  return bad_conn == 0;
+  return bad_conn == 0 ? 1 : 0;
 }
 
 /***************************************************************************
@@ -687,5 +687,5 @@ int NonSequencedConnClass::Service_Receive_Queue() {
     }
   }
 
-  return true;
+  return 1;
 }

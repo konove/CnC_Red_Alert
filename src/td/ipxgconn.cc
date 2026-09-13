@@ -212,12 +212,12 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
   --------------------------- Check the magic # ----------------------------
   */
   if (std::cmp_less(buflen, sizeof(GlobalHeaderType))) {
-    return false;
+    return 0;
   }
   auto packet_storage = port::ReadUnaligned<GlobalHeaderType>(buf);
   packet = &packet_storage;
   if (packet->Header.MagicNumber != MagicNum) {
-    return false;
+    return 0;
   }
 
   /*------------------------------------------------------------------------
@@ -274,7 +274,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
 
   } /* end of switch */
 
-  return true;
+  return 1;
 }
 
 /***************************************************************************
@@ -310,7 +310,7 @@ int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
   ------------------------ Return if nothing to do -------------------------
   */
   if (Queue->Num_Receive() == 0) {
-    return false;
+    return 0;
   }
 
   /*
@@ -340,10 +340,10 @@ int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
     *address = packet->Address;
     *product_id = packet->ProductID;
 
-    return true;
+    return 1;
   }
 
-  return false;
+  return 0;
 }
 
 /***************************************************************************

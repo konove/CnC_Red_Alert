@@ -84,7 +84,7 @@
  * HISTORY:                                                                *
  *   12/14/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPX_SPX_Installed() {
+bool IPX_SPX_Installed() {
 #ifndef NOT_FOR_WIN95
 
   return IPX_Initialise();

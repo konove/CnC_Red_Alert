@@ -1306,9 +1306,9 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
   */
   int xx = Coord_X(coord) - Cell_To_Lepton(MapCellX);
   int yy = Coord_Y(coord) - Cell_To_Lepton(MapCellY);
-  bool shifted =
-      Confine_Rect(&xx, &yy, TacLeptonWidth, TacLeptonHeight,
-                   Cell_To_Lepton(MapCellWidth), Cell_To_Lepton(MapCellHeight));
+  bool shifted = Confine_Rect(&xx, &yy, TacLeptonWidth, TacLeptonHeight,
+                              Cell_To_Lepton(MapCellWidth),
+                              Cell_To_Lepton(MapCellHeight)) != 0;
   if (xx < 0) {
     xx = 0;
     shifted = true;
@@ -2758,7 +2758,7 @@ void DisplayClass::Refresh_Band() {
  *                                                                                             *
  * HISTORY: * 02/17/1995 JLB : Created. *
  *=============================================================================================*/
-int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
+bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
   int x;
   int y;  // Sub cell pixel coordinates.
   bool shadow;

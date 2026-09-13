@@ -201,7 +201,7 @@ void Check_From_WChat(char* wchat_name) {
     PlanetWestwoodIsHost = strchr(key_string, '1') != nullptr;
 
     UseVirtualSubnetServer =
-        WWGetPrivateProfileInt("Internet", "UseVSS", 0, ini_file);
+        WWGetPrivateProfileInt("Internet", "UseVSS", 0, ini_file) != 0;
 
     Special.IsFromWChat = true;
   }

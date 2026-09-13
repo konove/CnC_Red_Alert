@@ -419,7 +419,7 @@ void Main_Game(int argc, char* argv[]) {
     if (PlaybackGame) {
       Show_Mouse();
       GameToPlay = GAME_NORMAL;
-      PlaybackGame = 0;
+      PlaybackGame = false;
     }
 
     /*
@@ -529,14 +529,14 @@ void Keyboard_Process(KeyNumType& input) {
 
   if constexpr (config::kVirginCheatKeysEnabled) {
     if (Debug_Playtest && input == (KN_W | KN_ALT_BIT)) {
-      PlayerPtr->Blockage = false;
+      PlayerPtr->Blockage = 0;
       PlayerPtr->Flag_To_Win();
     }
   }
 
   // #ifdef CHEAT_KEYS
   if (/*Debug_Playtest && */ input == (KN_W | KN_ALT_BIT)) {
-    PlayerPtr->Blockage = false;
+    PlayerPtr->Blockage = 0;
     PlayerPtr->Flag_To_Win();
   }
 
@@ -1982,11 +1982,11 @@ int MixFileVqaIo::Open(const char* filename) {
 }
 
 int MixFileVqaIo::Read(void* buffer, int64_t bytes) {
-  return file_->Read(buffer, static_cast<int32_t>(bytes)) != bytes;
+  return file_->Read(buffer, static_cast<int32_t>(bytes)) != bytes ? 1 : 0;
 }
 
 int MixFileVqaIo::Seek(int64_t offset, int origin) {
-  return file_->Seek(static_cast<int32_t>(offset), origin) == -1;
+  return file_->Seek(static_cast<int32_t>(offset), origin) == -1 ? 1 : 0;
 }
 
 void MixFileVqaIo::Close() {
@@ -2131,14 +2131,14 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     // Theme.Stop();
     // Theme.AI();
     Theme.Queue_Song(theme);
-    if (PreserveVQAScreen == 0) {
+    if (!PreserveVQAScreen) {
       Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
       VisiblePage.Clear();
       memset(BlackPalette, 0x01, 768);
       Set_Palette(BlackPalette);
       memset(BlackPalette, 0x00, 768);
     }
-    PreserveVQAScreen = 0;
+    PreserveVQAScreen = false;
     Keyboard::Clear();
 
     VqaPlayer player;
@@ -2769,7 +2769,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
   if ((BreakoutAllowed || Debug_Flag) && key == KN_ESC) {
     Keyboard::Clear();
     Brokeout = true;
-    return true;
+    return 1;
   }
 
   if (!GameInFocus) {
@@ -2782,7 +2782,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
 
   Video_End_Frame();
 
-  return false;
+  return 0;
 }
 
 int32_t VQ_Event_Handler(uint32_t event, void* /*buffer*/, int32_t /*nbytes*/) {

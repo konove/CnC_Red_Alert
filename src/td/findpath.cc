@@ -294,7 +294,7 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
   FacingType* list = &path->Command[idx - 1];  // point to the last command
   int checkx;
   int checky;
-  int last_was_line = false;
+  bool last_was_line = false;
 
   /*
   ** loop backward through the list searching for a point that is
@@ -992,12 +992,12 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
   int cost = 0;       // Working cost value.
   int startx;
   int starty;
-  int online = true;
+  bool online = true;
   int targetx;
   int targety;
   int oldval = 0;
   int cellcount = 0;
-  int forceout = false;
+  bool forceout = false;
   auto firstdir = static_cast<FacingType>(-1);
   CELL firstcell = -1;
   startx = Cell_X(start);

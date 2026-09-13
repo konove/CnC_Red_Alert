@@ -80,23 +80,23 @@ class ListClass : public ControlClass {
   // int h, TextPrintType flags, void const * up, void const * down);
   virtual int Add_Item(const char* text);
   virtual int Add_Item(int text);
-  virtual int Add_Scroll_Bar();
-  virtual void Bump(int up);
+  virtual bool Add_Scroll_Bar();
+  virtual void Bump(bool up);
   virtual int Count() { return static_cast<int>(List.Count()); }
   virtual int Current_Index();
   virtual const char* Current_Item();
-  int Draw_Me(bool forced) override;
+  bool Draw_Me(bool forced) override;
   [[nodiscard]] virtual const char* Get_Item(int index) const;
   virtual int Step_Selected_Index(int step);
 
   void Peer_To_Peer(unsigned flags, KeyNumType& key,
                     ControlClass& whom) override;
   virtual void Remove_Item(const char* text);
-  virtual int Remove_Scroll_Bar() final;
+  virtual bool Remove_Scroll_Bar() final;
   virtual void Set_Selected_Index(int index);
   virtual void Set_Tabs(const int* tabs);
-  virtual int Set_View_Index(int index);
-  virtual void Step(int up);
+  virtual bool Set_View_Index(int index);
+  virtual void Step(bool up);
 
   /*
   ** These overloaded list routines handle adding/removing the scroll bar
@@ -108,8 +108,8 @@ class ListClass : public ControlClass {
   GadgetClass* Remove() override;
 
  protected:
-  int Action(unsigned flags, KeyNumType& key) override;
-  virtual void Draw_Entry(int index, int x, int y, int width, int selected);
+  bool Action(unsigned flags, KeyNumType& key) override;
+  virtual void Draw_Entry(int index, int x, int y, int width, bool selected);
 
   /*
   **	This controls what the text looks like. It uses the basic TPF_ flags

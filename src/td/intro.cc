@@ -114,7 +114,7 @@ void Choose_Side() {
   const void* speechn;
   const void* speech = nullptr;
   int statichandle;
-  int speechplaying = 0;
+  bool speechplaying = false;
   int oldfontxspacing = FontXSpacing;
   int setpalette = 0;
   int gdi_start_palette;
@@ -127,7 +127,7 @@ void Choose_Side() {
       new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
   int frame = 0;
   int endframe = 255;
-  int lettersdone = 0;
+  bool lettersdone = false;
 
   Hide_Mouse();
   /* Change to the six-point font for Text_Print */
@@ -149,7 +149,7 @@ void Choose_Side() {
   if (Special.IsFromInstall) {
     {
       VisiblePage.Clear();
-      PreserveVQAScreen = 1;
+      PreserveVQAScreen = true;
       Play_Movie("INTRO2", THEME_NONE, false);
     }
     BreakoutAllowed = true;
@@ -230,7 +230,7 @@ void Choose_Side() {
       lettersdone = true;
       for (auto& ScoreObj : ScoreObjs) {
         if (ScoreObj) {
-          lettersdone = 0;
+          lettersdone = false;
         }
       }
       if (lettersdone) {
@@ -328,7 +328,7 @@ void Choose_Side() {
     Set_Palette(BlackPalette);
     memset(BlackPalette, 0x00, 768);
   } else {
-    PreserveVQAScreen = 1;
+    PreserveVQAScreen = true;
   }
   Stop_Sample(statichandle);
   Free(staticaud);

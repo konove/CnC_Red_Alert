@@ -277,7 +277,7 @@ void DriveClass::Overrun_Square(CELL cell, bool threaten) {
 
     } else {
       ObjectClass* object = cellptr->Cell_Occupier();
-      int crushed = false;
+      bool crushed = false;
       while (object) {
         if (object->Class_Of().IsCrushable && !House->Is_Ally(object) &&
             Distance(object->Center_Coord()) < 0x80) {

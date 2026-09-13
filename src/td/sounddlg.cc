@@ -79,7 +79,7 @@ class MusicListClass : public ListClass {
   MusicListClass& operator=(MusicListClass&&) = delete;
 
  protected:
-  void Draw_Entry(int index, int x, int y, int width, int selected) override;
+  void Draw_Entry(int index, int x, int y, int width, bool selected) override;
 };
 
 int SoundControlsClass::Init() {
@@ -469,7 +469,7 @@ void SoundControlsClass::Process() {
 }
 
 void MusicListClass::Draw_Entry(int index, int x, int y, int width,
-                                int selected) {
+                                bool selected) {
   if (TextFlags & TPF_6PT_GRAD) {
     TextPrintType flags = TextFlags;
 

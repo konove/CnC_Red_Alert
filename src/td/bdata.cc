@@ -3935,7 +3935,7 @@ void BuildingTypeClass::Init_Anim(BStateType state, int start, int count,
  *   06/07/1994 JLB : Handles concrete special check. * 06/21/1994 JLB :
  *Converted to building type class member function.                        *
  *=============================================================================================*/
-int BuildingTypeClass::Legal_Placement(CELL pos) const {
+bool BuildingTypeClass::Legal_Placement(CELL pos) const {
   const int16_t* offset;  // Pointer to cell offset list.
 
   if (pos == -1) {

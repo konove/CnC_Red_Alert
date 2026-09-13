@@ -328,7 +328,7 @@ bool IPXAddressClass::Is_Broadcast() {
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXAddressClass::operator==(IPXAddressClass& addr) {
+bool IPXAddressClass::operator==(IPXAddressClass& addr) {
   /*------------------------------------------------------------------------
   If either Network Number is all 0's (which can happen if the system is
   not running NETX), compare only the Node Addresses.
@@ -369,7 +369,7 @@ int IPXAddressClass::operator==(IPXAddressClass& addr) {
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXAddressClass::operator!=(IPXAddressClass& addr) {
+bool IPXAddressClass::operator!=(IPXAddressClass& addr) {
   /*------------------------------------------------------------------------
   If either Network Number is all 0's (which can happen if the system is
   not running NETX), compare only the Node Addresses.
@@ -405,7 +405,7 @@ int IPXAddressClass::operator!=(IPXAddressClass& addr) {
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXAddressClass::operator>(IPXAddressClass& addr) {
+bool IPXAddressClass::operator>(IPXAddressClass& addr) {
   return memcmp(this, &addr, 10) > 0;
 
 } /* end of operator != */
@@ -428,7 +428,7 @@ int IPXAddressClass::operator>(IPXAddressClass& addr) {
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXAddressClass::operator<(IPXAddressClass& addr) {
+bool IPXAddressClass::operator<(IPXAddressClass& addr) {
   return memcmp(this, &addr, 10) < 0;
 
 } /* end of operator != */
@@ -451,7 +451,7 @@ int IPXAddressClass::operator<(IPXAddressClass& addr) {
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXAddressClass::operator>=(IPXAddressClass& addr) {
+bool IPXAddressClass::operator>=(IPXAddressClass& addr) {
   return memcmp(this, &addr, 10) >= 0;
 
 } /* end of operator != */
@@ -474,7 +474,7 @@ int IPXAddressClass::operator>=(IPXAddressClass& addr) {
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXAddressClass::operator<=(IPXAddressClass& addr) {
+bool IPXAddressClass::operator<=(IPXAddressClass& addr) {
   return memcmp(this, &addr, 10) <= 0;
 
 } /* end of operator != */

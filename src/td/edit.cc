@@ -122,7 +122,7 @@ EditClass::EditClass(int id, char* text, int max_len, TextPrintType flags,
       }
     }
   }
-  IsReadOnly = 0;
+  IsReadOnly = false;
 }
 
 /***********************************************************************************************
@@ -178,7 +178,7 @@ void EditClass::Set_Text(char* text, int max_len) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-int EditClass::Draw_Me(bool forced) {
+bool EditClass::Draw_Me(bool forced) {
   if (ControlClass::Draw_Me(forced)) {
     /*
     **	Hide the mouse.
@@ -227,7 +227,7 @@ int EditClass::Draw_Me(bool forced) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-int EditClass::Action(unsigned flags, KeyNumType& key) {
+bool EditClass::Action(unsigned flags, KeyNumType& key) {
   /*
   ** If this is a read-only edit box, it's a display-only device
   */

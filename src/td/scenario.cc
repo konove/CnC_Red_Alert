@@ -673,7 +673,7 @@ void Do_Lose() {
  * HISTORY: * 08/24/1995 JLB : Created. *
  *=============================================================================================*/
 void Do_Restart() {
-  bool hidden = Get_Mouse_State();
+  bool hidden = Get_Mouse_State() != 0;
 
   if (hidden) {
     Show_Mouse();
@@ -747,7 +747,7 @@ bool Restate_Mission(const char* name, int right_btn, int left_btn) {
       port::SafeCopy(_buff, BriefingText);
       // port::SafeCopy(_ShapeBuffer, BriefingText);
 
-      bool hidden = Get_Mouse_State();
+      bool hidden = Get_Mouse_State() != 0;
       if (hidden) {
         Show_Mouse();
       }

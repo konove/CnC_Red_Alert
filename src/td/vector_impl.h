@@ -144,7 +144,7 @@ VectorClass<T>& VectorClass<T>::operator=(const VectorClass<T>& vector) {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int VectorClass<T>::operator==(const VectorClass<T>& vector) const {
+bool VectorClass<T>::operator==(const VectorClass<T>& vector) const {
   if (VectorMax == vector.Length()) {
     for (base::ssize index = 0; index < VectorMax; index++) {
       if (Vector[index] != vector[index]) {
@@ -256,7 +256,7 @@ void VectorClass<T>::Clear() {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int VectorClass<T>::Resize(base::ssize newsize, T* array) {
+bool VectorClass<T>::Resize(base::ssize newsize, T* array) {
   if (newsize) {
     /*
     **	Allocate a new vector of the size specified. The default constructor
@@ -305,7 +305,7 @@ int VectorClass<T>::Resize(base::ssize newsize, T* array) {
     */
     Vector = newptr;
     VectorMax = newsize;
-    IsAllocated = Vector && !array;
+    IsAllocated = Vector != nullptr && array == nullptr;
 
   } else {
     /*
@@ -363,7 +363,7 @@ DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, T* array)
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int DynamicVectorClass<T>::Resize(base::ssize newsize, T* array) {
+bool DynamicVectorClass<T>::Resize(base::ssize newsize, T* array) {
   if (VectorClass<T>::Resize(newsize, array)) {
     if (this->Length() < ActiveCount) {
       ActiveCount = this->Length();
@@ -419,7 +419,7 @@ int DynamicVectorClass<T>::ID(const T& ptr) {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int DynamicVectorClass<T>::Add(const T& object) {
+bool DynamicVectorClass<T>::Add(const T& object) {
   if (ActiveCount >= this->Length()) {
     if ((this->IsAllocated || !this->VectorMax) && GrowthStep > 0) {
       if (!Resize(this->Length() + GrowthStep)) {
@@ -451,7 +451,7 @@ int DynamicVectorClass<T>::Add(const T& object) {
 }
 
 template <class T>
-int DynamicVectorClass<T>::Add_Head(const T& object) {
+bool DynamicVectorClass<T>::Add_Head(const T& object) {
   if (ActiveCount >= this->Length()) {
     if ((this->IsAllocated || !this->VectorMax) && GrowthStep > 0) {
       if (!Resize(this->Length() + GrowthStep)) {
@@ -510,7 +510,7 @@ int DynamicVectorClass<T>::Add_Head(const T& object) {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int DynamicVectorClass<T>::Delete(const T& object) {
+bool DynamicVectorClass<T>::Delete(const T& object) {
   int index = ID(object);
   if (index != -1) {
     return Delete(index);
@@ -540,7 +540,7 @@ int DynamicVectorClass<T>::Delete(const T& object) {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int DynamicVectorClass<T>::Delete(int index) {
+bool DynamicVectorClass<T>::Delete(int index) {
   if (std::cmp_less(index, ActiveCount)) {
     ActiveCount--;
 

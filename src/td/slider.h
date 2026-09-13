@@ -55,7 +55,7 @@
  ** int y -- y position of gadget
  ** int w -- width of gadget
  ** int h -- height of gadget
- ** int belong_to_list -- does this slider go with a listclass? *
+ ** bool belong_to_list -- does this slider go with a listclass? *
  *                                                                         *
  * OUTPUT:     none.
  ** WARNINGS:
@@ -64,21 +64,21 @@
 class SliderClass final : public GaugeClass {
  public:
   SliderClass(unsigned id, int x, int y, int w, int h,
-              int belong_to_list = false);
+              bool belong_to_list = false);
   ~SliderClass() override;
   SliderClass(const SliderClass&) = delete;
   SliderClass& operator=(const SliderClass&) = delete;
   SliderClass(SliderClass&&) = delete;
   SliderClass& operator=(SliderClass&&) = delete;
   //		static SliderClass * Create_One_Of(unsigned id, int x, int y,
-  // int w, int h, int belong_to_list=false);
+  // int w, int h, bool belong_to_list=false);
 
   void Set_Thumb_Size(int value);
-  int Set_Maximum(int value) override;
-  int Set_Value(int /*value*/) override;
-  int Bump(int up);
-  int Step(int up);
-  int Draw_Me(bool forced) override;
+  bool Set_Maximum(int value) override;
+  bool Set_Value(int /*value*/) override;
+  bool Bump(bool up);
+  bool Step(bool up);
+  bool Draw_Me(bool forced) override;
   void Peer_To_Peer(unsigned flags, KeyNumType& key,
                     ControlClass& whom) override;
 
@@ -111,7 +111,7 @@ class SliderClass final : public GaugeClass {
   int ThumbSize = 0;
   int ThumbStart = 0;  // x or y position for the thumb
 
-  int Action(unsigned flags, KeyNumType& key) override;
+  bool Action(unsigned flags, KeyNumType& key) override;
   void Draw_Thumb() override;
 
  private:

@@ -84,11 +84,11 @@ class FixedHeapClass {
     return index >= 0 && index < TotalCount && FreeFlag[base::ToSize(index)];
   }
 
-  virtual int Set_Heap(int count, void* buffer = nullptr);
+  virtual bool Set_Heap(int count, void* buffer = nullptr);
   virtual void* Allocate();
   virtual void Clear();
-  virtual int Free(void* pointer);
-  virtual int Free_All();
+  virtual bool Free(void* pointer);
+  virtual bool Free_All();
 
  protected:
   void* operator[](int index) {
@@ -151,11 +151,11 @@ class FixedIHeapClass : public FixedHeapClass {
   FixedIHeapClass(FixedIHeapClass&&) = delete;
   FixedIHeapClass& operator=(FixedIHeapClass&&) = delete;
 
-  int Set_Heap(int count, void* buffer = nullptr) override;
+  bool Set_Heap(int count, void* buffer = nullptr) override;
   void* Allocate() override;
   void Clear() override;
-  int Free(void* pointer) override;
-  int Free_All() override;
+  bool Free(void* pointer) override;
+  bool Free_All() override;
 
   virtual void* Active_Ptr(int index) { return ActivePointers[index]; }
 
@@ -187,11 +187,11 @@ class TFixedIHeapClass : public FixedIHeapClass {
 
   virtual int ID(const T* pointer) { return FixedIHeapClass::ID(pointer); }
   virtual T* Alloc() { return static_cast<T*>(FixedIHeapClass::Allocate()); }
-  virtual int Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
-  int Free(void* pointer) override { return FixedIHeapClass::Free(pointer); }
-  int Save(ArchiveWriter& /*file*/)
+  virtual bool Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
+  bool Free(void* pointer) override { return FixedIHeapClass::Free(pointer); }
+  bool Save(ArchiveWriter& /*file*/)
     requires Serializable<T>;
-  int Load(ArchiveReader& /*file*/)
+  bool Load(ArchiveReader& /*file*/)
     requires Serializable<T>;
 
   virtual T* Ptr(int index) { return static_cast<T*>(ActivePointers[index]); }
@@ -210,7 +210,7 @@ class TFixedIHeapClass : public FixedIHeapClass {
  * HISTORY: * 03/15/1995 BRR : Created. *
  *=============================================================================================*/
 template <class T>
-int TFixedIHeapClass<T>::Save(ArchiveWriter& file)
+bool TFixedIHeapClass<T>::Save(ArchiveWriter& file)
   requires Serializable<T>
 {
   int i;    // loop counter
@@ -254,7 +254,7 @@ int TFixedIHeapClass<T>::Save(ArchiveWriter& file)
  * HISTORY: * 03/15/1995 BRR : Created. *
  *=============================================================================================*/
 template <class T>
-int TFixedIHeapClass<T>::Load(ArchiveReader& file)
+bool TFixedIHeapClass<T>::Load(ArchiveReader& file)
   requires Serializable<T>
 {
   int i;    // loop counter

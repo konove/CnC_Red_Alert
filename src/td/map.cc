@@ -1296,7 +1296,7 @@ bool MapClass::Place_Random_Crate() {
  * HISTORY:                                                                *
  *   07/08/1995 BRR : Created.                                             *
  *=========================================================================*/
-int MapClass::Validate() {
+bool MapClass::Validate() {
   CELL cell;
   TemplateType ttype;
   unsigned char ticon;

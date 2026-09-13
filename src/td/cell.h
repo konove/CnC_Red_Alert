@@ -196,7 +196,7 @@ class CellClass {
   // Resets the cell to its default initial state.
   void Reset();
 
-  int operator==(const CellClass& cell) const { return &cell == this; }
+  bool operator==(const CellClass& cell) const { return &cell == this; }
 
   /*
   **	Query functions.
@@ -204,7 +204,7 @@ class CellClass {
   [[nodiscard]] ObjectClass* Cell_Occupier() const;
   static int Spot_Index(COORDINATE coord);
   [[nodiscard]] bool Is_Spot_Free(int spot_index) const {
-    return !(Flag.Composite & 1 << spot_index);
+    return (Flag.Composite & 1 << spot_index) == 0;
   }
   [[nodiscard]] COORDINATE Closest_Free_Spot(COORDINATE coord,
                                              bool any = false) const;
@@ -268,7 +268,7 @@ class CellClass {
   void Concrete_Calc();
   void Recalc_Attributes();
   int Reduce_Tiberium(int levels);
-  int Reduce_Wall(int damage);
+  bool Reduce_Wall(int damage);
   void Incoming(COORDINATE threat = 0, bool forced = false);
   void Adjust_Threat(HousesType house, int threat_value);
 

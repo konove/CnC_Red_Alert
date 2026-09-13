@@ -160,10 +160,10 @@ static SerialSettingsType* DialSettings;
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-int Init_Null_Modem(SerialSettingsType* settings) {
+bool Init_Null_Modem(SerialSettingsType* settings) {
   return NullModem.Init(settings->Port, settings->IRQ, settings->ModemName,
                         settings->Baud, 0, 8, 1,
-                        settings->HardwareFlowControl) != 0;
+                        settings->HardwareFlowControl ? 1 : 0) != 0;
 }
 
 /***************************************************************************
@@ -579,7 +579,7 @@ int Reconnect_Modem() {
         // reconnect....\n" );
         status = Reconnect_Null_Modem();
       } else {
-        status = Dial_Modem(DialSettings, true);
+        status = Dial_Modem(DialSettings, true) ? 1 : 0;
       }
       break;
 
@@ -590,7 +590,7 @@ int Reconnect_Modem() {
         // reconnect....\n" );
         status = Reconnect_Null_Modem();
       } else {
-        status = Answer_Modem(DialSettings, true);
+        status = Answer_Modem(DialSettings, true) ? 1 : 0;
       }
       break;
     default:
@@ -728,7 +728,7 @@ static int Reconnect_Null_Modem() {
     switch (static_cast<int>(input)) {
       case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
-        retval = false;
+        retval = 0;
         process = false;
         break;
 
@@ -764,7 +764,7 @@ static int Reconnect_Null_Modem() {
 
         if (ReceivePacket.ID == MPlayerLocalID) {
           CCMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
-          retval = false;
+          retval = 0;
           break;
         }
 
@@ -779,7 +779,7 @@ static int Reconnect_Null_Modem() {
         while (TickCount.Time() - starttime < 60) {
           NullModem.Service();
         }
-        retval = true;
+        retval = 1;
         process = false;
       }
     }
@@ -788,7 +788,7 @@ static int Reconnect_Null_Modem() {
     // timeout if we do not get any packets
     //
     if (TickCount.Time() - lastmsgtime > PACKET_CANCEL_TIMEOUT) {
-      retval = false;
+      retval = 0;
       process = false;
     }
 
@@ -1608,21 +1608,21 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
     */
     switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_COMPRESSION):
-        settings->Compression = settings->Compression ^ 1;
+        settings->Compression = !settings->Compression;
         port::SafeCopy(compress_text, settings->Compression
                                           ? Text_String(TXT_ON)
                                           : Text_String(TXT_OFF));
         break;
 
       case ButtonKey(BUTTON_ERROR_CORRECTION):
-        settings->ErrorCorrection = settings->ErrorCorrection ^ 1;
+        settings->ErrorCorrection = !settings->ErrorCorrection;
         port::SafeCopy(correction_text, settings->ErrorCorrection
                                             ? Text_String(TXT_ON)
                                             : Text_String(TXT_OFF));
         break;
 
       case ButtonKey(BUTTON_HARDWARE_FLOW_CONTROL):
-        settings->HardwareFlowControl = settings->HardwareFlowControl ^ 1;
+        settings->HardwareFlowControl = !settings->HardwareFlowControl;
         port::SafeCopy(flowcontrol_text, settings->HardwareFlowControl
                                              ? Text_String(TXT_ON)
                                              : Text_String(TXT_OFF));
@@ -2902,7 +2902,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
         if (dpstatus == PORT_VALID) {
           process = false;
-          rc = true;
+          rc = 1;
         } else if (dpstatus == PORT_INVALID) {
           CCMessageBox().Process(TXT_INVALID_SETTINGS);
           firsttime = 1;
@@ -2920,7 +2920,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         process = false;
-        rc = false;
+        rc = 0;
         break;
       default:
         break;
@@ -3245,7 +3245,7 @@ int Com_Scenario_Dialog() {
   int changed = 0;         // 1 = user has changed an option
 
   int rc = 0;
-  int recsignedoff = false;
+  bool recsignedoff = false;
   int i;
   int version;
   char txt[80];
@@ -3967,7 +3967,7 @@ int Com_Scenario_Dialog() {
       case ButtonKey(BUTTON_CANCEL):
         if (!ready_to_go) {
           process = false;
-          rc = false;
+          rc = 0;
         }
         break;
 
@@ -4216,7 +4216,7 @@ int Com_Scenario_Dialog() {
         lastmsgtime = TickCount.Time();
 
         process = false;
-        rc = false;
+        rc = 0;
 
         // say we did receive sign off to keep from sending one
         recsignedoff = true;
@@ -4254,7 +4254,7 @@ int Com_Scenario_Dialog() {
             lastmsgtime = TickCount.Time();
 
             process = false;
-            rc = false;
+            rc = 0;
             recsignedoff = true;
             break;
 
@@ -4299,7 +4299,7 @@ int Com_Scenario_Dialog() {
               lastmsgtime = TickCount.Time();
 
               process = false;
-              rc = false;
+              rc = 0;
             } else {
               if (ReceivePacket.Version < version) {
                 CCMessageBox().Process(TXT_DESTGAME_OUTDATED);
@@ -4308,7 +4308,7 @@ int Com_Scenario_Dialog() {
                 lastmsgtime = TickCount.Time();
 
                 process = false;
-                rc = false;
+                rc = 0;
               }
             }
             break;
@@ -4377,7 +4377,7 @@ int Com_Scenario_Dialog() {
     if (TickCount.Time() - lastmsgtime > msg_timeout) {
       CCMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
       process = false;
-      rc = false;
+      rc = 0;
 
       // say we did receive sign off to keep from sending one
       recsignedoff = true;
@@ -5171,7 +5171,7 @@ int Com_Show_Scenario_Dialog() {
       case ButtonKey(BUTTON_CANCEL):
         if (!ready_to_go) {
           process = false;
-          rc = false;
+          rc = 0;
         }
         break;
 
@@ -5379,10 +5379,10 @@ int Com_Show_Scenario_Dialog() {
         CCMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
 
         // to skip the other system not responding msg
-        rc = false;
+        rc = 0;
 
         // say we did receive sign off to keep from sending one
-        recsignedoff = true;
+        recsignedoff = 1;
         break;
       }
 
@@ -5418,8 +5418,8 @@ int Com_Show_Scenario_Dialog() {
             lastmsgtime = TickCount.Time();
 
             process = false;
-            rc = false;
-            recsignedoff = true;
+            rc = 0;
+            recsignedoff = 1;
             break;
 
           /*..................................................................
@@ -5504,7 +5504,7 @@ int Com_Show_Scenario_Dialog() {
               lastmsgtime = TickCount.Time();
 
               process = false;
-              rc = false;
+              rc = 0;
             } else {
               if (ReceivePacket.Version < version) {
                 CCMessageBox().Process(TXT_DESTGAME_OUTDATED);
@@ -5513,7 +5513,7 @@ int Com_Show_Scenario_Dialog() {
                 lastmsgtime = TickCount.Time();
 
                 process = false;
-                rc = false;
+                rc = 0;
               }
             }
 
@@ -5547,7 +5547,7 @@ int Com_Show_Scenario_Dialog() {
             CCDebugString(flip);
 
             process = false;
-            rc = true;
+            rc = 1;
             break;
 
           /*..................................................................
@@ -5600,10 +5600,10 @@ int Com_Show_Scenario_Dialog() {
     if (TickCount.Time() - lastmsgtime > msg_timeout) {
       CCMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
       process = false;
-      rc = false;
+      rc = 0;
 
       // say we did receive sign off to keep from sending one
-      recsignedoff = true;
+      recsignedoff = 1;
     }
 
     /*---------------------------------------------------------------------
@@ -6170,7 +6170,7 @@ static int Phone_Dialog() {
         }
 
         process = false;
-        rc = true;
+        rc = 1;
         break;
 
       /*------------------------------------------------------------------
@@ -6179,7 +6179,7 @@ static int Phone_Dialog() {
       case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         process = false;
-        rc = false;
+        rc = 0;
         break;
       default:
         break;
@@ -6487,11 +6487,11 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       phone->Settings.Baud == -1) {
     settings = SerialDefaults;
     defaultbtn.Turn_On();
-    custom = false;
+    custom = 0;
   } else {
     settings = phone->Settings;
     custombtn.Turn_On();
-    custom = true;
+    custom = 1;
   }
 
   port::SafeCopy(namebuf, phone->Name);
@@ -6615,7 +6615,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         process = false;
-        rc = false;
+        rc = 0;
         break;
 
       /*------------------------------------------------------------------
@@ -6624,7 +6624,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       case KN_RETURN:
       case ButtonKey(BUTTON_SAVE):
         process = false;
-        rc = true;
+        rc = 1;
         break;
       default:
         break;
@@ -6769,7 +6769,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     while (wait.Time()) {
       Call_Back();
     }
-    SoundOn = 0;
+    SoundOn = false;
   }
 
   dialstatus =
@@ -6944,7 +6944,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     while (wait.Time()) {
       Call_Back();
     }
-    SoundOn = 0;
+    SoundOn = false;
   }
 
   dialstatus = NullModem.Answer_Modem(reconnect);

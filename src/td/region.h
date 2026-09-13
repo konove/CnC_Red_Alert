@@ -51,21 +51,21 @@ class RegionClass {
   void Serialize(Archive& ar) {
     ar(Threat);
   }
-  int operator!=(const RegionClass& region) {
-    return memcmp(this, &region, sizeof(RegionClass));
+  bool operator!=(const RegionClass& region) {
+    return memcmp(this, &region, sizeof(RegionClass)) != 0;
   }
-  int operator==(const RegionClass& region) {
-    return !memcmp(this, &region, sizeof(RegionClass));
+  bool operator==(const RegionClass& region) {
+    return memcmp(this, &region, sizeof(RegionClass)) == 0;
   }
-  int operator>(const RegionClass& region) {
+  bool operator>(const RegionClass& region) {
     return memcmp(this, &region, sizeof(RegionClass)) > 0;
   }
-  int operator<(const RegionClass& region) {
+  bool operator<(const RegionClass& region) {
     return memcmp(this, &region, sizeof(RegionClass)) < 0;
   }
 
   void Reset_Threat() { Threat = 0; }
-  void Adjust_Threat(int threat, int neg) {
+  void Adjust_Threat(int threat, bool neg) {
     if (neg) {
       Threat -= threat;
     } else {

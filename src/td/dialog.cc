@@ -136,7 +136,8 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
 
   if (filled) {
     if (style.Filler == CC_GREEN_BKGD) {
-      CC_Texture_Fill(MFCD::Retrieve("BTEXTURE.SHP"), InMainLoop, x, y, w, h);
+      CC_Texture_Fill(MFCD::Retrieve("BTEXTURE.SHP"), InMainLoop ? 1 : 0, x, y,
+                      w, h);
     } else {
       LogicPage->Fill_Rect(x, y, x + w, y + h,
                            static_cast<unsigned char>(style.Filler));
@@ -739,7 +740,7 @@ void Conquer_Clip_Text_Print(const char* text, int x, int y, int fore,
 
     char* source = &buffer[0];
     int offset = 0;
-    int processing = true;
+    bool processing = true;
     while (processing && offset < width) {
       char* ptr = strchr(source, '\t');
 
@@ -769,7 +770,7 @@ void Conquer_Clip_Text_Print(const char* text, int x, int y, int fore,
           bptr--;
           w -= Char_Pixel_Width(*bptr);
           *bptr = '\0';
-          processing = 0;
+          processing = false;
         }
 
         /*

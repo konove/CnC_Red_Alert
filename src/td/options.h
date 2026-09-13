@@ -53,7 +53,7 @@ class OptionsClass {
   void Set_Shuffle(int on);
   void Set_Repeat(int on);
   void Set_Score_Volume(int volume);
-  void Set_Sound_Volume(int volume, int feedback);
+  void Set_Sound_Volume(int volume, bool feedback);
   void Set_Brightness(int brightness);
   [[nodiscard]] int Get_Brightness() const;
   void Set_Color(int color);

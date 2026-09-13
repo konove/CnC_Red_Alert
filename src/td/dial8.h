@@ -61,13 +61,13 @@ class Dial8Class : public ControlClass {
   /*
   ** Overloaded draw routine
   */
-  int Draw_Me(bool forced = false) override;
+  bool Draw_Me(bool forced = false) override;
 
  protected:
   /*
   ** Overloaded event processing routine
   */
-  int Action(unsigned flags, KeyNumType& key) override;
+  bool Action(unsigned flags, KeyNumType& key) override;
 
  private:
   int FaceX;             // x-coord of center of face

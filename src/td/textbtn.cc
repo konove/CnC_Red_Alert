@@ -81,9 +81,9 @@
  *=============================================================================================*/
 TextButtonClass::TextButtonClass(unsigned id, const char* text,
                                  TextPrintType style, int x, int y, int w,
-                                 int h, int blackborder)
+                                 int h, bool blackborder)
     : ToggleClass(id, x, y, w, h),
-      IsBlackBorder(blackborder != 0),
+      IsBlackBorder(blackborder),
       String(text),
       PrintFlags(style) {
   if (w == -1 || h == -1) {
@@ -150,9 +150,9 @@ TextButtonClass::TextButtonClass()
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
-                                 int x, int y, int w, int h, int blackborder)
+                                 int x, int y, int w, int h, bool blackborder)
     : ToggleClass(id, x, y, w, h),
-      IsBlackBorder(blackborder != 0),
+      IsBlackBorder(blackborder),
       String(nullptr),
       PrintFlags(style) {
   Set_Text(text);
@@ -184,7 +184,7 @@ TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
  *                                                                                             *
  * HISTORY: * 01/03/1995 MML : Created. * 01/16/1995 JLB : Modified *
  *=============================================================================================*/
-int TextButtonClass::Draw_Me(bool forced) {
+bool TextButtonClass::Draw_Me(bool forced) {
   if (ControlClass::Draw_Me(forced)) {
     /*
     **	Hide the mouse.

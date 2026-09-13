@@ -47,7 +47,7 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 
-int CheckBoxClass::Draw_Me(bool forced) {
+bool CheckBoxClass::Draw_Me(bool forced) {
   if (ToggleClass::Draw_Me(forced)) {
     Hide_Mouse();
     Draw_Box(X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, false);

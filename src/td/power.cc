@@ -430,7 +430,7 @@ int PowerClass::Power_Height(int value) {
  *                                                                                             *
  * HISTORY: * 08/07/1995 JLB : Created. *
  *=============================================================================================*/
-int PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key) {
+bool PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key) {
   if (!Map.IsSidebarActive) {
     return false;
   }
