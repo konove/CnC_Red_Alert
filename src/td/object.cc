@@ -928,10 +928,10 @@ const short* ObjectTypeClass::Overlap_List() const {
  *=============================================================================================*/
 void ObjectTypeClass::One_Time() {
   SelectShapes = MFCD::Retrieve("SELECT.SHP");
-#if (FRENCH)
+#ifdef FRENCH
   PipShapes = Hires_Retrieve("PIPS_F.SHP");
 #else
-#if (GERMAN)
+#ifdef GERMAN
   PipShapes = Hires_Retrieve("PIPS_G.SHP");
 #else
   PipShapes = Hires_Retrieve("PIPS.SHP");

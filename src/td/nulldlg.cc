@@ -952,7 +952,7 @@ GameType Select_Serial_Dialog() {
   int d_settings_x = d_dialog_cx - (d_settings_w / 2);
   int d_settings_y = d_nullmodem_y + d_nullmodem_h + 2;
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_cancel_w = 50 * factor;
 #else
   int d_cancel_w = 40 * factor;
@@ -1824,7 +1824,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   int d_save_x = d_dialog_x + (d_dialog_w / 5) - (d_save_w / 2);
   int d_save_y = d_dialog_y + d_dialog_h - d_save_h - d_margin - (2 * factor);
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_cancel_w = 50 * factor;
 #else
   int d_cancel_w = 40 * factor;
@@ -1834,7 +1834,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   int d_cancel_y =
       d_dialog_y + d_dialog_h - d_cancel_h - d_margin - (2 * factor);
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_advanced_w = 50 * factor;
 #else
   int d_advanced_w = 40 * factor;
@@ -3110,7 +3110,7 @@ int Com_Scenario_Dialog() {
   int d_level_h = 7 * factor;
   int d_level_y = d_count_y;
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_bases_w = 120 * factor;  // BGA:100;
 #else
   int d_bases_w = 110 * factor;
@@ -3119,7 +3119,7 @@ int Com_Scenario_Dialog() {
   int d_bases_x = d_dialog_cx - d_bases_w - d_margin2;
   int d_bases_y = d_count_y + d_count_h + d_margin2;
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_goodies_w = 120 * factor;
 #else
   int d_goodies_w = 110 * factor;
@@ -3138,7 +3138,7 @@ int Com_Scenario_Dialog() {
       ((d_goodies_w - ((13 * 6 * factor) + (3 * factor) + d_level_w)) / 2) +
       d_margin2;
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_tiberium_w = 120 * factor;
 #else
   int d_tiberium_w = 110 * factor;
@@ -3147,7 +3147,7 @@ int Com_Scenario_Dialog() {
   int d_tiberium_x = d_dialog_cx - d_bases_w - d_margin2;
   int d_tiberium_y = d_bases_y + d_bases_h + d_margin2;
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_ghosts_w = 120 * factor;
 #else
   int d_ghosts_w = 110 * factor;
@@ -6337,7 +6337,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       d_dialog_x + ((d_dialog_w - d_number_w) * 3 / 4) - (5 * factor);
   int d_number_y = d_name_y + d_name_h + d_margin;
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_default_w = 130 * factor;
 #else
   int d_default_w = 104 * factor;
@@ -6346,7 +6346,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   int d_default_x = d_dialog_cx - (d_default_w / 2);
   int d_default_y = d_number_y + d_number_h + d_margin;
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_custom_w = 130 * factor;
 #else
   int d_custom_w = 100 * factor;
@@ -6355,7 +6355,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   int d_custom_x = d_dialog_cx - (d_default_w / 2);
   int d_custom_y = d_default_y + d_default_h + d_margin;
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_save_w = 55 * factor;
 #else
   int d_save_w = 45 * factor;
@@ -6364,7 +6364,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   int d_save_x = d_dialog_cx - d_margin - d_save_w;
   int d_save_y = d_dialog_y + d_dialog_h - d_margin - d_save_h;
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_cancel_w = 55 * factor;
 #else
   int d_cancel_w = 45 * factor;

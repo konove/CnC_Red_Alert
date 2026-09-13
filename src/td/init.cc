@@ -2828,19 +2828,19 @@ int Version_Number() {
   return (version);
 #endif
 
-#if (FRENCH)
+#ifdef FRENCH
   sprintf(VersionText, ".02");  // Win95 french version number
 #endif                          // FRENCH
 
-#if (GERMAN)
+#ifdef GERMAN
   sprintf(VersionText, ".01");  // Win95 german version number
 #endif                          // GERMAN
 
-#if (JAPANESE)
+#ifdef JAPANESE
   sprintf(VersionText, ".01");  // Win95 german version number
 #endif                          // GERMAN
 
-#if !(FRENCH | GERMAN | JAPANESE)
+#if !(defined(FRENCH) || defined(GERMAN) || defined(JAPANESE))
   sprintf(VersionText, ".07");  // Win95 USA version number
 #endif                          // FRENCH | GERMAN
 
@@ -2852,19 +2852,19 @@ int Version_Number() {
   }
   strncat(VersionText, version, sizeof(VersionText) - strlen(VersionText) - 1);
 
-#if (FRENCH)
+#ifdef FRENCH
   return (1);  // Win95 french version number
 #endif         // FRENCH
 
-#if (GERMAN)
+#ifdef GERMAN
   return (1);  // Win95 german version number
 #endif         // GERMAN
 
-#if (JAPANESE)
+#ifdef JAPANESE
   return (1);  // Win95 german version number
 #endif         // GERMAN
 
-#if !(FRENCH | GERMAN | JAPANESE)
+#if !(defined(FRENCH) || defined(GERMAN) || defined(JAPANESE))
   return 1;  // Win95 USA version number
 #endif       // FRENCH | GERMAN
 }

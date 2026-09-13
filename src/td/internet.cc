@@ -438,7 +438,7 @@ bool Do_The_Internet_Menu_Thang() {
   int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // centered y-coord
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_cancel_w = 50 * factor;
 #else
   int d_cancel_w = 40 * factor;
@@ -447,7 +447,7 @@ bool Do_The_Internet_Menu_Thang() {
   int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
   int d_cancel_y = d_dialog_y + d_dialog_h - (20 * factor);
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int width = 160 * factor;
   int height = 80 * factor;
 #else
@@ -459,7 +459,7 @@ bool Do_The_Internet_Menu_Thang() {
   Format_Window_String((char*)Text_String(TXT_CONNECTING),
                        SeenBuff.Get_Height(), width, height);
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   d_dialog_w = width + 25 * factor;
   d_dialog_x = ((320 * factor - d_dialog_w) / 2);  // dialog x-coord
   d_cancel_x = d_dialog_cx - (d_cancel_w / 2);

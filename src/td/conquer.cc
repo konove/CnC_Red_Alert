@@ -2172,7 +2172,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       Brokeout = false;
       // Suspend_Audio_Thread();
 
-#if (FRENCH | GERMAN | JAPANESE)
+#if (defined(FRENCH) || defined(GERMAN) || defined(JAPANESE))
       /*
       ** Kludge to use the old palette interpolation table for CC2TEASE
       ** unless the covert CD is inserted.
@@ -2188,7 +2188,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       }
 #endif  //(FRENCH | GERMAN)
 
-#if (GERMAN)
+#ifdef GERMAN
       /*
       ** Kludge to use a different palette interpolation table for RETRO.VQA
       ** if the covert CD is inserted.

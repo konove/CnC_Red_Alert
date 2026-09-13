@@ -340,10 +340,10 @@ void SidebarClass::Init_IO() {
     Repair.IsToggleType = true;
 
     Repair.ReflectButtonState = true;
-#if (FRENCH)
+#ifdef FRENCH
     Repair.Set_Shape(Hires_Retrieve("REPAIRF.SHP"));
 #else
-#if (GERMAN)
+#ifdef GERMAN
     Repair.Set_Shape(Hires_Retrieve("REPAIRG.SHP"));
 #else
     Repair.Set_Shape(Hires_Retrieve("REPAIR.SHP"));
@@ -358,10 +358,10 @@ void SidebarClass::Init_IO() {
     Upgrade.IsToggleType = true;
 
     Upgrade.ReflectButtonState = true;
-#if (FRENCH)
+#ifdef FRENCH
     Upgrade.Set_Shape(Hires_Retrieve("SELLF.SHP"));
 #else
-#if (GERMAN)
+#ifdef GERMAN
     Upgrade.Set_Shape(Hires_Retrieve("SELLG.SHP"));
 #else
     Upgrade.Set_Shape(Hires_Retrieve("SELL.SHP"));
@@ -374,10 +374,10 @@ void SidebarClass::Init_IO() {
     Zoom.Y = 160;
     Zoom.IsPressed = false;
 
-#if (FRENCH)
+#ifdef FRENCH
     Zoom.Set_Shape(Hires_Retrieve("MAPF.SHP"));
 #else
-#if (GERMAN)
+#ifdef GERMAN
     Zoom.Set_Shape(Hires_Retrieve("MAPG.SHP"));
 #else
     Zoom.Set_Shape(Hires_Retrieve("MAP.SHP"));

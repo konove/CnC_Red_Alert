@@ -2182,7 +2182,7 @@ void Multi_Score_Presentation() {
     }
   }
 
-#if (FRENCH)
+#ifdef FRENCH
   Alloc_Object(new ScorePrintClass(
       TXT_MAP_CLICK2, 90 /*(320-strlen(Text_String(TXT_MAP_CLICK2)))/2*/, 185,
       _cycleyellowpal));

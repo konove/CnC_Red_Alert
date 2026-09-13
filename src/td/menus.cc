@@ -567,13 +567,13 @@ int Main_Menu(unsigned long timeout) {
     D_INTRO_H = 18,
     D_INTRO_X = 196,
     D_INTRO_Y = 178,
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
     D_EXIT_W = 166,
 #else
     D_EXIT_W = 126,
 #endif
     D_EXIT_H = 18,
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
     D_EXIT_X = 236,
 #else
     D_EXIT_X = 256,
@@ -720,7 +720,7 @@ int Main_Menu(unsigned long timeout) {
   TextButtonClass exitbtn(
       BUTTON_EXIT, TXT_EXIT_GAME,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
       // D_EXIT_X, starty);
       D_EXIT_X, starty, D_EXIT_W, D_EXIT_H);
 #else
@@ -742,7 +742,7 @@ int Main_Menu(unsigned long timeout) {
   TextButtonClass exitbtn(
       BUTTON_EXIT, TXT_EXIT_GAME,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
       // D_EXIT_X, D_EXIT_Y);
       D_EXIT_X, D_EXIT_Y, D_EXIT_W, D_EXIT_H);
 #else

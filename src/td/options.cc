@@ -112,7 +112,7 @@ OptionsClass::OptionsClass() {
   Tint = 0x80;
   Brightness = 0x80;
   AutoScroll = true;
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   IsDeathAnnounce = true;
 #else
   IsDeathAnnounce = false;

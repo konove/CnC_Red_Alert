@@ -902,7 +902,7 @@ void Map_Selection() {
   Alloc_Object(new ScorePrintClass(TXT_MAP_LOCATE, 0, 160, _greenpal));
   Call_Back_Delay(20);
   Alloc_Object(new ScorePrintClass(TXT_MAP_NEXT_MISSION, 0, 170, _greenpal));
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   Call_Back_Delay(20);
   Alloc_Object(new ScorePrintClass(TXT_MAP_NEXT_MISS2, 0, 180, _greenpal));
 #endif
@@ -912,7 +912,7 @@ void Map_Selection() {
   ** If we're on the last scenario, erase that text before doing the crosshairs
   */
   if (lastscenario) {
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
     SysMemPage.Fill_Rect(0, 160, 20 * 6, 186, TBLACK);
     PseudoSeenBuff->Fill_Rect(0, 160, 20 * 6, 186, TBLACK);
     TextPrintBuffer->Fill_Rect(0, 320, 40 * 6, 372, BLACK);
@@ -965,7 +965,7 @@ void Map_Selection() {
             Alloc_Object(new MultiStagePrintClass(
                 Text_String(TXT_ENHANCING_IMAGE), 0, 10, _othergreenpal));
           } else {
-#if (FRENCH)
+#ifdef FRENCH
             Alloc_Object(new MultiStagePrintClass(
                 Text_String(TXT_ENHANCING_IMAGE), 180, 10, _othergreenpal));
 #else
@@ -983,7 +983,7 @@ void Map_Selection() {
                 0, 20, 2 * String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE)),
                 2 * (10 + 12), BLACK);
           } else {
-#if (FRENCH)
+#ifdef FRENCH
             TextPrintBuffer->Fill_Rect(
                 360, 20,
                 2 * (180 +
@@ -1005,7 +1005,7 @@ void Map_Selection() {
                 0, 20, 2 * String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE)),
                 2 * (10 + 12), TBLACK);
           } else {
-#if (FRENCH)
+#ifdef FRENCH
             TextPrintBuffer->Fill_Rect(
                 360, 20,
                 2 * (180 +
@@ -1036,7 +1036,7 @@ void Map_Selection() {
   // erase the "Locating Coordinates" message...
   Play_Sample(beepy6, 255, Options.Normalize_Sound(90));
   if (!lastscenario) {
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
     SysMemPage.Fill_Rect(0, 160, 20 * 6, 186, TBLACK);
     PseudoSeenBuff->Fill_Rect(0, 160, 20 * 6, 186, TBLACK);
     TextPrintBuffer->Fill_Rect(0, 320, 40 * 6, 372, BLACK);
@@ -1127,7 +1127,7 @@ void Map_Selection() {
                               BLACK);
     TextPrintBuffer->Fill_Rect(2 * attackxcoord, 320,
                                2 * (attackxcoord + (17 * 6)), 2 * 178, BLACK);
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
     PseudoSeenBuff->Fill_Rect(attackxcoord + (17 * 6), 160,
                               attackxcoord + (21 * 6), 178, BLACK);
     TextPrintBuffer->Fill_Rect(2 * attackxcoord + (17 * 6 * 2), 320,
@@ -1179,7 +1179,7 @@ void Map_Selection() {
     // localpalette, 768);
 
     Hide_Mouse();
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
     PseudoSeenBuff->Fill_Rect(attackxcoord, 160, 319, 178,
                               BLACK);  // erase "Select country to attack"
     TextPrintBuffer->Fill_Rect(2 * attackxcoord, 320, 639, 356,

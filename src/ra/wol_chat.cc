@@ -432,7 +432,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
 //------------------------------------------------------------------------
 //	Init Mono Output
 //------------------------------------------------------------------------
-#if (SHOW_MONO)
+#ifdef SHOW_MONO
   Ipx.Configure_Debug(-1, sizeof(GlobalHeaderType), sizeof(NetCommandType),
                       GlobalPacketNames, 0, 13);
   Ipx.Mono_Debug_Print(-1, 1);
@@ -442,7 +442,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   //	Processing loop
   //------------------------------------------------------------------------
   while (process) {
-#if (SHOW_MONO)
+#ifdef SHOW_MONO
     Ipx.Mono_Debug_Print(-1, 0);
 #endif
 

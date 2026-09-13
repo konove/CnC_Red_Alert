@@ -826,7 +826,7 @@ static int Net_Join_Dialog() {
   int d_join_x = d_dialog_x + (d_dialog_w / 6) - (d_join_w / 2);
   int d_join_y = d_msg5_y + d_txt6_h + d_margin1;
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_cancel_w = 50 * factor;
 #else
   int d_cancel_w = 40 * factor;
@@ -2743,7 +2743,7 @@ static int Net_New_Dialog() {
   int d_scenariolist_x = d_dialog_x + d_dialog_w - d_margin1 - d_scenariolist_w;
   int d_scenariolist_y = d_dialog_y + d_margin1 + (d_txt6_h * 3);
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_reject_w = 55 * factor;
 #else
   int d_reject_w = 45 * factor;
@@ -2768,7 +2768,7 @@ static int Net_New_Dialog() {
   int d_credits_x = d_dialog_cx + (2 * factor);
   int d_credits_y = d_level_y + d_level_h + d_margin1;
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_bases_w = 120 * factor;  // bga:100;
 #else
   int d_bases_w = 100 * factor;
@@ -2777,7 +2777,7 @@ static int Net_New_Dialog() {
   int d_bases_x = d_dialog_cx - d_bases_w - d_margin2;
   int d_bases_y = d_credits_y + d_credits_h + d_margin2;
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_tiberium_w = 120 * factor;
 #else
   int d_tiberium_w = 100 * factor;
@@ -2786,7 +2786,7 @@ static int Net_New_Dialog() {
   int d_tiberium_x = d_dialog_cx - d_bases_w - d_margin2;
   int d_tiberium_y = d_bases_y + d_bases_h + d_margin2;
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_goodies_w = 120 * factor;
 #else
   int d_goodies_w = 100 * factor;
@@ -2795,7 +2795,7 @@ static int Net_New_Dialog() {
   int d_goodies_x = d_dialog_cx + d_margin2;
   int d_goodies_y = d_credits_y + d_credits_h + d_margin2;
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_ghosts_w = 120 * factor;
 #else
   int d_ghosts_w = 100 * factor;
@@ -2809,7 +2809,7 @@ static int Net_New_Dialog() {
   int d_ok_x = d_dialog_cx - d_margin2 - (d_bases_w / 2) - (d_ok_w / 2);
   int d_ok_y = d_ghosts_y + d_ghosts_h + d_margin1;
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_cancel_w = 50 * factor;
 #else
   int d_cancel_w = 45 * factor;
@@ -4245,7 +4245,7 @@ static int Net_Fake_New_Dialog() {
   int d_playerlist_x = 500 * factor;  // 10 * factor;	//off screen
   int d_playerlist_y = d_dialog_y + 20;
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_cancel_w = 50 * factor;
 #else
   int d_cancel_w = 45 * factor;
@@ -4254,7 +4254,7 @@ static int Net_Fake_New_Dialog() {
   int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
   int d_cancel_y = d_dialog_y + d_dialog_h - (20 * factor);
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int width = 160 * factor;
   int height = 80 * factor;
 #else
@@ -4269,7 +4269,7 @@ static int Net_Fake_New_Dialog() {
   Format_Window_String((char*)Text_String(TXT_CONNECTING),
                        SeenBuff.Get_Height(), width, height);
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   d_dialog_w = width + 25 * factor;
   d_dialog_x = ((320 * factor - d_dialog_w) / 2);  // dialog x-coord
   d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
@@ -4840,7 +4840,7 @@ static int Net_Fake_Join_Dialog() {
   int d_playerlist_x = 500 * factor;  // Off screen
   int d_playerlist_y = d_gamelist_y + 20;
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int d_cancel_w = 50 * factor;
 #else
   int d_cancel_w = 45 * factor;
@@ -4851,7 +4851,7 @@ static int Net_Fake_Join_Dialog() {
 
   bool ready_to_go = false;
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   int width = 160 * factor;
   int height = 80 * factor;
 #else
@@ -4863,7 +4863,7 @@ static int Net_Fake_Join_Dialog() {
   Format_Window_String((char*)Text_String(TXT_CONNECTING),
                        SeenBuff.Get_Height(), width, height);
 
-#if (GERMAN | FRENCH)
+#if (defined(GERMAN) || defined(FRENCH))
   d_dialog_w = width + 25 * factor;
   d_dialog_x = ((320 * factor - d_dialog_w) / 2);  // dialog x-coord
   d_cancel_x = d_dialog_cx - (d_cancel_w / 2);

@@ -780,7 +780,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   //	Processing loop
   //------------------------------------------------------------------------
   while (bProcess) {
-#if (SHOW_MONO)
+#ifdef SHOW_MONO
     Ipx.Mono_Debug_Print(-1, 0);
 #endif
 

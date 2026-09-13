@@ -377,7 +377,7 @@ void Do_Win() {
   **	Announce win to player.
   */
   Set_Logic_Page(SeenBuff);
-#if !(GERMAN | FRENCH)
+#if !(defined(GERMAN) || defined(FRENCH))
   Fancy_Text_Print(TXT_MISSION, x, y, WHITE, TBLACK, TPF_CENTER | TPF_VCR);
 #endif
   Fancy_Text_Print(TXT_SCENARIO_WON, x, y + 30, WHITE, TBLACK,
