@@ -139,7 +139,7 @@ class IconListClass : public ListClass {
   //		virtual void Peer_To_Peer(unsigned flags, KeyNumType & key,
   // ControlClass & whom);
   void Remove_Item(const char* text) override;
-  void Remove_Item(int) override;
+  void Remove_Item(int /*index*/ /*unused*/) override;
   //		virtual int  Remove_Scroll_Bar();
   //		virtual void Set_Selected_Index(int index);
   //		virtual void Set_Selected_Index(char const * text);

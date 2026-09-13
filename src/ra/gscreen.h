@@ -61,7 +61,8 @@ class GScreenClass {
   ** Initialization
   */
   virtual void One_Time();                         // One-time initializations
-  virtual void Init(TheaterType = THEATER_NONE);   // Inits everything
+  virtual void Init(
+      TheaterType /*theater*/ = THEATER_NONE);     // Inits everything
   virtual void Init_Clear();                       // Clears all to known state
   virtual void Init_IO();                          // Inits button list
   virtual void Init_Theater(TheaterType theater);  // Theater-specific inits
@@ -70,7 +71,7 @@ class GScreenClass {
   **	Player I/O is routed through here. It is called every game tick.
   */
   virtual void Input(KeyNumType& key, int& x, int& y);
-  virtual void AI(KeyNumType&, int, int) {}
+  virtual void AI(KeyNumType& /*unused*/, int /*unused*/, int /*unused*/) {}
   virtual void Add_A_Button(GadgetClass& gadget);
   virtual void Remove_A_Button(GadgetClass& gadget);
 
@@ -89,7 +90,7 @@ class GScreenClass {
   **	Is called when actual drawing is required. This is the function to
   **	override in derived classes.
   */
-  virtual void Draw_It(bool = false) {}
+  virtual void Draw_It(bool /*unused*/ = false) {}
 
   /*
   **	This moves the hidpage up to the seenpage.

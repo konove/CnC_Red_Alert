@@ -69,7 +69,7 @@ class TerrainClass final : public ObjectClass, public StageClass {
   **	Constructor for terrain object class.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   TerrainClass() {
     IsActive = true;
@@ -127,7 +127,7 @@ class TerrainClass final : public ObjectClass, public StageClass {
   /*
   **	User I/O.
   */
-  void Clicked_As_Target(int) override {}
+  void Clicked_As_Target(int /*unused*/) override {}
 
   /*
   **	Combat related.

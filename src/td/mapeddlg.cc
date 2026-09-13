@@ -533,8 +533,8 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_BUTTONS = 1,
+    REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
   /*........................................................................
@@ -974,8 +974,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_MAP,         // includes map interior & coord values
-    REDRAW_BACKGROUND,  // includes box, map bord, key, coord labels, btns
+    REDRAW_MAP = 1,         // includes map interior & coord values
+    REDRAW_BACKGROUND = 2,  // includes box, map bord, key, coord labels, btns
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
   /*........................................................................
@@ -1673,8 +1673,8 @@ int MapEditClass::Scenario_Dialog() {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,     // includes map interior & coord values
-    REDRAW_BACKGROUND,  // includes box, map bord, key, coord labels, btns
+    REDRAW_BUTTONS = 1,     // includes map interior & coord values
+    REDRAW_BACKGROUND = 2,  // includes box, map bord, key, coord labels, btns
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
   /*........................................................................
@@ -2190,7 +2190,7 @@ void MapEditClass::Handle_Triggers() {
   - If user wants to delete trigger, delete the current trigger
   - Keep looping until 'OK'
   ------------------------------------------------------------------------*/
-  while (1) {
+  while (true) {
     /*
     ........................... Select trigger ............................
     */
@@ -2356,8 +2356,8 @@ int MapEditClass::Select_Trigger() {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_BUTTONS = 1,
+    REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 
@@ -2787,8 +2787,8 @@ int MapEditClass::Edit_Trigger() {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_BUTTONS = 1,
+    REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 
@@ -3329,8 +3329,8 @@ int MapEditClass::Import_Triggers() {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_BUTTONS = 1,
+    REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
   /*........................................................................
@@ -3672,8 +3672,8 @@ int MapEditClass::Import_Teams() {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_BUTTONS = 1,
+    REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
   /*........................................................................

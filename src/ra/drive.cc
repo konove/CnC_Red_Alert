@@ -1441,7 +1441,7 @@ void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-bool DriveClass::Ok_To_Move(DirType) const {
+bool DriveClass::Ok_To_Move(DirType /*unused*/) const {
   assert(IsActive);
 
   return true;

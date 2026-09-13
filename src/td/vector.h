@@ -81,14 +81,14 @@ template <class T>
 class VectorClass {
  public:
   explicit VectorClass(base::ssize size = 0, T* array = nullptr);
-  VectorClass(const VectorClass&);  // Copy constructor.
+  VectorClass(const VectorClass& /*vector*/);  // Copy constructor.
   virtual ~VectorClass();
   VectorClass(VectorClass&&) = delete;
   VectorClass& operator=(VectorClass&&) = delete;
 
   T& operator[](base::ssize index) { return Vector[index]; }
   const T& operator[](base::ssize index) const { return Vector[index]; }
-  VectorClass& operator=(const VectorClass&);
+  VectorClass& operator=(const VectorClass& /*vector*/);
 
  private:
   // The copying half of operator=, without the Clear() that precedes it. The
@@ -98,7 +98,7 @@ class VectorClass {
   void Copy_From(const VectorClass& vector);
 
  public:
-  virtual int operator==(const VectorClass&) const;
+  virtual int operator==(const VectorClass& /*vector*/) const;
   virtual int Resize(base::ssize newsize, T* array = nullptr);
   virtual void Clear();
   [[nodiscard]] base::ssize Length() const { return VectorMax; }

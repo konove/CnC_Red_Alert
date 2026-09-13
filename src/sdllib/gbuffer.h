@@ -619,7 +619,7 @@ inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest, int src_x,
                                         int src_y, int dst_x, int dst_y,
                                         int src_w, int src_h, int dst_w,
                                         int dst_h, bool trans, char* remap) {
-  bool return_code = 0;
+  bool return_code = false;
   if (Lock()) {
     if (dest.Lock()) {
       return_code =

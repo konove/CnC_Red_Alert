@@ -191,7 +191,7 @@ ResultType TerrainClass::Take_Damage(int& damage, int distance,
  *                                                                                             *
  * HISTORY: * 05/14/1994 JLB : Created. *
  *=============================================================================================*/
-void* TerrainClass::operator new(size_t) noexcept {
+void* TerrainClass::operator new(size_t /*unused*/) noexcept {
   void* ptr = Terrains.Allocate();
   if (ptr) {
     static_cast<TerrainClass*>(ptr)->IsActive = true;
@@ -382,7 +382,7 @@ void TerrainClass::Init() { Terrains.Free_All(); }
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. * 01/01/1995 JLB : Actually works now. *
  *=============================================================================================*/
-MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType) const {
+MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 

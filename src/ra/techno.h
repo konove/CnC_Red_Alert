@@ -331,7 +331,7 @@ class TechnoClass : public RadioClass,
                                                         bool friendly) const;
   virtual CELL Find_Exit_Cell(const TechnoClass* techno) const;
   [[nodiscard]] COORDINATE Fire_Coord(int which) const override;
-  virtual DirType Desired_Load_Dir(ObjectClass*, CELL& moveto) const;
+  virtual DirType Desired_Load_Dir(ObjectClass* /*unused*/, CELL& moveto) const;
   [[nodiscard]] virtual DirType Fire_Direction() const;
   [[nodiscard]] HousesType Owner() const override;
   [[nodiscard]] virtual InfantryType Crew_Type() const;
@@ -438,7 +438,7 @@ class TechnoClass : public RadioClass,
   virtual void Draw_Pips(int x, int y, WindowNumberType window) const;
   void Hidden() override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
-  int Exit_Object(TechnoClass*) override;
+  int Exit_Object(TechnoClass* /*unused*/) override;
   virtual void Do_Uncloak();
   virtual void Do_Cloak();
   void Do_Shimmer() override;
@@ -456,7 +456,7 @@ class TechnoClass : public RadioClass,
   /*
   **	Map entry and exit logic.
   */
-  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
   void Detach(TARGET target, bool all) override;
 
   /*

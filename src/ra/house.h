@@ -644,7 +644,7 @@ class HouseClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   explicit HouseClass(HousesType house);
   ~HouseClass();
@@ -734,7 +734,7 @@ class HouseClass {
       RTTIType objecttype, bool kennel = false) const;
   [[nodiscard]] const BuildingTypeClass* Suggest_New_Building() const;
   void Recalc_Center();
-  [[nodiscard]] bool Does_Enemy_Building_Exist(StructType) const;
+  [[nodiscard]] bool Does_Enemy_Building_Exist(StructType /*btype*/) const;
   void Harvested(unsigned tiberium);
   void Stole(unsigned worth);
   [[nodiscard]] long Available_Money() const;
@@ -899,7 +899,7 @@ class HouseClass {
   **	the house AI processing. Higher priority build requests take precidence.
   */
   struct BuildChoiceClass {
-    void* operator new(size_t, void* ptr) noexcept { return ptr; }
+    void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
     UrgencyType Urgency;   // The urgency of the build request
     StructType Structure;  // The type of building to produce.
 

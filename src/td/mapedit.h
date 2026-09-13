@@ -161,21 +161,21 @@ The house button ID's must be sequential, with a 1-to-1 correspondence to
 the HousesType values.
 ...........................................................................*/
 enum MapEditButtonIDEnum {
-  POPUP_GDI = 500,    // GDI house button
-  POPUP_NOD,          // NOD house button
-  POPUP_NEUTRAL,      // Neutral house button
-  POPUP_HOUSE_JP,     // not used
-  POPUP_MULTI1,       // Multiplayer 1 house button
-  POPUP_MULTI2,       // Multiplayer 2 house button
-  POPUP_MULTI3,       // Multiplayer 3 house button
-  POPUP_MULTI4,       // Multiplayer 4 house button
-  POPUP_MULTI5,       // Multiplayer 4 house button
-  POPUP_MULTI6,       // Multiplayer 4 house button
-  POPUP_MISSIONLIST,  // list box for missions
-  POPUP_HEALTHGAUGE,  // health of object
-  POPUP_FACINGDIAL,   // object's facing
-  POPUP_BASEPERCENT,  // Base's percent-built slider
-  MAP_AREA,           // map as a click-able thingy
+  POPUP_GDI = 500,          // GDI house button
+  POPUP_NOD = 501,          // NOD house button
+  POPUP_NEUTRAL = 502,      // Neutral house button
+  POPUP_HOUSE_JP = 503,     // not used
+  POPUP_MULTI1 = 504,       // Multiplayer 1 house button
+  POPUP_MULTI2 = 505,       // Multiplayer 2 house button
+  POPUP_MULTI3 = 506,       // Multiplayer 3 house button
+  POPUP_MULTI4 = 507,       // Multiplayer 4 house button
+  POPUP_MULTI5 = 508,       // Multiplayer 4 house button
+  POPUP_MULTI6 = 509,       // Multiplayer 4 house button
+  POPUP_MISSIONLIST = 510,  // list box for missions
+  POPUP_HEALTHGAUGE = 511,  // health of object
+  POPUP_FACINGDIAL = 512,   // object's facing
+  POPUP_BASEPERCENT = 513,  // Base's percent-built slider
+  MAP_AREA = 514,           // map as a click-able thingy
   BUTTON_FLAG = 0x8000
 };
 

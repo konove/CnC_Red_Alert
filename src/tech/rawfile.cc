@@ -90,7 +90,8 @@
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void RawFileClass::Error(int, int, const char*) {}
+void RawFileClass::Error(int /*error*/, int /*canretry*/,
+                         const char* /*filename*/) {}
 
 /***********************************************************************************************
  * RawFileClass::RawFileClass -- Simple constructor for a file object. *

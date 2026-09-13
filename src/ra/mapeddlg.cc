@@ -1039,8 +1039,9 @@ int MapEditClass::Load_Scenario() {
     */
     typedef enum {
       REDRAW_NONE = 0,
-      REDRAW_MAP,         // includes map interior & coord values
-      REDRAW_BACKGROUND,  // includes box, map board, key, coord labels, btns
+      REDRAW_MAP = 1,  // includes map interior & coord values
+      REDRAW_BACKGROUND =
+          2,  // includes box, map board, key, coord labels, btns
       REDRAW_ALL = REDRAW_BACKGROUND
     } RedrawType;
 
@@ -2547,7 +2548,7 @@ int MapEditClass::Load_Scenario() {
     **	- If user wants to delete trigger, delete the current trigger
     **	- Keep looping until 'OK'
     */
-    while (1) {
+    while (true) {
       /*
       **	Select trigger
       */

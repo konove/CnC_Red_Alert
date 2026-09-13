@@ -1123,7 +1123,7 @@ static void Create_Units() {
     'centroid' will be the centroid of all this house's stuff.
     .....................................................................*/
     try_count = 0;
-    while (1) {
+    while (true) {
       j = GameRandomRange(0, MPlayerMax - 1);
       if (sorted_waypts[j] != -1) {
         centroid = sorted_waypts[j];
@@ -1137,7 +1137,7 @@ static void Create_Units() {
       as it's mappable.
       ..................................................................*/
       if (try_count > 200) {
-        while (1) {
+        while (true) {
           centroid = static_cast<CELL>(GameRandomRange(0, MAP_CELL_TOTAL - 1));
           if (Map.In_Radar(centroid)) {
             break;

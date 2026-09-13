@@ -236,7 +236,7 @@ class TechnoClass : public RadioClass,
   ActionType What_Action(ObjectClass* object) override;
   [[nodiscard]] ActionType What_Action(CELL cell) const override;
   [[nodiscard]] virtual int Tiberium_Load() const;
-  virtual DirType Desired_Load_Dir(ObjectClass*, CELL& moveto) const;
+  virtual DirType Desired_Load_Dir(ObjectClass* /*unused*/, CELL& moveto) const;
   [[nodiscard]] virtual int Pip_Count() const;
   [[nodiscard]] virtual DirType Fire_Direction() const;
 
@@ -316,7 +316,7 @@ class TechnoClass : public RadioClass,
   virtual void Draw_Pips(int x, int y, WindowNumberType window);
   void Hidden() override;
   bool Mark(MarkType mark) override;
-  int Exit_Object(TechnoClass*) override;
+  int Exit_Object(TechnoClass* /*unused*/) override;
   virtual void Do_Uncloak();
   virtual void Do_Cloak();
   void Do_Shimmer() override;
@@ -327,13 +327,13 @@ class TechnoClass : public RadioClass,
   virtual void Random_Animate();
   virtual void Assign_Destination(TARGET target);
   void Scatter(COORDINATE source = 0, bool forced = false) override;
-  virtual void Per_Cell_Process(bool);
+  virtual void Per_Cell_Process(bool /*unused*/);
   virtual void Enter_Idle_Mode(bool initial = false);
 
   /*
   **	Map entry and exit logic.
   */
-  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
   void Detach(TARGET target, bool all) override;
 
   /*

@@ -1210,7 +1210,7 @@ bool Remote_Connect() {
   //	off for now (during this portion of the dialogs, we must show ourselves)
   //------------------------------------------------------------------------
   stealth = Session.NetStealth;
-  Session.NetStealth = 0;
+  Session.NetStealth = false;
 
   //------------------------------------------------------------------------
   //	Init my game name to 0-length, since I haven't joined any game yet.
@@ -1221,12 +1221,12 @@ bool Remote_Connect() {
   //	The game is now "open" for joining.  Close it as soon as we exit this
   //	routine.
   //------------------------------------------------------------------------
-  Session.NetOpen = 1;
+  Session.NetOpen = true;
 
   //------------------------------------------------------------------------
   //	Keep looping until something useful happens.
   //------------------------------------------------------------------------
-  while (1) {
+  while (true) {
     //.....................................................................
     //	Pop up the network Join/New dialog
     //.....................................................................
@@ -1237,7 +1237,7 @@ bool Remote_Connect() {
     //.....................................................................
     if (rc == -1) {
       Session.NetStealth = stealth;
-      Session.NetOpen = 0;
+      Session.NetOpen = false;
       return false;
     }
 
@@ -1247,7 +1247,7 @@ bool Remote_Connect() {
     if (rc == 0) {
       Session.Write_MultiPlayer_Settings();
       Session.NetStealth = stealth;
-      Session.NetOpen = 0;
+      Session.NetOpen = false;
 
       return true;
     }
@@ -1263,7 +1263,7 @@ bool Remote_Connect() {
       if (Net_New_Dialog()) {
         Session.Write_MultiPlayer_Settings();
         Session.NetStealth = stealth;
-        Session.NetOpen = 0;
+        Session.NetOpen = false;
 
         return true;
       }
@@ -1466,11 +1466,11 @@ static int Net_Join_Dialog() {
   //------------------------------------------------------------------------
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_PARMS,
-    REDRAW_MESSAGE,
-    REDRAW_COLORS,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_PARMS = 1,
+    REDRAW_MESSAGE = 2,
+    REDRAW_COLORS = 3,
+    REDRAW_BUTTONS = 4,
+    REDRAW_BACKGROUND = 5,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 
@@ -4107,10 +4107,10 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_PARMS,
-    REDRAW_MESSAGE,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_PARMS = 1,
+    REDRAW_MESSAGE = 2,
+    REDRAW_BUTTONS = 3,
+    REDRAW_BACKGROUND = 4,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 

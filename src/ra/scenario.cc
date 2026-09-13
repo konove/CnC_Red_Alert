@@ -819,7 +819,7 @@ void Do_Win() {
         Session.CurGame = MAX_MULTI_GAMES - 1;
       }
     }
-    GameActive = 0;
+    GameActive = false;
     Show_Mouse();
     return;
   }
@@ -1034,7 +1034,7 @@ void Do_Lose() {
         Session.CurGame = MAX_MULTI_GAMES - 1;
       }
     }
-    GameActive = 0;
+    GameActive = false;
     Show_Mouse();
     return;
   }
@@ -1067,7 +1067,7 @@ void Do_Lose() {
     Map.Render();
   } else {
     Hide_Mouse();
-    GameActive = 0;
+    GameActive = false;
   }
 
   GamePalette.Set(kFadePaletteFast, Call_Back);
@@ -1122,7 +1122,7 @@ void Do_Draw() {
       Session.CurGame = MAX_MULTI_GAMES - 1;
     }
   }
-  GameActive = 0;
+  GameActive = false;
   Show_Mouse();
 }
 
@@ -1297,7 +1297,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     **	Build the button list.
     */
     bheight = FontHeight + FontYSpacing + 2;
-    bwidth = std::max(String_Pixel_Width(b1txt) + 8, 80u);
+    bwidth = std::max(String_Pixel_Width(b1txt) + 8, 80U);
     if (b2txt) {
       numbuttons = 2;
       b2char = static_cast<char>(toupper(b2txt[0]));
@@ -1802,7 +1802,7 @@ void ScenarioClass::Set_Scenario_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created.  V.Grippi added CS check 2/5/97 *
  *=============================================================================================*/
-bool Read_Scenario_INI(char* fname, bool) {
+bool Read_Scenario_INI(char* fname, bool /*unused*/) {
   //	char fname[kMaxFname+kMaxExt];			// full INI
   // filename
 
@@ -2426,7 +2426,7 @@ void Assign_Houses() {
     //.....................................................................
     // Pick a color for this house; keep looping until we find one.
     //.....................................................................
-    while (1) {
+    while (true) {
       color = Random_Pick(0, 7);
       if (!static_cast<bool>(color_used[color])) {
         break;

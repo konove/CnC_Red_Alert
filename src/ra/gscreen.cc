@@ -188,7 +188,7 @@ void GScreenClass::Init_Clear() {
  *                                                                                             *
  * HISTORY: * 12/28/1994 BR : Created. *
  *=============================================================================================*/
-void GScreenClass::Init_Theater(TheaterType) {}
+void GScreenClass::Init_Theater(TheaterType /*unused*/) {}
 
 /***********************************************************************************************
  * GScreenClass::Init_IO -- Initializes the Button list ('Buttons'). *

@@ -136,7 +136,9 @@ class DisplayClass : public MapClass {
   void Center_Map(COORDINATE center = 0L);
   virtual bool Map_Cell(CELL cell, HouseClass* house);
   [[nodiscard]] virtual CELL Click_Cell_Calc(int x, int y) const;
-  virtual void Help_Text(int, int = -1, int = -1, int = YELLOW, bool = false) {}
+  virtual void Help_Text(int /*unused*/, int /*unused*/ = -1,
+                         int /*unused*/ = -1, int /*unused*/ = YELLOW,
+                         bool /*unused*/ = false) {}
   [[nodiscard]] virtual MouseType Get_Mouse_Shape() const = 0;
   virtual bool Scroll_Map(DirType facing, int& distance, bool really);
   virtual void Refresh_Cells(CELL cell, const short* list);
@@ -157,7 +159,8 @@ class DisplayClass : public MapClass {
   /*
   **	Pending object placement control.
   */
-  virtual void Put_Place_Back(TechnoClass*) {}  // Affects 'pending' system.
+  virtual void Put_Place_Back(TechnoClass* /*unused*/) {
+  }  // Affects 'pending' system.
   void Cursor_Mark(CELL pos, bool on);
   void Set_Cursor_Shape(const short* list);
   CELL Set_Cursor_Pos(CELL pos = -1);

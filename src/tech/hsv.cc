@@ -146,7 +146,6 @@ HSVClass::operator RGBClass() const {
       Hue_Component(), Saturation_Component(), Value_Component());
 
   // RGBClass narrows each 8-bit gun to the 6-bit VGA range it stores.
-  return RGBClass(static_cast<uint8_t>(color.red),
-                  static_cast<uint8_t>(color.green),
-                  static_cast<uint8_t>(color.blue));
+  return {static_cast<uint8_t>(color.red), static_cast<uint8_t>(color.green),
+          static_cast<uint8_t>(color.blue)};
 }

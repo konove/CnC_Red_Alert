@@ -363,13 +363,15 @@ class ObjectTypeClass : public AbstractTypeClass {
   virtual ObjectClass* Create_One_Of(HouseClass*) const = 0;
   [[nodiscard]] virtual const short* Occupy_List(bool placement = false) const;
   [[nodiscard]] virtual const short* Overlap_List() const;
-  [[nodiscard]] virtual BuildingClass* Who_Can_Build_Me(bool, bool,
-                                                        HousesType) const;
+  [[nodiscard]] virtual BuildingClass* Who_Can_Build_Me(
+      bool /*unused*/, bool /*unused*/, HousesType /*unused*/) const;
   [[nodiscard]] virtual const void* Get_Cameo_Data() const;
   [[nodiscard]] const void* Get_Image_Data() const { return ImageData; }
   [[nodiscard]] const void* Get_Radar_Data() const { return RadarIcon; }
 
-  virtual void Display(int, int, WindowNumberType, HousesType) const {}
+  virtual void Display(int /*unused*/, int /*unused*/,
+                       WindowNumberType /*unused*/,
+                       HousesType /*unused*/) const {}
 
   static const void* SelectShapes;
   static const void* PipShapes;
@@ -933,7 +935,7 @@ class UnitTypeClass : public TechnoTypeClass {
 
   static UnitType From_Name(const char* name);
   static const UnitTypeClass& As_Reference(UnitType type);
-  static void Init(TheaterType);
+  static void Init(TheaterType /*theater*/);
   static void One_Time();
   static void Prep_For_Add();
 
@@ -1045,7 +1047,7 @@ class InfantryTypeClass : public TechnoTypeClass {
   static const InfantryTypeClass& As_Reference(InfantryType type) {
     return *Pointers[type];
   }
-  static void Init(TheaterType);
+  static void Init(TheaterType /*theater*/);
   static void One_Time();
   static void Prep_For_Add();
 
@@ -1208,15 +1210,18 @@ class BulletTypeClass : public ObjectTypeClass {
   static const BulletTypeClass& As_Reference(BulletType type) {
     return *Pointers[type];
   }
-  static void Init(TheaterType) {}
+  static void Init(TheaterType /*unused*/) {}
   static void One_Time();
 
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  bool Create_And_Place(CELL, HousesType = HOUSE_NONE) const override {
+  bool Create_And_Place(CELL /*unused*/,
+                        HousesType /*unused*/ = HOUSE_NONE) const override {
     return false;
   }
-  ObjectClass* Create_One_Of(HouseClass*) const override { return nullptr; }
+  ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override {
+    return nullptr;
+  }
 
  private:
   static const BulletTypeClass* const Pointers[BULLET_COUNT];
@@ -1294,7 +1299,7 @@ class TerrainTypeClass : public ObjectTypeClass {
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell, HousesType house) const override;
-  ObjectClass* Create_One_Of(HouseClass*) const override;
+  ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
   [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
   [[nodiscard]] const short* Overlap_List() const override;
 
@@ -1370,7 +1375,7 @@ class TemplateTypeClass : public ObjectTypeClass {
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell,
                         HousesType house = HOUSE_NONE) const override;
-  ObjectClass* Create_One_Of(HouseClass*) const override;
+  ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
   [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
 
   void Display(int x, int y, WindowNumberType window,
@@ -1533,13 +1538,16 @@ class AnimTypeClass : public ObjectTypeClass {
   static const AnimTypeClass& As_Reference(AnimType type) {
     return *Pointers[type];
   }
-  static void Init(TheaterType) {}
+  static void Init(TheaterType /*unused*/) {}
   static void One_Time();
 
-  bool Create_And_Place(CELL, HousesType = HOUSE_NONE) const override {
+  bool Create_And_Place(CELL /*unused*/,
+                        HousesType /*unused*/ = HOUSE_NONE) const override {
     return false;
   }
-  ObjectClass* Create_One_Of(HouseClass*) const override { return nullptr; }
+  ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override {
+    return nullptr;
+  }
 
  private:
   static const AnimTypeClass* const Pointers[ANIM_COUNT];
@@ -1604,7 +1612,7 @@ class AircraftTypeClass : public TechnoTypeClass {
   }
 
   // Reloads theater-specific hi-res sidebar icons.
-  static void Init(TheaterType);
+  static void Init(TheaterType /*theater*/);
 
   // Loads shape and graphic data from disk. Must be called exactly once.
   static void One_Time();
@@ -1622,7 +1630,7 @@ class AircraftTypeClass : public TechnoTypeClass {
   // Aircraft cannot be placed directly; always returns false.
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  bool Create_And_Place(CELL, HousesType) const override;
+  bool Create_And_Place(CELL /*unused*/, HousesType /*unused*/) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
 
   // Occupation and overlap lists are only meaningful when the aircraft is
@@ -1740,7 +1748,7 @@ class OverlayTypeClass : public ObjectTypeClass {
   static const OverlayTypeClass& As_Reference(OverlayType type) {
     return *Pointers[type];
   }
-  static void Init(TheaterType);
+  static void Init(TheaterType /*theater*/);
   static void One_Time();
   static void Prep_For_Add();
 
@@ -1751,7 +1759,7 @@ class OverlayTypeClass : public ObjectTypeClass {
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell,
                         HousesType house = HOUSE_NONE) const override;
-  ObjectClass* Create_One_Of(HouseClass*) const override;
+  ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
   [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
   virtual void Draw_It(int x, int y, int data) const;
   [[nodiscard]] virtual unsigned char* Radar_Icon(int data) const;
@@ -1810,7 +1818,7 @@ class SmudgeTypeClass : public ObjectTypeClass {
   static const SmudgeTypeClass& As_Reference(SmudgeType type) {
     return *Pointers[type];
   }
-  static void Init(TheaterType);
+  static void Init(TheaterType /*theater*/);
   static void One_Time();
   static void Prep_For_Add();
 
@@ -1818,7 +1826,7 @@ class SmudgeTypeClass : public ObjectTypeClass {
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell,
                         HousesType house = HOUSE_NONE) const override;
-  ObjectClass* Create_One_Of(HouseClass*) const override;
+  ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
   [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
   [[nodiscard]] const short* Overlap_List() const override {
     return Occupy_List();

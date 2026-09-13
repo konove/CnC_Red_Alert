@@ -283,7 +283,7 @@ void HouseClass::One_Time() {
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Debug_Dump(MonoClass*) const {
+void HouseClass::Debug_Dump(MonoClass* /*unused*/) const {
   if constexpr (config::kCheatKeysEnabled) {
     Validate();
   }
@@ -306,7 +306,7 @@ void HouseClass::Debug_Dump(MonoClass*) const {
  *                                                                                             *
  * HISTORY: * 05/22/1994 JLB : Created. *
  *=============================================================================================*/
-void* HouseClass::operator new(size_t) noexcept {
+void* HouseClass::operator new(size_t /*unused*/) noexcept {
   void* ptr = Houses.Allocate();
   if (ptr) {
     static_cast<HouseClass*>(ptr)->IsActive = true;
@@ -3143,7 +3143,7 @@ void HouseClass::Add_Nuke_Piece(int piece) {
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : commented *
  *=============================================================================================*/
-void HouseClass::Detach(TARGET, bool) {
+void HouseClass::Detach(TARGET /*unused*/, bool /*unused*/) {
   Validate();
   //	if (LaunchSite == target) {
   //		LaunchSite = TARGET_NONE;

@@ -13,7 +13,7 @@
 void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
                                  int frac);
 void Fat_Put_Pixel(int x, int y, std::uint8_t color, int size,
-                   GraphicViewPortClass&);
+                   GraphicViewPortClass& /*gpage*/);
 void strtrim(char* buffer);
 
 // Null pointer check that fires only in cheat-key builds.

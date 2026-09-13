@@ -308,7 +308,8 @@ int IPXConnClass::Stop_Listening() {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Send(char* buf, int buflen, void*, int) {
+int IPXConnClass::Send(char* buf, int buflen, void* /*extrabuf*/,
+                       int /*extralen*/) {
   /*------------------------------------------------------------------------
   Invoke our own Send_To routine, filling in our Address as the destination.
   ------------------------------------------------------------------------*/

@@ -138,7 +138,7 @@ class UnitClass final : public DriveClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   UnitClass(UnitType classid, HousesType house);
   // objects compare directly against their type ID.
@@ -198,7 +198,7 @@ class UnitClass final : public DriveClass {
   **	Object entry and exit from the game system.
   */
   bool Limbo() override;
-  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how

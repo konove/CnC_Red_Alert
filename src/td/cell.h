@@ -268,7 +268,7 @@ class CellClass {
   void Incoming(COORDINATE threat = 0, bool forced = false);
   void Adjust_Threat(HousesType house, int threat_value);
 
-  int operator!=(const CellClass&) const { return 0; }
+  int operator!=(const CellClass& /*unused*/) const { return 0; }
 
   // debug self-check; callers run it for its assertions and ignore the count.
   // NOLINTNEXTLINE(modernize-use-nodiscard)

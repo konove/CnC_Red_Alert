@@ -179,8 +179,8 @@ class HouseTypeClass : public AbstractTypeClass {
 
   [[nodiscard]] const unsigned char* Remap_Table() const;
 
-  void* operator new(size_t) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/) noexcept;
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   static HousesType From_Name(const char* name);
@@ -354,7 +354,9 @@ class ObjectTypeClass : public AbstractTypeClass {
 
   [[nodiscard]] const void* Get_Radar_Data() const { return RadarIcon.get(); }
 
-  virtual void Display(int, int, WindowNumberType, HousesType) const {}
+  virtual void Display(int /*unused*/, int /*unused*/,
+                       WindowNumberType /*unused*/,
+                       HousesType /*unused*/) const {}
 
   static const void* SelectShapes;
   static const void* PipShapes;
@@ -787,8 +789,8 @@ class BuildingTypeClass : public TechnoTypeClass {
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator StructType() const { return Type; }
 
-  void* operator new(size_t) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/) noexcept;
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   static void Init_Heap();
@@ -974,14 +976,14 @@ class UnitTypeClass : public TechnoTypeClass {
                 bool is_animating, bool is_jammer, bool is_gapper, int rotation,
                 int toffset, MissionType order, bool is_aftermath) noexcept;
 
-  void* operator new(size_t) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/) noexcept;
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* pointer);
 
   static void Init_Heap();
   static UnitType From_Name(const char* name);
   static UnitTypeClass& As_Reference(UnitType type);
-  static void Init(TheaterType) {}
+  static void Init(TheaterType /*unused*/) {}
   static void One_Time();
   static void Prep_For_Add();
 
@@ -1068,14 +1070,14 @@ class VesselTypeClass : public TechnoTypeClass {
                   bool is_nominal, bool is_turret_equipped, int rotation,
                   int toffset, bool is_aftermath) noexcept;
 
-  void* operator new(size_t) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/) noexcept;
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* pointer);
 
   static void Init_Heap();
   static VesselType From_Name(const char* name);
   static VesselTypeClass& As_Reference(VesselType type);
-  static void Init(TheaterType) {}
+  static void Init(TheaterType /*unused*/) {}
   static void One_Time();
   static void Prep_For_Add();
 
@@ -1202,14 +1204,14 @@ class InfantryTypeClass : public TechnoTypeClass {
                     int pronelaunch, const unsigned char* override_remap,
                     bool is_aftermath) noexcept;
 
-  void* operator new(size_t) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/) noexcept;
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* pointer);
 
   static void Init_Heap();
   static InfantryType From_Name(const char* name);
   static InfantryTypeClass& As_Reference(InfantryType type);
-  static void Init(TheaterType) {}
+  static void Init(TheaterType /*unused*/) {}
   static void One_Time();
   static void Prep_For_Add();
 
@@ -1290,21 +1292,21 @@ class AircraftTypeClass : public TechnoTypeClass {
                     int landingspeed, int rotation,
                     MissionType deforder) noexcept;
 
-  void* operator new(size_t) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/) noexcept;
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* pointer);
 
   static void Init_Heap();
   static AircraftType From_Name(const char* name);
   static AircraftTypeClass& As_Reference(AircraftType a);
-  static void Init(TheaterType) {}
+  static void Init(TheaterType /*unused*/) {}
   static void One_Time();
   static void Prep_For_Add();
 
   void Dimensions(int& width, int& height) const override;
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  bool Create_And_Place(CELL, HousesType) const override;
+  bool Create_And_Place(CELL /*unused*/, HousesType /*unused*/) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
   [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
   [[nodiscard]] const short* Overlap_List() const override;
@@ -1470,22 +1472,25 @@ class BulletTypeClass : public ObjectTypeClass {
   //---------------------------------------------------------------------
   explicit BulletTypeClass(const char* name) noexcept;
 
-  void* operator new(size_t) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/) noexcept;
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   static void Init_Heap();
   static BulletTypeClass& As_Reference(BulletType type);
-  static void Init(TheaterType) {}
+  static void Init(TheaterType /*unused*/) {}
   static void One_Time();
 
   virtual bool Read_INI(CCINIClass& ini);
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  bool Create_And_Place(CELL, HousesType = HOUSE_NONE) const override {
+  bool Create_And_Place(CELL /*unused*/,
+                        HousesType /*unused*/ = HOUSE_NONE) const override {
     return false;
   }
-  ObjectClass* Create_One_Of(HouseClass*) const override { return nullptr; }
+  ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override {
+    return nullptr;
+  }
 };
 
 /****************************************************************************
@@ -1524,8 +1529,8 @@ class TerrainTypeClass : public ObjectTypeClass {
                    int fullname, const short* occupy,
                    const short* overlap) noexcept;
 
-  void* operator new(size_t) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/) noexcept;
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* pointer);
 
   static void Init_Heap();
@@ -1539,7 +1544,7 @@ class TerrainTypeClass : public ObjectTypeClass {
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell, HousesType house) const override;
-  ObjectClass* Create_One_Of(HouseClass*) const override;
+  ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
   [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
   [[nodiscard]] const short* Overlap_List() const override;
 
@@ -1580,8 +1585,8 @@ class TemplateTypeClass : public ObjectTypeClass {
   TemplateTypeClass(TemplateType iconset, int theater, const char* ininame,
                     int fullname) noexcept;
 
-  void* operator new(size_t) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/) noexcept;
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   static void Init_Heap();
@@ -1596,7 +1601,7 @@ class TemplateTypeClass : public ObjectTypeClass {
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell,
                         HousesType house = HOUSE_NONE) const override;
-  ObjectClass* Create_One_Of(HouseClass*) const override;
+  ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
   [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
   [[nodiscard]] LandType Land_Type(int icon) const;
 
@@ -1762,8 +1767,8 @@ class AnimTypeClass : public ObjectTypeClass {
                 VocType sound, AnimType chainto) noexcept;
 
   static void Init_Heap();
-  void* operator new(size_t) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/) noexcept;
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* pointer);
 
   static AnimTypeClass& As_Reference(AnimType type);
@@ -1772,10 +1777,13 @@ class AnimTypeClass : public ObjectTypeClass {
 
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  bool Create_And_Place(CELL, HousesType = HOUSE_NONE) const override {
+  bool Create_And_Place(CELL /*unused*/,
+                        HousesType /*unused*/ = HOUSE_NONE) const override {
     return false;
   }
-  ObjectClass* Create_One_Of(HouseClass*) const override { return nullptr; }
+  ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override {
+    return nullptr;
+  }
 };
 
 /****************************************************************************
@@ -1859,14 +1867,14 @@ class OverlayTypeClass : public ObjectTypeClass {
                    bool iscrushable, bool istiberium, bool high, bool theater,
                    bool walltype, bool iscrate) noexcept;
 
-  void* operator new(size_t) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/) noexcept;
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* pointer);
 
   static void Init_Heap();
   static OverlayType From_Name(const char* name);
   static OverlayTypeClass& As_Reference(OverlayType type);
-  static void Init(TheaterType);
+  static void Init(TheaterType /*theater*/);
   static void One_Time();
   static void Prep_For_Add();
 
@@ -1875,7 +1883,7 @@ class OverlayTypeClass : public ObjectTypeClass {
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell,
                         HousesType house = HOUSE_NONE) const override;
-  ObjectClass* Create_One_Of(HouseClass*) const override;
+  ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
   [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
   virtual void Draw_It(int x, int y, int data) const;
   [[nodiscard]] virtual unsigned char* Radar_Icon(int data) const;
@@ -1921,14 +1929,14 @@ class SmudgeTypeClass : public ObjectTypeClass {
   SmudgeTypeClass(SmudgeType smudge, const char* ininame, int fullname,
                   int width, int height, bool isbib, bool iscrater) noexcept;
 
-  void* operator new(size_t) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/) noexcept;
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* pointer);
 
   static void Init_Heap();
   static SmudgeType From_Name(const char* name);
   static SmudgeTypeClass& As_Reference(SmudgeType type);
-  static void Init(TheaterType);
+  static void Init(TheaterType /*theater*/);
   static void One_Time();
   static void Prep_For_Add();
 
@@ -1936,7 +1944,7 @@ class SmudgeTypeClass : public ObjectTypeClass {
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell,
                         HousesType house = HOUSE_NONE) const override;
-  ObjectClass* Create_One_Of(HouseClass*) const override;
+  ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
   [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
   [[nodiscard]] const short* Overlap_List() const override {
     return Occupy_List();

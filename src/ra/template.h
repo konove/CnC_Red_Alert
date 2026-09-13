@@ -68,7 +68,7 @@ class TemplateClass : public ObjectClass {
   **	Constructors and destructors.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   explicit TemplateClass(TemplateType type, CELL pos = -1);
   ~TemplateClass() override {
@@ -99,7 +99,8 @@ class TemplateClass : public ObjectClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  void Draw_It(int, int, WindowNumberType) const override {}
+  void Draw_It(int /*x*/, int /*y*/,
+               WindowNumberType /*unused*/) const override {}
   bool Mark(MarkType mark) override;
 
   /*

@@ -239,7 +239,7 @@ class FootClass : public TechnoClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
   bool Limbo() override;
   bool Mark(MarkType mark) override;
 
@@ -285,9 +285,10 @@ class FootClass : public TechnoClass {
   */
   void Per_Cell_Process(bool center) override;
   virtual void Approach_Target();
-  virtual void Fixup_Path(PathType*) {}
+  virtual void Fixup_Path(PathType* /*unused*/) {}
   virtual void Set_Speed(int speed);
-  MoveType Can_Enter_Cell(CELL, FacingType = FACING_NONE) const override;
+  MoveType Can_Enter_Cell(CELL /*unused*/,
+                          FacingType /*unused*/ = FACING_NONE) const override;
   int Optimize_Moves(PathType* path, MoveType threshhold);
   void Override_Mission(MissionType mission, TARGET tarcom,
                         TARGET navcom) override;

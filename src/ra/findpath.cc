@@ -810,7 +810,8 @@ end_of_list:
  *=============================================================================================*/
 bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
                             FacingType search, FacingType olddir, int threat,
-                            int, int max_cells, MoveType threshhold) {
+                            int /*unused*/, int max_cells,
+                            MoveType threshhold) {
   FacingType newdir;  // Direction of facing before surrounding cell check.
   CELL oldcell,       // Current cell.
       newcell;        // Tentative new cell.

@@ -2902,7 +2902,7 @@ BuildingTypeClass::BuildingTypeClass(
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void* BuildingTypeClass::operator new(size_t) noexcept {
+void* BuildingTypeClass::operator new(size_t /*unused*/) noexcept {
   return BuildingTypes.Alloc();
 }
 
@@ -3212,7 +3212,7 @@ StructType BuildingTypeClass::From_Name(const char* name) {
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
 void BuildingTypeClass::Display(int x, int y, WindowNumberType window,
-                                HousesType) const {
+                                HousesType /*unused*/) const {
   const void* ptr = Get_Cameo_Data();
   if (ptr == nullptr) {
     IsTheaterShape = IsTheater;

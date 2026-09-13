@@ -149,8 +149,8 @@ GameType Select_MPlayer_Game() {
   ........................................................................*/
   enum {
     BUTTON_MODEMSERIAL = 100,
-    BUTTON_IPX,
-    BUTTON_CANCEL,
+    BUTTON_IPX = 101,
+    BUTTON_CANCEL = 102,
 
     NUM_OF_BUTTONS = 3,
   };
@@ -160,8 +160,8 @@ GameType Select_MPlayer_Game() {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,     // includes map interior & coord values
-    REDRAW_BACKGROUND,  // includes box, map bord, key, coord labels, btns
+    REDRAW_BUTTONS = 1,     // includes map interior & coord values
+    REDRAW_BACKGROUND = 2,  // includes box, map bord, key, coord labels, btns
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
   /*........................................................................
@@ -646,7 +646,7 @@ void Read_MultiPlayer_Settings() {
       phone->Settings.Compression =
           tech::ParseInteger<int>(tokenptr).value_or(0);
     } else {
-      phone->Settings.Compression = 0;
+      phone->Settings.Compression = false;
     }
 
     tokenptr = strtok(nullptr, "|");
@@ -654,7 +654,7 @@ void Read_MultiPlayer_Settings() {
       phone->Settings.ErrorCorrection =
           tech::ParseInteger<int>(tokenptr).value_or(0);
     } else {
-      phone->Settings.ErrorCorrection = 0;
+      phone->Settings.ErrorCorrection = false;
     }
 
     tokenptr = strtok(nullptr, "|");
@@ -662,7 +662,7 @@ void Read_MultiPlayer_Settings() {
       phone->Settings.HardwareFlowControl =
           tech::ParseInteger<int>(tokenptr).value_or(0);
     } else {
-      phone->Settings.HardwareFlowControl = 1;
+      phone->Settings.HardwareFlowControl = true;
     }
 
     tokenptr = strtok(nullptr, "|");
@@ -1082,7 +1082,7 @@ static void Garble_Message(char* buf) {
   Pull off any trailing punctuation
   ------------------------------------------------------------------------*/
   p = buf + strlen(buf) - 1;
-  while (1) {
+  while (true) {
     if (p < buf) {
       break;
     }
@@ -1198,8 +1198,8 @@ int Surrender_Dialog() {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_BUTTONS = 1,
+    REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 

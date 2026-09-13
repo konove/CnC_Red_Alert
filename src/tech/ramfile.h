@@ -55,7 +55,9 @@ class RAMFileClass final : public FileClass {
   RAMFileClass& operator=(RAMFileClass&&) = delete;
 
   [[nodiscard]] const char* File_Name() const override { return "UNKNOWN"; }
-  const char* Set_Name(const char*) override { return File_Name(); }
+  const char* Set_Name(const char* /*filename*/) override {
+    return File_Name();
+  }
   int Create() override;
   int Delete() override;
   [[nodiscard]] int Is_Open() const override;
@@ -68,8 +70,9 @@ class RAMFileClass final : public FileClass {
   long Write(const void* buffer, long size) override;
   void Close() override;
   unsigned long Get_Date_Time() override { return 0; }
-  bool Set_Date_Time(unsigned long) override { return true; }
-  void Error(int, int = false, const char* = nullptr) override {}
+  bool Set_Date_Time(unsigned long /*unused*/) override { return true; }
+  void Error(int /*error*/, int /*canretry*/ = false,
+             const char* /*filename*/ = nullptr) override {}
 
  protected:
   int Do_Is_Available(AvailabilityCheck mode) override;

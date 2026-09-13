@@ -1945,7 +1945,10 @@ int FootClass::Offload_Tiberium_Bail() { return 0; }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-MoveType FootClass::Can_Enter_Cell(CELL, FacingType) const { return MOVE_OK; }
+MoveType FootClass::Can_Enter_Cell(CELL /*unused*/,
+                                   FacingType /*unused*/) const {
+  return MOVE_OK;
+}
 
 /***********************************************************************************************
  * FootClass::Can_Demolish -- Checks to see if this object can be sold back. *

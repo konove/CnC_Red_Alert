@@ -1625,7 +1625,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
  *allocation scheme                                               * 07/29/1994
  *JLB : Simplified. *
  *=============================================================================================*/
-void* BuildingClass::operator new(size_t) noexcept {
+void* BuildingClass::operator new(size_t /*unused*/) noexcept {
   void* ptr = Buildings.Allocate();
   if (ptr) {
     static_cast<BuildingClass*>(ptr)->IsActive = true;
@@ -3235,7 +3235,7 @@ COORDINATE BuildingClass::Sort_Y() const {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-MoveType BuildingClass::Can_Enter_Cell(CELL cell, FacingType) const {
+MoveType BuildingClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 

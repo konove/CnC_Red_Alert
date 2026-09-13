@@ -1565,12 +1565,12 @@ void MapEditClass::Toggle_House() {
  *   11/23/1994 BR : Created.                                              *
  *   01/26/1996 JLB : Uses new house selection list method.                *
  *=========================================================================*/
-void MapEditClass::Set_House_Buttons(HousesType house, GadgetClass*, int)
+void MapEditClass::Set_House_Buttons(HousesType house, GadgetClass* /*unused*/,
+                                     int /*unused*/)
 // void MapEditClass::Set_House_Buttons(HousesType house, GadgetClass * btnlist,
 // int base_id)
 {
   HouseList->Set_Selected_Index(house);
-
 }
 
 /***************************************************************************

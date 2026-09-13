@@ -327,7 +327,7 @@ void ObjectClass::AI() {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType ObjectClass::What_Action(const ObjectClass*) const {
+ActionType ObjectClass::What_Action(const ObjectClass* /*unused*/) const {
   assert(IsActive);
 
   return ACTION_NONE;
@@ -353,7 +353,7 @@ ActionType ObjectClass::What_Action(const ObjectClass*) const {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType ObjectClass::What_Action(CELL) const {
+ActionType ObjectClass::What_Action(CELL /*unused*/) const {
   assert(IsActive);
 
   return ACTION_NONE;
@@ -626,7 +626,7 @@ COORDINATE ObjectClass::Sort_Y() const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE ObjectClass::Fire_Coord(int) const {
+COORDINATE ObjectClass::Fire_Coord(int /*unused*/) const {
   assert(IsActive);
 
   return Coord;
@@ -648,7 +648,7 @@ COORDINATE ObjectClass::Fire_Coord(int) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Record_The_Kill(TechnoClass*) { assert(IsActive); }
+void ObjectClass::Record_The_Kill(TechnoClass* /*unused*/) { assert(IsActive); }
 
 /***********************************************************************************************
  * ObjectClass::Do_Shimmer -- Shimmers this object if it is cloaked. *
@@ -689,7 +689,7 @@ void ObjectClass::Do_Shimmer() { assert(IsActive); }
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-int ObjectClass::Exit_Object(TechnoClass*) {
+int ObjectClass::Exit_Object(TechnoClass* /*unused*/) {
   assert(IsActive);
   return 0;
 }
@@ -731,7 +731,7 @@ void ObjectClass::Hidden() { assert(IsActive); }
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Look(bool) { assert(IsActive); }
+void ObjectClass::Look(bool /*unused*/) { assert(IsActive); }
 
 /***********************************************************************************************
  * ObjectClass::Active_Click_With -- Dispatches action on the object specified.
@@ -754,7 +754,8 @@ void ObjectClass::Look(bool) { assert(IsActive); }
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Active_Click_With(ActionType, ObjectClass*) {
+void ObjectClass::Active_Click_With(ActionType /*unused*/,
+                                    ObjectClass* /*unused*/) {
   assert(IsActive);
 }
 
@@ -775,7 +776,9 @@ void ObjectClass::Active_Click_With(ActionType, ObjectClass*) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Active_Click_With(ActionType, CELL) { assert(IsActive); }
+void ObjectClass::Active_Click_With(ActionType /*unused*/, CELL /*unused*/) {
+  assert(IsActive);
+}
 
 /***********************************************************************************************
  * ObjectClass::Clicked_As_Target -- Triggers target selection animation. *
@@ -792,7 +795,7 @@ void ObjectClass::Active_Click_With(ActionType, CELL) { assert(IsActive); }
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Clicked_As_Target(int) { assert(IsActive); }
+void ObjectClass::Clicked_As_Target(int /*unused*/) { assert(IsActive); }
 
 /***********************************************************************************************
  * ObjectClass::In_Range -- Determines if the coordinate is within weapon range.
@@ -814,7 +817,7 @@ void ObjectClass::Clicked_As_Target(int) { assert(IsActive); }
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::In_Range(COORDINATE, int) const {
+bool ObjectClass::In_Range(COORDINATE /*unused*/, int /*unused*/) const {
   assert(IsActive);
 
   return false;
@@ -836,7 +839,7 @@ bool ObjectClass::In_Range(COORDINATE, int) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-int ObjectClass::Weapon_Range(int) const {
+int ObjectClass::Weapon_Range(int /*unused*/) const {
   assert(IsActive);
 
   return 0;
@@ -860,7 +863,10 @@ int ObjectClass::Weapon_Range(int) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Scatter(COORDINATE, bool, bool) { assert(IsActive); }
+void ObjectClass::Scatter(COORDINATE /*unused*/, bool /*unused*/,
+                          bool /*unused*/) {
+  assert(IsActive);
+}
 
 /***********************************************************************************************
  * ObjectClass::Catch_Fire -- Called when animation is attached to this object.
@@ -967,7 +973,7 @@ MissionType ObjectClass::Get_Mission() const {
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Repair(int) { assert(IsActive); }
+void ObjectClass::Repair(int /*unused*/) { assert(IsActive); }
 
 /***********************************************************************************************
  * ObjectClass::Sell_Back -- Sells the object -- if possible. *
@@ -987,7 +993,7 @@ void ObjectClass::Repair(int) { assert(IsActive); }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Sell_Back(int) { assert(IsActive); }
+void ObjectClass::Sell_Back(int /*unused*/) { assert(IsActive); }
 
 /***********************************************************************************************
  * ObjectClass::Move -- Moves (by force) the object in the desired direction. *
@@ -1320,7 +1326,7 @@ bool ObjectClass::Limbo() {
  * HISTORY: * 09/24/1994 JLB : Created. * 12/23/1994 JLB : Sets object strength.
  **
  *=============================================================================================*/
-bool ObjectClass::Unlimbo(COORDINATE coord, DirType) {
+bool ObjectClass::Unlimbo(COORDINATE coord, DirType /*unused*/) {
   assert(IsActive);
   if (GameActive && IsInLimbo && !IsDown) {
     if (ScenarioInit ||
@@ -1366,7 +1372,7 @@ bool ObjectClass::Unlimbo(COORDINATE coord, DirType) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Detach(TARGET target, bool) {
+void ObjectClass::Detach(TARGET target, bool /*unused*/) {
   if (Trigger.Is_Valid() && Is_Target_Trigger(target) &&
       Trigger->As_Target() == target) {
     Attach_Trigger(nullptr);
@@ -1427,8 +1433,9 @@ void ObjectClass::Detach_All(bool all) {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-RadioMessageType ObjectClass::Receive_Message(RadioClass*,
-                                              RadioMessageType message, long&) {
+RadioMessageType ObjectClass::Receive_Message(RadioClass* /*unused*/,
+                                              RadioMessageType message,
+                                              long& /*unused*/) {
   assert(IsActive);
 
   switch (message) {
@@ -1830,14 +1837,14 @@ bool ObjectClass::Attach_Trigger(TriggerClass* trigger) {
 const short* ObjectClass::Occupy_List(bool placement) const {
   return Class_Of().Occupy_List(placement);
 };
-const short* ObjectClass::Overlap_List(bool) const {
+const short* ObjectClass::Overlap_List(bool /*unused*/) const {
   return Class_Of().Overlap_List();
 };
 BuildingClass* ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {
   return Class_Of().Who_Can_Build_Me(intheory, legal, Owner());
 };
 fixed ObjectClass::Health_Ratio() const {
-  return fixed(Strength, Class_Of().MaxStrength);
+  return {Strength, Class_Of().MaxStrength};
 };
 int ObjectClass::Full_Name() const { return Class_Of().Full_Name(); };
 
@@ -2021,7 +2028,7 @@ const void* ObjectTypeClass::Get_Cameo_Data() const { return nullptr; }
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-const short* ObjectTypeClass::Occupy_List(bool) const {
+const short* ObjectTypeClass::Occupy_List(bool /*unused*/) const {
   static const short _list[] = {0, kRefreshEol};
   return _list;
 }

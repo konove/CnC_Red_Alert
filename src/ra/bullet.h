@@ -77,7 +77,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   BulletClass(BulletType id, TARGET target, TechnoClass* Payback, int strength,
               WarheadType warhead, int speed);
@@ -101,7 +101,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   [[nodiscard]] LayerType In_Which_Layer() const override;
   [[nodiscard]] COORDINATE Sort_Y() const override;
   virtual void Assign_Target(TARGET target) { TarCom = target; }
-  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
@@ -109,8 +109,10 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   void Draw_It(int x, int y, WindowNumberType window) const override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
   void AI() override;
-  [[nodiscard]] const short* Occupy_List(bool = false) const override;
-  [[nodiscard]] const short* Overlap_List(bool = false) const override {
+  [[nodiscard]] const short* Occupy_List(
+      bool /*placement*/ = false) const override;
+  [[nodiscard]] const short* Overlap_List(
+      bool /*redraw*/ = false) const override {
     return Occupy_List(false);
   }
   [[nodiscard]] COORDINATE Target_Coord() const override;

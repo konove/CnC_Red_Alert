@@ -230,7 +230,7 @@ class BuildingClass : public TechnoClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   BuildingClass(StructType type, HousesType house);
   ~BuildingClass() override;
@@ -293,8 +293,8 @@ class BuildingClass : public TechnoClass {
   virtual void Grand_Opening(bool captured = false);
   virtual void Update_Buildables();
   [[nodiscard]] MoveType Can_Enter_Cell(
-      CELL cell, FacingType = FACING_NONE) const override;
-  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
+      CELL cell, FacingType /*unused*/ = FACING_NONE) const override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
   bool Limbo() override;
 
   /*
@@ -317,7 +317,8 @@ class BuildingClass : public TechnoClass {
   **	Combat related.
   */
   void Death_Announcement(const TechnoClass* source = nullptr) const override;
-  [[nodiscard]] FireErrorType Can_Fire(TARGET, int which) const override;
+  [[nodiscard]] FireErrorType Can_Fire(TARGET /*target*/,
+                                       int which) const override;
   TARGET Greatest_Threat(ThreatType threat) override;  // const;
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                          TechnoClass* source = nullptr,

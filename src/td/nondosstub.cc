@@ -113,7 +113,8 @@ void Check_VQ_Palette_Set() {
   }
 }
 
-void __cdecl SetPalette(unsigned char* palette, long, unsigned long) {
+void __cdecl SetPalette(unsigned char* palette, long /*unused*/,
+                        unsigned long /*unused*/) {
   for (int i = 0; i < 256 * 3; i++) {
     *(palette + i) &= 63;
   }
@@ -126,7 +127,6 @@ void __cdecl SetPalette(unsigned char* palette, long, unsigned long) {
 
   Set_Palette(palette);
 }
-
 
 /***********************************************************************************************
  * Load_Title_Screen -- loads the title screen into the given video buffer *

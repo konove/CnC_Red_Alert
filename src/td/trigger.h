@@ -58,35 +58,35 @@ typedef enum EventType {
   /*
   .......................... Cell-specific events ..........................
   */
-  EVENT_PLAYER_ENTERED,  // player enters this square
+  EVENT_PLAYER_ENTERED = 0,  // player enters this square
   EVENT_CELLFIRST = EVENT_PLAYER_ENTERED,
 
   /*
   ......................... Object-specific events .........................
   */
-  EVENT_DISCOVERED,  // player discovers this object
+  EVENT_DISCOVERED = 1,  // player discovers this object
   EVENT_OBJECTFIRST = EVENT_DISCOVERED,
-  EVENT_ATTACKED,   // player attacks this object
-  EVENT_DESTROYED,  // player destroys this object
-  EVENT_ANY,        // Any object event will cause the trigger.
+  EVENT_ATTACKED = 2,   // player attacks this object
+  EVENT_DESTROYED = 3,  // player destroys this object
+  EVENT_ANY = 4,        // Any object event will cause the trigger.
 
   /*
   ......................... House-specific events ..........................
   */
-  EVENT_HOUSE_DISCOVERED,  // any object in this house discovered
+  EVENT_HOUSE_DISCOVERED = 5,  // any object in this house discovered
   EVENT_HOUSEFIRST = EVENT_HOUSE_DISCOVERED,
-  EVENT_UNITS_DESTROYED,       // all house's units destroyed
-  EVENT_BUILDINGS_DESTROYED,   // all house's buildings destroyed
-  EVENT_ALL_DESTROYED,         // all house's units & buildings destroyed
-  EVENT_CREDITS,               // house reaches this many credits
-  EVENT_TIME,                  // time elapses for this house
-  EVENT_NBUILDINGS_DESTROYED,  // Number of buildings destroyed.
-  EVENT_NUNITS_DESTROYED,      // Number of units destroyed.
-  EVENT_NOFACTORIES,           // No factories left.
-  EVENT_EVAC_CIVILIAN,         // Civilian has been evacuated.
-  EVENT_BUILD,                 // If specified building has been built.
+  EVENT_UNITS_DESTROYED = 6,        // all house's units destroyed
+  EVENT_BUILDINGS_DESTROYED = 7,    // all house's buildings destroyed
+  EVENT_ALL_DESTROYED = 8,          // all house's units & buildings destroyed
+  EVENT_CREDITS = 9,                // house reaches this many credits
+  EVENT_TIME = 10,                  // time elapses for this house
+  EVENT_NBUILDINGS_DESTROYED = 11,  // Number of buildings destroyed.
+  EVENT_NUNITS_DESTROYED = 12,      // Number of units destroyed.
+  EVENT_NOFACTORIES = 13,           // No factories left.
+  EVENT_EVAC_CIVILIAN = 14,         // Civilian has been evacuated.
+  EVENT_BUILD = 15,                 // If specified building has been built.
 
-  EVENT_COUNT,
+  EVENT_COUNT = 16,
 } EventType;
 
 class TriggerClass {
@@ -198,7 +198,7 @@ class TriggerClass {
   **	Overloaded operators
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   /*

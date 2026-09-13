@@ -205,7 +205,9 @@ int RAMFileClass::Is_Open() const { return IsOpen; }
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int RAMFileClass::Open(const char*, FileAccess access) { return Open(access); }
+int RAMFileClass::Open(const char* /*filename*/, FileAccess access) {
+  return Open(access);
+}
 
 /***********************************************************************************************
  * RAMFileClass::Open -- Opens the RAM based file. *

@@ -559,7 +559,7 @@ OverlayTypeClass::OverlayTypeClass(OverlayType iconset, const char* ininame,
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void* OverlayTypeClass::operator new(size_t) noexcept {
+void* OverlayTypeClass::operator new(size_t /*unused*/) noexcept {
   return OverlayTypes.Alloc();
 }
 
@@ -693,7 +693,7 @@ OverlayType OverlayTypeClass::From_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-const short* OverlayTypeClass::Occupy_List(bool) const {
+const short* OverlayTypeClass::Occupy_List(bool /*placement*/) const {
   static short _simple[] = {0, kRefreshEol};
 
   return _simple;
@@ -738,7 +738,7 @@ unsigned char* OverlayTypeClass::Radar_Icon(int data) const {
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
 void OverlayTypeClass::Display(int x, int y, WindowNumberType window,
-                               HousesType) const {
+                               HousesType /*unused*/) const {
   if (Get_Image_Data() != nullptr) {
     int frame = 0;
 
@@ -798,7 +798,8 @@ void OverlayTypeClass::Prep_For_Add() {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-bool OverlayTypeClass::Create_And_Place(CELL cell, HousesType) const {
+bool OverlayTypeClass::Create_And_Place(CELL cell,
+                                        HousesType /*unused*/) const {
   return new OverlayClass(Type, cell) != nullptr;
 }
 
@@ -819,7 +820,7 @@ bool OverlayTypeClass::Create_And_Place(CELL cell, HousesType) const {
  *                                                                                             *
  * HISTORY: * 06/18/1994 JLB : Created. *
  *=============================================================================================*/
-ObjectClass* OverlayTypeClass::Create_One_Of(HouseClass*) const {
+ObjectClass* OverlayTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
   return new OverlayClass(Type, -1);
 }
 

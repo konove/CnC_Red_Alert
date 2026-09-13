@@ -40,7 +40,7 @@ bool ReadWith(const std::vector<uint8_t>& bytes, Fn fn) {
   return reader.ok();
 }
 
-static_assert(FourCC("RASV") == 0x56534152u);
+static_assert(FourCC("RASV") == 0x56534152U);
 static_assert(ArchiveScalar<int32_t>);
 static_assert(ArchiveScalar<char>);
 static_assert(!ArchiveScalar<double>);
@@ -142,7 +142,7 @@ TEST(ArchiveTest, NestedTypesAndArraysOfThemRoundTrip) {
   shape.corners[1] = {-3, 4};
   shape.filled = true;
   auto bytes = WriteWith([&](auto& ar) { ar(shape); });
-  EXPECT_EQ(bytes.size(), 17u);
+  EXPECT_EQ(bytes.size(), 17U);
 
   Shape read;
   EXPECT_TRUE(ReadWith(bytes, [&](auto& ar) { ar(read); }));
@@ -194,7 +194,7 @@ TEST(ArchiveTest, SectionTagsMatchOrFail) {
     int32_t v = 5;
     ar(v);
   });
-  EXPECT_EQ(bytes.size(), 8u);
+  EXPECT_EQ(bytes.size(), 8U);
 
   {
     BufferStraw straw(bytes.data(), static_cast<int>(bytes.size()));

@@ -359,7 +359,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   **	Build the button list.
   */
   bheight = FontHeight + FontYSpacing + 4;
-  bwidth = std::max(String_Pixel_Width(Text_String(btext)) + 16, 30u * 2);
+  bwidth = std::max(String_Pixel_Width(Text_String(btext)) + 16, 30U * 2);
 
   /*
   **	Determine the dimensions of the text to be used for the dialog box.

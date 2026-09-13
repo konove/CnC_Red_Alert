@@ -134,7 +134,7 @@ class InfantryClass final : public FootClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   InfantryClass();
   InfantryClass(InfantryType classid, HousesType house);
@@ -150,7 +150,7 @@ class InfantryClass final : public FootClass {
   */
   static void Init();
 
-  void Assign_Destination(TARGET) override;
+  void Assign_Destination(TARGET /*target*/) override;
 
   /*
   **	Query functions.
@@ -200,7 +200,7 @@ class InfantryClass final : public FootClass {
                          TechnoClass* source = nullptr) override;
   TARGET As_Target() const override;
   FireErrorType Can_Fire(TARGET target, int which) const override;
-  void Assign_Target(TARGET) override;
+  void Assign_Target(TARGET /*target*/) override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    long& param) override;
   int Rearm_Delay(bool second) const override;
@@ -244,7 +244,8 @@ class InfantryClass final : public FootClass {
   */
   bool Do_Action(DoType todo, bool force = false);
   void Random_Animate() override;
-  MoveType Can_Enter_Cell(CELL, FacingType = FACING_NONE) const override;
+  MoveType Can_Enter_Cell(CELL /*cell*/ /*unused*/,
+                          FacingType /*unused*/ = FACING_NONE) const override;
   void Per_Cell_Process(bool center) override;
   void Enter_Idle_Mode(bool initial = false) override;
   void Scatter(COORDINATE threat, bool forced = false) override;

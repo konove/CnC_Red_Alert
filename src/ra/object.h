@@ -183,8 +183,8 @@ class ObjectClass : public AbstractClass {
   */
   [[nodiscard]] virtual bool Is_Players_Army() const { return false; }
   [[nodiscard]] virtual const void* Get_Image_Data() const;
-  virtual ActionType What_Action(const ObjectClass*) const;
-  [[nodiscard]] virtual ActionType What_Action(CELL) const;
+  virtual ActionType What_Action(const ObjectClass* /*unused*/) const;
+  [[nodiscard]] virtual ActionType What_Action(CELL /*unused*/) const;
   [[nodiscard]] virtual LayerType In_Which_Layer() const;
   [[nodiscard]] bool Is_Infantry() const { return RTTI == RTTI_INFANTRY; }
   [[nodiscard]] bool Is_Foot() const {
@@ -221,10 +221,10 @@ class ObjectClass : public AbstractClass {
   **	Object entry and exit from the game system.
   */
   virtual bool Limbo();
-  virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
+  virtual bool Unlimbo(COORDINATE /*coord*/, DirType facing = DIR_N);
   virtual void Detach(TARGET target, bool all = true);
   virtual void Detach_All(bool all = true);
-  virtual void Record_The_Kill(TechnoClass*);
+  virtual void Record_The_Kill(TechnoClass* /*unused*/);
   virtual bool Paradrop(COORDINATE coord);
   bool Attach_Trigger(TriggerClass* trigger);
 
@@ -233,7 +233,7 @@ class ObjectClass : public AbstractClass {
   **	object interacts with the map and thus indirectly controls rendering.
   */
   virtual void Do_Shimmer();
-  virtual int Exit_Object(TechnoClass*);
+  virtual int Exit_Object(TechnoClass* /*unused*/);
   virtual bool Render(bool forced);  // const;
   [[nodiscard]] virtual const short* Occupy_List(bool placement = false) const;
   [[nodiscard]] virtual const short* Overlap_List(bool redraw = false) const;
@@ -241,7 +241,7 @@ class ObjectClass : public AbstractClass {
   virtual void Draw_It(int x, int y, WindowNumberType) const = 0;
   virtual void Hidden();
   virtual void Look(bool incremental = false);
-  virtual bool Mark(MarkType = MARK_CHANGE);
+  virtual bool Mark(MarkType /*mark*/ = MARK_CHANGE);
 
  private:
   virtual void Mark_For_Redraw();
@@ -250,21 +250,24 @@ class ObjectClass : public AbstractClass {
   /*
   **	User I/O.
   */
-  virtual void Active_Click_With(ActionType, ObjectClass*);
-  virtual void Active_Click_With(ActionType, CELL);
-  virtual void Clicked_As_Target(int = 7);
+  virtual void Active_Click_With(ActionType /*unused*/,
+                                 ObjectClass* /*unused*/);
+  virtual void Active_Click_With(ActionType /*unused*/, CELL /*unused*/);
+  virtual void Clicked_As_Target(int /*unused*/ = 7);
   virtual bool Select();
   virtual void Unselect();
 
   /*
   **	Combat related.
   */
-  [[nodiscard]] virtual bool In_Range(COORDINATE, int = 0) const;
-  [[nodiscard]] virtual int Weapon_Range(int = 0) const;
+  [[nodiscard]] virtual bool In_Range(COORDINATE /*unused*/,
+                                      int /*unused*/ = 0) const;
+  [[nodiscard]] virtual int Weapon_Range(int /*unused*/ = 0) const;
   virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                  TechnoClass* source = nullptr,
                                  bool forced = false);
-  virtual void Scatter(COORDINATE, bool forced = false, bool nokidding = false);
+  virtual void Scatter(COORDINATE /*unused*/, bool forced = false,
+                       bool nokidding = false);
   virtual bool Catch_Fire();
   virtual void Fire_Out();
   [[nodiscard]] virtual int Value() const;
@@ -273,22 +276,22 @@ class ObjectClass : public AbstractClass {
   /*
   **	AI.
   */
-  virtual void Per_Cell_Process(PCPType) {}
+  virtual void Per_Cell_Process(PCPType /*unused*/) {}
   [[nodiscard]] virtual BuildingClass* Who_Can_Build_Me(bool intheory,
                                                         bool legal) const;
   virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
                                            long& param);
   virtual bool Revealed(HouseClass* house);
-  virtual void Repair(int);
-  virtual void Sell_Back(int);
+  virtual void Repair(int /*unused*/);
+  virtual void Sell_Back(int /*unused*/);
   void AI() override;
 
   /*
   **	Scenario and debug support.
   */
   void Debug_Dump(MonoClass* mono) const override;
-  virtual void Move(FacingType);
+  virtual void Move(FacingType /*facing*/);
 
   enum { FLIGHT_LEVEL = 256 };
 };

@@ -98,8 +98,8 @@ static bool Is_Valid_Handle(const int handle) {
 }
 
 static int ToMixerAmplitude(const int raw_volume) {
-  const float normalized = static_cast<float>(raw_volume) / (255.0f * 255.0f);
-  return static_cast<int>(powf(normalized, 2.0f) * 32767.0f);
+  const float normalized = static_cast<float>(raw_volume) / (255.0F * 255.0F);
+  return static_cast<int>(powf(normalized, 2.0F) * 32767.0F);
 }
 
 static uint8_t* DecodeADPCMBlock(ChannelState& chan, int block_size,
@@ -146,16 +146,17 @@ static uint8_t* DecodeWestwoodBlock(ChannelState& chan, int block_size,
 
   while (in_ptr != in_end) {
     auto code = *in_ptr++;  // Get code byte
-    auto data = code & 0x3Fu;
-    code >>= 6u;
+    auto data = code & 0x3FU;
+    code >>= 6U;
 
     if (code == 2) {  // Raw sequence?
       // The code contains either a 5 bit delta or a count of
       // raw samples to dump out.
-      if (data & 0x20u) {
+      if (data & 0x20U) {
         // The lower 5 bits are actually a signed delta.
         // Sign extend the delta and add it to the stream.
-        int8_t v = static_cast<int8_t>(data & 0x10u ? data | 0xE0u : data & 0xFu);
+        int8_t v =
+            static_cast<int8_t>(data & 0x10U ? data | 0xE0U : data & 0xFU);
 
         prev_sample += v;
 

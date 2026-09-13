@@ -121,7 +121,7 @@ class AbstractClass {
   **	Object entry and exit from the game system.
   */
   [[nodiscard]] virtual MoveType Can_Enter_Cell(
-      CELL, FacingType = FACING_NONE) const {
+      CELL /*unused*/, FacingType /*unused*/ = FACING_NONE) const {
     return MOVE_OK;
   }
 

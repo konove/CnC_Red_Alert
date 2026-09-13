@@ -102,7 +102,7 @@ bool Rect::Is_Valid() const { return Width > 0 && Height > 0; }
  *                                                                                             *
  * HISTORY: * 07/22/1996 JLB : Created. *
  *=============================================================================================*/
-const Rect Rect::Intersect(const Rect& rectangle, int* x, int* y) const {
+Rect Rect::Intersect(const Rect& rectangle, int* x, int* y) const {
   Rect rect(0, 0, 0, 0);  // Dummy (illegal) rectangle.
   Rect r = rectangle;     // Working rectangle.
 
@@ -170,7 +170,7 @@ const Rect Rect::Intersect(const Rect& rectangle, int* x, int* y) const {
   return r;
 }
 
-const Rect Union(const Rect& rect1, const Rect& rect2) {
+Rect Union(const Rect& rect1, const Rect& rect2) {
   if (rect1.Is_Valid()) {
     if (rect2.Is_Valid()) {
       Rect result = rect1;

@@ -2521,7 +2521,7 @@ const TechnoTypeClass* Fetch_Techno_Type(const RTTIType type, const int id) {
   return nullptr;
 }
 
-long VQ_Call_Back(unsigned char*, long) {
+long VQ_Call_Back(unsigned char* /*unused*/, long /*unused*/) {
   int key = 0;
   if (Keyboard->Check()) {
     key = Keyboard->Get();
@@ -2839,11 +2839,11 @@ enum CD_VOLUME {
   CD_LOCAL = -2,
   CD_ANY = -1,
   CD_SOVIET [[maybe_unused]] = 0,
-  CD_ALLIED [[maybe_unused]],
-  CD_COUNTERSTRIKE,
-  CD_AFTERMATH,
-  CD_CS_OR_AM,
-  CD_DVD,
+  CD_ALLIED [[maybe_unused]] = 1,
+  CD_COUNTERSTRIKE = 2,
+  CD_AFTERMATH = 3,
+  CD_CS_OR_AM = 4,
+  CD_DVD = 5,
 };
 
 // Index of the DVD's name in kCdNames. The table has no entry for the

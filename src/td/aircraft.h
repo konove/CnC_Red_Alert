@@ -42,9 +42,9 @@ class AircraftClass : public FootClass, public FlyClass {
   template <class Archive>
   void Serialize(Archive& ar);
 
-  void* operator new(size_t) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
-  void operator delete(void*);
+  void* operator new(size_t /*unused*/) noexcept;
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void operator delete(void* /*ptr*/);
   // objects compare directly against their type ID.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator AircraftType() const { return Class->Type; }
@@ -101,13 +101,13 @@ class AircraftClass : public FootClass, public FlyClass {
   COORDINATE Target_Coord() const override;
 
   // Object entry and exit from the game system.
-  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  int Exit_Object(TechnoClass*) override;
+  int Exit_Object(TechnoClass* /*unit*/ /*unused*/) override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
   const short* Overlap_List() const override;
   void Draw_It(int x, int y, WindowNumberType window) override;

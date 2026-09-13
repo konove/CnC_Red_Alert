@@ -41,8 +41,8 @@
 #include <cstdint>
 
 typedef enum {
-  BM_AMIGA,  // Bit plane format (8K per bitplane).
-  BM_MCGA,   // Byte per pixel format (64K).
+  BM_AMIGA = 0,  // Bit plane format (8K per bitplane).
+  BM_MCGA = 1,   // Byte per pixel format (64K).
 
   BM_DEFAULT = BM_MCGA  // Default picture format.
 } PicturePlaneType;

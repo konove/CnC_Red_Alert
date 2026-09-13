@@ -254,7 +254,7 @@ TEST(FixedSerializeTest, RoundTripsRawBits) {
     ArchiveWriter writer(sink);
     fixed out = value;
     out.Serialize(writer);
-    EXPECT_EQ(sink.bytes.size(), 2u);
+    EXPECT_EQ(sink.bytes.size(), 2U);
 
     BufferStraw straw(sink.bytes.data(), static_cast<int>(sink.bytes.size()));
     ArchiveReader reader(straw);

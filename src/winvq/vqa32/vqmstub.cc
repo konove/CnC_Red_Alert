@@ -21,7 +21,7 @@ static constexpr int16_t kImaAdpcmStepTable[89] = {
     5894,  6484,  7132,  7845,  8630,  9493,  10442, 11487, 12635, 13899,
     15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767};
 
-long AudioUnzap(void* /*source*/, void* /*dest*/, long) {
+long AudioUnzap(void* /*source*/, void* /*dest*/, long /*unused*/) {
   printf("%s\n", __func__);
   return 0;
 }

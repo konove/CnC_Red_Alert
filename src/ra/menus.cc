@@ -219,7 +219,8 @@ void Setup_Menu(int menu, const char* text[], unsigned long field, int index,
   Keyboard->Clear();
 }
 
-int Check_Menu(int menu, const char* text[], char*, long field, int index) {
+int Check_Menu(int menu, const char* text[], char* /*unused*/, long field,
+               int index) {
   int maxitem, select, key, menuy, menux;
   int mx1, mx2, my1, my2, tempy;
   int drawy, menuskip, halfskip;
@@ -394,7 +395,7 @@ int Check_Menu(int menu, const char* text[], char*, long field, int index) {
  * HISTORY:                                                                *
  *   05/16/1994 JLB : Created.                                             *
  *=========================================================================*/
-int Do_Menu(const char** strings, bool) {
+int Do_Menu(const char** strings, bool /*unused*/) {
   int count;         // Number of entries in this menu.
   int length;        // The width of the menu (in pixels).
   const char** ptr;  // Working menu text pointer.
@@ -488,7 +489,7 @@ int Do_Menu(const char** strings, bool) {
  * HISTORY:                                                                *
  *   05/17/1995 BRR : Created.                                             *
  *=========================================================================*/
-int Main_Menu(unsigned long) {
+int Main_Menu(unsigned long /*unused*/) {
   /*
   **	Dialog & button dimensions
   */

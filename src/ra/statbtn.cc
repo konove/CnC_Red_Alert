@@ -84,7 +84,7 @@
  *                                                                                             *
  * HISTORY:  01/15/1995 JLB : Created. *
  *=============================================================================================*/
-StaticButtonClass::StaticButtonClass(unsigned, const char* text,
+StaticButtonClass::StaticButtonClass(unsigned /*unused*/, const char* text,
                                      TextPrintType style, int x, int y, int w,
                                      int h)
     : GadgetClass(x, y, w, h, static_cast<FlagEnum>(0)),

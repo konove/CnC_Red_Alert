@@ -304,7 +304,7 @@ InfantryClass::~InfantryClass() {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void* InfantryClass::operator new(size_t) noexcept {
+void* InfantryClass::operator new(size_t /*unused*/) noexcept {
   void* ptr = Infantry.Allocate();
   if (ptr != nullptr) {
     static_cast<InfantryClass*>(ptr)->IsActive = true;
@@ -1199,7 +1199,7 @@ void InfantryClass::AI() {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
+MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -1469,7 +1469,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-const short* InfantryClass::Overlap_List(bool) const {
+const short* InfantryClass::Overlap_List(bool /*redraw*/) const {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -1554,7 +1554,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Enter_Idle_Mode(bool) {
+void InfantryClass::Enter_Idle_Mode(bool /*initial*/) {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 

@@ -476,7 +476,7 @@ static void Queue_AI_Normal() {
   //------------------------------------------------------------------------
   if (!Execute_DoList(1, PlayerPtr->Class->House, nullptr, nullptr, nullptr,
                       nullptr, nullptr)) {
-    GameActive = 0;
+    GameActive = false;
     return;
   }
 
@@ -1007,7 +1007,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   dialog_timer.Set(dialog_time);  // time to show dlg
   timeout_timer.Set(timeout);     // time to bail out
 
-  while (1) {
+  while (true) {
     Keyboard->Check();
 
     Update_Queue_Mono(net, 2);
@@ -1682,7 +1682,7 @@ static int Send_Packets(ConnManClass* net, char* multi_packet_buf,
   //------------------------------------------------------------------------
   //	Build our meta-packet & transmit it.
   //------------------------------------------------------------------------
-  while (1) {
+  while (true) {
     Keyboard->Check();
 
     Update_Queue_Mono(net, 1);
@@ -2372,7 +2372,7 @@ static int Handle_Timeout(ConnManClass* net, int64_t* their_frame,
 static void Stop_Game() {
   Session.LoadGame = false;
   Session.EmergencySave = false;
-  GameActive = 0;
+  GameActive = false;
   if (IsMono) {
     MonoClass::Disable();
   }
@@ -3687,7 +3687,7 @@ static void Queue_Playback() {
   if (Keyboard->Check()) {
     key = Keyboard->Get();
     if (key == KA_ESC || Session.Attract) {
-      GameActive = 0;
+      GameActive = false;
       return;
     }
   }
@@ -3698,7 +3698,7 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   if (Session.Attract && Frame > 0 &&
       (mx != Get_Mouse_X() || my != Get_Mouse_Y())) {
-    GameActive = 0;
+    GameActive = false;
     return;
   }
   mx = Get_Mouse_X();
@@ -3761,7 +3761,7 @@ static void Queue_Playback() {
   }
 
   if (!ok) {
-    GameActive = 0;
+    GameActive = false;
     return;
   }
 
@@ -3777,7 +3777,7 @@ static void Queue_Playback() {
   }
   if (!Execute_DoList(max_houses, base_house, nullptr, nullptr, nullptr,
                       nullptr, nullptr)) {
-    GameActive = 0;
+    GameActive = false;
     return;
   }
 

@@ -969,10 +969,10 @@ GameType Select_Serial_Dialog() {
   ........................................................................*/
   enum {
     BUTTON_DIAL = 100,
-    BUTTON_ANSWER,
-    BUTTON_NULLMODEM,
-    BUTTON_SETTINGS,
-    BUTTON_CANCEL,
+    BUTTON_ANSWER = 101,
+    BUTTON_NULLMODEM = 102,
+    BUTTON_SETTINGS = 103,
+    BUTTON_CANCEL = 104,
 
     NUM_OF_BUTTONS = 5,
   };
@@ -982,8 +982,8 @@ GameType Select_Serial_Dialog() {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_BUTTONS = 1,
+    REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 
@@ -1452,8 +1452,8 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
 
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_BUTTONS = 1,
+    REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND,
   } RedrawType;
 
@@ -1882,8 +1882,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_BUTTONS = 1,
+    REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 
@@ -3212,10 +3212,10 @@ int Com_Scenario_Dialog() {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_MESSAGE,
-    REDRAW_COLORS,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_MESSAGE = 1,
+    REDRAW_COLORS = 2,
+    REDRAW_BUTTONS = 3,
+    REDRAW_BACKGROUND = 4,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 
@@ -4642,10 +4642,10 @@ int Com_Show_Scenario_Dialog() {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_MESSAGE,
-    REDRAW_COLORS,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_MESSAGE = 1,
+    REDRAW_COLORS = 2,
+    REDRAW_BUTTONS = 3,
+    REDRAW_BACKGROUND = 4,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 
@@ -5799,8 +5799,8 @@ static int Phone_Dialog() {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_BUTTONS = 1,
+    REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 
@@ -6407,8 +6407,8 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_BUTTONS = 1,
+    REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 

@@ -109,8 +109,8 @@ class NullModemClass : public ConnManClass {
            int wordlength, int stopbits, int flowcontrol);
   int Delete_Connection();
   int Num_Connections() override;
-  int Connection_ID(int) override { return 0; }
-  int Connection_Index(int) override { return 0; }
+  int Connection_ID(int /*index*/) override { return 0; }
+  int Connection_Index(int /*id*/) override { return 0; }
   int Init_Send_Queue();
   void Shutdown();
 
@@ -127,10 +127,10 @@ class NullModemClass : public ConnManClass {
   ** These are for compatibility
   */
   int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
-                           int = CONNECTION_NONE) override {
+                           int /*conn_id*/ = CONNECTION_NONE) override {
     return Send_Message(buf, buflen, ack_req);
   }
-  int Get_Private_Message(void* buf, int* buflen, int*) override {
+  int Get_Private_Message(void* buf, int* buflen, int* /*conn_id*/) override {
     return Get_Message(buf, buflen);
   }
 
@@ -159,16 +159,18 @@ class NullModemClass : public ConnManClass {
   */
   int Global_Num_Send() override { return Num_Send(); }
   int Global_Num_Receive() override { return Num_Receive(); }
-  int Private_Num_Send(int = CONNECTION_NONE) override { return Num_Send(); }
-  int Private_Num_Receive(int = CONNECTION_NONE) override {
+  int Private_Num_Send(int /*id*/ = CONNECTION_NONE) override {
+    return Num_Send();
+  }
+  int Private_Num_Receive(int /*id*/ = CONNECTION_NONE) override {
     return Num_Receive();
   }
 
   DetectPortType Detect_Port(SerialSettingsType* settings);
-  int Detect_Modem(SerialSettingsType* settings, bool reconnect = 0);
+  int Detect_Modem(SerialSettingsType* settings, bool reconnect = false);
   DialStatusType Dial_Modem(const char* string, DialMethodType method,
-                            bool reconnect = 0);
-  DialStatusType Answer_Modem(bool reconnect = 0);
+                            bool reconnect = false);
+  DialStatusType Answer_Modem(bool reconnect = false);
   bool Hangup_Modem();
   void Setup_Modem_Echo(void (*func)(char c));
   void Remove_Modem_Echo();

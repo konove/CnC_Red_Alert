@@ -226,8 +226,8 @@ using CELL = int16_t;
 
 // Size of the map in cells. The brace initialization fails to compile if the
 // map ever outgrows a CELL.
-inline constexpr CELL MAP_CELL_W{1u << MAP_CELL_MAX_X_BITS};
-inline constexpr CELL MAP_CELL_H{1u << MAP_CELL_MAX_Y_BITS};
+inline constexpr CELL MAP_CELL_W{1U << MAP_CELL_MAX_X_BITS};
+inline constexpr CELL MAP_CELL_H{1U << MAP_CELL_MAX_Y_BITS};
 inline constexpr CELL MAP_CELL_TOTAL{MAP_CELL_W * MAP_CELL_H};
 
 #define REFRESH_EOL 32767  // This number ends a refresh/occupy offset list.
@@ -298,45 +298,45 @@ typedef enum MoveType {
 typedef enum ThemeType {
   THEME_PICK_ANOTHER = -2,
   THEME_NONE = -1,
-  THEME_AIRSTRIKE,
-  THEME_80MX,
-  THEME_CHRG,
-  THEME_CREP,
-  THEME_DRIL,
-  THEME_DRON,
-  THEME_FIST,
-  THEME_RECON,
-  THEME_VOICE,
-  THEME_HEAVYG,
-  THEME_J1,
-  THEME_JDI_V2,
-  THEME_RADIO,
-  THEME_RAIN,
-  THEME_AOI,       // Act On Instinct
-  THEME_CCTHANG,   //	C&C Thang
-  THEME_DIE,       //	Die!!
-  THEME_FWP,       //	Fight, Win, Prevail
-  THEME_IND,       //	Industrial
-  THEME_IND2,      //	Industrial2
-  THEME_JUSTDOIT,  //	Just Do It!
-  THEME_LINEFIRE,  //	In The Line Of Fire
-  THEME_MARCH,     //	March To Your Doom
-  THEME_MECHMAN,   // Mechanical Man
-  THEME_NOMERCY,   //	No Mercy
-  THEME_OTP,       //	On The Prowl
-  THEME_PRP,       //	Prepare For Battle
-  THEME_ROUT,      //	Reaching Out
-  THEME_HEART,     //
-  THEME_STOPTHEM,  //	Stop Them
-  THEME_TROUBLE,   //	Looks Like Trouble
-  THEME_WARFARE,   //	Warfare
-  THEME_BFEARED,   //	Enemies To Be Feared
-  THEME_IAM,       // I Am
-  THEME_WIN1,      //	Great Shot!
-  THEME_MAP1,      // Map subliminal techno "theme".
-  THEME_VALKYRIE,  // Ride of the valkyries.
+  THEME_AIRSTRIKE = 0,
+  THEME_80MX = 1,
+  THEME_CHRG = 2,
+  THEME_CREP = 3,
+  THEME_DRIL = 4,
+  THEME_DRON = 5,
+  THEME_FIST = 6,
+  THEME_RECON = 7,
+  THEME_VOICE = 8,
+  THEME_HEAVYG = 9,
+  THEME_J1 = 10,
+  THEME_JDI_V2 = 11,
+  THEME_RADIO = 12,
+  THEME_RAIN = 13,
+  THEME_AOI = 14,       // Act On Instinct
+  THEME_CCTHANG = 15,   //	C&C Thang
+  THEME_DIE = 16,       //	Die!!
+  THEME_FWP = 17,       //	Fight, Win, Prevail
+  THEME_IND = 18,       //	Industrial
+  THEME_IND2 = 19,      //	Industrial2
+  THEME_JUSTDOIT = 20,  //	Just Do It!
+  THEME_LINEFIRE = 21,  //	In The Line Of Fire
+  THEME_MARCH = 22,     //	March To Your Doom
+  THEME_MECHMAN = 23,   // Mechanical Man
+  THEME_NOMERCY = 24,   //	No Mercy
+  THEME_OTP = 25,       //	On The Prowl
+  THEME_PRP = 26,       //	Prepare For Battle
+  THEME_ROUT = 27,      //	Reaching Out
+  THEME_HEART = 28,     //
+  THEME_STOPTHEM = 29,  //	Stop Them
+  THEME_TROUBLE = 30,   //	Looks Like Trouble
+  THEME_WARFARE = 31,   //	Warfare
+  THEME_BFEARED = 32,   //	Enemies To Be Feared
+  THEME_IAM = 33,       // I Am
+  THEME_WIN1 = 34,      //	Great Shot!
+  THEME_MAP1 = 35,      // Map subliminal techno "theme".
+  THEME_VALKYRIE = 36,  // Ride of the valkyries.
 
-  THEME_COUNT,
+  THEME_COUNT = 37,
   THEME_LAST = THEME_BFEARED,
 } ThemeType;
 
@@ -572,18 +572,18 @@ typedef enum VolType {
 */
 typedef enum HousesType : int8_t {
   HOUSE_NONE = -1,
-  HOUSE_GOOD,     // Global Defense Initiative
-  HOUSE_BAD,      // Brotherhood of Nod
-  HOUSE_NEUTRAL,  // Civilians
-  HOUSE_JP,       // Disaster Containment Team
-  HOUSE_MULTI1,   // Multi-Player house #1
-  HOUSE_MULTI2,   // Multi-Player house #2
-  HOUSE_MULTI3,   // Multi-Player house #3
-  HOUSE_MULTI4,   // Multi-Player house #4
-  HOUSE_MULTI5,   // Multi-Player house #5
-  HOUSE_MULTI6,   // Multi-Player house #6
+  HOUSE_GOOD = 0,     // Global Defense Initiative
+  HOUSE_BAD = 1,      // Brotherhood of Nod
+  HOUSE_NEUTRAL = 2,  // Civilians
+  HOUSE_JP = 3,       // Disaster Containment Team
+  HOUSE_MULTI1 = 4,   // Multi-Player house #1
+  HOUSE_MULTI2 = 5,   // Multi-Player house #2
+  HOUSE_MULTI3 = 6,   // Multi-Player house #3
+  HOUSE_MULTI4 = 7,   // Multi-Player house #4
+  HOUSE_MULTI5 = 8,   // Multi-Player house #5
+  HOUSE_MULTI6 = 9,   // Multi-Player house #6
 
-  HOUSE_COUNT,
+  HOUSE_COUNT = 10,
   HOUSE_FIRST = HOUSE_GOOD
 } HousesType;
 
@@ -600,16 +600,16 @@ typedef enum HousesType : int8_t {
 
 typedef enum PlayerColorType {
   REMAP_NONE = -1,
-  REMAP_YELLOW,
+  REMAP_YELLOW = 0,
   REMAP_FIRST = REMAP_YELLOW,
-  REMAP_RED,
-  REMAP_AQUA,
-  REMAP_ORANGE,
-  REMAP_GREEN,
-  REMAP_BLUE,
+  REMAP_RED = 1,
+  REMAP_AQUA = 2,
+  REMAP_ORANGE = 3,
+  REMAP_GREEN = 4,
+  REMAP_BLUE = 5,
   REMAP_LAST = REMAP_BLUE,
 
-  REMAP_COUNT
+  REMAP_COUNT = 6
 } PlayerColorType;
 
 /**********************************************************************
@@ -937,13 +937,13 @@ typedef enum UnitType {
 *helicopters *	as well as traditional aircraft.
 */
 typedef enum AircraftType {
-  AIRCRAFT_TRANSPORT,   // Transport helicopter.
-  AIRCRAFT_A10,         // Ground attack plane.
-  AIRCRAFT_HELICOPTER,  // Apache gunship.
-  AIRCRAFT_CARGO,       // Cargo plane.
-  AIRCRAFT_ORCA,        // Nod attack helicopter.
+  AIRCRAFT_TRANSPORT = 0,   // Transport helicopter.
+  AIRCRAFT_A10 = 1,         // Ground attack plane.
+  AIRCRAFT_HELICOPTER = 2,  // Apache gunship.
+  AIRCRAFT_CARGO = 3,       // Cargo plane.
+  AIRCRAFT_ORCA = 4,        // Nod attack helicopter.
 
-  AIRCRAFT_COUNT,
+  AIRCRAFT_COUNT = 5,
   AIRCRAFT_NONE = -1,
 } AircraftType;
 
@@ -960,233 +960,233 @@ typedef enum AircraftType {
 **	as the bottom most layer, then it is a template.
 */
 typedef enum TemplateType : uint8_t {
-  TEMPLATE_CLEAR1,
-  TEMPLATE_WATER,  // This must be the first non-clear template.
-  TEMPLATE_WATER2,
-  TEMPLATE_SHORE1,
-  TEMPLATE_SHORE2,
-  TEMPLATE_SHORE3,
-  TEMPLATE_SHORE4,
-  TEMPLATE_SHORE5,
-  TEMPLATE_SHORE11,
-  TEMPLATE_SHORE12,
-  TEMPLATE_SHORE13,
-  TEMPLATE_SHORE14,
-  TEMPLATE_SHORE15,
-  TEMPLATE_SLOPE1,
-  TEMPLATE_SLOPE2,
-  TEMPLATE_SLOPE3,
-  TEMPLATE_SLOPE4,
-  TEMPLATE_SLOPE5,
-  TEMPLATE_SLOPE6,
-  TEMPLATE_SLOPE7,
-  TEMPLATE_SLOPE8,
-  TEMPLATE_SLOPE9,
-  TEMPLATE_SLOPE10,
-  TEMPLATE_SLOPE11,
-  TEMPLATE_SLOPE12,
-  TEMPLATE_SLOPE13,
-  TEMPLATE_SLOPE14,
-  TEMPLATE_SLOPE15,
-  TEMPLATE_SLOPE16,
-  TEMPLATE_SLOPE17,
-  TEMPLATE_SLOPE18,
-  TEMPLATE_SLOPE19,
-  TEMPLATE_SLOPE20,
-  TEMPLATE_SLOPE21,
-  TEMPLATE_SLOPE22,
-  TEMPLATE_SLOPE23,
-  TEMPLATE_SLOPE24,
-  TEMPLATE_SLOPE25,
-  TEMPLATE_SLOPE26,
-  TEMPLATE_SLOPE27,
-  TEMPLATE_SLOPE28,
-  TEMPLATE_SLOPE29,
-  TEMPLATE_SLOPE30,
-  TEMPLATE_SLOPE31,
-  TEMPLATE_SLOPE32,
-  TEMPLATE_SLOPE33,
-  TEMPLATE_SLOPE34,
-  TEMPLATE_SLOPE35,
-  TEMPLATE_SLOPE36,
-  TEMPLATE_SLOPE37,
-  TEMPLATE_SLOPE38,
-  TEMPLATE_SHORE32,
-  TEMPLATE_SHORE33,
-  TEMPLATE_SHORE20,
-  TEMPLATE_SHORE21,
-  TEMPLATE_SHORE22,
-  TEMPLATE_SHORE23,
-  TEMPLATE_BRUSH1,
-  TEMPLATE_BRUSH2,
-  TEMPLATE_BRUSH3,
-  TEMPLATE_BRUSH4,
-  TEMPLATE_BRUSH5,
-  TEMPLATE_BRUSH6,
-  TEMPLATE_BRUSH7,
-  TEMPLATE_BRUSH8,
-  TEMPLATE_BRUSH9,
-  TEMPLATE_BRUSH10,
-  TEMPLATE_PATCH1,
-  TEMPLATE_PATCH2,
-  TEMPLATE_PATCH3,
-  TEMPLATE_PATCH4,
-  TEMPLATE_PATCH5,
-  TEMPLATE_PATCH6,
-  TEMPLATE_PATCH7,
-  TEMPLATE_PATCH8,
-  TEMPLATE_SHORE16,
-  TEMPLATE_SHORE17,
-  TEMPLATE_SHORE18,
-  TEMPLATE_SHORE19,
-  TEMPLATE_PATCH13,
-  TEMPLATE_PATCH14,
-  TEMPLATE_PATCH15,
-  TEMPLATE_BOULDER1,
-  TEMPLATE_BOULDER2,
-  TEMPLATE_BOULDER3,
-  TEMPLATE_BOULDER4,
-  TEMPLATE_BOULDER5,
-  TEMPLATE_BOULDER6,
-  TEMPLATE_SHORE6,
-  TEMPLATE_SHORE7,
-  TEMPLATE_SHORE8,
-  TEMPLATE_SHORE9,
-  TEMPLATE_SHORE10,
+  TEMPLATE_CLEAR1 = 0,
+  TEMPLATE_WATER = 1,  // This must be the first non-clear template.
+  TEMPLATE_WATER2 = 2,
+  TEMPLATE_SHORE1 = 3,
+  TEMPLATE_SHORE2 = 4,
+  TEMPLATE_SHORE3 = 5,
+  TEMPLATE_SHORE4 = 6,
+  TEMPLATE_SHORE5 = 7,
+  TEMPLATE_SHORE11 = 8,
+  TEMPLATE_SHORE12 = 9,
+  TEMPLATE_SHORE13 = 10,
+  TEMPLATE_SHORE14 = 11,
+  TEMPLATE_SHORE15 = 12,
+  TEMPLATE_SLOPE1 = 13,
+  TEMPLATE_SLOPE2 = 14,
+  TEMPLATE_SLOPE3 = 15,
+  TEMPLATE_SLOPE4 = 16,
+  TEMPLATE_SLOPE5 = 17,
+  TEMPLATE_SLOPE6 = 18,
+  TEMPLATE_SLOPE7 = 19,
+  TEMPLATE_SLOPE8 = 20,
+  TEMPLATE_SLOPE9 = 21,
+  TEMPLATE_SLOPE10 = 22,
+  TEMPLATE_SLOPE11 = 23,
+  TEMPLATE_SLOPE12 = 24,
+  TEMPLATE_SLOPE13 = 25,
+  TEMPLATE_SLOPE14 = 26,
+  TEMPLATE_SLOPE15 = 27,
+  TEMPLATE_SLOPE16 = 28,
+  TEMPLATE_SLOPE17 = 29,
+  TEMPLATE_SLOPE18 = 30,
+  TEMPLATE_SLOPE19 = 31,
+  TEMPLATE_SLOPE20 = 32,
+  TEMPLATE_SLOPE21 = 33,
+  TEMPLATE_SLOPE22 = 34,
+  TEMPLATE_SLOPE23 = 35,
+  TEMPLATE_SLOPE24 = 36,
+  TEMPLATE_SLOPE25 = 37,
+  TEMPLATE_SLOPE26 = 38,
+  TEMPLATE_SLOPE27 = 39,
+  TEMPLATE_SLOPE28 = 40,
+  TEMPLATE_SLOPE29 = 41,
+  TEMPLATE_SLOPE30 = 42,
+  TEMPLATE_SLOPE31 = 43,
+  TEMPLATE_SLOPE32 = 44,
+  TEMPLATE_SLOPE33 = 45,
+  TEMPLATE_SLOPE34 = 46,
+  TEMPLATE_SLOPE35 = 47,
+  TEMPLATE_SLOPE36 = 48,
+  TEMPLATE_SLOPE37 = 49,
+  TEMPLATE_SLOPE38 = 50,
+  TEMPLATE_SHORE32 = 51,
+  TEMPLATE_SHORE33 = 52,
+  TEMPLATE_SHORE20 = 53,
+  TEMPLATE_SHORE21 = 54,
+  TEMPLATE_SHORE22 = 55,
+  TEMPLATE_SHORE23 = 56,
+  TEMPLATE_BRUSH1 = 57,
+  TEMPLATE_BRUSH2 = 58,
+  TEMPLATE_BRUSH3 = 59,
+  TEMPLATE_BRUSH4 = 60,
+  TEMPLATE_BRUSH5 = 61,
+  TEMPLATE_BRUSH6 = 62,
+  TEMPLATE_BRUSH7 = 63,
+  TEMPLATE_BRUSH8 = 64,
+  TEMPLATE_BRUSH9 = 65,
+  TEMPLATE_BRUSH10 = 66,
+  TEMPLATE_PATCH1 = 67,
+  TEMPLATE_PATCH2 = 68,
+  TEMPLATE_PATCH3 = 69,
+  TEMPLATE_PATCH4 = 70,
+  TEMPLATE_PATCH5 = 71,
+  TEMPLATE_PATCH6 = 72,
+  TEMPLATE_PATCH7 = 73,
+  TEMPLATE_PATCH8 = 74,
+  TEMPLATE_SHORE16 = 75,
+  TEMPLATE_SHORE17 = 76,
+  TEMPLATE_SHORE18 = 77,
+  TEMPLATE_SHORE19 = 78,
+  TEMPLATE_PATCH13 = 79,
+  TEMPLATE_PATCH14 = 80,
+  TEMPLATE_PATCH15 = 81,
+  TEMPLATE_BOULDER1 = 82,
+  TEMPLATE_BOULDER2 = 83,
+  TEMPLATE_BOULDER3 = 84,
+  TEMPLATE_BOULDER4 = 85,
+  TEMPLATE_BOULDER5 = 86,
+  TEMPLATE_BOULDER6 = 87,
+  TEMPLATE_SHORE6 = 88,
+  TEMPLATE_SHORE7 = 89,
+  TEMPLATE_SHORE8 = 90,
+  TEMPLATE_SHORE9 = 91,
+  TEMPLATE_SHORE10 = 92,
 
-  TEMPLATE_ROAD1,
-  TEMPLATE_ROAD2,
-  TEMPLATE_ROAD3,
-  TEMPLATE_ROAD4,
-  TEMPLATE_ROAD5,
-  TEMPLATE_ROAD6,
-  TEMPLATE_ROAD7,
-  TEMPLATE_ROAD8,
-  TEMPLATE_ROAD9,
-  TEMPLATE_ROAD10,
-  TEMPLATE_ROAD11,
-  TEMPLATE_ROAD12,
-  TEMPLATE_ROAD13,
-  TEMPLATE_ROAD14,
-  TEMPLATE_ROAD15,
-  TEMPLATE_ROAD16,
-  TEMPLATE_ROAD17,
-  TEMPLATE_ROAD18,
-  TEMPLATE_ROAD19,
-  TEMPLATE_ROAD20,
-  TEMPLATE_ROAD21,
-  TEMPLATE_ROAD22,
-  TEMPLATE_ROAD23,
-  TEMPLATE_ROAD24,
-  TEMPLATE_ROAD25,
-  TEMPLATE_ROAD26,
-  TEMPLATE_ROAD27,
-  TEMPLATE_ROAD28,
-  TEMPLATE_ROAD29,
-  TEMPLATE_ROAD30,
-  TEMPLATE_ROAD31,
-  TEMPLATE_ROAD32,
-  TEMPLATE_ROAD33,
-  TEMPLATE_ROAD34,
-  TEMPLATE_ROAD35,
-  TEMPLATE_ROAD36,
-  TEMPLATE_ROAD37,
-  TEMPLATE_ROAD38,
-  TEMPLATE_ROAD39,
-  TEMPLATE_ROAD40,
-  TEMPLATE_ROAD41,
-  TEMPLATE_ROAD42,
-  TEMPLATE_ROAD43,
+  TEMPLATE_ROAD1 = 93,
+  TEMPLATE_ROAD2 = 94,
+  TEMPLATE_ROAD3 = 95,
+  TEMPLATE_ROAD4 = 96,
+  TEMPLATE_ROAD5 = 97,
+  TEMPLATE_ROAD6 = 98,
+  TEMPLATE_ROAD7 = 99,
+  TEMPLATE_ROAD8 = 100,
+  TEMPLATE_ROAD9 = 101,
+  TEMPLATE_ROAD10 = 102,
+  TEMPLATE_ROAD11 = 103,
+  TEMPLATE_ROAD12 = 104,
+  TEMPLATE_ROAD13 = 105,
+  TEMPLATE_ROAD14 = 106,
+  TEMPLATE_ROAD15 = 107,
+  TEMPLATE_ROAD16 = 108,
+  TEMPLATE_ROAD17 = 109,
+  TEMPLATE_ROAD18 = 110,
+  TEMPLATE_ROAD19 = 111,
+  TEMPLATE_ROAD20 = 112,
+  TEMPLATE_ROAD21 = 113,
+  TEMPLATE_ROAD22 = 114,
+  TEMPLATE_ROAD23 = 115,
+  TEMPLATE_ROAD24 = 116,
+  TEMPLATE_ROAD25 = 117,
+  TEMPLATE_ROAD26 = 118,
+  TEMPLATE_ROAD27 = 119,
+  TEMPLATE_ROAD28 = 120,
+  TEMPLATE_ROAD29 = 121,
+  TEMPLATE_ROAD30 = 122,
+  TEMPLATE_ROAD31 = 123,
+  TEMPLATE_ROAD32 = 124,
+  TEMPLATE_ROAD33 = 125,
+  TEMPLATE_ROAD34 = 126,
+  TEMPLATE_ROAD35 = 127,
+  TEMPLATE_ROAD36 = 128,
+  TEMPLATE_ROAD37 = 129,
+  TEMPLATE_ROAD38 = 130,
+  TEMPLATE_ROAD39 = 131,
+  TEMPLATE_ROAD40 = 132,
+  TEMPLATE_ROAD41 = 133,
+  TEMPLATE_ROAD42 = 134,
+  TEMPLATE_ROAD43 = 135,
 
-  TEMPLATE_RIVER1,
-  TEMPLATE_RIVER2,
-  TEMPLATE_RIVER3,
-  TEMPLATE_RIVER4,
-  TEMPLATE_RIVER5,
-  TEMPLATE_RIVER6,
-  TEMPLATE_RIVER7,
-  TEMPLATE_RIVER8,
-  TEMPLATE_RIVER9,
-  TEMPLATE_RIVER10,
-  TEMPLATE_RIVER11,
-  TEMPLATE_RIVER12,
-  TEMPLATE_RIVER13,
+  TEMPLATE_RIVER1 = 136,
+  TEMPLATE_RIVER2 = 137,
+  TEMPLATE_RIVER3 = 138,
+  TEMPLATE_RIVER4 = 139,
+  TEMPLATE_RIVER5 = 140,
+  TEMPLATE_RIVER6 = 141,
+  TEMPLATE_RIVER7 = 142,
+  TEMPLATE_RIVER8 = 143,
+  TEMPLATE_RIVER9 = 144,
+  TEMPLATE_RIVER10 = 145,
+  TEMPLATE_RIVER11 = 146,
+  TEMPLATE_RIVER12 = 147,
+  TEMPLATE_RIVER13 = 148,
 
-  TEMPLATE_RIVER14,
-  TEMPLATE_RIVER15,
-  TEMPLATE_RIVER16,
-  TEMPLATE_RIVER17,
-  TEMPLATE_RIVER18,
-  TEMPLATE_RIVER19,
-  TEMPLATE_RIVER20,
-  TEMPLATE_RIVER21,
-  TEMPLATE_RIVER22,
-  TEMPLATE_RIVER23,
-  TEMPLATE_RIVER24,
-  TEMPLATE_RIVER25,
-  TEMPLATE_FORD1,
-  TEMPLATE_FORD2,
-  TEMPLATE_FALLS1,
-  TEMPLATE_FALLS2,
+  TEMPLATE_RIVER14 = 149,
+  TEMPLATE_RIVER15 = 150,
+  TEMPLATE_RIVER16 = 151,
+  TEMPLATE_RIVER17 = 152,
+  TEMPLATE_RIVER18 = 153,
+  TEMPLATE_RIVER19 = 154,
+  TEMPLATE_RIVER20 = 155,
+  TEMPLATE_RIVER21 = 156,
+  TEMPLATE_RIVER22 = 157,
+  TEMPLATE_RIVER23 = 158,
+  TEMPLATE_RIVER24 = 159,
+  TEMPLATE_RIVER25 = 160,
+  TEMPLATE_FORD1 = 161,
+  TEMPLATE_FORD2 = 162,
+  TEMPLATE_FALLS1 = 163,
+  TEMPLATE_FALLS2 = 164,
 
-  TEMPLATE_BRIDGE1,
-  TEMPLATE_BRIDGE1D,
-  TEMPLATE_BRIDGE2,
-  TEMPLATE_BRIDGE2D,
-  TEMPLATE_BRIDGE3,
-  TEMPLATE_BRIDGE3D,
-  TEMPLATE_BRIDGE4,
-  TEMPLATE_BRIDGE4D,
+  TEMPLATE_BRIDGE1 = 165,
+  TEMPLATE_BRIDGE1D = 166,
+  TEMPLATE_BRIDGE2 = 167,
+  TEMPLATE_BRIDGE2D = 168,
+  TEMPLATE_BRIDGE3 = 169,
+  TEMPLATE_BRIDGE3D = 170,
+  TEMPLATE_BRIDGE4 = 171,
+  TEMPLATE_BRIDGE4D = 172,
 
-  TEMPLATE_SHORE24,
-  TEMPLATE_SHORE25,
-  TEMPLATE_SHORE26,
-  TEMPLATE_SHORE27,
-  TEMPLATE_SHORE28,
-  TEMPLATE_SHORE29,
-  TEMPLATE_SHORE30,
-  TEMPLATE_SHORE31,
+  TEMPLATE_SHORE24 = 173,
+  TEMPLATE_SHORE25 = 174,
+  TEMPLATE_SHORE26 = 175,
+  TEMPLATE_SHORE27 = 176,
+  TEMPLATE_SHORE28 = 177,
+  TEMPLATE_SHORE29 = 178,
+  TEMPLATE_SHORE30 = 179,
+  TEMPLATE_SHORE31 = 180,
 
-  TEMPLATE_PATCH16,
-  TEMPLATE_PATCH17,
-  TEMPLATE_PATCH18,
-  TEMPLATE_PATCH19,
-  TEMPLATE_PATCH20,
+  TEMPLATE_PATCH16 = 181,
+  TEMPLATE_PATCH17 = 182,
+  TEMPLATE_PATCH18 = 183,
+  TEMPLATE_PATCH19 = 184,
+  TEMPLATE_PATCH20 = 185,
 
-  TEMPLATE_SHORE34,
-  TEMPLATE_SHORE35,
-  TEMPLATE_SHORE36,
-  TEMPLATE_SHORE37,
-  TEMPLATE_SHORE38,
-  TEMPLATE_SHORE39,
-  TEMPLATE_SHORE40,
-  TEMPLATE_SHORE41,
-  TEMPLATE_SHORE42,
-  TEMPLATE_SHORE43,
-  TEMPLATE_SHORE44,
-  TEMPLATE_SHORE45,
+  TEMPLATE_SHORE34 = 186,
+  TEMPLATE_SHORE35 = 187,
+  TEMPLATE_SHORE36 = 188,
+  TEMPLATE_SHORE37 = 189,
+  TEMPLATE_SHORE38 = 190,
+  TEMPLATE_SHORE39 = 191,
+  TEMPLATE_SHORE40 = 192,
+  TEMPLATE_SHORE41 = 193,
+  TEMPLATE_SHORE42 = 194,
+  TEMPLATE_SHORE43 = 195,
+  TEMPLATE_SHORE44 = 196,
+  TEMPLATE_SHORE45 = 197,
 
-  TEMPLATE_SHORE46,
-  TEMPLATE_SHORE47,
-  TEMPLATE_SHORE48,
-  TEMPLATE_SHORE49,
-  TEMPLATE_SHORE50,
-  TEMPLATE_SHORE51,
-  TEMPLATE_SHORE52,
-  TEMPLATE_SHORE53,
-  TEMPLATE_SHORE54,
-  TEMPLATE_SHORE55,
-  TEMPLATE_SHORE56,
-  TEMPLATE_SHORE57,
-  TEMPLATE_SHORE58,
-  TEMPLATE_SHORE59,
-  TEMPLATE_SHORE60,
-  TEMPLATE_SHORE61,
+  TEMPLATE_SHORE46 = 198,
+  TEMPLATE_SHORE47 = 199,
+  TEMPLATE_SHORE48 = 200,
+  TEMPLATE_SHORE49 = 201,
+  TEMPLATE_SHORE50 = 202,
+  TEMPLATE_SHORE51 = 203,
+  TEMPLATE_SHORE52 = 204,
+  TEMPLATE_SHORE53 = 205,
+  TEMPLATE_SHORE54 = 206,
+  TEMPLATE_SHORE55 = 207,
+  TEMPLATE_SHORE56 = 208,
+  TEMPLATE_SHORE57 = 209,
+  TEMPLATE_SHORE58 = 210,
+  TEMPLATE_SHORE59 = 211,
+  TEMPLATE_SHORE60 = 212,
+  TEMPLATE_SHORE61 = 213,
 
-  TEMPLATE_SHORE62,
-  TEMPLATE_SHORE63,
+  TEMPLATE_SHORE62 = 214,
+  TEMPLATE_SHORE63 = 215,
 
-  TEMPLATE_COUNT,
+  TEMPLATE_COUNT = 216,
   TEMPLATE_NONE = 255,
 } TemplateType;
 
@@ -1266,40 +1266,41 @@ typedef enum SmudgeType {
 typedef enum AnimType {
   ANIM_NONE = -1,
   ANIM_FBALL1 = 0,    // Large fireball explosion (bulges rightward).
-  ANIM_GRENADE,       // Genade (dirt type) explosion.
-  ANIM_FRAG1,         // Medium fragment throwing explosion -- short decay.
-  ANIM_FRAG2,         // Medium fragment throwing explosion -- long decay.
-  ANIM_VEH_HIT1,      //	Small fireball explosion (bulges rightward).
-  ANIM_VEH_HIT2,      //	Small fragment throwing explosion -- pop & sparkles.
-  ANIM_VEH_HIT3,      // Small fragment throwing explosion -- burn/exp mix.
-  ANIM_ART_EXP1,      // Large fragment throwing explosion -- many sparkles.
-  ANIM_NAPALM1,       // Small napalm burn.
-  ANIM_NAPALM2,       // Medium napalm burn.
-  ANIM_NAPALM3,       // Large napalm burn.
-  ANIM_SMOKE_PUFF,    // Small rocket smoke trail puff.
-  ANIM_PIFF,          // Machine gun impact piffs.
-  ANIM_PIFFPIFF,      // Chaingun impact piffs.
-  ANIM_FLAME_N,       // Flame thrower firing north.
-  ANIM_FLAME_NE,      //	Flame thrower firing north east.
-  ANIM_FLAME_E,       // Flame thrower firing east.
-  ANIM_FLAME_SE,      // Flame thrower firing south east.
-  ANIM_FLAME_S,       // Flame thrower firing south.
-  ANIM_FLAME_SW,      // Flame thrower firing south west.
-  ANIM_FLAME_W,       // Flame thrower firing west.
-  ANIM_FLAME_NW,      // Flame thrower firing north west.
-  ANIM_CHEM_N,        // Chem sprayer firing north.
-  ANIM_CHEM_NE,       //	Chem sprayer firing north east.
-  ANIM_CHEM_E,        // Chem sprayer firing east.
-  ANIM_CHEM_SE,       // Chem sprayer firing south east.
-  ANIM_CHEM_S,        // Chem sprayer firing south.
-  ANIM_CHEM_SW,       // Chem sprayer firing south west.
-  ANIM_CHEM_W,        // Chem sprayer firing west.
-  ANIM_CHEM_NW,       // Chem sprayer firing north west.
-  ANIM_FIRE_SMALL,    // Small flame animation.
-  ANIM_FIRE_MED,      // Medium flame animation.
-  ANIM_FIRE_MED2,     // Medium flame animation (oranger).
-  ANIM_FIRE_TINY,     // Very tiny flames.
-  ANIM_MUZZLE_FLASH,  // Big cannon flash (with translucency).
+  ANIM_GRENADE = 1,   // Genade (dirt type) explosion.
+  ANIM_FRAG1 = 2,     // Medium fragment throwing explosion -- short decay.
+  ANIM_FRAG2 = 3,     // Medium fragment throwing explosion -- long decay.
+  ANIM_VEH_HIT1 = 4,  //	Small fireball explosion (bulges rightward).
+  ANIM_VEH_HIT2 =
+      5,                 //	Small fragment throwing explosion -- pop & sparkles.
+  ANIM_VEH_HIT3 = 6,     // Small fragment throwing explosion -- burn/exp mix.
+  ANIM_ART_EXP1 = 7,     // Large fragment throwing explosion -- many sparkles.
+  ANIM_NAPALM1 = 8,      // Small napalm burn.
+  ANIM_NAPALM2 = 9,      // Medium napalm burn.
+  ANIM_NAPALM3 = 10,     // Large napalm burn.
+  ANIM_SMOKE_PUFF = 11,  // Small rocket smoke trail puff.
+  ANIM_PIFF = 12,        // Machine gun impact piffs.
+  ANIM_PIFFPIFF = 13,    // Chaingun impact piffs.
+  ANIM_FLAME_N = 14,     // Flame thrower firing north.
+  ANIM_FLAME_NE = 15,    //	Flame thrower firing north east.
+  ANIM_FLAME_E = 16,     // Flame thrower firing east.
+  ANIM_FLAME_SE = 17,    // Flame thrower firing south east.
+  ANIM_FLAME_S = 18,     // Flame thrower firing south.
+  ANIM_FLAME_SW = 19,    // Flame thrower firing south west.
+  ANIM_FLAME_W = 20,     // Flame thrower firing west.
+  ANIM_FLAME_NW = 21,    // Flame thrower firing north west.
+  ANIM_CHEM_N = 22,      // Chem sprayer firing north.
+  ANIM_CHEM_NE = 23,     //	Chem sprayer firing north east.
+  ANIM_CHEM_E = 24,      // Chem sprayer firing east.
+  ANIM_CHEM_SE = 25,     // Chem sprayer firing south east.
+  ANIM_CHEM_S = 26,      // Chem sprayer firing south.
+  ANIM_CHEM_SW = 27,     // Chem sprayer firing south west.
+  ANIM_CHEM_W = 28,      // Chem sprayer firing west.
+  ANIM_CHEM_NW = 29,     // Chem sprayer firing north west.
+  ANIM_FIRE_SMALL = 30,  // Small flame animation.
+  ANIM_FIRE_MED = 31,    // Medium flame animation.
+  ANIM_FIRE_MED2 = 32,   // Medium flame animation (oranger).
+  ANIM_FIRE_TINY = 33,   // Very tiny flames.
+  ANIM_MUZZLE_FLASH = 34,  // Big cannon flash (with translucency).
 #ifdef NEVER
   ANIM_E1_ROT_FIRE,  // Infantry decay animations.
   ANIM_E1_ROT_GRENADE,
@@ -1318,51 +1319,51 @@ typedef enum AnimType {
   ANIM_E4_ROT_GUN,
   ANIM_E4_ROT_EXP,
 #endif
-  ANIM_SMOKE_M,        // Smoke rising from ground.
-  ANIM_BURN_SMALL,     // Small combustable fire effect (with trail off).
-  ANIM_BURN_MED,       // Medium combustable fire effect (with trail off).
-  ANIM_BURN_BIG,       // Large combustable fire effect (with trail off).
-  ANIM_ON_FIRE_SMALL,  // Burning effect for buildings.
-  ANIM_ON_FIRE_MED,    // Burning effect for buildings.
-  ANIM_ON_FIRE_BIG,    // Burning effect for buildings.
-  ANIM_SAM_N,
-  ANIM_SAM_NE,
-  ANIM_SAM_E,
-  ANIM_SAM_SE,
-  ANIM_SAM_S,
-  ANIM_SAM_SW,
-  ANIM_SAM_W,
-  ANIM_SAM_NW,
-  ANIM_GUN_N,
-  ANIM_GUN_NE,
-  ANIM_GUN_E,
-  ANIM_GUN_SE,
-  ANIM_GUN_S,
-  ANIM_GUN_SW,
-  ANIM_GUN_W,
-  ANIM_GUN_NW,
-  ANIM_LZ_SMOKE,
-  ANIM_ION_CANNON,
-  ANIM_ATOM_BLAST,
-  ANIM_CRATE_DEVIATOR,  // Red finned missile.
-  ANIM_CRATE_DOLLAR,    // Dollar sign.
-  ANIM_CRATE_EARTH,     // Cracked Earth.
-  ANIM_CRATE_EMPULSE,   // Plasma ball.
-  ANIM_CRATE_INVUN,     // Orange sphere with green rings.
-  ANIM_CRATE_MINE,      // Spiked mine.
-  ANIM_CRATE_RAPID,     // Red skull.
-  ANIM_CRATE_STEALTH,   // Cloaking sphere.
-  ANIM_CRATE_MISSILE,   // Green finned missile.
-  ANIM_ATOM_DOOR,
-  ANIM_MOVE_FLASH,
-  ANIM_OILFIELD_BURN,
-  ANIM_TRIC_DIE,
-  ANIM_TREX_DIE,
-  ANIM_STEG_DIE,
-  ANIM_RAPT_DIE,
-  ANIM_CHEM_BALL,  // Chemical warrior explosion.
+  ANIM_SMOKE_M = 35,        // Smoke rising from ground.
+  ANIM_BURN_SMALL = 36,     // Small combustable fire effect (with trail off).
+  ANIM_BURN_MED = 37,       // Medium combustable fire effect (with trail off).
+  ANIM_BURN_BIG = 38,       // Large combustable fire effect (with trail off).
+  ANIM_ON_FIRE_SMALL = 39,  // Burning effect for buildings.
+  ANIM_ON_FIRE_MED = 40,    // Burning effect for buildings.
+  ANIM_ON_FIRE_BIG = 41,    // Burning effect for buildings.
+  ANIM_SAM_N = 42,
+  ANIM_SAM_NE = 43,
+  ANIM_SAM_E = 44,
+  ANIM_SAM_SE = 45,
+  ANIM_SAM_S = 46,
+  ANIM_SAM_SW = 47,
+  ANIM_SAM_W = 48,
+  ANIM_SAM_NW = 49,
+  ANIM_GUN_N = 50,
+  ANIM_GUN_NE = 51,
+  ANIM_GUN_E = 52,
+  ANIM_GUN_SE = 53,
+  ANIM_GUN_S = 54,
+  ANIM_GUN_SW = 55,
+  ANIM_GUN_W = 56,
+  ANIM_GUN_NW = 57,
+  ANIM_LZ_SMOKE = 58,
+  ANIM_ION_CANNON = 59,
+  ANIM_ATOM_BLAST = 60,
+  ANIM_CRATE_DEVIATOR = 61,  // Red finned missile.
+  ANIM_CRATE_DOLLAR = 62,    // Dollar sign.
+  ANIM_CRATE_EARTH = 63,     // Cracked Earth.
+  ANIM_CRATE_EMPULSE = 64,   // Plasma ball.
+  ANIM_CRATE_INVUN = 65,     // Orange sphere with green rings.
+  ANIM_CRATE_MINE = 66,      // Spiked mine.
+  ANIM_CRATE_RAPID = 67,     // Red skull.
+  ANIM_CRATE_STEALTH = 68,   // Cloaking sphere.
+  ANIM_CRATE_MISSILE = 69,   // Green finned missile.
+  ANIM_ATOM_DOOR = 70,
+  ANIM_MOVE_FLASH = 71,
+  ANIM_OILFIELD_BURN = 72,
+  ANIM_TRIC_DIE = 73,
+  ANIM_TREX_DIE = 74,
+  ANIM_STEG_DIE = 75,
+  ANIM_RAPT_DIE = 76,
+  ANIM_CHEM_BALL = 77,  // Chemical warrior explosion.
 
-  ANIM_COUNT,
+  ANIM_COUNT = 78,
   ANIM_FIRST = 0
 } AnimType;
 
@@ -1373,42 +1374,42 @@ typedef enum AnimType {
 typedef enum DoType {
   DO_NOTHING = -1,  // Not performing any choreographed sequence.
   DO_STAND_READY = 0,
-  DO_STAND_GUARD,
-  DO_PRONE,
-  DO_WALK,
-  DO_FIRE_WEAPON,
-  DO_LIE_DOWN,
-  DO_CRAWL,
-  DO_GET_UP,
-  DO_FIRE_PRONE,
-  DO_IDLE1,
-  DO_IDLE2,
-  DO_ON_GUARD,
-  DO_FIGHT_READY,
-  DO_PUNCH,
-  DO_KICK,
-  DO_PUNCH_HIT1,
-  DO_PUNCH_HIT2,
-  DO_PUNCH_DEATH,
-  DO_KICK_HIT1,
-  DO_KICK_HIT2,
-  DO_KICK_DEATH,
-  DO_READY_WEAPON,
-  DO_GUN_DEATH,
-  DO_EXPLOSION_DEATH,
-  DO_EXPLOSION2_DEATH,
-  DO_GRENADE_DEATH,
-  DO_FIRE_DEATH,
-  DO_GESTURE1,
-  DO_SALUTE1,
-  DO_GESTURE2,
-  DO_SALUTE2,
+  DO_STAND_GUARD = 1,
+  DO_PRONE = 2,
+  DO_WALK = 3,
+  DO_FIRE_WEAPON = 4,
+  DO_LIE_DOWN = 5,
+  DO_CRAWL = 6,
+  DO_GET_UP = 7,
+  DO_FIRE_PRONE = 8,
+  DO_IDLE1 = 9,
+  DO_IDLE2 = 10,
+  DO_ON_GUARD = 11,
+  DO_FIGHT_READY = 12,
+  DO_PUNCH = 13,
+  DO_KICK = 14,
+  DO_PUNCH_HIT1 = 15,
+  DO_PUNCH_HIT2 = 16,
+  DO_PUNCH_DEATH = 17,
+  DO_KICK_HIT1 = 18,
+  DO_KICK_HIT2 = 19,
+  DO_KICK_DEATH = 20,
+  DO_READY_WEAPON = 21,
+  DO_GUN_DEATH = 22,
+  DO_EXPLOSION_DEATH = 23,
+  DO_EXPLOSION2_DEATH = 24,
+  DO_GRENADE_DEATH = 25,
+  DO_FIRE_DEATH = 26,
+  DO_GESTURE1 = 27,
+  DO_SALUTE1 = 28,
+  DO_GESTURE2 = 29,
+  DO_SALUTE2 = 30,
   // Civilian actions
-  DO_PULL_GUN,
-  DO_PLEAD,
-  DO_PLEAD_DEATH,
+  DO_PULL_GUN = 31,
+  DO_PLEAD = 32,
+  DO_PLEAD_DEATH = 33,
 
-  DO_COUNT,
+  DO_COUNT = 34,
   DO_FIRST = 0
 } DoType;
 
@@ -1491,13 +1492,13 @@ inline constexpr TARGET kTargetNone{};
 */
 typedef enum SelectEnum {
   SELECT_NONE = -1,
-  SELECT_INFANTRY,                // Small infantry selection box.
-  SELECT_UNIT,                    // Big unit selection box.
+  SELECT_INFANTRY = 0,            // Small infantry selection box.
+  SELECT_UNIT = 1,                // Big unit selection box.
   SELECT_BUILDING = SELECT_UNIT,  // Custom box for buildings.
   SELECT_TERRAIN = SELECT_UNIT,   // Custom box for terrain objects.
-  SELECT_WRENCH,                  // A building is repairing overlay graphic.
+  SELECT_WRENCH = 2,              // A building is repairing overlay graphic.
 
-  SELECT_COUNT
+  SELECT_COUNT = 3
 } SelectEnum;
 
 /****************************************************************************
@@ -1805,16 +1806,16 @@ typedef struct {
 typedef enum BSizeType {
   BSIZE_NONE = -1,
   BSIZE_11 = 0,
-  BSIZE_21,
-  BSIZE_12,
-  BSIZE_22,
-  BSIZE_23,
-  BSIZE_32,
-  BSIZE_33,
-  BSIZE_42,
-  BSIZE_55,
+  BSIZE_21 = 1,
+  BSIZE_12 = 2,
+  BSIZE_22 = 3,
+  BSIZE_23 = 4,
+  BSIZE_32 = 5,
+  BSIZE_33 = 6,
+  BSIZE_42 = 7,
+  BSIZE_55 = 8,
 
-  BSIZE_COUNT
+  BSIZE_COUNT = 9
 } BSizeType;
 
 /**********************************************************************
@@ -1940,15 +1941,15 @@ inline constexpr int64_t kTimerMinute = int64_t{kTimerSecond} * 60;
 typedef enum SpeedType {
   SPEED_NONE = -1,
 
-  SPEED_FOOT = 0,   // Bipedal.
-  SPEED_TRACK,      // Tracked locomotion.
-  SPEED_HARVESTER,  // Harvester speed rating.
-  SPEED_WHEEL,      // Balloon tires.
-  SPEED_WINGED,     // Lifter's, 'thopters, and rockets.
-  SPEED_HOVER,      // Typical hovercraft logic.
-  SPEED_FLOAT,      // Ships.
+  SPEED_FOOT = 0,       // Bipedal.
+  SPEED_TRACK = 1,      // Tracked locomotion.
+  SPEED_HARVESTER = 2,  // Harvester speed rating.
+  SPEED_WHEEL = 3,      // Balloon tires.
+  SPEED_WINGED = 4,     // Lifter's, 'thopters, and rockets.
+  SPEED_HOVER = 5,      // Typical hovercraft logic.
+  SPEED_FLOAT = 6,      // Ships.
 
-  SPEED_COUNT,
+  SPEED_COUNT = 7,
   SPEED_FIRST = SPEED_FOOT
 } SpeedType;
 
@@ -1958,140 +1959,142 @@ typedef enum SpeedType {
 typedef enum VocType {
   VOC_NONE = -1,
 
-  VOC_RAMBO_PRESENT,  //	"I've got a present for	ya"
-  VOC_RAMBO_CMON,     //	"c'mon"
-  VOC_RAMBO_UGOTIT,   //	"you got it"
-  VOC_RAMBO_COMIN,    //	"keep 'em commin'"
-  VOC_RAMBO_LAUGH,    //	"hahaha"
-  VOC_RAMBO_LEFTY,    //	"that was left handed"
-  VOC_RAMBO_NOPROB,   //	"no problem"
-                      //	VOC_RAMBO_OHSH,	//	"oh shiiiiii...."
-  VOC_RAMBO_ONIT,     //	"I'm on it"
-  VOC_RAMBO_YELL,     //	"ahhhhhhh"
-  VOC_RAMBO_ROCK,     //	"time to rock and roll"
-  VOC_RAMBO_TUFF,     //	"real tuff guy"
-  VOC_RAMBO_YEA,      //	"yea"
-  VOC_RAMBO_YES,      //	"yes"
-  VOC_RAMBO_YO,       //	"yo"
+  VOC_RAMBO_PRESENT = 0,  //	"I've got a present for	ya"
+  VOC_RAMBO_CMON = 1,     //	"c'mon"
+  VOC_RAMBO_UGOTIT = 2,   //	"you got it"
+  VOC_RAMBO_COMIN = 3,    //	"keep 'em commin'"
+  VOC_RAMBO_LAUGH = 4,    //	"hahaha"
+  VOC_RAMBO_LEFTY = 5,    //	"that was left handed"
+  VOC_RAMBO_NOPROB = 6,   //	"no problem"
+                          //	VOC_RAMBO_OHSH,	//	"oh shiiiiii...."
+  VOC_RAMBO_ONIT = 7,     //	"I'm on it"
+  VOC_RAMBO_YELL = 8,     //	"ahhhhhhh"
+  VOC_RAMBO_ROCK = 9,     //	"time to rock and roll"
+  VOC_RAMBO_TUFF = 10,    //	"real tuff guy"
+  VOC_RAMBO_YEA = 11,     //	"yea"
+  VOC_RAMBO_YES = 12,     //	"yes"
+  VOC_RAMBO_YO = 13,      //	"yo"
 
-  VOC_GIRL_OKAY,  // "okay"
-  VOC_GIRL_YEAH,  // "yeah?"
-  VOC_GUY_OKAY,   //	"okay"
-  VOC_GUY_YEAH,   // "yeah?"
+  VOC_GIRL_OKAY = 14,  // "okay"
+  VOC_GIRL_YEAH = 15,  // "yeah?"
+  VOC_GUY_OKAY = 16,   //	"okay"
+  VOC_GUY_YEAH = 17,   // "yeah?"
 
-  VOC_2DANGER,     //	"negative, too dangerous"
-  VOC_ACKNOWL,     //	"acknowledged"
-  VOC_AFFIRM,      //	"affirmative"
-  VOC_AWAIT,       //	"awaiting orders"
-                   //	VOC_BACKUP,			//	"send backup"
-                   //	VOC_HELP,			//	"send help"
-  VOC_MOVEOUT,     //	"movin' out"
-  VOC_NEGATIVE,    //	"negative"
-  VOC_NO_PROB,     //	"not a problem"
-  VOC_READY,       //	"ready and waiting"
-  VOC_REPORT,      //	"reporting"
-  VOC_RIGHT_AWAY,  //	"right away sir"
-  VOC_ROGER,       //	"roger"
-                   //	VOC_SIR,				//	"sir?"
-                   //	VOC_SQUAD,			//	"squad
-                   // reporting" 	VOC_PRACTICE,		//	"target
+  VOC_2DANGER = 18,     //	"negative, too dangerous"
+  VOC_ACKNOWL = 19,     //	"acknowledged"
+  VOC_AFFIRM = 20,      //	"affirmative"
+  VOC_AWAIT = 21,       //	"awaiting orders"
+                        //	VOC_BACKUP,			//	"send backup"
+                        //	VOC_HELP,			//	"send help"
+  VOC_MOVEOUT = 22,     //	"movin' out"
+  VOC_NEGATIVE = 23,    //	"negative"
+  VOC_NO_PROB = 24,     //	"not a problem"
+  VOC_READY = 25,       //	"ready and waiting"
+  VOC_REPORT = 26,      //	"reporting"
+  VOC_RIGHT_AWAY = 27,  //	"right away sir"
+  VOC_ROGER = 28,       //	"roger"
+                        //	VOC_SIR,				//	"sir?"
+                        //	VOC_SQUAD,			//	"squad
+                        // reporting" 	VOC_PRACTICE,		//	"target
   // practice"
-  VOC_UGOTIT,  //	"you got it"
-  VOC_UNIT,    //	"unit reporting"
-  VOC_VEHIC,   //	"vehicle reporting"
-  VOC_YESSIR,  //	"yes sir"
+  VOC_UGOTIT = 29,  //	"you got it"
+  VOC_UNIT = 30,    //	"unit reporting"
+  VOC_VEHIC = 31,   //	"vehicle reporting"
+  VOC_YESSIR = 32,  //	"yes sir"
 
-  VOC_BAZOOKA,        //	Gunfire
-  VOC_BLEEP,          //	Clean metal bing
-  VOC_BOMB1,          //	Crunchy parachute bomb type explosion
-  VOC_BUTTON,         //	Dungeon Master button click
-  VOC_RADAR_ON,       //	Elecronic static with beeps
-  VOC_CONSTRUCTION,   //	construction sounds
-  VOC_CRUMBLE,        //	muffled crumble sound
-  VOC_FLAMER1,        //	flame thrower
-  VOC_RIFLE,          //	rifle shot
-  VOC_M60,            //	machine gun burst -- 6 rounds
-  VOC_GUN20,          //	bat hitting heavy metal door
-  VOC_M60A,           //	medium machine gun burst
-  VOC_MINI,           //	mini gun burst
-  VOC_RELOAD,         //	gun clip reload
-  VOC_SLAM,           //	metal plates slamming together
-  VOC_HVYGUN10,       //	loud sharp cannon
-  VOC_ION_CANNON,     //	partical beam
-  VOC_MGUN11,         //	alternate tripple burst
-  VOC_MGUN2,          //	M-16 tripple burst
-  VOC_NUKE_FIRE,      //	long missile sound
-  VOC_NUKE_EXPLODE,   //	long but not loud explosion
-  VOC_LASER,          //	humming star wars laser beam
-  VOC_LASER_POWER,    //	warming up sound of star wars laser beam
-  VOC_RADAR_OFF,      //	doom door slide
-  VOC_SNIPER,         //	silenced rifle fire
-  VOC_ROCKET1,        //	rocket launch variation #1
-  VOC_ROCKET2,        //	rocket launch variation #2
-  VOC_MOTOR,          //	dentists drill
-  VOC_SCOLD,          //	cannot perform action feedback tone
-  VOC_SIDEBAR_OPEN,   //	xylophone clink
-  VOC_SIDEBAR_CLOSE,  //	xylophone clink
-  VOC_SQUISH2,        //	crushing infantry
-  VOC_TANK1,          //	sharp tank fire with recoil
-  VOC_TANK2,          //	sharp tank fire
-  VOC_TANK3,          //	sharp tank fire
-  VOC_TANK4,          //	big gun tank fire
-  VOC_UP,             //	credits counting up
-  VOC_DOWN,           //	credits counting down
-  VOC_TARGET,         //	target sound
-  VOC_SONAR,          //	sonar echo
-  VOC_TOSS,           //	air swish
-  VOC_CLOAK,          //	stealth tank
-  VOC_BURN,           //	burning crackle
-  VOC_TURRET,         //	muffled gunfire
-  VOC_XPLOBIG4,       //	very long muffled explosion
-  VOC_XPLOBIG6,       //	very long muffled explosion
-  VOC_XPLOBIG7,       //	very long muffled explosion
-  VOC_XPLODE,         //	long soft muffled explosion
-  VOC_XPLOS,          //	short crunchy explosion
-  VOC_XPLOSML2,       //	muffled mechanical explosion
+  VOC_BAZOOKA = 33,        //	Gunfire
+  VOC_BLEEP = 34,          //	Clean metal bing
+  VOC_BOMB1 = 35,          //	Crunchy parachute bomb type explosion
+  VOC_BUTTON = 36,         //	Dungeon Master button click
+  VOC_RADAR_ON = 37,       //	Elecronic static with beeps
+  VOC_CONSTRUCTION = 38,   //	construction sounds
+  VOC_CRUMBLE = 39,        //	muffled crumble sound
+  VOC_FLAMER1 = 40,        //	flame thrower
+  VOC_RIFLE = 41,          //	rifle shot
+  VOC_M60 = 42,            //	machine gun burst -- 6 rounds
+  VOC_GUN20 = 43,          //	bat hitting heavy metal door
+  VOC_M60A = 44,           //	medium machine gun burst
+  VOC_MINI = 45,           //	mini gun burst
+  VOC_RELOAD = 46,         //	gun clip reload
+  VOC_SLAM = 47,           //	metal plates slamming together
+  VOC_HVYGUN10 = 48,       //	loud sharp cannon
+  VOC_ION_CANNON = 49,     //	partical beam
+  VOC_MGUN11 = 50,         //	alternate tripple burst
+  VOC_MGUN2 = 51,          //	M-16 tripple burst
+  VOC_NUKE_FIRE = 52,      //	long missile sound
+  VOC_NUKE_EXPLODE = 53,   //	long but not loud explosion
+  VOC_LASER = 54,          //	humming star wars laser beam
+  VOC_LASER_POWER = 55,    //	warming up sound of star wars laser beam
+  VOC_RADAR_OFF = 56,      //	doom door slide
+  VOC_SNIPER = 57,         //	silenced rifle fire
+  VOC_ROCKET1 = 58,        //	rocket launch variation #1
+  VOC_ROCKET2 = 59,        //	rocket launch variation #2
+  VOC_MOTOR = 60,          //	dentists drill
+  VOC_SCOLD = 61,          //	cannot perform action feedback tone
+  VOC_SIDEBAR_OPEN = 62,   //	xylophone clink
+  VOC_SIDEBAR_CLOSE = 63,  //	xylophone clink
+  VOC_SQUISH2 = 64,        //	crushing infantry
+  VOC_TANK1 = 65,          //	sharp tank fire with recoil
+  VOC_TANK2 = 66,          //	sharp tank fire
+  VOC_TANK3 = 67,          //	sharp tank fire
+  VOC_TANK4 = 68,          //	big gun tank fire
+  VOC_UP = 69,             //	credits counting up
+  VOC_DOWN = 70,           //	credits counting down
+  VOC_TARGET = 71,         //	target sound
+  VOC_SONAR = 72,          //	sonar echo
+  VOC_TOSS = 73,           //	air swish
+  VOC_CLOAK = 74,          //	stealth tank
+  VOC_BURN = 75,           //	burning crackle
+  VOC_TURRET = 76,         //	muffled gunfire
+  VOC_XPLOBIG4 = 77,       //	very long muffled explosion
+  VOC_XPLOBIG6 = 78,       //	very long muffled explosion
+  VOC_XPLOBIG7 = 79,       //	very long muffled explosion
+  VOC_XPLODE = 80,         //	long soft muffled explosion
+  VOC_XPLOS = 81,          //	short crunchy explosion
+  VOC_XPLOSML2 = 82,       //	muffled mechanical explosion
 
-  VOC_SCREAM1,   //	short infantry scream
-  VOC_SCREAM3,   //	short infantry scream
-  VOC_SCREAM4,   //	short infantry scream
-  VOC_SCREAM5,   //	short infantry scream
-  VOC_SCREAM6,   //	short infantry scream
-  VOC_SCREAM7,   //	short infantry scream
-  VOC_SCREAM10,  //	short infantry scream
-  VOC_SCREAM11,  //	short infantry scream
-  VOC_SCREAM12,  //	short infantry scream
-  VOC_YELL1,     //	long infantry scream
+  VOC_SCREAM1 = 83,   //	short infantry scream
+  VOC_SCREAM3 = 84,   //	short infantry scream
+  VOC_SCREAM4 = 85,   //	short infantry scream
+  VOC_SCREAM5 = 86,   //	short infantry scream
+  VOC_SCREAM6 = 87,   //	short infantry scream
+  VOC_SCREAM7 = 88,   //	short infantry scream
+  VOC_SCREAM10 = 89,  //	short infantry scream
+  VOC_SCREAM11 = 90,  //	short infantry scream
+  VOC_SCREAM12 = 91,  //	short infantry scream
+  VOC_YELL1 = 92,     //	long infantry scream
 
-  VOC_YES,         //	"Yes?"
-  VOC_COMMANDER,   //	"Commander?"
-  VOC_HELLO,       //	"Hello?"
-  VOC_HMMM,        //	"Hmmm?"
-                   //	VOC_PROCEED1,		//	"I will proceed, post haste."
-                   //	VOC_PROCEED2,		//	"I will proceed, at once."
-                   //	VOC_PROCEED3,		//	"I will proceed, immediately."
-                   //	VOC_EXCELLENT1,	//	"That is an excellent plan."
-                   //	VOC_EXCELLENT2,	//	"Yes, that is an excellent plan."
-  VOC_EXCELLENT3,  //	"A wonderful plan."
-                   //	VOC_EXCELLENT4,	//	"Asounding plan of action
-                   // commander." 	VOC_EXCELLENT5,	//	"Remarkable
-                   // contrivance."
-  VOC_OF_COURSE,   //	"Of course."
-  VOC_YESYES,      //	"Yes yes yes."
-  VOC_QUIP1,       //	"Mind the Tiberium."
-                   //	VOC_QUIP2,			//	"A most
-                   // remarkable  Metasequoia Glyptostroboides."
-  VOC_THANKS,      //	"Thank you."
+  VOC_YES = 93,        //	"Yes?"
+  VOC_COMMANDER = 94,  //	"Commander?"
+  VOC_HELLO = 95,      //	"Hello?"
+  VOC_HMMM =
+      96,  //	"Hmmm?"
+           //	VOC_PROCEED1,		//	"I will proceed, post haste."
+           //	VOC_PROCEED2,		//	"I will proceed, at once."
+           //	VOC_PROCEED3,		//	"I will proceed, immediately."
+           //	VOC_EXCELLENT1,	//	"That is an excellent plan."
+           //	VOC_EXCELLENT2,	//	"Yes, that is an excellent plan."
+  VOC_EXCELLENT3 =
+      97,              //	"A wonderful plan."
+                       //	VOC_EXCELLENT4,	//	"Asounding plan of action
+                       // commander." 	VOC_EXCELLENT5,	//	"Remarkable
+                       // contrivance."
+  VOC_OF_COURSE = 98,  //	"Of course."
+  VOC_YESYES = 99,     //	"Yes yes yes."
+  VOC_QUIP1 = 100,     //	"Mind the Tiberium."
+                       //	VOC_QUIP2,			//	"A most
+                       // remarkable  Metasequoia Glyptostroboides."
+  VOC_THANKS = 101,    //	"Thank you."
 
-  VOC_CASHTURN,  // Sound of money being piled up.
-  VOC_BLEEPY3,   // Clean computer bleep sound.
+  VOC_CASHTURN = 102,  // Sound of money being piled up.
+  VOC_BLEEPY3 = 103,   // Clean computer bleep sound.
 
-  VOC_DINOMOUT,  // Movin' out in dino-speak.
-  VOC_DINOYES,   // Yes Sir in dino-speak.
-  VOC_DINOATK1,  // Dino attack sound.
-  VOC_DINODIE1,  // Dino die sound.
+  VOC_DINOMOUT = 104,  // Movin' out in dino-speak.
+  VOC_DINOYES = 105,   // Yes Sir in dino-speak.
+  VOC_DINOATK1 = 106,  // Dino attack sound.
+  VOC_DINODIE1 = 107,  // Dino die sound.
 
-  VOC_COUNT,
+  VOC_COUNT = 108,
   VOC_BUILD_SELECT = VOC_TARGET,
 } VocType;
 
@@ -2213,18 +2216,18 @@ typedef enum SourceType {
   SOURCE_FIRST = 0,
 
   SOURCE_NORTH = SOURCE_FIRST,  // From north edge.
-  SOURCE_EAST,                  // From east edge.
-  SOURCE_SOUTH,                 // From south edge.
-  SOURCE_WEST,                  // From west edge.
-  SOURCE_SHIPPING,              // Shipping lane.
-  SOURCE_BEACH,                 // Selects beach to land upon.
-  SOURCE_AIR,                   // Dropped by air (someplace).
-  SOURCE_VISIBLE,               // Dropped where player can see.
-  SOURCE_ENEMYBASE,             // Dropped at enemy base.
-  SOURCE_HOMEBASE,              // Dropped at friendly base.
-  SOURCE_OCEAN,                 // Enters from ocean map edge.
+  SOURCE_EAST = 1,              // From east edge.
+  SOURCE_SOUTH = 2,             // From south edge.
+  SOURCE_WEST = 3,              // From west edge.
+  SOURCE_SHIPPING = 4,          // Shipping lane.
+  SOURCE_BEACH = 5,             // Selects beach to land upon.
+  SOURCE_AIR = 6,               // Dropped by air (someplace).
+  SOURCE_VISIBLE = 7,           // Dropped where player can see.
+  SOURCE_ENEMYBASE = 8,         // Dropped at enemy base.
+  SOURCE_HOMEBASE = 9,          // Dropped at friendly base.
+  SOURCE_OCEAN = 10,            // Enters from ocean map edge.
 
-  SOURCE_COUNT
+  SOURCE_COUNT = 11
 } SourceType;
 
 /****************************************************************************
@@ -2294,9 +2297,9 @@ typedef enum GameEnum {
 */
 typedef enum CommProtocolEnum {
   COMM_PROTOCOL_SINGLE_NO_COMP = 0,  // single frame with no compression
-  COMM_PROTOCOL_SINGLE_E_COMP,       // single frame with event compression
-  COMM_PROTOCOL_MULTI_E_COMP,        // multiple frame with event compression
-  COMM_PROTOCOL_COUNT,
+  COMM_PROTOCOL_SINGLE_E_COMP = 1,   // single frame with event compression
+  COMM_PROTOCOL_MULTI_E_COMP = 2,    // multiple frame with event compression
+  COMM_PROTOCOL_COUNT = 3,
   DEFAULT_COMM_PROTOCOL = COMM_PROTOCOL_SINGLE_NO_COMP,
 } CommProtocolType;
 
@@ -2402,7 +2405,7 @@ typedef enum SerialCommandType {
   SERIAL_TIMING = 105,    // timimg packet
   SERIAL_SCORE_SCREEN = 106,  // player at score screen
   SERIAL_READY_TO_GO = 107,   // Host is ready to start the game
-  SERIAL_LAST_COMMAND         // last command
+  SERIAL_LAST_COMMAND = 108   // last command
 } SerialCommandType;
 
 //
@@ -2439,9 +2442,9 @@ typedef struct {
 
 typedef enum ModemGameType {
   MODEM_NULL_HOST = 0,
-  MODEM_NULL_JOIN,
-  MODEM_DIALER,
-  MODEM_ANSWERER,
+  MODEM_NULL_JOIN = 1,
+  MODEM_DIALER = 2,
+  MODEM_ANSWERER = 3,
   INTERNET_HOST = MODEM_NULL_HOST,
   INTERNET_JOIN = MODEM_NULL_JOIN
 } ModemGameType;
@@ -2602,7 +2605,7 @@ typedef enum OptionControlType {
   OPTION_BUTTON_GDI = 28,    // Huh?
   OPTION_BUTTON_NOD = 30,    // Huh?
 
-  OPTION_COUNT
+  OPTION_COUNT = 31
 } OptionControlType;
 
 #define TOTAL_CRATE_TYPES 15

@@ -181,7 +181,7 @@ typedef enum SerialCommandType : uint16_t {
   SERIAL_TIMING = 105,    // timimg packet
   SERIAL_SCORE_SCREEN = 106,  // player at score screen
   SERIAL_LOADGAME = 107,      // Start the game, loading a saved game first
-  SERIAL_LAST_COMMAND,        // last command
+  SERIAL_LAST_COMMAND = 108,  // last command
   SERIAL_REQ_SCENARIO =
       1000,  // Reqest that host sends the scenario file to the other players.
   SERIAL_FILE_INFO =
@@ -196,21 +196,21 @@ typedef enum SerialCommandType : uint16_t {
 // Commands sent over the network Global Channel
 //...........................................................................
 typedef enum NetCommandType : uint16_t {
-  NET_QUERY_GAME,     // Hey, what games are out there?
-  NET_ANSWER_GAME,    // Yo, Here's my game's name!
-  NET_QUERY_PLAYER,   // Hey, what players are in this game?
-  NET_ANSWER_PLAYER,  // Yo, I'm in that game!
-  NET_CHAT_ANNOUNCE,  // I'm at the chat screen
-  NET_CHAT_REQUEST,   // Respond with a CHAT_ANNOUNCE, please.
-  NET_QUERY_JOIN,     // Hey guys, can I play too?
-  NET_CONFIRM_JOIN,   // Well, OK, if you really want to.
-  NET_REJECT_JOIN,    // No, you can't join; sorry, dude.
-  NET_GAME_OPTIONS,   // Hey, dudes, here's some new game options
-  NET_SIGN_OFF,       // Bogus, dudes, my boss is coming; I'm outta here!
-  NET_GO,             // OK, jump into the game loop!
-  NET_MESSAGE,        // Here's a message
-  NET_PING,           // I'm pinging you to take a time measurement
-  NET_LOADGAME,       // start a game by loading a saved game
+  NET_QUERY_GAME = 0,     // Hey, what games are out there?
+  NET_ANSWER_GAME = 1,    // Yo, Here's my game's name!
+  NET_QUERY_PLAYER = 2,   // Hey, what players are in this game?
+  NET_ANSWER_PLAYER = 3,  // Yo, I'm in that game!
+  NET_CHAT_ANNOUNCE = 4,  // I'm at the chat screen
+  NET_CHAT_REQUEST = 5,   // Respond with a CHAT_ANNOUNCE, please.
+  NET_QUERY_JOIN = 6,     // Hey guys, can I play too?
+  NET_CONFIRM_JOIN = 7,   // Well, OK, if you really want to.
+  NET_REJECT_JOIN = 8,    // No, you can't join; sorry, dude.
+  NET_GAME_OPTIONS = 9,   // Hey, dudes, here's some new game options
+  NET_SIGN_OFF = 10,      // Bogus, dudes, my boss is coming; I'm outta here!
+  NET_GO = 11,            // OK, jump into the game loop!
+  NET_MESSAGE = 12,       // Here's a message
+  NET_PING = 13,          // I'm pinging you to take a time measurement
+  NET_LOADGAME = 14,      // start a game by loading a saved game
   NET_REQ_SCENARIO =
       1000,  // Reqest that host sends the scenario file to the other players.
   NET_FILE_INFO = 1001,   // Info about the file that is going to be transferred
@@ -665,9 +665,9 @@ class SessionClass {
   //.....................................................................
   int IsBridge{0};                            // 1 = we're crossing a bridge
   IPXAddressClass BridgeNet;                  // address of bridge
-  bool NetStealth{0};                         // makes us invisible
-  bool NetProtect{1};                         // keeps others from messaging us
-  bool NetOpen{0};                            // 1 = game is open for joining
+  bool NetStealth{false};                     // makes us invisible
+  bool NetProtect{true};                      // keeps others from messaging us
+  bool NetOpen{false};                        // 1 = game is open for joining
   char GameName[MPLAYER_NAME_MAX]{};          // game's name
   GlobalPacketType GPacket{};                 // global packet
   int GPacketlen = 0;                         // global packet length

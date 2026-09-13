@@ -243,7 +243,7 @@ static bool Counts_As_Civ_Evac(const ObjectClass* candidate) {
 // Allocates a new aircraft object from the free object pool.
 // Marks the allocated object as active by setting its IsActive flag to true.
 // Returns nullptr if no free objects are available in the pool.
-void* AircraftClass::operator new(size_t) noexcept {
+void* AircraftClass::operator new(size_t /*unused*/) noexcept {
   void* ptr = Aircraft.Allocate();
   if (ptr) {
     static_cast<AircraftClass*>(ptr)->IsActive = true;
@@ -1878,7 +1878,7 @@ int AircraftClass::Mission_Move() {
  *                                                                                             *
  * HISTORY: * 06/05/1995 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Enter_Idle_Mode(bool) {
+void AircraftClass::Enter_Idle_Mode(bool /*initial*/) {
   DCHECK_EQ(Aircraft.ID(this), ID);
   DCHECK(IsActive);
 
@@ -3040,7 +3040,7 @@ bool AircraftClass::Process_Landing() {
  *                                                                                             *
  * HISTORY: * 06/12/1995 JLB : Created. *
  *=============================================================================================*/
-MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType) const {
+MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
   DCHECK_EQ(Aircraft.ID(this), ID);
   DCHECK(IsActive);
 
@@ -3628,7 +3628,8 @@ AircraftClass::~AircraftClass() {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Scatter(COORDINATE, bool, bool) {
+void AircraftClass::Scatter(COORDINATE /*unused*/, bool /*forced*/,
+                            bool /*nokidding*/) {
   DCHECK_EQ(Aircraft.ID(this), ID);
   DCHECK(IsActive);
 

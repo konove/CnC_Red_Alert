@@ -502,7 +502,7 @@ const short* AnimClass::Overlap_List() const {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-const short* AnimClass::Occupy_List(bool) const {
+const short* AnimClass::Occupy_List(bool /*placement*/) const {
   Validate();
   static short _simple[] = {REFRESH_EOL};
 
@@ -541,7 +541,7 @@ void AnimClass::Init() { Anims.Free_All(); }
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void* AnimClass::operator new(size_t) noexcept {
+void* AnimClass::operator new(size_t /*unused*/) noexcept {
   void* ptr = Anims.Allocate();
   if (ptr) {
     static_cast<AnimClass*>(ptr)->IsActive = true;

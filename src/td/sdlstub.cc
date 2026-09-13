@@ -24,7 +24,7 @@
 #include "td/rand.h"
 #include "winvq/vqa32/vqaplay.h"
 
-bool ReadyToQuit = 0;
+bool ReadyToQuit = false;
 
 void CCDebugString(const char* /*string*/) {}
 

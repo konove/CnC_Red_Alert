@@ -305,7 +305,7 @@ static long Select_Frame(VQAHandle* vqap) {
    * - If this is a palette-set frame, set the palette before skipping it
    * - Loop until we get the frame we need, or there's no frames available
    */
-  while (1) {
+  while (true) {
     /* No frame available; return */
     if ((curframe->Flags & VQAFRMF_LOADED) == 0) {
       return VQAERR_NOBUFFER;

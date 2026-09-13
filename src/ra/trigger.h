@@ -96,15 +96,15 @@ class TriggerClass {
   */
   [[nodiscard]] TARGET As_Target() const;
   [[nodiscard]] const char* Description() const;
-  void Draw_It(int, int x, int y, int width, int height, bool selected,
-               TextPrintType flags) const;
+  void Draw_It(int /*unused*/, int x, int y, int width, int height,
+               bool selected, TextPrintType flags) const;
   [[nodiscard]] const char* Name() const { return Class->Name(); }
 
   /*
   **	Overloaded operators
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* pointer);
 
   /*

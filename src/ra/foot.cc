@@ -1864,7 +1864,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
  *                                                                                             *
  * HISTORY: * 07/01/1995 JLB : Created. *
  *=============================================================================================*/
-void FootClass::Death_Announcement(const TechnoClass*) const {
+void FootClass::Death_Announcement(const TechnoClass* /*source*/) const {
   assert(IsActive);
 
   if (IsOwnedByPlayer) {
@@ -2058,7 +2058,8 @@ int FootClass::Offload_Tiberium_Bail() {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-MoveType FootClass::Can_Enter_Cell(CELL, FacingType) const {
+MoveType FootClass::Can_Enter_Cell(CELL /*unused*/,
+                                   FacingType /*unused*/) const {
   assert(IsActive);
 
   return MOVE_OK;

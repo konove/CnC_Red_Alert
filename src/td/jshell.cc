@@ -289,7 +289,7 @@ long Load_Uncompress(FileClass& file, BufferClass& uncomp_buff,
 
 int Load_Picture(const char* filename, BufferClass& scratchbuf,
                  BufferClass& destbuf, unsigned char* palette,
-                 PicturePlaneType) {
+                 PicturePlaneType /*unused*/) {
   CCFileClass fc(filename);
   return static_cast<int>(
       Load_Uncompress(fc, scratchbuf, destbuf, palette) / 8000);

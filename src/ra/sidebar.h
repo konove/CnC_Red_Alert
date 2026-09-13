@@ -119,7 +119,7 @@ class SidebarClass : public PowerClass {
 
    public:
     StripClass() = default;
-    explicit StripClass(const InitClass&);
+    explicit StripClass(const InitClass& /*unused*/);
 
     bool Add(RTTIType type, int ID);
     bool Abandon_Production(int factory);

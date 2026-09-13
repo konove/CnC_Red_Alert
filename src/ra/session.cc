@@ -688,9 +688,9 @@ void SessionClass::Read_MultiPlayer_Settings() {
         phone->Settings.Baud = -1;
       }
 
-      phone->Settings.Compression = 0;
-      phone->Settings.ErrorCorrection = 0;
-      phone->Settings.HardwareFlowControl = 1;
+      phone->Settings.Compression = false;
+      phone->Settings.ErrorCorrection = false;
+      phone->Settings.HardwareFlowControl = true;
 
       /*
       ** Find out if this phonebook entry has the new settings included. If not
@@ -1336,7 +1336,7 @@ MultiMission::MultiMission(const char* filename, const char* description,
   Set_Expansion(expansion);
 }
 
-void MultiMission::Draw_It(int, int x, int y, int width, int height,
+void MultiMission::Draw_It(int /*unused*/, int x, int y, int width, int height,
                            bool selected, TextPrintType flags) const {
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   static int _tabs[] = {35, 60, 80, 100};

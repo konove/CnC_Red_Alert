@@ -125,7 +125,8 @@ CCFileClass::CCFileClass() : Position(0) {}
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void CCFileClass::Error(int, int, const char*) {
+void CCFileClass::Error(int /*error*/, int /*canretry*/,
+                        const char* /*filename*/) {
   if (!Force_CD_Available(RequiredCD)) {
     // Prog_End();
     Emergency_Exit(EXIT_FAILURE);
@@ -575,7 +576,7 @@ int __cdecl Find_File(const char* file_name) {
   return file.Is_Available();
 }
 
-void* __cdecl Load_Alloc_Data(const char* name, int) {
+void* __cdecl Load_Alloc_Data(const char* name, int /*unused*/) {
   CCFileClass file(name);
 
   return Load_Alloc_Data(file);

@@ -31,7 +31,7 @@ void RGBClass::Adjust(const int ratio, const RGBClass& target) {
 
   // Convert [0, 255] integer range to [0.0, 1.0] floating point range
   // for the linear interpolation function.
-  const float t = static_cast<float>(clamped_ratio) / 255.0f;
+  const float t = static_cast<float>(clamped_ratio) / 255.0F;
 
   // std::lerp (Linear Interpolation) calculates: a + t * (b - a)
   //
@@ -104,6 +104,6 @@ HSVClass RGBClass::ToHSV() const {
   }
 
   // We know these values are in [0, 255], so the cast is safe.
-  return HSVClass(static_cast<uint8_t>(hue), static_cast<uint8_t>(saturation),
-                  static_cast<uint8_t>(value));
+  return {static_cast<uint8_t>(hue), static_cast<uint8_t>(saturation),
+          static_cast<uint8_t>(value)};
 }

@@ -131,10 +131,10 @@ GameType Select_MPlayer_Game() {
   //------------------------------------------------------------------------
   enum {
     BUTTON_MODEMSERIAL = 100,
-    BUTTON_SKIRMISH,
-    BUTTON_IPX,
-    BUTTON_WOL,  //	ajw
-    BUTTON_CANCEL,
+    BUTTON_SKIRMISH = 101,
+    BUTTON_IPX = 102,
+    BUTTON_WOL = 103,  //	ajw
+    BUTTON_CANCEL = 104,
 
     //	BUTTON_WOL keeps its slot either way; the pointer stays null when
     //	the button is not built.
@@ -153,8 +153,8 @@ GameType Select_MPlayer_Game() {
   //------------------------------------------------------------------------
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,     // includes map interior & coord values
-    REDRAW_BACKGROUND,  // includes box, map bord, key, coord labels, btns
+    REDRAW_BUTTONS = 1,     // includes map interior & coord values
+    REDRAW_BACKGROUND = 2,  // includes box, map bord, key, coord labels, btns
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 

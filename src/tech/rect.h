@@ -44,9 +44,9 @@ class Rect {
  public:
   explicit Rect(int x = 0, int y = 0, int w = 0, int h = 0);
 
-  const Rect Intersect(const Rect& rectangle, int* x = nullptr,
-                       int* y = nullptr) const;
-  friend const Rect Union(const Rect& rect1, const Rect& rect2);
+  Rect Intersect(const Rect& rectangle, int* x = nullptr,
+                 int* y = nullptr) const;
+  friend Rect Union(const Rect& rect1, const Rect& rect2);
 
   [[nodiscard]] bool Is_Valid() const;
   [[nodiscard]] int Size() const { return Width * Height; }

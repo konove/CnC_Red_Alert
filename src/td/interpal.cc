@@ -165,8 +165,9 @@ void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
  *   12/06/1995  MG : Created.                                             *
  *   01/2026     : Replaced with SDL texture scaling.                      *
  *=========================================================================*/
-void Interpolate_2X_Scale(GraphicBufferClass* source, GraphicViewPortClass*,
-                          const char*) {
+void Interpolate_2X_Scale(GraphicBufferClass* source,
+                          GraphicViewPortClass* /*unused*/,
+                          const char* /*unused*/) {
   // Render using SDL scaling - palette already set via Update_Palette
   source->Lock();
   WindowBuffer->Render_Scaled_Frame(source->Get_Offset(), source->Get_Width(),

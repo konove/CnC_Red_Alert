@@ -1298,7 +1298,7 @@ TemplateType TemplateTypeClass::From_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-const short* TemplateTypeClass::Occupy_List(bool) const {
+const short* TemplateTypeClass::Occupy_List(bool /*placement*/) const {
   static short _occupy[(13 * 8) + 5];
   unsigned char map[13 * 8];
   short* ptr;
@@ -1373,7 +1373,7 @@ void TemplateTypeClass::Init(TheaterType theater) {
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
 void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
-                                HousesType) const {
+                                HousesType /*unused*/) const {
   int w, h;
   int index;
   unsigned char map[13 * 8];
@@ -1453,7 +1453,8 @@ void TemplateTypeClass::Prep_For_Add() {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-bool TemplateTypeClass::Create_And_Place(CELL cell, HousesType) const {
+bool TemplateTypeClass::Create_And_Place(CELL cell,
+                                         HousesType /*unused*/) const {
   return new TemplateClass(Type, cell) != nullptr;
 }
 
@@ -1475,7 +1476,7 @@ bool TemplateTypeClass::Create_And_Place(CELL cell, HousesType) const {
  *                                                                                             *
  * HISTORY: * 06/18/1994 JLB : Created. *
  *=============================================================================================*/
-ObjectClass* TemplateTypeClass::Create_One_Of(HouseClass*) const {
+ObjectClass* TemplateTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
   return new TemplateClass(Type, -1);
 }
 

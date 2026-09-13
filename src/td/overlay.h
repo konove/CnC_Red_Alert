@@ -62,10 +62,11 @@ class OverlayClass : public ObjectClass {
   **	Constructors and destructors.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   OverlayClass() { IsActive = true; }
-  explicit OverlayClass(OverlayType type, CELL pos = -1, HousesType = HOUSE_NONE);
+  explicit OverlayClass(OverlayType type, CELL pos = -1,
+                        HousesType /*house*/ = HOUSE_NONE);
   ~OverlayClass() override {
     if (GameActive) {
       OverlayClass::Limbo();
@@ -85,8 +86,8 @@ class OverlayClass : public ObjectClass {
   /*
   **	File I/O.
   */
-  static void Read_INI(char*);
-  static void Write_INI(char*);
+  static void Read_INI(char* /*buffer*/);
+  static void Write_INI(char* /*buffer*/);
   static const char* INI_Name() { return "OVERLAY"; }
   // Field-wise saved-game support, defined in ioobj.cc.
   template <class Archive>
@@ -95,11 +96,11 @@ class OverlayClass : public ObjectClass {
   /*
   **	Virtual support functionality.
   */
-  bool Mark(MarkType) override;
+  bool Mark(MarkType /*mark*/ /*unused*/) override;
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
-  void Draw_It(int, int, WindowNumberType) override {}
+  void Draw_It(int /*x*/, int /*y*/, WindowNumberType /*unused*/) override {}
 
   /*
   **	Dee-buggin' support.

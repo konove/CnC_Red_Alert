@@ -293,7 +293,7 @@ void TeamClass::Init() { Teams.Free_All(); }
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void* TeamClass::operator new(size_t) noexcept {
+void* TeamClass::operator new(size_t /*unused*/) noexcept {
   void* ptr = Teams.Allocate();
   if (ptr != nullptr) {
     static_cast<TeamClass*>(ptr)->IsActive = true;
@@ -1377,7 +1377,7 @@ int TeamClass::Recruit(int typeindex) {
  *                                                                                             *
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Detach(TARGET target, bool) {
+void TeamClass::Detach(TARGET target, bool /*unused*/) {
   assert(IsActive);
   assert(Teams.ID(this) == ID);
 
@@ -1610,7 +1610,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
  *                                                                                             *
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Took_Damage(FootClass*, ResultType result,
+void TeamClass::Took_Damage(FootClass* /*unused*/, ResultType result,
                             TechnoClass* source) {
   assert(IsActive);
   assert(Teams.ID(this) == ID);
@@ -2508,7 +2508,7 @@ int TeamClass::TMission_Formation() {
   int group = ID + 10;
   int xdir = 0;
   int ydir = 0;
-  bool evenodd = 1;
+  bool evenodd = true;
 
   /*
   **	Assign appropriate formation offsets for each of the members

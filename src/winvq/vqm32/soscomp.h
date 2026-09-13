@@ -86,9 +86,10 @@ typedef struct tagCOMPRESS_HEADER {
 extern "C" {
 #endif
 
-void __cdecl VQA_sosCODECInitStream(SosCompressInfo*);
+void __cdecl VQA_sosCODECInitStream(SosCompressInfo* /*info*/);
 unsigned long __cdecl VQA_sosCODECCompressData(SosCompressInfo*, unsigned long);
-bool __cdecl DecompressVqaSosData(SosCompressInfo*, std::size_t);
+bool __cdecl DecompressVqaSosData(SosCompressInfo* /*info*/,
+                                  std::size_t /*uncomp_size*/);
 
 #ifdef __cplusplus
 }

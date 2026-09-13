@@ -259,8 +259,8 @@ int MapEditClass::Select_Team(const char* caption) {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_BUTTONS = 1,
+    REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
   /*........................................................................
@@ -751,8 +751,8 @@ int MapEditClass::Edit_Team() {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_BUTTONS = 1,
+    REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 
@@ -1539,8 +1539,8 @@ int MapEditClass::Team_Members(HousesType house) {
   */
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_BUTTONS = 1,
+    REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
   RedrawType display;  // requested redraw level

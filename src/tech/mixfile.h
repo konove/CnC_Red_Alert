@@ -370,7 +370,8 @@ const void* MixFileClass<T>::Retrieve(std::string_view filename) {
 
 template <class T>
 MixFileClass<T>* MixFileClass<T>::Register(std::string_view filename,
-                                           const PKey* key, RandomStraw*) {
+                                           const PKey* key,
+                                           RandomStraw* /*unused*/) {
   if (auto* existing = Finder(filename)) {
     return existing;
   }

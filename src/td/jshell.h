@@ -228,7 +228,7 @@ void Set_Window(int window, int x, int y, int w, int h);
 // Allocates a buffer, reads the file into it, and null-terminates.
 // Returns ownership of the buffer. Caller must delete[].
 void* Load_Alloc_Data(FileClass& file);
-void* Load_Alloc_Data(const char* name, int);
+void* Load_Alloc_Data(const char* name, int /*unused*/);
 long Load_Uncompress(FileClass& file, BufferClass& uncomp_buff,
                      BufferClass& dest_buff, void* reserved_data);
 long Translucent_Table_Size(int count);

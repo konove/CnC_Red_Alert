@@ -67,7 +67,7 @@ class TurretClass : public DriveClass {
   FacingClass SecondaryFacing;
 
   void Debug_Dump(MonoClass* mono) const override;
-  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
 
   /*
   **	File I/O.

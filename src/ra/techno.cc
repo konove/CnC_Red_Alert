@@ -5318,7 +5318,8 @@ fixed TechnoClass::Tiberium_Load() const {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-DirType TechnoClass::Desired_Load_Dir(ObjectClass*, CELL& moveto) const {
+DirType TechnoClass::Desired_Load_Dir(ObjectClass* /*unused*/,
+                                      CELL& moveto) const {
   assert(IsActive);
 
   moveto = 0;
@@ -5490,7 +5491,7 @@ bool TechnoClass::Target_Something_Nearby(ThreatType threat) {
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-int TechnoClass::Exit_Object(TechnoClass*) {
+int TechnoClass::Exit_Object(TechnoClass* /*unused*/) {
   assert(IsActive);
 
   return 0;
@@ -5532,7 +5533,7 @@ bool TechnoClass::Is_Ready_To_Random_Animate() const {
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Assign_Destination(TARGET) { assert(IsActive); }
+void TechnoClass::Assign_Destination(TARGET /*unused*/) { assert(IsActive); }
 
 /***********************************************************************************************
  * TechnoClass::Enter_Idle_Mode -- Object enters its default idle condition. *
@@ -5552,7 +5553,7 @@ void TechnoClass::Assign_Destination(TARGET) { assert(IsActive); }
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Enter_Idle_Mode(bool) { assert(IsActive); }
+void TechnoClass::Enter_Idle_Mode(bool /*unused*/) { assert(IsActive); }
 
 /***********************************************************************************************
  * TechnoClass::Draw_Pips -- Draws the transport pips and other techno
@@ -5919,7 +5920,7 @@ BuildingClass* TechnoClass::Find_Docking_Bay(StructType b,
  *                                                                                             *
  * HISTORY: * 08/12/1995 JLB : Created. *
  *=============================================================================================*/
-CELL TechnoClass::Find_Exit_Cell(const TechnoClass*) const {
+CELL TechnoClass::Find_Exit_Cell(const TechnoClass* /*unused*/) const {
   assert(IsActive);
 
   return Coord_Cell(Docking_Coord());

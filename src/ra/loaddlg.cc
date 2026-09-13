@@ -182,8 +182,8 @@ int LoadOptionsClass::Process() {
   */
   enum RedrawType {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_BUTTONS = 1,
+    REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   };
 

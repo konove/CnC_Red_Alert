@@ -34,8 +34,11 @@ long Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
 bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
                            int dx_pixel, int dy_pixel, int pixel_width,
                            int pixel_height, bool trans);
-bool Linear_Scale_To_Linear(void*, void*, int, int, int, int, int, int, int,
-                            int, bool, const char*);
+bool Linear_Scale_To_Linear(void* /*thisptr*/, void* /*dest*/, int /*src_x*/,
+                            int /*src_y*/, int /*dst_x*/, int /*dst_y*/,
+                            int /*src_w*/, int /*src_h*/, int /*dst_w*/,
+                            int /*dst_h*/, bool /*trans*/,
+                            const char* /*remap*/);
 
 // Draws text onto the viewport using the current global font (FontPtr).
 // Wraps to a new line when text exceeds the viewport width. A bcolor of 0
@@ -53,8 +56,9 @@ void Buffer_Fill_Rect(void* thisptr, int sx, int sy, int dx, int dy,
 void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
                   void* remap);
 void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
-                            int x_pixel, int y_pixel, const void* remap, int,
-                            int, int, int);
+                            int x_pixel, int y_pixel, const void* remap,
+                            int /*min_x*/, int /*min_y*/, int /*max_x*/,
+                            int /*max_y*/);
 
 extern GraphicViewPortClass* LogicPage;
 extern bool AllowHardwareBlitFills;

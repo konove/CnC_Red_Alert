@@ -60,7 +60,7 @@ class FactoryClass : private StageClass {
   FactoryClass(FactoryClass&&) = delete;
   FactoryClass& operator=(FactoryClass&&) = delete;
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   static void Init();

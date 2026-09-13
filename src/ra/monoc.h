@@ -106,7 +106,7 @@ class MonoClass {
   **	Handles deep copies for the mono class objects. This performs what is
   *essentially *	a screen copy.
   */
-  MonoClass& operator=(const MonoClass&);
+  MonoClass& operator=(const MonoClass& /*src*/);
 
   /*
   **	This merely makes a duplicate of the mono object into a newly created

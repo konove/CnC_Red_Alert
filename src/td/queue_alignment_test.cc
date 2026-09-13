@@ -28,7 +28,7 @@ class TestConnection : public NonSequencedConnClass {
   }
 
  protected:
-  int Send(char*, int) override { return true; }
+  int Send(char* /*buf*/, int /*buflen*/) override { return true; }
 };
 
 TEST_F(QueueAlignmentTest, ReceivesPacketHeaderAtOddAddress) {

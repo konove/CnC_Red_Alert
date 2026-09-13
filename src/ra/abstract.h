@@ -119,7 +119,7 @@ class AbstractClass {
   }
 
   [[nodiscard]] virtual MoveType Can_Enter_Cell(
-      CELL, FacingType = FACING_NONE) const {
+      CELL /*unused*/, FacingType /*unused*/ = FACING_NONE) const {
     return MOVE_OK;
   }
 

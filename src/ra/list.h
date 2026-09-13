@@ -94,7 +94,7 @@ class ListClass : public ControlClass {
   void Peer_To_Peer(unsigned flags, KeyNumType& key,
                     ControlClass& whom) override;
   virtual void Remove_Item(const char* text);
-  virtual void Remove_Item(int);
+  virtual void Remove_Item(int /*index*/);
   virtual int Remove_Scroll_Bar() final;
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(const char* text);
@@ -194,8 +194,8 @@ class TListClass final : public ControlClass {
 
   void Peer_To_Peer(unsigned flags, KeyNumType& key,
                     ControlClass& whom) override;
-  void Remove_Item(T);
-  void Remove_Index(int);
+  void Remove_Item(T /*text*/);
+  void Remove_Index(int /*index*/);
   int Remove_Scroll_Bar();
   void Set_Selected_Index(int index);
   void Set_Selected_Index(T text);
@@ -521,7 +521,7 @@ int TListClass<T>::Current_Index() const {
 }
 
 template <class T>
-void TListClass<T>::Peer_To_Peer(unsigned flags, KeyNumType&,
+void TListClass<T>::Peer_To_Peer(unsigned flags, KeyNumType& /*unused*/,
                                  ControlClass& whom) {
   if (flags & LEFTRELEASE) {
     if (&whom == &UpGadget) {

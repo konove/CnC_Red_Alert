@@ -269,8 +269,9 @@ void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
  *   12/06/1995  MG : Created.                                             *
  *   01/2026     : Replaced with SDL texture scaling.                      *
  *=========================================================================*/
-void Interpolate_2X_Scale(GraphicBufferClass* source, GraphicViewPortClass*,
-                          const char*) {
+void Interpolate_2X_Scale(GraphicBufferClass* source,
+                          GraphicViewPortClass* /*unused*/,
+                          const char* /*unused*/) {
   // Keep palette interpolation table updated for other code that may use it
   if (InterpolationPaletteChanged) {
     Create_Palette_Interpolation_Table();
@@ -282,4 +283,3 @@ void Interpolate_2X_Scale(GraphicBufferClass* source, GraphicViewPortClass*,
                                     source->Get_Height());
   source->Unlock();
 }
-

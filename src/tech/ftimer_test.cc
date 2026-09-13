@@ -35,7 +35,7 @@ T RoundTrip(T& subject, int64_t skew) {
   ByteSink sink;
   ArchiveWriter writer(sink);
   subject.Serialize(writer);
-  EXPECT_EQ(sink.bytes.size(), 9u);  // int64_t value + bool running
+  EXPECT_EQ(sink.bytes.size(), 9U);  // int64_t value + bool running
 
   FakeTick::now += skew;
   BufferStraw straw(sink.bytes.data(), static_cast<int>(sink.bytes.size()));

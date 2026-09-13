@@ -157,7 +157,8 @@ void NullModemConnClass::Init(HANDLE port_handle) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NullModemConnClass::Send(char* buf, int buflen, void*, int) {
+int NullModemConnClass::Send(char* buf, int buflen, void* /*extrabuf*/,
+                             int /*extralen*/) {
   SerialHeaderType* header;
   unsigned long sendlen;
 
@@ -192,7 +193,6 @@ int NullModemConnClass::Send(char* buf, int buflen, void*, int) {
   SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf,
                                    static_cast<int>(sendlen));
   return true;
-
 
 } /* end of Send */
 

@@ -210,8 +210,9 @@ NullModemClass::~NullModemClass() {
  *=========================================================================*/
 // int NullModemClass::Init (int port, int irq, int baud, char parity, int
 // wordlen, int stopbits)
-int NullModemClass::Init(int port, int, char* dev_name, int baud, char parity,
-                         int wordlen, int stopbits, int flowcontrol) {
+int NullModemClass::Init(int port, int /*unused*/, char* dev_name, int baud,
+                         char parity, int wordlen, int stopbits,
+                         int flowcontrol) {
 #ifdef _WIN32
   if (PortHandle) {
     CloseHandle(PortHandle);
@@ -1008,7 +1009,7 @@ void* NullModemClass::Oldest_Send() {
  * HISTORY:                                                                *
  *   05/31/1995 BRR : Created.                                             *
  *=========================================================================*/
-void NullModemClass::Configure_Debug(int, int offset, int size,
+void NullModemClass::Configure_Debug(int /*index*/, int offset, int size,
                                      const char** names, int maxnames) {
   if (Connection) {
     Connection->Queue->Configure_Debug(offset, size, names, maxnames);
@@ -1033,7 +1034,7 @@ void NullModemClass::Configure_Debug(int, int offset, int size,
  * HISTORY:                                                                *
  *   05/02/1995 BRR : Created.                                             *
  *=========================================================================*/
-void NullModemClass::Mono_Debug_Print(int, int refresh) {
+void NullModemClass::Mono_Debug_Print(int /*index*/, int refresh) {
   if (!Connection) {
     return;
   }
@@ -1623,8 +1624,8 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_BUTTONS = 1,
+    REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 
@@ -2113,7 +2114,7 @@ void NullModemClass::Remove_Abort_Modem() {
  *                                                                                             *
  * HISTORY: * 8/2/96 3:03PM ST : Documented / Win32 support added *
  *=============================================================================================*/
-int NullModemClass::Change_IRQ_Priority(int) {
+int NullModemClass::Change_IRQ_Priority(int /*unused*/) {
   return ASSUCCESS;
 } /* end of Change_IRQ_Priority */
 

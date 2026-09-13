@@ -196,7 +196,7 @@ void MapEditClass::Handle_Teams(const char* caption) {
  *   12/08/1994 BR : Created.                                              *
  *   05/07/1996 JLB : Streamlined and sorted team list.                    *
  *=========================================================================*/
-int MapEditClass::Select_Team(const char*) {
+int MapEditClass::Select_Team(const char* /*unused*/) {
   /*
   **	Dialog & button dimensions
   */
@@ -497,8 +497,8 @@ int MapEditClass::Team_Members(HousesType house) {
   */
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_BUTTONS = 1,
+    REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
   RedrawType display;  // requested redraw level

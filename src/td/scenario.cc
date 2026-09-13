@@ -278,7 +278,7 @@ void Fill_In_Data() {
   **	game.
   */
   if (GameToPlay != GAME_NORMAL) {
-    Map.Player_Names(1);
+    Map.Player_Names(true);
   }
 
   ScenarioInit--;
@@ -401,7 +401,7 @@ void Do_Win() {
         MPlayerCurGame = MAX_MULTI_GAMES - 1;
       }
     }
-    GameActive = 0;
+    GameActive = false;
     Show_Mouse();
     return;
   }
@@ -629,7 +629,7 @@ void Do_Lose() {
         MPlayerCurGame = MAX_MULTI_GAMES - 1;
       }
     }
-    GameActive = 0;
+    GameActive = false;
     Show_Mouse();
     return;
   }
@@ -649,7 +649,7 @@ void Do_Lose() {
     Map.Render();
   } else {
     Hide_Mouse();
-    GameActive = 0;
+    GameActive = false;
   }
 
   Fade_Palette_To(GamePalette, kFadePaletteFast, Call_Back);

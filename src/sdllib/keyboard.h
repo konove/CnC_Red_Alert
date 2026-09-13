@@ -261,106 +261,106 @@ typedef enum KeyASCIIType {
   KA_SETX = 25,
   KA_SETY = 26,
 
-  KA_SPACE = 32,  /*   */
-  KA_EXCLAMATION, /* ! */
-  KA_DQUOTE,      /* " */
-  KA_POUND,       /* # */
-  KA_DOLLAR,      /* $ */
-  KA_PERCENT,     /* % */
-  KA_AMPER,       /* & */
-  KA_SQUOTE,      /* ' */
-  KA_LPAREN,      /* ( */
-  KA_RPAREN,      /* ) */
-  KA_ASTERISK,    /* * */
-  KA_PLUS,        /* + */
-  KA_COMMA,       /* , */
-  KA_MINUS,       /* - */
-  KA_PERIOD,      /* . */
-  KA_SLASH,       /* / */
+  KA_SPACE = 32,       /*   */
+  KA_EXCLAMATION = 33, /* ! */
+  KA_DQUOTE = 34,      /* " */
+  KA_POUND = 35,       /* # */
+  KA_DOLLAR = 36,      /* $ */
+  KA_PERCENT = 37,     /* % */
+  KA_AMPER = 38,       /* & */
+  KA_SQUOTE = 39,      /* ' */
+  KA_LPAREN = 40,      /* ( */
+  KA_RPAREN = 41,      /* ) */
+  KA_ASTERISK = 42,    /* * */
+  KA_PLUS = 43,        /* + */
+  KA_COMMA = 44,       /* , */
+  KA_MINUS = 45,       /* - */
+  KA_PERIOD = 46,      /* . */
+  KA_SLASH = 47,       /* / */
 
-  KA_0,
-  KA_1,
-  KA_2,
-  KA_3,
-  KA_4,
-  KA_5,
-  KA_6,
-  KA_7,
-  KA_8,
-  KA_9,
-  KA_COLON,        /* : */
-  KA_SEMICOLON,    /* ; */
-  KA_LESS_THAN,    /* < */
-  KA_EQUAL,        /* = */
-  KA_GREATER_THAN, /* > */
-  KA_QUESTION,     /* ? */
+  KA_0 = 48,
+  KA_1 = 49,
+  KA_2 = 50,
+  KA_3 = 51,
+  KA_4 = 52,
+  KA_5 = 53,
+  KA_6 = 54,
+  KA_7 = 55,
+  KA_8 = 56,
+  KA_9 = 57,
+  KA_COLON = 58,        /* : */
+  KA_SEMICOLON = 59,    /* ; */
+  KA_LESS_THAN = 60,    /* < */
+  KA_EQUAL = 61,        /* = */
+  KA_GREATER_THAN = 62, /* > */
+  KA_QUESTION = 63,     /* ? */
 
-  KA_AT, /* @ */
-  KA_A,  /* A */
-  KA_B,  /* B */
-  KA_C,  /* C */
-  KA_D,  /* D */
-  KA_E,  /* E */
-  KA_F,  /* F */
-  KA_G,  /* G */
-  KA_H,  /* H */
-  KA_I,  /* I */
-  KA_J,  /* J */
-  KA_K,  /* K */
-  KA_L,  /* L */
-  KA_M,  /* M */
-  KA_N,  /* N */
-  KA_O,  /* O */
+  KA_AT = 64, /* @ */
+  KA_A = 65,  /* A */
+  KA_B = 66,  /* B */
+  KA_C = 67,  /* C */
+  KA_D = 68,  /* D */
+  KA_E = 69,  /* E */
+  KA_F = 70,  /* F */
+  KA_G = 71,  /* G */
+  KA_H = 72,  /* H */
+  KA_I = 73,  /* I */
+  KA_J = 74,  /* J */
+  KA_K = 75,  /* K */
+  KA_L = 76,  /* L */
+  KA_M = 77,  /* M */
+  KA_N = 78,  /* N */
+  KA_O = 79,  /* O */
 
-  KA_P,         /* P */
-  KA_Q,         /* Q */
-  KA_R,         /* R */
-  KA_S,         /* S */
-  KA_T,         /* T */
-  KA_U,         /* U */
-  KA_V,         /* V */
-  KA_W,         /* W */
-  KA_X,         /* X */
-  KA_Y,         /* Y */
-  KA_Z,         /* Z */
-  KA_LBRACKET,  /* [ */
-  KA_BACKSLASH, /* \ */
-  KA_RBRACKET,  /* ] */
-  KA_CARROT,    /* ^ */
-  KA_UNDERLINE, /* _ */
+  KA_P = 80,         /* P */
+  KA_Q = 81,         /* Q */
+  KA_R = 82,         /* R */
+  KA_S = 83,         /* S */
+  KA_T = 84,         /* T */
+  KA_U = 85,         /* U */
+  KA_V = 86,         /* V */
+  KA_W = 87,         /* W */
+  KA_X = 88,         /* X */
+  KA_Y = 89,         /* Y */
+  KA_Z = 90,         /* Z */
+  KA_LBRACKET = 91,  /* [ */
+  KA_BACKSLASH = 92, /* \ */
+  KA_RBRACKET = 93,  /* ] */
+  KA_CARROT = 94,    /* ^ */
+  KA_UNDERLINE = 95, /* _ */
 
-  KA_GRAVE, /* ` */
-  KA_a,     /* a */
-  KA_b,     /* b */
-  KA_c,     /* c */
-  KA_d,     /* d */
-  KA_e,     /* e */
-  KA_f,     /* f */
-  KA_g,     /* g */
-  KA_h,     /* h */
-  KA_i,     /* i */
-  KA_j,     /* j */
-  KA_k,     /* k */
-  KA_l,     /* l */
-  KA_m,     /* m */
-  KA_n,     /* n */
-  KA_o,     /* o */
+  KA_GRAVE = 96, /* ` */
+  KA_a = 97,     /* a */
+  KA_b = 98,     /* b */
+  KA_c = 99,     /* c */
+  KA_d = 100,    /* d */
+  KA_e = 101,    /* e */
+  KA_f = 102,    /* f */
+  KA_g = 103,    /* g */
+  KA_h = 104,    /* h */
+  KA_i = 105,    /* i */
+  KA_j = 106,    /* j */
+  KA_k = 107,    /* k */
+  KA_l = 108,    /* l */
+  KA_m = 109,    /* m */
+  KA_n = 110,    /* n */
+  KA_o = 111,    /* o */
 
-  KA_p,      /* p */
-  KA_q,      /* q */
-  KA_r,      /* r */
-  KA_s,      /* s */
-  KA_t,      /* t */
-  KA_u,      /* u */
-  KA_v,      /* v */
-  KA_w,      /* w */
-  KA_x,      /* x */
-  KA_y,      /* y */
-  KA_z,      /* z */
-  KA_LBRACE, /* { */
-  KA_BAR,    /* | */
-  KA_RBRACE, /* ] */
-  KA_TILDA,  /* ~ */
+  KA_p = 112,      /* p */
+  KA_q = 113,      /* q */
+  KA_r = 114,      /* r */
+  KA_s = 115,      /* s */
+  KA_t = 116,      /* t */
+  KA_u = 117,      /* u */
+  KA_v = 118,      /* v */
+  KA_w = 119,      /* w */
+  KA_x = 120,      /* x */
+  KA_y = 121,      /* y */
+  KA_z = 122,      /* z */
+  KA_LBRACE = 123, /* { */
+  KA_BAR = 124,    /* | */
+  KA_RBRACE = 125, /* ] */
+  KA_TILDA = 126,  /* ~ */
 
   KA_ESC = '\x1b',
   KA_RETURN = '\r',

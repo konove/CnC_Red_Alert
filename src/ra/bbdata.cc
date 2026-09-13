@@ -98,7 +98,7 @@ BulletTypeClass::BulletTypeClass(const char* name) noexcept
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void* BulletTypeClass::operator new(size_t) noexcept {
+void* BulletTypeClass::operator new(size_t /*unused*/) noexcept {
   return BulletTypes.Alloc();
 }
 

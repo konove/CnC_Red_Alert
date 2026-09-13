@@ -162,7 +162,7 @@ void UDPInterfaceClass::Set_Broadcast_Address(void* address) {
  *                                                                                             *
  * HISTORY: * 8/5/97 12:13PM ST : Created *
  *=============================================================================================*/
-bool UDPInterfaceClass::Open_Socket(SOCKET) {
+bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
   linger ling{};
   struct sockaddr_in addr{};
 

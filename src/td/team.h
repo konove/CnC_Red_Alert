@@ -188,7 +188,7 @@ class TeamClass : public AbstractClass {
   [[nodiscard]] virtual RTTIType What_Am_I() const { return RTTI_TEAM; }
   void operator delete(void* ptr);
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   static void Init();
   static void Suspend_Teams(int priority);
 
@@ -205,11 +205,11 @@ class TeamClass : public AbstractClass {
     IsForcedActive = true;
     IsUnderStrength = false;
   }
-  bool Remove(FootClass*, int typeindex = -1);
+  bool Remove(FootClass* /*obj*/, int typeindex = -1);
   void Detach(TARGET target, bool all);
   void AI() override;
   void Took_Damage(FootClass* obj, ResultType result, TechnoClass* source);
-  bool Add(FootClass*, int typeindex = -1);
+  bool Add(FootClass* /*obj*/, int typeindex = -1);
   void Assign_Mission_Target(TARGET new_target);
 
   /*

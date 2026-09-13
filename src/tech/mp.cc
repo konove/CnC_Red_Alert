@@ -1189,7 +1189,7 @@ int XMP_Unsigned_Mult(uint32_t* prod, const uint32_t* multiplicand,
     XMP_Shift_Left_Bits(prod, 1, precision);
 
     if (*(multiplier - 1) & high_bit_mask) {
-      XMP_Add(prod, prod, multiplicand, 0, precision);
+      XMP_Add(prod, prod, multiplicand, false, precision);
     }
 
     high_bit_mask >>= 1;
@@ -1464,7 +1464,7 @@ int XMP_Unsigned_Div(uint32_t* remainder, uint32_t* quotient,
     }
 
     if (XMP_Compare(remainder, divisor, precision) >= 0) {
-      XMP_Sub(remainder, remainder, divisor, 0, precision);
+      XMP_Sub(remainder, remainder, divisor, false, precision);
       *quotient_ptr |= high_bit_mask;
     }
 
@@ -1532,7 +1532,7 @@ void XMP_Signed_Div(uint32_t* remainder, uint32_t* quotient,
     if (!XMP_Test_Eq_Int(remainder, 0, precision)) {
       XMP_Dec(quotient, precision);
       XMP_Neg(remainder, precision);
-      XMP_Add(remainder, remainder, scratch_divisor, 0, precision);
+      XMP_Add(remainder, remainder, scratch_divisor, false, precision);
     }
   }
 }
@@ -1576,11 +1576,11 @@ void XMP_Inverse_A_Mod_B(uint32_t* result, const uint32_t* number,
     XMP_Unsigned_Div(g[(i + 1) % 3], y, g[(i - 1) % 3], g[i % 3], precision);
 
     XMP_Unsigned_Mult(result, v[i % 3], y, precision);
-    XMP_Sub(v[(i + 1) % 3], v[(i - 1) % 3], result, 0, precision);
+    XMP_Sub(v[(i + 1) % 3], v[(i - 1) % 3], result, false, precision);
   }
 
   if (XMP_Is_Negative(v[(i - 1) % 3], precision)) {
-    XMP_Add(v[(i - 1) % 3], v[(i - 1) % 3], modulus, 0, precision);
+    XMP_Add(v[(i - 1) % 3], v[(i - 1) % 3], modulus, false, precision);
   }
 
   XMP_Move(result, v[(i - 1) % 3], precision);
@@ -1628,7 +1628,7 @@ int XMP_Reciprocal(uint32_t* quotient, const uint32_t* divisor, int precision) {
   while (total_bit_count--) {
     XMP_Shift_Left_Bits(remainder, 1, precision);
     if (XMP_Compare(remainder, divisor, precision) >= 0) {
-      XMP_Sub(remainder, remainder, divisor, 0, precision);
+      XMP_Sub(remainder, remainder, divisor, false, precision);
       *quotient |= high_bit_mask;
     }
 
@@ -1743,7 +1743,7 @@ void XMP_Decode_ASCII(const char* str, uint32_t* mpn, int precision) {
     }
 
     XMP_Unsigned_Mult_Int(mpn, mpn, radix, precision);
-    XMP_Add_Int(mpn, mpn, c, 0, precision);
+    XMP_Add_Int(mpn, mpn, c, false, precision);
   }
   if (minus) {
     XMP_Neg(mpn, precision);
@@ -2350,7 +2350,7 @@ bool XMP_Fermat_Test(const uint32_t* candidate_prime, unsigned rounds,
 bool XMP_Rabin_Miller_Test(Straw& rng, const uint32_t* w, int rounds,
                            int precision) {
   uint32_t wminus1[MAX_UNIT_PRECISION] = {};
-  XMP_Sub_Int(wminus1, w, 1, 0, precision);
+  XMP_Sub_Int(wminus1, w, 1, false, precision);
 
   unsigned maxbitprecision = precision * sizeof(uint32_t) * 8;
   unsigned a;
@@ -2462,13 +2462,13 @@ void XMP_Randomize(uint32_t* result, Straw& rng, int total_bits,
 void XMP_Randomize(uint32_t* result, Straw& rng, const uint32_t* minval,
                    const uint32_t* maxval, int precision) {
   uint32_t range[MAX_UNIT_PRECISION];
-  XMP_Sub(range, maxval, minval, 0, precision);
+  XMP_Sub(range, maxval, minval, false, precision);
   unsigned int bit_count = XMP_Count_Bits(range, precision);
   do {
     XMP_Randomize(result, rng, bit_count, precision);
   } while (XMP_Compare(result, range, precision) > 0);
 
-  XMP_Add(result, result, minval, 0, precision);
+  XMP_Add(result, result, minval, false, precision);
 }
 
 /***********************************************************************************************
@@ -2494,7 +2494,7 @@ bool XMP_Is_Prime(const uint32_t* prime, int precision) {
   /*
   **	Even numbers are ALWAYS not prime.
   */
-  if (!(*prime & 0x01u)) {
+  if (!(*prime & 0x01U)) {
     return false;
   }
 

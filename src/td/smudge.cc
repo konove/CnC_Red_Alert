@@ -113,7 +113,7 @@ int SmudgeClass::Validate() const {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void* SmudgeClass::operator new(size_t) noexcept {
+void* SmudgeClass::operator new(size_t /*unused*/) noexcept {
   void* ptr = Smudges.Allocate();
   if (ptr) {
     static_cast<SmudgeClass*>(ptr)->IsActive = true;

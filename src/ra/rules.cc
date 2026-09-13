@@ -196,7 +196,7 @@ RulesClass::RulesClass()
 
       PathDelay(fixed::FromString(".016")),
       MovieTime(fixed(1, 4)) {
-  NewUnitsEnabled = SecretUnitsEnabled = 0;
+  NewUnitsEnabled = SecretUnitsEnabled = false;
   MTankDistance = 30;
   QuakeUnitDamage = fixed::_1_2;
   QuakeBuildingDamage = fixed::_1_4;

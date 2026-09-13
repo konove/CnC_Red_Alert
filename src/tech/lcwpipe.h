@@ -52,7 +52,7 @@ class LCWPipe : public Pipe {
  public:
   typedef enum CompControl { COMPRESS, DECOMPRESS } CompControl;
 
-  explicit LCWPipe(CompControl, int blocksize = 1024 * 8);
+  explicit LCWPipe(CompControl /*control*/, int blocksize = 1024 * 8);
   ~LCWPipe() override;
 
   int Flush() override;

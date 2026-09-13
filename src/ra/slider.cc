@@ -380,7 +380,7 @@ int SliderClass::Draw_Me(bool forced) {
  *-- Which gadget is being touched.                                         *
  * OUTPUT:  none * WARNINGS:   none * HISTORY:    01/16/1995 JLB : Created. *
  *=============================================================================================*/
-void SliderClass::Peer_To_Peer(unsigned flags, KeyNumType&,
+void SliderClass::Peer_To_Peer(unsigned flags, KeyNumType& /*unused*/,
                                ControlClass& whom) {
   if (flags & LEFTRELEASE) {
     if (&whom == PlusGadget) {

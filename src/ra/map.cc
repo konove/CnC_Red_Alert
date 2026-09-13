@@ -2297,7 +2297,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
  *                                                                                             *
  * HISTORY: * 07/28/1996 JLB : Created. *
  *=============================================================================================*/
-void MapClass::Detach(TARGET target, bool) {
+void MapClass::Detach(TARGET target, bool /*unused*/) {
   /*
   **	Remove this trigger from the map zone/line tracking list.
   */

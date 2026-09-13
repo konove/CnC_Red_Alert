@@ -81,7 +81,7 @@ class MapClass : public GScreenClass {
   [[nodiscard]] CELL Nearby_Location(CELL cell, SpeedType speed, int zone = -1,
                                      MZoneType check = MZONE_NORMAL) const;
   [[nodiscard]] ObjectClass* Close_Object(COORDINATE coord) const;
-  virtual void Detach(ObjectClass*) {}
+  virtual void Detach(ObjectClass* /*unused*/) {}
   int Cell_Region(CELL cell);
   int Cell_Threat(CELL cell, HousesType house);
   [[nodiscard]] bool In_Radar(CELL cell) const;

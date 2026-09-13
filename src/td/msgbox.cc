@@ -96,7 +96,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
 #define BUFFSIZE (511)
   // #define BUFFSIZE (255)
   char buffer[BUFFSIZE];
-  bool retval = false;
+  int retval = -1;   // The pressed button's index: 0, 1 or 2.
   bool process;      // loop while true
   KeyNumType input;  // user input
   int selection = 0;

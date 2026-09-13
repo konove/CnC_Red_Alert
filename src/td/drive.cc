@@ -1602,7 +1602,7 @@ int DriveClass::Offload_Tiberium_Bail() {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-bool DriveClass::Ok_To_Move(DirType) { return true; }
+bool DriveClass::Ok_To_Move(DirType /*unused*/) { return true; }
 
 /***********************************************************************************************
  * DriveClass::Class_Of -- Fetches a reference to the class type for this

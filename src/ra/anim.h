@@ -75,7 +75,7 @@ class AnimClass final : public ObjectClass, public StageClass {
   operator AnimType() const { return Class->Type; }
 
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   /*---------------------------------------------------------------------
@@ -87,7 +87,9 @@ class AnimClass final : public ObjectClass, public StageClass {
   void Make_Invisible() { IsInvisible = true; }
   static void Do_Atom_Damage(HousesType ownerhouse, CELL cell);
 
-  [[nodiscard]] bool Can_Place_Here(COORDINATE) const { return true; }
+  [[nodiscard]] bool Can_Place_Here(COORDINATE /*unused*/) const {
+    return true;
+  }
   bool Mark(MarkType mark = MARK_CHANGE) override;
   bool Render(bool forced) override;  // const;
   [[nodiscard]] COORDINATE Center_Coord() const override;
@@ -96,8 +98,10 @@ class AnimClass final : public ObjectClass, public StageClass {
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
-  [[nodiscard]] const short* Occupy_List(bool = false) const override;
-  [[nodiscard]] const short* Overlap_List(bool = false) const override;
+  [[nodiscard]] const short* Occupy_List(
+      bool /*placement*/ = false) const override;
+  [[nodiscard]] const short* Overlap_List(
+      bool /*redraw*/ = false) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
   void AI() override;
   void Detach(TARGET target, bool all) override;

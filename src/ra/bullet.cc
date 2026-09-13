@@ -219,7 +219,7 @@ BulletClass::~BulletClass() {
  *                                                                                             *
  * HISTORY: * 05/02/1994 JLB : Created. *
  *=============================================================================================*/
-void* BulletClass::operator new(size_t) noexcept {
+void* BulletClass::operator new(size_t /*unused*/) noexcept {
   void* ptr = Bullets.Allocate();
   if (ptr) {
     static_cast<BulletClass*>(ptr)->IsActive = true;
@@ -265,7 +265,7 @@ void BulletClass::operator delete(void* ptr) {
  * HISTORY: * 06/20/1994 JLB : Created. * 01/05/1995 JLB : Handles projectiles
  *with altitude.                                       *
  *=============================================================================================*/
-const short* BulletClass::Occupy_List(bool) const {
+const short* BulletClass::Occupy_List(bool /*placement*/) const {
   assert(Bullets.ID(this) == ID);
   assert(IsActive);
 

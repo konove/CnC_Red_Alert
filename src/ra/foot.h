@@ -355,7 +355,7 @@ class FootClass : public TechnoClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
 
   /*

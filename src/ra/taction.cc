@@ -203,8 +203,9 @@ ActionChoiceClass ActionChoices[TACTION_COUNT] = {{TACTION_NONE},
  *                                                                                             *
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
-void ActionChoiceClass::Draw_It(int, int x, int y, int width, int height,
-                                bool selected, TextPrintType flags) const {
+void ActionChoiceClass::Draw_It(int /*unused*/, int x, int y, int width,
+                                int height, bool selected,
+                                TextPrintType flags) const {
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   static int _tabs[] = {13, 40};
   if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {

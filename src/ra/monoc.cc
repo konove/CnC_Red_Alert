@@ -73,7 +73,7 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 
-bool MonoClass::Enabled = 0;
+bool MonoClass::Enabled = false;
 MonoClass* MonoClass::PageUsage[MAX_MONO_PAGES];
 
 /*

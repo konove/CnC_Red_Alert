@@ -134,7 +134,8 @@ class GadgetClass : public LinkClass {
   virtual void Enable();
   [[nodiscard]] virtual unsigned Get_ID() const { return 0; }
   virtual void Flag_To_Redraw();
-  virtual void Peer_To_Peer(unsigned, KeyNumType&, ControlClass&) {}
+  virtual void Peer_To_Peer(unsigned /*unused*/, KeyNumType& /*unused*/,
+                            ControlClass& /*unused*/) {}
   virtual void Set_Focus();
   virtual void Clear_Focus();
   virtual bool Has_Focus();

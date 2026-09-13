@@ -223,7 +223,7 @@ VesselClass::~VesselClass() {
  *                                                                                             *
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
-void* VesselClass::operator new(size_t) noexcept {
+void* VesselClass::operator new(size_t /*unused*/) noexcept {
   void* ptr = Vessels.Alloc();
   if (ptr != nullptr) {
     static_cast<VesselClass*>(ptr)->IsActive = true;
@@ -290,7 +290,7 @@ const ObjectTypeClass& VesselClass::Class_Of() const {
  *                                                                                             *
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
-MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType) const {
+MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
@@ -769,7 +769,7 @@ ActionType VesselClass::What_Action(const ObjectClass* object) const {
       action = ACTION_NONE;
     } else {
       // check to see if the transporter can unload.
-      bool found = 0;
+      bool found = false;
       if (*this != VESSEL_CARRIER) {
         for (FacingType face : magic_enum::enum_values<FacingType>()) {
           if (found) {
@@ -1272,7 +1272,7 @@ TARGET VesselClass::Greatest_Threat(ThreatType threat)  // const
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselClass::Enter_Idle_Mode(bool) {
+void VesselClass::Enter_Idle_Mode(bool /*initial*/) {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 

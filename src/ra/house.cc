@@ -254,7 +254,7 @@ fixed HouseClass::Tiberium_Fraction() const {
   if (Tiberium == 0) {
     return fixed(0);
   }
-  return fixed(static_cast<int>(Tiberium), static_cast<int>(Capacity));
+  return {static_cast<int>(Tiberium), static_cast<int>(Capacity)};
 }
 
 /***********************************************************************************************
@@ -588,7 +588,7 @@ void HouseClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 05/22/1994 JLB : Created. *
  *=============================================================================================*/
-void* HouseClass::operator new(size_t) noexcept {
+void* HouseClass::operator new(size_t /*unused*/) noexcept {
   void* ptr = Houses.Allocate();
   if (ptr) {
     static_cast<HouseClass*>(ptr)->IsActive = true;
@@ -3177,7 +3177,7 @@ void HouseClass::Clobber_All() {
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : commented *
  *=============================================================================================*/
-void HouseClass::Detach(TARGET target, bool) {
+void HouseClass::Detach(TARGET target, bool /*unused*/) {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (ToCapture == target) {
@@ -4046,7 +4046,7 @@ fixed HouseClass::Power_Fraction() const {
   }
 
   if (Power) {
-    return fixed(Power, Drain);
+    return {Power, Drain};
   }
   return fixed(0);
 }
@@ -4894,7 +4894,7 @@ UrgencyType HouseClass::Check_Raise_Power() const {
   return urgency;
 }
 
-bool HouseClass::AI_Attack(UrgencyType) {
+bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
   CHECK_EQ(Houses.ID(this), ID);
 
   bool shuffle =
@@ -4958,7 +4958,7 @@ bool HouseClass::AI_Attack(UrgencyType) {
 **	Given the specified urgency, build a power structure to meet
 **	this need.
 */
-bool HouseClass::AI_Build_Power(UrgencyType) const {
+bool HouseClass::AI_Build_Power(UrgencyType /*unused*/) const {
   CHECK_EQ(Houses.ID(this), ID);
 
   return false;
@@ -4968,7 +4968,7 @@ bool HouseClass::AI_Build_Power(UrgencyType) const {
 **	Given the specified urgency, build base defensive structures
 **	according to need and according to existing base disposition.
 */
-bool HouseClass::AI_Build_Defense(UrgencyType) const {
+bool HouseClass::AI_Build_Defense(UrgencyType /*unused*/) const {
   CHECK_EQ(Houses.ID(this), ID);
 
   return false;
@@ -4978,7 +4978,7 @@ bool HouseClass::AI_Build_Defense(UrgencyType) const {
 **	Given the specified urgency, build offensive units according
 **	to need and according to the opponents base defenses.
 */
-bool HouseClass::AI_Build_Offense(UrgencyType) const {
+bool HouseClass::AI_Build_Offense(UrgencyType /*unused*/) const {
   CHECK_EQ(Houses.ID(this), ID);
 
   return false;
@@ -4988,7 +4988,7 @@ bool HouseClass::AI_Build_Offense(UrgencyType) const {
 **	Given the specified urgency, build income producing
 **	structures according to need.
 */
-bool HouseClass::AI_Build_Income(UrgencyType) const {
+bool HouseClass::AI_Build_Income(UrgencyType /*unused*/) const {
   CHECK_EQ(Houses.ID(this), ID);
 
   return false;
@@ -5008,7 +5008,7 @@ bool HouseClass::AI_Fire_Sale(UrgencyType urgency) {
 /*
 **	Given the specified urgency, build an engineer.
 */
-bool HouseClass::AI_Build_Engineer(UrgencyType) const {
+bool HouseClass::AI_Build_Engineer(UrgencyType /*unused*/) const {
   CHECK_EQ(Houses.ID(this), ID);
 
   return false;
@@ -5018,7 +5018,7 @@ bool HouseClass::AI_Build_Engineer(UrgencyType) const {
 **	Given the specified urgency, sell of some power since
 **	there appears to be excess.
 */
-bool HouseClass::AI_Lower_Power(UrgencyType) const {
+bool HouseClass::AI_Lower_Power(UrgencyType /*unused*/) const {
   CHECK_EQ(Houses.ID(this), ID);
 
   BuildingClass* b = Find_Building(STRUCT_POWER);

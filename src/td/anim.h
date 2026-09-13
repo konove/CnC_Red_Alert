@@ -59,7 +59,7 @@ class ArchiveWriter;
 class AnimClass final : public ObjectClass, private StageClass {
  public:
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   AnimClass() { IsActive = true; }
   AnimClass(AnimType animnum, COORDINATE coord, unsigned char timedelay = 0,
@@ -82,7 +82,9 @@ class AnimClass final : public ObjectClass, private StageClass {
   void Attach_To(ObjectClass* obj);
   void Make_Invisible() { IsInvisible = true; }
 
-  [[nodiscard]] bool Can_Place_Here(COORDINATE) const { return true; }
+  [[nodiscard]] bool Can_Place_Here(COORDINATE /*unused*/) const {
+    return true;
+  }
   bool Mark(MarkType mark = MARK_CHANGE) override;
   bool Render(bool forced) override;
   [[nodiscard]] COORDINATE Center_Coord() const override;
@@ -91,7 +93,8 @@ class AnimClass final : public ObjectClass, private StageClass {
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
-  [[nodiscard]] const short* Occupy_List(bool = false) const override;
+  [[nodiscard]] const short* Occupy_List(
+      bool /*placement*/ = false) const override;
   [[nodiscard]] const short* Overlap_List() const override;
   void Draw_It(int x, int y, WindowNumberType window) override;
   void AI() override;

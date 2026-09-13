@@ -157,7 +157,7 @@ static void Play_Intro(bool for_real = false);
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-bool Init_Game(int, char*[]) {
+bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   const void* temp_mouse_shapes;
 
   /*

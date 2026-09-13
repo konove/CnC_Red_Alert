@@ -188,9 +188,9 @@ class TFixedIHeapClass : public FixedIHeapClass {
   virtual T* Alloc() { return static_cast<T*>(FixedIHeapClass::Allocate()); }
   virtual int Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
   int Free(void* pointer) override { return FixedIHeapClass::Free(pointer); }
-  int Save(ArchiveWriter&)
+  int Save(ArchiveWriter& /*file*/)
     requires Serializable<T>;
-  int Load(ArchiveReader&)
+  int Load(ArchiveReader& /*file*/)
     requires Serializable<T>;
 
   virtual T* Ptr(int index) { return static_cast<T*>(ActivePointers[index]); }

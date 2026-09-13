@@ -439,7 +439,7 @@ static void Put_All(Pipe& pipe, int save_net) {
  *   12/28/1994 BR : Created.                                              *
  *   02/27/1996 JLB : Uses simpler game control value save operation.      *
  *=========================================================================*/
-bool Save_Game(int id, const char* descr, bool) {
+bool Save_Game(int id, const char* descr, bool /*unused*/) {
   char name[kMaxFname + kMaxExt];
   unsigned scenario;
   HousesType house;

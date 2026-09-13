@@ -127,9 +127,9 @@ bool WOL_Download_Dialog(IDownload* pDownload,
 
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_PROGRESS,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_PROGRESS = 1,
+    REDRAW_BUTTONS = 2,
+    REDRAW_BACKGROUND = 3,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 

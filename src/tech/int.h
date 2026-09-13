@@ -49,7 +49,7 @@
 #include "tech/straw.h"
 
 template <class T>
-T Generate_Prime(Straw& rng, int pbits, const T*);
+T Generate_Prime(Straw& rng, int pbits, const T* /*unused*/);
 
 template <class T>
 T Gcd(const T& a, const T& n);
@@ -417,7 +417,7 @@ T Gcd(const T& a, const T& n) {
 }
 
 template <class T>
-T Generate_Prime(Straw& rng, int pbits, const T*) {
+T Generate_Prime(Straw& rng, int pbits, const T* /*unused*/) {
   T minQ = T(1UL) << static_cast<unsigned short>(pbits - (unsigned short)2);
   T maxQ = (T(1UL) << static_cast<unsigned short>(pbits - (unsigned short)1)) -
            static_cast<unsigned short>(1);

@@ -90,7 +90,7 @@ class VesselClass : public DriveClass {
 
   VesselClass(VesselType classid, HousesType house);
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   // objects compare directly against their type ID.
   // NOLINTNEXTLINE(*-explicit-constructor)

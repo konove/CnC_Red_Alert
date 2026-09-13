@@ -389,7 +389,7 @@ TerrainTypeClass::TerrainTypeClass(TerrainType terrain, int theater,
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-void* TerrainTypeClass::operator new(size_t) noexcept {
+void* TerrainTypeClass::operator new(size_t /*unused*/) noexcept {
   return TerrainTypes.Alloc();
 }
 
@@ -577,7 +577,7 @@ TerrainType TerrainTypeClass::From_Name(const char* name) {
  * HISTORY: * 05/16/1994 JLB : Created. *
  *=============================================================================================*/
 void TerrainTypeClass::Display(int x, int y, WindowNumberType window,
-                               HousesType) const {
+                               HousesType /*unused*/) const {
   IsTheaterShape = true;
   CC_Draw_Shape(Get_Image_Data(), 0, x, y, window,
                 SHAPE_NORMAL | SHAPE_CENTER | SHAPE_WIN_REL);
@@ -622,7 +622,8 @@ void TerrainTypeClass::Prep_For_Add() {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-bool TerrainTypeClass::Create_And_Place(CELL cell, HousesType) const {
+bool TerrainTypeClass::Create_And_Place(CELL cell,
+                                        HousesType /*unused*/) const {
   return new TerrainClass(Type, cell) != nullptr;
 }
 
@@ -642,7 +643,7 @@ bool TerrainTypeClass::Create_And_Place(CELL cell, HousesType) const {
  *                                                                                             *
  * HISTORY: * 07/19/1994 JLB : Created. *
  *=============================================================================================*/
-ObjectClass* TerrainTypeClass::Create_One_Of(HouseClass*) const {
+ObjectClass* TerrainTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
   return new TerrainClass(Type, -1);
 }
 
@@ -663,7 +664,7 @@ ObjectClass* TerrainTypeClass::Create_One_Of(HouseClass*) const {
  *                                                                                             *
  * HISTORY: * 09/20/1995 JLB : Created. *
  *=============================================================================================*/
-const short* TerrainTypeClass::Occupy_List(bool) const {
+const short* TerrainTypeClass::Occupy_List(bool /*placement*/) const {
   if (Occupy != nullptr) {
     return Occupy;
   }

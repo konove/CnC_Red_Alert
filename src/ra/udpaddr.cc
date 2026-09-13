@@ -80,9 +80,9 @@ bool Get_Broadcast_Addresses() {
   //------------------------------------------------------------------------
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_PARMS,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_PARMS = 1,
+    REDRAW_BUTTONS = 2,
+    REDRAW_BACKGROUND = 3,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 

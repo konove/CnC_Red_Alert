@@ -69,17 +69,17 @@ typedef struct {
  */
 /*=========================================================================*/
 typedef enum {
-  SAMPLE_NONE,  // No digitized sounds will be played.
-  SAMPLE_SDL,
+  SAMPLE_NONE = 0,  // No digitized sounds will be played.
+  SAMPLE_SDL = 1,
   SAMPLE_TEMP = 0x1000,
-  SAMPLE_LAST
+  SAMPLE_LAST = 4097
 } Sample_Type;
 
 typedef enum {
-  SFX_NONE,  // No sound effects will be played.
-  SFX_SDL,
+  SFX_NONE = 0,  // No sound effects will be played.
+  SFX_SDL = 1,
   SFX_TEMP = 0x1000,
-  SFX_LAST
+  SFX_LAST = 4097
 } SFX_Type;
 
 /*=========================================================================*/

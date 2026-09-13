@@ -46,11 +46,11 @@ class VisualControlsClass {
   enum VisualControlEnums {
     BUTTON_BRIGHTNESS = 1,
     BUTTON_BASE = BUTTON_BRIGHTNESS,  // Base for zero-indexed button offsets.
-    BUTTON_COLOR,
-    BUTTON_CONTRAST,
-    BUTTON_TINT,
-    BUTTON_RESET,
-    BUTTON_OPTIONS,
+    BUTTON_COLOR = 2,
+    BUTTON_CONTRAST = 3,
+    BUTTON_TINT = 4,
+    BUTTON_RESET = 5,
+    BUTTON_OPTIONS = 6,
   };
 
   // Layout constants.

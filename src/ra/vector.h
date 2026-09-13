@@ -34,7 +34,7 @@ template <typename T>
 class VectorClass {
  public:
   explicit VectorClass(base::ssize size = 0, T* array = nullptr);
-  VectorClass(const VectorClass&);  // Copy constructor.
+  VectorClass(const VectorClass& /*vector*/);  // Copy constructor.
   virtual ~VectorClass();
   VectorClass(VectorClass&&) = delete;
   VectorClass& operator=(VectorClass&&) = delete;
@@ -47,8 +47,10 @@ class VectorClass {
     DCHECK(index >= 0 && index < VectorMax);
     return Vector[index];
   }
-  VectorClass& operator=(const VectorClass&);  // Assignment operator.
-  virtual bool operator==(const VectorClass&) const;   // Equality operator.
+  VectorClass& operator=(
+      const VectorClass& /*vector*/);  // Assignment operator.
+  virtual bool operator==(
+      const VectorClass& /*vector*/) const;  // Equality operator.
   virtual bool Resize(base::ssize newsize, T* array = nullptr);
   virtual void Clear();
   [[nodiscard]] base::ssize Length() const { return VectorMax; }

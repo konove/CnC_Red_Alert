@@ -267,7 +267,7 @@ VesselTypeClass::VesselTypeClass(VesselType type, int name, const char* ininame,
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void* VesselTypeClass::operator new(size_t) noexcept {
+void* VesselTypeClass::operator new(size_t /*unused*/) noexcept {
   return VesselTypes.Alloc();
 }
 
@@ -364,7 +364,7 @@ VesselTypeClass& VesselTypeClass::As_Reference(VesselType type) {
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselTypeClass::Display(int x, int y, WindowNumberType window,
-                              HousesType) const {
+                              HousesType /*unused*/) const {
   int shape = 0;
   const void* ptr = Get_Cameo_Data();
   if (ptr == nullptr) {

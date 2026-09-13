@@ -224,7 +224,7 @@ static void Recoil_Adjust(DirType dir, int& x, int& y) {
  * HISTORY: * 04/11/1994 JLB : Created. * 04/21/1994 JLB : Converted to operator
  *new.                                               *
  *=============================================================================================*/
-void* UnitClass::operator new(size_t) noexcept {
+void* UnitClass::operator new(size_t /*unused*/) noexcept {
   void* ptr = Units.Alloc();
   if (ptr != nullptr) {
     static_cast<UnitClass*>(ptr)->IsActive = true;
@@ -3038,7 +3038,7 @@ const short* UnitClass::Overlap_List(bool redraw) const {
  *function.                                            * 07/04/1995 JLB :
  *Allowed to drive on building trying to enter it.                         *
  *=============================================================================================*/
-MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
+MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -4230,7 +4230,7 @@ fixed UnitClass::Tiberium_Load() const {
   assert(IsActive);
 
   if (*this == UNIT_HARVESTER) {
-    return fixed(Tiberium, Rule.BailCount);
+    return {Tiberium, Rule.BailCount};
   }
   return fixed(0);
 }

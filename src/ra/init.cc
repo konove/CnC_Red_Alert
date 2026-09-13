@@ -234,7 +234,7 @@ static void Load_Prolog_Page() {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-bool Init_Game(int, char*[]) {
+bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   /*
   **	Allocate the benchmark tracking objects only if the machine and
   **	compile flags indicate.
@@ -422,7 +422,6 @@ bool Init_Game(int, char*[]) {
   return true;
 }
 
-
 /***********************************************************************************************
  * Select_Game -- The game's main menu *
  *                                                                                             *
@@ -471,8 +470,8 @@ bool Select_Game(bool /*fade*/) {
   Show_Mouse();
 
   NewUnitsEnabled = SecretUnitsEnabled =
-      0;  // Assume new units disabled, unless specifically .INI enabled or
-          // multiplayer negotiations enable it.
+      false;  // Assume new units disabled, unless specifically .INI enabled or
+              // multiplayer negotiations enable it.
 
   /*
   **	[Re]set any globals that need it, in preparation for a new scenario

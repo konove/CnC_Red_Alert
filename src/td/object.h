@@ -157,8 +157,8 @@ class ObjectClass : public AbstractClass {
   /*
   **	Query functions.
   */
-  virtual ActionType What_Action(ObjectClass*);
-  [[nodiscard]] virtual ActionType What_Action(CELL) const;
+  virtual ActionType What_Action(ObjectClass* /*unused*/);
+  [[nodiscard]] virtual ActionType What_Action(CELL /*unused*/) const;
   [[nodiscard]] virtual LayerType In_Which_Layer() const;
   [[nodiscard]] virtual bool Is_Infantry() const;
   [[nodiscard]] virtual bool Is_Techno() const;
@@ -179,32 +179,32 @@ class ObjectClass : public AbstractClass {
   [[nodiscard]] COORDINATE Center_Coord() const override;
   [[nodiscard]] virtual COORDINATE Render_Coord() const;
   [[nodiscard]] virtual COORDINATE Sort_Y() const;
-  [[nodiscard]] virtual COORDINATE Fire_Coord(int) const;
+  [[nodiscard]] virtual COORDINATE Fire_Coord(int /*unused*/) const;
 
   /*
   **	Object entry and exit from the game system.
   */
   virtual bool Limbo();
-  virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
-  virtual void Detach(TARGET, bool) {}
+  virtual bool Unlimbo(COORDINATE /*coord*/, DirType facing = DIR_N);
+  virtual void Detach(TARGET /*unused*/, bool /*unused*/) {}
   virtual void Detach_All(bool all = true);
   static void Detach_This_From_All(TARGET target, bool all = true);
-  virtual void Record_The_Kill(TechnoClass*);
+  virtual void Record_The_Kill(TechnoClass* /*unused*/);
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
   virtual void Do_Shimmer();
-  virtual int Exit_Object(TechnoClass*);
+  virtual int Exit_Object(TechnoClass* /*unused*/);
   virtual bool Render(bool forced);
   [[nodiscard]] virtual const short* Occupy_List(bool placement = false) const;
   [[nodiscard]] virtual const short* Overlap_List() const;
   [[nodiscard]] virtual unsigned Health_Ratio() const;
   virtual void Draw_It(int x, int y, WindowNumberType) = 0;
   virtual void Hidden();
-  virtual void Look(bool = false);
-  virtual bool Mark(MarkType);
+  virtual void Look(bool /*unused*/ = false);
+  virtual bool Mark(MarkType /*mark*/);
 
  private:
   virtual void Mark_For_Redraw();
@@ -213,21 +213,23 @@ class ObjectClass : public AbstractClass {
   /*
   **	User I/O.
   */
-  virtual void Active_Click_With(ActionType, ObjectClass*);
-  virtual void Active_Click_With(ActionType, CELL);
-  virtual void Clicked_As_Target(int = 7);
+  virtual void Active_Click_With(ActionType /*unused*/,
+                                 ObjectClass* /*unused*/);
+  virtual void Active_Click_With(ActionType /*unused*/, CELL /*unused*/);
+  virtual void Clicked_As_Target(int /*unused*/ = 7);
   virtual bool Select();
   virtual void Unselect();
 
   /*
   **	Combat related.
   */
-  [[nodiscard]] virtual bool In_Range(COORDINATE, int = 0) const;
-  [[nodiscard]] virtual int Weapon_Range(int = 0) const;
+  [[nodiscard]] virtual bool In_Range(COORDINATE /*unused*/,
+                                      int /*unused*/ = 0) const;
+  [[nodiscard]] virtual int Weapon_Range(int /*unused*/ = 0) const;
   virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                  TechnoClass* source = nullptr);
   [[nodiscard]] virtual TARGET As_Target() const;
-  virtual void Scatter(COORDINATE, bool = false);
+  virtual void Scatter(COORDINATE /*unused*/, bool /*unused*/ = false);
   virtual bool Catch_Fire();
   virtual void Fire_Out();
   [[nodiscard]] virtual int Value() const;
@@ -242,8 +244,8 @@ class ObjectClass : public AbstractClass {
                                            RadioMessageType message,
                                            long& param);
   virtual bool Revealed(HouseClass* house);
-  virtual void Repair(int);
-  virtual void Sell_Back(int);
+  virtual void Repair(int /*unused*/);
+  virtual void Sell_Back(int /*unused*/);
 
   /*
   **	File I/O.
@@ -253,7 +255,7 @@ class ObjectClass : public AbstractClass {
   **	Scenario and debug support.
   */
   virtual void Debug_Dump(MonoClass* mono) const;
-  virtual void Move(FacingType);
+  virtual void Move(FacingType /*facing*/);
 };
 
 class ArchiveReader;

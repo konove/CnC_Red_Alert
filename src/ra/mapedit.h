@@ -170,21 +170,21 @@ enum MapEdit1Enum {
 enum MapEditButtonIDEnum {
   POPUP_SPAIN = 500,
   POPUP_FIRST = POPUP_SPAIN,
-  POPUP_GREECE,
-  POPUP_USSR,
-  POPUP_ENGLAND,
-  POPUP_ITALY,
-  POPUP_GERMANY,
-  POPUP_FRANCE,
-  POPUP_TURKEY,
-  POPUP_HOUSELIST,    // House selection list.
-  POPUP_SELLABLE,     // Allowed to sell.
-  POPUP_REBUILDABLE,  // Allowed to rebuild.
-  POPUP_MISSIONLIST,  // list box for missions
-  POPUP_HEALTHGAUGE,  // health of object
-  POPUP_FACINGDIAL,   // object's facing
-  POPUP_BASEPERCENT,  // Base's percent-built slider
-  MAP_AREA,           // map as a click-able thingy
+  POPUP_GREECE = 501,
+  POPUP_USSR = 502,
+  POPUP_ENGLAND = 503,
+  POPUP_ITALY = 504,
+  POPUP_GERMANY = 505,
+  POPUP_FRANCE = 506,
+  POPUP_TURKEY = 507,
+  POPUP_HOUSELIST = 508,    // House selection list.
+  POPUP_SELLABLE = 509,     // Allowed to sell.
+  POPUP_REBUILDABLE = 510,  // Allowed to rebuild.
+  POPUP_MISSIONLIST = 511,  // list box for missions
+  POPUP_HEALTHGAUGE = 512,  // health of object
+  POPUP_FACINGDIAL = 513,   // object's facing
+  POPUP_BASEPERCENT = 514,  // Base's percent-built slider
+  MAP_AREA = 515,           // map as a click-able thingy
   BUTTON_FLAG = 0x8000
 };
 

@@ -823,9 +823,9 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
           Zoom_Mode(Coord_Cell(TacticalCoord));
         } else {
           if (!Is_Player_Names()) {
-            Player_Names(1);
+            Player_Names(true);
           } else {
-            Player_Names(0);
+            Player_Names(false);
             Zoom_Mode(Coord_Cell(TacticalCoord));
           }
         }
@@ -1026,7 +1026,7 @@ bool SidebarClass::Activate(int control) {
  *                                                                                             *
  * HISTORY: * 12/31/1994 JLB : Created. *
  *=============================================================================================*/
-SidebarClass::StripClass::StripClass(const InitClass&) {
+SidebarClass::StripClass::StripClass(const InitClass& /*unused*/) {
   for (auto& Buildable : Buildables) {
     Buildable.BuildableID = 0;
     Buildable.BuildableType = RTTI_NONE;
@@ -1049,7 +1049,7 @@ SidebarClass::StripClass::StripClass(const InitClass&) {
  *                                                                                             *
  * HISTORY: * 12/31/1994 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::StripClass::One_Time(int) {
+void SidebarClass::StripClass::One_Time(int /*unused*/) {
   static const char* _file[3] = {"ION", "ATOM", "BOMB"};
   int factor = Get_Resolution_Factor();
 
@@ -1472,7 +1472,8 @@ void SidebarClass::StripClass::Flag_To_Redraw() {
  * HISTORY: * 12/31/1994 JLB : Created. * 12/31/1994 JLB : Uses mouse coordinate
  *parameters.                                        *
  *=============================================================================================*/
-bool SidebarClass::StripClass::AI(KeyNumType& input, int, int) {
+bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
+                                  int /*unused*/) {
   bool redraw = false;
 
   /*
@@ -2351,7 +2352,8 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
  *                                                                                             *
  * HISTORY: * 03/28/1995 JLB : Created. *
  *=============================================================================================*/
-int SidebarClass::SBGadgetClass::Action(unsigned, KeyNumType&) {
+int SidebarClass::SBGadgetClass::Action(unsigned /*flags*/,
+                                        KeyNumType& /*key*/) {
   Map.Help_Text(TXT_NONE);
   Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
   return true;

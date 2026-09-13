@@ -814,7 +814,7 @@ TechnoClass::TechnoClass(HousesType house)
  *units.                                                   * 12/27/1994 JLB :
  *Checks for an processes any trigger in cell.                             *
  *=============================================================================================*/
-void TechnoClass::Per_Cell_Process(bool) {
+void TechnoClass::Per_Cell_Process(bool /*unused*/) {
   CELL cell = Coord_Cell(Center_Coord());
 
   /*
@@ -2857,7 +2857,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
  *                                                                                             *
  * HISTORY: * 07/06/1995 JLB : Created. *
  *=============================================================================================*/
-CELL TechnoClass::Nearby_Location(const TechnoClass*) const {
+CELL TechnoClass::Nearby_Location(const TechnoClass* /*unused*/) const {
   /*
   **	Radiate outward from the object's location, looking for the best
   **	target.
@@ -3604,7 +3604,8 @@ int TechnoClass::Tiberium_Load() const { return 0x0000; }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-DirType TechnoClass::Desired_Load_Dir(ObjectClass*, CELL& moveto) const {
+DirType TechnoClass::Desired_Load_Dir(ObjectClass* /*unused*/,
+                                      CELL& moveto) const {
   moveto = 0;
   return DIR_N;
 }
@@ -3760,7 +3761,7 @@ bool TechnoClass::Target_Something_Nearby(ThreatType threat) {
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-int TechnoClass::Exit_Object(TechnoClass*) { return 0; }
+int TechnoClass::Exit_Object(TechnoClass* /*unused*/) { return 0; }
 
 /***********************************************************************************************
  * TechnoClass::Random_Animate -- Performs some idle animation for the object. *
@@ -3797,7 +3798,7 @@ void TechnoClass::Random_Animate() {}
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Assign_Destination(TARGET) {}
+void TechnoClass::Assign_Destination(TARGET /*unused*/) {}
 
 /***********************************************************************************************
  * TechnoClass::Scatter -- Causes the object to scatter to an adjacent cell. *
@@ -3817,7 +3818,7 @@ void TechnoClass::Assign_Destination(TARGET) {}
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Scatter(COORDINATE, bool) {}
+void TechnoClass::Scatter(COORDINATE /*unused*/, bool /*unused*/) {}
 
 /***********************************************************************************************
  * TechnoClass::Enter_Idle_Mode -- Object enters its default idle condition. *
@@ -3837,7 +3838,7 @@ void TechnoClass::Scatter(COORDINATE, bool) {}
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Enter_Idle_Mode(bool) {}
+void TechnoClass::Enter_Idle_Mode(bool /*unused*/) {}
 
 /***********************************************************************************************
  * TechnoClass::Draw_Pips -- Draws the transport pips and other techno graphics.
@@ -3992,7 +3993,7 @@ BuildingClass* TechnoClass::Find_Docking_Bay(StructType b,
  *                                                                                             *
  * HISTORY: * 08/12/1995 JLB : Created. *
  *=============================================================================================*/
-CELL TechnoClass::Find_Exit_Cell(const TechnoClass*) const {
+CELL TechnoClass::Find_Exit_Cell(const TechnoClass* /*unused*/) const {
   return Coord_Cell(Docking_Coord());
 }
 

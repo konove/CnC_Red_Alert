@@ -2,7 +2,7 @@
 
 Updated: 2026-09-12, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 153 currently excluded check names** and completed entries, in recommended work
+This tracks **all 140 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -182,76 +182,76 @@ comes from the installed tool, since the online documentation follows LLVM devel
 
 ## P4 — Cleanup and design consistency
 
-| Check                                                               | Status  | Reason / result                                                                                |
-| ------------------------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------- |
-| `readability-braces-around-statements`                              | Pending | Reduce ambiguity in future edits; mostly mechanical churn.                                     |
-| `hicpp-braces-around-statements`                                    | Legacy  | Unavailable in LLVM 23; review with `readability-braces-around-statements` on older tools.     |
-| `readability-inconsistent-ifelse-braces`                            | Pending | Keep related branches consistently braced.                                                     |
-| `readability-avoid-nested-conditional-operator`                     | Pending | Simplify conditional expressions that impede review.                                           |
-| `readability-function-cognitive-complexity`                         | Pending | Identify difficult control flow; refactor with behavior coverage.                              |
-| `readability-function-size`                                         | Pending | Identify oversized functions; size alone does not establish a defect.                          |
-| `google-readability-function-size`                                  | Pending | Alias of `readability-function-size`; handle together.                                         |
-| `hicpp-function-size`                                               | Legacy  | Unavailable in LLVM 23; review with `readability-function-size` on older tools.                |
-| `readability-magic-numbers`                                         | Pending | Name meaningful constants without naming every literal.                                        |
-| `cppcoreguidelines-avoid-magic-numbers`                             | Pending | Alias of `readability-magic-numbers`; handle together.                                         |
-| `readability-enum-initial-value`                                    | Pending | Make enum numbering policy explicit; preserve stored/wire values.                              |
-| `cert-int09-c`                                                      | Pending | Alias of `readability-enum-initial-value`; handle together.                                    |
-| `readability-named-parameter`                                       | Pending | Improve interface documentation through useful parameter names.                                |
-| `hicpp-named-parameter`                                             | Legacy  | Unavailable in LLVM 23; review with `readability-named-parameter` on older tools.              |
-| `readability-isolate-declaration`                                   | Pending | Separate declarations for clearer initialization and scope.                                    |
-| `readability-avoid-unconditional-preprocessor-if`                   | Pending | Remove obsolete scaffolding after platform review.                                             |
-| `readability-redundant-nested-if`                                   | Pending | Simplify equivalent conditions without obscuring intent.                                       |
-| `readability-trivial-switch`                                        | Pending | Simplify switches where the alternative reads better.                                          |
-| `modernize-use-bool-literals`                                       | Pending | Express boolean values directly.                                                               |
-| `readability-const-return-type`                                     | Pending | Remove ineffective top-level const on returned values.                                         |
-| `clang-diagnostic-ignored-qualifiers`                               | Pending | Remove qualifiers with no effect.                                                              |
-| `readability-convert-member-functions-to-static`                    | Pending | Mark operations independent of object state.                                                   |
-| `modernize-use-using`                                               | Pending | Modernize type aliases consistently.                                                           |
-| `modernize-use-auto`                                                | Pending | Reduce redundant type spelling where deduction stays clear.                                    |
-| `hicpp-use-auto`                                                    | Legacy  | Unavailable in LLVM 23; review with `modernize-use-auto` on older tools.                       |
-| `modernize-return-braced-init-list`                                 | Pending | Remove redundant return type spelling.                                                         |
-| `modernize-use-designated-initializers`                             | Pending | Make aggregate field selection explicit where useful.                                          |
-| `readability-uppercase-literal-suffix`                              | Pending | Make literal suffixes less ambiguous.                                                          |
-| `cert-dcl16-c`                                                      | Pending | Alias of `readability-uppercase-literal-suffix`; handle together.                              |
-| `hicpp-uppercase-literal-suffix`                                    | Legacy  | Unavailable in LLVM 23; review with `readability-uppercase-literal-suffix` on older tools.     |
-| `readability-trailing-comma`                                        | Pending | Reduce diff noise in lists; formatting preference.                                             |
-| `clang-diagnostic-missing-noreturn`                                 | Pending | Document functions that cannot return.                                                         |
-| `clang-diagnostic-nrvo`                                             | Pending | Review missed copy elision; optimize only where worthwhile.                                    |
-| `performance-no-int-to-ptr`                                         | Pending | Avoid integer/pointer round trips that hinder optimization.                                    |
-| `performance-enum-size`                                             | Pending | Consider storage savings only after packet/recording layout review.                            |
-| `clang-diagnostic-padded-bitfield`                                  | Pending | Review wasted bitfield space without changing wire layouts accidentally.                       |
-| `clang-diagnostic-ms-bitfield-padding`                              | Pending | Review ABI-dependent bitfield padding before layout changes.                                   |
-| `clang-diagnostic-weak-vtables`                                     | Pending | Consider vtable emission/build cost; little gameplay impact.                                   |
-| `cppcoreguidelines-avoid-const-or-ref-data-members`                 | Pending | Review assignment restrictions when redesigning affected types.                                |
-| `cppcoreguidelines-avoid-non-const-global-variables`                | Pending | Reduce global coupling gradually; substantial architecture work.                               |
-| `cppcoreguidelines-non-private-member-variables-in-classes`         | Pending | Improve encapsulation where it adds invariants, not boilerplate.                               |
-| `misc-non-private-member-variables-in-classes`                      | Pending | Review exposed mutable state alongside the Core Guidelines rule.                               |
-| `misc-multiple-inheritance`                                         | Pending | Review hierarchy complexity; inheritance alone is not a defect.                                |
-| `misc-no-recursion`                                                 | Pending | Review recursion depth where inputs can drive it.                                              |
-| `cppcoreguidelines-avoid-do-while`                                  | Pending | Consider clearer loops; do-while itself is valid.                                              |
-| `clang-diagnostic-global-constructors`                              | Pending | Reduce startup work where worthwhile; blanket removal is expensive.                            |
-| `clang-diagnostic-exit-time-destructors`                            | Pending | Review shutdown ordering after initialization dependencies.                                    |
-| `clang-diagnostic-lifetime-safety-intra-tu-suggestions`             | Pending | Add useful lifetime annotations after concrete findings are resolved.                          |
-| `clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions` | Pending | Annotate constructor lifetime relationships when useful.                                       |
-| `clang-diagnostic-lifetime-safety-cross-tu-suggestions`             | Pending | Extend annotations across translation-unit interfaces.                                         |
-| `clang-diagnostic-lifetime-safety-cross-tu-constructor-suggestions` | Pending | Extend constructor annotations across translation units.                                       |
-| `clang-diagnostic-date-time`                                        | Pending | Remove timestamp macros if reproducible builds require it.                                     |
-| `clang-diagnostic-documentation-unknown-command`                    | Pending | Fix unsupported documentation commands.                                                        |
-| `clang-diagnostic-pedantic`                                         | Pending | Review extension use individually against supported compilers.                                 |
-| `clang-diagnostic-c99-extensions`                                   | Pending | Review C99 constructs in C++ for portability.                                                  |
-| `clang-diagnostic-nested-anon-types`                                | Pending | Review anonymous nested types for portability.                                                 |
-| `clang-diagnostic-nullability-extension`                            | Pending | Review compiler-specific nullability syntax.                                                   |
-| `misc-confusable-identifiers`                                       | Pending | Avoid visually confusable names; low expected exposure here.                                   |
-| `bugprone-copy-constructor-mutates-argument`                        | Covered | Already enforced through `cert-oop58-cpp`; reconcile the excluded name.                        |
-| `cert-arr39-c`                                                      | Covered | Already enforced through `bugprone-sizeof-expression`; reconcile the excluded name.            |
-| `cert-err33-c`                                                      | Covered | Already enforced through `bugprone-unused-return-value`; reconcile the excluded name.          |
-| `cert-exp42-c`                                                      | Covered | Already enforced through `bugprone-suspicious-memory-comparison`; reconcile the excluded name. |
-| `cert-oop54-cpp`                                                    | Covered | Already enforced through `bugprone-unhandled-self-assignment`; reconcile the excluded name.    |
-| `cppcoreguidelines-c-copy-assignment-signature`                     | Covered | Already enforced through `misc-unconventional-assign-operator`; reconcile the excluded name.   |
-| `cppcoreguidelines-explicit-virtual-functions`                      | Covered | Already enforced through `modernize-use-override`; reconcile the excluded name.                |
-| `cppcoreguidelines-narrowing-conversions`                           | Covered | Already enforced through `bugprone-narrowing-conversions`; reconcile the excluded name.        |
-| `llvm-else-after-return`                                            | Covered | Already enforced through `readability-else-after-return`; reconcile the excluded name.         |
-| `llvm-qualified-auto`                                               | Covered | Already enforced through `readability-qualified-auto`; reconcile the excluded name.            |
+| Check                                                               | Status  | Reason / result                                                                                                                                                                                                           |
+| ------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `readability-braces-around-statements`                              | Pending | Reduce ambiguity in future edits; mostly mechanical churn.                                                                                                                                                                |
+| `hicpp-braces-around-statements`                                    | Legacy  | Unavailable in LLVM 23; review with `readability-braces-around-statements` on older tools.                                                                                                                                |
+| `readability-inconsistent-ifelse-braces`                            | Enabled | Commit `Apply the mechanical P4 fix-its`: no reports; enabled to keep it that way.                                                                                                                                        |
+| `readability-avoid-nested-conditional-operator`                     | Pending | Simplify conditional expressions that impede review.                                                                                                                                                                      |
+| `readability-function-cognitive-complexity`                         | Pending | Identify difficult control flow; refactor with behavior coverage.                                                                                                                                                         |
+| `readability-function-size`                                         | Pending | Identify oversized functions; size alone does not establish a defect.                                                                                                                                                     |
+| `google-readability-function-size`                                  | Pending | Alias of `readability-function-size`; handle together.                                                                                                                                                                    |
+| `hicpp-function-size`                                               | Legacy  | Unavailable in LLVM 23; review with `readability-function-size` on older tools.                                                                                                                                           |
+| `readability-magic-numbers`                                         | Pending | Name meaningful constants without naming every literal.                                                                                                                                                                   |
+| `cppcoreguidelines-avoid-magic-numbers`                             | Pending | Alias of `readability-magic-numbers`; handle together.                                                                                                                                                                    |
+| `readability-enum-initial-value`                                    | Enabled | Commit `Apply the mechanical P4 fix-its`: partly initialized enums initialize every enumerator; one fix-it misplaced a value after an attribute and was repaired. See review below.                                       |
+| `cert-int09-c`                                                      | Enabled | Commit `Apply the mechanical P4 fix-its`: enforced with `readability-enum-initial-value`, which it aliases.                                                                                                               |
+| `readability-named-parameter`                                       | Enabled | Commit `Apply the mechanical P4 fix-its`: unnamed parameters carry a commented name. See review below.                                                                                                                    |
+| `hicpp-named-parameter`                                             | Legacy  | Unavailable in LLVM 23; review with `readability-named-parameter` on older tools.                                                                                                                                         |
+| `readability-isolate-declaration`                                   | Pending | Separate declarations for clearer initialization and scope.                                                                                                                                                               |
+| `readability-avoid-unconditional-preprocessor-if`                   | Pending | Remove obsolete scaffolding after platform review.                                                                                                                                                                        |
+| `readability-redundant-nested-if`                                   | Pending | Simplify equivalent conditions without obscuring intent.                                                                                                                                                                  |
+| `readability-trivial-switch`                                        | Pending | Simplify switches where the alternative reads better.                                                                                                                                                                     |
+| `modernize-use-bool-literals`                                       | Enabled | Commit `Apply the mechanical P4 fix-its`: integer literals assigned to `bool` are `true`/`false`. It exposed TD's `CCMessageBox::Process` holding a three-way answer in a `bool`; that is an `int` now. See review below. |
+| `readability-const-return-type`                                     | Enabled | Commit `Apply the mechanical P4 fix-its`: `Rect::Intersect` and `Union` return plain `Rect`; TD's deleted `CCFileClass` copy assignment lost the same `const`. See review below.                                          |
+| `clang-diagnostic-ignored-qualifiers`                               | Enabled | Commit `Apply the mechanical P4 fix-its`: no reports; enabled to keep it that way.                                                                                                                                        |
+| `readability-convert-member-functions-to-static`                    | Pending | Mark operations independent of object state.                                                                                                                                                                              |
+| `modernize-use-using`                                               | Pending | Modernize type aliases consistently.                                                                                                                                                                                      |
+| `modernize-use-auto`                                                | Pending | Reduce redundant type spelling where deduction stays clear.                                                                                                                                                               |
+| `hicpp-use-auto`                                                    | Legacy  | Unavailable in LLVM 23; review with `modernize-use-auto` on older tools.                                                                                                                                                  |
+| `modernize-return-braced-init-list`                                 | Enabled | Commit `Apply the mechanical P4 fix-its`: returns that repeated the return type use braces.                                                                                                                               |
+| `modernize-use-designated-initializers`                             | Pending | Make aggregate field selection explicit where useful.                                                                                                                                                                     |
+| `readability-uppercase-literal-suffix`                              | Enabled | Commit `Apply the mechanical P4 fix-its`: literal suffixes are upper case. See review below.                                                                                                                              |
+| `cert-dcl16-c`                                                      | Enabled | Commit `Apply the mechanical P4 fix-its`: enforced with `readability-uppercase-literal-suffix`, which it aliases.                                                                                                         |
+| `hicpp-uppercase-literal-suffix`                                    | Legacy  | Unavailable in LLVM 23; review with `readability-uppercase-literal-suffix` on older tools.                                                                                                                                |
+| `readability-trailing-comma`                                        | Pending | Reduce diff noise in lists; formatting preference.                                                                                                                                                                        |
+| `clang-diagnostic-missing-noreturn`                                 | Pending | Document functions that cannot return.                                                                                                                                                                                    |
+| `clang-diagnostic-nrvo`                                             | Pending | Review missed copy elision; optimize only where worthwhile.                                                                                                                                                               |
+| `performance-no-int-to-ptr`                                         | Pending | Avoid integer/pointer round trips that hinder optimization.                                                                                                                                                               |
+| `performance-enum-size`                                             | Pending | Consider storage savings only after packet/recording layout review.                                                                                                                                                       |
+| `clang-diagnostic-padded-bitfield`                                  | Enabled | Commit `Apply the mechanical P4 fix-its`: no reports; enabled to keep it that way.                                                                                                                                        |
+| `clang-diagnostic-ms-bitfield-padding`                              | Pending | Review ABI-dependent bitfield padding before layout changes.                                                                                                                                                              |
+| `clang-diagnostic-weak-vtables`                                     | Pending | Consider vtable emission/build cost; little gameplay impact.                                                                                                                                                              |
+| `cppcoreguidelines-avoid-const-or-ref-data-members`                 | Pending | Review assignment restrictions when redesigning affected types.                                                                                                                                                           |
+| `cppcoreguidelines-avoid-non-const-global-variables`                | Pending | Reduce global coupling gradually; substantial architecture work.                                                                                                                                                          |
+| `cppcoreguidelines-non-private-member-variables-in-classes`         | Pending | Improve encapsulation where it adds invariants, not boilerplate.                                                                                                                                                          |
+| `misc-non-private-member-variables-in-classes`                      | Pending | Review exposed mutable state alongside the Core Guidelines rule.                                                                                                                                                          |
+| `misc-multiple-inheritance`                                         | Pending | Review hierarchy complexity; inheritance alone is not a defect.                                                                                                                                                           |
+| `misc-no-recursion`                                                 | Pending | Review recursion depth where inputs can drive it.                                                                                                                                                                         |
+| `cppcoreguidelines-avoid-do-while`                                  | Pending | Consider clearer loops; do-while itself is valid.                                                                                                                                                                         |
+| `clang-diagnostic-global-constructors`                              | Pending | Reduce startup work where worthwhile; blanket removal is expensive.                                                                                                                                                       |
+| `clang-diagnostic-exit-time-destructors`                            | Pending | Review shutdown ordering after initialization dependencies.                                                                                                                                                               |
+| `clang-diagnostic-lifetime-safety-intra-tu-suggestions`             | Pending | Add useful lifetime annotations after concrete findings are resolved.                                                                                                                                                     |
+| `clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions` | Pending | Annotate constructor lifetime relationships when useful.                                                                                                                                                                  |
+| `clang-diagnostic-lifetime-safety-cross-tu-suggestions`             | Pending | Extend annotations across translation-unit interfaces.                                                                                                                                                                    |
+| `clang-diagnostic-lifetime-safety-cross-tu-constructor-suggestions` | Pending | Extend constructor annotations across translation units.                                                                                                                                                                  |
+| `clang-diagnostic-date-time`                                        | Enabled | Commit `Apply the mechanical P4 fix-its`: no reports; enabled to keep it that way.                                                                                                                                        |
+| `clang-diagnostic-documentation-unknown-command`                    | Pending | Fix unsupported documentation commands.                                                                                                                                                                                   |
+| `clang-diagnostic-pedantic`                                         | Enabled | Commit `Apply the mechanical P4 fix-its`: no reports; enabled to keep it that way.                                                                                                                                        |
+| `clang-diagnostic-c99-extensions`                                   | Pending | Review C99 constructs in C++ for portability.                                                                                                                                                                             |
+| `clang-diagnostic-nested-anon-types`                                | Pending | Review anonymous nested types for portability.                                                                                                                                                                            |
+| `clang-diagnostic-nullability-extension`                            | Pending | Review compiler-specific nullability syntax.                                                                                                                                                                              |
+| `misc-confusable-identifiers`                                       | Pending | Avoid visually confusable names; low expected exposure here.                                                                                                                                                              |
+| `bugprone-copy-constructor-mutates-argument`                        | Covered | Already enforced through `cert-oop58-cpp`; reconcile the excluded name.                                                                                                                                                   |
+| `cert-arr39-c`                                                      | Covered | Already enforced through `bugprone-sizeof-expression`; reconcile the excluded name.                                                                                                                                       |
+| `cert-err33-c`                                                      | Covered | Already enforced through `bugprone-unused-return-value`; reconcile the excluded name.                                                                                                                                     |
+| `cert-exp42-c`                                                      | Covered | Already enforced through `bugprone-suspicious-memory-comparison`; reconcile the excluded name.                                                                                                                            |
+| `cert-oop54-cpp`                                                    | Covered | Already enforced through `bugprone-unhandled-self-assignment`; reconcile the excluded name.                                                                                                                               |
+| `cppcoreguidelines-c-copy-assignment-signature`                     | Covered | Already enforced through `misc-unconventional-assign-operator`; reconcile the excluded name.                                                                                                                              |
+| `cppcoreguidelines-explicit-virtual-functions`                      | Covered | Already enforced through `modernize-use-override`; reconcile the excluded name.                                                                                                                                           |
+| `cppcoreguidelines-narrowing-conversions`                           | Covered | Already enforced through `bugprone-narrowing-conversions`; reconcile the excluded name.                                                                                                                                   |
+| `llvm-else-after-return`                                            | Covered | Already enforced through `readability-else-after-return`; reconcile the excluded name.                                                                                                                                    |
+| `llvm-qualified-auto`                                               | Covered | Already enforced through `readability-qualified-auto`; reconcile the excluded name.                                                                                                                                       |
 
 ## P5 — Proposed skips
 
@@ -1273,6 +1273,39 @@ form, `int Count{0};`.
 
 The full strict build of both games is clean, all 242 tests pass, and the RA and TD save/load smoke
 tests match their uninterrupted runs.
+
+### P4 fix-it pass A (2026-09-12)
+
+Six P4 checks with reliable fix-its are enforced, together with their CERT aliases and five compiler
+diagnostics that already report nothing:
+
+- `readability-uppercase-literal-suffix` (and `cert-dcl16-c`): the 27 lower-case suffixes (20 `u`, 6
+  `f`, 1 `l`) are upper case, so an `l` can no longer pass for a `1`.
+- `readability-const-return-type`: `Rect::Intersect` and `Union` return plain `Rect` values, which
+  callers can move from. TD's deleted `CCFileClass` copy assignment lost the same `const`.
+- `modernize-return-braced-init-list`: returns that repeated the return type now use braces.
+- `modernize-use-bool-literals`: integer literals assigned to `bool` are `true` and `false`.
+- `readability-named-parameter`: unnamed parameters now carry a commented name, `/*unused*/` where
+  the body ignores them, so every declaration reads the same.
+- `readability-enum-initial-value` (and `cert-int09-c`): an enum that initializes some enumerators
+  now initializes all of them, so no value depends on counting from the last explicit one.
+
+`readability-inconsistent-ifelse-braces`, `clang-diagnostic-ignored-qualifiers`,
+`clang-diagnostic-padded-bitfield`, `clang-diagnostic-date-time` and `clang-diagnostic-pedantic`
+reported nothing and are enabled to keep it that way.
+
+`modernize-use-bool-literals` exposed a latent bug. TD's `CCMessageBox::Process` returns the pressed
+button's index but kept it in a `bool`, so a third button read back as `1`, the same as the second.
+The fix-it turned `retval = 2` into `true`, and `bugprone-branch-clone` then flagged two identical
+branches. `retval` is an `int` now, as in RA; no TD dialog uses a third button today.
+
+One fix-it produced invalid code. `readability-enum-initial-value` wrote
+`CD_ALLIED = 1 [[maybe_unused]]` in RA's `conquer.cc`, putting the value before the attribute; it is
+`CD_ALLIED [[maybe_unused]] = 1`.
+
+The fix-its touched 282 files.
+
+The full strict build of both games is clean and all 242 tests pass.
 
 ### Completed validation
 

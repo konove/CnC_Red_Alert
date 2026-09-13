@@ -285,9 +285,9 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
 
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_PROGRESS,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_PROGRESS = 1,
+    REDRAW_BUTTONS = 2,
+    REDRAW_BACKGROUND = 3,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 
@@ -557,9 +557,9 @@ bool Send_Remote_File(char* file_name, int gametype) {
 
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_PROGRESS,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_PROGRESS = 1,
+    REDRAW_BUTTONS = 2,
+    REDRAW_BACKGROUND = 3,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 

@@ -63,7 +63,7 @@ class SmudgeClass : public ObjectClass {
   **	Constructors and destructors.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   explicit SmudgeClass(SmudgeType type, COORDINATE pos = -1,
               HousesType house = HOUSE_NONE);
@@ -87,8 +87,8 @@ class SmudgeClass : public ObjectClass {
   /*
   **	File I/O.
   */
-  static void Read_INI(char*);
-  static void Write_INI(char*);
+  static void Read_INI(char* /*buffer*/);
+  static void Write_INI(char* /*buffer*/);
   static const char* INI_Name() { return "SMUDGE"; }
   // Field-wise saved-game support, defined in ioobj.cc.
   template <class Archive>
@@ -97,8 +97,8 @@ class SmudgeClass : public ObjectClass {
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
-  bool Mark(MarkType) override;
-  void Draw_It(int, int, WindowNumberType) override {}
+  bool Mark(MarkType /*mark*/ /*unused*/) override;
+  void Draw_It(int /*x*/, int /*y*/, WindowNumberType /*unused*/) override {}
 
   void Disown(CELL cell);
 

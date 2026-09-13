@@ -201,7 +201,7 @@ bool CCINIClass::Load(Straw& file, bool withdigest) {
       *error code.
       */
       if (memcmp(digest, Digest, sizeof(digest)) != 0) {
-        return 2;
+        return true;
       }
     }
   }

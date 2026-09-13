@@ -220,7 +220,7 @@ TARGET AircraftClass::As_Target() const {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-void* AircraftClass::operator new(size_t) noexcept {
+void* AircraftClass::operator new(size_t /*unused*/) noexcept {
   void* ptr = Aircraft.Allocate();
   if (ptr) {
     static_cast<AircraftClass*>(ptr)->IsActive = true;
@@ -1779,7 +1779,7 @@ int AircraftClass::Mission_Move() {
  *                                                                                             *
  * HISTORY: * 06/05/1995 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Enter_Idle_Mode(bool) {
+void AircraftClass::Enter_Idle_Mode(bool /*initial*/) {
   Validate();
   MissionType mission = MISSION_GUARD;
   if (In_Which_Layer() == LAYER_GROUND) {
@@ -2479,7 +2479,7 @@ TARGET AircraftClass::New_LZ(TARGET oldlz) const {
  *                                                                                             *
  * HISTORY: * 06/15/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE AircraftClass::Fire_Coord(int) const {
+COORDINATE AircraftClass::Fire_Coord(int /*unused*/) const {
   Validate();
   return Coord_Move(Coord_Add(XYP_Coord(0, -Altitude), Coord), SecondaryFacing,
                     0x040);
@@ -2801,7 +2801,7 @@ bool AircraftClass::Process_Landing() {
  *                                                                                             *
  * HISTORY: * 06/12/1995 JLB : Created. *
  *=============================================================================================*/
-MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType) const {
+MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   Validate();
   if (!Map.In_Radar(cell)) {
     return MOVE_NO;
@@ -3224,7 +3224,7 @@ AircraftClass::~AircraftClass() {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Scatter(COORDINATE, bool) {
+void AircraftClass::Scatter(COORDINATE /*source*/, bool /*forced*/) {
   Validate();
   if (IsLanding || Altitude == 0) {
     IsLanding = false;

@@ -3730,7 +3730,7 @@ COORDINATE DisplayClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
 
 bool DisplayClass::Is_Spot_Free(COORDINATE coord) const {
   if (coord & 0xC000C000) {
-    return 0x00800080;
+    return true;
   }
   return (*this)[Coord_Cell(coord)].Is_Spot_Free(CellClass::Spot_Index(coord));
 }

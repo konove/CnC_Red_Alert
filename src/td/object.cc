@@ -247,7 +247,7 @@ int ObjectTypeClass::Cost_Of() const { return 0; }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-int ObjectTypeClass::Time_To_Build(HousesType) const { return 0; }
+int ObjectTypeClass::Time_To_Build(HousesType /*unused*/) const { return 0; }
 
 /***********************************************************************************************
  * ObjectTypeClass::Who_Can_Build_Me -- Finds the factory building that can
@@ -265,7 +265,9 @@ int ObjectTypeClass::Time_To_Build(HousesType) const { return 0; }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool, bool, HousesType) const {
+BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool /*unused*/,
+                                                 bool /*unused*/,
+                                                 HousesType /*unused*/) const {
   return nullptr;
 }
 
@@ -344,7 +346,9 @@ RTTIType ObjectClass::What_Am_I() const { return RTTI_OBJECT; }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType ObjectClass::What_Action(ObjectClass*) { return ACTION_NONE; }
+ActionType ObjectClass::What_Action(ObjectClass* /*unused*/) {
+  return ACTION_NONE;
+}
 
 /***********************************************************************************************
  * ObjectClass::What_Action -- Returns with the action to perform for this
@@ -366,7 +370,9 @@ ActionType ObjectClass::What_Action(ObjectClass*) { return ACTION_NONE; }
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType ObjectClass::What_Action(CELL) const { return ACTION_NONE; }
+ActionType ObjectClass::What_Action(CELL /*unused*/) const {
+  return ACTION_NONE;
+}
 
 /***********************************************************************************************
  * ObjectClass::In_Which_Layer -- Fetches what layer this object is located in.
@@ -517,19 +523,22 @@ COORDINATE ObjectClass::Center_Coord() const { return Coord; };
 COORDINATE ObjectClass::Render_Coord() const { return Center_Coord(); }
 COORDINATE ObjectClass::Docking_Coord() const { return Center_Coord(); }
 COORDINATE ObjectClass::Sort_Y() const { return Coord; };
-COORDINATE ObjectClass::Fire_Coord(int) const { return Coord; };
-void ObjectClass::Record_The_Kill(TechnoClass*) {};
+COORDINATE ObjectClass::Fire_Coord(int /*unused*/) const { return Coord; };
+void ObjectClass::Record_The_Kill(TechnoClass* /*unused*/) {};
 void ObjectClass::Do_Shimmer() {};
-int ObjectClass::Exit_Object(TechnoClass*) { return 0; };
+int ObjectClass::Exit_Object(TechnoClass* /*unused*/) { return 0; };
 void ObjectClass::Hidden() {};
-void ObjectClass::Look(bool) {};
-void ObjectClass::Active_Click_With(ActionType, ObjectClass*) {};
-void ObjectClass::Active_Click_With(ActionType, CELL){};
-void ObjectClass::Clicked_As_Target(int) {};
-bool ObjectClass::In_Range(COORDINATE, int) const { return false; };
-int ObjectClass::Weapon_Range(int) const { return 0x0000; };
+void ObjectClass::Look(bool /*unused*/) {};
+void ObjectClass::Active_Click_With(ActionType /*unused*/,
+                                    ObjectClass* /*unused*/) {};
+void ObjectClass::Active_Click_With(ActionType /*unused*/, CELL /*unused*/){};
+void ObjectClass::Clicked_As_Target(int /*unused*/) {};
+bool ObjectClass::In_Range(COORDINATE /*unused*/, int /*unused*/) const {
+  return false;
+};
+int ObjectClass::Weapon_Range(int /*unused*/) const { return 0x0000; };
 TARGET ObjectClass::As_Target() const { return kTargetNone; };
-void ObjectClass::Scatter(COORDINATE, bool) {};
+void ObjectClass::Scatter(COORDINATE /*unused*/, bool /*unused*/) {};
 bool ObjectClass::Catch_Fire() { return false; };
 
 /***********************************************************************************************
@@ -605,7 +614,7 @@ MissionType ObjectClass::Get_Mission() const { return MISSION_NONE; }
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Repair(int) {}
+void ObjectClass::Repair(int /*unused*/) {}
 
 /***********************************************************************************************
  * ObjectClass::Sell_Back -- Sells the object -- if possible. *
@@ -625,7 +634,7 @@ void ObjectClass::Repair(int) {}
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Sell_Back(int) {}
+void ObjectClass::Sell_Back(int /*unused*/) {}
 
 /***********************************************************************************************
  * ObjectClass::Move -- Moves (by force) the object in the desired direction. *
@@ -876,7 +885,7 @@ void ObjectClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-const short* ObjectTypeClass::Occupy_List(bool) const {
+const short* ObjectTypeClass::Occupy_List(bool /*unused*/) const {
   static const short _list[] = {0, REFRESH_EOL};
   return _list;
 }
@@ -1025,7 +1034,7 @@ bool ObjectClass::Limbo() {
  * HISTORY: * 09/24/1994 JLB : Created. * 12/23/1994 JLB : Sets object strength.
  **
  *=============================================================================================*/
-bool ObjectClass::Unlimbo(COORDINATE coord, DirType) {
+bool ObjectClass::Unlimbo(COORDINATE coord, DirType /*unused*/) {
   if (GameActive && IsInLimbo && !IsDown) {
     if (ScenarioInit ||
         Can_Enter_Cell(Coord_Cell(coord), FACING_NONE) == MOVE_OK) {
@@ -1151,8 +1160,9 @@ void ObjectClass::Detach_This_From_All(TARGET target, bool all) {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-RadioMessageType ObjectClass::Receive_Message(RadioClass*,
-                                              RadioMessageType message, long&) {
+RadioMessageType ObjectClass::Receive_Message(RadioClass* /*unused*/,
+                                              RadioMessageType message,
+                                              long& /*unused*/) {
   switch (message) {
     /*
     **	This message serves as a rendering convenience. It lets the system

@@ -49,7 +49,7 @@ unsigned long __cdecl LCW_Compress(char const* source, char* dest,
 unsigned long __cdecl LCW_Uncompress(void* source, void* dest,
                                      unsigned long length);
 long AudioZap(void* source, void* dest, long size);
-long __cdecl AudioUnzap(void* source, void* dest, long);
+long __cdecl AudioUnzap(void* source, void* dest, long /*unused*/);
 
 #ifdef __cplusplus
 }

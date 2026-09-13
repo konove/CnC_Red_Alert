@@ -1782,7 +1782,7 @@ bool MapEditClass::Verify_House(HousesType house,
  *   11/23/1994 BR : Created.                                              *
  *=========================================================================*/
 HousesType MapEditClass::Cycle_House(HousesType curhouse,
-                                     const ObjectTypeClass*) {
+                                     const ObjectTypeClass* /*unused*/) {
   HousesType count;  // prevents an infinite loop
 
   /*
@@ -1790,7 +1790,7 @@ HousesType MapEditClass::Cycle_House(HousesType curhouse,
   **	return the first one that's valid
   */
   count = HOUSE_NONE;
-  while (1) {
+  while (true) {
     /*
     **	Go to next house
     */

@@ -261,7 +261,7 @@ void* Conquer_Build_Fading_Table(const PaletteClass& palette, void* dest,
 void* Small_Icon(const void* iconptr, int iconnum);
 void Set_Window(int window, int x, int y, int w, int h);
 void* Load_Alloc_Data(FileClass& file);
-void* Load_Alloc_Data(const char* name, int);
+void* Load_Alloc_Data(const char* name, int /*unused*/);
 std::vector<std::byte> LoadAllocData(FileClass& file);
 long Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
                      BuffType& dest_buff, void* reserved_data);

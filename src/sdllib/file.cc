@@ -223,7 +223,7 @@ bool Find_Next_File(FindFileState& state) {
   auto* glob_buf = static_cast<glob_t*>(state.data);
 
   if (!glob_buf) {
-    return 2;
+    return true;
   }
 
   if (!Update_Find_Result(state)) {

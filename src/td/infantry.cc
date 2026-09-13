@@ -395,7 +395,7 @@ InfantryClass::~InfantryClass() {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void* InfantryClass::operator new(size_t) noexcept {
+void* InfantryClass::operator new(size_t /*unused*/) noexcept {
   void* ptr = Infantry.Allocate();
   if (ptr) {
     static_cast<InfantryClass*>(ptr)->IsActive = true;
@@ -1604,7 +1604,7 @@ MoveBitType InfantryClass::Blocking_Object(const TechnoClass* techno,
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
+MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   Validate();
   /*
   ** If we are moving into an illegal cell, then we can't do that.
@@ -1929,7 +1929,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Enter_Idle_Mode(bool) {
+void InfantryClass::Enter_Idle_Mode(bool /*initial*/) {
   Validate();
   MissionType order;
 
@@ -2726,7 +2726,7 @@ void InfantryClass::Response_Attack() {
  *                                                                                             *
  * HISTORY: * 01/04/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE InfantryClass::Fire_Coord(int) const {
+COORDINATE InfantryClass::Fire_Coord(int /*unused*/) const {
   Validate();
   if (Class->Type == INFANTRY_E4) {
     return Coord;  // special case for flame thrower guy

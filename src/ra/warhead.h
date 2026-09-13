@@ -54,8 +54,8 @@ class WarheadTypeClass {
  public:
   explicit WarheadTypeClass(const char* name);
 
-  void* operator new(size_t) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/) noexcept;
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* pointer);
 
   [[nodiscard]] const char* Name() const { return IniName; }

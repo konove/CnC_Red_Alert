@@ -71,13 +71,13 @@
 **	This is the menu control structures.
 */
 typedef enum MenuIndexType {
-  MENUX,
-  MENUY,
-  ITEMWIDTH,
-  ITEMSHIGH,
-  MSELECTED,
-  NORMCOL,
-  HILITE,
+  MENUX = 0,
+  MENUY = 1,
+  ITEMWIDTH = 2,
+  ITEMSHIGH = 3,
+  MSELECTED = 4,
+  NORMCOL = 5,
+  HILITE = 6,
   MENUPADDING = 0x1000
 } MenuIndexType;
 

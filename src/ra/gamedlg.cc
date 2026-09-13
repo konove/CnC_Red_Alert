@@ -149,12 +149,12 @@ void GameControlsClass::Process() {
   //	spare pointer costs less than two spellings of the enum.
   enum {
     BUTTON_SPEED = 100,
-    BUTTON_SCROLLRATE,
-    BUTTON_VISUAL,
-    BUTTON_SOUND,
-    BUTTON_WOLAPI,
-    BUTTON_OK,
-    BUTTON_COUNT,
+    BUTTON_SCROLLRATE = 101,
+    BUTTON_VISUAL = 102,
+    BUTTON_SOUND = 103,
+    BUTTON_WOLAPI = 104,
+    BUTTON_OK = 105,
+    BUTTON_COUNT = 106,
     BUTTON_FIRST = BUTTON_SPEED,
   };
 

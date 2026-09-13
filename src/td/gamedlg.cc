@@ -123,11 +123,11 @@ void GameControlsClass::Process() {
   */
   enum {
     BUTTON_SPEED = 100,
-    BUTTON_SCROLLRATE,
-    BUTTON_VISUAL,
-    BUTTON_SOUND,
-    BUTTON_OK,
-    BUTTON_COUNT,
+    BUTTON_SCROLLRATE = 101,
+    BUTTON_VISUAL = 102,
+    BUTTON_SOUND = 103,
+    BUTTON_OK = 104,
+    BUTTON_COUNT = 105,
     BUTTON_FIRST = BUTTON_SPEED,
   };
 

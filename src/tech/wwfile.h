@@ -91,7 +91,7 @@ class FileClass {
   virtual long Write(const void* buffer, long size) = 0;
   virtual void Close() = 0;
   virtual unsigned long Get_Date_Time() { return 0; }
-  virtual bool Set_Date_Time(unsigned long) { return false; }
+  virtual bool Set_Date_Time(unsigned long /*unused*/) { return false; }
   virtual void Error(int error, int canretry = false,
                      const char* filename = nullptr) = 0;
 

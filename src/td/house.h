@@ -390,7 +390,7 @@ class HouseClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   // Load shell: allocate runtime trackers without touching scenario state.
   HouseClass() { Init_Trackers(); }
@@ -442,7 +442,7 @@ class HouseClass {
   void AI();
   [[nodiscard]] bool Can_Build(StructType structure, HousesType house) const;
   [[nodiscard]] bool Can_Build(InfantryType infantry, HousesType house) const;
-  [[nodiscard]] bool Can_Build(UnitType unit, HousesType) const;
+  [[nodiscard]] bool Can_Build(UnitType unit, HousesType /*house*/) const;
   [[nodiscard]] bool Can_Build(AircraftType aircraft, HousesType house) const;
   bool Can_Build(const TechnoTypeClass* type, HousesType house) const;
   [[nodiscard]] const unsigned char* Remap_Table(bool blushing = false,
@@ -450,7 +450,7 @@ class HouseClass {
 
   [[nodiscard]] const TechnoTypeClass* Suggest_New_Object(
       RTTIType objecttype) const;
-  [[nodiscard]] bool Does_Enemy_Building_Exist(StructType) const;
+  [[nodiscard]] bool Does_Enemy_Building_Exist(StructType /*btype*/) const;
   void Harvested(unsigned tiberium);
   [[nodiscard]] int64_t Available_Money() const;
   void Spend_Money(unsigned money);

@@ -406,7 +406,7 @@ int main(int argc, char* argv[])
       Memory_Error_Exit = Print_Error_Exit;
 
       CCDebugString("C&C95 - About to exit.\n");
-      ReadyToQuit = 1;
+      ReadyToQuit = true;
       SDL_Send_Quit();
       do {
         Keyboard::Check();

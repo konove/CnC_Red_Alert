@@ -71,7 +71,7 @@ TEST(HeapSerializeTest, SparseSlotsRoundTripIntoTheSameSlots) {
 
   std::vector<uint8_t> bytes = Save(source);
   // count + 2 x (index + ID + value + flag)
-  EXPECT_EQ(bytes.size(), 4u + (2 * (4 + 4 + 4 + 1)));
+  EXPECT_EQ(bytes.size(), 4U + (2 * (4 + 4 + 4 + 1)));
 
   TFixedIHeapClass<Widget> loaded;
   loaded.Set_Heap(8);
@@ -90,7 +90,7 @@ TEST(HeapSerializeTest, EmptyHeapRoundTrips) {
   TFixedIHeapClass<Widget> source;
   source.Set_Heap(4);
   std::vector<uint8_t> bytes = Save(source);
-  EXPECT_EQ(bytes.size(), 4u);
+  EXPECT_EQ(bytes.size(), 4U);
 
   TFixedIHeapClass<Widget> loaded;
   loaded.Set_Heap(4);

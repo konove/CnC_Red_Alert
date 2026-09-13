@@ -993,7 +993,7 @@ InfantryTypeClass::InfantryTypeClass(
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-void* InfantryTypeClass::operator new(size_t) noexcept {
+void* InfantryTypeClass::operator new(size_t /*unused*/) noexcept {
   return InfantryTypes.Alloc();
 }
 
@@ -1134,7 +1134,7 @@ bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-const short* InfantryTypeClass::Occupy_List(bool) const {
+const short* InfantryTypeClass::Occupy_List(bool /*placement*/) const {
   static const short _list[] = {0, kRefreshEol};
 
   return &_list[0];

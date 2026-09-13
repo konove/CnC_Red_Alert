@@ -997,9 +997,9 @@ void* NullModemClass::Oldest_Send() {
  * HISTORY:                                                                *
  *   05/31/1995 BRR : Created.                                             *
  *=========================================================================*/
-void NullModemClass::Configure_Debug(int, int type_offset, int type_size,
-                                     const char** names, int namestart,
-                                     int namecount) {
+void NullModemClass::Configure_Debug(int /*index*/, int type_offset,
+                                     int type_size, const char** names,
+                                     int namestart, int namecount) {
   if (Connection) {
     Connection->Queue->Configure_Debug(type_offset, type_size, names, namestart,
                                        namecount);
@@ -1025,7 +1025,7 @@ void NullModemClass::Configure_Debug(int, int type_offset, int type_size,
  * HISTORY:                                                                *
  *   05/02/1995 BRR : Created.                                             *
  *=========================================================================*/
-void NullModemClass::Mono_Debug_Print(int, int refresh) {
+void NullModemClass::Mono_Debug_Print(int /*index*/, int refresh) {
   if constexpr (config::kCheatKeysEnabled) {
     if (!Connection) {
       return;
@@ -1485,8 +1485,8 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   ------------------------------------------------------------------------*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_BUTTONS = 1,
+    REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 

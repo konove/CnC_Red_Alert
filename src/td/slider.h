@@ -75,7 +75,7 @@ class SliderClass final : public GaugeClass {
 
   void Set_Thumb_Size(int value);
   int Set_Maximum(int value) override;
-  int Set_Value(int) override;
+  int Set_Value(int /*value*/) override;
   int Bump(int up);
   int Step(int up);
   int Draw_Me(bool forced) override;

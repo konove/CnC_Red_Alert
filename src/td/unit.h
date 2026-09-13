@@ -74,7 +74,7 @@ class UnitClass final : public TarComClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   UnitClass() { IsActive = true; }
   UnitClass(UnitType classid, HousesType house);
@@ -119,7 +119,7 @@ class UnitClass final : public TarComClass {
   /*
   **	Object entry and exit from the game system.
   */
-  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
   bool Limbo() override;
 
   /*
@@ -171,7 +171,7 @@ class UnitClass final : public TarComClass {
   int Mission_Harvest() override;
   int Mission_Hunt() override;
   int Mission_Move() override;
-  FireErrorType Can_Fire(TARGET, int which) const override;
+  FireErrorType Can_Fire(TARGET /*target*/, int which) const override;
 
   /*
   **	Scenario and debug support.

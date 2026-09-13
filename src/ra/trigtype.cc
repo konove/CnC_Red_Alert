@@ -132,7 +132,7 @@ TriggerTypeClass::TriggerTypeClass()
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void* TriggerTypeClass::operator new(size_t) {
+void* TriggerTypeClass::operator new(size_t /*unused*/) {
   void* ptr = TriggerTypes.Allocate();
   if (ptr) {
     static_cast<TriggerTypeClass*>(ptr)->IsActive = true;
@@ -181,7 +181,7 @@ void TriggerTypeClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void TriggerTypeClass::Detach(TARGET target, bool) {
+void TriggerTypeClass::Detach(TARGET target, bool /*unused*/) {
   Action1.Detach(target);
   Action2.Detach(target);
 }
@@ -2065,8 +2065,9 @@ void TriggerTypeClass::Build_INI_Entry(std::string& buffer) const {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void TriggerTypeClass::Draw_It(int, int x, int y, int width, int height,
-                               bool selected, TextPrintType flags) const {
+void TriggerTypeClass::Draw_It(int /*unused*/, int x, int y, int width,
+                               int height, bool selected,
+                               TextPrintType flags) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
     static int _tabs[] = {13, 40};

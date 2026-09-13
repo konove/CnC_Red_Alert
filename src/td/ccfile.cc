@@ -94,7 +94,8 @@
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void CCFileClass::Error(int, int, const char*) {
+void CCFileClass::Error(int /*error*/, int /*canretry*/,
+                        const char* /*filename*/) {
 #ifdef DEMO
   if (strstr(File_Name(), "\\")) {
     if (!Force_CD_Available(-1)) {
@@ -529,7 +530,7 @@ ULONG __cdecl Load_Data(const char* name, VOID* ptr, ULONG size) {
 }
 #endif
 
-void* __cdecl Load_Alloc_Data(const char* name, int) {
+void* __cdecl Load_Alloc_Data(const char* name, int /*unused*/) {
   CCFileClass file(name);
 
   return Load_Alloc_Data(file);

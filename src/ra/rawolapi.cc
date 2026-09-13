@@ -233,7 +233,8 @@ STDMETHODIMP RAChatEventSink::OnPageSend(HRESULT hRes) {
 }
 
 //***********************************************************************************************
-STDMETHODIMP RAChatEventSink::OnPaged(HRESULT, User* pUser, LPCSTR szMessage) {
+STDMETHODIMP RAChatEventSink::OnPaged(HRESULT /*res*/, User* pUser,
+                                      LPCSTR szMessage) {
   //	debugprint( ">>> OnPaged got: %s ", szMessage );
 
   char szPrint[kMessageMax];
@@ -349,7 +350,8 @@ STDMETHODIMP RAChatEventSink::OnConnection(HRESULT hRes, LPCSTR motd) {
 }
 
 //***********************************************************************************************
-STDMETHODIMP RAChatEventSink::OnChannelCreate(HRESULT hRes, Channel*) {
+STDMETHODIMP RAChatEventSink::OnChannelCreate(HRESULT hRes,
+                                              Channel* /*channel*/) {
   //	debugprint( ">>> OnChannelCreate got: %i ", hRes );
   DebugChatDef(hRes);
 
@@ -508,7 +510,7 @@ bool operator<(const User& u1, const User& u2) {
 }
 
 //***********************************************************************************************
-STDMETHODIMP RAChatEventSink::OnChannelLeave(HRESULT hRes, Channel*,
+STDMETHODIMP RAChatEventSink::OnChannelLeave(HRESULT hRes, Channel* /*channel*/,
                                              User* pUser) {
   //	Note: This is also called directly from OnUserKick(), below, when
   // someone is kicked from a channel. 	Also now from OnLogout().
@@ -604,12 +606,15 @@ STDMETHODIMP RAChatEventSink::OnChannelLeave(HRESULT hRes, Channel*,
 }
 
 //***********************************************************************************************
-STDMETHODIMP RAChatEventSink::OnChannelTopic(HRESULT, Channel*, LPCSTR) {
+STDMETHODIMP RAChatEventSink::OnChannelTopic(HRESULT /*res*/,
+                                             Channel* /*channel*/,
+                                             LPCSTR /*topic*/) {
   return S_OK;
 }
 
 //***********************************************************************************************
-STDMETHODIMP RAChatEventSink::OnPublicMessage(HRESULT, Channel*,
+STDMETHODIMP RAChatEventSink::OnPublicMessage(HRESULT /*res*/,
+                                              Channel* /*channel*/,
                                               User* pUserSender,
                                               LPCSTR szMessage) {
   if (*szMessage) {
@@ -637,7 +642,8 @@ STDMETHODIMP RAChatEventSink::OnPublicMessage(HRESULT, Channel*,
 }
 
 //***********************************************************************************************
-STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT, User* pUserSender,
+STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT /*res*/,
+                                               User* pUserSender,
                                                LPCSTR szMessage) {
   //	Ignore private messages sent to myself by myself.
   if (pUserSender->flags & CHAT_USER_MYSELF) {
@@ -712,7 +718,10 @@ bool RAChatEventSink::bSpecialMessage(const char* szMessage) {
 }
 
 //***********************************************************************************************
-STDMETHODIMP RAChatEventSink::OnSystemMessage(HRESULT, LPCSTR) { return S_OK; }
+STDMETHODIMP RAChatEventSink::OnSystemMessage(HRESULT /*res*/,
+                                              LPCSTR /*message*/) {
+  return S_OK;
+}
 
 //***********************************************************************************************
 STDMETHODIMP RAChatEventSink::OnNetStatus(HRESULT hRes) {
@@ -751,7 +760,8 @@ STDMETHODIMP RAChatEventSink::OnNetStatus(HRESULT hRes) {
 }
 
 //***********************************************************************************************
-STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT, Channel* pChannelListIn) {
+STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT /*res*/,
+                                            Channel* pChannelListIn) {
   if (bIgnoreChannelLists)  //	Response to channel lists has been temporarily
                             // turned off.
   {
@@ -874,7 +884,8 @@ void RAChatEventSink::DeleteChannelList() {
 }
 
 //***********************************************************************************************
-STDMETHODIMP RAChatEventSink::OnUserList(HRESULT, Channel*, User* pUserListIn) {
+STDMETHODIMP RAChatEventSink::OnUserList(HRESULT /*res*/, Channel* /*channel*/,
+                                         User* pUserListIn) {
   //	Maintenance of users list is like that for channels list.
   //	debugprint( ">>> OnUserList\n" );
   DeleteUserList();
@@ -1043,7 +1054,8 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
 }
 
 //***********************************************************************************************
-STDMETHODIMP RAChatEventSink::OnMessageOfTheDay(HRESULT, LPCSTR) {
+STDMETHODIMP RAChatEventSink::OnMessageOfTheDay(HRESULT /*res*/,
+                                                LPCSTR /*motd*/) {
   return S_OK;
 }
 
@@ -1220,7 +1232,8 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
 }
 
 //***********************************************************************************************
-STDMETHODIMP RAChatEventSink::OnPrivateAction(HRESULT, User* pUserSender,
+STDMETHODIMP RAChatEventSink::OnPrivateAction(HRESULT /*res*/,
+                                              User* pUserSender,
                                               LPCSTR szMessage) {
   //	Ignore private messages sent to myself by myself.
   if (pUserSender->flags & CHAT_USER_MYSELF) {
@@ -1243,7 +1256,8 @@ STDMETHODIMP RAChatEventSink::OnPrivateAction(HRESULT, User* pUserSender,
 }
 
 //***********************************************************************************************
-STDMETHODIMP RAChatEventSink::OnPublicAction(HRESULT, Channel*,
+STDMETHODIMP RAChatEventSink::OnPublicAction(HRESULT /*res*/,
+                                             Channel* /*channel*/,
                                              User* pUserSender,
                                              LPCSTR szMessage) {
   if (*szMessage) {
@@ -1261,7 +1275,7 @@ STDMETHODIMP RAChatEventSink::OnPublicAction(HRESULT, Channel*,
 }
 
 //***********************************************************************************************
-STDMETHODIMP RAChatEventSink::OnPrivateGameOptions(HRESULT, User* pUser,
+STDMETHODIMP RAChatEventSink::OnPrivateGameOptions(HRESULT /*res*/, User* pUser,
                                                    LPCSTR szRequest) {
   //	debugprint( ">>> OnPrivateGameOptions\n" );
   //	DebugChatDef( hRes );
@@ -1284,7 +1298,9 @@ STDMETHODIMP RAChatEventSink::OnPrivateGameOptions(HRESULT, User* pUser,
 }
 
 //***********************************************************************************************
-STDMETHODIMP RAChatEventSink::OnPublicGameOptions(HRESULT, Channel*, User*,
+STDMETHODIMP RAChatEventSink::OnPublicGameOptions(HRESULT /*res*/,
+                                                  Channel* /*channel*/,
+                                                  User* /*user*/,
                                                   LPCSTR szInform) {
   //	debugprint( ">>> OnPublicGameOptions: %s\n", szInform );
 
@@ -1301,8 +1317,8 @@ STDMETHODIMP RAChatEventSink::OnPublicGameOptions(HRESULT, Channel*, User*,
 }
 
 //***********************************************************************************************
-STDMETHODIMP RAChatEventSink::OnGameStart(HRESULT hRes, Channel*, User* pUserIn,
-                                          int game_id) {
+STDMETHODIMP RAChatEventSink::OnGameStart(HRESULT hRes, Channel* /*channel*/,
+                                          User* pUserIn, int game_id) {
   //	Note: All players receive this, not just the host that requested it.
 
   //	debugprint( ">>> OnGameStart got: " );
@@ -1369,7 +1385,7 @@ unsigned long RAChatEventSink::GetPlayerGameIP(const char* szPlayerName) const {
 }
 
 //***********************************************************************************************
-STDMETHODIMP RAChatEventSink::OnUserKick(HRESULT hRes, Channel*,
+STDMETHODIMP RAChatEventSink::OnUserKick(HRESULT hRes, Channel* /*channel*/,
                                          User* pUserKicked, User* pUserKicker) {
   //	debugprint( ">>> OnUserKick got: " );
   DebugChatDef(hRes);
@@ -1491,7 +1507,7 @@ unsigned long RAChatEventSink::GetUserIP(const char* szName) const {
 }
 
 //***********************************************************************************************
-STDMETHODIMP RAChatEventSink::OnServerError(HRESULT hRes, LPCSTR) {
+STDMETHODIMP RAChatEventSink::OnServerError(HRESULT hRes, LPCSTR /*ircmsg*/) {
   // This body came from the one-argument OnServerError that sat beside this
   // one. That overload was written against an older IDL and overrode nothing,
   // so the tracing never ran; it belongs on the method wolapi actually calls.
@@ -1501,13 +1517,15 @@ STDMETHODIMP RAChatEventSink::OnServerError(HRESULT hRes, LPCSTR) {
 }
 
 //***********************************************************************************************
-STDMETHODIMP RAChatEventSink::OnServerBannedYou(HRESULT, time_t) {
+STDMETHODIMP RAChatEventSink::OnServerBannedYou(HRESULT /*res*/,
+                                                time_t /*bannedTill*/) {
   return S_OK;
 }
 
 //***********************************************************************************************
 STDMETHODIMP RAChatEventSink::OnUserFlags(HRESULT hRes, LPCSTR name,
-                                          unsigned int flags, unsigned int) {
+                                          unsigned int flags,
+                                          unsigned int /*mask*/) {
   //	debugprint( ">>> OnUserFlags got: " );
   DebugChatDef(hRes);
 
@@ -1566,7 +1584,8 @@ STDMETHODIMP RAChatEventSink::OnUserFlags(HRESULT hRes, LPCSTR name,
 }
 
 //***********************************************************************************************
-STDMETHODIMP RAChatEventSink::OnChannelBan(HRESULT, LPCSTR name, int banned) {
+STDMETHODIMP RAChatEventSink::OnChannelBan(HRESULT /*res*/, LPCSTR name,
+                                           int banned) {
   if (banned && strcmp(name, "*") != 0) {
     char szPrint[kMessageMax];
     Format_Runtime_Text(szPrint, sizeof(szPrint), TXT_WOL_USERWASBANNED, name);

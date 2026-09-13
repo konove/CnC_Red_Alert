@@ -431,7 +431,7 @@ void LogicClass::AI() {
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-void LogicClass::Detach(TARGET target, bool) {
+void LogicClass::Detach(TARGET target, bool /*unused*/) {
   /*
   **	Remove any triggers from the logic trigger list.
   */

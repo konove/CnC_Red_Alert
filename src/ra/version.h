@@ -77,9 +77,9 @@
 //---------------------------------------------------------------------------
 typedef enum CommProtocolEnum {
   COMM_PROTOCOL_SINGLE_NO_COMP = 0,  // single frame with no compression
-  COMM_PROTOCOL_SINGLE_E_COMP,       // single frame with event compression
-  COMM_PROTOCOL_MULTI_E_COMP,        // multiple frame with event compression
-  COMM_PROTOCOL_COUNT,
+  COMM_PROTOCOL_SINGLE_E_COMP = 1,   // single frame with event compression
+  COMM_PROTOCOL_MULTI_E_COMP = 2,    // multiple frame with event compression
+  COMM_PROTOCOL_COUNT = 3,
   DEFAULT_COMM_PROTOCOL = COMM_PROTOCOL_MULTI_E_COMP
 } CommProtocolType;
 

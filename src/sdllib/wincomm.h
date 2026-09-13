@@ -234,17 +234,21 @@ class WinModemClass {
 */
 class WinNullModemClass : public WinModemClass {
  public:
-  void Set_Modem_Dial_Type(WinCommDialMethodType) override {}
+  void Set_Modem_Dial_Type(WinCommDialMethodType /*method*/) override {}
   unsigned Get_Modem_Status() override { return 0; }
-  void Set_Serial_DTR(bool) override {}
-  int Get_Modem_Result(int, const char*, int) override { return 0; }
-  void Dial_Modem(const char*) override {}
-  int Send_Command_To_Modem(const char*, char, char*, int, int,
-                            int) override {
+  void Set_Serial_DTR(bool /*state*/) override {}
+  int Get_Modem_Result(int /*delay*/, const char* /*buffer*/,
+                       int /*buffer_len*/) override {
     return 0;
   }
-  void Set_Echo_Function(void (*)(char)) override {}
-  void Set_Abort_Function(int (*)()) override {}
+  void Dial_Modem(const char* /*dial_number*/) override {}
+  int Send_Command_To_Modem(const char* /*command*/, char /*terminator*/,
+                            char* /*buffer*/, int /*buflen*/, int /*delay*/,
+                            int /*retries*/) override {
+    return 0;
+  }
+  void Set_Echo_Function(void (* /*func*/)(char)) override {}
+  void Set_Abort_Function(int (* /*func*/)()) override {}
 };
 
 extern WinModemClass* SerialPort;

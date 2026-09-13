@@ -1828,7 +1828,7 @@ HousesType MapEditClass::Cycle_House(HousesType curhouse,
   return the first one that's valid
   ------------------------------------------------------------------------*/
   count = HOUSE_NONE;
-  while (1) {
+  while (true) {
     /*
     .......................... Go to next house ...........................
     */

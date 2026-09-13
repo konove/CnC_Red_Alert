@@ -490,7 +490,8 @@ int ListClass::Current_Index() const { return SelectedIndex; }
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-void ListClass::Peer_To_Peer(unsigned flags, KeyNumType&, ControlClass& whom) {
+void ListClass::Peer_To_Peer(unsigned flags, KeyNumType& /*unused*/,
+                             ControlClass& whom) {
   if (flags & LEFTRELEASE) {
     if (&whom == &UpGadget) {
       Step(true);

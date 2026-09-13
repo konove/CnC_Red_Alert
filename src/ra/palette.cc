@@ -65,15 +65,16 @@ void PaletteClass::Set(int fade, void (*callback)()) {
 // the only code that uses these two (Play_Movie and OptionsClass::Proccess)
 // only use it to adjust the black palette then immediately adjust it back
 // presumably this is to force a palette update
-void PaletteClass::Adjust(int) {}
+void PaletteClass::Adjust(int /*unused*/) {}
 
-void PaletteClass::Adjust(int, PaletteClass&) {}
+void PaletteClass::Adjust(int /*unused*/, PaletteClass& /*unused*/) {}
 
-void PaletteClass::Partial_Adjust(int, char*) {
+void PaletteClass::Partial_Adjust(int /*unused*/, char* /*unused*/) {
   printf("PaletteClass::%s\n", __func__);
 }
 
-void PaletteClass::Partial_Adjust(int, PaletteClass&, char*) {
+void PaletteClass::Partial_Adjust(int /*unused*/, PaletteClass& /*unused*/,
+                                  char* /*unused*/) {
   printf("PaletteClass::%s\n", __func__);
 }
 

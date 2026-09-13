@@ -120,8 +120,9 @@ class RAChatEventSink
   STDMETHOD(OnServerList)(HRESULT res, Server* servers) override;
   STDMETHOD(OnLogout)(HRESULT r, User* user) override;
   STDMETHOD(OnPageSend)(HRESULT r) override;
-  STDMETHOD(OnPaged)(HRESULT r, User*, LPCSTR) override;
-  STDMETHOD(OnFind)(HRESULT r, Channel*) override;
+  STDMETHOD(OnPaged)(HRESULT r, User* /*pUser*/ /*user*/,
+                     LPCSTR /*message*/ /*szMessage*/) override;
+  STDMETHOD(OnFind)(HRESULT r, Channel* /*chan*/ /*pChannel*/) override;
   STDMETHOD(OnConnection)(HRESULT r, LPCSTR motd) override;
   STDMETHOD(OnChannelCreate)(HRESULT r, Channel* channel) override;
   STDMETHOD(OnChannelJoin)(HRESULT r, Channel* channel, User* user) override;
@@ -130,19 +131,30 @@ class RAChatEventSink
   STDMETHOD(OnPublicMessage)
   (HRESULT r, Channel* channel, User* user, LPCSTR text) override;
   STDMETHOD(OnPrivateMessage)(HRESULT r, User* user, LPCSTR text) override;
-  STDMETHOD(OnSystemMessage)(HRESULT r, LPCSTR) override;
+  STDMETHOD(OnSystemMessage)(HRESULT r, LPCSTR /*message*/) override;
   STDMETHOD(OnNetStatus)(HRESULT r) override;
   STDMETHOD(OnChannelList)(HRESULT r, Channel* channels) override;
   STDMETHOD(OnUserList)(HRESULT r, Channel* channel, User* users) override;
-  STDMETHOD(OnUpdateList)(HRESULT res, Update*) override;
-  STDMETHOD(OnMessageOfTheDay)(HRESULT res, LPCSTR) override;
-  STDMETHOD(OnPrivateAction)(HRESULT r, User*, LPCSTR) override;
-  STDMETHOD(OnPublicAction)(HRESULT r, Channel*, User*, LPCSTR) override;
-  STDMETHOD(OnPrivateGameOptions)(HRESULT r, User*, LPCSTR) override;
-  STDMETHOD(OnPublicGameOptions)(HRESULT r, Channel*, User*, LPCSTR) override;
-  STDMETHOD(OnGameStart)(HRESULT r, Channel*, User*, int) override;
-  STDMETHOD(OnUserKick)(HRESULT r, Channel*, User*, User*) override;
-  STDMETHOD(OnUserIP)(HRESULT r, User*) override;
+  STDMETHOD(OnUpdateList)(HRESULT res,
+                          Update* /*pUpdateList*/ /*updates*/) override;
+  STDMETHOD(OnMessageOfTheDay)(HRESULT res, LPCSTR /*motd*/) override;
+  STDMETHOD(OnPrivateAction)(HRESULT r, User* /*pUserSender*/ /*user*/,
+                             LPCSTR /*action*/ /*szMessage*/) override;
+  STDMETHOD(OnPublicAction)(HRESULT r, Channel* /*channel*/,
+                            User* /*pUserSender*/ /*user*/,
+                            LPCSTR /*action*/ /*szMessage*/) override;
+  STDMETHOD(OnPrivateGameOptions)(HRESULT r, User* /*pUser*/ /*user*/,
+                                  LPCSTR /*options*/ /*szRequest*/) override;
+  STDMETHOD(OnPublicGameOptions)(HRESULT r, Channel* /*channel*/,
+                                 User* /*user*/,
+                                 LPCSTR /*options*/ /*szInform*/) override;
+  STDMETHOD(OnGameStart)(HRESULT r, Channel* /*channel*/,
+                         User* /*pUserIn*/ /*users*/,
+                         int /*game_id*/ /*gameid*/) override;
+  STDMETHOD(OnUserKick)(HRESULT r, Channel* /*channel*/,
+                        User* /*kicked*/ /*pUserKicked*/,
+                        User* /*kicker*/ /*pUserKicker*/) override;
+  STDMETHOD(OnUserIP)(HRESULT r, User* /*pUser*/ /*user*/) override;
   STDMETHOD(OnServerError)(HRESULT res, LPCSTR ircmsg) override;
   STDMETHOD(OnServerBannedYou)(HRESULT r, time_t bannedTill) override;
   STDMETHOD(OnUserFlags)

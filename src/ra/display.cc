@@ -4089,7 +4089,7 @@ COORDINATE DisplayClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
  *=============================================================================================*/
 bool DisplayClass::Is_Spot_Free(COORDINATE coord) const {
   if (coord & kHighCoordMask) {
-    return 0x00800080;
+    return true;
   }
   return Map[coord].Is_Spot_Free(CellClass::Spot_Index(coord));
 }

@@ -72,9 +72,9 @@ class AircraftClass : public FootClass, public FlyClass {
   CCPtr<AircraftTypeClass> Class;
 
   //-----------------------------------------------------------------------------
-  void* operator new(size_t) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
-  void operator delete(void*);
+  void* operator new(size_t /*unused*/) noexcept;
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
+  void operator delete(void* /*ptr*/);
   // objects compare directly against their type ID.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator AircraftType() const { return Class->Type; }
@@ -144,7 +144,7 @@ class AircraftClass : public FootClass, public FlyClass {
   /*
   **	Object entry and exit from the game system.
   */
-  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
@@ -152,7 +152,7 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   void Look(bool incremental = false) override;
   void Draw_Rotors(int x, int y, WindowNumberType window) const;
-  int Exit_Object(TechnoClass*) override;
+  int Exit_Object(TechnoClass* /*unit*/ /*unused*/) override;
   [[nodiscard]] const short* Overlap_List(bool redraw = false) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
   void Set_Speed(int speed) override;

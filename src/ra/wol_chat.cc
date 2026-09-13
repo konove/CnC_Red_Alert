@@ -197,7 +197,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   //------------------------------------------------------------------------
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BACKGROUND,
+    REDRAW_BACKGROUND = 1,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 

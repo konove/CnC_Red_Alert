@@ -369,11 +369,11 @@ class WOL_GameSetupDialog {
   //------------------------------------------------------------------------
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_PARMS,
-    REDRAW_MESSAGE,
-    REDRAW_COLORS,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_PARMS = 1,
+    REDRAW_MESSAGE = 2,
+    REDRAW_COLORS = 3,
+    REDRAW_BUTTONS = 4,
+    REDRAW_BACKGROUND = 5,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 

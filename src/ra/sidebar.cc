@@ -994,7 +994,8 @@ bool SidebarClass::Activate(int control) {
  *                                                                                             *
  * HISTORY: * 12/31/1994 JLB : Created. *
  *=============================================================================================*/
-SidebarClass::StripClass::StripClass(const InitClass&) : IsToRedraw(true) {
+SidebarClass::StripClass::StripClass(const InitClass& /*unused*/)
+    : IsToRedraw(true) {
   for (auto& Buildable : Buildables) {
     Buildable.BuildableID = 0;
     Buildable.BuildableType = RTTI_NONE;
@@ -1017,7 +1018,7 @@ SidebarClass::StripClass::StripClass(const InitClass&) : IsToRedraw(true) {
  *                                                                                             *
  * HISTORY: * 12/31/1994 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::StripClass::One_Time(int) {
+void SidebarClass::StripClass::One_Time(int /*unused*/) {
   /*
   ** Sidebar is player team specific in Hires
   */
@@ -1363,7 +1364,8 @@ void SidebarClass::StripClass::Flag_To_Redraw() {
  * HISTORY: * 12/31/1994 JLB : Created. * 12/31/1994 JLB : Uses mouse coordinate
  *parameters.                                        *
  *=============================================================================================*/
-bool SidebarClass::StripClass::AI(KeyNumType& input, int, int) {
+bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
+                                  int /*unused*/) {
   bool redraw = false;
 
   /*
@@ -2118,7 +2120,8 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
  *                                                                                             *
  * HISTORY: * 03/28/1995 JLB : Created. *
  *=============================================================================================*/
-int SidebarClass::SBGadgetClass::Action(unsigned, KeyNumType&) {
+int SidebarClass::SBGadgetClass::Action(unsigned /*flags*/,
+                                        KeyNumType& /*key*/) {
   Map.Help_Text(TXT_NONE);
   Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
   return true;
@@ -2264,9 +2267,9 @@ void SidebarClass::Zoom_Mode_Control() {
       }
     } else {
       if (!Spying_On_House() && !Is_Player_Names()) {
-        Player_Names(1);
+        Player_Names(true);
       } else {
-        Player_Names(0);
+        Player_Names(false);
         if (!Spy_Next_House()) {
           Zoom_Mode(Coord_Cell(TacticalCoord));
         }

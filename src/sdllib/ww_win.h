@@ -58,14 +58,14 @@ void Video_End_Frame();
 **	defines when accessing the WindowList.
 */
 typedef enum {
-  WINDOWX,        // X byte position of left edge.
-  WINDOWY,        // Y pixel position of top edge.
-  WINDOWWIDTH,    // Width in bytes of the window.
-  WINDOWHEIGHT,   // Height in pixels of the window.
-  WINDOWFCOL,     // Default foreground color.
-  WINDOWBCOL,     // Default background color.
-  WINDOWCURSORX,  // Current cursor X position (in rows).
-  WINDOWCURSORY,  // Current cursor Y position (in lines).
+  WINDOWX = 0,        // X byte position of left edge.
+  WINDOWY = 1,        // Y pixel position of top edge.
+  WINDOWWIDTH = 2,    // Width in bytes of the window.
+  WINDOWHEIGHT = 3,   // Height in pixels of the window.
+  WINDOWFCOL = 4,     // Default foreground color.
+  WINDOWBCOL = 5,     // Default background color.
+  WINDOWCURSORX = 6,  // Current cursor X position (in rows).
+  WINDOWCURSORY = 7,  // Current cursor Y position (in lines).
   WINDOWPADDING = 0x1000
 } WindowIndexType;
 

@@ -295,7 +295,7 @@ AircraftTypeClass::AircraftTypeClass(
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void* AircraftTypeClass::operator new(size_t) noexcept {
+void* AircraftTypeClass::operator new(size_t /*unused*/) noexcept {
   return AircraftTypes.Alloc();
 }
 
@@ -464,7 +464,7 @@ void AircraftTypeClass::Prep_For_Add() {
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
-                                HousesType) const {
+                                HousesType /*unused*/) const {
   int shape = 0;
   const void* ptr = Get_Cameo_Data();
   if (ptr == nullptr) {
@@ -490,7 +490,7 @@ void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-const short* AircraftTypeClass::Occupy_List(bool) const {
+const short* AircraftTypeClass::Occupy_List(bool /*placement*/) const {
   static const short _list[] = {0, kRefreshEol};
   return _list;
 }
@@ -554,7 +554,8 @@ int AircraftTypeClass::Max_Pips() const {
  *                                                                                             *
  * HISTORY: * 08/07/1995 JLB : Created. *
  *=============================================================================================*/
-bool AircraftTypeClass::Create_And_Place(CELL, HousesType) const {
+bool AircraftTypeClass::Create_And_Place(CELL /*unused*/,
+                                         HousesType /*unused*/) const {
   return false;
 }
 

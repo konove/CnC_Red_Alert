@@ -368,7 +368,7 @@ void GadgetClass::Delete_List() {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-int GadgetClass::Action(unsigned flags, KeyNumType&) {
+int GadgetClass::Action(unsigned flags, KeyNumType& /*unused*/) {
   /*
   **	If any of the event flags are active, then this indicates that something
   *probably *	has changed the gadget. Flag the gadget to be redrawn. Also,

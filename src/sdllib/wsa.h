@@ -49,7 +49,7 @@
 #include "sdllib/gbuffer.h"
 
 typedef enum {
-  WSA_NORMAL,              // Normal WSA animation
+  WSA_NORMAL = 0,          // Normal WSA animation
   WSA_GHOST = 0x1000,      // Or'd with the above flags to get ghosting
   WSA_PRIORITY2 = 0x2000,  // Copy using a priority (or in the priority)
   WSA_TRANS = 0x4000,      // Copy frame, ignoring transparent colors

@@ -8,16 +8,17 @@ class PaletteClass {
   PaletteClass() = default;
   // palettes pass where raw palette bytes are expected.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  PaletteClass(const RGBClass&) noexcept;
+  PaletteClass(const RGBClass& /*col*/) noexcept;
 
   void Set(int fade = 0, void (*callback)() = nullptr);
 
-  void Adjust(int);
-  void Adjust(int, PaletteClass&);
-  void Partial_Adjust(int, char*);
-  void Partial_Adjust(int, PaletteClass&, char*);
+  void Adjust(int /*unused*/);
+  void Adjust(int /*unused*/, PaletteClass& /*unused*/);
+  void Partial_Adjust(int /*unused*/, char* /*unused*/);
+  void Partial_Adjust(int /*unused*/, PaletteClass& /*unused*/,
+                      char* /*unused*/);
 
-  [[nodiscard]] int Closest_Color(const RGBClass&) const;
+  [[nodiscard]] int Closest_Color(const RGBClass& /*col*/) const;
 
   RGBClass& operator[](int index);
   const RGBClass& operator[](int index) const;

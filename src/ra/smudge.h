@@ -70,7 +70,7 @@ class SmudgeClass : public ObjectClass {
   **	Constructors and destructors.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   explicit SmudgeClass(SmudgeType type, COORDINATE pos = 0xFFFFFFFFUL,
               HousesType house = HOUSE_NONE);
@@ -103,8 +103,9 @@ class SmudgeClass : public ObjectClass {
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
-  bool Mark(MarkType) override;
-  void Draw_It(int, int, WindowNumberType) const override {}
+  bool Mark(MarkType /*mark*/ /*unused*/) override;
+  void Draw_It(int /*x*/, int /*y*/,
+               WindowNumberType /*unused*/) const override {}
 
   void Disown(CELL cell);
 

@@ -148,7 +148,7 @@ void TeamClass::Init() {
   memset(Success, 0, sizeof(Success));
 }
 
-void* TeamClass::operator new(size_t) noexcept {
+void* TeamClass::operator new(size_t /*unused*/) noexcept {
   void* ptr = Teams.Allocate();
   if (ptr) {
     static_cast<TeamClass*>(ptr)->IsActive = true;
@@ -947,7 +947,7 @@ int TeamClass::Recruit(int typeindex) {
  *                                                                                             *
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Detach(TARGET target, bool) {
+void TeamClass::Detach(TARGET target, bool /*unused*/) {
   Validate();
 
   /*
@@ -1052,7 +1052,7 @@ void TeamClass::Calc_Center(CELL& center, CELL& obj_center) const {
  *                                                                                             *
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Took_Damage(FootClass*, ResultType result,
+void TeamClass::Took_Damage(FootClass* /*unused*/, ResultType result,
                             TechnoClass* source) {
   Validate();
   if (result != RESULT_NONE && !Class->IsSuicide) {

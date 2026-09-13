@@ -55,7 +55,7 @@ class UDPInterfaceClass : public WinsockInterfaceClass {
   UDPInterfaceClass& operator=(const UDPInterfaceClass&) = delete;
   UDPInterfaceClass(UDPInterfaceClass&&) = delete;
   UDPInterfaceClass& operator=(UDPInterfaceClass&&) = delete;
-  void Event_Handler(int, SocketEvent) override;
+  void Event_Handler(int /*unused*/, SocketEvent /*event*/ /*unused*/) override;
   bool Open_Socket(SOCKET socketnum) override;
   void Set_Broadcast_Address(void* address) override;
   void Broadcast(void* buffer, int buffer_len) override;

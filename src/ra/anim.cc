@@ -353,7 +353,7 @@ bool AnimClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-const short* AnimClass::Overlap_List(bool) const {
+const short* AnimClass::Overlap_List(bool /*redraw*/) const {
   assert(Anims.ID(this) == ID);
   assert(IsActive);
   static const short OverlapAtom[] = {
@@ -393,7 +393,7 @@ const short* AnimClass::Overlap_List(bool) const {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-const short* AnimClass::Occupy_List(bool) const {
+const short* AnimClass::Occupy_List(bool /*placement*/) const {
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
@@ -434,7 +434,7 @@ void AnimClass::Init() { Anims.Free_All(); }
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void* AnimClass::operator new(size_t) noexcept {
+void* AnimClass::operator new(size_t /*unused*/) noexcept {
   void* ptr = Anims.Allocate();
   if (ptr != nullptr) {
     static_cast<AnimClass*>(ptr)->IsActive = true;

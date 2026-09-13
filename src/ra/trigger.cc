@@ -108,7 +108,7 @@ const char* TriggerClass::Description() const { return Class->Description(); }
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void TriggerClass::Draw_It(int, int x, int y, int width, int height,
+void TriggerClass::Draw_It(int /*unused*/, int x, int y, int width, int height,
                            bool selected, TextPrintType flags) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
@@ -390,7 +390,7 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void* TriggerClass::operator new(size_t) noexcept {
+void* TriggerClass::operator new(size_t /*unused*/) noexcept {
   void* ptr = Triggers.Allocate();
   if (ptr) {
     static_cast<TriggerClass*>(ptr)->IsActive = true;
@@ -496,7 +496,7 @@ TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void TriggerClass::Detach(TARGET target, bool) {
+void TriggerClass::Detach(TARGET target, bool /*unused*/) {
   if (Is_Target_TriggerType(target)) {
     assert(static_cast<TriggerTypeClass*>(Class) != As_TriggerType(target));
     //		if (Class == As_TriggerType(target)) {

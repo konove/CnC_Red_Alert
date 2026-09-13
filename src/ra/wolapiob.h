@@ -511,7 +511,7 @@ class WolapiObject {
   WOL_GAMETYPEINFO* GameTypeInfos{nullptr};
   unsigned int nGameTypeInfos{0};
 
-  float fLatencyToIconWidth = 0.0f;
+  float fLatencyToIconWidth = 0.0F;
   //	Width in pixels of the latency bar icon, or 0 if it did not load. Kept
   //	beside fLatencyToIconWidth so the list code does not have to reach into
   //	an optional it cannot check from where it stands.

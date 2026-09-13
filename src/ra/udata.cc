@@ -891,7 +891,9 @@ UnitTypeClass::UnitTypeClass(
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void* UnitTypeClass::operator new(size_t) noexcept { return UnitTypes.Alloc(); }
+void* UnitTypeClass::operator new(size_t /*unused*/) noexcept {
+  return UnitTypes.Alloc();
+}
 
 /***********************************************************************************************
  * UnitTypeClass::operator delete -- Return a unit type class object back to the
@@ -1006,7 +1008,7 @@ UnitType UnitTypeClass::From_Name(const char* name) {
  *vehicles now.                                        *
  *=============================================================================================*/
 void UnitTypeClass::Display(int x, int y, WindowNumberType window,
-                            HousesType) const {
+                            HousesType /*unused*/) const {
   int shape = 0;
   const void* ptr = Get_Cameo_Data();
   if (ptr == nullptr) {

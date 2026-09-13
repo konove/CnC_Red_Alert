@@ -395,7 +395,8 @@ const char* MissionClass::Mission_Name(MissionType mission) {
  *                                                                                             *
  * HISTORY: * 04/28/1995 PWG : Created. *
  *=============================================================================================*/
-void MissionClass::Override_Mission(MissionType mission, TARGET, TARGET) {
+void MissionClass::Override_Mission(MissionType mission, TARGET /*unused*/,
+                                    TARGET /*unused*/) {
   if (MissionQueue != MISSION_NONE) {
     SuspendedMission = MissionQueue;
   } else {

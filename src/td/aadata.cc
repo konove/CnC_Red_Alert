@@ -336,7 +336,7 @@ void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
                 HouseClass::As_Pointer(house)->Remap_Table(false, true));
 }
 
-const short* AircraftTypeClass::Occupy_List(bool) const {
+const short* AircraftTypeClass::Occupy_List(bool /*placement*/) const {
   static const short _list[] = {0, REFRESH_EOL};
   return _list;
 }
@@ -349,7 +349,7 @@ const short* AircraftTypeClass::Overlap_List() const {
   return _list;
 }
 
-BuildingClass* AircraftTypeClass::Who_Can_Build_Me(bool, bool legal,
+BuildingClass* AircraftTypeClass::Who_Can_Build_Me(bool /*unused*/, bool legal,
                                                    HousesType house) const {
   BuildingClass* anybuilding = nullptr;
   for (int index = 0; index < Buildings.Count(); index++) {
@@ -386,7 +386,8 @@ int AircraftTypeClass::Max_Pips() const {
   return 0;
 }
 
-bool AircraftTypeClass::Create_And_Place(CELL, HousesType) const {
+bool AircraftTypeClass::Create_And_Place(CELL /*unused*/,
+                                         HousesType /*unused*/) const {
   return false;
 }
 

@@ -306,7 +306,7 @@ class CellClass {
                 bool nokidding = false);
   void Adjust_Threat(HousesType house, int threat_value);
 
-  int operator!=(const CellClass&) const { return 0; }
+  int operator!=(const CellClass& /*unused*/) const { return 0; }
 
  private:
   LandType Land{LAND_CLEAR};  // The land type of this cell.

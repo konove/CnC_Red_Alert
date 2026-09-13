@@ -254,7 +254,7 @@ SmudgeType SmudgeTypeClass::From_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-const short* SmudgeTypeClass::Occupy_List(bool) const {
+const short* SmudgeTypeClass::Occupy_List(bool /*placement*/) const {
   static short _occupy[4 * 4];
   short* ptr = &_occupy[0];
 
@@ -312,7 +312,7 @@ void SmudgeTypeClass::Init(TheaterType theater) {
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
-                              HousesType) const {
+                              HousesType /*unused*/) const {
   const void* ptr = Get_Image_Data();
 
   x += WindowList[window][WINDOWX] << 3;
@@ -372,7 +372,7 @@ void SmudgeTypeClass::Prep_For_Add() {
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-bool SmudgeTypeClass::Create_And_Place(CELL cell, HousesType) const {
+bool SmudgeTypeClass::Create_And_Place(CELL cell, HousesType /*unused*/) const {
   return new SmudgeClass(Type, Cell_Coord(cell)) != nullptr;
 }
 
@@ -393,7 +393,7 @@ bool SmudgeTypeClass::Create_And_Place(CELL cell, HousesType) const {
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-ObjectClass* SmudgeTypeClass::Create_One_Of(HouseClass*) const {
+ObjectClass* SmudgeTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
   return new SmudgeClass(Type, -1);
 }
 

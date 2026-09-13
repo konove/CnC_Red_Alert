@@ -512,7 +512,7 @@ bool Remote_Connect() {
   off for now (during this portion of the dialogs, we must show ourselves)
   ------------------------------------------------------------------------*/
   stealth = NetStealth;
-  NetStealth = 0;
+  NetStealth = false;
 
   /*------------------------------------------------------------------------
   Init my game name to 0-length, since I haven't joined any game yet.
@@ -523,7 +523,7 @@ bool Remote_Connect() {
   The game is now "open" for joining.  Close it as soon as we exit this
   routine.
   ------------------------------------------------------------------------*/
-  NetOpen = 1;
+  NetOpen = true;
 
   /*------------------------------------------------------------------------
   Read the default values from the INI file
@@ -533,7 +533,7 @@ bool Remote_Connect() {
   /*------------------------------------------------------------------------
   Keep looping until something useful happens.
   ------------------------------------------------------------------------*/
-  while (1) {
+  while (true) {
     /*---------------------------------------------------------------------
     Pop up the network Join/New dialog
     ---------------------------------------------------------------------*/
@@ -544,7 +544,7 @@ bool Remote_Connect() {
     ---------------------------------------------------------------------*/
     if (rc == -1) {
       NetStealth = stealth;
-      NetOpen = 0;
+      NetOpen = false;
       return false;
     }
     /*---------------------------------------------------------------------
@@ -553,7 +553,7 @@ bool Remote_Connect() {
     if (rc == 0) {
       Write_MultiPlayer_Settings();
       NetStealth = stealth;
-      NetOpen = 0;
+      NetOpen = false;
 
       return true;
     }
@@ -567,9 +567,9 @@ bool Remote_Connect() {
       ..................................................................*/
       if (Net_New_Dialog()) {
         Write_MultiPlayer_Settings();
-        NetOpen = 0;
+        NetOpen = false;
         NetStealth = stealth;
-        NetOpen = 0;
+        NetOpen = false;
 
         return true;
       }
@@ -608,13 +608,13 @@ bool Server_Remote_Connect() {
   off for now (during this portion of the dialogs, we must show ourselves)
   ------------------------------------------------------------------------*/
   stealth = NetStealth;
-  NetStealth = 0;
+  NetStealth = false;
 
   /*------------------------------------------------------------------------
   The game is now "open" for joining.  Close it as soon as we exit this
   routine.
   ------------------------------------------------------------------------*/
-  NetOpen = 1;
+  NetOpen = true;
 
   /*------------------------------------------------------------------------
   Read the default values from the INI file
@@ -626,7 +626,7 @@ bool Server_Remote_Connect() {
     return false;
   }
 
-  NetOpen = 0;
+  NetOpen = false;
   NetStealth = stealth;
   Write_MultiPlayer_Settings();
   return true;
@@ -664,13 +664,13 @@ bool Client_Remote_Connect() {
   off for now (during this portion of the dialogs, we must show ourselves)
   ------------------------------------------------------------------------*/
   stealth = NetStealth;
-  NetStealth = 0;
+  NetStealth = false;
 
   /*------------------------------------------------------------------------
   The game is now "open" for joining.  Close it as soon as we exit this
   routine.
   ------------------------------------------------------------------------*/
-  NetOpen = 1;
+  NetOpen = true;
 
   /*------------------------------------------------------------------------
   Read the default values from the INI file
@@ -684,7 +684,7 @@ bool Client_Remote_Connect() {
   Write_MultiPlayer_Settings();
 
   NetStealth = stealth;
-  NetOpen = 0;
+  NetOpen = false;
 
   return rc != -1;
 }
@@ -871,10 +871,10 @@ static int Net_Join_Dialog() {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_MESSAGE,
-    REDRAW_COLORS,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_MESSAGE = 1,
+    REDRAW_COLORS = 2,
+    REDRAW_BUTTONS = 3,
+    REDRAW_BACKGROUND = 4,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 
@@ -2856,10 +2856,10 @@ static int Net_New_Dialog() {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_UNIT_COUNT,
-    REDRAW_MESSAGE,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_UNIT_COUNT = 1,
+    REDRAW_MESSAGE = 2,
+    REDRAW_BUTTONS = 3,
+    REDRAW_BACKGROUND = 4,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 
@@ -4289,9 +4289,9 @@ static int Net_Fake_New_Dialog() {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_MESSAGE,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_MESSAGE = 1,
+    REDRAW_BUTTONS = 2,
+    REDRAW_BACKGROUND = 3,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 
@@ -4884,10 +4884,10 @@ static int Net_Fake_Join_Dialog() {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_MESSAGE,
-    REDRAW_COLORS,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
+    REDRAW_MESSAGE = 1,
+    REDRAW_COLORS = 2,
+    REDRAW_BUTTONS = 3,
+    REDRAW_BACKGROUND = 4,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 

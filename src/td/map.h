@@ -70,7 +70,7 @@ class MapClass : public GScreenClass {
   ** as it relates to the map - not what the cell contains.
   */
   [[nodiscard]] ObjectClass* Close_Object(COORDINATE coord) const;
-  virtual void Detach(ObjectClass*) {}
+  virtual void Detach(ObjectClass* /*unused*/) {}
   int Cell_Region(CELL cell);
   int Cell_Threat(CELL cell, HousesType house);
   int Cell_Distance(CELL cell1, CELL cell2);

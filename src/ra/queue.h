@@ -88,7 +88,7 @@ class QueueClass {
   *and entry *	[Count-1] matches the last-in-line. This is ensured regardless
   *of the actual position *	of the object in the circular internal list.
   */
-  T& operator[](int);
+  T& operator[](int /*index*/);
 
   /*
   **	This function will return a reference to the "head of the line" object.
@@ -111,7 +111,7 @@ class QueueClass {
   **	This will add an object to the tail of the line. If there is no more
   *room to add *	the object, then false will be returned.
   */
-  int Add(const T&);
+  int Add(const T& /*q*/);
 
   int Get_Head();
   int Get_Tail();

@@ -286,9 +286,9 @@ int MapEditClass::Placement_Dialog() {
   ........................................................................*/
   typedef enum {
     REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_OBJECT,
-    REDRAW_BACKGROUND,
+    REDRAW_BUTTONS = 1,
+    REDRAW_OBJECT = 2,
+    REDRAW_BACKGROUND = 3,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
   /*........................................................................

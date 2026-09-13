@@ -247,7 +247,7 @@ static void Print_Framesync_Values(long curframe, unsigned long max_ahead,
                                    unsigned short* their_sent,
                                    unsigned short my_sent);
 #endif  // DEMO
-static void Print_CRCs(EventClass*);
+static void Print_CRCs(EventClass* /*unused*/);
 
 static void Dump_Packet_Too_Late_Stuff(EventClass* event);
 
@@ -426,7 +426,7 @@ static void Queue_AI_Normal() {
   //------------------------------------------------------------------------
   if (!Execute_DoList(1, PlayerPtr->Class->House, nullptr, nullptr, nullptr,
                       nullptr, nullptr)) {
-    GameActive = 0;
+    GameActive = false;
     return;
   }
   //------------------------------------------------------------------------
@@ -903,7 +903,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   dialog_timer.Set(dialog_time, true);  // time to show dlg
   timeout_timer.Set(timeout, true);     // time to bail out
 
-  while (1) {
+  while (true) {
     Update_Queue_Mono(net, 2);
 
     //---------------------------------------------------------------------
@@ -1499,7 +1499,7 @@ static int Send_Packets(ConnManClass* net, char* multi_packet_buf,
   //------------------------------------------------------------------------
   //	Build our meta-packet & transmit it.
   //------------------------------------------------------------------------
-  while (1) {
+  while (true) {
     Update_Queue_Mono(net, 1);
 
     //.....................................................................
@@ -2148,7 +2148,7 @@ static int Handle_Timeout(ConnManClass* net, int* their_frame,
  *=========================================================================*/
 static void Stop_Game() {
   CCDebugString("C&C95 - In Stop_Game.\n");
-  GameActive = 0;
+  GameActive = false;
   if (IsMono) {
     MonoClass::Disable();
   }
@@ -2969,9 +2969,9 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Execute_DoList(int, HousesType, ConnManClass* net,
-                          TCountDownTimerClass*, int* their_frame,
-                          unsigned short* their_sent,
+static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
+                          ConnManClass* net, TCountDownTimerClass* /*unused*/,
+                          int* their_frame, unsigned short* their_sent,
                           unsigned short* their_recv) {
   int i, j, k, wibble;
   int index;
@@ -3342,7 +3342,7 @@ static void Queue_Playback() {
     // recording, end it no matter what the user does (any key or mouse).
     //
     if (key == KA_ESC || AllowAttract) {
-      GameActive = 0;
+      GameActive = false;
       return;
     }
   }
@@ -3353,7 +3353,7 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   if (AllowAttract && Frame > 0 &&
       (mx != Get_Mouse_X() || my != Get_Mouse_Y())) {
-    GameActive = 0;
+    GameActive = false;
     return;
   }
   mx = Get_Mouse_X();
@@ -3405,7 +3405,7 @@ static void Queue_Playback() {
   }
 
   if (!ok) {
-    GameActive = 0;
+    GameActive = false;
     return;
   }
 
@@ -3421,7 +3421,7 @@ static void Queue_Playback() {
   }
   if (!Execute_DoList(max_houses, base_house, nullptr, nullptr, nullptr,
                       nullptr, nullptr)) {
-    GameActive = 0;
+    GameActive = false;
     return;
   }
 

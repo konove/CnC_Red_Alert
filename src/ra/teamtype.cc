@@ -127,7 +127,7 @@ static int atoh(char* str);
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-void TeamTypeClass::Draw_It(int, int x, int y, int width, int height,
+void TeamTypeClass::Draw_It(int /*unused*/, int x, int y, int width, int height,
                             bool selected, TextPrintType flags) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
@@ -296,7 +296,7 @@ const char* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
  * HISTORY:                                                                *
  *   11/28/1994 BR : Created.                                              *
  *=========================================================================*/
-void* TeamTypeClass::operator new(size_t) {
+void* TeamTypeClass::operator new(size_t /*unused*/) {
   void* ptr = TeamTypes.Allocate();
   if (ptr) {
     static_cast<TeamTypeClass*>(ptr)->IsActive = true;
@@ -404,9 +404,9 @@ void TeamTypeClass::Destroy_All_Of() const {
  * HISTORY: * 07/13/1995 JLB : Created. * 07/21/1995 JLB : Will autocreate team
  *even if no members in field.                        *
  *=============================================================================================*/
-const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house, long,
-                                                       long, long, long,
-                                                       bool alerted)
+const TeamTypeClass* TeamTypeClass::Suggested_New_Team(
+    HouseClass* house, long /*unused*/, long /*unused*/, long /*unused*/,
+    long /*unused*/, bool alerted)
 // TeamTypeClass const * TeamTypeClass::Suggested_New_Team(HouseClass * house,
 // long atypes, long utypes, long itypes, long vtypes, bool alerted)
 {
@@ -1579,7 +1579,7 @@ const char* TeamMissionClass::Description(int index) const {
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-void TeamTypeClass::Detach(TARGET target, bool) {
+void TeamTypeClass::Detach(TARGET target, bool /*unused*/) {
   if (Is_Target_TriggerType(target) && Trigger.Is_Valid() &&
       Trigger == As_TriggerType(target)) {
     Trigger = nullptr;

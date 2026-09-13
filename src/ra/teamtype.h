@@ -133,8 +133,8 @@ class TeamTypeClass : public AbstractTypeClass {
   TeamTypeClass(TeamTypeClass&&) = delete;
   TeamTypeClass& operator=(TeamTypeClass&&) = delete;
 
-  void* operator new(size_t);
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/);
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   /*

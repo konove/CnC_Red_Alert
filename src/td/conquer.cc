@@ -2764,7 +2764,7 @@ void Trap_Object() {
  * HISTORY: * 06/24/1995 JLB : Created. *
  *=============================================================================================*/
 
-long VQ_Call_Back(unsigned char*, long) {
+long VQ_Call_Back(unsigned char* /*unused*/, long /*unused*/) {
   int key = 0;
   if (Keyboard::Check()) {
     key = Keyboard::Get();

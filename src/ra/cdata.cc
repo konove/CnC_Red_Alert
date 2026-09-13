@@ -1253,7 +1253,7 @@ TemplateTypeClass::TemplateTypeClass(TemplateType iconset, int theater,
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void* TemplateTypeClass::operator new(size_t) noexcept {
+void* TemplateTypeClass::operator new(size_t /*unused*/) noexcept {
   return TemplateTypes.Alloc();
 }
 
@@ -1792,7 +1792,7 @@ TemplateType TemplateTypeClass::From_Name(const char* name) {
  * HISTORY: * 05/23/1994 JLB : Created. * 12/12/1995 JLB : Optimized for direct
  *access to iconset data.                             *
  *=============================================================================================*/
-const short* TemplateTypeClass::Occupy_List(bool) const {
+const short* TemplateTypeClass::Occupy_List(bool /*placement*/) const {
   static short _occupy[(13 * 8) + 5];
   short* ptr;
 
@@ -1871,7 +1871,7 @@ void TemplateTypeClass::Init(TheaterType theater) {
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
 void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
-                                HousesType) const {
+                                HousesType /*unused*/) const {
   int w, h;
   int index;
   bool scale;  // Should the template be half sized?
@@ -1951,7 +1951,8 @@ void TemplateTypeClass::Prep_For_Add() {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-bool TemplateTypeClass::Create_And_Place(CELL cell, HousesType) const {
+bool TemplateTypeClass::Create_And_Place(CELL cell,
+                                         HousesType /*unused*/) const {
   return new TemplateClass(Type, cell) != nullptr;
 }
 
@@ -1973,7 +1974,7 @@ bool TemplateTypeClass::Create_And_Place(CELL cell, HousesType) const {
  *                                                                                             *
  * HISTORY: * 06/18/1994 JLB : Created. *
  *=============================================================================================*/
-ObjectClass* TemplateTypeClass::Create_One_Of(HouseClass*) const {
+ObjectClass* TemplateTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
   return new TemplateClass(Type, -1);
 }
 

@@ -29,11 +29,11 @@
 // The value tests need a frame source, but no game session or debug display.
 int64_t Frame = 0;
 SpecialClass Special{};
-void Speak(VoxType) {}
+void Speak(VoxType /*unused*/) {}
 // Linking the legacy byte RNG also pulls in the SDL event pump.
-void SDL_Event_Handler(SDL_Event*) {}
-void MonoClass::Set_Cursor(int, int) {}
-void MonoClass::Printf(const char*, ...) {}
+void SDL_Event_Handler(SDL_Event* /*unused*/) {}
+void MonoClass::Set_Cursor(int /*unused*/, int /*unused*/) {}
+void MonoClass::Printf(const char* /*unused*/, ...) {}
 namespace {
 
 template <class T>

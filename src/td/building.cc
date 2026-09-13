@@ -1757,7 +1757,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
  * HISTORY: * 08/05/1992 JLB : Created. * 04/15/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-void BuildingClass::Look(bool) {
+void BuildingClass::Look(bool /*unused*/) {
   Validate();
   if (IsOwnedByPlayer || IsDiscoveredByPlayer) {
     Map.Sight_From(Coord_Cell(Center_Coord()), Class->SightRange, false);
@@ -1782,7 +1782,7 @@ void BuildingClass::Look(bool) {
  *allocation scheme                                               * 07/29/1994
  *JLB : Simplified. *
  *=============================================================================================*/
-void* BuildingClass::operator new(size_t) noexcept {
+void* BuildingClass::operator new(size_t /*unused*/) noexcept {
   void* ptr = Buildings.Allocate();
   if (ptr) {
     static_cast<BuildingClass*>(ptr)->IsActive = true;
@@ -2583,7 +2583,7 @@ bool BuildingClass::Limbo() {
  *                                                                                             *
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE BuildingClass::Fire_Coord(int) const {
+COORDINATE BuildingClass::Fire_Coord(int /*unused*/) const {
   Validate();
   COORDINATE coord = Center_Coord();  // Center of firing building.
 
@@ -3528,7 +3528,7 @@ COORDINATE BuildingClass::Sort_Y() const {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-MoveType BuildingClass::Can_Enter_Cell(CELL cell, FacingType) const {
+MoveType BuildingClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   Validate();
   return Class->Legal_Placement(cell) ? MOVE_OK : MOVE_NO;
 }
@@ -4570,7 +4570,7 @@ int BuildingClass::Pip_Count() const {
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
-void BuildingClass::Death_Announcement(const TechnoClass*) const {
+void BuildingClass::Death_Announcement(const TechnoClass* /*source*/) const {
   Validate();
   if (IsDiscoveredByPlayer || IsOwnedByPlayer) {
     if (House != PlayerPtr && GameToPlay != GAME_NORMAL) {

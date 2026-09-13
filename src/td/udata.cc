@@ -1323,7 +1323,7 @@ UnitTypeClass::UnitTypeClass(
  *                                                                                             *
  * HISTORY: * 05/14/1994 JLB : Created. *
  *=============================================================================================*/
-const short* UnitTypeClass::Occupy_List(bool) const {
+const short* UnitTypeClass::Occupy_List(bool /*placement*/) const {
   static const short _simple[] = {0, REFRESH_EOL};
   static const short _gun[] = {0, -1, 1, REFRESH_EOL};
 

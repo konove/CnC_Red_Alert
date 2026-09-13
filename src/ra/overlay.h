@@ -69,9 +69,10 @@ class OverlayClass : public ObjectClass {
   **	Constructors and destructors.
   */
   void* operator new(size_t size) noexcept;
-  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void* operator new(size_t /*unused*/, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
-  explicit OverlayClass(OverlayType type, CELL pos = -1, HousesType = HOUSE_NONE);
+  explicit OverlayClass(OverlayType type, CELL pos = -1,
+                        HousesType /*house*/ = HOUSE_NONE);
   ~OverlayClass() override {
     if (GameActive) {
       OverlayClass::Limbo();
@@ -101,11 +102,12 @@ class OverlayClass : public ObjectClass {
   /*
   **	Virtual support functionality.
   */
-  bool Mark(MarkType) override;
+  bool Mark(MarkType /*mark*/ /*unused*/) override;
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
-  void Draw_It(int, int, WindowNumberType) const override {}
+  void Draw_It(int /*x*/, int /*y*/,
+               WindowNumberType /*unused*/) const override {}
 
  private:
   /*

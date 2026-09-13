@@ -133,7 +133,7 @@ void OverlayClass::Init() {
  *                                                                                             *
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-void* OverlayClass::operator new(size_t) noexcept {
+void* OverlayClass::operator new(size_t /*unused*/) noexcept {
   void* ptr = Overlays.Allocate();
   if (ptr) {
     static_cast<OverlayClass*>(ptr)->IsActive = true;
