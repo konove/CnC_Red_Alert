@@ -65,6 +65,7 @@
 #include "td/trigger.h"
 
 #include <cinttypes>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -736,7 +737,7 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
  * HISTORY: * 12/06/1994 BR : Created. * 06/25/1995 JLB : Added more trigger
  *events.                                               *
  *=============================================================================================*/
-bool TriggerClass::Spring(EventType event, HousesType house, long data) {
+bool TriggerClass::Spring(EventType event, HousesType house, int64_t data) {
   Validate();
   /*
   **	If this is not the event for this trigger, just return.

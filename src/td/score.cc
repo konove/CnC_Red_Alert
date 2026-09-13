@@ -842,7 +842,8 @@ void ScoreClass::Presentation() {
   Play_Sample(sfx4, 255, Options.Normalize_Sound(120));
   Call_Back_Delay(13);
 
-  max = static_cast<int>(std::max(static_cast<long>(leadership), static_cast<long>(efficiency)));
+  max = static_cast<int>(std::max(static_cast<int32_t>(leadership),
+                                  static_cast<int32_t>(efficiency)));
   int scorecounter = 0;
   Keyboard::Clear();
 

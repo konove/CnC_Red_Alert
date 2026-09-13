@@ -252,7 +252,7 @@ void* SpeechBuffer;
 ** This accumulates into a useful value that contributes to a
 **	histogram of game performance.
 */
-long SpareTicks;
+int64_t SpareTicks;
 
 /***************************************************************************
 **	This is a special scenario count down value. End of game condition will
@@ -333,7 +333,7 @@ static CreditClass CreditDisplay;
 **	has been displayed. Once the message has been displayed, it will not be
 **	displayed again.
 */
-long TutorFlags[2];
+int32_t TutorFlags[2];
 
 /**************************************************************************
 ** This class records the special command override options that C&C
@@ -367,7 +367,7 @@ int BuildLevel = 3;  // Buildable level (1 = simplest)
 ** This value is computed every time a new scenario is loaded; it's a
 ** CRC of the INI and binary map files.
 */
-unsigned long ScenarioCRC;
+uint32_t ScenarioCRC;
 
 /***************************************************************************
 **	The various tutor and dialog messages are located in the data block
@@ -385,7 +385,7 @@ bool GameActive;
 **	a long, but the value wasn't supplied to a function. This is used
 **	specifically for the default reference value. As such, it is not stable.
 */
-long LParam;
+int32_t LParam;
 
 /***************************************************************************
 ** The currently-selected cell for the Scenario Editor
@@ -586,7 +586,7 @@ int MPlayerMaxAhead = 3;
 'FrameSendRate' is the # frames between data packets
 'FrameRateDelay' is the time ticks to wait between frames, for smoothing.
 ---------------------------------------------------------------------------*/
-long FrameSendRate;
+int32_t FrameSendRate;
 
 /***************************************************************************
 **	Multiplayer ID's, stored in order of event execution.
@@ -768,7 +768,7 @@ const char* SerialPacketNames[] = {
 /***************************************************************************
 **	These variables are just to help find sync bugs.
 */
-long TrapFrame = 0x7fffffff;       // frame to start trapping object values at
+int32_t TrapFrame = 0x7fffffff;    // frame to start trapping object values at
 RTTIType TrapObjType = RTTI_NONE;  // type of object to trap
 TrapObjectType TrapObject = {nullptr};  // ptr to object being trapped
 COORDINATE TrapCoord = 0;               // COORD of object to trap
@@ -861,7 +861,7 @@ int MetaSize =
 ** multiplayer games.
 */
 int Seed = 0;
-long* RandSeedPtr;
+int32_t* RandSeedPtr;
 
 /***************************************************************************
 ** If this value is non-zero, use it as the random # seed instead; this should

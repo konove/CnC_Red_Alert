@@ -48,6 +48,8 @@
 
 #ifdef _WIN32
 #include <winsock.h>
+
+#include <cstdint>
 #else
 #include <netinet/in.h>
 
@@ -189,7 +191,7 @@ class TcpipManagerClass {
 extern TcpipManagerClass Winsock;
 
 extern char PlanetWestwoodIPAddress[IP_ADDRESS_MAX];
-extern long PlanetWestwoodPortNumber;
+extern int32_t PlanetWestwoodPortNumber;
 extern bool PlanetWestwoodIsHost;
 extern int Read_Game_Options(const char* /*name*/);
 extern bool UseVirtualSubnetServer;

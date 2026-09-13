@@ -66,6 +66,8 @@
  *=============================================================================================*/
 #include "td/mission.h"
 
+#include <cstdint>
+
 #include "port/ex_string.h"
 #include "td/config.h"
 #include "td/defines.h"
@@ -157,7 +159,7 @@ void MissionClass::Debug_Dump(MonoClass* mono) const {
                  MissionClass::Mission_Name(MissionQueue));
     //	mono->Text_Print(MissionClass::Mission_Name(Mission), 21, 1);
     mono->Set_Cursor(20, 7);
-    mono->Printf("%2d", (long)Timer);
+    mono->Printf("%2d", (int32_t)Timer);
     mono->Set_Cursor(74, 1);
     mono->Printf("%2d", Status);
 

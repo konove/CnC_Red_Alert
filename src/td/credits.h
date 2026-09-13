@@ -41,13 +41,14 @@
 #ifndef CNC_RED_ALERT_TD_CREDITS_H_
 #define CNC_RED_ALERT_TD_CREDITS_H_
 
+#include <cstdint>
 
 /****************************************************************************
 **	The animating credit counter display is controlled by this class.
 */
 class CreditClass {
  public:
-  long Credits{0};  // Value of credits trying to update display to.
+  int64_t Credits{0};  // Value of credits trying to update display to.
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
@@ -62,7 +63,7 @@ class CreditClass {
   void Graphic_Logic(bool forced = false);
   void AI(bool forced = false);
 
-  long Current{0};  // Credit value currently displayed.
+  int64_t Current{0};  // Credit value currently displayed.
 
   unsigned IsToRedraw : 1 {false};
   unsigned IsUp : 1 {false};

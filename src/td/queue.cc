@@ -134,9 +134,9 @@
 // ColorNames is for debug output in Print_CRCs
 //---------------------------------------------------------------------------
 #ifndef DEMO
-static unsigned long GameCRC;
-static unsigned long CRC[32] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+static uint32_t GameCRC;
+static uint32_t CRC[32] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 static const char* ColorNames[6] = {
     "Yellow", "Red", "BlueGreen", "Orange", "Green", "Blue",
@@ -240,9 +240,7 @@ static void Compute_Game_CRC();
 // Bytes a compressed packet spends on each event's type tag.
 // Converts a CRC input the way the original implicit int -> unsigned long
 // conversion did (sign-extending), so game CRCs stay bit-identical.
-static unsigned long CrcBits(int value) {
-  return static_cast<unsigned long>(value);
-}
+static uint32_t CrcBits(int value) { return static_cast<uint32_t>(value); }
 
 constexpr int kEventTypeSize = static_cast<int>(sizeof(EventClass::EventType));
 
@@ -1293,9 +1291,8 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
   // send rate.  It also must be at least thrice the FrameSendRate.
   // (Isn't "thrice" a cool word?)
   //
-  maxahead = static_cast<int>((maxahead + FrameSendRate - 1) / FrameSendRate *
-                              FrameSendRate);
-  maxahead = std::max<int>(maxahead, static_cast<int>(FrameSendRate * 3));
+  maxahead = (maxahead + FrameSendRate - 1) / FrameSendRate * FrameSendRate;
+  maxahead = std::max<int>(maxahead, FrameSendRate * 3);
 
   ev.Type = EventClass::TIMING;
   ev.Data.Timing.DesiredFrameRate = static_cast<uint16_t>(DesiredFrameRate);
@@ -1576,8 +1573,9 @@ static void Send_FrameSync(ConnManClass* net, int cmd_count) {
   //------------------------------------------------------------------------
   packet.Type = EventClass::FRAMESYNC;
   if (CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-    packet.Frame = static_cast<unsigned>((Frame + MPlayerMaxAhead + (FrameSendRate - 1)) /
-                                          (FrameSendRate * FrameSendRate));
+    packet.Frame =
+        static_cast<unsigned>((Frame + MPlayerMaxAhead + (FrameSendRate - 1)) /
+                              (int64_t{FrameSendRate} * FrameSendRate));
   } else {
     packet.Frame = static_cast<unsigned>(Frame + MPlayerMaxAhead);
   }
@@ -3515,7 +3513,7 @@ static void Compute_Game_CRC() {
  * HISTORY:                                                                *
  *   05/09/1995 BRR : Created.                                             *
  *=========================================================================*/
-void Add_CRC(unsigned long* crc, unsigned long val) {
+void Add_CRC(uint32_t* crc, uint32_t val) {
   uint32_t hibit;
 
   if (*crc & 0x80000000) {
@@ -3573,7 +3571,7 @@ void Print_CRCs(EventClass* /*ev*/) {
   }
 
   for (i = 0; i < 32; i++) {
-    fprintf(fp, "CRC[%d]=%lx\n", i, CRC[i]);
+    fprintf(fp, "CRC[%d]=%x\n", i, CRC[i]);
   }
 
   housep = HouseClass::As_Pointer(HOUSE_MULTI1);

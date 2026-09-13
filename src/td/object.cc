@@ -1167,7 +1167,7 @@ void ObjectClass::Detach_This_From_All(TARGET target, bool all) {
  *=============================================================================================*/
 RadioMessageType ObjectClass::Receive_Message(RadioClass* /*unused*/,
                                               RadioMessageType message,
-                                              long& /*unused*/) {
+                                              int32_t& /*unused*/) {
   /*
   **	This message serves as a rendering convenience. It lets the system
   **	know that there might be a visual conflict and the unit in radio

@@ -1448,7 +1448,7 @@ const InfantryTypeClass* const InfantryTypeClass::Pointers[INFANTRY_COUNT] = {
  *=============================================================================================*/
 InfantryTypeClass::InfantryTypeClass(
     InfantryType type, int name, const char* ininame, unsigned char level,
-    long pre, bool is_female, bool is_leader, bool is_crawling,
+    uint64_t pre, bool is_female, bool is_leader, bool is_crawling,
     bool is_civilian, bool is_nominal, bool is_fraidycat, bool is_capture,
     bool is_theater, int ammo, int* do_table, int firelaunch, int pronelaunch,
     int16_t strength, int sightrange, int cost, int scenario, int risk,

@@ -152,8 +152,8 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
   /*........................................................................
   Save our socket ID number
   ........................................................................*/
-  Socket = static_cast<uint16_t>(((unsigned long)socket & 0x00ff) << 8 |
-                                 ((unsigned long)socket & 0xff00) >> 8);
+  Socket = static_cast<uint16_t>(((uint32_t)socket & 0x00ff) << 8 |
+                                 ((uint32_t)socket & 0xff00) >> 8);
 
   /*........................................................................
   Get the user's IPX local connection number
@@ -1461,8 +1461,8 @@ int IPXManagerClass::Private_Num_Receive(int id) {
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
 void IPXManagerClass::Set_Socket(uint16_t socket) {
-  Socket = static_cast<uint16_t>(((unsigned long)socket & 0x00ff) << 8 |
-                                 ((unsigned long)socket & 0xff00) >> 8);
+  Socket = static_cast<uint16_t>(((uint32_t)socket & 0x00ff) << 8 |
+                                 ((uint32_t)socket & 0xff00) >> 8);
 
 } /* end of Set_Socket */
 

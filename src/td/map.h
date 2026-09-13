@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_MAP_H_
 #define CNC_RED_ALERT_TD_MAP_H_
 
+#include <cstdint>
+
 #include "td/defines.h"
 #include "td/gscreen.h"
 #include "td/object.h"
@@ -80,11 +82,11 @@ class MapClass : public GScreenClass {
   void Pick_Up(CELL cell, ObjectClass* object);
   void Overlap_Down(CELL cell, ObjectClass* object);
   void Overlap_Up(CELL cell, ObjectClass* object);
-  static bool Read_Binary(const char* root, unsigned long* crc);
+  static bool Read_Binary(const char* root, uint32_t* crc);
   static bool Write_Binary(const char* root);
   bool Place_Random_Crate();
 
-  long Overpass();
+  int32_t Overpass();
 
   virtual void Logic();
   virtual void Set_Map_Dimensions(int x, int y, int w, int h);

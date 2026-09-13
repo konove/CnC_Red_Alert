@@ -246,7 +246,7 @@ const AircraftTypeClass* const AircraftTypeClass::Pointers[AIRCRAFT_COUNT] = {
 
 AircraftTypeClass::AircraftTypeClass(
     AircraftType airtype, int name, const char* ininame, unsigned char level,
-    long pre, bool is_leader, bool is_twoshooter, bool is_transporter,
+    uint64_t pre, bool is_leader, bool is_twoshooter, bool is_transporter,
     bool is_fixedwing, bool is_rotorequipped, bool is_rotorcustom,
     bool is_landable, bool is_crushable, bool is_stealthy, bool is_selectable,
     bool is_legal_target, bool is_insignificant, bool is_immune,

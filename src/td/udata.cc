@@ -1272,7 +1272,7 @@ const UnitTypeClass* const UnitTypeClass::Pointers[UNIT_COUNT] = {
  *=============================================================================================*/
 UnitTypeClass::UnitTypeClass(
     UnitType type, int name, const char* ininame, AnimType exp,
-    unsigned char level, long pre, bool is_goodie, bool is_leader,
+    unsigned char level, uint64_t pre, bool is_goodie, bool is_leader,
     bool is_eight, bool is_nominal, bool is_transporter, bool is_crushable,
     bool is_crusher, bool is_harvest, bool is_stealthy, bool is_selectable,
     bool is_legal_target, bool is_insignificant, bool is_immune,

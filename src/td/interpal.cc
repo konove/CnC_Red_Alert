@@ -46,6 +46,7 @@
 #include "td/interpal.h"
 
 #include <algorithm>
+#include <cstdint>
 
 #include "sdllib/gbuffer.h"
 #include "td/ccfile.h"
@@ -75,7 +76,8 @@ void Read_Interpolation_Palette(const char* palette_file_name) {
 
   if (palette_file.Is_Available()) {
     palette_file.Open(FileAccess::kRead);
-    palette_file.Read(&PaletteInterpolationTable[0][0], static_cast<long>(256) * 256);
+    palette_file.Read(&PaletteInterpolationTable[0][0],
+                      static_cast<int32_t>(256) * 256);
     palette_file.Close();
     InterpolationPaletteChanged = false;
   }
@@ -101,7 +103,8 @@ void Write_Interpolation_Palette(const char* palette_file_name) {
 
   if (!palette_file.Is_Available()) {
     palette_file.Open(FileAccess::kWrite);
-    palette_file.Write(&PaletteInterpolationTable[0][0], static_cast<long>(256) * 256);
+    palette_file.Write(&PaletteInterpolationTable[0][0],
+                       static_cast<int32_t>(256) * 256);
     palette_file.Close();
   }
 }

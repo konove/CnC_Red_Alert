@@ -45,6 +45,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -1588,9 +1589,9 @@ int MapEditClass::Team_Members(HousesType house) {
   */
   int lheld = 0;
   int rheld = 0;
-  long tdelay[3] = {5, 20, 0};
+  int64_t tdelay[3] = {5, 20, 0};
   int tindex = 0;
-  long heldtime = 0;
+  int64_t heldtime = 0;
 
   /*
   **	Buttons.

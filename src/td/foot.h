@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_FOOT_H_
 #define CNC_RED_ALERT_TD_FOOT_H_
 
+#include <cstdint>
+
 #include "td/defines.h"
 #include "td/ftimer.h"
 #include "td/monoc.h"
@@ -219,7 +221,7 @@ class FootClass : public TechnoClass {
   bool Basic_Path();
 
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
-                                   long& param) override;
+                                   int32_t& param) override;
   bool Can_Demolish() const override;
 
   /*

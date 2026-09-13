@@ -71,7 +71,7 @@ char* IPXConnClass::ListenBuf;
 ECBType* IPXConnClass::SendECB;
 IPXHeaderType* IPXConnClass::SendHeader;
 char* IPXConnClass::SendBuf;
-long IPXConnClass::Handler;
+int32_t IPXConnClass::Handler;
 int IPXConnClass::Configured = 0;
 int IPXConnClass::SocketOpen = 0;
 int IPXConnClass::Listening = 0;
@@ -220,7 +220,7 @@ void IPXConnClass::Init() {
 void IPXConnClass::Configure(uint16_t socket, int conn_num, ECBType* listen_ecb,
                              ECBType* send_ecb, IPXHeaderType* listen_header,
                              IPXHeaderType* send_header, char* listen_buf,
-                             char* send_buf, long handler_rm_ptr,
+                             char* send_buf, int32_t handler_rm_ptr,
                              int maxpacketlen) {
   /*------------------------------------------------------------------------
   Save the values passed in

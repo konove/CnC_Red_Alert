@@ -58,6 +58,7 @@
 #include "td/tcpip.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstring>
 
 #include "base/numeric.h"
@@ -592,7 +593,7 @@ void TcpipManagerClass::Close_Socket(SOCKET s) {
 void TcpipManagerClass::Set_Protocol_UDP(bool state) { UseUDP = state; }
 
 void TcpipManagerClass::Clear_Socket_Error(SOCKET socket) {
-  unsigned long error_code;
+  uint32_t error_code;
   socklen_t length = 4;
 
   getsockopt(socket, SOL_SOCKET, SO_ERROR, SocketBytes(error_code), &length);

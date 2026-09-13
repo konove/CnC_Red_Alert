@@ -1510,7 +1510,7 @@ bool FootClass::Restore_Mission() {
  *=============================================================================================*/
 RadioMessageType FootClass::Receive_Message(RadioClass* from,
                                             RadioMessageType message,
-                                            long& param) {
+                                            int32_t& param) {
   switch (message) {
     /*
     **	Intercept the repair request and if this object is moving, then no
@@ -1539,7 +1539,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     *motion, *	then it doesn't need furthur movement instructions.
     */
     case RADIO_NEED_TO_MOVE:
-      param = static_cast<long>(NavCom);
+      param = static_cast<int32_t>(NavCom);
       if (!Target_Legal(NavCom)) {
         return RADIO_ROGER;
       }

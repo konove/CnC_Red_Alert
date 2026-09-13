@@ -3505,14 +3505,14 @@ void DisplayClass::Compute_Start_Pos() {
   **	and buildings.  Buildings are weighted so that they count 16 times more
   **	than units or infantry.
   */
-  long x = 0;
-  long y = 0;
-  long num = 0;
+  int32_t x = 0;
+  int32_t y = 0;
+  int32_t num = 0;
   for (int i = 0; i < Infantry.Count(); i++) {
     InfantryClass* infp = Infantry.Ptr(i);
     if (!infp->IsInLimbo && infp->House == PlayerPtr) {
-      x += static_cast<long>(Coord_XCell(infp->Coord));
-      y += static_cast<long>(Coord_YCell(infp->Coord));
+      x += static_cast<int32_t>(Coord_XCell(infp->Coord));
+      y += static_cast<int32_t>(Coord_YCell(infp->Coord));
       num++;
     }
   }
@@ -3520,8 +3520,8 @@ void DisplayClass::Compute_Start_Pos() {
   for (int i = 0; i < Units.Count(); i++) {
     UnitClass* unitp = Units.Ptr(i);
     if (!unitp->IsInLimbo && unitp->House == PlayerPtr) {
-      x += static_cast<long>(Coord_XCell(unitp->Coord));
-      y += static_cast<long>(Coord_YCell(unitp->Coord));
+      x += static_cast<int32_t>(Coord_XCell(unitp->Coord));
+      y += static_cast<int32_t>(Coord_YCell(unitp->Coord));
       num++;
     }
   }
@@ -3529,8 +3529,8 @@ void DisplayClass::Compute_Start_Pos() {
   for (int i = 0; i < Buildings.Count(); i++) {
     BuildingClass* bldgp = Buildings.Ptr(i);
     if (!bldgp->IsInLimbo && bldgp->House == PlayerPtr) {
-      x += static_cast<long>(Coord_XCell(bldgp->Coord)) << 4;
-      y += static_cast<long>(Coord_YCell(bldgp->Coord)) << 4;
+      x += static_cast<int32_t>(Coord_XCell(bldgp->Coord)) << 4;
+      y += static_cast<int32_t>(Coord_YCell(bldgp->Coord)) << 4;
       num += 16;
     }
   }
@@ -3560,9 +3560,9 @@ void DisplayClass::Compute_Start_Pos() {
   /*
   **	Clip the computed x,y cell coords to the map's size.
   */
-  x = std::clamp<long>(
+  x = std::clamp<int32_t>(
       x, MapCellX, MapCellX + MapCellWidth - Lepton_To_Cell(TacLeptonWidth));
-  y = std::clamp<long>(
+  y = std::clamp<int32_t>(
       y, MapCellY, MapCellY + MapCellHeight - Lepton_To_Cell(TacLeptonHeight));
 
   /*

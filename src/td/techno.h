@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_TECHNO_H_
 #define CNC_RED_ALERT_TD_TECHNO_H_
 
+#include <cstdint>
+
 #include "td/bullet.h"
 #include "td/cargo.h"
 #include "td/crew.h"
@@ -289,7 +291,7 @@ class TechnoClass : public RadioClass,
   void AI() override;
   bool Revealed(HouseClass* house) override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
-                                   long& param) override;
+                                   int32_t& param) override;
 
   /*
    **	Scenario and debug support.

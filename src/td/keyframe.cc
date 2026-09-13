@@ -113,9 +113,10 @@ static int Length;
 void* Get_Shape_Header_Data(void* ptr) {
   if (UseBigShapeBuffer) {
     auto* header = static_cast<ShapeHeaderType*>(ptr);
-    return header->shape_data + (long)(header->shape_buffer
-                                           ? TheaterShapeBufferStart
-                                           : BigShapeBufferStart);
+    return header->shape_data +
+           std::bit_cast<intptr_t>(header->shape_buffer
+                                       ? TheaterShapeBufferStart
+                                       : BigShapeBufferStart);
   }
   return ptr;
 }
@@ -311,10 +312,11 @@ void* Build_Frame(const void* dataptr, uint16_t framenumber, void* buffptr) {
     if (*(KeyFrameSlots[keyfr->y] + framenumber)) {
       if (IsTheaterShape) {
         return TheaterShapeBufferStart +
-               (unsigned long)*(KeyFrameSlots[keyfr->y] + framenumber);
+               std::bit_cast<uintptr_t>(
+                   *(KeyFrameSlots[keyfr->y] + framenumber));
       }
       return BigShapeBufferStart +
-             (unsigned long)*(KeyFrameSlots[keyfr->y] + framenumber);
+             std::bit_cast<uintptr_t>(*(KeyFrameSlots[keyfr->y] + framenumber));
     }
   }
 
@@ -561,7 +563,7 @@ uint16_t Get_Build_Frame_Height(const void* dataptr) {
 bool Get_Build_Frame_Palette(const void* dataptr, void* palette) {
   if (dataptr && static_cast<const KeyFrameHeaderType*>(dataptr)->flags & 1) {
     const char* ptr = static_cast<const char*>(
-        Add_Long_To_Pointer(dataptr, (((long)sizeof(unsigned long) << 1) *
+        Add_Long_To_Pointer(dataptr, (((int32_t)sizeof(uint32_t) << 1) *
                                       ((KeyFrameHeaderType*)dataptr)->frames) +
                                          16 + sizeof(KeyFrameHeaderType)));
 

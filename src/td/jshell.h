@@ -234,9 +234,9 @@ void Set_Window(int window, int x, int y, int w, int h);
 // Returns ownership of the buffer. Caller must delete[].
 void* Load_Alloc_Data(FileClass& file);
 void* Load_Alloc_Data(const char* name, int /*unused*/);
-long Load_Uncompress(FileClass& file, BufferClass& uncomp_buff,
-                     BufferClass& dest_buff, void* reserved_data);
-long Translucent_Table_Size(int count);
+int32_t Load_Uncompress(FileClass& file, BufferClass& uncomp_buff,
+                        BufferClass& dest_buff, void* reserved_data);
+int32_t Translucent_Table_Size(int count);
 void* Build_Translucent_Table(const void* palette, const TLucentType* control,
                               int count,
                               void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);

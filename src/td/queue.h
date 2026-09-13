@@ -47,6 +47,8 @@
 #ifndef CNC_RED_ALERT_TD_QUEUE_H_
 #define CNC_RED_ALERT_TD_QUEUE_H_
 
+#include <cstdint>
+
 #include "absl/base/attributes.h"
 #include "td/defines.h"
 #include "td/monoc.h"
@@ -279,7 +281,7 @@ void Queue_AI();
 // read.
 int Extract_Uncompressed_Events(void* buf, int bufsize);
 int Extract_Compressed_Events(void* buf, int bufsize);
-void Add_CRC(unsigned long* crc, unsigned long val);
+void Add_CRC(uint32_t* crc, uint32_t val);
 
 extern int NetMonoMode, NewMonoMode;
 

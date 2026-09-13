@@ -212,8 +212,8 @@ void File_Fatal(const char* message) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-long Load_Uncompress(FileClass& file, BufferClass& uncomp_buff,
-                     BufferClass& dest_buff, void* reserved_data) {
+int32_t Load_Uncompress(FileClass& file, BufferClass& uncomp_buff,
+                        BufferClass& dest_buff, void* reserved_data) {
   uint16_t size;
   void* sptr = uncomp_buff.Get_Buffer();
   void* dptr = dest_buff.Get_Buffer();
@@ -286,15 +286,14 @@ long Load_Uncompress(FileClass& file, BufferClass& uncomp_buff,
   if (opened) {
     file.Close();
   }
-  return static_cast<long>(uncompressed_size);
+  return static_cast<int32_t>(uncompressed_size);
 }
 
 int Load_Picture(const char* filename, BufferClass& scratchbuf,
                  BufferClass& destbuf, unsigned char* palette,
                  PicturePlaneType /*unused*/) {
   CCFileClass fc(filename);
-  return static_cast<int>(
-      Load_Uncompress(fc, scratchbuf, destbuf, palette) / 8000);
+  return Load_Uncompress(fc, scratchbuf, destbuf, palette) / 8000;
 }
 
 void* Load_Alloc_Data(FileClass& file) {
@@ -320,7 +319,7 @@ void* Load_Alloc_Data(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 04/02/1994 JLB : Created. *
  *=============================================================================================*/
-long Translucent_Table_Size(int count) { return 256L + (256L * count); }
+int32_t Translucent_Table_Size(int count) { return 256 + (256 * count); }
 
 /***********************************************************************************************
  * Build_Translucent_Table -- Creates a translucent control table. *

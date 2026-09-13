@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_RADIO_H_
 #define CNC_RED_ALERT_TD_RADIO_H_
 
+#include <cstdint>
+
 #include "td/defines.h"
 #include "td/globals.h"
 #include "td/mission.h"
@@ -95,9 +97,9 @@ class RadioClass : public MissionClass {
 
   // Inherited from base class(es).
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
-                                   long& param) override;
+                                   int32_t& param) override;
   virtual RadioMessageType Transmit_Message(RadioMessageType message,
-                                            long& param = LParam,
+                                            int32_t& param = LParam,
                                             RadioClass* to = nullptr);
   virtual RadioMessageType Transmit_Message(RadioMessageType message,
                                             RadioClass* to);

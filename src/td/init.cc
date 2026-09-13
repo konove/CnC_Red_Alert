@@ -1959,7 +1959,7 @@ bool Select_Game(bool fade) {
 #ifdef FORCE_WINSOCK
   if (CommProtocol == COMM_PROTOCOL_MULTI_E_COMP && GameToPlay != GAME_NORMAL) {
     if (!Special.IsFromWChat) {
-      MPlayerMaxAhead = static_cast<int>(FrameSendRate * 3);  // 2;
+      MPlayerMaxAhead = FrameSendRate * 3;  // 2;
     } else {
       MPlayerMaxAhead = WChatMaxAhead;
       FrameSendRate = WChatSendRate;
@@ -2308,7 +2308,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     }
 
     bool processed = true;
-    switch (static_cast<unsigned long>(Obfuscate(string))) {
+    switch (Obfuscate(string)) {
       /*
       **	Signal that easy mode is active.
       */
@@ -2994,7 +2994,7 @@ void Load_Recording_Values() {
  *                                                                                             *
  * HISTORY: * 08/19/1995 JLB : Created. *
  *=============================================================================================*/
-long Obfuscate(const char* string) {
+uint32_t Obfuscate(const char* string) {
   char buffer[128];
 
   if (!string) {
@@ -3081,7 +3081,7 @@ long Obfuscate(const char* string) {
     auto temp = static_cast<unsigned char>(code);
     buffer[index] = static_cast<char>(buffer[index] ^ temp);
     code >>= 8;
-    code = static_cast<int>(code | static_cast<long>(temp) << 24);
+    code = static_cast<int>(code | static_cast<int32_t>(temp) << 24);
   }
 
   /*

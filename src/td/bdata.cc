@@ -3577,7 +3577,7 @@ const void* WarFactoryOverlay;
  *=============================================================================================*/
 BuildingTypeClass::BuildingTypeClass(
     StructType type, int name, const char* ininame, COORDINATE exitpoint,
-    unsigned char level, long pre, bool is_scanner, bool is_regulated,
+    unsigned char level, uint64_t pre, bool is_scanner, bool is_regulated,
     bool is_bibbed, bool is_nominal, bool is_wall, bool is_factory,
     bool is_captureable, bool is_flammable, bool is_simpledamage,
     bool is_stealthy, bool is_selectable, bool is_legal_target,
@@ -3586,7 +3586,7 @@ BuildingTypeClass::BuildingTypeClass(
     bool is_buildable, bool is_crew, bool is_sturdy, RTTIType tobuild,
     DirType sframe, int16_t strength, int sightrange, int cost, int scenario,
     int risk, int reward, int ownable, WeaponType primary, WeaponType secondary,
-    ArmorType armor, unsigned long canenter, int capacity, int power, int drain,
+    ArmorType armor, uint32_t canenter, int capacity, int power, int drain,
     BSizeType size, const int16_t* exitlist, const int16_t* sizelist,
     const int16_t* overlap) noexcept
     : TechnoTypeClass(

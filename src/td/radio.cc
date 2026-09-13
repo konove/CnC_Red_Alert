@@ -48,6 +48,8 @@
 */
 #include "td/radio.h"
 
+#include <cstdint>
+
 #include "td/config.h"
 #include "td/defines.h"
 #include "td/globals.h"
@@ -141,7 +143,7 @@ void RadioClass::Debug_Dump(MonoClass* mono) const {
  *=============================================================================================*/
 RadioMessageType RadioClass::Receive_Message(RadioClass* from,
                                              RadioMessageType message,
-                                             long& param) {
+                                             int32_t& param) {
   /*
   **	Keep a record of the last message received by this radio.
   */
@@ -198,7 +200,7 @@ RadioMessageType RadioClass::Receive_Message(RadioClass* from,
  * HISTORY: * 05/22/1995 JLB : Created. *
  *=============================================================================================*/
 RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
-                                              long& param, RadioClass* to) {
+                                              int32_t& param, RadioClass* to) {
   if (!to) {
     to = Contact_With_Whom();
   }

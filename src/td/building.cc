@@ -256,7 +256,7 @@ int BuildingClass::Validate() const {
  *=============================================================================================*/
 RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
                                                 RadioMessageType message,
-                                                long& param) {
+                                                int32_t& param) {
   Validate();
   switch (message) {
     /*
@@ -4246,7 +4246,7 @@ int BuildingClass::Mission_Repair() {
         if (IsReadyToCommence &&
             Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER) {
           IsReadyToCommence = false;
-          long param = Health_Ratio();
+          int32_t param = Health_Ratio();
           if (Transmit_Message(RADIO_REPAIR, param) != RADIO_ROGER) {
 #ifdef OBSOLETE
             if (House->Available_Money() < 10) {

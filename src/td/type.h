@@ -480,7 +480,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	multi-player or special events.
   */
   unsigned char Level;
-  long Pre;
+  uint64_t Pre;
 
   /*
   **	The risk and reward values are used to determine targets and paths
@@ -524,15 +524,15 @@ class TechnoTypeClass : public ObjectTypeClass {
   WeaponType Secondary;
 
   //--------------------------------------------------------------------
-  TechnoTypeClass(int name, const char* ininame, unsigned char level, long pre,
-                  bool is_leader, bool is_scanner, bool is_nominal,
-                  bool is_transporter, bool is_flammable, bool is_crushable,
-                  bool is_stealthy, bool is_selectable, bool is_legal_target,
-                  bool is_insignificant, bool is_immune, bool is_theater,
-                  bool is_twoshooter, bool is_turret_equipped,
+  TechnoTypeClass(int name, const char* ininame, unsigned char level,
+                  uint64_t pre, bool is_leader, bool is_scanner,
+                  bool is_nominal, bool is_transporter, bool is_flammable,
+                  bool is_crushable, bool is_stealthy, bool is_selectable,
+                  bool is_legal_target, bool is_insignificant, bool is_immune,
+                  bool is_theater, bool is_twoshooter, bool is_turret_equipped,
                   bool is_repairable, bool is_buildable, bool is_crew, int ammo,
-                  int16_t strength, MPHType maxspeed, int sightrange,
-                  int cost, int scenario, int risk, int reward, int ownable,
+                  int16_t strength, MPHType maxspeed, int sightrange, int cost,
+                  int scenario, int risk, int reward, int ownable,
                   WeaponType primary, WeaponType secondary,
                   ArmorType armor) noexcept;
 
@@ -646,7 +646,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	left by the unit type ID. If the corresponding bit is set, then that
   **	unit type can enter this building.
   */
-  unsigned long CanEnter;
+  uint32_t CanEnter;
 
   /*
   **	This is the starting facing to give this building when it first
@@ -701,7 +701,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   */
   BuildingTypeClass(
       StructType type, int name, const char* ininame, COORDINATE exitpoint,
-      unsigned char level, long pre, bool is_scanner, bool is_regulated,
+      unsigned char level, uint64_t pre, bool is_scanner, bool is_regulated,
       bool is_bibbed, bool is_nominal, bool is_wall, bool is_factory,
       bool is_captureable, bool is_flammable, bool is_simpledamage,
       bool is_stealthy, bool is_selectable, bool is_legal_target,
@@ -710,8 +710,8 @@ class BuildingTypeClass : public TechnoTypeClass {
       bool is_buildable, bool is_crew, bool is_sturdy, RTTIType tobuild,
       DirType sframe, int16_t strength, int sightrange, int cost, int scenario,
       int risk, int reward, int ownable, WeaponType primary,
-      WeaponType secondary, ArmorType armor, unsigned long canenter,
-      int capacity, int power, int drain, BSizeType size,
+      WeaponType secondary, ArmorType armor, uint32_t canenter, int capacity,
+      int power, int drain, BSizeType size,
       const int16_t* exitlist ABSL_ATTRIBUTE_LIFETIME_BOUND,
       const int16_t* sizelist ABSL_ATTRIBUTE_LIFETIME_BOUND,
       const int16_t* overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
@@ -923,19 +923,19 @@ class UnitTypeClass : public TechnoTypeClass {
   **	This is the explicit unit class constructor.
   */
   UnitTypeClass(UnitType type, int name, const char* ininame, AnimType exp,
-                unsigned char level, long pre, bool is_goodie, bool is_leader,
-                bool is_eight, bool is_nominal, bool is_transporter,
-                bool is_crushable, bool is_crusher, bool is_harvest,
-                bool is_stealthy, bool is_selectable, bool is_legal_target,
-                bool is_insignificant, bool is_immune, bool is_turret_equipped,
-                bool is_twoshooter, bool is_repairable, bool is_buildable,
-                bool is_crew, bool is_radar_equipped, bool is_fire_anim,
-                bool is_lock_turret, bool is_tracked, bool is_gigundo,
-                bool is_chunky, bool is_cloakable, bool is_animating, int ammo,
-                int16_t strength, int sightrange, int cost, int scenario,
-                int risk, int reward, int ownable, WeaponType primary,
-                WeaponType secondary, ArmorType armor, SpeedType speed,
-                MPHType maxSpeed, unsigned rot, int toffset,
+                unsigned char level, uint64_t pre, bool is_goodie,
+                bool is_leader, bool is_eight, bool is_nominal,
+                bool is_transporter, bool is_crushable, bool is_crusher,
+                bool is_harvest, bool is_stealthy, bool is_selectable,
+                bool is_legal_target, bool is_insignificant, bool is_immune,
+                bool is_turret_equipped, bool is_twoshooter, bool is_repairable,
+                bool is_buildable, bool is_crew, bool is_radar_equipped,
+                bool is_fire_anim, bool is_lock_turret, bool is_tracked,
+                bool is_gigundo, bool is_chunky, bool is_cloakable,
+                bool is_animating, int ammo, int16_t strength, int sightrange,
+                int cost, int scenario, int risk, int reward, int ownable,
+                WeaponType primary, WeaponType secondary, ArmorType armor,
+                SpeedType speed, MPHType maxSpeed, unsigned rot, int toffset,
                 MissionType order) noexcept;
   [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_UNITTYPE; }
 
@@ -1038,12 +1038,12 @@ class InfantryTypeClass : public TechnoTypeClass {
   **	This is the explicit unit class constructor.
   */
   InfantryTypeClass(InfantryType type, int name, const char* ininame,
-                    unsigned char level, long pre, bool is_female,
+                    unsigned char level, uint64_t pre, bool is_female,
                     bool is_leader, bool is_crawling, bool is_civilian,
                     bool is_nominal, bool is_fraidycat, bool is_capture,
                     bool is_theater, int ammo, int* do_table, int firelaunch,
-                    int pronelaunch, int16_t strength, int sightrange,
-                    int cost, int scenario, int risk, int reward, int ownable,
+                    int pronelaunch, int16_t strength, int sightrange, int cost,
+                    int scenario, int risk, int reward, int ownable,
                     WeaponType primary, WeaponType secondary,
                     MPHType maxSpeed) noexcept;
   [[nodiscard]] RTTIType What_Am_I() const override {
@@ -1603,7 +1603,7 @@ class AircraftTypeClass : public TechnoTypeClass {
   MissionType Mission;
 
   AircraftTypeClass(AircraftType airtype, int name, const char* ininame,
-                    unsigned char level, long pre, bool is_leader,
+                    unsigned char level, uint64_t pre, bool is_leader,
                     bool is_twoshooter, bool is_transporter, bool is_fixedwing,
                     bool is_rotorequipped, bool is_rotorcustom,
                     bool is_landable, bool is_crushable, bool is_stealthy,

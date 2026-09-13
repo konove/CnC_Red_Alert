@@ -207,7 +207,7 @@ class InfantryClass final : public FootClass {
   FireErrorType Can_Fire(TARGET target, int which) const override;
   void Assign_Target(TARGET /*target*/) override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
-                                   long& param) override;
+                                   int32_t& param) override;
   int Rearm_Delay(bool second) const override;
   void Set_Occupy_Bit(COORDINATE coord) {
     Set_Occupy_Bit(Coord_Cell(coord), CellClass::Spot_Index(coord));

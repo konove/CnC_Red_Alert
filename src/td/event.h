@@ -182,7 +182,7 @@ class EventClass {
     ** Delay: sender's propogation delay value for this frame
     */
     struct {
-      unsigned long CRC;
+      uint32_t CRC;
       uint16_t CommandCount;        // # commands sent so far
       unsigned char Delay;          // propogation delay used this frame
                             // (Frame - Delay = sender's current frame #)

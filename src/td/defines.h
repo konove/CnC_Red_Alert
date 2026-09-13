@@ -2435,7 +2435,7 @@ typedef struct {
   int Seed;                             // random number seed
   SpecialClass Special;                 // command-line options
   unsigned int GameSpeed;               // Game Speed
-  unsigned long ResponseTime;           // packet response time
+  uint32_t ResponseTime;                // packet response time
   char Message[COMPAT_MESSAGE_LENGTH];  // inter-player message
   unsigned char ID;                     // ID of sender of message
 } SerialPacketType;
@@ -2486,7 +2486,7 @@ typedef struct {
     struct {
       HousesType House;       // player's House
       unsigned int Color;     // player's color
-      unsigned long NameCRC;  // CRC of player's game's name
+      uint32_t NameCRC;       // CRC of player's game's name
     } PlayerInfo;
     struct {
       unsigned char Scenario;       // Scenario #
@@ -2504,7 +2504,7 @@ typedef struct {
     struct {
       char Buf[COMPAT_MESSAGE_LENGTH];  // inter-user message
       unsigned char ID;                 // ID of sender of message
-      unsigned long NameCRC;            // CRC of sender's Game Name
+      uint32_t NameCRC;                 // CRC of sender's Game Name
     } Message;
     struct {
       int OneWay;  // one-way response time

@@ -44,6 +44,8 @@
 class ArchiveReader;
 class ArchiveWriter;
 
+#include <cstdint>
+
 #include "absl/base/attributes.h"
 #include "td/building.h"
 #include "td/defines.h"
@@ -261,7 +263,7 @@ class CellClass {
   /*
   **	Maintenance calculation support.
   */
-  long Tiberium_Adjust(bool pregame = false);
+  int32_t Tiberium_Adjust(bool pregame = false);
   void Wall_Update();
   void Concrete_Calc();
   void Recalc_Attributes();

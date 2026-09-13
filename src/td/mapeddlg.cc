@@ -50,6 +50,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -1688,9 +1689,9 @@ int MapEditClass::Scenario_Dialog() {
   */
   TheaterType theater;       // DisplayClass::Theater
   TheaterType orig_theater;  // original theater
-  long gdi_credits;          // HouseClass::As_Pointer(HouseType)->Credits
-  long nod_credits;          // HouseClass::As_Pointer(HouseType)->Credits
-  long neut_credits;         // HouseClass::As_Pointer(HouseType)->Credits
+  int64_t gdi_credits;       // HouseClass::As_Pointer(HouseType)->Credits
+  int64_t nod_credits;       // HouseClass::As_Pointer(HouseType)->Credits
+  int64_t neut_credits;      // HouseClass::As_Pointer(HouseType)->Credits
   SourceType gdi_edge;       // HouseClass::As_Pointer(HouseType)->Edge
   SourceType nod_edge;       // HouseClass::As_Pointer(HouseType)->Edge
   char level_buf[10] = {0};

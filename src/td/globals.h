@@ -26,7 +26,7 @@ extern bool GameInFocus;
 extern int ScreenWidth;
 extern int ScreenHeight;
 extern bool GameActive;
-extern long LParam;
+extern int32_t LParam;
 extern GraphicViewPortClass SeenBuff;
 extern SpecialClass Special;
 

@@ -59,6 +59,7 @@
 #include "td/credits.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdlib>
 
 #include "sdllib/gbuffer.h"
@@ -169,7 +170,7 @@ void CreditClass::AI(bool forced) {
     **	Determine the amount to change the display toward the
     **	desired value.
     */
-    long adder = Credits - Current;
+    int64_t adder = Credits - Current;
     adder = std::abs(adder);
     adder >>= 5;
     adder = Bound(static_cast<int>(adder), 1L, 71 + 72);

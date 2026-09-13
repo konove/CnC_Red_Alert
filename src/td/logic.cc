@@ -42,6 +42,7 @@
 #include "td/logic.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstring>
 
 #include "rand.h"
@@ -153,7 +154,7 @@ void LogicClass::Debug_Dump(MonoClass* mono) {
   /*
   **	Fill in the data for the current frame's performance record.
   */
-  SpareTicks = std::min(SpareTicks, (long)kTimerSecond);
+  SpareTicks = std::min(SpareTicks, (int64_t)kTimerSecond);
   _record[RECORDCOUNT - 1].Graphic = Fixed_To_Cardinal(
       RECORDHEIGHT, Cardinal_To_Fixed(kTimerSecond, static_cast<int>(SpareTicks)));
 

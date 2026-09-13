@@ -45,6 +45,7 @@ class ArchiveReader;
 class ArchiveWriter;
 
 #include <cstddef>
+#include <cstdint>
 
 #include "absl/base/attributes.h"
 #include "td/bullet.h"
@@ -282,7 +283,7 @@ class BuildingClass final : public TechnoClass {
   void Repair(int control) override;
   void Sell_Back(int control) override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
-                                   long& param) override;
+                                   int32_t& param) override;
   void AI() override;
   void Assign_Target(TARGET target) override;
   bool Toggle_Primary();

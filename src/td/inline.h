@@ -103,11 +103,11 @@ inline COORDINATE Cell_Coord(CELL cell) {
                static_cast<uint16_t>((((cell & 0x003F) << 1) + 1) << 7)));
 }
 inline COORDINATE XYPixel_Coord(int x, int y) {
-  return static_cast<COORDINATE>(
-      MakeLong(static_cast<uint16_t>((long)y * (long)ICON_LEPTON_H /
-                                     (long)ICON_PIXEL_H) /*+LEPTON_OFFSET_Y*/,
-               static_cast<uint16_t>((long)x * (long)ICON_LEPTON_W /
-                                     (long)ICON_PIXEL_W) /*+LEPTON_OFFSET_X*/));
+  return static_cast<COORDINATE>(MakeLong(
+      static_cast<uint16_t>((int32_t)y * (int32_t)ICON_LEPTON_H /
+                            (int32_t)ICON_PIXEL_H) /*+LEPTON_OFFSET_Y*/,
+      static_cast<uint16_t>((int32_t)x * (int32_t)ICON_LEPTON_W /
+                            (int32_t)ICON_PIXEL_W) /*+LEPTON_OFFSET_X*/));
 }
 inline int Facing_To_32(DirType facing) { return Facing32[facing]; }
 inline DirType Direction256(COORDINATE coord1, COORDINATE coord2) {

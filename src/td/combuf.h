@@ -112,7 +112,7 @@ class CommBufferClass {
   int Num_Send() { return SendCount; }  // # entries in queue
   int Max_Send() { return MaxSend; }    // max # send queue entries
   SendQueueType* Get_Send(int index);   // random access to queue
-  unsigned long Send_Total() { return SendTotal; }
+  uint32_t Send_Total() { return SendTotal; }
 
   /*
   ....................... Receive Queue routines ........................
@@ -123,7 +123,7 @@ class CommBufferClass {
   int Num_Receive() { return ReceiveCount; }  // # entries in queue
   int Max_Receive() { return MaxReceive; }    // max # recv queue entries
   ReceiveQueueType* Get_Receive(int index);   // random access to queue
-  unsigned long Receive_Total() { return ReceiveTotal; }
+  uint32_t Receive_Total() { return ReceiveTotal; }
 
   /*
   ....................... Response time routines ........................
@@ -164,7 +164,7 @@ class CommBufferClass {
   */
   SendQueueType* SendQueue;  // incoming packets
   int SendCount = 0;         // # packets in the queue
-  unsigned long SendTotal = 0;  // total # added to send queue
+  uint32_t SendTotal = 0;    // total # added to send queue
   int* SendIndex;            // array of Send entry indices
 
   /*
@@ -172,7 +172,7 @@ class CommBufferClass {
   */
   ReceiveQueueType* ReceiveQueue;  // outgoing packets
   int ReceiveCount = 0;            // # packets in the queue
-  unsigned long ReceiveTotal = 0;  // total # added to receive queue
+  uint32_t ReceiveTotal = 0;       // total # added to receive queue
   int* ReceiveIndex;               // array of Receive entry indices
 
   /*

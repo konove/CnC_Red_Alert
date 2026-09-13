@@ -4037,7 +4037,7 @@ int Com_Scenario_Dialog() {
         If 'input' returned 3, it means send the current message.
         ...............................................................*/
         else if (i == 3) {
-          long actual_message_size;
+          int32_t actual_message_size;
           char* the_string;
 
           sent_so_far = 0;
@@ -4099,7 +4099,8 @@ int Com_Scenario_Dialog() {
                 magic_number, crc);
 
             magic_number++;
-            sent_so_far = static_cast<int>(sent_so_far + actual_message_size);  // COMPAT_MESSAGE_LENGTH-5;
+            sent_so_far =
+                sent_so_far + actual_message_size;  // COMPAT_MESSAGE_LENGTH-5;
           }
 
           display = std::max(display, REDRAW_MESSAGE);
@@ -4186,7 +4187,7 @@ int Com_Scenario_Dialog() {
     if (TickCount.Time() - timingtime > PACKET_TIMING_TIMEOUT) {
       SendPacket.Command = SERIAL_TIMING;
       SendPacket.ResponseTime =
-        static_cast<unsigned long>(NullModem.Response_Time());
+          static_cast<uint32_t>(NullModem.Response_Time());
       SendPacket.ID = ModemGameToPlay;
 
       NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 0);
@@ -4438,8 +4439,7 @@ int Com_Scenario_Dialog() {
     Send all players the GO packet.
     .....................................................................*/
     SendPacket.Command = SERIAL_GO;
-    SendPacket.ResponseTime =
-        static_cast<unsigned long>(NullModem.Response_Time());
+    SendPacket.ResponseTime = static_cast<uint32_t>(NullModem.Response_Time());
     if (theirresponsetime == 10000) {
       //			Mono_Clear_Screen();
       //			Smart_Printf( "Did not receive their response
@@ -5236,7 +5236,7 @@ int Com_Show_Scenario_Dialog() {
               If 'input' returned 3, it means send the current message.
               ...............................................................*/
               if (i == 3) {
-                long actual_message_size;
+                int32_t actual_message_size;
                 char* the_string;
 
                 sent_so_far = 0;
@@ -5353,7 +5353,7 @@ int Com_Show_Scenario_Dialog() {
     if (TickCount.Time() - timingtime > PACKET_TIMING_TIMEOUT) {
       SendPacket.Command = SERIAL_TIMING;
       SendPacket.ResponseTime =
-        static_cast<unsigned long>(NullModem.Response_Time());
+          static_cast<uint32_t>(NullModem.Response_Time());
       SendPacket.ID = ModemGameToPlay;
 
       NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 0);

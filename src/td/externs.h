@@ -207,13 +207,13 @@ extern std::span<const std::byte> SystemStrings;
 */
 extern HousesType Whom;
 extern VQAConfig AnimControl;
-extern long SpareTicks;
+extern int64_t SpareTicks;
 extern int MonoPage;
 extern unsigned char* OriginalPalette;
 extern int EndCountDown;
 extern bool SpecialFlag;
 extern int ScenarioInit;
-extern long TutorFlags[2];
+extern int32_t TutorFlags[2];
 extern HouseClass* PlayerPtr;
 extern unsigned char* BlackPalette;
 extern unsigned char* WhitePalette;
@@ -228,7 +228,7 @@ extern int CarryOverCap;
 extern int CarryOverPercent;
 extern char ScenarioName[kMaxFname + kMaxExt];
 extern int BuildLevel;
-extern unsigned long ScenarioCRC;
+extern uint32_t ScenarioCRC;
 
 extern CELL CurrentCell;
 
@@ -286,7 +286,7 @@ extern int MPlayerUnitCount;
 extern int MPlayerCountMin[2];
 extern int MPlayerCountMax[2];
 extern int MPlayerMaxAhead;
-extern long FrameSendRate;
+extern int32_t FrameSendRate;
 extern unsigned char MPlayerID[MAX_PLAYERS];
 extern HousesType MPlayerHouses[MAX_PLAYERS];
 extern char MPlayerNames[MAX_PLAYERS][MPLAYER_NAME_MAX];
@@ -319,7 +319,7 @@ typedef struct {
   } Ptr;
 } TrapObjectType;
 
-extern long TrapFrame;
+extern int32_t TrapFrame;
 extern RTTIType TrapObjType;
 extern TrapObjectType TrapObject;
 extern COORDINATE TrapCoord;
@@ -348,7 +348,7 @@ extern DynamicVectorClass<NodeNameType*> Games;
 extern DynamicVectorClass<NodeNameType*> Players;
 
 extern int Seed;
-extern long* RandSeedPtr;
+extern int32_t* RandSeedPtr;
 extern int CustomSeed;
 extern int NewMaxAheadFrame1;
 extern int NewMaxAheadFrame2;

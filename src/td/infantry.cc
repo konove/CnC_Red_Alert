@@ -2744,7 +2744,7 @@ COORDINATE InfantryClass::Fire_Coord(int /*unused*/) const {
  *=========================================================================*/
 RadioMessageType InfantryClass::Receive_Message(RadioClass* from,
                                                 RadioMessageType message,
-                                                long& param) {
+                                                int32_t& param) {
   Validate();
   int damage;
 

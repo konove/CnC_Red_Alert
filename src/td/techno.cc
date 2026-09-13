@@ -213,7 +213,7 @@ const int TechnoClass::BodyShape[32] = {
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
 TechnoTypeClass::TechnoTypeClass(
-    int name, const char* ininame, unsigned char level, long pre,
+    int name, const char* ininame, unsigned char level, uint64_t pre,
     bool is_leader, bool is_scanner, bool is_nominal, bool is_transporter,
     bool is_flammable, bool is_crushable, bool is_stealthy, bool is_selectable,
     bool is_legal_target, bool is_insignificant, bool is_immune,
@@ -637,7 +637,7 @@ bool TechnoClass::Mark(MarkType mark) {
  *=============================================================================================*/
 RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
                                               RadioMessageType message,
-                                              long& param) {
+                                              int32_t& param) {
   switch (message) {
     /*
     **	Just received instructions to attack the specified target.
@@ -3495,7 +3495,7 @@ void TechnoClass::Base_Is_Attacked(const TechnoClass* enemy) {
   }
 
   if (risktotal > desired) {
-    ((FootClass*)enemy)->BaseAttackTimer.Set(static_cast<long>(15) * 15);
+    ((FootClass*)enemy)->BaseAttackTimer.Set(int64_t{15} * 15);
   }
 }
 

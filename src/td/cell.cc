@@ -86,6 +86,7 @@
 
 #include <cassert>
 #include <cstddef>
+#include <cstdint>
 #include <iterator>
 #include <utility>
 
@@ -213,7 +214,7 @@ TechnoClass* CellClass::Cell_Techno(int x, int y) const {
   ObjectClass* object;
   COORDINATE click;  // Coordinate of click relative to cell corner.
   TechnoClass* close = nullptr;
-  long distance = 0;  // Recorded closest distance.
+  int32_t distance = 0;  // Recorded closest distance.
 
   /*
   **	Create a coordinate value that represent the pixel location within the
@@ -227,7 +228,7 @@ TechnoClass* CellClass::Cell_Techno(int x, int y) const {
     while (object) {
       if (object->Is_Techno()) {
         COORDINATE coord;  // Coordinate relative to cell corner.
-        long dist;
+        int32_t dist;
 
         coord = object->Center_Coord() & 0x00FF00FFL;
         dist = Distance(coord, click);
@@ -1804,7 +1805,7 @@ void CellClass::Adjust_Threat(HousesType house, int threat_value) {
  *                                                                                             *
  * HISTORY: * 05/16/1995 JLB : Created. *
  *=============================================================================================*/
-long CellClass::Tiberium_Adjust(bool pregame) {
+int32_t CellClass::Tiberium_Adjust(bool pregame) {
   Validate();
   if ((Overlay != OVERLAY_NONE) &&
       (OverlayTypeClass::As_Reference(Overlay).Land == LAND_TIBERIUM)) {
@@ -1832,7 +1833,8 @@ long CellClass::Tiberium_Adjust(bool pregame) {
     }
 
     OverlayData = static_cast<unsigned char>(_adj[count]);
-    return (static_cast<long>(OverlayData + 1)) * UnitTypeClass::TIBERIUM_STEP;
+    return (static_cast<int32_t>(OverlayData + 1)) *
+           UnitTypeClass::TIBERIUM_STEP;
   }
 
   return 0;

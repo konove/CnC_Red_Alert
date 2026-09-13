@@ -88,7 +88,7 @@
 */
 char PlanetWestwoodIPAddress[IP_ADDRESS_MAX] = {
     "206.154.108.87"};                 // IP of server or other player
-long PlanetWestwoodPortNumber = 1234;  // Port number to send to
+int32_t PlanetWestwoodPortNumber = 1234;  // Port number to send to
 bool PlanetWestwoodIsHost =
     false;  // Flag true if player has control of game options
 uint32_t PlanetWestwoodGameID;     // Game ID

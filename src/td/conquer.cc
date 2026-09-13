@@ -928,7 +928,7 @@ static void Message_Input(KeyNumType& input) {
 
     message_length = static_cast<int>(strlen(Messages.Get_Edit_Buf()));
 
-    long actual_message_size;
+    int32_t actual_message_size;
     char* the_string;
 
     /*
@@ -988,8 +988,8 @@ static void Message_Input(KeyNumType& input) {
         NullModem.Send_Message(NullModem.BuildBuf, sizeof(SerialPacketType), 1);
 
         magic_number++;
-        sent_so_far = static_cast<int>(
-            sent_so_far + actual_message_size);  // COMPAT_MESSAGE_LENGTH-5;
+        sent_so_far =
+            sent_so_far + actual_message_size;  // COMPAT_MESSAGE_LENGTH-5;
       }
 
     } else {
@@ -1064,8 +1064,8 @@ static void Message_Input(KeyNumType& input) {
           }
 
           magic_number++;
-          sent_so_far = static_cast<int>(
-              sent_so_far + actual_message_size);  // COMPAT_MESSAGE_LENGTH-5;
+          sent_so_far =
+              sent_so_far + actual_message_size;  // COMPAT_MESSAGE_LENGTH-5;
         }
       }
     }
@@ -3281,9 +3281,9 @@ static void Do_Record_Playback() {
   int i;
   COORDINATE coord;
   ObjectClass* obj;
-  unsigned long sum;
-  unsigned long sum2;
-  unsigned long ltgt;
+  uint32_t sum;
+  uint32_t sum2;
+  uint32_t ltgt;
 
   /*------------------------------------------------------------------------
   Record a game
@@ -3314,7 +3314,7 @@ static void Do_Record_Playback() {
     .....................................................................*/
     sum = 0;
     for (i = 0; i < count; i++) {
-      ltgt = static_cast<unsigned long>(CurrentObject[i]->As_Target());
+      ltgt = static_cast<uint32_t>(CurrentObject[i]->As_Target());
       sum += ltgt;
     }
     RecordFile.Write(&sum, sizeof(sum));
@@ -3353,7 +3353,7 @@ static void Do_Record_Playback() {
       ..................................................................*/
       sum = 0;
       for (i = 0; i < CurrentObject.Count(); i++) {
-        ltgt = static_cast<unsigned long>(CurrentObject[i]->As_Target());
+        ltgt = static_cast<uint32_t>(CurrentObject[i]->As_Target());
         sum += ltgt;
       }
 
