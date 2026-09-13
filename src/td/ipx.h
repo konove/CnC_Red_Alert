@@ -39,6 +39,8 @@
 #ifndef CNC_RED_ALERT_TD_IPX_H_
 #define CNC_RED_ALERT_TD_IPX_H_
 
+#include <cstdint>
+
 /*
 ******************************** Structures *********************************
 */
@@ -53,16 +55,16 @@ field; annotation of 'APP' means the application must set the field.
 NOTE: All header fields are ordered high-byte,low-byte.
 ---------------------------------------------------------------------------*/
 typedef struct IPXHEADER {
-  unsigned short CheckSum;               // IPX: Not used; always 0xffff
-  unsigned short Length;                 // IPX: Total size, incl header & data
+  uint16_t CheckSum;                     // IPX: Not used; always 0xffff
+  uint16_t Length;                       // IPX: Total size, incl header & data
   unsigned char TransportControl;        // IPX: # bridges message crossed
   unsigned char PacketType;              // APP: Set to 4 for IPX (5 for SPX)
   unsigned char DestNetworkNumber[4];    // APP: destination Network Number
   unsigned char DestNetworkNode[6];      // APP: destination Node Address
-  unsigned short DestNetworkSocket;      // APP: destination Socket Number
+  uint16_t DestNetworkSocket;            // APP: destination Socket Number
   unsigned char SourceNetworkNumber[4];  // IPX: source Network Number
   unsigned char SourceNetworkNode[6];    // IPX: source Node Address
-  unsigned short SourceNetworkSocket;    // IPX: source Socket Number
+  uint16_t SourceNetworkSocket;          // IPX: source Socket Number
 } IPXHeaderType;
 
 /*---------------------------------------------------------------------------
@@ -75,15 +77,15 @@ typedef struct ECB {
   void (*Event_Service_Routine)();  // APP: event handler (NULL=none)
   unsigned char InUse;              // IPX: 0 = event complete
   unsigned char CompletionCode;     // IPX: event's return code
-  unsigned short SocketNumber;      // APP: socket to send data through
-  unsigned short ConnectionID;      // returned by Listen (???)
-  unsigned short RestOfWorkspace;
+  uint16_t SocketNumber;            // APP: socket to send data through
+  uint16_t ConnectionID;            // returned by Listen (???)
+  uint16_t RestOfWorkspace;
   unsigned char DriverWorkspace[12];
   unsigned char ImmediateAddress[6];  // returned by Get_Local_Target
-  unsigned short PacketCount;
+  uint16_t PacketCount;
   struct {
     void* Address;
-    unsigned short Length;
+    uint16_t Length;
   } Packet[2];
 } ECBType;
 
@@ -100,15 +102,15 @@ typedef struct {
   long edx;
   long ecx;
   long eax;
-  short Flags;
-  short es;
-  short ds;
-  short fs;
-  short gs;
-  short ip;
-  short cs;
-  short sp;
-  short ss;
+  int16_t Flags;
+  int16_t es;
+  int16_t ds;
+  int16_t fs;
+  int16_t gs;
+  int16_t ip;
+  int16_t cs;
+  int16_t sp;
+  int16_t ss;
 } RMIType;
 
 /*
@@ -171,8 +173,8 @@ error codes if there's an error, EXCEPT:
 .................................. ipx.cpp ..................................
 */
 int IPX_SPX_Installed();
-int IPX_Open_Socket(unsigned short socket);
-int IPX_Close_Socket(unsigned short socket);
+int IPX_Open_Socket(uint16_t socket);
+int IPX_Close_Socket(uint16_t socket);
 int IPX_Get_Connection_Number();
 int IPX_Get_1st_Connection_Num(char* username);
 int IPX_Get_Internet_Address(int connection_number,
@@ -182,8 +184,7 @@ int IPX_Get_User_ID(int connection_number, char* user_id);
 int IPX_Listen_For_Packet(struct ECB* ecb_ptr);
 void IPX_Send_Packet(struct ECB* ecb_ptr);
 int IPX_Get_Local_Target(unsigned char* dest_network, unsigned char* dest_node,
-                         unsigned short dest_socket,
-                         unsigned char* bridge_address);
+                         uint16_t dest_socket, unsigned char* bridge_address);
 int IPX_Cancel_Event(struct ECB* ecb_ptr);
 void Let_IPX_Breath();
 

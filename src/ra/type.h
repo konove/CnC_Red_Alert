@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_RA_TYPE_H_
 
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 #include <memory>
 #include <span>
@@ -327,8 +328,9 @@ class ObjectTypeClass : public AbstractTypeClass {
   [[nodiscard]] virtual int Cost_Of() const;
   [[nodiscard]] virtual int Time_To_Build() const;
   virtual ObjectClass* Create_One_Of(HouseClass*) const = 0;
-  [[nodiscard]] virtual const short* Occupy_List(bool placement = false) const;
-  [[nodiscard]] virtual const short* Overlap_List() const;
+  [[nodiscard]] virtual const int16_t* Occupy_List(
+      bool placement = false) const;
+  [[nodiscard]] virtual const int16_t* Overlap_List() const;
   [[nodiscard]] virtual BuildingClass* Who_Can_Build_Me(bool intheory,
                                                         bool legal,
                                                         HousesType house) const;
@@ -736,7 +738,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   *that are *	more suitable than others. This list is here to inform the
   *system which *	directions those are.
   */
-  const short* ExitList;
+  const int16_t* ExitList;
 
   /*
   **	This is the structure type identifier. It can serve as a unique
@@ -797,9 +799,9 @@ class BuildingTypeClass : public TechnoTypeClass {
       bool is_selectable, bool is_legal_target, bool is_insignificant,
       bool is_theater, bool is_turret_equipped, bool is_remappable,
       RTTIType tobuild, DirType sframe, BSizeType size,
-      const short* exitlist ABSL_ATTRIBUTE_LIFETIME_BOUND,
-      const short* sizelist ABSL_ATTRIBUTE_LIFETIME_BOUND,
-      const short* overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
+      const int16_t* exitlist ABSL_ATTRIBUTE_LIFETIME_BOUND,
+      const int16_t* sizelist ABSL_ATTRIBUTE_LIFETIME_BOUND,
+      const int16_t* overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
   // objects compare directly against their type ID.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator StructType() const { return Type; }
@@ -832,8 +834,9 @@ class BuildingTypeClass : public TechnoTypeClass {
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
-  [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
-  [[nodiscard]] const short* Overlap_List() const override;
+  [[nodiscard]] const int16_t* Occupy_List(
+      bool placement = false) const override;
+  [[nodiscard]] const int16_t* Overlap_List() const override;
   [[nodiscard]] virtual const void* Get_Buildup_Data() const {
     return BuildupData;
   }
@@ -856,7 +859,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	are used to indicate the building's "footprint". This footprint is used
   **	to determine building placement legality and terrain passibility.
   */
-  const short* OccupyList;
+  const int16_t* OccupyList;
 
   /*
   **	Buildings can often times overlap a cell but not actually "occupy" it
@@ -864,7 +867,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   *indicate which *	cells the building has visual overlap but does not
   *occupy.
   */
-  const short* OverlapList;
+  const int16_t* OverlapList;
 
   /*
   **	The construction animation graphic data pointer is
@@ -1111,7 +1114,7 @@ class VesselTypeClass : public TechnoTypeClass {
   bool Create_And_Place(CELL cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
   [[nodiscard]] int Max_Pips() const override;
-  [[nodiscard]] const short* Overlap_List() const override;
+  [[nodiscard]] const int16_t* Overlap_List() const override;
 
   void Turret_Adjust(DirType dir, int& x, int& y) const;
 
@@ -1249,7 +1252,8 @@ class InfantryTypeClass : public TechnoTypeClass {
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
-  [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
+  [[nodiscard]] const int16_t* Occupy_List(
+      bool placement = false) const override;
   [[nodiscard]] int Full_Name() const override;
 
   void Display(int x, int y, WindowNumberType window,
@@ -1339,8 +1343,9 @@ class AircraftTypeClass : public TechnoTypeClass {
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL /*unused*/, HousesType /*unused*/) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
-  [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
-  [[nodiscard]] const short* Overlap_List() const override;
+  [[nodiscard]] const int16_t* Occupy_List(
+      bool placement = false) const override;
+  [[nodiscard]] const int16_t* Overlap_List() const override;
   [[nodiscard]] int Max_Pips() const override;
 
   void Display(int x, int y, WindowNumberType window,
@@ -1558,11 +1563,11 @@ class TerrainTypeClass : public ObjectTypeClass {
   unsigned IsWaterBased : 1;
 
   //----------------------------------------------------------------
-  TerrainTypeClass(TerrainType terrain, int theater, COORDINATE centerbase,
-                   bool is_immune, bool is_water, const char* ininame,
-                   int fullname,
-                   const short* occupy ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                   const short* overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
+  TerrainTypeClass(
+      TerrainType terrain, int theater, COORDINATE centerbase, bool is_immune,
+      bool is_water, const char* ininame, int fullname,
+      const int16_t* occupy ABSL_ATTRIBUTE_LIFETIME_BOUND,
+      const int16_t* overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
 
   void* operator new(size_t /*unused*/) noexcept;
   void* operator new(size_t /*unused*/,
@@ -1583,15 +1588,16 @@ class TerrainTypeClass : public ObjectTypeClass {
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
-  [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
-  [[nodiscard]] const short* Overlap_List() const override;
+  [[nodiscard]] const int16_t* Occupy_List(
+      bool placement = false) const override;
+  [[nodiscard]] const int16_t* Overlap_List() const override;
 
   void Display(int x, int y, WindowNumberType window,
                HousesType house = HOUSE_NONE) const override;
 
  private:
-  const short* Occupy;
-  const short* Overlap;
+  const int16_t* Occupy;
+  const int16_t* Overlap;
 };
 
 /****************************************************************************
@@ -1643,7 +1649,8 @@ class TemplateTypeClass : public ObjectTypeClass {
   bool Create_And_Place(CELL cell,
                         HousesType house = HOUSE_NONE) const override;
   ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
-  [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
+  [[nodiscard]] const int16_t* Occupy_List(
+      bool placement = false) const override;
   [[nodiscard]] LandType Land_Type(int icon) const;
 
   void Display(int x, int y, WindowNumberType window,
@@ -1931,7 +1938,8 @@ class OverlayTypeClass : public ObjectTypeClass {
   bool Create_And_Place(CELL cell,
                         HousesType house = HOUSE_NONE) const override;
   ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
-  [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
+  [[nodiscard]] const int16_t* Occupy_List(
+      bool placement = false) const override;
   virtual void Draw_It(int x, int y, int data) const;
   [[nodiscard]] virtual unsigned char* Radar_Icon(int data) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
@@ -1996,8 +2004,9 @@ class SmudgeTypeClass : public ObjectTypeClass {
   bool Create_And_Place(CELL cell,
                         HousesType house = HOUSE_NONE) const override;
   ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
-  [[nodiscard]] const short* Occupy_List(bool placement = false) const override;
-  [[nodiscard]] const short* Overlap_List() const override {
+  [[nodiscard]] const int16_t* Occupy_List(
+      bool placement = false) const override;
+  [[nodiscard]] const int16_t* Overlap_List() const override {
     return Occupy_List();
   }
   virtual void Draw_It(int x, int y, int data) const;

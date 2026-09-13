@@ -1,3 +1,5 @@
+#include <cstdint>
+
 #include "td/ipx95.h"
 
 bool __stdcall IPX_Initialise() { return false; }
@@ -30,7 +32,7 @@ int __stdcall IPX_Get_Connection_Number95() { return 0; }
 
 int __stdcall IPX_Get_Local_Target95(unsigned char* /*unused*/,
                                      unsigned char* /*unused*/,
-                                     unsigned short /*unused*/,
+                                     uint16_t /*unused*/,
                                      unsigned char* /*unused*/) {
   return 0;
 }

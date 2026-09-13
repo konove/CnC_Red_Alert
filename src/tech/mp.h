@@ -45,7 +45,7 @@
 
 #include "tech/straw.h"
 
-extern unsigned short primeTable[3511];
+extern uint16_t primeTable[3511];
 
 // #define uint32_t uint32_t
 // #define signeddigit int32_t
@@ -79,18 +79,17 @@ bool XMP_Add_Int(uint32_t* result, const uint32_t* left_number,
 bool XMP_Sub(uint32_t* result, const uint32_t* left_number,
              const uint32_t* right_number, bool borrow, int precision);
 bool XMP_Sub_Int(uint32_t* result, const uint32_t* left_number,
-                 unsigned short right_number, bool borrow, int precision);
+                 uint16_t right_number, bool borrow, int precision);
 int XMP_Unsigned_Mult(uint32_t* prod, const uint32_t* multiplicand,
                       const uint32_t* multiplier, int precision);
 int XMP_Unsigned_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
                           uint16_t multiplier, int precision);
 int XMP_Signed_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
-                        signed short multiplier, int precision);
+                        int16_t multiplier, int precision);
 int XMP_Signed_Mult(uint32_t* prod, const uint32_t* multiplicand,
                     const uint32_t* multiplier, int precision);
-unsigned short XMP_Unsigned_Div_Int(uint32_t* quotient,
-                                    const uint32_t* dividend,
-                                    unsigned short divisor, int precision);
+uint16_t XMP_Unsigned_Div_Int(uint32_t* quotient, const uint32_t* dividend,
+                              uint16_t divisor, int precision);
 int XMP_Unsigned_Div(uint32_t* remainder, uint32_t* quotient,
                      const uint32_t* dividend, const uint32_t* divisor,
                      int precision);
@@ -99,15 +98,15 @@ void XMP_Signed_Div(uint32_t* remainder, uint32_t* quotient,
                     int precision);
 int XMP_Reciprocal(uint32_t* quotient, const uint32_t* divisor, int precision);
 void XMP_Decode_ASCII(const char* str, uint32_t* mpn, int precision);
-void xmp_single_mul(unsigned short* prod, unsigned short* multiplicand,
-                    unsigned short multiplier, int precision);
+void xmp_single_mul(uint16_t* prod, uint16_t* multiplicand, uint16_t multiplier,
+                    int precision);
 void XMP_Double_Mul(uint32_t* prod, const uint32_t* multiplicand,
                     const uint32_t* multiplier, int precision);
 int xmp_stage_modulus(const uint32_t* n_modulus, int precision);
 int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
                  const uint32_t* multiplier, int precision);
 void XMP_Mod_Mult_Clear(int precision);
-unsigned short mp_quo_digit(const unsigned short* dividend);
+uint16_t mp_quo_digit(const uint16_t* dividend);
 int xmp_exponent_mod(uint32_t* expout, const uint32_t* expin,
                      const uint32_t* exponent_ptr, const uint32_t* modulus,
                      int precision);

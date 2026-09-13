@@ -151,6 +151,7 @@
 #include "ra/house.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <iterator>
@@ -6639,19 +6640,19 @@ CELL HouseClass::Zone_Cell(ZoneType zone) const {
 
     case ZONE_NORTH:
       return Coord_Cell(
-          Coord_Move(Center, DIR_N, static_cast<unsigned short>(Radius * 3)));
+          Coord_Move(Center, DIR_N, static_cast<uint16_t>(Radius * 3)));
 
     case ZONE_EAST:
       return Coord_Cell(
-          Coord_Move(Center, DIR_E, static_cast<unsigned short>(Radius * 3)));
+          Coord_Move(Center, DIR_E, static_cast<uint16_t>(Radius * 3)));
 
     case ZONE_WEST:
       return Coord_Cell(
-          Coord_Move(Center, DIR_W, static_cast<unsigned short>(Radius * 3)));
+          Coord_Move(Center, DIR_W, static_cast<uint16_t>(Radius * 3)));
 
     case ZONE_SOUTH:
       return Coord_Cell(
-          Coord_Move(Center, DIR_S, static_cast<unsigned short>(Radius * 3)));
+          Coord_Move(Center, DIR_S, static_cast<uint16_t>(Radius * 3)));
 
     default:
       break;
@@ -7474,7 +7475,7 @@ CELL HouseClass::Find_Cell_In_Zone(const TechnoClass* techno,
   */
   CELL trycell = Random_Cell_In_Zone(zone);
 
-  const short* list = nullptr;
+  const int16_t* list = nullptr;
   if (techno->What_Am_I() == RTTI_BUILDING) {
     list = techno->Occupy_List(true);
   }
@@ -7546,8 +7547,8 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       }
       coord = Coord_Move(
           Center, Random_Pick(DIR_N, DIR_E) - static_cast<DirType>(32),
-          static_cast<unsigned short>(Random_Pick(
-              std::min(Radius * 2, maxdist), std::min(Radius * 3, maxdist))));
+          static_cast<uint16_t>(Random_Pick(std::min(Radius * 2, maxdist),
+                                            std::min(Radius * 3, maxdist))));
       break;
 
     case ZONE_EAST:
@@ -7559,8 +7560,8 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       }
       coord = Coord_Move(
           Center, Random_Pick(DIR_NE, DIR_SE),
-          static_cast<unsigned short>(Random_Pick(
-              std::min(Radius * 2, maxdist), std::min(Radius * 3, maxdist))));
+          static_cast<uint16_t>(Random_Pick(std::min(Radius * 2, maxdist),
+                                            std::min(Radius * 3, maxdist))));
       break;
 
     case ZONE_SOUTH:
@@ -7572,8 +7573,8 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       }
       coord = Coord_Move(
           Center, Random_Pick(DIR_SE, DIR_SW),
-          static_cast<unsigned short>(Random_Pick(
-              std::min(Radius * 2, maxdist), std::min(Radius * 3, maxdist))));
+          static_cast<uint16_t>(Random_Pick(std::min(Radius * 2, maxdist),
+                                            std::min(Radius * 3, maxdist))));
       break;
 
     case ZONE_WEST:
@@ -7585,8 +7586,8 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       }
       coord = Coord_Move(
           Center, Random_Pick(DIR_SW, DIR_NW),
-          static_cast<unsigned short>(Random_Pick(
-              std::min(Radius * 2, maxdist), std::min(Radius * 3, maxdist))));
+          static_cast<uint16_t>(Random_Pick(std::min(Radius * 2, maxdist),
+                                            std::min(Radius * 3, maxdist))));
       break;
     default:
       break;

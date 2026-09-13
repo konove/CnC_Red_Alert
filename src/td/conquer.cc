@@ -813,8 +813,8 @@ static void Message_Input(KeyNumType& input) {
   int i;
   int message_length;
   int sent_so_far;
-  unsigned short magic_number;
-  unsigned short crc;
+  uint16_t magic_number;
+  uint16_t crc;
   int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   /*
@@ -941,8 +941,8 @@ static void Message_Input(KeyNumType& input) {
 
       sent_so_far = 0;
       magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
-      crc = static_cast<unsigned short>(
-          CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
+      crc = static_cast<uint16_t>(CrcEngine::Compute(Messages.Get_Edit_Buf()) &
+                                  0xffff);
 
       while (sent_so_far < message_length) {
         serial_packet =
@@ -999,7 +999,7 @@ static void Message_Input(KeyNumType& input) {
       if (GameToPlay == GAME_IPX || GameToPlay == GAME_INTERNET) {
         sent_so_far = 0;
         magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
-        crc = static_cast<unsigned short>(
+        crc = static_cast<uint16_t>(
             CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
 
         while (sent_so_far < message_length) {
@@ -1035,10 +1035,9 @@ static void Message_Input(KeyNumType& input) {
           ** Flag this message segment as either a message head or a message
           *tail.
           */
-          *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4) =
+          *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4) =
               magic_number;
-          *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2) =
-              crc;
+          *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2) = crc;
 
           GPacket.Message.ID = MPlayerLocalID;
           GPacket.Message.NameCRC = Compute_Name_CRC(MPlayerGameName);
@@ -1191,8 +1190,8 @@ void Call_Back() {
   int i;
   int id;
   int color;
-  unsigned short magic_number;
-  unsigned short crc;
+  uint16_t magic_number;
+  uint16_t crc;
 #endif
 
   /*
@@ -1256,10 +1255,9 @@ void Call_Back() {
           if (msg_ok) {
             Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
                                 GPacket.Name, GPacket.Message.Buf);
-            magic_number = *(unsigned short*)(GPacket.Message.Buf +
-                                              COMPAT_MESSAGE_LENGTH - 4);
-            crc = *(unsigned short*)(GPacket.Message.Buf +
-                                     COMPAT_MESSAGE_LENGTH - 2);
+            magic_number =
+                *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4);
+            crc = *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2);
             color = MPlayerID_To_ColorIndex(GPacket.Message.ID);
             Messages.Add_Message(
                 txt, MPlayerTColors[color],
@@ -2348,9 +2346,8 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
     ** just need to skip past this set of icons and try to build the
     ** next frame.
     */
-    ptr =
-        Build_Frame(shapefile, static_cast<unsigned short>(shapenum + framelp),
-                    SysMemPage.Get_Buffer());
+    ptr = Build_Frame(shapefile, static_cast<uint16_t>(shapenum + framelp),
+                      SysMemPage.Get_Buffer());
     if (ptr != nullptr) {
       ptr = Get_Shape_Header_Data(ptr);
       /*
@@ -2402,8 +2399,8 @@ void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
     /*
     ** Build frame returns a pointer now instead of the shapes length
     */
-    shape_size = Build_Frame(shapefile, static_cast<unsigned short>(shapenum),
-                             ShapeBuffer);
+    shape_size =
+        Build_Frame(shapefile, static_cast<uint16_t>(shapenum), ShapeBuffer);
     if (Get_Last_Frame_Length() > ShapeBufferSize) {
       Mono_Printf(
           "Attempt to use shape buffer for size %d buffer is only size %d",
@@ -2495,8 +2492,8 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
     /*
     ** Build frame returns a pointer now instead of the shapes length
     */
-    shape_size = Build_Frame(shapefile, static_cast<unsigned short>(shapenum),
-                             ShapeBuffer);
+    shape_size =
+        Build_Frame(shapefile, static_cast<uint16_t>(shapenum), ShapeBuffer);
     if (Get_Last_Frame_Length() > ShapeBufferSize) {
       Mono_Printf(
           "Attempt to use shape buffer for size %d buffer is only size %d",

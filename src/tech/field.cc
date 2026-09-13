@@ -64,7 +64,7 @@ FieldClass::FieldClass(const char* id, unsigned char data)
   memcpy(Data, &data, Size);
 }
 
-FieldClass::FieldClass(const char* id, short data)
+FieldClass::FieldClass(const char* id, int16_t data)
     : DataType(TYPE_SHORT),
       Size(sizeof(data)),
       Data(new char[Size]),
@@ -74,7 +74,7 @@ FieldClass::FieldClass(const char* id, short data)
   memcpy(Data, &data, Size);
 }
 
-FieldClass::FieldClass(const char* id, unsigned short data)
+FieldClass::FieldClass(const char* id, uint16_t data)
     : DataType(TYPE_UNSIGNED_SHORT),
       Size(sizeof(data)),
       Data(new char[Size]),
@@ -106,7 +106,7 @@ FieldClass::FieldClass(const char* id, unsigned long data)
 
 FieldClass::FieldClass(const char* id, const char* data)
     : DataType(TYPE_STRING),
-      Size(static_cast<unsigned short>(strlen(data) + 1)),
+      Size(static_cast<uint16_t>(strlen(data) + 1)),
       Data(new char[Size]),
       Next(nullptr) {
   strncpy(ID, id, sizeof(ID));
@@ -116,7 +116,7 @@ FieldClass::FieldClass(const char* id, const char* data)
 
 FieldClass::FieldClass(const char* id, void* data, int length)
     : DataType(TYPE_CHUNK),
-      Size(static_cast<unsigned short>(length)),
+      Size(static_cast<uint16_t>(length)),
       Data(new char[Size]),
       Next(nullptr) {
   strncpy(ID, id, sizeof(ID));
@@ -150,8 +150,7 @@ void FieldClass::Host_To_Net() {
 
     case TYPE_SHORT:
     case TYPE_UNSIGNED_SHORT:
-      *static_cast<unsigned short*>(Data) =
-          htons(*static_cast<unsigned short*>(Data));
+      *static_cast<uint16_t*>(Data) = htons(*static_cast<uint16_t*>(Data));
       break;
 
     case TYPE_LONG:
@@ -207,8 +206,7 @@ void FieldClass::Net_To_Host() {
 
     case TYPE_SHORT:
     case TYPE_UNSIGNED_SHORT:
-      *static_cast<unsigned short*>(Data) =
-          ntohs(*static_cast<unsigned short*>(Data));
+      *static_cast<uint16_t*>(Data) = ntohs(*static_cast<uint16_t*>(Data));
       break;
 
     case TYPE_LONG:

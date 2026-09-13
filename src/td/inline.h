@@ -60,10 +60,10 @@ inline COORDINATE XY_Coord(int x, int y) {
       MakeLong(static_cast<uint16_t>(y), static_cast<uint16_t>(x)));
 }
 inline int Coord_X(COORDINATE coord) {
-  return static_cast<short>(LowWord(coord));
+  return static_cast<int16_t>(LowWord(coord));
 }
 inline int Coord_Y(COORDINATE coord) {
-  return static_cast<short>(HighWord(coord));
+  return static_cast<int16_t>(HighWord(coord));
 }
 inline int Cell_X(CELL cell) { return static_cast<int>((unsigned)cell & 0x3F); }
 inline int Cell_Y(CELL cell) { return static_cast<int>((unsigned)cell >> 6); }
@@ -89,13 +89,13 @@ inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
 }
 inline COORDINATE Coord_Snap(COORDINATE coord) {
   return static_cast<COORDINATE>(
-      MakeLong((*((unsigned short*)&coord + 1) & 0xFF00) | 0x80,
-               (*(unsigned short*)&coord & 0xFF00) | 0x80));
+      MakeLong((*((uint16_t*)&coord + 1) & 0xFF00) | 0x80,
+               (*(uint16_t*)&coord & 0xFF00) | 0x80));
 }
 inline COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) {
-  return static_cast<COORDINATE>(MakeLong(
-      (*((unsigned short*)&coord1 + 1) + *((unsigned short*)&coord2 + 1)) >> 1,
-      (*(unsigned short*)&coord1 + *(unsigned short*)&coord2) >> 1));
+  return static_cast<COORDINATE>(
+      MakeLong((*((uint16_t*)&coord1 + 1) + *((uint16_t*)&coord2 + 1)) >> 1,
+               (*(uint16_t*)&coord1 + *(uint16_t*)&coord2) >> 1));
 }
 inline COORDINATE Cell_Coord(CELL cell) {
   return static_cast<COORDINATE>(

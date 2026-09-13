@@ -43,6 +43,7 @@
 #include "tech/lzwpipe.h"
 
 #include <cassert>
+#include <cstdint>
 #include <cstring>
 #include <utility>
 
@@ -216,8 +217,8 @@ int LZWPipe::Put(const void* source, int slen) {
         int len = LZW_Compress(Buffer(source_buffer_, BlockSize),
                                Buffer(output_buffer_, BlockSize + SafetyMargin));
 
-        BlockHeader.CompCount = static_cast<unsigned short>(len);
-        BlockHeader.UncompCount = static_cast<unsigned short>(BlockSize);
+        BlockHeader.CompCount = static_cast<uint16_t>(len);
+        BlockHeader.UncompCount = static_cast<uint16_t>(BlockSize);
         total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
         total += Pipe::Put(output_buffer_, len);
         Counter = 0;
@@ -235,8 +236,8 @@ int LZWPipe::Put(const void* source, int slen) {
       source = (char*)source + BlockSize;
       slen -= BlockSize;
 
-      BlockHeader.CompCount = static_cast<unsigned short>(len);
-      BlockHeader.UncompCount = static_cast<unsigned short>(BlockSize);
+      BlockHeader.CompCount = static_cast<uint16_t>(len);
+      BlockHeader.UncompCount = static_cast<uint16_t>(BlockSize);
       total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
       total += Pipe::Put(output_buffer_, len);
     }
@@ -315,8 +316,8 @@ int LZWPipe::Flush() {
       int len =
           LZW_Compress(Buffer(source_buffer_, Counter), Buffer(output_buffer_, BlockSize + SafetyMargin));
 
-      BlockHeader.CompCount = static_cast<unsigned short>(len);
-      BlockHeader.UncompCount = static_cast<unsigned short>(Counter);
+      BlockHeader.CompCount = static_cast<uint16_t>(len);
+      BlockHeader.UncompCount = static_cast<uint16_t>(Counter);
       total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
       total += Pipe::Put(output_buffer_, len);
       Counter = 0;

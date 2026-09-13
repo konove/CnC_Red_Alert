@@ -48,6 +48,7 @@
 #include "ra/connect.h"
 
 #include <chrono>
+#include <cstdint>
 #include <cstring>
 #include <utility>
 
@@ -90,9 +91,9 @@ const char* ConnectionClass::Commands[PACKET_COUNT] = {"ADATA", "NDATA", "ACK"};
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 ConnectionClass::ConnectionClass(int numsend, int numreceive, int maxlen,
-                                 unsigned short magicnum,
-                                 int32_t retry_delta, int32_t max_retries,
-                                 int32_t timeout, int extralen)
+                                 uint16_t magicnum, int32_t retry_delta,
+                                 int32_t max_retries, int32_t timeout,
+                                 int extralen)
     : MaxPacketLen(maxlen + static_cast<int>(sizeof(CommHeaderType))),
       PacketBuf(new char[base::ToSize(MaxPacketLen)]),
       MagicNum(magicnum),

@@ -68,6 +68,7 @@
 
 #include "td/terrain.h"
 
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -322,8 +323,8 @@ TerrainClass::TerrainClass(TerrainType type, CELL cell)
 bool TerrainClass::Mark(MarkType mark) {
   Validate();
   if (ObjectClass::Mark(mark)) {
-    const short* overlap = Class->Overlap_List();
-    const short* occupy = Class->Occupy_List();
+    const int16_t* overlap = Class->Overlap_List();
+    const int16_t* occupy = Class->Occupy_List();
     CELL cell = Coord_Cell(Coord);
 
     switch (mark) {
@@ -434,7 +435,7 @@ void TerrainClass::Init() { Terrains.Free_All(); }
  *=============================================================================================*/
 MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   Validate();
-  const short* offset;  // Pointer to cell offset list.
+  const int16_t* offset;  // Pointer to cell offset list.
 
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
     return MOVE_NO;

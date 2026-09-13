@@ -109,6 +109,7 @@
 #include "td/unit.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -919,7 +920,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
         }
         if (i) {
           if (i->Unlimbo(Coord, DIR_N)) {
-            i->Strength = static_cast<short>(
+            i->Strength = static_cast<int16_t>(
                 Random_Pick(5, static_cast<int>(i->Class->MaxStrength) / 2));
             i->Scatter(0, true);
             if (!House->IsHuman) {
@@ -1580,8 +1581,8 @@ bool UnitClass::Try_To_Deploy() {
           *strength *	ratio as the MCV that deployed into it.
           */
           int ratio = Health_Ratio();
-          building->Strength =
-              static_cast<short>(Fixed_To_Cardinal(building->Class->MaxStrength, ratio));
+          building->Strength = static_cast<int16_t>(
+              Fixed_To_Cardinal(building->Class->MaxStrength, ratio));
           /*
           ** Force the MCV to drop any flag it was carrying.  This will also set
           ** the owner house's flag home cell (since the house's FlagHome is
@@ -2669,9 +2670,9 @@ void UnitClass::Look(bool incremental) {
  * HISTORY: * 05/26/1994 JLB : Created. * 06/19/1994 JLB : Uses
  *Coord_Spillable_List function.                                      *
  *=============================================================================================*/
-const short* UnitClass::Overlap_List() const {
+const int16_t* UnitClass::Overlap_List() const {
   Validate();
-  static const short _gunboat[] = {-3, -2, 2, 3, REFRESH_EOL};
+  static const int16_t _gunboat[] = {-3, -2, 2, 3, REFRESH_EOL};
   int size;
 
   /*
@@ -3491,8 +3492,8 @@ void UnitClass::Read_INI(char* buffer) {
           }
 
           if (unit->Unlimbo(coord, dir)) {
-            unit->Strength =
-                static_cast<short>(Fixed_To_Cardinal(unit->Class->MaxStrength, strength));
+            unit->Strength = static_cast<int16_t>(
+                Fixed_To_Cardinal(unit->Class->MaxStrength, strength));
             if (GameToPlay == GAME_NORMAL || unit->House->IsHuman) {
               unit->Assign_Mission(mission);
               unit->Commence();
@@ -3599,7 +3600,7 @@ void UnitClass::Exit_Repair() {
   int i;
   CELL cell;
   bool found = false;
-  static const short ExitRepair[] = {
+  static const int16_t ExitRepair[] = {
       XYCELL(0, -2), XYCELL(1, -1), XYCELL(2, 0),  XYCELL(1, 1),
       XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
 

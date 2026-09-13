@@ -18,6 +18,7 @@
 
 // Aircraft type definitions and AircraftTypeClass method implementations.
 
+#include <cstdint>
 #include <filesystem>
 #include <string>
 
@@ -336,14 +337,14 @@ void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
                 HouseClass::As_Pointer(house)->Remap_Table(false, true));
 }
 
-const short* AircraftTypeClass::Occupy_List(bool /*placement*/) const {
-  static const short _list[] = {0, REFRESH_EOL};
+const int16_t* AircraftTypeClass::Occupy_List(bool /*placement*/) const {
+  static const int16_t _list[] = {0, REFRESH_EOL};
   return _list;
 }
 
 // All 8 surrounding cells when landed.
-const short* AircraftTypeClass::Overlap_List() const {
-  static const short _list[] = {
+const int16_t* AircraftTypeClass::Overlap_List() const {
+  static const int16_t _list[] = {
       -(MAP_CELL_W - 1), -MAP_CELL_W, -(MAP_CELL_W + 1), -1,         1,
       (MAP_CELL_W - 1),  MAP_CELL_W,  (MAP_CELL_W + 1),  REFRESH_EOL};
   return _list;

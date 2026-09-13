@@ -46,6 +46,8 @@
 #ifndef CNC_RED_ALERT_TD_IPX95_H_
 #define CNC_RED_ALERT_TD_IPX95_H_
 
+#include <cstdint>
+
 extern "C" {
 extern bool __stdcall IPX_Initialise();
 extern bool __stdcall IPX_Get_Outstanding_Buffer95(unsigned char* buffer);
@@ -63,7 +65,7 @@ extern void __stdcall IPX_Close_Socket95(int socket);
 extern int __stdcall IPX_Get_Connection_Number95();
 extern int __stdcall IPX_Get_Local_Target95(unsigned char* /*unused*/,
                                             unsigned char* /*unused*/,
-                                            unsigned short /*unused*/,
+                                            uint16_t /*unused*/,
                                             unsigned char* /*unused*/);
 }
 

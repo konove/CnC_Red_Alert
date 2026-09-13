@@ -47,11 +47,13 @@
 #include "ra/jshell.h"
 
 #include <cstdarg>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
 #include "base/numeric.h"
+#include "base/types.h"
 #include "ra/ccfile.h"
 #include "ra/monoc.h"
 #include "ra/startup.h"
@@ -61,7 +63,6 @@
 #include "sdllib/ww_win.h"
 #include "tech/rgb.h"
 #include "tech/wwfile.h"
-#include "base/types.h"
 
 /***********************************************************************************************
  * Small_Icon -- Create a small icon from a big one. *
@@ -204,7 +205,7 @@ void Format_Runtime_Text(char* buffer, size_t size, const char* format,
  *=============================================================================================*/
 long Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
                      BuffType& dest_buff, void* reserved_data) {
-  unsigned short size;
+  uint16_t size;
   void* sptr = uncomp_buff.Get_Buffer();
   void* dptr = dest_buff.Get_Buffer();
   int opened = false;

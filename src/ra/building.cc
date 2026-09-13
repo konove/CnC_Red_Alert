@@ -124,6 +124,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -814,7 +815,7 @@ bool BuildingClass::Mark(MarkType mark) {
   assert(IsActive);
 
   if (TechnoClass::Mark(mark)) {
-    const short* occupy = Occupy_List();
+    const int16_t* occupy = Occupy_List();
     CELL cell = Coord_Cell(Coord);
     SmudgeType bib;
 
@@ -1299,7 +1300,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
       Base_Is_Attacked(source);
     }
 
-    const short* offset = Occupy_List();
+    const int16_t* offset = Occupy_List();
 
     /*
     ** Memorize who they used to be in radio contact with.
@@ -1785,8 +1786,8 @@ void BuildingClass::Drop_Debris(TARGET source) {
           ScenarioInit++;
           if (i->Unlimbo(Cell_Coord(newcell), DIR_N)) {
             count--;
-            i->Strength =
-                static_cast<short>(Random_Pick(5, static_cast<int>(i->Class->MaxStrength)));
+            i->Strength = static_cast<int16_t>(
+                Random_Pick(5, static_cast<int>(i->Class->MaxStrength)));
             i->Scatter(0, true);
             if (source != kTargetNone && !House->Is_Ally(As_Object(source))) {
               i->Assign_Mission(MISSION_ATTACK);
@@ -3163,7 +3164,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     /*
     ** Update the new building's colors on the radar map.
     */
-    const short* offset = Occupy_List();
+    const int16_t* offset = Occupy_List();
     while (*offset != kRefreshEol) {
       CELL footprint_cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
       Map.Radar_Pixel(footprint_cell);
@@ -3584,7 +3585,8 @@ int BuildingClass::Mission_Deconstruction() {
             delete this;
 
             if (unit->Unlimbo(place, DIR_SW)) {
-              unit->Strength = static_cast<short>(unit->Class_Of().MaxStrength * ratio);
+              unit->Strength =
+                  static_cast<int16_t>(unit->Class_Of().MaxStrength * ratio);
 
               /*
               **	Lift the move destination from the building and assign
@@ -5034,7 +5036,7 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
         if (b->Unlimbo(Cell_Coord(cell), facing)) {
           strength = std::min(strength, 0x100);
           strength = b->Class->MaxStrength * fixed(strength, 256);
-          b->Strength = static_cast<short>(strength);
+          b->Strength = static_cast<int16_t>(strength);
           if (b->Strength > b->Class->MaxStrength - 3) {
             b->Strength = b->Class->MaxStrength;
           }
@@ -5417,7 +5419,7 @@ void BuildingClass::Repair_AI() {
     */
     if (House->Available_Money() >= cost) {
       House->Spend_Money(cost);
-      Strength = static_cast<short>(Strength + step);
+      Strength = static_cast<int16_t>(Strength + step);
 
       if (std::cmp_greater_equal(Strength, Class->MaxStrength)) {
         Strength = Class->MaxStrength;
@@ -5643,11 +5645,11 @@ void BuildingClass::Remove_Gap_Effect() {
   }
 }
 
-const short* BuildingClass::Overlap_List(bool redraw) const {
+const int16_t* BuildingClass::Overlap_List(bool redraw) const {
   if ((SpiedBy & 1 << PlayerPtr->Class->House) != 0 && IsSelected &&
       (*this == STRUCT_BARRACKS || *this == STRUCT_TENT)) {
-    static const short _list[] = {-1, 2, (MAP_CELL_W * 1) - 1,
-                                  (MAP_CELL_W * 1) + 2, kRefreshEol};
+    static const int16_t _list[] = {-1, 2, (MAP_CELL_W * 1) - 1,
+                                    (MAP_CELL_W * 1) + 2, kRefreshEol};
     return _list;
   }
   return TechnoClass::Overlap_List(redraw);

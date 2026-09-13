@@ -51,6 +51,7 @@
 #include "td/coord.h"
 
 #include <algorithm>
+#include <cstdint>
 
 #include "base/trig.h"
 #include "td/const.h"
@@ -83,8 +84,8 @@
  *   06/03/1994 JLB : Converted to general purpose spillage functionality. *
  *   01/07/1995 JLB : Manually calculates spillage list for large objects. *
  *=============================================================================================*/
-const short* Coord_Spillage_List(COORDINATE coord, int maxsize) {
-  static const short MoveSpillage[static_cast<int>(FACING_COUNT) + 1][5] = {
+const int16_t* Coord_Spillage_List(COORDINATE coord, int maxsize) {
+  static const int16_t MoveSpillage[static_cast<int>(FACING_COUNT) + 1][5] = {
       {0, -MAP_CELL_W, REFRESH_EOL, 0, 0},                   // N
       {0, -MAP_CELL_W, 1, -(MAP_CELL_W - 1), REFRESH_EOL},   // NE
       {0, 1, REFRESH_EOL, 0, 0},                             // E
@@ -97,7 +98,7 @@ const short* Coord_Spillage_List(COORDINATE coord, int maxsize) {
       //		{0, -MAP_CELL_W, -(MAP_CELL_W-1), 1, MAP_CELL_W+1,
       // MAP_CELL_W, MAP_CELL_W-1, -1, -(MAP_CELL_W+1), REFRESH_EOL}
   };
-  static short _manual[10];
+  static int16_t _manual[10];
   //;	00 = on axis
   //;	01 = below axis
   //;	10 = above axis
@@ -113,7 +114,7 @@ const short* Coord_Spillage_List(COORDINATE coord, int maxsize) {
   **	that covers a 5x5 square region.
   */
   if (maxsize > ICON_PIXEL_W * 2) {
-    static const short _gigundo[] = {
+    static const int16_t _gigundo[] = {
         -((2 * MAP_CELL_W) - 2), -((2 * MAP_CELL_W) - 1),
         -(2 * MAP_CELL_W),       -((2 * MAP_CELL_W) + 1),
         -((2 * MAP_CELL_W) + 2), -((1 * MAP_CELL_W) - 2),
@@ -217,9 +218,9 @@ const short* Coord_Spillage_List(COORDINATE coord, int maxsize) {
  *                                                                                             *
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE Coord_Move(COORDINATE start, DirType dir, unsigned short distance) {
-  auto x = static_cast<short>(Coord_X(start));
-  auto y = static_cast<short>(Coord_Y(start));
+COORDINATE Coord_Move(COORDINATE start, DirType dir, uint16_t distance) {
+  auto x = static_cast<int16_t>(Coord_X(start));
+  auto y = static_cast<int16_t>(Coord_Y(start));
 
   base::MovePoint(x, y, dir, static_cast<int16_t>(distance));
   return XY_Coord(x, y);
@@ -251,7 +252,7 @@ COORDINATE Coord_Scatter(COORDINATE coord, int distance, bool lock) {
   COORDINATE newcoord;
 
   newcoord = Coord_Move(coord, Random_Pick(DIR_N, DIR_MAX),
-                        static_cast<unsigned short>(distance));
+                        static_cast<uint16_t>(distance));
 
   if (newcoord & 0xC000C000L) {
     newcoord = coord;

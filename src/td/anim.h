@@ -45,6 +45,7 @@ class ArchiveReader;
 class ArchiveWriter;
 
 #include <cstddef>
+#include <cstdint>
 
 #include "absl/base/attributes.h"
 #include "td/defines.h"
@@ -97,9 +98,9 @@ class AnimClass final : public ObjectClass, private StageClass {
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
-  [[nodiscard]] const short* Occupy_List(
+  [[nodiscard]] const int16_t* Occupy_List(
       bool /*placement*/ = false) const override;
-  [[nodiscard]] const short* Overlap_List() const override;
+  [[nodiscard]] const int16_t* Overlap_List() const override;
   void Draw_It(int x, int y, WindowNumberType window) override;
   void AI() override;
   [[nodiscard]] TARGET As_Target() const override;

@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_CELL_H_
 #define CNC_RED_ALERT_RA_CELL_H_
 
+#include <cstdint>
+
 #include "absl/base/attributes.h"
 #include "base/types.h"
 #include "ra/ccptr.h"
@@ -61,7 +63,7 @@ class CellClass {
   *doesn't have *	be calculated. Calculating this number requires a divide
   *and would occur about *	5.72031 bijillion times per second.
   */
-  short ID;
+  int16_t ID;
 
   /*
   **	Does this cell need to be updated on the radar map?  If something
@@ -129,7 +131,7 @@ class CellClass {
   ** This field controls whether an area is being jammed by a gap
   ** generator.
   */
-  unsigned short Jammed{0};
+  uint16_t Jammed{0};
 
   /*
   **	This is the trigger ID for any trigger that might be attached to

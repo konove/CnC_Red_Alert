@@ -43,6 +43,7 @@
  *- - */
 
 #include <algorithm>
+#include <cstdint>
 #include <cstring>
 #include <string>
 
@@ -126,7 +127,7 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
   GlobalPacketType net_send_packet;
   GlobalPacketType net_receive_packet;
   unsigned int packet_len;
-  unsigned short product_id;
+  uint16_t product_id;
 
   IPXAddressClass sender_address;
 
@@ -227,7 +228,7 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
 bool Receive_Remote_File(char* file_name, int file_length,
                          int gametype) {
   // WWDebugString ("RA95 - In Receive_Remote_File\n");
-  unsigned short product_id;
+  uint16_t product_id;
   IPXAddressClass sender_address;
 
   /*
@@ -702,9 +703,9 @@ bool Send_Remote_File(char* file_name, int gametype) {
       if (block_number < total_blocks) {
         if (NullModem.Num_Send() < 2) {
           send_packet.Command = SERIAL_FILE_CHUNK;
-          send_packet.BlockNumber = static_cast<unsigned short>(block_number);
-          send_packet.BlockLength = static_cast<unsigned short>(
-              std::min(file_length, max_chunk_size));
+          send_packet.BlockNumber = static_cast<uint16_t>(block_number);
+          send_packet.BlockLength =
+              static_cast<uint16_t>(std::min(file_length, max_chunk_size));
 
           file_length -= send_packet.BlockLength;
 
@@ -739,9 +740,9 @@ bool Send_Remote_File(char* file_name, int gametype) {
       if (block_number < total_blocks) {
         if (Ipx.Global_Num_Send() == 0) {
           send_packet.Command = SERIAL_FILE_CHUNK;
-          send_packet.BlockNumber = static_cast<unsigned short>(block_number);
-          send_packet.BlockLength = static_cast<unsigned short>(
-              std::min(file_length, max_chunk_size));
+          send_packet.BlockNumber = static_cast<uint16_t>(block_number);
+          send_packet.BlockLength =
+              static_cast<uint16_t>(std::min(file_length, max_chunk_size));
 
           file_length -= send_packet.BlockLength;
 

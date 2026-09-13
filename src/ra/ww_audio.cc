@@ -47,6 +47,7 @@
 #include "sdllib/ww_audio.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdlib>
 #include <filesystem>
 #include <iterator>
@@ -492,7 +493,7 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation,
     }
   }
 
-  Sound_Effect(voc, volume, variation, static_cast<short>(pan_value), house);
+  Sound_Effect(voc, volume, variation, static_cast<int16_t>(pan_value), house);
 }
 
 /***********************************************************************************************
@@ -522,8 +523,8 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation,
  ** 05/04/1995 JLB : Variation adjustments. * 11/01/1996 JLB : House override
  *control.                                                  *
  *=============================================================================================*/
-int Sound_Effect(VocType voc, fixed volume, int variation,
-                 signed short pan_value, HousesType house) {
+int Sound_Effect(VocType voc, fixed volume, int variation, int16_t pan_value,
+                 HousesType house) {
   if (voc != VOC_NONE &&
       (voc < 0 || voc >= static_cast<int>(magic_enum::enum_count<VocType>()))) {
     DLOG(WARNING) << "Sound_Effect: invalid voc=" << static_cast<int>(voc)

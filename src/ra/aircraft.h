@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_RA_AIRCRAFT_H_
 
 #include <cstddef>
+#include <cstdint>
 
 #include "absl/base/attributes.h"
 #include "ra/bullet.h"
@@ -157,7 +158,7 @@ class AircraftClass : public FootClass, public FlyClass {
   void Look(bool incremental = false) override;
   void Draw_Rotors(int x, int y, WindowNumberType window) const;
   int Exit_Object(TechnoClass* /*unit*/ /*unused*/) override;
-  [[nodiscard]] const short* Overlap_List(bool redraw = false) const override;
+  [[nodiscard]] const int16_t* Overlap_List(bool redraw = false) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
   void Set_Speed(int speed) override;
 

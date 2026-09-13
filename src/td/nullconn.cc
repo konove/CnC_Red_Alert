@@ -43,6 +43,7 @@
 
 #include "td/nullconn.h"
 
+#include <cstdint>
 #include <cstring>
 
 #include "base/numeric.h"
@@ -77,13 +78,14 @@
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 NullModemConnClass::NullModemConnClass(int numsend, int numreceive, int maxlen,
-                                       unsigned short magicnum)
+                                       uint16_t magicnum)
     : NonSequencedConnClass(
           numsend, numreceive, maxlen, magicnum,
           60,  // Retry Delta Time
           -1,  // Max Retries (-1 means ignore this timeout parameter)
           1200),
-      SendBuf(new char[base::ToSize(Actual_Max_Packet())])  // Timeout: 20 seconds
+      SendBuf(
+          new char[base::ToSize(Actual_Max_Packet())])  // Timeout: 20 seconds
 {
   /*------------------------------------------------------------------------
   Pre-set the port value to NULL, so Send won't send until we've been Init'd
@@ -180,7 +182,7 @@ int NullModemConnClass::Send(char* buf, int buflen) {
   ------------------------------------------------------------------------*/
   header = port::AlignedObject<SerialHeaderType>(SendBuf);
   header->MagicNumber = PACKET_SERIAL_START;
-  header->Length = static_cast<unsigned short>(buflen);
+  header->Length = static_cast<uint16_t>(buflen);
   header->MagicNumber2 = PACKET_SERIAL_VERIFY;
 
   sendlen = static_cast<int>(sizeof(SerialHeaderType));

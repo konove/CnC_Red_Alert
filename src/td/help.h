@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_HELP_H_
 #define CNC_RED_ALERT_TD_HELP_H_
 
+#include <cstdint>
+
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
 #include "sdllib/wwstd.h"
@@ -66,7 +68,7 @@ class HelpClass : public TabClass {
   void Help_Text(int text, int x = -1, int y = -1, int color = LTGREY,
                  bool quick = false, int cost = 0) override;
   void Set_Cost(int cost);
-  [[nodiscard]] const short* Overlap_List() const;
+  [[nodiscard]] const int16_t* Overlap_List() const;
 
   /*
   **	File I/O.
@@ -138,7 +140,7 @@ class HelpClass : public TabClass {
   *indicates *	which cells are under the help text and thus which cells need to
   *be redrawn if *	the help text is to be erased.
   */
-  static short OverlapList[30];
+  static int16_t OverlapList[30];
 
   enum HelpClassEnum {
     HELP_DELAY = kTimerSecond *

@@ -42,6 +42,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 #include "ra/ipxgconn.h"
 
+#include <cstdint>
 #include <cstring>
 #include <utility>
 
@@ -78,7 +79,7 @@
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
-                                       unsigned short product_id)
+                                       uint16_t product_id)
     : IPXConnClass(numsend, numreceive,
                    maxlen + static_cast<int>(sizeof(GlobalHeaderType) -
                                              sizeof(CommHeaderType)),
@@ -359,7 +360,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
  *=========================================================================*/
 int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
                                    IPXAddressClass* address,
-                                   unsigned short* product_id) {
+                                   uint16_t* product_id) {
   ReceiveQueueType* rec_entry;  // ptr to receive entry header
   GlobalHeaderType* packet;
   int packetlen;  // size of received packet

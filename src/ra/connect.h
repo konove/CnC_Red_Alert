@@ -130,7 +130,7 @@ numerical ID for this packet.  The Connection sets this ID on all packets sent
 out.
 ---------------------------------------------------------------------------*/
 typedef struct {
-  unsigned short MagicNumber;
+  uint16_t MagicNumber;
   unsigned char Code;
   uint32_t PacketID;
 } CommHeaderType;
@@ -156,9 +156,9 @@ class ConnectionClass {
   /*.....................................................................
   Constructor/destructor.
   .....................................................................*/
-  ConnectionClass(int numsend, int numreceive, int maxlen,
-                  unsigned short magicnum, int32_t retry_delta,
-                  int32_t max_retries, int32_t timeout, int extralen = 0);
+  ConnectionClass(int numsend, int numreceive, int maxlen, uint16_t magicnum,
+                  int32_t retry_delta, int32_t max_retries, int32_t timeout,
+                  int extralen = 0);
   virtual ~ConnectionClass();
   ConnectionClass(const ConnectionClass&) = delete;
   ConnectionClass& operator=(const ConnectionClass&) = delete;
@@ -199,7 +199,7 @@ class ConnectionClass {
   /*.....................................................................
   Utility routines.
   .....................................................................*/
-  unsigned short Magic_Num() { return MagicNum; }
+  uint16_t Magic_Num() { return MagicNum; }
   int32_t Retry_Delta() { return RetryDelta; }
   void Set_Retry_Delta(int32_t delta) { RetryDelta = delta; }
   int32_t Max_Retries() { return MaxRetries; }
@@ -248,7 +248,7 @@ class ConnectionClass {
   This is the magic number assigned to this connection.  It is the first
   few bytes of any transmission.
   .....................................................................*/
-  unsigned short MagicNum;
+  uint16_t MagicNum;
 
   /*.....................................................................
   This value determines the time delay before a packet is re-sent.

@@ -41,6 +41,8 @@
 
 #include "ra/carry.h"
 
+#include <cstdint>
+
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/coord.h"
@@ -140,7 +142,7 @@ bool CarryoverClass::Create() const {
 
   if (techno) {
     bool oldscen = ScenarioInit;
-    techno->Strength = static_cast<short>(Strength);
+    techno->Strength = static_cast<int16_t>(Strength);
     if (RTTI == RTTI_INFANTRY) {
       ScenarioInit = 0;
     }

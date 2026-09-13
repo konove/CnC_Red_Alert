@@ -54,12 +54,13 @@
 // #pragma inline
 #include "td/monoc.h"
 
-#include "td/jshell.h"
-
 #include <cstdarg>
+#include <cstddef>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
-#include <cstddef>
+
+#include "td/jshell.h"
 
 // extern void output(short port, short data);
 // #pragma aux output parm [dx] [ax] =		\
@@ -678,7 +679,7 @@ int Mono_Printf(const char* string, ...) {
 
     va_end(va);
   }
-  return static_cast<short>(strlen(buffer));
+  return static_cast<int16_t>(strlen(buffer));
 }
 
 void Mono_Clear_Screen() {
@@ -734,7 +735,7 @@ int Mono_X() {
       mono = new MonoClass();
       mono->View();
     }
-    return static_cast<short>(mono->Get_X());
+    return static_cast<int16_t>(mono->Get_X());
   }
   return 0;
 }
@@ -746,7 +747,7 @@ int Mono_Y() {
       mono = new MonoClass();
       mono->View();
     }
-    return static_cast<short>(mono->Get_X());
+    return static_cast<int16_t>(mono->Get_X());
   }
   return 0;
 }

@@ -113,6 +113,7 @@
 #include "td/house.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <utility>
@@ -3585,9 +3586,8 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
         if (clockwise) {
           rot = static_cast<FacingType>(GameRandomRange(FACING_N, FACING_NW));
           for (fcounter = FACING_N; fcounter <= FACING_NW; fcounter++) {
-            newcell =
-                Coord_Cell(Coord_Move(Cell_Coord(cell), Facing_Dir(rot),
-                                      static_cast<unsigned short>(dist * 256)));
+            newcell = Coord_Cell(Coord_Move(Cell_Coord(cell), Facing_Dir(rot),
+                                            static_cast<uint16_t>(dist * 256)));
             if (Map.In_Radar(newcell) &&
                 Map[newcell].Flag_Place(Class->House)) {
               dist = 32;
@@ -3605,9 +3605,8 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
           */
           rot = static_cast<FacingType>(GameRandomRange(FACING_N, FACING_NW));
           for (fcounter = FACING_NW; fcounter >= FACING_N; fcounter--) {
-            newcell =
-                Coord_Cell(Coord_Move(Cell_Coord(cell), Facing_Dir(rot),
-                                      static_cast<unsigned short>(dist * 256)));
+            newcell = Coord_Cell(Coord_Move(Cell_Coord(cell), Facing_Dir(rot),
+                                            static_cast<uint16_t>(dist * 256)));
             if (Map.In_Radar(newcell) &&
                 Map[newcell].Flag_Place(Class->House)) {
               dist = 32;

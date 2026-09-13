@@ -112,6 +112,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -1071,8 +1072,8 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
         }
         if (i != nullptr) {
           if (i->Unlimbo(Coord, DIR_N)) {
-            i->Strength =
-                static_cast<short>(Random_Pick(5, static_cast<int>(i->Class->MaxStrength) / 2));
+            i->Strength = static_cast<int16_t>(
+                Random_Pick(5, static_cast<int>(i->Class->MaxStrength) / 2));
             i->Scatter(0, true);
             if (!House->IsHuman) {
               i->Assign_Mission(MISSION_HUNT);
@@ -1542,7 +1543,8 @@ bool UnitClass::Try_To_Deploy() {
           **	Force the newly placed construction yard to be in the same
           *strength *	ratio as the MCV that deployed into it.
           */
-          building->Strength = static_cast<short>(Health_Ratio() * building->Class->MaxStrength);
+          building->Strength = static_cast<int16_t>(
+              Health_Ratio() * building->Class->MaxStrength);
 
           /*
           ** Force the MCV to drop any flag it was carrying.  This will also set
@@ -2992,7 +2994,7 @@ int UnitClass::Mission_Hunt() {
  * HISTORY: * 05/26/1994 JLB : Created. * 06/19/1994 JLB : Uses
  *Coord_Spillable_List function.                                      *
  *=============================================================================================*/
-const short* UnitClass::Overlap_List(bool redraw) const {
+const int16_t* UnitClass::Overlap_List(bool redraw) const {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -3554,7 +3556,7 @@ void UnitClass::Exit_Repair() {
   int i;
   CELL cell;
   bool found = false;
-  static const short ExitRepair[] = {
+  static const int16_t ExitRepair[] = {
       XYCELL(0, -2), XYCELL(1, -1), XYCELL(2, 0),  XYCELL(1, 1),
       XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
 
@@ -4598,7 +4600,8 @@ void UnitClass::Read_INI(CCINIClass& ini) {
           }
 
           if (unit->Unlimbo(coord, dir)) {
-            unit->Strength = static_cast<short>(unit->Class->MaxStrength * fixed(strength, 256));
+            unit->Strength = static_cast<int16_t>(unit->Class->MaxStrength *
+                                                  fixed(strength, 256));
             if (unit->Strength > unit->Class->MaxStrength - 3) {
               unit->Strength = unit->Class->MaxStrength;
             }

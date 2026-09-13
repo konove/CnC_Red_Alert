@@ -118,6 +118,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstdint>
 
 #include "ra/abstract.h"
 #include "ra/anim.h"
@@ -1528,8 +1529,8 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
       if (What_Am_I() == RTTI_INFANTRY || What_Am_I() == RTTI_UNIT ||
           What_Am_I() == RTTI_AIRCRAFT) {
         Clicked_As_Target(7);
-        Strength = static_cast<short>(Strength - damage);
-        Strength = static_cast<short>(std::min<int>(Strength, maxstrength));
+        Strength = static_cast<int16_t>(Strength - damage);
+        Strength = static_cast<int16_t>(std::min<int>(Strength, maxstrength));
       }
       return RESULT_NONE;
     }
@@ -1560,7 +1561,7 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
     /*
     **	Apply the damage to the object.
     */
-    Strength = static_cast<short>(oldstrength - damage);
+    Strength = static_cast<int16_t>(oldstrength - damage);
 
     /*
     **	Check to see if the object is majorly damaged or destroyed.
@@ -1776,15 +1777,13 @@ bool ObjectClass::Paradrop(COORDINATE coord) {
     AnimClass* anim = nullptr;
 
     if (What_Am_I() == RTTI_BULLET) {
-      anim = new AnimClass(
-          ANIM_PARA_BOMB,
-          Coord_Move(Center_Coord(), DIR_N,
-                     static_cast<unsigned short>(0x0030 + Height)));
+      anim = new AnimClass(ANIM_PARA_BOMB,
+                           Coord_Move(Center_Coord(), DIR_N,
+                                      static_cast<uint16_t>(0x0030 + Height)));
     } else {
-      anim = new AnimClass(
-          ANIM_PARACHUTE,
-          Coord_Move(Center_Coord(), DIR_N,
-                     static_cast<unsigned short>(0x0030 + Height)));
+      anim = new AnimClass(ANIM_PARACHUTE,
+                           Coord_Move(Center_Coord(), DIR_N,
+                                      static_cast<uint16_t>(0x0030 + Height)));
     }
 
     /*
@@ -1828,10 +1827,10 @@ bool ObjectClass::Attach_Trigger(TriggerClass* trigger) {
 }
 
 // These can't be made inline (for various reasons).
-const short* ObjectClass::Occupy_List(bool placement) const {
+const int16_t* ObjectClass::Occupy_List(bool placement) const {
   return Class_Of().Occupy_List(placement);
 };
-const short* ObjectClass::Overlap_List(bool /*unused*/) const {
+const int16_t* ObjectClass::Overlap_List(bool /*unused*/) const {
   return Class_Of().Overlap_List();
 };
 BuildingClass* ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {
@@ -2022,8 +2021,8 @@ const void* ObjectTypeClass::Get_Cameo_Data() const { return nullptr; }
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-const short* ObjectTypeClass::Occupy_List(bool /*unused*/) const {
-  static const short _list[] = {0, kRefreshEol};
+const int16_t* ObjectTypeClass::Occupy_List(bool /*unused*/) const {
+  static const int16_t _list[] = {0, kRefreshEol};
   return _list;
 }
 
@@ -2045,8 +2044,8 @@ const short* ObjectTypeClass::Occupy_List(bool /*unused*/) const {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-const short* ObjectTypeClass::Overlap_List() const {
-  static const short _list[] = {kRefreshEol};
+const int16_t* ObjectTypeClass::Overlap_List() const {
+  static const int16_t _list[] = {kRefreshEol};
   return _list;
 }
 

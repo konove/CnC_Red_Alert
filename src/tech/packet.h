@@ -49,7 +49,7 @@
 
 class PacketClass {
  public:
-  explicit PacketClass(short id = 0) : Size(0), ID(id), Head(nullptr) {}
+  explicit PacketClass(int16_t id = 0) : Size(0), ID(id), Head(nullptr) {}
   explicit PacketClass(char* curbuf);
   ~PacketClass();
 
@@ -75,10 +75,10 @@ class PacketClass {
   void Add_Field(const char* field, unsigned char data) {
     Add_Field(new FieldClass(field, data));
   }
-  void Add_Field(const char* field, short data) {
+  void Add_Field(const char* field, int16_t data) {
     Add_Field(new FieldClass(field, data));
   }
-  void Add_Field(const char* field, unsigned short data) {
+  void Add_Field(const char* field, uint16_t data) {
     Add_Field(new FieldClass(field, data));
   }
   void Add_Field(const char* field, long data) {
@@ -101,8 +101,8 @@ class PacketClass {
   FieldClass* Find_Field(const char* id);
   bool Get_Field(const char* id, char& data);
   bool Get_Field(const char* id, unsigned char& data);
-  bool Get_Field(const char* id, short& data);
-  bool Get_Field(const char* id, unsigned short& data);
+  bool Get_Field(const char* id, int16_t& data);
+  bool Get_Field(const char* id, uint16_t& data);
   bool Get_Field(const char* id, long& data);
   bool Get_Field(const char* id, unsigned long& data);
   bool Get_Field(const char* id, char* data, std::size_t data_size);

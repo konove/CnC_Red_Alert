@@ -123,6 +123,7 @@
 #include "td/netdlg.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -915,8 +916,8 @@ static int Net_Join_Dialog() {
 
   int message_length;
   int sent_so_far;
-  unsigned short magic_number;
-  unsigned short crc;
+  uint16_t magic_number;
+  uint16_t crc;
 
   const void* up_button;
   const void* down_button;
@@ -1584,7 +1585,7 @@ static int Net_Join_Dialog() {
               sent_so_far = 0;
               magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
               message_length = static_cast<int>(strlen(Messages.Get_Edit_Buf()));
-              crc = static_cast<unsigned short>(
+              crc = static_cast<uint16_t>(
                   CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
 
               while (sent_so_far < message_length) {
@@ -1619,10 +1620,10 @@ static int Net_Join_Dialog() {
                 }
 
                 *(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 5) = 0;
-                *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH -
-                                   4) = magic_number;
-                *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH -
-                                   2) = crc;
+                *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4) =
+                    magic_number;
+                *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2) =
+                    crc;
                 GPacket.Message.ID = static_cast<unsigned char>(
                     Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
                 GPacket.Message.NameCRC = Compute_Name_CRC(MPlayerGameName);
@@ -2306,8 +2307,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   JoinEventType retcode = EV_NONE;
   char txt[80];
   int color;
-  unsigned short magic_number;
-  unsigned short crc;
+  uint16_t magic_number;
+  uint16_t crc;
 
   /*------------------------------------------------------------------------
   If there is no incoming packet, just return
@@ -2651,8 +2652,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM), GPacket.Name,
                         GPacket.Message.Buf);
     magic_number =
-        *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4);
-    crc = *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2);
+        *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4);
+    crc = *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2);
     color = MPlayerID_To_ColorIndex(GPacket.Message.ID);
     Messages.Add_Message(txt, MPlayerTColors[color],
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
@@ -2897,8 +2898,8 @@ static int Net_New_Dialog() {
 
   int message_length;
   int sent_so_far;
-  unsigned short magic_number;
-  unsigned short crc;
+  uint16_t magic_number;
+  uint16_t crc;
 
   /*........................................................................
   Buttons
@@ -3591,7 +3592,7 @@ static int Net_New_Dialog() {
           sent_so_far = 0;
           magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
           message_length = static_cast<int>(strlen(Messages.Get_Edit_Buf()));
-          crc = static_cast<unsigned short>(
+          crc = static_cast<uint16_t>(
               CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
           while (sent_so_far < message_length) {
             memset(&GPacket, 0, sizeof(GlobalPacketType));
@@ -3624,10 +3625,9 @@ static int Net_New_Dialog() {
             }
 
             *(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 5) = 0;
-            *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH -
-                               4) = magic_number;
-            *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH -
-                               2) = crc;
+            *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4) =
+                magic_number;
+            *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2) = crc;
             GPacket.Message.ID = static_cast<unsigned char>(
                 Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
             GPacket.Message.NameCRC = Compute_Name_CRC(MPlayerGameName);
@@ -3888,8 +3888,8 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
   int resend;
   char txt[80];
   int color;
-  unsigned short magic_number;
-  unsigned short crc;
+  uint16_t magic_number;
+  uint16_t crc;
 
   /*------------------------------------------------------------------------
   If there is no incoming packet, just return
@@ -4042,8 +4042,8 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM), GPacket.Name,
                         GPacket.Message.Buf);
     magic_number =
-        *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4);
-    crc = *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2);
+        *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4);
+    crc = *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2);
     color = MPlayerID_To_ColorIndex(GPacket.Message.ID);
     Messages.Add_Message(txt, MPlayerTColors[color],
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,

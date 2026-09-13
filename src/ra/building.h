@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_RA_BUILDING_H_
 
 #include <cstddef>
+#include <cstdint>
 
 #include "absl/base/attributes.h"
 #include "ra/ccini.h"
@@ -274,7 +275,7 @@ class BuildingClass : public TechnoClass {
     return *Class;
   }
   [[nodiscard]] DirType Fire_Direction() const override;
-  [[nodiscard]] const short* Overlap_List(bool redraw = false) const override;
+  [[nodiscard]] const int16_t* Overlap_List(bool redraw = false) const override;
   [[nodiscard]] int Shape_Number() const;
   [[nodiscard]] int Power_Output() const;
   [[nodiscard]] CELL Check_Point(CheckPointType cp) const;

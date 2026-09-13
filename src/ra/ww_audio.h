@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_RA_WW_AUDIO_H_
 #define CNC_RED_ALERT_RA_WW_AUDIO_H_
 
+#include <cstdint>
+
 #include "ra/defines.h"
 #include "tech/fixed.h"
 
@@ -100,7 +102,7 @@ VocType Voc_From_Name(const char* name);
 const char* Speech_Name(VoxType speech);
 const char* Voc_Name(VocType voc);
 int Sound_Effect(VocType voc, fixed volume = fixed(1), int variation = 1,
-                 signed short pan_value = 0, HousesType house = HOUSE_NONE);
+                 int16_t pan_value = 0, HousesType house = HOUSE_NONE);
 void Speak(VoxType voice);
 void Speak_AI();
 void Stop_Speaking();

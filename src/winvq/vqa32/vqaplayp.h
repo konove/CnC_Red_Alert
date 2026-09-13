@@ -98,8 +98,8 @@ typedef struct ChunkHeader {
  * CompSize   - Compressed size in bytes.
  */
 typedef struct ZAPHeader {
-  unsigned short UnCompSize;
-  unsigned short CompSize;
+  uint16_t UnCompSize;
+  uint16_t CompSize;
 } ZAPHeader;
 
 /* VQACBNode: A circular list of codebook buffers, used by the load task.
@@ -341,7 +341,7 @@ struct VQAAudio {
   int32_t PlayPosition = 0;
   int64_t SamplesPlayed = 0;
   int32_t NumSkipped = 0;
-  unsigned short SampleRate = 0;
+  uint16_t SampleRate = 0;
   unsigned char Channels = 0;
   unsigned char BitsPerSample = 0;
   int32_t BytesPerSec = 0;

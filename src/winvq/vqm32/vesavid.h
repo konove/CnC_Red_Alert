@@ -38,6 +38,8 @@
  *
  ****************************************************************************/
 
+#include <cstdint>
+
 #include "winvq/vqm32/realmode.h"
 
 /*---------------------------------------------------------------------------
@@ -85,11 +87,11 @@
  */
 typedef struct VESAInfo {
   char Signature[4];
-  unsigned short Version;
+  uint16_t Version;
   REALPTR OEMString;
   unsigned long Capabilities;
   REALPTR AvailModes;
-  unsigned short TotalMemory;
+  uint16_t TotalMemory;
   unsigned char Reserved[236];
 } VESAInfo;
 
@@ -132,17 +134,17 @@ typedef struct VESAInfo {
  * BankSize         - Bank size in KB
  */
 typedef struct VESAModeInfo {
-  unsigned short Attributes;
+  uint16_t Attributes;
   unsigned char WinA_Attributes;
   unsigned char WinB_Attributes;
-  unsigned short WinGranularity;
-  unsigned short WinSize;
-  unsigned short WinA_Segment;
-  unsigned short WinB_Segment;
+  uint16_t WinGranularity;
+  uint16_t WinSize;
+  uint16_t WinA_Segment;
+  uint16_t WinB_Segment;
   REALPTR WinFunc;
-  unsigned short BytesPerScanline;
-  unsigned short XRes;
-  unsigned short YRes;
+  uint16_t BytesPerScanline;
+  uint16_t XRes;
+  uint16_t YRes;
   unsigned char XCharSize;
   unsigned char YCharSize;
   unsigned char NumPlanes;

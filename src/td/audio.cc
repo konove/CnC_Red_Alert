@@ -45,6 +45,7 @@
 #include "td/audio.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdlib>
 #include <filesystem>
 
@@ -356,7 +357,7 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
 
   Sound_Effect(
       voc, static_cast<VolType>(Fixed_To_Cardinal(distance, Options.Volume)),
-      variation, static_cast<short>(pan_value));
+      variation, static_cast<int16_t>(pan_value));
 }
 
 /***********************************************************************************************
@@ -378,7 +379,7 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
  ** 05/04/1995 JLB : Variation adjustments. *
  *=============================================================================================*/
 int Sound_Effect(VocType voc, VolType volume, int variation,
-                 signed short pan_value) {
+                 int16_t pan_value) {
   if (!Options.Volume || voc == VOC_NONE || !SoundOn ||
       SampleType == SAMPLE_NONE) {
     return -1;

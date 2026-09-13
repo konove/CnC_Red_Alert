@@ -93,6 +93,8 @@
 */
 #include "td/object.h"
 
+#include <cstdint>
+
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/wwstd.h"
@@ -888,8 +890,8 @@ void ObjectClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-const short* ObjectTypeClass::Occupy_List(bool /*unused*/) const {
-  static const short _list[] = {0, REFRESH_EOL};
+const int16_t* ObjectTypeClass::Occupy_List(bool /*unused*/) const {
+  static const int16_t _list[] = {0, REFRESH_EOL};
   return _list;
 }
 
@@ -911,8 +913,8 @@ const short* ObjectTypeClass::Occupy_List(bool /*unused*/) const {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-const short* ObjectTypeClass::Overlap_List() const {
-  static const short _list[] = {REFRESH_EOL};
+const int16_t* ObjectTypeClass::Overlap_List() const {
+  static const int16_t _list[] = {REFRESH_EOL};
   return _list;
 }
 
@@ -1249,7 +1251,7 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
     /*
     **	Apply the damage to the object.
     */
-    Strength = static_cast<short>(oldstrength - damage);
+    Strength = static_cast<int16_t>(oldstrength - damage);
 
     /*
     **	Check to see if the object is majorly damaged or destroyed.
@@ -1423,10 +1425,10 @@ void ObjectClass::Init() { CurrentObject.Clear(); }
 bool ObjectClass::Revealed(HouseClass* house) { return house != nullptr; }
 
 // These can't be made inline (for various reasons).
-const short* ObjectClass::Occupy_List(bool placement) const {
+const int16_t* ObjectClass::Occupy_List(bool placement) const {
   return Class_Of().Occupy_List(placement);
 };
-const short* ObjectClass::Overlap_List() const {
+const int16_t* ObjectClass::Overlap_List() const {
   return Class_Of().Overlap_List();
 };
 BuildingClass* ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {

@@ -48,6 +48,8 @@
 
 #include "ra/power.h"
 
+#include <cstdint>
+
 #include "ra/bench_util.h"
 #include "ra/conquer.h"
 #include "ra/externs.h"
@@ -365,7 +367,7 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
  *                                                                                             *
  * HISTORY: * 06/01/1995 JLB : Created. *
  *=============================================================================================*/
-void PowerClass::Refresh_Cells(CELL cell, const short* list) {
+void PowerClass::Refresh_Cells(CELL cell, const int16_t* list) {
   if (*list == kRefreshSidebar) {
     IsPowerToRedraw = true;
     Flag_To_Redraw(false);

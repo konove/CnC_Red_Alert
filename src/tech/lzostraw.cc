@@ -42,6 +42,7 @@
 #include "tech/lzostraw.h"
 
 #include <cassert>
+#include <cstdint>
 #include <cstring>
 #include <utility>
 #include <vector>
@@ -192,7 +193,7 @@ int LZOStraw::Get(void* destbuf, int slen) {
       Counter = BlockHeader.UncompCount;
     } else {
       BlockHeader.UncompCount =
-          static_cast<unsigned short>(Straw::Get(Buffer, BlockSize));
+          static_cast<uint16_t>(Straw::Get(Buffer, BlockSize));
       if (BlockHeader.UncompCount == 0) {
         break;
       }
@@ -204,7 +205,7 @@ int LZOStraw::Get(void* destbuf, int slen) {
       lzo1x_1_compress(Buffer, BlockHeader.UncompCount,
                        &Buffer2[sizeof(BlockHeader)], &length,
                        dictionary);
-      BlockHeader.CompCount = static_cast<unsigned short>(length);
+      BlockHeader.CompCount = static_cast<uint16_t>(length);
       delete[] dictionary;
       memmove(Buffer2, &BlockHeader, sizeof(BlockHeader));
       Counter = static_cast<int>(BlockHeader.CompCount + sizeof(BlockHeader));

@@ -42,6 +42,7 @@
 #include "tech/lzwstraw.h"
 
 #include <cassert>
+#include <cstdint>
 #include <cstring>
 #include <utility>
 
@@ -199,11 +200,11 @@ int LZWStraw::Get(void* destbuf, int slen) {
     } else {
       // Compress
       BlockHeader.UncompCount =
-          static_cast<unsigned short>(Straw::Get(source_buffer_, BlockSize));
+          static_cast<uint16_t>(Straw::Get(source_buffer_, BlockSize));
       if (BlockHeader.UncompCount == 0) {
         break;
       }
-      BlockHeader.CompCount = static_cast<unsigned short>(
+      BlockHeader.CompCount = static_cast<uint16_t>(
           LZW_Compress(Buffer(source_buffer_, BlockHeader.UncompCount),
                        Buffer(&output_buffer_[sizeof(BlockHeader)],
                               BlockSize + SafetyMargin -

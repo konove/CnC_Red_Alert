@@ -64,6 +64,7 @@
  *- - - - - - - */
 
 #include <algorithm>
+#include <cstdint>
 #include <filesystem>
 #include <string>
 
@@ -90,73 +91,73 @@
 #define MCW MAP_CELL_W
 
 #define XYCELL(x, y) ((y) * MAP_CELL_W + (x))
-static const short ExitPyle[] = {
+static const int16_t ExitPyle[] = {
     XYCELL(1, 2),  XYCELL(2, 2),  XYCELL(0, 2),  XYCELL(-1, 2), XYCELL(-1, -1),
     XYCELL(0, -1), XYCELL(1, -1), XYCELL(2, -1), XYCELL(2, -1), XYCELL(-1, 0),
     XYCELL(2, 0),  XYCELL(2, 1),  XYCELL(-1, 1), REFRESH_EOL};
-static const short ExitHand[] = {
+static const int16_t ExitHand[] = {
     XYCELL(2, 3),  XYCELL(1, 3),  XYCELL(0, 3), XYCELL(2, 2),  XYCELL(-1, 3),
     XYCELL(-1, 2), XYCELL(0, 0),  XYCELL(1, 0), XYCELL(-1, 0), XYCELL(2, 0),
     XYCELL(2, 1),  XYCELL(-1, 1), REFRESH_EOL};
-static const short ExitWeap[] = {XYCELL(-1, 3), XYCELL(0, 3), XYCELL(-1, 2),
-                                 XYCELL(1, 3),
-                                 //	XYCELL(0,0),
-                                 //	XYCELL(1,0),
-                                 //	XYCELL(2,0),
-                                 //	XYCELL(-1,0),
-                                 //	XYCELL(3,0),
-                                 XYCELL(-1, 1), XYCELL(3, 1), XYCELL(3, 2),
-                                 XYCELL(3, 3), XYCELL(2, 3), REFRESH_EOL};
-static const short ExitAirstrip[] = {
+static const int16_t ExitWeap[] = {XYCELL(-1, 3), XYCELL(0, 3), XYCELL(-1, 2),
+                                   XYCELL(1, 3),
+                                   //	XYCELL(0,0),
+                                   //	XYCELL(1,0),
+                                   //	XYCELL(2,0),
+                                   //	XYCELL(-1,0),
+                                   //	XYCELL(3,0),
+                                   XYCELL(-1, 1), XYCELL(3, 1), XYCELL(3, 2),
+                                   XYCELL(3, 3), XYCELL(2, 3), REFRESH_EOL};
+static const int16_t ExitAirstrip[] = {
     XYCELL(-1, -1), XYCELL(-1, 0), XYCELL(-1, 1), XYCELL(-1, 2), XYCELL(0, -1),
     XYCELL(0, 2),   XYCELL(1, -1), XYCELL(1, 2),  XYCELL(2, -1), XYCELL(2, 2),
     XYCELL(3, -1),  XYCELL(3, 2),  XYCELL(4, -1), XYCELL(4, 0),  XYCELL(4, 1),
     XYCELL(4, 2),   REFRESH_EOL};
 
-static const short OListSAM[] = {-MCW, -(MCW - 1), REFRESH_EOL};
-static const short List32[] = {0, 1, 2, MCW, MCW + 1, MCW + 2, REFRESH_EOL};
-static const short List22_0011[] = {MCW, MCW + 1, REFRESH_EOL};
-static const short List22_1100[] = {0, 1, REFRESH_EOL};
-static const short ListFix[] = {1,       MCW,           MCW + 1,
-                                MCW + 2, MCW + MCW + 1, REFRESH_EOL};
-static const short StoreList[] = {0, 1, REFRESH_EOL};
-static const short List2[] = {0, 1, MCW + 1, MCW, REFRESH_EOL};
-static const short List42[] = {0,       1,       2,       3,          MCW,
-                               MCW + 1, MCW + 2, MCW + 3, REFRESH_EOL};
-static const short ListWestwood[] = {1,       2,       3,          MCW + 1,
-                                     MCW + 2, MCW + 3, REFRESH_EOL};
-static const short OListWestwood[] = {0, MCW, REFRESH_EOL};
-static const short ComList[] = {0, MCW, MCW + 1, REFRESH_EOL};
-static const short List21[] = {0, 1, REFRESH_EOL};
-static const short ListWeap[] = {(MCW * 1),  (MCW * 1) + 1, (MCW * 1) + 2,
-                                 (MCW * 2),  (MCW * 2) + 1, (MCW * 2) + 2,
-                                 REFRESH_EOL};
-static const short List12[] = {MCW, REFRESH_EOL};
-static const short ListHand[] = {MCW, MCW + 1, (MCW * 2) + 1, REFRESH_EOL};
-static const short ListTmpl[] = {
+static const int16_t OListSAM[] = {-MCW, -(MCW - 1), REFRESH_EOL};
+static const int16_t List32[] = {0, 1, 2, MCW, MCW + 1, MCW + 2, REFRESH_EOL};
+static const int16_t List22_0011[] = {MCW, MCW + 1, REFRESH_EOL};
+static const int16_t List22_1100[] = {0, 1, REFRESH_EOL};
+static const int16_t ListFix[] = {1,       MCW,           MCW + 1,
+                                  MCW + 2, MCW + MCW + 1, REFRESH_EOL};
+static const int16_t StoreList[] = {0, 1, REFRESH_EOL};
+static const int16_t List2[] = {0, 1, MCW + 1, MCW, REFRESH_EOL};
+static const int16_t List42[] = {0,       1,       2,       3,          MCW,
+                                 MCW + 1, MCW + 2, MCW + 3, REFRESH_EOL};
+static const int16_t ListWestwood[] = {1,       2,       3,          MCW + 1,
+                                       MCW + 2, MCW + 3, REFRESH_EOL};
+static const int16_t OListWestwood[] = {0, MCW, REFRESH_EOL};
+static const int16_t ComList[] = {0, MCW, MCW + 1, REFRESH_EOL};
+static const int16_t List21[] = {0, 1, REFRESH_EOL};
+static const int16_t ListWeap[] = {(MCW * 1),  (MCW * 1) + 1, (MCW * 1) + 2,
+                                   (MCW * 2),  (MCW * 2) + 1, (MCW * 2) + 2,
+                                   REFRESH_EOL};
+static const int16_t List12[] = {MCW, REFRESH_EOL};
+static const int16_t ListHand[] = {MCW, MCW + 1, (MCW * 2) + 1, REFRESH_EOL};
+static const int16_t ListTmpl[] = {
     MCW, MCW + 1, MCW + 2, MCW * 2, (MCW * 2) + 1, (MCW * 2) + 2, REFRESH_EOL};
-static const short List0011[] = {(MCW * 1), (MCW * 1) + 1, REFRESH_EOL};
-static const short List1101[] = {0, 1, (MCW * 1) + 1, REFRESH_EOL};
-static const short List11[] = {0, 1, REFRESH_EOL};
-static const short List1[] = {0, REFRESH_EOL};
-static const short List1100[] = {0, 1, REFRESH_EOL};
-static const short List0010[] = {MCW, REFRESH_EOL};
-static const short List1000[] = {0, REFRESH_EOL};
-static const short List0100[] = {1, REFRESH_EOL};
-static const short List0111[] = {1, (MCW * 1), (MCW * 1) + 1, REFRESH_EOL};
+static const int16_t List0011[] = {(MCW * 1), (MCW * 1) + 1, REFRESH_EOL};
+static const int16_t List1101[] = {0, 1, (MCW * 1) + 1, REFRESH_EOL};
+static const int16_t List11[] = {0, 1, REFRESH_EOL};
+static const int16_t List1[] = {0, REFRESH_EOL};
+static const int16_t List1100[] = {0, 1, REFRESH_EOL};
+static const int16_t List0010[] = {MCW, REFRESH_EOL};
+static const int16_t List1000[] = {0, REFRESH_EOL};
+static const int16_t List0100[] = {1, REFRESH_EOL};
+static const int16_t List0111[] = {1, (MCW * 1), (MCW * 1) + 1, REFRESH_EOL};
 // static short const List1111[] = {0, 1, (MCW*1), (MCW*1)+1, REFRESH_EOL};
-static const short List1011[] = {0, (MCW * 1), (MCW * 1) + 1, REFRESH_EOL};
-static const short List010111000[] = {1, (MCW * 1), (MCW * 1) + 1,
-                                      (MCW * 1) + 2, REFRESH_EOL};
-static const short List101000111[] = {
+static const int16_t List1011[] = {0, (MCW * 1), (MCW * 1) + 1, REFRESH_EOL};
+static const int16_t List010111000[] = {1, (MCW * 1), (MCW * 1) + 1,
+                                        (MCW * 1) + 2, REFRESH_EOL};
+static const int16_t List101000111[] = {
     0, 2, (MCW * 2), (MCW * 2) + 1, (MCW * 2) + 2, REFRESH_EOL};
 
-static const short OListFix[] = {0, 2, MCW + MCW, MCW + MCW + 2, REFRESH_EOL};
-static const short OListWeap[] = {0, 1, 2, REFRESH_EOL};
-static const short OComList[] = {1, REFRESH_EOL};
-static const short OList12[] = {0, REFRESH_EOL};
-static const short OListHand[] = {0, 1, MCW * 2, MCW * 1, REFRESH_EOL};
-static const short OListTmpl[] = {0, 1, 2, REFRESH_EOL};
+static const int16_t OListFix[] = {0, 2, MCW + MCW, MCW + MCW + 2, REFRESH_EOL};
+static const int16_t OListWeap[] = {0, 1, 2, REFRESH_EOL};
+static const int16_t OComList[] = {1, REFRESH_EOL};
+static const int16_t OList12[] = {0, REFRESH_EOL};
+static const int16_t OListHand[] = {0, 1, MCW * 2, MCW * 1, REFRESH_EOL};
+static const int16_t OListTmpl[] = {0, 1, 2, REFRESH_EOL};
 
 /***************************************************************************
  */
@@ -3583,19 +3584,18 @@ BuildingTypeClass::BuildingTypeClass(
     bool is_insignificant, bool is_immune, bool is_theater,
     bool is_turret_equipped, bool is_twoshooter, bool is_repairable,
     bool is_buildable, bool is_crew, bool is_sturdy, RTTIType tobuild,
-    DirType sframe, int16_t strength, int sightrange, int cost,
-    int scenario, int risk, int reward, int ownable, WeaponType primary,
-    WeaponType secondary, ArmorType armor, unsigned long canenter,
-    int capacity, int power, int drain, BSizeType size,
-    const short* exitlist, const short* sizelist, const short* overlap) noexcept
-    : TechnoTypeClass(name, ininame, level, pre, false, is_scanner, is_nominal,
-                      false, is_flammable, false, is_stealthy, is_selectable,
-                      is_legal_target, is_insignificant, is_immune, is_theater,
-                      is_twoshooter, is_turret_equipped, is_repairable,
-                      is_buildable, is_crew, -1, static_cast<int16_t>(strength * 2),
-                      MPH_IMMOBILE,
-                      sightrange, cost, scenario, risk, reward, ownable,
-                      primary, secondary, armor),
+    DirType sframe, int16_t strength, int sightrange, int cost, int scenario,
+    int risk, int reward, int ownable, WeaponType primary, WeaponType secondary,
+    ArmorType armor, unsigned long canenter, int capacity, int power, int drain,
+    BSizeType size, const int16_t* exitlist, const int16_t* sizelist,
+    const int16_t* overlap) noexcept
+    : TechnoTypeClass(
+          name, ininame, level, pre, false, is_scanner, is_nominal, false,
+          is_flammable, false, is_stealthy, is_selectable, is_legal_target,
+          is_insignificant, is_immune, is_theater, is_twoshooter,
+          is_turret_equipped, is_repairable, is_buildable, is_crew, -1,
+          static_cast<int16_t>(strength * 2), MPH_IMMOBILE, sightrange, cost,
+          scenario, risk, reward, ownable, primary, secondary, armor),
       IsBibbed(is_bibbed),
       IsWall(is_wall),
       IsFactory(is_factory),
@@ -3936,7 +3936,7 @@ void BuildingTypeClass::Init_Anim(BStateType state, int start, int count,
  *Converted to building type class member function.                        *
  *=============================================================================================*/
 int BuildingTypeClass::Legal_Placement(CELL pos) const {
-  const short* offset;  // Pointer to cell offset list.
+  const int16_t* offset;  // Pointer to cell offset list.
 
   if (pos == -1) {
     return false;
@@ -4146,7 +4146,7 @@ const BuildingTypeClass& BuildingTypeClass::As_Reference(StructType type) {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-const short* BuildingTypeClass::Occupy_List(bool placement) const {
+const int16_t* BuildingTypeClass::Occupy_List(bool placement) const {
   SmudgeType bib = SMUDGE_NONE;
   CELL cell = 0;
 
@@ -4172,15 +4172,15 @@ const short* BuildingTypeClass::Occupy_List(bool placement) const {
     }
 
     const SmudgeTypeClass& smudge = SmudgeTypeClass::As_Reference(bib);
-    static short _list[25];
-    short* dest = &_list[0];
+    static int16_t _list[25];
+    int16_t* dest = &_list[0];
 
     /*
     **	Copy the bib overlap list into the working buffer.
     */
-    const short* src = smudge.Occupy_List();
+    const int16_t* src = smudge.Occupy_List();
     while (*src != REFRESH_EOL) {
-      *dest++ = static_cast<short>(*src++ + cell);
+      *dest++ = static_cast<int16_t>(*src++ + cell);
     }
 
     /*
@@ -4199,7 +4199,7 @@ const short* BuildingTypeClass::Occupy_List(bool placement) const {
     return OccupyList;
   }
 
-  static const short _templap[] = {REFRESH_EOL};
+  static const int16_t _templap[] = {REFRESH_EOL};
   return &_templap[0];
 }
 
@@ -4220,12 +4220,12 @@ const short* BuildingTypeClass::Occupy_List(bool placement) const {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-const short* BuildingTypeClass::Overlap_List() const {
+const int16_t* BuildingTypeClass::Overlap_List() const {
   if (OverlapList) {
     return OverlapList;
   }
 
-  static const short _templap[] = {REFRESH_EOL};
+  static const int16_t _templap[] = {REFRESH_EOL};
   return &_templap[0];
 }
 

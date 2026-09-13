@@ -85,13 +85,13 @@ typedef enum {
 */
 #pragma pack(push, 1)
 typedef struct {
-  unsigned short ShapeType;      // 0 = normal, 1 = 16 colors,
+  uint16_t ShapeType;            // 0 = normal, 1 = 16 colors,
                                  // 2 = uncompressed, 4 = <16 colors
   unsigned char Height;          // Height of the shape in scan lines
-  unsigned short Width;          // Width of the shape in bytes
+  uint16_t Width;                // Width of the shape in bytes
   unsigned char OriginalHeight;  // Original height of shape in scan lines
-  unsigned short ShapeSize;      // Size of the shape, including header
-  unsigned short DataLength;     // Size of the uncompressed shape (just data)
+  uint16_t ShapeSize;            // Size of the shape, including header
+  uint16_t DataLength;           // Size of the uncompressed shape (just data)
   unsigned char Colortable[16];  // Optional color table for compact shape
 } Shape_Type;
 
@@ -99,7 +99,7 @@ typedef struct {
 ------------------------------- Shape block ---------------------------------
 */
 typedef struct {
-  unsigned short NumShapes;  // number of shapes in the block
+  uint16_t NumShapes;  // number of shapes in the block
   // Offsets follow the count in the file image; the struct is only ever read in
   // place. NOLINTNEXTLINE(clang-diagnostic-c99-extensions)
   uint32_t Offsets[];        // array of offsets to shape data

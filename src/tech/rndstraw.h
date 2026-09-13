@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_TECH_RNDSTRAW_H_
 #define CNC_RED_ALERT_TECH_RNDSTRAW_H_
 
+#include <cstdint>
+
 #include "tech/random.h"
 #include "tech/straw.h"
 
@@ -62,7 +64,7 @@ class RandomStraw : public Straw {
 
   void Seed_Bit(int seed);
   void Seed_Byte(char seed);
-  void Seed_Short(short seed);
+  void Seed_Short(int16_t seed);
   void Seed_Long(long seed);
 
   [[nodiscard]] int Seed_Bits_Needed() const;

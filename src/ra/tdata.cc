@@ -54,6 +54,7 @@
  *- - - - - - - */
 
 #include <cstddef>
+#include <cstdint>
 #include <filesystem>
 #include <string>
 
@@ -73,41 +74,43 @@
 #include "ra/type.h"
 #include "sdllib/shape.h"
 
-static const short List000011101000[] = {
+static const int16_t List000011101000[] = {
     MAP_CELL_W, MAP_CELL_W + 1, MAP_CELL_W + 2, MAP_CELL_W * 2, kRefreshEol};
-static const short List000110[] = {MAP_CELL_W, MAP_CELL_W + 1, kRefreshEol};
-static const short List001011100110[] = {2,
-                                         MAP_CELL_W,
-                                         MAP_CELL_W + 1,
-                                         MAP_CELL_W + 2,
-                                         (MAP_CELL_W * 2) + 1,
-                                         (MAP_CELL_W * 2) + 2,
-                                         kRefreshEol};
-static const short List0010[] = {MAP_CELL_W, kRefreshEol};
-static const short List0011[] = {MAP_CELL_W, MAP_CELL_W + 1, kRefreshEol};
-static const short List001[] = {2, kRefreshEol};
-static const short List010110[] = {1, MAP_CELL_W, MAP_CELL_W + 1, kRefreshEol};
-static const short List01[] = {1, kRefreshEol};
-static const short List11[] = {0, 1, kRefreshEol};
-static const short List1001[] = {0, MAP_CELL_W + 1, kRefreshEol};
-static const short List1010[] = {0, MAP_CELL_W, kRefreshEol};
-static const short List101001[] = {0, 2, MAP_CELL_W + 2, kRefreshEol};
-static const short List10[] = {0, kRefreshEol};
-static const short List110000011001[] = {
+static const int16_t List000110[] = {MAP_CELL_W, MAP_CELL_W + 1, kRefreshEol};
+static const int16_t List001011100110[] = {2,
+                                           MAP_CELL_W,
+                                           MAP_CELL_W + 1,
+                                           MAP_CELL_W + 2,
+                                           (MAP_CELL_W * 2) + 1,
+                                           (MAP_CELL_W * 2) + 2,
+                                           kRefreshEol};
+static const int16_t List0010[] = {MAP_CELL_W, kRefreshEol};
+static const int16_t List0011[] = {MAP_CELL_W, MAP_CELL_W + 1, kRefreshEol};
+static const int16_t List001[] = {2, kRefreshEol};
+static const int16_t List010110[] = {1, MAP_CELL_W, MAP_CELL_W + 1,
+                                     kRefreshEol};
+static const int16_t List01[] = {1, kRefreshEol};
+static const int16_t List11[] = {0, 1, kRefreshEol};
+static const int16_t List1001[] = {0, MAP_CELL_W + 1, kRefreshEol};
+static const int16_t List1010[] = {0, MAP_CELL_W, kRefreshEol};
+static const int16_t List101001[] = {0, 2, MAP_CELL_W + 2, kRefreshEol};
+static const int16_t List10[] = {0, kRefreshEol};
+static const int16_t List110000011001[] = {
     0, 1, MAP_CELL_W + 3, MAP_CELL_W * 2, (MAP_CELL_W * 2) + 3, kRefreshEol};
-static const short List110001[] = {0, 1, MAP_CELL_W + 2, kRefreshEol};
-static const short List1100[] = {0, 1, kRefreshEol};
-static const short List110110[] = {0, 1, MAP_CELL_W, MAP_CELL_W + 1,
+static const int16_t List110001[] = {0, 1, MAP_CELL_W + 2, kRefreshEol};
+static const int16_t List1100[] = {0, 1, kRefreshEol};
+static const int16_t List110110[] = {0, 1, MAP_CELL_W, MAP_CELL_W + 1,
+                                     kRefreshEol};
+static const int16_t List1101[] = {0, 1, MAP_CELL_W + 1, kRefreshEol};
+static const int16_t List1111[] = {0, 1, MAP_CELL_W, MAP_CELL_W + 1,
                                    kRefreshEol};
-static const short List1101[] = {0, 1, MAP_CELL_W + 1, kRefreshEol};
-static const short List1111[] = {0, 1, MAP_CELL_W, MAP_CELL_W + 1, kRefreshEol};
-static const short List111000010110[] = {0,
-                                         1,
-                                         2,
-                                         MAP_CELL_W + 3,
-                                         (MAP_CELL_W * 2) + 1,
-                                         (MAP_CELL_W * 2) + 2,
-                                         kRefreshEol};
+static const int16_t List111000010110[] = {0,
+                                           1,
+                                           2,
+                                           MAP_CELL_W + 3,
+                                           (MAP_CELL_W * 2) + 1,
+                                           (MAP_CELL_W * 2) + 2,
+                                           kRefreshEol};
 
 static const TerrainTypeClass Mine(
     TERRAIN_MINE, kTheaterFlagTemperate | kTheaterFlagSnow,
@@ -359,8 +362,8 @@ static const TerrainTypeClass Clump5Class(
 TerrainTypeClass::TerrainTypeClass(TerrainType terrain, int theater,
                                    COORDINATE centerbase, bool is_immune,
                                    bool is_water, const char* ininame,
-                                   int fullname, const short* occupy,
-                                   const short* overlap) noexcept
+                                   int fullname, const int16_t* occupy,
+                                   const int16_t* overlap) noexcept
     : ObjectTypeClass(RTTI_TERRAINTYPE, static_cast<int>(terrain), true, true,
                       false, false, true, is_immune, true, fullname, ininame),
       Type(terrain),
@@ -664,12 +667,12 @@ ObjectClass* TerrainTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
  *                                                                                             *
  * HISTORY: * 09/20/1995 JLB : Created. *
  *=============================================================================================*/
-const short* TerrainTypeClass::Occupy_List(bool /*placement*/) const {
+const int16_t* TerrainTypeClass::Occupy_List(bool /*placement*/) const {
   if (Occupy != nullptr) {
     return Occupy;
   }
 
-  static const short _simple[1] = {kRefreshEol};
+  static const int16_t _simple[1] = {kRefreshEol};
   return &_simple[0];
 }
 
@@ -692,12 +695,12 @@ const short* TerrainTypeClass::Occupy_List(bool /*placement*/) const {
  *                                                                                             *
  * HISTORY: * 09/20/1995 JLB : Created. *
  *=============================================================================================*/
-const short* TerrainTypeClass::Overlap_List() const {
+const int16_t* TerrainTypeClass::Overlap_List() const {
   if (Overlap != nullptr) {
     return Overlap;
   }
 
-  static const short _simple[1] = {kRefreshEol};
+  static const int16_t _simple[1] = {kRefreshEol};
   return &_simple[0];
 }
 

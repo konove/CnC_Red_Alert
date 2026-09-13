@@ -23,6 +23,7 @@ class ArchiveReader;
 class ArchiveWriter;
 
 #include <cstddef>
+#include <cstdint>
 
 #include "absl/base/attributes.h"
 #include "td/bullet.h"
@@ -113,7 +114,7 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   int Exit_Object(TechnoClass* /*unit*/ /*unused*/) override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
-  const short* Overlap_List() const override;
+  const int16_t* Overlap_List() const override;
   void Draw_It(int x, int y, WindowNumberType window) override;
   void Set_Speed(int speed) override;
 

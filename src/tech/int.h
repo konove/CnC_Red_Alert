@@ -189,7 +189,7 @@ class Int {
     Carry = XMP_Add(term, &reg[0], number, 0, PRECISION);
     return term;
   }
-  Int operator+(unsigned short b) const {
+  Int operator+(uint16_t b) const {
     Int result;
     Carry = XMP_Add_Int(result, &reg[0], b, 0, PRECISION);
     return result;
@@ -201,7 +201,7 @@ class Int {
     Borrow = XMP_Sub(term, &reg[0], number, 0, PRECISION);
     return term;
   }
-  Int operator-(unsigned short b) const {
+  Int operator-(uint16_t b) const {
     Int result;
     Borrow = XMP_Sub_Int(result, &reg[0], b, 0, PRECISION);
     return result;
@@ -213,7 +213,7 @@ class Int {
     Error = XMP_Signed_Mult(result, &reg[0], multiplier, PRECISION);
     return result;
   }
-  Int operator*(unsigned short b) const {
+  Int operator*(uint16_t b) const {
     Int result;
     Error = XMP_Unsigned_Mult_Int(result, &reg[0], b, PRECISION);
     return result;
@@ -226,7 +226,7 @@ class Int {
     return quotient;
   }
   Int operator/(unsigned long b) const { return *this / Int<PRECISION>(b); }
-  Int operator/(unsigned short divisor) const {
+  Int operator/(uint16_t divisor) const {
     Int quotient;
     Error = XMP_Unsigned_Div_Int(quotient, &reg[0], divisor, PRECISION);
     return quotient;
@@ -239,7 +239,7 @@ class Int {
     return remainder;
   }
   Int operator%(unsigned long b) const { return *this % Int<PRECISION>(b); }
-  unsigned short operator%(unsigned short divisor) const {
+  uint16_t operator%(uint16_t divisor) const {
     return XMP_Unsigned_Div_Int(Remainder, &reg[0], divisor, PRECISION);
   }
   //		friend Int<PRECISION> operator % (digit a, const Int<PRECISION>
@@ -381,7 +381,7 @@ class Int {
       }
     }
     [[nodiscard]] bool HasZero() const { return HasZeroEntry; }
-    void Increment(unsigned short increment = 1) {
+    void Increment(uint16_t increment = 1) {
       HasZeroEntry = false;
       for (unsigned int i = 0; i < std::ssize(primeTable); i++) {
         table[i] += increment;
@@ -403,7 +403,7 @@ class Int {
     }
 
     bool HasZeroEntry = false;
-    unsigned short table[std::size(primeTable)]{};
+    uint16_t table[std::size(primeTable)]{};
   };
 };
 
@@ -421,16 +421,16 @@ T Gcd(const T& a, const T& n) {
 
 template <class T>
 T Generate_Prime(Straw& rng, int pbits, const T* /*unused*/) {
-  T minQ = T(1UL) << static_cast<unsigned short>(pbits - (unsigned short)2);
-  T maxQ = (T(1UL) << static_cast<unsigned short>(pbits - (unsigned short)1)) -
-           static_cast<unsigned short>(1);
+  T minQ = T(1UL) << static_cast<uint16_t>(pbits - (uint16_t)2);
+  T maxQ = (T(1UL) << static_cast<uint16_t>(pbits - (uint16_t)1)) -
+           static_cast<uint16_t>(1);
 
   T q;
   T p;
 
   do {
     q.Randomize(rng, minQ, maxQ);
-    p = (q * 2) + static_cast<unsigned short>(1);
+    p = (q * 2) + static_cast<uint16_t>(1);
 
     typename T::RemainderTable rtQ(q);
     typename T::RemainderTable rtP(p);

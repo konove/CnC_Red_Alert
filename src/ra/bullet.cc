@@ -60,6 +60,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
+#include <cstdint>
 
 #include "port/ex_string.h"
 #include "ra/aircraft.h"
@@ -122,7 +123,7 @@ BulletClass::BulletClass(BulletType id, TARGET target, TechnoClass* payback,
       TarCom(target),
       MaxSpeed(speed),
       Warhead(warhead) {
-  Strength = static_cast<short>(strength);
+  Strength = static_cast<int16_t>(strength);
   Height = FLIGHT_LEVEL;
 }
 
@@ -268,7 +269,7 @@ void BulletClass::operator delete(void* ptr) {
  * HISTORY: * 06/20/1994 JLB : Created. * 01/05/1995 JLB : Handles projectiles
  *with altitude.                                       *
  *=============================================================================================*/
-const short* BulletClass::Occupy_List(bool /*placement*/) const {
+const int16_t* BulletClass::Occupy_List(bool /*placement*/) const {
   assert(Bullets.ID(this) == ID);
   assert(IsActive);
 
@@ -276,25 +277,25 @@ const short* BulletClass::Occupy_List(bool /*placement*/) const {
   **	Super-gigundo units use the >= 64 coord spillage list logic.
   */
   if (Class->IsGigundo) {
-    static short _list[] = {-1,
-                            0,
-                            1,
-                            (MAP_CELL_W * 1) - 1,
-                            MAP_CELL_W * 1,
-                            (MAP_CELL_W * 1) + 1,
-                            (-MAP_CELL_W * 1) - 1,
-                            -MAP_CELL_W * 1,
-                            (-MAP_CELL_W * 1) + 1,
-                            (MAP_CELL_W * 2) - 1,
-                            MAP_CELL_W * 2,
-                            (MAP_CELL_W * 2) + 1,
-                            (-MAP_CELL_W * 2) - 1,
-                            -MAP_CELL_W * 2,
-                            (-MAP_CELL_W * 2) + 1,
-                            (-MAP_CELL_W * 3) - 1,
-                            -MAP_CELL_W * 3,
-                            (-MAP_CELL_W * 3) + 1,
-                            kRefreshEol};
+    static int16_t _list[] = {-1,
+                              0,
+                              1,
+                              (MAP_CELL_W * 1) - 1,
+                              MAP_CELL_W * 1,
+                              (MAP_CELL_W * 1) + 1,
+                              (-MAP_CELL_W * 1) - 1,
+                              -MAP_CELL_W * 1,
+                              (-MAP_CELL_W * 1) + 1,
+                              (MAP_CELL_W * 2) - 1,
+                              MAP_CELL_W * 2,
+                              (MAP_CELL_W * 2) + 1,
+                              (-MAP_CELL_W * 2) - 1,
+                              -MAP_CELL_W * 2,
+                              (-MAP_CELL_W * 2) + 1,
+                              (-MAP_CELL_W * 3) - 1,
+                              -MAP_CELL_W * 3,
+                              (-MAP_CELL_W * 3) + 1,
+                              kRefreshEol};
     return _list;
     //		return(Coord_Spillage_List(Coord, 64));
   }
@@ -304,8 +305,8 @@ const short* BulletClass::Occupy_List(bool /*placement*/) const {
   *account *	that the bullet imagery and the shadow are widely separated.
   */
   if (Height > 0) {
-    static short _list[25];
-    const short* ptr = Coord_Spillage_List(Coord, 5);
+    static int16_t _list[25];
+    const int16_t* ptr = Coord_Spillage_List(Coord, 5);
     int index = 0;
     CELL cell1 = Coord_Cell(Coord);
 
@@ -314,12 +315,11 @@ const short* BulletClass::Occupy_List(bool /*placement*/) const {
       index++;
     }
 
-    COORDINATE coord =
-        Coord_Move(Coord, DIR_N, static_cast<unsigned short>(Height));
+    COORDINATE coord = Coord_Move(Coord, DIR_N, static_cast<uint16_t>(Height));
     CELL cell2 = Coord_Cell(coord);
     ptr = Coord_Spillage_List(coord, 5);
     while (*ptr != kRefreshEol) {
-      _list[index++] = static_cast<short>(*ptr + (cell2 - cell1));
+      _list[index++] = static_cast<int16_t>(*ptr + (cell2 - cell1));
       ptr++;
     }
     _list[index] = kRefreshEol;
@@ -740,9 +740,8 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
         scatterdist =
             std::min(scatterdist, static_cast<int>(Rule.BallisticScatter));
         scatterdist = std::max(scatterdist, 0);
-        tcoord = Coord_Move(
-            tcoord, dir,
-            static_cast<unsigned short>(Random_Pick(0, scatterdist)));
+        tcoord = Coord_Move(tcoord, dir,
+                            static_cast<uint16_t>(Random_Pick(0, scatterdist)));
       }
     }
 

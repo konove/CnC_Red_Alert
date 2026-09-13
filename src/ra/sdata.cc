@@ -54,6 +54,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 #include <cstddef>
+#include <cstdint>
 #include <filesystem>
 #include <string>
 
@@ -313,13 +314,13 @@ SmudgeType SmudgeTypeClass::From_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-const short* SmudgeTypeClass::Occupy_List(bool /*placement*/) const {
-  static short _occupy[4 * 4];
-  short* ptr = &_occupy[0];
+const int16_t* SmudgeTypeClass::Occupy_List(bool /*placement*/) const {
+  static int16_t _occupy[4 * 4];
+  int16_t* ptr = &_occupy[0];
 
   for (int x = 0; x < Width; x++) {
     for (int y = 0; y < Height; y++) {
-      *ptr++ = static_cast<short>(x + (y * MAP_CELL_W));
+      *ptr++ = static_cast<int16_t>(x + (y * MAP_CELL_W));
     }
   }
   *ptr = kRefreshEol;

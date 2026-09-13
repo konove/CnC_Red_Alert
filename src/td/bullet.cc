@@ -55,6 +55,7 @@
 #include "td/bullet.h"
 
 #include <algorithm>
+#include <cstdint>
 
 #include "rand.h"
 #include "sdllib/shape.h"
@@ -218,7 +219,7 @@ BulletClass::BulletClass(BulletType id)
  * HISTORY: * 06/20/1994 JLB : Created. * 01/05/1995 JLB : Handles projectiles
  *with altitude.                                       *
  *=============================================================================================*/
-const short* BulletClass::Occupy_List(bool /*placement*/) const {
+const int16_t* BulletClass::Occupy_List(bool /*placement*/) const {
   Validate();
   switch (*this) {
     case BULLET_FLAME:
@@ -231,7 +232,7 @@ const short* BulletClass::Occupy_List(bool /*placement*/) const {
     default:
       if (Altitude) {
         static CELL _list[10];
-        const short* ptr = Coord_Spillage_List(Coord, 5);
+        const int16_t* ptr = Coord_Spillage_List(Coord, 5);
         int index = 0;
         CELL cell1 = Coord_Cell(Coord);
 
@@ -396,9 +397,9 @@ void BulletClass::AI() {
         forced = true;
 
         if (*this == BULLET_TOW) {
-          Strength = static_cast<short>(Strength + (Strength / 3));
+          Strength = static_cast<int16_t>(Strength + (Strength / 3));
         } else {
-          Strength = static_cast<short>(Strength + (Strength / 2));
+          Strength = static_cast<int16_t>(Strength + (Strength / 2));
         }
       }
 
@@ -662,8 +663,8 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
         dir = static_cast<DirType>(dir + (Random_Pick(0, 10) - 5) & 0x00FF);
         tcoord = Coord_Scatter(tcoord, Random_Pick(0, scatterdist));
       } else {
-        tcoord = Coord_Move(
-            tcoord, dir, static_cast<unsigned short>(Random_Pick(0, 0x0100)));
+        tcoord = Coord_Move(tcoord, dir,
+                            static_cast<uint16_t>(Random_Pick(0, 0x0100)));
       }
 
       /*
@@ -673,7 +674,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
           (!Payback->In_Range(tcoord, 0) && !Payback->In_Range(tcoord, 1))) {
         tcoord = Coord_Move(
             tcoord, ::Direction(tcoord, Coord),
-            static_cast<unsigned short>(
+            static_cast<uint16_t>(
                 Distance(tcoord) -
                 std::max(Payback->Weapon_Range(0), Payback->Weapon_Range(1))));
       }

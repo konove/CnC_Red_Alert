@@ -55,6 +55,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -146,7 +147,7 @@ GadgetClass* NullModemClass::Commands;  // button list
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 NullModemClass::NullModemClass(int numsend, int numreceive, int maxlen,
-                               unsigned short magicnum)
+                               uint16_t magicnum)
     : MaxLen(maxlen),
       NumSend(numsend),
       NumReceive(numreceive),
@@ -695,7 +696,7 @@ int NullModemClass::Service() {
   int pos;  // current position in RXBuf
   int i;    // loop counter
   // int status;
-  unsigned short length;
+  uint16_t length;
   SerialHeaderType header;  // decoded packet start, length
   SerialCRCType crc;        // decoded packet CRC
   char moredata = 0;
@@ -727,7 +728,7 @@ int NullModemClass::Service() {
   Now scan the buffer for the start of a packet.
   ------------------------------------------------------------------------*/
   pos = -1;
-  for (i = 0; i <= RXCount - static_cast<int>(sizeof(short)); i++) {
+  for (i = 0; i <= RXCount - static_cast<int>(sizeof(int16_t)); i++) {
     if (port::ReadUnaligned<uint16_t>(RXBuf + i) == PACKET_SERIAL_START) {
       pos = i;
       break;
@@ -743,8 +744,8 @@ int NullModemClass::Service() {
     /*.....................................................................
     move the remaining, un-checked bytes to the start of the buffer
     .....................................................................*/
-    memmove(RXBuf, RXBuf + i, sizeof(short) - 1);
-    RXCount = sizeof(short) - 1;
+    memmove(RXBuf, RXBuf + i, sizeof(int16_t) - 1);
+    RXCount = sizeof(int16_t) - 1;
     return Connection->Service();
   }
 
@@ -771,7 +772,7 @@ int NullModemClass::Service() {
     // Smart_Printf( "Verify failed\n");
     //		Hex_Dump_Data( (RXBuf + pos), PACKET_SERIAL_OVERHEAD_SIZE );
 
-    pos += sizeof(short);  // throw away the bogus start code
+    pos += sizeof(int16_t);  // throw away the bogus start code
     memmove(RXBuf, RXBuf + pos, base::ToSize(RXCount - pos));
     RXCount -= pos;
     return Connection->Service();
@@ -791,7 +792,7 @@ int NullModemClass::Service() {
 #endif
     // Smart_Printf( "length too lonnng %d, max %d \n", length, MaxLen );
 
-    pos += sizeof(short);  // throw away the bogus start code
+    pos += sizeof(int16_t);  // throw away the bogus start code
     memmove(RXBuf, RXBuf + pos, base::ToSize(RXCount - pos));
     RXCount -= pos;
     return Connection->Service();
@@ -837,7 +838,7 @@ int NullModemClass::Service() {
     //(PACKET_SERIAL_OVERHEAD_SIZE + length) );
     //		}
 
-    pos += sizeof(short);  // throw away the bogus start code
+    pos += sizeof(int16_t);  // throw away the bogus start code
     memmove(RXBuf, RXBuf + pos, base::ToSize(RXCount - pos));
     RXCount -= pos;
     return Connection->Service();

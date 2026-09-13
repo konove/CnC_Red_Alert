@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_SIDEBAR_H_
 #define CNC_RED_ALERT_RA_SIDEBAR_H_
 
+#include <cstdint>
+
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/gadget.h"
@@ -89,7 +91,7 @@ class SidebarClass : public PowerClass {
 
   void AI(KeyNumType& input, int x, int y) override;
   void Draw_It(bool complete) override;
-  void Refresh_Cells(CELL cell, const short* list) override;
+  void Refresh_Cells(CELL cell, const int16_t* list) override;
 
   void Zoom_Mode_Control();
   bool Abandon_Production(RTTIType type, int factory);

@@ -52,6 +52,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <cstdint>
 #include <filesystem>
 #include <string>
 
@@ -710,8 +711,8 @@ OverlayType OverlayTypeClass::From_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-const short* OverlayTypeClass::Occupy_List(bool /*placement*/) const {
-  static short _simple[] = {0, REFRESH_EOL};
+const int16_t* OverlayTypeClass::Occupy_List(bool /*placement*/) const {
+  static int16_t _simple[] = {0, REFRESH_EOL};
 
   return _simple;
 }

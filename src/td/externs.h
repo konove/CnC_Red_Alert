@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_EXTERNS_H_
 #define CNC_RED_ALERT_TD_EXTERNS_H_
 
+#include <cstdint>
+
 #include "port/ex_string.h"
 #include "sdllib/playcd.h"
 #include "td/aircraft.h"
@@ -339,7 +341,7 @@ extern char MPlayerGameName[MPLAYER_NAME_MAX];
 extern GlobalPacketType GPacket;
 extern int GPacketlen;
 extern IPXAddressClass GAddress;
-extern unsigned short GProductID;
+extern uint16_t GProductID;
 extern char* MetaPacket;
 extern int MetaSize;
 extern DynamicVectorClass<NodeNameType*> Games;

@@ -92,6 +92,7 @@
 #include <cctype>
 #include <climits>
 #include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
@@ -1093,9 +1094,9 @@ bool XMP_Add_Int(uint32_t* result, const uint32_t* left_number,
  *=============================================================================================*/
 bool XMP_Sub(uint32_t* result, const uint32_t* left_number,
              const uint32_t* right_number, bool borrow, int precision) {
-  const auto* left_number_ptr = (const unsigned short*)left_number;
-  const auto* right_number_ptr = (const unsigned short*)right_number;
-  auto* result_ptr = (unsigned short*)result;
+  const auto* left_number_ptr = (const uint16_t*)left_number;
+  const auto* right_number_ptr = (const uint16_t*)right_number;
+  auto* result_ptr = (uint16_t*)result;
 
   precision *= 2;
   while (precision--) {
@@ -1104,7 +1105,7 @@ bool XMP_Sub(uint32_t* result, const uint32_t* left_number,
                  static_cast<uint32_t>(borrow);
     right_number_ptr++;
     left_number_ptr++;
-    *result_ptr++ = static_cast<unsigned short>(x);
+    *result_ptr++ = static_cast<uint16_t>(x);
     borrow = (1L << 16 & x) != 0L;
   }
   return borrow;
@@ -1137,16 +1138,16 @@ bool XMP_Sub(uint32_t* result, const uint32_t* left_number,
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 bool XMP_Sub_Int(uint32_t* result, const uint32_t* left_number,
-                 unsigned short right_number, bool borrow, int precision) {
-  const auto* left_number_ptr = (const unsigned short*)left_number;
-  auto* result_ptr = (unsigned short*)result;
+                 uint16_t right_number, bool borrow, int precision) {
+  const auto* left_number_ptr = (const uint16_t*)left_number;
+  auto* result_ptr = (uint16_t*)result;
 
   precision *= 2;
   while (precision--) {
     uint32_t x =
         static_cast<uint32_t>(*left_number_ptr) - right_number - borrow;
     left_number_ptr++;
-    *result_ptr++ = static_cast<unsigned short>(x);
+    *result_ptr++ = static_cast<uint16_t>(x);
     borrow = (1L << 16 & x) != 0L;
 
     right_number = 0;
@@ -1235,12 +1236,12 @@ int XMP_Unsigned_Mult(uint32_t* prod, const uint32_t* multiplicand,
  *=============================================================================================*/
 int XMP_Unsigned_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
                           uint16_t multiplier, int precision) {
-  const auto* m2 = (const unsigned short*)multiplicand;
-  auto* pr = (unsigned short*)prod;
+  const auto* m2 = (const uint16_t*)multiplicand;
+  auto* pr = (uint16_t*)prod;
   unsigned long carry = 0;
   for (int i = 0; i < precision * 2; ++i) {
     unsigned long p = (static_cast<unsigned long>(multiplier) * *m2) + carry;
-    *pr = static_cast<unsigned short>(p);
+    *pr = static_cast<uint16_t>(p);
     carry = p >> 16;
     m2++;
     pr++;
@@ -1273,14 +1274,14 @@ int XMP_Unsigned_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
 int XMP_Signed_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
-                        signed short multiplier, int precision) {
+                        int16_t multiplier, int precision) {
   if (XMP_Is_Negative(multiplicand, precision)) {
     uint32_t abs_multiplicand[MAX_UNIT_PRECISION];
     XMP_Move(abs_multiplicand, multiplicand, precision);
     XMP_Neg(abs_multiplicand, precision);
 
     if (multiplier < 0) {
-      multiplier = static_cast<signed short>(-multiplier);
+      multiplier = static_cast<int16_t>(-multiplier);
 
       XMP_Unsigned_Mult_Int(prod, abs_multiplicand,
                             static_cast<uint16_t>(multiplier), precision);
@@ -1291,7 +1292,7 @@ int XMP_Signed_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
     }
   } else {
     if (multiplier < 0) {
-      multiplier = static_cast<signed short>(-multiplier);
+      multiplier = static_cast<int16_t>(-multiplier);
 
       XMP_Unsigned_Mult_Int(prod, multiplicand,
                             static_cast<uint16_t>(multiplier), precision);
@@ -1380,14 +1381,13 @@ int XMP_Signed_Mult(uint32_t* prod, const uint32_t* multiplicand,
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-unsigned short XMP_Unsigned_Div_Int(uint32_t* quotient,
-                                    const uint32_t* dividend,
-                                    unsigned short divisor, int precision) {
+uint16_t XMP_Unsigned_Div_Int(uint32_t* quotient, const uint32_t* dividend,
+                              uint16_t divisor, int precision) {
   if (!divisor) {
     return 0; /* zero divisor means divide error */
   }
 
-  unsigned short remainder = 0;
+  uint16_t remainder = 0;
 
   XMP_Init(quotient, 0, precision);
 
@@ -1696,7 +1696,7 @@ void XMP_Decode_ASCII(const char* str, uint32_t* mpn, int precision) {
     return;
   }
 
-  unsigned short radix;          /* base 2-16 */
+  uint16_t radix;                /* base 2-16 */
   switch (toupper(str[i - 1])) { /* classify radix select suffix character */
     case '.':
       radix = 10;
@@ -1800,18 +1800,18 @@ void XMP_Decode_ASCII(const char* str, uint32_t* mpn, int precision) {
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-static void XMP_Hybrid_Mul(unsigned short* prod, unsigned short* multiplicand,
-                           unsigned short multiplier, int precision) {
+static void XMP_Hybrid_Mul(uint16_t* prod, uint16_t* multiplicand,
+                           uint16_t multiplier, int precision) {
   unsigned long carry = 0;
   for (int i = 0; i < precision; ++i) {
     unsigned long p = static_cast<unsigned long>(multiplier) * *multiplicand++;
     p += *prod + carry;
-    *prod++ = static_cast<unsigned short>(p);
+    *prod++ = static_cast<uint16_t>(p);
     carry = p >> 16;
   }
 
   /* Add carry to the next higher word of product / dividend */
-  *prod += static_cast<unsigned short>(carry);
+  *prod += static_cast<uint16_t>(carry);
 }
 
 /***********************************************************************************************
@@ -1842,19 +1842,19 @@ void XMP_Double_Mul(uint32_t* prod, const uint32_t* multiplicand,
   */
   XMP_Init(prod, 0, precision * 2);
 
-  const auto* multiplier_ptr = (const unsigned short*)multiplier;
-  auto* product_ptr = (unsigned short*)prod;
+  const auto* multiplier_ptr = (const uint16_t*)multiplier;
+  auto* product_ptr = (uint16_t*)prod;
 
   // Multiply multiplicand by each word in multiplier, accumulating prod.
   for (int i = 0; i < precision * 2; ++i) {
-    XMP_Hybrid_Mul(product_ptr++, (unsigned short*)multiplicand,
-                   *multiplier_ptr++, precision * 2);
+    XMP_Hybrid_Mul(product_ptr++, (uint16_t*)multiplicand, *multiplier_ptr++,
+                   precision * 2);
   }
 }
 
 static int modulus_shift;  // number of bits for recip scaling
-static unsigned short reciprical_high_digit;  // MSdigit of scaled recip
-static unsigned short reciprical_low_digit;   // LSdigit of scaled recip
+static uint16_t reciprical_high_digit;  // MSdigit of scaled recip
+static uint16_t reciprical_low_digit;   // LSdigit of scaled recip
 
 static int modulus_sub_precision;  //	length of modulus in MULTUNITs
 static int modulus_bit_count;      //	number of modulus significant bits
@@ -1917,7 +1917,7 @@ int XMP_Prepare_Modulus(const uint32_t* n_modulus, int precision) {
     XMP_Shift_Right_Bits(mod_quotient, 1, 2);
     modulus_shift--; /* now  0 <= _modulus_shift <= 16 */
   }
-  auto* mpm = (unsigned short*)mod_quotient;
+  auto* mpm = (uint16_t*)mod_quotient;
   reciprical_low_digit = *mpm++;
   reciprical_high_digit = *mpm;
 
@@ -1979,10 +1979,9 @@ int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
                                                 // remaining to be generated
 
     /* Set msb, lsb, and normal ptrs of dividend */
-    unsigned short* dmph =
-        (unsigned short*)double_staging_number + dmi +
-        1;  // points to one higher than precision would indicate
-    unsigned short* dmpl = dmph - modulus_sub_precision;
+    uint16_t* dmph = (uint16_t*)double_staging_number + dmi +
+                     1;  // points to one higher than precision would indicate
+    uint16_t* dmpl = dmph - modulus_sub_precision;
 
     /*
     ** Divide loop.
@@ -1997,16 +1996,15 @@ int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
       --dmph;
       --dmpl;
 
-      unsigned short q = mp_quo_digit(dmph);  // trial quotient uint32_t
+      uint16_t q = mp_quo_digit(dmph);  // trial quotient uint32_t
       if (q > 0) {
-        XMP_Hybrid_Mul(dmpl, (unsigned short*)scratch_modulus, q,
-                       precision * 2);
+        XMP_Hybrid_Mul(dmpl, (uint16_t*)scratch_modulus, q, precision * 2);
 
         /* Perform correction if q too large.
         **  This rarely occurs.
         */
         if (!(*dmph & SEMI_UPPER_MOST_BIT)) {
-          unsigned short* dmp = dmpl;
+          uint16_t* dmp = dmpl;
           uint32_t aligned_digits[MAX_UNIT_PRECISION];
           std::memcpy(aligned_digits, dmp,
                       base::ToSize(precision) * sizeof(uint32_t));
@@ -2082,7 +2080,7 @@ void XMP_Mod_Mult_Clear(int precision) {
 **      three MULTUNITs at dividend by the upper two MULTUNITs of the
 **      modulus.
 */
-unsigned short mp_quo_digit(const unsigned short* dividend) {
+uint16_t mp_quo_digit(const uint16_t* dividend) {
   unsigned long q;
   unsigned long q0;
   unsigned long q1;
@@ -2115,8 +2113,7 @@ unsigned short mp_quo_digit(const unsigned short* dividend) {
   q >>= modulus_shift;
 
   /*      Prevent overflow and then wipe out the intermediate results. */
-  return static_cast<unsigned short>(
-      std::min(q, (unsigned long)(1L << 16) - 1));
+  return static_cast<uint16_t>(std::min(q, (unsigned long)(1L << 16) - 1));
 }
 
 /*
@@ -2264,7 +2261,7 @@ bool XMP_Is_Small_Prime(const uint32_t* candidate, const int precision) {
   // The bounds check above guarantees the value fits in the table's element
   // type.
   return std::ranges::binary_search(primeTable,
-                                    static_cast<unsigned short>(*candidate));
+                                    static_cast<uint16_t>(*candidate));
 }
 
 /***********************************************************************************************
@@ -2554,7 +2551,7 @@ bool XMP_Is_Prime(const uint32_t* prime, int precision) {
 /*
 **	Complete list of all prime numbers that are less than 32719 (inclusive).
 */
-unsigned short primeTable[3511] = {
+uint16_t primeTable[3511] = {
     0x0002, 0x0003, 0x0005, 0x0007, 0x000B, 0x000D, 0x0011, 0x0013, 0x0017,
     0x001D, 0x001F, 0x0025, 0x0029, 0x002B, 0x002F, 0x0035, 0x003B, 0x003D,
     0x0043, 0x0047, 0x0049, 0x004F, 0x0053, 0x0059, 0x0061, 0x0065, 0x0067,

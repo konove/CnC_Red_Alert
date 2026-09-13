@@ -64,13 +64,13 @@
   Apply_XOR_Delta((char*)(buffer), (char*)(delta))
 
 typedef struct {
-  unsigned short frames;
-  unsigned short x;
-  unsigned short y;
-  unsigned short width;
-  unsigned short height;
-  unsigned short largest_frame_size;
-  short flags;
+  uint16_t frames;
+  uint16_t x;
+  uint16_t y;
+  uint16_t width;
+  uint16_t height;
+  uint16_t largest_frame_size;
+  int16_t flags;
 } KeyFrameHeaderType;
 
 // Byte offset of the frame offset table, which follows the header.
@@ -192,8 +192,7 @@ void Enable_Uncompressed_Shapes() {
   UseBigShapeBuffer = OriginalUseBigShapeBuffer;
 }
 
-void* Build_Frame(const void* dataptr, unsigned short framenumber,
-                  void* buffptr) {
+void* Build_Frame(const void* dataptr, uint16_t framenumber, void* buffptr) {
   char* ptr;
   // char *uncomp_ptr;
   uint32_t offset[SUBFRAMEOFFS];
@@ -201,9 +200,9 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
   int32_t offcurr;
   int32_t offdiff;
   KeyFrameHeaderType* keyfr;
-  unsigned short buffsize;
-  unsigned short currframe = 0;
-  unsigned short subframe;
+  uint16_t buffsize;
+  uint16_t currframe = 0;
+  uint16_t subframe;
   unsigned long length = 0;
   char frameflags;
   void* return_value;
@@ -288,10 +287,10 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
     if (keyfr->x != UNCOMPRESS_MAGIC_NUMBER) {
       keyfr->x = UNCOMPRESS_MAGIC_NUMBER;
       if (IsTheaterShape) {
-        keyfr->y = static_cast<unsigned short>(TheaterSlotsUsed);
+        keyfr->y = static_cast<uint16_t>(TheaterSlotsUsed);
         TheaterSlotsUsed++;
       } else {
-        keyfr->y = static_cast<unsigned short>(TotalSlotsUsed);
+        keyfr->y = static_cast<uint16_t>(TotalSlotsUsed);
         TotalSlotsUsed++;
       }
       /*
@@ -337,7 +336,7 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
   } else {  // key delta or delta
 
     if (frameflags & KF_DELTA) {
-      currframe = static_cast<unsigned short>(offset[1]);
+      currframe = static_cast<uint16_t>(offset[1]);
 
       ptr = static_cast<char*>(Add_Long_To_Pointer(
           dataptr,
@@ -492,21 +491,21 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Commented. *
  *=============================================================================================*/
-unsigned short Get_Build_Frame_Count(const void* dataptr) {
+uint16_t Get_Build_Frame_Count(const void* dataptr) {
   if (dataptr) {
     return static_cast<const KeyFrameHeaderType*>(dataptr)->frames;
   }
   return 0;
 }
 
-unsigned short Get_Build_Frame_X(const void* dataptr) {
+uint16_t Get_Build_Frame_X(const void* dataptr) {
   if (dataptr) {
     return static_cast<const KeyFrameHeaderType*>(dataptr)->x;
   }
   return 0;
 }
 
-unsigned short Get_Build_Frame_Y(const void* dataptr) {
+uint16_t Get_Build_Frame_Y(const void* dataptr) {
   if (dataptr) {
     return static_cast<const KeyFrameHeaderType*>(dataptr)->y;
   }
@@ -528,7 +527,7 @@ unsigned short Get_Build_Frame_Y(const void* dataptr) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Commented *
  *=============================================================================================*/
-unsigned short Get_Build_Frame_Width(const void* dataptr) {
+uint16_t Get_Build_Frame_Width(const void* dataptr) {
   if (dataptr) {
     return static_cast<const KeyFrameHeaderType*>(dataptr)->width;
   }
@@ -550,7 +549,7 @@ unsigned short Get_Build_Frame_Width(const void* dataptr) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Commented *
  *=============================================================================================*/
-unsigned short Get_Build_Frame_Height(const void* dataptr) {
+uint16_t Get_Build_Frame_Height(const void* dataptr) {
   if (dataptr) {
     return static_cast<const KeyFrameHeaderType*>(dataptr)->height;
   }

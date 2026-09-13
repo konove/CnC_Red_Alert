@@ -51,6 +51,7 @@
 #include <algorithm>
 #include <climits>
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 #include <iterator>
 #include <span>
@@ -195,7 +196,7 @@ void RandomStraw::Seed_Byte(char seed) {
  *                                                                                             *
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
-void RandomStraw::Seed_Short(short seed) {
+void RandomStraw::Seed_Short(int16_t seed) {
   for (int index = 0; std::cmp_less(index, sizeof(seed) * CHAR_BIT); index++) {
     Seed_Bit(seed);
     seed >>= 1;

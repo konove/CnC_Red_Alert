@@ -38,6 +38,8 @@
  *
  ****************************************************************************/
 
+#include <cstdint>
+
 #include "winvq/vqm32/vesavid.h"
 
 /*---------------------------------------------------------------------------
@@ -95,8 +97,8 @@ void DisplayXPage(long page);
 extern "C" {
 #endif
 
-void __cdecl WaitNoVB(short vbibit);
-void __cdecl WaitVB(short vbibit);
+void __cdecl WaitNoVB(int16_t vbibit);
+void __cdecl WaitVB(int16_t vbibit);
 void __cdecl ClearVRAM();
 long __cdecl SetXMode(long mode);
 void __cdecl ClearXMode();

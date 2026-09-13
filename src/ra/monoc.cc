@@ -62,15 +62,16 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "base/numeric.h"
 #include "ra/monoc.h"
 
 #include <algorithm>
 #include <cstdarg>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
+#include "base/numeric.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
 
@@ -860,7 +861,7 @@ int Mono_Printf(const char* string, ...) {
 
     va_end(va);
   }
-  return static_cast<short>(strlen(buffer));
+  return static_cast<int16_t>(strlen(buffer));
 }
 
 /***********************************************************************************************
@@ -993,7 +994,7 @@ int Mono_X() {
       mono = new MonoClass();
       mono->View();
     }
-    return static_cast<short>(mono->Get_X());
+    return static_cast<int16_t>(mono->Get_X());
   }
   return 0;
 }
@@ -1019,7 +1020,7 @@ int Mono_Y() {
       mono = new MonoClass();
       mono->View();
     }
-    return static_cast<short>(mono->Get_X());
+    return static_cast<int16_t>(mono->Get_X());
   }
   return 0;
 }
@@ -1043,5 +1044,5 @@ int Mono_Printf(int string, ...) {
 
     va_end(va);
   }
-  return static_cast<short>(strlen(buffer));
+  return static_cast<int16_t>(strlen(buffer));
 }

@@ -739,7 +739,7 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
     return;
   }
 
-  const short* list = object->Occupy_List();
+  const int16_t* list = object->Occupy_List();
   while (*list != REFRESH_EOL) {
     CELL newcell = static_cast<CELL>(cell + *list++);
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
@@ -782,7 +782,7 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
     return;
   }
 
-  const short* list = object->Occupy_List();
+  const int16_t* list = object->Occupy_List();
   while (*list != REFRESH_EOL) {
     CELL newcell = static_cast<CELL>(cell + *list++);
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
@@ -825,7 +825,7 @@ void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
     return;
   }
 
-  const short* list = object->Overlap_List();
+  const int16_t* list = object->Overlap_List();
   while (*list != REFRESH_EOL) {
     CELL newcell = static_cast<CELL>(cell + *list++);
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
@@ -857,7 +857,7 @@ void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
     return;
   }
 
-  const short* list = object->Overlap_List();
+  const int16_t* list = object->Overlap_List();
   while (*list != REFRESH_EOL) {
     CELL newcell = static_cast<CELL>(cell + *list++);
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {

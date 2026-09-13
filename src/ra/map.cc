@@ -962,9 +962,9 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
 
   if (object->Class_Of().IsFootprint &&
       object->In_Which_Layer() == LAYER_GROUND) {
-    short xlist[32];
+    int16_t xlist[32];
     List_Copy(object->Occupy_List(), std::ssize(xlist), xlist);
-    const short* list = xlist;
+    const int16_t* list = xlist;
     while (*list != kRefreshEol) {
       CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
@@ -1011,9 +1011,9 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
 
   if (object->Class_Of().IsFootprint &&
       object->In_Which_Layer() == LAYER_GROUND) {
-    short xlist[32];
+    int16_t xlist[32];
     List_Copy(object->Occupy_List(), std::ssize(xlist), xlist);
-    const short* list = xlist;
+    const int16_t* list = xlist;
     while (*list != kRefreshEol) {
       CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
@@ -1060,9 +1060,9 @@ void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
 
   if (object->Class_Of().IsFootprint &&
       object->In_Which_Layer() == LAYER_GROUND) {
-    short xlist[32];
+    int16_t xlist[32];
     List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
-    const short* list = xlist;
+    const int16_t* list = xlist;
     while (*list != kRefreshEol) {
       CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
@@ -1097,9 +1097,9 @@ void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
 
   if (object->Class_Of().IsFootprint &&
       object->In_Which_Layer() == LAYER_GROUND) {
-    short xlist[32];
+    int16_t xlist[32];
     List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
-    const short* list = xlist;
+    const int16_t* list = xlist;
     while (*list != kRefreshEol) {
       CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {

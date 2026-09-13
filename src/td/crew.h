@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_CREW_H_
 #define CNC_RED_ALERT_TD_CREW_H_
 
+#include <cstdint>
+
 /****************************************************************************
 **	This class handles the basic crew logic. This includes hero tracking,
 **	crew bail-out, and attached object logic.
@@ -57,7 +59,7 @@ class CrewClass {
   **	This keeps track of the number of "kills" the unit as accumulated.
   **	When it reaches a certain point, the unit improves.
   */
-  unsigned short Kills{0};
+  uint16_t Kills{0};
 
   /*
   **	Constructors, Destructors, and overloaded operators.

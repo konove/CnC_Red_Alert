@@ -42,6 +42,8 @@ Buff);
 #ifndef CNC_RED_ALERT_TECH_PCX_FILE_H_
 #define CNC_RED_ALERT_TECH_PCX_FILE_H_
 
+#include <cstdint>
+
 #include "sdllib/buffer.h"
 #include "sdllib/gbuffer.h"
 
@@ -56,17 +58,17 @@ typedef struct {
   char version;
   char encoding;
   char pixelsize;
-  short x;
-  short y;
-  short width;
-  short height;
-  short xres;
-  short yres;
+  int16_t x;
+  int16_t y;
+  int16_t width;
+  int16_t height;
+  int16_t xres;
+  int16_t yres;
   RGB ega_palette[16];
   char nothing;
   char color_planes;
-  short byte_per_line;
-  short palette_type;
+  int16_t byte_per_line;
+  int16_t palette_type;
   char filler[58];
 } PCX_HEADER;
 

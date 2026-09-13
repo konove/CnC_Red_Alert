@@ -1576,7 +1576,7 @@ int RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
  *                                                                                             *
  * HISTORY: * 01/01/1995 JLB : Created. *
  *=============================================================================================*/
-void RadarClass::Refresh_Cells(CELL cell, const short* list) {
+void RadarClass::Refresh_Cells(CELL cell, const int16_t* list) {
   if (*list == REFRESH_SIDEBAR) {
     IsRadarToRedraw = true;
     Flag_To_Redraw(false);

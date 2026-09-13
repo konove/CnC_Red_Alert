@@ -74,6 +74,7 @@
 #include "ra/vessel.h"
 
 #include <cassert>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -555,7 +556,7 @@ void VesselClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-const short* VesselClass::Overlap_List(bool /*redraw*/) const {
+const int16_t* VesselClass::Overlap_List(bool /*redraw*/) const {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
@@ -1977,8 +1978,8 @@ void VesselClass::Read_INI(CCINIClass& ini) {
           }
 
           if (vessel->Unlimbo(coord, dir)) {
-            vessel->Strength =
-                static_cast<short>(vessel->Class->MaxStrength * fixed(strength, 256));
+            vessel->Strength = static_cast<int16_t>(vessel->Class->MaxStrength *
+                                                    fixed(strength, 256));
             if (vessel->Strength > vessel->Class->MaxStrength - 3) {
               vessel->Strength = vessel->Class->MaxStrength;
             }
@@ -2255,7 +2256,7 @@ void VesselClass::Repair_AI() {
 
     if (House->Available_Money() >= cost) {
       House->Spend_Money(cost);
-      Strength = static_cast<short>(Strength + step);
+      Strength = static_cast<int16_t>(Strength + step);
       if (std::cmp_greater_equal(Strength, Class->MaxStrength)) {
         Strength = Class->MaxStrength;
         IsSelfRepairing = IsToSelfRepair = false;

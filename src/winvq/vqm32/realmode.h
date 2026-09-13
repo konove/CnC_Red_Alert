@@ -18,6 +18,8 @@
 
 #ifndef CNC_RED_ALERT_WINVQ_VQM32_REALMODE_H_
 #define CNC_RED_ALERT_WINVQ_VQM32_REALMODE_H_
+
+#include <cstdint>
 /****************************************************************************
  *
  *         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
@@ -74,8 +76,8 @@ typedef struct RMInfo {
   long edx;
   long ecx;
   long eax;
-  short flags;
-  short es, ds, fs, gs, ip, cs, sp, ss;
+  int16_t flags;
+  int16_t es, ds, fs, gs, ip, cs, sp, ss;
 } RMInfo;
 
 #endif  // CNC_RED_ALERT_WINVQ_VQM32_REALMODE_H_

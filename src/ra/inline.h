@@ -82,6 +82,7 @@
 #ifndef CNC_RED_ALERT_RA_INLINE_H_
 #define CNC_RED_ALERT_RA_INLINE_H_
 
+#include <cstdint>
 #include <cstdlib>
 #include <iterator>
 
@@ -114,7 +115,7 @@
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
 inline int Lepton_To_Pixel(LEPTON lepton) {
-  return ((static_cast<int>((signed short)lepton) * ICON_PIXEL_W) +
+  return ((static_cast<int>((int16_t)lepton) * ICON_PIXEL_W) +
           (ICON_LEPTON_W / 2)) /
          ICON_LEPTON_W;
 }
@@ -533,11 +534,11 @@ inline COORDINATE Coord_Add(COORDINATE a, COORDINATE b) {
   COORD_COMPOSITE coord{};
 
   coord.Sub.X.Raw =
-      static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)a).Sub.X.Raw +
-                          (int)(short)((COORD_COMPOSITE&)b).Sub.X.Raw);
+      static_cast<LEPTON>((int)(int16_t)((COORD_COMPOSITE&)a).Sub.X.Raw +
+                          (int)(int16_t)((COORD_COMPOSITE&)b).Sub.X.Raw);
   coord.Sub.Y.Raw =
-      static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)a).Sub.Y.Raw +
-                          (int)(short)((COORD_COMPOSITE&)b).Sub.Y.Raw);
+      static_cast<LEPTON>((int)(int16_t)((COORD_COMPOSITE&)a).Sub.Y.Raw +
+                          (int)(int16_t)((COORD_COMPOSITE&)b).Sub.Y.Raw);
   return coord.Coord;
 }
 
@@ -563,11 +564,11 @@ inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
   COORD_COMPOSITE coord{};
 
   coord.Sub.X.Raw =
-      static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)coord1).Sub.X.Raw -
-                          (int)(short)((COORD_COMPOSITE&)coord2).Sub.X.Raw);
+      static_cast<LEPTON>((int)(int16_t)((COORD_COMPOSITE&)coord1).Sub.X.Raw -
+                          (int)(int16_t)((COORD_COMPOSITE&)coord2).Sub.X.Raw);
   coord.Sub.Y.Raw =
-      static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)coord1).Sub.Y.Raw -
-                          (int)(short)((COORD_COMPOSITE&)coord2).Sub.Y.Raw);
+      static_cast<LEPTON>((int)(int16_t)((COORD_COMPOSITE&)coord1).Sub.Y.Raw -
+                          (int)(int16_t)((COORD_COMPOSITE&)coord2).Sub.Y.Raw);
   return coord.Coord;
 }
 

@@ -70,6 +70,7 @@
  *- - - - - - - */
 
 #include <cstddef>
+#include <cstdint>
 #include <filesystem>
 #include <string>
 
@@ -106,86 +107,86 @@
 #define MCW MAP_CELL_W
 
 #define XYCELL(x, y) ((y) * MAP_CELL_W + (x))
-static const short ExitPyle[] = {
+static const int16_t ExitPyle[] = {
     XYCELL(1, 2),  XYCELL(2, 2),  XYCELL(0, 2),  XYCELL(-1, 2), XYCELL(-1, -1),
     XYCELL(0, -1), XYCELL(1, -1), XYCELL(2, -1), XYCELL(2, -1), XYCELL(-1, 0),
     XYCELL(2, 0),  XYCELL(2, 1),  XYCELL(-1, 1), kRefreshEol};
 
-static const short ExitSub[] = {XYCELL(0, 2), XYCELL(2, 2), XYCELL(-1, 2),
-                                XYCELL(1, 2), XYCELL(3, 2)};
+static const int16_t ExitSub[] = {XYCELL(0, 2), XYCELL(2, 2), XYCELL(-1, 2),
+                                  XYCELL(1, 2), XYCELL(3, 2)};
 
-static const short ExitWeap[] = {XYCELL(1, 2), XYCELL(-1, 3), XYCELL(0, 3),
-                                 XYCELL(1, 3), XYCELL(-2, 3), XYCELL(2, 3),
-                                 kRefreshEol};
+static const int16_t ExitWeap[] = {XYCELL(1, 2), XYCELL(-1, 3), XYCELL(0, 3),
+                                   XYCELL(1, 3), XYCELL(-2, 3), XYCELL(2, 3),
+                                   kRefreshEol};
 
-static const short ComList[] = {0, 1, MCW, MCW + 1, kRefreshEol};
-static const short List000111111[] = {(MCW * 1),  (MCW * 1) + 1, (MCW * 1) + 2,
-                                      (MCW * 2),  (MCW * 2) + 1, (MCW * 2) + 2,
-                                      kRefreshEol};
-static const short List0010[] = {MCW, kRefreshEol};
-static const short List0011[] = {(MCW * 1), (MCW * 1) + 1, kRefreshEol};
-static const short List010111100[] = {
+static const int16_t ComList[] = {0, 1, MCW, MCW + 1, kRefreshEol};
+static const int16_t List000111111[] = {
+    (MCW * 1),     (MCW * 1) + 1, (MCW * 1) + 2, (MCW * 2),
+    (MCW * 2) + 1, (MCW * 2) + 2, kRefreshEol};
+static const int16_t List0010[] = {MCW, kRefreshEol};
+static const int16_t List0011[] = {(MCW * 1), (MCW * 1) + 1, kRefreshEol};
+static const int16_t List010111100[] = {
     1, (MCW * 1), (MCW * 1) + 1, (MCW * 1) + 2, (MCW * 2), kRefreshEol};
-static const short List0111[] = {1, (MCW * 1), (MCW * 1) + 1, kRefreshEol};
-static const short List1000[] = {0, kRefreshEol};
-static const short List101000011[] = {0, 2, (MCW * 2) + 1, (MCW * 2) + 2,
-                                      kRefreshEol};
-static const short List1100[] = {0, 1, kRefreshEol};
-static const short List1101[] = {0, 1, (MCW * 1) + 1, kRefreshEol};
-static const short List11[] = {0, 1, kRefreshEol};
-static const short List12[] = {MCW, kRefreshEol};
-static const short List1[] = {0, kRefreshEol};
-static const short List21[] = {0, 1, kRefreshEol};
-static const short List22[] = {0, 1, MCW, MCW + 1, kRefreshEol};
-static const short List22_0011[] = {MCW, MCW + 1, kRefreshEol};
-static const short List22_1100[] = {0, 1, kRefreshEol};
-static const short List2[] = {0, 1, MCW + 1, MCW, kRefreshEol};
-static const short List32[] = {0, 1, 2, MCW, MCW + 1, MCW + 2, kRefreshEol};
+static const int16_t List0111[] = {1, (MCW * 1), (MCW * 1) + 1, kRefreshEol};
+static const int16_t List1000[] = {0, kRefreshEol};
+static const int16_t List101000011[] = {0, 2, (MCW * 2) + 1, (MCW * 2) + 2,
+                                        kRefreshEol};
+static const int16_t List1100[] = {0, 1, kRefreshEol};
+static const int16_t List1101[] = {0, 1, (MCW * 1) + 1, kRefreshEol};
+static const int16_t List11[] = {0, 1, kRefreshEol};
+static const int16_t List12[] = {MCW, kRefreshEol};
+static const int16_t List1[] = {0, kRefreshEol};
+static const int16_t List21[] = {0, 1, kRefreshEol};
+static const int16_t List22[] = {0, 1, MCW, MCW + 1, kRefreshEol};
+static const int16_t List22_0011[] = {MCW, MCW + 1, kRefreshEol};
+static const int16_t List22_1100[] = {0, 1, kRefreshEol};
+static const int16_t List2[] = {0, 1, MCW + 1, MCW, kRefreshEol};
+static const int16_t List32[] = {0, 1, 2, MCW, MCW + 1, MCW + 2, kRefreshEol};
 // static short const List42[] = {0, 1, 2, 3, MCW, MCW+1, MCW+2, MCW+3,
 // kRefreshEol};
-static const short ListFix[] = {1,       MCW,           MCW + 1,
-                                MCW + 2, MCW + MCW + 1, kRefreshEol};
-static const short ListWeap[] = {
+static const int16_t ListFix[] = {1,       MCW,           MCW + 1,
+                                  MCW + 2, MCW + MCW + 1, kRefreshEol};
+static const int16_t ListWeap[] = {
     0, 1, 2, (MCW * 1), (MCW * 1) + 1, (MCW * 1) + 2, kRefreshEol};
-static const short ListWestwood[] = {1,       2,       3,          MCW + 1,
-                                     MCW + 2, MCW + 3, kRefreshEol};
-static const short OListSAM[] = {-MCW, -(MCW - 1), kRefreshEol};
+static const int16_t ListWestwood[] = {1,       2,       3,          MCW + 1,
+                                       MCW + 2, MCW + 3, kRefreshEol};
+static const int16_t OListSAM[] = {-MCW, -(MCW - 1), kRefreshEol};
 #ifdef FATSHIP
-static const short ListSPen[] = {0,
-                                 1,
-                                 2,
-                                 MCW,
-                                 MCW + 1,
-                                 MCW + 2,
-                                 MCW + MCW,
-                                 MCW + MCW + 1,
-                                 MCW + MCW + 2,
-                                 kRefreshEol};
-static const short OListSPen[] = {kRefreshEol};
+static const int16_t ListSPen[] = {0,
+                                   1,
+                                   2,
+                                   MCW,
+                                   MCW + 1,
+                                   MCW + 2,
+                                   MCW + MCW,
+                                   MCW + MCW + 1,
+                                   MCW + MCW + 2,
+                                   kRefreshEol};
+static const int16_t OListSPen[] = {kRefreshEol};
 #else
 static const short ListSPen[] = {1,       MCW,           MCW + 1,
                                  MCW + 2, MCW + MCW + 1, kRefreshEol};
 static const short OListSPen[] = {0, 2, MCW + MCW, MCW + MCW + 2, kRefreshEol};
 #endif
-static const short OListWestwood[] = {0, MCW, kRefreshEol};
-static const short StoreList[] = {0, kRefreshEol};
+static const int16_t OListWestwood[] = {0, MCW, kRefreshEol};
+static const int16_t StoreList[] = {0, kRefreshEol};
 
-static const short ListFactory[] = {0,
-                                    1,
-                                    2,
-                                    (MCW * 1),
-                                    (MCW * 1) + 1,
-                                    (MCW * 1) + 2,
-                                    (MCW * 2),
-                                    (MCW * 2) + 1,
-                                    (MCW * 2) + 2,
-                                    kRefreshEol};
+static const int16_t ListFactory[] = {0,
+                                      1,
+                                      2,
+                                      (MCW * 1),
+                                      (MCW * 1) + 1,
+                                      (MCW * 1) + 2,
+                                      (MCW * 2),
+                                      (MCW * 2) + 1,
+                                      (MCW * 2) + 2,
+                                      kRefreshEol};
 
-static const short OListFix[] = {0, 2, MCW + MCW, MCW + MCW + 2, kRefreshEol};
-static const short OListWeap[] = {kRefreshEol};
-static const short OComList[] = {1, kRefreshEol};
-static const short OList12[] = {0, kRefreshEol};
-static const short OListTmpl[] = {0, 1, 2, kRefreshEol};
+static const int16_t OListFix[] = {0, 2, MCW + MCW, MCW + MCW + 2, kRefreshEol};
+static const int16_t OListWeap[] = {kRefreshEol};
+static const int16_t OComList[] = {1, kRefreshEol};
+static const int16_t OList12[] = {0, kRefreshEol};
+static const int16_t OListTmpl[] = {0, 1, 2, kRefreshEol};
 
 /***************************************************************************
  */
@@ -2838,8 +2839,8 @@ BuildingTypeClass::BuildingTypeClass(
     bool is_nominal, bool is_wall, bool is_simpledamage, bool is_stealthy,
     bool is_selectable, bool is_legal_target, bool is_insignificant,
     bool is_theater, bool is_turret_equipped, bool is_remappable,
-    RTTIType tobuild, DirType sframe, BSizeType size, const short* exitlist,
-    const short* sizelist, const short* overlap) noexcept
+    RTTIType tobuild, DirType sframe, BSizeType size, const int16_t* exitlist,
+    const int16_t* sizelist, const int16_t* overlap) noexcept
     : TechnoTypeClass(RTTI_BUILDINGTYPE, static_cast<int>(type), name, ininame,
                       remap, verticaloffset, primaryoffset, primarylateral,
                       primaryoffset, primarylateral, is_nominal, is_stealthy,
@@ -3438,21 +3439,21 @@ BuildingTypeClass& BuildingTypeClass::As_Reference(StructType type) {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-const short* BuildingTypeClass::Occupy_List(bool placement) const {
+const int16_t* BuildingTypeClass::Occupy_List(bool placement) const {
   SmudgeType bib = SMUDGE_NONE;
   CELL cell = 0;
 
   if (placement && Bib_And_Offset(bib, cell)) {
     const SmudgeTypeClass& smudge = SmudgeTypeClass::As_Reference(bib);
-    static short _list[25];
-    short* dest = &_list[0];
+    static int16_t _list[25];
+    int16_t* dest = &_list[0];
 
     /*
     **	Copy the bib overlap list into the working buffer.
     */
-    const short* src = smudge.Occupy_List();
+    const int16_t* src = smudge.Occupy_List();
     while (*src != kRefreshEol) {
-      *dest++ = static_cast<short>(*src++ + cell);
+      *dest++ = static_cast<int16_t>(*src++ + cell);
     }
 
     /*
@@ -3471,7 +3472,7 @@ const short* BuildingTypeClass::Occupy_List(bool placement) const {
     return OccupyList;
   }
 
-  static const short _templap[] = {kRefreshEol};
+  static const int16_t _templap[] = {kRefreshEol};
   return &_templap[0];
 }
 
@@ -3492,12 +3493,12 @@ const short* BuildingTypeClass::Occupy_List(bool placement) const {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-const short* BuildingTypeClass::Overlap_List() const {
+const int16_t* BuildingTypeClass::Overlap_List() const {
   if (OverlapList != nullptr) {
     return OverlapList;
   }
 
-  static const short _templap[] = {kRefreshEol};
+  static const int16_t _templap[] = {kRefreshEol};
   return &_templap[0];
 }
 
@@ -3692,7 +3693,7 @@ bool BuildingTypeClass::Flush_For_Placement(CELL cell,
                                             HouseClass* house) const {
   bool again = false;
   if (cell > 0) {
-    const short* list = Occupy_List(true);
+    const int16_t* list = Occupy_List(true);
 
     while (*list != kRefreshEol) {
       CELL newcell = static_cast<CELL>(cell + *list++);

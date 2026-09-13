@@ -22,6 +22,7 @@
 #include "ra/coord.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <iterator>
 
 #include "base/trig.h"
@@ -32,10 +33,10 @@
 #include "ra/jshell.h"
 #include "ra/target.h"
 
-const short* Coord_Spillage_List(const COORDINATE coord, const Rect& rect,
-                                 const bool no_center) {
+const int16_t* Coord_Spillage_List(const COORDINATE coord, const Rect& rect,
+                                   const bool no_center) {
   if (!rect.Is_Valid()) {
-    static constexpr short _list[] = {kRefreshEol};
+    static constexpr int16_t _list[] = {kRefreshEol};
     return _list;
   }
 
@@ -49,9 +50,9 @@ const short* Coord_Spillage_List(const COORDINATE coord, const Rect& rect,
   LEPTON_COMPOSITE right{};
   LEPTON_COMPOSITE bottom{};
   left.Raw = static_cast<LEPTON>(static_cast<int>(x) +
-                                 static_cast<short>(Pixel_To_Lepton(rect.X)));
+                                 static_cast<int16_t>(Pixel_To_Lepton(rect.X)));
   top.Raw = static_cast<LEPTON>(static_cast<int>(y) +
-                                static_cast<short>(Pixel_To_Lepton(rect.Y)));
+                                static_cast<int16_t>(Pixel_To_Lepton(rect.Y)));
   right.Raw = left.Raw + Pixel_To_Lepton(rect.Width - 1);
   bottom.Raw = top.Raw + Pixel_To_Lepton(rect.Height - 1);
 
@@ -61,11 +62,12 @@ const short* Coord_Spillage_List(const COORDINATE coord, const Rect& rect,
   const int cell_bottom = bottom.Sub.Cell;
 
   int count = 0;
-  static short offsets[128];
-  short* ptr = offsets;
+  static int16_t offsets[128];
+  int16_t* ptr = offsets;
   for (int yy = cell_top; yy <= cell_bottom; yy++) {
     for (int xx = cell_left; xx <= cell_right; xx++) {
-      if (const auto offset = static_cast<short>(XY_Cell(xx, yy) - origin_cell);
+      if (const auto offset =
+              static_cast<int16_t>(XY_Cell(xx, yy) - origin_cell);
           !no_center || offset != 0) {
         *ptr++ = offset;
         count++;
@@ -84,7 +86,7 @@ const short* Coord_Spillage_List(const COORDINATE coord, const Rect& rect,
 }
 
 COORDINATE Coord_Move(const COORDINATE start, const DirType facing,
-                      const unsigned short distance) {
+                      const uint16_t distance) {
   auto x = static_cast<int16_t>(Coord_X(start));
   auto y = static_cast<int16_t>(Coord_Y(start));
   base::MovePoint(x, y, facing, static_cast<int16_t>(distance));
@@ -94,7 +96,7 @@ COORDINATE Coord_Move(const COORDINATE start, const DirType facing,
 COORDINATE Coord_Scatter(const COORDINATE coord, const int distance,
                          const bool lock) {
   COORDINATE result = Coord_Move(coord, Random_Pick(DIR_N, DIR_MAX),
-                                 static_cast<unsigned short>(distance));
+                                 static_cast<uint16_t>(distance));
 
   // If the move overflowed the valid coordinate range, discard it.
   if (result & kHighCoordMask) {
@@ -130,8 +132,8 @@ int Distance(const TARGET target1, const TARGET target2) {
   return Distance(As_Coord(target1), As_Coord(target2));
 }
 
-const short* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
-  static const short
+const int16_t* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
+  static const int16_t
       kFacingOffsets[static_cast<int>(magic_enum::enum_count<FacingType>()) +
                      1][5] = {
           {0, -MAP_CELL_W, kRefreshEol, 0, 0},                   // N
@@ -144,7 +146,7 @@ const short* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
           {0, -1, -MAP_CELL_W, -(MAP_CELL_W + 1), kRefreshEol},  // NW
           {0, kRefreshEol, 0, 0, 0}                              // non-moving.
   };
-  static short computed_offsets[10];
+  static int16_t computed_offsets[10];
   // 4-bit index encoding: bit3=south, bit2=north, bit1=east, bit0=west.
   // Maps each spill combination to a kFacingOffsets row index. -1 = invalid.
   static constexpr signed char kSpillToFacing[16] = {
@@ -155,7 +157,7 @@ const short* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
 
   // Objects larger than 2 tiles use a prebuilt 5x5 cell region.
   if (maxsize > ICON_PIXEL_W * 2) {
-    static constexpr short _gigundo[] = {
+    static constexpr int16_t _gigundo[] = {
         -((2 * MAP_CELL_W) - 2), -((2 * MAP_CELL_W) - 1),
         -(2 * MAP_CELL_W),       -((2 * MAP_CELL_W) + 1),
         -((2 * MAP_CELL_W) + 2), -((1 * MAP_CELL_W) - 2),

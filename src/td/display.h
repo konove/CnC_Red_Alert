@@ -41,6 +41,7 @@
 #ifndef CNC_RED_ALERT_TD_DISPLAY_H_
 #define CNC_RED_ALERT_TD_DISPLAY_H_
 
+#include <cstdint>
 #include <vector>
 
 #include "base/numeric.h"
@@ -94,8 +95,8 @@ class DisplayClass : public MapClass {
   **	extensively by the scenario editor.
   */
   CELL ZoneCell{0};
-  short ZoneOffset{0};
-  const short* CursorSize{nullptr};
+  int16_t ZoneOffset{0};
+  const int16_t* CursorSize{nullptr};
   bool ProximityCheck{false};  // Is proximity check ok?
 
   /*
@@ -153,7 +154,7 @@ class DisplayClass : public MapClass {
                          bool /*unused*/ = false, int /*unused*/ = 0) {}
   [[nodiscard]] virtual MouseType Get_Mouse_Shape() const = 0;
   virtual bool Scroll_Map(DirType facing, int& distance, bool really);
-  virtual void Refresh_Cells(CELL cell, const short* list);
+  virtual void Refresh_Cells(CELL cell, const int16_t* list);
   virtual void Set_View_Dimensions(int x, int y, int width = -1,
                                    int height = -1);
 
@@ -163,9 +164,9 @@ class DisplayClass : public MapClass {
   virtual void Put_Place_Back(TechnoClass* /*unused*/) {
   }  // Affects 'pending' system.
   void Cursor_Mark(CELL pos, bool on);
-  void Set_Cursor_Shape(const short* list);
+  void Set_Cursor_Shape(const int16_t* list);
   CELL Set_Cursor_Pos(CELL pos = -1);
-  static void Get_Occupy_Dimensions(int& w, int& h, const short* list);
+  static void Get_Occupy_Dimensions(int& w, int& h, const int16_t* list);
 
   /*
   **	Tactical map only functionality.
@@ -185,7 +186,8 @@ class DisplayClass : public MapClass {
   static ObjectClass* Next_Object(ObjectClass* object);
   static ObjectClass* Prev_Object(ObjectClass* object);
   int Cell_Shadow(CELL cell);
-  const short* Text_Overlap_List(const char* text, int x, int y, int lines = 1);
+  const int16_t* Text_Overlap_List(const char* text, int x, int y,
+                                   int lines = 1);
   [[nodiscard]] bool Is_Spot_Free(COORDINATE coord) const;
   [[nodiscard]] COORDINATE Closest_Free_Spot(COORDINATE coord,
                                              bool any = false) const;

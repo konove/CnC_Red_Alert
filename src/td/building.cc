@@ -113,6 +113,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -782,8 +783,8 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) {
 bool BuildingClass::Mark(MarkType mark) {
   Validate();
   if (TechnoClass::Mark(mark)) {
-    const short* offset = Overlap_List();
-    const short* occupy = Occupy_List();
+    const int16_t* offset = Overlap_List();
+    const int16_t* occupy = Occupy_List();
     CELL cell = Coord_Cell(Coord);
     SmudgeType bib;
 
@@ -1193,7 +1194,7 @@ void BuildingClass::AI() {
     */
     if (House->Available_Money() >= cost) {
       House->Spend_Money(cost);
-      Strength = static_cast<short>(Strength + step);
+      Strength = static_cast<int16_t>(Strength + step);
 
       if (std::cmp_greater_equal(Strength, Class->MaxStrength)) {
         Strength = Class->MaxStrength;
@@ -1536,7 +1537,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
       Base_Is_Attacked(source);
     }
 
-    const short* offset = Occupy_List();
+    const int16_t* offset = Occupy_List();
 
     /*
     **	SPECIAL CASE:
@@ -1921,7 +1922,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
     ScenarioInit++;
     if (i->Unlimbo(Center_Coord(), DIR_N)) {
       i->Trigger = TriggerClass::As_Pointer("CHAN");
-      i->Strength = static_cast<short>(
+      i->Strength = static_cast<int16_t>(
           Random_Pick(5, static_cast<int>(i->Class->MaxStrength)));
       ScenarioInit--;
       i->Scatter(0, true);
@@ -1964,7 +1965,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
           }
           ScenarioInit++;
           if (i->Unlimbo(Cell_Coord(newcell), DIR_N)) {
-            i->Strength = static_cast<short>(
+            i->Strength = static_cast<int16_t>(
                 Random_Pick(5, static_cast<int>(i->Class->MaxStrength)));
             i->Scatter(0, true);
             if (source != kTargetNone && !House->Is_Ally(As_Object(source))) {
@@ -3083,7 +3084,7 @@ void BuildingClass::Read_INI(char* buffer) {
         if (b->Unlimbo(Cell_Coord(cell), facing)) {
           strength = std::min(strength, 0x100);
           strength = Fixed_To_Cardinal(b->Class->MaxStrength, strength);
-          b->Strength = static_cast<short>(strength);
+          b->Strength = static_cast<int16_t>(strength);
           b->IsALemon = false;
           b->Trigger = TriggerClass::As_Pointer(trigname);
           if (b->Trigger) {
@@ -3824,8 +3825,8 @@ int BuildingClass::Mission_Deconstruction() {
 
             if (unit->Unlimbo(Coord_Snap(Adjacent_Cell(Coord, DIR_SE)),
                               DIR_SW)) {
-              unit->Strength =
-                  static_cast<short>(Fixed_To_Cardinal(unit->Class_Of().MaxStrength, ratio));
+              unit->Strength = static_cast<int16_t>(
+                  Fixed_To_Cardinal(unit->Class_Of().MaxStrength, ratio));
             } else {
               /*
               **	If, for some strange reason, the MCV could not be placed
@@ -4935,7 +4936,7 @@ bool BuildingClass::Flush_For_Placement(TechnoClass* techno, CELL cell) {
   Validate();
   bool again = false;
   if (techno && cell > 0) {
-    const short* list = techno->Class_Of().Occupy_List(true);
+    const int16_t* list = techno->Class_Of().Occupy_List(true);
 
     while (*list != REFRESH_EOL) {
       CELL newcell = static_cast<CELL>(cell + *list++);
@@ -5015,7 +5016,7 @@ bool BuildingClass::Passes_Proximity_Check(CELL homecell) {
   *adjacent *	cells to these are of friendly persuasion, then consider the
   *proximity check to *	have been a success.
   */
-  const short* ptr = Occupy_List(true);
+  const int16_t* ptr = Occupy_List(true);
   while (*ptr != REFRESH_EOL) {
     CELL cell = static_cast<CELL>(homecell + *ptr++);
 

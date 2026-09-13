@@ -61,6 +61,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
+#include <cstdint>
 
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -353,10 +354,10 @@ bool AnimClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-const short* AnimClass::Overlap_List(bool /*redraw*/) const {
+const int16_t* AnimClass::Overlap_List(bool /*redraw*/) const {
   assert(Anims.ID(this) == ID);
   assert(IsActive);
-  static const short OverlapAtom[] = {
+  static const int16_t OverlapAtom[] = {
       (-MAP_CELL_W * 2) - 1, (-MAP_CELL_W * 2),
       (-MAP_CELL_W * 2) + 1, (-MAP_CELL_W * 1) - 1,
       (-MAP_CELL_W * 1),     (-MAP_CELL_W * 1) + 1,
@@ -367,7 +368,7 @@ const short* AnimClass::Overlap_List(bool /*redraw*/) const {
       (MAP_CELL_W * 2) + 1,  kRefreshEol};
 
   if (IsToDelete) {
-    static const short _list[] = {kRefreshEol};
+    static const int16_t _list[] = {kRefreshEol};
     return _list;
   }
 
@@ -393,11 +394,11 @@ const short* AnimClass::Overlap_List(bool /*redraw*/) const {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-const short* AnimClass::Occupy_List(bool /*placement*/) const {
+const int16_t* AnimClass::Occupy_List(bool /*placement*/) const {
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
-  static short _simple[] = {kRefreshEol};
+  static int16_t _simple[] = {kRefreshEol};
 
   return _simple;
 }

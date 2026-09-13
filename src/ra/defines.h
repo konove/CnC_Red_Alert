@@ -274,7 +274,7 @@ inline constexpr int16_t kRefreshSidebar = 32766;
 **	size is critical. COORDINATE is more efficient when dealing with
 **	accuracy and object movement.
 */
-using LEPTON = unsigned short;
+using LEPTON = uint16_t;
 union LEPTON_COMPOSITE {
   LEPTON Raw;
   struct {

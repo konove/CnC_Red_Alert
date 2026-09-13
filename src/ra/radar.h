@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_RADAR_H_
 #define CNC_RED_ALERT_RA_RADAR_H_
 
+#include <cstdint>
+
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/gadget.h"
@@ -85,7 +87,7 @@ class RadarClass : public DisplayClass {
   [[nodiscard]] CELL Click_Cell_Calc(int x, int y) const override;
   void AI(KeyNumType& input, int x, int y) override;
   void Draw_It(bool forced = false) override;
-  void Refresh_Cells(CELL cell, const short* list) override;
+  void Refresh_Cells(CELL cell, const int16_t* list) override;
   void Set_Map_Dimensions(int x, int y, int w, int h) override;
   void Set_Tactical_Position(COORDINATE coord) override;
   void Zoom_Mode(CELL cell);

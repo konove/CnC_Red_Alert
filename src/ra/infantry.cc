@@ -100,6 +100,7 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -1468,7 +1469,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-const short* InfantryClass::Overlap_List(bool /*redraw*/) const {
+const int16_t* InfantryClass::Overlap_List(bool /*redraw*/) const {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -2801,7 +2802,7 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
         if (object->What_Am_I() == RTTI_BUILDING) {
           CELL cell = As_Cell(object->As_Target());
           int targzone = Map[As_Cell(As_Target())].Zones[Class->MZone];
-          const short* list =
+          const int16_t* list =
               ((BuildingClass*)object)->Class->Occupy_List(false);
           bool found = false;
           while (*list != kRefreshEol && !found) {
@@ -3199,8 +3200,8 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
           }
 
           if (infantry->Unlimbo(coord, dir)) {
-            infantry->Strength =
-                static_cast<short>(infantry->Class_Of().MaxStrength * fixed(strength, 256));
+            infantry->Strength = static_cast<int16_t>(
+                infantry->Class_Of().MaxStrength * fixed(strength, 256));
             if (infantry->Strength > infantry->Class->MaxStrength - 3) {
               infantry->Strength = infantry->Class->MaxStrength;
             }
@@ -3856,9 +3857,9 @@ void InfantryClass::Movement_AI() {
           maxspeed = FormationMaxSpeed;
         }
 
-        Coord = Coord_Move(
-            Coord, Direction(Head_To_Coord()),
-            static_cast<unsigned short>(maxspeed * fixed(movespeed, 256)));
+        Coord =
+            Coord_Move(Coord, Direction(Head_To_Coord()),
+                       static_cast<uint16_t>(maxspeed * fixed(movespeed, 256)));
       }
       Mark(MARK_DOWN);
     }

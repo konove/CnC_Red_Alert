@@ -59,6 +59,7 @@
  *=============================================================================================*/
 #include "td/fly.h"
 
+#include <cstdint>
 #include <cstdlib>
 
 #include "td/coord.h"
@@ -82,7 +83,7 @@ ImpactType FlyClass::Physics(COORDINATE& coord, DirType facing) {
     if (result.quot) {
       COORDINATE newcoord;  // New working coordinate.
 
-      newcoord = Coord_Move(coord, facing, static_cast<unsigned short>(actual));
+      newcoord = Coord_Move(coord, facing, static_cast<uint16_t>(actual));
 
       /*
       **	If no movement occurred, then presume it hasn't moved at all

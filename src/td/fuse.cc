@@ -54,6 +54,7 @@
 #include "td/fuse.h"
 
 #include <algorithm>
+#include <cstdint>
 
 #include "td/defines.h"
 #include "td/display_constants.h"
@@ -94,7 +95,7 @@ void FuseClass::Arm_Fuse(COORDINATE location, COORDINATE target, int timeto,
   Timer = static_cast<unsigned char>(std::min(timeto, 0xFF));
   Arming = static_cast<unsigned char>(std::min(arming, 0xFF));
   HeadTo = target;
-  Proximity = static_cast<short>(Distance(location, target));
+  Proximity = static_cast<int16_t>(Distance(location, target));
 }
 
 /***********************************************************************************************
@@ -142,7 +143,7 @@ bool FuseClass::Fuse_Checkup(COORDINATE newlocation) {
     if (proximity < ICON_LEPTON_W && proximity > Proximity) {
       return true;
     }
-    Proximity = static_cast<short>(proximity);
+    Proximity = static_cast<int16_t>(proximity);
   }
   return false;
 }

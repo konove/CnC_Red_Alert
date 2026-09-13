@@ -1,16 +1,18 @@
 #ifndef CNC_RED_ALERT_TD_MPLAYER_H_
 #define CNC_RED_ALERT_TD_MPLAYER_H_
 
+#include <cstdint>
+
 #include "td/defines.h"
 
-inline PlayerColorType MPlayerID_To_ColorIndex(unsigned short id) {
+inline PlayerColorType MPlayerID_To_ColorIndex(uint16_t id) {
   return static_cast<PlayerColorType>(id >> 4);
 }
-inline HousesType MPlayerID_To_HousesType(unsigned short id) {
+inline HousesType MPlayerID_To_HousesType(uint16_t id) {
   return static_cast<HousesType>(id & 0x000f);
 }
-inline unsigned short Build_MPlayerID(int c_idx, HousesType htype) {
-  return static_cast<unsigned short>(c_idx << 4 | htype);
+inline uint16_t Build_MPlayerID(int c_idx, HousesType htype) {
+  return static_cast<uint16_t>(c_idx << 4 | htype);
 }
 
 GameType Select_MPlayer_Game();

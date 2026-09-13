@@ -134,6 +134,7 @@
 #include "td/techno.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <utility>
 
 #include "sdllib/drawbuff.h"
@@ -218,8 +219,8 @@ TechnoTypeClass::TechnoTypeClass(
     bool is_legal_target, bool is_insignificant, bool is_immune,
     bool is_theater, bool is_twoshooter, bool is_turret_equipped,
     bool is_repairable, bool is_buildable, bool is_crew, int ammo,
-    int16_t strength, MPHType maxspeed, int sightrange, int cost,
-    int scenario, int /*risk*/, int reward, int ownable, WeaponType primary,
+    int16_t strength, MPHType maxspeed, int sightrange, int cost, int scenario,
+    int /*risk*/, int reward, int ownable, WeaponType primary,
     WeaponType secondary, ArmorType armor) noexcept
     : ObjectTypeClass(true, is_flammable, is_crushable, is_stealthy,
                       is_selectable, is_legal_target, is_insignificant,
@@ -242,7 +243,7 @@ TechnoTypeClass::TechnoTypeClass(
       Reward(reward),
       MaxSpeed(maxspeed),
       MaxAmmo(ammo),
-      Ownable(static_cast<unsigned short>(ownable)),
+      Ownable(static_cast<uint16_t>(ownable)),
       Primary(primary),
       Secondary(secondary) {
   /*
@@ -290,7 +291,7 @@ int TechnoTypeClass::Raw_Cost() const { return Cost; }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-unsigned short TechnoTypeClass::Get_Ownable() const { return Ownable; }
+uint16_t TechnoTypeClass::Get_Ownable() const { return Ownable; }
 
 /***********************************************************************************************
  * TechnoTypeClass::Time_To_Build -- Fetches the time to build this object. *
@@ -732,7 +733,7 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
           }
 #endif
           House->Spend_Money(cost);
-          Strength = static_cast<short>(Strength + step);
+          Strength = static_cast<int16_t>(Strength + step);
           return RADIO_ROGER;
         }
       }

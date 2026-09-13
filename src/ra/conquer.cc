@@ -3184,7 +3184,7 @@ void Shake_The_Screen(int shakes) {
   Show_Mouse();
 }
 
-void List_Copy(const short* source, int len, short* dest) {
+void List_Copy(const int16_t* source, int len, int16_t* dest) {
   if (source == nullptr || dest == nullptr) {
     return;
   }

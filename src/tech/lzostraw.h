@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_TECH_LZOSTRAW_H_
 #define CNC_RED_ALERT_TECH_LZOSTRAW_H_
 
+#include <cstdint>
+
 #include "tech/straw.h"
 
 /*
@@ -91,8 +93,8 @@ class LZOStraw : public Straw {
   **	Each block has a header of this format.
   */
   struct {
-    unsigned short CompCount = 0;    // Size of data block (compressed).
-    unsigned short UncompCount = 0;  // Bytes of uncompressed data it represents.
+    uint16_t CompCount = 0;    // Size of data block (compressed).
+    uint16_t UncompCount = 0;  // Bytes of uncompressed data it represents.
   } BlockHeader;
 
   // Set once the stream yields a block that cannot be decoded safely; all

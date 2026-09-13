@@ -159,6 +159,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstdint>
 #include <cstring>
 #include <iterator>
 #include <utility>
@@ -618,15 +619,13 @@ COORDINATE TechnoClass::Fire_Coord(int which) const {
 
   COORDINATE coord =
       Coord_Move(Center_Coord(), DIR_N,
-                 static_cast<unsigned short>(tclass->VerticalOffset + Height));
+                 static_cast<uint16_t>(tclass->VerticalOffset + Height));
   if (IsSecondShot) {
-    coord =
-        Coord_Move(coord, dir + DIR_E, static_cast<unsigned short>(lateral));
+    coord = Coord_Move(coord, dir + DIR_E, static_cast<uint16_t>(lateral));
   } else {
-    coord =
-        Coord_Move(coord, dir + DIR_W, static_cast<unsigned short>(lateral));
+    coord = Coord_Move(coord, dir + DIR_W, static_cast<uint16_t>(lateral));
   }
-  coord = Coord_Move(coord, dir, static_cast<unsigned short>(dist));
+  coord = Coord_Move(coord, dir, static_cast<uint16_t>(dist));
 
   return coord;
 }
@@ -1129,7 +1128,7 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
         */
         if (House->Available_Money() >= cost) {
           House->Spend_Money(cost);
-          Strength = static_cast<short>(Strength + step);
+          Strength = static_cast<int16_t>(Strength + step);
 
           /*
           **	Return with either an all ok or mission accomplished radio
@@ -6441,7 +6440,7 @@ int TechnoTypeClass::Legal_Placement(CELL pos) const {
   *of *	obstacles. If this check passes for all foundation squares, only
   *then does the *	routine return that it is legal to place.
   */
-  const short* offset = Occupy_List(true);
+  const int16_t* offset = Occupy_List(true);
   bool build = What_Am_I() == RTTI_BUILDINGTYPE;
 
   while (offset != nullptr && *offset != kRefreshEol) {

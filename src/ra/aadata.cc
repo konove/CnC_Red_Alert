@@ -57,6 +57,7 @@
  *- - - - - - - */
 
 #include <cstddef>
+#include <cstdint>
 #include <string>
 
 #include "magic_enum/magic_enum.hpp"
@@ -490,8 +491,8 @@ void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-const short* AircraftTypeClass::Occupy_List(bool /*placement*/) const {
-  static const short _list[] = {0, kRefreshEol};
+const int16_t* AircraftTypeClass::Occupy_List(bool /*placement*/) const {
+  static const int16_t _list[] = {0, kRefreshEol};
   return _list;
 }
 
@@ -510,8 +511,8 @@ const short* AircraftTypeClass::Occupy_List(bool /*placement*/) const {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-const short* AircraftTypeClass::Overlap_List() const {
-  static const short _list[] = {
+const int16_t* AircraftTypeClass::Overlap_List() const {
+  static const int16_t _list[] = {
       -(MAP_CELL_W - 1), -MAP_CELL_W, -(MAP_CELL_W + 1), -1,         1,
       (MAP_CELL_W - 1),  MAP_CELL_W,  (MAP_CELL_W + 1),  kRefreshEol};
   return _list;

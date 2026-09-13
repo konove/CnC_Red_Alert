@@ -46,6 +46,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <cstdint>
 #include <filesystem>
 
 #include "port/ex_string.h"
@@ -64,48 +65,49 @@
 // #define TREE_WEAK 400
 // #define TREE_STRONG 800
 
-static const short List1[] = {0, REFRESH_EOL};
-static const short List000010[] = {MAP_CELL_W + 1, REFRESH_EOL};
-static const short List000011101000[] = {
+static const int16_t List1[] = {0, REFRESH_EOL};
+static const int16_t List000010[] = {MAP_CELL_W + 1, REFRESH_EOL};
+static const int16_t List000011101000[] = {
     MAP_CELL_W, MAP_CELL_W + 1, MAP_CELL_W + 2, MAP_CELL_W * 2, REFRESH_EOL};
-static const short List00001[] = {4, REFRESH_EOL};
-static const short List000110[] = {MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL};
-static const short List000111[] = {MAP_CELL_W, MAP_CELL_W + 1, MAP_CELL_W + 2,
-                                   REFRESH_EOL};
-static const short List001011100110[] = {2,
-                                         MAP_CELL_W,
-                                         MAP_CELL_W + 1,
-                                         MAP_CELL_W + 2,
-                                         (MAP_CELL_W * 2) + 1,
-                                         (MAP_CELL_W * 2) + 2,
-                                         REFRESH_EOL};
-static const short List0010[] = {MAP_CELL_W, REFRESH_EOL};
-static const short List0011[] = {MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL};
-static const short List001[] = {2, REFRESH_EOL};
-static const short List010110[] = {1, MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL};
-static const short List01[] = {1, REFRESH_EOL};
-static const short List1001[] = {0, MAP_CELL_W + 1, REFRESH_EOL};
-static const short List101001[] = {0, 2, MAP_CELL_W + 2, REFRESH_EOL};
-static const short List10[] = {0, REFRESH_EOL};
-static const short List110000011001[] = {
+static const int16_t List00001[] = {4, REFRESH_EOL};
+static const int16_t List000110[] = {MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL};
+static const int16_t List000111[] = {MAP_CELL_W, MAP_CELL_W + 1, MAP_CELL_W + 2,
+                                     REFRESH_EOL};
+static const int16_t List001011100110[] = {2,
+                                           MAP_CELL_W,
+                                           MAP_CELL_W + 1,
+                                           MAP_CELL_W + 2,
+                                           (MAP_CELL_W * 2) + 1,
+                                           (MAP_CELL_W * 2) + 2,
+                                           REFRESH_EOL};
+static const int16_t List0010[] = {MAP_CELL_W, REFRESH_EOL};
+static const int16_t List0011[] = {MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL};
+static const int16_t List001[] = {2, REFRESH_EOL};
+static const int16_t List010110[] = {1, MAP_CELL_W, MAP_CELL_W + 1,
+                                     REFRESH_EOL};
+static const int16_t List01[] = {1, REFRESH_EOL};
+static const int16_t List1001[] = {0, MAP_CELL_W + 1, REFRESH_EOL};
+static const int16_t List101001[] = {0, 2, MAP_CELL_W + 2, REFRESH_EOL};
+static const int16_t List10[] = {0, REFRESH_EOL};
+static const int16_t List110000011001[] = {
     0, 1, MAP_CELL_W + 3, MAP_CELL_W * 2, (MAP_CELL_W * 2) + 3, REFRESH_EOL};
-static const short List110000[] = {0, 1, REFRESH_EOL};
-static const short List110001[] = {0, 1, MAP_CELL_W + 2, REFRESH_EOL};
-static const short List1100[] = {0, 1, REFRESH_EOL};
-static const short List110110[] = {0, 1, MAP_CELL_W, MAP_CELL_W + 1,
-                                   REFRESH_EOL};
-static const short List1101[] = {0, 1, MAP_CELL_W + 1, REFRESH_EOL};
-static const short List111000010110[] = {0,
-                                         1,
-                                         2,
-                                         MAP_CELL_W + 3,
-                                         (MAP_CELL_W * 2) + 1,
-                                         (MAP_CELL_W * 2) + 2,
-                                         REFRESH_EOL};
-static const short List111001[] = {0, 1, 2, MAP_CELL_W + 2, REFRESH_EOL};
-static const short List111101[] = {0,          1, 2, MAP_CELL_W, MAP_CELL_W + 2,
-                                   REFRESH_EOL};
-static const short List11110[] = {0, 1, 2, 3, REFRESH_EOL};
+static const int16_t List110000[] = {0, 1, REFRESH_EOL};
+static const int16_t List110001[] = {0, 1, MAP_CELL_W + 2, REFRESH_EOL};
+static const int16_t List1100[] = {0, 1, REFRESH_EOL};
+static const int16_t List110110[] = {0, 1, MAP_CELL_W, MAP_CELL_W + 1,
+                                     REFRESH_EOL};
+static const int16_t List1101[] = {0, 1, MAP_CELL_W + 1, REFRESH_EOL};
+static const int16_t List111000010110[] = {0,
+                                           1,
+                                           2,
+                                           MAP_CELL_W + 3,
+                                           (MAP_CELL_W * 2) + 1,
+                                           (MAP_CELL_W * 2) + 2,
+                                           REFRESH_EOL};
+static const int16_t List111001[] = {0, 1, 2, MAP_CELL_W + 2, REFRESH_EOL};
+static const int16_t List111101[] = {
+    0, 1, 2, MAP_CELL_W, MAP_CELL_W + 2, REFRESH_EOL};
+static const int16_t List11110[] = {0, 1, 2, 3, REFRESH_EOL};
 
 static const TerrainTypeClass Tree1Class(
     TERRAIN_TREE1, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -613,8 +615,8 @@ TerrainTypeClass::TerrainTypeClass(
     bool is_destroyable, bool is_transformable, bool is_flammable,
     bool is_crushable, bool is_selectable, bool is_legal_target,
     bool is_insignificant, bool is_immune, const char* ininame, int fullname,
-    int16_t strength, ArmorType armor, const short* occupy,
-    const short* overlap) noexcept
+    int16_t strength, ArmorType armor, const int16_t* occupy,
+    const int16_t* overlap) noexcept
     : ObjectTypeClass(true, is_flammable, is_crushable, true, is_selectable,
                       is_legal_target, is_insignificant, is_immune, fullname,
                       ininame, armor, strength),
@@ -786,20 +788,20 @@ ObjectClass* TerrainTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
   return new TerrainClass(Type, -1);
 }
 
-const short* TerrainTypeClass::Occupy_List(bool /*placement*/) const {
+const int16_t* TerrainTypeClass::Occupy_List(bool /*placement*/) const {
   if (Occupy) {
     return Occupy;
   }
 
-  static const short _simple[1] = {REFRESH_EOL};
+  static const int16_t _simple[1] = {REFRESH_EOL};
   return &_simple[0];
 }
 
-const short* TerrainTypeClass::Overlap_List() const {
+const int16_t* TerrainTypeClass::Overlap_List() const {
   if (Overlap) {
     return Overlap;
   }
 
-  static const short _simple[1] = {REFRESH_EOL};
+  static const int16_t _simple[1] = {REFRESH_EOL};
   return &_simple[0];
 }

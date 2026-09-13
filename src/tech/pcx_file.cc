@@ -37,6 +37,7 @@
 
 #include "tech/pcx_file.h"
 
+#include <cstdint>
 #include <utility>
 
 #include "base/numeric.h"
@@ -84,9 +85,9 @@ int Write_PCX_File(char* name, GraphicViewPortClass& pic,
     return false;
   }
 
-  header.width = static_cast<short>(pic.Get_Width() - 1);
-  header.height = static_cast<short>(pic.Get_Height() - 1);
-  header.byte_per_line = static_cast<short>(pic.Get_Width());
+  header.width = static_cast<int16_t>(pic.Get_Width() - 1);
+  header.height = static_cast<int16_t>(pic.Get_Height() - 1);
+  header.byte_per_line = static_cast<int16_t>(pic.Get_Width());
   Write_File(file_handle, &header, sizeof(PCX_HEADER));
 
   VP_Scan_Line = pic.Get_Width() + pic.Get_XAdd();

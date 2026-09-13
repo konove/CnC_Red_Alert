@@ -40,6 +40,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -121,7 +122,7 @@ void __cdecl Init_MMX();
 HINSTANCE ProgramInstance;
 #endif
 extern bool CC95AlreadyRunning;
-void Move_Point(short& x, short& y, DirType dir, unsigned short distance);
+void Move_Point(int16_t& x, int16_t& y, DirType dir, uint16_t distance);
 
 #ifndef TD_NO_ENTRY_POINT
 #ifdef _WIN32
@@ -543,7 +544,7 @@ void Read_Setup_Options(RawFileClass* config_file) {
     if (socket > 0) {
       socket += 0x4000;
       if (socket >= 0x4000 && socket < 0x8000) {
-        Ipx.Set_Socket(static_cast<unsigned short>(socket));
+        Ipx.Set_Socket(static_cast<uint16_t>(socket));
       }
     }
 

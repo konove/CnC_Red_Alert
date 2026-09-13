@@ -2453,7 +2453,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     if (strstr(string, "-SOCKET")) {
       const auto offset = tech::ParseInteger<int>(string + strlen("-SOCKET"));
       if (offset && *offset >= 0 && *offset < 0x4000) {
-        Ipx.Set_Socket(static_cast<unsigned short>(*offset + 0x4000));
+        Ipx.Set_Socket(static_cast<uint16_t>(*offset + 0x4000));
       }
       continue;
     }

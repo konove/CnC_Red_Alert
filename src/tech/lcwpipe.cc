@@ -43,6 +43,7 @@
 #include "tech/lcwpipe.h"
 
 #include <cassert>
+#include <cstdint>
 #include <cstring>
 #include <span>
 #include <utility>
@@ -212,8 +213,8 @@ int LCWPipe::Put(const void* source, int slen) {
       if (Counter == BlockSize) {
         int len = LCW_Comp(Buffer, Buffer2, BlockSize);
 
-        BlockHeader.CompCount = static_cast<unsigned short>(len);
-        BlockHeader.UncompCount = static_cast<unsigned short>(BlockSize);
+        BlockHeader.CompCount = static_cast<uint16_t>(len);
+        BlockHeader.UncompCount = static_cast<uint16_t>(BlockSize);
         total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
         total += Pipe::Put(Buffer2, len);
         Counter = 0;
@@ -230,8 +231,8 @@ int LCWPipe::Put(const void* source, int slen) {
       source = (char*)source + BlockSize;
       slen -= BlockSize;
 
-      BlockHeader.CompCount = static_cast<unsigned short>(len);
-      BlockHeader.UncompCount = static_cast<unsigned short>(BlockSize);
+      BlockHeader.CompCount = static_cast<uint16_t>(len);
+      BlockHeader.UncompCount = static_cast<uint16_t>(BlockSize);
       total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
       total += Pipe::Put(Buffer2, len);
     }
@@ -309,8 +310,8 @@ int LCWPipe::Flush() {
       */
       int len = LCW_Comp(Buffer, Buffer2, Counter);
 
-      BlockHeader.CompCount = static_cast<unsigned short>(len);
-      BlockHeader.UncompCount = static_cast<unsigned short>(Counter);
+      BlockHeader.CompCount = static_cast<uint16_t>(len);
+      BlockHeader.UncompCount = static_cast<uint16_t>(Counter);
       total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
       total += Pipe::Put(Buffer2, len);
       Counter = 0;

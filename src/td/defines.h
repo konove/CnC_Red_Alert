@@ -1482,7 +1482,7 @@ typedef enum RadioMessageType {
 */
 typedef uint32_t COORDINATE;
 
-typedef unsigned short TARGET;
+typedef uint16_t TARGET;
 inline constexpr TARGET kTargetNone{};
 
 /****************************************************************************

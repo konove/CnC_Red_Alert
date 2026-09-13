@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_OBJECT_H_
 #define CNC_RED_ALERT_RA_OBJECT_H_
 
+#include <cstdint>
+
 #include "ra/abstract.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -235,8 +237,9 @@ class ObjectClass : public AbstractClass {
   virtual void Do_Shimmer();
   virtual int Exit_Object(TechnoClass* /*unused*/);
   virtual bool Render(bool forced);  // const;
-  [[nodiscard]] virtual const short* Occupy_List(bool placement = false) const;
-  [[nodiscard]] virtual const short* Overlap_List(bool redraw = false) const;
+  [[nodiscard]] virtual const int16_t* Occupy_List(
+      bool placement = false) const;
+  [[nodiscard]] virtual const int16_t* Overlap_List(bool redraw = false) const;
   [[nodiscard]] virtual fixed Health_Ratio() const;
   virtual void Draw_It(int x, int y, WindowNumberType) const = 0;
   virtual void Hidden();

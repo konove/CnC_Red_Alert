@@ -97,9 +97,9 @@ bool Sample_Status(int handle);
 bool Is_Sample_Playing(const void* sample);
 void Stop_Sample_Playing(const void* sample);
 int Play_Sample(const void* sample, int priority = 0xFF, int volume = 0xFF,
-                signed short panloc = 0x0);
+                int16_t panloc = 0x0);
 int Play_Sample_Handle(const void* sample, int priority, int volume,
-                       signed short panloc, int id);
+                       int16_t panloc, int id);
 int Set_Score_Vol(int volume);
 void Fade_Sample(int handle, int ticks);
 int AcquireSampleHandle(int priority);

@@ -48,6 +48,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <cstdint>
 #include <filesystem>
 
 #include "port/ex_string.h"
@@ -1298,10 +1299,10 @@ TemplateType TemplateTypeClass::From_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-const short* TemplateTypeClass::Occupy_List(bool /*placement*/) const {
-  static short _occupy[(13 * 8) + 5];
+const int16_t* TemplateTypeClass::Occupy_List(bool /*placement*/) const {
+  static int16_t _occupy[(13 * 8) + 5];
   unsigned char map[13 * 8];
-  short* ptr;
+  int16_t* ptr;
   int index;
 
   Mem_Copy(Get_Icon_Set_Map(Get_Image_Data()), map, static_cast<unsigned long>(Width) * Height);
@@ -1310,7 +1311,7 @@ const short* TemplateTypeClass::Occupy_List(bool /*placement*/) const {
   for (index = 0; index < Width * Height; index++) {
     if (map[index] != 0xFF) {
       *ptr++ =
-          static_cast<short>((index % Width) + (index / Width * MAP_CELL_W));
+          static_cast<int16_t>((index % Width) + (index / Width * MAP_CELL_W));
     }
   }
   *ptr = REFRESH_EOL;

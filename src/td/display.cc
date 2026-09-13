@@ -91,6 +91,7 @@
 #include "td/display.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -474,12 +475,12 @@ void DisplayClass::Init_Theater(TheaterType theater) {
  * HISTORY: * 12/06/1994 JLB : Created. * 12/07/1994 JLB : Sidebar fixup. *
  *   08/13/1995 JLB : Optimized for variable sized help text. *
  *=============================================================================================*/
-const short* DisplayClass::Text_Overlap_List(const char* text, int x, int y,
-                                             int lines) {
-  static short _list[30];
+const int16_t* DisplayClass::Text_Overlap_List(const char* text, int x, int y,
+                                               int lines) {
+  static int16_t _list[30];
 
   if (text) {
-    short* ptr = &_list[0];
+    int16_t* ptr = &_list[0];
     int len = String_Pixel_Width(text) + CELL_PIXEL_W;
     int right = TacPixelX + Lepton_To_Pixel(TacLeptonWidth);
 
@@ -512,7 +513,8 @@ const short* DisplayClass::Text_Overlap_List(const char* text, int x, int y,
       if (ul != -1 && lr != -1) {
         for (int yy = Cell_Y(ul); yy <= Cell_Y(lr); yy++) {
           for (int xx = Cell_X(ul); xx <= Cell_X(lr); xx++) {
-            *ptr++ = static_cast<short>(XY_Cell(xx, yy) - Coord_Cell(TacticalCoord));
+            *ptr++ = static_cast<int16_t>(XY_Cell(xx, yy) -
+                                          Coord_Cell(TacticalCoord));
           }
         }
       }
@@ -611,7 +613,7 @@ void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
  * HISTORY: * 06/03/1994 JLB : Created. * 06/26/1995 JLB : Puts placement cursor
  *into static buffer.                                *
  *=============================================================================================*/
-void DisplayClass::Set_Cursor_Shape(const short* list) {
+void DisplayClass::Set_Cursor_Shape(const int16_t* list) {
   if (CursorSize) {
     Cursor_Mark(static_cast<CELL>(ZoneCell + ZoneOffset), false);
   }
@@ -621,14 +623,14 @@ void DisplayClass::Set_Cursor_Shape(const short* list) {
   if (list) {
     int w;
     int h;
-    static short _list[50];
+    static int16_t _list[50];
 
     for (int i = 0; !i || list[i - 1] != REFRESH_EOL; i++) {
       _list[i] = list[i];
     }
     CursorSize = _list;
     Get_Occupy_Dimensions(w, h, CursorSize);
-    ZoneOffset = static_cast<short>(-((h / 2 * MAP_CELL_W) + (w / 2)));
+    ZoneOffset = static_cast<int16_t>(-((h / 2 * MAP_CELL_W) + (w / 2)));
     Cursor_Mark(static_cast<CELL>(ZoneCell + ZoneOffset), true);
   } else {
     CursorSize = nullptr;
@@ -659,7 +661,7 @@ void DisplayClass::Set_Cursor_Shape(const short* list) {
  *check.                                                  *
  *=============================================================================================*/
 bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object) {
-  const short* ptr;
+  const int16_t* ptr;
 
   /*
   ** In editor mode, the proximity check always passes.
@@ -812,7 +814,7 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
  *                                                                                             *
  * HISTORY: * 03/31/1995 BRR : Created. *
  *=============================================================================================*/
-void DisplayClass::Get_Occupy_Dimensions(int& w, int& h, const short* list) {
+void DisplayClass::Get_Occupy_Dimensions(int& w, int& h, const int16_t* list) {
   int min_x = MAP_CELL_W;
   int max_x = -MAP_CELL_W;
   int min_y = MAP_CELL_H;
@@ -1297,7 +1299,7 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
   **	Determine the coordinate that it wants to scroll to.
   */
   COORDINATE coord =
-      Coord_Move(TacticalCoord, facing, static_cast<unsigned short>(distance));
+      Coord_Move(TacticalCoord, facing, static_cast<uint16_t>(distance));
 
   /*
   **	Clip the new coordinate to the edges of the game world.
@@ -1363,7 +1365,7 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
  *                                                                                             *
  * HISTORY: * 05/14/1994 JLB : Created. * 08/01/1994 JLB : Simplified. *
  *=============================================================================================*/
-void DisplayClass::Refresh_Cells(CELL cell, const short* list) {
+void DisplayClass::Refresh_Cells(CELL cell, const int16_t* list) {
   if (*list == REFRESH_SIDEBAR) {
     list++;
   }

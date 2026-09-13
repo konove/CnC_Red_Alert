@@ -42,6 +42,7 @@
 #include "tech/lcwstraw.h"
 
 #include <cassert>
+#include <cstdint>
 #include <cstring>
 #include <span>
 #include <utility>
@@ -194,11 +195,11 @@ int LCWStraw::Get(void* destbuf, int slen) {
       Counter = BlockHeader.UncompCount;
     } else {
       BlockHeader.UncompCount =
-          static_cast<unsigned short>(Straw::Get(Buffer, BlockSize));
+          static_cast<uint16_t>(Straw::Get(Buffer, BlockSize));
       if (BlockHeader.UncompCount == 0) {
         break;
       }
-      BlockHeader.CompCount = static_cast<unsigned short>(LCW_Comp(
+      BlockHeader.CompCount = static_cast<uint16_t>(LCW_Comp(
           Buffer, &Buffer2[sizeof(BlockHeader)], BlockHeader.UncompCount));
       memmove(Buffer2, &BlockHeader, sizeof(BlockHeader));
       Counter = static_cast<int>(BlockHeader.CompCount + sizeof(BlockHeader));

@@ -54,6 +54,8 @@
 #ifndef CNC_RED_ALERT_TD_IPXGCONN_H_
 #define CNC_RED_ALERT_TD_IPXGCONN_H_
 
+#include <cstdint>
+
 #include "td/connect.h"
 #include "td/ipx.h"
 #include "td/ipxaddr.h"
@@ -72,7 +74,7 @@ Connection Manager class, when it calls this class's Receive_Packet function.
 struct GlobalHeaderType {
   CommHeaderType Header{};
   IPXAddressClass Address;
-  unsigned short ProductID = 0;
+  uint16_t ProductID = 0;
 };
 
 /*
@@ -107,7 +109,7 @@ class IPXGlobalConnClass : public IPXConnClass {
   Constructor/destructor.
   .....................................................................*/
   IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
-                     unsigned short product_id);
+                     uint16_t product_id);
   ~IPXGlobalConnClass() override = default;
   IPXGlobalConnClass(const IPXGlobalConnClass&) = delete;
   IPXGlobalConnClass& operator=(const IPXGlobalConnClass&) = delete;
@@ -127,7 +129,7 @@ class IPXGlobalConnClass : public IPXConnClass {
   virtual int Receive_Packet(void* buf, int buflen, IPXAddressClass* address);
   // NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
   virtual int Get_Packet(void* buf, int* buflen, IPXAddressClass* address,
-                         unsigned short* product_id);
+                         uint16_t* product_id);
 
   /*.....................................................................
   This is for telling the connection it can cross a bridge.
@@ -137,7 +139,7 @@ class IPXGlobalConnClass : public IPXConnClass {
   /*.....................................................................
   The Product ID for this product.
   .....................................................................*/
-  unsigned short ProductID;
+  uint16_t ProductID;
 
   /*.....................................................................
   This describes the address of a bridge we have to cross.  This class

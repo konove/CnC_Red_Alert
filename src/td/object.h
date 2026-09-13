@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_OBJECT_H_
 #define CNC_RED_ALERT_TD_OBJECT_H_
 
+#include <cstdint>
+
 #include "td/abstract.h"
 #include "td/defines.h"
 #include "td/monoc.h"
@@ -127,7 +129,7 @@ class ObjectClass : public AbstractClass {
   /*
   **	This is the current strength of this object.
   */
-  short Strength{255};  // nominal strength value
+  int16_t Strength{255};  // nominal strength value
 
   /*-----------------------------------------------------------------------------------
   **	Constructor & destructors.
@@ -198,8 +200,9 @@ class ObjectClass : public AbstractClass {
   virtual void Do_Shimmer();
   virtual int Exit_Object(TechnoClass* /*unused*/);
   virtual bool Render(bool forced);
-  [[nodiscard]] virtual const short* Occupy_List(bool placement = false) const;
-  [[nodiscard]] virtual const short* Overlap_List() const;
+  [[nodiscard]] virtual const int16_t* Occupy_List(
+      bool placement = false) const;
+  [[nodiscard]] virtual const int16_t* Overlap_List() const;
   [[nodiscard]] virtual int Health_Ratio() const;
   virtual void Draw_It(int x, int y, WindowNumberType) = 0;
   virtual void Hidden();

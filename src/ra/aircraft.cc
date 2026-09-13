@@ -108,6 +108,7 @@
 #include "ra/aircraft.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
@@ -560,9 +561,9 @@ void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
     /*
     **	Dual rotors offset along flight axis.
     */
-    auto xx = static_cast<short>(x);
+    auto xx = static_cast<int16_t>(x);
     auto yy =
-        static_cast<short>(y - Lepton_To_Pixel(static_cast<LEPTON>(Height)));
+        static_cast<int16_t>(y - Lepton_To_Pixel(static_cast<LEPTON>(Height)));
     FacingType face = Dir_Facing(SecondaryFacing);
     base::MovePoint(xx, yy, SecondaryFacing.Current(), static_cast<int16_t>(_stretch[face]));
     CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
@@ -648,7 +649,8 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
           if (!Map.In_Radar(Coord_Cell(coord))) {
             delete air;
           } else {
-            air->Strength = static_cast<short>(air->Class->MaxStrength * fixed(strength, 256));
+            air->Strength = static_cast<int16_t>(air->Class->MaxStrength *
+                                                 fixed(strength, 256));
             if (air->Unlimbo(coord, dir)) {
               air->Assign_Mission(Mission_From_Name(strtok(nullptr, ",\n\r")));
             } else {
@@ -788,9 +790,9 @@ int AircraftClass::Mission_Hunt() {
         TARGET targ;
         switch (Can_Fire(TarCom, 0)) {
           case FIRE_OK:
-            targ = ::As_Target(Coord_Move(
-                Center_Coord(), SecondaryFacing,
-                static_cast<unsigned short>(Weapon_Range(0) - 0x0200)));
+            targ = ::As_Target(
+                Coord_Move(Center_Coord(), SecondaryFacing,
+                           static_cast<uint16_t>(Weapon_Range(0) - 0x0200)));
             if (Class->PrimaryWeapon != nullptr) {
               if (Class->PrimaryWeapon->IsCamera) {
                 Status = REGROUP;
@@ -1024,53 +1026,53 @@ void AircraftClass::AI() {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-const short* AircraftClass::Overlap_List(bool redraw) const {
+const int16_t* AircraftClass::Overlap_List(bool redraw) const {
   DCHECK_EQ(Aircraft.ID(this), ID);
   DCHECK(IsActive);
 
-  static const short _list[] = {-(MAP_CELL_W - 1),
-                                -MAP_CELL_W,
-                                -(MAP_CELL_W + 1),
-                                -1,
-                                0,
-                                1,
-                                (MAP_CELL_W - 1),
-                                MAP_CELL_W,
-                                (MAP_CELL_W + 1),
-                                -((MAP_CELL_W * 2) - 1),
-                                -(MAP_CELL_W * 2),
-                                -((MAP_CELL_W * 2) + 1),
-                                -((MAP_CELL_W * 3) - 1),
-                                -(MAP_CELL_W * 3),
-                                -((MAP_CELL_W * 3) + 1),
-                                kRefreshEol};
+  static const int16_t _list[] = {-(MAP_CELL_W - 1),
+                                  -MAP_CELL_W,
+                                  -(MAP_CELL_W + 1),
+                                  -1,
+                                  0,
+                                  1,
+                                  (MAP_CELL_W - 1),
+                                  MAP_CELL_W,
+                                  (MAP_CELL_W + 1),
+                                  -((MAP_CELL_W * 2) - 1),
+                                  -(MAP_CELL_W * 2),
+                                  -((MAP_CELL_W * 2) + 1),
+                                  -((MAP_CELL_W * 3) - 1),
+                                  -(MAP_CELL_W * 3),
+                                  -((MAP_CELL_W * 3) + 1),
+                                  kRefreshEol};
 
-  static const short _listbadger[] = {-(MAP_CELL_W - 2),
-                                      -(MAP_CELL_W - 1),
-                                      -MAP_CELL_W,
-                                      -(MAP_CELL_W + 1),
-                                      -(MAP_CELL_W + 2),
-                                      -2,
-                                      -1,
-                                      0,
-                                      1,
-                                      2,
-                                      (MAP_CELL_W - 2),
-                                      (MAP_CELL_W - 1),
-                                      MAP_CELL_W,
-                                      (MAP_CELL_W + 1),
-                                      (MAP_CELL_W + 2),
-                                      -((MAP_CELL_W * 2) - 2),
-                                      -((MAP_CELL_W * 2) - 1),
-                                      -(MAP_CELL_W * 2),
-                                      -((MAP_CELL_W * 2) + 1),
-                                      -((MAP_CELL_W * 2) + 2),
-                                      -((MAP_CELL_W * 3) - 2),
-                                      -((MAP_CELL_W * 3) - 1),
-                                      -(MAP_CELL_W * 3),
-                                      -((MAP_CELL_W * 3) + 1),
-                                      -((MAP_CELL_W * 3) + 2),
-                                      kRefreshEol};
+  static const int16_t _listbadger[] = {-(MAP_CELL_W - 2),
+                                        -(MAP_CELL_W - 1),
+                                        -MAP_CELL_W,
+                                        -(MAP_CELL_W + 1),
+                                        -(MAP_CELL_W + 2),
+                                        -2,
+                                        -1,
+                                        0,
+                                        1,
+                                        2,
+                                        (MAP_CELL_W - 2),
+                                        (MAP_CELL_W - 1),
+                                        MAP_CELL_W,
+                                        (MAP_CELL_W + 1),
+                                        (MAP_CELL_W + 2),
+                                        -((MAP_CELL_W * 2) - 2),
+                                        -((MAP_CELL_W * 2) - 1),
+                                        -(MAP_CELL_W * 2),
+                                        -((MAP_CELL_W * 2) + 1),
+                                        -((MAP_CELL_W * 2) + 2),
+                                        -((MAP_CELL_W * 3) - 2),
+                                        -((MAP_CELL_W * 3) - 1),
+                                        -(MAP_CELL_W * 3),
+                                        -((MAP_CELL_W * 3) + 1),
+                                        -((MAP_CELL_W * 3) + 2),
+                                        kRefreshEol};
 
   if (redraw || Height != 0) {
     if (*this == AIRCRAFT_BADGER) {
@@ -2650,7 +2652,7 @@ TARGET AircraftClass::New_LZ(TARGET oldlz) const {
       for (FacingType facing : magic_enum::enum_values<FacingType>()) {
         CELL newcell = Coord_Cell(
             Coord_Move(coord, Facing_Dir(facing + modifier),
-                       static_cast<unsigned short>(radius * ICON_LEPTON_W)));
+                       static_cast<uint16_t>(radius * ICON_LEPTON_W)));
         if (Map.In_Radar(newcell)) {
           TARGET newtarget = ::As_Target(newcell);
 
@@ -3102,7 +3104,7 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
     for (int r = range - 0x0100; r > 0x0100; r -= 0x0100) {
       for (int face = 0; face < 255; face += 16) {
         COORDINATE newcoord = Coord_Move(tcoord, static_cast<DirType>(face),
-                                         static_cast<unsigned short>(r));
+                                         static_cast<uint16_t>(r));
         CELL newcell = Coord_Cell(newcoord);
 
         if (Map.In_Radar(newcell) &&

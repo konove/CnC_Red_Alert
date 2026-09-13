@@ -23,6 +23,7 @@
 #include "td/abstract.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstring>
 
 #include "td/building.h"
@@ -60,4 +61,4 @@ COORDINATE AbstractTypeClass::Coord_Fixup(const COORDINATE coord) const {
   return coord;
 }
 int AbstractTypeClass::Full_Name() const { return Name; }
-unsigned short AbstractTypeClass::Get_Ownable() const { return 0xffff; }
+uint16_t AbstractTypeClass::Get_Ownable() const { return 0xffff; }

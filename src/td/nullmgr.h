@@ -98,8 +98,7 @@ class NullModemClass : public ConnManClass {
   /*
   **	Constructor/destructor.
   */
-  NullModemClass(int numsend, int numreceive, int maxlen,
-                 unsigned short magicnum);
+  NullModemClass(int numsend, int numreceive, int maxlen, uint16_t magicnum);
   ~NullModemClass() override;
   NullModemClass(const NullModemClass&) = delete;
   NullModemClass& operator=(const NullModemClass&) = delete;
@@ -209,7 +208,7 @@ class NullModemClass : public ConnManClass {
 
   int NumSend;
   int NumReceive;
-  unsigned short MagicNum;
+  uint16_t MagicNum;
 
   /*
   **	This is the staging buffer for parsing incoming packets.

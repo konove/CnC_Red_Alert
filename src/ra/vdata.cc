@@ -56,6 +56,7 @@
  *- - - - - - - */
 
 #include <cstddef>
+#include <cstdint>
 #include <filesystem>
 #include <string>
 
@@ -529,8 +530,8 @@ void VesselTypeClass::One_Time() {
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
-  auto xx = static_cast<short>(x);
-  auto yy = static_cast<short>(y);
+  auto xx = static_cast<int16_t>(x);
+  auto yy = static_cast<int16_t>(y);
 
   switch (Type) {
     case VESSEL_CA:
@@ -571,24 +572,24 @@ void VesselTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-const short* VesselTypeClass::Overlap_List() const {
-  static const short _ship[] = {-3,
-                                -2,
-                                -1,
-                                1,
-                                2,
-                                3,
-                                -MAP_CELL_W,
-                                -(MAP_CELL_W + 1),
-                                -(MAP_CELL_W - 1),
-                                -(MAP_CELL_W + 2),
-                                -(MAP_CELL_W - 2),
-                                +MAP_CELL_W,
-                                +(MAP_CELL_W + 1),
-                                +(MAP_CELL_W - 1),
-                                +(MAP_CELL_W + 2),
-                                +(MAP_CELL_W - 2),
-                                kRefreshEol};
+const int16_t* VesselTypeClass::Overlap_List() const {
+  static const int16_t _ship[] = {-3,
+                                  -2,
+                                  -1,
+                                  1,
+                                  2,
+                                  3,
+                                  -MAP_CELL_W,
+                                  -(MAP_CELL_W + 1),
+                                  -(MAP_CELL_W - 1),
+                                  -(MAP_CELL_W + 2),
+                                  -(MAP_CELL_W - 2),
+                                  +MAP_CELL_W,
+                                  +(MAP_CELL_W + 1),
+                                  +(MAP_CELL_W - 1),
+                                  +(MAP_CELL_W + 2),
+                                  +(MAP_CELL_W - 2),
+                                  kRefreshEol};
   //	static short const _ship[] = {-1, 1,
   //		-MAP_CELL_W, -(MAP_CELL_W+1), -(MAP_CELL_W-1),
   //		+MAP_CELL_W, +(MAP_CELL_W+1), +(MAP_CELL_W-1),

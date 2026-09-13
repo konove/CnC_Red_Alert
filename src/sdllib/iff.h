@@ -71,7 +71,7 @@ typedef struct {
   char Method;    // Compression method (CompressionType).
   char pad;       // Reserved pad byte (always 0).
   uint32_t Size;  // Size of the uncompressed data.
-  short Skip;     // Number of bytes to skip before data.
+  int16_t Skip;   // Number of bytes to skip before data.
 } CompHeaderType;
 #pragma pack(pop)
 

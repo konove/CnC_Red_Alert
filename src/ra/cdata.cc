@@ -53,6 +53,7 @@
  *- - - - - - - */
 
 #include <cstddef>
+#include <cstdint>
 #include <filesystem>
 #include <span>
 #include <string>
@@ -1791,9 +1792,9 @@ TemplateType TemplateTypeClass::From_Name(const char* name) {
  * HISTORY: * 05/23/1994 JLB : Created. * 12/12/1995 JLB : Optimized for direct
  *access to iconset data.                             *
  *=============================================================================================*/
-const short* TemplateTypeClass::Occupy_List(bool /*placement*/) const {
-  static short _occupy[(13 * 8) + 5];
-  short* ptr;
+const int16_t* TemplateTypeClass::Occupy_List(bool /*placement*/) const {
+  static int16_t _occupy[(13 * 8) + 5];
+  int16_t* ptr;
 
   const auto* iconset = static_cast<const IconsetClass*>(Get_Image_Data());
   const unsigned char* map = iconset->Map_Data();
@@ -1802,7 +1803,7 @@ const short* TemplateTypeClass::Occupy_List(bool /*placement*/) const {
   for (int index = 0; index < Width * Height; index++) {
     if (*map++ != 0xFF) {
       *ptr++ =
-          static_cast<short>((index % Width) + (index / Width * MAP_CELL_W));
+          static_cast<int16_t>((index % Width) + (index / Width * MAP_CELL_W));
     }
   }
   *ptr = kRefreshEol;

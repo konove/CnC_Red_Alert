@@ -48,6 +48,8 @@
 /*
 ********************************* Includes **********************************
 */
+#include <cstdint>
+
 #include "ra/connect.h"
 using HANDLE = void*;
 
@@ -61,9 +63,9 @@ using HANDLE = void*;
   (sizeof(SerialHeaderType) + sizeof(SerialCRCType))
 
 typedef struct {
-  unsigned short MagicNumber;
-  unsigned short Length;
-  unsigned short MagicNumber2;
+  uint16_t MagicNumber;
+  uint16_t Length;
+  uint16_t MagicNumber2;
 } SerialHeaderType;
 
 typedef struct {
@@ -82,7 +84,7 @@ class NullModemConnClass : public ConnectionClass {
   Constructor/destructor.
   .....................................................................*/
   NullModemConnClass(int numsend, int numreceive, int maxlen,
-                     unsigned short magicnum);
+                     uint16_t magicnum);
   ~NullModemConnClass() override;
   NullModemConnClass(const NullModemConnClass&) = delete;
   NullModemConnClass& operator=(const NullModemConnClass&) = delete;

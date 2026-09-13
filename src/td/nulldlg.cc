@@ -3265,8 +3265,8 @@ int Com_Scenario_Dialog() {
 
   int message_length;
   int sent_so_far;
-  unsigned short magic_number;
-  unsigned short crc;
+  uint16_t magic_number;
+  uint16_t crc;
   bool ready_to_go = false;
   CountDownTimerClass ready_time;
 
@@ -4043,7 +4043,7 @@ int Com_Scenario_Dialog() {
           sent_so_far = 0;
           magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
           message_length = static_cast<int>(strlen(Messages.Get_Edit_Buf()));
-          crc = static_cast<unsigned short>(
+          crc = static_cast<uint16_t>(
               CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
 
           while (sent_so_far < message_length) {
@@ -4078,10 +4078,9 @@ int Com_Scenario_Dialog() {
             }
 
             *(SendPacket.Message + COMPAT_MESSAGE_LENGTH - 5) = 0;
-            *(unsigned short*)(SendPacket.Message + COMPAT_MESSAGE_LENGTH - 4) =
+            *(uint16_t*)(SendPacket.Message + COMPAT_MESSAGE_LENGTH - 4) =
                 magic_number;
-            *(unsigned short*)(SendPacket.Message + COMPAT_MESSAGE_LENGTH - 2) =
-                crc;
+            *(uint16_t*)(SendPacket.Message + COMPAT_MESSAGE_LENGTH - 2) = crc;
 
             /*..................................................................
             Send the message
@@ -4321,10 +4320,10 @@ int Com_Scenario_Dialog() {
             oppscorescreen = false;
             Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
                                 ReceivePacket.Name, ReceivePacket.Message);
-            magic_number = *(unsigned short*)(ReceivePacket.Message +
-                                              COMPAT_MESSAGE_LENGTH - 4);
-            crc = *(unsigned short*)(ReceivePacket.Message +
-                                     COMPAT_MESSAGE_LENGTH - 2);
+            magic_number =
+                *(uint16_t*)(ReceivePacket.Message + COMPAT_MESSAGE_LENGTH - 4);
+            crc =
+                *(uint16_t*)(ReceivePacket.Message + COMPAT_MESSAGE_LENGTH - 2);
             Messages.Add_Message(
                 txt, MPlayerTColors[MPlayerID_To_ColorIndex(ReceivePacket.ID)],
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
@@ -4691,8 +4690,8 @@ int Com_Show_Scenario_Dialog() {
 
   int message_length;
   int sent_so_far;
-  unsigned short magic_number;
-  unsigned short crc;
+  uint16_t magic_number;
+  uint16_t crc;
   bool ready_to_go = false;
 
   /*........................................................................
@@ -5243,7 +5242,7 @@ int Com_Show_Scenario_Dialog() {
                 sent_so_far = 0;
                 magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
                 message_length = static_cast<int>(strlen(Messages.Get_Edit_Buf()));
-                crc = static_cast<unsigned short>(
+                crc = static_cast<uint16_t>(
                     CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
 
                 while (sent_so_far < message_length) {
@@ -5280,10 +5279,10 @@ int Com_Show_Scenario_Dialog() {
                   }
 
                   *(SendPacket.Message + COMPAT_MESSAGE_LENGTH - 5) = 0;
-                  *(unsigned short*)(SendPacket.Message +
-                                     COMPAT_MESSAGE_LENGTH - 4) = magic_number;
-                  *(unsigned short*)(SendPacket.Message +
-                                     COMPAT_MESSAGE_LENGTH - 2) = crc;
+                  *(uint16_t*)(SendPacket.Message + COMPAT_MESSAGE_LENGTH - 4) =
+                      magic_number;
+                  *(uint16_t*)(SendPacket.Message + COMPAT_MESSAGE_LENGTH - 2) =
+                      crc;
 
                   /*..................................................................
                   Send the message
@@ -5558,10 +5557,10 @@ int Com_Show_Scenario_Dialog() {
             oppscorescreen = false;
             Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
                                 ReceivePacket.Name, ReceivePacket.Message);
-            magic_number = *(unsigned short*)(ReceivePacket.Message +
-                                              COMPAT_MESSAGE_LENGTH - 4);
-            crc = *(unsigned short*)(ReceivePacket.Message +
-                                     COMPAT_MESSAGE_LENGTH - 2);
+            magic_number =
+                *(uint16_t*)(ReceivePacket.Message + COMPAT_MESSAGE_LENGTH - 4);
+            crc =
+                *(uint16_t*)(ReceivePacket.Message + COMPAT_MESSAGE_LENGTH - 2);
             Messages.Add_Message(
                 txt, MPlayerTColors[MPlayerID_To_ColorIndex(ReceivePacket.ID)],
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,

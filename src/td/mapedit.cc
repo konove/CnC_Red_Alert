@@ -62,6 +62,7 @@
 
 #include "td/mapedit.h"
 
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <type_traits>
@@ -1265,7 +1266,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         ....................... Set new strength ........................
         */
         if (strength != CurrentObject[0]->Strength) {
-          CurrentObject[0]->Strength = static_cast<short>(strength);
+          CurrentObject[0]->Strength = static_cast<int16_t>(strength);
           HiddenPage.Clear();
           Flag_To_Redraw(true);
           Changed = 1;

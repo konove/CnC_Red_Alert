@@ -39,6 +39,8 @@
 
 #include "td/globals.h"
 
+#include <cstdint>
+
 #include "port/ex_string.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -843,7 +845,7 @@ char MPlayerGameName[MPLAYER_NAME_MAX];
 GlobalPacketType GPacket;   // Global Channel packet
 int GPacketlen;             // length of incoming packet
 IPXAddressClass GAddress;   // address of sender
-unsigned short GProductID;  // sender's Product ID
+uint16_t GProductID;        // sender's Product ID
 
 /***************************************************************************
 **	This is the "meta-packet"; it's a bunch of events lumped together.

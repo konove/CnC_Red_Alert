@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_TECH_LZW_H_
 #define CNC_RED_ALERT_TECH_LZW_H_
 
+#include <cstdint>
+
 #include "tech/buff.h"
 
 class LZWEngine {
@@ -52,7 +54,7 @@ class LZWEngine {
   void Reset();
 
  private:
-  typedef short CodeType;
+  typedef int16_t CodeType;
   struct CodeClass {
     CodeType CodeValue = UNUSED;
     CodeType ParentCode = 0;

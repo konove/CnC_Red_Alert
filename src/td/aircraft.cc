@@ -105,6 +105,7 @@
 #include "td/aircraft.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -453,8 +454,8 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
       /*
       **	Dual rotors offset along flight axis.
       */
-      auto xx = static_cast<short>(x);
-      auto yy = static_cast<short>(y - Altitude);
+      auto xx = static_cast<int16_t>(x);
+      auto yy = static_cast<int16_t>(y - Altitude);
       FacingType face = Dir_Facing(SecondaryFacing);
       base::MovePoint(xx, yy, SecondaryFacing.Current(), static_cast<int16_t>(_stretch[face]));
       CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
@@ -532,8 +533,8 @@ void AircraftClass::Read_INI(char* buffer) {
           if (!Map.In_Radar(Coord_Cell(coord))) {
             delete air;
           } else {
-            air->Strength =
-                static_cast<short>(Fixed_To_Cardinal(air->Class->MaxStrength, strength));
+            air->Strength = static_cast<int16_t>(
+                Fixed_To_Cardinal(air->Class->MaxStrength, strength));
             if (air->Unlimbo(coord, dir)) {
               air->Assign_Mission(Mission_From_Name(strtok(nullptr, ",\n\r")));
             } else {
@@ -960,24 +961,24 @@ bool AircraftClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-const short* AircraftClass::Overlap_List() const {
+const int16_t* AircraftClass::Overlap_List() const {
   Validate();
-  static const short _list[] = {-(MAP_CELL_W - 1),
-                                -MAP_CELL_W,
-                                -(MAP_CELL_W + 1),
-                                -1,
-                                0,
-                                1,
-                                (MAP_CELL_W - 1),
-                                MAP_CELL_W,
-                                (MAP_CELL_W + 1),
-                                -((MAP_CELL_W * 2) - 1),
-                                -(MAP_CELL_W * 2),
-                                -((MAP_CELL_W * 2) + 1),
-                                -((MAP_CELL_W * 3) - 1),
-                                -(MAP_CELL_W * 3),
-                                -((MAP_CELL_W * 3) + 1),
-                                REFRESH_EOL};
+  static const int16_t _list[] = {-(MAP_CELL_W - 1),
+                                  -MAP_CELL_W,
+                                  -(MAP_CELL_W + 1),
+                                  -1,
+                                  0,
+                                  1,
+                                  (MAP_CELL_W - 1),
+                                  MAP_CELL_W,
+                                  (MAP_CELL_W + 1),
+                                  -((MAP_CELL_W * 2) - 1),
+                                  -(MAP_CELL_W * 2),
+                                  -((MAP_CELL_W * 2) + 1),
+                                  -((MAP_CELL_W * 3) - 1),
+                                  -(MAP_CELL_W * 3),
+                                  -((MAP_CELL_W * 3) + 1),
+                                  REFRESH_EOL};
 
   if (Altitude) {
     return _list;
@@ -2442,7 +2443,7 @@ TARGET AircraftClass::New_LZ(TARGET oldlz) const {
       for (FacingType facing = FACING_N; facing < FACING_COUNT; facing++) {
         CELL newcell = Coord_Cell(
             Coord_Move(coord, Facing_Dir(facing + modifier),
-                       static_cast<unsigned short>(radius * ICON_LEPTON_W)));
+                       static_cast<uint16_t>(radius * ICON_LEPTON_W)));
         if (Map.In_Radar(newcell)) {
           TARGET newtarget = ::As_Target(newcell);
 
@@ -2849,7 +2850,7 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
     for (int r = range - 0x0180; r > 0x0180; r -= 0x0100) {
       for (int face = 0; face < 255; face += 16) {
         COORDINATE newcoord = Coord_Move(tcoord, static_cast<DirType>(face),
-                                         static_cast<unsigned short>(r));
+                                         static_cast<uint16_t>(r));
         CELL newcell = Coord_Cell(newcoord);
 
         if (Map.In_Radar(newcell) &&

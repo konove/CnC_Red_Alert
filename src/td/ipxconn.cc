@@ -50,6 +50,7 @@
 
 #include "td/ipxconn.h"
 
+#include <cstdint>
 #include <cstring>
 
 #include "port/safe_string.h"
@@ -62,7 +63,7 @@
 /*
 ********************************* Globals ***********************************
 */
-unsigned short IPXConnClass::Socket;
+uint16_t IPXConnClass::Socket;
 int IPXConnClass::ConnectionNum;
 ECBType* IPXConnClass::ListenECB;
 IPXHeaderType* IPXConnClass::ListenHeader;
@@ -101,8 +102,8 @@ int IPXConnClass::PacketLen;
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
-                           unsigned short magicnum, IPXAddressClass* address,
-                           int id, const char* name)
+                           uint16_t magicnum, IPXAddressClass* address, int id,
+                           const char* name)
     : NonSequencedConnClass(numsend, numreceive, maxlen, magicnum,
                             2,   // retry delta
                             -1,  // max retries
@@ -216,9 +217,8 @@ void IPXConnClass::Init() {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-void IPXConnClass::Configure(unsigned short socket, int conn_num,
-                             ECBType* listen_ecb, ECBType* send_ecb,
-                             IPXHeaderType* listen_header,
+void IPXConnClass::Configure(uint16_t socket, int conn_num, ECBType* listen_ecb,
+                             ECBType* send_ecb, IPXHeaderType* listen_header,
                              IPXHeaderType* send_header, char* listen_buf,
                              char* send_buf, long handler_rm_ptr,
                              int maxpacketlen) {
@@ -452,7 +452,7 @@ int IPXConnClass::Send(char* buf, int buflen) {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Open_Socket(unsigned short socket) {
+int IPXConnClass::Open_Socket(uint16_t socket) {
   int rc;
 
   if (Winsock.Get_Connected()) {
@@ -508,7 +508,7 @@ int IPXConnClass::Open_Socket(unsigned short socket) {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-void IPXConnClass::Close_Socket(unsigned short socket) {
+void IPXConnClass::Close_Socket(uint16_t socket) {
   if (Winsock.Get_Connected()) {
     SocketOpen = 0;
     return;

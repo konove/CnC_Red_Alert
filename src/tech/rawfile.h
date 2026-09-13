@@ -45,6 +45,7 @@
 #define CNC_RED_ALERT_TECH_RAWFILE_H_
 
 #include <climits>
+#include <cstdint>
 #include <cstdio>
 #include <limits>
 #include <string>
@@ -154,8 +155,8 @@ class RawFileClass : public FileClass {
   //             bits 5-10  minutes (0-59)
   //             bits 11-15 hours (0-23)
   //
-  unsigned short Date;
-  unsigned short Time;
+  uint16_t Date;
+  uint16_t Time;
 };
 
 /***********************************************************************************************

@@ -65,6 +65,7 @@
 #include "ra/terrain.h"
 
 #include <cassert>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 
@@ -385,7 +386,7 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
-  const short* offset;  // Pointer to cell offset list.
+  const int16_t* offset;  // Pointer to cell offset list.
 
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
     return MOVE_NO;

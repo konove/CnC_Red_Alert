@@ -41,6 +41,7 @@
 
 #include "td/debug.h"
 
+#include <cstdint>
 #include <cstdio>
 #include <filesystem>
 
@@ -673,20 +674,18 @@ void Debug_Key(unsigned input) {
             auto r2 = (DirType)((r + 10) & 0xFF);
 
             if (Map.Coord_To_Pixel(
-                    Coord_Move(center, r1, static_cast<unsigned short>(sight)),
-                    x, y)) {
+                    Coord_Move(center, r1, static_cast<uint16_t>(sight)), x,
+                    y)) {
               Map.Coord_To_Pixel(
-                  Coord_Move(center, r2, static_cast<unsigned short>(sight)),
-                  x1, y1);
+                  Coord_Move(center, r2, static_cast<uint16_t>(sight)), x1, y1);
               LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, WHITE);
             }
             if (Map.Coord_To_Pixel(
-                    Coord_Move(center2, r1,
-                               static_cast<unsigned short>(weapon)),
-                    x, y)) {
+                    Coord_Move(center2, r1, static_cast<uint16_t>(weapon)), x,
+                    y)) {
               Map.Coord_To_Pixel(
-                  Coord_Move(center2, r2, static_cast<unsigned short>(weapon)),
-                  x1, y1);
+                  Coord_Move(center2, r2, static_cast<uint16_t>(weapon)), x1,
+                  y1);
               LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, RED);
             }
           }

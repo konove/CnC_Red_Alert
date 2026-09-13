@@ -207,7 +207,7 @@ class UnitClass final : public DriveClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  [[nodiscard]] const short* Overlap_List(bool redraw = false) const override;
+  [[nodiscard]] const int16_t* Overlap_List(bool redraw = false) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
 
   /*

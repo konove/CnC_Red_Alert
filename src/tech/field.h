@@ -38,6 +38,8 @@
 #ifndef CNC_RED_ALERT_TECH_FIELD_H_
 #define CNC_RED_ALERT_TECH_FIELD_H_
 
+#include <cstdint>
+
 #define FIELD_HEADER_SIZE (sizeof(FieldClass) - (sizeof(void*) * 2))
 
 #define TYPE_CHAR 1
@@ -63,8 +65,8 @@ class FieldClass {
   FieldClass() : DataType(0), Size(0), Data(nullptr), Next(nullptr) {}
   FieldClass(const char* id, char data);
   FieldClass(const char* id, unsigned char data);
-  FieldClass(const char* id, short data);
-  FieldClass(const char* id, unsigned short data);
+  FieldClass(const char* id, int16_t data);
+  FieldClass(const char* id, uint16_t data);
   FieldClass(const char* id, long data);
   FieldClass(const char* id, unsigned long data);
   FieldClass(const char* id, const char* data);
@@ -75,8 +77,8 @@ class FieldClass {
 
  private:
   char ID[4]{};               // id value of this field
-  unsigned short DataType;  // id of the data type we are using
-  unsigned short Size;      // size of the data portion of this field
+  uint16_t DataType;          // id of the data type we are using
+  uint16_t Size;              // size of the data portion of this field
   void* Data;               // pointer to the data portion of this field
   FieldClass* Next;         // pointer to the next field in the field list
 };

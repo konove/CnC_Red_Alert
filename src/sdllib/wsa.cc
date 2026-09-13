@@ -37,20 +37,20 @@
 #define DO_COPY 0x01
 
 typedef struct {
-  unsigned short current_frame;
-  unsigned short total_frames;
-  unsigned short pixel_x;
-  unsigned short pixel_y;
-  unsigned short pixel_width;
-  unsigned short pixel_height;
-  unsigned short largest_frame_size;
+  uint16_t current_frame;
+  uint16_t total_frames;
+  uint16_t pixel_x;
+  uint16_t pixel_y;
+  uint16_t pixel_width;
+  uint16_t pixel_height;
+  uint16_t largest_frame_size;
   char* delta_buffer;
   char* file_buffer;
   char file_name[13];
-  short flags;
+  int16_t flags;
   // New fields that animate does not know about below this point. SEE
   // kExtraBytesAnimateDoesNotKnowAbout
-  short file_handle;
+  int16_t file_handle;
   uint32_t anim_mem_size;
 } SysAnimHeaderType;
 
@@ -69,13 +69,13 @@ constexpr int kExtraBytesAnimateDoesNotKnowAbout =
 
 #pragma pack(push, 1)
 typedef struct {
-  unsigned short total_frames;
-  unsigned short pixel_x;
-  unsigned short pixel_y;
-  unsigned short pixel_width;
-  unsigned short pixel_height;
-  unsigned short largest_frame_size;
-  short flags;
+  uint16_t total_frames;
+  uint16_t pixel_x;
+  uint16_t pixel_y;
+  uint16_t pixel_width;
+  uint16_t pixel_height;
+  uint16_t largest_frame_size;
+  int16_t flags;
   uint32_t frame0_offset;
   uint32_t frame0_end;
   /* unsigned long data_seek_offset, unsigned short frame_size ... */
@@ -156,7 +156,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
     long tlong;
 
     tlong = file_header.frame0_end - file_header.frame0_offset;
-    frame0_size = static_cast<unsigned short>(tlong);
+    frame0_size = static_cast<uint16_t>(tlong);
   } else {
     anim_flags |= WSA_FRAME_0_ON_PAGE;
     frame0_size = 0;
@@ -281,7 +281,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   sys_header->pixel_height = file_header.pixel_height;
   sys_header->anim_mem_size = static_cast<std::uint32_t>(user_buffer_size);
   sys_header->delta_buffer = delta_buffer;
-  sys_header->largest_frame_size = static_cast<unsigned short>(
+  sys_header->largest_frame_size = static_cast<uint16_t>(
       delta_buffer_size - base::ssize{sizeof(SysAnimHeaderType)});
 
   std::snprintf(sys_header->file_name, sizeof(sys_header->file_name), "%s",
@@ -343,16 +343,16 @@ void* Open_Animation(const char* file_name, char* user_buffer,
 
   // We do not use the file handle when it is in RAM.
   if (anim_flags & WSA_RESIDENT) {
-    sys_header->file_handle = static_cast<short>(-1);
+    sys_header->file_handle = static_cast<int16_t>(-1);
     Close_File(fh);
   } else {
-    sys_header->file_handle = static_cast<short>(fh);
+    sys_header->file_handle = static_cast<int16_t>(fh);
   }
 
   LCW_Uncompress(delta_back, delta_buffer, sys_header->largest_frame_size);
 
   // Finally set the flags,
-  sys_header->flags = static_cast<short>(anim_flags);
+  sys_header->flags = static_cast<int16_t>(anim_flags);
 
   // return valid handle
   return user_buffer;
@@ -412,8 +412,8 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
   //
   // adjust x_pixel and y_pixel by system pixel_x and pixel_y respectively.
   //
-  x_pixel += static_cast<short>(sys_header->pixel_x);
-  y_pixel += static_cast<short>(sys_header->pixel_y);
+  x_pixel += static_cast<int16_t>(sys_header->pixel_x);
+  y_pixel += static_cast<int16_t>(sys_header->pixel_y);
 
   //
   // Check to see if we are using a buffer inside of the animation buffer or if
@@ -541,7 +541,7 @@ int Get_Animation_Frame_Count(void* handle) {
     return 0;
   }
   sys_header = static_cast<SysAnimHeaderType*>(handle);
-  return static_cast<short>(sys_header->total_frames);
+  return static_cast<int16_t>(sys_header->total_frames);
 }
 
 unsigned int Apply_XOR_Delta(char* source_ptr, char* delta_ptr) {

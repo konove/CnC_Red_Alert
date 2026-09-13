@@ -75,6 +75,7 @@
  *=========================================================================*/
 #include "td/noseqcon.h"
 
+#include <cstdint>
 #include <cstring>
 #include <utility>
 
@@ -84,9 +85,11 @@
 #include "td/combuf.h"
 #include "td/connect.h"
 
-NonSequencedConnClass::NonSequencedConnClass(
-    int numsend, int numreceive, int maxlen, unsigned short magicnum,
-    int32_t retry_delta, int32_t max_retries, int32_t timeout)
+NonSequencedConnClass::NonSequencedConnClass(int numsend, int numreceive,
+                                             int maxlen, uint16_t magicnum,
+                                             int32_t retry_delta,
+                                             int32_t max_retries,
+                                             int32_t timeout)
     : ConnectionClass(maxlen, magicnum, retry_delta, max_retries, timeout),
       Queue(new CommBufferClass(numsend, numreceive, MaxPacketLen)) {
   /*------------------------------------------------------------------------

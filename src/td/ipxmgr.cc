@@ -71,6 +71,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdint>
 
 #include "base/numeric.h"
 #include "port/aligned_buffer.h"
@@ -110,8 +111,7 @@
  *=========================================================================*/
 IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
                                  int glb_num_packets, int pvt_num_packets,
-                                 unsigned short socket,
-                                 unsigned short product_id) {
+                                 uint16_t socket, uint16_t product_id) {
   int i;
 
   /*------------------------------------------------------------------------
@@ -152,8 +152,8 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
   /*........................................................................
   Save our socket ID number
   ........................................................................*/
-  Socket = static_cast<unsigned short>(((unsigned long)socket & 0x00ff) << 8 |
-                                       ((unsigned long)socket & 0xff00) >> 8);
+  Socket = static_cast<uint16_t>(((unsigned long)socket & 0x00ff) << 8 |
+                                 ((unsigned long)socket & 0xff00) >> 8);
 
   /*........................................................................
   Get the user's IPX local connection number
@@ -766,7 +766,7 @@ int IPXManagerClass::Send_Global_Message(void* buf, int buflen, int ack_req,
  *=========================================================================*/
 int IPXManagerClass::Get_Global_Message(void* buf, int* buflen,
                                         IPXAddressClass* address,
-                                        unsigned short* product_id) {
+                                        uint16_t* product_id) {
   /*
   ------------ Error if IPX not installed or not Listening -----------------
   */
@@ -1460,9 +1460,9 @@ int IPXManagerClass::Private_Num_Receive(int id) {
  * HISTORY:                                                                *
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
-void IPXManagerClass::Set_Socket(unsigned short socket) {
-  Socket = static_cast<unsigned short>(((unsigned long)socket & 0x00ff) << 8 |
-                                       ((unsigned long)socket & 0xff00) >> 8);
+void IPXManagerClass::Set_Socket(uint16_t socket) {
+  Socket = static_cast<uint16_t>(((unsigned long)socket & 0x00ff) << 8 |
+                                 ((unsigned long)socket & 0xff00) >> 8);
 
 } /* end of Set_Socket */
 

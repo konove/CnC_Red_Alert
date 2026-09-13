@@ -48,8 +48,10 @@
 #include "td/msglist.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstring>
 
+#include "base/types.h"
 #include "port/safe_string.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
@@ -63,7 +65,6 @@
 #include "td/gadget.h"
 #include "td/jshell.h"
 #include "td/txtlabel.h"
-#include "base/types.h"
 
 char MessageListClass::MessageBuffers[MAX_NUM_MESSAGES]
                                      [MAX_MESSAGE_LENGTH + 30];
@@ -188,8 +189,8 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars,
  *=========================================================================*/
 TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
                                               TextPrintType style, int timeout,
-                                              unsigned short magic_number,
-                                              unsigned short crc) {
+                                              uint16_t magic_number,
+                                              uint16_t crc) {
   int num_msg;
   TextLabelClass* txtlabel;
   int x;

@@ -36,6 +36,8 @@
 #ifndef CNC_RED_ALERT_SDLLIB_KEYBOARD_H_
 #define CNC_RED_ALERT_SDLLIB_KEYBOARD_H_
 
+#include <cstdint>
+
 union SDL_Event;
 
 // Modifier and state bits combined with a key number. They are flags, not an
@@ -108,7 +110,7 @@ class WWKeyboardClass {
   /*   Keyboard Class.
    */
   /*===================================================================*/
-  unsigned short Buffer[256]{};  // buffer which holds actual keypresses
+  uint16_t Buffer[256]{};      // buffer which holds actual keypresses
   long Head = 0;               // the head position in keyboard buffer
   long Tail = 0;               // the tail position in keyboard buffer
 };

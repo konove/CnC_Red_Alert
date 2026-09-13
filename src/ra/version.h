@@ -39,6 +39,8 @@
 #ifndef CNC_RED_ALERT_RA_VERSION_H_
 #define CNC_RED_ALERT_RA_VERSION_H_
 
+#include <cstdint>
+
 #include "absl/base/attributes.h"
 
 #define VERSION_RED_ALERT_104 0x00010000  // Shipped US version number
@@ -108,8 +110,8 @@ class VersionClass {
   // version in the low word.  They should be interpreted in hex.
   //.....................................................................
   unsigned long Version_Number();
-  unsigned short Major_Version();
-  unsigned short Minor_Version();
+  uint16_t Major_Version();
+  uint16_t Minor_Version();
 
   //.....................................................................
   // Retrieves a pointer to the version # as a text string (#.#), with
@@ -170,8 +172,8 @@ class VersionClass {
   // This is the program's version number, stored internally.
   //.....................................................................
   unsigned long Version{0};
-  unsigned short MajorVer{0};
-  unsigned short MinorVer{0};
+  uint16_t MajorVer{0};
+  uint16_t MinorVer{0};
 
   //.....................................................................
   // This array is used for formatting the version # as a string

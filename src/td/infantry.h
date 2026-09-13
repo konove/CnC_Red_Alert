@@ -45,6 +45,7 @@ class ArchiveReader;
 class ArchiveWriter;
 
 #include <cstddef>
+#include <cstdint>
 
 #include "absl/base/attributes.h"
 #include "td/bullet.h"
@@ -180,7 +181,7 @@ class InfantryClass final : public FootClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  const short* Overlap_List() const override;
+  const int16_t* Overlap_List() const override;
   void Draw_It(int x, int y, WindowNumberType window) override;
   void Look(bool incremental = false) override;
 

@@ -78,6 +78,7 @@
 #include "ra/radar.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -1317,7 +1318,7 @@ void RadarClass::Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x, int& y) {
  * HISTORY: * 11/09/1995 BWG : Created. *
  *=============================================================================================*/
 bool RadarClass::Jam_Cell(CELL cell, HouseClass* house /*KO, bool shadeit*/) {
-  auto jam = static_cast<unsigned short>(1 << house->Class->House);
+  auto jam = static_cast<uint16_t>(1 << house->Class->House);
   (*this)[cell].Jammed |= jam;
   if (house != PlayerPtr) {
     Shroud_Cell(cell /*KO, shadeit*/);
@@ -1343,7 +1344,7 @@ bool RadarClass::Jam_Cell(CELL cell, HouseClass* house /*KO, bool shadeit*/) {
  * HISTORY: * 11/09/1995 BWG : Created. *
  *=============================================================================================*/
 bool RadarClass::UnJam_Cell(CELL cell, HouseClass* house) {
-  auto jam = static_cast<unsigned short>(1 << house->Class->House);
+  auto jam = static_cast<uint16_t>(1 << house->Class->House);
   (*this)[cell].Redraw_Objects();
   (*this)[cell].Jammed &= 0xFFFF - jam;
   Radar_Pixel(cell);
@@ -1843,7 +1844,7 @@ int RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
  *                                                                                             *
  * HISTORY: * 01/01/1995 JLB : Created. *
  *=============================================================================================*/
-void RadarClass::Refresh_Cells(CELL cell, const short* list) {
+void RadarClass::Refresh_Cells(CELL cell, const int16_t* list) {
   if (*list == kRefreshSidebar) {
     IsRadarToRedraw = true;
     Flag_To_Redraw(false);

@@ -600,7 +600,7 @@
 
 // Copies a cell offset list, stopping early at the kRefreshEol terminator.
 // At most len elements are written, so dest must have room for that many.
-void List_Copy(const short* source, int len, short* dest);
+void List_Copy(const int16_t* source, int len, int16_t* dest);
 
 // Identifies which C&C disc is in the given drive by matching its volume label.
 // Returns a CD_VOLUME value (see conquer.cc), or -1 if the disc is not a C&C

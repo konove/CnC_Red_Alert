@@ -24,13 +24,13 @@
 #include "absl/base/attributes.h"
 
 typedef struct {
-  short Width;      // Width of icons (pixels).
-  short Height;     // Height of icons (pixels).
-  short Count;      // Number of (logical) icons in this set.
-  short Allocated;  // Was this iconset allocated?
+  int16_t Width;      // Width of icons (pixels).
+  int16_t Height;     // Height of icons (pixels).
+  int16_t Count;      // Number of (logical) icons in this set.
+  int16_t Allocated;  // Was this iconset allocated?
 #ifndef TD
-  short MapWidth;   // Width of map (in icons).
-  short MapHeight;  // Height of map (in icons).
+  int16_t MapWidth;   // Width of map (in icons).
+  int16_t MapHeight;  // Height of map (in icons).
 #endif
   int32_t Size;       // Size of entire iconset memory block.
   int32_t Icons;      // Offset from buffer start to icon data.

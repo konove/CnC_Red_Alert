@@ -36,13 +36,14 @@
  * int Save_PCX_File (char* name, GraphicViewPortClass& pic, char* palette)*
  *= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
+#include <cstdint>
 #include <cstring>
 
+#include "base/types.h"
 #include "ra/filepcx.h"
 #include "ra/palette.h"
 #include "sdllib/gbuffer.h"
 #include "tech/wwfile.h"
-#include "base/types.h"
 
 static void Write_Pcx_ScanLine(FileClass& file, int scansize, char* ptr);
 
@@ -105,14 +106,14 @@ int Write_PCX_File(FileClass& file, GraphicBufferClass& pic,
                        8,
                        0,
                        0,
-                       static_cast<short>(pic.Get_Width() - 1),
-                       static_cast<short>(pic.Get_Height() - 1),
-                       static_cast<short>(pic.Get_Width()),
-                       static_cast<short>(pic.Get_Height()),
+                       static_cast<int16_t>(pic.Get_Width() - 1),
+                       static_cast<int16_t>(pic.Get_Height() - 1),
+                       static_cast<int16_t>(pic.Get_Width()),
+                       static_cast<int16_t>(pic.Get_Height()),
                        {},
                        0,
                        1,
-                       static_cast<short>(pic.Get_Width()),
+                       static_cast<int16_t>(pic.Get_Width()),
                        1,
                        {0}};
 

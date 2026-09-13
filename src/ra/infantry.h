@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_RA_INFANTRY_H_
 
 #include <cstddef>
+#include <cstdint>
 
 #include "absl/base/attributes.h"
 #include "ra/bullet.h"
@@ -171,7 +172,7 @@ class InfantryClass final : public FootClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  [[nodiscard]] const short* Overlap_List(bool redraw = false) const override;
+  [[nodiscard]] const int16_t* Overlap_List(bool redraw = false) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
 
   /*

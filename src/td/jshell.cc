@@ -49,11 +49,13 @@
 #include "td/jshell.h"
 
 #include <cstdarg>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
 #include "base/numeric.h"
+#include "base/types.h"
 #include "sdllib/buffer.h"
 #include "sdllib/iff.h"
 #include "sdllib/memflag.h"
@@ -64,7 +66,6 @@
 #include "td/ccfile.h"
 #include "td/monoc.h"
 #include "tech/wwfile.h"
-#include "base/types.h"
 
 /***********************************************************************************************
  * Small_Icon -- Create a small icon from a big one. *
@@ -213,7 +214,7 @@ void File_Fatal(const char* message) {
  *=============================================================================================*/
 long Load_Uncompress(FileClass& file, BufferClass& uncomp_buff,
                      BufferClass& dest_buff, void* reserved_data) {
-  unsigned short size;
+  uint16_t size;
   void* sptr = uncomp_buff.Get_Buffer();
   void* dptr = dest_buff.Get_Buffer();
   int opened = false;

@@ -357,8 +357,8 @@ static_assert(sizeof(SerialPacketType) == 160);
 typedef struct {
   SerialCommandType
       Command;  // Enum defined above. Should be a file transfer enum.
-  unsigned short BlockNumber;  // Index position of this file chunk in the file
-  unsigned short BlockLength;  // Length of data in the RawData buffer
+  uint16_t BlockNumber;  // Index position of this file chunk in the file
+  uint16_t BlockLength;  // Length of data in the RawData buffer
   unsigned char RawData[MAX_SEND_FILE_PACKET_SIZE];
 } RemoteFileTransferType;
 
@@ -679,7 +679,7 @@ class SessionClass {
   GlobalPacketType GPacket{};                 // global packet
   int GPacketlen = 0;                         // global packet length
   IPXAddressClass GAddress;                   // address of sender
-  unsigned short GProductID{0};               // product ID of sender
+  uint16_t GProductID{0};                     // product ID of sender
   char MetaPacket[MAX_IPX_PACKET_SIZE]{};     // packet building buffer
   int MetaSize;                               // size of MetaPacket
   DynamicVectorClass<NodeNameType*> Games;    // list of games

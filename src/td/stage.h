@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_STAGE_H_
 #define CNC_RED_ALERT_TD_STAGE_H_
 
+#include <cstdint>
+
 #include "td/monoc.h"
 
 class StageClass {
@@ -48,7 +50,7 @@ class StageClass {
   **	This handles the animation stage of the object. This includes smoke,
   *walking, *	flapping, and rocket flames.
   */
-  unsigned short Stage{0};
+  uint16_t Stage{0};
 
   /*
   **	This is the countdown timer for stage animation. When this counts down
@@ -80,7 +82,7 @@ class StageClass {
 
   [[nodiscard]] int Fetch_Stage() const { return Stage; }
   [[nodiscard]] int Fetch_Rate() const { return Rate; }
-  void Set_Stage(int stage) { Stage = static_cast<unsigned short>(stage); }
+  void Set_Stage(int stage) { Stage = static_cast<uint16_t>(stage); }
   void Set_Rate(unsigned char rate) { Rate = StageTimer = rate; }
   void AI() {}
   bool Graphic_Logic() {

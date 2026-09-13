@@ -204,7 +204,7 @@ unsigned long VersionClass::Version_Number() {
  * HISTORY:                                                                *
  *   10/26/1995 BRR : Created.                                             *
  *=========================================================================*/
-unsigned short VersionClass::Major_Version() {
+uint16_t VersionClass::Major_Version() {
   //------------------------------------------------------------------------
   // Read the text description, if there is one
   //------------------------------------------------------------------------
@@ -246,7 +246,7 @@ unsigned short VersionClass::Major_Version() {
  * HISTORY:                                                                *
  *   10/26/1995 BRR : Created.                                             *
  *=========================================================================*/
-unsigned short VersionClass::Minor_Version() {
+uint16_t VersionClass::Minor_Version() {
   //------------------------------------------------------------------------
   // Read the text description, if there is one
   //------------------------------------------------------------------------
@@ -292,7 +292,7 @@ char* VersionClass::Version_Name() {
   //------------------------------------------------------------------------
   // Trim 0's off the minor version
   //------------------------------------------------------------------------
-  unsigned short adjusted_minor;
+  uint16_t adjusted_minor;
   int i;
 
   adjusted_minor = Minor_Version();

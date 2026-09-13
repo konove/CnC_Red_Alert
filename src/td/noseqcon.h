@@ -73,7 +73,7 @@ class NonSequencedConnClass : public ConnectionClass {
   Constructor/destructor.
   .....................................................................*/
   NonSequencedConnClass(int numsend, int numreceive, int maxlen,
-                        unsigned short magicnum, int32_t retry_delta,
+                        uint16_t magicnum, int32_t retry_delta,
                         int32_t max_retries, int32_t timeout);
   ~NonSequencedConnClass() override;
   NonSequencedConnClass(const NonSequencedConnClass&) = delete;

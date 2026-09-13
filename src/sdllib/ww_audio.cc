@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <utility>
@@ -553,14 +554,13 @@ void Stop_Sample_Playing(const void* sample) {
   }
 }
 
-int Play_Sample(const void* sample, int priority, int volume,
-                signed short panloc) {
+int Play_Sample(const void* sample, int priority, int volume, int16_t panloc) {
   return Play_Sample_Handle(sample, priority, volume, panloc,
                             AcquireSampleHandle(priority));
 }
 
 int Play_Sample_Handle(const void* sample, int priority, int volume,
-                       signed short /*panloc*/, int id) {
+                       int16_t /*panloc*/, int id) {
   if (!Is_Valid_Handle(id) || !sample) {
     return -1;
   }

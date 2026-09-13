@@ -48,6 +48,8 @@
 /*
 ********************************* Includes **********************************
 */
+#include <cstdint>
+
 #include "ra/connect.h"
 #include "ra/ipx.h"
 #include "ra/ipxaddr.h"
@@ -70,7 +72,7 @@ class IPXConnClass : public ConnectionClass {
   /*.....................................................................
   Constructor/destructor.
   .....................................................................*/
-  IPXConnClass(int numsend, int numreceive, int maxlen, unsigned short magicnum,
+  IPXConnClass(int numsend, int numreceive, int maxlen, uint16_t magicnum,
                IPXAddressClass* address, int id, const char* name,
                int extralen = 0);
   ~IPXConnClass() override = default;
@@ -89,9 +91,8 @@ class IPXConnClass : public ConnectionClass {
   It's static because it doesn't apply to any specific connection, but
   all of them.
   .....................................................................*/
-  static void Configure(unsigned short socket, int conn_num,
-                        ECBType* listen_ecb, ECBType* send_ecb,
-                        IPXHeaderType* listen_header,
+  static void Configure(uint16_t socket, int conn_num, ECBType* listen_ecb,
+                        ECBType* send_ecb, IPXHeaderType* listen_header,
                         IPXHeaderType* send_header, char* listen_buf,
                         char* send_buf, long handler_rm_ptr, int maxpacketlen);
 
@@ -138,8 +139,8 @@ class IPXConnClass : public ConnectionClass {
   Send_To & Broadcast are static since they're direct interfaces to IPX,
   and there's only one IPX instance running.
   .....................................................................*/
-  static int Open_Socket(unsigned short socket);
-  static void Close_Socket(unsigned short socket);
+  static int Open_Socket(uint16_t socket);
+  static void Close_Socket(uint16_t socket);
   static int Send_To(char* buf, int buflen, IPXAddressClass* address,
                      const NetNodeType immed);
   static int Broadcast(char* buf, int buflen);
@@ -147,7 +148,7 @@ class IPXConnClass : public ConnectionClass {
   /*.....................................................................
   The socket ID for this connection
   .....................................................................*/
-  static unsigned short Socket;
+  static uint16_t Socket;
 
   /*.....................................................................
   User's local Connection # (0 = not logged in)

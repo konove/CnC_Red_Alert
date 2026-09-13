@@ -202,7 +202,7 @@ class EventClass {
     */
     struct {
       uint32_t CRC;
-      unsigned short CommandCount;  // # commands sent so far
+      uint16_t CommandCount;        // # commands sent so far
       unsigned char Delay;          // propagation delay used this frame
                             // (Frame - Delay = sender's current frame #)
     } FrameInfo;
@@ -223,8 +223,8 @@ class EventClass {
     // the COMM_MULTI_E_COMP protocol.
     //
     struct {
-      unsigned short DesiredFrameRate;
-      unsigned short MaxAhead;
+      uint16_t DesiredFrameRate;
+      uint16_t MaxAhead;
     } Timing;
 
     //
@@ -232,7 +232,7 @@ class EventClass {
     // the "desired" frame rate for the game.
     //
     struct {
-      unsigned short AverageTicks;
+      uint16_t AverageTicks;
     } ProcessTime;
 
   } Data{};

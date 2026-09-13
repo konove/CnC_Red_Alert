@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_FUSE_H_
 #define CNC_RED_ALERT_TD_FUSE_H_
 
+#include <cstdint>
+
 #include "td/defines.h"
 
 /****************************************************************************
@@ -91,7 +93,7 @@ class FuseClass {
   **	will progressively get smaller. Detonation occurs when it reaches
   **	zero or when it starts to grow larger.
   */
-  short Proximity{0};
+  int16_t Proximity{0};
 };
 
 inline COORDINATE FuseClass::Fuse_Target() { return HeadTo; }

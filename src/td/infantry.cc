@@ -95,6 +95,7 @@
 #include "td/infantry.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -533,8 +534,8 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
       case WARHEAD_FEEDME:
         if (source) {
           source->Strength += 30;
-          source->Strength =
-              static_cast<short>(std::min<int>(source->Strength, source->Class_Of().MaxStrength));
+          source->Strength = static_cast<int16_t>(
+              std::min<int>(source->Strength, source->Class_Of().MaxStrength));
         }
         [[fallthrough]];
 
@@ -1498,7 +1499,7 @@ void InfantryClass::AI() {
         **	Advance the infantry as far as it should go.
         */
         Coord = Coord_Move(Coord, Direction(Head_To_Coord()),
-                           static_cast<unsigned short>(
+                           static_cast<uint16_t>(
                                Fixed_To_Cardinal(Class->MaxSpeed, movespeed)));
       }
       Mark(MARK_DOWN);
@@ -1814,7 +1815,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-const short* InfantryClass::Overlap_List() const {
+const int16_t* InfantryClass::Overlap_List() const {
   Validate();
   // return(Coord_Spillage_List(Coord, 24 + ((IsSelected || Doing >
   // DO_WALK)?12:0)));
@@ -3010,8 +3011,8 @@ void InfantryClass::Read_INI(char* buffer) {
           }
 
           if (infantry->Unlimbo(coord, dir)) {
-            infantry->Strength =
-                static_cast<short>(Fixed_To_Cardinal(infantry->Class_Of().MaxStrength, strength));
+            infantry->Strength = static_cast<int16_t>(
+                Fixed_To_Cardinal(infantry->Class_Of().MaxStrength, strength));
             if (GameToPlay == GAME_NORMAL || infantry->House->IsHuman) {
               infantry->Assign_Mission(mission);
               infantry->Commence();

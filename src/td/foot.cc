@@ -84,14 +84,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "base/numeric.h"
-#include "td/rand.h"
 #include "td/foot.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstring>
 #include <iterator>
 
+#include "base/numeric.h"
 #include "rand.h"
 #include "sdllib/misc.h"
 #include "sdllib/ww_mouse.h"
@@ -115,6 +115,7 @@
 #include "td/object.h"
 #include "td/queue.h"
 #include "td/radio.h"
+#include "td/rand.h"
 #include "td/special.h"
 #include "td/target.h"
 #include "td/team.h"
@@ -956,8 +957,8 @@ void FootClass::Approach_Target() {
                                 32, -32, 48, -48, 64,  -64};
 
         for (int _angle : _angles) {
-          trycoord = Coord_Move(tcoord, dir + _angle,
-                                static_cast<unsigned short>(range));
+          trycoord =
+              Coord_Move(tcoord, dir + _angle, static_cast<uint16_t>(range));
 
           if (::Distance(trycoord, tcoord) < range) {
             trycell = Coord_Cell(trycoord);

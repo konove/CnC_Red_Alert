@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_RA_BULLET_H_
 
 #include <cstddef>
+#include <cstdint>
 
 #include "absl/base/attributes.h"
 #include "ra/ccptr.h"
@@ -114,9 +115,9 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   void Draw_It(int x, int y, WindowNumberType window) const override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
   void AI() override;
-  [[nodiscard]] const short* Occupy_List(
+  [[nodiscard]] const int16_t* Occupy_List(
       bool /*placement*/ = false) const override;
-  [[nodiscard]] const short* Overlap_List(
+  [[nodiscard]] const int16_t* Overlap_List(
       bool /*redraw*/ = false) const override {
     return Occupy_List(false);
   }

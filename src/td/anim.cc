@@ -60,6 +60,7 @@
 #include "td/anim.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdlib>
 
 #include "rand.h"
@@ -351,87 +352,87 @@ bool AnimClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-const short* AnimClass::Overlap_List() const {
+const int16_t* AnimClass::Overlap_List() const {
   Validate();
-  static const short OverlapN[] = {0,
-                                   -MAP_CELL_W,
-                                   -(MAP_CELL_W + 1),
-                                   -(MAP_CELL_W - 1),
-                                   -(2 * MAP_CELL_W),
-                                   -((2 * MAP_CELL_W) - 1),
-                                   -((2 * MAP_CELL_W) + 1),
-                                   REFRESH_EOL};
-  static const short OverlapNW[] = {0,
-                                    -1,
-                                    -MAP_CELL_W,
-                                    -(MAP_CELL_W + 1),
-                                    -(MAP_CELL_W + 2),
-                                    -((MAP_CELL_W * 2) + 2),
-                                    -((MAP_CELL_W * 2) + 1),
-                                    REFRESH_EOL};
-  static const short OverlapW[] = {
-      0, -1, -2, -(MAP_CELL_W + 1), -(MAP_CELL_W + 2), REFRESH_EOL};
-  static const short OverlapSW[] = {0,
-                                    -1,
-                                    MAP_CELL_W,
-                                    (MAP_CELL_W - 1),
-                                    (MAP_CELL_W - 2),
-                                    (MAP_CELL_W * 2 - 2),
-                                    (MAP_CELL_W * 2 - 1),
-                                    REFRESH_EOL};
-  static const short OverlapS[] = {0,
-                                   MAP_CELL_W - 1,
-                                   MAP_CELL_W,
-                                   MAP_CELL_W + 1,
-                                   (2 * MAP_CELL_W) + 1,
-                                   2 * MAP_CELL_W,
-                                   (2 * MAP_CELL_W) - 1,
-                                   REFRESH_EOL};
-  static const short OverlapSE[] = {0,
-                                    1,
-                                    MAP_CELL_W,
-                                    (MAP_CELL_W + 1),
-                                    (MAP_CELL_W + 2),
-                                    (MAP_CELL_W * 2 + 2),
-                                    (MAP_CELL_W * 2 + 1),
-                                    REFRESH_EOL};
-  static const short OverlapE[] = {
-      0, 1, 2, -(MAP_CELL_W - 1), -(MAP_CELL_W - 2), REFRESH_EOL};
-  static const short OverlapNE[] = {0,
-                                    1,
-                                    -MAP_CELL_W,
-                                    -(MAP_CELL_W - 1),
-                                    -(MAP_CELL_W - 2),
-                                    -((MAP_CELL_W * 2) - 2),
-                                    -((MAP_CELL_W * 2) - 1),
-                                    REFRESH_EOL};
-  static const short OverlapIon[] = {(-MAP_CELL_W * 7) - 1,
-                                     (-MAP_CELL_W * 7),
-                                     (-MAP_CELL_W * 7) + 1,
-                                     (-MAP_CELL_W * 6) - 1,
-                                     (-MAP_CELL_W * 6),
-                                     (-MAP_CELL_W * 6) + 1,
-                                     (-MAP_CELL_W * 5) - 1,
-                                     (-MAP_CELL_W * 5),
-                                     (-MAP_CELL_W * 5) + 1,
-                                     (-MAP_CELL_W * 4) - 1,
-                                     (-MAP_CELL_W * 4),
-                                     (-MAP_CELL_W * 4) + 1,
-                                     (-MAP_CELL_W * 3) - 1,
-                                     (-MAP_CELL_W * 3),
-                                     (-MAP_CELL_W * 3) + 1,
-                                     (-MAP_CELL_W * 2) - 1,
-                                     (-MAP_CELL_W * 2),
-                                     (-MAP_CELL_W * 2) + 1,
-                                     (-MAP_CELL_W * 1) - 1,
-                                     (-MAP_CELL_W * 1),
-                                     (-MAP_CELL_W * 1) + 1,
-                                     (-MAP_CELL_W * 0) - 1,
-                                     (-MAP_CELL_W * 0),
-                                     (-MAP_CELL_W * 0) + 1,
+  static const int16_t OverlapN[] = {0,
+                                     -MAP_CELL_W,
+                                     -(MAP_CELL_W + 1),
+                                     -(MAP_CELL_W - 1),
+                                     -(2 * MAP_CELL_W),
+                                     -((2 * MAP_CELL_W) - 1),
+                                     -((2 * MAP_CELL_W) + 1),
                                      REFRESH_EOL};
+  static const int16_t OverlapNW[] = {0,
+                                      -1,
+                                      -MAP_CELL_W,
+                                      -(MAP_CELL_W + 1),
+                                      -(MAP_CELL_W + 2),
+                                      -((MAP_CELL_W * 2) + 2),
+                                      -((MAP_CELL_W * 2) + 1),
+                                      REFRESH_EOL};
+  static const int16_t OverlapW[] = {
+      0, -1, -2, -(MAP_CELL_W + 1), -(MAP_CELL_W + 2), REFRESH_EOL};
+  static const int16_t OverlapSW[] = {0,
+                                      -1,
+                                      MAP_CELL_W,
+                                      (MAP_CELL_W - 1),
+                                      (MAP_CELL_W - 2),
+                                      (MAP_CELL_W * 2 - 2),
+                                      (MAP_CELL_W * 2 - 1),
+                                      REFRESH_EOL};
+  static const int16_t OverlapS[] = {0,
+                                     MAP_CELL_W - 1,
+                                     MAP_CELL_W,
+                                     MAP_CELL_W + 1,
+                                     (2 * MAP_CELL_W) + 1,
+                                     2 * MAP_CELL_W,
+                                     (2 * MAP_CELL_W) - 1,
+                                     REFRESH_EOL};
+  static const int16_t OverlapSE[] = {0,
+                                      1,
+                                      MAP_CELL_W,
+                                      (MAP_CELL_W + 1),
+                                      (MAP_CELL_W + 2),
+                                      (MAP_CELL_W * 2 + 2),
+                                      (MAP_CELL_W * 2 + 1),
+                                      REFRESH_EOL};
+  static const int16_t OverlapE[] = {
+      0, 1, 2, -(MAP_CELL_W - 1), -(MAP_CELL_W - 2), REFRESH_EOL};
+  static const int16_t OverlapNE[] = {0,
+                                      1,
+                                      -MAP_CELL_W,
+                                      -(MAP_CELL_W - 1),
+                                      -(MAP_CELL_W - 2),
+                                      -((MAP_CELL_W * 2) - 2),
+                                      -((MAP_CELL_W * 2) - 1),
+                                      REFRESH_EOL};
+  static const int16_t OverlapIon[] = {(-MAP_CELL_W * 7) - 1,
+                                       (-MAP_CELL_W * 7),
+                                       (-MAP_CELL_W * 7) + 1,
+                                       (-MAP_CELL_W * 6) - 1,
+                                       (-MAP_CELL_W * 6),
+                                       (-MAP_CELL_W * 6) + 1,
+                                       (-MAP_CELL_W * 5) - 1,
+                                       (-MAP_CELL_W * 5),
+                                       (-MAP_CELL_W * 5) + 1,
+                                       (-MAP_CELL_W * 4) - 1,
+                                       (-MAP_CELL_W * 4),
+                                       (-MAP_CELL_W * 4) + 1,
+                                       (-MAP_CELL_W * 3) - 1,
+                                       (-MAP_CELL_W * 3),
+                                       (-MAP_CELL_W * 3) + 1,
+                                       (-MAP_CELL_W * 2) - 1,
+                                       (-MAP_CELL_W * 2),
+                                       (-MAP_CELL_W * 2) + 1,
+                                       (-MAP_CELL_W * 1) - 1,
+                                       (-MAP_CELL_W * 1),
+                                       (-MAP_CELL_W * 1) + 1,
+                                       (-MAP_CELL_W * 0) - 1,
+                                       (-MAP_CELL_W * 0),
+                                       (-MAP_CELL_W * 0) + 1,
+                                       REFRESH_EOL};
 
-  static const short OverlapAtom[] = {
+  static const int16_t OverlapAtom[] = {
       (-MAP_CELL_W * 2) - 1, (-MAP_CELL_W * 2),
       (-MAP_CELL_W * 2) + 1, (-MAP_CELL_W * 1) - 1,
       (-MAP_CELL_W * 1),     (-MAP_CELL_W * 1) + 1,
@@ -501,9 +502,9 @@ const short* AnimClass::Overlap_List() const {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-const short* AnimClass::Occupy_List(bool /*placement*/) const {
+const int16_t* AnimClass::Occupy_List(bool /*placement*/) const {
   Validate();
-  static short _simple[] = {REFRESH_EOL};
+  static int16_t _simple[] = {REFRESH_EOL};
 
   return _simple;
 }

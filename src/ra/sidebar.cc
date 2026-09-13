@@ -91,6 +91,7 @@
 #include "ra/sidebar.h"
 
 #include <cassert>
+#include <cstdint>
 #include <cstring>
 #include <filesystem>
 #include <new>
@@ -494,7 +495,7 @@ bool SidebarClass::Factory_Link(int factory, RTTIType type, int id) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::Refresh_Cells(CELL cell, const short* list) {
+void SidebarClass::Refresh_Cells(CELL cell, const int16_t* list) {
   if (*list == kRefreshSidebar) {
     IsSidebarToRedraw = true;
     Column[0].IsToRedraw = true;

@@ -45,6 +45,7 @@ class ArchiveReader;
 class ArchiveWriter;
 
 #include <cstddef>
+#include <cstdint>
 
 #include "absl/base/attributes.h"
 #include "td/defines.h"
@@ -132,7 +133,7 @@ class UnitClass final : public TarComClass {
   */
   const void* Remap_Table() override;
   void Look(bool incremental = false) override;
-  const short* Overlap_List() const override;
+  const int16_t* Overlap_List() const override;
   void Draw_It(int x, int y, WindowNumberType window) override;
 
   /*

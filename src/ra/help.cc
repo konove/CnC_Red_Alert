@@ -52,6 +52,7 @@
 #include "ra/help.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <iterator>
@@ -70,7 +71,7 @@
 *be in the near *	data segment. It will be filled in by the Set_Text()
 *function.
 */
-short HelpClass::OverlapList[60] = {kRefreshEol};
+int16_t HelpClass::OverlapList[60] = {kRefreshEol};
 
 const char* HelpClass::HelpText;
 
@@ -129,7 +130,7 @@ void HelpClass::Init_Clear() {
  *                                                                                             *
  * HISTORY: * 11/18/1994 JLB : Created. *
  *=============================================================================================*/
-const short* HelpClass::Overlap_List() const {
+const int16_t* HelpClass::Overlap_List() const {
   if (Text == TXT_NONE || CountDownTimer.HasTimeLeft()) {
     OverlapList[0] = kRefreshEol;
   }

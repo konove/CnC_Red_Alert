@@ -56,6 +56,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include <algorithm>
+#include <cstdint>
 
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
@@ -301,7 +302,7 @@ int MapEditClass::Placement_Dialog() {
   int x;
   int y;                          // for drawing the grid
   KeyNumType input;               // user input
-  const short* occupy;            // ptr into object's OccupyList
+  const int16_t* occupy;          // ptr into object's OccupyList
   int cell;                       // cell index for parsing OccupyList
   int i;
   int typeindex = 0;  // index of class type
@@ -1001,7 +1002,7 @@ int MapEditClass::Place_Object() {
   CELL template_cell;        // cell being checked for template
   COORDINATE obj_coord;      // coord of occupier object
   int okflag;                // OK to place a template?
-  const short* occupy;       // ptr into template's OccupyList
+  const int16_t* occupy;     // ptr into template's OccupyList
   ObjectClass* occupier;     // occupying object
   TemplateType save_ttype;   // for saving cell's TType
   unsigned char save_ticon;  // for saving cell's TIcon

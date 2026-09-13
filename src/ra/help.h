@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_HELP_H_
 #define CNC_RED_ALERT_RA_HELP_H_
 
+#include <cstdint>
+
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/face.h"
@@ -71,7 +73,7 @@ class HelpClass : public TabClass {
   void Help_Text(int text, int x = -1, int y = -1, int color = LTGREY,
                  bool quick = false) override;
   void Set_Cost(int cost);
-  [[nodiscard]] const short* Overlap_List() const;
+  [[nodiscard]] const int16_t* Overlap_List() const;
 
  private:
   static const char* HelpText;
@@ -136,7 +138,7 @@ class HelpClass : public TabClass {
   *indicates *	which cells are under the help text and thus which cells need to
   *be redrawn if *	the help text is to be erased.
   */
-  static short OverlapList[60];
+  static int16_t OverlapList[60];
 
   enum HelpClassEnum {
     HELP_DELAY = kTimerSecond *

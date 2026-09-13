@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_RA_ANIM_H_
 
 #include <cstddef>
+#include <cstdint>
 
 #include "absl/base/attributes.h"
 #include "ra/ccptr.h"
@@ -102,9 +103,9 @@ class AnimClass final : public ObjectClass, public StageClass {
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
-  [[nodiscard]] const short* Occupy_List(
+  [[nodiscard]] const int16_t* Occupy_List(
       bool /*placement*/ = false) const override;
-  [[nodiscard]] const short* Overlap_List(
+  [[nodiscard]] const int16_t* Overlap_List(
       bool /*redraw*/ = false) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
   void AI() override;

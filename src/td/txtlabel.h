@@ -43,6 +43,8 @@
 #ifndef CNC_RED_ALERT_TD_TXTLABEL_H_
 #define CNC_RED_ALERT_TD_TXTLABEL_H_
 
+#include <cstdint>
+
 #include "absl/base/attributes.h"
 #include "td/defines.h"
 #include "td/gadget.h"
@@ -74,7 +76,7 @@ class TextLabelClass : public GadgetClass {
   int Color;
   int PixWidth{-1};
   char Segments{0};
-  unsigned short CRC = 0;
+  uint16_t CRC = 0;
 };
 
 #endif  // CNC_RED_ALERT_TD_TXTLABEL_H_

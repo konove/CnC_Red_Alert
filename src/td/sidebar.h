@@ -44,6 +44,8 @@
 class ArchiveReader;
 class ArchiveWriter;
 
+#include <cstdint>
+
 #include "sdllib/keyboard.h"
 #include "td/control.h"
 #include "td/defines.h"
@@ -97,7 +99,7 @@ class SidebarClass : public PowerClass {
 
   void AI(KeyNumType& input, int x, int y) override;
   void Draw_It(bool complete) override;
-  void Refresh_Cells(CELL cell, const short* list) override;
+  void Refresh_Cells(CELL cell, const int16_t* list) override;
 
   bool Abandon_Production(RTTIType type, int factory);
   bool Activate(int control);

@@ -38,6 +38,7 @@
 #include "tech/packet.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstring>
 
 #include "base/numeric.h"
@@ -191,8 +192,8 @@ char* PacketClass::Create_Comms_Packet(int& size) {
   //   are building.
   //
   for (current = Head; current; current = current->Next) {
-    size += static_cast<unsigned short>(
-        FIELD_HEADER_SIZE);      // add in packet header size
+    size +=
+        static_cast<uint16_t>(FIELD_HEADER_SIZE);  // add in packet header size
     size += current->Size;       // add in data size
     size +=
         (4 - (size & 3)) & 3;  // add in pad value to dword align next packet
@@ -209,9 +210,9 @@ char* PacketClass::Create_Comms_Packet(int& size) {
   // write the size into the packet header
   //
   port::WriteUnaligned(curbuf, htons(static_cast<uint16_t>(size)));
-  curbuf += sizeof(unsigned short);
+  curbuf += sizeof(uint16_t);
   port::WriteUnaligned(curbuf, htons(static_cast<uint16_t>(ID)));
-  curbuf += sizeof(short);
+  curbuf += sizeof(int16_t);
 
   //
   // Ok now that the actual header information has been written we need to write
@@ -336,10 +337,10 @@ bool PacketClass::Get_Field(const char* id, unsigned char& data) {
  * HISTORY:                                                               *
  *   04/23/1996 PWG : Created.                                            *
  *========================================================================*/
-bool PacketClass::Get_Field(const char* id, short& data) {
+bool PacketClass::Get_Field(const char* id, int16_t& data) {
   FieldClass* field = Find_Field(id);
   if (field) {
-    data = *static_cast<short*>(field->Data);
+    data = *static_cast<int16_t*>(field->Data);
   }
   return field != nullptr;
 }
@@ -359,10 +360,10 @@ bool PacketClass::Get_Field(const char* id, short& data) {
  * HISTORY:                                                               *
  *   04/23/1996 PWG : Created.                                            *
  *========================================================================*/
-bool PacketClass::Get_Field(const char* id, unsigned short& data) {
+bool PacketClass::Get_Field(const char* id, uint16_t& data) {
   FieldClass* field = Find_Field(id);
   if (field) {
-    data = *static_cast<unsigned short*>(field->Data);
+    data = *static_cast<uint16_t*>(field->Data);
   }
   return field != nullptr;
 }

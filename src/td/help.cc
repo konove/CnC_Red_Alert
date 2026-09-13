@@ -52,6 +52,7 @@
 #include "td/help.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 
@@ -74,7 +75,7 @@
 *be in the near *	data segment. It will be filled in by the Set_Text()
 *function.
 */
-short HelpClass::OverlapList[30] = {REFRESH_EOL};
+int16_t HelpClass::OverlapList[30] = {REFRESH_EOL};
 
 const char* HelpClass::HelpText;
 
@@ -132,7 +133,7 @@ void HelpClass::Init_Clear() {
  *                                                                                             *
  * HISTORY: * 11/18/1994 JLB : Created. *
  *=============================================================================================*/
-const short* HelpClass::Overlap_List() const {
+const int16_t* HelpClass::Overlap_List() const {
   if (Text == TXT_NONE || CountDownTimer.Time()) {
     OverlapList[0] = REFRESH_EOL;
   }

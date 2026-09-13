@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_AUDIO_H_
 #define CNC_RED_ALERT_TD_AUDIO_H_
 
+#include <cstdint>
+
 #include "td/defines.h"
 
 // #include "memory.h"
@@ -97,7 +99,7 @@
 //   }
 // };
 int Sound_Effect(VocType voc, VolType volume, int variation = 1,
-                 signed short pan_value = 0);
+                 int16_t pan_value = 0);
 void Speak(VoxType voice);
 void Speak_AI();
 void Stop_Speaking();

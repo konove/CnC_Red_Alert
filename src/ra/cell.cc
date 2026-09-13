@@ -92,6 +92,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstdint>
 #include <iterator>
 #include <utility>
 
@@ -166,7 +167,7 @@
  *list.                                                   *
  *=============================================================================================*/
 CellClass::CellClass()
-    : ID(static_cast<short>(Map.ID(this))),
+    : ID(static_cast<int16_t>(Map.ID(this))),
 
       Trigger(nullptr) {
   for (int zone = 0; std::cmp_less(zone, magic_enum::enum_count<MZoneType>());

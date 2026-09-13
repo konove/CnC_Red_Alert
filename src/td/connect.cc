@@ -86,7 +86,7 @@ const char* ConnectionClass::Commands[PACKET_COUNT] = {"ADATA", "NDATA", "ACK"};
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-ConnectionClass::ConnectionClass(int maxlen, unsigned short magicnum,
+ConnectionClass::ConnectionClass(int maxlen, uint16_t magicnum,
                                  int32_t retry_delta, int32_t max_retries,
                                  int32_t timeout)
     : MaxPacketLen(maxlen + static_cast<int>(sizeof(CommHeaderType))),

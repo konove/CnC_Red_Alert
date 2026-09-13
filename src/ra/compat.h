@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_RA_COMPAT_H_
 
 #include <cstddef>
+#include <cstdint>
 
 #define BuffType BufferClass
 // #define movmem(a,b,c) memmove(b,a,c)
@@ -90,14 +91,14 @@ typedef enum MenuIndexType {
 #define DKGRAY GREY
 #define LTGRAY LTGREY
 
-inline short Get_IconSet_MapWidth(const void* data) {
+inline int16_t Get_IconSet_MapWidth(const void* data) {
   if (data) {
     return ((IControl_Type*)data)->MapWidth;
   }
   return 0;
 }
 
-inline short Get_IconSet_MapHeight(const void* data) {
+inline int16_t Get_IconSet_MapHeight(const void* data) {
   if (data) {
     return ((IControl_Type*)data)->MapHeight;
   }
