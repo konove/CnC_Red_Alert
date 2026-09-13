@@ -459,7 +459,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     }
 
     KeyNumType input = buttons->Input();
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(200):
         Whom = list.Current_Object()->House;
         Scen.Scenario = list.Current_Object()->Scenario;

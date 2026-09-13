@@ -85,6 +85,8 @@ void Choose_Side()  //	ajw - In RA, all this did was play a movie.
         case 1:
           CurrentCD = 1;
           break;
+        default:
+          break;
       }
 
       Hide_Mouse();

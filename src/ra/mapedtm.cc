@@ -353,7 +353,7 @@ int MapEditClass::Select_Team(const char*) {
     /*
     **	Process input
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(TEAM_LIST):
         CurTeam = teamlist.Current_Item();
         break;
@@ -378,6 +378,8 @@ int MapEditClass::Select_Team(const char*) {
       case KN_RETURN:
       case ButtonKey(BUTTON_OK):
         process = false;
+        break;
+      default:
         break;
     }
   }
@@ -720,7 +722,7 @@ int MapEditClass::Team_Members(HousesType house) {
     /*
     **	Process input.
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       /*
       **	Mouse buttons set or clear 'held' values
       */

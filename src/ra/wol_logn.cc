@@ -319,7 +319,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       PassEdit.Flag_To_Redraw();
     }
 
-    switch (input) {
+    switch (static_cast<int>(input)) {
       /*
       ** ESC/Cancel: break
       */
@@ -383,6 +383,8 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
               process = false;
               iReturn = -1;
               break;
+            default:
+              break;
           }
           if (bBreak) {
             break;
@@ -417,6 +419,8 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
               //	This error value I pass back myself, when the emergency
               // timeout is hit.
               WWMessageBox().Process(TXT_WOL_TIMEOUT);
+              break;
+            default:
               break;
           }
           firsttime = true;  //	Bloody hack.
@@ -535,6 +539,8 @@ bool bSaveNick(WolapiObject* pWO, const char* szNickToSave,
       if (*szNick == 0 || strcmp(szNick, szNickToSave) == 0) {
         bPushSlot1 = false;
       }
+      break;
+    default:
       break;
   }
 

@@ -735,6 +735,8 @@ bool DriveClass::While_Moving() {
                   Special.IsScatter = old;
                 }
                 break;
+              default:
+                break;
             }
           }
         }

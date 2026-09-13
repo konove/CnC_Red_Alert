@@ -413,5 +413,7 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
 
       break;
     }
+    default:
+      break;
   }
 }

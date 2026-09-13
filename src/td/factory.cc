@@ -251,6 +251,8 @@ void FactoryClass::AI() {
         case RTTI_BUILDING:
           stages = Get_House()->BuildingFactories;
           break;
+        default:
+          break;
       }
       stages = std::max(stages, 1);
     }

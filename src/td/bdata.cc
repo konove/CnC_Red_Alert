@@ -4344,6 +4344,8 @@ bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, CELL& cell) const {
       case 4:
         bib = SMUDGE_BIB1;
         break;
+      default:
+        break;
     }
 
     /*

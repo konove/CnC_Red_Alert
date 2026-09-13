@@ -2142,6 +2142,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
             }
           }
           break;
+        default:
+          break;
       }
       /*
       **	Possibly force it to be an MCV if there is
@@ -2769,6 +2771,8 @@ bool CellClass::Is_Bridge_Here() const {
     case TEMPLATE_BRIDGE_3E:
     case TEMPLATE_BRIDGE_3F:
       return true;
+    default:
+      break;
   }
   return false;
 }

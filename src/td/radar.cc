@@ -333,6 +333,8 @@ bool RadarClass::Radar_Activate(int control) {
       Flag_To_Redraw(false);
       IsToRedraw = true;
       break;
+    default:
+      break;
   }
 
   if (IsRadarActive != old) {
@@ -654,6 +656,8 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
               size, *LogicPage);
           // LogicPage->Unlock();
           //}
+          break;
+        default:
           break;
       }
     }
@@ -1008,6 +1012,8 @@ CELL RadarClass::Click_Cell_Calc(int x, int y) {
 
     case -1:
       return -1;
+    default:
+      break;
   }
   return DisplayClass::Click_Cell_Calc(x, y);
 }

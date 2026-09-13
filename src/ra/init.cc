@@ -691,6 +691,8 @@ bool Select_Game(bool /*fade*/) {
               Scen.CDifficulty = DIFF_EASY;
               Scen.Difficulty = DIFF_HARD;
               break;
+            default:
+              break;
           }
           DLOG(INFO) << "Difficulty: player "
                      << magic_enum::enum_name(Scen.Difficulty) << ", computer "
@@ -734,6 +736,8 @@ bool Select_Game(bool /*fade*/) {
               case 4:
                 Scen.CDifficulty = DIFF_EASY;
                 Scen.Difficulty = DIFF_HARD;
+                break;
+              default:
                 break;
             }
           }
@@ -878,6 +882,8 @@ bool Select_Game(bool /*fade*/) {
                   selection = SEL_NONE;
                 }
                 break;
+              default:
+                break;
             }
           }  //	if( !pWolapi )
 
@@ -926,6 +932,8 @@ bool Select_Game(bool /*fade*/) {
                       Theme.Fade_Out();
                       BlackPalette.Set(kFadePaletteSlow);
                       return false;
+                    default:
+                      break;
                   }
                 } else {
                   Session.Type = GAME_NORMAL;
@@ -966,6 +974,8 @@ bool Select_Game(bool /*fade*/) {
                 delete PacketTransport;
                 PacketTransport = nullptr;
               }
+              break;
+            default:
               break;
           }
           break;

@@ -1078,6 +1078,8 @@ bool INIClass::Get_Bool(const char* section, const char* entry,
       case 'F':
       case '0':
         return false;
+      default:
+        break;
     }
   }
   return defvalue;

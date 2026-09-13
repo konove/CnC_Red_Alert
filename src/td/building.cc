@@ -332,6 +332,8 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
           Mark(MARK_CHANGE);
           Assign_Mission(MISSION_HARVEST);
           return RADIO_ATTACH;
+        default:
+          break;
       }
       break;
 
@@ -446,6 +448,8 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
         return RADIO_RUN_AWAY;
       }
       return RADIO_ROGER;
+    default:
+      break;
   }
 
   /*
@@ -823,6 +827,8 @@ bool BuildingClass::Mark(MarkType mark) {
 
             case STRUCT_CYCLONE_WALL:
               new OverlayClass(OVERLAY_CYCLONE_WALL, cell, House->Class->House);
+              break;
+            default:
               break;
           }
           Transmit_Message(RADIO_OVER_OUT);
@@ -1227,6 +1233,8 @@ void BuildingClass::AI() {
         delete Factory;
         Factory = nullptr;
         break;
+      default:
+        break;
     }
   }
 
@@ -1413,6 +1421,8 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
 
         case STRUCT_WOOD_WALL:
           otype = OVERLAY_WOOD_WALL;
+          break;
+        default:
           break;
       }
       if (otype != OVERLAY_NONE) {
@@ -1665,6 +1675,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
               case 11:
               case 12:
               case 13:
+              default:
                 break;
             }
           } else {
@@ -1686,6 +1697,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
         break;
 
       case RESULT_NONE:
+      default:
         break;
     }
 
@@ -2190,6 +2202,9 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
     case RTTI_INFANTRY:
     case RTTI_UNIT:
       switch (Class->Type) {
+        default:
+          break;
+
         case STRUCT_REFINERY:
           if (base->What_Am_I() == RTTI_UNIT) {
             CELL cell = Coord_Cell(Center_Coord());
@@ -2308,6 +2323,8 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         }
       }
       break;
+    default:
+      break;
   }
 
   /*
@@ -2382,6 +2399,8 @@ void BuildingClass::Update_Buildables() {
             //						}
           }
         }
+        break;
+      default:
         break;
     }
   }
@@ -2768,6 +2787,8 @@ void BuildingClass::Repair(int control) {
       }
       IsRepairing = false;
       break;
+    default:
+      break;
   }
 
   /*
@@ -2828,6 +2849,8 @@ void BuildingClass::Sell_Back(int control) {
           return;
         }
         decon = false;
+        break;
+      default:
         break;
     }
 
@@ -3321,6 +3344,8 @@ bool BuildingClass::Captured(HouseClass* newowner) {
       case HOUSE_BAD:
         Speak(VOX_NOD_CAPTURED);
         break;
+      default:
+        break;
     }
 
     if (House == PlayerPtr) {
@@ -3612,6 +3637,8 @@ int BuildingClass::Mission_Guard() {
           return 1;
         }
         break;
+      default:
+        break;
     }
     return kTicksPerSecond * 5;
   }
@@ -3660,6 +3687,8 @@ int BuildingClass::Mission_Construction() {
         Assign_Mission(MISSION_GUARD);
         PrimaryFacing = Class->StartFace;
       }
+      break;
+    default:
       break;
   }
   return 1;
@@ -3840,6 +3869,8 @@ int BuildingClass::Mission_Deconstruction() {
         }
         House->IsRecalcNeeded = true;
       }
+      break;
+    default:
       break;
   }
   return 1;
@@ -4047,6 +4078,8 @@ int BuildingClass::Mission_Attack() {
       case FIRE_OK:
         Fire_At(TarCom, 0);
         return 1;
+      default:
+        break;
     }
   }
   return kTicksPerSecond;
@@ -4127,6 +4160,8 @@ int BuildingClass::Mission_Harvest() {
         Assign_Mission(MISSION_GUARD);
       }
       break;
+    default:
+      break;
   }
   return 1;
 }
@@ -4164,6 +4199,8 @@ int BuildingClass::Mission_Repair() {
         if (!In_Radio_Contact()) {
           Assign_Mission(MISSION_GUARD);
         }
+        break;
+      default:
         break;
     }
     return 1;
@@ -4238,6 +4275,8 @@ int BuildingClass::Mission_Repair() {
           }
         }
         break;
+      default:
+        break;
     }
     return kTicksPerSecond / 2;
   }
@@ -4282,6 +4321,8 @@ int BuildingClass::Mission_Repair() {
           IsReadyToCommence = false;
           return time;
         }
+        break;
+      default:
         break;
     }
     return 3;
@@ -4402,6 +4443,8 @@ int BuildingClass::Mission_Missile() {
       case DONE_LAUNCH:
         Assign_Mission(MISSION_GUARD);
         return 60;
+      default:
+        break;
     }
   }
   return 60;
@@ -4667,6 +4710,8 @@ int BuildingClass::Mission_Unload() {
           Enter_Idle_Mode();
         }
         break;
+      default:
+        break;
     }
     return kTicksPerSecond / 2;
   }
@@ -4844,6 +4889,8 @@ void BuildingClass::Detach_All(bool all) {
 
       case RTTI_SPECIAL:
         fnum = House->SpecialFactory;
+        break;
+      default:
         break;
     }
 

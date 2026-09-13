@@ -3415,6 +3415,8 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
             case RTTI_BUILDING:
               text = TXT_ENEMY_STRUCTURE;
               break;
+            default:
+              break;
           }
         }
       }
@@ -3969,6 +3971,8 @@ void DisplayClass::Sell_Mode_Control(int control) {
     case 1:
       mode = true;
       break;
+    default:
+      break;
   }
 
   if (mode != IsSellMode && !PendingObject) {
@@ -4010,6 +4014,8 @@ void DisplayClass::Repair_Mode_Control(int control) {
 
     case 1:
       mode = true;
+      break;
+    default:
       break;
   }
 

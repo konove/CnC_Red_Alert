@@ -474,6 +474,8 @@ void ScoreClass::Presentation() {
     case DIFF_HARD:
       uspoints += 3500;
       break;
+    default:
+      break;
   }
 
   if (!leadership) {

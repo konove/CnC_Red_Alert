@@ -722,7 +722,7 @@ int Main_Menu(unsigned long) {
     /*
     **	Dispatch the input to be processed.
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_EXPAND):
       case ButtonKey(BUTTON_EXPAND_AM):
       case ButtonKey(BUTTON_START):
@@ -755,6 +755,8 @@ int Main_Menu(unsigned long) {
                 curbutton = max_buttons - 1;
               }
             }
+            break;
+          default:
             break;
         }
         buttons[curbutton]->Turn_On();

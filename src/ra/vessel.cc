@@ -1525,6 +1525,8 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
       }
       DriveClass::Receive_Message(from, message, param);
       return RADIO_ROGER;
+    default:
+      break;
   }
   return DriveClass::Receive_Message(from, message, param);
 }
@@ -1795,6 +1797,8 @@ int VesselClass::Mission_Unload() {
               Assign_Mission(MISSION_GUARD);
             }
           }
+          break;
+        default:
           break;
       }
       break;
@@ -2206,6 +2210,8 @@ void VesselClass::Combat_AI() {
         IsFiring = false;
         Mark(MARK_OVERLAP_DOWN);
         Do_Uncloak();
+        break;
+      default:
         break;
     }
   }

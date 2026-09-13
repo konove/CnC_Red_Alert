@@ -1062,7 +1062,7 @@ bool TeamTypeClass::Edit() {
     /*
     **	Process input
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       /*
       **	Select a Mission on the right-hand mission list; update the
       *Argument *	field to reflect the current value. This only serves as
@@ -1113,6 +1113,8 @@ bool TeamTypeClass::Edit() {
                     (missionlist2.Current_Item()->Data.Value / 26) + 'A' - 1,
                     (missionlist2.Current_Item()->Data.Value % 26) + 'A');
               }
+              break;
+            default:
               break;
           }
         }
@@ -1561,6 +1563,8 @@ const char* TeamMissionClass::Description(int index) const {
           sprintf(&buffer[strlen(buffer)], "%c%c", (Data.Value / 26) + 'A' - 1,
                   (Data.Value % 26) + 'A');
         }
+        break;
+      default:
         break;
     }
 

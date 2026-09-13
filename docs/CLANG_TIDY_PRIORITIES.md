@@ -2,7 +2,7 @@
 
 Updated: 2026-09-12, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 176 currently excluded check names** and completed entries, in recommended work
+This tracks **all 173 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -80,7 +80,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `bugprone-signed-bitwise`                                  | Skipped | Commit `Document sign and parameter check policy`: 3,715 reports even with `IgnorePositiveIntegerLiterals`; about 1,800 are enum flag ORs in the unit and building data tables, the rest deliberate bit manipulation in the VQA loader, blitters and crypto. See review below.                                                                                                                                                                                                                          |
 | `hicpp-signed-bitwise`                                     | Legacy  | Unavailable in LLVM 23; review with `bugprone-signed-bitwise` on older tools.                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `clang-diagnostic-switch-enum`                             | Skipped | Commit `Document variadic and thread-safety check policy`: all 293 reports are switches that already have a deliberate default over large type enums (up to 102 values); `-Wswitch` and `-Wswitch-default` already require an explicit fallback.                                                                                                                                                                                                                                                        |
-| `clang-diagnostic-switch`                                  | Pending | Review missing cases; intentional ButtonKey(n) labels need a policy.                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `clang-diagnostic-switch`                                  | Enabled | Commit `Give every switch a fallback and switch on key numbers as integers`: 792 reports; 639 were gadget-ID `ButtonKey()` cases in 98 `KeyNumType` switches, which now switch on the integer key number; the 153 unhandled-enumerator switches get the default below.                                                                                                                                                                                                                                  |
 | `clang-diagnostic-switch-bool`                             | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                                                                                                                                                                                                                                                           |
 | `clang-diagnostic-duplicate-enum`                          | Enabled | Commit `Drop the implicit FIRST enum aliases and fix mixed enum operations`: 25 reports, all an `X_FIRST = 0` alias duplicating the first real enumerator (22 TD enums, three RA trigger/team enums); uses now name that enumerator, per the magic_enum no-alias rule.                                                                                                                                                                                                                                  |
 | `clang-diagnostic-missing-braces`                          | Enabled | Commit `Brace the infantry animation control tables`: all 680 reports were rows of TD's `[DO_COUNT][3]` tables in `idata.cc`, now one brace pair per row; layout unchanged.                                                                                                                                                                                                                                                                                                                             |
@@ -144,9 +144,9 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `hicpp-use-equals-default`                                      | Legacy  | Unavailable in LLVM 23; review with `modernize-use-equals-default` on older tools.                                                                                                                                                                                                                      |
 | `performance-noexcept-swap`                                     | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                                                           |
 | `cppcoreguidelines-noexcept-swap`                               | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                                                           |
-| `bugprone-switch-missing-default-case`                          | Pending | Review fallback policy; empty defaults alone add little value.                                                                                                                                                                                                                                          |
+| `bugprone-switch-missing-default-case`                          | Enabled | Commit `Give every switch a fallback and switch on key numbers as integers`: all 136 reports were among the 311 switches given a default.                                                                                                                                                               |
 | `hicpp-multiway-paths-covered`                                  | Legacy  | Unavailable in LLVM 23; review with `bugprone-switch-missing-default-case` on older tools.                                                                                                                                                                                                              |
-| `clang-diagnostic-switch-default`                               | Pending | Align compiler fallback enforcement with the switch policy.                                                                                                                                                                                                                                             |
+| `clang-diagnostic-switch-default`                               | Enabled | Commit `Give every switch a fallback and switch on key numbers as integers`: 311 switches without a default, now `default: break;`, matching GCC's `-Wswitch-default` policy in `CMakeLists.txt`.                                                                                                       |
 | `clang-diagnostic-covered-switch-default`                       | Skipped | Commit `Document variadic and thread-safety check policy`: conflicts with GCC's `-Wswitch-default`, which the build already requires (see `CMakeLists.txt`); 16 reports are defaults on fully covered switches.                                                                                         |
 | `readability-implicit-bool-conversion`                          | Pending | Clarify boolean intent at numeric and pointer boundaries.                                                                                                                                                                                                                                               |
 | `readability-inconsistent-declaration-parameter-name`           | Pending | Remove declaration/definition mismatches that mislead callers.                                                                                                                                                                                                                                          |
@@ -905,6 +905,29 @@ Measured in the combined sweep, and retained as exclusions:
 - `bugprone-easily-swappable-parameters` reported 426 functions with adjacent same-typed parameters,
   almost all coordinates, sizes and IDs in the drawing, gadget and type APIs. Strong types for those
   would touch most call sites for little defect value.
+
+### Switch fallback review (2026-09-12)
+
+`clang-diagnostic-switch`, `clang-diagnostic-switch-default` and
+`bugprone-switch-missing-default-case` are now enforced together. The isolated sweep reported 792,
+311 and 136 findings, and they overlap almost completely:
+
+| Finding                                                     | Sites | Switches |
+| ----------------------------------------------------------- | ----- | -------- |
+| Gadget-ID `ButtonKey()` and similar cases on a `KeyNumType` | 639   | 98       |
+| Enum switch without a default missing enumerators           | 153   | 153      |
+| Integer switch without a default                            | 136   | 136      |
+| Fully covered enum switch without a default                 | 22    | 22       |
+
+The 98 key-input switches mix keyboard enumerators with gadget IDs, which are integers built by
+`ButtonKey()` and are not values of `KeyNumType`. They now switch on `static_cast<int>(input)`,
+which states what the cases already assumed.
+
+The 311 switches without a default each gain `default: break;` before their closing brace. That is
+the fallback GCC's `-Wswitch-default` already requires in `CMakeLists.txt`, and it makes an
+unhandled value's path explicit rather than implied. No case body changed. One report comes from the
+switch inside GoogleTest's `EXPECT_DEATH` expansion in `port/unaligned_test.cc` and is suppressed at
+that line.
 
 ### Completed validation
 

@@ -402,6 +402,8 @@ void MapEditClass::Popup_Controls() {
         Add_A_Button(*FacingDial);
       }
       break;
+    default:
+      break;
   }
 
   /*

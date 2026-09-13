@@ -567,6 +567,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         case WOL_LEVEL_INLOBBY:
           pWO->UpdateChannels(GAME_TYPE, CHANNELFILTER_LOCALLOBBYGAMES, true);
           break;
+        default:
+          break;
       }
       pWO->dwTimeNextChannelUpdate = Get_Time_Ms() + CHANNELUPDATEWAIT;
     }
@@ -717,7 +719,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     //.....................................................................
     //	Process input
     //.....................................................................
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_SENDEDIT):
         //	Enter has been pressed - was caught by sendedit control.
         if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
@@ -1080,6 +1082,8 @@ bool OnExpandChannelList(IconListClass& chanlist, IconListClass& userlist) {
       ResizeChannelList(chanlist, false);
       lesCurrent = LES_NORMAL;
       return false;
+    default:
+      break;
   }
   return true;
 }
@@ -1103,6 +1107,8 @@ bool OnExpandUserList(IconListClass& chanlist, IconListClass& userlist) {
       ResizeUserList(userlist, false);
       lesCurrent = LES_NORMAL;
       return false;
+    default:
+      break;
   }
   return true;
 }
@@ -1266,6 +1272,8 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
         break;
       case S_OK:
         bKeepTrying = false;
+        break;
+      default:
         break;
     }
   }

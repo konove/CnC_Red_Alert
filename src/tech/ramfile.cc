@@ -338,6 +338,8 @@ long RAMFileClass::Seek(long pos, int dir) {
     case SEEK_END:
       Offset = static_cast<int>(maxoffset + pos);
       break;
+    default:
+      break;
   }
 
   Offset = std::clamp(Offset, 0, maxoffset);

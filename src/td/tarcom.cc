@@ -160,6 +160,8 @@ void TarComClass::AI() {
         IsFiring = false;
         Do_Uncloak();
         break;
+      default:
+        break;
     }
   }
 

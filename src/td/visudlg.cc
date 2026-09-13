@@ -258,7 +258,7 @@ void VisualControlsClass::Process() {
     **	Get and process player input.
     */
     KeyNumType input = optionsbtn.Input();
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_BRIGHTNESS):
         Options.Set_Brightness(brightness.Get_Value());
         break;
@@ -305,6 +305,8 @@ void VisualControlsClass::Process() {
             case BUTTON_TINT - BUTTON_BASE:
               Options.Set_Tint(tint.Get_Value());
               break;
+            default:
+              break;
           }
         } else {
           buttons[curbutton]->Turn_Off();
@@ -338,6 +340,8 @@ void VisualControlsClass::Process() {
 
             case BUTTON_TINT - BUTTON_BASE:
               Options.Set_Tint(tint.Get_Value());
+              break;
+            default:
               break;
           }
         } else {
@@ -425,6 +429,8 @@ void VisualControlsClass::Process() {
 
         case BUTTON_OPTIONS:
           process = false;
+          break;
+        default:
           break;
       }
 

@@ -685,6 +685,8 @@ int AircraftClass::Mission_Hunt() {
           return 5;
         }
         break;
+      default:
+        break;
     }
   } else {
     if (!Ammo) {
@@ -1139,6 +1141,8 @@ int AircraftClass::Mission_Unload() {
       case BUG_OUT:
         Assign_Mission(MISSION_RETREAT);
         return 1;
+      default:
+        break;
     }
 
   } else {
@@ -1262,6 +1266,8 @@ int AircraftClass::Mission_Unload() {
         }
         return 1;
       }
+      default:
+        break;
     }
   }
   return 10;
@@ -1662,6 +1668,8 @@ int AircraftClass::Mission_Move() {
 
       case BUG_OUT:
         return kTicksPerSecond;
+      default:
+        break;
     }
     return 5;
   }
@@ -1750,6 +1758,8 @@ int AircraftClass::Mission_Move() {
         }
       }
       return 1;
+    default:
+      break;
   }
 
   return kTicksPerSecond;
@@ -2394,6 +2404,8 @@ int AircraftClass::Mission_Attack() {
       Assign_Destination(kTargetNone);
       Enter_Idle_Mode();
       break;
+    default:
+      break;
   }
 
   return kTicksPerSecond / 2;
@@ -2641,6 +2653,8 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
         return RADIO_ROGER;
       }
       return RADIO_NEGATIVE;
+    default:
+      break;
   }
 
   /*
@@ -2732,6 +2746,8 @@ bool AircraftClass::Process_Take_Off() {
       Set_Speed(0xFF);
       IsTakingOff = false;
       return true;
+    default:
+      break;
   }
   return false;
 }
@@ -2765,6 +2781,7 @@ bool AircraftClass::Process_Landing() {
       break;
 
     case FLIGHT_LEVEL:
+    default:
       break;
   }
   return false;
@@ -3061,6 +3078,8 @@ int AircraftClass::Mission_Enter() {
             Enter_Idle_Mode();
         }
       }
+      break;
+    default:
       break;
   }
   return 1;

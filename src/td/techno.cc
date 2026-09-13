@@ -1745,6 +1745,8 @@ void TechnoClass::AI() {
                 Scatter(0, true);
               }
               break;
+            default:
+              break;
           }
           break;
 
@@ -1756,6 +1758,8 @@ void TechnoClass::AI() {
           if (IsOwnedByPlayer) {
             Mark(MARK_CHANGE);
           }
+          break;
+        default:
           break;
       }
     }
@@ -2121,6 +2125,8 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
       case ANIM_FLAME_N:
         a = static_cast<AnimType>(
             a + static_cast<int>(Dir_Facing(Fire_Direction())));
+        break;
+      default:
         break;
     }
 
@@ -2497,6 +2503,8 @@ int TechnoClass::Weapon_Range(int which) const {
     case 1:
       weapon = ttype.Secondary;
       break;
+    default:
+      break;
   }
   if (weapon != WEAPON_NONE) {
     if (weapon == WEAPON_NIKE && GameToPlay == GAME_NORMAL) {
@@ -2741,6 +2749,8 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
       case RTTI_BUILDING:
       case RTTI_AIRCRAFT:
         source->Made_A_Kill();
+        break;
+      default:
         break;
     }
 

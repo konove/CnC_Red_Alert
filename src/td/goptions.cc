@@ -328,7 +328,7 @@ void GameOptionsClass::Process() {
     /*
     **	Process Input.
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_RESTATE):
         selection = BUTTON_RESTATE;
         pressed = true;
@@ -493,6 +493,8 @@ void GameOptionsClass::Process() {
                 PlayerRestarts = true;
                 process = false;
                 break;
+              default:
+                break;
             }
           } else {
             if (ConfirmationClass().Process(TXT_CONFIRM_EXIT)) {
@@ -513,6 +515,9 @@ void GameOptionsClass::Process() {
           // Save_Settings();
           process = false;
           display = true;
+          break;
+
+        default:
           break;
       }
 

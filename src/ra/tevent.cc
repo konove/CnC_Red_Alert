@@ -270,6 +270,8 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
 
     case TEVENT_TIME:
       return td.EventTimer.IsFinished();
+    default:
+      break;
   }
 
   /*

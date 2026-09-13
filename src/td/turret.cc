@@ -390,6 +390,8 @@ COORDINATE TurretClass::Fire_Coord(int which) const {
       coord = Coord_Move(coord, DIR_N, 0x0030);
       dist = 0x0030;
       break;
+    default:
+      break;
   }
 
   if (dist) {

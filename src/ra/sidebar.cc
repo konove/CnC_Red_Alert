@@ -1515,6 +1515,8 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int, int) {
                       EventClass(EventClass::PLACE, pending->What_Am_I(), -1));
                   Speak(VOX_UNIT_READY);
                   break;
+                default:
+                  break;
               }
             }
           }

@@ -798,6 +798,8 @@ const TechnoTypeClass* As_TechnoType(TARGET target) {
 
     case RTTI_BUILDINGTYPE:
       return &BuildingTypeClass::As_Reference(static_cast<StructType>(val));
+    default:
+      break;
   }
   return nullptr;
 }

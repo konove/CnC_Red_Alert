@@ -274,6 +274,8 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
         e2 = Class->Event2(Event2, event, Class->House, obj, forced);
         execute = e1 || e2;
         break;
+      default:
+        break;
     }
   }
 

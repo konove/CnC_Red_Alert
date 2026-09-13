@@ -147,6 +147,8 @@ int WOL_Main() {
           //	User joined game channel.
           bCreator = false;
           break;
+        default:
+          break;
       }
       if (bKeepGoing) {
         WOL_GameSetupDialog GSupDlg(pWolapi, bCreator);
@@ -180,6 +182,8 @@ int WOL_Main() {
               pWolapi->Logout();
             }
             bKeepGoing = false;
+            break;
+          default:
             break;
         }
       }

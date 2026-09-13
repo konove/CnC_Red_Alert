@@ -1431,7 +1431,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
     /*.....................................................................
     Process input
     .....................................................................*/
-    switch (Input) {
+    switch (static_cast<int>(Input)) {
       case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         dialstatus = DIAL_CANCELED;
@@ -1636,7 +1636,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     if (!Input) {
       Input = Commands->Input();
     }
-    switch (Input) {
+    switch (static_cast<int>(Input)) {
       case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         dialstatus = DIAL_CANCELED;
@@ -1924,10 +1924,12 @@ int NullModemClass::Abort_Modem() {
   */
   Input = Commands->Input();
 
-  switch (Input) {
+  switch (static_cast<int>(Input)) {
     case KN_ESC:
     case ButtonKey(BUTTON_CANCEL):
       return ASUSERABORT;
+    default:
+      break;
   }
 
   return ASSUCCESS;

@@ -417,6 +417,8 @@ void Queue_AI() {
       case GAME_INTERNET:
         Queue_AI_Multiplayer();
         break;
+      default:
+        break;
     }
   }
 

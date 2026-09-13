@@ -747,6 +747,8 @@ bool DriveClass::While_Moving() {
                   Map[c].Incoming(0, true, true);
                 }
                 break;
+              default:
+                break;
             }
           }
         }

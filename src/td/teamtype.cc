@@ -914,6 +914,8 @@ const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house,
           case RTTI_UNITTYPE:
             uneeded |= 1 << ((UnitTypeClass*)ttype->Class[ctype])->Type;
             break;
+          default:
+            break;
         }
       }
 

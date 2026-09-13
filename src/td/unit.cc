@@ -739,6 +739,8 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
       }
       TarComClass::Receive_Message(from, message, param);
       return RADIO_ROGER;
+    default:
+      break;
   }
   return TarComClass::Receive_Message(from, message, param);
 }
@@ -2375,6 +2377,8 @@ int UnitClass::Mission_Unload() {
             Assign_Mission(MISSION_GUARD);
           }
           break;
+        default:
+          break;
       }
       break;
 
@@ -2397,6 +2401,7 @@ int UnitClass::Mission_Unload() {
           break;
 
         case 2:
+        default:
           break;
       }
       return 1;
@@ -2419,7 +2424,11 @@ int UnitClass::Mission_Unload() {
           }
           Exit_Map();
           break;
+        default:
+          break;
       }
+      break;
+    default:
       break;
   }
   return kTicksPerSecond;
@@ -2546,6 +2555,8 @@ int UnitClass::Mission_Harvest() {
     case GOINGTOIDLE:
       Assign_Mission(MISSION_GUARD);
       break;
+    default:
+      break;
   }
   return kTicksPerSecond;
 }
@@ -2591,6 +2602,8 @@ int UnitClass::Mission_Hunt() {
         if (!IsDeploying) {
           Status = 0;
         }
+        break;
+      default:
         break;
     }
   } else {

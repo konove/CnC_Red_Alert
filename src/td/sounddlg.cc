@@ -381,7 +381,7 @@ void SoundControlsClass::Process() {
     /*
     **	Process Input.
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case KN_ESC:
       case ButtonKey(BUTTON_OPTIONS):
         process = false;
@@ -438,6 +438,8 @@ void SoundControlsClass::Process() {
       case ButtonKey(BUTTON_REPEAT):
         repeatbtn.Set_Text(repeatbtn.IsOn ? TXT_ON : TXT_OFF);
         Options.Set_Repeat(repeatbtn.IsOn);
+        break;
+      default:
         break;
     }
   }

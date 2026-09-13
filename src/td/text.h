@@ -34,6 +34,8 @@ inline const char* Text_String(int index) {
       return "Bonus Mission 4";
     case TXT_BONUS_MISSION_5:
       return "Bonus Mission 5";
+    default:
+      break;
   }
   return Extract_String(SystemStrings, index).data();
 }

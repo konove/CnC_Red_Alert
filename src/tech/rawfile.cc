@@ -522,6 +522,8 @@ long RawFileClass::Seek(long pos, int dir) {
         // pos : BiasStart+BiasLength; 				pos = (pos >=
         // BiasStart) ? pos : BiasStart;
         break;
+      default:
+        break;
     }
 
     /*

@@ -211,6 +211,8 @@ int MapEditClass::New_Scenario() {
       Base.House = HOUSE_USSR;
       LastHouse = HOUSE_GOOD;
       break;
+    default:
+      break;
   }
 
   /*
@@ -424,6 +426,8 @@ int MapEditClass::Load_Scenario() {
         PlayerPtr->IsHuman = true;
         //			Base.House = HOUSE_USSR;
         LastHouse = HOUSE_GOOD;
+        break;
+      default:
         break;
     }
 
@@ -672,6 +676,8 @@ int MapEditClass::Load_Scenario() {
       case SCEN_VAR_D:
         vardbtn.Turn_On();
         break;
+      default:
+        break;
     }
 
     /*
@@ -714,6 +720,8 @@ int MapEditClass::Load_Scenario() {
           case HOUSE_USSR:
             neubtn.Turn_On();
             break;
+          default:
+            break;
         }
       } else {
         switch (Scen.ScenarioName[2]) {
@@ -727,6 +735,8 @@ int MapEditClass::Load_Scenario() {
 
           case 'M':
             playermbtn.Turn_On();
+            break;
+          default:
             break;
         }
       }
@@ -775,7 +785,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Process input
       */
-      switch (input) {
+      switch (static_cast<int>(input)) {
         /*
         **	Handle a click on one of the scenario variation group buttons.
         */
@@ -787,7 +797,7 @@ int MapEditClass::Load_Scenario() {
           varbbtn.Turn_Off();
           varcbtn.Turn_Off();
           vardbtn.Turn_Off();
-          switch (input) {
+          switch (static_cast<int>(input)) {
             case ButtonKey(BUTTON_VAR_A):
               varp = SCEN_VAR_A;
               varabtn.Turn_On();
@@ -807,6 +817,8 @@ int MapEditClass::Load_Scenario() {
               varp = SCEN_VAR_D;
               vardbtn.Turn_On();
               break;
+            default:
+              break;
           }
           break;
 
@@ -817,7 +829,7 @@ int MapEditClass::Load_Scenario() {
         case ButtonKey(BUTTON_WEST):
           westbtn.Turn_Off();
           eastbtn.Turn_Off();
-          switch (input) {
+          switch (static_cast<int>(input)) {
             case ButtonKey(BUTTON_EAST):
               dirp = SCEN_DIR_EAST;
               eastbtn.Turn_On();
@@ -826,6 +838,8 @@ int MapEditClass::Load_Scenario() {
             case ButtonKey(BUTTON_WEST):
               dirp = SCEN_DIR_WEST;
               westbtn.Turn_On();
+              break;
+            default:
               break;
           }
           break;
@@ -842,7 +856,7 @@ int MapEditClass::Load_Scenario() {
           nodbtn.Turn_Off();
           neubtn.Turn_Off();
           playermbtn.Turn_Off();
-          switch (input) {
+          switch (static_cast<int>(input)) {
             case ButtonKey(BUTTON_GDI):
               playerp = SCEN_PLAYER_SPAIN;
               gdibtn.Turn_On();
@@ -861,6 +875,8 @@ int MapEditClass::Load_Scenario() {
             case ButtonKey(BUTTON_MPLAYER):
               playerp = SCEN_PLAYER_MPLAYER;
               playermbtn.Turn_On();
+              break;
+            default:
               break;
           }
           break;
@@ -1353,7 +1369,7 @@ int MapEditClass::Load_Scenario() {
       *NOT *	being held down ('grabbed' is 0).
       */
       if (grabbed == 0) {
-        switch (input) {
+        switch (static_cast<int>(input)) {
           case KN_RETURN:
           case ButtonKey(BUTTON_OK):
             cancel = false;
@@ -1444,7 +1460,7 @@ int MapEditClass::Load_Scenario() {
         *WWLIB doesn't pass through a KN_MOUSE_MOVE *	  value while the button
         *is being held down, so this case must be *	  trapped as a default.
         */
-        switch (input) {
+        switch (static_cast<int>(input)) {
           case ((int)KN_LMOUSE | (int)KN_RLSE_BIT):
             grabbed = 0;
             display = REDRAW_MAP;
@@ -2287,7 +2303,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Process input
       */
-      switch (input) {
+      switch (static_cast<int>(input)) {
         case ButtonKey(BUTTON_ALLIES):
           allies.Check_Item(house, true);
           break;
@@ -2803,7 +2819,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Process input
       */
-      switch (input) {
+      switch (static_cast<int>(input)) {
         case ButtonKey(TRIGGER_LIST):
           CurTrigger = &*triggerlist.Current_Item();
           //				CurTrigger = (TriggerTypeClass
@@ -2830,6 +2846,8 @@ int MapEditClass::Load_Scenario() {
         case KN_RETURN:
         case ButtonKey(BUTTON_OK):
           process = false;
+          break;
+        default:
           break;
       }
     }

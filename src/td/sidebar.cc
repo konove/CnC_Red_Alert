@@ -1639,6 +1639,8 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int, int) {
                       EventClass(EventClass::PLACE, pending->What_Am_I(), -1));
                   Speak(VOX_UNIT_READY);
                   break;
+                default:
+                  break;
               }
             }
           }
@@ -1751,6 +1753,8 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
               case RTTI_AIRCRAFTTYPE:
                 isbusy = PlayerPtr->AircraftFactory != -1;
                 break;
+              default:
+                break;
             }
             shapefile = obj->Get_Cameo_Data();
             shapenum = 0;
@@ -1798,6 +1802,8 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
               completed = PlayerPtr->NukeStrike.Is_Ready();
               stage = PlayerPtr->NukeStrike.Anim_Stage();
               darken = false;
+              break;
+            default:
               break;
           }
         }
@@ -2177,6 +2183,8 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
         case SPC_AIR_STRIKE:
           Map.Help_Text(TXT_AIR_STRIKE, X, Y, CC_GREEN, true);
           break;
+        default:
+          break;
       }
       flags &= ~LEFTUP;
     }
@@ -2222,6 +2230,8 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
           } else {
             PlayerPtr->NukeStrike.Impatient_Click();
           }
+          break;
+        default:
           break;
       }
     }

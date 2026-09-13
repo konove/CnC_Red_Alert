@@ -289,5 +289,7 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
                                 width, Tabs);
       }
       break;
+    default:
+      break;
   }
 }

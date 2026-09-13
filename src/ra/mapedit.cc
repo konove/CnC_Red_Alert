@@ -362,6 +362,8 @@ bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
       case RTTI_AIRCRAFTTYPE:
         NumType[8]++;
         break;
+      default:
+        break;
     }
     return true;
   }
@@ -577,7 +579,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
   **	Trap special editing keys; if one is detected, set 'input' to 0 to
   **	prevent a conflict with parent's AI().
   */
-  switch (input) {
+  switch (static_cast<int>(input)) {
     /*
     ** F2/RMOUSE = pop up main menu
     */
@@ -1640,6 +1642,8 @@ void MapEditClass::Main_Menu() {
         MapEditorActive = false;
         Start_Scenario(Scen.ScenarioName);
         return;
+      default:
+        break;
     }
   }
 
@@ -1733,6 +1737,8 @@ void MapEditClass::AI_Menu() {
       case 2:
         Handle_Teams("Teams");
         process = false;
+        break;
+      default:
         break;
     }
   }
@@ -1995,7 +2001,7 @@ bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
     /*
     **	Process input.
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       /*
       ** Load: if load fails, present a message, and stay in the dialog
       ** to allow the user to try another game

@@ -443,6 +443,8 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
         //	Ignore 'selected' parameter. We use our own records.
         ListClass::Draw_Entry(index, xText, y, width, pExtras->bMultiSelected);
         break;
+      default:
+        break;
     }
     //	Restore Tabs before TempTabs goes out of scope.
     Tabs = TabsSave;
@@ -461,6 +463,8 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
         break;
       case 2:
         bShowSelected = pExtras->bMultiSelected;
+        break;
+      default:
         break;
     }
 

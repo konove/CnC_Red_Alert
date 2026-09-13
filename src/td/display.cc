@@ -287,6 +287,8 @@ void DisplayClass::One_Time() {
         case 2:
           Mem_Copy(FadingShade, RemapTables[hindex][fade], 256);
           break;
+        default:
+          break;
       }
       Mem_Copy(&RemapTables[hindex][fade][(static_cast<base::ssize>(static_cast<int>(hindex) + 11)) * 16],
                &RemapTables[hindex][fade][(static_cast<base::ssize>(0 + 11)) * 16], 16);
@@ -3312,6 +3314,8 @@ void DisplayClass::Mouse_Left_Up(bool shadow, ObjectClass* object,
                 text = TXT_ENEMY_STRUCTURE;
               }
               break;
+            default:
+              break;
           }
         }
       }
@@ -3718,6 +3722,8 @@ void DisplayClass::Sell_Mode_Control(int control) {
     case 1:
       mode = true;
       break;
+    default:
+      break;
   }
 
   if (mode != IsSellMode && !PendingObject) {
@@ -3759,6 +3765,8 @@ void DisplayClass::Repair_Mode_Control(int control) {
 
     case 1:
       mode = true;
+      break;
+    default:
       break;
   }
 

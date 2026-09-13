@@ -137,6 +137,8 @@ void Self_Regulate() {
               Total_Ram_Free(MEM_NORMAL) - Ram_Free(MEM_NORMAL));
           *MonoClass::Get_Current() = *mono;
           break;
+        default:
+          break;
       }
 
       MonoArray[MonoPage] = *mono;
@@ -725,6 +727,8 @@ void Debug_Key(unsigned input) {
         }
         break;
 #endif
+      default:
+        break;
     }
   }
 }

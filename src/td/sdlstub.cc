@@ -79,6 +79,8 @@ void SDL_Event_Handler(SDL_Event* event) {
           GameInFocus = false;
           Focus_Loss();
           break;
+        default:
+          break;
       }
       break;
     }
@@ -89,6 +91,8 @@ void SDL_Event_Handler(SDL_Event* event) {
 
       fflush(stdout);
       exit(0);
+    default:
+      break;
   }
 }
 
@@ -163,6 +167,8 @@ void Shake_Screen(int shakes) {
         break;
       case 1:
         HidPage.Blit(SeenBuff, 0, 0, 0, 2, 640, 398);
+        break;
+      default:
         break;
     }
     while (x == TickCount.Time()) {

@@ -384,6 +384,8 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
             param =
                 ::As_Target(Coord_Cell(Adjacent_Cell(Center_Coord(), DIR_S)));
             break;
+          default:
+            break;
         }
 
         /*
@@ -1558,6 +1560,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
       case RESULT_NONE:
       case RESULT_LIGHT:
+      default:
         break;
     }
 
@@ -4161,6 +4164,8 @@ int BuildingClass::Mission_Missile() {
         }
       }
         return 1;
+      default:
+        break;
     }
   }
 
@@ -4259,6 +4264,8 @@ int BuildingClass::Mission_Missile() {
         Begin_Mode(BSTATE_IDLE);  // keep the door closed.
         Assign_Mission(MISSION_GUARD);
         return 60;
+      default:
+        break;
     }
   }
   return MissionControl[Mission].Normal_Delay();

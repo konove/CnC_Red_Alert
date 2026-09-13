@@ -867,6 +867,8 @@ void TeamClass::AI() {
       case TMISSION_LOOP:
         TMission_Loop();
         break;
+      default:
+        break;
     }
 
     /*
@@ -879,6 +881,8 @@ void TeamClass::AI() {
         if (TimeOut.IsFinished()) {
           IsNextMission = true;
         }
+        break;
+      default:
         break;
     }
 
@@ -1345,6 +1349,8 @@ int TeamClass::Recruit(int typeindex) {
           }
         }
       } break;
+      default:
+        break;
     }
   }
   return added;
@@ -2616,6 +2622,8 @@ int TeamClass::TMission_Formation() {
         member = member->Member;
         xdir += 2;
       }
+      break;
+    default:
       break;
   }
 

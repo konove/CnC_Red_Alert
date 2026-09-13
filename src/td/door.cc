@@ -91,6 +91,8 @@ void DoorClass::AI() {
         case IS_CLOSING:
           State = IS_CLOSED;
           break;
+        default:
+          break;
       }
     }
     IsToRedraw = true;
@@ -124,6 +126,8 @@ bool DoorClass::Open_Door(int rate, int stages) {
       Control.Set_Stage(0);
       Control.Set_Rate(static_cast<unsigned char>(rate));
       return true;
+    default:
+      break;
   }
   return false;
 }
@@ -155,6 +159,8 @@ bool DoorClass::Close_Door(int rate, int stages) {
       Control.Set_Stage(0);
       Control.Set_Rate(static_cast<unsigned char>(rate));
       return true;
+    default:
+      break;
   }
   return false;
 }
@@ -190,6 +196,8 @@ int DoorClass::Door_Stage() const {
 
     case IS_OPEN:
       return Stages - 1;
+    default:
+      break;
   }
   return 0;
 }

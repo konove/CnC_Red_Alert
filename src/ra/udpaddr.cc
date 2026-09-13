@@ -211,7 +211,7 @@ bool Get_Broadcast_Addresses() {
     //.....................................................................
     //	Process input
     //.....................................................................
-    switch (input) {
+    switch (static_cast<int>(input)) {
       //..................................................................
       // ESC / CANCEL: send a SIGN_OFF
       // - If we're part of a game, stay in this dialog; otherwise, exit
@@ -222,6 +222,8 @@ bool Get_Broadcast_Addresses() {
 
       case ButtonKey(BUTTON_OK):
         process = false;
+        break;
+      default:
         break;
     }
   }

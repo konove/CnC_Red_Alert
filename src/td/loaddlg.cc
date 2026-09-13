@@ -383,13 +383,15 @@ int LoadOptionsClass::Process() {
         case WWDELETE:
           input = ButtonKey(BUTTON_DELETE);
           break;
+        default:
+          break;
       }
     }
 
     /*
     **	Process input.
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       /*
       ** Load: if load fails, present a message, and stay in the dialog
       ** to allow the user to try another game

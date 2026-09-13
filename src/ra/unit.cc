@@ -696,6 +696,8 @@ void UnitClass::Firing_AI() {
         Mark(MARK_OVERLAP_DOWN);
         Do_Uncloak();
         break;
+      default:
+        break;
     }
   }
 }
@@ -903,6 +905,8 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
       }
       DriveClass::Receive_Message(from, message, param);
       return RADIO_ROGER;
+    default:
+      break;
   }
   return DriveClass::Receive_Message(from, message, param);
 }
@@ -2439,6 +2443,8 @@ int UnitClass::Mission_Unload() {
         case CLOSING_DOOR:
           Assign_Mission(MISSION_GUARD);
           break;
+        default:
+          break;
       }
       break;
 
@@ -2524,6 +2530,8 @@ int UnitClass::Mission_Unload() {
             Assign_Mission(MISSION_GUARD);
           }
           break;
+        default:
+          break;
       }
       break;
 
@@ -2555,6 +2563,8 @@ int UnitClass::Mission_Unload() {
           if (!IsDeploying) {
             Assign_Mission(MISSION_GUARD);
           }
+          break;
+        default:
           break;
       }
       return 1;
@@ -2632,6 +2642,8 @@ int UnitClass::Mission_Unload() {
           if (Is_Door_Closed()) {
             Assign_Mission(MISSION_GUARD);
           }
+          break;
+        default:
           break;
       }
       break;
@@ -2910,6 +2922,8 @@ int UnitClass::Mission_Harvest() {
       }
       Assign_Mission(MISSION_GUARD);
       break;
+    default:
+      break;
   }
   return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
 }
@@ -2959,6 +2973,8 @@ int UnitClass::Mission_Hunt() {
         if (!IsDeploying) {
           Status = FIND_SPOT;
         }
+        break;
+      default:
         break;
     }
   } else {

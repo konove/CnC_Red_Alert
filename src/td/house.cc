@@ -2126,6 +2126,8 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
     case RTTI_SPECIAL:
       factory = &SpecialFactory;
       break;
+    default:
+      break;
   }
 
   /*
@@ -2212,6 +2214,8 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
 
     case RTTI_SPECIAL:
       factory = &SpecialFactory;
+      break;
+    default:
       break;
   }
 
@@ -2300,6 +2304,8 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
 
     case RTTI_SPECIAL:
       factory = &SpecialFactory;
+      break;
+    default:
       break;
   }
 
@@ -2523,6 +2529,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
         IsRecalcNeeded = true;
       }
       break;
+    default:
+      break;
   }
   return true;
 }
@@ -2579,6 +2587,8 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
       if (BuildingFactory != -1) {
         factory = Factories.Raw_Ptr(BuildingFactory);
       }
+      break;
+    default:
       break;
   }
 
@@ -3451,6 +3461,8 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         }
       }
       break;
+    default:
+      break;
   }
   return techno;
 }
@@ -4243,6 +4255,8 @@ void HouseClass::Init_Data(PlayerColorType color, HousesType house,
       RemapTable = RemapBlue;
       (unsigned char&)Class->Color = 203;
       (unsigned char&)Class->BrightColor = 201;
+      break;
+    default:
       break;
   }
 }

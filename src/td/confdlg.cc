@@ -198,7 +198,7 @@ bool ConfirmationClass::Process(const char* string) {
     /*
     **	Process Input.
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_YES):
         selection = BUTTON_YES;
         pressed = true;
@@ -255,6 +255,8 @@ bool ConfirmationClass::Process(const char* string) {
         case BUTTON_NO:
           result = false;
           process = false;
+          break;
+        default:
           break;
       }
 

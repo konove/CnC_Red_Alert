@@ -908,7 +908,7 @@ int Main_Menu(unsigned long timeout) {
     **	Get and process player input.
     */
     input = commands->Input();
-    switch (input) {
+    switch (static_cast<int>(input)) {
 #ifdef NEWMENU
       case ButtonKey(BUTTON_EXPAND):
       case ButtonKey(BUTTON_INTERNET):

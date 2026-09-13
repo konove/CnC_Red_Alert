@@ -577,6 +577,8 @@ void TeamClass::AI() {
         CurrentMission = mission->Argument - 1;
         IsNextMission = true;
         break;
+      default:
+        break;
     }
 
     /*
@@ -595,6 +597,8 @@ void TeamClass::AI() {
         if (TimeOut.Expired()) {
           IsNextMission = true;
         }
+        break;
+      default:
         break;
     }
 

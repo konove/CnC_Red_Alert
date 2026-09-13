@@ -221,7 +221,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
       cancel_current_msgbox = false;
       input = ButtonKey(BUTTON_OK);
     }
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_OK):
         process = false;
         break;

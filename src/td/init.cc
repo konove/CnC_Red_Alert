@@ -1343,6 +1343,8 @@ bool Select_Game(bool fade) {
               break;
 
 #endif  // FORCE_WINSOCK
+            default:
+              break;
           }
 
           switch (GameToPlay) {
@@ -1377,6 +1379,8 @@ bool Select_Game(bool fade) {
                 display = true;
                 selection = SEL_NONE;
               }
+              break;
+            default:
               break;
           }
 #endif

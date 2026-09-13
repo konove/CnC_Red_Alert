@@ -295,7 +295,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         cancel_current_msgbox = false;
         input = KN_ESC;
       }
-      switch (input) {
+      switch (static_cast<int>(input)) {
         case KN_ESC:
           selection = realval[numbuttons - 1];
           pressed = true;
@@ -418,6 +418,8 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           case BUTTON_3:
             retval = 2;
             process = false;
+            break;
+          default:
             break;
         }
 

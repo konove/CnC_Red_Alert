@@ -1327,6 +1327,8 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
     case ACTION_SABOTAGE:
       Player_Assign_Mission(MISSION_SABOTAGE, kTargetNone, ::As_Target(cell));
       break;
+    default:
+      break;
   }
 }
 
@@ -1646,6 +1648,8 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
         TechnoClass::Receive_Message(from, message, param);
         return RADIO_ROGER;
       }
+      break;
+    default:
       break;
   }
   return TechnoClass::Receive_Message(from, message, param);
@@ -2520,6 +2524,8 @@ int FootClass::Mission_Retreat() {
       if (!Target_Legal(NavCom)) {
         Status = FIND_EDGE;
       }
+      break;
+    default:
       break;
   }
 

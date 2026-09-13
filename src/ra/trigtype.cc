@@ -452,6 +452,8 @@ bool TriggerTypeClass::Edit() {
       sprintf(event1data.Get_Text(), "%d",
               static_cast<int>(Event1.Data.Value));
       break;
+    default:
+      break;
   }
 
   char databuf2[GENERAL_SIZE] = "";
@@ -464,6 +466,8 @@ bool TriggerTypeClass::Edit() {
       sprintf(event2data.Get_Text(), "%d",
               static_cast<int>(Event2.Data.Value));
       break;
+    default:
+      break;
   }
 
   char actionbuf1[GENERAL_SIZE] = "";
@@ -474,6 +478,8 @@ bool TriggerTypeClass::Edit() {
     case NEED_NUMBER:
       sprintf(action1data.Get_Text(), "%d", Action1.Data.Value);
       break;
+    default:
+      break;
   }
 
   char actionbuf2[GENERAL_SIZE] = "";
@@ -483,6 +489,8 @@ bool TriggerTypeClass::Edit() {
   switch (Action_Needs(Action2.Action)) {
     case NEED_NUMBER:
       sprintf(action2data.Get_Text(), "%d", Action2.Data.Value);
+      break;
+    default:
       break;
   }
 
@@ -1112,6 +1120,8 @@ bool TriggerTypeClass::Edit() {
           eventbtn.Set_Text(TXT_TRIGGER_LINKED);
           event2list.Add(*commands);
           break;
+        default:
+          break;
       }
 
       /*
@@ -1291,6 +1301,8 @@ bool TriggerTypeClass::Edit() {
         case NEED_QUARRY:
           qlist1.Add(*commands);
           break;
+        default:
+          break;
       }
 
       qlist2.Remove();
@@ -1354,6 +1366,8 @@ bool TriggerTypeClass::Edit() {
           case NEED_QUARRY:
             qlist2.Add(*commands);
             break;
+          default:
+            break;
         }
       }
 
@@ -1412,7 +1426,7 @@ bool TriggerTypeClass::Edit() {
     /*
     **	Process input
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_EVENT):
         eventflag = (eventflag + 1) % 4;
         display = true;
@@ -1500,6 +1514,8 @@ bool TriggerTypeClass::Edit() {
           case NEED_TEAM:
             Event1.Team = TeamTypeClass::From_Name(ttype1list.Current_Item());
             break;
+          default:
+            break;
         }
 
         /*
@@ -1543,6 +1559,8 @@ bool TriggerTypeClass::Edit() {
 
           case NEED_TEAM:
             Event2.Team = TeamTypeClass::As_Pointer(ttype2list.Current_Item());
+            break;
+          default:
             break;
         }
 
@@ -1605,6 +1623,8 @@ bool TriggerTypeClass::Edit() {
           case NEED_QUARRY:
             Action1.Data.Quarry = QuarryType(qlist1.Current_Index());
             break;
+          default:
+            break;
         }
 
         /*
@@ -1664,6 +1684,8 @@ bool TriggerTypeClass::Edit() {
 
           case NEED_QUARRY:
             Action2.Data.Quarry = QuarryType(qlist1.Current_Index());
+            break;
+          default:
             break;
         }
         return true;

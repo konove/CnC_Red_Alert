@@ -2031,7 +2031,7 @@ static int Net_Join_Dialog() {
     //.....................................................................
     //	Process input
     //.....................................................................
-    switch (input) {
+    switch (static_cast<int>(input)) {
       //..................................................................
       // Mouse Click:
       // If we're joined to a game, display an error if the user tries to
@@ -4528,7 +4528,7 @@ static int Net_New_Dialog() {
     //.....................................................................
     //	Process input
     //.....................................................................
-    switch (input) {
+    switch (static_cast<int>(input)) {
       //..................................................................
       //	New Scenario selected.
       //..................................................................
@@ -5535,6 +5535,8 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
           snprintf(buf1, sizeof(buf1), "%s",
                    Text_String(TXT_WAITING_FOR_CONNECTIONS));
         }
+        break;
+      default:
         break;
     }
 

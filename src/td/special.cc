@@ -155,6 +155,8 @@ void Special_Dialog() {
         case TXT_SCATTER:
           value = Special.IsScatter;
           break;
+        default:
+          break;
       }
 
       _options[index].Setting = value;
@@ -208,7 +210,7 @@ void Special_Dialog() {
     }
 
     KeyNumType input = buttons->Input();
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case KN_ESC:
       case ButtonKey(200):
         process = false;
@@ -265,6 +267,8 @@ void Special_Dialog() {
 
             case TXT_SCATTER:
               oldspecial.IsScatter = _options[index].Setting;
+              break;
+            default:
               break;
           }
         }

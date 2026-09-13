@@ -1319,7 +1319,7 @@ static int Net_Join_Dialog() {
     /*
     ---------------------------- Process input ----------------------------
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       /*------------------------------------------------------------------
       User clicks on a color button:
       - If we've joined a game, don't allow a new color selection
@@ -3234,7 +3234,7 @@ static int Net_New_Dialog() {
     /*
     ---------------------------- Process input ----------------------------
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       /*------------------------------------------------------------------
       New Scenario selected.
       ------------------------------------------------------------------*/
@@ -4491,7 +4491,7 @@ static int Net_Fake_New_Dialog() {
     /*
     ---------------------------- Process input ----------------------------
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       /*------------------------------------------------------------------
       CANCEL: send a SIGN_OFF, bail out with error code
       ------------------------------------------------------------------*/
@@ -5059,7 +5059,7 @@ static int Net_Fake_Join_Dialog() {
     /*
     ---------------------------- Process input ----------------------------
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       /*------------------------------------------------------------------
       CANCEL: send a SIGN_OFF
       - If we're part of a game, stay in this dialog; otherwise, exit

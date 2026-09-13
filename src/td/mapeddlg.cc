@@ -650,6 +650,8 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
     case SCEN_VAR_LOSE:
       varlbtn.Turn_On();
       break;
+    default:
+      break;
   }
 
   /*
@@ -767,7 +769,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
     /*
     ............................ Process input ............................
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_VAR_A):
         (*varp) = SCEN_VAR_A;
         varabtn.Turn_On();
@@ -1291,7 +1293,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
     being held down ('grabbed' is 0).
     .....................................................................*/
     if (grabbed == 0) {
-      switch (input) {
+      switch (static_cast<int>(input)) {
         case KN_RETURN:
         case ButtonKey(BUTTON_OK):
           cancel = false;
@@ -1379,7 +1381,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         value while the button is being held down, so this case must be
         trapped as a default.
       .....................................................................*/
-      switch (input) {
+      switch (static_cast<int>(input)) {
         case ((int)KN_LMOUSE | (int)KN_RLSE_BIT):
           grabbed = 0;
           display = REDRAW_MAP;
@@ -1966,7 +1968,7 @@ int MapEditClass::Scenario_Dialog() {
     /*
     ............................ Process input ............................
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       /*..................................................................
       Credit edit boxes: no need for any action
       ..................................................................*/
@@ -2558,7 +2560,7 @@ int MapEditClass::Select_Trigger() {
     /*
     ............................ Process input ............................
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(TRIGGER_LIST):
         def_idx = triggerlist.Current_Index();
         if (def_idx < Triggers.Count()) {
@@ -2586,6 +2588,8 @@ int MapEditClass::Select_Trigger() {
       case KN_RETURN:
       case ButtonKey(BUTTON_OK):
         process = false;
+        break;
+      default:
         break;
     }
   }
@@ -2946,6 +2950,8 @@ int MapEditClass::Edit_Trigger() {
     case TriggerClass::PERSISTANT:
       persistbtn.Turn_On();
       break;
+    default:
+      break;
   }
 
   /*
@@ -3103,7 +3109,7 @@ int MapEditClass::Edit_Trigger() {
     /*
     ............................ Process input ............................
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(EVENT_LIST):
         if (eventlist.Current_Index() != event_idx) {
           event_idx = EventType(eventlist.Current_Index());
@@ -3518,7 +3524,7 @@ int MapEditClass::Import_Triggers() {
     /*
     ............................ Process input ............................
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(TRIGGER_LIST):
         break;
 
@@ -3531,6 +3537,8 @@ int MapEditClass::Import_Triggers() {
       case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
+        break;
+      default:
         break;
     }
   }
@@ -3861,7 +3869,7 @@ int MapEditClass::Import_Teams() {
     /*
     ............................ Process input ............................
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(TEAM_LIST):
         break;
 
@@ -3874,6 +3882,8 @@ int MapEditClass::Import_Teams() {
       case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
+        break;
+      default:
         break;
     }
   }

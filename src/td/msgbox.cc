@@ -326,7 +326,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       **	Fetch and process input.
       */
       input = buttonlist->Input();
-      switch (input) {
+      switch (static_cast<int>(input)) {
         case BUTTON_1 | BUTTON_FLAG:
           selection = realval[0];
           pressed = true;
@@ -421,6 +421,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           case BUTTON_3:
             retval = 2;
             process = false;
+            break;
+          default:
             break;
         }
 

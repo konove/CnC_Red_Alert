@@ -776,6 +776,8 @@ void Map_Selection() {
         Alloc_Object(new MultiStagePrintClass(
             Text_String(TXT_FOR_VISUAL_REFERENCE), 0, 22, _othergreenpal));
         break;
+      default:
+        break;
     }
 
     Animate_Frame(anim, *PseudoSeenBuff, frame++);
@@ -1019,6 +1021,8 @@ void Map_Selection() {
                 2 * (10 + 12), TBLACK);
 #endif  //(FRENCH)
           }
+          break;
+        default:
           break;
       }
     }
@@ -1318,6 +1322,8 @@ void Print_Statistics(int country, int xpos, int ypos) {
           Alloc_Object(new ScorePrintClass(
               _armynames[GDIStats[country].military], newx, ypos, _greenpal));
           break;
+        default:
+          break;
       }
       ypos += 8;
     }
@@ -1383,6 +1389,8 @@ void Print_Statistics(int country, int xpos, int ypos) {
         case 8:
           sprintf(_deststr, "%d%%", NodStats[country].probability);
           Alloc_Object(new ScorePrintClass(_deststr, newx, ypos, _greenpal));
+          break;
+        default:
           break;
       }
       ypos += 8;

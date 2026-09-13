@@ -451,7 +451,7 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
       /*
       ---------------------------- Process input ----------------------------
       */
-      switch (input) {
+      switch (static_cast<int>(input)) {
         /*
         ** Cancel. Just return to the main menu
         */
@@ -459,6 +459,8 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
         case ButtonKey(BUTTON_CANCEL):
           process = false;
           return_code = false;
+          break;
+        default:
           break;
       }
     }
@@ -779,7 +781,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
       /*
       ---------------------------- Process input ----------------------------
       */
-      switch (input) {
+      switch (static_cast<int>(input)) {
         /*
         ** Cancel. Just return to the main menu
         */
@@ -787,6 +789,8 @@ bool Send_Remote_File(char* file_name, int gametype) {
         case ButtonKey(BUTTON_CANCEL):
           process = false;
           return_code = false;
+          break;
+        default:
           break;
       }
     }

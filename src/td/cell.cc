@@ -1082,6 +1082,8 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
                     ((SmudgeTypeClass*)Map.PendingObject)->Type)
                     .Draw_It(x, y, 0);
                 break;
+              default:
+                break;
             }
           }
         }

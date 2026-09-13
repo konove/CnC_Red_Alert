@@ -187,6 +187,8 @@ bool TriggerClass::Event_Need_Object(EventType event) {
     case EVENT_DESTROYED:
     case EVENT_ANY:
       return true;
+    default:
+      break;
   }
   return false;
 }
@@ -222,6 +224,8 @@ bool TriggerClass::Event_Need_House(EventType event) {
     case EVENT_EVAC_CIVILIAN:
     case EVENT_BUILD:
       return true;
+    default:
+      break;
   }
   return false;
 }
@@ -249,6 +253,8 @@ bool TriggerClass::Event_Need_Data(EventType event) {
     case EVENT_NUNITS_DESTROYED:
     case EVENT_BUILD:
       return true;
+    default:
+      break;
   }
   return false;
 }
@@ -275,6 +281,8 @@ bool TriggerClass::Action_Need_Team(ActionType action) {
     case ACTION_DESTROY_TEAM:
     case ACTION_REINFORCEMENTS:
       return true;
+    default:
+      break;
   }
   return false;
 }

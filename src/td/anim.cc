@@ -276,6 +276,8 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) {
         case ANIM_ATOM_BLAST:
           transtable = MouseClass::UnitShadow;
           break;
+        default:
+          break;
       }
 
       /*

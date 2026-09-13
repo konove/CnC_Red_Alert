@@ -600,7 +600,7 @@ bool Do_The_Internet_Menu_Thang() {
     /*
     ---------------------------- Process input ----------------------------
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       /*
       ** Cancel. Just return to the main menu
       */
@@ -613,6 +613,8 @@ bool Do_The_Internet_Menu_Thang() {
 #endif
         GameStatisticsPacketSent = false;
         Spawn_WChat(false);
+        break;
+      default:
         break;
     }
   }

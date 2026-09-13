@@ -154,6 +154,8 @@ void Special_Dialog(bool simple) {
         case TXT_SPEED_BUILD:
           value = Special.IsSpeedBuild;
           break;
+        default:
+          break;
       }
 
       _options[index].Setting = value;
@@ -197,7 +199,7 @@ void Special_Dialog(bool simple) {
     }
 
     KeyNumType input = buttons->Input();
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case KN_ESC:
       case ButtonKey(200):
         process = false;
@@ -211,6 +213,8 @@ void Special_Dialog(bool simple) {
 
             case TXT_SPEED_BUILD:
               oldspecial.IsSpeedBuild = setting;
+              break;
+            default:
               break;
           }
         }
@@ -448,7 +452,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
       button2.Flag_To_Redraw();
       first = false;
     }
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case 1 | BUTTON_FLAG:
       case KN_ESC:
       case 2 | BUTTON_FLAG:
@@ -595,7 +599,7 @@ int Fetch_Difficulty(bool amath) {
     */
     KeyNumType input = buttonlist->Input();
 
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case KN_RETURN:
       case 1 | BUTTON_FLAG:
         process = false;

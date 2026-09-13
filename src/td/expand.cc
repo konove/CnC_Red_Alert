@@ -236,7 +236,7 @@ bool Expansion_Dialog() {
     }
 
     KeyNumType input = buttons->Input();
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case KN_RETURN:
       case ButtonKey(200):
         if (list.Current_Item()[sizeof(int)] == 'G') {
@@ -396,7 +396,7 @@ bool Bonus_Dialog() {
     }
 
     KeyNumType input = buttons->Input();
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case KN_RETURN:
       case ButtonKey(200):
         if (list.Current_Item()[sizeof(int)] == 'G') {

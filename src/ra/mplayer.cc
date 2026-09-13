@@ -293,7 +293,7 @@ GameType Select_MPlayer_Game() {
     //.....................................................................
     //	Process input
     //.....................................................................
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_MODEMSERIAL):
         selection = BUTTON_MODEMSERIAL;
         pressed = true;
@@ -417,6 +417,8 @@ GameType Select_MPlayer_Game() {
         case BUTTON_CANCEL:
           retval = GAME_NORMAL;
           process = false;
+          break;
+        default:
           break;
       }
 
@@ -647,7 +649,7 @@ int Surrender_Dialog(const char* text) {
     //.....................................................................
     //	Process input
     //.....................................................................
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_OK):
         retcode = 1;
         process = false;
@@ -838,7 +840,7 @@ int Abort_Dialog() {
     //.....................................................................
     //	Process input
     //.....................................................................
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_YES):
         retcode = 1;
         process = false;

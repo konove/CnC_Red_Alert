@@ -305,7 +305,7 @@ const char* SimpleEditDlgClass::Show() {
     /*
     **	Process input.
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
         //		case ( KN_ESC ):
       case ButtonKey(BUTTON_CANCEL):
         szReturn = szCancelButton;

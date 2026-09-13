@@ -270,7 +270,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     **	Process input.
     */
 
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_OK):
         cgiReturn.bCreateGame = true;
         process = false;
@@ -391,6 +391,8 @@ void SetPlayerCountList(IconListClass& PlayerCountList, int iPlayerMax,
       PlayerCountList.Set_Icon(0, 0, (void*)pShpBoxEmpty, ICON_SHAPE);
       PlayerCountList.Set_Icon(1, 0, (void*)pShpBoxEmpty, ICON_SHAPE);
       PlayerCountList.Set_Icon(2, 0, (void*)pShpBoxCheck, ICON_SHAPE);
+      break;
+    default:
       break;
   }
 }

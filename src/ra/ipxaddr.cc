@@ -202,11 +202,14 @@ void IPXAddressClass::Set_Address(IPXHeaderType* header) {
       memcpy(NodeAddress, header->SourceNetworkNode, 6);
       break;
 
-    case PROTOCOL_UDP:
+    case PROTOCOL_UDP: {
       unsigned char* addr = (unsigned char*)header;
       memset(NodeAddress, 0, 6);
       memcpy(NodeAddress, addr, 4);
       memset(NetworkNumber, 0, 4);
+      break;
+    }
+    default:
       break;
   }
 

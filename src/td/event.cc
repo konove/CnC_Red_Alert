@@ -585,6 +585,8 @@ void EventClass::Execute() {
                   dynamic_cast<FootClass*>(techno));
             }
             break;
+          default:
+            break;
         }
 
         if (object) {

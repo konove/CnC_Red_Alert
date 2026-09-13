@@ -471,7 +471,7 @@ int Test_Null_Modem() {
     /*
     ** Process input
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         retval = 0;
@@ -579,6 +579,8 @@ int Reconnect_Modem() {
       } else {
         status = Answer_Modem(DialSettings, true);
       }
+      break;
+    default:
       break;
   }
 
@@ -706,7 +708,7 @@ static int Reconnect_Null_Modem() {
     /*
     ** Process input
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         retval = false;
@@ -831,6 +833,8 @@ void Destroy_Null_Connection(int id, int error) {
 
     case -1:
       NullModem.Delete_Connection();
+      break;
+    default:
       break;
   }
 
@@ -1089,7 +1093,7 @@ GameType Select_Serial_Dialog() {
     /*
     ** Process input
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_DIAL):
         selection = BUTTON_DIAL;
         pressed = true;
@@ -1274,6 +1278,8 @@ GameType Select_Serial_Dialog() {
               case 3:
                 WWMessageBox().Process(TXT_MODEM_OR_LOOPBACK);
                 break;
+              default:
+                break;
             }
 
             if (process) {  // restore to default
@@ -1315,6 +1321,8 @@ GameType Select_Serial_Dialog() {
         case BUTTON_CANCEL:
           retval = GAME_NORMAL;
           process = false;
+          break;
+        default:
           break;
       }
 
@@ -1530,7 +1538,7 @@ void Advanced_Modem_Settings(SerialSettingsType* settings) {
     /*
     ---------------------------- Process input ----------------------------
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_COMPRESSION):
         settings->Compression = settings->Compression ^ 1;
         port::SafeCopy(compress_text, settings->Compression
@@ -1577,6 +1585,8 @@ void Advanced_Modem_Settings(SerialSettingsType* settings) {
 
       case ButtonKey(BUTTON_OK):
         process = false;
+        break;
+      default:
         break;
     }
   }
@@ -2146,7 +2156,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     /*
     ** Process input
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_ADVANCED):
         Advanced_Modem_Settings(&tempsettings);
         display = REDRAW_ALL;
@@ -2469,6 +2479,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       case ButtonKey(BUTTON_CANCEL):
         process = false;
         rc = false;
+        break;
+      default:
         break;
     }
 
@@ -3355,7 +3367,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       /*
       ---------------------------- Process input ----------------------------
       */
-      switch (input) {
+      switch (static_cast<int>(input)) {
         /*------------------------------------------------------------------
         User clicks on a color button
         ------------------------------------------------------------------*/
@@ -4101,6 +4113,8 @@ int Com_Scenario_Dialog(bool skirmish) {
           case 4:
             Scen.CDifficulty = DIFF_EASY;
             Scen.Difficulty = DIFF_HARD;
+            break;
+          default:
             break;
         }
       } else {
@@ -5097,7 +5111,7 @@ int Com_Show_Scenario_Dialog() {
     /*
     ---------------------------- Process input ----------------------------
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       /*------------------------------------------------------------------
       User clicks on a color button
       ------------------------------------------------------------------*/
@@ -6239,7 +6253,7 @@ static int Phone_Dialog() {
     /*
     ---------------------------- Process input ----------------------------
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       /*------------------------------------------------------------------
       New phone listing selected.
       ------------------------------------------------------------------*/
@@ -6438,6 +6452,8 @@ static int Phone_Dialog() {
       case ButtonKey(BUTTON_CANCEL):
         process = false;
         rc = false;
+        break;
+      default:
         break;
     }
 
@@ -6794,7 +6810,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     /*
     ---------------------------- Process input ----------------------------
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_NAME):
         numedit.Set_Focus();
         numedit.Flag_To_Redraw();
@@ -6842,6 +6858,8 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       case ButtonKey(BUTTON_SAVE):
         process = false;
         rc = true;
+        break;
+      default:
         break;
     }
 
@@ -7031,6 +7049,8 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
       WWMessageBox().Process(TXT_DIALING_CANCELED);
       connected = false;
       break;
+    default:
+      break;
   }
 
   NullModem.Remove_Modem_Echo();
@@ -7183,6 +7203,8 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     case DIAL_CANCELED:
       WWMessageBox().Process(TXT_ANSWERING_CANCELED);
       connected = false;
+      break;
+    default:
       break;
   }
 

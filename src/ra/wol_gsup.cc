@@ -1296,7 +1296,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     //.....................................................................
     //	Process input
     //.....................................................................
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case KN_LMOUSE:
         if (!bWaitingToStart) {
           //	Check for mouse down on a control when player is not host.
@@ -1685,6 +1685,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
               RESULT_WOLGSUP_FATALERROR;  //	Return with an error value.
         }
         break;
+      default:
+        break;
     }
 
     Call_Back();
@@ -1832,6 +1834,8 @@ void WOL_GameSetupDialog::BindControls(bool bBind) {
           pILScens->Add_Tail(*commands);
           pShpBtnScenarioUser->Add_Tail(*commands);
           pShpBtnScenarioUser->DRAWTABUP;
+          break;
+        default:
           break;
       }
     }

@@ -1493,7 +1493,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
       // Fetch and process input.
       input = buttonlist->Input();
-      switch (input) {
+      switch (static_cast<int>(input)) {
         case kButton1 | kButtonFlag:
           selection = realval[0];
           pressed = true;
@@ -1589,6 +1589,8 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
           case kButton3:
             retval = 2;
             process = false;
+            break;
+          default:
             break;
         }
 
@@ -3164,6 +3166,8 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
     case FACING_NW:
       x -= dist;
       y -= dist;
+      break;
+    default:
       break;
   }
 

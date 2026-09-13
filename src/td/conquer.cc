@@ -414,6 +414,7 @@ void Main_Game(int argc, char* argv[]) {
 
         case GAME_INTERNET:
           // Winsock.Close();
+        default:
           break;
       }
     }
@@ -520,7 +521,7 @@ void Keyboard_Process(KeyNumType& input) {
 
   if constexpr (config::kCheatKeysEnabled) {
     if (Debug_Flag) {
-      switch (input) {
+      switch (static_cast<int>(input)) {
         case (int)KN_M | (int)KN_SHIFT_BIT:
         case (int)KN_M | (int)KN_ALT_BIT:
         case (int)KN_M | (int)KN_CTRL_BIT:
@@ -1456,6 +1457,8 @@ FacingType KN_To_Facing(int input) {
 
     case KN_DOWNRIGHT:
       return FACING_SE;
+    default:
+      break;
   }
   return FACING_NONE;
 }
@@ -2616,6 +2619,8 @@ const TechnoTypeClass* Fetch_Techno_Type(RTTIType type, int id) {
     case RTTI_AIRCRAFTTYPE:
     case RTTI_AIRCRAFT:
       return &AircraftTypeClass::As_Reference(static_cast<AircraftType>(id));
+    default:
+      break;
   }
   return nullptr;
 }
@@ -2857,6 +2862,8 @@ void Handle_Team(int team, int action) {
               Unselect_All();
             }
             break;
+          default:
+            break;
         }
       }
       for (index = 0; index < Units.Count(); index++) {
@@ -2972,6 +2979,8 @@ void Handle_Team(int team, int action) {
           }
         }
       }
+      break;
+    default:
       break;
   }
   AllowVoice = true;

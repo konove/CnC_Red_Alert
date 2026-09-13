@@ -438,6 +438,8 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
                                       dst_adjust_width, Translucent,
                                       IsTranslucent, FadingNum, FadingTable);
         break;
+      default:
+        break;
     }
   } else {
     // super jump table fun!

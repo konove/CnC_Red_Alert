@@ -117,6 +117,8 @@ int WWKeyboardClass::Down(int key) {
         return buttons & SDL_BUTTON(1);
       case KN_RMOUSE:
         return buttons & SDL_BUTTON(3);
+      default:
+        break;
     }
   }
 
@@ -130,6 +132,8 @@ int WWKeyboardClass::Down(int key) {
         return keymod & KMOD_CTRL;
       case KN_LALT:
         return keymod & KMOD_ALT;
+      default:
+        break;
     }
   }
 
@@ -175,6 +179,8 @@ bool WWKeyboardClass::Event_Handler(SDL_Event* event) {
 
     case SDL_MOUSEMOTION:
       Update_Mouse_Pos(event->motion.x, event->motion.y);
+      break;
+    default:
       break;
   }
 

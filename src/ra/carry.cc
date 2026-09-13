@@ -135,6 +135,8 @@ bool CarryoverClass::Create() const {
     case RTTI_VESSEL:
       techno = new VesselClass(Type.Vessel, House);
       break;
+    default:
+      break;
   }
 
   if (techno) {

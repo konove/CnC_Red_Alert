@@ -1643,6 +1643,8 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
       x -= dist;
       y -= dist;
       break;
+    default:
+      break;
   }
 
   /*------------------------------------------------------------------------

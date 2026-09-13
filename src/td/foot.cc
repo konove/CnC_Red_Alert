@@ -1348,6 +1348,8 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
     case ACTION_ATTACK:
       Player_Assign_Mission(MISSION_ATTACK, ::As_Target(cell));
       break;
+    default:
+      break;
   }
 }
 
@@ -1564,6 +1566,8 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
         TechnoClass::Receive_Message(from, message, param);
         return RADIO_ROGER;
       }
+      break;
+    default:
       break;
   }
   return TechnoClass::Receive_Message(from, message, param);

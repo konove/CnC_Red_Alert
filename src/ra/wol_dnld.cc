@@ -193,7 +193,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
 
     if (process) {
       input = cancelbtn.Input();
-      switch (input) {
+      switch (static_cast<int>(input)) {
         /*
         ** Cancel. Just return to the main menu
         */
@@ -202,6 +202,8 @@ bool WOL_Download_Dialog(IDownload* pDownload,
           pDownload->Abort();
           process = false;
           bReturn = false;
+          break;
+        default:
           break;
       }
     }

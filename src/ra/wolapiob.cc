@@ -1088,6 +1088,8 @@ HRESULT WolapiObject::ChannelJoin(Channel* pChannelToJoin) {
     case CHAT_E_BANNED:
     case CHAT_E_CHANNELFULL:
       return pChatSink->hresRequestJoinResult;
+    default:
+      break;
   }
 
   if (!pChatSink->bJoined) {
@@ -1801,6 +1803,8 @@ void WolapiObject::DoFindPage() {
         delete[] szFound;
         break;
       }
+      default:
+        break;
     }
   } else {
     //	Page user.
@@ -1829,6 +1833,8 @@ void WolapiObject::DoFindPage() {
           Format_Runtime_Text(szMessage, sizeof(szMessage), TXT_WOL_WASPAGED,
                               pFindPageDlg->szEdit);
           PrintMessage(szMessage, WOLCOLORREMAP_LOCALMACHINEMESS);
+          break;
+        default:
           break;
       }
     }

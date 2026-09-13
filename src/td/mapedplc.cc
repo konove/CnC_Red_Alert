@@ -631,6 +631,8 @@ int MapEditClass::Placement_Dialog() {
           case BUTTON_BUILDING:
             buildingbtn.Turn_On();
             break;
+          default:
+            break;
         }
       }
 
@@ -650,7 +652,7 @@ int MapEditClass::Placement_Dialog() {
     /*
     ------------------------- Process user input --------------------------
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       /*
       ---------------------------- GDI House -----------------------------
       */

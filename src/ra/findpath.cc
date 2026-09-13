@@ -624,6 +624,8 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
                 case 2:
                   threat = -1;
                   break;
+                default:
+                  break;
               }
               restart_outer_loop = true;
               break;
@@ -700,6 +702,8 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
 
                 case 2:
                   threat = -1;
+                  break;
+                default:
                   break;
               }
               restart_outer_loop = true;

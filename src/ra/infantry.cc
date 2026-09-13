@@ -1708,6 +1708,10 @@ bool InfantryClass::Random_Animate() {
         Mark(MARK_CHANGE_REDRAW);
         PrimaryFacing.Set(Facing_Dir(Random_Pick(FACING_N, FACING_NW)));
         Mark(MARK_CHANGE_REDRAW);
+        break;
+
+      default:
+        break;
     }
     return true;
   }
@@ -3068,6 +3072,8 @@ ActionType InfantryClass::What_Action(CELL cell) const {
         //			case TEMPLATE_BRIDGE_3A:
         //			case TEMPLATE_BRIDGE_3B:
         return ACTION_SABOTAGE;
+      default:
+        break;
     }
   }
 
@@ -3427,6 +3433,8 @@ void InfantryClass::Firing_AI() {
             NavCom = kTargetNone;
             Path[0] = FACING_NONE;
           }
+          break;
+        default:
           break;
       }
     }

@@ -457,7 +457,7 @@ int MapEditClass::Select_Team(const char* caption) {
     /*
     ............................ Process input ............................
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(TEAM_LIST):
         def_idx = teamlist.Current_Index();
         if (def_idx < TeamTypes.Count()) {
@@ -485,6 +485,8 @@ int MapEditClass::Select_Team(const char* caption) {
       case KN_RETURN:
       case ButtonKey(BUTTON_OK):
         process = false;
+        break;
+      default:
         break;
     }
   }
@@ -1113,7 +1115,7 @@ int MapEditClass::Edit_Team() {
     /*
     ............................ Process input ............................
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_NAME):
       case ButtonKey(BUTTON_RECRUIT):
       case ButtonKey(BUTTON_MAXNUM):
@@ -1793,7 +1795,7 @@ int MapEditClass::Team_Members(HousesType house) {
     /*
     **	Process input.
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       /*
       **	Mouse buttons set or clear 'held' values
       */

@@ -291,6 +291,8 @@ int Base64_Decode(const void* source, int slen, void* dest, int dlen) {
         case 3:
           packet.SubCode.O4 = code;
           break;
+        default:
+          break;
       }
       pcount++;
     }

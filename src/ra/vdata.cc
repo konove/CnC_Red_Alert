@@ -551,6 +551,8 @@ void VesselTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
       x = xx;
       y = yy - 4;
       break;
+    default:
+      break;
   }
 }
 

@@ -2905,6 +2905,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
 
       break;
     }
+    default:
+      break;
   }
   return true;
 }
@@ -2998,6 +3000,8 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
               JustBuiltAircraft =
                   dynamic_cast<AircraftClass*>(pending)->Class->Type;
               IsBuiltSomething = true;
+              break;
+            default:
               break;
           }
         } else {
@@ -3301,6 +3305,8 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(RTTIType objecttype,
         return &BuildingTypeClass::As_Reference(BuildStructure);
       }
       return nullptr;
+    default:
+      break;
   }
   return techno;
 }
@@ -6897,6 +6903,8 @@ void HouseClass::Set_Factory(RTTIType rtti, FactoryClass* factory) {
     case RTTI_AIRCRAFTTYPE:
       factory_index = &AircraftFactory;
       break;
+    default:
+      break;
   }
 
   CHECK_NE(factory_index, nullptr);
@@ -7610,6 +7618,8 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
           Center, Random_Pick(DIR_SW, DIR_NW),
           static_cast<unsigned short>(Random_Pick(
               std::min(Radius * 2, maxdist), std::min(Radius * 3, maxdist))));
+      break;
+    default:
       break;
   }
 

@@ -388,6 +388,8 @@ int LoadOptionsClass::Process() {
             toggle->IsPressed = true;
           }
           break;
+        default:
+          break;
       }
       Hide_Mouse();
       commands->Draw_All(true);
@@ -397,7 +399,7 @@ int LoadOptionsClass::Process() {
     /*
     **	Process input.
     */
-    switch (input) {
+    switch (static_cast<int>(input)) {
       /*
       ** Load: if load fails, present a message, and stay in the dialog
       ** to allow the user to try another game

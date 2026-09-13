@@ -578,6 +578,8 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
         Sound_Effect(sound, Coord);
         Do_Action(DO_KICK_DEATH, true);
         break;
+      default:
+        break;
     }
 
     return res;
@@ -1230,6 +1232,8 @@ void InfantryClass::AI() {
         }
       }
 #endif
+      break;
+    default:
       break;
   }
 
@@ -2063,6 +2067,8 @@ void InfantryClass::Random_Animate() {
           Scatter(0, true);
         }
         break;
+      default:
+        break;
     }
   }
 }
@@ -2810,6 +2816,8 @@ RadioMessageType InfantryClass::Receive_Message(RadioClass* from,
         return RADIO_STATIC;
       }
       return RADIO_ROGER;
+    default:
+      break;
   }
   return FootClass::Receive_Message(from, message, param);
 }

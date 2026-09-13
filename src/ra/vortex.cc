@@ -816,6 +816,8 @@ void ChronalVortexClass::Render() {
       case STATE_SHRINK:
         frame = VORTEX_FRAMES * 2;
         break;
+      default:
+        break;
     }
 
     frame += AnimateFrame;

@@ -79,6 +79,8 @@ void SDL_Event_Handler(SDL_Event* event) {
           GameInFocus = false;
           Focus_Loss();
           break;
+        default:
+          break;
       }
       break;
     }
@@ -88,5 +90,7 @@ void SDL_Event_Handler(SDL_Event* event) {
       HiddenPage.Un_Init();
 
       exit(0);
+    default:
+      break;
   }
 }

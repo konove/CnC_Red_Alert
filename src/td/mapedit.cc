@@ -435,6 +435,8 @@ bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
       case RTTI_BUILDINGTYPE:
         NumType[7]++;
         break;
+      default:
+        break;
     }
     return true;
   }
@@ -647,7 +649,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
   Trap special editing keys; if one is detected, set 'input' to 0 to
   prevent a conflict with parent's AI().
   ------------------------------------------------------------------------*/
-  switch (input) {
+  switch (static_cast<int>(input)) {
     /*---------------------------------------------------------------------
     F2/RMOUSE = pop up main menu
     ---------------------------------------------------------------------*/
@@ -1658,6 +1660,8 @@ void MapEditClass::Main_Menu() {
         Debug_Map = false;
         Start_Scenario(ScenarioName);
         return;
+      default:
+        break;
     }
   }
 
@@ -1771,6 +1775,8 @@ void MapEditClass::AI_Menu() {
       case 4:
         Handle_Teams("Teams");
         process = false;
+        break;
+      default:
         break;
     }
   }

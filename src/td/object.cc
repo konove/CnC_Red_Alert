@@ -787,6 +787,9 @@ bool ObjectClass::Render(bool forced) {
     */
     if (Special.IsShowPath && IsSelected) {
       switch (What_Am_I()) {
+        default:
+          break;
+
         case RTTI_INFANTRY:
         case RTTI_UNIT:
           FootClass* foot = dynamic_cast<FootClass*>(this);

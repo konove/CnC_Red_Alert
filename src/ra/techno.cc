@@ -2716,6 +2716,8 @@ void TechnoClass::Cloaking_AI() {
                 Scatter(0, true);
               }
               break;
+            default:
+              break;
           }
           break;
 
@@ -2723,14 +2725,16 @@ void TechnoClass::Cloaking_AI() {
         **	A cloaked object will always be redrawn if it is owned by the
         **	player. This ensures that the shimmering effect will animate.
         */
-        case CLOAKED:
-#ifdef PREDATOR
         // CLOAKED marks for redraw in PREDATOR builds.
         // NOLINTNEXTLINE(bugprone-branch-clone)
+        case CLOAKED:
+#ifdef PREDATOR
           if (IsOwnedByPlayer) {
             Mark(MARK_CHANGE);
           }
 #endif
+          break;
+        default:
           break;
       }
     }
@@ -3322,6 +3326,8 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
       case ANIM_SAM_N:
         a = static_cast<AnimType>(
             ANIM_SAM_N + static_cast<int>(Dir_Facing(PrimaryFacing.Current())));
+        break;
+      default:
         break;
     }
 
@@ -4504,6 +4510,7 @@ void TechnoClass::Techno_Draw_Object(const void* shapefile, int shapenum, int x,
         break;
 
       case VISUAL_HIDDEN:
+      default:
         break;
     }
 #endif

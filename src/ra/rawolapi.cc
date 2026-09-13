@@ -845,6 +845,8 @@ STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT, Channel* pChannelListIn) {
           }
         }
         break;
+      default:
+        break;
     }
     Channel* pChannelNew = new Channel;
     *pChannelNew = *pChannelListIn;
@@ -1103,6 +1105,8 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
       case 5:
         Sound_Effect(VOC_CANNON8);
         break;
+      default:
+        break;
     }
   } else if (strstr(szMessage, "<<explodes>>") ||
              strstr(szMessage, "<<exploding>>") ||
@@ -1124,6 +1128,8 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
         break;
       case 4:
         Sound_Effect(VOC_KABOOM25);
+        break;
+      default:
         break;
     }
   } else if (strstr(szMessage, "<<aye>>") || strstr(szMessage, "<<ok>>") ||
@@ -1153,6 +1159,8 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
       case 7:
         Sound_Effect(VOC_MED_AFFIRM);
         break;
+      default:
+        break;
     }
   } else if (strstr(szMessage, "<<incredible>>") ||
              strstr(szMessage, "<<adam>>") || strstr(szMessage, "<<Adam>>")) {
@@ -1175,6 +1183,8 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
         break;
       case 4:
         Sound_Effect(VOC_THIEF_MOVEOUT);
+        break;
+      default:
         break;
     }
   } else if (strstr(szMessage, "<<water>>")) {
@@ -1219,6 +1229,8 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
         break;
       case 2:
         Sound_Effect(VOC_MISSILE_3);
+        break;
+      default:
         break;
     }
   }
@@ -1411,6 +1423,8 @@ STDMETHODIMP RAChatEventSink::OnUserKick(HRESULT hRes, Channel*,
         break;
       case 3:
         Sound_Effect(VOC_TANYA_KISS);
+        break;
+      default:
         break;
     }
   } else {
@@ -2030,6 +2044,8 @@ void ChatDefAsText(char* szDesc, std::size_t iSize, HRESULT hRes) {
       break;
     case NETUTIL_S_FINISHED:
       szNetUtil = "  NetUtil: NETUTIL_S_FINISHED";
+      break;
+    default:
       break;
   }
 

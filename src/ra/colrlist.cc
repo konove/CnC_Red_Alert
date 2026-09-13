@@ -282,5 +282,7 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
       LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
                            Colors[index]->Color);
       break;
+    default:
+      break;
   }
 }
