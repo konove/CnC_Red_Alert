@@ -70,9 +70,11 @@
  *
  ****************************************************************************/
 
+#include <algorithm>
 #include <cstdint>
 #include <cstring>
 
+#include "absl/log/check.h"
 #include "base/numeric.h"
 #include "winvq/vqa32/unvq.h"
 #include "winvq/vqa32/vqafile.h"
@@ -142,30 +144,39 @@ void VQA_Configure_Drawer(VQAHandle* vqap) {
     drawer->X2 = drawer->X1 + header->ImageWidth - 1;
     drawer->Y2 = drawer->Y1 + header->ImageHeight - 1;
   } else {
-    switch (origin) {
-      default:
-      case VQACFGF_TOPLEFT:
-        drawer->X1 = config->X1;
-        drawer->Y1 = config->Y1;
-        drawer->X2 = drawer->X1 + header->ImageWidth - 1;
-        drawer->Y2 = drawer->Y1 + header->ImageHeight - 1;
-        break;
+    // config->X1/Y1 is the gap between the image and the buffer corner the
+    // origin names, mirroring the top-left case: a zero gap puts the image
+    // flush in that corner. X1,Y1 is the image pixel nearest that corner and
+    // X2,Y2 the opposite pixel, both inclusive.
+    const bool right =
+        origin == VQACFGF_TOPRIGHT || origin == VQACFGF_BOTRIGHT;
+    const bool bottom =
+        origin == VQACFGF_BOTLEFT || origin == VQACFGF_BOTRIGHT;
 
-      case VQACFGF_BOTLEFT:
-        drawer->X1 = config->X1;
-        drawer->Y1 = drawer->ImageHeight - config->Y1;
-        drawer->X2 = drawer->X1 + header->ImageWidth - 1;
-        drawer->Y2 = drawer->Y2 - header->ImageHeight - 1;
-        break;
+    if (right) {
+      drawer->X1 = drawer->ImageWidth - 1 - config->X1;
+      drawer->X2 = drawer->X1 - header->ImageWidth + 1;
+    } else {
+      drawer->X1 = config->X1;
+      drawer->X2 = drawer->X1 + header->ImageWidth - 1;
+    }
 
-      case VQACFGF_BOTRIGHT:
-        drawer->X1 = drawer->ImageWidth - config->X1;
-        drawer->Y1 = drawer->ImageHeight - config->Y1;
-        drawer->X2 = drawer->X1 - header->ImageWidth;
-        drawer->Y2 = drawer->Y1 - header->ImageHeight;
-        break;
+    if (bottom) {
+      drawer->Y1 = drawer->ImageHeight - 1 - config->Y1;
+      drawer->Y2 = drawer->Y1 - header->ImageHeight + 1;
+    } else {
+      drawer->Y1 = config->Y1;
+      drawer->Y2 = drawer->Y1 + header->ImageHeight - 1;
     }
   }
+
+  // The placement comes from the caller's config, not the file, so an image
+  // that does not fit the buffer is a programmer error. Unchecked, UnVQ would
+  // write outside the buffer from ScreenOffset.
+  DCHECK(std::min(drawer->X1, drawer->X2) >= 0 &&
+         std::max(drawer->X1, drawer->X2) < drawer->ImageWidth &&
+         std::min(drawer->Y1, drawer->Y2) >= 0 &&
+         std::max(drawer->Y1, drawer->Y2) < drawer->ImageHeight);
 
   /*-------------------------------------------------------------------------
    * INITIALIZE THE UNVQ ROUTINE FOR THE SPECIFIED VIDEO MODE AND BLOCK SIZE.
@@ -203,8 +214,12 @@ void VQA_Configure_Drawer(VQAHandle* vqap) {
   {
     vqabuf->Draw_Frame = DrawFrame_Buffer;
 
-    /* Pre-compute the draw offset for speed. */
-    drawer->ScreenOffset = (drawer->ImageWidth * drawer->Y1) + drawer->X1;
+    // Pre-compute the draw offset for speed. UnVQ fills rightward and
+    // downward, so it starts at the image's top-left pixel whichever corner
+    // is anchored.
+    drawer->ScreenOffset =
+        (drawer->ImageWidth * std::min(drawer->Y1, drawer->Y2)) +
+        std::min(drawer->X1, drawer->X2);
   }
 }
 
@@ -334,10 +349,13 @@ static long Select_Frame(VQAHandle* vqap) {
           curframe->Flags &= ~VQAFRMF_PALCOMP;
         }
 
-        /* Stash the palette */
+        // Stash the palette. A decompressed palette can report up to
+        // Max_Pal_Size bytes, more than the 256-color copy holds.
+        const int32_t stash_size = std::min(
+            curframe->PaletteSize, int32_t{sizeof(drawer->Palette_24)});
         memcpy(drawer->Palette_24, curframe->Palette,
-               base::ToSize(curframe->PaletteSize));
-        drawer->CurPalSize = curframe->PaletteSize;
+               base::ToSize(stash_size));
+        drawer->CurPalSize = stash_size;
         drawer->Flags |= VQADRWF_SETPAL;
       }
 

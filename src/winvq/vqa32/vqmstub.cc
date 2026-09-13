@@ -21,7 +21,11 @@ static constexpr int16_t kImaAdpcmStepTable[89] = {
     5894,  6484,  7132,  7845,  8630,  9493,  10442, 11487, 12635, 13899,
     15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767};
 
-long AudioUnzap(void* /*source*/, void* /*dest*/, long /*unused*/) {
+// The only ZAP decoder is the original assembly (vqm32/audunzap.asm), which
+// the SDL port does not build. This stub writes nothing, so it cannot exceed
+// the destination size the loader passes. A real decoder must stop after
+// size bytes.
+long AudioUnzap(void* /*source*/, void* /*dest*/, long /*size*/) {
   printf("%s\n", __func__);
   return 0;
 }

@@ -66,6 +66,7 @@
  *
  ****************************************************************************/
 
+#include <algorithm>
 #include <bit>
 #include <cstdint>
 #include <cstdio>
@@ -118,6 +119,21 @@ static int32_t ChunkSize(const ChunkHeader& chunk) {
 // Returns a chunk size rounded up to the even boundary IFF chunks are padded
 // to. size must not be negative.
 static constexpr int32_t PadSize(int32_t size) { return size + (size % 2); }
+
+// Returns whether a size from ChunkSize() is usable. A file size of 2^31 or
+// more reads back negative, and INT32_MAX would overflow PadSize(). Every
+// chunk size must pass this before any other use.
+static constexpr bool IsValidChunkSize(int32_t size) {
+  return size >= 0 && size < INT32_MAX;
+}
+
+// Returns whether size bytes starting at offset lie inside a buffer of
+// capacity bytes. Takes 64-bit values so callers can add offsets without
+// overflowing.
+static constexpr bool FitsInBuffer(int64_t offset, int64_t size,
+                                   int64_t capacity) {
+  return offset >= 0 && size >= 0 && offset + size <= capacity;
+}
 
 /****************************************************************************
  *
@@ -220,12 +236,20 @@ long VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
 
     const int32_t chunk_size = ChunkSize(chunk);
 
+    // A negative size would make the skip below seek backwards.
+    if (!IsValidChunkSize(chunk_size)) {
+      VQA_Close(vqa);
+      return VQAERR_NOTVQA;
+    }
+
     switch (chunk.id) {
       /*---------------------------------------------------------------------
        * READ IN THE VQA HEADER.
        *-------------------------------------------------------------------*/
       case ID_VQHD:
-        if (std::cmp_not_equal(chunk_size, sizeof(VQAHeader))) {
+        // A second header would leak the first header's buffers.
+        if (std::cmp_not_equal(chunk_size, sizeof(VQAHeader)) ||
+            vqap->data != nullptr) {
           VQA_Close(vqa);
           return VQAERR_NOTVQA;
         }
@@ -234,6 +258,13 @@ long VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
         if (vqap->io->Read(header, PadSize(chunk_size))) {
           VQA_Close(vqa);
           return VQAERR_READ;
+        }
+
+        // These fields are divisors when sizing buffers and timing playback.
+        if (header->BlockWidth == 0 || header->BlockHeight == 0 ||
+            header->Groupsize == 0 || header->FPS == 0) {
+          VQA_Close(vqa);
+          return VQAERR_NOTVQA;
         }
 
         /*-------------------------------------------------------------------
@@ -277,6 +308,14 @@ long VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
         /*-------------------------------------------------------------------
          * ALLOCATE THE BUFFERS THAT WE NEED TO PLAY THE VQA.
          *-----------------------------------------------------------------*/
+        // The audio setup divides by the HMI buffer size.
+        if ((header->Flags & VQAHDF_AUDIO) != 0 &&
+            (config->OptionFlags & VQAOPTF_AUDIO) != 0 &&
+            config->HMIBufSize <= 0) {
+          VQA_Close(vqa);
+          return VQAERR_AUDIO;
+        }
+
         vqap->data = AllocBuffers(header, config);
         if (vqap->data == nullptr) {
           VQA_Close(vqa);
@@ -289,6 +328,12 @@ long VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
        * READ FRAME INFORMATION
        *-------------------------------------------------------------------*/
       case ID_FINF:
+        // The frame table is sized from the header, so it must come first.
+        if (vqap->data == nullptr) {
+          VQA_Close(vqa);
+          return VQAERR_NOTVQA;
+        }
+
         if (Load_FINF(vqap, chunk_size)) {
           VQA_Close(vqa);
           return VQAERR_READ;
@@ -395,9 +440,12 @@ long VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
 void VQA_Close(VQAHandle* vqa) {
   auto* vqa_handle_p = vqa;
   /* Shutdown audio/timing system. */
-  if (vqa_handle_p->config.OptionFlags & VQAOPTF_AUDIO) {
+  // Audio is open only once VQA_OpenAudio() has run. A failed VQA_Open() can
+  // get here earlier, with no data and no audio callback to tear down.
+  if (vqa_handle_p->data != nullptr &&
+      (vqa_handle_p->data->Audio.Flags & VQAAUDF_DIGIINIT) != 0) {
     VQA_CloseAudio(vqa_handle_p);
-  } else {
+  } else if ((vqa_handle_p->config.OptionFlags & VQAOPTF_AUDIO) == 0) {
     VQA_StopTimerInt(vqa_handle_p);
   }
 
@@ -511,7 +559,13 @@ long VQA_LoadFrame(VQAHandle* vqa) {
       }
 
       iffsize = ChunkSize(*chunk);
-      loader->FrameSize += iffsize;
+      if (!IsValidChunkSize(iffsize)) {
+        return VQAERR_READ;
+      }
+
+      // Saturates so a run of large skipped chunks cannot overflow the stat.
+      loader->FrameSize = static_cast<int32_t>(
+          std::min<int64_t>(int64_t{loader->FrameSize} + iffsize, INT32_MAX));
     }
 
     /* Handle each chunk type */
@@ -596,7 +650,7 @@ long VQA_LoadFrame(VQAHandle* vqa) {
           drawer->CurPalSize = static_cast<int32_t>(
               LCW_Uncompress(curframe->Palette + curframe->PalOffset,
                              drawer->Palette_24,
-                             base::ToSize(vqabuf->Max_Pal_Size)));
+                             sizeof(drawer->Palette_24)));
         }
 
         /* Flag this frame as having a palette. */
@@ -824,7 +878,9 @@ long VQA_LoadFrame(VQAHandle* vqa) {
  *     FromWhere - Relative position indicator.
  *
  * RESULT
- *     Frame - New frame position or -1 if error.
+ *     Frame - New frame position, or a negative VQAERR_ code: VQAERR_EOF
+ *             for a frame past the end, VQAERR_SEEK for a negative frame
+ *             or a movie without a frame table.
  *
  ****************************************************************************/
 
@@ -856,7 +912,13 @@ long VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, long /*fromwhere*/) {
   /* Make sure the requested frame is valid and the frame information
    * array is allocated before continuing.
    */
-  if (std::cmp_less(framenum, header->Frames) && vqabuf->Foff != nullptr) {
+  if (framenum < 0 || vqabuf->Foff == nullptr) {
+    rc = VQAERR_SEEK;
+  } else if (std::cmp_greater_equal(framenum, header->Frames)) {
+    rc = VQAERR_EOF;
+  }
+
+  if (rc == VQAERR_NONE) {
     /* Find and load the most recent palette. */
     if (!(config->OptionFlags & VQAOPTF_PALOFF)) {
       /* Get the current frame. */
@@ -1272,7 +1334,7 @@ static void FreeBuffers(VQAData* vqa, VQAConfig* /*config*/,
                         VQAHeader* /*header*/) {
   /* With RAII, all we need to do is delete the VQAData structure.
    * The vectors and unique_ptrs inside will automatically clean up:
-   * - FoffStorage (vector<long>)
+   * - FoffStorage (vector<uint32_t>)
    * - Audio.BufferStorage, IsLoadedStorage, TempBufStorage (vectors)
    * - ImageBufStorage (vector<unsigned char>)
    * - FrameNodes (vector<unique_ptr<VQAFrameNode>>)
@@ -1320,6 +1382,12 @@ long PrimeBuffers(VQAHandle* vqa) {
     rc = VQA_LoadFrame(vqa);
     if (rc == 0) {
       vqabuf->LoadedFrames++;
+    } else if (rc == VQAERR_EOF && std::cmp_greater_equal(
+                                       vqabuf->Loader.CurFrameNum,
+                                       vqa->header.Frames)) {
+      // A movie with fewer frames than buffers ends while priming. Only an
+      // end of file before the last frame (a truncated movie) is an error.
+      break;
     } else if (rc != VQAERR_NOBUFFER && rc != VQAERR_SLEEPING) {
       return rc;
     }
@@ -1358,7 +1426,7 @@ static long Load_VQF(VQAHandle* vqap, int32_t frame_iffsize) {
   ChunkHeader* chunk;
   int32_t iffsize;
   int32_t framesize;
-  int32_t bytes_loaded = 0;
+  int64_t bytes_loaded = 0;  // 64-bit: sums sizes up to 2^31 each.
   VQADrawer* drawer;
 
   /* Dereference commonly used data members for quicker access. */
@@ -1378,6 +1446,10 @@ static long Load_VQF(VQAHandle* vqap, int32_t frame_iffsize) {
     }
 
     iffsize = ChunkSize(*chunk);
+    if (!IsValidChunkSize(iffsize)) {
+      return VQAERR_READ;
+    }
+
     bytes_loaded += 8;
     bytes_loaded += PadSize(iffsize);
 
@@ -1443,7 +1515,7 @@ static long Load_VQF(VQAHandle* vqap, int32_t frame_iffsize) {
           drawer->CurPalSize = static_cast<int32_t>(
               LCW_Uncompress(curframe->Palette + curframe->PalOffset,
                              drawer->Palette_24,
-                             base::ToSize(vqabuf->Max_Pal_Size)));
+                             sizeof(drawer->Palette_24)));
         }
 
         /* Flag this frame as having a palette. */
@@ -1507,22 +1579,22 @@ static long Load_VQF(VQAHandle* vqap, int32_t frame_iffsize) {
  ****************************************************************************/
 
 static long Load_FINF(VQAHandle* vqap, int32_t iffsize) {
-  VQAData* vqabuf;
+  VQAData* vqabuf = vqap->data;
 
-  /* Dereference commonly used data members for quicker access. */
-  vqabuf = vqap->data;
+  // The table has one 4-byte entry per frame in the header. Copying no more
+  // than that and skipping the rest keeps an oversized chunk from writing
+  // past it; entries a short chunk leaves out stay zero.
+  const auto table_bytes =
+      static_cast<int64_t>(vqabuf->FoffStorage.size() * sizeof(uint32_t));
+  const int64_t copy_bytes = std::min<int64_t>(iffsize, table_bytes);
+  if (copy_bytes > 0 &&
+      vqap->io->Read(vqabuf->FoffStorage.data(), copy_bytes)) {
+    return VQAERR_READ;
+  }
 
-  /* Load the frame information table if we need to, otherwise we will
-   * skip it.
-   */
-  if (vqabuf->Foff != nullptr) {
-    if (vqap->io->Read(vqabuf->Foff, PadSize(iffsize))) {
-      return VQAERR_READ;
-    }
-  } else {
-    if (vqap->io->Seek(PadSize(iffsize), SEEK_CUR)) {
-      return VQAERR_SEEK;
-    }
+  const int64_t skip_bytes = PadSize(iffsize) - copy_bytes;
+  if (skip_bytes > 0 && vqap->io->Seek(skip_bytes, SEEK_CUR)) {
+    return VQAERR_SEEK;
   }
 
   return 0;
@@ -1556,6 +1628,10 @@ static long Load_CBF0(VQAHandle* vqap, int32_t iffsize) {
   /* Dereference commonly used data members for quicker access. */
   loader = &vqap->data->Loader;
   curcb = loader->CurCB;
+
+  if (!FitsInBuffer(0, PadSize(iffsize), vqap->data->Max_CB_Size)) {
+    return VQAERR_READ;
+  }
 
   /* Read into the start of the buffer */
   if (vqap->io->Read(curcb->Buffer, PadSize(iffsize))) {
@@ -1612,6 +1688,12 @@ static long Load_CBFZ(VQAHandle* vqap, int32_t iffsize) {
 
   /* Load the codebook into the end of the buffer. */
   lcwoffset = vqap->data->Max_CB_Size - padsize;
+
+  // A chunk larger than the buffer would start before it.
+  if (lcwoffset < 0) {
+    return VQAERR_READ;
+  }
+
   buffer = curcb->Buffer + lcwoffset;
 
   if (vqap->io->Read(buffer, padsize)) {
@@ -1668,6 +1750,11 @@ static long Load_CBP0(VQAHandle* vqap, int32_t iffsize) {
   /*-------------------------------------------------------------------------
    * ASSEMBLY PARTIAL CODEBOOKS.
    *-----------------------------------------------------------------------*/
+
+  if (!FitsInBuffer(loader->PartialCBSize, PadSize(iffsize),
+                    vqabuf->Max_CB_Size)) {
+    return VQAERR_READ;
+  }
 
   /* Read the partial codebook into the next position in the buffer. */
   buffer = curcb->Buffer + loader->PartialCBSize;
@@ -1740,8 +1827,22 @@ static long Load_CBPZ(VQAHandle* vqap, int32_t iffsize) {
    * a small fudge factor on, then subtracting that from the CB buffer size.
    */
   if (loader->PartialCBSize == 0) {
-    curcb->CBOffset =
-        vqabuf->Max_CB_Size - ((padsize * vqap->header.Groupsize) + 100);
+    // 64-bit because a large chunk times the group size overflows int32_t.
+    // A negative estimate would place the codebook before the buffer.
+    const int64_t cboffset =
+        int64_t{vqabuf->Max_CB_Size} -
+        ((int64_t{padsize} * vqap->header.Groupsize) + 100);
+    if (cboffset < 0) {
+      return VQAERR_READ;
+    }
+    curcb->CBOffset = static_cast<int32_t>(cboffset);
+  }
+
+  // The estimate assumes every part of the group is the size of the first
+  // one, so a larger later part can still run off the end.
+  if (!FitsInBuffer(int64_t{curcb->CBOffset} + loader->PartialCBSize, padsize,
+                    vqabuf->Max_CB_Size)) {
+    return VQAERR_READ;
   }
 
   /*-------------------------------------------------------------------------
@@ -1806,6 +1907,13 @@ static long Load_CPL0(VQAHandle* vqap, int32_t iffsize) {
   /* Dereference commonly used data members for quicker access. */
   curframe = vqap->data->Loader.CurFrame;
 
+  // The loader copies a frame's palette into the drawer's 256-color palette,
+  // so a larger one is malformed and would overrun that copy.
+  if (!FitsInBuffer(0, PadSize(iffsize),
+                    int64_t{sizeof(VQADrawer::Palette_24)})) {
+    return VQAERR_READ;
+  }
+
   /* Read the palette into the palette buffer */
   if (vqap->io->Read(curframe->Palette, PadSize(iffsize))) {
     return VQAERR_READ;
@@ -1852,6 +1960,12 @@ static long Load_CPLZ(VQAHandle* vqap, int32_t iffsize) {
 
   /* Read the palette into the end of the palette buffer. */
   lcwoffset = vqap->data->Max_Pal_Size - padsize;
+
+  // A chunk larger than the buffer would start before it.
+  if (lcwoffset < 0) {
+    return VQAERR_READ;
+  }
+
   buffer = curframe->Palette + lcwoffset;
 
   if (vqap->io->Read(buffer, padsize)) {
@@ -1892,6 +2006,10 @@ static long Load_VPT0(VQAHandle* vqap, int32_t iffsize) {
 
   /* Dereference commonly used data members for quicker access. */
   curframe = vqap->data->Loader.CurFrame;
+
+  if (!FitsInBuffer(0, PadSize(iffsize), vqap->data->Max_Ptr_Size)) {
+    return VQAERR_READ;
+  }
 
   /* Read the pointers into start of the pointer buffer. */
   if (vqap->io->Read(curframe->Pointers, PadSize(iffsize))) {
@@ -1936,6 +2054,11 @@ static long Load_VPTZ(VQAHandle* vqap, int32_t iffsize) {
   curframe = vqap->data->Loader.CurFrame;
   padsize = PadSize(iffsize);
   lcwoffset = vqap->data->Max_Ptr_Size - padsize;
+
+  // A chunk larger than the buffer would start before it.
+  if (lcwoffset < 0) {
+    return VQAERR_READ;
+  }
 
   /* Read the pointers into end of the pointer buffer. */
   buffer = curframe->Pointers + lcwoffset;
@@ -2001,6 +2124,10 @@ static long Load_SND0(VQAHandle* vqap, int32_t iffsize) {
 
   /* Read large startup chunk directly into AudioBuf */
   if (padsize > audio->TempBufSize && audio->AudBufPos == 0) {
+    if (padsize > config->AudioBufSize) {
+      return VQAERR_READ;
+    }
+
     if (vqap->io->Read(audio->Buffer, padsize)) {
       return VQAERR_READ;
     }
@@ -2014,6 +2141,11 @@ static long Load_SND0(VQAHandle* vqap, int32_t iffsize) {
 
     return 0;
   }
+  // Only the first audio chunk may exceed TempBuf; it is handled above.
+  if (padsize > audio->TempBufSize) {
+    return VQAERR_READ;
+  }
+
   /*  Read data into TempBuf */
   if (vqap->io->Read(audio->TempBuf, padsize)) {
     return VQAERR_READ;
@@ -2075,6 +2207,12 @@ static long Load_SND1(VQAHandle* vqap, int32_t iffsize) {
     return 0;
   }
 
+  // The ZAP header is part of the chunk; a shorter chunk would leave a
+  // negative payload size.
+  if (iffsize < int32_t{sizeof(ZAPHeader)}) {
+    return VQAERR_READ;
+  }
+
   /* Read the ZAP audio frame header. */
   if (vqap->io->Read(&zap, sizeof(ZAPHeader))) {
     return VQAERR_READ;
@@ -2086,6 +2224,11 @@ static long Load_SND1(VQAHandle* vqap, int32_t iffsize) {
   /* Read large startup chunk directly into AudioBuf */
   if (std::cmp_greater(zap.UnCompSize, audio->TempBufSize) &&
       audio->AudBufPos == 0) {
+    if (padsize > config->AudioBufSize ||
+        std::cmp_greater(zap.UnCompSize, config->AudioBufSize)) {
+      return VQAERR_READ;
+    }
+
     /* Load RAW uncompressed data. */
     if (zap.UnCompSize == zap.CompSize) {
       if (vqap->io->Read(audio->Buffer, padsize)) {
@@ -2111,6 +2254,12 @@ static long Load_SND1(VQAHandle* vqap, int32_t iffsize) {
     }
 
     return 0;
+  }
+
+  // Only the first audio chunk may exceed TempBuf; it is handled above.
+  if (padsize > audio->TempBufSize ||
+      std::cmp_greater(zap.UnCompSize, audio->TempBufSize)) {
+    return VQAERR_READ;
   }
 
   /* Load an audio frame. */
@@ -2187,10 +2336,20 @@ static long Load_SND2(VQAHandle* vqap, int32_t iffsize) {
     return 0;
   }
 
-  uncomp_size = iffsize * (audio->BitsPerSample / 4);
+  // 64-bit so an oversized chunk cannot overflow before the bounds checks.
+  const int64_t uncomp_bytes =
+      int64_t{iffsize} * (audio->BitsPerSample / 4);
+  if (uncomp_bytes > std::max(config->AudioBufSize, audio->TempBufSize)) {
+    return VQAERR_READ;
+  }
+  uncomp_size = static_cast<int32_t>(uncomp_bytes);
 
   /* Read large startup chunk directly into AudioBuf */
   if (uncomp_size > audio->TempBufSize && audio->AudBufPos == 0) {
+    if (padsize > config->AudioBufSize || uncomp_size > config->AudioBufSize) {
+      return VQAERR_READ;
+    }
+
     /* Load compressed data into the end of the buffer. */
     loadbuf = audio->Buffer + config->AudioBufSize - padsize;
 
@@ -2211,6 +2370,11 @@ static long Load_SND2(VQAHandle* vqap, int32_t iffsize) {
     }
 
     return 0;
+  }
+
+  // Only the first audio chunk may exceed TempBuf; it is handled above.
+  if (padsize > audio->TempBufSize || uncomp_size > audio->TempBufSize) {
+    return VQAERR_READ;
   }
 
   /* Load an audio frame. */

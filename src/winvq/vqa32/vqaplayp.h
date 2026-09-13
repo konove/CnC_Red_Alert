@@ -216,7 +216,9 @@ typedef struct VQALoader {
  * ImageBuf       - Buffer to un-vq into, must be DWORD aligned.
  * ImageWidth     - Width of Image buffer (in pixels).
  * ImageHeight    - Height of Image buffer (in pixels).
- * X1,Y1,X2,Y2    - Coordinates of image corners (in pixels).
+ * X1,Y1,X2,Y2    - Inclusive image corners in buffer pixels. X1,Y1 is the
+ *                  corner anchored by the VQACFGF_ORIGIN flags, X2,Y2 the
+ *                  opposite one.
  * ScreenOffset   - Offset into screen memory, for centering small images.
  * CurPalSize     - Size of the current palette in bytes.
  * Palette_24     - Copy of the last-loaded palette
@@ -403,7 +405,10 @@ struct VQAData {
 
   // RAII storage for buffers
   std::vector<unsigned char> ImageBufStorage;
-  std::vector<long> FoffStorage;
+  // One FINF entry per header frame. Entries are 4 bytes on disk: the
+  // VQAFINF_FLAGS bits on top and the halved file offset below (see
+  // VQAFRAME_OFFSET).
+  std::vector<uint32_t> FoffStorage;
 
   VQAFrameNode* FrameData = nullptr;  // Points to first node in FrameNodes
   VQACBNode* CBData = nullptr;        // Points to first node in CBNodes
@@ -412,7 +417,7 @@ struct VQAData {
   VQADrawer Drawer{};
   VQAFlipper Flipper{};
   uint32_t Flags = 0;    // VQADATF_* bits
-  long* Foff = nullptr;  // Points into FoffStorage
+  uint32_t* Foff = nullptr;  // Points into FoffStorage
   int32_t VBIBit = 0;
   int32_t Max_CB_Size = 0;
   int32_t Max_Pal_Size = 0;
