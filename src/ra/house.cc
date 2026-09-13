@@ -1995,7 +1995,7 @@ void HouseClass::Refund_Money(int money) {
 int HouseClass::Adjust_Capacity(int adjust, bool inanger) {
   CHECK_EQ(Houses.ID(this), ID);
 
-  long oldcap = Capacity;
+  int64_t oldcap = Capacity;
   int retval = 0;
 
   Capacity += adjust;
@@ -6970,7 +6970,8 @@ void HouseClass::Read_INI(CCINIClass& ini) {
     if (p->Control.MaxVessel == 0) {
       p->Control.MaxVessel = p->Control.MaxUnit;
     }
-    p->Control.InitialCredits = static_cast<long>(ini.Get_Int(hname, "Credits", 0)) * 100;
+    p->Control.InitialCredits =
+        static_cast<int64_t>(ini.Get_Int(hname, "Credits", 0)) * 100;
     p->Credits = p->Control.InitialCredits;
 
     int iq = ini.Get_Int(hname, "IQ", 0);

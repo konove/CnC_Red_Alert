@@ -64,8 +64,8 @@ class CCINIClass : public INIClass {
   int Save(FileClass& file, bool withdigest) const;
   int Save(Pipe& pipe, bool withdigest) const;
 
-  long Get_Buildings(const char* section, const char* entry,
-                     long defvalue) const;
+  uint64_t Get_Buildings(const char* section, const char* entry,
+                         uint64_t defvalue) const;
   UnitType Get_UnitType(const char* section, const char* entry,
                         UnitType defvalue) const;
   AnimType Get_AnimType(const char* section, const char* entry,
@@ -100,7 +100,8 @@ class CCINIClass : public INIClass {
                               WarheadType defvalue) const;
   WeaponType Get_WeaponType(const char* section, const char* entry,
                             WeaponType defvalue) const;
-  long Get_Owners(const char* section, const char* entry, long defvalue) const;
+  int32_t Get_Owners(const char* section, const char* entry,
+                     int32_t defvalue) const;
   CrateType Get_CrateType(const char* section, const char* entry,
                           CrateType defvalue) const;
 
@@ -116,7 +117,7 @@ class CCINIClass : public INIClass {
   bool Put_VQType(const char* section, const char* entry, VQType value);
   bool Put_OverlayType(const char* section, const char* entry,
                        OverlayType value);
-  bool Put_Owners(const char* section, const char* entry, long value);
+  bool Put_Owners(const char* section, const char* entry, int32_t value);
   bool Put_SourceType(const char* section, const char* entry, SourceType value);
   bool Put_TerrainType(const char* section, const char* entry,
                        TerrainType value);

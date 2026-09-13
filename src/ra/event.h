@@ -261,8 +261,8 @@ class EventClass {
   EventClass(EventType type, RTTIType object, CELL cell);
   EventClass(EventType type, int id, CELL cell);
   EventClass(AnimType anim, HousesType owner, COORDINATE coord);
-  EventClass(void* ptr, unsigned long size);
-  EventClass(EventType type, void* ptr, unsigned long size);
+  EventClass(void* ptr, uint32_t size);
+  EventClass(EventType type, void* ptr, uint32_t size);
 
   // Process the event.
   void Execute();

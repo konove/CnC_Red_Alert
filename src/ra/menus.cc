@@ -510,7 +510,7 @@ int Do_Menu(const char** strings, bool /*unused*/) {
  * HISTORY:                                                                *
  *   05/17/1995 BRR : Created.                                             *
  *=========================================================================*/
-int Main_Menu(unsigned long /*unused*/) {
+int Main_Menu(int32_t /*unused*/) {
   /*
   **	Dialog & button dimensions
   */

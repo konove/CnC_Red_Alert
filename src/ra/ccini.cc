@@ -424,10 +424,10 @@ bool CCINIClass::Put_MPHType(const char* section, const char* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-long CCINIClass::Get_Owners(const char* section, const char* entry,
-                            long defvalue) const {
+int32_t CCINIClass::Get_Owners(const char* section, const char* entry,
+                               int32_t defvalue) const {
   char buffer[128];
-  long ownable = defvalue;
+  int32_t ownable = defvalue;
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     ownable = 0;
@@ -462,7 +462,7 @@ long CCINIClass::Get_Owners(const char* section, const char* entry,
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool CCINIClass::Put_Owners(const char* section, const char* entry,
-                            long value) {
+                            int32_t value) {
   std::string buffer;
   // Optimization: avoid repeated allocations for small strings
   buffer.reserve(128);
@@ -1391,10 +1391,10 @@ bool CCINIClass::Put_TerrainType(const char* section, const char* entry,
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-long CCINIClass::Get_Buildings(const char* section, const char* entry,
-                               long defvalue) const {
+uint64_t CCINIClass::Get_Buildings(const char* section, const char* entry,
+                                   uint64_t defvalue) const {
   char buffer[128];
-  long pre;
+  uint64_t pre;
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     pre = 0;
@@ -1402,7 +1402,7 @@ long CCINIClass::Get_Buildings(const char* section, const char* entry,
     while (token != nullptr && *token != '\0') {
       StructType building = BuildingTypeClass::From_Name(token);
       if (building != STRUCT_NONE) {
-        pre |= 1L << building;
+        pre |= uint64_t{1} << building;
       }
       token = strtok(nullptr, ",");
     }

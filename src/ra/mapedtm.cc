@@ -39,6 +39,8 @@
  *   MapEditClass::Team_Members -- user picks makeup of a team             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include <cstdint>
+
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
@@ -535,7 +537,7 @@ int MapEditClass::Team_Members(HousesType house) {
   */
   int lheld = 0;
   int rheld = 0;
-  long tdelay[3] = {5, 20, 0};
+  int32_t tdelay[3] = {5, 20, 0};
   int tindex = 0;
   int64_t heldtime = 0;
 

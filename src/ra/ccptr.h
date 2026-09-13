@@ -37,6 +37,7 @@
 #define CNC_RED_ALERT_RA_CCPTR_H_
 
 #include <cassert>
+#include <cstdint>
 
 #include "ra/heap.h"
 
@@ -85,8 +86,8 @@ class CCPtr {
     return *this == rvalue || rvalue > *this;
   }
 
-  [[nodiscard]] long Raw() const { return ID; }
-  void Set_Raw(const long value) { ID = static_cast<int>(value); }
+  [[nodiscard]] int32_t Raw() const { return ID; }
+  void Set_Raw(const int32_t value) { ID = value; }
 
   // Saved-game support. The ID is the whole state; a loaded ID outside the
   // heap is a corrupt save, not a programmer error, so it is reported through

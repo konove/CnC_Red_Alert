@@ -3841,14 +3841,14 @@ void DisplayClass::Compute_Start_Pos() {
   **	and buildings.  Buildings are weighted so that they count 16 times more
   **	than units or infantry.
   */
-  long x = 0;
-  long y = 0;
-  long num = 0;
+  int32_t x = 0;
+  int32_t y = 0;
+  int32_t num = 0;
   for (int i = 0; i < Infantry.Count(); i++) {
     InfantryClass* infp = Infantry.Ptr(i);
     if (!infp->IsInLimbo && infp->IsOwnedByPlayer) {
-      x += static_cast<long>(Coord_XCell(infp->Coord));
-      y += static_cast<long>(Coord_YCell(infp->Coord));
+      x += static_cast<int32_t>(Coord_XCell(infp->Coord));
+      y += static_cast<int32_t>(Coord_YCell(infp->Coord));
       num++;
     }
   }
@@ -3856,8 +3856,8 @@ void DisplayClass::Compute_Start_Pos() {
   for (int i = 0; i < Units.Count(); i++) {
     UnitClass* unitp = Units.Ptr(i);
     if (!unitp->IsInLimbo && unitp->IsOwnedByPlayer) {
-      x += static_cast<long>(Coord_XCell(unitp->Coord));
-      y += static_cast<long>(Coord_YCell(unitp->Coord));
+      x += static_cast<int32_t>(Coord_XCell(unitp->Coord));
+      y += static_cast<int32_t>(Coord_YCell(unitp->Coord));
       num++;
     }
   }
@@ -3865,8 +3865,8 @@ void DisplayClass::Compute_Start_Pos() {
   for (int i = 0; i < Buildings.Count(); i++) {
     BuildingClass* bldgp = Buildings.Ptr(i);
     if (!bldgp->IsInLimbo && bldgp->IsOwnedByPlayer) {
-      x += static_cast<long>(Coord_XCell(bldgp->Coord)) * 16;
-      y += static_cast<long>(Coord_YCell(bldgp->Coord)) * 16;
+      x += static_cast<int32_t>(Coord_XCell(bldgp->Coord)) * 16;
+      y += static_cast<int32_t>(Coord_YCell(bldgp->Coord)) * 16;
       num += 16;
     }
   }
@@ -3874,8 +3874,8 @@ void DisplayClass::Compute_Start_Pos() {
   for (int i = 0; i < Vessels.Count(); i++) {
     VesselClass* bldgp = Vessels.Ptr(i);
     if (!bldgp->IsInLimbo && bldgp->IsOwnedByPlayer) {
-      x += static_cast<long>(Coord_XCell(bldgp->Coord));
-      y += static_cast<long>(Coord_YCell(bldgp->Coord));
+      x += static_cast<int32_t>(Coord_XCell(bldgp->Coord));
+      y += static_cast<int32_t>(Coord_YCell(bldgp->Coord));
       num++;
     }
   }
@@ -3901,8 +3901,8 @@ void DisplayClass::Compute_Start_Pos() {
   */
   //	x -= 5 * 2;
   //	y -= 4 * 2;
-  x = std::clamp<long>(x, MapCellX + 10, MapCellX + MapCellWidth - 10);
-  y = std::clamp<long>(y, MapCellY + 8, MapCellY + MapCellHeight - 8);
+  x = std::clamp<int32_t>(x, MapCellX + 10, MapCellX + MapCellWidth - 10);
+  y = std::clamp<int32_t>(y, MapCellY + 8, MapCellY + MapCellHeight - 8);
 
   Scen.Waypoint[ScenarioClass::kHomeWaypoint] = Scen.Views[0] = Scen.Views[1] =
       Scen.Views[2] = Scen.Views[3] =

@@ -520,8 +520,7 @@ int BulletClass::Shape_Number() const {
   **	For tumbling projectiles, fetch offset stage.
   */
   if (Class->Tumble > 0) {
-    shapenum =
-        static_cast<int>(shapenum + (static_cast<long>(Frame) % Class->Tumble));
+    shapenum += static_cast<int>(Frame % Class->Tumble);
   }
 
   return shapenum;

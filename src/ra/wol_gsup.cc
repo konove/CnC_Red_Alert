@@ -2802,8 +2802,7 @@ void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) {
   GParams.GPacket.ScenarioInfo.Seed = Seed;
   GParams.GPacket.ScenarioInfo.Special = Special;
   GParams.GPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;
-  GParams.GPacket.ScenarioInfo.Version =
-      static_cast<unsigned int>(VerNum.Get_Clipped_Version());
+  GParams.GPacket.ScenarioInfo.Version = VerNum.Get_Clipped_Version();
 
   GParams.bAftermathUnits = bAftermathUnits;
   GParams.bSlowUnitBuildRate = bSlowUnitBuildRate;
@@ -3585,7 +3584,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       pPlayerNew = new NodeNameType;
       port::SafeCopy(pPlayerNew->Name, szPlayerName);
       //	Get player's IP address from pChatSink...
-      unsigned long lAddress =
+      uint32_t lAddress =
           pWO->pChatSink->GetPlayerGameIP(szPlayerName);  // ntohl(
       //			debugprint( "IP address is %i, or 0x%x\n",
       // lAddress, lAddress );

@@ -52,6 +52,7 @@
 #include "ra/event.h"
 
 #include <cinttypes>
+#include <cstdint>
 #include <cstdio>
 #include <string>
 #include <utility>
@@ -466,7 +467,8 @@ EventClass::EventClass(EventType type, int id, CELL cell) : EventClass() {
  *                                                                                             *
  * HISTORY: * 11/10/1995 BRR : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, void* ptr, unsigned long size) : EventClass() {
+EventClass::EventClass(EventType type, void* ptr, uint32_t size)
+    : EventClass() {
   ID = static_cast<unsigned>(PlayerPtr->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.

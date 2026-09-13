@@ -1198,7 +1198,7 @@ bool WolapiObject::ListChannelUsers() {
         int iLatencyBarWidth = 0;
         int iLatency;
         if (CurrentLevel == WOL_LEVEL_INGAMECHANNEL) {
-          unsigned long UserIP = pChatSink->GetUserIP((char*)pUser->name);
+          uint32_t UserIP = pChatSink->GetUserIP((char*)pUser->name);
           //					debugprint( "player %s ip
           // address %i\n", szNameToShow, UserIP );
           if (UserIP && pNetUtil->GetAvgPing(UserIP, &iLatency) == S_OK) {
@@ -1420,11 +1420,11 @@ void WolapiObject::RequestPlayerPings() {
   for (int i = 0; i < pILPlayers->Count(); i++) {
     User* pUser = (User*)pILPlayers->Get_Item_ExtraDataPtr(i);
     if (pUser && !(pUser->flags & CHAT_USER_MYSELF)) {
-      unsigned long UserIP = pChatSink->GetUserIP((char*)pUser->name);
+      uint32_t UserIP = pChatSink->GetUserIP((char*)pUser->name);
       if (UserIP) {
         int iUnused;
         in_addr inaddrUser{};
-        inaddrUser.s_addr = static_cast<uint32_t>(UserIP);
+        inaddrUser.s_addr = UserIP;
         char* szIP = inet_ntoa(inaddrUser);
         //				debugprint( "RequestPing of %s, ipaddr
         // of %i, aka %s\n", (char*)pUser->name, UserIP, szIP );
@@ -3154,7 +3154,7 @@ bool WolapiObject::Pump_DisconnectPinging() {
       //	Ping opponent.
       in_addr inaddr{};
       char* szIP;
-      inaddr.s_addr = static_cast<uint32_t>(TournamentOpponentIP);
+      inaddr.s_addr = TournamentOpponentIP;
       szIP = inet_ntoa(inaddr);
       //		debugprint( "RequestPing ( opponent )\n" );
       if (pNetUtil->RequestPing(szIP, 1000, &iUnused) != S_OK) {

@@ -261,10 +261,10 @@ static void Toggle_Formation() {
   int team = kNoGroup;
   // Seeded inverted -- min at the largest possible value, max at the smallest
   // -- so the first cell examined replaces both.
-  long minx = 0x7FFFFFFFL;
-  long miny = 0x7FFFFFFFL;
-  long maxx = 0;
-  long maxy = 0;
+  int32_t minx = 0x7FFFFFFFL;
+  int32_t miny = 0x7FFFFFFFL;
+  int32_t maxx = 0;
+  int32_t maxy = 0;
   bool set_form = false;
 
   // Recording support
@@ -334,8 +334,8 @@ static void Toggle_Formation() {
         std::cmp_equal(obj->Group, team)) {
       obj->Mark(MARK_CHANGE);
       if (set_form) {
-        long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+        int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
         minx = std::min(xc, minx);
         maxx = std::max(xc, maxx);
         miny = std::min(yc, miny);
@@ -356,8 +356,8 @@ static void Toggle_Formation() {
         std::cmp_equal(obj->Group, team)) {
       obj->Mark(MARK_CHANGE);
       if (set_form) {
-        long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+        int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
         minx = std::min(xc, minx);
         maxx = std::max(xc, maxx);
         miny = std::min(yc, miny);
@@ -375,8 +375,8 @@ static void Toggle_Formation() {
         std::cmp_equal(obj->Group, team)) {
       obj->Mark(MARK_CHANGE);
       if (set_form) {
-        long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+        int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
         minx = std::min(xc, minx);
         maxx = std::max(xc, maxx);
         miny = std::min(yc, miny);
@@ -395,18 +395,18 @@ static void Toggle_Formation() {
   // Offsets are taken from where each unit already stands, so the formation
   // locks in the group's current shape rather than imposing a canned one.
   if (set_form) {
-    int center_x = static_cast<int>(((maxx - minx) / 2) + minx);
-    int center_y = static_cast<int>(((maxy - miny) / 2) + miny);
+    int center_x = (((maxx - minx) / 2) + minx);
+    int center_y = (((maxy - miny) / 2) + miny);
 
     for (int i = 0; i < Units.Count(); i++) {
       UnitClass* obj = Units.Ptr(i);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           std::cmp_equal(obj->Group, team)) {
-        long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+        int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
 
-        obj->XFormOffset = static_cast<int>(xc - center_x);
-        obj->YFormOffset = static_cast<int>(yc - center_y);
+        obj->XFormOffset = xc - center_x;
+        obj->YFormOffset = yc - center_y;
       }
     }
 
@@ -414,11 +414,11 @@ static void Toggle_Formation() {
       InfantryClass* obj = Infantry.Ptr(i);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           std::cmp_equal(obj->Group, team)) {
-        long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+        int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
 
-        obj->XFormOffset = static_cast<int>(xc - center_x);
-        obj->YFormOffset = static_cast<int>(yc - center_y);
+        obj->XFormOffset = xc - center_x;
+        obj->YFormOffset = yc - center_y;
       }
     }
 
@@ -426,11 +426,11 @@ static void Toggle_Formation() {
       VesselClass* obj = Vessels.Ptr(i);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           std::cmp_equal(obj->Group, team)) {
-        long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+        int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
 
-        obj->XFormOffset = static_cast<int>(xc - center_x);
-        obj->YFormOffset = static_cast<int>(yc - center_y);
+        obj->XFormOffset = xc - center_x;
+        obj->YFormOffset = yc - center_y;
       }
     }
   }
@@ -726,9 +726,9 @@ static void Do_Record_Playback() {
   TARGET tgt;
   int i;
   COORDINATE coord;
-  unsigned long sum;
-  unsigned long sum2;
-  unsigned long ltgt;
+  uint32_t sum;
+  uint32_t sum2;
+  uint32_t ltgt;
 
   // Record a game
   if (Session.Record) {
@@ -743,7 +743,7 @@ static void Do_Record_Playback() {
     // Save a CRC of the selected-object list.
     sum = 0;
     for (i = 0; i < count; i++) {
-      ltgt = static_cast<unsigned long>(CurrentObject[i]->As_Target());
+      ltgt = static_cast<uint32_t>(CurrentObject[i]->As_Target());
       sum += ltgt;
     }
     Session.RecordFile.Write(&sum, sizeof(sum));
@@ -780,7 +780,7 @@ static void Do_Record_Playback() {
       // Compute a CRC of the current object-selection list.
       sum = 0;
       for (i = 0; i < CurrentObject.Count(); i++) {
-        ltgt = static_cast<unsigned long>(CurrentObject[i]->As_Target());
+        ltgt = static_cast<uint32_t>(CurrentObject[i]->As_Target());
         sum += ltgt;
       }
 
@@ -2277,7 +2277,7 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
                    const int y, const WindowNumberType window,
                    ShapeFlags_Type flags, const void* fading_data,
                    const void* ghostdata, const DirType rotation,
-                   const long scale) {
+                   const int32_t scale) {
   // Special kludge for E3 to prevent crashes
   //
   // Callers that ask for ghosting or fading without supplying the table get
@@ -2385,7 +2385,7 @@ void CC_Draw_Shape(const std::span<const std::byte> shapefile,
                    const int shape_num, const int x, const int y,
                    const WindowNumberType window, const ShapeFlags_Type flags,
                    const void* fading_data, const void* ghostdata,
-                   const DirType rotation, const long scale) {
+                   const DirType rotation, const int32_t scale) {
   CC_Draw_Shape(shapefile.data(), shape_num, x, y, window, flags, fading_data,
                 ghostdata, rotation, scale);
 }
@@ -2680,10 +2680,10 @@ void Handle_Team(const int team, const int action) {
     // Create the team.
     case 2: {
       // Seeded inverted so the first member examined replaces both bounds.
-      long minx = 0x7FFFFFFFL;
-      long miny = 0x7FFFFFFFL;
-      long maxx = 0;
-      long maxy = 0;
+      int32_t minx = 0x7FFFFFFFL;
+      int32_t miny = 0x7FFFFFFFL;
+      int32_t maxx = 0;
+      int32_t maxy = 0;
       TeamSpeed[team] = SPEED_WHEEL;
       TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
       for (index = 0; index < Units.Count(); index++) {
@@ -2695,8 +2695,8 @@ void Handle_Team(const int team, const int action) {
           if (obj->IsSelected) {
             obj->Group = static_cast<unsigned char>(team);
             obj->Mark(MARK_CHANGE);
-            long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-            long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+            int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+            int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
             minx = std::min(xc, minx);
             maxx = std::max(xc, maxx);
             miny = std::min(yc, miny);
@@ -2718,8 +2718,8 @@ void Handle_Team(const int team, const int action) {
           if (obj->IsSelected) {
             obj->Group = static_cast<unsigned char>(team);
             obj->Mark(MARK_CHANGE);
-            long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-            long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+            int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+            int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
             minx = std::min(xc, minx);
             maxx = std::max(xc, maxx);
             miny = std::min(yc, miny);
@@ -2741,8 +2741,8 @@ void Handle_Team(const int team, const int action) {
           if (obj->IsSelected) {
             obj->Group = static_cast<unsigned char>(team);
             obj->Mark(MARK_CHANGE);
-            long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-            long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+            int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+            int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
             minx = std::min(xc, minx);
             maxx = std::max(xc, maxx);
             miny = std::min(yc, miny);

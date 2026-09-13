@@ -86,7 +86,7 @@ inline char staging_buffer[32000];
 using MFCD = MixFileClass<CCFileClass>;
 
 extern bool IsVQ640;
-extern unsigned long GameVersion;
+extern uint32_t GameVersion;
 
 // Developer switches (-NEWGAME<scenario>, -LOADGAME<n>, -QUITFRAME<n>,
 // -SAVESLOT<n>) for save-game checks without a display; see init.cc and
@@ -307,10 +307,10 @@ extern bool PassedProximity;  // used in display.cpp
 extern HousesType Whom;
 extern VQAConfig AnimControl;
 extern int64_t SpareTicks;
-extern long PathCount;
-extern long CellCount;
-extern long TargetScan;
-extern long SidebarRedraws;
+extern int32_t PathCount;
+extern int32_t CellCount;
+extern int32_t TargetScan;
+extern int32_t SidebarRedraws;
 extern DMonoType MonoPage;
 extern bool SpecialFlag;
 extern int ScenarioInit;
@@ -322,7 +322,7 @@ extern PaletteClass GamePalette;
 extern PaletteClass OriginalPalette;
 extern PaletteClass ScorePalette;
 extern int BuildLevel;
-extern unsigned long ScenarioCRC;
+extern uint32_t ScenarioCRC;
 
 extern bool bAftermathMultiplayer;  //	Is multiplayer game being played with
                                     // Aftermath rules?

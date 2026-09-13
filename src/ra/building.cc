@@ -231,7 +231,7 @@ const COORDINATE
  *=============================================================================================*/
 RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
                                                 RadioMessageType message,
-                                                long& param) {
+                                                int32_t& param) {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 

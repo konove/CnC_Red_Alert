@@ -64,6 +64,7 @@
 
 #include <cassert>
 #include <cerrno>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 
@@ -513,7 +514,7 @@ void WinsockInterfaceClass::Broadcast(void* buffer, int buffer_len) {
  * HISTORY: * 8/5/97 12:05PM ST : Created *
  *=============================================================================================*/
 void WinsockInterfaceClass::Clear_Socket_Error(SOCKET socket) {
-  unsigned long error_code;
+  uint32_t error_code;
   socklen_t length = 4;
 
   getsockopt(socket, SOL_SOCKET, SO_ERROR, SocketBytes(error_code), &length);

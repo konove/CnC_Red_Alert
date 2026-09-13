@@ -136,7 +136,7 @@ class VesselClass : public DriveClass {
   [[nodiscard]] const int16_t* Overlap_List(bool redraw = false) const override;
   DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
-                                   long& param) override;
+                                   int32_t& param) override;
   void AI() override;
   void Per_Cell_Process(PCPType why) override;
   void Assign_Destination(TARGET target) override;

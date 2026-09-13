@@ -105,7 +105,7 @@ class MapClass : public GScreenClass {
   void Detach(TARGET target, bool all = true);
   void Shroud_The_Map();
 
-  long Overpass();
+  int32_t Overpass();
 
   virtual void Logic();
   virtual void Set_Map_Dimensions(int x, int y, int w, int h);

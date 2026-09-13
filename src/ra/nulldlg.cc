@@ -2784,7 +2784,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   int rc = 0;
   int recsignedoff = false;
   int i;
-  unsigned long version;
+  uint32_t version;
   int64_t starttime;
   int64_t timingtime;
   int64_t lastmsgtime;
@@ -3719,10 +3719,8 @@ int Com_Scenario_Dialog(bool skirmish) {
         SendPacket.Command = SERIAL_GAME_OPTIONS;
         port::SafeCopy(SendPacket.Name, namebuf);
         SendPacket.ScenarioInfo.CheatCheck = RuleINI.Get_Unique_ID();
-        SendPacket.ScenarioInfo.MinVersion =
-            static_cast<uint32_t>(VersionClass::Min_Version());
-        SendPacket.ScenarioInfo.MaxVersion =
-            static_cast<std::uint32_t>(VersionClass::Max_Version());
+        SendPacket.ScenarioInfo.MinVersion = VersionClass::Min_Version();
+        SendPacket.ScenarioInfo.MaxVersion = VersionClass::Max_Version();
         SendPacket.ScenarioInfo.House = Session.House;
         SendPacket.ScenarioInfo.Color = Session.ColorIdx;
         SendPacket.ScenarioInfo.Credits = Session.Options.Credits;
@@ -4642,7 +4640,7 @@ int Com_Show_Scenario_Dialog() {
   int rc = 0;
   int recsignedoff = 0;
   int i;
-  unsigned long version;
+  uint32_t version;
   char txt[80];
   int64_t starttime;
   int64_t timingtime;
@@ -5302,10 +5300,8 @@ int Com_Show_Scenario_Dialog() {
       SendPacket.Command = SERIAL_GAME_OPTIONS;
       port::SafeCopy(SendPacket.Name, namebuf);
       SendPacket.ScenarioInfo.CheatCheck = RuleINI.Get_Unique_ID();
-      SendPacket.ScenarioInfo.MinVersion =
-          static_cast<uint32_t>(VersionClass::Min_Version());
-      SendPacket.ScenarioInfo.MaxVersion =
-          static_cast<std::uint32_t>(VersionClass::Max_Version());
+      SendPacket.ScenarioInfo.MinVersion = VersionClass::Min_Version();
+      SendPacket.ScenarioInfo.MaxVersion = VersionClass::Max_Version();
       SendPacket.ScenarioInfo.House = Session.House;
       SendPacket.ScenarioInfo.Color = Session.ColorIdx;
       SendPacket.ID = Session.ModemType;

@@ -1437,7 +1437,7 @@ void ObjectClass::Detach_All(bool all) {
  *=============================================================================================*/
 RadioMessageType ObjectClass::Receive_Message(RadioClass* /*unused*/,
                                               RadioMessageType message,
-                                              long& /*unused*/) {
+                                              int32_t& /*unused*/) {
   assert(IsActive);
 
   /*

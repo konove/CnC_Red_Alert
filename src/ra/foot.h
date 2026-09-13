@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_FOOT_H_
 #define CNC_RED_ALERT_RA_FOOT_H_
 
+#include <cstdint>
+
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/face.h"
@@ -329,7 +331,7 @@ class FootClass : public TechnoClass {
   bool Basic_Path();
 
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
-                                   long& param) override;
+                                   int32_t& param) override;
   [[nodiscard]] bool Can_Demolish() const override;
   bool Is_Recruitable(const HouseClass* house = nullptr) const;
   [[nodiscard]] bool Is_On_Priority_Mission() const;

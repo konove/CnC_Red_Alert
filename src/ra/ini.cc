@@ -69,13 +69,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "base/numeric.h"
 #include "ra/ini.h"
 
 #include <cctype>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 
+#include "base/numeric.h"
 #include "tech/b64pipe.h"
 #include "tech/b64straw.h"
 #include "tech/int.h"
@@ -385,7 +386,7 @@ int INIClass::Save(Pipe& pipe) const {
  *=============================================================================================*/
 INIClass::INISection* INIClass::Find_Section(const char* section) const {
   if (section != nullptr) {
-    long crc = CrcEngine::Compute(section);
+    uint32_t crc = CrcEngine::Compute(section);
 
     if (SectionIndex.Is_Present(static_cast<int>(crc))) {
       return SectionIndex.Fetch_Index(static_cast<int>(crc));

@@ -2691,7 +2691,7 @@ TARGET AircraftClass::New_LZ(TARGET oldlz) const {
  *=============================================================================================*/
 RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
                                                 RadioMessageType message,
-                                                long& param) {
+                                                int32_t& param) {
   DCHECK_EQ(Aircraft.ID(this), ID);
   DCHECK(IsActive);
 
@@ -2800,7 +2800,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
             if (cell == 0) {
               Transmit_Message(RADIO_OVER_OUT, from);
             } else {
-              param = static_cast<long>(::As_Target(cell));
+              param = static_cast<int32_t>(::As_Target(cell));
 
               /*
               **	Tell the potential passenger where it should go. If the
@@ -2809,7 +2809,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
               */
               if (Transmit_Message(RADIO_MOVE_HERE, param, from) ==
                   RADIO_YEA_NOW_WHAT) {
-                param = static_cast<long>(As_Target());
+                param = static_cast<int32_t>(As_Target());
                 Transmit_Message(RADIO_TETHER);
                 if (Transmit_Message(RADIO_MOVE_HERE, param, from) !=
                     RADIO_ROGER) {

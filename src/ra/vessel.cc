@@ -618,7 +618,7 @@ void VesselClass::AI() {
       MoebiusCountDown.Set(Rule.ReloadRate * kTicksPerMinute);
       ObjectClass* obj = Attached_Object();
       while (obj) {
-        long bogus;
+        int32_t bogus;
         dynamic_cast<AircraftClass*>(obj)->Receive_Message(this, RADIO_RELOAD,
                                                            bogus);
         obj = obj->Next;
@@ -1339,7 +1339,7 @@ void VesselClass::Enter_Idle_Mode(bool /*initial*/) {
  *=============================================================================================*/
 RadioMessageType VesselClass::Receive_Message(RadioClass* from,
                                               RadioMessageType message,
-                                              long& param) {
+                                              int32_t& param) {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
@@ -1453,7 +1453,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
           if (cell == 0) {
             Transmit_Message(RADIO_OVER_OUT, from);
           } else {
-            param = static_cast<long>(::As_Target(cell));
+            param = static_cast<int32_t>(::As_Target(cell));
 
             /*
             **	If it is now facing the correct direction, then open the
@@ -1472,7 +1472,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
             if ((Transmit_Message(RADIO_MOVE_HERE, param, from) ==
                  RADIO_YEA_NOW_WHAT) &&
                 Is_Door_Open()) {
-              param = static_cast<long>(As_Target());
+              param = static_cast<int32_t>(As_Target());
               Transmit_Message(RADIO_TETHER);
               if (Transmit_Message(RADIO_MOVE_HERE, param, from) !=
                   RADIO_ROGER) {
@@ -1831,7 +1831,7 @@ void VesselClass::Assign_Destination(TARGET target) {
   if (In_Radio_Contact() && Class->Max_Passengers() > 0 &&
       (Contact_With_Whom()->Is_Infantry() ||
        Contact_With_Whom()->What_Am_I() == RTTI_UNIT)) {
-    long param = kTargetNone;
+    int32_t param = kTargetNone;
     Transmit_Message(
         RADIO_MOVE_HERE,
         param);  // should stop objects heading toward this transport.

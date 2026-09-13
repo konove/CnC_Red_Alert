@@ -1020,7 +1020,7 @@ bool TechnoClass::Mark(MarkType mark) {
  *=============================================================================================*/
 RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
                                               RadioMessageType message,
-                                              long& param) {
+                                              int32_t& param) {
   assert(IsActive);
 
   switch (message) {
@@ -5789,7 +5789,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
     */
     // If it's a refinery/silo, print the enemy's money
     if (spiedby && ((BuildingClass*)this)->Class->Capacity) {
-      long money = House->Available_Money();
+      int64_t money = House->Available_Money();
 
       /*
       **	Determine how many digits will be printed.
@@ -6177,9 +6177,9 @@ int TechnoTypeClass::Raw_Cost() const { return Cost; }
  *=============================================================================================*/
 int TechnoTypeClass::Get_Ownable() const {
   if (IsDoubleOwned && Session.Type != GAME_NORMAL) {
-    return static_cast<int>(Ownable | kHouseFlagSoviet | kHouseFlagAllies);
+    return Ownable | kHouseFlagSoviet | kHouseFlagAllies;
   }
-  return static_cast<int>(Ownable);
+  return Ownable;
 }
 
 /***********************************************************************************************

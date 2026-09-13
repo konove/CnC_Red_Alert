@@ -88,7 +88,7 @@ typedef enum CommProtocolEnum {
 } CommProtocolType;
 
 typedef struct {
-  unsigned long Version;
+  uint32_t Version;
   CommProtocolType Protocol;
 } VersionProtocolType;
 
@@ -109,7 +109,7 @@ class VersionClass {
   // number contains the major version in the high word, and the minor
   // version in the low word.  They should be interpreted in hex.
   //.....................................................................
-  unsigned long Version_Number();
+  uint32_t Version_Number();
   uint16_t Major_Version();
   uint16_t Minor_Version();
 
@@ -127,22 +127,22 @@ class VersionClass {
   //.....................................................................
   // Returns the default comm protocol for a given version number.
   //.....................................................................
-  static CommProtocolType Version_Protocol(unsigned long version);
+  static CommProtocolType Version_Protocol(uint32_t version);
 
   //.....................................................................
   // These routines support "version clipping".
   //.....................................................................
   void Init_Clipping();
-  unsigned long Clip_Version(unsigned long minver, unsigned long maxver);
-  unsigned long Get_Clipped_Version() { return MaxClipVer; }
+  uint32_t Clip_Version(uint32_t minver, uint32_t maxver);
+  uint32_t Get_Clipped_Version() { return MaxClipVer; }
 
   //.....................................................................
   // These routines return the theoretical lowest & highest version #'s
   // that this program will connect to; this does not take any previous
   // version clipping into account.
   //.....................................................................
-  static unsigned long Min_Version();
-  static unsigned long Max_Version();
+  static uint32_t Min_Version();
+  static uint32_t Max_Version();
 
  private:
   //.....................................................................
@@ -171,7 +171,7 @@ class VersionClass {
   //.....................................................................
   // This is the program's version number, stored internally.
   //.....................................................................
-  unsigned long Version{0};
+  uint32_t Version{0};
   uint16_t MajorVer{0};
   uint16_t MinorVer{0};
 
@@ -190,8 +190,8 @@ class VersionClass {
   //.....................................................................
   // Values used for "Version Clipping"
   //.....................................................................
-  unsigned long MinClipVer{0};
-  unsigned long MaxClipVer{0};
+  uint32_t MinClipVer{0};
+  uint32_t MaxClipVer{0};
 
   //.....................................................................
   // Bitfield Flags

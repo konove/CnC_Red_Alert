@@ -300,7 +300,7 @@ class CellClass {
   */
   bool Grow_Tiberium();
   bool Spread_Tiberium(bool forced = false);
-  long Tiberium_Adjust(bool pregame = false);
+  int32_t Tiberium_Adjust(bool pregame = false);
   void Wall_Update();
   void Concrete_Calc();
   void Recalc_Attributes();

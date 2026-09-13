@@ -43,7 +43,7 @@
 
 #define IP_ADDRESS_MAX 40
 
-extern long PlanetWestwoodPortNumber;  // Port number to send to
+extern int32_t PlanetWestwoodPortNumber;  // Port number to send to
 extern bool
     PlanetWestwoodIsHost;  // True if this player controls the game options
 extern uint32_t PlanetWestwoodGameID;  // Game ID

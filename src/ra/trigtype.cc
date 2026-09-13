@@ -1896,20 +1896,12 @@ void TriggerTypeClass::Read_INI(CCINIClass& ini) {
     for (int trig_index = 0; trig_index < TriggerTypes.Count(); trig_index++) {
       TriggerTypeClass* indexed_trigger = TriggerTypes.Ptr(trig_index);
 
-      // While the INI loads, the trigger reference's ID holds a new[]'d name
-      // string. NOLINTNEXTLINE(performance-no-int-to-ptr)
-      char* ptr = (char*)indexed_trigger->Action1.Trigger.Raw();
-      if (ptr) {
-        indexed_trigger->Action1.Trigger = From_Name(ptr);
-        delete[] ptr;
-      }
-
-      // While the INI loads, the trigger reference's ID holds a new[]'d name
-      // string. NOLINTNEXTLINE(performance-no-int-to-ptr)
-      ptr = (char*)indexed_trigger->Action2.Trigger.Raw();
-      if (ptr) {
-        indexed_trigger->Action2.Trigger = From_Name(ptr);
-        delete[] ptr;
+      for (TActionClass* action :
+           {&indexed_trigger->Action1, &indexed_trigger->Action2}) {
+        if (!action->PendingTriggerName.empty()) {
+          action->Trigger = From_Name(action->PendingTriggerName.c_str());
+          action->PendingTriggerName.clear();
+        }
       }
     }
   }

@@ -638,7 +638,7 @@ bool Load_Game(int id) {
         version != kSaveGameVersion) {
       return false;
     }
-    GameVersion = static_cast<unsigned long>(version);
+    GameVersion = static_cast<uint32_t>(version);
   }
   /*
   **	Get the message digest that is embedded in the file.

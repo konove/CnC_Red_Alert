@@ -266,9 +266,9 @@ void Set_Window(int window, int x, int y, int w, int h);
 void* Load_Alloc_Data(FileClass& file);
 void* Load_Alloc_Data(const char* name, int /*unused*/);
 std::vector<std::byte> LoadAllocData(FileClass& file);
-long Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
-                     BuffType& dest_buff, void* reserved_data);
-long Translucent_Table_Size(int count);
+int32_t Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
+                        BuffType& dest_buff, void* reserved_data);
+int32_t Translucent_Table_Size(int count);
 void* Build_Translucent_Table(const PaletteClass& palette,
                               const TLucentType* control, int count,
                               void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);

@@ -108,7 +108,7 @@
 #include "winvq/vqa32/vqaplay.h"
 
 bool IsVQ640 = false;
-unsigned long GameVersion = 0;
+uint32_t GameVersion = 0;
 std::string DebugNewGame;
 int DebugLoadGame = -1;
 int64_t DebugQuitAtFrame = -1;
@@ -439,10 +439,10 @@ Buffer* TheaterBuffer;
 **	histogram of game performance.
 */
 int64_t SpareTicks;
-long PathCount;       // Number of findpaths called.
-long CellCount;       // Number of cells redrawn.
-long TargetScan;      // Number of target scans.
-long SidebarRedraws;  // Number of sidebar redraws.
+int32_t PathCount;       // Number of findpaths called.
+int32_t CellCount;       // Number of cells redrawn.
+int32_t TargetScan;      // Number of target scans.
+int32_t SidebarRedraws;  // Number of sidebar redraws.
 
 /***************************************************************************
 **	This is the monochrome debug page array. The various monochrome data
@@ -531,7 +531,7 @@ bool GameActive;
 **	a long, but the value wasn't supplied to a function. This is used
 **	specifically for the default reference value. As such, it is not stable.
 */
-long LParam;
+int32_t LParam;
 
 /***************************************************************************
 ** The currently-selected cell for the Scenario Editor
@@ -608,7 +608,7 @@ std::vector<CarryoverClass> Carryover;
 ** This value is computed every time a new scenario is loaded; it's a
 ** CRC of the INI and binary map files.
 */
-unsigned long ScenarioCRC;
+uint32_t ScenarioCRC;
 
 /***************************************************************************
 ** This class manages data specific to multiplayer games.

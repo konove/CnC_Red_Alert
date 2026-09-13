@@ -755,12 +755,12 @@ void CC_Draw_Shape(const void* shapefile, int shape_num, int x, int y,
                    WindowNumberType window, ShapeFlags_Type flags,
                    const void* fading_data = nullptr,
                    const void* ghostdata = nullptr, DirType rotation = DIR_N,
-                   long scale = 0x0100);
+                   int32_t scale = 0x0100);
 void CC_Draw_Shape(std::span<const std::byte> shapefile, int shape_num, int x,
                    int y, WindowNumberType window, ShapeFlags_Type flags,
                    const void* fading_data = nullptr,
                    const void* ghostdata = nullptr, DirType rotation = DIR_N,
-                   long scale = 0x0100);
+                   int32_t scale = 0x0100);
 
 // Switches between scenario-editor mode and normal game mode. Both modes need
 // a different button layout and a full redraw, so this cannot just set a flag.

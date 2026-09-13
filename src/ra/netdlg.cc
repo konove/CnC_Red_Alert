@@ -126,6 +126,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cctype>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -3055,15 +3056,13 @@ static int Request_To_Join(char* playername, int join_index, HousesType house,
   if (Is_Aftermath_Installed()) {
     //		debugprint( "Guest tells host 'I have Aftermath'\n" );
     Session.GPacket.PlayerInfo.MinVersion =
-        static_cast<uint32_t>(VersionClass::Min_Version()) | 0x80000000;
+        VersionClass::Min_Version() | 0x80000000;
   } else {
     //		debugprint( "Guest tells host 'I don't have
     // Aftermath'\n" );
-    Session.GPacket.PlayerInfo.MinVersion =
-        static_cast<uint32_t>(VersionClass::Min_Version());
+    Session.GPacket.PlayerInfo.MinVersion = VersionClass::Min_Version();
   }
-  Session.GPacket.PlayerInfo.MaxVersion =
-      static_cast<std::uint32_t>(VersionClass::Max_Version());
+  Session.GPacket.PlayerInfo.MaxVersion = VersionClass::Max_Version();
   Session.GPacket.PlayerInfo.CheatCheck = RuleINI.Get_Unique_ID();
 
   Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
@@ -3704,8 +3703,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //	Guest receives game version number from host.
       //	Added to the transmitted version number is a bit indicating
       // presence of Aftermath expansion.
-      unsigned long lVersion = Session.GPacket.ScenarioInfo.Version &
-                               ~0x80000000;  //	Actual version number.
+      uint32_t lVersion = Session.GPacket.ScenarioInfo.Version &
+                          ~0x80000000;  //	Actual version number.
       Session.CommProtocol = VersionClass::Version_Protocol(lVersion);
       bAftermathMultiplayer = Session.GPacket.ScenarioInfo.Version & 0x80000000;
       //			if( bAftermathMultiplayer )
@@ -4132,7 +4131,7 @@ static int Net_New_Dialog() {
 
   int transmit;  // 1 = re-transmit new game options
 
-  long ok_timer = 0;  // for timing OK button
+  int64_t ok_timer = 0;  // for timing OK button
   int index;          // index for rejecting a player
   int rc = 0;
   int i;
@@ -4142,7 +4141,7 @@ static int Net_New_Dialog() {
   int optiontabs[] = {8 * 2};  // tabs for option list box
 
   NodeNameType* who;    // node to add to Players
-  long ping_timer = 0;  // for sending Ping packets
+  int64_t ping_timer = 0;  // for sending Ping packets
 
   int color_used[MAX_MPLAYER_COLORS];  // 1 = color has been used
   char txt[80];
@@ -4920,18 +4919,18 @@ static int Net_New_Dialog() {
         Session.GPacket.ScenarioInfo.Seed = Seed;
         Session.GPacket.ScenarioInfo.Special = Special;
         Session.GPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;
-        Session.GPacket.ScenarioInfo.Version = static_cast<uint32_t>(VerNum.Get_Clipped_Version());
+        Session.GPacket.ScenarioInfo.Version = VerNum.Get_Clipped_Version();
         //	Host encodes whether or not this is an Aftermath game in the
         // highest bit.
         if (bAftermathMultiplayer) {
           //					debugprint( "Host tells guests
           //'This is an Aftermath game'\n" );
           Session.GPacket.ScenarioInfo.Version =
-              static_cast<uint32_t>(VerNum.Get_Clipped_Version()) | 0x80000000;
+              VerNum.Get_Clipped_Version() | 0x80000000;
         } else {
           //					debugprint( "Host tells guests
           //'This is NOT an Aftermath game'\n" );
-          Session.GPacket.ScenarioInfo.Version = static_cast<uint32_t>(VerNum.Get_Clipped_Version());
+          Session.GPacket.ScenarioInfo.Version = VerNum.Get_Clipped_Version();
         }
 
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
@@ -5171,7 +5170,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
   int found;
   JoinEventType retval = EV_NONE;
   int resend;
-  unsigned long version;  // version # to use
+  uint32_t version;  // version # to use
 
   //------------------------------------------------------------------------
   //	If there is no incoming packet, just return

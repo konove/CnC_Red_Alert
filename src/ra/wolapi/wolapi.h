@@ -52,11 +52,13 @@
 #define CNC_RED_ALERT_RA_WOLAPI_WOLAPI_H_
 
 // Generated Westwood Online API names (MIDL guards, struct tags) are reserved
-// identifiers; they stay as generated.
-// NOLINTBEGIN(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
-// The NOLINT only reaches clang-tidy. The compiler still warns about the MIDL guard macros while
-// preprocessing, which stops clang-tidy-cache from hashing every unit that includes this header
-// (see CLAUDE.md), so silence that warning here as port/win32/win32_com.h does.
+// identifiers, and their integer types (`long`, `unsigned long`) mirror the
+// Win32 COM ABI; both stay as generated.
+// NOLINTBEGIN(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier,google-runtime-int)
+// The NOLINT only reaches clang-tidy. The compiler still warns about the MIDL
+// guard macros while preprocessing, which stops clang-tidy-cache from hashing
+// every unit that includes this header (see CLAUDE.md), so silence that warning
+// here as port/win32/win32_com.h does.
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wreserved-macro-identifier"
@@ -892,6 +894,6 @@ class DECLSPEC_UUID("8B938191-EF3F-11D1-9808-00609706FA0C") Chat2;
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
-// NOLINTEND(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
+// NOLINTEND(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier,google-runtime-int)
 
 #endif  // CNC_RED_ALERT_RA_WOLAPI_WOLAPI_H_

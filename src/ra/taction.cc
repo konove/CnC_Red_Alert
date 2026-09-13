@@ -49,6 +49,7 @@
 #include "ra/taction.h"
 
 #include <cassert>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <format>
@@ -320,8 +321,7 @@ void TActionClass::Read_INI() {
       *the trigger text *	name. This will be fixed up later.
       */
       const char* trig_name = strtok(nullptr, ",");
-      char* trig_copy = port::CloneString(trig_name);
-      Trigger.Set_Raw((long)trig_copy);
+      PendingTriggerName = trig_name != nullptr ? trig_name : "";
 
       Data.Value = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
       break;

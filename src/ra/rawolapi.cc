@@ -22,6 +22,7 @@
 
 #include "ra/rawolapi.h"
 
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <ctime>
@@ -1371,12 +1372,12 @@ STDMETHODIMP RAChatEventSink::OnGameStart(HRESULT hRes, Channel* /*channel*/,
 }
 
 //***********************************************************************************************
-unsigned long RAChatEventSink::GetPlayerGameIP(const char* szPlayerName) const {
+uint32_t RAChatEventSink::GetPlayerGameIP(const char* szPlayerName) const {
   //	Returns ipaddr value of player if found in pGameUserList, else 0.
   User* pUser = pGameUserList;
   while (pUser) {
     if (stricmp((char*)pUser->name, szPlayerName) == 0) {
-      return pUser->ipaddr;
+      return static_cast<uint32_t>(pUser->ipaddr);
     }
     pUser = pUser->next;
   }
@@ -1486,7 +1487,7 @@ void RAChatEventSink::DeleteUserIPList() {
 }
 
 //***********************************************************************************************
-unsigned long RAChatEventSink::GetUserIP(const char* szName) const {
+uint32_t RAChatEventSink::GetUserIP(const char* szName) const {
   //	Looks in pUserIPList for the ipaddr of user with name szName.
   //	This is used only while in game channels.
   //	This is for step 2 in acquiring fellow player ping times. To get the IP
@@ -1498,7 +1499,7 @@ unsigned long RAChatEventSink::GetUserIP(const char* szName) const {
   User* pUser = pUserIPList;
   while (pUser) {
     if (stricmp((char*)pUser->name, szName) == 0) {
-      return pUser->ipaddr;
+      return static_cast<uint32_t>(pUser->ipaddr);
     }
     pUser = pUser->next;
   }
@@ -1757,11 +1758,10 @@ STDMETHODIMP RANetUtilEventSink::OnGameresSent(HRESULT hRes) {
 }
 
 //***********************************************************************************************
-STDMETHODIMP RANetUtilEventSink::OnLadderList(HRESULT hRes,
-                                              Ladder* pLadderListIn,
-                                              int /*totalCount*/,
-                                              long /*timeStamp*/,
-                                              int /*keyRung*/) {
+STDMETHODIMP RANetUtilEventSink::OnLadderList(
+    HRESULT hRes, Ladder* pLadderListIn, int /*totalCount*/,
+    // NOLINTNEXTLINE(google-runtime-int) - matches the generated COM interface.
+    long /*timeStamp*/, int /*keyRung*/) {
   //	Maintenance of ladders list is like that for channels list above.
   //	DeleteLadderList();		-> This is done once, before a set of
   // RequestLadderList() calls are made.
@@ -1831,8 +1831,10 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(HRESULT hRes,
 }
 
 //***********************************************************************************************
-STDMETHODIMP RANetUtilEventSink::OnPing(HRESULT hRes, int time,
-                                        unsigned long ip, int /*handle*/) {
+STDMETHODIMP RANetUtilEventSink::OnPing(
+    HRESULT hRes, int time,
+    // NOLINTNEXTLINE(google-runtime-int) - matches the generated COM interface.
+    unsigned long ip, int /*handle*/) {
   if (pOwner->bDoingDisconnectPinging) {
     //		debugprint( ">>> OnPing got : ip %i, time %i, ", ip, time );
     DebugChatDef(hRes);

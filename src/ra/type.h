@@ -525,7 +525,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	This specifies the building prerequisites required before an object
   **	of this type can be produced.
   */
-  long Prerequisite{kStructFlagNone};
+  uint64_t Prerequisite{kStructFlagNone};
 
   /*
   **	The risk and reward values are used to determine targets and paths
@@ -560,7 +560,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	to take possession of an object type otherwise not normally allowed.
   **	This event usually occurs as a result of capture.
   */
-  long Ownable{0};
+  int32_t Ownable{0};
 
   /*
   **	This is the small icon image that is used to display the object in

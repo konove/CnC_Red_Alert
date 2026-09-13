@@ -30,6 +30,7 @@
 
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include <optional>
 #include <span>
 
@@ -310,8 +311,8 @@ class WolapiObject {
                          // connection goes down.
   bool bGameServer = false;  //	Flag used while in a game, true if game server (host).
 
-  unsigned long TournamentOpponentIP = 0;  //	Valid while playing a tournament
-                                       // game. IP address of opponent.
+  uint32_t TournamentOpponentIP = 0;  //	Valid while playing a tournament
+                                      // game. IP address of opponent.
 
   bool bPump_In_Call_Back{
       false};  //	Used to enable PumpMessages during Call_Back(),

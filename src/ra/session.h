@@ -528,7 +528,7 @@ class SessionClass {
   //.....................................................................
   int Create_Connections();
   static bool Am_I_Master();
-  static unsigned long Compute_Unique_ID();
+  static uint32_t Compute_Unique_ID();
 
   //.....................................................................
   // File I/O
@@ -702,14 +702,14 @@ class SessionClass {
   //.....................................................................
   // For finding Sync Bugs
   //.....................................................................
-  long TrapFrame{0x7fffffff};       // frame # to start trapping 'TrapObject'
+  int32_t TrapFrame{0x7fffffff};    // frame # to start trapping 'TrapObject'
   RTTIType TrapObjType{RTTI_NONE};  // type of object to trap
   TrapObjectType TrapObject{};  // ptr to object to trap (watch)
   COORDINATE TrapCoord{0};      // coord of object, 0 = ignore
   TARGET TrapTarget{kTargetNone};  // Target # of object, 0 = ignore
   CellClass* TrapCell{nullptr};    // Ptr to cell to trap (watch)
   int TrapCheckHeap{0};            // true = check the heap as of TrapFrame
-  long TrapPrintCRC{0};            // Frame # to print CRC state file
+  int32_t TrapPrintCRC{0};         // Frame # to print CRC state file
 };
 
 class ArchiveReader;

@@ -46,6 +46,7 @@
 #include "ra/radio.h"
 
 #include <cassert>
+#include <cstdint>
 
 #include "magic_enum/magic_enum.hpp"
 #include "ra/config.h"
@@ -150,7 +151,7 @@ void RadioClass::Debug_Dump(MonoClass* mono) const {
  *=============================================================================================*/
 RadioMessageType RadioClass::Receive_Message(RadioClass* from,
                                              RadioMessageType message,
-                                             long& param) {
+                                             int32_t& param) {
   assert(IsActive);
 
   /*
@@ -213,7 +214,7 @@ RadioMessageType RadioClass::Receive_Message(RadioClass* from,
  * HISTORY: * 05/22/1995 JLB : Created. *
  *=============================================================================================*/
 RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
-                                              long& param, RadioClass* to) {
+                                              int32_t& param, RadioClass* to) {
   assert(IsActive);
 
   if (to == nullptr) {

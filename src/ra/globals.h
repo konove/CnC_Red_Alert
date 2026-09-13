@@ -7,7 +7,7 @@
 
 extern int64_t Frame;
 extern bool GameActive;
-extern long LParam;
+extern int32_t LParam;
 extern int Seed;
 extern int CustomSeed;
 extern int SoundOn;

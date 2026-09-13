@@ -284,7 +284,7 @@ class ObjectClass : public AbstractClass {
                                                         bool legal) const;
   virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
-                                           long& param);
+                                           int32_t& param);
   virtual bool Revealed(HouseClass* house);
   virtual void Repair(int /*unused*/);
   virtual void Sell_Back(int /*unused*/);

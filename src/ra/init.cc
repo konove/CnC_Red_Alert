@@ -1700,7 +1700,7 @@ uint32_t Obfuscate(const char* string) {
     auto temp = static_cast<unsigned char>(code);
     buffer[index] = static_cast<char>(buffer[index] ^ temp);
     code >>= 8;
-    code = static_cast<int>(code | static_cast<long>(temp) << 24);
+    code = static_cast<int>(code | static_cast<int32_t>(temp) << 24);
   }
 
   /*

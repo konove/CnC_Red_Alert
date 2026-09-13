@@ -160,7 +160,7 @@ VersionClass::VersionClass() {
 // commented out. 	Version number used is now kGameVersion. 	Note
 // also that VERSION_RA_300 is wrong, but not used.
 
-unsigned long VersionClass::Version_Number() {
+uint32_t VersionClass::Version_Number() {
   //------------------------------------------------------------------------
   // Read the text description, if there is one
   //------------------------------------------------------------------------
@@ -360,7 +360,7 @@ void VersionClass::Read_Text_String() {
  * HISTORY:                                                                *
  *   10/26/1995 BRR : Created.                                             *
  *=========================================================================*/
-CommProtocolType VersionClass::Version_Protocol(unsigned long version) {
+CommProtocolType VersionClass::Version_Protocol(uint32_t version) {
   int i;
   int j;
 
@@ -454,8 +454,7 @@ void VersionClass::Init_Clipping() {
  * HISTORY:                                                                *
  *   10/26/1995 BRR : Created.                                             *
  *=========================================================================*/
-unsigned long VersionClass::Clip_Version(unsigned long minver,
-                                         unsigned long maxver) {
+uint32_t VersionClass::Clip_Version(uint32_t minver, uint32_t maxver) {
   //------------------------------------------------------------------------
   // If the given range is outside & above our own, return an error.
   //------------------------------------------------------------------------
@@ -510,7 +509,7 @@ unsigned long VersionClass::Clip_Version(unsigned long minver,
  * HISTORY:                                                                *
  *   10/26/1995 BRR : Created.                                             *
  *=========================================================================*/
-unsigned long VersionClass::Min_Version() {
+uint32_t VersionClass::Min_Version() {
   if constexpr (config::kWolapiEnabled) {
     //	ajw: "Note! I'm no longer using MIN_VERSION, MAX_VERSION, or
     //	VERSION_RA_300! But no time to do three full rebuilds right now, so
@@ -547,7 +546,7 @@ unsigned long VersionClass::Min_Version() {
  * HISTORY:                                                                *
  *   10/26/1995 BRR : Created.                                             *
  *=========================================================================*/
-unsigned long VersionClass::Max_Version() {
+uint32_t VersionClass::Max_Version() {
   if constexpr (config::kWolapiEnabled) {
     return kGameVersion;
   } else {

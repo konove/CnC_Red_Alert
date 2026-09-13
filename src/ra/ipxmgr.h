@@ -162,7 +162,7 @@ it's stored in protected-mode memory.
 ---------------------------------------------------------------------------*/
 extern "C" {
 void* __cdecl Get_RM_IPX_Address();
-long __cdecl Get_RM_IPX_Size();
+int32_t __cdecl Get_RM_IPX_Size();
 }
 
 /*
@@ -360,7 +360,7 @@ class IPXManagerClass : public ConnManClass {
   This is a real-mode pointer to the address of the real-mode assembly
   entry point.
   .....................................................................*/
-  long Handler = 0;
+  int32_t Handler = 0;
 
   /*.....................................................................
   Event Control Block for listening; contained within the real-mode

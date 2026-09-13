@@ -162,11 +162,11 @@ class RAChatEventSink
   (HRESULT r, LPCSTR name, unsigned int flags, unsigned int mask) override;
   STDMETHOD(OnChannelBan)(HRESULT r, LPCSTR name, int banned) override;
 
-  unsigned long GetPlayerGameIP(const char* szPlayerName) const;
+  uint32_t GetPlayerGameIP(const char* szPlayerName) const;
   void DeleteUserList();  //	Deletes from heap all users pointed to through
                           // pUserList.
   void DeleteUserIPList();
-  unsigned long GetUserIP(const char* szName) const;
+  uint32_t GetUserIP(const char* szName) const;
 
   static void ActionEggSound(const char* szMessage);
 
@@ -317,8 +317,10 @@ class RANetUtilEventSink :
 
   STDMETHOD(OnGameresSent)(HRESULT res) override;
   STDMETHOD(OnLadderList)
+  // NOLINTNEXTLINE(google-runtime-int) - matches the generated COM interface.
   (HRESULT res, Ladder* list, int totalCount, long timeStamp, int keyRung)
       override;
+  // NOLINTNEXTLINE(google-runtime-int) - matches the generated COM interface.
   STDMETHOD(OnPing)(HRESULT res, int time, unsigned long ip,
                     int handle) override;
 

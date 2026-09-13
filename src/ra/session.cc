@@ -55,6 +55,7 @@
 #include <algorithm>
 #include <array>
 #include <cctype>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -1294,7 +1295,7 @@ void SessionClass::Trap_Object() {
  * HISTORY:                                                                *
  *   12/07/1995 BRR : Created.                                             *
  *=========================================================================*/
-unsigned long SessionClass::Compute_Unique_ID() {
+uint32_t SessionClass::Compute_Unique_ID() {
   time_t tm;
   uint32_t id;
   char* path;

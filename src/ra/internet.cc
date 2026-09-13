@@ -25,7 +25,7 @@
 
 #include <cstdint>
 
-long PlanetWestwoodPortNumber = 1234;  // Port number to send to
+int32_t PlanetWestwoodPortNumber = 1234;  // Port number to send to
 bool PlanetWestwoodIsHost =
     false;  // Flag true if player has control of game options
 uint32_t PlanetWestwoodGameID;     // Game ID

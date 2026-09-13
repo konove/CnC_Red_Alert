@@ -42,6 +42,8 @@
 #ifndef CNC_RED_ALERT_RA_TXTLABEL_H_
 #define CNC_RED_ALERT_RA_TXTLABEL_H_
 
+#include <cstdint>
+
 #include "absl/base/attributes.h"
 #include "ra/defines.h"
 #include "ra/gadget.h"
@@ -68,8 +70,8 @@ class TextLabelClass : public GadgetClass {
   /*
   ** General-purpose data fields
   */
-  long UserData1{0};
-  long UserData2{0};
+  int64_t UserData1{0};
+  int32_t UserData2{0};
   TextPrintType Style;
   char* Text;
   RemapControlType* Color;

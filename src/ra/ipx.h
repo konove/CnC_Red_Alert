@@ -93,14 +93,14 @@ This structure is used for calling DPMI function 0x300, Call-Real-Mode-
 Interrupt.  It passes register values to & from the interrupt handler.
 ---------------------------------------------------------------------------*/
 typedef struct {
-  long edi;
-  long esi;
-  long ebp;
-  long Reserved;
-  long ebx;
-  long edx;
-  long ecx;
-  long eax;
+  int32_t edi;
+  int32_t esi;
+  int32_t ebp;
+  int32_t Reserved;
+  int32_t ebx;
+  int32_t edx;
+  int32_t ecx;
+  int32_t eax;
   int16_t Flags;
   int16_t es;
   int16_t ds;

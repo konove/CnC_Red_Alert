@@ -125,6 +125,11 @@ struct TActionClass {
     int Value;
   } Data{};
 
+  // Trigger name read from a pre-version-2 INI, where triggers may name ones
+  // that load later. TriggerTypeClass::Read_INI resolves it into Trigger once
+  // every trigger exists; empty otherwise. Not saved.
+  std::string PendingTriggerName;
+
   TActionClass() {
     Data.Theme = THEME_NONE;
     Data.Value = -1;
