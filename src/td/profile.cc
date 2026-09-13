@@ -416,7 +416,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
 
       if (dest) {
         /*
-        **	Keep accumulating the identifier strings in the retbuffer.
+        **	Keep accumulating the identifier strings in dest.
         */
         while (workptr && workptr < next) {
           altworkptr = strchr(workptr, '=');  // find '='
@@ -427,7 +427,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
             length = static_cast<int>(altworkptr - workptr);
 
             /*
-            **	Make sure we don't write past the end of the retbuffer;
+            **	Make sure we don't write past the end of dest;
             **	add '3' for the 3 NULL's at the end
             */
             if (dest - orig_retbuf + length + 3 < dest_len) {
