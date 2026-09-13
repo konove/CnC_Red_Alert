@@ -79,17 +79,16 @@ class TurretClass : public DriveClass {
   TurretClass(TurretClass&&) = delete;
   TurretClass& operator=(TurretClass&&) = delete;
 
- protected:
-  TurretClass(UnitType classid, HousesType house);
-  TurretClass() = default;
-
   BulletClass* Fire_At(TARGET target, int which) override;
-
   DirType Fire_Direction() const override;
   FireErrorType Can_Fire(TARGET target, int which) const override;
   bool Ok_To_Move(DirType facing) override;
   void AI() override;
   COORDINATE Fire_Coord(int which) const override;
+
+ protected:
+  TurretClass(UnitType classid, HousesType house);
+  TurretClass() = default;
 };
 
 #endif  // CNC_RED_ALERT_TD_TURRET_H_

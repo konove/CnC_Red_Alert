@@ -85,8 +85,9 @@ class ControlClass : public GadgetClass {
   */
   unsigned ID;
 
- protected:
   unsigned Get_ID() const override;
+
+ protected:
   int Action(unsigned flags, KeyNumType& key) override;
 
   /*

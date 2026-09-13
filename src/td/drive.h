@@ -121,6 +121,7 @@ class DriveClass : public FootClass {
   void Assign_Destination(TARGET target) override;
   void Per_Cell_Process(bool center) override;
   virtual bool Ok_To_Move(DirType);
+  void Fixup_Path(PathType* path) override;
   void AI() override;
   void Debug_Dump(MonoClass* mono) const override;
   void Force_Track(int track, COORDINATE coord);
@@ -194,7 +195,6 @@ class DriveClass : public FootClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  void Fixup_Path(PathType* path) override;
   bool While_Moving();
   bool Start_Of_Move();
   void Lay_Track();

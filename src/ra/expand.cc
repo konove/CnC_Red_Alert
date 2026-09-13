@@ -260,10 +260,6 @@ class EListClass : public ListClass {
     return port::RestoreMutableObject<EObjectClass>(ListClass::Current_Item());
   }
 
- protected:
-  void Draw_Entry(int index, int x, int y, int width, int selected) override;
-
- private:
   int Add_Item(const char* text) override { return ListClass::Add_Item(text); }
   int Add_Item(int text) override { return ListClass::Add_Item(text); }
   const char* Current_Item() const override {
@@ -272,6 +268,9 @@ class EListClass : public ListClass {
   const char* Get_Item(int index) const override {
     return ListClass::Get_Item(index);
   }
+
+ protected:
+  void Draw_Entry(int index, int x, int y, int width, int selected) override;
 };
 
 /***********************************************************************************************

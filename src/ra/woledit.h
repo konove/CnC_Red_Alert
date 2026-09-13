@@ -39,9 +39,9 @@ class WOLEditClass : public EditClass {
                int y, int w, int h, EditStyle style)
       : EditClass(id, text, max_len, flags, x, y, w, h, style) {}
 
-  int Action(unsigned flags, KeyNumType& key) override;  //	Override of base
 
  protected:
+  int Action(unsigned flags, KeyNumType& key) override;  //	Override of base
   void Draw_Text(const char* text) override;  //	Override of base
 };
 

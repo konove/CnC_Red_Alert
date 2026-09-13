@@ -302,6 +302,8 @@ class BuildingClass final : public TechnoClass {
   void Serialize(Archive& ar);
   void Update_Specials();
 
+  BulletClass* Fire_At(TARGET target, int which) override;
+
   /*
   **	Dee-buggin' support.
   */
@@ -309,7 +311,6 @@ class BuildingClass final : public TechnoClass {
 
  private:
   void Drop_Debris(TARGET source = kTargetNone);
-  BulletClass* Fire_At(TARGET target, int which) override;
 
   static const COORDINATE CenterOffset[BSIZE_COUNT];
 
