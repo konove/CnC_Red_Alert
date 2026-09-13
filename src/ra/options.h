@@ -161,4 +161,9 @@ class OptionsClass {
   static const char* const HotkeyName;
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void OptionsClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void OptionsClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_RA_OPTIONS_H_

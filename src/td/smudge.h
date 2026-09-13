@@ -113,3 +113,6 @@ class SmudgeClass : public ObjectClass {
 };
 
 #endif  // CNC_RED_ALERT_TD_SMUDGE_H_
+extern template void SmudgeClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void SmudgeClass::Serialize<ArchiveReader>(ArchiveReader&);
+

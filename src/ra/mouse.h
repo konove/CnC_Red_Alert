@@ -133,4 +133,9 @@ class MouseClass : public ScrollClass {
   int Frame;
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void MouseClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void MouseClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_RA_MOUSE_H_

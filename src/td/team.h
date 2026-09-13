@@ -262,4 +262,7 @@ class TeamClass : public AbstractClass {
   static unsigned char Success[kTeamTypeMax];
 };
 
+extern template void TeamClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TeamClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_TD_TEAM_H_

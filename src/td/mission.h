@@ -138,4 +138,9 @@ class MissionClass : public ObjectClass {
   static const char* Missions[MISSION_COUNT];
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void MissionClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void MissionClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_TD_MISSION_H_

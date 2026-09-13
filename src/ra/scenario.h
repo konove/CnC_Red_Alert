@@ -382,4 +382,9 @@ BriefingAction Restate_Mission();
 int ShowBriefingMessageBox(std::string_view text, int left_btn, int right_btn,
                            bool fade_to_black = true);
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void ScenarioClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void ScenarioClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_RA_SCENARIO_H_

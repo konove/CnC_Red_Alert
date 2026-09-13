@@ -155,4 +155,9 @@ class FactoryClass : private StageClass {
   CCPtr<HouseClass> House;
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void FactoryClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void FactoryClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_RA_FACTORY_H_

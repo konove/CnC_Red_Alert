@@ -87,4 +87,9 @@ class CarryoverClass {
   HousesType House;
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void CarryoverClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void CarryoverClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_RA_CARRY_H_

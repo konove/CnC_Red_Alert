@@ -271,4 +271,7 @@ class TriggerClass {
   char Name[5]{};
 };
 
+extern template void TriggerClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TriggerClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_TD_TRIGGER_H_

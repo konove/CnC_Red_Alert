@@ -173,3 +173,8 @@ class VesselClass : public DriveClass {
 };
 
 #endif  // CNC_RED_ALERT_RA_VESSEL_H_
+class ArchiveReader;
+class ArchiveWriter;
+extern template void VesselClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void VesselClass::Serialize<ArchiveReader>(ArchiveReader&);
+

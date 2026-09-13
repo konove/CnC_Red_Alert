@@ -114,4 +114,9 @@ class RadioClass : public MissionClass {
 
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void RadioClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void RadioClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_TD_RADIO_H_

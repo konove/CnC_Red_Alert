@@ -183,3 +183,6 @@ class AnimClass final : public ObjectClass, private StageClass {
 void Shorten_Attached_Anims(ObjectClass* obj);
 
 #endif  // CNC_RED_ALERT_TD_ANIM_H_
+extern template void AnimClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void AnimClass::Serialize<ArchiveReader>(ArchiveReader&);
+

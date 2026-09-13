@@ -279,4 +279,9 @@ class ChronalVortexClass {
   GraphicBufferClass* RenderBuffer;
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void ChronalVortexClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void ChronalVortexClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_RA_VORTEX_H_

@@ -99,4 +99,9 @@ class CargoClass {
   FootClass* CargoHold;
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void CargoClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void CargoClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_TD_CARGO_H_

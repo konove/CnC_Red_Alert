@@ -137,4 +137,9 @@ class BaseClass {
   HousesType House = HOUSE_NONE;
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void BaseClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void BaseClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_RA_BASE_H_

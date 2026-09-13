@@ -272,3 +272,8 @@ class AircraftClass : public FootClass, public FlyClass {
 bool Building_Check();
 
 #endif  // CNC_RED_ALERT_RA_AIRCRAFT_H_
+class ArchiveReader;
+class ArchiveWriter;
+extern template void AircraftClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void AircraftClass::Serialize<ArchiveReader>(ArchiveReader&);
+

@@ -277,3 +277,8 @@ class UnitClass final : public DriveClass {
 };
 
 #endif  // CNC_RED_ALERT_RA_UNIT_H_
+class ArchiveReader;
+class ArchiveWriter;
+extern template void UnitClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void UnitClass::Serialize<ArchiveReader>(ArchiveReader&);
+

@@ -267,4 +267,7 @@ class TeamTypeClass : public AbstractTypeClass {
   static const char* TMissions[TMISSION_COUNT];
 };
 
+extern template void TeamTypeClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TeamTypeClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_TD_TEAMTYPE_H_

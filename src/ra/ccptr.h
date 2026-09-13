@@ -219,3 +219,33 @@ template <>
 FixedIHeapClass* CCPtr<SmudgeTypeClass>::Heap;
 
 #endif  // CNC_RED_ALERT_RA_CCPTR_H_
+// ccptr.cc instantiates CCPtr for these types; the declarations stop every
+// other translation unit from instantiating members it has no definition for.
+extern template class CCPtr<AircraftClass>;
+extern template class CCPtr<AnimClass>;
+extern template class CCPtr<BuildingClass>;
+extern template class CCPtr<BulletClass>;
+extern template class CCPtr<FactoryClass>;
+extern template class CCPtr<HouseClass>;
+extern template class CCPtr<InfantryClass>;
+extern template class CCPtr<OverlayClass>;
+extern template class CCPtr<SmudgeClass>;
+extern template class CCPtr<TeamClass>;
+extern template class CCPtr<TeamTypeClass>;
+extern template class CCPtr<TemplateClass>;
+extern template class CCPtr<TerrainClass>;
+extern template class CCPtr<TriggerClass>;
+extern template class CCPtr<TriggerTypeClass>;
+extern template class CCPtr<HouseTypeClass>;
+extern template class CCPtr<BuildingTypeClass>;
+extern template class CCPtr<AircraftTypeClass>;
+extern template class CCPtr<InfantryTypeClass>;
+extern template class CCPtr<BulletTypeClass>;
+extern template class CCPtr<AnimTypeClass>;
+extern template class CCPtr<UnitTypeClass>;
+extern template class CCPtr<VesselTypeClass>;
+extern template class CCPtr<TemplateTypeClass>;
+extern template class CCPtr<TerrainTypeClass>;
+extern template class CCPtr<OverlayTypeClass>;
+extern template class CCPtr<SmudgeTypeClass>;
+

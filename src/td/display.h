@@ -323,4 +323,9 @@ class DisplayClass : public MapClass {
 #define CELL_BLIT_ONLY 1
 #define CELL_DRAW_ONLY 2
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void DisplayClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void DisplayClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_TD_DISPLAY_H_

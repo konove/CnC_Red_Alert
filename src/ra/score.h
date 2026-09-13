@@ -182,4 +182,9 @@ void Bit_It_In(int x, int y, int w, int h, GraphicBufferClass* src,
 void Call_Back_Delay(int time);
 int Alloc_Object(ScoreAnimClass* obj);
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void ScoreClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void ScoreClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_RA_SCORE_H_

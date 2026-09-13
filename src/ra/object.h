@@ -292,4 +292,9 @@ class ObjectClass : public AbstractClass {
   enum { FLIGHT_LEVEL = 256 };
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void ObjectClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void ObjectClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_RA_OBJECT_H_

@@ -255,4 +255,9 @@ class ObjectClass : public AbstractClass {
   virtual void Move(FacingType);
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void ObjectClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void ObjectClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_TD_OBJECT_H_

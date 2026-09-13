@@ -205,4 +205,7 @@ class UnitClass final : public TarComClass {
  private:
 };
 
+extern template void UnitClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void UnitClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_TD_UNIT_H_

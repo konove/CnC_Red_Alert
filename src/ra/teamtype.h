@@ -288,3 +288,10 @@ class TeamTypeClass : public AbstractTypeClass {
 NeedType TeamMission_Needs(TeamMissionType tmtype);
 
 #endif  // CNC_RED_ALERT_RA_TEAMTYPE_H_
+class ArchiveReader;
+class ArchiveWriter;
+extern template void TeamMemberClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TeamMemberClass::Serialize<ArchiveReader>(ArchiveReader&);
+extern template void TeamTypeClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TeamTypeClass::Serialize<ArchiveReader>(ArchiveReader&);
+

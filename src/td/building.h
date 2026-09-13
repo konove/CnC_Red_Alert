@@ -317,3 +317,6 @@ class BuildingClass final : public TechnoClass {
 };
 
 #endif  // CNC_RED_ALERT_TD_BUILDING_H_
+extern template void BuildingClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void BuildingClass::Serialize<ArchiveReader>(ArchiveReader&);
+

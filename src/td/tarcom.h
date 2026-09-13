@@ -81,4 +81,9 @@ class TarComClass : public TurretClass {
   */
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void TarComClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TarComClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_TD_TARCOM_H_

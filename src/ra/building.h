@@ -371,3 +371,8 @@ class BuildingClass : public TechnoClass {
 };
 
 #endif  // CNC_RED_ALERT_RA_BUILDING_H_
+class ArchiveReader;
+class ArchiveWriter;
+extern template void BuildingClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void BuildingClass::Serialize<ArchiveReader>(ArchiveReader&);
+

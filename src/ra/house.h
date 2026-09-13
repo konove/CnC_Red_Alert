@@ -944,3 +944,8 @@ class HouseClass {
 };
 
 #endif  // CNC_RED_ALERT_RA_HOUSE_H_
+class ArchiveReader;
+class ArchiveWriter;
+extern template void HouseClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void HouseClass::Serialize<ArchiveReader>(ArchiveReader&);
+

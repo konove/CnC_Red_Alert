@@ -155,3 +155,8 @@ class TriggerTypeClass : public AbstractTypeClass {
 };
 
 #endif  // CNC_RED_ALERT_RA_TRIGTYPE_H_
+class ArchiveReader;
+class ArchiveWriter;
+extern template void TriggerTypeClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TriggerTypeClass::Serialize<ArchiveReader>(ArchiveReader&);
+

@@ -107,3 +107,8 @@ class TemplateClass : public ObjectClass {
 };
 
 #endif  // CNC_RED_ALERT_RA_TEMPLATE_H_
+class ArchiveReader;
+class ArchiveWriter;
+extern template void TemplateClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TemplateClass::Serialize<ArchiveReader>(ArchiveReader&);
+

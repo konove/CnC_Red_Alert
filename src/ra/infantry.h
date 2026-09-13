@@ -256,3 +256,8 @@ class InfantryClass final : public FootClass {
 };
 
 #endif  // CNC_RED_ALERT_RA_INFANTRY_H_
+class ArchiveReader;
+class ArchiveWriter;
+extern template void InfantryClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void InfantryClass::Serialize<ArchiveReader>(ArchiveReader&);
+

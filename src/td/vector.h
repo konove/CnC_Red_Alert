@@ -192,4 +192,48 @@ class DynamicVectorClass : public VectorClass<T> {
   int GrowthStep;
 };
 
+// An int vector cannot delete by value: Delete(const int&) and Delete(int)
+// would be ambiguous, so that overload is specialized away. The
+// specialization must precede the instantiation declarations below.
+template <>
+inline int DynamicVectorClass<int>::Delete(const int& /*object*/) {
+  return false;
+}
+
+// vector.cc instantiates the vectors for these element types.
+class BaseNodeClass;
+class CellClass;
+class FileEntryClass;
+struct NodeNameTag;
+class ObjectClass;
+class PhoneEntryClass;
+class TriggerClass;
+
+extern template class VectorClass<NodeNameTag*>;
+extern template class VectorClass<PhoneEntryClass*>;
+extern template class VectorClass<ObjectClass*>;
+extern template class VectorClass<TriggerClass*>;
+extern template class VectorClass<FileEntryClass*>;
+extern template class VectorClass<BaseNodeClass>;
+extern template class VectorClass<CellClass>;
+extern template class VectorClass<char>;
+extern template class VectorClass<int>;
+extern template class VectorClass<char*>;
+extern template class VectorClass<unsigned char*>;
+extern template class VectorClass<const char*>;
+extern template class VectorClass<void*>;
+extern template class VectorClass<unsigned char>;
+extern template class DynamicVectorClass<NodeNameTag*>;
+extern template class DynamicVectorClass<PhoneEntryClass*>;
+extern template class DynamicVectorClass<ObjectClass*>;
+extern template class DynamicVectorClass<TriggerClass*>;
+extern template class DynamicVectorClass<FileEntryClass*>;
+extern template class DynamicVectorClass<BaseNodeClass>;
+extern template class DynamicVectorClass<char>;
+extern template class DynamicVectorClass<int>;
+extern template class DynamicVectorClass<char*>;
+extern template class DynamicVectorClass<unsigned char*>;
+extern template class DynamicVectorClass<const char*>;
+extern template class DynamicVectorClass<void*>;
+
 #endif  // CNC_RED_ALERT_TD_VECTOR_H_

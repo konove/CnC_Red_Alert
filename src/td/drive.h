@@ -218,3 +218,8 @@ class DriveClass : public FootClass {
 };
 
 #endif  // CNC_RED_ALERT_TD_DRIVE_H_
+class ArchiveReader;
+class ArchiveWriter;
+extern template void DriveClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void DriveClass::Serialize<ArchiveReader>(ArchiveReader&);
+

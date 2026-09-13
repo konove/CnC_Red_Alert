@@ -226,3 +226,6 @@ class AircraftClass : public FootClass, public FlyClass {
 };
 
 #endif  // CNC_RED_ALERT_TD_AIRCRAFT_H_
+extern template void AircraftClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void AircraftClass::Serialize<ArchiveReader>(ArchiveReader&);
+

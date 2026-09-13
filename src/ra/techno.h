@@ -461,4 +461,9 @@ class TechnoClass : public RadioClass,
   static const int BodyShape[32];
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void TechnoClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TechnoClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_RA_TECHNO_H_

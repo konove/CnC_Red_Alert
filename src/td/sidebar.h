@@ -373,4 +373,7 @@ class SidebarClass : public PowerClass {
   unsigned IsDemolishActive : 1;
 };
 
+extern template void SidebarClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void SidebarClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_TD_SIDEBAR_H_

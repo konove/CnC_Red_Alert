@@ -347,4 +347,9 @@ class SidebarClass : public PowerClass {
   unsigned IsDemolishActive : 1;
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void SidebarClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void SidebarClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_RA_SIDEBAR_H_

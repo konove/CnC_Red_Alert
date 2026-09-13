@@ -169,3 +169,8 @@ class TerrainClass final : public ObjectClass, public StageClass {
 };
 
 #endif  // CNC_RED_ALERT_RA_TERRAIN_H_
+class ArchiveReader;
+class ArchiveWriter;
+extern template void TerrainClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TerrainClass::Serialize<ArchiveReader>(ArchiveReader&);
+

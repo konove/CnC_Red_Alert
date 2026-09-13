@@ -173,3 +173,8 @@ void Shorten_Attached_Anims(ObjectClass* obj);
 AnimType Anim_From_Name(const char* name);
 
 #endif  // CNC_RED_ALERT_RA_ANIM_H_
+class ArchiveReader;
+class ArchiveWriter;
+extern template void AnimClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void AnimClass::Serialize<ArchiveReader>(ArchiveReader&);
+

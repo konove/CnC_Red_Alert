@@ -91,4 +91,9 @@ class TurretClass : public DriveClass {
   TurretClass() = default;
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void TurretClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TurretClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_TD_TURRET_H_

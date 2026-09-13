@@ -140,4 +140,9 @@ class TriggerClass {
 
 TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype);
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void TriggerClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TriggerClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_RA_TRIGGER_H_

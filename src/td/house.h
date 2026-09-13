@@ -602,3 +602,6 @@ class HouseClass {
   TCountDownTimerClass SpeakMaxedDelay;
 };
 #endif  // CNC_RED_ALERT_TD_HOUSE_H_
+extern template void HouseClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void HouseClass::Serialize<ArchiveReader>(ArchiveReader&);
+

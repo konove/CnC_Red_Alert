@@ -158,4 +158,7 @@ class FactoryClass : StageClass {
   HousesType House = HOUSE_NONE;
 };
 
+extern template void FactoryClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void FactoryClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_TD_FACTORY_H_

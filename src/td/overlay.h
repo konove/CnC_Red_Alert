@@ -117,3 +117,6 @@ class OverlayClass : public ObjectClass {
 };
 
 #endif  // CNC_RED_ALERT_TD_OVERLAY_H_
+extern template void OverlayClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void OverlayClass::Serialize<ArchiveReader>(ArchiveReader&);
+

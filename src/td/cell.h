@@ -273,4 +273,7 @@ class CellClass {
   LandType Land;  // The land type of this cell.
 };
 
+extern template void CellClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void CellClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_TD_CELL_H_

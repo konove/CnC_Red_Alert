@@ -153,4 +153,52 @@ class TypePtr {
 template <class T>
 TypePtr(const T*&) -> TypePtr<T>;
 
+extern template void SerializeObjectList<ArchiveWriter>(ArchiveWriter&, DynamicVectorClass<ObjectClass*>&);
+extern template void SerializeObjectList<ArchiveReader>(ArchiveReader&, DynamicVectorClass<ObjectClass*>&);
+
+class TechnoClass;
+class RadioClass;
+class FootClass;
+
+extern template class ObjectPtr<ObjectClass>;
+extern template class ObjectPtr<TechnoClass>;
+extern template class ObjectPtr<RadioClass>;
+extern template class ObjectPtr<FootClass>;
+
+class HouseTypeClass;
+class BuildingTypeClass;
+class UnitTypeClass;
+class InfantryTypeClass;
+class BulletTypeClass;
+class TerrainTypeClass;
+class TemplateTypeClass;
+class AnimTypeClass;
+class AircraftTypeClass;
+class OverlayTypeClass;
+class SmudgeTypeClass;
+extern template class TeamTypePtr<TeamTypeClass>;
+extern template class TeamTypePtr<const TeamTypeClass>;
+extern template void TypePtr<HouseTypeClass>::Serialize(ArchiveWriter&);
+extern template void TypePtr<HouseTypeClass>::Serialize(ArchiveReader&);
+extern template void TypePtr<BuildingTypeClass>::Serialize(ArchiveWriter&);
+extern template void TypePtr<BuildingTypeClass>::Serialize(ArchiveReader&);
+extern template void TypePtr<UnitTypeClass>::Serialize(ArchiveWriter&);
+extern template void TypePtr<UnitTypeClass>::Serialize(ArchiveReader&);
+extern template void TypePtr<InfantryTypeClass>::Serialize(ArchiveWriter&);
+extern template void TypePtr<InfantryTypeClass>::Serialize(ArchiveReader&);
+extern template void TypePtr<BulletTypeClass>::Serialize(ArchiveWriter&);
+extern template void TypePtr<BulletTypeClass>::Serialize(ArchiveReader&);
+extern template void TypePtr<TerrainTypeClass>::Serialize(ArchiveWriter&);
+extern template void TypePtr<TerrainTypeClass>::Serialize(ArchiveReader&);
+extern template void TypePtr<TemplateTypeClass>::Serialize(ArchiveWriter&);
+extern template void TypePtr<TemplateTypeClass>::Serialize(ArchiveReader&);
+extern template void TypePtr<AnimTypeClass>::Serialize(ArchiveWriter&);
+extern template void TypePtr<AnimTypeClass>::Serialize(ArchiveReader&);
+extern template void TypePtr<AircraftTypeClass>::Serialize(ArchiveWriter&);
+extern template void TypePtr<AircraftTypeClass>::Serialize(ArchiveReader&);
+extern template void TypePtr<OverlayTypeClass>::Serialize(ArchiveWriter&);
+extern template void TypePtr<OverlayTypeClass>::Serialize(ArchiveReader&);
+extern template void TypePtr<SmudgeTypeClass>::Serialize(ArchiveWriter&);
+extern template void TypePtr<SmudgeTypeClass>::Serialize(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_TD_SERIALIZE_H_

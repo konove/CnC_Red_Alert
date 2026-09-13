@@ -282,4 +282,9 @@ class TeamClass : public AbstractClass {
   friend class TFixedIHeapClass<TeamClass>;
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void TeamClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TeamClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_RA_TEAM_H_

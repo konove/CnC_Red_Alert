@@ -64,4 +64,17 @@ class TechnoTypePtr {
   const TechnoTypeClass*& ref_;
 };
 
+class FootClass;
+class RadioClass;
+class TechnoClass;
+
+// serialize.cc instantiates ObjectPtr for these types.
+extern template class ObjectPtr<ObjectClass>;
+extern template class ObjectPtr<RadioClass>;
+extern template class ObjectPtr<TechnoClass>;
+extern template class ObjectPtr<FootClass>;
+
+extern template void SerializeObjectList<ArchiveWriter>(ArchiveWriter&, DynamicVectorClass<ObjectClass*>&);
+extern template void SerializeObjectList<ArchiveReader>(ArchiveReader&, DynamicVectorClass<ObjectClass*>&);
+
 #endif  // CNC_RED_ALERT_RA_SERIALIZE_H_

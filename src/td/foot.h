@@ -325,4 +325,9 @@ class FootClass : public TechnoClass {
   COORDINATE HeadToCoord;
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void FootClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void FootClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_TD_FOOT_H_

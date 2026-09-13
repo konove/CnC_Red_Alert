@@ -332,4 +332,9 @@ class DisplayClass : public MapClass {
                                int zone, MZoneType mzone) const;
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void DisplayClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void DisplayClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_RA_DISPLAY_H_

@@ -2,7 +2,7 @@
 
 Updated: 2026-09-12, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 180 currently excluded check names** and completed entries, in recommended work
+This tracks **all 179 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -95,7 +95,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `cert-dcl50-cpp`                                           | Pending | Alias of `modernize-avoid-variadic-functions`; handle together.                                                                                                                                                                                                                      |
 | `clang-diagnostic-missing-format-attribute`                | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                                        |
 | `clang-diagnostic-undef`                                   | Enabled | Commit `Test language and debug macros with defined()`: 105 reports; TD's `FRENCH`/`GERMAN`/`JAPANESE` builds and two WOL `SHOW_MONO` blocks tested undefined macros with `#if`, now `defined()` with the same result.                                                               |
-| `clang-diagnostic-undefined-func-template`                 | Pending | Catch unavailable template definitions on instantiated paths.                                                                                                                                                                                                                        |
+| `clang-diagnostic-undefined-func-template`                 | Enabled | Commit `Declare the explicitly instantiated templates`: 121 reports; `extern template` declarations now sit beside `CCPtr`, TD's vectors, `ObjectPtr` and the out-of-line `Serialize` members whose definitions live in one `.cc` file.                                              |
 | `clang-diagnostic-undefined-var-template`                  | Enabled | Commit `Declare the CCPtr heap specializations`: the 27 `CCPtr<T>::Heap` explicit specializations defined in `globals.cc` are now declared in `ccptr.h`, which also removes an ill-formed use-before-declaration.                                                                    |
 | `clang-diagnostic-shadow-field`                            | Pending | Find locals or parameters accidentally hiding object state.                                                                                                                                                                                                                          |
 | `clang-diagnostic-shadow`                                  | Pending | Find scope mistakes; expect more noise than field shadowing.                                                                                                                                                                                                                         |
@@ -829,6 +829,24 @@ maximum, with the original rules restated in its comment.
 A probe with identical then and else branches confirms the check reports an error under the
 repository configuration. The isolated sweep now reports nothing, both strict game builds are clean,
 and all 242 CTest tests pass. The excluded-name count drops from 206 to 205.
+
+### Explicit instantiation declarations (2026-09-12)
+
+`clang-diagnostic-undefined-func-template` is now enforced, completing the `-undefined-var-template`
+fix above. The field-wise savegame code, `CCPtr`, TD's vectors and `ObjectPtr` define their
+templates in one `.cc` file and explicitly instantiate them there, but no header said so, and every
+other translation unit that used them instantiated a declaration with no definition. The sweep's 121
+locations understate the work: one line in `ra/heap.h` or `tech/archive.h` instantiates `Serialize`
+for dozens of classes.
+
+Each explicit instantiation definition now has an `extern template` declaration in the header of the
+class it instantiates, generated from the instantiation lines themselves so the two lists cannot
+drift: 128 member-template declarations across 71 headers, plus the `CCPtr`, vector and `ObjectPtr`
+class instantiations and both games' `SerializeObjectList`. The `CCPtr<T>::Heap` specializations
+defined in `globals.cc` are declared in `ccptr.h`, which also removes a use of an explicit
+specialization before its declaration. TD's `DynamicVectorClass<int>::Delete(const int&)`
+specialization moved ahead of the declarations, since a specialization must precede the
+instantiation it replaces.
 
 ### Completed validation
 

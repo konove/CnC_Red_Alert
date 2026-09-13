@@ -164,3 +164,6 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
 };
 
 #endif  // CNC_RED_ALERT_TD_BULLET_H_
+extern template void BulletClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void BulletClass::Serialize<ArchiveReader>(ArchiveReader&);
+

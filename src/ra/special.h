@@ -102,4 +102,9 @@ void Special_Dialog(bool simple = false);
 const char* Fetch_Password(int caption, int message, int btext = TXT_OK);
 int Fetch_Difficulty(bool amath = false);
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void SpecialClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void SpecialClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_RA_SPECIAL_H_

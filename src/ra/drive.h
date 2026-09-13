@@ -219,4 +219,9 @@ class DriveClass : public FootClass {
   static const TrackType Track1[24];
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void DriveClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void DriveClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_RA_DRIVE_H_

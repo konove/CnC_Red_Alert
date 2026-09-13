@@ -190,4 +190,9 @@ class MapClass : public GScreenClass {
 
 int Coord_Spillage_Number(COORDINATE coord, int maxsize);
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void MapClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void MapClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_RA_MAP_H_

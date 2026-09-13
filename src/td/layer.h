@@ -67,4 +67,7 @@ class LayerClass : public DynamicVectorClass<ObjectClass*> {
 
 };
 
+extern template void LayerClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void LayerClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_TD_LAYER_H_

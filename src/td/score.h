@@ -198,4 +198,7 @@ void Call_Back_Delay(int time);
 int Alloc_Object(ScoreAnimClass* obj);
 extern GraphicBufferClass* PseudoSeenBuff;
 
+extern template void ScoreClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void ScoreClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_TD_SCORE_H_

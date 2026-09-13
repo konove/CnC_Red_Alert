@@ -250,4 +250,9 @@ class RadarClass : public DisplayClass {
   CELL PixelStack[PIXELSTACK]{};
 };
 
+class ArchiveReader;
+class ArchiveWriter;
+extern template void RadarClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void RadarClass::Serialize<ArchiveReader>(ArchiveReader&);
+
 #endif  // CNC_RED_ALERT_RA_RADAR_H_

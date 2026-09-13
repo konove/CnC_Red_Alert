@@ -526,10 +526,6 @@ int DynamicVectorClass<T>::Delete(const T& object) {
 }
 
 // workaround for DynamicVectorClass<int>, nobody call this please
-template <>
-inline int DynamicVectorClass<int>::Delete(const int& /*object*/) {
-  return false;
-}
 //
 
 /***********************************************************************************************
