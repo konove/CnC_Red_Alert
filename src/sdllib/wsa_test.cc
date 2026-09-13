@@ -188,8 +188,11 @@ void ExpectOversizedFrameIsNotLoaded(int32_t buffer_size, WSAOpenType flags) {
 
   const auto guard_end = storage.begin() + kGuard;
   EXPECT_EQ(std::count(storage.begin(), guard_end, '\x5a'), kGuard);
-  // The system header and target frame occupy the first 256+ bytes.
-  EXPECT_EQ(std::count(guard_end, guard_end + 256, '\xee'), 0);
+  // The system header and target frame occupy the first 256+ bytes. The
+  // header holds heap pointers, any byte of which may happen to be 0xee, so
+  // look for a run of frame bytes rather than a single one.
+  EXPECT_EQ(std::search_n(guard_end, guard_end + 256, 8, '\xee'),
+            guard_end + 256);
   EXPECT_EQ(std::count(page.begin(), page.end(), '\xee'), 0);
 
   Close_Animation(handle);
