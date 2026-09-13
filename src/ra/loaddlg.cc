@@ -132,7 +132,7 @@ LoadOptionsClass::~LoadOptionsClass() {
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-int LoadOptionsClass::Process() {
+bool LoadOptionsClass::Process() {
   /*
   **	Dialog & button dimensions
   */
@@ -203,7 +203,7 @@ int LoadOptionsClass::Process() {
   int game_num = 0;                    // file number of game to load/save/etc
   char game_descr[kDescripMax] = {0};  // save-game description
   char fname[kMaxFname + kMaxExt];     // for generating filename to delete
-  int rc;                              // return code
+  bool rc;                             // return code
 
   /*
   **	Buttons

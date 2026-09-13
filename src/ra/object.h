@@ -168,10 +168,10 @@ class ObjectClass : public AbstractClass {
   ObjectClass& operator=(const ObjectClass&) = delete;
   ObjectClass(ObjectClass&&) = delete;
   ObjectClass& operator=(ObjectClass&&) = delete;
-  int operator<(const ObjectClass& object) const {
+  bool operator<(const ObjectClass& object) const {
     return Sort_Y() < object.Sort_Y();
   }
-  int operator>(const ObjectClass& object) const {
+  bool operator>(const ObjectClass& object) const {
     return Sort_Y() > object.Sort_Y();
   }
 

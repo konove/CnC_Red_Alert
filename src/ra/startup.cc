@@ -580,8 +580,8 @@ void Read_Setup_Options(RawFileClass* config_file) {
     char netbuf[512];
     memset(netbuf, 0, sizeof(netbuf));
     char* netptr = netbuf;
-    bool found =
-        ini.Get_String("Options", "DestNet", nullptr, netbuf, sizeof(netbuf));
+    bool found = ini.Get_String("Options", "DestNet", nullptr, netbuf,
+                                sizeof(netbuf)) != 0;
 
     if (found && netptr != nullptr && strlen(netbuf)) {
       NetNumType net;

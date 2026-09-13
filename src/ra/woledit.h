@@ -41,7 +41,7 @@ class WOLEditClass : public EditClass {
 
 
  protected:
-  int Action(unsigned flags, KeyNumType& key) override;  //	Override of base
+  bool Action(unsigned flags, KeyNumType& key) override;  //	Override of base
   void Draw_Text(const char* text) override;  //	Override of base
 };
 

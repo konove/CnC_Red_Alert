@@ -125,11 +125,11 @@ void Special_Dialog(bool simple) {
   GadgetClass* buttons = nullptr;
   static struct {
     int Description;
-    int Setting;
+    bool Setting;
     CheckBoxClass* Button;
   } _options[] = {
-      {TXT_THREE_POINT, 0, nullptr},
-      {TXT_SPEED_BUILD, 0, nullptr},
+      {TXT_THREE_POINT, false, nullptr},
+      {TXT_SPEED_BUILD, false, nullptr},
   };
 
   TextButtonClass ok(200, TXT_OK, kTpfButton, OPTION_X + 30,

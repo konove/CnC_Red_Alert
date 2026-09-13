@@ -62,7 +62,7 @@ EditClass::EditClass(const int id, char* text, const int max_len,
     }
   }
 
-  IsReadOnly = 0;
+  IsReadOnly = false;
 }
 
 EditClass::~EditClass() {
@@ -78,7 +78,7 @@ void EditClass::Set_Text(char* text, const int max_len) {
   Flag_To_Redraw();
 }
 
-int EditClass::Draw_Me(const bool forced) {
+bool EditClass::Draw_Me(const bool forced) {
   if (ControlClass::Draw_Me(forced)) {
     if (LogicPage == &SeenBuff) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
@@ -96,7 +96,7 @@ int EditClass::Draw_Me(const bool forced) {
   return false;
 }
 
-int EditClass::Action(unsigned flags, KeyNumType& key) {
+bool EditClass::Action(unsigned flags, KeyNumType& key) {
   if (IsReadOnly) {
     return false;
   }
@@ -209,14 +209,15 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
         break;
       }
 
-      if (EditFlags.uppercase && isalpha(ascii)) {
+      if (EditFlags.uppercase && isalpha(ascii) != 0) {
         ascii = static_cast<KeyASCIIType>(toupper(ascii));
       }
 
       // Reject characters not matching any enabled EditStyle category.
-      const bool accepted = (EditFlags.numeric && isdigit(ascii)) ||
-                            (EditFlags.alpha && isalpha(ascii)) ||
-                            (EditFlags.misc && !isalnum(ascii)) || ascii == ' ';
+      const bool accepted = (EditFlags.numeric && isdigit(ascii) != 0) ||
+                            (EditFlags.alpha && isalpha(ascii) != 0) ||
+                            (EditFlags.misc && isalnum(ascii) == 0) ||
+                            ascii == ' ';
       if (!accepted) {
         break;
       }

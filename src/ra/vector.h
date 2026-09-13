@@ -199,7 +199,7 @@ bool VectorClass<T>::Resize(base::ssize newsize, T* array) {
 
     Vector = newptr;
     VectorMax = newsize;
-    IsAllocated = Vector && !array;
+    IsAllocated = Vector != nullptr && array == nullptr;
     return true;
   }
   // Resize to 0 is a failure. Use Clear() to explicitly deallocate.

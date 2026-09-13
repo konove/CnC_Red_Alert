@@ -98,7 +98,7 @@ GaugeClass::GaugeClass(unsigned id, int x, int y, int w, int h)
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int GaugeClass::Set_Maximum(int value) {
+bool GaugeClass::Set_Maximum(int value) {
   if (value != MaxValue) {
     MaxValue = value;
     Flag_To_Redraw();
@@ -122,7 +122,7 @@ int GaugeClass::Set_Maximum(int value) {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int GaugeClass::Set_Value(int value) {
+bool GaugeClass::Set_Value(int value) {
   value = Bound(value, 0, MaxValue);
   if (value != CurValue) {
     CurValue = value;
@@ -208,7 +208,7 @@ int GaugeClass::Value_To_Pixel(int value) {
  *                                                                                             *
  * HISTORY:    01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int GaugeClass::Draw_Me(bool forced) {
+bool GaugeClass::Draw_Me(bool forced) {
   if (ControlClass::Draw_Me(forced)) {
     /*
     **	Hide the mouse
@@ -269,7 +269,7 @@ int GaugeClass::Draw_Me(bool forced) {
  *                                                                                             *
  * WARNINGS:   none * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int GaugeClass::Action(unsigned flags, KeyNumType& key) {
+bool GaugeClass::Action(unsigned flags, KeyNumType& key) {
   /*
   ** If there's no thumb on this gauge, it's a display-only device.
   */
@@ -402,7 +402,7 @@ TriColorGaugeClass::TriColorGaugeClass(unsigned id, int x, int y, int w, int h)
  *                                                                                             *
  * HISTORY:    01/16/1995 MML : Created. *
  *=============================================================================================*/
-int TriColorGaugeClass::Set_Red_Limit(int value) {
+bool TriColorGaugeClass::Set_Red_Limit(int value) {
   if (value >= 0 && value < MaxValue) {
     //		if (value > YellowLimit) {
     //			RedLimit = YellowLimit;
@@ -428,7 +428,7 @@ int TriColorGaugeClass::Set_Red_Limit(int value) {
  *                                                                                             *
  * HISTORY:    01/16/1995 MML : Created. *
  *=============================================================================================*/
-int TriColorGaugeClass::Set_Yellow_Limit(int value) {
+bool TriColorGaugeClass::Set_Yellow_Limit(int value) {
   if (value >= 0 && value < MaxValue) {
     //		if (value < RedLimit) {
     //			YellowLimit = RedLimit;
@@ -453,7 +453,7 @@ int TriColorGaugeClass::Set_Yellow_Limit(int value) {
  *                                                                                             *
  * HISTORY:    01/16/1995 MML : Created. *
  *=============================================================================================*/
-int TriColorGaugeClass::Draw_Me(bool forced) {
+bool TriColorGaugeClass::Draw_Me(bool forced) {
   // The tri-colour body below replaces GaugeClass's single-colour one, so this
   // takes only the repaint-flag and peer handling from ControlClass.
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)

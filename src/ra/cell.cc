@@ -1512,7 +1512,7 @@ int CellClass::Reduce_Tiberium(int levels) {
  *information if wall was destroyed.                          * 10/06/1996 JLB :
  *Updates zone as necessary.                                               *
  *=============================================================================================*/
-int CellClass::Reduce_Wall(int damage) {
+bool CellClass::Reduce_Wall(int damage) {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   if (Overlay != OVERLAY_NONE) {

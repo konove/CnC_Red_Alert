@@ -169,7 +169,7 @@ int NullModemConnClass::Send(char* buf, int buflen, void* /*extrabuf*/,
   Error if we haven't been properly initialized
   ------------------------------------------------------------------------*/
   if (PortHandle == nullptr) {
-    return false;
+    return 0;
   }
 
 
@@ -195,7 +195,7 @@ int NullModemConnClass::Send(char* buf, int buflen, void* /*extrabuf*/,
   ------------------------------------------------------------------------*/
   SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf,
                                    sendlen);
-  return true;
+  return 1;
 
 } /* end of Send */
 

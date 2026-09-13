@@ -62,7 +62,7 @@ bool ConfirmationClass::Process(const char* string) {
   enum { NUM_OF_BUTTONS = 2 };
 
   char buffer[80 * 3];
-  int result = true;
+  bool result = true;
   int width;
   int bwidth, bheight;  // button width and height
   int height;

@@ -270,7 +270,7 @@ class EListClass : public ListClass {
   }
 
  protected:
-  void Draw_Entry(int index, int x, int y, int width, int selected) override;
+  void Draw_Entry(int index, int x, int y, int width, bool selected) override;
 };
 
 /***********************************************************************************************
@@ -294,7 +294,7 @@ class EListClass : public ListClass {
  *                                                                                             *
  * HISTORY: * 11/17/1995 JLB : Created. *
  *=============================================================================================*/
-void EListClass::Draw_Entry(int index, int x, int y, int width, int selected) {
+void EListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
   char buffer[128];
   RemapControlType* scheme = Get_Color_Scheme();
 

@@ -515,7 +515,7 @@ int32_t __cdecl Write_File(int handle, const void* buf, int32_t bytes) {
   return 0;
 }
 
-int __cdecl Find_File(const char* file_name) {
+bool __cdecl Find_File(const char* file_name) {
   CCFileClass file(file_name);
   return file.Is_Available();
 }

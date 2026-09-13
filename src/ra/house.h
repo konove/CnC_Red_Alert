@@ -802,7 +802,7 @@ class HouseClass {
   bool AI_Lower_Power(UrgencyType urgency) const;
 
   [[nodiscard]] bool Can_Make_Money() const {
-    return Available_Money() > 300 || BScan & kStructFlagRefinery;
+    return Available_Money() > 300 || (BScan & kStructFlagRefinery) != 0;
   }
 
   static void Init();

@@ -500,7 +500,7 @@ void HouseClass::Debug_Dump(MonoClass* mono) const {
 
     for (int index = 0; index < std::ssize(Scen.GlobalFlags); index++) {
       mono->Set_Cursor(1 + index, 15);
-      if (Scen.GlobalFlags[index] != 0) {
+      if (Scen.GlobalFlags[index]) {
         mono->Print("1");
       } else {
         mono->Print("0");
@@ -2369,7 +2369,7 @@ void HouseClass::Adjust_Threat(int region, int threat) {
       -kMapRegionWidth - 1, -kMapRegionWidth, -kMapRegionWidth + 1, -1, 0, 1,
       kMapRegionWidth - 1,  kMapRegionWidth,  kMapRegionWidth + 1};
   static int _thr[] = {2, 1, 2, 1, 0, 1, 2, 1, 2};
-  int neg;
+  bool neg;
   int* val = &_val[0];
   int* thr = &_thr[0];
 
@@ -2408,7 +2408,7 @@ void HouseClass::Adjust_Threat(int region, int threat) {
  *=============================================================================================*/
 ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
   CHECK_EQ(Houses.ID(this), ID);
-  int result = true;
+  bool result = true;
   FactoryClass* fptr;
   const TechnoTypeClass* tech = Fetch_Techno_Type(type, id);
 
@@ -3524,7 +3524,7 @@ void HouseClass::MPlayer_Defeated() {
   **	- Add my defeat message
   */
   if (PlayerPtr == this) {
-    Session.ObiWan = 1;
+    Session.ObiWan = true;
     Debug_Unshroud = true;
     HidPage.Clear();
     Map.Flag_To_Redraw(true);
@@ -4892,7 +4892,7 @@ bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
   CHECK_EQ(Houses.ID(this), ID);
 
   bool shuffle =
-      (Frame <= kTicksPerMinute || CurBuildings) && !Percent_Chance(33);
+      (Frame <= kTicksPerMinute || CurBuildings != 0) && !Percent_Chance(33);
   bool forced = CurBuildings == 0;
   int index;
   for (index = 0; index < Aircraft.Count(); index++) {

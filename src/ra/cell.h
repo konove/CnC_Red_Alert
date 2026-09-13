@@ -223,7 +223,7 @@ class CellClass {
   CellClass(CellClass&&) = delete;
   CellClass& operator=(CellClass&&) = delete;
 
-  int operator==(const CellClass& cell) const { return &cell == this; }
+  bool operator==(const CellClass& cell) const { return &cell == this; }
 
   /*
   **	Query functions.
@@ -264,7 +264,7 @@ class CellClass {
                                       bool ignorevehicles, int zone = -1,
                                       MZoneType check = MZONE_NORMAL) const;
   [[nodiscard]] bool Is_Spot_Free(int spot_index) const {
-    return !(Flag.Composite & 1 << spot_index);
+    return (Flag.Composite & 1 << spot_index) == 0;
   }
   [[nodiscard]] int Cell_Color(bool override = false) const;
   [[nodiscard]] int Clear_Icon() const;
@@ -305,7 +305,7 @@ class CellClass {
   void Concrete_Calc();
   void Recalc_Attributes();
   int Reduce_Tiberium(int levels);
-  int Reduce_Wall(int damage);
+  bool Reduce_Wall(int damage);
   void Incoming(COORDINATE threat = 0, bool forced = false,
                 bool nokidding = false);
   void Adjust_Threat(HousesType house, int threat_value);

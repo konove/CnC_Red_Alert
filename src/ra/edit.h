@@ -71,7 +71,7 @@ class EditClass : public ControlClass {
   EditClass& operator=(EditClass&&) = delete;
 
   void Set_Focus() override;
-  int Draw_Me(bool forced) override;
+  bool Draw_Me(bool forced) override;
 
   // Changes the text buffer and maximum length. Does not copy; |text| must
   // outlive this gadget.
@@ -79,7 +79,7 @@ class EditClass : public ControlClass {
   virtual char* Get_Text() { return String; }
   void Set_Color(RemapControlType* color) { Color = color; }
 
-  void Set_Read_Only(int rdonly) { IsReadOnly = rdonly; }
+  void Set_Read_Only(bool rdonly) { IsReadOnly = rdonly; }
   [[nodiscard]] int Get_Max_Length() const { return MaxLength; }
 
  protected:
@@ -95,7 +95,7 @@ class EditClass : public ControlClass {
   // Processes mouse and keyboard events. Sets focus on left-click; inserts
   // characters on keypress. Returns the gadget ID on RETURN, clears focus
   // on ESC.
-  int Action(unsigned flags, KeyNumType& key) override;
+  bool Action(unsigned flags, KeyNumType& key) override;
 
   // Draws the gadget background. Called with the mouse hidden.
   virtual void Draw_Background();
@@ -109,7 +109,7 @@ class EditClass : public ControlClass {
   virtual bool Handle_Key(KeyASCIIType ascii);
 
  private:
-  int IsReadOnly;
+  bool IsReadOnly = false;
 };
 
 #endif  // CNC_RED_ALERT_RA_EDIT_H_

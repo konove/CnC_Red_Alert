@@ -68,8 +68,8 @@ class FacingClass {
     ar(CurrentFacing, DesiredFacing);
   }
 
-  int Set_Desired(DirType facing);
-  int Set_Current(DirType facing);
+  bool Set_Desired(DirType facing);
+  bool Set_Current(DirType facing);
 
   void Set(DirType facing) {
     Set_Current(facing);
@@ -87,7 +87,7 @@ class FacingClass {
   [[nodiscard]] int Difference(DirType facing) const {
     return static_cast<signed char>((int)facing - (int)CurrentFacing);
   }
-  int Rotation_Adjust(int rate);
+  bool Rotation_Adjust(int rate);
 
  private:
   DirType CurrentFacing;

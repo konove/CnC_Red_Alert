@@ -103,7 +103,7 @@ class IPXConnClass : public ConnectionClass {
   connections at once (there's no way to turn listening on for only one
   connection; it's all or nothing).
   .....................................................................*/
-  static int Start_Listening();
+  static bool Start_Listening();
   static int Stop_Listening();
 
   /*.....................................................................
@@ -144,7 +144,7 @@ class IPXConnClass : public ConnectionClass {
   static void Close_Socket(uint16_t socket);
   static int Send_To(char* buf, int buflen, IPXAddressClass* address,
                      const NetNodeType immed);
-  static int Broadcast(char* buf, int buflen);
+  static bool Broadcast(char* buf, int buflen);
 
   /*.....................................................................
   The socket ID for this connection
@@ -197,7 +197,7 @@ class IPXConnClass : public ConnectionClass {
   /*.....................................................................
   This status flag tells us if the socket has been opened or not.
   .....................................................................*/
-  static int SocketOpen;
+  static bool SocketOpen;
 
   /*.....................................................................
   This status flag tells us if Start_Listening() has been called or not.

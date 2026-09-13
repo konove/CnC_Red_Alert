@@ -105,7 +105,7 @@ class GadgetClass : public LinkClass {
   } FlagEnum;
 
   GadgetClass(int x, int y, int w, int h, unsigned flags,
-              int sticky = false) noexcept;
+              bool sticky = false) noexcept;
   GadgetClass() noexcept = default;
   // Not copyable -- see LinkClass.
   GadgetClass(const GadgetClass&) = delete;
@@ -138,14 +138,14 @@ class GadgetClass : public LinkClass {
   virtual void Set_Focus();
   virtual void Clear_Focus();
   virtual bool Has_Focus();
-  virtual int Is_List_To_Redraw();
+  virtual bool Is_List_To_Redraw();
   virtual bool Is_To_Redraw() { return IsToRepaint; }
   virtual void Set_Position(int x, int y);
 
   /*
   **	General render function.
   */
-  virtual int Draw_Me(bool forced = false);
+  virtual bool Draw_Me(bool forced = false);
 
   /*
   ** Sets the current color scheme
@@ -180,7 +180,7 @@ class GadgetClass : public LinkClass {
   *mouse *	input indicates. This is the main method by which this button
   *performs a useful *	function.
   */
-  virtual int Action(unsigned flags, KeyNumType& key);
+  virtual bool Action(unsigned flags, KeyNumType& key);
 
   /*
   **	This is a record of the last list passed to the Input() function. If a
@@ -246,7 +246,7 @@ class GadgetClass : public LinkClass {
   static RemapControlType* ColorScheme;
 
  private:
-  virtual int Clicked_On(KeyNumType& key, unsigned flags, int x, int y);
+  virtual bool Clicked_On(KeyNumType& key, unsigned flags, int x, int y);
 };
 
 #endif  // CNC_RED_ALERT_RA_GADGET_H_

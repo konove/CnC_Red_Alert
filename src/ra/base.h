@@ -54,9 +54,9 @@ class BaseNodeClass {
  public:
   BaseNodeClass() = default;
   BaseNodeClass(StructType building, CELL cell) : Type(building), Cell(cell) {}
-  int operator==(const BaseNodeClass& node);
-  int operator!=(const BaseNodeClass& node);
-  int operator>(const BaseNodeClass& node);
+  bool operator==(const BaseNodeClass& node);
+  bool operator!=(const BaseNodeClass& node);
+  bool operator>(const BaseNodeClass& node);
 
   StructType Type = STRUCT_NONE;
   CELL Cell = 0;

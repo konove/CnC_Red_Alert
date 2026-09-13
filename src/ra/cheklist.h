@@ -88,7 +88,7 @@ class CheckListClass : public ListClass {
   void Check_Item(int index, bool checked);  // sets checked state of item
   [[nodiscard]] bool Is_Checked(int index) const;  // gets checked state of item
 
-  void Set_Read_Only(int rdonly) { IsReadOnly = rdonly; }
+  void Set_Read_Only(bool rdonly) { IsReadOnly = rdonly; }
 
   /*
   **	This defines the ASCII value of the checkmark character & non-checkmark
@@ -100,8 +100,8 @@ class CheckListClass : public ListClass {
   } CheckListClassEnum;
 
  protected:
-  int Action(unsigned flags, KeyNumType& key) override;
-  void Draw_Entry(int index, int x, int y, int width, int selected) override;
+  bool Action(unsigned flags, KeyNumType& key) override;
+  void Draw_Entry(int index, int x, int y, int width, bool selected) override;
 
  private:
   bool IsReadOnly{false};

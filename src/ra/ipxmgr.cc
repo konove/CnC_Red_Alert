@@ -369,7 +369,7 @@ int IPXManagerClass::Init() {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Is_IPX() { return IPXStatus; } /* end of Is_IPX */
+bool IPXManagerClass::Is_IPX() { return IPXStatus; } /* end of Is_IPX */
 
 /***************************************************************************
  * IPXManagerClass::Set_Timing -- sets timing for all connections

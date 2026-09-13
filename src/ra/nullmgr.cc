@@ -331,14 +331,14 @@ int NullModemClass::Init(int port, int /*irq*/, char* dev_name, int baud,
                                             stopbits, flowcontrol);
   if (PortHandle == nullptr) {
     Shutdown();
-    return false;
+    return 0;
   }
 
   Connection->Init(PortHandle);
 
   NumConnections = 1;
 
-  return true;
+  return 1;
 }
 
 /***********************************************************************************************
@@ -369,7 +369,7 @@ int NullModemClass::Num_Connections() { return NumConnections; }
  *                                                                                             *
  * HISTORY: * 8/2/96 11:44AM ST : Documented / Win32 support *
  *=============================================================================================*/
-int NullModemClass::Delete_Connection() {
+bool NullModemClass::Delete_Connection() {
   if (Connection) {
     delete Connection;
     Connection = nullptr;
@@ -408,7 +408,7 @@ int NullModemClass::Delete_Connection() {
  *                                                                                             *
  * HISTORY: * 8/2/96 11:46AM ST : Documented / Win32 support *
  *=============================================================================================*/
-int NullModemClass::Init_Send_Queue() {
+bool NullModemClass::Init_Send_Queue() {
   /*------------------------------------------------------------------------
   Init the send queue
   ------------------------------------------------------------------------*/
@@ -517,7 +517,7 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
   ** Open the com port
   */
   HANDLE porthandle = SerialPort->Serial_Port_Open(
-      device, baud, 0, 8, 1, settings->HardwareFlowControl);
+      device, baud, 0, 8, 1, settings->HardwareFlowControl ? 1 : 0);
 
   if (porthandle == nullptr) {
     return PORT_INVALID;
@@ -630,7 +630,7 @@ int NullModemClass::Send_Message(void* buf, int buflen, int ack_req) {
   int rc;
 
   if (NumConnections == 0) {
-    return false;
+    return 0;
   }
 
   rc = Connection->Send_Packet(buf, buflen, ack_req);
@@ -664,7 +664,7 @@ int NullModemClass::Send_Message(void* buf, int buflen, int ack_req) {
  *=========================================================================*/
 int NullModemClass::Get_Message(void* buf, int* buflen) {
   if (NumConnections == 0) {
-    return false;
+    return 0;
   }
   return Connection->Get_Packet(buf, buflen);
 }
@@ -698,7 +698,7 @@ int NullModemClass::Service() {
   char moredata = 0;
 
   if (NumConnections == 0) {
-    return false;
+    return 0;
   }
 
   RXCount += WinModemClass::Read_From_Serial_Port(
@@ -1162,7 +1162,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   status = Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 2);
 
   if (status < ASSUCCESS) {
-    return false;
+    return 0;
   }
 
   /*
@@ -1184,7 +1184,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
 
       if (status < ASSUCCESS) {
         if (WWMessageBox().Process(TXT_ERROR_NO_INIT, TXT_IGNORE, TXT_CANCEL)) {
-          return false;
+          return 0;
         }
         error_count++;
         break;
@@ -1221,7 +1221,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
     int flowTimeout = settings->HardwareFlowControl ? 300 : DEFAULT_TIMEOUT;
 
     if (!sendInitCommand(flowCmd, TXT_NO_FLOW_CONTROL_RESPONSE, flowTimeout)) {
-      return false;
+      return 0;
     }
 
     // 2. Compression
@@ -1230,7 +1230,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
                               : ModemRegistry->Get_Modem_Compression_Disable();
 
     if (!sendInitCommand(compCmd, TXT_NO_COMPRESSION_RESPONSE)) {
-      return false;
+      return 0;
     }
 
     // 3. Error Correction
@@ -1240,7 +1240,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
             : ModemRegistry->Get_Modem_Error_Correction_Disable();
 
     if (!sendInitCommand(errCmd, TXT_NO_ERROR_CORRECTION_RESPONSE)) {
-      return false;
+      return 0;
     }
   }
 
@@ -1251,7 +1251,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
                               INIT_COMMAND_RETRIES);
   if (status != MODEM_CMD_OK) {
     if (WWMessageBox().Process(TXT_ERROR_NO_DISABLE, TXT_IGNORE, TXT_CANCEL)) {
-      return false;
+      return 0;
     }
     error_count++;
   }
@@ -1261,10 +1261,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   */
   if (error_count >= 3) {
     WWMessageBox().Process(TXT_ERROR_TOO_MANY, TXT_OK);
-    return false;
+    return 0;
   }
 
-  return true;
+  return 1;
 }
 
 /***************************************************************************

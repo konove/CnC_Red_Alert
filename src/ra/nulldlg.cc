@@ -195,10 +195,10 @@ static SerialSettingsType* DialSettings;
  *   04/29/1995 BRR : Created.                                             *
  *   8/2/96      ST : Win32 support added                                  *
  *=========================================================================*/
-int Init_Null_Modem(SerialSettingsType* settings) {
+bool Init_Null_Modem(SerialSettingsType* settings) {
   return NullModem.Init(settings->Port, settings->IRQ, settings->ModemName,
                         settings->Baud, 0, 8, 1,
-                        settings->HardwareFlowControl) != 0;
+                        settings->HardwareFlowControl ? 1 : 0) != 0;
 }
 
 /***************************************************************************
@@ -568,7 +568,7 @@ int Reconnect_Modem() {
       if (modemstatus & CD_SET) {
         status = Reconnect_Null_Modem();
       } else {
-        status = Dial_Modem(DialSettings, true);
+        status = Dial_Modem(DialSettings, true) ? 1 : 0;
       }
       break;
 
@@ -577,7 +577,7 @@ int Reconnect_Modem() {
       if (modemstatus & CD_SET) {
         status = Reconnect_Null_Modem();
       } else {
-        status = Answer_Modem(DialSettings, true);
+        status = Answer_Modem(DialSettings, true) ? 1 : 0;
       }
       break;
     default:
@@ -714,7 +714,7 @@ static int Reconnect_Null_Modem() {
     switch (static_cast<int>(input)) {
       case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
-        retval = false;
+        retval = 0;
         process = false;
         break;
 
@@ -748,7 +748,7 @@ static int Reconnect_Null_Modem() {
 
         if (ReceivePacket.ID == Session.ColorIdx) {
           WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
-          retval = false;
+          retval = 0;
           break;
         }
 
@@ -764,7 +764,7 @@ static int Reconnect_Null_Modem() {
         while (TickCount.Value() - starttime < 60) {
           NullModem.Service();
         }
-        retval = true;
+        retval = 1;
         process = false;
       }
     }
@@ -773,7 +773,7 @@ static int Reconnect_Null_Modem() {
     // timeout if we do not get any packets
     //
     if (TickCount.Value() - lastmsgtime > PACKET_CANCEL_TIMEOUT) {
-      retval = false;
+      retval = 0;
       process = false;
     }
 
@@ -1542,7 +1542,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
     */
     switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_COMPRESSION):
-        settings->Compression = settings->Compression ^ 1;
+        settings->Compression = !settings->Compression;
         port::SafeCopy(compress_text, settings->Compression
                                           ? Text_String(TXT_ON)
                                           : Text_String(TXT_OFF));
@@ -1550,7 +1550,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
         break;
 
       case ButtonKey(BUTTON_ERROR_CORRECTION):
-        settings->ErrorCorrection = settings->ErrorCorrection ^ 1;
+        settings->ErrorCorrection = !settings->ErrorCorrection;
         port::SafeCopy(correction_text, settings->ErrorCorrection
                                             ? Text_String(TXT_ON)
                                             : Text_String(TXT_OFF));
@@ -1558,7 +1558,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
         break;
 
       case ButtonKey(BUTTON_HARDWARE_FLOW_CONTROL):
-        settings->HardwareFlowControl = settings->HardwareFlowControl ^ 1;
+        settings->HardwareFlowControl = !settings->HardwareFlowControl;
         port::SafeCopy(flowcontrol_text, settings->HardwareFlowControl
                                              ? Text_String(TXT_ON)
                                              : Text_String(TXT_OFF));
@@ -2457,7 +2457,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
         if (dpstatus == PORT_VALID) {
           process = false;
-          rc = true;
+          rc = 1;
 
         } else if (dpstatus == PORT_INVALID) {
           WWMessageBox().Process(TXT_UNABLE_TO_OPEN_PORT);
@@ -2477,7 +2477,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         process = false;
-        rc = false;
+        rc = 0;
         break;
       default:
         break;
@@ -2782,7 +2782,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   bool changed = false;  // 1 = user has changed an option
 
   int rc = 0;
-  int recsignedoff = false;
+  bool recsignedoff = false;
   int i;
   uint32_t version;
   int64_t starttime;
@@ -2977,7 +2977,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   playerlist.Set_Selected_Style(ColorListClass::SELECT_NORMAL);
 
   optionlist.Set_Tabs(optiontabs);
-  optionlist.Set_Read_Only(0);
+  optionlist.Set_Read_Only(false);
 
   optionlist.Add_Item(Text_String(TXT_BASES));
   optionlist.Add_Item(Text_String(TXT_ORE_SPREADS));
@@ -2987,9 +2987,9 @@ int Com_Scenario_Dialog(bool skirmish) {
     optionlist.Add_Item(Text_String(TXT_CAPTURE_THE_FLAG));
   }
 
-  optionlist.Check_Item(0, Session.Options.Bases);
-  optionlist.Check_Item(1, Session.Options.Tiberium);
-  optionlist.Check_Item(2, Session.Options.Goodies);
+  optionlist.Check_Item(0, Session.Options.Bases != 0);
+  optionlist.Check_Item(1, Session.Options.Tiberium != 0);
+  optionlist.Check_Item(2, Session.Options.Goodies != 0);
   optionlist.Check_Item(3, Special.IsShadowGrow);
   if (!skirmish) {
     optionlist.Check_Item(4, Special.IsCaptureTheFlag);
@@ -3021,10 +3021,8 @@ int Com_Scenario_Dialog(bool skirmish) {
   /*........................................................................
   Init other scenario parameters
   ........................................................................*/
-  Special.IsTGrowth =      // Session.Options.Tiberium;
-      Rule.IsTGrowth =     // Session.Options.Tiberium;
-      Special.IsTSpread =  // Session.Options.Tiberium;
-      Rule.IsTSpread = Session.Options.Tiberium;
+  Rule.IsTGrowth = Rule.IsTSpread = Session.Options.Tiberium != 0;
+  Special.IsTGrowth = Special.IsTSpread = Rule.IsTGrowth ? 1 : 0;
   transmit = true;
 
   /*........................................................................
@@ -3538,12 +3536,12 @@ int Com_Scenario_Dialog(bool skirmish) {
         //------------------------------------------------------------------
         case ButtonKey(BUTTON_OPTIONS):
           if (!skirmish &&
-              Special.IsCaptureTheFlag != optionlist.Is_Checked(4) &&
+              (Special.IsCaptureTheFlag != 0) != optionlist.Is_Checked(4) &&
               !Special.IsCaptureTheFlag) {
             optionlist.Check_Item(0, true);
           }
-          if (Session.Options.Bases != optionlist.Is_Checked(0)) {
-            Session.Options.Bases = optionlist.Is_Checked(0);
+          if ((Session.Options.Bases != 0) != optionlist.Is_Checked(0)) {
+            Session.Options.Bases = optionlist.Is_Checked(0) ? 1 : 0;
             if (Session.Options.Bases) {
               Session.Options.UnitCount = static_cast<int>(Rescale(
                 static_cast<uint32_t>(Session.Options.UnitCount - SessionClass::CountMin[0]),
@@ -3564,13 +3562,13 @@ int Com_Scenario_Dialog(bool skirmish) {
             countgauge.Set_Value(Session.Options.UnitCount -
                                  SessionClass::CountMin[Session.Options.Bases]);
           }
-          Session.Options.Tiberium = optionlist.Is_Checked(1);
+          Session.Options.Tiberium = optionlist.Is_Checked(1) ? 1 : 0;
           Special.IsTGrowth = static_cast<unsigned>(Session.Options.Tiberium);
-          Rule.IsTGrowth = Session.Options.Tiberium;
+          Rule.IsTGrowth = Session.Options.Tiberium != 0;
           Special.IsTSpread = static_cast<unsigned>(Session.Options.Tiberium);
-          Rule.IsTSpread = Session.Options.Tiberium;
+          Rule.IsTSpread = Session.Options.Tiberium != 0;
 
-          Session.Options.Goodies = optionlist.Is_Checked(2);
+          Session.Options.Goodies = optionlist.Is_Checked(2) ? 1 : 0;
           Special.IsShadowGrow = optionlist.Is_Checked(3);
           if (!skirmish) {
             Special.IsCaptureTheFlag = optionlist.Is_Checked(4);
@@ -3597,7 +3595,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           // make sure we got a game options packet from the other player
           //
           if (gameoptions) {
-            rc = true;
+            rc = 1;
             process = false;
 
             // force transmitting of game options packet one last time
@@ -3623,7 +3621,7 @@ int Com_Scenario_Dialog(bool skirmish) {
             display = REDRAW_BACKGROUND;
           }
           process = false;
-          rc = false;
+          rc = 0;
           break;
 
         /*------------------------------------------------------------------
@@ -3831,7 +3829,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           lastmsgtime = TickCount.Value();
 
           process = false;
-          rc = false;
+          rc = 0;
 
           // say we did receive sign off to keep from sending one
           recsignedoff = true;
@@ -3862,7 +3860,7 @@ int Com_Scenario_Dialog(bool skirmish) {
               lastmsgtime = TickCount.Value();
 
               process = false;
-              rc = false;
+              rc = 0;
               recsignedoff = true;
               break;
 
@@ -3899,7 +3897,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                 lastmsgtime = TickCount.Value();
 
                 process = false;
-                rc = false;
+                rc = 0;
               } else if (version == 0xffffffff) {
                 // ........................................................
                 // If the greatest-common-version comes back 0xffffffff,
@@ -3911,7 +3909,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                 lastmsgtime = TickCount.Value();
 
                 process = false;
-                rc = false;
+                rc = 0;
               } else {
                 if (ReceivePacket.ScenarioInfo.CheatCheck !=
                     RuleINI.Get_Unique_ID()) {
@@ -3921,7 +3919,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                   lastmsgtime = TickCount.Value();
 
                   process = false;
-                  rc = false;
+                  rc = 0;
 
                 } else {
                   // ........................................................
@@ -4050,7 +4048,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       if (!skirmish && TickCount.Value() - lastmsgtime > msg_timeout) {
         WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
         process = false;
-        rc = false;
+        rc = 0;
 
         // say we did receive sign off to keep from sending one
         recsignedoff = true;
@@ -4331,7 +4329,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   if (load_game && !skirmish) {
     if (!Load_Game(-1)) {
       WWMessageBox().Process(TXT_ERROR_LOADING_GAME);
-      rc = false;
+      rc = 0;
     }
     Frame++;
   }
@@ -4762,7 +4760,7 @@ int Com_Show_Scenario_Dialog() {
   playerlist.Set_Selected_Style(ColorListClass::SELECT_NORMAL);
 
   optionlist.Set_Tabs(optiontabs);
-  optionlist.Set_Read_Only(1);
+  optionlist.Set_Read_Only(true);
 
   optionlist.Add_Item(Text_String(TXT_BASES));
   optionlist.Add_Item(Text_String(TXT_ORE_SPREADS));
@@ -4770,9 +4768,9 @@ int Com_Show_Scenario_Dialog() {
   optionlist.Add_Item(Text_String(TXT_CAPTURE_THE_FLAG));
   optionlist.Add_Item(Text_String(TXT_SHADOW_REGROWS));
 
-  optionlist.Check_Item(0, Session.Options.Bases);
-  optionlist.Check_Item(1, Session.Options.Tiberium);
-  optionlist.Check_Item(2, Session.Options.Goodies);
+  optionlist.Check_Item(0, Session.Options.Bases != 0);
+  optionlist.Check_Item(1, Session.Options.Tiberium != 0);
+  optionlist.Check_Item(2, Session.Options.Goodies != 0);
   optionlist.Check_Item(3, Special.IsCaptureTheFlag);
   optionlist.Check_Item(4, Special.IsShadowGrow);
 
@@ -4797,21 +4795,21 @@ int Com_Show_Scenario_Dialog() {
   //........................................................................
   // Option gauges
   //........................................................................
-  countgauge.Use_Thumb(0);
+  countgauge.Use_Thumb(false);
   countgauge.Set_Maximum(SessionClass::CountMax[Session.Options.Bases] -
                          SessionClass::CountMin[Session.Options.Bases]);
   countgauge.Set_Value(Session.Options.UnitCount -
                        SessionClass::CountMin[Session.Options.Bases]);
 
-  levelgauge.Use_Thumb(0);
+  levelgauge.Use_Thumb(false);
   levelgauge.Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
   levelgauge.Set_Value(BuildLevel - 1);
 
-  creditsgauge.Use_Thumb(0);
+  creditsgauge.Use_Thumb(false);
   creditsgauge.Set_Maximum(Rule.MPMaxMoney);
   creditsgauge.Set_Value(Session.Options.Credits);
 
-  aiplayersgauge.Use_Thumb(0);
+  aiplayersgauge.Use_Thumb(false);
   aiplayersgauge.Set_Maximum(Rule.MaxPlayers - 2);
   aiplayersgauge.Set_Value(Session.Options.AIPlayers);
 
@@ -5216,7 +5214,7 @@ int Com_Show_Scenario_Dialog() {
       case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         process = false;
-        rc = false;
+        rc = 0;
         break;
 
       /*------------------------------------------------------------------
@@ -5370,10 +5368,10 @@ int Com_Show_Scenario_Dialog() {
         WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
 
         // to skip the other system not responding msg
-        rc = false;
+        rc = 0;
 
         // say we did receive sign off to keep from sending one
-        recsignedoff = true;
+        recsignedoff = 1;
         break;
       }
 
@@ -5403,8 +5401,8 @@ int Com_Show_Scenario_Dialog() {
             lastmsgtime = TickCount.Value();
 
             process = false;
-            rc = false;
-            recsignedoff = true;
+            rc = 0;
+            recsignedoff = 1;
             break;
 
           /*..................................................................
@@ -5486,9 +5484,9 @@ int Com_Show_Scenario_Dialog() {
             //.........................................................
             // Update the options list box
             //.........................................................
-            optionlist.Check_Item(0, Session.Options.Bases);
-            optionlist.Check_Item(1, Session.Options.Tiberium);
-            optionlist.Check_Item(2, Session.Options.Goodies);
+            optionlist.Check_Item(0, Session.Options.Bases != 0);
+            optionlist.Check_Item(1, Session.Options.Tiberium != 0);
+            optionlist.Check_Item(2, Session.Options.Goodies != 0);
             optionlist.Check_Item(3, Special.IsCaptureTheFlag);
             optionlist.Check_Item(4, Special.IsShadowGrow);
             optionlist.Flag_To_Redraw();
@@ -5534,7 +5532,7 @@ int Com_Show_Scenario_Dialog() {
               lastmsgtime = TickCount.Value();
 
               process = false;
-              rc = false;
+              rc = 0;
             } else if (version == 0xffffffff) {
               // ........................................................
               // If the greatest-common-version comes back 0xffffffff,
@@ -5546,7 +5544,7 @@ int Com_Show_Scenario_Dialog() {
               lastmsgtime = TickCount.Value();
 
               process = false;
-              rc = false;
+              rc = 0;
             }
             // ........................................................
             // Otherwise, 'version' is the highest version we have in
@@ -5561,7 +5559,7 @@ int Com_Show_Scenario_Dialog() {
                 lastmsgtime = TickCount.Value();
 
                 process = false;
-                rc = false;
+                rc = 0;
               } else {
                 Session.CommProtocol = VersionClass::Version_Protocol(version);
               }
@@ -5770,7 +5768,7 @@ int Com_Show_Scenario_Dialog() {
                 if (!Get_Scenario_File_From_Host(
                         Session.ScenarioFileName,
                         sizeof(Session.ScenarioFileName), 0)) {
-                  rc = false;
+                  rc = 0;
                   break;
                 }
                 /*
@@ -5815,7 +5813,7 @@ int Com_Show_Scenario_Dialog() {
             }
 
             process = false;
-            rc = true;
+            rc = 1;
             if (ReceivePacket.Command == SERIAL_LOADGAME) {
               load_game = true;
             }
@@ -5871,10 +5869,10 @@ int Com_Show_Scenario_Dialog() {
     if (TickCount.Value() - lastmsgtime > msg_timeout) {
       WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
       process = false;
-      rc = false;
+      rc = 0;
 
       // say we did receive sign off to keep from sending one
-      recsignedoff = true;
+      recsignedoff = 1;
     }
 
     /*---------------------------------------------------------------------
@@ -6011,7 +6009,7 @@ int Com_Show_Scenario_Dialog() {
   if (load_game) {
     if (!Load_Game(-1)) {
       WWMessageBox().Process(TXT_ERROR_LOADING_GAME);
-      rc = false;
+      rc = 0;
     }
     Frame++;
   }
@@ -6436,7 +6434,7 @@ static int Phone_Dialog() {
         }
 
         process = false;
-        rc = true;
+        rc = 1;
         break;
 
       /*------------------------------------------------------------------
@@ -6445,7 +6443,7 @@ static int Phone_Dialog() {
       case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         process = false;
-        rc = false;
+        rc = 0;
         break;
       default:
         break;
@@ -6842,7 +6840,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         process = false;
-        rc = false;
+        rc = 0;
         break;
 
       /*------------------------------------------------------------------
@@ -6851,7 +6849,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       case KN_RETURN:
       case ButtonKey(BUTTON_SAVE):
         process = false;
-        rc = true;
+        rc = 1;
         break;
       default:
         break;
@@ -6997,7 +6995,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     while (wait.Time()) {
       Call_Back();
     }
-    SoundOn = 0;
+    SoundOn = false;
   }
 
   dialstatus =
@@ -7169,7 +7167,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     while (wait.Time()) {
       Call_Back();
     }
-    SoundOn = 0;
+    SoundOn = false;
   }
 
   dialstatus = NullModem.Answer_Modem(reconnect);

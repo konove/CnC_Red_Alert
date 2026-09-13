@@ -401,7 +401,7 @@ void IconListClass::Remove_Item(int index) {
 #define ICONTEXTGAP 2
 
 void IconListClass::Draw_Entry(int index, int x, int y, int width,
-                               int selected) {
+                               bool selected) {
   IconList_ItemExtras* pExtras = ExtrasList[index];
 
   int xText = x;
@@ -527,7 +527,7 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
 }
 
 //***********************************************************************************************
-int IconListClass::Action(unsigned flags, KeyNumType& key) {
+bool IconListClass::Action(unsigned flags, KeyNumType& key) {
   //	Overriding of function is for the sake of MultiSelecting only.
   if ((iSelectType == 2) && (!(flags & LEFTRELEASE)) && (!(flags & KEYBOARD))) {
     int index = Get_Mouse_Y() - (Y + 1);

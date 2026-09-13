@@ -113,7 +113,7 @@ class MapClass : public GScreenClass {
   /*
   ** Debug routine
   */
-  int Validate();
+  bool Validate();
 
   /*
   **	This is the dimensions and position of the sub section of the global

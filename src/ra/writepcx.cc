@@ -171,7 +171,7 @@ int Write_PCX_File(FileClass& file, GraphicBufferClass& pic,
   if (open) {
     file.Close();
   }
-  return false;
+  return 0;
 }
 
 /***********************************************************************************************

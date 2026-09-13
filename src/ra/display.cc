@@ -729,7 +729,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
       //			cell = ZoneCell + ZoneOffset + *ptr++;
 
       if (!In_Radar(cell)) {
-        retval = false;
+        retval = 0;
         noradar = true;
         break;
       }
@@ -754,7 +754,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
              ((*this)[newcell].Smudge != SMUDGE_NONE &&
               SmudgeTypeClass::As_Reference((*this)[newcell].Smudge).IsBib)) &&
             ((*this)[newcell].Owner == house)) {
-          retval = true;
+          retval = 1;
           break;
         }
 
@@ -762,7 +762,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
         if (base != nullptr && base->What_Am_I() == RTTI_BUILDING &&
             base->House->Class->House == house &&
             dynamic_cast<BuildingClass*>(base)->Class->IsBase) {
-          retval = true;
+          retval = 1;
           break;
         }
 
@@ -787,7 +787,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
                 SmudgeTypeClass::As_Reference((*this)[newercell].Smudge)
                     .IsBib)) &&
               ((*this)[newercell].Owner == house)) {
-            retval = true;
+            retval = 1;
             break;
           }
 
@@ -797,7 +797,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
           if (newbase != nullptr && newbase->What_Am_I() == RTTI_BUILDING &&
               newbase->House->Class->House == house &&
               dynamic_cast<const BuildingClass*>(newbase)->Class->IsBase) {
-            retval = true;
+            retval = 1;
             break;
           }
         }
@@ -809,7 +809,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
   }
 
   if (retval == -1) {
-    retval = false;
+    retval = 0;
   }
 
   if (house == PlayerPtr->Class->House) {
@@ -833,7 +833,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
         centdist /= CELL_LEPTON_W;
         centdist -= (obj->Class->Width() + obj->Class->Height()) / 2;
         if (centdist <= building->Adjacent) {
-          retval = true;
+          retval = 1;
           break;
         }
       }
@@ -1248,9 +1248,9 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
            static_cast<int16_t>(Cell_To_Lepton(MapCellX));
   int yy = static_cast<int>((int16_t)Coord_Y(coord)) -
            static_cast<int16_t>(Cell_To_Lepton(MapCellY));
-  bool shifted =
-      Confine_Rect(&xx, &yy, TacLeptonWidth, TacLeptonHeight,
-                   Cell_To_Lepton(MapCellWidth), Cell_To_Lepton(MapCellHeight));
+  bool shifted = Confine_Rect(&xx, &yy, TacLeptonWidth, TacLeptonHeight,
+                              Cell_To_Lepton(MapCellWidth),
+                              Cell_To_Lepton(MapCellHeight)) != 0;
   if (xx < 0) {
     xx = 0;
     shifted = true;
@@ -2827,7 +2827,7 @@ void DisplayClass::Refresh_Band() {
  *                                                                                             *
  * HISTORY: * 02/17/1995 JLB : Created. *
  *=============================================================================================*/
-int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
+bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
   int x;
   int y;  // Sub cell pixel coordinates.
   bool shadow;
@@ -3805,7 +3805,8 @@ void DisplayClass::Set_Tactical_Position(COORDINATE coord) {
            static_cast<int>(Cell_To_Lepton(MapCellY));
 
   Confine_Rect(&xx, &yy, TacLeptonWidth, TacLeptonHeight,
-               Cell_To_Lepton(MapCellWidth), Cell_To_Lepton(MapCellHeight));
+               Cell_To_Lepton(MapCellWidth),
+               Cell_To_Lepton(MapCellHeight));
   coord = XY_Coord(static_cast<LEPTON>(xx + Cell_To_Lepton(MapCellX)),
                    static_cast<LEPTON>(yy + Cell_To_Lepton(MapCellY)));
 

@@ -88,7 +88,7 @@
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-int BaseNodeClass::operator==(const BaseNodeClass& node) {
+bool BaseNodeClass::operator==(const BaseNodeClass& node) {
   return Type == node.Type && Cell == node.Cell;
 }
 
@@ -103,7 +103,7 @@ int BaseNodeClass::operator==(const BaseNodeClass& node) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-int BaseNodeClass::operator!=(const BaseNodeClass& node) {
+bool BaseNodeClass::operator!=(const BaseNodeClass& node) {
   return !(*this == node);
 }
 
@@ -118,7 +118,7 @@ int BaseNodeClass::operator!=(const BaseNodeClass& node) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-int BaseNodeClass::operator>(const BaseNodeClass& /*unused*/) { return true; }
+bool BaseNodeClass::operator>(const BaseNodeClass& /*unused*/) { return true; }
 
 /***********************************************************************************************
  * BaseClass::Is_Built -- Tells if given item in the list has been built yet *

@@ -5010,13 +5010,13 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
       bool sellable = false;
       char* token_pointer = strtok(nullptr, ",");
       if (token_pointer) {
-        sellable = tech::ParseInteger<int>(token_pointer).value_or(0);
+        sellable = tech::ParseInteger<int>(token_pointer).value_or(0) != 0;
       }
 
       bool rebuild = false;
       token_pointer = strtok(nullptr, ",");
       if (token_pointer) {
-        rebuild = tech::ParseInteger<int>(token_pointer).value_or(0);
+        rebuild = tech::ParseInteger<int>(token_pointer).value_or(0) != 0;
       }
 
       b = new BuildingClass(classid, bhouse);

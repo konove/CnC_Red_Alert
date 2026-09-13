@@ -28,7 +28,7 @@
 #include "sdllib/ww_mouse.h"
 
 //***********************************************************************************************
-int BigCheckBoxClass::Draw_Me(bool forced) {
+bool BigCheckBoxClass::Draw_Me(bool forced) {
   if (ToggleClass::Draw_Me(forced)) {
     Hide_Mouse();
 
@@ -73,7 +73,7 @@ int BigCheckBoxClass::Draw_Me(bool forced) {
 }
 
 //***********************************************************************************************
-int BigCheckBoxClass::Action(unsigned flags, KeyNumType& key) {
+bool BigCheckBoxClass::Action(unsigned flags, KeyNumType& key) {
   /*	if( flags & LEFTPRESS )
           {
                   if (IsOn) {

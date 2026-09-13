@@ -77,7 +77,7 @@ class LoadOptionsClass {
   LoadOptionsClass& operator=(const LoadOptionsClass&) = delete;
   LoadOptionsClass(LoadOptionsClass&&) = delete;
   LoadOptionsClass& operator=(LoadOptionsClass&&) = delete;
-  int Process();
+  bool Process();
 
  protected:
   /*

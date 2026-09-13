@@ -143,7 +143,7 @@ void OptionsClass::One_Time() { Set_Score_Vol(ScoreVolume * 256); }
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::Set_Shuffle(int on) { IsScoreShuffle = on != 0; }
+void OptionsClass::Set_Shuffle(bool on) { IsScoreShuffle = on; }
 
 /***********************************************************************************************
  * OptionsClass::Set_Repeat -- Controls the score repeat option. *
@@ -159,7 +159,7 @@ void OptionsClass::Set_Shuffle(int on) { IsScoreShuffle = on != 0; }
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::Set_Repeat(int on) { IsScoreRepeat = on != 0; }
+void OptionsClass::Set_Repeat(bool on) { IsScoreRepeat = on; }
 
 /***********************************************************************************************
  * OptionsClass::Set_Score_Volume -- Sets the global score volume to that

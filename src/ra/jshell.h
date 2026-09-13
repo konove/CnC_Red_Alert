@@ -150,8 +150,9 @@ inline void Set_Bit(void* array, int bit, int value) {
   }
 }
 
-inline int Get_Bit(const void* array, int bit) {
-  return !!(((const uint32_t*)array)[(unsigned)bit >> 5] & 1 << (bit & 0x1F));
+inline bool Get_Bit(const void* array, int bit) {
+  return (((const uint32_t*)array)[(unsigned)bit >> 5] & 1 << (bit & 0x1F)) !=
+         0;
 }
 
 inline int First_True_Bit(const void* array) {

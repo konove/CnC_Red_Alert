@@ -116,7 +116,7 @@ class SidebarClass : public PowerClass {
       int Index{0};
 
      protected:
-      int Action(unsigned flags, KeyNumType& key) override;
+      bool Action(unsigned flags, KeyNumType& key) override;
     };
 
    public:
@@ -324,7 +324,7 @@ class SidebarClass : public PowerClass {
                       (kSideHeight - 1) * 2, LEFTUP) {}
 
    protected:
-    int Action(unsigned flags, KeyNumType& key) override;
+    bool Action(unsigned flags, KeyNumType& key) override;
   };
 
   /*

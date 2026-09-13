@@ -6430,9 +6430,9 @@ bool TechnoTypeClass::Read_INI(CCINIClass& ini) {
   return false;
 }
 
-int TechnoTypeClass::Legal_Placement(CELL pos) const {
+bool TechnoTypeClass::Legal_Placement(CELL pos) const {
   if (pos == -1) {
-    return 0;
+    return false;
   }
 
   /*
@@ -6450,13 +6450,13 @@ int TechnoTypeClass::Legal_Placement(CELL pos) const {
     }
     if (build) {
       if (!Map[cell].Is_Clear_To_Build(Speed)) {
-        return 0;
+        return false;
       }
     } else {
       if (!Map[cell].Is_Clear_To_Move(Speed, false, false)) {
-        return 0;
+        return false;
       }
     }
   }
-  return 1;
+  return true;
 }

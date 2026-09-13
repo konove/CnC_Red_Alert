@@ -349,7 +349,7 @@ extern SpecialDialogType SpecialDialog;
 
 extern int RequiredCD;
 extern int CurrentCD;
-extern int MouseInstalled;
+extern bool MouseInstalled;
 
 extern int LogLevel;
 extern int64_t LogLevelTime[kMaxLogLevel];

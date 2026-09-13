@@ -675,8 +675,8 @@ HRESULT WolapiObject::AttemptLogin(const char* szName, const char* szPass,
   pChatSink->bRequestConnectionWait = true;
   pChatSink->hresRequestConnectionError = 0;
 
-  if (!SUCCEEDED(
-          pChat->RequestConnection(pChatSink->pServer, 15, !bPassIsMangled))) {
+  if (!SUCCEEDED(pChat->RequestConnection(pChatSink->pServer, 15,
+                                          bPassIsMangled ? 0 : 1))) {
     //		debugprint( "RequestConnection call failed\n" );
     return CHAT_E_CON_ERROR;
   }
@@ -773,7 +773,7 @@ bool WolapiObject::UpdateChannels(int iChannelType, CHANNELFILTER ChannelFilter,
 
   //	debugprint( "RequestChannelList(), iChannelType = %i, filter = %i\n",
   // iChannelType, ChannelFilter );
-  if (!SUCCEEDED(pChat->RequestChannelList(iChannelType, bAutoping))) {
+  if (!SUCCEEDED(pChat->RequestChannelList(iChannelType, bAutoping ? 1 : 0))) {
     //		debugprint( "RequestChannelList() call failed\n" );
     return false;
   }
@@ -1910,7 +1910,7 @@ bool WolapiObject::Ban(User* pUserToKick) {
   //	Returns false if something terrible happens.
   //	debugprint( "RequestChannelBan()\n" );
   //		debugprint( "RequestChannelBan() call failed\n" ) on failure.
-  return SUCCEEDED(pChat->RequestChannelBan((char*)pUserToKick->name, true));
+  return SUCCEEDED(pChat->RequestChannelBan((char*)pUserToKick->name, 1));
 }
 
 //***********************************************************************************************
@@ -1956,11 +1956,11 @@ bool WolapiObject::Squelch(User* pUserToSquelch) {
   // pUserToSquelch->flags );
 
   if (pUserToSquelch->flags & CHAT_USER_SQUELCHED) {
-    pChat->SetSquelch(pUserToSquelch, false);
+    pChat->SetSquelch(pUserToSquelch, 0);
     pUserToSquelch->flags &= ~static_cast<unsigned int>(CHAT_USER_SQUELCHED);
     return false;
   }
-  pChat->SetSquelch(pUserToSquelch, true);
+  pChat->SetSquelch(pUserToSquelch, 1);
   pUserToSquelch->flags |= CHAT_USER_SQUELCHED;
   return true;
 }
@@ -2083,7 +2083,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
                         szCommandLine,  //	Command line.
                         nullptr,        //	Process handle not inheritable.
                         nullptr,        //	Thread handle not inheritable.
-                        false,          //	Set handle inheritance to false.
+                        FALSE,          //	Set handle inheritance to false.
                         0,              //	No creation flags.
                         nullptr,        //	Use parent�s environment block.
                         nullptr,        //	Use parent�s starting directory.
@@ -2959,7 +2959,7 @@ bool WolapiObject::GetLobbyChannels() {
   pChatSink->ChannelFilter = CHANNELFILTER_LOBBIES;
 
   //	debugprint( "RequestChannelList() for lobbies\n" );
-  if (!SUCCEEDED(pChat->RequestChannelList(0, false))) {
+  if (!SUCCEEDED(pChat->RequestChannelList(0, 0))) {
     //		debugprint( "RequestChannelList() call failed\n" );
     return false;
   }
@@ -3240,8 +3240,8 @@ void WolapiObject::SetOptionDefaults() {
 
     RegCloseKey(hKey);
   }
-  pChat->SetFindPage(bFindEnabled, bPageEnabled);
-  pChat->SetLangFilter(bLangFilter);
+  pChat->SetFindPage(bFindEnabled ? 1 : 0, bPageEnabled ? 1 : 0);
+  pChat->SetLangFilter(bLangFilter ? 1 : 0);
 }
 
 //***********************************************************************************************
@@ -3272,8 +3272,8 @@ void WolapiObject::SetOptions(bool bEnableFind, bool bEnablePage,
 
     RegCloseKey(hKey);
   }
-  pChat->SetFindPage(bFindEnabled, bPageEnabled);
-  pChat->SetLangFilter(bLangFilter);
+  pChat->SetFindPage(bFindEnabled ? 1 : 0, bPageEnabled ? 1 : 0);
+  pChat->SetLangFilter(bLangFilter ? 1 : 0);
 }
 
 //***********************************************************************************************

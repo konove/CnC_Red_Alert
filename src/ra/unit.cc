@@ -2609,14 +2609,14 @@ int UnitClass::Mission_Unload() {
                                         : STRUCT_AVMINE,
                                     House->Class->House);
               if (building != nullptr) {
-                ScenarioInit = true;
+                ScenarioInit = 1;
                 if (building->Unlimbo(Coord)) {
                   Sound_Effect(VOC_MINELAY1, Coord);
-                  ScenarioInit = false;
+                  ScenarioInit = 0;
                   building->Revealed(House);
                   Ammo--;
                 }
-                ScenarioInit = false;
+                ScenarioInit = 0;
               }
               Status = CLOSING_DOOR;
               Mark(MARK_DOWN);
@@ -4314,7 +4314,7 @@ void UnitClass::Overrun_Square(CELL cell, bool threaten) {
       }
     } else {
       ObjectClass* object = cellptr->Cell_Occupier();
-      int crushed = false;
+      bool crushed = false;
       while (object != nullptr) {
         if (object->Class_Of().IsCrushable && !House->Is_Ally(object) &&
             Distance(object->Center_Coord()) < CELL_LEPTON_W / 2) {

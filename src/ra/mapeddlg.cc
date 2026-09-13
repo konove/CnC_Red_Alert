@@ -322,7 +322,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Read the INI
     */
-    if (Read_Scenario_INI(Scen.ScenarioName) == 0) {
+    if (!Read_Scenario_INI(Scen.ScenarioName)) {
       if (Scen.Scenario < 20 && Scen.ScenarioName[2] == 'G') {
         WWMessageBox().Process("Please insert Red Alert CD1");
       } else if (Scen.Scenario < 20 && Scen.ScenarioName[2] == 'U') {
@@ -2140,7 +2140,7 @@ int MapEditClass::Load_Scenario() {
         sourcebtn.Set_Selected_Index(hstatic->Edge);
         maxunit.Set_Value(hstatic->MaxUnit + hstatic->MaxInfantry);
         for (HousesType h : magic_enum::enum_values<HousesType>()) {
-          allies.Check_Item(h, hstatic->Allies & (1L << h));
+          allies.Check_Item(h, (hstatic->Allies & (1L << h)) != 0);
         }
         smarties.Set_Value(hstatic->IQ);
 

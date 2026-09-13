@@ -597,10 +597,10 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     //------------------------------------------------------------------------
     Special.IsTGrowth =
         static_cast<unsigned>(Session.Options.Tiberium);  //	Ugh. Use of "Special" global.
-    Rule.IsTGrowth = Session.Options.Tiberium;
+    Rule.IsTGrowth = Session.Options.Tiberium != 0;
     Special.IsTSpread =
         static_cast<unsigned>(Session.Options.Tiberium);  //	Ugh. Use of "Special" global.
-    Rule.IsTSpread = Session.Options.Tiberium;
+    Rule.IsTSpread = Session.Options.Tiberium != 0;
 
     if (bHost) {
       //------------------------------------------------------------------------
@@ -687,7 +687,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   //	Init button states
   //------------------------------------------------------------------------
   pCheckListOptions->Set_Tabs(optiontabs);
-  pCheckListOptions->Set_Read_Only(0);
+  pCheckListOptions->Set_Read_Only(false);
 
   pCheckListOptions->Add_Item(Text_String(TXT_BASES));
   pCheckListOptions->Add_Item(Text_String(TXT_ORE_SPREADS));
@@ -1502,12 +1502,13 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //..................................................................
       case ButtonKey(BUTTON_PARAMS):
         bRetractHouseDropDown = true;
-        if (Special.IsCaptureTheFlag != pCheckListOptions->Is_Checked(3) &&
+        if ((Special.IsCaptureTheFlag != 0) !=
+                pCheckListOptions->Is_Checked(3) &&
             !Special.IsCaptureTheFlag) {
           pCheckListOptions->Check_Item(0, true);
         }
-        if (Session.Options.Bases != pCheckListOptions->Is_Checked(0)) {
-          Session.Options.Bases = pCheckListOptions->Is_Checked(0);
+        if ((Session.Options.Bases != 0) != pCheckListOptions->Is_Checked(0)) {
+          Session.Options.Bases = pCheckListOptions->Is_Checked(0) ? 1 : 0;
           if (Session.Options.Bases) {
             Session.Options.UnitCount =
                 static_cast<int>(Rescale(
@@ -1528,15 +1529,15 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           pGaugeCount->Set_Value(Session.Options.UnitCount -
                                  SessionClass::CountMin[Session.Options.Bases]);
         }
-        Session.Options.Tiberium = pCheckListOptions->Is_Checked(1);
+        Session.Options.Tiberium = pCheckListOptions->Is_Checked(1) ? 1 : 0;
         Special.IsTGrowth =
             static_cast<unsigned>(Session.Options.Tiberium);  //	Ugh. Use of "Special" global.
-        Rule.IsTGrowth = Session.Options.Tiberium;
+        Rule.IsTGrowth = Session.Options.Tiberium != 0;
         Special.IsTSpread =
             static_cast<unsigned>(Session.Options.Tiberium);  //	Ugh. Use of "Special" global.
-        Rule.IsTSpread = Session.Options.Tiberium;
+        Rule.IsTSpread = Session.Options.Tiberium != 0;
 
-        Session.Options.Goodies = pCheckListOptions->Is_Checked(2);
+        Session.Options.Goodies = pCheckListOptions->Is_Checked(2) ? 1 : 0;
         Special.IsCaptureTheFlag = pCheckListOptions->Is_Checked(
             3);  //	Ugh. Use of "Special" global.
         Special.IsShadowGrow = pCheckListOptions->Is_Checked(
@@ -1664,9 +1665,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 void WOL_GameSetupDialog::SetSpecialControlStates() {
   //	Set gauges and checklist.
 
-  pCheckListOptions->Check_Item(0, Session.Options.Bases);
-  pCheckListOptions->Check_Item(1, Session.Options.Tiberium);
-  pCheckListOptions->Check_Item(2, Session.Options.Goodies);
+  pCheckListOptions->Check_Item(0, Session.Options.Bases != 0);
+  pCheckListOptions->Check_Item(1, Session.Options.Tiberium != 0);
+  pCheckListOptions->Check_Item(2, Session.Options.Goodies != 0);
   pCheckListOptions->Check_Item(
       3, Special.IsCaptureTheFlag);  //	Ugh. Use of "Special" global.
   pCheckListOptions->Check_Item(
@@ -2517,8 +2518,8 @@ void WOL_GameSetupDialog::SendParams() {
       GParamsLastSent.GPacket.ScenarioInfo.Special.IsTSpread,
       static_cast<int>(GParamsLastSent.GPacket.ScenarioInfo.GameSpeed),
       static_cast<int>(GParamsLastSent.GPacket.ScenarioInfo.Version),
-      GParamsLastSent.bAftermathUnits,  //	Not currently used.
-      GParamsLastSent.bSlowUnitBuildRate,
+      GParamsLastSent.bAftermathUnits ? 1 : 0,  //	Not currently used.
+      GParamsLastSent.bSlowUnitBuildRate ? 1 : 0,
       RuleINI.Get_Unique_ID()  //	Used to verify rules.ini files match.
   );
 

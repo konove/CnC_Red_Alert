@@ -287,7 +287,7 @@ class DisplayClass : public MapClass {
                       true) {}
 
    protected:
-    int Action(unsigned flags, KeyNumType& key) override;
+    bool Action(unsigned flags, KeyNumType& key) override;
   };
   friend class TacticalClass;
 

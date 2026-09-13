@@ -364,17 +364,17 @@ void GameControlsClass::Process() {
 
       case KN_LEFT:
         if (curbutton == BUTTON_SPEED - BUTTON_FIRST) {
-          gspeed_btn.Bump(1);
+          gspeed_btn.Bump(true);
         } else if (curbutton == BUTTON_SCROLLRATE - BUTTON_FIRST) {
-          scrate_btn.Bump(1);
+          scrate_btn.Bump(true);
         }
         break;
 
       case KN_RIGHT:
         if (curbutton == BUTTON_SPEED - BUTTON_FIRST) {
-          gspeed_btn.Bump(0);
+          gspeed_btn.Bump(false);
         } else if (curbutton == BUTTON_SCROLLRATE - BUTTON_FIRST) {
-          scrate_btn.Bump(0);
+          scrate_btn.Bump(false);
         }
         break;
 

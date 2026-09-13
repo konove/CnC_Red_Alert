@@ -188,7 +188,7 @@ class IPXManagerClass : public ConnManClass {
   Initialization routines.
   .....................................................................*/
   int Init();
-  int Is_IPX();
+  bool Is_IPX();
   void Set_Timing(int32_t retrydelta, int32_t maxretries,
                   int32_t timeout) override;
   void Set_Bridge(NetNumType bridge);

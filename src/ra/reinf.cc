@@ -722,7 +722,7 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
     ** Try and place the object onto the map.
     */
     ScenarioInit++;
-    int placed = obj->Unlimbo(Cell_Coord(newcell), DIR_N);
+    bool placed = obj->Unlimbo(Cell_Coord(newcell), DIR_N);
     ScenarioInit--;
     if (placed) {
       /*
@@ -752,7 +752,7 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
       if (obj->What_Am_I() == RTTI_AIRCRAFT) {
         auto* aircraft = (AircraftClass*)obj;
         if (passenger != INFANTRY_NONE) {
-          aircraft->Passenger = passenger;
+          aircraft->Passenger = passenger != INFANTRY_NONE;
         }
         //				if (Passenger == INFANTRY_TANYA) {
         //					aircraft->Ammo = 1;

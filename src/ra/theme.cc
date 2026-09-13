@@ -461,7 +461,7 @@ void ThemeClass::Suspend() {
  *                                                                                             *
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
-int ThemeClass::Still_Playing() const {
+bool ThemeClass::Still_Playing() const {
   if (ScoresPresent && SampleType && Current != -1 && !Debug_Quiet) {
     return Sample_Status(Current);
   }

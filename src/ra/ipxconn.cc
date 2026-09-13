@@ -69,7 +69,7 @@ IPXHeaderType* IPXConnClass::SendHeader;
 char* IPXConnClass::SendBuf;
 int32_t IPXConnClass::Handler;
 int IPXConnClass::Configured = 0;
-int IPXConnClass::SocketOpen = 0;
+bool IPXConnClass::SocketOpen = false;
 int IPXConnClass::Listening = 0;
 int IPXConnClass::PacketLen;
 
@@ -237,7 +237,7 @@ void IPXConnClass::Configure(uint16_t socket, int conn_num, ECBType* listen_ecb,
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Start_Listening() {
+bool IPXConnClass::Start_Listening() {
   /*
   ** Open the socket.
   */
@@ -254,7 +254,6 @@ int IPXConnClass::Start_Listening() {
   }
   Close_Socket(Socket);
   return false;
-
 
 } /* end of Start_Listening */
 
@@ -340,11 +339,10 @@ int IPXConnClass::Send(char* buf, int buflen, void* /*extrabuf*/,
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXConnClass::Open_Socket(uint16_t socket) {
-  int rc;
-  rc = PacketTransport->Open_Socket(socket);
+  const bool rc = PacketTransport->Open_Socket(socket);
 
   SocketOpen = rc;
-  return rc;
+  return rc ? 1 : 0;
 
 } /* end of Open_Socket */
 
@@ -369,7 +367,7 @@ int IPXConnClass::Open_Socket(uint16_t socket) {
  *=========================================================================*/
 void IPXConnClass::Close_Socket(uint16_t /*socket*/) {
   PacketTransport->Close_Socket();
-  SocketOpen = 0;
+  SocketOpen = false;
 } /* end of Close_Socket */
 
 /***************************************************************************
@@ -409,7 +407,7 @@ int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
                           const NetNodeType immed) {
   assert(immed == nullptr);
   PacketTransport->WriteTo(buf, buflen, address);
-  return true;
+  return 1;
 
 } /* end of Send_To */
 
@@ -432,7 +430,7 @@ int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Broadcast(char* buf, int buflen) {
+bool IPXConnClass::Broadcast(char* buf, int buflen) {
   PacketTransport->Broadcast(buf, buflen);
   return true;
 } /* end of Broadcast */

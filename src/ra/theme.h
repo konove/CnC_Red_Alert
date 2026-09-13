@@ -78,7 +78,7 @@ class ThemeClass {
   [[nodiscard]] static const char* Base_Name(ThemeType theme);
   [[nodiscard]] static const char* Full_Name(ThemeType theme);
   int Play_Song(ThemeType theme);
-  [[nodiscard]] int Still_Playing() const;
+  [[nodiscard]] bool Still_Playing() const;
   [[nodiscard]] static int Track_Length(ThemeType theme);
   static void Scan();
   void AI();

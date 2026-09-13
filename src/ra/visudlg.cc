@@ -289,7 +289,7 @@ void VisualControlsClass::Process() {
 
       case KN_LEFT:
         if (curbutton <= BUTTON_TINT - BUTTON_BASE) {
-          buttonsliders[curbutton]->Bump(1);
+          buttonsliders[curbutton]->Bump(true);
           switch (curbutton) {
             case BUTTON_BRIGHTNESS - BUTTON_BASE:
               Options.Set_Brightness(fixed(brightness.Get_Value(), 256));
@@ -325,7 +325,7 @@ void VisualControlsClass::Process() {
 
       case KN_RIGHT:
         if (curbutton <= BUTTON_TINT - BUTTON_BASE) {
-          buttonsliders[curbutton]->Bump(0);
+          buttonsliders[curbutton]->Bump(false);
           switch (curbutton) {
             case BUTTON_BRIGHTNESS - BUTTON_BASE:
               Options.Set_Brightness(fixed(brightness.Get_Value(), 256));

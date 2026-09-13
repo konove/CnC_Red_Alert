@@ -2116,7 +2116,7 @@ bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
   /*
   **	Make sure that the infantry start in a legal position on the map.
   */
-  coord = Map[coord].Closest_Free_Spot(coord, ScenarioInit);
+  coord = Map[coord].Closest_Free_Spot(coord, ScenarioInit != 0);
   if (coord == 0) {
     return false;
   }

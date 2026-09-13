@@ -913,8 +913,8 @@ const char* const* EngMisStr = [] noexcept -> const char* const* {
 ******************************** Prototypes *********************************
 */
 static int Net_Join_Dialog();
-static int Request_To_Join(char* playername, int join_index, HousesType house,
-                           PlayerColorType color);
+static bool Request_To_Join(char* playername, int join_index, HousesType house,
+                            PlayerColorType color);
 static void Unjoin_Game(char* namebuf, JoinStateType joinstate,
                         ListClass* gamelist, ColorListClass* playerlist,
                         int game_index, int goto_lobby, int msg_x, int msg_y,
@@ -1046,7 +1046,7 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
   //------------------------------------------------------------------------
   //	Another system asking what game this is
   //------------------------------------------------------------------------
-  if (packet->Command == NET_QUERY_GAME && Session.NetStealth == 0) {
+  if (packet->Command == NET_QUERY_GAME && !Session.NetStealth) {
     //.....................................................................
     //	If the game is closed, let every player respond, and let the sender of
     //	the query sort it all out.  This way, if the game's host exits the game,
@@ -1073,7 +1073,7 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
   //------------------------------------------------------------------------
   if (packet->Command == NET_QUERY_PLAYER &&
       !strcmp(packet->Name, Session.GameName) && strlen(Session.GameName) > 0 &&
-      Session.NetStealth == 0) {
+      !Session.NetStealth) {
     memset(&mypacket, 0, sizeof(GlobalPacketType));  // changed DRD 9/26
 
     mypacket.Command = NET_ANSWER_PLAYER;
@@ -1200,7 +1200,7 @@ void Destroy_Connection(int id, int error) {
  *=============================================================================================*/
 bool Remote_Connect() {
   int rc;
-  int stealth;  // original state of Session.NetStealth flag
+  bool stealth;  // original state of Session.NetStealth flag
 
   //------------------------------------------------------------------------
   //	Init network timing parameters; these values should work for both a
@@ -1600,7 +1600,7 @@ static int Net_Join_Dialog() {
   playerlist.Set_Selected_Style(ColorListClass::SELECT_NORMAL);
 
   optionlist.Set_Tabs(optiontabs);
-  optionlist.Set_Read_Only(1);
+  optionlist.Set_Read_Only(true);
 
   optionlist.Add_Item(Text_String(TXT_BASES));
   optionlist.Add_Item(Text_String(TXT_ORE_SPREADS));
@@ -1635,21 +1635,21 @@ static int Net_Join_Dialog() {
   //........................................................................
   // Option gauges
   //........................................................................
-  countgauge.Use_Thumb(0);
+  countgauge.Use_Thumb(false);
   countgauge.Set_Maximum(SessionClass::CountMax[Session.Options.Bases] -
                          SessionClass::CountMin[Session.Options.Bases]);
   countgauge.Set_Value(Session.Options.UnitCount -
                        SessionClass::CountMin[Session.Options.Bases]);
 
-  levelgauge.Use_Thumb(0);
+  levelgauge.Use_Thumb(false);
   levelgauge.Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
   levelgauge.Set_Value(BuildLevel - 1);
 
-  creditsgauge.Use_Thumb(0);
+  creditsgauge.Use_Thumb(false);
   creditsgauge.Set_Maximum(Rule.MPMaxMoney);
   creditsgauge.Set_Value(Session.Options.Credits);
 
-  aiplayersgauge.Use_Thumb(0);
+  aiplayersgauge.Use_Thumb(false);
   aiplayersgauge.Set_Maximum(Session.Options.AIPlayers);
   aiplayersgauge.Set_Value(Session.Options.AIPlayers);
 
@@ -2676,9 +2676,9 @@ static int Net_Join_Dialog() {
       } else {
         aiplayersgauge.Set_Value(Session.Options.AIPlayers);
       }
-      optionlist.Check_Item(0, Session.Options.Bases);
-      optionlist.Check_Item(1, Session.Options.Tiberium);
-      optionlist.Check_Item(2, Session.Options.Goodies);
+      optionlist.Check_Item(0, Session.Options.Bases != 0);
+      optionlist.Check_Item(1, Session.Options.Tiberium != 0);
+      optionlist.Check_Item(2, Session.Options.Goodies != 0);
       optionlist.Check_Item(3, Special.IsCaptureTheFlag);
       optionlist.Check_Item(4, Special.IsShadowGrow);
       optionlist.Flag_To_Redraw();
@@ -3003,8 +3003,8 @@ static int Net_Join_Dialog() {
  *                                                                         *
  * HISTORY:                                                                *
  *=========================================================================*/
-static int Request_To_Join(char* playername, int join_index, HousesType house,
-                           PlayerColorType color) {
+static bool Request_To_Join(char* playername, int join_index, HousesType house,
+                            PlayerColorType color) {
   //------------------------------------------------------------------------
   //	Validate join_index
   //------------------------------------------------------------------------
@@ -3372,7 +3372,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   // otherwise, 	don't answer standard queries.
   //------------------------------------------------------------------------
   if (*joinstate == JOIN_CONFIRMED &&
-      Process_Global_Packet(&Session.GPacket, &Session.GAddress) != 0) {
+      Process_Global_Packet(&Session.GPacket, &Session.GAddress)) {
     return EV_NONE;
   }
 
@@ -3706,7 +3706,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       uint32_t lVersion = Session.GPacket.ScenarioInfo.Version &
                           ~0x80000000;  //	Actual version number.
       Session.CommProtocol = VersionClass::Version_Protocol(lVersion);
-      bAftermathMultiplayer = Session.GPacket.ScenarioInfo.Version & 0x80000000;
+      bAftermathMultiplayer =
+          (Session.GPacket.ScenarioInfo.Version & 0x80000000) != 0;
       //			if( bAftermathMultiplayer )
       //				debugprint( "Guest hears host say 'This
       // is an
@@ -4238,7 +4239,7 @@ static int Net_New_Dialog() {
   //	Init button states
   //------------------------------------------------------------------------
   optionlist.Set_Tabs(optiontabs);
-  optionlist.Set_Read_Only(0);
+  optionlist.Set_Read_Only(false);
 
   optionlist.Add_Item(Text_String(TXT_BASES));
   optionlist.Add_Item(Text_String(TXT_ORE_SPREADS));
@@ -4246,9 +4247,9 @@ static int Net_New_Dialog() {
   optionlist.Add_Item(Text_String(TXT_CAPTURE_THE_FLAG));
   optionlist.Add_Item(Text_String(TXT_SHADOW_REGROWS));
 
-  optionlist.Check_Item(0, Session.Options.Bases);
-  optionlist.Check_Item(1, Session.Options.Tiberium);
-  optionlist.Check_Item(2, Session.Options.Goodies);
+  optionlist.Check_Item(0, Session.Options.Bases != 0);
+  optionlist.Check_Item(1, Session.Options.Tiberium != 0);
+  optionlist.Check_Item(2, Session.Options.Goodies != 0);
   optionlist.Check_Item(3, Special.IsCaptureTheFlag);
   optionlist.Check_Item(4, Special.IsShadowGrow);
 
@@ -4267,9 +4268,9 @@ static int Net_New_Dialog() {
   //	Init other scenario parameters
   //------------------------------------------------------------------------
   Special.IsTGrowth = static_cast<unsigned>(Session.Options.Tiberium);
-  Rule.IsTGrowth = Session.Options.Tiberium;
+  Rule.IsTGrowth = Session.Options.Tiberium != 0;
   Special.IsTSpread = static_cast<unsigned>(Session.Options.Tiberium);
-  Rule.IsTSpread = Session.Options.Tiberium;
+  Rule.IsTSpread = Session.Options.Tiberium != 0;
   transmit = 0;
 
   //------------------------------------------------------------------------
@@ -4633,12 +4634,12 @@ static int Net_New_Dialog() {
       // in SpecialClass.
       //..................................................................
       case ButtonKey(BUTTON_OPTIONS):
-        if (Special.IsCaptureTheFlag != optionlist.Is_Checked(3) &&
+        if ((Special.IsCaptureTheFlag != 0) != optionlist.Is_Checked(3) &&
             !Special.IsCaptureTheFlag) {
           optionlist.Check_Item(0, true);
         }
-        if (Session.Options.Bases != optionlist.Is_Checked(0)) {
-          Session.Options.Bases = optionlist.Is_Checked(0);
+        if ((Session.Options.Bases != 0) != optionlist.Is_Checked(0)) {
+          Session.Options.Bases = optionlist.Is_Checked(0) ? 1 : 0;
           if (Session.Options.Bases) {
             Session.Options.UnitCount =
                 static_cast<int>(Rescale(
@@ -4658,13 +4659,13 @@ static int Net_New_Dialog() {
           countgauge.Set_Value(Session.Options.UnitCount -
                                SessionClass::CountMin[Session.Options.Bases]);
         }
-        Session.Options.Tiberium = optionlist.Is_Checked(1);
+        Session.Options.Tiberium = optionlist.Is_Checked(1) ? 1 : 0;
         Special.IsTGrowth = static_cast<unsigned>(Session.Options.Tiberium);
-        Rule.IsTGrowth = Session.Options.Tiberium;
+        Rule.IsTGrowth = Session.Options.Tiberium != 0;
         Special.IsTSpread = static_cast<unsigned>(Session.Options.Tiberium);
-        Rule.IsTSpread = Session.Options.Tiberium;
+        Rule.IsTSpread = Session.Options.Tiberium != 0;
 
-        Session.Options.Goodies = optionlist.Is_Checked(2);
+        Session.Options.Goodies = optionlist.Is_Checked(2) ? 1 : 0;
         Special.IsCaptureTheFlag = optionlist.Is_Checked(3);
         Special.IsShadowGrow = optionlist.Is_Checked(4);
 
@@ -4694,7 +4695,7 @@ static int Net_New_Dialog() {
         if (Session.Players.Count() > 1) {
           //				if (Session.Players.Count() +
           // Session.Options.AIPlayers > 1 ) {
-          rc = true;
+          rc = 1;
           process = false;
         } else {
           Session.Messages.Add_Message(nullptr, 0, Text_String(TXT_ONLY_ONE),
@@ -4759,7 +4760,7 @@ static int Net_New_Dialog() {
         }
         Session.GameName[0] = 0;
         process = false;
-        rc = false;
+        rc = 0;
         break;
 
       //..................................................................
@@ -5113,7 +5114,7 @@ static int Net_New_Dialog() {
   if (load_game) {
     if (!Load_Game(-1)) {
       WWMessageBox().Process(TXT_ERROR_LOADING_GAME);
-      rc = false;
+      rc = 0;
     }
     Frame++;
   }
@@ -5184,7 +5185,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
   //------------------------------------------------------------------------
   //	Try to handle the packet in a standard way
   //------------------------------------------------------------------------
-  if (Process_Global_Packet(&Session.GPacket, &Session.GAddress) != 0) {
+  if (Process_Global_Packet(&Session.GPacket, &Session.GAddress)) {
     return EV_NONE;
   }
   if (Session.GPacket.Command == NET_QUERY_JOIN) {
@@ -5270,7 +5271,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       //	Added to the transmitted _min_ version number is a bit
       // indicating presence of Aftermath expansion.
       bool bGuestHasAftermath =
-          Session.GPacket.PlayerInfo.MinVersion & 0x80000000;
+          (Session.GPacket.PlayerInfo.MinVersion & 0x80000000) != 0;
       if (!bGuestHasAftermath && bAftermathMultiplayer) {
         bAftermathMultiplayer = false;
       }
@@ -5503,7 +5504,7 @@ uint32_t Compute_Name_CRC(char* name) {
  * HISTORY:                                                                *
  *   07/08/1995 BRR : Created.                                             *
  *=========================================================================*/
-void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
+void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
                           int timeval) {
   static int x;
   static int y;

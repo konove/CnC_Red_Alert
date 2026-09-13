@@ -548,8 +548,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
   /*
   **	Check for mouse motion while left button is down.
   */
-  rc = Mouse_Moved();
-  if (LMouseDown && rc) {
+  const bool moved = Mouse_Moved();
+  if (LMouseDown && moved) {
     /*
     **	"Paint" mode: place current object, and restart placement
     */

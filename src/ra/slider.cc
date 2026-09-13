@@ -73,8 +73,8 @@
  ** HISTORY:    01/15/1995 JLB : Created. *
  *=============================================================================================*/
 SliderClass::SliderClass(unsigned id, int x, int y, int w, int h,
-                         int belong_to_list)
-    : GaugeClass(id, x, y, w, h), BelongToList(belong_to_list != 0) {
+                         bool belong_to_list)
+    : GaugeClass(id, x, y, w, h), BelongToList(belong_to_list) {
   if (!BelongToList) {
     PlusGadget = new ShapeButtonClass(id, MFCD::Retrieve("BTN-PLUS.SHP"),
                                       X + Width + 2, Y);
@@ -137,7 +137,7 @@ SliderClass::~SliderClass() {
  *                is currently set to already. * WARNINGS:   none * HISTORY:
  *01/15/1995 JLB : Created. *
  *=============================================================================================*/
-int SliderClass::Set_Maximum(int value) {
+bool SliderClass::Set_Maximum(int value) {
   if (GaugeClass::Set_Maximum(value)) {
     Recalc_Thumb();
     return true;
@@ -175,7 +175,7 @@ void SliderClass::Set_Thumb_Size(int value) {
  * OUTPUT:  bool; Was the slider thumb position changed at all? * WARNINGS: none
  ** HISTORY:   01/15/1995 JLB : Created. *
  *=============================================================================================*/
-int SliderClass::Set_Value(int value) {
+bool SliderClass::Set_Value(int value) {
   value = std::min(value, MaxValue - Thumb);
 
   if (GaugeClass::Set_Value(value)) {
@@ -221,7 +221,7 @@ void SliderClass::Recalc_Thumb() {
  *consumed and further processing of the gadget list should be   * aborted? *
  * WARNINGS:   none * HISTORY:    01/15/1995 JLB : Created. *
  *=============================================================================================*/
-int SliderClass::Action(unsigned flags, KeyNumType& key) {
+bool SliderClass::Action(unsigned flags, KeyNumType& key) {
   /*
   **	Handle the mouse click in a special way. If the click was not on the
   *thumb, then *	jump the thumb position one "step" in the appropriate
@@ -280,7 +280,7 @@ int SliderClass::Action(unsigned flags, KeyNumType& key) {
  *already  * at one end or the other. * WARNINGS:   none * HISTORY: 01/15/1995
  *JLB : Created.                                                       *
  *=============================================================================================*/
-int SliderClass::Bump(int up) {
+bool SliderClass::Bump(bool up) {
   if (up) {
     return Set_Value(CurValue - Thumb);
   }
@@ -298,7 +298,7 @@ int SliderClass::Bump(int up) {
  *one end or the other.                                                     *
  * WARNINGS:   none * HISTORY:    01/15/1995 JLB : Created. *
  *=============================================================================================*/
-int SliderClass::Step(int up) {
+bool SliderClass::Step(bool up) {
   if (up) {
     return Set_Value(CurValue - 1);
   }
@@ -333,7 +333,7 @@ void SliderClass::Draw_Thumb() {
  *redraw flag?     * OUTPUT:  bool; Was the gauge redrawn? * WARNINGS:   none *
  * HISTORY:    01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int SliderClass::Draw_Me(bool forced) {
+bool SliderClass::Draw_Me(bool forced) {
   // A list-attached slider draws a thumb instead of a gauge body; the
   // stand-alone case still goes through GaugeClass below.
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)

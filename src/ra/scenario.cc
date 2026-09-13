@@ -1922,28 +1922,13 @@ bool Read_Scenario_INI(char* fname, bool /*unused*/) {
   CCFileClass file(fname);
   //	file.Cache();
 
-  int result = ini.Load(file, true);
-  if (result == 0) {
+  if (!ini.Load(file, true)) {
     //		Mono_Printf("ini.Load failed");
     return false;
   }
 
-  /*
-  ** If the scenario digest is wrong then the return code will be a 2.
-  */
-  //		if (Session.Type == GAME_NORMAL || Session.ScenarioIsOfficial) {
-  /*
-  **	Make a special exception so that multiplayer maps from 1 through
-  **	24 will not care if the message digest is in error. All other
-  **	maps will abort the scenario load.
-  */
-  if ((result == 2) && (Scen.ScenarioName[2] != 'M' || Scen.Scenario >= 25)) {
-    GamePalette.Set();
-    WWMessageBox().Process(TXT_SCENARIO_ERROR, TXT_OK);
-    if constexpr (config::kReleaseVersion) {
-      return false;
-    }
-  }
+  // CCINIClass::Load reports a bad digest as a plain failure, so the old
+  // "digest wrong" (result 2) exception for multiplayer maps 1-24 is gone.
 
   /*
   **	Reset the rules values to their initial settings.
@@ -2333,7 +2318,7 @@ void Write_Scenario_INI(char* fname) {
  *=============================================================================================*/
 void Assign_Houses() {
   int assigned[kMaxPlayers];
-  int color_used[8];
+  bool color_used[8];
   int i;
   int j;
   HousesType house;
@@ -2348,7 +2333,7 @@ void Assign_Houses() {
   //------------------------------------------------------------------------
   for (i = 0; i < kMaxPlayers; i++) {
     assigned[i] = 0;
-    color_used[i] = 0;
+    color_used[i] = false;
   }
 
   //	debugprint( "Assign_Houses()\n" );
@@ -2380,7 +2365,7 @@ void Assign_Houses() {
     // Mark this player as having been assigned.
     //.....................................................................
     assigned[index] = 1;
-    color_used[Session.Players[index]->Player.Color] = 1;
+    color_used[Session.Players[index]->Player.Color] = true;
 
     //.....................................................................
     // Assign the lowest-color'd player to the next available slot in the
@@ -2433,7 +2418,7 @@ void Assign_Houses() {
     //.....................................................................
     while (true) {
       color = Random_Pick(0, 7);
-      if (!static_cast<bool>(color_used[color])) {
+      if (!color_used[color]) {
         break;
       }
     }
@@ -2924,14 +2909,14 @@ static void Create_Units(bool official) {
  *                                                                                             *
  * HISTORY: * 06/09/1995 BRR : Created. *
  *=============================================================================================*/
-int Scan_Place_Object(ObjectClass* obj, CELL cell) {
+bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
   int dist;             // for object placement
   FacingType rot;       // for object placement
   FacingType fcounter;  // for object placement
   int tryval;
   CELL newcell;
   TechnoClass* techno;
-  int skipit;
+  bool skipit;
 
   /*
   **	First try to unlimbo the object in the given cell.

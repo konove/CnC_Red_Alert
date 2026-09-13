@@ -90,12 +90,12 @@ class IPXAddressClass {
   /*.....................................................................
   Overloaded operators:
   .....................................................................*/
-  int operator==(IPXAddressClass& addr);
-  int operator!=(IPXAddressClass& addr);
-  int operator>(IPXAddressClass& addr);
-  int operator<(IPXAddressClass& addr);
-  int operator>=(IPXAddressClass& addr);
-  int operator<=(IPXAddressClass& addr);
+  bool operator==(IPXAddressClass& addr);
+  bool operator!=(IPXAddressClass& addr);
+  bool operator>(IPXAddressClass& addr);
+  bool operator<(IPXAddressClass& addr);
+  bool operator>=(IPXAddressClass& addr);
+  bool operator<=(IPXAddressClass& addr);
   /*
   -------------------------- Protected Interface ---------------------------
   */

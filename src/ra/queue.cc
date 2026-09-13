@@ -223,7 +223,7 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
                        const uint16_t* their_recv);
 static int Process_Reconnect_Dialog(Timer<SystemTickSource>* timeout_timer,
                                     const int64_t* their_frame, int num_conn,
-                                    int reconn, int fresh);
+                                    bool reconn, bool fresh);
 static int Handle_Timeout(ConnManClass* net, int64_t* their_frame,
                           uint16_t* their_sent, uint16_t* their_recv);
 static void Stop_Game();
@@ -295,8 +295,8 @@ static void Dump_Packet_Too_Late_Stuff(EventClass* event, ConnManClass* net,
  *=========================================================================*/
 bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
                    TARGET destination) {
-  return OutList.Add(EventClass(whom, mission, TargetClass(target),
-                                TargetClass(destination))) != 0;
+  return OutList.Add(
+      EventClass(whom, mission, TargetClass(target), TargetClass(destination)));
 }
 
 /***********************************************************************************************
@@ -331,8 +331,7 @@ bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
 bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
                    TARGET destination, SpeedType speed, MPHType maxspeed) {
   return OutList.Add(EventClass(whom, mission, TargetClass(target),
-                                TargetClass(destination), speed, maxspeed)) !=
-         0;
+                                TargetClass(destination), speed, maxspeed));
 }
 
 /***************************************************************************
@@ -353,7 +352,7 @@ bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
  *   09/21/1995 JLB : Created.                                             *
  *=========================================================================*/
 bool Queue_Options() {
-  return OutList.Add(EventClass(EventClass::OPTIONS)) != 0;
+  return OutList.Add(EventClass(EventClass::OPTIONS));
 
 } /* end of Queue_Options */
 
@@ -375,7 +374,7 @@ bool Queue_Options() {
  *   09/21/1995 JLB : Created.                                             *
  *=========================================================================*/
 bool Queue_Exit() {
-  return OutList.Add(EventClass(EventClass::EXIT)) != 0;
+  return OutList.Add(EventClass(EventClass::EXIT));
 } /* end of Queue_Exit */
 
 /***************************************************************************
@@ -1104,7 +1103,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
                  Session.Type == GAME_NULL_MODEM) {
         if (WWMessageBox().Process(TXT_ASK_EMERGENCY_SAVE_NOT_RESPONDING,
                                    TXT_YES, TXT_NO, TXT_NONE) == 0) {
-          Session.EmergencySave = 1;
+          Session.EmergencySave = true;
           // printf("Saving emergency game; frame:%d,
           // CRC:%d\n",Frame,GameCRC); Print_CRCs(NULL); printf("Before Save:
           // Count1:%d, Count2:%d, Seed:%d\n", Scen.RandomNumber.Count1,
@@ -1115,7 +1114,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
           //	Scen.RandomNumber.Count1,
           //	Scen.RandomNumber.Count2,
           //	Scen.RandomNumber.Seed);
-          Session.EmergencySave = 0;
+          Session.EmergencySave = false;
         }
         return RC_CANCEL;
       } else {
@@ -1170,7 +1169,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
         if (rc == RC_HUNG_UP) {
           if (WWMessageBox().Process(TXT_ASK_EMERGENCY_SAVE_HUNG_UP, TXT_YES,
                                      TXT_NO, TXT_NONE) == 0) {
-            Session.EmergencySave = 1;
+            Session.EmergencySave = true;
             // printf("Saving emergency game; frame:%d,
             // CRC:%d\n",Frame,GameCRC); Print_CRCs(NULL); printf("Before
             // Save: Count1:%d, Count2:%d, Seed:%d\n",
@@ -1182,7 +1181,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
             //	Scen.RandomNumber.Count1,
             //	Scen.RandomNumber.Count2,
             //	Scen.RandomNumber.Seed);
-            Session.EmergencySave = 0;
+            Session.EmergencySave = false;
           }
           return RC_CANCEL;
         }
@@ -2199,7 +2198,7 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
  *=========================================================================*/
 static int Process_Reconnect_Dialog(Timer<SystemTickSource>* timeout_timer,
                                     const int64_t* their_frame, int num_conn,
-                                    int reconn, int fresh) {
+                                    bool reconn, bool fresh) {
   static int displayed_time = 0;  // time value currently displayed
   int new_time;
   int i;

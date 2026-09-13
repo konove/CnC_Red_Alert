@@ -287,8 +287,8 @@ bool CheckListClass::Is_Checked(int index) const {
  * HISTORY:                                                                *
  *   02/16/1995 BR : Created.                                              *
  *=========================================================================*/
-int CheckListClass::Action(unsigned flags, KeyNumType& key) {
-  int rc;
+bool CheckListClass::Action(unsigned flags, KeyNumType& key) {
+  bool rc;
 
   /*
   ** If this is a read-only list, it's a display-only device
@@ -334,7 +334,7 @@ int CheckListClass::Action(unsigned flags, KeyNumType& key) {
  *   12/14/1995 BRR : Created.                                             *
  *=========================================================================*/
 void CheckListClass::Draw_Entry(int index, int x, int y, int width,
-                                int selected) {
+                                bool selected) {
   if (index >= Count()) {
     return;
   }

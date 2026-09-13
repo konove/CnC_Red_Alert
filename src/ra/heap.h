@@ -92,11 +92,11 @@ class FixedHeapClass {
   [[nodiscard]] int Avail() const { return TotalCount - ActiveCount; }
 
   virtual int ID(const void* pointer) const;
-  virtual int Set_Heap(int count, void* buffer = nullptr);
+  virtual bool Set_Heap(int count, void* buffer = nullptr);
   virtual void* Allocate();
   virtual void Clear();
-  virtual int Free(void* pointer);
-  virtual int Free_All();
+  virtual bool Free(void* pointer);
+  virtual bool Free_All();
 
   void* operator[](int index) {
     return static_cast<char*>(Buffer) +
@@ -162,11 +162,11 @@ class FixedIHeapClass : public FixedHeapClass {
   FixedIHeapClass(FixedIHeapClass&&) = delete;
   FixedIHeapClass& operator=(FixedIHeapClass&&) = delete;
 
-  int Set_Heap(int count, void* buffer = nullptr) override;
+  bool Set_Heap(int count, void* buffer = nullptr) override;
   void* Allocate() override;
   void Clear() override;
-  int Free(void* pointer) override;
-  int Free_All() override;
+  bool Free(void* pointer) override;
+  bool Free_All() override;
   virtual int Logical_ID(const void* pointer) const;
   [[nodiscard]] virtual int Logical_ID(int id) const {
     return Logical_ID((*this)[id]);
@@ -218,14 +218,14 @@ class TFixedIHeapClass : public FixedIHeapClass {
     return FixedIHeapClass::Logical_ID(id);
   }
   virtual T* Alloc() { return static_cast<T*>(FixedIHeapClass::Allocate()); }
-  virtual int Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
-  int Free(void* pointer) override { return FixedIHeapClass::Free(pointer); }
+  virtual bool Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
+  bool Free(void* pointer) override { return FixedIHeapClass::Free(pointer); }
   // Writes the active count, then each object's slot index and contents.
-  int Save(Pipe& file) const
+  bool Save(Pipe& file) const
     requires Serializable<T>;
   // Reads what Save wrote back into the same slots. Returns false on a
   // malformed stream; the heap is then partially populated.
-  int Load(Straw& file)
+  bool Load(Straw& file)
     requires Serializable<T>;
   [[nodiscard]] virtual T* Ptr(int index) const {
     return static_cast<T*>(ActivePointers[index]);
@@ -236,7 +236,7 @@ class TFixedIHeapClass : public FixedIHeapClass {
 };
 
 template <class T>
-int TFixedIHeapClass<T>::Save(Pipe& file) const
+bool TFixedIHeapClass<T>::Save(Pipe& file) const
   requires Serializable<T>
 {
   ArchiveWriter writer(file);
@@ -254,7 +254,7 @@ int TFixedIHeapClass<T>::Save(Pipe& file) const
 }
 
 template <class T>
-int TFixedIHeapClass<T>::Load(Straw& file)
+bool TFixedIHeapClass<T>::Load(Straw& file)
   requires Serializable<T>
 {
   ArchiveReader reader(file);

@@ -1037,7 +1037,7 @@ void Keyboard_Process(KeyNumType& input) {
     if (Debug_Playtest &&
         static_cast<unsigned>(input) ==
             (static_cast<unsigned>(KN_W) | static_cast<unsigned>(KN_ALT_BIT))) {
-      PlayerPtr->Blockage = false;
+      PlayerPtr->Blockage = 0;
       PlayerPtr->Flag_To_Win();
     }
 
@@ -1965,11 +1965,11 @@ int MixFileVqaIo::Open(const char* filename) {
 }
 
 int MixFileVqaIo::Read(void* buffer, const int64_t bytes) {
-  return file_->Read(buffer, static_cast<int32_t>(bytes)) != bytes;
+  return file_->Read(buffer, static_cast<int32_t>(bytes)) != bytes ? 1 : 0;
 }
 
 int MixFileVqaIo::Seek(const int64_t offset, const int origin) {
-  return file_->Seek(static_cast<int32_t>(offset), origin) == -1;
+  return file_->Seek(static_cast<int32_t>(offset), origin) == -1 ? 1 : 0;
 }
 
 void MixFileVqaIo::Close() {
@@ -2541,7 +2541,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
   if ((BreakoutAllowed || Debug_Flag) && key == KN_ESC) {
     Keyboard->Clear();
     Brokeout = true;
-    return true;
+    return 1;
   }
 
   if (!GameInFocus) {
@@ -2551,7 +2551,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
     }
   }
   Video_End_Frame();
-  return false;
+  return 0;
 }
 
 int32_t VQ_Event_Handler(const uint32_t event, void* /*buffer*/,

@@ -714,7 +714,7 @@ GraphicBufferClass HiddenPage;
 GraphicViewPortClass SeenBuff(&VisiblePage, 0, 0, 640, 480);
 GraphicViewPortClass HidPage(&HiddenPage, 0, 0, 640, 480);
 
-int SoundOn;
+bool SoundOn;
 Timer<SystemTickSource> FrameTimer;
 Timer<SystemTickSource> CountDownTimer;
 
@@ -729,7 +729,7 @@ SpecialDialogType SpecialDialog = SDLG_NONE;
 
 int RequiredCD = -1;
 int CurrentCD = -1;
-int MouseInstalled;
+bool MouseInstalled;
 
 //
 // Variables for helping track how much time goes bye in routines

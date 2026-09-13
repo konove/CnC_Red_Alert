@@ -127,11 +127,11 @@ class IconListClass : public ListClass {
                        int iYFixedIcon = 0, int iFixedIconWidth = -1);
 
   //		virtual int Add_Scroll_Bar();
-  //		virtual void Bump(int up);
+  //		virtual void Bump(bool up);
   //		virtual int Count() const {return List.Count();};
   //		virtual int Current_Index() const;
   //		virtual char const * Current_Item() const;
-  //		virtual int Draw_Me(int forced);
+  //		virtual bool Draw_Me(int forced);
   //		virtual char const * Get_Item(int index) const;
   //		virtual int Step_Selected_Index(int forward);
   //		virtual void Flag_To_Redraw();
@@ -145,7 +145,7 @@ class IconListClass : public ListClass {
   //		virtual void Set_Selected_Index(char const * text);
   //		virtual void Set_Tabs(int const * tabs);
   //		virtual int  Set_View_Index(int index);
-  //		virtual void Step(int up);
+  //		virtual void Step(bool up);
   //		virtual void Set_Position(int x, int y);
 
   /*
@@ -201,8 +201,8 @@ class IconListClass : public ListClass {
   }
 
  protected:
-  int Action(unsigned flags, KeyNumType& key) override;
-  void Draw_Entry(int index, int x, int y, int width, int selected) override;
+  bool Action(unsigned flags, KeyNumType& key) override;
+  void Draw_Entry(int index, int x, int y, int width, bool selected) override;
 
   virtual int Add_Item_Detail(const char* szToken, const char* szHelp,
                               void* pIcon0, ICONKIND IconKind0,

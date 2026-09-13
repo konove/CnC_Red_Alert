@@ -216,7 +216,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
   Check the magic #
   ------------------------------------------------------------------------*/
   if (std::cmp_less(buflen, sizeof(GlobalHeaderType))) {
-    return false;
+    return 0;
   }
   auto packet_storage = port::ReadUnaligned<GlobalHeaderType>(buf);
   packet = &packet_storage;
@@ -447,7 +447,7 @@ int IPXGlobalConnClass::Send(char* buf, int buflen, void* extrabuf,
   If it's a broadcast address, broadcast it
   ------------------------------------------------------------------------*/
   if (addr->Is_Broadcast()) {
-    return Broadcast(buf, buflen);
+    return Broadcast(buf, buflen) ? 1 : 0;
   }
 
   /*------------------------------------------------------------------------

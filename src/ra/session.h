@@ -541,9 +541,9 @@ class SessionClass {
   void SerializePlayers(Archive& ar);
 
   int Save(Pipe& file);
-  int Load(Straw& file);
+  bool Load(Straw& file);
   int Save(CCFileClass& file);
-  int Load(CCFileClass& file);
+  bool Load(CCFileClass& file);
 
   //.....................................................................
   // Debugging / Sync Bugs
@@ -580,7 +580,7 @@ class SessionClass {
   PlayerColorType PrefColor;      // preferred color index
   PlayerColorType ColorIdx;       // actual color index
   HousesType House{HOUSE_GOOD};   // GDI / NOD
-  int ObiWan{0};                  // 1 = player can see all
+  bool ObiWan{false};             // 1 = player can see all
   int Solo{0};                    // 1 = player can play alone
 
   //.....................................................................
@@ -607,13 +607,13 @@ class SessionClass {
   //.....................................................................
   // This flag is set when we've loaded a multiplayer game.
   //.....................................................................
-  int LoadGame{0};
+  bool LoadGame{false};
 
   //.....................................................................
   // This flag is set when the modem game saves the game due to a lost
   // connection.
   //.....................................................................
-  int EmergencySave{0};
+  bool EmergencySave{false};
 
   //.....................................................................
   // List of scenarios & their file numbers

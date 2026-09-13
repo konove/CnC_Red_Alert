@@ -247,7 +247,7 @@ bool RadarClass::Radar_Activate(int control) {
     ** Toggle the state of the radar map on or off.
     */
     case -1: {
-      int temp = !static_cast<bool>(IsRadarActive);
+      bool temp = !static_cast<bool>(IsRadarActive);
       if (temp) {
         Radar_Activate(1);
       } else {
@@ -1206,30 +1206,30 @@ bool RadarClass::Map_Cell(CELL cell, HouseClass* house) {
   return false;
 }
 
-void RadarClass::Cursor_Cell(CELL cell, int value) {
+void RadarClass::Cursor_Cell(CELL cell, bool value) {
   /*
   ** If this cell is not on the radar don't bother doing anything.
   */
   if (Cell_On_Radar(cell)) {
-    int temp = (*this)[cell].IsRadarCursor;
+    bool temp = (*this)[cell].IsRadarCursor;
 
     if (temp != value) {
       /*
       **	Record the new state of this cell.
       */
-      (*this)[cell].IsRadarCursor = value != 0;
+      (*this)[cell].IsRadarCursor = value;
 
       /*
       **	If we are erasing then erase the cell.
       */
-      if (!static_cast<bool>(value)) {
+      if (!value) {
         Plot_Radar_Pixel(cell);
       }
     }
   }
 }
 
-void RadarClass::Mark_Radar(int x1, int y1, int x2, int y2, int value,
+void RadarClass::Mark_Radar(int x1, int y1, int x2, int y2, bool value,
                             int barlen) {
   int x;
   int y;
@@ -1368,7 +1368,7 @@ bool RadarClass::UnJam_Cell(CELL cell, HouseClass* house) {
  *                                                                                             *
  * HISTORY: * 05/22/1991 JLB : Created. * 11/17/1995 PWG : Created. *
  *=============================================================================================*/
-void RadarClass::Radar_Cursor(int forced) {
+void RadarClass::Radar_Cursor(bool forced) {
   static int _last_pos = -1;
   static int _last_frame = -1;
   GraphicViewPortClass* oldpage;
@@ -1639,7 +1639,7 @@ void RadarClass::AI(KeyNumType& input, int x, int y) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-int RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
+bool RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
   CELL cell;                      // cell num click happened over
   int x;
   int y;  // Sub cell pixel coordinates.
@@ -1890,7 +1890,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
   newcell = XY_Cell(newx, newy);
 
   if (RadarCell != newcell) {
-    int forced = false;
+    bool forced = false;
     int xmod = newx;
     int ymod = newy;
 

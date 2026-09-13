@@ -81,7 +81,7 @@ class MusicListClass : public ListClass {
   MusicListClass& operator=(MusicListClass&&) = delete;
 
  protected:
-  void Draw_Entry(int index, int x, int y, int width, int selected) override;
+  void Draw_Entry(int index, int x, int y, int width, bool selected) override;
 };
 
 /***********************************************************************************************
@@ -460,7 +460,7 @@ void SoundControlsClass::Process() {
  * HISTORY: * 09/22/1995 JLB : Created. *
  *=============================================================================================*/
 void MusicListClass::Draw_Entry(int index, int x, int y, int width,
-                                int selected) {
+                                bool selected) {
   RemapControlType* scheme = Get_Color_Scheme();
 
   if (TextFlags & TPF_6PT_GRAD) {

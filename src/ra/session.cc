@@ -457,7 +457,7 @@ int SessionClass::Save(Pipe& file) {
  * HISTORY:                                                                *
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-int SessionClass::Load(Straw& file) {
+bool SessionClass::Load(Straw& file) {
   ArchiveReader reader(file);
   Serialize(reader);
   return reader.ok();
@@ -511,7 +511,7 @@ int SessionClass::Save(CCFileClass& file) {
  * HISTORY:                                                                *
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-int SessionClass::Load(CCFileClass& file) {
+bool SessionClass::Load(CCFileClass& file) {
   FileStraw straw(file);
   ArchiveReader reader(straw);
   Serialize(reader);
@@ -584,11 +584,11 @@ void SessionClass::Read_MultiPlayer_Settings() {
     SerialDefaults.IRQ = ini.Get_Int("SerialDefaults", "IRQ", -1);
     SerialDefaults.Baud = ini.Get_Int("SerialDefaults", "Baud", -1);
     SerialDefaults.Compression =
-        ini.Get_Int("SerialDefaults", "Compression", 0);
+        ini.Get_Int("SerialDefaults", "Compression", 0) != 0;
     SerialDefaults.ErrorCorrection =
-        ini.Get_Int("SerialDefaults", "ErrorCorrection", 0);
+        ini.Get_Int("SerialDefaults", "ErrorCorrection", 0) != 0;
     SerialDefaults.HardwareFlowControl =
-        ini.Get_Int("SerialDefaults", "HardwareFlowControl", 1);
+        ini.Get_Int("SerialDefaults", "HardwareFlowControl", 1) != 0;
 
     ini.Get_String("SerialDefaults", "DialMethod", "T", buf, 2);
 
@@ -720,18 +720,18 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
         if (i == DIAL_METHODS) {
           phone->Settings.Compression =
-              tech::ParseInteger<int>(tokenptr).value_or(0);
+              tech::ParseInteger<int>(tokenptr).value_or(0) != 0;
 
           tokenptr = strtok(nullptr, "|");
           if (tokenptr) {
             phone->Settings.ErrorCorrection =
-                tech::ParseInteger<int>(tokenptr).value_or(0);
+                tech::ParseInteger<int>(tokenptr).value_or(0) != 0;
           }
 
           tokenptr = strtok(nullptr, "|");
           if (tokenptr) {
             phone->Settings.HardwareFlowControl =
-                tech::ParseInteger<int>(tokenptr).value_or(0);
+                tech::ParseInteger<int>(tokenptr).value_or(0) != 0;
           }
 
           tokenptr = strtok(nullptr, "|");
@@ -856,20 +856,21 @@ void SessionClass::Write_MultiPlayer_Settings() {
     ini.Put_String("SerialDefaults", "CallWaitString",
                    SerialDefaults.CallWaitString);
     ini.Put_Int("SerialDefaults", "CallWaitStringIndex",
-                SerialDefaults.CallWaitStringIndex);
+                SerialDefaults.CallWaitStringIndex ? 1 : 0);
     ini.Put_Int("SerialDefaults", "InitStringIndex",
-                SerialDefaults.InitStringIndex);
+                SerialDefaults.InitStringIndex ? 1 : 0);
     ini.Put_String("SerialDefaults", "DialMethod",
                    DialMethodCheck[SerialDefaults.DialMethod]);
-    ini.Put_Int("SerialDefaults", "Baud", SerialDefaults.Baud);
-    ini.Put_Int("SerialDefaults", "IRQ", SerialDefaults.IRQ);
+    ini.Put_Int("SerialDefaults", "Baud", SerialDefaults.Baud ? 1 : 0);
+    ini.Put_Int("SerialDefaults", "IRQ", SerialDefaults.IRQ ? 1 : 0);
     ini.Put_Int("SerialDefaults", "Port", SerialDefaults.Port, 1);
     ini.Put_String("SerialDefaults", "ModemName", SerialDefaults.ModemName);
-    ini.Put_Int("SerialDefaults", "Compression", SerialDefaults.Compression);
+    ini.Put_Int("SerialDefaults", "Compression",
+                SerialDefaults.Compression ? 1 : 0);
     ini.Put_Int("SerialDefaults", "ErrorCorrection",
-                SerialDefaults.ErrorCorrection);
+                SerialDefaults.ErrorCorrection ? 1 : 0);
     ini.Put_Int("SerialDefaults", "HardwareFlowControl",
-                SerialDefaults.HardwareFlowControl);
+                SerialDefaults.HardwareFlowControl ? 1 : 0);
 
     //	Clear all existing InitString entries.
     ini.Clear("InitStrings");
@@ -892,14 +893,14 @@ void SessionClass::Write_MultiPlayer_Settings() {
       snprintf(buf, sizeof(buf), "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s",
                PhoneBook[i]->Name, PhoneBook[i]->Number,
                static_cast<unsigned int>(PhoneBook[i]->Settings.Port),
-              PhoneBook[i]->Settings.IRQ, PhoneBook[i]->Settings.Baud,
-              PhoneBook[i]->Settings.Compression,
-              PhoneBook[i]->Settings.ErrorCorrection,
-              PhoneBook[i]->Settings.HardwareFlowControl,
-              DialMethodCheck[PhoneBook[i]->Settings.DialMethod],
-              PhoneBook[i]->Settings.InitStringIndex,
-              PhoneBook[i]->Settings.CallWaitStringIndex,
-              PhoneBook[i]->Settings.CallWaitString);
+               PhoneBook[i]->Settings.IRQ, PhoneBook[i]->Settings.Baud,
+               PhoneBook[i]->Settings.Compression ? 1 : 0,
+               PhoneBook[i]->Settings.ErrorCorrection ? 1 : 0,
+               PhoneBook[i]->Settings.HardwareFlowControl ? 1 : 0,
+               DialMethodCheck[PhoneBook[i]->Settings.DialMethod],
+               PhoneBook[i]->Settings.InitStringIndex,
+               PhoneBook[i]->Settings.CallWaitStringIndex,
+               PhoneBook[i]->Settings.CallWaitString);
       sprintf(entrytext, "%03td", i);
       ini.Put_String("PhoneBook", entrytext, buf);
     }

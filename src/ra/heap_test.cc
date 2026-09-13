@@ -56,7 +56,7 @@ std::vector<uint8_t> Save(TFixedIHeapClass<Widget>& heap) {
 
 bool Load(TFixedIHeapClass<Widget>& heap, const std::vector<uint8_t>& bytes) {
   BufferStraw straw(bytes.data(), static_cast<int>(bytes.size()));
-  return heap.Load(straw) != 0;
+  return heap.Load(straw);
 }
 
 TEST(HeapSerializeTest, SparseSlotsRoundTripIntoTheSameSlots) {

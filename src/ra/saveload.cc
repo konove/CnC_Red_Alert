@@ -123,7 +123,7 @@
 /*
 ********************************** Defines **********************************
 */
-static int Reconcile_Players();
+static bool Reconcile_Players();
 
 // Section tags bracket every top-level block of the save body. They cost
 // four bytes each and turn a field-list mismatch into an error that names
@@ -525,7 +525,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   const char* dump_path = std::getenv("RA_SAVE_DUMP");
   if (dump_path != nullptr && dump_path[0] != '\0') {
     dump_file.Open(dump_path, FileAccess::kWrite);
-    dump_open = dump_file.Is_Open() != 0;
+    dump_open = dump_file.Is_Open();
     if (!dump_open) {
       DLOG(WARNING) << "Cannot open RA_SAVE_DUMP: " << dump_path;
     }
@@ -1338,7 +1338,7 @@ bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
  * HISTORY:                                                                *
  *   09/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Reconcile_Players() {
+static bool Reconcile_Players() {
   int i;
   int found;
   HousesType house;
@@ -1427,4 +1427,3 @@ static int Reconcile_Players() {
   //
   return Session.NumPlayers == Session.Players.Count();
 }
-

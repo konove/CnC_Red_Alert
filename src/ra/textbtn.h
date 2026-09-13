@@ -49,10 +49,10 @@ class TextButtonClass final : public ToggleClass {
   TextButtonClass();
   TextButtonClass(unsigned id, const char* text ABSL_ATTRIBUTE_LIFETIME_BOUND,
                   TextPrintType style, int x, int y, int w = -1, int h = -1,
-                  int blackborder = false);
+                  bool blackborder = false);
   TextButtonClass(unsigned id, int text, TextPrintType style, int x, int y,
-                  int w = -1, int h = -1, int blackborder = false);
-  int Draw_Me(bool forced = false) override;
+                  int w = -1, int h = -1, bool blackborder = false);
+  bool Draw_Me(bool forced = false) override;
   void Set_Text(const char* text, bool resize = false);
   void Set_Text(int text, bool resize = false);
   void Set_Style(TextPrintType style) { PrintFlags = style; }

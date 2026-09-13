@@ -101,9 +101,9 @@ class RadarClass : public DisplayClass {
   void Plot_Radar_Pixel(CELL cell);
   void Radar_Pixel(CELL cell);
   void Coord_To_Radar_Pixel(COORDINATE coord, int& x, int& y);
-  void Cursor_Cell(CELL cell, int value);
-  void Mark_Radar(int x1, int y1, int x2, int y2, int value, int barlen);
-  void Radar_Cursor(int forced = false);
+  void Cursor_Cell(CELL cell, bool value);
+  void Mark_Radar(int x1, int y1, int x2, int y2, bool value, int barlen);
+  void Radar_Cursor(bool forced = false);
   void Render_Terrain(CELL cell, int x, int y, int size);
   bool Cell_On_Radar(CELL cell);
   static void Render_Infantry(CELL cell, int x, int y, int size);
@@ -178,7 +178,7 @@ class RadarClass : public DisplayClass {
                       true) {}
 
    protected:
-    int Action(unsigned flags, KeyNumType& key) override;
+    bool Action(unsigned flags, KeyNumType& key) override;
     friend class RadarClass;
   };
   friend class RTacticalClass;

@@ -828,7 +828,7 @@ void MapEditClass::Start_Placement() {
 int MapEditClass::Place_Object() {
   CELL template_cell;        // cell being checked for template
   COORDINATE obj_coord;      // coord of occupier object
-  int okflag;                // OK to place a template?
+  bool okflag;               // OK to place a template?
   const int16_t* occupy;     // ptr into template's OccupyList
   ObjectClass* occupier;     // occupying object
   TemplateType save_ttype;   // for saving cell's TType

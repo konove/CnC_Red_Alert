@@ -1508,7 +1508,7 @@ bool MapClass::Remove_Crate(CELL cell) {
  * HISTORY:                                                                *
  *   07/08/1995 BRR : Created.                                             *
  *=========================================================================*/
-int MapClass::Validate() {
+bool MapClass::Validate() {
   CELL cell;
   TemplateType ttype;
   unsigned char ticon;

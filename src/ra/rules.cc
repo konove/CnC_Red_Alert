@@ -302,7 +302,7 @@ bool RulesClass::General(CCINIClass& ini) {
 
   if (ini.Is_Present(AFTERMATH)) {
     // debugprint( "NewUnitsEnabled previously %i\n", NewUnitsEnabled );
-    NewUnitsEnabled = ini.Get_Int(AFTERMATH, "NewUnitsEnabled", 0);
+    NewUnitsEnabled = ini.Get_Int(AFTERMATH, "NewUnitsEnabled", 0) != 0;
     // debugprint( "NewUnitsEnabled set to %i by Rules\n", NewUnitsEnabled );
     MTankDistance = ini.Get_Int(AFTERMATH, "MTankDistance", MTankDistance);
     QuakeUnitDamage =
@@ -342,9 +342,9 @@ bool RulesClass::General(CCINIClass& ini) {
     ParaBombTechLevel = ini.Get_Int(GENERAL, "ParabombTech", ParaBombTechLevel);
     GPSTechLevel = ini.Get_Int(GENERAL, "GPSTechLevel", GPSTechLevel);
     UnitCrateType = ini.Get_UnitType(GENERAL, "UnitCrateType", UnitCrateType);
-    IsExplosiveHarvester =
-        ini.Get_Fixed(GENERAL, "OreExplosive", fixed(IsExplosiveHarvester))
-            .ToInt();
+    IsExplosiveHarvester = ini.Get_Fixed(GENERAL, "OreExplosive",
+                                         fixed(IsExplosiveHarvester ? 1 : 0))
+                               .ToInt() != 0;
     GapRegenInterval =
         ini.Get_Fixed(GENERAL, "GapRegenInterval", GapRegenInterval);
     TeamDelay = ini.Get_Fixed(GENERAL, "TeamDelay", TeamDelay);

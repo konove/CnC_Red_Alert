@@ -1301,7 +1301,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
     //	Not all of these values are currently used during setup.
     CreateGameInfo.bCreateGame = false;
     CreateGameInfo.iPlayerMax = static_cast<int>(pChannel->maxUsers);
-    CreateGameInfo.bTournament = pChannel->tournament;
+    CreateGameInfo.bTournament = pChannel->tournament != 0;
     if (*szSuccessfulPassword) {
       CreateGameInfo.bPrivate = true;
       port::SafeCopy(CreateGameInfo.szPassword, szSuccessfulPassword);

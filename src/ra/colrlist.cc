@@ -202,7 +202,7 @@ void ColorListClass::Set_Selected_Style(SelectStyleType style,
  *   04/19/1995 BRR : Created.                                             *
  *=========================================================================*/
 void ColorListClass::Draw_Entry(int index, int x, int y, int width,
-                                int selected) {
+                                bool selected) {
   RemapControlType* color;
 
   /*

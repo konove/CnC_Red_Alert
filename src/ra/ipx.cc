@@ -81,11 +81,7 @@
  * HISTORY:                                                                *
  *   12/14/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPX_SPX_Installed() {
-  return false;
-
-
-} /* end of IPX_SPX_Installed */
+bool IPX_SPX_Installed() { return false; } /* end of IPX_SPX_Installed */
 
 /***************************************************************************
  * IPX_Open_Socket -- opens an IPX socket for sending or receiving         *

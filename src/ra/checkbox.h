@@ -47,10 +47,10 @@ class CheckBoxClass : public ToggleClass {
  public:
   CheckBoxClass(unsigned id, int x, int y) : ToggleClass(id, x, y, 7, 7) {}
 
-  int Draw_Me(bool forced = false) override;
+  bool Draw_Me(bool forced = false) override;
 
  protected:
-  int Action(unsigned flags, KeyNumType& key) override;
+  bool Action(unsigned flags, KeyNumType& key) override;
 };
 
 #endif  // CNC_RED_ALERT_RA_CHECKBOX_H_

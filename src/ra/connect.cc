@@ -297,7 +297,7 @@ int ConnectionClass::Receive_Packet(void* buf, int buflen) {
   Check the magic #
   ------------------------------------------------------------------------*/
   if (std::cmp_less(buflen, sizeof(CommHeaderType))) {
-    return false;
+    return 0;
   }
   auto packet_storage = port::ReadUnaligned<CommHeaderType>(buf);
   packet = &packet_storage;

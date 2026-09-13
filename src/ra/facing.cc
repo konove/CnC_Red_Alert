@@ -84,7 +84,7 @@ FacingClass::FacingClass() : CurrentFacing(DIR_N), DesiredFacing(DIR_N) {}
  *                                                                                             *
  * HISTORY: * 03/21/1995 JLB : Created. *
  *=============================================================================================*/
-int FacingClass::Set_Desired(DirType facing) {
+bool FacingClass::Set_Desired(DirType facing) {
   if (DesiredFacing != facing) {
     DesiredFacing = facing;
     return true;
@@ -107,7 +107,7 @@ int FacingClass::Set_Desired(DirType facing) {
  *                                                                                             *
  * HISTORY: * 03/21/1995 JLB : Created. *
  *=============================================================================================*/
-int FacingClass::Set_Current(DirType facing) {
+bool FacingClass::Set_Current(DirType facing) {
   if (CurrentFacing != facing) {
     CurrentFacing = facing;
     return true;
@@ -137,7 +137,7 @@ int FacingClass::Set_Current(DirType facing) {
  *                                                                                             *
  * HISTORY: * 03/21/1995 JLB : Created. *
  *=============================================================================================*/
-int FacingClass::Rotation_Adjust(int rate) {
+bool FacingClass::Rotation_Adjust(int rate) {
   /*
   **	Only perform the rotation adjustment if the desired facing is not the
   **	same as the current facing.

@@ -78,8 +78,8 @@ class NullModemClass : public ConnManClass {
 
   int OldIRQPri{-1};  // default true
 
-  int ModemVerboseOn{false};    // default 50 * 1000ms = 50 secs
-  int ModemEchoOn{false};       // default 6  * 100ms  = .6 secs
+  bool ModemVerboseOn{false};   // default 50 * 1000ms = 50 secs
+  bool ModemEchoOn{false};      // default 6  * 100ms  = .6 secs
   int ModemWaitCarrier{50000};  // default 14 * 100ms  = 1.4 secs
   int ModemCarrierDetect{600};  // default 20 * 1000ms = 20 secs
   int ModemCarrierLoss{1400};   // default 50 * 20ms   = 1 sec
@@ -106,11 +106,11 @@ class NullModemClass : public ConnManClass {
   */
   int Init(int port, int irq, char* dev_name, int baud, char parity,
            int wordlength, int stopbits, int flowcontrol);
-  int Delete_Connection();
+  bool Delete_Connection();
   int Num_Connections() override;
   int Connection_ID(int /*index*/) override { return 0; }
   int Connection_Index(int /*id*/) override { return 0; }
-  int Init_Send_Queue();
+  bool Init_Send_Queue();
   void Shutdown();
 
   void Set_Timing(int32_t retrydelta, int32_t maxretries,

@@ -77,8 +77,8 @@
 **	Function prototypes
 ******************************/
 
-static int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
-                                 int iny2);
+static bool Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
+                                  int iny2);
 static int Select_To_Entry(int selection, uint32_t enabled_mask,
                            int start_bit);
 static void Flash_Line(const char* text, int xpix, int ypix, int nfgc,
@@ -171,8 +171,8 @@ static void Flash_Line(const char* text, int xpix, int ypix, int nfgc,
 /*	RETURNS:	none
  */
 /*=========================================================================*/
-static int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
-                                 int iny2) {
+static bool Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
+                                  int iny2) {
   return x >= inx1 && x <= inx2 && y >= iny1 && y <= iny2;
 }
 

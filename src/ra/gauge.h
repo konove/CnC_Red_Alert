@@ -46,11 +46,11 @@ class GaugeClass : public ControlClass {
  public:
   GaugeClass(unsigned id, int x, int y, int w, int h);
 
-  int Draw_Me(bool forced = false) override;
-  virtual int Set_Maximum(int value);
-  virtual int Set_Value(int value);
+  bool Draw_Me(bool forced = false) override;
+  virtual bool Set_Maximum(int value);
+  virtual bool Set_Value(int value);
   [[nodiscard]] virtual int Get_Value() const { return CurValue; }
-  virtual void Use_Thumb(int value) { HasThumb = value != 0; }
+  virtual void Use_Thumb(bool value) { HasThumb = value; }
 
   virtual int Thumb_Pixels() { return 4; }
 
@@ -83,7 +83,7 @@ class GaugeClass : public ControlClass {
   int ClickDiff{0};
 
   virtual void Draw_Thumb();
-  int Action(unsigned flags, KeyNumType& key) override;
+  bool Action(unsigned flags, KeyNumType& key) override;
   virtual int Pixel_To_Value(int pixel);
   virtual int Value_To_Pixel(int value);
 };
@@ -91,9 +91,9 @@ class GaugeClass : public ControlClass {
 class TriColorGaugeClass : public GaugeClass {
  public:
   TriColorGaugeClass(unsigned id, int x, int y, int w, int h);
-  int Draw_Me(bool forced) override;
-  virtual int Set_Red_Limit(int value);
-  virtual int Set_Yellow_Limit(int value);
+  bool Draw_Me(bool forced) override;
+  virtual bool Set_Red_Limit(int value);
+  virtual bool Set_Yellow_Limit(int value);
 
  protected:
   int RedLimit{0};     // maximum value for red

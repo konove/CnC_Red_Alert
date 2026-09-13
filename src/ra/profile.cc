@@ -86,7 +86,7 @@ bool Read_Private_Config_Struct(FileClass& file, NewConfigType* config) {
   config->BitsPerSample =
       static_cast<unsigned>(ini.Get_Int("Sound", "BitsPerSample", 0));
   config->Channels = static_cast<unsigned>(ini.Get_Int("Sound", "Channels", 0));
-  config->Reverse = ini.Get_Int("Sound", "Reverse", 0);
+  config->Reverse = ini.Get_Int("Sound", "Reverse", 0) != 0;
   config->Speed = static_cast<unsigned>(ini.Get_Int("Sound", "Speed", 0));
   ini.Get_String("Language", "Language", nullptr, config->Language,
                  sizeof(config->Language));

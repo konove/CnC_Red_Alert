@@ -124,13 +124,13 @@ RemapControlType* GadgetClass::ColorScheme = &DefaultColorScheme;
  * HISTORY: * 01/03/1995 MML : Created. *
  *=============================================================================================*/
 GadgetClass::GadgetClass(int x, int y, int w, int h, unsigned flags,
-                         int sticky) noexcept
+                         bool sticky) noexcept
     : X(x),
       Y(y),
       Width(w),
       Height(h),
 
-      IsSticky(sticky != 0),
+      IsSticky(sticky),
 
       Flags(flags) {
   if (IsSticky) {
@@ -187,8 +187,8 @@ GadgetClass::~GadgetClass() {
  *                                                                         *
  * HISTORY:    01/03/1995 MML : Created.                                   *
  *=========================================================================*/
-int GadgetClass::Clicked_On(KeyNumType& key, unsigned flags, int mousex,
-                            int mousey) {
+bool GadgetClass::Clicked_On(KeyNumType& key, unsigned flags, int mousex,
+                             int mousey) {
   /*
   **	Set flags to match only those events that occur AND are being looked
   *for. If *	the result is NULL, then we know that this button should be
@@ -369,7 +369,7 @@ void GadgetClass::Delete_List() {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-int GadgetClass::Action(unsigned flags, KeyNumType& /*unused*/) {
+bool GadgetClass::Action(unsigned flags, KeyNumType& /*unused*/) {
   /*
   **	If any of the event flags are active, then this indicates that something
   *probably *	has changed the gadget. Flag the gadget to be redrawn. Also,
@@ -399,7 +399,7 @@ int GadgetClass::Action(unsigned flags, KeyNumType& /*unused*/) {
  *                                                                                             *
  * HISTORY: * 01/14/1995 JLB : Created. *
  *=============================================================================================*/
-int GadgetClass::Draw_Me(bool forced) {
+bool GadgetClass::Draw_Me(bool forced) {
   if (forced || IsToRepaint) {
     IsToRepaint = false;
     return true;
@@ -446,7 +446,7 @@ KeyNumType GadgetClass::Input() {
   int mousey;
   KeyNumType key;
   unsigned flags;
-  int forced = false;
+  bool forced = false;
 
   /*
   **	Record this list so that a forced redraw only occurs the FIRST time the
@@ -785,7 +785,7 @@ bool GadgetClass::Has_Focus() { return this == Focused; }
  *                                                                                             *
  * HISTORY: * 01/03/1995 MML : Created. *
  *=============================================================================================*/
-int GadgetClass::Is_List_To_Redraw() {
+bool GadgetClass::Is_List_To_Redraw() {
   GadgetClass* gadget = this;
 
   while (gadget != nullptr) {

@@ -17,7 +17,7 @@ LockedWindow::LockedWindow(WindowNumberType window)
             WindowList[window][WINDOWY] + LogicPage->Get_YPos(),
             WindowList[window][WINDOWWIDTH], WindowList[window][WINDOWHEIGHT]),
 
-      locked_(view_.Lock() != 0) {
+      locked_(view_.Lock()) {
   if (locked_) {
     // GraphicViewPortClass calls the end-of-line skip the "pitch", so the
     // distance between rows is that plus the visible width.

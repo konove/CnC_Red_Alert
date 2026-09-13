@@ -616,7 +616,7 @@ class TechnoTypeClass : public ObjectTypeClass {
                   bool is_footprint, int rotation, SpeedType speed) noexcept;
 
   [[nodiscard]] bool Is_Two_Shooter() const;
-  [[nodiscard]] int Legal_Placement(CELL pos) const;
+  [[nodiscard]] bool Legal_Placement(CELL pos) const;
   [[nodiscard]] virtual int Raw_Cost() const;
   [[nodiscard]] virtual int Max_Passengers() const { return MaxPassengers; }
   [[nodiscard]] virtual int Repair_Cost() const;

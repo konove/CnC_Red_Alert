@@ -46,7 +46,7 @@ class ShapeButtonClass final : public ToggleClass {
  public:
   ShapeButtonClass() noexcept;
   ShapeButtonClass(unsigned id, const void* shapes, int x, int y);
-  int Draw_Me(bool forced = false) override;
+  bool Draw_Me(bool forced = false) override;
   void Set_Shape(const void* data);
   const void* Get_Shape_Data() { return ShapeData; }
 

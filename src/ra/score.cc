@@ -132,7 +132,7 @@ static void Animate_Score_Objs();
 static void Cycle_Wait_Click(bool cycle = true);
 
 static const void* Beepy6;
-static int ControlQ;  // cheat key to skip past score/mapsel screens
+static bool ControlQ;  // cheat key to skip past score/mapsel screens
 static bool StillUpdating;
 
 static const char* ScreenNames[2] = {"ALIBACKH.PCX", "SOVBACKH.PCX"};
@@ -345,12 +345,14 @@ void ScoreClass::Presentation() {
   struct Fame hallfame[NUMFAMENAMES];
   const void* oldfont;
   int oldfontxspacing = FontXSpacing;
-  int house = PlayerPtr->Class->House == HOUSE_USSR ||
-              PlayerPtr->Class->House == HOUSE_UKRAINE;  // 0 or 1
+  int house = (PlayerPtr->Class->House == HOUSE_USSR ||
+               PlayerPtr->Class->House == HOUSE_UKRAINE)
+                  ? 1
+                  : 0;  // 0 or 1
   char inter_pal[15];
   sprintf(inter_pal, "SCORPAL1.PAL");
 
-  ControlQ = 0;
+  ControlQ = false;
   FontXSpacing = 0;
   Map.Override_Mouse_Shape(MOUSE_NORMAL);
   Theme.Queue_Song(THEME_SCORE);
@@ -709,7 +711,7 @@ void ScoreClass::Presentation() {
 
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;
-  ControlQ = 0;
+  ControlQ = false;
 
   /*
   ** Fix for the score screen crash due to uncompressed shape buffer overflow.
@@ -881,8 +883,10 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
   int i;
   int maxval;
   int xpos = 174;
-  int house = PlayerPtr->Class->House == HOUSE_USSR ||
-              PlayerPtr->Class->House == HOUSE_UKRAINE;  // 0 or 1
+  int house = (PlayerPtr->Class->House == HOUSE_USSR ||
+               PlayerPtr->Class->House == HOUSE_UKRAINE)
+                  ? 1
+                  : 0;  // 0 or 1
   if (house) {
     int temp = gkilled;
     gkilled = nkilled;
@@ -1509,7 +1513,7 @@ void Call_Back_Delay(int time) {
 
   if ((!ControlQ) &&
       (KeyboardClass::Down(KN_LCTRL) && KeyboardClass::Down(KN_Q))) {
-    ControlQ = 1;
+    ControlQ = true;
     Keyboard->Clear();
   }
 
@@ -1689,7 +1693,7 @@ void Multi_Score_Presentation() {
   GamePalette.Set();
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;
-  ControlQ = 0;
+  ControlQ = false;
   Show_Mouse();
 }
 

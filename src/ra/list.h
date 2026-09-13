@@ -80,14 +80,14 @@ class ListClass : public ControlClass {
 
   virtual int Add_Item(const char* text);
   virtual int Add_Item(int text);
-  virtual int Add_Scroll_Bar();
-  virtual void Bump(int up);
+  virtual bool Add_Scroll_Bar();
+  virtual void Bump(bool up);
   [[nodiscard]] virtual int Count() const {
     return static_cast<int>(List.Count());
   }
   [[nodiscard]] virtual int Current_Index() const;
   [[nodiscard]] virtual const char* Current_Item() const;
-  int Draw_Me(bool forced) override;
+  bool Draw_Me(bool forced) override;
   [[nodiscard]] virtual const char* Get_Item(int index) const;
   virtual int Step_Selected_Index(int step);
   void Flag_To_Redraw() final;
@@ -96,12 +96,12 @@ class ListClass : public ControlClass {
                     ControlClass& whom) override;
   virtual void Remove_Item(const char* text);
   virtual void Remove_Item(int /*index*/);
-  virtual int Remove_Scroll_Bar() final;
+  virtual bool Remove_Scroll_Bar() final;
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(const char* text);
   virtual void Set_Tabs(const int* tabs);
-  virtual int Set_View_Index(int index);
-  virtual void Step(int up);
+  virtual bool Set_View_Index(int index);
+  virtual void Step(bool up);
   void Set_Position(int x, int y) override;
 
   /*
@@ -114,8 +114,8 @@ class ListClass : public ControlClass {
   GadgetClass* Remove() override;
 
  protected:
-  int Action(unsigned flags, KeyNumType& key) override;
-  virtual void Draw_Entry(int index, int x, int y, int width, int selected);
+  bool Action(unsigned flags, KeyNumType& key) override;
+  virtual void Draw_Entry(int index, int x, int y, int width, bool selected);
 
   /*
   **	This controls what the text looks like. It uses the basic TPF_ flags
@@ -182,13 +182,13 @@ class TListClass final : public ControlClass {
   T& operator[](int index) { return List[index]; }
 
   int Add_Item(T text);
-  int Add_Scroll_Bar();
+  bool Add_Scroll_Bar();
   void Insert_Item(T item);
-  void Bump(int up);
+  void Bump(bool up);
   [[nodiscard]] int Count() const { return static_cast<int>(List.Count()); }
   [[nodiscard]] int Current_Index() const;
   T Current_Item() const;
-  int Draw_Me(bool forced) override;
+  bool Draw_Me(bool forced) override;
   int Step_Selected_Index(int step);
   void Flag_To_Redraw() override;
   [[nodiscard]] T Get_Item(int index) const { return List[index]; }
@@ -197,12 +197,12 @@ class TListClass final : public ControlClass {
                     ControlClass& whom) override;
   void Remove_Item(T /*text*/);
   void Remove_Index(int /*index*/);
-  int Remove_Scroll_Bar();
+  bool Remove_Scroll_Bar();
   void Set_Selected_Index(int index);
   void Set_Selected_Index(T text);
   void Set_Tabs(const int* tabs);
-  int Set_View_Index(int index);
-  void Step(int up);
+  bool Set_View_Index(int index);
+  void Step(bool up);
   void Set_Position(int x, int y) override;
 
   /*
@@ -215,7 +215,7 @@ class TListClass final : public ControlClass {
   GadgetClass* Remove() override;
 
  protected:
-  int Action(unsigned flags, KeyNumType& key) override;
+  bool Action(unsigned flags, KeyNumType& key) override;
 
   /*
   **	This controls what the text looks like. It uses the basic TPF_ flags
@@ -393,7 +393,7 @@ void TListClass<T>::Remove_Index(int index) {
       CurrentTopIndex--;
       CurrentTopIndex = std::max(CurrentTopIndex, 0);
       if (IsScrollActive) {
-        ScrollGadget.Step(1);
+        ScrollGadget.Step(true);
       }
     }
   }
@@ -405,7 +405,7 @@ void TListClass<T>::Remove_Item(T text) {
 }
 
 template <class T>
-int TListClass<T>::Action(unsigned flags, KeyNumType& key) {
+bool TListClass<T>::Action(unsigned flags, KeyNumType& key) {
   if (flags & LEFTRELEASE) {
     key = KN_NONE;
     flags &= (~LEFTRELEASE);
@@ -440,7 +440,7 @@ int TListClass<T>::Action(unsigned flags, KeyNumType& key) {
 }
 
 template <class T>
-int TListClass<T>::Draw_Me(bool forced) {
+bool TListClass<T>::Draw_Me(bool forced) {
   // As in ListClass::Draw_Me: skipping ControlClass avoids asking the peer
   // drop list to redraw from inside the list's own draw.
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)
@@ -489,7 +489,7 @@ int TListClass<T>::Draw_Me(bool forced) {
 }
 
 template <class T>
-void TListClass<T>::Bump(int up) {
+void TListClass<T>::Bump(bool up) {
   if (IsScrollActive && ScrollGadget.Step(up)) {
     CurrentTopIndex = ScrollGadget.Get_Value();
     Flag_To_Redraw();
@@ -497,7 +497,7 @@ void TListClass<T>::Bump(int up) {
 }
 
 template <class T>
-void TListClass<T>::Step(int up) {
+void TListClass<T>::Step(bool up) {
   if (IsScrollActive && ScrollGadget.Step(up)) {
     CurrentTopIndex = ScrollGadget.Get_Value();
     Flag_To_Redraw();
@@ -540,7 +540,7 @@ void TListClass<T>::Peer_To_Peer(unsigned flags, KeyNumType& /*unused*/,
 }
 
 template <class T>
-int TListClass<T>::Set_View_Index(int index) {
+bool TListClass<T>::Set_View_Index(int index) {
   index = std::clamp<int>(index, 0, static_cast<int>(List.Count()) - LineCount);
   if (index != CurrentTopIndex) {
     CurrentTopIndex = index;
@@ -554,7 +554,7 @@ int TListClass<T>::Set_View_Index(int index) {
 }
 
 template <class T>
-int TListClass<T>::Add_Scroll_Bar() {
+bool TListClass<T>::Add_Scroll_Bar() {
   if (!IsScrollActive) {
     IsScrollActive = true;
 
@@ -607,7 +607,7 @@ int TListClass<T>::Add_Scroll_Bar() {
 }
 
 template <class T>
-int TListClass<T>::Remove_Scroll_Bar() {
+bool TListClass<T>::Remove_Scroll_Bar() {
   if (IsScrollActive) {
     IsScrollActive = false;
     Width += ScrollGadget.Width;

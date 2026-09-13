@@ -146,7 +146,7 @@ static void Cycle_Call_Back_Delay(int time, PaletteClass& pal) {
 
 // Returns which mission choice (0-2) the mouse is hovering over, or -1 if none.
 // Each hotspot is a 12x10 pixel rectangle at the coordinates in MapCoords.
-static int Mouse_Over_Spot(const int is_soviet, const int scenario) {
+static int Mouse_Over_Spot(const bool is_soviet, const int scenario) {
   int retval = -1;
   for (int choice = 0;
        choice < 3 && MapCoords[is_soviet][scenario][choice].x != -1; choice++) {
@@ -174,8 +174,8 @@ std::string Map_Selection() {
   // MS=Map Selection, x=side (A=Allied, S=Soviet), Y=scenario letter (A-N for
   // scenarios 0-13). WSA = Westwood Studios Animation format.
   std::string file_name = "MSAA.WSA";
-  const int is_soviet = PlayerPtr->Class->House == HOUSE_USSR ||
-                        PlayerPtr->Class->House == HOUSE_UKRAINE;
+  const bool is_soviet = PlayerPtr->Class->House == HOUSE_USSR ||
+                         PlayerPtr->Class->House == HOUSE_UKRAINE;
 
   file_name[2] = is_soviet ? 'S' : 'A';
   file_name[3] = static_cast<char>(Scen.Scenario + 'A');

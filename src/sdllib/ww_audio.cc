@@ -55,7 +55,7 @@ Sample_Type SampleType;
 // playback. Set around map reveals and score screen animations to prevent
 // audio processing from causing frame drops.
 // NOTE: Not used in the current SDL audio implementation.
-int StreamLowImpact;
+bool StreamLowImpact;
 
 static int ScoreVolume = 255;
 

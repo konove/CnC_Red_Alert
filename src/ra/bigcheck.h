@@ -44,7 +44,7 @@ class BigCheckBoxClass : public ToggleClass {
     IsToggleType = true;
   }
 
-  int Draw_Me(bool forced = false) override;
+  bool Draw_Me(bool forced = false) override;
 
   bool Toggle() {
     if (IsOn) {
@@ -56,7 +56,7 @@ class BigCheckBoxClass : public ToggleClass {
   }
 
  protected:
-  int Action(unsigned flags, KeyNumType& key) override;
+  bool Action(unsigned flags, KeyNumType& key) override;
   TextPrintType TextFlags;
   std::string szCaption;
 };

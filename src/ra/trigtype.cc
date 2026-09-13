@@ -587,8 +587,8 @@ bool TriggerTypeClass::Edit() {
   booltype2list.Add_Item("OFF");
   booltype2list.Add_Item("ON");
 
-  booltype1list.Set_Selected_Index(Action1.Data.Bool);
-  booltype2list.Set_Selected_Index(Action2.Data.Bool);
+  booltype1list.Set_Selected_Index(Action1.Data.Bool ? 1 : 0);
+  booltype2list.Set_Selected_Index(Action2.Data.Bool ? 1 : 0);
 
   /*
   **	Optional musical theme choice list.
@@ -1000,7 +1000,7 @@ bool TriggerTypeClass::Edit() {
   /*
   **	This button controls the existence of a secondary action.
   */
-  bool actionflag = ActionControl;
+  bool actionflag = ActionControl != MULTI_ONLY;
   TextButtonClass actionbtn(BUTTON_ACTION, TXT_TRIGGER_JUST_ACTION, kTpfEButton,
                             action1list.X, action1list.Y + 11, 100, 9);
 
@@ -1593,7 +1593,7 @@ bool TriggerTypeClass::Edit() {
             break;
 
           case NEED_BOOL:
-            Action1.Data.Bool = booltype1list.Current_Index();
+            Action1.Data.Bool = booltype1list.Current_Index() != 0;
             break;
 
           case NEED_THEME:
@@ -1655,7 +1655,7 @@ bool TriggerTypeClass::Edit() {
             break;
 
           case NEED_BOOL:
-            Action2.Data.Bool = booltype2list.Current_Index();
+            Action2.Data.Bool = booltype2list.Current_Index() != 0;
             break;
 
           case NEED_THEME:

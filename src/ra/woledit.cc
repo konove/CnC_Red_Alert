@@ -62,7 +62,7 @@ void WOLEditClass::Draw_Text(const char* text) {
 // key.) 	Again, I'm not about to change the base class directly, as I'm
 // trying to have as minimal an affect as possible on 	the current game code.
 // -ajw
-int WOLEditClass::Action(unsigned flags, KeyNumType& key) {
+bool WOLEditClass::Action(unsigned flags, KeyNumType& key) {
   //	(Mostly duplicated from base class ::Action)
   /*	For some painful reason, IsReadOnly is private in the base class, so I
      can't do the following. For this reason, don't make a WOLEditClass edit box

@@ -545,12 +545,12 @@ bool bSaveNick(WolapiObject* pWO, const char* szNickToSave,
 
   if (bPushSlot1) {
     //	Move nick in slot 1 to slot 2.
-    pWO->pChat->SetNick(2, szNick, szPass, false);  //	(Already mangled.)
+    pWO->pChat->SetNick(2, szNick, szPass, 0);  //	(Already mangled.)
   }
 
   //	Save new nick in slot 1.
-  return (pWO->pChat->SetNick(1, szNickToSave, szPassToSave, !bPassIsMangled) ==
-          S_OK);
+  return (pWO->pChat->SetNick(1, szNickToSave, szPassToSave,
+                              bPassIsMangled ? 0 : 1) == S_OK);
 
   /*
           int iSlot;
@@ -601,18 +601,18 @@ void DeleteNick(WolapiObject* pWO, int iOneBasedEntryToDelete) {
     LPCSTR szPass;
     if (pWO->pChat->GetNick(2, &szNick, &szPass) == S_OK && *szNick != 0) {
       //	Copy nick in slot 2 to slot 1.
-      pWO->pChat->SetNick(1, szNick, szPass, false);  //	(Already
-                                                      // mangled.)
+      pWO->pChat->SetNick(1, szNick, szPass, 0);  //	(Already
+                                                  // mangled.)
       //	Delete slot 2.
-      HRESULT hRes = pWO->pChat->SetNick(2, "", "", false);
+      HRESULT hRes = pWO->pChat->SetNick(2, "", "", 0);
       DebugChatDef(hRes);
     } else {
       //	No second nick.
-      HRESULT hRes = pWO->pChat->SetNick(1, "", "", false);
+      HRESULT hRes = pWO->pChat->SetNick(1, "", "", 0);
       DebugChatDef(hRes);
     }
   } else {
-    HRESULT hRes = pWO->pChat->SetNick(2, "", "", false);
+    HRESULT hRes = pWO->pChat->SetNick(2, "", "", 0);
     DebugChatDef(hRes);
   }
 }

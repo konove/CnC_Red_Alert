@@ -110,7 +110,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
 
   GaugeClass progress_meter(BUTTON_PROGRESS, d_progress_x, d_progress_y,
                             d_progress_w, d_progress_h);
-  progress_meter.Use_Thumb(0);
+  progress_meter.Use_Thumb(false);
 
   StaticButtonClass StatTitle(0, szTitle, TPF_CENTER | kTpfText,
                               d_dialog_x + d_margin, d_dialog_y + 28,

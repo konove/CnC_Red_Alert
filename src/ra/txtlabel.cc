@@ -62,7 +62,10 @@
  *=============================================================================================*/
 TextLabelClass::TextLabelClass(char* txt, int x, int y, RemapControlType* color,
                                TextPrintType style)
-    : GadgetClass(x, y, 1, 1, 0, 0), Style(style), Text(txt), Color(color) {}
+    : GadgetClass(x, y, 1, 1, 0, false),
+      Style(style),
+      Text(txt),
+      Color(color) {}
 
 /***********************************************************************************************
  * TextLableClass::Draw_Me -- Graphical update routine *
@@ -76,7 +79,7 @@ TextLabelClass::TextLabelClass(char* txt, int x, int y, RemapControlType* color,
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-int TextLabelClass::Draw_Me(bool forced) {
+bool TextLabelClass::Draw_Me(bool forced) {
   if (GadgetClass::Draw_Me(forced)) {
     if (PixWidth == -1) {
       Simple_Text_Print(Text, X, Y, Color, TBLACK, Style);

@@ -194,7 +194,7 @@ class INIClass {
 
 void Write_Scenario_INI(char* fname);
 bool Read_Scenario_INI(char* fname, bool fresh = true);
-int Scan_Place_Object(ObjectClass* obj, CELL cell);
+bool Scan_Place_Object(ObjectClass* obj, CELL cell);
 void Assign_Houses();
 
 #endif  // CNC_RED_ALERT_RA_INI_H_
