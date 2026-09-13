@@ -129,4 +129,93 @@ bool operator==(T* lvalue, const CCPtr<T>& rvalue) {
   return lvalue == static_cast<T*>(rvalue);
 }
 
+/*
+**	The heap pointers are defined in globals.cc, one per game object type
+* that a *	CCPtr may refer to. Declaring the specializations here lets
+* every translation *	unit that dereferences a CCPtr see that a definition
+* exists.
+*/
+class AircraftClass;
+class AnimClass;
+class BuildingClass;
+class BulletClass;
+class FactoryClass;
+class HouseClass;
+class InfantryClass;
+class OverlayClass;
+class SmudgeClass;
+class TeamClass;
+class TeamTypeClass;
+class TemplateClass;
+class TerrainClass;
+class TriggerClass;
+class TriggerTypeClass;
+class HouseTypeClass;
+class BuildingTypeClass;
+class AircraftTypeClass;
+class InfantryTypeClass;
+class BulletTypeClass;
+class AnimTypeClass;
+class UnitTypeClass;
+class VesselTypeClass;
+class TemplateTypeClass;
+class TerrainTypeClass;
+class OverlayTypeClass;
+class SmudgeTypeClass;
+
+template <>
+FixedIHeapClass* CCPtr<AircraftClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<AnimClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<BuildingClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<BulletClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<FactoryClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<HouseClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<InfantryClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<OverlayClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<SmudgeClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<TeamClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<TeamTypeClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<TemplateClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<TerrainClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<TriggerClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<TriggerTypeClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<HouseTypeClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<BuildingTypeClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<AircraftTypeClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<InfantryTypeClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<BulletTypeClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<AnimTypeClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<UnitTypeClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<VesselTypeClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<TemplateTypeClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<TerrainTypeClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<OverlayTypeClass>::Heap;
+template <>
+FixedIHeapClass* CCPtr<SmudgeTypeClass>::Heap;
+
 #endif  // CNC_RED_ALERT_RA_CCPTR_H_
