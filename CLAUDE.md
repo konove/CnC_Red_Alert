@@ -1,7 +1,7 @@
 # CLAUDE.md
 
-C++23 port of EA's Command & Conquer Red Alert and Tiberian Dawn using SDL2. Legacy 1990s game code being modernized
-incrementally.
+C++23 port of EA's Command & Conquer Red Alert and Tiberian Dawn using SDL2. Legacy 1990s game code
+being modernized incrementally.
 
 ## Quick Reference
 
@@ -11,7 +11,7 @@ JOBS=$(($(getconf _NPROCESSORS_ONLN) / 2))
 ```
 
 | Target                 | Command                                                                          | Output                              |
-|------------------------|----------------------------------------------------------------------------------|-------------------------------------|
+| ---------------------- | -------------------------------------------------------------------------------- | ----------------------------------- |
 | Both games             | `cmake -Bbuild -G Ninja && cmake --build build --parallel $JOBS`                 | `build/ra/rasdl`, `build/td/tdsdl`  |
 | Red Alert only         | `cmake --build build --parallel $JOBS --target rasdl`                            | `build/ra/rasdl`                    |
 | Tiberian Dawn only     | `cmake --build build --parallel $JOBS --target tdsdl`                            | `build/td/tdsdl`                    |
@@ -34,17 +34,18 @@ sudo apt install libsdl2-dev clang-tidy ninja-build
 
 **macOS:**
 
-  ```bash
-  brew install sdl2 llvm ninja
-  ```
+```bash
+brew install sdl2 llvm ninja
+```
 
-**Note:** If clang-tidy is not installed, either install it (above) or build with `-DSTRICT_CHECKS=OFF` to disable
-static analysis.
+**Note:** If clang-tidy is not installed, either install it (above) or build with
+`-DSTRICT_CHECKS=OFF` to disable static analysis.
 
 ### Optional: Faster Builds
 
-`ccache` (compile cache), `clang-tidy-cache` (clang-tidy cache) and `mold` (linker) are picked up automatically by
-`cmake/Speedup.cmake` when installed — no per-machine configuration, and the build works unchanged without them.
+`ccache` (compile cache), `clang-tidy-cache` (clang-tidy cache) and `mold` (linker) are picked up
+automatically by `cmake/Speedup.cmake` when installed — no per-machine configuration, and the build
+works unchanged without them.
 
 ```bash
 sudo apt install ccache mold        # Linux
@@ -52,48 +53,56 @@ brew install ccache mold            # macOS (mold is Linux-only; the module skip
 ```
 
 `clang-tidy-cache` has no distro or PyPI package — install it from
-[matus-chochlik/ctcache](https://github.com/matus-chochlik/ctcache) and put `clang-tidy-cache` on `PATH`
-(`ctcache` is also accepted as the binary name).
+[matus-chochlik/ctcache](https://github.com/matus-chochlik/ctcache) and put `clang-tidy-cache` on
+`PATH` (`ctcache` is also accepted as the binary name).
 
 Configure output confirms them (`-- ccache enabled: ...`, `-- clang-tidy cache enabled: ...`,
 `-- mold linker enabled: ...`). Disable any of them with `-DUSE_CCACHE=OFF` / `-DUSE_CTCACHE=OFF` /
 `-DUSE_MOLD=OFF`. Check the compile cache with `ccache -s`; resize with `ccache -M 25G`.
 
 ccache caches only the compile. clang-tidy and IWYU run as separate passes in front of it, so under
-`STRICT_CHECKS=ON` a fully cached rebuild still pays their full cost — measured on `src/ra/drop.cc`: 0.00 s for the
-cached compile, 1.5 s for clang-tidy, 1.0 s for IWYU. Nothing caches IWYU, so `-DENABLE_IWYU=OFF` is the lever when
-iterating on tidy findings.
+`STRICT_CHECKS=ON` a fully cached rebuild still pays their full cost — measured on `src/ra/drop.cc`:
+0.00 s for the cached compile, 1.5 s for clang-tidy, 1.0 s for IWYU. Nothing caches IWYU, so
+`-DENABLE_IWYU=OFF` is the lever when iterating on tidy findings.
 
-**`clang-tidy-cache` caches little here as things stand.** It derives its hash by re-running the compiler to
-preprocess the TU and gives up on any compiler output to stderr (`hash_inputs` returns `None`). Under `-Weverything`
-the `_MAX_PATH` and friends defines in `src/port/ex_string.h` raise `-Wreserved-macro-identifier` while
-preprocessing, which most of the tree includes. Measured over 40 RA TUs: 14/40 cacheable as configured, and a
-rebuild after deleting the objects went 24.0 s cold to 19.2 s warm. Silencing that one warning takes it to 37/40
-cached and 23.9 s cold to 4.5 s warm — a 5x rebuild, gated entirely on keeping the preprocessor quiet.
+**`clang-tidy-cache` only caches a translation unit whose preprocess is silent.** It derives its
+hash by re-running the compiler to preprocess the TU and gives up on any compiler output to stderr
+(`hash_inputs` returns `None`), and under `-Weverything` a single preprocessor warning in a widely
+included header is enough to disable it tree-wide. The `_MAX_PATH`-style defines in
+`src/port/ex_string.h` used to do exactly that: 14/40 RA TUs were cacheable. With them renamed
+(`kMaxPath` and friends) and the reserved MIDL macros in `src/port/win32/win32_com.h` and
+`src/ra/wolapi/wolapi.h` wrapped in
+`#pragma clang diagnostic ignored "-Wreserved-macro-identifier"`, all 908 project TUs preprocess
+silently. Measured 2026-09-12 over the first 40 RA objects, deleted before each run with a fresh
+`CTCACHE_DIR`: 33.3 s cold, 8.7 s warm (compile from ccache and IWYU still run). Keep new headers
+preprocessor-quiet, or the cache silently stops working for everything that includes them.
 
-That bail-out is also what prints `ERROR:clang-tidy-cache:Error executing compile command: #[...]` during a strict
-build — one line per translation unit whose preprocess warns. It is noise, not a failure: the build continues
-uncached. Silence it with `CTCACHE_LOG_LEVEL=CRITICAL`, or `-DUSE_CTCACHE=OFF` to drop the wrapper entirely.
+That bail-out is also what prints `ERROR:clang-tidy-cache:Error executing compile command: #[...]`
+during a strict build — one line per translation unit whose preprocess warns. It is noise, not a
+failure: the build continues uncached. Since every unit is quiet today, seeing it again means some
+header started warning and caching is off for the units that include it.
+`CTCACHE_LOG_LEVEL=CRITICAL` hides the message; `-DUSE_CTCACHE=OFF` drops the wrapper entirely.
 
-The cache defaults to `/tmp/ctcache-$USER`, which does not survive a reboot; set `CTCACHE_DIR=~/.cache/ctcache` to
-keep it.
+The cache defaults to `/tmp/ctcache-$USER`, which does not survive a reboot; set
+`CTCACHE_DIR=~/.cache/ctcache` to keep it.
 
-Editing `.clang-tidy` re-checks the whole tree on the next build — its hash rides along in the clang-tidy command
-line, so a config change makes every object stale. No `clean` needed (and `clean` is expensive: it throws away
-objects ccache can restore for free, but nothing can restore the analysis).
+Editing `.clang-tidy` re-checks the whole tree on the next build — its hash rides along in the
+clang-tidy command line, so a config change makes every object stale. No `clean` needed (and `clean`
+is expensive: it throws away objects ccache can restore for free, but nothing can restore the
+analysis).
 
-**CLion:** nothing to configure — reload the CMake project (*File | Reload CMake Project*) and check the CMake tool
-window for the status lines. Ensure CLion's toolchain PATH sees `/usr/bin`; if `ccache` shows as not found there
-but works in a terminal, set the full path in *Settings | Build, Execution, Deployment | CMake | Environment* via
-`CMAKE_CXX_COMPILER_LAUNCHER=/usr/bin/ccache`.
+**CLion:** nothing to configure — reload the CMake project (_File | Reload CMake Project_) and check
+the CMake tool window for the status lines. Ensure CLion's toolchain PATH sees `/usr/bin`; if
+`ccache` shows as not found there but works in a terminal, set the full path in _Settings | Build,
+Execution, Deployment | CMake | Environment_ via `CMAKE_CXX_COMPILER_LAUNCHER=/usr/bin/ccache`.
 
 ## Architecture
 
 All source lives under `src/`:
 
-  ```
-  port/        → Portability layer (string utilities) [standalone]
-  base/        → Header-only utilities: types.h (base::ssize), algorithm.h, trig.h [standalone]
+```
+port/        → Portability layer (string utilities) [standalone]
+base/        → Header-only utilities: types.h (base::ssize), algorithm.h, trig.h [standalone]
 sdllib/      → SDL2 abstraction (graphics, audio, input) [depends: SDL2, abseil]
 winvq/       → VQA video codec (vqa32, vqm32, …; target name `vqa32`) [depends: port, SDL2]
 tech/        → Compression, encryption, Pipe/Straw pattern [depends: sdllib, port, vqa32]
@@ -101,24 +110,27 @@ ra/          → Red Alert (~200 files) [depends: tech, sdllib, port, vqa32]
 td/          → Tiberian Dawn (~288 files) [depends: tech, sdllib, port, vqa32]
 ```
 
-**Class hierarchy:** `AbstractClass → ObjectClass → TechnoClass → FootClass → InfantryClass/AircraftClass/DriveClass`
-and `TechnoClass → BuildingClass`. Heavy virtual function usage.
+**Class hierarchy:**
+`AbstractClass → ObjectClass → TechnoClass → FootClass → InfantryClass/AircraftClass/DriveClass` and
+`TechnoClass → BuildingClass`. Heavy virtual function usage.
 
-**Naming (legacy convention):** Existing classes end in `Class`, type definitions end in `Type` or `TypeClass`, and
-enums often end in `Type`. This describes the original code — new code is not required to follow these suffixes (see
-[Naming](#naming) below).
+**Naming (legacy convention):** Existing classes end in `Class`, type definitions end in `Type` or
+`TypeClass`, and enums often end in `Type`. This describes the original code — new code is not
+required to follow these suffixes (see [Naming](#naming) below).
 
 ## Code Style & Documentation
 
 **Follow [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html)** (primary) and
-[C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines). If they conflict, ask user.
+[C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines). If they
+conflict, ask user.
 
 ### Naming
 
-Use [Google C++ naming](https://google.github.io/styleguide/cppguide.html#Naming) for new and modernized code:
+Use [Google C++ naming](https://google.github.io/styleguide/cppguide.html#Naming) for new and
+modernized code:
 
 | Entity                  | Style                               | Example                              |
-|-------------------------|-------------------------------------|--------------------------------------|
+| ----------------------- | ----------------------------------- | ------------------------------------ |
 | Functions               | `PascalCase`                        | `AttachObject()`, `DetachObject()`   |
 | Accessors / mutators    | named like the variable             | `attached_count()`, `set_count(int)` |
 | Variables (local/param) | `snake_case`                        | `cargo_hold`, `target_cell`          |
@@ -187,71 +199,76 @@ int dist = IsqrtFixed(dx * dx + dy * dy);
 
 ## Testing
 
-All new code should have unit tests. Use the [Google Test](https://google.github.io/googletest/) framework.
+All new code should have unit tests. Use the [Google Test](https://google.github.io/googletest/)
+framework.
 
 ## Abseil
 
 Auto-fetched via CMake. Prefer Abseil over std/custom implementations.
 
 | Header                 | Usage                                                                  |
-|------------------------|------------------------------------------------------------------------|
+| ---------------------- | ---------------------------------------------------------------------- |
 | `absl/log/log.h`       | `DLOG(INFO)`, `DLOG(WARNING)` (debug-only), `LOG(ERROR)`, `LOG(FATAL)` |
 | `absl/log/check.h`     | `CHECK(x)`, `CHECK_EQ/NE/LT/GT`, `DCHECK` (debug-only)                 |
 | `absl/strings/`        | `StrCat`, `StrSplit`, `StrFormat`                                      |
 | `absl/strings/ascii.h` | `AsciiStrToLower`, `AsciiStrToUpper`                                   |
 | `absl/container/`      | `flat_hash_map`, `flat_hash_set`                                       |
 
-**String manipulation:** Never use `strdup`/`free` for temporary strings—use `std::string` with Abseil functions
-instead. Example: `std::string lower = absl::AsciiStrToLower(input);`
+**String manipulation:** Never use `strdup`/`free` for temporary strings—use `std::string` with
+Abseil functions instead. Example: `std::string lower = absl::AsciiStrToLower(input);`
 
-**Logging rule:** Use `DLOG` for debug messages (compiled out in release). Original game excluded most logging from
-release builds—follow this pattern. Use `CHECK` for programmer errors/invariants, NOT for user input validation.
+**Logging rule:** Use `DLOG` for debug messages (compiled out in release). Original game excluded
+most logging from release builds—follow this pattern. Use `CHECK` for programmer errors/invariants,
+NOT for user input validation.
 
 **CMake linking:** `target_link_libraries(mytarget PRIVATE absl::log absl::check absl::strings)`
 
 ## magic_enum
 
-Auto-fetched via CMake (`magic_enum::magic_enum`, linked into `rasdl`). Enums hold only real values: no
-`X_FIRST`/`X_COUNT` sentinels and no aliases. A negative `X_NONE` is fine; the build sets
-`MAGIC_ENUM_RANGE_MIN=0`, so reflection sees exactly the index values 0..N-1 (and `enum_name(X_NONE)` is empty).
+Auto-fetched via CMake (`magic_enum::magic_enum`, linked into `rasdl`). Enums hold only real values:
+no `X_FIRST`/`X_COUNT` sentinels and no aliases. A negative `X_NONE` is fine; the build sets
+`MAGIC_ENUM_RANGE_MIN=0`, so reflection sees exactly the index values 0..N-1 (and
+`enum_name(X_NONE)` is empty).
 
-- Array size or count: `magic_enum::enum_count<E>()`. It is a `size_t`; when comparing with an `int` index write
-  `static_cast<int>(magic_enum::enum_count<E>())` rather than adding a sign-compare warning.
-- Iteration: `for (E e : magic_enum::enum_values<E>())`. First/last value: `enum_values<E>().front()` / `.back()`.
+- Array size or count: `magic_enum::enum_count<E>()`. It is a `size_t`; when comparing with an `int`
+  index write `static_cast<int>(magic_enum::enum_count<E>())` rather than adding a sign-compare
+  warning.
+- Iteration: `for (E e : magic_enum::enum_values<E>())`. First/last value:
+  `enum_values<E>().front()` / `.back()`.
 - Names in debug output: `magic_enum::enum_name(value)` in `DLOG`.
-- Enums with values above 127 need an `enum_range` specialization next to the enum (see VocType and TemplateType in
-  `ra/defines.h`). Enums whose values are not 0..N-1 (bit flags, shape indices) are not index enums; give them
-  constants instead.
-- Each reflected enum costs ~40 ms of compile time per translation unit; `defines.h` includes the header, `.cc`
-  files that reflect include `magic_enum/magic_enum.hpp` themselves.
+- Enums with values above 127 need an `enum_range` specialization next to the enum (see VocType and
+  TemplateType in `ra/defines.h`). Enums whose values are not 0..N-1 (bit flags, shape indices) are
+  not index enums; give them constants instead.
+- Each reflected enum costs ~40 ms of compile time per translation unit; `defines.h` includes the
+  header, `.cc` files that reflect include `magic_enum/magic_enum.hpp` themselves.
 
 ## Legacy Code
 
-You will encounter: `strcpy`/`strcat`/`sprintf`, raw `new`/`delete`, C-style casts, globals in `ra/externs.h`,
-missing const, `WIN32`/`PORTABLE` ifdefs.
+You will encounter: `strcpy`/`strcat`/`sprintf`, raw `new`/`delete`, C-style casts, globals in
+`ra/externs.h`, missing const, `WIN32`/`PORTABLE` ifdefs.
 
-**Acceptable changes:** Safe string functions, buffer overflow fixes, add `override`, IWYU fixes, self-contained
-headers, fixed-width integer types (`long` → `int32_t`, etc.).
+**Acceptable changes:** Safe string functions, buffer overflow fixes, add `override`, IWYU fixes,
+self-contained headers, fixed-width integer types (`long` → `int32_t`, etc.).
 
-**Avoid unless requested:** Class hierarchy refactoring, smart pointers everywhere, const everywhere, STL containers
-everywhere, removing globals.
+**Avoid unless requested:** Class hierarchy refactoring, smart pointers everywhere, const
+everywhere, STL containers everywhere, removing globals.
 
 ## Integer Types
 
-Use `int` as the default integer type. For other sizes, use fixed-width types from `<cstdint>` (`int16_t`,
-`int32_t`, `int64_t`). Do not use `short`, `long`, or `long long`.
+Use `int` as the default integer type. For other sizes, use fixed-width types from `<cstdint>`
+(`int16_t`, `int32_t`, `int64_t`). Do not use `short`, `long`, or `long long`.
 
-Avoid unsigned types (`uint32_t`, etc.) unless representing bit patterns, flags, or modular arithmetic. Do not use
-unsigned merely to indicate a value is non-negative — use assertions instead.
+Avoid unsigned types (`uint32_t`, etc.) unless representing bit patterns, flags, or modular
+arithmetic. Do not use unsigned merely to indicate a value is non-negative — use assertions instead.
 
 Use `int64_t` for values that could exceed 2^31, including intermediate calculations.
 
-For indices, counts, and sizes, use `base::ssize` (defined in `base/types.h` as `std::ptrdiff_t`). Prefer this over
-`size_t` to avoid signed/unsigned comparison issues and to allow negative sentinel values. Include `"base/types.h"`
-and link the `base` library.
+For indices, counts, and sizes, use `base::ssize` (defined in `base/types.h` as `std::ptrdiff_t`).
+Prefer this over `size_t` to avoid signed/unsigned comparison issues and to allow negative sentinel
+values. Include `"base/types.h"` and link the `base` library.
 
 | Legacy Type                 | Replacement                                           |
-|-----------------------------|-------------------------------------------------------|
+| --------------------------- | ----------------------------------------------------- |
 | `int`                       | Keep as `int`                                         |
 | `long` / `long int`         | `int32_t` or `int64_t`                                |
 | `unsigned long`             | `uint32_t` (bitfield) or `int32_t`/`int64_t` (number) |
@@ -259,23 +276,24 @@ and link the `base` library.
 | `unsigned int/short`        | Prefer signed; `uint*_t` only for bit patterns        |
 | `size_t` (index/count/size) | `base::ssize`                                         |
 
-When converting between integer types, use brace initialization (`int32_t{value}`) for safe conversions that should
-fail on narrowing, or `static_cast<int32_t>(value)` when narrowing is intentional. Do not use C-style casts like
-`(int)value`. See [Type Conversion Casts](docs/TYPE_MIGRATION.md#type-conversion-casts) for details.
+When converting between integer types, use brace initialization (`int32_t{value}`) for safe
+conversions that should fail on narrowing, or `static_cast<int32_t>(value)` when narrowing is
+intentional. Do not use C-style casts like `(int)value`. See
+[Type Conversion Casts](docs/TYPE_MIGRATION.md#type-conversion-casts) for details.
 
 Omit the `std::` prefix on fixed-width types. See `docs/TYPE_MIGRATION.md` for full details.
 
 ## Tools Configuration
 
 | Tool       | Config File                          | Notes                                                      |
-|------------|--------------------------------------|------------------------------------------------------------|
+| ---------- | ------------------------------------ | ---------------------------------------------------------- |
 | clang-tidy | `.clang-tidy`                        | Many checks disabled for legacy code                       |
 | IWYU       | `cmake/IWYU.cmake`, `.iwyu_mappings` | Can segfault on `ra/externs.h`; warnings don't fail builds |
 
 ## Key Files
 
 | Purpose      | File(s)                                                    |
-|--------------|------------------------------------------------------------|
+| ------------ | ---------------------------------------------------------- |
 | Build config | `CMakeLists.txt`, `ra/CMakeLists.txt`, `td/CMakeLists.txt` |
 | Global state | `ra/externs.h`                                             |
 | Pipe/Straw   | `tech/pipe.h`, `tech/straw.h`                              |
