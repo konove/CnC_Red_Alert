@@ -128,10 +128,10 @@ inline void Set_Bit(void* array, int bit, int value) {
   */
   if (value) {
     static_cast<uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] |=
-        1 << (bit & 0x1F);
+        1U << (bit & 0x1F);
   } else {
     static_cast<uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] &=
-        ~(1 << (bit & 0x1F));
+        ~(1U << (bit & 0x1F));
   }
 }
 

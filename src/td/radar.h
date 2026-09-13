@@ -188,8 +188,8 @@ class RadarClass : public DisplayClass {
   **	This is biased so that the radar map, when smaller than full
   **	size will appear centered.
   */
-  unsigned BaseX = 0;
-  unsigned BaseY = 0;
+  int BaseX = 0;
+  int BaseY = 0;
 
   int RadarWidth = 0;
   int RadarCellWidth = 0;

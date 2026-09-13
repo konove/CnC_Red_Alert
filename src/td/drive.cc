@@ -67,6 +67,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/numeric.h"
 #include "td/audio.h"
 #include "td/building.h"
 #include "td/cell.h"
@@ -1453,7 +1454,7 @@ void DriveClass::Fixup_Path(PathType* path) {
   */
   if (ok) {
     if (path->Length <= 1) {
-      memmove(path->Command, &stage[0], std::max(counter, 1));
+      memmove(path->Command, &stage[0], base::ToSize(std::max(counter, 1)));
       path->Length = counter;
     } else {
       /*
@@ -1472,8 +1473,9 @@ void DriveClass::Fixup_Path(PathType* path) {
       **	insert the rest now.
       */
       if (counter) {
-        memmove(&path->Command[counter], &path->Command[0], 40 - counter);
-        memmove(&path->Command[0], &stage[0], counter);
+        memmove(&path->Command[counter], &path->Command[0],
+                base::ToSize(40 - counter));
+        memmove(&path->Command[0], &stage[0], base::ToSize(counter));
         path->Length += counter;
       }
     }
@@ -1528,9 +1530,7 @@ void DriveClass::Lay_Track() {
  * HISTORY: * 07/30/1995 JLB : Created. *
  *=============================================================================================*/
 void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
-  int value;
-
-  value = type != MARK_UP;
+  const bool value = type != MARK_UP;
 
   if (headto) {
     if (!IsOnShortTrack && TrackNumber != -1) {

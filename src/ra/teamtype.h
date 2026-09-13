@@ -179,9 +179,11 @@ class TeamTypeClass : public AbstractTypeClass {
                TextPrintType flags) const;
   static const char* Name_From_Mission(TeamMissionType order);
   static TeamMissionType Mission_From_Name(const char* name);
-  static const TeamTypeClass* Suggested_New_Team(HouseClass* house, long atypes,
-                                                 long utypes, long itypes,
-                                                 long vtypes, bool alerted);
+  static const TeamTypeClass* Suggested_New_Team(HouseClass* house,
+                                                 uint64_t atypes,
+                                                 uint64_t utypes,
+                                                 uint64_t itypes,
+                                                 uint64_t vtypes, bool alerted);
   static TeamTypeClass* From_Name(const char* name);
   bool Edit();
   [[nodiscard]] const char* Member_Description() const;

@@ -1045,7 +1045,7 @@ void RadarClass::Cursor_Cell(CELL cell, int value) {
     /*
     **	Record the new state of this cell.
     */
-    (*this)[cell].IsRadarCursor = value;
+    (*this)[cell].IsRadarCursor = value != 0;
 
     /*
     **	If we are erasing then erase the cell.
@@ -1662,8 +1662,8 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           ** Blit it in 2 stages using an intermediate buffer.
           */
           GraphicBufferClass temp_surface;
-          temp_surface.Init((RadarWidth + 16) & 0xfffffff0,
-                            (RadarHeight + 16) & 0xfffffff0, nullptr, 0,
+          temp_surface.Init((RadarWidth + 16) & ~0xF,
+                            (RadarHeight + 16) & ~0xF, nullptr, 0,
                             GBC_VIDEOMEM);
 
           HidPage.Blit(

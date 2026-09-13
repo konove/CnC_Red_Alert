@@ -8,6 +8,7 @@
 #include <optional>
 #include <span>
 
+#include "base/numeric.h"
 #include "base/types.h"
 
 namespace dib {
@@ -128,9 +129,10 @@ void RemapToPalette(Image& image, std::span<const Color> target) {
     base::ssize best = 0;
     int best_difference = std::numeric_limits<int>::max();
     for (base::ssize i = 0; i < std::ssize(target); ++i) {
-      const int difference = std::abs(red - target[i].red) +
-                             std::abs(green - target[i].green) +
-                             std::abs(blue - target[i].blue);
+      const auto& entry = target[base::ToSize(i)];
+      const int difference = std::abs(red - entry.red) +
+                             std::abs(green - entry.green) +
+                             std::abs(blue - entry.blue);
       if (difference == 0) {
         return static_cast<std::uint8_t>(i);
       }
@@ -145,7 +147,7 @@ void RemapToPalette(Image& image, std::span<const Color> target) {
   std::array<std::uint8_t, kMaxColors> mapping{};
   mapping[0] = nearest(Color{});
   for (base::ssize i = 1; i < std::ssize(image.Colors()); ++i) {
-    mapping[static_cast<std::size_t>(i)] = nearest(image.Colors()[i]);
+    mapping[base::ToSize(i)] = nearest(image.Colors()[base::ToSize(i)]);
   }
 
   for (std::uint8_t& pixel : image.MutableBits()) {

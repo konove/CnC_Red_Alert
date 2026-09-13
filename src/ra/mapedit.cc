@@ -66,6 +66,7 @@
 #include <cstring>
 #include <type_traits>
 
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/base.h"
 #include "ra/building.h"
@@ -755,7 +756,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         **	Set map position
         */
         ScenarioInit++;
-        Set_Tactical_Position(Scen.Waypoint[ScenarioClass::kHomeWaypoint]);
+        // Suspicious: passes a CELL where a COORDINATE is expected.
+        Set_Tactical_Position(static_cast<COORDINATE>(
+            Scen.Waypoint[ScenarioClass::kHomeWaypoint]));
         ScenarioInit--;
 
         /*
@@ -1219,7 +1222,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         **	Set new mission
         */
-        mission = MapEditMissions[MissionList->Current_Index()];
+        mission = MapEditMissions[base::ToSize(MissionList->Current_Index())];
         if (CurrentObject[0]->Get_Mission() != mission) {
           ((TechnoClass*)CurrentObject[0])->Set_Mission(mission);
           Changed = 1;

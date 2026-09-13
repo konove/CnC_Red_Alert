@@ -234,8 +234,8 @@ inline CELL Coord_YCell(COORDINATE coord) {
 inline CELL XY_Cell(int x, int y) {
   CELL_COMPOSITE cell{};
   cell.Cell = 0;
-  cell.Sub.X = x;
-  cell.Sub.Y = y;
+  cell.Sub.X = static_cast<unsigned>(x);
+  cell.Sub.Y = static_cast<unsigned>(y);
   return cell.Cell;
 }
 
@@ -996,9 +996,9 @@ inline int Distance(int x1, int y1, int x2, int y2) {
     diff2 = -diff2;
   }
   if (diff1 > diff2) {
-    return diff1 + (static_cast<unsigned>(diff2) / 2);
+    return diff1 + (diff2 / 2);
   }
-  return diff2 + (static_cast<unsigned>(diff1) / 2);
+  return diff2 + (diff1 / 2);
 }
 
 #endif  // CNC_RED_ALERT_RA_INLINE_H_

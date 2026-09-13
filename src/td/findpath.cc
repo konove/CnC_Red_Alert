@@ -59,6 +59,7 @@
 #include <cstring>
 
 #include "absl/log/check.h"
+#include "base/numeric.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/memflag.h"
@@ -209,7 +210,10 @@ static void Set_Overlap(PathType* path, CELL cell) {
 
 static void Clear_Overlap(PathType* path, CELL cell) {
   DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
-  path->Overlap[cell >> 5] &= ~(1 << Overlap_Bit(cell));
+  // Widen before inverting so the mask sign-extends exactly like the
+  // implicit conversion in Set_Overlap.
+  path->Overlap[cell >> 5] &=
+      ~static_cast<unsigned long>(1 << Overlap_Bit(cell));
 }
 
 /***************************************************************************
@@ -783,7 +787,7 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
         Mem_Copy(&path, &pleft, sizeof(PathType));
         pleft.Command = &moves_left[0];
         pleft.Overlap = LeftOverlap;
-        Mem_Copy(path.Command, pleft.Command, path.Length);
+        Mem_Copy(path.Command, pleft.Command, base::ToSize(path.Length));
         Mem_Copy(path.Overlap, pleft.Overlap, sizeof(LeftOverlap));
         left =
             Follow_Edge(startcell, next, &pleft, COUNTERCLOCK, direction,
@@ -808,7 +812,7 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
         Mem_Copy(&path, &pright, sizeof(PathType));
         pright.Command = &moves_right[0];
         pright.Overlap = RightOverlap;
-        Mem_Copy(path.Command, pright.Command, path.Length);
+        Mem_Copy(path.Command, pright.Command, base::ToSize(path.Length));
         Mem_Copy(path.Overlap, pright.Overlap, sizeof(RightOverlap));
         right = Follow_Edge(startcell, next, &pright, CLOCK, direction, threat,
                             threat_stage, sizeof(moves_right), threshhold);
@@ -916,7 +920,7 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
       len = std::min(len, maxlen);
       if (len > 0) {
         memcpy(&path.Overlap[0], &which->Overlap[0], sizeof(LeftOverlap));
-        memcpy(&path.Command[0], &which->Command[0], len);
+        memcpy(&path.Command[0], &which->Command[0], base::ToSize(len));
         path.Length = len;
         path.Cost = which->Cost;
         path.LastOverlap = -1;

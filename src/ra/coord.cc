@@ -85,13 +85,13 @@ const short* Coord_Spillage_List(const COORDINATE coord, const Rect& rect,
 
 COORDINATE Coord_Move(const COORDINATE start, const DirType facing,
                       const unsigned short distance) {
-  short x = Coord_X(start);
-  short y = Coord_Y(start);
-  base::MovePoint(x, y, facing, distance);
-  return XY_Coord(x, y);
+  auto x = static_cast<int16_t>(Coord_X(start));
+  auto y = static_cast<int16_t>(Coord_Y(start));
+  base::MovePoint(x, y, facing, static_cast<int16_t>(distance));
+  return XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y));
 }
 
-COORDINATE Coord_Scatter(const COORDINATE coord, const unsigned distance,
+COORDINATE Coord_Scatter(const COORDINATE coord, const int distance,
                          const bool lock) {
   COORDINATE result = Coord_Move(coord, Random_Pick(DIR_N, DIR_MAX),
                                  static_cast<unsigned short>(distance));
@@ -121,9 +121,9 @@ int Distance(const COORDINATE coord1, const COORDINATE coord2) {
   }
 
   if (diff1 > diff2) {
-    return diff1 + (static_cast<unsigned>(diff2) / 2);
+    return diff1 + (diff2 / 2);
   }
-  return diff2 + (static_cast<unsigned>(diff1) / 2);
+  return diff2 + (diff1 / 2);
 }
 
 int Distance(const TARGET target1, const TARGET target2) {

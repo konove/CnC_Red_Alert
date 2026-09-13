@@ -1924,7 +1924,7 @@ int UnitClass::Shape_Number() const {
     if (IsHarvesting && !PrimaryFacing.Is_Rotating() && !NavCom && !IsDriving) {
       //			static char _hstage[] = {0, 1, 2, 3, 4, 5, 6, 7,
       // 0};
-      unsigned stage = Fetch_Stage();
+      int stage = Fetch_Stage();
       if (stage >= std::ssize(UnitTypeClass::Harvester_Load_List)) {
         stage = std::ssize(UnitTypeClass::Harvester_Load_List) - 1;
       }
@@ -1937,7 +1937,7 @@ int UnitClass::Shape_Number() const {
       ** If the harvester's dumping a load of ore, show that animation
       */
       if (IsDumping) {
-        unsigned stage = Fetch_Stage();
+        int stage = Fetch_Stage();
         if (*this == UNIT_MAD) {
           if (stage >= 8) {
             stage = 7;

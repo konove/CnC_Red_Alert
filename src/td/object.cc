@@ -154,7 +154,7 @@ ObjectTypeClass::ObjectTypeClass(bool is_sentient, bool is_flammable,
                                  bool is_selectable, bool is_legal_target,
                                  bool is_insignificant, bool is_immune,
                                  int name, const char* ini, ArmorType armor,
-                                 unsigned short strength) noexcept
+                                 int16_t strength) noexcept
     : AbstractTypeClass(name, ini),
       IsCrushable(is_crushable),
       IsStealthy(is_stealthy),
@@ -829,7 +829,8 @@ bool ObjectClass::Render(bool forced) {
         **	relative, so add the window's x-coord to 'x'.
         */
         if (Debug_Map && Trigger) {
-          Fancy_Text_Print(Trigger->Get_Name(), x + (WinX << 3), y, PINK,
+          Fancy_Text_Print(Trigger->Get_Name(), x + (static_cast<int>(WinX) << 3), y,
+                           PINK,
                            TBLACK, TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
         }
       }
@@ -1431,7 +1432,7 @@ const short* ObjectClass::Overlap_List() const {
 BuildingClass* ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {
   return Class_Of().Who_Can_Build_Me(intheory, legal, Owner());
 };
-unsigned ObjectClass::Health_Ratio() const {
+int ObjectClass::Health_Ratio() const {
   return Cardinal_To_Fixed(Class_Of().MaxStrength, Strength);
 };
 int ObjectClass::Full_Name() const { return Class_Of().Full_Name(); };

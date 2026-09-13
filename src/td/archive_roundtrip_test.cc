@@ -5,6 +5,7 @@
 #include <new>
 #include <vector>
 
+#include "base/numeric.h"
 #include "gtest/gtest.h"
 #include "td/cell.h"
 #include "td/defines.h"
@@ -44,7 +45,7 @@ std::vector<uint8_t> Save(T& object) {
   CountingBufferPipe sink(bytes.data(), static_cast<int>(bytes.size()));
   ArchiveWriter writer(sink);
   object.Serialize(writer);
-  bytes.resize(sink.count);
+  bytes.resize(base::ToSize(sink.count));
   return bytes;
 }
 
@@ -107,7 +108,7 @@ TEST_F(TdArchiveRoundTripTest, TriggerIniPreserves64BitDataAndRejectsOverflow) {
 TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireBytes) {
   const auto check = [](auto configure, auto... args) {
     EventClass expected;
-    expected.ID = Houses.ID(PlayerPtr);
+    expected.ID = static_cast<unsigned>(Houses.ID(PlayerPtr));
     expected.Frame = static_cast<unsigned>(Frame);
     configure(expected);
     alignas(EventClass) std::array<unsigned char, sizeof(EventClass)> storage{};
@@ -221,7 +222,7 @@ std::vector<uint8_t> MapFields(int32_t growth_count = 2) {
   bool forward = true;
   writer(x, y, width, height, total, growth_count, spread_count, scan, forward);
   writer(growth, spread);
-  bytes.resize(sink.count);
+  bytes.resize(base::ToSize(sink.count));
   return bytes;
 }
 

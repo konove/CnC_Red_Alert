@@ -218,7 +218,7 @@ TechnoTypeClass::TechnoTypeClass(
     bool is_legal_target, bool is_insignificant, bool is_immune,
     bool is_theater, bool is_twoshooter, bool is_turret_equipped,
     bool is_repairable, bool is_buildable, bool is_crew, int ammo,
-    unsigned short strength, MPHType maxspeed, int sightrange, int cost,
+    int16_t strength, MPHType maxspeed, int sightrange, int cost,
     int scenario, int /*risk*/, int reward, int ownable, WeaponType primary,
     WeaponType secondary, ArmorType armor) noexcept
     : ObjectTypeClass(true, is_flammable, is_crushable, is_stealthy,
@@ -891,7 +891,7 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
     Class_Of().Dimensions(width, height);
 
     if (Strength && (House->Is_Ally(PlayerPtr) || Special.IsHealthBar)) {
-      unsigned ratio = Health_Ratio();
+      int ratio = Health_Ratio();
       int pwidth;  // Pixel width of bar interior.
       int color;   // The color to give the interior of the bargraph.
 
@@ -1627,7 +1627,9 @@ HousesType TechnoClass::Owner() const { return House->Class->House; }
  *                                                                                             *
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Clicked_As_Target(int count) { FlashCount = count; }
+void TechnoClass::Clicked_As_Target(int count) {
+  FlashCount = static_cast<unsigned>(count);
+}
 
 /***********************************************************************************************
  * TechnoClass::AI -- Handles AI processing for techno object. *

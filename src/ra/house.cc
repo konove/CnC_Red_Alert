@@ -887,7 +887,7 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
   /*
   **	Perform some equivalency fixups for the building existence flags.
   */
-  long flags = ActiveBScan;
+  uint64_t flags = ActiveBScan;
 
   /*
   **	The computer records prerequisite buildings because it can't relay on
@@ -897,8 +897,10 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
     flags = OldBScan;
   }
 
-  int pre = static_cast<int>(
-      dynamic_cast<const TechnoTypeClass*>(type)->Prerequisite);
+  // The mask used to live in an int, so only its low 32 bits, sign-extended,
+  // take part in the check below.
+  auto pre = static_cast<uint64_t>(static_cast<int32_t>(
+      dynamic_cast<const TechnoTypeClass*>(type)->Prerequisite));
 
   /*
   **	Advanced power also serves as a prerequisite for normal power.
@@ -1643,7 +1645,7 @@ void HouseClass::Super_Weapon_Handler() {
   **	being destroyed is a good example of this.
   */
   if (SuperWeapon[SPC_SONAR_PULSE].Is_Present()) {
-    int usspy = 1 << Class->House;
+    unsigned usspy = 1U << Class->House;
     bool present = false;
     bool powered = false;
     for (int q = 0; q < Buildings.Count() && !powered; q++) {
@@ -2876,7 +2878,10 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
             Percent_Chance(Rule.VortexChance * 100)) {
           int x = Random_Pick(0, Map.MapCellWidth - 1);
           int y = Random_Pick(0, Map.MapCellHeight - 1);
-          ChronalVortex.Appear(XY_Cell(Map.MapCellX + x, Map.MapCellY + y));
+          // Suspicious: passes a CELL where a COORDINATE is expected. Kept
+          // for identical simulation results.
+          ChronalVortex.Appear(static_cast<COORDINATE>(
+              XY_Cell(Map.MapCellX + x, Map.MapCellY + y)));
 
           //					if (Percent_Chance(50)) {
           //						ChronalVortex.Appear(Cell_Coord(oldcell));
@@ -3200,7 +3205,7 @@ void HouseClass::Detach(TARGET target, bool /*unused*/) {
 bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
   CHECK_EQ(Houses.ID(this), ID);
 
-  int bflag = 1 << btype;
+  uint64_t bflag = uint64_t{1} << btype;
   return std::ranges::any_of(
       magic_enum::enum_values<HousesType>(), [&](HousesType index) {
         HouseClass* house = As_Pointer(index);
@@ -4314,7 +4319,9 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
     ZoneType tryzone = _zones[(zz + start) % std::ssize(_zones)];
     zcell = Find_Cell_In_Zone(building, tryzone);
     if (zcell) {
-      return zcell;
+      // Suspicious: unlike the preferred-zone path above, this returns the
+      // raw CELL. Kept for identical simulation results.
+      return static_cast<COORDINATE>(zcell);
     }
   }
 
@@ -4573,14 +4580,14 @@ int HouseClass::Expert_AI() {
     }
 
     Control.MaxBuilding =
-        std::max<unsigned int>(Control.MaxBuilding, maxbuilding + 10);
-    Control.MaxUnit = std::max<unsigned int>(Control.MaxUnit, maxunit + 10);
+        std::max(Control.MaxBuilding, maxbuilding + 10);
+    Control.MaxUnit = std::max(Control.MaxUnit, maxunit + 10);
     Control.MaxInfantry =
-        std::max<unsigned int>(Control.MaxInfantry, maxinfantry + 10);
+        std::max(Control.MaxInfantry, maxinfantry + 10);
     Control.MaxVessel =
-        std::max<unsigned int>(Control.MaxVessel, maxvessel + 10);
+        std::max(Control.MaxVessel, maxvessel + 10);
     Control.MaxAircraft =
-        std::max<unsigned int>(Control.MaxAircraft, maxaircraft + 10);
+        std::max(Control.MaxAircraft, maxaircraft + 10);
   }
 
   /*
@@ -5228,9 +5235,8 @@ int HouseClass::AI_Building() {
     */
     int current = BQuantity[STRUCT_REFINERY];
     if (!IsTiberiumShort &&
-        current <
-            (Rule.RefineryRatio * fixed(static_cast<uint8_t>(CurBuildings)))
-                .Round_Up() &&
+        (Rule.RefineryRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+                .Round_Up() > current &&
         current < Rule.RefineryLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_REFINERY);
       if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome)) {
@@ -5248,9 +5254,8 @@ int HouseClass::AI_Building() {
     **	will be sufficient money to train troopers.
     */
     current = BQuantity[STRUCT_BARRACKS] + BQuantity[STRUCT_TENT];
-    if (current <
-            (Rule.BarracksRatio * fixed(static_cast<uint8_t>(CurBuildings)))
-                .Round_Up() &&
+    if ((Rule.BarracksRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+                .Round_Up() > current &&
         current < Rule.BarracksLimit && (money > 300 || hasincome)) {
       b = &BuildingTypeClass::As_Reference(STRUCT_BARRACKS);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
@@ -5304,8 +5309,8 @@ int HouseClass::AI_Building() {
     **	be sufficient money to build vehicles.
     */
     current = BQuantity[STRUCT_WEAP];
-    if (current < (Rule.WarRatio * fixed(static_cast<uint8_t>(CurBuildings)))
-                      .Round_Up() &&
+    if ((Rule.WarRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+                .Round_Up() > current &&
         current < Rule.WarLimit && (money > 2000 || hasincome)) {
       b = &BuildingTypeClass::As_Reference(STRUCT_WEAP);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
@@ -5322,9 +5327,8 @@ int HouseClass::AI_Building() {
     */
     current = BQuantity[STRUCT_PILLBOX] + BQuantity[STRUCT_CAMOPILLBOX] +
               BQuantity[STRUCT_TURRET] + BQuantity[STRUCT_FLAME_TURRET];
-    if (current <
-            (Rule.DefenseRatio * fixed(static_cast<uint8_t>(CurBuildings)))
-                .Round_Up() &&
+    if ((Rule.DefenseRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+                .Round_Up() > current &&
         current < Rule.DefenseLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_FLAME_TURRET);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
@@ -5357,8 +5361,8 @@ int HouseClass::AI_Building() {
     **	Build some air defense.
     */
     current = BQuantity[STRUCT_SAM] + BQuantity[STRUCT_AAGUN];
-    if (current < (Rule.AARatio * fixed(static_cast<uint8_t>(CurBuildings)))
-                      .Round_Up() &&
+    if ((Rule.AARatio * fixed(static_cast<uint8_t>(CurBuildings)))
+                .Round_Up() > current &&
         current < Rule.AALimit) {
       /*
       **	Building air defense only makes sense if the opponent has
@@ -5417,8 +5421,8 @@ int HouseClass::AI_Building() {
     **	Advanced base defense would be good.
     */
     current = BQuantity[STRUCT_TESLA];
-    if (current < (Rule.TeslaRatio * fixed(static_cast<uint8_t>(CurBuildings)))
-                      .Round_Up() &&
+    if ((Rule.TeslaRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+                .Round_Up() > current &&
         current < Rule.TeslaLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_TESLA);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) &&
@@ -5458,9 +5462,8 @@ int HouseClass::AI_Building() {
     **	A helipad would be good.
     */
     current = BQuantity[STRUCT_HELIPAD];
-    if (current <
-            (Rule.HelipadRatio * fixed(static_cast<uint8_t>(CurBuildings)))
-                .Round_Up() &&
+    if ((Rule.HelipadRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+                .Round_Up() > current &&
         current < Rule.HelipadLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
@@ -5482,9 +5485,8 @@ int HouseClass::AI_Building() {
     **	An airstrip would be good.
     */
     current = BQuantity[STRUCT_AIRSTRIP];
-    if (current <
-            (Rule.AirstripRatio * fixed(static_cast<uint8_t>(CurBuildings)))
-                .Round_Up() &&
+    if ((Rule.AirstripRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+                .Round_Up() > current &&
         current < Rule.AirstripLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_AIRSTRIP);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {

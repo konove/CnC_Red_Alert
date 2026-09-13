@@ -581,7 +581,7 @@ void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
   WindowList[WINDOW_TACTICAL][WINDOWHEIGHT] = height;
   if (Window == WINDOW_TACTICAL) {
     Change_Window(0);
-    Change_Window(Window);
+    Change_Window(static_cast<int>(Window));
   }
   IsDisplayToRedraw = true;
   Flag_To_Redraw(false);
@@ -3749,8 +3749,8 @@ bool DisplayClass::Is_Spot_Free(COORDINATE coord) const {
  *=============================================================================================*/
 void DisplayClass::Center_Map() {
   if (CurrentObject.Count()) {
-    unsigned x = 0;
-    unsigned y = 0;
+    int x = 0;
+    int y = 0;
 
     for (int index = 0; index < CurrentObject.Count(); index++) {
       COORDINATE coord = CurrentObject[index]->Center_Coord();
@@ -3759,8 +3759,9 @@ void DisplayClass::Center_Map() {
       y += Coord_Y(coord);
     }
 
-    x /= CurrentObject.Count();
-    y /= CurrentObject.Count();
+    const int count = static_cast<int>(CurrentObject.Count());
+    x /= count;
+    y /= count;
     Set_Tactical_Position(
         XY_Coord(x - (TacLeptonWidth / 2), y - (TacLeptonHeight / 2)));
   }

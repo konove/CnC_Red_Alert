@@ -78,7 +78,7 @@ class FacingClass {
 
   [[nodiscard]] DirType Get() const { return CurrentFacing; }
 
-  [[nodiscard]] int Is_Rotating() const {
+  [[nodiscard]] bool Is_Rotating() const {
     return DesiredFacing != CurrentFacing;
   }
   [[nodiscard]] int Difference() const {

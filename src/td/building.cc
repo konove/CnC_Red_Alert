@@ -1253,7 +1253,7 @@ void BuildingClass::AI() {
       ratio = 0x00C0;
     }
     if (Class->IsRepairable &&
-            Health_Ratio() <= static_cast<unsigned>(ratio)) {
+            Health_Ratio() <= ratio) {
       if (House->Available_Money() >= REPAIR_THRESHHOLD) {
         Repair(1);
       } else {
@@ -3148,7 +3148,7 @@ void BuildingClass::Write_INI(char* buffer) {
       sprintf(uname, "%03d", index);
       sprintf(buf, "%s,%s,%d,%u,%d,%s", building->House->Class->IniName,
               building->Class->IniName,
-              static_cast<int>(building->Health_Ratio()),
+              building->Health_Ratio(),
               Coord_Cell(building->Coord), building->PrimaryFacing.Current(),
               building->Trigger ? building->Trigger->Get_Name() : "None");
       WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
@@ -4782,7 +4782,8 @@ int BuildingClass::Refund_Amount() const {
   */
   if (IsV107 && Class->Capacity > 0) {
     cost += Fixed_To_Cardinal(
-        Class->Capacity, Cardinal_To_Fixed(static_cast<unsigned int>(House->Capacity), static_cast<unsigned int>(House->Tiberium)));
+        Class->Capacity, Cardinal_To_Fixed(static_cast<int>(House->Capacity),
+                                           static_cast<int>(House->Tiberium)));
   }
   return cost;
 }

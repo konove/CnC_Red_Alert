@@ -519,8 +519,10 @@ bool HouseClass::Can_Build(const TechnoTypeClass* type,
   /*
   **	Perform some equivalency fixups for the building existance flags.
   */
-  long flags = ActiveBScan;
-  int pre = static_cast<int>(type->Pre);
+  uint64_t flags = ActiveBScan;
+  // The mask used to live in an int, so only its low 32 bits, sign-extended,
+  // take part in the checks below.
+  auto pre = static_cast<uint64_t>(static_cast<int32_t>(type->Pre));
   if (flags & STRUCTF_ADVANCED_POWER) {
     flags |= STRUCTF_POWER;
   }
@@ -1333,6 +1335,10 @@ void HouseClass::AI() {
     **	amount of safety time has expired.
     */
     if (!EndCountDown) {
+      // Gunboats and unarmed aircraft do not count as surviving forces.
+      constexpr uint64_t kGunboatFlag = UNITF_GUNBOAT;
+      constexpr uint64_t kUnarmedAircraftFlags =
+          AIRCRAFTF_TRANSPORT | AIRCRAFTF_CARGO | AIRCRAFTF_A10;
       /*
       **	All buildings destroyed checker.
       */
@@ -1344,9 +1350,8 @@ void HouseClass::AI() {
       /*
       **	All units destroyed checker.
       */
-      if ((!((ActiveUScan & ~(UNITF_GUNBOAT)) | IScan |
-             (ActiveAScan &
-              ~(AIRCRAFTF_TRANSPORT | AIRCRAFTF_CARGO | AIRCRAFTF_A10)))) &&
+      if ((!((ActiveUScan & ~kGunboatFlag) | IScan |
+             (ActiveAScan & ~kUnarmedAircraftFlags))) &&
           t->Spring(EVENT_UNITS_DESTROYED, Class->House)) {
         continue;
       }
@@ -1354,9 +1359,8 @@ void HouseClass::AI() {
       /*
       **	All buildings AND units destroyed checker.
       */
-      if ((!(ActiveBScan | (ActiveUScan & ~(UNITF_GUNBOAT)) | IScan |
-             (ActiveAScan &
-              ~(AIRCRAFTF_TRANSPORT | AIRCRAFTF_CARGO | AIRCRAFTF_A10)))) &&
+      if ((!(ActiveBScan | (ActiveUScan & ~kGunboatFlag) | IScan |
+             (ActiveAScan & ~kUnarmedAircraftFlags))) &&
           t->Spring(EVENT_ALL_DESTROYED, Class->House)) {
         continue;
       }
@@ -1939,9 +1943,9 @@ void HouseClass::Make_Enemy(HousesType house) {
   Validate();
   if (house != HOUSE_NONE && Is_Ally(house)) {
     HouseClass* enemy = As_Pointer(house);
-    Allies &= ~(1 << house);
+    Allies &= ~(1U << house);
     if (enemy && enemy->Is_Ally(this)) {
-      enemy->Allies &= ~(1 << Class->House);
+      enemy->Allies &= ~(1U << Class->House);
     }
 
     if ((Debug_Flag || GameToPlay != GAME_NORMAL) && !ScenarioInit) {
@@ -3156,7 +3160,7 @@ void HouseClass::Detach(TARGET /*unused*/, bool /*unused*/) {
  *=============================================================================================*/
 bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
   Validate();
-  int bflag = 1 << btype;
+  uint64_t bflag = uint64_t{1} << btype;
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
     HouseClass* house = As_Pointer(index);
 
@@ -3717,7 +3721,8 @@ void HouseClass::MPlayer_Defeated() {
       Flag_Remove(FlagLocation, true);
     } else {
       if (FlagHome) {
-        Flag_Remove(FlagHome, true);
+        // Suspicious: passes a raw CELL rather than As_Target(FlagHome).
+        Flag_Remove(static_cast<TARGET>(FlagHome), true);
       }
     }
   }

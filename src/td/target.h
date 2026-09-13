@@ -73,9 +73,7 @@ typedef enum KindType {
 inline KindType Target_Kind(TARGET a) {
   return static_cast<KindType>((unsigned)a >> TARGET_MANTISSA);
 }
-inline unsigned Target_Value(TARGET a) {
-  return static_cast<unsigned>(a) & TARGET_MANTISSA_MASK;
-}
+inline int Target_Value(TARGET a) { return a & TARGET_MANTISSA_MASK; }
 
 inline bool Is_Target_Team(TARGET a) { return Target_Kind(a) == KIND_TEAM; }
 inline bool Is_Target_TeamType(TARGET a) {
@@ -111,7 +109,7 @@ inline TARGET Build_Target(KindType kind, int value) {
                              (unsigned)value);
 }
 inline TARGET As_Target(CELL cell) {
-  return static_cast<TARGET>((unsigned)KIND_CELL << TARGET_MANTISSA | cell);
+  return static_cast<TARGET>(KIND_CELL << TARGET_MANTISSA | cell);
 }
 
 class UnitClass;

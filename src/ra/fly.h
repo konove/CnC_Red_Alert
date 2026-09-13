@@ -82,7 +82,7 @@ class FlyClass {
   **	Object movement consists of incrementing the accumulator until enough
   *"distance" *	has accumulated so that moving the object becomes reasonable.
   */
-  unsigned SpeedAccum{0};          // Lepton accumulator.
+  int SpeedAccum{0};          // Lepton accumulator.
   MPHType SpeedAdd{MPH_IMMOBILE};  // Lepton add (per frame).
 };
 

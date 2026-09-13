@@ -143,7 +143,7 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
  *   06/20/1994 JLB : Uses object pointers to distribute damage. * 06/20/1994
  *JLB : Source is a pointer. *
  *=============================================================================================*/
-void Explosion_Damage(COORDINATE coord, unsigned strength, TechnoClass* source,
+void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
                       WarheadType warhead) {
   CELL cell;                 // Cell number under explosion.
   ObjectClass* object;       // Working object pointer.

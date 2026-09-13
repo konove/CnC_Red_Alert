@@ -262,15 +262,15 @@ class HouseClass {
   **	This is the running count of the number of units owned by this house.
   *This *	value is used to keep track of ownership limits.
   */
-  unsigned CurUnits = 0;
-  unsigned CurBuildings = 0;
+  int CurUnits = 0;
+  int CurBuildings = 0;
 
   /*
   **	This is the maximum number allowed to be built by this house. The
   **	value depends on the scenario being played.
   */
-  unsigned MaxUnit = 0;
-  unsigned MaxBuilding = 0;
+  int MaxUnit = 0;
+  int MaxBuilding = 0;
 
   /*
   **	This is the running total of the number of credits this house has

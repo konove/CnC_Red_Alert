@@ -162,8 +162,10 @@ BulletClass::~BulletClass() {
         *legal. If not, *	then find a nearby legal location.
         */
         if (Can_Enter_Cell(static_cast<CELL>(newcoord)) != MOVE_OK) {
-          newcoord =
-              Map.Nearby_Location(Coord_Cell(newcoord), dog->Class->Speed);
+          // Suspicious: stores a CELL in a COORDINATE. Kept for identical
+          // simulation results.
+          newcoord = static_cast<COORDINATE>(
+              Map.Nearby_Location(Coord_Cell(newcoord), dog->Class->Speed));
         }
 
         /*

@@ -105,10 +105,10 @@ class HouseStaticClass {
   **	This is the maximum number allowed to be built by this house. The
   **	value depends on the scenario being played.
   */
-  unsigned MaxUnit;
-  unsigned MaxBuilding;
+  int MaxUnit;
+  int MaxBuilding;
   int MaxInfantry;
-  unsigned MaxVessel;
+  int MaxVessel;
   int MaxAircraft;
 
   /*
@@ -438,10 +438,10 @@ class HouseClass {
   **	This is the running count of the number of units owned by this house.
   *This *	value is used to keep track of ownership limits.
   */
-  unsigned CurUnits = 0;
+  int CurUnits = 0;
   int CurBuildings = 0;
   int CurInfantry = 0;
-  unsigned CurVessels = 0;
+  int CurVessels = 0;
   int CurAircraft = 0;
 
   /*

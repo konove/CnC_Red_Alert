@@ -221,7 +221,7 @@ COORDINATE Coord_Move(COORDINATE start, DirType dir, unsigned short distance) {
   auto x = static_cast<short>(Coord_X(start));
   auto y = static_cast<short>(Coord_Y(start));
 
-  base::MovePoint(x, y, dir, distance);
+  base::MovePoint(x, y, dir, static_cast<int16_t>(distance));
   return XY_Coord(x, y);
 }
 
@@ -247,7 +247,7 @@ COORDINATE Coord_Move(COORDINATE start, DirType dir, unsigned short distance) {
  *                                                                                             *
  * HISTORY: * 02/01/1992 JLB : Created. * 05/13/1992 JLB : Only uses Random(). *
  *=============================================================================================*/
-COORDINATE Coord_Scatter(COORDINATE coord, unsigned distance, bool lock) {
+COORDINATE Coord_Scatter(COORDINATE coord, int distance, bool lock) {
   COORDINATE newcoord;
 
   newcoord = Coord_Move(coord, Random_Pick(DIR_N, DIR_MAX),

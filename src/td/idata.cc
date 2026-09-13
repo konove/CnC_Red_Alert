@@ -1450,7 +1450,7 @@ InfantryTypeClass::InfantryTypeClass(
     long pre, bool is_female, bool is_leader, bool is_crawling,
     bool is_civilian, bool is_nominal, bool is_fraidycat, bool is_capture,
     bool is_theater, int ammo, int* do_table, int firelaunch, int pronelaunch,
-    unsigned short strength, int sightrange, int cost, int scenario, int risk,
+    int16_t strength, int sightrange, int cost, int scenario, int risk,
     int reward, int ownable, WeaponType primary, WeaponType secondary,
     MPHType maxspeed) noexcept
     : TechnoTypeClass(name, ininame, level, pre, is_leader, true, is_nominal,

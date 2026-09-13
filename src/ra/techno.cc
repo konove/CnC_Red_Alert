@@ -164,6 +164,7 @@
 #include <utility>
 
 #include "absl/log/check.h"
+#include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
@@ -2499,7 +2500,7 @@ HousesType TechnoClass::Owner() const {
 void TechnoClass::Clicked_As_Target(int count) {
   assert(IsActive);
 
-  FlashCount = count;
+  FlashCount = static_cast<unsigned>(count);
 }
 
 /***********************************************************************************************
@@ -4425,8 +4426,8 @@ void TechnoClass::Techno_Draw_Object(const void* shapefile, int shapenum, int x,
             std::make_unique<Rect[]>(Get_Build_Frame_Count(shapefile));
       }
       if (ttype->DimensionData != nullptr &&
-          !ttype->DimensionData[shapenum].Is_Valid()) {
-        ttype->DimensionData[shapenum] = Shape_Dimensions(shapefile, shapenum);
+          !ttype->DimensionData[base::ToSize(shapenum)].Is_Valid()) {
+        ttype->DimensionData[base::ToSize(shapenum)] = Shape_Dimensions(shapefile, shapenum);
       }
     }
 
@@ -5760,7 +5761,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
   ** factory-producing item or whatever.
   */
   if (What_Am_I() == RTTI_BUILDING) {
-    int spiedby = SpiedBy & 1 << PlayerPtr->Class->House;
+    unsigned spiedby = SpiedBy & (1U << PlayerPtr->Class->House);
 
     /*
     ** If it's an ore refinery or other such storage-capable building,
@@ -6387,7 +6388,7 @@ bool TechnoTypeClass::Read_INI(CCINIClass& ini) {
     IsScanner = ini.Get_Bool(Name(), "Sensors", IsScanner);
     Armor = ini.Get_ArmorType(Name(), "Armor", Armor);
     Prerequisite = ini.Get_Buildings(Name(), "Prerequisite", Prerequisite);
-    MaxStrength = static_cast<unsigned short>(
+    MaxStrength = static_cast<int16_t>(
         ini.Get_Int(Name(), "Strength", MaxStrength));
     SightRange = ini.Get_Int(Name(), "Sight", SightRange);
     Level = ini.Get_Int(Name(), "TechLevel", Level);

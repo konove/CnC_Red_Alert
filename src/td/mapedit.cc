@@ -66,6 +66,7 @@
 #include <cstdlib>
 #include <type_traits>
 
+#include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/misc.h"
@@ -822,7 +823,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         ....................... Set map position ........................
         */
         ScenarioInit++;
-        Set_Tactical_Position(Waypoint[WAYPT_HOME]);
+        // Suspicious: passes a CELL where a COORDINATE is expected.
+        Set_Tactical_Position(static_cast<COORDINATE>(Waypoint[WAYPT_HOME]));
         ScenarioInit--;
 
         /*
@@ -1231,7 +1233,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         ........................ Set new mission ........................
         */
-        mission = MapEditMissions[MissionList->Current_Index()];
+        mission = MapEditMissions[base::ToSize(MissionList->Current_Index())];
         if (CurrentObject[0]->Get_Mission() != mission) {
           ((TechnoClass*)CurrentObject[0])->Set_Mission(mission);
           Changed = 1;
@@ -1250,8 +1252,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         .......... Derive strength from current gauge reading ...........
         */
         strength = Fixed_To_Cardinal(
-            (unsigned)CurrentObject[0]->Class_Of().MaxStrength,
-            (unsigned)HealthGauge->Get_Value());
+            CurrentObject[0]->Class_Of().MaxStrength,
+            HealthGauge->Get_Value());
 
         /*
         ........................... Clip to 1 ...........................

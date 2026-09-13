@@ -1788,8 +1788,8 @@ const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
   }
 
   const CellClass* ptr = this + AdjacentCell[face];
-  if (static_cast<unsigned>(Cell_Number()) + AdjacentCell[face] >=
-      MAP_CELL_TOTAL) {
+  const int adjacent = Cell_Number() + AdjacentCell[face];
+  if (adjacent < 0 || adjacent >= MAP_CELL_TOTAL) {
     return *this;
   }
   return *ptr;
@@ -2070,8 +2070,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
             int ucount;
             int minunits = 1000;
             bool found_spot = false;
-            unsigned long minutes = Score.ElapsedTime / kTimerMinute;
-            minutes = std::min<unsigned long>(minutes, 100);
+            const int64_t minutes =
+                std::min<int64_t>(Score.ElapsedTime / kTimerMinute, 100);
             if (Random_Pick(0, 100 - static_cast<int>(minutes)) == 0) {
               for (i = 0;
                    i < Session.Players.Count() + Session.Options.AIPlayers;

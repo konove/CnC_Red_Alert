@@ -142,9 +142,11 @@ T Bound(T original, T minval, T maxval) {
 
 inline void Set_Bit(void* array, int bit, int value) {
   if (value) {
-    ((uint32_t*)array)[(unsigned)bit >> 5] |= 1 << (bit & 0x1F);
+    static_cast<uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] |=
+        1U << (bit & 0x1F);
   } else {
-    ((uint32_t*)array)[(unsigned)bit >> 5] &= ~(1 << (bit & 0x1F));
+    static_cast<uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] &=
+        ~(1U << (bit & 0x1F));
   }
 }
 

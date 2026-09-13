@@ -15,7 +15,7 @@ void PutU16(std::vector<std::uint8_t>& out, std::uint16_t value) {
 
 void PutU32(std::vector<std::uint8_t>& out, std::uint32_t value) {
   for (int i = 0; i < 4; ++i) {
-    out.push_back(static_cast<std::uint8_t>((value >> (8U * i)) & 0xFFU));
+    out.push_back(static_cast<std::uint8_t>((value >> (8 * i)) & 0xFFU));
   }
 }
 

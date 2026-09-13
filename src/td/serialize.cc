@@ -58,7 +58,7 @@ ObjectClass* ResolveSavedObject(TARGET target, ArchiveReader& ar, bool active_on
   if (target == kTargetNone) {
     return nullptr;
   }
-  const int index = static_cast<int>(Target_Value(target));
+  const int index = Target_Value(target);
   switch (Target_Kind(target)) {
     case KIND_INFANTRY:
       return Slot(Infantry, index, ar, active_only);
@@ -150,11 +150,11 @@ void TeamTypePtr<T>::Serialize(ArchiveReader& ar) {
     return;
   }
   if (Target_Kind(target) != KIND_TEAMTYPE ||
-      Target_Value(target) >= static_cast<unsigned>(TeamTypes.Length())) {
+      Target_Value(target) >= TeamTypes.Length()) {
     ar.Fail("invalid saved team type target");
     return;
   }
-  ref_ = TeamTypes.Raw_Ptr(static_cast<int>(Target_Value(target)));
+  ref_ = TeamTypes.Raw_Ptr(Target_Value(target));
 }
 
 template class TeamTypePtr<TeamTypeClass>;
@@ -258,11 +258,11 @@ void TriggerPtr::Serialize(ArchiveReader& ar) {
     return;
   }
   if (Target_Kind(target) != KIND_TRIGGER ||
-      Target_Value(target) >= static_cast<unsigned>(Triggers.Length())) {
+      Target_Value(target) >= Triggers.Length()) {
     ar.Fail("invalid saved trigger target");
     return;
   }
-  ref_ = Triggers.Raw_Ptr(static_cast<int>(Target_Value(target)));
+  ref_ = Triggers.Raw_Ptr(Target_Value(target));
 }
 
 

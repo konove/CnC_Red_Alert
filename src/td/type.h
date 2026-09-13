@@ -332,7 +332,7 @@ class ObjectTypeClass : public AbstractTypeClass {
   /*
   **	This is the maximum strength of this object type.
   */
-  unsigned short MaxStrength;
+  int16_t MaxStrength;
 
   /*
   **	These point to the shape imagery for this object type. Since the shape
@@ -352,7 +352,7 @@ class ObjectTypeClass : public AbstractTypeClass {
                   bool is_stealthy, bool is_selectable, bool is_legal_target,
                   bool is_insignificant, bool is_immune, int fullname,
                   const char* ini, ArmorType armor,
-                  unsigned short strength) noexcept;
+                  int16_t strength) noexcept;
 
   static void One_Time();
 
@@ -529,7 +529,7 @@ class TechnoTypeClass : public ObjectTypeClass {
                   bool is_insignificant, bool is_immune, bool is_theater,
                   bool is_twoshooter, bool is_turret_equipped,
                   bool is_repairable, bool is_buildable, bool is_crew, int ammo,
-                  unsigned short strength, MPHType maxspeed, int sightrange,
+                  int16_t strength, MPHType maxspeed, int sightrange,
                   int cost, int scenario, int risk, int reward, int ownable,
                   WeaponType primary, WeaponType secondary,
                   ArmorType armor) noexcept;
@@ -658,7 +658,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	building's storage capacity is used to determine how much Tiberium can
   **	be accumulated.
   */
-  unsigned Capacity;
+  int Capacity;
 
   /*
   **	Each building type produces and consumes power. These values tell how
@@ -706,10 +706,10 @@ class BuildingTypeClass : public TechnoTypeClass {
       bool is_insignificant, bool is_immune, bool is_theater,
       bool is_turret_equipped, bool is_twoshooter, bool is_repairable,
       bool is_buildable, bool is_crew, bool is_sturdy, RTTIType tobuild,
-      DirType sframe, unsigned short strength, int sightrange, int cost,
+      DirType sframe, int16_t strength, int sightrange, int cost,
       int scenario, int risk, int reward, int ownable, WeaponType primary,
       WeaponType secondary, ArmorType armor, unsigned long canenter,
-      unsigned capacity, int power, int drain, BSizeType size,
+      int capacity, int power, int drain, BSizeType size,
       const short* exitlist ABSL_ATTRIBUTE_LIFETIME_BOUND,
       const short* sizelist ABSL_ATTRIBUTE_LIFETIME_BOUND,
       const short* overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
@@ -929,7 +929,7 @@ class UnitTypeClass : public TechnoTypeClass {
                 bool is_crew, bool is_radar_equipped, bool is_fire_anim,
                 bool is_lock_turret, bool is_tracked, bool is_gigundo,
                 bool is_chunky, bool is_cloakable, bool is_animating, int ammo,
-                unsigned short strength, int sightrange, int cost, int scenario,
+                int16_t strength, int sightrange, int cost, int scenario,
                 int risk, int reward, int ownable, WeaponType primary,
                 WeaponType secondary, ArmorType armor, SpeedType speed,
                 MPHType maxSpeed, unsigned rot, int toffset,
@@ -1038,7 +1038,7 @@ class InfantryTypeClass : public TechnoTypeClass {
                     bool is_leader, bool is_crawling, bool is_civilian,
                     bool is_nominal, bool is_fraidycat, bool is_capture,
                     bool is_theater, int ammo, int* do_table, int firelaunch,
-                    int pronelaunch, unsigned short strength, int sightrange,
+                    int pronelaunch, int16_t strength, int sightrange,
                     int cost, int scenario, int risk, int reward, int ownable,
                     WeaponType primary, WeaponType secondary,
                     MPHType maxSpeed) noexcept;
@@ -1283,7 +1283,7 @@ class TerrainTypeClass : public ObjectTypeClass {
                    bool is_spawn, bool is_destroyable, bool is_transformable,
                    bool is_flammable, bool is_crushable, bool is_selectable,
                    bool is_legal_target, bool is_insignificant, bool is_immune,
-                   const char* ininame, int fullname, unsigned short strength,
+                   const char* ininame, int fullname, int16_t strength,
                    ArmorType armor,
                    const short* occupy ABSL_ATTRIBUTE_LIFETIME_BOUND,
                    const short* overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
@@ -1603,7 +1603,7 @@ class AircraftTypeClass : public TechnoTypeClass {
                     bool is_selectable, bool is_legal_target,
                     bool is_insignificant, bool is_immune, bool is_theater,
                     bool is_repairable, bool is_buildable, bool is_crew,
-                    int ammo, unsigned short strength, int sightrange, int cost,
+                    int ammo, int16_t strength, int sightrange, int cost,
                     int scenario, int risk, int reward, int ownable,
                     WeaponType primary, WeaponType secondary, ArmorType armor,
                     MPHType MaxSpeed, int ROT, MissionType deforder) noexcept;

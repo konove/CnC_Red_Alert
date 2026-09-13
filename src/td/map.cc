@@ -63,6 +63,7 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "base/types.h"
 #include "port/ex_string.h"
 #include "rand.h"
 #include "sdllib/memflag.h"
@@ -524,7 +525,7 @@ void MapClass::Init_Cells() {
   Alloc_Cells();
 #else
   // Reset all cells to their default initial state.
-  for (size_t index = 0; index < MAP_CELL_TOTAL; index++) {
+  for (base::ssize index = 0; index < MAP_CELL_TOTAL; index++) {
     Map[index].Reset();
   }
 #endif

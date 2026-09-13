@@ -84,6 +84,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "base/numeric.h"
 #include "td/rand.h"
 #include "td/foot.h"
 
@@ -163,7 +164,7 @@ FootClass::FootClass()
   if (House) {
     House->CurUnits++;
   }
-  Group = -1;
+  Group = kNoGroup;
 }
 
 /***********************************************************************************************
@@ -215,7 +216,7 @@ FootClass::FootClass(HousesType house)
       NavCom(kTargetNone),
       SuspendedNavCom(kTargetNone),
       Team(nullptr),
-      Group(-1),
+      Group(kNoGroup),
       Member(nullptr),
       TryTryAgain(PATH_RETRY),
       HeadToCoord(0L) {
@@ -536,7 +537,7 @@ bool FootClass::Basic_Path() {
       if (found1) {
         Fixup_Path(&path1);
         memcpy(&Path[0], &workpath1[0],
-               std::min(path1.Length, static_cast<int>(sizeof(Path))));
+               base::ToSize(std::min(path1.Length, static_cast<int>(sizeof(Path)))));
       }
 
       Mark(MARK_DOWN);
@@ -1742,8 +1743,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
     ** Next we need to figure out how fast the unit moves because this
     ** decreases the distance penalty.
     */
-    speed = std::max(static_cast<unsigned>(Techno_Type_Class()->MaxSpeed),
-                     static_cast<unsigned>(1));
+    speed = std::max(static_cast<int>(Techno_Type_Class()->MaxSpeed), 1);
 
     int ratio = speed > 0 ? std::max(dist / speed, 1) : 1;
 

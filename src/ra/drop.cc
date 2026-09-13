@@ -39,6 +39,7 @@
 
 #include "ra/drop.h"
 
+#include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/dialog.h"
@@ -92,7 +93,7 @@ DropListClass* DropListClass::Remove() {
 }
 
 int DropListClass::Add_Item(const char* text) {
-  port::SafeCopy(String, text, MaxLength);
+  port::SafeCopy(String, text, base::ToSize(MaxLength));
   Flag_To_Redraw();
   return List.Add_Item(text);
 }
@@ -104,7 +105,7 @@ int DropListClass::Current_Index() { return List.Current_Index(); }
 void DropListClass::Set_Selected_Index(int index) {
   if (static_cast<unsigned>(index) < static_cast<unsigned>(List.Count())) {
     List.Set_Selected_Index(index);
-    port::SafeCopy(String, List.Get_Item(Current_Index()), MaxLength);
+    port::SafeCopy(String, List.Get_Item(Current_Index()), base::ToSize(MaxLength));
   } else {
     String[0] = '\0';
   }
@@ -124,7 +125,7 @@ void DropListClass::Peer_To_Peer(unsigned flags, KeyNumType& key,
   }
 
   if (&whom == &List) {
-    port::SafeCopy(String, List.Current_Item(), MaxLength);
+    port::SafeCopy(String, List.Current_Item(), base::ToSize(MaxLength));
     Flag_To_Redraw();
     key = ButtonKey(static_cast<int>(ID));
   }

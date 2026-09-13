@@ -167,7 +167,7 @@ void GameOptionsClass::Process() {
       y = OptionY + ButtonResumeY;
     }
 
-    auto* g = new TextButtonClass(_constants[index].ID, text,
+    auto* g = new TextButtonClass(static_cast<unsigned>(_constants[index].ID), text,
                                   TPF_6PT_GRAD | TPF_NOSHADOW, 0, y);
 
     maxwidth = std::max(g->Width, maxwidth);

@@ -76,7 +76,7 @@ std::vector<std::uint8_t> MakeBmp(int width, int height, std::uint8_t first) {
   };
   auto put32 = [&bmp](std::uint32_t v) {
     for (int i = 0; i < 4; ++i) {
-      bmp.push_back(static_cast<std::uint8_t>((v >> (8U * i)) & 0xFFU));
+      bmp.push_back(static_cast<std::uint8_t>((v >> (8 * i)) & 0xFFU));
     }
   };
 

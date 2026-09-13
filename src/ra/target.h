@@ -62,8 +62,9 @@ inline RTTIType Target_Kind(TARGET a) {
   return static_cast<RTTIType>(((TARGET_COMPOSITE&)a).Sub.Exponent);
 }
 
-inline unsigned Target_Value(TARGET a) {
-  return ((TARGET_COMPOSITE&)a).Sub.Mantissa;
+inline int Target_Value(TARGET a) {
+  const TARGET_COMPOSITE composite{.Target = a};
+  return static_cast<int>(composite.Sub.Mantissa);
 }
 
 inline bool Is_Target_Team(TARGET a) { return Target_Kind(a) == RTTI_TEAM; }
@@ -240,13 +241,13 @@ class TargetClass : public xTargetClass {
   TargetClass() : xTargetClass() { Invalidate(); }
   TargetClass(RTTIType rtti, int id) : xTargetClass() {
     Target.Sub.Exponent = rtti;
-    Target.Sub.Mantissa = id;
+    Target.Sub.Mantissa = static_cast<unsigned>(id);
   }
   // targets convert from every addressable thing by design.
   // NOLINTNEXTLINE(*-explicit-constructor)
   TargetClass(CELL cell) : xTargetClass() {
     Target.Sub.Exponent = RTTI_CELL;
-    Target.Sub.Mantissa = cell;
+    Target.Sub.Mantissa = static_cast<unsigned>(cell);
   }
   // targets convert from every addressable thing by design.
   // NOLINTNEXTLINE(*-explicit-constructor)

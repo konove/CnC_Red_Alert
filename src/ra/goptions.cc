@@ -198,7 +198,8 @@ void GameOptionsClass::Process() {
         continue;
       }
     } else {
-      g = new TextButtonClass(_constants[index].ID, text, kTpfButton, 0, y);
+      g = new TextButtonClass(static_cast<unsigned>(_constants[index].ID), text,
+                              kTpfButton, 0, y);
     }
 
     maxwidth = std::max(g->Width, maxwidth);

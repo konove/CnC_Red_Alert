@@ -94,7 +94,7 @@ TargetClass::TargetClass(TARGET target) : xTargetClass() { Target.Target = targe
 TargetClass::TargetClass(const AbstractClass* ptr) : xTargetClass() {
   if (ptr != nullptr) {
     Target.Sub.Exponent = ptr->RTTI;
-    Target.Sub.Mantissa = ptr->ID;
+    Target.Sub.Mantissa = static_cast<unsigned>(ptr->ID);
   } else {
     Target.Sub.Exponent = RTTI_NONE;
   }
@@ -103,7 +103,7 @@ TargetClass::TargetClass(const AbstractClass* ptr) : xTargetClass() {
 TargetClass::TargetClass(const AbstractTypeClass* ptr) : xTargetClass() {
   if (ptr != nullptr) {
     Target.Sub.Exponent = ptr->RTTI;
-    Target.Sub.Mantissa = ptr->ID;
+    Target.Sub.Mantissa = static_cast<unsigned>(ptr->ID);
   } else {
     Target.Sub.Exponent = RTTI_NONE;
   }
@@ -112,7 +112,7 @@ TargetClass::TargetClass(const AbstractTypeClass* ptr) : xTargetClass() {
 TargetClass::TargetClass(const CellClass* ptr) : xTargetClass() {
   if (ptr != nullptr) {
     Target.Sub.Exponent = RTTI_CELL;
-    Target.Sub.Mantissa = ptr->ID;
+    Target.Sub.Mantissa = static_cast<unsigned>(ptr->ID);
   } else {
     Target.Sub.Exponent = RTTI_NONE;
   }
@@ -550,39 +550,40 @@ COORDINATE As_Movement_Coord(TARGET target) {
  * HISTORY: * 03/05/1996 JLB : Created. *
  *=============================================================================================*/
 AbstractClass* xTargetClass::As_Abstract() const {
+  const int value = static_cast<int>(Value());
   switch (static_cast<RTTIType>(*this)) {
     case RTTI_TEAM:
-      return Teams.Raw_Ptr(Value());
+      return Teams.Raw_Ptr(value);
 
     case RTTI_BULLET:
-      return Bullets.Raw_Ptr(Value());
+      return Bullets.Raw_Ptr(value);
 
     case RTTI_OVERLAY:
-      return Overlays.Raw_Ptr(Value());
+      return Overlays.Raw_Ptr(value);
 
     case RTTI_SMUDGE:
-      return Smudges.Raw_Ptr(Value());
+      return Smudges.Raw_Ptr(value);
 
     case RTTI_UNIT:
-      return Units.Raw_Ptr(Value());
+      return Units.Raw_Ptr(value);
 
     case RTTI_VESSEL:
-      return Vessels.Raw_Ptr(Value());
+      return Vessels.Raw_Ptr(value);
 
     case RTTI_BUILDING:
-      return Buildings.Raw_Ptr(Value());
+      return Buildings.Raw_Ptr(value);
 
     case RTTI_INFANTRY:
-      return Infantry.Raw_Ptr(Value());
+      return Infantry.Raw_Ptr(value);
 
     case RTTI_AIRCRAFT:
-      return Aircraft.Raw_Ptr(Value());
+      return Aircraft.Raw_Ptr(value);
 
     case RTTI_TERRAIN:
-      return Terrains.Raw_Ptr(Value());
+      return Terrains.Raw_Ptr(value);
 
     case RTTI_ANIM:
-      return Anims.Raw_Ptr(Value());
+      return Anims.Raw_Ptr(value);
 
     default:
       break;
@@ -591,44 +592,45 @@ AbstractClass* xTargetClass::As_Abstract() const {
 }
 
 AbstractTypeClass* xTargetClass::As_TypeClass() const {
+  const int value = static_cast<int>(Value());
   switch (static_cast<RTTIType>(*this)) {
     case RTTI_TEAMTYPE:
-      return TeamTypes.Raw_Ptr(Value());
+      return TeamTypes.Raw_Ptr(value);
 
     case RTTI_TRIGGERTYPE:
-      return TriggerTypes.Raw_Ptr(Value());
+      return TriggerTypes.Raw_Ptr(value);
 
     case RTTI_BULLETTYPE:
-      return &BulletTypeClass::As_Reference(static_cast<BulletType>(Value()));
+      return &BulletTypeClass::As_Reference(static_cast<BulletType>(value));
 
     case RTTI_OVERLAY:
-      return &OverlayTypeClass::As_Reference(static_cast<OverlayType>(Value()));
+      return &OverlayTypeClass::As_Reference(static_cast<OverlayType>(value));
 
     case RTTI_SMUDGE:
-      return &SmudgeTypeClass::As_Reference(static_cast<SmudgeType>(Value()));
+      return &SmudgeTypeClass::As_Reference(static_cast<SmudgeType>(value));
 
     case RTTI_UNIT:
-      return &UnitTypeClass::As_Reference(static_cast<UnitType>(Value()));
+      return &UnitTypeClass::As_Reference(static_cast<UnitType>(value));
 
     case RTTI_VESSEL:
-      return &VesselTypeClass::As_Reference(static_cast<VesselType>(Value()));
+      return &VesselTypeClass::As_Reference(static_cast<VesselType>(value));
 
     case RTTI_BUILDING:
-      return &BuildingTypeClass::As_Reference(static_cast<StructType>(Value()));
+      return &BuildingTypeClass::As_Reference(static_cast<StructType>(value));
 
     case RTTI_INFANTRY:
       return &InfantryTypeClass::As_Reference(
-          static_cast<InfantryType>(Value()));
+          static_cast<InfantryType>(value));
 
     case RTTI_AIRCRAFT:
       return &AircraftTypeClass::As_Reference(
-          static_cast<AircraftType>(Value()));
+          static_cast<AircraftType>(value));
 
     case RTTI_TERRAIN:
-      return &TerrainTypeClass::As_Reference(static_cast<TerrainType>(Value()));
+      return &TerrainTypeClass::As_Reference(static_cast<TerrainType>(value));
 
     case RTTI_ANIM:
-      return &AnimTypeClass::As_Reference(static_cast<AnimType>(Value()));
+      return &AnimTypeClass::As_Reference(static_cast<AnimType>(value));
 
     default:
       break;
@@ -653,21 +655,22 @@ AbstractTypeClass* xTargetClass::As_TypeClass() const {
  * HISTORY: * 03/05/1996 JLB : Created. *
  *=============================================================================================*/
 TechnoClass* xTargetClass::As_Techno() const {
+  const int value = static_cast<int>(Value());
   switch (static_cast<RTTIType>(*this)) {
     case RTTI_UNIT:
-      return Units.Raw_Ptr(Value());
+      return Units.Raw_Ptr(value);
 
     case RTTI_VESSEL:
-      return Vessels.Raw_Ptr(Value());
+      return Vessels.Raw_Ptr(value);
 
     case RTTI_BUILDING:
-      return Buildings.Raw_Ptr(Value());
+      return Buildings.Raw_Ptr(value);
 
     case RTTI_INFANTRY:
-      return Infantry.Raw_Ptr(Value());
+      return Infantry.Raw_Ptr(value);
 
     case RTTI_AIRCRAFT:
-      return Aircraft.Raw_Ptr(Value());
+      return Aircraft.Raw_Ptr(value);
 
     default:
       break;
@@ -676,36 +679,37 @@ TechnoClass* xTargetClass::As_Techno() const {
 }
 
 ObjectClass* xTargetClass::As_Object() const {
+  const int value = static_cast<int>(Value());
   switch (static_cast<RTTIType>(*this)) {
     case RTTI_TERRAIN:
-      return Terrains.Raw_Ptr(Value());
+      return Terrains.Raw_Ptr(value);
 
     case RTTI_SMUDGE:
-      return Smudges.Raw_Ptr(Value());
+      return Smudges.Raw_Ptr(value);
 
     case RTTI_OVERLAY:
-      return Overlays.Raw_Ptr(Value());
+      return Overlays.Raw_Ptr(value);
 
     case RTTI_BULLET:
-      return Bullets.Raw_Ptr(Value());
+      return Bullets.Raw_Ptr(value);
 
     case RTTI_ANIM:
-      return Anims.Raw_Ptr(Value());
+      return Anims.Raw_Ptr(value);
 
     case RTTI_UNIT:
-      return Units.Raw_Ptr(Value());
+      return Units.Raw_Ptr(value);
 
     case RTTI_VESSEL:
-      return Vessels.Raw_Ptr(Value());
+      return Vessels.Raw_Ptr(value);
 
     case RTTI_BUILDING:
-      return Buildings.Raw_Ptr(Value());
+      return Buildings.Raw_Ptr(value);
 
     case RTTI_INFANTRY:
-      return Infantry.Raw_Ptr(Value());
+      return Infantry.Raw_Ptr(value);
 
     case RTTI_AIRCRAFT:
-      return Aircraft.Raw_Ptr(Value());
+      return Aircraft.Raw_Ptr(value);
 
     default:
       break;

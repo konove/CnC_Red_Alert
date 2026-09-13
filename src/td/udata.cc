@@ -1278,7 +1278,7 @@ UnitTypeClass::UnitTypeClass(
     bool is_turret_equipped, bool is_twoshooter, bool is_repairable,
     bool is_buildable, bool is_crew, bool is_radar_equipped, bool is_fire_anim,
     bool is_lock_turret, bool is_tracked, bool is_gigundo, bool is_chunky,
-    bool is_cloakable, bool is_animating, int ammo, unsigned short strength,
+    bool is_cloakable, bool is_animating, int ammo, int16_t strength,
     int sightrange, int cost, int scenario, int risk, int reward, int ownable,
     WeaponType primary, WeaponType secondary, ArmorType armor, SpeedType speed,
     MPHType maxSpeed, unsigned rot, int toffset, MissionType order) noexcept

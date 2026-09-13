@@ -77,13 +77,15 @@ inline CELL Coord_YLepton(COORDINATE coord) {
 // inline COORD CellXY_Coord(unsigned x, unsigned y) {return
 // (COORD)(MAKE_LONG(y<<8, x<<8));}
 inline COORDINATE Coord_Add(COORDINATE a, COORDINATE b) {
-  return static_cast<COORDINATE>(MakeLong(*((short*)&a + 1) + *((short*)&b + 1),
-                                          *(short*)&a + *(short*)&b));
+  // Components wrap modulo 2^16, exactly as the packed sum always did.
+  return static_cast<COORDINATE>(
+      MakeLong(static_cast<uint16_t>(Coord_Y(a) + Coord_Y(b)),
+               static_cast<uint16_t>(Coord_X(a) + Coord_X(b))));
 }
 inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
   return static_cast<COORDINATE>(
-      MakeLong(*((short*)&coord1 + 1) - *((short*)&coord2 + 1),
-               *(short*)&coord1 - *(short*)&coord2));
+      MakeLong(static_cast<uint16_t>(Coord_Y(coord1) - Coord_Y(coord2)),
+               static_cast<uint16_t>(Coord_X(coord1) - Coord_X(coord2))));
 }
 inline COORDINATE Coord_Snap(COORDINATE coord) {
   return static_cast<COORDINATE>(

@@ -394,7 +394,7 @@ bool SmudgeTypeClass::Create_And_Place(CELL cell, HousesType /*unused*/) const {
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* SmudgeTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
-  return new SmudgeClass(Type, -1);
+  return new SmudgeClass(Type);
 }
 
 /***********************************************************************************************

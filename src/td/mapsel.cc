@@ -47,6 +47,7 @@
 #include "absl/algorithm/container.h"
 #include "absl/random/random.h"
 #include "absl/types/span.h"
+#include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -1612,8 +1613,8 @@ void Bit_It_In(const int x, const int y, const int w, const int h,
   std::iota(shuffled_rows, shuffled_rows + h, 0);
 
   absl::BitGen gen;
-  auto x_span = absl::MakeSpan(shuffled_cols, w);
-  auto y_span = absl::MakeSpan(shuffled_rows, h);
+  auto x_span = absl::MakeSpan(shuffled_cols, base::ToSize(w));
+  auto y_span = absl::MakeSpan(shuffled_rows, base::ToSize(h));
   absl::c_shuffle(x_span, gen);
   absl::c_shuffle(y_span, gen);
 
@@ -1653,9 +1654,9 @@ void Bit_It_In(const int x, const int y, const int w, const int h,
         // NOTE: Ignores x/y/w/h and assumes a full 320-wide screen.
         // Only used with full-screen (0,0,320,200) dissolves.
         for (int row = line; row >= 0; row--) {
-          const unsigned offset = line - row;
-          const unsigned x_left = 160 - offset;
-          const unsigned x_right = 160 + offset;
+          const int offset = line - row;
+          const int x_left = 160 - offset;
+          const int x_right = 160 + offset;
           dest->Buffer_Put_Pixel(
               x_left, row,
               static_cast<unsigned char>(Buffer_Get_Pixel(src, x_left, row)));

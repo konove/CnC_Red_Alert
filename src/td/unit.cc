@@ -1970,7 +1970,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
           !IsDriving) {
         static char _hstage[6] = {0, 1, 2, 3, 2, 1};
         shapenum = 32 + ((BodyShape[facing] + 2) / 4 * 4) +
-                   _hstage[Fetch_Stage() % sizeof(_hstage)];
+                   _hstage[Fetch_Stage() % std::ssize(_hstage)];
       } else {
         shapenum = BodyShape[facing];
         if (Class->IsAnimating) {
@@ -3573,7 +3573,7 @@ void UnitClass::Write_INI(char* buffer) {
     if (!unit->IsInLimbo && unit->IsActive) {
       sprintf(uname, "%03d", index);
       sprintf(buf, "%s,%s,%d,%u,%d,%s,%s", unit->House->Class->IniName,
-              unit->Class->IniName, static_cast<int>(unit->Health_Ratio()),
+              unit->Class->IniName, unit->Health_Ratio(),
               Coord_Cell(unit->Coord), unit->PrimaryFacing.Current(),
               Mission_Name(unit->Mission),
               unit->Trigger ? unit->Trigger->Get_Name() : "None");

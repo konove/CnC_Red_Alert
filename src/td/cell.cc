@@ -1902,7 +1902,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
     } else {
       int index;
       UnitClass* unit = nullptr;
-      unsigned damage = 0;
+      int damage = 0;
       int what = MONEY;
 
       if (GameToPlay != GAME_NORMAL &&
@@ -2155,7 +2155,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         */
         case EXPLOSION:
           damage = 400;
-          object->Take_Damage((int&)damage, 0, WARHEAD_HE);
+          object->Take_Damage(damage, 0, WARHEAD_HE);
           for (index = 0; index < 5; index++) {
             COORDINATE blast_coord =
                 Coord_Scatter(Cell_Coord(), Random_Pick(0, 0x0200));

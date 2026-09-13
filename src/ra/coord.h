@@ -20,7 +20,7 @@ COORDINATE Coord_Move(COORDINATE start, DirType facing,
 
 // Returns a random coordinate within `distance` pixels of `coord`. If `lock`
 // is true, the result is snapped to the nearest cell center.
-COORDINATE Coord_Scatter(COORDINATE coord, unsigned distance,
+COORDINATE Coord_Scatter(COORDINATE coord, int distance,
                          bool lock = false);
 
 DirType Direction(COORDINATE coord1, COORDINATE coord2);

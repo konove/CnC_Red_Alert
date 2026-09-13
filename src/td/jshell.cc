@@ -53,6 +53,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "base/numeric.h"
 #include "sdllib/buffer.h"
 #include "sdllib/iff.h"
 #include "sdllib/memflag.h"
@@ -264,7 +265,7 @@ long Load_Uncompress(FileClass& file, BufferClass& uncomp_buff,
   */
   if (uncomp_buff.Get_Buffer() == dest_buff.Get_Buffer()) {
     sptr = Add_Long_To_Pointer(
-        sptr, uncomp_buff.Get_Size() - (size + sizeof(header)));
+        sptr, uncomp_buff.Get_Size() - (size + base::ToSigned(sizeof(header))));
   }
 
   /*
@@ -297,7 +298,7 @@ int Load_Picture(const char* filename, BufferClass& scratchbuf,
 
 void* Load_Alloc_Data(FileClass& file) {
   const auto size = static_cast<int>(file.Size());
-  auto* ptr = new char[size + 1];
+  auto* ptr = new char[base::ToSize(size + 1)];
   file.Read(ptr, size);
   ptr[size] = '\0';  // Null-terminate so text parsers don't read past the data.
   return ptr;
@@ -353,7 +354,7 @@ void* Build_Translucent_Table(const void* palette, const TLucentType* control,
 
   if (count && control && palette) {
     if (!buffer) {
-      buffer = new char[Translucent_Table_Size(count)];
+      buffer = new char[base::ToSize(Translucent_Table_Size(count))];
     }
 
     if (buffer) {
@@ -412,7 +413,7 @@ void* Conquer_Build_Translucent_Table(const void* palette,
 
   if (count && control && palette) {
     if (!buffer) {
-      buffer = new char[Translucent_Table_Size(count)];
+      buffer = new char[base::ToSize(Translucent_Table_Size(count))];
     }
 
     if (buffer) {

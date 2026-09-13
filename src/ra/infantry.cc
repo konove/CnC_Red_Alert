@@ -691,7 +691,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
           }
 
           if (*this == INFANTRY_SPY) {
-            int housespy = 1 << House->Class->House;
+            unsigned housespy = 1U << House->Class->House;
 
             if (tech->Trigger.Is_Valid()) {
               tech->Trigger->Spring(TEVENT_SPIED, this);

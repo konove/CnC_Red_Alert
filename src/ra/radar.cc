@@ -1216,7 +1216,7 @@ void RadarClass::Cursor_Cell(CELL cell, int value) {
       /*
       **	Record the new state of this cell.
       */
-      (*this)[cell].IsRadarCursor = value;
+      (*this)[cell].IsRadarCursor = value != 0;
 
       /*
       **	If we are erasing then erase the cell.
@@ -1940,8 +1940,8 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           ** Create a temporary intermediate surface
           */
           GraphicBufferClass temp_surface;
-          temp_surface.Init((RadarWidth + 16) & 0xfffffff0,
-                            (RadarHeight + 16) & 0xfffffff0, nullptr, 0,
+          temp_surface.Init((RadarWidth + 16) & ~0xF,
+                            (RadarHeight + 16) & ~0xF, nullptr, 0,
                             GBC_VIDEOMEM);
 
           /*
@@ -2249,7 +2249,7 @@ bool RadarClass::Draw_House_Info() {
                      TPF_6PT_GRAD | TPF_NOSHADOW);
     y += 12 + 1;
     // count & print units
-    snprintf(txt, sizeof(txt), "%i", static_cast<int>(ptr->CurUnits));
+    snprintf(txt, sizeof(txt), "%i", ptr->CurUnits);
     Fancy_Text_Print(txt, RadX + RadOffX + 12, y, color, BLACK,
                      style);
     y += 12 + 1;

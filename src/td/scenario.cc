@@ -518,7 +518,7 @@ void Do_Win() {
 
   CarryOverMoney = static_cast<int>(PlayerPtr->Credits);
 
-  int pieces = PlayerPtr->NukePieces;
+  const unsigned pieces = PlayerPtr->NukePieces;
 
   /*
   ** Generate a new scenario filename

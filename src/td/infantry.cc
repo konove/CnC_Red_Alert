@@ -772,7 +772,7 @@ void InfantryClass::Per_Cell_Process(bool center) {
   if (center && Mission == MISSION_SABOTAGE) {
     BuildingClass* building = cellptr->Cell_Building();
     if (building && building->As_Target() == NavCom) {
-      int temp = Special.IsScatter;
+      const bool temp = Special.IsScatter;
 
       building->IsGoingToBlow = true;
       building->Clicked_As_Target(20);
@@ -3078,7 +3078,7 @@ void InfantryClass::Write_INI(char* buffer) {
       sprintf(uname, "%03d", index);
       sprintf(buf, "%s,%s,%d,%u,%d,%s,%d,%s", infantry->House->Class->IniName,
               infantry->Class->IniName,
-              static_cast<int>(infantry->Health_Ratio()),
+              infantry->Health_Ratio(),
               Coord_Cell(infantry->Coord),
               CellClass::Spot_Index(infantry->Coord),
               Mission_Name(infantry->Mission == MISSION_NONE

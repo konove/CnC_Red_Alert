@@ -53,6 +53,9 @@
 **	Movable objects are handled by this class definition. Moveable objects
 **	cover everything except buildings.
 */
+// FootClass::Group value for an object outside every player-managed team.
+inline constexpr unsigned char kNoGroup = 255;
+
 class FootClass : public TechnoClass {
  public:
   // Field-wise state and checked references; load shells have no scenario effects.

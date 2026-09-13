@@ -147,8 +147,9 @@ class TeamTypeClass : public AbstractTypeClass {
   */
   static const char* Name_From_Mission(TeamMissionType order);
   static TeamMissionType Mission_From_Name(const char* name);
-  static const TeamTypeClass* Suggested_New_Team(HouseClass* house, long utypes,
-                                                 long itypes, bool alerted);
+  static const TeamTypeClass* Suggested_New_Team(HouseClass* house,
+                                                 uint64_t utypes,
+                                                 uint64_t itypes, bool alerted);
 
   [[nodiscard]] TARGET As_Target() const;
 

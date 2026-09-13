@@ -1769,7 +1769,8 @@ void MapEditClass::Set_House_Buttons(HousesType house, GadgetClass* btnlist,
     **	Compute the desired button ID; get a pointer to the button
     */
     id = (int)h + base_id;
-    btn = (TextButtonClass*)btnlist->Extract_Gadget(id);
+    btn = dynamic_cast<TextButtonClass*>(
+        btnlist->Extract_Gadget(static_cast<unsigned>(id)));
     if (btn) {
       /*
       **	If this house value is the desired one, turn the button on;

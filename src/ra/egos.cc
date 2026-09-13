@@ -45,6 +45,7 @@
 #include <algorithm>
 #include <cstring>
 
+#include "base/numeric.h"
 #include "port/safe_string.h"
 #include "ra/ccfile.h"
 #include "ra/conquer.h"
@@ -303,9 +304,12 @@ static void Slide_Show(int slide, int frame) {
     */
     for (int index = 0; index < 256; index++) {
       if (PaletteLUT[index]) {
-        ComboPalPtr[static_cast<base::ssize>(index) * 3] = SlidePals[slide][static_cast<base::ssize>(index) * 3];
-        ComboPalPtr[(index * 3) + 1] = SlidePals[slide][(index * 3) + 1];
-        ComboPalPtr[(index * 3) + 2] = SlidePals[slide][(index * 3) + 2];
+        ComboPalPtr[static_cast<base::ssize>(index) * 3] = static_cast<unsigned char>(
+            SlidePals[slide][static_cast<base::ssize>(index) * 3]);
+        ComboPalPtr[(index * 3) + 1] =
+            static_cast<unsigned char>(SlidePals[slide][(index * 3) + 1]);
+        ComboPalPtr[(index * 3) + 2] =
+            static_cast<unsigned char>(SlidePals[slide][(index * 3) + 2]);
       }
     }
     return;
@@ -394,7 +398,7 @@ void Show_Who_Was_Responsible() {
   if (!creditsfile.Is_Available()) {
     return;
   }
-  char* credits = new char[creditsfile.Size() + 1];
+  char* credits = new char[base::ToSize(creditsfile.Size() + 1)];
   creditsfile.Read(credits, creditsfile.Size());
 
   /*

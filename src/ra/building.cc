@@ -3157,7 +3157,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     ** spiedby flag for that house.
     */
     if (SpiedBy & 1 << newowner->Class->House) {
-      SpiedBy &= ~(1 << newowner->Class->House);
+      SpiedBy &= ~(1U << newowner->Class->House);
     }
 
     /*

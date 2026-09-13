@@ -599,7 +599,7 @@ void DisplayClass::Update_View_Dimensions(int x, int y, int width, int height,
   WindowList[WINDOW_TACTICAL][WINDOWHEIGHT] = Lepton_To_Pixel(TacLeptonHeight);
   if (Window == WINDOW_TACTICAL) {
     Change_Window(0);
-    Change_Window(Window);
+    Change_Window(static_cast<int>(Window));
   }
   IsDisplayToRedraw = true;
   Flag_To_Redraw(false);
@@ -3619,7 +3619,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
             */
             CELL newmove = cell;
             if (action == ACTION_MOVE && tobject->Is_Foot()) {
-              int oldisform;
+              bool oldisform;
               auto* foot = dynamic_cast<FootClass*>(tobject);
               oldisform = foot->IsFormationMove;
               foot->IsFormationMove = FormMove;

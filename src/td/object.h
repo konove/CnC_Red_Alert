@@ -200,7 +200,7 @@ class ObjectClass : public AbstractClass {
   virtual bool Render(bool forced);
   [[nodiscard]] virtual const short* Occupy_List(bool placement = false) const;
   [[nodiscard]] virtual const short* Overlap_List() const;
-  [[nodiscard]] virtual unsigned Health_Ratio() const;
+  [[nodiscard]] virtual int Health_Ratio() const;
   virtual void Draw_It(int x, int y, WindowNumberType) = 0;
   virtual void Hidden();
   virtual void Look(bool /*unused*/ = false);

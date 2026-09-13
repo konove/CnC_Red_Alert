@@ -96,6 +96,7 @@
 #include <new>
 #include <string>
 
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/bench_util.h"
 #include "ra/building.h"
@@ -1106,14 +1107,14 @@ void SidebarClass::StripClass::Init_IO(int id) {
   ID = id;
 
   UpButton[ID].IsSticky = true;
-  UpButton[ID].ID = kButtonUp + id;
+  UpButton[ID].ID = static_cast<unsigned>(kButtonUp + id);
   UpButton[ID].X = X + (kUpXOffset * 2);
   UpButton[ID].Y = Y + (kUpYOffset * 2);
 
   UpButton[ID].Set_Shape(MFCD::Retrieve("STRIPUP.SHP"));
 
   DownButton[ID].IsSticky = true;
-  DownButton[ID].ID = kButtonDown + id;
+  DownButton[ID].ID = static_cast<unsigned>(kButtonDown + id);
   DownButton[ID].X = X + (kDownXOffset * 2);
   DownButton[ID].Y = Y + (kDownYOffset * 2);
 
@@ -1799,7 +1800,7 @@ bool SidebarClass::StripClass::Recalc() {
       */
       if (BuildableCount > 1 && index < BuildableCount - 1) {
         memmove(&Buildables[index], &Buildables[index + 1],
-                sizeof(Buildables[0]) * (BuildableCount - index - 1));
+                sizeof(Buildables[0]) * base::ToSize(BuildableCount - index - 1));
       }
       TopIndex = 0;
       IsToRedraw = true;

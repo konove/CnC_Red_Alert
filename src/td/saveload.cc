@@ -97,7 +97,7 @@ bool Save_Game(int id, char* descr) {
   char name[kMaxFname + kMaxExt];
   int i;
   int32_t version = 0;
-  unsigned scenario;
+  int scenario;
   HousesType house;
   char descr_buf[kDescripMax]{};
 

@@ -209,7 +209,7 @@ void LogicClass::Debug_Dump(MonoClass* mono) {
       index |= (graph >= row + 1) ? 0x02 : 0x00;
 
       str[1] = '\0';
-      str[0] = _barchar[index];
+      str[0] = static_cast<char>(_barchar[index]);
       mono->Text_Print(str, 62, 9 - (row / 2));
     }
     mono->Sub_Window();

@@ -51,6 +51,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "base/numeric.h"
 #include "ra/ccfile.h"
 #include "ra/monoc.h"
 #include "ra/startup.h"
@@ -307,7 +308,7 @@ void* Load_Alloc_Data(FileClass& file) {
   void* ptr = nullptr;
   long size = file.Size();
 
-  ptr = new char[size];
+  ptr = new char[base::ToSize(size)];
   if (ptr) {
     file.Read(ptr, size);
   }
@@ -373,7 +374,7 @@ void* Build_Translucent_Table(const PaletteClass& palette,
 
   if (count && control && palette) {
     if (!buffer) {
-      buffer = new char[Translucent_Table_Size(count)];
+      buffer = new char[base::ToSize(Translucent_Table_Size(count))];
     }
 
     if (buffer) {
@@ -431,7 +432,7 @@ void* Conquer_Build_Translucent_Table(const PaletteClass& palette,
 
   if (count && control) {
     if (!buffer) {
-      buffer = new char[Translucent_Table_Size(count)];
+      buffer = new char[base::ToSize(Translucent_Table_Size(count))];
     }
 
     if (buffer) {

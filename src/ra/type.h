@@ -148,7 +148,7 @@ class HouseTypeClass : public AbstractTypeClass {
   **	flagged have a greater break-down chance. The percentage is expressed
   **	as a fixed point number with 0x000 meaning 0% and 0x100 meaning 100%.
   */
-  unsigned Lemon;
+  int Lemon;
 
   /*
   **	This points to the default remap table for this house.
@@ -274,7 +274,7 @@ class ObjectTypeClass : public AbstractTypeClass {
   /*
   **	This is the maximum strength of this object type.
   */
-  unsigned short MaxStrength{0};
+  int16_t MaxStrength{0};
 
   // Image data with ownership tracking. Either:
   // - borrowed span pointing into cached MIX data (from MFCD::Retrieve)
@@ -1785,7 +1785,7 @@ class AnimTypeClass : public ObjectTypeClass {
   **	This is the normal loop count for this animation. Usually this is one,
   *but *	for some animations, it may be larger.
   */
-  unsigned Loops;
+  int Loops;
 
   /*
   **	This is the sound effect to play when this animation starts. Usually,

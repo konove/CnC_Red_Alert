@@ -156,7 +156,7 @@ static void SerializeTriggerList(Archive& ar, DynamicVectorClass<TriggerClass*>&
     ar(target);
     if constexpr (Archive::kIsReading) {
       if (!ar.ok() || !Is_Target_Trigger(target) ||
-          Target_Value(target) >= static_cast<unsigned>(Triggers.Length())) {
+          Target_Value(target) >= Triggers.Length()) {
         ar.Fail("invalid saved trigger target");
         return;
       }
@@ -441,7 +441,7 @@ static void Put_All(Pipe& pipe, int save_net) {
  *=========================================================================*/
 bool Save_Game(int id, const char* descr, bool /*unused*/) {
   char name[kMaxFname + kMaxExt];
-  unsigned scenario;
+  int scenario;
   HousesType house;
   int save_net = 0;  // 1 = save network/modem game
 
@@ -489,7 +489,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
     ArchiveWriter header(fpipe);
     uint32_t magic = kSaveGameMagic;
     int32_t version = kSaveGameVersion;
-    auto scenario32 = static_cast<int32_t>(scenario);
+    int32_t scenario32 = scenario;
     header(magic, version, scenario32, house);
   }
 
@@ -998,7 +998,9 @@ bool Load_Game(int id) {
                  sizeof(Session.Options.ScenarioDescription));
           memcpy(Session.ScenarioFileName, Scen.ScenarioName,
                  sizeof(Session.ScenarioFileName));
-          Session.ScenarioFileLength = static_cast<int>(scenario_file.Size());
+          Session.ScenarioFileLength =
+              static_cast<decltype(Session.ScenarioFileLength)>(
+                  scenario_file.Size());
           memcpy(Session.ScenarioDigest, Session.Scenarios[s]->Get_Digest(),
                  sizeof(Session.ScenarioDigest));
           Session.ScenarioIsOfficial = Session.Scenarios[s]->Get_Official();

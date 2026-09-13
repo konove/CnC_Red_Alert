@@ -155,7 +155,7 @@ void LogicClass::Debug_Dump(MonoClass* mono) {
   */
   SpareTicks = std::min(SpareTicks, (long)kTimerSecond);
   _record[RECORDCOUNT - 1].Graphic = Fixed_To_Cardinal(
-      RECORDHEIGHT, Cardinal_To_Fixed(kTimerSecond, static_cast<unsigned int>(SpareTicks)));
+      RECORDHEIGHT, Cardinal_To_Fixed(kTimerSecond, static_cast<int>(SpareTicks)));
 
   /*
   **	Draw the bars across the performance record screen.
@@ -170,7 +170,7 @@ void LogicClass::Debug_Dump(MonoClass* mono) {
       index |= (_record[column].Graphic >= row + 1) ? 0x02 : 0x00;
 
       str[1] = '\0';
-      str[0] = _barchar[index];
+      str[0] = static_cast<char>(_barchar[index]);
       mono->Text_Print(str, 37 + column, 21 - (row / 2));
     }
   }

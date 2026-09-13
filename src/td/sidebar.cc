@@ -96,6 +96,7 @@
 #include <new>
 #include <string>
 
+#include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -1145,14 +1146,14 @@ void SidebarClass::StripClass::Init_IO(int id) {
   ID = id;
 
   UpButton[ID].IsSticky = true;
-  UpButton[ID].ID = BUTTON_UP + id;
+  UpButton[ID].ID = static_cast<unsigned>(BUTTON_UP + id);
   UpButton[ID].X = X + ButtonSpacingOffset + 1;
   UpButton[ID].Y = Y + (MAX_VISIBLE * ObjectHeight) - 1;
 
   UpButton[ID].Set_Shape(Hires_Retrieve("STRIPUP.SHP"));
 
   DownButton[ID].IsSticky = true;
-  DownButton[ID].ID = BUTTON_DOWN + id;
+  DownButton[ID].ID = static_cast<unsigned>(BUTTON_DOWN + id);
   DownButton[ID].X =
       UpButton[ID].X + UpButton[ID].Width + ButtonSpacingOffset - 2;
   DownButton[ID].Y = Y + (MAX_VISIBLE * ObjectHeight) - 1;
@@ -1976,7 +1977,7 @@ bool SidebarClass::StripClass::Recalc() {
       */
       if (BuildableCount > 1 && index < BuildableCount - 1) {
         memcpy(&Buildables[index], &Buildables[index + 1],
-               sizeof(Buildables[0]) * (BuildableCount - index - 1));
+               sizeof(Buildables[0]) * base::ToSize(BuildableCount - index - 1));
       }
       TopIndex = 0;
       IsToRedraw = true;
@@ -2163,7 +2164,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
       switch (spc) {
         case SPC_ION_CANNON:
           if (PlayerPtr->IonCannon.Is_Ready()) {
-            Map.IsTargettingMode = spc;
+            Map.IsTargettingMode = static_cast<unsigned>(spc);
             Unselect_All();
             Speak(VOX_SELECT_TARGET);
           } else {
@@ -2173,7 +2174,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
 
         case SPC_AIR_STRIKE:
           if (PlayerPtr->AirStrike.Is_Ready()) {
-            Map.IsTargettingMode = spc;
+            Map.IsTargettingMode = static_cast<unsigned>(spc);
             Unselect_All();
             Speak(VOX_SELECT_TARGET);
           } else {
@@ -2183,7 +2184,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
 
         case SPC_NUCLEAR_BOMB:
           if (PlayerPtr->NukeStrike.Is_Ready()) {
-            Map.IsTargettingMode = spc;
+            Map.IsTargettingMode = static_cast<unsigned>(spc);
             Unselect_All();
             Speak(VOX_SELECT_TARGET);
           } else {

@@ -71,6 +71,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -405,8 +406,8 @@ void TeamTypeClass::Destroy_All_Of() const {
  *even if no members in field.                        *
  *=============================================================================================*/
 const TeamTypeClass* TeamTypeClass::Suggested_New_Team(
-    HouseClass* house, long /*unused*/, long /*unused*/, long /*unused*/,
-    long /*unused*/, bool alerted)
+    HouseClass* house, uint64_t /*unused*/, uint64_t /*unused*/,
+    uint64_t /*unused*/, uint64_t /*unused*/, bool alerted)
 // TeamTypeClass const * TeamTypeClass::Suggested_New_Team(HouseClass * house,
 // long atypes, long utypes, long itypes, long vtypes, bool alerted)
 {
@@ -1090,7 +1091,7 @@ bool TeamTypeClass::Edit() {
               port::SafeCopy(
                   qlist.Get_Text(),
                   QuarryName[missionlist2.Current_Item()->Data.Quarry],
-                  qlist.Get_Max_Length());
+                  base::ToSize(qlist.Get_Max_Length()));
               break;
 
             case NEED_WAYPOINT:
@@ -1676,12 +1677,15 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
 
     case 0:
     case 1:
-      IsRoundAbout = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
-      IsSuicide = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
-      IsAutocreate = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
-      IsPrebuilt = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+      IsRoundAbout =
+          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
+      IsSuicide = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
+      IsAutocreate =
+          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
+      IsPrebuilt =
+          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
       IsReinforcable =
-          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
       break;
   }
 

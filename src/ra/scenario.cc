@@ -565,9 +565,9 @@ void Fill_In_Data() {
     Map[XY_Cell(x, Map.MapCellY - 1)].IsVisible =
         Map[XY_Cell(x, Map.MapCellY - 1)].IsMapped = true;
 
-    Map[XY_Cell(x, Map.MapCellY + static_cast<unsigned>(Map.MapCellHeight))]
+    Map[XY_Cell(x, Map.MapCellY + Map.MapCellHeight)]
         .IsVisible =
-        Map[XY_Cell(x, Map.MapCellY + static_cast<unsigned>(Map.MapCellHeight))]
+        Map[XY_Cell(x, Map.MapCellY + Map.MapCellHeight)]
             .IsMapped = true;
   }
   for (y = Map.MapCellY; y < Map.MapCellY + Map.MapCellHeight; y++) {

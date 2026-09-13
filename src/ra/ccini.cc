@@ -1494,7 +1494,7 @@ int CCINIClass::Get_Unique_ID() const {
     ((CCINIClass*)this)->Calculate_Message_Digest();
   }
 
-  return CrcEngine::Compute(Digest);
+  return static_cast<int>(CrcEngine::Compute(Digest));
 }
 
 /***********************************************************************************************

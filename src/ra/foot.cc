@@ -98,6 +98,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/building.h"
@@ -478,7 +479,7 @@ bool FootClass::Basic_Path() {
       */
       if (found1) {
         memcpy(&Path[0], &workpath1[0],
-               std::min(path->Length, static_cast<int>(sizeof(Path))));
+               base::ToSize(std::min(path->Length, static_cast<int>(sizeof(Path)))));
       }
 
       Mark(MARK_DOWN);
@@ -1832,8 +1833,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
     ** Next we need to figure out how fast the unit moves because this
     ** decreases the distance penalty.
     */
-    speed = std::max(static_cast<unsigned>(Techno_Type_Class()->MaxSpeed),
-                     static_cast<unsigned>(1));
+    speed = std::max(static_cast<int>(Techno_Type_Class()->MaxSpeed), 1);
 
     int ratio = speed > 0 ? std::max(dist / speed, 1) : 1;
 
@@ -1990,7 +1990,7 @@ void FootClass::Detach(TARGET target, bool all) {
       NavQueue[index] = kTargetNone;
       if (index < std::ssize(NavQueue) - 1) {
         memmove(&NavQueue[index], &NavQueue[index + 1],
-                (std::ssize(NavQueue) - index - 1) * sizeof(NavQueue[0]));
+                base::ToSize(std::ssize(NavQueue) - index - 1) * sizeof(NavQueue[0]));
         index--;
       }
     }

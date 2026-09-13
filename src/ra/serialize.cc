@@ -71,7 +71,7 @@ ObjectClass* ResolveSavedObject(int32_t target, ArchiveReader& ar) {
   if (target == kTargetNone) {
     return nullptr;
   }
-  int index = static_cast<int>(Target_Value(target));
+  int index = Target_Value(target);
   switch (Target_Kind(target)) {
     case RTTI_INFANTRY:
       return Slot(Infantry, index, ar);

@@ -324,7 +324,7 @@ inline TARGET Build_Target(const RTTIType kind, const int value) {
 
   target.Target = 0;
   target.Sub.Exponent = kind;
-  target.Sub.Mantissa = value;
+  target.Sub.Mantissa = static_cast<unsigned>(value);
   return target.Target;
 }
 

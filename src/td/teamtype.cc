@@ -258,27 +258,32 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   /*
   -------------------------- 2nd token: RoundAbout -------------------------
   */
-  IsRoundAbout = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+  IsRoundAbout =
+      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
 
   /*
   --------------------------- 3rd token: Learning --------------------------
   */
-  IsLearning = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+  IsLearning =
+      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
 
   /*
   --------------------------- 4th token: Suicide ---------------------------
   */
-  IsSuicide = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+  IsSuicide =
+      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
 
   /*
   ----------------------------- 5th token: Spy -----------------------------
   */
-  IsAutocreate = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+  IsAutocreate =
+      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
 
   /*
   -------------------------- 6th token: Mercenary --------------------------
   */
-  IsMercenary = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+  IsMercenary =
+      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
 
   /*
   ----------------------- 7th token: RecruitPriority -----------------------
@@ -387,11 +392,11 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
 
   char* ptr = strtok(nullptr, ",");
   if (ptr) {
-    IsReinforcable = tech::ParseInteger<int>(ptr).value_or(0);
+    IsReinforcable = tech::ParseInteger<int>(ptr).value_or(0) != 0;
   }
   ptr = strtok(nullptr, ",");
   if (ptr) {
-    IsPrebuilt = tech::ParseInteger<int>(ptr).value_or(0);
+    IsPrebuilt = tech::ParseInteger<int>(ptr).value_or(0) != 0;
   }
 }
 
@@ -569,30 +574,31 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
     ........................ 2nd token: RoundAbout ........................
     */
     team->IsRoundAbout =
-        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
 
     /*
     ......................... 3rd token: Learning .........................
     */
     team->IsLearning =
-        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
 
     /*
     ......................... 4th token: Suicide ..........................
     */
-    team->IsSuicide = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+    team->IsSuicide =
+        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
 
     /*
     ........................... 5th token: Spy ............................
     */
     team->IsAutocreate =
-        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
 
     /*
     ........................ 6th token: Mercenary .........................
     */
     team->IsMercenary =
-        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
 
     /*
     ..................... 7th token: RecruitPriority ......................
@@ -889,7 +895,8 @@ void TeamTypeClass::Destroy_All_Of() const {
  *even if no members in field.                        *
  *=============================================================================================*/
 const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house,
-                                                       long utypes, long itypes,
+                                                       uint64_t utypes,
+                                                       uint64_t itypes,
                                                        bool alerted) {
   const TeamTypeClass* best = nullptr;
   int bestvalue = 0;
@@ -903,16 +910,20 @@ const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house,
       /*
       **	Determine what kind of units this team requires.
       */
-      long uneeded = 0;
-      long ineeded = 0;
+      uint64_t uneeded = 0;
+      uint64_t ineeded = 0;
       for (int ctype = 0; std::cmp_less(ctype, ttype->ClassCount); ctype++) {
         switch (ttype->Class[ctype]->What_Am_I()) {
           case RTTI_INFANTRYTYPE:
-            ineeded |= 1 << ((InfantryTypeClass*)ttype->Class[ctype])->Type;
+            ineeded |= uint64_t{1}
+                       << dynamic_cast<const InfantryTypeClass*>(
+                              ttype->Class[ctype])->Type;
             break;
 
           case RTTI_UNITTYPE:
-            uneeded |= 1 << ((UnitTypeClass*)ttype->Class[ctype])->Type;
+            uneeded |= uint64_t{1}
+                       << dynamic_cast<const UnitTypeClass*>(
+                              ttype->Class[ctype])->Type;
             break;
           default:
             break;
