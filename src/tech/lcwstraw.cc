@@ -43,9 +43,11 @@
 
 #include <cassert>
 #include <cstring>
+#include <span>
 #include <utility>
 
 #include "base/numeric.h"
+#include "tech/codec_block.h"
 #include "tech/lcw.h"
 
 /***********************************************************************************************
@@ -70,7 +72,10 @@
 LCWStraw::LCWStraw(CompControl control, int blocksize)
     : Control(control),
       BlockSize(blocksize),
-      SafetyMargin((BlockSize / 128) + 1) {
+      // Room for an incompressible block plus the header the straw stores
+      // in front of it.
+      SafetyMargin(LcwWorstCaseSize(BlockSize) - BlockSize +
+                   static_cast<int>(sizeof(BlockHeader))) {
   Buffer = new char[base::ToSize(BlockSize + SafetyMargin)];
   if (control == COMPRESS) {
     Buffer2 = new char[base::ToSize(BlockSize + SafetyMargin)];
@@ -158,18 +163,34 @@ int LCWStraw::Get(void* destbuf, int slen) {
     }
 
     if (Control == DECOMPRESS) {
+      if (corrupt_) {
+        break;
+      }
       int incount = Straw::Get(&BlockHeader, sizeof(BlockHeader));
       if (incount != sizeof(BlockHeader)) {
         break;
       }
+      // A corrupt header must not size reads or writes past Buffer.
+      if (!BlockHeaderFits(BlockHeader.CompCount, BlockHeader.UncompCount,
+                           BlockSize + SafetyMargin)) {
+        corrupt_ = true;
+        break;
+      }
 
-      void* ptr = &Buffer[BlockSize + SafetyMargin - BlockHeader.CompCount];
+      char* ptr = &Buffer[BlockSize + SafetyMargin - BlockHeader.CompCount];
       incount = Straw::Get(ptr, BlockHeader.CompCount);
       if (std::cmp_not_equal(incount, BlockHeader.CompCount)) {
         break;
       }
 
-      LCW_Uncomp(ptr, Buffer);
+      const int produced = LcwUncompBounded(
+          std::as_bytes(std::span(ptr, BlockHeader.CompCount)),
+          std::as_writable_bytes(
+              std::span(Buffer, base::ToSize(BlockSize + SafetyMargin))));
+      if (std::cmp_not_equal(produced, BlockHeader.UncompCount)) {
+        corrupt_ = true;
+        break;
+      }
       Counter = BlockHeader.UncompCount;
     } else {
       BlockHeader.UncompCount =

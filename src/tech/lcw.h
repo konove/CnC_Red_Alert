@@ -40,8 +40,28 @@
 #ifndef CNC_RED_ALERT_TECH_LCW_H_
 #define CNC_RED_ALERT_TECH_LCW_H_
 
+#include <cstddef>
+#include <span>
+
 int LCW_Uncomp(const void* source, void* dest, int length = 0);
 
+// Decodes one LCW stream from `source` into `dest` without reading or writing
+// outside either span. Returns the number of bytes written, or -1 if the
+// stream is malformed: an operation runs past either span, a back-reference
+// points outside the bytes written so far, or the end marker is missing.
+int LcwUncompBounded(std::span<const std::byte> source,
+                     std::span<std::byte> dest);
+
+// Returns the largest stream LCW_Comp produces for `length` input bytes: the
+// input stored as literal runs of at most 63 bytes, each behind one opcode,
+// plus the end marker.
+constexpr int LcwWorstCaseSize(int length) {
+  return length + ((length + 62) / 63) + 1;
+}
+
+// Compresses `length` bytes from `source` into `dest` as one LCW stream ending
+// in the 0x80 marker, and returns the stream size. `dest` must hold
+// LcwWorstCaseSize(length) bytes.
 extern "C" {
 int __cdecl LCW_Comp(const void* source, void* dest, int length);
 }

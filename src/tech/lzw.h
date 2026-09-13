@@ -86,6 +86,10 @@ class LZWEngine {
   static int Make_LZW_Hash(CodeType code, unsigned char character);
 };
 
+// Returns the largest output LZW_Compress produces for `length` input bytes:
+// one 16-bit code per byte, plus the end-of-stream code.
+constexpr int LzwWorstCaseSize(int length) { return 2 * (length + 1); }
+
 int LZW_Compress(const Buffer& inbuff, const Buffer& outbuff);
 int LZW_Uncompress(const Buffer& inbuff, const Buffer& outbuff);
 

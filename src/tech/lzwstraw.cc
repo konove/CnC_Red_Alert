@@ -47,6 +47,7 @@
 
 #include "base/numeric.h"
 #include "tech/buff.h"
+#include "tech/codec_block.h"
 #include "tech/lzw.h"
 
 /***********************************************************************************************
@@ -69,7 +70,12 @@
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
 LZWStraw::LZWStraw(CompControl control, int blocksize)
-    : Control(control), BlockSize(blocksize), SafetyMargin(BlockSize) {
+    : Control(control),
+      BlockSize(blocksize),
+      // Room for an incompressible block plus the header the straw stores in
+      // front of it.
+      SafetyMargin(LzwWorstCaseSize(BlockSize) - BlockSize +
+                   static_cast<int>(sizeof(BlockHeader))) {
   //	SafetyMargin = BlockSize/128+1;
   source_buffer_ = new char[base::ToSize(BlockSize + SafetyMargin)];
   if (control == COMPRESS) {
@@ -159,8 +165,17 @@ int LZWStraw::Get(void* destbuf, int slen) {
     }
 
     if (Control == DECOMPRESS) {
+      if (corrupt_) {
+        break;
+      }
       int incount = Straw::Get(&BlockHeader, sizeof(BlockHeader));
       if (incount != sizeof(BlockHeader)) {
+        break;
+      }
+      // A corrupt header must not size reads or writes past Buffer.
+      if (!BlockHeaderFits(BlockHeader.CompCount, BlockHeader.UncompCount,
+                           BlockSize + SafetyMargin)) {
+        corrupt_ = true;
         break;
       }
 
@@ -171,7 +186,15 @@ int LZWStraw::Get(void* destbuf, int slen) {
         break;
       }
 
-      LZW_Uncompress(Buffer(ptr), Buffer(source_buffer_));
+      // Sized buffers stop a corrupt code stream from reading or writing
+      // past source_buffer_.
+      const int produced =
+          LZW_Uncompress(Buffer(ptr, BlockHeader.CompCount),
+                         Buffer(source_buffer_, BlockSize + SafetyMargin));
+      if (std::cmp_not_equal(produced, BlockHeader.UncompCount)) {
+        corrupt_ = true;
+        break;
+      }
       Counter = BlockHeader.UncompCount;
     } else {
       // Compress
@@ -182,7 +205,9 @@ int LZWStraw::Get(void* destbuf, int slen) {
       }
       BlockHeader.CompCount = static_cast<unsigned short>(
           LZW_Compress(Buffer(source_buffer_, BlockHeader.UncompCount),
-                       Buffer(&output_buffer_[sizeof(BlockHeader)])));
+                       Buffer(&output_buffer_[sizeof(BlockHeader)],
+                              BlockSize + SafetyMargin -
+                                  static_cast<int>(sizeof(BlockHeader)))));
       memmove(output_buffer_, &BlockHeader, sizeof(BlockHeader));
       Counter = static_cast<int>(BlockHeader.CompCount + sizeof(BlockHeader));
     }

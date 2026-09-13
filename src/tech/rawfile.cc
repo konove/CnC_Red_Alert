@@ -581,9 +581,7 @@ long RawFileClass::Size() {
   **	If the file is open, then proceed normally.
   */
   if (Is_Open()) {
-    // ftell's -1 error result arrives wrapped through size_t; a signed cast
-    // restores it rather than tripping a range check.
-    size = static_cast<base::ssize>(IO_Get_File_Size(Handle));
+    size = IO_Get_File_Size(Handle);
   } else {
     /*
     **	If the file wasn't open, then open the file and call this routine again.
@@ -810,11 +808,7 @@ long RawFileClass::Raw_Seek(long pos, int dir) {
     Error(EBADF, false, Filename_.c_str());
   }
 
-  // IO_Seek_File carries the offset in a size_t and hands it straight to
-  // fseek, so a negative relative seek survives the round trip unchanged, as
-  // does ftell's -1 error result on the way back.
-  pos = static_cast<base::ssize>(
-      IO_Seek_File(Handle, static_cast<size_t>(pos), dir));
+  pos = IO_Seek_File(Handle, pos, dir);
 
   /*
   **	Return with the new position of the file. This will range between zero

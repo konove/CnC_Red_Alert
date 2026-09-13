@@ -95,6 +95,10 @@ class LZWStraw : public Straw {
     unsigned short UncompCount = 0;  // Bytes of uncompressed data it represents.
   } BlockHeader;
 
+  // Set once the stream yields a block that cannot be decoded safely; all
+  // later data is dropped.
+  bool corrupt_ = false;
+
  public:
   LZWStraw(const LZWStraw&) = delete;
   LZWStraw& operator=(const LZWStraw&) = delete;

@@ -195,12 +195,10 @@ void Enable_Uncompressed_Shapes() {
 void* Build_Frame(const void* dataptr, unsigned short framenumber,
                   void* buffptr) {
   char* ptr;
-  char* lockptr = nullptr;
   // char *uncomp_ptr;
   uint32_t offset[SUBFRAMEOFFS];
   // Offsets into the 24-bit frame data, so int32_t never overflows.
   int32_t offcurr;
-  int32_t off16;
   int32_t offdiff;
   KeyFrameHeaderType* keyfr;
   unsigned short buffsize;
@@ -359,23 +357,15 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
       ptr = static_cast<char*>(Add_Long_To_Pointer(ptr, 768L));
     }
 
-    off16 = static_cast<int32_t>(std::bit_cast<uintptr_t>(lockptr) & 0x3FFF);
-
     length = LCW_Uncompress(ptr, buffptr, buffsize);
 
     if (length > buffsize) {
       return nullptr;
     }
 
-    if (static_cast<int32_t>(offset[2] & 0x00FFFFFF) - offcurr >=
-        0x00010000 - off16) {
-      ptr = static_cast<char*>(Add_Long_To_Pointer(ptr, offdiff));
-      off16 = static_cast<int32_t>(std::bit_cast<uintptr_t>(ptr) & 0x3FFF);
-
-      offcurr += offdiff;
-      offdiff = 0;
-    }
-
+    // The DOS build rebased ptr whenever the next delta crossed a 64K
+    // segment. ptr + offdiff is the same address either way, so a flat
+    // address space needs no rebasing.
     length = buffsize;
     Apply_Delta(buffptr, Add_Long_To_Pointer(ptr, offdiff));
 
@@ -387,16 +377,6 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
 
       while (currframe <= framenumber) {
         offdiff = static_cast<int32_t>(offset[subframe] & 0x00FFFFFF) - offcurr;
-
-        if (static_cast<int32_t>(offset[subframe + 2] & 0x00FFFFFF) - offcurr >=
-            0x00010000 - off16) {
-          ptr = static_cast<char*>(Add_Long_To_Pointer(ptr, offdiff));
-          off16 =
-              static_cast<int32_t>(std::bit_cast<uintptr_t>(lockptr) & 0x3FFF);
-
-          offcurr += offdiff;
-          offdiff = 0;
-        }
 
         length = buffsize;
         Apply_Delta(buffptr, Add_Long_To_Pointer(ptr, offdiff));

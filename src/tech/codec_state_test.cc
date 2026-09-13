@@ -196,3 +196,41 @@ TEST(CodecStateTest, ModularMultiplicationMatchesIndependentRemainder) {
   }
   XMP_Mod_Mult_Clear(kPrecision);
 }
+
+TEST(CodecStateTest, LcwHandlesFragmentedHeadersAndPartialBlocks) {
+  CheckBlocks<LCWPipe, LCWStraw>();
+}
+
+TEST(CodecStateTest, LzwRoundTripsIncompressibleBlocks) {
+  // 97 is coprime with 256, so every byte differs and no pair ever repeats:
+  // the encoder emits a code per byte, the worst case for its output size.
+  std::array<uint8_t, 256> source{};
+  for (int i = 0; auto& byte : source) {
+    byte = static_cast<uint8_t>((i++ * 97) % 256);
+  }
+  const std::vector<uint8_t> expected(source.begin(), source.end());
+
+  ByteSink encoded;
+  LZWPipe compressor(LZWPipe::COMPRESS, 128);
+  compressor.SetSink(encoded);
+  compressor.Put(source.data(), static_cast<int>(source.size()));
+  compressor.Flush();
+  BufferStraw compressed(encoded.bytes.data(),
+                         static_cast<int>(encoded.bytes.size()));
+  LZWStraw decompressor(LZWStraw::DECOMPRESS, 128);
+  decompressor.SetSource(compressed);
+  EXPECT_EQ(Drain(decompressor), expected);
+
+  BufferStraw plain(source.data(), static_cast<int>(source.size()));
+  LZWStraw compressing_straw(LZWStraw::COMPRESS, 128);
+  compressing_straw.SetSource(plain);
+  const std::vector<uint8_t> straw_encoded = Drain(compressing_straw);
+  EXPECT_EQ(straw_encoded, encoded.bytes);
+  ByteSink decoded;
+  LZWPipe decompressing_pipe(LZWPipe::DECOMPRESS, 128);
+  decompressing_pipe.SetSink(decoded);
+  decompressing_pipe.Put(straw_encoded.data(),
+                         static_cast<int>(straw_encoded.size()));
+  decompressing_pipe.Flush();
+  EXPECT_EQ(decoded.bytes, expected);
+}

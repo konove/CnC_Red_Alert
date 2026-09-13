@@ -188,6 +188,17 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   // THESE charS ON NOW FOR IT TO WORK.
   delta_buffer_size = base::ssize{file_header.largest_frame_size} +
                       kExtraBytesAnimateDoesNotKnowAbout;
+
+  // Frame 0 is read into the last largest_frame_size - 37 bytes of the delta
+  // buffer. A corrupt header whose frame 0 is bigger than that, or whose
+  // largest_frame_size is too small to include ANIMATE's 37 header bytes,
+  // would write outside it.
+  const base::ssize frame_capacity =
+      delta_buffer_size - base::ssize{sizeof(SysAnimHeaderType)};
+  if (frame_capacity < 0 || frame0_size > frame_capacity) {
+    Close_File(fh);
+    return nullptr;
+  }
   min_buffer_size = target_buffer_size + delta_buffer_size;
   max_buffer_size = min_buffer_size + file_buffer_size;
 
@@ -251,7 +262,9 @@ void* Open_Animation(const char* file_name, char* user_buffer,
 
   //	Clear target buffer if it is in the user buffer.
   if (target_buffer_size) {
-    memset(target_buffer, 0, static_cast<unsigned short>(target_buffer_size));
+    // The 16-bit DOS build clamped this to unsigned short, which left most of
+    // any frame over 65535 pixels (e.g. 320x240) uncleared.
+    memset(target_buffer, 0, base::ToSize(target_buffer_size));
   }
 
   // Poke data into the system animation header (start of user_buffer)
@@ -856,6 +869,16 @@ static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
         Get_Resident_Frame_Offset(sys_header->file_buffer, curr_frame + 1) -
         frame_offset;
 
+    // A corrupt offset table must not copy from outside the loaded file data
+    // or past the delta buffer, which holds largest_frame_size bytes.
+    const auto* const anim_end = static_cast<char*>(
+        Add_Long_To_Pointer(sys_header, sys_header->anim_mem_size));
+    if (frame_offset < 0 || frame_data_size <= 0 ||
+        std::cmp_greater(frame_data_size, sys_header->largest_frame_size) ||
+        frame_offset + frame_data_size > anim_end - sys_header->file_buffer) {
+      return false;
+    }
+
     data_ptr = static_cast<char*>(
         Add_Long_To_Pointer(sys_header->file_buffer, frame_offset));
     delta_back = static_cast<char*>(Add_Long_To_Pointer(
@@ -881,7 +904,10 @@ static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
         Get_File_Frame_Offset(file_handle, curr_frame + 1, palette_adjust) -
         frame_offset;
 
-    if (!frame_offset || !frame_data_size) {
+    // A corrupt offset table must not size a read past the delta buffer,
+    // which holds largest_frame_size bytes.
+    if (!frame_offset || frame_data_size <= 0 ||
+        std::cmp_greater(frame_data_size, sys_header->largest_frame_size)) {
       return false;
     }
 

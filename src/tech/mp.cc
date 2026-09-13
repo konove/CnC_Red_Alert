@@ -91,9 +91,11 @@
 #include <cassert>
 #include <cctype>
 #include <climits>
+#include <cstddef>
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <span>
 #include <utility>
 
 #include "base/numeric.h"
@@ -286,15 +288,19 @@ unsigned XMP_Encode(unsigned char* to, unsigned tobytes, const uint32_t* from,
   auto filler =
       static_cast<unsigned char>(XMP_Is_Negative(from, precision) ? 0xff : 0);
 
-  int index;
-  for (index = 0; std::cmp_less(index, tobytes - frombytes); index++) {
+  // A buffer shorter than the number keeps only its low-order bytes. The
+  // unsigned subtraction must not run when tobytes < frombytes, or it wraps
+  // and the padding loop overruns the buffer by about 4 GB.
+  const unsigned padding = tobytes > frombytes ? tobytes - frombytes : 0;
+  const unsigned copied = std::min(tobytes, frombytes);
+  for (unsigned index = 0; index < padding; index++) {
     *to++ = filler;
   }
 
-  const unsigned char* fptr =
-      (const unsigned char*)from + std::min(tobytes, frombytes);
-  for (index = 0; std::cmp_less(index, std::min(tobytes, frombytes)); index++) {
-    *to++ = *--fptr;
+  const std::span<const std::byte> bytes =
+      std::as_bytes(std::span(from, static_cast<std::size_t>(precision)));
+  for (unsigned index = copied; index > 0; index--) {
+    *to++ = static_cast<unsigned char>(bytes[index - 1]);
   }
 
   return tobytes;

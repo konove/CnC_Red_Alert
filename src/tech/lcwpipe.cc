@@ -44,9 +44,11 @@
 
 #include <cassert>
 #include <cstring>
+#include <span>
 #include <utility>
 
 #include "base/numeric.h"
+#include "tech/codec_block.h"
 #include "tech/lcw.h"
 
 /***********************************************************************************************
@@ -68,7 +70,10 @@
 LCWPipe::LCWPipe(CompControl control, int blocksize)
     : Control(control),
       BlockSize(blocksize),
-      SafetyMargin((BlockSize / 128) + 1) {
+      // Room for an incompressible block plus the header the straw stores
+      // in front of it.
+      SafetyMargin(LcwWorstCaseSize(BlockSize) - BlockSize +
+                   static_cast<int>(sizeof(BlockHeader))) {
   Buffer = new char[base::ToSize(BlockSize + SafetyMargin)];
   Buffer2 = new char[base::ToSize(BlockSize + SafetyMargin)];
 }
@@ -127,7 +132,7 @@ int LCWPipe::Put(const void* source, int slen) {
   **	Copy as much as can fit into the buffer from the source data supplied.
   */
   if (Control == DECOMPRESS) {
-    while (slen > 0) {
+    while (slen > 0 && !corrupt_) {
       /*
       **	First check to see if we are in the block header accumulation
       *phase. *	When a whole block header has been accumulated, only then will
@@ -148,6 +153,12 @@ int LCWPipe::Put(const void* source, int slen) {
         if (Counter == sizeof(BlockHeader)) {
           memmove(&BlockHeader, Buffer, sizeof(BlockHeader));
           Counter = 0;
+          // A corrupt header must not size writes past the staging buffers.
+          if (!BlockHeaderFits(BlockHeader.CompCount, BlockHeader.UncompCount,
+                               BlockSize + SafetyMargin)) {
+            corrupt_ = true;
+            break;
+          }
         }
       }
 
@@ -170,7 +181,15 @@ int LCWPipe::Put(const void* source, int slen) {
         *feed it *	through the pipe.
         */
         if (std::cmp_equal(Counter, BlockHeader.CompCount)) {
-          LCW_Uncomp(Buffer, Buffer2);
+          const int produced = LcwUncompBounded(
+              std::as_bytes(std::span(Buffer, BlockHeader.CompCount)),
+              std::as_writable_bytes(
+                  std::span(Buffer2, base::ToSize(BlockSize + SafetyMargin))));
+          if (std::cmp_not_equal(produced, BlockHeader.UncompCount)) {
+            Counter = 0;
+            corrupt_ = true;
+            break;
+          }
           total += Pipe::Put(Buffer2, BlockHeader.UncompCount);
           Counter = 0;
           BlockHeader.CompCount = 0xFFFF;

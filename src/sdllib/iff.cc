@@ -3,7 +3,6 @@
 #include <cstddef>
 #include <cstring>
 
-#include "absl/log/log.h"
 
 [[nodiscard]] size_t Uncompress_Data(void* src, void* dst) {
   if (src == nullptr || dst == nullptr) {
@@ -42,9 +41,4 @@
   }
 
   return uncompressed_size;
-}
-
-int LCW_Comp(const void* /*source*/, void* /*dest*/, int /*length*/) {
-  DLOG(INFO) << "LCW compression not implemented";
-  return 0;
 }

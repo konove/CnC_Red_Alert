@@ -85,8 +85,6 @@ extern "C" {
 
 extern unsigned long LCW_Uncompress(void* source, void* dest,
                                     unsigned long length);
-// Not implemented in the port: logs and returns 0 bytes written.
-int LCW_Comp(const void* source, void* dest, int length);
 
 #ifdef __cplusplus
 }

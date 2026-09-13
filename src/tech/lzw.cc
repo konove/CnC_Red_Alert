@@ -132,6 +132,10 @@ int LZWEngine::Uncompress(const Buffer& input, const Buffer& output) {
   if (instraw.Get(&old_code, sizeof(old_code)) == 0) {
     return outcount;
   }
+  // The first code is always a literal byte.
+  if (old_code < 0 || old_code > 255) {
+    return outcount;
+  }
 
   auto character = static_cast<unsigned char>(old_code);
   outcount += outpipe.Put(&character, sizeof(character));
@@ -145,6 +149,12 @@ int LZWEngine::Uncompress(const Buffer& input, const Buffer& output) {
     }
 
     if (new_code == END_OF_STREAM) {
+      break;
+    }
+
+    // A valid stream only references defined entries or the one about to be
+    // defined. Anything else would walk dict out of bounds.
+    if (new_code < 0 || new_code > next_code) {
       break;
     }
 

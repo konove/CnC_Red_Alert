@@ -187,7 +187,9 @@ bool MixFileClass<T>::Open(std::string_view filename, const PKey* key) {
   } alternate{};
 
   // Read initial metadata to determine format
-  straw->Get(&alternate, sizeof(alternate));
+  if (straw->Get(&alternate, sizeof(alternate)) != sizeof(alternate)) {
+    return false;
+  }
 
   if (alternate.First == 0) {
     // Extended Format
@@ -203,23 +205,46 @@ bool MixFileClass<T>::Open(std::string_view filename, const PKey* key) {
       straw = decrypt_straw.get();
     }
 
-    straw->Get(&file_header, sizeof(file_header));
+    if (straw->Get(&file_header, sizeof(file_header)) != sizeof(file_header)) {
+      return false;
+    }
   } else {
     // Plain Format: The bytes read into 'alternate' are actually the start of
     // FileHeader. Reassemble via a byte buffer to avoid reinterpret_cast.
     char header_buf[sizeof(file_header)];
     std::memcpy(header_buf, &alternate, sizeof(alternate));
-    straw->Get(header_buf + sizeof(alternate),
-               sizeof(file_header) - sizeof(alternate));
+    const int rest = sizeof(file_header) - sizeof(alternate);
+    if (straw->Get(header_buf + sizeof(alternate), rest) != rest) {
+      return false;
+    }
     std::memcpy(&file_header, header_buf, sizeof(file_header));
   }
 
+  // A corrupt header would size the index from a negative count, which makes
+  // resize() throw, or claim data the file does not hold.
+  if (file_header.count < 0 || file_header.size < 0) {
+    return false;
+  }
   data_size_ = file_header.size;
 
-  // Resize index and read entries
   file_index_.resize(static_cast<std::size_t>(file_header.count));
-  straw->Get(file_index_.data(),
-               static_cast<int>(file_index_.size() * sizeof(FileEntry)));
+  const int index_bytes = file_header.count * int{sizeof(FileEntry)};
+  if (straw->Get(file_index_.data(), index_bytes) != index_bytes) {
+    return false;
+  }
+
+  // Offset() hands out spans into the cached data, so every entry must lie
+  // inside it.
+  for (const FileEntry& entry : file_index_) {
+    if (entry.offset < 0 || entry.size < 0 ||
+        int64_t{entry.offset} + entry.size > data_size_) {
+      return false;
+    }
+  }
+
+  if (int64_t{file.Seek(0, SEEK_CUR)} + data_size_ > int64_t{file.Size()}) {
+    return false;
+  }
 
   // Calculate start position.
   // Seek returns long, cast to int32_t to match class member (assuming < 2GB

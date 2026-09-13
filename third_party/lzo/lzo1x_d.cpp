@@ -187,6 +187,186 @@ eof_found:
   return (ip == ip_end ? LZO_E_OK : LZO_E_ERROR);
 }
 
+/***********************************************************************
+// decompress a block of data, checking every read and write.
+//
+// Same control flow as lzo1x_decompress above, with the overrun tests of
+// the LZO_TEST_OVERRUN build: every input byte and output byte is checked
+// before use, and back-references are measured as distances so they can be
+// compared with the bytes written so far.
+************************************************************************/
+
+#define NEED_IP(x) \
+  if ((lzo_uint)(ip_end - ip) < (lzo_uint)(x)) goto input_overrun
+#define NEED_OP(x) \
+  if ((lzo_uint)(op_end - op) < (lzo_uint)(x)) goto output_overrun
+#define TEST_LB(d) \
+  if ((d) > (lzo_uint)(op - out)) goto lookbehind_overrun
+
+int lzo1x_decompress_safe(const lzo_byte* in, lzo_uint in_len, lzo_byte* out,
+                          lzo_uint* out_len, lzo_voidp) {
+  const lzo_byte* ip = in;
+  const lzo_byte* const ip_end = in + in_len;
+  lzo_byte* op = out;
+  const lzo_byte* const op_end = out + *out_len;
+  const lzo_byte* m_pos;
+  lzo_uint t;
+  lzo_uint dist;
+
+  *out_len = 0;
+
+  NEED_IP(1);
+  if (*ip > 17) {
+    t = *ip++ - 17;
+    goto first_literal_run;
+  }
+
+  for (;;) {
+    NEED_IP(1);
+    t = *ip++;
+    if (t >= 16) goto match;
+    /* a literal run */
+    if (t == 0) {
+      t = 15;
+      for (;;) {
+        NEED_IP(1);
+        if (*ip != 0) break;
+        t += 255;
+        ip++;
+      }
+      t += *ip++;
+    }
+    /* copy literals */
+    NEED_OP(3);
+    NEED_IP(3);
+    *op++ = *ip++;
+    *op++ = *ip++;
+    *op++ = *ip++;
+  first_literal_run:
+    NEED_OP(t);
+    NEED_IP(t + 1);
+    do *op++ = *ip++;
+    while (--t > 0);
+
+    t = *ip++;
+
+    if (t >= 16) goto match;
+    NEED_IP(1);
+#if defined(LZO1X)
+    dist = 1 + 0x800 + (t >> 2) + ((lzo_uint)*ip++ << 2);
+#elif defined(LZO1Y)
+    dist = 1 + 0x400 + (t >> 2) + ((lzo_uint)*ip++ << 2);
+#endif
+    TEST_LB(dist);
+    NEED_OP(3);
+    m_pos = op - dist;
+    *op++ = *m_pos++;
+    *op++ = *m_pos++;
+    *op++ = *m_pos++;
+    goto match_done;
+
+    /* handle matches */
+    for (;;) {
+      if (t < 16) /* a M1 match */
+      {
+        NEED_IP(1);
+        dist = 1 + (t >> 2) + ((lzo_uint)*ip++ << 2);
+        TEST_LB(dist);
+        NEED_OP(2);
+        m_pos = op - dist;
+        *op++ = *m_pos++;
+        *op++ = *m_pos++;
+      } else {
+      match:
+        if (t >= 64) /* a M2 match */
+        {
+          NEED_IP(1);
+#if defined(LZO1X)
+          dist = 1 + ((t >> 2) & 7) + ((lzo_uint)*ip++ << 3);
+          t = (t >> 5) - 1;
+#elif defined(LZO1Y)
+          dist = 1 + ((t >> 2) & 3) + ((lzo_uint)*ip++ << 2);
+          t = (t >> 4) - 3;
+#endif
+        } else if (t >= 32) /* a M3 match */
+        {
+          t &= 31;
+          if (t == 0) {
+            t = 31;
+            for (;;) {
+              NEED_IP(1);
+              if (*ip != 0) break;
+              t += 255;
+              ip++;
+            }
+            t += *ip++;
+          }
+          NEED_IP(2);
+          dist = 1 + (ip[0] >> 2) + ((lzo_uint)ip[1] << 6);
+          ip += 2;
+        } else /* a M4 match */
+        {
+          dist = (t & 8) << 11;
+          t &= 7;
+          if (t == 0) {
+            t = 7;
+            for (;;) {
+              NEED_IP(1);
+              if (*ip != 0) break;
+              t += 255;
+              ip++;
+            }
+            t += *ip++;
+          }
+          NEED_IP(2);
+          dist += (ip[0] >> 2) + ((lzo_uint)ip[1] << 6);
+          ip += 2;
+          if (dist == 0) goto eof_found;
+          dist += 0x4000;
+        }
+        TEST_LB(dist);
+        NEED_OP(t + 2);
+        m_pos = op - dist;
+        *op++ = *m_pos++;
+        *op++ = *m_pos++;
+        do *op++ = *m_pos++;
+        while (--t > 0);
+      }
+
+    match_done:
+      t = ip[-2] & 3;
+      if (t == 0) break;
+      /* copy literals */
+      NEED_OP(t);
+      NEED_IP(t + 1);
+      do *op++ = *ip++;
+      while (--t > 0);
+      t = *ip++;
+    }
+  }
+
+eof_found:
+  *out_len = op - out;
+  if (t != 1) return LZO_E_ERROR;
+  return (ip == ip_end ? LZO_E_OK : LZO_E_ERROR);
+
+input_overrun:
+  *out_len = op - out;
+  return LZO_E_INPUT_OVERRUN;
+
+output_overrun:
+  *out_len = op - out;
+  return LZO_E_OUTPUT_OVERRUN;
+
+lookbehind_overrun:
+  *out_len = op - out;
+  return LZO_E_LOOKBEHIND_OVERRUN;
+}
+
+#undef NEED_IP
+#undef NEED_OP
+#undef TEST_LB
+
 /*
 vi:ts=4
 */

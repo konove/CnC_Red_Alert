@@ -73,8 +73,8 @@ class LZOStraw : public Straw {
   /*
   **	Pointer to the working buffer that compression/decompression will use.
   */
-  char* Buffer = nullptr;
-  char* Buffer2 = nullptr;
+  unsigned char* Buffer = nullptr;
+  unsigned char* Buffer2 = nullptr;
 
   /*
   **	The working block size. Data will be compressed in chunks of this size.
@@ -94,6 +94,10 @@ class LZOStraw : public Straw {
     unsigned short CompCount = 0;    // Size of data block (compressed).
     unsigned short UncompCount = 0;  // Bytes of uncompressed data it represents.
   } BlockHeader;
+
+  // Set once the stream yields a block that cannot be decoded safely; all
+  // later data is dropped.
+  bool corrupt_ = false;
 
  public:
   LZOStraw(const LZOStraw&) = delete;

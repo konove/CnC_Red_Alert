@@ -44,9 +44,13 @@
 #include <cassert>
 #include <cstring>
 #include <utility>
+#include <vector>
 
 #include "base/numeric.h"
 #include "lzo/lzo.h"
+#include "lzo/lzo1x.h"
+#include "lzo/lzoconf.h"
+#include "tech/codec_block.h"
 
 /***********************************************************************************************
  * LZOStraw::LZOStraw -- Constructor for LZO straw object. *
@@ -69,9 +73,9 @@
  *=============================================================================================*/
 LZOStraw::LZOStraw(CompControl control, int blocksize)
     : Control(control), BlockSize(blocksize), SafetyMargin(BlockSize) {
-  Buffer = new char[base::ToSize(BlockSize + SafetyMargin)];
+  Buffer = new unsigned char[base::ToSize(BlockSize + SafetyMargin)];
   if (control == COMPRESS) {
-    Buffer2 = new char[base::ToSize(BlockSize + SafetyMargin)];
+    Buffer2 = new unsigned char[base::ToSize(BlockSize + SafetyMargin)];
   }
 }
 
@@ -156,20 +160,35 @@ int LZOStraw::Get(void* destbuf, int slen) {
     }
 
     if (Control == DECOMPRESS) {
+      if (corrupt_) {
+        break;
+      }
       int incount = Straw::Get(&BlockHeader, sizeof(BlockHeader));
       if (incount != sizeof(BlockHeader)) {
         break;
       }
 
-      char* staging_buffer = new char[BlockHeader.CompCount];
-      incount = Straw::Get(staging_buffer, BlockHeader.CompCount);
+      // A corrupt header must not size reads or writes past Buffer.
+      if (!BlockHeaderFits(BlockHeader.CompCount, BlockHeader.UncompCount,
+                           BlockSize + SafetyMargin)) {
+        corrupt_ = true;
+        break;
+      }
+
+      std::vector<unsigned char> staging(BlockHeader.CompCount);
+      incount = Straw::Get(staging.data(), BlockHeader.CompCount);
       if (std::cmp_not_equal(incount, BlockHeader.CompCount)) {
         break;
       }
-      unsigned int length = sizeof(Buffer);
-      lzo1x_decompress((unsigned char*)staging_buffer, BlockHeader.CompCount,
-                       (unsigned char*)Buffer, &length, nullptr);
-      delete[] staging_buffer;
+      // Buffer is a pointer; pass its allocated capacity, not sizeof.
+      auto length = static_cast<lzo_uint>(BlockSize + SafetyMargin);
+      // The checked decoder keeps a corrupt payload inside both buffers.
+      if (lzo1x_decompress_safe(staging.data(), BlockHeader.CompCount, Buffer,
+                                &length, nullptr) != LZO_E_OK ||
+          std::cmp_not_equal(length, BlockHeader.UncompCount)) {
+        corrupt_ = true;
+        break;
+      }
       Counter = BlockHeader.UncompCount;
     } else {
       BlockHeader.UncompCount =
@@ -177,10 +196,13 @@ int LZOStraw::Get(void* destbuf, int slen) {
       if (BlockHeader.UncompCount == 0) {
         break;
       }
-      char* dictionary = new char[64L * 1024];
-      unsigned int length = sizeof(Buffer2) - sizeof(BlockHeader);
-      lzo1x_1_compress((unsigned char*)Buffer, BlockHeader.UncompCount,
-                       (unsigned char*)&Buffer2[sizeof(BlockHeader)], &length,
+      // The compressor indexes 16384 pointers, so a fixed 64K dictionary
+      // overflowed on 64-bit hosts.
+      char* dictionary = new char[LZO1X_MEM_COMPRESS];
+      lzo_uint length = static_cast<lzo_uint>(BlockSize + SafetyMargin) -
+                        lzo_uint{sizeof(BlockHeader)};
+      lzo1x_1_compress(Buffer, BlockHeader.UncompCount,
+                       &Buffer2[sizeof(BlockHeader)], &length,
                        dictionary);
       BlockHeader.CompCount = static_cast<unsigned short>(length);
       delete[] dictionary;

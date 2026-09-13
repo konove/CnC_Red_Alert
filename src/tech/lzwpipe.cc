@@ -48,6 +48,7 @@
 
 #include "base/numeric.h"
 #include "tech/buff.h"
+#include "tech/codec_block.h"
 #include "tech/lzw.h"
 
 /***********************************************************************************************
@@ -67,7 +68,12 @@
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
 LZWPipe::LZWPipe(CompControl control, int blocksize)
-    : Control(control), BlockSize(blocksize), SafetyMargin(BlockSize) {
+    : Control(control),
+      BlockSize(blocksize),
+      // Room for an incompressible block plus the header the straw stores in
+      // front of it.
+      SafetyMargin(LzwWorstCaseSize(BlockSize) - BlockSize +
+                   static_cast<int>(sizeof(BlockHeader))) {
   //	SafetyMargin = BlockSize/128+1;
   source_buffer_ = new char[base::ToSize(BlockSize + SafetyMargin)];
   output_buffer_ = new char[base::ToSize(BlockSize + SafetyMargin)];
@@ -127,7 +133,7 @@ int LZWPipe::Put(const void* source, int slen) {
   **	Copy as much as can fit into the buffer from the source data supplied.
   */
   if (Control == DECOMPRESS) {
-    while (slen > 0) {
+    while (slen > 0 && !corrupt_) {
       /*
       **	First check to see if we are in the block header accumulation
       *phase. *	When a whole block header has been accumulated, only then will
@@ -149,6 +155,12 @@ int LZWPipe::Put(const void* source, int slen) {
         if (Counter == sizeof(BlockHeader)) {
           memmove(&BlockHeader, source_buffer_, sizeof(BlockHeader));
           Counter = 0;
+          // A corrupt header must not size writes past the staging buffers.
+          if (!BlockHeaderFits(BlockHeader.CompCount, BlockHeader.UncompCount,
+                               BlockSize + SafetyMargin)) {
+            corrupt_ = true;
+            break;
+          }
         }
       }
 
@@ -171,7 +183,16 @@ int LZWPipe::Put(const void* source, int slen) {
         *feed it *	through the pipe.
         */
         if (std::cmp_equal(Counter, BlockHeader.CompCount)) {
-          LZW_Uncompress(Buffer(source_buffer_), Buffer(output_buffer_));
+          // Sized buffers stop a corrupt code stream from reading or writing
+          // past the staging buffers.
+          const int produced =
+              LZW_Uncompress(Buffer(source_buffer_, BlockHeader.CompCount),
+                             Buffer(output_buffer_, BlockSize + SafetyMargin));
+          if (std::cmp_not_equal(produced, BlockHeader.UncompCount)) {
+            Counter = 0;
+            corrupt_ = true;
+            break;
+          }
           total += Pipe::Put(output_buffer_, BlockHeader.UncompCount);
           Counter = 0;
           BlockHeader.CompCount = 0xFFFF;
@@ -193,7 +214,7 @@ int LZWPipe::Put(const void* source, int slen) {
 
       if (Counter == BlockSize) {
         int len = LZW_Compress(Buffer(source_buffer_, BlockSize),
-                               Buffer(output_buffer_));
+                               Buffer(output_buffer_, BlockSize + SafetyMargin));
 
         BlockHeader.CompCount = static_cast<unsigned short>(len);
         BlockHeader.UncompCount = static_cast<unsigned short>(BlockSize);
@@ -209,7 +230,7 @@ int LZWPipe::Put(const void* source, int slen) {
     */
     while (slen >= BlockSize) {
       int len = LZW_Compress(Buffer((void*)source, BlockSize),
-                             Buffer(output_buffer_));
+                             Buffer(output_buffer_, BlockSize + SafetyMargin));
 
       source = (char*)source + BlockSize;
       slen -= BlockSize;
@@ -292,7 +313,7 @@ int LZWPipe::Flush() {
       *occurrence. Just *	compress the partial block and output normally.
       */
       int len =
-          LZW_Compress(Buffer(source_buffer_, Counter), Buffer(output_buffer_));
+          LZW_Compress(Buffer(source_buffer_, Counter), Buffer(output_buffer_, BlockSize + SafetyMargin));
 
       BlockHeader.CompCount = static_cast<unsigned short>(len);
       BlockHeader.UncompCount = static_cast<unsigned short>(Counter);

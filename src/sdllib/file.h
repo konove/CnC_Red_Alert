@@ -67,8 +67,11 @@ bool IO_Read_File(void* handle, void* buffer, size_t count,
 bool IO_Write_File(void* handle, const void* buffer, size_t count,
                    size_t& actual_written);
 
-size_t IO_Seek_File(void* handle, size_t offset, int origin);
-size_t IO_Get_File_Size(void* handle);
+// Seeks like fseek and returns the new position, or -1 on error. offset may
+// be negative for SEEK_CUR and SEEK_END.
+int64_t IO_Seek_File(void* handle, int64_t offset, int origin);
+// Returns the file's length in bytes, or -1 on error. Preserves the position.
+int64_t IO_Get_File_Size(void* handle);
 
 bool IO_Delete_File(const char* filename);
 

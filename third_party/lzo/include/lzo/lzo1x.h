@@ -66,10 +66,13 @@ LZO_EXTERN(int)
 lzo1x_decompress(const lzo_byte* src, lzo_uint src_len, lzo_byte* dst,
                  lzo_uint* dst_len, lzo_voidp wrkmem /* NOT USED */);
 
-/* safe decompression with overrun testing */
+/* safe decompression with overrun testing: *dst_len holds the capacity of
+ * dst on entry and the number of bytes written on return. Returns
+ * LZO_E_INPUT_OVERRUN, LZO_E_OUTPUT_OVERRUN or LZO_E_LOOKBEHIND_OVERRUN
+ * instead of reading or writing outside the buffers. */
 LZO_EXTERN(int)
-lzo1x_decompress_x(const lzo_byte* src, lzo_uint src_len, lzo_byte* dst,
-                   lzo_uint* dst_len, lzo_voidp wrkmem /* NOT USED */);
+lzo1x_decompress_safe(const lzo_byte* src, lzo_uint src_len, lzo_byte* dst,
+                      lzo_uint* dst_len, lzo_voidp wrkmem /* NOT USED */);
 
 /***********************************************************************
 //

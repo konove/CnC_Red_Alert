@@ -95,6 +95,10 @@ class LCWStraw : public Straw {
     unsigned short UncompCount = 0;  // Bytes of uncompressed data it represents.
   } BlockHeader;
 
+  // Set once the stream yields a block that cannot be decoded safely; all
+  // later data is dropped.
+  bool corrupt_ = false;
+
  public:
   LCWStraw(const LCWStraw&) = delete;
   LCWStraw& operator=(const LCWStraw&) = delete;
