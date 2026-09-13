@@ -766,8 +766,8 @@ void Clear_Scenario() {
 
   CurrentObject.Clear();
 
-  for (int index = 0; index < ScenarioClass::kWaypointCount; index++) {
-    Scen.Waypoint[index] = -1;
+  for (short& index : Scen.Waypoint) {
+    index = -1;
   }
 
   // For endgame auto-sonar pulse.

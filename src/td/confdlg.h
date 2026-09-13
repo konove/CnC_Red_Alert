@@ -47,7 +47,7 @@ class ConfirmationClass {
   };
 
  public:
-  ConfirmationClass() {}
+  ConfirmationClass() = default;
   bool Process(const char* string);
   bool Process(int text);
 };

@@ -95,7 +95,7 @@ class SoundControlsClass {
   };
 
  public:
-  SoundControlsClass() {}
+  SoundControlsClass() = default;
   void Process();
 };
 

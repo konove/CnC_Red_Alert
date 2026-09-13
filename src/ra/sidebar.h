@@ -118,7 +118,7 @@ class SidebarClass : public PowerClass {
     };
 
    public:
-    StripClass() {}
+    StripClass() = default;
     explicit StripClass(const InitClass&);
 
     bool Add(RTTIType type, int ID);

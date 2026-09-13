@@ -73,7 +73,7 @@ class IPXConnClass : public ConnectionClass {
   IPXConnClass(int numsend, int numreceive, int maxlen, unsigned short magicnum,
                IPXAddressClass* address, int id, const char* name,
                int extralen = 0);
-  ~IPXConnClass() override {}
+  ~IPXConnClass() override = default;
   IPXConnClass(const IPXConnClass&) = delete;
   IPXConnClass& operator=(const IPXConnClass&) = delete;
   IPXConnClass(IPXConnClass&&) = delete;

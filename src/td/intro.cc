@@ -219,8 +219,8 @@ void Choose_Side() {
     /* keep the mouse hidden until the letters are thru printing */
     if (!lettersdone) {
       lettersdone = true;
-      for (int i = 0; i < MAXSCOREOBJS; i++) {
-        if (ScoreObjs[i]) {
+      for (auto& ScoreObj : ScoreObjs) {
+        if (ScoreObj) {
           lettersdone = 0;
         }
       }
@@ -304,10 +304,10 @@ void Choose_Side() {
 
   Free_Interpolated_Palettes();
   /* get rid of all the animating objects */
-  for (int i = 0; i < MAXSCOREOBJS; i++) {
-    if (ScoreObjs[i]) {
-      delete ScoreObjs[i];
-      ScoreObjs[i] = nullptr;
+  for (auto& ScoreObj : ScoreObjs) {
+    if (ScoreObj) {
+      delete ScoreObj;
+      ScoreObj = nullptr;
     }
   }
 

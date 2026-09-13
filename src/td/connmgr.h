@@ -94,8 +94,8 @@ class ConnManClass {
   /*.....................................................................
   Constructor/Destructor.  These currently do nothing.
   .....................................................................*/
-  ConnManClass() {}
-  virtual ~ConnManClass() {}
+  ConnManClass() = default;
+  virtual ~ConnManClass() = default;
   ConnManClass(const ConnManClass&) = delete;
   ConnManClass& operator=(const ConnManClass&) = delete;
   ConnManClass(ConnManClass&&) = delete;

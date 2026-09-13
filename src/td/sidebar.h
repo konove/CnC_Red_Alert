@@ -134,7 +134,7 @@ class SidebarClass : public PowerClass {
     int LeftEdgeOffset = 0;
     int ButtonSpacingOffset = 0;
 
-    StripClass() {}
+    StripClass() = default;
     explicit StripClass(const InitClass&);
 
     bool Add(RTTIType type, int ID);

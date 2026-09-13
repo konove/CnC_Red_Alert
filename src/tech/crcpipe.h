@@ -49,7 +49,7 @@
 */
 class CRCPipe : public Pipe {
  public:
-  CRCPipe() {}
+  CRCPipe() = default;
   ~CRCPipe() override = default;
 
   CRCPipe(const CRCPipe&) = delete;

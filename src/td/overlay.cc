@@ -307,8 +307,8 @@ bool OverlayClass::Mark(MarkType mark) {
                 static FacingType _face[4] = {FACING_N, FACING_E, FACING_S,
                                               FACING_W};
 
-                for (int index = 0; index < std::ssize(_face); index++) {
-                  cellptr->Adjacent_Cell(_face[index]).Concrete_Calc();
+                for (auto& index : _face) {
+                  cellptr->Adjacent_Cell(index).Concrete_Calc();
                 }
               }
             }

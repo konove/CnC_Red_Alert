@@ -59,7 +59,7 @@ class TarComClass : public TurretClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  TarComClass() {}
+  TarComClass() = default;
   TarComClass(UnitType classid, HousesType house)
       : TurretClass(classid, house) {}
   ~TarComClass() override;

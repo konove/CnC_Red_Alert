@@ -226,9 +226,9 @@ void ScorePrintClass::Update() {
                              0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F};
 
   if (Stage && ((char*)DataPtr)[Stage - 1] == 0) {
-    for (int i = 0; i < MAXSCOREOBJS; i++) {
-      if (ScoreObjs[i] == this) {
-        ScoreObjs[i] = nullptr;
+    for (auto& ScoreObj : ScoreObjs) {
+      if (ScoreObj == this) {
+        ScoreObj = nullptr;
       }
     }
     delete this;
@@ -283,9 +283,9 @@ void ScoreScaleClass::Update() {
       Stage--;
     } else {
       Set_Font_Palette(Palette);
-      for (int i = 0; i < MAXSCOREOBJS; i++) {
-        if (ScoreObjs[i] == this) {
-          ScoreObjs[i] = nullptr;
+      for (auto& ScoreObj : ScoreObjs) {
+        if (ScoreObj == this) {
+          ScoreObj = nullptr;
         }
       }
       HidPage.Print((char*)DataPtr, XPos, YPos, TBLACK, TBLACK);
@@ -1542,9 +1542,9 @@ void Call_Back_Delay(int time) {
 
 void Animate_Score_Objs() {
   StillUpdating = false;
-  for (int i = 0; i < MAXSCOREOBJS; i++) {
-    if (ScoreObjs[i]) {
-      ScoreObjs[i]->Update();
+  for (auto& ScoreObj : ScoreObjs) {
+    if (ScoreObj) {
+      ScoreObj->Update();
     }
   }
 }

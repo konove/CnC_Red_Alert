@@ -52,6 +52,7 @@ class BufferClass {
   bool Allocated;
 
  private:
+ public:
   // Define the operators we do not want to happen which are the copy, move,
   // and assignment operators. These are bad because the Allocated flag could
   // be copied and the associated buffer freed. If this were to happen it could

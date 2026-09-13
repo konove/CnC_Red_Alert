@@ -204,7 +204,7 @@ class TechnoClass : public RadioClass,
   */
   TechnoClass();
   explicit TechnoClass(HousesType house);
-  ~TechnoClass() override {}
+  ~TechnoClass() override = default;
   TechnoClass(const TechnoClass&) = delete;
   TechnoClass& operator=(const TechnoClass&) = delete;
   TechnoClass(TechnoClass&&) = delete;

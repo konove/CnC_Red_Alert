@@ -139,12 +139,12 @@ class FixedHeapClass {
   */
   std::vector<bool> FreeFlag;
 
- private:
+ public:
   // The assignment operator is not supported.
-  FixedHeapClass& operator=(const FixedHeapClass&);
+  FixedHeapClass& operator=(const FixedHeapClass&) = delete;
 
   // The copy constructor is not supported.
-  FixedHeapClass(const FixedHeapClass&);
+  FixedHeapClass(const FixedHeapClass&) = delete;
 };
 
 // Fixed-size block allocator with fast iteration over active (allocated)
@@ -155,7 +155,7 @@ class FixedHeapClass {
 class FixedIHeapClass : public FixedHeapClass {
  public:
   explicit FixedIHeapClass(int size) noexcept : FixedHeapClass(size) {}
-  ~FixedIHeapClass() override {}
+  ~FixedIHeapClass() override = default;
   FixedIHeapClass(const FixedIHeapClass&) = delete;
   FixedIHeapClass& operator=(const FixedIHeapClass&) = delete;
   FixedIHeapClass(FixedIHeapClass&&) = delete;
@@ -198,7 +198,7 @@ template <class T>
 class TFixedIHeapClass : public FixedIHeapClass {
  public:
   TFixedIHeapClass() noexcept : FixedIHeapClass(sizeof(T)) {}
-  ~TFixedIHeapClass() override {}
+  ~TFixedIHeapClass() override = default;
   TFixedIHeapClass(const TFixedIHeapClass&) = delete;
   TFixedIHeapClass& operator=(const TFixedIHeapClass&) = delete;
   TFixedIHeapClass(TFixedIHeapClass&&) = delete;

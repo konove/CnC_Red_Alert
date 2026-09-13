@@ -95,6 +95,7 @@ class LCWStraw : public Straw {
     unsigned short UncompCount = 0;  // Bytes of uncompressed data it represents.
   } BlockHeader;
 
+ public:
   LCWStraw(const LCWStraw&) = delete;
   LCWStraw& operator=(const LCWStraw&) = delete;
   LCWStraw(LCWStraw&&) = delete;

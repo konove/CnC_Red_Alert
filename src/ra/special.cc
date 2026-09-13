@@ -188,12 +188,11 @@ void Special_Dialog(bool simple) {
       Dialog_Box(OPTION_X, OPTION_Y, OPTION_WIDTH, OPTION_HEIGHT);
       Draw_Caption(TXT_SPECIAL_OPTIONS, OPTION_X, OPTION_Y, OPTION_WIDTH);
 
-      for (int index = 0; index < std::ssize(_options);
-           index++) {
-        Fancy_Text_Print(
-            _options[index].Description, _options[index].Button->X + 20,
-            _options[index].Button->Y, GadgetClass::Get_Color_Scheme(), TBLACK,
-            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+      for (auto& _option : _options) {
+        Fancy_Text_Print(_option.Description, _option.Button->X + 20,
+                         _option.Button->Y, GadgetClass::Get_Color_Scheme(),
+                         TBLACK,
+                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       buttons->Draw_All();
       Show_Mouse();
@@ -204,10 +203,9 @@ void Special_Dialog(bool simple) {
       case KN_ESC:
       case ButtonKey(200):
         process = false;
-        for (int index = 0; index < std::ssize(_options);
-             index++) {
-          bool setting = _options[index].Setting;
-          switch (_options[index].Description) {
+        for (auto& _option : _options) {
+          bool setting = _option.Setting;
+          switch (_option.Description) {
             case TXT_THREE_POINT:
               oldspecial.IsThreePoint = setting;
               break;

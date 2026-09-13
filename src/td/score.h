@@ -105,7 +105,7 @@ class ScoreAnimClass {
   CountDownTimerClass Timer;
   const void* DataPtr;
   virtual void Update() {}
-  virtual ~ScoreAnimClass() {}
+  virtual ~ScoreAnimClass() = default;
   ScoreAnimClass(const ScoreAnimClass&) = delete;
   ScoreAnimClass& operator=(const ScoreAnimClass&) = delete;
   ScoreAnimClass(ScoreAnimClass&&) = delete;
@@ -121,7 +121,7 @@ class ScoreCredsClass : public ScoreAnimClass {
 
   void Update() override;
   ScoreCredsClass(int xpos, int ypos, const void* data, int max, int timer);
-  ~ScoreCredsClass() override {}
+  ~ScoreCredsClass() override = default;
   ScoreCredsClass(const ScoreCredsClass&) = delete;
   ScoreCredsClass& operator=(const ScoreCredsClass&) = delete;
   ScoreCredsClass(ScoreCredsClass&&) = delete;
@@ -134,7 +134,7 @@ class ScoreTimeClass : public ScoreAnimClass {
   int TimerReset;
   void Update() override;
   ScoreTimeClass(int xpos, int ypos, const void* data, int max, int timer);
-  ~ScoreTimeClass() override {}
+  ~ScoreTimeClass() override = default;
   ScoreTimeClass(const ScoreTimeClass&) = delete;
   ScoreTimeClass& operator=(const ScoreTimeClass&) = delete;
   ScoreTimeClass(ScoreTimeClass&&) = delete;
@@ -150,7 +150,7 @@ class ScorePrintClass : public ScoreAnimClass {
                   int background = TBLACK);
   ScorePrintClass(int string, int xpos, int ypos, const void* palette,
                   int background = TBLACK);
-  ~ScorePrintClass() override {}
+  ~ScorePrintClass() override = default;
   ScorePrintClass(const ScorePrintClass&) = delete;
   ScorePrintClass& operator=(const ScorePrintClass&) = delete;
   ScorePrintClass(ScorePrintClass&&) = delete;
@@ -166,7 +166,7 @@ class MultiStagePrintClass : public ScoreAnimClass {
                        const void* palette, int background = TBLACK);
   MultiStagePrintClass(int string, int xpos, int ypos, const void* palette,
                        int background = TBLACK);
-  ~MultiStagePrintClass() override {}
+  ~MultiStagePrintClass() override = default;
   MultiStagePrintClass(const MultiStagePrintClass&) = delete;
   MultiStagePrintClass& operator=(const MultiStagePrintClass&) = delete;
   MultiStagePrintClass(MultiStagePrintClass&&) = delete;
@@ -179,7 +179,7 @@ class ScoreScaleClass : public ScoreAnimClass {
   void Update() override;
   ScoreScaleClass(const void* string, int xpos, int ypos,
                   const unsigned char pal[]);
-  ~ScoreScaleClass() override {}
+  ~ScoreScaleClass() override = default;
   ScoreScaleClass(const ScoreScaleClass&) = delete;
   ScoreScaleClass& operator=(const ScoreScaleClass&) = delete;
   ScoreScaleClass(ScoreScaleClass&&) = delete;

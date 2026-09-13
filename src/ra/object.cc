@@ -1906,7 +1906,7 @@ ObjectTypeClass::ObjectTypeClass(const ObjectTypeClass& other)
       Armor(other.Armor),
       MaxStrength(other.MaxStrength) {}
 
-ObjectTypeClass::~ObjectTypeClass() {}
+ObjectTypeClass::~ObjectTypeClass() = default;
 
 /***********************************************************************************************
  * ObjectTypeClass::Max_Pips -- Fetches the maximum pips allowed for this

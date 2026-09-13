@@ -134,7 +134,7 @@ class ScoreTimeClass : public ScoreAnimClass {
   int TimerReset;
   void Update() override;
   ScoreTimeClass(int xpos, int ypos, const void* data, int max, int timer);
-  ~ScoreTimeClass() override {}
+  ~ScoreTimeClass() override = default;
   ScoreTimeClass(const ScoreTimeClass&) = delete;
   ScoreTimeClass& operator=(const ScoreTimeClass&) = delete;
   ScoreTimeClass(ScoreTimeClass&&) = delete;

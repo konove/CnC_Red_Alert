@@ -110,9 +110,10 @@ class CCFileClass : public CDFileClass {
   */
   long Position;
 
+ public:
   // Force these to never be invoked.
-  const CCFileClass& operator=(const CCFileClass& c);
-  CCFileClass(const CCFileClass&);
+  const CCFileClass& operator=(const CCFileClass& c) = delete;
+  CCFileClass(const CCFileClass&) = delete;
 };
 
 #endif  // CNC_RED_ALERT_RA_CCFILE_H_

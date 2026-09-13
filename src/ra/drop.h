@@ -55,7 +55,7 @@ class DropListClass : public EditClass {
  public:
   DropListClass(int id, char* text, int max_len, TextPrintType flags, int x,
                 int y, int w, int h, const void* up, const void* down);
-  ~DropListClass() override {}
+  ~DropListClass() override = default;
   DropListClass(DropListClass&&) = delete;
   DropListClass& operator=(DropListClass&&) = delete;
 
@@ -115,7 +115,7 @@ class TDropListClass : public EditClass {
   TDropListClass(int id, char* text, int max_len, TextPrintType flags, int x,
                  int y, int w, int h, const void* up, const void* down);
   TDropListClass(const TDropListClass<T>&) = delete;
-  ~TDropListClass() override {}
+  ~TDropListClass() override = default;
   TDropListClass(TDropListClass&&) = delete;
   TDropListClass& operator=(TDropListClass&&) = delete;
 

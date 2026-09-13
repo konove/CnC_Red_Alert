@@ -655,11 +655,11 @@ bool Init_Game(int, char*[]) {
   MPlayerGamesPlayed = 0;
   MPlayerNumScores = 0;
   MPlayerCurGame = 0;
-  for (int i = 0; i < MAX_MULTI_NAMES; i++) {
-    MPlayerScore[i].Name[0] = '\0';
-    MPlayerScore[i].Wins = 0;
-    for (int j = 0; j < MAX_MULTI_GAMES; j++) {
-      MPlayerScore[i].Kills[j] = -1;  // -1 = this player didn't play this round
+  for (auto& i : MPlayerScore) {
+    i.Name[0] = '\0';
+    i.Wins = 0;
+    for (int& kills : i.Kills) {
+      kills = -1;  // -1 = this player didn't play this round
     }
   }
 

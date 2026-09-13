@@ -66,7 +66,7 @@
 #include "td/turret.h"
 #include "td/type.h"
 
-TarComClass::~TarComClass() {}
+TarComClass::~TarComClass() = default;
 
 /***********************************************************************************************
  * TarComClass::Debug_Dump -- Displays the status of the tarcom class to the

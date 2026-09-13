@@ -3688,8 +3688,8 @@ void DisplayClass::Compute_Start_Pos() {
   **	Set our TacticalCell
   */
   Set_Tactical_Position(Cell_Coord(XY_Cell(static_cast<int>(x), static_cast<int>(y))));
-  for (int index = 0; index < std::ssize(Views); index++) {
-    Views[index] = Coord_Cell(TacticalCoord);
+  for (short& View : Views) {
+    View = Coord_Cell(TacticalCoord);
   }
 }
 

@@ -380,9 +380,9 @@ void ScorePrintClass::Update() {
                              0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F};
 
   if (Stage && ((char*)DataPtr)[Stage - 1] == 0) {
-    for (int i = 0; i < MAXSCOREOBJS; i++) {
-      if (ScoreObjs[i] == this) {
-        ScoreObjs[i] = nullptr;
+    for (auto& ScoreObj : ScoreObjs) {
+      if (ScoreObj == this) {
+        ScoreObj = nullptr;
       }
     }
     BlitList.Add(XPos * 2, YPos * 2, XPos * 2, YPos * 2, (Stage * 6) + 14, 16);
@@ -450,9 +450,9 @@ void MultiStagePrintClass::Update() {
                              0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F};
 
   if (Stage && ((char*)DataPtr)[Stage - 1] == 0) {
-    for (int i = 0; i < MAXSCOREOBJS; i++) {
-      if (ScoreObjs[i] == this) {
-        ScoreObjs[i] = nullptr;
+    for (auto& ScoreObj : ScoreObjs) {
+      if (ScoreObj == this) {
+        ScoreObj = nullptr;
       }
     }
     BlitList.Add(XPos * 2, YPos * 2, XPos * 2, YPos * 2, (Stage * 6) + 14, 16);
@@ -547,9 +547,9 @@ void ScoreScaleClass::Update() {
       Stage--;
     } else {
       Set_Font_Palette(Palette);
-      for (int i = 0; i < MAXSCOREOBJS; i++) {
-        if (ScoreObjs[i] == this) {
-          ScoreObjs[i] = nullptr;
+      for (auto& ScoreObj : ScoreObjs) {
+        if (ScoreObj == this) {
+          ScoreObj = nullptr;
         }
       }
       TextPrintBuffer->Print((char*)DataPtr, XPos * 2, YPos * 2, TBLACK,
@@ -2033,9 +2033,9 @@ void Call_Back_Delay(int time) {
 
 void Animate_Score_Objs() {
   StillUpdating = false;
-  for (int i = 0; i < MAXSCOREOBJS; i++) {
-    if (ScoreObjs[i]) {
-      ScoreObjs[i]->Update();
+  for (auto& ScoreObj : ScoreObjs) {
+    if (ScoreObj) {
+      ScoreObj->Update();
     }
   }
 }

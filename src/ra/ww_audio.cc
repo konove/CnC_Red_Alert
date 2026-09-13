@@ -908,8 +908,8 @@ void Speak_AI() {
  *=============================================================================================*/
 void Stop_Speaking() {
   SpeakQueue = VOX_NONE;
-  for (size_t index = 0; index < std::size(SpeechBuffer); index++) {
-    Stop_Sample_Playing(SpeechBuffer[index]);
+  for (auto& index : SpeechBuffer) {
+    Stop_Sample_Playing(index);
   }
 }
 

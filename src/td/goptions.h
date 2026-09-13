@@ -60,7 +60,7 @@ class GameOptionsClass : public OptionsClass {
   };
 
  public:
-  GameOptionsClass() {}
+  GameOptionsClass() = default;
   void Adjust_Variables_For_Resolution();
   void Process();
 

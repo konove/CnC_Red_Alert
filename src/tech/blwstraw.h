@@ -79,6 +79,7 @@ class BlowStraw : public Straw {
   int Counter = 0;
   CryptControl Control;
 
+ public:
   BlowStraw(const BlowStraw&) = delete;
   BlowStraw& operator=(const BlowStraw&) = delete;
   BlowStraw(BlowStraw&&) = delete;

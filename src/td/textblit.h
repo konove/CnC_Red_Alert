@@ -24,7 +24,7 @@
 class TextBlitClass {
  public:
   TextBlitClass();
-  ~TextBlitClass() {}
+  ~TextBlitClass() = default;
   TextBlitClass(const TextBlitClass&) = delete;
   TextBlitClass& operator=(const TextBlitClass&) = delete;
   TextBlitClass(TextBlitClass&&) = delete;

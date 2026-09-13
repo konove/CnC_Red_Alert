@@ -50,7 +50,7 @@
 */
 class SHAPipe : public Pipe {
  public:
-  SHAPipe() {}
+  SHAPipe() = default;
   ~SHAPipe() override = default;
 
   SHAPipe(const SHAPipe&) = delete;

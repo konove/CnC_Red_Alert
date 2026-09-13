@@ -1044,10 +1044,10 @@ SidebarClass::StripClass::StripClass(const InitClass&) {
   TopIndex = 0;
   Slid = 0;
   BuildableCount = 0;
-  for (int index = 0; index < MAX_BUILDABLES; index++) {
-    Buildables[index].BuildableID = 0;
-    Buildables[index].BuildableType = RTTI_NONE;
-    Buildables[index].Factory = -1;
+  for (auto& Buildable : Buildables) {
+    Buildable.BuildableID = 0;
+    Buildable.BuildableType = RTTI_NONE;
+    Buildable.Factory = -1;
   }
 }
 
@@ -1137,10 +1137,10 @@ void SidebarClass::StripClass::Init_Clear() {
   ** Since we're resetting the strips, clear out all the buildables & factory
   *pointers.
   */
-  for (int index = 0; index < MAX_BUILDABLES; index++) {
-    Buildables[index].BuildableID = 0;
-    Buildables[index].BuildableType = RTTI_NONE;
-    Buildables[index].Factory = -1;
+  for (auto& Buildable : Buildables) {
+    Buildable.BuildableID = 0;
+    Buildable.BuildableType = RTTI_NONE;
+    Buildable.Factory = -1;
   }
 }
 

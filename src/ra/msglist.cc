@@ -285,8 +285,8 @@ void MessageListClass::Reset() {
   //------------------------------------------------------------------------
   //	Mark all buffers as available
   //------------------------------------------------------------------------
-  for (int index = 0; index < MAX_NUM_MESSAGES; index++) {
-    BufferAvail[index] = 1;
+  for (char& index : BufferAvail) {
+    index = 1;
   }
 
   //------------------------------------------------------------------------

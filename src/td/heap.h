@@ -127,12 +127,12 @@ class FixedHeapClass {
   */
   std::vector<bool> FreeFlag;
 
- private:
+ public:
   // The assignment operator is not supported.
-  FixedHeapClass& operator=(const FixedHeapClass&);
+  FixedHeapClass& operator=(const FixedHeapClass&) = delete;
 
   // The copy constructor is not supported.
-  FixedHeapClass(const FixedHeapClass&);
+  FixedHeapClass(const FixedHeapClass&) = delete;
 };
 
 /**************************************************************************

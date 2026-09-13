@@ -50,7 +50,7 @@
 */
 class CRCStraw : public Straw {
  public:
-  CRCStraw() {}
+  CRCStraw() = default;
   ~CRCStraw() override = default;
 
   CRCStraw(const CRCStraw&) = delete;

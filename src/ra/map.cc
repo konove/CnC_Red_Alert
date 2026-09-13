@@ -1645,12 +1645,12 @@ ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
                            MAP_CELL_W + 1,
                            -(MAP_CELL_W - 1),
                            -(MAP_CELL_W + 1)};
-  for (int index = 0; index < std::ssize(_offsets); index++) {
+  for (int _offset : _offsets) {
     /*
     **	Examine the cell for close object. Make sure that the cell actually is a
     **	legal one.
     */
-    CELL newcell = static_cast<CELL>(cell + _offsets[index]);
+    CELL newcell = static_cast<CELL>(cell + _offset);
     if (In_Radar(newcell)) {
       /*
       **	Search through all objects that occupy this cell and then

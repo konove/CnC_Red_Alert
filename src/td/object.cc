@@ -800,11 +800,11 @@ bool ObjectClass::Render(bool forced) {
             cell = Adjacent_Cell(Coord_Cell(foot->Head_To_Coord()),
                                  foot->Path[0] + FACING_S & FACING_NW);
             Map.Coord_To_Pixel(Cell_Coord(cell), oldx, oldy);
-            for (int index = 0; index < kConquerPathMax; index++) {
-              if (foot->Path[index] == FACING_NONE) {
+            for (auto& index : foot->Path) {
+              if (index == FACING_NONE) {
                 break;
               }
-              cell = Adjacent_Cell(cell, foot->Path[index]);
+              cell = Adjacent_Cell(cell, index);
               if (Map.Coord_To_Pixel(Cell_Coord(cell), x, y)) {
                 LogicPage->Draw_Line(oldx, 8 + oldy, x, 8 + y, BLACK);
               }

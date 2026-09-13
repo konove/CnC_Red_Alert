@@ -64,7 +64,7 @@ class FlyClass {
   void Serialize(Archive& ar) {
     ar(SpeedAccum, SpeedAdd);
   }
-  ~FlyClass() {}
+  ~FlyClass() = default;
   FlyClass(const FlyClass&) = delete;
   FlyClass& operator=(const FlyClass&) = delete;
   FlyClass(FlyClass&&) = delete;

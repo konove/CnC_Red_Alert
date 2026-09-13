@@ -50,7 +50,7 @@
 */
 class SHAStraw : public Straw {
  public:
-  SHAStraw() {}
+  SHAStraw() = default;
   ~SHAStraw() override = default;
 
   SHAStraw(const SHAStraw&) = delete;

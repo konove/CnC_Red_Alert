@@ -93,7 +93,7 @@ typedef int socklen_t;
  *                                                                                             *
  * HISTORY: * 8/5/97 12:11PM ST : Created *
  *=============================================================================================*/
-UDPInterfaceClass::UDPInterfaceClass() {}
+UDPInterfaceClass::UDPInterfaceClass() = default;
 
 /***********************************************************************************************
  * UDPIC::~UDPInterfaceClass -- UDPInterface class destructor *

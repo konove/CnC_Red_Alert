@@ -103,7 +103,7 @@ class DriveClass : public FootClass {
   */
   DriveClass();
   DriveClass(UnitType classid, HousesType house);
-  ~DriveClass() override {}
+  ~DriveClass() override = default;
   DriveClass(const DriveClass&) = delete;
   DriveClass& operator=(const DriveClass&) = delete;
   DriveClass(DriveClass&&) = delete;

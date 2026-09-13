@@ -2268,9 +2268,8 @@ bool XMP_Is_Small_Prime(const uint32_t* candidate, const int precision) {
 bool XMP_Small_Divisors_Test(const uint32_t* candidate, int precision) {
   uint32_t quotient[MAX_UNIT_PRECISION];
 
-  for (unsigned i = 0; i < std::ssize(primeTable); i++) {
-    if (XMP_Unsigned_Div_Int(quotient, candidate, primeTable[i], precision) ==
-        0) {
+  for (unsigned short i : primeTable) {
+    if (XMP_Unsigned_Div_Int(quotient, candidate, i, precision) == 0) {
       return false;
     }
   }

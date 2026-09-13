@@ -242,10 +242,10 @@ void Nod_Ending() {
 #endif  // NOT_FOR_WIN95
 
   /* get rid of all the animating objects */
-  for (int i = 0; i < MAXSCOREOBJS; i++) {
-    if (ScoreObjs[i]) {
-      delete ScoreObjs[i];
-      ScoreObjs[i] = nullptr;
+  for (auto& ScoreObj : ScoreObjs) {
+    if (ScoreObj) {
+      delete ScoreObj;
+      ScoreObj = nullptr;
     }
   }
   // erase the "choose a target" text

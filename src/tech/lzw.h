@@ -58,7 +58,7 @@ class LZWEngine {
     CodeType ParentCode = 0;
     char CharValue = 0;
 
-    CodeClass() {}
+    CodeClass() = default;
     CodeClass(CodeType code, CodeType parent, char c)
         : CodeValue(code), ParentCode(parent), CharValue(c) {}
 

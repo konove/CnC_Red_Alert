@@ -83,7 +83,7 @@ class AbstractClass {
   }
 
  public:
-  virtual ~AbstractClass() {}
+  virtual ~AbstractClass() = default;
   AbstractClass(const AbstractClass&) = delete;
   AbstractClass& operator=(const AbstractClass&) = delete;
   AbstractClass(AbstractClass&&) = delete;

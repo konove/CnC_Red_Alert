@@ -62,7 +62,7 @@ class CrewClass {
   void Serialize(Archive& ar) {
     ar(Kills);
   }
-  ~CrewClass() {}
+  ~CrewClass() = default;
   CrewClass(const CrewClass&) = delete;
   CrewClass& operator=(const CrewClass&) = delete;
   CrewClass(CrewClass&&) = delete;

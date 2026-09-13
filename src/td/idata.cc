@@ -1471,10 +1471,10 @@ InfantryTypeClass::InfantryTypeClass(
   **	Set the animation sequence custom values.
   */
 
-  for (int i = 0; i < DO_COUNT; i++) {
-    DoControls[i].Frame = *do_table++;
-    DoControls[i].Count = static_cast<unsigned char>(*do_table++);
-    DoControls[i].Jump = static_cast<unsigned char>(*do_table++);
+  for (auto& DoControl : DoControls) {
+    DoControl.Frame = *do_table++;
+    DoControl.Count = static_cast<unsigned char>(*do_table++);
+    DoControl.Jump = static_cast<unsigned char>(*do_table++);
   }
 
 #ifdef cuts  // ST - 10/3/95 10:09AM

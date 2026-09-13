@@ -402,12 +402,11 @@ bool Init_Game(int, char*[]) {
   Session.GamesPlayed = 0;
   Session.NumScores = 0;
   Session.CurGame = 0;
-  for (int i = 0; i < MAX_MULTI_NAMES; i++) {
-    Session.Score[i].Name[0] = '\0';
-    Session.Score[i].Wins = 0;
-    for (int j = 0; j < MAX_MULTI_GAMES; j++) {
-      Session.Score[i].Kills[j] =
-          -1;  // -1 = this player didn't play this round
+  for (auto& i : Session.Score) {
+    i.Name[0] = '\0';
+    i.Wins = 0;
+    for (int& kills : i.Kills) {
+      kills = -1;  // -1 = this player didn't play this round
     }
   }
 

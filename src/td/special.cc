@@ -198,11 +198,9 @@ void Special_Dialog() {
       Dialog_Box(OPTION_X, OPTION_Y, OPTION_WIDTH, OPTION_HEIGHT);
       Draw_Caption(TXT_SPECIAL_OPTIONS, OPTION_X, OPTION_Y, OPTION_WIDTH);
 
-      for (int index = 0; index < std::ssize(_options);
-           index++) {
-        Fancy_Text_Print(_options[index].Description,
-                         _options[index].Button->X + 10,
-                         _options[index].Button->Y, CC_GREEN, TBLACK,
+      for (auto& _option : _options) {
+        Fancy_Text_Print(_option.Description, _option.Button->X + 10,
+                         _option.Button->Y, CC_GREEN, TBLACK,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       buttons->Draw_All();
@@ -214,59 +212,58 @@ void Special_Dialog() {
       case KN_ESC:
       case ButtonKey(200):
         process = false;
-        for (int index = 0; index < std::ssize(_options);
-             index++) {
-          switch (_options[index].Description) {
+        for (auto& _option : _options) {
+          switch (_option.Description) {
             case TXT_SEPARATE_HELIPAD:
-              oldspecial.IsSeparate = _options[index].Setting;
+              oldspecial.IsSeparate = _option.Setting;
               break;
 
             case TXT_SHOW_NAMES:
-              oldspecial.IsNamed = _options[index].Setting;
+              oldspecial.IsNamed = _option.Setting;
               break;
 
             case TXT_DEFENDER_ADVANTAGE:
-              oldspecial.IsDefenderAdvantage = _options[index].Setting;
+              oldspecial.IsDefenderAdvantage = _option.Setting;
               break;
 
             case TXT_VISIBLE_TARGET:
-              oldspecial.IsVisibleTarget = _options[index].Setting;
+              oldspecial.IsVisibleTarget = _option.Setting;
               break;
 
             case TXT_TREE_TARGET:
-              oldspecial.IsTreeTarget = _options[index].Setting;
+              oldspecial.IsTreeTarget = _option.Setting;
               break;
 
             case TXT_MCV_DEPLOY:
-              oldspecial.IsMCVDeploy = _options[index].Setting;
+              oldspecial.IsMCVDeploy = _option.Setting;
               break;
 
             case TXT_SMART_DEFENCE:
-              oldspecial.IsSmartDefense = _options[index].Setting;
+              oldspecial.IsSmartDefense = _option.Setting;
               break;
 
             case TXT_THREE_POINT:
-              oldspecial.IsThreePoint = _options[index].Setting;
+              oldspecial.IsThreePoint = _option.Setting;
               break;
 
             case TXT_TIBERIUM_GROWTH:
-              oldspecial.IsTGrowth = _options[index].Setting;
+              oldspecial.IsTGrowth = _option.Setting;
               break;
 
             case TXT_TIBERIUM_SPREAD:
-              oldspecial.IsTSpread = _options[index].Setting;
+              oldspecial.IsTSpread = _option.Setting;
               break;
 
             case TXT_TIBERIUM_FAST:
-              oldspecial.IsTFast = _options[index].Setting;
+              oldspecial.IsTFast = _option.Setting;
               break;
 
             case TXT_ROAD_PIECES:
-              oldspecial.IsRoad = _options[index].Setting;
+              oldspecial.IsRoad = _option.Setting;
               break;
 
             case TXT_SCATTER:
-              oldspecial.IsScatter = _options[index].Setting;
+              oldspecial.IsScatter = _option.Setting;
               break;
             default:
               break;

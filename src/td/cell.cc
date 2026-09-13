@@ -1348,9 +1348,8 @@ void CellClass::Wall_Update() {
   static FacingType _offsets[5] = {FACING_N, FACING_E, FACING_S, FACING_W,
                                    FACING_NONE};
 
-  for (unsigned index = 0; index < sizeof(_offsets) / sizeof(_offsets[0]);
-       index++) {
-    CellClass& newcell = Adjacent_Cell(_offsets[index]);
+  for (auto& _offset : _offsets) {
+    CellClass& newcell = Adjacent_Cell(_offset);
 
     if (newcell.Overlay != OVERLAY_NONE &&
         OverlayTypeClass::As_Reference(newcell.Overlay).IsWall) {

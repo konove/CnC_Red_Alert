@@ -42,7 +42,7 @@
 
 class GameControlsClass {
  public:
-  GameControlsClass() {}
+  GameControlsClass() = default;
   void Process();
 };
 

@@ -59,7 +59,7 @@ class FuseClass {
   void Serialize(Archive& ar) {
     ar(Timer, Arming, HeadTo, Proximity);
   }
-  ~FuseClass() {}
+  ~FuseClass() = default;
   FuseClass(const FuseClass&) = delete;
   FuseClass& operator=(const FuseClass&) = delete;
   FuseClass(FuseClass&&) = delete;

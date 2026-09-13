@@ -143,9 +143,9 @@ class GenericList {
   GenericNode FirstNode;
   GenericNode LastNode;
 
- private:
-  GenericList(GenericList& list);
-  GenericList& operator=(const GenericList&);
+ public:
+  GenericList(GenericList& list) = delete;
+  GenericList& operator=(const GenericList&) = delete;
 };
 
 /*

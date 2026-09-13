@@ -271,12 +271,11 @@ BuildingClass* BaseClass::Get_Building(int index) {
   obj[3] = Map[cell].Overlappers[2];
 
   bldg = nullptr;
-  for (int i = 0; i < 4; i++) {
-    if (obj[i] && obj[i]->Coord == Nodes[index].Coord &&
-        obj[i]->What_Am_I() == RTTI_BUILDING &&
-        dynamic_cast<BuildingClass*>(obj[i])->Class->Type ==
-            Nodes[index].Type) {
-      bldg = dynamic_cast<BuildingClass*>(obj[i]);
+  for (auto& i : obj) {
+    if (i && i->Coord == Nodes[index].Coord &&
+        i->What_Am_I() == RTTI_BUILDING &&
+        dynamic_cast<BuildingClass*>(i)->Class->Type == Nodes[index].Type) {
+      bldg = dynamic_cast<BuildingClass*>(i);
       break;
     }
   }

@@ -59,7 +59,7 @@ class MapClass : public GScreenClass {
   template <class Archive>
   void Serialize(Archive& ar);
 
-  MapClass() {}
+  MapClass() = default;
 
   /*
   ** Initialization

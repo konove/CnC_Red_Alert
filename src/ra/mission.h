@@ -93,7 +93,7 @@ class MissionClass : public ObjectClass {
         MissionTimer(0) {}
 
  public:
-  ~MissionClass() override {}
+  ~MissionClass() override = default;
   MissionClass(const MissionClass&) = delete;
   MissionClass& operator=(const MissionClass&) = delete;
   MissionClass(MissionClass&&) = delete;

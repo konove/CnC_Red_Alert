@@ -108,7 +108,7 @@ class DriveClass : public FootClass {
   DriveClass() = default;
 
  public:
-  ~DriveClass() override {}
+  ~DriveClass() override = default;
   DriveClass(const DriveClass&) = delete;
   DriveClass& operator=(const DriveClass&) = delete;
   DriveClass(DriveClass&&) = delete;

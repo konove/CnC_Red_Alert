@@ -136,7 +136,7 @@ class ObjectClass : public AbstractClass {
   template <class Archive>
   void Serialize(Archive& ar);
   ObjectClass();
-  ~ObjectClass() override {}
+  ~ObjectClass() override = default;
   ObjectClass(const ObjectClass&) = delete;
   ObjectClass& operator=(const ObjectClass&) = delete;
   ObjectClass(ObjectClass&&) = delete;

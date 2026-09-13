@@ -366,8 +366,8 @@ void MapEditClass::Clear_List() {
   Set # object type ptrs to 0, set NumType for each type to 0
   ------------------------------------------------------------------------*/
   ObjCount = 0;
-  for (int i = 0; i < NUM_EDIT_CLASSES; i++) {
-    NumType[i] = 0;
+  for (int& i : NumType) {
+    i = 0;
   }
 }
 

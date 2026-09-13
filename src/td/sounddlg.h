@@ -109,7 +109,7 @@ class SoundControlsClass {
   };
 
  public:
-  SoundControlsClass() {}
+  SoundControlsClass() = default;
   void Process();
   int Init();
 

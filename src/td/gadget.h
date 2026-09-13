@@ -106,7 +106,7 @@ class GadgetClass : public LinkClass {
 
   GadgetClass(int x, int y, int w, int h, unsigned flags,
               int sticky = false) noexcept;
-  GadgetClass() noexcept {}
+  GadgetClass() noexcept = default;
   ~GadgetClass() override;
   GadgetClass(const GadgetClass&) = delete;
   GadgetClass& operator=(const GadgetClass&) = delete;

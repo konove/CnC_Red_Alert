@@ -127,7 +127,7 @@ class TeamTypeClass : public AbstractTypeClass {
   **	Constructor/Destructor
   */
   TeamTypeClass();
-  ~TeamTypeClass() override {}
+  ~TeamTypeClass() override = default;
   TeamTypeClass(const TeamTypeClass&) = delete;
   TeamTypeClass& operator=(const TeamTypeClass&) = delete;
   TeamTypeClass(TeamTypeClass&&) = delete;

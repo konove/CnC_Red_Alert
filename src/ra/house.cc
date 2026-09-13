@@ -1236,14 +1236,12 @@ void HouseClass::AI() {
         0)  //	Includes count of VESSEL_MISSILESUBs. ajw
     {
       int iCount = 0;
-      for (int i = 0;
-           i != static_cast<int>(magic_enum::enum_count<StructType>()) - 3;
-           ++i) {
-        iCount += BQuantity[i];
+      for (int i : BQuantity) {
+        iCount += i;
       }
       if (!iCount) {
-        for (int i = 0; i != kOriginalUnitCount - 3; ++i) {
-          iCount += UQuantity[i];
+        for (int i : UQuantity) {
+          iCount += i;
         }
         if (!iCount) {
           //	ajw - Found bug - house's civilians are not removed from
@@ -5086,9 +5084,11 @@ bool HouseClass::AI_Raise_Power(UrgencyType urgency) const {
   **	Find a structure to sell and then sell it. Bail from further scanning
   *until *	the next time.
   */
-  for (int i = 0; i < std::ssize(_types); i++) {
-    if (urgency >= _types[i].Urgency) {
-      BuildingClass* b = Find_Building(_types[i].Structure);
+  // Sells the first qualifying building; the side effect is the point, so this
+  // stays a loop. NOLINTNEXTLINE(readability-use-anyofallof)
+  for (auto& _type : _types) {
+    if (urgency >= _type.Urgency) {
+      BuildingClass* b = Find_Building(_type.Structure);
       if (b != nullptr) {
         b->Sell_Back(1);
         return true;
@@ -5145,9 +5145,9 @@ bool HouseClass::AI_Raise_Money(UrgencyType urgency) const {
   **	Find a structure to sell and then sell it. Bail from further scanning
   *until *	the next time.
   */
-  for (int i = 0; i < std::ssize(_types); i++) {
-    if (urgency >= _types[i].Urgency) {
-      b = Find_Building(_types[i].Structure);
+  for (auto& _type : _types) {
+    if (urgency >= _type.Urgency) {
+      b = Find_Building(_type.Structure);
       if (b != nullptr) {
         b->Sell_Back(1);
         return true;

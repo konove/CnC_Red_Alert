@@ -159,10 +159,12 @@ class IndexClass {
   */
   const NodeElement* Archive;
 
+ public:
   //-------------------------------------------------------------------------------------
-  IndexClass(const IndexClass& rvalue);
-  IndexClass* operator=(const IndexClass& rvalue);
+  IndexClass(const IndexClass& rvalue) = delete;
+  IndexClass* operator=(const IndexClass& rvalue) = delete;
 
+ private:
   /*
   **	Increase size of internal index table by amount specified.
   */

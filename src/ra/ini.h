@@ -59,7 +59,7 @@
 */
 class INIClass {
  public:
-  INIClass() {}
+  INIClass() = default;
   ~INIClass();
   INIClass(const INIClass&) = delete;
   INIClass& operator=(const INIClass&) = delete;

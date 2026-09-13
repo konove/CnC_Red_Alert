@@ -46,8 +46,8 @@
 LZWEngine::LZWEngine() { Reset(); }
 
 void LZWEngine::Reset() {
-  for (int i = 0; i < TABLE_SIZE; i++) {
-    dict[i].Make_Unused();
+  for (auto& i : dict) {
+    i.Make_Unused();
   }
 }
 

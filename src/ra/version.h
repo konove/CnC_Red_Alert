@@ -94,7 +94,7 @@ class VersionClass {
   // Constructor/Destructor
   //.....................................................................
   VersionClass();
-  virtual ~VersionClass() {}
+  virtual ~VersionClass() = default;
   VersionClass(const VersionClass&) = delete;
   VersionClass& operator=(const VersionClass&) = delete;
   VersionClass(VersionClass&&) = delete;

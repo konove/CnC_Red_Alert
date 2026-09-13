@@ -55,7 +55,7 @@ class ArchiveWriter;
 */
 class BaseNodeClass {
  public:
-  BaseNodeClass() {}
+  BaseNodeClass() = default;
   int operator==(const BaseNodeClass& node);
   int operator!=(const BaseNodeClass& node);
   int operator>(const BaseNodeClass& node);
@@ -73,7 +73,7 @@ class BaseClass {
   /**********************************************************************
   ** Constructor/Destructor
   */
-  BaseClass() {}
+  BaseClass() = default;
   virtual ~BaseClass() { Nodes.Clear(); }
   BaseClass(const BaseClass&) = delete;
   BaseClass& operator=(const BaseClass&) = delete;

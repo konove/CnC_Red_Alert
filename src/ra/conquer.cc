@@ -2040,10 +2040,10 @@ int Load_Interpolated_Palettes(const char* filename, const bool add) {
 }
 
 void Free_Interpolated_Palettes() {
-  for (int i = 0; i < std::ssize(InterpolatedPalettes); i++) {
-    if (InterpolatedPalettes[i]) {
-      delete[] InterpolatedPalettes[i];
-      InterpolatedPalettes[i] = nullptr;
+  for (auto& InterpolatedPalette : InterpolatedPalettes) {
+    if (InterpolatedPalette) {
+      delete[] InterpolatedPalette;
+      InterpolatedPalette = nullptr;
     }
   }
 }

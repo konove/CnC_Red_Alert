@@ -118,8 +118,9 @@ class CCFileClass : public CDFileClass {
   */
   long Length;
 
+ public:
   // Force these to never be invoked.
-  const CCFileClass operator=(const CCFileClass& c);
+  const CCFileClass operator=(const CCFileClass& c) = delete;
   CCFileClass(const CCFileClass&) = delete;
 };
 

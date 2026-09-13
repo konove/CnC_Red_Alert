@@ -72,7 +72,7 @@ class MissionClass : public ObjectClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   MissionClass();
-  ~MissionClass() override {}
+  ~MissionClass() override = default;
   MissionClass(const MissionClass&) = delete;
   MissionClass& operator=(const MissionClass&) = delete;
   MissionClass(MissionClass&&) = delete;

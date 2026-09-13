@@ -561,8 +561,8 @@ unsigned long __cdecl Seek_File(int handle, long offset, int starting) {
 }
 
 void WWDOS_Shutdown() {
-  for (int index = 0; index < 10; index++) {
-    Handles[index].Set_Name(nullptr);
+  for (auto& Handle : Handles) {
+    Handle.Set_Name(nullptr);
   }
 }
 

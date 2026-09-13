@@ -182,7 +182,7 @@ class CellClass {
 
   //----------------------------------------------------------------
   CellClass();
-  ~CellClass() {}
+  ~CellClass() = default;
   CellClass(const CellClass&) = delete;
   // VectorClass copies the cells across when the map array grows, so
   // assignment stays available even though construction does not.

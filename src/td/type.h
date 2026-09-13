@@ -237,7 +237,7 @@ class AbstractTypeClass {
     }
   }
 
-  AbstractTypeClass() noexcept {}
+  AbstractTypeClass() noexcept = default;
   AbstractTypeClass(int name, const char* ini) noexcept;
   virtual ~AbstractTypeClass() = default;
   AbstractTypeClass(const AbstractTypeClass&) = default;
