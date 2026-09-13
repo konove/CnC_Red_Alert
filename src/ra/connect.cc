@@ -51,6 +51,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/numeric.h"
 #include "port/aligned_buffer.h"
 #include "port/unaligned.h"
 
@@ -90,11 +91,10 @@ const char* ConnectionClass::Commands[PACKET_COUNT] = {"ADATA", "NDATA", "ACK"};
  *=========================================================================*/
 ConnectionClass::ConnectionClass(int numsend, int numreceive, int maxlen,
                                  unsigned short magicnum,
-                                 unsigned long retry_delta,
-                                 unsigned long max_retries,
-                                 unsigned long timeout, int extralen)
-    : MaxPacketLen(static_cast<int>(maxlen + sizeof(CommHeaderType))),
-      PacketBuf(new char[MaxPacketLen]),
+                                 int32_t retry_delta, int32_t max_retries,
+                                 int32_t timeout, int extralen)
+    : MaxPacketLen(maxlen + static_cast<int>(sizeof(CommHeaderType))),
+      PacketBuf(new char[base::ToSize(MaxPacketLen)]),
       MagicNum(magicnum),
       RetryDelta(retry_delta),
       MaxRetries(max_retries),
@@ -245,13 +245,14 @@ int ConnectionClass::Send_Packet(void* buf, int buflen, int ack_req) {
   /*------------------------------------------------------------------------
   Now build the packet
   ------------------------------------------------------------------------*/
-  std::memcpy(PacketBuf + sizeof(CommHeaderType), buf, buflen);
+  std::memcpy(PacketBuf + sizeof(CommHeaderType), buf, base::ToSize(buflen));
 
   /*------------------------------------------------------------------------
   Add it to the queue; don't add any extra data with it.
   ------------------------------------------------------------------------*/
-  if (Queue->Queue_Send(PacketBuf, static_cast<int>(buflen + sizeof(CommHeaderType)), nullptr,
-                        0)) {
+  if (Queue->Queue_Send(PacketBuf,
+                        buflen + static_cast<int>(sizeof(CommHeaderType)),
+                        nullptr, 0)) {
     if (ack_req) {
       NumSendAck++;
     } else {
@@ -516,9 +517,10 @@ int ConnectionClass::Get_Packet(void* buf, int* buflen) {
         LastReadID = entry_data->PacketID;
         rec_entry->IsRead = 1;
 
-        packetlen = static_cast<int>(rec_entry->BufLen - sizeof(CommHeaderType));
+        packetlen = rec_entry->BufLen - static_cast<int>(sizeof(CommHeaderType));
         if (packetlen > 0) {
-          memcpy(buf, rec_entry->Buffer + sizeof(CommHeaderType), packetlen);
+          memcpy(buf, rec_entry->Buffer + sizeof(CommHeaderType),
+                 base::ToSize(packetlen));
         }
         *buflen = packetlen;
         return 1;
@@ -529,9 +531,10 @@ int ConnectionClass::Get_Packet(void* buf, int* buflen) {
       if (entry_data->Code == PACKET_DATA_NOACK) {
         rec_entry->IsRead = 1;
 
-        packetlen = static_cast<int>(rec_entry->BufLen - sizeof(CommHeaderType));
+        packetlen = rec_entry->BufLen - static_cast<int>(sizeof(CommHeaderType));
         if (packetlen > 0) {
-          memcpy(buf, rec_entry->Buffer + sizeof(CommHeaderType), packetlen);
+          memcpy(buf, rec_entry->Buffer + sizeof(CommHeaderType),
+                 base::ToSize(packetlen));
         }
         *buflen = packetlen;
         return 1;
@@ -603,7 +606,7 @@ int ConnectionClass::Service_Send_Queue() {
   int num_entries;
   SendQueueType* send_entry;   // ptr to send queue entry
   CommHeaderType* packet_hdr;  // packet header
-  unsigned long curtime;       // current time
+  int64_t curtime;             // current time
   int bad_conn = 0;
 
   /*------------------------------------------------------------------------
@@ -773,11 +776,11 @@ int ConnectionClass::Service_Receive_Queue() {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-unsigned long ConnectionClass::Time() {
+int64_t ConnectionClass::Time() {
   const auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(
                         std::chrono::steady_clock::now().time_since_epoch())
                         .count();
-  return static_cast<unsigned long>(msec / 100 * 6);
+  return msec / 100 * 6;
 }
 
 /***************************************************************************

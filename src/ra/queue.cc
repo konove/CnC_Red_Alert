@@ -89,6 +89,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
@@ -259,9 +260,12 @@ static void Queue_Playback();
 //...........................................................................
 static void Compute_Game_CRC();
 static void Print_CRCs(EventClass* ev);
+// Bytes a compressed packet spends on each event's type tag.
+constexpr int kEventTypeSize = static_cast<int>(sizeof(EventClass::EventType));
+
 static void Init_Queue_Mono(ConnManClass* net);
 static void Update_Queue_Mono(ConnManClass* net, int flow_index);
-static void Print_Framesync_Values(int64_t curframe, unsigned long max_ahead,
+static void Print_Framesync_Values(int64_t curframe, int max_ahead,
                                    int num_connections,
                                    unsigned short* their_recv,
                                    unsigned short* their_sent,
@@ -676,7 +680,7 @@ static void Queue_AI_Multiplayer() {
   if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
     multi_packet_buf = NullModem.BuildBuf;
     multi_packet_max =
-        static_cast<int>(NullModem.MaxLen - sizeof(CommHeaderType));
+        NullModem.MaxLen - static_cast<int>(sizeof(CommHeaderType));
     net = &NullModem;
   } else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
     multi_packet_buf = Session.MetaPacket;
@@ -1315,7 +1319,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
-  long resp_time;  // connection response time, in ticks
+  int32_t resp_time;  // connection response time, in ticks
   EventClass ev;
 
   //------------------------------------------------------------------------
@@ -1356,10 +1360,10 @@ static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
       else {
         if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
           ev.Data.FrameInfo.Delay = static_cast<unsigned char>(std::max(
-              static_cast<unsigned>(resp_time / 8), MODEM_MIN_MAX_AHEAD));
+              resp_time / 8, MODEM_MIN_MAX_AHEAD));
         } else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
           ev.Data.FrameInfo.Delay = static_cast<unsigned char>(std::max(
-              static_cast<unsigned>(resp_time / 8), NETWORK_MIN_MAX_AHEAD));
+              resp_time / 8, NETWORK_MIN_MAX_AHEAD));
         }
       }
       OutList.Add(ev);
@@ -1388,7 +1392,7 @@ static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
  *   07/02/1996 BRR : Created.                                             *
  *=========================================================================*/
 static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
-  long resp_time;  // connection response time, in ticks
+  int32_t resp_time;  // connection response time, in ticks
   EventClass ev;
   int highest_ticks;
   int i;
@@ -1456,8 +1460,7 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
   // resp_time is divided by 2 because, as reported, it represents a round-
   // trip, and we only want to use a one-way trip.
   //
-  maxahead = static_cast<int>(resp_time * Session.DesiredFrameRate /
-                              (static_cast<unsigned long>(2) * 60));
+  maxahead = resp_time * Session.DesiredFrameRate / (2 * 60);
 
   //
   // Now, we have to round 'maxahead' so it's an even multiple of our
@@ -1511,7 +1514,7 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
 static void Generate_Process_Time_Event(ConnManClass* net) {
   EventClass ev;
   int avgticks;
-  long resp_time;  // connection response time, in ticks
+  int32_t resp_time;  // connection response time, in ticks
 
   //
   // Measure the current connection response time.  This time will be in
@@ -1762,9 +1765,9 @@ static void Send_FrameSync(ConnManClass* net, int cmd_count) {
         (Frame + Session.MaxAhead + (Session.FrameSendRate - 1)) /
         (Session.FrameSendRate * Session.FrameSendRate));
   } else {
-    packet.Frame = static_cast<int>(Frame + Session.MaxAhead);
+    packet.Frame = static_cast<unsigned>(Frame + Session.MaxAhead);
   }
-  packet.ID = PlayerPtr->ID;
+  packet.ID = static_cast<unsigned>(PlayerPtr->ID);
   packet.Data.FrameInfo.CRC = static_cast<std::uint32_t>(ScenarioCRC);
   packet.Data.FrameInfo.CommandCount = static_cast<unsigned short>(cmd_count);
   packet.Data.FrameInfo.Delay = static_cast<unsigned char>(Session.MaxAhead);
@@ -2435,12 +2438,12 @@ static int Build_Send_Packet(void* buf, int bufsize, int frame_delay,
         (Frame + frame_delay + (Session.FrameSendRate - 1)) /
         (Session.FrameSendRate * Session.FrameSendRate));
   } else {
-    finfo->Frame = static_cast<int>(Frame + frame_delay);
+    finfo->Frame = static_cast<unsigned>(Frame + frame_delay);
   }
   //........................................................................
   // Fill in the rest of the event
   //........................................................................
-  finfo->ID = PlayerPtr->ID;
+  finfo->ID = static_cast<unsigned>(PlayerPtr->ID);
   finfo->Data.FrameInfo.CRC = GameCRC;
   finfo->Data.FrameInfo.CommandCount = static_cast<unsigned short>(num_cmds);
   finfo->Data.FrameInfo.Delay = static_cast<unsigned char>(frame_delay);
@@ -2543,12 +2546,12 @@ int Add_Uncompressed_Events(void* buf, int bufsize, int frame_delay, int size,
     //.....................................................................
     // Set the event's frame delay
     //.....................................................................
-    OutList.First().Frame = static_cast<int>(Frame + frame_delay);
+    OutList.First().Frame = static_cast<unsigned>(Frame + frame_delay);
 
     //.....................................................................
     // Set the event's ID
     //.....................................................................
-    OutList.First().ID = PlayerPtr->ID;
+    OutList.First().ID = static_cast<unsigned>(PlayerPtr->ID);
 
     //.....................................................................
     // Transfer the event in OutList to DoList, un-queue the OutList
@@ -2645,10 +2648,10 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
     // in the packet header.)
     //.....................................................................
     if (eventtype == EventClass::ADDPLAYER) {
-      storedsize = static_cast<int>(datasize + sizeof(EventClass::EventType) +
-                                    OutList.First().Data.Variable.Size);
+      storedsize = datasize + kEventTypeSize +
+                   static_cast<int>(OutList.First().Data.Variable.Size);
     } else {
-      storedsize = static_cast<int>(datasize + sizeof(EventClass::EventType));
+      storedsize = datasize + kEventTypeSize;
     }
 
     //.....................................................................
@@ -2786,13 +2789,13 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
           (Frame + frame_delay + (Session.FrameSendRate - 1)) /
           (Session.FrameSendRate * Session.FrameSendRate));
     } else {
-      OutList.First().Frame = static_cast<int>(Frame + frame_delay);
+      OutList.First().Frame = static_cast<unsigned>(Frame + frame_delay);
     }
 
     //.....................................................................
     // Set the event's ID
     //.....................................................................
-    OutList.First().ID = PlayerPtr->ID;
+    OutList.First().ID = static_cast<unsigned>(PlayerPtr->ID);
 
     //.....................................................................
     // Transfer the event in OutList to DoList, un-queue the OutList event.
@@ -2815,10 +2818,9 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
         port::WriteUnaligned(static_cast<char*>(buf) + size, eventtype);
 
         memcpy(static_cast<char*>(buf) + size + sizeof(EventClass::EventType),
-               &OutList.First().Data.FrameInfo.Delay, datasize);
+               &OutList.First().Data.FrameInfo.Delay, base::ToSize(datasize));
 
-        size =
-            static_cast<int>(size + (datasize + sizeof(EventClass::EventType)));
+        size += datasize + kEventTypeSize;
         break;
 
       //..................................................................
@@ -2836,7 +2838,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
           }
 
           memcpy(static_cast<char*>(buf) + size,
-                 &OutList.First().Data.MegaMission.Whom, datasize);
+                 &OutList.First().Data.MegaMission.Whom, base::ToSize(datasize));
 
           size += datasize;
         }
@@ -2855,11 +2857,9 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
 
           memcpy(static_cast<char*>(buf) + size +
                      sizeof(EventClass::EventType) + sizeof(numunits),
-                 &OutList.First().Data.MegaMission, datasize);
+                 &OutList.First().Data.MegaMission, base::ToSize(datasize));
 
-          size = static_cast<int>(
-              size +
-              (datasize + sizeof(EventClass::EventType) + sizeof(numunits)));
+          size += datasize + kEventTypeSize + static_cast<int>(sizeof(numunits));
         }
         break;
 
@@ -2870,9 +2870,8 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
         port::WriteUnaligned(static_cast<char*>(buf) + size, eventtype);
 
         memcpy(static_cast<char*>(buf) + size + sizeof(EventClass::EventType),
-               &OutList.First().Data.Variable.Size, datasize);
-        size =
-            static_cast<int>(size + (datasize + sizeof(EventClass::EventType)));
+               &OutList.First().Data.Variable.Size, base::ToSize(datasize));
+        size += datasize + kEventTypeSize;
 
         memcpy(static_cast<char*>(buf) + size,
                OutList.First().Data.Variable.Pointer,
@@ -2888,10 +2887,9 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
         port::WriteUnaligned(static_cast<char*>(buf) + size, eventtype);
 
         memcpy(static_cast<char*>(buf) + size + sizeof(EventClass::EventType),
-               &OutList.First().Data, datasize);
+               &OutList.First().Data, base::ToSize(datasize));
 
-        size =
-            static_cast<int>(size + (datasize + sizeof(EventClass::EventType)));
+        size += datasize + kEventTypeSize;
 
         break;
     }
@@ -3135,14 +3133,14 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
         case EventClass::RESPONSE_TIME:
           memcpy(&eventdata.Data.FrameInfo.Delay,
                  static_cast<char*>(buf) + pos + sizeof(EventClass::EventType),
-                 datasize);
+                 base::ToSize(datasize));
           break;
 
         case EventClass::ADDPLAYER:
 
           memcpy(&eventdata.Data.Variable.Size,
                  static_cast<char*>(buf) + pos + sizeof(EventClass::EventType),
-                 datasize);
+                 base::ToSize(datasize));
 
           eventdata.Data.Variable.Pointer =
               new char[eventdata.Data.Variable.Size];
@@ -3159,13 +3157,11 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
         case EventClass::MEGAMISSION:
           memcpy(&eventdata.Data.MegaMission,
                  static_cast<char*>(buf) + pos + sizeof(EventClass::EventType),
-                 datasize);
+                 base::ToSize(datasize));
 
           if (numunits > 1) {
-            pos = static_cast<int>(pos +
-                                   (datasize + sizeof(EventClass::EventType)));
-            leftover = static_cast<int>(
-                leftover - (datasize + sizeof(EventClass::EventType)));
+            pos += datasize + kEventTypeSize;
+            leftover -= datasize + kEventTypeSize;
             datasize = sizeof(eventdata.Data.MegaMission.Whom);
 
             while (numunits) {
@@ -3181,7 +3177,7 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
               count++;
               numunits--;
               memcpy(&eventdata.Data.MegaMission.Whom,
-                     static_cast<char*>(buf) + pos, datasize);
+                     static_cast<char*>(buf) + pos, base::ToSize(datasize));
 
               //......................................................
               // if one unit left fall thru to normal code
@@ -3199,7 +3195,7 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
         default:
           memcpy(&eventdata.Data,
                  static_cast<char*>(buf) + pos + sizeof(EventClass::EventType),
-                 datasize);
+                 base::ToSize(datasize));
           break;
       }
 
@@ -3219,9 +3215,8 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
       //..................................................................
       count++;
 
-      pos = static_cast<int>(pos + (datasize + sizeof(EventClass::EventType)));
-      leftover = static_cast<int>(leftover -
-                                  (datasize + sizeof(EventClass::EventType)));
+      pos += datasize + kEventTypeSize;
+      leftover -= datasize + kEventTypeSize;
 
       if (leftover) {
         if (std::cmp_less(leftover, sizeof(EventClass::EventType))) {
@@ -3244,9 +3239,8 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
     // and it will be uncompressed.
     //.....................................................................
     else {
-      pos = static_cast<int>(pos + (datasize + sizeof(EventClass::EventType)));
-      leftover = static_cast<int>(leftover -
-                                  (datasize + sizeof(EventClass::EventType)));
+      pos += datasize + kEventTypeSize;
+      leftover -= datasize + kEventTypeSize;
       if (std::cmp_less(leftover, sizeof(EventClass::EventType))) {
         return count;
       }
@@ -3333,7 +3327,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
     if (DoList[j].Type != EventClass::FRAMEINFO &&
         std::cmp_greater(DoList[j].Frame, NewMaxAheadFrame1) &&
         std::cmp_less(DoList[j].Frame, NewMaxAheadFrame2)) {
-      DoList[j].Frame = NewMaxAheadFrame2;
+      DoList[j].Frame = static_cast<unsigned>(NewMaxAheadFrame2);
     }
   }
 
@@ -3818,10 +3812,12 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   for (i = 0; i < Infantry.Count(); i++) {
     infp = static_cast<InfantryClass*>(Infantry.Active_Ptr(i));
-    Add_CRC(&GameCRC, static_cast<int>(infp->Coord) +
-                          static_cast<int>(infp->PrimaryFacing));
-    Add_CRC(&GameCRC, infp->Speed + infp->NavCom);
-    Add_CRC(&GameCRC, static_cast<int>(infp->Mission) + infp->TarCom);
+    Add_CRC(&GameCRC,
+            static_cast<uint32_t>(static_cast<int>(infp->Coord) +
+                                  static_cast<int>(infp->PrimaryFacing)));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(infp->Speed + infp->NavCom));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(static_cast<int>(infp->Mission) +
+                                            infp->TarCom));
   }
 
   //------------------------------------------------------------------------
@@ -3829,9 +3825,10 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   for (i = 0; i < Units.Count(); i++) {
     unitp = static_cast<UnitClass*>(Units.Active_Ptr(i));
-    Add_CRC(&GameCRC, static_cast<int>(unitp->Coord) +
-                          static_cast<int>(unitp->PrimaryFacing) +
-                          static_cast<int>(unitp->SecondaryFacing));
+    Add_CRC(&GameCRC,
+            static_cast<uint32_t>(static_cast<int>(unitp->Coord) +
+                                  static_cast<int>(unitp->PrimaryFacing) +
+                                  static_cast<int>(unitp->SecondaryFacing)));
   }
 
   //------------------------------------------------------------------------
@@ -3839,11 +3836,13 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   for (i = 0; i < Vessels.Count(); i++) {
     vessp = static_cast<VesselClass*>(Vessels.Active_Ptr(i));
-    Add_CRC(&GameCRC, static_cast<int>(vessp->Coord) +
-                          static_cast<int>(vessp->PrimaryFacing));
-    Add_CRC(&GameCRC, vessp->Speed + vessp->NavCom);
-    Add_CRC(&GameCRC, vessp->Strength);
-    Add_CRC(&GameCRC, static_cast<int>(vessp->Mission) + vessp->TarCom);
+    Add_CRC(&GameCRC,
+            static_cast<uint32_t>(static_cast<int>(vessp->Coord) +
+                                  static_cast<int>(vessp->PrimaryFacing)));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(vessp->Speed + vessp->NavCom));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(vessp->Strength));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(static_cast<int>(vessp->Mission) +
+                                            vessp->TarCom));
   }
 
   //------------------------------------------------------------------------
@@ -3851,8 +3850,9 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   for (i = 0; i < Buildings.Count(); i++) {
     bldgp = static_cast<BuildingClass*>(Buildings.Active_Ptr(i));
-    Add_CRC(&GameCRC, static_cast<int>(bldgp->Coord) +
-                          static_cast<int>(bldgp->PrimaryFacing));
+    Add_CRC(&GameCRC,
+            static_cast<uint32_t>(static_cast<int>(bldgp->Coord) +
+                                  static_cast<int>(bldgp->PrimaryFacing)));
   }
 
   //------------------------------------------------------------------------
@@ -3860,8 +3860,9 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   for (i = 0; i < Houses.Count(); i++) {
     housep = static_cast<HouseClass*>(Houses.Active_Ptr(i));
-    Add_CRC(&GameCRC,
-            static_cast<int>(housep->Credits) + housep->Power + housep->Drain);
+    Add_CRC(&GameCRC, static_cast<uint32_t>(static_cast<int>(housep->Credits) +
+                                            housep->Power +
+                                            housep->Drain));
   }
 
   //------------------------------------------------------------------------
@@ -3870,8 +3871,9 @@ static void Compute_Game_CRC() {
   for (i = 0; std::cmp_less(i, magic_enum::enum_count<LayerType>()); i++) {
     for (j = 0; j < MouseClass::Layer[i].Count(); j++) {
       objp = MouseClass::Layer[i][j];
-      Add_CRC(&GameCRC, static_cast<int>(objp->Coord) +
-                            static_cast<int>(objp->What_Am_I()));
+      Add_CRC(&GameCRC,
+              static_cast<uint32_t>(static_cast<int>(objp->Coord) +
+                                    static_cast<int>(objp->What_Am_I())));
     }
   }
 
@@ -3880,8 +3882,9 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   for (i = 0; i < Logic.Count(); i++) {
     objp = Logic[i];
-    Add_CRC(&GameCRC, static_cast<int>(objp->Coord) +
-                          static_cast<int>(objp->What_Am_I()));
+    Add_CRC(&GameCRC,
+            static_cast<uint32_t>(static_cast<int>(objp->Coord) +
+                                  static_cast<int>(objp->What_Am_I())));
   }
 
   //------------------------------------------------------------------------
@@ -3912,7 +3915,7 @@ static void Compute_Game_CRC() {
  *   05/09/1995 BRR : Created.                                             *
  *=========================================================================*/
 void Add_CRC(uint32_t* crc, uint32_t val) {
-  int hibit;
+  uint32_t hibit;
 
   if (*crc & 0x80000000) {
     hibit = 1;
@@ -3981,8 +3984,10 @@ static void Print_CRCs(EventClass* ev) {
       fprintf(fp, "%s: IsHuman:%d  Color:%s  ID:%d  ActLike:%s\n",
               housep->IniName, housep->IsHuman, ColorNames[color], housep->ID,
               HouseClass::As_Pointer(actlike)->Class->Name());
-      Add_CRC(&GameCRC, static_cast<int>(housep->Credits) + housep->Power +
-                            housep->Drain);
+      Add_CRC(&GameCRC,
+              static_cast<uint32_t>(static_cast<int>(housep->Credits) +
+                                    housep->Power +
+                                    housep->Drain));
       Mono_Printf("House %s:%x\n", housep->Class->Name(), GameCRC);
     }
   }
@@ -3999,10 +4004,13 @@ static void Print_CRCs(EventClass* ev) {
       for (i = 0; i < Infantry.Count(); i++) {
         infp = static_cast<InfantryClass*>(Infantry.Active_Ptr(i));
         if (infp->Owner() == house) {
-          Add_CRC(&GameCRC, static_cast<int>(infp->Coord) +
-                                static_cast<int>(infp->PrimaryFacing));
-          Add_CRC(&GameCRC, infp->Speed + infp->NavCom);
-          Add_CRC(&GameCRC, static_cast<int>(infp->Mission) + infp->TarCom);
+          Add_CRC(&GameCRC,
+                  static_cast<uint32_t>(static_cast<int>(infp->Coord) +
+                                        static_cast<int>(infp->PrimaryFacing)));
+          Add_CRC(&GameCRC, static_cast<uint32_t>(infp->Speed + infp->NavCom));
+          Add_CRC(&GameCRC,
+                  static_cast<uint32_t>(static_cast<int>(infp->Mission) +
+                                        infp->TarCom));
           fprintf(fp,
                   "COORD:%x   Facing:%d   Mission:%d   Type:%d   Tgt:%x "
                   "Speed:%d NavCom:%x\n",
@@ -4028,9 +4036,10 @@ static void Print_CRCs(EventClass* ev) {
       for (i = 0; i < Units.Count(); i++) {
         unitp = static_cast<UnitClass*>(Units.Active_Ptr(i));
         if (unitp->Owner() == house) {
-          Add_CRC(&GameCRC, static_cast<int>(unitp->Coord) +
-                                static_cast<int>(unitp->PrimaryFacing) +
-                                static_cast<int>(unitp->SecondaryFacing));
+          Add_CRC(&GameCRC,
+                  static_cast<uint32_t>(static_cast<int>(unitp->Coord) +
+                                        static_cast<int>(unitp->PrimaryFacing) +
+                                        static_cast<int>(unitp->SecondaryFacing)));
           fprintf(fp,
                   "COORD:%x   Facing:%d   Facing2:%d   Mission:%d   Type:%d   "
                   "Tgt:%x\n",
@@ -4056,12 +4065,15 @@ static void Print_CRCs(EventClass* ev) {
       for (i = 0; i < Vessels.Count(); i++) {
         vesselp = static_cast<VesselClass*>(Vessels.Active_Ptr(i));
         if (vesselp->Owner() == house) {
-          Add_CRC(&GameCRC, static_cast<int>(vesselp->Coord) +
-                                static_cast<int>(vesselp->PrimaryFacing));
-          Add_CRC(&GameCRC, vesselp->Speed + vesselp->NavCom);
-          Add_CRC(&GameCRC, vesselp->Strength);
           Add_CRC(&GameCRC,
-                  static_cast<int>(vesselp->Mission) + vesselp->TarCom);
+                  static_cast<uint32_t>(static_cast<int>(vesselp->Coord) +
+                                        static_cast<int>(vesselp->PrimaryFacing)));
+          Add_CRC(&GameCRC, static_cast<uint32_t>(vesselp->Speed +
+                                                  vesselp->NavCom));
+          Add_CRC(&GameCRC, static_cast<uint32_t>(vesselp->Strength));
+          Add_CRC(&GameCRC,
+                  static_cast<uint32_t>(static_cast<int>(vesselp->Mission) +
+                                        vesselp->TarCom));
           fprintf(fp,
                   "COORD:%x   Facing:%d   Mission:%d   Strength:%d Type:%d   "
                   "Tgt:%x\n",
@@ -4087,8 +4099,9 @@ static void Print_CRCs(EventClass* ev) {
       for (i = 0; i < Buildings.Count(); i++) {
         bldgp = static_cast<BuildingClass*>(Buildings.Active_Ptr(i));
         if (bldgp->Owner() == house) {
-          Add_CRC(&GameCRC, static_cast<int>(bldgp->Coord) +
-                                static_cast<int>(bldgp->PrimaryFacing));
+          Add_CRC(&GameCRC,
+                  static_cast<uint32_t>(static_cast<int>(bldgp->Coord) +
+                                        static_cast<int>(bldgp->PrimaryFacing)));
           fprintf(fp, "COORD:%x   Facing:%d   Mission:%d   Type:%d   Tgt:%x\n",
                   bldgp->Coord, static_cast<int>(bldgp->PrimaryFacing),
                   bldgp->Get_Mission(), bldgp->Class->Type,
@@ -4119,8 +4132,9 @@ static void Print_CRCs(EventClass* ev) {
     fprintf(fp, ">>>> MAP LAYER %d <<<<\n", i);
     for (j = 0; j < MouseClass::Layer[i].Count(); j++) {
       objp = MouseClass::Layer[i][j];
-      Add_CRC(&GameCRC, static_cast<int>(objp->Coord) +
-                            static_cast<int>(objp->What_Am_I()));
+      Add_CRC(&GameCRC,
+              static_cast<uint32_t>(static_cast<int>(objp->Coord) +
+                                    static_cast<int>(objp->What_Am_I())));
       fprintf(fp, "Object %d: %x ", j, objp->Coord);
 
       if (objp->What_Am_I() == RTTI_AIRCRAFT) {
@@ -4176,8 +4190,9 @@ static void Print_CRCs(EventClass* ev) {
   fprintf(fp, ">>>> LOGIC LAYER <<<<\n");
   for (i = 0; i < Logic.Count(); i++) {
     objp = Logic[i];
-    Add_CRC(&GameCRC, static_cast<int>(objp->Coord) +
-                          static_cast<int>(objp->What_Am_I()));
+    Add_CRC(&GameCRC,
+            static_cast<uint32_t>(static_cast<int>(objp->Coord) +
+                                  static_cast<int>(objp->What_Am_I())));
     fprintf(fp, "Object %d: %x ", i, objp->Coord);
 
     if (objp->What_Am_I() == RTTI_AIRCRAFT) {
@@ -4403,7 +4418,7 @@ static void Update_Queue_Mono(ConnManClass* /*net*/, int /*flow_index*/) {
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static void Print_Framesync_Values(int64_t /*curframe*/,
-                                   unsigned long /*max_ahead*/,
+                                   int /*max_ahead*/,
                                    int /*num_connections*/,
                                    unsigned short* /*their_recv*/,
                                    unsigned short* /*their_sent*/,

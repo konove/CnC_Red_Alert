@@ -156,9 +156,8 @@ class ConnectionClass {
   Constructor/destructor.
   .....................................................................*/
   ConnectionClass(int numsend, int numreceive, int maxlen,
-                  unsigned short magicnum, unsigned long retry_delta,
-                  unsigned long max_retries, unsigned long timeout,
-                  int extralen = 0);
+                  unsigned short magicnum, int32_t retry_delta,
+                  int32_t max_retries, int32_t timeout, int extralen = 0);
   virtual ~ConnectionClass();
   ConnectionClass(const ConnectionClass&) = delete;
   ConnectionClass& operator=(const ConnectionClass&) = delete;
@@ -187,19 +186,19 @@ class ConnectionClass {
   This routine is used by the retry logic; returns the current time in
   60ths of a second.
   .....................................................................*/
-  static unsigned long Time();
+  static int64_t Time();
 
   /*.....................................................................
   Utility routines.
   .....................................................................*/
   unsigned short Magic_Num() { return MagicNum; }
-  unsigned long Retry_Delta() { return RetryDelta; }
-  void Set_Retry_Delta(unsigned long delta) { RetryDelta = delta; }
-  long Max_Retries() { return MaxRetries; }
-  void Set_Max_Retries(unsigned long retries) { MaxRetries = retries; }
-  long Time_Out() { return Timeout; }
-  void Set_TimeOut(unsigned long t) { Timeout = t; }
-  unsigned long Max_Packet_Len() { return MaxPacketLen; }
+  int32_t Retry_Delta() { return RetryDelta; }
+  void Set_Retry_Delta(int32_t delta) { RetryDelta = delta; }
+  int32_t Max_Retries() { return MaxRetries; }
+  void Set_Max_Retries(int32_t retries) { MaxRetries = retries; }
+  int32_t Time_Out() { return Timeout; }
+  void Set_TimeOut(int32_t t) { Timeout = t; }
+  int Max_Packet_Len() { return MaxPacketLen; }
   static const char* Command_Name(int command);
 
   /*.....................................................................
@@ -246,19 +245,19 @@ class ConnectionClass {
   /*.....................................................................
   This value determines the time delay before a packet is re-sent.
   .....................................................................*/
-  unsigned long RetryDelta;
+  int32_t RetryDelta;
 
   /*.....................................................................
   This is the maximum number of retries allowed for a packet; if this
-  value is exceeded, the connection is probably broken.
+  value is exceeded, the connection is probably broken.  -1 means no limit.
   .....................................................................*/
-  long MaxRetries;
+  int32_t MaxRetries;
 
   /*.....................................................................
   This is the total timeout for this connection; if this time is exceeded
-  on a packet, the connection is probably broken.
+  on a packet, the connection is probably broken.  -1 means no limit.
   .....................................................................*/
-  long Timeout;
+  int32_t Timeout;
 
   /*.....................................................................
   Running totals of # of packets we send & receive which require an ACK,

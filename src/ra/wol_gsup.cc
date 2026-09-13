@@ -25,6 +25,7 @@
 #include <random>
 #include <utility>
 
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/bigcheck.h"
@@ -595,10 +596,10 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     //	Init other scenario parameters
     //------------------------------------------------------------------------
     Special.IsTGrowth =
-        Session.Options.Tiberium;  //	Ugh. Use of "Special" global.
+        static_cast<unsigned>(Session.Options.Tiberium);  //	Ugh. Use of "Special" global.
     Rule.IsTGrowth = Session.Options.Tiberium;
     Special.IsTSpread =
-        Session.Options.Tiberium;  //	Ugh. Use of "Special" global.
+        static_cast<unsigned>(Session.Options.Tiberium);  //	Ugh. Use of "Special" global.
     Rule.IsTSpread = Session.Options.Tiberium;
 
     if (bHost) {
@@ -1509,15 +1510,17 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           Session.Options.Bases = pCheckListOptions->Is_Checked(0);
           if (Session.Options.Bases) {
             Session.Options.UnitCount =
-                Rescale(Session.Options.UnitCount - SessionClass::CountMin[0],
-                        SessionClass::CountMax[0] - SessionClass::CountMin[0],
-                        SessionClass::CountMax[1] - SessionClass::CountMin[1]);
+                static_cast<int>(Rescale(
+                static_cast<uint32_t>(Session.Options.UnitCount - SessionClass::CountMin[0]),
+                static_cast<uint32_t>(SessionClass::CountMax[0] - SessionClass::CountMin[0]),
+                static_cast<uint32_t>(SessionClass::CountMax[1] - SessionClass::CountMin[1])));
           } else {
             pCheckListOptions->Check_Item(3, false);
             Session.Options.UnitCount =
-                Rescale(Session.Options.UnitCount - SessionClass::CountMin[1],
-                        SessionClass::CountMax[1] - SessionClass::CountMin[1],
-                        SessionClass::CountMax[0] - SessionClass::CountMin[0]);
+                static_cast<int>(Rescale(
+                static_cast<uint32_t>(Session.Options.UnitCount - SessionClass::CountMin[1]),
+                static_cast<uint32_t>(SessionClass::CountMax[1] - SessionClass::CountMin[1]),
+                static_cast<uint32_t>(SessionClass::CountMax[0] - SessionClass::CountMin[0])));
           }
           pGaugeCount->Set_Maximum(
               SessionClass::CountMax[Session.Options.Bases] -
@@ -1527,10 +1530,10 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         }
         Session.Options.Tiberium = pCheckListOptions->Is_Checked(1);
         Special.IsTGrowth =
-            Session.Options.Tiberium;  //	Ugh. Use of "Special" global.
+            static_cast<unsigned>(Session.Options.Tiberium);  //	Ugh. Use of "Special" global.
         Rule.IsTGrowth = Session.Options.Tiberium;
         Special.IsTSpread =
-            Session.Options.Tiberium;  //	Ugh. Use of "Special" global.
+            static_cast<unsigned>(Session.Options.Tiberium);  //	Ugh. Use of "Special" global.
         Rule.IsTSpread = Session.Options.Tiberium;
 
         Session.Options.Goodies = pCheckListOptions->Is_Checked(2);
@@ -1571,7 +1574,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
               //							debugprint(
               //"Sending accept.\n" ); 	Tell host we accept.
               char szSend[20];
-              sprintf(szSend, "%02i %06u", WOL_GAMEOPT_REQACCEPT,
+              sprintf(szSend, "%02i %06i", WOL_GAMEOPT_REQACCEPT,
                       nGuestLastParamID);
               pWO->SendGameOpt(szSend, pUserHost);
             }
@@ -1998,7 +2001,7 @@ void WOL_GameSetupDialog::SetPlayerHouse(const char* szName, HousesType House) {
   char szItem[100];
   pWO->WritePlayerListItem(szItem, sizeof(szItem), szName, House);
   //	debugprint ( "%i, %s\n", iItem, szItem );
-  pILPlayers->Set_Item(iItem, szItem);
+  pILPlayers->Set_Item(static_cast<unsigned int>(iItem), szItem);
   pILPlayers->Flag_To_Redraw();
 }
 
@@ -2289,7 +2292,7 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
         if (!param_id || *param_id < 0) {
           return;
         }
-        nGuestLastParamID = static_cast<unsigned int>(*param_id);
+        nGuestLastParamID = *param_id;
         szInform += 7;
         const auto house =
             tech::ParseInteger<int>(std::string_view{szInform, 2});
@@ -2355,10 +2358,10 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
           char szSend[20];
           //	Make sure we have the scenario.
           if (!bNeedScenarioDownload()) {
-            sprintf(szSend, "%02i %06u", WOL_GAMEOPT_REQSTART,
+            sprintf(szSend, "%02i %06i", WOL_GAMEOPT_REQSTART,
                     nGuestLastParamID);
           } else {
-            sprintf(szSend, "%02i %06u", WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO,
+            sprintf(szSend, "%02i %06i", WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO,
                     nGuestLastParamID);
           }
           pWO->SendGameOpt(szSend, pUserHost);
@@ -2485,7 +2488,7 @@ void WOL_GameSetupDialog::SendParams() {
       "%i "
       "%i "
       "%i ",
-      WOL_GAMEOPT_INFPARAMS, static_cast<int>(nHostLastParamID),
+      WOL_GAMEOPT_INFPARAMS, nHostLastParamID,
       static_cast<int>(strlen(GParamsLastSent.GPacket.ScenarioInfo.Scenario)),
       GParamsLastSent.GPacket.ScenarioInfo.Scenario,
       static_cast<int>(GParamsLastSent.GPacket.ScenarioInfo.FileLength),
@@ -2496,7 +2499,7 @@ void WOL_GameSetupDialog::SendParams() {
       GParamsLastSent.GPacket.ScenarioInfo.FileDigest[0] ? 1 : 0,
       GParamsLastSent.GPacket.ScenarioInfo.FileDigest,
       GParamsLastSent.GPacket.ScenarioInfo.OfficialScenario,
-      static_cast<int>(GParamsLastSent.GPacket.ScenarioInfo.Credits),
+      GParamsLastSent.GPacket.ScenarioInfo.Credits,
       GParamsLastSent.GPacket.ScenarioInfo.IsBases,
       GParamsLastSent.GPacket.ScenarioInfo.IsTiberium,
       GParamsLastSent.GPacket.ScenarioInfo.IsGoodies,
@@ -2540,7 +2543,7 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   char* szRemaining;
 
   szToken = strtok(szParams, szDelimiter);
-  nGuestLastParamID = tech::ParseInteger<uint32_t>(szToken).value_or(0);
+  nGuestLastParamID = tech::ParseInteger<int>(szToken).value_or(0);
 
   //	Read in length of following string.
   szToken = strtok(nullptr, szDelimiter);
@@ -2557,7 +2560,7 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   //	Set string pointer to start of string (length is 3 digits).
   szRemaining = szToken + 4;
   //	Read in string.
-  memcpy(Session.Options.ScenarioDescription, szRemaining, iLen);
+  memcpy(Session.Options.ScenarioDescription, szRemaining, base::ToSize(iLen));
   //	Null-terminate.
   Session.Options.ScenarioDescription[iLen] = 0;
   //	Advance string pointer to next param.
@@ -2571,7 +2574,8 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (!szToken) {
     return false;
   }
-  Session.ScenarioFileLength = tech::ParseInteger<int>(szToken).value_or(0);
+  Session.ScenarioFileLength =
+      static_cast<unsigned int>(tech::ParseInteger<int>(szToken).value_or(0));
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
@@ -2728,7 +2732,8 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (!szToken) {
     return false;
   }
-  Options.GameSpeed = tech::ParseInteger<int>(szToken).value_or(0);
+  Options.GameSpeed =
+      static_cast<unsigned int>(tech::ParseInteger<int>(szToken).value_or(0));
 
   szToken = strtok(nullptr, szDelimiter);
   if (!szToken) {
@@ -2996,7 +3001,7 @@ bool WOL_GameSetupDialog::InformAboutPlayerHouse(const char* szName,
     // szName );
     *szSend = 0;
   } else {
-    sprintf(szSend, "%02i %06u %02i %s", WOL_GAMEOPT_INFHOUSE, nHostLastParamID,
+    sprintf(szSend, "%02i %06i %02i %s", WOL_GAMEOPT_INFHOUSE, nHostLastParamID,
             (short)House, szName);
   }
 
@@ -3022,7 +3027,7 @@ bool WOL_GameSetupDialog::InformAboutStart() {
   // an earlier one we canceled out of.
   char szSend[10];
 
-  sprintf(szSend, "%02i %06u", WOL_GAMEOPT_INFSTART, nHostLastParamID);
+  sprintf(szSend, "%02i %06i", WOL_GAMEOPT_INFSTART, nHostLastParamID);
 
   return pWO->SendGameOpt(szSend, nullptr);
 }
@@ -3182,7 +3187,7 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
     szRemaining = szToken + 3;
     //	Read in string.
     char szPlayerName[50];
-    memcpy(szPlayerName, szRemaining, iLen);
+    memcpy(szPlayerName, szRemaining, base::ToSize(iLen));
     //	Null-terminate.
     szPlayerName[iLen] = 0;
 
@@ -3471,14 +3476,14 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
 
   // PlanetWestwoodGameID = WWGetPrivateProfileInt("Internet", "GameID", 0,
   // buffer);
-  PlanetWestwoodGameID = pWO->pChatSink->iGameID;
+  PlanetWestwoodGameID = static_cast<unsigned long>(pWO->pChatSink->iGameID);
 
   //	Reset ChatSink's iGameID.
   pWO->pChatSink->iGameID = 0;
 
   // PlanetWestwoodStartTime = WWGetPrivateProfileInt ("Internet", "StartTime",
   // 0, buffer);
-  PlanetWestwoodStartTime = time(nullptr);
+  PlanetWestwoodStartTime = static_cast<unsigned long>(time(nullptr));
   // WChatHWND = (HWND) WWGetPrivateProfileInt("Internet", "HWND",
   // (int)FindWindow("OWL_Window", "Westwood Chat"), buffer);
 
@@ -3771,7 +3776,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
 
   pWO->GameInfoCurrent.iPlayerCount = static_cast<int>(Session.Players.Count());
 
-  Ipx.Set_Timing(25, (unsigned long)-1, 1000);
+  Ipx.Set_Timing(25, -1, 1000);
 
   if (bHost) {
     if (Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official() &&
@@ -3791,7 +3796,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   }
 
   Session.CommProtocol = COMM_PROTOCOL_MULTI_E_COMP;
-  Ipx.Set_Timing(30, (unsigned long)-1, 600);
+  Ipx.Set_Timing(30, -1, 600);
 
   pWO->bEnableNewAftermathUnits = bAftermathUnits;
   bAftermathMultiplayer = bAftermathUnits;

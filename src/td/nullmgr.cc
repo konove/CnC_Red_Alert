@@ -60,6 +60,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/numeric.h"
 #include "port/aligned_buffer.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
@@ -236,13 +237,13 @@ int NullModemClass::Init(int port, int /*unused*/, char* dev_name, int baud,
     "Actual" maximum packet size, given from the connection; this allows for
     both headers that get added to the packet.
     ------------------------------------------------------------------------*/
-    RXSize = static_cast<int>(Connection->Actual_Max_Packet() * NumReceive);
-    RXBuf = new char[RXSize];
+    RXSize = Connection->Actual_Max_Packet() * NumReceive;
+    RXBuf = new char[base::ToSize(RXSize)];
 
     // new char[] provides alignment for the packet headers stored at its base.
-    BuildBuf = new char[MaxLen];
+    BuildBuf = new char[base::ToSize(MaxLen)];
 
-    EchoBuf = new char[EchoSize];
+    EchoBuf = new char[base::ToSize(EchoSize)];
   }
 
   RXCount = 0;
@@ -576,9 +577,8 @@ void NullModemClass::Shutdown() {
  * HISTORY:                                                                *
  *   08/07/1995 DRD : Created.                                             *
  *=========================================================================*/
-void NullModemClass::Set_Timing(unsigned long retrydelta,
-                                unsigned long maxretries,
-                                unsigned long timeout) {
+void NullModemClass::Set_Timing(int32_t retrydelta, int32_t maxretries,
+                                int32_t timeout) {
   RetryDelta = retrydelta;
   MaxRetries = maxretries;
   Timeout = timeout;
@@ -752,7 +752,7 @@ int NullModemClass::Service() {
   Check to see if there are enough bytes for the header to be decoded
   ........................................................................*/
   if (RXCount - pos < static_cast<int>(sizeof(SerialHeaderType))) {
-    memmove(RXBuf, RXBuf + pos, RXCount - pos);
+    memmove(RXBuf, RXBuf + pos, base::ToSize(RXCount - pos));
     RXCount -= pos;
     return Connection->Service();
   }
@@ -772,7 +772,7 @@ int NullModemClass::Service() {
     //		Hex_Dump_Data( (RXBuf + pos), PACKET_SERIAL_OVERHEAD_SIZE );
 
     pos += sizeof(short);  // throw away the bogus start code
-    memmove(RXBuf, RXBuf + pos, RXCount - pos);
+    memmove(RXBuf, RXBuf + pos, base::ToSize(RXCount - pos));
     RXCount -= pos;
     return Connection->Service();
   }
@@ -792,7 +792,7 @@ int NullModemClass::Service() {
     // Smart_Printf( "length too lonnng %d, max %d \n", length, MaxLen );
 
     pos += sizeof(short);  // throw away the bogus start code
-    memmove(RXBuf, RXBuf + pos, RXCount - pos);
+    memmove(RXBuf, RXBuf + pos, base::ToSize(RXCount - pos));
     RXCount -= pos;
     return Connection->Service();
   }
@@ -809,7 +809,7 @@ int NullModemClass::Service() {
     }
 
     if (pos) {
-      memmove(RXBuf, RXBuf + pos, RXCount - pos);
+      memmove(RXBuf, RXBuf + pos, base::ToSize(RXCount - pos));
       RXCount -= pos;
     }
     return Connection->Service();
@@ -838,7 +838,7 @@ int NullModemClass::Service() {
     //		}
 
     pos += sizeof(short);  // throw away the bogus start code
-    memmove(RXBuf, RXBuf + pos, RXCount - pos);
+    memmove(RXBuf, RXBuf + pos, base::ToSize(RXCount - pos));
     RXCount -= pos;
     return Connection->Service();
   }
@@ -855,8 +855,8 @@ int NullModemClass::Service() {
   /*------------------------------------------------------------------------
   Move all data past this packet to the front of the buffer.
   ------------------------------------------------------------------------*/
-  pos = static_cast<int>(pos + (PACKET_SERIAL_OVERHEAD_SIZE + length));
-  memmove(RXBuf, RXBuf + pos, RXCount - pos);
+  pos += static_cast<int>(PACKET_SERIAL_OVERHEAD_SIZE) + length;
+  memmove(RXBuf, RXBuf + pos, base::ToSize(RXCount - pos));
   RXCount -= pos;
 
   /*------------------------------------------------------------------------
@@ -919,7 +919,7 @@ int NullModemClass::Num_Receive() {
  * HISTORY:                                                                *
  *   05/01/1995 BRR : Created.                                             *
  *=========================================================================*/
-long NullModemClass::Response_Time() {
+int32_t NullModemClass::Response_Time() {
   if (Connection) {
     return Connection->Queue->Avg_Response_Time();
   }
@@ -2140,7 +2140,8 @@ int NullModemClass::Get_Modem_Status() {
   char buffer[81];
 
   // modemstatus = GetModemStatus( Port );
-  modemstatus = SerialPort->Get_Modem_Status();
+  // Modem status is a small bit mask (CTS/DSR/RI/CD).
+  modemstatus = static_cast<int>(SerialPort->Get_Modem_Status());
 
   status = Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
 

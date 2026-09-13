@@ -60,6 +60,7 @@
 #include <algorithm>
 #include <cstring>
 
+#include "base/numeric.h"
 #include "port/safe_string.h"
 #include "port/socket_bytes.h"
 #include "td/jshell.h"
@@ -304,7 +305,8 @@ int TcpipManagerClass::Read(void* buffer, int buffer_len) {
   */
   if (ReceiveBuffers[RXBufferTail].InUse) {
     memcpy(buffer, ReceiveBuffers[RXBufferTail].Buffer,
-           std::min(ReceiveBuffers[RXBufferTail].DataLength, buffer_len));
+           base::ToSize(
+               std::min(ReceiveBuffers[RXBufferTail].DataLength, buffer_len)));
     ReceiveBuffers[RXBufferTail].InUse = false;
 
     bytes_copied =
@@ -336,7 +338,7 @@ void TcpipManagerClass::Write(void* buffer, int buffer_len) {
   */
   if (!TransmitBuffers[TXBufferHead].InUse) {
     memcpy(TransmitBuffers[TXBufferHead].Buffer, buffer,
-           std::min(buffer_len, WS_INTERNET_BUFFER_LEN));
+           base::ToSize(std::min(buffer_len, WS_INTERNET_BUFFER_LEN)));
     TransmitBuffers[TXBufferHead].InUse = true;
     TransmitBuffers[TXBufferHead++].DataLength =
         std::min(buffer_len, WS_INTERNET_BUFFER_LEN);
@@ -456,7 +458,7 @@ bool TcpipManagerClass::Add_Client() {
 void TcpipManagerClass::Copy_To_In_Buffer(int bytes) {
   if (!ReceiveBuffers[RXBufferHead].InUse) {
     memcpy(ReceiveBuffers[RXBufferHead].Buffer, ReceiveBuffer,
-           std::min(bytes, WS_INTERNET_BUFFER_LEN));
+           base::ToSize(std::min(bytes, WS_INTERNET_BUFFER_LEN)));
     ReceiveBuffers[RXBufferHead].InUse = true;
     ReceiveBuffers[RXBufferHead++].DataLength =
         std::min(bytes, WS_INTERNET_BUFFER_LEN);

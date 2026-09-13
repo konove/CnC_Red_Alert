@@ -15,7 +15,7 @@ IID FromString(std::uint32_t data1, std::uint16_t data2, std::uint16_t data3,
                std::uint64_t tail) {
   IID iid{data1, data2, data3, {}};
   for (int i = 0; i < 8; ++i) {
-    iid.Data4[i] = static_cast<std::uint8_t>(tail >> (8U * (7 - i)));
+    iid.Data4[i] = static_cast<std::uint8_t>(tail >> (8 * (7 - i)));
   }
   return iid;
 }

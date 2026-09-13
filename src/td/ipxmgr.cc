@@ -393,9 +393,8 @@ int IPXManagerClass::Is_IPX() { return IPXStatus; } /* end of Is_IPX */
  * HISTORY:                                                                *
  *   07/02/1995 BR : Created.                                              *
  *=========================================================================*/
-void IPXManagerClass::Set_Timing(unsigned long retrydelta,
-                                 unsigned long maxretries,
-                                 unsigned long timeout) {
+void IPXManagerClass::Set_Timing(int32_t retrydelta, int32_t maxretries,
+                                 int32_t timeout) {
   int i;
 
   RetryDelta = retrydelta;
@@ -1483,9 +1482,9 @@ void IPXManagerClass::Set_Socket(unsigned short socket) {
  * HISTORY:                                                                *
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-long IPXManagerClass::Response_Time() {
-  unsigned long resp;
-  unsigned long maxresp = 0;
+int32_t IPXManagerClass::Response_Time() {
+  int32_t resp;
+  int32_t maxresp = 0;
   int i;
 #ifdef VIRTUAL_SUBNET_SERVER
   int vss = 0;
@@ -1523,7 +1522,7 @@ long IPXManagerClass::Response_Time() {
  * HISTORY:                                                                *
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-long IPXManagerClass::Global_Response_Time() {
+int32_t IPXManagerClass::Global_Response_Time() {
   if (GlobalChannel) {
     return GlobalChannel->Queue->Avg_Response_Time();
   }
@@ -1583,8 +1582,8 @@ void IPXManagerClass::Reset_Response_Time() {
 void* IPXManagerClass::Oldest_Send() {
   int i;
   int j;
-  unsigned long time;
-  unsigned long mintime = 0xffffffff;
+  int64_t time;
+  int64_t mintime = 0xffffffff;
   SendQueueType* send_entry;  // ptr to send entry header
   CommHeaderType* packet;
   void* buf = nullptr;

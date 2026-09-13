@@ -55,6 +55,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "base/numeric.h"
 #include "port/socket_bytes.h"
 #include "port/unaligned.h"
 #include "ra/externs.h"
@@ -280,7 +281,7 @@ void UDPInterfaceClass::Broadcast(void* buffer, int buffer_len) {
     /*
     ** Copy the packet into the holding buffer.
     */
-    memcpy(packet->Buffer, buffer, buffer_len);
+    memcpy(packet->Buffer, buffer, base::ToSize(buffer_len));
     packet->BufferLen = buffer_len;
 
     /*
@@ -350,7 +351,7 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
         */
         packet = new WinsockBufferType;
         packet->BufferLen = rc;
-        memcpy(packet->Buffer, ReceiveBuffer, rc);
+        memcpy(packet->Buffer, ReceiveBuffer, base::ToSize(rc));
         memset(packet->Address, 0, sizeof(packet->Address));
         memcpy(packet->Address + 4, &addr.sin_addr.s_addr, 4);
         if (!InBuffers.Add(packet)) {
@@ -392,7 +393,8 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       ** send us another WRITE message when it is ready to receive more data.
       */
       int rc = static_cast<int>(sendto(Socket, SocketBytes(packet->Buffer),
-                                       packet->BufferLen, 0, (sockaddr*)&addr,
+                                       base::ToSize(packet->BufferLen), 0,
+                                       (sockaddr*)&addr,
                                        sizeof(addr)));
 
       if (rc == -1) {

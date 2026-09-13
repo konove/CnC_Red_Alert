@@ -285,8 +285,8 @@ class WOL_GameSetupDialog {
 
   HousesType HousePrevious{HOUSE_NONE};
 
-  unsigned int nHostLastParamID{0};  //	Host's send update tracking packet ID.
-  unsigned int nGuestLastParamID{
+  int nHostLastParamID{0};  //	Host's send update tracking packet ID.
+  int nGuestLastParamID{
       0};  //	Guest's record of last ID received from host.
 
   bool bWaitingToStart{false};

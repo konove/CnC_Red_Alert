@@ -136,7 +136,7 @@ void GameControlsClass::Process() {
   */
   KeyNumType input;
 
-  int gamespeed = Options.GameSpeed;
+  int gamespeed = static_cast<int>(Options.GameSpeed);
   int scrollrate = Options.ScrollRate;
   int selection = 0;
   bool pressed = false;
@@ -427,8 +427,8 @@ void GameControlsClass::Process() {
       *don't
       ** go out of sync.
       */
-      int old = Options.GameSpeed;  // save orig value
-      Options.GameSpeed = gamespeed;
+      auto old = Options.GameSpeed;  // save orig value
+      Options.GameSpeed = static_cast<unsigned int>(gamespeed);
       Options.Save_Settings();  // save new value
       Options.GameSpeed = old;  // restore old value
 

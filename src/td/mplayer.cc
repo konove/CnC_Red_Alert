@@ -57,6 +57,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "rand.h"
@@ -423,7 +424,7 @@ void Read_MultiPlayer_Settings() {
   parsing.)
   ------------------------------------------------------------------------*/
   buffer = ShapeBuffer;
-  memset(buffer, '\0', ShapeBufferSize);
+  memset(buffer, '\0', base::ToSize(ShapeBufferSize));
 
   /*------------------------------------------------------------------------
   Clear the initstring entries
@@ -782,7 +783,7 @@ void Write_MultiPlayer_Settings() {
   starts cleared out of any data.
   ------------------------------------------------------------------------*/
   buffer = ShapeBuffer;
-  memset(buffer, '\0', ShapeBufferSize);
+  memset(buffer, '\0', base::ToSize(ShapeBufferSize));
 
   file.Set_Name("CONQUER.INI");
   if (file.Is_Available()) {
@@ -875,7 +876,7 @@ void Write_MultiPlayer_Settings() {
   Write the INI data out to a file.
   ------------------------------------------------------------------------*/
   file.Open(FileAccess::kWrite);
-  file.Write(buffer, strlen(buffer));
+  file.Write(buffer, base::ToSigned(strlen(buffer)));
   file.Close();
 }
 
@@ -928,7 +929,7 @@ void Read_Scenario_Descriptions() {
     buffer is cleared out before proceeding.
     .....................................................................*/
     buffer = ShapeBuffer;
-    memset(buffer, '\0', ShapeBufferSize);
+    memset(buffer, '\0', base::ToSize(ShapeBufferSize));
 
     /*.....................................................................
     Create filename and read the file.

@@ -74,6 +74,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/numeric.h"
 #include "port/aligned_buffer.h"
 #include "port/unaligned.h"
 #include "td/combuf.h"
@@ -85,8 +86,8 @@
 IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
                                        unsigned short product_id)
     : IPXConnClass(numsend, numreceive,
-                   static_cast<int>(maxlen + sizeof(GlobalHeaderType) -
-                                    sizeof(CommHeaderType)),
+                   maxlen + static_cast<int>(sizeof(GlobalHeaderType) -
+                                             sizeof(CommHeaderType)),
                    GLOBAL_MAGICNUM,  // magic number for this connection
                    nullptr,          // IPX Address (none)
                    0,                // Connection ID
@@ -167,13 +168,13 @@ int IPXGlobalConnClass::Send_Packet(void* buf, int buflen,
   /*------------------------------------------------------------------------
   Copy the application's data
   ------------------------------------------------------------------------*/
-  memcpy(PacketBuf + sizeof(GlobalHeaderType), buf, buflen);
+  memcpy(PacketBuf + sizeof(GlobalHeaderType), buf, base::ToSize(buflen));
 
   /*------------------------------------------------------------------------
   Queue it
   ------------------------------------------------------------------------*/
   return Queue->Queue_Send(
-      PacketBuf, static_cast<int>(buflen + sizeof(GlobalHeaderType)));
+      PacketBuf, buflen + static_cast<int>(sizeof(GlobalHeaderType)));
 
 } /* end of Send_Packet */
 
@@ -329,9 +330,10 @@ int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
     .......................... Copy data packet ...........................
     */
     packet = port::AlignedObject<GlobalHeaderType>(rec_entry->Buffer);
-    packetlen = static_cast<int>(rec_entry->BufLen - sizeof(GlobalHeaderType));
+    packetlen = rec_entry->BufLen - static_cast<int>(sizeof(GlobalHeaderType));
     if (packetlen > 0) {
-      memcpy(buf, rec_entry->Buffer + sizeof(GlobalHeaderType), packetlen);
+      memcpy(buf, rec_entry->Buffer + sizeof(GlobalHeaderType),
+             base::ToSize(packetlen));
     }
     *buflen = packetlen;
     *address = packet->Address;

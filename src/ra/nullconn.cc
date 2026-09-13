@@ -44,6 +44,7 @@
 
 #include <cstring>
 
+#include "base/numeric.h"
 #include "port/aligned_buffer.h"
 #include "port/unaligned.h"
 #include "sdllib/wincomm.h"
@@ -76,7 +77,7 @@ NullModemConnClass::NullModemConnClass(int numsend, int numreceive, int maxlen,
           60,  // Retry Delta Time
           -1,  // Max Retries (-1 means ignore this timeout parameter)
           1200),
-      SendBuf(new char[Actual_Max_Packet()])  // Timeout: 20 seconds
+      SendBuf(new char[base::ToSize(Actual_Max_Packet())])  // Timeout: 20 seconds
 {
   /*------------------------------------------------------------------------
   Pre-set the port value to NULL, so Send won't send until we've been Init'd
@@ -160,7 +161,7 @@ void NullModemConnClass::Init(HANDLE port_handle) {
 int NullModemConnClass::Send(char* buf, int buflen, void* /*extrabuf*/,
                              int /*extralen*/) {
   SerialHeaderType* header;
-  unsigned long sendlen;
+  int sendlen;
 
   /*------------------------------------------------------------------------
   Error if we haven't been properly initialized
@@ -175,14 +176,14 @@ int NullModemConnClass::Send(char* buf, int buflen, void* /*extrabuf*/,
   ------------------------------------------------------------------------*/
   header = port::AlignedObject<SerialHeaderType>(SendBuf);
   header->MagicNumber = PACKET_SERIAL_START;
-  header->Length = static_cast<short>(buflen);
+  header->Length = static_cast<unsigned short>(buflen);
   header->MagicNumber2 = PACKET_SERIAL_VERIFY;
 
-  sendlen = sizeof(SerialHeaderType);
-  memcpy(SendBuf + sendlen, buf, buflen);
+  sendlen = static_cast<int>(sizeof(SerialHeaderType));
+  memcpy(SendBuf + sendlen, buf, base::ToSize(buflen));
   sendlen += buflen;
   port::WriteUnaligned(SendBuf + sendlen, Compute_CRC(buf, buflen));
-  sendlen += sizeof(int);
+  sendlen += static_cast<int>(sizeof(int));
 
   *(SendBuf + sendlen) = '\r';
   sendlen += 1;
@@ -191,7 +192,7 @@ int NullModemConnClass::Send(char* buf, int buflen, void* /*extrabuf*/,
   Send the data
   ------------------------------------------------------------------------*/
   SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf,
-                                   static_cast<int>(sendlen));
+                                   sendlen);
   return true;
 
 } /* end of Send */

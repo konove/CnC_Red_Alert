@@ -98,8 +98,9 @@ class NullModemConnClass : public ConnectionClass {
   /*.....................................................................
   Utility routines.
   .....................................................................*/
-  unsigned long Actual_Max_Packet() {
-    return MaxPacketLen + sizeof(SerialHeaderType) + sizeof(int) + sizeof(char);
+  int Actual_Max_Packet() {
+    return MaxPacketLen + static_cast<int>(sizeof(SerialHeaderType) +
+                                           sizeof(int) + sizeof(char));
   }
 
   /*.....................................................................

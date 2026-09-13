@@ -59,6 +59,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "sdllib/drawbuff.h"
@@ -214,7 +215,7 @@ void Shutdown_Modem() {
  *   08/03/1995 DRD : Created.                                             *
  *=========================================================================*/
 void Modem_Signoff() {
-  unsigned long starttime;
+  int64_t starttime;
   EventClass event;
 
   if (!PlaybackGame) {
@@ -266,7 +267,7 @@ int Test_Null_Modem() {
   KeyNumType input;
 
   int retval = 0;
-  unsigned long starttime;
+  int64_t starttime;
   int packetlen;
 
   int x;
@@ -633,8 +634,8 @@ static int Reconnect_Null_Modem() {
   KeyNumType input;
 
   int retval = 0;
-  unsigned long starttime;
-  unsigned long lastmsgtime;
+  int64_t starttime;
+  int64_t lastmsgtime;
   int packetlen;
 
   int x;
@@ -2191,7 +2192,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       if (temp) {
         pos = static_cast<int>(temp - custom_port) + 2;
         len = static_cast<int>(strlen(tempsettings.ModemName));
-        strncpy(custom_port + pos, tempsettings.ModemName, len);
+        strncpy(custom_port + pos, tempsettings.ModemName, base::ToSize(len));
         *(custom_port + pos + len) = 0;
         port::SafeCopy(portbuf, tempsettings.ModemName);
         port_index = port_custom_index;
@@ -2229,7 +2230,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         if (temp) {
           pos = static_cast<int>(temp - custom_port) + 2;
           len = static_cast<int>(strlen(portbuf));
-          strncpy(custom_port + pos, portbuf, len);
+          strncpy(custom_port + pos, portbuf, base::ToSize(len));
           *(custom_port + pos + len) = 0;
         }
         break;
@@ -2281,7 +2282,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       if (temp) {
         pos = static_cast<int>(temp - item) + 2;
         len = static_cast<int>(strlen(tempsettings.CallWaitString));
-        strncpy(item + pos, tempsettings.CallWaitString, len);
+        strncpy(item + pos, tempsettings.CallWaitString, base::ToSize(len));
         *(item + pos + len) = 0;
         if (i == cwaitstr_index) {
           strncpy(cwaitstrbuf, item + pos, CWAITSTRBUF_MAX);
@@ -2465,7 +2466,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
             strncpy(portbuf, item, PORTBUF_MAX);
           } else {
             pos = static_cast<int>(temp - item);
-            strncpy(portbuf, item, pos);
+            strncpy(portbuf, item, base::ToSize(pos));
             portbuf[pos] = 0;
           }
           port_edt.Set_Text(portbuf, PORTBUF_MAX);
@@ -2524,7 +2525,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                   if (temp) {
                     pos = static_cast<int>(temp - item) + 2;
                     len = static_cast<int>(strlen(portbuf));
-                    strncpy(item + pos, portbuf, len);
+                    strncpy(item + pos, portbuf, base::ToSize(len));
                     *(item + pos + len) = 0;
                     display = REDRAW_BUTTONS;
                   }
@@ -2542,7 +2543,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
             if (temp) {
               pos = static_cast<int>(temp - item) + 2;
               len = static_cast<int>(strlen(portbuf));
-              strncpy(item + pos, portbuf, len);
+              strncpy(item + pos, portbuf, base::ToSize(len));
               *(item + pos + len) = 0;
               display = REDRAW_BUTTONS;
             }
@@ -2567,7 +2568,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
               strncpy(portbuf, item, PORTBUF_MAX);
             } else {
               pos = static_cast<int>(temp - item);
-              strncpy(portbuf, item, pos);
+              strncpy(portbuf, item, base::ToSize(pos));
               portbuf[pos] = 0;
             }
             port_edt.Clear_Focus();
@@ -2770,7 +2771,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           if (temp) {
             pos = static_cast<int>(temp - item) + 2;
             len = static_cast<int>(strlen(cwaitstrbuf));
-            strncpy(item + pos, cwaitstrbuf, len);
+            strncpy(item + pos, cwaitstrbuf, base::ToSize(len));
             *(item + pos + len) = 0;
             display = REDRAW_BUTTONS;
           }
@@ -3248,18 +3249,19 @@ int Com_Scenario_Dialog() {
   int i;
   int version;
   char txt[80];
-  unsigned long starttime;
-  unsigned long timingtime;
-  unsigned long lastmsgtime;
-  unsigned long lastredrawtime;
-  unsigned long transmittime = 0;
-  unsigned long theirresponsetime;
+  int64_t starttime;
+  int64_t timingtime;
+  int64_t lastmsgtime;
+  int64_t lastredrawtime;
+  int64_t transmittime = 0;
+  // Same type as the packet field it is compared with and copied into.
+  decltype(SerialPacketType::ResponseTime) theirresponsetime;
   int packetlen;
   static int first_time = 1;
   bool oppscorescreen = false;
   bool gameoptions = false;
   EventClass* event;                 // event ptr
-  unsigned long msg_timeout = 1200;  // init to 20 seconds
+  int64_t msg_timeout = 1200;  // init to 20 seconds
 
   int message_length;
   int sent_so_far;
@@ -3446,8 +3448,8 @@ int Com_Scenario_Dialog() {
   /*........................................................................
   Init other scenario parameters
   ........................................................................*/
-  Special.IsTGrowth = MPlayerTiberium;
-  Special.IsTSpread = MPlayerTiberium;
+  Special.IsTGrowth = static_cast<unsigned>(MPlayerTiberium);
+  Special.IsTSpread = static_cast<unsigned>(MPlayerTiberium);
   transmit = 1;
 
   /*........................................................................
@@ -3792,7 +3794,7 @@ int Com_Scenario_Dialog() {
       ------------------------------------------------------------------*/
       case ButtonKey(BUTTON_LEVEL):
         if (!ready_to_go) {
-          BuildLevel = std::min<unsigned int>(levelgauge.Get_Value() + 1,
+          BuildLevel = std::min(levelgauge.Get_Value() + 1,
                                               MPLAYER_BUILD_LEVEL_MAX);
           display = std::max(display, REDRAW_MESSAGE);
           transmit = 1;
@@ -4150,11 +4152,11 @@ int Com_Scenario_Dialog() {
       SendPacket.Scenario =
           static_cast<unsigned char>(MPlayerFilenum[ScenarioIdx]);
 
-      SendPacket.Credits = MPlayerCredits;
-      SendPacket.IsBases = MPlayerBases;
-      SendPacket.IsTiberium = MPlayerTiberium;
-      SendPacket.IsGoodies = MPlayerGoodies;
-      SendPacket.IsGhosties = MPlayerGhosts;
+      SendPacket.Credits = static_cast<unsigned int>(MPlayerCredits);
+      SendPacket.IsBases = static_cast<unsigned int>(MPlayerBases);
+      SendPacket.IsTiberium = static_cast<unsigned int>(MPlayerTiberium);
+      SendPacket.IsGoodies = static_cast<unsigned int>(MPlayerGoodies);
+      SendPacket.IsGhosties = static_cast<unsigned int>(MPlayerGhosts);
       SendPacket.BuildLevel = static_cast<unsigned char>(BuildLevel);
       SendPacket.UnitCount = static_cast<unsigned char>(MPlayerUnitCount);
       SendPacket.Seed = Seed;
@@ -4184,7 +4186,8 @@ int Com_Scenario_Dialog() {
     //
     if (TickCount.Time() - timingtime > PACKET_TIMING_TIMEOUT) {
       SendPacket.Command = SERIAL_TIMING;
-      SendPacket.ResponseTime = NullModem.Response_Time();
+      SendPacket.ResponseTime =
+        static_cast<unsigned long>(NullModem.Response_Time());
       SendPacket.ID = ModemGameToPlay;
 
       NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 0);
@@ -4436,7 +4439,8 @@ int Com_Scenario_Dialog() {
     Send all players the GO packet.
     .....................................................................*/
     SendPacket.Command = SERIAL_GO;
-    SendPacket.ResponseTime = NullModem.Response_Time();
+    SendPacket.ResponseTime =
+        static_cast<unsigned long>(NullModem.Response_Time());
     if (theirresponsetime == 10000) {
       //			Mono_Clear_Screen();
       //			Smart_Printf( "Did not receive their response
@@ -4675,15 +4679,15 @@ int Com_Show_Scenario_Dialog() {
   int i;
   int version;
   char txt[80];
-  unsigned long starttime;
-  unsigned long timingtime;
-  unsigned long lastmsgtime;
-  unsigned long lastredrawtime;
-  unsigned long transmittime = 0;
+  int64_t starttime;
+  int64_t timingtime;
+  int64_t lastmsgtime;
+  int64_t lastredrawtime;
+  int64_t transmittime = 0;
   int packetlen;
   bool oppscorescreen = false;
   EventClass* event;                 // event ptr
-  unsigned long msg_timeout = 1200;  // init to 20 seconds
+  int64_t msg_timeout = 1200;  // init to 20 seconds
 
   int message_length;
   int sent_so_far;
@@ -5349,7 +5353,8 @@ int Com_Show_Scenario_Dialog() {
     //
     if (TickCount.Time() - timingtime > PACKET_TIMING_TIMEOUT) {
       SendPacket.Command = SERIAL_TIMING;
-      SendPacket.ResponseTime = NullModem.Response_Time();
+      SendPacket.ResponseTime =
+        static_cast<unsigned long>(NullModem.Response_Time());
       SendPacket.ID = ModemGameToPlay;
 
       NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 0);
@@ -5451,7 +5456,7 @@ int Com_Show_Scenario_Dialog() {
             /*...............................................................
             Save scenario settings.
             ...............................................................*/
-            MPlayerCredits = ReceivePacket.Credits;
+            MPlayerCredits = static_cast<int>(ReceivePacket.Credits);
             MPlayerBases = ReceivePacket.IsBases;
             MPlayerTiberium = ReceivePacket.IsTiberium;
             MPlayerGoodies = ReceivePacket.IsGoodies;

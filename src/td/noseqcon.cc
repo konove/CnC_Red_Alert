@@ -78,6 +78,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/numeric.h"
 #include "port/aligned_buffer.h"
 #include "port/unaligned.h"
 #include "td/combuf.h"
@@ -85,7 +86,7 @@
 
 NonSequencedConnClass::NonSequencedConnClass(
     int numsend, int numreceive, int maxlen, unsigned short magicnum,
-    unsigned long retry_delta, unsigned long max_retries, unsigned long timeout)
+    int32_t retry_delta, int32_t max_retries, int32_t timeout)
     : ConnectionClass(maxlen, magicnum, retry_delta, max_retries, timeout),
       Queue(new CommBufferClass(numsend, numreceive, MaxPacketLen)) {
   /*------------------------------------------------------------------------
@@ -193,12 +194,12 @@ int NonSequencedConnClass::Send_Packet(void* buf, int buflen, int ack_req) {
   /*........................................................................
   Now build the packet
   ........................................................................*/
-  memcpy(PacketBuf + sizeof(CommHeaderType), buf, buflen);
+  memcpy(PacketBuf + sizeof(CommHeaderType), buf, base::ToSize(buflen));
 
   /*........................................................................
   Add it to the queue.
   ........................................................................*/
-  if (Queue->Queue_Send(PacketBuf, static_cast<int>(buflen + sizeof(CommHeaderType)))) {
+  if (Queue->Queue_Send(PacketBuf, buflen + static_cast<int>(sizeof(CommHeaderType)))) {
     if (ack_req) {
       // Smart_Printf( "Packet ack Queued ID %d \n", ((CommHeaderType
       // *)PacketBuf)->PacketID );
@@ -485,9 +486,10 @@ int NonSequencedConnClass::Get_Packet(void* buf, int* buflen) {
         LastReadID = entry_data->PacketID;
         rec_entry->IsRead = 1;
 
-        packetlen = static_cast<int>(rec_entry->BufLen - sizeof(CommHeaderType));
+        packetlen = rec_entry->BufLen - static_cast<int>(sizeof(CommHeaderType));
         if (packetlen > 0) {
-          memcpy(buf, rec_entry->Buffer + sizeof(CommHeaderType), packetlen);
+          memcpy(buf, rec_entry->Buffer + sizeof(CommHeaderType),
+                 base::ToSize(packetlen));
         }
         *buflen = packetlen;
         return true;
@@ -498,9 +500,10 @@ int NonSequencedConnClass::Get_Packet(void* buf, int* buflen) {
       if (entry_data->Code == PACKET_DATA_NOACK) {
         rec_entry->IsRead = 1;
 
-        packetlen = static_cast<int>(rec_entry->BufLen - sizeof(CommHeaderType));
+        packetlen = rec_entry->BufLen - static_cast<int>(sizeof(CommHeaderType));
         if (packetlen > 0) {
-          memcpy(buf, rec_entry->Buffer + sizeof(CommHeaderType), packetlen);
+          memcpy(buf, rec_entry->Buffer + sizeof(CommHeaderType),
+                 base::ToSize(packetlen));
         }
         *buflen = packetlen;
         return true;
@@ -534,7 +537,7 @@ int NonSequencedConnClass::Service_Send_Queue() {
   int num_entries;
   SendQueueType* send_entry;   // ptr to send queue entry
   CommHeaderType* packet_hdr;  // packet header
-  unsigned long curtime;       // current time
+  int64_t curtime;             // current time
   int bad_conn = 0;
 
   /*------------------------------------------------------------------------

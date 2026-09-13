@@ -53,7 +53,10 @@
 #include "ra/combuf.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstring>
+
+#include "base/numeric.h"
 
 /***************************************************************************
  * CommBufferClass::CommBufferClass -- class constructor *
@@ -82,10 +85,10 @@ CommBufferClass::CommBufferClass(int numsend, int numreceive, int maxlen,
       MaxReceive(numreceive),
       MaxPacketSize(maxlen),
       MaxExtraSize(extralen),
-      SendQueue(new SendQueueType[numsend]),
-      SendIndex(new int[numsend]),
-      ReceiveQueue(new ReceiveQueueType[numreceive]),
-      ReceiveIndex(new int[numreceive]) {
+      SendQueue(new SendQueueType[base::ToSize(numsend)]),
+      SendIndex(new int[base::ToSize(numsend)]),
+      ReceiveQueue(new ReceiveQueueType[base::ToSize(numreceive)]),
+      ReceiveIndex(new int[base::ToSize(numreceive)]) {
   int i;
 
   //------------------------------------------------------------------------
@@ -101,18 +104,18 @@ CommBufferClass::CommBufferClass(int numsend, int numreceive, int maxlen,
   //------------------------------------------------------------------------
   for (i = 0; i < MaxSend; i++) {
     // new char[] provides alignment for the packet headers stored at its base.
-    SendQueue[i].Buffer = new char[maxlen];
+    SendQueue[i].Buffer = new char[base::ToSize(maxlen)];
     if (MaxExtraSize > 0) {
-      SendQueue[i].ExtraBuffer = new char[MaxExtraSize];
+      SendQueue[i].ExtraBuffer = new char[base::ToSize(MaxExtraSize)];
     } else {
       SendQueue[i].ExtraBuffer = nullptr;
     }
   }
 
   for (i = 0; i < MaxReceive; i++) {
-    ReceiveQueue[i].Buffer = new char[maxlen];
+    ReceiveQueue[i].Buffer = new char[base::ToSize(maxlen)];
     if (MaxExtraSize > 0) {
-      ReceiveQueue[i].ExtraBuffer = new char[MaxExtraSize];
+      ReceiveQueue[i].ExtraBuffer = new char[base::ToSize(MaxExtraSize)];
     } else {
       ReceiveQueue[i].ExtraBuffer = nullptr;
     }
@@ -192,7 +195,7 @@ void CommBufferClass::Init() {
   ReceiveTotal = 0L;
 
   DelaySum = 0L;
-  NumDelay = 0L;
+  NumDelay = 0;
   MeanDelay = 0L;
   MaxDelay = 0L;
 
@@ -208,7 +211,7 @@ void CommBufferClass::Init() {
     SendQueue[i].IsACK = 0;
     SendQueue[i].FirstTime = 0L;
     SendQueue[i].LastTime = 0L;
-    SendQueue[i].SendCount = 0L;
+    SendQueue[i].SendCount = 0;
     SendQueue[i].BufLen = 0;
     SendQueue[i].ExtraLen = 0;
 
@@ -269,7 +272,7 @@ void CommBufferClass::Init_Send_Queue() {
     SendQueue[i].IsACK = 0;
     SendQueue[i].FirstTime = 0L;
     SendQueue[i].LastTime = 0L;
-    SendQueue[i].SendCount = 0L;
+    SendQueue[i].SendCount = 0;
     SendQueue[i].BufLen = 0;
     SendQueue[i].ExtraLen = 0;
 
@@ -332,19 +335,19 @@ int CommBufferClass::Queue_Send(void* buf, int buflen, void* extrabuf,
   SendQueue[index].IsACK = 0;        // entry hasn't been ACK'd
   SendQueue[index].FirstTime = 0L;   // filled in by Manager when sent
   SendQueue[index].LastTime = 0L;    // filled in by Manager when sent
-  SendQueue[index].SendCount = 0L;   // filled in by Manager when sent
+  SendQueue[index].SendCount = 0;   // filled in by Manager when sent
   SendQueue[index].BufLen = buflen;  // save buffer size
 
   //------------------------------------------------------------------------
   //	Copy the packet data
   //------------------------------------------------------------------------
-  memcpy(SendQueue[index].Buffer, buf, buflen);
+  memcpy(SendQueue[index].Buffer, buf, base::ToSize(buflen));
 
   //------------------------------------------------------------------------
   //	Fill in the extra data, if there is any
   //------------------------------------------------------------------------
   if (extrabuf != nullptr && extralen > 0 && extralen <= MaxExtraSize) {
-    memcpy(SendQueue[index].ExtraBuffer, extrabuf, extralen);
+    memcpy(SendQueue[index].ExtraBuffer, extrabuf, base::ToSize(extralen));
     SendQueue[index].ExtraLen = extralen;
   } else {
     SendQueue[index].ExtraLen = 0;
@@ -409,7 +412,7 @@ int CommBufferClass::UnQueue_Send(void* buf, int* buflen, int index,
   //------------------------------------------------------------------------
   if (buf != nullptr) {
     memcpy(buf, SendQueue[SendIndex[index]].Buffer,
-           SendQueue[SendIndex[index]].BufLen);
+           base::ToSize(SendQueue[SendIndex[index]].BufLen));
     *buflen = SendQueue[SendIndex[index]].BufLen;
   }
 
@@ -418,7 +421,7 @@ int CommBufferClass::UnQueue_Send(void* buf, int* buflen, int index,
   //------------------------------------------------------------------------
   if (extrabuf != nullptr && extralen != nullptr) {
     memcpy(extrabuf, SendQueue[SendIndex[index]].ExtraBuffer,
-           SendQueue[SendIndex[index]].ExtraLen);
+           base::ToSize(SendQueue[SendIndex[index]].ExtraLen));
     *extralen = SendQueue[SendIndex[index]].ExtraLen;
   }
 
@@ -429,7 +432,7 @@ int CommBufferClass::UnQueue_Send(void* buf, int* buflen, int index,
   SendQueue[SendIndex[index]].IsACK = 0;
   SendQueue[SendIndex[index]].FirstTime = 0L;
   SendQueue[SendIndex[index]].LastTime = 0L;
-  SendQueue[SendIndex[index]].SendCount = 0L;
+  SendQueue[SendIndex[index]].SendCount = 0;
   SendQueue[SendIndex[index]].BufLen = 0;
   SendQueue[SendIndex[index]].ExtraLen = 0;
 
@@ -535,13 +538,13 @@ int CommBufferClass::Queue_Receive(void* buf, int buflen, void* extrabuf,
   //------------------------------------------------------------------------
   //	Copy the packet data
   //------------------------------------------------------------------------
-  memcpy(ReceiveQueue[index].Buffer, buf, buflen);
+  memcpy(ReceiveQueue[index].Buffer, buf, base::ToSize(buflen));
 
   //------------------------------------------------------------------------
   //	Fill in the extra data, if there is any
   //------------------------------------------------------------------------
   if (extrabuf != nullptr && extralen > 0 && extralen <= MaxExtraSize) {
-    memcpy(ReceiveQueue[index].ExtraBuffer, extrabuf, extralen);
+    memcpy(ReceiveQueue[index].ExtraBuffer, extrabuf, base::ToSize(extralen));
     ReceiveQueue[index].ExtraLen = extralen;
   } else {
     ReceiveQueue[index].ExtraLen = 0;
@@ -607,7 +610,7 @@ int CommBufferClass::UnQueue_Receive(void* buf, int* buflen, int index,
   //------------------------------------------------------------------------
   if (buf != nullptr) {
     memcpy(buf, ReceiveQueue[ReceiveIndex[index]].Buffer,
-           ReceiveQueue[ReceiveIndex[index]].BufLen);
+           base::ToSize(ReceiveQueue[ReceiveIndex[index]].BufLen));
     *buflen = ReceiveQueue[ReceiveIndex[index]].BufLen;
   }
 
@@ -616,7 +619,7 @@ int CommBufferClass::UnQueue_Receive(void* buf, int* buflen, int index,
   //------------------------------------------------------------------------
   if (extrabuf != nullptr && extralen != nullptr) {
     memcpy(extrabuf, ReceiveQueue[ReceiveIndex[index]].ExtraBuffer,
-           ReceiveQueue[ReceiveIndex[index]].ExtraLen);
+           base::ToSize(ReceiveQueue[ReceiveIndex[index]].ExtraLen));
     *extralen = ReceiveQueue[ReceiveIndex[index]].ExtraLen;
   }
 
@@ -702,7 +705,7 @@ ReceiveQueueType* CommBufferClass::Get_Receive(int index) {
  * HISTORY:                                                                *
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
-void CommBufferClass::Add_Delay(unsigned long delay) {
+void CommBufferClass::Add_Delay(int64_t delay) {
   int roundoff = 0;
 
   if (NumDelay == 256) {
@@ -739,8 +742,8 @@ void CommBufferClass::Add_Delay(unsigned long delay) {
  * HISTORY:                                                                *
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
-unsigned long CommBufferClass::Avg_Response_Time() {
-  return MeanDelay;
+int32_t CommBufferClass::Avg_Response_Time() {
+  return static_cast<int32_t>(MeanDelay);
 
 } /* end of Avg_Response_Time */
 
@@ -762,8 +765,8 @@ unsigned long CommBufferClass::Avg_Response_Time() {
  * HISTORY:                                                                *
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
-unsigned long CommBufferClass::Max_Response_Time() {
-  return MaxDelay;
+int32_t CommBufferClass::Max_Response_Time() {
+  return static_cast<int32_t>(MaxDelay);
 
 } /* end of Max_Response_Time */
 
@@ -788,7 +791,7 @@ unsigned long CommBufferClass::Max_Response_Time() {
  *=========================================================================*/
 void CommBufferClass::Reset_Response_Time() {
   DelaySum = 0L;
-  NumDelay = 0L;
+  NumDelay = 0;
   MeanDelay = 0L;
   MaxDelay = 0L;
 

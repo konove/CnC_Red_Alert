@@ -43,6 +43,9 @@
 #include "td/connect.h"
 
 #include <chrono>
+#include <cstdint>
+
+#include "base/numeric.h"
 
 /*
 ********************************* Globals ***********************************
@@ -83,11 +86,10 @@ const char* ConnectionClass::Commands[PACKET_COUNT] = {"ADATA", "NDATA", "ACK"};
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 ConnectionClass::ConnectionClass(int maxlen, unsigned short magicnum,
-                                 unsigned long retry_delta,
-                                 unsigned long max_retries,
-                                 unsigned long timeout)
-    : MaxPacketLen(static_cast<int>(maxlen + sizeof(CommHeaderType))),
-      PacketBuf(new char[MaxPacketLen]),
+                                 int32_t retry_delta, int32_t max_retries,
+                                 int32_t timeout)
+    : MaxPacketLen(maxlen + static_cast<int>(sizeof(CommHeaderType))),
+      PacketBuf(new char[base::ToSize(MaxPacketLen)]),
       MagicNum(magicnum),
       RetryDelta(retry_delta),
       MaxRetries(max_retries),
@@ -208,11 +210,11 @@ int ConnectionClass::Service() {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-unsigned long ConnectionClass::Time() {
+int64_t ConnectionClass::Time() {
   const auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(
                         std::chrono::steady_clock::now().time_since_epoch())
                         .count();
-  return static_cast<unsigned long>(msec / 100 * 6);
+  return msec / 100 * 6;
 }
 
 /***************************************************************************

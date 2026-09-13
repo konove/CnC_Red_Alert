@@ -67,6 +67,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "base/numeric.h"
 #include "port/socket_bytes.h"
 #include "ra/externs.h"
 #include "ra/ipxaddr.h"
@@ -386,7 +387,7 @@ int WinsockInterfaceClass::Read(void* buffer, int& buffer_len, void* address,
   /*
   ** Copy the data and the address it came from into the supplied buffers.
   */
-  memcpy(buffer, packet->Buffer, packet->BufferLen);
+  memcpy(buffer, packet->Buffer, base::ToSize(packet->BufferLen));
   memcpy(address, packet->Address, sizeof(packet->Address));
 
   /*
@@ -428,7 +429,7 @@ void WinsockInterfaceClass::WriteTo(void* buffer, int buffer_len,
   /*
   ** Copy the packet into the holding buffer.
   */
-  memcpy(packet->Buffer, buffer, buffer_len);
+  memcpy(packet->Buffer, buffer, base::ToSize(buffer_len));
   packet->BufferLen = buffer_len;
   packet->IsBroadcast = false;
   //	memcpy ( packet->Address, address, sizeof (packet->Address) );
@@ -476,7 +477,7 @@ void WinsockInterfaceClass::Broadcast(void* buffer, int buffer_len) {
   /*
   ** Copy the packet into the holding buffer.
   */
-  memcpy(packet->Buffer, buffer, buffer_len);
+  memcpy(packet->Buffer, buffer, base::ToSize(buffer_len));
   packet->BufferLen = buffer_len;
 
   /*

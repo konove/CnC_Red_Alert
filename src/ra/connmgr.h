@@ -75,6 +75,8 @@
 #ifndef CNC_RED_ALERT_RA_CONNMGR_H_
 #define CNC_RED_ALERT_RA_CONNMGR_H_
 
+#include <cstdint>
+
 /*
 ***************************** Class Declaration *****************************
 */
@@ -135,9 +137,10 @@ class ConnManClass {
   Timing management
   .....................................................................*/
   virtual void Reset_Response_Time() = 0;
-  virtual long Response_Time() = 0;
-  virtual void Set_Timing(unsigned long retrydelta, unsigned long maxretries,
-                          unsigned long timeout) = 0;
+  virtual int32_t Response_Time() = 0;
+  // A maxretries or timeout of -1 means no limit.
+  virtual void Set_Timing(int32_t retrydelta, int32_t maxretries,
+                          int32_t timeout) = 0;
 
   /*.....................................................................
   Debugging

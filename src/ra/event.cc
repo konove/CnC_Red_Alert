@@ -163,7 +163,7 @@ const char* EventClass::EventNames[LAST_EVENT] = {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(SpecialClass data) : EventClass() {
-  ID = PlayerPtr->ID;
+  ID = static_cast<unsigned>(PlayerPtr->ID);
   Type = SPECIAL;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(::Frame);
@@ -187,7 +187,7 @@ EventClass::EventClass(SpecialClass data) : EventClass() {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type, TargetClass target) : EventClass() {
-  ID = PlayerPtr->ID;
+  ID = static_cast<unsigned>(PlayerPtr->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(::Frame);
@@ -195,7 +195,7 @@ EventClass::EventClass(EventType type, TargetClass target) : EventClass() {
 }
 
 EventClass::EventClass(EventType type, CELL cell) : EventClass() {
-  ID = PlayerPtr->ID;
+  ID = static_cast<unsigned>(PlayerPtr->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(::Frame);
@@ -217,7 +217,7 @@ EventClass::EventClass(EventType type, CELL cell) : EventClass() {
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type) : EventClass() {
-  ID = PlayerPtr->ID;
+  ID = static_cast<unsigned>(PlayerPtr->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(::Frame);
@@ -235,7 +235,7 @@ EventClass::EventClass(EventType type) : EventClass() {
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type, int val) : EventClass() {
-  ID = PlayerPtr->ID;
+  ID = static_cast<unsigned>(PlayerPtr->ID);
   Type = type;
   Data.General.Value = val;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -262,7 +262,7 @@ EventClass::EventClass(EventType type, int val) : EventClass() {
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type, TargetClass src, TargetClass dest) : EventClass() {
-  ID = PlayerPtr->ID;
+  ID = static_cast<unsigned>(PlayerPtr->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(::Frame);
@@ -287,7 +287,7 @@ EventClass::EventClass(EventType type, TargetClass src, TargetClass dest) : Even
  * HISTORY: * 05/19/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(AnimType anim, HousesType owner, COORDINATE coord) : EventClass() {
-  ID = PlayerPtr->ID;
+  ID = static_cast<unsigned>(PlayerPtr->ID);
   Type = ANIMATION;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(::Frame);
@@ -318,7 +318,7 @@ EventClass::EventClass(AnimType anim, HousesType owner, COORDINATE coord) : Even
  *=============================================================================================*/
 EventClass::EventClass(TargetClass src, MissionType mission, TargetClass target,
                        TargetClass destination) : EventClass() {
-  ID = PlayerPtr->ID;
+  ID = static_cast<unsigned>(PlayerPtr->ID);
   Type = MEGAMISSION;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(::Frame);
@@ -356,7 +356,7 @@ EventClass::EventClass(TargetClass src, MissionType mission, TargetClass target,
 EventClass::EventClass(TargetClass src, MissionType mission, TargetClass target,
                        TargetClass destination, SpeedType speed,
                        MPHType maxspeed) : EventClass() {
-  ID = PlayerPtr->ID;
+  ID = static_cast<unsigned>(PlayerPtr->ID);
   Type = MEGAMISSION_F;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(::Frame);
@@ -387,7 +387,7 @@ EventClass::EventClass(TargetClass src, MissionType mission, TargetClass target,
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type, RTTIType object, int id) : EventClass() {
-  ID = PlayerPtr->ID;
+  ID = static_cast<unsigned>(PlayerPtr->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(::Frame);
@@ -417,7 +417,7 @@ EventClass::EventClass(EventType type, RTTIType object, int id) : EventClass() {
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type, RTTIType object, CELL cell) : EventClass() {
-  ID = PlayerPtr->ID;
+  ID = static_cast<unsigned>(PlayerPtr->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(::Frame);
@@ -444,7 +444,7 @@ EventClass::EventClass(EventType type, RTTIType object, CELL cell) : EventClass(
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type, int id, CELL cell) : EventClass() {
-  ID = PlayerPtr->ID;
+  ID = static_cast<unsigned>(PlayerPtr->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(::Frame);
@@ -467,7 +467,7 @@ EventClass::EventClass(EventType type, int id, CELL cell) : EventClass() {
  * HISTORY: * 11/10/1995 BRR : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type, void* ptr, unsigned long size) : EventClass() {
-  ID = PlayerPtr->ID;
+  ID = static_cast<unsigned>(PlayerPtr->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(::Frame);
@@ -878,7 +878,7 @@ void EventClass::Execute() {
     **	Process the options Game Speed
     */
     case GAMESPEED:
-      Options.GameSpeed = Data.General.Value;
+      Options.GameSpeed = static_cast<unsigned>(Data.General.Value);
       break;
 
     /*

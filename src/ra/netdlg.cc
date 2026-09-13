@@ -2529,7 +2529,7 @@ static int Net_Join_Dialog() {
         *scenario locally then *	we need to fix up the file name so we
         *load the right one.
         */
-        Ipx.Set_Timing(25, static_cast<unsigned long>(-1), 1000);
+        Ipx.Set_Timing(25, -1, 1000);
         if (Find_Local_Scenario(
                 Session.Options.ScenarioDescription, Session.ScenarioFileName,
                 Session.ScenarioFileLength, Session.ScenarioDigest,
@@ -2566,7 +2566,7 @@ static int Net_Join_Dialog() {
            */
         }
 
-        Ipx.Set_Timing(30, static_cast<unsigned long>(-1), 600);
+        Ipx.Set_Timing(30, -1, 600);
         port::SafeCopy(Scen.ScenarioName, Session.ScenarioFileName);
         rc = 0;
         process = false;
@@ -2932,8 +2932,8 @@ static int Net_Join_Dialog() {
   //------------------------------------------------------------------------
   //	Ipx.Set_Timing (Ipx.Global_Response_Time() + 2, -1,
   //		Ipx.Global_Response_Time() * 4);
-  Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, static_cast<unsigned long>(-1),
-                 std::max(120L, Ipx.Global_Response_Time() * 8));
+  Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, -1,
+                 std::max(120, Ipx.Global_Response_Time() * 8));
 
   //------------------------------------------------------------------------
   //	Clear all lists, but NOT the Games & Players vectors.
@@ -3055,12 +3055,12 @@ static int Request_To_Join(char* playername, int join_index, HousesType house,
   if (Is_Aftermath_Installed()) {
     //		debugprint( "Guest tells host 'I have Aftermath'\n" );
     Session.GPacket.PlayerInfo.MinVersion =
-        static_cast<int>(VersionClass::Min_Version()) | 0x80000000;
+        static_cast<uint32_t>(VersionClass::Min_Version()) | 0x80000000;
   } else {
     //		debugprint( "Guest tells host 'I don't have
     // Aftermath'\n" );
     Session.GPacket.PlayerInfo.MinVersion =
-        static_cast<int>(VersionClass::Min_Version());
+        static_cast<uint32_t>(VersionClass::Min_Version());
   }
   Session.GPacket.PlayerInfo.MaxVersion =
       static_cast<std::uint32_t>(VersionClass::Max_Version());
@@ -3288,7 +3288,7 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
 
     Session.GPacket.Command = NET_CHAT_ANNOUNCE;
     port::SafeCopy(Session.GPacket.Name, myname);
-    Session.GPacket.Chat.ID = Session.UniqueID;
+    Session.GPacket.Chat.ID = static_cast<uint32_t>(Session.UniqueID);
     Session.GPacket.Chat.Color = Session.ColorIdx;
 
     Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
@@ -3924,7 +3924,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
 
       Session.GPacket.Command = NET_CHAT_ANNOUNCE;
       port::SafeCopy(Session.GPacket.Name, my_name);
-      Session.GPacket.Chat.ID = Session.UniqueID;
+      Session.GPacket.Chat.ID = static_cast<uint32_t>(Session.UniqueID);
       Session.GPacket.Chat.Color = Session.ColorIdx;
 
       Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
@@ -4267,9 +4267,9 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   //	Init other scenario parameters
   //------------------------------------------------------------------------
-  Special.IsTGrowth = Session.Options.Tiberium;
+  Special.IsTGrowth = static_cast<unsigned>(Session.Options.Tiberium);
   Rule.IsTGrowth = Session.Options.Tiberium;
-  Special.IsTSpread = Session.Options.Tiberium;
+  Special.IsTSpread = static_cast<unsigned>(Session.Options.Tiberium);
   Rule.IsTSpread = Session.Options.Tiberium;
   transmit = 0;
 
@@ -4642,15 +4642,17 @@ static int Net_New_Dialog() {
           Session.Options.Bases = optionlist.Is_Checked(0);
           if (Session.Options.Bases) {
             Session.Options.UnitCount =
-                Rescale(Session.Options.UnitCount - SessionClass::CountMin[0],
-                        SessionClass::CountMax[0] - SessionClass::CountMin[0],
-                        SessionClass::CountMax[1] - SessionClass::CountMin[1]);
+                static_cast<int>(Rescale(
+                static_cast<uint32_t>(Session.Options.UnitCount - SessionClass::CountMin[0]),
+                static_cast<uint32_t>(SessionClass::CountMax[0] - SessionClass::CountMin[0]),
+                static_cast<uint32_t>(SessionClass::CountMax[1] - SessionClass::CountMin[1])));
           } else {
             optionlist.Check_Item(3, false);
             Session.Options.UnitCount =
-                Rescale(Session.Options.UnitCount - SessionClass::CountMin[1],
-                        SessionClass::CountMax[1] - SessionClass::CountMin[1],
-                        SessionClass::CountMax[0] - SessionClass::CountMin[0]);
+                static_cast<int>(Rescale(
+                static_cast<uint32_t>(Session.Options.UnitCount - SessionClass::CountMin[1]),
+                static_cast<uint32_t>(SessionClass::CountMax[1] - SessionClass::CountMin[1]),
+                static_cast<uint32_t>(SessionClass::CountMax[0] - SessionClass::CountMin[0])));
           }
           countgauge.Set_Maximum(SessionClass::CountMax[Session.Options.Bases] -
                                  SessionClass::CountMin[Session.Options.Bases]);
@@ -4658,9 +4660,9 @@ static int Net_New_Dialog() {
                                SessionClass::CountMin[Session.Options.Bases]);
         }
         Session.Options.Tiberium = optionlist.Is_Checked(1);
-        Special.IsTGrowth = Session.Options.Tiberium;
+        Special.IsTGrowth = static_cast<unsigned>(Session.Options.Tiberium);
         Rule.IsTGrowth = Session.Options.Tiberium;
-        Special.IsTSpread = Session.Options.Tiberium;
+        Special.IsTSpread = static_cast<unsigned>(Session.Options.Tiberium);
         Rule.IsTSpread = Session.Options.Tiberium;
 
         Session.Options.Goodies = optionlist.Is_Checked(2);
@@ -4891,7 +4893,8 @@ static int Net_New_Dialog() {
             Session.Scenarios[Session.Options.ScenarioIndex]->Description());
         CCFileClass file(
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
-        Session.GPacket.ScenarioInfo.FileLength = static_cast<int>(file.Size());
+        Session.GPacket.ScenarioInfo.FileLength =
+            static_cast<unsigned int>(file.Size());
         port::SafeCopy(
             Session.GPacket.ScenarioInfo.ShortFileName,
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
@@ -4917,18 +4920,18 @@ static int Net_New_Dialog() {
         Session.GPacket.ScenarioInfo.Seed = Seed;
         Session.GPacket.ScenarioInfo.Special = Special;
         Session.GPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;
-        Session.GPacket.ScenarioInfo.Version = static_cast<int>(VerNum.Get_Clipped_Version());
+        Session.GPacket.ScenarioInfo.Version = static_cast<uint32_t>(VerNum.Get_Clipped_Version());
         //	Host encodes whether or not this is an Aftermath game in the
         // highest bit.
         if (bAftermathMultiplayer) {
           //					debugprint( "Host tells guests
           //'This is an Aftermath game'\n" );
           Session.GPacket.ScenarioInfo.Version =
-              static_cast<int>(VerNum.Get_Clipped_Version()) | 0x80000000;
+              static_cast<uint32_t>(VerNum.Get_Clipped_Version()) | 0x80000000;
         } else {
           //					debugprint( "Host tells guests
           //'This is NOT an Aftermath game'\n" );
-          Session.GPacket.ScenarioInfo.Version = static_cast<int>(VerNum.Get_Clipped_Version());
+          Session.GPacket.ScenarioInfo.Version = static_cast<uint32_t>(VerNum.Get_Clipped_Version());
         }
 
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
@@ -4992,11 +4995,10 @@ static int Net_New_Dialog() {
           Session.FrameSendRate * 2));
     } else {
       Session.MaxAhead =
-          std::max(static_cast<unsigned>(Ipx.Global_Response_Time() / 8),
-                   NETWORK_MIN_MAX_AHEAD);
+          std::max(Ipx.Global_Response_Time() / 8, NETWORK_MIN_MAX_AHEAD);
     }
 
-    Ipx.Set_Timing(25, static_cast<unsigned long>(-1), 1000);
+    Ipx.Set_Timing(25, -1, 1000);
 
     //.....................................................................
     //	Send all players the NET_GO packet.  Wait until all ACK's have
@@ -5086,8 +5088,8 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   // Ipx.Set_Timing (Ipx.Global_Response_Time() + 2, -1,
   // Ipx.Global_Response_Time() * 4);
-  Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, static_cast<unsigned long>(-1),
-                 std::max(120L, Ipx.Global_Response_Time() * 8));
+  Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, -1,
+                 std::max(120, Ipx.Global_Response_Time() * 8));
 
   //------------------------------------------------------------------------
   //	Clear all lists, but NOT the Games or Players vectors.
@@ -5503,7 +5505,7 @@ uint32_t Compute_Name_CRC(char* name) {
  *   07/08/1995 BRR : Created.                                             *
  *=========================================================================*/
 void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
-                          unsigned long timeval) {
+                          int timeval) {
   static int x;
   static int y;
   static int w;
@@ -5627,7 +5629,7 @@ struct WWPerson {
   char Name[MAX_CHAT_NAME];
   char Phrase[MAX_CHAT_PHRASE];
   PlayerColorType Color;
-  unsigned long LastTime;
+  int64_t LastTime;
 };
 
 static struct WWPerson WWPersons[] = {

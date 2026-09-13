@@ -1300,7 +1300,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
     CREATEGAMEINFO CreateGameInfo{};
     //	Not all of these values are currently used during setup.
     CreateGameInfo.bCreateGame = false;
-    CreateGameInfo.iPlayerMax = pChannel->maxUsers;
+    CreateGameInfo.iPlayerMax = static_cast<int>(pChannel->maxUsers);
     CreateGameInfo.bTournament = pChannel->tournament;
     if (*szSuccessfulPassword) {
       CreateGameInfo.bPrivate = true;

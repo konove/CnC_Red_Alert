@@ -324,7 +324,7 @@ class RANetUtilEventSink :
 
   void DeleteLadderList();  //	Deletes from heap all users pointed to through
                             // pUserList.
-  unsigned int GetUserRank(const char* szName, bool bRankRA);
+  int GetUserRank(const char* szName, bool bRankRA);
 
   Ladder* pLadderList{nullptr};  //	First element of Ladder list, or null.
   Ladder* pLadderTail{nullptr};  //	Last element of Ladder list, or null.

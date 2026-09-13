@@ -54,6 +54,8 @@
 #ifndef CNC_RED_ALERT_TD_COMBUF_H_
 #define CNC_RED_ALERT_TD_COMBUF_H_
 
+#include <cstdint>
+
 /*
 ********************************** Defines **********************************
 */
@@ -63,9 +65,9 @@ This is one output queue entry
 typedef struct {
   unsigned int IsActive : 1;  // 1 = this entry is ready to be processed
   unsigned int IsACK : 1;     // 1 = ACK received for this packet
-  long FirstTime;    // time this packet was first sent
-  long LastTime;     // time this packet was last sent
-  long SendCount;    // # of times this packet has been sent
+  int64_t FirstTime;          // time this packet was first sent
+  int64_t LastTime;           // time this packet was last sent
+  int SendCount;              // # of times this packet has been sent
   int BufLen;                 // size of the packet stored in this entry
   char* Buffer;               // the data packet
 } SendQueueType;
@@ -126,9 +128,9 @@ class CommBufferClass {
   /*
   ....................... Response time routines ........................
   */
-  void Add_Delay(unsigned long delay);  // accumulates response time
-  unsigned long Avg_Response_Time();    // gets mean response time
-  unsigned long Max_Response_Time();    // gets max response time
+  void Add_Delay(int64_t delay);  // accumulates response time
+  int32_t Avg_Response_Time();    // gets mean response time
+  int32_t Max_Response_Time();    // gets max response time
   void Reset_Response_Time();           // resets computations
 
   /*
@@ -152,10 +154,10 @@ class CommBufferClass {
   /*
   ....................... Response time variables .......................
   */
-  unsigned long DelaySum = 0;  // sum of last 4 delay times
-  unsigned long NumDelay = 0;  // current # delay times summed
-  unsigned long MeanDelay = 0;  // current average delay time
-  unsigned long MaxDelay = 0;  // max delay ever for this queue
+  int64_t DelaySum = 0;   // sum of last 4 delay times
+  int NumDelay = 0;       // current # delay times summed
+  int64_t MeanDelay = 0;  // current average delay time
+  int64_t MaxDelay = 0;   // max delay ever for this queue
 
   /*
   ........................ Send Queue variables .........................

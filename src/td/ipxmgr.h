@@ -132,6 +132,8 @@
 #ifndef CNC_RED_ALERT_TD_IPXMGR_H_
 #define CNC_RED_ALERT_TD_IPXMGR_H_
 
+#include <cstdint>
+
 /*
 ********************************* Includes **********************************
 */
@@ -189,8 +191,8 @@ class IPXManagerClass : public ConnManClass {
   .....................................................................*/
   int Init();
   int Is_IPX();
-  void Set_Timing(unsigned long retrydelta, unsigned long maxretries,
-                  unsigned long timeout) override;
+  void Set_Timing(int32_t retrydelta, int32_t maxretries,
+                  int32_t timeout) override;
   void Set_Bridge(NetNumType bridge);
 
   /*.....................................................................
@@ -248,8 +250,8 @@ class IPXManagerClass : public ConnManClass {
   Routines to return the largest average queue response time, and to
   reset the response time for all queues.
   .....................................................................*/
-  long Response_Time() override;
-  long Global_Response_Time();
+  int32_t Response_Time() override;
+  int32_t Global_Response_Time();
   void Reset_Response_Time() override;
 
   /*.....................................................................
@@ -316,9 +318,9 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   Timing parameters for all connections
   .....................................................................*/
-  unsigned long RetryDelta;
-  unsigned long MaxRetries;
-  unsigned long Timeout;
+  int32_t RetryDelta;
+  int32_t MaxRetries;  // -1 means no limit
+  int32_t Timeout;     // -1 means no limit
 
   /*---------------------------------------------------------------------
   Real-mode memory pointers and such

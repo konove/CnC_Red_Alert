@@ -284,12 +284,13 @@ int Read_Game_Options(const char* name) {
   BuildLevel = WWGetPrivateProfileInt("Options", "BuildLevel", 0, buffer);
   MPlayerUnitCount = WWGetPrivateProfileInt("Options", "UnitCount", 0, buffer);
   Seed = WWGetPrivateProfileInt("Options", "Seed", 0, buffer);
-  Special.IsCaptureTheFlag =
-      WWGetPrivateProfileInt("Options", "CaptureTheFlag", 0, buffer);
-  PlanetWestwoodGameID =
-      WWGetPrivateProfileInt("Internet", "GameID", 0, buffer);
-  PlanetWestwoodStartTime =
-      WWGetPrivateProfileInt("Internet", "StartTime", 0, buffer);
+  Special.IsCaptureTheFlag = static_cast<unsigned>(
+      WWGetPrivateProfileInt("Options", "CaptureTheFlag", 0, buffer));
+  // externs.h declares these unsigned long; the INI stores them as ints.
+  PlanetWestwoodGameID = static_cast<unsigned long>(
+      WWGetPrivateProfileInt("Internet", "GameID", 0, buffer));
+  PlanetWestwoodStartTime = static_cast<unsigned long>(
+      WWGetPrivateProfileInt("Internet", "StartTime", 0, buffer));
 
   InternetMaxPlayers =
       WWGetPrivateProfileInt("Internet", "MaxPlayers", 2, buffer);

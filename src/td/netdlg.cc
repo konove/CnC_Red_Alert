@@ -381,7 +381,7 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
     mypacket.Command = NET_ANSWER_PLAYER;
     port::SafeCopy(mypacket.Name, MPlayerName);
     mypacket.PlayerInfo.House = MPlayerHouse;
-    mypacket.PlayerInfo.Color = MPlayerColorIdx;
+    mypacket.PlayerInfo.Color = static_cast<unsigned int>(MPlayerColorIdx);
     mypacket.PlayerInfo.NameCRC = Compute_Name_CRC(MPlayerGameName);
 
     Ipx.Send_Global_Message(&mypacket, sizeof(GlobalPacketType), 1, address);
@@ -2161,7 +2161,7 @@ static int Request_To_Join(char* playername, int join_index,
   GPacket.Command = NET_QUERY_JOIN;
   port::SafeCopy(GPacket.Name, MPlayerName);
   GPacket.PlayerInfo.House = house;
-  GPacket.PlayerInfo.Color = color;
+  GPacket.PlayerInfo.Color = static_cast<unsigned int>(color);
 
   Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 1,
                           &Games[join_index]->Address);
@@ -2480,7 +2480,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     if (*joinstate != JOIN_CONFIRMED) {
       port::SafeCopy(MPlayerGameName, GPacket.Name);
       MPlayerHouse = GPacket.PlayerInfo.House;
-      MPlayerColorIdx = GPacket.PlayerInfo.Color;
+      MPlayerColorIdx = static_cast<int>(GPacket.PlayerInfo.Color);
 
       *joinstate = JOIN_CONFIRMED;
       retcode = EV_STATE_CHANGE;
@@ -2526,7 +2526,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   ------------------------------------------------------------------------*/
   else if (GPacket.Command == NET_GAME_OPTIONS) {
     if (*joinstate == JOIN_CONFIRMED) {
-      MPlayerCredits = GPacket.ScenarioInfo.Credits;
+      MPlayerCredits = static_cast<int>(GPacket.ScenarioInfo.Credits);
       MPlayerBases = GPacket.ScenarioInfo.IsBases;
       MPlayerTiberium = GPacket.ScenarioInfo.IsTiberium;
       MPlayerGoodies = GPacket.ScenarioInfo.IsGoodies;
@@ -3065,8 +3065,8 @@ static int Net_New_Dialog() {
   /*........................................................................
   Init other scenario parameters
   ........................................................................*/
-  Special.IsTGrowth = MPlayerTiberium;
-  Special.IsTSpread = MPlayerTiberium;
+  Special.IsTGrowth = static_cast<unsigned>(MPlayerTiberium);
+  Special.IsTSpread = static_cast<unsigned>(MPlayerTiberium);
   transmit = 0;
 
   /*........................................................................
@@ -3301,7 +3301,7 @@ static int Net_New_Dialog() {
       User adjusts build level
       ------------------------------------------------------------------*/
       case ButtonKey(BUTTON_LEVEL):
-        BuildLevel = std::min<unsigned int>(levelgauge.Get_Value() + 1,
+        BuildLevel = std::min(levelgauge.Get_Value() + 1,
                                             MPLAYER_BUILD_LEVEL_MAX);
 
         Hide_Mouse();
@@ -3692,11 +3692,16 @@ static int Net_New_Dialog() {
         GPacket.Command = NET_GAME_OPTIONS;
         GPacket.ScenarioInfo.Scenario =
             static_cast<unsigned char>(MPlayerFilenum[ScenarioIdx]);
-        GPacket.ScenarioInfo.Credits = MPlayerCredits;
-        GPacket.ScenarioInfo.IsBases = MPlayerBases;
-        GPacket.ScenarioInfo.IsTiberium = MPlayerTiberium;
-        GPacket.ScenarioInfo.IsGoodies = MPlayerGoodies;
-        GPacket.ScenarioInfo.IsGhosties = MPlayerGhosts;
+        GPacket.ScenarioInfo.Credits =
+            static_cast<unsigned int>(MPlayerCredits);
+        GPacket.ScenarioInfo.IsBases =
+            static_cast<unsigned int>(MPlayerBases);
+        GPacket.ScenarioInfo.IsTiberium =
+            static_cast<unsigned int>(MPlayerTiberium);
+        GPacket.ScenarioInfo.IsGoodies =
+            static_cast<unsigned int>(MPlayerGoodies);
+        GPacket.ScenarioInfo.IsGhosties =
+            static_cast<unsigned int>(MPlayerGhosts);
         GPacket.ScenarioInfo.BuildLevel =
             static_cast<unsigned char>(BuildLevel);
         GPacket.ScenarioInfo.UnitCount =
@@ -4105,7 +4110,7 @@ unsigned long Compute_Name_CRC(char* name) {
  *   07/08/1995 BRR : Created.                                             *
  *=========================================================================*/
 void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
-                          unsigned long timeval) {
+                          int timeval) {
   static int x;
   static int y;
   static int w;
@@ -4378,8 +4383,8 @@ static int Net_Fake_New_Dialog() {
   /*........................................................................
   Init other scenario parameters
   ........................................................................*/
-  Special.IsTGrowth = MPlayerTiberium;
-  Special.IsTSpread = MPlayerTiberium;
+  Special.IsTGrowth = static_cast<unsigned>(MPlayerTiberium);
+  Special.IsTSpread = static_cast<unsigned>(MPlayerTiberium);
   transmit = 0;
 
   /*........................................................................
@@ -4630,11 +4635,16 @@ static int Net_Fake_New_Dialog() {
         GPacket.Command = NET_GAME_OPTIONS;
         GPacket.ScenarioInfo.Scenario = static_cast<unsigned char>(
             ScenarioIdx);  // MPlayerFilenum[ScenarioIdx];
-        GPacket.ScenarioInfo.Credits = MPlayerCredits;
-        GPacket.ScenarioInfo.IsBases = MPlayerBases;
-        GPacket.ScenarioInfo.IsTiberium = MPlayerTiberium;
-        GPacket.ScenarioInfo.IsGoodies = MPlayerGoodies;
-        GPacket.ScenarioInfo.IsGhosties = MPlayerGhosts;
+        GPacket.ScenarioInfo.Credits =
+            static_cast<unsigned int>(MPlayerCredits);
+        GPacket.ScenarioInfo.IsBases =
+            static_cast<unsigned int>(MPlayerBases);
+        GPacket.ScenarioInfo.IsTiberium =
+            static_cast<unsigned int>(MPlayerTiberium);
+        GPacket.ScenarioInfo.IsGoodies =
+            static_cast<unsigned int>(MPlayerGoodies);
+        GPacket.ScenarioInfo.IsGhosties =
+            static_cast<unsigned int>(MPlayerGhosts);
         GPacket.ScenarioInfo.BuildLevel =
             static_cast<unsigned char>(BuildLevel);
         GPacket.ScenarioInfo.UnitCount =

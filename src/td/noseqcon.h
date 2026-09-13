@@ -53,6 +53,8 @@
 #ifndef CNC_RED_ALERT_TD_NOSEQCON_H_
 #define CNC_RED_ALERT_TD_NOSEQCON_H_
 
+#include <cstdint>
+
 /*
 ********************************* Includes **********************************
 */
@@ -71,8 +73,8 @@ class NonSequencedConnClass : public ConnectionClass {
   Constructor/destructor.
   .....................................................................*/
   NonSequencedConnClass(int numsend, int numreceive, int maxlen,
-                        unsigned short magicnum, unsigned long retry_delta,
-                        unsigned long max_retries, unsigned long timeout);
+                        unsigned short magicnum, int32_t retry_delta,
+                        int32_t max_retries, int32_t timeout);
   ~NonSequencedConnClass() override;
   NonSequencedConnClass(const NonSequencedConnClass&) = delete;
   NonSequencedConnClass& operator=(const NonSequencedConnClass&) = delete;

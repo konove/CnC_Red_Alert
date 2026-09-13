@@ -45,7 +45,7 @@
 /*
 ********************************* Includes **********************************
 */
-#include <limits>
+#include <cstdint>
 
 #include "sdllib/keyboard.h"
 #include "td/connmgr.h"
@@ -118,8 +118,8 @@ class NullModemClass : public ConnManClass {
   int Init_Send_Queue();
   void Shutdown();
 
-  void Set_Timing(unsigned long retrydelta, unsigned long maxretries,
-                  unsigned long timeout) override;
+  void Set_Timing(int32_t retrydelta, int32_t maxretries,
+                  int32_t timeout) override;
 
   /*
   **	This is how the application sends & receives messages.
@@ -150,7 +150,7 @@ class NullModemClass : public ConnManClass {
   */
   int Num_Send();
   int Num_Receive();
-  long Response_Time() override;
+  int32_t Response_Time() override;
   void Reset_Response_Time() override;
   void* Oldest_Send();
   void Configure_Debug(int index, int offset, int size, const char** names,
@@ -221,12 +221,11 @@ class NullModemClass : public ConnManClass {
   int RXCount = 0;
 
   /*.....................................................................
-  Timing parameters for all connections  // 60 ticks between retries
-  .....................................................................*/  // disregard # retries
-  unsigned long RetryDelta{60};  // report bad connection after 20 seconds
-  unsigned long MaxRetries{
-      std::numeric_limits<unsigned long>::max()};  // Retry forever.
-  unsigned long Timeout{1200};
+  Timing parameters for all connections
+  .....................................................................*/
+  int32_t RetryDelta{60};  // ticks between retries
+  int32_t MaxRetries{-1};  // -1 means no limit: retry forever
+  int32_t Timeout{1200};   // report bad connection after 20 seconds
 
   /*
   **	Various Statistics

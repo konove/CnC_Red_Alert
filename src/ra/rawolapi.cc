@@ -1877,7 +1877,7 @@ void RANetUtilEventSink::DeleteLadderList() {
 }
 
 //***********************************************************************************************
-unsigned int RANetUtilEventSink::GetUserRank(const char* szName, bool bRankRA) {
+int RANetUtilEventSink::GetUserRank(const char* szName, bool bRankRA) {
   //	Searches for szName in ladder list, returns player rank if found, else
   // 0. 	Slow linear search. 	If bRankRA, returns RA rank, else
   // returns AM rank. 	debugprint( "GetUserRank: Asked for %s, ", szName );
@@ -1893,7 +1893,7 @@ unsigned int RANetUtilEventSink::GetUserRank(const char* szName, bool bRankRA) {
     if (stricmp((char*)pLad->login_name, szName) == 0) {
       //			debugprint( "found rung value %u\n", pLad->rung
       //);
-      return pLad->rung;
+      return static_cast<int>(pLad->rung);
     }
     pLad = pLad->next;
   }

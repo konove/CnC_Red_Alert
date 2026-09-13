@@ -53,6 +53,8 @@
 #ifndef CNC_RED_ALERT_RA_SEQCONN_H_
 #define CNC_RED_ALERT_RA_SEQCONN_H_
 
+#include <cstdint>
+
 #include "ra/comqueue.h"
 #include "ra/connect.h"
 
@@ -68,8 +70,8 @@ class SequencedConnClass : public ConnectionClass {
   Constructor/destructor.
   .....................................................................*/
   SequencedConnClass(int numsend, int numrecieve, int maxlen,
-                     unsigned short magicnum, unsigned long retry_delta,
-                     unsigned long max_retries, unsigned long timeout);
+                     unsigned short magicnum, int32_t retry_delta,
+                     int32_t max_retries, int32_t timeout);
   ~SequencedConnClass() override;
 
   /*.....................................................................

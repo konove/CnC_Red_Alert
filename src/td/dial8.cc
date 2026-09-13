@@ -74,7 +74,7 @@
 #include "td/jshell.h"
 
 Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
-    : ControlClass(id, x, y, w, h, LEFTPRESS | LEFTHELD | LEFTRELEASE, true),
+    : ControlClass(static_cast<unsigned>(id), x, y, w, h, LEFTPRESS | LEFTHELD | LEFTRELEASE, true),
       FaceX(X + (Width / 2)),
       FaceY(Y + (Height / 2)),
       Direction(dir),

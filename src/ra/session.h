@@ -95,8 +95,8 @@
 // Min value for MaxAhead, for both net & modem; only applies for
 // COMM_PROTOCOL_MULTI_E_COMP.
 //...........................................................................
-#define MODEM_MIN_MAX_AHEAD 5u
-#define NETWORK_MIN_MAX_AHEAD 2u
+#define MODEM_MIN_MAX_AHEAD 5
+#define NETWORK_MIN_MAX_AHEAD 2
 
 //...........................................................................
 // Send period (in frames) for COMM_PROTOCOL_MULTI_E_COMP and above
@@ -278,7 +278,7 @@ typedef struct NodeNameTag {
   union {
     struct {
       unsigned char IsOpen;    // is the game open?
-      unsigned long LastTime;  // last time we heard from this guy
+      int64_t LastTime;        // last time we heard from this guy
     } Game{};
     struct {
       HousesType House;       // "ActLike" House of this player
@@ -287,7 +287,7 @@ typedef struct NodeNameTag {
       int ProcessTime;        // Length of time to process players main loop
     } Player;
     struct {
-      unsigned long LastTime;    // last time we heard from this guy
+      int64_t LastTime;          // last time we heard from this guy
       unsigned char LastChance;  // we're about to remove him from the list
       PlayerColorType Color;     // chat player's color
     } Chat;
@@ -308,7 +308,7 @@ typedef struct {
       uint32_t MinVersion;                // min version this game supports
       uint32_t MaxVersion;                // max version this game supports
       char Scenario[kDescripMax];         // Scenario name
-      unsigned int Credits;               // player's credits
+      int Credits;                        // player's credits
       unsigned int IsBases : 1;           // 1 = bases are allowed
       unsigned int IsTiberium : 1;        // 1 = tiberium is allowed
       unsigned int IsGoodies : 1;         // 1 = goodies are allowed
@@ -322,7 +322,7 @@ typedef struct {
       int Seed;                           // random number seed
       SpecialClass Special;               // command-line options
       unsigned int GameSpeed;             // Game Speed
-      uint32_t ResponseTime;              // packet response time
+      int32_t ResponseTime;               // packet response time
       unsigned int FileLength;  // Length of scenario file to expect from host.
       // Name of the scenario file to expect from the host: 12 characters of
       // 8.3 name plus the terminator.
@@ -382,7 +382,7 @@ typedef struct GlobalPacketType {
     } PlayerInfo;
     struct {
       char Scenario[kDescripMax];  // Scenario Name
-      unsigned int Credits;        // player's credits
+      int Credits;                 // player's credits
       uint8_t IsBases : 1;         // 1 = bases are allowed
       uint8_t IsTiberium : 1;      // 1 = tiberium is allowed
       uint8_t IsGoodies : 1;       // 1 = goodies are allowed

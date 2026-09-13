@@ -40,6 +40,7 @@
 #include <optional>
 
 #include "absl/log/check.h"
+#include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "port/sleep.h"
@@ -496,7 +497,7 @@ void WolapiObject::GetGameTypeInfo(int iGameType,
   //	debugprint( "GetGametypeInfo, type %i\n", iGameType );
   LPCSTR szName;
   LPCSTR szURL;
-  pChat->GetGametypeInfo(iGameType, 12, &pVirtualFile, &iFileLength, &szName,
+  pChat->GetGametypeInfo(static_cast<unsigned int>(iGameType), 12, &pVirtualFile, &iFileLength, &szName,
                          &szURL);
   GameTypeInfo.iGameType = iGameType;
   port::SafeCopy(GameTypeInfo.szName, szName != nullptr ? szName : "");
@@ -1128,7 +1129,7 @@ bool WolapiObject::ListChannelUsers() {
     CHANNELUSERINFO* pUsersSaved = nullptr;
     int iUsersSaved = 0;
     if (iCount) {
-      pUsersSaved = new CHANNELUSERINFO[iCount];
+      pUsersSaved = new CHANNELUSERINFO[base::ToSize(iCount)];
       for (int i = 0; i != iCount; i++) {
         PullPlayerName_Into_From(pUsersSaved[iUsersSaved].szName,
                                  sizeof(pUsersSaved[iUsersSaved].szName),
@@ -1245,7 +1246,7 @@ bool WolapiObject::ListChannelUsers() {
             WritePlayerListItem(szItem, sizeof(szItem),
                                 pUsersSaved[iUser].szName,
                                 pUsersSaved[iUser].House);
-            pListToUse->Set_Item(iFind, szItem);
+            pListToUse->Set_Item(static_cast<unsigned int>(iFind), szItem);
           }
           //	Player was marked "accepted" before. If he has one now, it's
           // because he is the host. 	Else it was an accepted icon before, so
@@ -1295,10 +1296,10 @@ bool WolapiObject::MarkItemAccepted(int iIndex, bool bAccept) {
   pILPlayers->Flag_To_Redraw();
   if (bAccept) {
     return pILPlayers->Set_Icon(
-        iIndex, 0, IconPointer(DibIconInfos[DIBICON_ACCEPT]), ICON_DIB);
+        static_cast<unsigned int>(iIndex), 0, IconPointer(DibIconInfos[DIBICON_ACCEPT]), ICON_DIB);
   }  // return pILPlayers->Set_Icon( iIndex, 0, NULL, ICON_DIB );
   return pILPlayers->Set_Icon(
-      iIndex, 0, IconPointer(DibIconInfos[DIBICON_NOTACCEPT]), ICON_DIB);
+      static_cast<unsigned int>(iIndex), 0, IconPointer(DibIconInfos[DIBICON_NOTACCEPT]), ICON_DIB);
 }
 
 //***********************************************************************************************
@@ -1611,7 +1612,7 @@ bool WolapiObject::ChannelCreate(
                    sizeof(ChannelNew.name));
   } else {
     ChannelNew.type = GAME_TYPE;
-    ChannelNew.maxUsers = iMaxPlayers;
+    ChannelNew.maxUsers = static_cast<unsigned int>(iMaxPlayers);
     ChannelNew.tournament = bTournament;
     //	Channel 'reserved' stores GameKind in the highest byte, and
     //	lobby number to return to in the lower three bytes.
@@ -1956,7 +1957,7 @@ bool WolapiObject::Squelch(User* pUserToSquelch) {
 
   if (pUserToSquelch->flags & CHAT_USER_SQUELCHED) {
     pChat->SetSquelch(pUserToSquelch, false);
-    pUserToSquelch->flags &= ~CHAT_USER_SQUELCHED;
+    pUserToSquelch->flags &= ~static_cast<unsigned int>(CHAT_USER_SQUELCHED);
     return false;
   }
   pChat->SetSquelch(pUserToSquelch, true);
@@ -3287,9 +3288,10 @@ std::array<dib::Color, dib::kPaletteSize> CurrentScreenPalette() {
   std::array<dib::Color, dib::kPaletteSize> Palette = {};
   for (int i = 0; i != dib::kPaletteSize; i++) {
     const RGBClass& Entry = PaletteClass::CurrentPalette[i];
-    Palette[i].red = static_cast<std::uint8_t>(Entry.Red_Component());
-    Palette[i].green = static_cast<std::uint8_t>(Entry.Green_Component());
-    Palette[i].blue = static_cast<std::uint8_t>(Entry.Blue_Component());
+    dib::Color& color = Palette[base::ToSize(i)];
+    color.red = static_cast<std::uint8_t>(Entry.Red_Component());
+    color.green = static_cast<std::uint8_t>(Entry.Green_Component());
+    color.blue = static_cast<std::uint8_t>(Entry.Blue_Component());
   }
   return Palette;
 }
