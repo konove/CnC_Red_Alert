@@ -3,8 +3,7 @@
 
 #include "td/defines.h"
 
-COORDINATE Coord_Move(COORDINATE start, DirType facing,
-                      unsigned short distance);
+COORDINATE Coord_Move(COORDINATE start, DirType dir, unsigned short distance);
 COORDINATE Coord_Scatter(COORDINATE coord, unsigned distance,
                          bool lock = false);
 const short* Coord_Spillage_List(COORDINATE coord, int maxsize);

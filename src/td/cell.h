@@ -252,7 +252,7 @@ class CellClass {
   /*
   **	Display and rendering controls.
   */
-  void Draw_It(int x, int y, int draw_flags = 0) const;
+  void Draw_It(int x, int y, int draw_type = 0) const;
   void Redraw_Objects(bool forced = false);
   void Shimmer();
 

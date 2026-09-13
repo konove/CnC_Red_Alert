@@ -85,8 +85,8 @@ class ScoreClass {
   void Count_Up_Print(const char* str, int percent, int max, int xpos,
                       int ypos);
   void Show_Credits(int house, const unsigned char pal[]);
-  void Do_GDI_Graph(const void* yellowptr, const void* redptr, int gdikilled,
-                    int nodkilled, int ypos);
+  void Do_GDI_Graph(const void* yellowptr, const void* redptr, int gkilled,
+                    int nkilled, int ypos);
   void Do_Nod_Casualties_Graph();
   void Do_Nod_Buildings_Graph();
   void Input_Name(char str[], int xpos, int ypos, const unsigned char pal[]);
@@ -163,7 +163,7 @@ class ScoreScaleClass : public ScoreAnimClass {
   int Stage;
   const unsigned char* Palette;
   void Update() override;
-  ScoreScaleClass(const void* data, int xpos, int ypos,
+  ScoreScaleClass(const void* string, int xpos, int ypos,
                   const unsigned char pal[]);
   ~ScoreScaleClass() override { Palette = nullptr; }
   ScoreScaleClass(const ScoreScaleClass&) = delete;

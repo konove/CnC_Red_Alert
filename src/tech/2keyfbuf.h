@@ -5,8 +5,8 @@
 #include "sdllib/shape.h"
 
 extern "C" {
-long __cdecl Buffer_Frame_To_Page(int x, int y, int w, int h, void* Buffer,
-                                  GraphicViewPortClass& view, int flags, ...);
+long __cdecl Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
+                                  GraphicViewPortClass& dest, int flags, ...);
 }
 
 // Returns the drawing-effect bits of `flags` that a cached shape header is

@@ -56,7 +56,7 @@ class LZWStraw : public Straw {
   explicit LZWStraw(CompControl control, int blocksize = 1024 * 8);
   ~LZWStraw() override;
 
-  int Get(void* source, int slen) override;
+  int Get(void* destbuf, int slen) override;
 
  private:
   /*

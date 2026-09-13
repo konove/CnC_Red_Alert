@@ -97,7 +97,7 @@
 //   }
 // };
 int Sound_Effect(VocType voc, VolType volume, int variation = 1,
-                 signed short panvalue = 0);
+                 signed short pan_value = 0);
 void Speak(VoxType voice);
 void Speak_AI();
 void Stop_Speaking();

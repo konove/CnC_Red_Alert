@@ -81,7 +81,7 @@ class IPXConnClass : public NonSequencedConnClass
   /*.....................................................................
   Constructor/destructor.
   .....................................................................*/
-  IPXConnClass(int numsend, int numrecieve, int maxlen, unsigned short magicnum,
+  IPXConnClass(int numsend, int numreceive, int maxlen, unsigned short magicnum,
                IPXAddressClass* address, int id, const char* name);
   ~IPXConnClass() override {}
   IPXConnClass(const IPXConnClass&) = delete;

@@ -315,7 +315,7 @@ class TechnoClass : public RadioClass,
   [[nodiscard]] virtual DirType Turret_Facing() const {
     return PrimaryFacing.Current();
   }
-  CELL Nearby_Location(const TechnoClass* from = nullptr) const;
+  CELL Nearby_Location(const TechnoClass* techno = nullptr) const;
   [[nodiscard]] TechnoTypeClass* Techno_Type_Class() const {
     return (TechnoTypeClass*)&Class_Of();
   }
@@ -326,7 +326,7 @@ class TechnoClass : public RadioClass,
   [[nodiscard]] int Time_To_Build() const;
   [[nodiscard]] int What_Weapon_Should_I_Use(TARGET target) const;
   [[nodiscard]] ActionType What_Action(CELL cell) const override;
-  ActionType What_Action(const ObjectClass* target) const override;
+  ActionType What_Action(const ObjectClass* object) const override;
   [[nodiscard]] virtual BuildingClass* Find_Docking_Bay(StructType b,
                                                         bool friendly) const;
   virtual CELL Find_Exit_Cell(const TechnoClass* techno) const;
@@ -358,7 +358,7 @@ class TechnoClass : public RadioClass,
   virtual void Response_Select();
   virtual void Response_Move();
   virtual void Response_Attack();
-  virtual void Player_Assign_Mission(MissionType order,
+  virtual void Player_Assign_Mission(MissionType mission,
                                      TARGET target = kTargetNone,
                                      TARGET destination = kTargetNone);
 
@@ -379,7 +379,7 @@ class TechnoClass : public RadioClass,
       const TechnoClass* source = nullptr) const = 0;
   [[nodiscard]] virtual FireErrorType Can_Fire(TARGET target,
                                                int which = 0) const;
-  virtual TARGET Greatest_Threat(ThreatType threat);  // const;
+  virtual TARGET Greatest_Threat(ThreatType method);  // const;
   virtual void Assign_Target(TARGET target);
   void Override_Mission(MissionType mission, TARGET tarcom,
                         TARGET navcom) override;
@@ -398,7 +398,7 @@ class TechnoClass : public RadioClass,
                        int zone = -1) const;
   [[nodiscard]] int Evaluate_Just_Cell(CELL cell) const;
   virtual bool Electric_Zap(TARGET target, int which,
-                            COORDINATE target_coord = 0L,
+                            COORDINATE source_coord = 0L,
                             unsigned char* remap = nullptr);
 
   /*
@@ -456,7 +456,7 @@ class TechnoClass : public RadioClass,
   /*
   **	Map entry and exit logic.
   */
-  bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
+  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
   void Detach(TARGET target, bool all) override;
 
   /*

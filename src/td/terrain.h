@@ -75,7 +75,7 @@ class TerrainClass final : public ObjectClass, public StageClass {
     IsActive = true;
     Strength = 0;
   }
-  TerrainClass(TerrainType id, CELL cell);
+  TerrainClass(TerrainType type, CELL cell);
   ~TerrainClass() override;
   TerrainClass(const TerrainClass&) = delete;
   TerrainClass& operator=(const TerrainClass&) = delete;

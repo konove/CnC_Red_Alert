@@ -70,18 +70,18 @@ class ThemeClass {
   ThemeClass();
 
   ThemeType From_Name(const char* name);
-  int Track_Length(ThemeType index);
+  int Track_Length(ThemeType theme);
   int Max_Themes() { return THEME_COUNT; }
-  [[nodiscard]] const char* Full_Name(ThemeType index) const;
-  [[nodiscard]] const char* Base_Name(ThemeType index) const;
+  [[nodiscard]] const char* Full_Name(ThemeType theme) const;
+  [[nodiscard]] const char* Base_Name(ThemeType theme) const;
   void AI();
-  void Queue_Song(ThemeType index);
-  int Play_Song(ThemeType index);
+  void Queue_Song(ThemeType theme);
+  int Play_Song(ThemeType theme);
   ThemeType What_Is_Playing() { return Score; }
   void Stop();
   void Fade_Out() { Queue_Song(THEME_NONE); }
   int Still_Playing();
-  ThemeType Next_Song(ThemeType index);
+  ThemeType Next_Song(ThemeType theme);
   [[nodiscard]] bool Is_Allowed(ThemeType index) const;
   static void Scan();
 };

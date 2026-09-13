@@ -60,7 +60,7 @@ class WarheadTypeClass {
 
   [[nodiscard]] const char* Name() const { return IniName; }
   bool Read_INI(CCINIClass& ini);
-  static WarheadTypeClass* As_Pointer(WarheadType weapon);
+  static WarheadTypeClass* As_Pointer(WarheadType warhead);
 
   /*
   **	This is the ID number of the weapon type. It is the weapon

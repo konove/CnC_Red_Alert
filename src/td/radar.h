@@ -77,7 +77,7 @@ class RadarClass : public DisplayClass {
   bool Map_Cell(CELL cell, HouseClass* house) override;
   CELL Click_Cell_Calc(int x, int y) override;
   void AI(KeyNumType& input, int x, int y) override;
-  void Draw_It(bool complete = false) override;
+  void Draw_It(bool forced = false) override;
   void Refresh_Cells(CELL cell, const short* list) override;
   void Set_Map_Dimensions(int x, int y, int w, int h) override;
   //		virtual void Set_Tactical_Position(int x, int y, int leptonx=0,

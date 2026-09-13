@@ -200,7 +200,7 @@ class TeamClass : public AbstractClass {
   CCPtr<TriggerClass> Trigger;
 
   //------------------------------------------------------------
-  explicit TeamClass(const TeamTypeClass* team, HouseClass* owner = nullptr);
+  explicit TeamClass(const TeamTypeClass* type, HouseClass* owner = nullptr);
   ~TeamClass() override;
   TeamClass(const TeamClass&) = delete;
   TeamClass& operator=(const TeamClass&) = delete;
@@ -266,7 +266,7 @@ class TeamClass : public AbstractClass {
   void Coordinate_Move();
   bool Coordinate_Conscript(FootClass* unit);
   void Coordinate_Do();
-  void Calc_Center(TARGET& center, TARGET& obj_center) const;
+  void Calc_Center(TARGET& center, TARGET& close_member) const;
   int Recruit(int typeindex);
   bool Is_A_Member(const void* who) const;
   bool Lagging_Units();

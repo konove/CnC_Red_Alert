@@ -136,7 +136,7 @@ class IPXGlobalConnClass : public IPXConnClass {
   //.....................................................................
   // Constructor/destructor.
   //.....................................................................
-  IPXGlobalConnClass(int numsend, int numrecieve, int maxlen,
+  IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
                      unsigned short product_id);
   ~IPXGlobalConnClass() override {}
   IPXGlobalConnClass(const IPXGlobalConnClass&) = delete;

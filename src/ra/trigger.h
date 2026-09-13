@@ -105,7 +105,7 @@ class TriggerClass {
   */
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
-  void operator delete(void* ptr);
+  void operator delete(void* pointer);
 
   /*
   **	If this trigger object is active, then this flag will be true. Trigger

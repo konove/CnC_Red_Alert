@@ -198,7 +198,7 @@ class MapEditClass : public MouseClass {
   */
   MapEditClass();
   bool Get_Waypoint_Name(char wayptname[]);
-  void Update_Waypoint(int waypt_index);
+  void Update_Waypoint(int waypt_idx);
 
   void One_Time() override;  // One-time init
   void Init_IO() override;   // Inits button list

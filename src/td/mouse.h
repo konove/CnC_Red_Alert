@@ -79,7 +79,7 @@ class MouseClass : public ScrollClass {
   virtual bool Load(ArchiveReader& file);
   virtual bool Save(ArchiveWriter& file);
 
-  void Set_Default_Mouse(MouseType mouse, bool wwsmall = false) override;
+  void Set_Default_Mouse(MouseType mouse, bool size = false) override;
 
   /*
   **	This allows the tactical map input gadget access to change the

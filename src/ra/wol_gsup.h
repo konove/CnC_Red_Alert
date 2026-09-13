@@ -65,7 +65,7 @@ struct GAMEPARAMS {
 //***********************************************************************************************
 class WOL_GameSetupDialog {
  public:
-  WOL_GameSetupDialog(WolapiObject* wolapi, bool bHost);
+  WOL_GameSetupDialog(WolapiObject* wolapi, bool bIsHost);
   ~WOL_GameSetupDialog();
   WOL_GameSetupDialog(const WOL_GameSetupDialog&) = delete;
   WOL_GameSetupDialog& operator=(const WOL_GameSetupDialog&) = delete;
@@ -83,7 +83,7 @@ class WOL_GameSetupDialog {
   bool bExitForGameTrigger;       //	Trigger exiting dialog for game.
 
   void ProcessGuestRequest(User* pUser, const char* szRequest);
-  void ProcessInform(char* szRequest);
+  void ProcessInform(char* szInform);
   void OnGuestJoin(User* pUser);
   void OnGuestLeave(User* pUser);
 

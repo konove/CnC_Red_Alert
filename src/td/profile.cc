@@ -199,9 +199,9 @@ bool WWWritePrivateProfileInt(const char* section, const char* entry, int value,
  *                                                                                             *
  * HISTORY: * 08/05/1992 JLB : Created. *
  *=============================================================================================*/
-char* WWGetPrivateProfileString(const char* section, const char* entry,
-                                const char* def, char* retbuffer, int retlen,
-                                char* profile) {
+char* WWGetPrivateProfileString(const char* section, const char* key,
+                                const char* def, char* dest, int dest_len,
+                                char* ini_data) {
   char *workptr,              // Working pointer into profile block.
       *altworkptr = nullptr;  // Alternate work pointer.
   char sec[50];       // Working section buffer.
@@ -210,24 +210,24 @@ char* WWGetPrivateProfileString(const char* section, const char* entry,
   char c, c2;         // Working character values.
   int len;            // Working substring length value.
   int entrylen;       // Byte length of specified entry.
-  char* orig_retbuf = nullptr;  // original retbuffer ptr
+  char* orig_retbuf = nullptr;  // original dest ptr
 
   /*
   **	Fill in the default value just in case the entry could not be found.
   */
-  if (retbuffer) {
-    if (def && retbuffer != def) {
-      port::SafeCopy(retbuffer, def, retlen);
+  if (dest) {
+    if (def && dest != def) {
+      port::SafeCopy(dest, def, dest_len);
     }
-    retbuffer[retlen - 1] = '\0';
-    orig_retbuf = retbuffer;
+    dest[dest_len - 1] = '\0';
+    orig_retbuf = dest;
   }
 
   /*
   **	Make sure a profile string was passed in
   */
-  if (!profile || !section) {
-    return retbuffer;
+  if (!ini_data || !section) {
+    return dest;
   }
 
   /*
@@ -240,7 +240,7 @@ char* WWGetPrivateProfileString(const char* section, const char* entry,
   /*
   **	Scan for a matching section
   */
-  workptr = profile;
+  workptr = ini_data;
   for (;;) {
     /*
     **	'workptr' = start of next section
@@ -258,7 +258,7 @@ char* WWGetPrivateProfileString(const char* section, const char* entry,
     /*
     **	'c' = character just before the '['
     */
-    if (workptr == profile) {
+    if (workptr == ini_data) {
       c = '\n';
     } else {
       c = *(workptr - 1);
@@ -283,7 +283,7 @@ char* WWGetPrivateProfileString(const char* section, const char* entry,
       **	a blank line between this section's name & 1st entry. So, check
       **	for 2 newlines in a row & step backward.
       */
-      if (workptr - profile > 4) {
+      if (workptr - ini_data > 4) {
         if (*(workptr - 1) == '\n' && *(workptr - 3) == '\n') {
           workptr -= 2;
         }
@@ -325,14 +325,14 @@ char* WWGetPrivateProfileString(const char* section, const char* entry,
       **	If a specific entry was specified then return with the
       *associated *	string.
       */
-      if (entry) {
-        entrylen = static_cast<int>(strlen(entry));
+      if (key) {
+        entrylen = static_cast<int>(strlen(key));
 
         for (;;) {
           /*
           ** Search for the 1st character of the entry
           */
-          workptr = strchr(workptr, *entry);
+          workptr = strchr(workptr, *key);
 
           /*
           **	If the end of the file has been reached or we have spilled
@@ -352,7 +352,7 @@ char* WWGetPrivateProfileString(const char* section, const char* entry,
           /*
           **	Entry found; extract it
           */
-          if (memicmp(workptr, entry, entrylen) == 0 && c == '\n' &&
+          if (memicmp(workptr, key, entrylen) == 0 && c == '\n' &&
               (c2 == '=' || isspace(c2))) {
             retval = workptr;
             workptr += entrylen;             // skip entry name
@@ -394,12 +394,12 @@ char* WWGetPrivateProfileString(const char* section, const char* entry,
             **	Copy the entry into the return buffer.
             */
             len = static_cast<int>(altworkptr - workptr);
-            len = std::min(len, retlen - 1);
+            len = std::min(len, dest_len - 1);
 
-            if (retbuffer) {
-              memcpy(retbuffer, workptr, len);
-              *(retbuffer + len) = '\0';  // Insert trailing null.
-              strtrim(retbuffer);
+            if (dest) {
+              memcpy(dest, workptr, len);
+              *(dest + len) = '\0';  // Insert trailing null.
+              strtrim(dest);
             }
             return retval;
           }
@@ -414,7 +414,7 @@ char* WWGetPrivateProfileString(const char* section, const char* entry,
       // 1st entry after section name 'next' is next bracket, or end of file
       retval = workptr;
 
-      if (retbuffer) {
+      if (dest) {
         /*
         **	Keep accumulating the identifier strings in the retbuffer.
         */
@@ -430,11 +430,11 @@ char* WWGetPrivateProfileString(const char* section, const char* entry,
             **	Make sure we don't write past the end of the retbuffer;
             **	add '3' for the 3 NULL's at the end
             */
-            if (retbuffer - orig_retbuf + length + 3 < retlen) {
-              memcpy(retbuffer, workptr, length);  // copy entry name
-              *(retbuffer + length) = '\0';        // NULL-terminate it
-              strtrim(retbuffer);                  // trim spaces
-              retbuffer += strlen(retbuffer) + 1;  // next pos in dest buf
+            if (dest - orig_retbuf + length + 3 < dest_len) {
+              memcpy(dest, workptr, length);  // copy entry name
+              *(dest + length) = '\0';        // NULL-terminate it
+              strtrim(dest);                  // trim spaces
+              dest += strlen(dest) + 1;       // next pos in dest buf
             } else {
               break;
             }
@@ -460,8 +460,8 @@ char* WWGetPrivateProfileString(const char* section, const char* entry,
         **	Final trailing terminator. Make double sure the double
         **	trailing null is added.
         */
-        *retbuffer++ = '\0';
-        *retbuffer = '\0';
+        *dest++ = '\0';
+        *dest = '\0';
       }
       break;
     }

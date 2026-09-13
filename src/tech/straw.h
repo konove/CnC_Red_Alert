@@ -59,7 +59,7 @@ class Straw {
 
   void SetSource(Straw* source) { source_ = source; }
   void SetSource(Straw& source) { source_ = &source; }
-  virtual int Get(void* buffer, int slen);
+  virtual int Get(void* buffer, int length);
 
  protected:
   // The straw we pull data from. Caller must ensure source outlives this straw.

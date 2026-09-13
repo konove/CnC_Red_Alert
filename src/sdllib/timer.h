@@ -84,7 +84,7 @@ class CountDownTimerClass : TimerClass {
   CountDownTimerClass(CountDownTimerClass&&) = default;
   CountDownTimerClass& operator=(CountDownTimerClass&&) = default;
 
-  void Set(long set, bool start = true);  // Set count down value.
+  void Set(long value, bool start = true);  // Set count down value.
   long Reset(bool start = true);          // Reset timer to zero.
   long Stop();                            // Pause timer.
   long Start();                           // Resume timer.

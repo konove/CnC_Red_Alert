@@ -66,7 +66,7 @@ class RulesClass {
  public:
   RulesClass();
 
-  bool Process(CCINIClass& file);
+  bool Process(CCINIClass& ini);
   bool General(CCINIClass& ini);
   bool MPlayer(CCINIClass& ini);
   bool Recharge(CCINIClass& ini);

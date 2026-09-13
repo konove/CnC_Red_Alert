@@ -128,11 +128,11 @@ class TDropListClass : public EditClass {
   TDropListClass* Remove() override;
   void Zap() override;
 
-  virtual int Add_Item(T text);
+  virtual int Add_Item(T item);
   virtual T Current_Item();
   virtual int Current_Index();
   virtual void Set_Selected_Index(int index);
-  virtual void Set_Selected_Index(T item);
+  virtual void Set_Selected_Index(T text);
   void Peer_To_Peer(unsigned flags, KeyNumType&, ControlClass& whom) override;
   void Clear_Focus() override;
   [[nodiscard]] virtual int Count() const { return List.Count(); }

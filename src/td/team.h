@@ -179,7 +179,7 @@ class TeamClass : public AbstractClass {
     IsActive = true;
     SuspendTimer.Clear();
   }
-  TeamClass(const TeamTypeClass* team, HouseClass* owner);
+  TeamClass(const TeamTypeClass* type, HouseClass* owner);
   ~TeamClass() override;
   TeamClass(const TeamClass&) = delete;
   TeamClass& operator=(const TeamClass&) = delete;

@@ -61,7 +61,7 @@ class Pipe {
   virtual int End() { return Flush(); }
   void SetSink(Pipe* sink) { sink_ = sink; }
   void SetSink(Pipe& sink) { sink_ = &sink; }
-  virtual int Put(const void* source, int slen);
+  virtual int Put(const void* source, int length);
 
  protected:
   // The pipe we push data to. Caller must ensure sink outlives this pipe.

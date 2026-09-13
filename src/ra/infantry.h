@@ -206,7 +206,7 @@ class InfantryClass final : public FootClass {
   **	occupation flags and driver instructions.
   */
   bool Stop_Driver() override;
-  bool Start_Driver(COORDINATE& coord) override;
+  bool Start_Driver(COORDINATE& headto) override;
 
   /*
   **	AI.

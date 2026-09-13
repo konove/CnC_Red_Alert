@@ -103,7 +103,7 @@ class VectorClass {
   virtual void Clear();
   [[nodiscard]] base::ssize Length() const { return VectorMax; }
   virtual int ID(const T* ptr);  // Pointer based identification.
-  virtual int ID(const T& ptr);  // Value based identification.
+  virtual int ID(const T& object);  // Value based identification.
 
  protected:
   /*

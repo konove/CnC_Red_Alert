@@ -348,7 +348,7 @@ class ObjectTypeClass : public AbstractTypeClass {
   ObjectTypeClass(bool is_sentient, bool is_flammable, bool is_crushable,
                   bool is_stealthy, bool is_selectable, bool is_legal_target,
                   bool is_insignificant, bool is_immune, int fullname,
-                  const char* name, ArmorType armor,
+                  const char* ini, ArmorType armor,
                   unsigned short strength) noexcept;
 
   static void One_Time();
@@ -696,14 +696,14 @@ class BuildingTypeClass : public TechnoTypeClass {
                     COORDINATE exitpoint, unsigned char level, long pre,
                     bool is_scanner, bool is_regulated, bool is_bibbed,
                     bool is_nominal, bool is_wall, bool is_factory,
-                    bool is_capturable, bool is_flammable, bool is_simpledamage,
-                    bool is_stealthy, bool is_selectable, bool is_legal_target,
-                    bool is_insignificant, bool is_immune, bool is_theater,
-                    bool is_turret_equipped, bool is_twoshooter,
-                    bool is_repairable, bool is_buildable, bool is_crew,
-                    bool is_sturdy, RTTIType tobuild, DirType sframe,
-                    unsigned short strength, int sightrange, int cost,
-                    int scenario, int risk, int reward, int ownable,
+                    bool is_captureable, bool is_flammable,
+                    bool is_simpledamage, bool is_stealthy, bool is_selectable,
+                    bool is_legal_target, bool is_insignificant, bool is_immune,
+                    bool is_theater, bool is_turret_equipped,
+                    bool is_twoshooter, bool is_repairable, bool is_buildable,
+                    bool is_crew, bool is_sturdy, RTTIType tobuild,
+                    DirType sframe, unsigned short strength, int sightrange,
+                    int cost, int scenario, int risk, int reward, int ownable,
                     WeaponType primary, WeaponType secondary, ArmorType armor,
                     unsigned long canenter, unsigned capacity, int power,
                     int drain, BSizeType size, const short* exitlist,
@@ -1731,9 +1731,9 @@ class OverlayTypeClass : public ObjectTypeClass {
   //----------------------------------------------------------
   OverlayTypeClass(OverlayType iconset, const char* ininame, int fullname,
                    LandType ground, int damagelevels, int damagepoints,
-                   bool isradarinvisible, bool iswooden, bool istarget,
+                   bool isradarvisible, bool iswooden, bool istarget,
                    bool iscrushable, bool istiberium, bool high, bool theater,
-                   bool iswall, bool iscrate) noexcept;
+                   bool walltype, bool iscrate) noexcept;
   [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_OVERLAYTYPE; }
 
   static OverlayType From_Name(const char* name);

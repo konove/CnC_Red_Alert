@@ -67,7 +67,7 @@ class TurretClass : public DriveClass {
   FacingClass SecondaryFacing;
 
   void Debug_Dump(MonoClass* mono) const override;
-  bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
+  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
 
   /*
   **	File I/O.
@@ -82,7 +82,7 @@ class TurretClass : public DriveClass {
   BulletClass* Fire_At(TARGET target, int which) override;
   DirType Fire_Direction() const override;
   FireErrorType Can_Fire(TARGET target, int which) const override;
-  bool Ok_To_Move(DirType facing) override;
+  bool Ok_To_Move(DirType dir) override;
   void AI() override;
   COORDINATE Fire_Coord(int which) const override;
 

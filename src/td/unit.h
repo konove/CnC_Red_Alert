@@ -119,7 +119,7 @@ class UnitClass final : public TarComClass {
   /*
   **	Object entry and exit from the game system.
   */
-  bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
+  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
   bool Limbo() override;
 
   /*
@@ -156,7 +156,7 @@ class UnitClass final : public TarComClass {
   **	occupation flags and driver instructions.
   */
   bool Stop_Driver() override;
-  bool Start_Driver(COORDINATE& coord) override;
+  bool Start_Driver(COORDINATE& headto) override;
 
   /*
   **	AI.

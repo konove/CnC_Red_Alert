@@ -86,7 +86,7 @@ class ListClass : public ControlClass {
   virtual const char* Current_Item();
   int Draw_Me(bool forced) override;
   [[nodiscard]] virtual const char* Get_Item(int index) const;
-  virtual int Step_Selected_Index(int forward);
+  virtual int Step_Selected_Index(int step);
 
   void Peer_To_Peer(unsigned flags, KeyNumType& key,
                     ControlClass& whom) override;
@@ -101,9 +101,9 @@ class ListClass : public ControlClass {
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  LinkClass& Add(LinkClass& object) override;
-  LinkClass& Add_Tail(LinkClass& object) override;
-  LinkClass& Add_Head(LinkClass& object) override;
+  LinkClass& Add(LinkClass& list) override;
+  LinkClass& Add_Tail(LinkClass& list) override;
+  LinkClass& Add_Head(LinkClass& list) override;
   GadgetClass* Remove() override;
 
  protected:

@@ -87,7 +87,7 @@ class MonoClass {
   void Set_Default_Attribute(MonoAttribute attrib) { Attrib = attrib; }
   void Clear();
   void Set_Cursor(int x, int y);
-  void Print(const char* text);
+  void Print(const char* ptr);
   void Print(int text);
   void Printf(const char* text, ...);
   void Printf(int text, ...);

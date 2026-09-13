@@ -347,10 +347,10 @@ class ScenarioClass {
 void Disect_Scenario_Name(const char* name, int& scenario,
                           ScenarioPlayerType& player, ScenarioDirType& dir,
                           ScenarioVarType& var);
-void Post_Load_Game(int load_net);
+void Post_Load_Game(int load_multi);
 bool End_Game();
-bool Read_Scenario(char* root);
-bool Start_Scenario(char* root, bool briefing = true);
+bool Read_Scenario(char* name);
+bool Start_Scenario(char* name, bool briefing = true);
 HousesType Select_House();
 void Clear_Scenario();
 void Do_Briefing(const char* text);
@@ -379,7 +379,7 @@ BriefingAction Restate_Mission();
 // Shows a briefing message box with up to two buttons. Long text is
 // automatically paginated with a "MORE" button. Fades to black on first page.
 // Returns the text ID of the button that was clicked (left_btn or right_btn).
-int ShowBriefingMessageBox(std::string_view text, int left_btn, int right_btn,
+int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
                            bool fade_to_black = true);
 
 class ArchiveReader;

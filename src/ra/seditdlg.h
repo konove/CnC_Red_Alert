@@ -31,10 +31,9 @@ extern bool disable_current_msgbox;
 
 class SimpleEditDlgClass {
  public:
-  SimpleEditDlgClass(int iDialogWidth, const char* szTitle,
-                     const char* szPrompt, int iEditCharsAccept,
-                     const char* szPrompt2 = nullptr,
-                     int iEditCharsAccept2 = 0);
+  SimpleEditDlgClass(int dialog_width, const char* szTitle,
+                     const char* szPrompt, int chars_accept,
+                     const char* szPrompt2 = nullptr, int chars_accept2 = 0);
   virtual ~SimpleEditDlgClass();
   SimpleEditDlgClass(const SimpleEditDlgClass&) = delete;
   SimpleEditDlgClass& operator=(const SimpleEditDlgClass&) = delete;

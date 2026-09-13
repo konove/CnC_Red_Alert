@@ -50,7 +50,7 @@
 class PacketClass {
  public:
   explicit PacketClass(short id = 0) : Size(0), ID(id), Head(nullptr) {}
-  explicit PacketClass(char* cur_buf);
+  explicit PacketClass(char* curbuf);
   ~PacketClass();
 
   PacketClass(const PacketClass&) = delete;

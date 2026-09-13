@@ -31,8 +31,8 @@
 
 class ToolTipClass {
  public:
-  ToolTipClass(GadgetClass* pGadget, const char* szText, int xShow, int yShow,
-               bool bRightAlign = false, bool bIconList = false);
+  ToolTipClass(GadgetClass* pGadget, const char* szText, int x_show, int y_show,
+               bool right_align = false, bool icon_list = false);
   ~ToolTipClass() { delete[] pSaveRect; }
   ToolTipClass(const ToolTipClass&) = delete;
   ToolTipClass& operator=(const ToolTipClass&) = delete;

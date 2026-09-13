@@ -106,7 +106,7 @@ class MissionClass : public ObjectClass {
 
   void Shorten_Mission_Timer() { MissionTimer.Set(0); }
   [[nodiscard]] MissionType Get_Mission() const override;
-  virtual void Assign_Mission(MissionType mission);
+  virtual void Assign_Mission(MissionType order);
   virtual bool Commence();
   void AI() override;
 
@@ -134,7 +134,7 @@ class MissionClass : public ObjectClass {
   virtual void Set_Mission(MissionType mission);
   static bool Is_Recruitable_Mission(MissionType mission);
 
-  static const char* Mission_Name(MissionType order);
+  static const char* Mission_Name(MissionType mission);
   static MissionType Mission_From_Name(const char* name);
   virtual void Override_Mission(MissionType mission, TARGET, TARGET);
   virtual bool Restore_Mission();

@@ -55,9 +55,9 @@ class LinkClass {
 
   [[nodiscard]] virtual LinkClass* Get_Next() const;
   [[nodiscard]] virtual LinkClass* Get_Prev() const;
-  virtual LinkClass& Add(LinkClass& object);
-  virtual LinkClass& Add_Tail(LinkClass& object);
-  virtual LinkClass& Add_Head(LinkClass& object);
+  virtual LinkClass& Add(LinkClass& list);
+  virtual LinkClass& Add_Tail(LinkClass& list);
+  virtual LinkClass& Add_Head(LinkClass& list);
   virtual LinkClass& Head_Of_List() final;
   virtual LinkClass& Tail_Of_List() final;
   virtual void Zap();

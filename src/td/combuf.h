@@ -92,7 +92,7 @@ class CommBufferClass {
   /*
   ....................... Constructor/Destructor ........................
   */
-  CommBufferClass(int numsend, int numrecieve, int maxlen);
+  CommBufferClass(int numsend, int numreceive, int maxlen);
   virtual ~CommBufferClass();
   CommBufferClass(const CommBufferClass&) = delete;
   CommBufferClass& operator=(const CommBufferClass&) = delete;

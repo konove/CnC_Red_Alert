@@ -184,7 +184,7 @@ class UnitClass final : public DriveClass {
   [[nodiscard]] int Pip_Count() const override;
   [[nodiscard]] InfantryType Crew_Type() const override;
   [[nodiscard]] DirType Fire_Direction() const override;
-  [[nodiscard]] bool Ok_To_Move(DirType facing) const override;
+  [[nodiscard]] bool Ok_To_Move(DirType dir) const override;
   [[nodiscard]] FireErrorType Can_Fire(TARGET target, int which) const override;
   [[nodiscard]] fixed Tiberium_Load() const override;
 
@@ -198,7 +198,7 @@ class UnitClass final : public DriveClass {
   **	Object entry and exit from the game system.
   */
   bool Limbo() override;
-  bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
+  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
@@ -227,7 +227,7 @@ class UnitClass final : public DriveClass {
   **	Driver control support functions. These are used to control cell
   **	occupation flags and driver instructions.
   */
-  bool Start_Driver(COORDINATE& coord) override;
+  bool Start_Driver(COORDINATE& headto) override;
 
   /*
   **	AI.

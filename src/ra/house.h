@@ -695,7 +695,7 @@ class HouseClass {
   [[nodiscard]] bool Is_Hack_Prevented(RTTIType rtti, int value) const;
   [[nodiscard]] bool Is_No_YakMig() const;
   int Expert_AI();
-  void Production_Begun(const TechnoClass* rtti);
+  void Production_Begun(const TechnoClass* product);
   void Sell_Wall(CELL cell);
   bool Flag_To_Die();
   bool Flag_To_Win();
@@ -731,7 +731,7 @@ class HouseClass {
       bool blushing = false, RemapType remap = REMAP_NORMAL) const;
 
   [[nodiscard]] const TechnoTypeClass* Suggest_New_Object(
-      RTTIType objectype, bool kennel = false) const;
+      RTTIType objecttype, bool kennel = false) const;
   [[nodiscard]] const BuildingTypeClass* Suggest_New_Building() const;
   void Recalc_Center();
   [[nodiscard]] bool Does_Enemy_Building_Exist(StructType) const;

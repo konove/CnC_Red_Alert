@@ -155,7 +155,7 @@ class ConnectionClass {
   /*.....................................................................
   Constructor/destructor.
   .....................................................................*/
-  ConnectionClass(int numsend, int numrecieve, int maxlen,
+  ConnectionClass(int numsend, int numreceive, int maxlen,
                   unsigned short magicnum, unsigned long retry_delta,
                   unsigned long max_retries, unsigned long timeout,
                   int extralen = 0);

@@ -69,21 +69,21 @@ class ThemeClass {
   ThemeClass();
 
   ThemeType From_Name(const char* name) const;
-  [[nodiscard]] ThemeType Next_Song(ThemeType index) const;
+  [[nodiscard]] ThemeType Next_Song(ThemeType theme) const;
   [[nodiscard]] ThemeType What_Is_Playing() const { return Score; }
   [[nodiscard]] bool Is_Allowed(ThemeType index) const;
   [[nodiscard]] bool Is_Regular(ThemeType theme) const {
     return theme != THEME_NONE && _themes[theme].Normal;
   }
-  [[nodiscard]] const char* Base_Name(ThemeType index) const;
-  [[nodiscard]] const char* Full_Name(ThemeType index) const;
-  int Play_Song(ThemeType index);
+  [[nodiscard]] const char* Base_Name(ThemeType theme) const;
+  [[nodiscard]] const char* Full_Name(ThemeType theme) const;
+  int Play_Song(ThemeType theme);
   [[nodiscard]] int Still_Playing() const;
-  [[nodiscard]] int Track_Length(ThemeType index) const;
+  [[nodiscard]] int Track_Length(ThemeType theme) const;
   static void Scan();
   void AI();
   void Fade_Out() { Queue_Song(THEME_QUIET); }
-  void Queue_Song(ThemeType index);
+  void Queue_Song(ThemeType theme);
   void Set_Theme_Data(ThemeType theme, int scenario, int owners);
   void Stop();
   void Suspend();

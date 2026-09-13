@@ -88,7 +88,7 @@ class ListClass : public ControlClass {
   [[nodiscard]] virtual const char* Current_Item() const;
   int Draw_Me(bool forced) override;
   [[nodiscard]] virtual const char* Get_Item(int index) const;
-  virtual int Step_Selected_Index(int forward);
+  virtual int Step_Selected_Index(int step);
   void Flag_To_Redraw() final;
 
   void Peer_To_Peer(unsigned flags, KeyNumType& key,
@@ -107,9 +107,9 @@ class ListClass : public ControlClass {
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  LinkClass& Add(LinkClass& object) override;
-  LinkClass& Add_Tail(LinkClass& object) override;
-  LinkClass& Add_Head(LinkClass& object) override;
+  LinkClass& Add(LinkClass& list) override;
+  LinkClass& Add_Tail(LinkClass& list) override;
+  LinkClass& Add_Head(LinkClass& list) override;
   GadgetClass* Remove() override;
 
  protected:
@@ -188,7 +188,7 @@ class TListClass final : public ControlClass {
   [[nodiscard]] int Current_Index() const;
   T Current_Item() const;
   int Draw_Me(bool forced) override;
-  int Step_Selected_Index(int forward);
+  int Step_Selected_Index(int step);
   void Flag_To_Redraw() override;
   [[nodiscard]] T Get_Item(int index) const { return List[index]; }
 
@@ -198,7 +198,7 @@ class TListClass final : public ControlClass {
   void Remove_Index(int);
   int Remove_Scroll_Bar();
   void Set_Selected_Index(int index);
-  void Set_Selected_Index(T item);
+  void Set_Selected_Index(T text);
   void Set_Tabs(const int* tabs);
   int Set_View_Index(int index);
   void Step(int up);
@@ -208,9 +208,9 @@ class TListClass final : public ControlClass {
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  LinkClass& Add(LinkClass& object) override;
-  LinkClass& Add_Tail(LinkClass& object) override;
-  LinkClass& Add_Head(LinkClass& object) override;
+  LinkClass& Add(LinkClass& list) override;
+  LinkClass& Add_Tail(LinkClass& list) override;
+  LinkClass& Add_Head(LinkClass& list) override;
   GadgetClass* Remove() override;
 
  protected:

@@ -96,7 +96,7 @@ class AircraftClass : public FootClass, public FlyClass {
   int Mission_Guard() override;
   int Mission_Guard_Area() override;
 
-  void Assign_Destination(TARGET target) override;
+  void Assign_Destination(TARGET dest) override;
   /*
   **	State machine support routines.
   */
@@ -119,10 +119,10 @@ class AircraftClass : public FootClass, public FlyClass {
   }
   ActionType What_Action(const ObjectClass* target) const override;
   [[nodiscard]] ActionType What_Action(CELL cell) const override;
-  DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
+  DirType Desired_Load_Dir(ObjectClass* object, CELL& moveto) const override;
   [[nodiscard]] int Pip_Count() const override;
   [[nodiscard]] TARGET Good_Fire_Location(TARGET target) const;
-  [[nodiscard]] bool Cell_Seems_Ok(CELL cell, bool landing = false) const;
+  [[nodiscard]] bool Cell_Seems_Ok(CELL cell, bool strict = false) const;
   [[nodiscard]] DirType Pose_Dir() const;
   [[nodiscard]] TARGET Good_LZ() const;
   [[nodiscard]] DirType Fire_Direction() const override;
@@ -144,7 +144,7 @@ class AircraftClass : public FootClass, public FlyClass {
   /*
   **	Object entry and exit from the game system.
   */
-  bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
+  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how

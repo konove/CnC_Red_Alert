@@ -70,7 +70,7 @@ class NonSequencedConnClass : public ConnectionClass {
   /*.....................................................................
   Constructor/destructor.
   .....................................................................*/
-  NonSequencedConnClass(int numsend, int numrecieve, int maxlen,
+  NonSequencedConnClass(int numsend, int numreceive, int maxlen,
                         unsigned short magicnum, unsigned long retry_delta,
                         unsigned long max_retries, unsigned long timeout);
   ~NonSequencedConnClass() override;

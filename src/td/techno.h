@@ -233,7 +233,7 @@ class TechnoClass : public RadioClass,
   [[nodiscard]] virtual int Risk() const;
   [[nodiscard]] int Value() const override;
   [[nodiscard]] virtual int Rearm_Delay(bool second = true) const;
-  ActionType What_Action(ObjectClass* target) override;
+  ActionType What_Action(ObjectClass* object) override;
   [[nodiscard]] ActionType What_Action(CELL cell) const override;
   [[nodiscard]] virtual int Tiberium_Load() const;
   virtual DirType Desired_Load_Dir(ObjectClass*, CELL& moveto) const;
@@ -248,7 +248,7 @@ class TechnoClass : public RadioClass,
   virtual void Response_Select();
   virtual void Response_Move();
   virtual void Response_Attack();
-  virtual void Player_Assign_Mission(MissionType order,
+  virtual void Player_Assign_Mission(MissionType mission,
                                      TARGET target = kTargetNone,
                                      TARGET destination = kTargetNone);
 
@@ -268,7 +268,7 @@ class TechnoClass : public RadioClass,
       const TechnoClass* source = nullptr) const = 0;
   [[nodiscard]] virtual FireErrorType Can_Fire(TARGET target,
                                                int which = 0) const;
-  [[nodiscard]] virtual TARGET Greatest_Threat(ThreatType threat) const;
+  [[nodiscard]] virtual TARGET Greatest_Threat(ThreatType method) const;
   virtual void Assign_Target(TARGET target);
   void Override_Mission(MissionType mission, TARGET tarcom,
                         TARGET navcom) override;
@@ -333,7 +333,7 @@ class TechnoClass : public RadioClass,
   /*
   **	Map entry and exit logic.
   */
-  bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
+  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
   void Detach(TARGET target, bool all) override;
 
   /*

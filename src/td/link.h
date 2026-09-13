@@ -55,9 +55,9 @@ class LinkClass {
 
   [[nodiscard]] virtual LinkClass* Get_Next() const;
   [[nodiscard]] virtual LinkClass* Get_Prev() const;
-  virtual LinkClass& Add(LinkClass& object);
-  virtual LinkClass& Add_Tail(LinkClass& object);
-  virtual LinkClass& Add_Head(LinkClass& object);
+  virtual LinkClass& Add(LinkClass& list);
+  virtual LinkClass& Add_Tail(LinkClass& list);
+  virtual LinkClass& Add_Head(LinkClass& list);
   [[nodiscard]] virtual const LinkClass& Head_Of_List() const final;
   virtual LinkClass& Head_Of_List() final {
     return (LinkClass&)static_cast<const LinkClass*>(this)->Head_Of_List();

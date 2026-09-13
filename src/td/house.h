@@ -449,7 +449,7 @@ class HouseClass {
                                                  bool unit = false) const;
 
   [[nodiscard]] const TechnoTypeClass* Suggest_New_Object(
-      RTTIType objectype) const;
+      RTTIType objecttype) const;
   [[nodiscard]] bool Does_Enemy_Building_Exist(StructType) const;
   void Harvested(unsigned tiberium);
   [[nodiscard]] int64_t Available_Money() const;

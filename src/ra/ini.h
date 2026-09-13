@@ -72,7 +72,7 @@ class INIClass {
   bool Load(FileClass& file);
   bool Load(Straw& file);
   int Save(FileClass& file) const;
-  int Save(Pipe& file) const;
+  int Save(Pipe& pipe) const;
 
   /*
   **	Erase all data within this INI file manager.
@@ -115,7 +115,7 @@ class INIClass {
   bool Get_Bool(const char* section, const char* entry,
                 bool defvalue = false) const;
   int Get_TextBlock(const char* section, char* buffer, int len) const;
-  int Get_UUBlock(const char* section, void* buffer, int len) const;
+  int Get_UUBlock(const char* section, void* block, int len) const;
   [[nodiscard]] PKey Get_PKey(bool fast) const;
   fixed Get_Fixed(const char* section, const char* entry, fixed defvalue) const;
 
@@ -196,8 +196,8 @@ class INIClass {
   IndexClass<INISection*> SectionIndex;
 };
 
-void Write_Scenario_INI(char* root);
-bool Read_Scenario_INI(char* root, bool fresh = true);
+void Write_Scenario_INI(char* fname);
+bool Read_Scenario_INI(char* fname, bool fresh = true);
 int Scan_Place_Object(ObjectClass* obj, CELL cell);
 void Assign_Houses();
 

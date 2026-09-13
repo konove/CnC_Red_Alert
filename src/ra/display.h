@@ -135,13 +135,13 @@ class DisplayClass : public MapClass {
   **	General display/map/interface support functionality.
   */
   void AI(KeyNumType& input, int x, int y) override;
-  void Draw_It(bool complete = false) override;
+  void Draw_It(bool forced = false) override;
 
   /*
   **	Added functionality.
   */
   void All_To_Look(bool units_only = false);
-  void Constrained_Look(COORDINATE coord, LEPTON distance);
+  void Constrained_Look(COORDINATE center, LEPTON distance);
   void Shroud_Cell(CELL cell /*KO, bool shadeit = false*/);
   void Encroach_Shadow();
   void Center_Map(COORDINATE center = 0L);

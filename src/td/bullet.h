@@ -105,7 +105,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   static void Init();
 
   virtual void Assign_Target(TARGET target) { TarCom = target; }
-  bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
+  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
   [[nodiscard]] LayerType In_Which_Layer() const override { return LAYER_TOP; }
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;

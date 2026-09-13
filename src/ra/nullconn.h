@@ -81,7 +81,7 @@ class NullModemConnClass : public ConnectionClass {
   /*.....................................................................
   Constructor/destructor.
   .....................................................................*/
-  NullModemConnClass(int numsend, int numrecieve, int maxlen,
+  NullModemConnClass(int numsend, int numreceive, int maxlen,
                      unsigned short magicnum);
   ~NullModemConnClass() override;
   NullModemConnClass(const NullModemConnClass&) = delete;

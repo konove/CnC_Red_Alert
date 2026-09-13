@@ -62,23 +62,24 @@ void XMP_Inc(uint32_t* r, int precision);
 void XMP_Dec(uint32_t* r, int precision);
 void XMP_Neg(uint32_t* r, int precision);
 void XMP_Abs(uint32_t* r, int precision);
-void XMP_Shift_Right_Bits(uint32_t* r1, int bits, int precision);
-void XMP_Shift_Left_Bits(uint32_t* r1, int bits, int precision);
-bool XMP_Rotate_Left(uint32_t* r1, bool carry, int precision);
-void XMP_Not(uint32_t* digit_ptr, int precision);
+void XMP_Shift_Right_Bits(uint32_t* number, int bits, int precision);
+void XMP_Shift_Left_Bits(uint32_t* number, int bits, int precision);
+bool XMP_Rotate_Left(uint32_t* number, bool carry, int precision);
+void XMP_Not(uint32_t* number, int precision);
 void XMP_Init(uint32_t* r, uint32_t value, int precision);
 unsigned XMP_Count_Bits(const uint32_t* r, int precision);
 int XMP_Count_Bytes(const uint32_t* r, int precision);
 void XMP_Move(uint32_t* dest, const uint32_t* source, int precision);
-int XMP_Compare(const uint32_t* r1, const uint32_t* r2, int precision);
-bool XMP_Add(uint32_t* result, const uint32_t* r1, const uint32_t* r2,
-             bool carry, int precision);
-bool XMP_Add_Int(uint32_t* result, const uint32_t* r1, uint32_t r2, bool carry,
-                 int precision);
-bool XMP_Sub(uint32_t* result, const uint32_t* r1, const uint32_t* r2,
-             bool borrow, int precision);
-bool XMP_Sub_Int(uint32_t* result, const uint32_t* r1, unsigned short r2,
-                 bool borrow, int precision);
+int XMP_Compare(const uint32_t* left_number, const uint32_t* right_number,
+                int precision);
+bool XMP_Add(uint32_t* result, const uint32_t* left_number,
+             const uint32_t* right_number, bool carry, int precision);
+bool XMP_Add_Int(uint32_t* result, const uint32_t* left_number,
+                 uint32_t right_number, bool carry, int precision);
+bool XMP_Sub(uint32_t* result, const uint32_t* left_number,
+             const uint32_t* right_number, bool borrow, int precision);
+bool XMP_Sub_Int(uint32_t* result, const uint32_t* left_number,
+                 unsigned short right_number, bool borrow, int precision);
 int XMP_Unsigned_Mult(uint32_t* prod, const uint32_t* multiplicand,
                       const uint32_t* multiplier, int precision);
 int XMP_Unsigned_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
@@ -123,7 +124,7 @@ void XMP_Unsigned_Decode(uint32_t* result, const unsigned char* from,
 unsigned XMP_Encode(unsigned char* to, const uint32_t* from, int precision);
 unsigned XMP_Encode(unsigned char* to, unsigned tobytes, const uint32_t* from,
                     int precision);
-void XMP_Randomize(uint32_t* result, Straw& rng, int nbits, int precision);
+void XMP_Randomize(uint32_t* result, Straw& rng, int total_bits, int precision);
 void XMP_Randomize(uint32_t* result, Straw& rng, const uint32_t* min,
                    const uint32_t* max, int precision);
 bool XMP_Is_Prime(const uint32_t* prime, int precision);

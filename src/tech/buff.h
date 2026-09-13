@@ -48,9 +48,9 @@
 */
 class Buffer {
  public:
-  explicit Buffer(char* ptr, long size = 0);
-  explicit Buffer(void* ptr = nullptr, long size = 0);
-  explicit Buffer(const void* ptr, long size = 0);
+  explicit Buffer(char* buffer, long size = 0);
+  explicit Buffer(void* buffer = nullptr, long size = 0);
+  explicit Buffer(const void* buffer, long size = 0);
   explicit Buffer(long size);
   Buffer(const Buffer&) = delete;
   Buffer& operator=(const Buffer&) = delete;

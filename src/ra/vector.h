@@ -53,7 +53,7 @@ class VectorClass {
   virtual void Clear();
   [[nodiscard]] base::ssize Length() const { return VectorMax; }
   virtual base::ssize ID(const T* ptr);  // Pointer based identification.
-  virtual base::ssize ID(const T& ptr);  // Value based identification.
+  virtual base::ssize ID(const T& object);  // Value based identification.
 
  protected:
   T* Vector;                // Pointer to element array.

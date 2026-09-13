@@ -83,10 +83,10 @@ class AircraftClass : public FootClass, public FlyClass {
   const ObjectTypeClass& Class_Of() const override { return *Class; }
   ActionType What_Action(ObjectClass* target) override;
   ActionType What_Action(CELL cell) const override;
-  DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
+  DirType Desired_Load_Dir(ObjectClass* object, CELL& moveto) const override;
   int Pip_Count() const override;
   TARGET Good_Fire_Location(TARGET target) const;
-  bool Cell_Seems_Ok(CELL cell, bool landing = false) const;
+  bool Cell_Seems_Ok(CELL cell, bool strict = false) const;
   DirType Pose_Dir() const;
   TARGET Good_LZ() const;
   DirType Fire_Direction() const override;
@@ -101,7 +101,7 @@ class AircraftClass : public FootClass, public FlyClass {
   COORDINATE Target_Coord() const override;
 
   // Object entry and exit from the game system.
-  bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
+  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
