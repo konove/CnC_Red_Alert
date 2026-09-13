@@ -81,6 +81,13 @@ add_gtest(
 )
 target_compile_definitions(td_heap_test PRIVATE TD=1)
 
+add_gtest(
+    NAME td_fixedmath_test
+    SOURCES fixedmath_test.cc fixedmath.cc
+    LIBS tech
+)
+target_compile_definitions(td_fixedmath_test PRIVATE TD=1)
+
 if (EMSCRIPTEN)
     set_target_properties(tdsdl PROPERTIES
             SUFFIX ".html"

@@ -735,9 +735,10 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
                   if (IsOwnedByPlayer || bldg->IsOwnedByPlayer) {
                     Speak(VOX_MONEY_STOLEN);
                   }
-                  long cash = bldg->House->Available_Money() / 2;
-                  bldg->House->Spend_Money(static_cast<unsigned int>(cash));
-                  House->Refund_Money(static_cast<unsigned int>(cash));
+                  const int cash =
+                      static_cast<int>(bldg->House->Available_Money() / 2);
+                  bldg->House->Spend_Money(cash);
+                  House->Refund_Money(cash);
                 }
               }
             }

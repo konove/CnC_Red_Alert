@@ -170,6 +170,13 @@ add_gtest(
 )
 apply_language_setting(ra_saveglobals_test)
 
+add_gtest(
+    NAME ra_fixed_point_test
+    SOURCES fixed_point_test.cc
+    LIBS base tech absl::check absl::log magic_enum::magic_enum
+)
+apply_language_setting(ra_fixed_point_test)
+
 
 if (EMSCRIPTEN)
     set_target_properties(rasdl PROPERTIES

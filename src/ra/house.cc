@@ -1853,10 +1853,11 @@ void HouseClass::Attacked() {
  *                                                                                             *
  * HISTORY: * 01/25/1995 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Harvested(unsigned tiberium) {
+void HouseClass::Harvested(int tiberium) {
   CHECK_EQ(Houses.ID(this), ID);
+  DCHECK(tiberium >= 0);
 
-  long oldtib = Tiberium;
+  int64_t oldtib = Tiberium;
 
   Tiberium += tiberium;
   if (Tiberium > Capacity) {
@@ -1885,7 +1886,7 @@ void HouseClass::Harvested(unsigned tiberium) {
  *                                                                                             *
  * HISTORY: * 09/05/1996 BWG : Created. *
  *=============================================================================================*/
-void HouseClass::Stole(unsigned worth) {
+void HouseClass::Stole(int worth) {
   CHECK_EQ(Houses.ID(this), ID);
 
   StolenBuildingsCredits += worth;
@@ -1906,7 +1907,7 @@ void HouseClass::Stole(unsigned worth) {
  *                                                                                             *
  * HISTORY: * 01/25/1995 JLB : Created. *
  *=============================================================================================*/
-long HouseClass::Available_Money() const {
+int64_t HouseClass::Available_Money() const {
   CHECK_EQ(Houses.ID(this), ID);
 
   return Tiberium + Credits;
@@ -1929,12 +1930,13 @@ long HouseClass::Available_Money() const {
  * HISTORY: * 01/25/1995 JLB : Created. * 06/20/1995 JLB : Spends Tiberium
  *before spending cash.                                    *
  *=============================================================================================*/
-void HouseClass::Spend_Money(unsigned money) {
+void HouseClass::Spend_Money(int money) {
   CHECK_EQ(Houses.ID(this), ID);
+  DCHECK(money >= 0);
 
-  long oldtib = Tiberium;
-  if (std::cmp_greater(money, Tiberium)) {
-    money -= static_cast<unsigned>(Tiberium);
+  int64_t oldtib = Tiberium;
+  if (money > Tiberium) {
+    money -= static_cast<int>(Tiberium);
     Tiberium = 0;
     Credits -= money;
   } else {
@@ -1962,8 +1964,9 @@ void HouseClass::Spend_Money(unsigned money) {
  * HISTORY: * 01/25/1995 JLB : Created. * 06/01/1995 JLB : Refunded money is
  *never lost                                             *
  *=============================================================================================*/
-void HouseClass::Refund_Money(unsigned money) {
+void HouseClass::Refund_Money(int money) {
   CHECK_EQ(Houses.ID(this), ID);
+  DCHECK(money >= 0);
 
   Credits += money;
 }
@@ -2026,7 +2029,7 @@ int HouseClass::Adjust_Capacity(int adjust, bool inanger) {
  *                                                                                             *
  * HISTORY: * 02/02/1995 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Silo_Redraw_Check(long oldtib, long oldcap) {
+void HouseClass::Silo_Redraw_Check(int64_t oldtib, int64_t oldcap) {
   CHECK_EQ(Houses.ID(this), ID);
 
   int oldratio = 0;

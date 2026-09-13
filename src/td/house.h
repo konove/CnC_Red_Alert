@@ -255,8 +255,8 @@ class HouseClass {
   **	Record of gains and losses for this house during the course of the
   **	scenario.
   */
-  unsigned CreditsSpent = 0;
-  unsigned HarvestedCredits = 0;
+  int CreditsSpent = 0;
+  int HarvestedCredits = 0;
 
   /*
   **	This is the running count of the number of units owned by this house.
@@ -455,10 +455,13 @@ class HouseClass {
   [[nodiscard]] const TechnoTypeClass* Suggest_New_Object(
       RTTIType objecttype) const;
   [[nodiscard]] bool Does_Enemy_Building_Exist(StructType /*btype*/) const;
-  void Harvested(unsigned tiberium);
+  // "tiberium" must not be negative.
+  void Harvested(int tiberium);
   [[nodiscard]] int64_t Available_Money() const;
-  void Spend_Money(unsigned money);
-  void Refund_Money(unsigned money);
+  // "money" must not be negative.
+  void Spend_Money(int money);
+  // "money" must not be negative.
+  void Refund_Money(int money);
   void Attacked();
   void Adjust_Power(int adjust) { Power += adjust; }
   void Adjust_Drain(int adjust) { Drain += adjust; }

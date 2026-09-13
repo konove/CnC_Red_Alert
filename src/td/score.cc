@@ -705,13 +705,12 @@ void ScoreClass::Presentation() {
   anim = Open_Animation(ScreenNames[house], nullptr, 0L,
                         WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, Palette);
 
-  unsigned minutes =
-      static_cast<unsigned>(ElapsedTime / (long)kTimerMinute) + 1;
+  int minutes = static_cast<int>(ElapsedTime / kTimerMinute) + 1;
 
   /*
   **	Determine leadership rating.
   */
-  unsigned leadership = 0;
+  int leadership = 0;
   for (int index = 0; index < Logic.Count(); index++) {
     ObjectClass* object = Logic[index];
     if (object->Owner() == house) {
@@ -743,25 +742,25 @@ void ScoreClass::Presentation() {
   }
   leadership = Cardinal_To_Fixed(GKilled + GBKilled + leadership, leadership);
   leadership = Fixed_To_Cardinal(100, leadership);
-  leadership = std::min<unsigned int>(leadership, 100);
+  leadership = std::min(leadership, 100);
 
   /*
   **	Determine efficiency rating.
   */
-  unsigned efficiency = Cardinal_To_Fixed(
+  int efficiency = Cardinal_To_Fixed(
       (house == HOUSE_GOOD ? GHarvested : NHarvested) +
-          static_cast<unsigned>(PlayerPtr->InitialCredits) + 1,
-      static_cast<unsigned>(PlayerPtr->Available_Money()) + 1);
+          static_cast<int>(PlayerPtr->InitialCredits) + 1,
+      static_cast<int>(PlayerPtr->Available_Money()) + 1);
   if (!efficiency) {
     efficiency++;
   }
   efficiency = Fixed_To_Cardinal(100, efficiency);
 
-  efficiency = std::min<unsigned int>(efficiency, 100);
+  efficiency = std::min(efficiency, 100);
   /*
   ** Calculate total score
   */
-  long total = ((leadership * 40) + 4600 + (efficiency * 14)) / 100;
+  int total = ((leadership * 40) + 4600 + (efficiency * 14)) / 100;
   if (!total) {
     total++;
   }
@@ -855,8 +854,8 @@ void ScoreClass::Presentation() {
       Count_Up_Print("%3d%%", i - 30, efficiency, 264, 38);
     }
     if (i >= 60) {
-      Count_Up_Print("%3d", scorecounter, static_cast<int>(total), 264, 50);
-      scorecounter = static_cast<int>(scorecounter + (total / 100));
+      Count_Up_Print("%3d", scorecounter, total, 264, 50);
+      scorecounter = scorecounter + (total / 100);
     }
     Print_Minutes(minutes);
     Call_Back_Delay(1);
@@ -866,7 +865,7 @@ void ScoreClass::Presentation() {
       Keyboard::Clear();
     }
   }
-  Count_Up_Print("%3d", static_cast<int>(total), static_cast<int>(total), 264, 50);
+  Count_Up_Print("%3d", total, total, 264, 50);
 
   Call_Back_Delay(60);
 
@@ -990,7 +989,7 @@ void ScoreClass::Presentation() {
           hallfame[i] = hallfame[i - 1];
         }
       }
-      hallfame[index].score = static_cast<int>(total);
+      hallfame[index].score = total;
       hallfame[index].level = Scenario;
       //			hallfame[index].level = BuildLevel;
       // hallfame[index].name[0] = 0;	// blank out the name

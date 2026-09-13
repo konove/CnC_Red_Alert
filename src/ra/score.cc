@@ -477,10 +477,10 @@ void ScoreClass::Presentation() {
   */
   int economy =
       100 *
-      fixed(static_cast<unsigned>(PlayerPtr->Available_Money()) + 1 +
+      fixed(static_cast<int>(PlayerPtr->Available_Money()) + 1 +
                 PlayerPtr->StolenBuildingsCredits,
             PlayerPtr->HarvestedCredits +
-                static_cast<unsigned>(PlayerPtr->Control.InitialCredits) + 1);
+                static_cast<int>(PlayerPtr->Control.InitialCredits) + 1);
   economy = std::min(economy, 150);
 
   int total = (uspoints * leadership / 100) + (uspoints * economy / 100);

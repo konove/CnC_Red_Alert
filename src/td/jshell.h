@@ -191,9 +191,13 @@ inline int Bound(int original, int minval, int maxval) {
   return std::clamp(original, minval, maxval);
 }
 
-unsigned Fixed_To_Cardinal(unsigned base, unsigned fixed);
+// Returns the rounded "fixed" fraction of "base", where "fixed" is 0x100 for
+// one; 0xFFFF if the product does not fit in 24 bits.
+int Fixed_To_Cardinal(int base, int fixed);
 
-unsigned Cardinal_To_Fixed(unsigned base, unsigned cardinal);
+// Returns "cardinal" as a fixed-point fraction of "base", where 0x100 is one;
+// 0xFFFF if "base" is zero.
+int Cardinal_To_Fixed(int base, int cardinal);
 
 // Prints a printf-style message to stderr and exits with a failure code. The
 // format attribute both type-checks every call site and tells the compiler the

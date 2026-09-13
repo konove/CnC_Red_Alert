@@ -430,8 +430,8 @@ class HouseClass {
   **	Record of gains and losses for this house during the course of the
   **	scenario.
   */
-  unsigned CreditsSpent = 0;
-  unsigned HarvestedCredits = 0;
+  int CreditsSpent = 0;
+  int HarvestedCredits = 0;
   int StolenBuildingsCredits = 0;
 
   /*
@@ -739,11 +739,15 @@ class HouseClass {
   [[nodiscard]] const BuildingTypeClass* Suggest_New_Building() const;
   void Recalc_Center();
   [[nodiscard]] bool Does_Enemy_Building_Exist(StructType /*btype*/) const;
-  void Harvested(unsigned tiberium);
-  void Stole(unsigned worth);
-  [[nodiscard]] long Available_Money() const;
-  void Spend_Money(unsigned money);
-  void Refund_Money(unsigned money);
+  // "tiberium" must not be negative.
+  void Harvested(int tiberium);
+  // "worth" is negative when a captured building is sold back.
+  void Stole(int worth);
+  [[nodiscard]] int64_t Available_Money() const;
+  // "money" must not be negative.
+  void Spend_Money(int money);
+  // "money" must not be negative.
+  void Refund_Money(int money);
   void Attacked();
   void Adjust_Power(int adjust);
   void Adjust_Drain(int adjust);
@@ -858,7 +862,7 @@ class HouseClass {
   friend class MapEditClass;
 
  private:
-  void Silo_Redraw_Check(long oldtib, long oldcap);
+  void Silo_Redraw_Check(int64_t oldtib, int64_t oldcap);
   int AI_Building();
   int AI_Unit();
   int AI_Vessel();

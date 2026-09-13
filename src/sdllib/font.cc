@@ -36,7 +36,7 @@ int Char_Pixel_Width(const char chr) {
   return FontView(FontPtr).GlyphWidth(static_cast<uint8_t>(chr)) + FontXSpacing;
 }
 
-unsigned int String_Pixel_Width(const char* string) {
+int String_Pixel_Width(const char* string) {
   if (!string) {
     return 0;
   }

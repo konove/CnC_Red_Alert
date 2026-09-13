@@ -73,8 +73,8 @@
 static int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
                                  int iny2);
 static int Select_To_Entry(int select, unsigned long bitfield, int index);
-static void Flash_Line(const char* text, int xpix, int ypix, unsigned nfgc,
-                       unsigned hfgc, unsigned bgc);
+static void Flash_Line(const char* text, int xpix, int ypix, int nfgc,
+                       int hfgc, int bgc);
 
 int UnknownKey;
 
@@ -139,8 +139,8 @@ static int Select_To_Entry(int select, unsigned long bitfield, int index) {
 /*	RETURNS:	none
  */
 /*=========================================================================*/
-static void Flash_Line(const char* text, int xpix, int ypix, unsigned nfgc,
-                       unsigned hfgc, unsigned bgc) {
+static void Flash_Line(const char* text, int xpix, int ypix, int nfgc,
+                       int hfgc, int bgc) {
   int loop;
 
   for (loop = 0; loop < 3; loop++) {
@@ -477,7 +477,7 @@ int Do_Menu(const char** strings, bool blue) {
   length = 0;
   ptr = strings;
   while (*ptr) {
-    length = std::max(length, (int)String_Pixel_Width(*ptr));
+    length = std::max(length, String_Pixel_Width(*ptr));
     ptr++;
   }
   length += 7;

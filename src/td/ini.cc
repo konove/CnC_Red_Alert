@@ -406,9 +406,11 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
     PlayerPtr = HouseClass::As_Pointer(HouseTypeClass::From_Name(buf));
     PlayerPtr->IsHuman = true;
     int carryover;
-    if (CarryOverCap != -1) {
+    // Any negative cap, not just the -1 default, means uncapped; the original
+    // compared the cap as unsigned.
+    if (CarryOverCap >= 0) {
       carryover = std::min(Fixed_To_Cardinal(CarryOverMoney, CarryOverPercent),
-                           static_cast<uint32_t>(CarryOverCap));
+                           CarryOverCap);
     } else {
       carryover = Fixed_To_Cardinal(CarryOverMoney, CarryOverPercent);
     }

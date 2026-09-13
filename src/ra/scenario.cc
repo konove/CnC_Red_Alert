@@ -1306,20 +1306,18 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     **	Build the button list.
     */
     bheight = FontHeight + FontYSpacing + 2;
-    bwidth = std::max(String_Pixel_Width(b1txt) + 8, 80U);
+    bwidth = std::max(String_Pixel_Width(b1txt) + 8, 80);
     if (b2txt) {
       numbuttons = 2;
       b2char = static_cast<char>(toupper(b2txt[0]));
-      bwidth = std::max(String_Pixel_Width(b2txt) + 8,
-                        static_cast<unsigned>(bwidth));
+      bwidth = std::max(String_Pixel_Width(b2txt) + 8, bwidth);
       //			b1x = x + 10;
       //// left side
 
       if (b3txt) {
         numbuttons = 3;
         b3char = static_cast<char>(toupper(b3txt[0]));
-        bwidth = std::max(String_Pixel_Width(b3txt) + 8,
-                          static_cast<unsigned>(bwidth));
+        bwidth = std::max(String_Pixel_Width(b3txt) + 8, bwidth);
       }
 
     } else {

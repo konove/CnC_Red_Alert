@@ -117,6 +117,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/log/check.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "sdllib/gbuffer.h"
@@ -1501,8 +1502,9 @@ void HouseClass::Attacked() {
  *                                                                                             *
  * HISTORY: * 01/25/1995 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Harvested(unsigned tiberium) {
+void HouseClass::Harvested(int tiberium) {
   Validate();
+  DCHECK(tiberium >= 0);
   int64_t oldtib = Tiberium;
 
   Tiberium += tiberium;
@@ -1551,11 +1553,12 @@ int64_t HouseClass::Available_Money() const {
  * HISTORY: * 01/25/1995 JLB : Created. * 06/20/1995 JLB : Spends Tiberium
  *before spending cash.                                    *
  *=============================================================================================*/
-void HouseClass::Spend_Money(unsigned money) {
+void HouseClass::Spend_Money(int money) {
   Validate();
+  DCHECK(money >= 0);
   int64_t oldtib = Tiberium;
-  if (std::cmp_greater(money, Tiberium)) {
-    money -= static_cast<unsigned>(Tiberium);
+  if (money > Tiberium) {
+    money -= static_cast<int>(Tiberium);
     Tiberium = 0;
     Credits -= money;
   } else {
@@ -1583,8 +1586,9 @@ void HouseClass::Spend_Money(unsigned money) {
  * HISTORY: * 01/25/1995 JLB : Created. * 06/01/1995 JLB : Refunded money is
  *never lost                                             *
  *=============================================================================================*/
-void HouseClass::Refund_Money(unsigned money) {
+void HouseClass::Refund_Money(int money) {
   Validate();
+  DCHECK(money >= 0);
   Credits += money;
 }
 

@@ -394,7 +394,7 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
  *spacing in a more friendly manner.                        *
  *=============================================================================================*/
 void Simple_Text_Print(const char* text, int x, int y,
-                       RemapControlType* fore, unsigned back,
+                       RemapControlType* fore, int back,
                        TextPrintType flag) {
   static int yspace = 0;          // Y spacing adjustment for font.
   static int xspace = 0;          // Spacing adjustment for font.
@@ -645,7 +645,7 @@ void Simple_Text_Print(const char* text, int x, int y,
  * HISTORY: * 11/29/1994 JLB : Created *
  *=============================================================================================*/
 void Fancy_Text_Print(int text, int x, int y, RemapControlType* fore,
-                      unsigned back, TextPrintType flag, ...) {
+                      int back, TextPrintType flag, ...) {
   char buffer[512];  // Working staging buffer.
   va_list arg;       // Argument list var.
 
@@ -704,7 +704,7 @@ void Fancy_Text_Print(int text, int x, int y, RemapControlType* fore,
  *Separated actual draw action.                                            *
  *=============================================================================================*/
 void Fancy_Text_Print(const char* text, int x, int y,
-                      RemapControlType* fore, unsigned back, TextPrintType flag,
+                      RemapControlType* fore, int back, TextPrintType flag,
                       ...) {
   char buffer[512];  // Working staging buffer.
   va_list arg;       // Argument list var.
@@ -768,7 +768,7 @@ void Fancy_Text_Print(const char* text, int x, int y,
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
 void Conquer_Clip_Text_Print(const char* text, int x, int y,
-                             RemapControlType* fore, unsigned back,
+                             RemapControlType* fore, int back,
                              TextPrintType flag, int width, const int* tabs) {
   char buffer[512];
 
@@ -869,8 +869,8 @@ void Conquer_Clip_Text_Print(const char* text, int x, int y,
  * HISTORY:                                                                *
  *   01/05/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Plain_Text_Print(int text, unsigned x, unsigned y, unsigned fore,
-                      unsigned back, TextPrintType flag, ...) {
+void Plain_Text_Print(int text, int x, int y, int fore,
+                      int back, TextPrintType flag, ...) {
   RemapControlType scheme{};
 
   memset(&scheme.FontRemap[4], fore, 12);
@@ -914,8 +914,8 @@ void Plain_Text_Print(int text, unsigned x, unsigned y, unsigned fore,
  * HISTORY:                                                                *
  *   01/05/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Plain_Text_Print(const char* text, unsigned x, unsigned y, unsigned fore,
-                      unsigned back, TextPrintType flag, ...) {
+void Plain_Text_Print(const char* text, int x, int y, int fore,
+                      int back, TextPrintType flag, ...) {
   RemapControlType scheme{};
 
   memset(&scheme.FontRemap[4], fore, 12);

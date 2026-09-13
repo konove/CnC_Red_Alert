@@ -42,21 +42,29 @@ const short* Coord_Spillage_List(COORDINATE coord, int maxsize);
 // Converts a coordinate to its cell number (map array index).
 CELL Coord_Cell(COORDINATE coord);
 
-constexpr uint32_t Cardinal_To_Fixed(const uint32_t base,
-                                     const uint32_t cardinal) {
+// Returns "cardinal" as a fixed-point fraction of "base", where 0x100 is one;
+// 0xFFFF if "base" is zero.
+constexpr int Cardinal_To_Fixed(const int base, const int cardinal) {
   if (base == 0) {
     return 0xFFFF;
   }
-  return (cardinal << 8) / base;
+  // Unsigned 32-bit arithmetic keeps the original results, including the
+  // wraparound for inputs outside the game's range; the simulation is
+  // deterministic across peers only if these stay bit-identical.
+  return static_cast<int>((static_cast<uint32_t>(cardinal) << 8) /
+                          static_cast<uint32_t>(base));
 }
 
-constexpr uint32_t Fixed_To_Cardinal(const uint32_t base,
-                                     const uint32_t fixed) {
-  const uint32_t ret = (base * fixed) + 0x80;
+// Returns the rounded "fixed" fraction of "base", where "fixed" is 0x100 for
+// one; 0xFFFF if the product does not fit in 24 bits.
+constexpr int Fixed_To_Cardinal(const int base, const int fixed) {
+  // Unsigned 32-bit arithmetic for the same reason as Cardinal_To_Fixed.
+  const uint32_t ret =
+      (static_cast<uint32_t>(base) * static_cast<uint32_t>(fixed)) + 0x80;
   if (ret > 0x00FFFFFF) {
     return 0xFFFF;
   }
-  return ret >> 8;
+  return static_cast<int>(ret >> 8);
 }
 
 // Rescales a value from an old range to a new range with rounding.

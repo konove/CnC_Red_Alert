@@ -350,8 +350,7 @@ void EditClass::Draw_Text(const char* text) {
                             TextFlags | flags, Width - 2);
 
     if (Has_Focus() && std::cmp_less(strlen(text), MaxLength) &&
-        static_cast<int>(String_Pixel_Width(text) + String_Pixel_Width("_")) <
-            Width - 2) {
+        String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2) {
       Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(text), Y + 1,
                               Color, TBLACK, TextFlags | flags);
     }
@@ -360,8 +359,7 @@ void EditClass::Draw_Text(const char* text) {
                             TBLACK, TextFlags, Width - 2);
 
     if (Has_Focus() && std::cmp_less(strlen(text), MaxLength) &&
-        static_cast<int>(String_Pixel_Width(text) + String_Pixel_Width("_")) <
-            Width - 2) {
+        String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2) {
       Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(text), Y + 1,
                               BLUE, TBLACK, TextFlags);
     }
@@ -428,8 +426,8 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
       /*
       **	Don't add a character if the length is greater than edit width.
       */
-      if (static_cast<int>(String_Pixel_Width(String) +
-                           Char_Pixel_Width(static_cast<char>(ascii))) >=
+      if (String_Pixel_Width(String) +
+              Char_Pixel_Width(static_cast<char>(ascii)) >=
           Width - 2) {
         break;
       }

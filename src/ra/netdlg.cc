@@ -5569,14 +5569,11 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
         config::kWolapiEnabled && Session.Type == GAME_INTERNET &&
         pWolapi != nullptr && pWolapi->GameInfoCurrent.bTournament;
     if (bForfeitWarning) {
-      w = static_cast<int>(std::max(String_Pixel_Width(szNewCancelMessage),
-                                    static_cast<unsigned>(w)));
+      w = std::max(String_Pixel_Width(szNewCancelMessage), w);
       //	* 2;		why was it ever multiplied by this!!!?
       w += d_margin * 12;
     } else {
-      w = static_cast<int>(std::max(String_Pixel_Width(buf3),
-                                    static_cast<unsigned>(w))) *
-          2;
+      w = std::max(String_Pixel_Width(buf3), w) * 2;
       w += d_margin * 5;
     }
 

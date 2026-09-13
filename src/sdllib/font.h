@@ -151,7 +151,7 @@ const void* Set_Font(const void* new_font);
 /*=========================================================================*/
 
 int Char_Pixel_Width(char chr);
-unsigned int String_Pixel_Width(const char* string);
+int String_Pixel_Width(const char* string);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: TEXTPRNT.ASM
