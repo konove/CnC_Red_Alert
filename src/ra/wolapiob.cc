@@ -371,18 +371,18 @@ void WolapiObject::UnsetupCOMStuff() {
 }
 
 //***********************************************************************************************
-void WolapiObject::LinkToChatDlg(IconListClass* pILChat,
-                                 IconListClass* pILChannels,
-                                 IconListClass* pILUsers,
-                                 StaticButtonClass* pStaticUsers) {
+void WolapiObject::LinkToChatDlg(IconListClass* chat_list,
+                                 IconListClass* channels_list,
+                                 IconListClass* users_list,
+                                 StaticButtonClass* static_users) {
   //	Called to initialize this before the chat dialog is shown.
 
   //	Set pointers to lists in dialog.
-  this->pILChat = pILChat;
-  this->pILChannels = pILChannels;
-  this->pILUsers = pILUsers;
+  this->pILChat = chat_list;
+  this->pILChannels = channels_list;
+  this->pILUsers = users_list;
 
-  this->pStaticUsers = pStaticUsers;
+  this->pStaticUsers = static_users;
 }
 
 //***********************************************************************************************
@@ -400,12 +400,12 @@ void WolapiObject::ClearListPtrs() {
 
 //***********************************************************************************************
 void WolapiObject::LinkToGameDlg(IconListClass* pILDisc,
-                                 IconListClass* pILPlayers) {
+                                 IconListClass* players_list) {
   //	Called to initialize this before the gamesetup dialog is shown.
 
   //	Set pointers to lists in dialog.
   pILChat = pILDisc;
-  this->pILPlayers = pILPlayers;
+  this->pILPlayers = players_list;
 }
 
 //***********************************************************************************************

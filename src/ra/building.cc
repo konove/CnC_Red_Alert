@@ -1342,8 +1342,8 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
             dynamic_cast<AircraftClass*>(tech)->Class->IsFixedWing &&
             dynamic_cast<AircraftClass*>(tech)->In_Which_Layer() ==
                 LAYER_GROUND) {
-          int damage = 500;
-          tech->Take_Damage(damage, 0, WARHEAD_AP, source, forced);
+          int occupant_damage = 500;
+          tech->Take_Damage(occupant_damage, 0, WARHEAD_AP, source, forced);
         }
 
         Sound_Effect(VOC_KABOOM22, Coord);
@@ -3168,8 +3168,8 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     */
     const short* offset = Occupy_List();
     while (*offset != kRefreshEol) {
-      CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
-      Map.Radar_Pixel(cell);
+      CELL footprint_cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
+      Map.Radar_Pixel(footprint_cell);
     }
     return true;
   }

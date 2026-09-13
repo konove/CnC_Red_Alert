@@ -1684,9 +1684,9 @@ void UnitClass::Per_Cell_Process(PCPType why) {
             **	onto a transport (or other situation) if the destination
             **	so indicates.
             */
-            TechnoClass* techno = As_Techno(NavCom);
-            if (techno != nullptr) {
-              Transmit_Message(RADIO_DOCKING, techno);
+            TechnoClass* navcom_techno = As_Techno(NavCom);
+            if (navcom_techno != nullptr) {
+              Transmit_Message(RADIO_DOCKING, navcom_techno);
             }
           }
         } else {

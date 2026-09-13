@@ -1055,8 +1055,8 @@ int IPXManagerClass::Service() {
                     int id = event->ID;
 
                     assert(id != PlayerPtr->ID);
-                    for (int i = 1; i < Session.Players.Count(); i++) {
-                      if (Session.Players[i]->Player.ID == id) {
+                    for (int k = 1; k < Session.Players.Count(); k++) {
+                      if (Session.Players[k]->Player.ID == id) {
                         int iConnectionIndex = Connection_Index(id);
                         if (iConnectionIndex !=
                             CONNECTION_NONE)  //	(else
@@ -1069,7 +1069,7 @@ int IPXManagerClass::Service() {
                           ** packet since it's a framesync packet and will will
                           *pick up the next one.
                           */
-                          Session.Players[i]->Address = address;
+                          Session.Players[k]->Address = address;
                           Connection[iConnectionIndex]->Address = address;
                         }
                         break;

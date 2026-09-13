@@ -448,11 +448,11 @@ void EventClass::Execute() {
     */
     case SPECIAL: {
       Special = Data.Options.Data;
-      HouseClass* house = Houses.Raw_Ptr(ID);
+      HouseClass* sender = Houses.Raw_Ptr(ID);
 
       Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_SPECIAL_WARNING),
-                          house->Name);
-      Messages.Add_Message(txt, MPlayerTColors[house->RemapColor],
+                          sender->Name);
+      Messages.Add_Message(txt, MPlayerTColors[sender->RemapColor],
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                            1200, 0, 0);
       Map.Flag_To_Redraw(false);
@@ -758,10 +758,10 @@ void EventClass::Execute() {
         if (MPlayerID == ::MPlayerID[i]) {
           TheirProcessTime[i] = Data.ProcessTime.AverageTicks;
 
-          char flip[128];
-          sprintf(flip, "C&C95 - Received PROCESS_TIME packet of %04x ticks\n",
+          char flip_text[128];
+          sprintf(flip_text, "C&C95 - Received PROCESS_TIME packet of %04x ticks\n",
                   Data.ProcessTime.AverageTicks);
-          CCDebugString(flip);
+          CCDebugString(flip_text);
 
           break;
         }

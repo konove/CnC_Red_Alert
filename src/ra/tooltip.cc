@@ -109,19 +109,19 @@ bool ToolTipClass::bGadgetHit() const {
 }
 
 //***********************************************************************************************
-void ToolTipClass::Move(int xShow, int yShow) {
+void ToolTipClass::Move(int x_show, int y_show) {
   bool bRestoreShow = false;
   if (bShowing) {
     bRestoreShow = true;
     Unshow();
   }
-  this->xShow = xShow;
+  this->xShow = x_show;
   if (!bIconList) {
     if (bRightAlign) {
       this->xShow -= wShow;
     }
   }
-  this->yShow = yShow;
+  this->yShow = y_show;
   if (bRestoreShow) {
     Show();
   }

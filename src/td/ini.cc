@@ -537,7 +537,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
     CCFileClass("MISSION.INI").Read(_ShapeBuffer, _ShapeBufferSize);
 
     char* work = &BriefingText[0];
-    int index = 1;
+    int player_index = 1;
 
     /*
     **	Build the full text of the mission objective.
@@ -545,7 +545,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
     for (;;) {
       char buff[16];
 
-      sprintf(buff, "%d", index++);
+      sprintf(buff, "%d", player_index++);
       *work = '\0';
       WWGetPrivateProfileString(root, buff, "", work,
                                 static_cast<int>(sizeof(BriefingText) -
@@ -623,7 +623,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
     **	Place crates if MPlayerGoodies is on.
     */
     if (MPlayerGoodies) {
-      for (int index = 0; index < MPlayerCount; index++) {
+      for (int player_index = 0; player_index < MPlayerCount; player_index++) {
         Map.Place_Random_Crate();
       }
     }

@@ -2091,7 +2091,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           if (Session.Type != GAME_NORMAL) {
             int i, ucount;
             int minunits = 1000;
-            bool found = false;
+            bool found_spot = false;
             unsigned long minutes = Score.ElapsedTime / kTimerMinute;
             minutes = std::min<unsigned long>(minutes, 100);
             if (Random_Pick(0, 100 - static_cast<int>(minutes)) == 0) {
@@ -2133,11 +2133,11 @@ bool CellClass::Goodie_Check(FootClass* object) {
                 }
               }
               if (Random_Pick(0, minunits) == minunits) {
-                found = true;
+                found_spot = true;
               }
             }
 
-            if (!found) {
+            if (!found_spot) {
               powerup = CRATE_MONEY;
             }
           }

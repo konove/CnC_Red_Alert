@@ -392,12 +392,12 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         */
         if (selection == BUTTON_1 || selection == BUTTON_2 ||
             selection == BUTTON_3) {
-          TextButtonClass* toggle = dynamic_cast<TextButtonClass*>(
+          TextButtonClass* button = dynamic_cast<TextButtonClass*>(
               buttonlist->Extract_Gadget(selection));
-          if (toggle != nullptr) {
-            toggle->Turn_On();
+          if (button != nullptr) {
+            button->Turn_On();
             //						toggle->IsOn = true;
-            toggle->IsPressed = true;
+            button->IsPressed = true;
           }
         }
         Hide_Mouse();

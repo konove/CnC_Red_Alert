@@ -126,13 +126,13 @@ void Detach_This_From_All(TARGET target, bool all) {
     **	upon that type.
     */
     if (As_TriggerType(target) != nullptr) {
-      for (int index = 0; index < Triggers.Count(); index++) {
-        TriggerClass* tp = Triggers.Ptr(index);
+      for (int j = 0; j < Triggers.Count(); j++) {
+        TriggerClass* tp = Triggers.Ptr(j);
 
         if (tp->Class->As_Target() == target) {
           Detach_This_From_All(tp->As_Target());
           delete tp;
-          index--;
+          j--;
         }
       }
     }

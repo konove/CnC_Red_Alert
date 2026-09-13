@@ -368,12 +368,12 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
     } else {
       mess_start = 0;
     }
-    for (int i = 1; i < static_cast<int>(strlen(txt)); i++) {
-      strncpy(&temp[mess_start], txt, i);
-      temp[mess_start + i] = 0;
+    for (int j = 1; j < static_cast<int>(strlen(txt)); j++) {
+      strncpy(&temp[mess_start], txt, j);
+      temp[mess_start + j] = 0;
       wid = String_Pixel_Width(temp);
       if (wid >= Width - 8) {
-        print_this_pass = mess_start + i - 1;
+        print_this_pass = mess_start + j - 1;
         break;
       }
     }

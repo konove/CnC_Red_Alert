@@ -1020,9 +1020,9 @@ void SessionClass::Read_Scenario_Descriptions() {
     // debugprint("Found file '%s'.\n", block.cAlternateFileName);
     // debugprint("Found file '%s'.\n", block.cFileName);
     // debugprint( "Found alternate PKT file.\n" );
-    CCFileClass file(state.name);
+    CCFileClass mission_file(state.name);
     INIClass ini;
-    ini.Load(file);
+    ini.Load(mission_file);
 
     int count = ini.Entry_Count("Missions");
     for (int index = 0; index < count; index++) {
@@ -1100,9 +1100,9 @@ void SessionClass::Read_Scenario_Descriptions() {
   found = Find_First_File("*.MPR", state);
   while (found) {
     // debugprint( "Found MPR '%s'\n", file_name );
-    CCFileClass file(state.name);
+    CCFileClass mission_file(state.name);
     INIClass ini;
-    ini.Load(file);
+    ini.Load(mission_file);
 
     ini.Get_String("Basic", "Name", "No Name", name_buffer,
                    sizeof(name_buffer));

@@ -1095,8 +1095,8 @@ bool Load_Game(int id) {
         }
       }
       CCINIClass mpini;
-      CCFileClass fc("MPLAYER.INI");
-      if (mpini.Load(fc, false)) {
+      CCFileClass mplayer_ini("MPLAYER.INI");
+      if (mpini.Load(mplayer_ini, false)) {
         Rule.General(mpini);
         Rule.Recharge(mpini);
         Rule.AI(mpini);

@@ -1754,17 +1754,17 @@ void UnitClass::Per_Cell_Process(bool center) {
   if (center && IsALoaner && !Map.In_Radar(cell)) {
     if (IsReturning || !Is_Something_Attached()) {
       if (*this == UNIT_GUNBOAT) {
-        CELL cell = Coord_Cell(Coord);
-        if (Cell_X(cell) <= Map.MapCellX) {
+        CELL current_cell = Coord_Cell(Coord);
+        if (Cell_X(current_cell) <= Map.MapCellX) {
           Assign_Mission(MISSION_HUNT);
           Assign_Destination(::As_Target(
-              XY_Cell(Map.MapCellX + Map.MapCellWidth, Cell_Y(cell))));
+              XY_Cell(Map.MapCellX + Map.MapCellWidth, Cell_Y(current_cell))));
           Set_Speed(255);
           PrimaryFacing = DIR_E;
         } else {
           Assign_Mission(MISSION_HUNT);
           Assign_Destination(
-              ::As_Target(XY_Cell(Map.MapCellX - 1, Cell_Y(cell))));
+              ::As_Target(XY_Cell(Map.MapCellX - 1, Cell_Y(current_cell))));
           Set_Speed(255);
           PrimaryFacing = DIR_W;
         }

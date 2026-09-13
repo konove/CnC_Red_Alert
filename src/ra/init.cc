@@ -326,8 +326,8 @@ bool Init_Game(int, char*[]) {
   //	This is safe to do, as only rules for aftermath units are included in
   // this ini.
   if (Is_Aftermath_Installed()) {
-    CCFileClass fc("AFTRMATH.INI");
-    if (AftermathINI.Load(fc, false)) {
+    CCFileClass aftermath_ini("AFTRMATH.INI");
+    if (AftermathINI.Load(aftermath_ini, false)) {
       Rule.Process(AftermathINI);
     }
   }

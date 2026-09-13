@@ -337,8 +337,8 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
           if (OverlayTypeClass::As_Reference(classid).IsWall) {
             HousesType owner = HOUSE_NONE;
             int distance = 0x7FFFFFFF;
-            for (int index = 0; index < Buildings.Count(); index++) {
-              BuildingClass* building = Buildings.Ptr(index);
+            for (int j = 0; j < Buildings.Count(); j++) {
+              BuildingClass* building = Buildings.Ptr(j);
               int newdist =
                   ::Distance(building->Center_Coord(), Cell_Coord(cell));
               if (newdist < distance) {

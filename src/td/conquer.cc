@@ -711,8 +711,8 @@ void Keyboard_Process(KeyNumType& input) {
     */
     case VK_S:
       if (CurrentObject.Count()) {
-        for (int index = 0; index < CurrentObject.Count(); index++) {
-          const ObjectClass* tech = CurrentObject[index];
+        for (int j = 0; j < CurrentObject.Count(); j++) {
+          const ObjectClass* tech = CurrentObject[j];
 
           if (tech && (tech->Can_Player_Move() ||
                        (tech->Can_Player_Fire() &&
@@ -728,8 +728,8 @@ void Keyboard_Process(KeyNumType& input) {
     */
     case VK_X:
       if (CurrentObject.Count()) {
-        for (int index = 0; index < CurrentObject.Count(); index++) {
-          const ObjectClass* tech = CurrentObject[index];
+        for (int j = 0; j < CurrentObject.Count(); j++) {
+          const ObjectClass* tech = CurrentObject[j];
 
           if (tech && tech->Can_Player_Move()) {
             OutList.Add(EventClass(EventClass::SCATTER, tech->As_Target()));
@@ -743,8 +743,8 @@ void Keyboard_Process(KeyNumType& input) {
     */
     case VK_G:
       if (CurrentObject.Count()) {
-        for (int index = 0; index < CurrentObject.Count(); index++) {
-          const ObjectClass* tech = CurrentObject[index];
+        for (int j = 0; j < CurrentObject.Count(); j++) {
+          const ObjectClass* tech = CurrentObject[j];
 
           if (tech && tech->Can_Player_Move() && tech->Can_Player_Fire()) {
             OutList.Add(EventClass(tech->As_Target(), MISSION_GUARD_AREA));
@@ -978,9 +978,9 @@ static void Message_Input(KeyNumType& input) {
         if (the_string[actual_message_size] == ' ') {
           /* Now delete the extra characters after the space (they musnt print)
            */
-          for (int i = 0; i < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
-               i++) {
-            the_string[i + actual_message_size] = static_cast<char>(0xff);
+          for (int j = 0; j < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
+               j++) {
+            the_string[j + actual_message_size] = static_cast<char>(0xff);
           }
         } else {
           actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
@@ -1033,9 +1033,9 @@ static void Message_Input(KeyNumType& input) {
           if (the_string[actual_message_size] == ' ') {
             /* Now delete the extra characters after the space (they musnt
              * print) */
-            for (int i = 0; i < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
-                 i++) {
-              the_string[i + actual_message_size] = static_cast<char>(0xff);
+            for (int j = 0; j < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
+                 j++) {
+              the_string[j + actual_message_size] = static_cast<char>(0xff);
             }
           } else {
             actual_message_size = COMPAT_MESSAGE_LENGTH - 5;

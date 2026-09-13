@@ -1319,7 +1319,7 @@ STDMETHODIMP RAChatEventSink::OnPublicGameOptions(HRESULT, Channel*, User*,
 
 //***********************************************************************************************
 STDMETHODIMP RAChatEventSink::OnGameStart(HRESULT hRes, Channel*, User* pUserIn,
-                                          int iGameID) {
+                                          int game_id) {
   //	Note: All players receive this, not just the host that requested it.
 
   //	debugprint( ">>> OnGameStart got: " );
@@ -1367,7 +1367,7 @@ STDMETHODIMP RAChatEventSink::OnGameStart(HRESULT hRes, Channel*, User* pUserIn,
   //	}
 
   //	debugprint( "iGameID is %i\n", iGameID );
-  this->iGameID = iGameID;
+  this->iGameID = game_id;
 
   return S_OK;
 }

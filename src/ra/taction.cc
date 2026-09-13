@@ -479,9 +479,9 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
       if (!PlayerPtr->IsVisionary) {
         int zone = Map[Scen.Waypoint[Data.Value]].Zones[MZONE_CRUSHER];
 
-        for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-          if (Map[cell].Zones[MZONE_CRUSHER] == zone) {
-            Map.Map_Cell(cell, PlayerPtr);
+        for (CELL map_cell = 0; map_cell < MAP_CELL_TOTAL; map_cell++) {
+          if (Map[map_cell].Zones[MZONE_CRUSHER] == zone) {
+            Map.Map_Cell(map_cell, PlayerPtr);
           }
         }
       }
@@ -493,8 +493,8 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     case TACTION_REVEAL_ALL:
       if (!PlayerPtr->IsVisionary) {
         PlayerPtr->IsVisionary = true;
-        for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-          Map.Map_Cell(cell, PlayerPtr);
+        for (CELL map_cell = 0; map_cell < MAP_CELL_TOTAL; map_cell++) {
+          Map.Map_Cell(map_cell, PlayerPtr);
         }
       }
       break;

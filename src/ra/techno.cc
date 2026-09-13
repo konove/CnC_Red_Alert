@@ -4034,12 +4034,12 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
               Techno_Type_Class()->PrimaryWeapon->WarheadPtr->ID);
         }
 
-        int damage = Techno_Type_Class()->MaxStrength;
-        new AnimClass(Combat_Anim(damage, wh, Map[Center_Coord()].Land_Type()),
+        int explosion_damage = Techno_Type_Class()->MaxStrength;
+        new AnimClass(Combat_Anim(explosion_damage, wh, Map[Center_Coord()].Land_Type()),
                       Center_Coord());
-        int radius = damage * Rule.ExplosionSpread;
+        int radius = explosion_damage * Rule.ExplosionSpread;
         //				int radius = damage/2;
-        Wide_Area_Damage(Center_Coord(), static_cast<LEPTON>(radius), damage,
+        Wide_Area_Damage(Center_Coord(), static_cast<LEPTON>(radius), explosion_damage,
                          source, wh);
       }
 

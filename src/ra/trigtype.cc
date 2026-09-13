@@ -1902,17 +1902,17 @@ void TriggerTypeClass::Read_INI(CCINIClass& ini) {
     **	Fix up the self-referential trigger pointers.
     */
     for (int trig_index = 0; trig_index < TriggerTypes.Count(); trig_index++) {
-      TriggerTypeClass* trigger = TriggerTypes.Ptr(trig_index);
+      TriggerTypeClass* indexed_trigger = TriggerTypes.Ptr(trig_index);
 
-      char* ptr = (char*)trigger->Action1.Trigger.Raw();
+      char* ptr = (char*)indexed_trigger->Action1.Trigger.Raw();
       if (ptr) {
-        trigger->Action1.Trigger = From_Name(ptr);
+        indexed_trigger->Action1.Trigger = From_Name(ptr);
         delete[] ptr;
       }
 
-      ptr = (char*)trigger->Action2.Trigger.Raw();
+      ptr = (char*)indexed_trigger->Action2.Trigger.Raw();
       if (ptr) {
-        trigger->Action2.Trigger = From_Name(ptr);
+        indexed_trigger->Action2.Trigger = From_Name(ptr);
         delete[] ptr;
       }
     }

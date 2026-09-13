@@ -1167,8 +1167,8 @@ void MapClass::Logic() {
         */
         if (Map.In_Radar(cell)) {
           FacingType offset = Random_Pick(FACING_N, FACING_NW);
-          for (FacingType index = FACING_N; index < FACING_COUNT; index++) {
-            CellClass* newcell = &(*this)[cell].Adjacent_Cell(index + offset);
+          for (FacingType j = FACING_N; j < FACING_COUNT; j++) {
+            CellClass* newcell = &(*this)[cell].Adjacent_Cell(j + offset);
 
             if (newcell && newcell->Cell_Object() == nullptr &&
                 newcell->Land_Type() == LAND_CLEAR &&

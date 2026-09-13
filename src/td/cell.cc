@@ -1093,12 +1093,12 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
       **	Draw the flag if there is one located at this cell.
       */
       if (IsFlagged) {
-        const void* remap =
+        const void* const_remap =
             HouseClass::As_Pointer(Owner)->Remap_Table(false, false);
         CC_Draw_Shape(MFCD::Retrieve("FLAGFLY.SHP"),
                       static_cast<int>(Frame % 14), x + (ICON_PIXEL_W / 2),
                       y + (ICON_PIXEL_H / 2), WINDOW_TACTICAL,
-                      SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING, remap,
+                      SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING, const_remap,
                       MouseClass::UnitShadow);
       }
     }
@@ -2006,12 +2006,12 @@ bool CellClass::Goodie_Check(FootClass* object) {
                 cellptr->IsVisible = false;
               }
             }
-            for (int index = 0; index < MouseClass::Layer[LAYER_GROUND].Count();
-                 index++) {
-              ObjectClass* object = MouseClass::Layer[LAYER_GROUND][index];
-              if (object && object->Is_Techno() &&
-                  dynamic_cast<TechnoClass*>(object)->House == PlayerPtr) {
-                object->Look();
+            for (int j = 0; j < MouseClass::Layer[LAYER_GROUND].Count();
+                 j++) {
+              ObjectClass* layer_object = MouseClass::Layer[LAYER_GROUND][j];
+              if (layer_object && layer_object->Is_Techno() &&
+                  dynamic_cast<TechnoClass*>(layer_object)->House == PlayerPtr) {
+                layer_object->Look();
               }
             }
             Map.Flag_To_Redraw(true);
@@ -2072,13 +2072,13 @@ bool CellClass::Goodie_Check(FootClass* object) {
             }
           }
 
-          UnitClass* unit =
+          UnitClass* new_unit =
               dynamic_cast<UnitClass*>(utp->Create_One_Of(object->House));
-          if (unit) {
-            if (unit->Unlimbo(Cell_Coord())) {
+          if (new_unit) {
+            if (new_unit->Unlimbo(Cell_Coord())) {
               return false;
             }
-            delete unit;
+            delete new_unit;
           }
         } break;
 
@@ -2158,11 +2158,11 @@ bool CellClass::Goodie_Check(FootClass* object) {
           damage = 400;
           object->Take_Damage((int&)damage, 0, WARHEAD_HE);
           for (index = 0; index < 5; index++) {
-            COORDINATE coord =
+            COORDINATE blast_coord =
                 Coord_Scatter(Cell_Coord(), Random_Pick(0, 0x0200));
-            new AnimClass(ANIM_FBALL1, coord);
+            new AnimClass(ANIM_FBALL1, blast_coord);
             damage = 400;
-            Explosion_Damage(coord, damage, nullptr, WARHEAD_HE);
+            Explosion_Damage(blast_coord, damage, nullptr, WARHEAD_HE);
           }
           break;
 

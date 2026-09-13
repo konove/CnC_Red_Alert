@@ -368,10 +368,10 @@ class WolapiObject {
 
   bool bLoggedIn();
 
-  void LinkToChatDlg(IconListClass* pILChat, IconListClass* pILChannels,
-                     IconListClass* pILUsers, StaticButtonClass* pStaticUsers);
+  void LinkToChatDlg(IconListClass* chat_list, IconListClass* channels_list,
+                     IconListClass* users_list, StaticButtonClass* static_users);
   void ClearListPtrs();
-  void LinkToGameDlg(IconListClass* pILDisc, IconListClass* pILPlayers);
+  void LinkToGameDlg(IconListClass* pILDisc, IconListClass* players_list);
 
   void PrepareButtonsAndIcons();
 

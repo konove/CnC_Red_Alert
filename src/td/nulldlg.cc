@@ -4062,9 +4062,9 @@ int Com_Scenario_Dialog() {
             if (the_string[actual_message_size] == ' ') {
               /* Now delete the extra characters after the space (they musnt
                * print) */
-              for (int i = 0;
-                   i < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size; i++) {
-                the_string[i + actual_message_size] = static_cast<char>(0xff);
+              for (int j = 0;
+                   j < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size; j++) {
+                the_string[j + actual_message_size] = static_cast<char>(0xff);
               }
             } else {
               actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
@@ -5262,10 +5262,10 @@ int Com_Show_Scenario_Dialog() {
                   if (the_string[actual_message_size] == ' ') {
                     /* Now delete the extra characters after the space (they
                      * musnt print) */
-                    for (int i = 0;
-                         i < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
-                         i++) {
-                      the_string[i + actual_message_size] = static_cast<char>(0xff);
+                    for (int j = 0;
+                         j < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
+                         j++) {
+                      the_string[j + actual_message_size] = static_cast<char>(0xff);
                     }
                   } else {
                     actual_message_size = COMPAT_MESSAGE_LENGTH - 5;

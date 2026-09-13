@@ -1014,22 +1014,22 @@ void ScoreClass::Presentation() {
   */
   Set_Logic_Page(*PseudoSeenBuff);
 
-  for (int i = 0; i < NUMFAMENAMES; i++) {
-    Alloc_Object(new ScorePrintClass(hallfame[i].name, HALLFAME_X,
-                                     HALLFAME_Y + (i * 8), _bluepal));
-    if (hallfame[i].score) {
+  for (int j = 0; j < NUMFAMENAMES; j++) {
+    Alloc_Object(new ScorePrintClass(hallfame[j].name, HALLFAME_X,
+                                     HALLFAME_Y + (j * 8), _bluepal));
+    if (hallfame[j].score) {
       char* str = static_cast<char*>(SysMemPage.Get_Buffer()) +
-                  (static_cast<base::ssize>(i) * 32);
-      sprintf(str, "%d", hallfame[i].score);
+                  (static_cast<base::ssize>(j) * 32);
+      sprintf(str, "%d", hallfame[j].score);
       Alloc_Object(new ScorePrintClass(str, HALLFAME_X + (6 * 15),
-                                       HALLFAME_Y + (i * 8), _bluepal, BLACK));
-      if (hallfame[i].level < 20) {
-        sprintf(str + 16, "%d", hallfame[i].level);
+                                       HALLFAME_Y + (j * 8), _bluepal, BLACK));
+      if (hallfame[j].level < 20) {
+        sprintf(str + 16, "%d", hallfame[j].level);
       } else {
         sprintf(str + 16, "**");
       }
       Alloc_Object(new ScorePrintClass(str + 16, HALLFAME_X + (6 * 12),
-                                       HALLFAME_Y + (i * 8), _bluepal, BLACK));
+                                       HALLFAME_Y + (j * 8), _bluepal, BLACK));
       Call_Back_Delay(13);
     }
   }
@@ -1458,7 +1458,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
 
   for (i = 1; i <= max; i++) {
     // Draw & update infantrymen 3 times for every tick on the graph (i)
-    for (int q = 0; q < 3; q++) {
+    for (int j = 0; j < 3; j++) {
       Draw_InfantryMen();
       Draw_Bar_Graphs(i, gdikilled, nodkilled, civkilled);
       SysMemPage.Blit(*PseudoSeenBuff, 0, 0, BARGRAPH_X, CASUALTY_Y,

@@ -42,7 +42,7 @@ class ToolTipClass {
   ToolTipClass* GetToolTipHit();
   void Show();
   void Unshow();
-  void Move(int xShow, int yShow);
+  void Move(int x_show, int y_show);
   bool bOverDifferentLine() const;
 
   ToolTipClass* next;  //	Next tooltip in list of which *this is a part.

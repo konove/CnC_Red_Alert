@@ -267,8 +267,8 @@ void Nod_Ending() {
   CountDownTimerClass count;
   if (CCFileClass("TRAILER.VQA").Is_Available()) {
     Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
-    CCFileClass f("ATTRACT2.CPS");
-    Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
+    CCFileClass attract_file("ATTRACT2.CPS");
+    Load_Uncompress(attract_file, SysMemPage, SysMemPage, Palette);
     SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
     Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
     Clear_KeyBuffer();

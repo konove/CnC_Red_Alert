@@ -2,7 +2,7 @@
 
 Updated: 2026-09-12, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 172 currently excluded check names** and completed entries, in recommended work
+This tracks **all 171 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -98,7 +98,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-undefined-func-template`                 | Enabled | Commit `Declare the explicitly instantiated templates`: 121 reports; `extern template` declarations now sit beside `CCPtr`, TD's vectors, `ObjectPtr` and the out-of-line `Serialize` members whose definitions live in one `.cc` file.                                                                                                                                                                                                                                                                 |
 | `clang-diagnostic-undefined-var-template`                  | Enabled | Commit `Declare the CCPtr heap specializations`: the 27 `CCPtr<T>::Heap` explicit specializations defined in `globals.cc` are now declared in `ccptr.h`, which also removes an ill-formed use-before-declaration.                                                                                                                                                                                                                                                                                       |
 | `clang-diagnostic-shadow-field`                            | Enabled | Commit `Name each map layer's redraw flag after its layer`: the eight reports were one `IsToRedraw` bit-field redeclared at every step of both games' `GScreenClass` → `TabClass` chain; each layer's flag now has its own name, and every use was rebound by the compiler to the layer it already meant. See review below.                                                                                                                                                                             |
-| `clang-diagnostic-shadow`                                  | Pending | Find scope mistakes; expect more noise than field shadowing.                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `clang-diagnostic-shadow`                                  | Enabled | Commit `Give shadowing locals and parameters their own names`: 65 reports, none a use of the wrong variable; the 57 inner locals and eight member-named parameters are renamed within their scope. See review below.                                                                                                                                                                                                                                                                                    |
 | `concurrency-mt-unsafe`                                    | Skipped | Commit `Document variadic and thread-safety check policy`: 323 reports, 222 `strtok` in INI and text parsing plus `exit`, `rand`, `inet_ntoa`, `gethostbyname`, `getenv` and `glob`; every call runs on the main game thread, and the SDL audio callback and VQA timer paths call none of them. See review below.                                                                                                                                                                                       |
 | `clang-analyzer-optin.core.FixedAddressDereference`        | Enabled | Commit `Keep mono pages in memory and bound the box drawing`: the port addressed the DOS mono card at 0xB0000; the pages now live in memory, which exposed and fixed an off-by-one box clamp, an unclamped view size and `Fill_Attrib` testing `h` for `y` without the enable check.                                                                                                                                                                                                                    |
 | `clang-analyzer-core.FixedAddressDereference`              | Legacy  | Unavailable in LLVM 23; review with `clang-analyzer-optin.core.FixedAddressDereference` on older tools.                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -943,6 +943,22 @@ no fallback remained and the compiler reported every use. Each use was then give
 nearest chain class at or above its member function's class, or of the object's static type, exactly
 the member the old lookup found. The unrelated `IsToRedraw` flags in `DoorClass`, `CreditClass` and
 the sidebar's `StripClass` are unchanged.
+
+### Local shadowing review (2026-09-12)
+
+`clang-diagnostic-shadow` is now enforced. It reported 65 declarations: 57 locals that reuse the
+name of an enclosing local or parameter, and eight parameters named like a member of their class.
+
+The locals were read for the defect the check exists to catch, a use of the inner name that meant
+the outer object, and none was found. The riskiest-looking are deliberate: `Take_Damage` passes a
+fresh `damage` of 500 to a building's occupant while its own `damage` parameter carries on,
+`Goodie_Check` walks the ground layer with an inner `object` and returns to its `FootClass* object`
+parameter after the loop, and the nested `for (int i ...)` loops in the dialogs never read the
+function-scope counter they hide. Each inner declaration now has a distinct name, so the next reader
+does not have to establish that.
+
+The eight member-named parameters (`ToolTipClass::Move`, `WolapiObject::LinkToChatDlg`,
+`RAChatEventSink::OnGameStart`) are renamed in both the declaration and the definition.
 
 ### Completed validation
 

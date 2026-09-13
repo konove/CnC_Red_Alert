@@ -1810,13 +1810,13 @@ int RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
         if (flags & LEFTPRESS) {
           cell = Map.RadarClass::Click_Cell_Calc(x, y);
           if (cell != -1) {
-            int cellx = Cell_X(cell);
-            int celly = Cell_Y(cell);
-            cellx -= Lepton_To_Cell(Map.TacLeptonWidth) / 2;
-            cellx = std::max(cellx, Map.MapCellX);
-            celly -= Lepton_To_Cell(Map.TacLeptonHeight) / 2;
-            celly = std::max(celly, Map.MapCellY);
-            cell = XY_Cell(cellx, celly);
+            int cell_x = Cell_X(cell);
+            int cell_y = Cell_Y(cell);
+            cell_x -= Lepton_To_Cell(Map.TacLeptonWidth) / 2;
+            cell_x = std::max(cell_x, Map.MapCellX);
+            cell_y -= Lepton_To_Cell(Map.TacLeptonHeight) / 2;
+            cell_y = std::max(cell_y, Map.MapCellY);
+            cell = XY_Cell(cell_x, cell_y);
             Map.Set_Tactical_Position(Cell_Coord(cell));
             cell = Coord_Cell(Map.DesiredTacticalCoord);
             Map.DisplayClass::IsDisplayToRedraw = true;

@@ -2048,14 +2048,14 @@ void DisplayClass::Draw_It(bool forced) {
           **	Set the 'redraw stamp' bit for any cells that could not be
           *copied.
           */
-          int startx = -Lepton_To_Pixel(Coord_XLepton(TacticalCoord));
-          int starty = -Lepton_To_Pixel(Coord_YLepton(TacticalCoord));
+          int tactical_x = -Lepton_To_Pixel(Coord_XLepton(TacticalCoord));
+          int tactical_y = -Lepton_To_Pixel(Coord_YLepton(TacticalCoord));
           oldw -= 24;
           oldh -= 24;
-          for (y = starty;
+          for (y = tactical_y;
                y <= Lepton_To_Pixel(TacLeptonHeight) + (CELL_PIXEL_H * 2);
                y += CELL_PIXEL_H) {
-            for (x = startx;
+            for (x = tactical_x;
                  x <= Lepton_To_Pixel(TacLeptonWidth) + (CELL_PIXEL_W * 2);
                  x += CELL_PIXEL_W) {
               if (x <= oldx || x >= oldx + oldw || y <= oldy ||
@@ -2661,35 +2661,35 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
         *terrain or other *	units.
         */
         int counter2 = 0;
-        for (int index = 1; index < counter - 1; index++) {
-          if (Cell_X(cells[index - 1]) + 1 == Cell_X(cells[index]) &&
-              Cell_X(cells[index + 1]) - 1 == Cell_X(cells[index])) {
-            alternate[counter2++] = cells[index];
+        for (int j = 1; j < counter - 1; j++) {
+          if (Cell_X(cells[j - 1]) + 1 == Cell_X(cells[j]) &&
+              Cell_X(cells[j + 1]) - 1 == Cell_X(cells[j])) {
+            alternate[counter2++] = cells[j];
           }
         }
 
-        CELL cell = 0;
+        CELL scan_cell = 0;
         if (counter2) {
           if (counter2 < 4) {
-            cell = alternate[counter2 - 1];
+            scan_cell = alternate[counter2 - 1];
           } else {
-            cell = alternate[counter2 - (counter2 / 4)];
+            scan_cell = alternate[counter2 - (counter2 / 4)];
           }
         } else {
           if (counter) {
             if (counter < 4) {
-              cell = cells[counter - 1];
+              scan_cell = cells[counter - 1];
             } else {
-              cell = cells[counter - (counter / 4)];
+              scan_cell = cells[counter - (counter / 4)];
             }
           }
         }
-        if (cell) {
+        if (scan_cell) {
           if (Map.Theater == THEATER_DESERT) {
-            cell += MAP_CELL_W;
+            scan_cell += MAP_CELL_W;
           }
         }
-        return cell;
+        return scan_cell;
       }
 
       case SOURCE_OCEAN:

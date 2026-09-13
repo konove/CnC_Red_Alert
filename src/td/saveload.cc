@@ -367,13 +367,13 @@ bool Load_Game(int id) {
   for (auto& count : TeamClass::Number) {
     count = 0;
   }
-  for (int i = 0; i < Teams.Count(); ++i) {
-    ++TeamClass::Number[TeamTypes.ID(Teams.Ptr(i)->Class)];
+  for (int j = 0; j < Teams.Count(); ++j) {
+    ++TeamClass::Number[TeamTypes.ID(Teams.Ptr(j)->Class)];
   }
 
   // add triggers
-  for (int i = 0; i < Triggers.Count(); i++) {
-    TriggerClass* trig = Triggers.Ptr(i);
+  for (int j = 0; j < Triggers.Count(); j++) {
+    TriggerClass* trig = Triggers.Ptr(j);
     if (trig->House != HOUSE_NONE) {
       HouseTriggers[trig->House].Add(trig);
     }

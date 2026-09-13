@@ -1954,16 +1954,16 @@ void DisplayClass::Draw_It(bool forced) {
           **	Set the 'redraw stamp' bit for any cells that could not be
           *copied.
           */
-          int startx = -Lepton_To_Pixel(
+          int tactical_x = -Lepton_To_Pixel(
               static_cast<LEPTON>(Coord_XLepton(TacticalCoord)));
-          int starty = -Lepton_To_Pixel(
+          int tactical_y = -Lepton_To_Pixel(
               static_cast<LEPTON>(Coord_YLepton(TacticalCoord)));
           oldw -= 24;
           oldh -= 24;
-          for (y = starty;
+          for (y = tactical_y;
                y <= Lepton_To_Pixel(TacLeptonHeight) + (CELL_PIXEL_H * 2);
                y += CELL_PIXEL_H) {
-            for (x = startx;
+            for (x = tactical_x;
                  x <= Lepton_To_Pixel(TacLeptonWidth) + (CELL_PIXEL_W * 2);
                  x += CELL_PIXEL_W) {
               if (x <= oldx || x >= oldx + oldw || y <= oldy ||
@@ -2560,13 +2560,13 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, WAYPOINT waypoint, CELL cell,
     int modifier = x > MapCellX ? -1 : 1;
 
     for (int index = 0; index < MapCellHeight; index++) {
-      CELL trycell =
+      CELL edge_cell =
           XY_Cell(x + MapCellX, ((y + index) % MapCellHeight) + MapCellY);
 
-      if (Good_Reinforcement_Cell(trycell,
-                                  static_cast<CELL>(trycell + modifier), loco,
+      if (Good_Reinforcement_Cell(edge_cell,
+                                  static_cast<CELL>(edge_cell + modifier), loco,
                                   zone, mzone)) {
-        return trycell;
+        return edge_cell;
       }
     }
   }
@@ -2575,13 +2575,13 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, WAYPOINT waypoint, CELL cell,
     int modifier = y > MapCellY ? -MAP_CELL_W : MAP_CELL_W;
 
     for (int index = 0; index < MapCellWidth; index++) {
-      CELL trycell =
+      CELL edge_cell =
           XY_Cell(((x + index) % MapCellWidth) + MapCellX, y + MapCellY);
 
-      if (Good_Reinforcement_Cell(trycell,
-                                  static_cast<CELL>(trycell + modifier), loco,
+      if (Good_Reinforcement_Cell(edge_cell,
+                                  static_cast<CELL>(edge_cell + modifier), loco,
                                   zone, mzone)) {
-        return trycell;
+        return edge_cell;
       }
     }
   }

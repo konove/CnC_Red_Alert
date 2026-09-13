@@ -2877,9 +2877,9 @@ static int Net_Join_Dialog() {
       //..................................................................
       // Don't send myself the message.
       //..................................................................
-      for (int i = 1; i < Session.Players.Count(); i++) {
+      for (int j = 1; j < Session.Players.Count(); j++) {
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                                &Session.Players[i]->Address);
+                                &Session.Players[j]->Address);
         Ipx.Service();
       }
 
@@ -2914,9 +2914,9 @@ static int Net_Join_Dialog() {
     //	a chance to get to the other system.  If he doesn't get our ACK,
     // he'll be waiting the whole time we load MIX files.
     //.....................................................................
-    int i = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) * 2, 60);
+    int j = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) * 2, 60);
     starttime = TickCount.Value();
-    while (TickCount.Value() - starttime < static_cast<int64_t>(i)) {
+    while (TickCount.Value() - starttime < static_cast<int64_t>(j)) {
       Ipx.Service();
     }
   }

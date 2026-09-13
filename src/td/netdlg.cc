@@ -1607,10 +1607,10 @@ static int Net_Join_Dialog() {
                 if (the_string[actual_message_size] == ' ') {
                   /* Now delete the extra characters after the space (they musnt
                    * print) */
-                  for (int i = 0;
-                       i < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
-                       i++) {
-                    the_string[i + actual_message_size] = static_cast<char>(0xff);
+                  for (int k = 0;
+                       k < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
+                       k++) {
+                    the_string[k + actual_message_size] = static_cast<char>(0xff);
                   }
                 } else {
                   actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
@@ -3606,9 +3606,9 @@ static int Net_New_Dialog() {
             if (the_string[actual_message_size] == ' ') {
               /* Now delete the extra characters after the space (they musnt
                * print) */
-              for (int i = 0;
-                   i < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size; i++) {
-                the_string[i + actual_message_size] = static_cast<char>(0xff);
+              for (int k = 0;
+                   k < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size; k++) {
+                the_string[k + actual_message_size] = static_cast<char>(0xff);
               }
             } else {
               actual_message_size = COMPAT_MESSAGE_LENGTH - 5;

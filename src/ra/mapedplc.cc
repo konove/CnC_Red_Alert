@@ -279,8 +279,8 @@ int MapEditClass::Placement_Dialog() {
   ListClass housebtn(BUTTON_HOUSE, D_GDI_X, D_GDI_Y, 60, 8 * 16,
                      TPF_EFNT | TPF_NOSHADOW, MFCD::Retrieve("EBTN-UP.SHP"),
                      MFCD::Retrieve("EBTN-DN.SHP"));
-  for (HousesType house : magic_enum::enum_values<HousesType>()) {
-    housebtn.Add_Item(HouseTypeClass::As_Reference(house).IniName);
+  for (HousesType each_house : magic_enum::enum_values<HousesType>()) {
+    housebtn.Add_Item(HouseTypeClass::As_Reference(each_house).IniName);
   }
 
   TextButtonClass nextbtn(BUTTON_NEXT, TXT_RIGHT, kTpfEButton, D_RIGHT_X,
