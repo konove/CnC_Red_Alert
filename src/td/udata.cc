@@ -1352,7 +1352,7 @@ const short* UnitTypeClass::Occupy_List(bool) const {
  *=============================================================================================*/
 UnitType UnitTypeClass::From_Name(const char* name) {
   if (name) {
-    for (UnitType classid = UNIT_FIRST; classid < UNIT_COUNT; classid++) {
+    for (UnitType classid = UNIT_HTANK; classid < UNIT_COUNT; classid++) {
       if (stricmp(Pointers[classid]->IniName, name) == 0) {
         return classid;
       }
@@ -1409,7 +1409,7 @@ void UnitTypeClass::Display(int x, int y, WindowNumberType window,
  *interface functions.                                    *
  *=============================================================================================*/
 void UnitTypeClass::Prep_For_Add() {
-  for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
+  for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
     if (As_Reference(index).Get_Image_Data() != nullptr) {
       Map.Add_To_List(&As_Reference(index));
     }
@@ -1433,7 +1433,7 @@ void UnitTypeClass::Prep_For_Add() {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 void UnitTypeClass::One_Time() {
-  for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
+  for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
     const UnitTypeClass& uclass = As_Reference(index);
     CCFileClass file;
     int largest;  // Largest dimension of shape (so far).
@@ -1510,7 +1510,7 @@ void UnitTypeClass::Init(TheaterType theater) {
     if (theater != LastTheater) {
       const void* cameo_ptr;
 
-      for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
+      for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
         const UnitTypeClass& uclass = As_Reference(index);
 
         (const void*&)uclass.CameoData = nullptr;

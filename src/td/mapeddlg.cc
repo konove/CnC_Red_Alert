@@ -2911,12 +2911,12 @@ int MapEditClass::Edit_Trigger() {
   */
   event_idx = CurTrigger->Event;  // event list
   if (event_idx == EVENT_NONE) {
-    event_idx = EVENT_FIRST;
+    event_idx = EVENT_PLAYER_ENTERED;
   }
 
   action_idx = CurTrigger->Action;  // action list
   if (action_idx == TriggerClass::ACTION_NONE) {
-    action_idx = TriggerClass::ACTION_FIRST;
+    action_idx = TriggerClass::ACTION_WIN;
   }
 
   port::SafeCopy(namebuf, CurTrigger->Get_Name());  // Name
@@ -3136,7 +3136,7 @@ int MapEditClass::Edit_Trigger() {
       case ButtonKey(BUTTON_MULTI4):
       case ButtonKey(BUTTON_MULTI5):
       case ButtonKey(BUTTON_MULTI6):
-        house = (HousesType)((input & (~KN_BUTTON)) - BUTTON_GDI);
+        house = (HousesType)(static_cast<int>(input & ~KN_BUTTON) - BUTTON_GDI);
         Set_House_Buttons(house, commands, BUTTON_GDI);
         break;
 

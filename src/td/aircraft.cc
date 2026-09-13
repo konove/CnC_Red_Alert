@@ -746,7 +746,7 @@ void AircraftClass::AI() {
       Mark();
     }
   }
-  if (Physics(Coord, PrimaryFacing) != RESULT_NONE) {
+  if (Physics(Coord, PrimaryFacing) != IMPACT_NONE) {
     Mark();
   }
 

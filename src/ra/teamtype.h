@@ -73,7 +73,6 @@ typedef enum TeamMissionType {
   TMISSION_PATROL,        // Move but look for enemies as well.
 
   TMISSION_COUNT,
-  TMISSION_FIRST = 0
 } TeamMissionType;
 
 /*

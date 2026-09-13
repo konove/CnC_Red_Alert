@@ -4216,7 +4216,7 @@ void AircraftClass::Movement_AI() {
       Mark(MARK_DOWN);
     } else {
       Mark(MARK_CHANGE_REDRAW);
-      if (Physics(Coord, PrimaryFacing) != RESULT_NONE) {
+      if (Physics(Coord, PrimaryFacing) != IMPACT_NONE) {
         Mark(MARK_CHANGE_REDRAW);
       }
     }

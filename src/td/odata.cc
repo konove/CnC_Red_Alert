@@ -685,7 +685,7 @@ void OverlayTypeClass::One_Time() {}
  *=============================================================================================*/
 OverlayType OverlayTypeClass::From_Name(const char* name) {
   if (name) {
-    for (OverlayType index = OVERLAY_FIRST; index < OVERLAY_COUNT; index++) {
+    for (OverlayType index = OVERLAY_CONCRETE; index < OVERLAY_COUNT; index++) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
         return index;
       }
@@ -786,7 +786,7 @@ void OverlayTypeClass::Display(int x, int y, WindowNumberType window,
  * HISTORY: * 08/06/1994 JLB : Created *
  *=============================================================================================*/
 void OverlayTypeClass::Prep_For_Add() {
-  for (OverlayType index = OVERLAY_FIRST; index < OVERLAY_COUNT; index++) {
+  for (OverlayType index = OVERLAY_CONCRETE; index < OVERLAY_COUNT; index++) {
     const OverlayTypeClass& overlay = As_Reference(index);
     if (overlay.Get_Image_Data() && !overlay.IsWall &&
         (!overlay.IsTiberium || index == OVERLAY_TIBERIUM1)) {
@@ -879,7 +879,7 @@ void OverlayTypeClass::Draw_It(int x, int y, int data) const {
  *=============================================================================================*/
 void OverlayTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
-    for (OverlayType index = OVERLAY_FIRST; index < OVERLAY_COUNT; index++) {
+    for (OverlayType index = OVERLAY_CONCRETE; index < OVERLAY_COUNT; index++) {
       const OverlayTypeClass& overlay = As_Reference(index);
       std::string fullname;  // Fully constructed iconset name.
 

@@ -644,7 +644,7 @@ TerrainTypeClass::TerrainTypeClass(
  *=============================================================================================*/
 void TerrainTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
-    for (TerrainType index = TERRAIN_FIRST; index < TERRAIN_COUNT; index++) {
+    for (TerrainType index = TERRAIN_TREE1; index < TERRAIN_COUNT; index++) {
       const TerrainTypeClass& terrain = As_Reference(index);
 
       /*
@@ -693,7 +693,7 @@ TerrainType TerrainTypeClass::From_Name(const char* name) {
   TerrainType index;
 
   if (name) {
-    for (index = TERRAIN_FIRST; index < TERRAIN_COUNT; index++) {
+    for (index = TERRAIN_TREE1; index < TERRAIN_COUNT; index++) {
       if (stricmp(name, Pointers[index]->IniName) == 0) {
         return index;
       }
@@ -740,7 +740,7 @@ void TerrainTypeClass::Display(int x, int y, WindowNumberType window,
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
 void TerrainTypeClass::Prep_For_Add() {
-  for (TerrainType index = TERRAIN_FIRST; index < TERRAIN_COUNT; index++) {
+  for (TerrainType index = TERRAIN_TREE1; index < TERRAIN_COUNT; index++) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
     }

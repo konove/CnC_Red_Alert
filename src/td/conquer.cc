@@ -1405,7 +1405,7 @@ TheaterType Theater_From_Name(const char* name) {
   TheaterType index;
 
   if (name) {
-    for (index = THEATER_FIRST; index < THEATER_COUNT; index++) {
+    for (index = THEATER_DESERT; index < THEATER_COUNT; index++) {
       if (stricmp(name, Theaters[index].Name) == 0) {
         return index;
       }

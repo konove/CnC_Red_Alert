@@ -1214,7 +1214,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       /*..................................................................
       Convert input value into a house value; assume HOUSE_GOOD is 0
       ..................................................................*/
-      house = (HousesType)((input & (~KN_BUTTON)) - POPUP_GDI);
+      house = (HousesType)(static_cast<int>(input & ~KN_BUTTON) - POPUP_GDI);
       /*..................................................................
       If that house doesn't own this object, try to transfer it
       ..................................................................*/

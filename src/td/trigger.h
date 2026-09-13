@@ -87,7 +87,6 @@ typedef enum EventType {
   EVENT_BUILD,                 // If specified building has been built.
 
   EVENT_COUNT,
-  EVENT_FIRST = 0
 } EventType;
 
 class TriggerClass {
@@ -116,7 +115,6 @@ class TriggerClass {
     ACTION_ALLOWWIN,        // Allows winning if triggered.
 
     ACTION_COUNT,
-    ACTION_FIRST = 0
   } ActionType;
 
   typedef enum PersistantType {

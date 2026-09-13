@@ -188,14 +188,14 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
     /*
     ** Find which variations are available for this scenario
     */
-    for (i = SCEN_VAR_FIRST; i < SCEN_VAR_COUNT; i++) {
+    for (i = SCEN_VAR_A; i < SCEN_VAR_COUNT; i++) {
       sprintf(fname, "SC%c%02d%c%c.INI", c_player, scenario, c_dir, 'A' + i);
       if (!CCFileClass(fname).Is_Available()) {
         break;
       }
     }
 
-    if (i == SCEN_VAR_FIRST) {
+    if (i == SCEN_VAR_A) {
       c_var = 'X';  // indicates an error
     } else {
       c_var = static_cast<char>('A' + Random_Pick(0, i - 1));

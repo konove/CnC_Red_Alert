@@ -271,7 +271,7 @@ AircraftTypeClass::AircraftTypeClass(
 
 AircraftType AircraftTypeClass::From_Name(const char* name) {
   if (name) {
-    for (AircraftType classid = AIRCRAFT_FIRST; classid < AIRCRAFT_COUNT;
+    for (AircraftType classid = AIRCRAFT_TRANSPORT; classid < AIRCRAFT_COUNT;
          classid++) {
       if (stricmp(Pointers[classid]->IniName, name) == 0) {
         return classid;
@@ -284,7 +284,7 @@ AircraftType AircraftTypeClass::From_Name(const char* name) {
 void AircraftTypeClass::One_Time() {
   AircraftType index;
 
-  for (index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; index++) {
+  for (index = AIRCRAFT_TRANSPORT; index < AIRCRAFT_COUNT; index++) {
     const AircraftTypeClass& uclass = As_Reference(index);
 
     // Load the sidebar cameo icon (hi-res "ICNH" or lo-res "ICON").
@@ -315,7 +315,8 @@ ObjectClass* AircraftTypeClass::Create_One_Of(HouseClass* house) const {
 }
 
 void AircraftTypeClass::Prep_For_Add() {
-  for (AircraftType index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; ++index) {
+  for (AircraftType index = AIRCRAFT_TRANSPORT; index < AIRCRAFT_COUNT;
+       ++index) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
     }
@@ -393,7 +394,7 @@ bool AircraftTypeClass::Create_And_Place(CELL, HousesType) const {
 void AircraftTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
     if (Get_Resolution_Factor()) {
-      for (AircraftType index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT;
+      for (AircraftType index = AIRCRAFT_TRANSPORT; index < AIRCRAFT_COUNT;
            ++index) {
         const AircraftTypeClass& uclass = As_Reference(index);
 

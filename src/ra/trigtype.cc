@@ -339,7 +339,7 @@ bool TriggerTypeClass::Edit() {
       EVENT_LIST2, event2text, sizeof(event2text), TPF_EFNT | TPF_NOSHADOW,
       E2_X, E2_Y, E_WIDTH, E_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
       MFCD::Retrieve("EBTN-DN.SHP"));
-  for (TEventType event = TEVENT_FIRST; event < TEVENT_COUNT; event++) {
+  for (TEventType event = TEVENT_NONE; event < TEVENT_COUNT; event++) {
     event1list.Add_Item(&EventChoices[event]);
     event2list.Add_Item(&EventChoices[event]);
   }
@@ -348,11 +348,11 @@ bool TriggerTypeClass::Edit() {
   PBubble_Sort(&event2list[0], event2list.Count());
 
   if (Event1.Event == TEVENT_NONE) {
-    Event1.Event = TEVENT_FIRST;
+    Event1.Event = TEVENT_NONE;
   }
   event1list.Set_Selected_Index(&EventChoices[Event1.Event]);
   if (Event2.Event == TEVENT_NONE) {
-    Event2.Event = TEVENT_FIRST;
+    Event2.Event = TEVENT_NONE;
   }
   event2list.Set_Selected_Index(&EventChoices[Event2.Event]);
 
@@ -369,7 +369,7 @@ bool TriggerTypeClass::Edit() {
       ACTION_LIST2, action2text, sizeof(action2text), TPF_EFNT | TPF_NOSHADOW,
       A2_X, A2_Y, E_WIDTH, E_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
       MFCD::Retrieve("EBTN-DN.SHP"));
-  for (TActionType action = TACTION_FIRST; action < TACTION_COUNT; action++) {
+  for (TActionType action = TACTION_NONE; action < TACTION_COUNT; action++) {
     action1list.Add_Item(&ActionChoices[action]);
     action2list.Add_Item(&ActionChoices[action]);
   }
@@ -377,12 +377,12 @@ bool TriggerTypeClass::Edit() {
   PBubble_Sort(&action1list[0], action1list.Count());
   PBubble_Sort(&action2list[0], action2list.Count());
 
-  if (Action1.Action == ACTION_NONE) {
-    Action1.Action = TACTION_FIRST;
+  if (Action1.Action == TACTION_NONE) {
+    Action1.Action = TACTION_NONE;
   }
   action1list.Set_Selected_Index(&ActionChoices[Action1.Action]);
-  if (Action2.Action == ACTION_NONE) {
-    Action2.Action = TACTION_FIRST;
+  if (Action2.Action == TACTION_NONE) {
+    Action2.Action = TACTION_NONE;
   }
   action2list.Set_Selected_Index(&ActionChoices[Action2.Action]);
 

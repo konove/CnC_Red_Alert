@@ -259,7 +259,7 @@ TeamTypeClass* TeamTypeClass::As_Pointer(const char* name) {
  *=========================================================================*/
 TeamMissionType TeamTypeClass::Mission_From_Name(const char* name) {
   if (name) {
-    for (TeamMissionType order = TMISSION_FIRST; order < TMISSION_COUNT;
+    for (TeamMissionType order = TMISSION_ATTACK; order < TMISSION_COUNT;
          order++) {
       if (stricmp(TMissions[order], name) == 0) {
         return order;
@@ -851,7 +851,7 @@ bool TeamTypeClass::Edit() {
       BUTTON_MISSION1, droptext, sizeof(droptext), TPF_EFNT | TPF_NOSHADOW,
       reinforcebtn.X, reinforcebtn.Y + 15, 170, 8 * 8,
       MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
-  for (TeamMissionType tm = TMISSION_FIRST; tm < TMISSION_COUNT; tm++) {
+  for (TeamMissionType tm = TMISSION_ATTACK; tm < TMISSION_COUNT; tm++) {
     missionlist1.Add_Item(TeamTypeClass::Name_From_Mission(tm));
   }
   missionlist1.Set_Selected_Index(0);

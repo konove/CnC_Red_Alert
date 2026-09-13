@@ -245,7 +245,7 @@ ThemeType ThemeClass::Next_Song(ThemeType theme) {
         */
         ThemeType newtheme;
         do {
-          newtheme = Sim_Random_Pick(THEME_FIRST, THEME_LAST);
+          newtheme = Sim_Random_Pick(THEME_AIRSTRIKE, THEME_LAST);
         } while (newtheme == theme || !Is_Allowed(newtheme));
         theme = newtheme;
 
@@ -256,7 +256,7 @@ ThemeType ThemeClass::Next_Song(ThemeType theme) {
         do {
           theme++;
           if (theme > THEME_LAST) {
-            theme = THEME_FIRST;
+            theme = THEME_AIRSTRIKE;
           }
         } while (!Is_Allowed(theme));
       }
@@ -313,7 +313,7 @@ int ThemeClass::Play_Song(ThemeType theme) {
   if (ScoresPresent && SampleType && !Debug_Quiet && Options.ScoreVolume) {
     Stop();
     Score = theme;
-    if (theme >= THEME_FIRST) {
+    if (theme >= THEME_AIRSTRIKE) {
 #ifdef DEMO
       if (_themes[theme].Scenario != 99) {
         CCFileClass file(Theme_File_Name(theme));
@@ -506,7 +506,7 @@ ThemeType ThemeClass::From_Name(const char* name) {
     **	First search for an exact name match with the filename
     **	of the theme. This is guaranteed to be unique.
     */
-    for (ThemeType theme = THEME_FIRST; theme < THEME_COUNT; theme++) {
+    for (ThemeType theme = THEME_AIRSTRIKE; theme < THEME_COUNT; theme++) {
       if (stricmp(_themes[theme].Name, name) == 0) {
         return theme;
       }
@@ -517,7 +517,7 @@ ThemeType ThemeClass::From_Name(const char* name) {
     **	a substring within the full name of the score. This might
     **	yeild a match, but is not guaranteed to be unique.
     */
-    for (ThemeType theme = THEME_FIRST; theme < THEME_COUNT; theme++) {
+    for (ThemeType theme = THEME_AIRSTRIKE; theme < THEME_COUNT; theme++) {
       if (strstr(Text_String(_themes[theme].Fullname), name) != nullptr) {
         return theme;
       }
@@ -545,7 +545,7 @@ ThemeType ThemeClass::From_Name(const char* name) {
  * HISTORY: * 01/04/1996 JLB : Created. *
  *=============================================================================================*/
 void ThemeClass::Scan() {
-  for (ThemeType theme = THEME_FIRST; theme < THEME_COUNT; theme++) {
+  for (ThemeType theme = THEME_AIRSTRIKE; theme < THEME_COUNT; theme++) {
     //		if (theme == THEME_J1 && !Special.IsJurassic) {
     //			_themes[theme].Available = false;
     //		} else {

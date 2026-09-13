@@ -92,7 +92,6 @@ typedef enum TEventType {
   TEVENT_BUILDING_EXISTS,        // Check for building existing.
 
   TEVENT_COUNT,
-  TEVENT_FIRST = 0
 } TEventType;
 
 TEventType Event_From_Name(const char* name);

@@ -583,7 +583,7 @@ void BulletTypeClass::One_Time() {
   /*
   **	Load the bullet shapes.
   */
-  for (index = BULLET_FIRST; index < BULLET_COUNT; index++) {
+  for (index = BULLET_SNIPER; index < BULLET_COUNT; index++) {
     const BulletTypeClass& bullet = As_Reference(index);
 
     if (!bullet.IsInvisible) {

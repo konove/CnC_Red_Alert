@@ -1745,7 +1745,7 @@ void InfantryTypeClass::Display(int x, int y, WindowNumberType window,
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryTypeClass::Prep_For_Add() {
-  for (InfantryType index = INFANTRY_FIRST; index < INFANTRY_COUNT; index++) {
+  for (InfantryType index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
     Map.Add_To_List(&As_Reference(index));
   }
 }
@@ -1770,7 +1770,7 @@ void InfantryTypeClass::Prep_For_Add() {
  *=============================================================================================*/
 InfantryType InfantryTypeClass::From_Name(const char* name) {
   if (name) {
-    for (InfantryType classid = INFANTRY_FIRST; classid < INFANTRY_COUNT;
+    for (InfantryType classid = INFANTRY_E1; classid < INFANTRY_COUNT;
          classid++) {
       if (stricmp(Pointers[classid]->IniName, name) == 0) {
         return classid;
@@ -1799,7 +1799,7 @@ InfantryType InfantryTypeClass::From_Name(const char* name) {
 void InfantryTypeClass::One_Time() {
   InfantryType index;
 
-  for (index = INFANTRY_FIRST; index < INFANTRY_COUNT; index++) {
+  for (index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
     const InfantryTypeClass* uclass;
     CCFileClass file;
 
@@ -1848,7 +1848,7 @@ void InfantryTypeClass::Init(TheaterType theater) {
       InfantryType index;
       const void* cameo_ptr;
 
-      for (index = INFANTRY_FIRST; index < INFANTRY_COUNT; index++) {
+      for (index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
         const InfantryTypeClass* uclass;
         CCFileClass file;
 

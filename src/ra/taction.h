@@ -95,7 +95,6 @@ typedef enum TActionType {
   TACTION_LAUNCH_NUKES,      // Launch fake nuclear missiles from all silos
 
   TACTION_COUNT,
-  TACTION_FIRST = 0
 } TActionType;
 
 TActionType Action_From_Name(const char* name);

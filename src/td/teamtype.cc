@@ -763,7 +763,7 @@ TeamMissionType TeamTypeClass::Mission_From_Name(const char* name) {
   int order;
 
   if (name) {
-    for (order = TMISSION_FIRST; order < TMISSION_COUNT; order++) {
+    for (order = TMISSION_ATTACKBASE; order < TMISSION_COUNT; order++) {
       if (stricmp(TMissions[order], name) == 0) {
         return static_cast<TeamMissionType>(order);
       }

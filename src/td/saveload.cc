@@ -482,8 +482,9 @@ void Serialize_Misc_Values(Archive& ar) {
     BriefMovie[sizeof(BriefMovie) - 1] = '\0';
     ActionMovie[sizeof(ActionMovie) - 1] = '\0';
     BriefingText[sizeof(BriefingText) - 1] = '\0';
-    if (ScenDir < SCEN_DIR_FIRST || ScenDir >= SCEN_DIR_COUNT ||
-        ScenVar < SCEN_VAR_FIRST || (ScenVar >= SCEN_VAR_COUNT && ScenVar != SCEN_VAR_LOSE)) {
+    if (ScenDir < SCEN_DIR_EAST || ScenDir >= SCEN_DIR_COUNT ||
+        ScenVar < SCEN_VAR_A ||
+        (ScenVar >= SCEN_VAR_COUNT && ScenVar != SCEN_VAR_LOSE)) {
       ar.Fail("invalid saved scenario direction or variant");
     }
     for (CELL cell : Waypoint) {

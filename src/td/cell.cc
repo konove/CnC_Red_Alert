@@ -1819,7 +1819,7 @@ long CellClass::Tiberium_Adjust(bool pregame) {
       **	Add up all adjacent cells that contain tiberium.
       ** (Skip those cells which aren't on the map)
       */
-      for (FacingType face = FACING_FIRST; face < FACING_COUNT; face++) {
+      for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
         CellClass& adj = Adjacent_Cell(face);
 
         if (adj.Overlay != OVERLAY_NONE &&
@@ -2059,7 +2059,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
 
           while (!utp) {
             UnitType utype =
-                Random_Pick(UNIT_FIRST, static_cast<UnitType>(UNIT_COUNT - 1));
+                Random_Pick(UNIT_HTANK, static_cast<UnitType>(UNIT_COUNT - 1));
             if (utype != UNIT_MCV || MPlayerBases) {
               utp = &UnitTypeClass::As_Reference(utype);
               if (utp->IsCrateGoodie && utp->Ownable & 1 << object->Owner() &&

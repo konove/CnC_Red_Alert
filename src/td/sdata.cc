@@ -229,7 +229,7 @@ SmudgeTypeClass::SmudgeTypeClass(SmudgeType smudge, const char* ininame,
  *=============================================================================================*/
 SmudgeType SmudgeTypeClass::From_Name(const char* name) {
   if (name) {
-    for (SmudgeType index = SMUDGE_FIRST; index < SMUDGE_COUNT; index++) {
+    for (SmudgeType index = SMUDGE_CRATER1; index < SMUDGE_COUNT; index++) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
         return index;
       }
@@ -284,7 +284,7 @@ const short* SmudgeTypeClass::Occupy_List(bool) const {
  *=============================================================================================*/
 void SmudgeTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
-    for (SmudgeType index = SMUDGE_FIRST; index < SMUDGE_COUNT; index++) {
+    for (SmudgeType index = SMUDGE_CRATER1; index < SMUDGE_COUNT; index++) {
       const SmudgeTypeClass& smudge = As_Reference(index);
 
       // Fully constructed smudge data set name.
@@ -348,7 +348,7 @@ void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 void SmudgeTypeClass::Prep_For_Add() {
-  for (SmudgeType index = SMUDGE_FIRST; index < SMUDGE_COUNT; index++) {
+  for (SmudgeType index = SMUDGE_CRATER1; index < SMUDGE_COUNT; index++) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
     }

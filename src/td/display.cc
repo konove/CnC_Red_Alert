@@ -249,7 +249,7 @@ void DisplayClass::One_Time() {
   // Sized here rather than in constructor to follow one-time init pattern.
   CellRedraw.resize(MAP_CELL_TOTAL);
 
-  for (LayerType layer = LAYER_FIRST; layer < LAYER_COUNT; layer++) {
+  for (LayerType layer = LAYER_GROUND; layer < LAYER_COUNT; layer++) {
     Layer[layer].One_Time();
   }
 
@@ -324,7 +324,7 @@ void DisplayClass::Init_Clear() {
   /*
   ** Empty all the display's layers
   */
-  for (LayerType layer = LAYER_FIRST; layer < LAYER_COUNT; layer++) {
+  for (LayerType layer = LAYER_GROUND; layer < LAYER_COUNT; layer++) {
     Layer[layer].Init();
   }
 }
@@ -1627,7 +1627,7 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
   **	are not allowed, and to fix this, just map the cells until
   **	all is ok.
   */
-  for (FacingType dir = FACING_FIRST; dir < FACING_COUNT; dir++) {
+  for (FacingType dir = FACING_N; dir < FACING_COUNT; dir++) {
     int shadow;
     CELL c;
 

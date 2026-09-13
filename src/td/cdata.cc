@@ -1273,7 +1273,8 @@ TemplateTypeClass::TemplateTypeClass(TemplateType iconset, int theater,
  *=============================================================================================*/
 TemplateType TemplateTypeClass::From_Name(const char* name) {
   if (name) {
-    for (TemplateType index = TEMPLATE_FIRST; index < TEMPLATE_COUNT; index++) {
+    for (TemplateType index = TEMPLATE_CLEAR1; index < TEMPLATE_COUNT;
+         index++) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
         return index;
       }
@@ -1339,7 +1340,7 @@ const short* TemplateTypeClass::Occupy_List(bool) const {
 void TemplateTypeClass::Init(TheaterType theater) {
   const void* ptr;  // Working loaded iconset pointer.
 
-  for (TemplateType index = TEMPLATE_FIRST; index < TEMPLATE_COUNT; index++) {
+  for (TemplateType index = TEMPLATE_CLEAR1; index < TEMPLATE_COUNT; index++) {
     const TemplateTypeClass& tplate = As_Reference(index);
 
     (const void*&)tplate.ImageData = nullptr;

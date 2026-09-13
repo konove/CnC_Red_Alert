@@ -356,7 +356,7 @@ MissionType MissionClass::Mission_From_Name(const char* name) {
   MissionType order;
 
   if (name) {
-    for (order = MISSION_FIRST; order < MISSION_COUNT; order++) {
+    for (order = MISSION_SLEEP; order < MISSION_COUNT; order++) {
       if (stricmp(Missions[order], name) == 0) {
         return order;
       }

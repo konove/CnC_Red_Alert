@@ -885,10 +885,10 @@ BulletClass* BuildingClass::Fire_At(TARGET target, int which) {
   bullet = TechnoClass::Fire_At(target, which);
   if (bullet) {
     if (*this == STRUCT_SAM) {
-      AnimClass* anim =
-          new AnimClass(static_cast<AnimType>(
-                            ANIM_SAM_N + Dir_Facing(PrimaryFacing.Current())),
-                        Center_Coord());
+      AnimClass* anim = new AnimClass(
+          static_cast<AnimType>(ANIM_SAM_N + static_cast<int>(Dir_Facing(
+                                                 PrimaryFacing.Current()))),
+          Center_Coord());
       if (anim) {
         anim->Attach_To(this);
       }
@@ -900,9 +900,10 @@ BulletClass* BuildingClass::Fire_At(TARGET target, int which) {
       Sound_Effect(weapon->Sound, Coord);
 
       if (weapon->Fires == BULLET_BULLET) {
-        new AnimClass(static_cast<AnimType>(
-                          ANIM_GUN_N + Dir_Facing(PrimaryFacing.Current())),
-                      Fire_Coord(which));
+        new AnimClass(
+            static_cast<AnimType>(ANIM_GUN_N + static_cast<int>(Dir_Facing(
+                                                   PrimaryFacing.Current()))),
+            Fire_Coord(which));
       } else {
         if (weapon->Fires == BULLET_LASER) {
           int x, y, x1, y1;
@@ -2336,7 +2337,7 @@ void BuildingClass::Update_Buildables() {
   if (House == PlayerPtr && !IsInLimbo && IsDiscoveredByPlayer) {
     switch (Class->ToBuild) {
       case RTTI_BUILDINGTYPE:
-        for (StructType i = STRUCT_FIRST; i < STRUCT_COUNT; i++) {
+        for (StructType i = STRUCT_WEAP; i < STRUCT_COUNT; i++) {
           if (PlayerPtr->Can_Build(i, ActLike)) {
             //						if
             //(BuildingTypeClass::As_Reference(i).Who_Can_Build_Me(true, true,
@@ -2348,7 +2349,7 @@ void BuildingClass::Update_Buildables() {
         break;
 
       case RTTI_UNITTYPE:
-        for (UnitType u = UNIT_FIRST; u < UNIT_COUNT; u++) {
+        for (UnitType u = UNIT_HTANK; u < UNIT_COUNT; u++) {
           if (PlayerPtr->Can_Build(u, ActLike)) {
             //						if
             //(UnitTypeClass::As_Reference(u).Who_Can_Build_Me(true, true,
@@ -2360,7 +2361,7 @@ void BuildingClass::Update_Buildables() {
         break;
 
       case RTTI_INFANTRYTYPE:
-        for (InfantryType f = INFANTRY_FIRST; f < INFANTRY_COUNT; f++) {
+        for (InfantryType f = INFANTRY_E1; f < INFANTRY_COUNT; f++) {
           if (PlayerPtr->Can_Build(f, ActLike)) {
             //						if
             //(InfantryTypeClass::As_Reference(f).Who_Can_Build_Me(true, true,
@@ -2372,7 +2373,7 @@ void BuildingClass::Update_Buildables() {
         break;
 
       case RTTI_AIRCRAFTTYPE:
-        for (AircraftType a = AIRCRAFT_FIRST; a < AIRCRAFT_COUNT; a++) {
+        for (AircraftType a = AIRCRAFT_TRANSPORT; a < AIRCRAFT_COUNT; a++) {
           if (PlayerPtr->Can_Build(a, ActLike)) {
             //						if
             //(AircraftTypeClass::As_Reference(a).Who_Can_Build_Me(true, true,

@@ -3692,7 +3692,7 @@ void BuildingTypeClass::One_Time() {
       {STRUCT_TEMPLE, BSTATE_ACTIVE, 0, 5, 1},
   };
 
-  for (StructType sindex = STRUCT_FIRST; sindex < STRUCT_COUNT; sindex++) {
+  for (StructType sindex = STRUCT_WEAP; sindex < STRUCT_COUNT; sindex++) {
     const BuildingTypeClass& building = As_Reference(sindex);
 
     /*
@@ -3771,7 +3771,7 @@ void BuildingTypeClass::One_Time() {
  *=============================================================================================*/
 StructType BuildingTypeClass::From_Name(const char* name) {
   if (name) {
-    for (StructType classid = STRUCT_FIRST; classid < STRUCT_COUNT; classid++) {
+    for (StructType classid = STRUCT_WEAP; classid < STRUCT_COUNT; classid++) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
         return classid;
       }
@@ -3826,7 +3826,7 @@ void BuildingTypeClass::Display(int x, int y, WindowNumberType window,
  *interface routines.                                     *
  *=============================================================================================*/
 void BuildingTypeClass::Prep_For_Add() {
-  for (StructType index = STRUCT_FIRST; index < STRUCT_COUNT; index++) {
+  for (StructType index = STRUCT_WEAP; index < STRUCT_COUNT; index++) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
     }
@@ -4050,7 +4050,7 @@ BuildingClass* BuildingTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
  *=============================================================================================*/
 void BuildingTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
-    for (StructType sindex = STRUCT_FIRST; sindex < STRUCT_COUNT; sindex++) {
+    for (StructType sindex = STRUCT_WEAP; sindex < STRUCT_COUNT; sindex++) {
       const BuildingTypeClass* classptr = &As_Reference(sindex);
 
       if (classptr->IsTheater) {

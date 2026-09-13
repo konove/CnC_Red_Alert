@@ -2119,7 +2119,8 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
       case ANIM_GUN_N:
       case ANIM_CHEM_N:
       case ANIM_FLAME_N:
-        a = static_cast<AnimType>(a + Dir_Facing(Fire_Direction()));
+        a = static_cast<AnimType>(
+            a + static_cast<int>(Dir_Facing(Fire_Direction())));
         break;
     }
 

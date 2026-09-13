@@ -3218,7 +3218,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         if (GameToPlay == GAME_NORMAL) {
           memset(counter, 0x00, sizeof(counter));
         } else {
-          for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
+          for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
             if (Can_Build(index, Class->House) &&
                 UnitTypeClass::As_Reference(index).Level <= BuildLevel) {
               counter[index] = 16;
@@ -3299,7 +3299,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         int bestval = -1;
         int bestcount = 0;
         UnitType bestlist[UNIT_COUNT];
-        for (UnitType utype = UNIT_FIRST; utype < UNIT_COUNT; utype++) {
+        for (UnitType utype = UNIT_HTANK; utype < UNIT_COUNT; utype++) {
           if (counter[utype] > 0 && Can_Build(utype, Class->House) &&
               UnitTypeClass::As_Reference(utype).Cost_Of() <=
                   Available_Money()) {
@@ -3333,7 +3333,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         if (GameToPlay == GAME_NORMAL) {
           memset(counter, 0x00, sizeof(counter));
         } else {
-          for (InfantryType index = INFANTRY_FIRST; index < INFANTRY_COUNT;
+          for (InfantryType index = INFANTRY_E1; index < INFANTRY_COUNT;
                index++) {
             if (Can_Build(index, Class->House) &&
                 InfantryTypeClass::As_Reference(index).Level <= BuildLevel) {
@@ -3415,7 +3415,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         int bestval = -1;
         int bestcount = 0;
         InfantryType bestlist[INFANTRY_COUNT];
-        for (InfantryType utype = INFANTRY_FIRST; utype < INFANTRY_COUNT;
+        for (InfantryType utype = INFANTRY_E1; utype < INFANTRY_COUNT;
              utype++) {
           if (counter[utype] > 0 && Can_Build(utype, Class->House) &&
               InfantryTypeClass::As_Reference(utype).Cost_Of() <=

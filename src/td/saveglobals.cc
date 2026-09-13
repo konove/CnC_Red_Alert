@@ -25,7 +25,7 @@ void BaseClass::Serialize(Archive& ar) {
     if constexpr (!Archive::kIsReading) node = Nodes[i];
     ar(node.Type, node.Coord);
     if constexpr (Archive::kIsReading) {
-      if (!ar.ok() || node.Type < STRUCT_FIRST || node.Type >= STRUCT_COUNT) {
+      if (!ar.ok() || node.Type < STRUCT_WEAP || node.Type >= STRUCT_COUNT) {
         ar.Fail("invalid saved base building type");
         return;
       }

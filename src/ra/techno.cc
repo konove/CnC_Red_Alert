@@ -3313,12 +3313,13 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
     AnimType a = weapon->Anim;
     switch (a) {
       case ANIM_GUN_N:
-        a = static_cast<AnimType>(a + Dir_Facing(Fire_Direction()));
+        a = static_cast<AnimType>(
+            a + static_cast<int>(Dir_Facing(Fire_Direction())));
         break;
 
       case ANIM_SAM_N:
-        a = static_cast<AnimType>(ANIM_SAM_N +
-                                  Dir_Facing(PrimaryFacing.Current()));
+        a = static_cast<AnimType>(
+            ANIM_SAM_N + static_cast<int>(Dir_Facing(PrimaryFacing.Current())));
         break;
     }
 

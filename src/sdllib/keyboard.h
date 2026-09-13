@@ -38,15 +38,15 @@
 
 union SDL_Event;
 
-typedef enum {
-  WWKEY_SHIFT_BIT = 0x100,
-  WWKEY_CTRL_BIT = 0x200,
-  WWKEY_ALT_BIT = 0x400,
-  WWKEY_RLS_BIT = 0x800,
-  WWKEY_VK_BIT = 0x1000,
-  WWKEY_DBL_BIT = 0x2000,
-  WWKEY_BTN_BIT = 0x8000,
-} WWKey_Type;
+// Modifier and state bits combined with a key number. They are flags, not an
+// enumeration, so they stay plain integers and mix with KeyNumType freely.
+inline constexpr int WWKEY_SHIFT_BIT = 0x100;
+inline constexpr int WWKEY_CTRL_BIT = 0x200;
+inline constexpr int WWKEY_ALT_BIT = 0x400;
+inline constexpr int WWKEY_RLS_BIT = 0x800;
+inline constexpr int WWKEY_VK_BIT = 0x1000;
+inline constexpr int WWKEY_DBL_BIT = 0x2000;
+inline constexpr int WWKEY_BTN_BIT = 0x8000;
 
 class WWKeyboardClass {
  public:

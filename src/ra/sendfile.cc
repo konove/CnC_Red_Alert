@@ -392,7 +392,7 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
       NullModem.Service();
 
       if (NullModem.Get_Message(&receive_packet, (int*)&packet_len) > 0) {
-        if (receive_packet.Command == NET_FILE_CHUNK) {
+        if (receive_packet.Command == SERIAL_FILE_CHUNK) {
           if (receive_packet.BlockNumber == last_received_block + 1) {
             save_file.Write(receive_packet.RawData, receive_packet.BlockLength);
             total_length += receive_packet.BlockLength;
@@ -420,7 +420,7 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
       int receive_packet_len = sizeof(receive_packet);
       if (Ipx.Get_Global_Message(&receive_packet, &receive_packet_len,
                                  &sender_address, &product_id)) {
-        if (receive_packet.Command == NET_FILE_CHUNK &&
+        if (receive_packet.Command == SERIAL_FILE_CHUNK &&
             sender_address == Session.HostAddress) {
           if (receive_packet.BlockNumber == last_received_block + 1) {
             save_file.Write(receive_packet.RawData, receive_packet.BlockLength);

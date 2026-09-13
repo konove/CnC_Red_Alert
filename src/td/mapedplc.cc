@@ -661,7 +661,7 @@ int MapEditClass::Placement_Dialog() {
       case ButtonKey(BUTTON_MULTI2):
       case ButtonKey(BUTTON_MULTI3):
       case ButtonKey(BUTTON_MULTI4):
-        house = (HousesType)((input & (~KN_BUTTON)) - BUTTON_GDI);
+        house = (HousesType)(static_cast<int>(input & ~KN_BUTTON) - BUTTON_GDI);
         /*
         ............... ignore if invalid for this object ...............
         */

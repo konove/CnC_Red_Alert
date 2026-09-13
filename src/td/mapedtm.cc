@@ -1263,8 +1263,8 @@ int MapEditClass::Edit_Team() {
           /*
           ** Set the Mission value based on 1st list box's index
           */
-          missions[i].Mission =
-              (TeamMissionType)(TMISSION_FIRST + missionlist1.Current_Index());
+          missions[i].Mission = (TeamMissionType)(TMISSION_ATTACKBASE +
+                                                  missionlist1.Current_Index());
 
           /*
           ** Set the missions argument field
@@ -1333,7 +1333,7 @@ int MapEditClass::Edit_Team() {
       case ButtonKey(BUTTON_MULTI2):
       case ButtonKey(BUTTON_MULTI3):
       case ButtonKey(BUTTON_MULTI4):
-        house = (HousesType)((input & (~KN_BUTTON)) - BUTTON_GDI);
+        house = (HousesType)(static_cast<int>(input & ~KN_BUTTON) - BUTTON_GDI);
         Set_House_Buttons(house, commands, BUTTON_GDI);
         break;
 
@@ -1615,21 +1615,21 @@ int MapEditClass::Team_Members(HousesType house) {
   **	checking to be sure this house can own the object
   */
   i = 0;
-  for (i_id = INFANTRY_FIRST; i_id < INFANTRY_COUNT; i_id++) {
+  for (i_id = INFANTRY_E1; i_id < INFANTRY_COUNT; i_id++) {
     if (Verify_House(house, &InfantryTypeClass::As_Reference(i_id))) {
       teamclass[i] = &InfantryTypeClass::As_Reference(i_id);
       i++;
     }
   }
 
-  for (a_id = AIRCRAFT_FIRST; a_id < AIRCRAFT_COUNT; a_id++) {
+  for (a_id = AIRCRAFT_TRANSPORT; a_id < AIRCRAFT_COUNT; a_id++) {
     if (Verify_House(house, &AircraftTypeClass::As_Reference(a_id))) {
       teamclass[i] = &AircraftTypeClass::As_Reference(a_id);
       i++;
     }
   }
 
-  for (u_id = UNIT_FIRST; u_id < UNIT_COUNT; u_id++) {
+  for (u_id = UNIT_HTANK; u_id < UNIT_COUNT; u_id++) {
     if (Verify_House(house, &UnitTypeClass::As_Reference(u_id))) {
       teamclass[i] = &UnitTypeClass::As_Reference(u_id);
       i++;

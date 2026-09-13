@@ -338,7 +338,6 @@ typedef enum ThemeType {
 
   THEME_COUNT,
   THEME_LAST = THEME_BFEARED,
-  THEME_FIRST = 0
 } ThemeType;
 
 /**********************************************************************
@@ -438,7 +437,6 @@ typedef enum MissionType {
   MISSION_MISSILE,
 
   MISSION_COUNT,
-  MISSION_FIRST = 0
 } MissionType;
 
 /**********************************************************************
@@ -627,7 +625,6 @@ typedef enum ScenarioPlayerEnum {
   SCEN_PLAYER_2PLAYER,
   SCEN_PLAYER_MPLAYER,
   SCEN_PLAYER_COUNT,
-  SCEN_PLAYER_FIRST = 0,
 } ScenarioPlayerType;
 
 /**********************************************************************
@@ -638,7 +635,6 @@ typedef enum ScenarioDirEnum {
   SCEN_DIR_EAST,
   SCEN_DIR_WEST,
   SCEN_DIR_COUNT,
-  SCEN_DIR_FIRST = 0,
 } ScenarioDirType;
 
 /**********************************************************************
@@ -652,7 +648,6 @@ typedef enum ScenarioVarEnum {
   SCEN_VAR_D,
   SCEN_VAR_COUNT,  // comes before the Lose value!
   SCEN_VAR_LOSE,
-  SCEN_VAR_FIRST = 0,
 } ScenarioVarType;
 
 /**********************************************************************
@@ -667,7 +662,6 @@ typedef enum LayerType {
   LAYER_TOP,     // Topmost layer (aircraft & bullets).
 
   LAYER_COUNT,
-  LAYER_FIRST = 0
 } LayerType;
 
 /**********************************************************************
@@ -697,7 +691,6 @@ typedef enum BulletType {
   BULLET_TREXBITE,     // Tyrannosaurus Rex's bite - especially bad for infantry
 
   BULLET_COUNT,
-  BULLET_FIRST = 0
 } BulletType;
 
 /**********************************************************************
@@ -782,7 +775,6 @@ typedef enum StructType {
   STRUCT_WOOD_WALL,
 
   STRUCT_COUNT,
-  STRUCT_FIRST = 0
 } StructType;
 
 #define STRUCTF_NONE 0L
@@ -852,7 +844,6 @@ typedef enum OverlayType : int8_t {
   OVERLAY_STEEL_CRATE,    //	Steel goodie crate.
 
   OVERLAY_COUNT,
-  OVERLAY_FIRST = 0
 } OverlayType;
 
 /**********************************************************************
@@ -884,7 +875,6 @@ typedef enum InfantryType {
   INFANTRY_CHAN,     // Dr. Chan
 
   INFANTRY_COUNT,
-  INFANTRY_FIRST = 0
 } InfantryType;
 
 /**********************************************************************
@@ -917,7 +907,6 @@ typedef enum UnitType {
   UNIT_STEG,       //	Stegasaurus
 
   UNIT_COUNT,
-  UNIT_FIRST = 0
 } UnitType;
 
 #define UNITF_HTANK (1L << UNIT_HTANK)
@@ -956,7 +945,6 @@ typedef enum AircraftType {
 
   AIRCRAFT_COUNT,
   AIRCRAFT_NONE = -1,
-  AIRCRAFT_FIRST = 0
 } AircraftType;
 
 #define AIRCRAFTF_TRANSPORT (1L << AIRCRAFT_TRANSPORT)
@@ -1200,7 +1188,6 @@ typedef enum TemplateType : uint8_t {
 
   TEMPLATE_COUNT,
   TEMPLATE_NONE = 255,
-  TEMPLATE_FIRST = 0
 } TemplateType;
 
 /**********************************************************************
@@ -1244,7 +1231,6 @@ typedef enum TerrainType {
   TERRAIN_ROCK7,
 
   TERRAIN_COUNT,
-  TERRAIN_FIRST = 0
 } TerrainType;
 
 /**********************************************************************
@@ -1271,7 +1257,6 @@ typedef enum SmudgeType {
   SMUDGE_BIB3,
 
   SMUDGE_COUNT,
-  SMUDGE_FIRST = 0
 } SmudgeType;
 
 /**********************************************************************
@@ -1799,7 +1784,6 @@ typedef enum TheaterType {
   THEATER_WINTER,
 
   THEATER_COUNT,
-  THEATER_FIRST = 0
 } TheaterType;
 
 #define THEATERF_DESERT (1 << THEATER_DESERT)
@@ -1879,7 +1863,6 @@ enum FacingType : int8_t {
   FACING_NW,  // North-West
 
   FACING_COUNT,  // Total of 8 directions (0..7).
-  FACING_FIRST = 0
 };
 
 inline FacingType operator+(FacingType f1, FacingType f2) {
@@ -2110,7 +2093,6 @@ typedef enum VocType {
 
   VOC_COUNT,
   VOC_BUILD_SELECT = VOC_TARGET,
-  VOC_FIRST = 0
 } VocType;
 
 typedef enum VoxType : int8_t {
@@ -2218,8 +2200,6 @@ typedef enum VoxType : int8_t {
   //	VOX_MULTI_OFFLINE		= VOX_GOLD_OFFLINE,
   //	VOX_MULTI_LOST			= VOX_GOLD_LOST,
   //	VOX_MULTI_WON			= VOX_GOLD_WON,
-
-  VOX_FIRST = 0
 } VoxType;
 
 #define NUM_MULTI_VOICES 6

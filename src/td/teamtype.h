@@ -73,7 +73,6 @@ typedef enum TeamMissionType {
   TMISSION_ATTACKTARCOM,  // attack tarcom
   TMISSION_UNLOAD,        // Unload at current location.
   TMISSION_COUNT,
-  TMISSION_FIRST = 0
 } TeamMissionType;
 
 /*
