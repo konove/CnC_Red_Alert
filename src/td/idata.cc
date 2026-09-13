@@ -92,40 +92,40 @@
 // Minigunners
 
 int MiniGunnerDos[DO_COUNT][3] = {
-    0,   1,  1,  // DO_STAND_READY
-    8,   1,  1,  // DO_STAND_GUARD
-    192, 1,  8,  // DO_PRONE
-    16,  6,  6,  // DO_WALK
-    64,  8,  8,  // DO_FIRE_WEAPON
-    128, 2,  2,  // DO_LIE_DOWN
-    144, 4,  4,  // DO_CRAWL
-    176, 2,  2,  // DO_GET_UP
-    192, 6,  8,  // DO_FIRE_PRONE
-    256, 16, 0,  // DO_IDLE1
-    272, 16, 0,  // DO_IDLE2
-    288, 13, 0,  // DO_ON_GUARD
-    292, 10, 0,  // DO_FIGHT_READY
-    301, 2,  0,  // DO_PUNCH
-    303, 6,  0,  // DO_KICK
-    309, 2,  0,  // DO_PUNCH_HIT1
-    311, 4,  0,  // DO_PUNCH_HIT2
-    315, 5,  0,  // DO_PUNCH_DEATH
-    319, 2,  0,  // DO_KICK_HIT1
-    321, 4,  0,  // DO_KICK_HIT2
-    325, 5,  0,  // DO_KICK_DEATH
-    330, 5,  0,  // DO_READY_WEAPON
-    382, 8,  0,  // DO_GUN_DEATH
-    398, 8,  0,  // DO_EXPLOSION_DEATH
-    398, 8,  0,  // DO_EXPLOSION2_DEATH
-    406, 12, 0,  // DO_GRENADE_DEATH
-    418, 18, 0,  // DO_FIRE_DEATH
-    436, 3,  3,  // DO_GESTURE1
-    460, 3,  3,  // DO_SALUTE1
-    484, 3,  3,  // DO_GESTURE2
-    508, 3,  3,  // DO_SALUTE2
-    0,   1,  1,  // DO_PULL_GUN			// N/A
-    0,   1,  1,  //	DO_PLEAD				// N/A
-    0,   1,  1   //	DO_PLEAD_DEATH		// N/A
+    {0, 1, 1},  // DO_STAND_READY
+    {8, 1, 1},  // DO_STAND_GUARD
+    {192, 1, 8},  // DO_PRONE
+    {16, 6, 6},  // DO_WALK
+    {64, 8, 8},  // DO_FIRE_WEAPON
+    {128, 2, 2},  // DO_LIE_DOWN
+    {144, 4, 4},  // DO_CRAWL
+    {176, 2, 2},  // DO_GET_UP
+    {192, 6, 8},  // DO_FIRE_PRONE
+    {256, 16, 0},  // DO_IDLE1
+    {272, 16, 0},  // DO_IDLE2
+    {288, 13, 0},  // DO_ON_GUARD
+    {292, 10, 0},  // DO_FIGHT_READY
+    {301, 2, 0},  // DO_PUNCH
+    {303, 6, 0},  // DO_KICK
+    {309, 2, 0},  // DO_PUNCH_HIT1
+    {311, 4, 0},  // DO_PUNCH_HIT2
+    {315, 5, 0},  // DO_PUNCH_DEATH
+    {319, 2, 0},  // DO_KICK_HIT1
+    {321, 4, 0},  // DO_KICK_HIT2
+    {325, 5, 0},  // DO_KICK_DEATH
+    {330, 5, 0},  // DO_READY_WEAPON
+    {382, 8, 0},  // DO_GUN_DEATH
+    {398, 8, 0},  // DO_EXPLOSION_DEATH
+    {398, 8, 0},  // DO_EXPLOSION2_DEATH
+    {406, 12, 0},  // DO_GRENADE_DEATH
+    {418, 18, 0},  // DO_FIRE_DEATH
+    {436, 3, 3},  // DO_GESTURE1
+    {460, 3, 3},  // DO_SALUTE1
+    {484, 3, 3},  // DO_GESTURE2
+    {508, 3, 3},  // DO_SALUTE2
+    {0, 1, 1},  // DO_PULL_GUN			// N/A
+    {0, 1, 1},  //	DO_PLEAD				// N/A
+    {0, 1, 1}   //	DO_PLEAD_DEATH		// N/A
 };
 
 static const InfantryTypeClass E1(
@@ -161,40 +161,40 @@ static const InfantryTypeClass E1(
 // Grenadiers
 
 int GrenadierDos[DO_COUNT][3] = {
-    0,   1,  1,   // DO_STAND_READY
-    8,   1,  1,   // DO_STAND_GUARD
-    288, 1,  12,  // DO_PRONE
-    16,  6,  6,   // DO_WALK
-    64,  20, 20,  // DO_FIRE_WEAPON
-    224, 2,  2,   // DO_LIE_DOWN
-    240, 4,  4,   // DO_CRAWL
-    272, 2,  2,   // DO_GET_UP
-    288, 8,  12,  // DO_FIRE_PRONE
-    384, 16, 0,   // DO_IDLE1
-    400, 16, 0,   // DO_IDLE2
-    416, 13, 0,   // DO_ON_GUARD
-    420, 10, 0,   // DO_FIGHT_READY
-    429, 2,  0,   // DO_PUNCH
-    431, 6,  0,   // DO_KICK
-    437, 2,  0,   // DO_PUNCH_HIT1
-    439, 4,  0,   // DO_PUNCH_HIT2
-    443, 4,  0,   // DO_PUNCH_DEATH
-    447, 2,  0,   // DO_KICK_HIT1
-    449, 4,  0,   // DO_KICK_HIT2
-    453, 5,  0,   // DO_KICK_DEATH
-    458, 5,  0,   // DO_READY_WEAPON
-    510, 8,  0,   // DO_GUN_DEATH
-    526, 8,  0,   // DO_EXPLOSION_DEATH
-    526, 8,  0,   // DO_EXPLOSION2_DEATH
-    534, 12, 0,   // DO_GRENADE_DEATH
-    546, 18, 0,   // DO_FIRE_DEATH
-    564, 3,  3,   // DO_GESTURE1
-    588, 3,  3,   // DO_SALUTE1
-    612, 3,  3,   // DO_GESTURE2
-    636, 3,  3,   // DO_SALUTE2
-    0,   1,  1,   // DO_PULL_GUN			// N/A
-    0,   1,  1,   //	DO_PLEAD				// N/A
-    0,   1,  1    //	DO_PLEAD_DEATH		// N/A
+    {0, 1, 1},   // DO_STAND_READY
+    {8, 1, 1},   // DO_STAND_GUARD
+    {288, 1, 12},  // DO_PRONE
+    {16, 6, 6},   // DO_WALK
+    {64, 20, 20},  // DO_FIRE_WEAPON
+    {224, 2, 2},   // DO_LIE_DOWN
+    {240, 4, 4},   // DO_CRAWL
+    {272, 2, 2},   // DO_GET_UP
+    {288, 8, 12},  // DO_FIRE_PRONE
+    {384, 16, 0},   // DO_IDLE1
+    {400, 16, 0},   // DO_IDLE2
+    {416, 13, 0},   // DO_ON_GUARD
+    {420, 10, 0},   // DO_FIGHT_READY
+    {429, 2, 0},   // DO_PUNCH
+    {431, 6, 0},   // DO_KICK
+    {437, 2, 0},   // DO_PUNCH_HIT1
+    {439, 4, 0},   // DO_PUNCH_HIT2
+    {443, 4, 0},   // DO_PUNCH_DEATH
+    {447, 2, 0},   // DO_KICK_HIT1
+    {449, 4, 0},   // DO_KICK_HIT2
+    {453, 5, 0},   // DO_KICK_DEATH
+    {458, 5, 0},   // DO_READY_WEAPON
+    {510, 8, 0},   // DO_GUN_DEATH
+    {526, 8, 0},   // DO_EXPLOSION_DEATH
+    {526, 8, 0},   // DO_EXPLOSION2_DEATH
+    {534, 12, 0},   // DO_GRENADE_DEATH
+    {546, 18, 0},   // DO_FIRE_DEATH
+    {564, 3, 3},   // DO_GESTURE1
+    {588, 3, 3},   // DO_SALUTE1
+    {612, 3, 3},   // DO_GESTURE2
+    {636, 3, 3},   // DO_SALUTE2
+    {0, 1, 1},   // DO_PULL_GUN			// N/A
+    {0, 1, 1},   //	DO_PLEAD				// N/A
+    {0, 1, 1}    //	DO_PLEAD_DEATH		// N/A
 };
 
 static const InfantryTypeClass E2(
@@ -230,40 +230,40 @@ static const InfantryTypeClass E2(
 // Bazooka
 
 int BazookaDos[DO_COUNT][3] = {
-    0,   1,  1,   // DO_STAND_READY
-    8,   1,  1,   // DO_STAND_GUARD
-    192, 1,  10,  // DO_PRONE
-    16,  6,  6,   // DO_WALK
-    64,  8,  8,   // DO_FIRE_WEAPON
-    128, 2,  2,   // DO_LIE_DOWN
-    144, 4,  4,   // DO_CRAWL
-    176, 2,  2,   // DO_GET_UP
-    192, 10, 10,  // DO_FIRE_PRONE
-    272, 16, 0,   // DO_IDLE1
-    288, 16, 0,   // DO_IDLE2
-    304, 13, 0,   // DO_ON_GUARD
-    308, 10, 0,   // DO_FIGHT_READY
-    307, 2,  0,   // DO_PUNCH
-    319, 6,  0,   // DO_KICK
-    325, 2,  0,   // DO_PUNCH_HIT1
-    327, 4,  0,   // DO_PUNCH_HIT2
-    331, 4,  0,   // DO_PUNCH_DEATH
-    335, 2,  0,   // DO_KICK_HIT1
-    337, 4,  0,   // DO_KICK_HIT2
-    341, 5,  0,   // DO_KICK_DEATH
-    346, 5,  0,   // DO_READY_WEAPON
-    398, 8,  0,   // DO_GUN_DEATH
-    414, 8,  0,   // DO_EXPLOSION_DEATH
-    414, 8,  0,   // DO_EXPLOSION2_DEATH
-    422, 12, 0,   // DO_GRENADE_DEATH
-    434, 18, 0,   // DO_FIRE_DEATH
-    452, 3,  3,   // DO_GESTURE1
-    476, 3,  3,   // DO_SALUTE1
-    500, 3,  3,   // DO_GESTURE2
-    524, 3,  3,   // DO_SALUTE2
-    0,   1,  1,   // DO_PULL_GUN			// N/A
-    0,   1,  1,   //	DO_PLEAD				// N/A
-    0,   1,  1    //	DO_PLEAD_DEATH		// N/A
+    {0, 1, 1},   // DO_STAND_READY
+    {8, 1, 1},   // DO_STAND_GUARD
+    {192, 1, 10},  // DO_PRONE
+    {16, 6, 6},   // DO_WALK
+    {64, 8, 8},   // DO_FIRE_WEAPON
+    {128, 2, 2},   // DO_LIE_DOWN
+    {144, 4, 4},   // DO_CRAWL
+    {176, 2, 2},   // DO_GET_UP
+    {192, 10, 10},  // DO_FIRE_PRONE
+    {272, 16, 0},   // DO_IDLE1
+    {288, 16, 0},   // DO_IDLE2
+    {304, 13, 0},   // DO_ON_GUARD
+    {308, 10, 0},   // DO_FIGHT_READY
+    {307, 2, 0},   // DO_PUNCH
+    {319, 6, 0},   // DO_KICK
+    {325, 2, 0},   // DO_PUNCH_HIT1
+    {327, 4, 0},   // DO_PUNCH_HIT2
+    {331, 4, 0},   // DO_PUNCH_DEATH
+    {335, 2, 0},   // DO_KICK_HIT1
+    {337, 4, 0},   // DO_KICK_HIT2
+    {341, 5, 0},   // DO_KICK_DEATH
+    {346, 5, 0},   // DO_READY_WEAPON
+    {398, 8, 0},   // DO_GUN_DEATH
+    {414, 8, 0},   // DO_EXPLOSION_DEATH
+    {414, 8, 0},   // DO_EXPLOSION2_DEATH
+    {422, 12, 0},   // DO_GRENADE_DEATH
+    {434, 18, 0},   // DO_FIRE_DEATH
+    {452, 3, 3},   // DO_GESTURE1
+    {476, 3, 3},   // DO_SALUTE1
+    {500, 3, 3},   // DO_GESTURE2
+    {524, 3, 3},   // DO_SALUTE2
+    {0, 1, 1},   // DO_PULL_GUN			// N/A
+    {0, 1, 1},   //	DO_PLEAD				// N/A
+    {0, 1, 1}    //	DO_PLEAD_DEATH		// N/A
 };
 
 static const InfantryTypeClass E3(
@@ -299,40 +299,40 @@ static const InfantryTypeClass E3(
 // Flamethrower
 
 int FlamethrowerDos[DO_COUNT][3] = {
-    0,   1,  1,   // DO_STAND_READY
-    8,   1,  1,   // DO_STAND_GUARD
-    256, 1,  16,  // DO_PRONE
-    16,  6,  6,   // DO_WALK
-    64,  16, 16,  // DO_FIRE_WEAPON
-    192, 2,  2,   // DO_LIE_DOWN
-    208, 4,  4,   // DO_CRAWL
-    240, 2,  2,   // DO_GET_UP
-    256, 16, 16,  // DO_FIRE_PRONE
-    384, 16, 0,   // DO_IDLE1
-    400, 16, 0,   // DO_IDLE2
-    416, 13, 0,   // DO_ON_GUARD
-    420, 10, 0,   // DO_FIGHT_READY
-    429, 2,  0,   // DO_PUNCH
-    431, 6,  0,   // DO_KICK
-    437, 2,  0,   // DO_PUNCH_HIT1
-    439, 4,  0,   // DO_PUNCH_HIT2
-    443, 4,  0,   // DO_PUNCH_DEATH
-    447, 2,  0,   // DO_KICK_HIT1
-    449, 4,  0,   // DO_KICK_HIT2
-    453, 5,  0,   // DO_KICK_DEATH
-    458, 5,  0,   // DO_READY_WEAPON
-    510, 8,  0,   // DO_GUN_DEATH
-    526, 8,  0,   // DO_EXPLOSION_DEATH
-    526, 8,  0,   // DO_EXPLOSION2_DEATH
-    534, 12, 0,   // DO_GRENADE_DEATH
-    546, 18, 0,   // DO_FIRE_DEATH
-    564, 3,  3,   // DO_GESTURE1
-    588, 3,  3,   // DO_SALUTE1
-    612, 3,  3,   // DO_GESTURE2
-    636, 3,  3,   // DO_SALUTE2
-    0,   1,  1,   // DO_PULL_GUN			// N/A
-    0,   1,  1,   //	DO_PLEAD				// N/A
-    0,   1,  1    //	DO_PLEAD_DEATH		// N/A
+    {0, 1, 1},   // DO_STAND_READY
+    {8, 1, 1},   // DO_STAND_GUARD
+    {256, 1, 16},  // DO_PRONE
+    {16, 6, 6},   // DO_WALK
+    {64, 16, 16},  // DO_FIRE_WEAPON
+    {192, 2, 2},   // DO_LIE_DOWN
+    {208, 4, 4},   // DO_CRAWL
+    {240, 2, 2},   // DO_GET_UP
+    {256, 16, 16},  // DO_FIRE_PRONE
+    {384, 16, 0},   // DO_IDLE1
+    {400, 16, 0},   // DO_IDLE2
+    {416, 13, 0},   // DO_ON_GUARD
+    {420, 10, 0},   // DO_FIGHT_READY
+    {429, 2, 0},   // DO_PUNCH
+    {431, 6, 0},   // DO_KICK
+    {437, 2, 0},   // DO_PUNCH_HIT1
+    {439, 4, 0},   // DO_PUNCH_HIT2
+    {443, 4, 0},   // DO_PUNCH_DEATH
+    {447, 2, 0},   // DO_KICK_HIT1
+    {449, 4, 0},   // DO_KICK_HIT2
+    {453, 5, 0},   // DO_KICK_DEATH
+    {458, 5, 0},   // DO_READY_WEAPON
+    {510, 8, 0},   // DO_GUN_DEATH
+    {526, 8, 0},   // DO_EXPLOSION_DEATH
+    {526, 8, 0},   // DO_EXPLOSION2_DEATH
+    {534, 12, 0},   // DO_GRENADE_DEATH
+    {546, 18, 0},   // DO_FIRE_DEATH
+    {564, 3, 3},   // DO_GESTURE1
+    {588, 3, 3},   // DO_SALUTE1
+    {612, 3, 3},   // DO_GESTURE2
+    {636, 3, 3},   // DO_SALUTE2
+    {0, 1, 1},   // DO_PULL_GUN			// N/A
+    {0, 1, 1},   //	DO_PLEAD				// N/A
+    {0, 1, 1}    //	DO_PLEAD_DEATH		// N/A
 };
 
 static const InfantryTypeClass E4(
@@ -366,40 +366,40 @@ static const InfantryTypeClass E4(
 // Chemwarrior
 
 int ChemwarriorDos[DO_COUNT][3] = {
-    0,   1,  1,   // DO_STAND_READY
-    8,   1,  1,   // DO_STAND_GUARD
-    256, 1,  16,  // DO_PRONE
-    16,  6,  6,   // DO_WALK
-    64,  16, 16,  // DO_FIRE_WEAPON
-    192, 2,  2,   // DO_LIE_DOWN
-    208, 4,  4,   // DO_CRAWL
-    240, 2,  2,   // DO_GET_UP
-    256, 16, 16,  // DO_FIRE_PRONE
-    384, 16, 0,   // DO_IDLE1
-    400, 16, 0,   // DO_IDLE2
-    416, 13, 0,   // DO_ON_GUARD
-    420, 10, 0,   // DO_FIGHT_READY
-    429, 2,  0,   // DO_PUNCH
-    431, 6,  0,   // DO_KICK
-    437, 2,  0,   // DO_PUNCH_HIT1
-    439, 4,  0,   // DO_PUNCH_HIT2
-    443, 4,  0,   // DO_PUNCH_DEATH
-    447, 2,  0,   // DO_KICK_HIT1
-    449, 4,  0,   // DO_KICK_HIT2
-    453, 5,  0,   // DO_KICK_DEATH
-    458, 5,  0,   // DO_READY_WEAPON
-    510, 8,  0,   // DO_GUN_DEATH
-    526, 8,  0,   // DO_EXPLOSION_DEATH
-    526, 8,  0,   // DO_EXPLOSION2_DEATH
-    534, 12, 0,   // DO_GRENADE_DEATH
-    546, 18, 0,   // DO_FIRE_DEATH
-    564, 3,  3,   // DO_GESTURE1
-    588, 3,  3,   // DO_SALUTE1
-    612, 3,  3,   // DO_GESTURE2
-    636, 3,  3,   // DO_SALUTE2
-    0,   1,  1,   // DO_PULL_GUN			// N/A
-    0,   1,  1,   //	DO_PLEAD				// N/A
-    0,   1,  1    //	DO_PLEAD_DEATH		// N/A
+    {0, 1, 1},   // DO_STAND_READY
+    {8, 1, 1},   // DO_STAND_GUARD
+    {256, 1, 16},  // DO_PRONE
+    {16, 6, 6},   // DO_WALK
+    {64, 16, 16},  // DO_FIRE_WEAPON
+    {192, 2, 2},   // DO_LIE_DOWN
+    {208, 4, 4},   // DO_CRAWL
+    {240, 2, 2},   // DO_GET_UP
+    {256, 16, 16},  // DO_FIRE_PRONE
+    {384, 16, 0},   // DO_IDLE1
+    {400, 16, 0},   // DO_IDLE2
+    {416, 13, 0},   // DO_ON_GUARD
+    {420, 10, 0},   // DO_FIGHT_READY
+    {429, 2, 0},   // DO_PUNCH
+    {431, 6, 0},   // DO_KICK
+    {437, 2, 0},   // DO_PUNCH_HIT1
+    {439, 4, 0},   // DO_PUNCH_HIT2
+    {443, 4, 0},   // DO_PUNCH_DEATH
+    {447, 2, 0},   // DO_KICK_HIT1
+    {449, 4, 0},   // DO_KICK_HIT2
+    {453, 5, 0},   // DO_KICK_DEATH
+    {458, 5, 0},   // DO_READY_WEAPON
+    {510, 8, 0},   // DO_GUN_DEATH
+    {526, 8, 0},   // DO_EXPLOSION_DEATH
+    {526, 8, 0},   // DO_EXPLOSION2_DEATH
+    {534, 12, 0},   // DO_GRENADE_DEATH
+    {546, 18, 0},   // DO_FIRE_DEATH
+    {564, 3, 3},   // DO_GESTURE1
+    {588, 3, 3},   // DO_SALUTE1
+    {612, 3, 3},   // DO_GESTURE2
+    {636, 3, 3},   // DO_SALUTE2
+    {0, 1, 1},   // DO_PULL_GUN			// N/A
+    {0, 1, 1},   //	DO_PLEAD				// N/A
+    {0, 1, 1}    //	DO_PLEAD_DEATH		// N/A
 };
 
 static const InfantryTypeClass E5(
@@ -434,40 +434,40 @@ static const InfantryTypeClass E5(
 // Engineer
 
 int EngineerDos[DO_COUNT][3] = {
-    0,   1,  1,  // DO_STAND_READY
-    8,   1,  1,  // DO_STAND_GUARD
-    82,  1,  4,  // DO_PRONE
-    16,  6,  6,  // DO_WALK
-    0,   0,  0,  // DO_FIRE_WEAPON
-    67,  2,  2,  // DO_LIE_DOWN
-    82,  4,  4,  // DO_CRAWL
-    114, 2,  2,  // DO_GET_UP
-    0,   0,  0,  // DO_FIRE_PRONE
-    130, 16, 0,  // DO_IDLE1
-    0,   0,  0,  // DO_IDLE2
-    0,   0,  0,  // DO_ON_GUARD
-    0,   0,  0,  // DO_FIGHT_READY
-    0,   0,  0,  // DO_PUNCH
-    0,   0,  0,  // DO_KICK
-    0,   0,  0,  // DO_PUNCH_HIT1
-    0,   0,  0,  // DO_PUNCH_HIT2
-    0,   0,  0,  // DO_PUNCH_DEATH
-    0,   0,  0,  // DO_KICK_HIT1
-    0,   0,  0,  // DO_KICK_HIT2
-    0,   0,  0,  // DO_KICK_DEATH
-    0,   0,  0,  // DO_READY_WEAPON
-    146, 8,  0,  // DO_GUN_DEATH
-    154, 8,  0,  // DO_EXPLOSION_DEATH
-    162, 8,  0,  // DO_EXPLOSION2_DEATH
-    162, 12, 0,  // DO_GRENADE_DEATH
-    182, 18, 0,  // DO_FIRE_DEATH
-    200, 3,  3,  // DO_GESTURE1
-    224, 3,  3,  // DO_SALUTE1
-    200, 3,  3,  // DO_GESTURE2
-    224, 3,  3,  // DO_SALUTE2
-    0,   1,  1,  // DO_PULL_GUN			// N/A
-    0,   1,  1,  //	DO_PLEAD				// N/A
-    0,   1,  1   //	DO_PLEAD_DEATH		// N/A
+    {0, 1, 1},  // DO_STAND_READY
+    {8, 1, 1},  // DO_STAND_GUARD
+    {82, 1, 4},  // DO_PRONE
+    {16, 6, 6},  // DO_WALK
+    {0, 0, 0},  // DO_FIRE_WEAPON
+    {67, 2, 2},  // DO_LIE_DOWN
+    {82, 4, 4},  // DO_CRAWL
+    {114, 2, 2},  // DO_GET_UP
+    {0, 0, 0},  // DO_FIRE_PRONE
+    {130, 16, 0},  // DO_IDLE1
+    {0, 0, 0},  // DO_IDLE2
+    {0, 0, 0},  // DO_ON_GUARD
+    {0, 0, 0},  // DO_FIGHT_READY
+    {0, 0, 0},  // DO_PUNCH
+    {0, 0, 0},  // DO_KICK
+    {0, 0, 0},  // DO_PUNCH_HIT1
+    {0, 0, 0},  // DO_PUNCH_HIT2
+    {0, 0, 0},  // DO_PUNCH_DEATH
+    {0, 0, 0},  // DO_KICK_HIT1
+    {0, 0, 0},  // DO_KICK_HIT2
+    {0, 0, 0},  // DO_KICK_DEATH
+    {0, 0, 0},  // DO_READY_WEAPON
+    {146, 8, 0},  // DO_GUN_DEATH
+    {154, 8, 0},  // DO_EXPLOSION_DEATH
+    {162, 8, 0},  // DO_EXPLOSION2_DEATH
+    {162, 12, 0},  // DO_GRENADE_DEATH
+    {182, 18, 0},  // DO_FIRE_DEATH
+    {200, 3, 3},  // DO_GESTURE1
+    {224, 3, 3},  // DO_SALUTE1
+    {200, 3, 3},  // DO_GESTURE2
+    {224, 3, 3},  // DO_SALUTE2
+    {0, 1, 1},  // DO_PULL_GUN			// N/A
+    {0, 1, 1},  //	DO_PLEAD				// N/A
+    {0, 1, 1}   //	DO_PLEAD_DEATH		// N/A
 };
 
 static const InfantryTypeClass E7(
@@ -503,40 +503,40 @@ static const InfantryTypeClass E7(
 // Commandos
 
 int CommandoDos[DO_COUNT][3] = {
-    0,   1,  1,  // DO_STAND_READY
-    8,   1,  1,  // DO_STAND_GUARD
-    160, 1,  4,  // DO_PRONE
-    16,  6,  6,  // DO_WALK
-    64,  4,  4,  // DO_FIRE_WEAPON
-    96,  2,  2,  // DO_LIE_DOWN
-    112, 4,  4,  // DO_CRAWL
-    144, 2,  2,  // DO_GET_UP
-    160, 4,  4,  // DO_FIRE_PRONE
-    192, 16, 0,  // DO_IDLE1
-    208, 16, 0,  // DO_IDLE2
-    224, 13, 0,  // DO_ON_GUARD
-    228, 9,  0,  // DO_FIGHT_READY
-    237, 2,  0,  // DO_PUNCH
-    239, 6,  0,  // DO_KICK
-    245, 2,  0,  // DO_PUNCH_HIT1
-    247, 4,  0,  // DO_PUNCH_HIT2
-    251, 4,  0,  // DO_PUNCH_DEATH
-    255, 2,  0,  // DO_KICK_HIT1
-    257, 4,  0,  // DO_KICK_HIT2
-    261, 5,  0,  // DO_KICK_DEATH
-    266, 5,  0,  // DO_READY_WEAPON
-    318, 8,  0,  // DO_GUN_DEATH
-    334, 8,  0,  // DO_EXPLOSION_DEATH
-    334, 8,  0,  // DO_EXPLOSION2_DEATH
-    342, 12, 0,  // DO_GRENADE_DEATH
-    354, 18, 0,  // DO_FIRE_DEATH
-    372, 3,  3,  // DO_GESTURE1
-    396, 3,  3,  // DO_SALUTE1
-    420, 3,  3,  // DO_GESTURE2
-    444, 3,  3,  // DO_SALUTE2
-    0,   1,  1,  // DO_PULL_GUN			// N/A
-    0,   1,  1,  //	DO_PLEAD				// N/A
-    0,   1,  1   //	DO_PLEAD_DEATH		// N/A
+    {0, 1, 1},  // DO_STAND_READY
+    {8, 1, 1},  // DO_STAND_GUARD
+    {160, 1, 4},  // DO_PRONE
+    {16, 6, 6},  // DO_WALK
+    {64, 4, 4},  // DO_FIRE_WEAPON
+    {96, 2, 2},  // DO_LIE_DOWN
+    {112, 4, 4},  // DO_CRAWL
+    {144, 2, 2},  // DO_GET_UP
+    {160, 4, 4},  // DO_FIRE_PRONE
+    {192, 16, 0},  // DO_IDLE1
+    {208, 16, 0},  // DO_IDLE2
+    {224, 13, 0},  // DO_ON_GUARD
+    {228, 9, 0},  // DO_FIGHT_READY
+    {237, 2, 0},  // DO_PUNCH
+    {239, 6, 0},  // DO_KICK
+    {245, 2, 0},  // DO_PUNCH_HIT1
+    {247, 4, 0},  // DO_PUNCH_HIT2
+    {251, 4, 0},  // DO_PUNCH_DEATH
+    {255, 2, 0},  // DO_KICK_HIT1
+    {257, 4, 0},  // DO_KICK_HIT2
+    {261, 5, 0},  // DO_KICK_DEATH
+    {266, 5, 0},  // DO_READY_WEAPON
+    {318, 8, 0},  // DO_GUN_DEATH
+    {334, 8, 0},  // DO_EXPLOSION_DEATH
+    {334, 8, 0},  // DO_EXPLOSION2_DEATH
+    {342, 12, 0},  // DO_GRENADE_DEATH
+    {354, 18, 0},  // DO_FIRE_DEATH
+    {372, 3, 3},  // DO_GESTURE1
+    {396, 3, 3},  // DO_SALUTE1
+    {420, 3, 3},  // DO_GESTURE2
+    {444, 3, 3},  // DO_SALUTE2
+    {0, 1, 1},  // DO_PULL_GUN			// N/A
+    {0, 1, 1},  //	DO_PLEAD				// N/A
+    {0, 1, 1}   //	DO_PLEAD_DEATH		// N/A
 
 };
 static const InfantryTypeClass Commando(
@@ -572,40 +572,40 @@ static const InfantryTypeClass Commando(
 // Civilians
 
 int CivilianDos1[DO_COUNT][3] = {
-    0,   1,  1,  // DO_STAND_READY
-    0,   1,  1,  // DO_STAND_GUARD
-    0,   1,  1,  // DO_PRONE				// N/A
-    56,  6,  6,  // DO_WALK
-    205, 4,  4,  // DO_FIRE_WEAPON
-    0,   1,  1,  // DO_LIE_DOWN			// N/A
-    8,   6,  6,  // DO_CRAWL
-    0,   1,  1,  // DO_GET_UP			// N/A
-    205, 4,  4,  // DO_FIRE_PRONE
-    189, 10, 0,  // DO_IDLE1
-    199, 6,  0,  // DO_IDLE2
-    104, 3,  0,  // DO_ON_GUARD
-    107, 7,  0,  // DO_FIGHT_READY
-    114, 2,  0,  // DO_PUNCH
-    116, 6,  0,  // DO_KICK
-    122, 2,  0,  // DO_PUNCH_HIT1
-    124, 4,  0,  // DO_PUNCH_HIT2
-    128, 4,  0,  // DO_PUNCH_DEATH
-    133, 2,  0,  // DO_KICK_HIT1
-    135, 4,  0,  // DO_KICK_HIT2
-    139, 5,  0,  // DO_KICK_DEATH
-    144, 3,  0,  // DO_READY_WEAPON
-    329, 8,  0,  // DO_GUN_DEATH
-    337, 8,  0,  // DO_EXPLOSION_DEATH
-    337, 8,  0,  // DO_EXPLOSION2_DEATH
-    345, 12, 0,  // DO_GRENADE_DEATH
-    357, 18, 0,  // DO_FIRE_DEATH
-    0,   0,  0,  // DO_GESTURE1			// N/A
-    0,   0,  0,  // DO_SALUTE1			// N/A
-    0,   0,  0,  // DO_GESTURE2			// N/A
-    0,   0,  0,  // DO_SALUTE2			// N/A
-    199, 6,  0,  // DO_PULL_GUN
-    237, 40, 0,  //	DO_PLEAD
-    277, 6,  0   //	DO_PLEAD_DEATH
+    {0, 1, 1},  // DO_STAND_READY
+    {0, 1, 1},  // DO_STAND_GUARD
+    {0, 1, 1},  // DO_PRONE				// N/A
+    {56, 6, 6},  // DO_WALK
+    {205, 4, 4},  // DO_FIRE_WEAPON
+    {0, 1, 1},  // DO_LIE_DOWN			// N/A
+    {8, 6, 6},  // DO_CRAWL
+    {0, 1, 1},  // DO_GET_UP			// N/A
+    {205, 4, 4},  // DO_FIRE_PRONE
+    {189, 10, 0},  // DO_IDLE1
+    {199, 6, 0},  // DO_IDLE2
+    {104, 3, 0},  // DO_ON_GUARD
+    {107, 7, 0},  // DO_FIGHT_READY
+    {114, 2, 0},  // DO_PUNCH
+    {116, 6, 0},  // DO_KICK
+    {122, 2, 0},  // DO_PUNCH_HIT1
+    {124, 4, 0},  // DO_PUNCH_HIT2
+    {128, 4, 0},  // DO_PUNCH_DEATH
+    {133, 2, 0},  // DO_KICK_HIT1
+    {135, 4, 0},  // DO_KICK_HIT2
+    {139, 5, 0},  // DO_KICK_DEATH
+    {144, 3, 0},  // DO_READY_WEAPON
+    {329, 8, 0},  // DO_GUN_DEATH
+    {337, 8, 0},  // DO_EXPLOSION_DEATH
+    {337, 8, 0},  // DO_EXPLOSION2_DEATH
+    {345, 12, 0},  // DO_GRENADE_DEATH
+    {357, 18, 0},  // DO_FIRE_DEATH
+    {0, 0, 0},  // DO_GESTURE1			// N/A
+    {0, 0, 0},  // DO_SALUTE1			// N/A
+    {0, 0, 0},  // DO_GESTURE2			// N/A
+    {0, 0, 0},  // DO_SALUTE2			// N/A
+    {199, 6, 0},  // DO_PULL_GUN
+    {237, 40, 0},  //	DO_PLEAD
+    {277, 6, 0}   //	DO_PLEAD_DEATH
 };
 
 static const InfantryTypeClass C1(
@@ -637,40 +637,40 @@ static const InfantryTypeClass C1(
     WEAPON_PISTOL, WEAPON_NONE, MPH_SLOW_ISH);
 
 int CivilianDos2[DO_COUNT][3] = {
-    0,   1,  1,  // DO_STAND_READY
-    0,   1,  1,  // DO_STAND_GUARD
-    0,   1,  1,  // DO_PRONE				// N/A
-    56,  6,  6,  // DO_WALK
-    205, 4,  4,  // DO_FIRE_WEAPON
-    0,   1,  1,  // DO_LIE_DOWN			// N/A
-    8,   6,  6,  // DO_CRAWL
-    0,   1,  1,  // DO_GET_UP			// N/A
-    205, 4,  4,  // DO_FIRE_PRONE
-    189, 10, 0,  // DO_IDLE1
-    199, 6,  0,  // DO_IDLE2
-    104, 3,  0,  // DO_ON_GUARD
-    107, 7,  0,  // DO_FIGHT_READY
-    114, 2,  0,  // DO_PUNCH
-    116, 6,  0,  // DO_KICK
-    122, 2,  0,  // DO_PUNCH_HIT1
-    124, 4,  0,  // DO_PUNCH_HIT2
-    128, 4,  0,  // DO_PUNCH_DEATH
-    133, 2,  0,  // DO_KICK_HIT1
-    135, 4,  0,  // DO_KICK_HIT2
-    139, 5,  0,  // DO_KICK_DEATH
-    144, 3,  0,  // DO_READY_WEAPON
-    329, 8,  0,  // DO_GUN_DEATH
-    337, 8,  0,  // DO_EXPLOSION_DEATH
-    337, 8,  0,  // DO_EXPLOSION2_DEATH
-    345, 12, 0,  // DO_GRENADE_DEATH
-    357, 18, 0,  // DO_FIRE_DEATH
-    0,   0,  0,  // DO_GESTURE1			// N/A
-    0,   0,  0,  // DO_SALUTE1			// N/A
-    0,   0,  0,  // DO_GESTURE2			// N/A
-    0,   0,  0,  // DO_SALUTE2			// N/A
-    199, 6,  0,  // DO_PULL_GUN
-    237, 40, 0,  //	DO_PLEAD
-    277, 6,  0   //	DO_PLEAD_DEATH
+    {0, 1, 1},  // DO_STAND_READY
+    {0, 1, 1},  // DO_STAND_GUARD
+    {0, 1, 1},  // DO_PRONE				// N/A
+    {56, 6, 6},  // DO_WALK
+    {205, 4, 4},  // DO_FIRE_WEAPON
+    {0, 1, 1},  // DO_LIE_DOWN			// N/A
+    {8, 6, 6},  // DO_CRAWL
+    {0, 1, 1},  // DO_GET_UP			// N/A
+    {205, 4, 4},  // DO_FIRE_PRONE
+    {189, 10, 0},  // DO_IDLE1
+    {199, 6, 0},  // DO_IDLE2
+    {104, 3, 0},  // DO_ON_GUARD
+    {107, 7, 0},  // DO_FIGHT_READY
+    {114, 2, 0},  // DO_PUNCH
+    {116, 6, 0},  // DO_KICK
+    {122, 2, 0},  // DO_PUNCH_HIT1
+    {124, 4, 0},  // DO_PUNCH_HIT2
+    {128, 4, 0},  // DO_PUNCH_DEATH
+    {133, 2, 0},  // DO_KICK_HIT1
+    {135, 4, 0},  // DO_KICK_HIT2
+    {139, 5, 0},  // DO_KICK_DEATH
+    {144, 3, 0},  // DO_READY_WEAPON
+    {329, 8, 0},  // DO_GUN_DEATH
+    {337, 8, 0},  // DO_EXPLOSION_DEATH
+    {337, 8, 0},  // DO_EXPLOSION2_DEATH
+    {345, 12, 0},  // DO_GRENADE_DEATH
+    {357, 18, 0},  // DO_FIRE_DEATH
+    {0, 0, 0},  // DO_GESTURE1			// N/A
+    {0, 0, 0},  // DO_SALUTE1			// N/A
+    {0, 0, 0},  // DO_GESTURE2			// N/A
+    {0, 0, 0},  // DO_SALUTE2			// N/A
+    {199, 6, 0},  // DO_PULL_GUN
+    {237, 40, 0},  //	DO_PLEAD
+    {277, 6, 0}   //	DO_PLEAD_DEATH
 };
 
 static const InfantryTypeClass C2(
@@ -702,40 +702,40 @@ static const InfantryTypeClass C2(
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 int CivilianDos3[DO_COUNT][3] = {
-    0,   1,  1,  // DO_STAND_READY
-    0,   1,  1,  // DO_STAND_GUARD
-    0,   1,  1,  // DO_PRONE				// N/A
-    56,  6,  6,  // DO_WALK
-    205, 4,  4,  // DO_FIRE_WEAPON
-    0,   1,  1,  // DO_LIE_DOWN			// N/A
-    8,   6,  6,  // DO_CRAWL
-    0,   1,  1,  // DO_GET_UP			// N/A
-    205, 4,  4,  // DO_FIRE_PRONE
-    189, 10, 0,  // DO_IDLE1
-    199, 6,  0,  // DO_IDLE2
-    104, 3,  0,  // DO_ON_GUARD
-    107, 7,  0,  // DO_FIGHT_READY
-    114, 2,  0,  // DO_PUNCH
-    116, 6,  0,  // DO_KICK
-    122, 2,  0,  // DO_PUNCH_HIT1
-    124, 4,  0,  // DO_PUNCH_HIT2
-    128, 4,  0,  // DO_PUNCH_DEATH
-    133, 2,  0,  // DO_KICK_HIT1
-    135, 4,  0,  // DO_KICK_HIT2
-    139, 5,  0,  // DO_KICK_DEATH
-    144, 3,  0,  // DO_READY_WEAPON
-    329, 8,  0,  // DO_GUN_DEATH
-    337, 8,  0,  // DO_EXPLOSION_DEATH
-    337, 8,  0,  // DO_EXPLOSION2_DEATH
-    345, 12, 0,  // DO_GRENADE_DEATH
-    357, 18, 0,  // DO_FIRE_DEATH
-    0,   0,  0,  // DO_GESTURE1			// N/A
-    0,   0,  0,  // DO_SALUTE1			// N/A
-    0,   0,  0,  // DO_GESTURE2			// N/A
-    0,   0,  0,  // DO_SALUTE2			// N/A
-    199, 6,  0,  // DO_PULL_GUN
-    237, 40, 0,  //	DO_PLEAD
-    277, 6,  0   //	DO_PLEAD_DEATH
+    {0, 1, 1},  // DO_STAND_READY
+    {0, 1, 1},  // DO_STAND_GUARD
+    {0, 1, 1},  // DO_PRONE				// N/A
+    {56, 6, 6},  // DO_WALK
+    {205, 4, 4},  // DO_FIRE_WEAPON
+    {0, 1, 1},  // DO_LIE_DOWN			// N/A
+    {8, 6, 6},  // DO_CRAWL
+    {0, 1, 1},  // DO_GET_UP			// N/A
+    {205, 4, 4},  // DO_FIRE_PRONE
+    {189, 10, 0},  // DO_IDLE1
+    {199, 6, 0},  // DO_IDLE2
+    {104, 3, 0},  // DO_ON_GUARD
+    {107, 7, 0},  // DO_FIGHT_READY
+    {114, 2, 0},  // DO_PUNCH
+    {116, 6, 0},  // DO_KICK
+    {122, 2, 0},  // DO_PUNCH_HIT1
+    {124, 4, 0},  // DO_PUNCH_HIT2
+    {128, 4, 0},  // DO_PUNCH_DEATH
+    {133, 2, 0},  // DO_KICK_HIT1
+    {135, 4, 0},  // DO_KICK_HIT2
+    {139, 5, 0},  // DO_KICK_DEATH
+    {144, 3, 0},  // DO_READY_WEAPON
+    {329, 8, 0},  // DO_GUN_DEATH
+    {337, 8, 0},  // DO_EXPLOSION_DEATH
+    {337, 8, 0},  // DO_EXPLOSION2_DEATH
+    {345, 12, 0},  // DO_GRENADE_DEATH
+    {357, 18, 0},  // DO_FIRE_DEATH
+    {0, 0, 0},  // DO_GESTURE1			// N/A
+    {0, 0, 0},  // DO_SALUTE1			// N/A
+    {0, 0, 0},  // DO_GESTURE2			// N/A
+    {0, 0, 0},  // DO_SALUTE2			// N/A
+    {199, 6, 0},  // DO_PULL_GUN
+    {237, 40, 0},  //	DO_PLEAD
+    {277, 6, 0}   //	DO_PLEAD_DEATH
 
 };
 
@@ -768,40 +768,40 @@ static const InfantryTypeClass C3(
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 int CivilianDos4[DO_COUNT][3] = {
-    0,   1,  1,  // DO_STAND_READY
-    0,   1,  1,  // DO_STAND_GUARD
-    0,   1,  1,  // DO_PRONE				// N/A
-    56,  6,  6,  // DO_WALK
-    205, 4,  4,  // DO_FIRE_WEAPON
-    0,   1,  1,  // DO_LIE_DOWN			// N/A
-    8,   6,  6,  // DO_CRAWL
-    0,   1,  1,  // DO_GET_UP			// N/A
-    205, 4,  4,  // DO_FIRE_PRONE
-    189, 10, 0,  // DO_IDLE1
-    199, 6,  0,  // DO_IDLE2
-    104, 3,  0,  // DO_ON_GUARD
-    107, 7,  0,  // DO_FIGHT_READY
-    114, 2,  0,  // DO_PUNCH
-    116, 6,  0,  // DO_KICK
-    122, 2,  0,  // DO_PUNCH_HIT1
-    124, 4,  0,  // DO_PUNCH_HIT2
-    128, 4,  0,  // DO_PUNCH_DEATH
-    133, 2,  0,  // DO_KICK_HIT1
-    135, 4,  0,  // DO_KICK_HIT2
-    139, 5,  0,  // DO_KICK_DEATH
-    144, 3,  0,  // DO_READY_WEAPON
-    329, 8,  0,  // DO_GUN_DEATH
-    337, 8,  0,  // DO_EXPLOSION_DEATH
-    337, 8,  0,  // DO_EXPLOSION2_DEATH
-    345, 12, 0,  // DO_GRENADE_DEATH
-    357, 18, 0,  // DO_FIRE_DEATH
-    0,   0,  0,  // DO_GESTURE1			// N/A
-    0,   0,  0,  // DO_SALUTE1			// N/A
-    0,   0,  0,  // DO_GESTURE2			// N/A
-    0,   0,  0,  // DO_SALUTE2			// N/A
-    199, 6,  0,  // DO_PULL_GUN
-    237, 40, 0,  //	DO_PLEAD
-    277, 6,  0,  //	DO_PLEAD_DEATH
+    {0, 1, 1},  // DO_STAND_READY
+    {0, 1, 1},  // DO_STAND_GUARD
+    {0, 1, 1},  // DO_PRONE				// N/A
+    {56, 6, 6},  // DO_WALK
+    {205, 4, 4},  // DO_FIRE_WEAPON
+    {0, 1, 1},  // DO_LIE_DOWN			// N/A
+    {8, 6, 6},  // DO_CRAWL
+    {0, 1, 1},  // DO_GET_UP			// N/A
+    {205, 4, 4},  // DO_FIRE_PRONE
+    {189, 10, 0},  // DO_IDLE1
+    {199, 6, 0},  // DO_IDLE2
+    {104, 3, 0},  // DO_ON_GUARD
+    {107, 7, 0},  // DO_FIGHT_READY
+    {114, 2, 0},  // DO_PUNCH
+    {116, 6, 0},  // DO_KICK
+    {122, 2, 0},  // DO_PUNCH_HIT1
+    {124, 4, 0},  // DO_PUNCH_HIT2
+    {128, 4, 0},  // DO_PUNCH_DEATH
+    {133, 2, 0},  // DO_KICK_HIT1
+    {135, 4, 0},  // DO_KICK_HIT2
+    {139, 5, 0},  // DO_KICK_DEATH
+    {144, 3, 0},  // DO_READY_WEAPON
+    {329, 8, 0},  // DO_GUN_DEATH
+    {337, 8, 0},  // DO_EXPLOSION_DEATH
+    {337, 8, 0},  // DO_EXPLOSION2_DEATH
+    {345, 12, 0},  // DO_GRENADE_DEATH
+    {357, 18, 0},  // DO_FIRE_DEATH
+    {0, 0, 0},  // DO_GESTURE1			// N/A
+    {0, 0, 0},  // DO_SALUTE1			// N/A
+    {0, 0, 0},  // DO_GESTURE2			// N/A
+    {0, 0, 0},  // DO_SALUTE2			// N/A
+    {199, 6, 0},  // DO_PULL_GUN
+    {237, 40, 0},  //	DO_PLEAD
+    {277, 6, 0},  //	DO_PLEAD_DEATH
 };
 
 static const InfantryTypeClass C4(
@@ -833,40 +833,40 @@ static const InfantryTypeClass C4(
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 int CivilianDos5[DO_COUNT][3] = {
-    0,   1,  1,  // DO_STAND_READY
-    0,   1,  1,  // DO_STAND_GUARD
-    0,   1,  1,  // DO_PRONE				// N/A
-    56,  6,  6,  // DO_WALK
-    205, 4,  4,  // DO_FIRE_WEAPON
-    0,   1,  1,  // DO_LIE_DOWN			// N/A
-    8,   6,  6,  // DO_CRAWL
-    0,   1,  1,  // DO_GET_UP			// N/A
-    205, 4,  4,  // DO_FIRE_PRONE
-    189, 10, 0,  // DO_IDLE1
-    199, 6,  0,  // DO_IDLE2
-    104, 3,  0,  // DO_ON_GUARD
-    107, 7,  0,  // DO_FIGHT_READY
-    114, 2,  0,  // DO_PUNCH
-    116, 6,  0,  // DO_KICK
-    122, 2,  0,  // DO_PUNCH_HIT1
-    124, 4,  0,  // DO_PUNCH_HIT2
-    128, 4,  0,  // DO_PUNCH_DEATH
-    133, 2,  0,  // DO_KICK_HIT1
-    135, 4,  0,  // DO_KICK_HIT2
-    139, 5,  0,  // DO_KICK_DEATH
-    144, 3,  0,  // DO_READY_WEAPON
-    329, 8,  0,  // DO_GUN_DEATH
-    337, 8,  0,  // DO_EXPLOSION_DEATH
-    337, 8,  0,  // DO_EXPLOSION2_DEATH
-    345, 12, 0,  // DO_GRENADE_DEATH
-    357, 18, 0,  // DO_FIRE_DEATH
-    0,   0,  0,  // DO_GESTURE1			// N/A
-    0,   0,  0,  // DO_SALUTE1			// N/A
-    0,   0,  0,  // DO_GESTURE2			// N/A
-    0,   0,  0,  // DO_SALUTE2			// N/A
-    199, 6,  0,  // DO_PULL_GUN
-    237, 40, 0,  //	DO_PLEAD
-    277, 6,  0   //	DO_PLEAD_DEATH
+    {0, 1, 1},  // DO_STAND_READY
+    {0, 1, 1},  // DO_STAND_GUARD
+    {0, 1, 1},  // DO_PRONE				// N/A
+    {56, 6, 6},  // DO_WALK
+    {205, 4, 4},  // DO_FIRE_WEAPON
+    {0, 1, 1},  // DO_LIE_DOWN			// N/A
+    {8, 6, 6},  // DO_CRAWL
+    {0, 1, 1},  // DO_GET_UP			// N/A
+    {205, 4, 4},  // DO_FIRE_PRONE
+    {189, 10, 0},  // DO_IDLE1
+    {199, 6, 0},  // DO_IDLE2
+    {104, 3, 0},  // DO_ON_GUARD
+    {107, 7, 0},  // DO_FIGHT_READY
+    {114, 2, 0},  // DO_PUNCH
+    {116, 6, 0},  // DO_KICK
+    {122, 2, 0},  // DO_PUNCH_HIT1
+    {124, 4, 0},  // DO_PUNCH_HIT2
+    {128, 4, 0},  // DO_PUNCH_DEATH
+    {133, 2, 0},  // DO_KICK_HIT1
+    {135, 4, 0},  // DO_KICK_HIT2
+    {139, 5, 0},  // DO_KICK_DEATH
+    {144, 3, 0},  // DO_READY_WEAPON
+    {329, 8, 0},  // DO_GUN_DEATH
+    {337, 8, 0},  // DO_EXPLOSION_DEATH
+    {337, 8, 0},  // DO_EXPLOSION2_DEATH
+    {345, 12, 0},  // DO_GRENADE_DEATH
+    {357, 18, 0},  // DO_FIRE_DEATH
+    {0, 0, 0},  // DO_GESTURE1			// N/A
+    {0, 0, 0},  // DO_SALUTE1			// N/A
+    {0, 0, 0},  // DO_GESTURE2			// N/A
+    {0, 0, 0},  // DO_SALUTE2			// N/A
+    {199, 6, 0},  // DO_PULL_GUN
+    {237, 40, 0},  //	DO_PLEAD
+    {277, 6, 0}   //	DO_PLEAD_DEATH
 };
 
 static const InfantryTypeClass C5(
@@ -898,40 +898,40 @@ static const InfantryTypeClass C5(
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 int CivilianDos6[DO_COUNT][3] = {
-    0,   1,  1,  // DO_STAND_READY
-    0,   1,  1,  // DO_STAND_GUARD
-    0,   1,  1,  // DO_PRONE				// N/A
-    56,  6,  6,  // DO_WALK
-    205, 4,  4,  // DO_FIRE_WEAPON
-    0,   1,  1,  // DO_LIE_DOWN			// N/A
-    8,   6,  6,  // DO_CRAWL
-    0,   1,  1,  // DO_GET_UP			// N/A
-    205, 4,  4,  // DO_FIRE_PRONE
-    189, 10, 0,  // DO_IDLE1
-    199, 6,  0,  // DO_IDLE2
-    104, 3,  0,  // DO_ON_GUARD
-    107, 7,  0,  // DO_FIGHT_READY
-    114, 2,  0,  // DO_PUNCH
-    116, 6,  0,  // DO_KICK
-    122, 2,  0,  // DO_PUNCH_HIT1
-    124, 4,  0,  // DO_PUNCH_HIT2
-    128, 4,  0,  // DO_PUNCH_DEATH
-    133, 2,  0,  // DO_KICK_HIT1
-    135, 4,  0,  // DO_KICK_HIT2
-    139, 5,  0,  // DO_KICK_DEATH
-    144, 3,  0,  // DO_READY_WEAPON
-    329, 8,  0,  // DO_GUN_DEATH
-    337, 8,  0,  // DO_EXPLOSION_DEATH
-    337, 8,  0,  // DO_EXPLOSION2_DEATH
-    345, 12, 0,  // DO_GRENADE_DEATH
-    357, 18, 0,  // DO_FIRE_DEATH
-    0,   0,  0,  // DO_GESTURE1			// N/A
-    0,   0,  0,  // DO_SALUTE1			// N/A
-    0,   0,  0,  // DO_GESTURE2			// N/A
-    0,   0,  0,  // DO_SALUTE2			// N/A
-    199, 6,  0,  // DO_PULL_GUN
-    237, 40, 0,  //	DO_PLEAD
-    277, 6,  0   //	DO_PLEAD_DEATH
+    {0, 1, 1},  // DO_STAND_READY
+    {0, 1, 1},  // DO_STAND_GUARD
+    {0, 1, 1},  // DO_PRONE				// N/A
+    {56, 6, 6},  // DO_WALK
+    {205, 4, 4},  // DO_FIRE_WEAPON
+    {0, 1, 1},  // DO_LIE_DOWN			// N/A
+    {8, 6, 6},  // DO_CRAWL
+    {0, 1, 1},  // DO_GET_UP			// N/A
+    {205, 4, 4},  // DO_FIRE_PRONE
+    {189, 10, 0},  // DO_IDLE1
+    {199, 6, 0},  // DO_IDLE2
+    {104, 3, 0},  // DO_ON_GUARD
+    {107, 7, 0},  // DO_FIGHT_READY
+    {114, 2, 0},  // DO_PUNCH
+    {116, 6, 0},  // DO_KICK
+    {122, 2, 0},  // DO_PUNCH_HIT1
+    {124, 4, 0},  // DO_PUNCH_HIT2
+    {128, 4, 0},  // DO_PUNCH_DEATH
+    {133, 2, 0},  // DO_KICK_HIT1
+    {135, 4, 0},  // DO_KICK_HIT2
+    {139, 5, 0},  // DO_KICK_DEATH
+    {144, 3, 0},  // DO_READY_WEAPON
+    {329, 8, 0},  // DO_GUN_DEATH
+    {337, 8, 0},  // DO_EXPLOSION_DEATH
+    {337, 8, 0},  // DO_EXPLOSION2_DEATH
+    {345, 12, 0},  // DO_GRENADE_DEATH
+    {357, 18, 0},  // DO_FIRE_DEATH
+    {0, 0, 0},  // DO_GESTURE1			// N/A
+    {0, 0, 0},  // DO_SALUTE1			// N/A
+    {0, 0, 0},  // DO_GESTURE2			// N/A
+    {0, 0, 0},  // DO_SALUTE2			// N/A
+    {199, 6, 0},  // DO_PULL_GUN
+    {237, 40, 0},  //	DO_PLEAD
+    {277, 6, 0}   //	DO_PLEAD_DEATH
 };
 
 static const InfantryTypeClass C6(
@@ -963,40 +963,40 @@ static const InfantryTypeClass C6(
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 int CivilianDos7[DO_COUNT][3] = {
-    0,   1,  1,  // DO_STAND_READY
-    0,   1,  1,  // DO_STAND_GUARD
-    0,   1,  1,  // DO_PRONE				// N/A
-    56,  6,  6,  // DO_WALK
-    205, 4,  4,  // DO_FIRE_WEAPON
-    0,   1,  1,  // DO_LIE_DOWN			// N/A
-    8,   6,  6,  // DO_CRAWL
-    0,   1,  1,  // DO_GET_UP			// N/A
-    205, 4,  4,  // DO_FIRE_PRONE
-    189, 10, 0,  // DO_IDLE1
-    199, 6,  0,  // DO_IDLE2
-    104, 3,  0,  // DO_ON_GUARD
-    107, 7,  0,  // DO_FIGHT_READY
-    114, 2,  0,  // DO_PUNCH
-    116, 6,  0,  // DO_KICK
-    122, 2,  0,  // DO_PUNCH_HIT1
-    124, 4,  0,  // DO_PUNCH_HIT2
-    128, 4,  0,  // DO_PUNCH_DEATH
-    133, 2,  0,  // DO_KICK_HIT1
-    135, 4,  0,  // DO_KICK_HIT2
-    139, 5,  0,  // DO_KICK_DEATH
-    144, 3,  0,  // DO_READY_WEAPON
-    329, 8,  0,  // DO_GUN_DEATH
-    337, 8,  0,  // DO_EXPLOSION_DEATH
-    337, 8,  0,  // DO_EXPLOSION2_DEATH
-    345, 12, 0,  // DO_GRENADE_DEATH
-    357, 18, 0,  // DO_FIRE_DEATH
-    0,   0,  0,  // DO_GESTURE1			// N/A
-    0,   0,  0,  // DO_SALUTE1			// N/A
-    0,   0,  0,  // DO_GESTURE2			// N/A
-    0,   0,  0,  // DO_SALUTE2			// N/A
-    199, 6,  0,  // DO_PULL_GUN
-    237, 40, 0,  //	DO_PLEAD
-    277, 6,  0   //	DO_PLEAD_DEATH
+    {0, 1, 1},  // DO_STAND_READY
+    {0, 1, 1},  // DO_STAND_GUARD
+    {0, 1, 1},  // DO_PRONE				// N/A
+    {56, 6, 6},  // DO_WALK
+    {205, 4, 4},  // DO_FIRE_WEAPON
+    {0, 1, 1},  // DO_LIE_DOWN			// N/A
+    {8, 6, 6},  // DO_CRAWL
+    {0, 1, 1},  // DO_GET_UP			// N/A
+    {205, 4, 4},  // DO_FIRE_PRONE
+    {189, 10, 0},  // DO_IDLE1
+    {199, 6, 0},  // DO_IDLE2
+    {104, 3, 0},  // DO_ON_GUARD
+    {107, 7, 0},  // DO_FIGHT_READY
+    {114, 2, 0},  // DO_PUNCH
+    {116, 6, 0},  // DO_KICK
+    {122, 2, 0},  // DO_PUNCH_HIT1
+    {124, 4, 0},  // DO_PUNCH_HIT2
+    {128, 4, 0},  // DO_PUNCH_DEATH
+    {133, 2, 0},  // DO_KICK_HIT1
+    {135, 4, 0},  // DO_KICK_HIT2
+    {139, 5, 0},  // DO_KICK_DEATH
+    {144, 3, 0},  // DO_READY_WEAPON
+    {329, 8, 0},  // DO_GUN_DEATH
+    {337, 8, 0},  // DO_EXPLOSION_DEATH
+    {337, 8, 0},  // DO_EXPLOSION2_DEATH
+    {345, 12, 0},  // DO_GRENADE_DEATH
+    {357, 18, 0},  // DO_FIRE_DEATH
+    {0, 0, 0},  // DO_GESTURE1			// N/A
+    {0, 0, 0},  // DO_SALUTE1			// N/A
+    {0, 0, 0},  // DO_GESTURE2			// N/A
+    {0, 0, 0},  // DO_SALUTE2			// N/A
+    {199, 6, 0},  // DO_PULL_GUN
+    {237, 40, 0},  //	DO_PLEAD
+    {277, 6, 0}   //	DO_PLEAD_DEATH
 };
 
 static const InfantryTypeClass C7(
@@ -1028,40 +1028,40 @@ static const InfantryTypeClass C7(
     WEAPON_PISTOL, WEAPON_NONE, MPH_SLOW_ISH);
 
 int CivilianDos8[DO_COUNT][3] = {
-    0,   1,  1,  // DO_STAND_READY
-    0,   1,  1,  // DO_STAND_GUARD
-    0,   1,  1,  // DO_PRONE				// N/A
-    56,  6,  6,  // DO_WALK
-    205, 4,  4,  // DO_FIRE_WEAPON
-    0,   1,  1,  // DO_LIE_DOWN			// N/A
-    8,   6,  6,  // DO_CRAWL
-    0,   1,  1,  // DO_GET_UP			// N/A
-    205, 4,  4,  // DO_FIRE_PRONE
-    189, 10, 0,  // DO_IDLE1
-    199, 6,  0,  // DO_IDLE2
-    104, 3,  0,  // DO_ON_GUARD
-    107, 7,  0,  // DO_FIGHT_READY
-    114, 2,  0,  // DO_PUNCH
-    116, 6,  0,  // DO_KICK
-    122, 2,  0,  // DO_PUNCH_HIT1
-    124, 4,  0,  // DO_PUNCH_HIT2
-    128, 4,  0,  // DO_PUNCH_DEATH
-    133, 2,  0,  // DO_KICK_HIT1
-    135, 4,  0,  // DO_KICK_HIT2
-    139, 5,  0,  // DO_KICK_DEATH
-    144, 3,  0,  // DO_READY_WEAPON
-    329, 8,  0,  // DO_GUN_DEATH
-    337, 8,  0,  // DO_EXPLOSION_DEATH
-    337, 8,  0,  // DO_EXPLOSION2_DEATH
-    345, 12, 0,  // DO_GRENADE_DEATH
-    357, 18, 0,  // DO_FIRE_DEATH
-    0,   0,  0,  // DO_GESTURE1			// N/A
-    0,   0,  0,  // DO_SALUTE1			// N/A
-    0,   0,  0,  // DO_GESTURE2			// N/A
-    0,   0,  0,  // DO_SALUTE2			// N/A
-    199, 6,  0,  // DO_PULL_GUN
-    237, 40, 0,  //	DO_PLEAD
-    277, 6,  0   //	DO_PLEAD_DEATH
+    {0, 1, 1},  // DO_STAND_READY
+    {0, 1, 1},  // DO_STAND_GUARD
+    {0, 1, 1},  // DO_PRONE				// N/A
+    {56, 6, 6},  // DO_WALK
+    {205, 4, 4},  // DO_FIRE_WEAPON
+    {0, 1, 1},  // DO_LIE_DOWN			// N/A
+    {8, 6, 6},  // DO_CRAWL
+    {0, 1, 1},  // DO_GET_UP			// N/A
+    {205, 4, 4},  // DO_FIRE_PRONE
+    {189, 10, 0},  // DO_IDLE1
+    {199, 6, 0},  // DO_IDLE2
+    {104, 3, 0},  // DO_ON_GUARD
+    {107, 7, 0},  // DO_FIGHT_READY
+    {114, 2, 0},  // DO_PUNCH
+    {116, 6, 0},  // DO_KICK
+    {122, 2, 0},  // DO_PUNCH_HIT1
+    {124, 4, 0},  // DO_PUNCH_HIT2
+    {128, 4, 0},  // DO_PUNCH_DEATH
+    {133, 2, 0},  // DO_KICK_HIT1
+    {135, 4, 0},  // DO_KICK_HIT2
+    {139, 5, 0},  // DO_KICK_DEATH
+    {144, 3, 0},  // DO_READY_WEAPON
+    {329, 8, 0},  // DO_GUN_DEATH
+    {337, 8, 0},  // DO_EXPLOSION_DEATH
+    {337, 8, 0},  // DO_EXPLOSION2_DEATH
+    {345, 12, 0},  // DO_GRENADE_DEATH
+    {357, 18, 0},  // DO_FIRE_DEATH
+    {0, 0, 0},  // DO_GESTURE1			// N/A
+    {0, 0, 0},  // DO_SALUTE1			// N/A
+    {0, 0, 0},  // DO_GESTURE2			// N/A
+    {0, 0, 0},  // DO_SALUTE2			// N/A
+    {199, 6, 0},  // DO_PULL_GUN
+    {237, 40, 0},  //	DO_PLEAD
+    {277, 6, 0}   //	DO_PLEAD_DEATH
 };
 
 static const InfantryTypeClass C8(
@@ -1093,40 +1093,40 @@ static const InfantryTypeClass C8(
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 int CivilianDos9[DO_COUNT][3] = {
-    0,   1,  1,  // DO_STAND_READY
-    0,   1,  1,  // DO_STAND_GUARD
-    0,   1,  1,  // DO_PRONE				// N/A
-    56,  6,  6,  // DO_WALK
-    205, 4,  4,  // DO_FIRE_WEAPON
-    0,   1,  1,  // DO_LIE_DOWN			// N/A
-    8,   6,  6,  // DO_CRAWL
-    0,   1,  1,  // DO_GET_UP			// N/A
-    205, 4,  4,  // DO_FIRE_PRONE
-    189, 10, 0,  // DO_IDLE1
-    199, 6,  0,  // DO_IDLE2
-    104, 3,  0,  // DO_ON_GUARD
-    107, 7,  0,  // DO_FIGHT_READY
-    114, 2,  0,  // DO_PUNCH
-    116, 6,  0,  // DO_KICK
-    122, 2,  0,  // DO_PUNCH_HIT1
-    124, 4,  0,  // DO_PUNCH_HIT2
-    128, 4,  0,  // DO_PUNCH_DEATH
-    133, 2,  0,  // DO_KICK_HIT1
-    135, 4,  0,  // DO_KICK_HIT2
-    139, 5,  0,  // DO_KICK_DEATH
-    144, 3,  0,  // DO_READY_WEAPON
-    329, 8,  0,  // DO_GUN_DEATH
-    337, 8,  0,  // DO_EXPLOSION_DEATH
-    337, 8,  0,  // DO_EXPLOSION2_DEATH
-    345, 12, 0,  // DO_GRENADE_DEATH
-    357, 18, 0,  // DO_FIRE_DEATH
-    0,   0,  0,  // DO_GESTURE1			// N/A
-    0,   0,  0,  // DO_SALUTE1			// N/A
-    0,   0,  0,  // DO_GESTURE2			// N/A
-    0,   0,  0,  // DO_SALUTE2			// N/A
-    199, 6,  0,  // DO_PULL_GUN
-    237, 40, 0,  //	DO_PLEAD
-    277, 6,  0   //	DO_PLEAD_DEATH
+    {0, 1, 1},  // DO_STAND_READY
+    {0, 1, 1},  // DO_STAND_GUARD
+    {0, 1, 1},  // DO_PRONE				// N/A
+    {56, 6, 6},  // DO_WALK
+    {205, 4, 4},  // DO_FIRE_WEAPON
+    {0, 1, 1},  // DO_LIE_DOWN			// N/A
+    {8, 6, 6},  // DO_CRAWL
+    {0, 1, 1},  // DO_GET_UP			// N/A
+    {205, 4, 4},  // DO_FIRE_PRONE
+    {189, 10, 0},  // DO_IDLE1
+    {199, 6, 0},  // DO_IDLE2
+    {104, 3, 0},  // DO_ON_GUARD
+    {107, 7, 0},  // DO_FIGHT_READY
+    {114, 2, 0},  // DO_PUNCH
+    {116, 6, 0},  // DO_KICK
+    {122, 2, 0},  // DO_PUNCH_HIT1
+    {124, 4, 0},  // DO_PUNCH_HIT2
+    {128, 4, 0},  // DO_PUNCH_DEATH
+    {133, 2, 0},  // DO_KICK_HIT1
+    {135, 4, 0},  // DO_KICK_HIT2
+    {139, 5, 0},  // DO_KICK_DEATH
+    {144, 3, 0},  // DO_READY_WEAPON
+    {329, 8, 0},  // DO_GUN_DEATH
+    {337, 8, 0},  // DO_EXPLOSION_DEATH
+    {337, 8, 0},  // DO_EXPLOSION2_DEATH
+    {345, 12, 0},  // DO_GRENADE_DEATH
+    {357, 18, 0},  // DO_FIRE_DEATH
+    {0, 0, 0},  // DO_GESTURE1			// N/A
+    {0, 0, 0},  // DO_SALUTE1			// N/A
+    {0, 0, 0},  // DO_GESTURE2			// N/A
+    {0, 0, 0},  // DO_SALUTE2			// N/A
+    {199, 6, 0},  // DO_PULL_GUN
+    {237, 40, 0},  //	DO_PLEAD
+    {277, 6, 0}   //	DO_PLEAD_DEATH
 };
 
 static const InfantryTypeClass C9(
@@ -1158,40 +1158,40 @@ static const InfantryTypeClass C9(
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 int NikoombaDos[DO_COUNT][3] = {
-    0,   1,  1,  // DO_STAND_READY
-    0,   1,  1,  // DO_STAND_GUARD
-    0,   1,  1,  // DO_PRONE				// N/A
-    56,  6,  6,  // DO_WALK
-    205, 4,  4,  // DO_FIRE_WEAPON
-    0,   1,  1,  // DO_LIE_DOWN			// N/A
-    8,   6,  6,  // DO_CRAWL
-    0,   1,  1,  // DO_GET_UP			// N/A
-    205, 4,  4,  // DO_FIRE_PRONE
-    189, 10, 0,  // DO_IDLE1
-    199, 6,  0,  // DO_IDLE2
-    104, 3,  0,  // DO_ON_GUARD
-    107, 7,  0,  // DO_FIGHT_READY
-    114, 2,  0,  // DO_PUNCH
-    116, 6,  0,  // DO_KICK
-    122, 2,  0,  // DO_PUNCH_HIT1
-    124, 4,  0,  // DO_PUNCH_HIT2
-    128, 4,  0,  // DO_PUNCH_DEATH
-    133, 2,  0,  // DO_KICK_HIT1
-    135, 4,  0,  // DO_KICK_HIT2
-    139, 5,  0,  // DO_KICK_DEATH
-    144, 3,  0,  // DO_READY_WEAPON
-    329, 8,  0,  // DO_GUN_DEATH
-    337, 8,  0,  // DO_EXPLOSION_DEATH
-    337, 8,  0,  // DO_EXPLOSION2_DEATH
-    345, 12, 0,  // DO_GRENADE_DEATH
-    357, 18, 0,  // DO_FIRE_DEATH
-    0,   0,  0,  // DO_GESTURE1			// N/A
-    0,   0,  0,  // DO_SALUTE1			// N/A
-    0,   0,  0,  // DO_GESTURE2			// N/A
-    0,   0,  0,  // DO_SALUTE2			// N/A
-    199, 6,  0,  // DO_PULL_GUN
-    237, 40, 0,  //	DO_PLEAD
-    277, 6,  0,  //	DO_PLEAD_DEATH
+    {0, 1, 1},  // DO_STAND_READY
+    {0, 1, 1},  // DO_STAND_GUARD
+    {0, 1, 1},  // DO_PRONE				// N/A
+    {56, 6, 6},  // DO_WALK
+    {205, 4, 4},  // DO_FIRE_WEAPON
+    {0, 1, 1},  // DO_LIE_DOWN			// N/A
+    {8, 6, 6},  // DO_CRAWL
+    {0, 1, 1},  // DO_GET_UP			// N/A
+    {205, 4, 4},  // DO_FIRE_PRONE
+    {189, 10, 0},  // DO_IDLE1
+    {199, 6, 0},  // DO_IDLE2
+    {104, 3, 0},  // DO_ON_GUARD
+    {107, 7, 0},  // DO_FIGHT_READY
+    {114, 2, 0},  // DO_PUNCH
+    {116, 6, 0},  // DO_KICK
+    {122, 2, 0},  // DO_PUNCH_HIT1
+    {124, 4, 0},  // DO_PUNCH_HIT2
+    {128, 4, 0},  // DO_PUNCH_DEATH
+    {133, 2, 0},  // DO_KICK_HIT1
+    {135, 4, 0},  // DO_KICK_HIT2
+    {139, 5, 0},  // DO_KICK_DEATH
+    {144, 3, 0},  // DO_READY_WEAPON
+    {329, 8, 0},  // DO_GUN_DEATH
+    {337, 8, 0},  // DO_EXPLOSION_DEATH
+    {337, 8, 0},  // DO_EXPLOSION2_DEATH
+    {345, 12, 0},  // DO_GRENADE_DEATH
+    {357, 18, 0},  // DO_FIRE_DEATH
+    {0, 0, 0},  // DO_GESTURE1			// N/A
+    {0, 0, 0},  // DO_SALUTE1			// N/A
+    {0, 0, 0},  // DO_GESTURE2			// N/A
+    {0, 0, 0},  // DO_SALUTE2			// N/A
+    {199, 6, 0},  // DO_PULL_GUN
+    {237, 40, 0},  //	DO_PLEAD
+    {277, 6, 0},  //	DO_PLEAD_DEATH
 
 };
 
@@ -1225,40 +1225,40 @@ static const InfantryTypeClass C10(
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 int MoebiusDos[DO_COUNT][3] = {
-    0,   1,  1,  // DO_STAND_READY
-    0,   1,  1,  // DO_STAND_GUARD
-    0,   1,  1,  // DO_PRONE				// N/A
-    56,  6,  6,  // DO_WALK
-    205, 4,  4,  // DO_FIRE_WEAPON
-    0,   1,  1,  // DO_LIE_DOWN			// N/A
-    8,   6,  6,  // DO_CRAWL
-    0,   1,  1,  // DO_GET_UP			// N/A
-    0,   0,  0,  // DO_FIRE_PRONE
-    104, 16, 0,  // DO_IDLE1
-    120, 20, 0,  // DO_IDLE2
-    0,   0,  0,  // DO_ON_GUARD
-    0,   0,  0,  // DO_FIGHT_READY
-    0,   0,  0,  // DO_PUNCH
-    0,   0,  0,  // DO_KICK
-    0,   0,  0,  // DO_PUNCH_HIT1
-    0,   0,  0,  // DO_PUNCH_HIT2
-    0,   0,  0,  // DO_PUNCH_DEATH
-    0,   0,  0,  // DO_KICK_HIT1
-    0,   0,  0,  // DO_KICK_HIT2
-    0,   0,  0,  // DO_KICK_DEATH
-    0,   0,  0,  // DO_READY_WEAPON
-    212, 8,  0,  // DO_GUN_DEATH
-    220, 8,  0,  // DO_EXPLOSION_DEATH
-    228, 12, 0,  // DO_EXPLOSION2_DEATH
-    228, 12, 0,  // DO_GRENADE_DEATH
-    240, 18, 0,  // DO_FIRE_DEATH
-    0,   0,  0,  // DO_GESTURE1			// N/A
-    0,   0,  0,  // DO_SALUTE1			// N/A
-    0,   0,  0,  // DO_GESTURE2			// N/A
-    0,   0,  0,  // DO_SALUTE2			// N/A
-    0,   0,  0,  // DO_PULL_GUN
-    120, 31, 0,  //	DO_PLEAD
-    151, 14, 0   //	DO_PLEAD_DEATH
+    {0, 1, 1},  // DO_STAND_READY
+    {0, 1, 1},  // DO_STAND_GUARD
+    {0, 1, 1},  // DO_PRONE				// N/A
+    {56, 6, 6},  // DO_WALK
+    {205, 4, 4},  // DO_FIRE_WEAPON
+    {0, 1, 1},  // DO_LIE_DOWN			// N/A
+    {8, 6, 6},  // DO_CRAWL
+    {0, 1, 1},  // DO_GET_UP			// N/A
+    {0, 0, 0},  // DO_FIRE_PRONE
+    {104, 16, 0},  // DO_IDLE1
+    {120, 20, 0},  // DO_IDLE2
+    {0, 0, 0},  // DO_ON_GUARD
+    {0, 0, 0},  // DO_FIGHT_READY
+    {0, 0, 0},  // DO_PUNCH
+    {0, 0, 0},  // DO_KICK
+    {0, 0, 0},  // DO_PUNCH_HIT1
+    {0, 0, 0},  // DO_PUNCH_HIT2
+    {0, 0, 0},  // DO_PUNCH_DEATH
+    {0, 0, 0},  // DO_KICK_HIT1
+    {0, 0, 0},  // DO_KICK_HIT2
+    {0, 0, 0},  // DO_KICK_DEATH
+    {0, 0, 0},  // DO_READY_WEAPON
+    {212, 8, 0},  // DO_GUN_DEATH
+    {220, 8, 0},  // DO_EXPLOSION_DEATH
+    {228, 12, 0},  // DO_EXPLOSION2_DEATH
+    {228, 12, 0},  // DO_GRENADE_DEATH
+    {240, 18, 0},  // DO_FIRE_DEATH
+    {0, 0, 0},  // DO_GESTURE1			// N/A
+    {0, 0, 0},  // DO_SALUTE1			// N/A
+    {0, 0, 0},  // DO_GESTURE2			// N/A
+    {0, 0, 0},  // DO_SALUTE2			// N/A
+    {0, 0, 0},  // DO_PULL_GUN
+    {120, 31, 0},  //	DO_PLEAD
+    {151, 14, 0}   //	DO_PLEAD_DEATH
 };
 
 static const InfantryTypeClass Moebius(
@@ -1290,40 +1290,40 @@ static const InfantryTypeClass Moebius(
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 int DelphiDos[DO_COUNT][3] = {
-    0,   1,  1,  // DO_STAND_READY
-    0,   1,  1,  // DO_STAND_GUARD
-    0,   1,  1,  // DO_PRONE				// N/A
-    56,  6,  6,  // DO_WALK
-    205, 4,  4,  // DO_FIRE_WEAPON
-    0,   1,  1,  // DO_LIE_DOWN			// N/A
-    8,   6,  6,  // DO_CRAWL
-    0,   1,  1,  // DO_GET_UP			// N/A
-    205, 4,  4,  // DO_FIRE_PRONE
-    189, 10, 0,  // DO_IDLE1
-    199, 6,  0,  // DO_IDLE2
-    104, 3,  0,  // DO_ON_GUARD
-    107, 7,  0,  // DO_FIGHT_READY
-    114, 2,  0,  // DO_PUNCH
-    116, 6,  0,  // DO_KICK
-    122, 2,  0,  // DO_PUNCH_HIT1
-    124, 4,  0,  // DO_PUNCH_HIT2
-    128, 4,  0,  // DO_PUNCH_DEATH
-    133, 2,  0,  // DO_KICK_HIT1
-    135, 4,  0,  // DO_KICK_HIT2
-    139, 5,  0,  // DO_KICK_DEATH
-    144, 3,  0,  // DO_READY_WEAPON
-    329, 8,  0,  // DO_GUN_DEATH
-    337, 8,  0,  // DO_EXPLOSION_DEATH
-    337, 8,  0,  // DO_EXPLOSION2_DEATH
-    345, 12, 0,  // DO_GRENADE_DEATH
-    357, 18, 0,  // DO_FIRE_DEATH
-    0,   0,  0,  // DO_GESTURE1			// N/A
-    0,   0,  0,  // DO_SALUTE1			// N/A
-    0,   0,  0,  // DO_GESTURE2			// N/A
-    0,   0,  0,  // DO_SALUTE2			// N/A
-    199, 6,  0,  // DO_PULL_GUN
-    237, 40, 0,  //	DO_PLEAD
-    277, 6,  0,  //	DO_PLEAD_DEATH
+    {0, 1, 1},  // DO_STAND_READY
+    {0, 1, 1},  // DO_STAND_GUARD
+    {0, 1, 1},  // DO_PRONE				// N/A
+    {56, 6, 6},  // DO_WALK
+    {205, 4, 4},  // DO_FIRE_WEAPON
+    {0, 1, 1},  // DO_LIE_DOWN			// N/A
+    {8, 6, 6},  // DO_CRAWL
+    {0, 1, 1},  // DO_GET_UP			// N/A
+    {205, 4, 4},  // DO_FIRE_PRONE
+    {189, 10, 0},  // DO_IDLE1
+    {199, 6, 0},  // DO_IDLE2
+    {104, 3, 0},  // DO_ON_GUARD
+    {107, 7, 0},  // DO_FIGHT_READY
+    {114, 2, 0},  // DO_PUNCH
+    {116, 6, 0},  // DO_KICK
+    {122, 2, 0},  // DO_PUNCH_HIT1
+    {124, 4, 0},  // DO_PUNCH_HIT2
+    {128, 4, 0},  // DO_PUNCH_DEATH
+    {133, 2, 0},  // DO_KICK_HIT1
+    {135, 4, 0},  // DO_KICK_HIT2
+    {139, 5, 0},  // DO_KICK_DEATH
+    {144, 3, 0},  // DO_READY_WEAPON
+    {329, 8, 0},  // DO_GUN_DEATH
+    {337, 8, 0},  // DO_EXPLOSION_DEATH
+    {337, 8, 0},  // DO_EXPLOSION2_DEATH
+    {345, 12, 0},  // DO_GRENADE_DEATH
+    {357, 18, 0},  // DO_FIRE_DEATH
+    {0, 0, 0},  // DO_GESTURE1			// N/A
+    {0, 0, 0},  // DO_SALUTE1			// N/A
+    {0, 0, 0},  // DO_GESTURE2			// N/A
+    {0, 0, 0},  // DO_SALUTE2			// N/A
+    {199, 6, 0},  // DO_PULL_GUN
+    {237, 40, 0},  //	DO_PLEAD
+    {277, 6, 0},  //	DO_PLEAD_DEATH
 };
 
 static const InfantryTypeClass Delphi(
@@ -1355,40 +1355,40 @@ static const InfantryTypeClass Delphi(
     WEAPON_PISTOL, WEAPON_NONE, MPH_SLOW_ISH);
 
 int DrChanDos[DO_COUNT][3] = {
-    0,   1,  1,  // DO_STAND_READY
-    0,   1,  1,  // DO_STAND_GUARD
-    0,   1,  1,  // DO_PRONE				// N/A
-    56,  6,  6,  // DO_WALK
-    205, 4,  4,  // DO_FIRE_WEAPON
-    0,   1,  1,  // DO_LIE_DOWN			// N/A
-    8,   6,  6,  // DO_CRAWL
-    0,   1,  1,  // DO_GET_UP			// N/A
-    0,   0,  0,  // DO_FIRE_PRONE
-    104, 16, 0,  // DO_IDLE1
-    120, 20, 0,  // DO_IDLE2
-    0,   0,  0,  // DO_ON_GUARD
-    0,   0,  0,  // DO_FIGHT_READY
-    0,   0,  0,  // DO_PUNCH
-    0,   0,  0,  // DO_KICK
-    0,   0,  0,  // DO_PUNCH_HIT1
-    0,   0,  0,  // DO_PUNCH_HIT2
-    0,   0,  0,  // DO_PUNCH_DEATH
-    0,   0,  0,  // DO_KICK_HIT1
-    0,   0,  0,  // DO_KICK_HIT2
-    0,   0,  0,  // DO_KICK_DEATH
-    0,   0,  0,  // DO_READY_WEAPON
-    212, 8,  0,  // DO_GUN_DEATH
-    220, 8,  0,  // DO_EXPLOSION_DEATH
-    228, 12, 0,  // DO_EXPLOSION2_DEATH
-    228, 12, 0,  // DO_GRENADE_DEATH
-    240, 18, 0,  // DO_FIRE_DEATH
-    0,   0,  0,  // DO_GESTURE1			// N/A
-    0,   0,  0,  // DO_SALUTE1			// N/A
-    0,   0,  0,  // DO_GESTURE2			// N/A
-    0,   0,  0,  // DO_SALUTE2			// N/A
-    0,   0,  0,  // DO_PULL_GUN
-    120, 31, 0,  //	DO_PLEAD
-    151, 14, 0   //	DO_PLEAD_DEATH
+    {0, 1, 1},  // DO_STAND_READY
+    {0, 1, 1},  // DO_STAND_GUARD
+    {0, 1, 1},  // DO_PRONE				// N/A
+    {56, 6, 6},  // DO_WALK
+    {205, 4, 4},  // DO_FIRE_WEAPON
+    {0, 1, 1},  // DO_LIE_DOWN			// N/A
+    {8, 6, 6},  // DO_CRAWL
+    {0, 1, 1},  // DO_GET_UP			// N/A
+    {0, 0, 0},  // DO_FIRE_PRONE
+    {104, 16, 0},  // DO_IDLE1
+    {120, 20, 0},  // DO_IDLE2
+    {0, 0, 0},  // DO_ON_GUARD
+    {0, 0, 0},  // DO_FIGHT_READY
+    {0, 0, 0},  // DO_PUNCH
+    {0, 0, 0},  // DO_KICK
+    {0, 0, 0},  // DO_PUNCH_HIT1
+    {0, 0, 0},  // DO_PUNCH_HIT2
+    {0, 0, 0},  // DO_PUNCH_DEATH
+    {0, 0, 0},  // DO_KICK_HIT1
+    {0, 0, 0},  // DO_KICK_HIT2
+    {0, 0, 0},  // DO_KICK_DEATH
+    {0, 0, 0},  // DO_READY_WEAPON
+    {212, 8, 0},  // DO_GUN_DEATH
+    {220, 8, 0},  // DO_EXPLOSION_DEATH
+    {228, 12, 0},  // DO_EXPLOSION2_DEATH
+    {228, 12, 0},  // DO_GRENADE_DEATH
+    {240, 18, 0},  // DO_FIRE_DEATH
+    {0, 0, 0},  // DO_GESTURE1			// N/A
+    {0, 0, 0},  // DO_SALUTE1			// N/A
+    {0, 0, 0},  // DO_GESTURE2			// N/A
+    {0, 0, 0},  // DO_SALUTE2			// N/A
+    {0, 0, 0},  // DO_PULL_GUN
+    {120, 31, 0},  //	DO_PLEAD
+    {151, 14, 0}   //	DO_PLEAD_DEATH
 };
 
 static const InfantryTypeClass DrChan(

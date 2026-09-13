@@ -2,7 +2,7 @@
 
 Updated: 2026-09-12, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 181 currently excluded check names** and completed entries, in recommended work
+This tracks **all 180 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -83,7 +83,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-switch`                                  | Pending | Review missing cases; intentional ButtonKey(n) labels need a policy.                                                                                                                                                                                                                 |
 | `clang-diagnostic-switch-bool`                             | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                                        |
 | `clang-diagnostic-duplicate-enum`                          | Enabled | Commit `Drop the implicit FIRST enum aliases and fix mixed enum operations`: 25 reports, all an `X_FIRST = 0` alias duplicating the first real enumerator (22 TD enums, three RA trigger/team enums); uses now name that enumerator, per the magic_enum no-alias rule.               |
-| `clang-diagnostic-missing-braces`                          | Pending | Check aggregate/subobject initialization before adding braces.                                                                                                                                                                                                                       |
+| `clang-diagnostic-missing-braces`                          | Enabled | Commit `Brace the infantry animation control tables`: all 680 reports were rows of TD's `[DO_COUNT][3]` tables in `idata.cc`, now one brace pair per row; layout unchanged.                                                                                                          |
 | `clang-diagnostic-cast-qual`                               | Pending | Review casts discarding const or volatile guarantees.                                                                                                                                                                                                                                |
 | `misc-explicit-constructor`                                | Pending | Prevent unintended implicit construction and conversions.                                                                                                                                                                                                                            |
 | `cppcoreguidelines-explicit-constructor`                   | Pending | Alias of `misc-explicit-constructor`; handle together.                                                                                                                                                                                                                               |
