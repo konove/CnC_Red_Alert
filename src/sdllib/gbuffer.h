@@ -236,9 +236,9 @@ class GraphicViewPortClass {
   void Buffer_Put_Pixel(int x, int y, unsigned char color);
   int Get_Pixel(int x, int y);
   void Clear(unsigned char color = 0);
-  long To_Buffer(int x, int y, int w, int h, void* buff, long size);
-  long To_Buffer(int x, int y, int w, int h, BufferClass* buff);
-  long To_Buffer(BufferClass* buff);
+  int32_t To_Buffer(int x, int y, int w, int h, void* buff, int32_t size);
+  int32_t To_Buffer(int x, int y, int w, int h, BufferClass* buff);
+  int32_t To_Buffer(BufferClass* buff);
   int Blit(GraphicViewPortClass& dest, int x_pixel, int y_pixel, int dx_pixel,
            int dy_pixel, int pixel_width, int pixel_height, bool trans = false);
   int Blit(GraphicViewPortClass& dest, int dx, int dy, bool trans = false);
@@ -296,7 +296,7 @@ class GraphicViewPortClass {
   int XAdd = 0;                             // xadd for graphic page (0)
   int XPos = 0;                             // x offset in relation to graphicbuff
   int YPos = 0;                             // y offset in relation to graphicbuff
-  long Pitch = 0;                           // Distance from one line to the next
+  int32_t Pitch = 0;  // Distance from one line to the next
   GraphicBufferClass* GraphicBuff = nullptr;  // related graphic buff
   int LockCount = 0;  // Count for stacking locks if non-zero the buffer
 };
@@ -330,7 +330,7 @@ class GraphicViewPortClass {
 /*=========================================================================*/
 class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
  public:
-  GraphicBufferClass(int w, int h, void* buffer, long size);
+  GraphicBufferClass(int w, int h, void* buffer, int32_t size);
   GraphicBufferClass(int w, int h, void* buffer = nullptr);
   GraphicBufferClass();
   ~GraphicBufferClass();
@@ -340,7 +340,7 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
   GraphicBufferClass(GraphicBufferClass&&) = delete;
   GraphicBufferClass& operator=(GraphicBufferClass&&) = delete;
 
-  void Init(int w, int h, void* buffer, long size, GBC_Enum flags);
+  void Init(int w, int h, void* buffer, int32_t size, GBC_Enum flags);
   void Un_Init();
 
   // Locks and unlocks the underlying SDL surface. Callers normally use the
@@ -571,9 +571,9 @@ inline void GraphicViewPortClass::Clear(unsigned char color) {
   Unlock();
 }
 
-inline long GraphicViewPortClass::To_Buffer(int x, int y, int w, int h,
-                                            void* buff, long size) {
-  long return_code = 0;
+inline int32_t GraphicViewPortClass::To_Buffer(int x, int y, int w, int h,
+                                               void* buff, int32_t size) {
+  int32_t return_code = 0;
   if (Lock()) {
     return_code = Buffer_To_Buffer(this, x, y, w, h, buff, size);
   }
@@ -581,12 +581,12 @@ inline long GraphicViewPortClass::To_Buffer(int x, int y, int w, int h,
   return return_code;
 }
 
-inline long GraphicViewPortClass::To_Buffer(int x, int y, int w, int h,
-                                            BufferClass* buff) {
+inline int32_t GraphicViewPortClass::To_Buffer(int x, int y, int w, int h,
+                                               BufferClass* buff) {
   return To_Buffer(x, y, w, h, buff->Get_Buffer(), buff->Get_Size());
 }
 
-inline long GraphicViewPortClass::To_Buffer(BufferClass* buff) {
+inline int32_t GraphicViewPortClass::To_Buffer(BufferClass* buff) {
   return To_Buffer(0, 0, Width, Height, buff->Get_Buffer(), buff->Get_Size());
 }
 
@@ -740,9 +740,9 @@ inline int GraphicViewPortClass::Get_Pitch() { return static_cast<int>(Pitch); }
  * HISTORY:                                                                *
  *   01/12/1995 PWG : Created.                                             *
  *=========================================================================*/
-inline long Buffer_To_Page(int x, int y, int w, int h, void* Buffer,
-                           GraphicViewPortClass& view) {
-  long return_code = 0;
+inline int32_t Buffer_To_Page(int x, int y, int w, int h, void* Buffer,
+                              GraphicViewPortClass& view) {
+  int32_t return_code = 0;
   if (view.Lock()) {
     return_code = Buffer_To_Page(x, y, w, h, Buffer, &view);
   }
@@ -767,7 +767,7 @@ inline long Buffer_To_Page(int x, int y, int w, int h, void* Buffer,
  * HISTORY:                                                                *
  *   07/01/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline long BufferClass::To_Page(int w, int h, GraphicViewPortClass& view) {
+inline int32_t BufferClass::To_Page(int w, int h, GraphicViewPortClass& view) {
   return To_Page(0, 0, w, h, view);
 }
 /***************************************************************************
@@ -786,7 +786,7 @@ inline long BufferClass::To_Page(int w, int h, GraphicViewPortClass& view) {
  * HISTORY:                                                                *
  *   07/01/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline long BufferClass::To_Page(GraphicViewPortClass& view) {
+inline int32_t BufferClass::To_Page(GraphicViewPortClass& view) {
   return To_Page(0, 0, view.Get_Width(), view.Get_Height(), view);
 }
 /***************************************************************************
@@ -805,9 +805,9 @@ inline long BufferClass::To_Page(GraphicViewPortClass& view) {
  * HISTORY:                                                                *
  *   07/01/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline long BufferClass::To_Page(int x, int y, int w, int h,
-                                 GraphicViewPortClass& view) {
-  long return_code = 0;
+inline int32_t BufferClass::To_Page(int x, int y, int w, int h,
+                                    GraphicViewPortClass& view) {
+  int32_t return_code = 0;
   if (view.Lock()) {
     return_code = Buffer_To_Page(x, y, w, h, Buffer, &view);
   }

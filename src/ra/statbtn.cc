@@ -45,6 +45,8 @@
 
 #include "ra/statbtn.h"
 
+#include <cstdint>
+
 #include "port/safe_string.h"
 #include "ra/conquer.h"
 #include "ra/dialog.h"
@@ -223,10 +225,10 @@ void StaticButtonClass::Draw_Background() {
   **	allocate and record the background image now.
   */
   if (Background.Get_Buffer() == nullptr && Width > 0 && Height > 0) {
-    Background = Buffer(static_cast<long>(Width) * Height);
+    Background = Buffer(static_cast<base::ssize>(Width) * Height);
     if (Background.Get_Buffer() != nullptr) {
       LogicPage->To_Buffer(X, Y, Width, Height, Background,
-                           Background.Get_Size());
+                           static_cast<int32_t>(Background.Get_Size()));
     }
   }
 

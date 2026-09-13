@@ -111,8 +111,8 @@ class WWKeyboardClass {
    */
   /*===================================================================*/
   uint16_t Buffer[256]{};      // buffer which holds actual keypresses
-  long Head = 0;               // the head position in keyboard buffer
-  long Tail = 0;               // the tail position in keyboard buffer
+  int Head = 0;                // the head position in keyboard buffer
+  int Tail = 0;                // the tail position in keyboard buffer
 };
 
 extern WWKeyboardClass* ActiveKeyboard;

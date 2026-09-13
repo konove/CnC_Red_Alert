@@ -40,12 +40,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "base/numeric.h"
 #include "td/msgbox.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <cstring>
 
+#include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -62,7 +64,6 @@
 #include "td/jshell.h"
 #include "td/text.h"
 #include "td/textbtn.h"
-#include <cstddef>
 
 #ifdef JAPANESE
 CCMessageBox::CCMessageBox(int caption, bool pict)
@@ -240,7 +241,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   Hide_Mouse();
   if (preserve) {
     back = new char[base::ToSize(width * height)];
-    SeenBuff.To_Buffer(x, y, width, height, back, static_cast<long>(width) * height);
+    SeenBuff.To_Buffer(x, y, width, height, back,
+                       static_cast<int32_t>(width) * height);
   }
   // display = true;
 #ifdef JAPANESE

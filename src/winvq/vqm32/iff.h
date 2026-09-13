@@ -18,6 +18,8 @@
 
 #ifndef CNC_RED_ALERT_WINVQ_VQM32_IFF_H_
 #define CNC_RED_ALERT_WINVQ_VQM32_IFF_H_
+
+#include <cstdint>
 /****************************************************************************
  *
  *         C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S
@@ -46,9 +48,9 @@
  * type - Form type (IE: "ILBM")
  */
 typedef struct FormHeader {
-  long id;
-  long size;
-  long type;
+  int32_t id;
+  int32_t size;
+  int32_t type;
 } FormHeader;
 
 /* Context - Structure associated with chunks.
@@ -58,9 +60,9 @@ typedef struct FormHeader {
  * scan - Bytes read/written.
  */
 typedef struct Context {
-  long id;
-  long size;
-  long scan;
+  int32_t id;
+  int32_t size;
+  int32_t scan;
 } Context;
 
 /* IFFHandle - Structure associated with an active IFF read\write session.
@@ -72,10 +74,10 @@ typedef struct Context {
  * cn    - Context of current chunk.
  */
 typedef struct IFFHandle {
-  long fh;
-  long flags;
+  int32_t fh;
+  int32_t flags;
   FormHeader form;
-  long scan;
+  int32_t scan;
   Context cn;
 } IFFHandle;
 
@@ -125,18 +127,18 @@ typedef struct IFFHandle {
 #define ID_NULL MAKE_ID(' ', ' ', ' ', ' ')
 
 /* Prototypes */
-IFFHandle* OpenIFF(char*, long);
+IFFHandle* OpenIFF(char*, int32_t);
 void CloseIFF(IFFHandle*);
-long ReadForm(IFFHandle*, FormHeader*);
-long WriteForm(IFFHandle*, FormHeader*);
-long ReadChunkHeader(IFFHandle*);
-long WriteChunkHeader(IFFHandle*, long, long);
-long WriteChunk(IFFHandle*, long, char*, long);
-long WriteChunkBytes(IFFHandle*, char*, long);
-long ReadChunkBytes(IFFHandle*, char*, long);
-long SkipChunkBytes(IFFHandle*, long);
-long FindChunk(IFFHandle*, long);
-char* IDtoStr(long, char*);
-long CurrentFilePos(IFFHandle*);
+int32_t ReadForm(IFFHandle*, FormHeader*);
+int32_t WriteForm(IFFHandle*, FormHeader*);
+int32_t ReadChunkHeader(IFFHandle*);
+int32_t WriteChunkHeader(IFFHandle*, int32_t, int32_t);
+int32_t WriteChunk(IFFHandle*, int32_t, char*, int32_t);
+int32_t WriteChunkBytes(IFFHandle*, char*, int32_t);
+int32_t ReadChunkBytes(IFFHandle*, char*, int32_t);
+int32_t SkipChunkBytes(IFFHandle*, int32_t);
+int32_t FindChunk(IFFHandle*, int32_t);
+char* IDtoStr(int32_t, char*);
+int32_t CurrentFilePos(IFFHandle*);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQM32_IFF_H_

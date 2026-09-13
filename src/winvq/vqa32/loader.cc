@@ -91,20 +91,20 @@
 
 static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config);
 static void FreeBuffers(VQAData* vqa, VQAConfig* config, VQAHeader* header);
-static long PrimeBuffers(VQAHandle* vqa);
-static long Load_VQF(VQAHandle* vqap, int32_t iffsize);
-static long Load_FINF(VQAHandle* vqap, int32_t iffsize);
-static long Load_CBF0(VQAHandle* vqap, int32_t iffsize);
-static long Load_CBFZ(VQAHandle* vqap, int32_t iffsize);
-static long Load_CBP0(VQAHandle* vqap, int32_t iffsize);
-static long Load_CBPZ(VQAHandle* vqap, int32_t iffsize);
-static long Load_CPL0(VQAHandle* vqap, int32_t iffsize);
-static long Load_CPLZ(VQAHandle* vqap, int32_t iffsize);
-static long Load_VPT0(VQAHandle* vqap, int32_t iffsize);
-static long Load_VPTZ(VQAHandle* vqap, int32_t iffsize);
-static long Load_SND0(VQAHandle* vqap, int32_t iffsize);
-static long Load_SND1(VQAHandle* vqap, int32_t iffsize);
-static long Load_SND2(VQAHandle* vqap, int32_t iffsize);
+static int32_t PrimeBuffers(VQAHandle* vqa);
+static int32_t Load_VQF(VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_FINF(VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_CBF0(VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_CBFZ(VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_CBP0(VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_CBPZ(VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_CPL0(VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_CPLZ(VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_VPT0(VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_VPTZ(VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_SND0(VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_SND1(VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_SND2(VQAHandle* vqap, int32_t iffsize);
 
 extern "C" {
 void __cdecl Force_VM_Page_In(void* buffer, int length);
@@ -165,11 +165,11 @@ static constexpr bool FitsInBuffer(int64_t offset, int64_t size,
  *
  ****************************************************************************/
 
-long VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
+int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
   VQAHandle* vqap;
   VQAHeader* header;
   ChunkHeader chunk;
-  long done;
+  int32_t done;
 
   /* Dereference commonly used data members for quicker access. */
   vqap = vqa;
@@ -500,14 +500,14 @@ void VQA_Close(VQAHandle* vqa) {
  *
  ****************************************************************************/
 
-long VQA_LoadFrame(VQAHandle* vqa) {
+int32_t VQA_LoadFrame(VQAHandle* vqa) {
   VQAData* vqabuf;
   VQALoader* loader;
   VQADrawer* drawer;
   VQAFrameNode* curframe;
   ChunkHeader* chunk;
   int32_t iffsize;
-  long frame_loaded = 0;
+  int32_t frame_loaded = 0;
 
   /* Dereference commonly used data members for quicker access. */
   VQAHandle* vqa_handle_p = vqa;
@@ -883,7 +883,7 @@ long VQA_LoadFrame(VQAHandle* vqa) {
  *
  ****************************************************************************/
 
-long VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, long /*fromwhere*/) {
+int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
   VQAHandle* vqap;
   VQAData* vqabuf;
   VQALoader* loader;
@@ -892,9 +892,9 @@ long VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, long /*fromwhere*/) {
   VQAConfig* config;
   int32_t group;
   int32_t i;
-  long rc = VQAERR_NONE;
+  int32_t rc = VQAERR_NONE;
   VQAAudio* audio;
-  long audio_on;
+  int32_t audio_on;
   /* Dereference commonly used data members for quick access. */
   vqap = vqa;
   vqabuf = vqap->data;
@@ -1366,11 +1366,11 @@ static void FreeBuffers(VQAData* vqa, VQAConfig* /*config*/,
  *
  ****************************************************************************/
 
-long PrimeBuffers(VQAHandle* vqa) {
+int32_t PrimeBuffers(VQAHandle* vqa) {
   VQAData* vqabuf;
   VQAConfig* config;
-  long rc;
-  long i;
+  int32_t rc;
+  int32_t i;
 
   /* Dereference commonly used data members for quick access. */
   vqabuf = vqa->data;
@@ -1419,7 +1419,7 @@ long PrimeBuffers(VQAHandle* vqa) {
  *
  ****************************************************************************/
 
-static long Load_VQF(VQAHandle* vqap, int32_t frame_iffsize) {
+static int32_t Load_VQF(VQAHandle* vqap, int32_t frame_iffsize) {
   VQAData* vqabuf;
   VQAFrameNode* curframe;
   ChunkHeader* chunk;
@@ -1576,7 +1576,7 @@ static long Load_VQF(VQAHandle* vqap, int32_t frame_iffsize) {
  *
  ****************************************************************************/
 
-static long Load_FINF(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_FINF(VQAHandle* vqap, int32_t iffsize) {
   VQAData* vqabuf = vqap->data;
 
   // The table has one 4-byte entry per frame in the header. Copying no more
@@ -1619,7 +1619,7 @@ static long Load_FINF(VQAHandle* vqap, int32_t iffsize) {
  *
  ****************************************************************************/
 
-static long Load_CBF0(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_CBF0(VQAHandle* vqap, int32_t iffsize) {
   VQALoader* loader;
   VQACBNode* curcb;
 
@@ -1672,7 +1672,7 @@ static long Load_CBF0(VQAHandle* vqap, int32_t iffsize) {
  *
  ****************************************************************************/
 
-static long Load_CBFZ(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_CBFZ(VQAHandle* vqap, int32_t iffsize) {
   VQALoader* loader;
   VQACBNode* curcb;
   void* buffer;
@@ -1734,7 +1734,7 @@ static long Load_CBFZ(VQAHandle* vqap, int32_t iffsize) {
  *
  ****************************************************************************/
 
-static long Load_CBP0(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_CBP0(VQAHandle* vqap, int32_t iffsize) {
   VQAData* vqabuf;
   VQALoader* loader;
   VQACBNode* curcb;
@@ -1807,7 +1807,7 @@ static long Load_CBP0(VQAHandle* vqap, int32_t iffsize) {
  *
  ****************************************************************************/
 
-static long Load_CBPZ(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_CBPZ(VQAHandle* vqap, int32_t iffsize) {
   VQAData* vqabuf;
   VQALoader* loader;
   VQACBNode* curcb;
@@ -1899,7 +1899,7 @@ static long Load_CBPZ(VQAHandle* vqap, int32_t iffsize) {
  *
  ****************************************************************************/
 
-static long Load_CPL0(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_CPL0(VQAHandle* vqap, int32_t iffsize) {
   VQAFrameNode* curframe;
 
   /* Dereference commonly used data members for quicker access. */
@@ -1946,7 +1946,7 @@ static long Load_CPL0(VQAHandle* vqap, int32_t iffsize) {
  *
  ****************************************************************************/
 
-static long Load_CPLZ(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_CPLZ(VQAHandle* vqap, int32_t iffsize) {
   VQAFrameNode* curframe;
   void* buffer;
   int32_t padsize;
@@ -1999,7 +1999,7 @@ static long Load_CPLZ(VQAHandle* vqap, int32_t iffsize) {
  *
  ****************************************************************************/
 
-static long Load_VPT0(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_VPT0(VQAHandle* vqap, int32_t iffsize) {
   VQAFrameNode* curframe;
 
   /* Dereference commonly used data members for quicker access. */
@@ -2042,7 +2042,7 @@ static long Load_VPT0(VQAHandle* vqap, int32_t iffsize) {
  *
  ****************************************************************************/
 
-static long Load_VPTZ(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_VPTZ(VQAHandle* vqap, int32_t iffsize) {
   VQAFrameNode* curframe;
   void* buffer;
   int32_t padsize;
@@ -2097,7 +2097,7 @@ static long Load_VPTZ(VQAHandle* vqap, int32_t iffsize) {
  *
  ****************************************************************************/
 
-static long Load_SND0(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_SND0(VQAHandle* vqap, int32_t iffsize) {
   VQAData* vqabuf;
   VQAAudio* audio;
   VQAConfig* config;
@@ -2180,7 +2180,7 @@ static long Load_SND0(VQAHandle* vqap, int32_t iffsize) {
  *
  ****************************************************************************/
 
-static long Load_SND1(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_SND1(VQAHandle* vqap, int32_t iffsize) {
   VQAData* vqabuf;
   VQAAudio* audio;
   VQAConfig* config;
@@ -2309,7 +2309,7 @@ static long Load_SND1(VQAHandle* vqap, int32_t iffsize) {
  *
  ****************************************************************************/
 
-static long Load_SND2(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_SND2(VQAHandle* vqap, int32_t iffsize) {
   VQAData* vqabuf;
   VQAAudio* audio;
   VQAConfig* config;

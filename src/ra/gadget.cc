@@ -61,6 +61,7 @@
 
 #include "ra/gadget.h"
 
+#include <cstdint>
 #include <cstdio>
 
 #include "ra/config.h"
@@ -474,7 +475,7 @@ KeyNumType GadgetClass::Input() {
         (!Debug_MotionCapture)) {
       GraphicBufferClass temp_page(
           SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
-          static_cast<long>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
+          static_cast<int32_t>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
       CDFileClass file;
       char filename[30];
 

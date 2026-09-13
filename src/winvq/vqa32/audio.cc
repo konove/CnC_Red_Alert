@@ -75,7 +75,6 @@
  * PROTOTYPES
  *-------------------------------------------------------------------------*/
 
-extern unsigned long Get_Game_Time();
 
 #include <SDL_audio.h>
 
@@ -85,7 +84,7 @@ extern unsigned long Get_Game_Time();
 
 static VQAHandle* VQAP = nullptr;
 static uint32_t AudioFlags = 0;  // VQAAUDF_* bits
-static long TimerIntCount = 0;
+static int32_t TimerIntCount = 0;
 static uint16_t VQATimer = 0;
 static int TimerMethod;
 static int64_t VQATickCount = 0;
@@ -177,7 +176,7 @@ static void VQA_Audio_Callback(uint8_t* stream, int len) {
  *
  ****************************************************************************/
 
-long VQA_StartTimerInt(VQAHandle* vqap, long /*init*/) {
+int32_t VQA_StartTimerInt(VQAHandle* vqap, int32_t /*init*/) {
   VQAAudio* audio;
 
   /* Dereference for quick access. */
@@ -264,7 +263,7 @@ void VQA_StopTimerInt(VQAHandle* /*vqap*/) {
 
 static int OpenCount = 0;
 
-long VQA_OpenAudio(VQAHandle* vqap, void* /*window*/) {
+int32_t VQA_OpenAudio(VQAHandle* vqap, void* /*window*/) {
   VQAData* vqabuf;
   VQAAudio* audio;
   VQAConfig* config;
@@ -395,7 +394,7 @@ void VQA_CloseAudio(VQAHandle* vqap) {
  *
  ****************************************************************************/
 
-long VQA_StartAudio(VQAHandle* vqap) {
+int32_t VQA_StartAudio(VQAHandle* vqap) {
   VQAConfig* config;
   VQAAudio* audio;
 
@@ -489,7 +488,7 @@ void VQA_StopAudio(VQAHandle* vqap) {
  *
  ****************************************************************************/
 
-long CopyAudio(VQAHandle* vqap) {
+int32_t CopyAudio(VQAHandle* vqap) {
   VQAAudio* audio;
   VQAConfig* config;
   int32_t startblock;
@@ -801,4 +800,4 @@ int64_t VQA_GetTime(VQAHandle* vqap) {
  *
  ****************************************************************************/
 
-long VQA_TimerMethod() { return TimerMethod; }
+int32_t VQA_TimerMethod() { return TimerMethod; }

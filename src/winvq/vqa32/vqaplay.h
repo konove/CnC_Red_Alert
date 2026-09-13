@@ -148,8 +148,8 @@ extern void Debug_Printf(char* format_string, ...);
  * EVAFont        - Pointer to font to use for E.V.A text cations. (For C&C)
  */
 typedef struct VQAConfig {
-  long (*DrawerCallback)(unsigned char* screen, long framenum);
-  long (*EventHandler)(unsigned long event, void* buffer, long nbytes);
+  int32_t (*DrawerCallback)(unsigned char* screen, int32_t framenum);
+  int32_t (*EventHandler)(uint32_t event, void* buffer, int32_t nbytes);
   uint32_t NotifyFlags;
   int32_t Vmode;
   int32_t VBIBit;
@@ -231,9 +231,9 @@ typedef struct VQAConfig {
  * ImageBuf    - Pointer to the image buffer VQA draw into.
  */
 typedef struct VQAInfo {
-  long NumFrames;
-  long ImageWidth;
-  long ImageHeight;
+  int32_t NumFrames;
+  int32_t ImageWidth;
+  int32_t ImageHeight;
   unsigned char* ImageBuf;
 } VQAInfo;
 
@@ -332,7 +332,7 @@ void VQA_PauseAudio();
 void VQA_ResumeAudio();
 
 // Supplied by the game: queue a palette change for the next frame.
-void Flag_To_Set_Palette(unsigned char* palette, long numbytes,
-                         unsigned long slowpal);
+void Flag_To_Set_Palette(unsigned char* palette, int32_t numbytes,
+                         uint32_t slowpal);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQA32_VQAPLAY_H_

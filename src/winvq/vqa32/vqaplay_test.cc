@@ -27,11 +27,11 @@ int32_t LCW_Uncompress(void* /*source*/, void* /*dest*/, int32_t /*length*/) {
   return 0;
 }
 
-void SetPalette(unsigned char* /*palette*/, long /*numbytes*/,
-                unsigned long /*slowpal*/) {}
+void SetPalette(unsigned char* /*palette*/, int32_t /*numbytes*/,
+                uint32_t /*slowpal*/) {}
 
-void Flag_To_Set_Palette(unsigned char* /*palette*/, long /*numbytes*/,
-                         unsigned long /*slowpal*/) {}
+void Flag_To_Set_Palette(unsigned char* /*palette*/, int32_t /*numbytes*/,
+                         uint32_t /*slowpal*/) {}
 
 namespace {
 
@@ -291,7 +291,7 @@ class VqaLoaderTest : public testing::Test {
     }
   }
 
-  long Open() { return VQA_Open(&handle_, "test.vqa", &config_); }
+  int32_t Open() { return VQA_Open(&handle_, "test.vqa", &config_); }
 
   FakeVqaIo fake_;
   VQAHandle handle_;

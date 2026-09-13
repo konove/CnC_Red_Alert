@@ -77,17 +77,17 @@ void Focus_Restore() {
 }
 
 static unsigned char* VQPalette;
-static long VQNumBytes;
-static unsigned long VQSlowpal;
+static int32_t VQNumBytes;
+static uint32_t VQSlowpal;
 static bool VQPaletteChange = false;
 
 extern "C" {
-void __cdecl SetPalette(unsigned char* palette, long numbytes,
-                        unsigned long slowpal);
+void __cdecl SetPalette(unsigned char* palette, int32_t numbytes,
+                        uint32_t slowpal);
 }
 
-void Flag_To_Set_Palette(unsigned char* palette, long numbytes,
-                         unsigned long slowpal) {
+void Flag_To_Set_Palette(unsigned char* palette, int32_t numbytes,
+                         uint32_t slowpal) {
   VQPalette = palette;
   VQNumBytes = numbytes;
   VQSlowpal = slowpal;
@@ -101,8 +101,8 @@ void Check_VQ_Palette_Set() {
   }
 }
 
-void __cdecl SetPalette(unsigned char* palette, long /*unused*/,
-                        unsigned long /*unused*/) {
+void __cdecl SetPalette(unsigned char* palette, int32_t /*unused*/,
+                        uint32_t /*unused*/) {
   for (int i = 0; i < 256 * 3; i++) {
     *(palette + i) &= 63;
   }
@@ -198,7 +198,7 @@ class BufferedFileReader {
 };
 
 GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
-                                  long Size) {
+                                  int32_t Size) {
   CCFileClass file_handle(name);
 
   if (!file_handle.Is_Available()) {
@@ -230,7 +230,8 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
       return nullptr;
     }
   } else {
-    pic = new GraphicBufferClass(width, height, nullptr, static_cast<long>(width) * (height + 4));
+    pic = new GraphicBufferClass(width, height, nullptr,
+                                 static_cast<int32_t>(width) * (height + 4));
     if (!pic->Get_Buffer()) {
       delete pic;
       return nullptr;

@@ -67,6 +67,7 @@
 */
 #include "td/gadget.h"
 
+#include <cstdint>
 #include <cstdio>
 #include <filesystem>
 
@@ -449,7 +450,7 @@ KeyNumType GadgetClass::Input() {
       */
       GraphicBufferClass temp_page(
           SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
-          static_cast<long>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
+          static_cast<int32_t>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
       char filename[30];
 
       SeenBuff.Blit(temp_page);

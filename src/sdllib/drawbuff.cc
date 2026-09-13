@@ -56,8 +56,9 @@ void Buffer_Clear(void* thisptr, unsigned char color) {
   } while (--line_count);
 }
 
-long Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel, int pixel_width,
-                      int pixel_height, void* buff, long /*size*/) {
+int32_t Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel,
+                         int pixel_width, int pixel_height, void* buff,
+                         int32_t /*size*/) {
   auto* vp_src = static_cast<GraphicViewPortClass*>(thisptr);
 
   int dst_x0 = 0;
@@ -125,8 +126,8 @@ long Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel, int pixel_width,
   return 0;
 }
 
-long Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
-                    int pixel_height, void* Buffer, void* view) {
+int32_t Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
+                       int pixel_height, void* Buffer, void* view) {
   auto* vp_dst = static_cast<GraphicViewPortClass*>(view);
 
   int src_x0 = 0;
@@ -1036,19 +1037,19 @@ void GraphicViewPortClass::Attach(GraphicBufferClass* graphic_buff, int x,
   GraphicBuff = graphic_buff;
 }
 
-GraphicBufferClass::GraphicBufferClass(int w, int h, void* buffer, long size)
+GraphicBufferClass::GraphicBufferClass(int w, int h, void* buffer, int32_t size)
     : GraphicBufferClass() {
   Init(w, h, buffer, size, GBC_NONE);
 }
 
 GraphicBufferClass::GraphicBufferClass(int w, int h, void* buffer)
-    : GraphicBufferClass(w, h, buffer, static_cast<base::ssize>(w) * h) {}
+    : GraphicBufferClass(w, h, buffer, w * h) {}
 
 GraphicBufferClass::GraphicBufferClass() { GraphicBuff = this; }
 
 GraphicBufferClass::~GraphicBufferClass() { Un_Init(); }
 
-void GraphicBufferClass::Init(int w, int h, void* buffer, long size,
+void GraphicBufferClass::Init(int w, int h, void* buffer, int32_t size,
                               GBC_Enum flags) {
   Size = size;
   Width = w;
@@ -1068,7 +1069,7 @@ void GraphicBufferClass::Init(int w, int h, void* buffer, long size,
 
     if (buffer == nullptr) {
       if (size == 0) {
-        Size = static_cast<base::ssize>(w) * h;
+        Size = w * h;
       } else {
         Size = size;
       }

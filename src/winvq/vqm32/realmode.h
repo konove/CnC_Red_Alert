@@ -50,7 +50,7 @@
  * and the associated macros are identical to that of the PHARLAP "pltypes.h"
  * definitions for easy of conversion to WATCOM/4GW.
  */
-typedef unsigned long REALPTR;
+typedef uint32_t REALPTR;
 
 #define RP_OFF(rp) ((unsigned short)(((unsigned long)(rp)) & 0xFFFF))
 #define RP_SEG(rp) ((unsigned short)(((unsigned long)(rp)) >> 16))
@@ -68,14 +68,14 @@ typedef unsigned long REALPTR;
  * to real-mode and then execute the interrupt in real-mode.
  */
 typedef struct RMInfo {
-  long edi;
-  long esi;
-  long ebp;
-  long reservedbysystem;
-  long ebx;
-  long edx;
-  long ecx;
-  long eax;
+  int32_t edi;
+  int32_t esi;
+  int32_t ebp;
+  int32_t reservedbysystem;
+  int32_t ebx;
+  int32_t edx;
+  int32_t ecx;
+  int32_t eax;
   int16_t flags;
   int16_t es, ds, fs, gs, ip, cs, sp, ss;
 } RMInfo;

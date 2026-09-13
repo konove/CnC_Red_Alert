@@ -38,12 +38,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "base/numeric.h"
 #include "ra/msgbox.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <cstring>
 
+#include "base/numeric.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -59,7 +61,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include <cstddef>
 
 bool cancel_current_msgbox = false;
 
@@ -232,7 +233,8 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   Hide_Mouse();
   if (preserve) {
     back = new char[base::ToSize(width * height)];
-    SeenBuff.To_Buffer(x, y, width, height, back, static_cast<long>(width) * height);
+    SeenBuff.To_Buffer(x, y, width, height, back,
+                       static_cast<int32_t>(width) * height);
   }
   Dialog_Box(x, y, width, height);
   Draw_Caption(Caption, x, y, width);

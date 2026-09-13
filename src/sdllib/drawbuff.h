@@ -19,6 +19,8 @@
 #ifndef CNC_RED_ALERT_SDLLIB_DRAWBUFF_H_
 #define CNC_RED_ALERT_SDLLIB_DRAWBUFF_H_
 
+#include <cstdint>
+
 class GraphicViewPortClass;
 
 /*======================================================================*/
@@ -27,10 +29,10 @@ class GraphicViewPortClass;
 /*======================================================================*/
 int Buffer_Get_Pixel(void* thisptr, int x, int y);
 void Buffer_Clear(void* thisptr, unsigned char color);
-long Buffer_To_Buffer(void* thisptr, int x, int y, int pixel_width,
-                      int pixel_height, void* buff, long size);
-long Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
-                    int pixel_height, void* Buffer, void* view);
+int32_t Buffer_To_Buffer(void* thisptr, int x, int y, int pixel_width,
+                         int pixel_height, void* buff, int32_t size);
+int32_t Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
+                       int pixel_height, void* Buffer, void* view);
 bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
                            int dx_pixel, int dy_pixel, int pixel_width,
                            int pixel_height, bool trans);

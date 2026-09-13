@@ -683,10 +683,10 @@ AudioCallback* Get_Audio_Callback_Ptr() { return &ExtraCallback; }
 
 // TD
 // used for nod ending
-static long Sample_Read(int fh, void* buffer, base::ssize size) {
+static int32_t Sample_Read(int fh, void* buffer, base::ssize size) {
   AUDHeaderType RawHeader;
   void* outbuffer;         // Pointer to start of raw data.
-  long actual_bytes_read;  // Actual bytes read in, including header
+  int32_t actual_bytes_read;  // Actual bytes read in, including header
 
   if (!buffer || fh == kInvalidHandle ||
       size <= base::ssize{sizeof(RawHeader)}) {

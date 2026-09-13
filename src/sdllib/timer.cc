@@ -5,6 +5,7 @@
 #include <SDL_timer.h>
 
 #include <algorithm>
+#include <cstdint>
 
 #include "absl/log/check.h"
 
@@ -26,7 +27,7 @@ TimerClass::TimerClass(bool start) noexcept {
   }
 }
 
-long TimerClass::Set(long value, bool start) {
+int64_t TimerClass::Set(int64_t value, bool start) {
   Started = 0;
   Accumulated = value;
   if (start) {
@@ -36,23 +37,23 @@ long TimerClass::Set(long value, bool start) {
   return Time();
 }
 
-long TimerClass::Start() {
+int64_t TimerClass::Start() {
   if (Started == 0) {
     Started = Get_Ticks() + 1;
   }
   return Time();
 }
 
-long TimerClass::Time() {
+int64_t TimerClass::Time() {
   if (Started) {
-    long ticks = Get_Ticks();
+    int64_t ticks = Get_Ticks();
     Accumulated += ticks - (Started - 1);
     Started = ticks + 1;
   }
   return Accumulated;
 }
 
-long TimerClass::Get_Ticks() {
+int64_t TimerClass::Get_Ticks() {
   if (g_tick_timer) {
     return g_tick_timer->TickCount();
   }
@@ -60,7 +61,7 @@ long TimerClass::Get_Ticks() {
   return 0;
 }
 
-CountDownTimerClass::CountDownTimerClass(long set, bool on) noexcept
+CountDownTimerClass::CountDownTimerClass(int64_t set, bool on) noexcept
     : TimerClass(on) {
   Set(set, on);
 }
@@ -71,13 +72,13 @@ CountDownTimerClass::CountDownTimerClass(bool on) noexcept : TimerClass(false) {
   }
 }
 
-void CountDownTimerClass::Set(long value, bool start) {
+void CountDownTimerClass::Set(int64_t value, bool start) {
   DelayTime = value;
   TimerClass::Reset(start);
 }
 
-long CountDownTimerClass::Time() {
-  return std::max<long>(DelayTime - TimerClass::Time(), 0);
+int64_t CountDownTimerClass::Time() {
+  return std::max<int64_t>(DelayTime - TimerClass::Time(), 0);
 }
 
 TickTimer::TickTimer(const int tick_rate)

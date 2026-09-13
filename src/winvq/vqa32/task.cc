@@ -139,11 +139,11 @@ int VQAMovieDone;
  *
  ****************************************************************************/
 
-long VQA_Play(VQAHandle* vqa, long mode) {
+int32_t VQA_Play(VQAHandle* vqa, int32_t mode) {
   VQAData* vqabuf;
   VQAConfig* config;
   VQADrawer* drawer;
-  int64_t rc = 0;
+  int32_t rc = 0;
 
 #ifdef _WIN32
   /*

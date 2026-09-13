@@ -393,7 +393,7 @@ struct VQAAudio {
  * MemUsed      - Number of bytes allocated by VQA_AllocBuffers
  */
 struct VQAData {
-  long (*Draw_Frame)(VQAHandle* vqa) = nullptr;
+  int32_t (*Draw_Frame)(VQAHandle* vqa) = nullptr;
 
   void (*UnVQ)(const unsigned char* codebook, const unsigned char* pointers,
                unsigned char* buffer, int blocksperrow, int numrows,
@@ -481,32 +481,32 @@ struct VQAHandle {
  *-------------------------------------------------------------------------*/
 
 /* Player entry points (wrapped by the public VqaPlayer class). */
-long VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config);
+int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config);
 void VQA_Close(VQAHandle* vqa);
-long VQA_Play(VQAHandle* vqa, long mode);
-long VQA_SeekFrame(VQAHandle* vqa, int32_t frame, long fromwhere);
+int32_t VQA_Play(VQAHandle* vqa, int32_t mode);
+int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t frame, int32_t fromwhere);
 int64_t VQA_SetStop(VQAHandle* vqa, int64_t stop);
 void VQA_GetInfo(VQAHandle* vqa, VQAInfo* info);
 void VQA_GetStats(VQAHandle* vqa, VQAStatistics* stats);
 
 /* Loader/Drawer system. */
-long VQA_LoadFrame(VQAHandle* vqa);
+int32_t VQA_LoadFrame(VQAHandle* vqa);
 void VQA_Configure_Drawer(VQAHandle* vqap);
 int64_t User_Update(VQAHandle* vqa);
 
 /* Timer system. */
-long VQA_StartTimerInt(VQAHandle* vqap, long init);
+int32_t VQA_StartTimerInt(VQAHandle* vqap, int32_t init);
 void VQA_StopTimerInt(VQAHandle* vqap);
 void VQA_SetTimer(VQAHandle* vqap, int64_t time, int method);
 int64_t VQA_GetTime(VQAHandle* vqap);
-long VQA_TimerMethod();
+int32_t VQA_TimerMethod();
 
 /* Audio system. */
-long VQA_OpenAudio(VQAHandle* vqap, void* window);
+int32_t VQA_OpenAudio(VQAHandle* vqap, void* window);
 void VQA_CloseAudio(VQAHandle* vqap);
-long VQA_StartAudio(VQAHandle* vqap);
+int32_t VQA_StartAudio(VQAHandle* vqap);
 void VQA_StopAudio(VQAHandle* vqap);
-long CopyAudio(VQAHandle* vqap);
+int32_t CopyAudio(VQAHandle* vqap);
 
 extern int VQAMovieDone;
 

@@ -74,7 +74,7 @@ typedef struct {
 } PCX_HEADER;
 
 GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* buff,
-                                  long size);
+                                  int32_t size);
 GraphicBufferClass* Read_PCX_File(const char* name, BufferClass& Buff,
                                   char* palette = nullptr);
 

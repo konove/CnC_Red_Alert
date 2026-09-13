@@ -729,7 +729,7 @@ void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass* inbuffer, int x,
   unsigned char remap_color;
   unsigned char pixel_color;
 
-  BufferClass destbuf(static_cast<long>(width) * height);
+  BufferClass destbuf(static_cast<int32_t>(width) * height);
 
   auto* destptr = static_cast<unsigned char*>(destbuf.Get_Buffer());
 

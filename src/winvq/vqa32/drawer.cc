@@ -85,10 +85,10 @@
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS
  *-------------------------------------------------------------------------*/
-static long Select_Frame(VQAHandle* vqap);
+static int32_t Select_Frame(VQAHandle* vqap);
 static void Prepare_Frame(VQAData* vqabuf);
 
-static long DrawFrame_Buffer(VQAHandle* vqa);
+static int32_t DrawFrame_Buffer(VQAHandle* vqa);
 
 static void __cdecl UnVQ_Nop(const unsigned char* codebook,
                              const unsigned char* pointers,
@@ -123,7 +123,7 @@ void VQA_Configure_Drawer(VQAHandle* vqap) {
   VQAHeader* header;
   VQADrawer* drawer;
   uint32_t origin;
-  long blkdim;
+  int32_t blkdim;
 
   /* Dereference commonly used data members for quicker access. */
   vqabuf = vqap->data;
@@ -245,7 +245,7 @@ void VQA_Configure_Drawer(VQAHandle* vqap) {
  *
  ****************************************************************************/
 
-static long Select_Frame(VQAHandle* vqap) {
+static int32_t Select_Frame(VQAHandle* vqap) {
   VQAData* vqabuf;
   VQADrawer* drawer;
   VQAConfig* config;
@@ -463,7 +463,7 @@ static void Prepare_Frame(VQAData* vqabuf) {
  ****************************************************************************/
 
 extern void __cdecl Set_Palette(void* palette);
-static long DrawFrame_Buffer(VQAHandle* vqa) {
+static int32_t DrawFrame_Buffer(VQAHandle* vqa) {
   VQAFrameNode* curframe;
   unsigned char* pal;
   int32_t palsize;

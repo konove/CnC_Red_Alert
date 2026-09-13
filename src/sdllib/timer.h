@@ -54,29 +54,29 @@ class TimerClass {
   TimerClass& operator=(TimerClass&&) = default;
 
   // Set initial timer value.
-  long Set(long value, bool start = true);
+  int64_t Set(int64_t value, bool start = true);
   // Pause timer
-  long Stop();
+  int64_t Stop();
   // Resume timer.
-  long Start();
+  int64_t Start();
   // Reset timer to zero.
-  long Reset(bool start = true) { return Set(0, start); }
+  int64_t Reset(bool start = true) { return Set(0, start); }
   // Fetch current timer value.
-  long Time();
+  int64_t Time();
 
  protected:
-  long Started = 0;      // Time last started (0 == not paused).
-  long Accumulated = 0;  // Total accumulated ticks.
+  int64_t Started = 0;      // Time last started (0 == not paused).
+  int64_t Accumulated = 0;  // Total accumulated ticks.
 
  private:
-  static long Get_Ticks();
+  static int64_t Get_Ticks();
 };
 
 class CountDownTimerClass : TimerClass {
  public:
   // Constructor.  Timers set before low level init has been done will not
   // be able to be 'Started' or 'on' until timer system is in place.
-  explicit CountDownTimerClass(long set, bool on = false) noexcept;
+  explicit CountDownTimerClass(int64_t set, bool on = false) noexcept;
   explicit CountDownTimerClass(bool on = false) noexcept;
   ~CountDownTimerClass() = default;
   CountDownTimerClass(const CountDownTimerClass&) = default;
@@ -84,27 +84,27 @@ class CountDownTimerClass : TimerClass {
   CountDownTimerClass(CountDownTimerClass&&) = default;
   CountDownTimerClass& operator=(CountDownTimerClass&&) = default;
 
-  void Set(long value, bool start = true);  // Set count down value.
-  long Reset(bool start = true);          // Reset timer to zero.
-  long Stop();                            // Pause timer.
-  long Start();                           // Resume timer.
-  long Time();                            // Fetch current count down value.
+  void Set(int64_t value, bool start = true);  // Set count down value.
+  int64_t Reset(bool start = true);            // Reset timer to zero.
+  int64_t Stop();                              // Pause timer.
+  int64_t Start();                             // Resume timer.
+  int64_t Time();  // Fetch current count down value.
 
  protected:
-  long DelayTime = 0;  // Ticks remaining before countdown timer expires.
+  int64_t DelayTime = 0;  // Ticks remaining before countdown timer expires.
 };
 
-inline long CountDownTimerClass::Stop() {
+inline int64_t CountDownTimerClass::Stop() {
   TimerClass::Stop();
   return Time();
 }
 
-inline long CountDownTimerClass::Start() {
+inline int64_t CountDownTimerClass::Start() {
   TimerClass::Start();
   return Time();
 }
 
-inline long CountDownTimerClass::Reset(bool start) {
+inline int64_t CountDownTimerClass::Reset(bool start) {
   return TimerClass::Reset(start);
 }
 

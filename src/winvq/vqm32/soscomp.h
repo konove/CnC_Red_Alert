@@ -72,10 +72,10 @@ struct SosCompressInfo {
 
 /* compressed file type header */
 typedef struct tagCOMPRESS_HEADER {
-  unsigned long dwType;              // type of compression
-  unsigned long dwCompressedSize;    // compressed file size
-  unsigned long dwUnCompressedSize;  // uncompressed file size
-  unsigned long dwSourceBitSize;     // original bit size
+  uint32_t dwType;                   // type of compression
+  uint32_t dwCompressedSize;         // compressed file size
+  uint32_t dwUnCompressedSize;       // uncompressed file size
+  uint32_t dwSourceBitSize;          // original bit size
   char szName[16];                   // file type, for error checking
 } SOS_COMPRESS_HEADER;
 
@@ -86,7 +86,7 @@ extern "C" {
 #endif
 
 void __cdecl VQA_sosCODECInitStream(SosCompressInfo* /*info*/);
-unsigned long __cdecl VQA_sosCODECCompressData(SosCompressInfo*, unsigned long);
+uint32_t __cdecl VQA_sosCODECCompressData(SosCompressInfo*, uint32_t);
 bool __cdecl DecompressVqaSosData(SosCompressInfo* /*info*/,
                                   int32_t /*uncomp_size*/);
 

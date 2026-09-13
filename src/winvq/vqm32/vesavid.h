@@ -89,7 +89,7 @@ typedef struct VESAInfo {
   char Signature[4];
   uint16_t Version;
   REALPTR OEMString;
-  unsigned long Capabilities;
+  uint32_t Capabilities;
   REALPTR AvailModes;
   uint16_t TotalMemory;
   unsigned char Reserved[236];
@@ -170,10 +170,10 @@ typedef struct VESAModeInfo {
  * Function prototypes
  *-------------------------------------------------------------------------*/
 
-long InitVESA();
+int32_t InitVESA();
 void UninitVESA();
-VESAModeInfo* SetVESAMode(long mode);
-VESAModeInfo* ReadVESAModeInfo(long mode);
-void SetVESAWindow(long grain_num);
+VESAModeInfo* SetVESAMode(int32_t mode);
+VESAModeInfo* ReadVESAModeInfo(int32_t mode);
+void SetVESAWindow(int32_t grain_num);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQM32_VESAVID_H_

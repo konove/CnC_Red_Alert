@@ -37,7 +37,7 @@ int WWKeyboardClass::Get() {
 }
 
 bool WWKeyboardClass::Put(int key) {
-  int temp = static_cast<int>((Tail + 1) & 255);
+  int temp = (Tail + 1) & 255;
   if (temp != Head) {
     Buffer[Tail] = static_cast<uint16_t>(key);
 
@@ -192,7 +192,7 @@ int WWKeyboardClass::Buff_Get() {
   while (!Check()) {
   }  // wait for key in buffer
   int temp = Buffer[Head];             // get key out of the buffer
-  int newhead = static_cast<int>(Head);                  // save off head for manipulation
+  int newhead = Head;                  // save off head for manipulation
   if (Is_Mouse_Key(temp)) {            // if key is a mouse then
     MouseQX = Buffer[(Head + 1) & 255];  //		get the x and y pos
     MouseQY = Buffer[(Head + 2) & 255];  //		from the buffer

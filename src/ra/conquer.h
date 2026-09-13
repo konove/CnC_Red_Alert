@@ -707,8 +707,8 @@ void Main_Game(int argc, char* argv[]);
 // Per-frame callback installed into the VQA player. Scales the decoded frame
 // onto the visible page, and returns non-zero to abort the movie (ESC, when
 // breaking out is allowed).
-long VQ_Call_Back(unsigned char* buffer = nullptr, long frame = 0);
-long VQ_Event_Handler(unsigned long event, void* buffer, long nbytes);
+int32_t VQ_Call_Back(unsigned char* buffer = nullptr, int32_t frame = 0);
+int32_t VQ_Event_Handler(uint32_t event, void* buffer, int32_t nbytes);
 
 // Handles keyboard input while the tactical map is displayed. Consumes each
 // key it acts on by setting input to KN_NONE.

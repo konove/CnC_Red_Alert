@@ -14,7 +14,7 @@
 
 SurfaceMonitorClass AllSurfaces;
 
-long RandNumb;
+int RandNumb;
 
 void (*Misc_Focus_Loss_Function)();
 void (*Misc_Focus_Restore_Function)();
@@ -37,8 +37,7 @@ void Delay(int duration) {
   }
 }
 
-void* Build_Fading_Table(const void* palette, void* dest, long int color,
-                         long int frac) {
+void* Build_Fading_Table(const void* palette, void* dest, int color, int frac) {
   int matchvalue;
   uint8_t targetred;
   uint8_t targetgreen;
@@ -53,7 +52,7 @@ void* Build_Fading_Table(const void* palette, void* dest, long int color,
   }
 
   // Fractions above 255 become 255.
-  frac = std::min<long>(frac, 255);
+  frac = std::min<int>(frac, 255);
 
   // Record the target gun values.
   const auto* pal8 = (uint8_t*)palette;

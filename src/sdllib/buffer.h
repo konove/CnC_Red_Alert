@@ -31,7 +31,7 @@ class BufferClass {
  public:
   // Define the base constructor and destructors for the class
   BufferClass() : Buffer(nullptr), Size(0), Allocated(false) {}
-  explicit BufferClass(long size)
+  explicit BufferClass(int32_t size)
       : Buffer(new uint8_t[base::ToSize(size)]), Size(size), Allocated(true) {}
   ~BufferClass() {
     if (Allocated) {
@@ -40,17 +40,17 @@ class BufferClass {
   }
 
   // Define functions which work with the buffer class.
-  long To_Page(GraphicViewPortClass& view);
-  long To_Page(int w, int h, GraphicViewPortClass& view);
-  long To_Page(int x, int y, int w, int h, GraphicViewPortClass& view);
+  int32_t To_Page(GraphicViewPortClass& view);
+  int32_t To_Page(int w, int h, GraphicViewPortClass& view);
+  int32_t To_Page(int x, int y, int w, int h, GraphicViewPortClass& view);
 
   // define functions to get at the protected data members
   void* Get_Buffer() { return Buffer; }
-  long Get_Size() { return Size; }
+  int32_t Get_Size() { return Size; }
 
  protected:
   void* Buffer;
-  long Size;
+  int32_t Size;
   bool Allocated;
 
  private:

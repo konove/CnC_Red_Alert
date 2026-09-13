@@ -2754,7 +2754,7 @@ void Trap_Object() {
  * HISTORY: * 06/24/1995 JLB : Created. *
  *=============================================================================================*/
 
-long VQ_Call_Back(unsigned char* /*unused*/, long /*unused*/) {
+int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
   int key = 0;
   if (Keyboard::Check()) {
     key = Keyboard::Get();
@@ -2785,7 +2785,7 @@ long VQ_Call_Back(unsigned char* /*unused*/, long /*unused*/) {
   return false;
 }
 
-long VQ_Event_Handler(unsigned long event, void* /*buffer*/, long /*nbytes*/) {
+int32_t VQ_Event_Handler(uint32_t event, void* /*buffer*/, int32_t /*nbytes*/) {
   // vsync while waiting for frame
   if (event == VQAEVENT_SYNC) {
     Video_End_Frame();

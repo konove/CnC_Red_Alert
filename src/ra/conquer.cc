@@ -1866,7 +1866,7 @@ bool Main_Loop() {
     // Leaked for the same reason as frames above.
     static auto& temp_page = *new GraphicBufferClass(
         SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
-        static_cast<long>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
+        static_cast<int32_t>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
 
     base::ssize size =
         static_cast<base::ssize>(SeenBuff.Get_Width()) * SeenBuff.Get_Height();
@@ -2523,7 +2523,7 @@ const TechnoTypeClass* Fetch_Techno_Type(const RTTIType type, const int id) {
   return nullptr;
 }
 
-long VQ_Call_Back(unsigned char* /*unused*/, long /*unused*/) {
+int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
   int key = 0;
   if (Keyboard->Check()) {
     key = Keyboard->Get();
@@ -2554,8 +2554,8 @@ long VQ_Call_Back(unsigned char* /*unused*/, long /*unused*/) {
   return false;
 }
 
-long VQ_Event_Handler(const unsigned long event, void* /*buffer*/,
-                      long /*n_bytes*/) {
+int32_t VQ_Event_Handler(const uint32_t event, void* /*buffer*/,
+                         int32_t /*n_bytes*/) {
   // vsync while waiting for frame
   if (event == VQAEVENT_SYNC) {
     Video_End_Frame();

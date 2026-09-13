@@ -38,6 +38,8 @@
 
 #include "td/rand.h"
 
+#include <cstdint>
+
 #include "td/jshell.h"
 #include "tech/random.h"
 
@@ -51,7 +53,7 @@ RandomClass gameplay_random;
 
 void SeedGameRandom(uint32_t seed) {
   gameplay_random.set_seed(seed);
-  RandNumb = static_cast<long>(seed);
+  RandNumb = static_cast<int32_t>(seed);
   SimRandIndex = 0;
 }
 int GameRandomRange(int low, int high) {
@@ -64,7 +66,7 @@ TdRandomState CaptureRandomState() {
 }
 void RestoreRandomState(const TdRandomState& state) {
   gameplay_random.set_seed(state.gameplay);
-  RandNumb = static_cast<long>(state.byte_stream);
+  RandNumb = static_cast<int32_t>(state.byte_stream);
   SimRandIndex = state.simulation_index;
 }
 

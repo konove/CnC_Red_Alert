@@ -1544,7 +1544,7 @@ int MapClass::Validate() {
       tclass = &TemplateTypeClass::As_Reference(ttype);
       ticon = (*this)[cell].TIcon;
       Mem_Copy(Get_Icon_Set_Map(tclass->Get_Image_Data()), map,
-               static_cast<unsigned long>(tclass->Width) * tclass->Height);
+               static_cast<size_t>(tclass->Width) * tclass->Height);
       if (ticon >= tclass->Width * tclass->Height || map[ticon] == 0xff) {
         return false;
       }

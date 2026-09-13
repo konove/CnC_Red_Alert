@@ -37,8 +37,10 @@
 #define CNC_RED_ALERT_SDLLIB_MEMFLAG_H_
 
 #include <cstddef>
+#include <cstdint>
 
 #include "absl/base/attributes.h"
+#include "base/types.h"
 
 // Memory Flags
 /*
@@ -68,12 +70,12 @@ void Force_VM_Page_In(void* buffer, int length);
 
 // void* operator new(size_t size, MemoryFlagType flag);
 // void* operator new[](size_t size, MemoryFlagType flag);
-char* Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags);
+char* Alloc(base::ssize bytes_to_alloc, MemoryFlagType flags);
 void Free(const void* pointer);
-void* Resize_Alloc(void* original_ptr, unsigned long new_size_in_bytes);
-long Ram_Free(MemoryFlagType flag);
-long Total_Ram_Free(MemoryFlagType flag);
-long Heap_Size(MemoryFlagType flag);
+void* Resize_Alloc(void* original_ptr, base::ssize new_size_in_bytes);
+int64_t Ram_Free(MemoryFlagType flag);
+int64_t Total_Ram_Free(MemoryFlagType flag);
+int64_t Heap_Size(MemoryFlagType flag);
 
 // inline void* operator new(size_t size, MemoryFlagType flag) {
 //   return Alloc(size, flag);
@@ -88,11 +90,11 @@ long Heap_Size(MemoryFlagType flag);
 /*=========================================================================*/
 
 extern "C" {
-void Mem_Copy(const void* source, void* dest, unsigned long bytes_to_copy);
+void Mem_Copy(const void* source, void* dest, size_t bytes_to_copy);
 }
 
 inline void* Add_Long_To_Pointer(const void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                                 long size) {
+                                 base::ssize size) {
   return (void*)(static_cast<const char*>(ptr) + size);
 }
 
