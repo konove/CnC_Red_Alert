@@ -49,6 +49,8 @@
 #include <cassert>
 #include <cstring>
 
+#include "base/numeric.h"
+
 /*
 **	Byte order controlled long integer. This integer is constructed
 **	so that character 0 (C0) is the most significant byte of the
@@ -239,7 +241,7 @@ int BlowfishEngine::Encrypt(const void* plaintext, int length,
     **	Copy over any trailing left over appendix bytes.
     */
     if (encrypted < length) {
-      memmove(cyphertext, plaintext, length - encrypted);
+      memmove(cyphertext, plaintext, base::ToSize(length - encrypted));
     }
 
     return encrypted;
@@ -249,7 +251,7 @@ int BlowfishEngine::Encrypt(const void* plaintext, int length,
   **	Non-keyed processing merely copies the data.
   */
   if (plaintext != cyphertext) {
-    memmove(cyphertext, plaintext, length);
+    memmove(cyphertext, plaintext, base::ToSize(length));
   }
   return length;
 }
@@ -307,7 +309,7 @@ int BlowfishEngine::Decrypt(const void* cyphertext, int length,
     **	Copy over any trailing left over appendix bytes.
     */
     if (encrypted < length) {
-      memmove(plaintext, cyphertext, length - encrypted);
+      memmove(plaintext, cyphertext, base::ToSize(length - encrypted));
     }
 
     return encrypted;
@@ -317,7 +319,7 @@ int BlowfishEngine::Decrypt(const void* cyphertext, int length,
   **	Non-keyed processing merely copies the data.
   */
   if (plaintext != cyphertext) {
-    memmove(plaintext, cyphertext, length);
+    memmove(plaintext, cyphertext, base::ToSize(length));
   }
   return length;
 }

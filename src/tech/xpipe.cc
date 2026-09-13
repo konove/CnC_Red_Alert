@@ -43,6 +43,8 @@
 
 #include <cstring>
 
+#include "base/numeric.h"
+
 //---------------------------------------------------------------------------------------------------------
 // BufferPipe
 //---------------------------------------------------------------------------------------------------------
@@ -76,7 +78,8 @@ int BufferPipe::Put(const void* source, int slen) {
     }
 
     if (len > 0) {
-      memmove(static_cast<char*>(BufferPtr.Get_Buffer()) + Index, source, len);
+      memmove(static_cast<char*>(BufferPtr.Get_Buffer()) + Index, source,
+              base::ToSize(len));
     }
 
     Index += len;

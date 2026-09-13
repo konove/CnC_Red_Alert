@@ -50,6 +50,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "base/numeric.h"
 /***********************************************************************************************
  * PKey::PKey -- Construct a key using encoded strings. *
  *                                                                                             *
@@ -250,7 +251,7 @@ void PKey::Generate(Straw& random, int bits, PKey& fastkey, PKey& slowkey) {
     **	Compare the pre and post processing buffer. A match indicates
     **	a valid key pair.
     */
-    if (memcmp(before, after, fastkey.Plain_Block_Size()) == 0) {
+    if (memcmp(before, after, base::ToSize(fastkey.Plain_Block_Size())) == 0) {
       break;
     }
   }
@@ -291,13 +292,13 @@ int PKey::Encrypt(const void* source, int slen, void* dest) const {
     **	Perform the encryption of the block.
     */
     BigInt temp = 0;
-    memmove(&temp, source, Plain_Block_Size());
+    memmove(&temp, source, base::ToSize(Plain_Block_Size()));
     temp = temp.exp_b_mod_c(Exponent, Modulus);
 
     /*
     **	Move the cypher block to the destination.
     */
-    memmove(dest, &temp, Crypt_Block_Size());
+    memmove(dest, &temp, base::ToSize(Crypt_Block_Size()));
     slen -= Plain_Block_Size();
     source = (char*)source + Plain_Block_Size();
     dest = static_cast<char*>(dest) + Crypt_Block_Size();
@@ -343,13 +344,13 @@ int PKey::Decrypt(const void* source, int slen, void* dest) const {
     **	Perform the encryption.
     */
     temp = 0;
-    memmove(&temp, source, Crypt_Block_Size());
+    memmove(&temp, source, base::ToSize(Crypt_Block_Size()));
     temp = temp.exp_b_mod_c(Exponent, Modulus);
 
     /*
     **	Move the cypher block to the destination.
     */
-    memmove(dest, &temp, Plain_Block_Size());
+    memmove(dest, &temp, base::ToSize(Plain_Block_Size()));
     slen -= Crypt_Block_Size();
     source = (char*)source + Crypt_Block_Size();
     dest = static_cast<char*>(dest) + Plain_Block_Size();

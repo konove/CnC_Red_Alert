@@ -56,16 +56,16 @@ class LZWEngine {
   struct CodeClass {
     CodeType CodeValue = UNUSED;
     CodeType ParentCode = 0;
-    char CharValue = 0;
+    unsigned char CharValue = 0;
 
     CodeClass() = default;
-    CodeClass(CodeType code, CodeType parent, char c)
+    CodeClass(CodeType code, CodeType parent, unsigned char c)
         : CodeValue(code), ParentCode(parent), CharValue(c) {}
 
     enum { UNUSED = -1 };
     void Make_Unused() { CodeValue = UNUSED; }
     [[nodiscard]] bool Is_Unused() const { return CodeValue == UNUSED; }
-    [[nodiscard]] bool Is_Matching(CodeType code, char c) const {
+    [[nodiscard]] bool Is_Matching(CodeType code, unsigned char c) const {
       return ParentCode == code && CharValue == c;
     }
   };
@@ -79,11 +79,11 @@ class LZWEngine {
   };
   CodeClass dict[TABLE_SIZE];
 
-  char decode_stack[TABLE_SIZE]{};
+  unsigned char decode_stack[TABLE_SIZE]{};
 
-  int Find_Child_Node(CodeType parent_code, char child_character);
-  int Decode_String(char* ptr, CodeType code);
-  static int Make_LZW_Hash(CodeType code, char character);
+  int Find_Child_Node(CodeType parent_code, unsigned char child_character);
+  int Decode_String(unsigned char* ptr, CodeType code);
+  static int Make_LZW_Hash(CodeType code, unsigned char character);
 };
 
 int LZW_Compress(const Buffer& inbuff, const Buffer& outbuff);

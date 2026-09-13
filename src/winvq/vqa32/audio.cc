@@ -67,6 +67,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include "base/numeric.h"
 #include "winvq/vqa32/vqaplay.h"
 #include "winvq/vqa32/vqaplayp.h"
 
@@ -83,17 +84,18 @@ extern unsigned long Get_Game_Time();
  *-------------------------------------------------------------------------*/
 
 static VQAHandle* VQAP = nullptr;
-static long AudioFlags = 0;
+static uint32_t AudioFlags = 0;  // VQAAUDF_* bits
 static long TimerIntCount = 0;
 static uint16_t VQATimer = 0;
-static long TimerMethod;
-static long VQATickCount = 0;
+static int TimerMethod;
+static int64_t VQATickCount = 0;
 
-static long TickOffset = 0;
+static int64_t TickOffset = 0;
 
 static bool VQAAudioPaused = false;
 static SDL_AudioStream* SDLStream = nullptr;
-static unsigned StreamConvScale = 1 << 15;
+// Input bytes per output byte of SDLStream, in 17.15 fixed point.
+static int64_t StreamConvScale = 1 << 15;
 
 static void VQA_Audio_Callback(uint8_t* stream, int len) {
   // called from SDL audio callback
@@ -109,7 +111,7 @@ static void VQA_Audio_Callback(uint8_t* stream, int len) {
 
   while (SDL_AudioStreamAvailable(SDLStream) < len) {
     SDL_AudioStreamPut(SDLStream, audio->Buffer + audio->PlayPosition,
-                       static_cast<int>(config->HMIBufSize));
+                       config->HMIBufSize);
 
     /* Compute the 'NextBlock' index */
     audio->NextBlock = audio->CurBlock + 1;
@@ -295,12 +297,12 @@ long VQA_OpenAudio(VQAHandle* vqap, void* /*window*/) {
       audio->SampleRate, spec->format, spec->channels, spec->freq);
 
   // calculate scaling factor
-  unsigned bytes_per_second_in =
+  const int bytes_per_second_in =
       audio->BitsPerSample / 8 * audio->Channels * audio->SampleRate;
-  unsigned bytes_per_second_out =
+  const int bytes_per_second_out =
       SDL_AUDIO_BITSIZE(spec->format) / 8 * spec->channels * spec->freq;
 
-  StreamConvScale = (bytes_per_second_in << 15) / bytes_per_second_out;
+  StreamConvScale = (int64_t{bytes_per_second_in} << 15) / bytes_per_second_out;
 
   // register our audio callback
   *config->AudioCallback = VQA_Audio_Callback;
@@ -490,11 +492,11 @@ void VQA_StopAudio(VQAHandle* vqap) {
 long CopyAudio(VQAHandle* vqap) {
   VQAAudio* audio;
   VQAConfig* config;
-  long startblock;
-  long endblock;
-  long len1;
-  long len2;
-  long i;
+  int32_t startblock;
+  int32_t endblock;
+  int32_t len1;
+  int32_t len2;
+  int32_t i;
 
   /* Dereference commonly used data members for quicker access. */
   audio = &vqap->data->Audio;
@@ -531,7 +533,8 @@ long CopyAudio(VQAHandle* vqap) {
    */
   if (startblock <= endblock) {
     /* Copy data */
-    memcpy(audio->Buffer + audio->AudBufPos, audio->TempBuf, audio->TempBufLen);
+    memcpy(audio->Buffer + audio->AudBufPos, audio->TempBuf,
+           base::ToSize(audio->TempBufLen));
 
     /* Adjust current load position */
     audio->AudBufPos += audio->TempBufLen;
@@ -552,10 +555,10 @@ long CopyAudio(VQAHandle* vqap) {
   len2 = audio->TempBufLen - len1;
 
   /* Copy 1st piece into end of Audio Buffer */
-  memcpy(audio->Buffer + audio->AudBufPos, audio->TempBuf, len1);
+  memcpy(audio->Buffer + audio->AudBufPos, audio->TempBuf, base::ToSize(len1));
 
   /* Copy 2nd piece into start of Audio Buffer */
-  memcpy(audio->Buffer, audio->TempBuf + len1, len2);
+  memcpy(audio->Buffer, audio->TempBuf + len1, base::ToSize(len2));
 
   /* Adjust load position */
   audio->AudBufPos = len2;
@@ -599,7 +602,7 @@ void VQA_ResumeAudio() {
  * SYNOPSIS
  *     VQA_SetTimer(Time, Method)
  *
- *     void VQA_SetTimer(long, long);
+ *     void VQA_SetTimer(int64_t, int);
  *
  * FUNCTION
  *     Sets 'TickOffset' to a value that will make the current time look like
@@ -620,8 +623,8 @@ void VQA_ResumeAudio() {
  *
  ****************************************************************************/
 
-void VQA_SetTimer(VQAHandle* vqap, long time, long method) {
-  unsigned long curtime;
+void VQA_SetTimer(VQAHandle* vqap, int64_t time, int method) {
+  int64_t curtime;
 
   /* If the client does not have a preferencee then pick a method
    * based on the state of the player.
@@ -655,7 +658,7 @@ void VQA_SetTimer(VQAHandle* vqap, long time, long method) {
 
   TimerMethod = method;
 
-  TickOffset = 0L;
+  TickOffset = 0;
   curtime = VQA_GetTime(vqap);
   TickOffset = time - curtime;
 }
@@ -668,7 +671,7 @@ void VQA_SetTimer(VQAHandle* vqap, long time, long method) {
  * SYNOPSIS
  *     Time = VQA_GetTime()
  *
- *     unsigned long VQA_GetTime();
+ *     int64_t VQA_GetTime();
  *
  * FUNCTION
  *     This routine returns timer ticks computed one of 3 ways:
@@ -719,12 +722,10 @@ void VQA_SetTimer(VQAHandle* vqap, long time, long method) {
 int64_t VQA_GetTime(VQAHandle* vqap) {
   VQAAudio* audio;
   VQAConfig* config;
-  unsigned long totalbytes;
-  unsigned long samples;
-  uint32_t play_cursor;  // Position that direct sound is reading from
-
-  // MEG 09.25.95 - changed from long to unsigned long
-  unsigned long ticks;
+  int64_t totalbytes;
+  int64_t samples;
+  int play_cursor;  // Bytes queued in SDLStream but not yet played
+  int64_t ticks;
 
   switch (TimerMethod) {
     /* If Audio is playing then timing is based on the audio DMA buffer
@@ -737,7 +738,8 @@ int64_t VQA_GetTime(VQAHandle* vqap) {
       config = &vqap->config;
 
       SDL_LockAudioDevice(vqap->config.AudioDeviceID);
-      totalbytes = audio->ChunksMovedToAudioBuffer * config->HMIBufSize;
+      totalbytes =
+          int64_t{audio->ChunksMovedToAudioBuffer} * config->HMIBufSize;
 
       // offset by any bytes still in the stream
       // there will still be samples in the "hardware" queue, but this is the
@@ -753,7 +755,7 @@ int64_t VQA_GetTime(VQAHandle* vqap) {
        * processed times the tick resolution per second divided by the
        * sample rate.
        */
-      ticks = static_cast<long>(samples * VQA_TIMETICKS / audio->SampleRate);
+      ticks = samples * VQA_TIMETICKS / audio->SampleRate;
       ticks += TickOffset;
       break;
 
@@ -770,8 +772,7 @@ int64_t VQA_GetTime(VQAHandle* vqap) {
                     now.time_since_epoch())
                     .count();
 
-      ticks = static_cast<unsigned long>(ms);
-      ticks = ticks * VQA_TIMETICKS / 1000L;
+      ticks = ms * VQA_TIMETICKS / 1000;
       ticks += TickOffset;
     } break;
   }

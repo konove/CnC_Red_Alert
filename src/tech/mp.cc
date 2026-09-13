@@ -96,6 +96,8 @@
 #include <iterator>
 #include <utility>
 
+#include "base/numeric.h"
+
 /***********************************************************************************************
  * _Byte_Precision -- Determines the number of bytes significant in long
  *integer.              *
@@ -193,11 +195,12 @@ int XMP_DER_Encode(const uint32_t* from, unsigned char* output, int precision) {
   unsigned char buffer[(MAX_UNIT_PRECISION * sizeof(uint32_t)) + 1];
   int header_count = 0;
 
-  unsigned number_count = XMP_Encode(buffer, from, precision);
+  const int number_count = XMP_Encode(buffer, from, precision);
 
   output[header_count++] = 0x02;
-  header_count += XMP_DER_Length_Encode(number_count, &output[header_count]);
-  memcpy(&output[header_count], buffer, number_count);
+  header_count +=
+      XMP_DER_Length_Encode(base::ToSize(number_count), &output[header_count]);
+  memcpy(&output[header_count], buffer, base::ToSize(number_count));
 
   return header_count + number_count;
 }
@@ -229,7 +232,7 @@ void XMP_DER_Decode(uint32_t* result, const unsigned char* input,
   assert(precision > 0);
 
   if (*input++ == 0x02) {
-    unsigned byte_count;
+    int byte_count;
 
     if ((*input & 0x80) == 0) {
       byte_count = *input++;
@@ -243,7 +246,7 @@ void XMP_DER_Decode(uint32_t* result, const unsigned char* input,
         byte_count = byte_count << 8 | *input++;
       }
     }
-    if (byte_count <= precision * sizeof(uint32_t)) {
+    if (byte_count <= precision * static_cast<int>(sizeof(uint32_t))) {
       XMP_Signed_Decode(result, input, byte_count, precision);
     }
   }
@@ -278,7 +281,8 @@ unsigned XMP_Encode(unsigned char* to, unsigned tobytes, const uint32_t* from,
   assert(tobytes > 0);
   assert(precision > 0);
 
-  unsigned frombytes = precision * sizeof(uint32_t);
+  const unsigned frombytes =
+      static_cast<unsigned>(precision) * unsigned{sizeof(uint32_t)};
   auto filler =
       static_cast<unsigned char>(XMP_Is_Negative(from, precision) ? 0xff : 0);
 
@@ -316,7 +320,7 @@ unsigned XMP_Encode(unsigned char* to, unsigned tobytes, const uint32_t* from,
  *                                                                                             *
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
-unsigned XMP_Encode(unsigned char* to, const uint32_t* from, int precision) {
+int XMP_Encode(unsigned char* to, const uint32_t* from, int precision) {
   assert(to != nullptr);
   assert(from != nullptr);
   assert(precision > 0);
@@ -333,7 +337,7 @@ unsigned XMP_Encode(unsigned char* to, const uint32_t* from, int precision) {
     }
   }
 
-  unsigned index = 0;
+  int index = 0;
   if ((*number_ptr & 0x80 && !is_negative) ||
       (!(*number_ptr & 0x80) && is_negative)) {
     to[index++] = filler;
@@ -379,7 +383,7 @@ void XMP_Signed_Decode(uint32_t* result, const unsigned char* from,
 
   auto filler = static_cast<unsigned char>(*from & 0x80 ? 0xff : 0);
 
-  int fillcount = static_cast<int>((precision * sizeof(uint32_t)) - frombytes);
+  int fillcount = (precision * static_cast<int>(sizeof(uint32_t))) - frombytes;
   auto* dest = (unsigned char*)&result[precision];
 
   /*
@@ -427,7 +431,7 @@ void XMP_Unsigned_Decode(uint32_t* result, const unsigned char* from,
   assert(frombytes > 0);
   assert(precision > 0);
 
-  int fillcount = static_cast<int>((precision * sizeof(uint32_t)) - frombytes);
+  int fillcount = (precision * static_cast<int>(sizeof(uint32_t))) - frombytes;
   auto* dest = (unsigned char*)&result[precision];
 
   /*
@@ -842,7 +846,7 @@ void XMP_Init(uint32_t* number, uint32_t value, int precision) {
   assert(number != nullptr);
   assert(precision > 0);
 
-  memset(number, '\0', precision * sizeof(uint32_t));
+  memset(number, '\0', base::ToSize(precision) * sizeof(uint32_t));
   *number = value;
 }
 
@@ -863,7 +867,7 @@ void XMP_Init(uint32_t* number, uint32_t value, int precision) {
  *                                                                                             *
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
-unsigned XMP_Count_Bits(const uint32_t* number, int precision) {
+int XMP_Count_Bits(const uint32_t* number, int precision) {
   assert(number != nullptr);
   assert(precision > 0);
 
@@ -904,7 +908,8 @@ unsigned XMP_Count_Bits(const uint32_t* number, int precision) {
 int XMP_Count_Bytes(const uint32_t* number, int precision) {
   auto* ptr = (unsigned char*)number;
   int count = 0;
-  for (unsigned index = 0; index < precision * sizeof(uint32_t); index++) {
+  for (int index = 0; index < precision * static_cast<int>(sizeof(uint32_t));
+       index++) {
     if (!*ptr) {
       break;
     }
@@ -932,7 +937,7 @@ int XMP_Count_Bytes(const uint32_t* number, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 void XMP_Move(uint32_t* dest, const uint32_t* source, int precision) {
-  memcpy(dest, source, precision * sizeof(uint32_t));
+  memcpy(dest, source, base::ToSize(precision) * sizeof(uint32_t));
 }
 
 /***********************************************************************************************
@@ -1223,7 +1228,7 @@ int XMP_Unsigned_Mult(uint32_t* prod, const uint32_t* multiplicand,
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
 int XMP_Unsigned_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
-                          short multiplier, int precision) {
+                          uint16_t multiplier, int precision) {
   const auto* m2 = (const unsigned short*)multiplicand;
   auto* pr = (unsigned short*)prod;
   unsigned long carry = 0;
@@ -1271,19 +1276,23 @@ int XMP_Signed_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
     if (multiplier < 0) {
       multiplier = static_cast<signed short>(-multiplier);
 
-      XMP_Unsigned_Mult_Int(prod, abs_multiplicand, multiplier, precision);
+      XMP_Unsigned_Mult_Int(prod, abs_multiplicand,
+                            static_cast<uint16_t>(multiplier), precision);
     } else {
-      XMP_Unsigned_Mult_Int(prod, abs_multiplicand, multiplier, precision);
+      XMP_Unsigned_Mult_Int(prod, abs_multiplicand,
+                            static_cast<uint16_t>(multiplier), precision);
       XMP_Neg(prod, precision);
     }
   } else {
     if (multiplier < 0) {
       multiplier = static_cast<signed short>(-multiplier);
 
-      XMP_Unsigned_Mult_Int(prod, multiplicand, multiplier, precision);
+      XMP_Unsigned_Mult_Int(prod, multiplicand,
+                            static_cast<uint16_t>(multiplier), precision);
       XMP_Neg(prod, precision);
     } else {
-      XMP_Unsigned_Mult_Int(prod, multiplicand, multiplier, precision);
+      XMP_Unsigned_Mult_Int(prod, multiplicand,
+                            static_cast<uint16_t>(multiplier), precision);
     }
   }
   return 0;
@@ -1615,7 +1624,7 @@ int XMP_Reciprocal(uint32_t* quotient, const uint32_t* divisor, int precision) {
   XMP_Init(quotient, 0, precision);
 
   /* normalize and compute number of bits in quotient first */
-  unsigned total_bit_count = XMP_Count_Bits(divisor, precision);
+  int total_bit_count = XMP_Count_Bits(divisor, precision);
   uint32_t high_bit_mask = XMP_Bits_To_Mask(
       total_bit_count + 1); /* bitmask within a single uint32_t */
   int sub_precision = XMP_Bits_To_Digits(total_bit_count + 1);
@@ -1993,10 +2002,12 @@ int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
         if (!(*dmph & SEMI_UPPER_MOST_BIT)) {
           unsigned short* dmp = dmpl;
           uint32_t aligned_digits[MAX_UNIT_PRECISION];
-          std::memcpy(aligned_digits, dmp, precision * sizeof(uint32_t));
+          std::memcpy(aligned_digits, dmp,
+                      base::ToSize(precision) * sizeof(uint32_t));
           const bool borrow = XMP_Sub(aligned_digits, aligned_digits,
                                       scratch_modulus, false, precision);
-          std::memcpy(dmp, aligned_digits, precision * sizeof(uint32_t));
+          std::memcpy(dmp, aligned_digits,
+                      base::ToSize(precision) * sizeof(uint32_t));
           if (borrow) {
             (*dmph)--;
           }
@@ -2355,8 +2366,8 @@ bool XMP_Rabin_Miller_Test(Straw& rng, const uint32_t* w, int rounds,
   uint32_t wminus1[MAX_UNIT_PRECISION] = {};
   XMP_Sub_Int(wminus1, w, 1, false, precision);
 
-  unsigned maxbitprecision = precision * sizeof(uint32_t) * 8;
-  unsigned a;
+  int maxbitprecision = precision * static_cast<int>(sizeof(uint32_t)) * 8;
+  int a;
   for (a = 0; a < maxbitprecision; a++) {
     if (XMP_Test_Bit(wminus1, a)) {
       break;
@@ -2381,7 +2392,7 @@ bool XMP_Rabin_Miller_Test(Straw& rng, const uint32_t* w, int rounds,
       continue;  // passes this round
     }
 
-    unsigned j;
+    int j;
     for (j = 1; j < a; j++) {
       uint32_t t2[MAX_UNIT_PRECISION];
       xmp_exponent_mod(t2, z, temp, w, precision);
@@ -2430,7 +2441,7 @@ void XMP_Randomize(uint32_t* result, Straw& rng, int total_bits,
 
   total_bits = std::min(total_bits, precision * 32);
 
-  unsigned nbytes = (total_bits / 8) + 1;
+  int nbytes = (total_bits / 8) + 1;
 
   XMP_Init(result, 0, precision);
   rng.Get(result, nbytes);
@@ -2466,7 +2477,7 @@ void XMP_Randomize(uint32_t* result, Straw& rng, const uint32_t* minval,
                    const uint32_t* maxval, int precision) {
   uint32_t range[MAX_UNIT_PRECISION];
   XMP_Sub(range, maxval, minval, false, precision);
-  unsigned int bit_count = XMP_Count_Bits(range, precision);
+  int bit_count = XMP_Count_Bits(range, precision);
   do {
     XMP_Randomize(result, rng, bit_count, precision);
   } while (XMP_Compare(result, range, precision) > 0);

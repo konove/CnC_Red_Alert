@@ -46,6 +46,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/numeric.h"
 #include "tech/lcw.h"
 
 /***********************************************************************************************
@@ -68,8 +69,8 @@ LCWPipe::LCWPipe(CompControl control, int blocksize)
     : Control(control),
       BlockSize(blocksize),
       SafetyMargin((BlockSize / 128) + 1) {
-  Buffer = new char[BlockSize + SafetyMargin];
-  Buffer2 = new char[BlockSize + SafetyMargin];
+  Buffer = new char[base::ToSize(BlockSize + SafetyMargin)];
+  Buffer2 = new char[base::ToSize(BlockSize + SafetyMargin)];
 }
 
 /***********************************************************************************************
@@ -133,10 +134,9 @@ int LCWPipe::Put(const void* source, int slen) {
       *the regular *	data processing begin for the block.
       */
       if (BlockHeader.CompCount == 0xFFFF) {
-        const int needed =
-            static_cast<int>(sizeof(BlockHeader)) - Counter;
+        const int needed = static_cast<int>(sizeof(BlockHeader)) - Counter;
         int len = slen < needed ? slen : needed;
-        memmove(&Buffer[Counter], source, len);
+        memmove(&Buffer[Counter], source, base::ToSize(len));
         source = (char*)source + len;
         slen -= len;
         Counter += len;
@@ -160,7 +160,7 @@ int LCWPipe::Put(const void* source, int slen) {
                       ? slen
                       : BlockHeader.CompCount - Counter;
 
-        memmove(&Buffer[Counter], source, len);
+        memmove(&Buffer[Counter], source, base::ToSize(len));
         slen -= len;
         source = (char*)source + len;
         Counter += len;
@@ -185,7 +185,7 @@ int LCWPipe::Put(const void* source, int slen) {
     */
     if (Counter > 0) {
       int tocopy = slen < BlockSize - Counter ? slen : BlockSize - Counter;
-      memmove(&Buffer[Counter], source, tocopy);
+      memmove(&Buffer[Counter], source, base::ToSize(tocopy));
       source = (char*)source + tocopy;
       slen -= tocopy;
       Counter += tocopy;
@@ -222,7 +222,7 @@ int LCWPipe::Put(const void* source, int slen) {
     **	until a full data block has been accumulated.
     */
     if (slen > 0) {
-      memmove(Buffer, source, slen);
+      memmove(Buffer, source, base::ToSize(slen));
       Counter = slen;
     }
   }

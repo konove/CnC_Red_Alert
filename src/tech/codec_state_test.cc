@@ -1,7 +1,9 @@
 // Regression coverage for initialized codec buffers and block headers.
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <iterator>
 #include <utility>
 #include <vector>
 
@@ -47,8 +49,8 @@ template <class CodecPipe, class CodecStraw>
 void CheckBlocks() {
   // Multiple full blocks and a one-byte tail exercise both header states.
   std::array<uint8_t, 513> source{};
-  for (int i = 0; std::cmp_less(i, source.size()); ++i) {
-    source[i] = i % 7;
+  for (int i = 0; auto& byte : source) {
+    byte = static_cast<uint8_t>(i++ % 7);
   }
   ByteSink encoded;
   CodecPipe compressor(CodecPipe::COMPRESS, 128);
@@ -119,8 +121,10 @@ TEST(CodecStateTest, Base64HandlesShortFinalGroups) {
     Base64Straw decoder(Base64Straw::DECODE);
     decoder.SetSource(encoded);
     const auto decoded = Drain(decoder);
-    ASSERT_EQ(decoded.size(), length);
-    EXPECT_EQ(std::memcmp(decoded.data(), input, length), 0);
+    ASSERT_EQ(std::ssize(decoded), length);
+    EXPECT_EQ(
+        std::memcmp(decoded.data(), input, static_cast<std::size_t>(length)),
+        0);
   }
 }
 
@@ -150,8 +154,9 @@ TEST(CodecStateTest, LcwLongRunsRespectTheirLengthAtEveryAlignment) {
           0xfe, static_cast<uint8_t>(length), 0, 0x6b, 0x80};
       EXPECT_EQ(LCW_Uncomp(encoded.data(), output.data() + offset, length),
                 length);
-      for (int i = 0; std::cmp_less(i, output.size()); ++i) {
-        EXPECT_EQ(output[i], i >= offset && i < offset + length ? 0x6b : 0xa5);
+      for (int i = 0; const uint8_t byte : output) {
+        EXPECT_EQ(byte, i >= offset && i < offset + length ? 0x6b : 0xa5);
+        ++i;
       }
     }
   }

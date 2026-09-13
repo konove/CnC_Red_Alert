@@ -73,8 +73,8 @@ class LZOPipe : public Pipe {
   /*
   **	Pointer to the working buffer that compression/decompression will use.
   */
-  char* Buffer = nullptr;
-  char* Buffer2 = nullptr;
+  unsigned char* Buffer = nullptr;
+  unsigned char* Buffer2 = nullptr;
 
   /*
   **	The working block size. Data will be compressed in chunks of this size.

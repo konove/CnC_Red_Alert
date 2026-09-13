@@ -35,6 +35,7 @@
 #define CNC_RED_ALERT_TECH_MIXFILE_H_
 
 #include <algorithm>
+#include <bit>
 #include <cassert>
 #include <cerrno>
 #include <cstddef>
@@ -216,7 +217,7 @@ bool MixFileClass<T>::Open(std::string_view filename, const PKey* key) {
   data_size_ = file_header.size;
 
   // Resize index and read entries
-  file_index_.resize(file_header.count);
+  file_index_.resize(static_cast<std::size_t>(file_header.count));
   straw->Get(file_index_.data(),
                static_cast<int>(file_index_.size() * sizeof(FileEntry)));
 
@@ -256,7 +257,7 @@ bool MixFileClass<T>::Cache() {
   }
 
   try {
-    data_.resize(data_size_);
+    data_.resize(static_cast<std::size_t>(data_size_));
   } catch (const std::bad_alloc&) {
     return false;
   }
@@ -321,7 +322,9 @@ std::optional<typename MixFileClass<T>::FileLocation> MixFileClass<T>::Offset(
   }
 
   // CRC calculation uses upper case for case-insensitivity consistency.
-  const std::int32_t crc = CrcEngine::Compute(absl::AsciiStrToUpper(filename));
+  // FileEntry keeps the CRC as the signed value the index is sorted by.
+  const auto crc = std::bit_cast<std::int32_t>(
+      CrcEngine::Compute(absl::AsciiStrToUpper(filename)));
 
   // Iterate through mixfiles (Most Recently Added / Tail priority is typical
   // for override mods)

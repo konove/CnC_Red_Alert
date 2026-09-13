@@ -42,6 +42,7 @@
 
 #include <cstring>
 
+#include "base/numeric.h"
 #include "tech/base64.h"
 
 /***********************************************************************************************
@@ -89,7 +90,7 @@ int Base64Pipe::Put(const void* source, int slen) {
 
   if (Counter > 0) {
     int len = slen < fromsize - Counter ? slen : fromsize - Counter;
-    memmove(&from[Counter], source, len);
+    memmove(&from[Counter], source, base::ToSize(len));
     Counter += len;
     slen -= len;
     source = (char*)source + len;
@@ -119,7 +120,7 @@ int Base64Pipe::Put(const void* source, int slen) {
   }
 
   if (slen > 0) {
-    memmove(from, source, slen);
+    memmove(from, source, base::ToSize(slen));
     Counter = slen;
   }
 

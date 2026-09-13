@@ -148,8 +148,9 @@ int Confine_Rect(int* x, int* y, int dw, int dh, int width, int height) {
 }
 
 // these are used by TD
-static int Get_Random_Mask(unsigned int maxval) {
+static int Get_Random_Mask(int maxval) {
   // original asm did something using bsr but I can't be bothered
+  DCHECK(maxval >= 0);
   maxval |= maxval >> 1;
   maxval |= maxval >> 2;
   maxval |= maxval >> 4;

@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_TECH_PK_H_
 #define CNC_RED_ALERT_TECH_PK_H_
 
+#include <cstdint>
+
 #include "tech/int.h"
 #include "tech/straw.h"
 
@@ -81,7 +83,7 @@ class PKey {
   void Decode_Modulus(void* buffer);
   void Decode_Exponent(void* buffer);
 
-  static long Fast_Exponent() { return 65537L; }
+  static uint32_t Fast_Exponent() { return 65537; }
 
  private:
   // p*q

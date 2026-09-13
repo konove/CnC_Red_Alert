@@ -43,6 +43,7 @@
 #include <cassert>
 #include <cstring>
 
+#include "base/numeric.h"
 /***********************************************************************************************
  * BlowStraw::Get -- Fetch a block of data from the straw. *
  *                                                                                             *
@@ -88,7 +89,8 @@ int BlowStraw::Get(void* source, int slen) {
     */
     if (Counter > 0) {
       int sublen = slen < Counter ? slen : Counter;
-      memmove(source, &Buffer[sizeof(Buffer) - Counter], sublen);
+      memmove(source, &Buffer[static_cast<int>(sizeof(Buffer)) - Counter],
+              base::ToSize(sublen));
       Counter -= sublen;
       source = static_cast<char*>(source) + sublen;
       slen -= sublen;
@@ -117,7 +119,8 @@ int BlowStraw::Get(void* source, int slen) {
         BF->Encrypt(Buffer, incount, Buffer);
       }
     } else {
-      memmove(&Buffer[sizeof(Buffer) - incount], Buffer, incount);
+      memmove(&Buffer[static_cast<int>(sizeof(Buffer)) - incount], Buffer,
+              base::ToSize(incount));
     }
     Counter = incount;
   }

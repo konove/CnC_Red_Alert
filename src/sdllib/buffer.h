@@ -21,6 +21,8 @@
 
 #include <cstdint>
 
+#include "base/numeric.h"
+
 class GraphicViewPortClass;
 
 // BufferClass - A base class which holds buffer information including a pointer
@@ -30,7 +32,7 @@ class BufferClass {
   // Define the base constructor and destructors for the class
   BufferClass() : Buffer(nullptr), Size(0), Allocated(false) {}
   explicit BufferClass(long size)
-      : Buffer(new uint8_t[size]), Size(size), Allocated(true) {}
+      : Buffer(new uint8_t[base::ToSize(size)]), Size(size), Allocated(true) {}
   ~BufferClass() {
     if (Allocated) {
       delete[] static_cast<uint8_t*>(Buffer);

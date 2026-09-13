@@ -46,6 +46,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/numeric.h"
 #include "tech/buff.h"
 #include "tech/lzw.h"
 
@@ -68,8 +69,8 @@
 LZWPipe::LZWPipe(CompControl control, int blocksize)
     : Control(control), BlockSize(blocksize), SafetyMargin(BlockSize) {
   //	SafetyMargin = BlockSize/128+1;
-  source_buffer_ = new char[BlockSize + SafetyMargin];
-  output_buffer_ = new char[BlockSize + SafetyMargin];
+  source_buffer_ = new char[base::ToSize(BlockSize + SafetyMargin)];
+  output_buffer_ = new char[base::ToSize(BlockSize + SafetyMargin)];
 }
 
 /***********************************************************************************************
@@ -136,7 +137,7 @@ int LZWPipe::Put(const void* source, int slen) {
         const int needed =
             static_cast<int>(sizeof(BlockHeader)) - Counter;
         int len = slen < needed ? slen : needed;
-        memmove(&source_buffer_[Counter], source, len);
+        memmove(&source_buffer_[Counter], source, base::ToSize(len));
         source = (char*)source + len;
         slen -= len;
         Counter += len;
@@ -160,7 +161,7 @@ int LZWPipe::Put(const void* source, int slen) {
                       ? slen
                       : BlockHeader.CompCount - Counter;
 
-        memmove(&source_buffer_[Counter], source, len);
+        memmove(&source_buffer_[Counter], source, base::ToSize(len));
         slen -= len;
         source = (char*)source + len;
         Counter += len;
@@ -185,7 +186,7 @@ int LZWPipe::Put(const void* source, int slen) {
     */
     if (Counter > 0) {
       int tocopy = slen < BlockSize - Counter ? slen : BlockSize - Counter;
-      memmove(&source_buffer_[Counter], source, tocopy);
+      memmove(&source_buffer_[Counter], source, base::ToSize(tocopy));
       source = (char*)source + tocopy;
       slen -= tocopy;
       Counter += tocopy;
@@ -224,7 +225,7 @@ int LZWPipe::Put(const void* source, int slen) {
     **	until a full data block has been accumulated.
     */
     if (slen > 0) {
-      memmove(source_buffer_, source, slen);
+      memmove(source_buffer_, source, base::ToSize(slen));
       Counter = slen;
     }
   }

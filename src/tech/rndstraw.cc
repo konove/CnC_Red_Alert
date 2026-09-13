@@ -48,11 +48,15 @@
 
 #include "tech/rndstraw.h"
 
+#include <algorithm>
 #include <climits>
 #include <cstddef>
 #include <cstring>
+#include <iterator>
+#include <span>
 #include <utility>
 
+#include "base/numeric.h"
 #include "tech/sha.h"
 
 namespace {
@@ -142,11 +146,14 @@ int RandomStraw::Seed_Bits_Needed() const {
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
 void RandomStraw::Seed_Bit(int seed) {
-  char* ptr = (char*)&Random[0] + (SeedBits / CHAR_BIT % sizeof(Random));
-  char frac = static_cast<char>(1 << (SeedBits & CHAR_BIT - 1));
+  const std::span<std::byte> seed_bytes =
+      std::as_writable_bytes(std::span(Random));
+  std::byte& target = seed_bytes[base::ToSize(
+      SeedBits / CHAR_BIT % static_cast<int>(sizeof(Random)))];
+  const std::byte frac = std::byte{1} << (SeedBits & (CHAR_BIT - 1));
 
   if (seed & 0x01) {
-    *ptr = static_cast<char>(*ptr ^ frac);
+    target ^= frac;
   }
   SeedBits++;
 
@@ -239,6 +246,8 @@ void RandomStraw::Scramble_Seed() {
   // The seed is scrambled a byte at a time, so the bound is the size of the
   // whole array in bytes, not its element count.
   constexpr int kSeedBytes = sizeof(Random);
+  const std::span<std::byte> seed_bytes =
+      std::as_writable_bytes(std::span(Random));
 
   for (int index = 0; index < kSeedBytes; index++) {
     char digest[20];
@@ -246,10 +255,9 @@ void RandomStraw::Scramble_Seed() {
     sha.Hash(&Random[0], sizeof(Random));
     sha.Result(digest);
 
-    int tocopy = sizeof(digest) < sizeof(Random) - index
-                     ? sizeof(digest)
-                     : static_cast<int>(sizeof(Random) - index);
-    memmove((char*)&Random[0] + index, digest, tocopy);
+    const int tocopy =
+        std::min(static_cast<int>(sizeof(digest)), kSeedBytes - index);
+    memmove(seed_bytes.data() + index, digest, base::ToSize(tocopy));
   }
 }
 
@@ -280,7 +288,7 @@ int RandomStraw::Get(void* source, int slen) {
   int total = 0;
   while (slen > 0) {
     *static_cast<char*>(source) = static_cast<char>(Random[Current++].Next());
-    Current = static_cast<int>(Current % (sizeof(Random) / sizeof(Random[0])));
+    Current %= static_cast<int>(std::size(Random));
     source = static_cast<char*>(source) + sizeof(char);
     slen--;
     total++;

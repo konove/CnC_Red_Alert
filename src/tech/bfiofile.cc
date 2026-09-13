@@ -59,6 +59,7 @@
 #include <cerrno>
 #include <cstring>
 
+#include "base/numeric.h"
 /***********************************************************************************************
  * BufferIOFileClass::BufferIOFileClass -- Filename based constructor for a file
  *object.       *
@@ -213,7 +214,7 @@ bool BufferIOFileClass::Cache(long size, void* ptr) {
   if (ptr) {
     Buffer = ptr;
   } else {
-    Buffer = new char[BufferSize];
+    Buffer = new char[base::ToSize(BufferSize)];
   }
 
   if (Buffer) {
@@ -610,7 +611,8 @@ long BufferIOFileClass::Write(const void* buffer, long size) {
         }
 
         memmove(static_cast<char*>(Buffer) + BufferPos,
-                (char*)buffer + sizewritten, sizetowrite);
+                static_cast<const char*>(buffer) + sizewritten,
+                base::ToSize(sizetowrite));
 
         IsChanged = true;
         sizewritten += sizetowrite;
@@ -740,7 +742,8 @@ long BufferIOFileClass::Read(void* buffer, long size) {
         }
 
         memmove(static_cast<char*>(buffer) + sizeread,
-                static_cast<char*>(Buffer) + BufferPos, sizetoread);
+                static_cast<char*>(Buffer) + BufferPos,
+                base::ToSize(sizetoread));
 
         sizeread += sizetoread;
         size -= sizetoread;

@@ -7,6 +7,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/shape.h"
@@ -248,7 +249,7 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
     offset <<= 1;
 
     if (offset < 0) {
-      offset = (-offset & PRED_MASK) | 0xFFFFFF00;  // will be ffffff00-ffffff0E
+      offset = (-offset & PRED_MASK) | ~0xFF;  // will be ffffff00-ffffff0E
     } else {
       offset &= PRED_MASK;
     }
@@ -334,7 +335,7 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
       {
         // copy lines
         do {
-          memcpy(dst_offset, src_offset, pixel_count);
+          memcpy(dst_offset, src_offset, base::ToSize(pixel_count));
           src_offset += w;
           dst_offset += dst_area;
         } while (--line_count);

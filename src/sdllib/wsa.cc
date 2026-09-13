@@ -7,6 +7,8 @@
 #include <cstring>
 #include <utility>
 
+#include "base/numeric.h"
+#include "base/types.h"
 #include "port/aligned_buffer.h"
 #include "port/unaligned.h"
 #include "sdllib/file.h"
@@ -47,7 +49,7 @@ typedef struct {
   char file_name[13];
   short flags;
   // New fields that animate does not know about below this point. SEE
-  // EXTRA_charS_ANIMATE_NOT_KNOW_ABOUT
+  // kExtraBytesAnimateDoesNotKnowAbout
   short file_handle;
   uint32_t anim_mem_size;
 } SysAnimHeaderType;
@@ -56,7 +58,8 @@ typedef struct {
 // ANIMATE.EXE UTILITY DID NOT KNOW I UPDATED IT, IT ADDS IT TO
 // largest_frame_size BEFORE SAVING IT TO THE FILE.  THIS MEANS I HAVE TO ADD
 // THESE charS ON NOW FOR IT TO WORK.
-#define EXTRA_charS_ANIMATE_NOT_KNOW_ABOUT (sizeof(SysAnimHeaderType) - 37)
+constexpr int kExtraBytesAnimateDoesNotKnowAbout =
+    int{sizeof(SysAnimHeaderType) - 37};
 
 //
 // Header structure for the file.
@@ -80,12 +83,12 @@ typedef struct {
 
 #pragma pack(pop)
 
-#define WSA_FILE_HEADER_SIZE \
-  (sizeof(WSA_FileHeaderType) - (2 * sizeof(uint32_t)))
+constexpr int kWsaFileHeaderSize{sizeof(WSA_FileHeaderType) -
+                                 (2 * sizeof(uint32_t))};
 
-static unsigned long Get_Resident_Frame_Offset(char* file_buffer, int frame);
-static unsigned long Get_File_Frame_Offset(int file_handle, int frame,
-                                           int palette_adjust);
+static int64_t Get_Resident_Frame_Offset(char* file_buffer, int frame);
+static int64_t Get_File_Frame_Offset(int file_handle, int frame,
+                                     int palette_adjust);
 static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
                         char* dest_ptr, int dest_w);
 
@@ -95,13 +98,13 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   int fh;
   int anim_flags;
   int palette_adjust;
-  unsigned int offsets_size;
-  unsigned int frame0_size;
-  long target_buffer_size;
-  long delta_buffer_size;
-  long file_buffer_size;
-  long max_buffer_size;
-  long min_buffer_size;
+  int offsets_size;
+  int frame0_size;
+  base::ssize target_buffer_size;
+  base::ssize delta_buffer_size;
+  base::ssize file_buffer_size;
+  base::ssize max_buffer_size;
+  base::ssize min_buffer_size;
   char* sys_anim_header_buffer;
   char* target_buffer;
   char* delta_buffer;
@@ -147,7 +150,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
 
   // Get the total file size minus the size of the first frame and the size
   // of the file header.  These will not be read in to save even more space.
-  file_buffer_size = Seek_File(fh, 0L, SEEK_END);
+  file_buffer_size = base::ToSigned(Seek_File(fh, 0L, SEEK_END));
 
   if (file_header.frame0_offset) {
     long tlong;
@@ -159,7 +162,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
     frame0_size = 0;
   }
 
-  file_buffer_size -= palette_adjust + frame0_size + WSA_FILE_HEADER_SIZE;
+  file_buffer_size -= palette_adjust + frame0_size + kWsaFileHeaderSize;
 
   // We need to determine the buffer sizes required for the animation.  At a
   // minimum, we need a target buffer for the uncompressed frame and a delta
@@ -175,17 +178,16 @@ void* Open_Animation(const char* file_name, char* user_buffer,
     target_buffer_size = 0L;
   } else {
     anim_flags |= WSA_TARGET_IN_BUFFER;
-    target_buffer_size = static_cast<unsigned long>(file_header.pixel_width) *
-                         file_header.pixel_height;
+    target_buffer_size =
+        base::ssize{file_header.pixel_width} * file_header.pixel_height;
   }
 
   // NOTE:"THIS IS A BAD THING. SINCE sizeof(SysAnimHeaderType) CHANGED, THE
   // ANIMATE.EXE UTILITY DID NOT KNOW I UPDATED IT, IT ADDS IT TO
   // largest_frame_size BEFORE SAVING IT TO THE FILE.  THIS MEANS I HAVE TO ADD
   // THESE charS ON NOW FOR IT TO WORK.
-  delta_buffer_size =
-      static_cast<unsigned long>(file_header.largest_frame_size) +
-      EXTRA_charS_ANIMATE_NOT_KNOW_ABOUT;
+  delta_buffer_size = base::ssize{file_header.largest_frame_size} +
+                      kExtraBytesAnimateDoesNotKnowAbout;
   min_buffer_size = target_buffer_size + delta_buffer_size;
   max_buffer_size = min_buffer_size + file_buffer_size;
 
@@ -227,7 +229,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
     }
 
     // allocate buffer needed
-    user_buffer = new char[user_buffer_size]();
+    user_buffer = new char[base::ToSize(user_buffer_size)]();
 
     anim_flags |= WSA_SYS_ALLOCATED;
   } else {
@@ -267,7 +269,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   sys_header->anim_mem_size = static_cast<std::uint32_t>(user_buffer_size);
   sys_header->delta_buffer = delta_buffer;
   sys_header->largest_frame_size = static_cast<unsigned short>(
-      delta_buffer_size - sizeof(SysAnimHeaderType));
+      delta_buffer_size - base::ssize{sizeof(SysAnimHeaderType)});
 
   std::snprintf(sys_header->file_name, sizeof(sys_header->file_name), "%s",
                 file_name);
@@ -288,11 +290,11 @@ void* Open_Animation(const char* file_name, char* user_buffer,
 
     sys_header->file_buffer = static_cast<char*>(
         Add_Long_To_Pointer(delta_buffer, sys_header->largest_frame_size));
-    Seek_File(fh, WSA_FILE_HEADER_SIZE, SEEK_SET);
-    Read_File(fh, sys_header->file_buffer, offsets_size);
+    Seek_File(fh, kWsaFileHeaderSize, SEEK_SET);
+    Read_File(fh, sys_header->file_buffer, base::ToSize(offsets_size));
     Seek_File(fh, frame0_size + palette_adjust, SEEK_CUR);
     Read_File(fh, sys_header->file_buffer + offsets_size,
-              file_buffer_size - offsets_size);
+              base::ToSize(file_buffer_size - offsets_size));
 
     //
     // Find out if there is an ending value for the last frame.
@@ -323,8 +325,8 @@ void* Open_Animation(const char* file_name, char* user_buffer,
 
   // Read the first frame into the delta buffer and uncompress it.
   // Then close it.
-  Seek_File(fh, WSA_FILE_HEADER_SIZE + offsets_size + palette_adjust, SEEK_SET);
-  Read_File(fh, delta_back, frame0_size);
+  Seek_File(fh, kWsaFileHeaderSize + offsets_size + palette_adjust, SEEK_SET);
+  Read_File(fh, delta_back, base::ToSize(frame0_size));
 
   // We do not use the file handle when it is in RAM.
   if (anim_flags & WSA_RESIDENT) {
@@ -506,7 +508,7 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
     }
   }
 
-  sys_header->current_frame = static_cast<short>(frame_number);
+  sys_header->current_frame = static_cast<uint16_t>(frame_number);
 
   // If we did this all in a hidden buffer, then copy it to the desired page or
   // viewport.
@@ -798,7 +800,7 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
   }
 }
 
-static unsigned long Get_Resident_Frame_Offset(char* file_buffer, int frame) {
+static int64_t Get_Resident_Frame_Offset(char* file_buffer, int frame) {
   uint32_t frame0_size;
   const auto first = port::ReadUnaligned<uint32_t>(file_buffer);
   if (first) {
@@ -808,24 +810,24 @@ static unsigned long Get_Resident_Frame_Offset(char* file_buffer, int frame) {
     frame0_size = 0;
   }
 
-  const auto offset =
-      port::ReadUnaligned<uint32_t>(file_buffer + (frame * sizeof(uint32_t)));
+  const auto offset = port::ReadUnaligned<uint32_t>(
+      file_buffer + (base::ToSize(frame) * sizeof(uint32_t)));
   if (offset) {
-    return offset - (frame0_size + WSA_FILE_HEADER_SIZE);
+    return offset - (frame0_size + kWsaFileHeaderSize);
   }
   return 0L;
 }
 
-static unsigned long Get_File_Frame_Offset(int file_handle, int frame,
-                                           int palette_adjust) {
+static int64_t Get_File_Frame_Offset(int file_handle, int frame,
+                                     int palette_adjust) {
   uint32_t offset;
 
-  Seek_File(file_handle, (frame << 2) + WSA_FILE_HEADER_SIZE, SEEK_SET);
+  Seek_File(file_handle, (frame << 2) + kWsaFileHeaderSize, SEEK_SET);
 
   if (Read_File(file_handle, &offset, sizeof(uint32_t)) != sizeof(uint32_t)) {
     offset = 0L;
   }
-  offset += palette_adjust;
+  offset += static_cast<uint32_t>(palette_adjust);
   return offset;
 }
 
@@ -835,8 +837,8 @@ static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
   char* delta_back;
   int file_handle;
   int palette_adjust;
-  unsigned long frame_data_size;
-  unsigned long frame_offset;
+  int64_t frame_data_size;
+  int64_t frame_offset;
 
   palette_adjust = sys_header->flags & WSA_PALETTE_PRESENT ? 768 : 0;
   delta_back = sys_header->delta_buffer;
@@ -859,7 +861,7 @@ static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
     delta_back = static_cast<char*>(Add_Long_To_Pointer(
         delta_back, sys_header->largest_frame_size - frame_data_size));
 
-    Mem_Copy(data_ptr, delta_back, frame_data_size);
+    Mem_Copy(data_ptr, delta_back, base::ToSize(frame_data_size));
 
   } else if (sys_header->flags & WSA_FILE) {
     //	Open up file because not file not in RAM.
@@ -887,7 +889,7 @@ static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
     delta_back = static_cast<char*>(Add_Long_To_Pointer(
         delta_back, sys_header->largest_frame_size - frame_data_size));
 
-    if (Read_File(file_handle, delta_back, frame_data_size) !=
+    if (Read_File(file_handle, delta_back, base::ToSize(frame_data_size)) !=
         static_cast<int>(frame_data_size)) {
       return false;
     }

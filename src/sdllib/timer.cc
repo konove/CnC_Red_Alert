@@ -81,7 +81,8 @@ long CountDownTimerClass::Time() {
 }
 
 TickTimer::TickTimer(const int tick_rate)
-    : timer_id_(SDL_AddTimer(1000 / tick_rate, TimerCallback, this)) {
+    : timer_id_(SDL_AddTimer(static_cast<Uint32>(1000 / tick_rate),
+                             TimerCallback, this)) {
   SDL_Init(SDL_INIT_TIMER);
 
   TimerSystemOn = timer_id_ != 0;

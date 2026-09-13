@@ -43,6 +43,8 @@
 
 #include <cstring>
 
+#include "base/numeric.h"
+
 //---------------------------------------------------------------------------------------------------------
 // BufferStraw
 //---------------------------------------------------------------------------------------------------------
@@ -77,7 +79,8 @@ int BufferStraw::Get(void* source, int slen) {
     }
 
     if (len > 0) {
-      memmove(source, static_cast<char*>(BufferPtr.Get_Buffer()) + Index, len);
+      memmove(source, static_cast<char*>(BufferPtr.Get_Buffer()) + Index,
+              base::ToSize(len));
     }
 
     Index += len;

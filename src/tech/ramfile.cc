@@ -54,6 +54,8 @@
 #include <algorithm>
 #include <cstring>
 
+#include "base/numeric.h"
+
 /***********************************************************************************************
  * RAMFileClass::RAMFileClass -- Construct a RAM buffer based "file" object. *
  *                                                                                             *
@@ -82,7 +84,7 @@
 RAMFileClass::RAMFileClass(void* buffer, int len)
     : Buffer(static_cast<char*>(buffer)), MaxLength(len), Length(len) {
   if (buffer == nullptr && len > 0) {
-    Buffer = new char[len];
+    Buffer = new char[base::ToSize(len)];
     IsAllocated = true;
   }
 }
@@ -288,7 +290,7 @@ long RAMFileClass::Read(void* buffer, long size) {
 
   int tocopy =
       static_cast<int>(size < Length - Offset ? size : Length - Offset);
-  memmove(buffer, &Buffer[Offset], tocopy);
+  memmove(buffer, &Buffer[Offset], base::ToSize(tocopy));
   Offset += tocopy;
 
   if (hasopened) {
@@ -403,7 +405,7 @@ long RAMFileClass::Write(const void* buffer, long size) {
 
   int maxwrite = MaxLength - Offset;
   int towrite = static_cast<int>(size < maxwrite ? size : maxwrite);
-  memmove(&Buffer[Offset], buffer, towrite);
+  memmove(&Buffer[Offset], buffer, base::ToSize(towrite));
   Offset += towrite;
 
   Length = std::max(Offset, Length);

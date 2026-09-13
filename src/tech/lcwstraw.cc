@@ -45,6 +45,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/numeric.h"
 #include "tech/lcw.h"
 
 /***********************************************************************************************
@@ -70,9 +71,9 @@ LCWStraw::LCWStraw(CompControl control, int blocksize)
     : Control(control),
       BlockSize(blocksize),
       SafetyMargin((BlockSize / 128) + 1) {
-  Buffer = new char[BlockSize + SafetyMargin];
+  Buffer = new char[base::ToSize(BlockSize + SafetyMargin)];
   if (control == COMPRESS) {
-    Buffer2 = new char[BlockSize + SafetyMargin];
+    Buffer2 = new char[base::ToSize(BlockSize + SafetyMargin)];
   }
 }
 
@@ -139,11 +140,13 @@ int LCWStraw::Get(void* destbuf, int slen) {
     if (Counter) {
       int len = slen < Counter ? slen : Counter;
       if (Control == DECOMPRESS) {
-        memmove(destbuf, &Buffer[BlockHeader.UncompCount - Counter], len);
+        memmove(destbuf, &Buffer[BlockHeader.UncompCount - Counter],
+                base::ToSize(len));
       } else {
         memmove(destbuf,
-                &Buffer2[BlockHeader.CompCount + sizeof(BlockHeader) - Counter],
-                len);
+                &Buffer2[BlockHeader.CompCount +
+                         static_cast<int>(sizeof(BlockHeader)) - Counter],
+                base::ToSize(len));
       }
       destbuf = static_cast<char*>(destbuf) + len;
       slen -= len;

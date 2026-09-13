@@ -67,7 +67,7 @@ void XMP_Shift_Left_Bits(uint32_t* number, int bits, int precision);
 bool XMP_Rotate_Left(uint32_t* number, bool carry, int precision);
 void XMP_Not(uint32_t* number, int precision);
 void XMP_Init(uint32_t* r, uint32_t value, int precision);
-unsigned XMP_Count_Bits(const uint32_t* r, int precision);
+int XMP_Count_Bits(const uint32_t* r, int precision);
 int XMP_Count_Bytes(const uint32_t* r, int precision);
 void XMP_Move(uint32_t* dest, const uint32_t* source, int precision);
 int XMP_Compare(const uint32_t* left_number, const uint32_t* right_number,
@@ -83,7 +83,7 @@ bool XMP_Sub_Int(uint32_t* result, const uint32_t* left_number,
 int XMP_Unsigned_Mult(uint32_t* prod, const uint32_t* multiplicand,
                       const uint32_t* multiplier, int precision);
 int XMP_Unsigned_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
-                          short multiplier, int precision);
+                          uint16_t multiplier, int precision);
 int XMP_Signed_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
                         signed short multiplier, int precision);
 int XMP_Signed_Mult(uint32_t* prod, const uint32_t* multiplicand,
@@ -121,7 +121,7 @@ void XMP_Signed_Decode(uint32_t* result, const unsigned char* from,
                        int frombytes, int precision);
 void XMP_Unsigned_Decode(uint32_t* result, const unsigned char* from,
                          int frombytes, int precision);
-unsigned XMP_Encode(unsigned char* to, const uint32_t* from, int precision);
+int XMP_Encode(unsigned char* to, const uint32_t* from, int precision);
 unsigned XMP_Encode(unsigned char* to, unsigned tobytes, const uint32_t* from,
                     int precision);
 void XMP_Randomize(uint32_t* result, Straw& rng, int total_bits, int precision);
@@ -156,11 +156,11 @@ inline bool XMP_Test_Eq_Int(const uint32_t* r, int i, int p) {
   return std::cmp_equal(*r, i) && XMP_Significance(r, p) <= 1;
 }
 
-inline void XMP_Set_Bit(uint32_t* r, unsigned bit) {
+inline void XMP_Set_Bit(uint32_t* r, int bit) {
   r[bit >> LOG_UNITSIZE] |= static_cast<uint32_t>(1) << (bit & (UNITSIZE - 1));
 }
 
-inline bool XMP_Test_Bit(const uint32_t* r, unsigned bit) {
+inline bool XMP_Test_Bit(const uint32_t* r, int bit) {
   return r[bit >> LOG_UNITSIZE] & static_cast<uint32_t>(1)
                                       << (bit & (UNITSIZE - 1));
 }

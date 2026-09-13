@@ -39,6 +39,7 @@
 
 #include <utility>
 
+#include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/file.h"
 #include "sdllib/gbuffer.h"
@@ -133,8 +134,8 @@ void Write_Pcx_ScanLine(int file_handle, int scansize, char* ptr) {
   unsigned rle;
   unsigned color;
   unsigned last;
-  char* file_ptr;
-  char pool[kPoolSize];
+  unsigned char* file_ptr;
+  unsigned char pool[kPoolSize];
 
   file_ptr = pool;
 
@@ -179,5 +180,5 @@ void Write_Pcx_ScanLine(int file_handle, int scansize, char* ptr) {
     }
   }
 
-  Write_File(file_handle, pool, file_ptr - pool);
+  Write_File(file_handle, pool, base::ToSize(file_ptr - pool));
 }

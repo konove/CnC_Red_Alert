@@ -136,7 +136,7 @@ int LZWEngine::Uncompress(const Buffer& input, const Buffer& output) {
   auto character = static_cast<unsigned char>(old_code);
   outcount += outpipe.Put(&character, sizeof(character));
 
-  unsigned int count;
+  int count;
   CodeType new_code;
   CodeType next_code = FIRST_CODE;
   for (;;) {
@@ -182,12 +182,12 @@ int LZWEngine::Uncompress(const Buffer& input, const Buffer& output) {
   return outcount;
 }
 
-int LZWEngine::Make_LZW_Hash(CodeType code, char character) {
-  return static_cast<int>((unsigned char)character) << (BITS - 8) ^
-         static_cast<int>(code);
+int LZWEngine::Make_LZW_Hash(CodeType code, unsigned char character) {
+  return static_cast<int>(character) << (BITS - 8) ^ static_cast<int>(code);
 }
 
-int LZWEngine::Find_Child_Node(CodeType parent_code, char child_character) {
+int LZWEngine::Find_Child_Node(CodeType parent_code,
+                               unsigned char child_character) {
   /*
   **	Fetch the first try index for the code and character.
   */
@@ -239,14 +239,14 @@ int LZWEngine::Find_Child_Node(CodeType parent_code, char child_character) {
   return hash_index;
 }
 
-int LZWEngine::Decode_String(char* ptr, CodeType code) {
+int LZWEngine::Decode_String(unsigned char* ptr, CodeType code) {
   int count = 0;
   while (code > 255) {
     *ptr++ = dict[code].CharValue;
     count++;
     code = dict[code].ParentCode;
   }
-  *ptr = static_cast<char>(code);
+  *ptr = static_cast<unsigned char>(code);
   count++;
   return count;
 }

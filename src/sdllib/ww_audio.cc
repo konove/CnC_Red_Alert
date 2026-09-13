@@ -11,6 +11,8 @@
 #include <utility>
 
 #include "absl/base/attributes.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "port/unaligned.h"
 #include "sdllib/file.h"
 #include "sdllib/memflag.h"
@@ -72,8 +74,8 @@ struct ChannelState {
   int local_volume = 255;  // per-sound volume [0, 255], set at play time
   int raw_volume = 0;      // local_volume * ScoreVolume
   int fade = 0;
-  uint32_t offset = 0;
-  uint32_t length = 0;
+  int offset = 0;        // samples already queued
+  int length = 0;        // total samples in the sound
   int file_handle = -1;  // if this is a file stream
 
   int16_t volume = 32767;
@@ -170,7 +172,7 @@ static uint8_t* DecodeWestwoodBlock(ChannelState& chan, int block_size,
         data++;
 
         // put samples
-        SDL_AudioStreamPut(chan.stream, in_ptr, data);
+        SDL_AudioStreamPut(chan.stream, in_ptr, static_cast<int>(data));
 
         in_ptr += data;
 
@@ -238,8 +240,7 @@ static uint8_t* DecodeWestwoodBlock(ChannelState& chan, int block_size,
 }
 
 static bool RefillStream(ChannelState& chan) {
-  uint32_t max_update =
-      ObtainedSpec.samples;  // assume the target rate is not lower
+  int max_update = ObtainedSpec.samples;  // assume the target rate is not lower
 
   if (chan.offset == chan.length) {
     return false;
@@ -298,7 +299,7 @@ static void ResetStream(ChannelState& chan, const AUDHeaderType* header) {
 }
 
 static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
-  memset(stream, 0, len);
+  memset(stream, 0, base::ToSize(len));
 
   // let VQA do its thing
   if (ExtraCallback) {
@@ -339,8 +340,9 @@ static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
     int stream_len = SDL_AudioStreamGet(chan.stream, MixBuffer, len);
 
     // mix into buffer
-    for (int s = 0; std::cmp_less(s, stream_len / sizeof(int16_t)); s++) {
-      const auto offset = s * sizeof(int16_t);
+    const int sample_count = stream_len / int{sizeof(int16_t)};
+    for (int s = 0; s < sample_count; s++) {
+      const base::ssize offset = s * base::ssize{sizeof(int16_t)};
       const auto output = port::ReadUnaligned<int16_t>(stream + offset);
       const auto input = port::ReadUnaligned<int16_t>(MixBuffer + offset);
       port::WriteUnaligned(
@@ -681,27 +683,28 @@ AudioCallback* Get_Audio_Callback_Ptr() { return &ExtraCallback; }
 
 // TD
 // used for nod ending
-static long Sample_Read(int fh, void* buffer, size_t size) {
+static long Sample_Read(int fh, void* buffer, base::ssize size) {
   AUDHeaderType RawHeader;
   void* outbuffer;         // Pointer to start of raw data.
   long actual_bytes_read;  // Actual bytes read in, including header
 
-  if (!buffer || fh == kInvalidHandle || size <= sizeof(RawHeader)) {
+  if (!buffer || fh == kInvalidHandle ||
+      size <= base::ssize{sizeof(RawHeader)}) {
     return 0;
   }
 
-  size -= sizeof(RawHeader);
+  size -= base::ssize{sizeof(RawHeader)};
   outbuffer = Add_Long_To_Pointer(buffer, sizeof(RawHeader));
   actual_bytes_read = Read_File(fh, &RawHeader, sizeof(RawHeader));
-  actual_bytes_read +=
-      Read_File(fh, outbuffer, std::min<size_t>(size, RawHeader.Size));
+  actual_bytes_read += Read_File(
+      fh, outbuffer, base::ToSize(std::min<base::ssize>(size, RawHeader.Size)));
   Mem_Copy(&RawHeader, buffer, sizeof(RawHeader));
   return actual_bytes_read;
 }
 
 void* Load_Sample(const char* filename) {
   void* buffer = nullptr;
-  long size;
+  base::ssize size;
   int fh;
 
   if (!filename || !Find_File(filename)) {
@@ -710,8 +713,8 @@ void* Load_Sample(const char* filename) {
 
   fh = Open_File(filename, FileAccess::kRead);
   if (fh != kInvalidHandle) {
-    size = File_Size(fh) + sizeof(AUDHeaderType);
-    buffer = new char[size];
+    size = base::ToSigned(File_Size(fh)) + base::ssize{sizeof(AUDHeaderType)};
+    buffer = new char[base::ToSize(size)];
     Sample_Read(fh, buffer, size);
 
     Close_File(fh);

@@ -15,7 +15,7 @@ target_sources(vqa32 PUBLIC
         FILES ${VQA32_HEADERS}
 )
 
-target_link_libraries(vqa32 PRIVATE port)
+target_link_libraries(vqa32 PRIVATE base port)
 
 find_package(SDL2 REQUIRED)
 target_link_libraries(vqa32 PRIVATE SDL2::SDL2)
@@ -25,5 +25,5 @@ include(Testing)
 add_gtest(
     NAME vqa32_test
     SOURCES vqaplay_test.cc unvq_test.cc
-    LIBS vqa32 absl::core_headers
+    LIBS vqa32 base absl::core_headers
 )

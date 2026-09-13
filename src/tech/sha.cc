@@ -46,6 +46,8 @@
 #include <iterator>
 #include <utility>
 
+#include "base/numeric.h"
+
 #if !defined(__BORLANDC__) && !defined(min)
 #define min(a, b) ((a) < (b)) ? (a) : (b)
 #endif
@@ -92,7 +94,7 @@ void SHAEngine::Process_Partial(const void*& data, long& length) {
   **	the staging buffer.
   */
   int add_count = min((int)length, SRC_BLOCK_SIZE - PartialCount);
-  memcpy(&Partial[PartialCount], data, add_count);
+  memcpy(&Partial[PartialCount], data, base::ToSize(add_count));
   data = (const char*&)data + add_count;
   PartialCount += add_count;
   length -= add_count;
@@ -217,7 +219,7 @@ int SHAEngine::Result(void* result) const {
   if (SRC_BLOCK_SIZE - partialcount < 9) {
     if (partialcount + 1 < SRC_BLOCK_SIZE) {
       memset(&partial[partialcount + 1], '\0',
-             SRC_BLOCK_SIZE - (partialcount + 1));
+             base::ToSize(SRC_BLOCK_SIZE - (partialcount + 1)));
     }
     Process_Block(&partial[0], acc);
     partialcount = 0;
@@ -229,7 +231,8 @@ int SHAEngine::Result(void* result) const {
   **	Put the length of the source data as a 64 bit integer in the
   **	last 8 bytes of the pseudo-source data.
   */
-  memset(&partial[partialcount], '\0', SRC_BLOCK_SIZE - partialcount);
+  memset(&partial[partialcount], '\0',
+         base::ToSize(SRC_BLOCK_SIZE - partialcount));
   *(uint32_t*)&partial[SRC_BLOCK_SIZE - 4] = Reverse_LONG((length * 8));
   Process_Block(&partial[0], acc);
 
@@ -253,7 +256,8 @@ int SHAEngine::Result(void* result) const {
 */
 template <class T>
 static T rotl(T X, int n) {
-  return static_cast<T>(X << n | (unsigned)X >> ((sizeof(T) * 8) - n));
+  return static_cast<T>(X << n | static_cast<unsigned>(X) >>
+                                     (static_cast<int>(sizeof(T) * 8) - n));
 }
 // unsigned long _RTLENTRY _rotl(unsigned long X, int n)
 //{

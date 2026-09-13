@@ -51,8 +51,10 @@ bool IO_Write_File(void* handle, const void* buffer, size_t count,
 
 size_t IO_Seek_File(void* handle, size_t offset, int origin) {
   auto* file = static_cast<FILE*>(handle);
-  fseek(file, offset, origin);
-  return ftell(file);
+  // Callers pass negative SEEK_CUR offsets and receive ftell's -1 error result
+  // through size_t, so both conversions deliberately preserve the bit pattern.
+  fseek(file, static_cast<int64_t>(offset), origin);
+  return static_cast<size_t>(ftell(file));
 }
 
 size_t IO_Get_File_Size(void* handle) {
@@ -65,7 +67,8 @@ size_t IO_Get_File_Size(void* handle) {
 
   fseek(file, pos, SEEK_SET);
 
-  return length;
+  // As in IO_Seek_File, ftell's -1 error result wraps through size_t.
+  return static_cast<size_t>(length);
 }
 
 bool IO_Delete_File(const char* filename) { return unlink(filename) == 0; }

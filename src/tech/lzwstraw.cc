@@ -45,6 +45,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/numeric.h"
 #include "tech/buff.h"
 #include "tech/lzw.h"
 
@@ -70,9 +71,9 @@
 LZWStraw::LZWStraw(CompControl control, int blocksize)
     : Control(control), BlockSize(blocksize), SafetyMargin(BlockSize) {
   //	SafetyMargin = BlockSize/128+1;
-  source_buffer_ = new char[BlockSize + SafetyMargin];
+  source_buffer_ = new char[base::ToSize(BlockSize + SafetyMargin)];
   if (control == COMPRESS) {
-    output_buffer_ = new char[BlockSize + SafetyMargin];
+    output_buffer_ = new char[base::ToSize(BlockSize + SafetyMargin)];
   }
 }
 
@@ -140,12 +141,13 @@ int LZWStraw::Get(void* destbuf, int slen) {
       int len = slen < Counter ? slen : Counter;
       if (Control == DECOMPRESS) {
         memmove(destbuf, &source_buffer_[BlockHeader.UncompCount - Counter],
-                len);
+                base::ToSize(len));
       } else {
-        memmove(destbuf,
-                &output_buffer_[BlockHeader.CompCount + sizeof(BlockHeader) -
-                                Counter],
-                len);
+        memmove(
+            destbuf,
+            &output_buffer_[BlockHeader.CompCount +
+                            static_cast<int>(sizeof(BlockHeader)) - Counter],
+            base::ToSize(len));
       }
       destbuf = static_cast<char*>(destbuf) + len;
       slen -= len;

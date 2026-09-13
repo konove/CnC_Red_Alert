@@ -93,7 +93,7 @@ class Int {
   /*
   **	Array access operator (references bit position). Bit 0 is the first bit.
   */
-  bool operator[](unsigned bit) const { return XMP_Test_Bit(&reg[0], bit); }
+  bool operator[](int bit) const { return XMP_Test_Bit(&reg[0], bit); }
 
   /*
   **	Unary operators.

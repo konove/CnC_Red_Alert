@@ -150,35 +150,35 @@ extern void Debug_Printf(char* format_string, ...);
 typedef struct VQAConfig {
   long (*DrawerCallback)(unsigned char* screen, long framenum);
   long (*EventHandler)(unsigned long event, void* buffer, long nbytes);
-  unsigned long NotifyFlags;
-  long Vmode;
-  long VBIBit;
+  uint32_t NotifyFlags;
+  int32_t Vmode;
+  int32_t VBIBit;
   unsigned char* ImageBuf;
-  long ImageWidth;
-  long ImageHeight;
-  long X1, Y1;
-  long FrameRate;
-  long DrawRate;
-  long TimerMethod;
-  long DrawFlags;
-  long OptionFlags;
-  long NumFrameBufs;
-  long NumCBBufs;
+  int32_t ImageWidth;
+  int32_t ImageHeight;
+  int32_t X1, Y1;
+  int32_t FrameRate;
+  int32_t DrawRate;
+  int32_t TimerMethod;
+  uint32_t DrawFlags;    // VQACFGF_* bits
+  uint32_t OptionFlags;  // VQAOPTF_* bits
+  int32_t NumFrameBufs;
+  int32_t NumCBBufs;
   uint32_t AudioDeviceID;  // SDL_AudioDeviceID
   void (**AudioCallback)(uint8_t*, int);
   void* AudioSpec;  // pointer to an SDL_AudioSpec
   char* VocFile;
   unsigned char* AudioBuf;
-  long AudioBufSize;
-  long AudioRate;
-  long Volume;
-  long HMIBufSize;
-  long DigiHandle;
-  long DigiCard;
-  long DigiPort;
-  long DigiIRQ;
-  long DigiDMA;
-  long Language;
+  int32_t AudioBufSize;
+  int32_t AudioRate;
+  int32_t Volume;
+  int32_t HMIBufSize;
+  int32_t DigiHandle;
+  int32_t DigiCard;
+  int32_t DigiPort;
+  int32_t DigiIRQ;
+  int32_t DigiDMA;
+  int32_t Language;
   char* CapFont;
   char* EVAFont; /* For C&C Only */
 } VQAConfig;
@@ -191,17 +191,17 @@ typedef struct VQAConfig {
 #define VQACFGB_ORIGIN 4  /* 0,0 origin position */
 #define VQACFGB_SCALEX2 6 /* Scale X2 enable (VESA 320x200 to 640x400) */
 #define VQACFGB_WOOFER 7
-#define VQACFGF_BUFFER (1 << VQACFGB_BUFFER)
-#define VQACFGF_NODRAW (1 << VQACFGB_NODRAW)
-#define VQACFGF_NOSKIP (1 << VQACFGB_NOSKIP)
-#define VQACFGF_VRAMCB (1 << VQACFGB_VRAMCB)
-#define VQACFGF_ORIGIN (3 << VQACFGB_ORIGIN)
-#define VQACFGF_TOPLEFT (0 << VQACFGB_ORIGIN)
-#define VQACFGF_TOPRIGHT (1 << VQACFGB_ORIGIN)
-#define VQACFGF_BOTRIGHT (2 << VQACFGB_ORIGIN)
-#define VQACFGF_BOTLEFT (3 << VQACFGB_ORIGIN)
-#define VQACFGF_SCALEX2 (1 << VQACFGB_SCALEX2)
-#define VQACFGF_WOOFER (1 << VQACFGB_WOOFER)
+#define VQACFGF_BUFFER (1U << VQACFGB_BUFFER)
+#define VQACFGF_NODRAW (1U << VQACFGB_NODRAW)
+#define VQACFGF_NOSKIP (1U << VQACFGB_NOSKIP)
+#define VQACFGF_VRAMCB (1U << VQACFGB_VRAMCB)
+#define VQACFGF_ORIGIN (3U << VQACFGB_ORIGIN)
+#define VQACFGF_TOPLEFT (0U << VQACFGB_ORIGIN)
+#define VQACFGF_TOPRIGHT (1U << VQACFGB_ORIGIN)
+#define VQACFGF_BOTRIGHT (2U << VQACFGB_ORIGIN)
+#define VQACFGF_BOTLEFT (3U << VQACFGB_ORIGIN)
+#define VQACFGF_SCALEX2 (1U << VQACFGB_SCALEX2)
+#define VQACFGF_WOOFER (1U << VQACFGB_WOOFER)
 
 /* Options Configuration (OptionFlags) */
 #define VQAOPTB_AUDIO 0    /* Audio enable. */
@@ -213,15 +213,15 @@ typedef struct VQAConfig {
 #define VQAOPTB_ALTAUDIO 6 /* Use alternate audio track. */
 #define VQAOPTB_CAPTIONS 7 /* Show captions. */
 #define VQAOPTB_EVA 8      /* Show EVA text (For C&C only) */
-#define VQAOPTF_AUDIO (1 << VQAOPTB_AUDIO)
-#define VQAOPTF_STEP (1 << VQAOPTB_STEP)
-#define VQAOPTF_MONO (1 << VQAOPTB_MONO)
-#define VQAOPTF_PALOFF (1 << VQAOPTB_PALOFF)
-#define VQAOPTF_SLOWPAL (1 << VQAOPTB_SLOWPAL)
-#define VQAOPTF_HMIINIT (1 << VQAOPTB_HMIINIT)
-#define VQAOPTF_ALTAUDIO (1 << VQAOPTB_ALTAUDIO)
-#define VQAOPTF_CAPTIONS (1 << VQAOPTB_CAPTIONS)
-#define VQAOPTF_EVA (1 << VQAOPTB_EVA) /* For C&C only */
+#define VQAOPTF_AUDIO (1U << VQAOPTB_AUDIO)
+#define VQAOPTF_STEP (1U << VQAOPTB_STEP)
+#define VQAOPTF_MONO (1U << VQAOPTB_MONO)
+#define VQAOPTF_PALOFF (1U << VQAOPTB_PALOFF)
+#define VQAOPTF_SLOWPAL (1U << VQAOPTB_SLOWPAL)
+#define VQAOPTF_HMIINIT (1U << VQAOPTB_HMIINIT)
+#define VQAOPTF_ALTAUDIO (1U << VQAOPTB_ALTAUDIO)
+#define VQAOPTF_CAPTIONS (1U << VQAOPTB_CAPTIONS)
+#define VQAOPTF_EVA (1U << VQAOPTB_EVA) /* For C&C only */
 
 /* VQAInfo: Information about the VQA movie.
  *
@@ -249,14 +249,14 @@ typedef struct VQAInfo {
  * MemUsed       - Total bytes used. (Low memory)
  */
 typedef struct VQAStatistics {
-  long StartTime;
-  long EndTime;
-  long FramesLoaded;
-  long FramesDrawn;
-  long FramesSkipped;
-  long MaxFrameSize;
-  unsigned long SamplesPlayed;
-  unsigned long MemUsed;
+  int64_t StartTime;
+  int64_t EndTime;
+  int32_t FramesLoaded;
+  int32_t FramesDrawn;
+  int32_t FramesSkipped;
+  int32_t MaxFrameSize;
+  int64_t SamplesPlayed;
+  int32_t MemUsed;
 } VQAStatistics;
 
 /* Internal player state; defined in vqaplayp.h. */

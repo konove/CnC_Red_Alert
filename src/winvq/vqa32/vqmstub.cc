@@ -33,7 +33,7 @@ void VQA_sosCODECInitStream(SosCompressInfo* info) {
 }
 
 // Returns true on success, false on failure.
-bool DecompressVqaSosData(SosCompressInfo* info, std::size_t uncomp_size) {
+bool DecompressVqaSosData(SosCompressInfo* info, int32_t uncomp_size) {
   // Sanity check: This decoder only supports Mono 16-bit.
   if (info->channels != 1 || info->bit_size != 16) {
     std::fprintf(stderr, "%s (%d/%d)\n", __func__, info->channels,

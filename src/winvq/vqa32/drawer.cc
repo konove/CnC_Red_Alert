@@ -70,8 +70,10 @@
  *
  ****************************************************************************/
 
+#include <cstdint>
 #include <cstring>
 
+#include "base/numeric.h"
 #include "winvq/vqa32/unvq.h"
 #include "winvq/vqa32/vqafile.h"
 #include "winvq/vqa32/vqaplay.h"
@@ -88,8 +90,8 @@ static long DrawFrame_Buffer(VQAHandle* vqa);
 
 static void __cdecl UnVQ_Nop(const unsigned char* codebook,
                              const unsigned char* pointers,
-                             unsigned char* buffer, unsigned long blocksperrow,
-                             unsigned long numrows, unsigned long bufwidth);
+                             unsigned char* buffer, int blocksperrow,
+                             int numrows, int bufwidth);
 
 /****************************************************************************
  *
@@ -118,7 +120,7 @@ void VQA_Configure_Drawer(VQAHandle* vqap) {
   VQAConfig* config;
   VQAHeader* header;
   VQADrawer* drawer;
-  long origin;
+  uint32_t origin;
   long blkdim;
 
   /* Dereference commonly used data members for quicker access. */
@@ -233,9 +235,8 @@ static long Select_Frame(VQAHandle* vqap) {
   VQADrawer* drawer;
   VQAConfig* config;
   VQAFrameNode* curframe;
-  long desiredframe;
-  // MEG 11.29.95 - changed from long to unsigned long
-  long curtime;
+  int64_t desiredframe;
+  int64_t curtime;
 
   /* Dereference commonly used data members for quicker access. */
   config = &vqap->config;
@@ -325,15 +326,17 @@ static long Select_Frame(VQAHandle* vqap) {
       if (curframe->Flags & VQAFRMF_PALETTE) {
         /* Un-LCW if needed */
         if (curframe->Flags & VQAFRMF_PALCOMP) {
-          curframe->PaletteSize =
-              LCW_Uncompress((char*)curframe->Palette + curframe->PalOffset,
-                             (char*)curframe->Palette, vqabuf->Max_Pal_Size);
+          curframe->PaletteSize = static_cast<int32_t>(
+              LCW_Uncompress(curframe->Palette + curframe->PalOffset,
+                             curframe->Palette,
+                             base::ToSize(vqabuf->Max_Pal_Size)));
 
           curframe->Flags &= ~VQAFRMF_PALCOMP;
         }
 
         /* Stash the palette */
-        memcpy(drawer->Palette_24, curframe->Palette, curframe->PaletteSize);
+        memcpy(drawer->Palette_24, curframe->Palette,
+               base::ToSize(curframe->PaletteSize));
         drawer->CurPalSize = curframe->PaletteSize;
         drawer->Flags |= VQADRWF_SETPAL;
       }
@@ -395,8 +398,8 @@ static void Prepare_Frame(VQAData* vqabuf) {
   /* Decompress the codebook, if needed */
   if (codebook->Flags & VQACBF_CBCOMP) {
     /* Decompress the codebook. */
-    LCW_Uncompress((char*)codebook->Buffer + codebook->CBOffset,
-                   (char*)codebook->Buffer, vqabuf->Max_CB_Size);
+    LCW_Uncompress(codebook->Buffer + codebook->CBOffset, codebook->Buffer,
+                   base::ToSize(vqabuf->Max_CB_Size));
 
     /* Mark as uncompressed for the next time we use it */
     codebook->Flags &= ~VQACBF_CBCOMP;
@@ -404,9 +407,9 @@ static void Prepare_Frame(VQAData* vqabuf) {
 
   /* Decompress the palette, if needed */
   if (curframe->Flags & VQAFRMF_PALCOMP) {
-    curframe->PaletteSize =
-        LCW_Uncompress((char*)curframe->Palette + curframe->PalOffset,
-                       (char*)curframe->Palette, vqabuf->Max_Pal_Size);
+    curframe->PaletteSize = static_cast<int32_t>(
+        LCW_Uncompress(curframe->Palette + curframe->PalOffset,
+                       curframe->Palette, base::ToSize(vqabuf->Max_Pal_Size)));
 
     /* Mark as uncompressed */
     curframe->Flags &= ~VQAFRMF_PALCOMP;
@@ -414,8 +417,8 @@ static void Prepare_Frame(VQAData* vqabuf) {
 
   /* Decompress the pointer data, if needed */
   if (curframe->Flags & VQAFRMF_PTRCOMP) {
-    LCW_Uncompress((char*)curframe->Pointers + curframe->PtrOffset,
-                   (char*)curframe->Pointers, vqabuf->Max_Ptr_Size);
+    LCW_Uncompress(curframe->Pointers + curframe->PtrOffset,
+                   curframe->Pointers, base::ToSize(vqabuf->Max_Ptr_Size));
 
     /* Mark as uncompressed */
     curframe->Flags &= ~VQAFRMF_PTRCOMP;
@@ -446,8 +449,8 @@ extern void __cdecl Set_Palette(void* palette);
 static long DrawFrame_Buffer(VQAHandle* vqa) {
   VQAFrameNode* curframe;
   unsigned char* pal;
-  long palsize;
-  long slowpal;
+  int32_t palsize;
+  uint32_t slowpal;
   unsigned char* buff;
 
   auto* vqa_handle_p = vqa;
@@ -485,7 +488,7 @@ static long DrawFrame_Buffer(VQAHandle* vqa) {
 
   pal = curframe->Palette;
   palsize = curframe->PaletteSize;
-  slowpal = config->OptionFlags & VQAOPTF_SLOWPAL ? 1 : 0;
+  slowpal = (config->OptionFlags & VQAOPTF_SLOWPAL) != 0 ? 1U : 0U;
 
   /* Set the palette if necessary */
   if (curframe->Flags & VQAFRMF_PALETTE || drawer->Flags & VQADRWF_SETPAL) {
@@ -528,7 +531,7 @@ static long DrawFrame_Buffer(VQAHandle* vqa) {
  *     UnVQ_Nop(Codebook, Pointers, Buffer, BPR, Rows, BufWidth)
  *
  *     void UnVQ_Nop(unsigned char *, unsigned char *, unsigned char *,
- *                   unsigned long, unsigned long, unsigned long);
+ *                   int, int, int);
  * FUNCTION
  *
  * INPUTS
@@ -546,5 +549,5 @@ static long DrawFrame_Buffer(VQAHandle* vqa) {
 
 static void UnVQ_Nop(const unsigned char* /*codebook*/,
                      const unsigned char* /*pointers*/,
-                     unsigned char* /*buffer*/, unsigned long /*blocksperrow*/,
-                     unsigned long /*numrows*/, unsigned long /*bufwidth*/) {}
+                     unsigned char* /*buffer*/, int /*blocksperrow*/,
+                     int /*numrows*/, int /*bufwidth*/) {}

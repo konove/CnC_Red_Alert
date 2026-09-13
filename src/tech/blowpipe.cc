@@ -45,6 +45,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/numeric.h"
 /***********************************************************************************************
  * BlowPipe::Flush -- Flushes any pending data out the pipe. *
  *                                                                                             *
@@ -114,7 +115,7 @@ int BlowPipe::Put(const void* source, int slen) {
   if (Counter) {
     const int room = static_cast<int>(sizeof(Buffer)) - Counter;
     int sublen = room < slen ? room : slen;
-    memmove(&Buffer[Counter], source, sublen);
+    memmove(&Buffer[Counter], source, base::ToSize(sublen));
     Counter += sublen;
     source = (char*)source + sublen;
     slen -= sublen;
@@ -151,7 +152,7 @@ int BlowPipe::Put(const void* source, int slen) {
   **	processing.
   */
   if (slen > 0) {
-    memmove(Buffer, source, slen);
+    memmove(Buffer, source, base::ToSize(slen));
     Counter = slen;
   }
 

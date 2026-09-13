@@ -34,8 +34,7 @@ void strtrim(char* buffer) {
       source++;
     }
     if (source != buffer) {
-      int len = static_cast<int>(strlen(source));
-      memmove(buffer, source, len + 1);
+      memmove(buffer, source, strlen(source) + 1);
     }
 
     /*

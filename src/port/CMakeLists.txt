@@ -22,7 +22,7 @@ include(Testing)
 add_gtest(
     NAME port_test
     SOURCES safe_string_test.cc sleep_test.cc socket_bytes_test.cc unaligned_test.cc
-    LIBS port
+    LIBS port base
 )
 
 add_gtest(

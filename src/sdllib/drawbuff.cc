@@ -5,6 +5,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -50,7 +51,7 @@ void Buffer_Clear(void* thisptr, unsigned char color) {
 
   // fill lines
   do {
-    memset(dst_offset, color, pixel_count);
+    memset(dst_offset, color, base::ToSize(pixel_count));
     dst_offset += dst_area;
   } while (--line_count);
 }
@@ -116,7 +117,7 @@ long Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel, int pixel_width,
 
   // copy lines
   do {
-    memcpy(dst_offset, src_offset, pixel_count);
+    memcpy(dst_offset, src_offset, base::ToSize(pixel_count));
     src_offset += src_area;
     dst_offset += pixel_width;
   } while (--line_count);
@@ -185,7 +186,7 @@ long Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
 
   // copy lines
   do {
-    memcpy(dst_offset, src_offset, pixel_count);
+    memcpy(dst_offset, src_offset, base::ToSize(pixel_count));
     src_offset += pixel_width;
     dst_offset += dst_area;
   } while (--line_count);
@@ -307,7 +308,7 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
       src_offset += src_area * (line_count - 1);
       dst_offset += dst_area * (line_count - 1);
       do {
-        memmove(dst_offset, src_offset, pixel_count);
+        memmove(dst_offset, src_offset, base::ToSize(pixel_count));
         src_offset -= src_area;
         dst_offset -= dst_area;
       } while (--line_count);
@@ -328,7 +329,7 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
     } else {
       // copy lines
       do {
-        memmove(dst_offset, src_offset, pixel_count);
+        memmove(dst_offset, src_offset, base::ToSize(pixel_count));
         src_offset += src_area;
         dst_offset += dst_area;
       } while (--line_count);
@@ -449,7 +450,7 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
         uint8_t pixel = src_offset[x >> 16];
 
         if (pixel) {
-          *out = remap[pixel];
+          *out = static_cast<uint8_t>(remap[pixel]);
         }
 
         x += dx_frac;
@@ -498,7 +499,7 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       int x = 0;
       auto* out = dst_offset;
       do {
-        *out++ = remap[src_offset[x >> 16]];
+        *out++ = static_cast<uint8_t>(remap[src_offset[x >> 16]]);
         x += dx_frac;
       } while (--counter_x);
 
@@ -751,7 +752,7 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
 
     int count = dx - sx + 1;
     auto* ptr = vp_dst->Get_Offset() + sx + (bpr * sy);
-    std::memset(ptr, color, count);
+    std::memset(ptr, color, base::ToSize(count));
 
     return;
   }
@@ -856,7 +857,7 @@ void Buffer_Fill_Rect(void* thisptr, int sx, int sy, int dx, int dy,
 
   // fill lines
   do {
-    memset(dst_offset, color, pixel_count);
+    memset(dst_offset, color, base::ToSize(pixel_count));
     dst_offset += dst_area;
   } while (--line_count);
 }
@@ -1071,7 +1072,7 @@ void GraphicBufferClass::Init(int w, int h, void* buffer, long size,
       } else {
         Size = size;
       }
-      Buffer = new uint8_t[Size];
+      Buffer = new uint8_t[base::ToSize(Size)];
     }
 
     Offset = static_cast<uint8_t*>(Buffer);

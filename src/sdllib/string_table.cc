@@ -5,6 +5,8 @@
 #include <span>
 #include <string_view>
 
+#include "base/numeric.h"
+
 std::string_view Extract_String(const std::span<const std::byte> data,
                                 const int index) {
   if (data.empty() || index < 0) {
@@ -23,7 +25,8 @@ std::string_view Extract_String(const std::span<const std::byte> data,
   }
 
   uint16_t string_offset;
-  std::memcpy(&string_offset, data.data() + (index * sizeof(uint16_t)),
+  std::memcpy(&string_offset,
+              data.data() + (base::ToSize(index) * sizeof(uint16_t)),
               sizeof(string_offset));
 
   // char is explicitly allowed to alias any type per the standard.

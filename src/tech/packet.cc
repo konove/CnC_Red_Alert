@@ -40,6 +40,7 @@
 #include <algorithm>
 #include <cstring>
 
+#include "base/numeric.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
 
@@ -112,7 +113,7 @@ PacketClass::PacketClass(char* curbuf) : Head(nullptr) {
   Size = ntohs(Size);
   std::memcpy(&ID, curbuf, sizeof(ID));
   curbuf += sizeof(ID);
-  ID = ntohs(ID);
+  ID = static_cast<int16_t>(ntohs(static_cast<uint16_t>(ID)));
 
   //
   // Calculate the remaining size so that we can loop through the
@@ -138,8 +139,8 @@ PacketClass::PacketClass(char* curbuf) : Head(nullptr) {
     // Copy the data into the buffer
     //
     int size = ntohs(field->Size);
-    field->Data = new char[size];
-    memcpy(field->Data, curbuf, size);
+    field->Data = new char[base::ToSize(size)];
+    memcpy(field->Data, curbuf, base::ToSize(size));
     curbuf += size;
     remaining_size -= size;
     //
@@ -201,7 +202,7 @@ char* PacketClass::Create_Comms_Packet(int& size) {
   // Now that we know the size allocate a buffer big enough to hold the
   // packet.
   //
-  char* retval = new char[size];
+  char* retval = new char[base::ToSize(size)];
   char* curbuf = retval;
 
   //
@@ -209,7 +210,7 @@ char* PacketClass::Create_Comms_Packet(int& size) {
   //
   port::WriteUnaligned(curbuf, htons(static_cast<uint16_t>(size)));
   curbuf += sizeof(unsigned short);
-  port::WriteUnaligned(curbuf, htons(ID));
+  port::WriteUnaligned(curbuf, htons(static_cast<uint16_t>(ID)));
   curbuf += sizeof(short);
 
   //
@@ -245,7 +246,7 @@ char* PacketClass::Create_Comms_Packet(int& size) {
     // to zeros, so it looks like a pad.
     //
     if (pad) {
-      memset(curbuf, 0, pad);
+      memset(curbuf, 0, base::ToSize(pad));
       curbuf += pad;
     }
 
@@ -457,7 +458,8 @@ bool PacketClass::Get_Field(const char* id, unsigned long& data) {
 bool PacketClass::Get_Field(const char* id, void* data, int& length) {
   FieldClass* field = Find_Field(id);
   if (field) {
-    memcpy(data, field->Data, std::min(static_cast<int>(field->Size), length));
+    memcpy(data, field->Data,
+           base::ToSize(std::min(static_cast<int>(field->Size), length)));
     length = static_cast<int>(field->Size);
   }
   return field != nullptr;

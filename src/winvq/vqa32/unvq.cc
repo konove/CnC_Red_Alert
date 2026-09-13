@@ -2,13 +2,17 @@
 
 #include <cstdint>
 
+#include "base/types.h"
 #include "port/unaligned.h"
 
 void UnVQ_4x2(const unsigned char* codebook, const unsigned char* pointers,
-              unsigned char* buffer, unsigned long blocksperrow,
-              unsigned long numrows, unsigned long bufwidth) {
+              unsigned char* buffer, int blocksperrow, int numrows,
+              int bufwidth) {
+  // Pointer offsets are computed in ptrdiff_t so row multiples cannot overflow.
+  const base::ssize stride = bufwidth;
+
   // Compute the offset to the next row of blocks
-  auto rowoffset = bufwidth * 2;
+  const base::ssize rowoffset = stride * 2;
 
   // Compute the end address of the pointer data
   auto entries = numrows * blocksperrow;
@@ -20,18 +24,18 @@ void UnVQ_4x2(const unsigned char* codebook, const unsigned char* pointers,
 
   // Drawing loop
   do {
-    int count = static_cast<int>(blocksperrow);  // Number of blocks in a line
+    int count = blocksperrow;  // Number of blocks in a line
     do {
-      int v = *src_ptr;
+      const uint8_t v = *src_ptr;
       int cb = src_ptr[entries];  // Get the codebook pointer value
       src_ptr++;
 
       if (cb == 0xF)  // Is it a one color block?
       {
         // Draw 1-color block
-        uint32_t col32 = v | v << 8 | v << 16 | v << 24;  // Duplicate colour
+        const uint32_t col32 = v * 0x01010101U;  // Duplicate colour
         port::WriteUnaligned(dst_ptr, col32);  // Write 1st row to dest
-        port::WriteUnaligned(dst_ptr + bufwidth,
+        port::WriteUnaligned(dst_ptr + stride,
                              col32);  // Write 2st row to dest
       } else {
         // Draw multi-color block
@@ -41,7 +45,7 @@ void UnVQ_4x2(const unsigned char* codebook, const unsigned char* pointers,
         auto row2 = port::ReadUnaligned<uint32_t>(
             codebook + index + 4);            // Read 2nd row of codeword
         port::WriteUnaligned(dst_ptr, row1);  // Write 1st row to dest
-        port::WriteUnaligned(dst_ptr + bufwidth,
+        port::WriteUnaligned(dst_ptr + stride,
                              row2);  // Write 2st row to dest
       }
 
@@ -54,10 +58,13 @@ void UnVQ_4x2(const unsigned char* codebook, const unsigned char* pointers,
 }
 
 void UnVQ_4x4(const unsigned char* codebook, const unsigned char* pointers,
-              unsigned char* buffer, unsigned long blocksperrow,
-              unsigned long numrows, unsigned long bufwidth) {
+              unsigned char* buffer, int blocksperrow, int numrows,
+              int bufwidth) {
+  // Pointer offsets are computed in ptrdiff_t so row multiples cannot overflow.
+  const base::ssize stride = bufwidth;
+
   // Compute the offset to the next row of blocks
-  auto rowoffset = bufwidth * 4;
+  const base::ssize rowoffset = stride * 4;
 
   // Compute the end address of the pointer data
   auto entries = numrows * blocksperrow;
@@ -69,22 +76,22 @@ void UnVQ_4x4(const unsigned char* codebook, const unsigned char* pointers,
 
   // Drawing loop
   do {
-    int count = static_cast<int>(blocksperrow);  // Number of blocks in a line
+    int count = blocksperrow;  // Number of blocks in a line
     do {
-      int v = *src_ptr;
+      const uint8_t v = *src_ptr;
       int cb = src_ptr[entries];  // Get the codebook pointer value
       src_ptr++;
 
       if (cb == 0xFF)  // Is it a one color block?
       {
         // Draw 1-color block
-        uint32_t col32 = v | v << 8 | v << 16 | v << 24;  // Duplicate colour
+        const uint32_t col32 = v * 0x01010101U;  // Duplicate colour
         port::WriteUnaligned(dst_ptr, col32);  // Write 1st row to dest
-        port::WriteUnaligned(dst_ptr + bufwidth,
+        port::WriteUnaligned(dst_ptr + stride,
                              col32);  // Write 2nd row to dest
-        port::WriteUnaligned(dst_ptr + (bufwidth * 2),
+        port::WriteUnaligned(dst_ptr + (stride * 2),
                              col32);  // Write 3rd row to dest
-        port::WriteUnaligned(dst_ptr + (bufwidth * 3),
+        port::WriteUnaligned(dst_ptr + (stride * 3),
                              col32);  // Write 4th row to dest
       } else {
         // Draw multi-color block
@@ -99,11 +106,11 @@ void UnVQ_4x4(const unsigned char* codebook, const unsigned char* pointers,
             codebook + index + 12);  // Read 4th row of codeword
 
         port::WriteUnaligned(dst_ptr, row1);  // Write 1st row to dest
-        port::WriteUnaligned(dst_ptr + bufwidth,
+        port::WriteUnaligned(dst_ptr + stride,
                              row2);  // Write 2nd row to dest
-        port::WriteUnaligned(dst_ptr + (bufwidth * 2),
+        port::WriteUnaligned(dst_ptr + (stride * 2),
                              row3);  // Write 3rt row to dest
-        port::WriteUnaligned(dst_ptr + (bufwidth * 3),
+        port::WriteUnaligned(dst_ptr + (stride * 3),
                              row4);  // Write 4th row to dest
       }
 

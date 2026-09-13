@@ -42,6 +42,8 @@
 
 #include "tech/buff.h"
 
+#include "base/numeric.h"
+
 /***********************************************************************************************
  * Buffer::Buffer -- Constructor for buffer object. *
  *                                                                                             *
@@ -89,7 +91,7 @@ Buffer::Buffer(const void* buffer, long size)
  *=============================================================================================*/
 Buffer::Buffer(long size) : BufferPtr(nullptr), Size(size), IsAllocated(false) {
   if (size > 0) {
-    BufferPtr = new char[size];
+    BufferPtr = new char[base::ToSize(size)];
     IsAllocated = true;
   }
 }

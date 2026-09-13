@@ -147,7 +147,7 @@ int Base64_Encode(const void* source, int slen, void* dest, int dlen) {
   */
   int total = 0;
   const auto* sptr = static_cast<const unsigned char*>(source);
-  auto* dptr = static_cast<unsigned char*>(dest);
+  auto* dptr = static_cast<char*>(dest);
   while (slen > 0 && dlen >= PacketChars) {
     /*
     **	Fetch 24 bits of source data.

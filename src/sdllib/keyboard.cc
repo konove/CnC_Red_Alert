@@ -39,7 +39,7 @@ int WWKeyboardClass::Get() {
 bool WWKeyboardClass::Put(int key) {
   int temp = static_cast<int>((Tail + 1) & 255);
   if (temp != Head) {
-    Buffer[Tail] = static_cast<short>(key);
+    Buffer[Tail] = static_cast<uint16_t>(key);
 
     Tail = temp;
     return true;
@@ -86,7 +86,7 @@ bool WWKeyboardClass::Put_Key_Message(unsigned vk_key, bool release) {
   if (vk_key == 0) {
     return false;
   }
-  return Put(vk_key);
+  return Put(static_cast<int>(vk_key));
 }
 
 int WWKeyboardClass::To_ASCII(int num) {
@@ -165,7 +165,8 @@ bool WWKeyboardClass::Event_Handler(SDL_Event* event) {
         return false;
       }
 
-      Put_Key_Message(button, event->button.state == SDL_RELEASED);
+      Put_Key_Message(static_cast<unsigned>(button),
+                      event->button.state == SDL_RELEASED);
       Put(event->button.x);
       Put(event->button.y);
       return true;

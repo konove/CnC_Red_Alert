@@ -64,6 +64,8 @@
 #include <string>
 
 #include "absl/strings/ascii.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "sdllib/file.h"
 
 /***********************************************************************************************
@@ -401,8 +403,8 @@ long RawFileClass::Read(void* buffer, long size) {
   }
 
   size_t read_tmp = 0;
-  IO_Read_File(Handle, buffer, size, read_tmp);
-  bytesread = read_tmp;
+  IO_Read_File(Handle, buffer, base::ToSize(size), read_tmp);
+  bytesread = base::ToSigned(read_tmp);
   // doesn't bother looping, the below code is broken anyway (buffer isn't
   // incremented)
 
@@ -451,8 +453,8 @@ long RawFileClass::Write(const void* buffer, long size) {
   }
 
   size_t write_tmp = 0;
-  IO_Write_File(Handle, buffer, size, write_tmp);
-  bytesread = write_tmp;
+  IO_Write_File(Handle, buffer, base::ToSize(size), write_tmp);
+  bytesread = base::ToSigned(write_tmp);
 
   /*
   **	Fixup the bias length if necessary.
@@ -579,7 +581,9 @@ long RawFileClass::Size() {
   **	If the file is open, then proceed normally.
   */
   if (Is_Open()) {
-    size = IO_Get_File_Size(Handle);
+    // ftell's -1 error result arrives wrapped through size_t; a signed cast
+    // restores it rather than tripping a range check.
+    size = static_cast<base::ssize>(IO_Get_File_Size(Handle));
   } else {
     /*
     **	If the file wasn't open, then open the file and call this routine again.
@@ -806,7 +810,11 @@ long RawFileClass::Raw_Seek(long pos, int dir) {
     Error(EBADF, false, Filename_.c_str());
   }
 
-  pos = IO_Seek_File(Handle, pos, dir);
+  // IO_Seek_File carries the offset in a size_t and hands it straight to
+  // fseek, so a negative relative seek survives the round trip unchanged, as
+  // does ftell's -1 error result on the way back.
+  pos = static_cast<base::ssize>(
+      IO_Seek_File(Handle, static_cast<size_t>(pos), dir));
 
   /*
   **	Return with the new position of the file. This will range between zero

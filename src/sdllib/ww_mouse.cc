@@ -11,11 +11,11 @@
 #include <SDL_video.h>
 
 #include <cstring>
-
-#include "base/types.h"
 #include <utility>
 
 #include "absl/log/log.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/iff.h"
 #include "sdllib/shape.h"
@@ -47,7 +47,8 @@ static WWMouseClass* Mouse = nullptr;
 
   int dst_w = src_w * scale;
   int dst_h = src_h * scale;
-  auto* dst = new uint8_t[static_cast<base::ssize>(dst_w) * dst_h];
+  auto* dst =
+      new uint8_t[base::ToSize(static_cast<base::ssize>(dst_w) * dst_h)];
 
   for (int y = 0; y < dst_h; ++y) {
     int src_y = y / scale;
@@ -93,7 +94,8 @@ static int Get_Display_Scale() {
 
 WWMouseClass::WWMouseClass([[maybe_unused]] GraphicViewPortClass* scr,
                            int max_width, int max_height)
-    : MouseCursor(static_cast<base::ssize>(max_width) * max_height),
+    : MouseCursor(
+          base::ToSize(static_cast<base::ssize>(max_width) * max_height)),
       MaxWidth(max_width),
       MaxHeight(max_height) {
   Set_Cursor_Clip();
@@ -133,7 +135,7 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
   auto* outptr = MouseCursor.data();
 
   // Pre-zero buffer: RLE decoding may not write every pixel explicitly.
-  memset(MouseCursor.data(), 0, remaining);
+  memset(MouseCursor.data(), 0, base::ToSize(remaining));
 
   do {
     uint8_t pixel = *inptr++;
@@ -187,7 +189,7 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
     memcpy(static_cast<uint8_t*>(sdl_surf->pixels) +
                (static_cast<base::ssize>(y) * sdl_surf->pitch),
            scaled_cursor + (static_cast<base::ssize>(y) * scaled_width),
-           scaled_width);
+           base::ToSize(scaled_width));
   }
   delete[] scaled_cursor;
 

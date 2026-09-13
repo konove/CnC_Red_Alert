@@ -19,6 +19,7 @@
 #include "tech/random.h"
 
 #include <bit>
+#include <cstdint>
 #include <utility>
 
 RandomClass::RandomClass(const uint32_t seed) noexcept : seed_(seed) {}
@@ -51,7 +52,8 @@ int RandomClass::InRange(int low, int high) {
   // that covers the (windowed) magnitude. The width floors at one bit so the
   // mask is never empty even when the magnitude has no bits inside the window.
   const int magnitude = (high - low) & kSignificantMask;
-  const int high_bit = magnitude == 0 ? 1 : std::bit_width<unsigned>(magnitude);
+  const int high_bit =
+      magnitude == 0 ? 1 : std::bit_width(static_cast<uint32_t>(magnitude));
   const int mask = (1 << high_bit) - 1;
 
   // Reject-sample masked draws until one lands within the magnitude. Masking to

@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include "base/numeric.h"
 #include "gtest/gtest.h"
 #include "port/aligned_buffer.h"
 
@@ -16,8 +17,8 @@ TEST(UnalignedTest, ReadsAndWritesNativeValuesAtEveryByteOffset) {
     port::WriteUnaligned(bytes.data() + offset, kValue);
     EXPECT_EQ(port::ReadUnaligned<uint64_t>(bytes.data() + offset), kValue);
     EXPECT_EQ(std::memcmp(bytes.data() + offset, &kValue, sizeof(kValue)), 0);
-    EXPECT_EQ(bytes[offset - 1], 0xa5);
-    EXPECT_EQ(bytes[offset + sizeof(kValue)], 0xa5);
+    EXPECT_EQ(bytes[base::ToSize(offset - 1)], 0xa5);
+    EXPECT_EQ(bytes[base::ToSize(offset) + sizeof(kValue)], 0xa5);
   }
 }
 }  // namespace

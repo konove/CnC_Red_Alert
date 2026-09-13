@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
@@ -202,7 +203,7 @@ void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
   } else {
     // Fast non-transparent icon draw routine.
     do {
-      memcpy(dst_offset, ptr, iwidth);
+      memcpy(dst_offset, ptr, base::ToSize(iwidth));
       dst_offset += dst_area;
       ptr += IconWidth;
     } while (--iheight);
