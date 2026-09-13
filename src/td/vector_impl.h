@@ -6,6 +6,7 @@
 #include <new>
 #include <utility>
 
+#include "base/numeric.h"
 #include "td/vector.h"
 
 /***********************************************************************************************
@@ -30,16 +31,16 @@
  *=============================================================================================*/
 template <class T>
 VectorClass<T>::VectorClass(base::ssize size, T* array)
-    : Vector(nullptr), VectorMax(static_cast<unsigned int>(size)) {
+    : Vector(nullptr), VectorMax(size) {
   /*
   **	Allocate the vector. The default constructor will be called for every
   **	object in this vector.
   */
   if (size) {
     if (array) {
-      Vector = new (static_cast<void*>(array)) T[size];
+      Vector = new (static_cast<void*>(array)) T[base::ToSize(size)];
     } else {
-      Vector = new T[size];
+      Vector = new T[base::ToSize(size)];
       IsAllocated = true;
     }
   }
@@ -87,12 +88,12 @@ VectorClass<T>::VectorClass(const VectorClass<T>& vector) : Vector(nullptr) {
 
 template <class T>
 void VectorClass<T>::Copy_From(const VectorClass<T>& vector) {
-  VectorMax = static_cast<unsigned int>(vector.Length());
+  VectorMax = vector.Length();
   if (VectorMax) {
-    Vector = new T[VectorMax];
+    Vector = new T[base::ToSize(VectorMax)];
     if (Vector) {
       IsAllocated = true;
-      for (unsigned index = 0; index < VectorMax; index++) {
+      for (base::ssize index = 0; index < VectorMax; index++) {
         Vector[index] = vector[index];
       }
     }
@@ -145,7 +146,7 @@ VectorClass<T>& VectorClass<T>::operator=(const VectorClass<T>& vector) {
 template <class T>
 int VectorClass<T>::operator==(const VectorClass<T>& vector) const {
   if (VectorMax == vector.Length()) {
-    for (unsigned index = 0; index < VectorMax; index++) {
+    for (base::ssize index = 0; index < VectorMax; index++) {
       if (Vector[index] != vector[index]) {
         return false;
       }
@@ -200,9 +201,9 @@ int VectorClass<T>::ID(const T* ptr) {
  *=============================================================================================*/
 template <class T>
 int VectorClass<T>::ID(const T& object) {
-  for (unsigned index = 0; index < VectorMax; index++) {
+  for (base::ssize index = 0; index < VectorMax; index++) {
     if ((*this)[index] == object) {
-      return index;
+      return static_cast<int>(index);
     }
   }
   return -1;
@@ -263,9 +264,9 @@ int VectorClass<T>::Resize(base::ssize newsize, T* array) {
     */
     T* newptr;
     if (!array) {
-      newptr = new T[newsize];
+      newptr = new T[base::ToSize(newsize)];
     } else {
-      newptr = new (static_cast<void*>(array)) T[newsize];
+      newptr = new (static_cast<void*>(array)) T[base::ToSize(newsize)];
     }
     if (!newptr) {
       return false;
@@ -303,7 +304,7 @@ int VectorClass<T>::Resize(base::ssize newsize, T* array) {
     **	Assign the new vector data to this class.
     */
     Vector = newptr;
-    VectorMax = static_cast<unsigned int>(newsize);
+    VectorMax = newsize;
     IsAllocated = Vector && !array;
 
   } else {

@@ -59,6 +59,7 @@
 
 #include <cstddef>
 
+#include "absl/log/check.h"
 #include "base/types.h"
 
 // IWYU pragma: no_include "td/cell.h"
@@ -89,8 +90,14 @@ class VectorClass {
   VectorClass(VectorClass&&) = delete;
   VectorClass& operator=(VectorClass&&) = delete;
 
-  T& operator[](base::ssize index) { return Vector[index]; }
-  const T& operator[](base::ssize index) const { return Vector[index]; }
+  T& operator[](base::ssize index) {
+    DCHECK(index >= 0 && index < VectorMax);
+    return Vector[index];
+  }
+  const T& operator[](base::ssize index) const {
+    DCHECK(index >= 0 && index < VectorMax);
+    return Vector[index];
+  }
   VectorClass& operator=(const VectorClass& /*vector*/);
 
  private:
@@ -120,7 +127,7 @@ class VectorClass {
   // Stays 32-bit: this member is byte-serialized as part of the save format
   // (see src/td/heap_layout_test.cc), so widening it changes sizeof() for every
   // containing type. The public interface below is signed regardless.
-  unsigned VectorMax{0};
+  base::ssize VectorMax{0};
 
   /*
   **	Does the vector data pointer refer to memory that this class has

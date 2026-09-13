@@ -24,6 +24,7 @@
 #include <new>  // IWYU pragma: keep
 
 #include "absl/log/check.h"
+#include "base/numeric.h"
 #include "base/types.h"
 #include "ra/defines.h"  // IWYU pragma: keep
 #include "ra/egos.h"     // IWYU pragma: keep
@@ -75,12 +76,12 @@ VectorClass<T>::VectorClass(base::ssize size, T* array)
   if (size > 0) {
     if (array) {
       Vector = new (static_cast<void*>(array))
-          T[size];  // Placement new into provided buffer.
+          T[base::ToSize(size)];  // Placement new into provided buffer.
     } else {
       // Value initialized: callers routinely read capacity that has not been
       // assigned yet (Resize copies the whole old capacity, not just the
       // elements in use), which is an indeterminate value for a POD T.
-      Vector = new T[size]();
+      Vector = new T[base::ToSize(size)]();
       IsAllocated = true;
     }
   }
@@ -102,7 +103,7 @@ VectorClass<T>& VectorClass<T>::operator=(const VectorClass<T>& vector) {
     Clear();
     VectorMax = vector.Length();
     if (VectorMax > 0) {
-      Vector = new T[VectorMax];
+      Vector = new T[base::ToSize(VectorMax)];
       if (Vector) {
         IsAllocated = true;
         for (base::ssize index = 0; index < VectorMax; index++) {
@@ -169,9 +170,9 @@ bool VectorClass<T>::Resize(base::ssize newsize, T* array) {
   if (newsize > 0) {
     T* newptr;
     if (!array) {
-      newptr = new T[newsize]();  // Value initialized, see the constructor.
+      newptr = new T[base::ToSize(newsize)]();  // Value initialized, see the constructor.
     } else {
-      newptr = new (static_cast<void*>(array)) T[newsize];
+      newptr = new (static_cast<void*>(array)) T[base::ToSize(newsize)];
     }
     if (!newptr) {
       return false;

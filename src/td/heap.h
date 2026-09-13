@@ -45,6 +45,7 @@
 #include <new>
 #include <vector>
 
+#include "base/numeric.h"
 #include "base/types.h"
 #include "td/vector.h"
 #include "tech/archive.h"
@@ -80,7 +81,7 @@ class FixedHeapClass {
   int Length() { return TotalCount; }
   int Avail() { return TotalCount - ActiveCount; }
   [[nodiscard]] bool Is_Allocated(int index) const {
-    return index >= 0 && index < TotalCount && FreeFlag[index];
+    return index >= 0 && index < TotalCount && FreeFlag[base::ToSize(index)];
   }
 
   virtual int Set_Heap(int count, void* buffer = nullptr);
@@ -292,12 +293,12 @@ int TFixedIHeapClass<T>::Load(ArchiveReader& file)
     /*
     ** Get a pointer to the object, activate that object
     */
-    if (idx < 0 || idx >= TotalCount || FreeFlag[idx]) {
+    if (idx < 0 || idx >= TotalCount || FreeFlag[base::ToSize(idx)]) {
       file.Fail("invalid heap slot");
       return false;
     }
     ptr = static_cast<T*>((*this)[idx]);
-    FreeFlag[idx] = true;
+    FreeFlag[base::ToSize(idx)] = true;
     ActiveCount++;
     ActivePointers.Add(ptr);
 

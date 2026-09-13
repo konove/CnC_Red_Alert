@@ -42,6 +42,7 @@
 
 #include <cstring>
 
+#include "base/numeric.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/edit.h"
@@ -223,7 +224,7 @@ TDropListClass<T>* TDropListClass<T>::Remove() {
 
 template <class T>
 int TDropListClass<T>::Add_Item(T item) {
-  strncpy(String, item->Description(), MaxLength);
+  strncpy(String, item->Description(), base::ToSize(MaxLength));
   Flag_To_Redraw();
   return List.Add_Item(item);
 }
@@ -242,7 +243,7 @@ template <class T>
 void TDropListClass<T>::Set_Selected_Index(int index) {
   if (static_cast<unsigned>(index) < static_cast<unsigned>(List.Count())) {
     List.Set_Selected_Index(index);
-    strncpy(String, List.Get_Item(Current_Index())->Description(), MaxLength);
+    strncpy(String, List.Get_Item(Current_Index())->Description(), base::ToSize(MaxLength));
   } else {
     String[0] = '\0';
   }
@@ -266,7 +267,7 @@ void TDropListClass<T>::Peer_To_Peer(unsigned flags, KeyNumType& key,
   }
 
   if (&whom == &List) {
-    strncpy(String, List.Current_Item()->Description(), MaxLength);
+    strncpy(String, List.Current_Item()->Description(), base::ToSize(MaxLength));
     Flag_To_Redraw();
     key = ButtonKey(static_cast<int>(ID));
   }

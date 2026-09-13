@@ -39,7 +39,7 @@ ObjectClass* Slot(TFixedIHeapClass<T>& heap, int index, ArchiveReader& ar) {
     ar.Fail("saved object index outside its heap");
     return nullptr;
   }
-  return heap.Raw_Ptr(static_cast<std::size_t>(index));
+  return heap.Raw_Ptr(index);
 }
 
 bool IsTechnoKind(RTTIType kind) {

@@ -96,6 +96,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
@@ -3767,5 +3768,5 @@ void DisplayClass::Center_Map() {
 void DisplayClass::Flag_Cell(CELL cell) {
   Flag_To_Redraw(false);
   IsDisplayToRedraw = true;
-  CellRedraw[cell] = true;
+  CellRedraw[base::ToSize(cell)] = true;
 };

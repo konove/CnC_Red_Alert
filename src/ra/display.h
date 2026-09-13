@@ -21,6 +21,7 @@
 
 #include <vector>
 
+#include "base/numeric.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
@@ -198,7 +199,7 @@ class DisplayClass : public MapClass {
 
   virtual void Flag_Cell(CELL cell);
   [[nodiscard]] static bool Is_Cell_Flagged(CELL cell) {
-    return CellRedraw[cell];
+    return CellRedraw[base::ToSize(cell)];
   }
 
   /*

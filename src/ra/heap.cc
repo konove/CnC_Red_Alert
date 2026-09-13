@@ -56,6 +56,7 @@
 #include <cstring>
 
 #include "base/algorithm.h"
+#include "base/numeric.h"
 
 /***********************************************************************************************
  * FixedHeapClass::FixedHeapClass -- Normal constructor for heap management
@@ -139,9 +140,9 @@ int FixedHeapClass::Set_Heap(int count, void* buffer) {
   **	Initialize the free boolean vector and the buffer for the actual
   **	allocation objects.
   */
-  FreeFlag.resize(count, false);
+  FreeFlag.resize(base::ToSize(count), false);
   if (!buffer) {
-    buffer = new char[static_cast<std::size_t>(count) * Size];
+    buffer = new char[base::ToSize(int64_t{count} * Size)];
     IsAllocated = true;
   }
   Buffer = buffer;
@@ -171,7 +172,7 @@ void* FixedHeapClass::Allocate() {
 
     if (index != -1) {
       ActiveCount++;
-      FreeFlag[index] = true;
+      FreeFlag[base::ToSize(index)] = true;
       return (*this)[index];
     }
   }
@@ -198,9 +199,9 @@ int FixedHeapClass::Free(void* pointer) {
     int index = ID(pointer);
 
     if (static_cast<unsigned>(index) < static_cast<unsigned>(TotalCount)) {
-      if (FreeFlag[index]) {
+      if (FreeFlag[base::ToSize(index)]) {
         ActiveCount--;
-        FreeFlag[index] = false;
+        FreeFlag[base::ToSize(index)] = false;
         return true;
       }
     }
@@ -383,7 +384,7 @@ void* FixedIHeapClass::Allocate() {
   void* ptr = FixedHeapClass::Allocate();
   if (ptr) {
     ActivePointers.Add(ptr);
-    memset(ptr, 0, Size);
+    memset(ptr, 0, base::ToSize(Size));
   }
   return ptr;
 }

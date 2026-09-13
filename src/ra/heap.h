@@ -47,6 +47,7 @@
 #include <cstdint>
 #include <new>
 
+#include "base/numeric.h"
 #include "base/types.h"
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
@@ -226,11 +227,11 @@ class TFixedIHeapClass : public FixedIHeapClass {
   // malformed stream; the heap is then partially populated.
   int Load(Straw& file)
     requires Serializable<T>;
-  [[nodiscard]] virtual T* Ptr(std::size_t index) const {
+  [[nodiscard]] virtual T* Ptr(int index) const {
     return static_cast<T*>(ActivePointers[index]);
   }
-  virtual T* Raw_Ptr(std::size_t index) {
-    return static_cast<T*>((*this)[static_cast<int>(index)]);
+  virtual T* Raw_Ptr(int index) {
+    return static_cast<T*>((*this)[index]);
   }
 };
 
@@ -271,7 +272,7 @@ int TFixedIHeapClass<T>::Load(Straw& file)
     }
 
     T* ptr = static_cast<T*>((*this)[idx]);
-    FreeFlag[idx] = true;
+    FreeFlag[base::ToSize(idx)] = true;
     ActiveCount++;
     ActivePointers.Add(ptr);
 

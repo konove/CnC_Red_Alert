@@ -110,6 +110,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
@@ -4537,5 +4538,5 @@ void DisplayClass::Constrained_Look(COORDINATE center, LEPTON distance) {
 void DisplayClass::Flag_Cell(CELL cell) {
   Flag_To_Redraw(false);
   IsDisplayToRedraw = true;
-  CellRedraw[cell] = true;
+  CellRedraw[base::ToSize(cell)] = true;
 }

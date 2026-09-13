@@ -43,6 +43,7 @@
 
 #include <vector>
 
+#include "base/numeric.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/wwstd.h"
 #include "td/defines.h"
@@ -193,7 +194,7 @@ class DisplayClass : public MapClass {
 
   virtual void Flag_Cell(CELL cell);
   [[nodiscard]] static bool Is_Cell_Flagged(CELL cell) {
-    return CellRedraw[cell];
+    return CellRedraw[base::ToSize(cell)];
   }
 
   /*

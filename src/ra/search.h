@@ -62,6 +62,7 @@
 #endif
 
 #include "absl/log/check.h"
+#include "base/numeric.h"
 
 /*
 **	This class is used to create and maintain an index. It does this by
@@ -283,7 +284,7 @@ bool IndexClass<T>::Increase_Table_Size(int amount) {
     return false;
   }
 
-  auto* table = new NodeElement[IndexSize + amount];
+  auto* table = new NodeElement[base::ToSize(IndexSize + amount)];
   if (table != nullptr) {
     /*
     **	Copy all valid nodes into the new table.
@@ -637,7 +638,7 @@ const IndexClass<T>::NodeElement* IndexClass<T>::Search_For_Node(int id) const {
   *requires *	the list to be sorted.
   */
   if (!IsSorted) {
-    qsort(&IndexTable[0], IndexCount, sizeof(IndexTable[0]), search_compfunc);
+    qsort(&IndexTable[0], base::ToSize(IndexCount), sizeof(IndexTable[0]), search_compfunc);
     ((IndexClass<T>*)this)->Invalidate_Archive();
     ((IndexClass<T>*)this)->IsSorted = true;
   }
@@ -647,7 +648,8 @@ const IndexClass<T>::NodeElement* IndexClass<T>::Search_For_Node(int id) const {
   */
   NodeElement node{};
   node.ID = id;
-  return (const NodeElement*)bsearch(&node, &IndexTable[0], IndexCount,
+  return (const NodeElement*)bsearch(&node, &IndexTable[0],
+                                     base::ToSize(IndexCount),
                                      sizeof(IndexTable[0]), search_compfunc);
 }
 
