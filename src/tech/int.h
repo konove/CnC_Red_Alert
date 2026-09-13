@@ -64,7 +64,7 @@ class Int {
   Int() noexcept { XMP_Init(&reg[0], 0, PRECISION); }
   // big integers mix with machine integers in the crypto code.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  Int(unsigned long value) {
+  Int(uint32_t value) {
     XMP_Init(&reg[0], static_cast<std::uint32_t>(value), PRECISION);
   }
 
@@ -225,7 +225,7 @@ class Int {
     XMP_Signed_Div(Remainder, quotient, &reg[0], divisor, PRECISION);
     return quotient;
   }
-  Int operator/(unsigned long b) const { return *this / Int<PRECISION>(b); }
+  Int operator/(uint32_t b) const { return *this / Int<PRECISION>(b); }
   Int operator/(uint16_t divisor) const {
     Int quotient;
     Error = XMP_Unsigned_Div_Int(quotient, &reg[0], divisor, PRECISION);
@@ -238,7 +238,7 @@ class Int {
     XMP_Signed_Div(remainder, Remainder, &reg[0], divisor, PRECISION);
     return remainder;
   }
-  Int operator%(unsigned long b) const { return *this % Int<PRECISION>(b); }
+  Int operator%(uint32_t b) const { return *this % Int<PRECISION>(b); }
   uint16_t operator%(uint16_t divisor) const {
     return XMP_Unsigned_Div_Int(Remainder, &reg[0], divisor, PRECISION);
   }

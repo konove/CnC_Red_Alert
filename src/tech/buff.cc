@@ -62,15 +62,15 @@
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-Buffer::Buffer(void* buffer, long size)
+Buffer::Buffer(void* buffer, base::ssize size)
     : BufferPtr(buffer), Size(size), IsAllocated(false) {}
 
 // Alternate constructor for char * pointer.
-Buffer::Buffer(char* buffer, long size)
+Buffer::Buffer(char* buffer, base::ssize size)
     : BufferPtr(buffer), Size(size), IsAllocated(false) {}
 
 // Alternate constructor for void const * pointer.
-Buffer::Buffer(const void* buffer, long size)
+Buffer::Buffer(const void* buffer, base::ssize size)
     : BufferPtr((void*)buffer), Size(size), IsAllocated(false) {}
 
 /***********************************************************************************************
@@ -89,7 +89,8 @@ Buffer::Buffer(const void* buffer, long size)
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-Buffer::Buffer(long size) : BufferPtr(nullptr), Size(size), IsAllocated(false) {
+Buffer::Buffer(base::ssize size)
+    : BufferPtr(nullptr), Size(size), IsAllocated(false) {
   if (size > 0) {
     BufferPtr = new char[base::ToSize(size)];
     IsAllocated = true;

@@ -47,10 +47,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "base/numeric.h"
 #include "ra/ccfile.h"
 
 #include <cerrno>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
@@ -59,6 +59,7 @@
 #include <span>
 #include <string>
 
+#include "base/numeric.h"
 #include "ra/conquer.h"
 #include "ra/externs.h"
 #include "ra/jshell.h"
@@ -151,7 +152,7 @@ void CCFileClass::Error(int /*error*/, int /*canretry*/,
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-long CCFileClass::Write(const void* buffer, long size) {
+int32_t CCFileClass::Write(const void* buffer, int32_t size) {
   /*
   **	If this is part of a mixfile, then writing is not allowed. Error out
   *with a fatal *	message.
@@ -182,7 +183,7 @@ long CCFileClass::Write(const void* buffer, long size) {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-long CCFileClass::Read(void* buffer, long size) {
+int32_t CCFileClass::Read(void* buffer, int32_t size) {
   bool opened = false;
 
   /*
@@ -197,7 +198,7 @@ long CCFileClass::Read(void* buffer, long size) {
   **	all that is required for the read.
   */
   if (Is_Resident()) {
-    long maximum = Data.Get_Size() - Position;
+    int32_t maximum = static_cast<int32_t>(Data.Get_Size()) - Position;
 
     size = maximum < size ? maximum : size;
     //		size = std::min(maximum, size);
@@ -213,7 +214,7 @@ long CCFileClass::Read(void* buffer, long size) {
     return size;
   }
 
-  long s = CDFileClass::Read(buffer, size);
+  int32_t s = CDFileClass::Read(buffer, size);
 
   /*
   **	If the file was opened by this routine, then close it at this time.
@@ -248,7 +249,7 @@ long CCFileClass::Read(void* buffer, long size) {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-long CCFileClass::Seek(long pos, int dir) {
+int32_t CCFileClass::Seek(int32_t pos, int dir) {
   /*
   **	When the file is resident, a mere adjustment of the virtual file
   *position is *	all that is required of a seek.
@@ -256,7 +257,7 @@ long CCFileClass::Seek(long pos, int dir) {
   if (Is_Resident()) {
     switch (dir) {
       case SEEK_END:
-        Position = Data.Get_Size();
+        Position = static_cast<int32_t>(Data.Get_Size());
         break;
 
       case SEEK_SET:
@@ -269,7 +270,9 @@ long CCFileClass::Seek(long pos, int dir) {
     }
     Position += pos;
     Position = Position < 0 ? 0 : Position;
-    Position = Position > Data.Get_Size() ? Data.Get_Size() : Position;
+    Position = Position > static_cast<int32_t>(Data.Get_Size())
+                   ? static_cast<int32_t>(Data.Get_Size())
+                   : Position;
     //		Position = Bound(Position+pos, 0L, Length);
     return Position;
   }
@@ -292,13 +295,13 @@ long CCFileClass::Seek(long pos, int dir) {
  * HISTORY: * 08/08/1994 JLB : Created. * 08/05/1996 JLB : Handles returning
  *size of embedded file.                                 *
  *=============================================================================================*/
-long CCFileClass::Size() {
+int32_t CCFileClass::Size() {
   /*
   **	If the file is resident, the the size is already known. Just return the
   *size in this *	case.
   */
   if (Is_Resident()) {
-    return Data.Get_Size();
+    return static_cast<int32_t>(Data.Get_Size());
   }
 
   /*
@@ -473,64 +476,6 @@ int CCFileClass::Open(FileAccess rights) {
   return true;
 }
 
-/***********************************************************************************************
- * CCFileClass::Get_Date_Time -- Gets the date and time the file was last
- *modified.            *
- *                                                                                             *
- *    Use this routine to get the date and time of the file. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the file date and time as a long. * Use the YEAR(long),
- *MONTH(),....                                                   *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 11/14/1995 DRD : Created. *
- *=============================================================================================*/
-unsigned long CCFileClass::Get_Date_Time() {
-  unsigned long datetime = CDFileClass::Get_Date_Time();
-
-  if (!datetime) {
-    if (auto loc = MFCD::Offset(File_Name())) {
-      // Check for nested MIX files.
-      return CCFileClass(loc->mixfile->Filename().c_str()).Get_Date_Time();
-    }
-    // else return 0 indicating no file
-  }
-
-  return datetime;
-}
-
-/***********************************************************************************************
- * CCFileClass::Set_Date_Time -- Sets the date and time the file was last
- *modified.            *
- *                                                                                             *
- *    Use this routine to set the date and time of the file. *
- *                                                                                             *
- * INPUT:   the file date and time as a long *
- *                                                                                             *
- * OUTPUT:  successful or not if the file date and time was changed. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 11/14/1995 DRD : Created. *
- *=============================================================================================*/
-bool CCFileClass::Set_Date_Time(unsigned long datetime) {
-  bool status = CDFileClass::Set_Date_Time(datetime);
-
-  if (!status) {
-    if (auto loc = MFCD::Offset(File_Name())) {
-      // Check for nested MIX files.
-      return CCFileClass(loc->mixfile->Filename().c_str())
-          .Set_Date_Time(datetime);
-    }
-    // else return false indicating no file
-  }
-
-  return status;
-}
-
 /***********************************************************************************
 ** Backward compatibility section.
 */
@@ -556,16 +501,16 @@ void __cdecl Close_File(int handle) {
   }
 }
 
-long __cdecl Read_File(int handle, void* buf, unsigned long bytes) {
+int32_t __cdecl Read_File(int handle, void* buf, int32_t bytes) {
   if (handle != WWERROR && Handles[handle].Is_Open()) {
-    return Handles[handle].Read(buf, base::ToSigned(bytes));
+    return Handles[handle].Read(buf, bytes);
   }
   return 0;
 }
 
-long __cdecl Write_File(int handle, const void* buf, unsigned long bytes) {
+int32_t __cdecl Write_File(int handle, const void* buf, int32_t bytes) {
   if (handle != WWERROR && Handles[handle].Is_Open()) {
-    return Handles[handle].Write(buf, base::ToSigned(bytes));
+    return Handles[handle].Write(buf, bytes);
   }
   return 0;
 }
@@ -581,16 +526,16 @@ void* __cdecl Load_Alloc_Data(const char* name, int /*unused*/) {
   return Load_Alloc_Data(file);
 }
 
-unsigned long __cdecl File_Size(int handle) {
+int32_t __cdecl File_Size(int handle) {
   if (handle != WWERROR && Handles[handle].Is_Open()) {
-    return base::ToSize(Handles[handle].Size());
+    return Handles[handle].Size();
   }
   return 0;
 }
 
-unsigned long __cdecl Seek_File(int handle, long offset, int starting) {
+int32_t __cdecl Seek_File(int handle, int32_t offset, int starting) {
   if (handle != WWERROR && Handles[handle].Is_Open()) {
-    return base::ToSize(Handles[handle].Seek(offset, starting));
+    return Handles[handle].Seek(offset, starting);
   }
   return 0;
 }

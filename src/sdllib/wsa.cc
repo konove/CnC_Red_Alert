@@ -93,7 +93,7 @@ static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
                         char* dest_ptr, int dest_w);
 
 void* Open_Animation(const char* file_name, char* user_buffer,
-                     long user_buffer_size, WSAOpenType user_flags,
+                     int32_t user_buffer_size, WSAOpenType user_flags,
                      unsigned char* palette) {
   int fh;
   int anim_flags;
@@ -133,7 +133,9 @@ void* Open_Animation(const char* file_name, char* user_buffer,
     palette_adjust = 768;
 
     if (palette != nullptr) {
-      Seek_File(fh, sizeof(uint32_t) * file_header.total_frames, SEEK_CUR);
+      Seek_File(
+          fh, static_cast<int32_t>(sizeof(uint32_t) * file_header.total_frames),
+          SEEK_CUR);
       Read_File(fh, palette, 768L);
     }
 
@@ -150,12 +152,13 @@ void* Open_Animation(const char* file_name, char* user_buffer,
 
   // Get the total file size minus the size of the first frame and the size
   // of the file header.  These will not be read in to save even more space.
-  file_buffer_size = base::ToSigned(Seek_File(fh, 0L, SEEK_END));
+  file_buffer_size = Seek_File(fh, 0, SEEK_END);
 
   if (file_header.frame0_offset) {
-    long tlong;
+    int32_t tlong;
 
-    tlong = file_header.frame0_end - file_header.frame0_offset;
+    tlong = static_cast<int32_t>(file_header.frame0_end -
+                                 file_header.frame0_offset);
     frame0_size = static_cast<uint16_t>(tlong);
   } else {
     anim_flags |= WSA_FRAME_0_ON_PAGE;
@@ -221,9 +224,9 @@ void* Open_Animation(const char* file_name, char* user_buffer,
     // enough for the max configuration) allocate what we need.
     if ((user_flags & WSA_OPEN_FROM_DISK) ||
         (user_buffer_size != 0 && user_buffer_size < max_buffer_size)) {
-      user_buffer_size = min_buffer_size;
+      user_buffer_size = static_cast<int32_t>(min_buffer_size);
     } else {
-      user_buffer_size = max_buffer_size;
+      user_buffer_size = static_cast<int32_t>(max_buffer_size);
     }
 
     // Check to see if enough RAM available for buffer_size.
@@ -236,7 +239,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
       }
 
       // Else make buffer size the min and allocate it.
-      user_buffer_size = min_buffer_size;
+      user_buffer_size = static_cast<int32_t>(min_buffer_size);
     }
 
     // allocate buffer needed
@@ -246,9 +249,9 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   } else {
     // Check to see if the user_buffer_size should be min or max.
     if (user_flags & WSA_OPEN_FROM_DISK || user_buffer_size < max_buffer_size) {
-      user_buffer_size = min_buffer_size;
+      user_buffer_size = static_cast<int32_t>(min_buffer_size);
     } else {
-      user_buffer_size = max_buffer_size;
+      user_buffer_size = static_cast<int32_t>(max_buffer_size);
     }
     anim_flags |= WSA_USER_ALLOCATED;
   }
@@ -304,10 +307,10 @@ void* Open_Animation(const char* file_name, char* user_buffer,
     sys_header->file_buffer = static_cast<char*>(
         Add_Long_To_Pointer(delta_buffer, sys_header->largest_frame_size));
     Seek_File(fh, kWsaFileHeaderSize, SEEK_SET);
-    Read_File(fh, sys_header->file_buffer, base::ToSize(offsets_size));
+    Read_File(fh, sys_header->file_buffer, offsets_size);
     Seek_File(fh, frame0_size + palette_adjust, SEEK_CUR);
     Read_File(fh, sys_header->file_buffer + offsets_size,
-              base::ToSize(file_buffer_size - offsets_size));
+              static_cast<int32_t>(file_buffer_size - offsets_size));
 
     //
     // Find out if there is an ending value for the last frame.
@@ -339,7 +342,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   // Read the first frame into the delta buffer and uncompress it.
   // Then close it.
   Seek_File(fh, kWsaFileHeaderSize + offsets_size + palette_adjust, SEEK_SET);
-  Read_File(fh, delta_back, base::ToSize(frame0_size));
+  Read_File(fh, delta_back, frame0_size);
 
   // We do not use the file handle when it is in RAM.
   if (anim_flags & WSA_RESIDENT) {
@@ -911,11 +914,12 @@ static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
       return false;
     }
 
-    Seek_File(file_handle, frame_offset, SEEK_SET);
+    Seek_File(file_handle, static_cast<int32_t>(frame_offset), SEEK_SET);
     delta_back = static_cast<char*>(Add_Long_To_Pointer(
         delta_back, sys_header->largest_frame_size - frame_data_size));
 
-    if (Read_File(file_handle, delta_back, base::ToSize(frame_data_size)) !=
+    if (Read_File(file_handle, delta_back,
+                  static_cast<int32_t>(frame_data_size)) !=
         static_cast<int>(frame_data_size)) {
       return false;
     }

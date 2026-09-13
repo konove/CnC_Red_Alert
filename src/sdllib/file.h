@@ -52,10 +52,10 @@
 // These are actually implemented in the game, but used by audio and WSA
 int Open_File(const char* file_name, FileAccess mode);
 void Close_File(int handle);
-long Read_File(int handle, void* buf, unsigned long bytes);
-long Write_File(int handle, const void* buf, unsigned long bytes);
-unsigned long Seek_File(int handle, long offset, int starting);
-unsigned long File_Size(int handle);
+int32_t Read_File(int handle, void* buf, int32_t bytes);
+int32_t Write_File(int handle, const void* buf, int32_t bytes);
+int32_t Seek_File(int handle, int32_t offset, int starting);
+int32_t File_Size(int handle);
 int Find_File(const char* file_name);
 
 // low level IO implemented here

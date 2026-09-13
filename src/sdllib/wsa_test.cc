@@ -33,16 +33,16 @@ int Open_File(const char* /*file_name*/, FileAccess /*mode*/) {
 
 void Close_File(int /*handle*/) {}
 
-long Read_File(int /*handle*/, void* buf, unsigned long bytes) {
+int32_t Read_File(int /*handle*/, void* buf, int32_t bytes) {
   const int64_t available =
       std::max<int64_t>(0, std::ssize(file_image) - file_pos);
   const int64_t count = std::min(static_cast<int64_t>(bytes), available);
   std::memcpy(buf, file_image.data() + file_pos, static_cast<size_t>(count));
   file_pos += count;
-  return count;
+  return static_cast<int32_t>(count);
 }
 
-unsigned long Seek_File(int /*handle*/, long offset, int starting) {
+int32_t Seek_File(int /*handle*/, int32_t offset, int starting) {
   if (starting == SEEK_SET) {
     file_pos = offset;
   } else if (starting == SEEK_CUR) {
@@ -50,15 +50,14 @@ unsigned long Seek_File(int /*handle*/, long offset, int starting) {
   } else {
     file_pos = std::ssize(file_image) + offset;
   }
-  return static_cast<unsigned long>(file_pos);
+  return static_cast<int32_t>(file_pos);
 }
 
 // ww_win.cc, pulled in through gbuffer, dispatches events to the app.
 void SDL_Event_Handler(SDL_Event* /*event*/) {}
 
 // Frame 0 decoding is not under test; leave the delta buffer alone.
-unsigned long LCW_Uncompress(void* /*source*/, void* /*dest*/,
-                             unsigned long /*length*/) {
+int32_t LCW_Uncompress(void* /*source*/, void* /*dest*/, int32_t /*length*/) {
   return 0;
 }
 
@@ -173,7 +172,7 @@ std::vector<char> MakeTwoFrameWsa(int claimed_size) {
 // Opens the corrupt animation in `buffer_size` bytes surrounded by guard
 // bytes, animates to frame 1, and checks that the oversized frame landed
 // neither in front of the delta buffer nor outside the caller's buffer.
-void ExpectOversizedFrameIsNotLoaded(long buffer_size, WSAOpenType flags) {
+void ExpectOversizedFrameIsNotLoaded(int32_t buffer_size, WSAOpenType flags) {
   file_image = MakeTwoFrameWsa(600);
   constexpr int kGuard = 1024;
   std::vector<char> storage(static_cast<size_t>(kGuard + buffer_size + kGuard),

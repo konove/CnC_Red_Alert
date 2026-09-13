@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_TECH_CRCSTRAW_H_
 #define CNC_RED_ALERT_TECH_CRCSTRAW_H_
 
+#include <cstdint>
+
 #include "tech/crc.h"
 #include "tech/straw.h"
 
@@ -61,7 +63,7 @@ class CRCStraw : public Straw {
   int Get(void* source, int slen) override;
 
   // Calculate and return the CRC value.
-  [[nodiscard]] long Result() const;
+  [[nodiscard]] uint32_t Result() const;
 
  protected:
   CrcEngine crc_;

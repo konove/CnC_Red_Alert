@@ -1982,11 +1982,11 @@ int MixFileVqaIo::Open(const char* filename) {
 }
 
 int MixFileVqaIo::Read(void* buffer, int64_t bytes) {
-  return file_->Read(buffer, bytes) != bytes;
+  return file_->Read(buffer, static_cast<int32_t>(bytes)) != bytes;
 }
 
 int MixFileVqaIo::Seek(int64_t offset, int origin) {
-  return file_->Seek(offset, origin) == -1;
+  return file_->Seek(static_cast<int32_t>(offset), origin) == -1;
 }
 
 void MixFileVqaIo::Close() {

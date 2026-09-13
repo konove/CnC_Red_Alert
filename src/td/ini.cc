@@ -735,7 +735,7 @@ void Write_Scenario_Ini(char* root) {
     **	Write the scenario data out to a file.
     */
     //	file.Open(WRITE);
-    file.Write(buffer, base::ToSigned(strlen(buffer)));
+    file.Write(buffer, static_cast<int32_t>(strlen(buffer)));
     //	file.Close();
 
     /*
@@ -757,7 +757,7 @@ void Write_Scenario_Ini(char* root) {
     TriggerClass::Write_INI(buffer, false);
 
     //	file.Open(WRITE);
-    file.Write(buffer, base::ToSigned(strlen(buffer)));
+    file.Write(buffer, static_cast<int32_t>(strlen(buffer)));
     //	file.Close();
   }
 }

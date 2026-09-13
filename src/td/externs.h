@@ -414,8 +414,8 @@ extern bool SpawnedFromWChat;
 extern bool VQPaletteChange;
 extern int WChatMaxAhead;
 extern int WChatSendRate;
-extern unsigned long PlanetWestwoodGameID;
-extern unsigned long PlanetWestwoodStartTime;
+extern uint32_t PlanetWestwoodGameID;
+extern uint32_t PlanetWestwoodStartTime;
 void Check_For_Focus_Loss();
 void Create_Main_Window(void* instance, int command_show, int width,
                         int height);

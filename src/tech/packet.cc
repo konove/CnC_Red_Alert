@@ -383,10 +383,10 @@ bool PacketClass::Get_Field(const char* id, uint16_t& data) {
  * HISTORY:                                                               *
  *   04/23/1996 PWG : Created.                                            *
  *========================================================================*/
-bool PacketClass::Get_Field(const char* id, long& data) {
+bool PacketClass::Get_Field(const char* id, int32_t& data) {
   FieldClass* field = Find_Field(id);
   if (field) {
-    data = *static_cast<long*>(field->Data);
+    data = *static_cast<int32_t*>(field->Data);
   }
   return field != nullptr;
 }
@@ -432,10 +432,10 @@ bool PacketClass::Get_Field(const char* id, char* data, size_t data_size) {
  * HISTORY:                                                               *
  *   04/23/1996 PWG : Created.                                            *
  *========================================================================*/
-bool PacketClass::Get_Field(const char* id, unsigned long& data) {
+bool PacketClass::Get_Field(const char* id, uint32_t& data) {
   FieldClass* field = Find_Field(id);
   if (field) {
-    data = *static_cast<unsigned long*>(field->Data);
+    data = *static_cast<uint32_t*>(field->Data);
   }
   return field != nullptr;
 }

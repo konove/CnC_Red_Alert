@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_TECH_CRCPIPE_H_
 #define CNC_RED_ALERT_TECH_CRCPIPE_H_
 
+#include <cstdint>
+
 #include "tech/crc.h"
 #include "tech/pipe.h"
 
@@ -60,7 +62,7 @@ class CRCPipe : public Pipe {
   int Put(const void* source, int slen) override;
 
   // Fetch the CRC value.
-  [[nodiscard]] long Result() const;
+  [[nodiscard]] uint32_t Result() const;
 
  protected:
   CrcEngine crc_;

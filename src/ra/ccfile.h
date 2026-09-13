@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_CCFILE_H_
 #define CNC_RED_ALERT_RA_CCFILE_H_
 
+#include <cstdint>
 #include <cstdio>
 
 #include "ra/compat.h"
@@ -73,13 +74,11 @@ class CCFileClass : public CDFileClass {
     return Open(rights);
   }
   int Open(FileAccess rights = FileAccess::kRead) override;
-  long Read(void* buffer, long size) override;
-  long Seek(long pos, int dir = SEEK_CUR) override;
-  long Size() override;
-  long Write(const void* buffer, long size) override;
+  int32_t Read(void* buffer, int32_t size) override;
+  int32_t Seek(int32_t pos, int dir = SEEK_CUR) override;
+  int32_t Size() override;
+  int32_t Write(const void* buffer, int32_t size) override;
   void Close() override;
-  unsigned long Get_Date_Time() override;
-  bool Set_Date_Time(unsigned long datetime) override;
   void Error(int error, int canretry = false,
              const char* filename = nullptr) override;
 
@@ -108,7 +107,7 @@ class CCFileClass : public CDFileClass {
   *accurate. This value will *	range from zero to the size of the file in
   *bytes.
   */
-  long Position;
+  int32_t Position;
 
  public:
   // Force these to never be invoked.

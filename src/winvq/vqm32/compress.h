@@ -18,6 +18,8 @@
 
 #ifndef CNC_RED_ALERT_WINVQ_VQM32_COMPRESS_H_
 #define CNC_RED_ALERT_WINVQ_VQM32_COMPRESS_H_
+
+#include <cstdint>
 /****************************************************************************
  *
  *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
@@ -44,12 +46,9 @@
 extern "C" {
 #endif
 
-unsigned long __cdecl LCW_Compress(char const* source, char* dest,
-                                   unsigned long length);
-unsigned long __cdecl LCW_Uncompress(void* source, void* dest,
-                                     unsigned long length);
-long AudioZap(void* source, void* dest, long size);
-long __cdecl AudioUnzap(void* source, void* dest, long /*unused*/);
+int32_t __cdecl LCW_Uncompress(void* source, void* dest, int32_t length);
+int32_t AudioZap(void* source, void* dest, int32_t size);
+int32_t __cdecl AudioUnzap(void* source, void* dest, int32_t /*unused*/);
 
 #ifdef __cplusplus
 }

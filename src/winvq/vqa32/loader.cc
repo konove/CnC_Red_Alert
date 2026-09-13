@@ -647,10 +647,9 @@ long VQA_LoadFrame(VQAHandle* vqa) {
          * This functionality is needed for Monopoly!
          */
         if (drawer->CurPalSize == 0) {
-          drawer->CurPalSize = static_cast<int32_t>(
+          drawer->CurPalSize =
               LCW_Uncompress(curframe->Palette + curframe->PalOffset,
-                             drawer->Palette_24,
-                             sizeof(drawer->Palette_24)));
+                             drawer->Palette_24, sizeof(drawer->Palette_24));
         }
 
         /* Flag this frame as having a palette. */
@@ -942,9 +941,9 @@ long VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, long /*fromwhere*/) {
             if (VQA_LoadFrame(vqa) == 0) {
               /* Decompress the palette if neccessary.*/
               if (frame->Flags & VQAFRMF_PALCOMP) {
-                frame->PaletteSize = static_cast<int32_t>(LCW_Uncompress(
-                    frame->Palette + frame->PalOffset, frame->Palette,
-                    base::ToSize(vqabuf->Max_Pal_Size)));
+                frame->PaletteSize =
+                    LCW_Uncompress(frame->Palette + frame->PalOffset,
+                                   frame->Palette, vqabuf->Max_Pal_Size);
               }
 
               SetPalette(frame->Palette, frame->PaletteSize, 0);
@@ -1512,10 +1511,9 @@ static long Load_VQF(VQAHandle* vqap, int32_t frame_iffsize) {
          * This functionality is needed for Monopoly!
          */
         if (drawer->CurPalSize == 0) {
-          drawer->CurPalSize = static_cast<int32_t>(
+          drawer->CurPalSize =
               LCW_Uncompress(curframe->Palette + curframe->PalOffset,
-                             drawer->Palette_24,
-                             sizeof(drawer->Palette_24)));
+                             drawer->Palette_24, sizeof(drawer->Palette_24));
         }
 
         /* Flag this frame as having a palette. */

@@ -120,7 +120,7 @@
  *                                                                                             *
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
-static int Byte_Precision(unsigned long value) {
+static int Byte_Precision(uint32_t value) {
   int byte_count;
   for (byte_count = sizeof(value); byte_count; byte_count--) {
     if (value >> ((byte_count - 1) * 8)) {
@@ -150,7 +150,7 @@ static int Byte_Precision(unsigned long value) {
  *                                                                                             *
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
-int XMP_DER_Length_Encode(unsigned long length, unsigned char* output) {
+int XMP_DER_Length_Encode(uint32_t length, unsigned char* output) {
   assert(output != nullptr);
 
   int header_length = 0;
@@ -201,8 +201,8 @@ int XMP_DER_Encode(const uint32_t* from, unsigned char* output, int precision) {
   const int number_count = XMP_Encode(buffer, from, precision);
 
   output[header_count++] = 0x02;
-  header_count +=
-      XMP_DER_Length_Encode(base::ToSize(number_count), &output[header_count]);
+  header_count += XMP_DER_Length_Encode(static_cast<uint32_t>(number_count),
+                                        &output[header_count]);
   memcpy(&output[header_count], buffer, base::ToSize(number_count));
 
   return header_count + number_count;
@@ -1238,9 +1238,9 @@ int XMP_Unsigned_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
                           uint16_t multiplier, int precision) {
   const auto* m2 = (const uint16_t*)multiplicand;
   auto* pr = (uint16_t*)prod;
-  unsigned long carry = 0;
+  uint32_t carry = 0;
   for (int i = 0; i < precision * 2; ++i) {
-    unsigned long p = (static_cast<unsigned long>(multiplier) * *m2) + carry;
+    uint32_t p = (static_cast<uint32_t>(multiplier) * *m2) + carry;
     *pr = static_cast<uint16_t>(p);
     carry = p >> 16;
     m2++;
@@ -1802,9 +1802,9 @@ void XMP_Decode_ASCII(const char* str, uint32_t* mpn, int precision) {
  *=============================================================================================*/
 static void XMP_Hybrid_Mul(uint16_t* prod, uint16_t* multiplicand,
                            uint16_t multiplier, int precision) {
-  unsigned long carry = 0;
+  uint32_t carry = 0;
   for (int i = 0; i < precision; ++i) {
-    unsigned long p = static_cast<unsigned long>(multiplier) * *multiplicand++;
+    uint32_t p = static_cast<uint32_t>(multiplier) * *multiplicand++;
     p += *prod + carry;
     *prod++ = static_cast<uint16_t>(p);
     carry = p >> 16;
@@ -2081,10 +2081,10 @@ void XMP_Mod_Mult_Clear(int precision) {
 **      modulus.
 */
 uint16_t mp_quo_digit(const uint16_t* dividend) {
-  unsigned long q;
-  unsigned long q0;
-  unsigned long q1;
-  unsigned long q2;
+  uint64_t q;
+  uint64_t q0;
+  uint64_t q1;
+  uint64_t q2;
 
   /*
    * Compute the least significant product group.
@@ -2092,28 +2092,27 @@ uint16_t mp_quo_digit(const uint16_t* dividend) {
    * needed to guarantee that the result not be too small.
    */
   q1 = ((dividend[-2] ^ SEMI_MASK) *
-        static_cast<unsigned long>(reciprical_high_digit)) +
+        static_cast<uint64_t>(reciprical_high_digit)) +
        reciprical_high_digit;
   q2 = ((dividend[-1] ^ SEMI_MASK) *
-        static_cast<unsigned long>(reciprical_low_digit)) +
+        static_cast<uint64_t>(reciprical_low_digit)) +
        (1L << 16);
   q0 = (q1 >> 1) + (q2 >> 1) + 1;
 
   /*      Compute the middle significant product group.   */
-  q1 = (dividend[-1] ^ SEMI_MASK) *
-       static_cast<unsigned long>(reciprical_high_digit);
-  q2 = (dividend[0] ^ SEMI_MASK) *
-       static_cast<unsigned long>(reciprical_low_digit);
+  q1 =
+      (dividend[-1] ^ SEMI_MASK) * static_cast<uint64_t>(reciprical_high_digit);
+  q2 = (dividend[0] ^ SEMI_MASK) * static_cast<uint64_t>(reciprical_low_digit);
   q = (q0 >> 16) + (q1 >> 1) + (q2 >> 1) + 1;
 
   /*      Compute the most significant term and add in the others */
   q = (q >> (16 - 2)) + (((dividend[0] ^ SEMI_MASK) *
-                          static_cast<unsigned long>(reciprical_high_digit))
+                          static_cast<uint64_t>(reciprical_high_digit))
                          << 1);
   q >>= modulus_shift;
 
   /*      Prevent overflow and then wipe out the intermediate results. */
-  return static_cast<uint16_t>(std::min(q, (unsigned long)(1L << 16) - 1));
+  return static_cast<uint16_t>(std::min(q, (uint64_t)(1L << 16) - 1));
 }
 
 /*

@@ -226,7 +226,7 @@ class BufferedFileReader {
 };
 
 GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
-                                  long Size) {
+                                  int32_t Size) {
   CCFileClass file_handle(name);
 
   if (!file_handle.Is_Available()) {
@@ -250,7 +250,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
 
   if (Buff) {
     buffer = static_cast<char*>(Buff);
-    int max_lines = static_cast<int>(Size / width);
+    int max_lines = Size / width;
     height = std::min(max_lines - 1, height);
     pic = new GraphicBufferClass(width, height, buffer, Size);
     if (!pic->Get_Buffer()) {

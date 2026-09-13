@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_TECH_RAMFILE_H_
 #define CNC_RED_ALERT_TECH_RAMFILE_H_
 
+#include <cstdint>
 #include <cstdio>
 
 #include "absl/base/attributes.h"
@@ -65,13 +66,11 @@ class RAMFileClass final : public FileClass {
   int Open(const char* filename,
            FileAccess access = FileAccess::kRead) override;
   int Open(FileAccess access = FileAccess::kRead) override;
-  long Read(void* buffer, long size) override;
-  long Seek(long pos, int dir = SEEK_CUR) override;
-  long Size() override;
-  long Write(const void* buffer, long size) override;
+  int32_t Read(void* buffer, int32_t size) override;
+  int32_t Seek(int32_t pos, int dir = SEEK_CUR) override;
+  int32_t Size() override;
+  int32_t Write(const void* buffer, int32_t size) override;
   void Close() override;
-  unsigned long Get_Date_Time() override { return 0; }
-  bool Set_Date_Time(unsigned long /*unused*/) override { return true; }
   void Error(int /*error*/, int /*canretry*/ = false,
              const char* /*filename*/ = nullptr) override {}
 

@@ -48,6 +48,7 @@
 
 #include <algorithm>
 #include <cerrno>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -169,7 +170,7 @@ CCFileClass::CCFileClass()
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-long CCFileClass::Write(const void* buffer, long size) {
+int32_t CCFileClass::Write(const void* buffer, int32_t size) {
   /*
   **	If this is part of a mixfile, then writing is not allowed. Error out
   *with a fatal *	message.
@@ -200,7 +201,7 @@ long CCFileClass::Write(const void* buffer, long size) {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-long CCFileClass::Read(void* buffer, long size) {
+int32_t CCFileClass::Read(void* buffer, int32_t size) {
   int opened = false;
 
   if ((!Is_Open()) && Open()) {
@@ -212,7 +213,7 @@ long CCFileClass::Read(void* buffer, long size) {
   **	all that is required for the read.
   */
   if (Pointer) {
-    long maximum = Length - Position;
+    int32_t maximum = Length - Position;
 
     size = std::min(maximum, size);
     if (size) {
@@ -231,7 +232,7 @@ long CCFileClass::Read(void* buffer, long size) {
   **	on disk, then a special read operation is necessary.
   */
   if (FromDisk) {
-    long maximum = Length - Position;
+    int32_t maximum = Length - Position;
 
     size = std::min(maximum, size);
     if (size > 0) {
@@ -245,7 +246,7 @@ long CCFileClass::Read(void* buffer, long size) {
     return size;
   }
 
-  long s = CDFileClass::Read(buffer, size);
+  int32_t s = CDFileClass::Read(buffer, size);
   if (opened) {
     Close();
   }
@@ -272,7 +273,7 @@ long CCFileClass::Read(void* buffer, long size) {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-long CCFileClass::Seek(long pos, int dir) {
+int32_t CCFileClass::Seek(int32_t pos, int dir) {
   if (Pointer || FromDisk) {
     switch (dir) {
       case SEEK_END:
@@ -287,7 +288,7 @@ long CCFileClass::Seek(long pos, int dir) {
       default:
         break;
     }
-    Position = std::clamp<long>(Position + pos, 0, Length);
+    Position = std::clamp<int32_t>(Position + pos, 0, Length);
     return Position;
   }
   return CDFileClass::Seek(pos, dir);
@@ -308,7 +309,7 @@ long CCFileClass::Seek(long pos, int dir) {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-long CCFileClass::Size() {
+int32_t CCFileClass::Size() {
   if (Pointer || FromDisk) {
     return Length;
   }
@@ -431,8 +432,8 @@ int CCFileClass::Open(FileAccess rights) {
     */
     if (loc->data.empty()) {
       // Not cached - read from disk
-      long start = loc->offset;
-      long length = loc->size;
+      int32_t start = loc->offset;
+      int32_t length = loc->size;
 
       /*
       **	This is a legitimate open to the file. All access to the file
@@ -497,16 +498,16 @@ void __cdecl Close_File(int handle) {
   }
 }
 
-long __cdecl Read_File(int handle, void* buf, unsigned long bytes) {
+int32_t __cdecl Read_File(int handle, void* buf, int32_t bytes) {
   if (handle != kInvalidHandle && Handles[handle].Is_Open()) {
-    return Handles[handle].Read(buf, base::ToSigned(bytes));
+    return Handles[handle].Read(buf, bytes);
   }
   return 0;
 }
 
-long __cdecl Write_File(int handle, const void* buf, unsigned long bytes) {
+int32_t __cdecl Write_File(int handle, const void* buf, int32_t bytes) {
   if (handle != kInvalidHandle && Handles[handle].Is_Open()) {
-    return Handles[handle].Write(buf, base::ToSigned(bytes));
+    return Handles[handle].Write(buf, bytes);
   }
   return 0;
 }
@@ -536,9 +537,9 @@ void* __cdecl Load_Alloc_Data(const char* name, int /*unused*/) {
   return Load_Alloc_Data(file);
 }
 
-unsigned long __cdecl File_Size(int handle) {
+int32_t __cdecl File_Size(int handle) {
   if (handle != kInvalidHandle && Handles[handle].Is_Open()) {
-    return base::ToSize(Handles[handle].Size());
+    return Handles[handle].Size();
   }
   return 0;
 }
@@ -549,9 +550,9 @@ ULONG __cdecl Write_Data(const char* name, const VOID* ptr, ULONG size) {
 }
 #endif
 
-unsigned long __cdecl Seek_File(int handle, long offset, int starting) {
+int32_t __cdecl Seek_File(int handle, int32_t offset, int starting) {
   if (handle != kInvalidHandle && Handles[handle].Is_Open()) {
-    return base::ToSize(Handles[handle].Seek(offset, starting));
+    return Handles[handle].Seek(offset, starting);
   }
   return 0;
 }

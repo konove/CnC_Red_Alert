@@ -691,7 +691,7 @@ void OptionsClass::Save_Settings() {
   /*
   **	Write the INI data out to a file.
   */
-  file.Write(buffer, base::ToSigned(strlen(buffer)));
+  file.Write(buffer, static_cast<int32_t>(strlen(buffer)));
 }
 
 /***********************************************************************************************

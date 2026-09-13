@@ -129,7 +129,7 @@ void XMP_Randomize(uint32_t* result, Straw& rng, const uint32_t* min,
 bool XMP_Is_Prime(const uint32_t* prime, int precision);
 bool XMP_Rabin_Miller_Test(Straw& rng, const uint32_t* w, int rounds,
                            int precision);
-int XMP_DER_Length_Encode(unsigned long length, unsigned char* output);
+int XMP_DER_Length_Encode(uint32_t length, unsigned char* output);
 int XMP_DER_Encode(const uint32_t* from, unsigned char* output, int precision);
 void XMP_DER_Decode(uint32_t* result, const unsigned char* input,
                     int precision);

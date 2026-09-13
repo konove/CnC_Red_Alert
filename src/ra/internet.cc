@@ -23,10 +23,12 @@
 
 #include "ra/internet.h"
 
+#include <cstdint>
+
 long PlanetWestwoodPortNumber = 1234;  // Port number to send to
 bool PlanetWestwoodIsHost =
     false;  // Flag true if player has control of game options
-unsigned long PlanetWestwoodGameID;     // Game ID
-unsigned long PlanetWestwoodStartTime;  // Time that game was started
+uint32_t PlanetWestwoodGameID;     // Game ID
+uint32_t PlanetWestwoodStartTime;  // Time that game was started
 bool GameStatisticsPacketSent;  // Flag that game stats have been sent
 bool ConnectionLost;  // Flag that the connection to the other player was lost

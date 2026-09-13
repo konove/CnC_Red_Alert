@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_TECH_BUFF_H_
 
 #include "absl/base/attributes.h"
+#include "base/types.h"
 
 /*
 **	A general purpose buffer pointer handler object. It holds not only the
@@ -50,12 +51,13 @@
 */
 class Buffer {
  public:
-  explicit Buffer(char* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND, long size = 0);
+  explicit Buffer(char* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                  base::ssize size = 0);
   explicit Buffer(void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND = nullptr,
-                  long size = 0);
+                  base::ssize size = 0);
   explicit Buffer(const void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                  long size = 0);
-  explicit Buffer(long size);
+                  base::ssize size = 0);
+  explicit Buffer(base::ssize size);
   Buffer(const Buffer&) = delete;
   Buffer& operator=(const Buffer&) = delete;
   Buffer(Buffer&& buffer) noexcept;
@@ -70,7 +72,7 @@ class Buffer {
 
   void Reset();
   [[nodiscard]] void* Get_Buffer() const { return BufferPtr; }
-  [[nodiscard]] long Get_Size() const { return Size; }
+  [[nodiscard]] base::ssize Get_Size() const { return Size; }
   [[nodiscard]] bool Is_Valid() const { return BufferPtr != nullptr; }
 
  protected:
@@ -82,7 +84,7 @@ class Buffer {
   /*
   **	The size of the buffer memory.
   */
-  long Size;
+  base::ssize Size;
 
   /*
   **	Was the buffer allocated by this class? If so, then this class

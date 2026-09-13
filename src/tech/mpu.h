@@ -63,13 +63,6 @@ inline uint64_t Get_CPU_Clock() {
 }
 #endif
 
-// Legacy interface - returns low 32 bits, stores high 32 bits in 'high'.
-inline unsigned long Get_CPU_Clock(unsigned long& high) {
-  uint64_t tsc = Get_CPU_Clock();
-  high = tsc >> 32;
-  return tsc;
-}
-
 // Processor type constants (legacy).
 constexpr int kProc80586 = 2;  // Pentium and later
 

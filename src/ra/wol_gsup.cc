@@ -3476,14 +3476,14 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
 
   // PlanetWestwoodGameID = WWGetPrivateProfileInt("Internet", "GameID", 0,
   // buffer);
-  PlanetWestwoodGameID = static_cast<unsigned long>(pWO->pChatSink->iGameID);
+  PlanetWestwoodGameID = static_cast<uint32_t>(pWO->pChatSink->iGameID);
 
   //	Reset ChatSink's iGameID.
   pWO->pChatSink->iGameID = 0;
 
   // PlanetWestwoodStartTime = WWGetPrivateProfileInt ("Internet", "StartTime",
   // 0, buffer);
-  PlanetWestwoodStartTime = static_cast<unsigned long>(time(nullptr));
+  PlanetWestwoodStartTime = static_cast<uint32_t>(time(nullptr));
   // WChatHWND = (HWND) WWGetPrivateProfileInt("Internet", "HWND",
   // (int)FindWindow("OWL_Window", "Westwood Chat"), buffer);
 

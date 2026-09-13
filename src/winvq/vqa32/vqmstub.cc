@@ -25,7 +25,7 @@ static constexpr int16_t kImaAdpcmStepTable[89] = {
 // the SDL port does not build. This stub writes nothing, so it cannot exceed
 // the destination size the loader passes. A real decoder must stop after
 // size bytes.
-long AudioUnzap(void* /*source*/, void* /*dest*/, long /*size*/) {
+int32_t AudioUnzap(void* /*source*/, void* /*dest*/, int32_t /*size*/) {
   printf("%s\n", __func__);
   return 0;
 }

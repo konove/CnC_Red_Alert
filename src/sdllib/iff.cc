@@ -29,7 +29,8 @@
     case HORIZONTAL:
       break;
     case LCW:
-      LCW_Uncompress(payload_src, payload_dst, uncompressed_size);
+      LCW_Uncompress(payload_src, payload_dst,
+                     static_cast<int32_t>(uncompressed_size));
       break;
     // Unsupported compression methods - copy the payload through untouched.
     [[unlikely]] case LZW12:

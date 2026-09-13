@@ -47,6 +47,7 @@
 #define MINUTE(dt) (((dt) & 0x000007E0) >> 5)
 #define SECOND(dt) (((dt) & 0x0000001F) << 1)
 
+#include <cstdint>
 #include <cstdio>
 
 #include "sdllib/file_access.h"
@@ -85,13 +86,11 @@ class FileClass {
   virtual int Open(const char* filename,
                    FileAccess rights = FileAccess::kRead) = 0;
   virtual int Open(FileAccess rights = FileAccess::kRead) = 0;
-  virtual long Read(void* buffer, long size) = 0;
-  virtual long Seek(long pos, int dir = SEEK_CUR) = 0;
-  virtual long Size() = 0;
-  virtual long Write(const void* buffer, long size) = 0;
+  virtual int32_t Read(void* buffer, int32_t size) = 0;
+  virtual int32_t Seek(int32_t pos, int dir = SEEK_CUR) = 0;
+  virtual int32_t Size() = 0;
+  virtual int32_t Write(const void* buffer, int32_t size) = 0;
   virtual void Close() = 0;
-  virtual unsigned long Get_Date_Time() { return 0; }
-  virtual bool Set_Date_Time(unsigned long /*unused*/) { return false; }
   virtual void Error(int error, int canretry = false,
                      const char* filename = nullptr) = 0;
 

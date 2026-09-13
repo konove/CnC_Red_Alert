@@ -41,6 +41,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 
@@ -152,7 +153,7 @@ enum {
 extern "C" char CPUType;
 
 static TimerClass GameTimer;
-static long GameEndTime;
+static int32_t GameEndTime;
 void* PacketLater = nullptr;
 
 /***********************************************************************************************
@@ -224,8 +225,7 @@ void Send_Statistics_Packet() {
     /*
     ** Start credits.
     */
-    stats.Add_Field(FIELD_START_CREDITS,
-                    static_cast<unsigned long>(MPlayerCredits));
+    stats.Add_Field(FIELD_START_CREDITS, static_cast<uint32_t>(MPlayerCredits));
 
     /*
     ** Bases (On/Off)
@@ -253,12 +253,12 @@ void Send_Statistics_Packet() {
     ** Start unit count
     */
     stats.Add_Field(FIELD_START_UNIT_COUNT,
-                    static_cast<unsigned long>(MPlayerUnitCount));
+                    static_cast<uint32_t>(MPlayerUnitCount));
 
     /*
     ** Tech level.
     */
-    stats.Add_Field(FIELD_TECH_LEVEL, static_cast<unsigned long>(BuildLevel));
+    stats.Add_Field(FIELD_TECH_LEVEL, static_cast<uint32_t>(BuildLevel));
 
     CCDebugString("C&C95 - Adding stats field for scenario.\n");
     /*
@@ -359,7 +359,7 @@ void Send_Statistics_Packet() {
     ** Passed from WChat
     */
     stats.Add_Field(FIELD_START_TIME,
-                    static_cast<long>(PlanetWestwoodStartTime));
+                    static_cast<int32_t>(PlanetWestwoodStartTime));
 
     /*
     ** Game duration (seconds).
@@ -370,9 +370,10 @@ void Send_Statistics_Packet() {
     ** Avg. frame rate.
     */
     if (GameEndTime / 60 == 0) {
-      stats.Add_Field(FIELD_FRAME_RATE, 0L);
+      stats.Add_Field(FIELD_FRAME_RATE, int32_t{0});
     } else {
-      stats.Add_Field(FIELD_FRAME_RATE, Frame / (GameEndTime / 60));
+      stats.Add_Field(FIELD_FRAME_RATE,
+                      static_cast<int32_t>(Frame / (GameEndTime / 60)));
     }
 
     CCDebugString("C&C95 - Adding game info stats.\n");
@@ -420,8 +421,9 @@ void Send_Statistics_Packet() {
         ** Player end credits.
         */
         field_player_credits[3] = static_cast<char>('1' + static_cast<char>(house));
-        stats.Add_Field(field_player_credits,
-                        player->Credits + player->Tiberium);
+        stats.Add_Field(
+            field_player_credits,
+            static_cast<int32_t>(player->Credits + player->Tiberium));
 
         /*
         ** Number of each unit/building type built
@@ -566,7 +568,7 @@ void Send_Statistics_Packet() {
         */
         field_player_harvested[3] = static_cast<char>('1' + static_cast<char>(house));
         stats.Add_Field(field_player_harvested,
-                        static_cast<unsigned long>(player->HarvestedCredits));
+                        static_cast<uint32_t>(player->HarvestedCredits));
       }
     }
 
@@ -634,5 +636,5 @@ void Register_Game_Start_Time() {
 }
 
 extern void Register_Game_End_Time() {
-  GameEndTime = GameTimer.Time();
+  GameEndTime = static_cast<int32_t>(GameTimer.Time());
 }

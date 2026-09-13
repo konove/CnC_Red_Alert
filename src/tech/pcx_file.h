@@ -73,7 +73,7 @@ typedef struct {
 } PCX_HEADER;
 
 GraphicBufferClass* Read_PCX_File(const char* name, char* palette = nullptr,
-                                  void* buff = nullptr, long size = 0);
+                                  void* buff = nullptr, int32_t size = 0);
 GraphicBufferClass* Read_PCX_File(char* name, BufferClass& Buff,
                                   char* palette = nullptr);
 int Write_PCX_File(char* name, GraphicViewPortClass& pic,

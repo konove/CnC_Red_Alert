@@ -144,9 +144,9 @@ static void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
   } while (--line_count);
 }
 
-extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
-                                     GraphicViewPortClass& dest, int flags,
-                                     ...) {
+extern "C" int32_t Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
+                                        GraphicViewPortClass& dest, int flags,
+                                        ...) {
   if (!src) {
     return 0;
   }

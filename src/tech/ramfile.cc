@@ -52,6 +52,7 @@
 #include "tech/ramfile.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstring>
 
 #include "base/numeric.h"
@@ -273,7 +274,7 @@ int RAMFileClass::Open(FileAccess access) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-long RAMFileClass::Read(void* buffer, long size) {
+int32_t RAMFileClass::Read(void* buffer, int32_t size) {
   if (Buffer == nullptr || buffer == nullptr || size == 0) {
     return 0;
   }
@@ -288,8 +289,7 @@ long RAMFileClass::Read(void* buffer, long size) {
     }
   }
 
-  int tocopy =
-      static_cast<int>(size < Length - Offset ? size : Length - Offset);
+  int tocopy = size < Length - Offset ? size : Length - Offset;
   memmove(buffer, &Buffer[Offset], base::ToSize(tocopy));
   Offset += tocopy;
 
@@ -320,7 +320,7 @@ long RAMFileClass::Read(void* buffer, long size) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-long RAMFileClass::Seek(long pos, int dir) {
+int32_t RAMFileClass::Seek(int32_t pos, int dir) {
   if (Buffer == nullptr || !Is_Open()) {
     return Offset;
   }
@@ -332,15 +332,15 @@ long RAMFileClass::Seek(long pos, int dir) {
 
   switch (dir) {
     case SEEK_CUR:
-      Offset = static_cast<int>(Offset + pos);
+      Offset = Offset + pos;
       break;
 
     case SEEK_SET:
-      Offset = static_cast<int>(pos);
+      Offset = pos;
       break;
 
     case SEEK_END:
-      Offset = static_cast<int>(maxoffset + pos);
+      Offset = maxoffset + pos;
       break;
     default:
       break;
@@ -368,7 +368,7 @@ long RAMFileClass::Seek(long pos, int dir) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-long RAMFileClass::Size() { return Length; }
+int32_t RAMFileClass::Size() { return Length; }
 
 /***********************************************************************************************
  * RAMFileClass::Write -- Copies data to the ram file. *
@@ -388,7 +388,7 @@ long RAMFileClass::Size() { return Length; }
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-long RAMFileClass::Write(const void* buffer, long size) {
+int32_t RAMFileClass::Write(const void* buffer, int32_t size) {
   if (Buffer == nullptr || buffer == nullptr || size == 0) {
     return 0;
   }
@@ -404,7 +404,7 @@ long RAMFileClass::Write(const void* buffer, long size) {
   }
 
   int maxwrite = MaxLength - Offset;
-  int towrite = static_cast<int>(size < maxwrite ? size : maxwrite);
+  int towrite = size < maxwrite ? size : maxwrite;
   memmove(&Buffer[Offset], buffer, base::ToSize(towrite));
   Offset += towrite;
 

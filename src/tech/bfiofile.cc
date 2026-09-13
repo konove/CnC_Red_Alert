@@ -57,6 +57,7 @@
 
 #include <algorithm>
 #include <cerrno>
+#include <cstdint>
 #include <cstring>
 
 #include "base/numeric.h"
@@ -166,7 +167,7 @@ BufferIOFileClass::~BufferIOFileClass() {
  *                                                                                             *
  * HISTORY: * 11/10/1995 DRD : Created. *
  *=============================================================================================*/
-bool BufferIOFileClass::Cache(long size, void* ptr) {
+bool BufferIOFileClass::Cache(int32_t size, void* ptr) {
   if (Buffer) {
     //
     // if trying to cache again with size or ptr fail
@@ -231,9 +232,9 @@ bool BufferIOFileClass::Cache(long size, void* ptr) {
     // the file was checked for availability then set the FileSize
     //
     if (FileSize) {
-      long readsize;
+      int32_t readsize;
       int opened = false;
-      long prevpos = 0;
+      int32_t prevpos = 0;
 
       if (FileSize <= BufferSize) {
         readsize = FileSize;
@@ -280,7 +281,7 @@ bool BufferIOFileClass::Cache(long size, void* ptr) {
         }
       }
 
-      long actual = Read(Buffer, readsize);
+      int32_t actual = Read(Buffer, readsize);
 
       if (actual != readsize) {
         Error(EIO);
@@ -352,7 +353,7 @@ void BufferIOFileClass::Free() {
  * HISTORY: * 11/15/1995 DRD : Created. *
  *=============================================================================================*/
 bool BufferIOFileClass::Commit() {
-  long size;
+  int32_t size;
 
   if (UseBuffer) {
     if (IsChanged) {
@@ -557,7 +558,7 @@ int BufferIOFileClass::Open(FileAccess rights) {
  *                                                                                             *
  * HISTORY: * 11/15/1995 DRD : Created. *
  *=============================================================================================*/
-long BufferIOFileClass::Write(const void* buffer, long size) {
+int32_t BufferIOFileClass::Write(const void* buffer, int32_t size) {
   int opened = false;
 
   if (!Is_Open()) {
@@ -569,11 +570,11 @@ long BufferIOFileClass::Write(const void* buffer, long size) {
   }
 
   if (UseBuffer) {
-    long sizewritten = 0;
+    int32_t sizewritten = 0;
 
     if (BufferRights != FileAccess::kRead) {
       while (size) {
-        long sizetowrite;
+        int32_t sizetowrite;
 
         if (size >= BufferSize - BufferPos) {
           sizetowrite = BufferSize - BufferPos;
@@ -582,7 +583,7 @@ long BufferIOFileClass::Write(const void* buffer, long size) {
         }
 
         if ((sizetowrite != BufferSize) && (!IsCached)) {
-          long readsize;
+          int32_t readsize;
 
           if (FileSize < BufferSize) {
             readsize = FileSize;
@@ -691,7 +692,7 @@ long BufferIOFileClass::Write(const void* buffer, long size) {
  *                                                                                             *
  * HISTORY: * 11/15/1995 DRD : Created. *
  *=============================================================================================*/
-long BufferIOFileClass::Read(void* buffer, long size) {
+int32_t BufferIOFileClass::Read(void* buffer, int32_t size) {
   int opened = false;
 
   if ((!Is_Open()) && Open()) {
@@ -700,11 +701,11 @@ long BufferIOFileClass::Read(void* buffer, long size) {
   }
 
   if (UseBuffer) {
-    long sizeread = 0;
+    int32_t sizeread = 0;
 
     if (BufferRights != FileAccess::kWrite) {
       while (size) {
-        long sizetoread;
+        int32_t sizetoread;
 
         if (size >= BufferSize - BufferPos) {
           sizetoread = BufferSize - BufferPos;
@@ -713,7 +714,7 @@ long BufferIOFileClass::Read(void* buffer, long size) {
         }
 
         if (!IsCached) {
-          long readsize;
+          int32_t readsize;
 
           if (FileSize < BufferSize) {
             readsize = FileSize;
@@ -813,7 +814,7 @@ long BufferIOFileClass::Read(void* buffer, long size) {
  *                                                                                             *
  * HISTORY: * 11/15/1995 DRD : Created. *
  *=============================================================================================*/
-long BufferIOFileClass::Seek(long pos, int dir) {
+int32_t BufferIOFileClass::Seek(int32_t pos, int dir) {
   if (UseBuffer) {
     bool adjusted = false;
 
@@ -838,7 +839,7 @@ long BufferIOFileClass::Seek(long pos, int dir) {
 
     FilePos += pos;
 
-    FilePos = std::max<long>(FilePos, 0);
+    FilePos = std::max<int32_t>(FilePos, 0);
     FilePos = std::min(FilePos, FileSize);
 
     if (FileSize <= BufferSize) {
@@ -886,7 +887,7 @@ long BufferIOFileClass::Seek(long pos, int dir) {
  *                                                                                             *
  * HISTORY: * 11/14/1995 DRD : Created. *
  *=============================================================================================*/
-long BufferIOFileClass::Size() {
+int32_t BufferIOFileClass::Size() {
   if (IsOpen && UseBuffer) {
     return FileSize;
   }

@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_TECH_BFIOFILE_H_
 #define CNC_RED_ALERT_TECH_BFIOFILE_H_
 
+#include <cstdint>
 #include <cstdio>
 
 #include "absl/base/attributes.h"
@@ -63,7 +64,7 @@ class BufferIOFileClass : public RawFileClass {
   BufferIOFileClass(BufferIOFileClass&&) = delete;
   BufferIOFileClass& operator=(BufferIOFileClass&&) = delete;
 
-  bool Cache(long size = 0, void* ptr = nullptr);
+  bool Cache(int32_t size = 0, void* ptr = nullptr);
   void Free();
   bool Commit();
   const char* Set_Name(const char* filename)
@@ -72,10 +73,10 @@ class BufferIOFileClass : public RawFileClass {
   int Open(const char* filename,
            FileAccess rights = FileAccess::kRead) override;
   int Open(FileAccess rights = FileAccess::kRead) override;
-  long Read(void* buffer, long size) override;
-  long Seek(long pos, int dir = SEEK_CUR) override;
-  long Size() override;
-  long Write(const void* buffer, long size) override;
+  int32_t Read(void* buffer, int32_t size) override;
+  int32_t Seek(int32_t pos, int dir = SEEK_CUR) override;
+  int32_t Size() override;
+  int32_t Write(const void* buffer, int32_t size) override;
   void Close() override;
 
   enum { MINIMUM_BUFFER_SIZE = 1024 };
@@ -95,14 +96,14 @@ class BufferIOFileClass : public RawFileClass {
 
   void* Buffer;
 
-  long BufferSize;
-  long BufferPos;
-  long BufferFilePos;
-  long BufferChangeBeg;
-  long BufferChangeEnd;
-  long FileSize;
-  long FilePos;
-  long TrueFileStart;
+  int32_t BufferSize;
+  int32_t BufferPos;
+  int32_t BufferFilePos;
+  int32_t BufferChangeBeg;
+  int32_t BufferChangeEnd;
+  int32_t FileSize;
+  int32_t FilePos;
+  int32_t TrueFileStart;
 };
 
 #endif  // CNC_RED_ALERT_TECH_BFIOFILE_H_

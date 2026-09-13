@@ -60,6 +60,7 @@
 #include <ctime>
 #include <random>
 #include <string>
+#include <utility>
 
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
@@ -4387,7 +4388,7 @@ bool Find_Local_Scenario(char* description, char* filename, unsigned int length,
       /*
       ** Possible rejection on the basis of size.
       */
-      if (file.Is_Available() && (file.Size() == length)) {
+      if (file.Is_Available() && std::cmp_equal(file.Size(), length)) {
         // debugprint("length matches.\n");
         /*
         ** We don't know the digest for 'official' scenarios so assume its

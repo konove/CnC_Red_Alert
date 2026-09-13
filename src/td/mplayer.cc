@@ -876,7 +876,7 @@ void Write_MultiPlayer_Settings() {
   Write the INI data out to a file.
   ------------------------------------------------------------------------*/
   file.Open(FileAccess::kWrite);
-  file.Write(buffer, base::ToSigned(strlen(buffer)));
+  file.Write(buffer, static_cast<int32_t>(strlen(buffer)));
   file.Close();
 }
 

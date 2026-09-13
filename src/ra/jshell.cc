@@ -307,7 +307,7 @@ int Load_Picture(const char* filename, BufferClass& scratchbuf,
  *=============================================================================================*/
 void* Load_Alloc_Data(FileClass& file) {
   void* ptr = nullptr;
-  long size = file.Size();
+  int32_t size = file.Size();
 
   ptr = new char[base::ToSize(size)];
   if (ptr) {
@@ -318,7 +318,7 @@ void* Load_Alloc_Data(FileClass& file) {
 
 // Modern RAII version that returns owned data as a vector.
 std::vector<std::byte> LoadAllocData(FileClass& file) {
-  long size = file.Size();
+  int32_t size = file.Size();
   std::vector<std::byte> data(static_cast<size_t>(size));
   file.Read(data.data(), size);
   return data;

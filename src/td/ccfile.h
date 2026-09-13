@@ -41,6 +41,7 @@
 #ifndef CNC_RED_ALERT_TD_CCFILE_H_
 #define CNC_RED_ALERT_TD_CCFILE_H_
 
+#include <cstdint>
 #include <cstdio>
 
 #include "tech/cdfile.h"
@@ -69,10 +70,10 @@ class CCFileClass : public CDFileClass {
   }
   int Open(FileAccess rights = FileAccess::kRead) override;
   [[nodiscard]] int Is_Open() const override;
-  long Read(void* buffer, long size) override;
-  long Seek(long pos, int dir = SEEK_CUR) override;
-  long Size() override;
-  long Write(const void* buffer, long size) override;
+  int32_t Read(void* buffer, int32_t size) override;
+  int32_t Seek(int32_t pos, int dir = SEEK_CUR) override;
+  int32_t Size() override;
+  int32_t Write(const void* buffer, int32_t size) override;
   void Close() override;
   void Error(int error, int canretry = false,
              const char* filename = nullptr) override;
@@ -102,7 +103,7 @@ class CCFileClass : public CDFileClass {
   *only valid *	if the file is part of a mixfile that resides on disk. It serves
   *as the counterpart *	to the "Pointer" variable.
   */
-  long Start;
+  int32_t Start;
 
   /*
   **	This is the current seek position of the file. It is duplicated here if
@@ -110,13 +111,13 @@ class CCFileClass : public CDFileClass {
   *accurate. This value will *	range from zero to the size of the file in
   *bytes.
   */
-  long Position;
+  int32_t Position;
 
   /*
   **	This is the size of the file if it was embedded in a mixfile. The size
   *must be manually *	kept track of because the DOS file size is invalid.
   */
-  long Length;
+  int32_t Length;
 
  public:
   // Force these to never be invoked.

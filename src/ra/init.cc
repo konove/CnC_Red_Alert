@@ -2786,7 +2786,7 @@ void Extract(const char* filename, const char* outname) {
   int64_t size = inFile.Size();
 
   while (size > 0) {
-    const int64_t bytes = inFile.Read(buffer.get(), 32768);
+    const int32_t bytes = inFile.Read(buffer.get(), 32768);
     outFile.Write(buffer.get(), bytes);
     size -= bytes;
   }

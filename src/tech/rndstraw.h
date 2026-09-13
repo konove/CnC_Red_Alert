@@ -65,7 +65,7 @@ class RandomStraw : public Straw {
   void Seed_Bit(int seed);
   void Seed_Byte(char seed);
   void Seed_Short(int16_t seed);
-  void Seed_Long(long seed);
+  void Seed_Long(int32_t seed);
 
   [[nodiscard]] int Seed_Bits_Needed() const;
 

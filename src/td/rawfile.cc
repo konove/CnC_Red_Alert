@@ -52,15 +52,16 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/rawfile.h"
+
 #include <cerrno>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <new>
 
 #include "td/function.h"
-
-#include "td/rawfile.h"
 
 /***********************************************************************************************
  * RawFileClass::Error -- Handles displaying a file error message. *
@@ -386,8 +387,8 @@ void RawFileClass::Close() {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-long RawFileClass::Read(void* buffer, long size) {
-  long bytesread =
+int32_t RawFileClass::Read(void* buffer, int32_t size) {
+  int32_t bytesread =
       0;  // Running count of the number of bytes read into the buffer.
   int opened = false;  // Was the file opened by this routine?
   int readresult;
@@ -438,8 +439,8 @@ long RawFileClass::Read(void* buffer, long size) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-long RawFileClass::Write(const void* buffer, long size) {
-  long bytesread = 0;
+int32_t RawFileClass::Write(const void* buffer, int32_t size) {
+  int32_t bytesread = 0;
   int opened = false;  // Was the file manually opened?
   int writeresult;
 
@@ -495,7 +496,7 @@ long RawFileClass::Write(const void* buffer, long size) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-long RawFileClass::Seek(long pos, int dir) {
+int32_t RawFileClass::Seek(int32_t pos, int dir) {
   /*
   **	If the file isn't opened, then this is a fatal error condition.
   */
@@ -526,8 +527,8 @@ long RawFileClass::Seek(long pos, int dir) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-long RawFileClass::Size() {
-  long size = 0;
+int32_t RawFileClass::Size() {
+  int32_t size = 0;
 
   /*
   **	If the file is open, then proceed normally.

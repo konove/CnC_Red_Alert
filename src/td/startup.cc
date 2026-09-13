@@ -369,7 +369,7 @@ int main(int argc, char* argv[])
       ** gonna change it to say "no" in the future.
       */
       WWWritePrivateProfileString("Intro", "PlayIntro", "No", buffer);
-      cfile.Write(buffer, base::ToSigned(strlen(buffer)));
+      cfile.Write(buffer, static_cast<int32_t>(strlen(buffer)));
 
       Free(buffer);
 

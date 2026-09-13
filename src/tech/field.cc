@@ -84,7 +84,7 @@ FieldClass::FieldClass(const char* id, uint16_t data)
   memcpy(Data, &data, Size);
 }
 
-FieldClass::FieldClass(const char* id, long data)
+FieldClass::FieldClass(const char* id, int32_t data)
     : DataType(TYPE_LONG),
       Size(sizeof(data)),
       Data(new char[Size]),
@@ -94,7 +94,7 @@ FieldClass::FieldClass(const char* id, long data)
   memcpy(Data, &data, Size);
 }
 
-FieldClass::FieldClass(const char* id, unsigned long data)
+FieldClass::FieldClass(const char* id, uint32_t data)
     : DataType(TYPE_UNSIGNED_LONG),
       Size(sizeof(data)),
       Data(new char[Size]),
@@ -155,8 +155,8 @@ void FieldClass::Host_To_Net() {
 
     case TYPE_LONG:
     case TYPE_UNSIGNED_LONG:
-      *static_cast<unsigned long*>(Data) = htonl(
-          static_cast<std::uint32_t>(*static_cast<unsigned long*>(Data)));
+      *static_cast<uint32_t*>(Data) =
+          htonl(static_cast<std::uint32_t>(*static_cast<uint32_t*>(Data)));
       break;
 
     //
@@ -211,8 +211,8 @@ void FieldClass::Net_To_Host() {
 
     case TYPE_LONG:
     case TYPE_UNSIGNED_LONG:
-      *static_cast<unsigned long*>(Data) = ntohl(
-          static_cast<std::uint32_t>(*static_cast<unsigned long*>(Data)));
+      *static_cast<uint32_t*>(Data) =
+          ntohl(static_cast<std::uint32_t>(*static_cast<uint32_t*>(Data)));
       break;
 
     //

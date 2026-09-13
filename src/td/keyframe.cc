@@ -47,7 +47,9 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <utility>
 
+#include "base/numeric.h"
 #include "base/types.h"
 #include "port/aligned_buffer.h"
 #include "sdllib/iff.h"
@@ -203,7 +205,7 @@ void* Build_Frame(const void* dataptr, uint16_t framenumber, void* buffptr) {
   uint16_t buffsize;
   uint16_t currframe = 0;
   uint16_t subframe;
-  unsigned long length = 0;
+  int32_t length = 0;
   char frameflags;
   void* return_value;
   char* temp_shape_ptr;
@@ -358,7 +360,7 @@ void* Build_Frame(const void* dataptr, uint16_t framenumber, void* buffptr) {
 
     length = LCW_Uncompress(ptr, buffptr, buffsize);
 
-    if (length > buffsize) {
+    if (std::cmp_greater(length, buffsize)) {
       return nullptr;
     }
 
@@ -417,7 +419,7 @@ void* Build_Frame(const void* dataptr, uint16_t framenumber, void* buffptr) {
             ((4 - (std::bit_cast<uintptr_t>(temp_shape_ptr) & 3)) & 3);
       }
 
-      memcpy(temp_shape_ptr, buffptr, length);
+      memcpy(temp_shape_ptr, buffptr, base::ToSize(length));
       port::AlignedObject<ShapeHeaderType>(TheaterShapeBufferPtr)->draw_flags =
           ~0U;  // Flag that headers need to be generated
       port::AlignedObject<ShapeHeaderType>(TheaterShapeBufferPtr)->shape_data =
@@ -452,7 +454,7 @@ void* Build_Frame(const void* dataptr, uint16_t framenumber, void* buffptr) {
           temp_shape_ptr +
           ((4 - (std::bit_cast<uintptr_t>(temp_shape_ptr) & 3)) & 3);
     }
-    memcpy(temp_shape_ptr, buffptr, length);
+    memcpy(temp_shape_ptr, buffptr, base::ToSize(length));
     port::AlignedObject<ShapeHeaderType>(BigShapeBufferPtr)->draw_flags =
         ~0U;  // Flag that headers need to be generated
     port::AlignedObject<ShapeHeaderType>(BigShapeBufferPtr)->shape_data =

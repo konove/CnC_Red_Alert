@@ -60,6 +60,7 @@
 
 #include <algorithm>
 #include <cerrno>
+#include <cstdint>
 #include <cstdio>
 #include <string>
 
@@ -373,8 +374,8 @@ void RawFileClass::Close() {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-long RawFileClass::Read(void* buffer, long size) {
-  long bytesread =
+int32_t RawFileClass::Read(void* buffer, int32_t size) {
+  int32_t bytesread =
       0;  // Running count of the number of bytes read into the buffer.
   int opened = false;  // Was the file opened by this routine?
 
@@ -398,13 +399,13 @@ long RawFileClass::Read(void* buffer, long size) {
   *of *	the file.
   */
   if (BiasLength != -1) {
-    int remainder = static_cast<int>(BiasLength - Seek(0));
+    int remainder = BiasLength - Seek(0);
     size = size < remainder ? size : remainder;
   }
 
   size_t read_tmp = 0;
   IO_Read_File(Handle, buffer, base::ToSize(size), read_tmp);
-  bytesread = base::ToSigned(read_tmp);
+  bytesread = static_cast<int32_t>(read_tmp);
   // doesn't bother looping, the below code is broken anyway (buffer isn't
   // incremented)
 
@@ -436,8 +437,8 @@ long RawFileClass::Read(void* buffer, long size) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-long RawFileClass::Write(const void* buffer, long size) {
-  long bytesread = 0;
+int32_t RawFileClass::Write(const void* buffer, int32_t size) {
+  int32_t bytesread = 0;
   int opened = false;  // Was the file manually opened?
 
   /*
@@ -454,13 +455,13 @@ long RawFileClass::Write(const void* buffer, long size) {
 
   size_t write_tmp = 0;
   IO_Write_File(Handle, buffer, base::ToSize(size), write_tmp);
-  bytesread = base::ToSigned(write_tmp);
+  bytesread = static_cast<int32_t>(write_tmp);
 
   /*
   **	Fixup the bias length if necessary.
   */
   if ((BiasLength != -1) && (Raw_Seek(0) > BiasStart + BiasLength)) {
-    BiasLength = static_cast<int>(Raw_Seek(0) - BiasStart);
+    BiasLength = Raw_Seek(0) - BiasStart;
   }
 
   /*
@@ -500,7 +501,7 @@ long RawFileClass::Write(const void* buffer, long size) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-long RawFileClass::Seek(long pos, int dir) {
+int32_t RawFileClass::Seek(int32_t pos, int dir) {
   /*
   **	A file that is biased will have a seek operation modified so that the
   *file appears to *	exist only within the bias range. All bytes outside of
@@ -509,7 +510,7 @@ long RawFileClass::Seek(long pos, int dir) {
   if (BiasLength != -1) {
     switch (dir) {
       case SEEK_SET:
-        pos = std::min<long>(pos, BiasLength);
+        pos = std::min<int32_t>(pos, BiasLength);
         pos += BiasStart;
         break;
 
@@ -530,7 +531,7 @@ long RawFileClass::Seek(long pos, int dir) {
     /*
     **	Perform the modified raw seek into the file.
     */
-    long newpos = Raw_Seek(pos, dir) - BiasStart;
+    int32_t newpos = Raw_Seek(pos, dir) - BiasStart;
 
     /*
     **	Perform a final double check to make sure the file position fits with
@@ -567,8 +568,8 @@ long RawFileClass::Seek(long pos, int dir) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-long RawFileClass::Size() {
-  long size = 0;
+int32_t RawFileClass::Size() {
+  int32_t size = 0;
 
   /*
   **	A biased file already has its length determined.
@@ -581,7 +582,7 @@ long RawFileClass::Size() {
   **	If the file is open, then proceed normally.
   */
   if (Is_Open()) {
-    size = IO_Get_File_Size(Handle);
+    size = static_cast<int32_t>(IO_Get_File_Size(Handle));
   } else {
     /*
     **	If the file wasn't open, then open the file and call this routine again.
@@ -598,7 +599,7 @@ long RawFileClass::Size() {
     }
   }
 
-  BiasLength = static_cast<int>(size - BiasStart);
+  BiasLength = size - BiasStart;
   return BiasLength;
 }
 
@@ -697,47 +698,6 @@ int RawFileClass::Delete() {
 }
 
 /***********************************************************************************************
- * RawFileClass::Get_Date_Time -- Gets the date and time the file was last
- *modified.           *
- *                                                                                             *
- *    Use this routine to get the date and time of the file. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the file date and time as a long. * Use the YEAR(long),
- *MONTH(),....                                                   *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 11/14/1995 DRD : Created. * 07/13/1996 JLB : Handles win32 method.
- **
- *=============================================================================================*/
-unsigned long RawFileClass::Get_Date_Time() {
-  // does not seem that this has any users
-  return 0;
-}
-
-/***********************************************************************************************
- * RawFileClass::Set_Date_Time -- Sets the date and time the file was last
- *modified.           *
- *                                                                                             *
- *    Use this routine to set the date and time of the file. *
- *                                                                                             *
- * INPUT:   the file date and time as a long *
- *                                                                                             *
- * OUTPUT:  successful or not if the file date and time was changed. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 11/14/1995 DRD : Created. * 07/13/1996 JLB : Handles win 32 method
- **
- *=============================================================================================*/
-bool RawFileClass::Set_Date_Time(unsigned long /*datetime*/) {
-  // does not seem that this has any users
-  return false;
-}
-
-/***********************************************************************************************
  * RawFileClass::Bias -- Bias a file with a specific starting position and
  *length.             *
  *                                                                                             *
@@ -766,7 +726,7 @@ void RawFileClass::Bias(int start, int length) {
     return;
   }
 
-  BiasLength = static_cast<int>(RawFileClass::Size());
+  BiasLength = RawFileClass::Size();
   BiasStart += start;
   if (length != -1) {
     BiasLength = BiasLength < length ? BiasLength : length;
@@ -800,7 +760,7 @@ void RawFileClass::Bias(int start, int length) {
  *                                                                                             *
  * HISTORY: * 08/04/1996 JLB : Created. *
  *=============================================================================================*/
-long RawFileClass::Raw_Seek(long pos, int dir) {
+int32_t RawFileClass::Raw_Seek(int32_t pos, int dir) {
   /*
   **	If the file isn't opened, then this is a fatal error condition.
   */
@@ -808,7 +768,7 @@ long RawFileClass::Raw_Seek(long pos, int dir) {
     Error(EBADF, false, Filename_.c_str());
   }
 
-  pos = IO_Seek_File(Handle, pos, dir);
+  pos = static_cast<int32_t>(IO_Seek_File(Handle, pos, dir));
 
   /*
   **	Return with the new position of the file. This will range between zero

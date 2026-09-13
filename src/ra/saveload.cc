@@ -650,7 +650,7 @@ bool Load_Game(int id) {
   **	Remember the file position since we must seek back here to
   **	perform the real saved game read.
   */
-  long pos = file.Seek(0, SEEK_CUR);
+  int32_t pos = file.Seek(0, SEEK_CUR);
 
   /*
   **	Pass the rest of the file through the hash straw so that

@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_TECH_BLOWFISH_H_
 
 #include <climits>
+#include <cstdint>
 
 /*
 **	This engine will process data blocks by encryption and decryption.
@@ -75,10 +76,10 @@ class BlowfishEngine {
  private:
   bool IsKeyed = false;
 
-  void Sub_Key_Encrypt(unsigned long& left, unsigned long& right);
+  void Sub_Key_Encrypt(uint32_t& left, uint32_t& right);
 
   void Process_Block(const void* plaintext, void* cyphertext,
-                     const unsigned long* ptable);
+                     const uint32_t* ptable);
   void Initialize_Tables();
 
   enum {
@@ -92,19 +93,19 @@ class BlowfishEngine {
   **	filled with a number generated from pi. Thus they are not random but
   **	they don't hold a weak pattern either.
   */
-  static const unsigned long P_Init[static_cast<int>(ROUNDS) + 2];
-  static const unsigned long S_Init[4][UCHAR_MAX + 1];
+  static const uint32_t P_Init[static_cast<int>(ROUNDS) + 2];
+  static const uint32_t S_Init[4][UCHAR_MAX + 1];
 
   /*
   **	Permutation tables for encryption and decryption.
   */
-  unsigned long P_Encrypt[static_cast<int>(ROUNDS) + 2]{};
-  unsigned long P_Decrypt[static_cast<int>(ROUNDS) + 2]{};
+  uint32_t P_Encrypt[static_cast<int>(ROUNDS) + 2]{};
+  uint32_t P_Decrypt[static_cast<int>(ROUNDS) + 2]{};
 
   /*
   **	S-Box tables (four).
   */
-  unsigned long bf_S[4][UCHAR_MAX + 1]{};
+  uint32_t bf_S[4][UCHAR_MAX + 1]{};
 };
 
 #endif  // CNC_RED_ALERT_TECH_BLOWFISH_H_

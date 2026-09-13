@@ -81,10 +81,10 @@ class PacketClass {
   void Add_Field(const char* field, uint16_t data) {
     Add_Field(new FieldClass(field, data));
   }
-  void Add_Field(const char* field, long data) {
+  void Add_Field(const char* field, int32_t data) {
     Add_Field(new FieldClass(field, data));
   }
-  void Add_Field(const char* field, unsigned long data) {
+  void Add_Field(const char* field, uint32_t data) {
     Add_Field(new FieldClass(field, data));
   }
   void Add_Field(const char* field, const char* data) {
@@ -103,8 +103,8 @@ class PacketClass {
   bool Get_Field(const char* id, unsigned char& data);
   bool Get_Field(const char* id, int16_t& data);
   bool Get_Field(const char* id, uint16_t& data);
-  bool Get_Field(const char* id, long& data);
-  bool Get_Field(const char* id, unsigned long& data);
+  bool Get_Field(const char* id, int32_t& data);
+  bool Get_Field(const char* id, uint32_t& data);
   bool Get_Field(const char* id, char* data, std::size_t data_size);
   bool Get_Field(const char* id, void* data, int& length);
 

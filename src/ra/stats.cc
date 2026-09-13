@@ -41,6 +41,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <cstdint>
 #include <cstdio>
 
 #include "port/unaligned.h"
@@ -170,7 +171,7 @@ enum {
 extern "C" char CPUType;
 
 static TimerClass GameTimer;
-static long GameEndTime;
+static int32_t GameEndTime;
 void* PacketLater = nullptr;
 
 #ifdef _WIN32
@@ -264,7 +265,7 @@ void Send_Statistics_Packet() {
     if constexpr (config::kWolapiEnabled) {
       //	Number of players initially in game.
       stats.Add_Field(FIELD_NUM_INITIAL_PLAYERS,
-                      (unsigned long)pWolapi->GameInfoCurrent.iPlayerCount);
+                      (uint32_t)pWolapi->GameInfoCurrent.iPlayerCount);
       // debugprint( "Stats: number of initial players is %i\n",
       // pWolapi->GameInfoCurrent.iPlayerCount );
 
@@ -272,7 +273,7 @@ void Send_Statistics_Packet() {
       // will be
       // statistically...
       stats.Add_Field(FIELD_NUM_REMAINING_PLAYERS,
-                      (unsigned long)Session.Players.Count());
+                      (uint32_t)Session.Players.Count());
       // debugprint( "Stats: number of remaining players is %i\n",
       // Session.Players.Count() );
 
@@ -294,7 +295,7 @@ void Send_Statistics_Packet() {
     ** Start credits.
     */
     stats.Add_Field(FIELD_START_CREDITS,
-                    static_cast<unsigned long>(Session.Options.Credits));
+                    static_cast<uint32_t>(Session.Options.Credits));
 
     /*
     ** Bases (On/Off)
@@ -315,7 +316,7 @@ void Send_Statistics_Packet() {
     ** AI Players (On/Off)
     */
     stats.Add_Field(FIELD_AI_PLAYERS,
-                    static_cast<unsigned long>(Session.Options.AIPlayers));
+                    static_cast<uint32_t>(Session.Options.AIPlayers));
 
     /*
     ** Shadow regrowth enabled
@@ -332,12 +333,12 @@ void Send_Statistics_Packet() {
     ** Start unit count
     */
     stats.Add_Field(FIELD_START_UNIT_COUNT,
-                    static_cast<unsigned long>(Session.Options.UnitCount));
+                    static_cast<uint32_t>(Session.Options.UnitCount));
 
     /*
     ** Tech level.
     */
-    stats.Add_Field(FIELD_TECH_LEVEL, static_cast<unsigned long>(BuildLevel));
+    stats.Add_Field(FIELD_TECH_LEVEL, static_cast<uint32_t>(BuildLevel));
 
     /*
     ** Scenario
@@ -521,7 +522,7 @@ void Send_Statistics_Packet() {
     ** Passed from WChat
     */
     stats.Add_Field(FIELD_START_TIME,
-                    static_cast<long>(PlanetWestwoodStartTime));
+                    static_cast<int32_t>(PlanetWestwoodStartTime));
 
     /*
     ** Game duration (seconds).
@@ -531,12 +532,12 @@ void Send_Statistics_Packet() {
     /*
     ** Avg. frame rate.
     */
-    long divisor = GameEndTime / 60;
+    int32_t divisor = GameEndTime / 60;
     if (divisor != 0) {
       stats.Add_Field(FIELD_FRAME_RATE,
-                      static_cast<long>(Frame) / (GameEndTime / 60));
+                      static_cast<int32_t>(Frame) / (GameEndTime / 60));
     } else {
-      stats.Add_Field(FIELD_FRAME_RATE, 0L);
+      stats.Add_Field(FIELD_FRAME_RATE, int32_t{0});
     }
 
     /*
@@ -610,7 +611,8 @@ void Send_Statistics_Packet() {
       */
       field_player_credits[3] =
           static_cast<char>('1' + static_cast<char>(house));
-      stats.Add_Field(field_player_credits, player->Credits + player->Tiberium);
+      stats.Add_Field(field_player_credits,
+                      static_cast<int32_t>(player->Credits + player->Tiberium));
 
       /*
       ** Number of each unit/building type built
@@ -797,7 +799,7 @@ void Send_Statistics_Packet() {
       field_player_harvested[3] =
           static_cast<char>('1' + static_cast<char>(house));
       stats.Add_Field(field_player_harvested,
-                      static_cast<unsigned long>(player->HarvestedCredits));
+                      static_cast<uint32_t>(player->HarvestedCredits));
     }
 
     /*
@@ -869,5 +871,5 @@ void Register_Game_Start_Time() {
 }
 
 extern void Register_Game_End_Time() {
-  GameEndTime = GameTimer.Time();
+  GameEndTime = static_cast<int32_t>(GameTimer.Time());
 }

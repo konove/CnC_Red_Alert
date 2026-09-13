@@ -37,6 +37,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 
 #include "sdllib/iff.h"
@@ -76,8 +77,7 @@ extern "C" {
  * HISTORY:                                                                *
  *    03/20/1995 IML : Created.                                            *
  *=========================================================================*/
-unsigned long __cdecl LCW_Uncompress(void* source, void* dest,
-                                     unsigned long length)
+int32_t __cdecl LCW_Uncompress(void* source, void* dest, int32_t length)
 // unsigned long LCW_Uncompress (void * source, void * dest, unsigned long
 // length)
 {
@@ -109,7 +109,7 @@ unsigned long __cdecl LCW_Uncompress(void* source, void* dest,
       // not possible to write any more, and if we try to read more we might
       // fault
       if (!count) {
-        return static_cast<unsigned long>(dest_ptr - (unsigned char*)dest);
+        return static_cast<int32_t>(dest_ptr - (unsigned char*)dest);
       }
 
       copy_ptr = dest_ptr - (static_cast<unsigned>(*source_ptr++) +
@@ -123,7 +123,7 @@ unsigned long __cdecl LCW_Uncompress(void* source, void* dest,
       if (!(op_code & 0x40)) {
         if (op_code == 0x80) {
           /* Return # of destination bytes written. */
-          return static_cast<unsigned long>(dest_ptr - (unsigned char*)dest);
+          return static_cast<int32_t>(dest_ptr - (unsigned char*)dest);
         }
         /* Do a medium copy from source. */
         count = op_code & 0x3f;
@@ -174,6 +174,6 @@ unsigned long __cdecl LCW_Uncompress(void* source, void* dest,
     }
   }
 
-  return static_cast<unsigned long>(dest_ptr - (unsigned char*)dest);
+  return static_cast<int32_t>(dest_ptr - (unsigned char*)dest);
 }
 }

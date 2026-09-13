@@ -39,13 +39,15 @@
 #ifndef CNC_RED_ALERT_RA_INTERNET_H_
 #define CNC_RED_ALERT_RA_INTERNET_H_
 
+#include <cstdint>
+
 #define IP_ADDRESS_MAX 40
 
 extern long PlanetWestwoodPortNumber;  // Port number to send to
 extern bool
     PlanetWestwoodIsHost;  // True if this player controls the game options
-extern unsigned long PlanetWestwoodGameID;  // Game ID
-extern unsigned long PlanetWestwoodStartTime;
+extern uint32_t PlanetWestwoodGameID;  // Game ID
+extern uint32_t PlanetWestwoodStartTime;
 extern bool
     GameStatisticsPacketSent;  // True once the game statistics have been sent
 extern bool

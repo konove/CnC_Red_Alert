@@ -1,12 +1,15 @@
 #ifndef CNC_RED_ALERT_TECH_2KEYFBUF_H_
 #define CNC_RED_ALERT_TECH_2KEYFBUF_H_
 
+#include <cstdint>
+
 #include "sdllib/gbuffer.h"
 #include "sdllib/shape.h"
 
 extern "C" {
-long __cdecl Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
-                                  GraphicViewPortClass& dest, int flags, ...);
+int32_t __cdecl Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
+                                     GraphicViewPortClass& dest, int flags,
+                                     ...);
 }
 
 // Returns the drawing-effect bits of `flags` that a cached shape header is

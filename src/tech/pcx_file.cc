@@ -181,5 +181,5 @@ void Write_Pcx_ScanLine(int file_handle, int scansize, char* ptr) {
     }
   }
 
-  Write_File(file_handle, pool, base::ToSize(file_ptr - pool));
+  Write_File(file_handle, pool, static_cast<int32_t>(file_ptr - pool));
 }

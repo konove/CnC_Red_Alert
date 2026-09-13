@@ -341,10 +341,9 @@ static long Select_Frame(VQAHandle* vqap) {
       if (curframe->Flags & VQAFRMF_PALETTE) {
         /* Un-LCW if needed */
         if (curframe->Flags & VQAFRMF_PALCOMP) {
-          curframe->PaletteSize = static_cast<int32_t>(
+          curframe->PaletteSize =
               LCW_Uncompress(curframe->Palette + curframe->PalOffset,
-                             curframe->Palette,
-                             base::ToSize(vqabuf->Max_Pal_Size)));
+                             curframe->Palette, vqabuf->Max_Pal_Size);
 
           curframe->Flags &= ~VQAFRMF_PALCOMP;
         }
@@ -417,7 +416,7 @@ static void Prepare_Frame(VQAData* vqabuf) {
   if (codebook->Flags & VQACBF_CBCOMP) {
     /* Decompress the codebook. */
     LCW_Uncompress(codebook->Buffer + codebook->CBOffset, codebook->Buffer,
-                   base::ToSize(vqabuf->Max_CB_Size));
+                   vqabuf->Max_CB_Size);
 
     /* Mark as uncompressed for the next time we use it */
     codebook->Flags &= ~VQACBF_CBCOMP;
@@ -425,9 +424,9 @@ static void Prepare_Frame(VQAData* vqabuf) {
 
   /* Decompress the palette, if needed */
   if (curframe->Flags & VQAFRMF_PALCOMP) {
-    curframe->PaletteSize = static_cast<int32_t>(
+    curframe->PaletteSize =
         LCW_Uncompress(curframe->Palette + curframe->PalOffset,
-                       curframe->Palette, base::ToSize(vqabuf->Max_Pal_Size)));
+                       curframe->Palette, vqabuf->Max_Pal_Size);
 
     /* Mark as uncompressed */
     curframe->Flags &= ~VQAFRMF_PALCOMP;
@@ -435,8 +434,8 @@ static void Prepare_Frame(VQAData* vqabuf) {
 
   /* Decompress the pointer data, if needed */
   if (curframe->Flags & VQAFRMF_PTRCOMP) {
-    LCW_Uncompress(curframe->Pointers + curframe->PtrOffset,
-                   curframe->Pointers, base::ToSize(vqabuf->Max_Ptr_Size));
+    LCW_Uncompress(curframe->Pointers + curframe->PtrOffset, curframe->Pointers,
+                   vqabuf->Max_Ptr_Size);
 
     /* Mark as uncompressed */
     curframe->Flags &= ~VQAFRMF_PTRCOMP;

@@ -47,6 +47,7 @@
 #include "tech/blowfish.h"
 
 #include <cassert>
+#include <cstdint>
 #include <cstring>
 
 #include "base/numeric.h"
@@ -58,7 +59,7 @@
 **	just happens to be how the Blowfish algorithm was designed.
 */
 typedef union {
-  unsigned long Long;
+  uint32_t Long;
   struct {
     unsigned char C3;
     unsigned char C2;
@@ -139,9 +140,9 @@ void BlowfishEngine::Submit_Key(const void* key, int length) {
   */
   int j = 0;
   const auto* key_ptr = static_cast<const unsigned char*>(key);
-  unsigned long* p_ptr = &P_Encrypt[0];
+  uint32_t* p_ptr = &P_Encrypt[0];
   for (int index = 0; index < ROUNDS + 2; index++) {
-    unsigned long data = 0;
+    uint32_t data = 0;
 
     data = data << CHAR_BIT | key_ptr[j++ % length];
     data = data << CHAR_BIT | key_ptr[j++ % length];
@@ -158,10 +159,10 @@ void BlowfishEngine::Submit_Key(const void* key, int length) {
   **	the table data WHILE it is using the table data, the tables are
   **	thoroughly obfuscated by this process.
   */
-  unsigned long left = 0x00000000L;
-  unsigned long right = 0x00000000L;
-  unsigned long* p_en = &P_Encrypt[0];           // Encryption table.
-  unsigned long* p_de = &P_Decrypt[ROUNDS + 1];  // Decryption table.
+  uint32_t left = 0x00000000L;
+  uint32_t right = 0x00000000L;
+  uint32_t* p_en = &P_Encrypt[0];           // Encryption table.
+  uint32_t* p_de = &P_Decrypt[ROUNDS + 1];  // Decryption table.
   for (int p_index = 0; p_index < ROUNDS + 2; p_index += 2) {
     Sub_Key_Encrypt(left, right);
 
@@ -352,7 +353,7 @@ int BlowfishEngine::Decrypt(const void* cyphertext, int length,
  * HISTORY: * 04/19/1996 JLB : Created. *
  *=============================================================================================*/
 void BlowfishEngine::Process_Block(const void* plaintext, void* cyphertext,
-                                   const unsigned long* ptable) {
+                                   const uint32_t* ptable) {
   /*
   **	Input the left and right halves of the source block such that
   **	the byte order is constant regardless of the endian
@@ -438,8 +439,7 @@ void BlowfishEngine::Process_Block(const void* plaintext, void* cyphertext,
  *                                                                                             *
  * HISTORY: * 04/19/1996 JLB : Created. *
  *=============================================================================================*/
-void BlowfishEngine::Sub_Key_Encrypt(unsigned long& left,
-                                     unsigned long& right) {
+void BlowfishEngine::Sub_Key_Encrypt(uint32_t& left, uint32_t& right) {
   Int l;
   l.Long = left;
 
@@ -466,13 +466,13 @@ void BlowfishEngine::Sub_Key_Encrypt(unsigned long& left,
 *painful.
 */
 
-const unsigned long BlowfishEngine::P_Init[ROUNDS + 2] = {
+const uint32_t BlowfishEngine::P_Init[ROUNDS + 2] = {
     0x243F6A88U, 0x85A308D3U, 0x13198A2EU, 0x03707344U, 0xA4093822U,
     0x299F31D0U, 0x082EFA98U, 0xEC4E6C89U, 0x452821E6U, 0x38D01377U,
     0xBE5466CFU, 0x34E90C6CU, 0xC0AC29B7U, 0xC97C50DDU, 0x3F84D5B5U,
     0xB5470917U, 0x9216D5D9U, 0x8979FB1BU};
 
-const unsigned long BlowfishEngine::S_Init[4][UCHAR_MAX + 1] = {
+const uint32_t BlowfishEngine::S_Init[4][UCHAR_MAX + 1] = {
     {
         0xD1310BA6U, 0x98DFB5ACU, 0x2FFD72DBU, 0xD01ADFB7U, 0xB8E1AFEDU,
         0x6A267E96U, 0xBA7C9045U, 0xF12C7F99U, 0x24A19947U, 0xB3916CF7U,

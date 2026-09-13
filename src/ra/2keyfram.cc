@@ -288,8 +288,7 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
     if (keyfr->flags & 1) {
       ptr = static_cast<char*>(Add_Long_To_Pointer(ptr, 768));
     }
-    length = static_cast<int32_t>(
-        LCW_Uncompress(ptr, buffptr, static_cast<unsigned long>(buffsize)));
+    length = LCW_Uncompress(ptr, buffptr, buffsize);
   } else {
     uint16_t currframe = 0;
     // key delta or delta
@@ -315,8 +314,7 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
       ptr = static_cast<char*>(Add_Long_To_Pointer(ptr, 768));
     }
 
-    length = static_cast<int32_t>(
-        LCW_Uncompress(ptr, buffptr, static_cast<unsigned long>(buffsize)));
+    length = LCW_Uncompress(ptr, buffptr, buffsize);
 
     if (length > buffsize) {
       return nullptr;

@@ -48,6 +48,7 @@
  *                                                                         				*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - */
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 
@@ -90,8 +91,8 @@ char PlanetWestwoodIPAddress[IP_ADDRESS_MAX] = {
 long PlanetWestwoodPortNumber = 1234;  // Port number to send to
 bool PlanetWestwoodIsHost =
     false;  // Flag true if player has control of game options
-unsigned long PlanetWestwoodGameID;     // Game ID
-unsigned long PlanetWestwoodStartTime;  // Time that game was started
+uint32_t PlanetWestwoodGameID;     // Game ID
+uint32_t PlanetWestwoodStartTime;  // Time that game was started
 #ifdef _WIN32
 HWND WChatHWND = 0;  // Handle to Wchat window.
 #endif
@@ -287,9 +288,9 @@ int Read_Game_Options(const char* name) {
   Special.IsCaptureTheFlag = static_cast<unsigned>(
       WWGetPrivateProfileInt("Options", "CaptureTheFlag", 0, buffer));
   // externs.h declares these unsigned long; the INI stores them as ints.
-  PlanetWestwoodGameID = static_cast<unsigned long>(
+  PlanetWestwoodGameID = static_cast<uint32_t>(
       WWGetPrivateProfileInt("Internet", "GameID", 0, buffer));
-  PlanetWestwoodStartTime = static_cast<unsigned long>(
+  PlanetWestwoodStartTime = static_cast<uint32_t>(
       WWGetPrivateProfileInt("Internet", "StartTime", 0, buffer));
 
   InternetMaxPlayers =

@@ -96,13 +96,11 @@ class RawFileClass : public FileClass {
   int Open(const char* filename,
            FileAccess rights = FileAccess::kRead) override;
   int Open(FileAccess rights = FileAccess::kRead) override;
-  long Read(void* buffer, long size) override;
-  long Seek(long pos, int dir = SEEK_CUR) override;
-  long Size() override;
-  long Write(const void* buffer, long size) override;
+  int32_t Read(void* buffer, int32_t size) override;
+  int32_t Seek(int32_t pos, int dir = SEEK_CUR) override;
+  int32_t Size() override;
+  int32_t Write(const void* buffer, int32_t size) override;
   void Close() override;
-  unsigned long Get_Date_Time() override;
-  bool Set_Date_Time(unsigned long datetime) override;
   void Error(int error, int canretry = false,
              const char* filename = nullptr) override;
 
@@ -121,16 +119,7 @@ class RawFileClass : public FileClass {
  protected:
   int Do_Is_Available(AvailabilityCheck mode) override;
 
-  /*
-  **	This function returns the largest size a low level DOS read or write may
-  **	perform. Larger file transfers are performed in chunks of this size or
-  *less.
-  */
-  static long Transfer_Block_Size() {
-    return static_cast<long>(std::numeric_limits<unsigned int>::max()) - 16L;
-  }
-
-  long Raw_Seek(long pos, int dir = SEEK_CUR);
+  int32_t Raw_Seek(int32_t pos, int dir = SEEK_CUR);
 
  private:
   /*

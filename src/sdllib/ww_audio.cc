@@ -697,7 +697,8 @@ static long Sample_Read(int fh, void* buffer, base::ssize size) {
   outbuffer = Add_Long_To_Pointer(buffer, sizeof(RawHeader));
   actual_bytes_read = Read_File(fh, &RawHeader, sizeof(RawHeader));
   actual_bytes_read += Read_File(
-      fh, outbuffer, base::ToSize(std::min<base::ssize>(size, RawHeader.Size)));
+      fh, outbuffer,
+      static_cast<int32_t>(std::min<base::ssize>(size, RawHeader.Size)));
   Mem_Copy(&RawHeader, buffer, sizeof(RawHeader));
   return actual_bytes_read;
 }

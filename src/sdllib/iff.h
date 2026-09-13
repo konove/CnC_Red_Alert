@@ -83,8 +83,7 @@ size_t Uncompress_Data(void* src, void* dst);
 extern "C" {
 #endif
 
-extern unsigned long LCW_Uncompress(void* source, void* dest,
-                                    unsigned long length);
+extern int32_t LCW_Uncompress(void* source, void* dest, int32_t length);
 
 #ifdef __cplusplus
 }
