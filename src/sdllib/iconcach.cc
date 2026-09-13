@@ -33,7 +33,7 @@ typedef struct {
   int32_t Map;        // Icon map offset (if present).
 } IControl_Type_Old;
 
-void Init_Stamps(const void* icon_ptr) {
+static void Init_Stamps(const void* icon_ptr) {
   // Verify legality of parameter.
   if (!icon_ptr) {
     return;

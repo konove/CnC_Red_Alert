@@ -1,6 +1,8 @@
 #include "sdllib/keyboard.h"
 
 #include "gtest/gtest.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/ww_win.h"
 
 // The two hooks keyboard.cc calls out to. Stubbing them keeps the buffer
 // semantics under test deterministic and free of a real event pump.

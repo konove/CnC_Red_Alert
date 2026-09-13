@@ -35,40 +35,15 @@
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "td/conquer.h"
+#include "td/globals.h"
 #include "td/interpal.h"
 #include "td/mapedit.h"
 #include "td/palette.h"
 #include "td/theme.h"
+#include "tech/pcx_file.h"
+#include "winvq/vqa32/vqaplay.h"
 
-typedef struct {
-  char red;
-  char green;
-  char blue;
-} RGB;
-
-typedef struct {
-  char id;
-  char version;
-  char encoding;
-  char pixelsize;
-  short x;
-  short y;
-  short width;
-  short height;
-  short xres;
-  short yres;
-  RGB ega_palette[16];
-  char nothing;
-  char color_planes;
-  short byte_per_line;
-  short palette_type;
-  char filler[58];
-} PCX_HEADER;
-
-void output(short, short) {}
-
-ThemeType OldTheme = THEME_NONE;
-extern bool InMovie;
+static ThemeType OldTheme = THEME_NONE;
 
 /***********************************************************************************************
  * Focus_Loss -- this function is called when a library function detects focus
@@ -113,9 +88,9 @@ void Focus_Restore() {
   }
 }
 
-unsigned char* VQPalette;
-long VQNumBytes;
-unsigned long VQSlowpal;
+static unsigned char* VQPalette;
+static long VQNumBytes;
+static unsigned long VQSlowpal;
 bool VQPaletteChange = false;
 
 extern "C" {
@@ -152,8 +127,6 @@ void __cdecl SetPalette(unsigned char* palette, long, unsigned long) {
   Set_Palette(palette);
 }
 
-GraphicBufferClass* Read_PCX_File(const char* name, char* Palette, void* Buff,
-                                  long Size);
 
 /***********************************************************************************************
  * Load_Title_Screen -- loads the title screen into the given video buffer *

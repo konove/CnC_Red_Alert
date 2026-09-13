@@ -56,6 +56,7 @@
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/globals.h"
+#include "tech/2keyfbuf.h"
 
 #define SUBFRAMEOFFS 7  // 3 1/2 frame offsets loaded (2 offsets/frame)
 
@@ -76,26 +77,24 @@ typedef struct {
 #define THEATER_BIG_SHAPE_BUFFER_SIZE (1000 * 1024)
 #define UNCOMPRESS_MAGIC_NUMBER 56789
 
-unsigned BigShapeBufferLength = INITIAL_BIG_SHAPE_BUFFER_SIZE;
-unsigned TheaterShapeBufferLength = THEATER_BIG_SHAPE_BUFFER_SIZE;
+static unsigned BigShapeBufferLength = INITIAL_BIG_SHAPE_BUFFER_SIZE;
+static unsigned TheaterShapeBufferLength = THEATER_BIG_SHAPE_BUFFER_SIZE;
 char* BigShapeBufferStart = nullptr;
 char* TheaterShapeBufferStart = nullptr;
 bool UseBigShapeBuffer = false;
 bool IsTheaterShape = false;
-char* BigShapeBufferPtr = nullptr;
-int TotalBigShapes = 0;
-bool ReallocShapeBufferFlag = false;
-bool OriginalUseBigShapeBuffer = false;
+static char* BigShapeBufferPtr = nullptr;
+static bool ReallocShapeBufferFlag = false;
+static bool OriginalUseBigShapeBuffer = false;
 
-char* TheaterShapeBufferPtr = nullptr;
-int TotalTheaterShapes = 0;
+static char* TheaterShapeBufferPtr = nullptr;
 
 #define MAX_SLOTS 1500
 #define THEATER_SLOT_START 1000
 
-char** KeyFrameSlots[MAX_SLOTS];
-int TotalSlotsUsed = 0;
-int TheaterSlotsUsed = THEATER_SLOT_START;
+static char** KeyFrameSlots[MAX_SLOTS];
+static int TotalSlotsUsed = 0;
+static int TheaterSlotsUsed = THEATER_SLOT_START;
 
 typedef struct tShapeHeaderType {
   unsigned draw_flags;
@@ -126,7 +125,6 @@ void Reset_Theater_Shapes() {
   }
 
   TheaterShapeBufferPtr = TheaterShapeBufferStart;
-  TotalTheaterShapes = 0;
   TheaterSlotsUsed = THEATER_SLOT_START;
 }
 

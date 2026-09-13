@@ -56,10 +56,6 @@ int IPX_Close_Socket(unsigned short socket) {
 
 int IPX_Get_Connection_Number() { return IPX_Get_Connection_Number95(); }
 
-int IPX_Broadcast_Packet(unsigned char* buf, int buflen) {
-  return IPX_Broadcast_Packet95(buf, buflen);
-}
-
 extern "C" {
 extern void __cdecl Int3();
 }

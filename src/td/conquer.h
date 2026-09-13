@@ -22,6 +22,7 @@
 #include <memory>
 #include <string>
 
+#include "sdllib/keyboard.h"
 #include "sdllib/shape.h"
 #include "td/defines.h"
 #include "winvq/vqa32/vqaio.h"
@@ -864,5 +865,11 @@ void Heap_Dump_Check(const char* string);
 void Validate_Error(const char* name);
 const void* Hires_Retrieve(const char* name);
 int Get_Resolution_Factor();
+
+// Processes the tactical map input codes.
+void Keyboard_Process(KeyNumType& input);
+// Tiles `shapefile`'s frame `shapenum` over the given rectangle.
+void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
+                     int width, int height);
 
 #endif  // CNC_RED_ALERT_TD_CONQUER_H_

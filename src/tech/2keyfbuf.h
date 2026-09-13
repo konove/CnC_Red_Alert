@@ -23,4 +23,11 @@ constexpr int ShapeEffectFlags(const int flags) {
 // blitter cannot read.
 inline bool UseOldShapeDraw = false;
 
+// Uncompressed shape buffers owned by the game's keyframe loader. While
+// UseBigShapeBuffer is set, cached shape headers hold offsets from the start of
+// the big buffer, or of the theater buffer for theater-specific shapes.
+extern char* BigShapeBufferStart;
+extern char* TheaterShapeBufferStart;
+extern bool UseBigShapeBuffer;
+
 #endif  // CNC_RED_ALERT_TECH_2KEYFBUF_H_

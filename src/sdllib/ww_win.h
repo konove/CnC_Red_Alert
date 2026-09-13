@@ -37,6 +37,8 @@
 #ifndef CNC_RED_ALERT_SDLLIB_WW_WIN_H_
 #define CNC_RED_ALERT_SDLLIB_WW_WIN_H_
 
+#include <cstdint>
+
 union SDL_Event;
 
 /*=========================================================================*/
@@ -90,5 +92,9 @@ extern void (*Window_More_Ptr)(const char*, int, int, int);
 // portability). Created by SDL_Create_Main_Window() and used throughout the
 // windowing system.
 extern void* MainWindow;
+
+struct SDL_Renderer;
+extern SDL_Renderer* SDLRenderer;
+extern uint32_t ForceRenderEventID;
 
 #endif  // CNC_RED_ALERT_SDLLIB_WW_WIN_H_

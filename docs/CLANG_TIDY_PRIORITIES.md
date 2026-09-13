@@ -2,7 +2,7 @@
 
 Updated: 2026-09-12, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 165 currently excluded check names** and completed entries, in recommended work
+This tracks **all 162 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -155,10 +155,10 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `misc-override-with-different-visibility`                       | Enabled | Commit `Match override access to the base declarations`: 19 overrides moved to their base's access level in both games' gadget, turret, drive, building and list classes.                                                                                                                                                                                                                                                    |
 | `misc-header-include-cycle`                                     | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                                                                                                                                                                                |
 | `misc-include-cleaner`                                          | Pending | Review missing/redundant includes alongside existing IWYU checks.                                                                                                                                                                                                                                                                                                                                                            |
-| `clang-diagnostic-missing-prototypes`                           | Pending | Give externally visible functions consistent declarations.                                                                                                                                                                                                                                                                                                                                                                   |
-| `clang-diagnostic-missing-variable-declarations`                | Pending | Give shared variables an explicit interface.                                                                                                                                                                                                                                                                                                                                                                                 |
-| `misc-use-internal-linkage`                                     | Pending | Limit accidental symbol exposure and cross-unit coupling.                                                                                                                                                                                                                                                                                                                                                                    |
-| `misc-use-anonymous-namespace`                                  | Pending | Keep implementation details local to their translation unit.                                                                                                                                                                                                                                                                                                                                                                 |
+| `clang-diagnostic-missing-prototypes`                           | Enabled | Commit `Declare shared symbols in headers and give file-local ones internal linkage`: header drift fixed (`Expansion_Dialog`, `Smart_Printf`, `Write_Bin_Init`, `LCW_Uncompress`, dead `output` stub); local `extern` declarations and prototypes moved into the defining file's header. See review below.                                                                                                                   |
+| `clang-diagnostic-missing-variable-declarations`                | Enabled | Commit `Declare shared symbols in headers and give file-local ones internal linkage`: shared globals declared in their headers; unused DOS globals `MaxDevice`, `DefaultDrive` and `CallingDOSInt` deleted. See review below.                                                                                                                                                                                                |
+| `misc-use-internal-linkage`                                     | Enabled | Commit `Declare shared symbols in headers and give file-local ones internal linkage`: 240 file-local functions and variables made `static`; `AnalyzeTypes` off because types only get internal linkage from anonymous namespaces. See review below.                                                                                                                                                                          |
+| `misc-use-anonymous-namespace`                                  | Skipped | Commit `Declare shared symbols in headers and give file-local ones internal linkage`: 766 reports would move working `static` definitions into unnamed namespaces with no linkage change; Google style accepts `static` and the tree uses no namespaces. See review below.                                                                                                                                                   |
 | `clang-diagnostic-unneeded-internal-declaration`                | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                                                                                                                                                                                |
 | `clang-diagnostic-unused-but-set-global`                        | Enabled | Commit `Remove the unused path-finding start location`: `StartLocation` was only read inside `#ifdef NEVER` in both games.                                                                                                                                                                                                                                                                                                   |
 | `misc-static-assert`                                            | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                                                                                                                                                                                |
@@ -1047,6 +1047,101 @@ functions whose results the engine ignores on purpose:
 
 Those 47 declarations keep no attribute, each under a `NOLINTNEXTLINE` that says why. With them
 excluded, no call site in either game discards a `[[nodiscard]]` result.
+
+### Declaration and linkage review (2026-09-12)
+
+`clang-diagnostic-missing-prototypes`, `clang-diagnostic-missing-variable-declarations` and
+`misc-use-internal-linkage` are now enforced together. The isolated sweep reported 105 functions and
+164 variables defined without a previous declaration, and 390 names that could have internal
+linkage; the three lists describe the same underlying state, a global symbol that no header
+declares.
+
+The first thing they exposed was headers that had drifted from the code they describe:
+
+- `ra/expand.h` declared `bool Expansion_Dialog()`, which RA never defines; the real function takes
+  `bool bCounterstrike`, and `ra/init.cc` had worked around the stale header with its own prototype.
+- `ra/nulldlg.h` declared `Smart_Printf(char*, ...)` and `ra/profile.h` declared
+  `Write_Bin_Init(const char*, int)`; neither overload exists. The headers now match the
+  definitions.
+- Both games' `ccfile.cc` define a second `Load_Alloc_Data(const char* name, int)` overload that no
+  header declared; it now sits beside `Load_Alloc_Data(FileClass&)` in `jshell.h`.
+- `winvq/vqm32/compress.h` declared the C function `LCW_Uncompress` as
+  `(char const*, char*, unsigned long)` while `tech` defines `(void*, void*, unsigned long)`. Both
+  declarations are `extern "C"`, so every object referenced the same unmangled symbol and it linked,
+  but the VQA drawer and loader were type-checked against the wrong parameters.
+- `output(short, short)` was an empty DOS port-output stub in both games. Its only caller, RA's
+  `MonoClass::Set_Cursor`, wrote the mono card's CRTC cursor register; the port's mono pages live in
+  memory, so the writes and the stub are both gone and `Set_Cursor` just records the position.
+- `Flag_To_Set_Palette`, the palette callback each game provides to the VQA player, was declared
+  only inside `winvq/vqa32/drawer.cc`; it is now declared in the public `vqaplay.h`.
+- The VQA test's link stubs include the real `compress.h` and `palette.h`, so their signatures are
+  checked; `MainWindow`'s real declaration is Windows-only, so the test declares it itself.
+
+The fix-its and a moving script took the rest in two steps. 53 symbols that other files reached
+through local `extern` declarations or prototypes had those declarations moved into the header of
+the defining file, or a module header for files without one: `ra/keyframe.h` for `2keyfram.cc`,
+`ra/wol_main.h` for the Westwood Online dialogs, and each game's `externs.h` for the startup and
+statistics globals. The local copies are gone. Declarations inside `extern "C"` blocks, Windows-only
+sources and files the build does not compile were left alone. The internal-linkage fix-its then made
+240 file-local functions and variables `static`.
+
+That fix-it pass is not safe to take whole. The check sees one translation unit, so a definition
+whose file does not include the declaring header looks unused elsewhere. The fix-its made 38 shared
+symbols `static` and the link failed. Those went back, and each of the last 36 reports got a hand
+fix:
+
+- The shape-buffer globals, which the blitter in `tech/2keyfbuf.cc` declared locally, are declared
+  in `tech/2keyfbuf.h`, and both keyframe loaders include it.
+- The RA file wrappers in `ccfile.cc`, `Choose_Side`, both games' `Read_PCX_File` and RA's
+  `Warheads` and `Weapons` gained the include of the header that already declared them.
+  `tech/pcx_file.h` now takes `const char*`, matching TD's definition, and TD's `nondosstub.cc` uses
+  the header's `PCX_HEADER` in place of its own copy. RA's `MaxDevice`, `DefaultDrive` and
+  `CallingDOSInt`, which nothing read, are deleted.
+- RA's Planet Westwood globals are declared in `ra/internet.h`, which `externs.h` includes. The
+  handle, password, address and `ShowCommand` externs were deleted from `externs.h`: their
+  definitions in `internet.cc` are `static`, so no use of them could ever have linked.
+- `Extract_Compressed_Events` and `Extract_Uncompressed_Events` are declared in each game's
+  `queue.h`, which the TD alignment test now uses. `Create_Main_Window` is declared in each game's
+  `externs.h`. TD's `Keyboard_Process` and `CC_Texture_Fill` are declared in `td/conquer.h`.
+  `WOL_PrintMessage` is declared in `ra/wolapiob.h`, `WOL_Download_Dialog` in `ra/rawolapi.h` and
+  `bSpecialAftermathScenario` in `ra/wol_main.h`, replacing seven local copies.
+- `sdllib` declared `Get_Font_Palette_Ptr`, `Load_Sample` and `Free_Sample` only under `#ifdef TD`,
+  a macro the library itself is never built with, so its own definitions went unchecked. The guards
+  are gone. `LCW_Comp`'s stub and `RandNumb` are declared in `sdllib/iff.h` and `sdllib/misc.h`, and
+  `tech/lcwuncmp.cc` includes the `iff.h` declaration of `LCW_Uncompress`.
+- TD's `Bibx3` smudge is `static`, as RA's already was.
+
+With internal linkage, the compiler could see that 52 of the newly `static` names had no user. It
+reported them as unused functions, unused variables or globals that are set but never read. They are
+deleted:
+
+- Empty DOS stubs: `Mono_Put_Char`, `Mono_Scroll`, `Mono_View_Page` and `Unfragment_File_Cache` in
+  both games.
+- Uncalled code: TD's copy of `Create_Palette_Interpolation_Table` (only RA builds the table at run
+  time), `Timer_Test`, `Just_Path`, `IPX_Broadcast_Packet`, `Is_Disk_Inserted` and three VQA drawer
+  accessors.
+- Orphaned globals: `BlubCell`, `PlayerAborts`, TD's `Argv` and `Argc`, and the Planet Westwood
+  handle, password and address strings.
+- Write-only globals: RA's keyframe `Length`, `TotalTheaterShapes`, `VideoBackBufferAllowed` and
+  `GameTimerInUse`, with their assignments.
+- RA's `ending.cc` and `ending.h`, whose `GDI_Ending` and `Nod_Ending` were empty and uncalled.
+
+RA's `dtable.cc` and `itable.cc` hold only the ADPCM tables for `adpcm.cc`, which the build already
+excludes, so they join it in the excluded list.
+
+Seven names are used only in code that the build compiles out: RA's `SHOW_MONO` screens and
+`CS_DEBUG` names, TD's `FIX_ME_LATER` statistics, and TD's startup helpers in the round-trip test's
+`TD_NO_ENTRY_POINT` build. They are `[[maybe_unused]]`.
+
+`misc-use-internal-linkage.AnalyzeTypes` is off. A `.cc`-local struct, class or enum can only get
+internal linkage from an anonymous namespace, and there is no `static` for types. Functions and
+variables stay checked.
+
+`misc-use-anonymous-namespace` stays excluded. It reported 766 file-local `static` functions and
+variables in project sources. Google style accepts either `static` or an unnamed namespace, the tree
+uses no namespaces, and moving 766 working definitions would change no linkage.
+
+The full strict build of both games is clean and all 242 tests pass.
 
 ### Completed validation
 

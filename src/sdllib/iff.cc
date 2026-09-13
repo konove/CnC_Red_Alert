@@ -44,8 +44,7 @@
   return uncompressed_size;
 }
 
-extern "C" int LCW_Comp(const void* /*source*/, void* /*dest*/,
-                        int /*length*/) {
+int LCW_Comp(const void* /*source*/, void* /*dest*/, int /*length*/) {
   DLOG(INFO) << "LCW compression not implemented";
   return 0;
 }

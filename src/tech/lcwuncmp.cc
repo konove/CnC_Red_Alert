@@ -39,6 +39,8 @@
 #include <cstddef>
 #include <cstring>
 
+#include "sdllib/iff.h"
+
 extern "C" {
 
 /***************************************************************************

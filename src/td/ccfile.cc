@@ -594,4 +594,3 @@ int __cdecl Find_Disk_Number(const char*) { return (0); }
 
 //}
 
-void Unfragment_File_Cache() {}

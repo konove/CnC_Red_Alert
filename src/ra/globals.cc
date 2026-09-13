@@ -266,7 +266,6 @@ fixed EngineerDamage = fixed::_1_3;   // Amount of damage an engineer does
 fixed EngineerCaptureLevel(
     0x40);  // Building damage level before engineer can capture
 
-unsigned short Hard_Error_Occured = 0;
 WWMouseClass* WWMouse = nullptr;
 GraphicBufferClass SysMemPage(kDefaultScreenWidth, 200, nullptr);
 int ScreenWidth = 640;
@@ -419,12 +418,6 @@ bool PlayerWins;
 bool PlayerLoses;
 bool PlayerRestarts;
 
-/*
-** This flag is set if the player neither wins nor loses; it's mostly for
-** multiplayer mode.
-*/
-bool PlayerAborts;
-
 /***************************************************************************
 **	This is the pointer for the speech staging buffer. This buffer is used
 **	to hold the currently speaking voice data. Since only one speech sample
@@ -499,7 +492,7 @@ ScoreClass Score;
 **	The running credit display is controlled by this class (and member
 **	functions.
 */
-CreditClass CreditDisplay;
+static CreditClass CreditDisplay;
 
 /**************************************************************************
 ** This class records the special command override options that C&C

@@ -30,6 +30,7 @@
 #include "ra/ccfile.h"
 #include "ra/compat.h"
 #include "ra/externs.h"
+#include "ra/filepcx.h"
 #include "ra/graphics_loader.h"
 #include "ra/interpal.h"
 #include "ra/mapedit.h"
@@ -40,7 +41,6 @@
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 
-void output(short, short) {}
 
 /***********************************************************************************************
  * Focus_Loss -- this function is called when a library function detects focus
@@ -74,10 +74,10 @@ void Focus_Restore() {
   }
 }
 
-unsigned char* VQPalette;
-long VQNumBytes;
-unsigned long VQSlowpal;
-bool VQPaletteChange = false;
+static unsigned char* VQPalette;
+static long VQNumBytes;
+static unsigned long VQSlowpal;
+static bool VQPaletteChange = false;
 
 extern "C" {
 void __cdecl SetPalette(unsigned char* palette, long numbytes,
@@ -111,8 +111,6 @@ void __cdecl SetPalette(unsigned char* palette, long, unsigned long) {
   Set_Palette(palette);
 }
 
-GraphicBufferClass* Read_PCX_File(const char* name, char* Palette, void* Buff,
-                                  long Size);
 void Load_Title_Screen(std::string_view name, GraphicViewPortClass* video_page,
                        unsigned char* palette) {
   GraphicBufferClass* load_buffer;
@@ -125,7 +123,6 @@ void Load_Title_Screen(std::string_view name, GraphicViewPortClass* video_page,
   }
 }
 
-#include "ra/filepcx.h"
 
 /***************************************************************************
  * READ_PCX_FILE -- read a pcx file into a Graphic Buffer                  *

@@ -178,6 +178,7 @@
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
+#include "ra/wol_main.h"
 #include "ra/ww_audio.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
@@ -197,8 +198,6 @@
 // Size of the heap buffers holding the "xxx's Game" entries of the game list:
 // a player name plus room for the surrounding text and brackets.
 constexpr size_t kGameListItemSize = MPLAYER_NAME_MAX + 64;
-
-bool bSpecialAftermathScenario(const char* szScenarioDescription);
 
 #include <iterator>
 #include <random>
@@ -924,8 +923,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
 static int Net_New_Dialog();
 static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
                                            int* color_used);
-void Start_WWChat(ColorListClass* playerlist);
-int Update_WWChat();
+static void Start_WWChat(ColorListClass* playerlist);
+static int Update_WWChat();
 
 #define PCOLOR_BROWN PCOLOR_GREY
 
@@ -5620,7 +5619,7 @@ struct WWPerson {
   unsigned long LastTime;
 };
 
-struct WWPerson WWPersons[] = {
+static struct WWPerson WWPersons[] = {
     {{
          66,
          105,
@@ -7124,7 +7123,7 @@ struct WWPerson WWPersons[] = {
      0},
 };
 
-Timer<SystemTickSource> wwperson_timer;
+static Timer<SystemTickSource> wwperson_timer;
 
 void Start_WWChat(ColorListClass* playerlist) {
   char* item;

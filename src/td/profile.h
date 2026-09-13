@@ -1,6 +1,8 @@
 #ifndef CNC_RED_ALERT_TD_PROFILE_H_
 #define CNC_RED_ALERT_TD_PROFILE_H_
 
+#include "td/defines.h"  // NewConfigType is an anonymous struct typedef.
+
 int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
                            char* profile);
 bool WWWritePrivateProfileInt(const char* section, const char* entry, int value,
@@ -15,5 +17,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
                                 char* ini_data);
 unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
                                 char* profile);
+
+bool Read_Private_Config_Struct(char* profile, NewConfigType* config);
 
 #endif  // CNC_RED_ALERT_TD_PROFILE_H_

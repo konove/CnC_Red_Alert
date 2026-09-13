@@ -17,4 +17,7 @@ void Smart_Printf(const char* format, ...);
 void Hex_Dump_Data(char* buffer, int length);
 void itoh(int i, char* s);
 
+class ModemRegistryEntryClass;
+extern ModemRegistryEntryClass* ModemRegistry;
+
 #endif  // CNC_RED_ALERT_TD_NULLDLG_H_

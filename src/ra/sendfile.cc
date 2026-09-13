@@ -75,8 +75,8 @@
 #include "tech/ftimer.h"
 #include "tech/rawfile.h"
 
-bool Receive_Remote_File(char* file_name, unsigned int file_length,
-                         int gametype);
+static bool Receive_Remote_File(char* file_name, unsigned int file_length,
+                                int gametype);
 
 #define RESPONSE_TIMEOUT (int64_t{60} * 60)
 

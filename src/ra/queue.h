@@ -293,6 +293,11 @@ bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
 bool Queue_Options();
 bool Queue_Exit();
 void Queue_AI();
+
+// Decode the events packed in `buf` onto DoList. Return the number of events
+// read.
+int Extract_Uncompressed_Events(void* buf, int bufsize);
+int Extract_Compressed_Events(void* buf, int bufsize);
 void Add_CRC(uint32_t* crc, uint32_t val);
 
 #endif  // CNC_RED_ALERT_RA_QUEUE_H_

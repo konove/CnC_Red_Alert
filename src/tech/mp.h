@@ -168,4 +168,6 @@ inline bool XMP_Test_Bit(const uint32_t* r, unsigned bit) {
 // Misc functions.
 void memrev(char* buffer, size_t length);
 
+int XMP_Prepare_Modulus(const uint32_t* modulus, int precision);
+
 #endif  // CNC_RED_ALERT_TECH_MP_H_

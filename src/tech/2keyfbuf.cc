@@ -33,15 +33,11 @@ enum BlitFlags {
 };
 
 // the one in jshell isn't const enough
-constexpr BlitFlags operator|(BlitFlags t1, BlitFlags t2) {
+static constexpr BlitFlags operator|(BlitFlags t1, BlitFlags t2) {
   return static_cast<BlitFlags>((int)t1 | (int)t2);
 }
 
 #define PRED_MASK 0xE
-
-extern char* BigShapeBufferStart;
-extern char* TheaterShapeBufferStart;
-extern bool UseBigShapeBuffer;
 
 static int BFPredOffset;
 static int BFPartialCount;
@@ -53,7 +49,7 @@ static int16_t BFPredNegTable[]{-1, -3, -2, -5, -2, -4, -3, -1,
 static int16_t BFPredTable[]{1, 3, 2, 5, 2, 3, 4, 1};
 
 // copied from blit funcs
-inline int Make_Code(int x, int y, int w, int h) {
+static inline int Make_Code(int x, int y, int w, int h) {
   return (x < 0 ? 0b1000 : 0) | (x >= w ? 0b0100 : 0) | (y < 0 ? 0b0010 : 0) |
          (y >= h ? 0b0001 : 0);
 }
@@ -101,11 +97,11 @@ static void Setup_Shape_Header(int pixel_width, int pixel_height, char* src,
 // single helper that handles all combinations
 // templated on flags to avoid writing every combination
 template <int flags>
-void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
-                 uint8_t* dst_offset, int src_adjust_width,
-                 int dst_adjust_width, const uint8_t* Translucent,
-                 const uint8_t* IsTranslucent, int FadingNum,
-                 const uint8_t* FadingTable) {
+static void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
+                        uint8_t* dst_offset, int src_adjust_width,
+                        int dst_adjust_width, const uint8_t* Translucent,
+                        const uint8_t* IsTranslucent, int FadingNum,
+                        const uint8_t* FadingTable) {
   do {
     // original asm unrolled this 32 times
     for (int x = 0; x < pixel_count; x++) {

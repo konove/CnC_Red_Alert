@@ -11,9 +11,7 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/ww_win.h"
 
-extern SDL_Renderer* SDLRenderer;
 
-extern Uint32 ForceRenderEventID;
 static Uint32 Force_Redraw_Timer(Uint32 /*interval*/, void*) {
   // something has been draw and not displayed for 33ms
   // go tell the main thread it should probably display that

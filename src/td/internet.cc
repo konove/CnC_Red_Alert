@@ -85,8 +85,6 @@
 /***************************************************************************
 ** Internet specific globals
 */
-char PlanetWestwoodHandle[] = {"Handle"};      // Planet WW user name
-char PlanetWestwoodPassword[] = {"Password"};  // Planet WW password
 char PlanetWestwoodIPAddress[IP_ADDRESS_MAX] = {
     "206.154.108.87"};                 // IP of server or other player
 long PlanetWestwoodPortNumber = 1234;  // Port number to send to
@@ -103,8 +101,6 @@ int WChatMaxAhead;
 int WChatSendRate;
 
 int Read_Game_Options();
-
-extern bool SpawnedFromWChat;
 
 /***********************************************************************************************
  * Check_From_WChat -- This function reads in C&CSPAWN.INI and interprets it *
@@ -342,16 +338,6 @@ int Read_Game_Options(const char* name) {
 extern HKEY Get_Registry_Sub_Key(HKEY base_key, char* search_key, BOOL close);
 #endif
 
-void Just_Path(char* path, char* destpath, size_t dest_size) {
-  char* terminator = nullptr;  // He'll be back.
-
-  port::SafeCopy(destpath, path, dest_size);
-  terminator = strrchr(destpath, '\\');
-  if (terminator) {
-    *terminator = 0;
-  }
-}
-
 /***********************************************************************************************
  * Is_User_WChat_Registered -- retrieve the users wchat entry from the registry
  **
@@ -366,7 +352,7 @@ void Just_Path(char* path, char* destpath, size_t dest_size) {
  *                                                                                             *
  * HISTORY: * 1/12/96 2:13PM ST : Created *
  *=============================================================================================*/
-bool Is_User_WChat_Registered(char* /*buffer*/, int /*buffer_len*/) {
+static bool Is_User_WChat_Registered(char* /*buffer*/, int /*buffer_len*/) {
   return false;
 }
 
@@ -402,9 +388,7 @@ bool Spawn_WChat(bool /*can_launch*/) {
  *                                                                                             *
  * HISTORY: * 6/8/96 12:33PM ST : Created *
  *=============================================================================================*/
-bool Spawn_Registration_App() {
-  return false;
-}
+static bool Spawn_Registration_App() { return false; }
 
 /***********************************************************************************************
  * Do_The_Internet_Menu_Thang -- Handle case where user clicks on 'Internet'

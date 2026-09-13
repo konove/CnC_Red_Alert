@@ -41,4 +41,14 @@
 
 #define IP_ADDRESS_MAX 40
 
+extern long PlanetWestwoodPortNumber;  // Port number to send to
+extern bool
+    PlanetWestwoodIsHost;  // True if this player controls the game options
+extern unsigned long PlanetWestwoodGameID;  // Game ID
+extern unsigned long PlanetWestwoodStartTime;
+extern bool
+    GameStatisticsPacketSent;  // True once the game statistics have been sent
+extern bool
+    ConnectionLost;  // True once the connection to the other player dropped
+
 #endif  // CNC_RED_ALERT_RA_INTERNET_H_

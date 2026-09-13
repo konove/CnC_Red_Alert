@@ -14,9 +14,7 @@
 
 SurfaceMonitorClass AllSurfaces;
 
-extern "C" {
 long RandNumb;
-}
 
 void (*Misc_Focus_Loss_Function)();
 void (*Misc_Focus_Restore_Function)();

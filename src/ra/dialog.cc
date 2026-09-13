@@ -72,8 +72,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 
-unsigned char* Font_Palette(int color);
-
 /***********************************************************************************************
  * Dialog_Box -- draws a dialog background box *
  *                                                                                             *
@@ -934,14 +932,6 @@ void Plain_Text_Print(const char* text, unsigned x, unsigned y, unsigned fore,
   scheme.Bar = static_cast<unsigned char>(fore);
 
   Fancy_Text_Print(text, x, y, &scheme, back, flag);
-}
-
-unsigned char* Font_Palette(int color) {
-  static unsigned char _fpalette[16];
-
-  memset(_fpalette, '\0', sizeof(_fpalette));
-  memset(&_fpalette[11], color, 5);
-  return _fpalette;
 }
 
 /***********************************************************************************************

@@ -44,6 +44,7 @@
 #include "ra/statbtn.h"
 #include "ra/textbtn.h"
 #include "ra/theme.h"
+#include "ra/wol_main.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 #include "ra/ww_audio.h"
@@ -51,11 +52,11 @@
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 
-bool ReadSavedNicks(WolapiObject* pWO, IconListClass& NickList,
-                    char* szNameBuffer, char* szPassBuffer);
-bool bSaveNick(WolapiObject* pWO, const char* szNickToSave,
-               const char* szPassToSave, bool bPassIsMangled);
-void DeleteNick(WolapiObject* pWO, int iOneBasedEntryToDelete);
+static bool ReadSavedNicks(WolapiObject* pWO, IconListClass& NickList,
+                           char* szNameBuffer, char* szPassBuffer);
+static bool bSaveNick(WolapiObject* pWO, const char* szNickToSave,
+                      const char* szPassToSave, bool bPassIsMangled);
+static void DeleteNick(WolapiObject* pWO, int iOneBasedEntryToDelete);
 // char* LoadShpFile( const char* szShpFile );
 
 // #include "ra/woldebug.h"

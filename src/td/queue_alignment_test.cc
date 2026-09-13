@@ -12,8 +12,6 @@
 #include "td/queue.h"
 
 extern QueueClass<EventClass, MAX_EVENTS * 8> DoList;
-int Extract_Compressed_Events(void* buf, int bufsize);
-int Extract_Uncompressed_Events(void* buf, int bufsize);
 
 namespace {
 class QueueAlignmentTest : public testing::Test {

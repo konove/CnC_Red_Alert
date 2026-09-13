@@ -148,14 +148,10 @@ enum {
   COMPLETION_PLAYER_2_WON_BY_DISCONNECTION
 };
 
-extern unsigned long PlanetWestwoodGameID;
-extern unsigned long PlanetWestwoodStartTime;
-
 extern "C" char CPUType;
 
-bool GameTimerInUse = false;
-TimerClass GameTimer;
-long GameEndTime;
+static TimerClass GameTimer;
+static long GameEndTime;
 void* PacketLater = nullptr;
 
 /***********************************************************************************************
@@ -634,10 +630,8 @@ void Send_Statistics_Packet() {
 
 void Register_Game_Start_Time() {
   GameTimer.Set(0, true);
-  GameTimerInUse = true;
 }
 
 extern void Register_Game_End_Time() {
   GameEndTime = GameTimer.Time();
-  GameTimerInUse = false;
 }

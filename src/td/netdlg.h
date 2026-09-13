@@ -13,4 +13,7 @@ unsigned long Compute_Name_CRC(char* name);
 void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
                           unsigned long timeval);
 
+bool Client_Remote_Connect();
+bool Server_Remote_Connect();
+
 #endif  // CNC_RED_ALERT_TD_NETDLG_H_

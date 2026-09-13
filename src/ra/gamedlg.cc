@@ -40,6 +40,7 @@
 
 #include "ra/gamedlg.h"
 
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -57,6 +58,9 @@
 #include "ra/sounddlg.h"
 #include "ra/textbtn.h"
 #include "ra/visudlg.h"
+#include "ra/wol_main.h"
+#include "ra/wolapiob.h"
+#include "ra/wolstrng.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
@@ -65,12 +69,6 @@
 #include "sdllib/wwstd.h"
 #include "session.h"
 #include "slider.h"
-
-#include "ra/config.h"
-#include "ra/wolapiob.h"
-#include "ra/wolstrng.h"
-
-bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame);
 
 /***********************************************************************************************
  * OptionsClass::Process -- Handles all the options graphic interface. *

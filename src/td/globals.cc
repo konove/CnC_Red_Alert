@@ -237,12 +237,6 @@ bool PlayerWins;
 bool PlayerLoses;
 bool PlayerRestarts;
 
-/*
-** This flag is set if the player neither wins nor loses; it's mostly for
-** multiplayer mode.
-*/
-bool PlayerAborts;
-
 /***************************************************************************
 **	This is the pointer for the speech staging buffer. This buffer is used
 **	to hold the currently speaking voice data. Since only one speech sample
@@ -330,7 +324,7 @@ ScoreClass Score;
 **	The running credit display is controlled by this class (and member
 **	functions.
 */
-CreditClass CreditDisplay;
+static CreditClass CreditDisplay;
 
 /***************************************************************************
 **	These are the bits that are set when the appropriate tutor message
@@ -909,7 +903,7 @@ GraphicViewPortClass HidPage(&HiddenPage, 0, 0, 640, 480);
 GraphicBufferClass SysMemPage(kDefaultScreenWidth, 200, nullptr);
 int SoundOn;
 CountDownTimerClass FrameTimer{0L};
-CountDownTimerClass DebugTimer{0L};
+static CountDownTimerClass DebugTimer{0L};
 CountDownTimerClass CountDownTimer{0L};
 
 NewConfigType NewConfig;
@@ -970,14 +964,6 @@ int MouseInstalled;
 ** enabled by the INI file.
 */
 int AreThingiesEnabled = false;
-
-/*
-** Command line arguments
-**
-**
-*/
-char* Argv[20];  // Pointers to command line arguments
-int Argc;        // Command line argument count
 
 WWKeyboardClass Kbd;
 int ScreenWidth = 640;

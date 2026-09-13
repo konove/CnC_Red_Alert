@@ -44,6 +44,7 @@
 #include "ra/textbtn.h"
 #include "ra/theme.h"
 #include "ra/tooltip.h"
+#include "ra/wol_main.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 #include "ra/ww_audio.h"
@@ -53,19 +54,16 @@
 
 // #include "ra/woldebug.h"
 
-void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
-                      PlayerColorType iColorRemap = PCOLOR_NONE);
-void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
-                      RemapControlType* pColorRemap);
-bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
-                  char* szChannelName, bool bGame);
-bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist,
-                  IconListClass& chanlist, int iIndex, bool bGame);
-bool ExitChatChannel(WolapiObject* pWO);
-void CreateChatChannel(WolapiObject* pWO);
-bool CreateGameChannel(WolapiObject* pWO, const CREATEGAMEINFO& cgi);
-bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
-                                 IconListClass& chanlist, int iIndex);
+static bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist,
+                         Channel* pChannel, char* szChannelName, bool bGame);
+static bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist,
+                         IconListClass& chanlist, int iIndex, bool bGame);
+static bool ExitChatChannel(WolapiObject* pWO);
+static void CreateChatChannel(WolapiObject* pWO);
+static bool CreateGameChannel(WolapiObject* pWO, const CREATEGAMEINFO& cgi);
+static bool ProcessChannelListSelection(WolapiObject* pWO,
+                                        IconListClass& chatlist,
+                                        IconListClass& chanlist, int iIndex);
 
 enum LIST_EXPAND_STATE {
   LES_NORMAL,
@@ -74,14 +72,14 @@ enum LIST_EXPAND_STATE {
 };
 static LIST_EXPAND_STATE lesCurrent = LES_NORMAL;
 
-bool OnExpandChannelList(IconListClass& chanlist, IconListClass& userlist);
-bool OnExpandUserList(IconListClass& chanlist, IconListClass& userlist);
-void ResizeChannelList(IconListClass& chanlist, bool bExpand);
-void ResizeUserList(IconListClass& userlist, bool bExpand);
+static bool OnExpandChannelList(IconListClass& chanlist,
+                                IconListClass& userlist);
+static bool OnExpandUserList(IconListClass& chanlist, IconListClass& userlist);
+static void ResizeChannelList(IconListClass& chanlist, bool bExpand);
+static void ResizeUserList(IconListClass& userlist, bool bExpand);
 
-bool bLinkInList(const LinkClass* pListHead, const LinkClass* pLinkToFind);
-
-extern CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO);
+static bool bLinkInList(const LinkClass* pListHead,
+                        const LinkClass* pLinkToFind);
 
 static int d_chanlist_w;
 static int d_chanlist_h;

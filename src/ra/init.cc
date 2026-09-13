@@ -163,7 +163,7 @@
 #include "tech/xstraw.h"
 #include "winvq/vqa32/vqaplay.h"
 
-RemapControlType SidebarScheme;
+static RemapControlType SidebarScheme;
 
 /****************************************
 **	Function prototypes for this module **
@@ -183,22 +183,17 @@ static void Bootstrap();
 static void Init_Bulk_Data();
 static void Init_Keys();
 
-extern "C" {
-extern long RandNumb;
-}
-
-void Init_Random();
+static void Init_Random();
 
 #define ATTRACT_MODE_TIMEOUT 3600  // timeout for attract mode
 
-bool Load_Recording_Values(CCFileClass& file);
-bool Save_Recording_Values(CCFileClass& file);
+static bool Load_Recording_Values(CCFileClass& file);
+static bool Save_Recording_Values(CCFileClass& file);
 
 #include "ra/config.h"
+#include "ra/expand.h"
 #include "ra/wol_main.h"
 #include "ra/wolapiob.h"
-
-bool Expansion_Dialog(bool bCounterstrike);
 
 /***********************************************************************************************
  * Load_Prolog_Page -- Loads the special pre-prolog "please wait" page. *
@@ -427,7 +422,6 @@ bool Init_Game(int, char*[]) {
   return true;
 }
 
-extern bool Get_Broadcast_Addresses();
 
 /***********************************************************************************************
  * Select_Game -- The game's main menu *
@@ -1539,7 +1533,6 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     }
 
     if (strstr(string, "-NOMOUSEGRAB")) {
-      extern bool NoMouseGrab;
       NoMouseGrab = true;
     }
 
@@ -2370,7 +2363,7 @@ static void Init_Bootstrap_Mixfiles() {
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 // #define DENZIL_MIXEXTRACT
-void Extract(const char* filename, const char* outname);
+static void Extract(const char* filename, const char* outname);
 
 static void Init_Secondary_Mixfiles() {
   if (CCFileClass("MAIN1.MIX").Is_Available()) {
@@ -2803,12 +2796,12 @@ void Extract(const char* filename, const char* outname) {
   }
 }
 
-bool bUsingDVD = false;
+static bool bUsingDVD = false;
 
 //***********************************************************************************************
 // Whether the installer recorded a DVD edition. Off Windows there is no
 // installer, and the disc logic treats the data on disk as the DVD.
-bool Is_DVD_Installed() {
+static bool Is_DVD_Installed() {
   if constexpr (port::kIsWindows) {
     return ReadInstallerFlag("DVD");
   } else {

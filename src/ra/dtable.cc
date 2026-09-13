@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-long DiffTable[] = {
+static long DiffTable[] = {
     0,       // Index = 0, Token = 0
     1,       // Index = 0, Token = 1
     3,       // Index = 0, Token = 2

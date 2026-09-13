@@ -10,4 +10,16 @@
 // and the application must shut down for it to install.
 int WOL_Main();
 
+struct CREATEGAMEINFO;
+class WolapiObject;
+
+CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO);
+bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame);
+int WOL_Chat_Dialog(WolapiObject* pWolapi);
+int WOL_Login_Dialog(WolapiObject* pWolapi);
+
+// Returns true if the scenario description names one of the Aftermath
+// scenarios that need the expansion installed.
+bool bSpecialAftermathScenario(const char* szScenarioDescription);
+
 #endif  // CNC_RED_ALERT_RA_WOL_MAIN_H_

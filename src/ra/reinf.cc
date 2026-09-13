@@ -146,7 +146,7 @@ static bool _Pop_Group_Out_Of_Object(FootClass* group, TechnoClass* object) {
  *                                                                                             *
  * HISTORY: * 07/26/1996 JLB : Created. *
  *=============================================================================================*/
-bool _Need_To_Take(const AircraftClass* air) {
+static bool _Need_To_Take(const AircraftClass* air) {
   if (*air == AIRCRAFT_YAK || *air == AIRCRAFT_MIG) {
     int deficit = air->House->Get_Quantity(STRUCT_AIRSTRIP);
     //		int deficit = air->House->Get_Quantity(STRUCT_AIRSTRIP) -

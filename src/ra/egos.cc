@@ -73,7 +73,7 @@
 ** List of Ego Class instances
 **  There will be one instance for each line of text.
 */
-DynamicVectorClass<EgoClass*> EgoList;
+static DynamicVectorClass<EgoClass*> EgoList;
 
 /*
 ** Number of slideshow pictures
@@ -94,7 +94,7 @@ DynamicVectorClass<EgoClass*> EgoList;
 /*
 ** Names of slideshow pictures to play behind the text
 */
-char SlideNames[NUM_SLIDES][13] = {
+static char SlideNames[NUM_SLIDES][13] = {
 
     "aftr_hi.pcx",  "aly1.pcx",     "apc_hi.pcx",   "aphi0049.pcx",
     "bnhi0020.pcx", "dchi0040.pcx", "frhi0166.pcx", "lab.pcx",
@@ -103,46 +103,36 @@ char SlideNames[NUM_SLIDES][13] = {
     "tent.pcx"};
 
 /*
-** Names of low res slideshow pictures to play behind the text
-*/
-char LoresSlideNames[NUM_SLIDES][13] = {
-    "malo0107.cps", "mig_lo.cps",   "mtfactlo.cps", "needl-lo.cps",
-    "sov2-lo.cps",  "spy-lo.cps",   "staln-lo.cps", "tent-lo.cps",
-    "aftr_lo.cps",  "aly1-lo.cps",  "apc_lo.cps",   "aplo0049.cps",
-    "bnlo0020.cps", "dclo0040.cps", "frlo0166.cps", "lab-lo.cps",
-    "lands-lo.cps"};
-
-/*
 ** Array of all the palettes required for the slides
 */
-char SlidePals[NUM_SLIDES][256 * 3];
+static char SlidePals[NUM_SLIDES][256 * 3];
 
 /*
 ** Array of graphic buffers containing the slides
 */
-GraphicBufferClass* SlideBuffers[NUM_SLIDES];
+static GraphicBufferClass* SlideBuffers[NUM_SLIDES];
 
 /*
 ** Original copy of slide (pref in video mem) that we use to undraw the text
 */
-GraphicBufferClass* BackgroundPage;
+static GraphicBufferClass* BackgroundPage;
 
 /*
 **  This palette contains both the font palette entries and the slide
 **  palette.
 */
-PaletteClass ComboPalette;
+static PaletteClass ComboPalette;
 
 /*
 ** Ptr to the combo palette.
 */
-unsigned char* ComboPalPtr;
+static unsigned char* ComboPalPtr;
 
 /*
 ** Lookup table. If an entry is non-zero then it should be faded in/out when the
 *slide changes.
 */
-char PaletteLUT[256];
+static char PaletteLUT[256];
 
 /*
 ** Height of the strips that are blitted from the slides to the backgound and
@@ -269,7 +259,7 @@ void EgoClass::Wipe(GraphicBufferClass* background) {
  *                                                                                             *
  * HISTORY: * 9/9/96 11:59PM ST : Created *
  *=============================================================================================*/
-void Set_Pal(char* palette) { Set_Palette(palette); }
+static void Set_Pal(char* palette) { Set_Palette(palette); }
 
 /***********************************************************************************************
  * Slide_Show -- Handles the blitting and fading of the background pictures. *
@@ -285,7 +275,7 @@ void Set_Pal(char* palette) { Set_Palette(palette); }
  *                                                                                             *
  * HISTORY: * 9/10/96 0:16AM ST : Created *
  *=============================================================================================*/
-void Slide_Show(int slide, int frame) {
+static void Slide_Show(int slide, int frame) {
   /*
   ** Temprary storage to save CCPalette to
   */

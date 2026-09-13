@@ -2,6 +2,8 @@
 // lifecycle, and the VQA_Open() validation/error paths, driven by a scripted
 // in-memory VqaIo file source. No real movie assets are required.
 
+#include "winvq/vqa32/vqaplay.h"
+
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
@@ -9,19 +11,21 @@
 
 #include "gtest/gtest.h"
 #include "winvq/vqa32/vqaio.h"
-#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqm32/compress.h"
+#include "winvq/vqm32/palette.h"
 
 // Link-time stubs for symbols normally provided by the game or sdllib. The
 // tests never draw frames or decode palettes, so these are never called.
+extern void* MainWindow;  // Declared by the Windows viewer as an HWND.
 void* MainWindow = nullptr;
 
-extern "C" unsigned long LCW_Uncompress(char const* /*source*/, char* /*dest*/,
-                                        unsigned long /*length*/) {
+unsigned long LCW_Uncompress(void* /*source*/, void* /*dest*/,
+                             unsigned long /*length*/) {
   return 0;
 }
 
-extern "C" void SetPalette(unsigned char* /*palette*/, long /*numbytes*/,
-                           unsigned long /*slowpal*/) {}
+void SetPalette(unsigned char* /*palette*/, long /*numbytes*/,
+                unsigned long /*slowpal*/) {}
 
 void Flag_To_Set_Palette(unsigned char* /*palette*/, long /*numbytes*/,
                          unsigned long /*slowpal*/) {}

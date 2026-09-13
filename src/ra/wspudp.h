@@ -76,4 +76,6 @@ class UDPInterfaceClass : public WinsockInterfaceClass {
   DynamicVectorClass<unsigned char*> LocalAddresses;
 };
 
+bool Get_Broadcast_Addresses();
+
 #endif  // CNC_RED_ALERT_RA_WSPUDP_H_

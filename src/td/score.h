@@ -201,4 +201,6 @@ extern GraphicBufferClass* PseudoSeenBuff;
 extern template void ScoreClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void ScoreClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+extern int ControlQ;
+
 #endif  // CNC_RED_ALERT_TD_SCORE_H_

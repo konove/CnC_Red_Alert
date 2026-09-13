@@ -57,6 +57,7 @@
 #include "ra/statbtn.h"
 #include "ra/tooltip.h"
 #include "ra/wol_gsup.h"
+#include "ra/wol_main.h"
 #include "ra/woldebug.h"
 #include "ra/wolstrng.h"
 #include "ra/ww_audio.h"
@@ -64,13 +65,8 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 
-extern void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
-                             PlayerColorType iColorRemap = PCOLOR_NONE);
-extern void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
-                             RemapControlType* pColorRemap);
-void HostNameFromGameChannelName(char* szNameToSet, const char* szChannelName);
-
-bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame);
+static void HostNameFromGameChannelName(char* szNameToSet,
+                                        const char* szChannelName);
 
 namespace {
 

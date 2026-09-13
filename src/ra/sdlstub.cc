@@ -18,8 +18,6 @@
 #include "sdllib/ww_win.h"
 #include "winvq/vqa32/vqaplay.h"
 
-void Focus_Loss();
-void Focus_Restore();
 
 void WWDebugString(const char* /*string*/) {}
 

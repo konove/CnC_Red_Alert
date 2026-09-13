@@ -147,4 +147,6 @@ int Get_Mouse_Y();
 void Update_Mouse_Palette();
 void Update_Mouse_Pos(int x, int y);
 
+extern bool NoMouseGrab;
+
 #endif  // CNC_RED_ALERT_SDLLIB_WW_MOUSE_H_

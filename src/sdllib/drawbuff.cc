@@ -19,7 +19,7 @@ bool OverlappedVideoBlits = true;
 
 GraphicBufferClass* WindowBuffer = nullptr;
 
-inline int Make_Code(int x, int y, int w, int h) {
+static inline int Make_Code(int x, int y, int w, int h) {
   return (x < 0 ? 0b1000 : 0) | (x >= w ? 0b0100 : 0) | (y < 0 ? 0b0010 : 0) |
          (y >= h ? 0b0001 : 0);
 }

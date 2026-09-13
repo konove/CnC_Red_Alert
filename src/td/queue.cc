@@ -125,8 +125,6 @@
 /********************************** Defines *********************************/
 #define SHOW_MONO 1
 
-int tmp_flag = 0;
-
 /********************************** Globals *********************************/
 //---------------------------------------------------------------------------
 //	GameCRC is the current computed CRC value for this frame.
@@ -218,12 +216,10 @@ static int Build_Send_Packet(void* buf, int bufsize, int frame_delay,
                              int num_cmds, int cap);
 static int Breakup_Receive_Packet(void* buf, int bufsize);
 #endif  // DEMO
-int Add_Uncompressed_Events(void* buf, int bufsize, int frame_delay, int size,
-                            int cap);
-int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
-                          int cap);
-int Extract_Uncompressed_Events(void* buf, int bufsize);
-int Extract_Compressed_Events(void* buf, int bufsize);
+static int Add_Uncompressed_Events(void* buf, int bufsize, int frame_delay,
+                                   int size, int cap);
+static int Add_Compressed_Events(void* buf, int bufsize, int frame_delay,
+                                 int size, int cap);
 
 //...........................................................................
 // DoList management:
@@ -251,13 +247,9 @@ static void Print_Framesync_Values(long curframe, unsigned long max_ahead,
                                    unsigned short* their_sent,
                                    unsigned short my_sent);
 #endif  // DEMO
-void Print_CRCs(EventClass*);
+static void Print_CRCs(EventClass*);
 
-extern void Keyboard_Process(KeyNumType& input);
-void Dump_Packet_Too_Late_Stuff(EventClass* event);
-
-extern void Register_Game_End_Time();
-extern void Send_Statistics_Packet();
+static void Dump_Packet_Too_Late_Stuff(EventClass* event);
 
 /***************************************************************************
  * Queue_Mission -- Queue a mega mission event.                            *

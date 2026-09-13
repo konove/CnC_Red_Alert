@@ -61,9 +61,11 @@
 #include "ra/ipxaddr.h"
 #include "ra/ipxmgr.h"
 #include "ra/jshell.h"
+#include "ra/keyframe.h"
 #include "ra/language.h"
 #include "ra/nullconn.h"
 #include "ra/palette.h"
+#include "ra/profile.h"
 #include "ra/session.h"
 #include "ra/special.h"
 #include "sdllib/drawbuff.h"
@@ -89,18 +91,13 @@
 
 // #include "ra/woldebug.h"
 
-bool Read_Private_Config_Struct(FileClass& file, NewConfigType* config);
-void Print_Error_Exit(char* string);
+static void Print_Error_Exit(char* string);
 
-extern void Create_Main_Window(HANDLE instance, int command_show, int width,
-                               int height);
 extern bool RA95AlreadyRunning;
 #ifdef _WIN32
 HINSTANCE ProgramInstance;
 #endif
-void Check_Use_Compressed_Shapes();
-void Read_Setup_Options(RawFileClass* config_file);
-bool VideoBackBufferAllowed = true;
+static void Read_Setup_Options(RawFileClass* config_file);
 
 /***********************************************************************************************
  * main -- Initial startup routine (preps library systems). *
@@ -561,7 +558,6 @@ void Read_Setup_Options(RawFileClass* config_file) {
     /*
     ** Read in the boolean options
     */
-    VideoBackBufferAllowed = ini.Get_Bool("Options", "VideoBackBuffer", true);
     AllowHardwareBlitFills = ini.Get_Bool("Options", "HardwareFills", true);
 
     ScreenHeight = ini.Get_Bool("Options", "Resolution", false) ? 480 : 400;

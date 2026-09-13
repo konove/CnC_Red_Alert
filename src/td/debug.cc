@@ -62,6 +62,7 @@
 #include "td/ending.h"
 #include "td/externs.h"
 #include "td/globals.h"
+#include "td/gscreen.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/jshell.h"
@@ -70,13 +71,12 @@
 #include "td/monoc.h"
 #include "td/object.h"
 #include "td/palette.h"
+#include "td/queue.h"
 #include "td/team.h"
 #include "td/techno.h"
 #include "td/type.h"
 #include "td/vector.h"
 #include "tech/pcx_file.h"
-
-extern bool ScreenRecording;
 
 /***********************************************************************************************
  * Self_Regulate -- Regulates the logic timer to result in smooth animation *
@@ -177,7 +177,6 @@ void Debug_Key(unsigned input) {
   if (Debug_Flag) {
     switch (input) {
       case KN_L:
-        extern int NetMonoMode, NewMonoMode;
         if (NetMonoMode) {
           NetMonoMode = 0;
         } else {

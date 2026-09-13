@@ -73,8 +73,6 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 
-void output(short port, short data);
-
 bool MonoClass::Enabled = 0;
 MonoClass* MonoClass::PageUsage[MAX_MONO_PAGES];
 
@@ -367,22 +365,10 @@ void MonoClass::Set_Cursor(int x, int y) {
   y = std::min(y, SubH);
   y = std::max(y, 0);
 
+  // The DOS build also moved the card's hardware cursor here; the port's mono
+  // pages live in memory, so recording the position is all there is to do.
   X = x;
   Y = y;
-
-  if (!Enabled) {
-    return;
-  }
-
-  /*
-  **	Update the visible cursor position only if the this mono page is the
-  *currently *	visible one.
-  */
-  int pos = ((y + SubY) * COLUMNS) + (x + SubX);
-  if (Page == 0) {
-    output(CONTROL_PORT, static_cast<short>(0x0E | (pos & 0xFF00)));
-    output(CONTROL_PORT, static_cast<short>(0x0F | pos << 8));
-  }
 }
 
 /***********************************************************************************************
@@ -1043,12 +1029,6 @@ int Mono_Y() {
   }
   return 0;
 }
-
-void Mono_Put_Char(char, int) {}
-
-void Mono_Scroll(int) {}
-
-void Mono_View_Page(int) {}
 
 int Mono_Printf(int string, ...) {
   va_list va;

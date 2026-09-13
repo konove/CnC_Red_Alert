@@ -186,7 +186,6 @@ DisplayClass::TacticalClass DisplayClass::TacButton;
 */
 #define _RETRIEVE
 
-extern MFCD* TheaterIcons;
 
 /***********************************************************************************************
  * DisplayClass::DisplayClass -- Default constructor for display class. *

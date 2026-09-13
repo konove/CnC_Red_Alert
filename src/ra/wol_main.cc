@@ -25,11 +25,8 @@
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 
-int WOL_Login_Dialog(WolapiObject* pWolapi);
-int WOL_Chat_Dialog(WolapiObject* pWolapi);
-
-bool ReregisterWolapiDLL();
-void HandleDLLFail();
+static bool ReregisterWolapiDLL();
+static void HandleDLLFail();
 
 #include "absl/log/check.h"
 #include "port/ex_string.h"

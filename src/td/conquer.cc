@@ -160,24 +160,17 @@
 
 #define SHAPE_TRANS 0x40
 
-void* Get_Shape_Header_Data(void* ptr);
-
 /****************************************
 **	Function prototypes for this module **
 *****************************************/
-void Keyboard_Process(KeyNumType& input);
 #ifndef DEMO
 static void Message_Input(KeyNumType& input);
 #endif
 static bool Color_Cycle();
-bool Map_Edit_Loop();
-void Trap_Object();
+static bool Map_Edit_Loop();
+static void Trap_Object();
 
-void Error_In_Heap_Pointers(const char* string);
 static void Do_Record_Playback();
-extern void Register_Game_Start_Time();
-extern void Register_Game_End_Time();
-extern void Send_Statistics_Packet();
 extern "C" {
 extern char* __nheapbeg;
 }
@@ -208,8 +201,6 @@ bool InMainLoop = false;
  *                                                                                             *
  * HISTORY: * 10/01/1994 JLB : Created. *
  *=============================================================================================*/
-extern bool Spawn_WChat(bool can_launch);
-extern bool SpawnedFromWChat;
 void Main_Game(int argc, char* argv[]) {
   bool fade = false;  // don't fade title screen the first time through
 
@@ -1518,8 +1509,6 @@ static void Sync_Delay() {
  *                                                                                             *
  * HISTORY: * 10/01/1994 JLB : Created. *
  *=============================================================================================*/
-extern void Check_For_Focus_Loss();
-void Reallocate_Big_Shape_Buffer();
 
 bool Main_Loop() {
   KeyNumType input;  // Player input.
@@ -2015,7 +2004,7 @@ void MixFileVqaIo::Close() {
   }
 }
 
-void Rebuild_Interpolated_Palette(unsigned char* interpal) {
+static void Rebuild_Interpolated_Palette(unsigned char* interpal) {
   for (int y = 0; y < 255; y++) {
     for (int x = y + 1; x < 256; x++) {
       *(interpal + ((y * 256) + x)) = *(interpal + ((x * 256) + y));
@@ -2104,8 +2093,6 @@ void Free_Interpolated_Palettes() {
  *                                                                                             *
  * HISTORY: * 12/19/1994 JLB : Created. *
  *=============================================================================================*/
-extern bool InMovie;
-extern bool VQPaletteChange;
 void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
   if (DebugNoMovies) {
     return;
@@ -2776,7 +2763,6 @@ void Trap_Object() {
  *                                                                                             *
  * HISTORY: * 06/24/1995 JLB : Created. *
  *=============================================================================================*/
-void Check_VQ_Palette_Set();
 
 long VQ_Call_Back(unsigned char*, long) {
   int key = 0;
@@ -3027,12 +3013,6 @@ void Heap_Dump_Check(const char* string) {
     Smart_Printf("%s\n", string);
 
     //	Debug_Heap_Dump = false;
-  }
-}
-
-void Error_In_Heap_Pointers(const char* string) {
-  if constexpr (config::kCheatKeysEnabled) {
-    Smart_Printf("Error in Heap for %s\n", string);
   }
 }
 

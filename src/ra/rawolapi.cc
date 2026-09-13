@@ -79,7 +79,7 @@ constexpr int kMessageMax = 512;
 //	the build. They live in ra/wolapi/wolapi_iids.cc now, and wolapi.h
 //	declares them.
 
-bool operator<(const User& u1, const User& u2);
+static bool operator<(const User& u1, const User& u2);
 
 //	The definitions of QueryInterface, AddRef, and Release are needed
 // because we are not including 	files that ordinarily (under MSVC) would
@@ -967,9 +967,6 @@ STDMETHODIMP RAChatEventSink::OnUpdateList(HRESULT hRes, Update* pUpdateList) {
   return S_OK;
 }
 
-extern bool WOL_Download_Dialog(IDownload* pDownload,
-                                RADownloadEventSink* pDownloadSink,
-                                const char* szTitle);
 //***********************************************************************************************
 bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
   //	First we create a Download and Download Sink interface object, like Chat

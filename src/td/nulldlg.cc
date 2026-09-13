@@ -132,10 +132,10 @@ static void Modem_Echo(char c);
 
 static SerialPacketType SendPacket;
 static SerialPacketType ReceivePacket;
-char TheirName[MPLAYER_NAME_MAX];
-unsigned char TheirColor;
-HousesType TheirHouse;
-unsigned char TheirID;
+static char TheirName[MPLAYER_NAME_MAX];
+static unsigned char TheirColor;
+static HousesType TheirHouse;
+static unsigned char TheirID;
 static char DialString[CWAITSTRBUF_MAX + PhoneEntryClass::PHONE_MAX_NUM - 1];
 static SerialSettingsType* DialSettings;
 
@@ -1408,7 +1408,7 @@ GameType Select_Serial_Dialog() {
  *                                                                                             *
  * HISTORY: * 12/16/96 2:29PM ST : Created *
  *=============================================================================================*/
-void Advanced_Modem_Settings(SerialSettingsType* settings) {
+static void Advanced_Modem_Settings(SerialSettingsType* settings) {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/

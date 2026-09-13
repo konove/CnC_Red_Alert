@@ -431,7 +431,7 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
 /*
 **	This elaborates all the EVA speech voices.
 */
-const char* Speech[VOX_COUNT] = {
+static const char* Speech[VOX_COUNT] = {
     "ACCOM1",    //	mission accomplished
     "FAIL1",     //	your mission has failed
     "BLDG1",     //	unable to comply, building in progress

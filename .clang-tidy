@@ -42,8 +42,6 @@ Checks: '*,
          -clang-diagnostic-lifetime-safety-intra-tu-suggestions,
          -clang-diagnostic-lifetime-safety-invalidation,
          -clang-diagnostic-missing-noreturn,
-         -clang-diagnostic-missing-prototypes,
-         -clang-diagnostic-missing-variable-declarations,
          -clang-diagnostic-ms-bitfield-padding,
          -clang-diagnostic-nested-anon-types,
          -clang-diagnostic-nrvo,
@@ -129,7 +127,6 @@ Checks: '*,
          -misc-non-private-member-variables-in-classes,
          -misc-predictable-rand,
          -misc-use-anonymous-namespace,
-         -misc-use-internal-linkage,
          -modernize-avoid-c-arrays,
          -modernize-avoid-c-style-cast,
          -modernize-avoid-variadic-functions,
@@ -170,6 +167,11 @@ WarningsAsErrors: '*'
 HeaderFilterRegex: '.*/CnC_Red_Alert/src/(base|port|sdllib|tech|jshell|winvq|ra|td)/.*'
 FormatStyle: file
 CheckOptions:
+  # Types have no `static`: the only way to give a .cc-local struct or enum
+  # internal linkage is an anonymous namespace, which the codebase does not use
+  # (misc-use-anonymous-namespace stays excluded). Functions and variables are
+  # still checked.
+  misc-use-internal-linkage.AnalyzeTypes: false
   # Same-width unsigned-to-signed conversions are the game's own compact types
   # flowing into int -- LEPTON (unsigned short), COORDINATE (uint32_t) and the
   # rest of the do-not-touch list in docs/TYPE_MIGRATION.md. Warning on those is

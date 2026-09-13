@@ -155,7 +155,7 @@ static const SmudgeTypeClass Bibx2(SMUDGE_BIB2, "BIB2", TXT_BIB, 3,
 *'volatile' reduces the
 ** level of optimisation enough for the problem not to manifest.
 */
-const volatile SmudgeTypeClass Bibx3(
+static const volatile SmudgeTypeClass Bibx3(
     SMUDGE_BIB3, "BIB3", TXT_BIB, 2,
     2,     // Width and height of smudge (in icons).
     true,  // Is this a building bib?

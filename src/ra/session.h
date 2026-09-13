@@ -716,6 +716,8 @@ extern template void NodeNameTag::Serialize<ArchiveReader>(ArchiveReader&);
 extern template void SessionClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void SessionClass::Serialize<ArchiveReader>(ArchiveReader&);
 
+bool Is_Mission_126x126(char* file_name);
+
 #endif  // CNC_RED_ALERT_RA_SESSION_H_
 
 /*************************** end of session.h ******************************/

@@ -331,4 +331,8 @@ void VQA_DefaultConfig(VQAConfig* config);
 void VQA_PauseAudio();
 void VQA_ResumeAudio();
 
+// Supplied by the game: queue a palette change for the next frame.
+void Flag_To_Set_Palette(unsigned char* palette, long numbytes,
+                         unsigned long slowpal);
+
 #endif  // CNC_RED_ALERT_WINVQ_VQA32_VQAPLAY_H_

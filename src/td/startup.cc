@@ -69,6 +69,7 @@
 #include "td/ipxaddr.h"
 #include "td/ipxmgr.h"
 #include "td/jshell.h"
+#include "td/keyframe.h"
 #include "td/nullconn.h"
 #include "td/nullmgr.h"
 #include "td/profile.h"
@@ -84,18 +85,12 @@
 #include "td/ccdde.h"
 #endif
 
-bool Read_Private_Config_Struct(char* profile, NewConfigType* config);
 void Delete_Swap_Files();
-void Print_Error_End_Exit(char* string);
-void Print_Error_Exit(char* string);
-extern void Create_Main_Window(HANDLE instance, int command_show, int width,
-                               int height);
+[[maybe_unused]] static void Print_Error_End_Exit(char* string);
+[[maybe_unused]] static void Print_Error_Exit(char* string);
 
-extern bool ReadyToQuit;
-void Read_Setup_Options(RawFileClass* config_file);
+[[maybe_unused]] static void Read_Setup_Options(RawFileClass* config_file);
 
-bool VideoBackBufferAllowed = true;
-void Check_From_WChat(char* wchat_name);
 bool SpawnedFromWChat = false;
 
 extern "C" {
@@ -126,8 +121,6 @@ HINSTANCE ProgramInstance;
 #endif
 extern bool CC95AlreadyRunning;
 void Move_Point(short& x, short& y, DirType dir, unsigned short distance);
-
-void Check_Use_Compressed_Shapes();
 
 #ifndef TD_NO_ENTRY_POINT
 #ifdef _WIN32
@@ -536,8 +529,6 @@ void Read_Setup_Options(RawFileClass* config_file) {
   if (config_file->Is_Available()) {
     config_file->Read(buffer, config_file->Size());
 
-    VideoBackBufferAllowed =
-        WWGetPrivateProfileInt("Options", "VideoBackBuffer", 1, buffer);
     AllowHardwareBlitFills =
         WWGetPrivateProfileInt("Options", "HardwareFills", 1, buffer);
     ScreenHeight =

@@ -523,4 +523,10 @@ inline WolapiObject* pWolapi = nullptr;
 // stats code sends afterwards report this player as the one who quit.
 inline bool bReconnectDialogCancelled = false;
 
+// Appends a line of chat text to `ILTarget`, colored by player color or remap.
+void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
+                      PlayerColorType iColorRemap = PCOLOR_NONE);
+void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
+                      RemapControlType* pColorRemap);
+
 #endif  // CNC_RED_ALERT_RA_WOLAPIOB_H_

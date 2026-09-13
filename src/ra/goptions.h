@@ -90,4 +90,6 @@ class GameOptionsClass : public OptionsClass {
   int ButtonResumeY = 0;
 };
 
+extern bool RedrawOptionsMenu;
+
 #endif  // CNC_RED_ALERT_RA_GOPTIONS_H_

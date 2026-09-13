@@ -120,7 +120,7 @@ void Write_Interpolation_Palette(const char* palette_file_name) {
  * HISTORY:                                                                *
  *   12/06/1995  MG : Created.                                             *
  *=========================================================================*/
-void Create_Palette_Interpolation_Table() {
+static void Create_Palette_Interpolation_Table() {
   //	Asm_Create_Palette_Interpolation_Table();
 
   int i;

@@ -4192,7 +4192,7 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
  *                                                                                             *
  * HISTORY: * 1/6/97 3:23PM ST : Created *
  *=============================================================================================*/
-void Wait_For_Focus() {
+static void Wait_For_Focus() {
   CountDownTimerClass focus_timer;
   focus_timer.Set(static_cast<long>(5) * 60);
   /*
@@ -4212,8 +4212,6 @@ void Wait_For_Focus() {
     AllSurfaces.SurfacesRestored = false;
   }
 }
-
-extern bool Spawn_WChat(bool can_launch);
 
 /***********************************************************************************************
  * Net_Fake_New_Dialog -- Just like Net_New_Dialog but without the Dialog. For

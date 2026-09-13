@@ -111,32 +111,32 @@ bool Expansion_AM_Present() {
   //	return(file.Is_Available());
 }
 
-const char* ExpandNames[] = {"SCG20EA", "SCG21EA", "SCG22EA", "SCG23EA",
-                             "SCG24EA", "SCG26EA", "SCG27EA", "SCG28EA",
-                             "SCU31EA", "SCU32EA", "SCU33EA", "SCU34EA",
-                             "SCU35EA", "SCU36EA", "SCU37EA", "SCU38EA",
-                             "SCG43EA",  // Harbor Reclamation
-                             "SCG41EA",  // In the nick of time
-                             "SCG40EA",  // Caught in the act
-                             "SCG42EA",  // Production Disruption
-                             "SCG47EA",  // Negotiations
-                             "SCG45EA",  // Monster Tank Madness
-                             "SCG44EA",  // Time Flies
-                             "SCG48EA",  // Absolut MADness
-                             "SCG46EA",  // Pawn
+static const char* ExpandNames[] = {"SCG20EA", "SCG21EA", "SCG22EA", "SCG23EA",
+                                    "SCG24EA", "SCG26EA", "SCG27EA", "SCG28EA",
+                                    "SCU31EA", "SCU32EA", "SCU33EA", "SCU34EA",
+                                    "SCU35EA", "SCU36EA", "SCU37EA", "SCU38EA",
+                                    "SCG43EA",  // Harbor Reclamation
+                                    "SCG41EA",  // In the nick of time
+                                    "SCG40EA",  // Caught in the act
+                                    "SCG42EA",  // Production Disruption
+                                    "SCG47EA",  // Negotiations
+                                    "SCG45EA",  // Monster Tank Madness
+                                    "SCG44EA",  // Time Flies
+                                    "SCG48EA",  // Absolut MADness
+                                    "SCG46EA",  // Pawn
 
-                             "SCU43EA",  // Testing Grounds
-                             "SCU40EA",  // Shock Therapy
-                             "SCU42EA",  // Let's Make a Steal
-                             "SCU41EA",  // Test Drive
-                             "SCU45EA",  // Don't Drink The Water
-                             "SCU44EA",  // Situation Critical
-                             "SCU46EA",  // Brothers in Arms
-                             "SCU47EA",  // Deus Ex Machina
-                             "SCU48EA",  // Grunyev Revolution
-                             nullptr};
+                                    "SCU43EA",  // Testing Grounds
+                                    "SCU40EA",  // Shock Therapy
+                                    "SCU42EA",  // Let's Make a Steal
+                                    "SCU41EA",  // Test Drive
+                                    "SCU45EA",  // Don't Drink The Water
+                                    "SCU44EA",  // Situation Critical
+                                    "SCU46EA",  // Brothers in Arms
+                                    "SCU47EA",  // Deus Ex Machina
+                                    "SCU48EA",  // Grunyev Revolution
+                                    nullptr};
 
-const char* TestNames2[] = {
+[[maybe_unused]] static const char* TestNames2[] = {
     "SCG01EA", "SCG02EA", "SCG03EA", "SCG04EA", "SCG05EA", "SCG06EA",
     "SCG07EA", "SCG08EA", "SCU01EA", "SCU02EA", "SCU03EA", "SCU04EA",
     "SCU05EA", "SCU06EA", "SCU07EA", "SCU08EA", "SCU09EA", nullptr};

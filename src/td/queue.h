@@ -273,6 +273,13 @@ bool Queue_Mission(TARGET whom, MissionType mission, TARGET target,
 bool Queue_Options();
 bool Queue_Exit();
 void Queue_AI();
+
+// Decode the events packed in `buf` onto DoList. Return the number of events
+// read.
+int Extract_Uncompressed_Events(void* buf, int bufsize);
+int Extract_Compressed_Events(void* buf, int bufsize);
 void Add_CRC(unsigned long* crc, unsigned long val);
+
+extern int NetMonoMode, NewMonoMode;
 
 #endif  // CNC_RED_ALERT_TD_QUEUE_H_

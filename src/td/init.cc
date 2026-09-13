@@ -141,9 +141,6 @@ static void Play_Intro(bool for_real = false);
 
 #define ATTRACT_MODE_TIMEOUT 3600  // timeout for attract mode
 
-extern bool Server_Remote_Connect();
-extern bool Client_Remote_Connect();
-extern bool SpawnedFromWChat;
 
 /***********************************************************************************************
  * Init_Game -- Main game initialization routine. *
@@ -718,7 +715,6 @@ void Uninit_Game() {
   Palette = nullptr;  // Prog_End may run again when SDL handles the quit event.
 }
 
-extern bool Do_The_Internet_Menu_Thang();
 extern int ShowCommand;
 
 /***********************************************************************************************
@@ -737,9 +733,6 @@ extern int ShowCommand;
  *=============================================================================================*/
 extern int Com_Fake_Scenario_Dialog();
 extern int Com_Show_Fake_Scenario_Dialog();
-extern int WChatMaxAhead;
-extern int WChatSendRate;
-void Check_From_WChat(char* wchat_name);
 
 bool Select_Game(bool fade) {
   if (DebugQuitAtFrame >= 0 && DebugNewGame.empty() && DebugLoadGame < 0) {
@@ -2488,7 +2481,6 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     ** Disable mouse grabbing for debugging
     */
     if (strstr(string, "-NOMOUSEGRAB")) {
-      extern bool NoMouseGrab;
       NoMouseGrab = true;
       continue;
     }

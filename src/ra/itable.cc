@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-unsigned short IndexTable[] = {
+static unsigned short IndexTable[] = {
     0,     // Index = 0, Token = 0
     0,     // Index = 0, Token = 1
     0,     // Index = 0, Token = 2

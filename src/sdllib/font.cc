@@ -67,4 +67,4 @@ void Set_Font_Palette_Range(const void* palette, int start_idx, int end_idx) {
   }
 }
 
-extern "C" void* Get_Font_Palette_Ptr() { return FontPalette; }
+void* Get_Font_Palette_Ptr() { return FontPalette; }

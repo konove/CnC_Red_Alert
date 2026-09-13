@@ -41,9 +41,8 @@
 #include "td/jshell.h"
 #include "tech/random.h"
 
-int SimRandIndex = 0;
+static int SimRandIndex = 0;
 extern "C" {
-extern long RandNumb;  // Legacy byte generator, shared with sdllib::Random().
 }
 
 namespace {

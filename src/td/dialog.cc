@@ -104,8 +104,6 @@ void Dialog_Box(int x, int y, int w, int h) {
  * HISTORY: * 05/28/1991 JLB : Created. * 05/30/1992 JLB : Embedded color codes.
  ** 07/31/1992 JLB : Depressed option added. *
  *=============================================================================================*/
-extern void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos,
-                            int ypos, int width, int height);
 
 void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
   static const BoxStyleType ButtonColors[BOXSTYLE_COUNT] = {

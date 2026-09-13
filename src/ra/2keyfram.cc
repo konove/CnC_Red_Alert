@@ -51,6 +51,7 @@
 #include "sdllib/iff.h"
 #include "sdllib/memflag.h"
 #include "sdllib/wsa.h"
+#include "tech/2keyfbuf.h"
 
 // 3 1/2 frame offsets loaded (2 offsets/frame).
 constexpr int kSubFrameOffs = 7;
@@ -69,8 +70,8 @@ constexpr int kInitialBigShapeBufferSize = 8000000;
 constexpr int kTheaterBigShapeBufferSize = 4000000;
 constexpr uint16_t kUncompressMagicNumber = 56789;
 
-unsigned BigShapeBufferLength = kInitialBigShapeBufferSize;
-unsigned TheaterShapeBufferLength = kTheaterBigShapeBufferSize;
+static unsigned BigShapeBufferLength = kInitialBigShapeBufferSize;
+static unsigned TheaterShapeBufferLength = kTheaterBigShapeBufferSize;
 char* BigShapeBufferStart = nullptr;
 char* TheaterShapeBufferStart = nullptr;
 bool UseBigShapeBuffer = false;
@@ -79,28 +80,24 @@ bool IsTheaterShape = false;
 ** Global required to fix the score screen crash bug by allowing disabling of
 *uncompressed shapes.
 */
-bool OriginalUseBigShapeBuffer = false;
-char* BigShapeBufferPtr = nullptr;
-int TotalBigShapes = 0;
-bool ReallocShapeBufferFlag = false;
+static bool OriginalUseBigShapeBuffer = false;
+static char* BigShapeBufferPtr = nullptr;
+static bool ReallocShapeBufferFlag = false;
 
-char* TheaterShapeBufferPtr = nullptr;
-int TotalTheaterShapes = 0;
+static char* TheaterShapeBufferPtr = nullptr;
 
 constexpr int kMaxSlots = 1500;
 constexpr int kTheaterSlotStart = 1000;
 
-char** KeyFrameSlots[kMaxSlots];
-int TotalSlotsUsed = 0;
-int TheaterSlotsUsed = kTheaterSlotStart;
+static char** KeyFrameSlots[kMaxSlots];
+static int TotalSlotsUsed = 0;
+static int TheaterSlotsUsed = kTheaterSlotStart;
 
 struct ShapeHeaderType {
   unsigned draw_flags;
   char* shape_data;
   int shape_buffer;  // 1 if shape is in theater buffer
 };
-
-static int Length;
 
 void* Get_Shape_Header_Data(void* ptr) {
   if (UseBigShapeBuffer) {
@@ -112,8 +109,6 @@ void* Get_Shape_Header_Data(void* ptr) {
   return ptr;
 }
 
-int Get_Last_Frame_Length() { return Length; }
-
 void Reset_Theater_Shapes() {
   /*
   ** Delete any previously allocated slots
@@ -123,7 +118,6 @@ void Reset_Theater_Shapes() {
   }
 
   TheaterShapeBufferPtr = TheaterShapeBufferStart;
-  TotalTheaterShapes = 0;
   TheaterSlotsUsed = kTheaterSlotStart;
 }
 
@@ -197,7 +191,6 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
   int32_t length = 0;
 
   // valid pointer??
-  Length = 0;
   if (!dataptr || !buffptr) {
     return nullptr;
   }
@@ -396,7 +389,6 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
              alignof(ShapeHeaderType) - 1) &
             ~(uintptr_t{alignof(ShapeHeaderType)} - 1));
       }
-      Length = length;
       return return_value;
     }
     return_value = BigShapeBufferPtr;
@@ -427,7 +419,6 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
                                 alignof(ShapeHeaderType) - 1) &
                                ~(uintptr_t{alignof(ShapeHeaderType)} - 1));
     }
-    Length = length;
     return return_value;
   }
   return buffptr;

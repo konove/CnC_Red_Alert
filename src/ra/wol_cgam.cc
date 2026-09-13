@@ -43,6 +43,7 @@
 #include "ra/statbtn.h"
 #include "ra/textbtn.h"
 #include "ra/theme.h"
+#include "ra/wol_main.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 #include "ra/ww_audio.h"
@@ -51,8 +52,6 @@
 #include "sdllib/ww_mouse.h"
 
 // extern char* LoadShpFile( const char* szShpFile );
-void SetPlayerCountList(IconListClass& PlayerCountList, int iPlayerMax,
-                        char* pShpBoxCheck, char* pShpBoxEmpty);
 
 //***********************************************************************************************
 CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
@@ -372,27 +371,3 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   return cgiReturn;
 }
 
-//***********************************************************************************************
-void SetPlayerCountList(IconListClass& PlayerCountList, int iPlayerMax,
-                        char* pShpBoxCheck, char* pShpBoxEmpty) {
-  //	Checks appropriate list item based on iPlayerMax.
-  switch (iPlayerMax) {
-    case 2:
-      PlayerCountList.Set_Icon(0, 0, (void*)pShpBoxCheck, ICON_SHAPE);
-      PlayerCountList.Set_Icon(1, 0, (void*)pShpBoxEmpty, ICON_SHAPE);
-      PlayerCountList.Set_Icon(2, 0, (void*)pShpBoxEmpty, ICON_SHAPE);
-      break;
-    case 3:
-      PlayerCountList.Set_Icon(0, 0, (void*)pShpBoxEmpty, ICON_SHAPE);
-      PlayerCountList.Set_Icon(1, 0, (void*)pShpBoxCheck, ICON_SHAPE);
-      PlayerCountList.Set_Icon(2, 0, (void*)pShpBoxEmpty, ICON_SHAPE);
-      break;
-    case 4:
-      PlayerCountList.Set_Icon(0, 0, (void*)pShpBoxEmpty, ICON_SHAPE);
-      PlayerCountList.Set_Icon(1, 0, (void*)pShpBoxEmpty, ICON_SHAPE);
-      PlayerCountList.Set_Icon(2, 0, (void*)pShpBoxCheck, ICON_SHAPE);
-      break;
-    default:
-      break;
-  }
-}

@@ -86,6 +86,7 @@
 #include "td/monoc.h"
 #include "td/msgbox.h"
 #include "td/nullconn.h"
+#include "td/nulldlg.h"
 #include "td/tcpip.h"
 #include "td/text.h"
 #include "td/textbtn.h"
@@ -95,8 +96,6 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
-
-extern ModemRegistryEntryClass* ModemRegistry;
 
 // the following line was taken from Greenleaf's <ibmkeys.h> <asciidef.h>
 // because of other define conflicts
@@ -1106,23 +1105,6 @@ void NullModemClass::Mono_Debug_Print(int, int refresh) {
 
 } /* end of Mono_Debug_Print */
 
-void Timer_Test(int line, char* file) {
-  char abuffer[128];
-
-  sprintf(abuffer, "Testing timer at line %d in file %s", line, file);
-  CCDebugString(abuffer);
-
-  CountDownTimerClass timer;
-
-  timer.Set(1);
-
-  while (timer.Time()) {
-    CCDebugString(".");
-  }
-
-  CCDebugString("OK\n");
-}
-
 /***************************************************************************
  * NullModemClass::Detect_Modem -- Detects and initializes the modem       *
  *                                                                         *
@@ -1188,7 +1170,6 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
                    TBLACK, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   Show_Mouse();
-
 
   /*
   ** OK, lets not mess about any more. Just turn on echo, verbose, and result

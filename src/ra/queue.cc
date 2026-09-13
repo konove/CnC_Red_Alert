@@ -173,8 +173,8 @@ static const char* ColorNames[8] = {"Yellow", "LtBlue", "Red",  "Green",
 // NewMonoMode: set by anything that toggles NetMonoMode; re-inits screen
 // IsMono: used for taking control of Mono screen away from the engine
 //...........................................................................
-int NetMonoMode = 1;
-int NewMonoMode = 1;
+[[maybe_unused]] static int NetMonoMode = 1;
+[[maybe_unused]] static int NewMonoMode = 1;
 static int IsMono = 0;
 
 //---------------------------------------------------------------------------
@@ -235,13 +235,11 @@ static void Stop_Game();
 //...........................................................................
 static int Build_Send_Packet(void* buf, int bufsize, int frame_delay,
                              int num_cmds, int cap);
-int Add_Uncompressed_Events(void* buf, int bufsize, int frame_delay, int size,
-                            int cap);
-int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
-                          int cap);
+static int Add_Uncompressed_Events(void* buf, int bufsize, int frame_delay,
+                                   int size, int cap);
+static int Add_Compressed_Events(void* buf, int bufsize, int frame_delay,
+                                 int size, int cap);
 static int Breakup_Receive_Packet(void* buf, int bufsize);
-int Extract_Uncompressed_Events(void* buf, int bufsize);
-int Extract_Compressed_Events(void* buf, int bufsize);
 
 //...........................................................................
 // DoList management:
@@ -269,10 +267,10 @@ static void Print_Framesync_Values(int64_t curframe, unsigned long max_ahead,
                                    unsigned short* their_sent,
                                    unsigned short my_sent);
 
-void Dump_Packet_Too_Late_Stuff(EventClass* event, ConnManClass* net,
-                                int64_t* their_frame,
-                                unsigned short* their_sent,
-                                unsigned short* their_recv);
+static void Dump_Packet_Too_Late_Stuff(EventClass* event, ConnManClass* net,
+                                       int64_t* their_frame,
+                                       unsigned short* their_sent,
+                                       unsigned short* their_recv);
 
 /***************************************************************************
  * Queue_Mission -- Queue a mega mission event.                            *

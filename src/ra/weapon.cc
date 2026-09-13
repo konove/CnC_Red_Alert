@@ -54,6 +54,7 @@
 #include "port/ex_string.h"
 #include "ra/const.h"
 #include "ra/defines.h"
+#include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/jshell.h"
 

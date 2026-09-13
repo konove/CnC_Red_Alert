@@ -36,17 +36,12 @@
 #include "ra/tooltip.h"
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
+#include "ra/wol_main.h"
 #include "ra/wolstrng.h"
 #include "ra/wsproto.h"
 #include "tech/number_parse.h"
 
-extern const char* const* EngMisStr;
-
-bool Is_Mission_126x126(char* file_name);
-
-int ScenarioIndex_From_Filename(const char* szScenarioFilename);
-
-bool bSpecialAftermathScenario(const char* szScenarioDescription);
+static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 
 #include "absl/log/check.h"
 #include "port/safe_string.h"
@@ -62,6 +57,7 @@ bool bSpecialAftermathScenario(const char* szScenarioDescription);
 #include "ra/gauge.h"
 #include "ra/init.h"
 #include "ra/inline.h"
+#include "ra/internet.h"
 #include "ra/jshell.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
@@ -80,16 +76,10 @@ bool bSpecialAftermathScenario(const char* szScenarioDescription);
 
 #define PING_AND_DISPLAY_WAIT 5000
 
-void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
-                      PlayerColorType iColorRemap = PCOLOR_NONE);
-void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
-                      RemapControlType* pColorRemap);
-
-bool operator==(const GAMEPARAMS& gp1, const GAMEPARAMS& gp2);
-bool operator==(const GlobalPacketType& gp1, const GlobalPacketType& gp2);
-PlayerColorType PlayerColorTypeOf(RemapControlType* pColorRemap);
-
-extern unsigned long PlanetWestwoodStartTime;  // Time that game was started
+static bool operator==(const GAMEPARAMS& gp1, const GAMEPARAMS& gp2);
+static bool operator==(const GlobalPacketType& gp1,
+                       const GlobalPacketType& gp2);
+static PlayerColorType PlayerColorTypeOf(RemapControlType* pColorRemap);
 
 extern bool disable_current_msgbox;
 

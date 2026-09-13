@@ -40,9 +40,9 @@
 #ifndef CNC_RED_ALERT_RA_EXTERNS_H_
 #define CNC_RED_ALERT_RA_EXTERNS_H_
 
-#include <vector>
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #include "magic_enum/magic_enum.hpp"
 #include "ra/base.h"
@@ -53,6 +53,7 @@
 #include "ra/event.h"
 #include "ra/goptions.h"
 #include "ra/infantry.h"
+#include "ra/internet.h"
 #include "ra/ipxmgr.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
@@ -376,22 +377,14 @@ extern bool InDebugger;       // Are we being run from a debugger
 void Memory_Error_Handler();  // Memory error handler function
 void WWDebugString(const char* string);
 void Check_For_Focus_Loss();  // Pumps the event queue while focus is lost
+void Create_Main_Window(void* instance, int command_show, int width,
+                        int height);
 void Check_VQ_Palette_Set();  // Applies a palette change queued by a movie
 
 /*************************************************************
 ** Internet specific externs
 */
-extern char PlanetWestwoodHandle[];     // Planet WW user name
-extern char PlanetWestwoodPassword[];   // Planet WW password
-extern char PlanetWestwoodIPAddress[];  // IP of server or other player
-extern long PlanetWestwoodPortNumber;   // Port number to send to
-extern bool
-    PlanetWestwoodIsHost;  // Flag true if player has control of game options
-extern unsigned long PlanetWestwoodGameID;  // Game ID
-extern bool GameStatisticsPacketSent;
-extern bool ConnectionLost;
 extern void* PacketLater;
-extern int ShowCommand;
 void Register_Game_Start_Time();
 void Register_Game_End_Time();
 void Send_Statistics_Packet();
@@ -408,5 +401,8 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
 
 bool Find_Local_Scenario(char* description, char* filename, unsigned int length,
                          char* digest, bool official);
+
+void Focus_Loss();
+void Focus_Restore();
 
 #endif  // CNC_RED_ALERT_RA_EXTERNS_H_

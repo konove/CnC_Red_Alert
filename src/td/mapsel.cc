@@ -80,12 +80,10 @@
 
 void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
                       GraphicBufferClass* src, GraphicBufferClass* dest);
-void Print_Statistics(int country, int xpos, int ypos);
-void Cycle_Call_Back_Delay(int time, unsigned char* pal);
-int LowMedHiStr(int percentage);
-extern int ControlQ;
+static void Print_Statistics(int country, int xpos, int ypos);
+static void Cycle_Call_Back_Delay(int time, unsigned char* pal);
+[[maybe_unused]] static int LowMedHiStr(int percentage);
 
-unsigned char CountryRemap[256];
 #ifdef OBSOLETE
 const unsigned char High16Remap[256] = {
     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB,

@@ -35,6 +35,7 @@
 #include "ra/palette.h"
 #include "ra/textbtn.h"
 #include "ra/wsproto.h"
+#include "ra/wspudp.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"

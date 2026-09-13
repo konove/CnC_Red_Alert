@@ -78,6 +78,7 @@
 #include "td/house.h"
 #include "td/interpal.h"
 #include "td/jshell.h"
+#include "td/keyframe.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
 #include "td/mouse.h"
@@ -109,7 +110,7 @@
 #define NUMFAMENAMES 7
 #define MAX_FAMENAME_LENGTH 12
 
-struct InfantryAnim {
+static struct InfantryAnim {
   int xpos;
   int ypos;
   const void* shapefile;
@@ -119,26 +120,24 @@ struct InfantryAnim {
   char delay;
   const InfantryTypeClass* Class;
 } InfantryMan[NUMINFANTRYMEN];
-void Draw_InfantryMen();
-void Draw_InfantryMan(int index);
-void New_Infantry_Anim(int index, int anim);
-void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled);
-void Animate_Cursor(int pos, int ypos);
-void Animate_Score_Objs();
-void Cycle_Wait_Click();
+static void Draw_InfantryMen();
+static void Draw_InfantryMan(int index);
+static void New_Infantry_Anim(int index, int anim);
+static void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled);
+static void Animate_Cursor(int pos, int ypos);
+static void Animate_Score_Objs();
+static void Cycle_Wait_Click();
 
-int ScorePass;
-
-const void* Beepy6;
+static const void* Beepy6;
 
 int ControlQ;  // cheat key to skip past score/mapsel screens
 
-bool StillUpdating;
+static bool StillUpdating;
 
 GraphicBufferClass* PseudoSeenBuff;
 GraphicBufferClass* TextPrintBuffer;
 
-unsigned char RemapCiv[256] = {
+static unsigned char RemapCiv[256] = {
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
     0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0xD0,
     0x18, 0x19, 0xD1, 0xD2, 0xD3, 0xD4, 0x1E, 0xD5, 0x20, 0x21, 0x22, 0x23,
@@ -281,7 +280,7 @@ const unsigned char ScoreRemapFBall[256] = {
 
 TextBlitClass BlitList;
 
-const char* ScreenNames[2] = {"S-GDIIN2.WSA", "SCRSCN1.WSA"};
+static const char* ScreenNames[2] = {"S-GDIIN2.WSA", "SCRSCN1.WSA"};
 
 // extern short StreamLowImpact;
 
@@ -610,9 +609,6 @@ void TextBlitClass::Update() {
     }
   }
 }
-
-void Disable_Uncompressed_Shapes();
-void Enable_Uncompressed_Shapes();
 
 /***********************************************************************************************
  * ScoreClass::Presentation -- Main routine to display score screen. *
@@ -2040,7 +2036,7 @@ void Animate_Score_Objs() {
   }
 }
 
-char* Int_Print(int a) {
+static char* Int_Print(int a) {
   static char str[10];
 
   sprintf(str, "%d", a);

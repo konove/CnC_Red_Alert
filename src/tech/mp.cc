@@ -1785,8 +1785,8 @@ void XMP_Decode_ASCII(const char* str, uint32_t* mpn, int precision) {
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-void XMP_Hybrid_Mul(unsigned short* prod, unsigned short* multiplicand,
-                    unsigned short multiplier, int precision) {
+static void XMP_Hybrid_Mul(unsigned short* prod, unsigned short* multiplicand,
+                           unsigned short multiplier, int precision) {
   unsigned long carry = 0;
   for (int i = 0; i < precision; ++i) {
     unsigned long p = static_cast<unsigned long>(multiplier) * *multiplicand++;

@@ -104,6 +104,9 @@ void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
 extern "C" {
 #endif
 
+// Legacy byte generator state behind Random(); the games seed it.
+extern long RandNumb;
+
 void* Build_Fading_Table(const void* palette, void* dest, long int color,
                          long int frac);
 

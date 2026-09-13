@@ -61,8 +61,8 @@
 
 // Scenario filenames for the secret ant missions (Easter egg campaign).
 // Index 0 is unused; missions are numbered 1-4.
-const char* ant_missions[] = {nullptr, "SCA01EA.INI", "SCA02EA.INI",
-                              "SCA03EA.INI", "SCA04EA.INI"};
+static const char* ant_missions[] = {nullptr, "SCA01EA.INI", "SCA02EA.INI",
+                                     "SCA03EA.INI", "SCA04EA.INI"};
 
 // Scenario variant suffixes. Each mission can have up to 3 variants (A/B/C)
 // representing different map layouts or objectives for the same mission number.
@@ -108,7 +108,7 @@ struct point {
 constexpr int kHotspotPaletteIndex = 254;
 
 // Animates the pulsing highlight on clickable map locations.
-void Cycle_Call_Back_Delay(int time, PaletteClass& pal) {
+static void Cycle_Call_Back_Delay(int time, PaletteClass& pal) {
   static Timer<SystemTickSource> pulse_timer;
   static bool brightening = false;
   constexpr int kMinFade = 32;
@@ -146,7 +146,7 @@ void Cycle_Call_Back_Delay(int time, PaletteClass& pal) {
 
 // Returns which mission choice (0-2) the mouse is hovering over, or -1 if none.
 // Each hotspot is a 12x10 pixel rectangle at the coordinates in MapCoords.
-int Mouse_Over_Spot(const int is_soviet, const int scenario) {
+static int Mouse_Over_Spot(const int is_soviet, const int scenario) {
   int retval = -1;
   for (int choice = 0;
        choice < 3 && MapCoords[is_soviet][scenario][choice].x != -1; choice++) {

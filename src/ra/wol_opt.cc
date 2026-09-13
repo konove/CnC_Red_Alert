@@ -43,6 +43,7 @@
 #include "ra/statbtn.h"
 #include "ra/textbtn.h"
 #include "ra/theme.h"
+#include "ra/wol_main.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 #include "ra/ww_audio.h"

@@ -115,8 +115,9 @@ bool AddItemExtras(DynamicVectorClass<IconList_ItemExtras*>& list,
 
 }  // namespace
 
-int Format_Window_String_New(const char* string, int maxlinelen, int& width,
-                             int& height, char* szReturn, int iExtraChars);
+static int Format_Window_String_New(const char* string, int maxlinelen,
+                                    int& width, int& height, char* szReturn,
+                                    int iExtraChars);
 
 //***********************************************************************************************
 IconListClass::IconListClass(int id, int x, int y, int w, int h,

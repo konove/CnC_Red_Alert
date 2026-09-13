@@ -78,6 +78,7 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/msgbox.h"
+#include "ra/nulldlg.h"
 #include "ra/textbtn.h"
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
@@ -94,7 +95,6 @@
 #include <windows.h>
 #endif
 
-extern ModemRegistryEntryClass* ModemRegistry;
 
 // the following line was taken from Greenleaf's <ibmkeys.h> <asciidef.h>
 // because of other define conflicts

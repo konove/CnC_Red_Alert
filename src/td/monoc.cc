@@ -750,12 +750,6 @@ int Mono_Y() {
   return 0;
 }
 
-void Mono_Put_Char(char, int) {}
-
-void Mono_Scroll(int) {}
-
-void Mono_View_Page(int) {}
-
 #ifdef NEVER
 int Mono_Printf(int string, ...) {
   va_list va;

@@ -107,10 +107,8 @@ int Get_Digi_Handle();
 bool Start_Primary_Sound_Buffer(bool forced);
 void Stop_Primary_Sound_Buffer();
 
-#ifdef TD
 void* Load_Sample(const char* filename);
 void Free_Sample(const void* sample);
-#endif
 
 typedef void (*AudioCallback)(uint8_t* stream, int len);
 uint32_t Get_Audio_Device();

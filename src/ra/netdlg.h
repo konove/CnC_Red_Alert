@@ -14,4 +14,6 @@ uint32_t Compute_Name_CRC(char* name);
 void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
                           unsigned long timeval);
 
+extern const char* const* EngMisStr;
+
 #endif  // CNC_RED_ALERT_RA_NETDLG_H_

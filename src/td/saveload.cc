@@ -460,7 +460,7 @@ bool Load_Game(int id) {
 }
 
 template <class Archive>
-void Serialize_Misc_Values(Archive& ar) {
+static void Serialize_Misc_Values(Archive& ar) {
   ar.Section(FourCC("MISC"));
   ar(HousePtr(PlayerPtr), Scenario, WinMovie, LoseMovie);
   if constexpr (Archive::kIsReading) {

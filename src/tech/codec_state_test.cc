@@ -20,7 +20,6 @@
 #include "tech/straw.h"
 #include "tech/xstraw.h"
 
-int XMP_Prepare_Modulus(const uint32_t* modulus, int precision);
 
 namespace {
 class ByteSink : public Pipe {

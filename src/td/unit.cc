@@ -213,7 +213,7 @@ int UnitClass::Validate() const {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-void Recoil_Adjust(DirType dir, int& x, int& y) {
+static void Recoil_Adjust(DirType dir, int& x, int& y) {
   static struct {
     signed char X, Y;
   } _adjust[32] = {{0, 1},                                  // N
@@ -248,7 +248,7 @@ void Recoil_Adjust(DirType dir, int& x, int& y) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-void Turret_Adjust(DirType dir, int& x, int& y) {
+static void Turret_Adjust(DirType dir, int& x, int& y) {
   static struct {
     signed char X, Y;
   } _adjust[32] = {{1, 2},                                  // N

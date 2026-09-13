@@ -503,4 +503,6 @@ long VQA_StartAudio(VQAHandle* vqap);
 void VQA_StopAudio(VQAHandle* vqap);
 long CopyAudio(VQAHandle* vqap);
 
+extern int VQAMovieDone;
+
 #endif  // CNC_RED_ALERT_WINVQ_VQA32_VQAPLAYP_H_

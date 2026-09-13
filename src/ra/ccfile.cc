@@ -62,6 +62,7 @@
 #include "ra/externs.h"
 #include "ra/jshell.h"
 #include "ra/startup.h"
+#include "sdllib/file.h"
 #include "tech/mixfile.h"
 #include "tech/rawfile.h"
 
@@ -602,10 +603,3 @@ unsigned long __cdecl Seek_File(int handle, long offset, int starting) {
 // dest_buff, reserved_data));
 // }
 
-extern "C" {
-int MaxDevice;
-int DefaultDrive;
-char CallingDOSInt;
-}
-
-void Unfragment_File_Cache() {}

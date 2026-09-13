@@ -23,10 +23,6 @@
 
 #include "ra/internet.h"
 
-char PlanetWestwoodHandle[] = {"Handle"};      // Planet WW user name
-char PlanetWestwoodPassword[] = {"Password"};  // Planet WW password
-char PlanetWestwoodIPAddress[IP_ADDRESS_MAX] = {
-    "206.154.108.87"};                 // IP of server or other player
 long PlanetWestwoodPortNumber = 1234;  // Port number to send to
 bool PlanetWestwoodIsHost =
     false;  // Flag true if player has control of game options
@@ -34,4 +30,3 @@ unsigned long PlanetWestwoodGameID;     // Game ID
 unsigned long PlanetWestwoodStartTime;  // Time that game was started
 bool GameStatisticsPacketSent;  // Flag that game stats have been sent
 bool ConnectionLost;  // Flag that the connection to the other player was lost
-int ShowCommand;

@@ -71,6 +71,7 @@
 #include "ra/inline.h"
 #include "ra/interpal.h"
 #include "ra/jshell.h"
+#include "ra/keyframe.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
 #include "ra/nullmgr.h"
@@ -112,7 +113,7 @@
 #define NUMFAMENAMES 7
 #define MAX_FAMENAME_LENGTH 11
 
-struct InfantryAnim {
+static struct InfantryAnim {
   int xpos;
   int ypos;
   const void* shapefile;
@@ -122,22 +123,19 @@ struct InfantryAnim {
   char delay;
   const InfantryTypeClass* Class;
 } InfantryMan[NUMINFANTRYMEN];
-void Draw_InfantryMen();
-void Draw_InfantryMan(int index);
-void New_Infantry_Anim(int index, int anim);
-void Draw_Bar_Graphs(int i, int gkilled, int nkilled);
-void Animate_Cursor(int pos, int ypos);
-void Animate_Score_Objs();
-void Cycle_Wait_Click(bool cycle = true);
+static void Draw_InfantryMen();
+static void Draw_InfantryMan(int index);
+static void New_Infantry_Anim(int index, int anim);
+static void Draw_Bar_Graphs(int i, int gkilled, int nkilled);
+static void Animate_Cursor(int pos, int ypos);
+static void Animate_Score_Objs();
+static void Cycle_Wait_Click(bool cycle = true);
 
-void Disable_Uncompressed_Shapes();
-void Enable_Uncompressed_Shapes();
+static const void* Beepy6;
+static int ControlQ;  // cheat key to skip past score/mapsel screens
+static bool StillUpdating;
 
-const void* Beepy6;
-int ControlQ;  // cheat key to skip past score/mapsel screens
-bool StillUpdating;
-
-const char* ScreenNames[2] = {"ALIBACKH.PCX", "SOVBACKH.PCX"};
+static const char* ScreenNames[2] = {"ALIBACKH.PCX", "SOVBACKH.PCX"};
 
 struct Fame {
   char name[MAX_FAMENAME_LENGTH];
@@ -1549,7 +1547,7 @@ void Animate_Score_Objs() {
   }
 }
 
-char* Int_Print(int a) {
+static char* Int_Print(int a) {
   static char str[10];
 
   sprintf(str, "%d", a);

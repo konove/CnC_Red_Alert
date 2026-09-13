@@ -85,8 +85,6 @@
 
 static Timer<SystemTickSource> DebugTimer;
 
-int VortexFrame = -1;
-
 /***********************************************************************************************
  * Debug_Key -- Debug mode keyboard processing. *
  *                                                                                             *

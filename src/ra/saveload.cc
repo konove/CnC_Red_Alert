@@ -1426,24 +1426,3 @@ static int Reconcile_Players() {
   return Session.NumPlayers == Session.Players.Count();
 }
 
-/***************************************************************************
- * MPlayer_Save_Message -- pops up a "saving..." message                   *
- *                                                                         *
- * INPUT:                                                                  *
- *		none.
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none.
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   10/30/1995 BRR : Created.                                             *
- *=========================================================================*/
-void MPlayer_Save_Message() {
-  // char *txt = Text_String(
-}

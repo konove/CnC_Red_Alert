@@ -37,6 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "ra/intro.h"
+
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/externs.h"

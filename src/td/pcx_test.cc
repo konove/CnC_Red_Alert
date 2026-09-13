@@ -10,9 +10,7 @@
 
 #include "gtest/gtest.h"
 #include "sdllib/gbuffer.h"
-
-GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* buffer,
-                                long size);
+#include "tech/pcx_file.h"
 
 namespace {
 

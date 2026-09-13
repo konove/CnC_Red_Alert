@@ -420,8 +420,6 @@ const int MapClass::RadiusOffset[] = {
 const int MapClass::RadiusCount[11] = {1,   9,   21,  37,  61, 89,
                                        121, 161, 205, 253, 309};
 
-CellClass* BlubCell;
-
 /***********************************************************************************************
  * MapClass::One_Time -- Performs special one time initializations for the map.
  **

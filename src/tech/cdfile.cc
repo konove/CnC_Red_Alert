@@ -66,32 +66,6 @@ CDFileClass::CDFileClass() : is_disabled_(false) {}
 extern int Get_CD_Index(int cd_drive, int timeout);
 
 /***********************************************************************************************
- * Is_Disk_Inserted -- Checks to see if a disk is inserted in specified drive. *
- *                                                                                             *
- *    This routine will examine the drive specified to see if there is a disk
- *inserted. It     * can be used for floppy drives as well as for the CD-ROM. *
- *                                                                                             *
- * INPUT:   disk  -- The drive number to examine. 0=A, 1=B, etc. *
- *                                                                                             *
- * OUTPUT:  bool; Is a disk inserted into the specified drive? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/20/1995 JLB : Created. *
- *=============================================================================================*/
-int cdecl Is_Disk_Inserted(int disk) {
-  char scan[] = "?:\\*.*";
-
-  scan[0] = static_cast<char>('A' + disk);
-
-  // yeah this isn't going to work on non-windows...
-  FindFileState state{};
-  bool ret = Find_First_File(scan, state);
-  End_Find_File(state);
-  return ret;
-}
-
-/***********************************************************************************************
  * CDFileClass::Open -- Opens the file object -- with path search. *
  *                                                                                             *
  *    This will open the file object, but since the file object could have been

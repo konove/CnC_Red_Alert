@@ -110,18 +110,7 @@
 #include "tech/number_parse.h"
 #include "tech/readline.h"
 
-TeamMissionClass TeamMissions[TMISSION_COUNT] = {
-    {TMISSION_ATTACK, {}},     {TMISSION_ATT_WAYPT, {}},
-    {TMISSION_FORMATION, {}},  {TMISSION_MOVE, {}},
-    {TMISSION_MOVECELL, {}},   {TMISSION_GUARD, {}},
-    {TMISSION_LOOP, {}},       {TMISSION_ATTACKTARCOM, {}},
-    {TMISSION_UNLOAD, {}},     {TMISSION_DEPLOY, {}},
-    {TMISSION_HOUND_DOG, {}},  {TMISSION_DO, {}},
-    {TMISSION_SET_GLOBAL, {}}, {TMISSION_LOAD, {}},
-    {TMISSION_SPY, {}},        {TMISSION_PATROL, {}},
-};
-
-int atoh(char* str);
+static int atoh(char* str);
 
 /***********************************************************************************************
  * TeamTypeClass::Draw_It -- Display the team type in a list box. *

@@ -91,7 +91,6 @@ static long VQATickCount = 0;
 
 static long TickOffset = 0;
 
-extern int VQAMovieDone;
 static bool VQAAudioPaused = false;
 static SDL_AudioStream* SDLStream = nullptr;
 static unsigned StreamConvScale = 1 << 15;

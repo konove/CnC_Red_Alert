@@ -213,7 +213,6 @@
 
 TFixedIHeapClass<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;
 
-extern bool RedrawOptionsMenu;
 
 /***********************************************************************************************
  * HouseClass::operator HousesType -- Conversion to HousesType operator. *

@@ -405,4 +405,24 @@ extern void Reset_Theater_Shapes();
 extern TheaterType LastTheater;
 extern TimerClass TickCount;
 
+bool Do_The_Internet_Menu_Thang();
+bool Spawn_WChat(bool can_launch);
+extern bool ReadyToQuit;
+extern bool SpawnedFromWChat;
+extern bool VQPaletteChange;
+extern int WChatMaxAhead;
+extern int WChatSendRate;
+extern unsigned long PlanetWestwoodGameID;
+extern unsigned long PlanetWestwoodStartTime;
+void Check_For_Focus_Loss();
+void Create_Main_Window(void* instance, int command_show, int width,
+                        int height);
+void Check_From_WChat(char* wchat_name);
+void Check_VQ_Palette_Set();
+void Focus_Loss();
+void Focus_Restore();
+void Register_Game_End_Time();
+void Register_Game_Start_Time();
+void Send_Statistics_Packet();
+
 #endif  // CNC_RED_ALERT_TD_EXTERNS_H_

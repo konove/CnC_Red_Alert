@@ -335,4 +335,10 @@ inline constexpr int kGameVersion = 0x00030003;
 #define LADDER_CODE_RA 1005
 #define LADDER_CODE_AM 500
 
+// Runs the patch download dialog. Returns false if the download failed or was
+// cancelled.
+bool WOL_Download_Dialog(IDownload* pDownload,
+                         RADownloadEventSink* pDownloadSink,
+                         const char* szTitle);
+
 #endif  // CNC_RED_ALERT_RA_RAWOLAPI_H_

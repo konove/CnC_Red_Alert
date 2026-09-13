@@ -49,6 +49,7 @@
 
 #include "magic_enum/magic_enum.hpp"
 #include "ra/defines.h"
+#include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/jshell.h"
 

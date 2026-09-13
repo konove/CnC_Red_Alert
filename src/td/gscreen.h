@@ -143,4 +143,6 @@ class GScreenClass : public VectorClass<CellClass> {
  private:
 };
 
+extern bool ScreenRecording;
+
 #endif  // CNC_RED_ALERT_TD_GSCREEN_H_

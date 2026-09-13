@@ -95,11 +95,13 @@
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
+#include "ra/netdlg.h"
 #include "ra/nullmgr.h"
 #include "ra/palette.h"
 #include "ra/rules.h"
 #include "ra/saveload.h"
 #include "ra/scenario.h"
+#include "ra/session.h"
 #include "ra/slider.h"
 #include "ra/special.h"
 #include "ra/startup.h"
@@ -110,6 +112,7 @@
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
+#include "ra/wol_main.h"
 #include "ra/ww_audio.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
@@ -129,7 +132,6 @@
 
 ModemRegistryEntryClass* ModemRegistry = nullptr;  // Ptr to modem registry data
 
-extern bool Is_Mission_126x126(char* file_name);
 
 // #include "WolDebug.h"
 
@@ -141,7 +143,6 @@ extern bool Is_Mission_126x126(char* file_name);
 #define PACKET_CANCEL_TIMEOUT 900
 
 // extern char const *ForMisStr[];
-extern const char* const* EngMisStr;
 
 //
 // how much time (ticks) to go by before sending another packet
@@ -163,13 +164,11 @@ static void Modem_Echo(char c);
 
 static SerialPacketType SendPacket;
 static SerialPacketType ReceivePacket;
-char TheirName[MPLAYER_NAME_MAX];
-PlayerColorType TheirColor;
-HousesType TheirHouse;
+static char TheirName[MPLAYER_NAME_MAX];
+static PlayerColorType TheirColor;
+static HousesType TheirHouse;
 static std::string DialString;
 static SerialSettingsType* DialSettings;
-
-bool bSpecialAftermathScenario(const char* szScenarioDescription);
 
 #define PCOLOR_BROWN PCOLOR_GREY
 
@@ -1346,7 +1345,7 @@ GameType Select_Serial_Dialog() {
  *                                                                                             *
  * HISTORY: * 12/16/96 2:29PM ST : Created *
  *=============================================================================================*/
-void Advanced_Modem_Settings(SerialSettingsType* settings) {
+static void Advanced_Modem_Settings(SerialSettingsType* settings) {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/

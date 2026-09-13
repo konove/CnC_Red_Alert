@@ -24,4 +24,8 @@ void Reallocate_Big_Shape_Buffer();
 // returned unchanged.
 void* Get_Shape_Header_Data(void* ptr);
 
+void Check_Use_Compressed_Shapes();
+void Disable_Uncompressed_Shapes();
+void Enable_Uncompressed_Shapes();
+
 #endif  // CNC_RED_ALERT_RA_KEYFRAME_H_
