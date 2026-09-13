@@ -134,6 +134,7 @@
 #include "td/techno.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
@@ -2473,7 +2474,7 @@ bool TechnoClass::Can_Repair() const {
     return false;
   }
   return Techno_Type_Class()->IsRepairable &&
-         Strength != Class_Of().MaxStrength;
+         std::cmp_not_equal(Strength, Class_Of().MaxStrength);
 }
 
 /***********************************************************************************************

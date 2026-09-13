@@ -47,6 +47,7 @@
 #include "ra/template.h"
 
 #include <cassert>
+#include <utility>
 
 #include "ra/cell.h"
 #include "ra/coord.h"
@@ -97,8 +98,8 @@ bool TemplateClass::Mark(MarkType mark) {
   if (iset && ObjectClass::Mark(mark)) {
     void* map = Get_Icon_Set_Map(iset);
 
-    for (int y = 0; y < Class->Height; y++) {
-      for (int x = 0; x < Class->Width; x++) {
+    for (int y = 0; std::cmp_less(y, Class->Height); y++) {
+      for (int x = 0; std::cmp_less(x, Class->Width); x++) {
         CELL cell = static_cast<CELL>(Coord_Cell(Coord) + (y * MAP_CELL_W) + x);
         if (Map.In_Radar(cell)) {
           CellClass* cellptr = &Map[cell];
@@ -117,7 +118,8 @@ bool TemplateClass::Mark(MarkType mark) {
             **	Lift the terrain object from the map.
             */
             if (mark == MARK_UP && !noup) {
-              if (cellptr->TType == Class->Type && cellptr->TIcon == number) {
+              if (cellptr->TType == Class->Type &&
+                  std::cmp_equal(cellptr->TIcon, number)) {
                 cellptr->TType = TEMPLATE_NONE;
                 cellptr->TIcon = 0;
               }

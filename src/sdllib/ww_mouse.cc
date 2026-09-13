@@ -111,8 +111,8 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
   const auto* cursor_shape = static_cast<Shape_Type*>(cursor);
 
   if (cursor_shape->Width == 0 || cursor_shape->OriginalHeight == 0 ||
-      cursor_shape->Width > MaxWidth ||
-      cursor_shape->OriginalHeight > MaxHeight) {
+      std::cmp_greater(cursor_shape->Width, MaxWidth) ||
+      std::cmp_greater(cursor_shape->OriginalHeight, MaxHeight)) {
     return;
   }
 

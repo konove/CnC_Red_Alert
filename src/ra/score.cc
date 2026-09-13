@@ -53,6 +53,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
+#include <utility>
 
 #include "base/types.h"
 #include "ra/ccfile.h"
@@ -1388,8 +1389,10 @@ void Draw_InfantryMan(int index) {
   */
   if (--InfantryMan[index].delay <= 0) {
     InfantryMan[index].delay = 3;
-    if (++InfantryMan[index].stage >=
-        InfantryMan[index].Class->DoControls[InfantryMan[index].anim].Count) {
+    if (std::cmp_greater_equal(++InfantryMan[index].stage,
+                               InfantryMan[index]
+                                   .Class->DoControls[InfantryMan[index].anim]
+                                   .Count)) {
       /*
       ** was he playing a death anim? If so, and it's done, erase him
       */

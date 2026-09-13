@@ -56,6 +56,7 @@
 #include "td/event.h"
 
 #include <cstdio>
+#include <utility>
 
 #include "td/anim.h"
 #include "td/audio.h"
@@ -718,7 +719,7 @@ void EventClass::Execute() {
       //  period of vulnerability's frame start & end values, so we
       //  can reschedule these events to execute after it's over.
       //
-      if (Data.Timing.MaxAhead > MPlayerMaxAhead) {
+      if (std::cmp_greater(Data.Timing.MaxAhead, MPlayerMaxAhead)) {
         NewMaxAheadFrame1 = Frame;
         NewMaxAheadFrame2 = Frame + Data.Timing.MaxAhead;
       }

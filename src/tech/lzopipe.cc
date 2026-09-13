@@ -44,6 +44,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <utility>
 
 #include "lzo/lzo.h"
 
@@ -167,7 +168,7 @@ int LZOPipe::Put(const void* source, int slen) {
         **	If an entire block has been accumulated, then uncompress it and
         *feed it *	through the pipe.
         */
-        if (Counter == BlockHeader.CompCount) {
+        if (std::cmp_equal(Counter, BlockHeader.CompCount)) {
           unsigned int length = sizeof(Buffer2);
           lzo1x_decompress((unsigned char*)Buffer, BlockHeader.CompCount,
                            (unsigned char*)Buffer2, &length, nullptr);

@@ -60,6 +60,7 @@
 #include <cctype>
 #include <cstdio>
 #include <cstring>
+#include <utility>
 
 #include "port/safe_string.h"
 #include "ra/conquer.h"
@@ -368,7 +369,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
     } else {
       mess_start = 0;
     }
-    for (int j = 1; j < static_cast<int>(strlen(txt)); j++) {
+    for (int j = 1; std::cmp_less(j, strlen(txt)); j++) {
       strncpy(&temp[mess_start], txt, j);
       temp[mess_start + j] = 0;
       wid = String_Pixel_Width(temp);

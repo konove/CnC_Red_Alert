@@ -44,6 +44,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <utility>
 
 #include "tech/buff.h"
 #include "tech/lzw.h"
@@ -169,7 +170,7 @@ int LZWPipe::Put(const void* source, int slen) {
         **	If an entire block has been accumulated, then uncompress it and
         *feed it *	through the pipe.
         */
-        if (Counter == BlockHeader.CompCount) {
+        if (std::cmp_equal(Counter, BlockHeader.CompCount)) {
           LZW_Uncompress(Buffer(source_buffer_), Buffer(output_buffer_));
           total += Pipe::Put(output_buffer_, BlockHeader.UncompCount);
           Counter = 0;

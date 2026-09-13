@@ -42,6 +42,8 @@
 
 #include "td/reinf.h"
 
+#include <utility>
+
 #include "port/safe_string.h"
 #include "td/aircraft.h"
 #include "td/audio.h"
@@ -111,7 +113,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   bool airtransport = false;    // Transport can fly in?
   bool watertransport = false;  // Transport needs a beach to land at?
   bool onlytransport = true;    // Just transport is in reinforcement?
-  for (int index = 0; index < teamtype->ClassCount; index++) {
+  for (int index = 0; std::cmp_less(index, teamtype->ClassCount); index++) {
     if (teamtype->Class[index]->IsTransporter ||
         teamtype->Class[index]->What_Am_I() == RTTI_AIRCRAFTTYPE) {
       if (teamtype->Class[index]->What_Am_I() == RTTI_AIRCRAFTTYPE) {
@@ -166,10 +168,10 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   */
   TechnoClass* transport = nullptr;
   TechnoClass* object = nullptr;
-  for (int index = 0; index < teamtype->ClassCount; index++) {
+  for (int index = 0; std::cmp_less(index, teamtype->ClassCount); index++) {
     const TechnoTypeClass* tclass = teamtype->Class[index];
 
-    for (int sub = 0; sub < teamtype->DesiredNum[index]; sub++) {
+    for (int sub = 0; std::cmp_less(sub, teamtype->DesiredNum[index]); sub++) {
       ScenarioInit++;
       FootClass* temp = dynamic_cast<FootClass*>(
           tclass->Create_One_Of(HouseClass::As_Pointer(teamtype->House)));

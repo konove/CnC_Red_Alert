@@ -57,6 +57,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <utility>
 
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -5100,7 +5101,7 @@ int Com_Show_Scenario_Dialog() {
             sure we can't pick that color.
             .........................................................*/
             if (parms_received) {
-              if (MPlayerPrefColor == TheirColor) {
+              if (std::cmp_equal(MPlayerPrefColor, TheirColor)) {
                 break;
               }
             }
@@ -5429,7 +5430,7 @@ int Com_Show_Scenario_Dialog() {
             /*...............................................................
             Make sure I don't have the same color as the other guy.
             ...............................................................*/
-            if (MPlayerColorIdx == TheirColor) {
+            if (std::cmp_equal(MPlayerColorIdx, TheirColor)) {
               // force transmitting of game options packet
 
               transmit = 1;
@@ -5472,7 +5473,7 @@ int Com_Show_Scenario_Dialog() {
             ...............................................................*/
             ScenarioIdx = -1;
             for (i = 0; i < MPlayerFilenum.Count(); i++) {
-              if (ReceivePacket.Scenario == MPlayerFilenum[i]) {
+              if (std::cmp_equal(ReceivePacket.Scenario, MPlayerFilenum[i])) {
                 ScenarioIdx = i;
               }
             }

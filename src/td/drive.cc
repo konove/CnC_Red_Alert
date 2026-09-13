@@ -65,6 +65,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
+#include <utility>
 
 #include "td/audio.h"
 #include "td/building.h"
@@ -1101,7 +1102,7 @@ bool DriveClass::Start_Of_Move() {
   if (Class->MaxStrength >> 1 > Strength) {
     speed -= speed >> 2;  // Three quarters speed.
   }
-  if (speed != Speed /* || !SpeedAdd*/) {
+  if (std::cmp_not_equal(speed, Speed) /* || !SpeedAdd*/) {
     Set_Speed(speed);  // Full speed.
   }
 

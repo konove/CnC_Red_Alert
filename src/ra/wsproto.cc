@@ -386,7 +386,7 @@ int WinsockInterfaceClass::Read(void* buffer, int& buffer_len, void* address,
   WinsockBufferType* packet = InBuffers[packetnum];
 
   assert(buffer_len >= packet->BufferLen);
-  assert(address_len >= static_cast<int>(sizeof(packet->Address)));
+  assert(std::cmp_greater_equal(address_len, sizeof(packet->Address)));
 
   /*
   ** Copy the data and the address it came from into the supplied buffers.

@@ -104,6 +104,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <utility>
 
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
@@ -2808,8 +2809,9 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
           while (*list != kRefreshEol && !found) {
             CELL newcell = static_cast<CELL>(cell + *list++);
             for (FacingType i : magic_enum::enum_values<FacingType>()) {
-              if (Map[Adjacent_Cell(newcell, i)].Zones[Class->MZone] ==
-                  targzone) {
+              if (std::cmp_equal(
+                      Map[Adjacent_Cell(newcell, i)].Zones[Class->MZone],
+                      targzone)) {
                 found = true;
                 break;
               }

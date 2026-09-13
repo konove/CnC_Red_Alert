@@ -56,6 +56,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <utility>
 
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -465,7 +466,7 @@ void TeamTypeClass::Write_INI(char* buffer, bool refresh) {
     /*.....................................................................
     For every class in the team, record the class's name & desired count
     .....................................................................*/
-    for (i = 0; i < team->ClassCount; i++) {
+    for (i = 0; std::cmp_less(i, team->ClassCount); i++) {
       sprintf(buf + strlen(buf), ",%s:%d", team->Class[i]->IniName,
               team->DesiredNum[i]);
     }
@@ -905,7 +906,7 @@ const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house,
       */
       long uneeded = 0;
       long ineeded = 0;
-      for (int ctype = 0; ctype < ttype->ClassCount; ctype++) {
+      for (int ctype = 0; std::cmp_less(ctype, ttype->ClassCount); ctype++) {
         switch (ttype->Class[ctype]->What_Am_I()) {
           case RTTI_INFANTRYTYPE:
             ineeded |= 1 << ((InfantryTypeClass*)ttype->Class[ctype])->Type;

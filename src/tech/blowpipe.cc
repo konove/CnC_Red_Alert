@@ -43,6 +43,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <utility>
 
 /***********************************************************************************************
  * BlowPipe::Flush -- Flushes any pending data out the pipe. *
@@ -133,7 +134,7 @@ int BlowPipe::Put(const void* source, int slen) {
   **	Process the input data in blocks until there is not enough
   **	source data to fill a full block of data.
   */
-  while (slen >= static_cast<int>(sizeof(Buffer))) {
+  while (std::cmp_greater_equal(slen, sizeof(Buffer))) {
     if (Control == DECRYPT) {
       BF->Decrypt(source, sizeof(Buffer), Buffer);
     } else {

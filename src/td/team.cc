@@ -61,6 +61,7 @@
 #include "td/team.h"
 
 #include <cstring>
+#include <utility>
 
 #include "td/abstract.h"
 #include "td/aircraft.h"
@@ -282,7 +283,7 @@ void TeamClass::AI() {
   *should *	recalculate the under strength and full strength flags.
   */
   if (IsAltered) {
-    for (int index = 0; index < Class->ClassCount; index++) {
+    for (int index = 0; std::cmp_less(index, Class->ClassCount); index++) {
       desired += Class->DesiredNum[index];
     }
 
@@ -336,7 +337,7 @@ void TeamClass::AI() {
     ** If the team has gone from under strength to no longer under
     ** strength than the team needs to reform.
     */
-    if (old_under != IsUnderStrength) {
+    if (std::cmp_not_equal(old_under, IsUnderStrength)) {
       IsReforming = true;
     }
   }
@@ -436,7 +437,7 @@ void TeamClass::AI() {
   */
   if (!IsMoving ||
       (!IsFullStrength && Class->IsReinforcable && !House->IsHuman)) {
-    for (int index = 0; index < Class->ClassCount; index++) {
+    for (int index = 0; std::cmp_less(index, Class->ClassCount); index++) {
       if (Quantity[index] < Class->DesiredNum[index]) {
         Recruit(index);
       }
@@ -682,7 +683,8 @@ bool TeamClass::Add(FootClass* obj, int typeindex) {
   *illegal to add this *	object to this team -- return with failure flag.
   */
   if (typeindex == -1) {
-    for (typeindex = 0; typeindex < Class->ClassCount; typeindex++) {
+    for (typeindex = 0; std::cmp_less(typeindex, Class->ClassCount);
+         typeindex++) {
       if (Class->Class[typeindex] == &obj->Class_Of()) {
         break;
       }
@@ -765,7 +767,8 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   *object from the team is a good idea.
   */
   if (typeindex == -1) {
-    for (typeindex = 0; typeindex < Class->ClassCount; typeindex++) {
+    for (typeindex = 0; std::cmp_less(typeindex, Class->ClassCount);
+         typeindex++) {
       if (Class->Class[typeindex] == &obj->Class_Of()) {
         break;
       }
@@ -776,7 +779,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   **	Decrement the counter for the team class. There is now one less of this
   *object type.
   */
-  if (static_cast<unsigned>(typeindex) < Class->ClassCount) {
+  if (std::cmp_less(typeindex, Class->ClassCount)) {
     Quantity[typeindex]--;
   }
 

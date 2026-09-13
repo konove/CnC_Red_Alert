@@ -23,6 +23,7 @@
 #include <cstring>
 #include <ctime>
 #include <random>
+#include <utility>
 
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -2164,8 +2165,8 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
     case WOL_GAMEOPT_REQCOLOR: {
       const auto color = tech::ParseInteger<int>(szRequest);
       if (!color || *color < 0 ||
-          *color >=
-              static_cast<int>(magic_enum::enum_count<PlayerColorType>())) {
+          std::cmp_greater_equal(*color,
+                                 magic_enum::enum_count<PlayerColorType>())) {
         return;
       }
       PlayerColorType ColorDesired = static_cast<PlayerColorType>(*color);
@@ -2202,8 +2203,8 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
     case WOL_GAMEOPT_REQACCEPT:
       //	Does Param ID of accept request match the last param change ID
       // sent? See notes at top.
-      if (static_cast<unsigned int>(tech::ParseInteger<int>(szRequest).value_or(
-              0)) == nHostLastParamID) {
+      if (std::cmp_equal(tech::ParseInteger<int>(szRequest).value_or(0),
+                         nHostLastParamID)) {
         //			debugprint( "Host received valid accept from
         //'%s'.\n", (char*)pUser->name );
         SetPlayerAccepted((char*)pUser->name, true);
@@ -2225,10 +2226,10 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
     case WOL_GAMEOPT_REQSTART:
       //	Does Param ID of accept request match the last param change ID
       // sent? See notes at top.
-      if (static_cast<unsigned int>(
-              tech::ParseInteger<int>(szRequest).value_or(0)) ==
-          nHostLastParamID)  //	Otherwise ignore - it's old and we don't care.
-                             //(Incredibly unlikely to happen, actually.)
+      if (std::cmp_equal(tech::ParseInteger<int>(szRequest).value_or(0),
+                         nHostLastParamID))  //	Otherwise ignore - it's old and
+                                             // we don't care. (Incredibly
+                                             // unlikely to happen, actually.)
       {
         //			debugprint( "Host received valid
         // WOL_GAMEOPT_REQSTART from '%s'.\n", (char*)pUser->name );
@@ -2248,10 +2249,10 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
     case WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO:
       //	Does Param ID of accept request match the last param change ID
       // sent? See notes at top.
-      if (static_cast<unsigned int>(
-              tech::ParseInteger<int>(szRequest).value_or(0)) ==
-          nHostLastParamID)  //	Otherwise ignore - it's old and we don't care.
-                             //(Incredibly unlikely to happen, actually.)
+      if (std::cmp_equal(tech::ParseInteger<int>(szRequest).value_or(0),
+                         nHostLastParamID))  //	Otherwise ignore - it's old and
+                                             // we don't care. (Incredibly
+                                             // unlikely to happen, actually.)
       {
         //			debugprint( "Host received valid
         // WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO from '%s'.\n",
@@ -2309,8 +2310,8 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
         const auto color =
             tech::ParseInteger<int>(std::string_view{szInform, 2});
         if (!color || *color < 0 ||
-            *color >=
-                static_cast<int>(magic_enum::enum_count<PlayerColorType>())) {
+            std::cmp_greater_equal(*color,
+                                   magic_enum::enum_count<PlayerColorType>())) {
           return;
         }
         PlayerColorType Color = static_cast<PlayerColorType>(*color);
@@ -2337,7 +2338,8 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
         const auto house =
             tech::ParseInteger<int>(std::string_view{szInform, 2});
         if (!house || *house < 0 ||
-            *house >= static_cast<int>(magic_enum::enum_count<HousesType>())) {
+            std::cmp_greater_equal(*house,
+                                   magic_enum::enum_count<HousesType>())) {
           return;
         }
         HousesType House = static_cast<HousesType>(*house);
@@ -2592,7 +2594,8 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   }
   int iLen = tech::ParseInteger<int>(szToken).value_or(-1);
   if (params_end - szToken <= 3 || strlen(szToken) != 3 || iLen < 0 ||
-      iLen >= static_cast<int>(sizeof(Session.Options.ScenarioDescription)) ||
+      std::cmp_greater_equal(iLen,
+                             sizeof(Session.Options.ScenarioDescription)) ||
       static_cast<size_t>(iLen) >= strlen(szToken + 4)) {
     return false;
   }

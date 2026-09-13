@@ -22,6 +22,7 @@
 
 #include <cctype>
 #include <cstring>
+#include <utility>
 
 #include "ra/conquer.h"
 #include "ra/control.h"
@@ -164,7 +165,7 @@ void EditClass::Draw_Text(const char* text) {
   Conquer_Clip_Text_Print(text, X + 1, Y + 1, Color, TBLACK, TextFlags | flags,
                           Width - 2);
 
-  if (Has_Focus() && static_cast<int>(strlen(text)) < MaxLength &&
+  if (Has_Focus() && std::cmp_less(strlen(text), MaxLength) &&
       static_cast<int>(String_Pixel_Width(text) + String_Pixel_Width("_")) <
           Width - 2) {
     Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(text), Y + 1, Color,

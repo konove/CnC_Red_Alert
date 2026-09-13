@@ -187,8 +187,8 @@ CellClass::CellClass()
       InfType(HOUSE_NONE),
       OccupierPtr(nullptr),
       Land(LAND_CLEAR) {
-  for (int zone = 0;
-       zone < static_cast<int>(magic_enum::enum_count<MZoneType>()); zone++) {
+  for (int zone = 0; std::cmp_less(zone, magic_enum::enum_count<MZoneType>());
+       zone++) {
     Zones[zone] = 0;
   }
   Flag.Composite = 0;
@@ -1968,8 +1968,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
     */
     int total_shares = 0;
     for (int index = 0;
-         index < static_cast<int>(magic_enum::enum_count<CrateType>());
-         index++) {
+         std::cmp_less(index, magic_enum::enum_count<CrateType>()); index++) {
       total_shares += CrateShares[index];
     }
 
@@ -2103,28 +2102,28 @@ bool CellClass::Goodie_Check(FootClass* object) {
                 if (hptr != nullptr && !hptr->IsDefeated) {
                   int j;
                   for (j = 0;
-                       j < static_cast<int>(magic_enum::enum_count<UnitType>());
+                       std::cmp_less(j, magic_enum::enum_count<UnitType>());
                        j++) {
                     ucount += hptr->QuantityU(j);
                   }
-                  for (j = 0; j < static_cast<int>(
-                                      magic_enum::enum_count<InfantryType>());
+                  for (j = 0;
+                       std::cmp_less(j, magic_enum::enum_count<InfantryType>());
                        j++) {
                     ucount += hptr->QuantityI(j);
                   }
-                  for (j = 0; j < static_cast<int>(
-                                      magic_enum::enum_count<AircraftType>());
+                  for (j = 0;
+                       std::cmp_less(j, magic_enum::enum_count<AircraftType>());
                        j++) {
                     ucount += hptr->QuantityA(j);
                   }
-                  for (j = 0; j < static_cast<int>(
-                                      magic_enum::enum_count<VesselType>());
+                  for (j = 0;
+                       std::cmp_less(j, magic_enum::enum_count<VesselType>());
                        j++) {
                     ucount += hptr->QuantityV(j);
                   }
                   int bcount = 0;
-                  for (j = 0; j < static_cast<int>(
-                                      magic_enum::enum_count<StructType>());
+                  for (j = 0;
+                       std::cmp_less(j, magic_enum::enum_count<StructType>());
                        j++) {
                     bcount += hptr->QuantityB(j);
                   }
@@ -2676,7 +2675,7 @@ bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
   **	zone to allow movement.
   */
   if (zone != -1) {
-    if (zone != Zones[check]) {
+    if (std::cmp_not_equal(zone, Zones[check])) {
       return false;
     }
   }

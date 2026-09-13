@@ -45,6 +45,8 @@
 
 #include <algorithm>
 #include <cstring>
+#include <iterator>
+#include <utility>
 
 #include "port/safe_string.h"
 #include "ra/checkbox.h"
@@ -71,7 +73,6 @@
 #include "sdllib/misc.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include <iterator>
 
 #define OPTION_WIDTH (236 * 2)
 #define OPTION_HEIGHT (162 * 2)
@@ -299,7 +300,7 @@ void PWEditClass::Draw_Text(const char* text) {
     Conquer_Clip_Text_Print(buffer, X + 1, Y + 1, Color, TBLACK,
                             TextFlags | flags, Width - 2);
 
-    if (Has_Focus() && static_cast<int>(strlen(buffer)) < MaxLength) {
+    if (Has_Focus() && std::cmp_less(strlen(buffer), MaxLength)) {
       Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(buffer), Y + 1,
                               Color, TBLACK, TextFlags | flags);
     }
@@ -309,7 +310,7 @@ void PWEditClass::Draw_Text(const char* text) {
                                         : &ColorRemaps[PCOLOR_GREY],
                             TBLACK, TextFlags, Width - 2);
 
-    if (Has_Focus() && static_cast<int>(strlen(buffer)) < MaxLength) {
+    if (Has_Focus() && std::cmp_less(strlen(buffer), MaxLength)) {
       Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(buffer), Y + 1,
                               &ColorRemaps[PCOLOR_DIALOG_BLUE], TBLACK,
                               TextFlags);

@@ -54,7 +54,9 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <utility>
 
+#include "base/types.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -88,7 +90,6 @@
 #include "td/theme.h"
 #include "td/type.h"
 #include "td/vector.h"
-#include "base/types.h"
 
 #define SCORETEXT_X 184
 // #define SCORETEXT_Y 8
@@ -1862,8 +1863,10 @@ void Draw_InfantryMan(int index) {
   */
   if (--InfantryMan[index].delay < 0) {
     InfantryMan[index].delay = 3;
-    if (++InfantryMan[index].stage >=
-        InfantryMan[index].Class->DoControls[InfantryMan[index].anim].Count) {
+    if (std::cmp_greater_equal(++InfantryMan[index].stage,
+                               InfantryMan[index]
+                                   .Class->DoControls[InfantryMan[index].anim]
+                                   .Count)) {
       /*
       ** was he playing a death anim? If so, and it's done, erase him
       */

@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <utility>
 
 #include "port/aligned_buffer.h"
 #include "port/unaligned.h"
@@ -413,7 +414,7 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
   // place so must uncompress frame 0 in delta buffer to the frame_buffer/page
   // if it exists.
   //
-  if (sys_header->current_frame == total_frames) {
+  if (std::cmp_equal(sys_header->current_frame, total_frames)) {
     // Call apply delta telling it wether to copy or to xor depending on if the
     // target is a page or a buffer.
 

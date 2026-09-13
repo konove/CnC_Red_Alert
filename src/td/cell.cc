@@ -86,6 +86,8 @@
 
 #include <cassert>
 #include <cstddef>
+#include <iterator>
+#include <utility>
 
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
@@ -127,7 +129,6 @@
 #include "td/unit.h"
 #include "td/utracker.h"
 #include "td/vector.h"
-#include <iterator>
 
 // #define FIXUP 0
 
@@ -1317,7 +1318,7 @@ void CellClass::Concrete_Calc() {
   /*
   **	Update the icon on the map.
   */
-  if (icon != C_NONE && OverlayData != icon) {
+  if (icon != C_NONE && std::cmp_not_equal(OverlayData, icon)) {
     OverlayData = static_cast<unsigned char>(icon);
     // Array[cell].Base = 0;
     Redraw_Objects();
@@ -1446,7 +1447,7 @@ int CellClass::Reduce_Tiberium(int levels) {
   int reducer = 0;
 
   if (levels && Land == LAND_TIBERIUM) {
-    if (OverlayData > levels) {
+    if (std::cmp_greater(OverlayData, levels)) {
       OverlayData -= levels;
       reducer = levels;
     } else {

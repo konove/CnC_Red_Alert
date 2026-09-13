@@ -44,6 +44,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <utility>
 
 #include "tech/lcw.h"
 
@@ -167,7 +168,7 @@ int LCWPipe::Put(const void* source, int slen) {
         **	If an entire block has been accumulated, then uncompress it and
         *feed it *	through the pipe.
         */
-        if (Counter == BlockHeader.CompCount) {
+        if (std::cmp_equal(Counter, BlockHeader.CompCount)) {
           LCW_Uncomp(Buffer, Buffer2);
           total += Pipe::Put(Buffer2, BlockHeader.UncompCount);
           Counter = 0;

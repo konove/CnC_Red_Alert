@@ -37,6 +37,8 @@
 
 #include "tech/pcx_file.h"
 
+#include <utility>
+
 #include "base/types.h"
 #include "sdllib/file.h"
 #include "sdllib/gbuffer.h"
@@ -146,7 +148,7 @@ void Write_Pcx_ScanLine(int file_handle, int scansize, char* ptr) {
   last = static_cast<unsigned char>(*ptr);
   rle = 1;
 
-  for (i = 1; i < static_cast<unsigned>(scansize); i++) {
+  for (i = 1; std::cmp_less(i, scansize); i++) {
     color = 0xff & *++ptr;
     if (color == last) {
       rle++;

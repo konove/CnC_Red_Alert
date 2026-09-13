@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <utility>
 
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
@@ -294,7 +295,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
   BufferedFileReader reader(file_handle);
 
   if (header.byte_per_line != width) {
-    for (unsigned scan_pos = 0, j = 0; j < static_cast<unsigned>(height);
+    for (unsigned scan_pos = 0, j = 0; std::cmp_less(j, height);
          j++, scan_pos += width) {
       for (int i = 0; i < width;) {
         const auto rle_result = reader.ReadByte();

@@ -43,6 +43,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <utility>
 
 #include "tech/buff.h"
 #include "tech/lzw.h"
@@ -165,7 +166,7 @@ int LZWStraw::Get(void* destbuf, int slen) {
       void* ptr =
           &source_buffer_[BlockSize + SafetyMargin - BlockHeader.CompCount];
       incount = Straw::Get(ptr, BlockHeader.CompCount);
-      if (incount != BlockHeader.CompCount) {
+      if (std::cmp_not_equal(incount, BlockHeader.CompCount)) {
         break;
       }
 

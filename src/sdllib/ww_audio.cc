@@ -8,6 +8,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <utility>
 
 #include "port/unaligned.h"
 #include "sdllib/file.h"
@@ -280,8 +281,8 @@ static void ResetStream(ChannelState& chan, const AUDHeaderType* header) {
   int bits = header->Flags & AUD_FLAG_16BIT ? 16 : 8;
 
   // re-allocate stream if needed
-  if (channels != chan.channels || bits != chan.bits ||
-      header->Rate != chan.sample_rate) {
+  if (std::cmp_not_equal(channels, chan.channels) ||
+      std::cmp_not_equal(bits, chan.bits) || header->Rate != chan.sample_rate) {
     if (chan.stream) {
       SDL_FreeAudioStream(chan.stream);
     }
@@ -337,7 +338,7 @@ static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
     int stream_len = SDL_AudioStreamGet(chan.stream, MixBuffer, len);
 
     // mix into buffer
-    for (int s = 0; s < static_cast<int>(stream_len / sizeof(int16_t)); s++) {
+    for (int s = 0; std::cmp_less(s, stream_len / sizeof(int16_t)); s++) {
       const auto offset = s * sizeof(int16_t);
       const auto output = port::ReadUnaligned<int16_t>(stream + offset);
       const auto input = port::ReadUnaligned<int16_t>(MixBuffer + offset);

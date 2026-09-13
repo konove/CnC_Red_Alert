@@ -60,6 +60,7 @@
 #include <cstring>
 #include <sstream>
 #include <string>
+#include <utility>
 
 #include "absl/log/log.h"
 #include "port/aligned_buffer.h"
@@ -799,7 +800,7 @@ int NullModemClass::Service() {
   - Throw away the bogus packet-start code
   - Return;  we'll search for another packet-start code next time.
   ------------------------------------------------------------------------*/
-  if (length > MaxLen) {
+  if (std::cmp_greater(length, MaxLen)) {
 #if (CONN_DEBUG)
     printf("length too lonnng\n");
 #endif
@@ -1861,7 +1862,7 @@ void NullModemClass::Remove_Modem_Echo() {
  * HISTORY: * 8/2/96 12:51PM ST : Documented *
  *=============================================================================================*/
 void NullModemClass::Print_EchoBuf() {
-  for (int i = 0; i < static_cast<int>(strlen(NullModem.EchoBuf)); i++) {
+  for (int i = 0; std::cmp_less(i, strlen(NullModem.EchoBuf)); i++) {
     if (NullModem.EchoBuf[i] == '\r') {
       NullModem.EchoBuf[i] = 1;
     } else {

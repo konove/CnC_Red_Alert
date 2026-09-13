@@ -127,6 +127,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <utility>
 
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
@@ -2594,7 +2595,7 @@ void BuildingClass::Repair(int control) {
   */
   VocType soundid = VOC_NONE;
   if (IsRepairing) {
-    if (Strength == Class->MaxStrength) {
+    if (std::cmp_equal(Strength, Class->MaxStrength)) {
       soundid = VOC_SCOLD;
     } else {
       soundid = VOC_CLICK;
@@ -5426,7 +5427,7 @@ void BuildingClass::Repair_AI() {
       House->Spend_Money(cost);
       Strength = static_cast<short>(Strength + step);
 
-      if (Strength >= Class->MaxStrength) {
+      if (std::cmp_greater_equal(Strength, Class->MaxStrength)) {
         Strength = Class->MaxStrength;
         IsRepairing = false;
       }

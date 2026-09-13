@@ -202,6 +202,7 @@ bool bSpecialAftermathScenario(const char* szScenarioDescription);
 
 #include <iterator>
 #include <random>
+#include <utility>
 
 #include "ra/config.h"
 #include "ra/wolapiob.h"
@@ -3871,7 +3872,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     //.....................................................................
     // If this packet is from myself, don't add it to the list
     //.....................................................................
-    if (Session.GPacket.Chat.ID == static_cast<uint32_t>(Session.UniqueID)) {
+    if (std::cmp_equal(Session.GPacket.Chat.ID, Session.UniqueID)) {
       found = 1;
     }
     //.....................................................................
@@ -5460,7 +5461,7 @@ uint32_t Compute_Name_CRC(char* name) {
   port::SafeCopy(buf, name);
   strupr(buf);
 
-  for (i = 0; i < static_cast<int>(strlen(buf)); i++) {
+  for (i = 0; std::cmp_less(i, strlen(buf)); i++) {
     Add_CRC(&crc, static_cast<uint32_t>(buf[i]));
   }
 

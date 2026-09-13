@@ -6,6 +6,7 @@
 #include <SDL_timer.h>
 
 #include <cstdint>
+#include <utility>
 
 #include "sdllib/gbuffer.h"
 #include "sdllib/ww_win.h"
@@ -121,8 +122,9 @@ void GraphicBufferClass::Update_Palette(const uint8_t* palette) {
     int new_g = palette[(i * 3) + 1] << 2 | palette[(i * 3) + 1] >> 4;
     int new_b = palette[(i * 3) + 2] << 2 | palette[(i * 3) + 2] >> 4;
 
-    changed = changed || sdl_pal->colors[i].r != new_r ||
-              sdl_pal->colors[i].g != new_g || sdl_pal->colors[i].b != new_b;
+    changed = changed || std::cmp_not_equal(sdl_pal->colors[i].r, new_r) ||
+              std::cmp_not_equal(sdl_pal->colors[i].g, new_g) ||
+              std::cmp_not_equal(sdl_pal->colors[i].b, new_b);
 
     sdl_pal->colors[i].r = static_cast<Uint8>(new_r);
     sdl_pal->colors[i].g = static_cast<Uint8>(new_g);

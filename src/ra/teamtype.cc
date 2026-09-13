@@ -69,6 +69,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <utility>
 
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -351,7 +352,7 @@ void TeamTypeClass::operator delete(void* ptr) {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 TeamClass* TeamTypeClass::Create_One_Of() const {
-  if (ScenarioInit || Number < MaxAllowed) {
+  if (ScenarioInit || std::cmp_less(Number, MaxAllowed)) {
     //	if (ScenarioInit || TeamClass::Number[ID] < MaxAllowed) {
     return new TeamClass(this, HouseClass::As_Pointer(House));
   }

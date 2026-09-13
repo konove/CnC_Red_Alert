@@ -55,6 +55,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <utility>
 
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -348,7 +349,7 @@ GameType Select_MPlayer_Game() {
       buttons[curbutton]->Turn_Off();
       buttons[curbutton]->Flag_To_Redraw();
       for (int index = 0; index < number_of_buttons; index++) {
-        if (buttons[index]->ID == static_cast<unsigned>(selection)) {
+        if (std::cmp_equal(buttons[index]->ID, selection)) {
           curbutton = index;
           break;
         }

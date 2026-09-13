@@ -333,10 +333,9 @@ void TActionClass::Read_INI() {
   */
   if (Action == TACTION_PLAY_SOUND &&
       (Data.Value < 0 ||
-       Data.Value >= static_cast<int>(magic_enum::enum_count<VocType>()))) {
+       std::cmp_greater_equal(Data.Value, magic_enum::enum_count<VocType>()))) {
     int fixed = Data.Value & 0xFF;
-    if (fixed >= 0 &&
-        fixed < static_cast<int>(magic_enum::enum_count<VocType>())) {
+    if (fixed >= 0 && std::cmp_less(fixed, magic_enum::enum_count<VocType>())) {
       DLOG(WARNING) << "Read_INI: Fixed corrupted sound value " << Data.Value
                     << " -> " << fixed;
       Data.Value = fixed;
@@ -480,7 +479,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
         int zone = Map[Scen.Waypoint[Data.Value]].Zones[MZONE_CRUSHER];
 
         for (CELL map_cell = 0; map_cell < MAP_CELL_TOTAL; map_cell++) {
-          if (Map[map_cell].Zones[MZONE_CRUSHER] == zone) {
+          if (std::cmp_equal(Map[map_cell].Zones[MZONE_CRUSHER], zone)) {
             Map.Map_Cell(map_cell, PlayerPtr);
           }
         }

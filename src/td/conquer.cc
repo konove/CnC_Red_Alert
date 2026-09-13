@@ -72,6 +72,7 @@
 #include <filesystem>
 #include <iterator>
 #include <string>
+#include <utility>
 
 #include "absl/log/log.h"
 #include "base/types.h"
@@ -2858,7 +2859,8 @@ void Handle_Team(int team, int action) {
           case RTTI_UNIT:
           case RTTI_INFANTRY:
           case RTTI_AIRCRAFT:
-            if (dynamic_cast<FootClass*>(CurrentObject[0])->Group != team) {
+            if (std::cmp_not_equal(
+                    dynamic_cast<FootClass*>(CurrentObject[0])->Group, team)) {
               Unselect_All();
             }
             break;
@@ -2868,7 +2870,7 @@ void Handle_Team(int team, int action) {
       }
       for (index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
-        if (obj && !obj->IsInLimbo && obj->Group == team &&
+        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
             obj->House == PlayerPtr) {
           if (!obj->IsSelected) {
             obj->Select();
@@ -2878,7 +2880,7 @@ void Handle_Team(int team, int action) {
       }
       for (index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
-        if (obj && !obj->IsInLimbo && obj->Group == team &&
+        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
             obj->House == PlayerPtr) {
           if (!obj->IsSelected) {
             obj->Select();
@@ -2888,7 +2890,7 @@ void Handle_Team(int team, int action) {
       }
       for (index = 0; index < Aircraft.Count(); index++) {
         AircraftClass* obj = Aircraft.Ptr(index);
-        if (obj && !obj->IsInLimbo && obj->Group == team &&
+        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
             obj->House == PlayerPtr) {
           if (!obj->IsSelected) {
             obj->Select();
@@ -2912,7 +2914,7 @@ void Handle_Team(int team, int action) {
     case 1:
       for (index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
-        if (obj && !obj->IsInLimbo && obj->Group == team &&
+        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
             obj->House == PlayerPtr) {
           if (!obj->IsSelected) {
             obj->Select();
@@ -2922,7 +2924,7 @@ void Handle_Team(int team, int action) {
       }
       for (index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
-        if (obj && !obj->IsInLimbo && obj->Group == team &&
+        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
             obj->House == PlayerPtr) {
           if (!obj->IsSelected) {
             obj->Select();
@@ -2932,7 +2934,7 @@ void Handle_Team(int team, int action) {
       }
       for (index = 0; index < Aircraft.Count(); index++) {
         AircraftClass* obj = Aircraft.Ptr(index);
-        if (obj && !obj->IsInLimbo && obj->Group == team &&
+        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
             obj->House == PlayerPtr) {
           if (!obj->IsSelected) {
             obj->Select();
@@ -2949,7 +2951,7 @@ void Handle_Team(int team, int action) {
       for (index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House == PlayerPtr) {
-          if (obj->Group == team) {
+          if (std::cmp_equal(obj->Group, team)) {
             obj->Group = -1;
           }
           if (obj->IsSelected) {
@@ -2960,7 +2962,7 @@ void Handle_Team(int team, int action) {
       for (index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House == PlayerPtr) {
-          if (obj->Group == team) {
+          if (std::cmp_equal(obj->Group, team)) {
             obj->Group = -1;
           }
           if (obj->IsSelected) {
@@ -2971,7 +2973,7 @@ void Handle_Team(int team, int action) {
       for (index = 0; index < Aircraft.Count(); index++) {
         AircraftClass* obj = Aircraft.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House == PlayerPtr) {
-          if (obj->Group == team) {
+          if (std::cmp_equal(obj->Group, team)) {
             obj->Group = -1;
           }
           if (obj->IsSelected) {

@@ -126,6 +126,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <utility>
 
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -2546,7 +2547,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       } else {
         ScenarioIdx = -1;
         for (i = 0; i < MPlayerFilenum.Count(); i++) {
-          if (GPacket.ScenarioInfo.Scenario == MPlayerFilenum[i]) {
+          if (std::cmp_equal(GPacket.ScenarioInfo.Scenario,
+                             MPlayerFilenum[i])) {
             ScenarioIdx = i;
           }
         }
@@ -4066,7 +4068,7 @@ unsigned long Compute_Name_CRC(char* name) {
   port::SafeCopy(buf, name);
   strupr(buf);
 
-  for (i = 0; i < static_cast<int>(strlen(buf)); i++) {
+  for (i = 0; std::cmp_less(i, strlen(buf)); i++) {
     Add_CRC(&crc, static_cast<unsigned long>(buf[i]));
   }
 

@@ -84,6 +84,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <utility>
 
 #include "port/safe_string.h"
 #include "port/unaligned.h"
@@ -1650,7 +1651,7 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
   //------------------------------------------------------------------------
   //	Get an event ptr to the incoming message
   //------------------------------------------------------------------------
-  if (packetlen < static_cast<int>(offsetof(EventClass, Data) +
+  if (std::cmp_less(packetlen, offsetof(EventClass, Data) +
                                    sizeof(event_storage.Data.FrameInfo))) {
     return RC_NORMAL;
   }
@@ -1775,7 +1776,7 @@ static RetcodeType Process_Serial_Packet(char* multi_packet_buf, int packetlen,
   //------------------------------------------------------------------------
   //	Determine if this packet means that the other player has left the game
   //------------------------------------------------------------------------
-  if (packetlen < static_cast<int>(sizeof(serial_storage.Command))) {
+  if (std::cmp_less(packetlen, sizeof(serial_storage.Command))) {
     return RC_SERIAL_PROCESSED;
   }
   std::memset(&serial_storage, 0, sizeof(serial_storage));
@@ -1852,7 +1853,7 @@ static RetcodeType Process_Serial_Packet(char* multi_packet_buf, int packetlen,
   //........................................................................
   //	are we getting our own packets back??
   //........................................................................
-  if (packetlen < static_cast<int>(offsetof(EventClass, Data) +
+  if (std::cmp_less(packetlen, offsetof(EventClass, Data) +
                                    sizeof(event_storage.Data.FrameInfo))) {
     return RC_NORMAL;
   }
@@ -2696,7 +2697,7 @@ int Extract_Uncompressed_Events(void* buf, int bufsize) {
   //------------------------------------------------------------------------
   // Loop until there are no more events in the packet
   //------------------------------------------------------------------------
-  while (leftover >= static_cast<int>(sizeof(EventClass))) {
+  while (std::cmp_greater_equal(leftover, sizeof(EventClass))) {
     event_storage =
         port::ReadUnaligned<EventClass>(static_cast<char*>(buf) + pos);
 
@@ -2769,7 +2770,7 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
   //------------------------------------------------------------------------
   datasize = offsetof(EventClass, Data) + size_of(EventClass, Data.FrameInfo) -
              sizeof(EventClass::EventType);
-  if (leftover < static_cast<int>(sizeof(EventClass::EventType))) {
+  if (std::cmp_less(leftover, sizeof(EventClass::EventType))) {
     return count;
   }
   event_type =
@@ -2893,7 +2894,7 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
       leftover = static_cast<int>(leftover - (datasize + sizeof(EventClass::EventType)));
 
       if (leftover) {
-        if (leftover < static_cast<int>(sizeof(EventClass::EventType))) {
+        if (std::cmp_less(leftover, sizeof(EventClass::EventType))) {
           return count;
         }
         event_type = port::ReadUnaligned<EventClass::EventType>(
@@ -2915,7 +2916,7 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
     else {
       pos = static_cast<int>(pos + (datasize + sizeof(EventClass::EventType)));
       leftover = static_cast<int>(leftover - (datasize + sizeof(EventClass::EventType)));
-      if (leftover < static_cast<int>(sizeof(EventClass::EventType))) {
+      if (std::cmp_less(leftover, sizeof(EventClass::EventType))) {
         return count;
       }
       event_type = port::ReadUnaligned<EventClass::EventType>(
@@ -2988,7 +2989,8 @@ static int Execute_DoList(int, HousesType, ConnManClass* net,
   //------------------------------------------------------------------------
   if (GameToPlay == GAME_NORMAL) {
     for (i = 0; i < DoList.Count; i++) {
-      if (Frame >= DoList[i].Frame && !DoList[i].IsExecuted) {
+      if (std::cmp_greater_equal(Frame, DoList[i].Frame) &&
+          !DoList[i].IsExecuted) {
         DoList[i].Execute();          // execute it
         DoList[i].IsExecuted = true;  // mark as having been executed
       }
@@ -3011,8 +3013,8 @@ static int Execute_DoList(int, HousesType, ConnManClass* net,
   if (CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
     for (j = 0; j < DoList.Count; j++) {
       if (DoList[j].Type != EventClass::FRAMEINFO &&
-          DoList[j].Frame > NewMaxAheadFrame1 &&
-          DoList[j].Frame < NewMaxAheadFrame2) {
+          std::cmp_greater(DoList[j].Frame, NewMaxAheadFrame1) &&
+          std::cmp_less(DoList[j].Frame, NewMaxAheadFrame2)) {
         DoList[j].Frame = NewMaxAheadFrame2;
       }
     }
@@ -3062,12 +3064,13 @@ static int Execute_DoList(int, HousesType, ConnManClass* net,
       //	If this event was from the currently-executing player ID, and
       // it's 	time to execute it, execute it.
       //..................................................................
-      if (DoList[j].MPlayerID == MPlayerID[i] && Frame >= DoList[j].Frame &&
+      if (DoList[j].MPlayerID == MPlayerID[i] &&
+          std::cmp_greater_equal(Frame, DoList[j].Frame) &&
           !DoList[j].IsExecuted) {
         //...............................................................
         //	Error if it's too late to execute this packet!
         //...............................................................
-        if (Frame > DoList[j].Frame &&
+        if (std::cmp_greater(Frame, DoList[j].Frame) &&
             DoList[j].Type != EventClass::FRAMEINFO) {
 #ifndef DEMO
           Dump_Packet_Too_Late_Stuff(&DoList[j]);
@@ -3149,7 +3152,8 @@ static int Execute_DoList(int, HousesType, ConnManClass* net,
         //...............................................................
 #ifndef DEMO
         else if (DoList[j].Type == EventClass::FRAMEINFO) {
-          if (DoList[j].Frame == Frame && DoList[j].Data.FrameInfo.Delay < 32) {
+          if (std::cmp_equal(DoList[j].Frame, Frame) &&
+              DoList[j].Data.FrameInfo.Delay < 32) {
             index = (DoList[j].Frame - DoList[j].Data.FrameInfo.Delay) & 0x001f;
             if (CRC[index] != DoList[j].Data.FrameInfo.CRC) {
               Print_CRCs(&DoList[j]);
@@ -3237,7 +3241,8 @@ static void Clean_DoList(ConnManClass* net) {
     //	events lying around in my queue.  They won't have been "executed",
     //	because his IPX connection was destroyed.)
     //.....................................................................
-    if (DoList.First().IsExecuted || Frame > DoList.First().Frame) {
+    if (DoList.First().IsExecuted ||
+        std::cmp_greater(Frame, DoList.First().Frame)) {
       DoList.Next();
     } else {
       break;
@@ -3279,7 +3284,7 @@ static void Queue_Record() {
   //------------------------------------------------------------------------
   j = 0;
   for (i = 0; i < DoList.Count; i++) {
-    if (Frame == DoList[i].Frame && !DoList[i].IsExecuted) {
+    if (std::cmp_equal(Frame, DoList[i].Frame) && !DoList[i].IsExecuted) {
       j++;
     }
   }
@@ -3289,7 +3294,7 @@ static void Queue_Record() {
   //------------------------------------------------------------------------
   RecordFile.Write(&j, sizeof(j));
   for (i = 0; i < DoList.Count; i++) {
-    if (Frame == DoList[i].Frame && !DoList[i].IsExecuted) {
+    if (std::cmp_equal(Frame, DoList[i].Frame) && !DoList[i].IsExecuted) {
       RecordFile.Write(&DoList[i], sizeof(EventClass));
       j--;
     }

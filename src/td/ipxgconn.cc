@@ -72,6 +72,7 @@
 #include "td/ipxgconn.h"
 
 #include <cstring>
+#include <utility>
 
 #include "port/aligned_buffer.h"
 #include "port/unaligned.h"
@@ -210,7 +211,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
   /*
   --------------------------- Check the magic # ----------------------------
   */
-  if (buflen < static_cast<int>(sizeof(GlobalHeaderType))) {
+  if (std::cmp_less(buflen, sizeof(GlobalHeaderType))) {
     return false;
   }
   auto packet_storage = port::ReadUnaligned<GlobalHeaderType>(buf);

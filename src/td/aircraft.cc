@@ -108,6 +108,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <utility>
 
 #include "base/trig.h"
 #include "sdllib/shape.h"
@@ -1900,7 +1901,7 @@ int AircraftClass::Process_Fly_To(bool slowdown) {
   if (slowdown) {
     int speed = std::min(distance, 0x0300);
     speed = std::clamp(speed / 3, 0x0020, 0x00FF);
-    if (Speed != speed) {
+    if (std::cmp_not_equal(Speed, speed)) {
       Set_Speed(speed);
     }
   }

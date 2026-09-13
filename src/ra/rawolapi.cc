@@ -26,6 +26,7 @@
 #include <cstring>
 #include <ctime>
 #include <iterator>
+#include <utility>
 
 #include "absl/log/check.h"
 #include "port/ex_string.h"
@@ -2080,7 +2081,7 @@ void InterpretLobbyNumber(char* szLobbyNameToSet, int iLobby) {
       "Death Valley", "The Wastelands",     "Isle of Fury", "Armourgarden",
       "The Hive",     "North by Northwest", "Decatur High", "Damnation Alley",
   };
-  if (iLobby >= 0 && iLobby < static_cast<int>(std::size(kLobbyNames))) {
+  if (iLobby >= 0 && std::cmp_less(iLobby, std::size(kLobbyNames))) {
     port::SafeCopy(szLobbyNameToSet, kLobbyNames[iLobby],
                    REASONABLELOBBYINTERPRETEDNAMELEN);
   } else {

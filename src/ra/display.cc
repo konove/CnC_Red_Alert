@@ -108,6 +108,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <utility>
 
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -1178,8 +1179,7 @@ CELL DisplayClass::Click_Cell_Calc(int x, int y) const {
   y -= TacPixelY;
   y = Pixel_To_Lepton(y);
 
-  if (static_cast<unsigned>(x) < TacLeptonWidth &&
-      static_cast<unsigned>(y) < TacLeptonHeight) {
+  if (std::cmp_less(x, TacLeptonWidth) && std::cmp_less(y, TacLeptonHeight)) {
     COORDINATE tcoord =
         XY_Coord(Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(TacticalCoord))),
                  Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(TacticalCoord))));
@@ -2144,10 +2144,10 @@ void DisplayClass::Draw_It(bool forced) {
  *=============================================================================================*/
 void DisplayClass::Redraw_Icons() {
   IsShadowPresent = false;
-  for (int y = -Coord_YLepton(TacticalCoord); y <= TacLeptonHeight;
-       y += CELL_LEPTON_H) {
-    for (int x = -Coord_XLepton(TacticalCoord); x <= TacLeptonWidth;
-         x += CELL_LEPTON_W) {
+  for (int y = -Coord_YLepton(TacticalCoord);
+       std::cmp_less_equal(y, TacLeptonHeight); y += CELL_LEPTON_H) {
+    for (int x = -Coord_XLepton(TacticalCoord);
+         std::cmp_less_equal(x, TacLeptonWidth); x += CELL_LEPTON_W) {
       COORDINATE coord =
           Coord_Add(TacticalCoord,
                     XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y)));
@@ -2187,10 +2187,10 @@ void DisplayClass::Redraw_Icons() {
 }
 
 void DisplayClass::Redraw_OIcons() {
-  for (int y = -Coord_YLepton(TacticalCoord); y <= TacLeptonHeight;
-       y += CELL_LEPTON_H) {
-    for (int x = -Coord_XLepton(TacticalCoord); x <= TacLeptonWidth;
-         x += CELL_LEPTON_W) {
+  for (int y = -Coord_YLepton(TacticalCoord);
+       std::cmp_less_equal(y, TacLeptonHeight); y += CELL_LEPTON_H) {
+    for (int x = -Coord_XLepton(TacticalCoord);
+         std::cmp_less_equal(x, TacLeptonWidth); x += CELL_LEPTON_W) {
       COORDINATE coord =
           Coord_Add(TacticalCoord,
                     XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y)));
@@ -2237,10 +2237,10 @@ void DisplayClass::Redraw_OIcons() {
  *=============================================================================================*/
 void DisplayClass::Redraw_Shadow() {
   if (IsShadowPresent) {
-    for (int y = -Coord_YLepton(TacticalCoord); y <= TacLeptonHeight;
-         y += CELL_LEPTON_H) {
-      for (int x = -Coord_XLepton(TacticalCoord); x <= TacLeptonWidth;
-           x += CELL_LEPTON_W) {
+    for (int y = -Coord_YLepton(TacticalCoord);
+         std::cmp_less_equal(y, TacLeptonHeight); y += CELL_LEPTON_H) {
+      for (int x = -Coord_XLepton(TacticalCoord);
+           std::cmp_less_equal(x, TacLeptonWidth); x += CELL_LEPTON_W) {
         COORDINATE coord =
             Coord_Add(TacticalCoord,
                       XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y)));
@@ -2407,8 +2407,7 @@ COORDINATE DisplayClass::Pixel_To_Coord(int x, int y) const {
   **	If pixel coordinate is over the tactical map, then translate it into a
   *coordinate *	value. If not, then just return with nullptr.
   */
-  if (static_cast<unsigned>(x) < TacLeptonWidth &&
-      static_cast<unsigned>(y) < TacLeptonHeight) {
+  if (std::cmp_less(x, TacLeptonWidth) && std::cmp_less(y, TacLeptonHeight)) {
     return Coord_Add(TacticalCoord,
                      XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y)));
   }
@@ -3572,7 +3571,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
             **	formation offset, then it can't be a formation move.
             */
             const FootClass* foot = (FootClass*)tobject;
-            if (foot->Group != group ||
+            if (std::cmp_not_equal(foot->Group, group) ||
                 foot->XFormOffset == kNoFormationOffset) {
               FormMove = false;
               break;
@@ -3625,7 +3624,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
               **	it isn't selected, then the formation move cannot take
               **	place.
               */
-              if (foot->Group == group) {
+              if (std::cmp_equal(foot->Group, group)) {
                 FormMove = false;
                 break;
               }

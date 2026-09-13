@@ -103,6 +103,7 @@
 #include <span>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -484,8 +485,7 @@ bool CCINIClass::Put_Owners(const char* section, const char* entry,
   }
 
   // Iterate through House Types
-  for (int i = 0; i < static_cast<int>(magic_enum::enum_count<HousesType>());
-       ++i) {
+  for (int i = 0; std::cmp_less(i, magic_enum::enum_count<HousesType>()); ++i) {
     if ((value & 1L << i) != 0) {
       const auto house = static_cast<HousesType>(i);
       append(HouseTypeClass::As_Reference(house).Name());

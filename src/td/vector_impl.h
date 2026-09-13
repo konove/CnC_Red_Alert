@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <new>
+#include <utility>
 
 #include "td/vector.h"
 
@@ -286,8 +287,8 @@ int VectorClass<T>::Resize(base::ssize newsize, const T* array) {
       *This *	presumes that there is a functional assignment operator for each
       **	of the objects in the vector.
       */
-      int copycount =
-          static_cast<int>(newsize < VectorMax ? newsize : VectorMax);
+      int copycount = static_cast<int>(
+          std::cmp_less(newsize, VectorMax) ? newsize : VectorMax);
       for (int index = 0; index < copycount; index++) {
         newptr[index] = Vector[index];
       }
@@ -548,7 +549,7 @@ int DynamicVectorClass<T>::Delete(const T& object) {
  *=============================================================================================*/
 template <class T>
 int DynamicVectorClass<T>::Delete(int index) {
-  if ((unsigned)index < ActiveCount) {
+  if (std::cmp_less(index, ActiveCount)) {
     ActiveCount--;
 
     /*

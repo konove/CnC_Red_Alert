@@ -53,6 +53,7 @@
  ****************************************************************************/
 
 #include <cstdint>
+#include <utility>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -331,7 +332,7 @@ auto VQA_SetStop(VQAHandle* vqa, int64_t stop) -> int64_t {
   /* Get a local pointer to the header. */
   auto* header = &vqa->header;
 
-  if (stop > 0 && header->Frames >= stop) {
+  if (stop > 0 && std::cmp_greater_equal(header->Frames, stop)) {
     oldstop = header->Frames;
     header->Frames = static_cast<uint16_t>(stop);
   }

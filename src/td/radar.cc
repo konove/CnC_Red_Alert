@@ -81,6 +81,7 @@
 #include <cstring>
 #include <filesystem>
 #include <string>
+#include <utility>
 
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
@@ -1171,7 +1172,7 @@ void RadarClass::Radar_Cursor(int forced) {
   ** just skip the redraw process.
   */
   if (tac_cell != -1 && _last_pos == tac_cell &&
-      _last_frame == SpecialRadarFrame && !forced) {
+      std::cmp_equal(_last_frame, SpecialRadarFrame) && !forced) {
     return;
   }
 

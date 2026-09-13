@@ -116,6 +116,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <utility>
 
 #include "rand.h"
 #include "reinf.h"
@@ -1196,7 +1197,7 @@ void BuildingClass::AI() {
         House->Spend_Money(cost);
         Strength = static_cast<short>(Strength + step);
 
-        if (Strength >= Class->MaxStrength) {
+        if (std::cmp_greater_equal(Strength, Class->MaxStrength)) {
           Strength = Class->MaxStrength;
           IsRepairing = false;
         }
@@ -2797,7 +2798,7 @@ void BuildingClass::Repair(int control) {
   */
   VocType sound = VOC_NONE;
   if (IsRepairing) {
-    if (Strength == Class->MaxStrength) {
+    if (std::cmp_equal(Strength, Class->MaxStrength)) {
       sound = VOC_SCOLD;
     } else {
       sound = VOC_BUTTON;

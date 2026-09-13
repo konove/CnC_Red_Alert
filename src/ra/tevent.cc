@@ -445,7 +445,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       *destroyed.
       */
       case TEVENT_NBUILDINGS_DESTROYED:
-        if (static_cast<int>(hptr->BuildingsLost) < Data.Value) {
+        if (std::cmp_less(hptr->BuildingsLost, Data.Value)) {
           return false;
         }
         break;
@@ -454,7 +454,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Verify that the specified number of units have been destroyed.
       */
       case TEVENT_NUNITS_DESTROYED:
-        if (static_cast<int>(hptr->UnitsLost) < Data.Value) {
+        if (std::cmp_less(hptr->UnitsLost, Data.Value)) {
           return false;
         }
         break;

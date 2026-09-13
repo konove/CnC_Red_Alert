@@ -46,6 +46,7 @@
 #include <array>
 #include <cstdio>
 #include <type_traits>
+#include <utility>
 
 #include "ra/base.h"
 #include "ra/building.h"
@@ -346,7 +347,7 @@ void MapEditClass::Popup_Controls() {
   */
   owner = CurrentObject[0]->Owner();
   mission_index = 0;
-  for (i = 0; i < static_cast<int>(MapEditMissions.size()); i++) {
+  for (i = 0; std::cmp_less(i, MapEditMissions.size()); i++) {
     if (CurrentObject[0]->Get_Mission() == MapEditMissions[i]) {
       mission_index = i;
     }

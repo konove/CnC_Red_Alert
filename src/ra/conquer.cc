@@ -40,6 +40,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "absl/log/log.h"
@@ -280,7 +281,7 @@ static void Toggle_Formation() {
     UnitClass* obj = Units.Ptr(index);
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr && obj->IsSelected) {
       team = obj->Group;
-      if (team != kNoGroup) {
+      if (std::cmp_not_equal(team, kNoGroup)) {
         set_form = obj->XFormOffset == kNoFormationOffset;
         TeamSpeed[team] = SPEED_WHEEL;
         TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
@@ -288,13 +289,13 @@ static void Toggle_Formation() {
       }
     }
   }
-  if (team == kNoGroup) {
+  if (std::cmp_equal(team, kNoGroup)) {
     for (int index = 0; index < Infantry.Count(); index++) {
       InfantryClass* obj = Infantry.Ptr(index);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           obj->IsSelected) {
         team = obj->Group;
-        if (team != kNoGroup) {
+        if (std::cmp_not_equal(team, kNoGroup)) {
           set_form = obj->XFormOffset == kNoFormationOffset;
           TeamSpeed[team] = SPEED_WHEEL;
           TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
@@ -304,13 +305,13 @@ static void Toggle_Formation() {
     }
   }
 
-  if (team == kNoGroup) {
+  if (std::cmp_equal(team, kNoGroup)) {
     for (int index = 0; index < Vessels.Count(); index++) {
       VesselClass* obj = Vessels.Ptr(index);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           obj->IsSelected) {
         team = obj->Group;
-        if (team != kNoGroup) {
+        if (std::cmp_not_equal(team, kNoGroup)) {
           set_form = obj->XFormOffset == kNoFormationOffset;
           TeamSpeed[team] = SPEED_WHEEL;
           TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
@@ -320,14 +321,14 @@ static void Toggle_Formation() {
     }
   }
 
-  if (team == kNoGroup) {
+  if (std::cmp_equal(team, kNoGroup)) {
     return;
   }
   // Now that we have a team, let's go set (or clear) the formation offsets.
   for (int i = 0; i < Units.Count(); i++) {
     UnitClass* obj = Units.Ptr(i);
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
-        obj->Group == team) {
+        std::cmp_equal(obj->Group, team)) {
       obj->Mark(MARK_CHANGE);
       if (set_form) {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
@@ -349,7 +350,7 @@ static void Toggle_Formation() {
   for (int i = 0; i < Infantry.Count(); i++) {
     InfantryClass* obj = Infantry.Ptr(i);
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
-        obj->Group == team) {
+        std::cmp_equal(obj->Group, team)) {
       obj->Mark(MARK_CHANGE);
       if (set_form) {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
@@ -368,7 +369,7 @@ static void Toggle_Formation() {
   for (int i = 0; i < Vessels.Count(); i++) {
     VesselClass* obj = Vessels.Ptr(i);
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
-        obj->Group == team) {
+        std::cmp_equal(obj->Group, team)) {
       obj->Mark(MARK_CHANGE);
       if (set_form) {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
@@ -397,7 +398,7 @@ static void Toggle_Formation() {
     for (int i = 0; i < Units.Count(); i++) {
       UnitClass* obj = Units.Ptr(i);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
-          obj->Group == team) {
+          std::cmp_equal(obj->Group, team)) {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
         long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
 
@@ -409,7 +410,7 @@ static void Toggle_Formation() {
     for (int i = 0; i < Infantry.Count(); i++) {
       InfantryClass* obj = Infantry.Ptr(i);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
-          obj->Group == team) {
+          std::cmp_equal(obj->Group, team)) {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
         long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
 
@@ -421,7 +422,7 @@ static void Toggle_Formation() {
     for (int i = 0; i < Vessels.Count(); i++) {
       VesselClass* obj = Vessels.Ptr(i);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
-          obj->Group == team) {
+          std::cmp_equal(obj->Group, team)) {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
         long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
 
@@ -2391,7 +2392,7 @@ Rect Shape_Dimensions(const void* shapedata, const int shape_num) {
   Rect rect;
 
   if (shapedata == nullptr || shape_num < 0 ||
-      shape_num > Get_Build_Frame_Count(shapedata)) {
+      std::cmp_greater(shape_num, Get_Build_Frame_Count(shapedata))) {
     return rect;
   }
 
@@ -2585,13 +2586,14 @@ void Handle_Team(const int team, const int action) {
       // objects before selecting this team.
       if (CurrentObject.Count()) {
         if (CurrentObject[0]->Is_Foot() &&
-            dynamic_cast<FootClass*>(CurrentObject[0])->Group != team) {
+            std::cmp_not_equal(
+                dynamic_cast<FootClass*>(CurrentObject[0])->Group, team)) {
           Unselect_All();
         }
       }
       for (index = 0; index < Vessels.Count(); index++) {
         VesselClass* obj = Vessels.Ptr(index);
-        if (obj && !obj->IsInLimbo && obj->Group == team &&
+        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
             obj->House->IsPlayerControl) {
           if (!obj->IsSelected) {
             obj->Select();
@@ -2601,7 +2603,7 @@ void Handle_Team(const int team, const int action) {
       }
       for (index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
-        if (obj && !obj->IsInLimbo && obj->Group == team &&
+        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
             obj->House->IsPlayerControl) {
           if (!obj->IsSelected) {
             obj->Select();
@@ -2611,7 +2613,7 @@ void Handle_Team(const int team, const int action) {
       }
       for (index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
-        if (obj && !obj->IsInLimbo && obj->Group == team &&
+        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
             obj->House->IsPlayerControl) {
           if (!obj->IsSelected) {
             obj->Select();
@@ -2621,7 +2623,7 @@ void Handle_Team(const int team, const int action) {
       }
       for (index = 0; index < Aircraft.Count(); index++) {
         AircraftClass* obj = Aircraft.Ptr(index);
-        if (obj && !obj->IsInLimbo && obj->Group == team &&
+        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
             obj->House->IsPlayerControl) {
           if (!obj->IsSelected) {
             obj->Select();
@@ -2641,7 +2643,7 @@ void Handle_Team(const int team, const int action) {
     case 1:
       for (index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
-        if (obj && !obj->IsInLimbo && obj->Group == team &&
+        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
             obj->House->IsPlayerControl) {
           if (!obj->IsSelected) {
             obj->Select();
@@ -2651,7 +2653,7 @@ void Handle_Team(const int team, const int action) {
       }
       for (index = 0; index < Vessels.Count(); index++) {
         VesselClass* obj = Vessels.Ptr(index);
-        if (obj && !obj->IsInLimbo && obj->Group == team &&
+        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
             obj->House->IsPlayerControl) {
           if (!obj->IsSelected) {
             obj->Select();
@@ -2661,7 +2663,7 @@ void Handle_Team(const int team, const int action) {
       }
       for (index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
-        if (obj && !obj->IsInLimbo && obj->Group == team &&
+        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
             obj->House->IsPlayerControl) {
           if (!obj->IsSelected) {
             obj->Select();
@@ -2671,7 +2673,7 @@ void Handle_Team(const int team, const int action) {
       }
       for (index = 0; index < Aircraft.Count(); index++) {
         AircraftClass* obj = Aircraft.Ptr(index);
-        if (obj && !obj->IsInLimbo && obj->Group == team &&
+        if (obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
             obj->House->IsPlayerControl) {
           if (!obj->IsSelected) {
             obj->Select();
@@ -2691,7 +2693,7 @@ void Handle_Team(const int team, const int action) {
       for (index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
-          if (obj->Group == team) {
+          if (std::cmp_equal(obj->Group, team)) {
             obj->Group = kNoGroup;
           }
           if (obj->IsSelected) {
@@ -2714,7 +2716,7 @@ void Handle_Team(const int team, const int action) {
       for (index = 0; index < Vessels.Count(); index++) {
         VesselClass* obj = Vessels.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
-          if (obj->Group == team) {
+          if (std::cmp_equal(obj->Group, team)) {
             obj->Group = kNoGroup;
           }
           if (obj->IsSelected) {
@@ -2737,7 +2739,7 @@ void Handle_Team(const int team, const int action) {
       for (index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
-          if (obj->Group == team) {
+          if (std::cmp_equal(obj->Group, team)) {
             obj->Group = kNoGroup;
           }
           if (obj->IsSelected) {
@@ -2757,7 +2759,7 @@ void Handle_Team(const int team, const int action) {
       for (index = 0; index < Aircraft.Count(); index++) {
         AircraftClass* obj = Aircraft.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
-          if (obj->Group == team) {
+          if (std::cmp_equal(obj->Group, team)) {
             obj->Group = kNoGroup;
           }
           if (obj->IsSelected) {
@@ -2770,7 +2772,7 @@ void Handle_Team(const int team, const int action) {
       for (index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl &&
-            obj->Group == team && obj->IsSelected) {
+            std::cmp_equal(obj->Group, team) && obj->IsSelected) {
           // When a team is first created, they're created without a
           // formation offset, so they will not be created in
           // formation.  Later, if they're assigned a formation, the
@@ -2783,13 +2785,13 @@ void Handle_Team(const int team, const int action) {
       for (index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
-          if (obj->Group == team) {
+          if (std::cmp_equal(obj->Group, team)) {
             obj->Group = kNoGroup;
           }
           if (obj->IsSelected) {
             obj->Group = static_cast<unsigned char>(team);
           }
-          if (obj->Group == team && obj->IsSelected) {
+          if (std::cmp_equal(obj->Group, team) && obj->IsSelected) {
             obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
           }
         }

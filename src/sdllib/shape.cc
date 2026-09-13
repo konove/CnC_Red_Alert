@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <span>
+#include <utility>
 
 char* _ShapeBuffer;
 int _ShapeBufferSize;
@@ -23,7 +24,8 @@ void* Extract_Shape(const void* buffer, int shape) {
   /*
   ----------------------- Return if invalid argument -----------------------
   */
-  if (buffer == nullptr || shape < 0 || shape >= block->NumShapes) {
+  if (buffer == nullptr || shape < 0 ||
+      std::cmp_greater_equal(shape, block->NumShapes)) {
     return nullptr;
   }
 

@@ -77,6 +77,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <utility>
 
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -2271,7 +2272,7 @@ void VesselClass::Repair_AI() {
       if (House->Available_Money() >= cost) {
         House->Spend_Money(cost);
         Strength = static_cast<short>(Strength + step);
-        if (Strength >= Class->MaxStrength) {
+        if (std::cmp_greater_equal(Strength, Class->MaxStrength)) {
           Strength = Class->MaxStrength;
           IsSelfRepairing = IsToSelfRepair = false;
           if (IsOwnedByPlayer) {

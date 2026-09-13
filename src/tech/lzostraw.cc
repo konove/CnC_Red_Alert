@@ -43,6 +43,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <utility>
 
 #include "lzo/lzo.h"
 
@@ -160,7 +161,7 @@ int LZOStraw::Get(void* destbuf, int slen) {
 
       char* staging_buffer = new char[BlockHeader.CompCount];
       incount = Straw::Get(staging_buffer, BlockHeader.CompCount);
-      if (incount != BlockHeader.CompCount) {
+      if (std::cmp_not_equal(incount, BlockHeader.CompCount)) {
         break;
       }
       unsigned int length = sizeof(Buffer);

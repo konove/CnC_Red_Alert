@@ -59,6 +59,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>  // for station ID computation
+#include <utility>
 
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -1354,7 +1355,7 @@ unsigned long SessionClass::Compute_Unique_ID() {
   //------------------------------------------------------------------------
   path = getenv("PATH");
   if (path) {
-    for (i = 0; i < static_cast<int>(strlen(path)); i++) {
+    for (i = 0; std::cmp_less(i, strlen(path)); i++) {
       Add_CRC(&id, static_cast<uint32_t>(path[i]));
     }
   }

@@ -51,6 +51,7 @@
 #include <climits>
 #include <cstddef>
 #include <cstring>
+#include <utility>
 
 #include "tech/sha.h"
 
@@ -188,7 +189,7 @@ void RandomStraw::Seed_Byte(char seed) {
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
 void RandomStraw::Seed_Short(short seed) {
-  for (int index = 0; index < static_cast<int>(sizeof(seed) * CHAR_BIT); index++) {
+  for (int index = 0; std::cmp_less(index, sizeof(seed) * CHAR_BIT); index++) {
     Seed_Bit(seed);
     seed >>= 1;
   }
@@ -208,7 +209,7 @@ void RandomStraw::Seed_Short(short seed) {
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
 void RandomStraw::Seed_Long(long seed) {
-  for (int index = 0; index < static_cast<int>(sizeof(seed) * CHAR_BIT); index++) {
+  for (int index = 0; std::cmp_less(index, sizeof(seed) * CHAR_BIT); index++) {
     Seed_Bit(static_cast<int>(seed));
     seed >>= 1;
   }

@@ -41,6 +41,7 @@
  */
 
 #include <cstdint>
+#include <utility>
 
 #include "td/abstract.h"
 #include "td/aircraft.h"
@@ -157,7 +158,7 @@ void TeamTypeClass::Serialize(Archive& ar) {
   for (int i = 0; i < MissionCount; ++i) {
     ar(MissionList[i]);
   }
-  for (int i = 0; i < ClassCount; ++i) {
+  for (int i = 0; std::cmp_less(i, ClassCount); ++i) {
     ar(TechnoTypePtr(Class[i]), DesiredNum[i]);
     if constexpr (Archive::kIsReading) {
       if (Class[i] == nullptr) {

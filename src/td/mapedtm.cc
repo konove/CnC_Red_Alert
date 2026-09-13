@@ -48,6 +48,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <utility>
 
 #include "port/safe_string.h"
 #include "sdllib/drawbuff.h"
@@ -341,7 +342,7 @@ int MapEditClass::Select_Team(const char* caption) {
     /*
     ................ Fill in class & count for all classes ................
     */
-    for (j = 0; j < TeamTypes.Ptr(i)->ClassCount; j++) {
+    for (j = 0; std::cmp_less(j, TeamTypes.Ptr(i)->ClassCount); j++) {
       sprintf(txt, "%s:%d", TeamTypes.Ptr(i)->Class[j]->IniName,
               TeamTypes.Ptr(i)->DesiredNum[j]);
 
@@ -1655,7 +1656,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Loop through all classes in the team.
   */
-  for (i = 0; i < CurTeam->ClassCount; i++) {
+  for (i = 0; std::cmp_less(i, CurTeam->ClassCount); i++) {
     /*
     **	Find this class in our array.
     */

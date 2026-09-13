@@ -54,6 +54,7 @@
 #include <cinttypes>
 #include <cstdio>
 #include <string>
+#include <utility>
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
@@ -928,10 +929,10 @@ void EventClass::Execute() {
     case ADDPLAYER:
       int i;
       printf("ADDPLAYER EVENT!\n");
-      for (i = 0; i < static_cast<int>(Data.Variable.Size); i++) {
+      for (i = 0; std::cmp_less(i, Data.Variable.Size); i++) {
         printf("%d\n", static_cast<char*>(Data.Variable.Pointer)[i]);
       }
-      if (ID != PlayerPtr->ID) {
+      if (std::cmp_not_equal(ID, PlayerPtr->ID)) {
         delete[] static_cast<char*>(Data.Variable.Pointer);
       }
       break;
@@ -949,7 +950,7 @@ void EventClass::Execute() {
       // period of vulnerability's frame start & end values, so we
       // can reschedule these events to execute after it's over.
       //
-      if (Data.Timing.MaxAhead > Session.MaxAhead) {
+      if (std::cmp_greater(Data.Timing.MaxAhead, Session.MaxAhead)) {
         NewMaxAheadFrame1 = Frame;
         NewMaxAheadFrame2 = Frame + Data.Timing.MaxAhead;
       }
@@ -979,7 +980,7 @@ void EventClass::Execute() {
       break;
 
     case PROPOSE_DRAW:
-      if (ID == PlayerPtr->ID) {
+      if (std::cmp_equal(ID, PlayerPtr->ID)) {
         if (Scen.bOtherProposesDraw) {
           //	Both sides agree to draw. Game will end in a tie.
           Scen.bLocalProposesDraw = true;
@@ -1020,7 +1021,7 @@ void EventClass::Execute() {
       break;
 
     case RETRACT_DRAW:
-      if (ID == PlayerPtr->ID) {
+      if (std::cmp_equal(ID, PlayerPtr->ID)) {
         Scen.bLocalProposesDraw = false;
         Session.Messages.Add_Message(
             nullptr, 0, TXT_WOL_DRAW_RETRACTED_LOCAL, PCOLOR_GOLD,

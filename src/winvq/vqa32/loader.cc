@@ -459,7 +459,8 @@ long VQA_LoadFrame(VQAHandle* vqa) {
   iffsize = REVERSE_LONG(chunk->size);
 
   /* We have reached the end of the file if we loaded all the frames. */
-  if (loader->CurFrameNum >= vqa_handle_p->header.Frames) {
+  if (std::cmp_greater_equal(loader->CurFrameNum,
+                             vqa_handle_p->header.Frames)) {
     return VQAERR_EOF;
   }
 
@@ -840,7 +841,7 @@ long VQA_SeekFrame(VQAHandle* vqa, long framenum, long /*fromwhere*/) {
   /* Make sure the requested frame is valid and the frame information
    * array is allocated before continuing.
    */
-  if (framenum < header->Frames && vqabuf->Foff != nullptr) {
+  if (std::cmp_less(framenum, header->Frames) && vqabuf->Foff != nullptr) {
     /* Find and load the most recent palette. */
     if (!(config->OptionFlags & VQAOPTF_PALOFF)) {
       /* Get the current frame. */
@@ -888,7 +889,7 @@ long VQA_SeekFrame(VQAHandle* vqa, long framenum, long /*fromwhere*/) {
       /* The codebook for the group we want to goto is found in the previous
        * group, with the exception of the very first group.
        */
-      if (group >= header->Groupsize) {
+      if (std::cmp_greater_equal(group, header->Groupsize)) {
         group -= header->Groupsize;
       }
 
@@ -1668,7 +1669,7 @@ static long Load_CBP0(VQAHandle* vqap, unsigned long iffsize) {
   /*-------------------------------------------------------------------------
    * PROCESS FULL CODEBOOK.
    *-----------------------------------------------------------------------*/
-  if (loader->NumPartialCB == vqap->header.Groupsize) {
+  if (std::cmp_equal(loader->NumPartialCB, vqap->header.Groupsize)) {
     /* Reset the codebook accumulator values */
     loader->NumPartialCB = 0;
     loader->PartialCBSize = 0;
@@ -1747,7 +1748,7 @@ static long Load_CBPZ(VQAHandle* vqap, unsigned long iffsize) {
   /*-------------------------------------------------------------------------
    * PROCESS FULL CODEBOOK.
    *-----------------------------------------------------------------------*/
-  if (loader->NumPartialCB == vqap->header.Groupsize) {
+  if (std::cmp_equal(loader->NumPartialCB, vqap->header.Groupsize)) {
     /* Reset the codebook accumulator values. */
     loader->NumPartialCB = 0;
     loader->PartialCBSize = 0;

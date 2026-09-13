@@ -155,6 +155,7 @@
 #include <cstring>
 #include <iterator>
 #include <new>
+#include <utility>
 
 #include "absl/log/check.h"
 #include "base/types.h"
@@ -1252,7 +1253,7 @@ void HouseClass::AI() {
           }
           if (!iCount) {
             for (int i = 0;
-                 i != static_cast<int>(magic_enum::enum_count<AircraftType>());
+                 std::cmp_not_equal(i, magic_enum::enum_count<AircraftType>());
                  ++i) {
               iCount += AQuantity[i];
             }
@@ -1951,7 +1952,7 @@ void HouseClass::Spend_Money(unsigned money) {
   CHECK_EQ(Houses.ID(this), ID);
 
   long oldtib = Tiberium;
-  if (money > Tiberium) {
+  if (std::cmp_greater(money, Tiberium)) {
     money -= static_cast<unsigned>(Tiberium);
     Tiberium = 0;
     Credits -= money;

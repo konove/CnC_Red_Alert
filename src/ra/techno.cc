@@ -155,15 +155,16 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "port/ex_string.h"
 #include "ra/techno.h"
 
 #include <algorithm>
 #include <cassert>
 #include <cstring>
 #include <iterator>
+#include <utility>
 
 #include "absl/log/check.h"
+#include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -1634,7 +1635,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   */
   COORDINATE objectcoord = object->Center_Coord();
   if (zone != -1 &&
-      Map[objectcoord].Zones[Techno_Type_Class()->MZone] != zone) {
+      std::cmp_not_equal(Map[objectcoord].Zones[Techno_Type_Class()->MZone],
+                         zone)) {
     BEnd(BENCH_EVAL_OBJECT);
     return false;
   }
@@ -1985,7 +1987,8 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, int mask, CELL cell,
   **	Don't consider for evaluation a cell that is not within the same zone.
   *Only *	perform this check if zone checking is required.
   */
-  if (zone != -1 && cellptr->Zones[Techno_Type_Class()->MZone] != zone) {
+  if (zone != -1 &&
+      std::cmp_not_equal(cellptr->Zones[Techno_Type_Class()->MZone], zone)) {
     BEnd(BENCH_EVAL_CELL);
     return false;
   }
@@ -3791,7 +3794,7 @@ bool TechnoClass::Can_Repair() const {
     return false;
   }
   return Techno_Type_Class()->IsRepairable &&
-         Strength != Class_Of().MaxStrength;
+         std::cmp_not_equal(Strength, Class_Of().MaxStrength);
 }
 
 /***********************************************************************************************

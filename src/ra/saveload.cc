@@ -37,7 +37,6 @@
  */
 
 #include "ra/saveload.h"
-#include "ra/serialize.h"
 
 #include <array>
 #include <cassert>
@@ -47,7 +46,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <new>
-
+#include <utility>
 #include <vector>
 
 #include "absl/log/log.h"
@@ -87,6 +86,7 @@
 #include "ra/rules.h"
 #include "ra/scenario.h"
 #include "ra/score.h"
+#include "ra/serialize.h"
 #include "ra/session.h"
 #include "ra/smudge.h"
 #include "ra/special.h"
@@ -347,8 +347,7 @@ static void Put_All(Pipe& pipe, int save_net) {
   }
 
   Put_Section(pipe, FourCC("LAYR"));
-  for (int i = 0; i < static_cast<int>(magic_enum::enum_count<LayerType>());
-       i++) {
+  for (int i = 0; std::cmp_less(i, magic_enum::enum_count<LayerType>()); i++) {
     writer(MouseClass::Layer[i]);
   }
 
@@ -862,7 +861,7 @@ bool Load_Game(int id) {
   if (!Get_Section(straw, FourCC("LAYR"))) {
     return false;
   }
-  for (i = 0; i < static_cast<int>(magic_enum::enum_count<LayerType>()); i++) {
+  for (i = 0; std::cmp_less(i, magic_enum::enum_count<LayerType>()); i++) {
     reader(MouseClass::Layer[i]);
     if (!reader.ok()) {
       return false;

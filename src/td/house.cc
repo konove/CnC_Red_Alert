@@ -115,6 +115,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
+#include <utility>
 
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -543,7 +544,7 @@ bool HouseClass::Can_Build(const TechnoTypeClass* type,
   **	Multiplayer game uses a different legality check for building.
   */
   if (GameToPlay != GAME_NORMAL || (Special.IsJurassic && AreThingiesEnabled)) {
-    return (pre & flags) == pre && type->Level <= BuildLevel;
+    return (pre & flags) == pre && std::cmp_less_equal(type->Level, BuildLevel);
   }
 
 #ifdef NEWMENU
@@ -660,7 +661,7 @@ bool HouseClass::Can_Build(const TechnoTypeClass* type,
   if (Debug_Cheat) {
     level = 98;
   }
-  return (pre & flags) == pre && type->Scenario <= level;
+  return (pre & flags) == pre && std::cmp_less_equal(type->Scenario, level);
 }
 
 /***********************************************************************************************
@@ -1567,7 +1568,7 @@ int64_t HouseClass::Available_Money() const {
 void HouseClass::Spend_Money(unsigned money) {
   Validate();
   int64_t oldtib = Tiberium;
-  if (money > Tiberium) {
+  if (std::cmp_greater(money, Tiberium)) {
     money -= static_cast<unsigned>(Tiberium);
     Tiberium = 0;
     Credits -= money;
@@ -3218,7 +3219,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         if (!Special.IsEasy && !IsHuman && ActiveBScan & STRUCTF_REFINERY &&
             !(UScan & UNITF_HARVESTER)) {
           techno = &UnitTypeClass::As_Reference(UNIT_HARVESTER);
-          if (techno->Scenario <= BuildLevel) {
+          if (std::cmp_less_equal(techno->Scenario, BuildLevel)) {
             break;
           }
           techno = nullptr;
@@ -3230,7 +3231,8 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         } else {
           for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
             if (Can_Build(index, Class->House) &&
-                UnitTypeClass::As_Reference(index).Level <= BuildLevel) {
+                std::cmp_less_equal(UnitTypeClass::As_Reference(index).Level,
+                                    BuildLevel)) {
               counter[index] = 16;
             } else {
               counter[index] = 0;
@@ -3249,7 +3251,8 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
 
             if (/*team->IsReinforcable || */ !tptr->IsFullStrength &&
                 team->House == Class->House) {
-              for (int subindex = 0; subindex < team->ClassCount; subindex++) {
+              for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
+                   subindex++) {
                 if (team->Class[subindex]->What_Am_I() == RTTI_UNITTYPE) {
                   counter[dynamic_cast<const UnitTypeClass*>(
                               team->Class[subindex])
@@ -3273,7 +3276,8 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
           if (team) {
             if (team->House == Class->House && team->IsPrebuilt &&
                 (!team->IsAutocreate || IsAlerted)) {
-              for (int subindex = 0; subindex < team->ClassCount; subindex++) {
+              for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
+                   subindex++) {
                 if (team->Class[subindex]->What_Am_I() == RTTI_UNITTYPE) {
                   int subtype =
                       dynamic_cast<const UnitTypeClass*>(team->Class[subindex])
@@ -3346,7 +3350,8 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
           for (InfantryType index = INFANTRY_E1; index < INFANTRY_COUNT;
                index++) {
             if (Can_Build(index, Class->House) &&
-                InfantryTypeClass::As_Reference(index).Level <= BuildLevel) {
+                std::cmp_less_equal(
+                    InfantryTypeClass::As_Reference(index).Level, BuildLevel)) {
               counter[index] = 16;
             } else {
               counter[index] = 0;
@@ -3365,7 +3370,8 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
 
             if ((team->IsReinforcable || !tptr->IsFullStrength) &&
                 team->House == Class->House) {
-              for (int subindex = 0; subindex < team->ClassCount; subindex++) {
+              for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
+                   subindex++) {
                 if (team->Class[subindex]->What_Am_I() == RTTI_INFANTRYTYPE) {
                   counter[dynamic_cast<const InfantryTypeClass*>(
                               team->Class[subindex])
@@ -3386,7 +3392,8 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
           if (team) {
             if (team->House == Class->House && team->IsPrebuilt &&
                 (!team->IsAutocreate || IsAlerted)) {
-              for (int subindex = 0; subindex < team->ClassCount; subindex++) {
+              for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
+                   subindex++) {
                 if (team->Class[subindex]->What_Am_I() == RTTI_INFANTRYTYPE) {
                   int subtype = dynamic_cast<const InfantryTypeClass*>(
                                     team->Class[subindex])

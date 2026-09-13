@@ -43,6 +43,7 @@
 #include "ra/ipxgconn.h"
 
 #include <cstring>
+#include <utility>
 
 #include "port/aligned_buffer.h"
 #include "port/unaligned.h"
@@ -214,7 +215,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
   /*------------------------------------------------------------------------
   Check the magic #
   ------------------------------------------------------------------------*/
-  if (buflen < static_cast<int>(sizeof(GlobalHeaderType))) {
+  if (std::cmp_less(buflen, sizeof(GlobalHeaderType))) {
     return false;
   }
   auto packet_storage = port::ReadUnaligned<GlobalHeaderType>(buf);
@@ -239,7 +240,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
       //..................................................................
       resend = 0;
       for (i = 0; i < 4; i++) {
-        if (i >= static_cast<int>(Queue->Receive_Total())) {
+        if (std::cmp_greater_equal(i, Queue->Receive_Total())) {
           break;
         }
         if (*address == LastAddress[i] &&

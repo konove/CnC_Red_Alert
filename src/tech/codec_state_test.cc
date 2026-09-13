@@ -2,6 +2,7 @@
 #include <array>
 #include <cstdint>
 #include <cstring>
+#include <utility>
 #include <vector>
 
 #include "gtest/gtest.h"
@@ -47,7 +48,9 @@ template <class CodecPipe, class CodecStraw>
 void CheckBlocks() {
   // Multiple full blocks and a one-byte tail exercise both header states.
   std::array<uint8_t, 513> source{};
-  for (int i = 0; i < static_cast<int>(source.size()); ++i) source[i] = i % 7;
+  for (int i = 0; std::cmp_less(i, source.size()); ++i) {
+    source[i] = i % 7;
+  }
   ByteSink encoded;
   CodecPipe compressor(CodecPipe::COMPRESS, 128);
   compressor.SetSink(encoded);
@@ -142,7 +145,7 @@ TEST(CodecStateTest, LcwLongRunsRespectTheirLengthAtEveryAlignment) {
           0xfe, static_cast<uint8_t>(length), 0, 0x6b, 0x80};
       EXPECT_EQ(LCW_Uncomp(encoded.data(), output.data() + offset, length),
                 length);
-      for (int i = 0; i < static_cast<int>(output.size()); ++i) {
+      for (int i = 0; std::cmp_less(i, output.size()); ++i) {
         EXPECT_EQ(output[i], i >= offset && i < offset + length ? 0x6b : 0xa5);
       }
     }

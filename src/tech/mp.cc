@@ -94,6 +94,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <utility>
 
 /***********************************************************************************************
  * _Byte_Precision -- Determines the number of bytes significant in long
@@ -282,14 +283,13 @@ unsigned XMP_Encode(unsigned char* to, unsigned tobytes, const uint32_t* from,
       static_cast<unsigned char>(XMP_Is_Negative(from, precision) ? 0xff : 0);
 
   int index;
-  for (index = 0; index < static_cast<int>(tobytes - frombytes); index++) {
+  for (index = 0; std::cmp_less(index, tobytes - frombytes); index++) {
     *to++ = filler;
   }
 
   const unsigned char* fptr =
       (const unsigned char*)from + std::min(tobytes, frombytes);
-  for (index = 0; index < static_cast<int>(std::min(tobytes, frombytes));
-       index++) {
+  for (index = 0; std::cmp_less(index, std::min(tobytes, frombytes)); index++) {
     *to++ = *--fptr;
   }
 

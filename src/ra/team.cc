@@ -86,6 +86,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <utility>
 
 #include "ra/aircraft.h"
 #include "ra/building.h"
@@ -578,7 +579,7 @@ void TeamClass::AI() {
     ** If the team has gone from under strength to no longer under
     ** strength than the team needs to reform.
     */
-    if (old_under != IsUnderStrength) {
+    if (std::cmp_not_equal(old_under, IsUnderStrength)) {
       IsReforming = true;
     }
   }
@@ -684,7 +685,7 @@ void TeamClass::AI() {
     //	if ((!IsMoving || (!IsFullStrength && Class->IsReinforcable)) &&
     //((/*!House->IsHuman ||*/ !IsHasBeen) && Session.Type == GAME_NORMAL)) {
     for (int index = 0; index < Class->ClassCount; index++) {
-      if (Quantity[index] < Class->Members[index].Quantity) {
+      if (std::cmp_less(Quantity[index], Class->Members[index].Quantity)) {
         Recruit(index);
       }
     }
@@ -1053,7 +1054,8 @@ bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
   **	If the team is already full of this type, then adding the object is not
   *allowed. *	Return with a failure flag in this case.
   */
-  if (Quantity[typeindex] >= Class->Members[typeindex].Quantity) {
+  if (std::cmp_greater_equal(Quantity[typeindex],
+                             Class->Members[typeindex].Quantity)) {
     return false;
   }
 
@@ -1226,7 +1228,8 @@ int TeamClass::Recruit(int typeindex) {
   **	Quick check to see if recruiting is really allowed for this index or
   *not.
   */
-  if (Class->Members[typeindex].Quantity > Quantity[typeindex]) {
+  if (std::cmp_greater(Class->Members[typeindex].Quantity,
+                       Quantity[typeindex])) {
     switch (Class->Members[typeindex].Class->What_Am_I()) {
       /*
       **	For infantry objects, sweep through the infantry in the game
