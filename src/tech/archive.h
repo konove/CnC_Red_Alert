@@ -35,9 +35,9 @@
 #include "tech/straw.h"
 
 // Integers and enums the archive writes directly, each at its own width.
-// `long` cannot be rejected here because int64_t is `long` on LP64, so a
-// `long` member still has to be migrated to a fixed-width type by review
-// before it is added to a Serialize() list (see CLAUDE.md, Integer Types).
+// `long` cannot be rejected here because int64_t is `long` on LP64;
+// clang-tidy's google-runtime-int keeps `long` members out of Serialize() lists
+// instead.
 template <class T>
 concept ArchiveScalar = std::integral<T> || std::is_enum_v<T>;
 

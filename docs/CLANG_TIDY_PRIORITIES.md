@@ -134,7 +134,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-deprecated-enum-enum-conversion`              | Enabled | Commit `Drop the implicit FIRST enum aliases and fix mixed enum operations`: 76 reports; the `WWKEY_*` modifier bits are flags, so they became integer constants, and five facing-to-animation offsets cast the facing to `int`.                                                                                                                                                                                             |
 | `clang-diagnostic-deprecated-anon-enum-enum-conversion`         | Enabled | Commit `Drop the implicit FIRST enum aliases and fix mixed enum operations`: three TD editor house-button offsets now subtract from an integer key number.                                                                                                                                                                                                                                                                   |
 | `clang-diagnostic-deprecated-enum-compare`                      | Enabled | Commit `Drop the implicit FIRST enum aliases and fix mixed enum operations`: six comparisons against the wrong enum's zero or 1002 constant (`RESULT_NONE` for `IMPACT_NONE`, `ACTION_NONE` for `TACTION_NONE`, `NET_FILE_CHUNK` for `SERIAL_FILE_CHUNK`); values were equal, so behavior is unchanged.                                                                                                                      |
-| `google-runtime-int`                                            | Skipped | Commit `Record the remaining P3 policy decisions`: 2,717 reports; the integer migration goes file by file with a do-not-touch list (`docs/TYPE_MIGRATION.md`). See review below.                                                                                                                                                                                                                                             |
+| `google-runtime-int`                                            | Enabled | Commit `Enable google-runtime-int`: 2,179 reports in five commits; `short` became `int16_t`, and each `long` got a 32-bit width for wire and file fields or 64 bits where values already needed them. See review below.                                                                                                                                                                                                      |
 | `modernize-use-default-member-init`                             | Enabled | Commit `Move member defaults into initializers and declarations`: 724 member declarations gained brace defaults; the fix-its' comma debris and header-invisible names (`CELL_LEPTON_W`, `TXT_NONE`, `INVALID_SOCKET`) were repaired. See review below.                                                                                                                                                                       |
 | `cppcoreguidelines-use-default-member-init`                     | Enabled | Commit `Move member defaults into initializers and declarations`: enforced with `modernize-use-default-member-init`, which it aliases.                                                                                                                                                                                                                                                                                       |
 | `cppcoreguidelines-prefer-member-initializer`                   | Enabled | Commit `Move member defaults into initializers and declarations`: constructor-body assignments moved into initializer lists. Doing so exposed `delete` on a `new[]` array in both games' `UnitTrackerClass`, and TD `CommBufferClass` copying unchecked packet lengths into fixed buffers; both fixed. See review below.                                                                                                     |
@@ -924,8 +924,8 @@ What remains explicit is a crossing the reader should see:
   container and `size_t` library parameters, and check the value in debug builds.
 - Packing a signed component into a `COORDINATE`, `TARGET` or `LEPTON`, or reading one back, is a
   `static_cast` at that point.
-- CRC inputs are cast to the CRC's unsigned type. The CRC bits are unchanged, and TD keeps its
-  `unsigned long` CRC because events travel by `sizeof(EventClass)`.
+- CRC inputs are cast to the CRC's unsigned type. The CRC bits are unchanged. (TD's CRC has since
+  become `uint32_t`; see the runtime integer review.)
 - The sdllib seek and size wrappers keep plain casts: callers pass negative `SEEK_CUR` offsets and
   receive `ftell`'s -1 through `size_t`, which a checked conversion would reject.
 
@@ -950,6 +950,56 @@ Reviewing the code turned up suspected defects, which were then fixed with tests
   counts trusted from the stream, an unchecked LZO decoder, and the stubbed LCW compressor, which
   wrote empty map packs.
 - TD object validation exited with status 0, which ended the TD test binary early as a success.
+
+### Runtime integer review (2026-09-13)
+
+`google-runtime-int` is now enforced, with `TypeSuffix: '_t'` so its messages name `int64_t` rather
+than `int64`. The 2,717 reports in the 2026-09-12 policy table were stale. Measured again across
+both games and shared code, the Linux build reported 2,179 locations in 338 files: 738 `long`, 282
+`unsigned long`, 634 `short` and 525 `unsigned short`. They were fixed in five commits:
+
+| Commit                                                          | Reports |
+| --------------------------------------------------------------- | ------- |
+| `Spell 16-bit integers as fixed-width types`                    | 1,159   |
+| `Use fixed-width integers in file, packet and codec interfaces` | 310     |
+| `Use fixed-width integers in sdllib and the VQA player`         | 293     |
+| `Use fixed-width integers in Red Alert`                         | 235     |
+| `Use fixed-width integers in Tiberian Dawn`                     | 182     |
+
+`short` and `unsigned short` became `int16_t` and `uint16_t`. Those are the same types on every
+supported platform, so that commit changes no layout, overload or behavior. This includes the RA
+`LEPTON` and TD `TARGET` typedefs.
+
+`long` is 64 bits on Linux and macOS and 32 bits on Windows, so each `long` site needed a width:
+
+- Wire, file-format and protocol fields became 32-bit, the width the original Win32 build used.
+  Packet `TYPE_LONG` fields had been sent as 8 bytes on LP64 and are 4 bytes again. TD's frame CRC
+  is `uint32_t` like RA's; `EventLength` is computed from `sizeof`, so peers stay consistent, and
+  the CRC's low 32 bits are unchanged.
+- The `FileClass` chain and the `Read_File` family use `int32_t`, casting at the `int64_t` POSIX
+  boundary. `Buffer` sizes are `base::ssize`, `Alloc` takes `base::ssize`, and `Mem_Copy` takes
+  `size_t`.
+- Tick counts, credits and timers that already carried 64-bit values kept 64 bits (`int64_t`), as
+  did the multiprecision trial-quotient intermediates and the pathfinding cross product.
+- Prerequisite masks are `uint64_t` in both games, like the flag constants they are compared with.
+  The houses' deliberate 32-bit truncation of the mask is unchanged.
+- The generated Westwood Online header `ra/wolapi/wolapi.h` keeps its Win32 COM spellings under its
+  existing `NOLINTBEGIN`, as do the two event-sink overrides that must match it.
+
+No serialized member changed width, so neither game's save version moved; the headless RA and TD
+save/load checks pass. New tests cover packet field round trips and wire layout, and Blowfish
+against Eric Young's reference vectors.
+
+The migration exposed two defects:
+
+- Old-format RA INI triggers stored a `new[]`'d name string in `CCPtr`'s `int` ID, which truncated
+  the pointer on 64-bit builds. The name now waits in `TActionClass::PendingTriggerName`.
+- RA's `Get_Buildings` shifted a 32-bit `long` by building numbers above 31 on Windows.
+
+The unused `FileClass::Get_Date_Time`/`Set_Date_Time` virtuals, `Transfer_Block_Size`, and the
+legacy two-argument `Get_CPU_Clock` were removed. Enforcement covers code the Linux build compiles.
+Windows-only, DOS and unbuilt `winvq` sources still contain `long` and are reported only if they are
+built with clang-tidy.
 
 ### Switch fallback review (2026-09-12)
 
@@ -1244,7 +1294,6 @@ every site.
 | `modernize-avoid-c-style-cast`, `google-readability-casting` | 1,393   | `docs/TYPE_MIGRATION.md` makes cast replacement opportunistic, inside code already being migrated, and forbids a codebase-wide cast hunt.                                                                               |
 | `cppcoreguidelines-pro-type-cstyle-cast`                     | 866     | The type-unsafe subset of the same casts: 549 between unrelated types, 187 downcasts and 132 that cast away `const`. The cast-qual review showed the `const` ones need API work first.                                  |
 | `clang-diagnostic-old-style-cast`                            | 0       | The clang flag set passes `-Wno-old-style-cast`, so enabling the name enforces nothing; the GCC strict set already has `-Wold-style-cast`.                                                                              |
-| `google-runtime-int`                                         | 2,717   | The integer-type migration goes file by file, with a do-not-touch list of serialized, network and SDL-facing types; see `docs/TYPE_MIGRATION.md`.                                                                       |
 | `cppcoreguidelines-macro-usage`                              | 2,134   | 2,094 are constants and 40 function-like macros. 1,310 are the text-string IDs in each game's `conquer.h`, and the next largest group is the `sdllib/keyboard.h` key codes.                                             |
 | `modernize-macro-to-enum`, `cppcoreguidelines-macro-to-enum` | 2,256   | The same macro groups. As enumerators they would change type wherever they meet integer arithmetic and `printf`-style formatting.                                                                                       |
 | `cppcoreguidelines-use-enum-class`                           | 517     | 178 are unnamed enums used as integer constants. 46 are the per-dialog `RedrawType` levels, compared as ordered values 110 times. 137 are the core type enums in each game's `defines.h`, which index arrays and loops. |

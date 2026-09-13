@@ -69,7 +69,6 @@ Checks: '*,
          -google-default-arguments,
          -google-readability-casting,
          -google-readability-todo,
-         -google-runtime-int,
          -hicpp-avoid-c-arrays,
          -hicpp-braces-around-statements,
          -hicpp-explicit-conversions,
@@ -128,8 +127,11 @@ CheckOptions:
   # (misc-use-anonymous-namespace stays excluded). Functions and variables are
   # still checked.
   misc-use-internal-linkage.AnalyzeTypes: false
+  # google-runtime-int names the <cstdint> spelling (int64_t, not int64) in its
+  # suggestions.
+  google-runtime-int.TypeSuffix: '_t'
   # Same-width unsigned-to-signed conversions are the game's own compact types
-  # flowing into int -- LEPTON (unsigned short), COORDINATE (uint32_t) and the
+  # flowing into int -- LEPTON (uint16_t), COORDINATE (uint32_t) and the
   # rest of the do-not-touch list in docs/TYPE_MIGRATION.md. Warning on those is
   # 585 findings the project has already decided against; real narrowing is not
   # affected.

@@ -224,11 +224,12 @@ codebase-wide cast hunt.
 
 The following should **not** be changed during type migration:
 
-- **Game typedefs already using fixed-width types** (defined in `ra/defines.h`):
-  - `LEPTON` (`unsigned short` -- game-specific unit, change only as a separate task)
+- **Game typedefs already using fixed-width types** (defined in each game's `defines.h`). Their
+  width and signedness are game-specific units; change them only as a separate task:
+  - `LEPTON` (`uint16_t`)
   - `COORDINATE` (`uint32_t`)
-  - `CELL` (`signed short` -- game-specific unit, change only as a separate task)
-  - `TARGET` (`int32_t`)
+  - `CELL` (`int16_t`)
+  - `TARGET` (`int32_t` in RA, `uint16_t` in TD)
 
 - **Enums with explicit underlying types**:
   - `enum EventType : uint8_t`
@@ -370,6 +371,14 @@ When encountering a virtual function with a legacy type:
 7. **Check for virtual/override** -- if the function is virtual, update all overrides.
 
 8. **Build and test** to verify the change compiles.
+
+## Enforcement
+
+clang-tidy's `google-runtime-int` rejects `short`, `long` and `long long` in every file the Linux
+build compiles, so new code cannot reintroduce them. Windows-only, DOS and unbuilt `winvq` sources
+still spell legacy types and are migrated only when they are built. The one suppression is the
+generated Westwood Online header `ra/wolapi/wolapi.h` and the two event-sink overrides that must
+match its Win32 COM signatures.
 
 ## Migration Priority
 
