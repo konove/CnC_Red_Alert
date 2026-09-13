@@ -148,7 +148,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `hicpp-multiway-paths-covered`                                  | Legacy  | Unavailable in LLVM 23; review with `bugprone-switch-missing-default-case` on older tools.                                                                                                                                                                                                                                                                                                                                   |
 | `clang-diagnostic-switch-default`                               | Enabled | Commit `Give every switch a fallback and switch on key numbers as integers`: 311 switches without a default, now `default: break;`, matching GCC's `-Wswitch-default` policy in `CMakeLists.txt`.                                                                                                                                                                                                                            |
 | `clang-diagnostic-covered-switch-default`                       | Skipped | Commit `Document variadic and thread-safety check policy`: conflicts with GCC's `-Wswitch-default`, which the build already requires (see `CMakeLists.txt`); 16 reports are defaults on fully covered switches.                                                                                                                                                                                                              |
-| `readability-implicit-bool-conversion`                          | Skipped | Commit `Document buffer, union and boolean conversion check policy`: 6,938 reports, overwhelmingly `if (ptr)` and flag tests, which the Google C++ style guide explicitly allows. See review below.                                                                                                                                                                                                                          |
+| `readability-implicit-bool-conversion`                          | Enabled | Commit `Enable readability-implicit-bool-conversion`: with `AllowPointerConditions` and `AllowIntegerConditions` (Google style), 1,572 reports; flags and predicates became `bool` in four commits. See review below.                                                                                                                                                                                                        |
 | `readability-inconsistent-declaration-parameter-name`           | Enabled | Commit `Name declaration parameters after their definitions`: 164 reports, applied with the check's fix-its. TD's `WWGetPrivateProfileString` definition took RA's parameter names instead, because the header-side rename made 66 correct calls read as swapped arguments to `readability-suspicious-call-argument`.                                                                                                        |
 | `misc-const-correctness`                                        | Skipped | Commit `Document P3 checks the legacy-code policy rules out`: 4,090 reports of locals that could be `const`; const everywhere is what CLAUDE.md's legacy-code rules list it under changes to avoid unless requested, and the fix-its would churn most dialog and game-logic functions. See review below.                                                                                                                     |
 | `readability-make-member-function-const`                        | Skipped | Commit `Record the remaining P3 policy decisions`: bitwise const only; of 103 functions its fix-its touched, 29 were accessors and many others mutate state through globals. See review below.                                                                                                                                                                                                                               |
@@ -1001,6 +1001,43 @@ legacy two-argument `Get_CPU_Clock` were removed. Enforcement covers code the Li
 Windows-only, DOS and unbuilt `winvq` sources still contain `long` and are reported only if they are
 built with clang-tidy.
 
+### Implicit bool conversion review (2026-09-13)
+
+`readability-implicit-bool-conversion` is enforced with `AllowPointerConditions` and
+`AllowIntegerConditions`, which permit exactly what the Google C++ style guide allows: `if (ptr)`
+and `while (count)`. The 6,938 reports of the earlier policy were mostly those conditions; with the
+options set, the Linux build reported 1,572, all real crossings between `bool` and integers. The fix
+was to change types, not to add casts:
+
+| Commit                                            | Change                                                                                          |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `Store one-bit flags as bool bitfields`           | 597 `unsigned X : 1` flags became `bool X : 1`; 0/1 assignments became `false`/`true`           |
+| `Return bool from shared predicates`              | The `FileClass` predicates, `Keyboard::Down`, the viewport `Blit` wrappers, the bignum bit test |
+| `Use bool for Red Alert flags and predicates`     | The gadget virtual chain, about 30 predicates and operators, flag globals, members and locals   |
+| `Use bool for Tiberian Dawn flags and predicates` | The same for Tiberian Dawn, plus its vector and heap members                                    |
+
+Some values look like flags but carry more states, and stay `int` with explicit `1`/`0`: the dialog
+return codes (`-1` means cancelled), `ScenarioInit` and `Blockage` (counters), `Activate`'s -1/0/1
+control, the game options sent in packets, the network send and receive status results, and the
+recorded `GameOptionsClass`. Layout-sensitive bitfields keep `unsigned`: `SpecialClass`,
+`EventClass`, the packet structs and the cell flag unions. Small multi-bit fields next to the new
+`bool` flags use `uint8_t` storage so the Microsoft ABI still packs them. Saves copy bitfields
+through `bool` temporaries, so the archive format and the save versions are unchanged; the RA and TD
+save/load checks pass.
+
+The conversions exposed defects:
+
+- Both games' VQA movie I/O tested `Open(...) == -1`, which a true/false result never matched, so a
+  failed open went unnoticed.
+- RA scenario loading compared `CCINIClass::Load`'s `bool` result with 2 to catch a bad digest; the
+  branch could never run and is removed.
+- Three TD calls pass `true` to `Scatter()`'s `COORDINATE` threat parameter, probably meaning a
+  forced scatter. The value (1) is kept, with a comment, so behavior does not change.
+
+A TD save/load run crashed once at exit while this landed: the SDL audio callback reads sample data
+from a mix file that `Uninit_Game` has already freed. The race predates this work and is not fixed
+here.
+
 ### Switch fallback review (2026-09-12)
 
 `clang-diagnostic-switch`, `clang-diagnostic-switch-default` and
@@ -1083,7 +1120,6 @@ Measured in the combined sweep, and retained as exclusions:
 | `cppcoreguidelines-pro-bounds-pointer-arithmetic`               | 2,491   |
 | `cppcoreguidelines-pro-bounds-avoid-unchecked-container-access` | 1,840   |
 | `cppcoreguidelines-pro-type-union-access`                       | 1,438   |
-| `readability-implicit-bool-conversion`                          | 6,938   |
 
 The five bounds checks describe one property from different angles: the engine walks raw buffers.
 The blitters, the LCW/LZO/LZW codecs, audio mixing, the crypto code and the packet and save readers
@@ -1096,9 +1132,8 @@ that API.
 The union reports are the event, target and packet unions, whose layouts are part of the network and
 savegame formats; replacing them with variants changes those formats.
 
-`readability-implicit-bool-conversion` is overwhelmingly `if (ptr)` and flag tests. The Google C++
-style guide, which this project follows, explicitly allows pointers and integers in boolean
-contexts, so the fix-its would churn thousands of conditions against the project's own style.
+`readability-implicit-bool-conversion` was later enabled with the options that allow pointers and
+integers as conditions; see the implicit bool conversion review.
 
 ### Const-dropping cast review (2026-09-12)
 

@@ -113,7 +113,6 @@ Checks: '*,
          -portability-template-virtual-member-function,
          -readability-function-cognitive-complexity,
          -readability-identifier-length,
-         -readability-implicit-bool-conversion,
          -readability-magic-numbers,
          -readability-make-member-function-const,
          -readability-trailing-comma,
@@ -130,6 +129,10 @@ CheckOptions:
   # google-runtime-int names the <cstdint> spelling (int64_t, not int64) in its
   # suggestions.
   google-runtime-int.TypeSuffix: '_t'
+  # Google style allows pointers and integers as conditions (`if (ptr)`,
+  # `while (count)`); every other bool/int crossing must be explicit.
+  readability-implicit-bool-conversion.AllowPointerConditions: true
+  readability-implicit-bool-conversion.AllowIntegerConditions: true
   # Same-width unsigned-to-signed conversions are the game's own compact types
   # flowing into int -- LEPTON (uint16_t), COORDINATE (uint32_t) and the
   # rest of the do-not-touch list in docs/TYPE_MIGRATION.md. Warning on those is
