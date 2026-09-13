@@ -112,9 +112,9 @@ class AbstractTypeClass {
   virtual int Full_Name() const;
 
   const char* Name() const { return IniName; }
-  void Set_Name(const char* buf) const {
-    strncpy((char*)IniName, buf, sizeof(IniName));
-    (char&)IniName[sizeof(IniName) - 1] = '\0';
+  void Set_Name(const char* buf) {
+    strncpy(IniName, buf, sizeof(IniName));
+    IniName[sizeof(IniName) - 1] = '\0';
   }
   // Returns a bit flag of houses allowed to own this type. Base allows all;
   // derived classes override to restrict ownership.

@@ -120,7 +120,7 @@ int WinModemClass::Read_From_Serial_Port(unsigned char* /*dest_ptr*/,
   return 0;
 }
 
-void WinModemClass::Write_To_Serial_Port(unsigned char* /*buffer*/,
+void WinModemClass::Write_To_Serial_Port(const unsigned char* /*buffer*/,
                                          int /*length*/) {
 #ifdef LIBSERIALPORT
   if (PortHandle) {

@@ -78,8 +78,9 @@ class SHAEngine {
   **	here to avoid the overhead of recalculating it over
   **	multiple sequential requests.
   */
-  bool IsCached = false;
-  SHADigest FinalResult{};
+  // Result() is const and fills this cache lazily.
+  mutable bool IsCached = false;
+  mutable SHADigest FinalResult{};
 
   enum {
     // These are the initial seeds to the block accumulators.

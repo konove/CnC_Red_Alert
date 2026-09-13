@@ -84,7 +84,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-switch-bool`                             | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                                                                                                                                                                                                                                                           |
 | `clang-diagnostic-duplicate-enum`                          | Enabled | Commit `Drop the implicit FIRST enum aliases and fix mixed enum operations`: 25 reports, all an `X_FIRST = 0` alias duplicating the first real enumerator (22 TD enums, three RA trigger/team enums); uses now name that enumerator, per the magic_enum no-alias rule.                                                                                                                                                                                                                                  |
 | `clang-diagnostic-missing-braces`                          | Enabled | Commit `Brace the infantry animation control tables`: all 680 reports were rows of TD's `[DO_COUNT][3]` tables in `idata.cc`, now one brace pair per row; layout unchanged.                                                                                                                                                                                                                                                                                                                             |
-| `clang-diagnostic-cast-qual`                               | Pending | Review casts discarding const or volatile guarantees.                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `clang-diagnostic-cast-qual`                               | Skipped | Commit `Fix four writes through const and document cast-qual policy`: 422 reports. Four were writes through `const` and are fixed by design. The other ~260 write through a `const` object, so the only mechanical fix is `const_cast`, which the enabled `cppcoreguidelines-pro-type-const-cast` rejects; they need API const-correctness work instead. See review below.                                                                                                                              |
 | `misc-explicit-constructor`                                | Enabled | Commit `Make single-argument constructors explicit where conversion is unintended`: 125 reports; the check's fix-its made 69 constructors explicit (file, pipe, straw, heap, vector, dialog and game-object constructors) with no call site relying on the conversion. The 56 deliberate conversions stay implicit under a reasoned `NOLINTNEXTLINE`: object-to-type-ID operators, `CCPtr`, `TargetClass`, `FacingClass`, countdown timers, choice tables, palettes and big integers. See review below. |
 | `cppcoreguidelines-explicit-constructor`                   | Enabled | Alias enabled with `misc-explicit-constructor` in commit `Make single-argument constructors explicit where conversion is unintended`.                                                                                                                                                                                                                                                                                                                                                                   |
 | `google-explicit-constructor`                              | Enabled | Alias enabled with `misc-explicit-constructor` in commit `Make single-argument constructors explicit where conversion is unintended`.                                                                                                                                                                                                                                                                                                                                                                   |
@@ -1004,6 +1004,30 @@ savegame formats; replacing them with variants changes those formats.
 `readability-implicit-bool-conversion` is overwhelmingly `if (ptr)` and flag tests. The Google C++
 style guide, which this project follows, explicitly allows pointers and integers in boolean
 contexts, so the fix-its would churn thousands of conditions against the project's own style.
+
+### Const-dropping cast review (2026-09-12)
+
+`clang-diagnostic-cast-qual` stays excluded, after a full attempt to enable it. The isolated sweep
+reported 422 casts, almost all C-style, that remove `const` or `volatile`.
+
+Four were writes through `const` that the cast was hiding, and are fixed at their design:
+
+- `SHAEngine::Result()` is `const` but fills its digest cache on first use; `FinalResult` and
+  `IsCached` are now `mutable`.
+- Both games' `VectorClass` and `DynamicVectorClass` take a caller buffer as `const T* array` and
+  placement-construct into it; the parameter is now `T*`. No caller passes one.
+- `AbstractTypeClass::Set_Name` was `const` in both games while writing `IniName`; it no longer is.
+- `WinModemClass::Write_To_Serial_Port` only reads its buffer, so it now takes
+  `const unsigned char*`.
+
+The rest could not be enabled honestly. clang's cast fix-its turn a pure `const` removal into
+`const_cast`, and the casts that also change the type become a named cast to the `const` target;
+compiling that showed about 60 more whose result is written. Every one of those writes ends in a
+`const_cast` removing `const` — 256 in total — and `cppcoreguidelines-pro-type-const-cast`, which is
+already enforced, rejects each of them. The two checks together require the writes themselves to go:
+`const` type-class tables that are patched at load time, list nodes that hand out mutable parents
+from `const` accessors, and blitters that decode into buffers typed as `const`. That is API work to
+do module by module, after which this check can be revisited.
 
 ### Completed validation
 

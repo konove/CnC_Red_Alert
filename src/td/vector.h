@@ -80,7 +80,7 @@
 template <class T>
 class VectorClass {
  public:
-  explicit VectorClass(base::ssize size = 0, const T* array = nullptr);
+  explicit VectorClass(base::ssize size = 0, T* array = nullptr);
   VectorClass(const VectorClass&);  // Copy constructor.
   virtual ~VectorClass();
   VectorClass(VectorClass&&) = delete;
@@ -99,7 +99,7 @@ class VectorClass {
 
  public:
   virtual int operator==(const VectorClass&) const;
-  virtual int Resize(base::ssize newsize, const T* array = nullptr);
+  virtual int Resize(base::ssize newsize, T* array = nullptr);
   virtual void Clear();
   base::ssize Length() const { return VectorMax; }
   virtual int ID(const T* ptr);  // Pointer based identification.
@@ -139,10 +139,10 @@ class VectorClass {
 template <class T>
 class DynamicVectorClass : public VectorClass<T> {
  public:
-  explicit DynamicVectorClass(base::ssize size = 0, const T* array = nullptr);
+  explicit DynamicVectorClass(base::ssize size = 0, T* array = nullptr);
 
   // Change maximum size of vector.
-  int Resize(base::ssize newsize, const T* array = nullptr) override;
+  int Resize(base::ssize newsize, T* array = nullptr) override;
 
   // Resets and frees the vector array.
   void Clear() override {

@@ -110,7 +110,7 @@ class WinModemClass {
   **
   ** Replacement for Greenleaf function: WriteBuffer
   */
-  void Write_To_Serial_Port(unsigned char* buffer, int length);
+  void Write_To_Serial_Port(const unsigned char* buffer, int length);
 
   /*
   ** Wait for the outgoing buffer to empty

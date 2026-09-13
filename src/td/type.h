@@ -249,9 +249,9 @@ class AbstractTypeClass {
 
   virtual COORDINATE Coord_Fixup(COORDINATE coord) const;
   virtual int Full_Name() const;
-  void Set_Name(const char* buf) const {
-    strncpy((char*)IniName, buf, sizeof(IniName));
-    (char&)IniName[sizeof(IniName) - 1] = '\0';
+  void Set_Name(const char* buf) {
+    strncpy(IniName, buf, sizeof(IniName));
+    IniName[sizeof(IniName) - 1] = '\0';
   }
   virtual unsigned short Get_Ownable() const;
 };

@@ -33,7 +33,7 @@
 template <typename T>
 class VectorClass {
  public:
-  explicit VectorClass(base::ssize size = 0, const T* array = nullptr);
+  explicit VectorClass(base::ssize size = 0, T* array = nullptr);
   VectorClass(const VectorClass&);  // Copy constructor.
   virtual ~VectorClass();
   VectorClass(VectorClass&&) = delete;
@@ -49,7 +49,7 @@ class VectorClass {
   }
   VectorClass& operator=(const VectorClass&);  // Assignment operator.
   virtual bool operator==(const VectorClass&) const;   // Equality operator.
-  virtual bool Resize(base::ssize newsize, const T* array = nullptr);
+  virtual bool Resize(base::ssize newsize, T* array = nullptr);
   virtual void Clear();
   base::ssize Length() const { return VectorMax; }
   virtual base::ssize ID(const T* ptr);  // Pointer based identification.
@@ -64,12 +64,12 @@ class VectorClass {
 // Implementation details only below here
 
 template <class T>
-VectorClass<T>::VectorClass(base::ssize size, const T* array)
+VectorClass<T>::VectorClass(base::ssize size, T* array)
     : Vector(nullptr), VectorMax(size), IsAllocated(false) {
   if (size > 0) {
     if (array) {
-      Vector =
-          new ((void*)array) T[size];  // Placement new into provided buffer.
+      Vector = new (static_cast<void*>(array))
+          T[size];  // Placement new into provided buffer.
     } else {
       // Value initialized: callers routinely read capacity that has not been
       // assigned yet (Resize copies the whole old capacity, not just the
@@ -160,13 +160,13 @@ void VectorClass<T>::Clear() {
 // Changes capacity, preserving existing elements up to new size.
 // If array is provided, uses placement new into that buffer.
 template <class T>
-bool VectorClass<T>::Resize(base::ssize newsize, const T* array) {
+bool VectorClass<T>::Resize(base::ssize newsize, T* array) {
   if (newsize > 0) {
     T* newptr;
     if (!array) {
       newptr = new T[newsize]();  // Value initialized, see the constructor.
     } else {
-      newptr = new ((void*)array) T[newsize];
+      newptr = new (static_cast<void*>(array)) T[newsize];
     }
     if (!newptr) {
       return false;

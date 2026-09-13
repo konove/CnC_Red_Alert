@@ -13,10 +13,10 @@
 template <typename T>
 class DynamicVectorClass : public VectorClass<T> {
  public:
-  explicit DynamicVectorClass(base::ssize size = 0, const T* array = nullptr);
+  explicit DynamicVectorClass(base::ssize size = 0, T* array = nullptr);
 
   // Change maximum size of vector.
-  bool Resize(base::ssize newsize, const T* array = nullptr) override;
+  bool Resize(base::ssize newsize, T* array = nullptr) override;
 
   // Resets and frees the vector array.
   void Clear() override {
@@ -70,7 +70,7 @@ class DynamicVectorClass : public VectorClass<T> {
 // Implementation details only below here
 
 template <class T>
-DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, const T* array)
+DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, T* array)
     : VectorClass<T>(size, array) {
   GrowthStep = 10;
   ActiveCount = 0;
@@ -78,7 +78,7 @@ DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, const T* array)
 
 // Resizes capacity. Truncates ActiveCount if new size is smaller.
 template <class T>
-bool DynamicVectorClass<T>::Resize(base::ssize newsize, const T* array) {
+bool DynamicVectorClass<T>::Resize(base::ssize newsize, T* array) {
   if (VectorClass<T>::Resize(newsize, array)) {
     if (this->Length() < ActiveCount) {
       ActiveCount = this->Length();

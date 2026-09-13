@@ -29,7 +29,7 @@
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-VectorClass<T>::VectorClass(base::ssize size, const T* array) {
+VectorClass<T>::VectorClass(base::ssize size, T* array) {
   Vector = nullptr;
   VectorMax = static_cast<unsigned int>(size);
   IsAllocated = false;
@@ -40,7 +40,7 @@ VectorClass<T>::VectorClass(base::ssize size, const T* array) {
   */
   if (size) {
     if (array) {
-      Vector = new ((void*)array) T[size];
+      Vector = new (static_cast<void*>(array)) T[size];
     } else {
       Vector = new T[size];
       IsAllocated = true;
@@ -261,7 +261,7 @@ void VectorClass<T>::Clear() {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int VectorClass<T>::Resize(base::ssize newsize, const T* array) {
+int VectorClass<T>::Resize(base::ssize newsize, T* array) {
   if (newsize) {
     /*
     **	Allocate a new vector of the size specified. The default constructor
@@ -271,7 +271,7 @@ int VectorClass<T>::Resize(base::ssize newsize, const T* array) {
     if (!array) {
       newptr = new T[newsize];
     } else {
-      newptr = new ((void*)array) T[newsize];
+      newptr = new (static_cast<void*>(array)) T[newsize];
     }
     if (!newptr) {
       return false;
@@ -344,7 +344,7 @@ int VectorClass<T>::Resize(base::ssize newsize, const T* array) {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, const T* array)
+DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, T* array)
     : VectorClass<T>(size, array) {
   GrowthStep = 10;
   ActiveCount = 0;
@@ -371,7 +371,7 @@ DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, const T* array)
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int DynamicVectorClass<T>::Resize(base::ssize newsize, const T* array) {
+int DynamicVectorClass<T>::Resize(base::ssize newsize, T* array) {
   if (VectorClass<T>::Resize(newsize, array)) {
     if (this->Length() < ActiveCount) {
       ActiveCount = this->Length();

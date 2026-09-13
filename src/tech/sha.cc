@@ -233,13 +233,13 @@ int SHAEngine::Result(void* result) const {
   *(uint32_t*)&partial[SRC_BLOCK_SIZE - 4] = Reverse_LONG((length * 8));
   Process_Block(&partial[0], acc);
 
-  memcpy((char*)&FinalResult, &acc, sizeof(acc));
+  memcpy(&FinalResult, &acc, sizeof(acc));
   for (int index = 0;
        std::cmp_less(index, sizeof(FinalResult) / sizeof(uint32_t)); index++) {
     //	for (int index = 0; index < SRC_BLOCK_SIZE/sizeof(long); index++) {
-    (uint32_t&)FinalResult.Long[index] = Reverse_LONG(FinalResult.Long[index]);
+    FinalResult.Long[index] = Reverse_LONG(FinalResult.Long[index]);
   }
-  (bool&)IsCached = true;
+  IsCached = true;
   memcpy(result, &FinalResult, sizeof(FinalResult));
   return sizeof(FinalResult);
 }
