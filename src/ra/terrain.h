@@ -77,7 +77,8 @@ class TerrainClass final : public ObjectClass, public StageClass {
   TerrainClass& operator=(const TerrainClass&) = delete;
   TerrainClass(TerrainClass&&) = delete;
   TerrainClass& operator=(TerrainClass&&) = delete;
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator TerrainType() const { return Class->Type; }
 
   static void Init();

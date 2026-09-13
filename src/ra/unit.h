@@ -141,7 +141,8 @@ class UnitClass final : public DriveClass {
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   UnitClass(UnitType classid, HousesType house);
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator UnitType() const { return Class->Type; }
   ~UnitClass() override;
   UnitClass(const UnitClass&) = delete;

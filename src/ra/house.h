@@ -652,7 +652,8 @@ class HouseClass {
   HouseClass& operator=(const HouseClass&) = delete;
   HouseClass(HouseClass&&) = delete;
   HouseClass& operator=(HouseClass&&) = delete;
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator HousesType() const;
 
   /*---------------------------------------------------------------------

@@ -2725,6 +2725,8 @@ void TechnoClass::Cloaking_AI() {
         */
         case CLOAKED:
 #ifdef PREDATOR
+        // CLOAKED marks for redraw in PREDATOR builds.
+        // NOLINTNEXTLINE(bugprone-branch-clone)
           if (IsOwnedByPlayer) {
             Mark(MARK_CHANGE);
           }

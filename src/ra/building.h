@@ -238,7 +238,8 @@ class BuildingClass : public TechnoClass {
   BuildingClass& operator=(const BuildingClass&) = delete;
   BuildingClass(BuildingClass&&) = delete;
   BuildingClass& operator=(BuildingClass&&) = delete;
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator StructType() const { return Class->Type; }
 
   /*---------------------------------------------------------------------

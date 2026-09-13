@@ -135,7 +135,8 @@ class InfantryClass final : public FootClass {
   InfantryClass& operator=(const InfantryClass&) = delete;
   InfantryClass(InfantryClass&&) = delete;
   InfantryClass& operator=(InfantryClass&&) = delete;
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator InfantryType() const { return Class->Type; }
 
   /*---------------------------------------------------------------------

@@ -61,7 +61,8 @@ class Int {
   **	Constructors and initializers.
   */
   Int() noexcept { XMP_Init(&reg[0], 0, PRECISION); }
-  // NOLINTNEXTLINE(*-explicit-constructor): big integers mix with machine integers in the crypto code.
+  // big integers mix with machine integers in the crypto code.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   Int(unsigned long value) {
     XMP_Init(&reg[0], static_cast<std::uint32_t>(value), PRECISION);
   }
@@ -79,9 +80,11 @@ class Int {
   **	integers. Big number math is basically manipulation of arbitrary
   **	length arrays.
   */
-  // NOLINTNEXTLINE(*-explicit-constructor): legacy C interfaces take the object where a pointer or name is expected.
+  // legacy C interfaces take the object where a pointer or name is expected.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator uint32_t*() { return &reg[0]; }
-  // NOLINTNEXTLINE(*-explicit-constructor): legacy C interfaces take the object where a pointer or name is expected.
+  // legacy C interfaces take the object where a pointer or name is expected.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator const uint32_t*() const { return &reg[0]; }
 
   /*

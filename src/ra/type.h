@@ -781,7 +781,8 @@ class BuildingTypeClass : public TechnoTypeClass {
                     RTTIType tobuild, DirType sframe, BSizeType size,
                     const short* exitlist, const short* sizelist,
                     const short* overlap) noexcept;
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator StructType() const { return Type; }
 
   void* operator new(size_t) noexcept;

@@ -70,7 +70,8 @@ class AnimClass final : public ObjectClass, public StageClass {
   AnimClass(AnimClass&&) = delete;
   AnimClass& operator=(AnimClass&&) = delete;
 
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator AnimType() const { return Class->Type; }
 
   void* operator new(size_t size) noexcept;

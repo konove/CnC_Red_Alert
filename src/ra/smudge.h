@@ -74,7 +74,8 @@ class SmudgeClass : public ObjectClass {
   void operator delete(void* ptr);
   explicit SmudgeClass(SmudgeType type, COORDINATE pos = 0xFFFFFFFFUL,
               HousesType house = HOUSE_NONE);
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator SmudgeType() const { return Class->Type; }
   ~SmudgeClass() override {
     if (GameActive) {

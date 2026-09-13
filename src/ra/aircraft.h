@@ -75,7 +75,8 @@ class AircraftClass : public FootClass, public FlyClass {
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void*);
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator AircraftType() const { return Class->Type; }
   AircraftClass(AircraftType classid, HousesType house);
   ~AircraftClass() override;

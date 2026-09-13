@@ -28,6 +28,8 @@ TEST(AlignedBufferTest, RecoversOriginalObjectAndRejectsInteriorByte) {
   EXPECT_EQ(port::AlignedObject<uint64_t>(&value), &value);
   EXPECT_EQ(port::RestoreMutableObject<uint64_t>(&value), &value);
   EXPECT_EQ(port::RestoreMutableObject<uint64_t>(nullptr), nullptr);
+  // the switch is inside GoogleTest's macro.
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default)
   EXPECT_DEATH((void)port::AlignedObject<uint64_t>(bytes.data() + 1),
                "Check failed");
 }

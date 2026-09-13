@@ -81,7 +81,8 @@ class TemplateClass : public ObjectClass {
   TemplateClass& operator=(const TemplateClass&) = delete;
   TemplateClass(TemplateClass&&) = delete;
   TemplateClass& operator=(TemplateClass&&) = delete;
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator TemplateType() const { return Class->Type; }
 
   static void Init();

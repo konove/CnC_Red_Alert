@@ -62,7 +62,8 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   *this variable.
   */
   const BulletTypeClass* Class = nullptr;
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator BulletType() const { return Class->Type; }
 
   /*

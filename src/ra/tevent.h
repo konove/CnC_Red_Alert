@@ -185,10 +185,12 @@ AttachType Attaches_To(TEventType event);
 
 class EventChoiceClass {
  public:
-  // NOLINTNEXTLINE(*-explicit-constructor): choice tables are brace lists of event types.
+  // choice tables are brace lists of event types.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   EventChoiceClass(TEventType event = TEVENT_NONE) noexcept : Event(event) {}
 
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator TEventType() const { return Event; }
   bool operator==(const EventChoiceClass& rvalue) const {
     return Event == rvalue.Event;

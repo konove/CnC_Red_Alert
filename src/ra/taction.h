@@ -145,11 +145,13 @@ struct TActionClass {
 
 class ActionChoiceClass {
  public:
-  // NOLINTNEXTLINE(*-explicit-constructor): choice tables are brace lists of action types.
+  // choice tables are brace lists of action types.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   ActionChoiceClass(TActionType event = TACTION_NONE) noexcept
       : Action(event) {}
 
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator TActionType() const { return Action; }
   bool operator==(const ActionChoiceClass& rvalue) const {
     return Action == rvalue.Action;

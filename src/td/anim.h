@@ -69,7 +69,8 @@ class AnimClass final : public ObjectClass, private StageClass {
   AnimClass& operator=(const AnimClass&) = delete;
   AnimClass(AnimClass&&) = delete;
   AnimClass& operator=(AnimClass&&) = delete;
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator AnimType() const { return Class->Type; }
   RTTIType What_Am_I() const override { return RTTI_ANIM; }
 

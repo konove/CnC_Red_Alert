@@ -56,7 +56,8 @@ class HSVClass {
   HSVClass(unsigned char hue, unsigned char saturation,
            unsigned char value) noexcept
       : Hue(hue), Saturation(saturation), Value(value) {}
-  // NOLINTNEXTLINE(*-explicit-constructor): legacy C interfaces take the object where a pointer or name is expected.
+  // legacy C interfaces take the object where a pointer or name is expected.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator RGBClass() const;
 
   enum { MAX_VALUE = 255 };

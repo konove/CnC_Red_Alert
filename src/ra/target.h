@@ -122,7 +122,8 @@ class xTargetClass {
 
  public:
   // conversion operator to RTTIType
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator RTTIType() const {
     return static_cast<RTTIType>(Target.Sub.Exponent);
   }
@@ -239,18 +240,23 @@ class TargetClass : public xTargetClass {
     Target.Sub.Exponent = rtti;
     Target.Sub.Mantissa = id;
   }
-  // NOLINTNEXTLINE(*-explicit-constructor): targets convert from every addressable thing by design.
+  // targets convert from every addressable thing by design.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   TargetClass(CELL cell) : xTargetClass() {
     Target.Sub.Exponent = RTTI_CELL;
     Target.Sub.Mantissa = cell;
   }
-  // NOLINTNEXTLINE(*-explicit-constructor): targets convert from every addressable thing by design.
+  // targets convert from every addressable thing by design.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   TargetClass(TARGET target);
-  // NOLINTNEXTLINE(*-explicit-constructor): targets convert from every addressable thing by design.
+  // targets convert from every addressable thing by design.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   TargetClass(const AbstractClass* ptr);
-  // NOLINTNEXTLINE(*-explicit-constructor): targets convert from every addressable thing by design.
+  // targets convert from every addressable thing by design.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   TargetClass(const AbstractTypeClass* ptr);
-  // NOLINTNEXTLINE(*-explicit-constructor): targets convert from every addressable thing by design.
+  // targets convert from every addressable thing by design.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   TargetClass(const CellClass* ptr);
 };
 

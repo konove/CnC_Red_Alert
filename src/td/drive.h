@@ -108,7 +108,8 @@ class DriveClass : public FootClass {
   DriveClass& operator=(const DriveClass&) = delete;
   DriveClass(DriveClass&&) = delete;
   DriveClass& operator=(DriveClass&&) = delete;
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator UnitType() const { return Class->Type; }
 
   /*---------------------------------------------------------------------

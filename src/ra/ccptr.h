@@ -47,10 +47,12 @@ template <class T>
 class CCPtr {
  public:
   CCPtr() : ID(-1) {}
-  // NOLINTNEXTLINE(*-explicit-constructor): a CCPtr stands in for the raw object pointer.
+  // a CCPtr stands in for the raw object pointer.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   CCPtr(T* ptr);
 
-  // NOLINTNEXTLINE(*-explicit-constructor): a CCPtr stands in for the raw object pointer.
+  // a CCPtr stands in for the raw object pointer.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator T*() const {
     if (ID == -1) {
       return nullptr;

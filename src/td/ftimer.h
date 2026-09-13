@@ -56,7 +56,8 @@ class TCountDownTimerClass {
  public:
   // Constructor.  Timers set before low level init has been done will not
   // be able to be 'Started' or 'on' until timer system is in place.
-  // NOLINTNEXTLINE(*-explicit-constructor): a countdown assigns and reads as its tick count.
+  // a countdown assigns and reads as its tick count.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   TCountDownTimerClass(int64_t set = 0) noexcept { Set(set); }
 
   // Saves remaining ticks and whether the timer is active. Restore Frame
@@ -81,7 +82,8 @@ class TCountDownTimerClass {
 
   // No destructor.
 
-  // NOLINTNEXTLINE(*-explicit-constructor): a countdown assigns and reads as its tick count.
+  // a countdown assigns and reads as its tick count.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator int64_t() const { return Time(); }
 
   // Public functions

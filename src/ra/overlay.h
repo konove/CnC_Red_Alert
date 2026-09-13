@@ -82,7 +82,8 @@ class OverlayClass : public ObjectClass {
   OverlayClass& operator=(const OverlayClass&) = delete;
   OverlayClass(OverlayClass&&) = delete;
   OverlayClass& operator=(OverlayClass&&) = delete;
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator OverlayType() const { return Class->Type; }
 
   static void Init();

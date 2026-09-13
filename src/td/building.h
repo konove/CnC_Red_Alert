@@ -70,7 +70,8 @@ class ArchiveWriter;
 class BuildingClass final : public TechnoClass {
  public:
   const BuildingTypeClass* Class = nullptr;
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator StructType() const { return Class->Type; }
 
   /*

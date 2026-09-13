@@ -6,7 +6,8 @@
 class PaletteClass {
  public:
   PaletteClass() = default;
-  // NOLINTNEXTLINE(*-explicit-constructor): palettes pass where raw palette bytes are expected.
+  // palettes pass where raw palette bytes are expected.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   PaletteClass(const RGBClass&) noexcept;
 
   void Set(int fade = 0, void (*callback)() = nullptr);
@@ -21,9 +22,11 @@ class PaletteClass {
   RGBClass& operator[](int index);
   const RGBClass& operator[](int index) const;
 
-  // NOLINTNEXTLINE(*-explicit-constructor): legacy C interfaces take the object where a pointer or name is expected.
+  // legacy C interfaces take the object where a pointer or name is expected.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator unsigned char*() noexcept;
-  // NOLINTNEXTLINE(*-explicit-constructor): legacy C interfaces take the object where a pointer or name is expected.
+  // legacy C interfaces take the object where a pointer or name is expected.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator const unsigned char*() const;
 
   static const int COLOR_COUNT = 256;

@@ -61,7 +61,8 @@ class ArchiveWriter;
 class TerrainClass final : public ObjectClass, public StageClass {
  public:
   const TerrainTypeClass* Class = nullptr;
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator TerrainType() const { return Class->Type; }
 
   /*

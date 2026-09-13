@@ -86,7 +86,8 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   BulletClass& operator=(const BulletClass&) = delete;
   BulletClass(BulletClass&&) = delete;
   BulletClass& operator=(BulletClass&&) = delete;
-  // NOLINTNEXTLINE(*-explicit-constructor): objects compare directly against their type ID.
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
   operator BulletType() const { return Class->Type; }
 
   /*---------------------------------------------------------------------
