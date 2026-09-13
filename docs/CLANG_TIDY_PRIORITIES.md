@@ -1,8 +1,8 @@
 # Clang-tidy priorities
 
-Updated: 2026-09-12, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
+Updated: 2026-09-13, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 119 currently excluded check names** and completed entries, in recommended work
+This tracks **all 118 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -76,7 +76,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-shift-op-parentheses`                    | Enabled | Commit `Fix the shifted window origin and make operator precedence explicit`: two real bugs -- TD shifted the window origin by `3 + Get_XPos()` instead of adding it.                                                                                                                                                                                                                                                                                                                                   |
 | `readability-math-missing-parentheses`                     | Enabled | Commit `Parenthesize mixed-precedence arithmetic`: 2,513 sites, applied with the check's own fix-its plus 16 manual edits the fix-its could not reach; no behavior change (see the review below).                                                                                                                                                                                                                                                                                                       |
 | `bugprone-branch-clone`                                    | Enabled | Commit `Merge duplicate branches and enable branch clone checking`: 43 sites, none a copy/paste bug; stack identical case labels, join repeated condition bodies, and collapse four identical if/else pairs. See review below.                                                                                                                                                                                                                                                                          |
-| `clang-diagnostic-sign-conversion`                         | Skipped | Commit `Document sign and parameter check policy`: 2,432 reports; about 650 are `int` sizes and counts passed to `size_t` library parameters, 876 `int`/`unsigned` mixes on legacy fields the type-migration plan keeps, and 219 `long`/`unsigned long`. The project's signed-by-default policy makes each a cast rather than a fix. See review below.                                                                                                                                                  |
+| `clang-diagnostic-sign-conversion`                         | Enabled | Commit `Enable sign conversion checking`: 2,414 reports, fixed mostly at the type: signed heap and vector indices, money, text widths and fixed-point helpers, connection timing with an explicit `-1` "no limit", and the VQA player's `long` fields. Library parameters take `base::ToSize`/`base::ToSigned`; packets, recordings and saves keep their widths. See review below.                                                                                                                      |
 | `bugprone-signed-bitwise`                                  | Skipped | Commit `Document sign and parameter check policy`: 3,715 reports even with `IgnorePositiveIntegerLiterals`; about 1,800 are enum flag ORs in the unit and building data tables, the rest deliberate bit manipulation in the VQA loader, blitters and crypto. See review below.                                                                                                                                                                                                                          |
 | `hicpp-signed-bitwise`                                     | Legacy  | Unavailable in LLVM 23; review with `bugprone-signed-bitwise` on older tools.                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `clang-diagnostic-switch-enum`                             | Skipped | Commit `Document variadic and thread-safety check policy`: all 293 reports are switches that already have a deliberate default over large type enums (up to 102 values); `-Wswitch` and `-Wswitch-default` already require an explicit fallback.                                                                                                                                                                                                                                                        |
@@ -888,15 +888,9 @@ Measured in the same combined sweep, and retained as exclusions:
 
 ### Sign and parameter check policy (2026-09-12)
 
-Measured in the combined sweep, and retained as exclusions:
+Measured in the combined sweep, and retained as exclusions. `clang-diagnostic-sign-conversion` was
+reviewed here too and later enabled; see the sign conversion review.
 
-- `clang-diagnostic-sign-conversion` reported 2,432 implicit signedness changes: `int` to
-  `unsigned int` (593), `int` to `size_t` under its various spellings (657), `unsigned int` to `int`
-  (283), `long` to `unsigned long` (161) and smaller mixes. They are overwhelmingly signed sizes and
-  counts handed to library parameters (`memcpy`, `strncpy`, container indexing) and the legacy
-  unsigned fields that [TYPE_MIGRATION.md](TYPE_MIGRATION.md) deliberately keeps. Under the
-  project's signed-by-default rule each would become a `static_cast`, which records nothing a reader
-  does not already know. The warning also stays off in `CMakeLists.txt`.
 - `bugprone-signed-bitwise` reported 4,191 uses of a signed operand with a bitwise operator, 3,715
   with `IgnorePositiveIntegerLiterals`. About 1,800 are OR'd flag enumerators in the unit, building,
   infantry and terrain data tables (`td/bdata.cc` alone has 643); the rest are the VQA loader,
@@ -905,6 +899,46 @@ Measured in the combined sweep, and retained as exclusions:
 - `bugprone-easily-swappable-parameters` reported 426 functions with adjacent same-typed parameters,
   almost all coordinates, sizes and IDs in the drawing, gadget and type APIs. Strong types for those
   would touch most call sites for little defect value.
+
+### Sign conversion review (2026-09-13)
+
+`clang-diagnostic-sign-conversion` is now enforced, and `-Wno-sign-conversion` is gone from
+`CMakeLists.txt`. The 2026-09-12 policy skipped it because each report looked like a `static_cast`.
+Measured again with each translation unit's own flags plus `-Wsign-conversion`, there were 2,414
+reports (RA 1,191, TD 866, winvq 149, tech 148, sdllib 58, port 2), and most went away by fixing the
+type the value comes from:
+
+| Change                                                                                                                                               | Reports   |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| Shared libraries: VQA player `long` fields to `int32_t` numbers and `uint32_t` flags, WSA and audio sizes, big-integer bit counts, LZW/LZO byte data | 357       |
+| RA heap `Ptr`/`Raw_Ptr` take `int`; TD vector capacity is `base::ssize`, with RA's subscript `DCHECK`                                                | 319       |
+| Money functions take `int`; text print colors and `String_Pixel_Width` are `int`; `Cardinal_To_Fixed`/`Fixed_To_Cardinal` take `int`                 | about 370 |
+| Connection timing: `Set_Timing`, retry delay, retries and timeout are `int32_t` with `-1` for no limit; the connection clock is `int64_t`            | 313       |
+| Null-modem, IPX and Westwood Online dialogs                                                                                                          | 323       |
+| Gameplay and coordinates: target values, stage, radar origin, unit limits and `MaxStrength` signed at the same width; prerequisite masks `uint64_t`  | 417       |
+| Menus, options, profiles, scores, keyframes and the other UI code                                                                                    | 319       |
+
+What remains explicit is a crossing the reader should see:
+
+- `base::ToSize` and `base::ToSigned` (`base/numeric.h`) convert counts at `memcpy`, `new[]`,
+  container and `size_t` library parameters, and check the value in debug builds.
+- Packing a signed component into a `COORDINATE`, `TARGET` or `LEPTON`, or reading one back, is a
+  `static_cast` at that point.
+- CRC inputs are cast to the CRC's unsigned type. The CRC bits are unchanged, and TD keeps its
+  `unsigned long` CRC because events travel by `sizeof(EventClass)`.
+- The sdllib seek and size wrappers keep plain casts: callers pass negative `SEEK_CUR` offsets and
+  receive `ftell`'s -1 through `size_t`, which a checked conversion would reject.
+
+Behavior is preserved. The fixed-point helpers still compute in `uint32_t`, and new tests compare
+them with the original implementations over the game's range. Serialized fields and wire structs
+kept their widths; the headless RA and TD save/load checks pass. Two consequences are intended: a
+64-bit build now sends RA's unit tracker totals as the 4-byte values the stats packet declares, and
+the VQA frame clock goes negative instead of wrapping to a huge tick count.
+
+Reviewing the code turned up suspected defects that are marked, not fixed: `// Suspicious:` comments
+where a `CELL` is used as a `COORDINATE` or `TARGET`; the VQA FINF seek table stored in 8-byte
+`long` entries on 64-bit Linux; a codebook offset in `Load_CBPZ` that can go negative; a bottom-left
+drawer origin that reads `Y2` before setting it; and a WSA buffer clear truncated to 16 bits.
 
 ### Switch fallback review (2026-09-12)
 
@@ -1746,8 +1780,8 @@ sample confirmed the enabled check reports an error.
 3. Remove the exclusion, verify enforcement, and mark the row **Enabled** with its commit. If
    enabling is unsuitable, record the concrete reason rather than silently dropping the row.
 
-Compiler diagnostic filters also depend on warning flags. In particular, `sign-conversion`,
-`unsafe-buffer-usage`, `old-style-cast`, `padded`, and `covered-switch-default` are suppressed in
+Compiler diagnostic filters also depend on warning flags. In particular, `unsafe-buffer-usage`,
+`old-style-cast`, `padded`, and `covered-switch-default` are suppressed in
 [CMakeLists.txt](../CMakeLists.txt); removing their tidy exclusions alone does not enable them. An
 isolated diagnostic sweep needs its warning flag and at least one real clang-tidy check.
 
