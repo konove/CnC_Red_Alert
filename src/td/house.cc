@@ -3721,8 +3721,7 @@ void HouseClass::MPlayer_Defeated() {
       Flag_Remove(FlagLocation, true);
     } else {
       if (FlagHome) {
-        // Suspicious: passes a raw CELL rather than As_Target(FlagHome).
-        Flag_Remove(static_cast<TARGET>(FlagHome), true);
+        Flag_Remove(As_Target(FlagHome), true);
       }
     }
   }

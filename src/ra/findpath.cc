@@ -55,6 +55,7 @@
 #include "ra/findpath.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 
@@ -71,6 +72,7 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
+#include "ra/path_overlap.h"
 #include "ra/team.h"
 #include "ra/teamtype.h"
 #include "sdllib/memflag.h"
@@ -92,11 +94,6 @@
 **	This is the marker to signify the end of the path list.
 */
 #define END FACING_NONE
-
-/*
-**	"- 1" test for bit manipulation.
-*/
-#define TEST
 
 /*
 **	If memory is more important than speed, set this define to
@@ -149,12 +146,11 @@ static FacingType Next_Direction(FacingType current, FacingType delta) {
 /* Define a couple of variables which are private to the module they are   */
 /*      declared in.                                                       */
 /*=========================================================================*/
-static unsigned long
-    MainOverlap[MAP_CELL_TOTAL / 32];  // overlap list for the main path
-static unsigned long
-    LeftOverlap[MAP_CELL_TOTAL / 32];  // overlap list for the left path
-static unsigned long
-    RightOverlap[MAP_CELL_TOTAL / 32];  // overlap list for the right path
+// One bit per cell needs no partial word, see ra/path_overlap.h.
+static_assert(MAP_CELL_TOTAL % 32 == 0);
+static uint32_t MainOverlap[MAP_CELL_TOTAL / 32];   // main path
+static uint32_t LeftOverlap[MAP_CELL_TOTAL / 32];   // left path
+static uint32_t RightOverlap[MAP_CELL_TOTAL / 32];  // right path
 
 // static CELL MoveMask = 0;
 static CELL DestLocation;
@@ -165,34 +161,20 @@ static CELL DestLocation;
 **	helpers, so the "cell is on the map" invariant lives in one place -
 **	callers get their cells by stepping to an adjacent cell, which has no
 **	notion of the map edge.
-**
-**	The bit picked within a word differs between TEST and shipping builds;
-**	that difference is preserved here as it affects path results.
 */
-static int Overlap_Bit(CELL cell) {
-#ifdef TEST
-  return cell & 31;
-#else
-  return (cell & 31) - 1;
-#endif
-}
-
 static bool Is_Overlapped(const PathType* path, CELL cell) {
   DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
-  return (path->Overlap[cell >> 5] & (1 << Overlap_Bit(cell))) != 0;
+  return IsOverlapped(path->Overlap, cell);
 }
 
 static void Set_Overlap(PathType* path, CELL cell) {
   DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
-  path->Overlap[cell >> 5] |= 1 << Overlap_Bit(cell);
+  SetOverlap(path->Overlap, cell);
 }
 
 static void Clear_Overlap(PathType* path, CELL cell) {
   DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
-  // Widen before inverting so the mask sign-extends exactly like the
-  // implicit conversion in Set_Overlap.
-  path->Overlap[cell >> 5] &=
-      ~static_cast<unsigned long>(1 << Overlap_Bit(cell));
+  ClearOverlap(path->Overlap, cell);
 }
 
 /***************************************************************************

@@ -823,8 +823,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         ....................... Set map position ........................
         */
         ScenarioInit++;
-        // Suspicious: passes a CELL where a COORDINATE is expected.
-        Set_Tactical_Position(static_cast<COORDINATE>(Waypoint[WAYPT_HOME]));
+        Set_Tactical_Position(Cell_Coord(Waypoint[WAYPT_HOME]));
         ScenarioInit--;
 
         /*

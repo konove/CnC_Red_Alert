@@ -55,6 +55,7 @@
 #include "td/findpath.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 
@@ -72,6 +73,7 @@
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
+#include "td/path_overlap.h"
 #include "td/special.h"
 #include "td/support.h"
 #include "td/team.h"
@@ -174,12 +176,11 @@ static FacingType Next_Direction(const FacingType current,
 /* Define a couple of variables which are private to the module they are   */
 /*      declared in.                                                       */
 /*=========================================================================*/
-static unsigned long
-    MainOverlap[MAP_CELL_TOTAL / 32];  // overlap list for the main path
-static unsigned long
-    LeftOverlap[MAP_CELL_TOTAL / 32];  // overlap list for the left path
-static unsigned long
-    RightOverlap[MAP_CELL_TOTAL / 32];  // overlap list for the right path
+// One bit per cell needs no partial word, see td/path_overlap.h.
+static_assert(MAP_CELL_TOTAL % 32 == 0);
+static uint32_t MainOverlap[MAP_CELL_TOTAL / 32];   // main path
+static uint32_t LeftOverlap[MAP_CELL_TOTAL / 32];   // left path
+static uint32_t RightOverlap[MAP_CELL_TOTAL / 32];  // right path
 
 // static CELL MoveMask = 0;
 static CELL DestLocation;
@@ -191,29 +192,26 @@ static CELL DestLocation;
 **	callers get their cells by stepping to an adjacent cell, which has no
 **	notion of the map edge.
 **
-**	The bit index is deliberately one less than the cell's position within
-**	the word. That looks wrong, but path results depend on it, so it is
-**	preserved. ra/findpath.cc keeps the same expression for shipping builds,
-**	behind an #ifdef TEST that TD's copy never had.
+**	The original picked bit (cell & 31) - 1, which is -1 for the first cell of
+**	each word. On x86 SHL masks its count to 5 bits, so that cell used bit 31:
+**	a rotation of the bits within the same word. Every read and write goes
+**	through these helpers and the buffers are only cleared or copied whole, so
+**	any one-to-one bit choice gives identical paths; the plain cell & 31 used
+**	here (as in RA) avoids the undefined negative shift.
 */
-static int Overlap_Bit(CELL cell) { return (cell & 31) - 1; }
-
 static bool Is_Overlapped(const PathType* path, CELL cell) {
   DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
-  return (path->Overlap[cell >> 5] & (1 << Overlap_Bit(cell))) != 0;
+  return IsOverlapped(path->Overlap, cell);
 }
 
 static void Set_Overlap(PathType* path, CELL cell) {
   DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
-  path->Overlap[cell >> 5] |= 1 << Overlap_Bit(cell);
+  SetOverlap(path->Overlap, cell);
 }
 
 static void Clear_Overlap(PathType* path, CELL cell) {
   DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
-  // Widen before inverting so the mask sign-extends exactly like the
-  // implicit conversion in Set_Overlap.
-  path->Overlap[cell >> 5] &=
-      ~static_cast<unsigned long>(1 << Overlap_Bit(cell));
+  ClearOverlap(path->Overlap, cell);
 }
 
 /***************************************************************************

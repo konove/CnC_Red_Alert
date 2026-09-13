@@ -2878,10 +2878,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
             Percent_Chance(Rule.VortexChance * 100)) {
           int x = Random_Pick(0, Map.MapCellWidth - 1);
           int y = Random_Pick(0, Map.MapCellHeight - 1);
-          // Suspicious: passes a CELL where a COORDINATE is expected. Kept
-          // for identical simulation results.
-          ChronalVortex.Appear(static_cast<COORDINATE>(
-              XY_Cell(Map.MapCellX + x, Map.MapCellY + y)));
+          ChronalVortex.Appear(
+              Cell_Coord(XY_Cell(Map.MapCellX + x, Map.MapCellY + y)));
 
           //					if (Percent_Chance(50)) {
           //						ChronalVortex.Appear(Cell_Coord(oldcell));
@@ -3512,7 +3510,7 @@ void HouseClass::MPlayer_Defeated() {
       Flag_Remove(FlagLocation, true);
     } else {
       if (FlagHome != 0) {
-        Flag_Remove(FlagHome, true);
+        Flag_Remove(As_Target(FlagHome), true);
       }
     }
   }
@@ -4319,9 +4317,7 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
     ZoneType tryzone = _zones[(zz + start) % std::ssize(_zones)];
     zcell = Find_Cell_In_Zone(building, tryzone);
     if (zcell) {
-      // Suspicious: unlike the preferred-zone path above, this returns the
-      // raw CELL. Kept for identical simulation results.
-      return static_cast<COORDINATE>(zcell);
+      return Cell_Coord(zcell);
     }
   }
 

@@ -319,9 +319,8 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
               object->Assign_Mission(MISSION_GUARD);
             } else {
               object->Assign_Mission(MISSION_MOVE);
-              // Suspicious: passes a raw CELL rather than As_Target(...).
               object->Assign_Destination(
-                  static_cast<TARGET>(Adjacent_Cell(newcell, eface)));
+                  As_Target(Adjacent_Cell(newcell, eface)));
             }
             object->Commence();
           }

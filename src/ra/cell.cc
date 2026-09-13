@@ -1787,12 +1787,13 @@ const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
     return *this;
   }
 
-  const CellClass* ptr = this + AdjacentCell[face];
+  // Check the index before forming the pointer: pointer arithmetic that leaves
+  // the cell array is undefined even if the result is never dereferenced.
   const int adjacent = Cell_Number() + AdjacentCell[face];
   if (adjacent < 0 || adjacent >= MAP_CELL_TOTAL) {
     return *this;
   }
-  return *ptr;
+  return *(this + AdjacentCell[face]);
 }
 
 /***************************************************************************

@@ -161,10 +161,11 @@ BulletClass::~BulletClass() {
         **	Ensure that the coordinate, that the dog is to appear at, is
         *legal. If not, *	then find a nearby legal location.
         */
-        if (Can_Enter_Cell(static_cast<CELL>(newcoord)) != MOVE_OK) {
-          // Suspicious: stores a CELL in a COORDINATE. Kept for identical
-          // simulation results.
-          newcoord = static_cast<COORDINATE>(
+        // This asks the bullet, which inherits AbstractClass's
+        // always-MOVE_OK Can_Enter_Cell, so the fallback never runs. The loop
+        // below does the real legality check through Unlimbo.
+        if (Can_Enter_Cell(Coord_Cell(newcoord)) != MOVE_OK) {
+          newcoord = Cell_Coord(
               Map.Nearby_Location(Coord_Cell(newcoord), dog->Class->Speed));
         }
 

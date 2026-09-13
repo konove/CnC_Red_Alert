@@ -95,6 +95,22 @@ add_gtest(
 )
 target_compile_definitions(td_connect_test PRIVATE TD=1)
 
+add_gtest(
+    NAME td_path_overlap_test
+    SOURCES path_overlap_test.cc
+    LIBS absl::check absl::log
+)
+target_compile_definitions(td_path_overlap_test PRIVATE TD=1)
+
+# Real cell array from the engine, without a game entry point.
+add_gtest(
+    NAME td_cell_adjacent_test
+    SOURCES cell_adjacent_test.cc startup.cc
+    LIBS td_engine absl::core_headers
+)
+target_compile_definitions(td_cell_adjacent_test PRIVATE TD_NO_ENTRY_POINT=1)
+apply_dotenv_settings(td_cell_adjacent_test)
+
 if (EMSCRIPTEN)
     set_target_properties(tdsdl PROPERTIES
             SUFFIX ".html"

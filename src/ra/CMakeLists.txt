@@ -184,6 +184,13 @@ add_gtest(
 )
 
 
+add_gtest(
+    NAME ra_path_overlap_test
+    SOURCES path_overlap_test.cc
+    LIBS base absl::check absl::log magic_enum::magic_enum
+)
+apply_language_setting(ra_path_overlap_test)
+
 if (EMSCRIPTEN)
     set_target_properties(rasdl PROPERTIES
             SUFFIX ".html"

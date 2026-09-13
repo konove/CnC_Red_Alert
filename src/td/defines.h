@@ -2249,7 +2249,7 @@ typedef struct {
   int Cost;                // Accumulated terrain cost.
   int Length;              // Command string length.
   FacingType* Command;     // Pointer to command string.
-  unsigned long* Overlap;  // Pointer to overlap list
+  uint32_t* Overlap;       // Overlap bitmap, see td/path_overlap.h.
   CELL LastOverlap;        // stores position of last overlap
   CELL LastFixup;          // stores position of last overlap
 } PathType;
