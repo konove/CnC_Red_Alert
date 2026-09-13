@@ -1,9 +1,11 @@
 #ifndef CNC_RED_ALERT_RA_MENUS_H_
 #define CNC_RED_ALERT_RA_MENUS_H_
 
-void Setup_Menu(int menu, const char* text[], unsigned long field, int index,
+#include <cstdint>
+
+void Setup_Menu(int menu, const char* text[], uint32_t field, int index,
                 int skip);
-int Check_Menu(int menu, const char* text[], char* selection, long field,
+int Check_Menu(int menu, const char* text[], char* selection, uint32_t field,
                int index);
 int Do_Menu(const char** strings, bool blue);
 extern int UnknownKey;

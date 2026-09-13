@@ -43,6 +43,8 @@
 #ifndef CNC_RED_ALERT_RA_LOADDLG_H_
 #define CNC_RED_ALERT_RA_LOADDLG_H_
 
+#include <cstdint>
+
 #include "ra/defines.h"
 #include "ra/list.h"
 #include "ra/vector_dynamic.h"
@@ -53,7 +55,7 @@ class FileEntryClass {
   unsigned Scenario;       // scenario #
   HousesType House;        // house
   int Num;                 // save file number (from the extension)
-  unsigned long DateTime;  // date/time stamp of file
+  int64_t DateTime;  // date/time stamp of file
   bool Valid;              // Is the scenario valid?
 };
 

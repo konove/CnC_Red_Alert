@@ -192,7 +192,7 @@ int Write_PCX_File(FileClass& file, GraphicBufferClass& pic,
  *file class I/O.                                     *
  *=============================================================================================*/
 static void Write_Pcx_ScanLine(FileClass& file, int scansize, char* ptr) {
-  unsigned char last = *ptr;
+  auto last = static_cast<unsigned char>(*ptr);
   unsigned char rle = 1;
   unsigned char c;
   for (int i = 1; i < scansize; i++) {

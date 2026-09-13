@@ -129,7 +129,7 @@ GadgetClass::GadgetClass(int x, int y, int w, int h, unsigned flags,
       Width(w),
       Height(h),
 
-      IsSticky(sticky),
+      IsSticky(sticky != 0),
 
       Flags(flags) {
   if (IsSticky) {

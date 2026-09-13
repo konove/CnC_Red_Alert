@@ -410,8 +410,9 @@ void Send_Statistics_Packet() {
                   //	We have an address in the right form.
                   //	Now, is it an address in a private network? If so we
                   // should ignore it.
-                  unsigned char q1 = ((char*)piAddress)[0];  //	First digit.
-                  unsigned char q2 = ((char*)piAddress)[1];  //	Second digit.
+                  //	First and second digits.
+                  auto q1 = static_cast<unsigned char>(piAddress[0]);
+                  auto q2 = static_cast<unsigned char>(piAddress[1]);
                   //								debugprint(
                   //"ip: %s\n", szAsciiIP );
                   if (q1 == 10 || (q1 == 172 && (q2 >= 16 && q2 <= 31)) ||

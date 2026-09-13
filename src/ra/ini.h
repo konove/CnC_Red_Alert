@@ -148,7 +148,9 @@ class INIClass {
     INIEntry& operator=(const INIEntry&) = delete;
     INIEntry(INIEntry&&) = delete;
     INIEntry& operator=(INIEntry&&) = delete;
-    [[nodiscard]] int Index_ID() const { return CrcEngine::Compute(Entry); }
+    [[nodiscard]] int Index_ID() const {
+      return static_cast<int>(CrcEngine::Compute(Entry));
+    }
 
     std::string Entry;
     std::string Value;
@@ -166,7 +168,9 @@ class INIClass {
     INISection(INISection&&) = delete;
     INISection& operator=(INISection&&) = delete;
     INIEntry* Find_Entry(const char* entry) const;
-    [[nodiscard]] int Index_ID() const { return CrcEngine::Compute(Section); }
+    [[nodiscard]] int Index_ID() const {
+      return static_cast<int>(CrcEngine::Compute(Section));
+    }
 
     std::string Section;
     List<INIEntry> EntryList;

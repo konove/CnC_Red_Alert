@@ -477,7 +477,7 @@ void MonoClass::Print(const char* ptr) {
       *scrolled *	upward a line.
       */
       default:
-        cell.Character = *text;
+        cell.Character = static_cast<unsigned char>(*text);
         Store_Cell(cell, X, Y);
         //				MonoSegment.Copy_Word_To(*(short*)&cell,
         // optr); 				optr += sizeof(CellType);

@@ -47,9 +47,9 @@ Buff);
 #include "tech/wwfile.h"
 
 typedef struct {
-  char red;
-  char green;
-  char blue;
+  unsigned char red;
+  unsigned char green;
+  unsigned char blue;
 } RGB;
 
 typedef struct {

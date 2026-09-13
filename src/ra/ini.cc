@@ -69,6 +69,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "base/numeric.h"
 #include "ra/ini.h"
 
 #include <cctype>
@@ -1006,7 +1007,7 @@ int INIClass::Get_String(const char* section, const char* entry,
     return 0;
   }
   if (buffer != defvalue) {
-    strncpy(buffer, defvalue, size);
+    strncpy(buffer, defvalue, base::ToSize(size));
   }
   buffer[size - 1] = '\0';
   strtrim(buffer);
@@ -1106,7 +1107,7 @@ bool INIClass::Get_Bool(const char* section, const char* entry,
  *=============================================================================================*/
 INIClass::INIEntry* INIClass::INISection::Find_Entry(const char* entry) const {
   if (entry != nullptr) {
-    int crc = CrcEngine::Compute(entry);
+    const int crc = static_cast<int>(CrcEngine::Compute(entry));
     if (EntryIndex.Is_Present(crc)) {
       return EntryIndex.Fetch_Index(crc);
     }

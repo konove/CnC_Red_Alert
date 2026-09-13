@@ -18,6 +18,7 @@
 
 //	ToolTip.cpp
 
+#include "base/numeric.h"
 #include "ra/tooltip.h"
 
 #include <cstdint>
@@ -70,7 +71,7 @@ ToolTipClass::ToolTipClass(GadgetClass* gadget, const char* szText, int x_show,
 
   if (!bIconList) {
     //	Else it is reallocated on every draw.
-    pSaveRect = new std::uint8_t[base::ssize{wShow} * hShow];
+    pSaveRect = new std::uint8_t[base::ToSize(base::ssize{wShow} * hShow)];
     if (bRightAlign) {
       xShow -= wShow;
     }
@@ -165,7 +166,7 @@ void ToolTipClass::Show() {
         xShowUse -= wShowUse;
       }
       delete[] pSaveRect;
-      pSaveRect = new std::uint8_t[base::ssize{wShowUse} * hShow];
+      pSaveRect = new std::uint8_t[base::ToSize(base::ssize{wShowUse} * hShow)];
       bLastShowNoText = false;
       xLastShow = xShowUse;
       yLastShow = yShowUse;

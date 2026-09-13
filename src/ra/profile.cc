@@ -40,6 +40,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "base/numeric.h"
 #include "ra/profile.h"
 
 #include <algorithm>
@@ -78,14 +79,15 @@ bool Read_Private_Config_Struct(FileClass& file, NewConfigType* config) {
   INIClass ini;
   ini.Load(file);
 
-  config->DigitCard = ini.Get_Hex("Sound", "Card", 0);
-  config->IRQ = ini.Get_Int("Sound", "IRQ", 0);
-  config->DMA = ini.Get_Int("Sound", "DMA", 0);
-  config->Port = ini.Get_Hex("Sound", "Port", 0);
-  config->BitsPerSample = ini.Get_Int("Sound", "BitsPerSample", 0);
-  config->Channels = ini.Get_Int("Sound", "Channels", 0);
+  config->DigitCard = static_cast<unsigned>(ini.Get_Hex("Sound", "Card", 0));
+  config->IRQ = static_cast<unsigned>(ini.Get_Int("Sound", "IRQ", 0));
+  config->DMA = static_cast<unsigned>(ini.Get_Int("Sound", "DMA", 0));
+  config->Port = static_cast<unsigned>(ini.Get_Hex("Sound", "Port", 0));
+  config->BitsPerSample =
+      static_cast<unsigned>(ini.Get_Int("Sound", "BitsPerSample", 0));
+  config->Channels = static_cast<unsigned>(ini.Get_Int("Sound", "Channels", 0));
   config->Reverse = ini.Get_Int("Sound", "Reverse", 0);
-  config->Speed = ini.Get_Int("Sound", "Speed", 0);
+  config->Speed = static_cast<unsigned>(ini.Get_Int("Sound", "Speed", 0));
   ini.Get_String("Language", "Language", nullptr, config->Language,
                  sizeof(config->Language));
 
@@ -226,7 +228,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
       dest[1] = '\0';
     }
     if (def) {
-      strncpy(dest, def, dest_len);
+      strncpy(dest, def, base::ToSize(dest_len));
     }
     dest[dest_len - 1] = '\0';
     orig_retbuf = dest;
@@ -277,7 +279,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
     **	If this is the section name & the character before is a newline,
     **	process this section
     */
-    if (memicmp(workptr, sec, len) == 0 && c == '\n') {
+    if (memicmp(workptr, sec, base::ToSize(len)) == 0 && c == '\n') {
       /*
       **	Skip work pointer to start of first valid entry.
       */
@@ -360,7 +362,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
           /*
           **	Entry found; extract it
           */
-          if (memicmp(workptr, key, entrylen) == 0 && c == '\n' &&
+          if (memicmp(workptr, key, base::ToSize(entrylen)) == 0 && c == '\n' &&
               (c2 == '=' || isspace(c2))) {
             retval = workptr;
             workptr += entrylen;             // skip entry name
@@ -405,7 +407,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
             len = std::min(len, dest_len - 1);
 
             if (dest) {
-              memcpy(dest, workptr, len);
+              memcpy(dest, workptr, base::ToSize(len));
               *(dest + len) = '\0';  // Insert trailing null.
               strtrim(dest);
             }
@@ -442,10 +444,10 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
               **	add '3' for the 3 NULL's at the end
               */
               if (dest - orig_retbuf + length + 3 < dest_len) {
-                memcpy(dest, workptr, length);  // copy entry name
-                *(dest + length) = '\0';        // NULL-terminate it
-                strtrim(dest);                  // trim spaces
-                dest += strlen(dest) + 1;       // next pos in dest buf
+                memcpy(dest, workptr, base::ToSize(length));  // copy entry name
+                *(dest + length) = '\0';  // NULL-terminate it
+                strtrim(dest);            // trim spaces
+                dest += strlen(dest) + 1;  // next pos in dest buf
               } else {
                 break;
               }
@@ -670,7 +672,7 @@ bool Read_Bin_Num(void* num, int length, const char* buffer) {
     return false;
   }
   ptr = ReadBinBuffer + ReadBinBufferPos;
-  memcpy(num, ptr, length);
+  memcpy(num, ptr, base::ToSize(length));
   ReadBinBufferPos += length;
 
   ReadBinBufferMax = std::max(ReadBinBufferPos, ReadBinBufferMax);
@@ -685,7 +687,7 @@ int Read_Bin_Pos(const char* buffer) {
   return ReadBinBufferPos;
 }
 
-int Read_Bin_PosSet(unsigned int pos, const char* buffer) {
+int Read_Bin_PosSet(int pos, const char* buffer) {
   if (buffer != ReadBinBuffer) {
     return -1;
   }
@@ -738,7 +740,7 @@ bool Write_Bin_Num(void* num, int length, const char* buffer) {
     return false;
   }
   ptr = WriteBinBuffer + WriteBinBufferPos;
-  memcpy(ptr, num, length);
+  memcpy(ptr, num, base::ToSize(length));
   WriteBinBufferPos += length;
 
   WriteBinBufferMax = std::max(WriteBinBufferPos, WriteBinBufferMax);
@@ -753,7 +755,7 @@ int Write_Bin_Pos(const char* buffer) {
   return WriteBinBufferPos;
 }
 
-int Write_Bin_PosSet(unsigned int pos, const char* buffer) {
+int Write_Bin_PosSet(int pos, const char* buffer) {
   if (buffer != WriteBinBuffer) {
     return -1;
   }
@@ -770,7 +772,7 @@ bool Write_Bin_String(char* string, int length, const char* buffer) {
   }
   ptr = WriteBinBuffer + WriteBinBufferPos;
   *ptr++ = static_cast<char>(length);
-  memcpy(ptr, string, length + 1);
+  memcpy(ptr, string, base::ToSize(length + 1));
   WriteBinBufferPos += length + 2;
 
   WriteBinBufferMax = std::max(WriteBinBufferPos, WriteBinBufferMax);

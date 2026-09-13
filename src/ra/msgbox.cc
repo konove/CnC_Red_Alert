@@ -38,6 +38,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "base/numeric.h"
 #include "ra/msgbox.h"
 
 #include <algorithm>
@@ -230,7 +231,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   Hide_Mouse();
   if (preserve) {
-    back = new char[static_cast<std::size_t>(width) * height];
+    back = new char[base::ToSize(width * height)];
     SeenBuff.To_Buffer(x, y, width, height, back, static_cast<long>(width) * height);
   }
   Dialog_Box(x, y, width, height);
@@ -392,7 +393,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         if (selection == BUTTON_1 || selection == BUTTON_2 ||
             selection == BUTTON_3) {
           auto* button = dynamic_cast<TextButtonClass*>(
-              buttonlist->Extract_Gadget(selection));
+              buttonlist->Extract_Gadget(static_cast<unsigned>(selection)));
           if (button != nullptr) {
             button->Turn_On();
             //						toggle->IsOn = true;

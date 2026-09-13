@@ -65,6 +65,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "base/numeric.h"
 #include "td/options.h"
 
 #include <cstring>
@@ -144,7 +145,7 @@ void OptionsClass::One_Time() { Set_Score_Vol(ScoreVolume); }
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::Set_Shuffle(int on) { IsScoreShuffle = on; }
+void OptionsClass::Set_Shuffle(int on) { IsScoreShuffle = on != 0; }
 
 /***********************************************************************************************
  * OptionsClass::Set_Repeat -- Controls the score repeat option. *
@@ -160,7 +161,7 @@ void OptionsClass::Set_Shuffle(int on) { IsScoreShuffle = on; }
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::Set_Repeat(int on) { IsScoreRepeat = on; }
+void OptionsClass::Set_Repeat(int on) { IsScoreRepeat = on != 0; }
 
 /***********************************************************************************************
  * OptionsClass::Set_Score_Volume -- Sets the global score volume to that
@@ -440,17 +441,17 @@ void OptionsClass::Adjust_Palette(void* oldpal, void* newpal,
 
       temp = v * brightness / 0x80;  // Brightness
       temp = Bound(temp, 0, 0xFF);
-      v = temp;
+      v = static_cast<unsigned>(temp);
       temp =
           ((static_cast<int>(v) - 0x80) * contrast / 0x80) + 0x80;  // Contrast
       temp = Bound(temp, 0, 0xFF);
-      v = temp;
+      v = static_cast<unsigned>(temp);
       temp = s * color / 0x80;  // Color
       temp = Bound(temp, 0, 0xFF);
-      s = temp;
+      s = static_cast<unsigned>(temp);
       temp = h * tint / 0x80;  // Tint
       temp = Bound(temp, 0, 0xFF);
-      h = temp;
+      h = static_cast<unsigned>(temp);
       Convert_HSV_To_RGB(h, s, v, &r, &g, &b);
       static_cast<char*>(newpal)[(index * 3) + 0] = static_cast<char>(r);
       static_cast<char*>(newpal)[(index * 3) + 1] = static_cast<char>(g);
@@ -480,7 +481,7 @@ void OptionsClass::Load_Settings() {
   *during the INI *	parsing.)
   */
   buffer = ShapeBuffer;
-  memset(buffer, '\0', ShapeBufferSize);
+  memset(buffer, '\0', base::ToSize(ShapeBufferSize));
 
   /*
   **	Create filename and read the file.
@@ -495,7 +496,8 @@ void OptionsClass::Load_Settings() {
   /*
   **	Read in the Options values
   */
-  GameSpeed = WWGetPrivateProfileInt("Options", "GameSpeed", 4, buffer);
+  GameSpeed = static_cast<unsigned>(
+      WWGetPrivateProfileInt("Options", "GameSpeed", 4, buffer));
   ScrollRate = WWGetPrivateProfileInt("Options", "ScrollRate", 4, buffer);
   Set_Brightness(WWGetPrivateProfileInt("Options", "Brightness", 0x80, buffer));
   Set_Sound_Volume(WWGetPrivateProfileInt("Options", "Volume", 0x66, buffer),
@@ -505,12 +507,14 @@ void OptionsClass::Load_Settings() {
   Set_Contrast(WWGetPrivateProfileInt("Options", "Contrast", 0x80, buffer));
   Set_Color(WWGetPrivateProfileInt("Options", "Color", 0x80, buffer));
   Set_Tint(WWGetPrivateProfileInt("Options", "Tint", 0x80, buffer));
-  AutoScroll = WWGetPrivateProfileInt("Options", "AutoScroll", 1, buffer);
+  AutoScroll =
+      WWGetPrivateProfileInt("Options", "AutoScroll", 1, buffer) != 0;
   Set_Repeat(WWGetPrivateProfileInt("Options", "IsScoreRepeat", 0, buffer));
   Set_Shuffle(WWGetPrivateProfileInt("Options", "IsScoreShuffle", 0, buffer));
   IsDeathAnnounce =
-      WWGetPrivateProfileInt("Options", "DeathAnnounce", 0, buffer);
-  IsFreeScroll = WWGetPrivateProfileInt("Options", "FreeScrolling", 0, buffer);
+      WWGetPrivateProfileInt("Options", "DeathAnnounce", 0, buffer) != 0;
+  IsFreeScroll =
+      WWGetPrivateProfileInt("Options", "FreeScrolling", 0, buffer) != 0;
   SlowPalette = WWGetPrivateProfileInt("Options", "SlowPalette", 1, buffer);
 
   char workbuf[128];
@@ -659,7 +663,7 @@ void OptionsClass::Save_Settings() {
   *buffer *	starts cleared out of any data.
   */
   buffer = ShapeBuffer;
-  memset(buffer, '\0', ShapeBufferSize);
+  memset(buffer, '\0', base::ToSize(ShapeBufferSize));
 
   file.Set_Name("CONQUER.INI");
   if (file.Is_Available()) {
@@ -669,7 +673,8 @@ void OptionsClass::Save_Settings() {
   /*
   **	Save Options settings
   */
-  WWWritePrivateProfileInt("Options", "GameSpeed", GameSpeed, buffer);
+  WWWritePrivateProfileInt("Options", "GameSpeed", static_cast<int>(GameSpeed),
+                           buffer);
   WWWritePrivateProfileInt("Options", "ScrollRate", ScrollRate, buffer);
   WWWritePrivateProfileInt("Options", "Brightness", Brightness, buffer);
   WWWritePrivateProfileInt("Options", "Volume", Volume, buffer);
@@ -686,7 +691,7 @@ void OptionsClass::Save_Settings() {
   /*
   **	Write the INI data out to a file.
   */
-  file.Write(buffer, strlen(buffer));
+  file.Write(buffer, base::ToSigned(strlen(buffer)));
 }
 
 /***********************************************************************************************
@@ -746,7 +751,7 @@ int OptionsClass::Normalize_Delay(int delay) const {
     if (delay < 5) {
       delay = _adjust[delay - 1][GameSpeed];
     } else {
-      delay = delay * 8 / (GameSpeed + 1);
+      delay = delay * 8 / static_cast<int>(GameSpeed + 1);
     }
   }
   return delay;

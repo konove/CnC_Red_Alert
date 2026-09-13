@@ -40,6 +40,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "base/numeric.h"
 #include "td/msgbox.h"
 
 #include <algorithm>
@@ -238,7 +239,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   Hide_Mouse();
   if (preserve) {
-    back = new char[static_cast<std::size_t>(width) * height];
+    back = new char[base::ToSize(width * height)];
     SeenBuff.To_Buffer(x, y, width, height, back, static_cast<long>(width) * height);
   }
   // display = true;

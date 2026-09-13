@@ -38,7 +38,7 @@
 EditClass::EditClass(const int id, char* text, const int max_len,
                      const TextPrintType flags, const int x, const int y,
                      const int w, const int h, const EditStyle style)
-    : ControlClass(id, x, y, w, h, LEFTPRESS),
+    : ControlClass(static_cast<unsigned>(id), x, y, w, h, LEFTPRESS),
       TextFlags(flags & ~TPF_CENTER),
       EditFlags(style),
       String(text),

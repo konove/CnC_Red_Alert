@@ -1,6 +1,8 @@
 #ifndef CNC_RED_ALERT_TD_NODENAME_H_
 #define CNC_RED_ALERT_TD_NODENAME_H_
 
+#include <cstdint>
+
 #include "td/defines.h"
 #include "td/ipxaddr.h"
 
@@ -13,7 +15,7 @@ typedef struct NodeNameTag {
     struct {
       int Version;
       unsigned char IsOpen;
-      unsigned long LastTime;
+      int64_t LastTime;
     } Game{};
     struct {
       HousesType House;

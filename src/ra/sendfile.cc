@@ -75,7 +75,7 @@
 #include "tech/ftimer.h"
 #include "tech/rawfile.h"
 
-static bool Receive_Remote_File(char* file_name, unsigned int file_length,
+static bool Receive_Remote_File(char* file_name, int file_length,
                                 int gametype);
 
 #define RESPONSE_TIMEOUT (int64_t{60} * 60)
@@ -119,7 +119,7 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
                                  int gametype) {
   // WWDebugString ("RA95 - In Get_Scenario_From_Host\n");
 
-  unsigned int file_length = 0;
+  int file_length = 0;
 
   SerialPacketType send_packet;
   SerialPacketType receive_packet;
@@ -161,7 +161,7 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
           (receive_packet.Command == SERIAL_FILE_INFO)) {
         strncpy(return_name, receive_packet.ScenarioInfo.ShortFileName,
                 dest_size);
-        file_length = receive_packet.ScenarioInfo.FileLength;
+        file_length = static_cast<int>(receive_packet.ScenarioInfo.FileLength);
         break;
       }
 
@@ -178,7 +178,8 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
       {
         strncpy(return_name, net_receive_packet.ScenarioInfo.ShortFileName,
                 dest_size);
-        file_length = net_receive_packet.ScenarioInfo.FileLength;
+        file_length =
+            static_cast<int>(net_receive_packet.ScenarioInfo.FileLength);
         // WWDebugString ("RA95 - Got file info packet from host\n");
         break;
       }
@@ -223,7 +224,7 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
  *                                                                                             *
  * HISTORY: * 8/22/96 3:07PM ST : Created *
  *=============================================================================================*/
-bool Receive_Remote_File(char* file_name, unsigned int file_length,
+bool Receive_Remote_File(char* file_name, int file_length,
                          int gametype) {
   // WWDebugString ("RA95 - In Receive_Remote_File\n");
   unsigned short product_id;
@@ -301,7 +302,7 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
   RemoteFileTransferType receive_packet;
 
   int last_received_block = -1;  // No blocks received yet
-  unsigned int total_length = 0;
+  int total_length = 0;
   unsigned int packet_len;
 
   /*
@@ -604,7 +605,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
       strncpy(file_info.ScenarioInfo.ShortFileName, "DOWNLOAD.TMP",
               sizeof(file_info.ScenarioInfo.ShortFileName));
     }
-    file_info.ScenarioInfo.FileLength = file_length;
+    file_info.ScenarioInfo.FileLength = static_cast<unsigned>(file_length);
     NullModem.Send_Message(&file_info, sizeof(file_info), 1);
     while (NullModem.Num_Send() > 0 && response_timer.HasTimeLeft()) {
       NullModem.Service();
@@ -621,7 +622,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
     }
     //		debugprint( "ShortFileName is '%s'\n",
     // net_file_info.ScenarioInfo.ShortFileName );
-    net_file_info.ScenarioInfo.FileLength = file_length;
+    net_file_info.ScenarioInfo.FileLength = static_cast<unsigned>(file_length);
 
     for (int i = 0; i < Session.RequestCount; i++) {
       Ipx.Send_Global_Message(

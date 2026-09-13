@@ -49,6 +49,7 @@
 #include "version.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <string>
@@ -178,7 +179,7 @@ unsigned long VersionClass::Version_Number() {
   //------------------------------------------------------------------------
   // Generate the version #
   //------------------------------------------------------------------------
-  Version = Major_Version() << 16 | Minor_Version();
+  Version = uint32_t{Major_Version()} << 16 | Minor_Version();
   VersionInit = 1;
 
   return Version;

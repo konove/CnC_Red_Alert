@@ -276,12 +276,12 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     case SELECT_INVERT:
       if (TextFlags & TPF_6PT_GRAD) {
         LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
-                             Colors[index]);
+                             static_cast<unsigned char>(Colors[index]));
         Conquer_Clip_Text_Print(List[index], x, y, BLACK, TBLACK, TextFlags,
                                 width, Tabs);
       } else {
         LogicPage->Fill_Rect(x, y, x + width - 2, y + LineHeight - 2,
-                             Colors[index]);
+                             static_cast<unsigned char>(Colors[index]));
         Conquer_Clip_Text_Print(List[index], x, y, LTGREY, TBLACK, TextFlags,
                                 width, Tabs);
       }

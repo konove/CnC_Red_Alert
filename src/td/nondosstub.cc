@@ -27,6 +27,7 @@
 #include "absl/base/attributes.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
+#include "base/numeric.h"
 #include "td/ccfile.h"
 #include "td/defines.h"
 #include "td/externs.h"
@@ -210,7 +211,7 @@ class BufferedFileReader {
   bool RefillBuffer() {
     cursor_ = 0;
     // Track exactly how many bytes were read.
-    bytes_in_buffer_ = file_.Read(buffer_.data(), kBufferSize);
+    bytes_in_buffer_ = base::ToSize(file_.Read(buffer_.data(), kBufferSize));
     return bytes_in_buffer_ > 0;
   }
 
@@ -268,15 +269,14 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
   BufferedFileReader reader(file_handle);
 
   if (header.byte_per_line != width) {
-    for (unsigned scan_pos = 0, j = 0; std::cmp_less(j, height);
-         j++, scan_pos += width) {
+    for (int scan_pos = 0, j = 0; j < height; j++, scan_pos += width) {
       for (int i = 0; i < width;) {
         const auto rle_result = reader.ReadByte();
         if (!rle_result.ok()) {
           delete pic;
           return nullptr;
         }
-        unsigned rle = *rle_result;
+        int rle = *rle_result;
         if (rle > 192) {
           rle -= 192;
           const auto color_result = reader.ReadByte();
@@ -284,8 +284,8 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
             delete pic;
             return nullptr;
           }
-          unsigned color = *color_result;
-          memset(buffer + scan_pos + i, color, rle);
+          int color = *color_result;
+          memset(buffer + scan_pos + i, color, base::ToSize(rle));
           i += rle;
         } else {
           buffer[scan_pos + i++] = static_cast<char>(rle);
@@ -299,7 +299,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
       delete pic;
       return nullptr;
     }
-    unsigned rle = *rle_result;
+    int rle = *rle_result;
     if ((rle > 192) && (!reader.ReadByte().ok())) {
       delete pic;
       return nullptr;
@@ -312,7 +312,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
         delete pic;
         return nullptr;
       }
-      unsigned rle = *rle_result;
+      int rle = *rle_result;
       if (rle > 192) {
         rle -= 192;
         const auto color_result = reader.ReadByte();
@@ -320,8 +320,8 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
           delete pic;
           return nullptr;
         }
-        unsigned color = *color_result;
-        memset(buffer + i, color, rle);
+        int color = *color_result;
+        memset(buffer + i, color, base::ToSize(rle));
         i += rle;
       } else {
         buffer[i++] = static_cast<char>(rle);

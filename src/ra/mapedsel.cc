@@ -48,6 +48,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/numeric.h"
 #include "ra/base.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -348,8 +349,8 @@ void MapEditClass::Popup_Controls() {
   */
   owner = CurrentObject[0]->Owner();
   mission_index = 0;
-  for (i = 0; std::cmp_less(i, MapEditMissions.size()); i++) {
-    if (CurrentObject[0]->Get_Mission() == MapEditMissions[i]) {
+  for (i = 0; i < std::ssize(MapEditMissions); i++) {
+    if (CurrentObject[0]->Get_Mission() == MapEditMissions[base::ToSize(i)]) {
       mission_index = i;
     }
   }
@@ -491,7 +492,7 @@ int MapEditClass::Move_Grabbed_Object() {
     /*
     **	Non-infantry: use cell's center coordinate
     */
-    new_coord = static_cast<CELL>(Cell_Coord(static_cast<CELL>(ZoneCell + GrabOffset)));
+    new_coord = Cell_Coord(static_cast<CELL>(ZoneCell + GrabOffset));
 
     if (GrabbedObject->What_Am_I() == RTTI_BUILDING ||
         GrabbedObject->What_Am_I() == RTTI_TERRAIN) {

@@ -63,6 +63,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "base/numeric.h"
 #include "td/conquer.h"
 
 #include <cstdint>
@@ -2327,7 +2328,7 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
   ** Allocate a position to store our icons.  If the alloc fails then
   ** we dont add these icons to the set.
   **/
-  buffer = new char[(icon_width * icon_height * 9 * frames) + 2];
+  buffer = new char[base::ToSize((icon_width * icon_height * 9 * frames) + 2)];
   if (!buffer) {
     return nullptr;
   }
@@ -2924,7 +2925,7 @@ void Handle_Team(int team, int action) {
         UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House == PlayerPtr) {
           if (std::cmp_equal(obj->Group, team)) {
-            obj->Group = -1;
+            obj->Group = 0xFF;  // No team.
           }
           if (obj->IsSelected) {
             obj->Group = static_cast<unsigned char>(team);
@@ -2935,7 +2936,7 @@ void Handle_Team(int team, int action) {
         InfantryClass* obj = Infantry.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House == PlayerPtr) {
           if (std::cmp_equal(obj->Group, team)) {
-            obj->Group = -1;
+            obj->Group = 0xFF;  // No team.
           }
           if (obj->IsSelected) {
             obj->Group = static_cast<unsigned char>(team);
@@ -2946,7 +2947,7 @@ void Handle_Team(int team, int action) {
         AircraftClass* obj = Aircraft.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House == PlayerPtr) {
           if (std::cmp_equal(obj->Group, team)) {
-            obj->Group = -1;
+            obj->Group = 0xFF;  // No team.
           }
           if (obj->IsSelected) {
             obj->Group = static_cast<unsigned char>(team);

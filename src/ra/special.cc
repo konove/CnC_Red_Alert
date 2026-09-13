@@ -141,8 +141,9 @@ void Special_Dialog(bool simple) {
   cancel.Add(*buttons);
 
   for (int index = 0; index < std::ssize(_options); index++) {
-    _options[index].Button = new CheckBoxClass(100 + index, OPTION_X + 34,
-                                               OPTION_Y + 40 + (index * 20));
+    _options[index].Button =
+        new CheckBoxClass(static_cast<unsigned>(100 + index), OPTION_X + 34,
+                          OPTION_Y + 40 + (index * 20));
     if (_options[index].Button) {
       _options[index].Button->Add(*buttons);
 

@@ -60,6 +60,7 @@
  *pre-prolog "please wait" page.                      *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
+#include "base/numeric.h"
 #include "ra/init.h"
 
 #include <algorithm>
@@ -1665,7 +1666,7 @@ uint32_t Obfuscate(const char* string) {
   **	Transform the buffer into a number. This transformation is character
   **	order dependant.
   */
-  int32_t code = CrcEngine::Compute(buffer);
+  auto code = static_cast<int32_t>(CrcEngine::Compute(buffer));
 
   /*
   **	Record a copy of this initial transformation to be used in a later
@@ -1715,9 +1716,9 @@ uint32_t Obfuscate(const char* string) {
                                        0x40, 0x00, 0x00, 0x04};
 
     buffer[index] = static_cast<char>(buffer[index] |
-                                      _addbits[index % std::size(_addbits)]);
-    buffer[index] = static_cast<char>(buffer[index] &
-                                      ~_lossbits[index % std::size(_lossbits)]);
+                                      _addbits[index % std::ssize(_addbits)]);
+    buffer[index] = static_cast<char>(
+        buffer[index] & ~_lossbits[index % std::ssize(_lossbits)]);
   }
 
   /*
@@ -1774,7 +1775,7 @@ uint32_t Obfuscate(const char* string) {
   **	Convert this final vector into a cypher key code to be
   **	returned by this routine.
   */
-  code = CrcEngine::Compute(buffer);
+  code = static_cast<int32_t>(CrcEngine::Compute(buffer));
 
   /*
   **	Return the final code value.
@@ -1801,7 +1802,7 @@ uint32_t Obfuscate(const char* string) {
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
 void Init_Random() {
-  int ms = Get_Time_Ms();
+  const uint32_t ms = Get_Time_Ms();
   CryptRandom.Seed_Byte(static_cast<char>(ms));
   // grab some more bits from somewhere?
 
@@ -2643,12 +2644,12 @@ static void Init_Bulk_Data() {
     char num[10];
     sprintf(num, "%d", index);
     if (ini.Get_String("Tutorial", num, "", buffer, sizeof(buffer))) {
-      totallen = static_cast<int>(totallen + (strlen(buffer) + 1));
+      totallen += static_cast<int>(strlen(buffer)) + 1;
     }
   }
 
   // now allocate and copy
-  TutorialTextData = new char[totallen];
+  TutorialTextData = new char[base::ToSize(totallen)];
   char* textptr = (char*)TutorialTextData;
 
   for (int index = 0; index < std::ssize(TutorialTextOffsets); index++) {
@@ -2782,11 +2783,10 @@ void Extract(const char* filename, const char* outname) {
 
   auto buffer = std::make_unique<char[]>(32768);
 
-  unsigned long size = inFile.Size();
-  unsigned long bytes;
+  int64_t size = inFile.Size();
 
   while (size > 0) {
-    bytes = inFile.Read(buffer.get(), 32768);
+    const int64_t bytes = inFile.Read(buffer.get(), 32768);
     outFile.Write(buffer.get(), bytes);
     size -= bytes;
   }

@@ -62,6 +62,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "base/numeric.h"
 #include "ra/monoc.h"
 
 #include <algorithm>
@@ -169,7 +170,7 @@ void MonoClass::Pan(int cols) {
     for (int index = SubY; index < SubY + SubH; index++) {
       memmove(&Page_Ptr()->Data[index][SubX],
               &Page_Ptr()->Data[index][SubX + cols],
-              sizeof(CellType) * (SubW - cols));
+              sizeof(CellType) * base::ToSize(SubW - cols));
       for (int cc = SubX + SubW - cols; cc < SubX + SubW; cc++) {
         Page_Ptr()->Data[index][cc] = cell;
       }
@@ -177,7 +178,8 @@ void MonoClass::Pan(int cols) {
   } else {
     for (int index = SubY; index < SubY + SubH; index++) {
       memmove(&Page_Ptr()->Data[index][SubX - cols],
-              &Page_Ptr()->Data[index][SubX], sizeof(CellType) * (SubW + cols));
+              &Page_Ptr()->Data[index][SubX],
+              sizeof(CellType) * base::ToSize(SubW + cols));
       for (int cc = SubX; cc < SubX - cols; cc++) {
         Page_Ptr()->Data[index][cc] = cell;
       }
@@ -419,10 +421,8 @@ void MonoClass::Clear() {
  *=============================================================================================*/
 void MonoClass::Fill_Attrib(int x, int y, int w, int h, MonoAttribute attrib) {
   if (!Enabled || !w || !h ||
-      static_cast<unsigned>(x) >= static_cast<unsigned>(SubW) ||
-      static_cast<unsigned>(y) >= static_cast<unsigned>(SubH) ||
-      static_cast<unsigned>(x) + w > static_cast<unsigned>(SubW) ||
-      static_cast<unsigned>(y) + h > static_cast<unsigned>(SubH)) {
+      x < 0 || x >= SubW || y < 0 || y >= SubH || x + w > SubW ||
+      y + h > SubH) {
     return;
   }
 
@@ -467,7 +467,8 @@ void MonoClass::Scroll(int lines) {
   if (lines > 0) {
     for (int row = 0; row < SubH - lines; row++) {
       memmove(&Page_Ptr()->Data[SubY + row][SubX],
-              &Page_Ptr()->Data[SubY + row + 1][SubX], SubW * sizeof(CellType));
+              &Page_Ptr()->Data[SubY + row + 1][SubX],
+              base::ToSize(SubW) * sizeof(CellType));
     }
     for (int frow = SubH - lines; frow < SubH; frow++) {
       for (int cc = 0; cc < SubW; cc++) {
@@ -477,7 +478,8 @@ void MonoClass::Scroll(int lines) {
   } else {
     for (int row = SubH - 1; row >= -lines; row--) {
       memmove(&Page_Ptr()->Data[SubY + row][SubX],
-              &Page_Ptr()->Data[SubY + row - 1][SubX], SubW * sizeof(CellType));
+              &Page_Ptr()->Data[SubY + row - 1][SubX],
+              base::ToSize(SubW) * sizeof(CellType));
     }
     for (int frow = 0; frow < -lines; frow++) {
       for (int cc = 0; cc < SubW; cc++) {
@@ -581,7 +583,7 @@ void MonoClass::Print(const char* ptr) {
   text = ptr;
   cell.Attribute = Attrib;
   while (*text) {
-    cell.Character = *text;
+    cell.Character = static_cast<unsigned char>(*text);
 
     /*
     **	Sometimes the character string is used for cursor control instead

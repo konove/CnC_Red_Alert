@@ -162,7 +162,7 @@ int ToggleClass::Action(unsigned flags, KeyNumType& key) {
   if (flags & LEFTPRESS) {
     IsPressed = true;
     Flag_To_Redraw();
-    flags &= ~LEFTPRESS;
+    flags &= ~unsigned{LEFTPRESS};
     ControlClass::Action(flags, key);
     key = KN_NONE;  // erase the event
     return true;    // stop processing other buttons now
@@ -176,7 +176,7 @@ int ToggleClass::Action(unsigned flags, KeyNumType& key) {
       IsPressed = false;
       Flag_To_Redraw();
     } else {
-      flags &= ~LEFTRELEASE;
+      flags &= ~unsigned{LEFTRELEASE};
     }
   }
 

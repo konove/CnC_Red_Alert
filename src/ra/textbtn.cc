@@ -92,7 +92,7 @@ TextButtonClass::TextButtonClass(unsigned id, const char* text,
                                  TextPrintType style, int x, int y, int w,
                                  int h, int blackborder)
     : ToggleClass(id, x, y, w, h),
-      IsBlackBorder(blackborder),
+      IsBlackBorder(blackborder != 0),
       String(text),
       PrintFlags(style) {
   if (w == -1 || h == -1) {
@@ -156,7 +156,7 @@ TextButtonClass::TextButtonClass()
 TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
                                  int x, int y, int w, int h, int blackborder)
     : ToggleClass(id, x, y, w, h),
-      IsBlackBorder(blackborder),
+      IsBlackBorder(blackborder != 0),
       String(nullptr),
       PrintFlags(style) {
   Set_Text(text);

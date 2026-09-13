@@ -97,7 +97,8 @@
  *=========================================================================*/
 ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
                      const void* up, const void* down)
-    : ControlClass(id, x, y, w, h, LEFTPRESS | LEFTRELEASE | KEYBOARD, false),
+    : ControlClass(static_cast<unsigned>(id), x, y, w, h,
+                   LEFTPRESS | LEFTRELEASE | KEYBOARD, false),
       TextFlags(flags),
       LineHeight(FontHeight + FontYSpacing - 1),
       LineCount((h - 1) / LineHeight),

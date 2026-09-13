@@ -41,6 +41,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "base/numeric.h"
 #include "td/profile.h"
 
 #include <algorithm>
@@ -66,14 +67,18 @@
  *=========================================================================*/
 bool Read_Private_Config_Struct(char* profile, NewConfigType* config) {
   config->DigitCard = WWGetPrivateProfileHex("Sound", "Card", profile);
-  config->IRQ = WWGetPrivateProfileInt("Sound", "IRQ", 0, profile);
-  config->DMA = WWGetPrivateProfileInt("Sound", "DMA", 0, profile);
+  config->IRQ = static_cast<unsigned>(
+      WWGetPrivateProfileInt("Sound", "IRQ", 0, profile));
+  config->DMA = static_cast<unsigned>(
+      WWGetPrivateProfileInt("Sound", "DMA", 0, profile));
   config->Port = WWGetPrivateProfileHex("Sound", "Port", profile);
-  config->BitsPerSample =
-      WWGetPrivateProfileInt("Sound", "BitsPerSample", 0, profile);
-  config->Channels = WWGetPrivateProfileInt("Sound", "Channels", 0, profile);
+  config->BitsPerSample = static_cast<unsigned>(
+      WWGetPrivateProfileInt("Sound", "BitsPerSample", 0, profile));
+  config->Channels = static_cast<unsigned>(
+      WWGetPrivateProfileInt("Sound", "Channels", 0, profile));
   config->Reverse = WWGetPrivateProfileInt("Sound", "Reverse", 0, profile);
-  config->Speed = WWGetPrivateProfileInt("Sound", "Speed", 0, profile);
+  config->Speed = static_cast<unsigned>(
+      WWGetPrivateProfileInt("Sound", "Speed", 0, profile));
   WWGetPrivateProfileString("Language", "Language", nullptr, config->Language,
                             3, profile);
 
@@ -219,7 +224,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
   */
   if (dest) {
     if (def && dest != def) {
-      port::SafeCopy(dest, def, dest_len);
+      port::SafeCopy(dest, def, base::ToSize(dest_len));
     }
     dest[dest_len - 1] = '\0';
     orig_retbuf = dest;
@@ -270,7 +275,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
     **	If this is the section name & the character before is a newline,
     **	process this section
     */
-    if (memicmp(workptr, sec, len) == 0 && c == '\n') {
+    if (memicmp(workptr, sec, base::ToSize(len)) == 0 && c == '\n') {
       /*
       **	Skip work pointer to start of first valid entry.
       */
@@ -353,7 +358,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
           /*
           **	Entry found; extract it
           */
-          if (memicmp(workptr, key, entrylen) == 0 && c == '\n' &&
+          if (memicmp(workptr, key, base::ToSize(entrylen)) == 0 && c == '\n' &&
               (c2 == '=' || isspace(c2))) {
             retval = workptr;
             workptr += entrylen;             // skip entry name
@@ -398,7 +403,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
             len = std::min(len, dest_len - 1);
 
             if (dest) {
-              memcpy(dest, workptr, len);
+              memcpy(dest, workptr, base::ToSize(len));
               *(dest + len) = '\0';  // Insert trailing null.
               strtrim(dest);
             }
@@ -432,7 +437,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
             **	add '3' for the 3 NULL's at the end
             */
             if (dest - orig_retbuf + length + 3 < dest_len) {
-              memcpy(dest, workptr, length);  // copy entry name
+              memcpy(dest, workptr, base::ToSize(length));  // copy entry name
               *(dest + length) = '\0';        // NULL-terminate it
               strtrim(dest);                  // trim spaces
               dest += strlen(dest) + 1;       // next pos in dest buf

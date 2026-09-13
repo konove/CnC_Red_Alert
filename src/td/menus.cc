@@ -47,6 +47,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstddef>
+#include <cstdint>
 
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -72,7 +73,7 @@
 
 static int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
                                  int iny2);
-static int Select_To_Entry(int select, unsigned long bitfield, int index);
+static int Select_To_Entry(int select, uint32_t bitfield, int index);
 static void Flash_Line(const char* text, int xpix, int ypix, int nfgc,
                        int hfgc, int bgc);
 
@@ -99,7 +100,7 @@ static int MenuSkip;
 /*	RETURNS:	int the index into the table of entries
  */
 /*=========================================================================*/
-static int Select_To_Entry(int select, unsigned long bitfield, int index) {
+static int Select_To_Entry(int select, uint32_t bitfield, int index) {
   int placement;
 
   if (bitfield == 0xFFFFFFFFL) { /* if all bits are set	*/
@@ -230,10 +231,10 @@ int Find_Menu_Items(int maxitems, unsigned long field, char index) {
  */
 /*=========================================================================*/
 void Setup_Menu(const MenuConfig& menu, const char* labels[],
-                const unsigned long visible_items, const int bit_offset,
+                const uint32_t visible_items, const int bit_offset,
                 const int line_spacing) {
-  const int menu_x = (WinX + menu.x) << 3;
-  const int menu_y = WinY + menu.y;
+  const int menu_x = (static_cast<int>(WinX) + menu.x) << 3;
+  const int menu_y = static_cast<int>(WinY) + menu.y;
 
   const int selected_entry =
       Select_To_Entry(menu.selected, visible_items, bit_offset);
@@ -266,7 +267,8 @@ void Setup_Menu(const MenuConfig& menu, const char* labels[],
 /*	RETURNS:
  */
 /*=========================================================================*/
-int Check_Menu(MenuConfig& menu, const char* text[], long field, int index) {
+int Check_Menu(MenuConfig& menu, const char* text[], uint32_t field,
+               int index) {
   int maxitem;
   int select;
   int key;
@@ -292,8 +294,8 @@ int Check_Menu(MenuConfig& menu, const char* text[], long field, int index) {
   menuskip = FontHeight + MenuSkip;               /* calc new font height	*/
   halfskip = MenuSkip >> 1;                       /* adjustment for menus	*/
 
-  menuy = WinY + menu.y;        /* get the absolute 		*/
-  menux = (WinX + menu.x) << 3; /*		coords of menu		*/
+  menuy = static_cast<int>(WinY) + menu.y;        /* get the absolute */
+  menux = (static_cast<int>(WinX) + menu.x) << 3; /* coords of menu */
   normcol = menu.normal_color;
   litcol = menu.highlight_color;
 
@@ -314,9 +316,9 @@ int Check_Menu(MenuConfig& menu, const char* text[], long field, int index) {
   **	the heck outta here. If we are somewhere on the menu, then figure
   **	out the new selected item, and continue forward.
   */
-  mx1 = (WinX << 3) + (menu.x * FontWidth); /* get menu coords		*/
-  my1 = WinY + menu.y - halfskip;           /*		from the menu
-                                             */
+  /* get menu coords from the menu */
+  mx1 = (static_cast<int>(WinX) << 3) + (menu.x * FontWidth);
+  my1 = static_cast<int>(WinY) + menu.y - halfskip;
   mx2 = mx1 + (menu.item_width * FontWidth) -
         1; /*		structure as		*/
   my2 = my1 + (menu.item_count * menuskip) -
@@ -490,7 +492,7 @@ int Do_Menu(const char** strings, bool blue) {
   WindowList[WINDOW_MENU][WINDOWWIDTH] = menu_config.item_width + 2;
   WindowList[WINDOW_MENU][WINDOWX] = 19 - (length >> 4);
   WindowList[WINDOW_MENU][WINDOWY] =
-      174 - (unsigned)(menu_config.item_count * (FontHeight + FontYSpacing));
+      174 - (menu_config.item_count * (FontHeight + FontYSpacing));
   WindowList[WINDOW_MENU][WINDOWHEIGHT] =
       (menu_config.item_count * FontHeight) + 5 /*11*/;
 
@@ -542,7 +544,7 @@ int Do_Menu(const char** strings, bool blue) {
  * HISTORY:                                                                *
  *   05/17/1995 BRR : Created.                                             *
  *=========================================================================*/
-int Main_Menu(unsigned long timeout) {
+int Main_Menu(int timeout) {
   enum {
     D_DIALOG_W = 304,
     D_DIALOG_H = 272,
@@ -632,7 +634,7 @@ int Main_Menu(unsigned long timeout) {
 #else
   TextButtonClass* buttons[5];
 #endif
-  unsigned long starttime;
+  int64_t starttime;
 
   ControlClass* commands = nullptr;  // the button list
 

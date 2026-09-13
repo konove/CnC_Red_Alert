@@ -72,7 +72,7 @@ class MonoClass {
   *in the monochrome drawing *	code.
   */
   typedef struct {
-    char Character;  // Character to display.
+    unsigned char Character;  // Character to display.
     char Attribute;  // Attribute.
   } CellType;
 
@@ -154,8 +154,8 @@ class MonoClass {
   **	Helper functions to help with display operations.
   */
   [[nodiscard]] int Offset(int x = 0, int y = 0) const {
-    return static_cast<int>((static_cast<std::size_t>(SIZE_OF_PAGE) * Page) +
-                            (sizeof(CellType) * (x + (y * COLUMNS))));
+    return (SIZE_OF_PAGE * Page) +
+           (static_cast<int>(sizeof(CellType)) * (x + (y * COLUMNS)));
   }
   void Scroll(int lines);
   void Store_Cell(CellType& cell, int x, int y) {

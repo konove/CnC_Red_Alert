@@ -56,6 +56,7 @@
 // #include	<fcntl.h>
 // #include	<io.h>
 // #include	<dos.h>
+#include "base/numeric.h"
 #include "sdllib/file.h"
 #include "sdllib/memflag.h"
 #include "sdllib/misc.h"
@@ -215,7 +216,8 @@ long CCFileClass::Read(void* buffer, long size) {
 
     size = std::min(maximum, size);
     if (size) {
-      Mem_Copy(Add_Long_To_Pointer(Pointer, Position), buffer, size);
+      Mem_Copy(Add_Long_To_Pointer(Pointer, Position), buffer,
+               base::ToSize(size));
       Position += size;
     }
     if (opened) {
@@ -497,14 +499,14 @@ void __cdecl Close_File(int handle) {
 
 long __cdecl Read_File(int handle, void* buf, unsigned long bytes) {
   if (handle != kInvalidHandle && Handles[handle].Is_Open()) {
-    return Handles[handle].Read(buf, bytes);
+    return Handles[handle].Read(buf, base::ToSigned(bytes));
   }
   return 0;
 }
 
 long __cdecl Write_File(int handle, const void* buf, unsigned long bytes) {
   if (handle != kInvalidHandle && Handles[handle].Is_Open()) {
-    return Handles[handle].Write(buf, bytes);
+    return Handles[handle].Write(buf, base::ToSigned(bytes));
   }
   return 0;
 }
@@ -536,7 +538,7 @@ void* __cdecl Load_Alloc_Data(const char* name, int /*unused*/) {
 
 unsigned long __cdecl File_Size(int handle) {
   if (handle != kInvalidHandle && Handles[handle].Is_Open()) {
-    return Handles[handle].Size();
+    return base::ToSize(Handles[handle].Size());
   }
   return 0;
 }
@@ -549,7 +551,7 @@ ULONG __cdecl Write_Data(const char* name, const VOID* ptr, ULONG size) {
 
 unsigned long __cdecl Seek_File(int handle, long offset, int starting) {
   if (handle != kInvalidHandle && Handles[handle].Is_Open()) {
-    return Handles[handle].Seek(offset, starting);
+    return base::ToSize(Handles[handle].Seek(offset, starting));
   }
   return 0;
 }

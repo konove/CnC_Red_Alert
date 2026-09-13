@@ -1,6 +1,8 @@
 #ifndef CNC_RED_ALERT_TD_MENUS_H_
 #define CNC_RED_ALERT_TD_MENUS_H_
 
+#include <cstdint>
+
 #include "sdllib/wwstd.h"
 
 struct MenuConfig {
@@ -14,10 +16,10 @@ struct MenuConfig {
 };
 
 void Setup_Menu(const MenuConfig& menu, const char* labels[],
-                unsigned long visible_items, int bit_offset, int line_spacing);
-int Check_Menu(MenuConfig& menu, const char* text[], long field, int index);
+                uint32_t visible_items, int bit_offset, int line_spacing);
+int Check_Menu(MenuConfig& menu, const char* text[], uint32_t field, int index);
 int Do_Menu(const char** strings, bool blue);
 extern int UnknownKey;
-int Main_Menu(unsigned long timeout);
+int Main_Menu(int timeout);
 
 #endif  // CNC_RED_ALERT_TD_MENUS_H_

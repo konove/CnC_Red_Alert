@@ -230,14 +230,14 @@ static void Create_Palette_Interpolation_Table() {
 
 void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
                                 int green_percentage, int blue_percentage,
-                                unsigned cap) {
-  unsigned int red;
-  unsigned int green;
-  unsigned int blue;
+                                int cap) {
+  int red;
+  int green;
+  int blue;
   for (int i = 0; i < SIZE_OF_PALETTE * 3; i += 3) {
-    red = static_cast<unsigned>(*(palette + i));
-    green = static_cast<unsigned>(*(palette + i + 1));
-    blue = static_cast<unsigned>(*(palette + i + 2));
+    red = *(palette + i);
+    green = *(palette + i + 1);
+    blue = *(palette + i + 2);
 
     red += red * red_percentage / 100;
     green += green * green_percentage / 100;

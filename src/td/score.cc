@@ -53,6 +53,7 @@
 #include "td/score.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
 #include <utility>
 
@@ -724,12 +725,14 @@ void ScoreClass::Presentation() {
         HouseClass::As_Pointer(static_cast<HousesType>(HOUSE_GOOD + index));
   }
 
-  GKilled = HouseClass::As_Pointer(HOUSE_GOOD)->UnitsLost;
-  NKilled = HouseClass::As_Pointer(HOUSE_BAD)->UnitsLost;
-  CKilled = HouseClass::As_Pointer(HOUSE_NEUTRAL)->UnitsLost;
-  GBKilled = HouseClass::As_Pointer(HOUSE_GOOD)->BuildingsLost;
-  NBKilled = HouseClass::As_Pointer(HOUSE_BAD)->BuildingsLost;
-  CBKilled = HouseClass::As_Pointer(HOUSE_NEUTRAL)->BuildingsLost;
+  GKilled = static_cast<int>(HouseClass::As_Pointer(HOUSE_GOOD)->UnitsLost);
+  NKilled = static_cast<int>(HouseClass::As_Pointer(HOUSE_BAD)->UnitsLost);
+  CKilled = static_cast<int>(HouseClass::As_Pointer(HOUSE_NEUTRAL)->UnitsLost);
+  GBKilled =
+      static_cast<int>(HouseClass::As_Pointer(HOUSE_GOOD)->BuildingsLost);
+  NBKilled = static_cast<int>(HouseClass::As_Pointer(HOUSE_BAD)->BuildingsLost);
+  CBKilled =
+      static_cast<int>(HouseClass::As_Pointer(HOUSE_NEUTRAL)->BuildingsLost);
 
   /*
   ** New  - ST 6/12/96 2:40PM
@@ -1089,7 +1092,7 @@ void ScoreClass::Presentation() {
 void Cycle_Wait_Click() {
   int counter = 0;
   int minclicks = 20;
-  unsigned long timingtime = TickCount.Time();
+  int64_t timingtime = TickCount.Time();
   SerialPacketType sendpacket;
   SerialPacketType receivepacket;
   int packetlen;
@@ -1104,7 +1107,8 @@ void Cycle_Wait_Click() {
       //
       if (TickCount.Time() - timingtime > PACKET_TIMING_TIMEOUT) {
         sendpacket.Command = SERIAL_SCORE_SCREEN;
-        sendpacket.ResponseTime = NullModem.Response_Time();
+        sendpacket.ResponseTime =
+            static_cast<uint32_t>(NullModem.Response_Time());
         sendpacket.ID = ModemGameToPlay;
 
         NullModem.Send_Message(&sendpacket, sizeof(sendpacket), 0);

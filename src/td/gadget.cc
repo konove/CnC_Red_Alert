@@ -119,7 +119,7 @@ GadgetClass* GadgetClass::Focused = nullptr;
  *=============================================================================================*/
 GadgetClass::GadgetClass(int x, int y, int w, int h, unsigned flags,
                          int sticky) noexcept
-    : X(x), Y(y), Width(w), Height(h), IsSticky(sticky), Flags(flags) {
+    : X(x), Y(y), Width(w), Height(h), IsSticky(sticky != 0), Flags(flags) {
   if (IsSticky) {
     Flags |= LEFTPRESS | LEFTRELEASE;
   }

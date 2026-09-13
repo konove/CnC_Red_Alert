@@ -70,22 +70,22 @@ void Special_Dialog() {
   GadgetClass* buttons = nullptr;
   static struct {
     int Description;
-    int Setting;
+    bool Setting;
     CheckBoxClass* Button;
   } _options[] = {
       //		{TXT_DEFENDER_ADVANTAGE, 0, 0},
-      {TXT_SEPARATE_HELIPAD, 0, nullptr},
-      {TXT_VISIBLE_TARGET, 0, nullptr},
-      {TXT_TREE_TARGET, 0, nullptr},
-      {TXT_MCV_DEPLOY, 0, nullptr},
-      {TXT_SMART_DEFENCE, 0, nullptr},
-      {TXT_THREE_POINT, 0, nullptr},
+      {TXT_SEPARATE_HELIPAD, false, nullptr},
+      {TXT_VISIBLE_TARGET, false, nullptr},
+      {TXT_TREE_TARGET, false, nullptr},
+      {TXT_MCV_DEPLOY, false, nullptr},
+      {TXT_SMART_DEFENCE, false, nullptr},
+      {TXT_THREE_POINT, false, nullptr},
       //		{TXT_TIBERIUM_GROWTH, 0, 0},
       //		{TXT_TIBERIUM_SPREAD, 0, 0},
-      {TXT_TIBERIUM_FAST, 0, nullptr},
-      {TXT_ROAD_PIECES, 0, nullptr},
-      {TXT_SCATTER, 0, nullptr},
-      {TXT_SHOW_NAMES, 0, nullptr},
+      {TXT_TIBERIUM_FAST, false, nullptr},
+      {TXT_ROAD_PIECES, false, nullptr},
+      {TXT_SCATTER, false, nullptr},
+      {TXT_SHOW_NAMES, false, nullptr},
   };
 
   TextButtonClass ok(200, TXT_OK, TPF_6PT_GRAD | TPF_NOSHADOW, OPTION_X + 5,
@@ -97,8 +97,9 @@ void Special_Dialog() {
   cancel.Add(*buttons);
 
   for (int index = 0; index < std::ssize(_options); index++) {
-    _options[index].Button = new CheckBoxClass(100 + index, OPTION_X + 7,
-                                               OPTION_Y + 20 + (index * 10));
+    _options[index].Button =
+        new CheckBoxClass(static_cast<unsigned>(100 + index), OPTION_X + 7,
+                          OPTION_Y + 20 + (index * 10));
     if (_options[index].Button) {
       _options[index].Button->Add(*buttons);
 
@@ -283,7 +284,7 @@ void Special_Dialog() {
         int index = (input & ~KN_BUTTON) - 100;
         if (static_cast<unsigned>(index) <
             sizeof(_options) / sizeof(_options[0])) {
-          _options[index].Setting = !static_cast<bool>(_options[index].Setting);
+          _options[index].Setting = !_options[index].Setting;
           if (_options[index].Setting) {
             _options[index].Button->Turn_On();
           } else {

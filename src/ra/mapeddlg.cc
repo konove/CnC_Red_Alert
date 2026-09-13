@@ -2420,7 +2420,7 @@ int MapEditClass::Load_Scenario() {
       HouseClass* hptr = HouseClass::As_Pointer(h);
       if (hptr != nullptr) {
         hptr->Control = hdata[h];
-        hptr->Allies = hdata[h].Allies;
+        hptr->Allies = static_cast<unsigned>(hdata[h].Allies);
         hptr->IsPlayerControl = control.Is_Checked(h);
       }
     }

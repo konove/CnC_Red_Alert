@@ -26,6 +26,7 @@
 //
 // Originally CONQUER.CPP, by Joe L. Bostic, started April 3, 1991.
 
+#include "base/numeric.h"
 #include "ra/conquer.h"
 
 #include <fcntl.h>
@@ -653,7 +654,7 @@ static void Message_Input(KeyNumType& input) {
 
       serial_packet->Command = SERIAL_MESSAGE;
       port::SafeCopy(serial_packet->Name, Session.Players[0]->Name);
-      serial_packet->ID = Session.ColorIdx;
+      serial_packet->ID = static_cast<unsigned char>(Session.ColorIdx);
 
       if (rc == 3) {
         port::SafeCopy(serial_packet->Message.Message,
@@ -1859,7 +1860,7 @@ bool Main_Loop() {
       // Sized when a capture run starts rather than once per process, so that
       // an edit to MovieTime takes effect on the next run.
       int frame_count = Rule.MovieTime * kTicksPerMinute;
-      frames.resize(frame_count);
+      frames.resize(base::ToSize(frame_count));
     }
 
     // Leaked for the same reason as frames above.
@@ -1872,10 +1873,11 @@ bool Main_Loop() {
 
     if (sequence < std::ssize(frames)) {
       // A no-op on a frame reused from an earlier run of the same resolution.
-      frames[sequence].resize(size);
+      frames[base::ToSize(sequence)].resize(base::ToSize(size));
 
       SeenBuff.Blit(temp_page);
-      std::memcpy(frames[sequence].data(), temp_page.Get_Buffer(), size);
+      std::memcpy(frames[base::ToSize(sequence)].data(), temp_page.Get_Buffer(),
+                  base::ToSize(size));
       sequence++;
     } else {
       Debug_MotionCapture = false;
@@ -1885,7 +1887,8 @@ bool Main_Loop() {
       char filename[30];
 
       for (base::ssize index = 0; index < sequence; index++) {
-        std::memcpy(temp_page.Get_Buffer(), frames[index].data(), size);
+        std::memcpy(temp_page.Get_Buffer(), frames[base::ToSize(index)].data(),
+                    base::ToSize(size));
         snprintf(filename, sizeof(filename), "cap%04zd.pcx", index);
         file.Set_Name(filename);
 
@@ -2214,7 +2217,8 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile,
   // Allocate a position to store our icons.  If the alloc fails then
   // we don't add these icons to the set.
   auto result =
-      std::make_unique<char[]>((icon_width * icon_height * 9 * frames) + 2);
+      std::make_unique<char[]>(
+          base::ToSize((icon_width * icon_height * 9 * frames) + 2));
   char* buffer = result.get();
   *buffer++ = static_cast<char>(icon_width);
   *buffer++ = static_cast<char>(icon_height);
@@ -3000,7 +3004,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
       if (cd_desired == CD_DVD) {
         insert_prompt(kCdNames[kDvdName]);
       } else if (cd_desired == CD_COUNTERSTRIKE || cd_desired == CD_AFTERMATH) {
-        insert_prompt(kCdNames[cd_desired]);
+        insert_prompt(kCdNames[base::ToSize(cd_desired)]);
       } else {
         // These prompts come from the localized string table, so verify the
         // translation still takes a %d followed by a %s before using it.
@@ -3008,9 +3012,10 @@ bool Force_CD_Available(int cd_desired)  // ajw
             cd_desired == CD_ANY ? TXT_CD_DIALOG_1 : TXT_CD_DIALOG_2;  // 0 or 1
         auto format = absl::ParsedFormat<'d', 's'>::New(Text_String(text));
         if (format != nullptr) {
-          port::SafeCopy(buffer, absl::StrFormat(*format, cd_desired + 1,
-                                                 kCdNames[cd_desired])
-                                     .c_str());
+          port::SafeCopy(
+              buffer, absl::StrFormat(*format, cd_desired + 1,
+                                      kCdNames[base::ToSize(cd_desired)])
+                          .c_str());
         }
       }
 
@@ -3105,7 +3110,7 @@ void* Hires_Load(char* name) {
 
   if (file.Is_Available()) {
     const int length = static_cast<int>(file.Size());
-    void* return_ptr = new char[length];
+    void* return_ptr = new char[base::ToSize(length)];
     file.Read(return_ptr, length);
     return return_ptr;
   }

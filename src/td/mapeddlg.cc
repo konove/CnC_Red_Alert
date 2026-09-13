@@ -997,7 +997,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   char txt[40];
   int txt_x;
   int txt_y;              // for displaying text
-  unsigned index;         // for drawing map symbology
+  int index;              // for drawing map symbology
   CELL cell;              // for drawing map symbology
   int color;              // for drawing map symbology
   ObjectClass* occupier;  // cell's occupier

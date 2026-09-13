@@ -198,7 +198,7 @@ int LoadOptionsClass::Process() {
   **	Other Variables
   */
   int btn_txt;                // text on the 'OK' button
-  int btn_id;                 // ID of 'OK' button
+  unsigned btn_id;               // ID of 'OK' button
   int caption;                // dialog caption
   int game_idx = 0;           // index of game to save/load/etc
   int game_num = 0;           // file number of game to load/save/etc

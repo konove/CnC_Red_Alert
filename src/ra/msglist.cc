@@ -54,6 +54,7 @@
  *   MessageListClass::Reset -- Reset so no messages are visible.          *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "base/numeric.h"
 #include "ra/msglist.h"
 
 #include <algorithm>
@@ -208,7 +209,7 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars, int height,
   // edit field above the other messages; otherwise, place it at the desired
   // coords.
   //------------------------------------------------------------------------
-  EnableOverflow = overflow_on;
+  EnableOverflow = overflow_on != 0;
   IsEdit = 0;
   if (edit_x == -1 || edit_y == -1) {
     AdjustEdit = 1;
@@ -353,7 +354,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
       mess_start = 0;
     }
     for (int j = 1; std::cmp_less(j, strlen(txt)); j++) {
-      strncpy(&temp[mess_start], txt, j);
+      strncpy(&temp[mess_start], txt, base::ToSize(j));
       temp[mess_start + j] = 0;
       wid = String_Pixel_Width(temp);
       if (wid >= Width - 8) {
@@ -605,13 +606,13 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
     //---------------------------------------------------------------------
     // We need to trim the message if there is no room to draw it
     //---------------------------------------------------------------------
-    char* concat_test = new char[MaxChars + 1];
+    char* concat_test = new char[base::ToSize(MaxChars + 1)];
     Fancy_Text_Print(TXT_NONE, 0, 0, tlabel->Color, TBLACK, tlabel->Style);
     int name_width = String_Pixel_Width(tlabel->Text) - String_Pixel_Width(msg);
     int width;
 
-    port::SafeCopy(concat_test, msg, MaxChars);
-    port::SafeAppend(concat_test, txt, MaxChars);
+    port::SafeCopy(concat_test, msg, base::ToSize(MaxChars));
+    port::SafeAppend(concat_test, txt, base::ToSize(MaxChars));
     width = String_Pixel_Width(concat_test) + name_width;
     min_chars = 10;
 
@@ -620,8 +621,8 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
 
       Trim_Message(nullptr, msg, min_chars, max_chars, 0);
 
-      port::SafeCopy(concat_test, msg, MaxChars);
-      port::SafeAppend(concat_test, txt, MaxChars);
+      port::SafeCopy(concat_test, msg, base::ToSize(MaxChars));
+      port::SafeAppend(concat_test, txt, base::ToSize(MaxChars));
 
       width = String_Pixel_Width(concat_test) + name_width;
     }
@@ -1300,14 +1301,14 @@ int MessageListClass::Trim_Message(char* dest, char* src, int min_chars,
   // Save trimmed characters in the dest buffer, if there is one
   //------------------------------------------------------------------------
   if (dest) {
-    memcpy(dest, src, i);
+    memcpy(dest, src, base::ToSize(i));
     dest[i] = '\0';
   }
 
   //------------------------------------------------------------------------
   // Shift characters over in the source buffer
   //------------------------------------------------------------------------
-  memmove(src, src + i, len - i + 1);
+  memmove(src, src + i, base::ToSize(len - i + 1));
 
   return i;
 

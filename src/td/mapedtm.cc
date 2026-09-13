@@ -1406,13 +1406,13 @@ int MapEditClass::Edit_Team() {
       tech::ParseInteger<int>(maxnum_buf).value_or(0));
   CurTeam->InitNum = static_cast<unsigned char>(
       tech::ParseInteger<int>(initnum_buf).value_or(0));
-  CurTeam->IsRoundAbout = roundabout;
-  CurTeam->IsLearning = learning;
-  CurTeam->IsSuicide = suicide;
-  CurTeam->IsAutocreate = autocreate;
-  CurTeam->IsPrebuilt = prebuilt;
-  CurTeam->IsReinforcable = reinforce;
-  CurTeam->IsMercenary = mercenary;
+  CurTeam->IsRoundAbout = roundabout != 0;
+  CurTeam->IsLearning = learning != 0;
+  CurTeam->IsSuicide = suicide != 0;
+  CurTeam->IsAutocreate = autocreate != 0;
+  CurTeam->IsPrebuilt = prebuilt != 0;
+  CurTeam->IsReinforcable = reinforce != 0;
+  CurTeam->IsMercenary = mercenary != 0;
   CurTeam->House = house;
   CurTeam->MissionCount = missioncount;
   for (i = 0; i < missioncount; i++) {

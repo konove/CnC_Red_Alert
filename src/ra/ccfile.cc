@@ -47,6 +47,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "base/numeric.h"
 #include "ra/ccfile.h"
 
 #include <cerrno>
@@ -201,7 +202,7 @@ long CCFileClass::Read(void* buffer, long size) {
     size = maximum < size ? maximum : size;
     //		size = std::min(maximum, size);
     if (size) {
-      memmove(buffer, static_cast<char*>(Data) + Position, size);
+      memmove(buffer, static_cast<char*>(Data) + Position, base::ToSize(size));
       //			Mem_Copy((char *)Pointer + Position, buffer,
       // size);
       Position += size;
@@ -465,7 +466,7 @@ int CCFileClass::Open(FileAccess rights) {
     Bias(loc->offset, loc->size);
     Seek(0, SEEK_SET);
   } else {
-    new (&Data)::Buffer(loc->data.data(), loc->data.size());
+    new (&Data)::Buffer(loc->data.data(), base::ToSigned(loc->data.size()));
     Position = 0;
   }
 
@@ -557,14 +558,14 @@ void __cdecl Close_File(int handle) {
 
 long __cdecl Read_File(int handle, void* buf, unsigned long bytes) {
   if (handle != WWERROR && Handles[handle].Is_Open()) {
-    return Handles[handle].Read(buf, bytes);
+    return Handles[handle].Read(buf, base::ToSigned(bytes));
   }
   return 0;
 }
 
 long __cdecl Write_File(int handle, const void* buf, unsigned long bytes) {
   if (handle != WWERROR && Handles[handle].Is_Open()) {
-    return Handles[handle].Write(buf, bytes);
+    return Handles[handle].Write(buf, base::ToSigned(bytes));
   }
   return 0;
 }
@@ -582,14 +583,14 @@ void* __cdecl Load_Alloc_Data(const char* name, int /*unused*/) {
 
 unsigned long __cdecl File_Size(int handle) {
   if (handle != WWERROR && Handles[handle].Is_Open()) {
-    return Handles[handle].Size();
+    return base::ToSize(Handles[handle].Size());
   }
   return 0;
 }
 
 unsigned long __cdecl Seek_File(int handle, long offset, int starting) {
   if (handle != WWERROR && Handles[handle].Is_Open()) {
-    return Handles[handle].Seek(offset, starting);
+    return base::ToSize(Handles[handle].Seek(offset, starting));
   }
   return 0;
 }

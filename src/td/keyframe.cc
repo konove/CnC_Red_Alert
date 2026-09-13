@@ -73,6 +73,10 @@ typedef struct {
   short flags;
 } KeyFrameHeaderType;
 
+// Byte offset of the frame offset table, which follows the header.
+constexpr base::ssize kKeyFrameHeaderSize =
+    base::ssize{sizeof(KeyFrameHeaderType)};
+
 #define INITIAL_BIG_SHAPE_BUFFER_SIZE (12000 * 1024)
 #define THEATER_BIG_SHAPE_BUFFER_SIZE (1000 * 1024)
 #define UNCOMPRESS_MAGIC_NUMBER 56789
@@ -194,9 +198,10 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
   char* lockptr = nullptr;
   // char *uncomp_ptr;
   uint32_t offset[SUBFRAMEOFFS];
-  unsigned long offcurr;
-  unsigned long off16;
-  unsigned long offdiff;
+  // Offsets into the 24-bit frame data, so int32_t never overflows.
+  int32_t offcurr;
+  int32_t off16;
+  int32_t offdiff;
   KeyFrameHeaderType* keyfr;
   unsigned short buffsize;
   unsigned short currframe = 0;
@@ -319,7 +324,7 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
 
   // get offset into data
   ptr = static_cast<char*>(Add_Long_To_Pointer(
-      dataptr, ((unsigned long)framenumber << 3) + sizeof(KeyFrameHeaderType)));
+      dataptr, (int32_t{framenumber} << 3) + kKeyFrameHeaderSize));
   Mem_Copy(ptr, &offset[0], 12L);
   frameflags = static_cast<char>(offset[0] >> 24);
 
@@ -338,15 +343,15 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
 
       ptr = static_cast<char*>(Add_Long_To_Pointer(
           dataptr,
-          ((unsigned long)currframe << 3) + sizeof(KeyFrameHeaderType)));
+          (int32_t{currframe} << 3) + kKeyFrameHeaderSize));
       Mem_Copy(ptr, &offset[0], SUBFRAMEOFFS * sizeof(uint32_t));
     }
 
     // key frame
-    offcurr = offset[1] & 0x00FFFFFFL;
+    offcurr = static_cast<int32_t>(offset[1] & 0x00FFFFFF);
 
     // key delta
-    offdiff = (offset[0] & 0x00FFFFFFL) - offcurr;
+    offdiff = static_cast<int32_t>(offset[0] & 0x00FFFFFF) - offcurr;
 
     ptr = static_cast<char*>(Add_Long_To_Pointer(dataptr, offcurr));
 
@@ -354,7 +359,7 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
       ptr = static_cast<char*>(Add_Long_To_Pointer(ptr, 768L));
     }
 
-    off16 = (unsigned long)lockptr & 0x00003FFFL;
+    off16 = static_cast<int32_t>(std::bit_cast<uintptr_t>(lockptr) & 0x3FFF);
 
     length = LCW_Uncompress(ptr, buffptr, buffsize);
 
@@ -362,9 +367,10 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
       return nullptr;
     }
 
-    if ((offset[2] & 0x00FFFFFFL) - offcurr >= 0x00010000L - off16) {
+    if (static_cast<int32_t>(offset[2] & 0x00FFFFFF) - offcurr >=
+        0x00010000 - off16) {
       ptr = static_cast<char*>(Add_Long_To_Pointer(ptr, offdiff));
-      off16 = (unsigned long)ptr & 0x00003FFFL;
+      off16 = static_cast<int32_t>(std::bit_cast<uintptr_t>(ptr) & 0x3FFF);
 
       offcurr += offdiff;
       offdiff = 0;
@@ -380,12 +386,13 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
       subframe = 2;
 
       while (currframe <= framenumber) {
-        offdiff = (offset[subframe] & 0x00FFFFFFL) - offcurr;
+        offdiff = static_cast<int32_t>(offset[subframe] & 0x00FFFFFF) - offcurr;
 
-        if ((offset[subframe + 2] & 0x00FFFFFFL) - offcurr >=
-            0x00010000L - off16) {
+        if (static_cast<int32_t>(offset[subframe + 2] & 0x00FFFFFF) - offcurr >=
+            0x00010000 - off16) {
           ptr = static_cast<char*>(Add_Long_To_Pointer(ptr, offdiff));
-          off16 = (unsigned long)lockptr & 0x00003FFFL;
+          off16 =
+              static_cast<int32_t>(std::bit_cast<uintptr_t>(lockptr) & 0x3FFF);
 
           offcurr += offdiff;
           offdiff = 0;
@@ -398,9 +405,8 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
         subframe += 2;
 
         if (subframe >= SUBFRAMEOFFS - 1 && currframe <= framenumber) {
-          Mem_Copy(Add_Long_To_Pointer(
-                       dataptr, (static_cast<unsigned long>(currframe) << 3) +
-                                    sizeof(KeyFrameHeaderType)),
+          Mem_Copy(Add_Long_To_Pointer(dataptr, (int32_t{currframe} << 3) +
+                                                    kKeyFrameHeaderSize),
                    &offset[0], SUBFRAMEOFFS * sizeof(uint32_t));
           subframe = 0;
         }
@@ -434,7 +440,7 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
 
       memcpy(temp_shape_ptr, buffptr, length);
       port::AlignedObject<ShapeHeaderType>(TheaterShapeBufferPtr)->draw_flags =
-          -1;  // Flag that headers need to be generated
+          ~0U;  // Flag that headers need to be generated
       port::AlignedObject<ShapeHeaderType>(TheaterShapeBufferPtr)->shape_data =
           temp_shape_ptr -
           (uintptr_t)TheaterShapeBufferStart;  // pointer to old raw shape data
@@ -469,7 +475,7 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
     }
     memcpy(temp_shape_ptr, buffptr, length);
     port::AlignedObject<ShapeHeaderType>(BigShapeBufferPtr)->draw_flags =
-        -1;  // Flag that headers need to be generated
+        ~0U;  // Flag that headers need to be generated
     port::AlignedObject<ShapeHeaderType>(BigShapeBufferPtr)->shape_data =
         temp_shape_ptr -
         (uintptr_t)BigShapeBufferStart;  // pointer to old raw shape data

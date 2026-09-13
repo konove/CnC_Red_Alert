@@ -203,8 +203,8 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
   **	is calculated as a ratio from 0 (matches orthogonal) to 31
   **	(matches diagonal).
   */
-  CHECK_NE(bigger, 0U);
-  int frac = smaller * 32U / bigger;
+  CHECK_NE(bigger, 0);
+  int frac = smaller * 32 / bigger;
 
   /*
   **	Given the quadrant and knowing whether the facing is closer

@@ -143,7 +143,7 @@ void OptionsClass::One_Time() { Set_Score_Vol(ScoreVolume * 256); }
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::Set_Shuffle(int on) { IsScoreShuffle = on; }
+void OptionsClass::Set_Shuffle(int on) { IsScoreShuffle = on != 0; }
 
 /***********************************************************************************************
  * OptionsClass::Set_Repeat -- Controls the score repeat option. *
@@ -159,7 +159,7 @@ void OptionsClass::Set_Shuffle(int on) { IsScoreShuffle = on; }
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::Set_Repeat(int on) { IsScoreRepeat = on; }
+void OptionsClass::Set_Repeat(int on) { IsScoreRepeat = on != 0; }
 
 /***********************************************************************************************
  * OptionsClass::Set_Score_Volume -- Sets the global score volume to that
@@ -471,7 +471,8 @@ void OptionsClass::Load_Settings() {
   **	Read in the Options values
   */
   static const char* const OPTIONS = "Options";
-  GameSpeed = ini.Get_Int(OPTIONS, "GameSpeed", GameSpeed);
+  GameSpeed = static_cast<unsigned>(
+      ini.Get_Int(OPTIONS, "GameSpeed", static_cast<int>(GameSpeed)));
   ScrollRate = ini.Get_Int(OPTIONS, "ScrollRate", ScrollRate);
   Set_Brightness(ini.Get_Fixed(OPTIONS, "Brightness", Brightness));
   Set_Sound_Volume(ini.Get_Fixed(OPTIONS, "Volume", Volume), false);
@@ -667,7 +668,7 @@ void OptionsClass::Save_Settings() {
   **	Save Options settings
   */
   static const char* const OPTIONS = "Options";
-  ini.Put_Int(OPTIONS, "GameSpeed", GameSpeed);
+  ini.Put_Int(OPTIONS, "GameSpeed", static_cast<int>(GameSpeed));
   ini.Put_Int(OPTIONS, "ScrollRate", ScrollRate);
   ini.Put_Fixed(OPTIONS, "Brightness", Brightness);
   ini.Put_Fixed(OPTIONS, "Volume", Volume);
@@ -796,7 +797,7 @@ int OptionsClass::Normalize_Delay(int delay) const {
     if (delay < 5) {
       delay = _adjust[delay - 1][GameSpeed];
     } else {
-      delay = delay * 8 / (GameSpeed + 1);
+      delay = delay * 8 / static_cast<int>(GameSpeed + 1);
     }
   }
   return delay;

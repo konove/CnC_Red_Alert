@@ -370,8 +370,7 @@ void ScoreClass::Presentation() {
   ** Load the background for the score screen
   */
 
-  unsigned minutes =
-      static_cast<unsigned>(ElapsedTime / (long)kTimerMinute) + 1;
+  const int minutes = static_cast<int>(ElapsedTime / kTimerMinute) + 1;
 
   // Load up the shapes for the Nod score screen
   yellowptr = MFCD::Retrieve("BAR3BHR.SHP");
@@ -735,7 +734,7 @@ void Cycle_Wait_Click(bool cycle) {
       if (TickCount.Value() - timingtime > PACKET_TIMING_TIMEOUT) {
         memset(&sendpacket, 0, sizeof(SerialPacketType));
         sendpacket.Command = SERIAL_SCORE_SCREEN;
-        sendpacket.ScenarioInfo.ResponseTime = static_cast<int>(NullModem.Response_Time());
+        sendpacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
         sendpacket.ID = Session.ModemType;
 
         NullModem.Send_Message(&sendpacket, sizeof(sendpacket), 0);
@@ -838,7 +837,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     CC_Draw_Shape(tanya_shape,
                   ramboclass->DoControls[DO_WALK].Frame +
                       (ramboclass->DoControls[DO_WALK].Jump * 6) +
-                      ((static_cast<unsigned>(i) >> 1) %
+                      ((i >> 1) %
                        ramboclass->DoControls[DO_WALK].Count),
                   i + 32, 40, WINDOW_MAIN,
                   SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST,
@@ -1565,7 +1564,7 @@ static char* Int_Print(int a) {
  *=============================================================================================*/
 
 void Multi_Score_Presentation() {
-  char remap[16];
+  unsigned char remap[16];
   auto* pseudoseenbuff =
       new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
 

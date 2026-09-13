@@ -53,6 +53,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 #include <span>
 #include <string>
 
@@ -1579,7 +1580,7 @@ bool Select_Game(bool fade) {
   */
   // Seed = 1;
 
-  srand(Seed);
+  srand(static_cast<unsigned>(Seed));
   // Loading already restored the exact stream positions.
   if (!gameloaded) {
     SeedGameRandom(static_cast<uint32_t>(Seed));
@@ -2426,9 +2427,9 @@ bool Parse_Command_Line(int argc, char* argv[]) {
           break;
         }
         if (i < 4) {
-          net[i] = static_cast<char>(*byte);  // fill NetNum
+          net[i] = *byte;  // fill NetNum
         } else {
-          node[i - 4] = static_cast<char>(*byte);  // fill NetNode
+          node[i - 4] = *byte;  // fill NetNode
         }
         i++;
         p = strtok(nullptr, ".");
@@ -3046,7 +3047,7 @@ long Obfuscate(const char* string) {
   **	Transform the buffer into a number. This transformation is character
   **	order dependant.
   */
-  int32_t code = CrcEngine::Compute(buffer);
+  auto code = static_cast<int32_t>(CrcEngine::Compute(buffer));
 
   /*
   **	Record a copy of this initial transformation to be used in a later
@@ -3096,11 +3097,9 @@ long Obfuscate(const char* string) {
                                        0x40, 0x00, 0x00, 0x04};
 
     buffer[index] = static_cast<char>(
-        buffer[index] |
-        _addbits[index % (sizeof(_addbits) / sizeof(_addbits[0]))]);
+        buffer[index] | _addbits[index % std::ssize(_addbits)]);
     buffer[index] = static_cast<char>(
-        buffer[index] &
-        ~_lossbits[index % (sizeof(_lossbits) / sizeof(_lossbits[0]))]);
+        buffer[index] & ~_lossbits[index % std::ssize(_lossbits)]);
   }
 
   /*
@@ -3157,7 +3156,7 @@ long Obfuscate(const char* string) {
   **	Convert this final vector into a cypher key code to be
   **	returned by this routine.
   */
-  code = CrcEngine::Compute(buffer);
+  code = static_cast<int32_t>(CrcEngine::Compute(buffer));
 
   /*
   **	Return the final code value.

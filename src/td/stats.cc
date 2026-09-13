@@ -44,6 +44,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "base/numeric.h"
 #include "sdllib/shape.h"
 #include "sdllib/timer.h"
 #include "td/aircraft.h"
@@ -266,7 +267,7 @@ void Send_Statistics_Packet() {
     char fname[128];
     char namebuffer[40];
     char* abuffer = ShapeBuffer;
-    memset(abuffer, '\0', ShapeBufferSize);
+    memset(abuffer, '\0', base::ToSize(ShapeBufferSize));
     sprintf(fname, "%s.INI", ScenarioName);
     CCFileClass fileo;
     fileo.Set_Name(fname);

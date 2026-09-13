@@ -942,8 +942,10 @@ void ChronalVortexClass::Render() {
       ** Calculate the pixel position of our fresh block of cells on the
       *tactical map so *	we can blit it to the hid page.
       */
-      COORDINATE render_pos = XY_Coord(
-          xc * CELL_LEPTON_W, yc * CELL_LEPTON_H);  // Coord_Whole(Position);
+      // Coord_Whole(Position);
+      COORDINATE render_pos =
+          XY_Coord(static_cast<LEPTON>(xc * CELL_LEPTON_W),
+                   static_cast<LEPTON>(yc * CELL_LEPTON_H));
 
       int xtac = Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(Map.TacticalCoord)));
       int xoff = Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(render_pos)));

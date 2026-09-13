@@ -44,6 +44,8 @@
 #ifndef CNC_RED_ALERT_TD_LOADDLG_H_
 #define CNC_RED_ALERT_TD_LOADDLG_H_
 
+#include <cstdint>
+
 #include "td/defines.h"
 #include "td/list.h"
 #include "td/vector.h"
@@ -54,7 +56,7 @@ class FileEntryClass {
   unsigned Scenario;       // scenario #
   HousesType House;        // house
   int Num;                 // save file number (from the extension)
-  unsigned long DateTime;  // date/time stamp of file
+  int64_t DateTime;  // date/time stamp of file
   bool Valid;              // Is the scenario valid?
 };
 

@@ -41,6 +41,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstdint>
 
 #include "ra/compat.h"
 #include "ra/conquer.h"
@@ -78,7 +79,7 @@
 
 static int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
                                  int iny2);
-static int Select_To_Entry(int selection, unsigned long enabled_mask,
+static int Select_To_Entry(int selection, uint32_t enabled_mask,
                            int start_bit);
 static void Flash_Line(const char* text, int xpix, int ypix, int nfgc,
                        int hfgc, int bgc);
@@ -99,7 +100,7 @@ static int MenuSkip;
 //   selection=0 -> entry_index=0 (first enabled)
 //   selection=1 -> entry_index=1 (second enabled)
 //   selection=2 -> entry_index=3 (third enabled, skips disabled entry 2)
-static int Select_To_Entry(int selection, const unsigned long enabled_mask,
+static int Select_To_Entry(int selection, const uint32_t enabled_mask,
                            const int start_bit) {
   if (enabled_mask == 0xFFFFFFFFL) {
     return selection;  // All entries enabled, direct mapping.
@@ -191,7 +192,7 @@ static int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
 /*	RETURNS:	none
  */
 /*=========================================================================*/
-void Setup_Menu(int menu, const char* text[], unsigned long field, int index,
+void Setup_Menu(int menu, const char* text[], uint32_t field, int index,
                 int skip) {
   int* menuptr;
   int lp;
@@ -203,8 +204,8 @@ void Setup_Menu(int menu, const char* text[], unsigned long field, int index,
   int drawy;
 
   menuptr = &MenuList[menu][0];  /* get pointer to menu	*/
-  menuy = WinY + menuptr[MENUY]; /* get the absolute 		*/
-  menux = WinX + menuptr[MENUX]; /*		coords of menu		*/
+  menuy = static_cast<int>(WinY) + menuptr[MENUY]; /* get the absolute */
+  menux = static_cast<int>(WinX) + menuptr[MENUX]; /* coords of menu */
   item = Select_To_Entry(menuptr[MSELECTED], field, index);
   num = menuptr[ITEMSHIGH];
 
@@ -225,7 +226,7 @@ void Setup_Menu(int menu, const char* text[], unsigned long field, int index,
   Keyboard->Clear();
 }
 
-int Check_Menu(int menu, const char* text[], char* /*unused*/, long field,
+int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
                int index) {
   int maxitem;
   int select;
@@ -257,8 +258,8 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, long field,
   menuskip = FontHeight + MenuSkip; /* calc new font height	*/
   halfskip = MenuSkip >> 1;         /* adjustment for menus	*/
 
-  menuy = WinY + menuptr[MENUY]; /* get the absolute 		*/
-  menux = WinX + menuptr[MENUX]; /*		coords of menu		*/
+  menuy = static_cast<int>(WinY) + menuptr[MENUY]; /* get the absolute */
+  menux = static_cast<int>(WinX) + menuptr[MENUX]; /* coords of menu */
   normcol = menuptr[NORMCOL];
   litcol = menuptr[HILITE];
 
@@ -281,9 +282,9 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, long field,
   **	the heck outta here. If we are somewhere on the menu, then figure
   **	out the new selected item, and continue forward.
   */
-  mx1 = WinX + (menuptr[MENUX] * FontWidth); /* get menu coords
-                                              */
-  my1 = WinY + menuptr[MENUY] -
+  /* get menu coords from the menu structure as necessary */
+  mx1 = static_cast<int>(WinX) + (menuptr[MENUX] * FontWidth);
+  my1 = static_cast<int>(WinY) + menuptr[MENUY] -
         halfskip; /*		from the menu		*/
   mx2 = mx1 + (menuptr[ITEMWIDTH] * FontWidth) -
         1; /*		structure as		*/
@@ -459,8 +460,7 @@ int Do_Menu(const char** strings, bool /*unused*/) {
   WindowList[WINDOW_MENU][WINDOWWIDTH] = (MenuList[0][ITEMWIDTH] + 2) * 8;
   WindowList[WINDOW_MENU][WINDOWX] = (19 - (length >> 4)) * 8;
   WindowList[WINDOW_MENU][WINDOWY] =
-      174 - static_cast<unsigned>(MenuList[0][ITEMSHIGH] *
-                                  (FontHeight + FontYSpacing));
+      174 - (MenuList[0][ITEMSHIGH] * (FontHeight + FontYSpacing));
   WindowList[WINDOW_MENU][WINDOWHEIGHT] =
       (MenuList[0][ITEMSHIGH] * FontHeight) + 5 /*11*/;
 

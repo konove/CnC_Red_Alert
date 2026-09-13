@@ -47,6 +47,7 @@
 
 #include "absl/log/globals.h"
 #include "absl/log/initialize.h"
+#include "base/numeric.h"
 #include "port/ex_string.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/file.h"
@@ -367,7 +368,7 @@ int main(int argc, char* argv[])
       ** gonna change it to say "no" in the future.
       */
       WWWritePrivateProfileString("Intro", "PlayIntro", "No", buffer);
-      cfile.Write(buffer, strlen(buffer));
+      cfile.Write(buffer, base::ToSigned(strlen(buffer)));
 
       Free(buffer);
 
@@ -523,7 +524,7 @@ void Print_Error_Exit(char* string) {
  * HISTORY: * 6/7/96 4:09PM ST : Created *
  *=============================================================================================*/
 void Read_Setup_Options(RawFileClass* config_file) {
-  char* buffer = new char[config_file->Size() + 1];
+  char* buffer = new char[base::ToSize(config_file->Size() + 1)];
   buffer[config_file->Size()] = 0;
 
   if (config_file->Is_Available()) {
@@ -570,9 +571,9 @@ void Read_Setup_Options(RawFileClass* config_file) {
           break;
         }
         if (i < 4) {
-          net[i] = static_cast<char>(*byte);  // fill NetNum
+          net[i] = *byte;  // fill NetNum
         } else {
-          node[i - 4] = static_cast<char>(*byte);  // fill NetNode
+          node[i - 4] = *byte;  // fill NetNode
         }
         i++;
         p = strtok(nullptr, ".");

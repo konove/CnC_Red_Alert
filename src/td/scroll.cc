@@ -262,7 +262,7 @@ bool ScrollClass::Set_Autoscroll(int control) {
   if (control == -1) {
     IsAutoScroll = !IsAutoScroll;
   } else {
-    IsAutoScroll = control;
+    IsAutoScroll = control != 0;
   }
   return old;
 }

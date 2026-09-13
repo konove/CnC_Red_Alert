@@ -516,8 +516,7 @@ int MapEditClass::Move_Grabbed_Object() {
     /*------------------------------------------------------------------------
     Non-infantry: use cell's center coordinate
     ------------------------------------------------------------------------*/
-    new_coord =
-        static_cast<CELL>(Cell_Coord(static_cast<CELL>(ZoneCell + GrabOffset)));
+    new_coord = Cell_Coord(static_cast<CELL>(ZoneCell + GrabOffset));
 
     if (GrabbedObject->What_Am_I() == RTTI_BUILDING ||
         GrabbedObject->What_Am_I() == RTTI_TERRAIN) {

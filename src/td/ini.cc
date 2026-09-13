@@ -50,6 +50,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "base/numeric.h"
 #include "td/ini.h"
 
 #include <algorithm>
@@ -265,7 +266,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
   *during the INI *	parsing.)
   */
   buffer = ShapeBuffer;
-  memset(buffer, '\0', ShapeBufferSize);
+  memset(buffer, '\0', base::ToSize(ShapeBufferSize));
 
   if (fresh) {
     Clear_Scenario();
@@ -534,7 +535,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
   **	the mission.ini file.
   */
   if (BriefingText[0] == '\0') {
-    memset(ShapeBuffer, '\0', ShapeBufferSize);
+    memset(ShapeBuffer, '\0', base::ToSize(ShapeBufferSize));
     CCFileClass("MISSION.INI").Read(ShapeBuffer, ShapeBufferSize);
 
     char* work = &BriefingText[0];
@@ -667,7 +668,7 @@ void Write_Scenario_Ini(char* root) {
     *buffer *	starts cleared out of any data.
     */
     buffer = ShapeBuffer;
-    memset(buffer, '\0', ShapeBufferSize);
+    memset(buffer, '\0', base::ToSize(ShapeBufferSize));
 
     switch (ScenPlayer) {
       case SCEN_PLAYER_GDI:
@@ -734,14 +735,14 @@ void Write_Scenario_Ini(char* root) {
     **	Write the scenario data out to a file.
     */
     //	file.Open(WRITE);
-    file.Write(buffer, strlen(buffer));
+    file.Write(buffer, base::ToSigned(strlen(buffer)));
     //	file.Close();
 
     /*
     **	Now update the Master INI file, containing the master list of triggers &
     *teams
     */
-    memset(buffer, '\0', ShapeBufferSize);
+    memset(buffer, '\0', base::ToSize(ShapeBufferSize));
 
     file.Set_Name("MASTER.INI");
     if (file.Is_Available()) {
@@ -756,7 +757,7 @@ void Write_Scenario_Ini(char* root) {
     TriggerClass::Write_INI(buffer, false);
 
     //	file.Open(WRITE);
-    file.Write(buffer, strlen(buffer));
+    file.Write(buffer, base::ToSigned(strlen(buffer)));
     //	file.Close();
   }
 }

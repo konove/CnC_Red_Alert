@@ -314,7 +314,7 @@ static struct {
  *dramatically when off screen.                         *
  *=============================================================================================*/
 void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
-  unsigned distance;
+  int distance;
   CELL cell_pos = 0;
   int pan_value;
 
@@ -331,13 +331,13 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
   if (coord && !Map.In_View(cell_pos)) {
     distance =
         MapEditClass::Cell_Distance(cell_pos, Coord_Cell(Map.TacticalCoord));
-    distance = static_cast<unsigned int>(std::min<int>(distance, MAP_CELL_W));
+    distance = std::min<int>(distance, MAP_CELL_W);
     distance = Cardinal_To_Fixed(MAP_CELL_W, distance);
-    distance = std::min(distance, 0xFFU);
+    distance = std::min(distance, 0xFF);
     distance ^= 0xFF;
 
     distance /= 2;
-    distance = std::max<int>(distance, 25);
+    distance = std::max(distance, 25);
 
     pan_value = Cell_X(cell_pos);
     pan_value -= Coord_XCell(Map.TacticalCoord) +

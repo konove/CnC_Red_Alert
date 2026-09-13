@@ -44,6 +44,8 @@
 #include <cstdint>
 #include <cstring>
 
+#include "base/numeric.h"
+#include "base/types.h"
 #include "port/aligned_buffer.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
@@ -65,6 +67,10 @@ struct KeyFrameHeaderType {
   uint16_t largest_frame_size;
   int16_t flags;
 };
+
+// Byte offset of the frame offset table, which follows the header.
+constexpr base::ssize kKeyFrameHeaderSize =
+    base::ssize{sizeof(KeyFrameHeaderType)};
 
 constexpr int kInitialBigShapeBufferSize = 8000000;
 constexpr int kTheaterBigShapeBufferSize = 4000000;
@@ -271,7 +277,7 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
   // get offset into data
   auto* ptr = static_cast<char*>(Add_Long_To_Pointer(
       dataptr,
-      (static_cast<int32_t>(framenumber) << 3) + sizeof(KeyFrameHeaderType)));
+      (int32_t{framenumber} << 3) + kKeyFrameHeaderSize));
   Mem_Copy(ptr, &offset[0], 12);
   const char frameflags = static_cast<char>(offset[0] >> 24);
 
@@ -282,7 +288,8 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
     if (keyfr->flags & 1) {
       ptr = static_cast<char*>(Add_Long_To_Pointer(ptr, 768));
     }
-    length = static_cast<int32_t>(LCW_Uncompress(ptr, buffptr, buffsize));
+    length = static_cast<int32_t>(
+        LCW_Uncompress(ptr, buffptr, static_cast<unsigned long>(buffsize)));
   } else {
     uint16_t currframe = 0;
     // key delta or delta
@@ -292,7 +299,7 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
 
       ptr = static_cast<char*>(Add_Long_To_Pointer(
           dataptr,
-          (static_cast<int32_t>(currframe) << 3) + sizeof(KeyFrameHeaderType)));
+          (int32_t{currframe} << 3) + kKeyFrameHeaderSize));
       Mem_Copy(ptr, &offset[0], kSubFrameOffs * sizeof(uint32_t));
     }
 
@@ -308,7 +315,8 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
       ptr = static_cast<char*>(Add_Long_To_Pointer(ptr, 768));
     }
 
-    length = static_cast<int32_t>(LCW_Uncompress(ptr, buffptr, buffsize));
+    length = static_cast<int32_t>(
+        LCW_Uncompress(ptr, buffptr, static_cast<unsigned long>(buffsize)));
 
     if (length > buffsize) {
       return nullptr;
@@ -335,8 +343,8 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
 
         if (subframe >= kSubFrameOffs - 1 && currframe <= framenumber) {
           Mem_Copy(Add_Long_To_Pointer(dataptr,
-                                       (static_cast<int32_t>(currframe) << 3) +
-                                           sizeof(KeyFrameHeaderType)),
+                                       (int32_t{currframe} << 3) +
+                                           kKeyFrameHeaderSize),
                    &offset[0], kSubFrameOffs * sizeof(uint32_t));
           subframe = 0;
         }
@@ -370,9 +378,9 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
             ((4 - (std::bit_cast<uintptr_t>(temp_shape_ptr) & 3)) & 3);
       }
 
-      memcpy(temp_shape_ptr, buffptr, length);
+      memcpy(temp_shape_ptr, buffptr, base::ToSize(length));
       port::AlignedObject<ShapeHeaderType>(TheaterShapeBufferPtr)->draw_flags =
-          -1;  // Flag that headers need to be generated
+          ~0U;  // Flag that headers need to be generated
       port::AlignedObject<ShapeHeaderType>(TheaterShapeBufferPtr)->shape_data =
           temp_shape_ptr -
           (uintptr_t)TheaterShapeBufferStart;  // pointer to old raw shape data
@@ -404,9 +412,9 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
           temp_shape_ptr +
           ((4 - (std::bit_cast<uintptr_t>(temp_shape_ptr) & 3)) & 3);
     }
-    memcpy(temp_shape_ptr, buffptr, length);
+    memcpy(temp_shape_ptr, buffptr, base::ToSize(length));
     port::AlignedObject<ShapeHeaderType>(BigShapeBufferPtr)->draw_flags =
-        -1;  // Flag that headers need to be generated
+        ~0U;  // Flag that headers need to be generated
     port::AlignedObject<ShapeHeaderType>(BigShapeBufferPtr)->shape_data =
         temp_shape_ptr -
         (uintptr_t)BigShapeBufferStart;  // pointer to old raw shape data

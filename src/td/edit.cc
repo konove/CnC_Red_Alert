@@ -102,7 +102,7 @@
  *=============================================================================================*/
 EditClass::EditClass(int id, char* text, int max_len, TextPrintType flags,
                      int x, int y, int w, int h, EditStyle style)
-    : ControlClass(id, x, y, w, h, LEFTPRESS),
+    : ControlClass(static_cast<unsigned>(id), x, y, w, h, LEFTPRESS),
       TextFlags(flags),
       EditFlags(style),
       String(text) {
