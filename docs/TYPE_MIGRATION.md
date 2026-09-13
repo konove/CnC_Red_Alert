@@ -282,7 +282,6 @@ Bit fields (`unsigned Frame : 26`) should not be changed without understanding t
 
 - `src/ra/connect.h`, `src/ra/nullconn.h` -- connection header structs
 - `src/ra/ipxconn.h`, `src/ra/ipxgconn.h` -- IPX packet structures
-- `src/ra/noseqcon.h` -- non-sequenced connection stats
 
 ### Packed Structures (`#pragma pack`)
 

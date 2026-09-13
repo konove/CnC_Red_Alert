@@ -103,15 +103,10 @@ int IPXConnClass::PacketLen;
 IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
                            unsigned short magicnum, IPXAddressClass* address,
                            int id, const char* name)
-    :
-#ifdef SEQ_NET
-      SequencedConnClass(numsend, numreceive, maxlen, magicnum,
-#else
-      NonSequencedConnClass(numsend, numreceive, maxlen, magicnum,
-#endif
-                         2,   // retry delta
-                         -1,  // max retries
-                         60)  // timeout
+    : NonSequencedConnClass(numsend, numreceive, maxlen, magicnum,
+                            2,   // retry delta
+                            -1,  // max retries
+                            60)  // timeout
 {
   NetNumType net;
   NetNodeType node;
@@ -182,11 +177,7 @@ void IPXConnClass::Init() {
   /*------------------------------------------------------------------------
   Invoke the parent's Init routine
   ------------------------------------------------------------------------*/
-#ifdef SEQ_NET
-  SequencedConnClass::Init();
-#else
   NonSequencedConnClass::Init();
-#endif
 }
 
 /***************************************************************************

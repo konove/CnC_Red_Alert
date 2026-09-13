@@ -49,23 +49,14 @@
 /*
 ********************************* Includes **********************************
 */
-#ifdef SEQ_NET
-#include "ra/seqconn.h"
-#else
-#include "td/noseqcon.h"
-#endif
 #include "td/ipx.h"
 #include "td/ipxaddr.h"
+#include "td/noseqcon.h"
 
 /*
 ***************************** Class Declaration *****************************
 */
-#ifdef SEQ_NET
-class IPXConnClass : public SequencedConnClass
-#else
-class IPXConnClass : public NonSequencedConnClass
-#endif
-{
+class IPXConnClass : public NonSequencedConnClass {
   /*
   ---------------------------- Public Interface ----------------------------
   */
