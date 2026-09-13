@@ -233,6 +233,10 @@ void MonoClass::Sub_Window(int x, int y, int w, int h) {
   if (h == -1) {
     h = LINES - y;
   }
+  // Keep the view on the page; the drawing routines index the page with
+  // SubX + SubW and SubY + SubH.
+  w = std::clamp(w, 1, COLUMNS - x);
+  h = std::clamp(h, 1, LINES - y);
 
   /*
   **	Assign the new sub-region.
@@ -287,9 +291,11 @@ void MonoClass::Draw_Box(int x, int y, int w, int h, MonoAttribute attrib,
     return;
   }
 
-  x = std::min(x, SubW);
+  // Clamp to the last cell, not one past it: a region starting at SubW would
+  // touch a column outside the view (and off the page for a full-width view).
+  x = std::min(x, SubW - 1);
   x = std::max(x, 0);
-  y = std::min(y, SubH);
+  y = std::min(y, SubH - 1);
   y = std::max(y, 0);
   w = std::min(w, SubW - x);
   w = std::max(w, 1);
@@ -434,8 +440,9 @@ void MonoClass::Clear() {
  * HISTORY: * 06/04/1996 JLB : Created. *
  *=============================================================================================*/
 void MonoClass::Fill_Attrib(int x, int y, int w, int h, MonoAttribute attrib) {
-  if (!w || !h || static_cast<unsigned>(x) >= static_cast<unsigned>(SubW) ||
-      static_cast<unsigned>(h) >= static_cast<unsigned>(SubH) ||
+  if (!Enabled || !w || !h ||
+      static_cast<unsigned>(x) >= static_cast<unsigned>(SubW) ||
+      static_cast<unsigned>(y) >= static_cast<unsigned>(SubH) ||
       static_cast<unsigned>(x) + w > static_cast<unsigned>(SubW) ||
       static_cast<unsigned>(y) + h > static_cast<unsigned>(SubH)) {
     return;

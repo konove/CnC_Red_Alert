@@ -197,13 +197,15 @@ class MonoClass {
   *first entry *	in this table is the one that is visible.
   */
   static MonoClass* PageUsage[MAX_MONO_PAGES];
+  inline static MonoPageType MonoRAM[MAX_MONO_PAGES]{};
 
   /*
-  **	Fetches pointers to the appropriate mono RAM.
+  **	Fetches pointers to the appropriate mono RAM. The DOS build addressed
+  * the *	card's memory at 0xB0000; the port has no card, so the pages
+  * live in *	ordinary memory and enabling mono output no longer writes to a
+  * fixed *	address.
   */
-  MonoPageType* Raw_Ptr(int page) const {
-    return &((MonoPageType*)0xB0000)[page];
-  }
+  static MonoPageType* Raw_Ptr(int page) { return &MonoRAM[page]; }
   MonoPageType* Page_Ptr() const { return Raw_Ptr(Page); }
 
   /*
