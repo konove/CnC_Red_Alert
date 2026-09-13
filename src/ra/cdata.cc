@@ -1277,7 +1277,7 @@ void TemplateTypeClass::operator delete(void* ptr) {
   TemplateTypes.Free(static_cast<TemplateTypeClass*>(ptr));
 }
 
-static void _Watcom_Ugh_Hack() {
+static void Watcom_Ugh_Hack() {
   (void)new TemplateTypeClass(Road37);        //	TEMPLATE_ROAD37
   (void)new TemplateTypeClass(Road38);        //	TEMPLATE_ROAD38
   (void)new TemplateTypeClass(Road39);        //	TEMPLATE_ROAD39
@@ -1695,7 +1695,7 @@ void TemplateTypeClass::Init_Heap() {
   **	Separate out the list of new operator calls. Watcom bombs
   **	if they are kept together.
   */
-  _Watcom_Ugh_Hack();
+  Watcom_Ugh_Hack();
 }
 
 /***********************************************************************************************

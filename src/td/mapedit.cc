@@ -1100,7 +1100,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
                 /*
                 ................ No object: select the cell ..................
                 */
-                CurrentCell = Click_Cell_Calc(_Kbd->MouseQX, _Kbd->MouseQY);
+                CurrentCell = Click_Cell_Calc(ActiveKeyboard->MouseQX,
+                                              ActiveKeyboard->MouseQY);
                 HiddenPage.Clear();
                 Flag_To_Redraw(true);
                 Render();

@@ -466,7 +466,7 @@ class MultiMission {
 
  private:
   char ScenarioDescription[kDescripMax]{};
-  char Filename[_MAX_FNAME + _MAX_EXT]{};
+  char Filename[kMaxFname + kMaxExt]{};
   char Digest[32]{};
   bool IsOfficial = false;
   bool IsExpansion = false;
@@ -615,7 +615,7 @@ class SessionClass {
   //		DynamicVectorClass <char *> Scenarios;
   //		DynamicVectorClass <int> Filenum;
 
-  char ScenarioFileName[_MAX_FNAME + _MAX_EXT +
+  char ScenarioFileName[kMaxFname + kMaxExt +
                         1]{};  // File name of scenario to load
 
   char ScenarioDigest[32]{};  // Digest of scenario to load

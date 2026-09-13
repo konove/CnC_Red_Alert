@@ -125,11 +125,11 @@ extern ThemeType TransitTheme;
 extern bool AllowVoice;
 extern NewConfigType NewConfig;
 extern char BriefingText[512];
-extern char IntroMovie[_MAX_FNAME + _MAX_EXT];
-extern char ActionMovie[_MAX_FNAME + _MAX_EXT];
-extern char BriefMovie[_MAX_FNAME + _MAX_EXT];
-extern char WinMovie[_MAX_FNAME + _MAX_EXT];
-extern char LoseMovie[_MAX_FNAME + _MAX_EXT];
+extern char IntroMovie[kMaxFname + kMaxExt];
+extern char ActionMovie[kMaxFname + kMaxExt];
+extern char BriefMovie[kMaxFname + kMaxExt];
+extern char WinMovie[kMaxFname + kMaxExt];
+extern char LoseMovie[kMaxFname + kMaxExt];
 extern VoxType SpeakQueue;
 extern bool PlayerWins;
 extern bool PlayerLoses;
@@ -204,7 +204,7 @@ extern std::span<const std::byte> SystemStrings;
 **	Miscellaneous globals.
 */
 extern HousesType Whom;
-extern _VQAConfig AnimControl;
+extern VQAConfig AnimControl;
 extern long SpareTicks;
 extern int MonoPage;
 extern unsigned char* OriginalPalette;
@@ -224,7 +224,7 @@ extern ScenarioVarType ScenVar;
 extern int CarryOverMoney;
 extern int CarryOverCap;
 extern int CarryOverPercent;
-extern char ScenarioName[_MAX_FNAME + _MAX_EXT];
+extern char ScenarioName[kMaxFname + kMaxExt];
 extern int BuildLevel;
 extern unsigned long ScenarioCRC;
 

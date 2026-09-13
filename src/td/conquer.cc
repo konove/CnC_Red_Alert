@@ -172,7 +172,7 @@ static void Trap_Object();
 
 static void Do_Record_Playback();
 extern "C" {
-extern char* __nheapbeg;
+extern char* nheapbeg;
 }
 bool InMainLoop = false;
 
@@ -1321,7 +1321,7 @@ void Call_Back() {
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
 const char* Language_Name(const char* basename) {
-  static char _fullname[_MAX_FNAME + _MAX_EXT];
+  static char _fullname[kMaxFname + kMaxExt];
 
   if (!basename) {
     return nullptr;
@@ -2408,11 +2408,11 @@ void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
     ** Build frame returns a pointer now instead of the shapes length
     */
     shape_size = Build_Frame(shapefile, static_cast<unsigned short>(shapenum),
-                             _ShapeBuffer);
-    if (Get_Last_Frame_Length() > _ShapeBufferSize) {
+                             ShapeBuffer);
+    if (Get_Last_Frame_Length() > ShapeBufferSize) {
       Mono_Printf(
           "Attempt to use shape buffer for size %d buffer is only size %d",
-          shape_size, _ShapeBufferSize);
+          shape_size, ShapeBufferSize);
       Get_Key();
     }
 
@@ -2502,11 +2502,11 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
     ** Build frame returns a pointer now instead of the shapes length
     */
     shape_size = Build_Frame(shapefile, static_cast<unsigned short>(shapenum),
-                             _ShapeBuffer);
-    if (Get_Last_Frame_Length() > _ShapeBufferSize) {
+                             ShapeBuffer);
+    if (Get_Last_Frame_Length() > ShapeBufferSize) {
       Mono_Printf(
           "Attempt to use shape buffer for size %d buffer is only size %d",
-          shape_size, _ShapeBufferSize);
+          shape_size, ShapeBufferSize);
       Get_Key();
     }
 

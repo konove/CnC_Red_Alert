@@ -1872,7 +1872,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Intro movie name.
     */
-    char introtext[_MAX_FNAME + _MAX_EXT];
+    char introtext[kMaxFname + kMaxExt];
     DropListClass intro(
         BUTTON_INTRO, introtext, sizeof(introtext), TPF_EFNT | TPF_NOSHADOW,
         theaterbtn.X, theaterbtn.Y + theaterbtn.Height + 24, 50, 7 * 10,
@@ -1886,7 +1886,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Briefing movie name.
     */
-    char brieftext[_MAX_FNAME + _MAX_EXT];
+    char brieftext[kMaxFname + kMaxExt];
     DropListClass briefing(BUTTON_BRIEFING, brieftext, sizeof(brieftext),
                            TPF_EFNT | TPF_NOSHADOW, intro.X + intro.Width + 10,
                            intro.Y, 50, 7 * 10, MFCD::Retrieve("EBTN-UP.SHP"),
@@ -1897,7 +1897,7 @@ int MapEditClass::Load_Scenario() {
     }
     briefing.Set_Selected_Index((int)Scen.BriefMovie + 1);
 
-    char actiontext[_MAX_FNAME + _MAX_EXT];
+    char actiontext[kMaxFname + kMaxExt];
     DropListClass action(
         BUTTON_ACTION, actiontext, sizeof(actiontext), TPF_EFNT | TPF_NOSHADOW,
         briefing.X + briefing.Width + 10, briefing.Y, 50, 7 * 10,
@@ -1908,7 +1908,7 @@ int MapEditClass::Load_Scenario() {
     }
     action.Set_Selected_Index((int)Scen.ActionMovie + 1);
 
-    char wintext[_MAX_FNAME + _MAX_EXT];
+    char wintext[kMaxFname + kMaxExt];
     DropListClass win(BUTTON_WIN, wintext, sizeof(wintext),
                       TPF_EFNT | TPF_NOSHADOW, action.X + action.Width + 10,
                       action.Y, 50, 7 * 10, MFCD::Retrieve("EBTN-UP.SHP"),
@@ -1919,7 +1919,7 @@ int MapEditClass::Load_Scenario() {
     }
     win.Set_Selected_Index((int)Scen.WinMovie + 1);
 
-    char losetext[_MAX_FNAME + _MAX_EXT];
+    char losetext[kMaxFname + kMaxExt];
     DropListClass lose(BUTTON_LOSE, losetext, sizeof(losetext),
                        TPF_EFNT | TPF_NOSHADOW, win.X + win.Width + 10, win.Y,
                        50, 7 * 10, MFCD::Retrieve("EBTN-UP.SHP"),

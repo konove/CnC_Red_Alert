@@ -84,7 +84,7 @@
  *   01/07/1995 JLB : Manually calculates spillage list for large objects. *
  *=============================================================================================*/
 const short* Coord_Spillage_List(COORDINATE coord, int maxsize) {
-  static const short _MoveSpillage[static_cast<int>(FACING_COUNT) + 1][5] = {
+  static const short MoveSpillage[static_cast<int>(FACING_COUNT) + 1][5] = {
       {0, -MAP_CELL_W, REFRESH_EOL, 0, 0},                   // N
       {0, -MAP_CELL_W, 1, -(MAP_CELL_W - 1), REFRESH_EOL},   // NE
       {0, 1, REFRESH_EOL, 0, 0},                             // E
@@ -102,8 +102,8 @@ const short* Coord_Spillage_List(COORDINATE coord, int maxsize) {
   //;	01 = below axis
   //;	10 = above axis
   //;	11 = undefined
-  static const int _SpillTable[16] = {8, 6, 2, -1, 0,  7,  1,  -1,
-                                      4, 5, 3, -1, -1, -1, -1, -1};
+  static const int SpillTable[16] = {8, 6, 2, -1, 0,  7,  1,  -1,
+                                     4, 5, 3, -1, -1, -1, -1, -1};
   int index = 0;
   int x, y;
 
@@ -194,7 +194,7 @@ const short* Coord_Spillage_List(COORDINATE coord, int maxsize) {
     index |= 0x01;  // Spilling West.
   }
 
-  return &_MoveSpillage[_SpillTable[index]][0];
+  return &MoveSpillage[SpillTable[index]][0];
 }
 
 /***********************************************************************************************

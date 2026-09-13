@@ -168,11 +168,11 @@ bool SlowPalette = true;      // Slow palette flag set?
 **	These are the movie names to use for mission briefing, winning, and
 *losing *	sequences. They are read from the INI file.
 */
-char IntroMovie[_MAX_FNAME + _MAX_EXT];
-char BriefMovie[_MAX_FNAME + _MAX_EXT];
-char WinMovie[_MAX_FNAME + _MAX_EXT];
-char LoseMovie[_MAX_FNAME + _MAX_EXT];
-char ActionMovie[_MAX_FNAME + _MAX_EXT];
+char IntroMovie[kMaxFname + kMaxExt];
+char BriefMovie[kMaxFname + kMaxExt];
+char WinMovie[kMaxFname + kMaxExt];
+char LoseMovie[kMaxFname + kMaxExt];
+char ActionMovie[kMaxFname + kMaxExt];
 char BriefingText[512];
 ThemeType TransitTheme = THEME_NONE;
 
@@ -348,7 +348,7 @@ int Scenario;                              // Scenario #
 ScenarioPlayerType ScenPlayer;             // GDI, NOD, 2-Player, Multi-Player
 ScenarioDirType ScenDir;                   // East/West
 ScenarioVarType ScenVar;                   // variation A/B/C
-char ScenarioName[_MAX_FNAME + _MAX_EXT];  // name of scenario
+char ScenarioName[kMaxFname + kMaxExt];    // name of scenario
 int CarryOverMoney;    // Carry over money from last scenario.
 int CarryOverPercent;  // Carry over money percentage control.
 int CarryOverCap;      // Maxmimum carry over money allowed.
@@ -979,4 +979,4 @@ bool ConnectionLost;
 TheaterType LastTheater = THEATER_NONE;
 
 TimerClass TickCount;
-WWKeyboardClass* _Kbd = &Kbd;
+WWKeyboardClass* ActiveKeyboard = &Kbd;

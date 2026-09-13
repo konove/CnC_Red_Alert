@@ -290,7 +290,7 @@ void SmudgeClass::Read_INI(char* buffer) {
   char* tbuffer = buffer + len;
 
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            _ShapeBufferSize - len, buffer);
+                            ShapeBufferSize - len, buffer);
   while (*tbuffer != '\0') {
     SmudgeType smudge;  // Smudge type.
 
@@ -341,7 +341,7 @@ void SmudgeClass::Write_INI(char* buffer) {
   */
   tbuffer = buffer + strlen(buffer) + 2;
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            _ShapeBufferSize - static_cast<int>(strlen(buffer)),
+                            ShapeBufferSize - static_cast<int>(strlen(buffer)),
                             buffer);
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);

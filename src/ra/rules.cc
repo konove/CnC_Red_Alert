@@ -92,7 +92,7 @@
  *                                                                                             *
  * HISTORY: * 06/17/1996 JLB : Created. *
  *=============================================================================================*/
-static inline int _Scale_To_256(int val) {
+static inline int Scale_To_256(int val) {
   val = fixed(100, 256) * val;
   val = std::min(val, 255);
   return val;
@@ -529,7 +529,7 @@ bool RulesClass::General(CCINIClass& ini) {
     CrateTime = ini.Get_Fixed(GENERAL, "CrateRegen", CrateTime);
     VortexRange = ini.Get_Lepton(GENERAL, "VortexRange", VortexRange);
     VortexSpeed = static_cast<MPHType>(
-        _Scale_To_256(ini.Get_Int(GENERAL, "VortexSpeed", VortexSpeed)));
+        Scale_To_256(ini.Get_Int(GENERAL, "VortexSpeed", VortexSpeed)));
     VortexDamage = ini.Get_Int(GENERAL, "VortexDamage", VortexDamage);
     VortexChance = ini.Get_Fixed(GENERAL, "VortexChance", VortexChance);
 

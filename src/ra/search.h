@@ -59,7 +59,6 @@
 #define CNC_RED_ALERT_RA_SEARCH_H_
 
 #ifndef __BORLANDC__
-#define _USERENTRY
 #endif
 
 #include "absl/log/check.h"
@@ -190,7 +189,7 @@ class IndexClass {
   */
   [[nodiscard]] const NodeElement* Search_For_Node(int id) const;
 
-  static int _USERENTRY search_compfunc(const void* ptr, const void* ptr2);
+  static int search_compfunc(const void* ptr, const void* ptr2);
 };
 
 /***********************************************************************************************
@@ -598,8 +597,7 @@ bool IndexClass<T>::Remove_Index(int id) {
  * HISTORY: * 11/02/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int _USERENTRY IndexClass<T>::search_compfunc(const void* ptr1,
-                                              const void* ptr2) {
+int IndexClass<T>::search_compfunc(const void* ptr1, const void* ptr2) {
   if (*(const int*)ptr1 == *(const int*)ptr2) {
     return 0;
   }

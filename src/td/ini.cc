@@ -131,7 +131,7 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
   char c_dir;     // character representing direction type
   char c_var;     // character representing variation type
   ScenarioVarType i;
-  char fname[_MAX_FNAME + _MAX_EXT];
+  char fname[kMaxFname + kMaxExt];
 
   /*
   ** Set the player-type value.
@@ -249,7 +249,7 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
  *=============================================================================================*/
 bool Read_Scenario_Ini(char* root, bool fresh) {
   char* buffer;                       // Scenario.ini staging buffer pointer.
-  char fname[_MAX_FNAME + _MAX_EXT];  // full INI filename
+  char fname[kMaxFname + kMaxExt];    // full INI filename
   char buf[128];                      // Working string staging buffer.
   int rndmax;
   int rndmin;
@@ -264,8 +264,8 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
   *this, since *	the HidPage may be needed for various uncompressions
   *during the INI *	parsing.)
   */
-  buffer = _ShapeBuffer;
-  memset(buffer, '\0', _ShapeBufferSize);
+  buffer = ShapeBuffer;
+  memset(buffer, '\0', ShapeBufferSize);
 
   if (fresh) {
     Clear_Scenario();
@@ -314,7 +314,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
   if (!file.Is_Available()) {
     return false;
   }
-  file.Read(buffer, _ShapeBufferSize - 1);
+  file.Read(buffer, ShapeBufferSize - 1);
 
   /*
   ** Init the Scenario CRC value
@@ -533,8 +533,8 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
   **	the mission.ini file.
   */
   if (BriefingText[0] == '\0') {
-    memset(_ShapeBuffer, '\0', _ShapeBufferSize);
-    CCFileClass("MISSION.INI").Read(_ShapeBuffer, _ShapeBufferSize);
+    memset(ShapeBuffer, '\0', ShapeBufferSize);
+    CCFileClass("MISSION.INI").Read(ShapeBuffer, ShapeBufferSize);
 
     char* work = &BriefingText[0];
     int player_index = 1;
@@ -547,10 +547,10 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
 
       sprintf(buff, "%d", player_index++);
       *work = '\0';
-      WWGetPrivateProfileString(root, buff, "", work,
-                                static_cast<int>(sizeof(BriefingText) -
-                                               strlen(BriefingText) - 1),
-                                _ShapeBuffer);
+      WWGetPrivateProfileString(
+          root, buff, "", work,
+          static_cast<int>(sizeof(BriefingText) - strlen(BriefingText) - 1),
+          ShapeBuffer);
       if (strlen(work) == 0) {
         break;
       }
@@ -657,7 +657,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
 void Write_Scenario_Ini(char* root) {
   if constexpr (config::kCheatKeysEnabled) {
     char* buffer;                       // Scenario.ini staging buffer pointer.
-    char fname[_MAX_FNAME + _MAX_EXT];  // full scenario name
+    char fname[kMaxFname + kMaxExt];    // full scenario name
     HousesType house;
     CCFileClass file;
 
@@ -665,8 +665,8 @@ void Write_Scenario_Ini(char* root) {
     **	Get a working pointer to the INI staging buffer. Make sure that the
     *buffer *	starts cleared out of any data.
     */
-    buffer = _ShapeBuffer;
-    memset(buffer, '\0', _ShapeBufferSize);
+    buffer = ShapeBuffer;
+    memset(buffer, '\0', ShapeBufferSize);
 
     switch (ScenPlayer) {
       case SCEN_PLAYER_GDI:
@@ -693,7 +693,7 @@ void Write_Scenario_Ini(char* root) {
     file.Set_Name(fname);
     if (file.Is_Available()) {
       //		file.Open(READ);
-      file.Read(buffer, _ShapeBufferSize - 1);
+      file.Read(buffer, ShapeBufferSize - 1);
       //		file.Close();
     } else {
       sprintf(buffer, "; Scenario %d control for house %s.\r\n",
@@ -740,12 +740,12 @@ void Write_Scenario_Ini(char* root) {
     **	Now update the Master INI file, containing the master list of triggers &
     *teams
     */
-    memset(buffer, '\0', _ShapeBufferSize);
+    memset(buffer, '\0', ShapeBufferSize);
 
     file.Set_Name("MASTER.INI");
     if (file.Is_Available()) {
       //		file.Open(READ);
-      file.Read(buffer, _ShapeBufferSize - 1);
+      file.Read(buffer, ShapeBufferSize - 1);
       //		file.Close();
     } else {
       sprintf(buffer, "; Master Trigger & Team List.\r\n");

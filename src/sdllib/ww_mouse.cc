@@ -32,7 +32,7 @@ void SDLSurfaceDeleter::operator()(SDL_Surface* p) const noexcept {
   SDL_FreeSurface(p);
 }
 
-static WWMouseClass* _Mouse = nullptr;
+static WWMouseClass* Mouse = nullptr;
 
 // Nearest-neighbor scaling preserves the crisp pixel art look of game cursors.
 [[nodiscard]] static uint8_t* Scale_Cursor_Nearest(const uint8_t* src,
@@ -98,7 +98,7 @@ WWMouseClass::WWMouseClass([[maybe_unused]] GraphicViewPortClass* scr,
       MaxHeight(max_height),
       State(0) {
   Set_Cursor_Clip();
-  _Mouse = this;
+  Mouse = this;
 }
 
 WWMouseClass::~WWMouseClass() { Clear_Cursor_Clip(); }
@@ -299,64 +299,64 @@ void WWMouseClass::Update_Pos(int x, int y) {
 // C-style API for legacy game code. These delegate to the singleton.
 
 void Hide_Mouse() {
-  if (_Mouse) {
-    _Mouse->Hide_Mouse();
+  if (Mouse) {
+    Mouse->Hide_Mouse();
   }
 }
 
 void Show_Mouse() {
-  if (_Mouse) {
-    _Mouse->Show_Mouse();
+  if (Mouse) {
+    Mouse->Show_Mouse();
   }
 }
 
 void Conditional_Hide_Mouse(int x1, int y1, int x2, int y2) {
-  if (_Mouse) {
-    _Mouse->Conditional_Hide_Mouse(x1, y1, x2, y2);
+  if (Mouse) {
+    Mouse->Conditional_Hide_Mouse(x1, y1, x2, y2);
   }
 }
 
 void Conditional_Show_Mouse() {
-  if (_Mouse) {
-    _Mouse->Conditional_Show_Mouse();
+  if (Mouse) {
+    Mouse->Conditional_Show_Mouse();
   }
 }
 
 int Get_Mouse_State() {
-  if (_Mouse) {
-    return _Mouse->Get_Mouse_State();
+  if (Mouse) {
+    return Mouse->Get_Mouse_State();
   }
   return 0;
 }
 
 void Set_Mouse_Cursor(int hotx, int hoty, void* cursor) {
-  if (_Mouse) {
-    _Mouse->Set_Cursor(hotx, hoty, cursor);
+  if (Mouse) {
+    Mouse->Set_Cursor(hotx, hoty, cursor);
   }
 }
 
 int Get_Mouse_X() {
-  if (_Mouse) {
-    return _Mouse->Get_Mouse_X();
+  if (Mouse) {
+    return Mouse->Get_Mouse_X();
   }
   return 0;
 }
 
 int Get_Mouse_Y() {
-  if (_Mouse) {
-    return _Mouse->Get_Mouse_Y();
+  if (Mouse) {
+    return Mouse->Get_Mouse_Y();
   }
   return 0;
 }
 
 void Update_Mouse_Palette() {
-  if (_Mouse) {
-    _Mouse->Update_Palette();
+  if (Mouse) {
+    Mouse->Update_Palette();
   }
 }
 
 void Update_Mouse_Pos(int x, int y) {
-  if (_Mouse) {
-    _Mouse->Update_Pos(x, y);
+  if (Mouse) {
+    Mouse->Update_Pos(x, y);
   }
 }

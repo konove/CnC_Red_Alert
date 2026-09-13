@@ -703,7 +703,7 @@ void Uninit_Game() {
   Teams.Set_Heap(0);
   Houses.Set_Heap(0);
 
-  delete[] _ShapeBuffer;
+  delete[] ShapeBuffer;
   Set_Shape_Buffer(nullptr, 0);
   delete[] BlackPalette;
   delete[] GamePalette;
@@ -2704,8 +2704,8 @@ void Parse_INI_File() {
   Fetch working pointer to the INI staging buffer. Make sure that the buffer
   is cleared out before proceeding.
   ------------------------------------------------------------------------*/
-  buffer = (char*)_ShapeBuffer;
-  memset(buffer, '\0', _ShapeBufferSize);
+  buffer = (char*)ShapeBuffer;
+  memset(buffer, '\0', ShapeBufferSize);
 
   /*------------------------------------------------------------------------
   Decode the desired section, entry, & name
@@ -2735,7 +2735,7 @@ void Parse_INI_File() {
   if (!file.Is_Available()) {
     return;
   } else {
-    file.Read(buffer, _ShapeBufferSize - 1);
+    file.Read(buffer, ShapeBufferSize - 1);
   }
   file.Close();
 

@@ -38,7 +38,7 @@
 
 /* compression types */
 enum {
-  _ADPCM_TYPE_1,
+  ADPCM_TYPE_1,
 };
 
 /* define compression structure */
@@ -72,13 +72,13 @@ struct SosCompressInfo {
 };
 
 /* compressed file type header */
-typedef struct _tagCOMPRESS_HEADER {
+typedef struct tagCOMPRESS_HEADER {
   unsigned long dwType;              // type of compression
   unsigned long dwCompressedSize;    // compressed file size
   unsigned long dwUnCompressedSize;  // uncompressed file size
   unsigned long dwSourceBitSize;     // original bit size
   char szName[16];                   // file type, for error checking
-} _SOS_COMPRESS_HEADER;
+} SOS_COMPRESS_HEADER;
 
 /* Prototypes */
 

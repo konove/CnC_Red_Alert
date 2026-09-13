@@ -127,8 +127,8 @@ static bool FullRedraw = false;
 
 // #define _MAX_NAME 13
 
-static GraphicBufferClass _IconStage(3, 3);
-static GraphicBufferClass _TileStage(24, 24);
+static GraphicBufferClass IconStage(3, 3);
+static GraphicBufferClass TileStage(24, 24);
 
 /***********************************************************************************************
  * RadarClass::RadarClass -- Default constructor for RadarClass object. *
@@ -593,9 +593,9 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
       continue;
     }
 
-    Buffer_To_Page(0, 0, 3, 3, icon, _IconStage);
-    _IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
-                     (char*)&FadingBrighten[0]);
+    Buffer_To_Page(0, 0, 3, 3, icon, IconStage);
+    IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
+                    (char*)&FadingBrighten[0]);
   }
 }
 
@@ -688,13 +688,13 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
       if (!icon) {
         return;
       }
-      Buffer_To_Page(0, 0, 3, 3, icon, _IconStage);
+      Buffer_To_Page(0, 0, 3, 3, icon, IconStage);
       if (otype->IsTiberium) {
-        _IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, size, size, true,
-                         (char*)&FadingGreen[0]);
+        IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, size, size, true,
+                        (char*)&FadingGreen[0]);
       } else {
-        _IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, size, size, true,
-                         (char*)&FadingBrighten[0]);
+        IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, size, size, true,
+                        (char*)&FadingBrighten[0]);
       }
     }
   }
@@ -880,9 +880,9 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         ptr = Add_Long_To_Pointer(ptr, offset + (icon * (24 * 24)));
 
         unsigned char* data = (unsigned char*)ptr;
-        Buffer_To_Page(0, 0, 24, 24, data, _TileStage);
-        _TileStage.Scale(*LogicPage, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor,
-                         true);
+        Buffer_To_Page(0, 0, 24, 24, data, TileStage);
+        TileStage.Scale(*LogicPage, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor,
+                        true);
 
       } else {
         if (LogicPage->Lock()) {
@@ -1438,8 +1438,8 @@ int RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
   *used. Other *	events must use the current mouse position globals.
   */
   if (flags & (LEFTPRESS | LEFTRELEASE | RIGHTPRESS | RIGHTRELEASE)) {
-    x = _Kbd->MouseQX;
-    y = _Kbd->MouseQY;
+    x = ActiveKeyboard->MouseQX;
+    y = ActiveKeyboard->MouseQY;
   } else {
     x = Get_Mouse_X();
     y = Get_Mouse_Y();

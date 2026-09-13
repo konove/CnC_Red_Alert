@@ -918,8 +918,8 @@ InfantryClass* CellClass::Cell_Infantry() const {
 }
 
 // Only the cell-sorted renderer draws partial cells, hence maybe_unused.
-[[maybe_unused]] static bool _Calc_Partial_Window(int cellx, int celly,
-                                                  int& drawx, int& drawy) {
+[[maybe_unused]] static bool Calc_Partial_Window(int cellx, int celly,
+                                                 int& drawx, int& drawy) {
   int& px = WindowList[WINDOW_PARTIAL][WINDOWX];
   int& py = WindowList[WINDOW_PARTIAL][WINDOWY];
   int& pw = WindowList[WINDOW_PARTIAL][WINDOWWIDTH];
@@ -1345,7 +1345,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
             (!object->Is_Techno() ||
              ((TechnoClass*)object)->Visual_Character() == VISUAL_NORMAL) &&
             Map.Coord_To_Pixel(object->Render_Coord(), xx, yy)) {
-          if (_Calc_Partial_Window(x, y, xx, yy)) {
+          if (Calc_Partial_Window(x, y, xx, yy)) {
             object->Draw_It(xx, yy, WINDOW_PARTIAL);
             // IsToDisplay clearing moved to frame end in DisplayClass::Draw_It
             // to prevent flickering when render rate exceeds logic tick rate.

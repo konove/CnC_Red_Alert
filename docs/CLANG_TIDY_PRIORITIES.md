@@ -2,7 +2,7 @@
 
 Updated: 2026-09-12, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 161 currently excluded check names** and completed entries, in recommended work
+This tracks **all 156 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -171,11 +171,11 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `cppcoreguidelines-macro-usage`                                 | Pending | Replace avoidable macros with typed language constructs.                                                                                                                                                                                                                                                                                                                                                                     |
 | `modernize-macro-to-enum`                                       | Pending | Replace suitable integral macro groups with typed constants/enums.                                                                                                                                                                                                                                                                                                                                                           |
 | `cppcoreguidelines-macro-to-enum`                               | Pending | Alias of `modernize-macro-to-enum`; handle together.                                                                                                                                                                                                                                                                                                                                                                         |
-| `bugprone-reserved-identifier`                                  | Pending | Avoid collisions with implementation-reserved identifiers.                                                                                                                                                                                                                                                                                                                                                                   |
-| `cert-dcl37-c`                                                  | Pending | Alias of `bugprone-reserved-identifier`; handle together.                                                                                                                                                                                                                                                                                                                                                                    |
-| `cert-dcl51-cpp`                                                | Pending | Alias of `bugprone-reserved-identifier`; handle together.                                                                                                                                                                                                                                                                                                                                                                    |
-| `clang-diagnostic-reserved-identifier`                          | Pending | Enforce compiler-detected reserved names.                                                                                                                                                                                                                                                                                                                                                                                    |
-| `clang-diagnostic-reserved-macro-identifier`                    | Pending | Fix reserved macros; also reduce preprocessing warnings/cache misses.                                                                                                                                                                                                                                                                                                                                                        |
+| `bugprone-reserved-identifier`                                  | Enabled | Commit `Rename reserved identifiers`: 133 underscore-prefixed names renamed token-wise (`_Kbd` is `ActiveKeyboard`, `_GreyScheme` is `DefaultColorScheme`); generated `ra/wolapi/` headers and four Windows SDK spellings in `port/win32/win32_com.h` suppressed. See review below.                                                                                                                                          |
+| `cert-dcl37-c`                                                  | Enabled | Commit `Rename reserved identifiers`: enforced with `bugprone-reserved-identifier`, which it aliases.                                                                                                                                                                                                                                                                                                                        |
+| `cert-dcl51-cpp`                                                | Enabled | Commit `Rename reserved identifiers`: enforced with `bugprone-reserved-identifier`, which it aliases.                                                                                                                                                                                                                                                                                                                        |
+| `clang-diagnostic-reserved-identifier`                          | Enabled | Commit `Rename reserved identifiers`: the same 133 renames cleared all 144 compiler reports.                                                                                                                                                                                                                                                                                                                                 |
+| `clang-diagnostic-reserved-macro-identifier`                    | Enabled | Commit `Rename reserved identifiers`: `_MAX_*` are `kMaxPath` and friends (105 uses), `_USERENTRY` and TD's `_RETRIEVE` are gone, removing the preprocessing warning `CLAUDE.md` names as the `clang-tidy-cache` blocker (not re-measured). See review below.                                                                                                                                                                |
 | `clang-diagnostic-invalid-source-encoding`                      | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                                                                                                                                                                                |
 | `portability-template-virtual-member-function`                  | Pending | Review compiler-dependent template/virtual behavior.                                                                                                                                                                                                                                                                                                                                                                         |
 | `portability-avoid-pragma-once`                                 | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                                                                                                                                                                                |
@@ -1140,6 +1140,51 @@ variables stay checked.
 `misc-use-anonymous-namespace` stays excluded. It reported 766 file-local `static` functions and
 variables in project sources. Google style accepts either `static` or an unnamed namespace, the tree
 uses no namespaces, and moving 766 working definitions would change no linkage.
+
+The full strict build of both games is clean and all 242 tests pass.
+
+### Reserved identifier review (2026-09-12)
+
+`bugprone-reserved-identifier`, its CERT aliases `cert-dcl37-c` and `cert-dcl51-cpp`,
+`clang-diagnostic-reserved-identifier` and `clang-diagnostic-reserved-macro-identifier` are now
+enforced together. The sweep reported 188 declarations and 34 macros. Most were Westwood's habit of
+prefixing file-local helpers and struct tags with an underscore (`_Consists_Only_Of_Infantry`,
+`typedef struct _VQAConfig {...} VQAConfig`). None of them collided with the implementation, but
+nothing stopped the next one from doing so.
+
+A token-level rename covered 133 names in 73 files, leaving comments and strings alone, and it
+refused any new name already spelled in the file. Most names just lose the underscore; a struct tag
+taking its typedef's name is legal C++. A few needed a name of their own:
+
+- TD's `_Kbd` was the pointer the `sdllib/keyboard.h` helpers call through, next to the `Kbd` object
+  it points at. It is `ActiveKeyboard`.
+- RA's gadget colour scheme `_GreyScheme` would have collided with the `GreyScheme` global in
+  `externs.h`. It is `DefaultColorScheme`.
+- The base64 tables became `kEncoder`, `kDecoder` and `kPad`, and the `_wsproto.h` guard became
+  `CNC_RED_ALERT_RA_WSPROTO_IMPL_H_`.
+- `sdllib`'s `_ShapeBuffer` and `_ShapeBufferSize` lost the underscore, which retires RA's
+  `#define ShapeBufferSize _ShapeBufferSize` alias in `compat.h`.
+
+The macros:
+
+- `port/ex_string.h` defined `_MAX_PATH`, `_MAX_FNAME`, `_MAX_EXT` and `_MAX_DRIVE`, the Microsoft
+  CRT spellings. They are now `kMaxPath`, `kMaxFname`, `kMaxExt` and `kMaxDrive`, and their 105 uses
+  in 25 files follow. Plain `MAX_PATH` stays with Windows. This was also the preprocessor warning
+  that `CLAUDE.md` measured as keeping `clang-tidy-cache` from hashing most translation units; the
+  cache rate has not been re-measured since.
+- `ra/search.h` defined `_USERENTRY`, an empty Borland calling-convention macro, and used it twice.
+  It is gone.
+- TD's `display.cc` and `sidebar.cc` each defined `_RETRIEVE` so that `Init_Theater` loads the
+  palette fading and translucency tables rather than building them and writing them to disk. The
+  build-and-write branches (thirteen blocks in `display.cc`, one in `sidebar.cc`) were always
+  compiled out. They are deleted and the loads are unconditional. Renaming the macro alone would
+  have silently switched them back on.
+
+The Westwood Online headers under `ra/wolapi/` are MIDL output, kept faithful to the IDL, and full
+of generated reserved names (`__IChat_FWD_DEFINED__`, `__RPC_FAR`, struct tags). Each is wrapped in
+a `NOLINTBEGIN`/`NOLINTEND` for these five checks. The matching Windows SDK spellings in
+`port/win32/win32_com.h` (`__RPC_FAR`, `__RPC_USER`, `__RPC_STUB` and the `__IID_DEFINED__` guard
+that MIDL's IID file tests) carry line suppressions: the generated code needs exactly those names.
 
 The full strict build of both games is clean and all 242 tests pass.
 

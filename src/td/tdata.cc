@@ -64,48 +64,48 @@
 // #define TREE_WEAK 400
 // #define TREE_STRONG 800
 
-static const short _List1[] = {0, REFRESH_EOL};
-static const short _List000010[] = {MAP_CELL_W + 1, REFRESH_EOL};
-static const short _List000011101000[] = {
+static const short List1[] = {0, REFRESH_EOL};
+static const short List000010[] = {MAP_CELL_W + 1, REFRESH_EOL};
+static const short List000011101000[] = {
     MAP_CELL_W, MAP_CELL_W + 1, MAP_CELL_W + 2, MAP_CELL_W * 2, REFRESH_EOL};
-static const short _List00001[] = {4, REFRESH_EOL};
-static const short _List000110[] = {MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL};
-static const short _List000111[] = {MAP_CELL_W, MAP_CELL_W + 1, MAP_CELL_W + 2,
-                                    REFRESH_EOL};
-static const short _List001011100110[] = {2,
-                                          MAP_CELL_W,
-                                          MAP_CELL_W + 1,
-                                          MAP_CELL_W + 2,
-                                          (MAP_CELL_W * 2) + 1,
-                                          (MAP_CELL_W * 2) + 2,
-                                          REFRESH_EOL};
-static const short _List0010[] = {MAP_CELL_W, REFRESH_EOL};
-static const short _List0011[] = {MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL};
-static const short _List001[] = {2, REFRESH_EOL};
-static const short _List010110[] = {1, MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL};
-static const short _List01[] = {1, REFRESH_EOL};
-static const short _List1001[] = {0, MAP_CELL_W + 1, REFRESH_EOL};
-static const short _List101001[] = {0, 2, MAP_CELL_W + 2, REFRESH_EOL};
-static const short _List10[] = {0, REFRESH_EOL};
-static const short _List110000011001[] = {
+static const short List00001[] = {4, REFRESH_EOL};
+static const short List000110[] = {MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL};
+static const short List000111[] = {MAP_CELL_W, MAP_CELL_W + 1, MAP_CELL_W + 2,
+                                   REFRESH_EOL};
+static const short List001011100110[] = {2,
+                                         MAP_CELL_W,
+                                         MAP_CELL_W + 1,
+                                         MAP_CELL_W + 2,
+                                         (MAP_CELL_W * 2) + 1,
+                                         (MAP_CELL_W * 2) + 2,
+                                         REFRESH_EOL};
+static const short List0010[] = {MAP_CELL_W, REFRESH_EOL};
+static const short List0011[] = {MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL};
+static const short List001[] = {2, REFRESH_EOL};
+static const short List010110[] = {1, MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL};
+static const short List01[] = {1, REFRESH_EOL};
+static const short List1001[] = {0, MAP_CELL_W + 1, REFRESH_EOL};
+static const short List101001[] = {0, 2, MAP_CELL_W + 2, REFRESH_EOL};
+static const short List10[] = {0, REFRESH_EOL};
+static const short List110000011001[] = {
     0, 1, MAP_CELL_W + 3, MAP_CELL_W * 2, (MAP_CELL_W * 2) + 3, REFRESH_EOL};
-static const short _List110000[] = {0, 1, REFRESH_EOL};
-static const short _List110001[] = {0, 1, MAP_CELL_W + 2, REFRESH_EOL};
-static const short _List1100[] = {0, 1, REFRESH_EOL};
-static const short _List110110[] = {0, 1, MAP_CELL_W, MAP_CELL_W + 1,
-                                    REFRESH_EOL};
-static const short _List1101[] = {0, 1, MAP_CELL_W + 1, REFRESH_EOL};
-static const short _List111000010110[] = {0,
-                                          1,
-                                          2,
-                                          MAP_CELL_W + 3,
-                                          (MAP_CELL_W * 2) + 1,
-                                          (MAP_CELL_W * 2) + 2,
-                                          REFRESH_EOL};
-static const short _List111001[] = {0, 1, 2, MAP_CELL_W + 2, REFRESH_EOL};
-static const short _List111101[] = {
-    0, 1, 2, MAP_CELL_W, MAP_CELL_W + 2, REFRESH_EOL};
-static const short _List11110[] = {0, 1, 2, 3, REFRESH_EOL};
+static const short List110000[] = {0, 1, REFRESH_EOL};
+static const short List110001[] = {0, 1, MAP_CELL_W + 2, REFRESH_EOL};
+static const short List1100[] = {0, 1, REFRESH_EOL};
+static const short List110110[] = {0, 1, MAP_CELL_W, MAP_CELL_W + 1,
+                                   REFRESH_EOL};
+static const short List1101[] = {0, 1, MAP_CELL_W + 1, REFRESH_EOL};
+static const short List111000010110[] = {0,
+                                         1,
+                                         2,
+                                         MAP_CELL_W + 3,
+                                         (MAP_CELL_W * 2) + 1,
+                                         (MAP_CELL_W * 2) + 2,
+                                         REFRESH_EOL};
+static const short List111001[] = {0, 1, 2, MAP_CELL_W + 2, REFRESH_EOL};
+static const short List111101[] = {0,          1, 2, MAP_CELL_W, MAP_CELL_W + 2,
+                                   REFRESH_EOL};
+static const short List11110[] = {0, 1, 2, 3, REFRESH_EOL};
 
 static const TerrainTypeClass Tree1Class(
     TERRAIN_TREE1, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -119,7 +119,7 @@ static const TerrainTypeClass Tree1Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     false,              // Is it immune to normal combat damage?
-    "T01", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1001);
+    "T01", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree2Class(
     TERRAIN_TREE2, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -133,7 +133,7 @@ static const TerrainTypeClass Tree2Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     false,              // Is it immune to normal combat damage?
-    "T02", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1001);
+    "T02", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree3Class(
     TERRAIN_TREE3, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -147,7 +147,7 @@ static const TerrainTypeClass Tree3Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     false,              // Is it immune to normal combat damage?
-    "T03", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1001);
+    "T03", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree4Class(
     TERRAIN_TREE4, THEATERF_DESERT,
@@ -161,7 +161,7 @@ static const TerrainTypeClass Tree4Class(
     false,            // Can it be the target of a move or attack order?
     true,             // Don't make a big deal about it if it gets destroyed?
     false,            // Is it immune to normal combat damage?
-    "T04", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List1, nullptr);
+    "T04", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List1, nullptr);
 
 static const TerrainTypeClass Tree5Class(
     TERRAIN_TREE5, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -175,7 +175,7 @@ static const TerrainTypeClass Tree5Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     false,              // Is it immune to normal combat damage?
-    "T05", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1001);
+    "T05", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree6Class(
     TERRAIN_TREE6, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -189,7 +189,7 @@ static const TerrainTypeClass Tree6Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     false,              // Is it immune to normal combat damage?
-    "T06", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1001);
+    "T06", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree7Class(
     TERRAIN_TREE7, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -203,7 +203,7 @@ static const TerrainTypeClass Tree7Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     false,              // Is it immune to normal combat damage?
-    "T07", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1001);
+    "T07", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree8Class(
     TERRAIN_TREE8, THEATERF_WINTER | THEATERF_TEMPERATE | THEATERF_DESERT,
@@ -217,7 +217,7 @@ static const TerrainTypeClass Tree8Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     false,              // Is it immune to normal combat damage?
-    "T08", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List10, _List01);
+    "T08", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List10, List01);
 
 static const TerrainTypeClass Tree9Class(
     TERRAIN_TREE9, THEATERF_DESERT,
@@ -231,7 +231,7 @@ static const TerrainTypeClass Tree9Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     false,              // Is it immune to normal combat damage?
-    "T09", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List10, _List01);
+    "T09", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List10, List01);
 
 static const TerrainTypeClass Tree10Class(
     TERRAIN_TREE10, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -245,7 +245,7 @@ static const TerrainTypeClass Tree10Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     false,              // Is it immune to normal combat damage?
-    "T10", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0011, _List1100);
+    "T10", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0011, List1100);
 
 static const TerrainTypeClass Tree11Class(
     TERRAIN_TREE11, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -259,7 +259,7 @@ static const TerrainTypeClass Tree11Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     false,              // Is it immune to normal combat damage?
-    "T11", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0011, _List1100);
+    "T11", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0011, List1100);
 
 static const TerrainTypeClass Tree12Class(
     TERRAIN_TREE12, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -273,7 +273,7 @@ static const TerrainTypeClass Tree12Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     false,              // Is it immune to normal combat damage?
-    "T12", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1001);
+    "T12", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree13Class(
     TERRAIN_TREE13, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -287,7 +287,7 @@ static const TerrainTypeClass Tree13Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     false,              // Is it immune to normal combat damage?
-    "T13", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1101);
+    "T13", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1101);
 
 static const TerrainTypeClass Tree14Class(
     TERRAIN_TREE14, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -301,7 +301,7 @@ static const TerrainTypeClass Tree14Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     false,              // Is it immune to normal combat damage?
-    "T14", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0011, _List1100);
+    "T14", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0011, List1100);
 
 static const TerrainTypeClass Tree15Class(
     TERRAIN_TREE15, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -315,7 +315,7 @@ static const TerrainTypeClass Tree15Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     false,              // Is it immune to normal combat damage?
-    "T15", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0011, _List1100);
+    "T15", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0011, List1100);
 
 static const TerrainTypeClass Tree16Class(
     TERRAIN_TREE16, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -329,7 +329,7 @@ static const TerrainTypeClass Tree16Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     false,              // Is it immune to normal combat damage?
-    "T16", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1001);
+    "T16", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree17Class(
     TERRAIN_TREE17, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -343,7 +343,7 @@ static const TerrainTypeClass Tree17Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     false,              // Is it immune to normal combat damage?
-    "T17", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1001);
+    "T17", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree18Class(
     TERRAIN_TREE18, THEATERF_DESERT,
@@ -357,7 +357,7 @@ static const TerrainTypeClass Tree18Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     false,              // Is it immune to normal combat damage?
-    "T18", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List000010, _List111101);
+    "T18", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List000010, List111101);
 
 static const TerrainTypeClass Split1Class(
     TERRAIN_BLOSSOMTREE1, THEATERF_TEMPERATE | THEATERF_WINTER,
@@ -371,7 +371,7 @@ static const TerrainTypeClass Split1Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     true,               // Is it immune to normal combat damage?
-    "SPLIT2", TXT_BLOSSOM_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1101);
+    "SPLIT2", TXT_BLOSSOM_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1101);
 
 static const TerrainTypeClass Split2Class(
     TERRAIN_BLOSSOMTREE2,
@@ -386,7 +386,7 @@ static const TerrainTypeClass Split2Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     true,               // Is it immune to normal combat damage?
-    "SPLIT3", TXT_BLOSSOM_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1101);
+    "SPLIT3", TXT_BLOSSOM_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1101);
 
 static const TerrainTypeClass Clump1Class(
     TERRAIN_CLUMP1, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -400,7 +400,7 @@ static const TerrainTypeClass Clump1Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     true,               // Is it immune to normal combat damage?
-    "TC01", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List000110, _List110001);
+    "TC01", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List000110, List110001);
 
 static const TerrainTypeClass Clump2Class(
     TERRAIN_CLUMP2, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -414,7 +414,7 @@ static const TerrainTypeClass Clump2Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     true,               // Is it immune to normal combat damage?
-    "TC02", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List010110, _List101001);
+    "TC02", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List010110, List101001);
 
 static const TerrainTypeClass Clump3Class(
     TERRAIN_CLUMP3, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -428,7 +428,7 @@ static const TerrainTypeClass Clump3Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     true,               // Is it immune to normal combat damage?
-    "TC03", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List110110, _List001);
+    "TC03", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List110110, List001);
 
 static const TerrainTypeClass Clump4Class(
     TERRAIN_CLUMP4, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -442,8 +442,8 @@ static const TerrainTypeClass Clump4Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     true,               // Is it immune to normal combat damage?
-    "TC04", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List000011101000,
-    _List111000010110);
+    "TC04", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List000011101000,
+    List111000010110);
 
 static const TerrainTypeClass Clump5Class(
     TERRAIN_CLUMP5, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -457,8 +457,8 @@ static const TerrainTypeClass Clump5Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     true,               // Is it immune to normal combat damage?
-    "TC05", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List001011100110,
-    _List110000011001);
+    "TC05", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List001011100110,
+    List110000011001);
 
 static const TerrainTypeClass Rock1Class(
     TERRAIN_ROCK1, THEATERF_DESERT,
@@ -472,7 +472,7 @@ static const TerrainTypeClass Rock1Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     true,               // Is it immune to normal combat damage?
-    "ROCK1", TXT_ROCK, 1000, ARMOR_STEEL, _List0011, _List111001);
+    "ROCK1", TXT_ROCK, 1000, ARMOR_STEEL, List0011, List111001);
 
 static const TerrainTypeClass Rock2Class(
     TERRAIN_ROCK2, THEATERF_DESERT,
@@ -486,7 +486,7 @@ static const TerrainTypeClass Rock2Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     true,               // Is it immune to normal combat damage?
-    "ROCK2", TXT_ROCK, 1000, ARMOR_STEEL, _List1100, _List001);
+    "ROCK2", TXT_ROCK, 1000, ARMOR_STEEL, List1100, List001);
 
 static const TerrainTypeClass Rock3Class(
     TERRAIN_ROCK3, THEATERF_DESERT,
@@ -500,7 +500,7 @@ static const TerrainTypeClass Rock3Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     true,               // Is it immune to normal combat damage?
-    "ROCK3", TXT_ROCK, 1000, ARMOR_STEEL, _List000110, _List110001);
+    "ROCK3", TXT_ROCK, 1000, ARMOR_STEEL, List000110, List110001);
 
 static const TerrainTypeClass Rock4Class(
     TERRAIN_ROCK4, THEATERF_DESERT,
@@ -514,7 +514,7 @@ static const TerrainTypeClass Rock4Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     true,               // Is it immune to normal combat damage?
-    "ROCK4", TXT_ROCK, 1000, ARMOR_STEEL, _List10, _List01);
+    "ROCK4", TXT_ROCK, 1000, ARMOR_STEEL, List10, List01);
 
 static const TerrainTypeClass Rock5Class(
     TERRAIN_ROCK5, THEATERF_DESERT,
@@ -528,7 +528,7 @@ static const TerrainTypeClass Rock5Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     true,               // Is it immune to normal combat damage?
-    "ROCK5", TXT_ROCK, 1000, ARMOR_STEEL, _List10, _List01);
+    "ROCK5", TXT_ROCK, 1000, ARMOR_STEEL, List10, List01);
 
 static const TerrainTypeClass Rock6Class(
     TERRAIN_ROCK6, THEATERF_DESERT,
@@ -542,7 +542,7 @@ static const TerrainTypeClass Rock6Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     true,               // Is it immune to normal combat damage?
-    "ROCK6", TXT_ROCK, 1000, ARMOR_STEEL, _List000111, _List110000);
+    "ROCK6", TXT_ROCK, 1000, ARMOR_STEEL, List000111, List110000);
 
 static const TerrainTypeClass Rock7Class(
     TERRAIN_ROCK7, THEATERF_DESERT,
@@ -556,7 +556,7 @@ static const TerrainTypeClass Rock7Class(
     false,              // Can it be the target of a move or attack order?
     true,               // Don't make a big deal about it if it gets destroyed?
     true,               // Is it immune to normal combat damage?
-    "ROCK7", TXT_ROCK, 1000, ARMOR_STEEL, _List11110, _List00001);
+    "ROCK7", TXT_ROCK, 1000, ARMOR_STEEL, List11110, List00001);
 
 const TerrainTypeClass* const TerrainTypeClass::Pointers[TERRAIN_COUNT] = {
     &Tree1Class,   //	TERRAIN_TREE1

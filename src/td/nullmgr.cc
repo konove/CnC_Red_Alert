@@ -114,7 +114,7 @@
 // to determine whether or not they call the abort modem function.
 //
 extern "C" {
-extern void (*_AbortModemFunctionPtr)(int);
+extern void (*AbortModemFunctionPtr)(int);
 }
 
 void (*NullModemClass::OrigAbortModemFunc)(int);

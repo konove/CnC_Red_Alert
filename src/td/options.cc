@@ -487,8 +487,8 @@ void OptionsClass::Load_Settings() {
   *this, since *	the HidPage may be needed for various uncompressions
   *during the INI *	parsing.)
   */
-  buffer = _ShapeBuffer;
-  memset(buffer, '\0', _ShapeBufferSize);
+  buffer = ShapeBuffer;
+  memset(buffer, '\0', ShapeBufferSize);
 
   /*
   **	Create filename and read the file.
@@ -497,7 +497,7 @@ void OptionsClass::Load_Settings() {
   if (!file.Is_Available()) {
     return;
   }
-  file.Read(buffer, _ShapeBufferSize - 1);
+  file.Read(buffer, ShapeBufferSize - 1);
   file.Close();
 
   /*
@@ -666,12 +666,12 @@ void OptionsClass::Save_Settings() {
   **	Get a working pointer to the INI staging buffer. Make sure that the
   *buffer *	starts cleared out of any data.
   */
-  buffer = _ShapeBuffer;
-  memset(buffer, '\0', _ShapeBufferSize);
+  buffer = ShapeBuffer;
+  memset(buffer, '\0', ShapeBufferSize);
 
   file.Set_Name("CONQUER.INI");
   if (file.Is_Available()) {
-    file.Read(buffer, _ShapeBufferSize - 1);
+    file.Read(buffer, ShapeBufferSize - 1);
   }
 
   /*

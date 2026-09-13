@@ -6352,7 +6352,7 @@ bool TechnoTypeClass::Is_Two_Shooter() const {
  *                                                                                             *
  * HISTORY: * 06/17/1996 JLB : Created. *
  *=============================================================================================*/
-static inline int _Scale_To_256(int val) {
+static inline int Scale_To_256(int val) {
   val = std::min(val, 100);
   val = std::max(val, 0);
   val = val * 256 / 100;
@@ -6428,8 +6428,8 @@ bool TechnoTypeClass::Read_INI(CCINIClass& ini) {
         ini.Get_Int(Name(), "Strength", MaxStrength));
     SightRange = ini.Get_Int(Name(), "Sight", SightRange);
     Level = ini.Get_Int(Name(), "TechLevel", Level);
-    MaxSpeed = static_cast<MPHType>(_Scale_To_256(
-        ini.Get_Int(Name(), "Speed", fixed(MaxSpeed, 256) * 100)));
+    MaxSpeed = static_cast<MPHType>(
+        Scale_To_256(ini.Get_Int(Name(), "Speed", fixed(MaxSpeed, 256) * 100)));
     Cost = ini.Get_Int(Name(), "Cost", Cost);
     MaxAmmo = ini.Get_Int(Name(), "Ammo", MaxAmmo);
     Risk = Reward = Points = ini.Get_Int(Name(), "Points", Points);

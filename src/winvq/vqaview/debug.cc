@@ -114,7 +114,7 @@ VOID Debug_Mono_Message(BYTE* message) {
 #if (DEBUG_LOG_TO_FILE)
   INT fh;
   static BOOL _errored_once = FALSE;
-  BYTE name_path_string[_MAX_PATH];
+  BYTE name_path_string[kMaxPath];
   BOOL danger;
 #endif
 

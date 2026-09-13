@@ -85,7 +85,7 @@
  * id   - 4 Byte chunk id.
  * size - Size of chunk.
  */
-typedef struct _ChunkHeader {
+typedef struct ChunkHeader {
   uint32_t id;
   uint32_t size;
 } ChunkHeader;
@@ -97,7 +97,7 @@ typedef struct _ChunkHeader {
  * UnCompSize - Uncompressed size in bytes.
  * CompSize   - Compressed size in bytes.
  */
-typedef struct _ZAPHeader {
+typedef struct ZAPHeader {
   unsigned short UnCompSize;
   unsigned short CompSize;
 } ZAPHeader;
@@ -191,7 +191,7 @@ struct VQAFrameNode {
  * MaxFrameSize  - Size of the largest frame in the animation.
  * CurChunkHdr   - Chunk header of the chunk currently being processed.
  */
-typedef struct _VQALoader {
+typedef struct VQALoader {
   VQACBNode* CurCB;
   VQACBNode* FullCB;
   VQAFrameNode* CurFrame;
@@ -235,7 +235,7 @@ typedef struct _VQALoader {
  * WaitsOnFlipper - Number of wait states Drawer hits waiting on the Flipper.
  * WaitsOnLoader  - Number of wait states Drawer hits waiting on the Loader.
  */
-typedef struct _VQADrawer {
+typedef struct VQADrawer {
   VQAFrameNode* CurFrame;
   unsigned long Flags;
   DisplayInfo* Display;
@@ -273,7 +273,7 @@ typedef struct _VQADrawer {
  * LastFrameNum - Number of last flipped frame
  * pad          - DWORD alignment padding.
  */
-typedef struct _VQAFlipper {
+typedef struct VQAFlipper {
   VQAFrameNode* CurFrame;
   long LastFrameNum;
 } VQAFlipper;

@@ -1000,14 +1000,14 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
   Update* pUpdate = pUpdateList;
   int iUpdateCurrent = 0;
   //	Save current directory.
-  char szCurDirSave[_MAX_PATH];
-  ::GetCurrentDirectory(_MAX_PATH, szCurDirSave);
+  char szCurDirSave[kMaxPath];
+  ::GetCurrentDirectory(kMaxPath, szCurDirSave);
   while (pUpdate) {
     ++iUpdateCurrent;
     char szTitle[120];
     Format_Runtime_Text(szTitle, sizeof(szTitle), TXT_WOL_DOWNLOADING,
                         iUpdateCurrent, iUpdates);
-    char fullpath[_MAX_PATH];
+    char fullpath[kMaxPath];
     sprintf(fullpath, "%s\\%s", pUpdate->patchpath, pUpdate->patchfile);
     //	Downloading in WOLAPI is in a state of disarray somewhat.
     //	Make sure the destination directory exists, and make it the current

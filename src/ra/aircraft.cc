@@ -179,7 +179,7 @@
  *                                                                                             *
  * HISTORY: * 06/24/1996 JLB : Created. *
  *=============================================================================================*/
-static bool _Counts_As_Civ_Evac(const ObjectClass* candidate) {
+static bool Counts_As_Civ_Evac(const ObjectClass* candidate) {
   /*
   **	If the candidate pointer is missing, then return with failure code.
   */
@@ -2774,7 +2774,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
       **	If a civilian has entered the transport, then the transport will
       *immediately *	fly off the map.
       */
-      if (_Counts_As_Civ_Evac(from)) {
+      if (Counts_As_Civ_Evac(from)) {
         Assign_Mission(MISSION_RETREAT);
       }
       return RADIO_ATTACH;
@@ -4153,7 +4153,7 @@ bool AircraftClass::Edge_Of_World_AI() {
         /*
         **	Flag the owning house that civ evacuation has occurred.
         */
-        if (_Counts_As_Civ_Evac(obj)) {
+        if (Counts_As_Civ_Evac(obj)) {
           obj->House->IsCivEvacuated = true;
         }
 

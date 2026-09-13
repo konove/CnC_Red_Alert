@@ -2299,7 +2299,7 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
 
     // In WIn95, build shape returns a pointer to the shape not its size
     void* shape_pointer =
-        Build_Frame(shapefile, static_cast<uint16_t>(shape_num), _ShapeBuffer);
+        Build_Frame(shapefile, static_cast<uint16_t>(shape_num), ShapeBuffer);
     if (shape_pointer) {
       GraphicViewPortClass draw_window(
           LogicPage->Get_Graphic_Buffer(),
@@ -2397,7 +2397,7 @@ Rect Shape_Dimensions(const void* shapedata, const int shape_num) {
   }
 
   void* sh =
-      Build_Frame(shapedata, static_cast<uint16_t>(shape_num), _ShapeBuffer);
+      Build_Frame(shapedata, static_cast<uint16_t>(shape_num), ShapeBuffer);
   if (sh == nullptr) {
     return rect;
   }

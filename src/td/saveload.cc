@@ -94,7 +94,7 @@
 // Write the theater/map, object heaps, ordered layers, and globals as fields.
 bool Save_Game(int id, char* descr) {
   RawFileClass file;
-  char name[_MAX_FNAME + _MAX_EXT];
+  char name[kMaxFname + kMaxExt];
   int i;
   int32_t version = 0;
   unsigned scenario;
@@ -232,7 +232,7 @@ bool Save_Game(int id, char* descr) {
 // Load heaps before ordered object lists; rebuild runtime placement/UI state last.
 bool Load_Game(int id) {
   RawFileClass file;
-  char name[_MAX_FNAME + _MAX_EXT];
+  char name[kMaxFname + kMaxExt];
   int i;
   int32_t version = 0;
   unsigned scenario;
@@ -531,7 +531,7 @@ bool Load_Misc_Values(ArchiveReader& file) {
  *=========================================================================*/
 bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
   RawFileClass file;
-  char name[_MAX_FNAME + _MAX_EXT];
+  char name[kMaxFname + kMaxExt];
   int32_t version = 0;
   char descr_buf[kDescripMax];
 

@@ -162,7 +162,7 @@ static void Create_Units(bool official);
 static CELL Clip_Scatter(CELL cell, int maxdist);
 static CELL Clip_Move(CELL cell, FacingType facing, int dist);
 
-static int _build_tech[11] = {
+static int build_tech[11] = {
     2, 2,  // Tech level 0 and 1 are the same (tech 0 is never used).
     4, 5, 7, 8, 9, 10, 11, 12, 13};
 
@@ -1661,7 +1661,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
   char c_player;  // character representing player type
   char c_dir;     // character representing direction type
   char c_var;     // character representing variation type
-  char fname[_MAX_FNAME + _MAX_EXT];
+  char fname[kMaxFname + kMaxExt];
 
   /*
   ** Set the player-type value.
@@ -1831,7 +1831,7 @@ void ScenarioClass::Set_Scenario_Name(const char* name) {
  * HISTORY: * 10/07/1992 JLB : Created.  V.Grippi added CS check 2/5/97 *
  *=============================================================================================*/
 bool Read_Scenario_INI(char* fname, bool) {
-  //	char fname[_MAX_FNAME+_MAX_EXT];			// full INI
+  //	char fname[kMaxFname+kMaxExt];			// full INI
   // filename
 
   ScenarioInit++;
@@ -2425,7 +2425,7 @@ void Assign_Houses() {
     **	Convert the build level into an actual tech level to assign to the
     *house. *	There isn't a one-to-one correspondence.
     */
-    housep->Control.TechLevel = _build_tech[BuildLevel];
+    housep->Control.TechLevel = build_tech[BuildLevel];
 
     housep->Assign_Handicap(Scen.Difficulty);
 
@@ -2480,7 +2480,7 @@ void Assign_Houses() {
 
     housep->Init_Data(static_cast<PlayerColorType>(color), pref_house,
                       Session.Options.Credits);
-    housep->Control.TechLevel = _build_tech[BuildLevel];
+    housep->Control.TechLevel = build_tech[BuildLevel];
     //		housep->Control.TechLevel = BuildLevel;
 
     DiffType difficulty = Scen.CDifficulty;

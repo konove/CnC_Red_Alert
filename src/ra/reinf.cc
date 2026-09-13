@@ -85,7 +85,7 @@
  *                                                                                             *
  * HISTORY: * 06/25/1996 JLB : Created. *
  *=============================================================================================*/
-static bool _Pop_Group_Out_Of_Object(FootClass* group, TechnoClass* object) {
+static bool Pop_Group_Out_Of_Object(FootClass* group, TechnoClass* object) {
   assert(group != nullptr && object != nullptr);
   int quantity = 0;
 
@@ -146,7 +146,7 @@ static bool _Pop_Group_Out_Of_Object(FootClass* group, TechnoClass* object) {
  *                                                                                             *
  * HISTORY: * 07/26/1996 JLB : Created. *
  *=============================================================================================*/
-static bool _Need_To_Take(const AircraftClass* air) {
+static bool Need_To_Take(const AircraftClass* air) {
   if (*air == AIRCRAFT_YAK || *air == AIRCRAFT_MIG) {
     int deficit = air->House->Get_Quantity(STRUCT_AIRSTRIP);
     //		int deficit = air->House->Get_Quantity(STRUCT_AIRSTRIP) -
@@ -189,7 +189,7 @@ static bool _Need_To_Take(const AircraftClass* air) {
  *                                                                                             *
  * HISTORY: * 06/25/1996 JLB : Created. *
  *=============================================================================================*/
-static FootClass* _Create_Group(const TeamTypeClass* teamtype) {
+static FootClass* Create_Group(const TeamTypeClass* teamtype) {
   assert(teamtype != nullptr);
 
   TeamClass* team = new TeamClass(teamtype);
@@ -232,7 +232,7 @@ static FootClass* _Create_Group(const TeamTypeClass* teamtype) {
         }
 
         const AircraftClass* air = dynamic_cast<const AircraftClass*>(temp);
-        if (air != nullptr && !_Need_To_Take(air)) {
+        if (air != nullptr && !Need_To_Take(air)) {
           temp->IsALoaner = true;
         }
 
@@ -319,7 +319,7 @@ static FootClass* _Create_Group(const TeamTypeClass* teamtype) {
  *                                                                                             *
  * HISTORY: * 06/25/1996 JLB : Created. *
  *=============================================================================================*/
-static bool _Consists_Only_Of_Infantry(const FootClass* first) {
+static bool Consists_Only_Of_Infantry(const FootClass* first) {
   while (first != nullptr) {
     if (first->What_Am_I() != RTTI_INFANTRY) {
       return false;
@@ -347,7 +347,7 @@ static bool _Consists_Only_Of_Infantry(const FootClass* first) {
  *                                                                                             *
  * HISTORY: * 06/25/1996 JLB : Created. *
  *=============================================================================================*/
-static TechnoClass* _Who_Can_Pop_Out_Of(CELL origin) {
+static TechnoClass* Who_Can_Pop_Out_Of(CELL origin) {
   CellClass* cellptr = &Map[origin];
   TechnoClass* candidate = nullptr;
 
@@ -411,7 +411,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
     tt->MissionList[0].Data.Value = teamtype->Origin;
   }
 
-  FootClass* object = _Create_Group(teamtype);
+  FootClass* object = Create_Group(teamtype);
 
   // Mono_Printf("%d-%s (object=%p, team=%d).\n", __LINE__, __FILE__, object,
   // object->Team.Is_Valid());Keyboard->Get();
@@ -430,15 +430,15 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   *do).
   */
   if (object != nullptr && teamtype->Origin != -1 &&
-      _Consists_Only_Of_Infantry(object)) {
+      Consists_Only_Of_Infantry(object)) {
     /*
     **	Search for an object that these infantry can pop out of.
     */
     TechnoClass* candidate =
-        _Who_Can_Pop_Out_Of(Scen.Waypoint[teamtype->Origin]);
+        Who_Can_Pop_Out_Of(Scen.Waypoint[teamtype->Origin]);
 
     if (candidate != nullptr) {
-      return _Pop_Group_Out_Of_Object(object, candidate);
+      return Pop_Group_Out_Of_Object(object, candidate);
     }
   }
 

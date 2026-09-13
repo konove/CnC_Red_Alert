@@ -19,6 +19,10 @@
 #ifndef CNC_RED_ALERT_RA_WOLAPI_DOWNLOADDEFS_H_
 #define CNC_RED_ALERT_RA_WOLAPI_DOWNLOADDEFS_H_
 
+// Generated Westwood Online API names (MIDL guards, struct tags) are reserved
+// identifiers; they stay as generated.
+// NOLINTBEGIN(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
+
 // Every DOWNLOAD_E_* and DOWNLOAD_S_* value is built out of MAKE_HRESULT.
 #include "port/win32/win32_com.h"
 
@@ -59,5 +63,7 @@
 #define DOWNLOADEVENT_LOCALFILEOPENFAILED 5
 #define DOWNLOADEVENT_TCPERROR 6
 #define DOWNLOADEVENT_DISCONNECTERROR 7
+
+// NOLINTEND(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
 
 #endif  // CNC_RED_ALERT_RA_WOLAPI_DOWNLOADDEFS_H_

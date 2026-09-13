@@ -1330,11 +1330,12 @@ static int Net_Join_Dialog() {
         if (joinstate > JOIN_NOTHING) {
           break;
         }
-        if (_Kbd->MouseQX > cbox_x[0] &&
-            _Kbd->MouseQX < cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
-            _Kbd->MouseQY > d_color_y &&
-            _Kbd->MouseQY < d_color_y + d_color_h) {
-          MPlayerPrefColor = (_Kbd->MouseQX - cbox_x[0]) / d_color_w;
+        if (ActiveKeyboard->MouseQX > cbox_x[0] &&
+            ActiveKeyboard->MouseQX <
+                cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
+            ActiveKeyboard->MouseQY > d_color_y &&
+            ActiveKeyboard->MouseQY < d_color_y + d_color_h) {
+          MPlayerPrefColor = (ActiveKeyboard->MouseQX - cbox_x[0]) / d_color_w;
           MPlayerColorIdx = MPlayerPrefColor;
 
           name_edt.Set_Color(MPlayerTColors[MPlayerColorIdx]);

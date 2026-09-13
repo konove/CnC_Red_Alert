@@ -115,7 +115,7 @@
  *                                                                                             *
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
-static int _Byte_Precision(unsigned long value) {
+static int Byte_Precision(unsigned long value) {
   int byte_count;
   for (byte_count = sizeof(value); byte_count; byte_count--) {
     if (value >> ((byte_count - 1) * 8)) {
@@ -154,8 +154,8 @@ int XMP_DER_Length_Encode(unsigned long length, unsigned char* output) {
     output[header_length++] = static_cast<unsigned char>(length);
   } else {
     output[header_length++] =
-        static_cast<unsigned char>(_Byte_Precision(length) | 0x80);
-    for (int byte_counter = _Byte_Precision(length); byte_counter;
+        static_cast<unsigned char>(Byte_Precision(length) | 0x80);
+    for (int byte_counter = Byte_Precision(length); byte_counter;
          --byte_counter) {
       output[header_length++] =
           static_cast<unsigned char>(length >> ((byte_counter - 1) * 8));
@@ -1837,20 +1837,20 @@ void XMP_Double_Mul(uint32_t* prod, const uint32_t* multiplicand,
   }
 }
 
-static int _modulus_shift;  // number of bits for recip scaling
-static unsigned short _reciprical_high_digit;  // MSdigit of scaled recip
-static unsigned short _reciprical_low_digit;   // LSdigit of scaled recip
+static int modulus_shift;  // number of bits for recip scaling
+static unsigned short reciprical_high_digit;  // MSdigit of scaled recip
+static unsigned short reciprical_low_digit;   // LSdigit of scaled recip
 
-static int _modulus_sub_precision;  //	length of modulus in MULTUNITs
-static int _modulus_bit_count;      //	number of modulus significant bits
-static uint32_t _scratch_modulus[MAX_UNIT_PRECISION];  // modulus
+static int modulus_sub_precision;  //	length of modulus in MULTUNITs
+static int modulus_bit_count;      //	number of modulus significant bits
+static uint32_t scratch_modulus[MAX_UNIT_PRECISION];  // modulus
 
 // The double precision modulus staging buffer.
-static uint32_t _double_staging_number[(MAX_UNIT_PRECISION * 2) + 2];
+static uint32_t double_staging_number[(MAX_UNIT_PRECISION * 2) + 2];
 
 // most significant digits of modulus.
-static uint32_t _mod_quotient[4];
-static uint32_t _mod_divisor[4];
+static uint32_t mod_quotient[4];
+static uint32_t mod_divisor[4];
 
 /***********************************************************************************************
  * XMP_Prepare_Modulus -- Prepare globals for modulus operation. *
@@ -1875,36 +1875,36 @@ static uint32_t _mod_divisor[4];
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
 int XMP_Prepare_Modulus(const uint32_t* n_modulus, int precision) {
-  XMP_Move(_scratch_modulus, n_modulus, precision);
+  XMP_Move(scratch_modulus, n_modulus, precision);
 
-  _modulus_bit_count = XMP_Count_Bits(_scratch_modulus, precision);
-  _modulus_sub_precision = (_modulus_bit_count + 16 - 1) / 16;
+  modulus_bit_count = XMP_Count_Bits(scratch_modulus, precision);
+  modulus_sub_precision = (modulus_bit_count + 16 - 1) / 16;
 
   /*
   **	Keep 2*16 bits in _mod_divisor.
   ** This will (normally) result in a reciprocal of 2*16+1 bits.
   */
   int sub_precision = XMP_Significance(
-      _scratch_modulus, precision);  // significant digits in modulus
-  XMP_Move(_mod_divisor, &_scratch_modulus[sub_precision - 2], 2);
-  _modulus_shift = XMP_Count_Bits(_mod_divisor, 2) - (2 * 16);
-  XMP_Shift_Right_Bits(_mod_divisor, _modulus_shift, 2);
+      scratch_modulus, precision);  // significant digits in modulus
+  XMP_Move(mod_divisor, &scratch_modulus[sub_precision - 2], 2);
+  modulus_shift = XMP_Count_Bits(mod_divisor, 2) - (2 * 16);
+  XMP_Shift_Right_Bits(mod_divisor, modulus_shift, 2);
 
-  XMP_Reciprocal(_mod_quotient, _mod_divisor, 2);
-  XMP_Shift_Right_Bits(_mod_quotient, 1, 2);
+  XMP_Reciprocal(mod_quotient, mod_divisor, 2);
+  XMP_Shift_Right_Bits(mod_quotient, 1, 2);
 
   /* Reduce to:   0 < _modulus_shift <= 16 */
-  _modulus_shift = ((_modulus_shift + (16 - 1)) % 16) + 1;
+  modulus_shift = ((modulus_shift + (16 - 1)) % 16) + 1;
 
   /* round up */
-  XMP_Inc(_mod_quotient, 2);
-  if (XMP_Count_Bits(_mod_quotient, 2) > 2 * 16) {
-    XMP_Shift_Right_Bits(_mod_quotient, 1, 2);
-    _modulus_shift--; /* now  0 <= _modulus_shift <= 16 */
+  XMP_Inc(mod_quotient, 2);
+  if (XMP_Count_Bits(mod_quotient, 2) > 2 * 16) {
+    XMP_Shift_Right_Bits(mod_quotient, 1, 2);
+    modulus_shift--; /* now  0 <= _modulus_shift <= 16 */
   }
-  unsigned short* mpm = (unsigned short*)_mod_quotient;
-  _reciprical_low_digit = *mpm++;
-  _reciprical_high_digit = *mpm;
+  unsigned short* mpm = (unsigned short*)mod_quotient;
+  reciprical_low_digit = *mpm++;
+  reciprical_high_digit = *mpm;
 
   return 0;
 }
@@ -1933,21 +1933,21 @@ int XMP_Prepare_Modulus(const uint32_t* n_modulus, int precision) {
  *=============================================================================================*/
 int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
                  const uint32_t* multiplier, int precision) {
-  XMP_Double_Mul(_double_staging_number, multiplicand, multiplier, precision);
+  XMP_Double_Mul(double_staging_number, multiplicand, multiplier, precision);
 
   int double_precision = (precision * 2) + 1;
 
-  _double_staging_number[double_precision - 1] = 0; /* leading 0 uint32_t */
+  double_staging_number[double_precision - 1] = 0; /* leading 0 uint32_t */
 
   /*
   **	We now start working with MULTUNITs.
   **	Determine the most significant MULTUNIT of the product so we don't
   **	have to process leading zeros in our divide loop.
   */
-  int dmi = XMP_Significance(_double_staging_number, double_precision) *
+  int dmi = XMP_Significance(double_staging_number, double_precision) *
             2;  //	number of significant MULTUNITs in product
 
-  if (dmi >= _modulus_sub_precision) {
+  if (dmi >= modulus_sub_precision) {
     /* Make dividend negative.  This allows the use of mp_single_mul to
     ** "subtract" the product of the modulus and the trial divisor
     ** by actually adding to a negative dividend.
@@ -1957,17 +1957,17 @@ int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
     ** indicates that no adjustment is necessary, and we should not
     ** attempt to adjust if the result of the addition is zero.
     */
-    XMP_Inc(_double_staging_number, double_precision);
-    XMP_Neg(_double_staging_number, double_precision);
+    XMP_Inc(double_staging_number, double_precision);
+    XMP_Neg(double_staging_number, double_precision);
 
-    int nqd = dmi + 1 - _modulus_sub_precision;  // number of quotient digits
-                                                 // remaining to be generated
+    int nqd = dmi + 1 - modulus_sub_precision;  // number of quotient digits
+                                                // remaining to be generated
 
     /* Set msb, lsb, and normal ptrs of dividend */
     unsigned short* dmph =
-        (unsigned short*)_double_staging_number + dmi +
+        (unsigned short*)double_staging_number + dmi +
         1;  // points to one higher than precision would indicate
-    unsigned short* dmpl = dmph - _modulus_sub_precision;
+    unsigned short* dmpl = dmph - modulus_sub_precision;
 
     /*
     ** Divide loop.
@@ -1984,7 +1984,7 @@ int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
 
       unsigned short q = mp_quo_digit(dmph);  // trial quotient uint32_t
       if (q > 0) {
-        XMP_Hybrid_Mul(dmpl, (unsigned short*)_scratch_modulus, q,
+        XMP_Hybrid_Mul(dmpl, (unsigned short*)scratch_modulus, q,
                        precision * 2);
 
         /* Perform correction if q too large.
@@ -1995,7 +1995,7 @@ int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
           uint32_t aligned_digits[MAX_UNIT_PRECISION];
           std::memcpy(aligned_digits, dmp, precision * sizeof(uint32_t));
           const bool borrow = XMP_Sub(aligned_digits, aligned_digits,
-                                      _scratch_modulus, false, precision);
+                                      scratch_modulus, false, precision);
           std::memcpy(dmp, aligned_digits, precision * sizeof(uint32_t));
           if (borrow) {
             (*dmph)--;
@@ -2005,11 +2005,11 @@ int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
     }
 
     /* d contains the one's complement of the remainder. */
-    XMP_Neg(_double_staging_number, precision);
-    XMP_Dec(_double_staging_number, precision);
+    XMP_Neg(double_staging_number, precision);
+    XMP_Dec(double_staging_number, precision);
   }
 
-  XMP_Move(prod, _double_staging_number, precision);
+  XMP_Move(prod, double_staging_number, precision);
   return 0;
 }
 
@@ -2030,13 +2030,13 @@ int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
 void XMP_Mod_Mult_Clear(int precision) {
-  XMP_Init(_scratch_modulus, 0, precision);
-  XMP_Init(_double_staging_number, 0, precision);
-  XMP_Init(_mod_quotient, 0, std::ssize(_mod_quotient));
-  XMP_Init(_mod_divisor, 0, std::ssize(_mod_divisor));
-  _modulus_shift = _modulus_bit_count = 0;
-  _reciprical_high_digit = _reciprical_low_digit = 0;
-  _modulus_sub_precision = /*mutemp =*/0;
+  XMP_Init(scratch_modulus, 0, precision);
+  XMP_Init(double_staging_number, 0, precision);
+  XMP_Init(mod_quotient, 0, std::ssize(mod_quotient));
+  XMP_Init(mod_divisor, 0, std::ssize(mod_divisor));
+  modulus_shift = modulus_bit_count = 0;
+  reciprical_high_digit = reciprical_low_digit = 0;
+  modulus_sub_precision = /*mutemp =*/0;
 }
 
 /*
@@ -2074,25 +2074,25 @@ unsigned short mp_quo_digit(const unsigned short* dividend) {
    * needed to guarantee that the result not be too small.
    */
   q1 = ((dividend[-2] ^ SEMI_MASK) *
-        static_cast<unsigned long>(_reciprical_high_digit)) +
-       _reciprical_high_digit;
+        static_cast<unsigned long>(reciprical_high_digit)) +
+       reciprical_high_digit;
   q2 = ((dividend[-1] ^ SEMI_MASK) *
-        static_cast<unsigned long>(_reciprical_low_digit)) +
+        static_cast<unsigned long>(reciprical_low_digit)) +
        (1L << 16);
   q0 = (q1 >> 1) + (q2 >> 1) + 1;
 
   /*      Compute the middle significant product group.   */
   q1 = (dividend[-1] ^ SEMI_MASK) *
-       static_cast<unsigned long>(_reciprical_high_digit);
+       static_cast<unsigned long>(reciprical_high_digit);
   q2 = (dividend[0] ^ SEMI_MASK) *
-       static_cast<unsigned long>(_reciprical_low_digit);
+       static_cast<unsigned long>(reciprical_low_digit);
   q = (q0 >> 16) + (q1 >> 1) + (q2 >> 1) + 1;
 
   /*      Compute the most significant term and add in the others */
   q = (q >> (16 - 2)) + (((dividend[0] ^ SEMI_MASK) *
-                          static_cast<unsigned long>(_reciprical_high_digit))
+                          static_cast<unsigned long>(reciprical_high_digit))
                          << 1);
-  q >>= _modulus_shift;
+  q >>= modulus_shift;
 
   /*      Prevent overflow and then wipe out the intermediate results. */
   return static_cast<unsigned short>(

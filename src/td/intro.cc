@@ -91,12 +91,12 @@ static bool Open_Movie(VqaPlayer& player, MixFileVqaIo& io, const char* name) {
  * HISTORY: * 5/08/1995 BWG : Created. *
  *=============================================================================================*/
 void Choose_Side() {
-  static const unsigned char _yellowpal[] = {0x0,  0xC9, 0xBA, 0x93, 0x61, 0xEE,
-                                             0xee, 0x0,  0x0,  0x0,  0x0,  0x0,
-                                             0x0,  0x0,  0x0,  0x0};
-  static const unsigned char _redpal[] = {0x0,  0xa8, 0xd9, 0xda, 0xe1, 0xd4,
-                                          0xDA, 0x0,  0xE1, 0x0,  0x0,  0x0,
-                                          0x0,  0x0,  0xD4, 0x0};
+  static const unsigned char yellowpal[] = {0x0,  0xC9, 0xBA, 0x93, 0x61, 0xEE,
+                                            0xee, 0x0,  0x0,  0x0,  0x0,  0x0,
+                                            0x0,  0x0,  0x0,  0x0};
+  static const unsigned char redpal[] = {0x0,  0xa8, 0xd9, 0xda, 0xe1, 0xd4,
+                                         0xDA, 0x0,  0xE1, 0x0,  0x0,  0x0,
+                                         0x0,  0x0,  0xD4, 0x0};
   static const unsigned char _graypal[] = {0x0,  0x17, 0x10, 0x12, 0x14, 0x1c,
                                            0x12, 0x1c, 0x14, 0x0,  0x0,  0x0,
                                            0x0,  0x0,  0x1C, 0x0};
@@ -176,11 +176,11 @@ void Choose_Side() {
   statichandle = Play_Sample(staticaud, 255, 64);
   CountDownTimerClass sample_timer;
   sample_timer.Set(0x3f);
-  Alloc_Object(new ScorePrintClass(TXT_GDI_NAME, 0, 180, _yellowpal));
+  Alloc_Object(new ScorePrintClass(TXT_GDI_NAME, 0, 180, yellowpal));
 #ifdef FRENCH
-  Alloc_Object(new ScorePrintClass(TXT_GDI_NAME2, 0, 187, _yellowpal));
+  Alloc_Object(new ScorePrintClass(TXT_GDI_NAME2, 0, 187, yellowpal));
 #endif
-  Alloc_Object(new ScorePrintClass(TXT_NOD_NAME, 180, 180, _redpal));
+  Alloc_Object(new ScorePrintClass(TXT_NOD_NAME, 180, 180, redpal));
 
 #ifdef GERMAN
   Alloc_Object(new ScorePrintClass(TXT_SEL_TRANS, 57, 190, _graypal));
@@ -233,8 +233,8 @@ void Choose_Side() {
     }
     if (Keyboard::Check() && endframe == 255) {
       if ((Keyboard::Get() & 0x10FF) == KN_LMOUSE) {
-        if (_Kbd->MouseQY > 96 && _Kbd->MouseQY < 300) {
-          if (_Kbd->MouseQX > 36 && _Kbd->MouseQX < 296) {
+        if (ActiveKeyboard->MouseQY > 96 && ActiveKeyboard->MouseQY < 300) {
+          if (ActiveKeyboard->MouseQX > 36 && ActiveKeyboard->MouseQX < 296) {
             // Chose GDI
             Whom = HOUSE_GOOD;
             ScenPlayer = SCEN_PLAYER_GDI;
@@ -243,7 +243,8 @@ void Choose_Side() {
             speechplaying = true;
             speech = speechg;
 
-          } else if (_Kbd->MouseQX > 320 && _Kbd->MouseQX < 600) {
+          } else if (ActiveKeyboard->MouseQX > 320 &&
+                     ActiveKeyboard->MouseQX < 600) {
             // Chose Nod
             endframe = 14;
             Whom = HOUSE_BAD;

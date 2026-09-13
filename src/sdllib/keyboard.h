@@ -113,18 +113,18 @@ class WWKeyboardClass {
   long Tail = 0;               // the tail position in keyboard buffer
 };
 
-extern WWKeyboardClass* _Kbd;
+extern WWKeyboardClass* ActiveKeyboard;
 
 // Both peek at the pending key number. Check_Key deliberately does not mirror
 // Get_Key's ASCII translation: its callers test whether any key is waiting, and
 // To_ASCII reports 0 for key releases and every non-alphanumeric key.
-inline int Check_Key() { return _Kbd->Check(); }
-inline int Check_Key_Num() { return _Kbd->Check(); }
-inline int Get_Key() { return _Kbd->To_ASCII(_Kbd->Get()); }
-inline int Get_Key_Num() { return _Kbd->Get(); }
-inline bool Key_Down(int key) { return _Kbd->Down(key); }
-inline void Clear_KeyBuffer() { _Kbd->Clear(); }
-inline int KN_To_KA(int key) { return _Kbd->To_ASCII(key); }
+inline int Check_Key() { return ActiveKeyboard->Check(); }
+inline int Check_Key_Num() { return ActiveKeyboard->Check(); }
+inline int Get_Key() { return ActiveKeyboard->To_ASCII(ActiveKeyboard->Get()); }
+inline int Get_Key_Num() { return ActiveKeyboard->Get(); }
+inline bool Key_Down(int key) { return ActiveKeyboard->Down(key); }
+inline void Clear_KeyBuffer() { ActiveKeyboard->Clear(); }
+inline int KN_To_KA(int key) { return ActiveKeyboard->To_ASCII(key); }
 inline int KN_To_VK(int key) { return key; }
 
 // these are (mostly) SDL_SCANCODE_x values

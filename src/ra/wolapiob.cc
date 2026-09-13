@@ -2078,8 +2078,8 @@ bool WolapiObject::DoWebRegistration() {
     GenericErrorMessage();
     return false;
   }
-  char szPath[_MAX_PATH + 1];
-  DWORD dwBufSize = _MAX_PATH;
+  char szPath[kMaxPath + 1];
+  DWORD dwBufSize = kMaxPath;
   if (RegQueryValueEx(hKey, "InstallPath", nullptr, nullptr, (LPBYTE)szPath,
                       &dwBufSize) != ERROR_SUCCESS) {
     GenericErrorMessage();
@@ -2135,7 +2135,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
   si.cb = sizeof(si);
 
   if (*szWebBrowser) {
-    char szCommandLine[_MAX_PATH + 300];
+    char szCommandLine[kMaxPath + 300];
     sprintf(szCommandLine, "\"%s\" %s", szWebBrowser, szURL);
     //		debugprint( "About to CreateProcess: '%s'\n", szCommandLine );
     Hide_Mouse();

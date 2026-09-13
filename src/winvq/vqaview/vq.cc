@@ -508,8 +508,8 @@ void VQAClass::Read_Palettes() {
   ** Create the palette file name from the VQ file name. Palette files have .VQP
   *ext
   */
-  memcpy(&PaletteFilename[0], &vqa_filename[0], _MAX_PATH);
-  for (int i = 0; i < _MAX_PATH; i++) {
+  memcpy(&PaletteFilename[0], &vqa_filename[0], kMaxPath);
+  for (int i = 0; i < kMaxPath; i++) {
     if (PaletteFilename[i] == '.') {
       PaletteFilename[i + 1] = 'V';
       PaletteFilename[i + 2] = 'Q';

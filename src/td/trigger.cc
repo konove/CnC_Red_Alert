@@ -1021,7 +1021,7 @@ void TriggerClass::Read_INI(char* buffer) {
   **	Read all TRIGGER entry names into 'tbuffer'
   */
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            _ShapeBufferSize - len, buffer);
+                            ShapeBufferSize - len, buffer);
 
   /*
   **	Loop for all trigger entries.

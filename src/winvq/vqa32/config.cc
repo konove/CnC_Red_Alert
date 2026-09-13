@@ -56,7 +56,7 @@
  *-------------------------------------------------------------------------*/
 
 /* Default configuration structure. */
-static VQAConfig _defaultconfig = {
+static VQAConfig defaultconfig = {
 
     /* DrawerCallback: This is a function that is called for every frame
      * in the movie.
@@ -211,5 +211,5 @@ static VQAConfig _defaultconfig = {
  ****************************************************************************/
 
 void VQA_DefaultConfig(VQAConfig* config) {
-  memcpy(config, &_defaultconfig, sizeof(VQAConfig));
+  memcpy(config, &defaultconfig, sizeof(VQAConfig));
 }

@@ -921,7 +921,7 @@ bool MapClass::Read_Binary(const char* root, unsigned long* crc)
 #endif
 {
   CCFileClass file;
-  char fname[_MAX_FNAME + _MAX_EXT];
+  char fname[kMaxFname + kMaxExt];
   int i;
   char* map;
   void* rawmap;
@@ -1010,7 +1010,7 @@ bool MapClass::Read_Binary(const char* root, unsigned long* crc)
  *=============================================================================================*/
 bool MapClass::Write_Binary(const char* root) {
   CCFileClass* file;
-  char fname[_MAX_FNAME + _MAX_EXT];
+  char fname[kMaxFname + kMaxExt];
   int i;
 
   /*

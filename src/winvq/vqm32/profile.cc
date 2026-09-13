@@ -92,8 +92,8 @@ static long FileGets(FILE* fp, char* buf, long buflen);
 
 long Get_Frame_Pathname(char* inifile, long anim_frame, char* ext,
                         char* outbuf) {
-  char rootdir[_MAX_PATH];  // Root directory from INI file
-  char extdir[_MAX_PATH];   // this extension's directory
+  char rootdir[kMaxPath];   // Root directory from INI file
+  char extdir[kMaxPath];    // this extension's directory
   char entry_name[40];      // INI entry name
   char inibuf[80];          // string returned from INI file
   char* prefix;             // 4-char prefix for this scene

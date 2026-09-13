@@ -147,7 +147,7 @@ extern void Debug_Printf(char* format_string, ...);
  * CapFont        - Pointer to font to use for subtitle text captions.
  * EVAFont        - Pointer to font to use for E.V.A text cations. (For C&C)
  */
-typedef struct _VQAConfig {
+typedef struct VQAConfig {
   long (*DrawerCallback)(unsigned char* screen, long framenum);
   long (*EventHandler)(unsigned long event, void* buffer, long nbytes);
   unsigned long NotifyFlags;
@@ -230,7 +230,7 @@ typedef struct _VQAConfig {
  * ImageWidth  - Width of image in pixels.
  * ImageBuf    - Pointer to the image buffer VQA draw into.
  */
-typedef struct _VQAInfo {
+typedef struct VQAInfo {
   long NumFrames;
   long ImageWidth;
   long ImageHeight;
@@ -248,7 +248,7 @@ typedef struct _VQAInfo {
  * SamplesPlayed - Number of sample bytes played.
  * MemUsed       - Total bytes used. (Low memory)
  */
-typedef struct _VQAStatistics {
+typedef struct VQAStatistics {
   long StartTime;
   long EndTime;
   long FramesLoaded;

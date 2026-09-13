@@ -113,8 +113,8 @@ typedef struct {
 -------------------------------- prioinit.c ---------------------------------
 */
 
-extern int _ShapeBufferSize;
-extern char* _ShapeBuffer;
+extern int ShapeBufferSize;
+extern char* ShapeBuffer;
 
 /*
 ---------------------------------- shape.c ----------------------------------

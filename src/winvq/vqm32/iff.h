@@ -45,7 +45,7 @@
  * size - Length of IFF in bytes
  * type - Form type (IE: "ILBM")
  */
-typedef struct _FormHeader {
+typedef struct FormHeader {
   long id;
   long size;
   long type;
@@ -57,7 +57,7 @@ typedef struct _FormHeader {
  * size - Size of chunk in bytes.
  * scan - Bytes read/written.
  */
-typedef struct _Context {
+typedef struct Context {
   long id;
   long size;
   long scan;
@@ -71,7 +71,7 @@ typedef struct _Context {
  * scan  - Bytes read/written
  * cn    - Context of current chunk.
  */
-typedef struct _IFFHandle {
+typedef struct IFFHandle {
   long fh;
   long flags;
   FormHeader form;

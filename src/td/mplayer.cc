@@ -422,8 +422,8 @@ void Read_MultiPlayer_Settings() {
   the HidPage may be needed for various uncompressions during the INI
   parsing.)
   ------------------------------------------------------------------------*/
-  buffer = _ShapeBuffer;
-  memset(buffer, '\0', _ShapeBufferSize);
+  buffer = ShapeBuffer;
+  memset(buffer, '\0', ShapeBufferSize);
 
   /*------------------------------------------------------------------------
   Clear the initstring entries
@@ -448,7 +448,7 @@ void Read_MultiPlayer_Settings() {
   if (!file.Is_Available()) {
     return;
   }
-  file.Read(buffer, _ShapeBufferSize - 1);
+  file.Read(buffer, ShapeBufferSize - 1);
   file.Close();
 
   if (!Special.IsFromWChat) {
@@ -541,7 +541,7 @@ void Read_MultiPlayer_Settings() {
   Read all Base-Scenario names into 'tbuffer'
   ------------------------------------------------------------------------*/
   WWGetPrivateProfileString("InitStrings", nullptr, nullptr, tbuffer,
-                            _ShapeBufferSize - len, buffer);
+                            ShapeBufferSize - len, buffer);
 
   /*------------------------------------------------------------------------
   Read in & store each entry
@@ -586,7 +586,7 @@ void Read_MultiPlayer_Settings() {
   Read the entry names in
   ........................................................................*/
   WWGetPrivateProfileString("PhoneBook", nullptr, nullptr, tbuffer,
-                            _ShapeBufferSize - len, buffer);
+                            ShapeBufferSize - len, buffer);
 
   while (*tbuffer != '\0') {
     /*.....................................................................
@@ -781,13 +781,13 @@ void Write_MultiPlayer_Settings() {
   Get a working pointer to the INI staging buffer. Make sure that the buffer
   starts cleared out of any data.
   ------------------------------------------------------------------------*/
-  buffer = _ShapeBuffer;
-  memset(buffer, '\0', _ShapeBufferSize);
+  buffer = ShapeBuffer;
+  memset(buffer, '\0', ShapeBufferSize);
 
   file.Set_Name("CONQUER.INI");
   if (file.Is_Available()) {
     file.Open(FileAccess::kRead);
-    file.Read(buffer, _ShapeBufferSize - 1);
+    file.Read(buffer, ShapeBufferSize - 1);
     file.Close();
   }
 
@@ -927,8 +927,8 @@ void Read_Scenario_Descriptions() {
     Fetch working pointer to the INI staging buffer. Make sure that the
     buffer is cleared out before proceeding.
     .....................................................................*/
-    buffer = _ShapeBuffer;
-    memset(buffer, '\0', _ShapeBufferSize);
+    buffer = ShapeBuffer;
+    memset(buffer, '\0', ShapeBufferSize);
 
     /*.....................................................................
     Create filename and read the file.
@@ -937,7 +937,7 @@ void Read_Scenario_Descriptions() {
                       SCEN_DIR_EAST, SCEN_VAR_A);
     sprintf(fname, "%s.INI", ScenarioName);
     file.Set_Name(fname);
-    file.Read(buffer, _ShapeBufferSize - 1);
+    file.Read(buffer, ShapeBufferSize - 1);
     file.Close();
 
     /*.....................................................................

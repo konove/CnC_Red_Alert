@@ -440,7 +440,7 @@ static void Put_All(Pipe& pipe, int save_net) {
  *   02/27/1996 JLB : Uses simpler game control value save operation.      *
  *=========================================================================*/
 bool Save_Game(int id, const char* descr, bool) {
-  char name[_MAX_FNAME + _MAX_EXT];
+  char name[kMaxFname + kMaxExt];
   unsigned scenario;
   HousesType house;
   int save_net = 0;  // 1 = save network/modem game
@@ -592,7 +592,7 @@ bool Save_Game(int id, const char* descr, bool) {
  ** 1/20/97  V.Grippi Added expansion CD check                            *
  *=========================================================================*/
 bool Load_Game(int id) {
-  char name[_MAX_FNAME + _MAX_EXT];
+  char name[kMaxFname + kMaxExt];
   int i;
   HousesType house = HOUSE_NONE;
   char descr_buf[kDescripMax];
@@ -1259,7 +1259,7 @@ bool Load_MPlayer_Values(Straw& file) {
  *=========================================================================*/
 bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
                        HousesType* housep) {
-  char name[_MAX_FNAME + _MAX_EXT];
+  char name[kMaxFname + kMaxExt];
   char descr_buf[kDescripMax];
 
   /*

@@ -136,7 +136,7 @@ class ScenarioClass {
   /*
   **	The full name of the scenario (as it exists on disk).
   */
-  char ScenarioName[_MAX_FNAME + _MAX_EXT]{};
+  char ScenarioName[kMaxFname + kMaxExt]{};
 
   /*
   **	Description of the scenario.

@@ -4416,7 +4416,7 @@ bool Find_Local_Scenario(char* description, char* filename, unsigned int length,
           if (IsMissionAftermath(Session.Scenarios[index]->Get_Filename())) {
             // debugprint("a 1match!\n");
             port::SafeCopy(filename, Session.Scenarios[index]->Get_Filename(),
-                           _MAX_FNAME + _MAX_EXT + 1);
+                           kMaxFname + kMaxExt + 1);
             return true;
           }
 
@@ -4426,7 +4426,7 @@ bool Find_Local_Scenario(char* description, char* filename, unsigned int length,
           if (official || !strcmp(digest, digest_buffer)) {
             // debugprint("a match!\n");
             port::SafeCopy(filename, Session.Scenarios[index]->Get_Filename(),
-                           _MAX_FNAME + _MAX_EXT + 1);
+                           kMaxFname + kMaxExt + 1);
             return true;
           }
         }

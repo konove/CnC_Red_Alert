@@ -628,20 +628,20 @@ void TextBlitClass::Update() {
 void ScoreClass::Presentation() {
   // static char const
   // _redpal[]={0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x28,0x29,0x2A,0x2B,0x2C,0x2D,0x21,0x2F};
-  static const unsigned char _redpal[] = {0x20, 0x22, 0x24, 0x26, 0x28, 0x28,
-                                          0x28, 0x28, 0x28, 0x29, 0x2A, 0x2B,
-                                          0x2C, 0x2D, 0x21, 0x2F};
-  static const unsigned char _greenpal[] = {0x10, 0x12, 0x14, 0x16, 0x18, 0x18,
-                                            0x18, 0x18, 0x18, 0x19, 0x1A, 0x1B,
-                                            0x1C, 0x1D, 0x10, 0x1F};
-  static const unsigned char _bluepal[] = {0x60, 0x62, 0x64, 0x66, 0x68, 0x68,
-                                           0x68, 0x68, 0x68, 0x69, 0x6A, 0x6B,
-                                           0x6C, 0x6D, 0x61, 0x6F};
+  static const unsigned char redpal[] = {0x20, 0x22, 0x24, 0x26, 0x28, 0x28,
+                                         0x28, 0x28, 0x28, 0x29, 0x2A, 0x2B,
+                                         0x2C, 0x2D, 0x21, 0x2F};
+  static const unsigned char greenpal[] = {0x10, 0x12, 0x14, 0x16, 0x18, 0x18,
+                                           0x18, 0x18, 0x18, 0x19, 0x1A, 0x1B,
+                                           0x1C, 0x1D, 0x10, 0x1F};
+  static const unsigned char bluepal[] = {0x60, 0x62, 0x64, 0x66, 0x68, 0x68,
+                                          0x68, 0x68, 0x68, 0x69, 0x6A, 0x6B,
+                                          0x6C, 0x6D, 0x61, 0x6F};
   // static char const
   // _bluepal[]={0x60,0x61,0x62,0x63,0x64,0x65,0x66,0x67,0x68,0x69,0x6A,0x6B,0x6C,0x6D,0x61,0x6F};
-  static const unsigned char _yellowpal[] = {0x0,  0x0, 0xEC, 0x0, 0xEB, 0x0,
-                                             0xEA, 0x0, 0xE9, 0x0, 0x0,  0x0,
-                                             0x0,  0x0, 0xED, 0x0};
+  static const unsigned char yellowpal[] = {0x0,  0x0, 0xEC, 0x0, 0xEB, 0x0,
+                                            0xEA, 0x0, 0xE9, 0x0, 0x0,  0x0,
+                                            0x0,  0x0, 0xED, 0x0};
   static const int _casuax[2] = {144, 146};
   static const int _casuay[2] = {78, 90};
   static const int _gditxx[2] = {150, 224};
@@ -836,13 +836,13 @@ void ScoreClass::Presentation() {
   Set_Logic_Page(PseudoSeenBuff);
 
 #ifdef FRENCH
-  Alloc_Object(new ScorePrintClass(TXT_SCORE_TIME, 200, 3, _greenpal));
+  Alloc_Object(new ScorePrintClass(TXT_SCORE_TIME, 200, 3, greenpal));
 #else
-  Alloc_Object(new ScorePrintClass(TXT_SCORE_TIME, 206, 3, _greenpal));
+  Alloc_Object(new ScorePrintClass(TXT_SCORE_TIME, 206, 3, greenpal));
 #endif
-  Alloc_Object(new ScorePrintClass(TXT_SCORE_LEAD, 182, 26, _greenpal));
-  Alloc_Object(new ScorePrintClass(TXT_SCORE_EFFI, 182, 38, _greenpal));
-  Alloc_Object(new ScorePrintClass(TXT_SCORE_TOTA, 182, 50, _greenpal));
+  Alloc_Object(new ScorePrintClass(TXT_SCORE_LEAD, 182, 26, greenpal));
+  Alloc_Object(new ScorePrintClass(TXT_SCORE_EFFI, 182, 38, greenpal));
+  Alloc_Object(new ScorePrintClass(TXT_SCORE_TOTA, 182, 50, greenpal));
   Play_Sample(sfx4, 255, Options.Normalize_Sound(120));
   Call_Back_Delay(13);
 
@@ -855,7 +855,7 @@ void ScoreClass::Presentation() {
   BlitList.Add(528, 100, 528, 100, 4 * 12, 12);
   BlitList.Add(550, 18, 550, 18, 64, 12);  // Minutes
   for (i = 0; i <= 160; i++) {
-    Set_Font_Palette(_greenpal);
+    Set_Font_Palette(greenpal);
     Count_Up_Print("%3d%%", i, leadership, 264, 26);
     if (i >= 30) {
       Count_Up_Print("%3d%%", i - 30, efficiency, 264, 38);
@@ -877,7 +877,7 @@ void ScoreClass::Presentation() {
   Call_Back_Delay(60);
 
   if (house == HOUSE_BAD) {
-    Show_Credits(house, _greenpal);
+    Show_Credits(house, greenpal);
   }
 
   Call_Back_Delay(60);
@@ -888,20 +888,20 @@ void ScoreClass::Presentation() {
   Set_Logic_Page(*PseudoSeenBuff);
   Play_Sample(sfx4, 255, Options.Normalize_Sound(90));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_CASU, _casuax[house],
-                                   _casuay[house], _redpal));
+                                   _casuay[house], redpal));
   Call_Back_Delay(9);
   if (house == HOUSE_BAD) {
-    Alloc_Object(new ScorePrintClass(TXT_SCORE_NEUT, 200, 114, _redpal));
+    Alloc_Object(new ScorePrintClass(TXT_SCORE_NEUT, 200, 114, redpal));
     Call_Back_Delay(4);
   }
 
   Alloc_Object(new ScorePrintClass(TXT_SCORE_GDI, _gditxx[house],
-                                   _gditxy[house], _redpal));
+                                   _gditxy[house], redpal));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_NOD, _nodtxx[house],
-                                   _nodtxy[house], _redpal));
+                                   _nodtxy[house], redpal));
   Call_Back_Delay(6);
 
-  Set_Font_Palette(_redpal);
+  Set_Font_Palette(redpal);
   if (house == HOUSE_BAD) {
     Do_Nod_Casualties_Graph();
   } else {
@@ -915,24 +915,24 @@ void ScoreClass::Presentation() {
   */
   Play_Sample(sfx4, 255, Options.Normalize_Sound(90));
   if (house == HOUSE_GOOD) {
-    Alloc_Object(new ScorePrintClass(TXT_SCORE_BUIL, 144, 126, _greenpal));
+    Alloc_Object(new ScorePrintClass(TXT_SCORE_BUIL, 144, 126, greenpal));
     Call_Back_Delay(9);
   } else {
-    Alloc_Object(new ScorePrintClass(TXT_SCORE_BUIL1, 146, 128, _greenpal));
-    Alloc_Object(new ScorePrintClass(TXT_SCORE_BUIL2, 146, 136, _greenpal));
+    Alloc_Object(new ScorePrintClass(TXT_SCORE_BUIL1, 146, 128, greenpal));
+    Alloc_Object(new ScorePrintClass(TXT_SCORE_BUIL2, 146, 136, greenpal));
     Call_Back_Delay(9);
-    Alloc_Object(new ScorePrintClass(TXT_SCORE_NEUT, 200, 152, _greenpal));
+    Alloc_Object(new ScorePrintClass(TXT_SCORE_NEUT, 200, 152, greenpal));
     Call_Back_Delay(4);
   }
   Alloc_Object(new ScorePrintClass(TXT_SCORE_GDI, _gditxx[house],
-                                   _bldggy[house], _greenpal));
+                                   _bldggy[house], greenpal));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_NOD, _gditxx[house],
-                                   _bldgny[house], _greenpal));
+                                   _bldgny[house], greenpal));
   Call_Back_Delay(7);
 
   if (house == HOUSE_BAD) {
     Call_Back_Delay(6);
-    Set_Font_Palette(_greenpal);
+    Set_Font_Palette(greenpal);
     Do_Nod_Buildings_Graph();
   } else {
     Do_GDI_Graph(yellowptr, redptr, GBKilled + CBKilled, NBKilled, 136);
@@ -948,14 +948,14 @@ void ScoreClass::Presentation() {
   }
 
   if (house == HOUSE_GOOD) {
-    Show_Credits(house, _greenpal);
+    Show_Credits(house, greenpal);
   }
 
   /*
   ** Hall of fame display and processing
   */
   Play_Sample(sfx4, 255, Options.Normalize_Sound(90));
-  Alloc_Object(new ScorePrintClass(TXT_SCORE_TOP, 28, 110, _bluepal));
+  Alloc_Object(new ScorePrintClass(TXT_SCORE_TOP, 28, 110, bluepal));
   Call_Back_Delay(9);
 
   /*
@@ -1013,20 +1013,20 @@ void ScoreClass::Presentation() {
 
   for (int j = 0; j < NUMFAMENAMES; j++) {
     Alloc_Object(new ScorePrintClass(hallfame[j].name, HALLFAME_X,
-                                     HALLFAME_Y + (j * 8), _bluepal));
+                                     HALLFAME_Y + (j * 8), bluepal));
     if (hallfame[j].score) {
       char* str = static_cast<char*>(SysMemPage.Get_Buffer()) +
                   (static_cast<base::ssize>(j) * 32);
       sprintf(str, "%d", hallfame[j].score);
       Alloc_Object(new ScorePrintClass(str, HALLFAME_X + (6 * 15),
-                                       HALLFAME_Y + (j * 8), _bluepal, BLACK));
+                                       HALLFAME_Y + (j * 8), bluepal, BLACK));
       if (hallfame[j].level < 20) {
         sprintf(str + 16, "%d", hallfame[j].level);
       } else {
         sprintf(str + 16, "**");
       }
       Alloc_Object(new ScorePrintClass(str + 16, HALLFAME_X + (6 * 12),
-                                       HALLFAME_Y + (j * 8), _bluepal, BLACK));
+                                       HALLFAME_Y + (j * 8), bluepal, BLACK));
       Call_Back_Delay(13);
     }
   }
@@ -1042,7 +1042,7 @@ void ScoreClass::Presentation() {
   Keyboard::Clear();
   if (index < NUMFAMENAMES) {
     Input_Name(hallfame[index].name, HALLFAME_X, HALLFAME_Y + (index * 8),
-               _bluepal);
+               bluepal);
 
     file.Open(FileAccess::kWrite);
     for (i = 0; i < NUMFAMENAMES; i++) {
@@ -1051,9 +1051,9 @@ void ScoreClass::Presentation() {
     file.Close();
   } else {
 #ifdef FRENCH
-    Alloc_Object(new ScorePrintClass(TXT_MAP_CLICK2, 145, 190, _yellowpal));
+    Alloc_Object(new ScorePrintClass(TXT_MAP_CLICK2, 145, 190, yellowpal));
 #else
-    Alloc_Object(new ScorePrintClass(TXT_MAP_CLICK2, 149, 190, _yellowpal));
+    Alloc_Object(new ScorePrintClass(TXT_MAP_CLICK2, 149, 190, yellowpal));
 #endif
     Cycle_Wait_Click();
   }
@@ -2060,24 +2060,24 @@ void Multi_Score_Presentation() {
       0x0,  0xec, 0xEb, 0xea, 0xE9, 0xe9, 0xE9, 0x0,
       0xE9, 0x0,  0x0,  0x0,  0x0,  0x0,  0xED, 0x0};
 
-  static const unsigned char _greenpal[] = {0x0,  0x12, 0x14, 0x16, 0x18, 0x18,
-                                            0x18, 0x0,  0x18, 0x0,  0x0,  0x0,
-                                            0x0,  0x0,  0x10, 0x0};
-  static const unsigned char _redpal[] = {0x0,  0x22, 0x24, 0x26, 0x28, 0x28,
-                                          0x28, 0x0,  0x28, 0x0,  0x0,  0x0,
-                                          0x0,  0x0,  0x20, 0x0};
+  static const unsigned char greenpal[] = {0x0,  0x12, 0x14, 0x16, 0x18, 0x18,
+                                           0x18, 0x0,  0x18, 0x0,  0x0,  0x0,
+                                           0x0,  0x0,  0x10, 0x0};
+  static const unsigned char redpal[] = {0x0,  0x22, 0x24, 0x26, 0x28, 0x28,
+                                         0x28, 0x0,  0x28, 0x0,  0x0,  0x0,
+                                         0x0,  0x0,  0x20, 0x0};
   static const unsigned char _graypal[] = {0x0,  0xca, 0xCb, 0xcc, 0xCd, 0xcd,
                                            0xCd, 0x0,  0xCD, 0x0,  0x0,  0x0,
                                            0x0,  0x0,  0xC8, 0x0};
   static const unsigned char _orangepal[] = {0x0,  0xd1, 0xD2, 0xd3, 0xD4, 0xd4,
                                              0xD4, 0x0,  0xD4, 0x0,  0x0,  0x0,
                                              0x0,  0x0,  0xD0, 0x0};
-  static const unsigned char _bluepal[] = {0x0,  0x2, 0x0a, 0xb, 0x0b, 0xb,
-                                           0x0B, 0x0, 0x0B, 0x0, 0x0,  0x0,
-                                           0x0,  0x0, 0x09, 0x0};
-  static const unsigned char _yellowpal[] = {0x0,  0x5,  0xee, 0xf1, 0xf2, 0xf2,
-                                             0xF2, 0xf2, 0xF2, 0x0,  0x0,  0x0,
-                                             0x0,  0x0,  0x7D, 0x0};
+  static const unsigned char bluepal[] = {0x0,  0x2, 0x0a, 0xb, 0x0b, 0xb,
+                                          0x0B, 0x0, 0x0B, 0x0, 0x0,  0x0,
+                                          0x0,  0x0, 0x09, 0x0};
+  static const unsigned char yellowpal[] = {0x0,  0x5,  0xee, 0xf1, 0xf2, 0xf2,
+                                            0xF2, 0xf2, 0xF2, 0x0,  0x0,  0x0,
+                                            0x0,  0x0,  0x7D, 0x0};
 
   // static char const _greenpal[]=
   // {0x0,0x0,0x12,0x0,0x14,0x0,0x16,0x0,0x18,0x0,0x0,0x0,0x0,0x0,0x10,0x0};
@@ -2092,8 +2092,8 @@ void Multi_Score_Presentation() {
   // static char const
   // _yellowpal[]={0x0,0x0,0x05,0x0,0xEE,0x0,0xF1,0x0,0xF2,0x0,0x0,0x0,0x0,0x0,0x7D,0x0};
 
-  static const unsigned char* _colors[] = {_yellowpal, _redpal,   _bluepal,
-                                           _orangepal, _greenpal, _graypal};
+  static const unsigned char* _colors[] = {yellowpal,  redpal,   bluepal,
+                                           _orangepal, greenpal, _graypal};
 
   int i, k;
   void* anim;

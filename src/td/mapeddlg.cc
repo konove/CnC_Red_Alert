@@ -1310,61 +1310,61 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
           /*
           ....................... Grab top left ........................
           */
-          delta1 = abs(_Kbd->MouseQX - map_x1);
-          delta2 = abs(_Kbd->MouseQY - map_y1);
+          delta1 = abs(ActiveKeyboard->MouseQX - map_x1);
+          delta2 = abs(ActiveKeyboard->MouseQY - map_y1);
           if (delta1 < 3 && delta2 < 3) {
             grabbed = 1;
-            mx = _Kbd->MouseQX;
-            my = _Kbd->MouseQY;
+            mx = ActiveKeyboard->MouseQX;
+            my = ActiveKeyboard->MouseQY;
             display = REDRAW_MAP;
             break;
           }
           /*
           ...................... Grab top right ........................
           */
-          delta1 = abs(_Kbd->MouseQX - map_x2);
-          delta2 = abs(_Kbd->MouseQY - map_y1);
+          delta1 = abs(ActiveKeyboard->MouseQX - map_x2);
+          delta2 = abs(ActiveKeyboard->MouseQY - map_y1);
           if (delta1 < 3 && delta2 < 3) {
             grabbed = 2;
-            mx = _Kbd->MouseQX;
-            my = _Kbd->MouseQY;
+            mx = ActiveKeyboard->MouseQX;
+            my = ActiveKeyboard->MouseQY;
             display = REDRAW_MAP;
             break;
           }
           /*
           ..................... Grab bottom right ......................
           */
-          delta1 = abs(_Kbd->MouseQX - map_x2);
-          delta2 = abs(_Kbd->MouseQY - map_y2);
+          delta1 = abs(ActiveKeyboard->MouseQX - map_x2);
+          delta2 = abs(ActiveKeyboard->MouseQY - map_y2);
           if (delta1 < 3 && delta2 < 3) {
             grabbed = 3;
-            mx = _Kbd->MouseQX;
-            my = _Kbd->MouseQY;
+            mx = ActiveKeyboard->MouseQX;
+            my = ActiveKeyboard->MouseQY;
             display = REDRAW_MAP;
             break;
           }
           /*
           ..................... Grab bottom left .......................
           */
-          delta1 = abs(_Kbd->MouseQX - map_x1);
-          delta2 = abs(_Kbd->MouseQY - map_y2);
+          delta1 = abs(ActiveKeyboard->MouseQX - map_x1);
+          delta2 = abs(ActiveKeyboard->MouseQY - map_y2);
           if (delta1 < 3 && delta2 < 3) {
             grabbed = 4;
-            mx = _Kbd->MouseQX;
-            my = _Kbd->MouseQY;
+            mx = ActiveKeyboard->MouseQX;
+            my = ActiveKeyboard->MouseQY;
             display = REDRAW_MAP;
             break;
           }
           /*
           ..................... Grab the whole map .....................
           */
-          delta1 = abs(_Kbd->MouseQX - ((map_x1 + map_x2) / 2));
-          delta2 = abs(_Kbd->MouseQY - ((map_y1 + map_y2) / 2));
+          delta1 = abs(ActiveKeyboard->MouseQX - ((map_x1 + map_x2) / 2));
+          delta2 = abs(ActiveKeyboard->MouseQY - ((map_y1 + map_y2) / 2));
           if (delta1 < (map_x2 - map_x1) / 4 &&
               delta2 < (map_y2 - map_y1) / 4) {
             grabbed = 5;
-            mx = _Kbd->MouseQX;
-            my = _Kbd->MouseQY;
+            mx = ActiveKeyboard->MouseQX;
+            my = ActiveKeyboard->MouseQY;
             display = REDRAW_MAP;
           }
           break;

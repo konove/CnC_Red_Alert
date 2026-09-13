@@ -484,8 +484,8 @@ KeyNumType GadgetClass::Input() {
   *to this function.
   */
   if ((key & 0x10FF) == KN_LMOUSE || (key & 0x10FF) == KN_RMOUSE) {
-    mousex = _Kbd->MouseQX;
-    mousey = _Kbd->MouseQY;
+    mousex = ActiveKeyboard->MouseQX;
+    mousey = ActiveKeyboard->MouseQY;
   } else {
     mousex = Get_Mouse_X();
     mousey = Get_Mouse_Y();

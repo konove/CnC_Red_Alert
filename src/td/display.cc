@@ -180,11 +180,6 @@ std::vector<bool> DisplayClass::CellRedraw;
 */
 DisplayClass::TacticalClass DisplayClass::TacButton;
 
-/*
-**	Define "_RETRIEVE" if the palette morphing tables are part of the loaded
-*data. If this *	is undefined, then the files will be created.
-*/
-#define _RETRIEVE
 
 
 /***********************************************************************************************
@@ -368,25 +363,6 @@ void DisplayClass::Init_IO() {
 void DisplayClass::Init_Theater(TheaterType theater) {
   char fullname[16];
   char iconname[16];
-#ifndef _RETRIEVE
-  static const TLucentType MouseCols[4] = {{BLACK, BLACK, 110, 0},
-                                           {WHITE, WHITE, 110, 0},
-                                           {LTGREY, LTGREY, 110, 0},
-                                           {GREY, GREY, 110, 0}};
-  static const TLucentType MagicCols[MAGIC_COL_COUNT] = {
-      {32, 32, 110, 0},      {33, 33, 110, 0},       {34, 34, 110, 0},
-      {35, 35, 110, 0},      {36, 36, 110, 0},       {37, 37, 110, 0},
-      {38, 38, 110, 0},      {39, 39, 110, 0},       {BLACK, BLACK, 200, 0},
-      {WHITE, BLACK, 40, 0}, {LTGREY, BLACK, 80, 0}, {GREY, BLACK, 140, 0}};
-  static const TLucentType WhiteCols[1] = {{1, WHITE, 80, 0}};
-  static const TLucentType ShadowCols[SHADOW_COL_COUNT] = {
-      {WHITE + 1, BLACK, 130, 0},
-      {WHITE, BLACK, 170, 0},
-      {LTGREY, BLACK, 250, 0},
-      {GREY, BLACK, 250, 0}};
-  static const TLucentType UShadowCols[USHADOW_COL_COUNT] = {
-      {LTGREEN, BLACK, 130, 0}};
-#endif
 
   /*
   ---------------------- Invoke parent's init routine ----------------------
@@ -431,113 +407,44 @@ void DisplayClass::Init_Theater(TheaterType theater) {
 
   Mem_Copy(GamePalette, OriginalPalette, 768);
 
-#ifndef _RETRIEVE
-  /*
-  **	Make sure that remapping doesn't occur on the colors that cycle.
-  */
-  memset(&GamePalette[CYCLE_COLOR_START * 3], 0x3F, CYCLE_COLOR_COUNT * 3);
-#endif
 
-#ifdef _RETRIEVE
   CCFileClass(Fading_Table_Name("GREEN", theater).c_str())
       .Read(FadingGreen, sizeof(FadingGreen));
-#else
-  Build_Fading_Table(GamePalette, FadingGreen, GREEN, 110);
-  CCFileClass(Fading_Table_Name("GREEN", theater).c_str())
-      .Write(FadingGreen, sizeof(FadingGreen));
-#endif
   if (theater == THEATER_DESERT) {
     FadingGreen[196] = 160;
   }
 
-#ifdef _RETRIEVE
   CCFileClass(Fading_Table_Name("YELLOW", theater).c_str())
       .Read(FadingYellow, sizeof(FadingYellow));
-#else
-  Build_Fading_Table(GamePalette, FadingYellow, YELLOW, 140);
-  CCFileClass(Fading_Table_Name("YELLOW", theater).c_str())
-      .Write(FadingYellow, sizeof(FadingYellow));
-#endif
 
-#ifdef _RETRIEVE
   CCFileClass(Fading_Table_Name("RED", theater).c_str())
       .Read(FadingRed, sizeof(FadingRed));
-#else
-  Build_Fading_Table(GamePalette, FadingRed, RED, 140);
-  CCFileClass(Fading_Table_Name("RED", theater).c_str())
-      .Write(FadingRed, sizeof(FadingRed));
-#endif
 
-#ifdef _RETRIEVE
   CCFileClass(Fading_Table_Name("MOUSE", theater).c_str())
       .Read(MouseTranslucentTable, sizeof(MouseTranslucentTable));
-#else
-  Build_Translucent_Table(GamePalette, &MouseCols[0], 4, MouseTranslucentTable);
-  CCFileClass(Fading_Table_Name("MOUSE", theater).c_str())
-      .Write(MouseTranslucentTable, sizeof(MouseTranslucentTable));
-#endif
 
   //	MouseDrawPtr = MouseTranslucentTable;
   //	MouseDrawPtr2 = Add_Long_To_Pointer(MouseTranslucentTable, 256L);
   //	MouseDrawVal = 1;
   //	MouseDrawFlags = (int)SHAPE_GHOST;
 
-#ifdef _RETRIEVE
   CCFileClass(Fading_Table_Name("TRANS", theater).c_str())
       .Read(TranslucentTable, sizeof(TranslucentTable));
-#else
-  Build_Translucent_Table(GamePalette, &MagicCols[0], MAGIC_COL_COUNT,
-                          TranslucentTable);
-  CCFileClass(Fading_Table_Name("TRANS", theater).c_str())
-      .Write(TranslucentTable, sizeof(TranslucentTable));
-#endif
 
-#ifdef _RETRIEVE
   CCFileClass(Fading_Table_Name("WHITE", theater).c_str())
       .Read(WhiteTranslucentTable, sizeof(WhiteTranslucentTable));
-#else
-  Build_Translucent_Table(GamePalette, &WhiteCols[0], 1, WhiteTranslucentTable);
-  CCFileClass(Fading_Table_Name("WHITE", theater).c_str())
-      .Write(WhiteTranslucentTable, sizeof(WhiteTranslucentTable));
-#endif
 
-#ifdef _RETRIEVE
   CCFileClass(Fading_Table_Name("SHADOW", theater).c_str())
       .Read(ShadowTrans, sizeof(ShadowTrans));
-#else
-  Build_Translucent_Table(GamePalette, &ShadowCols[0], SHADOW_COL_COUNT,
-                          ShadowTrans);
-  CCFileClass(Fading_Table_Name("SHADOW", theater).c_str())
-      .Write(ShadowTrans, sizeof(ShadowTrans));
-#endif
 
-#ifdef _RETRIEVE
   CCFileClass(Fading_Table_Name("UNITS", theater).c_str())
       .Read(UnitShadow, sizeof(UnitShadow));
-#else
-  Conquer_Build_Translucent_Table(GamePalette, &UShadowCols[0],
-                                  USHADOW_COL_COUNT, UnitShadow);
-  CCFileClass(Fading_Table_Name("UNITS", theater).c_str())
-      .Write(UnitShadow, sizeof(UnitShadow));
-#endif
 
-#ifdef _RETRIEVE
   CCFileClass(Fading_Table_Name("SHADE", theater).c_str())
       .Read(FadingShade, sizeof(FadingShade));
-#else
-  Conquer_Build_Fading_Table(GamePalette, FadingShade, BLACK, 150);
-  CCFileClass(Fading_Table_Name("SHADE", theater).c_str())
-      .Write(FadingShade, sizeof(FadingShade));
-#endif
 
-#ifdef _RETRIEVE
   CCFileClass(Fading_Table_Name("LIGHT", theater).c_str())
       .Read(FadingLight, sizeof(FadingLight));
-#else
-  Conquer_Build_Fading_Table(GamePalette, FadingLight, WHITE, 85);
-  CCFileClass(Fading_Table_Name("LIGHT", theater).c_str())
-      .Write(FadingLight, sizeof(FadingLight));
-#endif
 
   /*
   **	Create the shadow color used by aircraft.
@@ -549,16 +456,6 @@ void DisplayClass::Init_Theater(TheaterType theater) {
 
   Build_Fading_Table(GamePalette, FadingBrighten, WHITE, 25);
 
-#ifndef _RETRIEVE
-  /*
-  **	Restore the palette since it was mangled while building the fading
-  *tables.
-  */
-  sprintf(fullname, "%s.PAL", Theaters[theater].Root);
-  ptr = MFCD::Retrieve(fullname);
-  Mem_Copy((void*)ptr, GamePalette, 768);
-  Mem_Copy(GamePalette, OriginalPalette, 768);
-#endif
 
   /*
   **	Adjust the palette according to the visual control option settings.
@@ -1237,7 +1134,7 @@ void DisplayClass::Read_INI(char* buffer) {
   **	Read all entry names into 'tbuffer'.
   */
   WWGetPrivateProfileString(trigsection, nullptr, nullptr, tbuffer,
-                            _ShapeBufferSize - len, buffer);
+                            ShapeBufferSize - len, buffer);
 
   /*
   **	Loop through all CellTrigger entries.
@@ -2887,8 +2784,8 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
   */
   bool edge = false;
   if (flags & (LEFTPRESS | LEFTRELEASE | RIGHTPRESS | RIGHTRELEASE)) {
-    x = _Kbd->MouseQX;
-    y = _Kbd->MouseQY;
+    x = ActiveKeyboard->MouseQX;
+    y = ActiveKeyboard->MouseQY;
   } else {
     x = Get_Mouse_X();
     y = Get_Mouse_Y();

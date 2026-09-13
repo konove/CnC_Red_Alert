@@ -265,12 +265,12 @@ void Send_Statistics_Packet() {
     */
     char fname[128];
     char namebuffer[40];
-    char* abuffer = _ShapeBuffer;
-    memset(abuffer, '\0', _ShapeBufferSize);
+    char* abuffer = ShapeBuffer;
+    memset(abuffer, '\0', ShapeBufferSize);
     sprintf(fname, "%s.INI", ScenarioName);
     CCFileClass fileo;
     fileo.Set_Name(fname);
-    fileo.Read(abuffer, _ShapeBufferSize - 1);
+    fileo.Read(abuffer, ShapeBufferSize - 1);
     fileo.Close();
     WWGetPrivateProfileString("Basic", "Name", "Nulls-Ville", namebuffer, 40,
                               abuffer);

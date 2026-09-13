@@ -342,9 +342,9 @@ int Check_Menu(MenuConfig& menu, const char* text[], long field, int index) {
     */
     case KN_RMOUSE:
     case KN_LMOUSE:
-      if (Coordinates_In_Region(_Kbd->MouseQX, _Kbd->MouseQY, mx1, my1, mx2,
-                                my2)) {
-        newitem = (_Kbd->MouseQY - my1) / menuskip;
+      if (Coordinates_In_Region(ActiveKeyboard->MouseQX,
+                                ActiveKeyboard->MouseQY, mx1, my1, mx2, my2)) {
+        newitem = (ActiveKeyboard->MouseQY - my1) / menuskip;
       } else {
         UnknownKey = key;  //	Pass the unprocessed button click back.
         break;

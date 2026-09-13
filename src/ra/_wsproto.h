@@ -36,8 +36,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CNC_RED_ALERT_RA__WSPROTO_H_
-#define CNC_RED_ALERT_RA__WSPROTO_H_
+#ifndef CNC_RED_ALERT_RA_WSPROTO_IMPL_H_
+#define CNC_RED_ALERT_RA_WSPROTO_IMPL_H_
 
 class WinsockInterfaceClass;
 extern WinsockInterfaceClass*

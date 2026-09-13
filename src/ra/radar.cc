@@ -129,8 +129,8 @@ const void* RadarClass::RadarFrame = nullptr;
 
 static bool FullRedraw = false;
 
-static GraphicBufferClass _IconStage(3, 3);
-static GraphicBufferClass _TileStage(24, 24);
+static GraphicBufferClass IconStage(3, 3);
+static GraphicBufferClass TileStage(24, 24);
 
 /***********************************************************************************************
  * RadarClass::RadarClass -- Default constructor for RadarClass object. *
@@ -417,7 +417,7 @@ void RadarClass::Draw_It(bool forced) {
   static HousesType _house = HOUSE_NONE;
 
   if (PlayerPtr->ActLike != _house) {
-    char name[_MAX_FNAME + _MAX_EXT];
+    char name[kMaxFname + kMaxExt];
 
     //		port::SafeCopy(name, "NATORADR.SHP" );
     //		if (Session.Type == GAME_NORMAL) {
@@ -712,9 +712,9 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
     if (!icon) {
       continue;
     }
-    Buffer_To_Page(0, 0, 3, 3, icon, _IconStage);
-    _IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
-                     (char*)&FadingBrighten[0]);
+    Buffer_To_Page(0, 0, 3, 3, icon, IconStage);
+    IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
+                    (char*)&FadingBrighten[0]);
   }
 }
 
@@ -811,7 +811,7 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
       if (!icon) {
         return;
       }
-      Buffer_To_Page(0, 0, 3, 3, icon, _IconStage);
+      Buffer_To_Page(0, 0, 3, 3, icon, IconStage);
       if (otype->IsTiberium) {
         if (size == 1) {
           LogicPage->Put_Pixel(x, y, DKGREY);
@@ -819,8 +819,8 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
           //					_IconStage.Scale(*LogicPage, 0,
           // 0, x, y, 3, 3, size, size, true, (char *)&FadingShade[0]);
         } else {
-          _IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, size, size, true,
-                           (char*)&FadingYellow[0]);
+          IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, size, size, true,
+                          (char*)&FadingYellow[0]);
         }
         //				_IconStage.Scale(*LogicPage, 0, 0, x, y,
         // 3, 3, size, size, true, (char *)&FadingGreen[0]);
@@ -1064,9 +1064,9 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         unsigned char* data =
             (unsigned char*)icondata +
             (static_cast<base::ssize>(icon) * (base::ssize{24} * 24));
-        Buffer_To_Page(0, 0, 24, 24, data, _TileStage);
-        _TileStage.Scale(*LogicPage, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor,
-                         true);
+        Buffer_To_Page(0, 0, 24, 24, data, TileStage);
+        TileStage.Scale(*LogicPage, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor,
+                        true);
       } else {
         //				LogicPage->Fill_Rect(x, y,
         // x+ZoomFactor-1, y+ZoomFactor-1, cellptr->Cell_Color(false));

@@ -3,10 +3,11 @@
 
 #include <cstdio>
 
-#define _MAX_PATH 260
-#define _MAX_FNAME 256
-#define _MAX_EXT 256
-#define _MAX_DRIVE 3
+// Path component buffer sizes, matching the Microsoft CRT's _MAX_* limits.
+inline constexpr int kMaxPath = 260;
+inline constexpr int kMaxFname = 256;
+inline constexpr int kMaxExt = 256;
+inline constexpr int kMaxDrive = 3;
 
 // The Microsoft CRT ships all of these; redeclaring them with C++ linkage is
 // an error there, so the portable versions exist only on other platforms.

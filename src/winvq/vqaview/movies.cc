@@ -163,15 +163,15 @@ void Free_Movie_System() {
  *=========================================================================*/
 void Choose_Movie(WindowHandle window_handle) {
   int i;
-  char temp_file[_MAX_FNAME + _MAX_EXT];
+  char temp_file[kMaxFname + kMaxExt];
   static OPENFILENAME open_file_dlg;
-  static char path_filename[_MAX_PATH * 500];
-  static char filename[_MAX_FNAME + _MAX_EXT];
+  static char path_filename[kMaxPath * 500];
+  static char filename[kMaxFname + kMaxExt];
   static char* filters[] = {"VQA files (*.VQA)", "*.vqa", "All Files", "*.*",
                             ""};
 
   filename[0] = 0;
-  memset(&path_filename[0], 0, _MAX_PATH * 500);
+  memset(&path_filename[0], 0, kMaxPath * 500);
 
   open_file_dlg.lStructSize = sizeof(OPENFILENAME);
   open_file_dlg.hwndOwner = window_handle;
@@ -181,9 +181,9 @@ void Choose_Movie(WindowHandle window_handle) {
   open_file_dlg.nMaxCustFilter = 0;
   open_file_dlg.nFilterIndex = 1;
   open_file_dlg.lpstrFile = path_filename;
-  open_file_dlg.nMaxFile = _MAX_PATH * 500;
+  open_file_dlg.nMaxFile = kMaxPath * 500;
   open_file_dlg.lpstrFileTitle = filename;
-  open_file_dlg.nMaxFileTitle = _MAX_FNAME + _MAX_EXT;
+  open_file_dlg.nMaxFileTitle = kMaxFname + kMaxExt;
   open_file_dlg.lpstrInitialDir = NULL;
   open_file_dlg.lpstrTitle = "Choose a VQA to run";
   open_file_dlg.Flags = OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT;

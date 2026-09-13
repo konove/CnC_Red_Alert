@@ -496,9 +496,9 @@ void Map_Selection() {
                                   /* Nod countries */
                                   45, 80, 75, 76, 31, 64, 69, 89, 88, 106, 115,
                                   139, 168, 164, 183, 123, 154};
-  static const char _greenpal[] = {0,    0x41, 0x42, 0x43, 0x44, 0x44,
-                                   0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
-                                   0x44, 0x44, 0x44, 0x44};
+  static const char greenpal[] = {0,    0x41, 0x42, 0x43, 0x44, 0x44,
+                                  0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
+                                  0x44, 0x44, 0x44, 0x44};
   static const char _othergreenpal[] = {0,    0x21, 0x22, 0x23, 0x24, 0x25,
                                         0x26, 0x26, 0x26, 0x26, 0x26, 0x26,
                                         0x26, 0x26, 0x26, 0x26};
@@ -835,9 +835,9 @@ void Map_Selection() {
   SysMemPage.Blit(backpage, xcoord, 1, 0, 0, 20 * 6, 8);
   Play_Sample(text2, 255, Options.Normalize_Sound(90));
   if (house == HOUSE_GOOD) {
-    Alloc_Object(new ScorePrintClass(TXT_MAP_GDI, 0, 2, _greenpal));
+    Alloc_Object(new ScorePrintClass(TXT_MAP_GDI, 0, 2, greenpal));
   } else {
-    Alloc_Object(new ScorePrintClass(TXT_MAP_NOD, xcoord, 2, _greenpal));
+    Alloc_Object(new ScorePrintClass(TXT_MAP_NOD, xcoord, 2, greenpal));
   }
   Call_Back_Delay(60);
 
@@ -866,9 +866,9 @@ void Map_Selection() {
   if (!lastscenario) {
     Play_Sample(text2, 255, Options.Normalize_Sound(90));
     if (house == HOUSE_GOOD) {
-      Alloc_Object(new ScorePrintClass(TXT_MAP_NOD, 0, 12, _greenpal));
+      Alloc_Object(new ScorePrintClass(TXT_MAP_NOD, 0, 12, greenpal));
     } else {
-      Alloc_Object(new ScorePrintClass(TXT_MAP_GDI, xcoord, 12, _greenpal));
+      Alloc_Object(new ScorePrintClass(TXT_MAP_GDI, xcoord, 12, greenpal));
     }
     Call_Back_Delay(65);
   }
@@ -899,12 +899,12 @@ void Map_Selection() {
   ** Now print the text over the page
   */
   Play_Sample(text2, 255, Options.Normalize_Sound(90));
-  Alloc_Object(new ScorePrintClass(TXT_MAP_LOCATE, 0, 160, _greenpal));
+  Alloc_Object(new ScorePrintClass(TXT_MAP_LOCATE, 0, 160, greenpal));
   Call_Back_Delay(20);
-  Alloc_Object(new ScorePrintClass(TXT_MAP_NEXT_MISSION, 0, 170, _greenpal));
+  Alloc_Object(new ScorePrintClass(TXT_MAP_NEXT_MISSION, 0, 170, greenpal));
 #if (defined(GERMAN) || defined(FRENCH))
   Call_Back_Delay(20);
-  Alloc_Object(new ScorePrintClass(TXT_MAP_NEXT_MISS2, 0, 180, _greenpal));
+  Alloc_Object(new ScorePrintClass(TXT_MAP_NEXT_MISS2, 0, 180, greenpal));
 #endif
   Call_Back_Delay(50);
 
@@ -1071,10 +1071,10 @@ void Map_Selection() {
   //	Set_Font(ScoreFontPtr);
   Play_Sample(text2, 255, Options.Normalize_Sound(90));
   Alloc_Object(
-      new ScorePrintClass(TXT_MAP_SELECT, attackxcoord, 160, _greenpal));
+      new ScorePrintClass(TXT_MAP_SELECT, attackxcoord, 160, greenpal));
   Cycle_Call_Back_Delay(16, progresspalette);
   Alloc_Object(
-      new ScorePrintClass(TXT_MAP_TO_ATTACK, attackxcoord, 170, _greenpal));
+      new ScorePrintClass(TXT_MAP_TO_ATTACK, attackxcoord, 170, greenpal));
   Cycle_Call_Back_Delay(24, progresspalette);
   while (Get_Mouse_State() > 0) {
     Show_Mouse();
@@ -1263,9 +1263,9 @@ void Print_Statistics(int country, int xpos, int ypos) {
                                   TXT_MAP_MILITARY2, TXT_MAP_MILITARY3,
                                   TXT_MAP_MILITARY4};
 
-  static const char _greenpal[] = {0,    0x41, 0x42, 0x43, 0x44, 0x44,
-                                   0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
-                                   0x44, 0x44, 0x44, 0x44};
+  static const char greenpal[] = {0,    0x41, 0x42, 0x43, 0x44, 0x44,
+                                  0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
+                                  0x44, 0x44, 0x44, 0x44};
   // static char const
   // _greenpal[]={0,1,0x42,3,0x43,5,0x44,7,0x44,9,10,1,12,13,0x41,15};
   static char _deststr[16];
@@ -1281,44 +1281,44 @@ void Print_Statistics(int country, int xpos, int ypos) {
   ypos = ypos > 100 ? 8 : 104 - 6;
   if (PlayerPtr->Class->House == HOUSE_GOOD) {
     Alloc_Object(new ScorePrintClass(_countryname[GDIStats[country].nameindex],
-                                     xpos, ypos, _greenpal));
+                                     xpos, ypos, greenpal));
     Call_Back_Delay(
         static_cast<int>(strlen(Text_String(_countryname[GDIStats[country].nameindex]))) * 3);
     ypos += 16;
     for (index = 0; index < 7; index++) {
       Alloc_Object(
-          new ScorePrintClass(_gdistatnames[index], xpos, ypos, _greenpal));
+          new ScorePrintClass(_gdistatnames[index], xpos, ypos, greenpal));
       Call_Back_Delay(static_cast<int>(strlen(Text_String(_gdistatnames[index] + 3))));
       newx = xpos +
              (6 * static_cast<int>(strlen(Text_String(_gdistatnames[index]))));
       switch (index) {
         case 0:
-          Alloc_Object(new ScorePrintClass(GDIStats[country].pop, newx, ypos,
-                                           _greenpal));
+          Alloc_Object(
+              new ScorePrintClass(GDIStats[country].pop, newx, ypos, greenpal));
           break;
         case 1:
           Alloc_Object(new ScorePrintClass(GDIStats[country].area, newx, ypos,
-                                           _greenpal));
+                                           greenpal));
           break;
         case 2:
           Alloc_Object(new ScorePrintClass(GDIStats[country].capital, newx,
-                                           ypos, _greenpal));
+                                           ypos, greenpal));
           break;
         case 3:
           Alloc_Object(new ScorePrintClass(_govtnames[GDIStats[country].govt],
-                                           newx, ypos, _greenpal));
+                                           newx, ypos, greenpal));
           break;
         case 4:
-          Alloc_Object(new ScorePrintClass(GDIStats[country].gdp, newx, ypos,
-                                           _greenpal));
+          Alloc_Object(
+              new ScorePrintClass(GDIStats[country].gdp, newx, ypos, greenpal));
           break;
         case 5:
           Alloc_Object(new ScorePrintClass(GDIStats[country].conflict, newx,
-                                           ypos, _greenpal));
+                                           ypos, greenpal));
           break;
         case 6:
           Alloc_Object(new ScorePrintClass(
-              _armynames[GDIStats[country].military], newx, ypos, _greenpal));
+              _armynames[GDIStats[country].military], newx, ypos, greenpal));
           break;
         default:
           break;
@@ -1336,32 +1336,32 @@ void Print_Statistics(int country, int xpos, int ypos) {
     country++;
 
     Alloc_Object(new ScorePrintClass(_countryname[NodStats[country].nameindex],
-                                     xpos, ypos, _greenpal));
+                                     xpos, ypos, greenpal));
     Call_Back_Delay(
         static_cast<int>(strlen(Text_String(_countryname[NodStats[country].nameindex]))) * 3);
     ypos += 16;
     for (index = 0; index < 9; index++) {
       Alloc_Object(
-          new ScorePrintClass(_nodstatnames[index], xpos, ypos, _greenpal));
+          new ScorePrintClass(_nodstatnames[index], xpos, ypos, greenpal));
       Call_Back_Delay(static_cast<int>(strlen(Text_String(_nodstatnames[index] + 3))));
       newx = xpos +
              (6 * static_cast<int>(strlen(Text_String(_nodstatnames[index]))));
       switch (index) {
         case 0:
-          Alloc_Object(new ScorePrintClass(NodStats[country].pop, newx, ypos,
-                                           _greenpal));
+          Alloc_Object(
+              new ScorePrintClass(NodStats[country].pop, newx, ypos, greenpal));
           break;
         case 1:
           sprintf(_deststr, "%d%%", NodStats[country].expendable);
-          Alloc_Object(new ScorePrintClass(_deststr, newx, ypos, _greenpal));
+          Alloc_Object(new ScorePrintClass(_deststr, newx, ypos, greenpal));
           break;
         case 2:
           Alloc_Object(new ScorePrintClass(NodStats[country].capital, newx,
-                                           ypos, _greenpal));
+                                           ypos, greenpal));
           break;
         case 3:
           Alloc_Object(new ScorePrintClass(_govtnames[NodStats[country].govt],
-                                           newx, ypos, _greenpal));
+                                           newx, ypos, greenpal));
           break;
         case 4:
 #ifdef FIX_ME_LATER
@@ -1370,23 +1370,23 @@ void Print_Statistics(int country, int xpos, int ypos) {
                   NodStats[country].corruptible);
 #endif  // FIX_ME_LATER
           sprintf(_deststr, "%d%%", NodStats[country].corruptible);
-          Alloc_Object(new ScorePrintClass(_deststr, newx, ypos, _greenpal));
+          Alloc_Object(new ScorePrintClass(_deststr, newx, ypos, greenpal));
           break;
         case 5:
           Alloc_Object(new ScorePrintClass(NodStats[country].worth, newx, ypos,
-                                           _greenpal));
+                                           greenpal));
           break;
         case 6:
           Alloc_Object(new ScorePrintClass(NodStats[country].conflict, newx,
-                                           ypos, _greenpal));
+                                           ypos, greenpal));
           break;
         case 7:
           Alloc_Object(new ScorePrintClass(
-              _military[NodStats[country].military], newx, ypos, _greenpal));
+              _military[NodStats[country].military], newx, ypos, greenpal));
           break;
         case 8:
           sprintf(_deststr, "%d%%", NodStats[country].probability);
-          Alloc_Object(new ScorePrintClass(_deststr, newx, ypos, _greenpal));
+          Alloc_Object(new ScorePrintClass(_deststr, newx, ypos, greenpal));
           break;
         default:
           break;
@@ -1396,10 +1396,10 @@ void Print_Statistics(int country, int xpos, int ypos) {
   }
 
 #ifdef FRENCH
-  Alloc_Object(new ScorePrintClass(TXT_MAP_CLICK2, 94, 193 - 6, _greenpal));
+  Alloc_Object(new ScorePrintClass(TXT_MAP_CLICK2, 94, 193 - 6, greenpal));
 #else
   Alloc_Object(
-      new ScorePrintClass(TXT_MAP_CLICK2, 160 - (17 * 3), 193 - 6, _greenpal));
+      new ScorePrintClass(TXT_MAP_CLICK2, 160 - (17 * 3), 193 - 6, greenpal));
 #endif
 
   int done = 0;

@@ -137,7 +137,7 @@
  *                                                                                             *
  * HISTORY: * 03/11/1996 JLB : Created. *
  *=============================================================================================*/
-static inline bool _Is_It_Breathing(const FootClass* object) {
+static inline bool Is_It_Breathing(const FootClass* object) {
   /*
   **	If the object is not present or appears to be dead, then it
   **	certainly isn't an active member of the team.
@@ -184,12 +184,12 @@ static inline bool _Is_It_Breathing(const FootClass* object) {
  *                                                                                             *
  * HISTORY: * 03/11/1996 JLB : Created. *
  *=============================================================================================*/
-static inline bool _Is_It_Playing(const FootClass* object) {
+static inline bool Is_It_Playing(const FootClass* object) {
   /*
   **	If the object is not active, then it certainly can be a participating
   *member of the *	team.
   */
-  if (!_Is_It_Breathing(object)) {
+  if (!Is_It_Breathing(object)) {
     return false;
   }
 
@@ -652,7 +652,7 @@ void TeamClass::AI() {
     FootClass* techno = Member;
     DoType doaction = Percent_Chance(50) ? DO_GESTURE1 : DO_GESTURE2;
     while (techno) {
-      if (_Is_It_Breathing(techno) && techno->What_Am_I() == RTTI_INFANTRY) {
+      if (Is_It_Breathing(techno) && techno->What_Am_I() == RTTI_INFANTRY) {
         dynamic_cast<InfantryClass*>(techno)->Do_Action(doaction);
       }
 
@@ -1003,8 +1003,7 @@ bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
   *dispensation is given to *	units that are in radio contact. It is presumed
   *that they are very busy and should *	not be disturbed.
   */
-  if (!_Is_It_Breathing(obj) || obj->In_Radio_Contact() ||
-      obj->House != House) {
+  if (!Is_It_Breathing(obj) || obj->In_Radio_Contact() || obj->House != House) {
     return false;
   }
 
@@ -1462,7 +1461,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     for (int unit_index = 0; unit_index < Units.Count(); unit_index++) {
       const FootClass* trial_unit = Units.Ptr(unit_index);
 
-      if (_Is_It_Breathing(trial_unit) && trial_unit->House->Is_Ally(House) &&
+      if (Is_It_Breathing(trial_unit) && trial_unit->House->Is_Ally(House) &&
           trial_unit->Team != this) {
         int trial_distance = team_member->Distance(trial_unit);
 
@@ -1480,7 +1479,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
          infantry_index++) {
       const FootClass* trial_infantry = Infantry.Ptr(infantry_index);
 
-      if (_Is_It_Breathing(trial_infantry) &&
+      if (Is_It_Breathing(trial_infantry) &&
           trial_infantry->House->Is_Ally(House) &&
           trial_infantry->Team != this) {
         int trial_distance = team_member->Distance(trial_infantry);
@@ -1498,7 +1497,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     for (int vessel_index = 0; vessel_index < Vessels.Count(); vessel_index++) {
       const FootClass* trial_vessel = Vessels.Ptr(vessel_index);
 
-      if (_Is_It_Breathing(trial_vessel) &&
+      if (Is_It_Breathing(trial_vessel) &&
           trial_vessel->House->Is_Ally(House) && trial_vessel->Team != this) {
         int trial_distance = team_member->Distance(trial_vessel);
 
@@ -1533,7 +1532,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     *target.
     */
     while (team_member != nullptr) {
-      if (_Is_It_Playing(team_member)) {
+      if (Is_It_Playing(team_member)) {
         /*
         **	Accumulate X and Y components of qualified team members.
         */
@@ -1728,7 +1727,7 @@ void TeamClass::Coordinate_Attack() {
     while (unit != nullptr) {
       Coordinate_Conscript(unit);
 
-      if (_Is_It_Playing(unit)) {
+      if (Is_It_Playing(unit)) {
         if (mission->Mission == TMISSION_SPY &&
             unit->What_Am_I() == RTTI_INFANTRY &&
             *dynamic_cast<InfantryClass*>(unit) == INFANTRY_SPY) {
@@ -1794,7 +1793,7 @@ bool TeamClass::Coordinate_Regroup() {
   while (unit != nullptr) {
     Coordinate_Conscript(unit);
 
-    if (_Is_It_Playing(unit)) {
+    if (Is_It_Playing(unit)) {
       if (unit->Distance(Zone) > Rule.StrayDistance &&
           (unit->Mission != MISSION_GUARD_AREA ||
            !Target_Legal(unit->TarCom))) {
@@ -1861,7 +1860,7 @@ void TeamClass::Coordinate_Do() {
   while (unit != nullptr) {
     Coordinate_Conscript(unit);
 
-    if (_Is_It_Playing(unit)) {
+    if (Is_It_Playing(unit)) {
       if (!Target_Legal(unit->TarCom) && !Target_Legal(unit->NavCom) &&
           unit->Distance(Zone) > Rule.StrayDistance * 2) {
         /*
@@ -1936,7 +1935,7 @@ void TeamClass::Coordinate_Move() {
           finished = false;
         }
 
-        if (_Is_It_Playing(unit) && unit->Mission != MISSION_UNLOAD &&
+        if (Is_It_Playing(unit) && unit->Mission != MISSION_UNLOAD &&
             unit->MissionQueue != MISSION_UNLOAD) {
           int stray = Rule.StrayDistance;
           if (unit->What_Am_I() == RTTI_AIRCRAFT) {
@@ -2090,7 +2089,7 @@ bool TeamClass::Lagging_Units() {
   ** trouble keeping up with the pack.
   */
   while (unit != nullptr) {
-    if (_Is_It_Playing(unit)) {
+    if (Is_It_Playing(unit)) {
       int stray = Rule.StrayDistance;
       if (unit->What_Am_I() == RTTI_AIRCRAFT) {
         stray *= 3;
@@ -2156,7 +2155,7 @@ int TeamClass::TMission_Unload() {
   while (unit != nullptr) {
     Coordinate_Conscript(unit);
 
-    if (_Is_It_Playing(unit)) {
+    if (Is_It_Playing(unit)) {
       /*
       ** Only assign the mission if the unit is carrying a passenger, OR
       ** if the unit is a minelayer, with mines in it, and the cell it's
@@ -2274,7 +2273,7 @@ int TeamClass::TMission_Load() {
     /*
     ** Only assign the mission if the unit is not the transport.
     */
-    if (_Is_It_Playing(unit) && unit != trans) {
+    if (Is_It_Playing(unit) && unit != trans) {
       if (unit->Mission != MISSION_ENTER) {
         unit->Assign_Mission(MISSION_ENTER);
         unit->Assign_Target(kTargetNone);
@@ -2313,7 +2312,7 @@ bool TeamClass::Coordinate_Conscript(FootClass* unit) {
   assert(IsActive);
   assert(Teams.ID(this) == ID);
 
-  if (_Is_It_Breathing(unit) && !unit->IsInitiated) {
+  if (Is_It_Breathing(unit) && !unit->IsInitiated) {
     if (unit->Distance(Zone) > Rule.StrayDistance) {
       if (!Target_Legal(unit->NavCom)) {
         unit->Assign_Mission(MISSION_MOVE);
@@ -2994,7 +2993,7 @@ int TeamClass::TMission_Deploy() {
   while (unit != nullptr) {
     Coordinate_Conscript(unit);
 
-    if (_Is_It_Playing(unit)) {
+    if (Is_It_Playing(unit)) {
       if (unit->What_Am_I() == RTTI_UNIT &&
           *dynamic_cast<UnitClass*>(unit) == UNIT_MCV) {
         if (unit->Mission != MISSION_UNLOAD) {
@@ -3057,7 +3056,7 @@ FootClass* TeamClass::Fetch_A_Leader() const {
   *member and *	is equipped with a weapon.
   */
   while (leader != nullptr) {
-    if (_Is_It_Playing(leader) && leader->Is_Weapon_Equipped()) {
+    if (Is_It_Playing(leader) && leader->Is_Weapon_Equipped()) {
       break;
     }
     leader = leader->Member;

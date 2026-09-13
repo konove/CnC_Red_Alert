@@ -130,11 +130,6 @@
 #include "td/text.h"
 #include "td/type.h"
 
-/*
-**	Define "_RETRIEVE" if the palette morphing tables are part of the loaded
-*data. If this *	is undefined, then the files will be created.
-*/
-#define _RETRIEVE
 
 /***************************************************************************
 **	This holds the translucent table for use with the construction clock
@@ -1219,29 +1214,8 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
     }
   }
 
-#ifndef _RETRIEVE
-  static const TLucentType ClockCols[1] = {
-      //			{LTGREEN, BLACK, 0, 0},
-      {GREEN, LTGREY, 180, 0}};
-
-  /*
-  **	Make sure that remapping doesn't occur on the colors that cycle.
-  */
-  Mem_Copy(GamePalette, OriginalPalette, 768);
-  memset(&GamePalette[CYCLE_COLOR_START * 3], 0x3f, CYCLE_COLOR_COUNT * 3);
-
-  /*
-  **	Create the translucent table used for the sidebar.
-  */
-  Build_Translucent_Table(GamePalette, &ClockCols[0], 1,
-                          (void*)ClockTranslucentTable);
-  CCFileClass(Fading_Table_Name("CLOCK", theater).c_str())
-      .Write(ClockTranslucentTable, sizeof(ClockTranslucentTable));
-  Mem_Copy(OriginalPalette, GamePalette, 768);
-#else
   CCFileClass(Fading_Table_Name("CLOCK", theater).c_str())
       .Read(ClockTranslucentTable, sizeof(ClockTranslucentTable));
-#endif
   LastTheater = theater;
 }
 

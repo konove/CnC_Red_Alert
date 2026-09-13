@@ -379,7 +379,7 @@ const char* CDFileClass::Set_Name(const char* filename) {
   SearchDriveType* srch = First;
 
   while (srch) {
-    char path[_MAX_PATH];
+    char path[kMaxPath];
 
     /*
     **	Build a pathname to search for.

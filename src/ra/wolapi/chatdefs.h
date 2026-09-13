@@ -19,6 +19,10 @@
 #ifndef CNC_RED_ALERT_RA_WOLAPI_CHATDEFS_H_
 #define CNC_RED_ALERT_RA_WOLAPI_CHATDEFS_H_
 
+// Generated Westwood Online API names (MIDL guards, struct tags) are reserved
+// identifiers; they stay as generated.
+// NOLINTBEGIN(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
+
 // Every CHAT_E_* and CHAT_S_* value is built out of MAKE_HRESULT.
 #include "port/win32/win32_com.h"
 
@@ -144,5 +148,7 @@
 #define CHAN_MODE_KEY 0x0100
 #define CHAN_MODE_BAN 0x0200
 #define CHAN_MODE_LIMIT 0x0400
+
+// NOLINTEND(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
 
 #endif  // CNC_RED_ALERT_RA_WOLAPI_CHATDEFS_H_

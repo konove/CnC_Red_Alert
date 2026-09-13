@@ -290,7 +290,7 @@ int CCINIClass::Save(Pipe& pipe, bool withdigest) const {
   return length;
 }
 
-static inline int _Scale_To_256(int val) {
+static inline int Scale_To_256(int val) {
   val = std::min(val, 100);
   val = std::max(val, 0);
   val = val * 256 / 100;
@@ -372,7 +372,7 @@ bool CCINIClass::Put_Lepton(const char* section, const char* entry,
 MPHType CCINIClass::Get_MPHType(const char* section, const char* entry,
                                 MPHType defvalue) const {
   int val = Get_Int(section, entry, static_cast<int>(defvalue) * 100 / 256);
-  return static_cast<MPHType>(_Scale_To_256(val));
+  return static_cast<MPHType>(Scale_To_256(val));
 }
 
 /***********************************************************************************************

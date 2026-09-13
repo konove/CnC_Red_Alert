@@ -47,13 +47,13 @@
 *necessary to accomplish this. *	The pad character lets the decoder know
 *of this condition and it will compensate *	accordingly.
 */
-static const char* const _pad = "=";
+static const char* const kPad = "=";
 
 /*
 **	This encoder translation table will convert a 6 bit number into an ASCII
 *character.
 */
-static const char* const _encoder =
+static const char* const kEncoder =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 /*
@@ -62,7 +62,7 @@ static const char* const _encoder =
 */
 #define BAD 0xFE  // Ignore this character in source data.
 #define END 0xFF  // Signifies premature end of input data.
-static const unsigned char _decoder[256] = {
+static const unsigned char kDecoder[256] = {
     BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD,
     BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD,
     BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, 62,  BAD,
@@ -175,17 +175,17 @@ int Base64_Encode(const void* source, int slen, void* dest, int dlen) {
     **	Translate and write 4 characters of Base64 data. Pad with pad
     **	characters if there is insufficient source data for a full packet.
     */
-    *dptr++ = _encoder[packet.SubCode.O1];
-    *dptr++ = _encoder[packet.SubCode.O2];
+    *dptr++ = kEncoder[packet.SubCode.O1];
+    *dptr++ = kEncoder[packet.SubCode.O2];
     if (pad < 2) {
-      *dptr++ = _encoder[packet.SubCode.O3];
+      *dptr++ = kEncoder[packet.SubCode.O3];
     } else {
-      *dptr++ = _pad[0];
+      *dptr++ = kPad[0];
     }
     if (pad < 1) {
-      *dptr++ = _encoder[packet.SubCode.O4];
+      *dptr++ = kEncoder[packet.SubCode.O4];
     } else {
-      *dptr++ = _pad[0];
+      *dptr++ = kPad[0];
     }
 
     dlen -= PacketChars;
@@ -256,7 +256,7 @@ int Base64_Decode(const void* source, int slen, void* dest, int dlen) {
       unsigned char c = *sptr++;
       slen--;
 
-      unsigned char code = _decoder[c];
+      unsigned char code = kDecoder[c];
 
       /*
       **	An unrecognized character is skipped.

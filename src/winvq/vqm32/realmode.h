@@ -65,7 +65,7 @@ typedef unsigned long REALPTR;
  * will then use this information to set up the real-mode registers, switch
  * to real-mode and then execute the interrupt in real-mode.
  */
-typedef struct _RMInfo {
+typedef struct RMInfo {
   long edi;
   long esi;
   long ebp;

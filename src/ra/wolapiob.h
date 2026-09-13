@@ -313,7 +313,7 @@ class WolapiObject {
   bool bSelfDestruct;  //	If set true, causes logout and deletion of
                        // wolapi object.
 
-  char szWebBrowser[_MAX_PATH + 1]{};
+  char szWebBrowser[kMaxPath + 1]{};
 
   //	For "disconnect pinging".
   bool bDoingDisconnectPinging;

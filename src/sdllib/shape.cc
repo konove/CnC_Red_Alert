@@ -4,8 +4,8 @@
 #include <span>
 #include <utility>
 
-char* _ShapeBuffer;
-int _ShapeBufferSize;
+char* ShapeBuffer;
+int ShapeBufferSize;
 
 int Extract_Shape_Count(const void* buffer) {
   ShapeBlock_Type* block = (ShapeBlock_Type*)buffer;
@@ -35,6 +35,6 @@ void* Extract_Shape(const void* buffer, int shape) {
 }
 
 void Set_Shape_Buffer(void* buffer, int size) {
-  _ShapeBuffer = static_cast<char*>(buffer);
-  _ShapeBufferSize = size;
+  ShapeBuffer = static_cast<char*>(buffer);
+  ShapeBufferSize = size;
 }

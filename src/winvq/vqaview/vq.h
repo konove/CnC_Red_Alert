@@ -113,9 +113,9 @@ extern unsigned char* Movie_Scratch_Buffer;
 
 class VQAClass {
  private:
-  char base_filename[_MAX_PATH];
-  char vqa_filename[_MAX_PATH];
-  char PaletteFilename[_MAX_PATH];
+  char base_filename[kMaxPath];
+  char vqa_filename[kMaxPath];
+  char PaletteFilename[kMaxPath];
   VQAConfig vqa_config;
   VQAHandle* vqa_handle;
   short media_source;

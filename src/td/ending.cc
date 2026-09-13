@@ -213,8 +213,8 @@ void Nod_Ending() {
       } else {
         int key = Keyboard::Get();
         if ((key & 0x10FF) == KN_LMOUSE && !(key & KN_RLSE_BIT)) {
-          int mousex = _Kbd->MouseQX;
-          int mousey = _Kbd->MouseQY;
+          int mousex = ActiveKeyboard->MouseQX;
+          int mousey = ActiveKeyboard->MouseQY;
           if (mousey >= 44 && mousey <= 354) {
             done = true;
             if (mousex < 320 && mousey < 200) {

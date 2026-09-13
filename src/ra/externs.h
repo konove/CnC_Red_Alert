@@ -305,7 +305,7 @@ extern ChronalVortexClass ChronalVortex;
 extern Stopwatch<SystemTickSource> TickCount;
 extern bool PassedProximity;  // used in display.cpp
 extern HousesType Whom;
-extern _VQAConfig AnimControl;
+extern VQAConfig AnimControl;
 extern int64_t SpareTicks;
 extern long PathCount;
 extern long CellCount;

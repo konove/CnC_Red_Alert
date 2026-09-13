@@ -51,6 +51,10 @@
 #ifndef CNC_RED_ALERT_RA_WOLAPI_WOLAPI_H_
 #define CNC_RED_ALERT_RA_WOLAPI_WOLAPI_H_
 
+// Generated Westwood Online API names (MIDL guards, struct tags) are reserved
+// identifiers; they stay as generated.
+// NOLINTBEGIN(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
+
 #include <ctime>  // for time_t, which IChatEvent::OnServerBannedYou uses.
 
 #include "port/win32/win32_com.h"
@@ -877,5 +881,7 @@ class DECLSPEC_UUID("8B938191-EF3F-11D1-9808-00609706FA0C") Chat2;
 #ifdef __cplusplus
 }
 #endif
+
+// NOLINTEND(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
 
 #endif  // CNC_RED_ALERT_RA_WOLAPI_WOLAPI_H_

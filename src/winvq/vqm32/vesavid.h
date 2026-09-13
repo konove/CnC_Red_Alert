@@ -83,7 +83,7 @@
  * TotalMemory  - ???
  * Reserved     - Pads structure to 256 bytes total
  */
-typedef struct _VESAInfo {
+typedef struct VESAInfo {
   char Signature[4];
   unsigned short Version;
   REALPTR OEMString;
@@ -131,7 +131,7 @@ typedef struct _VESAInfo {
  *                    10-FFh = OEM-specific
  * BankSize         - Bank size in KB
  */
-typedef struct _VESAModeInfo {
+typedef struct VESAModeInfo {
   unsigned short Attributes;
   unsigned char WinA_Attributes;
   unsigned char WinB_Attributes;

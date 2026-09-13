@@ -252,7 +252,7 @@ int SHAEngine::Result(void* result) const {
 *same parameters and declaration attributes.
 */
 template <class T>
-static T _rotl(T X, int n) {
+static T rotl(T X, int n) {
   return static_cast<T>(X << n | (unsigned)X >> ((sizeof(T) * 8) - n));
 }
 // unsigned long _RTLENTRY _rotl(unsigned long X, int n)
@@ -303,9 +303,9 @@ void SHAEngine::Process_Block(const void* source, SHADigest& acc) const {
        std::cmp_less(index, PROC_BLOCK_SIZE / sizeof(uint32_t)); index++) {
     //		block[index] = _rotl(block[(index-3)&15] ^ block[(index-8)&15] ^
     // block[(index-14)&15] ^ block[(index-16)&15], 1);
-    block[index] = _rotl(block[index - 3] ^ block[index - 8] ^
-                             block[index - 14] ^ block[index - 16],
-                         1);
+    block[index] = rotl(block[index - 3] ^ block[index - 8] ^
+                            block[index - 14] ^ block[index - 16],
+                        1);
   }
 
   /*
@@ -316,12 +316,12 @@ void SHAEngine::Process_Block(const void* source, SHADigest& acc) const {
   SHADigest alt = acc;
   for (index = 0; std::cmp_less(index, PROC_BLOCK_SIZE / sizeof(uint32_t));
        index++) {
-    uint32_t temp = _rotl(alt.Long[0], 5) +
+    uint32_t temp = rotl(alt.Long[0], 5) +
                     Do_Function(index, alt.Long[1], alt.Long[2], alt.Long[3]) +
                     alt.Long[4] + block[index] + Get_Constant(index);
     alt.Long[4] = alt.Long[3];
     alt.Long[3] = alt.Long[2];
-    alt.Long[2] = _rotl(alt.Long[1], 30);
+    alt.Long[2] = rotl(alt.Long[1], 30);
     alt.Long[1] = alt.Long[0];
     alt.Long[0] = temp;
   }

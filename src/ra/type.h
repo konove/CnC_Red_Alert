@@ -137,7 +137,7 @@ class HouseTypeClass : public AbstractTypeClass {
   **	This is the filename suffix to use when creating a house specific
   **	file name. It is three characters long.
   */
-  char Suffix[_MAX_EXT]{};
+  char Suffix[kMaxExt]{};
 
   /*
   **	This is the "lemon percentage" to use when determining if a particular
@@ -199,7 +199,7 @@ class HouseTypeClass : public AbstractTypeClass {
 class ObjectTypeClass : public AbstractTypeClass {
  public:
   // Base filename for graphic data. Empty string indicates no graphic.
-  char GraphicName[_MAX_FNAME]{};
+  char GraphicName[kMaxFname]{};
 
   /*
   **	Is this object squashable by heavy vehicles?  If it is, then the vehicle
