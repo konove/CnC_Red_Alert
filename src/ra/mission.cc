@@ -509,15 +509,7 @@ bool MissionClass::Is_Recruitable_Mission(MissionType mission) {
 }
 
 MissionControlClass::MissionControlClass()
-    : Mission(MISSION_NONE),
-      IsNoThreat(false),
-      IsZombie(false),
-      IsRecruitable(true),
-      IsParalyzed(false),
-      IsRetaliate(true),
-      IsScatter(true),
-      Rate(fixed::FromString(".016")),
-      AARate(fixed::FromString(".016")) {}
+    : Rate(fixed::FromString(".016")), AARate(fixed::FromString(".016")) {}
 
 const char* MissionControlClass::Name() const {
   if (Mission == MISSION_NONE) {

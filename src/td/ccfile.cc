@@ -147,13 +147,8 @@ CCFileClass::CCFileClass(const char* filename)
  *                                                                                             *
  * HISTORY: * 03/20/1995 JLB : Created. *
  *=============================================================================================*/
-CCFileClass::CCFileClass() {
-  FromDisk = false;
-  Pointer = nullptr;
-  Position = 0;
-  Length = 0;
-  Start = 0;
-}
+CCFileClass::CCFileClass()
+    : FromDisk(false), Pointer(nullptr), Start(0), Position(0), Length(0) {}
 
 /***********************************************************************************************
  * CCFileClass::Write -- Writes data to the file (non mixfile files only). *

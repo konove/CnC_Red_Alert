@@ -92,38 +92,38 @@ ConnectionClass::ConnectionClass(int numsend, int numreceive, int maxlen,
                                  unsigned short magicnum,
                                  unsigned long retry_delta,
                                  unsigned long max_retries,
-                                 unsigned long timeout, int extralen) {
+                                 unsigned long timeout, int extralen)
+    : MaxPacketLen(static_cast<int>(maxlen + sizeof(CommHeaderType))),
+      PacketBuf(new char[MaxPacketLen]),
+      MagicNum(magicnum),
+      RetryDelta(retry_delta),
+      MaxRetries(max_retries),
+      Timeout(timeout) {
   /*------------------------------------------------------------------------
   Compute our maximum packet length
   ------------------------------------------------------------------------*/
-  MaxPacketLen = static_cast<int>(maxlen + sizeof(CommHeaderType));
 
   /*------------------------------------------------------------------------
   Assign the magic number
   ------------------------------------------------------------------------*/
-  MagicNum = magicnum;
 
   /*------------------------------------------------------------------------
   Initialize the retry time.  This is the time that t2 - t1 must be greater
   than before a retry will occur.
   ------------------------------------------------------------------------*/
-  RetryDelta = retry_delta;
 
   /*------------------------------------------------------------------------
   Set the maximum allowable retries.
   ------------------------------------------------------------------------*/
-  MaxRetries = max_retries;
 
   /*------------------------------------------------------------------------
   Set the timeout for this connection.
   ------------------------------------------------------------------------*/
-  Timeout = timeout;
 
   /*------------------------------------------------------------------------
   Allocate the packet staging buffer.  This will be used to
   ------------------------------------------------------------------------*/
   // new char[] provides alignment for the packet headers stored at its base.
-  PacketBuf = new char[MaxPacketLen];
 
   /*------------------------------------------------------------------------
   Allocate the packet Queue.  This will store incoming packets (placed there

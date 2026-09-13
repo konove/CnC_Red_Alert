@@ -89,8 +89,8 @@ class ColorListClass : public ListClass {
   /*
   **	This tells how to draw the selected item.
   */
-  SelectStyleType Style;
-  int SelectColor;
+  SelectStyleType Style{SELECT_HIGHLIGHT};
+  int SelectColor{-1};
 };
 
 #endif  // CNC_RED_ALERT_TD_COLRLIST_H_

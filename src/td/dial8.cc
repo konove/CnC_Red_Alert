@@ -74,19 +74,19 @@
 #include "td/jshell.h"
 
 Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
-    : ControlClass(id, x, y, w, h, LEFTPRESS | LEFTHELD | LEFTRELEASE, true) {
+    : ControlClass(id, x, y, w, h, LEFTPRESS | LEFTHELD | LEFTRELEASE, true),
+      FaceX(X + (Width / 2)),
+      FaceY(Y + (Height / 2)),
+      Direction(dir),
+      Facing(Dir_Facing(Direction)),
+      OldFacing(Facing) {
   /*
   **	Center coordinates.
   */
-  FaceX = X + (Width / 2);
-  FaceY = Y + (Height / 2);
 
   /*
   **	Init directions.
   */
-  Direction = dir;                 // 0 - 255
-  Facing = Dir_Facing(Direction);  // 0 - 7
-  OldFacing = Facing;              // 0 - 7
 
   /*
   **	Compute the drawing dimensions:  a 45-degree angle intersects a unity-

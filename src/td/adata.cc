@@ -2223,28 +2223,27 @@ AnimTypeClass::AnimTypeClass(AnimType anim, const char* name, int size,
                              int loopstart, int loopend, int stages, int loops,
                              VocType sound, AnimType chainto) noexcept
     : ObjectTypeClass(true, false, false, true, false, false, true, true,
-                      TXT_NONE, name, ARMOR_NONE, 0) {
-  Biggest = biggest;
-  ChainTo = chainto;
-  Damage = damage;
-  Delay = static_cast<unsigned char>(delaytime);
-  IsCraterForming = iscrater;
-  IsFlameThrower = isflame;
-  IsGroundLayer = ground;
-  IsNormalized = isnormal;
-  IsScorcher = isscorcher;
-  IsSticky = issticky;
-  IsTranslucent = istrans;
-  IsWhiteTrans = iswhitetrans;
-  LoopEnd = loopend;
-  LoopStart = loopstart;
-  Loops = static_cast<unsigned char>(loops);
-  Size = size;
-  Sound = sound;
-  Stages = stages;
-  Start = start;
-  Type = anim;
-}
+                      TXT_NONE, name, ARMOR_NONE, 0),
+      IsNormalized(isnormal),
+      IsGroundLayer(ground),
+      IsTranslucent(istrans),
+      IsWhiteTrans(iswhitetrans),
+      IsFlameThrower(isflame),
+      IsScorcher(isscorcher),
+      IsCraterForming(iscrater),
+      IsSticky(issticky),
+      Type(anim),
+      Size(size),
+      Biggest(biggest),
+      Damage(damage),
+      Delay(static_cast<unsigned char>(delaytime)),
+      Start(start),
+      LoopStart(loopstart),
+      LoopEnd(loopend),
+      Stages(stages),
+      Loops(static_cast<unsigned char>(loops)),
+      Sound(sound),
+      ChainTo(chainto) {}
 
 /***********************************************************************************************
  * AnimTypeClass::One_Time -- Performs one time action for animation types. *

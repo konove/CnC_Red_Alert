@@ -337,7 +337,7 @@ class ObjectTypeClass : public AbstractTypeClass {
   *object is constructed. *	The "mutable" keyword allows easy modification
   *to this otherwise const object.
   */
-  const void* ImageData;
+  const void* ImageData{nullptr};
 
   /*
   **	This points to the radar imagery for this object.
@@ -482,7 +482,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	greatest reward will be selected. The values assigned are
   ** arbitrary.
   */
-  int Risk, Reward;
+  int Risk{0}, Reward;
 
   /*
   **	This value indicates the maximum speed that this object can achieve.
@@ -508,7 +508,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	This is the small icon image that is used to display the object in
   **	the sidebar for construction selection purposes.
   */
-  const void* CameoData;
+  const void* CameoData{nullptr};
 
   /*
   **	These are the weapons that this techno object is armed with.

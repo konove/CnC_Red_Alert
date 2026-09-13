@@ -46,9 +46,9 @@ class ThemeClass {
  private:
   static const char* Theme_File_Name(ThemeType theme);
 
-  int Current;        // Handle to current score.
-  ThemeType Score;    // Score number currently being played.
-  ThemeType Pending;  // Score to play next.
+  int Current{-1};                // Handle to current score.
+  ThemeType Score{THEME_NONE};    // Score number currently being played.
+  ThemeType Pending{THEME_NONE};  // Score to play next.
 
   typedef struct {
     const char* Name;  // Filename of score.

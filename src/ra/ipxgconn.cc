@@ -78,19 +78,17 @@
  *=========================================================================*/
 IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
                                        unsigned short product_id)
-    : IPXConnClass(
-          numsend, numreceive,
-          static_cast<int>(maxlen + sizeof(GlobalHeaderType) - sizeof(CommHeaderType)),
-          GLOBAL_MAGICNUM,          // magic number for this connection
-          nullptr,                  // IPX Address (none)
-          0,                        // Connection ID
-          "",                       // Connection Name
-          sizeof(IPXAddressClass))  // extra storage for the sender's address
+    : IPXConnClass(numsend, numreceive,
+                   static_cast<int>(maxlen + sizeof(GlobalHeaderType) -
+                                    sizeof(CommHeaderType)),
+                   GLOBAL_MAGICNUM,  // magic number for this connection
+                   nullptr,          // IPX Address (none)
+                   0,                // Connection ID
+                   "",               // Connection Name
+                   sizeof(IPXAddressClass)),
+      ProductID(product_id)  // extra storage for the sender's address
 {
   int i;
-
-  ProductID = product_id;
-  IsBridge = 0;
 
   for (i = 0; i < 4; i++) {
     LastPacketID[i] = 0xffffffff;

@@ -77,7 +77,7 @@ class QueueClass {
   *is zero, *	then the operator[], First(), and Next() functions are
   *undefined. Check this *	value BEFORE calling these functions.
   */
-  const int Count;
+  const int Count{0};
 
   //-------------- Functions --------------------
   QueueClass() noexcept;  // Default constructor.
@@ -140,7 +140,7 @@ class QueueClass {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 template <class T, int size>
-QueueClass<T, size>::QueueClass() noexcept : Count(0) {
+QueueClass<T, size>::QueueClass() noexcept {
   Init();
 }
 

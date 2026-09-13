@@ -59,12 +59,7 @@
 #include "td/display_constants.h"
 #include "td/inline.h"
 
-FuseClass::FuseClass() {
-  Timer = 0;
-  Arming = 0;
-  HeadTo = 0;
-  Proximity = 0;
-}
+FuseClass::FuseClass() = default;
 
 /***********************************************************************************************
  * FuseClass::Arm_Fuse -- Sets up fuse for detonation check. *

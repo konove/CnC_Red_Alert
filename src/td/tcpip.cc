@@ -101,13 +101,7 @@ TcpipManagerClass Winsock;  // The object for interfacing with Winsock
  *                                                                                             *
  * HISTORY: * 3/20/96 2:51PM ST : Created *
  *=============================================================================================*/
-TcpipManagerClass::TcpipManagerClass() {
-  WinsockInitialised = false;
-  Connected = false;
-  UseUDP = true;
-  SocketReceiveBuffer = 4096;
-  SocketSendBuffer = 4096;
-}
+TcpipManagerClass::TcpipManagerClass() = default;
 
 /***********************************************************************************************
  * TMC::~TcpipManagerClass -- destructor for the TcpipManagerClass *

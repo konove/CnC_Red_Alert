@@ -146,20 +146,14 @@ struct Fame {
 
 ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 
-ScoreAnimClass::ScoreAnimClass(int x, int y, const void* data) {
-  XPos = x * 2;
-  YPos = y * 2;
+ScoreAnimClass::ScoreAnimClass(int x, int y, const void* data)
+    : XPos(x * 2), YPos(y * 2), DataPtr(data) {
   AnimTimer.Set(0);
-  DataPtr = data;
 }
 
 ScoreTimeClass::ScoreTimeClass(int xpos, int ypos, const void* data, int maxval,
                                int xtimer)
-    : ScoreAnimClass(xpos, ypos, data) {
-  Stage = 0;
-  MaxStage = maxval;
-  TimerReset = xtimer;
-}
+    : ScoreAnimClass(xpos, ypos, data), MaxStage(maxval), TimerReset(xtimer) {}
 
 void ScoreTimeClass::Update() {
   GraphicViewPortClass* oldpage;
@@ -178,13 +172,11 @@ void ScoreTimeClass::Update() {
 
 ScoreCredsClass::ScoreCredsClass(int xpos, int ypos, const void* data,
                                  int maxval, int xtimer)
-    : ScoreAnimClass(xpos, ypos, data) {
-  Stage = 0;
-  MaxStage = maxval;
-  TimerReset = xtimer;
-  Clock1 = MFCD::Retrieve("CLOCK1.AUD");
-  CashTurn = MFCD::Retrieve("CASHTURN.AUD");
-}
+    : ScoreAnimClass(xpos, ypos, data),
+      MaxStage(maxval),
+      TimerReset(xtimer),
+      CashTurn(MFCD::Retrieve("CASHTURN.AUD")),
+      Clock1(MFCD::Retrieve("CLOCK1.AUD")) {}
 
 void ScoreCredsClass::Update() {
   GraphicViewPortClass* oldpage;
@@ -204,19 +196,17 @@ void ScoreCredsClass::Update() {
 
 ScorePrintClass::ScorePrintClass(int string, int xpos, int ypos,
                                  const void* palette, int background)
-    : ScoreAnimClass(xpos, ypos, Text_String(string)) {
-  Background = background;
-  PrimaryPalette = palette;
-  Stage = 0;
-}
+    : ScoreAnimClass(xpos, ypos, Text_String(string)),
+      Background(background),
+      Stage(0),
+      PrimaryPalette(palette) {}
 
 ScorePrintClass::ScorePrintClass(const void* string, int xpos, int ypos,
                                  const void* palette, int background)
-    : ScoreAnimClass(xpos, ypos, string) {
-  Background = background;
-  PrimaryPalette = palette;
-  Stage = 0;
-}
+    : ScoreAnimClass(xpos, ypos, string),
+      Background(background),
+      Stage(0),
+      PrimaryPalette(palette) {}
 
 void ScorePrintClass::Update() {
   static char localstr[2] = {0, 0};
@@ -258,10 +248,7 @@ void ScorePrintClass::Update() {
 
 ScoreScaleClass::ScoreScaleClass(const void* string, int xpos, int ypos,
                                  const unsigned char palette[])
-    : ScoreAnimClass(xpos, ypos, string) {
-  Palette = &palette[0];
-  Stage = 0;
-}
+    : ScoreAnimClass(xpos, ypos, string), Palette(&palette[0]) {}
 
 void ScoreScaleClass::Update() {
   static int _destx[] = {0, 80, 107, 134, 180, 228};

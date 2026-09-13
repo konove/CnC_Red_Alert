@@ -1235,9 +1235,7 @@ TemplateTypeClass::TemplateTypeClass(TemplateType iconset, int theater,
     : ObjectTypeClass(RTTI_TEMPLATETYPE, static_cast<int>(iconset), false, true,
                       false, false, true, true, false, fullname, ininame),
       Type(iconset),
-      Theater(static_cast<unsigned char>(theater)),
-      Width(0),
-      Height(0) {}
+      Theater(static_cast<unsigned char>(theater)) {}
 
 /***********************************************************************************************
  * TemplateTypeClass::operator new -- Allocates a template type from special

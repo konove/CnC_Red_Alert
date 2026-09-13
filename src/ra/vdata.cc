@@ -242,9 +242,8 @@ VesselTypeClass::VesselTypeClass(VesselType type, int name, const char* ininame,
       IsAftermath(is_aftermath),
       Type(type),
       TurretOffset(static_cast<signed char>(toffset)),
-      Mission(MISSION_GUARD),
-      Explosion(exp),
-      MaxSize(0) {
+
+      Explosion(exp) {
   /*
   **	Forced vessel overrides from the default.
   */

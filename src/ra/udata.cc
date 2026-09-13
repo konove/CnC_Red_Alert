@@ -862,13 +862,12 @@ UnitTypeClass::UnitTypeClass(
       IsAnimating(is_animating),
       IsJammer(is_jammer),
       IsGapper(is_gapper),
-      IsNoFireWhileMoving(false),
+
       IsAftermath(is_aftermath),
       Type(type),
       TurretOffset(static_cast<signed char>(toffset)),
       Mission(order),
-      Explosion(exp),
-      MaxSize(0) {
+      Explosion(exp) {
   /*
   **	Forced unit overrides form the default.
   */

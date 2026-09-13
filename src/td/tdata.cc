@@ -617,16 +617,15 @@ TerrainTypeClass::TerrainTypeClass(
     const short* overlap) noexcept
     : ObjectTypeClass(true, is_flammable, is_crushable, true, is_selectable,
                       is_legal_target, is_insignificant, is_immune, fullname,
-                      ininame, armor, strength) {
-  CenterBase = centerbase;
-  IsTiberiumSpawn = is_spawn;
-  IsDestroyable = is_destroyable;
-  IsTransformable = is_transformable;
-  Theater = static_cast<unsigned char>(theater);
-  Type = terrain;
-  Occupy = occupy;
-  Overlap = overlap;
-}
+                      ininame, armor, strength),
+      Type(terrain),
+      IsDestroyable(is_destroyable),
+      IsTransformable(is_transformable),
+      IsTiberiumSpawn(is_spawn),
+      CenterBase(centerbase),
+      Theater(static_cast<unsigned char>(theater)),
+      Occupy(occupy),
+      Overlap(overlap) {}
 
 /***********************************************************************************************
  * TerrainTypeClass::Init -- Loads terrain object shape files. *

@@ -105,6 +105,9 @@
 ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
                      const void* up, const void* down)
     : ControlClass(id, x, y, w, h, LEFTPRESS | LEFTRELEASE | KEYBOARD, false),
+      TextFlags(flags),
+      LineHeight(FontHeight + FontYSpacing - 1),
+      LineCount((h - 1) / LineHeight),
       UpGadget(0, up, x + w, y),
       DownGadget(0, down, x + w, y + h),
       ScrollGadget(0, x + w, y, 0, h, true) {
@@ -124,14 +127,8 @@ ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
   /*
   **	Set the list box to a default state.
   */
-  TextFlags = flags;
-  IsScrollActive = false;
-  Tabs = nullptr;
-  SelectedIndex = 0;
-  CurrentTopIndex = 0;
+
   Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TextFlags);
-  LineHeight = FontHeight + FontYSpacing - 1;
-  LineCount = (h - 1) / LineHeight;
 }
 
 /***********************************************************************************************

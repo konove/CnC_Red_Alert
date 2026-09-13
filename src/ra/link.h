@@ -48,7 +48,7 @@
 */
 class LinkClass {
  public:
-  LinkClass() noexcept : Next(nullptr), Prev(nullptr) {}
+  LinkClass() noexcept = default;
   virtual ~LinkClass();
   LinkClass(LinkClass&&) = delete;
   LinkClass& operator=(LinkClass&&) = delete;
@@ -73,8 +73,8 @@ class LinkClass {
   /*
   **	Pointers to previous and next link objects in chain.
   */
-  LinkClass* Next;
-  LinkClass* Prev;
+  LinkClass* Next{nullptr};
+  LinkClass* Prev{nullptr};
 };
 
 #endif  // CNC_RED_ALERT_RA_LINK_H_

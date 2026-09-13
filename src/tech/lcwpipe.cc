@@ -65,8 +65,9 @@
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
 LCWPipe::LCWPipe(CompControl control, int blocksize)
-    : Control(control), BlockSize(blocksize) {
-  SafetyMargin = (BlockSize / 128) + 1;
+    : Control(control),
+      BlockSize(blocksize),
+      SafetyMargin((BlockSize / 128) + 1) {
   Buffer = new char[BlockSize + SafetyMargin];
   Buffer2 = new char[BlockSize + SafetyMargin];
 }

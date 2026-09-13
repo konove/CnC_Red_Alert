@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_HELP_H_
 #define CNC_RED_ALERT_RA_HELP_H_
 
+#include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/face.h"
 #include "ra/jshell.h"
@@ -81,47 +82,47 @@ class HelpClass : public TabClass {
   **	If the help text is right justified (as with the help text that pops up
   *over the *	sidebar icons), then this flag is set to true.
   */
-  unsigned IsRight : 1;
+  unsigned IsRight : 1 {false};
 
   /*
   **	If the optional second line of text that displays cost is desired, then
   *this *	value will be non-zero. Typically, this is true when the help
   *text is associated *	with one of the sidebar construction icons.
   */
-  int Cost;
+  int Cost{0};
 
   /*
   **	This is the recorded position of the cursor at the time the help text
   **	pops up. The help text is rendered as an offset from this pixel
   *position.
   */
-  int X;
-  int Y;
+  int X{0};
+  int Y{0};
 
   /*
   **	This is the draw X and Y coordinate. This position is relative to the X
   *and *	Y coordinates but adjusted for screen edges as necessary.
   */
-  int DrawX;
-  int DrawY;
+  int DrawX{0};
+  int DrawY{0};
 
   /*
   **	The width of the help text (in pixels) is stored here. This is a
   *convenience *	since calculating the width takes a bit of time.
   */
-  int Width;
+  int Width{0};
 
   /*
   **	The text number of the help text to display is held here. If no text is
   *to be *	displayed, then this value will be TXT_NONE.
   */
-  int Text;
+  int Text{TXT_NONE};
 
   /*
   **	This is the background color to use for the help text. It can change
   *according *	to the message displayed.
   */
-  int Color;
+  int Color{LTGREY};
 
   /*
   **	This countdown timer controls when the help text will pop up. If the

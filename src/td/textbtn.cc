@@ -82,10 +82,10 @@
 TextButtonClass::TextButtonClass(unsigned id, const char* text,
                                  TextPrintType style, int x, int y, int w,
                                  int h, int blackborder)
-    : ToggleClass(id, x, y, w, h), String(text) {
-  PrintFlags = style;
-  IsBlackBorder = blackborder;
-
+    : ToggleClass(id, x, y, w, h),
+      IsBlackBorder(blackborder),
+      String(text),
+      PrintFlags(style) {
   if (w == -1 || h == -1) {
     Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, PrintFlags);
     if (w == -1) {
@@ -110,12 +110,13 @@ TextButtonClass::TextButtonClass(unsigned id, const char* text,
  *                                                                                             *
  * HISTORY:  01/15/1995 JLB : Created. *
  *=============================================================================================*/
-TextButtonClass::TextButtonClass() : ToggleClass(0, 0, 0, 0, 0) {
+TextButtonClass::TextButtonClass()
+    : ToggleClass(0, 0, 0, 0, 0),
+      IsBlackBorder(0),
+      String(nullptr),
+      PrintFlags(TPF_8POINT) {
   X = Y = 0;
   Width = Height = 0;
-  IsBlackBorder = 0;
-  String = nullptr;
-  PrintFlags = TPF_8POINT;
 }
 
 /***********************************************************************************************
@@ -150,9 +151,10 @@ TextButtonClass::TextButtonClass() : ToggleClass(0, 0, 0, 0, 0) {
  *=============================================================================================*/
 TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
                                  int x, int y, int w, int h, int blackborder)
-    : ToggleClass(id, x, y, w, h), String(nullptr) {
-  PrintFlags = style;
-  IsBlackBorder = blackborder;
+    : ToggleClass(id, x, y, w, h),
+      IsBlackBorder(blackborder),
+      String(nullptr),
+      PrintFlags(style) {
   Set_Text(text);
 
   if (w == -1 || h == -1) {

@@ -47,10 +47,9 @@ IconListClass* AsIconList(GadgetClass* gadget) {
 ToolTipClass::ToolTipClass(GadgetClass* gadget, const char* szText, int x_show,
                            int y_show, bool right_align /* = false */,
                            bool icon_list /*= false */)
-    : next(nullptr),
-      pGadget(gadget),
+    : pGadget(gadget),
       bRightAlign(right_align),
-      bShowing(false),
+
       bIconList(icon_list),
       xShow(x_show),
       yShow(y_show)

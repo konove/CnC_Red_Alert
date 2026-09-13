@@ -62,29 +62,29 @@ class GaugeClass : public ControlClass {
   **	If this gauge has a color to the left of the current setting, then this
   **	flag will be true.
   */
-  unsigned IsColorized : 1;
+  unsigned IsColorized : 1 {true};
 
  protected:
   /*
   **	If a thumb is desired, set to true.
   */
-  unsigned HasThumb : 1;
+  unsigned HasThumb : 1 {true};
 
   /*
   **	Is this a horizontal slider?
   */
   unsigned IsHorizontal : 1;
 
-  int MaxValue;  // maximum value (in application units)
-  int CurValue;  // index of 1st displayed string in box
-                 //  (in application units)
+  int MaxValue{255};  // maximum value (in application units)
+  int CurValue{0};    // index of 1st displayed string in box
+                      //  (in application units)
 
   /*
   ** This value records the difference between where the user clicked
   ** and the edge of the thumb, so that the thumb follows the mouse
   ** with the proper offset.
   */
-  int ClickDiff;
+  int ClickDiff{0};
 
   virtual void Draw_Thumb();
   int Action(unsigned flags, KeyNumType& key) override;
@@ -102,8 +102,8 @@ class TriColorGaugeClass : public GaugeClass {
   virtual int Set_Yellow_Limit(int value);
 
  protected:
-  int RedLimit;     // maximum value for red
-  int YellowLimit;  // maximum value for yellow
+  int RedLimit{0};     // maximum value for red
+  int YellowLimit{0};  // maximum value for yellow
 };
 
 #endif  // CNC_RED_ALERT_TD_GAUGE_H_

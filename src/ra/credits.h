@@ -46,7 +46,7 @@
 */
 class CreditClass {
  public:
-  long Credits;  // Value of credits trying to update display to.
+  long Credits{0};  // Value of credits trying to update display to.
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
@@ -61,14 +61,14 @@ class CreditClass {
   void Graphic_Logic(bool forced = false);
   void AI(bool forced = false);
 
-  long Current;  // Credit value currently displayed.
+  long Current{0};  // Credit value currently displayed.
 
-  unsigned IsToRedraw : 1;
-  unsigned IsUp : 1;
-  unsigned IsAudible : 1;
+  unsigned IsToRedraw : 1 {false};
+  unsigned IsUp : 1 {false};
+  unsigned IsAudible : 1 {false};
 
  private:
-  int Countdown;  // Delay between ticks.
+  int Countdown{0};  // Delay between ticks.
 };
 
 #endif  // CNC_RED_ALERT_RA_CREDITS_H_

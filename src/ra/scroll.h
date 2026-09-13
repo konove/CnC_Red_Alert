@@ -51,7 +51,7 @@ class ScrollClass : public HelpClass {
   *scrolling will *	cause the map to scroll if the mouse is in the scroll
   *region, regardless of *	whether or not the mouse button is held down.
   */
-  unsigned IsAutoScroll : 1;
+  unsigned IsAutoScroll : 1 {true};
 
   /*
   **	Scroll speed is regulated by this count down timer. When this value
@@ -63,7 +63,7 @@ class ScrollClass : public HelpClass {
   /*
   ** Inertia control for scrolling
   */
-  int Inertia;
+  int Inertia{0};
 
  public:
   // Resets transient UI state after loading, preserving saved game state.

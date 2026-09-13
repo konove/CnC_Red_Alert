@@ -128,7 +128,7 @@ class InfantryClass final : public FootClass {
   **	The fear rating of this infantry unit. The more afraid the infantry, the
   *more *	likely it is to panic and seek cover.
   */
-  unsigned char Fear = 0;
+  unsigned char Fear = 0;  // Starts completely brave.
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.

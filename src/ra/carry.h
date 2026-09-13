@@ -59,7 +59,7 @@ class CarryoverClass {
   /*
   **	What type of object this is.
   */
-  RTTIType RTTI;
+  RTTIType RTTI{RTTI_NONE};
 
   /*
   **	This is the object type that is to be carried over. The exact nature of
@@ -76,17 +76,17 @@ class CarryoverClass {
   /*
   **	The location of the object.
   */
-  CELL Cell;
+  CELL Cell{0};
 
   /*
   **	The strength of the object at the time is was recorded.
   */
-  int Strength;
+  int Strength{0};
 
   /*
   **	This is the owner of the object.
   */
-  HousesType House;
+  HousesType House{HOUSE_NONE};
 };
 
 class ArchiveReader;

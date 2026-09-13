@@ -165,7 +165,7 @@ class MissionControlClass {
   /*
   **	This is the mission identifier that this mission represents.
   */
-  MissionType Mission;
+  MissionType Mission{MISSION_NONE};
 
   [[nodiscard]] const char* Name() const;
 
@@ -173,36 +173,36 @@ class MissionControlClass {
   **	If the object should not be considered a threat when it
   **	comes to target scanning, then this will be true.
   */
-  unsigned IsNoThreat : 1;
+  unsigned IsNoThreat : 1 {false};
 
   /*
   **	If objects in this mission should avoid targeting the enemy and
   **	also avoid responding to the enemy, then this will be true.
   */
-  unsigned IsZombie : 1;
+  unsigned IsZombie : 1 {false};
 
   /*
   **	An ojbect that can be recruited into a team must be on a mission
   **	of this type.
   */
-  unsigned IsRecruitable : 1;
+  unsigned IsRecruitable : 1 {true};
 
   /*
   **	If the object can behave normally except that it cannot
   **	move to another location, then this flag will be true.
   */
-  unsigned IsParalyzed : 1;
+  unsigned IsParalyzed : 1 {false};
 
   /*
   **	If an object on this mission is damaged, it is allowed to
   **	retaliate?
   */
-  unsigned IsRetaliate : 1;
+  unsigned IsRetaliate : 1 {true};
 
   /*
   **	Is the object allowed to scatter from immediate threats?
   */
-  unsigned IsScatter : 1;
+  unsigned IsScatter : 1 {true};
 
   /*
   **	This specifies the time to delay between calls to the mission handler

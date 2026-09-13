@@ -111,7 +111,7 @@ class FixedHeapClass {
   **	If the memory block buffer was allocated by this class, then this flag
   **	will be true. The block must be deallocated by this class if true.
   */
-  unsigned IsAllocated : 1;
+  unsigned IsAllocated : 1 {false};
 
   /*
   **	This is the size of each sub-block within the buffer.
@@ -121,18 +121,18 @@ class FixedHeapClass {
   /*
   **	This records the absolute number of sub-blocks in the buffer.
   */
-  int TotalCount;
+  int TotalCount{0};
 
   /*
   **	This is the total blocks allocated out of the heap. This number
   **	will never exceed Count.
   */
-  int ActiveCount;
+  int ActiveCount{0};
 
   /*
   **	Pointer to the heap's memory buffer.
   */
-  void* Buffer;
+  void* Buffer{nullptr};
 
   /*
   **	This is a boolean vector array of allocation flag bits.

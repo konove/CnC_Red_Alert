@@ -116,7 +116,7 @@ class MouseClass : public ScrollClass {
   **	If the small representation of the mouse is active, then this flag is
   *true.
   */
-  unsigned IsSmall : 1;
+  unsigned IsSmall : 1 {false};
 
  private:
   /*
@@ -125,14 +125,14 @@ class MouseClass : public ScrollClass {
   *performed) and *	the normal default mouse shape (when arrow shapes are
   *needed).
   */
-  MouseType CurrentMouseShape;
-  MouseType NormalMouseShape;
+  MouseType CurrentMouseShape{MOUSE_NORMAL};
+  MouseType NormalMouseShape{MOUSE_NORMAL};
 
   /*
   **	For animating mouse shapes, this controls the frame and animation rate.
   */
   static Timer<SystemTickSource> AnimTimer;
-  int Frame;
+  int Frame{0};
 };
 
 class ArchiveReader;

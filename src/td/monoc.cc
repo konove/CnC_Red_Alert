@@ -105,7 +105,6 @@ const MonoClass::BoxDataType MonoClass::CharData[COUNT] = {
 MonoClass::MonoClass() {
   int index;
 
-  Attrib = DEFAULT_ATTRIBUTE;  // Normal text color.
   X = Y = 0;
   for (index = 0; index < MAX_MONO_PAGES; index++) {
     if (!PageUsage[index]) {

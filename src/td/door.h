@@ -54,7 +54,7 @@ class DoorClass {
   **	This is the recorded number of stages of the current
   **	door animation process.
   */
-  unsigned char Stages;
+  unsigned char Stages{0};
 
   /*
   **	This is the door state.
@@ -64,13 +64,13 @@ class DoorClass {
     IS_OPENING,  // Door is in the process of opening.
     IS_OPEN,     // Door is fully open.
     IS_CLOSING   //	Door is in the process of closing.
-  } State;
+  } State{IS_CLOSED};
 
   /*
   **	If the animation for this door indicates that the object it is
   **	attached to should be redrawn, then this flag will be true.
   */
-  unsigned IsToRedraw : 1;
+  unsigned IsToRedraw : 1 {false};
 
  public:
   // Saves the animation phase, door state, and pending redraw flag.

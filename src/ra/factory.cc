@@ -86,7 +86,7 @@
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-FactoryClass::FactoryClass() : RTTI(RTTI_FACTORY), ID(Factories.ID(this)) {}
+FactoryClass::FactoryClass() : ID(Factories.ID(this)) {}
 
 /***********************************************************************************************
  * FactoryClass::~FactoryClass -- Default destructor for factory objects. *

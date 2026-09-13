@@ -38,14 +38,14 @@
 EditClass::EditClass(const int id, char* text, const int max_len,
                      const TextPrintType flags, const int x, const int y,
                      const int w, const int h, const EditStyle style)
-    : ControlClass(id, x, y, w, h, LEFTPRESS), String(text) {
-  TextFlags = flags & ~TPF_CENTER;
-  EditFlags = style;
-  String = text;
-  MaxLength = max_len - 1;
-  Length = static_cast<int>(strlen(String));
+    : ControlClass(id, x, y, w, h, LEFTPRESS),
+      TextFlags(flags & ~TPF_CENTER),
+      EditFlags(style),
+      String(text),
+      MaxLength(max_len - 1),
+      Length(static_cast<int>(strlen(String))),
+      Color(Get_Color_Scheme()) {
   GadgetClass::Flag_To_Redraw();
-  Color = Get_Color_Scheme();
 
   if (w == -1 || h == -1) {
     Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TextFlags);

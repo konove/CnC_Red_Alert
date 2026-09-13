@@ -102,7 +102,7 @@ void PacketClass::Add_Field(FieldClass* field) {
  * HISTORY:                                                               *
  *   04/22/1996 PWG : Created.                                            *
  *========================================================================*/
-PacketClass::PacketClass(char* curbuf) {
+PacketClass::PacketClass(char* curbuf) : Head(nullptr) {
   int remaining_size;
   //
   // Pull the size and packet ID out of the linear packet stream.
@@ -113,7 +113,6 @@ PacketClass::PacketClass(char* curbuf) {
   std::memcpy(&ID, curbuf, sizeof(ID));
   curbuf += sizeof(ID);
   ID = ntohs(ID);
-  Head = nullptr;
 
   //
   // Calculate the remaining size so that we can loop through the

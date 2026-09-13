@@ -77,25 +77,24 @@
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
 CommBufferClass::CommBufferClass(int numsend, int numreceive, int maxlen,
-                                 int extralen) {
+                                 int extralen)
+    : MaxSend(numsend),
+      MaxReceive(numreceive),
+      MaxPacketSize(maxlen),
+      MaxExtraSize(extralen),
+      SendQueue(new SendQueueType[numsend]),
+      SendIndex(new int[numsend]),
+      ReceiveQueue(new ReceiveQueueType[numreceive]),
+      ReceiveIndex(new int[numreceive]) {
   int i;
 
   //------------------------------------------------------------------------
   //	Init variables
   //------------------------------------------------------------------------
-  MaxSend = numsend;
-  MaxReceive = numreceive;
-  MaxPacketSize = maxlen;
-  MaxExtraSize = extralen;
 
   //------------------------------------------------------------------------
   //	Allocate the queue entries
   //------------------------------------------------------------------------
-  SendQueue = new SendQueueType[numsend];
-  ReceiveQueue = new ReceiveQueueType[numreceive];
-
-  SendIndex = new int[numsend];
-  ReceiveIndex = new int[numreceive];
 
   //------------------------------------------------------------------------
   //	Allocate queue entry buffers

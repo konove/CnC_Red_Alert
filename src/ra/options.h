@@ -84,9 +84,9 @@ class OptionsClass {
   **	This is actually the delay between game frames expressed as 1/60 of
   **	a second. The default value is 4 (1/15 second).
   */
-  unsigned int GameSpeed;
+  unsigned int GameSpeed{3};
 
-  int ScrollRate;                // Distance to scroll.
+  int ScrollRate{3};             // Distance to scroll.
   fixed Volume;                  // Volume for sound effects.
   fixed ScoreVolume;             // Volume for scores.
   fixed MultiScoreVolume;        // Volume for scores during multiplayer games.
@@ -94,63 +94,63 @@ class OptionsClass {
   fixed Tint;                    // Hue
   fixed Saturation;              // Saturation
   fixed Contrast;                // Value
-  unsigned AutoScroll : 1;       // Does map autoscroll?
-  unsigned IsScoreRepeat : 1;    // Score should repeat?
-  unsigned IsScoreShuffle : 1;   // Score list should shuffle?
-  unsigned IsPaletteScroll : 1;  // Allow palette scrolling?
+  unsigned AutoScroll : 1 {true};       // Does map autoscroll?
+  unsigned IsScoreRepeat : 1 {false};   // Score should repeat?
+  unsigned IsScoreShuffle : 1 {false};  // Score list should shuffle?
+  unsigned IsPaletteScroll : 1 {true};  // Allow palette scrolling?
 
   /*
   **	These are the hotkeys used for keyboard control.
   */
-  KeyNumType KeyForceMove1;
-  KeyNumType KeyForceMove2;
-  KeyNumType KeyForceAttack1;
-  KeyNumType KeyForceAttack2;
-  KeyNumType KeySelect1;
-  KeyNumType KeySelect2;
-  KeyNumType KeyScatter;
-  KeyNumType KeyStop;
-  KeyNumType KeyGuard;
-  KeyNumType KeyNext;
-  KeyNumType KeyPrevious;
-  KeyNumType KeyFormation;
-  KeyNumType KeyHome1;
-  KeyNumType KeyHome2;
-  KeyNumType KeyBase;
-  KeyNumType KeyResign;
-  KeyNumType KeyAlliance;
-  KeyNumType KeyBookmark1;
-  KeyNumType KeyBookmark2;
-  KeyNumType KeyBookmark3;
-  KeyNumType KeyBookmark4;
-  KeyNumType KeySelectView;
-  KeyNumType KeyRepair;
-  KeyNumType KeyRepairOn;
-  KeyNumType KeyRepairOff;
-  KeyNumType KeySell;
-  KeyNumType KeySellOn;
-  KeyNumType KeySellOff;
-  KeyNumType KeyMap;
-  KeyNumType KeySidebarUp;
-  KeyNumType KeySidebarDown;
-  KeyNumType KeyOption1;
-  KeyNumType KeyOption2;
-  KeyNumType KeyScrollLeft;
-  KeyNumType KeyScrollRight;
-  KeyNumType KeyScrollUp;
-  KeyNumType KeyScrollDown;
-  KeyNumType KeyQueueMove1;
-  KeyNumType KeyQueueMove2;
-  KeyNumType KeyTeam1;
-  KeyNumType KeyTeam2;
-  KeyNumType KeyTeam3;
-  KeyNumType KeyTeam4;
-  KeyNumType KeyTeam5;
-  KeyNumType KeyTeam6;
-  KeyNumType KeyTeam7;
-  KeyNumType KeyTeam8;
-  KeyNumType KeyTeam9;
-  KeyNumType KeyTeam10;
+  KeyNumType KeyForceMove1{KN_LALT};
+  KeyNumType KeyForceMove2{KN_RALT};
+  KeyNumType KeyForceAttack1{KN_LCTRL};
+  KeyNumType KeyForceAttack2{KN_RCTRL};
+  KeyNumType KeySelect1{KN_LSHIFT};
+  KeyNumType KeySelect2{KN_RSHIFT};
+  KeyNumType KeyScatter{KN_X};
+  KeyNumType KeyStop{KN_S};
+  KeyNumType KeyGuard{KN_G};
+  KeyNumType KeyNext{KN_N};
+  KeyNumType KeyPrevious{KN_B};
+  KeyNumType KeyFormation{KN_F};
+  KeyNumType KeyHome1{KN_HOME};
+  KeyNumType KeyHome2{KN_E_HOME};
+  KeyNumType KeyBase{KN_H};
+  KeyNumType KeyResign{KN_R};
+  KeyNumType KeyAlliance{KN_A};
+  KeyNumType KeyBookmark1{KN_F9};
+  KeyNumType KeyBookmark2{KN_F10};
+  KeyNumType KeyBookmark3{KN_F11};
+  KeyNumType KeyBookmark4{KN_F12};
+  KeyNumType KeySelectView{KN_E};
+  KeyNumType KeyRepair{KN_T};
+  KeyNumType KeyRepairOn{KN_NONE};
+  KeyNumType KeyRepairOff{KN_NONE};
+  KeyNumType KeySell{KN_Y};
+  KeyNumType KeySellOn{KN_NONE};
+  KeyNumType KeySellOff{KN_NONE};
+  KeyNumType KeyMap{KN_U};
+  KeyNumType KeySidebarUp{KN_UP};
+  KeyNumType KeySidebarDown{KN_DOWN};
+  KeyNumType KeyOption1{KN_ESC};
+  KeyNumType KeyOption2{KN_SPACE};
+  KeyNumType KeyScrollLeft{KN_NONE};
+  KeyNumType KeyScrollRight{KN_NONE};
+  KeyNumType KeyScrollUp{KN_NONE};
+  KeyNumType KeyScrollDown{KN_NONE};
+  KeyNumType KeyQueueMove1{KN_Q};
+  KeyNumType KeyQueueMove2{KN_Q};
+  KeyNumType KeyTeam1{KN_1};
+  KeyNumType KeyTeam2{KN_2};
+  KeyNumType KeyTeam3{KN_3};
+  KeyNumType KeyTeam4{KN_4};
+  KeyNumType KeyTeam5{KN_5};
+  KeyNumType KeyTeam6{KN_6};
+  KeyNumType KeyTeam7{KN_7};
+  KeyNumType KeyTeam8{KN_8};
+  KeyNumType KeyTeam9{KN_9};
+  KeyNumType KeyTeam10{KN_0};
 
   void Adjust_Palette(const PaletteClass& oldpal, PaletteClass& newpal,
                       fixed brightness, fixed color, fixed tint,

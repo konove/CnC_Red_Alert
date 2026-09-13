@@ -92,13 +92,13 @@ class WeaponTypeClass {
   **	nearby friendly structures and if found, firing upon the target
   **	would be discouraged, then this flag will be true.
   */
-  unsigned IsSupressed : 1;
+  unsigned IsSupressed : 1 {false};
 
   /*
   **	If this weapon is equipped with a camera that reveals the
   **	area around the firer, then this flag will be true.
   */
-  unsigned IsCamera : 1;
+  unsigned IsCamera : 1 {false};
 
   /*
   **	If this weapon requires charging before it can fire, then this
@@ -106,7 +106,7 @@ class WeaponTypeClass {
   **	which has specific charging animation. The normal rate of fire
   **	value suffices for all other cases.
   */
-  unsigned IsElectric : 1;
+  unsigned IsElectric : 1 {false};
 
   /*
   **	This is the number of shots this weapon first (in rapid succession).
@@ -114,7 +114,7 @@ class WeaponTypeClass {
   **	the double barreled gun turrets of the Mammoth tank, this value will be
   **	set to 2.
   */
-  int Burst;
+  int Burst{1};
 
   /*
   **	This is the unit class of the projectile fired. A subset of the unit
@@ -122,24 +122,24 @@ class WeaponTypeClass {
   *specified here. *	If this object does not fire anything, then this value
   *will be BULLET_NONE.
   */
-  const BulletTypeClass* Bullet;
+  const BulletTypeClass* Bullet{nullptr};
 
   /*
   **	This is the damage (explosive load) to be assigned to the projectile
   *that *	this object fires. For the rare healing weapon, this value is
   *negative.
   */
-  int Attack;
+  int Attack{0};
 
   /*
   **	Speed of the projectile launched.
   */
-  MPHType MaxSpeed;
+  MPHType MaxSpeed{MPH_IMMOBILE};
 
   /*
   **	Warhead to attach to the projectile.
   */
-  const WarheadTypeClass* WarheadPtr;
+  const WarheadTypeClass* WarheadPtr{nullptr};
 
   /*
   **	Objects that fire (which can be buildings as well) will fire at a
@@ -147,7 +147,7 @@ class WeaponTypeClass {
   **	down timer between shots. The smaller the value, the faster the
   **	rate of fire.
   */
-  int ROF;
+  int ROF{0};
 
   /*
   **	When this object fires, the range at which it's projectiles travel is
@@ -155,17 +155,17 @@ class WeaponTypeClass {
   **	projectile will travel. Objects outside of this range will not be fired
   **	upon (in normal circumstances).
   */
-  LEPTON Range;
+  LEPTON Range{0};
 
   /*
   **	This is the typical sound generated when firing.
   */
-  VocType Sound;
+  VocType Sound{VOC_NONE};
 
   /*
   **	This is the animation to display at the firing coordinate.
   */
-  AnimType Anim;
+  AnimType Anim{ANIM_NONE};
 };
 
 WeaponType Weapon_From_Name(const char* name);

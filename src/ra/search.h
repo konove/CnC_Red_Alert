@@ -136,20 +136,20 @@ class IndexClass {
   /*
   **	This records the number of valid nodes within the index table.
   */
-  int IndexCount;
+  int IndexCount{0};
 
   /*
   **	The total size (in nodes) of the index table is recorded here. If adding
   *a node *	would cause the index count to exceed this value, the index
   *table must be resized *	to make room.
   */
-  int IndexSize;
+  int IndexSize{0};
 
   /*
   **	If the index table is sorted and ready for searching, this flag will be
   *true. Sorting *	of the table only occurs when absolutely necessary.
   */
-  bool IsSorted;
+  bool IsSorted{false};
 
   /*
   **	This records a pointer to the last element found by the Is_Present()
@@ -208,9 +208,7 @@ class IndexClass {
 template <class T>
 IndexClass<T>::IndexClass()
     : IndexTable(nullptr),
-      IndexCount(0),
-      IndexSize(0),
-      IsSorted(false),
+
       Archive(nullptr) {
   Invalidate_Archive();
 }

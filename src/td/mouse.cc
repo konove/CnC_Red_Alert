@@ -259,11 +259,7 @@ void MouseClass::AI(KeyNumType& input, int x, int y) {
  *                                                                                             *
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
-MouseClass::MouseClass() {
-  CurrentMouseShape = MOUSE_NORMAL;
-  NormalMouseShape = MOUSE_NORMAL;
-  Timer.Start();
-}
+MouseClass::MouseClass() { Timer.Start(); }
 
 /***********************************************************************************************
  * MouseClass::One_Time -- Performs the one time initialization of the mouse

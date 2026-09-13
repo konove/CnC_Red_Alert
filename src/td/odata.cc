@@ -636,19 +636,18 @@ OverlayTypeClass::OverlayTypeClass(OverlayType iconset, const char* ininame,
                                    bool istiberium, bool high, bool theater,
                                    bool walltype, bool iscrate) noexcept
     : ObjectTypeClass(false, false, iscrushable, true, false, istarget, true,
-                      false, fullname, ininame, ARMOR_NONE, 0) {
-  IsRadarVisible = isradarvisible;
-  IsCrate = iscrate;
-  IsWooden = iswooden;
-  IsHigh = high;
-  IsTheater = theater;
-  IsTiberium = istiberium;
-  Type = iconset;
-  Land = ground;
-  IsWall = walltype;
-  DamageLevels = damagelevels;
-  DamagePoints = damagepoints;
-}
+                      false, fullname, ininame, ARMOR_NONE, 0),
+      Type(iconset),
+      Land(ground),
+      DamageLevels(damagelevels),
+      DamagePoints(damagepoints),
+      IsTheater(theater),
+      IsWall(walltype),
+      IsHigh(high),
+      IsTiberium(istiberium),
+      IsWooden(iswooden),
+      IsCrate(iscrate),
+      IsRadarVisible(isradarvisible) {}
 
 /***********************************************************************************************
  * OverlayTypeClass::One_Time -- Loads all the necessary general overlay shape

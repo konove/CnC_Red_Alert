@@ -102,7 +102,7 @@ class CheckListClass : public ListClass {
   void Draw_Entry(int index, int x, int y, int width, int selected) override;
 
  private:
-  bool IsReadOnly;
+  bool IsReadOnly{false};
 };
 
 #endif  // CNC_RED_ALERT_RA_CHEKLIST_H_

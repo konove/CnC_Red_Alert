@@ -68,51 +68,51 @@ class CellClass {
   *this flag will be set. It gets cleared *	when the cell graphic is updated
   *to the radar map.
   */
-  unsigned IsPlot : 1;
+  unsigned IsPlot : 1 {false};
 
   /*
   **	Does this cell contain the special placement cursor graphic?  This
   *graphic is *	present when selecting a site for building placement.
   */
-  unsigned IsCursorHere : 1;
+  unsigned IsCursorHere : 1 {false};
 
   /*
   **	A mapped cell has some portion of it visible. Maybe it has a shroud
   *piece *	over it and maybe not.
   */
-  unsigned IsMapped : 1;
+  unsigned IsMapped : 1 {false};
 
   /*
   **	A visible cell means that it is completely visible with no shroud over
   **	it at all.
   */
-  unsigned IsVisible : 1;
+  unsigned IsVisible : 1 {false};
 
   /*
   ** Every cell can be assigned a waypoint.  A waypoint can only be assigned
   ** to one cell, and vice-versa.  This bit simply indicates whether this
   ** cell is assigned a waypoint or not.
   */
-  unsigned IsWaypoint : 1;
+  unsigned IsWaypoint : 1 {false};
 
   /*
   ** Is this cell currently under the radar map cursor?  If so then it
   **   needs to be updated whenever the map is updated.
   */
-  unsigned IsRadarCursor : 1;
+  unsigned IsRadarCursor : 1 {false};
 
   /*
   **	If this cell contains a house flag, then this will be true. The actual
   *house *	flag it contains is specified by the Owner field.
   */
-  unsigned IsFlagged : 1;
+  unsigned IsFlagged : 1 {false};
 
   /*
   **	This is a working flag used to help keep track of what cells should be
   **	shrouded. By using this flag it allows a single pass through the map
   **	cells for determining shadow regrowth logic.
   */
-  unsigned IsToShroud : 1;
+  unsigned IsToShroud : 1 {false};
 
   /*
   **	This records the movement zone for this map. Movement zones share the
@@ -128,7 +128,7 @@ class CellClass {
   ** This field controls whether an area is being jammed by a gap
   ** generator.
   */
-  unsigned short Jammed;
+  unsigned short Jammed{0};
 
   /*
   **	This is the trigger ID for any trigger that might be attached to
@@ -141,23 +141,23 @@ class CellClass {
   **	of the terrain. All rendering on an icon occurs AFTER the icon
   **	specified by this element is rendered. It is the lowest of the low.
   */
-  TemplateType TType;
-  unsigned char TIcon;
+  TemplateType TType{TEMPLATE_NONE};
+  unsigned char TIcon{0};
 
   /*
   **	The second layer of 'terrain' icons is represented by a simple
   **	type number and a value byte. This is sufficient for handling
   **	concrete and walls.
   */
-  OverlayType Overlay;
-  unsigned char OverlayData;
+  OverlayType Overlay{OVERLAY_NONE};
+  unsigned char OverlayData{0};
 
   /*
   **	This is used to specify any special 'stain' overlay icon. This
   **	typically includes infantry bodies or other temporary marks.
   */
-  SmudgeType Smudge;
-  unsigned char SmudgeData;
+  SmudgeType Smudge{SMUDGE_NONE};
+  unsigned char SmudgeData{0};
 
   /*
   **	Smudges and walls need to record ownership values. For walls, this
@@ -165,20 +165,20 @@ class CellClass {
   **	allows building over smudges that are no longer attached to buildings
   **	in addition to fixing the adjacent placement logic.
   */
-  HousesType Owner;
+  HousesType Owner{HOUSE_NONE};
 
   /*
   ** This flag tells you what type of infantry currently occupy the
   ** cell or are moving into it.
   */
-  HousesType InfType;
+  HousesType InfType{HOUSE_NONE};
 
   /*
   **	These point to the object(s) that are located in this cell or overlap
   **	this cell.
   */
  private:
-  ObjectClass* OccupierPtr;
+  ObjectClass* OccupierPtr{nullptr};
 
  public:
   // The cell-sorted renderer tracks more overlapping objects per cell. This
@@ -309,7 +309,7 @@ class CellClass {
   int operator!=(const CellClass&) const { return 0; }
 
  private:
-  LandType Land;  // The land type of this cell.
+  LandType Land{LAND_CLEAR};  // The land type of this cell.
 };
 
 class ArchiveReader;

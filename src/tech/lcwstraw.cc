@@ -67,8 +67,9 @@
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
 LCWStraw::LCWStraw(CompControl control, int blocksize)
-    : Control(control), BlockSize(blocksize) {
-  SafetyMargin = (BlockSize / 128) + 1;
+    : Control(control),
+      BlockSize(blocksize),
+      SafetyMargin((BlockSize / 128) + 1) {
   Buffer = new char[BlockSize + SafetyMargin];
   if (control == COMPRESS) {
     Buffer2 = new char[BlockSize + SafetyMargin];

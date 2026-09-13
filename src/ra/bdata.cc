@@ -2846,29 +2846,25 @@ BuildingTypeClass::BuildingTypeClass(
                       is_selectable, is_legal_target, is_insignificant, false,
                       is_theater, is_turret_equipped, is_remappable, true,
                       is_turret_equipped ? 32 : 1, SPEED_NONE),
-      IsBase(true),
+
       IsFake(is_fake),
-      IsBibbed(false),
+
       IsWall(is_wall),
       IsSimpleDamage(is_simpledamage),
-      IsCaptureable(false),
+
       IsRegulated(is_regulated),
-      IsPowered(false),
-      IsUnsellable(false),
+
       FoundationFace(foundation),
-      Adjacent(1),
+
       ToBuild(tobuild),
       ExitCoordinate(exitpoint),
       ExitList(exitlist),
       Type(type),
       StartFace(sframe),
-      Capacity(0),
-      Power(0),
-      Drain(0),
+
       Size(size),
       OccupyList(sizelist),
-      OverlapList(overlap),
-      BuildupData(nullptr) {
+      OverlapList(overlap) {
   Anims[BSTATE_CONSTRUCTION].Start = 0;
   Anims[BSTATE_CONSTRUCTION].Count = 1;
   Anims[BSTATE_CONSTRUCTION].Rate = 0;

@@ -64,9 +64,9 @@ class UnitTrackerClass {
   void To_PC_Format();
 
  private:
-  long* UnitTotals;
-  int UnitCount;
-  int InNetworkFormat;
+  long* UnitTotals;        // Allocate memory for the unit totals
+  int UnitCount;           // Keep a record of how many unit entries there are
+  int InNetworkFormat{0};  // The unit entries are in host format
 };
 
 #endif  // CNC_RED_ALERT_TD_UTRACKER_H_

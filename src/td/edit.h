@@ -97,7 +97,7 @@ class EditClass : public ControlClass {
   /*
   **	This is the desired color of the edit control.
   */
-  int Color;
+  int Color{CC_GREEN};
 
   int Action(unsigned flags, KeyNumType& key) override;
   virtual void Draw_Background();

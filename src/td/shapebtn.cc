@@ -64,9 +64,8 @@
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-ShapeButtonClass::ShapeButtonClass() noexcept : ToggleClass(0, 0, 0, 0, 0) {
-  ReflectButtonState = false;
-}
+ShapeButtonClass::ShapeButtonClass() noexcept
+    : ToggleClass(0, 0, 0, 0, 0), ReflectButtonState(false) {}
 
 /***********************************************************************************************
  * ShapeButtonClass::ShapeButtonClass -- Constructor for a shape type button. *
@@ -93,10 +92,10 @@ ShapeButtonClass::ShapeButtonClass() noexcept : ToggleClass(0, 0, 0, 0, 0) {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 ShapeButtonClass::ShapeButtonClass(unsigned id, const void* shape, int x, int y)
-    : ToggleClass(id, x, y, 0, 0) {
+    : ToggleClass(id, x, y, 0, 0), ReflectButtonState(false) {
   Width = 0;
   Height = 0;
-  ReflectButtonState = false;
+
   Set_Shape(shape);
 }
 

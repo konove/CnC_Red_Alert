@@ -65,8 +65,9 @@ class SimpleEditDlgClass {
                                // Appears on left.
   const char* szCancelButton;  //	Text of button that acts like an Cancel
                                // button. Appears on right.
-  const char* szMiddleButton;  //	Optional middle button text. Null = no
-                               // middle button.
+  const char* szMiddleButton{
+      nullptr};  //	Optional middle button text. Null = no
+                 // middle button.
 };
 
 #endif  // CNC_RED_ALERT_RA_SEDITDLG_H_

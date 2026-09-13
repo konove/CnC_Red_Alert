@@ -50,7 +50,7 @@
 
 class FactoryClass : private StageClass {
  public:
-  RTTIType RTTI;
+  RTTIType RTTI{RTTI_FACTORY};
   int ID;
 
   FactoryClass();

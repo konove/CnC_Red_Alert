@@ -75,24 +75,23 @@
 #include <algorithm>
 #include <cstring>
 
-CommBufferClass::CommBufferClass(int numsend, int numreceive, int maxlen) {
+CommBufferClass::CommBufferClass(int numsend, int numreceive, int maxlen)
+    : MaxSend(numsend),
+      MaxReceive(numreceive),
+      MaxPacketSize(maxlen),
+      SendQueue(new SendQueueType[numsend]),
+      SendIndex(new int[numsend]),
+      ReceiveQueue(new ReceiveQueueType[numreceive]),
+      ReceiveIndex(new int[numreceive]) {
   int i;
 
   /*
   ----------------------------- Init variables -----------------------------
   */
-  MaxSend = numsend;
-  MaxReceive = numreceive;
-  MaxPacketSize = maxlen;
 
   /*
   ----------------------- Allocate the queue entries -----------------------
   */
-  SendQueue = new SendQueueType[numsend];
-  ReceiveQueue = new ReceiveQueueType[numreceive];
-
-  SendIndex = new int[numsend];
-  ReceiveIndex = new int[numreceive];
 
   /*
   ---------------------- Allocate queue entry buffers ----------------------
@@ -268,7 +267,7 @@ int CommBufferClass::Queue_Send(void* buf, int buflen) {
   /*
   --------------------- Error if no room in the queue ----------------------
   */
-  if (SendCount == MaxSend) {
+  if (SendCount == MaxSend || buflen > MaxPacketSize) {
     return 0;
   }
 
@@ -440,7 +439,7 @@ int CommBufferClass::Queue_Receive(void* buf, int buflen) {
   /*
   --------------------- Error if no room in the queue ----------------------
   */
-  if (ReceiveCount == MaxReceive) {
+  if (ReceiveCount == MaxReceive || buflen > MaxPacketSize) {
     // CCDebugString("C&C95 - Error - Receive queue full!\n");
     return 0;
   }

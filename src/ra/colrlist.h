@@ -89,8 +89,8 @@ class ColorListClass : public ListClass {
   /*
   **	This tells how to draw the selected item.
   */
-  SelectStyleType Style;
-  RemapControlType* SelectColor;
+  SelectStyleType Style{SELECT_HIGHLIGHT};
+  RemapControlType* SelectColor{nullptr};
 };
 
 #endif  // CNC_RED_ALERT_RA_COLRLIST_H_

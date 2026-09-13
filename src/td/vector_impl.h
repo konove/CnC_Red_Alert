@@ -29,11 +29,8 @@
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-VectorClass<T>::VectorClass(base::ssize size, T* array) {
-  Vector = nullptr;
-  VectorMax = static_cast<unsigned int>(size);
-  IsAllocated = false;
-
+VectorClass<T>::VectorClass(base::ssize size, T* array)
+    : Vector(nullptr), VectorMax(static_cast<unsigned int>(size)) {
   /*
   **	Allocate the vector. The default constructor will be called for every
   **	object in this vector.
@@ -82,10 +79,7 @@ VectorClass<T>::~VectorClass() {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-VectorClass<T>::VectorClass(const VectorClass<T>& vector) {
-  VectorMax = 0;
-  IsAllocated = false;
-  Vector = nullptr;
+VectorClass<T>::VectorClass(const VectorClass<T>& vector) : Vector(nullptr) {
   if (this != &vector) {
     Copy_From(vector);
   }
@@ -345,10 +339,7 @@ int VectorClass<T>::Resize(base::ssize newsize, T* array) {
  *=============================================================================================*/
 template <class T>
 DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, T* array)
-    : VectorClass<T>(size, array) {
-  GrowthStep = 10;
-  ActiveCount = 0;
-}
+    : VectorClass<T>(size, array) {}
 
 /***********************************************************************************************
  * DynamicVectorClass<T>::Resize -- Changes the size of a dynamic vector. *

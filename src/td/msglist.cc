@@ -88,17 +88,6 @@ char MessageListClass::BufferAvail[MAX_NUM_MESSAGES];
 MessageListClass::MessageListClass() {
   int i;
 
-  MessageList = nullptr;
-  MessageX = 0;
-  MessageY = 0;
-  MaxMessages = 0;
-  MaxChars = 0;
-  Height = 0;
-  EditLabel = nullptr;
-  EditBuf = nullptr;
-  EditCurPos = 0;
-  EditInitPos = 0;
-
   for (i = 0; i < MAX_NUM_MESSAGES; i++) {
     BufferAvail[i] = 1;
   }

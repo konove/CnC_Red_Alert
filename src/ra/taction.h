@@ -106,7 +106,7 @@ NeedType Action_Needs(TActionType action);
 **	a trigger's action.
 */
 struct TActionClass {
-  TActionType Action;  // Action to perform.
+  TActionType Action{TACTION_NONE};  // Action to perform.
 
   CCPtr<TeamTypeClass> Team;  // Team type pointer for this action (if needed).
 
@@ -125,7 +125,7 @@ struct TActionClass {
     int Value;
   } Data{};
 
-  TActionClass() : Action(TACTION_NONE) {
+  TActionClass() {
     Data.Theme = THEME_NONE;
     Data.Value = -1;
   }

@@ -48,7 +48,7 @@ class StageClass {
   **	This handles the animation stage of the object. This includes smoke,
   *walking, *	flapping, and rocket flames.
   */
-  unsigned Stage;
+  unsigned Stage{0};
 
   /*
   **	This is the countdown timer for stage animation. When this counts down
@@ -62,10 +62,10 @@ class StageClass {
   *reset. Thus, *	this value is the control of how fast the stage value
   *increments.
   */
-  int Rate;
+  int Rate{0};
 
  public:
-  StageClass() : Stage(0), StageTimer(0), Rate(0) {}
+  StageClass() : StageTimer(0) {}
 
   // Saved-game support.
   template <class Archive>

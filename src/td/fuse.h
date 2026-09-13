@@ -70,7 +70,7 @@ class FuseClass {
   **	Fuses can detonate if enough time has elapsed. This value counts
   **	down. When it reaches zero, detonation occurs.
   */
-  unsigned char Timer;
+  unsigned char Timer{0};
 
  private:
   /*
@@ -78,20 +78,20 @@ class FuseClass {
   **	occur. This counts down and when it reaches zero, normal fuse
   **	detonation checking can occur.
   */
-  unsigned char Arming;
+  unsigned char Arming{0};
 
   /*
   **	This is the designated impact point of the projectile. The fuse
   **	will trip when the closest point to this location has been reached.
   */
-  COORDINATE HeadTo;
+  COORDINATE HeadTo{0};
 
   /*
   **	This is the running proximity value to the impact point. This value
   **	will progressively get smaller. Detonation occurs when it reaches
   **	zero or when it starts to grow larger.
   */
-  short Proximity;
+  short Proximity{0};
 };
 
 inline COORDINATE FuseClass::Fuse_Target() { return HeadTo; }

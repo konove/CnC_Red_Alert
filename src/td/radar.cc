@@ -145,15 +145,7 @@ static GraphicBufferClass TileStage(24, 24);
  *                                                                                             *
  * HISTORY: * 12/16/1994 JLB : Created. *
  *=============================================================================================*/
-RadarClass::RadarClass() {
-  IsZoomed = true;
-  IsRadarActive = false;
-  IsRadarToRedraw = false;
-  RadarCursorRedraw = false;
-  PixelPtr = 0;
-  SpecialRadarFrame = 0;
-  IsPlayerNames = false;
-}
+RadarClass::RadarClass() = default;
 
 /***********************************************************************************************
  * RadarClass::One_Time -- Handles one time processing for the radar map. *

@@ -50,13 +50,11 @@ SimpleEditDlgClass::SimpleEditDlgClass(int dialog_width, const char* title,
       szPrompt(prompt != nullptr ? prompt : ""),
       iEditCharsAccept(chars_accept),
       szPrompt2(prompt2 != nullptr ? prompt2 : ""),
-      iEditCharsAccept2(chars_accept2) {
+      iEditCharsAccept2(chars_accept2),
+      szOkButton(Text_String(TXT_OK)),
+      szCancelButton(Text_String(TXT_CANCEL)) {
   *szEdit = 0;
   *szEdit2 = 0;
-
-  szOkButton = Text_String(TXT_OK);
-  szCancelButton = Text_String(TXT_CANCEL);
-  szMiddleButton = nullptr;
 }
 
 //***********************************************************************************************

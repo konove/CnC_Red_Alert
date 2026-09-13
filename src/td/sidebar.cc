@@ -189,12 +189,6 @@ const void* SidebarClass::SidebarShape2;
  * HISTORY: * 11/17/1994 JLB : Created. *
  *=============================================================================================*/
 SidebarClass::SidebarClass() {
-  IsSidebarActive = false;
-  IsRepairActive = false;
-  IsUpgradeActive = false;
-  IsDemolishActive = false;
-  IsSidebarToRedraw = true;
-
   new (&Column[0]) StripClass(InitClass());
   new (&Column[1]) StripClass(InitClass());
 }
@@ -1033,12 +1027,6 @@ bool SidebarClass::Activate(int control) {
  * HISTORY: * 12/31/1994 JLB : Created. *
  *=============================================================================================*/
 SidebarClass::StripClass::StripClass(const InitClass&) {
-  IsScrollingDown = false;
-  IsScrolling = false;
-  IsBuilding = false;
-  TopIndex = 0;
-  Slid = 0;
-  BuildableCount = 0;
   for (auto& Buildable : Buildables) {
     Buildable.BuildableID = 0;
     Buildable.BuildableType = RTTI_NONE;
@@ -2030,8 +2018,6 @@ SidebarClass::StripClass::SelectClass::SelectClass() noexcept
     : ControlClass(0, 0, 0, 0, 0, LEFTPRESS | RIGHTPRESS | LEFTUP) {
   int factor = Get_Resolution_Factor();
 
-  Strip = nullptr;
-  Index = 0;
   Width = OBJECT_WIDTH << factor;
   Height = OBJECT_HEIGHT << factor;
 }

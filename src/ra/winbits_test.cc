@@ -36,9 +36,8 @@ class TestScreen {
  public:
   TestScreen()
       : pixels_(std::size_t{kWidth} * kHeight, 0),
-        buffer_(kWidth, kHeight, pixels_.data()) {
-    previous_ = Set_Logic_Page(&buffer_);
-  }
+        buffer_(kWidth, kHeight, pixels_.data()),
+        previous_(Set_Logic_Page(&buffer_)) {}
 
   TestScreen(const TestScreen&) = delete;
   TestScreen& operator=(const TestScreen&) = delete;

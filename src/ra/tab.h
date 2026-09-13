@@ -73,7 +73,7 @@ class TabClass : public SidebarClass {
   /*
   **	If the tab graphic is to be redrawn, then this flag is true.
   */
-  unsigned IsTabToRedraw : 1;
+  unsigned IsTabToRedraw : 1 {false};
 
  private:
   void Set_Active(int select);

@@ -2,7 +2,7 @@
 
 Updated: 2026-09-12, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 156 currently excluded check names** and completed entries, in recommended work
+This tracks **all 153 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -135,9 +135,9 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-deprecated-anon-enum-enum-conversion`         | Enabled | Commit `Drop the implicit FIRST enum aliases and fix mixed enum operations`: three TD editor house-button offsets now subtract from an integer key number.                                                                                                                                                                                                                                                                   |
 | `clang-diagnostic-deprecated-enum-compare`                      | Enabled | Commit `Drop the implicit FIRST enum aliases and fix mixed enum operations`: six comparisons against the wrong enum's zero or 1002 constant (`RESULT_NONE` for `IMPACT_NONE`, `ACTION_NONE` for `TACTION_NONE`, `NET_FILE_CHUNK` for `SERIAL_FILE_CHUNK`); values were equal, so behavior is unchanged.                                                                                                                      |
 | `google-runtime-int`                                            | Skipped | Commit `Record the remaining P3 policy decisions`: 2,717 reports; the integer migration goes file by file with a do-not-touch list (`docs/TYPE_MIGRATION.md`). See review below.                                                                                                                                                                                                                                             |
-| `modernize-use-default-member-init`                             | Pending | Centralize common defaults and reduce constructor drift.                                                                                                                                                                                                                                                                                                                                                                     |
-| `cppcoreguidelines-use-default-member-init`                     | Pending | Alias of `modernize-use-default-member-init`; handle together.                                                                                                                                                                                                                                                                                                                                                               |
-| `cppcoreguidelines-prefer-member-initializer`                   | Pending | Initialize members directly; preserve construction-order semantics.                                                                                                                                                                                                                                                                                                                                                          |
+| `modernize-use-default-member-init`                             | Enabled | Commit `Move member defaults into initializers and declarations`: 724 member declarations gained brace defaults; the fix-its' comma debris and header-invisible names (`CELL_LEPTON_W`, `TXT_NONE`, `INVALID_SOCKET`) were repaired. See review below.                                                                                                                                                                       |
+| `cppcoreguidelines-use-default-member-init`                     | Enabled | Commit `Move member defaults into initializers and declarations`: enforced with `modernize-use-default-member-init`, which it aliases.                                                                                                                                                                                                                                                                                       |
+| `cppcoreguidelines-prefer-member-initializer`                   | Enabled | Commit `Move member defaults into initializers and declarations`: constructor-body assignments moved into initializer lists. Doing so exposed `delete` on a `new[]` array in both games' `UnitTrackerClass`, and TD `CommBufferClass` copying unchecked packet lengths into fixed buffers; both fixed. See review below.                                                                                                     |
 | `modernize-use-equals-delete`                                   | Enabled | Commit `Use defaulted and deleted special members and range loops`: 54 reports. The fix-its turn 11 undefined private copy operations into `= delete`, and the deleted members of 16 classes (the pipe and straw family, `BufferClass`, `IconsetClass`, both games' `FixedHeapClass` and `CCFileClass`, `IndexClass`, `GenericList`) move to `public:`, where misuse reports a deleted function rather than an access error. |
 | `hicpp-use-equals-delete`                                       | Legacy  | Unavailable in LLVM 23; review with `modernize-use-equals-delete` on older tools.                                                                                                                                                                                                                                                                                                                                            |
 | `modernize-use-equals-default`                                  | Enabled | Commit `Use defaulted and deleted special members and range loops`: 62 reports (35 trivial destructors, 27 trivial default constructors), now `= default` from the check's fix-its.                                                                                                                                                                                                                                          |
@@ -1222,6 +1222,57 @@ given `T` would fail only there. Silencing the check means explicitly instantiat
 specialization, or making those members non-virtual. That is a design change to the heap and vector
 interfaces, which both games use for every object type, and neither the clang nor the GCC build has
 a member that fails to instantiate.
+
+### Member initializer review (2026-09-12)
+
+`cppcoreguidelines-prefer-member-initializer`, `modernize-use-default-member-init` and its alias
+`cppcoreguidelines-use-default-member-init` are now enforced. The savegame migration made this
+possible: no raw-image loads or `NoInitClass` constructors remain, so a default member initializer
+can no longer overwrite loaded state. The sweep reported 806 constructor-body assignments that
+belonged in the initializer list and 654 constant initializers that belonged on the member
+declaration.
+
+The fix-its did most of the work, in two separate passes: initializer list first, then member
+declarations. Run together, the two passes edit the same initializer lists and corrupt them. Even
+run separately, each needed repair:
+
+- `prefer-member-initializer` copied a legacy duplicate `Contrast = 0x80;` from TD's `OptionsClass`
+  constructor into the initializer list twice. The duplicate is gone. The pass also moved the
+  unconditional half of a `GERMAN`/`FRENCH` conditional, which is harmless: the localized branch
+  still assigns `true` in the body afterwards.
+- `use-default-member-init` removes an initializer but keeps its separating comma. Across 200 edited
+  hunks this left lists such as `: , , MagicNum(magicnum), , {`. A repair pass collapsed the empty
+  slots, touching only lines the fix-its had changed, and the compiler checked the result.
+- Moving a default from a `.cc` constructor into a header can bring names the header never saw:
+  - `CELL_LEPTON_W` lived in the heavy `ra/display.h`. It now sits in a new
+    `ra/display_constants.h`, which `rules.h` includes, mirroring TD's `display_constants.h`.
+  - Both games' `help.h` now include `conquer.h` for `TXT_NONE`.
+  - RA's `INVALID_SOCKET` moved from two `.cc` files into `wsproto.h`, next to `typedef int SOCKET`.
+- Both passes carried an assignment's trailing comment out of the constructor body as a bare line,
+  sometimes left sitting under unrelated code. Each note now sits on its member's declaration, or
+  was dropped where the declaration already says the same.
+- The brace form rejects narrowing. `MaxRetries = -1` meant "retry forever", so its default is now
+  `std::numeric_limits<unsigned long>::max()`.
+- The strict build then reported initializer lists out of declaration order and constructors left
+  empty. Its fix-its reordered them and turned them into `= default`, except for one reorder in RA's
+  `list.h` and TD's now-empty `TabClass` constructor, which were done by hand. Initialization order
+  was already declaration order, so the textual reordering changes nothing at run time.
+
+Moving `UnitTrackerClass`'s allocation into its initializer list exposed a real bug in both games:
+the destructor freed the `new long[]` array with scalar `delete`. It is `delete[]` now.
+
+TD's `CommBufferClass` showed a second one. Once its `MaxPacketSize` assignment became an
+initializer, clang reported the field as never read. RA's copy of the class checks
+`buflen > MaxPacketSize` before copying a packet into a queue buffer allocated as
+`new char[maxlen]`; TD's `Queue_Send` and `Queue_Receive` did not, so an oversized packet, including
+one received from the network, overran the heap. Both now reject it as RA does.
+
+In the end, 724 member declarations gained a default initializer and 801 constructor-body
+assignments are gone, across 120 headers and 152 source files. The defaults use the check's brace
+form, `int Count{0};`.
+
+The full strict build of both games is clean, all 242 tests pass, and the RA and TD save/load smoke
+tests match their uninterrupted runs.
 
 ### Completed validation
 

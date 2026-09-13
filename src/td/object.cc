@@ -155,18 +155,17 @@ ObjectTypeClass::ObjectTypeClass(bool is_sentient, bool is_flammable,
                                  bool is_insignificant, bool is_immune,
                                  int name, const char* ini, ArmorType armor,
                                  unsigned short strength) noexcept
-    : AbstractTypeClass(name, ini) {
-  IsSentient = is_sentient;
-  IsFlammable = is_flammable;
-  IsCrushable = is_crushable;
-  IsStealthy = is_stealthy;
-  IsSelectable = is_selectable;
-  IsLegalTarget = is_legal_target;
-  IsInsignificant = is_insignificant;
-  IsImmune = is_immune;
-  Armor = armor;
-  MaxStrength = strength;
-  ImageData = nullptr;
+    : AbstractTypeClass(name, ini),
+      IsCrushable(is_crushable),
+      IsStealthy(is_stealthy),
+      IsSelectable(is_selectable),
+      IsLegalTarget(is_legal_target),
+      IsInsignificant(is_insignificant),
+      IsImmune(is_immune),
+      IsFlammable(is_flammable),
+      IsSentient(is_sentient),
+      Armor(armor),
+      MaxStrength(strength) {
   // RadarIcon = NULL;
 }
 
@@ -307,15 +306,6 @@ const void* ObjectTypeClass::Get_Cameo_Data() const { return nullptr; }
  *=============================================================================================*/
 ObjectClass::ObjectClass() {
   Coord = 0xFFFFFFFFL;  // Some bogus illegal value.
-  Next = nullptr;       // Not part of any object list.
-  Trigger = nullptr;    // No associated trigger.
-  IsToDamage = false;
-  IsToDisplay = false;     // Redraw is presumed unnecessary.
-  IsInLimbo = true;        // Always presumed to start in limbo state.
-  IsSelected = false;      // Limboed units cannot be selected.
-  IsDown = false;          // Limboed units cannot be on the map.
-  IsAnimAttached = false;  // Anim is not attached.
-  Strength = 255;          // nominal strength value
 }
 
 /***********************************************************************************************

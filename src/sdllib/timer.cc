@@ -80,9 +80,9 @@ long CountDownTimerClass::Time() {
   return std::max<long>(DelayTime - TimerClass::Time(), 0);
 }
 
-TickTimer::TickTimer(const int tick_rate) {
+TickTimer::TickTimer(const int tick_rate)
+    : timer_id_(SDL_AddTimer(1000 / tick_rate, TimerCallback, this)) {
   SDL_Init(SDL_INIT_TIMER);
-  timer_id_ = SDL_AddTimer(1000 / tick_rate, TimerCallback, this);
 
   TimerSystemOn = timer_id_ != 0;
 }

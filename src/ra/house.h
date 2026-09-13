@@ -85,20 +85,20 @@ class HouseStaticClass {
   **	This value indicates the degree of smartness to assign to this house.
   **	A value is zero is presumed for human controlled houses.
   */
-  int IQ;
+  int IQ{0};
 
   /*
   **	This is the buildable tech level for this house. This value is used
   **	for when the computer is deciding what objects to build.
   */
-  int TechLevel;
+  int TechLevel{1};
 
   /*
   **	This is the original ally specification to use at scenario
   **	start. Various forces during play may adjust the ally state
   **	of this house.
   */
-  int Allies;
+  int Allies{0};
 
   /*
   **	This is the maximum number allowed to be built by this house. The
@@ -114,13 +114,13 @@ class HouseStaticClass {
   **	This records the initial credits assigned to this house when the
   *scenario *	was loaded.
   */
-  int64_t InitialCredits;
+  int64_t InitialCredits{0};
 
   /*
   **	For generic (unspecified) reinforcements, they arrive by a common
   *method. This *	specifies which method is to be used.
   */
-  SourceType Edge;
+  SourceType Edge{SOURCE_NORTH};
 };
 
 /****************************************************************************

@@ -46,7 +46,7 @@
 
 class RegionClass {
  public:
-  RegionClass() { Threat = 0; }
+  RegionClass() = default;
   template <class Archive>
   void Serialize(Archive& ar) {
     ar(Threat);
@@ -75,7 +75,7 @@ class RegionClass {
   [[nodiscard]] int Threat_Value() const { return static_cast<int>(Threat); }
 
  protected:
-  int64_t Threat;
+  int64_t Threat{0};
 };
 
 #endif  // CNC_RED_ALERT_TD_REGION_H_

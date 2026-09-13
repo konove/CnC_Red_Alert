@@ -1163,7 +1163,6 @@ UnitClass::~UnitClass() {
  *=============================================================================================*/
 UnitClass::UnitClass(UnitType classid, HousesType house)
     : TarComClass(classid, house) {
-  Flagged = HOUSE_NONE;
   Reload = 0;
   Ammo = Class->MaxAmmo;
   IsCloakable = Class->IsCloakable;

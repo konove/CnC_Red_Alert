@@ -88,8 +88,7 @@ ProgressBarClass::ProgressBarClass(int x, int y, int width, int height,
       BackColor(backcolor),
       BorderColor(bordercolor),
       CurrentValue(0),
-      LastDisplayCurrent(0),
-      IsDrawn(false) {}
+      LastDisplayCurrent(0) {}
 
 /***********************************************************************************************
  * ProgressBarClass::Is_Horizontal -- Determines if the bargraph is horizontal

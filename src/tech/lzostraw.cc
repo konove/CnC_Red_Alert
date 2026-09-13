@@ -67,8 +67,7 @@
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
 LZOStraw::LZOStraw(CompControl control, int blocksize)
-    : Control(control), BlockSize(blocksize) {
-  SafetyMargin = BlockSize;
+    : Control(control), BlockSize(blocksize), SafetyMargin(BlockSize) {
   Buffer = new char[BlockSize + SafetyMargin];
   if (control == COMPRESS) {
     Buffer2 = new char[BlockSize + SafetyMargin];

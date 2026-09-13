@@ -3594,27 +3594,26 @@ BuildingTypeClass::BuildingTypeClass(
                       is_twoshooter, is_turret_equipped, is_repairable,
                       is_buildable, is_crew, -1, strength * 2, MPH_IMMOBILE,
                       sightrange, cost, scenario, risk, reward, ownable,
-                      primary, secondary, armor) {
-  CanEnter = canenter;
-  Capacity = capacity;
-  Drain = drain;
-  ExitList = exitlist;
-  ExitPoint = exitpoint;
-  IsBibbed = is_bibbed;
-  IsCaptureable = is_captureable;
-  IsFactory = is_factory;
-  IsRegulated = is_regulated;
-  IsSimpleDamage = is_simpledamage;
-  IsSturdy = is_sturdy;
-  IsWall = is_wall;
-  OccupyList = sizelist;
-  OverlapList = overlap;
-  Power = power;
-  Size = size;
-  StartFace = sframe;
-  ToBuild = tobuild;
-  Type = type;
-
+                      primary, secondary, armor),
+      IsBibbed(is_bibbed),
+      IsWall(is_wall),
+      IsFactory(is_factory),
+      IsSimpleDamage(is_simpledamage),
+      IsSturdy(is_sturdy),
+      IsCaptureable(is_captureable),
+      IsRegulated(is_regulated),
+      ToBuild(tobuild),
+      ExitPoint(exitpoint),
+      ExitList(exitlist),
+      Type(type),
+      CanEnter(canenter),
+      StartFace(sframe),
+      Capacity(capacity),
+      Power(power),
+      Drain(drain),
+      Size(size),
+      OccupyList(sizelist),
+      OverlapList(overlap) {
   Anims[BSTATE_CONSTRUCTION].Start = 0;
   Anims[BSTATE_CONSTRUCTION].Count = 1;
   Anims[BSTATE_CONSTRUCTION].Rate = 0;

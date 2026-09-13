@@ -48,6 +48,7 @@
 #include <winsock.h>
 #else
 typedef int SOCKET;
+#define INVALID_SOCKET (-1)
 typedef void* HANDLE;
 #define WM_USER 0x400
 #endif
@@ -167,17 +168,17 @@ class WinsockInterfaceClass {
   /*
   ** Is Winsock present and initialised?
   */
-  bool WinsockInitialised;
+  bool WinsockInitialised{false};
 
   /*
   ** Socket that communications will take place over.
   */
-  SOCKET Socket;
+  SOCKET Socket{INVALID_SOCKET};
 
   /*
   ** Async object required for callbacks to our message handler.
   */
-  HANDLE ASync;
+  HANDLE ASync{nullptr};
 
   /*
   ** Temporary receive buffer to use when querying Winsock for incoming packets.

@@ -72,7 +72,7 @@ class DisplayClass : public MapClass {
   **	upper left hand corner. These should not be altered directly. Use
   **	the Set_Tactical_Position function instead.
   */
-  COORDINATE TacticalCoord;
+  COORDINATE TacticalCoord{0};
 
   /*
   **	The dimensions (in cells) of the visible window onto the game map. This
@@ -92,10 +92,10 @@ class DisplayClass : public MapClass {
   **	over the map. This cursor is used when placing buildings and also used
   **	extensively by the scenario editor.
   */
-  CELL ZoneCell;
-  short ZoneOffset;
-  const short* CursorSize;
-  bool ProximityCheck;  // Is proximity check ok?
+  CELL ZoneCell{0};
+  short ZoneOffset{0};
+  const short* CursorSize{nullptr};
+  bool ProximityCheck{false};  // Is proximity check ok?
 
   /*
   ** This holds the building type that is about to be placed upon the map.
@@ -103,9 +103,9 @@ class DisplayClass : public MapClass {
   **	flag is updated as the cursor moves and it reflects the legality of
   **	placing the building at the desired location.
   */
-  ObjectClass* PendingObjectPtr;
-  const ObjectTypeClass* PendingObject;
-  HousesType PendingHouse;
+  ObjectClass* PendingObjectPtr{nullptr};
+  const ObjectTypeClass* PendingObject{nullptr};
+  HousesType PendingHouse{HOUSE_NONE};
 
   static unsigned char FadingBrighten[256];
   static unsigned char FadingShade[256];
@@ -229,28 +229,28 @@ class DisplayClass : public MapClass {
   **	If something in the tactical map is to be redrawn, this flag is set to
   *true.
   */
-  unsigned IsDisplayToRedraw : 1;
+  unsigned IsDisplayToRedraw : 1 {true};
 
   /*
   **	If the player is currently wielding a wrench (to select buildings for
   *repair), *	then this flag is true. In such a state, normal movement and
   *combat orders *	are preempted.
   */
-  unsigned IsRepairMode : 1;
+  unsigned IsRepairMode : 1 {false};
 
   /*
   **	If the player is currently in "sell back" mode, then this flag will be
   **	true. While in this mode, anything clicked on will be sold back to the
   **	"factory".
   */
-  unsigned IsSellMode : 1;
+  unsigned IsSellMode : 1 {false};
 
   /*
   **	If the player is currently in ion cannon targetting mode, then this
   ** flag will be true.  While in this mode, anything clicked on will be
   ** be destroyed by the ION cannon.
   */
-  unsigned IsTargettingMode : 2;
+  unsigned IsTargettingMode : 2 {false};
 
  protected:
   /*
@@ -258,7 +258,7 @@ class DisplayClass : public MapClass {
   **	flag will be true. While in such a mode, normal input is prempted while
   **	the extended selection is in progress.
   */
-  unsigned IsRubberBand : 1;
+  unsigned IsRubberBand : 1 {false};
 
   /*
   **	The moment the mouse is held down, this flag gets set. If the mouse is
@@ -266,7 +266,7 @@ class DisplayClass : public MapClass {
   *mode selection *	can begin. Using a minimum distance prevents accidental
   *rubber band selection *	mode from being initiated.
   */
-  unsigned IsTentative : 1;
+  unsigned IsTentative : 1 {false};
 
   /*
   **	This gadget class is used for capturing input to the tactical map. All

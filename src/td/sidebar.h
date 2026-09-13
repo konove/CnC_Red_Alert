@@ -120,8 +120,8 @@ class SidebarClass : public PowerClass {
       SelectClass() noexcept;
 
       void Set_Owner(StripClass& strip, int index);
-      StripClass* Strip;
-      int Index;
+      StripClass* Strip{nullptr};
+      int Index{0};
 
      protected:
       int Action(unsigned flags, KeyNumType& key) override;
@@ -328,13 +328,13 @@ class SidebarClass : public PowerClass {
   /*
   **	If the sidebar is active then this flag is true.
   */
-  unsigned IsSidebarActive : 1;
+  unsigned IsSidebarActive : 1 {false};
 
   /*
   **	This flag tells the rendering system that the sidebar needs to be
   *redrawn.
   */
-  unsigned IsSidebarToRedraw : 1;
+  unsigned IsSidebarToRedraw : 1 {true};
 
   class SBGadgetClass : public GadgetClass {
    public:
@@ -368,9 +368,9 @@ class SidebarClass : public PowerClass {
   bool Scroll(bool up, int column);
   int Which_Column(RTTIType type);
 
-  unsigned IsRepairActive : 1;
-  unsigned IsUpgradeActive : 1;
-  unsigned IsDemolishActive : 1;
+  unsigned IsRepairActive : 1 {false};
+  unsigned IsUpgradeActive : 1 {false};
+  unsigned IsDemolishActive : 1 {false};
 };
 
 extern template void SidebarClass::Serialize<ArchiveWriter>(ArchiveWriter&);

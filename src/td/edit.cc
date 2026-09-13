@@ -102,10 +102,10 @@
  *=============================================================================================*/
 EditClass::EditClass(int id, char* text, int max_len, TextPrintType flags,
                      int x, int y, int w, int h, EditStyle style)
-    : ControlClass(id, x, y, w, h, LEFTPRESS), String(text) {
-  TextFlags = flags;
-  EditFlags = style;
-  Color = CC_GREEN;
+    : ControlClass(id, x, y, w, h, LEFTPRESS),
+      TextFlags(flags),
+      EditFlags(style),
+      String(text) {
   EditClass::Set_Text(text, max_len);
 
   if (w == -1 || h == -1) {

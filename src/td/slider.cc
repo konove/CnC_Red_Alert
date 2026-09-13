@@ -75,11 +75,7 @@
  *=============================================================================================*/
 SliderClass::SliderClass(unsigned id, int x, int y, int w, int h,
                          int belong_to_list)
-    : GaugeClass(id, x, y, w, h) {
-  BelongToList = belong_to_list != 0;
-
-  PlusGadget = nullptr;
-  MinusGadget = nullptr;
+    : GaugeClass(id, x, y, w, h), BelongToList(belong_to_list != 0) {
   if (!BelongToList) {
     PlusGadget = new ShapeButtonClass(id, MFCD::Retrieve("BTN-PLUS.SHP"),
                                       X + Width + 2, Y);

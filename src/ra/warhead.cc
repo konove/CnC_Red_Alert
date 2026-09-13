@@ -75,15 +75,7 @@ TFixedIHeapClass<WarheadTypeClass> Warheads;
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 WarheadTypeClass::WarheadTypeClass(const char* name)
-    : ID(Warheads.ID(this)),
-      IniName(name),
-      SpreadFactor(1),
-      IsWallDestroyer(false),
-      IsWoodDestroyer(false),
-      IsTiberiumDestroyer(false),
-      IsOrganic(false),
-      ExplosionSet(0),
-      InfantryDeath(0) {
+    : ID(Warheads.ID(this)), IniName(name) {
   for (ArmorType armor : magic_enum::enum_values<ArmorType>()) {
     Modifier[armor] = fixed(1);
   }

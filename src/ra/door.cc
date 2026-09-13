@@ -56,11 +56,7 @@
  *                                                                                             *
  * HISTORY: * 06/14/1995 JLB : Created. *
  *=============================================================================================*/
-DoorClass::DoorClass() {
-  State = IS_CLOSED;
-  IsToRedraw = false;
-  Stages = 0;
-}
+DoorClass::DoorClass() = default;
 
 /***********************************************************************************************
  * DoorClass::AI -- Handles the door processing logic. *

@@ -83,10 +83,7 @@ GraphicBufferClass* GScreenClass::ShadowPage = nullptr;
  *                                                                                             *
  * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
-GScreenClass::GScreenClass() {
-  IsToUpdate = true;
-  IsScreenToRedraw = true;
-}
+GScreenClass::GScreenClass() = default;
 
 /***********************************************************************************************
  * GScreenClass::One_Time -- Handles one time class setups. *

@@ -177,7 +177,7 @@ class IPXGlobalConnClass : public IPXConnClass {
   //.....................................................................
   NetNumType BridgeNet{};
   NetNodeType BridgeNode{};
-  int IsBridge;
+  int IsBridge{0};
 
   //------------------------------------------------------------------------
   // Protected Interface

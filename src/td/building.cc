@@ -1834,27 +1834,20 @@ void BuildingClass::operator delete(void* ptr) {
  *to match expected value.                            *
  *=============================================================================================*/
 BuildingClass::BuildingClass(StructType type, HousesType house)
-    : TechnoClass(house), Class(&BuildingTypeClass::As_Reference(type)) {
+    : TechnoClass(house),
+      Class(&BuildingTypeClass::As_Reference(type)),
+      ActLike(House->ActLike),
+      WhoLastHurtMe(house) {
   PlacementDelay = 0;
-  LastStrength = 0;
-  ActLike = House->ActLike;
-  BState = BSTATE_NONE;
+
   CountDown.Set(0);
-  Factory = nullptr;
+
   House->CurBuildings++;
-  WhomToRepay = kTargetNone;
-  IsCaptured = false;
-  IsCharged = false;
-  IsCharging = false;
-  IsSurvivorless = false;
-  IsGoingToBlow = false;
-  IsReadyToCommence = false;
-  IsRepairing = false;
+
   IsSecondShot = !Class->IsTwoShooter;
-  IsWrenchVisible = false;
-  QueueBState = BSTATE_NONE;
+
   Strength = Class->MaxStrength;
-  WhoLastHurtMe = house;
+
   Ammo = Class->MaxAmmo;
 
   /*

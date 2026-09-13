@@ -76,10 +76,7 @@
 ColorListClass::ColorListClass(int id, int x, int y, int w, int h,
                                TextPrintType flags, const void* up,
                                const void* down)
-    : ListClass(id, x, y, w, h, flags, up, down) {
-  Style = SELECT_HIGHLIGHT;
-  SelectColor = -1;
-}
+    : ListClass(id, x, y, w, h, flags, up, down) {}
 
 /***************************************************************************
  * ColorListClass::~ColorListClass -- Class destructor                     *

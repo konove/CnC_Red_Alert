@@ -190,12 +190,7 @@ const void* SidebarClass::StripClass::SpecialShapes
  *                                                                                             *
  * HISTORY: * 11/17/1994 JLB : Created. *
  *=============================================================================================*/
-SidebarClass::SidebarClass()
-    : IsSidebarActive(false),
-      IsSidebarToRedraw(true),
-      IsRepairActive(false),
-      IsUpgradeActive(false),
-      IsDemolishActive(false) {
+SidebarClass::SidebarClass() {
   /*
   **	This sets up the clipping window. This window is used by the shape
   *drawing *	code so that as the sidebar buildable buttons scroll, they get
@@ -999,19 +994,7 @@ bool SidebarClass::Activate(int control) {
  *                                                                                             *
  * HISTORY: * 12/31/1994 JLB : Created. *
  *=============================================================================================*/
-SidebarClass::StripClass::StripClass(const InitClass&)
-    : X(0),
-      Y(0),
-      ID(0),
-      IsToRedraw(true),
-      IsBuilding(false),
-      IsScrollingDown(false),
-      IsScrolling(false),
-      Flasher(-1),
-      TopIndex(0),
-      Scroller(0),
-      Slid(0),
-      BuildableCount(0) {
+SidebarClass::StripClass::StripClass(const InitClass&) : IsToRedraw(true) {
   for (auto& Buildable : Buildables) {
     Buildable.BuildableID = 0;
     Buildable.BuildableType = RTTI_NONE;
@@ -1846,9 +1829,7 @@ bool SidebarClass::StripClass::Recalc() {
  *=============================================================================================*/
 SidebarClass::StripClass::SelectClass::SelectClass() noexcept
     : ControlClass(0, 0, 0, (kObjectWidth - 1) * 2, kObjectHeight * 2,
-                   LEFTPRESS | RIGHTPRESS | LEFTUP),
-      Strip(nullptr),
-      Index(0) {}
+                   LEFTPRESS | RIGHTPRESS | LEFTUP) {}
 
 /***********************************************************************************************
  * SidebarClass::StripClass::SelectClass:: -- Assigns special values to a

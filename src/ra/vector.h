@@ -57,15 +57,16 @@ class VectorClass {
 
  protected:
   T* Vector;                // Pointer to element array.
-  base::ssize VectorMax;    // Maximum number of elements.
-  bool IsAllocated : true;  // True if we own the memory and must delete it.
+  base::ssize VectorMax{0};  // Maximum number of elements.
+  bool IsAllocated
+      : true {false};  // True if we own the memory and must delete it.
 };
 
 // Implementation details only below here
 
 template <class T>
 VectorClass<T>::VectorClass(base::ssize size, T* array)
-    : Vector(nullptr), VectorMax(size), IsAllocated(false) {
+    : Vector(nullptr), VectorMax(size) {
   if (size > 0) {
     if (array) {
       Vector = new (static_cast<void*>(array))
@@ -86,8 +87,7 @@ VectorClass<T>::~VectorClass() {
 }
 
 template <class T>
-VectorClass<T>::VectorClass(const VectorClass<T>& vector)
-    : Vector(nullptr), VectorMax(0), IsAllocated(false) {
+VectorClass<T>::VectorClass(const VectorClass<T>& vector) : Vector(nullptr) {
   *this = vector;
 }
 

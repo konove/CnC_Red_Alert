@@ -200,22 +200,8 @@ DisplayClass::TacticalClass DisplayClass::TacButton;
  * HISTORY: * 12/06/1994 JLB : Created. *
  *=============================================================================================*/
 DisplayClass::DisplayClass() {
-  TacticalCoord = 0;
   ShadowShapes = nullptr;
   TransIconset = nullptr;
-  ZoneCell = 0;
-  ZoneOffset = 0;
-  CursorSize = nullptr;
-  ProximityCheck = false;
-  PendingObjectPtr = nullptr;
-  PendingObject = nullptr;
-  PendingHouse = HOUSE_NONE;
-  IsRepairMode = false;
-  IsTargettingMode = false;
-  IsDisplayToRedraw = true;
-  IsRubberBand = false;
-  IsTentative = false;
-  IsSellMode = false;
 }
 
 /***********************************************************************************************

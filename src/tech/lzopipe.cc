@@ -65,8 +65,7 @@
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
 LZOPipe::LZOPipe(CompControl control, int blocksize)
-    : Control(control), BlockSize(blocksize) {
-  SafetyMargin = BlockSize;
+    : Control(control), BlockSize(blocksize), SafetyMargin(BlockSize) {
   Buffer = new char[BlockSize + SafetyMargin];
   Buffer2 = new char[BlockSize + SafetyMargin];
 }

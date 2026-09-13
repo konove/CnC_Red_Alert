@@ -78,9 +78,7 @@ class AbstractClass {
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   // IsActive starts true because each heap type's operator new sets it
   // before a normal constructor runs, and the shell must not disagree.
-  AbstractClass() : RTTI(RTTI_NONE), ID(-1), Coord(0xFFFFFFFFL), Height(0) {
-    IsActive = true;
-  }
+  AbstractClass() : RTTI(RTTI_NONE), ID(-1), Coord(0xFFFFFFFFL), Height(0) {}
 
  public:
   virtual ~AbstractClass() = default;

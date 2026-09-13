@@ -6140,43 +6140,22 @@ TechnoTypeClass::TechnoTypeClass(
                       is_legal_target, is_insignificant, is_immune,
                       is_footprint, name, ininame),
       Remap(remap),
-      IsDoubleOwned(false),
-      IsInvisible(false),
-      IsLeader(false),
-      IsScanner(false),
+
       IsNominal(is_nominal),
       IsTheater(is_theater),
       IsTurretEquipped(is_turret_equipped),
-      IsRepairable(true),
-      IsCrew(false),
+
       IsRemappable(is_remappable),
-      IsCloakable(false),
-      IsSelfHealing(false),
-      IsExploding(false),
-      MZone(MZONE_NORMAL),
-      ThreatRange(0),
-      MaxPassengers(0),
-      SightRange(0),
-      Cost(0),
-      Level(-1),
-      Prerequisite(kStructFlagNone),
-      Risk(0),
-      Reward(0),
-      MaxSpeed(MPH_IMMOBILE),
+
       Speed(speed),
-      MaxAmmo(-1),
-      Ownable(0),
-      CameoData(nullptr),
+
       Rotation(rotation),
-      ROT(0),
-      PrimaryWeapon(nullptr),
-      SecondaryWeapon(nullptr),
+
       VerticalOffset(verticaloffset),
       PrimaryOffset(primaryoffset),
       PrimaryLateral(primarylateral),
       SecondaryOffset(secondaryoffset),
-      SecondaryLateral(secondarylateral),
-      Points(0) {}
+      SecondaryLateral(secondarylateral) {}
 
 /***********************************************************************************************
  * TechnoTypeClass::Raw_Cost -- Fetches the raw (base) cost of the object. *

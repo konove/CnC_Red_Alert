@@ -79,27 +79,27 @@ class WarheadTypeClass {
   **	over distance. The larger the number, the less the damage is reduced
   **	the further the distance from the source of the damage.
   */
-  int SpreadFactor;
+  int SpreadFactor{1};
 
   /*
   **	If this warhead type can destroy walls, then this flag will be true.
   */
-  bool IsWallDestroyer : 1;
+  bool IsWallDestroyer : 1 {false};
 
   /*
   **	If this warhead can destroy wooden walls, then this flag will be true.
   */
-  bool IsWoodDestroyer : 1;
+  bool IsWoodDestroyer : 1 {false};
 
   /*
   **	Does this warhead damage tiberium?
   */
-  bool IsTiberiumDestroyer : 1;
+  bool IsTiberiumDestroyer : 1 {false};
 
   /*
   **	Only effective against infantry?
   */
-  bool IsOrganic : 1;
+  bool IsOrganic : 1 {false};
 
   /*
   **	The warhead damage is reduced depending on the the type of armor the
@@ -110,13 +110,13 @@ class WarheadTypeClass {
   /*
   **	Which explosion set to use for warhead impact.
   */
-  int ExplosionSet;
+  int ExplosionSet{0};
 
   /*
   **	This specifies the infantry death animation to use if the infantry dies
   *as *	a result of a warhead of this type.
   */
-  int InfantryDeath;
+  int InfantryDeath{0};
 };
 
 #endif  // CNC_RED_ALERT_RA_WARHEAD_H_

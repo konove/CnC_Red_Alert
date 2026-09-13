@@ -339,12 +339,7 @@ InfantryClass::InfantryClass(InfantryType classid, HousesType house)
   *shooters.
   */
   IsSecondShot = Class->IsTwoShooter == 0;
-  Doing = DO_NOTHING;
-  Fear = 0;  // Starts completely brave.
-  IsProne = false;
-  IsStoked = false;
-  IsBoxing = false;
-  IsTechnician = false;
+
   Strength = Class->MaxStrength;
 
   /*

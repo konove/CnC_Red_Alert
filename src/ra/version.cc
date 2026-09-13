@@ -98,16 +98,7 @@ static VersionProtocolType VersionProtocol[] = {
  *   10/26/1995 BRR : Created.                                             *
  *   09/17/1996 JLB : Converted to used initializer list.                  *
  *=========================================================================*/
-VersionClass::VersionClass()
-    : Version(0),
-      MajorVer(0),
-      MinorVer(0),
-      MinClipVer(0),
-      MaxClipVer(0),
-      VersionInit(false),
-      MajorInit(false),
-      MinorInit(false),
-      TextInit(false) {
+VersionClass::VersionClass() {
   VersionText[0] = '\0';
   VersionName[0] = '\0';
 }

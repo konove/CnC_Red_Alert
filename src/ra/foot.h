@@ -305,11 +305,11 @@ class FootClass : public TechnoClass {
         YFormOffset(kNoFormationOffset),
         NavCom(kTargetNone),
         SuspendedNavCom(kTargetNone),
-        NavQueue{},
+
         Team(nullptr),
         Group(kNoGroup),
         Member(nullptr),
-        Path{},
+
         PathThreshhold(MOVE_CLOAK),
         PathDelay(0),
         TryTryAgain(PATH_RETRY),

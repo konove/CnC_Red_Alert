@@ -204,13 +204,12 @@ SmudgeTypeClass::SmudgeTypeClass(SmudgeType smudge, const char* ininame,
                                  int fullname, int width, int height,
                                  bool isbib, bool iscrater) noexcept
     : ObjectTypeClass(false, false, false, true, false, false, true, true,
-                      fullname, ininame, ARMOR_NONE, 0) {
-  IsBib = isbib;
-  Width = width;
-  Height = height;
-  IsCrater = iscrater;
-  Type = smudge;
-}
+                      fullname, ininame, ARMOR_NONE, 0),
+      Type(smudge),
+      Width(width),
+      Height(height),
+      IsCrater(iscrater),
+      IsBib(isbib) {}
 
 /***********************************************************************************************
  * SmudgeTypeClass::From_Name -- Converts an ASCII name into a smudge type. *

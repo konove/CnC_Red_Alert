@@ -157,12 +157,8 @@ static char PaletteLUT[256];
  *                                                                                             *
  * HISTORY: * 9/9/96 11:53PM ST : Created *
  *=============================================================================================*/
-EgoClass::EgoClass(int x, int y, char* text, TextPrintType flags) {
-  XPos = x;
-  YPos = y;
-  Flags = flags;
-  Text = port::CloneString(text);
-}
+EgoClass::EgoClass(int x, int y, char* text, TextPrintType flags)
+    : Text(port::CloneString(text)), XPos(x), YPos(y), Flags(flags) {}
 
 /***********************************************************************************************
  * EC::~EgoClass -- EgoClass destructor *

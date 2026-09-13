@@ -127,14 +127,14 @@ class RadarClass : public DisplayClass {
   *true. *	Typical causes of this would be when the radar first appears, or
   *when the *	screen has been damaged.
   */
-  unsigned IsRadarToRedraw : 1;
-  unsigned RadarCursorRedraw : 1;
+  unsigned IsRadarToRedraw : 1 {false};
+  unsigned RadarCursorRedraw : 1 {false};
 
   /*
   **	If the radar map is visible then this flag is true.
   */
   unsigned DoesRadarExist : 1 = 0;
-  unsigned IsRadarActive : 1;
+  unsigned IsRadarActive : 1 {false};
   unsigned IsRadarActivating : 1 = 0;
   unsigned IsRadarDeactivating : 1 = 0;
 
@@ -144,7 +144,7 @@ class RadarClass : public DisplayClass {
   ** either the radar cursor becomes normal or the radar cursor is moved
   ** again.
   */
-  unsigned SpecialRadarFrame : 3;
+  unsigned SpecialRadarFrame : 3 {0};
   unsigned RadarAnimFrame : 6 = 0;
 
   static const void* RadarAnim;
@@ -199,19 +199,19 @@ class RadarClass : public DisplayClass {
   /*
   **	If the radar map is in zoom mode, then this value will be true.
   */
-  unsigned IsZoomed : 1;
+  unsigned IsZoomed : 1 {true};
 
   /*
   ** This flag is true if the radar map is in its special show-the-player
   ** names mode.
   */
-  unsigned IsPlayerNames : 1;
+  unsigned IsPlayerNames : 1 {false};
 
   /*
   **	This is the list of radar pixels that need to be updated. Only a partial
   **	list is maintained for maximum speed.
   */
-  int PixelPtr;
+  int PixelPtr{0};
   int ZoomFactor = 0;
   enum PixelStackEnums { PIXELSTACK = 200 };
   CELL PixelStack[PIXELSTACK]{};

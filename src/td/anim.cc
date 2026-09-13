@@ -596,9 +596,6 @@ void AnimClass::operator delete(void* ptr) {
 AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
                      unsigned char timedelay, unsigned char loop, bool alt)
     : Class(&AnimTypeClass::As_Reference(animnum)) {
-  Object = nullptr;
-  Owner = HOUSE_NONE;
-
   if (Class->IsNormalized) {
     Set_Rate(static_cast<unsigned char>(Options.Normalize_Delay(Class->Delay)));
   } else {

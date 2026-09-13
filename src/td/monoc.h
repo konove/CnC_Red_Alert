@@ -146,7 +146,7 @@ class MonoClass {
  private:
   char X;       // Cursor X position.
   char Y;       // Cursor Y position.
-  char Attrib;  // Normal attribute to use if none specified.
+  char Attrib{DEFAULT_ATTRIBUTE};  // Normal attribute to use if none specified.
   int Page;     // The current page to write to.
 
   /*

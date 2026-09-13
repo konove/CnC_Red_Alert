@@ -62,14 +62,7 @@
  *=============================================================================================*/
 TextLabelClass::TextLabelClass(char* txt, int x, int y, RemapControlType* color,
                                TextPrintType style)
-    : GadgetClass(x, y, 1, 1, 0, 0) {
-  Text = txt;
-  Color = color;
-  Style = style;
-  UserData1 = 0;
-  UserData2 = 0;
-  PixWidth = -1;
-}
+    : GadgetClass(x, y, 1, 1, 0, 0), Style(style), Text(txt), Color(color) {}
 
 /***********************************************************************************************
  * TextLableClass::Draw_Me -- Graphical update routine *

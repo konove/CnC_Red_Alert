@@ -205,7 +205,7 @@ class ObjectTypeClass : public AbstractTypeClass {
   **	Is this object squashable by heavy vehicles?  If it is, then the vehicle
   **	can travel over this object and destroy it in the process.
   */
-  unsigned IsCrushable : 1;
+  unsigned IsCrushable : 1 {false};
 
   /*
   **	Does this object type NOT show up on radar scans?  If true, then in any
@@ -263,12 +263,12 @@ class ObjectTypeClass : public AbstractTypeClass {
   **	The defense of this object is greatly affected by the type of armor
   **	it possesses. This value specifies the type of armor.
   */
-  ArmorType Armor;
+  ArmorType Armor{ARMOR_NONE};
 
   /*
   **	This is the maximum strength of this object type.
   */
-  unsigned short MaxStrength;
+  unsigned short MaxStrength{0};
 
   // Image data with ownership tracking. Either:
   // - borrowed span pointing into cached MIX data (from MFCD::Retrieve)
@@ -378,13 +378,13 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	Is this object ownable by all sides in a multiplayer game? There are
   *some *	special case objects that need this override ability.
   */
-  unsigned IsDoubleOwned : 1;
+  unsigned IsDoubleOwned : 1 {false};
 
   /*
   **	If this object should be completely and always invisible to the enemy,
   *then *	this flag will be true.
   */
-  unsigned IsInvisible : 1;
+  unsigned IsInvisible : 1 {false};
 
   /*
   **	If this object can serve as a good leader for a group selected
@@ -393,13 +393,13 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	also used to indicate the primary factory when dealing with
   **	buildings.
   */
-  unsigned IsLeader : 1;
+  unsigned IsLeader : 1 {false};
 
   /*
   **	Does this object have the ability to detect the presence of a nearby
   **	cloaked object?
   */
-  unsigned IsScanner : 1;
+  unsigned IsScanner : 1 {false};
 
   /*
   **	If this object is always given its proper name rather than a generic
@@ -427,14 +427,14 @@ class TechnoTypeClass : public ObjectTypeClass {
   *For units, *	they must travel to a repair center to be repaired. If this flag
   *is true, then *	allow the player or computer AI to repair the object.
   */
-  unsigned IsRepairable : 1;
+  unsigned IsRepairable : 1 {true};
 
   /*
   **	Does this object contain a crew?  If it does, then when the object is
   *destroyed, there *	is a distinct possibility that infantry will "pop out".
   *Only units with crews can *	become "heros".
   */
-  unsigned IsCrew : 1;
+  unsigned IsCrew : 1 {false};
 
   /*
   **	This tells whether this unit should EVER be remapped when it is
@@ -447,27 +447,27 @@ class TechnoTypeClass : public ObjectTypeClass {
   /*
   ** Is the unit capable of cloaking?  Only Stealth Tank can do so now.
   */
-  unsigned IsCloakable : 1;
+  unsigned IsCloakable : 1 {false};
 
   /*
   **	Can this object self heal up to half strength? Mammoth tanks from C&C
   *had this *	feature.
   */
-  unsigned IsSelfHealing : 1;
+  unsigned IsSelfHealing : 1 {false};
 
   /*
   **	If this object explodes violently when destroyed, then this flag will be
   *true. *	The type of explosion is based on the warhead type and the
   *damage generated *	corresponds to the full strength of the object.
   */
-  unsigned IsExploding : 1;
+  unsigned IsExploding : 1 {false};
 
   /*
   **	This specifies the zone that an object of this type should recognize.
   *Zones *	of this type or lower will be considered "possible to travel
   *to".
   */
-  MZoneType MZone;
+  MZoneType MZone{MZONE_NORMAL};
 
   /*
   **	When determining threat, the range can be overridden to be the value
@@ -475,13 +475,13 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	longest weapon range the object has. If the value is zero, then the
   **	weapon range is used.
   */
-  LEPTON ThreatRange;
+  LEPTON ThreatRange{0};
 
   /*
   **	If this is a transporter object (e.g., hovercraft, chinook, APC), then
   *this *	value specifies the maximum number of passengers it may carry.
   */
-  int MaxPassengers;
+  int MaxPassengers{0};
 
   /*
   **	Most objects have the ability to reveal the terrain around themselves.
@@ -489,24 +489,24 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	this value is 0, then this unit never reveals terrain. Bullets are
   **	typically of this nature.
   */
-  int SightRange;
+  int SightRange{0};
 
   /*
   **	This is the credit cost to produce this object (presuming production is
   **	allowed).
   */
-  int Cost;
+  int Cost{0};
 
   /*
   **	The tech level that this object can be produced at.
   */
-  int Level;
+  int Level{-1};
 
   /*
   **	This specifies the building prerequisites required before an object
   **	of this type can be produced.
   */
-  long Prerequisite;
+  long Prerequisite{kStructFlagNone};
 
   /*
   **	The risk and reward values are used to determine targets and paths
@@ -515,12 +515,12 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	greatest reward will be selected. The values assigned are
   ** arbitrary.
   */
-  int Risk, Reward;
+  int Risk{0}, Reward{0};
 
   /*
   **	This value indicates the maximum speed that this object can achieve.
   */
-  MPHType MaxSpeed;
+  MPHType MaxSpeed{MPH_IMMOBILE};
 
   /*
   **	This indicates the speed (locomotion) type for this unit. Through this
@@ -532,7 +532,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	This is the maximum number of ammo shots this object can hold. If
   **	this number is -1, then this indicates unlimited ammo.
   */
-  int MaxAmmo;
+  int MaxAmmo{-1};
 
   /*
   **	This is a bit field representing the houses that are allowed to
@@ -541,13 +541,13 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	to take possession of an object type otherwise not normally allowed.
   **	This event usually occurs as a result of capture.
   */
-  long Ownable;
+  long Ownable{0};
 
   /*
   **	This is the small icon image that is used to display the object in
   **	the sidebar for construction selection purposes.
   */
-  const void* CameoData;
+  const void* CameoData{nullptr};
 
   /*
   **	The number of animation frames allotted to rotation is specified here.
@@ -562,13 +562,13 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	turret or body rotation speed expresses as 360/256ths rotation steps per
   **	game tick.
   */
-  int ROT;
+  int ROT{0};
 
   /*
   **	These are the weapons that this techno object is armed with.
   */
-  const WeaponTypeClass* PrimaryWeapon;
-  const WeaponTypeClass* SecondaryWeapon;
+  const WeaponTypeClass* PrimaryWeapon{nullptr};
+  const WeaponTypeClass* SecondaryWeapon{nullptr};
 
   /*
   **	These specify the lepton offsets to locate the exact coordinate of the
@@ -585,7 +585,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   ** Points you're awarded for destroying an object of this type, and
   ** points you lose if you lose an object of this type.
   */
-  int Points;
+  int Points{0};
 
   //--------------------------------------------------------------------
   TechnoTypeClass(RTTIType rtti, int id, int name, const char* ininame,
@@ -628,7 +628,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	checking? If false, then building off of (or adjacent to) this building
   **	is not considered.
   */
-  unsigned IsBase : 1;
+  unsigned IsBase : 1 {true};
 
   /*
   ** If this building is a fake, this flag will be set.
@@ -640,7 +640,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	bib or not. A building with a bib has a dirt patch automatically
   **	attached to the structure when it is placed.
   */
-  unsigned IsBibbed : 1;
+  unsigned IsBibbed : 1 {false};
 
   /*
   **	If this building is a special wall type, such that it exists as a
@@ -663,7 +663,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	building types, this flag will be true. Typically, military or hardened
   **	structures such as turrets cannot be captured.
   */
-  unsigned IsCaptureable : 1;
+  unsigned IsCaptureable : 1 {false};
 
   /*
   **	If this building really only has cosmetic idle animation, then this flag
@@ -678,14 +678,14 @@ class BuildingTypeClass : public TechnoTypeClass {
   *gradually reduced in effectiveness. This *	flag is for those buildings that
   *completely cease to function when the power drops below *	full.
   */
-  unsigned IsPowered : 1;
+  unsigned IsPowered : 1 {false};
 
   /*
   **	If this flag is true, then the building cannot be sold even if it could
   *have been built. This *	is especially useful for mines which can be
   *built but cannot be sold.
   */
-  unsigned IsUnsellable : 1;
+  unsigned IsUnsellable : 1 {false};
 
   /*
   **	This is the direction (from the center cell) of the building in order to
@@ -697,7 +697,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   /*
   **	Adjacent distance for building next to.
   */
-  int Adjacent;
+  int Adjacent{1};
 
   /*
   **	This flag specifies the type of object this factory building can
@@ -739,14 +739,14 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	building's storage capacity is used to determine how much Tiberium can
   **	be accumulated.
   */
-  int Capacity;
+  int Capacity{0};
 
   /*
   **	Each building type produces and consumes power. These values tell how
   **	much.
   */
-  int Power;
-  int Drain;
+  int Power{0};
+  int Drain{0};
 
   /*
   **	This is the size of the building. This size value is a rough indication
@@ -850,7 +850,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	The construction animation graphic data pointer is
   **	pointed to by this element.
   */
-  const void* BuildupData;
+  const void* BuildupData{nullptr};
 
   void Init_Anim(BStateType state, int start, int count, int rate) const;
 };
@@ -927,7 +927,7 @@ class UnitTypeClass : public TechnoTypeClass {
   **	true. Such a unit must stop and stabilize for a bit before it
   **	can fire.
   */
-  unsigned IsNoFireWhileMoving : 1;
+  unsigned IsNoFireWhileMoving : 1 {false};
 
   // Added by Aftermath; cannot be built while NewUnitsEnabled is false.
   unsigned IsAftermath : 1;
@@ -959,7 +959,7 @@ class UnitTypeClass : public TechnoTypeClass {
   /*
   **	The width or height of the largest dimension for this unit.
   */
-  int MaxSize;
+  int MaxSize{0};
 
   /*
   **	This is the explicit unit class constructor.
@@ -1047,7 +1047,7 @@ class VesselTypeClass : public TechnoTypeClass {
   **	This value is used to provide the unit with a default mission order when
   **	first created. Usually, this is a resting or idle type of order.
   */
-  MissionType Mission;
+  MissionType Mission{MISSION_GUARD};
 
   /*
   **	This is the default explosion to use when this vehicle is destroyed.
@@ -1057,7 +1057,7 @@ class VesselTypeClass : public TechnoTypeClass {
   /*
   **	The width or height of the largest dimension for this unit.
   */
-  int MaxSize;
+  int MaxSize{0};
 
   /*
   **	This is the explicit unit class constructor.
@@ -1117,14 +1117,14 @@ class InfantryTypeClass : public TechnoTypeClass {
   **	For those infantry types that can capture buildings, this flag
   **	will be set to true. Typically, this is the engineer.
   */
-  unsigned IsCapture : 1;
+  unsigned IsCapture : 1 {false};
 
   /*
   **	For infantry types that will run away from any damage causing
   **	events, this flag will be true. Typically, this is so for all
   **	civilians as well as the flame thrower guys.
   */
-  unsigned IsFraidyCat : 1;
+  unsigned IsFraidyCat : 1 {false};
 
   /*
   **	This flags whether this infantry is actually a civilian. A
@@ -1138,14 +1138,14 @@ class InfantryTypeClass : public TechnoTypeClass {
   **	flag will be true. Such infantry can enter and destroy enemy
   **	buildings.
   */
-  unsigned IsBomber : 1;
+  unsigned IsBomber : 1 {false};
 
   /*
   ** This flags whether this infantry is actually a dog.  A dog
   ** uses different voice responses, has no ammo, and runs instead
   ** of walks to attack.
   */
-  unsigned IsDog : 1;
+  unsigned IsDog : 1 {false};
 
   /*
   ** This flag specifies whether this infantry type should use the
@@ -1326,20 +1326,20 @@ class BulletTypeClass : public ObjectTypeClass {
   /*
   **	Does this bullet type fly over walls?
   */
-  unsigned IsHigh : 1;
+  unsigned IsHigh : 1 {false};
 
   /*
   ** Does this bullet need a shadow drawn under it?  Shadowed bullets
   ** use the Height value to offset their Y position.
   */
-  unsigned IsShadow : 1;
+  unsigned IsShadow : 1 {true};
 
   /*
   **	If this projectile is one that ballistically arcs from ground level, up
   *into the air and *	then back to the ground, where it explodes. Typical uses
   *of this are for grenades and *	artillery shells.
   */
-  unsigned IsArcing : 1;
+  unsigned IsArcing : 1 {false};
 
   /*
   **	Certain projectiles do not travel horizontally, but rather, vertically
@@ -1347,7 +1347,7 @@ class BulletTypeClass : public ObjectTypeClass {
   *have this value set to *	true. Dropping projectiles do not calculate
   *collision with terrain (such as walls).
   */
-  unsigned IsDropping : 1;
+  unsigned IsDropping : 1 {false};
 
   /*
   **	Is this projectile invisible?  Some bullets and weapon effects are not
@@ -1355,88 +1355,88 @@ class BulletTypeClass : public ObjectTypeClass {
   *treated like *	normal projectiles for damage purposes, but are
   *displayed using custom *	rules.
   */
-  unsigned IsInvisible : 1;
+  unsigned IsInvisible : 1 {false};
 
   /*
   **	Does this bullet explode when near the target?  Some bullets only
   *explode if *	it actually hits the target. Some explode even if nearby.
   */
-  unsigned IsProximityArmed : 1;
+  unsigned IsProximityArmed : 1 {false};
 
   /*
   **	Does this projectile spew puffs of smoke out its tail while it
   **	travels? Missiles are prime examples of this projectile type.
   */
-  unsigned IsFlameEquipped : 1;
+  unsigned IsFlameEquipped : 1 {false};
 
   /*
   **	Should fuel consumption be tracked for this projectile?  Rockets are the
   *primary *	projectile with this characteristic, but even for bullets it
   *should be checked so that *	bullets don't travel too far.
   */
-  unsigned IsFueled : 1;
+  unsigned IsFueled : 1 {false};
 
   /*
   **	Is this projectile without different facing visuals?  Most plain bullets
   *do not change *	visual imagery if their facing changes. Rockets, on the
   *other hand, are equipped with *	the full 32 facing imagery.
   */
-  unsigned IsFaceless : 1;
+  unsigned IsFaceless : 1 {true};
 
   /*
   **	If this is a typically inaccurate projectile, then this flag will be
   *true. Artillery *	is a prime example of this type.
   */
-  unsigned IsInaccurate : 1;
+  unsigned IsInaccurate : 1 {false};
 
   /*
   **	If the bullet contains translucent pixels, then this flag will be true.
   *These *	translucent pixels really are "shadow" pixels in the same style
   *as the shadow *	cast by regular ground units.
   */
-  unsigned IsTranslucent : 1;
+  unsigned IsTranslucent : 1 {false};
 
   /*
   **	If this bullet can be fired on aircraft, then this flag will be true.
   */
-  unsigned IsAntiAircraft : 1;
+  unsigned IsAntiAircraft : 1 {false};
 
   /*
   **	If this bullet can fire upon ground targets, then this flag will be
   *true.
   */
-  unsigned IsAntiGround : 1;
+  unsigned IsAntiGround : 1 {true};
 
   /*
   **	If this bullet can be fired upon submarines (that are submerged), then
   **	this flag will be true.
   */
-  unsigned IsAntiSub : 1;
+  unsigned IsAntiSub : 1 {false};
 
   /*
   **	If this bullet should lose strength as it travels toward the target,
   *then *	this flag will be true.
   */
-  unsigned IsDegenerate : 1;
+  unsigned IsDegenerate : 1 {false};
 
   /*
   **	Does this projectile travel under the water? If so, then its imagery
   *will be modified *	to look like it is doing so.
   */
-  unsigned IsSubSurface : 1;
+  unsigned IsSubSurface : 1 {false};
 
   /*
   **	If this projectile is equipped with a parachute, then this flag will be
   *set. Parachute *	bombs are usually the only one with this flag set.
   */
-  unsigned IsParachuted : 1;
+  unsigned IsParachuted : 1 {false};
 
   /*
   **	Is this unit of the humongous size?  Certain very large projectiles have
   **	this flag set. Typically, they require a special offset list so that the
   *cells *	they overlap will be properly redrawn.
   */
-  unsigned IsGigundo : 1;
+  unsigned IsGigundo : 1 {false};
 
   /*
   **	This element is a unique identification number for the bullet
@@ -1451,21 +1451,21 @@ class BulletTypeClass : public ObjectTypeClass {
   *performed. Otherwise *	the projectile is considered to be a homing
   *type.
   */
-  unsigned char ROT;
+  unsigned char ROT{0};
 
   /*
   **	Some projectiles have a built in arming distance that must elapse before
   *the *	projectile may explode. If this value is non-zero, then this
   *override is *	applied.
   */
-  int Arming;
+  int Arming{0};
 
   /*
   **	If this bullet is of the tumbling type, then this is the modulo to
   *factor *	into the game frame when determining what shape number to use
   *for the *	imagery.
   */
-  int Tumble;
+  int Tumble{0};
 
   //---------------------------------------------------------------------
   explicit BulletTypeClass(const char* name) noexcept;
@@ -1574,7 +1574,7 @@ class TemplateTypeClass : public ObjectTypeClass {
   /*
   **	Raw dimensions of this template (in icons).
   */
-  unsigned char Width, Height;
+  unsigned char Width{0}, Height{0};
 
   //----------------------------------------------------------
   TemplateTypeClass(TemplateType iconset, int theater, const char* ininame,

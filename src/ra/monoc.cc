@@ -104,15 +104,7 @@ const MonoClass::BoxDataType MonoClass::CharData[COUNT] = {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-MonoClass::MonoClass()
-    : X(0),
-      Y(0),
-      Attrib(NORMAL),
-      Page(0),
-      SubX(0),
-      SubY(0),
-      SubW(COLUMNS),
-      SubH(LINES) {
+MonoClass::MonoClass() {
   int index;
 
   for (index = 0; index < MAX_MONO_PAGES; index++) {

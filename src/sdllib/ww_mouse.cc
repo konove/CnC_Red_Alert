@@ -95,8 +95,7 @@ WWMouseClass::WWMouseClass([[maybe_unused]] GraphicViewPortClass* scr,
                            int max_width, int max_height)
     : MouseCursor(static_cast<base::ssize>(max_width) * max_height),
       MaxWidth(max_width),
-      MaxHeight(max_height),
-      State(0) {
+      MaxHeight(max_height) {
   Set_Cursor_Clip();
   Mouse = this;
 }

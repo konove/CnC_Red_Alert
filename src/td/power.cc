@@ -84,19 +84,7 @@ PowerClass::PowerButtonClass PowerClass::PowerButton;
  *                                                                                             *
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
-PowerClass::PowerClass() {
-  IsPowerToRedraw = false;
-  RecordedDrain = -1;
-  RecordedPower = -1;
-  DesiredDrainHeight = 0;
-  DesiredPowerHeight = 0;
-  DrainHeight = 0;
-  PowerHeight = 0;
-  PowerBounce = 0;
-  DrainBounce = 0;
-  DrainDir = 0;
-  PowerDir = 0;
-}
+PowerClass::PowerClass() = default;
 
 /***********************************************************************************************
  * PowerClass::Init_Clear -- Clears all the power bar variables. *

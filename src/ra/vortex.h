@@ -197,7 +197,7 @@ class ChronalVortexClass {
   /*
   ** Is vortex currently active?
   */
-  int Active : 1;
+  int Active : 1 {0};
 
   /*
   ** Is the vortex winding down?
@@ -217,7 +217,7 @@ class ChronalVortexClass {
   /*
   ** Theater that lookup table is good for.
   */
-  TheaterType Theater;
+  TheaterType Theater{THEATER_NONE};
 
   /*
   ** Last frame that vortex attacked on
@@ -260,23 +260,24 @@ class ChronalVortexClass {
   /*
   ** Range in cells of the vortex lightning
   */
-  int Range;
+  int Range{10};
 
   /*
   ** Max speed in leptons per frame of the vortex.
   */
-  int Speed;
+  int Speed{10};
 
   /*
   ** Damge of vortex lightning zap.
   */
-  int Damage;
+  int Damage{200};
 
   /*
   ** Offscreen buffer to render vortex into. This is needed so we can handle
   *clipping.
   */
-  GraphicBufferClass* RenderBuffer;
+  GraphicBufferClass* RenderBuffer{
+      nullptr};  // We havn't allocated it yet. It will be allocated as needed.
 };
 
 class ArchiveReader;

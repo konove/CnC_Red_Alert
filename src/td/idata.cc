@@ -1457,16 +1457,15 @@ InfantryTypeClass::InfantryTypeClass(
                       false, false, true, true, true, true, false, false,
                       is_theater, false, false, false, true, false, ammo,
                       strength, maxspeed, sightrange, cost, scenario, risk,
-                      reward, ownable, primary, secondary, ARMOR_NONE) {
-  IsFemale = is_female;
-  IsCrawling = is_crawling;
-  IsCapture = is_capture;
-  IsFraidyCat = is_fraidycat;
-  IsCivilian = is_civilian;
-  Type = type;
-  FireLaunch = firelaunch;
-  ProneLaunch = pronelaunch;
-
+                      reward, ownable, primary, secondary, ARMOR_NONE),
+      IsFemale(is_female),
+      IsCrawling(is_crawling),
+      IsCapture(is_capture),
+      IsFraidyCat(is_fraidycat),
+      IsCivilian(is_civilian),
+      Type(type),
+      FireLaunch(firelaunch),
+      ProneLaunch(pronelaunch) {
   /*
   **	Set the animation sequence custom values.
   */

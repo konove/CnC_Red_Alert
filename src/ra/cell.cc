@@ -167,26 +167,8 @@
  *=============================================================================================*/
 CellClass::CellClass()
     : ID(static_cast<short>(Map.ID(this))),
-      IsPlot(false),
-      IsCursorHere(false),
-      IsMapped(false),
-      IsVisible(false),
-      IsWaypoint(false),
-      IsRadarCursor(false),
-      IsFlagged(false),
-      IsToShroud(false),
-      Jammed(0),
-      Trigger(nullptr),
-      TType(TEMPLATE_NONE),
-      TIcon(0),
-      Overlay(OVERLAY_NONE),
-      OverlayData(0),
-      Smudge(SMUDGE_NONE),
-      SmudgeData(0),
-      Owner(HOUSE_NONE),
-      InfType(HOUSE_NONE),
-      OccupierPtr(nullptr),
-      Land(LAND_CLEAR) {
+
+      Trigger(nullptr) {
   for (int zone = 0; std::cmp_less(zone, magic_enum::enum_count<MZoneType>());
        zone++) {
     Zones[zone] = 0;

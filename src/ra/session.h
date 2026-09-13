@@ -549,12 +549,12 @@ class SessionClass {
   //.....................................................................
   // The type of session being played
   //.....................................................................
-  GameType Type;
+  GameType Type{GAME_NORMAL};
 
   //.....................................................................
   // The current communications protocol
   //.....................................................................
-  CommProtocolType CommProtocol;
+  CommProtocolType CommProtocol{DEFAULT_COMM_PROTOCOL};
 
   //.....................................................................
   // Game options
@@ -564,7 +564,7 @@ class SessionClass {
   //.....................................................................
   // Unique workstation ID, for detecting my own packets
   //.....................................................................
-  int UniqueID;
+  int UniqueID{0};
 
   //.....................................................................
   // Player's local options
@@ -572,15 +572,15 @@ class SessionClass {
   char Handle[MPLAYER_NAME_MAX]{};  // player name
   PlayerColorType PrefColor;      // preferred color index
   PlayerColorType ColorIdx;       // actual color index
-  HousesType House;               // GDI / NOD
-  int ObiWan;                     // 1 = player can see all
-  int Solo;                       // 1 = player can play alone
+  HousesType House{HOUSE_GOOD};   // GDI / NOD
+  int ObiWan{0};                  // 1 = player can see all
+  int Solo{0};                    // 1 = player can play alone
 
   //.....................................................................
   // Max allowable # of players & actual # of (human) players
   //.....................................................................
-  int MaxPlayers;
-  int NumPlayers;
+  int MaxPlayers{8};
+  int NumPlayers{0};
 
   //.....................................................................
   // Frame-sync'ing timing variables
@@ -588,8 +588,8 @@ class SessionClass {
   // a given packet.  It's set by the RESPONSE_TIME event.
   // 'FrameSendRate' is the # frames between data packets
   //.....................................................................
-  int MaxAhead;
-  int64_t FrameSendRate;
+  int MaxAhead{5};
+  int64_t FrameSendRate{DEFAULT_FRAME_SEND_RATE};
 
   int DesiredFrameRate = 0;
 
@@ -600,13 +600,13 @@ class SessionClass {
   //.....................................................................
   // This flag is set when we've loaded a multiplayer game.
   //.....................................................................
-  int LoadGame;
+  int LoadGame{0};
 
   //.....................................................................
   // This flag is set when the modem game saves the game due to a lost
   // connection.
   //.....................................................................
-  int EmergencySave;
+  int EmergencySave{0};
 
   //.....................................................................
   // List of scenarios & their file numbers
@@ -632,7 +632,7 @@ class SessionClass {
   MessageListClass Messages;
   IPXAddressClass MessageAddress;
   char LastMessage[MAX_MESSAGE_LENGTH]{};
-  unsigned WWChat : 1;  // 1 = go into special WW Chat mode
+  unsigned WWChat : 1 {0};  // 1 = go into special WW Chat mode
 
   //.....................................................................
   // This is the multiplayer scorekeeping system
@@ -656,23 +656,23 @@ class SessionClass {
   // For Recording & Playing back a file
   //.....................................................................
   CCFileClass RecordFile;
-  unsigned Record : 1;
-  unsigned Play : 1;
-  unsigned Attract : 1;
+  unsigned Record : 1 {0};  // set via command line
+  unsigned Play : 1 {0};
+  unsigned Attract : 1 {0};
 
   //.....................................................................
   // IPX-specific variables
   //.....................................................................
-  int IsBridge;                               // 1 = we're crossing a bridge
+  int IsBridge{0};                            // 1 = we're crossing a bridge
   IPXAddressClass BridgeNet;                  // address of bridge
-  bool NetStealth;                            // makes us invisible
-  bool NetProtect;                            // keeps others from messaging us
-  bool NetOpen;                               // 1 = game is open for joining
+  bool NetStealth{0};                         // makes us invisible
+  bool NetProtect{1};                         // keeps others from messaging us
+  bool NetOpen{0};                            // 1 = game is open for joining
   char GameName[MPLAYER_NAME_MAX]{};          // game's name
   GlobalPacketType GPacket{};                 // global packet
   int GPacketlen = 0;                         // global packet length
   IPXAddressClass GAddress;                   // address of sender
-  unsigned short GProductID;                  // product ID of sender
+  unsigned short GProductID{0};               // product ID of sender
   char MetaPacket[MAX_IPX_PACKET_SIZE]{};     // packet building buffer
   int MetaSize;                               // size of MetaPacket
   DynamicVectorClass<NodeNameType*> Games;    // list of games
@@ -682,10 +682,10 @@ class SessionClass {
   //.....................................................................
   // Modem-specific variables
   //.....................................................................
-  unsigned ModemService : 1;          // 1 = service modem in Call_Back
-  int CurPhoneIdx;                    // phone listing index
+  unsigned ModemService : 1 {true};     // 1 = service modem in Call_Back
+  int CurPhoneIdx{0};                   // phone listing index
   SerialSettingsType SerialDefaults{};  // default serial settings
-  ModemGameType ModemType;            // caller or answerer?
+  ModemGameType ModemType{MODEM_NULL_HOST};  // caller or answerer?
 
   DynamicVectorClass<PhoneEntryClass*> PhoneBook;
   DynamicVectorClass<char*> InitStrings;
@@ -695,15 +695,14 @@ class SessionClass {
   //.....................................................................
   // For finding Sync Bugs
   //.....................................................................
-  long TrapFrame;             // frame # to start trapping 'TrapObject'
-  RTTIType TrapObjType;       // type of object to trap
+  long TrapFrame{0x7fffffff};       // frame # to start trapping 'TrapObject'
+  RTTIType TrapObjType{RTTI_NONE};  // type of object to trap
   TrapObjectType TrapObject{};  // ptr to object to trap (watch)
-  COORDINATE TrapCoord;       // coord of object, 0 = ignore
-  TARGET TrapTarget;          // Target # of object, 0 = ignore
-  CellClass* TrapCell;        // Ptr to cell to trap (watch)
-  int TrapCheckHeap;          // true = check the heap as of TrapFrame
-  long TrapPrintCRC;          // Frame # to print CRC state file
-
+  COORDINATE TrapCoord{0};      // coord of object, 0 = ignore
+  TARGET TrapTarget{kTargetNone};  // Target # of object, 0 = ignore
+  CellClass* TrapCell{nullptr};    // Ptr to cell to trap (watch)
+  int TrapCheckHeap{0};            // true = check the heap as of TrapFrame
+  long TrapPrintCRC{0};            // Frame # to print CRC state file
 };
 
 class ArchiveReader;

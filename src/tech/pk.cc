@@ -67,10 +67,10 @@
  *                                                                                             *
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
-PKey::PKey(const void* exponent, const void* modulus) {
+PKey::PKey(const void* exponent, const void* modulus)
+    : BitPrecision(Modulus.BitCount() - 1) {
   Modulus.DERDecode((unsigned char*)modulus);
   Exponent.DERDecode((unsigned char*)exponent);
-  BitPrecision = Modulus.BitCount() - 1;
 }
 
 /***********************************************************************************************

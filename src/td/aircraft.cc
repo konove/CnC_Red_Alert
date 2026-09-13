@@ -267,7 +267,9 @@ void AircraftClass::operator delete(void* ptr) {
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 AircraftClass::AircraftClass(AircraftType classid, HousesType house)
-    : FootClass(house), Class(&AircraftTypeClass::As_Reference(classid)) {
+    : FootClass(house),
+      Class(&AircraftTypeClass::As_Reference(classid)),
+      SecondaryFacing(PrimaryFacing) {
   /*
   **	For two shooters, clear out the second shot flag -- it will be set the
   *first time *	the object fires. For non two shooters, set the flag since it
@@ -277,16 +279,9 @@ AircraftClass::AircraftClass(AircraftType classid, HousesType house)
   */
   IsSecondShot = Class->IsTwoShooter == 0;
   Ammo = Class->MaxAmmo;
-  AttacksRemaining = 3;
-  Altitude = FLIGHT_LEVEL;
-  IsLanding = false;
-  IsTakingOff = false;
-  IsHovering = false;
-  IsHoming = false;
+
   Strength = Class->MaxStrength;
   NavCom = kTargetNone;
-  SecondaryFacing = PrimaryFacing;
-  Jitter = 0;
 
   /*
   ** Keep count of the number of units created. Dont track cargo planes as they

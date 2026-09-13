@@ -80,17 +80,17 @@ class OptionsClass {
   unsigned int GameSpeed;
 
   int ScrollRate;  // Distance to scroll.
-  unsigned char Brightness;
-  unsigned char Volume;          // Volume for sound effects.
-  unsigned char ScoreVolume;     // Volume for scores.
-  unsigned char Contrast;        // Value
-  unsigned char Color;           // Saturation
-  unsigned char Tint;            // Hue
-  unsigned AutoScroll : 1;       // Does map autoscroll?
-  unsigned IsScoreRepeat : 1;    // Score should repeat?
-  unsigned IsScoreShuffle : 1;   // Score list should shuffle?
-  unsigned IsDeathAnnounce : 1;  // Announce enemy deaths?
-  unsigned IsFreeScroll : 1;     // Allow free direction scrolling?
+  unsigned char Brightness{0x80};
+  unsigned char Volume{0xE0};            // Volume for sound effects.
+  unsigned char ScoreVolume{0x90};       // Volume for scores.
+  unsigned char Contrast{0x80};          // Value
+  unsigned char Color{0x80};             // Saturation
+  unsigned char Tint{0x80};              // Hue
+  unsigned AutoScroll : 1 {true};        // Does map autoscroll?
+  unsigned IsScoreRepeat : 1 {false};    // Score should repeat?
+  unsigned IsScoreShuffle : 1 {false};   // Score list should shuffle?
+  unsigned IsDeathAnnounce : 1 {false};  // Announce enemy deaths?
+  unsigned IsFreeScroll : 1 {false};     // Allow free direction scrolling?
 
  protected:
   void Adjust_Palette(void* oldpal, void* newpal, unsigned char brightness,

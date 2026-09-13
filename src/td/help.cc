@@ -96,16 +96,7 @@ CountDownTimerClass HelpClass::CountDownTimer;
  *                                                                                             *
  * HISTORY: * 11/18/1994 JLB : Created. *
  *=============================================================================================*/
-HelpClass::HelpClass() {
-  X = 0;
-  Y = 0;
-  Width = 0;
-  Text = TXT_NONE;
-  Color = LTGREY;
-  CountDownTimer.Set(0);
-  IsRight = false;
-  Cost = 0;
-}
+HelpClass::HelpClass() { CountDownTimer.Set(0); }
 
 /***********************************************************************************************
  * HelpClass::Init_Clear -- Sets help system to a known state. *

@@ -148,46 +148,10 @@ other data being out of sync.
 //***********************************************************************************************
 WOL_GameSetupDialog::WOL_GameSetupDialog(WolapiObject* wolapi, bool bIsHost)
     : bHost(bIsHost),
-      bHostSayGo(false),
-      bHostWaitingForGoTrigger(false),
-      bExitForGameTrigger(false),
-      pILPlayers(nullptr),
-      pILScens(nullptr),
-      pILDisc(nullptr),
-      pEditSend(nullptr),
-      pGaugeCount(nullptr),
-      pGaugeLevel(nullptr),
-      pGaugeCredits(nullptr),
-      pGaugeAIPlayers(nullptr),
-      pCheckListOptions(nullptr),
+
       //		pTextBtnOk( NULL ),
-      pTextBtnCancel(nullptr),
-      pTextBtnAcceptStart(nullptr),
-      pTextBtnAction(nullptr),
-      pStaticDescrip(nullptr),
-      pStaticUnit(nullptr),
-      pStaticLevel(nullptr),
-      pStaticCredits(nullptr),
-      pStaticAIPlayers(nullptr),
-      pDropListHouse(nullptr),
-      pCheckAftermathUnits(nullptr),
-      pShpBtnScenarioRA(nullptr),
-      pShpBtnScenarioCS(nullptr),
-      pShpBtnScenarioAM(nullptr),
-      pShpBtnScenarioUser(nullptr),
-      pTTipAcceptStart(nullptr),
-      pTTipCancel(nullptr),
-      pTTipAction(nullptr),
-      pWO(wolapi),
-      HousePrevious(HOUSE_NONE),
-      nHostLastParamID(0),
-      nGuestLastParamID(0),
-      bWaitingToStart(false),
-      bParamsReceived(false),
-      bLeaveDueToRulesMismatchTrigger(false),
-      pToolTipHead(nullptr),
-      pToolTipHitLast(nullptr),
-      ScenKindCurrent(SCENARIO_UNINITIALIZED) {
+
+      pWO(wolapi) {
   *szSendBuffer = 0;
   *szHouseBuffer = 0;
   memset(&GParamsLastSent, 0, sizeof(GAMEPARAMS));

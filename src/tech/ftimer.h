@@ -75,15 +75,13 @@ class Stopwatch {
 
   int64_t start_tick_;
   // Total ticks accumulated across stop/start cycles.
-  int64_t accumulated_ticks_;
-  bool running_;
+  int64_t accumulated_ticks_{0};
+  bool running_{true};
 };
 
 template <TickSource T>
 Stopwatch<T>::Stopwatch() noexcept
-    : start_tick_(static_cast<int64_t>(T::Tick())),
-      accumulated_ticks_(0),
-      running_(true) {}
+    : start_tick_(static_cast<int64_t>(T::Tick())) {}
 
 template <TickSource T>
 template <class Archive>
@@ -182,14 +180,12 @@ class Timer {
   int64_t start_tick_;
   // Ticks remaining as of the last anchor point (Set, Stop, or construction).
   int64_t delay_time_;
-  bool running_;
+  bool running_{true};
 };
 
 template <TickSource T>
 Timer<T>::Timer(int64_t set) noexcept
-    : start_tick_(static_cast<int64_t>(T::Tick())),
-      delay_time_(set),
-      running_(true) {}
+    : start_tick_(static_cast<int64_t>(T::Tick())), delay_time_(set) {}
 
 template <TickSource T>
 template <class Archive>

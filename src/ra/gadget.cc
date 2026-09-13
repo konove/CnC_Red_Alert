@@ -128,9 +128,9 @@ GadgetClass::GadgetClass(int x, int y, int w, int h, unsigned flags,
       Y(y),
       Width(w),
       Height(h),
-      IsToRepaint(false),
+
       IsSticky(sticky),
-      IsDisabled(false),
+
       Flags(flags) {
   if (IsSticky) {
     Flags |= LEFTPRESS | LEFTRELEASE;

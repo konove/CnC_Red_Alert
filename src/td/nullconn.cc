@@ -79,14 +79,14 @@ NullModemConnClass::NullModemConnClass(int numsend, int numreceive, int maxlen,
                                        unsigned short magicnum)
     : NonSequencedConnClass(
           numsend, numreceive, maxlen, magicnum,
-          60,    // Retry Delta Time
-          -1,    // Max Retries (-1 means ignore this timeout parameter)
-          1200)  // Timeout: 20 seconds
+          60,  // Retry Delta Time
+          -1,  // Max Retries (-1 means ignore this timeout parameter)
+          1200),
+      SendBuf(new char[Actual_Max_Packet()])  // Timeout: 20 seconds
 {
   /*------------------------------------------------------------------------
   Pre-set the port value to NULL, so Send won't send until we've been Init'd
   ------------------------------------------------------------------------*/
-  PortHandle = nullptr;
 
   /*------------------------------------------------------------------------
   Allocate the Send Buffer; the parent constructor has set MaxPacketLen,
@@ -94,7 +94,6 @@ NullModemConnClass::NullModemConnClass(int numsend, int numreceive, int maxlen,
   ------------------------------------------------------------------------*/
   //	SendBuf = new char [MaxPacketLen + sizeof(int) * 3];
   // new char[] provides alignment for the packet headers stored at its base.
-  SendBuf = new char[Actual_Max_Packet()];
 
 } /* end of NullModemConnClass */
 

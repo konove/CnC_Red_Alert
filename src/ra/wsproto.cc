@@ -82,7 +82,6 @@ typedef int socklen_t;
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define INVALID_SOCKET (-1)
 // #define INVALID_HANDLE_VALUE NULL
 
 #define closesocket close
@@ -108,11 +107,7 @@ static void Socket_Event_Handler(int socket, SocketEvent event, void* data) {
  *                                                                                             *
  * HISTORY: * 3/20/96 2:51PM ST : Created *
  *=============================================================================================*/
-WinsockInterfaceClass::WinsockInterfaceClass() {
-  WinsockInitialised = false;
-  ASync = nullptr;
-  Socket = INVALID_SOCKET;
-}
+WinsockInterfaceClass::WinsockInterfaceClass() = default;
 
 /***********************************************************************************************
  * WIC::~WinsockInterfaceClass -- destructor for the WinsockInterfaceClass *

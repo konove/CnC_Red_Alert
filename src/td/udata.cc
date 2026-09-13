@@ -1288,26 +1288,25 @@ UnitTypeClass::UnitTypeClass(
                       is_immune, false, is_twoshooter, is_turret_equipped,
                       is_repairable, is_buildable, is_crew, ammo, strength,
                       maxSpeed, sightrange, cost, scenario, risk, reward,
-                      ownable, primary, secondary, armor) {
-  Explosion = exp;
-  IsCrateGoodie = is_goodie;
-  IsPieceOfEight = is_eight;
-  IsCloakable = is_cloakable;
-  IsChunkyShape = is_chunky;
-  IsCrusher = is_crusher;
-  IsFireAnim = is_fire_anim;
-  IsGigundo = is_gigundo;
-  IsLockTurret = is_lock_turret;
-  IsRadarEquipped = is_radar_equipped;
-  IsToHarvest = is_harvest;
-  IsTracked = is_tracked;
-  IsAnimating = is_animating;
-  Mission = order;
-  ROT = static_cast<unsigned char>(rot);
-  Speed = speed;
-  TurretOffset = static_cast<signed char>(toffset);
-  Type = type;
-}
+                      ownable, primary, secondary, armor),
+      IsCrateGoodie(is_goodie),
+      IsPieceOfEight(is_eight),
+      IsCrusher(is_crusher),
+      IsToHarvest(is_harvest),
+      IsChunkyShape(is_chunky),
+      IsRadarEquipped(is_radar_equipped),
+      IsFireAnim(is_fire_anim),
+      IsLockTurret(is_lock_turret),
+      IsTracked(is_tracked),
+      IsGigundo(is_gigundo),
+      IsCloakable(is_cloakable),
+      IsAnimating(is_animating),
+      Type(type),
+      Speed(speed),
+      ROT(static_cast<unsigned char>(rot)),
+      TurretOffset(static_cast<signed char>(toffset)),
+      Mission(order),
+      Explosion(exp) {}
 
 /***********************************************************************************************
  * UnitTypeClass::Occupy_List -- Returns with unit occupation list. *

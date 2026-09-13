@@ -64,20 +64,20 @@ class CellClass {
   *this flag will be set. It gets cleared *	when the cell graphic is updated
   *to the radar map.
   */
-  unsigned IsPlot : 1;
+  unsigned IsPlot : 1 {false};
 
   /*
   **	Does this cell contain the special placement cursor graphic?  This
   *graphic is *	present when selecting a site for building placement.
   */
-  unsigned IsCursorHere : 1;
+  unsigned IsCursorHere : 1 {false};
 
   /*
   **	Is this cell mapped by the player?  A mapped cell is visible. An
   *unmapped cell *	is covered in a dark shroud. In addition to visibility,
   *mapped cells are the only *	legal place for transports to land.
   */
-  unsigned IsMapped : 1;
+  unsigned IsMapped : 1 {false};
 
   /*
   **	If any part of this cell is visible (even just peeking out from under
@@ -85,56 +85,56 @@ class CellClass {
   *this flag set, but unmapped *	cells might not -- it depends on where
   *the shadow edge is located.
   */
-  unsigned IsVisible : 1;
+  unsigned IsVisible : 1 {false};
 
   /*
   ** Every cell can be assigned a trigger. The same trigger can be assigned to
   ** multiple cells. This bitflag indicates whether this cell has a trigger.
   ** The trigger pointers for all cells must be stored elsewhere.
   */
-  unsigned IsTrigger : 1;
+  unsigned IsTrigger : 1 {false};
 
   /*
   ** Every cell can be assigned a waypoint.  A waypoint can only be assigned
   ** to one cell, and vice-versa.  This bit simply indicates whether this
   ** cell is assigned a waypoint or not.
   */
-  unsigned IsWaypoint : 1;
+  unsigned IsWaypoint : 1 {false};
 
   /*
   ** Is this cell currently under the radar map cursor?  If so then it
   **   needs to be updated whenever the map is updated.
   */
-  unsigned IsRadarCursor : 1;
+  unsigned IsRadarCursor : 1 {false};
 
   /*
   **	If this cell contains a house flag, then this will be true. The actual
   *house *	flag it contains is specified by the Owner field.
   */
-  unsigned IsFlagged : 1;
+  unsigned IsFlagged : 1 {false};
 
   /*
   **	This contains the icon number and set to use for the base
   **	of the terrain. All rendering on an icon occurs AFTER the icon
   **	specified by this element is rendered. It is the lowest of the low.
   */
-  TemplateType TType;
-  unsigned char TIcon;
+  TemplateType TType{TEMPLATE_NONE};
+  unsigned char TIcon{0};
 
   /*
   **	The second layer of 'terrain' icons is represented by a simple
   **	type number and a value byte. This is sufficient for handling
   **	concrete and walls.
   */
-  OverlayType Overlay;
-  unsigned char OverlayData;
+  OverlayType Overlay{OVERLAY_NONE};
+  unsigned char OverlayData{0};
 
   /*
   **	This is used to specify any special 'stain' overlay icon. This
   **	typically includes infantry bodies or other temporary marks.
   */
-  SmudgeType Smudge;
-  unsigned char SmudgeData;
+  SmudgeType Smudge{SMUDGE_NONE};
+  unsigned char SmudgeData{0};
 
   /*
   **	Smudges and walls need to record ownership values. For walls, this
@@ -142,20 +142,20 @@ class CellClass {
   **	allows building over smudges that are no longer attached to buildings
   **	in addition to fixing the adjacent placement logic.
   */
-  HousesType Owner;
+  HousesType Owner{HOUSE_NONE};
 
   /*
   ** This flag tells you what type of infantry currently occupy the
   ** cell or are moving into it.
   */
-  HousesType InfType;
+  HousesType InfType{HOUSE_NONE};
 
   /*
   **	These point to the object(s) that are located in this cell or overlap
   **	this cell.
   */
-  ObjectClass* OccupierPtr;
-  ObjectClass* Overlappers[3];
+  ObjectClass* OccupierPtr{nullptr};
+  ObjectClass* Overlappers[3]{nullptr, nullptr, nullptr};
 
   /*
   **	This array of bit flags is used to indicate which sub positions
@@ -275,7 +275,7 @@ class CellClass {
   int Validate() const;
 
  private:
-  LandType Land;  // The land type of this cell.
+  LandType Land{LAND_CLEAR};  // The land type of this cell.
 };
 
 extern template void CellClass::Serialize<ArchiveWriter>(ArchiveWriter&);

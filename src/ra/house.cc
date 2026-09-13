@@ -737,13 +737,11 @@ HouseClass::HouseClass()
       ID(Houses.ID(this)),
       Difficulty(DIFF_NORMAL),
       ActLike(HOUSE_NONE),
-      IsActive(true),
+
       IQ(0),
       WhoLastHurtMe(HOUSE_NONE),
-      ZoneInfo{},
-      RemapColor(PCOLOR_NONE),
-      IniName{},
-      InitialName{} {
+
+      RemapColor(PCOLOR_NONE) {
   Init_Trackers();
 }
 
@@ -784,16 +782,11 @@ HouseClass::~HouseClass() {
  * HISTORY: * 07/31/1996 JLB : Created. *
  *=============================================================================================*/
 HouseStaticClass::HouseStaticClass()
-    : IQ(0),
-      TechLevel(1),
-      Allies(0),
-      MaxUnit(Rule.UnitMax / 6),
+    : MaxUnit(Rule.UnitMax / 6),
       MaxBuilding(Rule.BuildingMax / 6),
       MaxInfantry(Rule.InfantryMax / 6),
       MaxVessel(Rule.VesselMax / 6),
-      MaxAircraft(Rule.UnitMax / 6),
-      InitialCredits(0),
-      Edge(SOURCE_NORTH) {}
+      MaxAircraft(Rule.UnitMax / 6) {}
 
 /***********************************************************************************************
  * HouseClass::Can_Build -- General purpose build legality checker. *

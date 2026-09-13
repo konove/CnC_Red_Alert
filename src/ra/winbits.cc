@@ -16,8 +16,7 @@ LockedWindow::LockedWindow(WindowNumberType window)
             WindowList[window][WINDOWX] + LogicPage->Get_XPos(),
             WindowList[window][WINDOWY] + LogicPage->Get_YPos(),
             WindowList[window][WINDOWWIDTH], WindowList[window][WINDOWHEIGHT]),
-      bits_(nullptr),
-      stride_(0),
+
       locked_(view_.Lock() != 0) {
   if (locked_) {
     // GraphicViewPortClass calls the end-of-line skip the "pitch", so the

@@ -101,26 +101,9 @@ MessageListClass::MessageListClass() {
   //------------------------------------------------------------------------
   // Init all data members
   //------------------------------------------------------------------------
-  MessageList = nullptr;
-  MessageX = 0;
-  MessageY = 0;
-  MaxMessages = 0;
-  MaxChars = 0;
-  Height = 0;
 
-  EnableOverflow = 0;
-  AdjustEdit = 0;
-  IsEdit = 0;
-  EditX = 0;
-  EditY = 0;
-  EditLabel = nullptr;
   EditBuf[0] = 0;
   OverflowBuf[0] = 0;
-  EditCurPos = 0;
-  EditInitPos = 0;
-  CursorChar = 0;
-  OverflowStart = 0;
-  OverflowEnd = 0;
 
   for (i = 0; i < MAX_NUM_MESSAGES; i++) {
     BufferAvail[i] = 1;

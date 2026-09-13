@@ -56,10 +56,10 @@ class DynamicVectorClass : public VectorClass<T> {
 
  protected:
   // Number of valid elements (may be less than capacity).
-  base::ssize ActiveCount;
+  base::ssize ActiveCount{0};
 
   // Elements to add when growing (0 disables auto-grow).
-  base::ssize GrowthStep;
+  base::ssize GrowthStep{10};
 
  private:
   // Makes sure at least one unused slot exists past ActiveCount, growing the
@@ -71,10 +71,7 @@ class DynamicVectorClass : public VectorClass<T> {
 
 template <class T>
 DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, T* array)
-    : VectorClass<T>(size, array) {
-  GrowthStep = 10;
-  ActiveCount = 0;
-}
+    : VectorClass<T>(size, array) {}
 
 // Resizes capacity. Truncates ActiveCount if new size is smaller.
 template <class T>

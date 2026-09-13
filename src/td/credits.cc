@@ -74,14 +74,7 @@
 #include "td/mapedit.h"
 #include "td/tab.h"
 
-CreditClass::CreditClass() {
-  IsToRedraw = false;
-  IsUp = false;
-  IsAudible = false;
-  Credits = 0;
-  Current = 0;
-  Countdown = 0;
-}
+CreditClass::CreditClass() = default;
 
 /***********************************************************************************************
  * CreditClass::Graphic_Logic -- Handles the credit redraw logic. *

@@ -1244,15 +1244,14 @@ TemplateTypeClass::TemplateTypeClass(TemplateType iconset, int theater,
                                      LandType altland,
                                      const char* alticons) noexcept
     : ObjectTypeClass(false, false, false, true, false, false, true, true,
-                      fullname, ininame, ARMOR_NONE, 0) {
-  Theater = static_cast<unsigned char>(theater);
-  AltIcons = alticons;
-  AltLand = altland;
-  Type = iconset;
-  Land = land;
-  Width = static_cast<unsigned char>(width);
-  Height = static_cast<unsigned char>(height);
-}
+                      fullname, ininame, ARMOR_NONE, 0),
+      Type(iconset),
+      Theater(static_cast<unsigned char>(theater)),
+      Land(land),
+      Width(static_cast<unsigned char>(width)),
+      Height(static_cast<unsigned char>(height)),
+      AltLand(altland),
+      AltIcons(alticons) {}
 
 /***********************************************************************************************
  * TemplateTypeClass::From_Name -- Determine template from ASCII name. *

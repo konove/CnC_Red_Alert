@@ -81,11 +81,9 @@
 SuperClass::SuperClass(int recharge, bool powered, VoxType charging,
                        VoxType ready, VoxType impatient, VoxType suspend)
     : IsPowered(powered),
-      IsPresent(false),
-      IsOneTime(false),
-      IsReady(false),
+
       Control(0),
-      OldStage(-1),
+
       VoxRecharge(ready),
       VoxCharging(charging),
       VoxImpatient(impatient),

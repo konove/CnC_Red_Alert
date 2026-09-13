@@ -1,28 +1,7 @@
 // Cell defaults and sparse-save selection, independent of the game session.
 #include "td/cell.h"
 
-CellClass::CellClass()
-    : IsPlot(false),
-      IsCursorHere(false),
-      IsMapped(false),
-      IsVisible(false),
-      IsTrigger(false),
-      IsWaypoint(false),
-      IsRadarCursor(false),
-      IsFlagged(false),
-      TType(TEMPLATE_NONE),
-      TIcon(0),
-      Overlay(OVERLAY_NONE),
-      OverlayData(0),
-      Smudge(SMUDGE_NONE),
-      SmudgeData(0),
-      Owner(HOUSE_NONE),
-      InfType(HOUSE_NONE),
-      OccupierPtr(nullptr),
-      Overlappers{nullptr, nullptr, nullptr},
-      Land(LAND_CLEAR) {
-  Flag.Composite = 0;
-}
+CellClass::CellClass() { Flag.Composite = 0; }
 
 void CellClass::Reset() {
   IsPlot = false;

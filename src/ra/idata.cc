@@ -956,11 +956,9 @@ InfantryTypeClass::InfantryTypeClass(
                       false, is_theater, false, true, true, 8, SPEED_FOOT),
       IsFemale(is_female),
       IsCrawling(is_crawling),
-      IsCapture(false),
-      IsFraidyCat(false),
+
       IsCivilian(is_civilian),
-      IsBomber(false),
-      IsDog(false),
+
       IsRemapOverride(is_remap_override),
       IsAftermath(is_aftermath),
       Type(type),

@@ -192,31 +192,31 @@ class MessageListClass {
   //.....................................................................
   // Private Data
   //.....................................................................
-  TextLabelClass* MessageList;  // list of messages
-  int MessageX;                 // x-coord of upper-left
-  int MessageY;                 // y-coord of upper-left
-  int MaxMessages;              // max messages allowed
-  int MaxChars;                 // max allowed chars per message
-  int Height;                   // height in pixels
+  TextLabelClass* MessageList{nullptr};  // list of messages
+  int MessageX{0};                       // x-coord of upper-left
+  int MessageY{0};                       // y-coord of upper-left
+  int MaxMessages{0};                    // max messages allowed
+  int MaxChars{0};                       // max allowed chars per message
+  int Height{0};                         // height in pixels
 
   //.....................................................................
   // Data for the edit field: the edit field will either appear at
   // exact coordinates specified by the application, or it will appear
   // vertically above the other messages.
   //.....................................................................
-  unsigned EnableOverflow : 1;            // 1 = enable overflow feature
-  unsigned IsEdit : 1;                    // 1 = there's an edit field
-  unsigned AdjustEdit : 1;                // 1 = edit field appears over msgs
-  int EditX;                              // x-coord of edit field
-  int EditY;                              // y-coord of edit field
-  TextLabelClass* EditLabel;              // ptr to current edit label
+  unsigned EnableOverflow : 1 {0};          // 1 = enable overflow feature
+  unsigned IsEdit : 1 {0};                  // 1 = there's an edit field
+  unsigned AdjustEdit : 1 {0};              // 1 = edit field appears over msgs
+  int EditX{0};                             // x-coord of edit field
+  int EditY{0};                             // y-coord of edit field
+  TextLabelClass* EditLabel{nullptr};       // ptr to current edit label
   char EditBuf[MAX_MESSAGE_LENGTH + 30]{};  // buffer for editable message
   char OverflowBuf[MAX_MESSAGE_LENGTH + 30]{};  // overflow area
-  int EditCurPos;                             // current edit position
-  int EditInitPos;                            // initial edit position
-  char CursorChar;                            // character to use a cursor
-  int OverflowStart;                          // 1st index for overflow trimming
-  int OverflowEnd;  // last index for overflow trimming
+  int EditCurPos{0};                            // current edit position
+  int EditInitPos{0};                           // initial edit position
+  char CursorChar{0};                           // character to use a cursor
+  int OverflowStart{0};  // 1st index for overflow trimming
+  int OverflowEnd{0};    // last index for overflow trimming
   int Width = 0;    // Maximum width in pixels of editable string
 
   //.....................................................................

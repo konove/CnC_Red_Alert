@@ -121,7 +121,7 @@ class ListClass : public ControlClass {
   **	<TAB> characters found in a list box string. The tabs are a series of
   **	pixel offsets from the starting pixel position of the text.
   */
-  const int* Tabs;
+  const int* Tabs{nullptr};
 
   /*
   **	The actual list of text pointers is maintained by this list manager. The
@@ -146,7 +146,7 @@ class ListClass : public ControlClass {
   **	If the slider bar has been created, these point to the respective
   *gadgets *	that it is composed of.
   */
-  unsigned IsScrollActive : 1;
+  unsigned IsScrollActive : 1 {false};
   ShapeButtonClass UpGadget;
   ShapeButtonClass DownGadget;
   SliderClass ScrollGadget;
@@ -154,12 +154,12 @@ class ListClass : public ControlClass {
   /*
   **	This is the currently selected index. It is highlighted.
   */
-  int SelectedIndex;
+  int SelectedIndex{0};
 
   /*
   **	This specifies the line (index) that is at the top of the list box.
   */
-  int CurrentTopIndex;
+  int CurrentTopIndex{0};
 };
 
 #endif  // CNC_RED_ALERT_TD_LIST_H_

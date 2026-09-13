@@ -127,7 +127,7 @@ class ListClass : public ControlClass {
   **	<TAB> characters found in a list box string. The tabs are a series of
   **	pixel offsets from the starting pixel position of the text.
   */
-  const int* Tabs;
+  const int* Tabs{nullptr};
 
   /*
   **	The actual list of text pointers is maintained by this list manager. The
@@ -151,7 +151,7 @@ class ListClass : public ControlClass {
   **	If the slider bar has been created, these point to the respective
   *gadgets *	that it is composed of.
   */
-  unsigned IsScrollActive : 1;
+  unsigned IsScrollActive : 1 {false};
   ShapeButtonClass UpGadget;
   ShapeButtonClass DownGadget;
   SliderClass ScrollGadget;
@@ -159,12 +159,12 @@ class ListClass : public ControlClass {
   /*
   **	This is the currently selected index. It is highlighted.
   */
-  int SelectedIndex;
+  int SelectedIndex{0};
 
   /*
   **	This specifies the line (index) that is at the top of the list box.
   */
-  int CurrentTopIndex;
+  int CurrentTopIndex{0};
 };
 
 template <class T>
@@ -227,7 +227,7 @@ class TListClass final : public ControlClass {
   **	<TAB> characters found in a list box string. The tabs are a series of
   **	pixel offsets from the starting pixel position of the text.
   */
-  const int* Tabs;
+  const int* Tabs{nullptr};
 
   /*
   **	The actual list of text pointers is maintained by this list manager.
@@ -249,7 +249,7 @@ class TListClass final : public ControlClass {
   **	If the slider bar has been created, these point to the respective
   *gadgets *	that it is composed of.
   */
-  unsigned IsScrollActive : 1;
+  unsigned IsScrollActive : 1 {false};
   ShapeButtonClass UpGadget;
   ShapeButtonClass DownGadget;
   SliderClass ScrollGadget;
@@ -257,12 +257,12 @@ class TListClass final : public ControlClass {
   /*
   **	This is the currently selected index. It is highlighted.
   */
-  int SelectedIndex;
+  int SelectedIndex{0};
 
   /*
   **	This specifies the line (index) that is at the top of the list box.
   */
-  int CurrentTopIndex;
+  int CurrentTopIndex{0};
 };
 
 template <class T>
@@ -270,13 +270,11 @@ TListClass<T>::TListClass(int id, int x, int y, int w, int h,
                           TextPrintType flags, const void* up, const void* down)
     : ControlClass(id, x, y, w, h, LEFTPRESS | LEFTRELEASE | KEYBOARD, false),
       TextFlags(flags),
-      Tabs(nullptr),
-      IsScrollActive(false),
+      LineHeight(FontHeight + FontYSpacing - 1),
+      LineCount((h - 1) / LineHeight),
       UpGadget(0, up, x + w, y),
       DownGadget(0, down, x + w, y + h),
-      ScrollGadget(0, x + w, y, 0, h, true),
-      SelectedIndex(0),
-      CurrentTopIndex(0) {
+      ScrollGadget(0, x + w, y, 0, h, true) {
   /*
   **	Set preliminary values for the slider related gadgets. They don't
   *automatically *	appear at this time, but there are some values that can
@@ -294,8 +292,6 @@ TListClass<T>::TListClass(int id, int x, int y, int w, int h,
   **	Set the list box to a default state.
   */
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TextFlags);
-  LineHeight = FontHeight + FontYSpacing - 1;
-  LineCount = (h - 1) / LineHeight;
 }
 
 template <class T>

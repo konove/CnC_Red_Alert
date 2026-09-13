@@ -197,15 +197,9 @@ void BulletClass::operator delete(void* ptr) {
  *=============================================================================================*/
 BulletClass::BulletClass(BulletType id)
     : Class(&BulletTypeClass::As_Reference(id)) {
-  Altitude = 0;
-  IsInaccurate = false;
-  IsLocked = true;
   //	IsLocked = false;
-  IsToAnimate = false;
-  Payback = nullptr;
-  Riser = 0;
+
   Strength = Class->MaxStrength;
-  TarCom = kTargetNone;
 }
 
 /***********************************************************************************************

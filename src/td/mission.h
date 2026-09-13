@@ -55,8 +55,8 @@ class MissionClass : public ObjectClass {
   **	This the tactical strategy to use. It is used by the unit script. This
   **	is a general guide for unit AI processing.
   */
-  MissionType Mission;
-  MissionType SuspendedMission;
+  MissionType Mission{MISSION_NONE};
+  MissionType SuspendedMission{MISSION_NONE};
 
   /*
   **	The order queue is used for orders that should take effect when the
@@ -64,9 +64,9 @@ class MissionClass : public ObjectClass {
   *is +1 when stored here *	so that 0 will indicated there is no queued
   *order.
   */
-  MissionType MissionQueue;
+  MissionType MissionQueue{MISSION_NONE};
 
-  char Status;
+  char Status{0};
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.

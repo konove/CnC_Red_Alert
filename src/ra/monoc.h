@@ -118,26 +118,26 @@ class MonoClass {
   /*
   **	Cursor coordinate (relative to sub-window).
   */
-  int X;
-  int Y;
+  int X{0};
+  int Y{0};
 
   /*
   **	Default attribute to use when printing text.
   */
-  MonoAttribute Attrib;
+  MonoAttribute Attrib{NORMAL};
 
   /*
   **	The current physical page that this mono class object refers to.
   */
-  int Page;
+  int Page{0};
 
   /*
   **	Sub window coordinates.
   */
-  int SubX;
-  int SubY;
-  int SubW;
-  int SubH;
+  int SubX{0};
+  int SubY{0};
+  int SubW{COLUMNS};
+  int SubH{LINES};
 
   /*
   **	Pointer to the monochrome RAM.

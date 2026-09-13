@@ -73,13 +73,7 @@
 #include "td/jshell.h"
 #include "td/object.h"
 
-MissionClass::MissionClass() {
-  Status = 0;
-  Timer = 0;
-  Mission = MISSION_NONE;
-  SuspendedMission = MISSION_NONE;
-  MissionQueue = MISSION_NONE;
-}
+MissionClass::MissionClass() { Timer = 0; }
 
 int MissionClass::Mission_Sleep() { return kTicksPerSecond * 30; };
 int MissionClass::Mission_Ambush() { return kTicksPerSecond * 30; };

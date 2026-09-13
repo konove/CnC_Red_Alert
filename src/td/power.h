@@ -74,7 +74,7 @@ class PowerClass : public RadarClass {
   **	File I/O.
   */
 
-  unsigned IsPowerToRedraw : 1;
+  unsigned IsPowerToRedraw : 1 {false};
 
  protected:
   /*
@@ -108,16 +108,16 @@ class PowerClass : public RadarClass {
 
   unsigned IsActive : 1 = 0;
 
-  int RecordedDrain;
-  int RecordedPower;
-  int DesiredDrainHeight;
-  int DesiredPowerHeight;
-  int DrainHeight;
-  int PowerHeight;
-  int DrainBounce;
-  int PowerBounce;
-  short PowerDir;
-  short DrainDir;
+  int RecordedDrain{-1};
+  int RecordedPower{-1};
+  int DesiredDrainHeight{0};
+  int DesiredPowerHeight{0};
+  int DrainHeight{0};
+  int PowerHeight{0};
+  int DrainBounce{0};
+  int PowerBounce{0};
+  short PowerDir{0};
+  short DrainDir{0};
 
   /*
   **	Points to the shape to use for the "desired" power level indicator.

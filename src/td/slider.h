@@ -89,8 +89,8 @@ class SliderClass final : public GaugeClass {
   **	If the slider bar has been created, these point to the respective
   *gadgets *	that it is composed of.
   */
-  ShapeButtonClass* PlusGadget;
-  ShapeButtonClass* MinusGadget;
+  ShapeButtonClass* PlusGadget{nullptr};
+  ShapeButtonClass* MinusGadget{nullptr};
 
   /*
   **	If I belong to a listbox, I have to draw myself differently...

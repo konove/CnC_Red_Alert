@@ -66,12 +66,12 @@ class TextLabelClass : public GadgetClass {
   /*
   ** General-purpose data fields
   */
-  long UserData1;
-  long UserData2;
+  long UserData1{0};
+  long UserData2{0};
   TextPrintType Style;
   char* Text;
   RemapControlType* Color;
-  int PixWidth;
+  int PixWidth{-1};
 };
 
 #endif  // CNC_RED_ALERT_RA_TXTLABEL_H_

@@ -99,8 +99,7 @@
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-LoadOptionsClass::LoadOptionsClass(LoadStyleType style) {
-  Style = style;
+LoadOptionsClass::LoadOptionsClass(LoadStyleType style) : Style(style) {
   Files.Clear();
 }
 

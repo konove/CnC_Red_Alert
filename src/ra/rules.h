@@ -42,6 +42,7 @@
 
 #include "ra/ccini.h"
 #include "ra/defines.h"
+#include "ra/display_constants.h"
 #include "tech/fixed.h"
 
 class DifficultyClass {
@@ -109,7 +110,7 @@ class RulesClass {
   /*
   **	The number of badgers that arrive when the parabomb option is used.
   */
-  int BadgerBombCount;
+  int BadgerBombCount{1};
 
   /*
   **	This specifies the percentage of the base (by building quantity) that
@@ -120,7 +121,7 @@ class RulesClass {
   /*
   **	Limit the number of airstrips to this amount.
   */
-  int AirstripLimit;
+  int AirstripLimit{5};
 
   /*
   **	This specifies the percentage of the base (by building quantity) that
@@ -131,7 +132,7 @@ class RulesClass {
   /*
   **	Limit the number of helipads to this amount.
   */
-  int HelipadLimit;
+  int HelipadLimit{5};
 
   /*
   **	This specifies the percentage of the base (by building quantity) that
@@ -142,7 +143,7 @@ class RulesClass {
   /*
   **	Limit tesla coil production to this maximum.
   */
-  int TeslaLimit;
+  int TeslaLimit{10};
 
   /*
   **	This specifies the percentage of the base (by building quantity) that
@@ -153,7 +154,7 @@ class RulesClass {
   /*
   **	Limit anti-aircraft building quantity to this amount.
   */
-  int AALimit;
+  int AALimit{10};
 
   /*
   **	This specifies the percentage of the base (by building quantity) that
@@ -164,7 +165,7 @@ class RulesClass {
   /*
   **	This is the limit to the number of defensive building that can be built.
   */
-  int DefenseLimit;
+  int DefenseLimit{40};
 
   /*
   **	This specifies the percentage of the base (by building quantity) that
@@ -176,7 +177,7 @@ class RulesClass {
   **	War factories are limited to this quantity for the computer controlled
   *player.
   */
-  int WarLimit;
+  int WarLimit{2};
 
   /*
   **	This specifies the percentage of the base (by building quantity) that
@@ -187,12 +188,12 @@ class RulesClass {
   /*
   **	No more than this many barracks can be built.
   */
-  int BarracksLimit;
+  int BarracksLimit{2};
 
   /*
   **	Refinery building is limited to this many refineries.
   */
-  int RefineryLimit;
+  int RefineryLimit{4};
 
   /*
   **	This specifies the percentage of the base (by building quantity) that
@@ -205,25 +206,25 @@ class RulesClass {
   *limited to the *	size of the largest human opponent base plus this
   *surplus count.
   */
-  int BaseSizeAdd;
+  int BaseSizeAdd{3};
 
   /*
   **	If the power surplus is less than this amount, then the computer will
   **	build power plants.
   */
-  int PowerSurplus;
+  int PowerSurplus{50};
 
   /*
   **	The computer will build infantry if their cash reserve is greater than
   *this amount.
   */
-  int InfantryReserve;
+  int InfantryReserve{2000};
 
   /*
   **	This factor is multiplied by the number of buildings in the computer's
   *base and infantry *	are always built until it matches that number.
   */
-  int InfantryBaseMult;
+  int InfantryBaseMult{2};
 
   /*
   **	This specifies the duration that a unit will remain chronoshifted before
@@ -240,18 +241,18 @@ class RulesClass {
   /*
   **	Solo play has money crate amount fixed according to this rule value.
   */
-  int SoloCrateMoney;
+  int SoloCrateMoney{2000};
 
   /*
   **	GPS tech level control.
   */
-  int GPSTechLevel;
+  int GPSTechLevel{0};
 
   /*
   **	If a unit type is specified here, then the unit crate will generate
   **	a unit of this type (always).
   */
-  UnitType UnitCrateType;
+  UnitType UnitCrateType{UNIT_NONE};
 
   /*
   **	This is the time to delay between patrol-to-waypoint target scanning.
@@ -286,9 +287,9 @@ class RulesClass {
   /*
   **	Controls the Chronal vortex characteristics.
   */
-  LEPTON VortexRange;
-  MPHType VortexSpeed;
-  int VortexDamage;
+  LEPTON VortexRange{10 * CELL_LEPTON_W};
+  MPHType VortexSpeed{static_cast<MPHType>(10)};
+  int VortexDamage{200};
   fixed VortexChance;
 
   /*
@@ -305,128 +306,128 @@ class RulesClass {
   **	weapons will supress firing on enemies if they are in close proximity
   **	to allied buildings.
   */
-  LEPTON SupressRadius;
+  LEPTON SupressRadius{CELL_LEPTON_W};
 
   /*
   **	This is the tech level that para infantry are granted free to the owner
   **	of an airstrip.
   */
-  int ParaInfantryTechLevel;
+  int ParaInfantryTechLevel{10};
 
   /*
   **	This is the tech level that spy planes are granted free to the owner of
   **	an airstrip.
   */
-  int SpyPlaneTechLevel;
+  int SpyPlaneTechLevel{10};
 
   /*
   **	This is the tech level that the parabombs are granted free to the owner
   **	of an airstrip.
   */
-  int ParaBombTechLevel;
+  int ParaBombTechLevel{10};
 
   /*
   **	This is the maximum number of IQ settings available. The human player is
   **	presumed to be at IQ level zero.
   */
-  int MaxIQ;
+  int MaxIQ{5};
 
   /*
   **	The IQ level at which super weapons will be automatically fired by the
   *computer.
   */
-  int IQSuperWeapons;
+  int IQSuperWeapons{4};
 
   /*
   **	The IQ level at which production is automatically controlled by the
   *computer.
   */
-  int IQProduction;
+  int IQProduction{5};
 
   /*
   **	The IQ level at which newly produced units start out in guard area mode
   *instead *	of normal guard mode.
   */
-  int IQGuardArea;
+  int IQGuardArea{4};
 
   /*
   **	The IQ level at which the computer will be able to decide what gets
   *repaired *	or sold.
   */
-  int IQRepairSell;
+  int IQRepairSell{3};
 
   /*
   **	At this IQ level or higher, a unit is allowed to automatically try to
   *crush *	an atagonist if possible.
   */
-  int IQCrush;
+  int IQCrush{2};
 
   /*
   **	The unit/infantry will try to scatter if an incoming threat
   **	is detected.
   */
-  int IQScatter;
+  int IQScatter{3};
 
   /*
   **	Tech level at which the computer will scan the contents of a transport
   **	in order to pick the best target to fire upon.
   */
-  int IQContentScan;
+  int IQContentScan{4};
 
   /*
   **	Aircraft replacement production occurs at this IQ level or higher.
   */
-  int IQAircraft;
+  int IQAircraft{4};
 
   /*
   **	Checks for and replaces lost harvesters.
   */
-  int IQHarvester;
+  int IQHarvester{3};
 
   /*
   **	Is allowed to sell a structure being damaged.
   */
-  int IQSellBack;
+  int IQSellBack{2};
 
   /*
   **	The silver and wood crates in solo play will have these powerups.
   */
-  CrateType SilverCrate;
-  CrateType WoodCrate;
-  CrateType WaterCrate;
+  CrateType SilverCrate{CRATE_HEAL_BASE};
+  CrateType WoodCrate{CRATE_MONEY};
+  CrateType WaterCrate{CRATE_MONEY};
 
   /*
   **	This specifies the minimum number of crates to place on the map in spite
   **	of the number of actual human players.
   */
-  int CrateMinimum;
+  int CrateMinimum{1};
 
   /*
   **	This specifies the crate maximum quantity to use.
   */
-  int CrateMaximum;
+  int CrateMaximum{255};
 
   /*
   **	Landing zone maximum alternate zone scan radius.
   */
-  LEPTON LZScanRadius;
+  LEPTON LZScanRadius{16 * CELL_LEPTON_W};
 
   /*
   **	Multiplayer default settings.
   */
-  int MPDefaultMoney;
-  int MPMaxMoney;
-  unsigned IsMPShadowGrow : 1;
-  unsigned IsMPBasesOn : 1;
-  unsigned IsMPTiberiumGrow : 1;
-  unsigned IsMPCrates : 1;
-  unsigned IsMPAIPlayers : 1;
-  unsigned IsMPCaptureTheFlag : 1;
+  int MPDefaultMoney{3000};
+  int MPMaxMoney{10000};
+  unsigned IsMPShadowGrow : 1 {true};
+  unsigned IsMPBasesOn : 1 {true};
+  unsigned IsMPTiberiumGrow : 1 {true};
+  unsigned IsMPCrates : 1 {true};
+  unsigned IsMPAIPlayers : 1 {false};
+  unsigned IsMPCaptureTheFlag : 1 {false};
 
   /*
   **	Drop zone reveal radius.
   */
-  LEPTON DropZoneRadius;
+  LEPTON DropZoneRadius{4 * CELL_LEPTON_W};
 
   /*
   **	This is the delay that multiplayer messages will remain on the screen.
@@ -443,13 +444,13 @@ class RulesClass {
   **	This specifies the damage to inflict for two differnt styles of
   **	land mine.
   */
-  int AVMineDamage;
-  int APMineDamage;
+  int AVMineDamage{1200};
+  int APMineDamage{1000};
 
   /*
   **	This is the maximum number of multiplayers allowed.
   */
-  int MaxPlayers;
+  int MaxPlayers{8};
 
   /*
   **	This is the delay between 'panic attacks' when the computer's base is
@@ -464,7 +465,7 @@ class RulesClass {
   *specified priority will be *	temporarily put on hold for the number of
   *minutes specified.
   */
-  int SuspendPriority;
+  int SuspendPriority{20};
   fixed SuspendDelay;
 
   /*
@@ -494,13 +495,13 @@ class RulesClass {
   /*
   **	Ore truck speed for dumping.
   */
-  int OreDumpRate;
+  int OreDumpRate{2};
 
   /*
   **	This is the amount of damage done by the atom bomb in solo missions. The
   **	damage done during multiplay will be 1/5th this value.
   */
-  int AtomDamage;
+  int AtomDamage{1000};
 
   /*
   **	This array controls the difficulty affects on the game. There is one
@@ -512,112 +513,112 @@ class RulesClass {
   **	Is the computer paranoid? If so, then it will band together with other
   *computer *	paranoid players when the situation looks rough.
   */
-  bool IsComputerParanoid : 1;
+  bool IsComputerParanoid : 1 {true};
 
   /*
   **	Should helicopters shuffle their position between firing on their
   **	target?
   */
-  bool IsCurleyShuffle : 1;
+  bool IsCurleyShuffle : 1 {false};
 
   /*
   **	Flash the power bar when the power goes below 100%.
   */
-  bool IsFlashLowPower : 1;
+  bool IsFlashLowPower : 1 {true};
 
   /*
   **	If the computer players will go to easy mode if there is more
   **	than one human player, this flag will be true.
   */
-  bool IsCompEasyBonus : 1;
+  bool IsCompEasyBonus : 1 {true};
 
   /*
   **	If fine control of difficulty settings is desired, then set this value
   *to true. *	Fine control allows 5 settings. The coarse control only allows
   *three settings.
   */
-  bool IsFineDifficulty : 1;
+  bool IsFineDifficulty : 1 {false};
 
   /*
   **	If the harvester is to explode more violently than normal
   **	if it is carrying cargo, then this flag will be true.
   */
-  unsigned IsExplosiveHarvester : 1;
+  unsigned IsExplosiveHarvester : 1 {false};
 
   /*
   **	Show the health bar on the enemy units?
   */
-  unsigned IsHealthBar : 1;
+  unsigned IsHealthBar : 1 {true};
 
   /*
   **	If this flag is true, then the construction yard can undeploy back into
   *an MCV.
   */
-  unsigned IsMCVDeploy : 1;
+  unsigned IsMCVDeploy : 1 {false};
 
   /*
   **	If the base is to be revealed to a new ally, then this
   **	flag will be true.
   */
-  unsigned IsAllyReveal : 1;
+  unsigned IsAllyReveal : 1 {true};
 
   /*
   **	Can the helipad (and airfield) be purchased separately from the
   *associated *	aircraft.
   */
-  unsigned IsSeparate : 1;
+  unsigned IsSeparate : 1 {false};
 
   /*
   **	Give target cursor for trees? Doing this will make targetting of trees
   *easier.
   */
-  unsigned IsTreeTarget : 1;
+  unsigned IsTreeTarget : 1 {false};
 
   /*
   **	Are friendly units automatically aware of mines so that they can avoid
   *them?
   */
-  unsigned IsMineAware : 1;
+  unsigned IsMineAware : 1 {true};
 
   /*
   **	If Tiberium is allowed to grow, then this flag will be true.
   */
-  unsigned IsTGrowth : 1;
+  unsigned IsTGrowth : 1 {true};
 
   /*
   **	If Tiberium is allowed to spread, then this flag will be true.
   */
-  unsigned IsTSpread : 1;
+  unsigned IsTSpread : 1 {true};
 
   /*
   **	Should civilan buildings and civilians display their true name rather
   *than *	the generic "Civilian Building" and "Civilain"?
   */
-  unsigned IsNamed : 1;
+  unsigned IsNamed : 1 {false};
 
   /*
   **	Should player controlled vehicles automatically try to crush nearby
   *infantry *	instead of required the player to manually direct them to crush.
   */
-  unsigned IsAutoCrush : 1;
+  unsigned IsAutoCrush : 1 {false};
 
   /*
   **	Should the player controlled buildings and units automatically return
   *fire when *	fired upon?
   */
-  unsigned IsSmartDefense : 1;
+  unsigned IsSmartDefense : 1 {false};
 
   /*
   **	Should player controlled units try to scatter more easily in order to
   **	avoid damage or threats?
   */
-  unsigned IsScatter : 1;
+  unsigned IsScatter : 1 {false};
 
   /*
   **	If the chronoshift effect should kill all cargo, then this flag will
   **	be set to true.
   */
-  unsigned IsChronoKill : 1;
+  unsigned IsChronoKill : 1 {true};
 
   /*
   **	When infantry are prone or when civilians are running around like crazy,
@@ -688,12 +689,12 @@ class RulesClass {
   **	This is the gravity constant used to control the arcing and descent of
   *ballistic *	object such as grenades and artillery.
   */
-  int Gravity;
+  int Gravity{3};
 
   /*
   **	Gap generators have a shroud radius of this many cells.
   */
-  int GapShroudRadius;
+  int GapShroudRadius{10};
 
   /*
   **	This is the minute interval between the gap generators refreshing
@@ -704,7 +705,7 @@ class RulesClass {
   /*
   **	Mobile radar jammer radius of effect.
   */
-  LEPTON RadarJamRadius;
+  LEPTON RadarJamRadius{10 * CELL_LEPTON_W};
 
   /*
   **	The speed at which a projectile that travels at or slower will cause
@@ -712,13 +713,13 @@ class RulesClass {
   **	of targets to run for cover if the projectile gives them enough time
   **	to react.
   */
-  MPHType Incoming;
+  MPHType Incoming{MPH_IMMOBILE};
 
   /*
   **	Minimum and maximum damage allowed per shot.
   */
-  int MinDamage;
-  int MaxDamage;
+  int MinDamage{1};
+  int MaxDamage{1000};
 
   /*
   **	This is the rate of repair for units and buildings. The rate is the
@@ -728,9 +729,9 @@ class RulesClass {
   **	repair the object from 1 damage point to full strength would cost 50% of
   **	the cost to build it from scratch.
   */
-  int RepairStep;
+  int RepairStep{5};
   fixed RepairPercent;
-  int URepairStep;
+  int URepairStep{5};
   fixed URepairPercent;
 
   /*
@@ -758,32 +759,32 @@ class RulesClass {
   **	may carry. The harvester carries a maximum discrete number of 'bails'.
   **	The value of each bail depends on the ore it is composed of.
   */
-  int BailCount;  // was STEP_COUNT
-  int GoldValue;  // was GOLD_WORTH
-  int GemValue;   // was GEM_WORTH
+  int BailCount{28};  // was STEP_COUNT
+  int GoldValue{35};  // was GOLD_WORTH
+  int GemValue{110};  // was GEM_WORTH
 
   /*
   **	This specifies the heap maximum for the various game objects.
   */
-  int AircraftMax;
-  int AnimMax;
-  int BuildingMax;
-  int BulletMax;
-  int FactoryMax;
-  int InfantryMax;
-  int OverlayMax;
-  int SmudgeMax;
-  int TeamMax;
-  int TeamTypeMax;
-  int TemplateMax;
-  int TerrainMax;
-  int TriggerMax;
-  int UnitMax;
-  int VesselMax;
-  int ProjectileMax;
-  int WeaponMax;
-  int WarheadMax;
-  int TrigTypeMax;
+  int AircraftMax{100};
+  int AnimMax{100};
+  int BuildingMax{500};
+  int BulletMax{40};
+  int FactoryMax{20};
+  int InfantryMax{500};
+  int OverlayMax{1};
+  int SmudgeMax{1};
+  int TeamMax{60};
+  int TeamTypeMax{60};
+  int TemplateMax{1};
+  int TerrainMax{500};
+  int TriggerMax{60};
+  int UnitMax{500};
+  int VesselMax{100};
+  int ProjectileMax{20};
+  int WeaponMax{20};
+  int WarheadMax{20};
+  int TrigTypeMax{80};
 
   /*
   **	Close enough distance that is used to determine if the object should
@@ -792,13 +793,13 @@ class RulesClass {
   *consider *	the object to have gotten "close enough" to the destination to
   *stop.
   */
-  LEPTON CloseEnoughDistance;
+  LEPTON CloseEnoughDistance{0x0280};
 
   /*
   **	Stray distance to group team members within. The larger the distance,
   **	the looser the teams will move.
   */
-  LEPTON StrayDistance;
+  LEPTON StrayDistance{0x0200};
 
   /*
   **	If a vehicle is closer than this range to a target that it can crush
@@ -806,19 +807,19 @@ class RulesClass {
   **	upon it. The larger the value, the greater the 'bigfoot crush syndrome'
   *is *	has.
   */
-  LEPTON CrushDistance;
+  LEPTON CrushDistance{0x0180};
 
   /*
   **	For area effect crate bonus items will affect all objects within this
   *radius.
   */
-  LEPTON CrateRadius;
+  LEPTON CrateRadius{0x0280};
 
   /*
   **	Maximum scatter distances for homing and non-homing projectiles.
   */
-  LEPTON HomingScatter;
-  LEPTON BallisticScatter;
+  LEPTON HomingScatter{0x0200};
+  LEPTON BallisticScatter{0x0100};
 
   /*
   **	This is the refund percentage when selling off buildings and units
@@ -835,7 +836,7 @@ class RulesClass {
   **	The strength of bridges is held here. By corollary, the strength of the
   **	demolition charge carried by Tanya is equal to this value as well.
   */
-  int BridgeStrength;
+  int BridgeStrength{1000};
 
   /*
   **	This is the overall build speed bias. Multiply this value by the normal
@@ -869,7 +870,7 @@ class RulesClass {
   *frittering away *	all it's cash on repairing and thus leaving nothing for
   *production of defenses.
   */
-  int RepairThreshhold;
+  int RepairThreshhold{1000};
 
   /*
   **	This is the delay (in minutes) between retries of a failed path. The
@@ -889,7 +890,7 @@ class RulesClass {
   ** actually produce the chronosphere effect.  Below this tech level,
   ** the facility is merely a showpiece and has no effect.
   */
-  int ChronoTechLevel;
+  int ChronoTechLevel{1};
 
   /*
   **	These are the Tiberium scan distances. The short range scan is used to
@@ -897,8 +898,8 @@ class RulesClass {
   *used when finding a Tiberium *	field to harvest. Keep these ranges as
   *small as possible.
   */
-  LEPTON TiberiumShortScan;
-  LEPTON TiberiumLongScan;
+  LEPTON TiberiumShortScan{0x0600};
+  LEPTON TiberiumLongScan{0x2000};
 };
 
 #endif  // CNC_RED_ALERT_RA_RULES_H_

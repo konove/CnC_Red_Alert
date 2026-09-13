@@ -92,7 +92,7 @@ class ControlClass : public GadgetClass {
   **	This points to the peer button to inform when something happens to this
   **	gadget.
   */
-  GadgetClass* Peer;
+  GadgetClass* Peer{nullptr};
 };
 
 #endif  // CNC_RED_ALERT_TD_CONTROL_H_

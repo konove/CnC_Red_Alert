@@ -120,11 +120,7 @@ MapEditClass::MapEditClass() {
   /*
   **	Init data members.
   */
-  ScenVar = SCEN_VAR_A;
-  ObjCount = 0;
-  LastChoice = 0;
-  LastHouse = HOUSE_GOOD;
-  GrabbedObject = nullptr;
+
   for (int i = 0; i < NUM_EDIT_CLASSES; i++) {
     NumType[i] = 0;
     TypeOffset[i] = 0;

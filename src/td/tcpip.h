@@ -155,7 +155,7 @@ class TcpipManagerClass {
     bool InUse : 1;
   } InternetBufferType;
 
-  bool WinsockInitialised;
+  bool WinsockInitialised{false};
 #ifdef _WIN32
   WSADATA WinsockInfo;
 #endif
@@ -171,13 +171,13 @@ class TcpipManagerClass {
   // int					OutBufferHead;
   // int					OutBufferTail;
   bool IsServer = false;
-  bool Connected;
+  bool Connected{false};
   char HostAddress[IP_ADDRESS_MAX]{};
   ConnectStatusEnum ConnectStatus = NOT_CONNECTING;
-  bool UseUDP;
+  bool UseUDP{true};
   IN_ADDR UDPIPAddress{};
-  int SocketReceiveBuffer;
-  int SocketSendBuffer;
+  int SocketReceiveBuffer{4096};
+  int SocketSendBuffer{4096};
   InternetBufferType ReceiveBuffers[WS_NUM_TX_BUFFERS]{};
   InternetBufferType TransmitBuffers[WS_NUM_RX_BUFFERS]{};
   int TXBufferHead = 0;

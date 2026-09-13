@@ -91,15 +91,8 @@ const char* HelpClass::HelpText;
  * HISTORY: * 11/18/1994 JLB : Created. *
  *=============================================================================================*/
 HelpClass::HelpClass()
-    : IsRight(false),
-      Cost(0),
-      X(0),
-      Y(0),
-      DrawX(0),
-      DrawY(0),
-      Width(0),
-      Text(TXT_NONE),
-      Color(LTGREY),
+    :
+
       CountDownTimer(0) {}
 
 /***********************************************************************************************

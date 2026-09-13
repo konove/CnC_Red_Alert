@@ -88,23 +88,8 @@ static bool operator<(const User& u1, const User& u2);
 
 //***********************************************************************************************
 RAChatEventSink::RAChatEventSink(WolapiObject* pOwnerIn)
-    : bRequestServerListWait(false),
-      bRequestChannelListForLobbiesWait(false),
-      bIgnoreChannelLists(false),
-      bRequestGameStartWait(false),
-      pServer(nullptr),
-      bConnected(false),
-      bJoined(false),
-      pChannelList(nullptr),
-      pUserList(nullptr),
-      pUserTail(nullptr),
-      szMotd(nullptr),
-      hresRequestConnectionError(0),
-      bGotKickedTrigger(false),
-      pGameUserList(nullptr),
-      iGameID(0),
-      pUserIPList(nullptr),
-      pUserIPListTail(nullptr),
+    :
+
       pOwner(pOwnerIn),
       m_cRef(0) {}
 
@@ -1594,13 +1579,9 @@ STDMETHODIMP RAChatEventSink::OnChannelBan(HRESULT, LPCSTR name, int banned) {
 //***********************************************************************************************
 //***********************************************************************************************
 RADownloadEventSink::RADownloadEventSink()
-    : bFlagEnd(false),
-      bFlagError(false),
-      bFlagProgressUpdate(false),
-      bFlagStatusUpdate(false),
-      bFlagQueryResume(false) {
-  m_cRef = 0;  // Ref counter
-}
+    :
+
+      m_cRef(0) {}
 
 //			Interface IUnknown Methods
 //***********************************************************************************************
@@ -1700,10 +1681,8 @@ STDMETHODIMP RADownloadEventSink::OnQueryResume() {
 //***********************************************************************************************
 //***********************************************************************************************
 RANetUtilEventSink::RANetUtilEventSink(WolapiObject* pOwnerIn)
-    : pLadderList(nullptr),
-      pLadderTail(nullptr),
-      pLadderListAM(nullptr),
-      pLadderTailAM(nullptr),
+    :
+
       pOwner(pOwnerIn),
       m_cRef(0) {
   //	debugprint( "RANetUtilEventSink constructor\n" );

@@ -88,79 +88,16 @@ bool Game_Window_Has_Focus() {
 
 //***********************************************************************************************
 WolapiObject::WolapiObject()
-    : pChat(nullptr),
-      pDownload(nullptr),
-      dwChatAdvise(0),
-      dwDownloadAdvise(0),
-      pChatSink(nullptr),
-      pDownloadSink(nullptr),
-      bChatShownBefore(false),
-      bFindEnabled(true),
-      bPageEnabled(true),
-      bLangFilter(true),
-      bAllGamesShown(true),
-      bEggSounds(true),
-      bEgg8Player(false),
-      CurrentLevel(WOL_LEVEL_TOP),
-      bMyRecordUpdated(false),
-      bChannelListTitleUpdated(false),
-      bChannelOwner(false),
-      iLobbyReturnAfterGame(-1),
-      bReturningAfterGame(false),
-      iLobbyLast(-1),
-      pGSupDlg(nullptr),
-      bInGame(false),
-      bPump_In_Call_Back(false),
-      bSelfDestruct(false),
-      bDoingDisconnectPinging(false),
-      bFreezeExternalPager(false),
-      bShowRankRA(true),
-      bShowRankUpdated(false),
-      pShpDiscon(nullptr),
-      pShpLeave(nullptr),
-      pShpRefresh(nullptr),
-      pShpSquelch(nullptr),
-      pShpBan(nullptr),
-      pShpKick(nullptr),
-      pShpFindpage(nullptr),
-      pShpOptions(nullptr),
-      pShpLadder(nullptr),
-      pShpHelp(nullptr),
-      pShpBtnDiscon(nullptr),
-      pShpBtnLeave(nullptr),
-      pShpBtnRefresh(nullptr),
-      pShpBtnSquelch(nullptr),
-      pShpBtnBan(nullptr),
-      pShpBtnKick(nullptr),
-      pShpBtnFindpage(nullptr),
-      pShpBtnOptions(nullptr),
-      pShpBtnLadder(nullptr),
-      pShpBtnHelp(nullptr),
-      pTTipDiscon(nullptr),
-      pTTipLeave(nullptr),
-      pTTipRefresh(nullptr),
-      pTTipSquelch(nullptr),
-      pTTipBan(nullptr),
-      pTTipKick(nullptr),
-      pTTipFindpage(nullptr),
-      pTTipOptions(nullptr),
-      pTTipLadder(nullptr),
-      pTTipHelp(nullptr),
-      pILChat(nullptr),
-      pILUsers(nullptr),
-      pILPlayers(nullptr),
-      pStaticUsers(nullptr),
-      GameTypeInfos(nullptr),
-      nGameTypeInfos(0),
-      pChatSaveList(nullptr) {
+    :
+
+      dwTimeNextWolapiPump(Get_Time_Ms() + WOLAPIPUMPWAIT) {
   *szMyName = 0;
   *szMyRecord = 0;
   *szMyRecordAM = 0;
   *szChannelListTitle = 0;
   *szChannelNameCurrent = 0;
   *szChannelReturnOnGameEnterFail = 0;
-  dwTimeNextWolapiPump = Get_Time_Ms() + WOLAPIPUMPWAIT;
-  dwTimeNextChannelUpdate = 0;
+
   *szLadderServerHost = 0;
   *szGameResServerHost1 = 0;
   *szGameResServerHost2 = 0;

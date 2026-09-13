@@ -63,10 +63,7 @@
  *                                                                                             *
  * HISTORY: * 03/21/1995 JLB : Created. *
  *=============================================================================================*/
-FacingClass::FacingClass() {
-  CurrentFacing = DIR_N;
-  DesiredFacing = DIR_N;
-}
+FacingClass::FacingClass() : CurrentFacing(DIR_N), DesiredFacing(DIR_N) {}
 
 /***********************************************************************************************
  * FacingClass::Set_Desired -- Sets the desired facing  value. *

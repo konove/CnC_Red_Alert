@@ -45,13 +45,14 @@ class ToolTipClass {
   void Move(int x_show, int y_show);
   [[nodiscard]] bool bOverDifferentLine() const;
 
-  ToolTipClass* next;  //	Next tooltip in list of which *this is a part.
+  ToolTipClass* next{
+      nullptr};  //	Next tooltip in list of which *this is a part.
 
   GadgetClass* pGadget;  //	Gadget to which this tooltip is bound.
 
   bool bRightAlign;
 
-  bool bShowing;
+  bool bShowing{false};
   bool bIconList;  //	True if gadget is iconlist and line-specific tooltips
                    // are to be used.
 

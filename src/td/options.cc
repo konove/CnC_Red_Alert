@@ -101,25 +101,14 @@
  *                                                                                             *
  * HISTORY: * 07/21/1994 JLB : Created. *
  *=============================================================================================*/
-OptionsClass::OptionsClass() {
-  GameSpeed = kTimerSecond / kTicksPerSecond;
-  ScrollRate = kTimerSecond / kTicksPerSecond;
-  Volume = 0xE0;
-  ScoreVolume = 0x90;
-  Contrast = 0x80;
-  Color = 0x80;
-  Contrast = 0x80;
-  Tint = 0x80;
-  Brightness = 0x80;
-  AutoScroll = true;
+OptionsClass::OptionsClass()
+    : GameSpeed(kTimerSecond / kTicksPerSecond),
+      ScrollRate(kTimerSecond / kTicksPerSecond) {
 #if (defined(GERMAN) || defined(FRENCH))
   IsDeathAnnounce = true;
 #else
-  IsDeathAnnounce = false;
+
 #endif
-  IsScoreRepeat = false;
-  IsScoreShuffle = false;
-  IsFreeScroll = false;
 }
 
 /***********************************************************************************************

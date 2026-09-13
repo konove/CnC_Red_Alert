@@ -59,11 +59,7 @@
 
 #include "td/stage.h"
 
-DoorClass::DoorClass() {
-  State = IS_CLOSED;
-  IsToRedraw = false;
-  Stages = 0;
-}
+DoorClass::DoorClass() = default;
 
 /***********************************************************************************************
  * DoorClass::AI -- Handles the door processing logic. *

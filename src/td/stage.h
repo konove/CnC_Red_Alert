@@ -48,21 +48,21 @@ class StageClass {
   **	This handles the animation stage of the object. This includes smoke,
   *walking, *	flapping, and rocket flames.
   */
-  unsigned short Stage;
+  unsigned short Stage{0};
 
   /*
   **	This is the countdown timer for stage animation. When this counts down
   **	to zero, then the stage increments by one and the time cycle starts
   **	over again.
   */
-  unsigned char StageTimer;
+  unsigned char StageTimer{0};
 
   /*
   **	This is the value to assign the StageTimer whenever it needs to be
   *reset. Thus, *	this value is the control of how fast the stage value
   *increments.
   */
-  unsigned char Rate;
+  unsigned char Rate{0};
 
  public:
   // Field-wise saved-game support.
@@ -76,11 +76,7 @@ class StageClass {
   StageClass& operator=(const StageClass&) = delete;
   StageClass(StageClass&&) = delete;
   StageClass& operator=(StageClass&&) = delete;
-  StageClass() {
-    StageTimer = 0;
-    Stage = 0;
-    Rate = 0;
-  }
+  StageClass() = default;
 
   [[nodiscard]] int Fetch_Stage() const { return Stage; }
   [[nodiscard]] int Fetch_Rate() const { return Rate; }

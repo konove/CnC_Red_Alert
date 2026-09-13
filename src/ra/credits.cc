@@ -77,13 +77,7 @@
  *                                                                                             *
  * HISTORY: * 03/13/1995 JLB : Created. *
  *=============================================================================================*/
-CreditClass::CreditClass()
-    : Credits(0),
-      Current(0),
-      IsToRedraw(false),
-      IsUp(false),
-      IsAudible(false),
-      Countdown(0) {}
+CreditClass::CreditClass() = default;
 
 /***********************************************************************************************
  * CreditClass::Graphic_Logic -- Handles the credit redraw logic. *

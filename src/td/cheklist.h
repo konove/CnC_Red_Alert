@@ -82,7 +82,7 @@ class CheckListClass : public ListClass {
   int Action(unsigned flags, KeyNumType& key) override;
 
  private:
-  bool IsReadOnly;
+  bool IsReadOnly{false};
 };
 
 #endif  // CNC_RED_ALERT_TD_CHEKLIST_H_

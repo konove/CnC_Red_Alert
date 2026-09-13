@@ -68,8 +68,7 @@
  *                                                                                             *
  * HISTORY: * 05/10/1996 JLB : Created. *
  *=============================================================================================*/
-CarryoverClass::CarryoverClass(TechnoClass* techno)
-    : RTTI(RTTI_NONE), Cell(0), Strength(0), House(HOUSE_NONE) {
+CarryoverClass::CarryoverClass(TechnoClass* techno) {
   if (techno) {
     RTTI = techno->What_Am_I();
 

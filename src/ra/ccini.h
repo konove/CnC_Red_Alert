@@ -57,7 +57,7 @@ class TriggerTypeClass;
 */
 class CCINIClass : public INIClass {
  public:
-  CCINIClass() : IsDigestPresent(false) {}
+  CCINIClass() = default;
 
   bool Load(FileClass& file, bool withdigest);
   bool Load(Straw& file, bool withdigest);
@@ -137,7 +137,7 @@ class CCINIClass : public INIClass {
   void Calculate_Message_Digest();
   void Invalidate_Message_Digest();
 
-  bool IsDigestPresent : 1;
+  bool IsDigestPresent : 1 {false};
 
   /*
   **	This is the message digest (SHA) of the INI database that was embedded

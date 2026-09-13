@@ -168,10 +168,10 @@ const char* SessionClass::CallWaitStrings[CALL_WAIT_STRINGS_NUM] = {
  * HISTORY:                                                                *
  *   11/30/1995 BRR : Created.                                             *
  *=========================================================================*/
-SessionClass::SessionClass() {
-  Type = GAME_NORMAL;
-  CommProtocol = DEFAULT_COMM_PROTOCOL;
-
+SessionClass::SessionClass()
+    : PrefColor(magic_enum::enum_values<PlayerColorType>().front()),
+      ColorIdx(magic_enum::enum_values<PlayerColorType>().front()),
+      MetaSize(MAX_IPX_PACKET_SIZE) {
   Options.ScenarioIndex = 0;
   Options.Bases = 0;
   Options.Credits = 0;
@@ -180,43 +180,14 @@ SessionClass::SessionClass() {
   Options.Ghosts = 0;
   Options.UnitCount = 0;
 
-  UniqueID = 0;
-
   Handle[0] = 0;
-  PrefColor = magic_enum::enum_values<PlayerColorType>().front();
-  ColorIdx = magic_enum::enum_values<PlayerColorType>().front();
-  House = HOUSE_GOOD;
-  ObiWan = 0;
-  Solo = 0;
-
-  MaxPlayers = 8;
-  NumPlayers = 0;
-
-  MaxAhead = 5;
-  FrameSendRate = DEFAULT_FRAME_SEND_RATE;
-
-  LoadGame = 0;
-  EmergencySave = 0;
 
   LastMessage[0] = 0;
-  WWChat = 0;
 
   RecordFile.Set_Name("RECORD.BIN");  // always uses this name
-  Record = 0;                         // set via command line
-  Play = 0;                           // set via command line
-  Attract = 0;                        // set via command line
 
-  IsBridge = 0;
-  NetStealth = 0;
-  NetProtect = 1;
-  NetOpen = 0;
   GameName[0] = 0;
-  GProductID = 0;
 
-  MetaSize = MAX_IPX_PACKET_SIZE;
-
-  ModemService = true;
-  CurPhoneIdx = 0;                              // set from INI file
   SerialDefaults.Port = 0x2f8;                  // set from INI file
   SerialDefaults.IRQ = 3;                       // set from INI file
   SerialDefaults.Baud = 9600;                   // set from INI file
@@ -224,16 +195,8 @@ SessionClass::SessionClass() {
   SerialDefaults.InitStringIndex = 0;           // set from INI file
   SerialDefaults.CallWaitStringIndex = 0;       // set from INI file
   port::SafeCopy(SerialDefaults.CallWaitString, "");
-  ModemType = MODEM_NULL_HOST;  // set from INI file
 
-  TrapFrame = 0x7fffffff;        // frame to start trapping object values at
-  TrapObjType = RTTI_NONE;       // type of object to trap
   TrapObject.Ptr.All = nullptr;  // ptr to object being trapped
-  TrapCoord = 0;                 // COORDINATE of object to trap
-  TrapTarget = kTargetNone;      // TARGET value of object to trap
-  TrapCell = nullptr;            // for trapping a cell
-  TrapCheckHeap = 0;             // start checking the Heap
-  TrapPrintCRC = 0;              // output CRC file
 
 }  // end of SessionClass
 

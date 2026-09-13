@@ -162,7 +162,7 @@ class RAChatEventSink
   // rest of the time, their values are meaningless. 	The idea is to force
   // wolapi act in a modal way. In many places I "block" until a callback
   // response to a 	wolapi request has been received.
-  bool bRequestServerListWait;
+  bool bRequestServerListWait{false};
   bool bRequestConnectionWait = false;
   bool bRequestLogoutWait = false;
   //	bool	bRequestChannelListWait;
@@ -173,28 +173,30 @@ class RAChatEventSink
   bool bRequestFindWait = false;
   bool bRequestPageWait = false;
 
-  bool bRequestChannelListForLobbiesWait;
+  bool bRequestChannelListForLobbiesWait{false};
 
-  bool bIgnoreChannelLists;  //	Used to temporarily turn off response to channel
-                             // lists, when we are in the midst 	of some
-                             // processing that depends on pChannelList
-                             // remaining constant.
+  bool bIgnoreChannelLists{
+      false};  //	Used to temporarily turn off response to channel
+               // lists, when we are in the midst 	of some
+               // processing that depends on pChannelList
+               // remaining constant.
 
-  bool bRequestGameStartWait;
+  bool bRequestGameStartWait{false};
 
-  Server* pServer;  //	Server to connect to, acquired from OnServerList.
-  bool bConnected;  //	True when user is logged in to chat server.
-  bool bJoined;     //	True when user has joined a channel.
+  Server* pServer{
+      nullptr};            //	Server to connect to, acquired from OnServerList.
+  bool bConnected{false};  //	True when user is logged in to chat server.
+  bool bJoined{false};     //	True when user has joined a channel.
 
-  Channel* pChannelList;        //	First element of channel list, or null.
+  Channel* pChannelList{nullptr};  //	First element of channel list, or null.
   CHANNELFILTER ChannelFilter = CHANNELFILTER_NO;  //	Affects what channels are included in
                                 // channel list when built.
 
-  User* pUserList;  //	First element of user list, or null.
-  User* pUserTail;  //	Last element of user list, or null.
+  User* pUserList{nullptr};  //	First element of user list, or null.
+  User* pUserTail{nullptr};  //	Last element of user list, or null.
 
-  char* szMotd;                        //	Message of the day.
-  HRESULT hresRequestConnectionError;  //	Used to pass error hresult.
+  char* szMotd{nullptr};                  //	Message of the day.
+  HRESULT hresRequestConnectionError{0};  //	Used to pass error hresult.
 
   HRESULT hresRequestFindResult = 0;  //	Used to pass hresult.
   Channel OnFindChannel{};
@@ -203,17 +205,20 @@ class RAChatEventSink
 
   HRESULT hresRequestJoinResult = 0;  //	Used to pass hresult.
 
-  bool bGotKickedTrigger;  //	Special flag meaning do some more processing
-                           // after callback has exited.
+  bool bGotKickedTrigger{
+      false};  //	Special flag meaning do some more processing
+               // after callback has exited.
 
-  User* pGameUserList;  //	First element of start game user list, or null.
-  int iGameID;          //	WW Online game id received from OnGameStart.
-                        //	Is also a flag indicating "OnGameStart() called,
-                        // TriggerGameStart() not yet called".
+  User* pGameUserList{
+      nullptr};    //	First element of start game user list, or null.
+  int iGameID{0};  //	WW Online game id received from OnGameStart.
+                   //	Is also a flag indicating "OnGameStart() called,
+                   // TriggerGameStart() not yet called".
 
-  User* pUserIPList;  //	List that holds user IP's, used for pinging in
-                      // game channel.
-  User* pUserIPListTail;
+  User* pUserIPList{
+      nullptr};  //	List that holds user IP's, used for pinging in
+                 // game channel.
+  User* pUserIPListTail{nullptr};
 
  protected:
   WolapiObject* pOwner;  //	Link back to the object that contains me.
@@ -257,11 +262,11 @@ class RADownloadEventSink :
   STDMETHOD(OnStatusUpdate)(int status) override;
   STDMETHOD(OnQueryResume)() override;
 
-  bool bFlagEnd;
-  bool bFlagError;
-  bool bFlagProgressUpdate;
-  bool bFlagStatusUpdate;
-  bool bFlagQueryResume;
+  bool bFlagEnd{false};
+  bool bFlagError{false};
+  bool bFlagProgressUpdate{false};
+  bool bFlagStatusUpdate{false};
+  bool bFlagQueryResume{false};
   int iBytesRead = 0;
   int iTotalSize = 0;
   int iTimeTaken = 0;
@@ -307,10 +312,12 @@ class RANetUtilEventSink :
                             // pUserList.
   unsigned int GetUserRank(const char* szName, bool bRankRA);
 
-  Ladder* pLadderList;    //	First element of Ladder list, or null.
-  Ladder* pLadderTail;    //	Last element of Ladder list, or null.
-  Ladder* pLadderListAM;  //	First element of Aftermath Ladder list, or null.
-  Ladder* pLadderTailAM;  //	Last element of Aftermath Ladder list, or null.
+  Ladder* pLadderList{nullptr};  //	First element of Ladder list, or null.
+  Ladder* pLadderTail{nullptr};  //	Last element of Ladder list, or null.
+  Ladder* pLadderListAM{
+      nullptr};  //	First element of Aftermath Ladder list, or null.
+  Ladder* pLadderTailAM{
+      nullptr};  //	Last element of Aftermath Ladder list, or null.
 
  protected:
   WolapiObject* pOwner;  //	Link back to the object that contains me.

@@ -73,19 +73,12 @@
  * HISTORY:  01/05/1995 MML : Created.                                     *
  *=========================================================================*/
 GaugeClass::GaugeClass(unsigned id, int x, int y, int w, int h)
-    : ControlClass(id, x, y, w, h, LEFTHELD | LEFTPRESS | LEFTRELEASE, true) {
+    : ControlClass(id, x, y, w, h, LEFTHELD | LEFTPRESS | LEFTRELEASE, true),
+      IsHorizontal(w > h) {
   // Set the range directly. Set_Maximum and Set_Value are virtual -- SliderClass
   // overrides both to recalculate the thumb -- so a constructor cannot reach the
   // override, and they would compare against uninitialised members here anyway.
   // SliderClass's own constructor calls Set_Thumb_Size, which does the recalc.
-  MaxValue = 255;
-  CurValue = 0;
-
-  HasThumb = true;
-  IsHorizontal = w > h;
-  IsColorized = true;
-
-  ClickDiff = 0;
 }
 
 /***********************************************************************************************
@@ -395,8 +388,6 @@ void GaugeClass::Draw_Thumb() {
  *=============================================================================================*/
 TriColorGaugeClass::TriColorGaugeClass(unsigned id, int x, int y, int w, int h)
     : GaugeClass(id, x, y, w, h) {
-  RedLimit = 0;     // maximum value for red
-  YellowLimit = 0;  // maximum value for yellow
 }
 
 /***********************************************************************************************

@@ -123,8 +123,8 @@ class MouseClass : public ScrollClass {
   *performed) and *	the normal default mouse shape (when arrow shapes are
   *needed).
   */
-  MouseType CurrentMouseShape;
-  MouseType NormalMouseShape;
+  MouseType CurrentMouseShape{MOUSE_NORMAL};
+  MouseType NormalMouseShape{MOUSE_NORMAL};
 
   /*
   **	For animating mouse shapes, this controls the frame and animation rate.

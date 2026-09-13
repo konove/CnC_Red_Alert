@@ -127,7 +127,7 @@ class NullModemConnClass : public NonSequencedConnClass {
   /*.....................................................................
   This is the PORT value used by the GreenLeaf calls.
   .....................................................................*/
-  HANDLE PortHandle;
+  HANDLE PortHandle{nullptr};
   // PORT *Port;
 
   /*.....................................................................

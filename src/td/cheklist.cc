@@ -71,9 +71,7 @@
 CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
                                TextPrintType flags, const void* up,
                                const void* down)
-    : ListClass(id, x, y, w, h, flags, up, down) {
-  IsReadOnly = false;
-}
+    : ListClass(id, x, y, w, h, flags, up, down) {}
 
 /***************************************************************************
  * CheckListClass::Check_Item -- [un]checks an items                       *

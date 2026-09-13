@@ -109,7 +109,7 @@ class ScoreAnimClass {
 
 class ScoreCredsClass : public ScoreAnimClass {
  public:
-  int Stage;
+  int Stage{0};
   int MaxStage;
   int TimerReset;
   const void* CashTurn;
@@ -129,7 +129,7 @@ class ScoreCredsClass : public ScoreAnimClass {
 
 class ScoreTimeClass : public ScoreAnimClass {
  public:
-  int Stage;
+  int Stage{0};
   int MaxStage;
   int TimerReset;
   void Update() override;
@@ -160,7 +160,7 @@ class ScorePrintClass : public ScoreAnimClass {
 
 class ScoreScaleClass : public ScoreAnimClass {
  public:
-  int Stage;
+  int Stage{0};
   const unsigned char* Palette;
   void Update() override;
   ScoreScaleClass(const void* string, int xpos, int ypos,

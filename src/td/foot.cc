@@ -137,26 +137,29 @@
  *                                                                                             *
  * HISTORY: * 11/23/1994 JLB : Created. *
  *=============================================================================================*/
-FootClass::FootClass() : Speed(0) {
-  ArchiveTarget = kTargetNone;
-  IsDriving = false;
-  IsInitiated = false;
-  IsPlanningToLook = false;
-  IsDeploying = false;
-  IsNewNavCom = false;
-  IsFiring = false;
-  IsRotating = false;
-  IsUnloading = false;
-  NavCom = kTargetNone;
-  SuspendedNavCom = kTargetNone;
+FootClass::FootClass()
+    : IsInitiated(false),
+      IsNewNavCom(false),
+      IsPlanningToLook(false),
+      IsDeploying(false),
+      IsFiring(false),
+      IsRotating(false),
+      IsDriving(false),
+      IsUnloading(false),
+      Speed(0),
+      ArchiveTarget(kTargetNone),
+      NavCom(kTargetNone),
+      SuspendedNavCom(kTargetNone),
+      Team(nullptr),
+      Member(nullptr),
+      TryTryAgain(PATH_RETRY),
+      HeadToCoord(0) {
   for (auto& facing : Path) {
     facing = FACING_NONE;
   }
-  HeadToCoord = 0;
-  Member = nullptr;
-  Team = nullptr;
+
   PathDelay = 0;
-  TryTryAgain = PATH_RETRY;
+
   if (House) {
     House->CurUnits++;
   }
@@ -197,27 +200,31 @@ FootClass::~FootClass() {
  *                                                                                             *
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
-FootClass::FootClass(HousesType house) : TechnoClass(house), Speed(0) {
-  ArchiveTarget = kTargetNone;
-  Member = nullptr;
-  Team = nullptr;
+FootClass::FootClass(HousesType house)
+    : TechnoClass(house),
+      IsInitiated(false),
+      IsNewNavCom(false),
+      IsPlanningToLook(false),
+      IsDeploying(false),
+      IsFiring(false),
+      IsRotating(false),
+      IsDriving(false),
+      IsUnloading(false),
+      Speed(0),
+      ArchiveTarget(kTargetNone),
+      NavCom(kTargetNone),
+      SuspendedNavCom(kTargetNone),
+      Team(nullptr),
+      Group(-1),
+      Member(nullptr),
+      TryTryAgain(PATH_RETRY),
+      HeadToCoord(0L) {
   for (auto& facing : Path) {
     facing = FACING_NONE;
   }
-  NavCom = kTargetNone;
-  SuspendedNavCom = kTargetNone;
-  IsUnloading = false;
-  IsDriving = false;
-  IsInitiated = false;
-  IsRotating = false;
-  IsFiring = false;
-  IsDeploying = false;
-  IsNewNavCom = false;
-  IsPlanningToLook = false;
-  HeadToCoord = 0L;
+
   PathDelay = 0;
-  Group = -1;
-  TryTryAgain = PATH_RETRY;
+
   House->CurUnits++;
 }
 

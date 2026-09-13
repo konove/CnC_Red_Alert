@@ -118,16 +118,8 @@ GadgetClass* GadgetClass::Focused = nullptr;
  * HISTORY: * 01/03/1995 MML : Created. *
  *=============================================================================================*/
 GadgetClass::GadgetClass(int x, int y, int w, int h, unsigned flags,
-                         int sticky) noexcept {
-  X = x;
-  Y = y;
-  Width = w;
-  Height = h;
-  Flags = flags;
-  IsToRepaint = false;
-  IsSticky = sticky;
-  IsDisabled = false;
-
+                         int sticky) noexcept
+    : X(x), Y(y), Width(w), Height(h), IsSticky(sticky), Flags(flags) {
   if (IsSticky) {
     Flags |= LEFTPRESS | LEFTRELEASE;
   }

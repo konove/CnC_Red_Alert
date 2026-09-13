@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_RA_NULLMGR_H_
 #define CNC_RED_ALERT_RA_NULLMGR_H_
 
+#include <limits>
+
 #include "ra/connmgr.h"
 #include "ra/gadget.h"
 #include "ra/nullconn.h"
@@ -67,23 +69,23 @@ class NullModemClass : public ConnManClass {
     MODEM_CMD_ERROR
   };
 
-  char* BuildBuf;
+  char* BuildBuf{nullptr};
   int MaxLen;
 
-  char* EchoBuf;
-  int EchoSize;
+  char* EchoBuf{nullptr};
+  int EchoSize{500};
   int EchoCount = 0;
 
-  int OldIRQPri;
+  int OldIRQPri{-1};  // default true
 
-  int ModemVerboseOn;
-  int ModemEchoOn;
-  int ModemWaitCarrier;
-  int ModemCarrierDetect;
-  int ModemCarrierLoss;
-  int ModemHangupDelay;
-  int ModemGuardTime;
-  char ModemEscapeCode;
+  int ModemVerboseOn{false};    // default 50 * 1000ms = 50 secs
+  int ModemEchoOn{false};       // default 6  * 100ms  = .6 secs
+  int ModemWaitCarrier{50000};  // default 14 * 100ms  = 1.4 secs
+  int ModemCarrierDetect{600};  // default 20 * 1000ms = 20 secs
+  int ModemCarrierLoss{1400};   // default 50 * 20ms   = 1 sec
+  int ModemHangupDelay{20000};  // default ASCII 43
+  int ModemGuardTime{1000};
+  char ModemEscapeCode{'+'};
 
   static void (*OrigAbortModemFunc)(int);
   static KeyNumType Input;
@@ -189,13 +191,13 @@ class NullModemClass : public ConnManClass {
   /*
   **	This is a pointer to the NULL-Modem Connection object.
   */
-  NullModemConnClass* Connection;
-  int NumConnections;  // # connection objects in use
+  NullModemConnClass* Connection{nullptr};
+  int NumConnections{0};  // # connection objects in use
 
   /*
   ** This is the Win95 port handle
   */
-  HANDLE PortHandle;
+  HANDLE PortHandle{nullptr};
 
   int NumSend;
   int NumReceive;
@@ -206,23 +208,24 @@ class NullModemClass : public ConnManClass {
   **	RXSize is the allocated size of the RX buffer.
   **	RXCount is the # of characters we currently have in our buffer.
   */
-  char* RXBuf;
+  char* RXBuf{nullptr};
   int RXSize = 0;
   int RXCount = 0;
 
   /*.....................................................................
-  Timing parameters for all connections
-  .....................................................................*/
-  unsigned long RetryDelta;
-  unsigned long MaxRetries;
-  unsigned long Timeout;
+  Timing parameters for all connections  // 60 ticks between retries
+  .....................................................................*/  // disregard # retries
+  unsigned long RetryDelta{60};  // report bad connection after 20 seconds
+  unsigned long MaxRetries{
+      std::numeric_limits<unsigned long>::max()};  // Retry forever.
+  unsigned long Timeout{1200};
 
   /*
   **	Various Statistics
   */
-  int SendOverflows;
-  int ReceiveOverflows;
-  int CRCErrors;
+  int SendOverflows{0};
+  int ReceiveOverflows{0};
+  int CRCErrors{0};
 };
 
 #endif  // CNC_RED_ALERT_RA_NULLMGR_H_

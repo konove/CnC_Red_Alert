@@ -76,10 +76,7 @@ const void* TabClass::TabShape = nullptr;
  *                                                                                             *
  * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
-TabClass::TabClass() {
-  IsTabToRedraw = false;
-  //	Select = -1;
-}
+TabClass::TabClass() = default;
 
 /***********************************************************************************************
  * TabClass::Draw_It -- Displays the tab buttons as necessary. *

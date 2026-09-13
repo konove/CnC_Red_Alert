@@ -50,7 +50,7 @@ DropListClass::DropListClass(int id, char* text, int max_len,
                              TextPrintType flags, int x, int y, int w, int h,
                              const void* up, const void* down)
     : EditClass(id, text, max_len, flags, x, y, w, 18, kAlphanumeric),
-      IsDropped(false),
+
       ListHeight(h),
       DropButton(0, down, x + w, y),
       List(0, x, y + Get_Build_Frame_Height(down),

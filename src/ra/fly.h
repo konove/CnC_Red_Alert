@@ -57,7 +57,7 @@ class FlyClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  FlyClass() : SpeedAccum(0), SpeedAdd(MPH_IMMOBILE) {}
+  FlyClass() = default;
 
   // Saved-game support.
   template <class Archive>
@@ -82,8 +82,8 @@ class FlyClass {
   **	Object movement consists of incrementing the accumulator until enough
   *"distance" *	has accumulated so that moving the object becomes reasonable.
   */
-  unsigned SpeedAccum;  // Lepton accumulator.
-  MPHType SpeedAdd;     // Lepton add (per frame).
+  unsigned SpeedAccum{0};          // Lepton accumulator.
+  MPHType SpeedAdd{MPH_IMMOBILE};  // Lepton add (per frame).
 };
 
 #endif  // CNC_RED_ALERT_RA_FLY_H_

@@ -259,15 +259,14 @@ AircraftTypeClass::AircraftTypeClass(
                       is_immune, is_theater, is_twoshooter, false,
                       is_repairable, is_buildable, is_crew, ammo, strength,
                       maxspeed, sightrange, cost, scenario, risk, reward,
-                      ownable, primary, secondary, armor) {
-  IsRotorEquipped = is_rotorequipped;
-  IsRotorCustom = is_rotorcustom;
-  IsLandable = is_landable;
-  IsFixedWing = is_fixedwing;
-  Type = airtype;
-  ROT = static_cast<unsigned char>(rot);
-  Mission = deforder;
-}
+                      ownable, primary, secondary, armor),
+      IsFixedWing(is_fixedwing),
+      IsLandable(is_landable),
+      IsRotorEquipped(is_rotorequipped),
+      IsRotorCustom(is_rotorcustom),
+      Type(airtype),
+      ROT(static_cast<unsigned char>(rot)),
+      Mission(deforder) {}
 
 AircraftType AircraftTypeClass::From_Name(const char* name) {
   if (name) {

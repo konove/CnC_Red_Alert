@@ -124,11 +124,12 @@ IconListClass::IconListClass(int id, int x, int y, int w, int h,
                              TextPrintType flags, const void* up,
                              const void* down, bool bResponsibleForStringAlloc,
                              int iSelectionType, int iMaxItemsSaved)
-    : ListClass(id, x, y, w, h, flags, up, down) {
+    : ListClass(id, x, y, w, h, flags, up, down),
+      bDoAlloc(bResponsibleForStringAlloc) {
   //	If bResponsibleForStringAlloc, COPIES of strings are stored in the list.
   // Deletion is 	handled by this class. Icons are different - the caller
   // is responsible for what's on 	the other end of the pointer.
-  bDoAlloc = bResponsibleForStringAlloc;
+
   //	iSelectionType = 0 for no selection shown, 1 for normal ListClass
   // selection, 2 for n multiple selections
   if (iSelectionType < 0 || iSelectionType > 2) {

@@ -81,20 +81,7 @@ TFixedIHeapClass<WeaponTypeClass> Weapons;
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
 WeaponTypeClass::WeaponTypeClass(const char* name)
-    : ID(Weapons.ID(this)),
-      IniName(name),
-      IsSupressed(false),
-      IsCamera(false),
-      IsElectric(false),
-      Burst(1),
-      Bullet(nullptr),
-      Attack(0),
-      MaxSpeed(MPH_IMMOBILE),
-      WarheadPtr(nullptr),
-      ROF(0),
-      Range(0),
-      Sound(VOC_NONE),
-      Anim(ANIM_NONE) {}
+    : ID(Weapons.ID(this)), IniName(name) {}
 
 /***********************************************************************************************
  * WeaponTypeClass::~WeaponTypeClass -- Destructor for weapon type class

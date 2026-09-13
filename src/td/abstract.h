@@ -50,7 +50,7 @@ class AbstractClass {
   **	The coordinate location of the unit. For vehicles, this is the center
   **	point. For buildings, it is the upper left corner.
   */
-  COORDINATE Coord;
+  COORDINATE Coord{0L};
 
   /*
   **	The actual object ram-space is located in arrays in the data segment.
@@ -74,7 +74,7 @@ class AbstractClass {
     }
   }
 
-  AbstractClass() { Coord = 0L; }
+  AbstractClass() = default;
   virtual ~AbstractClass() = default;
   AbstractClass(const AbstractClass&) = delete;
   AbstractClass& operator=(const AbstractClass&) = delete;

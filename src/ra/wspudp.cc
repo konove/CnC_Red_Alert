@@ -74,7 +74,6 @@ typedef int socklen_t;
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define INVALID_SOCKET (-1)
 #define SOCKET_ERROR (-1)
 
 #define OutputDebugString(x) printf("%s", x)

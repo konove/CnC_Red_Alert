@@ -57,7 +57,7 @@ class RadioClass : public MissionClass {
   /*
   **	This is a record of the last message received by this receiver.
   */
-  RadioMessageType LastMessage;
+  RadioMessageType LastMessage{RADIO_STATIC};
 
   /*
   **	This is the object that radio communication has been established
@@ -65,7 +65,7 @@ class RadioClass : public MissionClass {
   **	the receiving radio is also tuned to the object that contains this
   **	radio set.
   */
-  RadioClass* Radio;
+  RadioClass* Radio{nullptr};
 
   /*
   **	This is a text representation of all the possible radio messages. This
@@ -77,10 +77,7 @@ class RadioClass : public MissionClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  RadioClass() {
-    Radio = nullptr;
-    LastMessage = RADIO_STATIC;
-  }
+  RadioClass() = default;
   ~RadioClass() override = default;
   RadioClass(const RadioClass&) = delete;
   RadioClass& operator=(const RadioClass&) = delete;

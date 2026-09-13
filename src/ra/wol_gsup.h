@@ -76,11 +76,13 @@ class WOL_GameSetupDialog {
 
   bool bHost;  //	True when I created the game channel and am the host.
 
-  bool bHostSayGo;  //	Trigger host instructing all to start game immediately.
-  bool bHostWaitingForGoTrigger;  //	True while host is waiting for go
-                                  // message to bounce back to him and trigger
-                                  // start.
-  bool bExitForGameTrigger;       //	Trigger exiting dialog for game.
+  bool bHostSayGo{
+      false};  //	Trigger host instructing all to start game immediately.
+  bool bHostWaitingForGoTrigger{
+      false};                       //	True while host is waiting for go
+                                    // message to bounce back to him and trigger
+                                    // start.
+  bool bExitForGameTrigger{false};  //	Trigger exiting dialog for game.
 
   void ProcessGuestRequest(User* pUser, const char* szRequest);
   void ProcessInform(char* szInform);
@@ -240,36 +242,36 @@ class WOL_GameSetupDialog {
  protected:
   GadgetClass* commands = nullptr;  //	The controls list.
 
-  IconListClass* pILPlayers;
-  IconListClass* pILScens;
-  IconListClass* pILDisc;
+  IconListClass* pILPlayers{nullptr};
+  IconListClass* pILScens{nullptr};
+  IconListClass* pILDisc{nullptr};
   char szSendBuffer[MAXCHATSENDLENGTH]{};
-  EditClass* pEditSend;
-  GaugeClass* pGaugeCount;
-  GaugeClass* pGaugeLevel;
-  GaugeClass* pGaugeCredits;
-  GaugeClass* pGaugeAIPlayers;
-  CheckListClass* pCheckListOptions;
+  EditClass* pEditSend{nullptr};
+  GaugeClass* pGaugeCount{nullptr};
+  GaugeClass* pGaugeLevel{nullptr};
+  GaugeClass* pGaugeCredits{nullptr};
+  GaugeClass* pGaugeAIPlayers{nullptr};
+  CheckListClass* pCheckListOptions{nullptr};
   TextButtonClass* pTextBtnOk = nullptr;
-  TextButtonClass* pTextBtnCancel;
-  TextButtonClass* pTextBtnAcceptStart;
-  TextButtonClass* pTextBtnAction;
-  StaticButtonClass* pStaticDescrip;
-  StaticButtonClass* pStaticUnit;
-  StaticButtonClass* pStaticLevel;
-  StaticButtonClass* pStaticCredits;
-  StaticButtonClass* pStaticAIPlayers;
+  TextButtonClass* pTextBtnCancel{nullptr};
+  TextButtonClass* pTextBtnAcceptStart{nullptr};
+  TextButtonClass* pTextBtnAction{nullptr};
+  StaticButtonClass* pStaticDescrip{nullptr};
+  StaticButtonClass* pStaticUnit{nullptr};
+  StaticButtonClass* pStaticLevel{nullptr};
+  StaticButtonClass* pStaticCredits{nullptr};
+  StaticButtonClass* pStaticAIPlayers{nullptr};
   char szHouseBuffer[25]{};  // buffer for house droplist
-  DropListClass* pDropListHouse;
-  BigCheckBoxClass* pCheckAftermathUnits;
-  ShapeButtonClass* pShpBtnScenarioRA;
-  ShapeButtonClass* pShpBtnScenarioCS;
-  ShapeButtonClass* pShpBtnScenarioAM;
-  ShapeButtonClass* pShpBtnScenarioUser;
+  DropListClass* pDropListHouse{nullptr};
+  BigCheckBoxClass* pCheckAftermathUnits{nullptr};
+  ShapeButtonClass* pShpBtnScenarioRA{nullptr};
+  ShapeButtonClass* pShpBtnScenarioCS{nullptr};
+  ShapeButtonClass* pShpBtnScenarioAM{nullptr};
+  ShapeButtonClass* pShpBtnScenarioUser{nullptr};
 
-  ToolTipClass* pTTipAcceptStart;
-  ToolTipClass* pTTipCancel;
-  ToolTipClass* pTTipAction;
+  ToolTipClass* pTTipAcceptStart{nullptr};
+  ToolTipClass* pTTipCancel{nullptr};
+  ToolTipClass* pTTipAction{nullptr};
 
   WolapiObject* pWO;
 
@@ -279,23 +281,24 @@ class WOL_GameSetupDialog {
   DWORD dwTimeNextParamRefresh = 0;  //	Param changes are sent by host at
                                  // certain interval.
 
-  HousesType HousePrevious;
+  HousesType HousePrevious{HOUSE_NONE};
 
-  unsigned int nHostLastParamID;  //	Host's send update tracking packet ID.
-  unsigned int
-      nGuestLastParamID;  //	Guest's record of last ID received from host.
+  unsigned int nHostLastParamID{0};  //	Host's send update tracking packet ID.
+  unsigned int nGuestLastParamID{
+      0};  //	Guest's record of last ID received from host.
 
-  bool bWaitingToStart;
+  bool bWaitingToStart{false};
 
   bool bProcess = false;        //	True means continue doing input loop.
   RESULT_WOLGSUP ResultReturn = RESULT_WOLGSUP_BACKTOCHAT;  //	Value that will be returned from Show().
   char szNameOfHostWhoJustBailedOnUs[WOL_NAME_LEN_MAX]{};  //	If set, triggers
                                                          // setup cancellation.
 
-  bool bParamsReceived;  //	True after any WOL_GAMEOPT_INFPARAMS messages
-                         // have been received from a host.
+  bool bParamsReceived{
+      false};  //	True after any WOL_GAMEOPT_INFPARAMS messages
+               // have been received from a host.
 
-  bool bLeaveDueToRulesMismatchTrigger;
+  bool bLeaveDueToRulesMismatchTrigger{false};
 
   bool bRequestedScenarioDownload = false;
 
@@ -303,18 +306,19 @@ class WOL_GameSetupDialog {
 
   //	Tooltips...
   DWORD timeToolTipAppear = 0;
-  ToolTipClass*
-      pToolTipHead;  //	Head of list of ToolTips that parallels gadget list.
-  ToolTipClass*
-      pToolTipHitLast;  //	ToolTip the mouse was last over, or null.
+  ToolTipClass* pToolTipHead{
+      nullptr};  //	Head of list of ToolTips that parallels gadget list.
+  ToolTipClass* pToolTipHitLast{
+      nullptr};  //	ToolTip the mouse was last over, or null.
 
   //	Extra game params...
   bool bAftermathUnits = false;  //	True if aftermath units are to be used in the
                          // game.
   bool bSlowUnitBuildRate = false;
 
-  SCENARIO_GAMEKIND ScenKindCurrent;  //	Describes what gamekind of
-                                      // scenarios we are viewing, if host.
+  SCENARIO_GAMEKIND ScenKindCurrent{
+      SCENARIO_UNINITIALIZED};  //	Describes what gamekind of
+                                // scenarios we are viewing, if host.
   DynamicVectorClass<const char*>
       ar_szScenarios[4];  //	Lists of scenarios, by SCENARIO_GAMEKIND.
   //	ar_szScenIndexes parallels ar_szScenarios, holds ScenarioIndex. It's

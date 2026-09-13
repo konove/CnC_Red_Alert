@@ -184,40 +184,12 @@ static int build_tech[11] = {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 ScenarioClass::ScenarioClass()
-    : Difficulty(DIFF_NORMAL),
-      CDifficulty(DIFF_NORMAL),
+    :
+
       MissionTimer(0),
       ShroudTimer(kTicksPerMinute * Rule.ShroudRate),
-      Scenario(1),
-      Theater(THEATER_TEMPERATE),
-      IntroMovie(VQ_NONE),
-      BriefMovie(VQ_NONE),
-      WinMovie(VQ_NONE),
-      LoseMovie(VQ_NONE),
-      ActionMovie(VQ_NONE),
-      TransitTheme(THEME_NONE),
-      PlayerHouse(HOUSE_GREECE),
+
       CarryOverPercent(0),
-      CarryOverMoney(0),
-      CarryOverCap(0),
-      Percent(0),
-      BridgeCount(0),
-      CarryOverTimer(0),
-      IsBridgeChanged(false),
-      IsGlobalChanged(false),
-      IsToCarryOver(false),
-      IsToInherit(false),
-      IsTanyaEvac(false),
-      IsFadingBW(false),
-      IsFadingColor(false),
-      IsEndOfGame(false),
-      IsInheritTimer(false),
-      IsNoSpyPlane(false),
-      IsSkipScore(false),
-      IsOneTimeOnly(false),
-      IsNoMapSel(false),
-      IsTruckCrate(false),
-      IsMoneyTiberium(false),
 #define AUTOSONAR_PERIOD (int64_t{kTicksPerSecond} * 40)
       FadeTimer(0),
       AutoSonarTimer(AUTOSONAR_PERIOD) {

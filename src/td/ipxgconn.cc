@@ -85,16 +85,14 @@
 IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
                                        unsigned short product_id)
     : IPXConnClass(numsend, numreceive,
-                   static_cast<int>(maxlen + sizeof(GlobalHeaderType) - sizeof(CommHeaderType)),
+                   static_cast<int>(maxlen + sizeof(GlobalHeaderType) -
+                                    sizeof(CommHeaderType)),
                    GLOBAL_MAGICNUM,  // magic number for this connection
                    nullptr,          // IPX Address (none)
                    0,                // Connection ID
-                   "")               // Connection Name
-{
-  ProductID = product_id;
-  IsBridge = 0;
-
-} /* end of IPXGlobalConnClass */
+                   ""),
+      ProductID(product_id)  // Connection Name
+{}                           /* end of IPXGlobalConnClass */
 
 /***************************************************************************
  * IPXGlobalConnClass::Send_Packet -- adds a packet to the send queue *

@@ -57,12 +57,12 @@ class CrewClass {
   **	This keeps track of the number of "kills" the unit as accumulated.
   **	When it reaches a certain point, the unit improves.
   */
-  unsigned short Kills;
+  unsigned short Kills{0};
 
   /*
   **	Constructors, Destructors, and overloaded operators.
   */
-  CrewClass() { Kills = 0; }
+  CrewClass() = default;
 
   // Increments the crew's kill tally and returns the new total.
   int Add_Kill() {

@@ -79,28 +79,8 @@
 BulletTypeClass::BulletTypeClass(const char* name) noexcept
     : ObjectTypeClass(RTTI_BULLETTYPE, BulletTypes.ID(this), true, true, false,
                       false, true, true, false, TXT_NONE, name),
-      IsHigh(false),
-      IsShadow(true),
-      IsArcing(false),
-      IsDropping(false),
-      IsInvisible(false),
-      IsProximityArmed(false),
-      IsFlameEquipped(false),
-      IsFueled(false),
-      IsFaceless(true),
-      IsInaccurate(false),
-      IsTranslucent(false),
-      IsAntiAircraft(false),
-      IsAntiGround(true),
-      IsAntiSub(false),
-      IsDegenerate(false),
-      IsSubSurface(false),
-      IsParachuted(false),
-      IsGigundo(false),
-      Type(static_cast<BulletType>(ID)),
-      ROT(0),
-      Arming(0),
-      Tumble(0) {}
+
+      Type(static_cast<BulletType>(ID)) {}
 
 /***********************************************************************************************
  * BulletTypeClass::operator new -- Allocates a bullet type object from the

@@ -81,13 +81,7 @@
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-FixedHeapClass::FixedHeapClass(int size) noexcept {
-  Size = size;
-  Buffer = nullptr;
-  IsAllocated = false;
-  TotalCount = 0;
-  ActiveCount = 0;
-}
+FixedHeapClass::FixedHeapClass(int size) noexcept : Size(size) {}
 
 /***********************************************************************************************
  * FixedHeapClass::~FixedHeapClass -- Destructor for the heap manager class. *

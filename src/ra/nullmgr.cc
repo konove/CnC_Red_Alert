@@ -144,48 +144,19 @@ GadgetClass* NullModemClass::Commands;  // button list
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 NullModemClass::NullModemClass(int numsend, int numreceive, int maxlen,
-                               unsigned short magicnum) {
+                               unsigned short magicnum)
+    : MaxLen(maxlen),
+      NumSend(numsend),
+      NumReceive(numreceive),
+      MagicNum(magicnum) {
   /*------------------------------------------------------------------------
   Init Port to NULL; we haven't opened Greenleaf yet.
   ------------------------------------------------------------------------*/
-  PortHandle = nullptr;
 
-  Connection = nullptr;
-
-  NumSend = numsend;
-  NumReceive = numreceive;
-  MaxLen = maxlen;
-  MagicNum = magicnum;
-
-  RXBuf = nullptr;
-  BuildBuf = nullptr;
-
-  EchoSize = 500;
-  EchoBuf = nullptr;
-
-  OldIRQPri = -1;
-
-  ModemVerboseOn = false;    // default true
-  ModemEchoOn = false;       // default true
-  ModemWaitCarrier = 50000;  // default 50 * 1000ms = 50 secs
-  ModemCarrierDetect = 600;  // default 6  * 100ms  = .6 secs
-  ModemCarrierLoss = 1400;   // default 14 * 100ms  = 1.4 secs
-  ModemHangupDelay = 20000;  // default 20 * 1000ms = 20 secs
-  ModemGuardTime = 1000;     // default 50 * 20ms   = 1 sec
-  ModemEscapeCode = '+';     // default ASCII 43
-
-  SendOverflows = 0;
-  ReceiveOverflows = 0;
-  CRCErrors = 0;
-
-  NumConnections = 0;
 
   /*------------------------------------------------------------------------
   Init timing parameters
   ------------------------------------------------------------------------*/
-  RetryDelta = 60;  // 60 ticks between retries
-  MaxRetries = -1;  // disregard # retries
-  Timeout = 1200;   // report bad connection after 20 seconds
 
 } /* end of NullModemClass */
 

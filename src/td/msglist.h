@@ -100,16 +100,16 @@ class MessageListClass {
   void Set_Width(int width);
 
  private:
-  TextLabelClass* MessageList;  // list of messages
-  int MessageX;                 // x-coord of upper-left
-  int MessageY;                 // y-coord of upper-left
-  int MaxMessages;              // max messages allowed
-  int MaxChars;                 // max allowed chars per message
-  int Height;                   // height in pixels
-  TextLabelClass* EditLabel;    // ptr to current edit label
-  char* EditBuf;                // ptr to current edit buffer
-  int EditCurPos;               // current edit position
-  int EditInitPos;              // initial edit position
+  TextLabelClass* MessageList{nullptr};  // list of messages
+  int MessageX{0};                       // x-coord of upper-left
+  int MessageY{0};                       // y-coord of upper-left
+  int MaxMessages{0};                    // max messages allowed
+  int MaxChars{0};                       // max allowed chars per message
+  int Height{0};                         // height in pixels
+  TextLabelClass* EditLabel{nullptr};    // ptr to current edit label
+  char* EditBuf{nullptr};                // ptr to current edit buffer
+  int EditCurPos{0};                     // current edit position
+  int EditInitPos{0};                    // initial edit position
   int Width = 0;                // Maximum width in pixels of editable string
 
   /*

@@ -50,8 +50,8 @@ class LockedWindow {
 
  private:
   GraphicViewPortClass view_;
-  std::uint8_t* bits_;
-  base::ssize stride_;
+  std::uint8_t* bits_{nullptr};
+  base::ssize stride_{0};
   bool locked_;
 };
 

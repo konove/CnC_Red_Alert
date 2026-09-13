@@ -124,7 +124,7 @@ class NullModemConnClass : public ConnectionClass {
   /*
   ** This is the winsoze port handle
   */
-  HANDLE PortHandle;
+  HANDLE PortHandle{nullptr};
 
   /*.....................................................................
   This buffer is a staging area for data sent out; it includes the

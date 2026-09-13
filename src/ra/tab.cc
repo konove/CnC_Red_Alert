@@ -80,7 +80,7 @@ const void* TabClass::TabShape = nullptr;
  *                                                                                             *
  * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
-TabClass::TabClass() : FlasherTimer(0), IsTabToRedraw(false), MoneyFlashTimer(0) {}
+TabClass::TabClass() : FlasherTimer(0), MoneyFlashTimer(0) {}
 
 /***********************************************************************************************
  * TabClass::Draw_It -- Displays the tab buttons as necessary. *

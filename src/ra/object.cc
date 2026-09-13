@@ -1868,16 +1868,14 @@ ObjectTypeClass::ObjectTypeClass(RTTIType rtti, int id, bool is_sentient,
                                  bool is_immune, bool is_footprint, int name,
                                  const char* ini) noexcept
     : AbstractTypeClass(rtti, id, name, ini),
-      IsCrushable(false),
+
       IsStealthy(is_stealthy),
       IsSelectable(is_selectable),
       IsLegalTarget(is_legal_target),
       IsInsignificant(is_insignificant),
       IsImmune(is_immune),
       IsSentient(is_sentient),
-      IsFootprint(is_footprint),
-      Armor(ARMOR_NONE),
-      MaxStrength(0) {}
+      IsFootprint(is_footprint) {}
 
 /***********************************************************************************************
  * ObjectTypeClass::~ObjectTypeClass -- Destructor for object type class.

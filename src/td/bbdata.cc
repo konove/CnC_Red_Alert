@@ -540,27 +540,26 @@ BulletTypeClass::BulletTypeClass(
     bool is_antiaircraft, int arming, int range, MPHType maxspeed, unsigned rot,
     WarheadType warhead, AnimType explosion) noexcept
     : ObjectTypeClass(true, false, false, true, false, false, true, true,
-                      TXT_NONE, ininame, ARMOR_NONE, 0) {
-  Explosion = explosion;
-  IsHigh = is_high;
-  IsAntiAircraft = is_antiaircraft;
-  IsTranslucent = is_translucent;
-  IsArcing = is_arcing;
-  IsHoming = is_homing;
-  IsDropping = is_dropping;
-  IsInvisible = is_invisible;
-  IsProximityArmed = is_proximity_armed;
-  IsFlameEquipped = is_flame_equipped;
-  IsFueled = is_fueled;
-  IsFaceless = is_faceless;
-  IsInaccurate = is_inaccurate;
-  Type = type;
-  Warhead = warhead;
-  MaxSpeed = maxspeed;
-  ROT = static_cast<unsigned char>(rot);
-  Arming = arming;
-  Range = range;
-}
+                      TXT_NONE, ininame, ARMOR_NONE, 0),
+      IsHigh(is_high),
+      IsArcing(is_arcing),
+      IsHoming(is_homing),
+      IsDropping(is_dropping),
+      IsInvisible(is_invisible),
+      IsProximityArmed(is_proximity_armed),
+      IsFlameEquipped(is_flame_equipped),
+      IsFueled(is_fueled),
+      IsFaceless(is_faceless),
+      IsInaccurate(is_inaccurate),
+      IsTranslucent(is_translucent),
+      IsAntiAircraft(is_antiaircraft),
+      Type(type),
+      MaxSpeed(maxspeed),
+      Warhead(warhead),
+      Explosion(explosion),
+      ROT(static_cast<unsigned char>(rot)),
+      Arming(arming),
+      Range(range) {}
 
 /***********************************************************************************************
  * BulletTypeClass::One_Time -- Performs the one time processing for bullets. *

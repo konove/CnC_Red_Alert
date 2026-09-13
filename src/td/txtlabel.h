@@ -66,12 +66,12 @@ class TextLabelClass : public GadgetClass {
   /*
   ** General-purpose data field
   */
-  long UserData;
+  long UserData{0};
   TextPrintType Style;
   char* Text;
   int Color;
-  int PixWidth;
-  char Segments;
+  int PixWidth{-1};
+  char Segments{0};
   unsigned short CRC = 0;
 };
 

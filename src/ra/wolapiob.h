@@ -228,19 +228,19 @@ class WolapiObject {
   WolapiObject(WolapiObject&&) = delete;
   WolapiObject& operator=(WolapiObject&&) = delete;
 
-  IChat* pChat;
-  IDownload* pDownload;
+  IChat* pChat{nullptr};
+  IDownload* pDownload{nullptr};
   INetUtil* pNetUtil = nullptr;
-  DWORD dwChatAdvise;  //	Value that identifies the "connection" from chat
-                       // to chatsink.
-  DWORD dwDownloadAdvise;
+  DWORD dwChatAdvise{0};  //	Value that identifies the "connection" from chat
+                          // to chatsink.
+  DWORD dwDownloadAdvise{0};
   DWORD dwNetUtilAdvise = 0;
 
-  RAChatEventSink* pChatSink;
-  RADownloadEventSink* pDownloadSink;
+  RAChatEventSink* pChatSink{nullptr};
+  RADownloadEventSink* pDownloadSink{nullptr};
   RANetUtilEventSink* pNetUtilSink = nullptr;
 
-  bool bChatShownBefore;
+  bool bChatShownBefore{false};
 
   char szLadderServerHost[150]{};
   int iLadderServerPort = 0;
@@ -249,37 +249,40 @@ class WolapiObject {
   char szGameResServerHost2[150]{};
   int iGameResServerPort2 = 0;
 
-  bool bFindEnabled;  //	I have to maintain these, though wolapi should
-                      // do it for me...
-  bool bPageEnabled;  //	Note they are initialized true, as is currently
-                      // the case in wol.
-  bool bLangFilter;   //
-  bool bAllGamesShown;
+  bool bFindEnabled{true};  //	I have to maintain these, though wolapi should
+                            // do it for me...
+  bool bPageEnabled{true};  //	Note they are initialized true, as is currently
+                            // the case in wol.
+  bool bLangFilter{true};   //
+  bool bAllGamesShown{true};
 
-  bool bEggSounds;   //	Easter egg related. True = user actions trigger sounds.
-  bool bEgg8Player;  //	True = 8 player games can be created. This is hidden so
-                     // that we don't really have to support the feature...
+  bool bEggSounds{
+      true};  //	Easter egg related. True = user actions trigger sounds.
+  bool bEgg8Player{
+      false};  //	True = 8 player games can be created. This is hidden so
+               // that we don't really have to support the feature...
 
-  WOL_LEVEL CurrentLevel;
+  WOL_LEVEL CurrentLevel{WOL_LEVEL_TOP};
   WOL_LEVEL LastUpdateChannelCallLevel = WOL_LEVEL_INVALID;
   char szMyName[WOL_NAME_LEN_MAX]{};  //	Local user's name, valid while
                                     // connected.
   char szMyRecord[WOL_NAME_LEN_MAX + 80]{};
   char szMyRecordAM[WOL_NAME_LEN_MAX + 80]{};
-  bool bMyRecordUpdated;  //	True when szMyRecord has changed and not yet
-                          // recognized by chat dialog.
+  bool bMyRecordUpdated{
+      false};  //	True when szMyRecord has changed and not yet
+               // recognized by chat dialog.
   char szChannelListTitle[100]{};
-  bool bChannelListTitleUpdated;
+  bool bChannelListTitleUpdated{false};
   char szChannelNameCurrent[WOL_CHANNAME_LEN_MAX]{};
-  bool bChannelOwner;
+  bool bChannelOwner{false};
   char szChannelReturnOnGameEnterFail[WOL_CHANNAME_LEN_MAX]{};
 
-  int iLobbyReturnAfterGame;  //	When in game channel, part of the value
-                              // of the channel's 'reserved' field.
+  int iLobbyReturnAfterGame{-1};  //	When in game channel, part of the value
+                                  // of the channel's 'reserved' field.
 
-  bool bReturningAfterGame;
+  bool bReturningAfterGame{false};
 
-  int iLobbyLast;  //	Number of last lobby we personally were in.
+  int iLobbyLast{-1};  //	Number of last lobby we personally were in.
 
   //	CREATEGAMEINFO::GAMEKIND GameKindCurrent;	//	Kind of game
   //(Red Alert, CS, AM) we are in game setup for.
@@ -289,17 +292,18 @@ class WolapiObject {
                                   // only.
 
   DWORD dwTimeNextWolapiPump;
-  DWORD dwTimeNextChannelUpdate;
+  DWORD dwTimeNextChannelUpdate{0};
 
   DIBICONINFO DibIconInfos[NUMDIBICONS];
 
   HRESULT hresPatchResults = 0;  //	Used when a patch has been downloaded or
                              // cancelled.
 
-  WOL_GameSetupDialog* pGSupDlg;  //	When in a game channel, setting up a
-                                  // game; ptr to the dialog.
+  WOL_GameSetupDialog* pGSupDlg{
+      nullptr};  //	When in a game channel, setting up a
+                 // game; ptr to the dialog.
 
-  bool bInGame;          //	True while playing a game.
+  bool bInGame{false};           //	True while playing a game.
   bool bConnectionDown = false;  //	Flag used while in a game, set to true if
                          // connection goes down.
   bool bGameServer = false;  //	Flag used while in a game, true if game server (host).
@@ -307,16 +311,18 @@ class WolapiObject {
   unsigned long TournamentOpponentIP = 0;  //	Valid while playing a tournament
                                        // game. IP address of opponent.
 
-  bool bPump_In_Call_Back;  //	Used to enable PumpMessages during Call_Back(),
-                            // for when we're in a modal dialog.
+  bool bPump_In_Call_Back{
+      false};  //	Used to enable PumpMessages during Call_Back(),
+               // for when we're in a modal dialog.
 
-  bool bSelfDestruct;  //	If set true, causes logout and deletion of
-                       // wolapi object.
+  bool bSelfDestruct{
+      false};  //	If set true, causes logout and deletion of
+               // wolapi object.
 
   char szWebBrowser[kMaxPath + 1]{};
 
   //	For "disconnect pinging".
-  bool bDoingDisconnectPinging;
+  bool bDoingDisconnectPinging{false};
   bool bDisconnectPingingCompleted = false;
   int iDisconnectPingCurrent = 0;
   DISCONNECT_PING_STATUS DisconnectPingResult_Server[DISCONNECT_PING_COUNT]{};
@@ -326,42 +332,43 @@ class WolapiObject {
   char szExternalPager[WOL_NAME_LEN_MAX]{};  //	Last person to page me from
                                            // outside the game, or blank for
                                            // none.
-  bool bFreezeExternalPager;
+  bool bFreezeExternalPager{false};
 
-  bool bShowRankRA;       //	true = view RA rankings, false = view AM rankings
-  bool bShowRankUpdated;  //	set true when bShowRankRA value changes
+  bool bShowRankRA{
+      true};  //	true = view RA rankings, false = view AM rankings
+  bool bShowRankUpdated{false};  //	set true when bShowRankRA value changes
 
   //	Standard wol buttons.
-  char* pShpDiscon;
-  char* pShpLeave;
-  char* pShpRefresh;
-  char* pShpSquelch;
-  char* pShpBan;
-  char* pShpKick;
-  char* pShpFindpage;
-  char* pShpOptions;
-  char* pShpLadder;
-  char* pShpHelp;
-  ShapeButtonClass* pShpBtnDiscon;
-  ShapeButtonClass* pShpBtnLeave;
-  ShapeButtonClass* pShpBtnRefresh;
-  ShapeButtonClass* pShpBtnSquelch;
-  ShapeButtonClass* pShpBtnBan;
-  ShapeButtonClass* pShpBtnKick;
-  ShapeButtonClass* pShpBtnFindpage;
-  ShapeButtonClass* pShpBtnOptions;
-  ShapeButtonClass* pShpBtnLadder;
-  ShapeButtonClass* pShpBtnHelp;
-  ToolTipClass* pTTipDiscon;
-  ToolTipClass* pTTipLeave;
-  ToolTipClass* pTTipRefresh;
-  ToolTipClass* pTTipSquelch;
-  ToolTipClass* pTTipBan;
-  ToolTipClass* pTTipKick;
-  ToolTipClass* pTTipFindpage;
-  ToolTipClass* pTTipOptions;
-  ToolTipClass* pTTipLadder;
-  ToolTipClass* pTTipHelp;
+  char* pShpDiscon{nullptr};
+  char* pShpLeave{nullptr};
+  char* pShpRefresh{nullptr};
+  char* pShpSquelch{nullptr};
+  char* pShpBan{nullptr};
+  char* pShpKick{nullptr};
+  char* pShpFindpage{nullptr};
+  char* pShpOptions{nullptr};
+  char* pShpLadder{nullptr};
+  char* pShpHelp{nullptr};
+  ShapeButtonClass* pShpBtnDiscon{nullptr};
+  ShapeButtonClass* pShpBtnLeave{nullptr};
+  ShapeButtonClass* pShpBtnRefresh{nullptr};
+  ShapeButtonClass* pShpBtnSquelch{nullptr};
+  ShapeButtonClass* pShpBtnBan{nullptr};
+  ShapeButtonClass* pShpBtnKick{nullptr};
+  ShapeButtonClass* pShpBtnFindpage{nullptr};
+  ShapeButtonClass* pShpBtnOptions{nullptr};
+  ShapeButtonClass* pShpBtnLadder{nullptr};
+  ShapeButtonClass* pShpBtnHelp{nullptr};
+  ToolTipClass* pTTipDiscon{nullptr};
+  ToolTipClass* pTTipLeave{nullptr};
+  ToolTipClass* pTTipRefresh{nullptr};
+  ToolTipClass* pTTipSquelch{nullptr};
+  ToolTipClass* pTTipBan{nullptr};
+  ToolTipClass* pTTipKick{nullptr};
+  ToolTipClass* pTTipFindpage{nullptr};
+  ToolTipClass* pTTipOptions{nullptr};
+  ToolTipClass* pTTipLadder{nullptr};
+  ToolTipClass* pTTipHelp{nullptr};
 
   WOL_GAMETYPEINFO OldRAGameTypeInfos[3];  //	Used for storing old red alert
                                            // icons only.
@@ -489,19 +496,20 @@ class WolapiObject {
   [[nodiscard]] const char* URLForGameType(int iGameType) const;
 
   //	Used by the general chat dialog.
-  IconListClass* pILChat;      //	Main messages list.
+  IconListClass* pILChat{nullptr};       //	Main messages list.
   IconListClass* pILChannels = nullptr;  //	Channels list.
-  IconListClass* pILUsers;     //	Users list.
+  IconListClass* pILUsers{nullptr};      //	Users list.
 
   //	IconListClass*			pILDisc;			//
   // Main messages list.		(pILChat is used.)
-  IconListClass* pILPlayers;  //	Players list.
+  IconListClass* pILPlayers{nullptr};  //	Players list.
 
-  StaticButtonClass* pStaticUsers;  //	Title for a users list. Used by main
-                                    // chat dialog only, not by game setup.
+  StaticButtonClass* pStaticUsers{
+      nullptr};  //	Title for a users list. Used by main
+                 // chat dialog only, not by game setup.
 
-  WOL_GAMETYPEINFO* GameTypeInfos;
-  unsigned int nGameTypeInfos;
+  WOL_GAMETYPEINFO* GameTypeInfos{nullptr};
+  unsigned int nGameTypeInfos{0};
 
   float fLatencyToIconWidth = 0.0f;
   //	Width in pixels of the latency bar icon, or 0 if it did not load. Kept
@@ -509,7 +517,7 @@ class WolapiObject {
   //	an optional it cannot check from where it stands.
   int iLatencyIconWidth = 0;
 
-  CHATSAVE* pChatSaveList;
+  CHATSAVE* pChatSaveList{nullptr};
   CHATSAVE* pChatSaveLast = nullptr;
 };
 

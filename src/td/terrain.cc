@@ -296,11 +296,6 @@ void TerrainClass::operator delete(void* ptr) {
  *=============================================================================================*/
 TerrainClass::TerrainClass(TerrainType type, CELL cell)
     : Class(&TerrainTypeClass::As_Reference(type)) {
-  IsBlossoming = false;
-  IsBarnacled = false;
-  IsSporing = false;
-  IsCrumbling = false;
-  IsOnFire = false;
   Strength = Class->MaxStrength;
   if (cell != -1) {
     if (!Unlimbo(Cell_Coord(cell))) {

@@ -86,13 +86,13 @@
 NonSequencedConnClass::NonSequencedConnClass(
     int numsend, int numreceive, int maxlen, unsigned short magicnum,
     unsigned long retry_delta, unsigned long max_retries, unsigned long timeout)
-    : ConnectionClass(maxlen, magicnum, retry_delta, max_retries, timeout) {
+    : ConnectionClass(maxlen, magicnum, retry_delta, max_retries, timeout),
+      Queue(new CommBufferClass(numsend, numreceive, MaxPacketLen)) {
   /*------------------------------------------------------------------------
   Allocate the packet Queue.  This will store incoming packets (which will
   be placed there by the Connection Manager), and outgoing packets (which
   are placed there by this class when it "sends" a packet).
   ------------------------------------------------------------------------*/
-  Queue = new CommBufferClass(numsend, numreceive, MaxPacketLen);
 }
 
 /***************************************************************************

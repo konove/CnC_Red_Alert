@@ -81,11 +81,7 @@ Timer<SystemTickSource> MouseClass::AnimTimer{0};
  *                                                                                             *
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
-MouseClass::MouseClass()
-    : IsSmall(false),
-      CurrentMouseShape(MOUSE_NORMAL),
-      NormalMouseShape(MOUSE_NORMAL),
-      Frame(0) {}
+MouseClass::MouseClass() = default;
 
 /***********************************************************************************************
  * MouseClass::Set_Default_Mouse -- Sets the mouse to match the shape specified.

@@ -70,9 +70,9 @@ struct KeyboardClass : public WWKeyboardClass {
   **	the keyboard or not. If not, then the normal console input
   **	takes precedence.
   */
-  unsigned IsLibrary;
+  unsigned IsLibrary{true};
 
-  KeyboardClass() : IsLibrary(true) {}
+  KeyboardClass() = default;
   // These deliberately hide the library's int-returning versions; narrowing to
   // the game's key enums is the only reason this interface class exists.
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)

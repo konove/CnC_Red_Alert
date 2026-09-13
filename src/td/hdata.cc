@@ -228,19 +228,18 @@ const HouseTypeClass* const HouseTypeClass::Pointers[HOUSE_COUNT] = {
 HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
                                const char* ext, int lemon, int color,
                                int bright_color, PlayerColorType remapcolor,
-                               const unsigned char* remap,
-                               char prefix) noexcept {
-  RemapTable = remap;
-  RemapColor = remapcolor;
-  House = house;
-  IniName = ini;
-  FullName = fullname;
+                               const unsigned char* remap, char prefix) noexcept
+    : House(house),
+      IniName(ini),
+      FullName(fullname),
+      Lemon(lemon),
+      Color(static_cast<unsigned char>(color)),
+      BrightColor(static_cast<unsigned char>(bright_color)),
+      RemapTable(remap),
+      RemapColor(remapcolor),
+      Prefix(prefix) {
   strncpy(Suffix, ext, 3);
   Suffix[3] = '\0';
-  Lemon = lemon;
-  Color = static_cast<unsigned char>(color);
-  BrightColor = static_cast<unsigned char>(bright_color);
-  Prefix = prefix;
 }
 
 /***********************************************************************************************

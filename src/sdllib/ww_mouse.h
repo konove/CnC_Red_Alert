@@ -124,7 +124,7 @@ class WWMouseClass {
   char* PrevCursor = nullptr;
 
   // Reference count for Hide/Show. Cursor visible when State == 0.
-  int State;
+  int State{0};
 
   int LastX = 0, LastY = 0;
 

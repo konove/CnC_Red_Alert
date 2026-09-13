@@ -223,35 +223,33 @@ TechnoTypeClass::TechnoTypeClass(
     WeaponType secondary, ArmorType armor) noexcept
     : ObjectTypeClass(true, is_flammable, is_crushable, is_stealthy,
                       is_selectable, is_legal_target, is_insignificant,
-                      is_immune, name, ininame, armor, strength) {
-  Level = level;
-  Pre = pre;
-  MaxAmmo = ammo;
-  MaxSpeed = maxspeed;
-  CameoData = nullptr;
-  Primary = primary;
-  Secondary = secondary;
-  Cost = cost;
-  IsLeader = is_leader;
-  IsScanner = is_scanner;
-  IsTransporter = is_transporter;
-  IsTwoShooter = is_twoshooter;
-  IsBuildable = is_buildable;
-  IsCrew = is_crew;
-  IsTheater = is_theater;
-  IsRepairable = is_repairable;
-  IsTurretEquipped = is_turret_equipped;
-  IsNominal = is_nominal;
-  Ownable = static_cast<unsigned short>(ownable);
-  Reward = reward;
-  Scenario = static_cast<unsigned char>(scenario);
-  SightRange = sightrange;
-
+                      is_immune, name, ininame, armor, strength),
+      IsLeader(is_leader),
+      IsScanner(is_scanner),
+      IsNominal(is_nominal),
+      IsTheater(is_theater),
+      IsTurretEquipped(is_turret_equipped),
+      IsTwoShooter(is_twoshooter),
+      IsRepairable(is_repairable),
+      IsBuildable(is_buildable),
+      IsCrew(is_crew),
+      IsTransporter(is_transporter),
+      SightRange(sightrange),
+      Cost(cost),
+      Scenario(static_cast<unsigned char>(scenario)),
+      Level(level),
+      Pre(pre),
+      Reward(reward),
+      MaxSpeed(maxspeed),
+      MaxAmmo(ammo),
+      Ownable(static_cast<unsigned short>(ownable)),
+      Primary(primary),
+      Secondary(secondary) {
   /*
   ** Units risk value is based on the type of weapon he has and the
   ** rate of fire it shoots at.
   */
-  Risk = 0;
+
   if (primary != WEAPON_NONE) {
     Risk = Weapons[primary].Attack * (Weapons[primary].Range >> 4) /
            Weapons[primary].ROF;
@@ -458,26 +456,29 @@ void TechnoClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
-TechnoClass::TechnoClass() : House(nullptr), TarCom(kTargetNone) {
-  Arm = 0;
-  Ammo = -1;
-  PurchasePrice = 0;
-  IsTickedOff = false;
-  Cloak = UNCLOAKED;
+TechnoClass::TechnoClass()
+    : IsTickedOff(false),
+      IsCloakable(false),
+      IsLeader(false),
+      IsALoaner(false),
+      IsLocked(false),
+      IsInRecoilState(false),
+      IsTethered(false),
+      IsOwnedByPlayer(false),
+      IsDiscoveredByPlayer(false),
+      IsDiscoveredByComputer(false),
+      IsALemon(false),
+      IsSecondShot(true),
+      House(nullptr),
+      Cloak(UNCLOAKED),
+      TarCom(kTargetNone),
+      SuspendedTarCom(kTargetNone),
+      Arm(0),
+      Ammo(-1),
+      PurchasePrice(0) {
   CloakingDevice.Set_Stage(1);
   CloakingDevice.Set_Rate(0);
-  IsCloakable = false;
-  IsALemon = false;
-  IsALoaner = false;
-  IsDiscoveredByPlayer = false;
-  IsDiscoveredByComputer = false;
-  IsInRecoilState = false;
-  IsLeader = false;
-  IsLocked = false;
-  IsOwnedByPlayer = false;
-  IsSecondShot = true;
-  IsTethered = false;
-  SuspendedTarCom = kTargetNone;
+
   PrimaryFacing.Set(DIR_N);
 }
 
@@ -762,27 +763,27 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 TechnoClass::TechnoClass(HousesType house)
-    : House(HouseClass::As_Pointer(house)), TarCom(kTargetNone) {
-  Arm = 0;
-  Ammo = -1;
-  PurchasePrice = 0;
-  IsTickedOff = false;
-  Cloak = UNCLOAKED;
+    : IsTickedOff(false),
+      IsCloakable(false),
+      IsLeader(false),
+      IsALoaner(false),
+      IsLocked(false),
+      IsInRecoilState(false),
+      IsTethered(false),
+      IsOwnedByPlayer(house == PlayerPtr->Class->House),
+      IsDiscoveredByPlayer(false),
+      IsDiscoveredByComputer(false),
+      IsALemon(false),
+      IsSecondShot(false),
+      House(HouseClass::As_Pointer(house)),
+      Cloak(UNCLOAKED),
+      TarCom(kTargetNone),
+      SuspendedTarCom(kTargetNone),
+      Arm(0),
+      Ammo(-1),
+      PurchasePrice(0) {
   CloakingDevice.Set_Stage(1);
   CloakingDevice.Set_Rate(0);
-  IsCloakable = false;
-  IsALemon = false;
-  IsALoaner = false;
-  IsDiscoveredByComputer = false;
-  IsOwnedByPlayer = house == PlayerPtr->Class->House;
-  IsDiscoveredByPlayer = false;
-  IsInRecoilState = false;
-  IsLeader = false;
-  IsLocked = false;
-  IsSecondShot = false;
-  IsTethered = false;
-
-  SuspendedTarCom = kTargetNone;
 
   PrimaryFacing.Set(DIR_N);
 

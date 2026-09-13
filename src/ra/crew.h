@@ -50,12 +50,12 @@ class CrewClass {
   **	This keeps track of the number of "kills" the unit as accumulated.
   **	When it reaches a certain point, the unit improves.
   */
-  unsigned short Kills;
+  unsigned short Kills{0};
 
   /*
   **	Constructors, Destructors, and overloaded operators.
   */
-  CrewClass() : Kills(0) {}
+  CrewClass() = default;
 
   // Saved-game support.
   template <class Archive>

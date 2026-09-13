@@ -113,15 +113,7 @@ ChronalVortexClass ChronalVortex;
  *                                                                                             *
  * HISTORY: * 8/29/96 4:25PM ST : Created *
  *=============================================================================================*/
-ChronalVortexClass::ChronalVortexClass() {
-  Active = 0;
-  Theater = THEATER_NONE;
-  Speed = 10;
-  Range = 10;
-  Damage = 200;
-  RenderBuffer =
-      nullptr;  // We havn't allocated it yet. It will be allocated as needed.
-}
+ChronalVortexClass::ChronalVortexClass() = default;
 
 /***********************************************************************************************
  * CVC::~ChronalVortexClass -- vortex class destructor *

@@ -167,9 +167,9 @@ class VersionClass {
   //.....................................................................
   // This is the program's version number, stored internally.
   //.....................................................................
-  unsigned long Version;
-  unsigned short MajorVer;
-  unsigned short MinorVer;
+  unsigned long Version{0};
+  unsigned short MajorVer{0};
+  unsigned short MinorVer{0};
 
   //.....................................................................
   // This array is used for formatting the version # as a string
@@ -186,17 +186,17 @@ class VersionClass {
   //.....................................................................
   // Values used for "Version Clipping"
   //.....................................................................
-  unsigned long MinClipVer;
-  unsigned long MaxClipVer;
+  unsigned long MinClipVer{0};
+  unsigned long MaxClipVer{0};
 
   //.....................................................................
   // Bitfield Flags
   // IsInitialized: is set if the VERSION.TXT file has been read
   //.....................................................................
-  unsigned VersionInit : 1;
-  unsigned MajorInit : 1;
-  unsigned MinorInit : 1;
-  unsigned TextInit : 1;
+  unsigned VersionInit : 1 {false};
+  unsigned MajorInit : 1 {false};
+  unsigned MinorInit : 1 {false};
+  unsigned TextInit : 1 {false};
 };
 
 const char* Version_Name();

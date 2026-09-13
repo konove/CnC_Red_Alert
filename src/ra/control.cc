@@ -74,7 +74,7 @@
  *=============================================================================================*/
 ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
                            unsigned flags, int sticky) noexcept
-    : GadgetClass(x, y, w, h, flags, sticky), ID(id), Peer(nullptr) {}
+    : GadgetClass(x, y, w, h, flags, sticky), ID(id) {}
 
 /***********************************************************************************************
  * ControlClass::Action -- Normal action for control gadget objects. *

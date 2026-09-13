@@ -51,7 +51,7 @@ class GenericList;
 class GenericNode {
  public:
   friend class GenericList;
-  GenericNode() : NextNode(nullptr), PrevNode(nullptr) {}
+  GenericNode() = default;
   virtual ~GenericNode() { Unlink(); }
   GenericNode(GenericNode&&) = delete;
   GenericNode& operator=(GenericNode&&) = delete;
@@ -105,8 +105,8 @@ class GenericNode {
   }
 
  protected:
-  GenericNode* NextNode;
-  GenericNode* PrevNode;
+  GenericNode* NextNode{nullptr};
+  GenericNode* PrevNode{nullptr};
 };
 
 /*

@@ -117,14 +117,14 @@ class VectorClass {
   // Stays 32-bit: this member is byte-serialized as part of the save format
   // (see src/td/heap_layout_test.cc), so widening it changes sizeof() for every
   // containing type. The public interface below is signed regardless.
-  unsigned VectorMax;
+  unsigned VectorMax{0};
 
   /*
   **	Does the vector data pointer refer to memory that this class has
   *manually *	allocated? If so, then this class is responsible for deleting
   *it.
   */
-  unsigned IsAllocated : 1;
+  unsigned IsAllocated : 1 {false};
 };
 
 /**************************************************************************
@@ -181,7 +181,7 @@ class DynamicVectorClass : public VectorClass<T> {
   **	vector. The memory array often times is bigger than this
   **	value.
   */
-  base::ssize ActiveCount;
+  base::ssize ActiveCount{0};
 
   /*
   **	If there is insufficient room in the vector array for a new
@@ -189,7 +189,7 @@ class DynamicVectorClass : public VectorClass<T> {
   **	of objects specified by this value. This is controlled by
   **	the Set_Growth_Step() function.
   */
-  int GrowthStep;
+  int GrowthStep{10};
 };
 
 // An int vector cannot delete by value: Delete(const int&) and Delete(int)

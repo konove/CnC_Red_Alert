@@ -329,14 +329,7 @@ DriveClass::DriveClass(UnitType classid, HousesType house)
   *shooters.
   */
   IsSecondShot = Class->IsTwoShooter == 0;
-  IsHarvesting = false;
-  IsTurretLockedDown = false;
-  IsOnShortTrack = false;
-  IsReturning = false;
-  TrackNumber = -1;
-  TrackIndex = 0;
-  SpeedAccum = 0;
-  Tiberium = 0;
+
   Strength = Class->MaxStrength;
 }
 

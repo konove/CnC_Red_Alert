@@ -82,8 +82,8 @@ class ScenarioClass {
   /*
   **	This is the difficulty setting of the game.
   */
-  DiffType Difficulty;   // For human player.
-  DiffType CDifficulty;  // For computer players.
+  DiffType Difficulty{DIFF_NORMAL};   // For human player.
+  DiffType CDifficulty{DIFF_NORMAL};  // For computer players.
 
   /*
   **	This is the main mission timer. This is the timer that is reset at the
@@ -126,12 +126,12 @@ class ScenarioClass {
   /*
   **	The scenario number.
   */
-  int Scenario;
+  int Scenario{1};
 
   /*
   **	The theater of the current scenario.
   */
-  TheaterType Theater;
+  TheaterType Theater{THEATER_TEMPERATE};
 
   /*
   **	The full name of the scenario (as it exists on disk).
@@ -146,28 +146,28 @@ class ScenarioClass {
   /*
   **	The filename of the introduction movie.
   */
-  VQType IntroMovie;
+  VQType IntroMovie{VQ_NONE};
 
   /*
   **	The filename of the briefing movie.
   */
-  VQType BriefMovie;
+  VQType BriefMovie{VQ_NONE};
 
   /*
   **	The filename of the movie to play if the scenario is won.
   */
-  VQType WinMovie;
+  VQType WinMovie{VQ_NONE};
 
   /*
   **	The filename of the movie to play if the scenario is lost.
   */
-  VQType LoseMovie;
+  VQType LoseMovie{VQ_NONE};
 
   /*
   **	The filename of the movie to play right after the briefing and
   **	just before the game.
   */
-  VQType ActionMovie;
+  VQType ActionMovie{VQ_NONE};
 
   /*
   **	This is the full text of the briefing. This text will be
@@ -181,12 +181,12 @@ class ScenarioClass {
   **	movie. A score started in this fashion will continue to play as
   **	the game progresses.
   */
-  ThemeType TransitTheme;
+  ThemeType TransitTheme{THEME_NONE};
 
   /*
   **	The house that the player is to be (obsolete).
   */
-  HousesType PlayerHouse;
+  HousesType PlayerHouse{HOUSE_GREECE};
 
   /*
   **	The percentage of money that is allowed to be carried over into the
@@ -198,20 +198,20 @@ class ScenarioClass {
   **	This is the amount of money that was left over in the previous
   **	scenario.
   */
-  int CarryOverMoney;
+  int CarryOverMoney{0};
 
   /*
   **	This specifies the maximum amount of money that is allowed to be
   **	carried over from the previous scenario. This limits the amount
   **	regardless of what the carry over percentage is set to.
   */
-  int CarryOverCap;
+  int CarryOverCap{0};
 
   /*
   **	This is the percent that the computer controlled base is to be
   **	built up to at the scenario start.
   */
-  int Percent;
+  int Percent{0};
 
   /*
   **	Global flags that are used in the trigger system and are persistent
@@ -227,103 +227,103 @@ class ScenarioClass {
   /*
   **	This is the number of active passable bridges in the current game.
   */
-  int BridgeCount;
+  int BridgeCount{0};
 
   /*
   **	This records the carry over timer value that is used when the mission
   **	starts (presuming the appropriate flag is set) and also used when the
   **	scenario restarts.
   */
-  int CarryOverTimer;
+  int CarryOverTimer{0};
 
   /*
   **	If a bridge has been destroyed, then this flag will be set to true.
   **	If there is a trigger that depends on this, it might be triggered.
   */
-  unsigned IsBridgeChanged : 1;
+  unsigned IsBridgeChanged : 1 {false};
 
   /*
   **	If a global has changed and global change trigger events must be
   **	processed, then this flag will be set to true.
   */
-  unsigned IsGlobalChanged : 1;
+  unsigned IsGlobalChanged : 1 {false};
 
   /*
   **	Are the buildings and units in this scenario to carry over into
   **	some (unspecified) later scenario and thus have to be recorded
   **	at the end?
   */
-  unsigned IsToCarryOver : 1;
+  unsigned IsToCarryOver : 1 {false};
 
   /*
   **	Is this scenario to begin by taking the previously recorded
   **	carryover objects and creating them onto the map?
   */
-  unsigned IsToInherit : 1;
+  unsigned IsToInherit : 1 {false};
 
   /*
   **	If Tanya or a civilian is to be automatically evacuated when they enter
   **	a transport vehicle, then this flag will be true.
   */
-  unsigned IsTanyaEvac : 1;
+  unsigned IsTanyaEvac : 1 {false};
 
   /*
   ** These variables are assigned to the chronosphere effect, and control
   ** whether the palette should be fading towards b&w or towards color.
   */
-  unsigned IsFadingBW : 1;
-  unsigned IsFadingColor : 1;
+  unsigned IsFadingBW : 1 {false};
+  unsigned IsFadingColor : 1 {false};
 
   /*
   **	If this scenario is to be the last mission of the game (for this side),
   *then *	this flag will be true.
   */
-  unsigned IsEndOfGame : 1;
+  unsigned IsEndOfGame : 1 {false};
 
   /*
   **	If the mission countdown timer is to be inherited from the previous
   **	scenario, then this flag will be set to true.
   */
-  unsigned IsInheritTimer : 1;
+  unsigned IsInheritTimer : 1 {false};
 
   /*
   **	If the spy plane is to be disabled in this scenario even though
   *circumstances *	might otherwise indicate that it should appear, then
   *this flag will be true.
   */
-  unsigned IsNoSpyPlane : 1;
+  unsigned IsNoSpyPlane : 1 {false};
 
   /*
   **	If the score screen (and "mission accomplished" voice) is to be skipped
   *when *	this scenario is finished, then this flag will be true.
   */
-  unsigned IsSkipScore : 1;
+  unsigned IsSkipScore : 1 {false};
 
   /*
   **	If this is to be a one time only mission such that when it is completed,
   *the game *	will return to the main menu, then this flag will be set to
   *true.
   */
-  unsigned IsOneTimeOnly : 1;
+  unsigned IsOneTimeOnly : 1 {false};
 
   /*
   **	If the map selection is to be skipped then this flag will be true. If
   *this *	ins't a one time only scenario, then the next scenario will have
   *the same *	name as the current one but will be for variation "B".
   */
-  unsigned IsNoMapSel : 1;
+  unsigned IsNoMapSel : 1 {false};
 
   /*
   **	If trucks are supposed to drop wood crates when they explode, then this
   *flag *	will be set to true.
   */
-  unsigned IsTruckCrate : 1;
+  unsigned IsTruckCrate : 1 {false};
 
   /*
   **	If the initial money is to be assigned as ore in available silos, then
   **	this flag will be set to true.
   */
-  unsigned IsMoneyTiberium : 1;
+  unsigned IsMoneyTiberium : 1 {false};
 
   /*
   **	This is the fading countdown timer.  As this timer counts down, the

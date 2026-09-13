@@ -286,18 +286,18 @@ class MapEditClass : public MouseClass {
   **	Clear_List(), added to by Add_To_List()
   */
   const ObjectTypeClass* Objects[MAX_EDIT_OBJECTS]{};
-  int ObjCount;  // # of objects in the Objects array
+  int ObjCount{0};  // # of objects in the Objects array
 
   /*
   **	Last-selected object to place, and last-selected house of object
   */
-  int LastChoice;        // index of item user picked last
-  HousesType LastHouse;  // house of last item picked
+  int LastChoice{0};                 // index of item user picked last
+  HousesType LastHouse{HOUSE_GOOD};  // house of last item picked
 
   /*
   **	Variables for grabbing/moving objects
   */
-  ObjectClass* GrabbedObject;   // object "grabbed" with mouse
+  ObjectClass* GrabbedObject{nullptr};  // object "grabbed" with mouse
   CELL GrabOffset = 0;          // offset to grabbed obj's upper-left
   unsigned long LastClickTime = 0;  // time of last LMOUSE click
 

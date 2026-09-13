@@ -133,23 +133,23 @@ class RadarClass : public DisplayClass {
   // If the radar map must be completely redrawn, then this flag will be true.
   // Typical causes of this would be when the radar first appears, or when the
   // screen has been damaged.
-  unsigned IsRadarToRedraw : 1;
-  unsigned RadarCursorRedraw : 1;
+  unsigned IsRadarToRedraw : 1 {false};
+  unsigned RadarCursorRedraw : 1 {false};
 
   /*
   **	If the radar map is visible then this flag is true.
   */
-  unsigned DoesRadarExist : 1;
-  unsigned IsRadarActive : 1;
-  unsigned IsRadarActivating : 1;
-  unsigned IsRadarDeactivating : 1;
-  unsigned IsRadarJammed : 1;
+  unsigned DoesRadarExist : 1 {false};
+  unsigned IsRadarActive : 1 {false};
+  unsigned IsRadarActivating : 1 {false};
+  unsigned IsRadarDeactivating : 1 {false};
+  unsigned IsRadarJammed : 1 {false};
 
   /*
   ** Flag to tell whether sonar pulse should be displayed on radar map
   */
-  unsigned IsPulseActive : 1;
-  int RadarPulseFrame;
+  unsigned IsPulseActive : 1 {false};
+  int RadarPulseFrame{0};
 
   /*
   ** Special radar frame is set when a new location is selected on the
@@ -157,8 +157,8 @@ class RadarClass : public DisplayClass {
   ** either the radar cursor becomes normal or the radar cursor is moved
   ** again.
   */
-  int SpecialRadarFrame;
-  int RadarAnimFrame;
+  int SpecialRadarFrame{0};
+  int RadarAnimFrame{0};
 
   static const void* RadarAnim;
   static const void* RadarPulse;
@@ -193,11 +193,11 @@ class RadarClass : public DisplayClass {
   **	radar map display. The width and height is controlled by the
   **	actual dimensions of the radar map display box (in pixels).
   */
-  int RadarX;
-  int RadarY;
-  int RadarCellWidth;
-  int RadarCellHeight;
-  int RadarCell;
+  int RadarX{0};
+  int RadarY{0};
+  int RadarCellWidth{0};
+  int RadarCellHeight{0};
+  int RadarCell{0};
 
   /*
   **	This is the origin (pixel offsets) for the upper left corner
@@ -205,47 +205,47 @@ class RadarClass : public DisplayClass {
   **	This is biased so that the radar map, when smaller than full
   **	size will appear centered.
   */
-  unsigned BaseX;
-  unsigned BaseY;
+  unsigned BaseX{0};
+  unsigned BaseY{0};
 
-  int RadarWidth;
-  int RadarHeight;
+  int RadarWidth{0};
+  int RadarHeight{0};
 
   /*
   **	If the radar map is in zoom mode, then this value will be true.
   */
-  unsigned IsZoomed : 1;
+  unsigned IsZoomed : 1 {true};
 
   /*
   ** This flag is true if the radar map is in its special show-the-player
   ** names mode.
   */
-  unsigned IsPlayerNames : 1;
+  unsigned IsPlayerNames : 1 {false};
 
   /*
   ** This flag is true if the radar map is in its special show-the-units
   ** of-another-house mode.
   */
-  unsigned IsHouseSpy : 1;
+  unsigned IsHouseSpy : 1 {false};
 
   /*
   **	This is the zoom factor to use. This value is the number of pixels wide
   **	each cell will occupy on the radar map. Completely zoomed out would be a
   **	value of 1.
   */
-  int ZoomFactor;
+  int ZoomFactor{0};
 
   /*
   ** If we're spying on a house's radar facility, this field shows the
   ** name of the house we're spying on.
   */
-  HousesType SpyingOn;
+  HousesType SpyingOn{HOUSE_SPAIN};
 
   /*
   **	This is the list of radar pixels that need to be updated. Only a partial
   **	list is maintained for maximum speed.
   */
-  int PixelPtr;
+  int PixelPtr{0};
   enum PixelStackEnums { PIXELSTACK = 400 };
   CELL PixelStack[PIXELSTACK]{};
 };

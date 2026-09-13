@@ -68,8 +68,7 @@
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
 LZWStraw::LZWStraw(CompControl control, int blocksize)
-    : Control(control), BlockSize(blocksize) {
-  SafetyMargin = BlockSize;
+    : Control(control), BlockSize(blocksize), SafetyMargin(BlockSize) {
   //	SafetyMargin = BlockSize/128+1;
   source_buffer_ = new char[BlockSize + SafetyMargin];
   if (control == COMPRESS) {

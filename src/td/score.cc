@@ -292,22 +292,19 @@ struct Fame {
 
 ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 
-ScoreAnimClass::ScoreAnimClass(int x, int y, const void* data) {
+ScoreAnimClass::ScoreAnimClass(int x, int y, const void* data)
+    : XPos(x), YPos(y), DataPtr(data) {
   BlitList.Add(x * 2, y * 2, x * 2, y * 2, 2 * String_Pixel_Width((char*)data),
                16);
-  XPos = x;
-  YPos = y;
+
   Timer.Set(0);
   Timer.Start();
-  DataPtr = data;
 }
 
 ScoreTimeClass::ScoreTimeClass(int xpos, int ypos, const void* data, int max,
                                int timer)
-    : ScoreAnimClass(xpos, ypos, data) {
+    : ScoreAnimClass(xpos, ypos, data), MaxStage(max), TimerReset(timer) {
   Stage = 0;
-  MaxStage = max;
-  TimerReset = timer;
 }
 
 void ScoreTimeClass::Update() {
@@ -327,12 +324,12 @@ void ScoreTimeClass::Update() {
 
 ScoreCredsClass::ScoreCredsClass(int xpos, int ypos, const void* data, int max,
                                  int timer)
-    : ScoreAnimClass(xpos, ypos, data) {
+    : ScoreAnimClass(xpos, ypos, data),
+      MaxStage(max),
+      TimerReset(timer),
+      CashTurn(MFCD::Retrieve("CASHTURN.AUD")),
+      Clock1(MFCD::Retrieve("CLOCK1.AUD")) {
   Stage = 0;
-  MaxStage = max;
-  TimerReset = timer;
-  Clock1 = MFCD::Retrieve("CLOCK1.AUD");
-  CashTurn = MFCD::Retrieve("CASHTURN.AUD");
 }
 
 void ScoreCredsClass::Update() {
@@ -359,17 +356,17 @@ void ScoreCredsClass::Update() {
 
 ScorePrintClass::ScorePrintClass(int string, int xpos, int ypos,
                                  const void* palette, int background)
-    : ScoreAnimClass(xpos, ypos, Text_String(string)) {
-  Background = background;
-  PrimaryPalette = palette;
+    : ScoreAnimClass(xpos, ypos, Text_String(string)),
+      Background(background),
+      PrimaryPalette(palette) {
   Stage = 0;
 }
 
 ScorePrintClass::ScorePrintClass(const void* string, int xpos, int ypos,
                                  const void* palette, int background)
-    : ScoreAnimClass(xpos, ypos, string) {
-  Background = background;
-  PrimaryPalette = palette;
+    : ScoreAnimClass(xpos, ypos, string),
+      Background(background),
+      PrimaryPalette(palette) {
   Stage = 0;
 }
 
@@ -428,18 +425,18 @@ void ScorePrintClass::Update() {
 
 MultiStagePrintClass::MultiStagePrintClass(int string, int xpos, int ypos,
                                            const void* palette, int background)
-    : ScoreAnimClass(xpos, ypos, Text_String(string)) {
-  Background = background;
-  PrimaryPalette = palette;
+    : ScoreAnimClass(xpos, ypos, Text_String(string)),
+      Background(background),
+      PrimaryPalette(palette) {
   Stage = 0;
 }
 
 MultiStagePrintClass::MultiStagePrintClass(const void* string, int xpos,
                                            int ypos, const void* palette,
                                            int background)
-    : ScoreAnimClass(xpos, ypos, string) {
-  Background = background;
-  PrimaryPalette = palette;
+    : ScoreAnimClass(xpos, ypos, string),
+      Background(background),
+      PrimaryPalette(palette) {
   Stage = 0;
 }
 
@@ -511,8 +508,7 @@ void MultiStagePrintClass::Update() {
 
 ScoreScaleClass::ScoreScaleClass(const void* string, int xpos, int ypos,
                                  const unsigned char palette[])
-    : ScoreAnimClass(xpos, ypos, string) {
-  Palette = &palette[0];
+    : ScoreAnimClass(xpos, ypos, string), Palette(&palette[0]) {
   Stage = 5;
 }
 

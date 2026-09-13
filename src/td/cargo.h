@@ -58,10 +58,7 @@ class CargoClass {
   template <class Archive>
   void Serialize(Archive& ar);
 
-  CargoClass() {
-    Quantity = 0;
-    CargoHold = nullptr;
-  }
+  CargoClass() = default;
   virtual ~CargoClass() { CargoHold = nullptr; }
   CargoClass(const CargoClass&) = delete;
   CargoClass& operator=(const CargoClass&) = delete;
@@ -92,13 +89,13 @@ class CargoClass {
   **	This is the number of objects attached to this cargo hold. For
   *transporter *	objects, they might contain more than one object.
   */
-  unsigned char Quantity;
+  unsigned char Quantity{0};
 
   /*
   **	This is the target value of any attached object. A value of zero
   *indicates *	that no object is attached.
   */
-  FootClass* CargoHold;
+  FootClass* CargoHold{nullptr};
 };
 
 class ArchiveReader;

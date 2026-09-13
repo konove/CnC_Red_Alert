@@ -150,11 +150,7 @@ const char* ThemeClass::Base_Name(ThemeType theme) const {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-ThemeClass::ThemeClass() {
-  Current = -1;
-  Score = THEME_NONE;
-  Pending = THEME_NONE;
-}
+ThemeClass::ThemeClass() = default;
 
 /***********************************************************************************************
  * ThemeClass::Full_Name -- Retrieves the full score name. *

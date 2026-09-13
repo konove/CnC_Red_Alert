@@ -70,10 +70,8 @@
  *                                                                                             *
  * HISTORY: * 6/7/96 0:10AM ST : Created *
  *=============================================================================================*/
-UnitTrackerClass::UnitTrackerClass(int unit_count) {
-  UnitTotals = new long[unit_count];  // Allocate memory for the unit totals
-  UnitCount = unit_count;  // Keep a record of how many unit entries there are
-  InNetworkFormat = 0;     // The unit entries are in host format
+UnitTrackerClass::UnitTrackerClass(int unit_count)
+    : UnitTotals(new long[unit_count]), UnitCount(unit_count) {
   Clear_Unit_Total();      // Clear each entry
 }
 
@@ -90,7 +88,7 @@ UnitTrackerClass::UnitTrackerClass(int unit_count) {
  *                                                                                             *
  * HISTORY: * 6/7/96 0:10AM ST : Created *
  *=============================================================================================*/
-UnitTrackerClass::~UnitTrackerClass() { delete UnitTotals; }
+UnitTrackerClass::~UnitTrackerClass() { delete[] UnitTotals; }
 
 /***********************************************************************************************
  * UTC::Increment_Unit_Total -- Increment the total for the specefied unit *
