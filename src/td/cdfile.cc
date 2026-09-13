@@ -98,7 +98,7 @@ CDFileClass::CDFileClass() : IsDisabled(false) {}
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int CDFileClass::Open(FileAccess rights) { return RawFileClass::Open(rights); }
+bool CDFileClass::Open(FileAccess rights) { return RawFileClass::Open(rights); }
 
 /***********************************************************************************************
  * CDFC::Refresh_Search_Drives -- Updates the search path when a CD changes or
@@ -436,7 +436,7 @@ const char* CDFileClass::Set_Name(const char* filename) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int CDFileClass::Open(const char* filename, FileAccess rights) {
+bool CDFileClass::Open(const char* filename, FileAccess rights) {
   Close();
 
   /*

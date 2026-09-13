@@ -233,7 +233,7 @@ bool BufferIOFileClass::Cache(int32_t size, void* ptr) {
     //
     if (FileSize) {
       int32_t readsize;
-      int opened = false;
+      bool opened = false;
       int32_t prevpos = 0;
 
       if (FileSize <= BufferSize) {
@@ -424,7 +424,7 @@ const char* BufferIOFileClass::Set_Name(const char* filename) {
  *                                                                                             *
  * HISTORY: * 11/16/1995 DRD : Created. *
  *=============================================================================================*/
-int BufferIOFileClass::Do_Is_Available(AvailabilityCheck mode) {
+bool BufferIOFileClass::Do_Is_Available(AvailabilityCheck mode) {
   if (UseBuffer) {
     return true;
   }
@@ -446,7 +446,7 @@ int BufferIOFileClass::Do_Is_Available(AvailabilityCheck mode) {
  *                                                                                             *
  * HISTORY: * 11/14/1995 DRD : Created. *
  *=============================================================================================*/
-int BufferIOFileClass::Is_Open() const {
+bool BufferIOFileClass::Is_Open() const {
   if (IsOpen && UseBuffer) {
     return true;
   }
@@ -475,7 +475,7 @@ int BufferIOFileClass::Is_Open() const {
  *                                                                                             *
  * HISTORY: * 11/14/1995 DRD : Created. *
  *=============================================================================================*/
-int BufferIOFileClass::Open(const char* filename, FileAccess rights) {
+bool BufferIOFileClass::Open(const char* filename, FileAccess rights) {
   Set_Name(filename);
   return BufferIOFileClass::Open(rights);
 }
@@ -498,7 +498,7 @@ int BufferIOFileClass::Open(const char* filename, FileAccess rights) {
  *                                                                                             *
  * HISTORY: * 11/14/1995 DRD : Created. *
  *=============================================================================================*/
-int BufferIOFileClass::Open(FileAccess rights) {
+bool BufferIOFileClass::Open(FileAccess rights) {
   BufferIOFileClass::Close();
 
   if (UseBuffer) {
@@ -559,7 +559,7 @@ int BufferIOFileClass::Open(FileAccess rights) {
  * HISTORY: * 11/15/1995 DRD : Created. *
  *=============================================================================================*/
 int32_t BufferIOFileClass::Write(const void* buffer, int32_t size) {
-  int opened = false;
+  bool opened = false;
 
   if (!Is_Open()) {
     if (!Open(FileAccess::kWrite)) {
@@ -693,7 +693,7 @@ int32_t BufferIOFileClass::Write(const void* buffer, int32_t size) {
  * HISTORY: * 11/15/1995 DRD : Created. *
  *=============================================================================================*/
 int32_t BufferIOFileClass::Read(void* buffer, int32_t size) {
-  int opened = false;
+  bool opened = false;
 
   if ((!Is_Open()) && Open()) {
     TrueFileStart = RawFileClass::Seek(0);

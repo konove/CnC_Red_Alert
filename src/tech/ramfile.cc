@@ -128,7 +128,7 @@ RAMFileClass::~RAMFileClass() {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int RAMFileClass::Create() {
+bool RAMFileClass::Create() {
   if (!Is_Open()) {
     Length = 0;
     return true;
@@ -151,7 +151,7 @@ int RAMFileClass::Create() {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int RAMFileClass::Delete() {
+bool RAMFileClass::Delete() {
   if (!Is_Open()) {
     Length = 0;
     return true;
@@ -172,7 +172,7 @@ int RAMFileClass::Delete() {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int RAMFileClass::Do_Is_Available(AvailabilityCheck /*mode*/) { return true; }
+bool RAMFileClass::Do_Is_Available(AvailabilityCheck /*mode*/) { return true; }
 
 /***********************************************************************************************
  * RAMFileClass::Is_Open -- Is the file open? *
@@ -187,7 +187,7 @@ int RAMFileClass::Do_Is_Available(AvailabilityCheck /*mode*/) { return true; }
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int RAMFileClass::Is_Open() const { return IsOpen; }
+bool RAMFileClass::Is_Open() const { return IsOpen; }
 
 /***********************************************************************************************
  * RAMFileClass::Open -- Opens a RAM based file for read or write. *
@@ -208,7 +208,7 @@ int RAMFileClass::Is_Open() const { return IsOpen; }
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int RAMFileClass::Open(const char* /*filename*/, FileAccess access) {
+bool RAMFileClass::Open(const char* /*filename*/, FileAccess access) {
   return Open(access);
 }
 
@@ -228,7 +228,7 @@ int RAMFileClass::Open(const char* /*filename*/, FileAccess access) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int RAMFileClass::Open(FileAccess access) {
+bool RAMFileClass::Open(FileAccess access) {
   if (Buffer == nullptr || Is_Open()) {
     return false;
   }

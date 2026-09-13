@@ -388,7 +388,7 @@ class Int {
         while (table[i] >= primeTable[i]) {
           table[i] -= primeTable[i];
         }
-        HasZeroEntry = HasZeroEntry || !table[i];
+        HasZeroEntry = HasZeroEntry || table[i] == 0;
       }
     }
     void Increment(const RemainderTable& rtQ) {
@@ -398,7 +398,7 @@ class Int {
         if (table[i] >= primeTable[i]) {
           table[i] -= primeTable[i];
         }
-        HasZeroEntry = HasZeroEntry || !table[i];
+        HasZeroEntry = HasZeroEntry || table[i] == 0;
       }
     }
 

@@ -1012,7 +1012,7 @@ bool XMP_Add(uint32_t* result, const uint32_t* left_number,
              const uint32_t* right_number, bool carry, int precision) {
   while (precision--) {
     uint32_t term = *left_number + *right_number;
-    uint32_t final = term + carry;
+    uint32_t final = term + static_cast<uint32_t>(carry);
     carry = term < *left_number || (carry && final == 0);
 
     right_number++;
@@ -1054,7 +1054,7 @@ bool XMP_Add_Int(uint32_t* result, const uint32_t* left_number,
                  uint32_t right_number, bool carry, int precision) {
   while (precision--) {
     uint32_t term = *left_number + right_number;
-    uint32_t final = term + carry;
+    uint32_t final = term + static_cast<uint32_t>(carry);
     carry = term < *left_number || (carry && final == 0);
 
     right_number = 0;
@@ -1144,8 +1144,8 @@ bool XMP_Sub_Int(uint32_t* result, const uint32_t* left_number,
 
   precision *= 2;
   while (precision--) {
-    uint32_t x =
-        static_cast<uint32_t>(*left_number_ptr) - right_number - borrow;
+    uint32_t x = static_cast<uint32_t>(*left_number_ptr) - right_number -
+                 static_cast<uint32_t>(borrow);
     left_number_ptr++;
     *result_ptr++ = static_cast<uint16_t>(x);
     borrow = (1L << 16 & x) != 0L;

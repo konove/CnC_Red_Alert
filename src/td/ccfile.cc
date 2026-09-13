@@ -96,7 +96,7 @@
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void CCFileClass::Error(int /*error*/, int /*canretry*/,
+void CCFileClass::Error(int /*error*/, bool /*canretry*/,
                         const char* /*filename*/) {
 #ifdef DEMO
   if (strstr(File_Name(), "\\")) {
@@ -202,7 +202,7 @@ int32_t CCFileClass::Write(const void* buffer, int32_t size) {
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
 int32_t CCFileClass::Read(void* buffer, int32_t size) {
-  int opened = false;
+  bool opened = false;
 
   if ((!Is_Open()) && Open()) {
     opened = true;
@@ -333,7 +333,7 @@ int32_t CCFileClass::Size() {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-int CCFileClass::Do_Is_Available(AvailabilityCheck /*mode*/) {
+bool CCFileClass::Do_Is_Available(AvailabilityCheck /*mode*/) {
   if (MFCD::Offset(File_Name()).has_value()) {
     return true;
   }
@@ -354,7 +354,7 @@ int CCFileClass::Do_Is_Available(AvailabilityCheck /*mode*/) {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-int CCFileClass::Is_Open() const {
+bool CCFileClass::Is_Open() const {
   /*
   **	If the file is part of a cached file, then return that it is opened. A
   *closed file *	doesn't have a valid pointer.
@@ -403,7 +403,7 @@ void CCFileClass::Close() {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-int CCFileClass::Open(FileAccess rights) {
+bool CCFileClass::Open(FileAccess rights) {
   /*
   **	Always close the file if it was open.
   */

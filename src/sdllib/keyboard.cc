@@ -107,16 +107,16 @@ int WWKeyboardClass::To_ASCII(int num) {
 
 void WWKeyboardClass::Clear() { Head = Tail; }
 
-int WWKeyboardClass::Down(int key) {
+bool WWKeyboardClass::Down(int key) {
   // gadget uses this to poll mouse buttons
   if (Is_Mouse_Key(key)) {
     auto buttons = SDL_GetMouseState(nullptr, nullptr);
 
     switch (key) {
       case KN_LMOUSE:
-        return buttons & SDL_BUTTON(1);
+        return (buttons & SDL_BUTTON(1)) != 0;
       case KN_RMOUSE:
-        return buttons & SDL_BUTTON(3);
+        return (buttons & SDL_BUTTON(3)) != 0;
       default:
         break;
     }
@@ -127,11 +127,11 @@ int WWKeyboardClass::Down(int key) {
         static_cast<SDL_Keymod>(SDL_GetModState() & kInputModifierMask);
     switch (key) {
       case KN_LSHIFT:
-        return keymod & KMOD_SHIFT;
+        return (keymod & KMOD_SHIFT) != 0;
       case KN_LCTRL:
-        return keymod & KMOD_CTRL;
+        return (keymod & KMOD_CTRL) != 0;
       case KN_LALT:
-        return keymod & KMOD_ALT;
+        return (keymod & KMOD_ALT) != 0;
       default:
         break;
     }
@@ -141,10 +141,10 @@ int WWKeyboardClass::Down(int key) {
   const auto* keys = SDL_GetKeyboardState(&numkeys);
 
   if (key < numkeys) {
-    return keys[key];
+    return keys[key] != 0;
   }
 
-  return 0;
+  return false;
 }
 
 bool WWKeyboardClass::Is_Mouse_Key(int key) {

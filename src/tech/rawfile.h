@@ -90,18 +90,18 @@ class RawFileClass : public FileClass {
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   const char* Set_Name(const char* filename)
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  int Create() override;
-  int Delete() override;
-  [[nodiscard]] int Is_Open() const override;
-  int Open(const char* filename,
-           FileAccess rights = FileAccess::kRead) override;
-  int Open(FileAccess rights = FileAccess::kRead) override;
+  bool Create() override;
+  bool Delete() override;
+  [[nodiscard]] bool Is_Open() const override;
+  bool Open(const char* filename,
+            FileAccess rights = FileAccess::kRead) override;
+  bool Open(FileAccess rights = FileAccess::kRead) override;
   int32_t Read(void* buffer, int32_t size) override;
   int32_t Seek(int32_t pos, int dir = SEEK_CUR) override;
   int32_t Size() override;
   int32_t Write(const void* buffer, int32_t size) override;
   void Close() override;
-  void Error(int error, int canretry = false,
+  void Error(int error, bool canretry = false,
              const char* filename = nullptr) override;
 
   void Bias(int start, int length = -1);
@@ -117,7 +117,7 @@ class RawFileClass : public FileClass {
   int BiasLength;
 
  protected:
-  int Do_Is_Available(AvailabilityCheck mode) override;
+  bool Do_Is_Available(AvailabilityCheck mode) override;
 
   int32_t Raw_Seek(int32_t pos, int dir = SEEK_CUR);
 
@@ -229,6 +229,6 @@ inline RawFileClass::~RawFileClass() {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-inline int RawFileClass::Is_Open() const { return Handle != nullptr; }
+inline bool RawFileClass::Is_Open() const { return Handle != nullptr; }
 
 #endif  // CNC_RED_ALERT_TECH_RAWFILE_H_

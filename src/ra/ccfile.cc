@@ -127,7 +127,7 @@ CCFileClass::CCFileClass() : Position(0) {}
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void CCFileClass::Error(int /*error*/, int /*canretry*/,
+void CCFileClass::Error(int /*error*/, bool /*canretry*/,
                         const char* /*filename*/) {
   if (!Force_CD_Available(RequiredCD)) {
     // Prog_End();
@@ -333,7 +333,7 @@ int32_t CCFileClass::Size() {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-int CCFileClass::Do_Is_Available(AvailabilityCheck mode) {
+bool CCFileClass::Do_Is_Available(AvailabilityCheck mode) {
   /*
   **	A file that is open is presumed available.
   */
@@ -369,7 +369,7 @@ int CCFileClass::Do_Is_Available(AvailabilityCheck mode) {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-int CCFileClass::Is_Open() const {
+bool CCFileClass::Is_Open() const {
   /*
   **	If the file is part of a cached file, then return that it is opened. A
   *closed file *	doesn't have a valid pointer.
@@ -419,7 +419,7 @@ void CCFileClass::Close() {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-int CCFileClass::Open(FileAccess rights) {
+bool CCFileClass::Open(FileAccess rights) {
   /*
   **	Always close the file if it was open.
   */

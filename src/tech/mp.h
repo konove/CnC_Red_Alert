@@ -160,8 +160,8 @@ inline void XMP_Set_Bit(uint32_t* r, int bit) {
 }
 
 inline bool XMP_Test_Bit(const uint32_t* r, int bit) {
-  return r[bit >> LOG_UNITSIZE] & static_cast<uint32_t>(1)
-                                      << (bit & (UNITSIZE - 1));
+  return (r[bit >> LOG_UNITSIZE] & static_cast<uint32_t>(1)
+                                       << (bit & (UNITSIZE - 1))) != 0;
 }
 
 // Misc functions.

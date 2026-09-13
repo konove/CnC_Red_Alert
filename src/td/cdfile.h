@@ -66,9 +66,9 @@ class CDFileClass : public RawFileClass {
   CDFileClass& operator=(CDFileClass&&) = delete;
 
   const char* Set_Name(const char* filename) override;
-  int Open(const char* filename,
-           FileAccess rights = FileAccess::kRead) override;
-  int Open(FileAccess rights = FileAccess::kRead) override;
+  bool Open(const char* filename,
+            FileAccess rights = FileAccess::kRead) override;
+  bool Open(FileAccess rights = FileAccess::kRead) override;
 
   void Searching(int on) { IsDisabled = !on; }
 

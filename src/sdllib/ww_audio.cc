@@ -486,7 +486,7 @@ bool Audio_Init(void* /*window*/, int /*bits_per_sample*/, bool stereo,
                 SDL_AUDIO_ALLOW_CHANNELS_CHANGE |
                 SDL_AUDIO_ALLOW_SAMPLES_CHANGE;
   AudioDevice =
-      SDL_OpenAudioDevice(nullptr, false, &desired, &ObtainedSpec, changes);
+      SDL_OpenAudioDevice(nullptr, 0, &desired, &ObtainedSpec, changes);
 
   if (!AudioDevice) {
     printf("Audio_Init: %s\n", SDL_GetError());
@@ -495,7 +495,7 @@ bool Audio_Init(void* /*window*/, int /*bits_per_sample*/, bool stereo,
 
   MixBuffer = new uint8_t[ObtainedSpec.size];
 
-  SDL_PauseAudioDevice(AudioDevice, false);
+  SDL_PauseAudioDevice(AudioDevice, 0);
 
   SoundType = SFX_SDL;
   SampleType = SAMPLE_SDL;
@@ -669,11 +669,11 @@ int Get_Digi_Handle() {
 }
 
 bool Start_Primary_Sound_Buffer(bool /*forced*/) {
-  SDL_PauseAudioDevice(AudioDevice, false);
+  SDL_PauseAudioDevice(AudioDevice, 0);
   return true;
 }
 
-void Stop_Primary_Sound_Buffer() { SDL_PauseAudioDevice(AudioDevice, true); }
+void Stop_Primary_Sound_Buffer() { SDL_PauseAudioDevice(AudioDevice, 1); }
 
 uint32_t Get_Audio_Device() { return AudioDevice; }
 

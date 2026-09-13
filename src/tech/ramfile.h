@@ -60,22 +60,22 @@ class RAMFileClass final : public FileClass {
   const char* Set_Name(const char* /*filename*/) override {
     return File_Name();
   }
-  int Create() override;
-  int Delete() override;
-  [[nodiscard]] int Is_Open() const override;
-  int Open(const char* filename,
-           FileAccess access = FileAccess::kRead) override;
-  int Open(FileAccess access = FileAccess::kRead) override;
+  bool Create() override;
+  bool Delete() override;
+  [[nodiscard]] bool Is_Open() const override;
+  bool Open(const char* filename,
+            FileAccess access = FileAccess::kRead) override;
+  bool Open(FileAccess access = FileAccess::kRead) override;
   int32_t Read(void* buffer, int32_t size) override;
   int32_t Seek(int32_t pos, int dir = SEEK_CUR) override;
   int32_t Size() override;
   int32_t Write(const void* buffer, int32_t size) override;
   void Close() override;
-  void Error(int /*error*/, int /*canretry*/ = false,
+  void Error(int /*error*/, bool /*canretry*/ = false,
              const char* /*filename*/ = nullptr) override {}
 
  protected:
-  int Do_Is_Available(AvailabilityCheck mode) override;
+  bool Do_Is_Available(AvailabilityCheck mode) override;
 
  private:
   /*

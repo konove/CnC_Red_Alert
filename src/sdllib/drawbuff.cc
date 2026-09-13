@@ -106,11 +106,11 @@ int32_t Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel,
                      (static_cast<base::ssize>(dst_y0) * pixel_width);
 
   if (src_x1 <= src_x0 || src_y1 <= src_y0) {
-    return true;
+    return 1;
   }
 
   if (src_offset == dst_offset) {
-    return true;
+    return 1;
   }
 
   int pixel_count = src_x1 - src_x0;
@@ -175,11 +175,11 @@ int32_t Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
   auto* dst_offset = vp_dst->Get_Offset() + dst_x0 + (dst_y0 * dst_area);
 
   if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
-    return true;
+    return 1;
   }
 
   if (src_offset == dst_offset) {
-    return true;
+    return 1;
   }
 
   int pixel_count = dst_x1 - dst_x0;
@@ -1064,7 +1064,7 @@ void GraphicBufferClass::Init(int w, int h, void* buffer, int32_t size,
     WindowBuffer = this;
   } else {
     // regular allocation
-    Allocated = !buffer;
+    Allocated = buffer == nullptr;
     Buffer = buffer;
 
     if (buffer == nullptr) {

@@ -442,7 +442,8 @@ extern "C" int32_t Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
   } else {
     // super jump table fun!
     printf("%s new f %x all flags %i\n", __func__,
-           header_pointer->draw_flags & BLIT_ALL, use_all_flags);
+           header_pointer->draw_flags & BLIT_ALL,
+           static_cast<int>(use_all_flags));
   }
 
   return 0;

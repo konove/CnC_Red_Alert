@@ -239,10 +239,11 @@ class GraphicViewPortClass {
   int32_t To_Buffer(int x, int y, int w, int h, void* buff, int32_t size);
   int32_t To_Buffer(int x, int y, int w, int h, BufferClass* buff);
   int32_t To_Buffer(BufferClass* buff);
-  int Blit(GraphicViewPortClass& dest, int x_pixel, int y_pixel, int dx_pixel,
-           int dy_pixel, int pixel_width, int pixel_height, bool trans = false);
-  int Blit(GraphicViewPortClass& dest, int dx, int dy, bool trans = false);
-  int Blit(GraphicViewPortClass& dest, bool trans = false);
+  bool Blit(GraphicViewPortClass& dest, int x_pixel, int y_pixel, int dx_pixel,
+            int dy_pixel, int pixel_width, int pixel_height,
+            bool trans = false);
+  bool Blit(GraphicViewPortClass& dest, int dx, int dy, bool trans = false);
+  bool Blit(GraphicViewPortClass& dest, bool trans = false);
 
   bool Scale(GraphicViewPortClass& dest, int src_x, int src_y, int dst_x,
              int dst_y, int src_w, int src_h, int dst_w, int dst_h,
@@ -399,7 +400,7 @@ inline int GraphicViewPortClass::Get_LockCount() { return LockCount; }
  *=============================================================================================*/
 inline bool GraphicViewPortClass::Get_IsDirectDraw() {
   // this flag is used as "do we need to lock" in a few places
-  return GraphicBuff && GraphicBuff->Is_Window_Surface();
+  return GraphicBuff != nullptr && GraphicBuff->Is_Window_Surface();
 }
 
 /***********************************************************************************************
@@ -590,11 +591,11 @@ inline int32_t GraphicViewPortClass::To_Buffer(BufferClass* buff) {
   return To_Buffer(0, 0, Width, Height, buff->Get_Buffer(), buff->Get_Size());
 }
 
-inline int GraphicViewPortClass::Blit(GraphicViewPortClass& dest, int x_pixel,
-                                      int y_pixel, int dx_pixel, int dy_pixel,
-                                      int pixel_width, int pixel_height,
-                                      bool trans) {
-  int return_code = 0;
+inline bool GraphicViewPortClass::Blit(GraphicViewPortClass& dest, int x_pixel,
+                                       int y_pixel, int dx_pixel, int dy_pixel,
+                                       int pixel_width, int pixel_height,
+                                       bool trans) {
+  bool return_code = false;
 
   if (Lock()) {
     if (dest.Lock()) {
@@ -609,12 +610,12 @@ inline int GraphicViewPortClass::Blit(GraphicViewPortClass& dest, int x_pixel,
   return return_code;
 }
 
-inline int GraphicViewPortClass::Blit(GraphicViewPortClass& dest, int dx,
-                                      int dy, bool trans) {
+inline bool GraphicViewPortClass::Blit(GraphicViewPortClass& dest, int dx,
+                                       int dy, bool trans) {
   return Blit(dest, 0, 0, dx, dy, Width, Height, trans);
 }
 
-inline int GraphicViewPortClass::Blit(GraphicViewPortClass& dest, bool trans) {
+inline bool GraphicViewPortClass::Blit(GraphicViewPortClass& dest, bool trans) {
   return Blit(dest, 0, 0, 0, 0, Width, Height, trans);
 }
 

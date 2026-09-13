@@ -1956,7 +1956,7 @@ int MixFileVqaIo::Open(const char* filename) {
   if (!file->Is_Available()) {
     return 1;
   }
-  if (file->Open(filename, FileAccess::kRead) == -1) {
+  if (!file->Open(filename, FileAccess::kRead)) {
     return 1;
   }
 

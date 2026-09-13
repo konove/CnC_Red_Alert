@@ -70,28 +70,28 @@ class FileClass {
 
   [[nodiscard]] virtual const char* File_Name() const = 0;
   virtual const char* Set_Name(const char* filename) = 0;
-  virtual int Create() = 0;
-  virtual int Delete() = 0;
+  virtual bool Create() = 0;
+  virtual bool Delete() = 0;
 
   // Returns true if the file is available to be opened.
-  int Is_Available() { return Do_Is_Available(AvailabilityCheck::kQuick); }
+  bool Is_Available() { return Do_Is_Available(AvailabilityCheck::kQuick); }
 
   // Returns true if the file is available. Uses full error recovery which may
   // block waiting for media (e.g., prompting for CD-ROM).
-  int Is_Available_Strict() {
+  bool Is_Available_Strict() {
     return Do_Is_Available(AvailabilityCheck::kBlocking);
   }
 
-  [[nodiscard]] virtual int Is_Open() const = 0;
-  virtual int Open(const char* filename,
-                   FileAccess rights = FileAccess::kRead) = 0;
-  virtual int Open(FileAccess rights = FileAccess::kRead) = 0;
+  [[nodiscard]] virtual bool Is_Open() const = 0;
+  virtual bool Open(const char* filename,
+                    FileAccess rights = FileAccess::kRead) = 0;
+  virtual bool Open(FileAccess rights = FileAccess::kRead) = 0;
   virtual int32_t Read(void* buffer, int32_t size) = 0;
   virtual int32_t Seek(int32_t pos, int dir = SEEK_CUR) = 0;
   virtual int32_t Size() = 0;
   virtual int32_t Write(const void* buffer, int32_t size) = 0;
   virtual void Close() = 0;
-  virtual void Error(int error, int canretry = false,
+  virtual void Error(int error, bool canretry = false,
                      const char* filename = nullptr) = 0;
 
   // legacy C interfaces take the object where a pointer or name is expected.
@@ -99,7 +99,7 @@ class FileClass {
   operator const char*() { return File_Name(); }
 
  protected:
-  virtual int Do_Is_Available(AvailabilityCheck mode) = 0;
+  virtual bool Do_Is_Available(AvailabilityCheck mode) = 0;
 };
 
 #endif  // CNC_RED_ALERT_TECH_WWFILE_H_

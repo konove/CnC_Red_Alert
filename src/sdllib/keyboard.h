@@ -73,7 +73,7 @@ class WWKeyboardClass {
                               //   and mouse clicks and dbl clicks
   static int To_ASCII(int num);  // converts keynum to ascii value
   void Clear();               // clears all keys from keybuffer
-  static int Down(int key);   // tests to see if a key is down
+  static bool Down(int key);  // tests to see if a key is down
 
   /*===================================================================*/
   /* Define the main hook for the message processing loop.

@@ -93,7 +93,7 @@
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void RawFileClass::Error(int /*error*/, int /*canretry*/,
+void RawFileClass::Error(int /*error*/, bool /*canretry*/,
                          const char* /*filename*/) {}
 
 /***********************************************************************************************
@@ -174,7 +174,7 @@ const char* RawFileClass::Set_Name(const char* filename) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-int RawFileClass::Open(const char* filename, FileAccess rights) {
+bool RawFileClass::Open(const char* filename, FileAccess rights) {
   Set_Name(filename);
   return Open(rights);
 }
@@ -197,7 +197,7 @@ int RawFileClass::Open(const char* filename, FileAccess rights) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-int RawFileClass::Open(FileAccess rights) {
+bool RawFileClass::Open(FileAccess rights) {
   Close();
 
   /*
@@ -263,7 +263,7 @@ int RawFileClass::Open(FileAccess rights) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int RawFileClass::Do_Is_Available(AvailabilityCheck mode) {
+bool RawFileClass::Do_Is_Available(AvailabilityCheck mode) {
   if (Filename_.empty()) {
     return false;
   }
@@ -377,7 +377,7 @@ void RawFileClass::Close() {
 int32_t RawFileClass::Read(void* buffer, int32_t size) {
   int32_t bytesread =
       0;  // Running count of the number of bytes read into the buffer.
-  int opened = false;  // Was the file opened by this routine?
+  bool opened = false;  // Was the file opened by this routine?
 
   /*
   **	If the file isn't opened, open it. This serves as a convenience
@@ -439,7 +439,7 @@ int32_t RawFileClass::Read(void* buffer, int32_t size) {
  *=============================================================================================*/
 int32_t RawFileClass::Write(const void* buffer, int32_t size) {
   int32_t bytesread = 0;
-  int opened = false;  // Was the file manually opened?
+  bool opened = false;  // Was the file manually opened?
 
   /*
   **	Check to open status of the file. If the file is open, then merely write
@@ -620,7 +620,7 @@ int32_t RawFileClass::Size() {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int RawFileClass::Create() {
+bool RawFileClass::Create() {
   Close();
   if (Open(FileAccess::kWrite)) {
     /*
@@ -654,7 +654,7 @@ int RawFileClass::Create() {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int RawFileClass::Delete() {
+bool RawFileClass::Delete() {
   /*
   **	If the file was open, then it must be closed first.
   */

@@ -69,10 +69,10 @@ class BufferIOFileClass : public RawFileClass {
   bool Commit();
   const char* Set_Name(const char* filename)
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  [[nodiscard]] int Is_Open() const override;
-  int Open(const char* filename,
-           FileAccess rights = FileAccess::kRead) override;
-  int Open(FileAccess rights = FileAccess::kRead) override;
+  [[nodiscard]] bool Is_Open() const override;
+  bool Open(const char* filename,
+            FileAccess rights = FileAccess::kRead) override;
+  bool Open(FileAccess rights = FileAccess::kRead) override;
   int32_t Read(void* buffer, int32_t size) override;
   int32_t Seek(int32_t pos, int dir = SEEK_CUR) override;
   int32_t Size() override;
@@ -82,7 +82,7 @@ class BufferIOFileClass : public RawFileClass {
   enum { MINIMUM_BUFFER_SIZE = 1024 };
 
  protected:
-  int Do_Is_Available(AvailabilityCheck mode) override;
+  bool Do_Is_Available(AvailabilityCheck mode) override;
 
  private:
   bool IsAllocated : 1;

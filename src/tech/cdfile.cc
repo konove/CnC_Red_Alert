@@ -81,7 +81,7 @@ extern int Get_CD_Index(int cd_drive, int timeout);
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int CDFileClass::Open(FileAccess rights) {
+bool CDFileClass::Open(FileAccess rights) {
   return BufferIOFileClass::Open(rights);
 }
 
@@ -296,7 +296,7 @@ const char* CDFileClass::Set_Name(const char* filename) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int CDFileClass::Open(const char* filename, FileAccess rights) {
+bool CDFileClass::Open(const char* filename, FileAccess rights) {
   CDFileClass::Close();
 
   /*

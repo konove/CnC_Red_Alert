@@ -82,7 +82,7 @@ struct KeyboardClass : public WWKeyboardClass {
   static KeyASCIIType To_ASCII(KeyNumType key) {
     return (KeyASCIIType)WWKeyboardClass::To_ASCII(key);
   }
-  static int Down(KeyNumType key) { return WWKeyboardClass::Down(key); }
+  static bool Down(KeyNumType key) { return WWKeyboardClass::Down(key); }
 
   static int Mouse_X() { return Get_Mouse_X(); }
   static int Mouse_Y() { return Get_Mouse_Y(); }

@@ -59,9 +59,9 @@ class CDFileClass : public BufferIOFileClass {
 
   const char* Set_Name(const char* filename)
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  int Open(const char* filename,
-           FileAccess rights = FileAccess::kRead) override;
-  int Open(FileAccess rights = FileAccess::kRead) override;
+  bool Open(const char* filename,
+            FileAccess rights = FileAccess::kRead) override;
+  bool Open(FileAccess rights = FileAccess::kRead) override;
 
   void Searching(const bool on) { is_disabled_ = !on; }
 

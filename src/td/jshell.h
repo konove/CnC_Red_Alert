@@ -68,7 +68,7 @@ class Keyboard {
   }
   static void Clear() { Clear_KeyBuffer(); }
   static void Stuff(KeyNumType /*key*/) {}
-  static int Down(KeyNumType key) { return Key_Down(key); }
+  static bool Down(KeyNumType key) { return Key_Down(key); }
   static int Mouse_X() { return Get_Mouse_X(); }
   static int Mouse_Y() { return Get_Mouse_Y(); }
 };

@@ -82,7 +82,7 @@ int Write_PCX_File(char* name, GraphicViewPortClass& pic,
   // Open file name
   file_handle = Open_File(name, FileAccess::kWrite);
   if (file_handle == -1) {
-    return false;
+    return 0;
   }
 
   header.width = static_cast<int16_t>(pic.Get_Width() - 1);
