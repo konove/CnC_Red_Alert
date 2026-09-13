@@ -46,6 +46,7 @@
 
 #include <climits>
 #include <cstdio>
+#include <limits>
 #include <string>
 
 #include "tech/wwfile.h"
@@ -121,7 +122,9 @@ class RawFileClass : public FileClass {
   **	perform. Larger file transfers are performed in chunks of this size or
   *less.
   */
-  long Transfer_Block_Size() { return static_cast<long>((UINT_MAX)) - 16L; }
+  long Transfer_Block_Size() {
+    return static_cast<long>(std::numeric_limits<unsigned int>::max()) - 16L;
+  }
 
   long Raw_Seek(long pos, int dir = SEEK_CUR);
 

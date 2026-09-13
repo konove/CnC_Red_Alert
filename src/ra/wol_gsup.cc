@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <cstring>
 #include <ctime>
+#include <random>
 
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -757,7 +758,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   //	Init random-number generator, & create a seed to be used for all random
   //	numbers from here on out
   //------------------------------------------------------------------------
-  srand(static_cast<unsigned int>(time(nullptr)));
+  srand(std::random_device{}());
 
   //------------------------------------------------------------------------
   //	Init the version-clipping system

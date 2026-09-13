@@ -1,15 +1,16 @@
 #include "sdllib/misc.h"
 
 #include <algorithm>
+#include <climits>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <random>
 
 #include "absl/log/check.h"
 #include "base/hsv.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_win.h"
-#include <climits>
 
 SurfaceMonitorClass AllSurfaces;
 
@@ -158,6 +159,8 @@ static int Get_Random_Mask(unsigned int maxval) {
   maxval |= maxval >> 16;
   return maxval;
 }
+
+void randomize() { std::srand(std::random_device{}()); }
 
 int IRandom(int minval, int maxval) {
   int num, mask;

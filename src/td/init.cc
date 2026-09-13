@@ -1544,13 +1544,6 @@ bool Select_Game(bool fade) {
   Kbd.Clear();
 
   /*
-  ** Get a pointer to the compiler's random number seed.
-  **	the Get_EAX() must follow immediately after the srand(0) in order to
-  *save *	the address of the random seed.  (Currently not used.)
-  */
-  srand(0);
-
-  /*
   **	Initialize the random number Seed.  For multiplayer, this will have been
   *done
   ** in the connection dialogs.  For single-player games, AND if we're not

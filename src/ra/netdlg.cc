@@ -201,6 +201,7 @@ constexpr size_t kGameListItemSize = MPLAYER_NAME_MAX + 64;
 bool bSpecialAftermathScenario(const char* szScenarioDescription);
 
 #include <iterator>
+#include <random>
 
 #include "ra/config.h"
 #include "ra/wolapiob.h"
@@ -4312,7 +4313,7 @@ static int Net_New_Dialog() {
   //	Init random-number generator, & create a seed to be used for all random
   //	numbers from here on out
   //------------------------------------------------------------------------
-  srand(static_cast<unsigned>(time(nullptr)));
+  srand(std::random_device{}());
   Seed = rand();
 
   //------------------------------------------------------------------------

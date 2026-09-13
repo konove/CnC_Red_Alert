@@ -73,6 +73,7 @@
 #include <ctime>
 #include <iterator>
 #include <memory>
+#include <random>
 #include <span>
 #include <string>
 
@@ -1839,7 +1840,7 @@ void Init_Random() {
     if (CustomSeed != 0) {
       Seed = CustomSeed;
     } else {
-      srand(static_cast<unsigned>(time(nullptr)));
+      srand(std::random_device{}());
       Seed = rand();
     }
   }

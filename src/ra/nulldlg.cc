@@ -58,6 +58,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <random>
 #include <string>
 
 #include "magic_enum/magic_enum.hpp"
@@ -3055,7 +3056,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   Init random-number generator, & create a seed to be used for all random
   numbers from here on out
   ........................................................................*/
-  srand(static_cast<unsigned>(time(nullptr)));
+  srand(std::random_device{}());
   Seed = rand();
 
   /*........................................................................
