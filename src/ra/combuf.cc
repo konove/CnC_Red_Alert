@@ -867,7 +867,7 @@ void CommBufferClass::Mono_Debug_Print(int refresh) {
   struct CommHdr {  // this mirrors the CommHeaderType
     unsigned short MagicNumber;
     unsigned char Code;
-    unsigned long PacketID;
+    uint32_t PacketID;
   }* hdr;
 
   //------------------------------------------------------------------------
@@ -1043,7 +1043,7 @@ void CommBufferClass::Mono_Debug_Print2(int refresh) {
   struct CommHdr {  // this mirrors the CommHeaderType
     unsigned short MagicNumber;
     unsigned char Code;
-    unsigned long PacketID;
+    uint32_t PacketID;
   }* hdr;
 
   //------------------------------------------------------------------------

@@ -177,6 +177,12 @@ add_gtest(
 )
 apply_language_setting(ra_fixed_point_test)
 
+add_gtest(
+    NAME ra_connect_test
+    SOURCES connect_test.cc connect.cc combuf.cc
+    LIBS base port absl::check absl::log
+)
+
 
 if (EMSCRIPTEN)
     set_target_properties(rasdl PROPERTIES

@@ -111,6 +111,7 @@
 ********************************* Includes **********************************
 */
 #include <cstdint>
+#include <span>
 
 #include "ra/combuf.h"
 
@@ -188,6 +189,13 @@ class ConnectionClass {
   .....................................................................*/
   static int64_t Time();
 
+  // Returns the send entry of the oldest PACKET_DATA_ACK packet still waiting
+  // for an ACK, comparing FirstTime across `queues`. Only each queue's first
+  // unacknowledged entry is considered. Null queues are skipped. Returns
+  // nullptr if no queue holds an unacknowledged packet.
+  static SendQueueType* OldestUnackedSend(
+      std::span<CommBufferClass* const> queues);
+
   /*.....................................................................
   Utility routines.
   .....................................................................*/
@@ -263,10 +271,10 @@ class ConnectionClass {
   Running totals of # of packets we send & receive which require an ACK,
   and those that don't.
   .....................................................................*/
-  unsigned long NumRecNoAck = 0;
-  unsigned long NumRecAck = 0;
-  unsigned long NumSendNoAck = 0;
-  unsigned long NumSendAck = 0;
+  uint32_t NumRecNoAck = 0;
+  uint32_t NumRecAck = 0;
+  uint32_t NumSendNoAck = 0;
+  uint32_t NumSendAck = 0;
 
   /*.....................................................................
   This is the ID of the last consecutively-received packet; anything older

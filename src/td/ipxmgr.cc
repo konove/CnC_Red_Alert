@@ -70,7 +70,9 @@
 #include "td/ipxmgr.h"
 
 #include <algorithm>
+#include <array>
 
+#include "base/numeric.h"
 #include "port/aligned_buffer.h"
 #include "port/unaligned.h"
 #include "td/combuf.h"
@@ -1580,40 +1582,12 @@ void IPXManagerClass::Reset_Response_Time() {
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
 void* IPXManagerClass::Oldest_Send() {
-  int i;
-  int j;
-  int64_t time;
-  int64_t mintime = 0xffffffff;
-  SendQueueType* send_entry;  // ptr to send entry header
-  CommHeaderType* packet;
-  void* buf = nullptr;
-
-  for (i = 0; i < NumConnections; i++) {
-    send_entry = nullptr;
-
-    for (j = 0; j < Connection[i]->Queue->Num_Send(); j++) {
-      send_entry = Connection[i]->Queue->Get_Send(j);
-      if (send_entry) {
-        packet = port::AlignedObject<CommHeaderType>(send_entry->Buffer);
-        if (packet->Code == ConnectionClass::PACKET_DATA_ACK &&
-            send_entry->IsACK == 0) {
-          break;
-        }
-        send_entry = nullptr;
-      }
-    }
-
-    if (send_entry != nullptr) {
-      time = send_entry->FirstTime;
-
-      if (time < mintime) {
-        mintime = time;
-        buf = send_entry->Buffer;
-      }
-    }
+  std::array<CommBufferClass*, CONNECT_MAX> queues{};
+  for (int i = 0; i < NumConnections; i++) {
+    queues[base::ToSize(i)] = Connection[i]->Queue;
   }
-
-  return buf;
+  SendQueueType* oldest = ConnectionClass::OldestUnackedSend(queues);
+  return oldest != nullptr ? oldest->Buffer : nullptr;
 
 } /* end of Oldest_Send */
 

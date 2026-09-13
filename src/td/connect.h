@@ -225,6 +225,9 @@
 #define CNC_RED_ALERT_TD_CONNECT_H_
 
 #include <cstdint>
+#include <span>
+
+#include "td/combuf.h"
 
 #define CONN_DEBUG 0
 
@@ -244,7 +247,9 @@ out.
 typedef struct {
   unsigned short MagicNumber;
   unsigned char Code;
-  unsigned long PacketID;
+  // 32 bits, as in the original game: the receiver's 0xffffffff "nothing
+  // received yet" sentinel relies on ID arithmetic wrapping to 0.
+  uint32_t PacketID;
 } CommHeaderType;
 
 /*
@@ -299,6 +304,13 @@ class ConnectionClass {
   60ths of a second.
   .....................................................................*/
   static int64_t Time();
+
+  // Returns the send entry of the oldest PACKET_DATA_ACK packet still waiting
+  // for an ACK, comparing FirstTime across `queues`. Only each queue's first
+  // unacknowledged entry is considered. Null queues are skipped. Returns
+  // nullptr if no queue holds an unacknowledged packet.
+  static SendQueueType* OldestUnackedSend(
+      std::span<CommBufferClass* const> queues);
 
   /*.....................................................................
   Utility routines.

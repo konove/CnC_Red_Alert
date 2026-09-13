@@ -234,12 +234,10 @@ int ConnectionClass::Send_Packet(void* buf, int buflen, int ack_req) {
   ------------------------------------------------------------------------*/
   if (ack_req) {
     port::AlignedObject<CommHeaderType>(PacketBuf)->Code = PACKET_DATA_ACK;
-    port::AlignedObject<CommHeaderType>(PacketBuf)->PacketID =
-        static_cast<std::uint32_t>(NumSendAck);
+    port::AlignedObject<CommHeaderType>(PacketBuf)->PacketID = NumSendAck;
   } else {
     port::AlignedObject<CommHeaderType>(PacketBuf)->Code = PACKET_DATA_NOACK;
-    port::AlignedObject<CommHeaderType>(PacketBuf)->PacketID =
-        static_cast<std::uint32_t>(NumSendNoAck);
+    port::AlignedObject<CommHeaderType>(PacketBuf)->PacketID = NumSendNoAck;
   }
 
   /*------------------------------------------------------------------------
@@ -781,6 +779,33 @@ int64_t ConnectionClass::Time() {
                         std::chrono::steady_clock::now().time_since_epoch())
                         .count();
   return msec / 100 * 6;
+}
+
+SendQueueType* ConnectionClass::OldestUnackedSend(
+    std::span<CommBufferClass* const> queues) {
+  // "Found" is tracked through the result pointer rather than a latest-time
+  // sentinel: ticks count from boot and outgrow any fixed 32-bit bound.
+  SendQueueType* oldest = nullptr;
+  for (CommBufferClass* queue : queues) {
+    if (queue == nullptr) {
+      continue;
+    }
+    for (int i = 0; i < queue->Num_Send(); i++) {
+      SendQueueType* entry = queue->Get_Send(i);
+      if (entry == nullptr) {
+        continue;
+      }
+      const CommHeaderType* packet =
+          port::AlignedObject<CommHeaderType>(entry->Buffer);
+      if (packet->Code == PACKET_DATA_ACK && entry->IsACK == 0) {
+        if (oldest == nullptr || entry->FirstTime < oldest->FirstTime) {
+          oldest = entry;
+        }
+        break;
+      }
+    }
+  }
+  return oldest;
 }
 
 /***************************************************************************

@@ -88,6 +88,13 @@ add_gtest(
 )
 target_compile_definitions(td_fixedmath_test PRIVATE TD=1)
 
+add_gtest(
+    NAME td_connect_test
+    SOURCES connect_test.cc connect.cc combuf.cc noseqcon.cc
+    LIBS base port absl::check absl::log
+)
+target_compile_definitions(td_connect_test PRIVATE TD=1)
+
 if (EMSCRIPTEN)
     set_target_properties(tdsdl PROPERTIES
             SUFFIX ".html"

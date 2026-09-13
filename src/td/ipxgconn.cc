@@ -147,7 +147,7 @@ int IPXGlobalConnClass::Send_Packet(void* buf, int buflen,
   packet; it doesn't let us detect re-sends of other systems' packets.
   ------------------------------------------------------------------------*/
   port::AlignedObject<GlobalHeaderType>(PacketBuf)->Header.PacketID =
-      Queue->Send_Total();
+      static_cast<uint32_t>(Queue->Send_Total());
 
   /*------------------------------------------------------------------------
   Set the product ID for this packet.
