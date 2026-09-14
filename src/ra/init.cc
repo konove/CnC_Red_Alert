@@ -139,7 +139,6 @@
 #include "sdllib/iff.h"
 #include "sdllib/misc.h"
 #include "sdllib/shape.h"
-#include "sdllib/timer.h"
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
@@ -157,7 +156,6 @@
 #include "tech/pk.h"
 #include "tech/random.h"
 #include "tech/rgb.h"
-#include "tech/rndstraw.h"
 #include "tech/search_paths.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
@@ -1801,10 +1799,6 @@ uint32_t Obfuscate(const char* string) {
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
 void Init_Random() {
-  const uint32_t ms = Get_Time_Ms();
-  CryptRandom.Seed_Byte(static_cast<char>(ms));
-  // grab some more bits from somewhere?
-
   //
   // If we've loaded a multiplayer save game, return now; the random #
   // class is loaded along with ScenarioClass.
@@ -2102,13 +2096,13 @@ static void Init_Expansion_Files() {
       if (stricmp(state.name, "scores.mix") == 0) {
         continue;
       }
-      MixArchive::Register(state.name, &FastKey, &CryptRandom);
+      MixArchive::Register(state.name, &FastKey);
       MixArchive::Cache(state.name);
     } while (Find_Next_File(state));
   }
   if (Find_First_File("SS*.MIX", state)) {
     do {
-      MixArchive::Register(state.name, &FastKey, &CryptRandom);
+      MixArchive::Register(state.name, &FastKey);
     } while (Find_Next_File(state));
   }
 }
@@ -2302,46 +2296,45 @@ static void Init_Bootstrap_Mixfiles() {
   if constexpr (config::kWolapiEnabled) {
     GameFile fileWolapiMix("WOLAPI.MIX");
     if (fileWolapiMix.IsAvailable()) {
-      MixArchive::Register("WOLAPI.MIX", &FastKey, &CryptRandom);
+      MixArchive::Register("WOLAPI.MIX", &FastKey);
       MixArchive::Cache("WOLAPI.MIX");
     }
   }
 
   GameFile file2("EXPAND2.MIX");
   if (file2.IsAvailable()) {
-    MixArchive::Register("EXPAND2.MIX", &FastKey, &CryptRandom);
+    MixArchive::Register("EXPAND2.MIX", &FastKey);
     bool ok = MixArchive::Cache("EXPAND2.MIX");
     assert(ok);
 
-    MixArchive::Register("HIRES1.MIX", &FastKey, &CryptRandom);
+    MixArchive::Register("HIRES1.MIX", &FastKey);
     ok = MixArchive::Cache("HIRES1.MIX");
     assert(ok);
   }
 
   GameFile file("EXPAND.MIX");
   if (file.IsAvailable()) {
-    MixArchive::Register("EXPAND.MIX", &FastKey, &CryptRandom);
+    MixArchive::Register("EXPAND.MIX", &FastKey);
     const bool ok = MixArchive::Cache("EXPAND.MIX");
     assert(ok);
   }
 
-  MixArchive::Register("REDALERT.MIX", &FastKey, &CryptRandom);
+  MixArchive::Register("REDALERT.MIX", &FastKey);
 
   /*
   **	Bootstrap enough of the system so that the error dialog box can
   *successfully *	be displayed.
   */
-  MixArchive::Register("LOCAL.MIX", &FastKey, &CryptRandom);  // Cached.
+  MixArchive::Register("LOCAL.MIX", &FastKey);  // Cached.
   bool ok = MixArchive::Cache("LOCAL.MIX");
   assert(ok);
 
-  MixArchive::Register("HIRES.MIX", &FastKey, &CryptRandom);
+  MixArchive::Register("HIRES.MIX", &FastKey);
   ok = MixArchive::Cache("HIRES.MIX");
   assert(ok);
 
-  MixArchive::Register(
-      "NCHIRES.MIX", &FastKey,
-      &CryptRandom);  // Non-cached hires stuff incl VQ palettes
+  MixArchive::Register("NCHIRES.MIX",
+                       &FastKey);  // Non-cached hires stuff incl VQ palettes
 
   RequiredCD = temp;
 }
@@ -2372,31 +2365,29 @@ static void Init_Secondary_Mixfiles() {
     // (they don't contain the base missions)
     if (GameFile("MAIN3.MIX").IsAvailable() &&
         !GameFile("GENERAL3.MIX").IsAvailable()) {
-      const MixArchive* tmp =
-          MixArchive::Register("MAIN3.MIX", &FastKey, &CryptRandom);
+      const MixArchive* tmp = MixArchive::Register("MAIN3.MIX", &FastKey);
       Extract("GENERAL.MIX", "GENERAL3.MIX");
       delete tmp;
     }
 
     if (GameFile("MAIN4.MIX").IsAvailable() &&
         !GameFile("GENERAL4.MIX").IsAvailable()) {
-      const MixArchive* tmp =
-          MixArchive::Register("MAIN4.MIX", &FastKey, &CryptRandom);
+      const MixArchive* tmp = MixArchive::Register("MAIN4.MIX", &FastKey);
       Extract("GENERAL.MIX", "GENERAL4.MIX");
       Extract("SCORES.MIX", "SCORES.MIX");  // also extract scores
       delete tmp;
     }
 
     // load the first two to get both movies
-    MixArchive::Register("MAIN2.MIX", &FastKey, &CryptRandom);
-    MixArchive::Register("MAIN1.MIX", &FastKey, &CryptRandom);
+    MixArchive::Register("MAIN2.MIX", &FastKey);
+    MixArchive::Register("MAIN1.MIX", &FastKey);
 
     // load extra missions
-    MixArchive::Register("GENERAL4.MIX", &FastKey, &CryptRandom);
-    MixArchive::Register("GENERAL3.MIX", &FastKey, &CryptRandom);
+    MixArchive::Register("GENERAL4.MIX", &FastKey);
+    MixArchive::Register("GENERAL3.MIX", &FastKey);
   } else {
     // assume regular/TFD files
-    MainMix = MixArchive::Register("MAIN.MIX", &FastKey, &CryptRandom);
+    MainMix = MixArchive::Register("MAIN.MIX", &FastKey);
     assert(MainMix != nullptr);
   }
 
@@ -2419,23 +2410,20 @@ static void Init_Secondary_Mixfiles() {
   /*
   **	Inform the file system of the various MIX files.
   */
-  ConquerMix =
-      MixArchive::Register("CONQUER.MIX", &FastKey, &CryptRandom);  // Cached.
-  //	MixArchive::Register("TRANSIT.MIX", &FastKey, &CryptRandom);
+  ConquerMix = MixArchive::Register("CONQUER.MIX", &FastKey);  // Cached.
+  //	MixArchive::Register("TRANSIT.MIX", &FastKey);
 
   if (GeneralMix == nullptr) {
-    GeneralMix = MixArchive::Register("GENERAL.MIX", &FastKey,
-                                      &CryptRandom);  // Never cached.
+    GeneralMix =
+        MixArchive::Register("GENERAL.MIX", &FastKey);  // Never cached.
   }
 
   if (GameFile("MOVIES1.MIX").IsAvailable()) {
-    MoviesMix = MixArchive::Register("MOVIES1.MIX", &FastKey,
-                                     &CryptRandom);  // Never cached.
+    MoviesMix = MixArchive::Register("MOVIES1.MIX", &FastKey);  // Never cached.
   }
   // load both sets of movies if possible
   if (GameFile("MOVIES2.MIX").IsAvailable()) {
-    MoviesMix = MixArchive::Register("MOVIES2.MIX", &FastKey,
-                                     &CryptRandom);  // Never cached.
+    MoviesMix = MixArchive::Register("MOVIES2.MIX", &FastKey);  // Never cached.
   }
   assert(MoviesMix != nullptr);
 
@@ -2443,17 +2431,17 @@ static void Init_Secondary_Mixfiles() {
   **	Register the score mixfile.
   */
   ScoresPresent = true;
-  ScoreMix = MixArchive::Register("SCORES.MIX", &FastKey, &CryptRandom);
+  ScoreMix = MixArchive::Register("SCORES.MIX", &FastKey);
   ThemeClass::Scan();
 
   /*
   **	These are sound card specific, but the install program would have
   **	copied the correct versions to the hard drive.
   */
-  MixArchive::Register("SPEECH.MIX", &FastKey, &CryptRandom);   // Never cached.
-  MixArchive::Register("SOUNDS.MIX", &FastKey, &CryptRandom);   // Cached.
-  MixArchive::Register("RUSSIAN.MIX", &FastKey, &CryptRandom);  // Cached.
-  MixArchive::Register("ALLIES.MIX", &FastKey, &CryptRandom);   // Cached.
+  MixArchive::Register("SPEECH.MIX", &FastKey);   // Never cached.
+  MixArchive::Register("SOUNDS.MIX", &FastKey);   // Cached.
+  MixArchive::Register("RUSSIAN.MIX", &FastKey);  // Cached.
+  MixArchive::Register("ALLIES.MIX", &FastKey);   // Cached.
 }
 
 /***********************************************************************************************

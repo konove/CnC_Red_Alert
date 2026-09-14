@@ -3061,16 +3061,16 @@ bool Force_CD_Available(int cd_desired)  // ajw
     delete ScoreMix;
     delete MainMix;
 
-    MainMix = MixArchive::Register("MAIN.MIX", &FastKey, &CryptRandom);
+    MainMix = MixArchive::Register("MAIN.MIX", &FastKey);
     assert(MainMix != nullptr);
     if (GameFile("MOVIES1.MIX").IsAvailable()) {
-      MoviesMix = MixArchive::Register("MOVIES1.MIX", &FastKey, &CryptRandom);
+      MoviesMix = MixArchive::Register("MOVIES1.MIX", &FastKey);
     } else {
-      MoviesMix = MixArchive::Register("MOVIES2.MIX", &FastKey, &CryptRandom);
+      MoviesMix = MixArchive::Register("MOVIES2.MIX", &FastKey);
     }
     assert(MoviesMix != nullptr);
-    GeneralMix = MixArchive::Register("GENERAL.MIX", &FastKey, &CryptRandom);
-    ScoreMix = MixArchive::Register("SCORES.MIX", &FastKey, &CryptRandom);
+    GeneralMix = MixArchive::Register("GENERAL.MIX", &FastKey);
+    ScoreMix = MixArchive::Register("SCORES.MIX", &FastKey);
     ThemeClass::Scan();
   }
 

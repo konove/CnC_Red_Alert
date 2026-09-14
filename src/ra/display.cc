@@ -395,7 +395,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   if (Scen.Theater != LastTheater) {
     delete TheaterData;
 
-    TheaterData = MixArchive::Register(fullname, &FastKey, &CryptRandom);
+    TheaterData = MixArchive::Register(fullname, &FastKey);
 
     const bool theaterload = TheaterData->Cache();
     assert(theaterload);

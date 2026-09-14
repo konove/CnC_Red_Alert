@@ -66,12 +66,10 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
-#include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
-#include "tech/rndstraw.h"
 
 /*****************************
 **	Function prototypes
@@ -738,14 +736,6 @@ int Main_Menu(int32_t /*unused*/) {
     **	Get and process player input.
     */
     input = commands->Input();
-
-    /*
-    **	If there is input, then take this opportunity to seed some bits
-    **	to the cryptographic random number generator.
-    */
-    if (input != 0) {
-      CryptRandom.Seed_Byte(static_cast<char>(Get_Time_Ms()));
-    }
 
     /*
     **	Dispatch the input to be processed.

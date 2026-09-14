@@ -44,7 +44,6 @@
 #include "absl/base/attributes.h"
 #include "tech/listnode.h"
 #include "tech/pk.h"
-#include "tech/rndstraw.h"
 
 // An archive is opened, and its files are served, through GameFile, so an
 // archive packed inside another registered archive works too.
@@ -95,8 +94,7 @@ class MixArchive : public Node<MixArchive> {
   // Factory: returns existing instance if already registered, otherwise
   // creates a new MixArchive and adds it to the global list.
   static MixArchive* Register(std::string_view filename,
-                              const PKey* key = nullptr,
-                              RandomStraw* rng = nullptr);
+                              const PKey* key = nullptr);
 
   // Removes and deletes a mixfile by name. Returns true if found.
   static bool Unregister(std::string_view filename);

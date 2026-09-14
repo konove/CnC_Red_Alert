@@ -78,7 +78,6 @@
 #include "tech/buff.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
-#include "tech/rndstraw.h"
 
 // Scratch space for packing and unpacking the MapPack and OverlayPack INI blocks.
 inline char staging_buffer[32000];
@@ -165,7 +164,6 @@ extern PKey FastKey;
 extern PKey SlowKey;
 extern RulesClass Rule;
 extern KeyboardClass* Keyboard;
-extern RandomStraw CryptRandom;
 extern RandomClass local_rng;
 extern std::vector<CarryoverClass> Carryover;
 extern ScenarioClass Scen;

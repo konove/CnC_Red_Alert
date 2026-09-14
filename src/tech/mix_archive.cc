@@ -29,7 +29,6 @@
 #include "tech/listnode.h"
 #include "tech/pk.h"
 #include "tech/pkstraw.h"
-#include "tech/rndstraw.h"
 #include "tech/shastraw.h"
 #include "tech/straw.h"
 #include "tech/xstraw.h"
@@ -248,8 +247,7 @@ const void* MixArchive::Retrieve(std::string_view filename) {
   return data.empty() ? nullptr : data.data();
 }
 
-MixArchive* MixArchive::Register(std::string_view filename, const PKey* key,
-                                 RandomStraw* /*unused*/) {
+MixArchive* MixArchive::Register(std::string_view filename, const PKey* key) {
   if (auto* existing = Finder(filename)) {
     return existing;
   }

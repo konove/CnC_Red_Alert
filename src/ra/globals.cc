@@ -107,7 +107,6 @@
 #include "tech/pk.h"
 #include "tech/random.h"
 #include "tech/rgb.h"
-#include "tech/rndstraw.h"
 #include "winvq/vqa32/vqaplay.h"
 
 bool IsVQ640 = false;
@@ -355,7 +354,6 @@ RemapControlType GreyScheme;
 // the simulation, it does not need to stay in sync across networked machines.
 // For sync-critical randomness use Scen.sync_rng_.
 RandomClass local_rng;
-RandomStraw CryptRandom;
 
 /***************************************************************************
 **	This is a list of all selected objects (for this map). The support
