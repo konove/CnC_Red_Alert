@@ -89,12 +89,18 @@ inline int ItemExtraDataAsInt(const void* data) {
   return static_cast<int>(reinterpret_cast<std::intptr_t>(data));
 }
 
+// A list box whose lines carry icons, tooltips, colors and extra data next
+// to their text (see IconList_ItemExtras).
+//
+// With `bWrapText` set, Add_Item word-wraps its text to the list width and
+// adds one line per resulting row, an icon-only item gets a blank line so
+// the icon still shows, and `iMaxItemsSaved` (0: unlimited) caps the line
+// count by dropping the oldest line. Without it each Add_Item is one line.
 class IconListClass : public ListClass {
  public:
   IconListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-                const void* up, const void* down,
-                bool bResponsibleForStringAlloc = false, int iSelectionType = 1,
-                int iMaxItemsSaved = 0);
+                const void* up, const void* down, bool wrap_text = false,
+                int iSelectionType = 1, int iMaxItemsSaved = 0);
   //		IconListClass( const IconListClass& list );
   ~IconListClass() override;
   IconListClass(const IconListClass&) = delete;
@@ -173,7 +179,7 @@ class IconListClass : public ListClass {
   virtual void Set_Item_Color(int index, RemapControlType* pColorRemap);
   [[nodiscard]] virtual const IconList_ItemExtras* Get_ItemExtras(
       int index) const;
-  virtual void Clear();
+  void Clear() override;
   virtual int Get_View_Index() { return CurrentTopIndex; }
   bool bScrollBeingDragged() {
     //	Returns true if the scroll bar of the list is being dragged by the user.
@@ -183,6 +189,7 @@ class IconListClass : public ListClass {
   virtual int Find(const char* szItemToFind);
   virtual int FindColor(RemapControlType* pColorRemap);
 
+  // Replaces an item's text; false when `index` is out of range.
   virtual bool Set_Item(unsigned int index, const char* szText);
   virtual bool Set_Icon(unsigned int index, unsigned int iIconNumber,
                         void* pIcon, ICONKIND IconKind);
@@ -219,13 +226,10 @@ class IconListClass : public ListClass {
   //	here.
   DynamicVectorClass<IconList_ItemExtras*> ExtrasList;
 
-  bool bDoAlloc;    //	True if I am responsible for mem. allocation/deletion of
-                    // strings.
-                    //		bool bMultiSelect;	//	True if we are
-                    // using the multiple item selection feature.
+  bool bWrapText;   //	True to word-wrap added text into several lines.
   int iSelectType;  //	0 for no selection shown, 1 for normal ListClass
                     // selection, 2 for n multiple selections
-  int iMaxItems;    //	Number of items to limit list to, if bDoAlloc is true.
+  int iMaxItems;    //	Number of items to limit list to, if bWrapText is true.
 };
 
 #endif  // CNC_RED_ALERT_RA_ICONLIST_H_

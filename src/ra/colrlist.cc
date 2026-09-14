@@ -44,8 +44,10 @@
 
 #include "ra/colrlist.h"
 
+#include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
+#include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/vector.h"
@@ -114,6 +116,10 @@ ColorListClass::~ColorListClass() {
  *   04/19/1995 BRR : Created.                                             *
  *=========================================================================*/
 int ColorListClass::Add_Item(const char* text, RemapControlType* color) {
+  // ListClass adds nothing for a null text; keep Colors parallel to it.
+  if (text == nullptr) {
+    return Count() - 1;
+  }
   Colors.Add(color);
   return ListClass::Add_Item(text);
 }
@@ -135,8 +141,9 @@ int ColorListClass::Add_Item(const char* text, RemapControlType* color) {
  *   04/19/1995 BRR : Created.                                             *
  *=========================================================================*/
 int ColorListClass::Add_Item(int text, RemapControlType* color) {
-  Colors.Add(color);
-  return ListClass::Add_Item(text);
+  // Not ListClass::Add_Item(int): that would call back into the virtual
+  // Add_Item(const char*) and add a second color.
+  return Add_Item(text == TXT_NONE ? nullptr : Text_String(text), color);
 }
 
 /***************************************************************************
@@ -153,11 +160,10 @@ int ColorListClass::Add_Item(int text, RemapControlType* color) {
  * HISTORY:                                                                *
  *   04/19/1995 BRR : Created.                                             *
  *=========================================================================*/
-void ColorListClass::Remove_Item(const char* text) {
-  const int index = static_cast<int>(List.ID(text));
-  if (index != -1) {
+void ColorListClass::Remove_Item(int index) {
+  if (index >= 0 && index < Count()) {
     Colors.Delete(index);
-    ListClass::Remove_Item(text);
+    ListClass::Remove_Item(index);
   }
 }
 
@@ -209,8 +215,8 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
   ** Draw a non-selected item in its color
   */
   if (!selected) {
-    Conquer_Clip_Text_Print(List[index], x, y, Colors[index], TBLACK, TextFlags,
-                            width, Tabs);
+    Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors[index], TBLACK,
+                            TextFlags, width, Tabs);
     return;
   }
 
@@ -228,7 +234,7 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     **	NONE: Just print the string in its native color
     */
     case SELECT_NORMAL:
-      Conquer_Clip_Text_Print(List[index], x, y, Colors[index], TBLACK,
+      Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors[index], TBLACK,
                               TextFlags, width, Tabs);
       break;
 
@@ -238,10 +244,10 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     */
     case SELECT_HIGHLIGHT:
       if (TextFlags & TPF_6PT_GRAD) {
-        Conquer_Clip_Text_Print(List[index], x, y, color, TBLACK,
+        Conquer_Clip_Text_Print(Get_Item(index), x, y, color, TBLACK,
                                 TextFlags | TPF_BRIGHT_COLOR, width, Tabs);
       } else {
-        Conquer_Clip_Text_Print(List[index], x, y, color, TBLACK, TextFlags,
+        Conquer_Clip_Text_Print(Get_Item(index), x, y, color, TBLACK, TextFlags,
                                 width, Tabs);
       }
       break;
@@ -252,7 +258,7 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     case SELECT_BOX:
       LogicPage->Draw_Rect(x, y, x + width - 2, y + LineHeight - 2,
                            color->Color);
-      Conquer_Clip_Text_Print(List[index], x, y, Colors[index], TBLACK,
+      Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors[index], TBLACK,
                               TextFlags, width, Tabs);
       break;
 
@@ -263,12 +269,12 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
       if (TextFlags & TPF_6PT_GRAD) {
         LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
                              color->Color);
-        Conquer_Clip_Text_Print(List[index], x, y, Colors[index], TBLACK,
+        Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors[index], TBLACK,
                                 TextFlags | TPF_BRIGHT_COLOR, width, Tabs);
       } else {
         LogicPage->Fill_Rect(x, y, x + width - 2, y + LineHeight - 2,
                              color->Color);
-        Conquer_Clip_Text_Print(List[index], x, y, Colors[index], TBLACK,
+        Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors[index], TBLACK,
                                 TextFlags, width, Tabs);
       }
       break;

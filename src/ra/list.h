@@ -42,6 +42,9 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include "absl/base/attributes.h"
 #include "base/types.h"
@@ -67,6 +70,11 @@
 // stops. Automatically manages an optional scroll bar when the list content
 // exceeds visible area. Items can be added/removed dynamically and accessed by
 // index or text string.
+//
+// The list owns its text: Add_Item copies the string it is given, so callers
+// may pass a stack buffer and forget it. Pointers from Get_Item and
+// Current_Item stay valid until the item is removed, replaced with Set_Item,
+// or another item is added.
 class ListClass : public ControlClass {
  public:
   ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
@@ -78,24 +86,40 @@ class ListClass : public ControlClass {
   ListClass(ListClass&&) = delete;
   ListClass& operator=(ListClass&&) = delete;
 
+  // Appends a copy of `text` and returns the new item's index. A nullptr
+  // text adds nothing; the returned index is then that of the last item.
   virtual int Add_Item(const char* text);
+  // Appends the text table string `text`; TXT_NONE adds nothing.
   virtual int Add_Item(int text);
   virtual bool Add_Scroll_Bar();
   virtual void Bump(bool up);
   [[nodiscard]] virtual int Count() const {
-    return static_cast<int>(List.Count());
+    return static_cast<int>(List.size());
   }
   [[nodiscard]] virtual int Current_Index() const;
-  [[nodiscard]] virtual const char* Current_Item() const;
+  // The selected item's text, or nullptr when the list is empty.
+  [[nodiscard]] virtual const char* Current_Item() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
   bool Draw_Me(bool forced) override;
-  [[nodiscard]] virtual const char* Get_Item(int index) const;
+  // The item's text, or nullptr when the list is empty. An out-of-range
+  // index is clamped to the nearest item.
+  [[nodiscard]] virtual const char* Get_Item(int index) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
   virtual int Step_Selected_Index(int step);
   void Flag_To_Redraw() final;
 
   void Peer_To_Peer(unsigned flags, KeyNumType& key,
                     ControlClass& whom) override;
+  // Removes the first item whose text equals `text` (nullptr: nothing).
   virtual void Remove_Item(const char* text);
-  virtual void Remove_Item(int /*index*/);
+  // Removes the item at `index`; out-of-range indices are ignored.
+  virtual void Remove_Item(int index);
+  // Removes every item, one at a time through Remove_Item(int), so
+  // subclasses that keep per-item state alongside the text stay aligned.
+  virtual void Clear();
+  // Replaces the text of the item at `index`; out-of-range indices are
+  // ignored.
+  void Set_Item(int index, std::string_view text);
   virtual bool Remove_Scroll_Bar() final;
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(const char* text);
@@ -130,12 +154,8 @@ class ListClass : public ControlClass {
   */
   const int* Tabs{nullptr};
 
-  /*
-  **	The actual list of text pointers is maintained by this list manager. The
-  *pointers *	are stored in EMS. The text that is pointed to may also be in
-  *EMS.
-  */
-  DynamicVectorClass<const char*> List;
+  // The items' text, in display order. Owned by the list.
+  std::vector<std::string> List;
 
   /*
   **	This is the total pixel height of a standard line of text. This is

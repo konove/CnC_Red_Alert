@@ -450,20 +450,7 @@ GameType Select_MPlayer_Game() {
  * HISTORY:                                                                *
  *   11/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-void Clear_Listbox(ListClass* list) {
-  char* item;
-
-  //------------------------------------------------------------------------
-  //	Clear the list box
-  //------------------------------------------------------------------------
-  while (list->Count()) {
-    item = (char*)list->Get_Item(0);
-    list->Remove_Item(item);
-    delete[] item;
-  }
-  list->Flag_To_Redraw();
-
-}  // end of Clear_Listbox
+void Clear_Listbox(ListClass* list) { list->Clear(); }  // end of Clear_Listbox
 
 /***************************************************************************
  * Clear_Vector -- clears the given NodeNameType vector                    *

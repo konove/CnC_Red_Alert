@@ -40,10 +40,11 @@
 #include "ra/expand.h"
 
 #include <cstdio>
+#include <vector>
 
-#include "port/aligned_buffer.h"
+#include "absl/base/attributes.h"
+#include "base/numeric.h"
 #include "port/safe_string.h"
-#include "port/socket_bytes.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -238,40 +239,40 @@ struct EObjectClass {
   char FullName[128];
 };
 
-/*
-**	Derived from list class to handle expansion scenario listings. The
-*listings *	are recorded as EObjectClass objects. The data contained
-*specifies the scenario *	number, side, and text description.
-*/
+// List box of expansion scenarios. Each line is an EObjectClass (scenario
+// number, side and description) kept alongside the line's text.
 class EListClass : public ListClass {
  public:
   EListClass(int id, int x, int y, int w, int h, TextPrintType flags,
              const void* up, const void* down)
       : ListClass(id, x, y, w, h, flags, up, down) {}
-
-  virtual int Add_Object(EObjectClass* obj) {
-    // Store the original object pointer opaquely; getters recover the same
-    // address.
-    return ListClass::Add_Item(SocketBytes(*obj));
+  // Appends a copy of `obj`, returning its index.
+  int Add_Object(const EObjectClass& obj) {
+    Objects.push_back(obj);
+    return ListClass::Add_Item(obj.Name);
   }
-  [[nodiscard]] virtual EObjectClass* Get_Object(int index) const {
-    return port::RestoreMutableObject<EObjectClass>(ListClass::Get_Item(index));
+  [[nodiscard]] const EObjectClass& Get_Object(int index) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return Objects[base::ToSize(index)];
   }
-  virtual EObjectClass* Current_Object() {
-    return port::RestoreMutableObject<EObjectClass>(ListClass::Current_Item());
+  // The selected scenario. Only valid while the list is not empty.
+  [[nodiscard]] const EObjectClass& Current_Object() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return Objects[base::ToSize(Current_Index())];
   }
-
-  int Add_Item(const char* text) override { return ListClass::Add_Item(text); }
-  int Add_Item(int text) override { return ListClass::Add_Item(text); }
-  [[nodiscard]] const char* Current_Item() const override {
-    return ListClass::Current_Item();
-  }
-  [[nodiscard]] const char* Get_Item(int index) const override {
-    return ListClass::Get_Item(index);
+  void Remove_Item(int index) override {
+    if (index >= 0 && index < Count()) {
+      Objects.erase(Objects.begin() + index);
+      ListClass::Remove_Item(index);
+    }
   }
 
  protected:
   void Draw_Entry(int index, int x, int y, int width, bool selected) override;
+
+ private:
+  // One per item, parallel to List.
+  std::vector<EObjectClass> Objects;
 };
 
 /***********************************************************************************************
@@ -300,12 +301,12 @@ void EListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
   RemapControlType* scheme = Get_Color_Scheme();
 
   int text = TXT_NONE;
-  if (Get_Object(index)->House == HOUSE_GOOD) {
+  if (Get_Object(index).House == HOUSE_GOOD) {
     text = TXT_ALLIES;
   } else {
     text = TXT_SOVIET;
   }
-  sprintf(buffer, "%s: %s", Text_String(text), Get_Object(index)->Name);
+  sprintf(buffer, "%s: %s", Text_String(text), Get_Object(index).Name);
 
   TextPrintType flags = TextFlags;
 
@@ -373,7 +374,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     }
 
     if (bOk && file.IsAvailable()) {
-      auto* obj = new EObjectClass;
+      EObjectClass obj{};
       switch (buffer[2]) {
         case 'G':
         case 'g':
@@ -384,14 +385,14 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
           WWGetPrivateProfileString("Basic", "Name", "x", buffer,
                                     sizeof(buffer), sbuffer);
           if constexpr (config::kIsEnglish) {
-            port::SafeCopy(obj->Name, buffer);
+            port::SafeCopy(obj.Name, buffer);
           } else {
-            port::SafeCopy(obj->Name,
+            port::SafeCopy(obj.Name,
                            kTranslatedMissionNames[index - kMissionNameOffset]);
           }
-          port::SafeCopy(obj->FullName, buffer2);
-          obj->House = HOUSE_GOOD;
-          obj->Scenario = index;
+          port::SafeCopy(obj.FullName, buffer2);
+          obj.House = HOUSE_GOOD;
+          obj.Scenario = index;
           list.Add_Object(obj);
           break;
 
@@ -404,19 +405,18 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
           WWGetPrivateProfileString("Basic", "Name", "x", buffer,
                                     sizeof(buffer), sbuffer);
           if constexpr (config::kIsEnglish) {
-            port::SafeCopy(obj->Name, buffer);
+            port::SafeCopy(obj.Name, buffer);
           } else {
-            port::SafeCopy(obj->Name,
+            port::SafeCopy(obj.Name,
                            kTranslatedMissionNames[index - kMissionNameOffset]);
           }
-          port::SafeCopy(obj->FullName, buffer2);
-          obj->House = HOUSE_BAD;
-          obj->Scenario = index;
+          port::SafeCopy(obj.FullName, buffer2);
+          obj.House = HOUSE_BAD;
+          obj.Scenario = index;
           list.Add_Object(obj);
           break;
 
         default:
-          delete obj;
           break;
       }
     }
@@ -464,9 +464,9 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     const KeyNumType input = buttons->Input();
     switch (static_cast<int>(input)) {
       case ButtonKey(200):
-        Whom = list.Current_Object()->House;
-        Scen.Scenario = list.Current_Object()->Scenario;
-        port::SafeCopy(Scen.ScenarioName, list.Current_Object()->FullName);
+        Whom = list.Current_Object().House;
+        Scen.Scenario = list.Current_Object().Scenario;
+        port::SafeCopy(Scen.ScenarioName, list.Current_Object().FullName);
         process = false;
         okval = true;
         break;
@@ -478,9 +478,9 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
         break;
 
       case KN_RETURN:
-        Whom = list.Current_Object()->House;
-        Scen.Scenario = list.Current_Object()->Scenario;
-        port::SafeCopy(Scen.ScenarioName, list.Current_Object()->FullName);
+        Whom = list.Current_Object().House;
+        Scen.Scenario = list.Current_Object().Scenario;
+        port::SafeCopy(Scen.ScenarioName, list.Current_Object().FullName);
         process = false;
         okval = true;
         break;
@@ -490,12 +490,6 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     }
   }
 
-  /*
-  **	Free up the allocations for the text lines in the list box.
-  */
-  for (int index = 0; index < list.Count(); index++) {
-    delete list.Get_Object(index);
-  }
 
   return okval;
 }

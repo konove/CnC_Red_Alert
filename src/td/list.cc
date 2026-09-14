@@ -63,7 +63,9 @@
 #include "td/list.h"
 
 #include <algorithm>
+#include <string_view>
 
+#include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -81,7 +83,6 @@
 #include "td/shapebtn.h"
 #include "td/slider.h"
 #include "td/text.h"
-#include "td/vector.h"
 
 /***************************************************************************
  * ListClass::ListClass -- class constructor                               *
@@ -154,14 +155,14 @@ ListClass::~ListClass() { ListClass::Remove_Scroll_Bar(); }
  *=============================================================================================*/
 int ListClass::Add_Item(const char* text) {
   if (text) {
-    List.Add(text);
+    List.emplace_back(text);
     Flag_To_Redraw();
 
     /*
     **	Add scroll gadget if the list gets too large to display all of the items
     **	at the same time.
     */
-    if (List.Count() > LineCount) {
+    if (Count() > LineCount) {
       Add_Scroll_Bar();
     }
 
@@ -169,10 +170,10 @@ int ListClass::Add_Item(const char* text) {
     **	Tell the slider that there is one more entry in the list.
     */
     if (IsScrollActive) {
-      ScrollGadget.Set_Maximum(static_cast<int>(List.Count()));
+      ScrollGadget.Set_Maximum(Count());
     }
   }
-  return static_cast<int>(List.Count()) - 1;
+  return Count() - 1;
 }
 
 /***********************************************************************************************
@@ -190,7 +191,7 @@ int ListClass::Add_Item(int text) {
   if (text != TXT_NONE) {
     Add_Item(Text_String(text));
   }
-  return static_cast<int>(List.Count()) - 1;
+  return Count() - 1;
 }
 
 /***********************************************************************************************
@@ -199,19 +200,44 @@ int ListClass::Add_Item(int text) {
  *    This routine will remove the specified text string from the list box. *
  *                                                                                             *
  * INPUT:      text  -- Pointer to the string to remove. * OUTPUT:     none *
- * WARNINGS:   The text pointer passed into this routine MUST be the same text
- *pointer that    * was used to add the string to the list. * HISTORY: *
+ * WARNINGS:   none * HISTORY: *
  *   01/15/1995 JLB : Created. *
  *=============================================================================================*/
 void ListClass::Remove_Item(const char* text) {
-  if (text) {
-    List.Delete(text);
+  if (text == nullptr) {
+    return;
+  }
+  // Items are copies, so a pointer handed out by Get_Item can only be matched
+  // by content; the first equal item is the one such a pointer came from.
+  const auto found = std::ranges::find(List, text);
+  if (found != List.end()) {
+    Remove_Item(static_cast<int>(found - List.begin()));
+  }
+}
+
+void ListClass::Clear() {
+  while (Count() > 0) {
+    Remove_Item(0);
+  }
+  Flag_To_Redraw();
+}
+
+void ListClass::Set_Item(int index, std::string_view text) {
+  if (index >= 0 && index < Count()) {
+    List[base::ToSize(index)].assign(text);
+    Flag_To_Redraw();
+  }
+}
+
+void ListClass::Remove_Item(int index) {
+  if (index >= 0 && index < Count()) {
+    List.erase(List.begin() + index);
 
     /*
     **	If the list is now small enough to display completely within the list
     *box region, *	then delete the slider gadget (if they are present).
     */
-    if (List.Count() <= LineCount) {
+    if (Count() <= LineCount) {
       Remove_Scroll_Bar();
     }
 
@@ -219,13 +245,13 @@ void ListClass::Remove_Item(const char* text) {
     **	Tell the slider that there is one less entry in the list.
     */
     if (IsScrollActive) {
-      ScrollGadget.Set_Maximum(static_cast<int>(List.Count()));
+      ScrollGadget.Set_Maximum(Count());
     }
 
     /*
     ** If we just removed the selected entry, select the previous one
     */
-    if (SelectedIndex >= List.Count()) {
+    if (SelectedIndex >= Count()) {
       SelectedIndex--;
       SelectedIndex = std::max(SelectedIndex, 0);
     }
@@ -233,7 +259,7 @@ void ListClass::Remove_Item(const char* text) {
     /*
     ** If we just removed the top-displayed entry, step up one item
     */
-    if (CurrentTopIndex >= List.Count()) {
+    if (CurrentTopIndex >= Count()) {
       CurrentTopIndex--;
       CurrentTopIndex = std::max(CurrentTopIndex, 0);
       if (IsScrollActive) {
@@ -284,7 +310,7 @@ bool ListClass::Action(unsigned flags, KeyNumType& key) {
     int index = Get_Mouse_Y() - (Y + 1);
     index = index / LineHeight;
     SelectedIndex = CurrentTopIndex + index;
-    SelectedIndex = std::min<int>(SelectedIndex, static_cast<int>(List.Count()) - 1);
+    SelectedIndex = std::min<int>(SelectedIndex, Count() - 1);
   }
   return ControlClass::Action(flags, key);
 }
@@ -323,11 +349,11 @@ bool ListClass::Draw_Me(bool forced) {
     /*
     **	Draw List.
     */
-    if (List.Count()) {
+    if (Count() > 0) {
       for (int index = 0; index < LineCount; index++) {
         const int line = CurrentTopIndex + index;
 
-        if (List.Count() > line) {
+        if (Count() > line) {
           /*
           **	Prints the text and handles right edge clipping and tabs.
           */
@@ -407,12 +433,11 @@ void ListClass::Step(bool up) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 const char* ListClass::Get_Item(int index) const {
-  if (List.Count() == 0) {
+  if (List.empty()) {
     return nullptr;
   }
-
-  index = std::min<int>(index, static_cast<int>(List.Count()) - 1);
-  return List[index];
+  index = std::clamp(index, 0, Count() - 1);
+  return List[base::ToSize(index)].c_str();
 }
 
 /***********************************************************************************************
@@ -428,7 +453,12 @@ const char* ListClass::Get_Item(int index) const {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-const char* ListClass::Current_Item() { return List[SelectedIndex]; }
+const char* ListClass::Current_Item() const {
+  if (Count() <= SelectedIndex) {
+    return nullptr;
+  }
+  return List[base::ToSize(SelectedIndex)].c_str();
+}
 
 /***********************************************************************************************
  * ListClass::Current_Index -- Fetches the current selected index. *
@@ -445,7 +475,7 @@ const char* ListClass::Current_Item() { return List[SelectedIndex]; }
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int ListClass::Current_Index() { return SelectedIndex; }
+int ListClass::Current_Index() const { return SelectedIndex; }
 
 /***********************************************************************************************
  * ListClass::Peer_To_Peer -- A peer gadget was touched -- make adjustments. *
@@ -502,7 +532,7 @@ void ListClass::Peer_To_Peer(unsigned flags, KeyNumType& /*unused*/,
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 bool ListClass::Set_View_Index(int index) {
-  index = Bound(index, 0, static_cast<int>(List.Count()) - LineCount);
+  index = Bound(index, 0, Count() - LineCount);
   if (index != CurrentTopIndex) {
     CurrentTopIndex = index;
     Flag_To_Redraw();
@@ -569,7 +599,7 @@ bool ListClass::Add_Scroll_Bar() {
     **	Inform the slider of the size of the window and the current view
     *position.
     */
-    ScrollGadget.Set_Maximum(static_cast<int>(List.Count()));
+    ScrollGadget.Set_Maximum(Count());
     ScrollGadget.Set_Thumb_Size(LineCount);
     ScrollGadget.Set_Value(CurrentTopIndex);
 
@@ -660,12 +690,13 @@ void ListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
       }
     }
 
-    Conquer_Clip_Text_Print(List[index], x, y, CC_GREEN, TBLACK, flags, width,
-                            Tabs);
+    Conquer_Clip_Text_Print(List[base::ToSize(index)].c_str(), x, y, CC_GREEN,
+                            TBLACK, flags, width, Tabs);
 
   } else {
-    Conquer_Clip_Text_Print(List[index], x, y, selected ? BLUE : WHITE, TBLACK,
-                            TextFlags, width, Tabs);
+    Conquer_Clip_Text_Print(List[base::ToSize(index)].c_str(), x, y,
+                            selected ? BLUE : WHITE, TBLACK, TextFlags, width,
+                            Tabs);
   }
 }
 
@@ -817,7 +848,7 @@ GadgetClass* ListClass::Remove() {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 void ListClass::Set_Selected_Index(int index) {
-  if (static_cast<unsigned>(index) < List.Count()) {
+  if (index >= 0 && index < Count()) {
     SelectedIndex = index;
     Flag_To_Redraw();
     if (SelectedIndex < CurrentTopIndex) {

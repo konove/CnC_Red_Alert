@@ -2240,6 +2240,9 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     }
   }
 
+  // The list copied custom_port when it was added; show what the settings
+  // wrote into it since.
+  portlist.Set_Item(port_custom_index, custom_port);
   portlist.Set_Selected_Index(port_index);
 
   /*
@@ -2462,14 +2465,14 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         break;
 
       case ButtonKey(BUTTON_PORT):
-        item = (char*)portlist.Current_Item();
         if (port_index < 4) {
-          temp = strchr(item, ' ');
-          if (!temp) {
-            strncpy(portbuf, item, PORTBUF_MAX);
+          const char* const current = portlist.Current_Item();
+          const char* const space = strchr(current, ' ');
+          if (!space) {
+            strncpy(portbuf, current, PORTBUF_MAX);
           } else {
-            pos = static_cast<int>(temp - item);
-            strncpy(portbuf, item, base::ToSize(pos));
+            pos = static_cast<int>(space - current);
+            strncpy(portbuf, current, base::ToSize(pos));
             portbuf[pos] = 0;
           }
           port_edt.Set_Text(portbuf, PORTBUF_MAX);
@@ -2524,12 +2527,12 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                 if (portbuf[3] <= '9' && portbuf[3] > '0') {
                   portbuf[4] = 0;
                   port_index = port_custom_index;
-                  temp = strchr(item, '-');
+                  temp = strchr(custom_port, '-');
                   if (temp) {
-                    pos = static_cast<int>(temp - item) + 2;
-                    len = static_cast<int>(strlen(portbuf));
-                    strncpy(item + pos, portbuf, base::ToSize(len));
-                    *(item + pos + len) = 0;
+                    pos = static_cast<int>(temp - custom_port) + 2;
+                    port::SafeCopy(custom_port + pos, portbuf,
+                                   sizeof(custom_port) - base::ToSize(pos));
+                    portlist.Set_Item(port_custom_index, custom_port);
                     display = REDRAW_BUTTONS;
                   }
                   break;
@@ -2542,12 +2545,12 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
             portlist.Set_Selected_Index(port_index);
           } else {
-            temp = strchr(item, '-');
+            temp = strchr(custom_port, '-');
             if (temp) {
-              pos = static_cast<int>(temp - item) + 2;
-              len = static_cast<int>(strlen(portbuf));
-              strncpy(item + pos, portbuf, base::ToSize(len));
-              *(item + pos + len) = 0;
+              pos = static_cast<int>(temp - custom_port) + 2;
+              port::SafeCopy(custom_port + pos, portbuf,
+                             sizeof(custom_port) - base::ToSize(pos));
+              portlist.Set_Item(port_custom_index, custom_port);
               display = REDRAW_BUTTONS;
             }
           }
@@ -2764,15 +2767,14 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         break;
 
       case ButtonKey(BUTTON_CWAITSTR):
-        item = (char*)cwaitstrlist.Current_Item();
-        if (cwaitstr_index < 3) {
-        } else {
+        if (cwaitstr_index >= CALL_WAIT_CUSTOM) {
+          item = CallWaitStrings[CALL_WAIT_CUSTOM];
           temp = strchr(item, '-');
           if (temp) {
             pos = static_cast<int>(temp - item) + 2;
-            len = static_cast<int>(strlen(cwaitstrbuf));
-            strncpy(item + pos, cwaitstrbuf, base::ToSize(len));
-            *(item + pos + len) = 0;
+            port::SafeCopy(item + pos, cwaitstrbuf,
+                           CALL_WAIT_STRING_MAX - base::ToSize(pos));
+            cwaitstrlist.Set_Item(cwaitstr_index, item);
             display = REDRAW_BUTTONS;
           }
         }
@@ -2974,18 +2976,13 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
                                       char* buf, int* index) {
   int i;
   int curidx;
-  char* item;
 
   curidx = *index;
 
   /*........................................................................
   Clear the list
   ........................................................................*/
-  while (list->Count()) {
-    item = (char*)list->Get_Item(0);
-    list->Remove_Item(item);
-    delete[] item;
-  }
+  list->Clear();
 
   /*
   ** Now sort the init string list by name then number
@@ -3001,9 +2998,7 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   Build the list
   ........................................................................*/
   for (i = 0; i < InitStrings.Count(); i++) {
-    item = new char[INITSTRBUF_MAX];
-    port::SafeCopy(item, InitStrings[i], INITSTRBUF_MAX);
-    list->Add_Item(item);
+    list->Add_Item(InitStrings[i]);
   }
   list->Flag_To_Redraw();
 
@@ -5820,7 +5815,6 @@ static int Phone_Dialog() {
   int rc = 0;
   int i;
   int tabs[] = {123 * factor, 207 * factor};  // tabs for list box
-  char* item;                // for removing items from list box
   PhoneEntryClass* p_entry;  // for creating / editing phonebook entries
   int changed = 0;           // 1 = save changes to INI file
   int firsttime = 0;
@@ -6198,11 +6192,7 @@ static int Phone_Dialog() {
   /*------------------------------------------------------------------------
   Clear the list box
   ------------------------------------------------------------------------*/
-  while (phonelist.Count()) {
-    item = (char*)phonelist.Get_Item(0);
-    phonelist.Remove_Item(item);
-    delete[] item;
-  }
+  phonelist.Clear();
 
   return rc;
 
@@ -6234,16 +6224,12 @@ static int Phone_Dialog() {
  *=========================================================================*/
 static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
   int i;
-  char* item;
+  char item[80];
   char phonename[21];
   char phonenum[15];
 
   // Clear the list
-  while (list->Count()) {
-    item = (char*)list->Get_Item(0);
-    list->Remove_Item(item);
-    delete[] item;
-  }
+  list->Clear();
 
   /*
   ** Now sort the phone list by name then number
@@ -6264,7 +6250,6 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
   Build the list
   ........................................................................*/
   for (i = 0; i < PhoneBook.Count(); i++) {
-    item = new char[80];
     if (strlen(PhoneBook[i]->Name) == 0) {
       port::SafeCopy(phonename, " ");
     } else {

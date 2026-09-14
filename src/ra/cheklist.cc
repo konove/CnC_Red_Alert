@@ -50,10 +50,9 @@
 #include "ra/cheklist.h"
 
 #include <cstdio>
+#include <vector>
 
-#include "port/aligned_buffer.h"
-#include "port/ex_string.h"
-#include "port/socket_bytes.h"
+#include "base/numeric.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
@@ -64,234 +63,38 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/wwstd.h"
 
-/***************************************************************************
- * CheckListClass::CheckListClass -- constructor                           *
- *                                                                         *
- * INPUT:                                                                  *
- *      id         control ID for this list box                            *
- *      x         x-coord                                                  *
- *      y         y-coord                                                  *
- *      w         width                                                    *
- *      h         height                                                   *
- *      flags      mouse event flags                                       *
- *      up         ptr to Up-arrow shape                                   *
- *      down      ptr to Down-arrow shape                                  *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      none.                                                              *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   02/16/1995 BR : Created.                                              *
- *=========================================================================*/
 CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
                                TextPrintType flags, const void* up,
                                const void* down)
     : ListClass(id, x, y, w, h, flags, up, down) {}
 
-/***********************************************************************************************
- * CheckListClass::~CheckListClass -- Destructor for check list object. *
- *                                                                                             *
- *    This destructor will delete all entries attached to it. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/06/1996 JLB : Created. *
- *=============================================================================================*/
-CheckListClass::~CheckListClass() {
-  while (CheckListClass::Count()) {
-    const auto* obj =
-        port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(0));
-
-    ListClass::Remove_Item(0);
-    delete obj;
-  }
-}
-
-/***********************************************************************************************
- * CheckListClass::Add_Item -- Adds specifies text to check list box. *
- *                                                                                             *
- *    This routine will add the specified text string to the check list. *
- *                                                                                             *
- * INPUT:   text  -- Pointer to the text string to add to the list box. *
- *                                                                                             *
- * OUTPUT:  Returns the index number where the text object was added. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/14/1996 JLB : Created. *
- *=============================================================================================*/
 int CheckListClass::Add_Item(const char* text) {
-  auto* obj = new CheckObject(text, false);
-  // The list stores this allocated object pointer opaquely; getters recover it.
-  return ListClass::Add_Item(SocketBytes(*obj));
+  const int index = ListClass::Add_Item(text);
+  // ListClass adds nothing for a null text; size to what it actually holds.
+  Checked.resize(List.size(), false);
+  return index;
 }
 
-const char* CheckListClass::Current_Item() const {
-  const auto* obj =
-      port::RestoreMutableObject<CheckObject>(ListClass::Current_Item());
-  if (obj) {
-    return obj->Text;
-  }
-  return nullptr;
-}
-
-/***********************************************************************************************
- * CheckListClass::Get_Item -- Fetches a pointer to the text associated with the
- *index.        *
- *                                                                                             *
- *    This routine will find the text associated with the entry specified and
- *return a pointer * to that text. *
- *                                                                                             *
- * INPUT:   index -- The entry (index) to fetch a pointer to. *
- *                                                                                             *
- * OUTPUT:  Returns with the text pointer associated with the index specified. *
- *                                                                                             *
- * WARNINGS:   If the index is out of range, then NULL is returned. *
- *                                                                                             *
- * HISTORY: * 07/06/1996 JLB : Created. *
- *=============================================================================================*/
-const char* CheckListClass::Get_Item(int index) const {
-  const auto* obj =
-      port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(index));
-  if (obj) {
-    return obj->Text;
-  }
-  return nullptr;
-}
-
-/***********************************************************************************************
- * CheckListClass::Remove_Item -- Remove the item that matches the text pointer
- *specified.     *
- *                                                                                             *
- *    This routine will find the entry that matches the text pointer specified
- *and then        * delete that entry. *
- *                                                                                             *
- * INPUT:   text  -- The text pointer to use to find the exact match in the
- *list.              *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/06/1996 JLB : Created. *
- *=============================================================================================*/
-void CheckListClass::Remove_Item(const char* text) {
-  for (int index = 0; index < Count(); index++) {
-    const auto* obj =
-        port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(index));
-    if (obj && stricmp(obj->Text, text) == 0) {
-      ListClass::Remove_Item(index);
-      delete obj;
-      break;
-    }
+void CheckListClass::Remove_Item(int index) {
+  if (index >= 0 && index < Count()) {
+    Checked.erase(Checked.begin() + index);
+    ListClass::Remove_Item(index);
   }
 }
 
-/***********************************************************************************************
- * CheckListClass::Set_Selected_Index -- Set the selected index to match the
- *text pointer spec *
- *                                                                                             *
- *    This routine will find the entry that exactly matches the text pointer
- *specified. If     * found, then that entry will be set as the currently
- *selected index.                      *
- *                                                                                             *
- * INPUT:   text  -- Pointer to the text string to find the match for. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   If an exact match to the specified text string could not be
- *found, then the     * currently selected index is not changed. *
- *                                                                                             *
- * HISTORY: * 07/06/1996 JLB : Created. *
- *=============================================================================================*/
-void CheckListClass::Set_Selected_Index(const char* text) {
-  for (int index = 0; index < Count(); index++) {
-    const auto* obj =
-        port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(index));
-    if (obj && stricmp(obj->Text, text) == 0) {
-      Set_Selected_Index(index);
-      break;
-    }
-  }
-}
-
-/***************************************************************************
- * CheckListClass::Check_Item -- [un]checks an items                       *
- *                                                                         *
- * INPUT:                                                                  *
- *      index         index of item to check or uncheck                    *
- *      checked      0 = uncheck, non-zero = check                         *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      none.                                                              *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   02/16/1995 BR : Created.                                              *
- *   02/14/1996 JLB : Revamped.                                            *
- *=========================================================================*/
 void CheckListClass::Check_Item(int index, bool checked) {
-  auto* obj =
-      port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(index));
-  if (obj && obj->IsChecked != checked) {
-    obj->IsChecked = checked;
+  if (index >= 0 && index < Count() &&
+      Checked[base::ToSize(index)] != checked) {
+    Checked[base::ToSize(index)] = checked;
     Flag_To_Redraw();
   }
 }
 
-/***************************************************************************
- * CheckListClass::Is_Checked -- returns checked state of an item          *
- *                                                                         *
- * INPUT:                                                                  *
- *      index         index of item to query                               *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      0 = item is unchecked, 1 = item is checked                         *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   02/16/1995 BR : Created.                                              *
- *   02/14/1996 JLB : Revamped.                                            *
- *=========================================================================*/
 bool CheckListClass::Is_Checked(int index) const {
-  const auto* obj =
-      port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(index));
-  if (obj) {
-    return obj->IsChecked;
-  }
-  return false;
+  return index >= 0 && index < Count() && Checked[base::ToSize(index)];
 }
 
-/***************************************************************************
- * CheckListClass::Action -- action function for this class                *
- *                                                                         *
- * INPUT:                                                                  *
- *      flags      the reason we're being called                           *
- *      key      the KN_number that was pressed                            *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      true = event was processed, false = event not processed            *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   02/16/1995 BR : Created.                                              *
- *=========================================================================*/
 bool CheckListClass::Action(unsigned flags, KeyNumType& key) {
-  bool rc;
-
   /*
   ** If this is a read-only list, it's a display-only device
   */
@@ -302,7 +105,7 @@ bool CheckListClass::Action(unsigned flags, KeyNumType& key) {
   /*
   **	Invoke parents Action first, so it can set the SelectedIndex if needed.
   */
-  rc = ListClass::Action(flags, key);
+  const bool rc = ListClass::Action(flags, key);
 
   /*
   **	Now, if this event was a left-press, toggle the checked state of the
@@ -315,59 +118,29 @@ bool CheckListClass::Action(unsigned flags, KeyNumType& key) {
   return rc;
 }
 
-/***************************************************************************
- * CheckListClass::Draw_Entry -- draws a list box entry                    *
- *                                                                         *
- * INPUT:                                                                  *
- *		index			index into List of item to draw
- ** x,y			x,y coords to draw at * width			maximum
- *width allowed for text                       		* selected
- *true = this item is selected                         		*
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none.
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   12/14/1995 BRR : Created.                                             *
- *=========================================================================*/
 void CheckListClass::Draw_Entry(int index, int x, int y, int width,
                                 bool selected) {
   if (index >= Count()) {
     return;
   }
 
-  const auto* obj =
-      port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(index));
+  char buffer[100] = "";
+  buffer[0] = Is_Checked(index) ? CHECK_CHAR : UNCHECK_CHAR;
+  buffer[1] = ' ';
+  snprintf(&buffer[2], sizeof(buffer) - 2, "%s", Get_Item(index));
 
-  if (obj) {
-    char buffer[100] = "";
+  TextPrintType flags = TextFlags;
+  RemapControlType* scheme = Get_Color_Scheme();
 
-    if (obj->IsChecked) {
-      buffer[0] = CHECK_CHAR;
-    } else {
-      buffer[0] = UNCHECK_CHAR;
+  if (selected) {
+    flags = flags | TPF_BRIGHT_COLOR;
+    LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
+                         scheme->Shadow);
+  } else {
+    if (!(flags & TPF_USE_GRAD_PAL)) {
+      flags = flags | TPF_MEDIUM_COLOR;
     }
-    buffer[1] = ' ';
-    snprintf(&buffer[2], sizeof(buffer) - 2, "%s", obj->Text);
-
-    TextPrintType flags = TextFlags;
-    RemapControlType* scheme = Get_Color_Scheme();
-
-    if (selected) {
-      flags = flags | TPF_BRIGHT_COLOR;
-      LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
-                           scheme->Shadow);
-    } else {
-      if (!(flags & TPF_USE_GRAD_PAL)) {
-        flags = flags | TPF_MEDIUM_COLOR;
-      }
-    }
-
-    Conquer_Clip_Text_Print(buffer, x, y, scheme, TBLACK, flags, width, Tabs);
   }
+
+  Conquer_Clip_Text_Print(buffer, x, y, scheme, TBLACK, flags, width, Tabs);
 }

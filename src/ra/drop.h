@@ -42,6 +42,7 @@
 
 #include <cstring>
 
+#include "absl/base/attributes.h"
 #include "base/numeric.h"
 #include "ra/control.h"
 #include "ra/defines.h"
@@ -75,7 +76,8 @@ class DropListClass : public EditClass {
                     ControlClass& whom) override;
   void Clear_Focus() override;
   [[nodiscard]] virtual int Count() const { return List.Count(); }
-  [[nodiscard]] virtual const char* Get_Item(int index) const {
+  [[nodiscard]] virtual const char* Get_Item(int index) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return List.Get_Item(index);
   }
 

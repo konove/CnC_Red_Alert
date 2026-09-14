@@ -48,6 +48,9 @@
 #include "td/defines.h"
 #include "td/list.h"
 
+// A list box whose items each carry a check mark the user can toggle by
+// clicking. The mark is the item's first character: add items with a leading
+// space (UNCHECK_CHAR) and Check_Item swaps it for CHECK_CHAR.
 class CheckListClass : public ListClass {
  public:
   /*---------------------------------------------------------------------

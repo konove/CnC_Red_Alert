@@ -911,7 +911,7 @@ static int Net_Join_Dialog() {
   int min_index = 0;         // for sorting player ID's
   unsigned char min_id = 0;  // for sorting player ID's
   unsigned char id = 0;      // connection ID
-  char* item;
+  char item[kGameListItemSize];
   int64_t starttime;
 
   NodeNameType* who;
@@ -1426,9 +1426,7 @@ static int Net_Join_Dialog() {
           // Remove myself from the player list box
           //
           if (playerlist.Count()) {  // added: BRR 6/14/96
-            item = (char*)playerlist.Get_Item(0);
-            playerlist.Remove_Item(item);
-            delete[] item;
+            playerlist.Remove_Item(0);
             playerlist.Flag_To_Redraw();
           }
 
@@ -1691,7 +1689,6 @@ static int Net_Join_Dialog() {
         if (joinstate == JOIN_CONFIRMED) {
           Clear_Player_List(&playerlist);
 
-          item = new char[MPLAYER_NAME_MAX + 4];
           if (MPlayerHouse == HOUSE_GOOD) {
             sprintf(item, "%s\t%s", MPlayerName, Text_String(TXT_G_D_I));
           } else {
@@ -1716,12 +1713,8 @@ static int Net_Join_Dialog() {
             // Remove myself from the player list box
             //
             if (playerlist.Count()) {  // added: BRR 6/14/96
-              item = (char*)playerlist.Get_Item(0);
-              if (item) {
-                playerlist.Remove_Item(item);
-                delete[] item;
-                playerlist.Flag_To_Redraw();
-              }
+              playerlist.Remove_Item(0);
+              playerlist.Flag_To_Redraw();
             }
 
             //
@@ -1800,9 +1793,7 @@ static int Net_Join_Dialog() {
     for (i = 0; i < Games.Count(); i++) {
       if (TickCount.Time() - Games[i]->Game.LastTime > 400) {
         Games.Delete(Games[i]);
-        item = (char*)gamelist.Get_Item(i);
-        gamelist.Remove_Item(item);
-        delete[] item;
+        gamelist.Remove_Item(i);
         if (i <= game_index) {
           gamelist.Flag_To_Redraw();
           Clear_Player_List(&playerlist);
@@ -1834,9 +1825,7 @@ static int Net_Join_Dialog() {
       // Remove myself from the player list box
       //
       if (playerlist.Count()) {  // added: BRR 6/14/96
-        item = (char*)playerlist.Get_Item(0);
-        playerlist.Remove_Item(item);
-        delete[] item;
+        playerlist.Remove_Item(0);
         playerlist.Flag_To_Redraw();
       }
 
@@ -1995,18 +1984,12 @@ static int Net_Join_Dialog() {
  * HISTORY:                                                                *
  *=========================================================================*/
 static void Clear_Game_List(ListClass* gamelist) {
-  char* item;
   int i;
 
   /*------------------------------------------------------------------------
   Clear the list box
   ------------------------------------------------------------------------*/
-  while (gamelist->Count()) {
-    item = (char*)gamelist->Get_Item(0);
-    gamelist->Remove_Item(item);
-    delete[] item;
-  }
-  gamelist->Flag_To_Redraw();
+  gamelist->Clear();
 
   /*------------------------------------------------------------------------
   Clear the 'Games' Vector
@@ -2041,18 +2024,12 @@ static void Clear_Game_List(ListClass* gamelist) {
  * HISTORY:                                                                *
  *=========================================================================*/
 static void Clear_Player_List(ListClass* playerlist) {
-  char* item;
   int i;
 
   /*------------------------------------------------------------------------
   Clear the list box
   ------------------------------------------------------------------------*/
-  while (playerlist->Count()) {
-    item = (char*)playerlist->Get_Item(0);
-    playerlist->Remove_Item(item);
-    delete[] item;
-  }
-  playerlist->Flag_To_Redraw();
+  playerlist->Clear();
 
   /*------------------------------------------------------------------------
   Clear the 'Players' Vector
@@ -2302,7 +2279,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                         ColorListClass* playerlist,
                                         int join_index) {
   int rc;
-  char* item;         // general-purpose string
+  char item[kGameListItemSize];  // general-purpose string
   NodeNameType* who;  // node to add to Games or Players
   int i;
   int found;
@@ -2347,7 +2324,6 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         ...............................................................*/
         Games[i]->Game.LastTime = TickCount.Time();
         if (Games[i]->Game.IsOpen != GPacket.GameInfo.IsOpen) {
-          item = (char*)gamelist->Get_Item(i);
           if (GPacket.GameInfo.IsOpen) {
             Format_Runtime_Text(item, kGameListItemSize,
                                 Text_String(TXT_THATGUYS_GAME), GPacket.Name);
@@ -2356,6 +2332,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                 Text_String(TXT_THATGUYS_GAME_BRACKET),
                                 GPacket.Name);
           }
+          gamelist->Set_Item(i, item);
           Games[i]->Game.IsOpen = GPacket.GameInfo.IsOpen;
           gamelist->Flag_To_Redraw();
           /*............................................................
@@ -2389,7 +2366,6 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       Create a string for "xxx's Game", leaving room for brackets around
       the string if it's a closed game
       ..................................................................*/
-      item = new char[kGameListItemSize];
       if (GPacket.GameInfo.IsOpen) {
         Format_Runtime_Text(item, kGameListItemSize,
                             Text_String(TXT_THATGUYS_GAME), GPacket.Name);
@@ -2463,7 +2439,6 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       /*..................................................................
       Create & add a string to the list box
       ..................................................................*/
-      item = new char[MPLAYER_NAME_MAX + 4];
       if (GPacket.PlayerInfo.House == HOUSE_GOOD) {
         sprintf(item, "%s\t%s", GPacket.Name, Text_String(TXT_G_D_I));
       } else {
@@ -2608,9 +2583,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         ................. Remove game name from game list ...............
         */
         Games.Delete(Games[i]);
-        item = (char*)gamelist->Get_Item(i);
-        gamelist->Remove_Item(item);
-        delete[] item;
+        gamelist->Remove_Item(i);
         gamelist->Flag_To_Redraw();
       }
     }
@@ -2622,9 +2595,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       ..................... Name found; remove it .....................
       */
       if (Players[i]->Address == GAddress) {
-        item = (char*)playerlist->Get_Item(i);
-        playerlist->Remove_Item(item);
-        delete[] item;
+        playerlist->Remove_Item(i);
         Players.Delete(Players[i]);
         playerlist->Flag_To_Redraw();
 
@@ -2886,7 +2857,7 @@ static int Net_New_Dialog() {
   int rc = 0;
   int i;
   int j;
-  char* item;
+  char item[kGameListItemSize];
   int tabs[] = {77 * factor};  // tabs for player list box
 
   int64_t ping_timer = 0;  // for sending Ping packets
@@ -3108,7 +3079,6 @@ static int Net_New_Dialog() {
   Add myself to the list.  Note that since I'm not in the Players Vector,
   the Vector & listbox are now 1 out of sync.
   ------------------------------------------------------------------------*/
-  item = new char[MPLAYER_NAME_MAX + 4];
   if (MPlayerHouse == HOUSE_GOOD) {
     sprintf(item, "%s\t%s", MPlayerName, Text_String(TXT_G_D_I));
   } else {
@@ -3885,7 +3855,7 @@ static int Net_New_Dialog() {
  *=========================================================================*/
 static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
   int rc;
-  char* item;         // general-purpose string
+  char item[kGameListItemSize];  // general-purpose string
   NodeNameType* who;  // node to add to Players Vector
   int i;
   int found;
@@ -3985,7 +3955,6 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
       /*..................................................................
       Add player name to the list box
       ..................................................................*/
-      item = new char[MPLAYER_NAME_MAX + 4];
       if (GPacket.PlayerInfo.House == HOUSE_GOOD) {
         sprintf(item, "%s\t%s", GPacket.Name, Text_String(TXT_G_D_I));
       } else {
@@ -4023,10 +3992,8 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
         /*...............................................................
         Remove from the list box
         ...............................................................*/
-        item = (char*)playerlist->Get_Item(i + 1);
-        playerlist->Remove_Item(item);
+        playerlist->Remove_Item(i + 1);
         playerlist->Flag_To_Redraw();
-        delete[] item;
         /*...............................................................
         Mark his color as available
         ...............................................................*/
@@ -4331,7 +4298,7 @@ static int Net_Fake_New_Dialog() {
   int rc = 0;
   int i;
   int j;
-  char* item;
+  char item[kGameListItemSize];
   int tabs[] = {77 * factor};  // tabs for player list box
 
   int64_t ping_timer = 0;  // for sending Ping packets
@@ -4415,7 +4382,6 @@ static int Net_Fake_New_Dialog() {
   Add myself to the list.  Note that since I'm not in the Players Vector,
   the Vector & listbox are now 1 out of sync.
   ------------------------------------------------------------------------*/
-  item = new char[MPLAYER_NAME_MAX + 4];
   if (MPlayerHouse == HOUSE_GOOD) {
     sprintf(item, "%s\t%s", MPlayerName, Text_String(TXT_G_D_I));
   } else {
@@ -4945,7 +4911,7 @@ static int Net_Fake_Join_Dialog() {
   int min_index = 0;         // for sorting player ID's
   unsigned char min_id = 0;  // for sorting player ID's
   unsigned char id = 0;      // connection ID
-  char* item;
+  char item[kGameListItemSize];
   int64_t starttime;
 
   NodeNameType* who;
@@ -5116,9 +5082,7 @@ static int Net_Fake_Join_Dialog() {
           //
           // Remove myself from the player list box
           //
-          item = (char*)playerlist.Get_Item(0);
-          playerlist.Remove_Item(item);
-          delete[] item;
+          playerlist.Remove_Item(0);
           playerlist.Flag_To_Redraw();
 
           //
@@ -5207,7 +5171,6 @@ static int Net_Fake_Join_Dialog() {
         if (joinstate == JOIN_CONFIRMED) {
           Clear_Player_List(&playerlist);
 
-          item = new char[MPLAYER_NAME_MAX + 4];
           if (MPlayerHouse == HOUSE_GOOD) {
             sprintf(item, "%s\t%s", MPlayerName, Text_String(TXT_G_D_I));
           } else {
@@ -5231,12 +5194,8 @@ static int Net_Fake_Join_Dialog() {
             //
             // Remove myself from the player list box
             //
-            item = (char*)playerlist.Get_Item(0);
-            if (item) {
-              playerlist.Remove_Item(item);
-              delete[] item;
-              playerlist.Flag_To_Redraw();
-            }
+            playerlist.Remove_Item(0);
+            playerlist.Flag_To_Redraw();
 
             //
             // Remove myself from the Players list
@@ -5304,9 +5263,7 @@ static int Net_Fake_Join_Dialog() {
     for (i = 0; i < Games.Count(); i++) {
       if (TickCount.Time() - Games[i]->Game.LastTime > 400) {
         Games.Delete(Games[i]);
-        item = (char*)gamelist.Get_Item(i);
-        gamelist.Remove_Item(item);
-        delete[] item;
+        gamelist.Remove_Item(i);
         if (i <= game_index) {
           gamelist.Flag_To_Redraw();
           Clear_Player_List(&playerlist);
@@ -5350,9 +5307,7 @@ static int Net_Fake_Join_Dialog() {
       //
       // Remove myself from the player list box
       //
-      item = (char*)playerlist.Get_Item(0);
-      playerlist.Remove_Item(item);
-      delete[] item;
+      playerlist.Remove_Item(0);
       playerlist.Flag_To_Redraw();
 
       //

@@ -1517,7 +1517,7 @@ static int Net_Join_Dialog() {
   Session.Options.ScenarioDescription[0] =
       0;  // Flag that we dont know the scenario name yet
 
-  char* item;
+  char item[kGameListItemSize];
   int64_t starttime;
   int load_game = 0;  // 1 = load saved game
   int goto_lobby;
@@ -1694,9 +1694,7 @@ static int Net_Join_Dialog() {
   who->Game.IsOpen = 0;
   who->Game.LastTime = 0;
   Session.Games.Add(who);
-  item = new char[MPLAYER_NAME_MAX];
-  port::SafeCopy(item, Text_String(TXT_LOBBY), MPLAYER_NAME_MAX);
-  gamelist.Add_Item(item);
+  gamelist.Add_Item(Text_String(TXT_LOBBY));
   gamelist.Set_Selected_Index(0);
   game_index = 0;
 
@@ -2585,7 +2583,6 @@ static int Net_Join_Dialog() {
         Clear_Listbox(&playerlist);
         Clear_Vector(&Session.Players);
 
-        item = new char[MPLAYER_NAME_MAX + 64];
 #ifdef OLDWAY
         if (Session.House == HOUSE_GOOD) {
           sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
@@ -2748,9 +2745,7 @@ static int Net_Join_Dialog() {
           delete Session.Games[i];
           Session.Games.Delete(Session.Games[i]);
 
-          item = (char*)gamelist.Get_Item(i);
-          gamelist.Remove_Item(item);
-          delete[] item;
+          gamelist.Remove_Item(i);
 
           gamelist.Flag_To_Redraw();
 
@@ -2815,15 +2810,11 @@ static int Net_Join_Dialog() {
       if (game_index == 0) {
         if (!Session.WWChat) {
           while (Session.Chat.Count() > playerlist.Count()) {
-            item = new char[MPLAYER_NAME_MAX];
-            item[0] = 0;
-            playerlist.Add_Item(item);
+            playerlist.Add_Item("");
             playerlist.Flag_To_Redraw();
           }
           while (playerlist.Count() > Session.Chat.Count()) {
-            item = (char*)playerlist.Get_Item(0);
-            playerlist.Remove_Item(item);
-            delete[] item;
+            playerlist.Remove_Item(0);
             playerlist.Flag_To_Redraw();
           }
           for (i = 0; i < Session.Chat.Count(); i++) {
@@ -2836,8 +2827,7 @@ static int Net_Join_Dialog() {
               if (playerlist.Colors[i] == &ColorRemaps[PCOLOR_DIALOG_BLUE]) {
                 playerlist.Colors[i] = &ColorRemaps[PCOLOR_REALLY_BLUE];
               }
-              port::SafeCopy((char*)playerlist.Get_Item(i),
-                             Session.Chat[i]->Name, MPLAYER_NAME_MAX);
+              playerlist.Set_Item(i, Session.Chat[i]->Name);
               playerlist.Flag_To_Redraw();
             }
           }
@@ -2846,8 +2836,7 @@ static int Net_Join_Dialog() {
               &ColorRemaps[Session.Chat[0]->Chat.Color] !=
                   playerlist.Colors[0]) {
             playerlist.Colors[0] = &ColorRemaps[Session.Chat[0]->Chat.Color];
-            port::SafeCopy((char*)playerlist.Get_Item(0), Session.Chat[0]->Name,
-                           MPLAYER_NAME_MAX);
+            playerlist.Set_Item(0, Session.Chat[0]->Name);
             playerlist.Flag_To_Redraw();
           }
           if (Update_WWChat()) {
@@ -3105,7 +3094,6 @@ static void Unjoin_Game(char* namebuf, JoinStateType joinstate,
                         int game_index, int goto_lobby, int msg_x, int msg_y,
                         int msg_h, int send_x, int send_y, int msg_len) {
   int i;
-  char* item;
 
   //------------------------------------------------------------------------
   // Fill in a SIGN_OFF packet
@@ -3144,9 +3132,7 @@ static void Unjoin_Game(char* namebuf, JoinStateType joinstate,
   // Remove myself from the player list, and reset my game name
   //------------------------------------------------------------------------
   if (playerlist->Count()) {
-    item = (char*)playerlist->Get_Item(0);
-    playerlist->Remove_Item(item);
-    delete[] item;
+    playerlist->Remove_Item(0);
     playerlist->Flag_To_Redraw();
   }
 
@@ -3354,7 +3340,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                         int join_index, const char* my_name,
                                         RejectType* why) {
   int rc;
-  char* item;         // general-purpose string
+  char item[kGameListItemSize];  // general-purpose string
   NodeNameType* who;  // node to add to Games or Players
   int i;
   int found;
@@ -3398,7 +3384,6 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         //...............................................................
         Session.Games[i]->Game.LastTime = TickCount.Value();
         if (Session.Games[i]->Game.IsOpen != Session.GPacket.GameInfo.IsOpen) {
-          item = (char*)gamelist->Get_Item(i);
           if (Session.GPacket.GameInfo.IsOpen) {
             Format_Runtime_Text(item, kGameListItemSize,
                                 Text_String(TXT_THATGUYS_GAME),
@@ -3408,6 +3393,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                 Text_String(TXT_THATGUYS_GAME_BRACKET),
                                 Session.GPacket.Name);
           }
+          gamelist->Set_Item(i, item);
           Session.Games[i]->Game.IsOpen = Session.GPacket.GameInfo.IsOpen;
           gamelist->Flag_To_Redraw();
 
@@ -3463,7 +3449,6 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //	Create a string for "xxx's Game", leaving room for brackets
       // around 	the string if it's a closed game
       //..................................................................
-      item = new char[kGameListItemSize];
       if (Session.GPacket.GameInfo.IsOpen) {
         Format_Runtime_Text(item, kGameListItemSize,
                             Text_String(TXT_THATGUYS_GAME),
@@ -3572,7 +3557,6 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //..................................................................
       //	Create & add a string to the list box
       //..................................................................
-      item = new char[MPLAYER_NAME_MAX + 64];
 #ifdef OLDWAY
       if (Session.GPacket.PlayerInfo.House == HOUSE_GOOD) {
         sprintf(item, "%s\t%s", Session.GPacket.Name, Text_String(TXT_ALLIES));
@@ -3662,9 +3646,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //..................................................................
       // remove myself from the player list
       //..................................................................
-      item = (char*)playerlist->Get_Item(0);
-      playerlist->Remove_Item(item);
-      delete[] item;
+      playerlist->Remove_Item(0);
       playerlist->Flag_To_Redraw();
 
       delete Session.Players[0];
@@ -3796,9 +3778,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         //...............................................................
         delete Session.Games[i];
         Session.Games.Delete(Session.Games[i]);
-        item = (char*)gamelist->Get_Item(i);
-        gamelist->Remove_Item(item);
-        delete[] item;
+        gamelist->Remove_Item(i);
         gamelist->Flag_To_Redraw();
       }
     }
@@ -3811,9 +3791,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //	Name found; remove it
       //..................................................................
       if (Session.Players[i]->Address == Session.GAddress) {
-        item = (char*)playerlist->Get_Item(i);
-        playerlist->Remove_Item(item);
-        delete[] item;
+        playerlist->Remove_Item(i);
 
         delete Session.Players[i];
         Session.Players.Delete(Session.Players[i]);
@@ -4144,7 +4122,7 @@ static int Net_New_Dialog() {
   int rc = 0;
   int i;
   int j;
-  char* item;
+  char item[kGameListItemSize];
   int tabs[] = {77 * 2};       // tabs for player list box
   int optiontabs[] = {8 * 2};  // tabs for option list box
 
@@ -4359,7 +4337,6 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   //	Add myself to the list, and to the Players vector.
   //------------------------------------------------------------------------
-  item = new char[MPLAYER_NAME_MAX + 64];
 #ifdef OLDWAY
   if (Session.House == HOUSE_GOOD) {
     sprintf(item, "%s\t%s", Session.Handle, Text_String(TXT_ALLIES));
@@ -5173,7 +5150,7 @@ static int Net_New_Dialog() {
 static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
                                            int* color_used) {
   int rc;
-  char* item;         // general-purpose string
+  char item[kGameListItemSize];  // general-purpose string
   NodeNameType* who;  // node to add to Players Vector
   int i;
   int found;
@@ -5350,7 +5327,6 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       //..................................................................
       //	Add player name to the list box
       //..................................................................
-      item = new char[MPLAYER_NAME_MAX + 64];
 #ifdef OLDWAY
       if (Session.GPacket.PlayerInfo.House == HOUSE_GOOD) {
         sprintf(item, "%s\t%s", Session.GPacket.Name, Text_String(TXT_ALLIES));
@@ -5403,10 +5379,8 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
         //...............................................................
         //	Remove from the list box
         //...............................................................
-        item = (char*)playerlist->Get_Item(i);
-        playerlist->Remove_Item(item);
+        playerlist->Remove_Item(i);
         playerlist->Flag_To_Redraw();
-        delete[] item;
 
         //...............................................................
         //	Mark his color as available
@@ -7147,7 +7121,7 @@ static struct WWPerson WWPersons[] = {
 static Timer<SystemTickSource> wwperson_timer;
 
 void Start_WWChat(ColorListClass* playerlist) {
-  char* item;
+  char item[kGameListItemSize];
   int i;
   HousesType house;
 
@@ -7159,7 +7133,6 @@ void Start_WWChat(ColorListClass* playerlist) {
   //------------------------------------------------------------------------
   // Add myself to the player list
   //------------------------------------------------------------------------
-  item = new char[MPLAYER_NAME_MAX + 64];
 #ifdef OLDWAY
   if (Session.House == HOUSE_GOOD) {
     sprintf(item, "%s\t%s", Session.Handle, Text_String(TXT_ALLIES));
@@ -7194,7 +7167,6 @@ void Start_WWChat(ColorListClass* playerlist) {
       }
       //			house =
       //(HousesType)Random_Pick((int)HOUSE_GOOD,(int)HOUSE_BAD);
-      item = new char[MPLAYER_NAME_MAX + 64];
       if (house != HOUSE_USSR && house != HOUSE_UKRAINE) {
         sprintf(item, "%s\t%s", WWPersons[i].Name, Text_String(TXT_ALLIES));
       } else {

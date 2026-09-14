@@ -41,7 +41,9 @@
 #include "ra/sounddlg.h"
 
 #include <cstdio>
+#include <vector>
 
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/config.h"
 #include "ra/conquer.h"
@@ -59,7 +61,6 @@
 #include "ra/slider.h"
 #include "ra/textbtn.h"
 #include "ra/theme.h"
-#include "ra/vector.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -69,6 +70,8 @@
 #include "tech/fixed.h"
 #include "tech/mix_archive.h"
 
+// The score list: each line is a track, with its theme kept alongside the
+// text.
 class MusicListClass : public ListClass {
  public:
   MusicListClass(int id, int x, int y, int w, int h)
@@ -81,8 +84,28 @@ class MusicListClass : public ListClass {
   MusicListClass(MusicListClass&&) = delete;
   MusicListClass& operator=(MusicListClass&&) = delete;
 
+  // Appends a line for `theme`, returning its index.
+  int Add_Track(ThemeType theme, const char* text) {
+    Themes.push_back(theme);
+    return ListClass::Add_Item(text);
+  }
+  // The selected line's theme, or THEME_NONE when the list is empty.
+  [[nodiscard]] ThemeType Current_Theme() const {
+    return Count() > 0 ? Themes[base::ToSize(Current_Index())] : THEME_NONE;
+  }
+  void Remove_Item(int index) override {
+    if (index >= 0 && index < Count()) {
+      Themes.erase(Themes.begin() + index);
+      ListClass::Remove_Item(index);
+    }
+  }
+
  protected:
   void Draw_Entry(int index, int x, int y, int width, bool selected) override;
+
+ private:
+  // One per item, parallel to List.
+  std::vector<ThemeType> Themes;
 };
 
 /***********************************************************************************************
@@ -272,12 +295,9 @@ void SoundControlsClass::Process() {
       const int length = ThemeClass::Track_Length(index);
       const char* fullname = ThemeClass::Full_Name(index);
 
-      void* ptr = new char[sizeof(buffer)];
-      if (ptr) {
-        sprintf(static_cast<char*>(ptr), "%cTrack %d\t%d:%02d\t%s", index,
-                listbox.Count() + 1, length / 60, length % 60, fullname);
-        listbox.Add_Item(static_cast<const char*>(ptr));
-      }
+      snprintf(buffer, sizeof(buffer), "Track %d\t%d:%02d\t%s",
+               listbox.Count() + 1, length / 60, length % 60, fullname);
+      listbox.Add_Track(index, buffer);
 
       if (Theme.What_Is_Playing() == index) {
         listbox.Set_Selected_Index(listbox.Count() - 1);
@@ -397,8 +417,7 @@ void SoundControlsClass::Process() {
       */
       case KN_SPACE:
       case ButtonKey(BUTTON_PLAY):
-        Theme.Queue_Song(static_cast<ThemeType>(
-            static_cast<unsigned char>(*listbox.Current_Item())));
+        Theme.Queue_Song(listbox.Current_Theme());
         break;
 
       /*
@@ -432,11 +451,6 @@ void SoundControlsClass::Process() {
   /*
   **	Free the items from the list box.
   */
-  while (listbox.Count()) {
-    const char* ptr = listbox.Get_Item(0);
-    listbox.Remove_Item(ptr);
-    delete[] ptr;
-  }
 }
 
 /***********************************************************************************************
@@ -477,12 +491,12 @@ void MusicListClass::Draw_Entry(int index, int x, int y, int width,
       }
     }
 
-    Conquer_Clip_Text_Print(List[index] + 1, x, y, scheme, TBLACK, flags, width,
+    Conquer_Clip_Text_Print(Get_Item(index), x, y, scheme, TBLACK, flags, width,
                             Tabs);
 
   } else {
     Conquer_Clip_Text_Print(
-        List[index] + 1, x, y,
+        Get_Item(index), x, y,
         selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
         TBLACK, TextFlags, width, Tabs);
   }

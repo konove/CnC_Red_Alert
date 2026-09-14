@@ -74,7 +74,8 @@ class ColorListClass : public ListClass {
   int Add_Item(int text) override { return Add_Item(text, WHITE); }
   virtual int Add_Item(const char* text, char color);
   virtual int Add_Item(int text, char color);
-  void Remove_Item(const char* text) override;
+  void Remove_Item(const char* text) override { ListClass::Remove_Item(text); }
+  void Remove_Item(int index) override;
 
   virtual void Set_Selected_Style(SelectStyleType style, int color = -1);
 

@@ -43,21 +43,15 @@
 #ifndef CNC_RED_ALERT_RA_CHEKLIST_H_
 #define CNC_RED_ALERT_RA_CHEKLIST_H_
 
-#include "absl/base/attributes.h"
+#include <vector>
+
 #include "ra/defines.h"
 #include "ra/list.h"
 #include "sdllib/keyboard.h"
 
-class CheckObject {
- public:
-  explicit CheckObject(const char* text ABSL_ATTRIBUTE_LIFETIME_BOUND = nullptr,
-                       bool checked = false)
-      : Text(text), IsChecked(checked) {}
-
-  const char* Text;
-  bool IsChecked;
-};
-
+// A list box whose items each carry a check mark the user can toggle by
+// clicking. The checked state lives next to the text, not in it: Get_Item
+// returns the item's text alone, and Draw_Entry prepends the glyph.
 class CheckListClass : public ListClass {
  public:
   /*
@@ -65,22 +59,17 @@ class CheckListClass : public ListClass {
   */
   CheckListClass(int id, int x, int y, int w, int h, TextPrintType flags,
                  const void* up, const void* down);
-  ~CheckListClass() override;
+  ~CheckListClass() override = default;
   CheckListClass(const CheckListClass&) = delete;
   CheckListClass& operator=(const CheckListClass&) = delete;
   CheckListClass(CheckListClass&&) = delete;
   CheckListClass& operator=(CheckListClass&&) = delete;
 
   int Add_Item(int text) override { return ListClass::Add_Item(text); }
+  // Adds an unchecked item.
   int Add_Item(const char* text) override;
-  [[nodiscard]] const char* Current_Item() const override;
-  [[nodiscard]] const char* Get_Item(int index) const override;
-  void Remove_Item(const char* text) override;
-  void Remove_Item(int text) override { ListClass::Remove_Item(text); }
-  void Set_Selected_Index(const char* text) override;
-  void Set_Selected_Index(int index) override {
-    ListClass::Set_Selected_Index(index);
-  }
+  void Remove_Item(const char* text) override { ListClass::Remove_Item(text); }
+  void Remove_Item(int index) override;
 
   /*
   **	Checkmark utility functions
@@ -104,6 +93,8 @@ class CheckListClass : public ListClass {
   void Draw_Entry(int index, int x, int y, int width, bool selected) override;
 
  private:
+  // Checked state of each item, parallel to List.
+  std::vector<bool> Checked;
   bool IsReadOnly{false};
 };
 

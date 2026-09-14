@@ -3342,7 +3342,8 @@ int MapEditClass::Import_Triggers() {
   char* tbuffer;          // Accumulation buffer of trigger IDs.
   int len;                // Length of data in buffer.
   TriggerClass* trigger;  // Working trigger pointer.
-  char* item;             // for adding to list box
+  constexpr int kItemSize = 60;
+  char item[kItemSize];  // for adding to list box
   char* eventptr;
   char* actionptr;
   char* houseptr;
@@ -3404,8 +3405,6 @@ int MapEditClass::Import_Triggers() {
   while (*tbuffer != '\0') {
     WWGetPrivateProfileString(TriggerClass::INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, inibuf);
-    constexpr int kItemSize = 60;
-    item = new char[kItemSize];
 
     /*
     ** Parse the INI entry
@@ -3577,11 +3576,7 @@ int MapEditClass::Import_Triggers() {
   Clean up memory
   ........................................................................*/
   trignames.Clear();
-  while (triggerlist.Count()) {
-    item = (char*)triggerlist.Get_Item(0);
-    triggerlist.Remove_Item(item);
-    delete[] item;
-  }
+  triggerlist.Clear();
   delete[] inibuf;
 
   if (cancel) {
@@ -3685,7 +3680,8 @@ int MapEditClass::Import_Teams() {
   char* tbuffer;                        // Accumulation buffer of team IDs.
   int len;                              // Length of data in buffer.
   TeamTypeClass* team;                  // Working team pointer.
-  char* item;                           // for adding to list box
+  constexpr int kItemSize = 60;
+  char item[kItemSize];  // for adding to list box
   char* houseptr;
   char* classptr;
   int numclasses;
@@ -3747,8 +3743,6 @@ int MapEditClass::Import_Teams() {
   while (*tbuffer != '\0') {
     WWGetPrivateProfileString(TeamTypeClass::INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, inibuf);
-    constexpr int kItemSize = 60;
-    item = new char[kItemSize];
 
     /*
     ** Parse the INI entry
@@ -3918,11 +3912,7 @@ int MapEditClass::Import_Teams() {
   Clean up memory
   ........................................................................*/
   teamnames.Clear();
-  while (teamlist.Count()) {
-    item = (char*)teamlist.Get_Item(0);
-    teamlist.Remove_Item(item);
-    delete[] item;
-  }
+  teamlist.Clear();
   delete[] inibuf;
 
   if (cancel) {

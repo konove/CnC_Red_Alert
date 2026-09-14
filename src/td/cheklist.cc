@@ -64,11 +64,11 @@
  *=========================================================================*/
 #include "td/cheklist.h"
 
+#include "base/numeric.h"
 #include "sdllib/keyboard.h"
 #include "td/defines.h"
 #include "td/gadget.h"
 #include "td/list.h"
-#include "td/vector.h"
 
 CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
                                TextPrintType flags, const void* up,
@@ -92,8 +92,10 @@ CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
  *   02/16/1995 BR : Created.                                              *
  *=========================================================================*/
 void CheckListClass::Check_Item(int index, int checked) {
-  if (List[index]) {
-    (char&)List[index][0] = checked ? CHECK_CHAR : UNCHECK_CHAR;
+  // The glyph lives in the item's first character, which the list now owns.
+  if (index >= 0 && index < Count() && !List[base::ToSize(index)].empty()) {
+    List[base::ToSize(index)][0] = checked ? CHECK_CHAR : UNCHECK_CHAR;
+    Flag_To_Redraw();
   }
 }
 
@@ -113,10 +115,8 @@ void CheckListClass::Check_Item(int index, int checked) {
  *   02/16/1995 BR : Created.                                              *
  *=========================================================================*/
 bool CheckListClass::Is_Checked(int index) const {
-  if (List[index]) {
-    return List[index][0] == CHECK_CHAR;
-  }
-  return false;
+  return index >= 0 && index < Count() && !List[base::ToSize(index)].empty() &&
+         List[base::ToSize(index)][0] == CHECK_CHAR;
 }
 
 /***************************************************************************

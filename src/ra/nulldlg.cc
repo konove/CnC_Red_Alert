@@ -1985,6 +1985,9 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     }
   }
 
+  // The list copied custom_port when it was added; show what the settings
+  // wrote into it since.
+  portlist.Set_Item(port_custom_index, custom_port);
   portlist.Set_Selected_Index(port_index);
 
   /*
@@ -2020,11 +2023,14 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           port::SafeCopy(cwaitstrbuf, item_str.c_str() + pos, CWAITSTRBUF_MAX);
         }
       }
-    } else if (i == cwaitstr_index) {
-      port::SafeCopy(cwaitstrbuf, SessionClass::CallWaitStrings[i],
-                     CWAITSTRBUF_MAX);
+      cwaitstrlist.Add_Item(item_str.c_str());
+    } else {
+      if (i == cwaitstr_index) {
+        port::SafeCopy(cwaitstrbuf, SessionClass::CallWaitStrings[i],
+                       CWAITSTRBUF_MAX);
+      }
+      cwaitstrlist.Add_Item(SessionClass::CallWaitStrings[i]);
     }
-    cwaitstrlist.Add_Item(SessionClass::CallWaitStrings[i]);
   }
 
   cwaitstrlist.Set_Selected_Index(cwaitstr_index);
@@ -2167,14 +2173,14 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         break;
 
       case ButtonKey(BUTTON_PORT):
-        item = (char*)portlist.Current_Item();
         if (port_index < 4) {
-          temp = strchr(item, ' ');
-          if (!temp) {
-            port::SafeCopy(portbuf, item, PORTBUF_MAX);
+          const char* const current = portlist.Current_Item();
+          const char* const space = strchr(current, ' ');
+          if (!space) {
+            port::SafeCopy(portbuf, current, PORTBUF_MAX);
           } else {
-            pos = static_cast<int>(temp - item);
-            port::SafeCopy(portbuf, item, base::ToSize(pos));
+            pos = static_cast<int>(space - current);
+            port::SafeCopy(portbuf, current, base::ToSize(pos));
           }
           port_edt.Set_Text(portbuf, PORTBUF_MAX);
           port_edt.Flag_To_Redraw();
@@ -2228,12 +2234,12 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                 if (portbuf[3] <= '9' && portbuf[3] > '0') {
                   portbuf[4] = 0;
                   port_index = port_custom_index;
-                  temp = strchr(item, '-');
+                  temp = strchr(custom_port, '-');
                   if (temp) {
-                    pos = static_cast<int>(temp - item) + 2;
-                    len = static_cast<int>(strlen(portbuf));
-                    port::SafeCopy(item + pos, portbuf, base::ToSize(len));
-                    *(item + pos + len) = 0;
+                    pos = static_cast<int>(temp - custom_port) + 2;
+                    port::SafeCopy(custom_port + pos, portbuf,
+                                   sizeof(custom_port) - base::ToSize(pos));
+                    portlist.Set_Item(port_custom_index, custom_port);
                     display = REDRAW_BUTTONS;
                   }
                   break;
@@ -2247,12 +2253,12 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
             portlist.Set_Selected_Index(port_index);
 
           } else {
-            temp = strchr(item, '-');
+            temp = strchr(custom_port, '-');
             if (temp) {
-              pos = static_cast<int>(temp - item) + 2;
-              len = static_cast<int>(strlen(portbuf));
-              port::SafeCopy(item + pos, portbuf, base::ToSize(len));
-              *(item + pos + len) = 0;
+              pos = static_cast<int>(temp - custom_port) + 2;
+              port::SafeCopy(custom_port + pos, portbuf,
+                             sizeof(custom_port) - base::ToSize(pos));
+              portlist.Set_Item(port_custom_index, custom_port);
               display = REDRAW_BUTTONS;
             }
           }
@@ -2366,15 +2372,14 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         break;
 
       case ButtonKey(BUTTON_CWAITSTR):
-        item = (char*)cwaitstrlist.Current_Item();
-        if (cwaitstr_index < 3) {
-        } else {
-          temp = strchr(item, '-');
-          if (temp) {
-            pos = static_cast<int>(temp - item) + 2;
-            len = static_cast<int>(strlen(cwaitstrbuf));
-            port::SafeCopy(item + pos, cwaitstrbuf, base::ToSize(len));
-            *(item + pos + len) = 0;
+        if (cwaitstr_index >= CALL_WAIT_CUSTOM) {
+          const char* const current = cwaitstrlist.Current_Item();
+          const char* const dash = strchr(current, '-');
+          if (dash) {
+            // Keep the "Custom - " prefix, replace what follows it.
+            std::string custom(current, base::ToSize(dash - current) + 2);
+            custom += cwaitstrbuf;
+            cwaitstrlist.Set_Item(cwaitstr_index, custom);
             display = REDRAW_BUTTONS;
           }
         }
@@ -2440,7 +2445,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         tempsettings.CallWaitStringIndex = cwaitstr_index;
 
         {
-          const char* custom = SessionClass::CallWaitStrings[CALL_WAIT_CUSTOM];
+          // The list item carries the string the user edited.
+          const char* custom = cwaitstrlist.Get_Item(CALL_WAIT_CUSTOM);
           const char* dash = strchr(custom, '-');
           if (dash) {
             pos = static_cast<int>(dash - custom) + 2;
@@ -2530,18 +2536,13 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
                                       char* buf, int* index) {
   int i;
   int curidx;
-  char* item;
 
   curidx = *index;
 
   /*........................................................................
   Clear the list
   ........................................................................*/
-  while (list->Count()) {
-    item = (char*)list->Get_Item(0);
-    list->Remove_Item(item);
-    delete[] item;
-  }
+  list->Clear();
 
   /*
   ** Now sort the init string list by name then number
@@ -2558,9 +2559,7 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   Build the list
   ........................................................................*/
   for (i = 0; i < Session.InitStrings.Count(); i++) {
-    item = new char[INITSTRBUF_MAX];
-    port::SafeCopy(item, Session.InitStrings[i], INITSTRBUF_MAX);
-    list->Add_Item(item);
+    list->Add_Item(Session.InitStrings[i]);
   }
   list->Flag_To_Redraw();
 
@@ -2799,7 +2798,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   GameFile loadfile("SAVEGAME.NET");
   bool load_game = false;  // 1 = load a saved game
   NodeNameType* who;       // node to add to Players
-  char* item;              // for filling in lists
+  char item[MPLAYER_NAME_MAX + 64];  // for filling in lists
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   bool messages_have_focus = true;  // Gadget focus starts on the message system
 
@@ -3771,7 +3770,6 @@ int Com_Scenario_Dialog(bool skirmish) {
         // Keep the player list up to date
         //..................................................................
         if (playerlist.Count()) {
-          item = (char*)playerlist.Get_Item(0);
 #ifdef OLDWAY
           if (Session.House == HOUSE_GOOD) {
             sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
@@ -3783,6 +3781,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                   Text_String(
                       HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
+          playerlist.Set_Item(0, item);
           playerlist.Colors[0] =
               &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                ? PCOLOR_REALLY_BLUE
@@ -3938,12 +3937,8 @@ int Com_Scenario_Dialog(bool skirmish) {
                 //......................................................
                 // Add two strings to the player list
                 //......................................................
-                item = new char[MPLAYER_NAME_MAX +
-                                64];  // Need room to display country name
-                playerlist.Add_Item(item, &ColorRemaps[Session.ColorIdx]);
-                item = new char[MPLAYER_NAME_MAX +
-                                64];  // Need room to display country name
-                playerlist.Add_Item(item, &ColorRemaps[TheirColor]);
+                playerlist.Add_Item("", &ColorRemaps[Session.ColorIdx]);
+                playerlist.Add_Item("", &ColorRemaps[TheirColor]);
               }
 
               //.........................................................
@@ -3951,7 +3946,6 @@ int Com_Scenario_Dialog(bool skirmish) {
               // our names & colors.  Do this every time we receive an
               // options packet.
               //.........................................................
-              item = (char*)playerlist.Get_Item(0);
 #ifdef OLDWAY
               if (Session.House == HOUSE_GOOD) {
                 sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
@@ -3964,12 +3958,12 @@ int Com_Scenario_Dialog(bool skirmish) {
                   Text_String(
                       HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
+              playerlist.Set_Item(0, item);
               playerlist.Colors[0] =
                   &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                    ? PCOLOR_REALLY_BLUE
                                    : Session.ColorIdx];
 
-              item = (char*)playerlist.Get_Item(1);
 #ifdef OLDWAY
               if (TheirHouse == HOUSE_GOOD) {
                 sprintf(item, "%s\t%s", TheirName, Text_String(TXT_ALLIES));
@@ -3982,6 +3976,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                   Text_String(
                       HouseTypeClass::As_Reference(TheirHouse).Full_Name()));
 #endif  // OLDWAY
+              playerlist.Set_Item(1, item);
               playerlist.Colors[1] =
                   &ColorRemaps[TheirColor == PCOLOR_DIALOG_BLUE
                                    ? PCOLOR_REALLY_BLUE
@@ -4302,11 +4297,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   /*------------------------------------------------------------------------
   Clean up the list boxes
   ------------------------------------------------------------------------*/
-  while (playerlist.Count() > 0) {
-    item = (char*)playerlist.Get_Item(0);
-    delete[] item;
-    playerlist.Remove_Item(item);
-  }
+  playerlist.Clear();
 
   /*------------------------------------------------------------------------
   Remove the chat edit box
@@ -4657,7 +4648,7 @@ int Com_Show_Scenario_Dialog() {
   int64_t msg_timeout = 1200;  // init to 20 seconds
   bool load_game = false;            // 1 = load saved game
   NodeNameType* who;                 // node to add to Players
-  char* item;                        // for filling in lists
+  char item[MPLAYER_NAME_MAX + 64];  // for filling in lists
   const char* p;
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   Session.Options.ScenarioDescription[0] =
@@ -5320,7 +5311,6 @@ int Com_Show_Scenario_Dialog() {
       // Keep the player list up to date
       //..................................................................
       if (playerlist.Count()) {
-        item = (char*)playerlist.Get_Item(0);
 #ifdef OLDWAY
         if (Session.House == HOUSE_GOOD) {
           sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
@@ -5332,6 +5322,7 @@ int Com_Show_Scenario_Dialog() {
                 Text_String(
                     HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
+        playerlist.Set_Item(0, item);
         playerlist.Colors[0] =
             &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
                              ? PCOLOR_REALLY_BLUE
@@ -5582,17 +5573,12 @@ int Com_Show_Scenario_Dialog() {
               // Add a string to the game list, and two to the player
               // list
               //......................................................
-              item = new char[MPLAYER_NAME_MAX + 64];
-              gamelist.Add_Item(item);
-              item = new char[MPLAYER_NAME_MAX +
-                              64];  // Need room to display country name
+              gamelist.Add_Item("");
               playerlist.Add_Item(
-                  item, &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                         ? PCOLOR_REALLY_BLUE
-                                         : Session.ColorIdx]);
-              item = new char[MPLAYER_NAME_MAX +
-                              64];  // Need room to display country name
-              playerlist.Add_Item(item,
+                  "", &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
+                                       ? PCOLOR_REALLY_BLUE
+                                       : Session.ColorIdx]);
+              playerlist.Add_Item("",
                                   &ColorRemaps[TheirColor == PCOLOR_DIALOG_BLUE
                                                    ? PCOLOR_REALLY_BLUE
                                                    : TheirColor]);
@@ -5607,10 +5593,9 @@ int Com_Show_Scenario_Dialog() {
             // greatest copy of our names & colors.  Do this every time
             // we receive an options packet.
             //.........................................................
-            item = (char*)gamelist.Get_Item(0);
             Format_Runtime_Text(item, MPLAYER_NAME_MAX + 64,
                                 Text_String(TXT_THATGUYS_GAME), TheirName);
-            item = (char*)playerlist.Get_Item(0);
+            gamelist.Set_Item(0, item);
 #ifdef OLDWAY
             if (Session.House == HOUSE_GOOD) {
               sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
@@ -5624,12 +5609,12 @@ int Com_Show_Scenario_Dialog() {
                     HouseTypeClass::As_Reference(Session.House).Full_Name()));
 
 #endif  // OLDWAY
+            playerlist.Set_Item(0, item);
             playerlist.Colors[0] =
                 &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                  ? PCOLOR_REALLY_BLUE
                                  : Session.ColorIdx];
 
-            item = (char*)playerlist.Get_Item(1);
 #ifdef OLDWAY
             if (TheirHouse == HOUSE_GOOD) {
               sprintf(item, "%s\t%s", TheirName, Text_String(TXT_ALLIES));
@@ -5641,6 +5626,7 @@ int Com_Show_Scenario_Dialog() {
                     Text_String(
                         HouseTypeClass::As_Reference(TheirHouse).Full_Name()));
 #endif  // OLDWAY
+            playerlist.Set_Item(1, item);
             playerlist.Colors[1] = &ColorRemaps[TheirColor == PCOLOR_DIALOG_BLUE
                                                     ? PCOLOR_REALLY_BLUE
                                                     : TheirColor];
@@ -5983,16 +5969,8 @@ int Com_Show_Scenario_Dialog() {
   //		delete [] item;
   //		optionlist.Remove_Item(item);
   //	}
-  while (gamelist.Count() > 0) {
-    item = (char*)gamelist.Get_Item(0);
-    delete[] item;
-    gamelist.Remove_Item(item);
-  }
-  while (playerlist.Count() > 0) {
-    item = (char*)playerlist.Get_Item(0);
-    delete[] item;
-    playerlist.Remove_Item(item);
-  }
+  gamelist.Clear();
+  playerlist.Clear();
 
   /*------------------------------------------------------------------------
   Remove the chat edit box
@@ -6126,7 +6104,6 @@ static int Phone_Dialog() {
   int rc = 0;
   int i;
   int tabs[] = {123 * 2, 414};  // tabs for list box
-  char* item;                // for removing items from list box
   PhoneEntryClass* p_entry;  // for creating / editing phonebook entries
   bool changed = false;      // 1 = save changes to INI file
   bool firsttime = false;
@@ -6468,11 +6445,7 @@ static int Phone_Dialog() {
   /*------------------------------------------------------------------------
   Clear the list box
   ------------------------------------------------------------------------*/
-  while (phonelist.Count()) {
-    item = (char*)phonelist.Get_Item(0);
-    phonelist.Remove_Item(item);
-    delete[] item;
-  }
+  phonelist.Clear();
 
   return rc;
 
@@ -6504,18 +6477,14 @@ static int Phone_Dialog() {
  *=========================================================================*/
 static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
   int i;
-  char* item;
+  char item[80];
   char phonename[21];
   char phonenum[15];
 
   /*........................................................................
   Clear the list
   ........................................................................*/
-  while (list->Count()) {
-    item = (char*)list->Get_Item(0);
-    list->Remove_Item(item);
-    delete[] item;
-  }
+  list->Clear();
 
   /*
   ** Now sort the phone list by name then number
@@ -6537,7 +6506,6 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
   Build the list
   ........................................................................*/
   for (i = 0; i < Session.PhoneBook.Count(); i++) {
-    item = new char[80];
     if (!strlen(Session.PhoneBook[i]->Name)) {
       port::SafeCopy(phonename, " ");
     } else {

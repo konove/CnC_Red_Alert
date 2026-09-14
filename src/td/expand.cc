@@ -39,12 +39,12 @@
 
 #include "td/expand.h"
 
-#include <cstring>
 #include <format>
 #include <string>
+#include <vector>
 
+#include "base/numeric.h"
 #include "port/safe_string.h"
-#include "port/unaligned.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -66,18 +66,8 @@
 #include "td/profile.h"
 #include "td/text.h"
 #include "td/textbtn.h"
-#include "td/vector.h"
 #include "tech/game_file.h"
 
-// Creates a list item string with an integer index stored at the beginning.
-// The returned buffer layout is: [int index][null-terminated string]
-// Caller takes ownership and must delete[] the returned pointer.
-static char* CreateIndexedListItem(int index, const std::string& str) {
-  auto* data = new char[sizeof(int) + str.size() + 1];
-  std::memcpy(data, &index, sizeof(int));
-  std::memcpy(data + sizeof(int), str.c_str(), str.size() + 1);
-  return data;
-}
 
 #ifdef NEWMENU
 
@@ -87,14 +77,36 @@ bool Expansion_Present() {
   return file.IsAvailable();
 }
 
+// List box of expansion scenarios: each line's scenario number is kept
+// alongside its text.
 class EListClass : public ListClass {
  public:
   EListClass(int id, int x, int y, int w, int h, TextPrintType flags,
              const void* up, const void* down)
       : ListClass(id, x, y, w, h, flags, up, down) {}
+  // Appends a line for `scenario`, returning its index.
+  int Add_Scenario(int scenario, const std::string& text) {
+    Scenarios.push_back(scenario);
+    return ListClass::Add_Item(text.c_str());
+  }
+  // The selected line's scenario number. Only valid while the list is not
+  // empty.
+  [[nodiscard]] int Current_Scenario() const {
+    return Scenarios[base::ToSize(Current_Index())];
+  }
+  void Remove_Item(int index) override {
+    if (index >= 0 && index < Count()) {
+      Scenarios.erase(Scenarios.begin() + index);
+      ListClass::Remove_Item(index);
+    }
+  }
 
  protected:
   void Draw_Entry(int index, int x, int y, int width, bool selected) override;
+
+ private:
+  // One per item, parallel to List.
+  std::vector<int> Scenarios;
 };
 
 void EListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
@@ -111,13 +123,12 @@ void EListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
       }
     }
 
-    Conquer_Clip_Text_Print(List[index] + sizeof(int), x, y, CC_GREEN, TBLACK,
-                            flags, width, Tabs);
+    Conquer_Clip_Text_Print(Get_Item(index), x, y, CC_GREEN, TBLACK, flags,
+                            width, Tabs);
 
   } else {
-    Conquer_Clip_Text_Print(List[index] + sizeof(int), x, y,
-                            selected ? BLUE : WHITE, TBLACK, TextFlags, width,
-                            Tabs);
+    Conquer_Clip_Text_Print(Get_Item(index), x, y, selected ? BLUE : WHITE,
+                            TBLACK, TextFlags, width, Tabs);
   }
 }
 
@@ -176,8 +187,7 @@ bool Expansion_Dialog() {
 
       WWGetPrivateProfileString("Basic", "Name", "x", buffer, sizeof(buffer),
                                 sbuffer);
-      list.Add_Item(
-          CreateIndexedListItem(index, std::format("GDI: {}", buffer)));
+      list.Add_Scenario(index, std::format("GDI: {}", buffer));
     }
   }
 
@@ -197,8 +207,7 @@ bool Expansion_Dialog() {
 
       WWGetPrivateProfileString("Basic", "Name", "x", buffer, sizeof(buffer),
                                 sbuffer);
-      list.Add_Item(
-          CreateIndexedListItem(index, std::format("NOD: {}", buffer)));
+      list.Add_Scenario(index, std::format("NOD: {}", buffer));
     }
   }
 
@@ -239,14 +248,14 @@ bool Expansion_Dialog() {
     switch (static_cast<int>(input)) {
       case KN_RETURN:
       case ButtonKey(200):
-        if (list.Current_Item()[sizeof(int)] == 'G') {
+        if (list.Current_Item()[0] == 'G') {
           ScenPlayer = SCEN_PLAYER_GDI;
         } else {
           ScenPlayer = SCEN_PLAYER_NOD;
         }
         ScenDir = SCEN_DIR_EAST;
         Whom = HOUSE_GOOD;
-        Scenario = port::ReadUnaligned<int>(list.Current_Item());
+        Scenario = list.Current_Scenario();
         process = false;
         okval = true;
         break;
@@ -256,7 +265,7 @@ bool Expansion_Dialog() {
         ScenPlayer = SCEN_PLAYER_GDI;
         ScenDir = SCEN_DIR_EAST;
         Whom = HOUSE_GOOD;
-        Scenario = port::ReadUnaligned<int>(list.Current_Item());
+        Scenario = list.Current_Scenario();
         process = false;
         okval = false;
         break;
@@ -266,12 +275,6 @@ bool Expansion_Dialog() {
     }
   }
 
-  /*
-  **	Free up the allocations for the text lines in the list box.
-  */
-  for (int index = 0; index < list.Count(); index++) {
-    delete[] (char*)list.Get_Item(index);
-  }
 
   return okval;
 }
@@ -341,9 +344,9 @@ bool Bonus_Dialog() {
     port::SafeAppend(buffer, ".INI");
     file.SetName(buffer);
     if (file.IsAvailable()) {
-      list.Add_Item(CreateIndexedListItem(
+      list.Add_Scenario(
           index,
-          std::format("GDI: {}", Text_String(gdi_scen_names[index - 60]))));
+          std::format("GDI: {}", Text_String(gdi_scen_names[index - 60])));
     }
   }
 
@@ -356,9 +359,9 @@ bool Bonus_Dialog() {
     port::SafeAppend(buffer, ".INI");
     file.SetName(buffer);
     if (file.IsAvailable()) {
-      list.Add_Item(CreateIndexedListItem(
+      list.Add_Scenario(
           index,
-          std::format("NOD: {}", Text_String(nod_scen_names[index - 60]))));
+          std::format("NOD: {}", Text_String(nod_scen_names[index - 60])));
     }
   }
 
@@ -399,14 +402,14 @@ bool Bonus_Dialog() {
     switch (static_cast<int>(input)) {
       case KN_RETURN:
       case ButtonKey(200):
-        if (list.Current_Item()[sizeof(int)] == 'G') {
+        if (list.Current_Item()[0] == 'G') {
           ScenPlayer = SCEN_PLAYER_GDI;
         } else {
           ScenPlayer = SCEN_PLAYER_NOD;
         }
         ScenDir = SCEN_DIR_EAST;
         Whom = HOUSE_GOOD;
-        Scenario = port::ReadUnaligned<int>(list.Current_Item());
+        Scenario = list.Current_Scenario();
         process = false;
         okval = true;
         break;
@@ -416,7 +419,7 @@ bool Bonus_Dialog() {
         ScenPlayer = SCEN_PLAYER_GDI;
         ScenDir = SCEN_DIR_EAST;
         Whom = HOUSE_GOOD;
-        Scenario = port::ReadUnaligned<int>(list.Current_Item());
+        Scenario = list.Current_Scenario();
         process = false;
         okval = false;
         break;
@@ -426,12 +429,6 @@ bool Bonus_Dialog() {
     }
   }
 
-  /*
-  **	Free up the allocations for the text lines in the list box.
-  */
-  for (int index = 0; index < list.Count(); index++) {
-    delete[] (char*)list.Get_Item(index);
-  }
 
   return okval;
 }
