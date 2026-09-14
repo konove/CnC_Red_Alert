@@ -11,7 +11,12 @@
   the whole path, so it only finds all-lowercase files.
 - Step 1 is complete (`aadf673c` BufferIOFileClass removed, `1bc0ec62` dead interface removed,
   `d593a6e1` read-write open no longer truncates). Smoke baselines unchanged.
-- Next: step 2.
+- Step 2 is complete: `5eeee905` FileClass→File (`tech/file.h`), `05bdb228` RawFileClass→DiskFile
+  (`tech/disk_file.*`), `84723147` RAMFileClass→MemoryFile (`tech/memory_file.*`).
+  FileStraw/FilePipe's `File` member became `file_`. Also `63aece55`: tests link
+  `src/testing/gtest_main.cc`, which makes death tests undumpable so ctest runs stop filling
+  systemd-coredump.
+- Next: step 3.
 
 ## Context
 
