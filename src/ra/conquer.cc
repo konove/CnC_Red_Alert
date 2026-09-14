@@ -637,7 +637,7 @@ static void Message_Input(KeyNumType& input) {
     } else {
       Map.Flag_To_Redraw(false);
     }
-    Map.DisplayClass::IsDisplayToRedraw = true;
+    Map.IsDisplayToRedraw = true;
   }
 
   // Send a message
