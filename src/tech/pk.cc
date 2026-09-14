@@ -285,6 +285,8 @@ void PKey::Generate(ByteSource& random, int bits, PKey& fastkey,
  *=============================================================================================*/
 int PKey::Encrypt(const void* source, int slen, void* dest) const {
   int total = 0;
+  const char* in = static_cast<const char*>(source);
+  char* out = static_cast<char*>(dest);
 
   /*
   **	Encrypt the source data in full blocks. Partial blocks are not processed
@@ -295,16 +297,16 @@ int PKey::Encrypt(const void* source, int slen, void* dest) const {
     **	Perform the encryption of the block.
     */
     BigInt temp = 0;
-    memmove(&temp, source, base::ToSize(Plain_Block_Size()));
+    memmove(&temp, in, base::ToSize(Plain_Block_Size()));
     temp = temp.exp_b_mod_c(Exponent, Modulus);
 
     /*
     **	Move the cypher block to the destination.
     */
-    memmove(dest, &temp, base::ToSize(Crypt_Block_Size()));
+    memmove(out, &temp, base::ToSize(Crypt_Block_Size()));
     slen -= Plain_Block_Size();
-    source = (char*)source + Plain_Block_Size();
-    dest = static_cast<char*>(dest) + Crypt_Block_Size();
+    in += Plain_Block_Size();
+    out += Crypt_Block_Size();
     total += Crypt_Block_Size();
   }
 
@@ -337,6 +339,8 @@ int PKey::Encrypt(const void* source, int slen, void* dest) const {
 int PKey::Decrypt(const void* source, int slen, void* dest) const {
   int total = 0;
   BigInt temp;
+  const char* in = static_cast<const char*>(source);
+  char* out = static_cast<char*>(dest);
 
   /*
   **	Decrypt the source data in full blocks. Partial blocks are not processed
@@ -347,16 +351,16 @@ int PKey::Decrypt(const void* source, int slen, void* dest) const {
     **	Perform the encryption.
     */
     temp = 0;
-    memmove(&temp, source, base::ToSize(Crypt_Block_Size()));
+    memmove(&temp, in, base::ToSize(Crypt_Block_Size()));
     temp = temp.exp_b_mod_c(Exponent, Modulus);
 
     /*
     **	Move the cypher block to the destination.
     */
-    memmove(dest, &temp, base::ToSize(Plain_Block_Size()));
+    memmove(out, &temp, base::ToSize(Plain_Block_Size()));
     slen -= Crypt_Block_Size();
-    source = (char*)source + Crypt_Block_Size();
-    dest = static_cast<char*>(dest) + Plain_Block_Size();
+    in += Crypt_Block_Size();
+    out += Plain_Block_Size();
     total += Plain_Block_Size();
   }
 

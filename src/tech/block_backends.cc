@@ -7,7 +7,6 @@
 #include "lzo/lzo.h"
 #include "lzo/lzo1x.h"
 #include "lzo/lzoconf.h"
-#include "tech/buff.h"
 #include "tech/lcw.h"
 #include "tech/lzw.h"
 
@@ -23,15 +22,6 @@ const unsigned char* AsLzoBytes(
 }
 unsigned char* AsLzoBytes(void* data ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   return static_cast<unsigned char*>(data);
-}
-
-// The legacy LZW engine works on Buffer, a pointer and a size.
-Buffer AsBuffer(
-    std::span<const std::byte> bytes ABSL_ATTRIBUTE_LIFETIME_BOUND) {
-  return Buffer(static_cast<const void*>(bytes.data()), std::ssize(bytes));
-}
-Buffer AsBuffer(std::span<std::byte> bytes ABSL_ATTRIBUTE_LIFETIME_BOUND) {
-  return Buffer(static_cast<void*>(bytes.data()), std::ssize(bytes));
 }
 
 }  // namespace
@@ -82,12 +72,12 @@ int LzwBackend::Capacity(int block_size) {
 
 int LzwBackend::Compress(std::span<const std::byte> input,
                          std::span<std::byte> output) {
-  return LZW_Compress(AsBuffer(input), AsBuffer(output));
+  return LZW_Compress(input, output);
 }
 
 int LzwBackend::Decompress(std::span<const std::byte> input,
                            std::span<std::byte> output) {
-  // Sized buffers stop a corrupt code stream from reading or writing past
+  // The spans stop a corrupt code stream from reading or writing past
   // either buffer.
-  return LZW_Uncompress(AsBuffer(input), AsBuffer(output));
+  return LZW_Uncompress(input, output);
 }

@@ -359,7 +359,7 @@ void* Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags) {
  * HISTORY:                                                                *
  *   05/25/1990     : Created.                                             *
  ***************************************************************************/
-void Free(const void* pointer) {
+void Free(void* pointer) {
   union REGS regs;
   struct SREGS sregs;
 

@@ -42,8 +42,6 @@
 
 #include <cassert>
 
-#include "absl/base/attributes.h"
-
 /*
 **	This is a doubly linked list node. Typical use of this node is to derive
 **	objects from this node. The interface class for this node can be used
@@ -77,13 +75,6 @@ class GenericNode {
     }
   }
 
-  [[nodiscard]] GenericList* Main_List() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    const GenericNode* node = this;
-    while (node->PrevNode) {
-      node = PrevNode;
-    }
-    return (GenericList*)this;
-  }
   void Link(GenericNode* node) {
     assert(node != nullptr);
     node->Unlink();
@@ -165,10 +156,6 @@ class Node : public GenericNode {
  public:
   // Hiding the generic accessors is the entire purpose of this interface
   // class: it narrows their return types without adding virtual dispatch.
-  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
-  [[nodiscard]] List<T>* Main_List() const {
-    return static_cast<List<T>*>(GenericNode::Main_List());
-  }
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
   [[nodiscard]] T* Next() const { return static_cast<T*>(GenericNode::Next()); }
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)

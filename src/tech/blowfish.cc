@@ -51,6 +51,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include "absl/log/check.h"
 #include "base/numeric.h"
 
 /*
@@ -219,9 +220,7 @@ int BlowfishEngine::Encrypt(const void* plaintext, int length,
   if (plaintext == nullptr || length == 0) {
     return 0;
   }
-  if (cyphertext == nullptr) {
-    cyphertext = (void*)plaintext;
-  }
+  CHECK(cyphertext != nullptr) << "Blowfish needs a destination buffer";
 
   if (IsKeyed) {
     /*
@@ -232,10 +231,12 @@ int BlowfishEngine::Encrypt(const void* plaintext, int length,
     /*
     **	Process the buffer in 64 bit chunks.
     */
+    const char* in = static_cast<const char*>(plaintext);
+    char* out = static_cast<char*>(cyphertext);
     for (int index = 0; index < blocks; index++) {
-      Process_Block(plaintext, cyphertext, P_Encrypt);
-      plaintext = (char*)plaintext + BYTES_PER_BLOCK;
-      cyphertext = static_cast<char*>(cyphertext) + BYTES_PER_BLOCK;
+      Process_Block(in, out, P_Encrypt);
+      in += BYTES_PER_BLOCK;
+      out += BYTES_PER_BLOCK;
     }
     const int encrypted = blocks * BYTES_PER_BLOCK;
 
@@ -243,7 +244,7 @@ int BlowfishEngine::Encrypt(const void* plaintext, int length,
     **	Copy over any trailing left over appendix bytes.
     */
     if (encrypted < length) {
-      memmove(cyphertext, plaintext, base::ToSize(length - encrypted));
+      memmove(out, in, base::ToSize(length - encrypted));
     }
 
     return encrypted;
@@ -287,9 +288,7 @@ int BlowfishEngine::Decrypt(const void* cyphertext, int length,
   if (cyphertext == nullptr || length == 0) {
     return 0;
   }
-  if (plaintext == nullptr) {
-    plaintext = (void*)cyphertext;
-  }
+  CHECK(plaintext != nullptr) << "Blowfish needs a destination buffer";
 
   if (IsKeyed) {
     /*
@@ -300,10 +299,12 @@ int BlowfishEngine::Decrypt(const void* cyphertext, int length,
     /*
     **	Process the buffer in 64 bit chunks.
     */
+    const char* in = static_cast<const char*>(cyphertext);
+    char* out = static_cast<char*>(plaintext);
     for (int index = 0; index < blocks; index++) {
-      Process_Block(cyphertext, plaintext, P_Decrypt);
-      cyphertext = (char*)cyphertext + BYTES_PER_BLOCK;
-      plaintext = static_cast<char*>(plaintext) + BYTES_PER_BLOCK;
+      Process_Block(in, out, P_Decrypt);
+      in += BYTES_PER_BLOCK;
+      out += BYTES_PER_BLOCK;
     }
     const int encrypted = blocks * BYTES_PER_BLOCK;
 
@@ -311,7 +312,7 @@ int BlowfishEngine::Decrypt(const void* cyphertext, int length,
     **	Copy over any trailing left over appendix bytes.
     */
     if (encrypted < length) {
-      memmove(plaintext, cyphertext, base::ToSize(length - encrypted));
+      memmove(out, in, base::ToSize(length - encrypted));
     }
 
     return encrypted;

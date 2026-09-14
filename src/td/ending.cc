@@ -168,8 +168,8 @@ void Nod_Ending() {
 #else
   SysMemPage.Blit(*PseudoSeenBuff);
 #endif  // NOT_FOR_WIN95
-  const void* kanefinl = Load_Sample("KANEFINL.AUD");
-  const void* loopie6m = Load_Sample("LOOPIE6M.AUD");
+  void* kanefinl = Load_Sample("KANEFINL.AUD");
+  void* loopie6m = Load_Sample("LOOPIE6M.AUD");
 
   Play_Movie("NODFINAL", THEME_NONE, false);
 

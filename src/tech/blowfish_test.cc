@@ -2,6 +2,7 @@
 
 #include "tech/blowfish.h"
 
+#include <algorithm>
 #include <array>
 
 #include "gtest/gtest.h"
@@ -56,6 +57,34 @@ TEST(BlowfishEngineTest, DecryptsReferenceVectors) {
               8);
     EXPECT_EQ(plain, vector.plain);
   }
+}
+
+// In-place operation is the same non-const buffer passed as source and
+// destination; the trailing partial block travels through untouched.
+TEST(BlowfishEngineTest, RoundTripsInPlaceThroughOneBuffer) {
+  const Vector& vector = kVectors[2];
+  BlowfishEngine engine;
+  engine.Submit_Key(vector.key.data(), static_cast<int>(vector.key.size()));
+
+  std::array<unsigned char, 11> data{};
+  std::copy(vector.plain.begin(), vector.plain.end(), data.begin());
+  data[8] = 0xAA;
+  data[9] = 0xBB;
+  data[10] = 0xCC;
+  const std::array<unsigned char, 11> original = data;
+
+  EXPECT_EQ(
+      engine.Encrypt(data.data(), static_cast<int>(data.size()), data.data()),
+      8);
+  EXPECT_TRUE(
+      std::equal(vector.cypher.begin(), vector.cypher.end(), data.begin()));
+  EXPECT_EQ(data[8], 0xAA);
+  EXPECT_EQ(data[10], 0xCC);
+
+  EXPECT_EQ(
+      engine.Decrypt(data.data(), static_cast<int>(data.size()), data.data()),
+      8);
+  EXPECT_EQ(data, original);
 }
 
 }  // namespace

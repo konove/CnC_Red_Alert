@@ -109,10 +109,10 @@ void Choose_Side() {
   GameFileVqaIo nodbrief_io;  // Must outlive the open players.
   bool gdibrief = false;
   bool nodbrief = false;  // Movie opened successfully?
-  const void* staticaud;
+  void* staticaud;
   const void* oldfont;
-  const void* speechg;
-  const void* speechn;
+  void* speechg;
+  void* speechn;
   const void* speech = nullptr;
   int statichandle;
   bool speechplaying = false;

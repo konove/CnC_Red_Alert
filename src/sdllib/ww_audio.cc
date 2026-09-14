@@ -729,7 +729,7 @@ void* Load_Sample(const char* filename) {
   return buffer;
 }
 
-void Free_Sample(const void* sample) {
+void Free_Sample(void* sample) {
   if (sample) {
     Stop_Sample_Playing(sample);
     Free(sample);

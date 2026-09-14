@@ -42,8 +42,6 @@
 #include <cstddef>
 #include <span>
 
-#include "base/numeric.h"
-#include "tech/buff.h"
 #include "tech/span_sink.h"
 #include "tech/span_source.h"
 
@@ -55,12 +53,10 @@ void LZWEngine::Reset() {
   }
 }
 
-int LZWEngine::Compress(const Buffer& input, const Buffer& output) {
-  SpanSource instraw(
-      std::span(static_cast<const std::byte*>(input.Get_Buffer()),
-                base::ToSize(input.Get_Size())));
-  SpanSink outpipe(std::span(static_cast<std::byte*>(output.Get_Buffer()),
-                             base::ToSize(output.Get_Size())));
+int LZWEngine::Compress(std::span<const std::byte> input,
+                        std::span<std::byte> output) {
+  SpanSource instraw(input);
+  SpanSink outpipe(output);
 
   CodeType string_code = END_OF_STREAM;
   CodeType next_code = FIRST_CODE;
@@ -131,12 +127,10 @@ int LZWEngine::Compress(const Buffer& input, const Buffer& output) {
   return static_cast<int>(outpipe.bytes_written());
 }
 
-int LZWEngine::Uncompress(const Buffer& input, const Buffer& output) {
-  SpanSource instraw(
-      std::span(static_cast<const std::byte*>(input.Get_Buffer()),
-                base::ToSize(input.Get_Size())));
-  SpanSink outpipe(std::span(static_cast<std::byte*>(output.Get_Buffer()),
-                             base::ToSize(output.Get_Size())));
+int LZWEngine::Uncompress(std::span<const std::byte> input,
+                          std::span<std::byte> output) {
+  SpanSource instraw(input);
+  SpanSink outpipe(output);
 
   CodeType old_code;
   if (instraw.Read(std::as_writable_bytes(std::span(&old_code, 1))) == 0) {
@@ -271,12 +265,14 @@ int LZWEngine::Decode_String(unsigned char* ptr, CodeType code) {
   return count;
 }
 
-int LZW_Uncompress(const Buffer& inbuff, const Buffer& outbuff) {
+int LZW_Uncompress(std::span<const std::byte> input,
+                   std::span<std::byte> output) {
   LZWEngine lzw;
-  return lzw.Uncompress(inbuff, outbuff);
+  return lzw.Uncompress(input, output);
 }
 
-int LZW_Compress(const Buffer& inbuff, const Buffer& outbuff) {
+int LZW_Compress(std::span<const std::byte> input,
+                 std::span<std::byte> output) {
   LZWEngine lzw;
-  return lzw.Compress(inbuff, outbuff);
+  return lzw.Compress(input, output);
 }

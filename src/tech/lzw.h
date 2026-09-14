@@ -40,16 +40,19 @@
 #ifndef CNC_RED_ALERT_TECH_LZW_H_
 #define CNC_RED_ALERT_TECH_LZW_H_
 
+#include <cstddef>
 #include <cstdint>
-
-#include "tech/buff.h"
+#include <span>
 
 class LZWEngine {
  public:
   LZWEngine();
 
-  int Compress(const Buffer& input, const Buffer& output);
-  int Uncompress(const Buffer& input, const Buffer& output);
+  // Both return the number of bytes written to `output`. The output span
+  // bounds the write and the input span bounds the read, so a corrupt code
+  // stream cannot run past either buffer.
+  int Compress(std::span<const std::byte> input, std::span<std::byte> output);
+  int Uncompress(std::span<const std::byte> input, std::span<std::byte> output);
 
   void Reset();
 
@@ -92,7 +95,9 @@ class LZWEngine {
 // one 16-bit code per byte, plus the end-of-stream code.
 constexpr int LzwWorstCaseSize(int length) { return 2 * (length + 1); }
 
-int LZW_Compress(const Buffer& inbuff, const Buffer& outbuff);
-int LZW_Uncompress(const Buffer& inbuff, const Buffer& outbuff);
+// One-shot wrappers around a fresh LZWEngine; return the bytes written.
+int LZW_Compress(std::span<const std::byte> input, std::span<std::byte> output);
+int LZW_Uncompress(std::span<const std::byte> input,
+                   std::span<std::byte> output);
 
 #endif  // CNC_RED_ALERT_TECH_LZW_H_

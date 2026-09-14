@@ -16,9 +16,9 @@ char* Alloc(const base::ssize bytes_to_alloc, const MemoryFlagType flags) {
                              : new char[base::ToSize(bytes_to_alloc)];
 }
 
-void Free(const void* pointer) {
+void Free(void* pointer) {
   if (pointer) {
-    delete[] (char*)pointer;
+    delete[] static_cast<char*>(pointer);
   }
 }
 

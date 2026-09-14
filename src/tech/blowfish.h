@@ -68,6 +68,11 @@ class BlowfishEngine {
 
   void Submit_Key(const void* key, int length);
 
+  // Encrypts (decrypts) `length` bytes from the source buffer into the
+  // destination buffer and returns how many bytes were processed. Only whole
+  // 8-byte blocks are transformed; a trailing partial block is copied as is.
+  // The destination must not be null: to work in place, pass the same
+  // non-const buffer as both arguments. Without a key the data is copied.
   int Encrypt(const void* plaintext, int length, void* cyphertext);
   int Decrypt(const void* cyphertext, int length, void* plaintext);
 

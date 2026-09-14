@@ -70,10 +70,6 @@ Buffer::Buffer(void* buffer, base::ssize size)
 Buffer::Buffer(char* buffer, base::ssize size)
     : BufferPtr(buffer), Size(size), IsAllocated(false) {}
 
-// Alternate constructor for void const * pointer.
-Buffer::Buffer(const void* buffer, base::ssize size)
-    : BufferPtr((void*)buffer), Size(size), IsAllocated(false) {}
-
 /***********************************************************************************************
  * Buffer::Buffer -- Self-allocating constructor for buffer object. *
  *                                                                                             *

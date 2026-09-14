@@ -55,8 +55,6 @@ class Buffer {
                   base::ssize size = 0);
   explicit Buffer(void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND = nullptr,
                   base::ssize size = 0);
-  explicit Buffer(const void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                  base::ssize size = 0);
   explicit Buffer(base::ssize size);
   Buffer(const Buffer&) = delete;
   Buffer& operator=(const Buffer&) = delete;
