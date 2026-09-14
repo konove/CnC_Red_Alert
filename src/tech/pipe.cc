@@ -19,21 +19,26 @@
 #include "tech/pipe.h"
 
 #include <cstddef>
-#include <iterator>
 #include <span>
 
-#include "base/types.h"
-
-base::ssize Pipe::Put(std::span<const std::byte> bytes) {
-  if (sink_ != nullptr) {
-    return sink_->Put(bytes);
+bool Pipe::Put(std::span<const std::byte> bytes) {
+  if (!ok()) {
+    return false;
   }
-  return std::ssize(bytes);
+  return sink_ == nullptr || sink_->Put(bytes);
 }
 
-base::ssize Pipe::Flush() {
+bool Pipe::Flush() {
   if (sink_ != nullptr) {
-    return sink_->Flush();
+    sink_->Flush();
   }
-  return 0;
+  return ok();
+}
+
+bool Pipe::Finish() {
+  Flush();
+  if (sink_ != nullptr) {
+    sink_->Finish();
+  }
+  return ok();
 }

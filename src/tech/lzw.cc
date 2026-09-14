@@ -43,7 +43,6 @@
 #include <span>
 
 #include "base/numeric.h"
-#include "base/types.h"
 #include "tech/buff.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
@@ -63,7 +62,6 @@ int LZWEngine::Compress(const Buffer& input, const Buffer& output) {
   BufferPipe outpipe(std::span(static_cast<std::byte*>(output.Get_Buffer()),
                                base::ToSize(output.Get_Size())));
 
-  base::ssize outcount = 0;
   CodeType string_code = END_OF_STREAM;
   CodeType next_code = FIRST_CODE;
 
@@ -119,22 +117,21 @@ int LZWEngine::Compress(const Buffer& input, const Buffer& output) {
       **	sequence scan in preparation for building a new one. It
       **	also ensures that the character will be written out.
       */
-      outcount += outpipe.WriteObject(string_code);
+      outpipe.WriteObject(string_code);
       string_code = character;
     }
   }
 
-  outcount += outpipe.WriteObject(string_code);
+  outpipe.WriteObject(string_code);
   if (string_code != END_OF_STREAM) {
     string_code = END_OF_STREAM;
-    outcount += outpipe.WriteObject(string_code);
+    outpipe.WriteObject(string_code);
   }
 
-  return static_cast<int>(outcount);
+  return static_cast<int>(outpipe.bytes_written());
 }
 
 int LZWEngine::Uncompress(const Buffer& input, const Buffer& output) {
-  base::ssize outcount = 0;
   BufferStraw instraw(
       std::span(static_cast<const std::byte*>(input.Get_Buffer()),
                 base::ToSize(input.Get_Size())));
@@ -143,15 +140,15 @@ int LZWEngine::Uncompress(const Buffer& input, const Buffer& output) {
 
   CodeType old_code;
   if (instraw.Get(std::as_writable_bytes(std::span(&old_code, 1))) == 0) {
-    return static_cast<int>(outcount);
+    return static_cast<int>(outpipe.bytes_written());
   }
   // The first code is always a literal byte.
   if (old_code < 0 || old_code > 255) {
-    return static_cast<int>(outcount);
+    return static_cast<int>(outpipe.bytes_written());
   }
 
   auto character = static_cast<unsigned char>(old_code);
-  outcount += outpipe.WriteObject(character);
+  outpipe.WriteObject(character);
 
   int count;
   CodeType new_code;
@@ -188,7 +185,7 @@ int LZWEngine::Uncompress(const Buffer& input, const Buffer& output) {
     character = decode_stack[count - 1];
     while (count > 0) {
       --count;
-      outcount += outpipe.WriteObject(decode_stack[count]);
+      outpipe.WriteObject(decode_stack[count]);
     }
 
     /*
@@ -202,7 +199,7 @@ int LZWEngine::Uncompress(const Buffer& input, const Buffer& output) {
     old_code = new_code;
   }
 
-  return static_cast<int>(outcount);
+  return static_cast<int>(outpipe.bytes_written());
 }
 
 int LZWEngine::Make_LZW_Hash(CodeType code, unsigned char character) {

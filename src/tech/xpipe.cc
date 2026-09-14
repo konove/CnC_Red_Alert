@@ -34,8 +34,8 @@
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
  * Functions: * BufferPipe::Put -- Submit data to the buffered pipe segment. *
- *   FilePipe::Put -- Submit a block of data to the pipe. * FilePipe::End -- End
- *the file pipe handler.                                               *
+ *   FilePipe::Put -- Submit a block of data to the pipe. * FilePipe::Finish --
+ * Finish the file pipe handler.                                               *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -74,14 +74,20 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-base::ssize BufferPipe::Put(std::span<const std::byte> bytes) {
+bool BufferPipe::Put(std::span<const std::byte> bytes) {
+  if (!ok()) {
+    return false;
+  }
   const base::ssize count =
       std::min(std::ssize(bytes), std::ssize(buffer_) - index_);
   if (count > 0) {
     std::memmove(buffer_.data() + index_, bytes.data(), base::ToSize(count));
     index_ += count;
   }
-  return count;
+  if (count < std::ssize(bytes)) {
+    Fail();
+  }
+  return ok();
 }
 
 //---------------------------------------------------------------------------------------------------------
@@ -97,7 +103,7 @@ FilePipe::~FilePipe() {
 }
 
 /***********************************************************************************************
- * FilePipe::End -- End the file pipe handler. *
+ * FilePipe::Finish -- Finish the file pipe handler. *
  *                                                                                             *
  *    This routine is called when there will be no more data sent through the
  *pipe. It is      * responsible for cleaning up anything it needs to. This is
@@ -116,13 +122,13 @@ FilePipe::~FilePipe() {
  *                                                                                             *
  * HISTORY: * 07/05/1996 JLB : Created. *
  *=============================================================================================*/
-base::ssize FilePipe::End() {
-  const base::ssize total = Pipe::End();
+bool FilePipe::Finish() {
+  const bool result = Pipe::Finish();
   if (Valid_File() && HasOpened) {
     HasOpened = false;
     file_->Close();
   }
-  return total;
+  return result;
 }
 
 /***********************************************************************************************
@@ -141,14 +147,26 @@ base::ssize FilePipe::End() {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-base::ssize FilePipe::Put(std::span<const std::byte> bytes) {
-  if (Valid_File() && !bytes.empty()) {
-    if (!file_->IsOpen()) {
-      HasOpened = true;
-      file_->Open(FileAccess::kWrite);
-    }
-
-    return file_->Write(bytes);
+bool FilePipe::Put(std::span<const std::byte> bytes) {
+  if (!ok()) {
+    return false;
   }
-  return 0;
+  if (bytes.empty()) {
+    return true;
+  }
+  if (!Valid_File()) {
+    Fail();
+    return false;
+  }
+  if (!file_->IsOpen()) {
+    HasOpened = true;
+    if (!file_->Open(FileAccess::kWrite)) {
+      Fail();
+      return false;
+    }
+  }
+  if (file_->Write(bytes) != std::ssize(bytes)) {
+    Fail();
+  }
+  return ok();
 }

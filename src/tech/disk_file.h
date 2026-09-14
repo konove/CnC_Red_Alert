@@ -89,6 +89,7 @@ class DiskFile : public File {
   using File::Write;
   base::ssize Read(std::span<std::byte> buffer) override;
   base::ssize Write(std::span<const std::byte> buffer) override;
+  [[nodiscard]] bool ok() const override { return !failed_; }
 
   // Returns the new position, or 0 if the file is not open. A seek to before
   // the start of the file leaves the position where it was, as stdio does.
@@ -107,6 +108,9 @@ class DiskFile : public File {
 
   // The open file, or nullptr while it is closed.
   std::unique_ptr<DiskStream> stream_;
+
+  // Set when a read or write fails; cleared by Open().
+  bool failed_ = false;
 };
 
 #endif  // CNC_RED_ALERT_TECH_DISK_FILE_H_

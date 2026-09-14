@@ -107,20 +107,25 @@ base::ssize BufferStraw::Get(std::span<std::byte> buffer) {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 base::ssize FileStraw::Get(std::span<std::byte> buffer) {
-  if (Valid_File() && !buffer.empty()) {
-    if (!file_->IsOpen()) {
-      HasOpened = true;
-      if (!file_->IsAvailable()) {
-        return 0;
-      }
-      if (!file_->Open(FileAccess::kRead)) {
-        return 0;
-      }
-    }
-
-    return file_->Read(buffer);
+  if (!ok() || buffer.empty()) {
+    return 0;
   }
-  return 0;
+  if (!Valid_File()) {
+    Fail();
+    return 0;
+  }
+  if (!file_->IsOpen()) {
+    HasOpened = true;
+    if (!file_->IsAvailable() || !file_->Open(FileAccess::kRead)) {
+      Fail();
+      return 0;
+    }
+  }
+  const base::ssize count = file_->Read(buffer);
+  if (!file_->ok()) {
+    Fail();
+  }
+  return count;
 }
 
 /***********************************************************************************************

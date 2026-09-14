@@ -88,6 +88,7 @@ bool DiskFile::Open(const std::string_view filename, const FileAccess rights) {
 
 bool DiskFile::Open(const FileAccess rights) {
   Close();
+  failed_ = false;
   if (filename_.empty()) {
     return false;
   }
@@ -101,6 +102,9 @@ base::ssize DiskFile::Read(const std::span<std::byte> buffer) {
     return 0;
   }
   const base::ssize bytes_read = stream_->Read(buffer);
+  if (!stream_->ok()) {
+    failed_ = true;
+  }
   if (opened_for_this_read) {
     Close();
   }
@@ -113,6 +117,9 @@ base::ssize DiskFile::Write(const std::span<const std::byte> buffer) {
     return 0;
   }
   const base::ssize bytes_written = stream_->Write(buffer);
+  if (!stream_->ok()) {
+    failed_ = true;
+  }
   if (opened_for_this_write) {
     Close();
   }

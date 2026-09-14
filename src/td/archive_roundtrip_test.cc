@@ -1,6 +1,5 @@
 // Exercise real game serializers without loading MIX files or starting SDL.
 #include <array>
-#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <new>
@@ -8,7 +7,6 @@
 #include <vector>
 
 #include "base/numeric.h"
-#include "base/types.h"
 #include "gtest/gtest.h"
 #include "td/cell.h"
 #include "td/defines.h"
@@ -31,25 +29,14 @@
 #include "tech/xstraw.h"
 
 namespace {
-class CountingBufferPipe : public BufferPipe {
- public:
-  using BufferPipe::BufferPipe;
-  int count = 0;
-  base::ssize Put(std::span<const std::byte> data) override {
-    const base::ssize written = BufferPipe::Put(data);
-    EXPECT_EQ(written, std::ssize(data));
-    count += static_cast<int>(written);
-    return written;
-  }
-};
-
 template <class T>
 std::vector<uint8_t> Save(T& object) {
   std::vector<uint8_t> bytes(8192);
-  CountingBufferPipe sink(std::as_writable_bytes(std::span(bytes)));
+  BufferPipe sink(std::as_writable_bytes(std::span(bytes)));
   ArchiveWriter writer(sink);
   object.Serialize(writer);
-  bytes.resize(base::ToSize(sink.count));
+  EXPECT_TRUE(writer.ok());
+  bytes.resize(base::ToSize(sink.bytes_written()));
   return bytes;
 }
 
@@ -212,7 +199,7 @@ TEST_F(TdArchiveRoundTripTest, CellRestoresFlagsAndGappedObjectAndTriggerReferen
 // public map dimensions, rather than relying on the serializer for both ends.
 std::vector<uint8_t> MapFields(int32_t growth_count = 2) {
   std::vector<uint8_t> bytes(128);
-  CountingBufferPipe sink(std::as_writable_bytes(std::span(bytes)));
+  BufferPipe sink(std::as_writable_bytes(std::span(bytes)));
   ArchiveWriter writer(sink);
   int32_t x = 1;
   int32_t y = 2;
@@ -226,7 +213,8 @@ std::vector<uint8_t> MapFields(int32_t growth_count = 2) {
   bool forward = true;
   writer(x, y, width, height, total, growth_count, spread_count, scan, forward);
   writer(growth, spread);
-  bytes.resize(base::ToSize(sink.count));
+  EXPECT_TRUE(writer.ok());
+  bytes.resize(base::ToSize(sink.bytes_written()));
   return bytes;
 }
 

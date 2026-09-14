@@ -96,6 +96,10 @@ class File {
   // Writes buffer to the file and returns the number of bytes written.
   virtual base::ssize Write(std::span<const std::byte> buffer) = 0;
 
+  // Returns false if a read or write has failed since the file was last
+  // opened. Reaching the end of the file is not a failure.
+  [[nodiscard]] virtual bool ok() const = 0;
+
   // Reads one trivially copyable value. Returns false on a short read, in
   // which case value is partially written.
   template <typename T>

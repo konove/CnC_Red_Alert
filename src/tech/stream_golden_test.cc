@@ -43,11 +43,11 @@ constexpr int kSaveBlockSize = 4096;
 class VectorPipe : public Pipe {
  public:
   std::vector<uint8_t> bytes;
-  base::ssize Put(std::span<const std::byte> data) override {
+  bool Put(std::span<const std::byte> data) override {
     for (const std::byte byte : data) {
       bytes.push_back(std::to_integer<uint8_t>(byte));
     }
-    return std::ssize(data);
+    return true;
   }
 };
 
@@ -245,12 +245,11 @@ TEST(StreamGoldenTest, Base64EncodesInUuBlockLines) {
   BufferPipe block_pipe(std::as_writable_bytes(std::span(block)));
   Base64Pipe decoding_pipe(Base64Pipe::DECODE);
   decoding_pipe.SetSink(&block_pipe);
-  base::ssize total = 0;
   for (const auto& line : lines) {
-    total += decoding_pipe.Put(std::as_bytes(std::span(line)));
+    decoding_pipe.Put(std::as_bytes(std::span(line)));
   }
-  total += decoding_pipe.End();
-  ASSERT_EQ(total, kInputSize);
+  EXPECT_TRUE(decoding_pipe.Finish());
+  ASSERT_EQ(block_pipe.bytes_written(), kInputSize);
   block.resize(kInputSize);
   EXPECT_EQ(block, input);
 

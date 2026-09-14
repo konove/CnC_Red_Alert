@@ -4,16 +4,14 @@
 #define CNC_RED_ALERT_TECH_TEEPIPE_H_
 
 #include <cstddef>
-#include <iterator>
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "base/types.h"
 #include "tech/pipe.h"
 
 // Forwards bytes to the main sink and copies them to a diagnostic sink.
 // Both sinks must outlive this pipe. Diagnostic failures never affect the
-// main stream; copy_ok() reports incomplete copies. Inherited Flush/End only
+// main stream; copy_ok() reports incomplete copies. Inherited Flush/Finish only
 // flush the main sink; the caller must finalize the diagnostic sink separately.
 class TeePipe : public Pipe {
  public:
@@ -23,9 +21,9 @@ class TeePipe : public Pipe {
     SetSink(main_sink);
   }
 
-  base::ssize Put(std::span<const std::byte> bytes) override {
+  bool Put(std::span<const std::byte> bytes) override {
     if (copy_sink_ != nullptr && copy_ok_ && !bytes.empty()) {
-      copy_ok_ = copy_sink_->Put(bytes) == std::ssize(bytes);
+      copy_ok_ = copy_sink_->Put(bytes);
     }
     return Pipe::Put(bytes);
   }

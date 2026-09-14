@@ -93,6 +93,7 @@ class GameFile : public File {
   // nothing and returns 0.
   using File::Write;
   base::ssize Write(std::span<const std::byte> buffer) override;
+  [[nodiscard]] bool ok() const override { return !failed_; }
 
   // Returns the new position, or 0 if the file is not open.
   base::ssize Seek(base::ssize offset,
@@ -109,6 +110,9 @@ class GameFile : public File {
 
   // The bytes of the open file, or nullptr while it is closed.
   std::unique_ptr<ByteStream> stream_;
+
+  // Set when a read or write fails; cleared by Open().
+  bool failed_ = false;
 };
 
 #endif  // CNC_RED_ALERT_TECH_GAME_FILE_H_

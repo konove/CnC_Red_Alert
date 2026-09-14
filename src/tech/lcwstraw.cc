@@ -152,12 +152,17 @@ base::ssize LCWStraw::Get(std::span<std::byte> buffer) {
       int incount = static_cast<int>(
           Straw::Get(std::as_writable_bytes(std::span(&BlockHeader, 1))));
       if (incount != sizeof(BlockHeader)) {
+        // Running out between blocks is the normal end of the stream.
+        if (incount != 0) {
+          Fail();
+        }
         break;
       }
       // A corrupt header must not size reads or writes past Buffer.
       if (!BlockHeaderFits(BlockHeader.CompCount, BlockHeader.UncompCount,
                            BlockSize + SafetyMargin)) {
         corrupt_ = true;
+        Fail();
         break;
       }
 
@@ -166,6 +171,7 @@ base::ssize LCWStraw::Get(std::span<std::byte> buffer) {
       incount = static_cast<int>(
           Straw::Get(WritableByteView(ptr, BlockHeader.CompCount)));
       if (std::cmp_not_equal(incount, BlockHeader.CompCount)) {
+        Fail();
         break;
       }
 
@@ -175,6 +181,7 @@ base::ssize LCWStraw::Get(std::span<std::byte> buffer) {
               Buffer.data(), base::ToSize(BlockSize + SafetyMargin))));
       if (std::cmp_not_equal(produced, BlockHeader.UncompCount)) {
         corrupt_ = true;
+        Fail();
         break;
       }
       Counter = BlockHeader.UncompCount;

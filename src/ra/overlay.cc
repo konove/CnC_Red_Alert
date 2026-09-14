@@ -50,7 +50,6 @@
 #include <span>
 
 #include "base/numeric.h"
-#include "base/types.h"
 #include "ra/building.h"
 #include "ra/ccini.h"
 #include "ra/cell.h"
@@ -372,14 +371,15 @@ void OverlayClass::Write_INI(CCINIClass& ini) {
 
   comppipe.SetSink(&bpipe);
 
-  base::ssize total = 0;
   CellClass* cellptr = &Map[static_cast<CELL>(0)];
   for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {
-    total += comppipe.WriteObject(cellptr->Overlay);
+    comppipe.WriteObject(cellptr->Overlay);
     cellptr++;
   }
-  if (total) {
-    ini.Put_UUBlock("OverlayPack", staging_buffer, static_cast<int>(total));
+  comppipe.Finish();
+  if (bpipe.bytes_written() > 0) {
+    ini.Put_UUBlock("OverlayPack", staging_buffer,
+                    static_cast<int>(bpipe.bytes_written()));
   }
 
   //	for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {

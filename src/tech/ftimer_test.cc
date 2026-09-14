@@ -5,7 +5,6 @@
 #include <span>
 #include <vector>
 
-#include "base/types.h"
 #include "gtest/gtest.h"
 #include "tech/archive.h"
 #include "tech/pipe.h"
@@ -22,11 +21,11 @@ int64_t FakeTick::now = 0;
 
 class ByteSink : public Pipe {
  public:
-  base::ssize Put(std::span<const std::byte> data) override {
+  bool Put(std::span<const std::byte> data) override {
     for (const std::byte byte : data) {
       bytes.push_back(std::to_integer<uint8_t>(byte));
     }
-    return std::ssize(data);
+    return true;
   }
   std::vector<uint8_t> bytes;
 };

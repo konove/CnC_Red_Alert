@@ -64,8 +64,8 @@ class Base64Pipe : public Pipe {
   Base64Pipe(Base64Pipe&&) = delete;
   Base64Pipe& operator=(Base64Pipe&&) = delete;
 
-  base::ssize Flush() override;
-  base::ssize Put(std::span<const std::byte> bytes) override;
+  bool Flush() override;
+  bool Put(std::span<const std::byte> bytes) override;
 
  private:
   /*

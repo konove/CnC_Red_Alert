@@ -23,11 +23,11 @@ namespace {
 class ByteSink : public Pipe {
  public:
   std::vector<uint8_t> bytes;
-  base::ssize Put(std::span<const std::byte> data) override {
+  bool Put(std::span<const std::byte> data) override {
     for (const std::byte byte : data) {
       bytes.push_back(std::to_integer<uint8_t>(byte));
     }
-    return std::ssize(data);
+    return true;
   }
 };
 
@@ -215,18 +215,18 @@ TEST(LcwCompTest, MapAndOverlayPacksRoundTripThroughStagingBuffer) {
 
   std::vector<char> staging(32000);
   BufferPipe map_sink(std::as_writable_bytes(std::span(staging)));
-  base::ssize map_total = 0;
   {
     LCWPipe comp(LCWPipe::COMPRESS);
     comp.SetSink(&map_sink);
     for (const uint16_t& type : types) {
-      map_total += comp.WriteObject(type);
+      comp.WriteObject(type);
     }
     for (const uint8_t& icon : icons) {
-      map_total += comp.WriteObject(icon);
+      comp.WriteObject(icon);
     }
-    map_total += comp.Flush();
+    EXPECT_TRUE(comp.Finish());
   }
+  const base::ssize map_total = map_sink.bytes_written();
   ASSERT_GT(map_total, 0);
   ASSERT_LT(map_total, 32000);  // Nothing was clipped by the staging buffer.
 
@@ -246,15 +246,15 @@ TEST(LcwCompTest, MapAndOverlayPacksRoundTripThroughStagingBuffer) {
   EXPECT_EQ(read_icons, icons);
 
   BufferPipe overlay_sink(std::as_writable_bytes(std::span(staging)));
-  base::ssize overlay_total = 0;
   {
     LCWPipe comppipe(LCWPipe::COMPRESS);
     comppipe.SetSink(&overlay_sink);
     for (const int8_t& overlay : overlays) {
-      overlay_total += comppipe.WriteObject(overlay);
+      comppipe.WriteObject(overlay);
     }
-    overlay_total += comppipe.Flush();
+    EXPECT_TRUE(comppipe.Finish());
   }
+  const base::ssize overlay_total = overlay_sink.bytes_written();
   ASSERT_GT(overlay_total, 0);
   ASSERT_LT(overlay_total, 32000);
 

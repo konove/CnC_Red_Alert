@@ -66,7 +66,7 @@ apply_dotenv_settings(td_archive_roundtrip_test)
 
 add_gtest(
     NAME td_saveload_test
-    SOURCES saveload_test.cc savevalues_test.cc cellvalues.cc scorevalues.cc door.cc flasher.cc fuse.cc super.cc fixedmath.cc rand.cc
+    SOURCES savevalues_test.cc cellvalues.cc scorevalues.cc door.cc flasher.cc fuse.cc super.cc fixedmath.cc rand.cc
     LIBS tech
 )
 

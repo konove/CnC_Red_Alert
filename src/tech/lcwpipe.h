@@ -61,8 +61,8 @@ class LCWPipe : public Pipe {
   explicit LCWPipe(CompControl /*control*/, int blocksize = 1024 * 8);
   ~LCWPipe() override = default;
 
-  base::ssize Flush() override;
-  base::ssize Put(std::span<const std::byte> bytes) override;
+  bool Flush() override;
+  bool Put(std::span<const std::byte> bytes) override;
 
  private:
   /*

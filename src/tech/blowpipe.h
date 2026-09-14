@@ -59,9 +59,9 @@ class BlowPipe : public Pipe {
 
   explicit BlowPipe(CryptControl control) : Control(control) {}
   ~BlowPipe() override = default;
-  base::ssize Flush() override;
+  bool Flush() override;
 
-  base::ssize Put(std::span<const std::byte> bytes) override;
+  bool Put(std::span<const std::byte> bytes) override;
 
   // Submit key for blowfish engine.
   void Key(const void* key, int length);

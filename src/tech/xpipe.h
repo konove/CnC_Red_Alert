@@ -62,7 +62,11 @@ class BufferPipe : public Pipe {
   // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
   explicit BufferPipe(std::span<std::byte> buffer) : buffer_(buffer) {}
 
-  base::ssize Put(std::span<const std::byte> bytes) override;
+  // Stores what fits, failing if that is not every byte.
+  bool Put(std::span<const std::byte> bytes) override;
+
+  // Returns the number of bytes stored so far.
+  [[nodiscard]] base::ssize bytes_written() const { return index_; }
 
  private:
   std::span<std::byte> buffer_;
@@ -87,8 +91,8 @@ class FilePipe : public Pipe {
   FilePipe(FilePipe&&) = delete;
   FilePipe& operator=(FilePipe&&) = delete;
 
-  base::ssize Put(std::span<const std::byte> bytes) override;
-  base::ssize End() override;
+  bool Put(std::span<const std::byte> bytes) override;
+  bool Finish() override;
 
  private:
   File* file_;

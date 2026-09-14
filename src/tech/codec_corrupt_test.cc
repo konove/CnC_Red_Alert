@@ -4,6 +4,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <iterator>
 #include <span>
 #include <string_view>
 #include <vector>
@@ -27,11 +28,11 @@ constexpr int kBlockSize = 128;
 class ByteSink : public Pipe {
  public:
   std::vector<uint8_t> bytes;
-  base::ssize Put(std::span<const std::byte> data) override {
+  bool Put(std::span<const std::byte> data) override {
     for (const std::byte byte : data) {
       bytes.push_back(std::to_integer<uint8_t>(byte));
     }
-    return std::ssize(data);
+    return true;
   }
 };
 
@@ -108,13 +109,54 @@ void ExpectDecodes(const std::vector<uint8_t>& encoded,
   PipeType pipe(PipeType::DECOMPRESS, kBlockSize);
   pipe.SetSink(sink);
   pipe.Put(std::as_bytes(std::span(encoded)));
-  pipe.Flush();
+  EXPECT_FALSE(pipe.Finish()) << "pipe";
   EXPECT_EQ(sink.bytes, expected) << "pipe";
 
   BufferStraw source(std::as_bytes(std::span(encoded)));
   StrawType straw(StrawType::DECOMPRESS, kBlockSize);
   straw.SetSource(source);
   EXPECT_EQ(Drain(straw), expected) << "straw";
+  EXPECT_FALSE(straw.ok()) << "straw";
+}
+
+// Every truncation of a valid stream keeps the whole blocks before the cut,
+// drops the partial one and fails, in the pipe and the straw alike.
+template <class PipeType, class StrawType>
+void ExpectTruncationsFail() {
+  std::vector<uint8_t> plain(300);
+  for (int i = 0; auto& byte : plain) {
+    byte = static_cast<uint8_t>(i++ * 7);
+  }
+  const std::vector<uint8_t> encoded = Compress<PipeType>(plain);
+  const auto count_at = [&encoded](base::ssize at) {
+    return encoded[static_cast<std::size_t>(at)] |
+           (encoded[static_cast<std::size_t>(at + 1)] << 8);
+  };
+  const base::ssize first_block_end = 4 + count_at(0);
+  for (const base::ssize cut : {base::ssize{2}, base::ssize{4}, base::ssize{9},
+                                first_block_end + 1, std::ssize(encoded) - 1}) {
+    const std::vector<uint8_t> truncated(encoded.begin(),
+                                         encoded.begin() + cut);
+    // Only blocks that end before the cut decode.
+    base::ssize decoded = 0;
+    for (base::ssize at = 0; at + 4 <= cut;) {
+      const base::ssize block_end = at + 4 + count_at(at);
+      if (block_end > cut) {
+        break;
+      }
+      decoded += count_at(at + 2);
+      at = block_end;
+    }
+    const std::vector<uint8_t> expected(plain.begin(), plain.begin() + decoded);
+    SCOPED_TRACE(cut);
+    ExpectDecodes<PipeType, StrawType>(truncated, expected);
+  }
+}
+
+TEST(CodecCorruptTest, TruncatedStreamsFailInBothDirections) {
+  ExpectTruncationsFail<LCWPipe, LCWStraw>();
+  ExpectTruncationsFail<LZWPipe, LZWStraw>();
+  ExpectTruncationsFail<LZOPipe, LZOStraw>();
 }
 
 TEST(CodecCorruptTest, LcwRejectsOversizedCompressedCount) {

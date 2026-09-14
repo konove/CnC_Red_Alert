@@ -130,6 +130,9 @@ class ArchiveWriter : public ArchiveBase<ArchiveWriter> {
   explicit ArchiveWriter(Pipe& sink ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : sink_(sink) {}
 
+  // Returns false once a write to the sink, or past it, has failed.
+  [[nodiscard]] bool ok() const { return sink_.ok(); }
+
   // Writes a four-byte marker that the reader checks with Section().
   void Section(uint32_t tag) { Scalar(tag); }
 

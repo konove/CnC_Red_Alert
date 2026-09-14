@@ -52,13 +52,17 @@ DiskStream::~DiskStream() { IO_Close_File(handle_); }
 
 base::ssize DiskStream::Read(const std::span<std::byte> buffer) {
   size_t bytes_read = 0;
-  IO_Read_File(handle_, buffer.data(), buffer.size(), bytes_read);
+  if (!IO_Read_File(handle_, buffer.data(), buffer.size(), bytes_read)) {
+    failed_ = true;
+  }
   return base::ToSigned(bytes_read);
 }
 
 base::ssize DiskStream::Write(const std::span<const std::byte> buffer) {
   size_t bytes_written = 0;
-  IO_Write_File(handle_, buffer.data(), buffer.size(), bytes_written);
+  if (!IO_Write_File(handle_, buffer.data(), buffer.size(), bytes_written)) {
+    failed_ = true;
+  }
   return base::ToSigned(bytes_written);
 }
 
@@ -103,6 +107,7 @@ base::ssize RangeStream::Read(const std::span<std::byte> buffer) {
   // between reads of different windows without the two disturbing each other.
   if (inner_->Seek(offset_ + position_, SeekOrigin::kBegin) !=
       offset_ + position_) {
+    failed_ = true;
     return 0;
   }
   const base::ssize bytes_read =

@@ -75,7 +75,6 @@
 #include <iterator>
 #include <new>
 
-#include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/ccptr.h"
@@ -1085,31 +1084,29 @@ int32_t MapClass::Overpass() {
  * INPUT:   pipe  -- Reference to the output pipe that will receive the map
  *template data.     *
  *                                                                                             *
- * OUTPUT:  Returns with the total number of bytes output to the pipe. *
+ * OUTPUT:  bool; Did every byte reach the end of the pipe? *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int MapClass::Write_Binary(Pipe& pipe) {
-  base::ssize total = 0;
-
+bool MapClass::Write_Binary(Pipe& pipe) {
   LCWPipe comp(LCWPipe::COMPRESS);
   comp.SetSink(&pipe);
 
   CellClass* cellptr = &Array[0];
   for (int i = 0; i < MAP_CELL_TOTAL; i++) {
-    total += comp.WriteObject(cellptr->TType);
+    comp.WriteObject(cellptr->TType);
     cellptr++;
   }
 
   cellptr = &Array[0];
   for (int i = 0; i < MAP_CELL_TOTAL; i++) {
-    total += comp.WriteObject(cellptr->TIcon);
+    comp.WriteObject(cellptr->TIcon);
     cellptr++;
   }
 
-  return static_cast<int>(total);
+  return comp.Finish();
 }
 
 /***********************************************************************************************

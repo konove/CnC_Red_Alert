@@ -549,9 +549,9 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   sha.Result(digest);
   fpipe.Put(std::as_bytes(std::span(digest)));
 
-  pipe.End();
-
-  return true;
+  // Finish closes the file, so it runs even when the tee already failed.
+  const bool finished = pipe.Finish();
+  return finished && tee.ok();
 }
 
 /***************************************************************************

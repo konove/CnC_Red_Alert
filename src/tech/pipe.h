@@ -44,8 +44,6 @@
 #include <span>
 #include <type_traits>
 
-#include "base/types.h"
-
 /*
 **	A "push through" pipe interface abstract class used for such purposes as
 *compression *	and translation of data. In STL terms, this is functionally
@@ -63,26 +61,45 @@ class Pipe {
   Pipe(Pipe&&) = delete;
   Pipe& operator=(Pipe&&) = delete;
 
-  virtual base::ssize Flush();
-  virtual base::ssize End() { return Flush(); }
   void SetSink(Pipe* sink) { sink_ = sink; }
   void SetSink(Pipe& sink) { sink_ = &sink; }
 
-  // Pushes bytes down the chain and returns how many reached its far end.
-  // A link that buffers returns less than it was given; the rest follows on
-  // a later Put or Flush.
-  virtual base::ssize Put(std::span<const std::byte> bytes);
+  // Accepts bytes, buffering them or passing them down the chain. Returns
+  // true if every byte was accepted. Once any link in the chain has failed,
+  // ok() is false and every later Put returns false.
+  virtual bool Put(std::span<const std::byte> bytes);
 
-  // Pushes one trivially copyable value; returns what Put returns.
+  // Pushes everything buffered (a partial compression block, a Blowfish
+  // tail, Base64 padding) all the way to the end of the chain. The chain
+  // stays usable, and a Flush with nothing buffered emits nothing. Returns
+  // ok().
+  virtual bool Flush();
+
+  // Flushes, then lets every link release what it holds: a file pipe closes
+  // a file it opened. The last call made on a chain. Returns ok().
+  virtual bool Finish();
+
+  // Returns false once this link or any link after it has failed.
+  [[nodiscard]] bool ok() const {
+    return ok_ && (sink_ == nullptr || sink_->ok());
+  }
+
+  // Puts one trivially copyable value; returns what Put returns.
   template <typename T>
     requires std::is_trivially_copyable_v<T>
-  base::ssize WriteObject(const T& value) {
+  bool WriteObject(const T& value) {
     return Put(std::as_bytes(std::span(&value, 1)));
   }
 
  protected:
+  // Marks this link as failed, which makes ok() false for good.
+  void Fail() { ok_ = false; }
+
   // The pipe we push data to. Caller must ensure sink outlives this pipe.
   Pipe* sink_ = nullptr;
+
+ private:
+  bool ok_ = true;
 };
 
 #endif  // CNC_RED_ALERT_TECH_PIPE_H_

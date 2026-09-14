@@ -1727,14 +1727,14 @@ bool Main_Loop() {
         class HexPipe : public Pipe {
          public:
           std::string fields;
-          base::ssize Put(std::span<const std::byte> bytes) override {
+          bool Put(std::span<const std::byte> bytes) override {
             constexpr char hex[] = "0123456789abcdef";
             for (const std::byte byte : bytes) {
               const auto value = std::to_integer<uint8_t>(byte);
               fields += hex[value >> 4];
               fields += hex[value & 15];
             }
-            return std::ssize(bytes);
+            return true;
           }
         } sink;
         ArchiveWriter writer(sink);
@@ -1763,7 +1763,7 @@ bool Main_Loop() {
       bool trace = std::getenv("TD_MAP_TRACE") != nullptr;
       std::string fields;
       uint64_t hash = 14695981039346656037ULL;
-      base::ssize Put(std::span<const std::byte> bytes) override {
+      bool Put(std::span<const std::byte> bytes) override {
         for (const std::byte byte : bytes) {
           const auto value = std::to_integer<uint8_t>(byte);
           hash = (hash ^ value) * 1099511628211ULL;
@@ -1773,7 +1773,7 @@ bool Main_Loop() {
             fields += hex[value & 15];
           }
         }
-        return std::ssize(bytes);
+        return true;
       }
     } map_sink;
     ArchiveWriter map_writer(map_sink);

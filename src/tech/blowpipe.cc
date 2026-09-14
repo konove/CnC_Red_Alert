@@ -47,7 +47,6 @@
 #include <utility>
 
 #include "base/numeric.h"
-#include "base/types.h"
 #include "tech/blowfish.h"
 #include "tech/byte_view.h"
 #include "tech/pipe.h"
@@ -66,14 +65,13 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-base::ssize BlowPipe::Flush() {
-  base::ssize total = 0;
+bool BlowPipe::Flush() {
   if (Counter > 0 && BF.has_value()) {
-    total += Pipe::Put(ByteView(Buffer.data(), Counter));
+    Pipe::Put(ByteView(Buffer.data(), Counter));
   }
   Counter = 0;
-  total += Pipe::Flush();
-  return total;
+  Pipe::Flush();
+  return ok();
 }
 
 /***********************************************************************************************
@@ -96,7 +94,7 @@ base::ssize BlowPipe::Flush() {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-base::ssize BlowPipe::Put(std::span<const std::byte> bytes) {
+bool BlowPipe::Put(std::span<const std::byte> bytes) {
   const void* source = bytes.data();
   int slen = static_cast<int>(bytes.size());
   if (source == nullptr || slen < 1) {
@@ -111,8 +109,6 @@ base::ssize BlowPipe::Put(std::span<const std::byte> bytes) {
     return Pipe::Put(bytes);
   }
   BlowfishEngine& engine = *BF;
-
-  base::ssize total = 0;
 
   /*
   **	If there is a partial block accumulated, then tag on the new data to
@@ -134,7 +130,7 @@ base::ssize BlowPipe::Put(std::span<const std::byte> bytes) {
       } else {
         engine.Encrypt(Buffer.data(), kBlockSize, Buffer.data());
       }
-      total += Pipe::Put(ByteView(Buffer.data(), kBlockSize));
+      Pipe::Put(ByteView(Buffer.data(), kBlockSize));
       Counter = 0;
     }
   }
@@ -149,7 +145,7 @@ base::ssize BlowPipe::Put(std::span<const std::byte> bytes) {
     } else {
       engine.Encrypt(source, kBlockSize, Buffer.data());
     }
-    total += Pipe::Put(ByteView(Buffer.data(), kBlockSize));
+    Pipe::Put(ByteView(Buffer.data(), kBlockSize));
     source = (char*)source + kBlockSize;
     slen -= kBlockSize;
   }
@@ -168,7 +164,7 @@ base::ssize BlowPipe::Put(std::span<const std::byte> bytes) {
   **	Return with the total number of bytes flushed out to the final end of
   *the *	pipe chain.
   */
-  return total;
+  return ok();
 }
 
 /***********************************************************************************************

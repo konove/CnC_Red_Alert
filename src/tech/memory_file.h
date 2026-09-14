@@ -80,6 +80,7 @@ class MemoryFile final : public File {
   using File::Write;
   base::ssize Read(std::span<std::byte> buffer) override;
   base::ssize Write(std::span<const std::byte> buffer) override;
+  [[nodiscard]] bool ok() const override { return true; }
   base::ssize Seek(base::ssize offset,
                    SeekOrigin origin = SeekOrigin::kCurrent) override;
   base::ssize Size() override;

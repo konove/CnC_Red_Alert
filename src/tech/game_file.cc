@@ -92,6 +92,7 @@ bool GameFile::Open(const std::string_view name, const FileAccess rights) {
 
 bool GameFile::Open(const FileAccess rights) {
   Close();
+  failed_ = false;
   stream_ = OpenStream(name_, rights);
   return IsOpen();
 }
@@ -102,6 +103,9 @@ base::ssize GameFile::Read(const std::span<std::byte> buffer) {
     return 0;
   }
   const base::ssize bytes_read = stream_->Read(buffer);
+  if (!stream_->ok()) {
+    failed_ = true;
+  }
   if (opened_for_this_read) {
     Close();
   }
@@ -114,6 +118,9 @@ base::ssize GameFile::Write(const std::span<const std::byte> buffer) {
     return 0;
   }
   const base::ssize bytes_written = stream_->Write(buffer);
+  if (!stream_->ok()) {
+    failed_ = true;
+  }
   if (opened_for_this_write) {
     Close();
   }

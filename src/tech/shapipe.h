@@ -62,7 +62,7 @@ class SHAPipe : public Pipe {
   SHAPipe(SHAPipe&&) = delete;
   SHAPipe& operator=(SHAPipe&&) = delete;
 
-  base::ssize Put(std::span<const std::byte> bytes) override;
+  bool Put(std::span<const std::byte> bytes) override;
 
   // Fetch the SHA hash value (stored in result buffer -- 20 bytes long).
   int Result(void* result) const;

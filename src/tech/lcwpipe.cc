@@ -49,7 +49,6 @@
 #include <utility>
 
 #include "base/numeric.h"
-#include "base/types.h"
 #include "tech/byte_view.h"
 #include "tech/codec_block.h"
 #include "tech/lcw.h"
@@ -102,14 +101,12 @@ LCWPipe::LCWPipe(CompControl control, int blocksize)
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-base::ssize LCWPipe::Put(std::span<const std::byte> bytes) {
+bool LCWPipe::Put(std::span<const std::byte> bytes) {
   const void* source = bytes.data();
   int slen = static_cast<int>(bytes.size());
   if (source == nullptr || slen < 1) {
     return Pipe::Put(bytes);
   }
-
-  base::ssize total = 0;
 
   /*
   **	Copy as much as can fit into the buffer from the source data supplied.
@@ -140,6 +137,7 @@ base::ssize LCWPipe::Put(std::span<const std::byte> bytes) {
           if (!BlockHeaderFits(BlockHeader.CompCount, BlockHeader.UncompCount,
                                BlockSize + SafetyMargin)) {
             corrupt_ = true;
+            Fail();
             break;
           }
         }
@@ -171,9 +169,10 @@ base::ssize LCWPipe::Put(std::span<const std::byte> bytes) {
           if (std::cmp_not_equal(produced, BlockHeader.UncompCount)) {
             Counter = 0;
             corrupt_ = true;
+            Fail();
             break;
           }
-          total += Pipe::Put(ByteView(Buffer2.data(), BlockHeader.UncompCount));
+          Pipe::Put(ByteView(Buffer2.data(), BlockHeader.UncompCount));
           Counter = 0;
           BlockHeader.CompCount = 0xFFFF;
         }
@@ -198,8 +197,8 @@ base::ssize LCWPipe::Put(std::span<const std::byte> bytes) {
 
         BlockHeader.CompCount = static_cast<uint16_t>(len);
         BlockHeader.UncompCount = static_cast<uint16_t>(BlockSize);
-        total += Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
-        total += Pipe::Put(ByteView(Buffer2.data(), len));
+        Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
+        Pipe::Put(ByteView(Buffer2.data(), len));
         Counter = 0;
       }
     }
@@ -216,8 +215,8 @@ base::ssize LCWPipe::Put(std::span<const std::byte> bytes) {
 
       BlockHeader.CompCount = static_cast<uint16_t>(len);
       BlockHeader.UncompCount = static_cast<uint16_t>(BlockSize);
-      total += Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
-      total += Pipe::Put(ByteView(Buffer2.data(), len));
+      Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
+      Pipe::Put(ByteView(Buffer2.data(), len));
     }
 
     /*
@@ -230,7 +229,7 @@ base::ssize LCWPipe::Put(std::span<const std::byte> bytes) {
     }
   }
 
-  return total;
+  return ok();
 }
 
 /***********************************************************************************************
@@ -252,53 +251,30 @@ base::ssize LCWPipe::Put(std::span<const std::byte> bytes) {
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-base::ssize LCWPipe::Flush() {
-  base::ssize total = 0;
-
-  /*
-  **	If there is accumulated data, then it must processed.
-  */
-  if (Counter > 0) {
-    if (Control == DECOMPRESS) {
-      /*
-      **	If the accumulated data is insufficient to make a block header,
-      *then *	this means the data has been truncated. Just dump the data
-      *through *	as if were already decompressed.
-      */
-      if (BlockHeader.CompCount == 0xFFFF) {
-        total += Pipe::Put(ByteView(Buffer.data(), Counter));
-        Counter = 0;
-      }
-
-      /*
-      **	There appears to be a partial block accumulated in the buffer.
-      *It would *	be disastrous to try to decompress the data since there
-      *wouldn't be *	the special end of data code that LCW decompression
-      *needs. In this *	case, dump the data out as if it were already
-      *decompressed.
-      */
-      if (Counter > 0) {
-        total += Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
-        total += Pipe::Put(ByteView(Buffer.data(), Counter));
-        Counter = 0;
-        BlockHeader.CompCount = 0xFFFF;
-      }
-
-    } else {
-      /*
-      **	A partial block in the compression process is a normal
-      *occurrence. Just *	compress the partial block and output normally.
-      */
-      const int len = LCW_Comp(Buffer.data(), Buffer2.data(), Counter);
-
-      BlockHeader.CompCount = static_cast<uint16_t>(len);
-      BlockHeader.UncompCount = static_cast<uint16_t>(Counter);
-      total += Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
-      total += Pipe::Put(ByteView(Buffer2.data(), len));
+bool LCWPipe::Flush() {
+  if (Control == DECOMPRESS) {
+    // A partial header or block means the stream was cut short. The block
+    // cannot be decoded without its end, so it is dropped.
+    if (Counter > 0 || BlockHeader.CompCount != 0xFFFF) {
       Counter = 0;
+      BlockHeader.CompCount = 0xFFFF;
+      corrupt_ = true;
+      Fail();
     }
+  } else if (Counter > 0) {
+    /*
+    **	A partial block in the compression process is a normal
+    *occurrence. Just *	compress the partial block and output normally.
+    */
+    const int len = LCW_Comp(Buffer.data(), Buffer2.data(), Counter);
+
+    BlockHeader.CompCount = static_cast<uint16_t>(len);
+    BlockHeader.UncompCount = static_cast<uint16_t>(Counter);
+    Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
+    Pipe::Put(ByteView(Buffer2.data(), len));
+    Counter = 0;
   }
 
-  total += Pipe::Flush();
-  return total;
+  Pipe::Flush();
+  return ok();
 }

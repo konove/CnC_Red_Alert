@@ -70,7 +70,6 @@
 #include "td/object.h"
 #include "td/overlay.h"
 #include "td/randomstate.h"
-#include "td/savepipe.h"
 #include "td/scenario.h"
 #include "td/score.h"
 #include "td/serialize.h"
@@ -157,8 +156,7 @@ bool Save_Game(int id, const char* descr) {
   }
 
   FilePipe sink(file);
-  SaveGamePipe checked_sink(sink);
-  ArchiveWriter writer(checked_sink);
+  ArchiveWriter writer(sink);
   writer.Section(FourCC("FRAM"));
   writer(Frame);
   const bool saved = [&] {
@@ -191,13 +189,13 @@ bool Save_Game(int id, const char* descr) {
     **	Save the Logic & Map layers
     */
     Logic.Serialize(writer);
-    if (!checked_sink.ok()) {
+    if (!writer.ok()) {
       return false;
     }
 
     for (i = 0; i < LAYER_COUNT; i++) {
       MouseClass::Layer[i].Serialize(writer);
-      if (!checked_sink.ok()) {
+      if (!writer.ok()) {
         return false;
       }
     }
@@ -206,7 +204,7 @@ bool Save_Game(int id, const char* descr) {
     **	Save the Score
     */
     Score.Serialize(writer);
-    if (!checked_sink.ok()) {
+    if (!writer.ok()) {
       return false;
     }
 
@@ -214,7 +212,7 @@ bool Save_Game(int id, const char* descr) {
     **	Save the AI Base
     */
     Base.Serialize(writer);
-    if (!checked_sink.ok()) {
+    if (!writer.ok()) {
       return false;
     }
 
@@ -227,7 +225,7 @@ bool Save_Game(int id, const char* descr) {
 
     return true;
   }();
-  return saved && checked_sink.ok();
+  return saved && writer.ok();
 }
 
 // Load heaps before ordered object lists; rebuild runtime placement/UI state last.

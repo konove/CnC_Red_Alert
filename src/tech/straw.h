@@ -67,8 +67,15 @@ class Straw {
   void SetSource(Straw* source) { source_ = source; }
   void SetSource(Straw& source) { source_ = &source; }
   // Pulls up to buffer.size() bytes through the chain into buffer and returns
-  // how many were stored, which is fewer only once the data runs out.
+  // how many were stored. The count is short only at the end of the data or
+  // after a failure, which ok() tells apart.
   virtual base::ssize Get(std::span<std::byte> buffer);
+
+  // Returns false once this link or any link before it has failed: a read
+  // error, or data that cannot be decoded.
+  [[nodiscard]] bool ok() const {
+    return ok_ && (source_ == nullptr || source_->ok());
+  }
 
   // Pulls one trivially copyable value. Returns false on a short read, in
   // which case value is partially written.
@@ -82,6 +89,12 @@ class Straw {
  protected:
   // The straw we pull data from. Caller must ensure source outlives this straw.
   Straw* source_ = nullptr;
+
+  // Marks this link as failed, which makes ok() false for good.
+  void Fail() { ok_ = false; }
+
+ private:
+  bool ok_ = true;
 };
 
 #endif  // CNC_RED_ALERT_TECH_STRAW_H_

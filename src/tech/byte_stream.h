@@ -44,6 +44,10 @@ class ByteStream {
   // Returns the number of bytes in the stream.
   virtual base::ssize Size() = 0;
 
+  // Returns false once a read or write has failed. Reaching the end of the
+  // stream is not a failure.
+  [[nodiscard]] virtual bool ok() const { return true; }
+
   // Returns the current position.
   base::ssize Tell() { return Seek(0, SeekOrigin::kCurrent); }
 };
@@ -73,6 +77,7 @@ class DiskStream final : public ByteStream {
   base::ssize Seek(base::ssize offset,
                    SeekOrigin origin = SeekOrigin::kCurrent) override;
   base::ssize Size() override;
+  [[nodiscard]] bool ok() const override { return !failed_; }
 
  private:
   explicit DiskStream(void* handle ABSL_ATTRIBUTE_LIFETIME_BOUND)
@@ -80,6 +85,9 @@ class DiskStream final : public ByteStream {
 
   // Low-level IO handle from IO_Open_File; never null.
   void* handle_;
+
+  // Set when the C library reports a read or write error.
+  bool failed_ = false;
 };
 
 // A read-only view of bytes that someone else owns and keeps alive for as
@@ -123,9 +131,13 @@ class RangeStream final : public ByteStream {
   base::ssize Seek(base::ssize offset,
                    SeekOrigin origin = SeekOrigin::kCurrent) override;
   base::ssize Size() override { return size_; }
+  [[nodiscard]] bool ok() const override { return !failed_ && inner_->ok(); }
 
  private:
   std::unique_ptr<ByteStream> inner_;
+
+  // Set when inner_ could not be positioned for a read.
+  bool failed_ = false;
 
   // Where the window starts in inner_.
   base::ssize offset_;

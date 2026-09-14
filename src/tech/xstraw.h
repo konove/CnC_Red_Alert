@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_TECH_XSTRAW_H_
 
 #include <cstddef>
+#include <iterator>
 #include <span>
 
 #include "absl/base/attributes.h"
@@ -60,6 +61,11 @@ class BufferStraw : public Straw {
       : buffer_(buffer) {}
 
   base::ssize Get(std::span<std::byte> buffer) override;
+
+  // Returns the number of bytes not yet handed out.
+  [[nodiscard]] base::ssize bytes_remaining() const {
+    return std::ssize(buffer_) - index_;
+  }
 
  private:
   std::span<const std::byte> buffer_;

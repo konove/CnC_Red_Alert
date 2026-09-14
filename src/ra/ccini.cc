@@ -225,7 +225,7 @@ bool CCINIClass::Load(Straw& file, bool withdigest) {
  * HISTORY: * 07/03/1996 JLB : Created. * 08/21/1996 JLB : Handles message
  *digest control.                                          *
  *=============================================================================================*/
-int CCINIClass::Save(File& file, bool withdigest) const {
+bool CCINIClass::Save(File& file, bool withdigest) const {
   FilePipe fp(file);
   return Save(fp, withdigest);
 }
@@ -244,14 +244,14 @@ int CCINIClass::Save(File& file, bool withdigest) const {
  *          withdigest  -- Should a message digest be generated and saved with
  *the INI         * data file? *
  *                                                                                             *
- * OUTPUT:  Returns with the number of bytes output to the pipe. *
+ * OUTPUT:  bool; Did every byte reach the end of the pipe? *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. * 08/21/1996 JLB : Handles message
  *digest control.                                          *
  *=============================================================================================*/
-int CCINIClass::Save(Pipe& pipe, bool withdigest) const {
+bool CCINIClass::Save(Pipe& pipe, bool withdigest) const {
   if (!withdigest) {
     return INIClass::Save(pipe);
   }
@@ -274,7 +274,7 @@ int CCINIClass::Save(Pipe& pipe, bool withdigest) const {
   /*
   **	Output the database to the pipe specified.
   */
-  const int length = INIClass::Save(pipe);
+  const bool saved = INIClass::Save(pipe);
 
   /*
   **	Remove the digest from the database. It shouldn't stick around as if it
@@ -282,10 +282,7 @@ int CCINIClass::Save(Pipe& pipe, bool withdigest) const {
   */
   ((CCINIClass*)this)->Clear("Digest");
 
-  /*
-  **	Finally, return with the total number of bytes send out the pipe.
-  */
-  return length;
+  return saved;
 }
 
 static inline int Scale_To_256(int val) {

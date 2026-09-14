@@ -153,6 +153,10 @@ base::ssize LZOStraw::Get(std::span<std::byte> buffer) {
       int incount = static_cast<int>(
           Straw::Get(std::as_writable_bytes(std::span(&BlockHeader, 1))));
       if (incount != sizeof(BlockHeader)) {
+        // Running out between blocks is the normal end of the stream.
+        if (incount != 0) {
+          Fail();
+        }
         break;
       }
 
@@ -160,12 +164,14 @@ base::ssize LZOStraw::Get(std::span<std::byte> buffer) {
       if (!BlockHeaderFits(BlockHeader.CompCount, BlockHeader.UncompCount,
                            BlockSize + SafetyMargin)) {
         corrupt_ = true;
+        Fail();
         break;
       }
 
       incount = static_cast<int>(
           Straw::Get(WritableByteView(staging_.data(), BlockHeader.CompCount)));
       if (std::cmp_not_equal(incount, BlockHeader.CompCount)) {
+        Fail();
         break;
       }
       auto length = static_cast<lzo_uint>(BlockSize + SafetyMargin);
@@ -174,6 +180,7 @@ base::ssize LZOStraw::Get(std::span<std::byte> buffer) {
                                 Buffer.data(), &length, nullptr) != LZO_E_OK ||
           std::cmp_not_equal(length, BlockHeader.UncompCount)) {
         corrupt_ = true;
+        Fail();
         break;
       }
       Counter = BlockHeader.UncompCount;

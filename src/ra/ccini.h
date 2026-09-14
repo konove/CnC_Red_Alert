@@ -61,8 +61,8 @@ class CCINIClass : public INIClass {
 
   bool Load(File& file, bool withdigest);
   bool Load(Straw& file, bool withdigest);
-  int Save(File& file, bool withdigest) const;
-  int Save(Pipe& pipe, bool withdigest) const;
+  bool Save(File& file, bool withdigest) const;
+  bool Save(Pipe& pipe, bool withdigest) const;
 
   uint64_t Get_Buildings(const char* section, const char* entry,
                          uint64_t defvalue) const;

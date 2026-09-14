@@ -94,7 +94,7 @@ class MapClass : public GScreenClass {
   void Overlap_Down(CELL cell, ObjectClass* object);
   void Overlap_Up(CELL cell, ObjectClass* object);
   bool Read_Binary(Straw& straw);
-  int Write_Binary(Pipe& pipe);
+  bool Write_Binary(Pipe& pipe);
   bool Place_Random_Crate();
   bool Remove_Crate(CELL cell);
   bool Zone_Reset(int method);

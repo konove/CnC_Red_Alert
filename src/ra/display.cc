@@ -4467,7 +4467,8 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
   */
   static const char* const MAPPACK = "MapPack";
   BufferPipe bpipe(std::as_writable_bytes(std::span(staging_buffer)));
-  const int len = Map.Write_Binary(bpipe);
+  Map.Write_Binary(bpipe);
+  const auto len = static_cast<int>(bpipe.bytes_written());
   ini.Clear(MAPPACK);
   if (len) {
     ini.Put_UUBlock(MAPPACK, staging_buffer, len);

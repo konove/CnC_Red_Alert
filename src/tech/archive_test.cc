@@ -1,14 +1,15 @@
 #include "tech/archive.h"
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <span>
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "base/types.h"
 #include "gtest/gtest.h"
 #include "tech/pipe.h"
+#include "tech/xpipe.h"
 #include "tech/xstraw.h"
 
 namespace {
@@ -16,11 +17,11 @@ namespace {
 // Pipe terminator that appends everything it receives to a vector.
 class VectorPipe : public Pipe {
  public:
-  base::ssize Put(std::span<const std::byte> data) override {
+  bool Put(std::span<const std::byte> data) override {
     for (const std::byte byte : data) {
       bytes_.push_back(std::to_integer<uint8_t>(byte));
     }
-    return std::ssize(data);
+    return true;
   }
   [[nodiscard]] const std::vector<uint8_t>& bytes() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -243,6 +244,43 @@ TEST(ArchiveTest, BytesEscapeHatchRoundTrips) {
     ar.Bytes(std::as_writable_bytes(std::span(read)));
   }));
   EXPECT_EQ(read[3], 'w');
+}
+
+TEST(ArchiveTest, WriterReportsShortWriteForGood) {
+  std::array<char, 2> bytes{};
+  BufferPipe sink(std::as_writable_bytes(std::span(bytes)));
+  ArchiveWriter writer(sink);
+  EXPECT_TRUE(writer.ok());
+  int32_t value = 123;
+  writer(value);
+  EXPECT_FALSE(writer.ok());
+  EXPECT_FALSE(sink.Put(std::as_bytes(std::span("x", 1))));
+  EXPECT_FALSE(writer.ok());
+}
+
+TEST(ArchiveTest, BodyRoundTripsThroughFixedBuffer) {
+  std::array<char, 32> bytes{};
+  BufferPipe sink(std::as_writable_bytes(std::span(bytes)));
+  ArchiveWriter writer(sink);
+  int32_t cell_count = 2;
+  char raw_payload[] = "raw checkpoint";
+  writer(cell_count);
+  writer.Bytes(std::as_bytes(std::span(raw_payload)));
+  EXPECT_TRUE(writer.ok());
+  EXPECT_EQ(sink.bytes_written(), 4 + std::ssize(raw_payload));
+
+  BufferStraw source(
+      std::as_bytes(std::span(bytes).first(4 + sizeof(raw_payload))));
+  ArchiveReader reader(source);
+  int32_t loaded_count = 0;
+  std::array<char, sizeof(raw_payload)> loaded{};
+  reader(loaded_count);
+  reader.Bytes(std::as_writable_bytes(std::span(loaded)));
+  EXPECT_TRUE(reader.ok());
+  EXPECT_EQ(loaded_count, cell_count);
+  EXPECT_STREQ(loaded.data(), raw_payload);
+  reader(loaded_count);
+  EXPECT_FALSE(reader.ok());
 }
 
 }  // namespace

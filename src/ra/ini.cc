@@ -80,7 +80,6 @@
 #include <string_view>
 
 #include "base/numeric.h"
-#include "base/types.h"
 #include "tech/b64pipe.h"
 #include "tech/b64straw.h"
 #include "tech/crc.h"
@@ -317,7 +316,7 @@ bool INIClass::Load(Straw& file)
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-int INIClass::Save(File& file) const {
+bool INIClass::Save(File& file) const {
   FilePipe fp(file);
   return Save(fp);
 }
@@ -329,16 +328,15 @@ int INIClass::Save(File& file) const {
  *                                                                                             *
  * INPUT:   pipe  -- Reference to the pipe stream to pump the INI image to. *
  *                                                                                             *
- * OUTPUT:  Returns with the number of bytes output to the pipe. *
+ * OUTPUT:  bool; Did every byte reach the end of the pipe? *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-int INIClass::Save(Pipe& pipe) const {
-  base::ssize total = 0;
-  const auto put = [&pipe, &total](std::string_view text) {
-    total += pipe.Put(std::as_bytes(std::span(text)));
+bool INIClass::Save(Pipe& pipe) const {
+  const auto put = [&pipe](std::string_view text) {
+    pipe.Put(std::as_bytes(std::span(text)));
   };
 
   INISection* secptr = SectionList.First();
@@ -372,9 +370,7 @@ int INIClass::Save(Pipe& pipe) const {
 
     secptr = secptr->Next();
   }
-  total += pipe.End();
-
-  return static_cast<int>(total);
+  return pipe.Finish();
 }
 
 /***********************************************************************************************
@@ -599,18 +595,16 @@ int INIClass::Get_UUBlock(const char* section, void* block, int len) const {
 
   b64pipe.SetSink(&bpipe);
 
-  base::ssize total = 0;
   const int counter = Entry_Count(section);
   for (int index = 0; index < counter; index++) {
     char buffer[128];
 
     const int length = Get_String(section, Get_Entry(section, index), "=",
                                   buffer, sizeof(buffer));
-    total += b64pipe.Put(
-        std::as_bytes(std::span(buffer).first(base::ToSize(length))));
+    b64pipe.Put(std::as_bytes(std::span(buffer).first(base::ToSize(length))));
   }
-  total += b64pipe.End();
-  return static_cast<int>(total);
+  b64pipe.Finish();
+  return static_cast<int>(bpipe.bytes_written());
 }
 
 /***********************************************************************************************
