@@ -51,7 +51,6 @@
 #include "sdllib/wsa.h"
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
-#include "td/ccfile.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
@@ -62,6 +61,7 @@
 #include "td/score.h"
 #include "td/special.h"
 #include "td/textblit.h"
+#include "tech/game_file.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifndef DEMO
@@ -135,7 +135,7 @@ void Choose_Side() {
 
   Call_Back();
 
-  CCFileClass f("STRUGGLE.AUD");
+  GameFile f("STRUGGLE.AUD");
   staticaud = Load_Alloc_Data(f);
   f.Open("GDI_SLCT.AUD");
   speechg = Load_Alloc_Data(f);

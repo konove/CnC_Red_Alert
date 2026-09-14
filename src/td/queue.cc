@@ -95,7 +95,6 @@
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "td/building.h"
-#include "td/ccfile.h"
 #include "td/connect.h"
 #include "td/connmgr.h"
 #include "td/conquer.h"
@@ -121,6 +120,7 @@
 #include "td/text.h"
 #include "td/type.h"
 #include "td/unit.h"
+#include "tech/game_file.h"
 
 /********************************** Defines *********************************/
 #define SHOW_MONO 1

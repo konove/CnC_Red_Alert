@@ -616,7 +616,7 @@ void Load_Title_Screen(const char* name, GraphicViewPortClass* video_page,
  *                                                                         *
  * HISTORY:                                                                *
  *   05/03/1995 JRJ : Created.                                             *
- *   04/30/1996 ST : Tidied up and modified to use CCFileClass             *
+ *   04/30/1996 ST : Tidied up and modified to use GameFile             *
  *=========================================================================*/
 
 #define POOL_SIZE 2048
@@ -642,7 +642,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
   char pool[POOL_SIZE];
   GraphicBufferClass* pic;
 
-  CCFileClass file_handle(name);
+  GameFile file_handle(name);
 
   if (!file_handle.IsAvailable()) {
     return NULL;

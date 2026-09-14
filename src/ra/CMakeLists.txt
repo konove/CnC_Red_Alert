@@ -179,12 +179,6 @@ add_gtest(
 
 
 add_gtest(
-    NAME ra_file_handles_test
-    SOURCES file_handles_test.cc file_handles.cc
-    LIBS base tech sdllib absl::strings absl::check absl::log
-)
-
-add_gtest(
     NAME ra_path_overlap_test
     SOURCES path_overlap_test.cc
     LIBS base absl::check absl::log magic_enum::magic_enum

@@ -102,7 +102,6 @@
 #include "td/base.h"
 #include "td/building.h"
 #include "td/bullet.h"
-#include "td/ccfile.h"
 #include "td/config.h"
 #include "td/const.h"
 #include "td/debug.h"
@@ -155,6 +154,7 @@
 #include "tech/archive.h"
 #include "tech/crc.h"
 #include "tech/file.h"
+#include "tech/game_file.h"
 #include "tech/pipe.h"
 #include "tech/search_paths.h"
 #include "winvq/vqa32/vqaplay.h"
@@ -1972,7 +1972,7 @@ MixFileVqaIo::MixFileVqaIo() = default;
 MixFileVqaIo::~MixFileVqaIo() { Close(); }
 
 int MixFileVqaIo::Open(const char* filename) {
-  auto file = std::make_unique<CCFileClass>(filename);
+  auto file = std::make_unique<GameFile>(filename);
 
   if (!file->IsAvailable()) {
     return 1;
@@ -2021,7 +2021,7 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
   int start_palette;
 
   PalettesRead = false;
-  CCFileClass file(filename);
+  GameFile file(filename);
 
   //	DiskFile	*palette_file;
 

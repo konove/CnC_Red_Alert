@@ -50,7 +50,6 @@
 #include "sdllib/timer.h"
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
-#include "td/ccfile.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
@@ -61,6 +60,7 @@
 #include "td/score.h"
 #include "td/text.h"
 #include "td/textblit.h"
+#include "tech/game_file.h"
 
 void GDI_Ending() {
 #ifdef DEMO
@@ -89,9 +89,9 @@ void GDI_Ending() {
   }
 
   CountDownTimerClass count;
-  if (CCFileClass("TRAILER.VQA").IsAvailable()) {
+  if (GameFile("TRAILER.VQA").IsAvailable()) {
     Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
-    CCFileClass f("ATTRACT2.CPS");
+    GameFile f("ATTRACT2.CPS");
     Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
     SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
     Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
@@ -106,7 +106,7 @@ void GDI_Ending() {
   }
 
   Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
-  CCFileClass f("ATTRACT2.CPS");
+  GameFile f("ATTRACT2.CPS");
   Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
   SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
   Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
@@ -159,7 +159,7 @@ void Nod_Ending() {
   HidPage.Clear();
   PseudoSeenBuff->Clear();
 
-  CCFileClass f("SATSEL.PAL");
+  GameFile f("SATSEL.PAL");
   void* localpal = Load_Alloc_Data(f);
   f.Open("SATSEL.CPS");
   Load_Uncompress(f, SysMemPage, SysMemPage, nullptr);
@@ -266,9 +266,9 @@ void Nod_Ending() {
   Play_Movie(fname);
 
   CountDownTimerClass count;
-  if (CCFileClass("TRAILER.VQA").IsAvailable()) {
+  if (GameFile("TRAILER.VQA").IsAvailable()) {
     Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
-    CCFileClass attract_file("ATTRACT2.CPS");
+    GameFile attract_file("ATTRACT2.CPS");
     Load_Uncompress(attract_file, SysMemPage, SysMemPage, Palette);
     SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
     Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
@@ -283,7 +283,7 @@ void Nod_Ending() {
   }
 
   Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
-  CCFileClass f2("ATTRACT2.CPS");
+  GameFile f2("ATTRACT2.CPS");
   Load_Uncompress(f2, SysMemPage, SysMemPage, Palette);
   SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
   Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);

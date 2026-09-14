@@ -59,7 +59,6 @@
 #include "sdllib/misc.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "td/ccfile.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/dialog.h"
@@ -77,6 +76,7 @@
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "tech/disk_file.h"
+#include "tech/game_file.h"
 #include "tech/number_parse.h"
 
 #ifdef _WIN32
@@ -250,7 +250,7 @@ int Read_Game_Options(const char* name) {
   /*------------------------------------------------------------------------
   Create filename and read the file.
   ------------------------------------------------------------------------*/
-  CCFileClass file(filename);
+  GameFile file(filename);
 
   if (name && !file.IsAvailable()) {
     return 0;

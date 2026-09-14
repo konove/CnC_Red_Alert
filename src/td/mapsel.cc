@@ -60,7 +60,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "td/audio.h"
-#include "td/ccfile.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
@@ -75,6 +74,7 @@
 #include "td/textblit.h"
 #include "td/theme.h"
 #include "td/type.h"
+#include "tech/game_file.h"
 
 #ifndef DEMO
 
@@ -1063,10 +1063,10 @@ void Map_Selection() {
   int done = 0;
 
   if (house == HOUSE_GOOD) {
-    CCFileClass f(lastscenario ? "CLICK_EB.CPS" : "CLICK_E.CPS");
+    GameFile f(lastscenario ? "CLICK_EB.CPS" : "CLICK_E.CPS");
     Load_Uncompress(f, SysMemPage, SysMemPage, nullptr);
   } else {
-    CCFileClass f(lastscenario ? "CLICK_SA.CPS" : "CLICK_A.CPS");
+    GameFile f(lastscenario ? "CLICK_SA.CPS" : "CLICK_A.CPS");
     Load_Uncompress(f, SysMemPage, SysMemPage, nullptr);
     if (lastscenario) {
       attackxcoord = 200;
@@ -1156,7 +1156,7 @@ void Map_Selection() {
     ** Now clear the palette of all but the country's colors, and fade
     ** the palette down
     */
-    CCFileClass("DARK_E.PAL").Read(localpalette, 768);
+    GameFile("DARK_E.PAL").Read(localpalette, 768);
     //		Load_Data("DARK_E.PAL", localpalette, 768);
     InterpolationPaletteChanged = true;
     InterpolationPalette = localpalette;
@@ -1170,7 +1170,7 @@ void Map_Selection() {
     Print_Statistics(color & 0x7F, _countryx[xshuffled_rows],
                      _countryy[xshuffled_rows]);
   } else {
-    CCFileClass(house == HOUSE_GOOD ? "DARK_B.PAL" : "DARK_SA.PAL")
+    GameFile(house == HOUSE_GOOD ? "DARK_B.PAL" : "DARK_SA.PAL")
         .Read(localpalette, 768);
     InterpolationPaletteChanged = true;
     InterpolationPalette = localpalette;

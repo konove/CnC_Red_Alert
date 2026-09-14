@@ -45,6 +45,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
+#include <iterator>
 
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
@@ -55,7 +56,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
-#include "td/ccfile.h"
 #include "td/confdlg.h"
 #include "td/conquer.h"
 #include "td/control.h"
@@ -79,7 +79,7 @@
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "td/theme.h"
-#include <iterator>
+#include "tech/game_file.h"
 
 void GameOptionsClass::Adjust_Variables_For_Resolution() {
   const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
@@ -433,7 +433,7 @@ void GameOptionsClass::Process() {
             BreakoutAllowed = true;
             char buffer[25];
             sprintf(buffer, "%s.VQA", BriefMovie);
-            if (CCFileClass(buffer).IsAvailable()) {
+            if (GameFile(buffer).IsAvailable()) {
               Play_Movie(BriefMovie);
             } else {
               Play_Movie(ActionMovie);

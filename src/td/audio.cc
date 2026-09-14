@@ -50,7 +50,6 @@
 #include <filesystem>
 
 #include "sdllib/ww_audio.h"
-#include "td/ccfile.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/globals.h"
@@ -59,6 +58,7 @@
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/special.h"
+#include "tech/game_file.h"
 
 /***************************************************************************
 **	Controls what special effects may occur on the sound effect.
@@ -585,7 +585,7 @@ void Speak_AI() {
                               .replace_extension(".AUD")
                               .string();
 
-        if (CCFileClass(name).Read(SpeechBuffer, SPEECH_BUFFER_SIZE)) {
+        if (GameFile(name).Read(SpeechBuffer, SPEECH_BUFFER_SIZE)) {
           Play_Sample(SpeechBuffer, 254, Options.Volume);
         }
         _last = SpeakQueue;

@@ -63,9 +63,9 @@
 #include "sdllib/tile.h"
 #include "sdllib/ww_win.h"
 #include "support.h"
-#include "td/ccfile.h"
 #include "td/monoc.h"
 #include "tech/file.h"
+#include "tech/game_file.h"
 
 /***********************************************************************************************
  * Small_Icon -- Create a small icon from a big one. *
@@ -292,7 +292,7 @@ int32_t Load_Uncompress(File& file, BufferClass& uncomp_buff,
 int Load_Picture(const char* filename, BufferClass& scratchbuf,
                  BufferClass& destbuf, unsigned char* palette,
                  PicturePlaneType /*unused*/) {
-  CCFileClass fc(filename);
+  GameFile fc(filename);
   return Load_Uncompress(fc, scratchbuf, destbuf, palette) / 8000;
 }
 

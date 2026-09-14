@@ -63,7 +63,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "td/base.h"
-#include "td/ccfile.h"
 #include "td/cell.h"
 #include "td/cheklist.h"
 #include "td/conquer.h"
@@ -95,6 +94,7 @@
 #include "td/trigger.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "tech/game_file.h"
 #include "tech/number_parse.h"
 
 /***************************************************************************
@@ -3337,7 +3337,7 @@ int MapEditClass::Import_Triggers() {
   static int tabs[] = {70, 220, 370, 420};  // list box tab stops
   DynamicVectorClass<char*> trignames;      // list of INI trigger names
   char* inibuf;                             // working INI buffer
-  CCFileClass file;                         // file for reading the INI file
+  GameFile file;                            // file for reading the INI file
   char buf[128];                            // for reading an INI entry
   char* tbuffer;          // Accumulation buffer of trigger IDs.
   int len;                // Length of data in buffer.
@@ -3680,7 +3680,7 @@ int MapEditClass::Import_Teams() {
   static int tabs[] = {120, 180};       // list box tab stops
   DynamicVectorClass<char*> teamnames;  // list of INI team names
   char* inibuf;                         // working INI buffer
-  CCFileClass file;                     // file for reading the INI file
+  GameFile file;                        // file for reading the INI file
   char buf[128];                        // for reading an INI entry
   char* tbuffer;                        // Accumulation buffer of team IDs.
   int len;                              // Length of data in buffer.

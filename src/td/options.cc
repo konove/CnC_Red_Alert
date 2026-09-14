@@ -76,7 +76,6 @@
 #include "sdllib/shape.h"
 #include "sdllib/ww_audio.h"
 #include "td/audio.h"
-#include "td/ccfile.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
@@ -86,6 +85,7 @@
 #include "td/palette.h"
 #include "td/profile.h"
 #include "td/special.h"
+#include "tech/game_file.h"
 
 /***********************************************************************************************
  * OptionsClass::OptionsClass -- The default constructor for the options class.
@@ -489,7 +489,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Create filename and read the file.
   */
-  CCFileClass file("CONQUER.INI");
+  GameFile file("CONQUER.INI");
   if (!file.IsAvailable()) {
     return;
   }
@@ -660,7 +660,7 @@ void OptionsClass::Load_Settings() {
  *=============================================================================================*/
 void OptionsClass::Save_Settings() const {
   char* buffer;  // INI staging buffer pointer.
-  CCFileClass file;
+  GameFile file;
 
   /*
   **	Get a working pointer to the INI staging buffer. Make sure that the

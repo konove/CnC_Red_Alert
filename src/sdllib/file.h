@@ -51,7 +51,7 @@
 #endif
 
 // Integer-handle file access for the audio and WSA code. The game implements
-// these (ra/file_handles.cc, td/ccfile.cc) so that names resolve through its
+// these (tech/file_handles.cc) so that names resolve through its
 // mixfiles. A handle is kInvalidHandle (-1) when the open failed.
 int OpenFileHandle(std::string_view file_name, FileAccess mode);
 void CloseFileHandle(int handle);

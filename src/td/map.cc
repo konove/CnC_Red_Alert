@@ -70,7 +70,6 @@
 #include "sdllib/file_access.h"
 #include "sdllib/memflag.h"
 #include "sdllib/tile.h"
-#include "td/ccfile.h"
 #include "td/cell.h"
 #include "td/defines.h"
 #include "td/externs.h"
@@ -89,6 +88,7 @@
 #include "td/terrain.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "tech/game_file.h"
 
 #define MCW MAP_CELL_W
 const int MapClass::RadiusOffset[] = {
@@ -921,7 +921,7 @@ bool MapClass::Read_Binary(const char* root, unsigned long*)
 bool MapClass::Read_Binary(const char* root, uint32_t* crc)
 #endif
 {
-  CCFileClass file;
+  GameFile file;
   char fname[kMaxFname + kMaxExt];
   int i;
   char* map;
@@ -1010,7 +1010,7 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
  * HISTORY: * 11/14/1994 BR : Created. *
  *=============================================================================================*/
 bool MapClass::Write_Binary(const char* root) {
-  CCFileClass* file;
+  GameFile* file;
   char fname[kMaxFname + kMaxExt];
   int i;
 
@@ -1022,7 +1022,7 @@ bool MapClass::Write_Binary(const char* root) {
   /*
   **	Create object & open file.
   */
-  file = new CCFileClass(fname);
+  file = new GameFile(fname);
   file->Open(FileAccess::kWrite);
 
   /*

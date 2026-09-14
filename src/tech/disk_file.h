@@ -58,10 +58,6 @@
 #include "base/types.h"
 #include "tech/file.h"
 
-#ifndef WWERROR
-#define WWERROR (-1)
-#endif
-
 // Returns path if a file exists there, otherwise the lowercased path if a file
 // exists there (game data is named in upper case, while Unix installs often
 // carry it in lower case), otherwise nullopt.

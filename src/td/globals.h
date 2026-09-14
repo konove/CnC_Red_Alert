@@ -37,8 +37,8 @@ extern SpecialClass Special;
 template <class T>
 // NOLINTNEXTLINE(cppcoreguidelines-virtual-class-destructor)
 class MixFileClass;
-class CCFileClass;
-extern MixFileClass<CCFileClass>* TheaterIcons;
+class GameFile;
+extern MixFileClass<GameFile>* TheaterIcons;
 extern bool InMovie;
 
 #endif  // CNC_RED_ALERT_TD_GLOBALS_H_

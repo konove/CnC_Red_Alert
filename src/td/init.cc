@@ -77,7 +77,6 @@
 #include "td/base.h"
 #include "td/building.h"
 #include "td/bullet.h"
-#include "td/ccfile.h"
 #include "td/config.h"
 #include "td/conquer.h"
 #include "td/defines.h"
@@ -130,6 +129,7 @@
 #include "td/unit.h"
 #include "tech/crc.h"
 #include "tech/disk_file.h"
+#include "tech/game_file.h"
 #include "tech/number_parse.h"
 #include "tech/search_paths.h"
 #include "winvq/vqa32/vqaplay.h"
@@ -254,7 +254,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
 
 #endif
   DLOG(INFO) << "C&C95 - About to load fonts";
-  CCFileClass f("12GREEN.FNT");
+  GameFile f("12GREEN.FNT");
   Green12FontPtr = Load_Alloc_Data(f);
   f.Open("12GRNGRD.FNT");
   Green12GradFontPtr = Load_Alloc_Data(f);
@@ -328,7 +328,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   **	Default palette initialization. Uses the desert palette for convenience,
   **	but only the non terrain specific colors matter.
   */
-  CCFileClass palfile("TEMPERAT.PAL");
+  GameFile palfile("TEMPERAT.PAL");
   palfile.Read(GamePalette, 768L);
 
   if (!MouseInstalled) {
@@ -355,7 +355,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   **	Add in any override path specified in the conquer.ini file.
   */
   if (strlen(OverridePath)) {
-    CCFileClass::Set_Search_Drives(OverridePath);
+    GameFile::Set_Search_Drives(OverridePath);
   }
 #endif
 
@@ -465,7 +465,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   */
 #ifdef DEMO
   (void)MFCD::Register("DEMO.MIX");
-  if (CCFileClass("DEMOM.MIX").IsAvailable()) {
+  if (GameFile("DEMOM.MIX").IsAvailable()) {
     if (!MoviesMix) {
       MoviesMix = MFCD::Register("DEMOM.MIX");
     }
@@ -484,7 +484,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
     GeneralMix = MFCD::Register("GENERAL.MIX");  // Never cached.
   }
 
-  //	if (CCFileClass("MOVIES.MIX").IsAvailable()) {
+  //	if (GameFile("MOVIES.MIX").IsAvailable()) {
   DLOG(INFO) << "C&C95 - About to register MOVIES.MIX";
   if (!MoviesMix) {
     MoviesMix = MFCD::Register("MOVIES.MIX");  // Never cached.
@@ -496,7 +496,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   */
   DLOG(INFO) << "C&C95 - About to register SCORES.MIX";
   ScoresPresent = false;
-  //	if (CCFileClass("SCORES.MIX").IsAvailable()) {
+  //	if (GameFile("SCORES.MIX").IsAvailable()) {
   ScoresPresent = true;
   if (!ScoreMix) {
     ScoreMix = MFCD::Register("SCORES.MIX");
@@ -510,7 +510,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   **	copied the coorect versions to the hard drive.
   */
   DLOG(INFO) << "C&C95 - About to register SPEECH.MIX";
-  if (CCFileClass("SPEECH.MIX").IsAvailable()) {
+  if (GameFile("SPEECH.MIX").IsAvailable()) {
     (void)MFCD::Register("SPEECH.MIX");  // Never cached.
   }
   DLOG(INFO) << "C&C95 - About to register SOUNDS.MIX";
@@ -714,7 +714,6 @@ void Uninit_Game() {
   delete[] OriginalPalette;
   delete[] WhitePalette;
 
-  WWDOS_Shutdown();
   delete[] Palette;
   Palette = nullptr;  // Prog_End may run again when SDL handles the quit event.
 }
@@ -1398,11 +1397,11 @@ bool Select_Game(bool fade) {
           Hide_Mouse();
 
           // verify existence of movie file before playing this sequence.
-          if (CCFileClass("TRAILER.VQA").IsAvailable()) {
+          if (GameFile("TRAILER.VQA").IsAvailable()) {
             Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
             VisiblePage.Clear();
-            if (CCFileClass("ATTRACT2.CPS").IsAvailable()) {
-              CCFileClass f("ATTRACT2.CPS");
+            if (GameFile("ATTRACT2.CPS").IsAvailable()) {
+              GameFile f("ATTRACT2.CPS");
               Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
               SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
               Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
@@ -1417,11 +1416,11 @@ bool Select_Game(bool fade) {
             Play_Movie("TRAILER");  // Red Alert teaser.
           }
 
-          if (CCFileClass("SIZZLE.VQA").IsAvailable()) {
+          if (GameFile("SIZZLE.VQA").IsAvailable()) {
             Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
             VisiblePage.Clear();
-            if (CCFileClass("ATTRACT2.CPS").IsAvailable()) {
-              CCFileClass f("ATTRACT2.CPS");
+            if (GameFile("ATTRACT2.CPS").IsAvailable()) {
+              GameFile f("ATTRACT2.CPS");
               Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
               SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
               Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
@@ -1436,11 +1435,11 @@ bool Select_Game(bool fade) {
             Play_Movie("SIZZLE");  // Red Alert teaser.
           }
 
-          if (CCFileClass("SIZZLE2.VQA").IsAvailable()) {
+          if (GameFile("SIZZLE2.VQA").IsAvailable()) {
             Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
             VisiblePage.Clear();
-            if (CCFileClass("ATTRACT2.CPS").IsAvailable()) {
-              CCFileClass f("ATTRACT2.CPS");
+            if (GameFile("ATTRACT2.CPS").IsAvailable()) {
+              GameFile f("ATTRACT2.CPS");
               Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
               SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
               Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
@@ -1457,8 +1456,8 @@ bool Select_Game(bool fade) {
 
           Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
           VisiblePage.Clear();
-          if (CCFileClass("ATTRACT2.CPS").IsAvailable()) {
-            CCFileClass f("ATTRACT2.CPS");
+          if (GameFile("ATTRACT2.CPS").IsAvailable()) {
+            GameFile f("ATTRACT2.CPS");
             Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
             SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
             Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
@@ -2739,7 +2738,7 @@ void Parse_INI_File() {
   /*------------------------------------------------------------------------
   Create filename and read the file.
   ------------------------------------------------------------------------*/
-  CCFileClass file("CONQUER.INI");
+  GameFile file("CONQUER.INI");
   if (!file.IsAvailable()) {
     return;
   } else {

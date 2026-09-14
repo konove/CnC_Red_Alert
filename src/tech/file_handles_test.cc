@@ -1,4 +1,4 @@
-// Tests for the integer-handle file API in ra/file_handles.cc.
+// Tests for the integer-handle file API in file_handles.cc.
 
 #include <cstdio>
 #include <filesystem>
@@ -10,13 +10,6 @@
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
 #include "sdllib/wwstd.h"
-
-// The real definition lives in the game, which would drag all of it in. No
-// CD drive is ever current here, so it is never called.
-// NOLINTBEGIN(misc-use-internal-linkage): satisfies search_paths.cc's extern.
-int Get_CD_Index(int cd_drive, int timeout);
-int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) { return -1; }
-// NOLINTEND(misc-use-internal-linkage)
 
 namespace {
 

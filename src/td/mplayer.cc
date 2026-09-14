@@ -69,7 +69,6 @@
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "td/ccfile.h"
 #include "td/conquer.h"
 #include "td/control.h"
 #include "td/defines.h"
@@ -93,6 +92,7 @@
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "td/vector.h"
+#include "tech/game_file.h"
 #include "tech/number_parse.h"
 
 static void Garble_Message(char* buf);
@@ -447,7 +447,7 @@ void Read_MultiPlayer_Settings() {
   /*------------------------------------------------------------------------
   Create filename and read the file.
   ------------------------------------------------------------------------*/
-  CCFileClass file("CONQUER.INI");
+  GameFile file("CONQUER.INI");
   if (!file.IsAvailable()) {
     return;
   }
@@ -777,7 +777,7 @@ void Read_MultiPlayer_Settings() {
  *=============================================================================================*/
 void Write_MultiPlayer_Settings() {
   char* buffer;  // INI staging buffer pointer.
-  CCFileClass file;
+  GameFile file;
   int i;
   char entrytext[4];
   char buf[128];  // buffer for parsing INI entry
@@ -898,7 +898,7 @@ void Write_MultiPlayer_Settings() {
  *=============================================================================================*/
 void Read_Scenario_Descriptions() {
   char* buffer;  // INI staging buffer pointer.
-  CCFileClass file;
+  GameFile file;
   int i;
   char fname[20];
 

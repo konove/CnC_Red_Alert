@@ -59,7 +59,6 @@
 #include "port/ex_string.h"
 #include "sdllib/shape.h"
 #include "td/building.h"
-#include "td/ccfile.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
@@ -75,6 +74,7 @@
 #include "td/special.h"
 #include "td/type.h"
 #include "td/unit.h"
+#include "tech/game_file.h"
 
 const void* UnitTypeClass::WakeShapes = nullptr;
 
@@ -1434,7 +1434,7 @@ void UnitTypeClass::Prep_For_Add() {
 void UnitTypeClass::One_Time() {
   for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
     const UnitTypeClass& uclass = As_Reference(index);
-    const CCFileClass file;
+    const GameFile file;
     int largest;  // Largest dimension of shape (so far).
 
     const void* ptr;  // Shape pointer and set pointer.

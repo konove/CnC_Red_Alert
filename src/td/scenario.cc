@@ -67,7 +67,6 @@
 #include "td/base.h"
 #include "td/building.h"
 #include "td/bullet.h"
-#include "td/ccfile.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/dialog.h"
@@ -102,6 +101,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "tech/game_file.h"
 
 /***********************************************************************************************
  * Start_Scenario -- Starts the scenario. *
@@ -164,7 +164,7 @@ bool Start_Scenario(char* root, bool briefing) {
 
     char buffer[25];
     sprintf(buffer, "%s.VQA", BriefMovie);
-    CCFileClass file(buffer);
+    GameFile file(buffer);
 
     if (GameToPlay == GAME_NORMAL && !file.IsAvailable()) {
       VisiblePage.Clear();
@@ -716,7 +716,7 @@ bool Restate_Mission(const char* name, int right_btn, int left_btn) {
     port::SafeCopy(fname, name);
     port::SafeAppend(fname, ".CPS");
 
-    if (CCFileClass(fname).IsAvailable()) {
+    if (GameFile(fname).IsAvailable()) {
       CCMessageBox box(TXT_NONE, true);
       return (box.Process(fname, right_btn, left_btn));
     }
@@ -731,8 +731,8 @@ bool Restate_Mission(const char* name, int right_btn, int left_btn) {
     char buffer1[25];
     sprintf(buffer, "%s.VQA", BriefMovie);
     sprintf(buffer1, "%s.VQA", ActionMovie);
-    CCFileClass file1(buffer);
-    CCFileClass file2(buffer1);
+    GameFile file1(buffer);
+    GameFile file2(buffer1);
     if (!file1.IsAvailable() && !file2.IsAvailable()) {
       right_btn = TXT_OK;
       left_btn = TXT_NONE;

@@ -56,7 +56,6 @@
 #include "td/base.h"
 #include "td/building.h"
 #include "td/bullet.h"
-#include "td/ccfile.h"
 #include "td/cell.h"
 #include "td/connect.h"
 #include "td/credits.h"
@@ -94,6 +93,7 @@
 #include "td/trigger.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "tech/game_file.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifdef JAPANESE
@@ -470,7 +470,7 @@ CommProtocolType CommProtocol;
 /***************************************************************************
 **	These values are used for recording & playing back a game.
 */
-CCFileClass RecordFile("RECORD.BIN");
+GameFile RecordFile("RECORD.BIN");
 bool RecordGame = false;  // 1 = record a game
 int SuperRecord = 0;   // 1 = reopen record file with every write
 bool PlaybackGame = false;  // 1 = play back a game

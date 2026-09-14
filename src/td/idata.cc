@@ -59,7 +59,6 @@
 #include "port/ex_string.h"
 #include "sdllib/shape.h"
 #include "td/building.h"
-#include "td/ccfile.h"
 #include "td/cell.h"
 #include "td/conquer.h"
 #include "td/const.h"
@@ -76,6 +75,7 @@
 #include "td/special.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "tech/game_file.h"
 
 /*
  * There were too many parameters for the InfantryTypeClass constructor so I
@@ -1801,7 +1801,7 @@ void InfantryTypeClass::One_Time() {
 
   for (index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
     const InfantryTypeClass* uclass;
-    const CCFileClass file;
+    const GameFile file;
 
     uclass = &As_Reference(index);
 
@@ -1849,7 +1849,7 @@ void InfantryTypeClass::Init(TheaterType theater) {
 
     for (index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
       const InfantryTypeClass* uclass;
-      const CCFileClass file;
+      const GameFile file;
 
       uclass = &As_Reference(index);
 

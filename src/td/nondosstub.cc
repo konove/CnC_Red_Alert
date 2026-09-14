@@ -28,9 +28,9 @@
 #include "absl/status/statusor.h"
 #include "base/numeric.h"
 #include "sdllib/file_access.h"
-#include "td/ccfile.h"
 #include "td/defines.h"
 #include "td/externs.h"
+#include "tech/game_file.h"
 // #include "ra/filepcx.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/iconcach.h"
@@ -181,14 +181,14 @@ void Load_Title_Screen(const char* name, GraphicViewPortClass* video_page,
  *                                                                         *
  * HISTORY:                                                                *
  *   05/03/1995 JRJ : Created.                                             *
- *   04/30/1996 ST : Tidied up and modified to use CCFileClass             *
+ *   04/30/1996 ST : Tidied up and modified to use GameFile             *
  *=========================================================================*/
 
 class BufferedFileReader {
  public:
   static constexpr size_t kBufferSize = 2048;
 
-  explicit BufferedFileReader(CCFileClass& file ABSL_ATTRIBUTE_LIFETIME_BOUND)
+  explicit BufferedFileReader(GameFile& file ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : file_(file) {}
 
   // Delete copy/move to prevent accidental state duplication.
@@ -216,7 +216,7 @@ class BufferedFileReader {
     return bytes_in_buffer_ > 0;
   }
 
-  CCFileClass& file_;
+  GameFile& file_;
 
   // Use std::array for standard compliance and bounds awareness.
   std::array<uint8_t, kBufferSize> buffer_{};
@@ -228,7 +228,7 @@ class BufferedFileReader {
 
 GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
                                   int32_t Size) {
-  CCFileClass file_handle(name);
+  GameFile file_handle(name);
 
   if (!file_handle.IsAvailable()) {
     return nullptr;

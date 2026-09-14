@@ -50,7 +50,7 @@
 #include "base/types.h"
 #include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
-#include "td/ccfile.h"
+#include "tech/game_file.h"
 
 bool InterpolationPaletteChanged = false;
 
@@ -73,7 +73,7 @@ unsigned char* InterpolationPalette;
  *=============================================================================================*/
 
 void Read_Interpolation_Palette(const char* palette_file_name) {
-  CCFileClass palette_file(palette_file_name);
+  GameFile palette_file(palette_file_name);
 
   if (palette_file.IsAvailable()) {
     palette_file.Open(FileAccess::kRead);
@@ -99,7 +99,7 @@ void Read_Interpolation_Palette(const char* palette_file_name) {
  *=============================================================================================*/
 
 void Write_Interpolation_Palette(const char* palette_file_name) {
-  CCFileClass palette_file(palette_file_name);
+  GameFile palette_file(palette_file_name);
 
   if (!palette_file.IsAvailable()) {
     palette_file.Open(FileAccess::kWrite);

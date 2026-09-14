@@ -107,7 +107,6 @@
 #include "sdllib/wwstd.h"
 #include "td/audio.h"
 #include "td/building.h"
-#include "td/ccfile.h"
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/control.h"
@@ -132,7 +131,7 @@
 #include "td/techno.h"
 #include "td/text.h"
 #include "td/type.h"
-
+#include "tech/game_file.h"
 
 /***************************************************************************
 **	This holds the translucent table for use with the construction clock
@@ -1206,7 +1205,7 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
     }
   }
 
-  CCFileClass(Fading_Table_Name("CLOCK", theater))
+  GameFile(Fading_Table_Name("CLOCK", theater))
       .Read(ClockTranslucentTable, sizeof(ClockTranslucentTable));
   LastTheater = theater;
 }

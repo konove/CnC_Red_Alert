@@ -50,7 +50,6 @@
 #include "sdllib/timer.h"
 #include "td/aircraft.h"
 #include "td/building.h"
-#include "td/ccfile.h"
 #include "td/defines.h"
 #include "td/expand.h"
 #include "td/externs.h"
@@ -65,6 +64,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/utracker.h"
+#include "tech/game_file.h"
 #include "tech/packet.h"
 
 #ifdef _WIN32
@@ -269,7 +269,7 @@ void Send_Statistics_Packet() {
     char* abuffer = ShapeBuffer;
     memset(abuffer, '\0', base::ToSize(ShapeBufferSize));
     sprintf(fname, "%s.INI", ScenarioName);
-    CCFileClass fileo;
+    GameFile fileo;
     fileo.SetName(fname);
     fileo.Read(abuffer, ShapeBufferSize - 1);
     fileo.Close();

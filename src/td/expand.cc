@@ -52,7 +52,6 @@
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "td/ccfile.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/dialog.h"
@@ -68,6 +67,7 @@
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "td/vector.h"
+#include "tech/game_file.h"
 
 // Creates a list item string with an integer index stored at the beginning.
 // The returned buffer layout is: [int index][null-terminated string]
@@ -82,7 +82,7 @@ static char* CreateIndexedListItem(int index, const std::string& str) {
 #ifdef NEWMENU
 
 bool Expansion_Present() {
-  CCFileClass file("EXPAND.DAT");
+  GameFile file("EXPAND.DAT");
 
   return file.IsAvailable();
 }
@@ -162,7 +162,7 @@ bool Expansion_Dialog() {
   char* sbuffer = ShapeBuffer;
   for (int index = 20; index < 60; index++) {
     char buffer[128];
-    CCFileClass file;
+    GameFile file;
 
     Set_Scenario_Name(buffer, index, SCEN_PLAYER_GDI, SCEN_DIR_EAST,
                       SCEN_VAR_A);
@@ -183,7 +183,7 @@ bool Expansion_Dialog() {
 
   for (int index = 20; index < 60; index++) {
     char buffer[128];
-    CCFileClass file;
+    GameFile file;
 
     Set_Scenario_Name(buffer, index, SCEN_PLAYER_NOD, SCEN_DIR_EAST,
                       SCEN_VAR_A);
@@ -334,7 +334,7 @@ bool Bonus_Dialog() {
 
   for (int index = 60; index < 63; index++) {
     char buffer[128];
-    CCFileClass file;
+    GameFile file;
 
     Set_Scenario_Name(buffer, index, SCEN_PLAYER_GDI, SCEN_DIR_EAST,
                       SCEN_VAR_A);
@@ -349,7 +349,7 @@ bool Bonus_Dialog() {
 
   for (int index = 60; index < 62; index++) {
     char buffer[128];
-    CCFileClass file;
+    GameFile file;
 
     Set_Scenario_Name(buffer, index, SCEN_PLAYER_NOD, SCEN_DIR_EAST,
                       SCEN_VAR_A);

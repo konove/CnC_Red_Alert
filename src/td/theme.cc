@@ -59,7 +59,6 @@
 
 #include "port/ex_string.h"
 #include "sdllib/ww_audio.h"
-#include "td/ccfile.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
@@ -69,6 +68,7 @@
 #include "td/rand.h"
 #include "td/special.h"
 #include "td/text.h"
+#include "tech/game_file.h"
 
 /*
 **	These are the actual filename list for the theme sample files.
@@ -313,7 +313,7 @@ int ThemeClass::Play_Song(ThemeType theme) {
     if (theme >= THEME_AIRSTRIKE) {
 #ifdef DEMO
       if (_themes[theme].Scenario != 99) {
-        CCFileClass file(Theme_File_Name(theme));
+        GameFile file(Theme_File_Name(theme));
         if (file.IsAvailable()) {
           Current = File_Stream_Sample_Vol(Theme_File_Name(theme), 0xFF, true);
         } else {
@@ -354,7 +354,7 @@ const char* ThemeClass::Theme_File_Name(ThemeType theme) {
     static auto name = std::filesystem::path(_themes[theme].Name)
                            .replace_extension(".VAR")
                            .string();
-    CCFileClass file(name);
+    GameFile file(name);
     if (file.IsAvailable()) {
       return name.data();
     }
@@ -454,7 +454,7 @@ bool ThemeClass::Is_Allowed(ThemeType index) {
   char buffer[128];
 
   sprintf(buffer, "%s.AUD", Base_Name(index));
-  CCFileClass file(buffer);
+  GameFile file(buffer);
   if (_themes[index].Scenario == 99 || !file.IsAvailable()) {
     _themes[index].Scenario = 99;
     return (false);
@@ -544,8 +544,7 @@ void ThemeClass::Scan() {
     //		if (theme == THEME_J1 && !Special.IsJurassic) {
     //			_themes[theme].Available = false;
     //		} else {
-    _themes[theme].Available =
-        CCFileClass(Theme_File_Name(theme)).IsAvailable();
+    _themes[theme].Available = GameFile(Theme_File_Name(theme)).IsAvailable();
     //		}
   }
 }

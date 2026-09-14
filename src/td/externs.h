@@ -50,7 +50,6 @@
 #include "td/base.h"
 #include "td/building.h"
 #include "td/bullet.h"
-#include "td/ccfile.h"
 #include "td/cell.h"
 #include "td/event.h"
 #include "td/factory.h"
@@ -61,10 +60,11 @@
 #include "td/ipxmgr.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
+#include "tech/game_file.h"
 #include "tech/mixfile.h"
 
-// Convenient alias for MixFileClass<CCFileClass>.
-using MFCD = MixFileClass<CCFileClass>;
+// Convenient alias for MixFileClass<GameFile>.
+using MFCD = MixFileClass<GameFile>;
 #include "td/monoc.h"
 #include "td/msglist.h"
 #include "td/nodename.h"
@@ -236,7 +236,7 @@ extern GameType GameToPlay;
 
 extern CommProtocolType CommProtocol;
 
-extern CCFileClass RecordFile;
+extern GameFile RecordFile;
 extern bool RecordGame;
 extern int SuperRecord;
 extern bool PlaybackGame;

@@ -113,7 +113,6 @@
 #include "support.h"
 #include "td/audio.h"
 #include "td/building.h"
-#include "td/ccfile.h"
 #include "td/cell.h"
 #include "td/config.h"
 #include "td/conquer.h"
@@ -145,6 +144,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "tech/game_file.h"
 #include "tech/number_parse.h"
 
 /*
@@ -396,19 +396,19 @@ void DisplayClass::Init_Theater(TheaterType theater) {
 
   Mem_Copy(GamePalette, OriginalPalette, 768);
 
-  CCFileClass(Fading_Table_Name("GREEN", theater))
+  GameFile(Fading_Table_Name("GREEN", theater))
       .Read(FadingGreen, sizeof(FadingGreen));
   if (theater == THEATER_DESERT) {
     FadingGreen[196] = 160;
   }
 
-  CCFileClass(Fading_Table_Name("YELLOW", theater))
+  GameFile(Fading_Table_Name("YELLOW", theater))
       .Read(FadingYellow, sizeof(FadingYellow));
 
-  CCFileClass(Fading_Table_Name("RED", theater))
+  GameFile(Fading_Table_Name("RED", theater))
       .Read(FadingRed, sizeof(FadingRed));
 
-  CCFileClass(Fading_Table_Name("MOUSE", theater))
+  GameFile(Fading_Table_Name("MOUSE", theater))
       .Read(MouseTranslucentTable, sizeof(MouseTranslucentTable));
 
   //	MouseDrawPtr = MouseTranslucentTable;
@@ -416,22 +416,22 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   //	MouseDrawVal = 1;
   //	MouseDrawFlags = (int)SHAPE_GHOST;
 
-  CCFileClass(Fading_Table_Name("TRANS", theater))
+  GameFile(Fading_Table_Name("TRANS", theater))
       .Read(TranslucentTable, sizeof(TranslucentTable));
 
-  CCFileClass(Fading_Table_Name("WHITE", theater))
+  GameFile(Fading_Table_Name("WHITE", theater))
       .Read(WhiteTranslucentTable, sizeof(WhiteTranslucentTable));
 
-  CCFileClass(Fading_Table_Name("SHADOW", theater))
+  GameFile(Fading_Table_Name("SHADOW", theater))
       .Read(ShadowTrans, sizeof(ShadowTrans));
 
-  CCFileClass(Fading_Table_Name("UNITS", theater))
+  GameFile(Fading_Table_Name("UNITS", theater))
       .Read(UnitShadow, sizeof(UnitShadow));
 
-  CCFileClass(Fading_Table_Name("SHADE", theater))
+  GameFile(Fading_Table_Name("SHADE", theater))
       .Read(FadingShade, sizeof(FadingShade));
 
-  CCFileClass(Fading_Table_Name("LIGHT", theater))
+  GameFile(Fading_Table_Name("LIGHT", theater))
       .Read(FadingLight, sizeof(FadingLight));
 
   /*

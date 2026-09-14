@@ -64,7 +64,6 @@
 #include "sdllib/shape.h"
 #include "td/base.h"
 #include "td/building.h"
-#include "td/ccfile.h"
 #include "td/cell.h"
 #include "td/config.h"
 #include "td/conquer.h"
@@ -96,6 +95,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "tech/game_file.h"
 
 /************************************* Prototypes
  * *********************************************/
@@ -192,7 +192,7 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
     */
     for (i = SCEN_VAR_A; i < SCEN_VAR_COUNT; i++) {
       sprintf(fname, "SC%c%02d%c%c.INI", c_player, scenario, c_dir, 'A' + i);
-      if (!CCFileClass(fname).IsAvailable()) {
+      if (!GameFile(fname).IsAvailable()) {
         break;
       }
     }
@@ -312,7 +312,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   */
 
   sprintf(fname, "%s.INI", root);
-  CCFileClass file(fname);
+  GameFile file(fname);
   if (!file.IsAvailable()) {
     return false;
   }
@@ -537,7 +537,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   */
   if (BriefingText[0] == '\0') {
     memset(ShapeBuffer, '\0', base::ToSize(ShapeBufferSize));
-    CCFileClass("MISSION.INI").Read(ShapeBuffer, ShapeBufferSize);
+    GameFile("MISSION.INI").Read(ShapeBuffer, ShapeBufferSize);
 
     char* work = &BriefingText[0];
     int player_index = 1;
@@ -662,7 +662,7 @@ void Write_Scenario_Ini(const char* root) {
     char* buffer;                       // Scenario.ini staging buffer pointer.
     char fname[kMaxFname + kMaxExt];    // full scenario name
     HousesType house;
-    CCFileClass file;
+    GameFile file;
 
     /*
     **	Get a working pointer to the INI staging buffer. Make sure that the

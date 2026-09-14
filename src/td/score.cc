@@ -72,7 +72,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "td/audio.h"
-#include "td/ccfile.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
@@ -94,6 +93,7 @@
 #include "td/theme.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "tech/game_file.h"
 
 #define SCORETEXT_X 184
 // #define SCORETEXT_Y 8
@@ -655,7 +655,7 @@ void ScoreClass::Presentation() {
   int max;
   const void* yellowptr = nullptr;
   const void* redptr = nullptr;
-  CCFileClass file("HALLFAME.DAT");
+  GameFile file("HALLFAME.DAT");
   struct Fame hallfame[NUMFAMENAMES];
   void* anim;
   const void* oldfont;
