@@ -33,7 +33,12 @@
   calls keep doing the prompting. Real-data check done with a throwaway tech test (MAIN1–4.MIX +
   REDALERT.MIX registered with the public key from `ra/const.h`): REDINTRO/PROLOG/ALLY1.VQA and
   BIGF226M/CRUS226M.AUD open through the nested archives.
-- Next: step 7.
+- Step 7 is complete (`5c1f5f02`): `td/ccfile.*` deleted, TD uses `GameFile`; handle API and its
+  test in `tech/file_handles*.cc`. No TD-specific nested test was written: the shared
+  `game_file_test` nested cases cover it and CCFileClass is gone in the same commit. Note: the TD
+  smoke script's `--building` fixture fails on SCB01EA ("could not create linked fixtures") before
+  and after; use SCB01EA without a fixture (6600 states) or SCG01EA with one.
+- Next: step 8.
 
 ## Context
 
