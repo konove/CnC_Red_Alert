@@ -1,7 +1,7 @@
 #ifndef CNC_RED_ALERT_TECH_ARCHIVE_H_
 #define CNC_RED_ALERT_TECH_ARCHIVE_H_
 
-// Binary archive over the Pipe/Straw chain, used for saved games.
+// Binary archive over the ByteSink/ByteSource chain, used for saved games.
 //
 // A class makes itself serializable by declaring one member template that
 // lists its fields once for both directions:
@@ -17,8 +17,8 @@
 // integer is little-endian at its own width, every enum is an int32_t, and a
 // bool is one byte, which makes the format identical across platforms.
 //
-// The archives are unbuffered: raw Pipe::Put and Straw::Get calls may be
-// interleaved with archive calls on the same chain.
+// The archives are unbuffered: raw ByteSink::Write and ByteSource::Read calls
+// may be interleaved with archive calls on the same chain.
 
 #include <algorithm>
 #include <bit>
@@ -33,8 +33,8 @@
 #include <utility>
 
 #include "absl/base/attributes.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
+#include "tech/byte_sink.h"
+#include "tech/byte_source.h"
 
 // Integers and enums the archive writes directly, each at its own width.
 // `long` cannot be rejected here because int64_t is `long` on LP64;
@@ -122,12 +122,12 @@ class ArchiveBase {
   }
 };
 
-// Writes fields to a Pipe.
+// Writes fields to a ByteSink.
 class ArchiveWriter : public ArchiveBase<ArchiveWriter> {
  public:
   static constexpr bool kIsReading = false;
 
-  explicit ArchiveWriter(Pipe& sink ABSL_ATTRIBUTE_LIFETIME_BOUND)
+  explicit ArchiveWriter(ByteSink& sink ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : sink_(sink) {}
 
   // Returns false once a write to the sink, or past it, has failed.
@@ -138,7 +138,7 @@ class ArchiveWriter : public ArchiveBase<ArchiveWriter> {
 
   // Writes bytes verbatim. The escape hatch for data that is not yet
   // field-wise; every use should disappear as the migration completes.
-  void Bytes(std::span<const std::byte> data) { sink_.Put(data); }
+  void Bytes(std::span<const std::byte> data) { sink_.Write(data); }
 
   template <ArchiveScalar T>
   void Scalar(const T& value) {
@@ -148,20 +148,20 @@ class ArchiveWriter : public ArchiveBase<ArchiveWriter> {
     }
     sink_.WriteObject(little);
   }
-  void Raw(std::span<const std::byte> data) { sink_.Put(data); }
+  void Raw(std::span<const std::byte> data) { sink_.Write(data); }
 
  private:
-  Pipe& sink_;
+  ByteSink& sink_;
 };
 
-// Reads fields from a Straw. The first failure (short read or wrong section
-// tag) is recorded and every later read yields zero without touching the
-// source, so a corrupt file produces one error instead of a cascade.
+// Reads fields from a ByteSource. The first failure (short read or wrong
+// section tag) is recorded and every later read yields zero without touching
+// the source, so a corrupt file produces one error instead of a cascade.
 class ArchiveReader : public ArchiveBase<ArchiveReader> {
  public:
   static constexpr bool kIsReading = true;
 
-  explicit ArchiveReader(Straw& source ABSL_ATTRIBUTE_LIFETIME_BOUND)
+  explicit ArchiveReader(ByteSource& source ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : source_(source) {}
 
   // Reads a marker and compares it with the expected tag. Returns false and
@@ -204,14 +204,14 @@ class ArchiveReader : public ArchiveBase<ArchiveReader> {
       std::ranges::fill(data, std::byte{0});
       return;
     }
-    if (source_.Get(data) != std::ssize(data)) {
+    if (source_.Read(data) != std::ssize(data)) {
       std::ranges::fill(data, std::byte{0});
       Fail("unexpected end of data");
     }
   }
 
  private:
-  Straw& source_;
+  ByteSource& source_;
   std::string error_;
 };
 

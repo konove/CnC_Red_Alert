@@ -7,8 +7,8 @@
 
 #include "gtest/gtest.h"
 #include "tech/archive.h"
-#include "tech/pipe.h"
-#include "tech/xstraw.h"
+#include "tech/byte_sink.h"
+#include "tech/span_source.h"
 
 namespace {
 
@@ -33,9 +33,9 @@ struct Gadget : Widget {
 };
 static_assert(!Serializable<Gadget>);
 
-class VectorPipe : public Pipe {
+class RecordingSink : public ByteSink {
  public:
-  bool Put(std::span<const std::byte> data) override {
+  bool Write(std::span<const std::byte> data) override {
     for (const std::byte byte : data) {
       bytes.push_back(std::to_integer<uint8_t>(byte));
     }
@@ -52,13 +52,13 @@ Widget* Allocate(TFixedIHeapClass<Widget>& heap, int32_t value) {
 }
 
 std::vector<uint8_t> Save(const TFixedIHeapClass<Widget>& heap) {
-  VectorPipe pipe;
+  RecordingSink pipe;
   EXPECT_TRUE(heap.Save(pipe));
   return pipe.bytes;
 }
 
 bool Load(TFixedIHeapClass<Widget>& heap, const std::vector<uint8_t>& bytes) {
-  BufferStraw straw(std::as_bytes(std::span(bytes)));
+  SpanSource straw(std::as_bytes(std::span(bytes)));
   return heap.Load(straw);
 }
 

@@ -17,9 +17,9 @@
 #include "ra/session.h"
 #include "ra/special.h"
 #include "tech/archive.h"
+#include "tech/byte_sink.h"
 #include "tech/ftimer.h"
-#include "tech/pipe.h"
-#include "tech/xstraw.h"
+#include "tech/span_source.h"
 
 // Game clock used by the scenario serializer in this test executable.
 int64_t Frame = 0;
@@ -30,9 +30,9 @@ namespace {
 
 static_assert(std::is_trivially_default_constructible_v<SpecialClass>);
 
-class GlobalsPipe : public Pipe {
+class GlobalsSink : public ByteSink {
  public:
-  bool Put(std::span<const std::byte> data) override {
+  bool Write(std::span<const std::byte> data) override {
     for (const std::byte byte : data) {
       bytes.push_back(std::to_integer<uint8_t>(byte));
     }
@@ -43,7 +43,7 @@ class GlobalsPipe : public Pipe {
 
 template <class T>
 bool ReadValue(T& value, const std::vector<uint8_t>& bytes) {
-  BufferStraw straw(std::as_bytes(std::span(bytes)));
+  SpanSource straw(std::as_bytes(std::span(bytes)));
   // The call operator is non-const; misc-const-correctness misses the call
   // because its argument is template-dependent.
   // NOLINTNEXTLINE(misc-const-correctness)
@@ -57,7 +57,7 @@ TEST(SaveGlobalsTest, SpecialFlagsUseExactlyOneByteForEveryCombination) {
     const std::vector<uint8_t> bytes{static_cast<uint8_t>(flags)};
     SpecialClass special{};
     ASSERT_TRUE(ReadValue(special, bytes));
-    GlobalsPipe pipe;
+    GlobalsSink pipe;
     ArchiveWriter writer(pipe);
     writer(special);
     EXPECT_EQ(pipe.bytes, bytes);
@@ -69,14 +69,14 @@ TEST(SaveGlobalsTest, ScorePreservesWideCountersAndPausedTime) {
   score.NKilled = 17;
   score.GHarvested = 123456;
   score.ElapsedTime = int64_t{1} << 40;
-  GlobalsPipe timer_data;
+  GlobalsSink timer_data;
   ArchiveWriter timer_writer(timer_data);
   int64_t elapsed = 9876543210;
   bool running = false;
   timer_writer(elapsed, running);
   ASSERT_TRUE(ReadValue(score.RealTime, timer_data.bytes));
 
-  GlobalsPipe pipe;
+  GlobalsSink pipe;
   ArchiveWriter writer(pipe);
   writer(score);
   EXPECT_EQ(score.RealTime.Value(), elapsed);
@@ -91,7 +91,7 @@ TEST(SaveGlobalsTest, ScorePreservesWideCountersAndPausedTime) {
   EXPECT_FALSE(loaded.RealTime.IsRunning());
 
   score.RealTime.Start();
-  GlobalsPipe running_data;
+  GlobalsSink running_data;
   ArchiveWriter running_writer(running_data);
   running_writer(score);
   EXPECT_TRUE(score.RealTime.IsRunning());
@@ -101,7 +101,7 @@ TEST(SaveGlobalsTest, ScorePreservesWideCountersAndPausedTime) {
 
 TEST(SaveGlobalsTest, TruncatedScoreFails) {
   ScoreClass score;
-  GlobalsPipe pipe;
+  GlobalsSink pipe;
   ArchiveWriter writer(pipe);
   writer(score);
   pipe.bytes.pop_back();
@@ -119,7 +119,7 @@ TEST(SaveGlobalsTest, PlayerRecordPreservesNameAddressAndPlayerFields) {
   player.Player.Color = PCOLOR_RED;
   player.Player.ID = HOUSE_MULTI1;
   player.Player.ProcessTime = 123;
-  GlobalsPipe pipe;
+  GlobalsSink pipe;
   ArchiveWriter writer(pipe);
   writer(player);
   EXPECT_EQ(pipe.bytes.size(),

@@ -1,7 +1,10 @@
-// File: Validation shared by the block-based compression pipes and straws.
+// File: Definitions shared by the block-based compression sinks and sources.
 
 #ifndef CNC_RED_ALERT_TECH_CODEC_BLOCK_H_
 #define CNC_RED_ALERT_TECH_CODEC_BLOCK_H_
+
+// Whether a block codec link compresses or decompresses what passes it.
+enum class CodecMode { kCompress, kDecompress };
 
 // Returns whether a block header read from a compressed stream describes a
 // block that fits buffers of `capacity` bytes. Encoders never emit empty

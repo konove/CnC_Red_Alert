@@ -11,18 +11,18 @@
 #include "ra/globals.h"
 #include "ra/jshell.h"
 #include "tech/archive.h"
+#include "tech/byte_sink.h"
 #include "tech/ftimer.h"
-#include "tech/pipe.h"
-#include "tech/xstraw.h"
+#include "tech/span_source.h"
 
 // The game clock is supplied by globals.cc in rasdl.
 int64_t Frame = 0;
 
 namespace {
 
-class CratePipe : public Pipe {
+class CrateSink : public ByteSink {
  public:
-  bool Put(std::span<const std::byte> data) override {
+  bool Write(std::span<const std::byte> data) override {
     for (const std::byte byte : data) {
       bytes.push_back(std::to_integer<uint8_t>(byte));
     }
@@ -33,7 +33,7 @@ class CratePipe : public Pipe {
 };
 
 bool ReadCrate(CrateClass& crate, const std::vector<uint8_t>& bytes) {
-  BufferStraw straw(std::as_bytes(std::span(bytes)));
+  SpanSource straw(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(straw);
   reader(crate);
   return reader.ok();
@@ -43,7 +43,7 @@ TEST(CrateSerializeTest, DefaultCrateHasNoCellOrExpiry) {
   CrateClass crate;
   EXPECT_FALSE(crate.Is_Valid());
   EXPECT_FALSE(crate.Is_Expired());
-  CratePipe pipe;
+  CrateSink pipe;
   ArchiveWriter writer(pipe);
   writer(crate);
   CrateClass loaded;
@@ -56,7 +56,7 @@ TEST(CrateSerializeTest, CountdownSurvivesSaveAndReanchorsOnLoad) {
   Frame = 100;
   CELL cell = 42;
   Timer<FrameTickSource> timer(30);
-  CratePipe fixture;
+  CrateSink fixture;
   ArchiveWriter fixture_writer(fixture);
   fixture_writer(cell, timer);
   CrateClass crate;
@@ -64,7 +64,7 @@ TEST(CrateSerializeTest, CountdownSurvivesSaveAndReanchorsOnLoad) {
   EXPECT_TRUE(crate.Is_Here(cell));
 
   Frame += 10;
-  CratePipe saved;
+  CrateSink saved;
   ArchiveWriter writer(saved);
   writer(crate);
   EXPECT_FALSE(crate.Is_Expired());
@@ -84,7 +84,7 @@ TEST(CrateSerializeTest, CountdownSurvivesSaveAndReanchorsOnLoad) {
 
 TEST(CrateSerializeTest, RejectsCellsOutsideTheMap) {
   for (CELL cell : {static_cast<CELL>(-2), static_cast<CELL>(MAP_CELL_TOTAL)}) {
-    CratePipe pipe;
+    CrateSink pipe;
     ArchiveWriter writer(pipe);
     Timer<FrameTickSource> timer(30);
     writer(cell, timer);
@@ -95,7 +95,7 @@ TEST(CrateSerializeTest, RejectsCellsOutsideTheMap) {
 
 TEST(CrateSerializeTest, RejectsTruncatedTimer) {
   CrateClass crate;
-  CratePipe pipe;
+  CrateSink pipe;
   ArchiveWriter writer(pipe);
   writer(crate);
   pipe.bytes.pop_back();

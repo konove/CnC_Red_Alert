@@ -8,16 +8,16 @@
 
 #include "absl/base/attributes.h"
 #include "gtest/gtest.h"
-#include "tech/pipe.h"
-#include "tech/xpipe.h"
-#include "tech/xstraw.h"
+#include "tech/byte_sink.h"
+#include "tech/span_sink.h"
+#include "tech/span_source.h"
 
 namespace {
 
-// Pipe terminator that appends everything it receives to a vector.
-class VectorPipe : public Pipe {
+// ByteSink terminator that appends everything it receives to a vector.
+class RecordingSink : public ByteSink {
  public:
-  bool Put(std::span<const std::byte> data) override {
+  bool Write(std::span<const std::byte> data) override {
     for (const std::byte byte : data) {
       bytes_.push_back(std::to_integer<uint8_t>(byte));
     }
@@ -35,7 +35,7 @@ class VectorPipe : public Pipe {
 // Writes through `fn` and returns the bytes produced.
 template <class Fn>
 std::vector<uint8_t> WriteWith(Fn fn) {
-  VectorPipe pipe;
+  RecordingSink pipe;
   ArchiveWriter writer(pipe);
   fn(writer);
   return pipe.bytes();
@@ -44,7 +44,7 @@ std::vector<uint8_t> WriteWith(Fn fn) {
 // Reads `bytes` through `fn` and reports whether the reader stayed healthy.
 template <class Fn>
 bool ReadWith(const std::vector<uint8_t>& bytes, Fn fn) {
-  BufferStraw straw(std::as_bytes(std::span(bytes)));
+  SpanSource straw(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(straw);
   fn(reader);
   return reader.ok();
@@ -187,7 +187,7 @@ TEST(ArchiveTest, RvalueProxiesAreAccepted) {
 
 TEST(ArchiveTest, ShortReadFailsOnceAndZeroFillsTheRest) {
   const std::vector<uint8_t> bytes = {1, 0};  // half of an int32_t
-  BufferStraw straw(std::as_bytes(std::span(bytes)));
+  SpanSource straw(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(straw);
   int32_t first = -1;
   int32_t second = -1;
@@ -207,7 +207,7 @@ TEST(ArchiveTest, SectionTagsMatchOrFail) {
   EXPECT_EQ(bytes.size(), 8U);
 
   {
-    BufferStraw straw(std::as_bytes(std::span(bytes)));
+    SpanSource straw(std::as_bytes(std::span(bytes)));
     ArchiveReader reader(straw);
     EXPECT_TRUE(reader.Section(FourCC("HOUS")));
     int32_t v = 0;
@@ -216,7 +216,7 @@ TEST(ArchiveTest, SectionTagsMatchOrFail) {
     EXPECT_TRUE(reader.ok());
   }
   {
-    BufferStraw straw(std::as_bytes(std::span(bytes)));
+    SpanSource straw(std::as_bytes(std::span(bytes)));
     ArchiveReader reader(straw);
     EXPECT_FALSE(reader.Section(FourCC("TEAM")));
     EXPECT_EQ(reader.error(), "section tag mismatch");
@@ -225,7 +225,7 @@ TEST(ArchiveTest, SectionTagsMatchOrFail) {
 
 TEST(ArchiveTest, FailKeepsTheFirstError) {
   const std::vector<uint8_t> bytes;
-  BufferStraw straw(std::as_bytes(std::span(bytes)));
+  SpanSource straw(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(straw);
   reader.Fail("first");
   reader.Fail("second");
@@ -248,19 +248,19 @@ TEST(ArchiveTest, BytesEscapeHatchRoundTrips) {
 
 TEST(ArchiveTest, WriterReportsShortWriteForGood) {
   std::array<char, 2> bytes{};
-  BufferPipe sink(std::as_writable_bytes(std::span(bytes)));
+  SpanSink sink(std::as_writable_bytes(std::span(bytes)));
   ArchiveWriter writer(sink);
   EXPECT_TRUE(writer.ok());
   int32_t value = 123;
   writer(value);
   EXPECT_FALSE(writer.ok());
-  EXPECT_FALSE(sink.Put(std::as_bytes(std::span("x", 1))));
+  EXPECT_FALSE(sink.Write(std::as_bytes(std::span("x", 1))));
   EXPECT_FALSE(writer.ok());
 }
 
 TEST(ArchiveTest, BodyRoundTripsThroughFixedBuffer) {
   std::array<char, 32> bytes{};
-  BufferPipe sink(std::as_writable_bytes(std::span(bytes)));
+  SpanSink sink(std::as_writable_bytes(std::span(bytes)));
   ArchiveWriter writer(sink);
   int32_t cell_count = 2;
   char raw_payload[] = "raw checkpoint";
@@ -269,7 +269,7 @@ TEST(ArchiveTest, BodyRoundTripsThroughFixedBuffer) {
   EXPECT_TRUE(writer.ok());
   EXPECT_EQ(sink.bytes_written(), 4 + std::ssize(raw_payload));
 
-  BufferStraw source(
+  SpanSource source(
       std::as_bytes(std::span(bytes).first(4 + sizeof(raw_payload))));
   ArchiveReader reader(source);
   int32_t loaded_count = 0;

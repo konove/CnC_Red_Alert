@@ -51,8 +51,8 @@
 #include <cstring>
 
 #include "base/numeric.h"
+#include "tech/byte_source.h"
 #include "tech/int.h"
-#include "tech/straw.h"
 /***********************************************************************************************
  * PKey::PKey -- Construct a key using encoded strings. *
  *                                                                                             *
@@ -194,7 +194,8 @@ void PKey::Decode_Exponent(void* buffer) {
  * HISTORY: * 07/05/1996 JLB : Created. * 07/10/1996 JLB : Must supply source of
  *random data.                                       *
  *=============================================================================================*/
-void PKey::Generate(Straw& random, int bits, PKey& fastkey, PKey& slowkey) {
+void PKey::Generate(ByteSource& random, int bits, PKey& fastkey,
+                    PKey& slowkey) {
   /*
   **	Key generation consists of create a key pair and then testing the key
   **	pair. If the test fails, then repeat the process. The test and repeat

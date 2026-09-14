@@ -6,9 +6,9 @@
 
 #include "ra/defines.h"
 #include "tech/archive.h"
+#include "tech/byte_sink.h"
+#include "tech/byte_source.h"
 #include "tech/file.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 // Identifies a saved game written by this port. It follows the description
 // in the file header, where the original format kept the scenario number, so
@@ -19,10 +19,10 @@ inline constexpr uint32_t kSaveGameMagic = FourCC("RASV");
 // from a raw image to Serialize(). Only an exact match loads.
 inline constexpr int32_t kSaveGameVersion = 16;
 
-bool Load_Misc_Values(Straw& file);
-bool Save_Misc_Values(Pipe& file);
-bool Load_MPlayer_Values(Straw& file);
-bool Save_MPlayer_Values(Pipe& file);
+bool Load_Misc_Values(ByteSource& file);
+bool Save_Misc_Values(ByteSink& file);
+bool Load_MPlayer_Values(ByteSource& file);
+bool Save_MPlayer_Values(ByteSink& file);
 bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
                        HousesType* housep);
 bool Load_Game(int id);

@@ -25,14 +25,14 @@
 #include "td/trigger.h"
 #include "td/unit.h"
 #include "tech/archive.h"
-#include "tech/xpipe.h"
-#include "tech/xstraw.h"
+#include "tech/span_sink.h"
+#include "tech/span_source.h"
 
 namespace {
 template <class T>
 std::vector<uint8_t> Save(T& object) {
   std::vector<uint8_t> bytes(8192);
-  BufferPipe sink(std::as_writable_bytes(std::span(bytes)));
+  SpanSink sink(std::as_writable_bytes(std::span(bytes)));
   ArchiveWriter writer(sink);
   object.Serialize(writer);
   EXPECT_TRUE(writer.ok());
@@ -42,7 +42,7 @@ std::vector<uint8_t> Save(T& object) {
 
 template <class T>
 bool Restore(T& object, const std::vector<uint8_t>& bytes) {
-  BufferStraw source(std::as_bytes(std::span(bytes)));
+  SpanSource source(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(source);
   object.Serialize(reader);
   if (!reader.ok()) {
@@ -199,7 +199,7 @@ TEST_F(TdArchiveRoundTripTest, CellRestoresFlagsAndGappedObjectAndTriggerReferen
 // public map dimensions, rather than relying on the serializer for both ends.
 std::vector<uint8_t> MapFields(int32_t growth_count = 2) {
   std::vector<uint8_t> bytes(128);
-  BufferPipe sink(std::as_writable_bytes(std::span(bytes)));
+  SpanSink sink(std::as_writable_bytes(std::span(bytes)));
   ArchiveWriter writer(sink);
   int32_t x = 1;
   int32_t y = 2;
@@ -235,7 +235,7 @@ TEST_F(TdArchiveRoundTripTest, MapRejectsOversizedScanListBeforeReadingEntries) 
   MapClass& map = Map;
   map.MapClass::Init_Clear();
   const auto bytes = MapFields(51);
-  BufferStraw source(std::as_bytes(std::span(bytes)));
+  SpanSource source(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(source);
   map.Serialize(reader);
   EXPECT_FALSE(reader.ok());
@@ -294,7 +294,7 @@ TEST_F(TdArchiveRoundTripTest, TruncatedCellHouseAndUnitRecordsFail) {
   const auto check = [](auto& object) {
     auto bytes = Save(object);
     bytes.pop_back();
-    BufferStraw source(std::as_bytes(std::span(bytes)));
+    SpanSource source(std::as_bytes(std::span(bytes)));
     ArchiveReader reader(source);
     object.Serialize(reader);
     EXPECT_FALSE(reader.ok());

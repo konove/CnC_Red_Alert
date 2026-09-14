@@ -21,9 +21,9 @@
 #include <cctype>
 #include <cstring>
 
+#include "tech/byte_source.h"
 #include "tech/file.h"
-#include "tech/straw.h"
-#include "tech/xstraw.h"
+#include "tech/file_source.h"
 
 void strtrim(char* buffer) {
   if (buffer) {
@@ -52,11 +52,11 @@ void strtrim(char* buffer) {
 }
 
 int Read_Line(File& file, char* buffer, int len, bool& eof) {
-  FileStraw fs(file);
+  FileSource fs(file);
   return Read_Line(fs, buffer, len, eof);
 }
 
-int Read_Line(Straw& file, char* buffer, int len, bool& eof) {
+int Read_Line(ByteSource& file, char* buffer, int len, bool& eof) {
   if (len == 0 || buffer == nullptr) {
     return 0;
   }

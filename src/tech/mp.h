@@ -43,7 +43,7 @@
 #include <cstdlib>
 #include <utility>
 
-#include "tech/straw.h"
+#include "tech/byte_source.h"
 
 extern uint16_t primeTable[3511];
 
@@ -123,11 +123,12 @@ void XMP_Unsigned_Decode(uint32_t* result, const unsigned char* from,
 int XMP_Encode(unsigned char* to, const uint32_t* from, int precision);
 unsigned XMP_Encode(unsigned char* to, unsigned tobytes, const uint32_t* from,
                     int precision);
-void XMP_Randomize(uint32_t* result, Straw& rng, int total_bits, int precision);
-void XMP_Randomize(uint32_t* result, Straw& rng, const uint32_t* min,
+void XMP_Randomize(uint32_t* result, ByteSource& rng, int total_bits,
+                   int precision);
+void XMP_Randomize(uint32_t* result, ByteSource& rng, const uint32_t* min,
                    const uint32_t* max, int precision);
 bool XMP_Is_Prime(const uint32_t* prime, int precision);
-bool XMP_Rabin_Miller_Test(Straw& rng, const uint32_t* w, int rounds,
+bool XMP_Rabin_Miller_Test(ByteSource& rng, const uint32_t* w, int rounds,
                            int precision);
 int XMP_DER_Length_Encode(uint32_t length, unsigned char* output);
 int XMP_DER_Encode(const uint32_t* from, unsigned char* output, int precision);

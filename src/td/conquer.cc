@@ -154,11 +154,11 @@
 #include "td/vector.h"
 #include "tech/2keyfbuf.h"
 #include "tech/archive.h"
+#include "tech/byte_sink.h"
 #include "tech/crc.h"
 #include "tech/game_file.h"
 #include "tech/game_file_vqa_io.h"
 #include "tech/mix_archive.h"
-#include "tech/pipe.h"
 #include "tech/search_paths.h"
 #include "winvq/vqa32/vqaplay.h"
 
@@ -1724,10 +1724,10 @@ bool Main_Loop() {
     const auto log_heap = [](auto& heap, const char* kind) {
       for (int index = 0; index < heap.Count(); ++index) {
         // Stream directly to hex so growing field lists cannot be truncated.
-        class HexPipe : public Pipe {
+        class HexSink : public ByteSink {
          public:
           std::string fields;
-          bool Put(std::span<const std::byte> bytes) override {
+          bool Write(std::span<const std::byte> bytes) override {
             constexpr char hex[] = "0123456789abcdef";
             for (const std::byte byte : bytes) {
               const auto value = std::to_integer<uint8_t>(byte);
@@ -1758,12 +1758,12 @@ bool Main_Loop() {
     log_heap(Units, "unitstate");
     log_heap(Infantry, "infantrystate");
     log_heap(Aircraft, "aircraftstate");
-    class MapHashPipe : public Pipe {
+    class MapHashSink : public ByteSink {
      public:
       bool trace = std::getenv("TD_MAP_TRACE") != nullptr;
       std::string fields;
       uint64_t hash = 14695981039346656037ULL;
-      bool Put(std::span<const std::byte> bytes) override {
+      bool Write(std::span<const std::byte> bytes) override {
         for (const std::byte byte : bytes) {
           const auto value = std::to_integer<uint8_t>(byte);
           hash = (hash ^ value) * 1099511628211ULL;
@@ -1779,7 +1779,7 @@ bool Main_Loop() {
     ArchiveWriter map_writer(map_sink);
     Map.Serialize(map_writer);
     LOG(INFO) << "frame " << Frame << " mapstate " << map_sink.hash;
-    MapHashPipe globals_sink;
+    MapHashSink globals_sink;
     ArchiveWriter globals_writer(globals_sink);
     Score.Serialize(globals_writer);
     Base.Serialize(globals_writer);

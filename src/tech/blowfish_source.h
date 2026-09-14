@@ -1,0 +1,92 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/BLWSTRAW.H 1     3/03/97 10:24a Joe_bostic $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : BLWSTRAW.H *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 07/02/96 *
+ *                                                                                             *
+ *                  Last Update : July 2, 1996 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#ifndef CNC_RED_ALERT_TECH_BLOWFISH_SOURCE_H_
+#define CNC_RED_ALERT_TECH_BLOWFISH_SOURCE_H_
+
+#include <array>
+#include <cstddef>
+#include <optional>
+#include <span>
+
+#include "base/types.h"
+#include "tech/blowfish.h"
+#include "tech/byte_source.h"
+
+/*
+**	Performs Blowfish encryption/decryption to the data that is drawn
+*through this straw. The *	process is controlled by the key which must be
+*submitted to the class before any data *	manipulation will occur. The
+*Blowfish algorithm is symmetric, thus the same key is used *	for encryption
+*as is for decryption.
+*/
+class BlowfishSource : public ChainedSource {
+ public:
+  BlowfishSource(CipherMode control, ByteSource& source)
+      : ChainedSource(source), Control(control) {}
+  ~BlowfishSource() override = default;
+
+  base::ssize Read(std::span<std::byte> buffer) override;
+
+  // Submit key for blowfish engine.
+  void Key(const void* key, int length);
+
+ protected:
+  /*
+  **	The Blowfish engine used for encryption/decryption. If it is empty,
+  **	then this indicates that the blowfish engine is not active and no
+  **	key has been submitted. All data would pass through this straw unchanged
+  **	in that case.
+  */
+  std::optional<BlowfishEngine> BF;
+
+ private:
+  static constexpr int kBlockSize = 8;
+  std::array<char, kBlockSize> Buffer{};
+  int Counter = 0;
+  CipherMode Control;
+
+ public:
+  BlowfishSource(const BlowfishSource&) = delete;
+  BlowfishSource& operator=(const BlowfishSource&) = delete;
+  BlowfishSource(BlowfishSource&&) = delete;
+  BlowfishSource& operator=(BlowfishSource&&) = delete;
+};
+
+#endif  // CNC_RED_ALERT_TECH_BLOWFISH_SOURCE_H_

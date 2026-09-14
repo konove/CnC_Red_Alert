@@ -10,20 +10,21 @@
 
 #include "base/types.h"
 #include "gtest/gtest.h"
+#include "tech/byte_sink.h"
+#include "tech/byte_source.h"
+#include "tech/codec_block.h"
 #include "tech/lcw.h"
-#include "tech/lcwpipe.h"
-#include "tech/lcwstraw.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
-#include "tech/xpipe.h"
-#include "tech/xstraw.h"
+#include "tech/lcw_sink.h"
+#include "tech/lcw_source.h"
+#include "tech/span_sink.h"
+#include "tech/span_source.h"
 
 namespace {
 
-class ByteSink : public Pipe {
+class RecordingSink : public ByteSink {
  public:
   std::vector<uint8_t> bytes;
-  bool Put(std::span<const std::byte> data) override {
+  bool Write(std::span<const std::byte> data) override {
     for (const std::byte byte : data) {
       bytes.push_back(std::to_integer<uint8_t>(byte));
     }
@@ -31,12 +32,12 @@ class ByteSink : public Pipe {
   }
 };
 
-std::vector<uint8_t> Drain(Straw& straw) {
+std::vector<uint8_t> Drain(ByteSource& straw) {
   std::vector<uint8_t> result;
   std::vector<uint8_t> chunk(999);
-  for (base::ssize count = straw.Get(std::as_writable_bytes(std::span(chunk)));
+  for (base::ssize count = straw.Read(std::as_writable_bytes(std::span(chunk)));
        count != 0;
-       count = straw.Get(std::as_writable_bytes(std::span(chunk)))) {
+       count = straw.Read(std::as_writable_bytes(std::span(chunk)))) {
     result.insert(result.end(), chunk.begin(), chunk.begin() + count);
   }
   return result;
@@ -149,27 +150,27 @@ TEST(LcwCompTest, CompressesRedundantData) {
 // other way round, feeding the pipes in uneven pieces.
 void ExpectPipeStrawRoundTrip(const std::vector<uint8_t>& plain,
                               int block_size) {
-  ByteSink encoded;
-  LCWPipe compressor(LCWPipe::COMPRESS, encoded, block_size);
+  RecordingSink encoded;
+  LcwSink compressor(CodecMode::kCompress, encoded, block_size);
   for (std::size_t at = 0; at < plain.size(); at += 1234) {
     const std::size_t piece = std::min<std::size_t>(1234, plain.size() - at);
-    compressor.Put(std::as_bytes(std::span(plain).subspan(at, piece)));
+    compressor.Write(std::as_bytes(std::span(plain).subspan(at, piece)));
   }
   compressor.Flush();
-  BufferStraw compressed(std::as_bytes(std::span(encoded.bytes)));
-  LCWStraw decompressor(LCWStraw::DECOMPRESS, compressed, block_size);
+  SpanSource compressed(std::as_bytes(std::span(encoded.bytes)));
+  LcwSource decompressor(CodecMode::kDecompress, compressed, block_size);
   EXPECT_EQ(Drain(decompressor), plain);
 
-  BufferStraw source(std::as_bytes(std::span(plain)));
-  LCWStraw compressing_straw(LCWStraw::COMPRESS, source, block_size);
+  SpanSource source(std::as_bytes(std::span(plain)));
+  LcwSource compressing_straw(CodecMode::kCompress, source, block_size);
   const std::vector<uint8_t> straw_encoded = Drain(compressing_straw);
   EXPECT_EQ(straw_encoded, encoded.bytes);
-  ByteSink decoded;
-  LCWPipe decompressing_pipe(LCWPipe::DECOMPRESS, decoded, block_size);
+  RecordingSink decoded;
+  LcwSink decompressing_pipe(CodecMode::kDecompress, decoded, block_size);
   for (std::size_t at = 0; at < straw_encoded.size(); at += 777) {
     const std::size_t piece =
         std::min<std::size_t>(777, straw_encoded.size() - at);
-    decompressing_pipe.Put(
+    decompressing_pipe.Write(
         std::as_bytes(std::span(straw_encoded).subspan(at, piece)));
   }
   decompressing_pipe.Flush();
@@ -210,9 +211,9 @@ TEST(LcwCompTest, MapAndOverlayPacksRoundTripThroughStagingBuffer) {
   }
 
   std::vector<char> staging(32000);
-  BufferPipe map_sink(std::as_writable_bytes(std::span(staging)));
+  SpanSink map_sink(std::as_writable_bytes(std::span(staging)));
   {
-    LCWPipe comp(LCWPipe::COMPRESS, map_sink);
+    LcwSink comp(CodecMode::kCompress, map_sink);
     for (const uint16_t& type : types) {
       comp.WriteObject(type);
     }
@@ -225,9 +226,9 @@ TEST(LcwCompTest, MapAndOverlayPacksRoundTripThroughStagingBuffer) {
   ASSERT_GT(map_total, 0);
   ASSERT_LT(map_total, 32000);  // Nothing was clipped by the staging buffer.
 
-  BufferStraw map_source(std::as_bytes(
+  SpanSource map_source(std::as_bytes(
       std::span(staging).first(static_cast<std::size_t>(map_total))));
-  LCWStraw decomp(LCWStraw::DECOMPRESS, map_source);
+  LcwSource decomp(CodecMode::kDecompress, map_source);
   std::vector<uint16_t> read_types(kCells);
   std::vector<uint8_t> read_icons(kCells);
   for (uint16_t& type : read_types) {
@@ -239,9 +240,9 @@ TEST(LcwCompTest, MapAndOverlayPacksRoundTripThroughStagingBuffer) {
   EXPECT_EQ(read_types, types);
   EXPECT_EQ(read_icons, icons);
 
-  BufferPipe overlay_sink(std::as_writable_bytes(std::span(staging)));
+  SpanSink overlay_sink(std::as_writable_bytes(std::span(staging)));
   {
-    LCWPipe comppipe(LCWPipe::COMPRESS, overlay_sink);
+    LcwSink comppipe(CodecMode::kCompress, overlay_sink);
     for (const int8_t& overlay : overlays) {
       comppipe.WriteObject(overlay);
     }
@@ -251,9 +252,9 @@ TEST(LcwCompTest, MapAndOverlayPacksRoundTripThroughStagingBuffer) {
   ASSERT_GT(overlay_total, 0);
   ASSERT_LT(overlay_total, 32000);
 
-  BufferStraw overlay_source(std::as_bytes(
+  SpanSource overlay_source(std::as_bytes(
       std::span(staging).first(static_cast<std::size_t>(overlay_total))));
-  LCWStraw uncomp(LCWStraw::DECOMPRESS, overlay_source);
+  LcwSource uncomp(CodecMode::kDecompress, overlay_source);
   std::vector<int8_t> read_overlays(kCells);
   for (int8_t& overlay : read_overlays) {
     ASSERT_TRUE(uncomp.ReadObject(overlay));

@@ -44,9 +44,9 @@
 #include "ra/jshell.h"
 #include "ra/scroll.h"
 #include "sdllib/keyboard.h"
+#include "tech/byte_sink.h"
+#include "tech/byte_source.h"
 #include "tech/ftimer.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 class MouseClass : public ScrollClass {
  public:
@@ -76,8 +76,8 @@ class MouseClass : public ScrollClass {
   /*
   **	File I/O.
   */
-  virtual bool Load(Straw& file);
-  virtual bool Save(Pipe& file);
+  virtual bool Load(ByteSource& file);
+  virtual bool Save(ByteSink& file);
 
   void Set_Default_Mouse(MouseType mouse, bool size = false) override;
 

@@ -23,24 +23,24 @@
 #include "absl/strings/match.h"
 #include "base/seek_origin.h"
 #include "sdllib/file_access.h"
-#include "tech/blwstraw.h"
+#include "tech/blowfish_source.h"
+#include "tech/byte_source.h"
 #include "tech/crc.h"
+#include "tech/file_source.h"
 #include "tech/game_file.h"
 #include "tech/listnode.h"
 #include "tech/pk.h"
-#include "tech/pkstraw.h"
+#include "tech/pk_source.h"
 #include "tech/sha.h"
-#include "tech/shastraw.h"
-#include "tech/straw.h"
-#include "tech/xstraw.h"
+#include "tech/sha1_source.h"
 
 bool MixArchive::Open(std::string_view filename, const PKey* key) {
   GameFile file(filename);
   filename_ = file.FileName();
 
-  FileStraw file_straw(file);
-  std::unique_ptr<BlowStraw> decrypt_straw;
-  Straw* straw = &file_straw;
+  FileSource file_straw(file);
+  std::unique_ptr<BlowfishSource> decrypt_straw;
+  ByteSource* straw = &file_straw;
 
   if (!file.IsAvailable()) {
     return false;
@@ -64,7 +64,7 @@ bool MixArchive::Open(std::string_view filename, const PKey* key) {
 
     if (is_encrypted_) {
       assert(key != nullptr);
-      decrypt_straw = MakePKDecryptStraw(file_straw, *key);
+      decrypt_straw = MakePkDecryptSource(file_straw, *key);
       if (decrypt_straw == nullptr) {
         return false;  // Failed to read encrypted key header.
       }
@@ -80,7 +80,7 @@ bool MixArchive::Open(std::string_view filename, const PKey* key) {
     char header_buf[sizeof(file_header)];
     std::memcpy(header_buf, &alternate, sizeof(alternate));
     const int rest = sizeof(file_header) - sizeof(alternate);
-    if (straw->Get(std::as_writable_bytes(
+    if (straw->Read(std::as_writable_bytes(
             std::span(header_buf).subspan(sizeof(alternate)))) != rest) {
       return false;
     }
@@ -96,7 +96,7 @@ bool MixArchive::Open(std::string_view filename, const PKey* key) {
 
   file_index_.resize(static_cast<std::size_t>(file_header.count));
   const int index_bytes = file_header.count * int{sizeof(FileEntry)};
-  if (straw->Get(std::as_writable_bytes(std::span(file_index_))) !=
+  if (straw->Read(std::as_writable_bytes(std::span(file_index_))) !=
       index_bytes) {
     return false;
   }
@@ -150,9 +150,10 @@ bool MixArchive::Cache() {
   }
 
   GameFile file(filename_);
-  FileStraw file_straw(file);
-  SHAStraw sha(file_straw);
-  Straw* const straw = has_digest_ ? static_cast<Straw*>(&sha) : &file_straw;
+  FileSource file_straw(file);
+  Sha1Source sha(file_straw);
+  ByteSource* const straw =
+      has_digest_ ? static_cast<ByteSource*>(&sha) : &file_straw;
 
   if (!file.Open(FileAccess::kRead)) {
     data_.clear();
@@ -162,7 +163,7 @@ bool MixArchive::Cache() {
   file.Seek(data_start_, SeekOrigin::kBegin);
 
   // Read directly into the vector buffer
-  if (straw->Get(data_) != data_size_) {
+  if (straw->Read(data_) != data_size_) {
     data_.clear();
     return false;
   }
@@ -170,7 +171,7 @@ bool MixArchive::Cache() {
   if (has_digest_) {
     const Sha1Digest computed = sha.digest();
     Sha1Digest expected{};
-    file_straw.Get(expected);
+    file_straw.Read(expected);
 
     if (expected != computed) {
       data_.clear();  // Corrupt data

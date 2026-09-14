@@ -9,8 +9,8 @@
 #include "td/vector.h"
 #include "td/vector_impl.h"  // IWYU pragma: keep
 #include "tech/archive.h"
-#include "tech/xpipe.h"
-#include "tech/xstraw.h"
+#include "tech/span_sink.h"
+#include "tech/span_source.h"
 
 template class VectorClass<void*>;
 template class DynamicVectorClass<void*>;
@@ -36,7 +36,7 @@ static_assert(!Serializable<InheritedOnly>);
 template <class T>
 std::array<uint8_t, 256> SaveHeap(TFixedIHeapClass<T>& heap) {
   std::array<uint8_t, 256> bytes{};
-  BufferPipe sink(std::as_writable_bytes(std::span(bytes)));
+  SpanSink sink(std::as_writable_bytes(std::span(bytes)));
   ArchiveWriter writer(sink);
   EXPECT_TRUE(heap.Save(writer));
   return bytes;
@@ -45,7 +45,7 @@ std::array<uint8_t, 256> SaveHeap(TFixedIHeapClass<T>& heap) {
 template <class T>
 bool LoadHeap(TFixedIHeapClass<T>& heap, const std::array<uint8_t, 256>& bytes,
               int length = 256) {
-  BufferStraw source(
+  SpanSource source(
       std::as_bytes(std::span(bytes).first(static_cast<std::size_t>(length))));
   ArchiveReader reader(source);
   return heap.Load(reader) != 0;
@@ -77,7 +77,7 @@ TEST(TdHeapTest, FieldObjectsPreserveSparseSlots) {
 TEST(TdHeapTest, RejectsNegativeCountsAndOutOfRangeSlots) {
   for (const bool invalid_count : {false, true}) {
     std::array<uint8_t, 256> bytes{};
-    BufferPipe sink(std::as_writable_bytes(std::span(bytes).first(256)));
+    SpanSink sink(std::as_writable_bytes(std::span(bytes).first(256)));
     ArchiveWriter writer(sink);
     int32_t count = invalid_count ? -1 : 1;
     int32_t index = 2;
@@ -91,7 +91,7 @@ TEST(TdHeapTest, RejectsNegativeCountsAndOutOfRangeSlots) {
 
 TEST(TdHeapTest, RejectsDuplicateSlotsAndTruncatedFields) {
   std::array<uint8_t, 256> bytes{};
-  BufferPipe sink(std::as_writable_bytes(std::span(bytes).first(256)));
+  SpanSink sink(std::as_writable_bytes(std::span(bytes).first(256)));
   ArchiveWriter writer(sink);
   int32_t count = 2;
   int32_t index = 0;
@@ -108,7 +108,7 @@ TEST(TdHeapTest, RejectsDuplicateSlotsAndTruncatedFields) {
 
 TEST(TdHeapTest, RejectsOversizedCountsAndTruncatedHeaders) {
   std::array<uint8_t, 256> bytes{};
-  BufferPipe sink(std::as_writable_bytes(std::span(bytes).first(256)));
+  SpanSink sink(std::as_writable_bytes(std::span(bytes).first(256)));
   ArchiveWriter writer(sink);
   int32_t count = 3;
   writer(count);

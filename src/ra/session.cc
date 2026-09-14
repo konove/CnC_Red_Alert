@@ -91,12 +91,12 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/wwstd.h"
 #include "tech/archive.h"
+#include "tech/byte_sink.h"
+#include "tech/byte_source.h"
 #include "tech/disk_file.h"
+#include "tech/file_sink.h"
+#include "tech/file_source.h"
 #include "tech/number_parse.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
-#include "tech/xpipe.h"
-#include "tech/xstraw.h"
 
 // #include "WolDebug.h"
 
@@ -435,7 +435,7 @@ void SessionClass::SerializePlayers(Archive& ar) {
 template void SessionClass::SerializePlayers(ArchiveWriter&);
 template void SessionClass::SerializePlayers(ArchiveReader&);
 
-int SessionClass::Save(Pipe& file) {
+int SessionClass::Save(ByteSink& file) {
   ArchiveWriter writer(file);
   Serialize(writer);
   return 1;
@@ -459,7 +459,7 @@ int SessionClass::Save(Pipe& file) {
  * HISTORY:                                                                *
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-bool SessionClass::Load(Straw& file) {
+bool SessionClass::Load(ByteSource& file) {
   ArchiveReader reader(file);
   Serialize(reader);
   return reader.ok();
@@ -488,7 +488,7 @@ bool SessionClass::Load(Straw& file) {
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
 int SessionClass::Save(GameFile& file) {
-  FilePipe pipe(file);
+  FileSink pipe(file);
   ArchiveWriter writer(pipe);
   Serialize(writer);
   SerializePlayers(writer);
@@ -514,7 +514,7 @@ int SessionClass::Save(GameFile& file) {
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
 bool SessionClass::Load(GameFile& file) {
-  FileStraw straw(file);
+  FileSource straw(file);
   ArchiveReader reader(straw);
   Serialize(reader);
   SerializePlayers(reader);

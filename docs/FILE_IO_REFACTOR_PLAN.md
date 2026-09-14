@@ -1,5 +1,10 @@
 # Plan: replace the FileClass inheritance chain with composition
 
+> The Pipe/Straw classes named in this document were renamed by the streams refactor
+> (`docs/STREAMS_REFACTOR_PLAN.md`): `Pipe`/`Straw` are now `ByteSink`/`ByteSource`,
+> `FilePipe`/`FileStraw` are `FileSink`/`FileSource`, `BufferPipe`/`BufferStraw` are
+> `SpanSink`/`SpanSource`, and each codec pipe and straw is a `…Sink`/`…Source`.
+
 ## Resume checkpoint (2026-09-14)
 
 - Step 0 is complete: `tech/rawfile_test.cc`, `tech/cdfile_test.cc` and the nested-mixfile,

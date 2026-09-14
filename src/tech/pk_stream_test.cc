@@ -9,20 +9,20 @@
 
 #include "base/types.h"
 #include "gtest/gtest.h"
-#include "tech/pipe.h"
+#include "tech/byte_sink.h"
+#include "tech/byte_source.h"
 #include "tech/pk.h"
-#include "tech/pkpipe.h"
-#include "tech/pkstraw.h"
-#include "tech/rndstraw.h"
-#include "tech/straw.h"
-#include "tech/xstraw.h"
+#include "tech/pk_sink.h"
+#include "tech/pk_source.h"
+#include "tech/random_source.h"
+#include "tech/span_source.h"
 
 namespace {
 
-class VectorPipe : public Pipe {
+class RecordingSink : public ByteSink {
  public:
   std::vector<uint8_t> bytes;
-  bool Put(std::span<const std::byte> data) override {
+  bool Write(std::span<const std::byte> data) override {
     for (const std::byte byte : data) {
       bytes.push_back(std::to_integer<uint8_t>(byte));
     }
@@ -30,18 +30,18 @@ class VectorPipe : public Pipe {
   }
 };
 
-std::vector<uint8_t> Drain(Straw& straw) {
+std::vector<uint8_t> Drain(ByteSource& straw) {
   std::vector<uint8_t> result;
   std::array<uint8_t, 100> chunk{};
-  for (base::ssize count = straw.Get(std::as_writable_bytes(std::span(chunk)));
+  for (base::ssize count = straw.Read(std::as_writable_bytes(std::span(chunk)));
        count != 0;
-       count = straw.Get(std::as_writable_bytes(std::span(chunk)))) {
+       count = straw.Read(std::as_writable_bytes(std::span(chunk)))) {
     result.insert(result.end(), chunk.begin(), chunk.begin() + count);
   }
   return result;
 }
 
-void Seed(RandomStraw& rng) {
+void Seed(RandomSource& rng) {
   for (int32_t value = 1; rng.Seed_Bits_Needed() > 0; ++value) {
     rng.Seed_Long(value * 40503);
   }
@@ -50,7 +50,7 @@ void Seed(RandomStraw& rng) {
 class PkStreamTest : public testing::Test {
  protected:
   static void SetUpTestSuite() {
-    RandomStraw rng;
+    RandomSource rng;
     Seed(rng);
     // Small primes keep the test fast; the modulus still spans several
     // Blowfish key blocks.
@@ -71,27 +71,27 @@ TEST_F(PkStreamTest, EncryptPipeRoundTripsThroughDecryptStraw) {
     plain.push_back(static_cast<uint8_t>(i * 13));
   }
 
-  RandomStraw rng;
+  RandomSource rng;
   Seed(rng);
-  VectorPipe sink;
-  const auto pipe = MakePKEncryptPipe(sink, fast_key_, rng);
+  RecordingSink sink;
+  const auto pipe = MakePkEncryptSink(sink, fast_key_, rng);
   ASSERT_NE(pipe, nullptr);
-  pipe->Put(std::as_bytes(std::span(plain)));
+  pipe->Write(std::as_bytes(std::span(plain)));
   pipe->Flush();
   const int header_size =
       fast_key_.Block_Count(56) * fast_key_.Crypt_Block_Size();
   ASSERT_EQ(std::ssize(sink.bytes), header_size + std::ssize(plain));
 
-  BufferStraw source(std::as_bytes(std::span(sink.bytes)));
-  const auto straw = MakePKDecryptStraw(source, slow_key_);
+  SpanSource source(std::as_bytes(std::span(sink.bytes)));
+  const auto straw = MakePkDecryptSource(source, slow_key_);
   ASSERT_NE(straw, nullptr);
   EXPECT_EQ(Drain(*straw), plain);
 }
 
 TEST_F(PkStreamTest, DecryptStrawRejectsShortHeader) {
   const std::array<uint8_t, 10> truncated{};
-  BufferStraw source(std::as_bytes(std::span(truncated)));
-  EXPECT_EQ(MakePKDecryptStraw(source, slow_key_), nullptr);
+  SpanSource source(std::as_bytes(std::span(truncated)));
+  EXPECT_EQ(MakePkDecryptSource(source, slow_key_), nullptr);
 }
 
 }  // namespace

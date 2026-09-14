@@ -39,6 +39,9 @@
 #ifndef CNC_RED_ALERT_TECH_BASE64_H_
 #define CNC_RED_ALERT_TECH_BASE64_H_
 
+// Whether a Base64 link encodes or decodes what passes it.
+enum class Base64Mode { kEncode, kDecode };
+
 int Base64_Encode(const void* source, int slen, void* dest, int dlen);
 int Base64_Decode(const void* source, int slen, void* dest, int dlen);
 

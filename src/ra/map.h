@@ -50,8 +50,8 @@
 #include "ra/house.h"
 #include "ra/object.h"
 #include "ra/vector.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
+#include "tech/byte_sink.h"
+#include "tech/byte_source.h"
 
 class MapClass : public GScreenClass {
  public:
@@ -93,8 +93,8 @@ class MapClass : public GScreenClass {
   void Pick_Up(CELL cell, ObjectClass* object);
   void Overlap_Down(CELL cell, ObjectClass* object);
   void Overlap_Up(CELL cell, ObjectClass* object);
-  bool Read_Binary(Straw& straw);
-  bool Write_Binary(Pipe& pipe);
+  bool Read_Binary(ByteSource& straw);
+  bool Write_Binary(ByteSink& pipe);
   bool Place_Random_Crate();
   bool Remove_Crate(CELL cell);
   bool Zone_Reset(int method);

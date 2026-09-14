@@ -47,9 +47,9 @@
 #include "ra/type.h"
 #include "sdllib/wwstd.h"
 #include "tech/archive.h"
+#include "tech/byte_sink.h"
+#include "tech/byte_source.h"
 #include "tech/ftimer.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 // ID comes from the sparse map index. Movement zones are rebuilt by
 // Post_Load_Game(), so they do not make an otherwise empty cell worth saving.
@@ -393,13 +393,13 @@ void MouseClass::Serialize(Archive& ar) {
 template void MouseClass::Serialize(ArchiveWriter&);
 template void MouseClass::Serialize(ArchiveReader&);
 
-bool MouseClass::Load(Straw& file) {
+bool MouseClass::Load(ByteSource& file) {
   ArchiveReader reader(file);
   Serialize(reader);
   return reader.ok();
 }
 
-bool MouseClass::Save(Pipe& file) {
+bool MouseClass::Save(ByteSink& file) {
   ArchiveWriter writer(file);
   Serialize(writer);
   return true;

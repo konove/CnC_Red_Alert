@@ -46,13 +46,13 @@
 #include "ra/defines.h"
 #include "ra/object.h"
 #include "ra/search.h"
+#include "tech/byte_sink.h"
+#include "tech/byte_source.h"
 #include "tech/crc.h"
 #include "tech/file.h"
 #include "tech/fixed.h"
 #include "tech/listnode.h"
-#include "tech/pipe.h"
 #include "tech/pk.h"
-#include "tech/straw.h"
 
 /*
 **	This is an INI database handler class. It handles a database with a disk
@@ -71,9 +71,9 @@ class INIClass {
   **	Fetch and store INI data.
   */
   bool Load(File& file);
-  bool Load(Straw& file);
+  bool Load(ByteSource& file);
   bool Save(File& file) const;
-  bool Save(Pipe& pipe) const;
+  bool Save(ByteSink& pipe) const;
 
   /*
   **	Erase all data within this INI file manager.

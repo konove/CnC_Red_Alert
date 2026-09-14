@@ -40,20 +40,19 @@
 #ifndef CNC_RED_ALERT_RA_HEAP_H_
 #define CNC_RED_ALERT_RA_HEAP_H_
 
-#include <cstddef>
-#include <vector>
-
 #include <concepts>
+#include <cstddef>
 #include <cstdint>
 #include <new>
+#include <vector>
 
 #include "base/numeric.h"
 #include "base/types.h"
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "tech/archive.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
+#include "tech/byte_sink.h"
+#include "tech/byte_source.h"
 
 // Fixed-size block memory allocator that manages a pool of uniformly-sized
 // memory blocks.
@@ -221,11 +220,11 @@ class TFixedIHeapClass : public FixedIHeapClass {
   virtual bool Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
   bool Free(void* pointer) override { return FixedIHeapClass::Free(pointer); }
   // Writes the active count, then each object's slot index and contents.
-  bool Save(Pipe& file) const
+  bool Save(ByteSink& file) const
     requires Serializable<T>;
   // Reads what Save wrote back into the same slots. Returns false on a
   // malformed stream; the heap is then partially populated.
-  bool Load(Straw& file)
+  bool Load(ByteSource& file)
     requires Serializable<T>;
   [[nodiscard]] virtual T* Ptr(int index) const {
     return static_cast<T*>(ActivePointers[index]);
@@ -236,7 +235,7 @@ class TFixedIHeapClass : public FixedIHeapClass {
 };
 
 template <class T>
-bool TFixedIHeapClass<T>::Save(Pipe& file) const
+bool TFixedIHeapClass<T>::Save(ByteSink& file) const
   requires Serializable<T>
 {
   ArchiveWriter writer(file);
@@ -254,7 +253,7 @@ bool TFixedIHeapClass<T>::Save(Pipe& file) const
 }
 
 template <class T>
-bool TFixedIHeapClass<T>::Load(Straw& file)
+bool TFixedIHeapClass<T>::Load(ByteSource& file)
   requires Serializable<T>
 {
   ArchiveReader reader(file);

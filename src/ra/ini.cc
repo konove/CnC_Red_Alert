@@ -80,19 +80,22 @@
 #include <string_view>
 
 #include "base/numeric.h"
-#include "tech/b64pipe.h"
-#include "tech/b64straw.h"
+#include "tech/base64.h"
+#include "tech/base64_sink.h"
+#include "tech/base64_source.h"
+#include "tech/byte_sink.h"
+#include "tech/byte_source.h"
 #include "tech/crc.h"
 #include "tech/file.h"
+#include "tech/file_sink.h"
+#include "tech/file_source.h"
 #include "tech/fixed.h"
 #include "tech/int.h"
 #include "tech/number_parse.h"
-#include "tech/pipe.h"
 #include "tech/pk.h"
 #include "tech/readline.h"
-#include "tech/straw.h"
-#include "tech/xpipe.h"
-#include "tech/xstraw.h"
+#include "tech/span_sink.h"
+#include "tech/span_source.h"
 
 /***********************************************************************************************
  * INIClass::~INIClass -- Destructor for INI handler. *
@@ -179,7 +182,7 @@ bool INIClass::Clear(const char* section, const char* entry) {
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
 bool INIClass::Load(File& file) {
-  FileStraw fs(file);
+  FileSource fs(file);
   return Load(fs);
 }
 
@@ -196,8 +199,7 @@ bool INIClass::Load(File& file) {
  *                                                                                             *
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
-bool INIClass::Load(Straw& file)
-{
+bool INIClass::Load(ByteSource& file) {
   bool end_of_file = false;
   char buffer[MAX_LINE_LENGTH];
 
@@ -317,7 +319,7 @@ bool INIClass::Load(Straw& file)
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
 bool INIClass::Save(File& file) const {
-  FilePipe fp(file);
+  FileSink fp(file);
   return Save(fp);
 }
 
@@ -334,9 +336,9 @@ bool INIClass::Save(File& file) const {
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-bool INIClass::Save(Pipe& pipe) const {
+bool INIClass::Save(ByteSink& pipe) const {
   const auto put = [&pipe](std::string_view text) {
-    pipe.Put(std::as_bytes(std::span(text)));
+    pipe.Write(std::as_bytes(std::span(text)));
   };
 
   INISection* secptr = SectionList.First();
@@ -532,9 +534,9 @@ bool INIClass::Put_UUBlock(const char* section, const void* block, int len) {
 
   Clear(section);
 
-  BufferStraw straw(
+  SpanSource straw(
       std::span(static_cast<const std::byte*>(block), base::ToSize(len)));
-  Base64Straw bstraw(Base64Straw::ENCODE, straw);
+  Base64Source bstraw(Base64Mode::kEncode, straw);
 
   int counter = 1;
 
@@ -542,7 +544,7 @@ bool INIClass::Put_UUBlock(const char* section, const void* block, int len) {
     char buffer[71];
     char sbuffer[32];
 
-    const auto length = static_cast<int>(bstraw.Get(
+    const auto length = static_cast<int>(bstraw.Read(
         std::as_writable_bytes(std::span(buffer).first(sizeof(buffer) - 1))));
     buffer[length] = '\0';
     if (length == 0) {
@@ -588,9 +590,8 @@ int INIClass::Get_UUBlock(const char* section, void* block, int len) const {
     return 0;
   }
 
-  BufferPipe bpipe(
-      std::span(static_cast<std::byte*>(block), base::ToSize(len)));
-  Base64Pipe b64pipe(Base64Pipe::DECODE, bpipe);
+  SpanSink bpipe(std::span(static_cast<std::byte*>(block), base::ToSize(len)));
+  Base64Sink b64pipe(Base64Mode::kDecode, bpipe);
 
   const int counter = Entry_Count(section);
   for (int index = 0; index < counter; index++) {
@@ -598,7 +599,7 @@ int INIClass::Get_UUBlock(const char* section, void* block, int len) const {
 
     const int length = Get_String(section, Get_Entry(section, index), "=",
                                   buffer, sizeof(buffer));
-    b64pipe.Put(std::as_bytes(std::span(buffer).first(base::ToSize(length))));
+    b64pipe.Write(std::as_bytes(std::span(buffer).first(base::ToSize(length))));
   }
   b64pipe.Finish();
   return static_cast<int>(bpipe.bytes_written());

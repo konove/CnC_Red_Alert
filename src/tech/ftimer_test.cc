@@ -7,8 +7,8 @@
 
 #include "gtest/gtest.h"
 #include "tech/archive.h"
-#include "tech/pipe.h"
-#include "tech/xstraw.h"
+#include "tech/byte_sink.h"
+#include "tech/span_source.h"
 
 namespace {
 
@@ -19,9 +19,9 @@ struct FakeTick {
 };
 int64_t FakeTick::now = 0;
 
-class ByteSink : public Pipe {
+class RecordingSink : public ByteSink {
  public:
-  bool Put(std::span<const std::byte> data) override {
+  bool Write(std::span<const std::byte> data) override {
     for (const std::byte byte : data) {
       bytes.push_back(std::to_integer<uint8_t>(byte));
     }
@@ -35,13 +35,13 @@ class ByteSink : public Pipe {
 // loading, which must not leak into the restored value.
 template <class T>
 T RoundTrip(T& subject, int64_t skew) {
-  ByteSink sink;
+  RecordingSink sink;
   ArchiveWriter writer(sink);
   subject.Serialize(writer);
   EXPECT_EQ(sink.bytes.size(), 9U);  // int64_t value + bool running
 
   FakeTick::now += skew;
-  BufferStraw straw(std::as_bytes(std::span(sink.bytes)));
+  SpanSource straw(std::as_bytes(std::span(sink.bytes)));
   ArchiveReader reader(straw);
   T restored;
   restored.Serialize(reader);

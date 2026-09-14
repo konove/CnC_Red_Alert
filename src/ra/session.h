@@ -53,9 +53,9 @@
 #include "ra/target.h"
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
+#include "tech/byte_sink.h"
+#include "tech/byte_source.h"
 #include "tech/game_file.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 //---------------------------------------------------------------------------
 // Defines
@@ -540,8 +540,8 @@ class SessionClass {
   template <class Archive>
   void SerializePlayers(Archive& ar);
 
-  int Save(Pipe& file);
-  bool Load(Straw& file);
+  int Save(ByteSink& file);
+  bool Load(ByteSource& file);
   int Save(GameFile& file);
   bool Load(GameFile& file);
 

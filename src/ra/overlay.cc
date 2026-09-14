@@ -63,11 +63,12 @@
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/session.h"
-#include "tech/lcwpipe.h"
-#include "tech/lcwstraw.h"
+#include "tech/codec_block.h"
+#include "tech/lcw_sink.h"
+#include "tech/lcw_source.h"
 #include "tech/number_parse.h"
-#include "tech/xpipe.h"
-#include "tech/xstraw.h"
+#include "tech/span_sink.h"
+#include "tech/span_source.h"
 
 HousesType OverlayClass::ToOwn = HOUSE_NONE;
 
@@ -275,9 +276,9 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
         ini.Get_UUBlock("OverlayPack", staging_buffer, sizeof(staging_buffer));
 
     if (len > 0) {
-      BufferStraw bpipe(
+      SpanSource bpipe(
           std::as_bytes(std::span(staging_buffer).first(base::ToSize(len))));
-      LCWStraw uncomp(LCWStraw::DECOMPRESS, bpipe);
+      LcwSource uncomp(CodecMode::kDecompress, bpipe);
 
       for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
         OverlayType classid;
@@ -365,8 +366,8 @@ void OverlayClass::Write_INI(CCINIClass& ini) {
   ini.Clear(INI_Name());
   ini.Clear("OverlayPack");
 
-  BufferPipe bpipe(std::as_writable_bytes(std::span(staging_buffer)));
-  LCWPipe comppipe(LCWPipe::COMPRESS, bpipe);
+  SpanSink bpipe(std::as_writable_bytes(std::span(staging_buffer)));
+  LcwSink comppipe(CodecMode::kCompress, bpipe);
 
   CellClass* cellptr = &Map[static_cast<CELL>(0)];
   for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {

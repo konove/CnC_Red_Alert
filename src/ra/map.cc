@@ -103,11 +103,12 @@
 #include "ra/vector_dynamic.h"
 #include "sdllib/memflag.h"
 #include "sdllib/tile.h"
+#include "tech/byte_sink.h"
+#include "tech/byte_source.h"
+#include "tech/codec_block.h"
 #include "tech/fixed.h"
-#include "tech/lcwpipe.h"
-#include "tech/lcwstraw.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
+#include "tech/lcw_sink.h"
+#include "tech/lcw_source.h"
 
 #define MCW MAP_CELL_W
 const int MapClass::RadiusOffset[] = {
@@ -1090,8 +1091,8 @@ int32_t MapClass::Overpass() {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool MapClass::Write_Binary(Pipe& pipe) {
-  LCWPipe comp(LCWPipe::COMPRESS, pipe);
+bool MapClass::Write_Binary(ByteSink& pipe) {
+  LcwSink comp(CodecMode::kCompress, pipe);
 
   CellClass* cellptr = &Array[0];
   for (int i = 0; i < MAP_CELL_TOTAL; i++) {
@@ -1123,8 +1124,8 @@ bool MapClass::Write_Binary(Pipe& pipe) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool MapClass::Read_Binary(Straw& straw) {
-  LCWStraw decomp(LCWStraw::DECOMPRESS, straw);
+bool MapClass::Read_Binary(ByteSource& straw) {
+  LcwSource decomp(CodecMode::kDecompress, straw);
 
   CELL cell;
   CellClass* cellptr;

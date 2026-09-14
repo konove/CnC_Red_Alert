@@ -84,8 +84,8 @@
 #include "td/vector.h"
 #include "tech/archive.h"
 #include "tech/disk_file.h"
-#include "tech/xpipe.h"
-#include "tech/xstraw.h"
+#include "tech/file_sink.h"
+#include "tech/file_source.h"
 
 /*
 ********************************** Defines **********************************
@@ -155,7 +155,7 @@ bool Save_Game(int id, const char* descr) {
     return false;
   }
 
-  FilePipe sink(file);
+  FileSink sink(file);
   ArchiveWriter writer(sink);
   writer.Section(FourCC("FRAM"));
   writer(Frame);
@@ -294,7 +294,7 @@ bool Load_Game(int id) {
   }
 
   Clear_Scenario();
-  FileStraw source(file);
+  FileSource source(file);
   ArchiveReader reader(source);
   if (!reader.Section(FourCC("FRAM"))) {
     return false;

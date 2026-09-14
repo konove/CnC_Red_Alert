@@ -42,8 +42,8 @@
 
 #include <cstdint>
 
+#include "tech/byte_source.h"
 #include "tech/int.h"
-#include "tech/straw.h"
 
 /*
 **	This class holds a public or private key used in Public Key
@@ -69,7 +69,8 @@ class PKey {
   int Encrypt(const void* source, int slen, void* dest) const;
   int Decrypt(const void* source, int slen, void* dest) const;
 
-  static void Generate(Straw& random, int bits, PKey& fastkey, PKey& slowkey);
+  static void Generate(ByteSource& random, int bits, PKey& fastkey,
+                       PKey& slowkey);
 
   [[nodiscard]] int Plain_Block_Size() const { return (BitPrecision - 1) / 8; }
   [[nodiscard]] int Crypt_Block_Size() const { return Plain_Block_Size() + 1; }

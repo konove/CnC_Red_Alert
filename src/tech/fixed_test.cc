@@ -10,8 +10,8 @@
 
 #include "gtest/gtest.h"
 #include "tech/archive.h"
-#include "tech/pipe.h"
-#include "tech/xstraw.h"
+#include "tech/byte_sink.h"
+#include "tech/span_source.h"
 
 namespace {
 
@@ -239,9 +239,9 @@ TEST(FixedAsStringTest, StripsTrailingZeros) {
 
 // Serialize: the raw 8.8 pattern round-trips through the archive.
 
-class ByteSink : public Pipe {
+class RecordingSink : public ByteSink {
  public:
-  bool Put(std::span<const std::byte> data) override {
+  bool Write(std::span<const std::byte> data) override {
     for (const std::byte byte : data) {
       bytes.push_back(std::to_integer<uint8_t>(byte));
     }
@@ -253,13 +253,13 @@ class ByteSink : public Pipe {
 TEST(FixedSerializeTest, RoundTripsRawBits) {
   for (const fixed value : {fixed(0, 1), fixed(3, 4), fixed(255, 1),
                             fixed(65535, 256)}) {
-    ByteSink sink;
+    RecordingSink sink;
     ArchiveWriter writer(sink);
     fixed out = value;
     out.Serialize(writer);
     EXPECT_EQ(sink.bytes.size(), 2U);
 
-    BufferStraw straw(std::as_bytes(std::span(sink.bytes)));
+    SpanSource straw(std::as_bytes(std::span(sink.bytes)));
     ArchiveReader reader(straw);
     fixed in;
     in.Serialize(reader);

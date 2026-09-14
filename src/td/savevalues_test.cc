@@ -28,8 +28,8 @@
 #include "td/super.h"
 #include "td/teamtype.h"
 #include "tech/archive.h"
-#include "tech/xpipe.h"
-#include "tech/xstraw.h"
+#include "tech/span_sink.h"
+#include "tech/span_source.h"
 
 // The value tests need a frame source, but no game session or debug display.
 int64_t Frame = 0;
@@ -44,7 +44,7 @@ namespace {
 template <class T>
 std::array<uint8_t, 64> Save(T& value) {
   std::array<uint8_t, 64> bytes{};
-  BufferPipe sink(std::as_writable_bytes(std::span(bytes)));
+  SpanSink sink(std::as_writable_bytes(std::span(bytes)));
   // The call operator is non-const; misc-const-correctness misses the call
   // because its argument is template-dependent.
   // NOLINTNEXTLINE(misc-const-correctness)
@@ -55,7 +55,7 @@ std::array<uint8_t, 64> Save(T& value) {
 
 template <class T>
 void Restore(T& value, const std::array<uint8_t, 64>& bytes) {
-  BufferStraw source(std::as_bytes(std::span(bytes)));
+  SpanSource source(std::as_bytes(std::span(bytes)));
   // The call operator is non-const; misc-const-correctness misses the call
   // because its argument is template-dependent.
   // NOLINTNEXTLINE(misc-const-correctness)
@@ -98,13 +98,13 @@ TEST(TdSaveValuesTest, ClearedAndExpiredCountdownsRemainDistinct) {
 TEST(TdSaveValuesTest, CountdownRejectsTruncationAndNegativeDuration) {
   TCountDownTimerClass timer;
   std::array<uint8_t, 9> bytes{};
-  BufferStraw short_source(std::as_bytes(std::span(bytes).first(8)));
+  SpanSource short_source(std::as_bytes(std::span(bytes).first(8)));
   ArchiveReader short_reader(short_source);
   short_reader(timer);
   EXPECT_FALSE(short_reader.ok());
   bytes.fill(0xff);
   bytes.back() = 1;
-  BufferStraw negative_source(std::as_bytes(std::span(bytes).first(9)));
+  SpanSource negative_source(std::as_bytes(std::span(bytes).first(9)));
   ArchiveReader negative_reader(negative_source);
   negative_reader(timer);
   EXPECT_FALSE(negative_reader.ok());
@@ -113,12 +113,12 @@ TEST(TdSaveValuesTest, CountdownRejectsTruncationAndNegativeDuration) {
 TEST(TdSaveValuesTest, FacingPreservesCurrentAndDesiredSeparately) {
   FacingClass facing(DIR_N);
   std::array<uint8_t, 8> bytes{};
-  BufferPipe sink(std::as_writable_bytes(std::span(bytes).first(8)));
+  SpanSink sink(std::as_writable_bytes(std::span(bytes).first(8)));
   ArchiveWriter writer(sink);
   DirType current = DIR_E;
   DirType desired = DIR_SW;
   writer(current, desired);
-  BufferStraw source(std::as_bytes(std::span(bytes).first(8)));
+  SpanSource source(std::as_bytes(std::span(bytes).first(8)));
   ArchiveReader reader(source);
   reader(facing);
   ASSERT_TRUE(reader.ok());
@@ -132,7 +132,7 @@ TEST(TdSaveValuesTest, FacingPreservesCurrentAndDesiredSeparately) {
 
 TEST(TdSaveValuesTest, FlightPreservesFractionalDistanceAndSpeed) {
   std::array<uint8_t, 64> bytes{};
-  BufferPipe sink(std::as_writable_bytes(std::span(bytes)));
+  SpanSink sink(std::as_writable_bytes(std::span(bytes)));
   ArchiveWriter writer(sink);
   uint32_t accumulator = 511;
   MPHType speed = MPH_FAST;
@@ -194,7 +194,7 @@ TEST(TdSaveValuesTest, FlashStateAndCrewKillsSurviveRoundTrip) {
 
 TEST(TdSaveValuesTest, FlashCountCannotOverflowItsBitfield) {
   std::array<uint8_t, 2> bytes{128, 0};
-  BufferStraw source(std::as_bytes(std::span(bytes).first(2)));
+  SpanSource source(std::as_bytes(std::span(bytes).first(2)));
   ArchiveReader reader(source);
   FlasherClass flash;
   reader(flash);
@@ -256,7 +256,7 @@ TEST(TdSaveValuesTest, TypePointersRejectInvalidIdsAndTruncation) {
   for (int32_t id : {-2, static_cast<int32_t>(UNIT_COUNT), INT32_MAX}) {
     const auto bytes = Save(id);
     const UnitRecord* value = nullptr;
-    BufferStraw source(std::as_bytes(std::span(bytes).first(4)));
+    SpanSource source(std::as_bytes(std::span(bytes).first(4)));
     ArchiveReader reader(source);
     reader(TypePtr(value));
     EXPECT_FALSE(reader.ok());
@@ -264,7 +264,7 @@ TEST(TdSaveValuesTest, TypePointersRejectInvalidIdsAndTruncation) {
   }
   std::array<uint8_t, 3> bytes{};
   const UnitRecord* value = &UnitRecord::As_Reference(UNIT_MCV);
-  BufferStraw source(std::as_bytes(std::span(bytes).first(3)));
+  SpanSource source(std::as_bytes(std::span(bytes).first(3)));
   ArchiveReader reader(source);
   reader(TypePtr(value));
   EXPECT_FALSE(reader.ok());
@@ -284,13 +284,13 @@ TEST(TdSaveValuesTest, TeamMissionPreservesOrderAndArgument) {
 TEST(TdSaveValuesTest, TeamMissionRejectsUnknownOrderAndTruncation) {
   TeamMissionStruct mission{TMISSION_COUNT, 1};
   auto bytes = Save(mission);
-  BufferStraw source(std::as_bytes(std::span(bytes)));
+  SpanSource source(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(source);
   reader(mission);
   EXPECT_FALSE(reader.ok());
   mission.Mission = TMISSION_GUARD;
   bytes = Save(mission);
-  BufferStraw truncated(std::as_bytes(std::span(bytes).first(7)));
+  SpanSource truncated(std::as_bytes(std::span(bytes).first(7)));
   ArchiveReader short_reader(truncated);
   short_reader(mission);
   EXPECT_FALSE(short_reader.ok());
@@ -309,7 +309,7 @@ TEST(TdSaveValuesTest,
   EXPECT_TRUE(loaded.IsActive);
   value.IsActive = false;
   auto bytes = Save(value);
-  BufferStraw source(std::as_bytes(std::span(bytes)));
+  SpanSource source(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(source);
   reader(loaded);
   EXPECT_FALSE(reader.ok());
@@ -318,7 +318,7 @@ TEST(TdSaveValuesTest,
 TEST(TdSaveValuesTest, RegionPreservesWideAndNegativeThreat) {
   for (int64_t threat : {int64_t{1} << 40, int64_t{-17}}) {
     std::array<uint8_t, 64> bytes{};
-    BufferPipe sink(std::as_writable_bytes(std::span(bytes)));
+    SpanSink sink(std::as_writable_bytes(std::span(bytes)));
     ArchiveWriter writer(sink);
     writer(threat);
     RegionClass region;
@@ -373,13 +373,13 @@ TEST(TdSaveValuesTest, SuperweaponRejectsInvalidVoiceAndTruncation) {
   SuperClass weapon(100, VOX_COUNT);
   auto bytes = Save(weapon);
   SuperClass loaded;
-  BufferStraw source(std::as_bytes(std::span(bytes)));
+  SpanSource source(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(source);
   reader(loaded);
   EXPECT_FALSE(reader.ok());
   weapon = SuperClass(100);
   bytes = Save(weapon);
-  BufferStraw truncated(std::as_bytes(std::span(bytes).first(40)));
+  SpanSource truncated(std::as_bytes(std::span(bytes).first(40)));
   ArchiveReader short_reader(truncated);
   short_reader(loaded);
   EXPECT_FALSE(short_reader.ok());
@@ -414,14 +414,14 @@ TEST(TdSaveValuesTest, RandomStateRejectsInvalidIndexAndTruncation) {
   for (const int32_t index : {-1, 256}) {
     TdRandomState state{1, 2, index};
     auto bytes = Save(state);
-    BufferStraw source(std::as_bytes(std::span(bytes)));
+    SpanSource source(std::as_bytes(std::span(bytes)));
     ArchiveReader reader(source);
     reader(state);
     EXPECT_FALSE(reader.ok());
   }
   TdRandomState state;
   auto bytes = Save(state);
-  BufferStraw source(std::as_bytes(std::span(bytes).first(11)));
+  SpanSource source(std::as_bytes(std::span(bytes).first(11)));
   ArchiveReader reader(source);
   reader(state);
   EXPECT_FALSE(reader.ok());
@@ -471,7 +471,7 @@ TEST(TdSaveValuesTest, ScorePreservesEveryCounterAndWideElapsedTime) {
   Restore(restored, bytes);
   EXPECT_EQ(Save(restored), bytes);
   EXPECT_EQ(restored.ElapsedTime, score.ElapsedTime);
-  BufferStraw source(std::as_bytes(
+  SpanSource source(std::as_bytes(
       std::span(bytes).first(51)));  // SCOR + ten int32 + uint64 needs 52.
   ArchiveReader reader(source);
   restored.Serialize(reader);

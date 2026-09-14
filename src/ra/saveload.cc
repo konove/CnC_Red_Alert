@@ -108,21 +108,22 @@
 #include "sdllib/file_access.h"
 #include "tech/archive.h"
 #include "tech/blowfish.h"
-#include "tech/blowpipe.h"
-#include "tech/blwstraw.h"
+#include "tech/blowfish_sink.h"
+#include "tech/blowfish_source.h"
+#include "tech/byte_sink.h"
+#include "tech/byte_source.h"
+#include "tech/codec_block.h"
 #include "tech/disk_file.h"
+#include "tech/file_sink.h"
+#include "tech/file_source.h"
 #include "tech/game_file.h"
-#include "tech/lzopipe.h"
-#include "tech/lzostraw.h"
-#include "tech/pipe.h"
+#include "tech/lzo_sink.h"
+#include "tech/lzo_source.h"
 #include "tech/search_paths.h"
 #include "tech/sha.h"
-#include "tech/shapipe.h"
-#include "tech/shastraw.h"
-#include "tech/straw.h"
-#include "tech/teepipe.h"
-#include "tech/xpipe.h"
-#include "tech/xstraw.h"
+#include "tech/sha1_sink.h"
+#include "tech/sha1_source.h"
+#include "tech/tee_sink.h"
 
 #define SAVE_BLOCK_SIZE 4096
 
@@ -134,10 +135,10 @@ static bool Reconcile_Players();
 // Section tags bracket every top-level block of the save body. They cost
 // four bytes each and turn a field-list mismatch into an error that names
 // the block instead of garbage further down the stream.
-static void Put_Section(Pipe& pipe, uint32_t tag) {
+static void Put_Section(ByteSink& pipe, uint32_t tag) {
   ArchiveWriter(pipe).Section(tag);
 }
-static bool Get_Section(Straw& straw, uint32_t tag) {
+static bool Get_Section(ByteSource& straw, uint32_t tag) {
   ArchiveReader reader(straw);
   return reader.Section(tag);
 }
@@ -220,7 +221,7 @@ static void SerializeCarryover(Archive& ar) {
  *                                                                                             *
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
-static void Put_All(Pipe& pipe, int save_net) {
+static void Put_All(ByteSink& pipe, int save_net) {
   ArchiveWriter writer(pipe);
   /*
   **	Frame goes first: every frame-based timer re-anchors to it when read.
@@ -470,7 +471,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   */
   DiskFile file(name);
 
-  FilePipe fpipe(&file);
+  FileSink fpipe(&file);
 
   /*
   **	Save the description, scenario #, and house
@@ -485,7 +486,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   memset(descr_buf, '\0', sizeof(descr_buf));
   sprintf(descr_buf, "%s\r\n", descr);    // put CR-LF after text
   descr_buf[strlen(descr_buf) + 1] = 26;  // put CTRL-Z after nullptr
-  fpipe.Put(std::as_bytes(std::span(descr_buf)));
+  fpipe.Write(std::as_bytes(std::span(descr_buf)));
 
   /*
   **	Magic and version come right after the description so the load dialog
@@ -505,22 +506,22 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   **	Store a dummy message digest.
   */
   Sha1Digest digest{};
-  fpipe.Put(digest);
+  fpipe.Write(digest);
 
   /*
   **	Dump the save game data to the file. The data is compressed
   **	and then encrypted. The message digest is calculated in the
   **	process by using the data just as it is written to disk.
   */
-  SHAPipe sha(fpipe);
-  BlowPipe bpipe(BlowPipe::ENCRYPT, sha);
-  LZOPipe pipe(LZOPipe::COMPRESS, bpipe, SAVE_BLOCK_SIZE);
+  Sha1Sink sha(fpipe);
+  BlowfishSink bpipe(CipherMode::kEncrypt, sha);
+  LzoSink pipe(CodecMode::kCompress, bpipe, SAVE_BLOCK_SIZE);
   bpipe.Key(&FastKey, BlowfishEngine::MAX_KEY_LENGTH);
 
   // Tee the field-wise body before compression. The dump has Section tags
   // but no save header, encryption, or digest, so it can be compared directly.
   DiskFile dump_file;
-  FilePipe dump_pipe(dump_file);
+  FileSink dump_pipe(dump_file);
   bool dump_open = false;
   const char* dump_path = std::getenv("RA_SAVE_DUMP");
   if (dump_path != nullptr && dump_path[0] != '\0') {
@@ -530,7 +531,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
       DLOG(WARNING) << "Cannot open RA_SAVE_DUMP: " << dump_path;
     }
   }
-  TeePipe tee(pipe, dump_open ? &dump_pipe : nullptr);
+  TeeSink tee(pipe, dump_open ? &dump_pipe : nullptr);
   Put_All(tee, save_net);
   if (!tee.copy_ok()) {
     DLOG(WARNING) << "Incomplete RA_SAVE_DUMP: " << dump_path;
@@ -544,7 +545,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   pipe.Flush();
   file.Seek(pos, SeekOrigin::kBegin);
   digest = sha.digest();
-  fpipe.Put(digest);
+  fpipe.Write(digest);
 
   // Finish closes the file, so it runs even when the tee already failed.
   const bool finished = pipe.Finish();
@@ -617,14 +618,15 @@ bool Load_Game(int id) {
     return false;
   }
 
-  FileStraw fstraw(file);
+  FileSource fstraw(file);
 
   Call_Back();
 
   /*
   **	Read & discard the save-game's header info
   */
-  if (fstraw.Get(std::as_writable_bytes(std::span(descr_buf))) != kDescripMax) {
+  if (fstraw.Read(std::as_writable_bytes(std::span(descr_buf))) !=
+      kDescripMax) {
     return false;
   }
 
@@ -644,7 +646,7 @@ bool Load_Game(int id) {
   **	Get the message digest that is embedded in the file.
   */
   Sha1Digest digest{};
-  fstraw.Get(digest);
+  fstraw.Read(digest);
 
   /*
   **	Remember the file position since we must seek back here to
@@ -658,9 +660,9 @@ bool Load_Game(int id) {
   */
   Sha1Digest actual{};
   {
-    SHAStraw sha(fstraw);
+    Sha1Source sha(fstraw);
     for (;;) {
-      if (sha.Get(std::as_writable_bytes(std::span(staging_buffer))) !=
+      if (sha.Read(std::as_writable_bytes(std::span(staging_buffer))) !=
           std::ssize(staging_buffer)) {
         break;
       }
@@ -682,8 +684,8 @@ bool Load_Game(int id) {
   **	Set up the pipe so that the scenario data can be read.
   */
   file.Seek(pos, SeekOrigin::kBegin);
-  BlowStraw bstraw(BlowStraw::DECRYPT, fstraw);
-  LZOStraw straw(LZOStraw::DECOMPRESS, bstraw, SAVE_BLOCK_SIZE);
+  BlowfishSource bstraw(CipherMode::kDecrypt, fstraw);
+  LzoSource straw(CodecMode::kDecompress, bstraw, SAVE_BLOCK_SIZE);
   bstraw.Key(&FastKey, BlowfishEngine::MAX_KEY_LENGTH);
 
   /*
@@ -1156,7 +1158,7 @@ static void SerializeMultiplayer(Archive& ar) {
   ar(Session, BuildLevel, Debug_Unshroud, Seed, Whom, Special, Options);
 }
 
-bool Save_Misc_Values(Pipe& file) {
+bool Save_Misc_Values(ByteSink& file) {
   ArchiveWriter writer(file);
   SerializeMisc(writer);
   return true;
@@ -1173,7 +1175,7 @@ bool Save_Misc_Values(Pipe& file) {
  *                                                                                             *
  * HISTORY: * 06/24/1995 BRR : Created. * 03/12/1996 JLB : Simplified. *
  *=============================================================================================*/
-bool Load_Misc_Values(Straw& file) {
+bool Load_Misc_Values(ByteSource& file) {
   ArchiveReader reader(file);
   SerializeMisc(reader);
   return reader.ok();
@@ -1206,7 +1208,7 @@ bool Load_Misc_Values(Straw& file) {
  * HISTORY:                                                                *
  *   09/28/1995 BRR : Created.                                             *
  *=========================================================================*/
-bool Save_MPlayer_Values(Pipe& file) {
+bool Save_MPlayer_Values(ByteSink& file) {
   ArchiveWriter writer(file);
   SerializeMultiplayer(writer);
   return true;
@@ -1230,7 +1232,7 @@ bool Save_MPlayer_Values(Pipe& file) {
  * HISTORY:                                                                *
  *   09/28/1995 BRR : Created.                                             *
  *=========================================================================*/
-bool Load_MPlayer_Values(Straw& file) {
+bool Load_MPlayer_Values(ByteSource& file) {
   ArchiveReader reader(file);
   SerializeMultiplayer(reader);
   return reader.ok();
@@ -1265,12 +1267,12 @@ bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
   sprintf(name, "SAVEGAME.%03d", id);
   DiskFile file(name);
 
-  FileStraw straw(file);
+  FileSource straw(file);
 
   /*
   **	Read in the description, scenario #, and the house
   */
-  if (straw.Get(std::as_writable_bytes(std::span(descr_buf))) != kDescripMax) {
+  if (straw.Read(std::as_writable_bytes(std::span(descr_buf))) != kDescripMax) {
     return false;
   }
 

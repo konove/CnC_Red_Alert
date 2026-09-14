@@ -146,6 +146,8 @@
 #include "tech/bench.h"
 #include "tech/buff.h"
 #include "tech/crc.h"
+#include "tech/file_sink.h"
+#include "tech/file_source.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/game_file.h"
@@ -157,8 +159,6 @@
 #include "tech/random.h"
 #include "tech/rgb.h"
 #include "tech/search_paths.h"
-#include "tech/xpipe.h"
-#include "tech/xstraw.h"
 #include "winvq/vqa32/vqaplay.h"
 
 static RemapControlType SidebarScheme;
@@ -2735,7 +2735,7 @@ static void SerializeRecording(Archive& ar) {
 }
 
 bool Save_Recording_Values(GameFile& file) {
-  FilePipe pipe(file);
+  FileSink pipe(file);
   ArchiveWriter writer(pipe);
   SerializeRecording(writer);
   return true;
@@ -2760,7 +2760,7 @@ bool Save_Recording_Values(GameFile& file) {
  *   09/28/1995 BRR : Created.                                             *
  *=========================================================================*/
 bool Load_Recording_Values(GameFile& file) {
-  FileStraw straw(file);
+  FileSource straw(file);
   ArchiveReader reader(straw);
   SerializeRecording(reader);
   return reader.ok();

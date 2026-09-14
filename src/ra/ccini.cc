@@ -120,15 +120,15 @@
 #include "ra/warhead.h"
 #include "ra/weapon.h"
 #include "ra/ww_audio.h"
+#include "tech/byte_sink.h"
+#include "tech/byte_source.h"
 #include "tech/crc.h"
 #include "tech/file.h"
+#include "tech/file_sink.h"
+#include "tech/file_source.h"
 #include "tech/fixed.h"
-#include "tech/pipe.h"
 #include "tech/sha.h"
-#include "tech/shapipe.h"
-#include "tech/straw.h"
-#include "tech/xpipe.h"
-#include "tech/xstraw.h"
+#include "tech/sha1_sink.h"
 /***********************************************************************************************
  * CCINIClass::Load -- Load the INI database from the file specified. *
  *                                                                                             *
@@ -154,7 +154,7 @@
  *control.                                                  *
  *=============================================================================================*/
 bool CCINIClass::Load(File& file, bool withdigest) {
-  FileStraw fs(file);
+  FileSource fs(file);
   return Load(fs, withdigest);
 }
 
@@ -177,7 +177,7 @@ bool CCINIClass::Load(File& file, bool withdigest) {
  * HISTORY: * 07/10/1996 JLB : Created. * 08/21/1996 JLB : Handles message
  *digest control.                                          *
  *=============================================================================================*/
-bool CCINIClass::Load(Straw& file, bool withdigest) {
+bool CCINIClass::Load(ByteSource& file, bool withdigest) {
   const bool ok = INIClass::Load(file);
 
   Invalidate_Message_Digest();
@@ -228,7 +228,7 @@ bool CCINIClass::Load(Straw& file, bool withdigest) {
  *digest control.                                          *
  *=============================================================================================*/
 bool CCINIClass::Save(File& file, bool withdigest) const {
-  FilePipe fp(file);
+  FileSink fp(file);
   return Save(fp, withdigest);
 }
 
@@ -253,7 +253,7 @@ bool CCINIClass::Save(File& file, bool withdigest) const {
  * HISTORY: * 07/03/1996 JLB : Created. * 08/21/1996 JLB : Handles message
  *digest control.                                          *
  *=============================================================================================*/
-bool CCINIClass::Save(Pipe& pipe, bool withdigest) const {
+bool CCINIClass::Save(ByteSink& pipe, bool withdigest) const {
   if (!withdigest) {
     return INIClass::Save(pipe);
   }
@@ -1521,8 +1521,8 @@ void CCINIClass::Calculate_Message_Digest() {
   /*
   **	Calculate the message digest for the INI data that was read.
   */
-  NullPipe discard;
-  SHAPipe sha(discard);
+  NullSink discard;
+  Sha1Sink sha(discard);
   INIClass::Save(sha);
   Digest = sha.digest();
   IsDigestPresent = true;

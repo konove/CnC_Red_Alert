@@ -44,8 +44,8 @@
 
 #include "base/numeric.h"
 #include "tech/buff.h"
-#include "tech/xpipe.h"
-#include "tech/xstraw.h"
+#include "tech/span_sink.h"
+#include "tech/span_source.h"
 
 LZWEngine::LZWEngine() { Reset(); }
 
@@ -56,18 +56,18 @@ void LZWEngine::Reset() {
 }
 
 int LZWEngine::Compress(const Buffer& input, const Buffer& output) {
-  BufferStraw instraw(
+  SpanSource instraw(
       std::span(static_cast<const std::byte*>(input.Get_Buffer()),
                 base::ToSize(input.Get_Size())));
-  BufferPipe outpipe(std::span(static_cast<std::byte*>(output.Get_Buffer()),
-                               base::ToSize(output.Get_Size())));
+  SpanSink outpipe(std::span(static_cast<std::byte*>(output.Get_Buffer()),
+                             base::ToSize(output.Get_Size())));
 
   CodeType string_code = END_OF_STREAM;
   CodeType next_code = FIRST_CODE;
 
   string_code = 0;
   // Only the low byte is read: the first code is a literal character.
-  if (instraw.Get(
+  if (instraw.Read(
           std::as_writable_bytes(std::span(&string_code, 1)).first(1)) == 0) {
     string_code = END_OF_STREAM;
   }
@@ -132,14 +132,14 @@ int LZWEngine::Compress(const Buffer& input, const Buffer& output) {
 }
 
 int LZWEngine::Uncompress(const Buffer& input, const Buffer& output) {
-  BufferStraw instraw(
+  SpanSource instraw(
       std::span(static_cast<const std::byte*>(input.Get_Buffer()),
                 base::ToSize(input.Get_Size())));
-  BufferPipe outpipe(std::span(static_cast<std::byte*>(output.Get_Buffer()),
-                               base::ToSize(output.Get_Size())));
+  SpanSink outpipe(std::span(static_cast<std::byte*>(output.Get_Buffer()),
+                             base::ToSize(output.Get_Size())));
 
   CodeType old_code;
-  if (instraw.Get(std::as_writable_bytes(std::span(&old_code, 1))) == 0) {
+  if (instraw.Read(std::as_writable_bytes(std::span(&old_code, 1))) == 0) {
     return static_cast<int>(outpipe.bytes_written());
   }
   // The first code is always a literal byte.
@@ -154,7 +154,7 @@ int LZWEngine::Uncompress(const Buffer& input, const Buffer& output) {
   CodeType new_code;
   CodeType next_code = FIRST_CODE;
   for (;;) {
-    if (instraw.Get(std::as_writable_bytes(std::span(&new_code, 1))) == 0) {
+    if (instraw.Read(std::as_writable_bytes(std::span(&new_code, 1))) == 0) {
       break;
     }
 

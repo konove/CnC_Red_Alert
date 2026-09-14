@@ -99,8 +99,8 @@
 #include <span>
 
 #include "base/numeric.h"
+#include "tech/byte_source.h"
 #include "tech/byte_view.h"
-#include "tech/straw.h"
 
 /***********************************************************************************************
  * _Byte_Precision -- Determines the number of bytes significant in long
@@ -2366,7 +2366,7 @@ bool XMP_Fermat_Test(const uint32_t* candidate_prime, unsigned rounds,
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-bool XMP_Rabin_Miller_Test(Straw& rng, const uint32_t* w, int rounds,
+bool XMP_Rabin_Miller_Test(ByteSource& rng, const uint32_t* w, int rounds,
                            int precision) {
   uint32_t wminus1[MAX_UNIT_PRECISION] = {};
   XMP_Sub_Int(wminus1, w, 1, false, precision);
@@ -2441,7 +2441,7 @@ bool XMP_Rabin_Miller_Test(Straw& rng, const uint32_t* w, int rounds,
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-void XMP_Randomize(uint32_t* result, Straw& rng, int total_bits,
+void XMP_Randomize(uint32_t* result, ByteSource& rng, int total_bits,
                    int precision) {
   assert(XMP_Bits_To_Digits(total_bits) <= MAX_UNIT_PRECISION);
 
@@ -2450,7 +2450,7 @@ void XMP_Randomize(uint32_t* result, Straw& rng, int total_bits,
   const int nbytes = (total_bits / 8) + 1;
 
   XMP_Init(result, 0, precision);
-  rng.Get(WritableByteView(result, nbytes));
+  rng.Read(WritableByteView(result, nbytes));
 
   ((unsigned char*)result)[nbytes - 1] &=
       static_cast<unsigned char>(~(~0 << (total_bits % 8)));
@@ -2479,7 +2479,7 @@ void XMP_Randomize(uint32_t* result, Straw& rng, int total_bits,
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-void XMP_Randomize(uint32_t* result, Straw& rng, const uint32_t* minval,
+void XMP_Randomize(uint32_t* result, ByteSource& rng, const uint32_t* minval,
                    const uint32_t* maxval, int precision) {
   uint32_t range[MAX_UNIT_PRECISION];
   XMP_Sub(range, maxval, minval, false, precision);

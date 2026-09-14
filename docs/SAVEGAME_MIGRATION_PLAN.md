@@ -1,5 +1,10 @@
 # Migration plan: field-wise save games, delete `NoInitClass`, enable `cppcoreguidelines-pro-type-member-init`
 
+> The Pipe/Straw classes named in this document were renamed by the streams refactor
+> (`docs/STREAMS_REFACTOR_PLAN.md`): `Pipe`/`Straw` are now `ByteSink`/`ByteSource`,
+> `FilePipe`/`FileStraw` are `FileSink`/`FileSource`, `BufferPipe`/`BufferStraw` are
+> `SpanSink`/`SpanSource`, and each codec pipe and straw is a `…Sink`/`…Source`.
+
 ## Resume checkpoint (2026-09-10)
 
 - Steps 0–36 are complete; step 35b is `a40b98f7`; step 35a is `ed1f462c`; step 34b is `46ac7e12`;

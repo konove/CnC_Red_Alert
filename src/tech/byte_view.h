@@ -1,5 +1,5 @@
-// File: byte views of pointer-and-length buffers, for the codec pipes and
-// straws whose internals still manage their data that way.
+// File: byte views of pointer-and-length buffers, for the codec sinks and
+// sources whose internals still manage their data that way.
 //
 // TODO: Delete once the codecs become ByteCodec implementations (Tier B of
 // docs/STREAMS_REFACTOR_PLAN.md).

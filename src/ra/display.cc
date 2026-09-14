@@ -173,8 +173,8 @@
 #include "tech/disk_file.h"
 #include "tech/mix_archive.h"
 #include "tech/number_parse.h"
-#include "tech/xpipe.h"
-#include "tech/xstraw.h"
+#include "tech/span_sink.h"
+#include "tech/span_source.h"
 
 /*
 **	These layer control elements are used to group the displayable objects
@@ -4392,7 +4392,7 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   */
   static const char* const MAPPACK = "MapPack";
   len = ini.Get_UUBlock(MAPPACK, staging_buffer, sizeof(staging_buffer));
-  BufferStraw bstraw(
+  SpanSource bstraw(
       std::as_bytes(std::span(staging_buffer).first(base::ToSize(len))));
   Map.Read_Binary(bstraw);
 
@@ -4466,7 +4466,7 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
   **	Write the map template data out to the ini file.
   */
   static const char* const MAPPACK = "MapPack";
-  BufferPipe bpipe(std::as_writable_bytes(std::span(staging_buffer)));
+  SpanSink bpipe(std::as_writable_bytes(std::span(staging_buffer)));
   Map.Write_Binary(bpipe);
   const auto len = static_cast<int>(bpipe.bytes_written());
   ini.Clear(MAPPACK);

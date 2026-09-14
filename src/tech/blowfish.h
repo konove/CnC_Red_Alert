@@ -43,6 +43,9 @@
 #include <climits>
 #include <cstdint>
 
+// Whether a Blowfish link encrypts or decrypts what passes it.
+enum class CipherMode { kEncrypt, kDecrypt };
+
 /*
 **	This engine will process data blocks by encryption and decryption.
 **	The "Blowfish" algorithm is in the public domain. It uses

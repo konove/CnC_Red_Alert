@@ -46,11 +46,11 @@
 #include <iterator>
 
 #include "absl/base/attributes.h"
+#include "tech/byte_source.h"
 #include "tech/mp.h"
-#include "tech/straw.h"
 
 template <class T>
-T Generate_Prime(Straw& rng, int pbits, const T* /*unused*/);
+T Generate_Prime(ByteSource& rng, int pbits, const T* /*unused*/);
 
 template <class T>
 T Gcd(const T& a, const T& n);
@@ -68,10 +68,10 @@ class Int {
     XMP_Init(&reg[0], static_cast<std::uint32_t>(value), PRECISION);
   }
 
-  void Randomize(Straw& rng, int bitcount) {
+  void Randomize(ByteSource& rng, int bitcount) {
     XMP_Randomize(&reg[0], rng, bitcount, PRECISION);
   }
-  void Randomize(Straw& rng, const Int& minval, const Int& maxval) {
+  void Randomize(ByteSource& rng, const Int& minval, const Int& maxval) {
     XMP_Randomize(&reg[0], rng, minval, maxval, PRECISION);
     reg[0] |= 1;
   }
@@ -144,7 +144,7 @@ class Int {
   [[nodiscard]] bool IsPrime() const {
     return XMP_Is_Prime(&reg[0], PRECISION);
   }
-  bool RabinMillerTest(Straw& rng, unsigned int rounds) const {
+  bool RabinMillerTest(ByteSource& rng, unsigned int rounds) const {
     return XMP_Rabin_Miller_Test(rng, &reg[0], rounds, PRECISION);
   }
 
@@ -351,7 +351,7 @@ class Int {
   }
 
   // Friend helper functions.
-  friend Int<PRECISION> Generate_Prime<>(Straw& rng, int pbits,
+  friend Int<PRECISION> Generate_Prime<>(ByteSource& rng, int pbits,
                                          const Int<PRECISION>*);
   friend Int<PRECISION> Gcd<>(const Int<PRECISION>& a, const Int<PRECISION>& b);
   //		friend bool NextPrime(Int<PRECISION> & p, const Int<PRECISION> &
@@ -420,7 +420,7 @@ T Gcd(const T& a, const T& n) {
 }
 
 template <class T>
-T Generate_Prime(Straw& rng, int pbits, const T* /*unused*/) {
+T Generate_Prime(ByteSource& rng, int pbits, const T* /*unused*/) {
   T minQ = T(1UL) << static_cast<uint16_t>(pbits - (uint16_t)2);
   T maxQ = (T(1UL) << static_cast<uint16_t>(pbits - (uint16_t)1)) -
            static_cast<uint16_t>(1);

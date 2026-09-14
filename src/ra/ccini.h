@@ -44,10 +44,10 @@
 
 #include "ra/defines.h"
 #include "ra/ini.h"
+#include "tech/byte_sink.h"
+#include "tech/byte_source.h"
 #include "tech/file.h"
-#include "tech/pipe.h"
 #include "tech/sha.h"
-#include "tech/straw.h"
 
 class TriggerTypeClass;
 
@@ -61,9 +61,9 @@ class CCINIClass : public INIClass {
   CCINIClass() = default;
 
   bool Load(File& file, bool withdigest);
-  bool Load(Straw& file, bool withdigest);
+  bool Load(ByteSource& file, bool withdigest);
   bool Save(File& file, bool withdigest) const;
-  bool Save(Pipe& pipe, bool withdigest) const;
+  bool Save(ByteSink& pipe, bool withdigest) const;
 
   uint64_t Get_Buildings(const char* section, const char* entry,
                          uint64_t defvalue) const;

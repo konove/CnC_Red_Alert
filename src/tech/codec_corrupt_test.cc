@@ -11,24 +11,25 @@
 
 #include "base/types.h"
 #include "gtest/gtest.h"
-#include "tech/lcwpipe.h"
-#include "tech/lcwstraw.h"
-#include "tech/lzopipe.h"
-#include "tech/lzostraw.h"
-#include "tech/lzwpipe.h"
-#include "tech/lzwstraw.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
-#include "tech/xstraw.h"
+#include "tech/byte_sink.h"
+#include "tech/byte_source.h"
+#include "tech/codec_block.h"
+#include "tech/lcw_sink.h"
+#include "tech/lcw_source.h"
+#include "tech/lzo_sink.h"
+#include "tech/lzo_source.h"
+#include "tech/lzw_sink.h"
+#include "tech/lzw_source.h"
+#include "tech/span_source.h"
 
 namespace {
 
 constexpr int kBlockSize = 128;
 
-class ByteSink : public Pipe {
+class RecordingSink : public ByteSink {
  public:
   std::vector<uint8_t> bytes;
-  bool Put(std::span<const std::byte> data) override {
+  bool Write(std::span<const std::byte> data) override {
     for (const std::byte byte : data) {
       bytes.push_back(std::to_integer<uint8_t>(byte));
     }
@@ -36,12 +37,12 @@ class ByteSink : public Pipe {
   }
 };
 
-std::vector<uint8_t> Drain(Straw& straw) {
+std::vector<uint8_t> Drain(ByteSource& straw) {
   std::vector<uint8_t> result;
   std::array<uint8_t, 7> chunk{};
-  for (base::ssize count = straw.Get(std::as_writable_bytes(std::span(chunk)));
+  for (base::ssize count = straw.Read(std::as_writable_bytes(std::span(chunk)));
        count != 0;
-       count = straw.Get(std::as_writable_bytes(std::span(chunk)))) {
+       count = straw.Read(std::as_writable_bytes(std::span(chunk)))) {
     result.insert(result.end(), chunk.begin(), chunk.begin() + count);
   }
   return result;
@@ -83,9 +84,9 @@ std::vector<uint8_t> LcwAbc() {
 
 template <class PipeType>
 std::vector<uint8_t> Compress(const std::vector<uint8_t>& plain) {
-  ByteSink sink;
-  PipeType pipe(PipeType::COMPRESS, sink, kBlockSize);
-  pipe.Put(std::as_bytes(std::span(plain)));
+  RecordingSink sink;
+  PipeType pipe(CodecMode::kCompress, sink, kBlockSize);
+  pipe.Write(std::as_bytes(std::span(plain)));
   pipe.Flush();
   return sink.bytes;
 }
@@ -104,14 +105,14 @@ std::vector<uint8_t> LzwCodes(const std::vector<int>& codes) {
 template <class PipeType, class StrawType>
 void ExpectDecodes(const std::vector<uint8_t>& encoded,
                    const std::vector<uint8_t>& expected) {
-  ByteSink sink;
-  PipeType pipe(PipeType::DECOMPRESS, sink, kBlockSize);
-  pipe.Put(std::as_bytes(std::span(encoded)));
+  RecordingSink sink;
+  PipeType pipe(CodecMode::kDecompress, sink, kBlockSize);
+  pipe.Write(std::as_bytes(std::span(encoded)));
   EXPECT_FALSE(pipe.Finish()) << "pipe";
   EXPECT_EQ(sink.bytes, expected) << "pipe";
 
-  BufferStraw source(std::as_bytes(std::span(encoded)));
-  StrawType straw(StrawType::DECOMPRESS, source, kBlockSize);
+  SpanSource source(std::as_bytes(std::span(encoded)));
+  StrawType straw(CodecMode::kDecompress, source, kBlockSize);
   EXPECT_EQ(Drain(straw), expected) << "straw";
   EXPECT_FALSE(straw.ok()) << "straw";
 }
@@ -151,36 +152,36 @@ void ExpectTruncationsFail() {
 }
 
 TEST(CodecCorruptTest, TruncatedStreamsFailInBothDirections) {
-  ExpectTruncationsFail<LCWPipe, LCWStraw>();
-  ExpectTruncationsFail<LZWPipe, LZWStraw>();
-  ExpectTruncationsFail<LZOPipe, LZOStraw>();
+  ExpectTruncationsFail<LcwSink, LcwSource>();
+  ExpectTruncationsFail<LzwSink, LzwSource>();
+  ExpectTruncationsFail<LzoSink, LzoSource>();
 }
 
 TEST(CodecCorruptTest, LcwRejectsOversizedCompressedCount) {
-  ExpectDecodes<LCWPipe, LCWStraw>(OversizedBlock(), {});
+  ExpectDecodes<LcwSink, LcwSource>(OversizedBlock(), {});
 }
 
 TEST(CodecCorruptTest, LzwRejectsOversizedCompressedCount) {
-  ExpectDecodes<LZWPipe, LZWStraw>(OversizedBlock(), {});
+  ExpectDecodes<LzwSink, LzwSource>(OversizedBlock(), {});
 }
 
 TEST(CodecCorruptTest, LzoRejectsOversizedCompressedCount) {
-  ExpectDecodes<LZOPipe, LZOStraw>(OversizedBlock(), {});
+  ExpectDecodes<LzoSink, LzoSource>(OversizedBlock(), {});
 }
 
 TEST(CodecCorruptTest, LcwKeepsValidBlockBeforeCorruptOne) {
-  ExpectDecodes<LCWPipe, LCWStraw>(Concat(LcwAbc(), OversizedBlock()),
-                                   {'a', 'b', 'c'});
+  ExpectDecodes<LcwSink, LcwSource>(Concat(LcwAbc(), OversizedBlock()),
+                                    {'a', 'b', 'c'});
 }
 
 TEST(CodecCorruptTest, LzwKeepsValidBlockBeforeCorruptOne) {
-  ExpectDecodes<LZWPipe, LZWStraw>(
-      Concat(Compress<LZWPipe>(Plain()), OversizedBlock()), Plain());
+  ExpectDecodes<LzwSink, LzwSource>(
+      Concat(Compress<LzwSink>(Plain()), OversizedBlock()), Plain());
 }
 
 TEST(CodecCorruptTest, LzoKeepsValidBlockBeforeCorruptOne) {
-  ExpectDecodes<LZOPipe, LZOStraw>(
-      Concat(Compress<LZOPipe>(Plain()), OversizedBlock()), Plain());
+  ExpectDecodes<LzoSink, LzoSource>(
+      Concat(Compress<LzoSink>(Plain()), OversizedBlock()), Plain());
 }
 
 TEST(CodecCorruptTest, RejectsOversizedUncompressedCount) {
@@ -188,39 +189,39 @@ TEST(CodecCorruptTest, RejectsOversizedUncompressedCount) {
   std::vector<uint8_t> lcw = LcwAbc();
   lcw[2] = 0x40;
   lcw[3] = 0x9c;
-  ExpectDecodes<LCWPipe, LCWStraw>(lcw, {});
+  ExpectDecodes<LcwSink, LcwSource>(lcw, {});
 
-  std::vector<uint8_t> lzw = Compress<LZWPipe>(Plain());
+  std::vector<uint8_t> lzw = Compress<LzwSink>(Plain());
   lzw[2] = 0x40;
   lzw[3] = 0x9c;
-  ExpectDecodes<LZWPipe, LZWStraw>(lzw, {});
+  ExpectDecodes<LzwSink, LzwSource>(lzw, {});
 
-  std::vector<uint8_t> lzo = Compress<LZOPipe>(Plain());
+  std::vector<uint8_t> lzo = Compress<LzoSink>(Plain());
   lzo[2] = 0x40;
   lzo[3] = 0x9c;
-  ExpectDecodes<LZOPipe, LZOStraw>(lzo, {});
+  ExpectDecodes<LzoSink, LzoSource>(lzo, {});
 }
 
 TEST(CodecCorruptTest, RejectsEmptyCompressedBlock) {
   const std::vector<uint8_t> empty = Block(0, 16, {});
-  ExpectDecodes<LCWPipe, LCWStraw>(empty, {});
-  ExpectDecodes<LZWPipe, LZWStraw>(empty, {});
-  ExpectDecodes<LZOPipe, LZOStraw>(empty, {});
+  ExpectDecodes<LcwSink, LcwSource>(empty, {});
+  ExpectDecodes<LzwSink, LzwSource>(empty, {});
+  ExpectDecodes<LzoSink, LzoSource>(empty, {});
 }
 
 TEST(CodecCorruptTest, LcwRejectsRunPastCapacity) {
   // A 40000-byte run from a 5-byte payload with a plausible header.
-  ExpectDecodes<LCWPipe, LCWStraw>(Block(5, 16, {0xfe, 0x40, 0x9c, 'x', 0x80}),
-                                   {});
+  ExpectDecodes<LcwSink, LcwSource>(Block(5, 16, {0xfe, 0x40, 0x9c, 'x', 0x80}),
+                                    {});
 }
 
 TEST(CodecCorruptTest, LcwRejectsCopyFromBeforeOutput) {
   // A short copy 5 bytes back when nothing has been written yet.
-  ExpectDecodes<LCWPipe, LCWStraw>(Block(3, 3, {0x00, 0x05, 0x80}), {});
+  ExpectDecodes<LcwSink, LcwSource>(Block(3, 3, {0x00, 0x05, 0x80}), {});
 }
 
 TEST(CodecCorruptTest, LcwRejectsMissingEndMarker) {
-  ExpectDecodes<LCWPipe, LCWStraw>(Block(2, 1, {0x81, 'a'}), {});
+  ExpectDecodes<LcwSink, LcwSource>(Block(2, 1, {0x81, 'a'}), {});
 }
 
 TEST(CodecCorruptTest, LzwRejectsExpansionPastCapacity) {
@@ -232,13 +233,13 @@ TEST(CodecCorruptTest, LzwRejectsExpansionPastCapacity) {
   }
   codes.push_back(256);  // End of stream.
   const std::vector<uint8_t> payload = LzwCodes(codes);
-  ExpectDecodes<LZWPipe, LZWStraw>(
+  ExpectDecodes<LzwSink, LzwSource>(
       Block(static_cast<int>(payload.size()), 200, payload), {});
 }
 
 TEST(CodecCorruptTest, LzwRejectsCodeBeyondDictionary) {
   const std::vector<uint8_t> payload = LzwCodes({'x', 30000, 258, 256});
-  ExpectDecodes<LZWPipe, LZWStraw>(
+  ExpectDecodes<LzwSink, LzwSource>(
       Block(static_cast<int>(payload.size()), 3, payload), {});
 }
 
@@ -246,7 +247,7 @@ TEST(CodecCorruptTest, LzoRejectsMatchBeforeOutputStart) {
   // A one-byte literal, then an M2 match reaching 136 bytes back, then the end
   // marker. The header gives the length the unchecked decoder produced while
   // copying bytes from before its output buffer.
-  ExpectDecodes<LZOPipe, LZOStraw>(
+  ExpectDecodes<LzoSink, LzoSource>(
       Block(7, 5, {18, 'x', 0x7c, 0x10, 0x11, 0x00, 0x00}), {});
 }
 
@@ -256,7 +257,7 @@ TEST(CodecCorruptTest, LzoRejectsExpansionPastCapacity) {
   std::vector<uint8_t> payload = {18, 'x', 32};
   payload.insert(payload.end(), 240, 0x00);
   payload.insert(payload.end(), {0x01, 0x00, 0x00, 0x11, 0x00, 0x00});
-  ExpectDecodes<LZOPipe, LZOStraw>(
+  ExpectDecodes<LzoSink, LzoSource>(
       Block(static_cast<int>(payload.size()), 16, payload), {});
 }
 

@@ -15,15 +15,17 @@
 #include "base/types.h"
 #include "gtest/gtest.h"
 #include "sdllib/file_access.h"
-#include "tech/blowpipe.h"
+#include "tech/blowfish.h"
+#include "tech/blowfish_sink.h"
+#include "tech/byte_sink.h"
 #include "tech/byte_stream.h"
+#include "tech/codec_block.h"
 #include "tech/disk_file.h"
 #include "tech/file.h"
-#include "tech/lzopipe.h"
-#include "tech/lzostraw.h"
-#include "tech/pipe.h"
-#include "tech/xpipe.h"
-#include "tech/xstraw.h"
+#include "tech/file_source.h"
+#include "tech/lzo_sink.h"
+#include "tech/lzo_source.h"
+#include "tech/span_sink.h"
 
 namespace {
 
@@ -31,10 +33,10 @@ std::span<const std::byte> Bytes(std::string_view text) {
   return std::as_bytes(std::span(text));
 }
 
-class VectorPipe : public Pipe {
+class RecordingSink : public ByteSink {
  public:
   std::vector<std::byte> bytes;
-  bool Put(std::span<const std::byte> data) override {
+  bool Write(std::span<const std::byte> data) override {
     bytes.insert(bytes.end(), data.begin(), data.end());
     return true;
   }
@@ -94,46 +96,46 @@ class ScriptedFile : public File {
 
 TEST(StreamErrorTest, BufferPipeStoresWhatFitsThenFailsForGood) {
   std::array<char, 4> storage{};
-  BufferPipe sink(std::as_writable_bytes(std::span(storage)));
-  EXPECT_TRUE(sink.Put(Bytes("ab")));
+  SpanSink sink(std::as_writable_bytes(std::span(storage)));
+  EXPECT_TRUE(sink.Write(Bytes("ab")));
   EXPECT_TRUE(sink.ok());
-  EXPECT_FALSE(sink.Put(Bytes("cde")));
+  EXPECT_FALSE(sink.Write(Bytes("cde")));
   EXPECT_FALSE(sink.ok());
   EXPECT_EQ(sink.bytes_written(), 4);
   EXPECT_EQ(std::string_view(storage.data(), 4), "abcd");
-  EXPECT_FALSE(sink.Put(Bytes("")));
+  EXPECT_FALSE(sink.Write(Bytes("")));
   EXPECT_FALSE(sink.Flush());
   EXPECT_FALSE(sink.Finish());
 }
 
 TEST(StreamErrorTest, FailureDownstreamReachesEveryLink) {
   std::array<char, 8> storage{};
-  BufferPipe sink(std::as_writable_bytes(std::span(storage)));
-  LZOPipe compressor(LZOPipe::COMPRESS, sink, 16);
+  SpanSink sink(std::as_writable_bytes(std::span(storage)));
+  LzoSink compressor(CodecMode::kCompress, sink, 16);
   // Buffered: nothing has reached the small sink yet.
-  EXPECT_TRUE(compressor.Put(Bytes("0123456789")));
+  EXPECT_TRUE(compressor.Write(Bytes("0123456789")));
   EXPECT_TRUE(compressor.ok());
   // The flushed block does not fit.
   EXPECT_FALSE(compressor.Flush());
   EXPECT_FALSE(compressor.ok());
-  EXPECT_FALSE(compressor.Put(Bytes("more")));
+  EXPECT_FALSE(compressor.Write(Bytes("more")));
 }
 
 // Save_Game flushes the chain, writes the digest straight into the file pipe
 // behind it, then finishes the chain, which must add nothing.
 TEST(StreamErrorTest, FlushEmitsEverythingSoFinishAddsNothing) {
-  VectorPipe file;
-  BlowPipe blow(BlowPipe::ENCRYPT, file);
-  LZOPipe lzo(LZOPipe::COMPRESS, blow, 64);
+  RecordingSink file;
+  BlowfishSink blow(CipherMode::kEncrypt, file);
+  LzoSink lzo(CodecMode::kCompress, blow, 64);
   const std::array<char, 8> key = {1, 2, 3, 4, 5, 6, 7, 8};
   blow.Key(key.data(), static_cast<int>(key.size()));
   // 100 bytes: one full block and a partial one, and a Blowfish tail.
   const std::string text(100, 'q');
-  EXPECT_TRUE(lzo.Put(Bytes(text)));
+  EXPECT_TRUE(lzo.Write(Bytes(text)));
   EXPECT_TRUE(lzo.Flush());
   const std::size_t flushed = file.bytes.size();
   EXPECT_GT(flushed, 0U);
-  EXPECT_TRUE(file.Put(Bytes("DIGEST")));
+  EXPECT_TRUE(file.Write(Bytes("DIGEST")));
   EXPECT_TRUE(lzo.Finish());
   EXPECT_EQ(file.bytes.size(), flushed + 6);
   EXPECT_TRUE(lzo.Flush());
@@ -143,28 +145,28 @@ TEST(StreamErrorTest, FlushEmitsEverythingSoFinishAddsNothing) {
 TEST(StreamErrorTest, FileStrawTellsEndOfFileFromReadError) {
   {
     ScriptedFile file("abc", -1);
-    FileStraw straw(file);
+    FileSource straw(file);
     std::array<std::byte, 8> buffer{};
-    EXPECT_EQ(straw.Get(buffer), 3);
-    EXPECT_EQ(straw.Get(buffer), 0);
+    EXPECT_EQ(straw.Read(buffer), 3);
+    EXPECT_EQ(straw.Read(buffer), 0);
     EXPECT_TRUE(straw.ok());
   }
   {
     // Two bytes arrive, then the file fails.
     ScriptedFile file("abcdef", 2);
-    FileStraw straw(file);
+    FileSource straw(file);
     std::array<std::byte, 8> buffer{};
-    EXPECT_EQ(straw.Get(buffer), 2);
+    EXPECT_EQ(straw.Read(buffer), 2);
     EXPECT_FALSE(straw.ok());
-    EXPECT_EQ(straw.Get(buffer), 0);
+    EXPECT_EQ(straw.Read(buffer), 0);
     EXPECT_FALSE(straw.ok());
   }
 }
 
 TEST(StreamErrorTest, ReadErrorIsStickyThroughTransformStraw) {
-  VectorPipe encoded;
-  LZOPipe compressor(LZOPipe::COMPRESS, encoded, 16);
-  compressor.Put(Bytes("0123456789abcdefghijklmnopqrstuvwxyz"));
+  RecordingSink encoded;
+  LzoSink compressor(CodecMode::kCompress, encoded, 16);
+  compressor.Write(Bytes("0123456789abcdefghijklmnopqrstuvwxyz"));
   compressor.Finish();
   std::string stored(static_cast<std::size_t>(std::ssize(encoded.bytes)), '\0');
   for (std::size_t i = 0; i < stored.size(); ++i) {
@@ -173,12 +175,12 @@ TEST(StreamErrorTest, ReadErrorIsStickyThroughTransformStraw) {
 
   // Blocks of 16, 16 and 4 bytes; the read error lands inside the last.
   ScriptedFile file(stored, std::ssize(stored) - 3);
-  FileStraw straw(file);
-  LZOStraw decompressor(LZOStraw::DECOMPRESS, straw, 16);
+  FileSource straw(file);
+  LzoSource decompressor(CodecMode::kDecompress, straw, 16);
   std::array<std::byte, 64> buffer{};
-  EXPECT_EQ(decompressor.Get(buffer), 32);
+  EXPECT_EQ(decompressor.Read(buffer), 32);
   EXPECT_FALSE(decompressor.ok());
-  EXPECT_EQ(decompressor.Get(buffer), 0);
+  EXPECT_EQ(decompressor.Read(buffer), 0);
   EXPECT_FALSE(decompressor.ok());
 }
 
@@ -197,8 +199,8 @@ TEST(StreamErrorTest, DiskReadErrorReachesFileAndStraw) {
   DiskFile file(directory);
   EXPECT_EQ(file.Read(buffer), 0);
   EXPECT_FALSE(file.ok());
-  FileStraw straw(file);
-  EXPECT_EQ(straw.Get(buffer), 0);
+  FileSource straw(file);
+  EXPECT_EQ(straw.Read(buffer), 0);
   EXPECT_FALSE(straw.ok());
 }
 
