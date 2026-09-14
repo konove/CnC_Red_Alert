@@ -40,10 +40,10 @@
 
 #include "tech/blwstraw.h"
 
-#include <cassert>
 #include <cstring>
 
 #include "base/numeric.h"
+#include "tech/blowfish.h"
 #include "tech/straw.h"
 /***********************************************************************************************
  * BlowStraw::Get -- Fetch a block of data from the straw. *
@@ -77,9 +77,10 @@ int BlowStraw::Get(void* source, int slen) {
   **	If there is no blowfish engine present, then merely pass the data
   *through *	unchanged.
   */
-  if (BF == nullptr) {
+  if (!BF.has_value()) {
     return Straw::Get(source, slen);
   }
+  BlowfishEngine& engine = *BF;
 
   int total = 0;
 
@@ -90,7 +91,7 @@ int BlowStraw::Get(void* source, int slen) {
     */
     if (Counter > 0) {
       const int sublen = slen < Counter ? slen : Counter;
-      memmove(source, &Buffer[static_cast<int>(sizeof(Buffer)) - Counter],
+      memmove(source, Buffer.data() + (kBlockSize - Counter),
               base::ToSize(sublen));
       Counter -= sublen;
       source = static_cast<char*>(source) + sublen;
@@ -104,7 +105,7 @@ int BlowStraw::Get(void* source, int slen) {
     /*
     **	Fetch and encrypt/decrypt the next block.
     */
-    const int incount = Straw::Get(Buffer, sizeof(Buffer));
+    const int incount = Straw::Get(Buffer.data(), kBlockSize);
     if (incount == 0) {
       break;
     }
@@ -113,14 +114,14 @@ int BlowStraw::Get(void* source, int slen) {
     **	Only full blocks are processed. Partial blocks are
     **	merely passed through unchanged.
     */
-    if (incount == sizeof(Buffer)) {
+    if (incount == kBlockSize) {
       if (Control == DECRYPT) {
-        BF->Decrypt(Buffer, incount, Buffer);
+        engine.Decrypt(Buffer.data(), incount, Buffer.data());
       } else {
-        BF->Encrypt(Buffer, incount, Buffer);
+        engine.Encrypt(Buffer.data(), incount, Buffer.data());
       }
     } else {
-      memmove(&Buffer[static_cast<int>(sizeof(Buffer)) - incount], Buffer,
+      memmove(Buffer.data() + (kBlockSize - incount), Buffer.data(),
               base::ToSize(incount));
     }
     Counter = incount;
@@ -154,13 +155,8 @@ void BlowStraw::Key(const void* key, int length) {
   /*
   **	Create the blowfish engine if one isn't already present.
   */
-  if (BF == nullptr) {
-    BF = new BlowfishEngine;
+  if (!BF.has_value()) {
+    BF.emplace();
   }
-
-  assert(BF != nullptr);
-
-  if (BF != nullptr) {
-    BF->Submit_Key(key, length);
-  }
+  BF->Submit_Key(key, length);
 }

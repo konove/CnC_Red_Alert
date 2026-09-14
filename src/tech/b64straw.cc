@@ -75,15 +75,15 @@ int Base64Straw::Get(void* source, int slen) {
   int tosize;
 
   if (Control == ENCODE) {
-    from = PBuffer;
-    fromsize = sizeof(PBuffer);
-    to = CBuffer;
-    tosize = sizeof(CBuffer);
+    from = PBuffer.data();
+    fromsize = static_cast<int>(PBuffer.size());
+    to = CBuffer.data();
+    tosize = static_cast<int>(CBuffer.size());
   } else {
-    from = CBuffer;
-    fromsize = sizeof(CBuffer);
-    to = PBuffer;
-    tosize = sizeof(PBuffer);
+    from = CBuffer.data();
+    fromsize = static_cast<int>(CBuffer.size());
+    to = PBuffer.data();
+    tosize = static_cast<int>(PBuffer.size());
   }
 
   /*

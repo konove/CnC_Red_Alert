@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_TECH_LCWSTRAW_H_
 
 #include <cstdint>
+#include <vector>
 
 #include "tech/straw.h"
 
@@ -56,7 +57,7 @@ class LCWStraw : public Straw {
   typedef enum CompControl { COMPRESS, DECOMPRESS } CompControl;
 
   explicit LCWStraw(CompControl control, int blocksize = 1024 * 8);
-  ~LCWStraw() override;
+  ~LCWStraw() override = default;
 
   int Get(void* destbuf, int slen) override;
 
@@ -73,10 +74,10 @@ class LCWStraw : public Straw {
   int Counter = 0;
 
   /*
-  **	Pointer to the working buffer that compression/decompression will use.
+  **	Working buffers that compression/decompression will use.
   */
-  char* Buffer = nullptr;
-  char* Buffer2 = nullptr;
+  std::vector<char> Buffer;
+  std::vector<char> Buffer2;
 
   /*
   **	The working block size. Data will be compressed in chunks of this size.

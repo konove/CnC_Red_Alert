@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_TECH_B64STRAW_H_
 #define CNC_RED_ALERT_TECH_B64STRAW_H_
 
+#include <array>
+
 #include "tech/straw.h"
 
 /*
@@ -77,14 +79,14 @@ class Base64Straw : public Straw {
   *buffer if *	this is for a decoding process. Otherwise, it will be used as a
   *scratch buffer.
   */
-  char CBuffer[4]{};
+  std::array<char, 4> CBuffer{};
 
   /*
   **	Buffer that holds the plain bytes. This will be the staging buffer if
   *this *	is for an encoding process. Otherwise, it will be used as a
   *scratch buffer.
   */
-  char PBuffer[3]{};
+  std::array<char, 3> PBuffer{};
 };
 
 #endif  // CNC_RED_ALERT_TECH_B64STRAW_H_

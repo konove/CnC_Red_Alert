@@ -41,7 +41,6 @@
 
 #include "tech/lzwstraw.h"
 
-#include <cassert>
 #include <cstdint>
 #include <cstring>
 #include <utility>
@@ -79,32 +78,10 @@ LZWStraw::LZWStraw(CompControl control, int blocksize)
       SafetyMargin(LzwWorstCaseSize(BlockSize) - BlockSize +
                    static_cast<int>(sizeof(BlockHeader))) {
   //	SafetyMargin = BlockSize/128+1;
-  source_buffer_ = new char[base::ToSize(BlockSize + SafetyMargin)];
+  source_buffer_.resize(base::ToSize(BlockSize + SafetyMargin));
   if (control == COMPRESS) {
-    output_buffer_ = new char[base::ToSize(BlockSize + SafetyMargin)];
+    output_buffer_.resize(base::ToSize(BlockSize + SafetyMargin));
   }
-}
-
-/***********************************************************************************************
- * LZWStraw::~LZWStraw -- Destructor for the LZW straw. *
- *                                                                                             *
- *    The destructor will free up the allocated buffers that it allocated in the
- *constructor.  *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/04/1996 JLB : Created. *
- *=============================================================================================*/
-LZWStraw::~LZWStraw() {
-  delete[] source_buffer_;
-  source_buffer_ = nullptr;
-
-  delete[] output_buffer_;
-  output_buffer_ = nullptr;
 }
 
 /***********************************************************************************************
@@ -129,8 +106,6 @@ LZWStraw::~LZWStraw() {
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
 int LZWStraw::Get(void* destbuf, int slen) {
-  assert(source_buffer_ != nullptr);
-
   int total = 0;
 
   /*
@@ -148,14 +123,15 @@ int LZWStraw::Get(void* destbuf, int slen) {
     if (Counter) {
       const int len = slen < Counter ? slen : Counter;
       if (Control == DECOMPRESS) {
-        memmove(destbuf, &source_buffer_[BlockHeader.UncompCount - Counter],
+        memmove(destbuf,
+                source_buffer_.data() + (BlockHeader.UncompCount - Counter),
                 base::ToSize(len));
       } else {
-        memmove(
-            destbuf,
-            &output_buffer_[BlockHeader.CompCount +
-                            static_cast<int>(sizeof(BlockHeader)) - Counter],
-            base::ToSize(len));
+        memmove(destbuf,
+                output_buffer_.data() +
+                    (BlockHeader.CompCount +
+                     static_cast<int>(sizeof(BlockHeader)) - Counter),
+                base::ToSize(len));
       }
       destbuf = static_cast<char*>(destbuf) + len;
       slen -= len;
@@ -181,8 +157,8 @@ int LZWStraw::Get(void* destbuf, int slen) {
         break;
       }
 
-      void* ptr =
-          &source_buffer_[BlockSize + SafetyMargin - BlockHeader.CompCount];
+      void* ptr = source_buffer_.data() +
+                  (BlockSize + SafetyMargin - BlockHeader.CompCount);
       incount = Straw::Get(ptr, BlockHeader.CompCount);
       if (std::cmp_not_equal(incount, BlockHeader.CompCount)) {
         break;
@@ -190,9 +166,9 @@ int LZWStraw::Get(void* destbuf, int slen) {
 
       // Sized buffers stop a corrupt code stream from reading or writing
       // past source_buffer_.
-      const int produced =
-          LZW_Uncompress(Buffer(ptr, BlockHeader.CompCount),
-                         Buffer(source_buffer_, BlockSize + SafetyMargin));
+      const int produced = LZW_Uncompress(
+          Buffer(ptr, BlockHeader.CompCount),
+          Buffer(source_buffer_.data(), BlockSize + SafetyMargin));
       if (std::cmp_not_equal(produced, BlockHeader.UncompCount)) {
         corrupt_ = true;
         break;
@@ -201,16 +177,16 @@ int LZWStraw::Get(void* destbuf, int slen) {
     } else {
       // Compress
       BlockHeader.UncompCount =
-          static_cast<uint16_t>(Straw::Get(source_buffer_, BlockSize));
+          static_cast<uint16_t>(Straw::Get(source_buffer_.data(), BlockSize));
       if (BlockHeader.UncompCount == 0) {
         break;
       }
       BlockHeader.CompCount = static_cast<uint16_t>(
-          LZW_Compress(Buffer(source_buffer_, BlockHeader.UncompCount),
-                       Buffer(&output_buffer_[sizeof(BlockHeader)],
+          LZW_Compress(Buffer(source_buffer_.data(), BlockHeader.UncompCount),
+                       Buffer(output_buffer_.data() + sizeof(BlockHeader),
                               BlockSize + SafetyMargin -
                                   static_cast<int>(sizeof(BlockHeader)))));
-      memmove(output_buffer_, &BlockHeader, sizeof(BlockHeader));
+      memmove(output_buffer_.data(), &BlockHeader, sizeof(BlockHeader));
       Counter = static_cast<int>(BlockHeader.CompCount + sizeof(BlockHeader));
     }
   }

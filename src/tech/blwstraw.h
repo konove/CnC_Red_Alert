@@ -40,6 +40,9 @@
 #ifndef CNC_RED_ALERT_TECH_BLWSTRAW_H_
 #define CNC_RED_ALERT_TECH_BLWSTRAW_H_
 
+#include <array>
+#include <optional>
+
 #include "tech/blowfish.h"
 #include "tech/straw.h"
 
@@ -55,10 +58,7 @@ class BlowStraw : public Straw {
   typedef enum CryptControl { ENCRYPT, DECRYPT } CryptControl;
 
   explicit BlowStraw(CryptControl control) : Control(control) {}
-  ~BlowStraw() override {
-    delete BF;
-    BF = nullptr;
-  }
+  ~BlowStraw() override = default;
 
   int Get(void* source, int slen) override;
 
@@ -67,15 +67,16 @@ class BlowStraw : public Straw {
 
  protected:
   /*
-  **	The Blowfish engine used for encryption/decryption. If this pointer is
-  **	NULL, then this indicates that the blowfish engine is not active and no
+  **	The Blowfish engine used for encryption/decryption. If it is empty,
+  **	then this indicates that the blowfish engine is not active and no
   **	key has been submitted. All data would pass through this straw unchanged
   **	in that case.
   */
-  BlowfishEngine* BF = nullptr;
+  std::optional<BlowfishEngine> BF;
 
  private:
-  char Buffer[8]{};
+  static constexpr int kBlockSize = 8;
+  std::array<char, kBlockSize> Buffer{};
   int Counter = 0;
   CryptControl Control;
 

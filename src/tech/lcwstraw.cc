@@ -41,7 +41,6 @@
 
 #include "tech/lcwstraw.h"
 
-#include <cassert>
 #include <cstdint>
 #include <cstring>
 #include <span>
@@ -78,32 +77,10 @@ LCWStraw::LCWStraw(CompControl control, int blocksize)
       // in front of it.
       SafetyMargin(LcwWorstCaseSize(BlockSize) - BlockSize +
                    static_cast<int>(sizeof(BlockHeader))) {
-  Buffer = new char[base::ToSize(BlockSize + SafetyMargin)];
+  Buffer.resize(base::ToSize(BlockSize + SafetyMargin));
   if (control == COMPRESS) {
-    Buffer2 = new char[base::ToSize(BlockSize + SafetyMargin)];
+    Buffer2.resize(base::ToSize(BlockSize + SafetyMargin));
   }
-}
-
-/***********************************************************************************************
- * LCWStraw::~LCWStraw -- Destructor for the LCW straw. *
- *                                                                                             *
- *    The destructor will free up the allocated buffers that it allocated in the
- *constructor.  *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/04/1996 JLB : Created. *
- *=============================================================================================*/
-LCWStraw::~LCWStraw() {
-  delete[] Buffer;
-  Buffer = nullptr;
-
-  delete[] Buffer2;
-  Buffer2 = nullptr;
 }
 
 /***********************************************************************************************
@@ -128,8 +105,6 @@ LCWStraw::~LCWStraw() {
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
 int LCWStraw::Get(void* destbuf, int slen) {
-  assert(Buffer != nullptr);
-
   int total = 0;
 
   /*
@@ -147,13 +122,14 @@ int LCWStraw::Get(void* destbuf, int slen) {
     if (Counter) {
       const int len = slen < Counter ? slen : Counter;
       if (Control == DECOMPRESS) {
-        memmove(destbuf, &Buffer[BlockHeader.UncompCount - Counter],
+        memmove(destbuf, Buffer.data() + (BlockHeader.UncompCount - Counter),
                 base::ToSize(len));
       } else {
-        memmove(destbuf,
-                &Buffer2[BlockHeader.CompCount +
-                         static_cast<int>(sizeof(BlockHeader)) - Counter],
-                base::ToSize(len));
+        memmove(
+            destbuf,
+            Buffer2.data() + (BlockHeader.CompCount +
+                              static_cast<int>(sizeof(BlockHeader)) - Counter),
+            base::ToSize(len));
       }
       destbuf = static_cast<char*>(destbuf) + len;
       slen -= len;
@@ -179,7 +155,8 @@ int LCWStraw::Get(void* destbuf, int slen) {
         break;
       }
 
-      char* ptr = &Buffer[BlockSize + SafetyMargin - BlockHeader.CompCount];
+      char* ptr =
+          Buffer.data() + (BlockSize + SafetyMargin - BlockHeader.CompCount);
       incount = Straw::Get(ptr, BlockHeader.CompCount);
       if (std::cmp_not_equal(incount, BlockHeader.CompCount)) {
         break;
@@ -187,8 +164,8 @@ int LCWStraw::Get(void* destbuf, int slen) {
 
       const int produced = LcwUncompBounded(
           std::as_bytes(std::span(ptr, BlockHeader.CompCount)),
-          std::as_writable_bytes(
-              std::span(Buffer, base::ToSize(BlockSize + SafetyMargin))));
+          std::as_writable_bytes(std::span(
+              Buffer.data(), base::ToSize(BlockSize + SafetyMargin))));
       if (std::cmp_not_equal(produced, BlockHeader.UncompCount)) {
         corrupt_ = true;
         break;
@@ -196,13 +173,14 @@ int LCWStraw::Get(void* destbuf, int slen) {
       Counter = BlockHeader.UncompCount;
     } else {
       BlockHeader.UncompCount =
-          static_cast<uint16_t>(Straw::Get(Buffer, BlockSize));
+          static_cast<uint16_t>(Straw::Get(Buffer.data(), BlockSize));
       if (BlockHeader.UncompCount == 0) {
         break;
       }
-      BlockHeader.CompCount = static_cast<uint16_t>(LCW_Comp(
-          Buffer, &Buffer2[sizeof(BlockHeader)], BlockHeader.UncompCount));
-      memmove(Buffer2, &BlockHeader, sizeof(BlockHeader));
+      BlockHeader.CompCount = static_cast<uint16_t>(
+          LCW_Comp(Buffer.data(), Buffer2.data() + sizeof(BlockHeader),
+                   BlockHeader.UncompCount));
+      memmove(Buffer2.data(), &BlockHeader, sizeof(BlockHeader));
       Counter = static_cast<int>(BlockHeader.CompCount + sizeof(BlockHeader));
     }
   }

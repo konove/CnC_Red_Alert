@@ -41,7 +41,6 @@
 
 #include "tech/lzostraw.h"
 
-#include <cassert>
 #include <cstdint>
 #include <cstring>
 #include <utility>
@@ -75,32 +74,13 @@
  *=============================================================================================*/
 LZOStraw::LZOStraw(CompControl control, int blocksize)
     : Control(control), BlockSize(blocksize), SafetyMargin(BlockSize) {
-  Buffer = new unsigned char[base::ToSize(BlockSize + SafetyMargin)];
+  Buffer.resize(base::ToSize(BlockSize + SafetyMargin));
   if (control == COMPRESS) {
-    Buffer2 = new unsigned char[base::ToSize(BlockSize + SafetyMargin)];
+    Buffer2.resize(base::ToSize(BlockSize + SafetyMargin));
+    work_.resize(LZO1X_MEM_COMPRESS);
+  } else {
+    staging_.resize(base::ToSize(BlockSize + SafetyMargin));
   }
-}
-
-/***********************************************************************************************
- * LZOStraw::~LZOStraw -- Destructor for the LZO straw. *
- *                                                                                             *
- *    The destructor will free up the allocated buffers that it allocated in the
- *constructor.  *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/04/1996 JLB : Created. *
- *=============================================================================================*/
-LZOStraw::~LZOStraw() {
-  delete[] Buffer;
-  Buffer = nullptr;
-
-  delete[] Buffer2;
-  Buffer2 = nullptr;
 }
 
 /***********************************************************************************************
@@ -125,8 +105,6 @@ LZOStraw::~LZOStraw() {
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
 int LZOStraw::Get(void* destbuf, int slen) {
-  assert(Buffer != nullptr);
-
   int total = 0;
 
   /*
@@ -144,13 +122,14 @@ int LZOStraw::Get(void* destbuf, int slen) {
     if (Counter) {
       const int len = slen < Counter ? slen : Counter;
       if (Control == DECOMPRESS) {
-        memmove(destbuf, &Buffer[BlockHeader.UncompCount - Counter],
+        memmove(destbuf, Buffer.data() + (BlockHeader.UncompCount - Counter),
                 base::ToSize(len));
       } else {
-        memmove(destbuf,
-                &Buffer2[BlockHeader.CompCount +
-                         static_cast<int>(sizeof(BlockHeader)) - Counter],
-                base::ToSize(len));
+        memmove(
+            destbuf,
+            Buffer2.data() + (BlockHeader.CompCount +
+                              static_cast<int>(sizeof(BlockHeader)) - Counter),
+            base::ToSize(len));
       }
       destbuf = static_cast<char*>(destbuf) + len;
       slen -= len;
@@ -177,16 +156,14 @@ int LZOStraw::Get(void* destbuf, int slen) {
         break;
       }
 
-      std::vector<unsigned char> staging(BlockHeader.CompCount);
-      incount = Straw::Get(staging.data(), BlockHeader.CompCount);
+      incount = Straw::Get(staging_.data(), BlockHeader.CompCount);
       if (std::cmp_not_equal(incount, BlockHeader.CompCount)) {
         break;
       }
-      // Buffer is a pointer; pass its allocated capacity, not sizeof.
       auto length = static_cast<lzo_uint>(BlockSize + SafetyMargin);
       // The checked decoder keeps a corrupt payload inside both buffers.
-      if (lzo1x_decompress_safe(staging.data(), BlockHeader.CompCount, Buffer,
-                                &length, nullptr) != LZO_E_OK ||
+      if (lzo1x_decompress_safe(staging_.data(), BlockHeader.CompCount,
+                                Buffer.data(), &length, nullptr) != LZO_E_OK ||
           std::cmp_not_equal(length, BlockHeader.UncompCount)) {
         corrupt_ = true;
         break;
@@ -194,21 +171,17 @@ int LZOStraw::Get(void* destbuf, int slen) {
       Counter = BlockHeader.UncompCount;
     } else {
       BlockHeader.UncompCount =
-          static_cast<uint16_t>(Straw::Get(Buffer, BlockSize));
+          static_cast<uint16_t>(Straw::Get(Buffer.data(), BlockSize));
       if (BlockHeader.UncompCount == 0) {
         break;
       }
-      // The compressor indexes 16384 pointers, so a fixed 64K dictionary
-      // overflowed on 64-bit hosts.
-      char* dictionary = new char[LZO1X_MEM_COMPRESS];
       lzo_uint length = static_cast<lzo_uint>(BlockSize + SafetyMargin) -
                         lzo_uint{sizeof(BlockHeader)};
-      lzo1x_1_compress(Buffer, BlockHeader.UncompCount,
-                       &Buffer2[sizeof(BlockHeader)], &length,
-                       dictionary);
+      lzo1x_1_compress(Buffer.data(), BlockHeader.UncompCount,
+                       Buffer2.data() + sizeof(BlockHeader), &length,
+                       work_.data());
       BlockHeader.CompCount = static_cast<uint16_t>(length);
-      delete[] dictionary;
-      memmove(Buffer2, &BlockHeader, sizeof(BlockHeader));
+      memmove(Buffer2.data(), &BlockHeader, sizeof(BlockHeader));
       Counter = static_cast<int>(BlockHeader.CompCount + sizeof(BlockHeader));
     }
   }

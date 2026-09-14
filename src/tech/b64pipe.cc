@@ -78,15 +78,15 @@ int Base64Pipe::Put(const void* source, int slen) {
   int tosize;
 
   if (Control == ENCODE) {
-    from = PBuffer;
-    fromsize = sizeof(PBuffer);
-    to = CBuffer;
-    tosize = sizeof(CBuffer);
+    from = PBuffer.data();
+    fromsize = static_cast<int>(PBuffer.size());
+    to = CBuffer.data();
+    tosize = static_cast<int>(CBuffer.size());
   } else {
-    from = CBuffer;
-    fromsize = sizeof(CBuffer);
-    to = PBuffer;
-    tosize = sizeof(PBuffer);
+    from = CBuffer.data();
+    fromsize = static_cast<int>(CBuffer.size());
+    to = PBuffer.data();
+    tosize = static_cast<int>(PBuffer.size());
   }
 
   if (Counter > 0) {
@@ -149,13 +149,13 @@ int Base64Pipe::Flush() {
 
   if (Counter) {
     if (Control == ENCODE) {
-      const int chars =
-          Base64_Encode(PBuffer, Counter, CBuffer, sizeof(CBuffer));
-      len += Pipe::Put(CBuffer, chars);
+      const int chars = Base64_Encode(PBuffer.data(), Counter, CBuffer.data(),
+                                      static_cast<int>(CBuffer.size()));
+      len += Pipe::Put(CBuffer.data(), chars);
     } else {
-      const int chars =
-          Base64_Decode(CBuffer, Counter, PBuffer, sizeof(PBuffer));
-      len += Pipe::Put(PBuffer, chars);
+      const int chars = Base64_Decode(CBuffer.data(), Counter, PBuffer.data(),
+                                      static_cast<int>(PBuffer.size()));
+      len += Pipe::Put(PBuffer.data(), chars);
     }
     Counter = 0;
   }

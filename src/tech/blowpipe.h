@@ -40,6 +40,9 @@
 #ifndef CNC_RED_ALERT_TECH_BLOWPIPE_H_
 #define CNC_RED_ALERT_TECH_BLOWPIPE_H_
 
+#include <array>
+#include <optional>
+
 #include "tech/blowfish.h"
 #include "tech/pipe.h"
 
@@ -52,10 +55,7 @@ class BlowPipe : public Pipe {
   typedef enum CryptControl { ENCRYPT, DECRYPT } CryptControl;
 
   explicit BlowPipe(CryptControl control) : Control(control) {}
-  ~BlowPipe() override {
-    delete BF;
-    BF = nullptr;
-  }
+  ~BlowPipe() override = default;
   int Flush() override;
 
   int Put(const void* source, int slen) override;
@@ -65,15 +65,16 @@ class BlowPipe : public Pipe {
 
  protected:
   /*
-  **	The Blowfish engine used for encryption/decryption. If this pointer is
-  **	NULL, then this indicates that the blowfish engine is not active and no
+  **	The Blowfish engine used for encryption/decryption. If it is empty,
+  **	then this indicates that the blowfish engine is not active and no
   **	key has been submitted. All data would pass through this pipe unchanged
   **	in that case.
   */
-  BlowfishEngine* BF = nullptr;
+  std::optional<BlowfishEngine> BF;
 
  private:
-  char Buffer[8]{};
+  static constexpr int kBlockSize = 8;
+  std::array<char, kBlockSize> Buffer{};
   int Counter = 0;
   CryptControl Control;
 

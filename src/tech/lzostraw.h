@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_TECH_LZOSTRAW_H_
 
 #include <cstdint>
+#include <vector>
 
 #include "tech/straw.h"
 
@@ -56,7 +57,7 @@ class LZOStraw : public Straw {
   typedef enum CompControl { COMPRESS, DECOMPRESS } CompControl;
 
   explicit LZOStraw(CompControl control, int blocksize = 1024 * 8);
-  ~LZOStraw() override;
+  ~LZOStraw() override = default;
 
   int Get(void* destbuf, int slen) override;
 
@@ -73,10 +74,10 @@ class LZOStraw : public Straw {
   int Counter = 0;
 
   /*
-  **	Pointer to the working buffer that compression/decompression will use.
+  **	Working buffers that compression/decompression will use.
   */
-  unsigned char* Buffer = nullptr;
-  unsigned char* Buffer2 = nullptr;
+  std::vector<unsigned char> Buffer;
+  std::vector<unsigned char> Buffer2;
 
   /*
   **	The working block size. Data will be compressed in chunks of this size.
@@ -100,6 +101,12 @@ class LZOStraw : public Straw {
   // Set once the stream yields a block that cannot be decoded safely; all
   // later data is dropped.
   bool corrupt_ = false;
+
+  // The LZO compressor's dictionary; empty when decompressing.
+  std::vector<unsigned char> work_;
+
+  // Holds one compressed block while it is decoded; empty when compressing.
+  std::vector<unsigned char> staging_;
 
  public:
   LZOStraw(const LZOStraw&) = delete;

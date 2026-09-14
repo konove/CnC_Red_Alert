@@ -42,7 +42,6 @@
 
 #include "tech/lcwpipe.h"
 
-#include <cassert>
 #include <cstdint>
 #include <cstring>
 #include <span>
@@ -76,29 +75,8 @@ LCWPipe::LCWPipe(CompControl control, int blocksize)
       // in front of it.
       SafetyMargin(LcwWorstCaseSize(BlockSize) - BlockSize +
                    static_cast<int>(sizeof(BlockHeader))) {
-  Buffer = new char[base::ToSize(BlockSize + SafetyMargin)];
-  Buffer2 = new char[base::ToSize(BlockSize + SafetyMargin)];
-}
-
-/***********************************************************************************************
- * LCWPipe::~LCWPipe -- Deconstructor for the LCW pipe object. *
- *                                                                                             *
- *    This will free any buffers it may have allocated. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/04/1996 JLB : Created. *
- *=============================================================================================*/
-LCWPipe::~LCWPipe() {
-  delete[] Buffer;
-  Buffer = nullptr;
-
-  delete[] Buffer2;
-  Buffer2 = nullptr;
+  Buffer.resize(base::ToSize(BlockSize + SafetyMargin));
+  Buffer2.resize(base::ToSize(BlockSize + SafetyMargin));
 }
 
 /***********************************************************************************************
@@ -126,8 +104,6 @@ int LCWPipe::Put(const void* source, int slen) {
     return Pipe::Put(source, slen);
   }
 
-  assert(Buffer != nullptr);
-
   int total = 0;
 
   /*
@@ -143,7 +119,7 @@ int LCWPipe::Put(const void* source, int slen) {
       if (BlockHeader.CompCount == 0xFFFF) {
         const int needed = static_cast<int>(sizeof(BlockHeader)) - Counter;
         const int len = slen < needed ? slen : needed;
-        memmove(&Buffer[Counter], source, base::ToSize(len));
+        memmove(Buffer.data() + Counter, source, base::ToSize(len));
         source = (char*)source + len;
         slen -= len;
         Counter += len;
@@ -153,7 +129,7 @@ int LCWPipe::Put(const void* source, int slen) {
         *safekeeping.
         */
         if (Counter == sizeof(BlockHeader)) {
-          memmove(&BlockHeader, Buffer, sizeof(BlockHeader));
+          memmove(&BlockHeader, Buffer.data(), sizeof(BlockHeader));
           Counter = 0;
           // A corrupt header must not size writes past the staging buffers.
           if (!BlockHeaderFits(BlockHeader.CompCount, BlockHeader.UncompCount,
@@ -173,7 +149,7 @@ int LCWPipe::Put(const void* source, int slen) {
                             ? slen
                             : BlockHeader.CompCount - Counter;
 
-        memmove(&Buffer[Counter], source, base::ToSize(len));
+        memmove(Buffer.data() + Counter, source, base::ToSize(len));
         slen -= len;
         source = (char*)source + len;
         Counter += len;
@@ -184,15 +160,15 @@ int LCWPipe::Put(const void* source, int slen) {
         */
         if (std::cmp_equal(Counter, BlockHeader.CompCount)) {
           const int produced = LcwUncompBounded(
-              std::as_bytes(std::span(Buffer, BlockHeader.CompCount)),
-              std::as_writable_bytes(
-                  std::span(Buffer2, base::ToSize(BlockSize + SafetyMargin))));
+              std::as_bytes(std::span(Buffer.data(), BlockHeader.CompCount)),
+              std::as_writable_bytes(std::span(
+                  Buffer2.data(), base::ToSize(BlockSize + SafetyMargin))));
           if (std::cmp_not_equal(produced, BlockHeader.UncompCount)) {
             Counter = 0;
             corrupt_ = true;
             break;
           }
-          total += Pipe::Put(Buffer2, BlockHeader.UncompCount);
+          total += Pipe::Put(Buffer2.data(), BlockHeader.UncompCount);
           Counter = 0;
           BlockHeader.CompCount = 0xFFFF;
         }
@@ -207,18 +183,18 @@ int LCWPipe::Put(const void* source, int slen) {
     if (Counter > 0) {
       const int tocopy =
           slen < BlockSize - Counter ? slen : BlockSize - Counter;
-      memmove(&Buffer[Counter], source, base::ToSize(tocopy));
+      memmove(Buffer.data() + Counter, source, base::ToSize(tocopy));
       source = (char*)source + tocopy;
       slen -= tocopy;
       Counter += tocopy;
 
       if (Counter == BlockSize) {
-        const int len = LCW_Comp(Buffer, Buffer2, BlockSize);
+        const int len = LCW_Comp(Buffer.data(), Buffer2.data(), BlockSize);
 
         BlockHeader.CompCount = static_cast<uint16_t>(len);
         BlockHeader.UncompCount = static_cast<uint16_t>(BlockSize);
         total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
-        total += Pipe::Put(Buffer2, len);
+        total += Pipe::Put(Buffer2.data(), len);
         Counter = 0;
       }
     }
@@ -228,7 +204,7 @@ int LCWPipe::Put(const void* source, int slen) {
     *insufficient *	source data left for a whole data block.
     */
     while (slen >= BlockSize) {
-      const int len = LCW_Comp(source, Buffer2, BlockSize);
+      const int len = LCW_Comp(source, Buffer2.data(), BlockSize);
 
       source = (char*)source + BlockSize;
       slen -= BlockSize;
@@ -236,7 +212,7 @@ int LCWPipe::Put(const void* source, int slen) {
       BlockHeader.CompCount = static_cast<uint16_t>(len);
       BlockHeader.UncompCount = static_cast<uint16_t>(BlockSize);
       total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
-      total += Pipe::Put(Buffer2, len);
+      total += Pipe::Put(Buffer2.data(), len);
     }
 
     /*
@@ -244,7 +220,7 @@ int LCWPipe::Put(const void* source, int slen) {
     **	until a full data block has been accumulated.
     */
     if (slen > 0) {
-      memmove(Buffer, source, base::ToSize(slen));
+      memmove(Buffer.data(), source, base::ToSize(slen));
       Counter = slen;
     }
   }
@@ -272,8 +248,6 @@ int LCWPipe::Put(const void* source, int slen) {
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
 int LCWPipe::Flush() {
-  assert(Buffer != nullptr);
-
   int total = 0;
 
   /*
@@ -287,7 +261,7 @@ int LCWPipe::Flush() {
       *through *	as if were already decompressed.
       */
       if (BlockHeader.CompCount == 0xFFFF) {
-        total += Pipe::Put(Buffer, Counter);
+        total += Pipe::Put(Buffer.data(), Counter);
         Counter = 0;
       }
 
@@ -300,7 +274,7 @@ int LCWPipe::Flush() {
       */
       if (Counter > 0) {
         total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
-        total += Pipe::Put(Buffer, Counter);
+        total += Pipe::Put(Buffer.data(), Counter);
         Counter = 0;
         BlockHeader.CompCount = 0xFFFF;
       }
@@ -310,12 +284,12 @@ int LCWPipe::Flush() {
       **	A partial block in the compression process is a normal
       *occurrence. Just *	compress the partial block and output normally.
       */
-      const int len = LCW_Comp(Buffer, Buffer2, Counter);
+      const int len = LCW_Comp(Buffer.data(), Buffer2.data(), Counter);
 
       BlockHeader.CompCount = static_cast<uint16_t>(len);
       BlockHeader.UncompCount = static_cast<uint16_t>(Counter);
       total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
-      total += Pipe::Put(Buffer2, len);
+      total += Pipe::Put(Buffer2.data(), len);
       Counter = 0;
     }
   }

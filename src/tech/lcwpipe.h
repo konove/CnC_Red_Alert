@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_TECH_LCWPIPE_H_
 
 #include <cstdint>
+#include <vector>
 
 #include "tech/pipe.h"
 
@@ -55,7 +56,7 @@ class LCWPipe : public Pipe {
   typedef enum CompControl { COMPRESS, DECOMPRESS } CompControl;
 
   explicit LCWPipe(CompControl /*control*/, int blocksize = 1024 * 8);
-  ~LCWPipe() override;
+  ~LCWPipe() override = default;
 
   int Flush() override;
   int Put(const void* source, int slen) override;
@@ -73,10 +74,10 @@ class LCWPipe : public Pipe {
   int Counter = 0;
 
   /*
-  **	Pointer to the working buffer that compression/decompression will use.
+  **	Working buffers that compression/decompression will use.
   */
-  char* Buffer = nullptr;
-  char* Buffer2 = nullptr;
+  std::vector<char> Buffer;
+  std::vector<char> Buffer2;
 
   /*
   **	The working block size. Data will be compressed in chunks of this size.

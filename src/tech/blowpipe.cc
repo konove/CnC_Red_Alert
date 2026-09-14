@@ -41,11 +41,11 @@
 
 #include "tech/blowpipe.h"
 
-#include <cassert>
 #include <cstring>
 #include <utility>
 
 #include "base/numeric.h"
+#include "tech/blowfish.h"
 #include "tech/pipe.h"
 /***********************************************************************************************
  * BlowPipe::Flush -- Flushes any pending data out the pipe. *
@@ -64,8 +64,8 @@
  *=============================================================================================*/
 int BlowPipe::Flush() {
   int total = 0;
-  if (Counter > 0 && BF != nullptr) {
-    total += Pipe::Put(Buffer, Counter);
+  if (Counter > 0 && BF.has_value()) {
+    total += Pipe::Put(Buffer.data(), Counter);
   }
   Counter = 0;
   total += Pipe::Flush();
@@ -101,9 +101,10 @@ int BlowPipe::Put(const void* source, int slen) {
   **	If there is no blowfish engine present, then merely pass the data
   *through *	unchanged in any way.
   */
-  if (BF == nullptr) {
+  if (!BF.has_value()) {
     return Pipe::Put(source, slen);
   }
+  BlowfishEngine& engine = *BF;
 
   int total = 0;
 
@@ -114,20 +115,20 @@ int BlowPipe::Put(const void* source, int slen) {
   **	can be skipped if there are no pending bytes in the buffer.
   */
   if (Counter) {
-    const int room = static_cast<int>(sizeof(Buffer)) - Counter;
+    const int room = kBlockSize - Counter;
     const int sublen = room < slen ? room : slen;
-    memmove(&Buffer[Counter], source, base::ToSize(sublen));
+    memmove(Buffer.data() + Counter, source, base::ToSize(sublen));
     Counter += sublen;
     source = (char*)source + sublen;
     slen -= sublen;
 
-    if (Counter == sizeof(Buffer)) {
+    if (Counter == kBlockSize) {
       if (Control == DECRYPT) {
-        BF->Decrypt(Buffer, sizeof(Buffer), Buffer);
+        engine.Decrypt(Buffer.data(), kBlockSize, Buffer.data());
       } else {
-        BF->Encrypt(Buffer, sizeof(Buffer), Buffer);
+        engine.Encrypt(Buffer.data(), kBlockSize, Buffer.data());
       }
-      total += Pipe::Put(Buffer, sizeof(Buffer));
+      total += Pipe::Put(Buffer.data(), kBlockSize);
       Counter = 0;
     }
   }
@@ -136,15 +137,15 @@ int BlowPipe::Put(const void* source, int slen) {
   **	Process the input data in blocks until there is not enough
   **	source data to fill a full block of data.
   */
-  while (std::cmp_greater_equal(slen, sizeof(Buffer))) {
+  while (std::cmp_greater_equal(slen, kBlockSize)) {
     if (Control == DECRYPT) {
-      BF->Decrypt(source, sizeof(Buffer), Buffer);
+      engine.Decrypt(source, kBlockSize, Buffer.data());
     } else {
-      BF->Encrypt(source, sizeof(Buffer), Buffer);
+      engine.Encrypt(source, kBlockSize, Buffer.data());
     }
-    total += Pipe::Put(Buffer, sizeof(Buffer));
-    source = (char*)source + sizeof(Buffer);
-    slen -= sizeof(Buffer);
+    total += Pipe::Put(Buffer.data(), kBlockSize);
+    source = (char*)source + kBlockSize;
+    slen -= kBlockSize;
   }
 
   /*
@@ -153,7 +154,7 @@ int BlowPipe::Put(const void* source, int slen) {
   **	processing.
   */
   if (slen > 0) {
-    memmove(Buffer, source, base::ToSize(slen));
+    memmove(Buffer.data(), source, base::ToSize(slen));
     Counter = slen;
   }
 
@@ -186,13 +187,8 @@ void BlowPipe::Key(const void* key, int length) {
   /*
   **	Create the blowfish engine if one isn't already present.
   */
-  if (BF == nullptr) {
-    BF = new BlowfishEngine;
+  if (!BF.has_value()) {
+    BF.emplace();
   }
-
-  assert(BF != nullptr);
-
-  if (BF != nullptr) {
-    BF->Submit_Key(key, length);
-  }
+  BF->Submit_Key(key, length);
 }
