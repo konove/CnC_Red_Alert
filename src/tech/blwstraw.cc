@@ -88,7 +88,7 @@ int BlowStraw::Get(void* source, int slen) {
     **	through first.
     */
     if (Counter > 0) {
-      int sublen = slen < Counter ? slen : Counter;
+      const int sublen = slen < Counter ? slen : Counter;
       memmove(source, &Buffer[static_cast<int>(sizeof(Buffer)) - Counter],
               base::ToSize(sublen));
       Counter -= sublen;
@@ -103,7 +103,7 @@ int BlowStraw::Get(void* source, int slen) {
     /*
     **	Fetch and encrypt/decrypt the next block.
     */
-    int incount = Straw::Get(Buffer, sizeof(Buffer));
+    const int incount = Straw::Get(Buffer, sizeof(Buffer));
     if (incount == 0) {
       break;
     }

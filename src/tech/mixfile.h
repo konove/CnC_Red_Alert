@@ -355,7 +355,7 @@ std::optional<typename MixFileClass<T>::FileLocation> MixFileClass<T>::Offset(
   // for override mods)
   for (auto* mix = MixList.First(); mix->Is_Valid(); mix = mix->Next()) {
     // Use C++20/23 ranges::lower_bound with projection
-    auto it =
+    const auto it =
         std::ranges::lower_bound(mix->file_index_, crc, {}, &FileEntry::crc);
 
     if (it != mix->file_index_.end() && it->crc == crc) {
@@ -396,7 +396,7 @@ std::span<const std::byte> MixFileClass<T>::RetrieveData(
 // Legacy API for backward compatibility with code expecting void*.
 template <class T>
 const void* MixFileClass<T>::Retrieve(std::string_view filename) {
-  auto data = RetrieveData(filename);
+  const auto data = RetrieveData(filename);
   return data.empty() ? nullptr : data.data();
 }
 
@@ -418,7 +418,7 @@ MixFileClass<T>* MixFileClass<T>::Register(std::string_view filename,
 
 template <class T>
 bool MixFileClass<T>::Unregister(std::string_view filename) {
-  if (auto* mix = Finder(filename)) {
+  if (const auto* mix = Finder(filename)) {
     delete mix;
     return true;
   }
@@ -427,7 +427,7 @@ bool MixFileClass<T>::Unregister(std::string_view filename) {
 
 template <class T>
 void MixFileClass<T>::Free_All() {
-  for (auto* node = MixList.First(); node->Is_Valid();) {
+  for (const auto* node = MixList.First(); node->Is_Valid();) {
     auto* next = node->Next();
     delete node;
     node = next;
@@ -438,7 +438,8 @@ template <class T>
 MixFileClass<T>* MixFileClass<T>::Finder(const std::string_view filename) {
   for (auto* ptr = MixList.First(); ptr->Is_Valid(); ptr = ptr->Next()) {
     // Compare basename only; paths may differ.
-    auto basename = std::filesystem::path(ptr->filename_).filename().string();
+    const auto basename =
+        std::filesystem::path(ptr->filename_).filename().string();
     if (absl::EqualsIgnoreCase(basename, filename)) {
       return ptr;
     }

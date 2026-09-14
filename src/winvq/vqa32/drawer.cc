@@ -472,7 +472,7 @@ static int32_t DrawFrame_Buffer(VQAHandle* vqa) {
 
   auto* vqa_handle_p = vqa;
   /* Dereference data members for quicker access. */
-  VQAConfig* config = &vqa_handle_p->config;
+  const VQAConfig* config = &vqa_handle_p->config;
   VQAData* vqabuf = vqa_handle_p->data;
   VQADrawer* drawer = &vqabuf->Drawer;
 

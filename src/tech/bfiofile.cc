@@ -281,7 +281,7 @@ bool BufferIOFileClass::Cache(int32_t size, void* ptr) {
         }
       }
 
-      int32_t actual = Read(Buffer, readsize);
+      const int32_t actual = Read(Buffer, readsize);
 
       if (actual != readsize) {
         Error(EIO);

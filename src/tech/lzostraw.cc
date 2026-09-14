@@ -141,7 +141,7 @@ int LZOStraw::Get(void* destbuf, int slen) {
     **	destination buffer.
     */
     if (Counter) {
-      int len = slen < Counter ? slen : Counter;
+      const int len = slen < Counter ? slen : Counter;
       if (Control == DECOMPRESS) {
         memmove(destbuf, &Buffer[BlockHeader.UncompCount - Counter],
                 base::ToSize(len));

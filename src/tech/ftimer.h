@@ -202,9 +202,9 @@ void Timer<T>::Serialize(Archive& ar) {
 
 template <TickSource T>
 int64_t Timer<T>::Value() const {
-  int64_t remain = delay_time_;
+  const int64_t remain = delay_time_;
   if (running_) {
-    int64_t elapsed = Elapsed();
+    const int64_t elapsed = Elapsed();
     if (elapsed < remain) {
       return remain - elapsed;
     }

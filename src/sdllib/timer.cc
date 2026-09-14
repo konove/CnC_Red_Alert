@@ -46,7 +46,7 @@ int64_t TimerClass::Start() {
 
 int64_t TimerClass::Time() {
   if (Started) {
-    int64_t ticks = Get_Ticks();
+    const int64_t ticks = Get_Ticks();
     Accumulated += ticks - (Started - 1);
     Started = ticks + 1;
   }

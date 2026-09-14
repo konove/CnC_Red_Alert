@@ -45,15 +45,15 @@ static WWMouseClass* Mouse = nullptr;
     return nullptr;
   }
 
-  int dst_w = src_w * scale;
-  int dst_h = src_h * scale;
+  const int dst_w = src_w * scale;
+  const int dst_h = src_h * scale;
   auto* dst =
       new uint8_t[base::ToSize(static_cast<base::ssize>(dst_w) * dst_h)];
 
   for (int y = 0; y < dst_h; ++y) {
-    int src_y = y / scale;
+    const int src_y = y / scale;
     for (int x = 0; x < dst_w; ++x) {
-      int src_x = x / scale;
+      const int src_x = x / scale;
       dst[(y * dst_w) + x] = src[(src_y * src_w) + src_x];
     }
   }
@@ -69,7 +69,8 @@ static WWMouseClass* Mouse = nullptr;
 static int Get_Display_Scale() {
   int display_index = 0;
   if (MainWindow) {
-    int idx = SDL_GetWindowDisplayIndex(static_cast<SDL_Window*>(MainWindow));
+    const int idx =
+        SDL_GetWindowDisplayIndex(static_cast<SDL_Window*>(MainWindow));
     if (idx >= 0) {
       display_index = idx;
     }
@@ -82,7 +83,7 @@ static int Get_Display_Scale() {
 
   constexpr int kLogicalHeight = 500;
   constexpr int kMaxScale = 4;
-  int scale = mode.h / kLogicalHeight;
+  const int scale = mode.h / kLogicalHeight;
   if (scale < 1) {
     return 1;
   }
@@ -129,7 +130,7 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
                  cursor_shape->DataLength);
 
   // After LCW decompression, the shape is still RLE encoded.
-  auto* inptr = decompressed_data;
+  const auto* inptr = decompressed_data;
 
   int remaining = cursor_shape->Width * cursor_shape->OriginalHeight;
   auto* outptr = MouseCursor.data();
@@ -138,7 +139,7 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
   memset(MouseCursor.data(), 0, base::ToSize(remaining));
 
   do {
-    uint8_t pixel = *inptr++;
+    const uint8_t pixel = *inptr++;
     if (pixel) {
       *outptr++ = pixel;
       remaining--;
@@ -158,7 +159,7 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
   // changes, we recreate the SDL cursor from this copy.
   OriginalWidth = cursor_shape->Width;
   OriginalHeight = cursor_shape->OriginalHeight;
-  int original_size = OriginalWidth * OriginalHeight;
+  const int original_size = OriginalWidth * OriginalHeight;
 
   OriginalCursor.assign(MouseCursor.begin(),
                         MouseCursor.begin() + original_size);
@@ -166,15 +167,15 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
   CurrentScale = Get_Display_Scale();
   int scaled_width;
   int scaled_height;
-  uint8_t* scaled_cursor =
+  const uint8_t* scaled_cursor =
       Scale_Cursor_Nearest(OriginalCursor.data(), OriginalWidth, OriginalHeight,
                            CurrentScale, &scaled_width, &scaled_height);
   if (!scaled_cursor) {
     return;
   }
 
-  int scaled_hotx = xhotspot * CurrentScale;
-  int scaled_hoty = yhotspot * CurrentScale;
+  const int scaled_hotx = xhotspot * CurrentScale;
+  const int scaled_hoty = yhotspot * CurrentScale;
 
   // SDL_CreateRGBSurfaceFrom doesn't copy pixel data, so we must use
   // SDL_CreateRGBSurface and copy manually to own the memory.
@@ -284,8 +285,8 @@ void WWMouseClass::Update_Palette() {
   SDL_SetPaletteColors(sdl_surface_->format->palette, window_pal->colors + 1, 1,
                        255);
 
-  int scaled_hotx = MouseXHot * CurrentScale;
-  int scaled_hoty = MouseYHot * CurrentScale;
+  const int scaled_hotx = MouseXHot * CurrentScale;
+  const int scaled_hoty = MouseYHot * CurrentScale;
   SDLCursorPtr sdl_cursor(
       SDL_CreateColorCursor(sdl_surface_.get(), scaled_hotx, scaled_hoty));
   SDL_SetCursor(sdl_cursor.get());

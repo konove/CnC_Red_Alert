@@ -67,7 +67,7 @@ int SHAStraw::Get(void* source, int slen) {
     return 0;
   }
 
-  int counter = Straw::Get(source, slen);
+  const int counter = Straw::Get(source, slen);
   SHA.Hash(source, counter);
   return counter;
 }

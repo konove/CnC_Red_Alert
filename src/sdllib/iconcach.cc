@@ -63,7 +63,7 @@ static void Init_Stamps(const void* icon_ptr) {
   // hack to detect old format
   // (these fields are actually Size in that case)
   if (!control->MapHeight || control->MapWidth > 256) {
-    auto* old = (IControl_Type_Old*)control;
+    const auto* old = (IControl_Type_Old*)control;
     MapPtr = (uint8_t*)icon_ptr + old->Map;
     StampPtr = (uint8_t*)icon_ptr + old->Icons;
     IsTrans = (uint8_t*)icon_ptr + old->TransFlag;
@@ -106,7 +106,7 @@ void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
   int iheight = IconHeight;
 
   // Fetch pointer to start of icon's data.
-  auto* ptr = StampPtr + (static_cast<base::ssize>(icon) * IconSize);
+  const auto* ptr = StampPtr + (static_cast<base::ssize>(icon) * IconSize);
 
   // Update the clipping window coordinates to be valid maxes instead of width &
   // height , and change the coordinates to be window-relative
@@ -138,7 +138,7 @@ void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
   int skip = IconWidth - iwidth;
 
   if (x_pixel + iwidth > max_x) {
-    int ow = iwidth;
+    const int ow = iwidth;
     iwidth = max_x - x_pixel;
     skip += ow - iwidth;
   }
@@ -159,22 +159,22 @@ void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
 
   // If the remap table pointer passed in is NULL, then flag this condition
   // so that the faster (non-remapping) icon draw loop will be used.
-  bool doremap = remap != nullptr;
+  const bool doremap = remap != nullptr;
 
   // Get pointer to position to render icon.
   auto* vp_dst = (GraphicViewPortClass*)thisptr;
-  base::ssize dst_area =
+  const base::ssize dst_area =
       vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + x_pixel + (y_pixel * dst_area);
 
   // Determine row modulo for advancing to next line.
-  int modulo = vp_dst->Get_Width() - iwidth;
+  const int modulo = vp_dst->Get_Width() - iwidth;
 
   if (doremap) {
     // Complex icon draw -- extended remap.
     do {
       for (int x = 0; x < iwidth; x++) {
-        uint8_t pixel = ((uint8_t*)remap)[*ptr++];
+        const uint8_t pixel = ((uint8_t*)remap)[*ptr++];
         if (pixel) {
           *dst_offset = pixel;
         }
@@ -190,7 +190,7 @@ void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
     // Transparent icon draw routine -- no extended remap.
     do {
       for (int x = 0; x < iwidth; x++) {
-        uint8_t pixel = *ptr++;
+        const uint8_t pixel = *ptr++;
         if (pixel) {
           *dst_offset = pixel;
         }

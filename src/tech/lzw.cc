@@ -81,7 +81,7 @@ int LZWEngine::Compress(const Buffer& input, const Buffer& output) {
     **	dictionary entry that fully represents the character
     **	sequence.
     */
-    int index = Find_Child_Node(string_code, character);
+    const int index = Find_Child_Node(string_code, character);
 
     /*
     **	If a code match was found, then set the current code
@@ -216,7 +216,7 @@ int LZWEngine::Find_Child_Node(CodeType parent_code,
   **	Keep offsetting through the dictionary until an exact match is
   **	found for the code and character specified.
   */
-  int initial = hash_index;
+  const int initial = hash_index;
   while (!dict[hash_index].Is_Matching(parent_code, child_character)) {
     /*
     **	Stop searching if an unused index is found since this means that

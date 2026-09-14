@@ -176,7 +176,7 @@ static void VQA_Audio_Callback(uint8_t* stream, int len) {
  *
  ****************************************************************************/
 
-int32_t VQA_StartTimerInt(VQAHandle* vqap, int32_t /*init*/) {
+int32_t VQA_StartTimerInt(const VQAHandle* vqap, int32_t /*init*/) {
   VQAAudio* audio;
 
   /* Dereference for quick access. */
@@ -289,7 +289,7 @@ int32_t VQA_OpenAudio(VQAHandle* vqap, void* /*window*/) {
     SDL_FreeAudioStream(SDLStream);
   }
 
-  auto* spec = static_cast<SDL_AudioSpec*>(config->AudioSpec);
+  const auto* spec = static_cast<SDL_AudioSpec*>(config->AudioSpec);
 
   SDLStream = SDL_NewAudioStream(
       audio->BitsPerSample == 16 ? AUDIO_S16 : AUDIO_S8, audio->Channels,
@@ -443,7 +443,7 @@ int32_t VQA_StartAudio(VQAHandle* vqap) {
  *
  ****************************************************************************/
 
-void VQA_StopAudio(VQAHandle* vqap) {
+void VQA_StopAudio(const VQAHandle* vqap) {
   VQAAudio* audio;
 
   /* Dereference commonly used data members for quicker access. */
@@ -766,10 +766,10 @@ int64_t VQA_GetTime(VQAHandle* vqap) {
     /* No interrupts are going at all; use system time */
     default:
     case VQA_TMETHOD_DOS: {
-      auto now = std::chrono::system_clock::now();
-      auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-                    now.time_since_epoch())
-                    .count();
+      const auto now = std::chrono::system_clock::now();
+      const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                          now.time_since_epoch())
+                          .count();
 
       ticks = ms * VQA_TIMETICKS / 1000;
       ticks += TickOffset;

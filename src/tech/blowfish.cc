@@ -226,7 +226,7 @@ int BlowfishEngine::Encrypt(const void* plaintext, int length,
     /*
     **	Validate parameters.
     */
-    int blocks = length / BYTES_PER_BLOCK;
+    const int blocks = length / BYTES_PER_BLOCK;
 
     /*
     **	Process the buffer in 64 bit chunks.
@@ -236,7 +236,7 @@ int BlowfishEngine::Encrypt(const void* plaintext, int length,
       plaintext = (char*)plaintext + BYTES_PER_BLOCK;
       cyphertext = static_cast<char*>(cyphertext) + BYTES_PER_BLOCK;
     }
-    int encrypted = blocks * BYTES_PER_BLOCK;
+    const int encrypted = blocks * BYTES_PER_BLOCK;
 
     /*
     **	Copy over any trailing left over appendix bytes.
@@ -294,7 +294,7 @@ int BlowfishEngine::Decrypt(const void* cyphertext, int length,
     /*
     **	Validate parameters.
     */
-    int blocks = length / BYTES_PER_BLOCK;
+    const int blocks = length / BYTES_PER_BLOCK;
 
     /*
     **	Process the buffer in 64 bit chunks.
@@ -304,7 +304,7 @@ int BlowfishEngine::Decrypt(const void* cyphertext, int length,
       cyphertext = (char*)cyphertext + BYTES_PER_BLOCK;
       plaintext = static_cast<char*>(plaintext) + BYTES_PER_BLOCK;
     }
-    int encrypted = blocks * BYTES_PER_BLOCK;
+    const int encrypted = blocks * BYTES_PER_BLOCK;
 
     /*
     **	Copy over any trailing left over appendix bytes.

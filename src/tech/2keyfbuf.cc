@@ -66,7 +66,7 @@ static void Setup_Shape_Header(int pixel_width, int pixel_height, char* src,
     int trans_count = 0;
     int x_count = pixel_width;
     do {
-      int pixel = static_cast<uint8_t>(*src);
+      const int pixel = static_cast<uint8_t>(*src);
       src = src + 1;
       if (!pixel && flags & SHAPE_TRANS) {
         line_flags = BLIT_TRANSPARENT;
@@ -109,7 +109,7 @@ static void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
       uint8_t pixel = *src_offset++;
       if (pixel || !(flags & BLIT_TRANSPARENT)) {
         if (flags & BLIT_PREDATOR) {
-          int pred = BFPartialCount + BFPartialPred;
+          const int pred = BFPartialCount + BFPartialPred;
           BFPartialCount = pred & 0xFF;
           // is this a predator pixel?
           if (pred >> 8) {
@@ -121,7 +121,7 @@ static void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
         }
 
         if (flags & BLIT_GHOST) {
-          uint8_t is_trans = IsTranslucent[pixel];
+          const uint8_t is_trans = IsTranslucent[pixel];
           if (is_trans != 0xFF) {  // is it a translucent color?
             pixel = Translucent[is_trans << 8 | *dst_offset];
           }
@@ -153,7 +153,7 @@ extern "C" int32_t Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
 
   uint8_t* IsTranslucent = nullptr;
   uint8_t* Translucent = nullptr;
-  uint8_t* FadingTable = nullptr;
+  const uint8_t* FadingTable = nullptr;
   int FadingNum = 0;
 
   ShapeHeaderType* header_pointer = nullptr;
@@ -281,8 +281,9 @@ extern "C" int32_t Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
   int dst_x1 = x + w;
   int dst_y1 = y + h;
 
-  int code0 = Make_Code(dst_x0, dst_y0, dest.Get_Width(), dest.Get_Height());
-  int code1 =
+  const int code0 =
+      Make_Code(dst_x0, dst_y0, dest.Get_Width(), dest.Get_Height());
+  const int code1 =
       Make_Code(dst_x1, dst_y1, dest.Get_Width() + 1, dest.Get_Height() + 1);
 
   // outside
@@ -315,19 +316,19 @@ extern "C" int32_t Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
   // do blit
   auto* src_offset = static_cast<uint8_t*>(src) + src_x0 +
                      (static_cast<base::ssize>(src_y0) * w);
-  int src_adjust_width = w - (dst_x1 - dst_x0);
+  const int src_adjust_width = w - (dst_x1 - dst_x0);
 
-  base::ssize dst_area =
+  const base::ssize dst_area =
       dest.Get_XAdd() + dest.Get_Width() + dest.Get_Pitch();
   auto* dst_offset = dest.Get_Offset() + dst_x0 + (dst_y0 * dst_area);
-  int dst_adjust_width = static_cast<int>(dst_area - (dst_x1 - dst_x0));
+  const int dst_adjust_width = static_cast<int>(dst_area - (dst_x1 - dst_x0));
 
   if (!use_new_draw) {
     if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
       return 0;
     }
 
-    int pixel_count = dst_x1 - dst_x0;
+    const int pixel_count = dst_x1 - dst_x0;
     int line_count = dst_y1 - dst_y0;
 
     switch (jflags & BLIT_OLD) {

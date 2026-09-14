@@ -37,7 +37,7 @@ int WWKeyboardClass::Get() {
 }
 
 bool WWKeyboardClass::Put(int key) {
-  int temp = (Tail + 1) & 255;
+  const int temp = (Tail + 1) & 255;
   if (temp != Head) {
     Buffer[Tail] = static_cast<uint16_t>(key);
 
@@ -55,7 +55,7 @@ bool WWKeyboardClass::Put_Key_Message(unsigned vk_key, bool release) {
   // version.
   //
   if (vk_key != VK_LBUTTON && vk_key != VK_MBUTTON && vk_key != VK_RBUTTON) {
-    auto keymod =
+    const auto keymod =
         static_cast<SDL_Keymod>(SDL_GetModState() & kInputModifierMask);
 
     //
@@ -96,7 +96,7 @@ int WWKeyboardClass::To_ASCII(int num) {
 
   // this isn't great but we can't do much better without rewriting everything
   // to use textinput events (SDL3 would allow passing the mods in)
-  int key = SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(num & 0xFF));
+  const int key = SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(num & 0xFF));
 
   if (key <= SDLK_z) {
     return key;
@@ -110,7 +110,7 @@ void WWKeyboardClass::Clear() { Head = Tail; }
 bool WWKeyboardClass::Down(int key) {
   // gadget uses this to poll mouse buttons
   if (Is_Mouse_Key(key)) {
-    auto buttons = SDL_GetMouseState(nullptr, nullptr);
+    const auto buttons = SDL_GetMouseState(nullptr, nullptr);
 
     switch (key) {
       case KN_LMOUSE:
@@ -123,7 +123,7 @@ bool WWKeyboardClass::Down(int key) {
   }
 
   if (key == KN_LSHIFT || key == KN_LCTRL || key == KN_LALT) {
-    auto keymod =
+    const auto keymod =
         static_cast<SDL_Keymod>(SDL_GetModState() & kInputModifierMask);
     switch (key) {
       case KN_LSHIFT:
@@ -191,7 +191,7 @@ bool WWKeyboardClass::Event_Handler(SDL_Event* event) {
 int WWKeyboardClass::Buff_Get() {
   while (!Check()) {
   }  // wait for key in buffer
-  int temp = Buffer[Head];             // get key out of the buffer
+  const int temp = Buffer[Head];       // get key out of the buffer
   int newhead = Head;                  // save off head for manipulation
   if (Is_Mouse_Key(temp)) {            // if key is a mouse then
     MouseQX = Buffer[(Head + 1) & 255];  //		get the x and y pos

@@ -32,7 +32,7 @@ int Buffer_Get_Pixel(void* thisptr, int x, int y) {
     return 0;
   }
 
-  base::ssize dst_area =
+  const base::ssize dst_area =
       vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + x + (y * dst_area);
 
@@ -42,11 +42,11 @@ int Buffer_Get_Pixel(void* thisptr, int x, int y) {
 void Buffer_Clear(void* thisptr, unsigned char color) {
   auto* vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
 
-  base::ssize dst_area =
+  const base::ssize dst_area =
       vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset();
 
-  int pixel_count = vp_dst->Get_Width();
+  const int pixel_count = vp_dst->Get_Width();
   int line_count = vp_dst->Get_Height();
 
   // fill lines
@@ -70,10 +70,10 @@ int32_t Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel,
   int src_x1 = x_pixel + pixel_width;
   int src_y1 = y_pixel + pixel_height;
 
-  int code0 =
+  const int code0 =
       Make_Code(src_x0, src_y0, vp_src->Get_Width(), vp_src->Get_Height());
-  int code1 = Make_Code(src_x1, src_y1, vp_src->Get_Width() + 1,
-                        vp_src->Get_Height() + 1);
+  const int code1 = Make_Code(src_x1, src_y1, vp_src->Get_Width() + 1,
+                              vp_src->Get_Height() + 1);
 
   // outside
   if (code0 & code1) {
@@ -98,7 +98,7 @@ int32_t Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel,
     }
   }
 
-  base::ssize src_area =
+  const base::ssize src_area =
       vp_src->Get_XAdd() + vp_src->Get_Width() + vp_src->Get_Pitch();
   auto* src_offset = vp_src->Get_Offset() + src_x0 + (src_y0 * src_area);
 
@@ -113,7 +113,7 @@ int32_t Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel,
     return 1;
   }
 
-  int pixel_count = src_x1 - src_x0;
+  const int pixel_count = src_x1 - src_x0;
   int line_count = src_y1 - src_y0;
 
   // copy lines
@@ -139,10 +139,10 @@ int32_t Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
   int dst_x1 = dx_pixel + pixel_width;
   int dst_y1 = dy_pixel + pixel_height;
 
-  int code0 =
+  const int code0 =
       Make_Code(dst_x0, dst_y0, vp_dst->Get_Width(), vp_dst->Get_Height());
-  int code1 = Make_Code(dst_x1, dst_y1, vp_dst->Get_Width() + 1,
-                        vp_dst->Get_Height() + 1);
+  const int code1 = Make_Code(dst_x1, dst_y1, vp_dst->Get_Width() + 1,
+                              vp_dst->Get_Height() + 1);
 
   // outside
   if (code0 & code1) {
@@ -167,10 +167,10 @@ int32_t Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
     }
   }
 
-  auto* src_offset = static_cast<uint8_t*>(Buffer) + src_x0 +
-                     (static_cast<base::ssize>(src_y0) * pixel_width);
+  const auto* src_offset = static_cast<uint8_t*>(Buffer) + src_x0 +
+                           (static_cast<base::ssize>(src_y0) * pixel_width);
 
-  base::ssize dst_area =
+  const base::ssize dst_area =
       vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + dst_x0 + (dst_y0 * dst_area);
 
@@ -182,7 +182,7 @@ int32_t Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
     return 1;
   }
 
-  int pixel_count = dst_x1 - dst_x0;
+  const int pixel_count = dst_x1 - dst_x0;
   int line_count = dst_y1 - dst_y0;
 
   // copy lines
@@ -270,11 +270,11 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
     }
   }
 
-  base::ssize src_area =
+  const base::ssize src_area =
       vp_src->Get_XAdd() + vp_src->Get_Width() + vp_src->Get_Pitch();
   auto* src_offset = vp_src->Get_Offset() + src_x0 + (src_y0 * src_area);
 
-  base::ssize dst_area =
+  const base::ssize dst_area =
       vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + dst_x0 + (dst_y0 * dst_area);
 
@@ -286,7 +286,7 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
     return true;
   }
 
-  int pixel_count = src_x1 - src_x0;
+  const int pixel_count = src_x1 - src_x0;
   int line_count = src_y1 - src_y0;
 
   if (src_offset < dst_offset) {
@@ -421,26 +421,26 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
   }
 
   // do scale
-  base::ssize src_win_width =
+  const base::ssize src_win_width =
       vp_src->Get_XAdd() + vp_src->Get_Width() + vp_src->Get_Pitch();
   auto* src_offset = vp_src->Get_Offset() + src_x0 + (src_y0 * src_win_width);
 
-  base::ssize dst_win_width =
+  const base::ssize dst_win_width =
       vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + dst_x0 + (dst_y0 * dst_win_width);
 
-  int dy_intr = static_cast<int>(src_h / dst_h * src_win_width);
-  int dy_frac = src_h % dst_h;
+  const int dy_intr = static_cast<int>(src_h / dst_h * src_win_width);
+  const int dy_frac = src_h % dst_h;
   int dy_acc = -dst_h;
 
-  int dx_frac = (src_w << 16) / dst_w;
+  const int dx_frac = (src_w << 16) / dst_w;
 
   if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
     return true;
   }
 
   int counter_y = dst_y1 - dst_y0;
-  int pixel_count = dst_x1 - dst_x0;
+  const int pixel_count = dst_x1 - dst_x0;
 
   if (trans && remap) {
     do {
@@ -448,7 +448,7 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       int x = 0;
       auto* out = dst_offset;
       do {
-        uint8_t pixel = src_offset[x >> 16];
+        const uint8_t pixel = src_offset[x >> 16];
 
         if (pixel) {
           *out = static_cast<uint8_t>(remap[pixel]);
@@ -474,7 +474,7 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       int x = 0;
       auto* out = dst_offset;
       do {
-        uint8_t pixel = src_offset[x >> 16];
+        const uint8_t pixel = src_offset[x >> 16];
 
         if (pixel) {
           *out = pixel;
@@ -669,12 +669,12 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
                       unsigned char color) {
   auto* vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
 
-  int width = vp_dst->Get_Width();
-  int height = vp_dst->Get_Height();
+  const int width = vp_dst->Get_Width();
+  const int height = vp_dst->Get_Height();
 
   // this is different to the original asm, but reused from blits
-  int code0 = Make_Code(sx, sy, width, height);
-  int code1 = Make_Code(dx, dy, width, height);
+  const int code0 = Make_Code(sx, sy, width, height);
+  const int code1 = Make_Code(dx, dy, width, height);
 
   if (code0 & code1) {
     return;
@@ -740,7 +740,7 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
     }
   }
 
-  base::ssize bpr =
+  const base::ssize bpr =
       vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
 
   int y_dist = dy - sy;
@@ -751,7 +751,7 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
       std::swap(dx, sx);
     }
 
-    int count = dx - sx + 1;
+    const int count = dx - sx + 1;
     auto* ptr = vp_dst->Get_Offset() + sx + (bpr * sy);
     std::memset(ptr, color, base::ToSize(count));
 
@@ -849,11 +849,11 @@ void Buffer_Fill_Rect(void* thisptr, int sx, int sy, int dx, int dy,
     return;
   }
 
-  base::ssize dst_area =
+  const base::ssize dst_area =
       vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + sx + (sy * dst_area);
 
-  int pixel_count = dx - sx + 1;
+  const int pixel_count = dx - sx + 1;
   int line_count = dy - sy + 1;
 
   // fill lines
@@ -877,10 +877,10 @@ void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
   int dst_x1 = sx + width;
   int dst_y1 = sy + height;
 
-  int code0 =
+  const int code0 =
       Make_Code(dst_x0, dst_y0, vp_dst->Get_Width(), vp_dst->Get_Height());
-  int code1 = Make_Code(dst_x1, dst_y1, vp_dst->Get_Width() + 1,
-                        vp_dst->Get_Height() + 1);
+  const int code1 = Make_Code(dst_x1, dst_y1, vp_dst->Get_Width() + 1,
+                              vp_dst->Get_Height() + 1);
 
   // outside
   if (code0 & code1) {
@@ -903,7 +903,7 @@ void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
     }
   }
 
-  base::ssize dst_area =
+  const base::ssize dst_area =
       vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + dst_x0 + (dst_y0 * dst_area);
 
@@ -911,15 +911,15 @@ void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
     return;
   }
 
-  int pixel_count = dst_x1 - dst_x0;
+  const int pixel_count = dst_x1 - dst_x0;
   int line_count = dst_y1 - dst_y0;
 
-  int skip = static_cast<int>(dst_area - pixel_count);
+  const int skip = static_cast<int>(dst_area - pixel_count);
 
   // remap lines
   do {
     for (int x = 0; x < pixel_count; x++) {
-      auto v = static_cast<uint8_t*>(remap)[*dst_offset];
+      const auto v = static_cast<uint8_t*>(remap)[*dst_offset];
       *dst_offset++ = v;
     }
     dst_offset += skip;
@@ -933,8 +933,8 @@ int Clip_Rect(int* x, int* y, int* dw, int* dh, int width, int height) {
   int x1 = *x + *dw;
   int y1 = *y + *dh;
 
-  int code0 = Make_Code(x0, y0, width, height);
-  int code1 = Make_Code(x1, y1, width + 1, height + 1);
+  const int code0 = Make_Code(x0, y0, width, height);
+  const int code1 = Make_Code(x1, y1, width + 1, height + 1);
 
   // outside
   if (code0 & code1) {

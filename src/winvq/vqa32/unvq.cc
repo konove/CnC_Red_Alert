@@ -15,7 +15,7 @@ void UnVQ_4x2(const unsigned char* codebook, const unsigned char* pointers,
   const base::ssize rowoffset = stride * 2;
 
   // Compute the end address of the pointer data
-  auto entries = numrows * blocksperrow;
+  const auto entries = numrows * blocksperrow;
   const auto* data_end = pointers + entries;
 
   const auto* src_ptr = pointers;
@@ -27,7 +27,7 @@ void UnVQ_4x2(const unsigned char* codebook, const unsigned char* pointers,
     int count = blocksperrow;  // Number of blocks in a line
     do {
       const uint8_t v = *src_ptr;
-      int cb = src_ptr[entries];  // Get the codebook pointer value
+      const int cb = src_ptr[entries];  // Get the codebook pointer value
       src_ptr++;
 
       if (cb == 0xF)  // Is it a one color block?
@@ -39,10 +39,10 @@ void UnVQ_4x2(const unsigned char* codebook, const unsigned char* pointers,
                              col32);  // Write 2st row to dest
       } else {
         // Draw multi-color block
-        int index = (cb << 8 | v) * 8;
-        auto row1 = port::ReadUnaligned<uint32_t>(
+        const int index = (cb << 8 | v) * 8;
+        const auto row1 = port::ReadUnaligned<uint32_t>(
             codebook + index);  // Read 1st row of codeword
-        auto row2 = port::ReadUnaligned<uint32_t>(
+        const auto row2 = port::ReadUnaligned<uint32_t>(
             codebook + index + 4);            // Read 2nd row of codeword
         port::WriteUnaligned(dst_ptr, row1);  // Write 1st row to dest
         port::WriteUnaligned(dst_ptr + stride,
@@ -67,7 +67,7 @@ void UnVQ_4x4(const unsigned char* codebook, const unsigned char* pointers,
   const base::ssize rowoffset = stride * 4;
 
   // Compute the end address of the pointer data
-  auto entries = numrows * blocksperrow;
+  const auto entries = numrows * blocksperrow;
   const auto* data_end = pointers + entries;
 
   const auto* src_ptr = pointers;
@@ -79,7 +79,7 @@ void UnVQ_4x4(const unsigned char* codebook, const unsigned char* pointers,
     int count = blocksperrow;  // Number of blocks in a line
     do {
       const uint8_t v = *src_ptr;
-      int cb = src_ptr[entries];  // Get the codebook pointer value
+      const int cb = src_ptr[entries];  // Get the codebook pointer value
       src_ptr++;
 
       if (cb == 0xFF)  // Is it a one color block?
@@ -95,14 +95,14 @@ void UnVQ_4x4(const unsigned char* codebook, const unsigned char* pointers,
                              col32);  // Write 4th row to dest
       } else {
         // Draw multi-color block
-        int index = (cb << 8 | v) * 16;
-        auto row1 = port::ReadUnaligned<uint32_t>(
+        const int index = (cb << 8 | v) * 16;
+        const auto row1 = port::ReadUnaligned<uint32_t>(
             codebook + index);  // Read 1st row of codeword
-        auto row2 = port::ReadUnaligned<uint32_t>(
+        const auto row2 = port::ReadUnaligned<uint32_t>(
             codebook + index + 4);  // Read 2nd row of codeword
-        auto row3 = port::ReadUnaligned<uint32_t>(
+        const auto row3 = port::ReadUnaligned<uint32_t>(
             codebook + index + 8);  // Read 3rd row of codeword
-        auto row4 = port::ReadUnaligned<uint32_t>(
+        const auto row4 = port::ReadUnaligned<uint32_t>(
             codebook + index + 12);  // Read 4th row of codeword
 
         port::WriteUnaligned(dst_ptr, row1);  // Write 1st row to dest

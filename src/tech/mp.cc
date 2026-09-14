@@ -240,7 +240,7 @@ void XMP_DER_Decode(uint32_t* result, const unsigned char* input,
     if ((*input & 0x80) == 0) {
       byte_count = *input++;
     } else {
-      int length = *input++ & 0x7f;
+      const int length = *input++ & 0x7f;
       if (length > 2) {
         return;
       }
@@ -286,7 +286,7 @@ unsigned XMP_Encode(unsigned char* to, unsigned tobytes, const uint32_t* from,
 
   const unsigned frombytes =
       static_cast<unsigned>(precision) * unsigned{sizeof(uint32_t)};
-  auto filler =
+  const auto filler =
       static_cast<unsigned char>(XMP_Is_Negative(from, precision) ? 0xff : 0);
 
   // A buffer shorter than the number keeps only its low-order bytes. The
@@ -332,8 +332,8 @@ int XMP_Encode(unsigned char* to, const uint32_t* from, int precision) {
   assert(from != nullptr);
   assert(precision > 0);
 
-  bool is_negative = XMP_Is_Negative(from, precision);
-  auto filler = static_cast<unsigned char>(is_negative ? 0xff : 0);
+  const bool is_negative = XMP_Is_Negative(from, precision);
+  const auto filler = static_cast<unsigned char>(is_negative ? 0xff : 0);
   unsigned char* number_ptr;
 
   auto* const end = (unsigned char*)from;
@@ -388,9 +388,10 @@ void XMP_Signed_Decode(uint32_t* result, const unsigned char* from,
   assert(frombytes > 0);
   assert(precision > 0);
 
-  auto filler = static_cast<unsigned char>(*from & 0x80 ? 0xff : 0);
+  const auto filler = static_cast<unsigned char>(*from & 0x80 ? 0xff : 0);
 
-  int fillcount = (precision * static_cast<int>(sizeof(uint32_t))) - frombytes;
+  const int fillcount =
+      (precision * static_cast<int>(sizeof(uint32_t))) - frombytes;
   auto* dest = (unsigned char*)&result[precision];
 
   /*
@@ -438,7 +439,8 @@ void XMP_Unsigned_Decode(uint32_t* result, const unsigned char* from,
   assert(frombytes > 0);
   assert(precision > 0);
 
-  int fillcount = (precision * static_cast<int>(sizeof(uint32_t))) - frombytes;
+  const int fillcount =
+      (precision * static_cast<int>(sizeof(uint32_t))) - frombytes;
   auto* dest = (unsigned char*)&result[precision];
 
   /*
@@ -630,7 +632,7 @@ void XMP_Shift_Right_Bits(uint32_t* number, int bits, int precision) {
     uint32_t carry = 0;
     while (precision--) {
       number--;
-      uint32_t temp = *number;
+      const uint32_t temp = *number;
       *number = carry;
       carry = temp;
     }
@@ -645,12 +647,12 @@ void XMP_Shift_Right_Bits(uint32_t* number, int bits, int precision) {
   if (bits < UNITSIZE) {
     number += precision;
     uint32_t carry = 0;
-    uint32_t bitmask = (1 << bits) - 1;
-    int unbits = UNITSIZE - bits;
+    const uint32_t bitmask = (1 << bits) - 1;
+    const int unbits = UNITSIZE - bits;
 
     while (precision--) {
       number--;
-      uint32_t temp = *number & bitmask;
+      const uint32_t temp = *number & bitmask;
       *number >>= bits;
       *number |= carry << unbits;
       carry = temp;
@@ -661,8 +663,8 @@ void XMP_Shift_Right_Bits(uint32_t* number, int bits, int precision) {
   /*
   **	General purpose slow right.
   */
-  int digits_to_shift = bits / UNITSIZE;
-  int bits_to_shift = bits % UNITSIZE;
+  const int digits_to_shift = bits / UNITSIZE;
+  const int bits_to_shift = bits % UNITSIZE;
 
   int index;
   for (index = digits_to_shift; index < precision - 1; index++) {
@@ -716,7 +718,7 @@ void XMP_Shift_Left_Bits(uint32_t* number, int bits, int precision) {
   if (bits == UNITSIZE) {
     uint32_t carry = 0;
     while (precision--) {
-      uint32_t temp = *number;
+      const uint32_t temp = *number;
       *number = carry;
       carry = temp;
       number++;
@@ -731,11 +733,11 @@ void XMP_Shift_Left_Bits(uint32_t* number, int bits, int precision) {
   */
   if (bits < UNITSIZE) {
     uint32_t carry = 0;
-    uint32_t bitmask = ~(static_cast<uint32_t>(-1) >> bits);
-    int unbits = UNITSIZE - bits; /* shift bits must be <= UNITSIZE */
+    const uint32_t bitmask = ~(static_cast<uint32_t>(-1) >> bits);
+    const int unbits = UNITSIZE - bits; /* shift bits must be <= UNITSIZE */
 
     while (precision--) {
-      uint32_t temp = *number & bitmask;
+      const uint32_t temp = *number & bitmask;
       *number = *number << bits | carry >> unbits;
       carry = temp;
       number++;
@@ -746,8 +748,8 @@ void XMP_Shift_Left_Bits(uint32_t* number, int bits, int precision) {
   /*
   **	General purpose slow left;
   */
-  int digits_to_shift = bits / UNITSIZE;
-  int bits_to_shift = bits % UNITSIZE;
+  const int digits_to_shift = bits / UNITSIZE;
+  const int bits_to_shift = bits % UNITSIZE;
 
   int index;
   number += precision - 1;
@@ -795,7 +797,7 @@ bool XMP_Rotate_Left(uint32_t* number, bool carry, int precision) {
   assert(precision > 0);
 
   while (precision--) {
-    bool temp = (*number & UPPER_MOST_BIT) != 0;
+    const bool temp = (*number & UPPER_MOST_BIT) != 0;
     *number = *number << 1;
     if (carry) {
       *number = *number + 1;
@@ -878,7 +880,7 @@ int XMP_Count_Bits(const uint32_t* number, int precision) {
   assert(number != nullptr);
   assert(precision > 0);
 
-  int sub_precision = XMP_Significance(number, precision);
+  const int sub_precision = XMP_Significance(number, precision);
   if (!sub_precision) {
     return 0;
   }
@@ -913,7 +915,7 @@ int XMP_Count_Bits(const uint32_t* number, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 int XMP_Count_Bytes(const uint32_t* number, int precision) {
-  auto* ptr = (unsigned char*)number;
+  const auto* ptr = (unsigned char*)number;
   int count = 0;
   for (int index = 0; index < precision * static_cast<int>(sizeof(uint32_t));
        index++) {
@@ -1011,8 +1013,8 @@ int XMP_Compare(const uint32_t* left_number, const uint32_t* right_number,
 bool XMP_Add(uint32_t* result, const uint32_t* left_number,
              const uint32_t* right_number, bool carry, int precision) {
   while (precision--) {
-    uint32_t term = *left_number + *right_number;
-    uint32_t final = term + static_cast<uint32_t>(carry);
+    const uint32_t term = *left_number + *right_number;
+    const uint32_t final = term + static_cast<uint32_t>(carry);
     carry = term < *left_number || (carry && final == 0);
 
     right_number++;
@@ -1053,8 +1055,8 @@ bool XMP_Add(uint32_t* result, const uint32_t* left_number,
 bool XMP_Add_Int(uint32_t* result, const uint32_t* left_number,
                  uint32_t right_number, bool carry, int precision) {
   while (precision--) {
-    uint32_t term = *left_number + right_number;
-    uint32_t final = term + static_cast<uint32_t>(carry);
+    const uint32_t term = *left_number + right_number;
+    const uint32_t final = term + static_cast<uint32_t>(carry);
     carry = term < *left_number || (carry && final == 0);
 
     right_number = 0;
@@ -1100,9 +1102,9 @@ bool XMP_Sub(uint32_t* result, const uint32_t* left_number,
 
   precision *= 2;
   while (precision--) {
-    uint32_t x = static_cast<uint32_t>(*left_number_ptr) -
-                 static_cast<uint32_t>(*right_number_ptr) -
-                 static_cast<uint32_t>(borrow);
+    const uint32_t x = static_cast<uint32_t>(*left_number_ptr) -
+                       static_cast<uint32_t>(*right_number_ptr) -
+                       static_cast<uint32_t>(borrow);
     right_number_ptr++;
     left_number_ptr++;
     *result_ptr++ = static_cast<uint16_t>(x);
@@ -1144,8 +1146,8 @@ bool XMP_Sub_Int(uint32_t* result, const uint32_t* left_number,
 
   precision *= 2;
   while (precision--) {
-    uint32_t x = static_cast<uint32_t>(*left_number_ptr) - right_number -
-                 static_cast<uint32_t>(borrow);
+    const uint32_t x = static_cast<uint32_t>(*left_number_ptr) - right_number -
+                       static_cast<uint32_t>(borrow);
     left_number_ptr++;
     *result_ptr++ = static_cast<uint16_t>(x);
     borrow = (1L << 16 & x) != 0L;
@@ -1191,7 +1193,7 @@ int XMP_Unsigned_Mult(uint32_t* prod, const uint32_t* multiplicand,
 
   int total_bit_count = XMP_Count_Bits(multiplier, precision);
   uint32_t high_bit_mask = XMP_Bits_To_Mask(total_bit_count);
-  int sub_precision = XMP_Bits_To_Digits(total_bit_count);
+  const int sub_precision = XMP_Bits_To_Digits(total_bit_count);
   if (!sub_precision) {
     return 0;
   }
@@ -1240,7 +1242,7 @@ int XMP_Unsigned_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
   auto* pr = (uint16_t*)prod;
   uint32_t carry = 0;
   for (int i = 0; i < precision * 2; ++i) {
-    uint32_t p = (static_cast<uint32_t>(multiplier) * *m2) + carry;
+    const uint32_t p = (static_cast<uint32_t>(multiplier) * *m2) + carry;
     *pr = static_cast<uint16_t>(p);
     carry = p >> 16;
     m2++;
@@ -1392,7 +1394,7 @@ uint16_t XMP_Unsigned_Div_Int(uint32_t* quotient, const uint32_t* dividend,
   XMP_Init(quotient, 0, precision);
 
   int total_bit_count = XMP_Count_Bits(dividend, precision);
-  int digit_precision = XMP_Bits_To_Digits(total_bit_count);
+  const int digit_precision = XMP_Bits_To_Digits(total_bit_count);
   const uint32_t* dividend_ptr = dividend + (digit_precision - 1);
 
   if (!digit_precision) {
@@ -1462,7 +1464,7 @@ int XMP_Unsigned_Div(uint32_t* remainder, uint32_t* quotient,
   XMP_Init(quotient, 0, precision);
 
   int total_bit_count = XMP_Count_Bits(dividend, precision);
-  int digit_precision = XMP_Bits_To_Digits(total_bit_count);
+  const int digit_precision = XMP_Bits_To_Digits(total_bit_count);
   if (!digit_precision) {
     return 0;
   }
@@ -1633,7 +1635,7 @@ int XMP_Reciprocal(uint32_t* quotient, const uint32_t* divisor, int precision) {
   int total_bit_count = XMP_Count_Bits(divisor, precision);
   uint32_t high_bit_mask = XMP_Bits_To_Mask(
       total_bit_count + 1); /* bitmask within a single uint32_t */
-  int sub_precision = XMP_Bits_To_Digits(total_bit_count + 1);
+  const int sub_precision = XMP_Bits_To_Digits(total_bit_count + 1);
 
   XMP_Set_Bit(remainder, total_bit_count - 1);
 
@@ -1691,7 +1693,7 @@ void XMP_Decode_ASCII(const char* str, uint32_t* mpn, int precision) {
   if (!str) {
     return;
   }
-  int i = static_cast<int>(strlen(str));
+  const int i = static_cast<int>(strlen(str));
   if (i == 0) {
     return;
   }
@@ -1719,7 +1721,7 @@ void XMP_Decode_ASCII(const char* str, uint32_t* mpn, int precision) {
       break;
   }
 
-  bool minus = *str == '-';
+  const bool minus = *str == '-';
   if (minus) {
     str++;
   }
@@ -1899,7 +1901,7 @@ int XMP_Prepare_Modulus(const uint32_t* n_modulus, int precision) {
   **	Keep 2*16 bits in _mod_divisor.
   ** This will (normally) result in a reciprocal of 2*16+1 bits.
   */
-  int sub_precision = XMP_Significance(
+  const int sub_precision = XMP_Significance(
       scratch_modulus, precision);  // significant digits in modulus
   XMP_Move(mod_divisor, &scratch_modulus[sub_precision - 2], 2);
   modulus_shift = XMP_Count_Bits(mod_divisor, 2) - (2 * 16);
@@ -1917,7 +1919,7 @@ int XMP_Prepare_Modulus(const uint32_t* n_modulus, int precision) {
     XMP_Shift_Right_Bits(mod_quotient, 1, 2);
     modulus_shift--; /* now  0 <= _modulus_shift <= 16 */
   }
-  auto* mpm = (uint16_t*)mod_quotient;
+  const auto* mpm = (uint16_t*)mod_quotient;
   reciprical_low_digit = *mpm++;
   reciprical_high_digit = *mpm;
 
@@ -1950,7 +1952,7 @@ int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
                  const uint32_t* multiplier, int precision) {
   XMP_Double_Mul(double_staging_number, multiplicand, multiplier, precision);
 
-  int double_precision = (precision * 2) + 1;
+  const int double_precision = (precision * 2) + 1;
 
   double_staging_number[double_precision - 1] = 0; /* leading 0 uint32_t */
 
@@ -1959,8 +1961,8 @@ int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
   **	Determine the most significant MULTUNIT of the product so we don't
   **	have to process leading zeros in our divide loop.
   */
-  int dmi = XMP_Significance(double_staging_number, double_precision) *
-            2;  //	number of significant MULTUNITs in product
+  const int dmi = XMP_Significance(double_staging_number, double_precision) *
+                  2;  //	number of significant MULTUNITs in product
 
   if (dmi >= modulus_sub_precision) {
     /* Make dividend negative.  This allows the use of mp_single_mul to
@@ -1996,7 +1998,7 @@ int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
       --dmph;
       --dmpl;
 
-      uint16_t q = mp_quo_digit(dmph);  // trial quotient uint32_t
+      const uint16_t q = mp_quo_digit(dmph);  // trial quotient uint32_t
       if (q > 0) {
         XMP_Hybrid_Mul(dmpl, (uint16_t*)scratch_modulus, q, precision * 2);
 
@@ -2147,7 +2149,7 @@ int xmp_exponent_mod(uint32_t* expout, const uint32_t* expin,
   }
 
   /* set smallest optimum precision for this modulus */
-  int limited_precision = XMP_Significance(modulus, precision);
+  const int limited_precision = XMP_Significance(modulus, precision);
 
   if (XMP_Prepare_Modulus(modulus, limited_precision)) {
     return -5; /* unstageable modulus (STEWART algorithm) */
@@ -2165,7 +2167,7 @@ int xmp_exponent_mod(uint32_t* expout, const uint32_t* expin,
   //	}
 
   int total_bit_count = XMP_Count_Bits(exponent_ptr, limited_precision);
-  int sub_precision = XMP_Bits_To_Digits(total_bit_count);
+  const int sub_precision = XMP_Bits_To_Digits(total_bit_count);
   if (!sub_precision) {
     return 0;
   }
@@ -2225,7 +2227,7 @@ int xmp_exponent_mod(uint32_t* expout, const uint32_t* expin,
 void memrev(char* buffer, size_t length) {
   char* r2 = &buffer[length - 1];
   while (buffer < r2) {
-    char b = *buffer;
+    const char b = *buffer;
     *buffer++ = *r2;
     *r2-- = b;
   }
@@ -2284,7 +2286,7 @@ bool XMP_Is_Small_Prime(const uint32_t* candidate, const int precision) {
 bool XMP_Small_Divisors_Test(const uint32_t* candidate, int precision) {
   uint32_t quotient[MAX_UNIT_PRECISION];
 
-  for (unsigned short i : primeTable) {
+  for (const unsigned short i : primeTable) {
     if (XMP_Unsigned_Div_Int(quotient, candidate, i, precision) == 0) {
       return false;
     }
@@ -2368,7 +2370,8 @@ bool XMP_Rabin_Miller_Test(Straw& rng, const uint32_t* w, int rounds,
   uint32_t wminus1[MAX_UNIT_PRECISION] = {};
   XMP_Sub_Int(wminus1, w, 1, false, precision);
 
-  int maxbitprecision = precision * static_cast<int>(sizeof(uint32_t)) * 8;
+  const int maxbitprecision =
+      precision * static_cast<int>(sizeof(uint32_t)) * 8;
   int a;
   for (a = 0; a < maxbitprecision; a++) {
     if (XMP_Test_Bit(wminus1, a)) {
@@ -2443,7 +2446,7 @@ void XMP_Randomize(uint32_t* result, Straw& rng, int total_bits,
 
   total_bits = std::min(total_bits, precision * 32);
 
-  int nbytes = (total_bits / 8) + 1;
+  const int nbytes = (total_bits / 8) + 1;
 
   XMP_Init(result, 0, precision);
   rng.Get(result, nbytes);
@@ -2479,7 +2482,7 @@ void XMP_Randomize(uint32_t* result, Straw& rng, const uint32_t* minval,
                    const uint32_t* maxval, int precision) {
   uint32_t range[MAX_UNIT_PRECISION];
   XMP_Sub(range, maxval, minval, false, precision);
-  int bit_count = XMP_Count_Bits(range, precision);
+  const int bit_count = XMP_Count_Bits(range, precision);
   do {
     XMP_Randomize(result, rng, bit_count, precision);
   } while (XMP_Compare(result, range, precision) > 0);

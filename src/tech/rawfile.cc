@@ -294,7 +294,7 @@ bool RawFileClass::Do_Is_Available(AvailabilityCheck mode) {
     Handle = IO_Open_File(Filename_.c_str(), FileAccess::kRead);
     if (!Handle) {
       // retry with lowercase name for case-sensitive fs
-      std::string lower_name = absl::AsciiStrToLower(Filename_);
+      const std::string lower_name = absl::AsciiStrToLower(Filename_);
       Handle = IO_Open_File(lower_name.c_str(), FileAccess::kRead);
 
       if (Handle) {
@@ -399,7 +399,7 @@ int32_t RawFileClass::Read(void* buffer, int32_t size) {
   *of *	the file.
   */
   if (BiasLength != -1) {
-    int remainder = BiasLength - Seek(0);
+    const int remainder = BiasLength - Seek(0);
     size = size < remainder ? size : remainder;
   }
 

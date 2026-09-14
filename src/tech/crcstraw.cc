@@ -69,7 +69,7 @@ int CRCStraw::Get(void* source, int slen) {
     return 0;
   }
 
-  int counter = Straw::Get(source, slen);
+  const int counter = Straw::Get(source, slen);
   crc_.Update(std::span(static_cast<const uint8_t*>(source),
                         static_cast<size_t>(counter)));
   return counter;

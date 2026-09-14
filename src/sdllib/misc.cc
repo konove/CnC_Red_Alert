@@ -30,7 +30,7 @@ void Wait_Blit() {
 }
 
 void Delay(int duration) {
-  auto target = g_tick_timer->TickCount() + duration;
+  const auto target = g_tick_timer->TickCount() + duration;
 
   while (g_tick_timer->TickCount() < target) {
     Video_End_Frame();
@@ -67,8 +67,8 @@ void* Build_Fading_Table(const void* palette, void* dest, int color, int frac) {
   *dptr++ = 0;
 
   for (int remap_index = 1; remap_index < 256; remap_index++) {
-    uint8_t origred = pal8[(remap_index * 3) + 0];
-    uint8_t origgreen = pal8[(remap_index * 3) + 1];
+    const uint8_t origred = pal8[(remap_index * 3) + 0];
+    const uint8_t origgreen = pal8[(remap_index * 3) + 1];
 
     auto tmp = static_cast<uint16_t>((origred - targetred) * (frac >> 1));
     idealred = static_cast<uint8_t>(origred - (tmp >> 7));
@@ -183,17 +183,17 @@ uint8_t Random() {
   auto* r = (uint8_t*)&RandNumb;
 
   uint8_t tmp = r[0] >> 1;
-  int c = tmp & 1;
+  const int c = tmp & 1;
   tmp >>= 1;
 
-  int c1 = r[2] & 0x80;
+  const int c1 = r[2] & 0x80;
   r[2] = static_cast<uint8_t>(r[2] << 1 | c);
 
-  int c2 = r[1] & 0x80;
+  const int c2 = r[1] & 0x80;
   r[1] = static_cast<uint8_t>(r[1] << 1 | c1 >> 7);
 
   tmp = static_cast<uint8_t>(tmp - ((RandNumb & 0xFF) + (1 - c2)));
-  int c3 = tmp & 1;
+  const int c3 = tmp & 1;
 
   r[0] = static_cast<uint8_t>(r[0] >> 1 | c3 << 7);
 

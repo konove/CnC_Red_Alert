@@ -115,9 +115,9 @@ void GraphicBufferClass::Update_Palette(const uint8_t* palette) {
 
   for (int i = 0; i < sdl_pal->ncolors; i++) {
     // convert from 6-bit
-    int new_r = palette[(i * 3) + 0] << 2 | palette[(i * 3) + 0] >> 4;
-    int new_g = palette[(i * 3) + 1] << 2 | palette[(i * 3) + 1] >> 4;
-    int new_b = palette[(i * 3) + 2] << 2 | palette[(i * 3) + 2] >> 4;
+    const int new_r = palette[(i * 3) + 0] << 2 | palette[(i * 3) + 0] >> 4;
+    const int new_g = palette[(i * 3) + 1] << 2 | palette[(i * 3) + 1] >> 4;
+    const int new_b = palette[(i * 3) + 2] << 2 | palette[(i * 3) + 2] >> 4;
 
     changed = changed || std::cmp_not_equal(sdl_pal->colors[i].r, new_r) ||
               std::cmp_not_equal(sdl_pal->colors[i].g, new_g) ||
@@ -170,7 +170,8 @@ void GraphicBufferClass::Render_Scaled_Frame(const uint8_t* paletted_data,
   }
 
   // Get the palette already set via Update_Palette (already 8-bit RGB)
-  auto* sdl_pal = static_cast<SDL_Surface*>(PaletteSurface)->format->palette;
+  const auto* sdl_pal =
+      static_cast<SDL_Surface*>(PaletteSurface)->format->palette;
 
   // Convert paletted pixels to RGBA and upload to intermediate texture
   void* pixels;
@@ -181,11 +182,11 @@ void GraphicBufferClass::Render_Scaled_Frame(const uint8_t* paletted_data,
   auto* dest = static_cast<uint32_t*>(pixels);
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++) {
-      uint8_t idx = paletted_data[(y * width) + x];
+      const uint8_t idx = paletted_data[(y * width) + x];
       // Use palette already converted to 8-bit by Update_Palette
-      uint8_t r = sdl_pal->colors[idx].r;
-      uint8_t g = sdl_pal->colors[idx].g;
-      uint8_t b = sdl_pal->colors[idx].b;
+      const uint8_t r = sdl_pal->colors[idx].r;
+      const uint8_t g = sdl_pal->colors[idx].g;
+      const uint8_t b = sdl_pal->colors[idx].b;
       dest[(y * (pitch / 4)) + x] =
           0xFFU << 24U | uint32_t{b} << 16U | uint32_t{g} << 8U | r;
     }

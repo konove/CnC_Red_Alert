@@ -55,7 +55,7 @@ TEST(ArchiveTest, IntegersUseTheirOwnWidthLittleEndian) {
   int32_t i32 = 0x01020304;
   int64_t i64 = 0x0102030405060708;
   uint16_t u16 = 0xFFFE;
-  auto bytes = WriteWith([&](auto& ar) { ar(i8, i16, i32, i64, u16); });
+  const auto bytes = WriteWith([&](auto& ar) { ar(i8, i16, i32, i64, u16); });
   const std::vector<uint8_t> expected = {0xFE, 0x02, 0x01, 0x04, 0x03, 0x02,
                                          0x01, 0x08, 0x07, 0x06, 0x05, 0x04,
                                          0x03, 0x02, 0x01, 0xFE, 0xFF};
@@ -77,7 +77,7 @@ TEST(ArchiveTest, IntegersUseTheirOwnWidthLittleEndian) {
 TEST(ArchiveTest, BoolIsOneByte) {
   bool yes = true;
   bool no = false;
-  auto bytes = WriteWith([&](auto& ar) { ar(yes, no); });
+  const auto bytes = WriteWith([&](auto& ar) { ar(yes, no); });
   EXPECT_EQ(bytes, (std::vector<uint8_t>{1, 0}));
 
   bool r1 = false;
@@ -93,7 +93,7 @@ enum Wide { kZero = 0, kNegative = -3 };
 TEST(ArchiveTest, EnumsAreAlwaysInt32) {
   Narrow narrow = Narrow::kA;
   Wide wide = kNegative;
-  auto bytes = WriteWith([&](auto& ar) { ar(narrow, wide); });
+  const auto bytes = WriteWith([&](auto& ar) { ar(narrow, wide); });
   EXPECT_EQ(bytes, (std::vector<uint8_t>{7, 0, 0, 0, 0xFD, 0xFF, 0xFF, 0xFF}));
 
   Narrow rn{};
@@ -106,7 +106,7 @@ TEST(ArchiveTest, EnumsAreAlwaysInt32) {
 TEST(ArchiveTest, CharArraysAreRawBytesAndOtherArraysElementWise) {
   char name[6] = "abc";
   int16_t values[3] = {1, 2, 3};
-  auto bytes = WriteWith([&](auto& ar) { ar(name, values); });
+  const auto bytes = WriteWith([&](auto& ar) { ar(name, values); });
   const std::vector<uint8_t> expected = {'a', 'b', 'c', 0, 0, 0,
                                          1,   0,   2,   0, 3, 0};
   EXPECT_EQ(bytes, expected);
@@ -145,7 +145,7 @@ TEST(ArchiveTest, NestedTypesAndArraysOfThemRoundTrip) {
   shape.corners[0] = {1, 2};
   shape.corners[1] = {-3, 4};
   shape.filled = true;
-  auto bytes = WriteWith([&](auto& ar) { ar(shape); });
+  const auto bytes = WriteWith([&](auto& ar) { ar(shape); });
   EXPECT_EQ(bytes.size(), 17U);
 
   Shape read;
@@ -171,7 +171,7 @@ struct Doubled {
 
 TEST(ArchiveTest, RvalueProxiesAreAccepted) {
   int32_t value = 21;
-  auto bytes = WriteWith([&](auto& ar) { ar(Doubled{value}); });
+  const auto bytes = WriteWith([&](auto& ar) { ar(Doubled{value}); });
   EXPECT_EQ(bytes, (std::vector<uint8_t>{42, 0, 0, 0}));
 
   int32_t read = 0;
@@ -230,7 +230,7 @@ TEST(ArchiveTest, FailKeepsTheFirstError) {
 
 TEST(ArchiveTest, BytesEscapeHatchRoundTrips) {
   const char blob[4] = {'x', 'y', 'z', 'w'};
-  auto bytes = WriteWith([&](auto& ar) { ar.Bytes(blob, sizeof(blob)); });
+  const auto bytes = WriteWith([&](auto& ar) { ar.Bytes(blob, sizeof(blob)); });
   EXPECT_EQ(bytes, (std::vector<uint8_t>{'x', 'y', 'z', 'w'}));
   char read[4] = {};
   EXPECT_TRUE(ReadWith(bytes, [&](auto& ar) { ar.Bytes(read, sizeof(read)); }));

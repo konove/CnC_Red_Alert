@@ -109,7 +109,7 @@ TEST(CodecStateTest, LzwHandlesFragmentedHeadersAndPartialBlocks) {
 
 TEST(CodecStateTest, Base64HandlesShortFinalGroups) {
   constexpr const char* expected[] = {"YQ==", "YWI=", "YWJj", "YWJjZA==", "YWJjZGU="};
-  for (int length : {1, 2, 3, 4, 5}) {
+  for (const int length : {1, 2, 3, 4, 5}) {
     constexpr char input[] = "abcde";
     BufferStraw plain(input, length);
     Base64Straw encoder(Base64Straw::ENCODE);

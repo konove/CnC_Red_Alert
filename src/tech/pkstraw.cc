@@ -29,12 +29,12 @@ constexpr int kMaxKeyBlockSize = 256;
 
 std::unique_ptr<BlowStraw> MakePKDecryptStraw(Straw& source, const PKey& key) {
   // Calculate how many bytes the encrypted blowfish key occupies.
-  int encrypted_len =
+  const int encrypted_len =
       key.Block_Count(kBlowfishKeySize) * key.Crypt_Block_Size();
 
   // Read the encrypted key header.
   char encrypted_key[kMaxKeyBlockSize];
-  int got = source.Get(encrypted_key, encrypted_len);
+  const int got = source.Get(encrypted_key, encrypted_len);
   if (got != encrypted_len) {
     return nullptr;
   }

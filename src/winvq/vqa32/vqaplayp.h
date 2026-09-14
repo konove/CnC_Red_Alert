@@ -487,15 +487,15 @@ int32_t VQA_Play(VQAHandle* vqa, int32_t mode);
 int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t frame, int32_t fromwhere);
 int64_t VQA_SetStop(VQAHandle* vqa, int64_t stop);
 void VQA_GetInfo(VQAHandle* vqa, VQAInfo* info);
-void VQA_GetStats(VQAHandle* vqa, VQAStatistics* stats);
+void VQA_GetStats(const VQAHandle* vqa, VQAStatistics* stats);
 
 /* Loader/Drawer system. */
 int32_t VQA_LoadFrame(VQAHandle* vqa);
 void VQA_Configure_Drawer(VQAHandle* vqap);
-int64_t User_Update(VQAHandle* vqa);
+int64_t User_Update(const VQAHandle* vqa);
 
 /* Timer system. */
-int32_t VQA_StartTimerInt(VQAHandle* vqap, int32_t init);
+int32_t VQA_StartTimerInt(const VQAHandle* vqap, int32_t init);
 void VQA_StopTimerInt(VQAHandle* vqap);
 void VQA_SetTimer(VQAHandle* vqap, int64_t time, int method);
 int64_t VQA_GetTime(VQAHandle* vqap);
@@ -505,7 +505,7 @@ int32_t VQA_TimerMethod();
 int32_t VQA_OpenAudio(VQAHandle* vqap, void* window);
 void VQA_CloseAudio(VQAHandle* vqap);
 int32_t VQA_StartAudio(VQAHandle* vqap);
-void VQA_StopAudio(VQAHandle* vqap);
+void VQA_StopAudio(const VQAHandle* vqap);
 int32_t CopyAudio(VQAHandle* vqap);
 
 extern int VQAMovieDone;

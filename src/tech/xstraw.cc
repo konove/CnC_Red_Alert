@@ -74,7 +74,8 @@ int BufferStraw::Get(void* source, int slen) {
   if (Is_Valid() && source != nullptr && slen > 0) {
     int len = slen;
     if (BufferPtr.Get_Size() != 0) {
-      int theoretical_max = static_cast<int>(BufferPtr.Get_Size() - Index);
+      const int theoretical_max =
+          static_cast<int>(BufferPtr.Get_Size() - Index);
       len = slen < theoretical_max ? slen : theoretical_max;
     }
 

@@ -56,7 +56,7 @@ TEST_F(TimerSerializeTest, RunningTimerKeepsItsRemainingValue) {
   FakeTick::now += 20;
   ASSERT_EQ(timer.Value(), 30);
 
-  Timer<FakeTick> restored = RoundTrip(timer, 500);
+  const Timer<FakeTick> restored = RoundTrip(timer, 500);
   EXPECT_EQ(restored.Value(), 30);
   EXPECT_TRUE(restored.IsRunning());
 
@@ -85,7 +85,7 @@ TEST_F(TimerSerializeTest, FinishedTimerStaysFinished) {
   FakeTick::now += 100;
   ASSERT_TRUE(timer.IsFinished());
 
-  Timer<FakeTick> restored = RoundTrip(timer, 500);
+  const Timer<FakeTick> restored = RoundTrip(timer, 500);
   EXPECT_TRUE(restored.IsFinished());
   EXPECT_EQ(restored.Value(), 0);
 }
@@ -95,7 +95,7 @@ TEST_F(TimerSerializeTest, StopwatchKeepsAccumulatedTicks) {
   FakeTick::now += 40;
   ASSERT_EQ(watch.Value(), 40);
 
-  Stopwatch<FakeTick> restored = RoundTrip(watch, 500);
+  const Stopwatch<FakeTick> restored = RoundTrip(watch, 500);
   EXPECT_EQ(restored.Value(), 40);
   EXPECT_TRUE(restored.IsRunning());
   FakeTick::now += 2;
@@ -107,7 +107,7 @@ TEST_F(TimerSerializeTest, StoppedStopwatchStaysStopped) {
   FakeTick::now += 40;
   watch.Stop();
 
-  Stopwatch<FakeTick> restored = RoundTrip(watch, 500);
+  const Stopwatch<FakeTick> restored = RoundTrip(watch, 500);
   EXPECT_FALSE(restored.IsRunning());
   FakeTick::now += 100;
   EXPECT_EQ(restored.Value(), 40);

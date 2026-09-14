@@ -289,7 +289,7 @@ int32_t RAMFileClass::Read(void* buffer, int32_t size) {
     }
   }
 
-  int tocopy = size < Length - Offset ? size : Length - Offset;
+  const int tocopy = size < Length - Offset ? size : Length - Offset;
   memmove(buffer, &Buffer[Offset], base::ToSize(tocopy));
   Offset += tocopy;
 
@@ -403,8 +403,8 @@ int32_t RAMFileClass::Write(const void* buffer, int32_t size) {
     }
   }
 
-  int maxwrite = MaxLength - Offset;
-  int towrite = size < maxwrite ? size : maxwrite;
+  const int maxwrite = MaxLength - Offset;
+  const int towrite = size < maxwrite ? size : maxwrite;
   memmove(&Buffer[Offset], buffer, base::ToSize(towrite));
   Offset += towrite;
 

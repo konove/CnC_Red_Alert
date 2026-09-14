@@ -253,10 +253,10 @@ int Base64_Decode(const void* source, int slen, void* dest, int dlen) {
     */
     int pcount = 0;
     while (pcount < PacketChars && slen > 0) {
-      unsigned char c = *sptr++;
+      const unsigned char c = *sptr++;
       slen--;
 
-      unsigned char code = kDecoder[c];
+      const unsigned char code = kDecoder[c];
 
       /*
       **	An unrecognized character is skipped.

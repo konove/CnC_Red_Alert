@@ -170,7 +170,7 @@ int32_t VQA_Play(VQAHandle* vqa, int32_t mode) {
     }
 
     /* Initialize the timer */
-    auto i =
+    const auto i =
         vqabuf->Drawer.CurFrame->FrameNum * VQA_TIMETICKS / config->DrawRate;
 
     VQA_SetTimer(vqa, i, config->TimerMethod);
@@ -362,7 +362,7 @@ auto VQA_SetStop(VQAHandle* vqa, int64_t stop) -> int64_t {
  ****************************************************************************/
 
 void VQA_GetInfo(VQAHandle* vqa, VQAInfo* info) {
-  auto* header = &vqa->header;
+  const auto* header = &vqa->header;
 
   info->NumFrames = header->Frames;
   info->ImageHeight = header->ImageHeight;
@@ -392,7 +392,7 @@ void VQA_GetInfo(VQAHandle* vqa, VQAInfo* info) {
  *
  ****************************************************************************/
 
-void VQA_GetStats(VQAHandle* vqa, VQAStatistics* stats) {
+void VQA_GetStats(const VQAHandle* vqa, VQAStatistics* stats) {
   VQAData* vqabuf;
 
   /* Dereference VQAData structure from VQAHandle */
@@ -428,7 +428,7 @@ void VQA_GetStats(VQAHandle* vqa, VQAStatistics* stats) {
  *
  ****************************************************************************/
 
-int64_t User_Update(VQAHandle* vqa) {
+int64_t User_Update(const VQAHandle* vqa) {
   auto* vqabuf = vqa->data;
 
   if ((vqabuf->Flags & VQADATF_UPDATE) != 0) {

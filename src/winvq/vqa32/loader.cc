@@ -89,19 +89,20 @@
  * PRIVATE DECLARATIONS
  *-------------------------------------------------------------------------*/
 
-static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config);
-static void FreeBuffers(VQAData* vqa, VQAConfig* config, VQAHeader* header);
+static VQAData* AllocBuffers(const VQAHeader* header, VQAConfig* config);
+static void FreeBuffers(const VQAData* vqa, VQAConfig* config,
+                        VQAHeader* header);
 static int32_t PrimeBuffers(VQAHandle* vqa);
 static int32_t Load_VQF(VQAHandle* vqap, int32_t iffsize);
-static int32_t Load_FINF(VQAHandle* vqap, int32_t iffsize);
-static int32_t Load_CBF0(VQAHandle* vqap, int32_t iffsize);
-static int32_t Load_CBFZ(VQAHandle* vqap, int32_t iffsize);
-static int32_t Load_CBP0(VQAHandle* vqap, int32_t iffsize);
-static int32_t Load_CBPZ(VQAHandle* vqap, int32_t iffsize);
-static int32_t Load_CPL0(VQAHandle* vqap, int32_t iffsize);
-static int32_t Load_CPLZ(VQAHandle* vqap, int32_t iffsize);
-static int32_t Load_VPT0(VQAHandle* vqap, int32_t iffsize);
-static int32_t Load_VPTZ(VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_FINF(const VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_CBF0(const VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_CBFZ(const VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_CBP0(const VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_CBPZ(const VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_CPL0(const VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_CPLZ(const VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_VPT0(const VQAHandle* vqap, int32_t iffsize);
+static int32_t Load_VPTZ(const VQAHandle* vqap, int32_t iffsize);
 static int32_t Load_SND0(VQAHandle* vqap, int32_t iffsize);
 static int32_t Load_SND1(VQAHandle* vqap, int32_t iffsize);
 static int32_t Load_SND2(VQAHandle* vqap, int32_t iffsize);
@@ -1088,7 +1089,7 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
  *
  ****************************************************************************/
 
-static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
+static VQAData* AllocBuffers(const VQAHeader* header, VQAConfig* config) {
   /* Check the configuration for valid values. */
   if (config->NumCBBufs == 0 || config->NumFrameBufs == 0) {
     return nullptr;
@@ -1147,7 +1148,7 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
 
   /* Set up the circular linked list */
   for (size_t i = 0; i < vqa->CBNodes.size(); i++) {
-    size_t next_idx = (i + 1) % vqa->CBNodes.size();
+    const size_t next_idx = (i + 1) % vqa->CBNodes.size();
     vqa->CBNodes[i]->Next = vqa->CBNodes[next_idx].get();
   }
 
@@ -1182,7 +1183,7 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
 
   /* Set up the circular linked list */
   for (size_t i = 0; i < vqa->FrameNodes.size(); i++) {
-    size_t next_idx = (i + 1) % vqa->FrameNodes.size();
+    const size_t next_idx = (i + 1) % vqa->FrameNodes.size();
     vqa->FrameNodes[i]->Next = vqa->FrameNodes[next_idx].get();
   }
 
@@ -1254,7 +1255,7 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
       /* Compute the number of HMI buffers that will completly fit into
        * 1.5 seconds of audio data.
        */
-      auto i =
+      const auto i =
           (audio->BytesPerSec + (audio->BytesPerSec / 2)) / config->HMIBufSize;
       config->AudioBufSize = config->HMIBufSize * i;
     }
@@ -1329,7 +1330,7 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
  *
  ****************************************************************************/
 
-static void FreeBuffers(VQAData* vqa, VQAConfig* /*config*/,
+static void FreeBuffers(const VQAData* vqa, VQAConfig* /*config*/,
                         VQAHeader* /*header*/) {
   /* With RAII, all we need to do is delete the VQAData structure.
    * The vectors and unique_ptrs inside will automatically clean up:
@@ -1576,7 +1577,7 @@ static int32_t Load_VQF(VQAHandle* vqap, int32_t frame_iffsize) {
  *
  ****************************************************************************/
 
-static int32_t Load_FINF(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_FINF(const VQAHandle* vqap, int32_t iffsize) {
   VQAData* vqabuf = vqap->data;
 
   // The table has one 4-byte entry per frame in the header. Copying no more
@@ -1619,7 +1620,7 @@ static int32_t Load_FINF(VQAHandle* vqap, int32_t iffsize) {
  *
  ****************************************************************************/
 
-static int32_t Load_CBF0(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_CBF0(const VQAHandle* vqap, int32_t iffsize) {
   VQALoader* loader;
   VQACBNode* curcb;
 
@@ -1672,7 +1673,7 @@ static int32_t Load_CBF0(VQAHandle* vqap, int32_t iffsize) {
  *
  ****************************************************************************/
 
-static int32_t Load_CBFZ(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_CBFZ(const VQAHandle* vqap, int32_t iffsize) {
   VQALoader* loader;
   VQACBNode* curcb;
   void* buffer;
@@ -1734,7 +1735,7 @@ static int32_t Load_CBFZ(VQAHandle* vqap, int32_t iffsize) {
  *
  ****************************************************************************/
 
-static int32_t Load_CBP0(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_CBP0(const VQAHandle* vqap, int32_t iffsize) {
   VQAData* vqabuf;
   VQALoader* loader;
   VQACBNode* curcb;
@@ -1807,7 +1808,7 @@ static int32_t Load_CBP0(VQAHandle* vqap, int32_t iffsize) {
  *
  ****************************************************************************/
 
-static int32_t Load_CBPZ(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_CBPZ(const VQAHandle* vqap, int32_t iffsize) {
   VQAData* vqabuf;
   VQALoader* loader;
   VQACBNode* curcb;
@@ -1899,7 +1900,7 @@ static int32_t Load_CBPZ(VQAHandle* vqap, int32_t iffsize) {
  *
  ****************************************************************************/
 
-static int32_t Load_CPL0(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_CPL0(const VQAHandle* vqap, int32_t iffsize) {
   VQAFrameNode* curframe;
 
   /* Dereference commonly used data members for quicker access. */
@@ -1946,7 +1947,7 @@ static int32_t Load_CPL0(VQAHandle* vqap, int32_t iffsize) {
  *
  ****************************************************************************/
 
-static int32_t Load_CPLZ(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_CPLZ(const VQAHandle* vqap, int32_t iffsize) {
   VQAFrameNode* curframe;
   void* buffer;
   int32_t padsize;
@@ -1999,7 +2000,7 @@ static int32_t Load_CPLZ(VQAHandle* vqap, int32_t iffsize) {
  *
  ****************************************************************************/
 
-static int32_t Load_VPT0(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_VPT0(const VQAHandle* vqap, int32_t iffsize) {
   VQAFrameNode* curframe;
 
   /* Dereference commonly used data members for quicker access. */
@@ -2042,7 +2043,7 @@ static int32_t Load_VPT0(VQAHandle* vqap, int32_t iffsize) {
  *
  ****************************************************************************/
 
-static int32_t Load_VPTZ(VQAHandle* vqap, int32_t iffsize) {
+static int32_t Load_VPTZ(const VQAHandle* vqap, int32_t iffsize) {
   VQAFrameNode* curframe;
   void* buffer;
   int32_t padsize;

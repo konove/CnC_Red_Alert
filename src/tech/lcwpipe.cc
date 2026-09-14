@@ -141,7 +141,7 @@ int LCWPipe::Put(const void* source, int slen) {
       */
       if (BlockHeader.CompCount == 0xFFFF) {
         const int needed = static_cast<int>(sizeof(BlockHeader)) - Counter;
-        int len = slen < needed ? slen : needed;
+        const int len = slen < needed ? slen : needed;
         memmove(&Buffer[Counter], source, base::ToSize(len));
         source = (char*)source + len;
         slen -= len;
@@ -168,9 +168,9 @@ int LCWPipe::Put(const void* source, int slen) {
       *make a whole *	data block.
       */
       if (slen > 0) {
-        int len = slen < BlockHeader.CompCount - Counter
-                      ? slen
-                      : BlockHeader.CompCount - Counter;
+        const int len = slen < BlockHeader.CompCount - Counter
+                            ? slen
+                            : BlockHeader.CompCount - Counter;
 
         memmove(&Buffer[Counter], source, base::ToSize(len));
         slen -= len;
@@ -204,14 +204,15 @@ int LCWPipe::Put(const void* source, int slen) {
     *stored *	into the staging buffer until a full set has been accumulated.
     */
     if (Counter > 0) {
-      int tocopy = slen < BlockSize - Counter ? slen : BlockSize - Counter;
+      const int tocopy =
+          slen < BlockSize - Counter ? slen : BlockSize - Counter;
       memmove(&Buffer[Counter], source, base::ToSize(tocopy));
       source = (char*)source + tocopy;
       slen -= tocopy;
       Counter += tocopy;
 
       if (Counter == BlockSize) {
-        int len = LCW_Comp(Buffer, Buffer2, BlockSize);
+        const int len = LCW_Comp(Buffer, Buffer2, BlockSize);
 
         BlockHeader.CompCount = static_cast<uint16_t>(len);
         BlockHeader.UncompCount = static_cast<uint16_t>(BlockSize);
@@ -226,7 +227,7 @@ int LCWPipe::Put(const void* source, int slen) {
     *insufficient *	source data left for a whole data block.
     */
     while (slen >= BlockSize) {
-      int len = LCW_Comp(source, Buffer2, BlockSize);
+      const int len = LCW_Comp(source, Buffer2, BlockSize);
 
       source = (char*)source + BlockSize;
       slen -= BlockSize;
@@ -308,7 +309,7 @@ int LCWPipe::Flush() {
       **	A partial block in the compression process is a normal
       *occurrence. Just *	compress the partial block and output normally.
       */
-      int len = LCW_Comp(Buffer, Buffer2, Counter);
+      const int len = LCW_Comp(Buffer, Buffer2, Counter);
 
       BlockHeader.CompCount = static_cast<uint16_t>(len);
       BlockHeader.UncompCount = static_cast<uint16_t>(Counter);

@@ -36,11 +36,12 @@ std::unique_ptr<BlowPipe> MakePKEncryptPipe(Pipe& sink, const PKey& key,
   rng.Get(blowfish_key, kBlowfishKeySize);
 
   // Calculate plain key length (padded to PK block size).
-  int plain_len = key.Block_Count(kBlowfishKeySize) * key.Plain_Block_Size();
+  const int plain_len =
+      key.Block_Count(kBlowfishKeySize) * key.Plain_Block_Size();
 
   // Encrypt the blowfish key with the public key.
   char encrypted_key[kMaxKeyBlockSize];
-  int encrypted_len = key.Encrypt(blowfish_key, plain_len, encrypted_key);
+  const int encrypted_len = key.Encrypt(blowfish_key, plain_len, encrypted_key);
 
   // Write the encrypted key header to the sink.
   sink.Put(encrypted_key, encrypted_len);

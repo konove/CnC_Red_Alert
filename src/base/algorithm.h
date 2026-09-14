@@ -12,7 +12,7 @@ namespace base {
 // Returns the index of the first false element, or -1 if none found.
 template <typename Container>
 ssize first_false(const Container& c) {
-  auto it = std::find(c.begin(), c.end(), false);
+  const auto it = std::find(c.begin(), c.end(), false);
   if (it == c.end()) {
     return -1;
   }

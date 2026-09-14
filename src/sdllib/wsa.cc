@@ -86,10 +86,10 @@ typedef struct {
 constexpr int kWsaFileHeaderSize{sizeof(WSA_FileHeaderType) -
                                  (2 * sizeof(uint32_t))};
 
-static int64_t Get_Resident_Frame_Offset(char* file_buffer, int frame);
+static int64_t Get_Resident_Frame_Offset(const char* file_buffer, int frame);
 static int64_t Get_File_Frame_Offset(int file_handle, int frame,
                                      int palette_adjust);
-static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
+static bool Apply_Delta(const SysAnimHeaderType* sys_header, int curr_frame,
                         char* dest_ptr, int dest_w);
 
 void* Open_Animation(const char* file_name, char* user_buffer,
@@ -547,8 +547,8 @@ int Get_Animation_Frame_Count(void* handle) {
   return static_cast<int16_t>(sys_header->total_frames);
 }
 
-unsigned int Apply_XOR_Delta(char* source_ptr, char* delta_ptr) {
-  auto* udelta = (uint8_t*)delta_ptr;
+unsigned int Apply_XOR_Delta(char* source_ptr, const char* delta_ptr) {
+  const auto* udelta = (const uint8_t*)delta_ptr;
 
   // top_loop
   while (true) {
@@ -557,7 +557,7 @@ unsigned int Apply_XOR_Delta(char* source_ptr, char* delta_ptr) {
     if (b == 0) {
       // SHORTRUN
       int count = *udelta++;      // get count
-      uint8_t xor_b = *udelta++;  // get XOR byte
+      const uint8_t xor_b = *udelta++;  // get XOR byte
       do {
         *source_ptr = static_cast<char>(*source_ptr ^ xor_b);  // XOR that byte
         source_ptr++;
@@ -577,7 +577,7 @@ unsigned int Apply_XOR_Delta(char* source_ptr, char* delta_ptr) {
           if (count & 0x4000) {
             // LONGRUN
             count &= 0x3FFF;
-            uint8_t xor_b = *udelta++;  // get XOR byte
+            const uint8_t xor_b = *udelta++;  // get XOR byte
             do {
               *source_ptr = static_cast<char>(*source_ptr ^ xor_b);  // XOR that byte
               source_ptr++;
@@ -586,7 +586,7 @@ unsigned int Apply_XOR_Delta(char* source_ptr, char* delta_ptr) {
             // LONGDUMP
             count &= 0x7FFF;
             do {
-              uint8_t xor_b = *udelta++;  // get delta XOR byte
+              const uint8_t xor_b = *udelta++;  // get delta XOR byte
               *source_ptr = static_cast<char>(*source_ptr ^ xor_b);       // xor that byte on the dest
               source_ptr++;
             } while (--count);
@@ -602,7 +602,7 @@ unsigned int Apply_XOR_Delta(char* source_ptr, char* delta_ptr) {
       int count = b;
 
       do {
-        uint8_t xor_b = *udelta++;  // get delta XOR byte
+        const uint8_t xor_b = *udelta++;  // get delta XOR byte
         *source_ptr = static_cast<char>(*source_ptr ^ xor_b);       // xor that byte on the dest
         source_ptr++;
       } while (--count);
@@ -613,7 +613,7 @@ unsigned int Apply_XOR_Delta(char* source_ptr, char* delta_ptr) {
 void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
                                          int nextrow, int copy) {
   auto* source_ptr = static_cast<uint8_t*>(target);
-  auto* udelta = static_cast<uint8_t*>(delta);
+  const auto* udelta = static_cast<uint8_t*>(delta);
 
   int x = 0;
 
@@ -626,7 +626,7 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
       if (b == 0) {
         // SHORTRUN
         int count = *udelta++;      // get count
-        uint8_t xor_b = *udelta++;  // get XOR byte
+        const uint8_t xor_b = *udelta++;  // get XOR byte
         do {
           *source_ptr ^= xor_b;  // XOR that byte
           source_ptr++;
@@ -653,7 +653,7 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
             if (count & 0x4000) {
               // LONGRUN
               count &= 0x3FFF;
-              uint8_t xor_b = *udelta++;  // get XOR byte
+              const uint8_t xor_b = *udelta++;  // get XOR byte
               do {
                 *source_ptr ^= xor_b;  // XOR that byte
                 source_ptr++;
@@ -668,7 +668,7 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
               // LONGDUMP
               count &= 0x7FFF;
               do {
-                uint8_t xor_b = *udelta++;  // get delta XOR byte
+                const uint8_t xor_b = *udelta++;  // get delta XOR byte
                 *source_ptr ^= xor_b;       // xor that byte on the dest
                 source_ptr++;
 
@@ -704,7 +704,7 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
         int count = b;
 
         do {
-          uint8_t xor_b = *udelta++;  // get delta XOR byte
+          const uint8_t xor_b = *udelta++;  // get delta XOR byte
           *source_ptr ^= xor_b;       // xor that byte on the dest
           source_ptr++;
           if (++x == width) {
@@ -724,7 +724,7 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
       if (b == 0) {
         // SHORTRUN
         int count = *udelta++;      // get count
-        uint8_t xor_b = *udelta++;  // get byte
+        const uint8_t xor_b = *udelta++;  // get byte
         do {
           *source_ptr = xor_b;  // store that byte
           source_ptr++;
@@ -751,7 +751,7 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
             if (count & 0x4000) {
               // LONGRUN
               count &= 0x3FFF;
-              uint8_t xor_b = *udelta++;  // get byte
+              const uint8_t xor_b = *udelta++;  // get byte
               do {
                 *source_ptr = xor_b;  // store that byte
                 source_ptr++;
@@ -766,7 +766,7 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
               // LONGDUMP
               count &= 0x7FFF;
               do {
-                uint8_t xor_b = *udelta++;  // get delta byte
+                const uint8_t xor_b = *udelta++;  // get delta byte
                 *source_ptr = xor_b;        // store that byte
                 source_ptr++;
 
@@ -802,7 +802,7 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
         int count = b;
 
         do {
-          uint8_t xor_b = *udelta++;  // get delta byte
+          const uint8_t xor_b = *udelta++;  // get delta byte
           *source_ptr = xor_b;        // store that byte
           source_ptr++;
           if (++x == width) {
@@ -816,7 +816,7 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
   }
 }
 
-static int64_t Get_Resident_Frame_Offset(char* file_buffer, int frame) {
+static int64_t Get_Resident_Frame_Offset(const char* file_buffer, int frame) {
   uint32_t frame0_size;
   const auto first = port::ReadUnaligned<uint32_t>(file_buffer);
   if (first) {
@@ -847,7 +847,7 @@ static int64_t Get_File_Frame_Offset(int file_handle, int frame,
   return offset;
 }
 
-static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
+static bool Apply_Delta(const SysAnimHeaderType* sys_header, int curr_frame,
                         char* dest_ptr, int dest_w) {
   char* data_ptr;
   char* delta_back;

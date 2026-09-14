@@ -49,7 +49,7 @@ void Socket_Unregister_Select(int socket) {
 }
 
 void Socket_Check_Write(int socket, bool check) {
-  auto it = Find_Socket(socket);
+  const auto it = Find_Socket(socket);
   if (it != Sockets.end()) {
     it->check_write = check;
   }
@@ -66,7 +66,7 @@ void Socket_Select() {
   FD_ZERO(&write_set);
   FD_ZERO(&err_set);
 
-  for (auto& sock : Sockets) {
+  for (const auto& sock : Sockets) {
     FD_SET(sock.socket, &read_set);
     if (sock.check_write) {
       FD_SET(sock.socket, &write_set);
@@ -79,10 +79,11 @@ void Socket_Select() {
   timeout.tv_sec = 0;
   timeout.tv_usec = 0;
 
-  int ready = select(max_fd + 1, &read_set, &write_set, &err_set, &timeout);
+  const int ready =
+      select(max_fd + 1, &read_set, &write_set, &err_set, &timeout);
 
   if (ready) {
-    for (auto& sock : Sockets) {
+    for (const auto& sock : Sockets) {
       if (FD_ISSET(sock.socket, &read_set)) {
         sock.callback(sock.socket, SOCKEV_READ, sock.data);
       }

@@ -123,7 +123,7 @@ int CDFileClass::Add_Search_Drives(const std::string_view new_paths) {
 int CDFileClass::Process_Path_Tokens(std::string_view paths) {
   bool found_valid_drive = false;
 
-  for (auto token_range : paths | std::views::split(';')) {
+  for (const auto token_range : paths | std::views::split(';')) {
     // Materialize the view into a string for manipulation.
     std::string path(token_range.begin(), token_range.end());
 
@@ -255,7 +255,7 @@ const char* CDFileClass::Set_Name(const char* filename) {
     // Construct the full path.
     // Note: Add_Search_Drive guarantees base_path ends with a path separator,
     // so we can safely concatenate directly.
-    std::string full_path = base_path + filename;
+    const std::string full_path = base_path + filename;
 
     // Check availability on this specific drive/path.
     BufferIOFileClass::Set_Name(full_path.c_str());

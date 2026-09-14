@@ -145,7 +145,7 @@ int LZWStraw::Get(void* destbuf, int slen) {
     **	destination buffer.
     */
     if (Counter) {
-      int len = slen < Counter ? slen : Counter;
+      const int len = slen < Counter ? slen : Counter;
       if (Control == DECOMPRESS) {
         memmove(destbuf, &source_buffer_[BlockHeader.UncompCount - Counter],
                 base::ToSize(len));

@@ -94,7 +94,7 @@ void SHAEngine::Process_Partial(const void*& data, int32_t& length) {
   **	Attach as many bytes as possible from the source data into
   **	the staging buffer.
   */
-  int add_count = min((int)length, SRC_BLOCK_SIZE - PartialCount);
+  const int add_count = min((int)length, SRC_BLOCK_SIZE - PartialCount);
   memcpy(&Partial[PartialCount], data, base::ToSize(add_count));
   data = (const char*&)data + add_count;
   PartialCount += add_count;
@@ -152,7 +152,7 @@ void SHAEngine::Hash(const void* data, int32_t length) {
   // step has to be expressed in words rather than bytes.
   constexpr int kWordsPerBlock = SRC_BLOCK_SIZE / sizeof(uint32_t);
 
-  int32_t blocks = length / SRC_BLOCK_SIZE;
+  const int32_t blocks = length / SRC_BLOCK_SIZE;
   const auto* source = static_cast<const uint32_t*>(data);
   for (int bcount = 0; bcount < blocks; bcount++) {
     Process_Block(source, Acc);
@@ -199,7 +199,7 @@ int SHAEngine::Result(void* result) const {
     memcpy(result, &FinalResult, sizeof(FinalResult));
   }
 
-  int32_t length = Length + PartialCount;
+  const int32_t length = Length + PartialCount;
   int partialcount = PartialCount;
   char partial[SRC_BLOCK_SIZE];
   memcpy(partial, Partial, sizeof(Partial));
@@ -321,9 +321,10 @@ void SHAEngine::Process_Block(const void* source, SHADigest& acc) {
   SHADigest alt = acc;
   for (index = 0; std::cmp_less(index, PROC_BLOCK_SIZE / sizeof(uint32_t));
        index++) {
-    uint32_t temp = rotl(alt.Long[0], 5) +
-                    Do_Function(index, alt.Long[1], alt.Long[2], alt.Long[3]) +
-                    alt.Long[4] + block[index] + Get_Constant(index);
+    const uint32_t temp =
+        rotl(alt.Long[0], 5) +
+        Do_Function(index, alt.Long[1], alt.Long[2], alt.Long[3]) +
+        alt.Long[4] + block[index] + Get_Constant(index);
     alt.Long[4] = alt.Long[3];
     alt.Long[3] = alt.Long[2];
     alt.Long[2] = rotl(alt.Long[1], 30);

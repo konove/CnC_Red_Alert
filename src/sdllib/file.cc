@@ -154,7 +154,7 @@ uint64_t Disk_Space_Available() {
 #else
 
 static bool Update_Find_Result(FindFileState& state) {
-  auto* const glob_buf = static_cast<glob_t*>(state.data);
+  const auto* const glob_buf = static_cast<glob_t*>(state.data);
   struct stat stat_buf{};
 
   // Iterate through paths until we find a valid file or run out of items
@@ -193,8 +193,8 @@ bool Find_First_File(const char* path_glob, FindFileState& state) {
 
   // also search for lowercase filenames
   if (ret == 0 || ret == GLOB_NOMATCH) {
-    std::string lower_glob = absl::AsciiStrToLower(path_glob);
-    int ret2 =
+    const std::string lower_glob = absl::AsciiStrToLower(path_glob);
+    const int ret2 =
         glob(lower_glob.c_str(), GLOB_MARK | GLOB_APPEND, nullptr, glob_buf);
     if (ret2 != GLOB_NOMATCH) {
       ret = ret2;

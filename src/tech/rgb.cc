@@ -46,7 +46,7 @@ void RGBClass::Adjust(const int ratio, const RGBClass& target) {
 }
 
 int RGBClass::Difference(const RGBClass& other) const {
-  auto diff_sq = [](const int a, const int b) {
+  const auto diff_sq = [](const int a, const int b) {
     const int d = a - b;
     return d * d;
   };

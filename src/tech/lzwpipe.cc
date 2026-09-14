@@ -143,7 +143,7 @@ int LZWPipe::Put(const void* source, int slen) {
       if (BlockHeader.CompCount == 0xFFFF) {
         const int needed =
             static_cast<int>(sizeof(BlockHeader)) - Counter;
-        int len = slen < needed ? slen : needed;
+        const int len = slen < needed ? slen : needed;
         memmove(&source_buffer_[Counter], source, base::ToSize(len));
         source = (char*)source + len;
         slen -= len;
@@ -170,9 +170,9 @@ int LZWPipe::Put(const void* source, int slen) {
       *make a whole *	data block.
       */
       if (slen > 0) {
-        int len = slen < BlockHeader.CompCount - Counter
-                      ? slen
-                      : BlockHeader.CompCount - Counter;
+        const int len = slen < BlockHeader.CompCount - Counter
+                            ? slen
+                            : BlockHeader.CompCount - Counter;
 
         memmove(&source_buffer_[Counter], source, base::ToSize(len));
         slen -= len;
@@ -207,15 +207,17 @@ int LZWPipe::Put(const void* source, int slen) {
     *stored *	into the staging buffer until a full set has been accumulated.
     */
     if (Counter > 0) {
-      int tocopy = slen < BlockSize - Counter ? slen : BlockSize - Counter;
+      const int tocopy =
+          slen < BlockSize - Counter ? slen : BlockSize - Counter;
       memmove(&source_buffer_[Counter], source, base::ToSize(tocopy));
       source = (char*)source + tocopy;
       slen -= tocopy;
       Counter += tocopy;
 
       if (Counter == BlockSize) {
-        int len = LZW_Compress(Buffer(source_buffer_, BlockSize),
-                               Buffer(output_buffer_, BlockSize + SafetyMargin));
+        const int len =
+            LZW_Compress(Buffer(source_buffer_, BlockSize),
+                         Buffer(output_buffer_, BlockSize + SafetyMargin));
 
         BlockHeader.CompCount = static_cast<uint16_t>(len);
         BlockHeader.UncompCount = static_cast<uint16_t>(BlockSize);
@@ -230,8 +232,9 @@ int LZWPipe::Put(const void* source, int slen) {
     *insufficient *	source data left for a whole data block.
     */
     while (slen >= BlockSize) {
-      int len = LZW_Compress(Buffer((void*)source, BlockSize),
-                             Buffer(output_buffer_, BlockSize + SafetyMargin));
+      const int len =
+          LZW_Compress(Buffer((void*)source, BlockSize),
+                       Buffer(output_buffer_, BlockSize + SafetyMargin));
 
       source = (char*)source + BlockSize;
       slen -= BlockSize;
@@ -313,8 +316,9 @@ int LZWPipe::Flush() {
       **	A partial block in the compression process is a normal
       *occurrence. Just *	compress the partial block and output normally.
       */
-      int len =
-          LZW_Compress(Buffer(source_buffer_, Counter), Buffer(output_buffer_, BlockSize + SafetyMargin));
+      const int len =
+          LZW_Compress(Buffer(source_buffer_, Counter),
+                       Buffer(output_buffer_, BlockSize + SafetyMargin));
 
       BlockHeader.CompCount = static_cast<uint16_t>(len);
       BlockHeader.UncompCount = static_cast<uint16_t>(Counter);

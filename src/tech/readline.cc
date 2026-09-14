@@ -29,7 +29,7 @@ void strtrim(char* buffer) {
     /*
     **	Strip leading white space from the string.
     */
-    char* source = buffer;
+    const char* source = buffer;
     while (isspace(*source)) {
       source++;
     }

@@ -94,7 +94,7 @@ int Base64Straw::Get(void* source, int slen) {
     **	Transfer any processed bytes available to the request buffer.
     */
     if (Counter > 0) {
-      int len = slen < Counter ? slen : Counter;
+      const int len = slen < Counter ? slen : Counter;
       memmove(source, &to[tosize - Counter], base::ToSize(len));
       Counter -= len;
       slen -= len;
@@ -108,7 +108,7 @@ int Base64Straw::Get(void* source, int slen) {
     /*
     **	More bytes are needed, so fetch and process another base 64 block.
     */
-    int incount = Straw::Get(from, fromsize);
+    const int incount = Straw::Get(from, fromsize);
     if (Control == ENCODE) {
       Counter = Base64_Encode(from, incount, to, tosize);
     } else {

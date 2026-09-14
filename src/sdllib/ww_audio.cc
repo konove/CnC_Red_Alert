@@ -109,11 +109,13 @@ static int ToMixerAmplitude(const int raw_volume) {
 static uint8_t* DecodeADPCMBlock(ChannelState& chan, int block_size,
                                  uint8_t* in_ptr
                                      ABSL_ATTRIBUTE_LIFETIME_BOUND) {
-  auto clamp = [](int v, int min, int max) { return std::clamp(v, min, max); };
+  const auto clamp = [](int v, int min, int max) {
+    return std::clamp(v, min, max);
+  };
 
   for (int i = 0; i < block_size; i++) {
     int16_t samples[2];
-    auto b = *in_ptr++;
+    const auto b = *in_ptr++;
 
     int nibble = b & 0xF;
     int step = ima_adpcm_step_table[chan.step];
@@ -139,7 +141,7 @@ static uint8_t* DecodeADPCMBlock(ChannelState& chan, int block_size,
   return in_ptr;
 }
 
-static uint8_t* DecodeWestwoodBlock(ChannelState& chan, int block_size,
+static uint8_t* DecodeWestwoodBlock(const ChannelState& chan, int block_size,
                                     uint8_t* in_ptr
                                         ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   int prev_sample = 0x80;  // Previous sample (starting value).
@@ -159,7 +161,8 @@ static uint8_t* DecodeWestwoodBlock(ChannelState& chan, int block_size,
       if (data & 0x20U) {
         // The lower 5 bits are actually a signed delta.
         // Sign extend the delta and add it to the stream.
-        auto v = static_cast<int8_t>(data & 0x10U ? data | 0xE0U : data & 0xFU);
+        const auto v =
+            static_cast<int8_t>(data & 0x10U ? data | 0xE0U : data & 0xFU);
 
         prev_sample += v;
 
@@ -241,7 +244,8 @@ static uint8_t* DecodeWestwoodBlock(ChannelState& chan, int block_size,
 }
 
 static bool RefillStream(ChannelState& chan) {
-  int max_update = ObtainedSpec.samples;  // assume the target rate is not lower
+  const int max_update =
+      ObtainedSpec.samples;  // assume the target rate is not lower
 
   if (chan.offset == chan.length) {
     return false;
@@ -251,8 +255,8 @@ static bool RefillStream(ChannelState& chan) {
   // read blocks until we have enough samples
   while (samples_to_gen > 0) {
     // read a block
-    auto block_in_size = port::ReadUnaligned<uint16_t>(chan.in_ptr);
-    auto block_out_size = port::ReadUnaligned<uint16_t>(chan.in_ptr + 2);
+    const auto block_in_size = port::ReadUnaligned<uint16_t>(chan.in_ptr);
+    const auto block_out_size = port::ReadUnaligned<uint16_t>(chan.in_ptr + 2);
     chan.in_ptr += 8;  // there's also a 0000DEAF magic value
 
     if (block_in_size == block_out_size)  // raw block
@@ -280,8 +284,8 @@ static bool RefillStream(ChannelState& chan) {
 }
 
 static void ResetStream(ChannelState& chan, const AUDHeaderType* header) {
-  int channels = header->Flags & AUD_FLAG_STEREO ? 2 : 1;
-  int bits = header->Flags & AUD_FLAG_16BIT ? 16 : 8;
+  const int channels = header->Flags & AUD_FLAG_STEREO ? 2 : 1;
+  const int bits = header->Flags & AUD_FLAG_16BIT ? 16 : 8;
 
   // re-allocate stream if needed
   if (std::cmp_not_equal(channels, chan.channels) ||
@@ -338,7 +342,7 @@ static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
       chan.volume = static_cast<int16_t>(ToMixerAmplitude(chan.raw_volume));
     }
 
-    int stream_len = SDL_AudioStreamGet(chan.stream, MixBuffer, len);
+    const int stream_len = SDL_AudioStreamGet(chan.stream, MixBuffer, len);
 
     // mix into buffer
     const int sample_count = stream_len / int{sizeof(int16_t)};
@@ -355,14 +359,14 @@ static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
 
 int File_Stream_Sample_Vol(const char* filename, int volume,
                            bool /*real_time_start*/) {
-  int id = AcquireSampleHandle(0xFF);
+  const int id = AcquireSampleHandle(0xFF);
 
   if (id == -1) {
     return -1;
   }
 
   // try to open file and get header
-  int handle = Open_File(filename, FileAccess::kRead);
+  const int handle = Open_File(filename, FileAccess::kRead);
 
   if (handle < 0) {
     return -1;
@@ -375,8 +379,8 @@ int File_Stream_Sample_Vol(const char* filename, int volume,
     return -1;
   }
 
-  int channels = header.Flags & 1 ? 2 : 1;
-  int bits = header.Flags & 2 ? 16 : 8;
+  const int channels = header.Flags & 1 ? 2 : 1;
+  const int bits = header.Flags & 2 ? 16 : 8;
 
   if (header.Compression != SCOMP_SOS || channels != 1 || bits != 16) {
     Close_File(handle);
@@ -438,8 +442,8 @@ void Sound_Callback() {
 
     // limit how much we buffer so we don't end up with the whole file
     // (not that it's a problem on any modern system, but still)
-    int max_buf = SDL_AUDIO_BITSIZE(ObtainedSpec.format) / 8 *
-                  ObtainedSpec.channels * ObtainedSpec.freq;
+    const int max_buf = SDL_AUDIO_BITSIZE(ObtainedSpec.format) / 8 *
+                        ObtainedSpec.channels * ObtainedSpec.freq;
     if (SDL_AudioStreamAvailable(chan.stream) >= max_buf) {
       continue;
     }
@@ -456,7 +460,7 @@ void Sound_Callback() {
       chan.file_handle = -1;
     } else {
       // read block
-      auto in_size = block_header[0];
+      const auto in_size = block_header[0];
 
       auto* buf = new uint8_t[in_size];
 
@@ -482,9 +486,9 @@ bool Audio_Init(void* /*window*/, int /*bits_per_sample*/, bool stereo,
   desired.callback = SDL_Audio_Callback;
 
   // don't allow format change so I need less mising code
-  int changes = SDL_AUDIO_ALLOW_FREQUENCY_CHANGE |
-                SDL_AUDIO_ALLOW_CHANNELS_CHANGE |
-                SDL_AUDIO_ALLOW_SAMPLES_CHANGE;
+  const int changes = SDL_AUDIO_ALLOW_FREQUENCY_CHANGE |
+                      SDL_AUDIO_ALLOW_CHANNELS_CHANGE |
+                      SDL_AUDIO_ALLOW_SAMPLES_CHANGE;
   AudioDevice =
       SDL_OpenAudioDevice(nullptr, 0, &desired, &ObtainedSpec, changes);
 
@@ -507,7 +511,7 @@ void Sound_End() {
 
   delete[] MixBuffer;
 
-  for (auto& chan : Channels) {
+  for (const auto& chan : Channels) {
     SDL_FreeAudioStream(chan.stream);
   }
 }
@@ -567,11 +571,11 @@ int Play_Sample_Handle(const void* sample, int priority, int volume,
 
   // play it
   const auto* header = static_cast<const AUDHeaderType*>(sample);
-  int channels = header->Flags & AUD_FLAG_STEREO ? 2 : 1;
-  int bits = header->Flags & AUD_FLAG_16BIT ? 16 : 8;
+  const int channels = header->Flags & AUD_FLAG_STEREO ? 2 : 1;
+  const int bits = header->Flags & AUD_FLAG_16BIT ? 16 : 8;
 
-  bool valid_comp = (header->Compression == SCOMP_SOS && bits == 16) ||
-                    (header->Compression == SCOMP_WESTWOOD && bits == 8);
+  const bool valid_comp = (header->Compression == SCOMP_SOS && bits == 16) ||
+                          (header->Compression == SCOMP_WESTWOOD && bits == 8);
 
   if (!valid_comp || channels != 1) {
     printf("\trate %i size %i/%i channels %i bits %i comp %i\n", header->Rate,
@@ -617,7 +621,7 @@ int Play_Sample_Handle(const void* sample, int priority, int volume,
 }
 
 int Set_Score_Vol(int volume) {
-  int old = ScoreVolume;
+  const int old = ScoreVolume;
   ScoreVolume = volume;
 
   for (auto& chan : Channels) {
@@ -633,10 +637,10 @@ int Set_Score_Vol(int volume) {
 
 void Fade_Sample(int handle, int ticks) {
   // recalse from game ticks, to audio callbacks
-  int fade_time = 1000 / 60 * ticks;
-  int callback_interval = ObtainedSpec.samples * 1000 / ObtainedSpec.freq;
+  const int fade_time = 1000 / 60 * ticks;
+  const int callback_interval = ObtainedSpec.samples * 1000 / ObtainedSpec.freq;
 
-  int num_steps = fade_time / callback_interval;
+  const int num_steps = fade_time / callback_interval;
 
   if (Sample_Status(handle)) {
     SDL_LockAudioDevice(AudioDevice);

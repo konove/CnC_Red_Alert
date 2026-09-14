@@ -133,7 +133,7 @@ class GenericList {
   void Add_Head(GenericNode* node) { FirstNode.Link(node); }
   void Add_Tail(GenericNode* node) { LastNode.Prev()->Link(node); }
   void Delete() {
-    GenericNode* node = FirstNode.Next();
+    const GenericNode* node = FirstNode.Next();
     while (node->Is_Valid()) {
       GenericNode* next = node->Next();
       delete node;

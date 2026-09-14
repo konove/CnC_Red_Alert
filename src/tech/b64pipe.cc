@@ -89,7 +89,7 @@ int Base64Pipe::Put(const void* source, int slen) {
   }
 
   if (Counter > 0) {
-    int len = slen < fromsize - Counter ? slen : fromsize - Counter;
+    const int len = slen < fromsize - Counter ? slen : fromsize - Counter;
     memmove(&from[Counter], source, base::ToSize(len));
     Counter += len;
     slen -= len;
@@ -148,10 +148,12 @@ int Base64Pipe::Flush() {
 
   if (Counter) {
     if (Control == ENCODE) {
-      int chars = Base64_Encode(PBuffer, Counter, CBuffer, sizeof(CBuffer));
+      const int chars =
+          Base64_Encode(PBuffer, Counter, CBuffer, sizeof(CBuffer));
       len += Pipe::Put(CBuffer, chars);
     } else {
-      int chars = Base64_Decode(CBuffer, Counter, PBuffer, sizeof(PBuffer));
+      const int chars =
+          Base64_Decode(CBuffer, Counter, PBuffer, sizeof(PBuffer));
       len += Pipe::Put(PBuffer, chars);
     }
     Counter = 0;

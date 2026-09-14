@@ -76,7 +76,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette = nullptr,
                                   void* buff = nullptr, int32_t size = 0);
 GraphicBufferClass* Read_PCX_File(char* name, BufferClass& Buff,
                                   char* palette = nullptr);
-int Write_PCX_File(char* name, GraphicViewPortClass& pic,
-                   unsigned char* palette);
+int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
+                   const unsigned char* palette);
 
 #endif  // CNC_RED_ALERT_TECH_PCX_FILE_H_

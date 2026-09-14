@@ -114,7 +114,7 @@ int BlowPipe::Put(const void* source, int slen) {
   */
   if (Counter) {
     const int room = static_cast<int>(sizeof(Buffer)) - Counter;
-    int sublen = room < slen ? room : slen;
+    const int sublen = room < slen ? room : slen;
     memmove(&Buffer[Counter], source, base::ToSize(sublen));
     Counter += sublen;
     source = (char*)source + sublen;

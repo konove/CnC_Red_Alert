@@ -205,16 +205,16 @@ void PKey::Generate(Straw& random, int bits, PKey& fastkey, PKey& slowkey) {
     **	Generate the two random prime numbers. This is the longest
     **	step.
     */
-    BigInt p = Generate_Prime(random, bits, &p);
-    BigInt q = Generate_Prime(random, bits, &q);
+    const BigInt p = Generate_Prime(random, bits, &p);
+    const BigInt q = Generate_Prime(random, bits, &q);
 
     /*
     **	The exponent factors are easy to calculate from the prime numbers.
     */
-    BigInt e = Fast_Exponent();
-    BigInt n = p * q;
-    BigInt pqmin = (p - 1) * (q - 1);
-    BigInt d = e.Inverse(pqmin);
+    const BigInt e = Fast_Exponent();
+    const BigInt n = p * q;
+    const BigInt pqmin = (p - 1) * (q - 1);
+    const BigInt d = e.Inverse(pqmin);
 
     /*
     **	Store the data into the key objects. Notice that the modulus is the

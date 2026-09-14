@@ -418,7 +418,7 @@ inline bool GraphicViewPortClass::Get_IsDirectDraw() {
  *functionality to GraphicBuffer                            *
  *=============================================================================================*/
 inline bool GraphicViewPortClass::Lock() {
-  bool lock = GraphicBuff->Lock_Surface();
+  const bool lock = GraphicBuff->Lock_Surface();
   if (!lock) {
     return false;
   }

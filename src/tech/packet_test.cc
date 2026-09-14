@@ -28,7 +28,7 @@ TEST(PacketClassTest, IntegerFieldsRoundTrip) {
   packet.Add_Field("STRG", "hello");
 
   int size = 0;
-  std::unique_ptr<char[]> wire = Serialize(packet, size);
+  const std::unique_ptr<char[]> wire = Serialize(packet, size);
   PacketClass parsed(wire.get());
 
   char c = 0;
@@ -60,7 +60,7 @@ TEST(PacketClassTest, LongFieldIsFourBigEndianBytes) {
   packet.Add_Field("ABCD", int32_t{0x01020304});
 
   int size = 0;
-  std::unique_ptr<char[]> wire = Serialize(packet, size);
+  const std::unique_ptr<char[]> wire = Serialize(packet, size);
 
   // Packet header (size, id), field header (id, type, size), then the data.
   // The original protocol sends TYPE_LONG as 4 bytes; an 8-byte host `long`

@@ -15,7 +15,7 @@ int stricmp(const char* string1, const char* string2) {
   const std::string_view view1(string1);
   const std::string_view view2(string2);
 
-  auto to_lower = [](const unsigned char chr) noexcept {
+  const auto to_lower = [](const unsigned char chr) noexcept {
     return std::tolower(chr);
   };
 
@@ -45,7 +45,7 @@ int strnicmp(const char* string1, const char* string2, const size_t count) {
   view1 = view1.substr(0, std::min(view1.size(), count));
   view2 = view2.substr(0, std::min(view2.size(), count));
 
-  auto to_lower = [](const unsigned char chr) noexcept {
+  const auto to_lower = [](const unsigned char chr) noexcept {
     return std::tolower(chr);
   };
 
@@ -69,10 +69,13 @@ int strnicmp(const char* string1, const char* string2, const size_t count) {
 
 // TODO(konove): Replace all usage of this function with absl::EqualsIgnoreCase
 int memicmp(const void* buffer1, const void* buffer2, const size_t count) {
-  auto view1 = std::span(static_cast<const unsigned char*>(buffer1), count);
-  auto view2 = std::span(static_cast<const unsigned char*>(buffer2), count);
+  const auto view1 =
+      std::span(static_cast<const unsigned char*>(buffer1), count);
+  const auto view2 =
+      std::span(static_cast<const unsigned char*>(buffer2), count);
 
-  auto cmp = [](const unsigned char chr_a, const unsigned char chr_b) noexcept {
+  const auto cmp = [](const unsigned char chr_a,
+                      const unsigned char chr_b) noexcept {
     return std::tolower(chr_a) <=> std::tolower(chr_b);
   };
   const auto result = std::lexicographical_compare_three_way(

@@ -138,7 +138,7 @@ int LZOPipe::Put(const void* source, int slen) {
       if (BlockHeader.CompCount == 0xFFFF) {
         const int needed =
             static_cast<int>(sizeof(BlockHeader)) - Counter;
-        int len = slen < needed ? slen : needed;
+        const int len = slen < needed ? slen : needed;
         memmove(&Buffer[Counter], source, base::ToSize(len));
         source = (char*)source + len;
         slen -= len;
@@ -165,9 +165,9 @@ int LZOPipe::Put(const void* source, int slen) {
       *make a whole *	data block.
       */
       if (slen > 0) {
-        int len = slen < BlockHeader.CompCount - Counter
-                      ? slen
-                      : BlockHeader.CompCount - Counter;
+        const int len = slen < BlockHeader.CompCount - Counter
+                            ? slen
+                            : BlockHeader.CompCount - Counter;
 
         memmove(&Buffer[Counter], source, base::ToSize(len));
         slen -= len;
@@ -202,7 +202,8 @@ int LZOPipe::Put(const void* source, int slen) {
     *stored *	into the staging buffer until a full set has been accumulated.
     */
     if (Counter > 0) {
-      int tocopy = slen < BlockSize - Counter ? slen : BlockSize - Counter;
+      const int tocopy =
+          slen < BlockSize - Counter ? slen : BlockSize - Counter;
       memmove(&Buffer[Counter], source, base::ToSize(tocopy));
       source = (char*)source + tocopy;
       slen -= tocopy;

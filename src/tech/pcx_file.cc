@@ -46,7 +46,7 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/memflag.h"
 
-static void Write_Pcx_ScanLine(int file_handle, int scansize, char* ptr);
+static void Write_Pcx_ScanLine(int file_handle, int scansize, const char* ptr);
 
 /***************************************************************************
  * WRITE_PCX_FILE -- Write the data in ViewPort to a pcx file              *
@@ -67,8 +67,8 @@ static void Write_Pcx_ScanLine(int file_handle, int scansize, char* ptr);
  *   05/04/1995 JRJ : Created.                                             *
  *   08/01/1995 SKB : Copy the palette so it is not modified.              *
  *=========================================================================*/
-int Write_PCX_File(char* name, GraphicViewPortClass& pic,
-                   unsigned char* palette) {
+int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
+                   const unsigned char* palette) {
   unsigned char palcopy[256 * 3];
   unsigned i;
   int file_handle;
@@ -130,7 +130,7 @@ int Write_PCX_File(char* name, GraphicViewPortClass& pic,
  *=========================================================================*/
 
 constexpr int kPoolSize = 2048;
-void Write_Pcx_ScanLine(int file_handle, int scansize, char* ptr) {
+void Write_Pcx_ScanLine(int file_handle, int scansize, const char* ptr) {
   unsigned i;
   unsigned rle;
   unsigned color;
