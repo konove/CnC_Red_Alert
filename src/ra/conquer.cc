@@ -26,7 +26,6 @@
 //
 // Originally CONQUER.CPP, by Joe L. Bostic, started April 3, 1991.
 
-#include "base/numeric.h"
 #include "ra/conquer.h"
 
 #include <fcntl.h>
@@ -46,6 +45,7 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
+#include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -1867,7 +1867,7 @@ bool Main_Loop() {
     // Leaked for the same reason as frames above.
     static auto& temp_page = *new GraphicBufferClass(
         SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
-        static_cast<int32_t>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
+        SeenBuff.Get_Width() * SeenBuff.Get_Height());
 
     const base::ssize size =
         static_cast<base::ssize>(SeenBuff.Get_Width()) * SeenBuff.Get_Height();
@@ -2190,8 +2190,8 @@ std::string Fading_Table_Name(const char* base, const TheaterType theater) {
 std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile,
                                        const int shape_num, int frames,
                                        const int zoom_factor) {
-  static const int off_x[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
-  static const int off_y[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
+  static constexpr int off_x[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
+  static constexpr int off_y[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
 
   // If there is no shape file, then there can be no radar icon imagery.
   if (shapefile == nullptr) {
@@ -2217,9 +2217,8 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile,
 
   // Allocate a position to store our icons.  If the alloc fails then
   // we don't add these icons to the set.
-  auto result =
-      std::make_unique<char[]>(
-          base::ToSize((icon_width * icon_height * 9 * frames) + 2));
+  auto result = std::make_unique<char[]>(
+      base::ToSize((icon_width * icon_height * 9 * frames) + 2));
   char* buffer = result.get();
   *buffer++ = static_cast<char>(icon_width);
   *buffer++ = static_cast<char>(icon_height);
@@ -2329,7 +2328,7 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
         GraphicBufferClass gb(width, height, x_buffer);
         const TPoint2D pt(width / 2, height / 2);
 
-        gb.Scale_Rotate(bm, pt, static_cast<int32_t>(scale),
+        gb.Scale_Rotate(bm, pt, scale,
                         static_cast<uint8_t>(256 - rotation + 64));
         buffer = x_buffer;
       }
@@ -3014,10 +3013,10 @@ bool Force_CD_Available(int cd_desired)  // ajw
         const auto format =
             absl::ParsedFormat<'d', 's'>::New(Text_String(text));
         if (format != nullptr) {
-          port::SafeCopy(
-              buffer, absl::StrFormat(*format, cd_desired + 1,
-                                      kCdNames[base::ToSize(cd_desired)])
-                          .c_str());
+          port::SafeCopy(buffer,
+                         absl::StrFormat(*format, cd_desired + 1,
+                                         kCdNames[base::ToSize(cd_desired)])
+                             .c_str());
         }
       }
 
@@ -3111,7 +3110,7 @@ void* Hires_Load(const char* name) {
   CCFileClass file(filename);
 
   if (file.Is_Available()) {
-    const int length = static_cast<int>(file.Size());
+    const int length = file.Size();
     void* return_ptr = new char[base::ToSize(length)];
     file.Read(return_ptr, length);
     return return_ptr;
