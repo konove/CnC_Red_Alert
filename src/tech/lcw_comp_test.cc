@@ -150,26 +150,22 @@ TEST(LcwCompTest, CompressesRedundantData) {
 void ExpectPipeStrawRoundTrip(const std::vector<uint8_t>& plain,
                               int block_size) {
   ByteSink encoded;
-  LCWPipe compressor(LCWPipe::COMPRESS, block_size);
-  compressor.SetSink(encoded);
+  LCWPipe compressor(LCWPipe::COMPRESS, encoded, block_size);
   for (std::size_t at = 0; at < plain.size(); at += 1234) {
     const std::size_t piece = std::min<std::size_t>(1234, plain.size() - at);
     compressor.Put(std::as_bytes(std::span(plain).subspan(at, piece)));
   }
   compressor.Flush();
   BufferStraw compressed(std::as_bytes(std::span(encoded.bytes)));
-  LCWStraw decompressor(LCWStraw::DECOMPRESS, block_size);
-  decompressor.SetSource(compressed);
+  LCWStraw decompressor(LCWStraw::DECOMPRESS, compressed, block_size);
   EXPECT_EQ(Drain(decompressor), plain);
 
   BufferStraw source(std::as_bytes(std::span(plain)));
-  LCWStraw compressing_straw(LCWStraw::COMPRESS, block_size);
-  compressing_straw.SetSource(source);
+  LCWStraw compressing_straw(LCWStraw::COMPRESS, source, block_size);
   const std::vector<uint8_t> straw_encoded = Drain(compressing_straw);
   EXPECT_EQ(straw_encoded, encoded.bytes);
   ByteSink decoded;
-  LCWPipe decompressing_pipe(LCWPipe::DECOMPRESS, block_size);
-  decompressing_pipe.SetSink(decoded);
+  LCWPipe decompressing_pipe(LCWPipe::DECOMPRESS, decoded, block_size);
   for (std::size_t at = 0; at < straw_encoded.size(); at += 777) {
     const std::size_t piece =
         std::min<std::size_t>(777, straw_encoded.size() - at);
@@ -216,8 +212,7 @@ TEST(LcwCompTest, MapAndOverlayPacksRoundTripThroughStagingBuffer) {
   std::vector<char> staging(32000);
   BufferPipe map_sink(std::as_writable_bytes(std::span(staging)));
   {
-    LCWPipe comp(LCWPipe::COMPRESS);
-    comp.SetSink(&map_sink);
+    LCWPipe comp(LCWPipe::COMPRESS, map_sink);
     for (const uint16_t& type : types) {
       comp.WriteObject(type);
     }
@@ -232,8 +227,7 @@ TEST(LcwCompTest, MapAndOverlayPacksRoundTripThroughStagingBuffer) {
 
   BufferStraw map_source(std::as_bytes(
       std::span(staging).first(static_cast<std::size_t>(map_total))));
-  LCWStraw decomp(LCWStraw::DECOMPRESS);
-  decomp.SetSource(&map_source);
+  LCWStraw decomp(LCWStraw::DECOMPRESS, map_source);
   std::vector<uint16_t> read_types(kCells);
   std::vector<uint8_t> read_icons(kCells);
   for (uint16_t& type : read_types) {
@@ -247,8 +241,7 @@ TEST(LcwCompTest, MapAndOverlayPacksRoundTripThroughStagingBuffer) {
 
   BufferPipe overlay_sink(std::as_writable_bytes(std::span(staging)));
   {
-    LCWPipe comppipe(LCWPipe::COMPRESS);
-    comppipe.SetSink(&overlay_sink);
+    LCWPipe comppipe(LCWPipe::COMPRESS, overlay_sink);
     for (const int8_t& overlay : overlays) {
       comppipe.WriteObject(overlay);
     }
@@ -260,8 +253,7 @@ TEST(LcwCompTest, MapAndOverlayPacksRoundTripThroughStagingBuffer) {
 
   BufferStraw overlay_source(std::as_bytes(
       std::span(staging).first(static_cast<std::size_t>(overlay_total))));
-  LCWStraw uncomp(LCWStraw::DECOMPRESS);
-  uncomp.SetSource(&overlay_source);
+  LCWStraw uncomp(LCWStraw::DECOMPRESS, overlay_source);
   std::vector<int8_t> read_overlays(kCells);
   for (int8_t& overlay : read_overlays) {
     ASSERT_TRUE(uncomp.ReadObject(overlay));

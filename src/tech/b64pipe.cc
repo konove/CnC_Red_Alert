@@ -72,7 +72,7 @@ bool Base64Pipe::Put(std::span<const std::byte> bytes) {
   const void* source = bytes.data();
   int slen = static_cast<int>(bytes.size());
   if (source == nullptr || slen < 1) {
-    return Pipe::Put(bytes);
+    return ChainedPipe::Put(bytes);
   }
 
   char* from;
@@ -106,7 +106,7 @@ bool Base64Pipe::Put(std::span<const std::byte> bytes) {
       } else {
         outcount = Base64_Decode(from, fromsize, to, tosize);
       }
-      Pipe::Put(ByteView(to, outcount));
+      ChainedPipe::Put(ByteView(to, outcount));
       Counter = 0;
     }
   }
@@ -119,7 +119,7 @@ bool Base64Pipe::Put(std::span<const std::byte> bytes) {
       outcount = Base64_Decode(source, fromsize, to, tosize);
     }
     source = (char*)source + fromsize;
-    Pipe::Put(ByteView(to, outcount));
+    ChainedPipe::Put(ByteView(to, outcount));
     slen -= fromsize;
   }
 
@@ -152,14 +152,14 @@ bool Base64Pipe::Flush() {
     if (Control == ENCODE) {
       const int chars = Base64_Encode(PBuffer.data(), Counter, CBuffer.data(),
                                       static_cast<int>(CBuffer.size()));
-      Pipe::Put(ByteView(CBuffer.data(), chars));
+      ChainedPipe::Put(ByteView(CBuffer.data(), chars));
     } else {
       const int chars = Base64_Decode(CBuffer.data(), Counter, PBuffer.data(),
                                       static_cast<int>(PBuffer.size()));
-      Pipe::Put(ByteView(PBuffer.data(), chars));
+      ChainedPipe::Put(ByteView(PBuffer.data(), chars));
     }
     Counter = 0;
   }
-  Pipe::Flush();
+  ChainedPipe::Flush();
   return ok();
 }

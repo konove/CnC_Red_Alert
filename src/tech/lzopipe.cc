@@ -72,8 +72,11 @@
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-LZOPipe::LZOPipe(CompControl control, int blocksize)
-    : Control(control), BlockSize(blocksize), SafetyMargin(BlockSize) {
+LZOPipe::LZOPipe(CompControl control, Pipe& next, int blocksize)
+    : ChainedPipe(next),
+      Control(control),
+      BlockSize(blocksize),
+      SafetyMargin(BlockSize) {
   Buffer.resize(base::ToSize(BlockSize + SafetyMargin));
   Buffer2.resize(base::ToSize(BlockSize + SafetyMargin));
   if (control == COMPRESS) {
@@ -105,7 +108,7 @@ bool LZOPipe::Put(std::span<const std::byte> bytes) {
   const void* source = bytes.data();
   int slen = static_cast<int>(bytes.size());
   if (source == nullptr || slen < 1) {
-    return Pipe::Put(bytes);
+    return ChainedPipe::Put(bytes);
   }
 
   /*
@@ -174,7 +177,7 @@ bool LZOPipe::Put(std::span<const std::byte> bytes) {
             Fail();
             break;
           }
-          Pipe::Put(ByteView(Buffer2.data(), BlockHeader.UncompCount));
+          ChainedPipe::Put(ByteView(Buffer2.data(), BlockHeader.UncompCount));
           Counter = 0;
           BlockHeader.CompCount = 0xFFFF;
         }
@@ -200,8 +203,8 @@ bool LZOPipe::Put(std::span<const std::byte> bytes) {
                          Buffer2.data(), &len, work_.data());
         BlockHeader.CompCount = static_cast<uint16_t>(len);
         BlockHeader.UncompCount = static_cast<uint16_t>(BlockSize);
-        Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
-        Pipe::Put(ByteView(Buffer2.data(), static_cast<int>(len)));
+        ChainedPipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
+        ChainedPipe::Put(ByteView(Buffer2.data(), static_cast<int>(len)));
         Counter = 0;
       }
     }
@@ -220,8 +223,8 @@ bool LZOPipe::Put(std::span<const std::byte> bytes) {
 
       BlockHeader.CompCount = static_cast<uint16_t>(len);
       BlockHeader.UncompCount = static_cast<uint16_t>(BlockSize);
-      Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
-      Pipe::Put(ByteView(Buffer2.data(), static_cast<int>(len)));
+      ChainedPipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
+      ChainedPipe::Put(ByteView(Buffer2.data(), static_cast<int>(len)));
     }
 
     /*
@@ -276,11 +279,11 @@ bool LZOPipe::Flush() {
                      Buffer2.data(), &len, work_.data());
     BlockHeader.CompCount = static_cast<uint16_t>(len);
     BlockHeader.UncompCount = static_cast<uint16_t>(Counter);
-    Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
-    Pipe::Put(ByteView(Buffer2.data(), static_cast<int>(len)));
+    ChainedPipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
+    ChainedPipe::Put(ByteView(Buffer2.data(), static_cast<int>(len)));
     Counter = 0;
   }
 
-  Pipe::Flush();
+  ChainedPipe::Flush();
   return ok();
 }

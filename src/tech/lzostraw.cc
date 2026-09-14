@@ -76,8 +76,11 @@
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-LZOStraw::LZOStraw(CompControl control, int blocksize)
-    : Control(control), BlockSize(blocksize), SafetyMargin(BlockSize) {
+LZOStraw::LZOStraw(CompControl control, Straw& source, int blocksize)
+    : ChainedStraw(source),
+      Control(control),
+      BlockSize(blocksize),
+      SafetyMargin(BlockSize) {
   Buffer.resize(base::ToSize(BlockSize + SafetyMargin));
   if (control == COMPRESS) {
     Buffer2.resize(base::ToSize(BlockSize + SafetyMargin));
@@ -150,8 +153,8 @@ base::ssize LZOStraw::Get(std::span<std::byte> buffer) {
       if (corrupt_) {
         break;
       }
-      int incount = static_cast<int>(
-          Straw::Get(std::as_writable_bytes(std::span(&BlockHeader, 1))));
+      int incount = static_cast<int>(ChainedStraw::Get(
+          std::as_writable_bytes(std::span(&BlockHeader, 1))));
       if (incount != sizeof(BlockHeader)) {
         // Running out between blocks is the normal end of the stream.
         if (incount != 0) {
@@ -168,8 +171,8 @@ base::ssize LZOStraw::Get(std::span<std::byte> buffer) {
         break;
       }
 
-      incount = static_cast<int>(
-          Straw::Get(WritableByteView(staging_.data(), BlockHeader.CompCount)));
+      incount = static_cast<int>(ChainedStraw::Get(
+          WritableByteView(staging_.data(), BlockHeader.CompCount)));
       if (std::cmp_not_equal(incount, BlockHeader.CompCount)) {
         Fail();
         break;
@@ -186,7 +189,7 @@ base::ssize LZOStraw::Get(std::span<std::byte> buffer) {
       Counter = BlockHeader.UncompCount;
     } else {
       BlockHeader.UncompCount = static_cast<uint16_t>(static_cast<int>(
-          Straw::Get(WritableByteView(Buffer.data(), BlockSize))));
+          ChainedStraw::Get(WritableByteView(Buffer.data(), BlockSize))));
       if (BlockHeader.UncompCount == 0) {
         break;
       }

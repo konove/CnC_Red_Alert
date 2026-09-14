@@ -150,13 +150,8 @@ bool MixArchive::Cache() {
 
   GameFile file(filename_);
   FileStraw file_straw(file);
-  Straw* straw = &file_straw;
-
-  SHAStraw sha;
-  if (has_digest_) {
-    sha.SetSource(file_straw);
-    straw = &sha;
-  }
+  SHAStraw sha(file_straw);
+  Straw* const straw = has_digest_ ? static_cast<Straw*>(&sha) : &file_straw;
 
   if (!file.Open(FileAccess::kRead)) {
     data_.clear();

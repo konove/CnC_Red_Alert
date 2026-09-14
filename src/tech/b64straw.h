@@ -52,11 +52,12 @@
 *straw. Note that *	encoding increases the data size by about 30%. The
 *reverse occurs when decoding.
 */
-class Base64Straw : public Straw {
+class Base64Straw : public ChainedStraw {
  public:
   typedef enum CodeControl { ENCODE, DECODE } CodeControl;
 
-  explicit Base64Straw(CodeControl control) : Control(control) {}
+  Base64Straw(CodeControl control, Straw& source)
+      : ChainedStraw(source), Control(control) {}
   ~Base64Straw() override = default;
 
   Base64Straw(const Base64Straw&) = delete;

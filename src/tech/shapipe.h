@@ -52,9 +52,9 @@
 *stream that flows *	through it. It doesn't modify the data stream in any
 *fashion.
 */
-class SHAPipe : public Pipe {
+class SHAPipe : public ChainedPipe {
  public:
-  SHAPipe() = default;
+  explicit SHAPipe(Pipe& next) : ChainedPipe(next) {}
   ~SHAPipe() override = default;
 
   SHAPipe(const SHAPipe&) = delete;

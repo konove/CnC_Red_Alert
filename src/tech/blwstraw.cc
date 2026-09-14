@@ -84,7 +84,7 @@ base::ssize BlowStraw::Get(std::span<std::byte> buffer) {
   *through *	unchanged.
   */
   if (!BF.has_value()) {
-    return Straw::Get(buffer);
+    return ChainedStraw::Get(buffer);
   }
   BlowfishEngine& engine = *BF;
 
@@ -112,7 +112,7 @@ base::ssize BlowStraw::Get(std::span<std::byte> buffer) {
     **	Fetch and encrypt/decrypt the next block.
     */
     const int incount = static_cast<int>(
-        Straw::Get(WritableByteView(Buffer.data(), kBlockSize)));
+        ChainedStraw::Get(WritableByteView(Buffer.data(), kBlockSize)));
     if (incount == 0) {
       break;
     }

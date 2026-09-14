@@ -70,8 +70,9 @@
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-LCWPipe::LCWPipe(CompControl control, int blocksize)
-    : Control(control),
+LCWPipe::LCWPipe(CompControl control, Pipe& next, int blocksize)
+    : ChainedPipe(next),
+      Control(control),
       BlockSize(blocksize),
       // Room for an incompressible block plus the header the straw stores
       // in front of it.
@@ -105,7 +106,7 @@ bool LCWPipe::Put(std::span<const std::byte> bytes) {
   const void* source = bytes.data();
   int slen = static_cast<int>(bytes.size());
   if (source == nullptr || slen < 1) {
-    return Pipe::Put(bytes);
+    return ChainedPipe::Put(bytes);
   }
 
   /*
@@ -172,7 +173,7 @@ bool LCWPipe::Put(std::span<const std::byte> bytes) {
             Fail();
             break;
           }
-          Pipe::Put(ByteView(Buffer2.data(), BlockHeader.UncompCount));
+          ChainedPipe::Put(ByteView(Buffer2.data(), BlockHeader.UncompCount));
           Counter = 0;
           BlockHeader.CompCount = 0xFFFF;
         }
@@ -197,8 +198,8 @@ bool LCWPipe::Put(std::span<const std::byte> bytes) {
 
         BlockHeader.CompCount = static_cast<uint16_t>(len);
         BlockHeader.UncompCount = static_cast<uint16_t>(BlockSize);
-        Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
-        Pipe::Put(ByteView(Buffer2.data(), len));
+        ChainedPipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
+        ChainedPipe::Put(ByteView(Buffer2.data(), len));
         Counter = 0;
       }
     }
@@ -215,8 +216,8 @@ bool LCWPipe::Put(std::span<const std::byte> bytes) {
 
       BlockHeader.CompCount = static_cast<uint16_t>(len);
       BlockHeader.UncompCount = static_cast<uint16_t>(BlockSize);
-      Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
-      Pipe::Put(ByteView(Buffer2.data(), len));
+      ChainedPipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
+      ChainedPipe::Put(ByteView(Buffer2.data(), len));
     }
 
     /*
@@ -270,11 +271,11 @@ bool LCWPipe::Flush() {
 
     BlockHeader.CompCount = static_cast<uint16_t>(len);
     BlockHeader.UncompCount = static_cast<uint16_t>(Counter);
-    Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
-    Pipe::Put(ByteView(Buffer2.data(), len));
+    ChainedPipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
+    ChainedPipe::Put(ByteView(Buffer2.data(), len));
     Counter = 0;
   }
 
-  Pipe::Flush();
+  ChainedPipe::Flush();
   return ok();
 }

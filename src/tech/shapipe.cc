@@ -66,7 +66,7 @@
  *=============================================================================================*/
 bool SHAPipe::Put(std::span<const std::byte> bytes) {
   SHA.Hash(bytes.data(), static_cast<int32_t>(bytes.size()));
-  return Pipe::Put(bytes);
+  return ChainedPipe::Put(bytes);
 }
 
 /***********************************************************************************************

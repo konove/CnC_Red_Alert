@@ -84,8 +84,7 @@ std::vector<uint8_t> LcwAbc() {
 template <class PipeType>
 std::vector<uint8_t> Compress(const std::vector<uint8_t>& plain) {
   ByteSink sink;
-  PipeType pipe(PipeType::COMPRESS, kBlockSize);
-  pipe.SetSink(sink);
+  PipeType pipe(PipeType::COMPRESS, sink, kBlockSize);
   pipe.Put(std::as_bytes(std::span(plain)));
   pipe.Flush();
   return sink.bytes;
@@ -106,15 +105,13 @@ template <class PipeType, class StrawType>
 void ExpectDecodes(const std::vector<uint8_t>& encoded,
                    const std::vector<uint8_t>& expected) {
   ByteSink sink;
-  PipeType pipe(PipeType::DECOMPRESS, kBlockSize);
-  pipe.SetSink(sink);
+  PipeType pipe(PipeType::DECOMPRESS, sink, kBlockSize);
   pipe.Put(std::as_bytes(std::span(encoded)));
   EXPECT_FALSE(pipe.Finish()) << "pipe";
   EXPECT_EQ(sink.bytes, expected) << "pipe";
 
   BufferStraw source(std::as_bytes(std::span(encoded)));
-  StrawType straw(StrawType::DECOMPRESS, kBlockSize);
-  straw.SetSource(source);
+  StrawType straw(StrawType::DECOMPRESS, source, kBlockSize);
   EXPECT_EQ(Drain(straw), expected) << "straw";
   EXPECT_FALSE(straw.ok()) << "straw";
 }

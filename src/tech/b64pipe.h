@@ -52,11 +52,12 @@
 *through. Note that *	encoded data will grow in size by about 30%. The reverse
 *occurs when decoding.
 */
-class Base64Pipe : public Pipe {
+class Base64Pipe : public ChainedPipe {
  public:
   typedef enum CodeControl { ENCODE, DECODE } CodeControl;
 
-  explicit Base64Pipe(const CodeControl control) : Control(control) {}
+  Base64Pipe(const CodeControl control, Pipe& next)
+      : ChainedPipe(next), Control(control) {}
   ~Base64Pipe() override = default;
 
   Base64Pipe(const Base64Pipe&) = delete;

@@ -50,8 +50,7 @@ std::unique_ptr<BlowStraw> MakePKDecryptStraw(Straw& source, const PKey& key) {
   key.Decrypt(encrypted_key, encrypted_len, blowfish_key);
 
   // Create and configure the BlowStraw.
-  auto straw = std::make_unique<BlowStraw>(BlowStraw::DECRYPT);
+  auto straw = std::make_unique<BlowStraw>(BlowStraw::DECRYPT, source);
   straw->Key(blowfish_key, kBlowfishKeySize);
-  straw->SetSource(source);
   return straw;
 }

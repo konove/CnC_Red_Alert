@@ -55,11 +55,12 @@
 *This changes the memory footprint of this class depending on *	the process
 *desired.
 */
-class LZOStraw : public Straw {
+class LZOStraw : public ChainedStraw {
  public:
   typedef enum CompControl { COMPRESS, DECOMPRESS } CompControl;
 
-  explicit LZOStraw(CompControl control, int blocksize = 1024 * 8);
+  // source must outlive this straw.
+  LZOStraw(CompControl control, Straw& source, int blocksize = 1024 * 8);
   ~LZOStraw() override = default;
 
   base::ssize Get(std::span<std::byte> buffer) override;

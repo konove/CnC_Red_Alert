@@ -277,8 +277,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
     if (len > 0) {
       BufferStraw bpipe(
           std::as_bytes(std::span(staging_buffer).first(base::ToSize(len))));
-      LCWStraw uncomp(LCWStraw::DECOMPRESS);
-      uncomp.SetSource(&bpipe);
+      LCWStraw uncomp(LCWStraw::DECOMPRESS, bpipe);
 
       for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
         OverlayType classid;
@@ -367,9 +366,7 @@ void OverlayClass::Write_INI(CCINIClass& ini) {
   ini.Clear("OverlayPack");
 
   BufferPipe bpipe(std::as_writable_bytes(std::span(staging_buffer)));
-  LCWPipe comppipe(LCWPipe::COMPRESS);
-
-  comppipe.SetSink(&bpipe);
+  LCWPipe comppipe(LCWPipe::COMPRESS, bpipe);
 
   CellClass* cellptr = &Map[static_cast<CELL>(0)];
   for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {

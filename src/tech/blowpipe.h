@@ -53,11 +53,12 @@
 **	Performs Blowfish encryption/decryption on the data stream that is piped
 **	through this class.
 */
-class BlowPipe : public Pipe {
+class BlowPipe : public ChainedPipe {
  public:
   typedef enum CryptControl { ENCRYPT, DECRYPT } CryptControl;
 
-  explicit BlowPipe(CryptControl control) : Control(control) {}
+  BlowPipe(CryptControl control, Pipe& next)
+      : ChainedPipe(next), Control(control) {}
   ~BlowPipe() override = default;
   bool Flush() override;
 

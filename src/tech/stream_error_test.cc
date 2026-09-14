@@ -109,8 +109,7 @@ TEST(StreamErrorTest, BufferPipeStoresWhatFitsThenFailsForGood) {
 TEST(StreamErrorTest, FailureDownstreamReachesEveryLink) {
   std::array<char, 8> storage{};
   BufferPipe sink(std::as_writable_bytes(std::span(storage)));
-  LZOPipe compressor(LZOPipe::COMPRESS, 16);
-  compressor.SetSink(sink);
+  LZOPipe compressor(LZOPipe::COMPRESS, sink, 16);
   // Buffered: nothing has reached the small sink yet.
   EXPECT_TRUE(compressor.Put(Bytes("0123456789")));
   EXPECT_TRUE(compressor.ok());
@@ -124,12 +123,10 @@ TEST(StreamErrorTest, FailureDownstreamReachesEveryLink) {
 // behind it, then finishes the chain, which must add nothing.
 TEST(StreamErrorTest, FlushEmitsEverythingSoFinishAddsNothing) {
   VectorPipe file;
-  BlowPipe blow(BlowPipe::ENCRYPT);
-  LZOPipe lzo(LZOPipe::COMPRESS, 64);
+  BlowPipe blow(BlowPipe::ENCRYPT, file);
+  LZOPipe lzo(LZOPipe::COMPRESS, blow, 64);
   const std::array<char, 8> key = {1, 2, 3, 4, 5, 6, 7, 8};
   blow.Key(key.data(), static_cast<int>(key.size()));
-  blow.SetSink(file);
-  lzo.SetSink(blow);
   // 100 bytes: one full block and a partial one, and a Blowfish tail.
   const std::string text(100, 'q');
   EXPECT_TRUE(lzo.Put(Bytes(text)));
@@ -166,8 +163,7 @@ TEST(StreamErrorTest, FileStrawTellsEndOfFileFromReadError) {
 
 TEST(StreamErrorTest, ReadErrorIsStickyThroughTransformStraw) {
   VectorPipe encoded;
-  LZOPipe compressor(LZOPipe::COMPRESS, 16);
-  compressor.SetSink(encoded);
+  LZOPipe compressor(LZOPipe::COMPRESS, encoded, 16);
   compressor.Put(Bytes("0123456789abcdefghijklmnopqrstuvwxyz"));
   compressor.Finish();
   std::string stored(static_cast<std::size_t>(std::ssize(encoded.bytes)), '\0');
@@ -178,8 +174,7 @@ TEST(StreamErrorTest, ReadErrorIsStickyThroughTransformStraw) {
   // Blocks of 16, 16 and 4 bytes; the read error lands inside the last.
   ScriptedFile file(stored, std::ssize(stored) - 3);
   FileStraw straw(file);
-  LZOStraw decompressor(LZOStraw::DECOMPRESS, 16);
-  decompressor.SetSource(straw);
+  LZOStraw decompressor(LZOStraw::DECOMPRESS, straw, 16);
   std::array<std::byte, 64> buffer{};
   EXPECT_EQ(decompressor.Get(buffer), 32);
   EXPECT_FALSE(decompressor.ok());

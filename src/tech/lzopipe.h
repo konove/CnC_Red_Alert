@@ -54,11 +54,12 @@
 *to be compressed *	quickly and large enough size to get decent compression
 *rates.
 */
-class LZOPipe : public Pipe {
+class LZOPipe : public ChainedPipe {
  public:
   typedef enum CompControl { COMPRESS, DECOMPRESS } CompControl;
 
-  explicit LZOPipe(CompControl /*control*/, int blocksize = 1024 * 8);
+  // next must outlive this pipe.
+  LZOPipe(CompControl control, Pipe& next, int blocksize = 1024 * 8);
   ~LZOPipe() override = default;
 
   bool Flush() override;

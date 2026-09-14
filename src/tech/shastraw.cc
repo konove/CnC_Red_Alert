@@ -74,7 +74,7 @@ base::ssize SHAStraw::Get(std::span<std::byte> buffer) {
     return 0;
   }
 
-  const base::ssize counter = Straw::Get(buffer);
+  const base::ssize counter = ChainedStraw::Get(buffer);
   SHA.Hash(buffer.data(), static_cast<int32_t>(counter));
   return counter;
 }

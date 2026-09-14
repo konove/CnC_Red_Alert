@@ -55,9 +55,8 @@ constexpr std::array<uint8_t, 16> kKey = {1, 2,  3,  4,  5,  6,  7,  8,
 
 std::vector<uint8_t> EncryptWithPipe(const std::vector<uint8_t>& plain) {
   VectorPipe sink;
-  BlowPipe pipe(BlowPipe::ENCRYPT);
+  BlowPipe pipe(BlowPipe::ENCRYPT, sink);
   pipe.Key(kKey.data(), kKey.size());
-  pipe.SetSink(sink);
   pipe.Put(std::as_bytes(std::span(plain)));
   pipe.Flush();
   return sink.bytes;
@@ -66,9 +65,8 @@ std::vector<uint8_t> EncryptWithPipe(const std::vector<uint8_t>& plain) {
 std::vector<uint8_t> DecryptWithStraw(const std::vector<uint8_t>& cipher,
                                       int chunk_size) {
   BufferStraw source(std::as_bytes(std::span(cipher)));
-  BlowStraw straw(BlowStraw::DECRYPT);
+  BlowStraw straw(BlowStraw::DECRYPT, source);
   straw.Key(kKey.data(), kKey.size());
-  straw.SetSource(source);
   return Drain(straw, chunk_size);
 }
 
@@ -100,17 +98,15 @@ TEST(BlowfishStreamTest, ShortTailPassesThroughBothWays) {
       std::equal(cipher.begin() + 16, cipher.end(), plain.begin() + 16));
 
   BufferStraw source(std::as_bytes(std::span(plain)));
-  BlowStraw straw(BlowStraw::ENCRYPT);
+  BlowStraw straw(BlowStraw::ENCRYPT, source);
   straw.Key(kKey.data(), kKey.size());
-  straw.SetSource(source);
   EXPECT_EQ(Drain(straw, 7), cipher);
 
   EXPECT_EQ(DecryptWithStraw(cipher, 7), plain);
 
   VectorPipe decrypted;
-  BlowPipe pipe(BlowPipe::DECRYPT);
+  BlowPipe pipe(BlowPipe::DECRYPT, decrypted);
   pipe.Key(kKey.data(), kKey.size());
-  pipe.SetSink(decrypted);
   pipe.Put(std::as_bytes(std::span(cipher)));
   pipe.Flush();
   EXPECT_EQ(decrypted.bytes, plain);
@@ -123,15 +119,13 @@ TEST(BlowfishStreamTest, ShortTailPassesThroughBothWays) {
 TEST(BlowfishStreamTest, WithoutKeyPassesThrough) {
   const std::vector<uint8_t> plain = Plain(37);
   VectorPipe sink;
-  BlowPipe pipe(BlowPipe::ENCRYPT);
-  pipe.SetSink(sink);
+  BlowPipe pipe(BlowPipe::ENCRYPT, sink);
   pipe.Put(std::as_bytes(std::span(plain)));
   pipe.Flush();
   EXPECT_EQ(sink.bytes, plain);
 
   BufferStraw source(std::as_bytes(std::span(plain)));
-  BlowStraw straw(BlowStraw::DECRYPT);
-  straw.SetSource(source);
+  BlowStraw straw(BlowStraw::DECRYPT, source);
   EXPECT_EQ(Drain(straw, 10), plain);
 }
 
@@ -140,9 +134,8 @@ TEST(BlowfishStreamTest, OneByteAtATimeMatchesBulk) {
   const std::vector<uint8_t> bulk = EncryptWithPipe(plain);
 
   VectorPipe sink;
-  BlowPipe pipe(BlowPipe::ENCRYPT);
+  BlowPipe pipe(BlowPipe::ENCRYPT, sink);
   pipe.Key(kKey.data(), kKey.size());
-  pipe.SetSink(sink);
   for (const uint8_t& byte : plain) {
     pipe.WriteObject(byte);
   }

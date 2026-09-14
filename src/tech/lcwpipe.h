@@ -54,11 +54,12 @@
 *to be compressed *	quickly and large enough size to get decent compression
 *rates.
 */
-class LCWPipe : public Pipe {
+class LCWPipe : public ChainedPipe {
  public:
   typedef enum CompControl { COMPRESS, DECOMPRESS } CompControl;
 
-  explicit LCWPipe(CompControl /*control*/, int blocksize = 1024 * 8);
+  // next must outlive this pipe.
+  LCWPipe(CompControl control, Pipe& next, int blocksize = 1024 * 8);
   ~LCWPipe() override = default;
 
   bool Flush() override;

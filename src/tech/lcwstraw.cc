@@ -73,8 +73,9 @@
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-LCWStraw::LCWStraw(CompControl control, int blocksize)
-    : Control(control),
+LCWStraw::LCWStraw(CompControl control, Straw& source, int blocksize)
+    : ChainedStraw(source),
+      Control(control),
       BlockSize(blocksize),
       // Room for an incompressible block plus the header the straw stores
       // in front of it.
@@ -149,8 +150,8 @@ base::ssize LCWStraw::Get(std::span<std::byte> buffer) {
       if (corrupt_) {
         break;
       }
-      int incount = static_cast<int>(
-          Straw::Get(std::as_writable_bytes(std::span(&BlockHeader, 1))));
+      int incount = static_cast<int>(ChainedStraw::Get(
+          std::as_writable_bytes(std::span(&BlockHeader, 1))));
       if (incount != sizeof(BlockHeader)) {
         // Running out between blocks is the normal end of the stream.
         if (incount != 0) {
@@ -169,7 +170,7 @@ base::ssize LCWStraw::Get(std::span<std::byte> buffer) {
       char* ptr =
           Buffer.data() + (BlockSize + SafetyMargin - BlockHeader.CompCount);
       incount = static_cast<int>(
-          Straw::Get(WritableByteView(ptr, BlockHeader.CompCount)));
+          ChainedStraw::Get(WritableByteView(ptr, BlockHeader.CompCount)));
       if (std::cmp_not_equal(incount, BlockHeader.CompCount)) {
         Fail();
         break;
@@ -187,7 +188,7 @@ base::ssize LCWStraw::Get(std::span<std::byte> buffer) {
       Counter = BlockHeader.UncompCount;
     } else {
       BlockHeader.UncompCount = static_cast<uint16_t>(static_cast<int>(
-          Straw::Get(WritableByteView(Buffer.data(), BlockSize))));
+          ChainedStraw::Get(WritableByteView(Buffer.data(), BlockSize))));
       if (BlockHeader.UncompCount == 0) {
         break;
       }

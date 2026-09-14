@@ -56,11 +56,12 @@
 *Blowfish algorithm is symmetric, thus the same key is used *	for encryption
 *as is for decryption.
 */
-class BlowStraw : public Straw {
+class BlowStraw : public ChainedStraw {
  public:
   typedef enum CryptControl { ENCRYPT, DECRYPT } CryptControl;
 
-  explicit BlowStraw(CryptControl control) : Control(control) {}
+  BlowStraw(CryptControl control, Straw& source)
+      : ChainedStraw(source), Control(control) {}
   ~BlowStraw() override = default;
 
   base::ssize Get(std::span<std::byte> buffer) override;

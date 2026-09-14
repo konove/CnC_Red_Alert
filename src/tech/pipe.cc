@@ -21,24 +21,17 @@
 #include <cstddef>
 #include <span>
 
-bool Pipe::Put(std::span<const std::byte> bytes) {
-  if (!ok()) {
-    return false;
-  }
-  return sink_ == nullptr || sink_->Put(bytes);
+bool ChainedPipe::Put(std::span<const std::byte> bytes) {
+  return ok() && next_.Put(bytes);
 }
 
-bool Pipe::Flush() {
-  if (sink_ != nullptr) {
-    sink_->Flush();
-  }
+bool ChainedPipe::Flush() {
+  next_.Flush();
   return ok();
 }
 
-bool Pipe::Finish() {
+bool ChainedPipe::Finish() {
   Flush();
-  if (sink_ != nullptr) {
-    sink_->Finish();
-  }
+  next_.Finish();
   return ok();
 }

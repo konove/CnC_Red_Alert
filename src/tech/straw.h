@@ -44,6 +44,7 @@
 #include <span>
 #include <type_traits>
 
+#include "absl/base/attributes.h"
 #include "base/numeric.h"
 #include "base/types.h"
 
@@ -64,18 +65,14 @@ class Straw {
   Straw(Straw&&) = delete;
   Straw& operator=(Straw&&) = delete;
 
-  void SetSource(Straw* source) { source_ = source; }
-  void SetSource(Straw& source) { source_ = &source; }
   // Pulls up to buffer.size() bytes through the chain into buffer and returns
   // how many were stored. The count is short only at the end of the data or
   // after a failure, which ok() tells apart.
-  virtual base::ssize Get(std::span<std::byte> buffer);
+  virtual base::ssize Get(std::span<std::byte> buffer) = 0;
 
   // Returns false once this link or any link before it has failed: a read
   // error, or data that cannot be decoded.
-  [[nodiscard]] bool ok() const {
-    return ok_ && (source_ == nullptr || source_->ok());
-  }
+  [[nodiscard]] virtual bool ok() const { return ok_; }
 
   // Pulls one trivially copyable value. Returns false on a short read, in
   // which case value is partially written.
@@ -87,14 +84,35 @@ class Straw {
   }
 
  protected:
-  // The straw we pull data from. Caller must ensure source outlives this straw.
-  Straw* source_ = nullptr;
-
   // Marks this link as failed, which makes ok() false for good.
   void Fail() { ok_ = false; }
 
  private:
   bool ok_ = true;
+};
+
+// A straw that draws its input from another straw. Chains are built from
+// their source: construct the source first and then each link on top of the
+// one it draws from.
+//
+// Example:
+//   FileStraw file(disk_file);
+//   BlowStraw cipher(BlowStraw::DECRYPT, file);
+//   LZOStraw decompressor(LZOStraw::DECOMPRESS, cipher);
+class ChainedStraw : public Straw {
+ public:
+  // source must outlive this straw.
+  explicit ChainedStraw(Straw& source ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : source_(source) {}
+
+  // Passes bytes through unchanged.
+  base::ssize Get(std::span<std::byte> buffer) override {
+    return source_.Get(buffer);
+  }
+  [[nodiscard]] bool ok() const override { return Straw::ok() && source_.ok(); }
+
+ private:
+  Straw& source_;
 };
 
 #endif  // CNC_RED_ALERT_TECH_STRAW_H_

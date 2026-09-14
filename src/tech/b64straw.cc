@@ -116,7 +116,7 @@ base::ssize Base64Straw::Get(std::span<std::byte> buffer) {
     **	More bytes are needed, so fetch and process another base 64 block.
     */
     const int incount =
-        static_cast<int>(Straw::Get(WritableByteView(from, fromsize)));
+        static_cast<int>(ChainedStraw::Get(WritableByteView(from, fromsize)));
     if (Control == ENCODE) {
       Counter = Base64_Encode(from, incount, to, tosize);
     } else {

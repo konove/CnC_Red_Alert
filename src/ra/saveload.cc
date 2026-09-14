@@ -511,14 +511,10 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   **	and then encrypted. The message digest is calculated in the
   **	process by using the data just as it is written to disk.
   */
-  SHAPipe sha;
-  BlowPipe bpipe(BlowPipe::ENCRYPT);
-  LZOPipe pipe(LZOPipe::COMPRESS, SAVE_BLOCK_SIZE);
+  SHAPipe sha(fpipe);
+  BlowPipe bpipe(BlowPipe::ENCRYPT, sha);
+  LZOPipe pipe(LZOPipe::COMPRESS, bpipe, SAVE_BLOCK_SIZE);
   bpipe.Key(&FastKey, BlowfishEngine::MAX_KEY_LENGTH);
-
-  sha.SetSink(fpipe);
-  bpipe.SetSink(sha);
-  pipe.SetSink(bpipe);
 
   // Tee the field-wise body before compression. The dump has Section tags
   // but no save header, encryption, or digest, so it can be compared directly.
@@ -659,17 +655,17 @@ bool Load_Game(int id) {
   **	Pass the rest of the file through the hash straw so that
   **	the digest can be compaired to the one in the file.
   */
-  SHAStraw sha;
-  sha.SetSource(fstraw);
-  for (;;) {
-    if (sha.Get(std::as_writable_bytes(std::span(staging_buffer))) !=
-        std::ssize(staging_buffer)) {
-      break;
-    }
-  }
   char actual[20];
-  sha.Result(actual);
-  sha.SetSource(nullptr);
+  {
+    SHAStraw sha(fstraw);
+    for (;;) {
+      if (sha.Get(std::as_writable_bytes(std::span(staging_buffer))) !=
+          std::ssize(staging_buffer)) {
+        break;
+      }
+    }
+    sha.Result(actual);
+  }
 
   Call_Back();
 
@@ -685,12 +681,9 @@ bool Load_Game(int id) {
   **	Set up the pipe so that the scenario data can be read.
   */
   file.Seek(pos, SeekOrigin::kBegin);
-  BlowStraw bstraw(BlowStraw::DECRYPT);
-  LZOStraw straw(LZOStraw::DECOMPRESS, SAVE_BLOCK_SIZE);
-
+  BlowStraw bstraw(BlowStraw::DECRYPT, fstraw);
+  LZOStraw straw(LZOStraw::DECOMPRESS, bstraw, SAVE_BLOCK_SIZE);
   bstraw.Key(&FastKey, BlowfishEngine::MAX_KEY_LENGTH);
-  bstraw.SetSource(fstraw);
-  straw.SetSource(bstraw);
 
   /*
   **	Clear the scenario so we start fresh; this calls the Init_Clear()

@@ -50,7 +50,6 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/file_access.h"
-#include "tech/pipe.h"
 
 //---------------------------------------------------------------------------------------------------------
 // BufferPipe
@@ -123,7 +122,7 @@ FilePipe::~FilePipe() {
  * HISTORY: * 07/05/1996 JLB : Created. *
  *=============================================================================================*/
 bool FilePipe::Finish() {
-  const bool result = Pipe::Finish();
+  const bool result = ok();
   if (Valid_File() && HasOpened) {
     HasOpened = false;
     file_->Close();

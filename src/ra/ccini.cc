@@ -1514,7 +1514,8 @@ void CCINIClass::Calculate_Message_Digest() {
   /*
   **	Calculate the message digest for the INI data that was read.
   */
-  SHAPipe sha;
+  NullPipe discard;
+  SHAPipe sha(discard);
   INIClass::Save(sha);
   sha.Result(Digest);
   IsDigestPresent = true;

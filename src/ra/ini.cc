@@ -534,8 +534,7 @@ bool INIClass::Put_UUBlock(const char* section, const void* block, int len) {
 
   BufferStraw straw(
       std::span(static_cast<const std::byte*>(block), base::ToSize(len)));
-  Base64Straw bstraw(Base64Straw::ENCODE);
-  bstraw.SetSource(straw);
+  Base64Straw bstraw(Base64Straw::ENCODE, straw);
 
   int counter = 1;
 
@@ -589,11 +588,9 @@ int INIClass::Get_UUBlock(const char* section, void* block, int len) const {
     return 0;
   }
 
-  Base64Pipe b64pipe(Base64Pipe::DECODE);
   BufferPipe bpipe(
       std::span(static_cast<std::byte*>(block), base::ToSize(len)));
-
-  b64pipe.SetSink(&bpipe);
+  Base64Pipe b64pipe(Base64Pipe::DECODE, bpipe);
 
   const int counter = Entry_Count(section);
   for (int index = 0; index < counter; index++) {

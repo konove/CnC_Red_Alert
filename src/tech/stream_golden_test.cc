@@ -117,24 +117,20 @@ template <class CodecPipe, class CodecStraw>
 void ExpectCompresses(int block_size, const std::string& golden) {
   const std::vector<uint8_t> input = Input();
   VectorPipe encoded;
-  CodecPipe compressor(CodecPipe::COMPRESS, block_size);
-  compressor.SetSink(encoded);
+  CodecPipe compressor(CodecPipe::COMPRESS, encoded, block_size);
   PutInPieces(compressor, input);
   EXPECT_EQ(Sha1Hex(encoded.bytes), golden);
 
   BufferStraw plain(std::as_bytes(std::span(input)));
-  CodecStraw compressing_straw(CodecStraw::COMPRESS, block_size);
-  compressing_straw.SetSource(plain);
+  CodecStraw compressing_straw(CodecStraw::COMPRESS, plain, block_size);
   EXPECT_EQ(Drain(compressing_straw, 1000), encoded.bytes);
 
   BufferStraw compressed(std::as_bytes(std::span(encoded.bytes)));
-  CodecStraw decompressor(CodecStraw::DECOMPRESS, block_size);
-  decompressor.SetSource(compressed);
+  CodecStraw decompressor(CodecStraw::DECOMPRESS, compressed, block_size);
   EXPECT_EQ(Drain(decompressor, 1000), input);
 
   VectorPipe decoded;
-  CodecPipe decompressing_pipe(CodecPipe::DECOMPRESS, block_size);
-  decompressing_pipe.SetSink(decoded);
+  CodecPipe decompressing_pipe(CodecPipe::DECOMPRESS, decoded, block_size);
   PutInPieces(decompressing_pipe, encoded.bytes);
   EXPECT_EQ(decoded.bytes, input);
 }
@@ -159,23 +155,20 @@ TEST(StreamGoldenTest, BlowfishEncryptsWithFixedKey) {
   const std::vector<uint8_t> input = Input();
   const auto key = Key();
   VectorPipe encrypted;
-  BlowPipe encryptor(BlowPipe::ENCRYPT);
+  BlowPipe encryptor(BlowPipe::ENCRYPT, encrypted);
   encryptor.Key(key.data(), static_cast<int>(key.size()));
-  encryptor.SetSink(encrypted);
   PutInPieces(encryptor, input);
   EXPECT_EQ(Sha1Hex(encrypted.bytes),
             "2fea48225f216a5c044f307a870ae4b2a88a8afc");
 
   BufferStraw plain(std::as_bytes(std::span(input)));
-  BlowStraw encrypting_straw(BlowStraw::ENCRYPT);
+  BlowStraw encrypting_straw(BlowStraw::ENCRYPT, plain);
   encrypting_straw.Key(key.data(), static_cast<int>(key.size()));
-  encrypting_straw.SetSource(plain);
   EXPECT_EQ(Drain(encrypting_straw, 1000), encrypted.bytes);
 
   BufferStraw cipher(std::as_bytes(std::span(encrypted.bytes)));
-  BlowStraw decryptor(BlowStraw::DECRYPT);
+  BlowStraw decryptor(BlowStraw::DECRYPT, cipher);
   decryptor.Key(key.data(), static_cast<int>(key.size()));
-  decryptor.SetSource(cipher);
   EXPECT_EQ(Drain(decryptor, 1000), input);
 }
 
@@ -184,13 +177,10 @@ TEST(StreamGoldenTest, SaveGameChainProducesPinnedBytesAndDigest) {
   const std::vector<uint8_t> input = Input();
   const auto key = Key();
   VectorPipe file;
-  SHAPipe sha;
-  BlowPipe blow(BlowPipe::ENCRYPT);
-  LZOPipe lzo(LZOPipe::COMPRESS, kSaveBlockSize);
+  SHAPipe sha(file);
+  BlowPipe blow(BlowPipe::ENCRYPT, sha);
+  LZOPipe lzo(LZOPipe::COMPRESS, blow, kSaveBlockSize);
   blow.Key(key.data(), static_cast<int>(key.size()));
-  sha.SetSink(file);
-  blow.SetSink(sha);
-  lzo.SetSink(blow);
   PutInPieces(lzo, input);
   EXPECT_EQ(Sha1Hex(file.bytes), "2338b443f754c7b2e6e587dab7c29deff557d0b1");
 
@@ -201,11 +191,9 @@ TEST(StreamGoldenTest, SaveGameChainProducesPinnedBytesAndDigest) {
             Sha1Hex(file.bytes));
 
   BufferStraw stored(std::as_bytes(std::span(file.bytes)));
-  BlowStraw decrypt(BlowStraw::DECRYPT);
-  LZOStraw decompress(LZOStraw::DECOMPRESS, kSaveBlockSize);
+  BlowStraw decrypt(BlowStraw::DECRYPT, stored);
+  LZOStraw decompress(LZOStraw::DECOMPRESS, decrypt, kSaveBlockSize);
   decrypt.Key(key.data(), static_cast<int>(key.size()));
-  decrypt.SetSource(stored);
-  decompress.SetSource(decrypt);
   EXPECT_EQ(Drain(decompress, 1000), input);
 }
 
@@ -214,8 +202,7 @@ TEST(StreamGoldenTest, SaveGameChainProducesPinnedBytesAndDigest) {
 TEST(StreamGoldenTest, Base64EncodesInUuBlockLines) {
   const std::vector<uint8_t> input = Input();
   BufferStraw plain(std::as_bytes(std::span(input)));
-  Base64Straw encoder(Base64Straw::ENCODE);
-  encoder.SetSource(plain);
+  Base64Straw encoder(Base64Straw::ENCODE, plain);
   std::vector<std::vector<uint8_t>> lines;
   std::vector<uint8_t> joined;
   for (;;) {
@@ -232,8 +219,7 @@ TEST(StreamGoldenTest, Base64EncodesInUuBlockLines) {
   EXPECT_EQ(Sha1Hex(joined), "228aa04caf47a421738b2d0186b6a379b1b23fbd");
 
   VectorPipe pipe_encoded;
-  Base64Pipe encoding_pipe(Base64Pipe::ENCODE);
-  encoding_pipe.SetSink(pipe_encoded);
+  Base64Pipe encoding_pipe(Base64Pipe::ENCODE, pipe_encoded);
   PutInPieces(encoding_pipe, input);
   std::vector<uint8_t> unsplit;
   for (const auto& line : lines) {
@@ -243,8 +229,7 @@ TEST(StreamGoldenTest, Base64EncodesInUuBlockLines) {
 
   std::vector<uint8_t> block(input.size() + 16);
   BufferPipe block_pipe(std::as_writable_bytes(std::span(block)));
-  Base64Pipe decoding_pipe(Base64Pipe::DECODE);
-  decoding_pipe.SetSink(&block_pipe);
+  Base64Pipe decoding_pipe(Base64Pipe::DECODE, block_pipe);
   for (const auto& line : lines) {
     decoding_pipe.Put(std::as_bytes(std::span(line)));
   }
@@ -254,8 +239,7 @@ TEST(StreamGoldenTest, Base64EncodesInUuBlockLines) {
   EXPECT_EQ(block, input);
 
   BufferStraw encoded(std::as_bytes(std::span(unsplit)));
-  Base64Straw decoder(Base64Straw::DECODE);
-  decoder.SetSource(encoded);
+  Base64Straw decoder(Base64Straw::DECODE, encoded);
   EXPECT_EQ(Drain(decoder, 1000), input);
 }
 

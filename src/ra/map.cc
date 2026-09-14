@@ -1091,8 +1091,7 @@ int32_t MapClass::Overpass() {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool MapClass::Write_Binary(Pipe& pipe) {
-  LCWPipe comp(LCWPipe::COMPRESS);
-  comp.SetSink(&pipe);
+  LCWPipe comp(LCWPipe::COMPRESS, pipe);
 
   CellClass* cellptr = &Array[0];
   for (int i = 0; i < MAP_CELL_TOTAL; i++) {
@@ -1125,8 +1124,7 @@ bool MapClass::Write_Binary(Pipe& pipe) {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool MapClass::Read_Binary(Straw& straw) {
-  LCWStraw decomp(LCWStraw::DECOMPRESS);
-  decomp.SetSource(&straw);
+  LCWStraw decomp(LCWStraw::DECOMPRESS, straw);
 
   CELL cell;
   CellClass* cellptr;

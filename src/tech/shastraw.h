@@ -52,9 +52,9 @@
 *stream that flows *	through it. It doesn't modify the data stream in any
 *fashion.
 */
-class SHAStraw : public Straw {
+class SHAStraw : public ChainedStraw {
  public:
-  SHAStraw() = default;
+  explicit SHAStraw(Straw& source) : ChainedStraw(source) {}
   ~SHAStraw() override = default;
 
   SHAStraw(const SHAStraw&) = delete;

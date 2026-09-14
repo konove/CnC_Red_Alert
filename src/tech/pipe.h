@@ -44,6 +44,8 @@
 #include <span>
 #include <type_traits>
 
+#include "absl/base/attributes.h"
+
 /*
 **	A "push through" pipe interface abstract class used for such purposes as
 *compression *	and translation of data. In STL terms, this is functionally
@@ -61,28 +63,23 @@ class Pipe {
   Pipe(Pipe&&) = delete;
   Pipe& operator=(Pipe&&) = delete;
 
-  void SetSink(Pipe* sink) { sink_ = sink; }
-  void SetSink(Pipe& sink) { sink_ = &sink; }
-
   // Accepts bytes, buffering them or passing them down the chain. Returns
   // true if every byte was accepted. Once any link in the chain has failed,
   // ok() is false and every later Put returns false.
-  virtual bool Put(std::span<const std::byte> bytes);
+  virtual bool Put(std::span<const std::byte> bytes) = 0;
 
   // Pushes everything buffered (a partial compression block, a Blowfish
   // tail, Base64 padding) all the way to the end of the chain. The chain
   // stays usable, and a Flush with nothing buffered emits nothing. Returns
   // ok().
-  virtual bool Flush();
+  virtual bool Flush() { return ok(); }
 
   // Flushes, then lets every link release what it holds: a file pipe closes
   // a file it opened. The last call made on a chain. Returns ok().
-  virtual bool Finish();
+  virtual bool Finish() { return Flush(); }
 
   // Returns false once this link or any link after it has failed.
-  [[nodiscard]] bool ok() const {
-    return ok_ && (sink_ == nullptr || sink_->ok());
-  }
+  [[nodiscard]] virtual bool ok() const { return ok_; }
 
   // Puts one trivially copyable value; returns what Put returns.
   template <typename T>
@@ -95,11 +92,39 @@ class Pipe {
   // Marks this link as failed, which makes ok() false for good.
   void Fail() { ok_ = false; }
 
-  // The pipe we push data to. Caller must ensure sink outlives this pipe.
-  Pipe* sink_ = nullptr;
-
  private:
   bool ok_ = true;
+};
+
+// A pipe that passes its output on to the next pipe in a chain. Chains are
+// built from their far end: construct the terminator first and then each
+// link in front of the one it feeds, so that destruction runs the other way.
+//
+// Example:
+//   FilePipe file(disk_file);
+//   BlowPipe cipher(BlowPipe::ENCRYPT, file);
+//   LZOPipe compressor(LZOPipe::COMPRESS, cipher);
+class ChainedPipe : public Pipe {
+ public:
+  // next must outlive this pipe.
+  explicit ChainedPipe(Pipe& next ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : next_(next) {}
+
+  // Passes bytes on unchanged.
+  bool Put(std::span<const std::byte> bytes) override;
+  bool Flush() override;
+  bool Finish() override;
+  [[nodiscard]] bool ok() const override { return Pipe::ok() && next_.ok(); }
+
+ private:
+  Pipe& next_;
+};
+
+// A terminator that accepts and discards everything, for chains whose links
+// matter only for what they observe, such as a SHA-1 digest.
+class NullPipe : public Pipe {
+ public:
+  bool Put(std::span<const std::byte> /*bytes*/) override { return true; }
 };
 
 #endif  // CNC_RED_ALERT_TECH_PIPE_H_

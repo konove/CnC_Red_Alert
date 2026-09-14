@@ -67,10 +67,10 @@
  *=============================================================================================*/
 bool BlowPipe::Flush() {
   if (Counter > 0 && BF.has_value()) {
-    Pipe::Put(ByteView(Buffer.data(), Counter));
+    ChainedPipe::Put(ByteView(Buffer.data(), Counter));
   }
   Counter = 0;
-  Pipe::Flush();
+  ChainedPipe::Flush();
   return ok();
 }
 
@@ -98,7 +98,7 @@ bool BlowPipe::Put(std::span<const std::byte> bytes) {
   const void* source = bytes.data();
   int slen = static_cast<int>(bytes.size());
   if (source == nullptr || slen < 1) {
-    return Pipe::Put(bytes);
+    return ChainedPipe::Put(bytes);
   }
 
   /*
@@ -106,7 +106,7 @@ bool BlowPipe::Put(std::span<const std::byte> bytes) {
   *through *	unchanged in any way.
   */
   if (!BF.has_value()) {
-    return Pipe::Put(bytes);
+    return ChainedPipe::Put(bytes);
   }
   BlowfishEngine& engine = *BF;
 
@@ -130,7 +130,7 @@ bool BlowPipe::Put(std::span<const std::byte> bytes) {
       } else {
         engine.Encrypt(Buffer.data(), kBlockSize, Buffer.data());
       }
-      Pipe::Put(ByteView(Buffer.data(), kBlockSize));
+      ChainedPipe::Put(ByteView(Buffer.data(), kBlockSize));
       Counter = 0;
     }
   }
@@ -145,7 +145,7 @@ bool BlowPipe::Put(std::span<const std::byte> bytes) {
     } else {
       engine.Encrypt(source, kBlockSize, Buffer.data());
     }
-    Pipe::Put(ByteView(Buffer.data(), kBlockSize));
+    ChainedPipe::Put(ByteView(Buffer.data(), kBlockSize));
     source = (char*)source + kBlockSize;
     slen -= kBlockSize;
   }

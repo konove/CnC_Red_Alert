@@ -55,8 +55,7 @@ std::unique_ptr<BlowPipe> MakePKEncryptPipe(Pipe& sink, const PKey& key,
       std::span(encrypted_key).first(base::ToSize(encrypted_len))));
 
   // Create and configure the BlowPipe.
-  auto pipe = std::make_unique<BlowPipe>(BlowPipe::ENCRYPT);
+  auto pipe = std::make_unique<BlowPipe>(BlowPipe::ENCRYPT, sink);
   pipe->Key(blowfish_key, kBlowfishKeySize);
-  pipe->SetSink(sink);
   return pipe;
 }
