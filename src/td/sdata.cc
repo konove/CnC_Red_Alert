@@ -55,9 +55,11 @@
 
 #include "port/ex_string.h"
 #include "sdllib/shape.h"
+#include "sdllib/ww_win.h"
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/defines.h"
+#include "td/display_constants.h"
 #include "td/externs.h"
 #include "td/house.h"
 #include "td/inline.h"

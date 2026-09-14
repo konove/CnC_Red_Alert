@@ -62,6 +62,7 @@
 #include "td/defines.h"
 #include "td/facing.h"
 #include "td/inline.h"
+#include "td/monoc.h"
 #include "td/target.h"
 #include "td/turret.h"
 #include "td/type.h"

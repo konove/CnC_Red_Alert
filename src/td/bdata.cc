@@ -69,6 +69,7 @@
 #include <string>
 
 #include "port/ex_string.h"
+#include "sdllib/shape.h"
 #include "td/building.h"
 #include "td/cell.h"
 #include "td/conquer.h"

@@ -50,6 +50,7 @@
 
 #include "td/scenario.h"
 
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -68,6 +69,7 @@
 #include "td/bullet.h"
 #include "td/ccfile.h"
 #include "td/conquer.h"
+#include "td/defines.h"
 #include "td/dialog.h"
 #include "td/ending.h"
 #include "td/externs.h"

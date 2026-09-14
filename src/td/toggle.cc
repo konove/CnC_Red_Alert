@@ -45,6 +45,8 @@
 
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
+#include "td/control.h"
+#include "td/gadget.h"
 #include "td/jshell.h"
 
 /***********************************************************************************************

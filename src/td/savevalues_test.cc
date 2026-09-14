@@ -1,12 +1,15 @@
 #include <array>
+#include <cstddef>
 #include <cstdint>
 
 #include "gtest/gtest.h"
+#include "sdllib/misc.h"
 #include "sdllib/ww_win.h"
 #include "td/abstract.h"
 #include "td/audio.h"
-#include "td/crew.h"
 #include "td/cell.h"
+#include "td/crew.h"
+#include "td/defines.h"
 #include "td/door.h"
 #include "td/facing.h"
 #include "td/flasher.h"
@@ -15,6 +18,7 @@
 #include "td/fuse.h"
 #include "td/monoc.h"
 #include "td/rand.h"
+#include "td/randomstate.h"
 #include "td/region.h"
 #include "td/score.h"
 #include "td/serialize.h"

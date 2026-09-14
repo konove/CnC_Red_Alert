@@ -63,7 +63,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "base/numeric.h"
 #include "td/conquer.h"
 
 #include <cstdint>
@@ -72,16 +71,19 @@
 #include <cstring>
 #include <filesystem>
 #include <iterator>
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "absl/log/log.h"
+#include "base/numeric.h"
 #include "base/types.h"
 #include "port/aligned_buffer.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
 #include "sdllib/drawbuff.h"
+#include "sdllib/file_access.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -137,7 +139,7 @@
 #include "td/object.h"
 #include "td/palette.h"
 #include "td/queue.h"
-#include "td/rand.h"
+#include "td/randomstate.h"
 #include "td/saveload.h"
 #include "td/scenario.h"
 #include "td/score.h"

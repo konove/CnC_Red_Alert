@@ -50,6 +50,7 @@
 #include "td/defines.h"
 #include "td/globals.h"
 #include "td/keyframe.h"
+#include "td/toggle.h"
 
 /***********************************************************************************************
  * ShapeButtonClass::ShapeButtonClass -- Default Constructor for a shape type

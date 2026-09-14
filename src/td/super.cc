@@ -74,6 +74,7 @@
 #include "td/config.h"
 #include "td/defines.h"
 #include "td/ftimer.h"
+#include "td/globals.h"
 #include "td/jshell.h"
 
 /***********************************************************************************************

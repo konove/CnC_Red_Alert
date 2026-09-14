@@ -70,7 +70,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/modemreg.h"
-#include "sdllib/timer.h"
 #include "sdllib/wincomm.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"

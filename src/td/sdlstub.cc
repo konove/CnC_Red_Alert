@@ -1,23 +1,19 @@
 // more portable replacements for winstub
 
-#include "sdllib/ww_mouse.h"
-#include "sdllib/ww_win.h"
-#include "td/globals.h"
-
 #include <SDL_events.h>
 #include <SDL_video.h>
 
-#include <bit>
-#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
-#include <string_view>
 
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/timer.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/ww_win.h"
 #include "td/externs.h"
+#include "td/globals.h"
 #include "td/msgbox.h"
 #include "td/nullconn.h"
 #include "td/palette.h"

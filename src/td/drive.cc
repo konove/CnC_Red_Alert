@@ -84,6 +84,7 @@
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
+#include "td/monoc.h"
 #include "td/object.h"
 #include "td/overlay.h"
 #include "td/special.h"

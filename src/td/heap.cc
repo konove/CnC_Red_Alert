@@ -55,14 +55,12 @@
 
 #include "td/heap.h"
 
-#include <cstddef>
+#include <cstdint>
 #include <cstring>
 #include <new>
 
 #include "base/algorithm.h"
 #include "base/numeric.h"
-#include "tech/archive.h"
-#include "tech/wwfile.h"
 
 /***********************************************************************************************
  * FixedHeapClass::FixedHeapClass -- Normal constructor for heap management

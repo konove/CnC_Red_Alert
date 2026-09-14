@@ -62,10 +62,12 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <iterator>
 
 #include "base/types.h"
 #include "port/ex_string.h"
 #include "rand.h"
+#include "sdllib/file_access.h"
 #include "sdllib/memflag.h"
 #include "sdllib/tile.h"
 #include "td/ccfile.h"
@@ -87,7 +89,6 @@
 #include "td/terrain.h"
 #include "td/type.h"
 #include "td/vector.h"
-#include <iterator>
 
 #define MCW MAP_CELL_W
 const int MapClass::RadiusOffset[] = {

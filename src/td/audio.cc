@@ -51,6 +51,7 @@
 
 #include "sdllib/ww_audio.h"
 #include "td/ccfile.h"
+#include "td/defines.h"
 #include "td/externs.h"
 #include "td/globals.h"
 #include "td/goptions.h"

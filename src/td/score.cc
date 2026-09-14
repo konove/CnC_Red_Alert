@@ -55,10 +55,12 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 #include <utility>
 
 #include "base/types.h"
 #include "sdllib/drawbuff.h"
+#include "sdllib/file_access.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"

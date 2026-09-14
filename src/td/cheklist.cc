@@ -64,7 +64,9 @@
  *=========================================================================*/
 #include "td/cheklist.h"
 
+#include "sdllib/keyboard.h"
 #include "td/defines.h"
+#include "td/gadget.h"
 #include "td/list.h"
 #include "td/vector.h"
 

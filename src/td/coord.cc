@@ -55,6 +55,7 @@
 
 #include "base/trig.h"
 #include "td/const.h"
+#include "td/defines.h"
 #include "td/display_constants.h"
 #include "td/inline.h"
 #include "td/jshell.h"

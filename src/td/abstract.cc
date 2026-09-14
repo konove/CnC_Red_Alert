@@ -28,6 +28,7 @@
 
 #include "td/building.h"
 #include "td/defines.h"
+#include "td/inline.h"
 #include "td/target.h"
 #include "td/type.h"
 

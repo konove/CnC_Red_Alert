@@ -54,11 +54,15 @@
 #include "sdllib/drawbuff.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
+#include "td/control.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/externs.h"
+#include "td/gadget.h"
+#include "td/gauge.h"
 #include "td/globals.h"
 #include "td/jshell.h"
+#include "td/shapebtn.h"
 
 /***********************************************************************************************
  * SliderClass::SliderClass -- Normal constructor for a slider (with thumb)

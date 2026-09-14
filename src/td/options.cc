@@ -65,11 +65,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "base/numeric.h"
 #include "td/options.h"
 
+#include <cstdint>
 #include <cstring>
 
+#include "base/numeric.h"
+#include "base/types.h"
 #include "sdllib/misc.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_audio.h"
@@ -84,7 +86,6 @@
 #include "td/palette.h"
 #include "td/profile.h"
 #include "td/special.h"
-#include "base/types.h"
 
 /***********************************************************************************************
  * OptionsClass::OptionsClass -- The default constructor for the options class.

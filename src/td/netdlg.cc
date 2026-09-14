@@ -142,6 +142,7 @@
 #include "sdllib/wwstd.h"
 #include "td/colrlist.h"
 #include "td/conquer.h"
+#include "td/defines.h"
 #include "td/dialog.h"
 #include "td/edit.h"
 #include "td/event.h"

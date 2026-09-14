@@ -59,7 +59,6 @@
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "td/rand.h"
 #include "td/audio.h"
 #include "td/ccfile.h"
 #include "td/conquer.h"

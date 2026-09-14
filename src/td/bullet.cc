@@ -55,11 +55,11 @@
 #include "td/bullet.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 
 #include "rand.h"
 #include "sdllib/shape.h"
-#include "td/abstract.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/cell.h"
@@ -71,6 +71,7 @@
 #include "td/externs.h"
 #include "td/facing.h"
 #include "td/fly.h"
+#include "td/globals.h"
 #include "td/heap.h"
 #include "td/inline.h"
 #include "td/jshell.h"

@@ -66,7 +66,6 @@
 #include "rand.h"
 #include "sdllib/misc.h"
 #include "sdllib/shape.h"
-#include "td/abstract.h"
 #include "td/audio.h"
 #include "td/building.h"
 #include "td/cell.h"

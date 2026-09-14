@@ -72,14 +72,11 @@
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/inline.h"
-#include "td/mapedit.h"
 #include "td/object.h"
 #include "td/profile.h"
 #include "td/type.h"
 #include "td/vector.h"
-#include "tech/archive.h"
 #include "tech/number_parse.h"
-#include "tech/wwfile.h"
 
 bool BaseNodeClass::operator==(const BaseNodeClass& node) const {
   return Type == node.Type && Coord == node.Coord;

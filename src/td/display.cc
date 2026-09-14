@@ -96,6 +96,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <vector>
 
 #include "base/numeric.h"
 #include "base/types.h"

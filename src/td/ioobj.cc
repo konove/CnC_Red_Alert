@@ -49,6 +49,8 @@
 #include "td/building.h"
 #include "td/bullet.h"
 #include "td/cargo.h"
+#include "td/const.h"
+#include "td/crew.h"
 #include "td/defines.h"
 #include "td/door.h"
 #include "td/drive.h"
@@ -71,7 +73,6 @@
 #include "td/serialize.h"
 #include "td/smudge.h"
 #include "td/stage.h"
-#include "td/support.h"
 #include "td/tarcom.h"
 #include "td/target.h"
 #include "td/team.h"
@@ -85,7 +86,6 @@
 #include "td/unit.h"
 #include "td/vector.h"
 #include "tech/archive.h"
-#include "tech/wwfile.h"
 
 template <class Archive>
 void FactoryClass::Serialize(Archive& ar) {

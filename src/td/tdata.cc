@@ -50,6 +50,7 @@
 #include <filesystem>
 
 #include "port/ex_string.h"
+#include "sdllib/shape.h"
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/defines.h"

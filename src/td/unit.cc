@@ -113,10 +113,10 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 
 #include "sdllib/misc.h"
 #include "sdllib/shape.h"
-#include "td/abstract.h"
 #include "td/anim.h"
 #include "td/audio.h"
 #include "td/building.h"
@@ -129,6 +129,7 @@
 #include "td/coord.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
+#include "td/drive.h"
 #include "td/externs.h"
 #include "td/facing.h"
 #include "td/foot.h"
@@ -143,7 +144,7 @@
 #include "td/keyframe.h"
 #include "td/layer.h"
 #include "td/mapedit.h"
-#include "td/mission.h"
+#include "td/monoc.h"
 #include "td/mouse.h"
 #include "td/object.h"
 #include "td/profile.h"

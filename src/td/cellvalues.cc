@@ -1,5 +1,6 @@
 // Cell defaults and sparse-save selection, independent of the game session.
 #include "td/cell.h"
+#include "td/defines.h"
 
 CellClass::CellClass() { Flag.Composite = 0; }
 

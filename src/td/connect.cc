@@ -44,9 +44,11 @@
 
 #include <chrono>
 #include <cstdint>
+#include <span>
 
 #include "base/numeric.h"
 #include "port/aligned_buffer.h"
+#include "td/combuf.h"
 
 /*
 ********************************* Globals ***********************************

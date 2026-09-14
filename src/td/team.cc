@@ -64,7 +64,6 @@
 #include <cstring>
 #include <utility>
 
-#include "td/abstract.h"
 #include "td/aircraft.h"
 #include "td/building.h"
 #include "td/config.h"

@@ -47,6 +47,7 @@
 #include <algorithm>
 #include <cstdlib>
 
+#include "td/defines.h"
 #include "td/inline.h"
 
 /***********************************************************************************************

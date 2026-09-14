@@ -48,15 +48,14 @@
 
 #include "td/mouse.h"
 
+#include "sdllib/keyboard.h"
 #include "sdllib/shape.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
-#include "td/cell.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/jshell.h"
 #include "td/scroll.h"
-#include "td/vector.h"
 #include "tech/rawfile.h"
 
 /*

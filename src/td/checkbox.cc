@@ -46,6 +46,7 @@
 #include "sdllib/wwstd.h"
 #include "td/defines.h"
 #include "td/dialog.h"
+#include "td/toggle.h"
 
 bool CheckBoxClass::Draw_Me(bool forced) {
   if (ToggleClass::Draw_Me(forced)) {

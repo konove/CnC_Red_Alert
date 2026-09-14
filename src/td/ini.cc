@@ -50,7 +50,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "base/numeric.h"
 #include "td/ini.h"
 
 #include <algorithm>
@@ -59,6 +58,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "base/numeric.h"
 #include "port/ex_string.h"
 #include "sdllib/misc.h"
 #include "sdllib/shape.h"
@@ -83,6 +83,7 @@
 #include "td/profile.h"
 #include "td/queue.h"
 #include "td/rand.h"
+#include "td/randomstate.h"
 #include "td/scenario.h"
 #include "td/smudge.h"
 #include "td/special.h"

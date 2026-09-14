@@ -72,6 +72,7 @@
 
 #include "port/ex_string.h"
 #include "reinf.h"
+#include "sdllib/shape.h"
 #include "td/anim.h"
 #include "td/building.h"
 #include "td/cell.h"

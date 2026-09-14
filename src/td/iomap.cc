@@ -19,16 +19,26 @@
 
 #include <algorithm>
 #include <cstdint>
-#include <iterator>
 
+#include "sdllib/wwstd.h"
 #include "td/aircraft.h"
 #include "td/cell.h"
+#include "td/conquer.h"
 #include "td/credits.h"
+#include "td/defines.h"
+#include "td/display.h"
 #include "td/externs.h"
 #include "td/factory.h"
-#include "td/mapedit.h"
+#include "td/gscreen.h"
+#include "td/help.h"
+#include "td/map.h"
+#include "td/mouse.h"
+#include "td/power.h"
+#include "td/radar.h"
+#include "td/scroll.h"
 #include "td/serialize.h"
-#include "td/text.h"
+#include "td/sidebar.h"
+#include "td/tab.h"
 #include "td/type.h"
 #include "tech/archive.h"
 

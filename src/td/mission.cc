@@ -73,6 +73,7 @@
 #include "td/defines.h"
 #include "td/ftimer.h"
 #include "td/jshell.h"
+#include "td/monoc.h"
 #include "td/object.h"
 
 MissionClass::MissionClass() { Timer = 0; }

@@ -43,7 +43,6 @@
 #include "td/msgbox.h"
 
 #include <algorithm>
-#include <cstddef>
 #include <cstdint>
 #include <cstring>
 
@@ -56,6 +55,7 @@
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "td/conquer.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/externs.h"

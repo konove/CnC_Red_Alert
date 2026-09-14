@@ -48,6 +48,7 @@
 #include <algorithm>
 #include <cstdint>
 
+#include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
 #include "td/ccfile.h"
 

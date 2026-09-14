@@ -97,6 +97,7 @@
 
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
+#include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
@@ -118,6 +119,7 @@
 #include "td/jshell.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
+#include "td/monoc.h"
 #include "td/radio.h"
 #include "td/special.h"
 #include "td/target.h"

@@ -68,6 +68,7 @@
 #include "td/control.h"
 #include "td/defines.h"
 #include "td/dialog.h"
+#include "td/gadget.h"
 #include "td/globals.h"
 #include "td/jshell.h"
 

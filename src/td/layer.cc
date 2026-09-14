@@ -43,6 +43,8 @@
 
 #include "td/layer.h"
 
+#include "td/object.h"
+
 /***********************************************************************************************
  * LayerClass::Submit -- Adds an object to a layer list. *
  *                                                                                             *

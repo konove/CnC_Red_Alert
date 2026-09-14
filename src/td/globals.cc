@@ -39,7 +39,10 @@
 
 #include "td/globals.h"
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
+#include <string>
 
 #include "port/ex_string.h"
 #include "sdllib/gbuffer.h"

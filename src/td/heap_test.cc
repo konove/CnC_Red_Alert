@@ -4,7 +4,8 @@
 #include <cstdint>
 
 #include "gtest/gtest.h"
-#include "td/vector_impl.h"
+#include "td/vector.h"
+#include "td/vector_impl.h"  // IWYU pragma: keep
 #include "tech/archive.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"

@@ -44,41 +44,47 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <filesystem>
 
-#include "absl/log/globals.h"
-#include "absl/log/initialize.h"
 #include "base/numeric.h"
-#include "port/ex_string.h"
 #include "sdllib/drawbuff.h"
-#include "sdllib/file.h"
-#include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/memflag.h"
 #include "sdllib/misc.h"
-#include "sdllib/playcd.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_audio.h"
-#include "sdllib/ww_mouse.h"
-#include "sdllib/ww_win.h"
-#include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/globals.h"
-#include "td/goptions.h"
-#include "td/init.h"
 #include "td/ipx.h"
 #include "td/ipxaddr.h"
 #include "td/ipxmgr.h"
-#include "td/jshell.h"
-#include "td/keyframe.h"
-#include "td/nullconn.h"
 #include "td/nullmgr.h"
 #include "td/profile.h"
-#include "td/special.h"
-#include "tech/cdfile.h"
 #include "tech/number_parse.h"
 #include "tech/rawfile.h"
+
+// The two tests that link this file define TD_NO_ENTRY_POINT; these headers
+// serve only main().
+#ifndef TD_NO_ENTRY_POINT
+#include <filesystem>
+
+#include "absl/base/log_severity.h"
+#include "absl/log/globals.h"
+#include "absl/log/initialize.h"
+#include "port/ex_string.h"
+#include "sdllib/file.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/memflag.h"
+#include "sdllib/playcd.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/ww_win.h"
+#include "td/conquer.h"
+#include "td/goptions.h"
+#include "td/init.h"
+#include "td/jshell.h"
+#include "td/keyframe.h"
+#include "td/special.h"
+#include "tech/cdfile.h"
+#endif  // TD_NO_ENTRY_POINT
 
 #ifdef _WIN32
 #include <direct.h>  //chdir

@@ -16,6 +16,7 @@
 #include "td/terrain.h"
 #include "td/trigger.h"
 #include "td/unit.h"
+#include "tech/archive.h"
 
 // Every object heap now declares its own field-wise serializer.
 static_assert(Serializable<AircraftClass>);

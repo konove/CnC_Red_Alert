@@ -9,6 +9,7 @@
 #include "td/building.h"
 #include "td/bullet.h"
 #include "td/cargo.h"
+#include "td/defines.h"
 #include "td/externs.h"
 #include "td/foot.h"
 #include "td/heap.h"

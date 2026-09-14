@@ -4,7 +4,6 @@
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/inline.h"
-#include "td/map.h"
 
 namespace {
 

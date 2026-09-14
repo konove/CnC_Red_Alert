@@ -40,6 +40,7 @@
 
 #include "td/ending.h"
 
+#include <cstdint>
 #include <cstdio>
 
 #include "sdllib/font.h"

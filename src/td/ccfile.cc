@@ -57,8 +57,11 @@
 // #include	<fcntl.h>
 // #include	<io.h>
 // #include	<dos.h>
+#include <iterator>
+
 #include "base/numeric.h"
 #include "sdllib/file.h"
+#include "sdllib/file_access.h"
 #include "sdllib/memflag.h"
 #include "sdllib/misc.h"
 #include "sdllib/wwstd.h"
@@ -68,7 +71,7 @@
 #include "td/jshell.h"
 #include "tech/cdfile.h"
 #include "tech/mixfile.h"
-#include <iterator>
+#include "tech/wwfile.h"
 // #include	<share.h>
 // #include	"ccfile.h"
 

@@ -88,12 +88,12 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
 #include <iterator>
 
 #include "base/numeric.h"
 #include "rand.h"
-#include "sdllib/misc.h"
 #include "sdllib/ww_mouse.h"
 #include "td/audio.h"
 #include "td/building.h"
@@ -112,10 +112,12 @@
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
+#include "td/monoc.h"
 #include "td/object.h"
 #include "td/queue.h"
 #include "td/radio.h"
 #include "td/rand.h"
+#include "td/randomstate.h"
 #include "td/special.h"
 #include "td/target.h"
 #include "td/team.h"

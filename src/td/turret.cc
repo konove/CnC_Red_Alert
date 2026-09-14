@@ -58,8 +58,11 @@
 #include "td/config.h"
 #include "td/const.h"
 #include "td/coord.h"
+#include "td/defines.h"
+#include "td/drive.h"
 #include "td/inline.h"
 #include "td/jshell.h"
+#include "td/monoc.h"
 #include "td/target.h"
 #include "td/type.h"
 

@@ -6,6 +6,7 @@
 
 #include "gtest/gtest.h"
 #include "port/unaligned.h"
+#include "td/connect.h"
 #include "td/defines.h"
 #include "td/event.h"
 #include "td/noseqcon.h"

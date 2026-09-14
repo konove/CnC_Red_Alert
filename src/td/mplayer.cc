@@ -51,7 +51,7 @@
 
 #include <algorithm>
 #include <bit>
-#include <cinttypes>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -61,6 +61,7 @@
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "rand.h"
+#include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
@@ -87,6 +88,7 @@
 #include "td/phone.h"
 #include "td/profile.h"
 #include "td/rand.h"
+#include "td/randomstate.h"
 #include "td/special.h"
 #include "td/text.h"
 #include "td/textbtn.h"

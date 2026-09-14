@@ -48,7 +48,6 @@
 #include <array>
 #include <cstdio>
 #include <iterator>
-#include <type_traits>
 
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -56,12 +55,10 @@
 #include "td/base.h"
 #include "td/building.h"
 #include "td/conquer.h"
-#include "td/control.h"
 #include "td/defines.h"
 #include "td/dial8.h"
 #include "td/display_constants.h"
 #include "td/externs.h"
-#include "td/facing.h"
 #include "td/gauge.h"
 #include "td/house.h"
 #include "td/infantry.h"
@@ -70,8 +67,6 @@
 #include "td/mapedit.h"
 #include "td/object.h"
 #include "td/techno.h"
-#include "td/textbtn.h"
-#include "td/txtlabel.h"
 #include "td/type.h"
 #include "td/vector.h"
 

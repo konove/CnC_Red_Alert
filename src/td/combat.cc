@@ -41,19 +41,20 @@
 
 #include "td/combat.h"
 
+#include <iterator>
+
 #include "td/cell.h"
 #include "td/const.h"
+#include "td/defines.h"
 #include "td/display_constants.h"
 #include "td/externs.h"
 #include "td/globals.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/mapedit.h"
 #include "td/object.h"
 #include "td/special.h"
 #include "td/type.h"
 #include "td/vector.h"
-#include <iterator>
 
 int Modify_Damage(int damage, WarheadType warhead, ArmorType armor);
 

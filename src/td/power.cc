@@ -55,6 +55,7 @@
 
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
+#include "sdllib/keyboard.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_win.h"
 #include "td/conquer.h"

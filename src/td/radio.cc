@@ -54,7 +54,8 @@
 #include "td/defines.h"
 #include "td/globals.h"
 #include "td/mission.h"
-#include "td/techno.h"
+#include "td/monoc.h"
+#include "td/techno.h"  // IWYU pragma: keep
 
 const char* RadioClass::Messages[RADIO_COUNT] = {
     "hisssss",

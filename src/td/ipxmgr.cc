@@ -74,7 +74,6 @@
 #include <cstdint>
 
 #include "base/numeric.h"
-#include "port/aligned_buffer.h"
 #include "port/unaligned.h"
 #include "td/combuf.h"
 #include "td/connect.h"

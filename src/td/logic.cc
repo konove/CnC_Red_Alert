@@ -58,6 +58,7 @@
 #include "td/infantry.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
+#include "td/monoc.h"
 #include "td/object.h"
 #include "td/team.h"
 #include "td/type.h"

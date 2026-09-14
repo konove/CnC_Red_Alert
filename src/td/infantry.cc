@@ -100,7 +100,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "td/abstract.h"
+#include "sdllib/shape.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/audio.h"
@@ -125,6 +125,7 @@
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
+#include "td/monoc.h"
 #include "td/object.h"
 #include "td/profile.h"
 #include "td/radio.h"

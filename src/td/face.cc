@@ -41,6 +41,7 @@
 #include "td/face.h"
 
 #include "absl/log/check.h"
+#include "td/defines.h"
 
 /***********************************************************************************************
  * Desired_Facing8 -- Determines facing from one coordinate to another. *

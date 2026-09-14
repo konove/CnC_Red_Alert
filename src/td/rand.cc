@@ -40,7 +40,9 @@
 
 #include <cstdint>
 
+#include "sdllib/misc.h"
 #include "td/jshell.h"
+#include "td/randomstate.h"
 #include "tech/random.h"
 
 static int SimRandIndex = 0;

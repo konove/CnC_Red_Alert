@@ -40,15 +40,12 @@
 
 #include "td/vector.h"
 
-#include <algorithm>
-#include <new>
-
 #include "td/base.h"
 #include "td/cell.h"
 #include "td/loaddlg.h"
 #include "td/nodename.h"
 #include "td/phone.h"
-#include "td/vector_impl.h"
+#include "td/vector_impl.h"  // IWYU pragma: keep
 
 template class VectorClass<NodeNameTag*>;
 template class VectorClass<PhoneEntryClass*>;

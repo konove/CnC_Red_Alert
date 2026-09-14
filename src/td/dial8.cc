@@ -69,6 +69,7 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/face.h"
+#include "td/gadget.h"
 #include "td/globals.h"
 #include "td/inline.h"
 #include "td/jshell.h"

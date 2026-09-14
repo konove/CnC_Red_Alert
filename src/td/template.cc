@@ -59,17 +59,19 @@
 #include <cstring>
 #include <utility>
 
+#include "sdllib/shape.h"
 #include "sdllib/tile.h"
-#include "td/abstract.h"
 #include "td/cell.h"
 #include "td/config.h"
 #include "td/conquer.h"
+#include "td/defines.h"
 #include "td/externs.h"
 #include "td/heap.h"
 #include "td/inline.h"
 #include "td/mapedit.h"
 #include "td/profile.h"
 #include "td/target.h"
+#include "td/type.h"
 #include "td/vector.h"
 #include "tech/number_parse.h"
 
