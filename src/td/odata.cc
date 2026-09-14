@@ -894,14 +894,11 @@ void OverlayTypeClass::Init(TheaterType theater) {
                        .replace_extension(".SHP")
                        .string();
       }
-      (const void*&)overlay.ImageData = MixArchive::Retrieve(fullname);
+      overlay.Set_Image_Data(MixArchive::Retrieve(fullname));
 
       IsTheaterShape = overlay.IsTheater;
-      if (overlay.RadarIcon) {
-        delete[] static_cast<const unsigned char*>(overlay.RadarIcon);
-      }
-      (const void*&)overlay.RadarIcon =
-          Get_Radar_Icon(overlay.Get_Image_Data(), 0, -1, 3);
+      overlay.Set_Radar_Icon(
+          Get_Radar_Icon(overlay.Get_Image_Data(), 0, -1, 3));
       IsTheaterShape = false;
     }
   }

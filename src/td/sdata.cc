@@ -288,7 +288,7 @@ void SmudgeTypeClass::Init(TheaterType theater) {
       const auto fullname = std::filesystem::path(smudge.IniName)
                                 .replace_extension(Theaters[theater].Suffix)
                                 .string();
-      (const void*&)smudge.ImageData = MixArchive::Retrieve(fullname);
+      smudge.Set_Image_Data(MixArchive::Retrieve(fullname));
     }
   }
 }

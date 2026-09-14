@@ -3709,7 +3709,7 @@ void BuildingTypeClass::One_Time() {
       }
       const auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
-      (const void*&)building.CameoData = MixArchive::Retrieve(fullname);
+      building.Set_Cameo_Data(MixArchive::Retrieve(fullname));
     }
 
     /*
@@ -3719,7 +3719,7 @@ void BuildingTypeClass::One_Time() {
     auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
     const void* dataptr = MixArchive::Retrieve(fullname);
-    (const void*&)building.BuildupData = dataptr;
+    building.Set_Buildup_Data(dataptr);
     if (dataptr) {
       int timedelay = 1;
       const int count = Get_Build_Frame_Count(dataptr);
@@ -3735,7 +3735,7 @@ void BuildingTypeClass::One_Time() {
     fullname = std::filesystem::path(building.IniName)
                    .replace_extension(".SHP")
                    .string();
-    (const void*&)building.ImageData = MixArchive::Retrieve(fullname);
+    building.Set_Image_Data(MixArchive::Retrieve(fullname));
   }
 
   // Try to load weap2.shp
@@ -3911,9 +3911,9 @@ ObjectClass* BuildingTypeClass::Create_One_Of(HouseClass* house) const {
  *=============================================================================================*/
 void BuildingTypeClass::Init_Anim(BStateType state, int start, int count,
                                   int rate) const {
-  (int&)Anims[state].Start = start;
-  (int&)Anims[state].Count = count;
-  (int&)Anims[state].Rate = rate;
+  Anims[state].Start = start;
+  Anims[state].Count = count;
+  Anims[state].Rate = rate;
 }
 
 /***********************************************************************************************
@@ -4057,13 +4057,13 @@ void BuildingTypeClass::Init(TheaterType theater) {
         const auto fullname = std::filesystem::path(classptr->IniName)
                                   .replace_extension(Theaters[theater].Suffix)
                                   .string();
-        (const void*&)classptr->ImageData = MixArchive::Retrieve(fullname);
+        classptr->Set_Image_Data(MixArchive::Retrieve(fullname));
       }
 
       if (Get_Resolution_Factor()) {
         const void* cameo_ptr;
 
-        (const void*&)classptr->CameoData = nullptr;
+        classptr->Set_Cameo_Data(nullptr);
         const auto filename =
             std::string(classptr->IniName).substr(0, 4) + "ICNH";
 
@@ -4073,7 +4073,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
 
         cameo_ptr = MixArchive::Retrieve(fullname);
         if (cameo_ptr) {
-          (const void*&)classptr->CameoData = cameo_ptr;
+          classptr->Set_Cameo_Data(cameo_ptr);
         }
       }
     }

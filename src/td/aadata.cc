@@ -297,14 +297,14 @@ void AircraftTypeClass::One_Time() {
     }
     auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    (const void*&)uclass.CameoData = MixArchive::Retrieve(fullname);
+    uclass.Set_Cameo_Data(MixArchive::Retrieve(fullname));
 
     // Load the main sprite sheet (shared across all houses).
     fullname = std::filesystem::path(uclass.IniName)
                    .replace_extension(".SHP")
                    .string();
 
-    (const void*&)uclass.ImageData = MixArchive::Retrieve(fullname);
+    uclass.Set_Image_Data(MixArchive::Retrieve(fullname));
   }
 
   LRotorData = MixArchive::Retrieve("LROTOR.SHP");
@@ -399,7 +399,7 @@ void AircraftTypeClass::Init(TheaterType theater) {
          ++index) {
       const AircraftTypeClass& uclass = As_Reference(index);
 
-      (const void*&)uclass.CameoData = nullptr;
+      uclass.Set_Cameo_Data(nullptr);
 
       const auto filename = std::string(uclass.IniName).substr(0, 4) + "ICNH";
 
@@ -409,7 +409,7 @@ void AircraftTypeClass::Init(TheaterType theater) {
 
       const void* cameo_ptr = MixArchive::Retrieve(fullname);
       if (cameo_ptr) {
-        (const void*&)uclass.CameoData = cameo_ptr;
+        uclass.Set_Cameo_Data(cameo_ptr);
       }
     }
   }

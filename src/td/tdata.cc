@@ -655,7 +655,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
       *specific, thus if *	it isn't loaded in this routine, it shouldn't
       *exist at all.
       */
-      (const void*&)terrain.ImageData = nullptr;
+      terrain.Set_Image_Data(nullptr);
 
       if (terrain.Theater & 1 << theater) {
         /*
@@ -664,14 +664,11 @@ void TerrainTypeClass::Init(TheaterType theater) {
         const auto fullname = std::filesystem::path(terrain.IniName)
                                   .replace_extension(Theaters[theater].Suffix)
                                   .string();
-        (const void*&)terrain.ImageData = MixArchive::Retrieve(fullname);
+        terrain.Set_Image_Data(MixArchive::Retrieve(fullname));
 
         IsTheaterShape = true;
-        if (terrain.RadarIcon) {
-          delete[] static_cast<const unsigned char*>(terrain.RadarIcon);
-        }
-        (const void*&)terrain.RadarIcon =
-            Get_Radar_Icon(terrain.Get_Image_Data(), 0, 1, 3);
+        terrain.Set_Radar_Icon(
+            Get_Radar_Icon(terrain.Get_Image_Data(), 0, 1, 3));
         IsTheaterShape = false;
       }
     }

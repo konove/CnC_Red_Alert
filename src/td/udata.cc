@@ -1453,7 +1453,7 @@ void UnitTypeClass::One_Time() {
       }
       const auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
-      (const void*&)uclass.CameoData = MixArchive::Retrieve(fullname);
+      uclass.Set_Cameo_Data(MixArchive::Retrieve(fullname));
     }
 
     /*
@@ -1468,7 +1468,7 @@ void UnitTypeClass::One_Time() {
       ptr = nullptr;
     }
 
-    (const void*&)uclass.ImageData = ptr;
+    uclass.Set_Image_Data(ptr);
     if (ptr) {
       if (index == UNIT_MLRS || index == UNIT_MSAM) {
         largest = 26;
@@ -1480,7 +1480,7 @@ void UnitTypeClass::One_Time() {
       }
     }
 
-    (int&)uclass.MaxSize = std::max(largest, 8);
+    uclass.Set_Max_Size(std::max(largest, 8));
   }
 
   /*
@@ -1512,7 +1512,7 @@ void UnitTypeClass::Init(TheaterType theater) {
     for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
       const UnitTypeClass& uclass = As_Reference(index);
 
-      (const void*&)uclass.CameoData = nullptr;
+      uclass.Set_Cameo_Data(nullptr);
 
       if (uclass.IsBuildable) {
         const auto fullname =
@@ -1521,7 +1521,7 @@ void UnitTypeClass::Init(TheaterType theater) {
                 .string();
         cameo_ptr = MixArchive::Retrieve(fullname);
         if (cameo_ptr) {
-          (const void*&)uclass.CameoData = cameo_ptr;
+          uclass.Set_Cameo_Data(cameo_ptr);
         }
       }
     }

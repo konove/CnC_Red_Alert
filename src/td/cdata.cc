@@ -1345,14 +1345,14 @@ void TemplateTypeClass::Init(TheaterType theater) {
   for (TemplateType index = TEMPLATE_CLEAR1; index < TEMPLATE_COUNT; index++) {
     const TemplateTypeClass& tplate = As_Reference(index);
 
-    (const void*&)tplate.ImageData = nullptr;
+    tplate.Set_Image_Data(nullptr);
     if (tplate.Theater & 1 << theater) {
       // Fully constructed iconset name.
       const auto fullname = std::filesystem::path(tplate.IniName)
                                 .replace_extension(Theaters[theater].Suffix)
                                 .string();
       ptr = MixArchive::Retrieve(fullname);
-      (const void*&)tplate.ImageData = ptr;
+      tplate.Set_Image_Data(ptr);
       Register_Icon_Set(ptr,
                         true);  // Register icon set for video memory caching
     }

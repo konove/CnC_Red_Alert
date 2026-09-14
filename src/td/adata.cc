@@ -2267,10 +2267,9 @@ void AnimTypeClass::One_Time() {
 
     DiskFile file(fullname);
     if (file.IsAvailable()) {
-      (const void*&)As_Reference(index).ImageData = Load_Alloc_Data(file);
+      As_Reference(index).Set_Image_Data(Load_Alloc_Data(file));
     } else {
-      (const void*&)As_Reference(index).ImageData =
-          MixArchive::Retrieve(fullname);
+      As_Reference(index).Set_Image_Data(MixArchive::Retrieve(fullname));
     }
     // Load shells skip AnimClass's gameplay constructor. Derived frame limits
     // must be ready for both restored animations and newly created ones.

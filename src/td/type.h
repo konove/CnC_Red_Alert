@@ -341,12 +341,14 @@ class ObjectTypeClass : public AbstractTypeClass {
   *object is constructed. *	The "mutable" keyword allows easy modification
   *to this otherwise const object.
   */
-  const void* ImageData{nullptr};
+  // Resolved when the theater loads; the table itself stays const.
+  mutable const void* ImageData{nullptr};
 
   /*
   **	This points to the radar imagery for this object.
   */
-  const void* RadarIcon = nullptr;
+  // Resolved when the theater loads; the table itself stays const.
+  mutable const void* RadarIcon = nullptr;
 
   //--------------------------------------------------------------------
   ObjectTypeClass(bool is_sentient, bool is_flammable, bool is_crushable,
@@ -373,6 +375,15 @@ class ObjectTypeClass : public AbstractTypeClass {
   [[nodiscard]] virtual const void* Get_Cameo_Data() const;
   [[nodiscard]] const void* Get_Image_Data() const { return ImageData; }
   [[nodiscard]] const void* Get_Radar_Data() const { return RadarIcon; }
+  // Points this type at freshly loaded shape data; nullptr clears it. The
+  // memory is owned by the archive or loader, never by this object.
+  void Set_Image_Data(const void* data) const { ImageData = data; }
+  // Installs a radar icon built by Get_Radar_Icon(), taking ownership and
+  // freeing the previous one, if any. nullptr clears it.
+  void Set_Radar_Icon(const void* icon) const {
+    delete[] static_cast<const unsigned char*>(RadarIcon);
+    RadarIcon = icon;
+  }
 
   virtual void Display(int /*unused*/, int /*unused*/,
                        WindowNumberType /*unused*/,
@@ -515,7 +526,8 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	This is the small icon image that is used to display the object in
   **	the sidebar for construction selection purposes.
   */
-  const void* CameoData{nullptr};
+  // Resolved when the theater loads; the table itself stays const.
+  mutable const void* CameoData{nullptr};
 
   /*
   **	These are the weapons that this techno object is armed with.
@@ -541,6 +553,8 @@ class TechnoTypeClass : public ObjectTypeClass {
   [[nodiscard]] virtual int Repair_Cost() const;
   [[nodiscard]] virtual int Repair_Step() const;
   [[nodiscard]] const void* Get_Cameo_Data() const override;
+  // Points this type at its sidebar cameo shape; nullptr clears it.
+  void Set_Cameo_Data(const void* data) const { CameoData = data; }
   [[nodiscard]] int Cost_Of() const override;
   [[nodiscard]] int Time_To_Build(HousesType house) const override;
   [[nodiscard]] uint16_t Get_Ownable() const override;
@@ -688,7 +702,8 @@ class BuildingTypeClass : public TechnoTypeClass {
     int Count;  // Number of frames in this animation.
     int Rate;   // Number of ticks to delay between each frame.
   } AnimControlType;
-  AnimControlType Anims[BSTATE_COUNT]{};
+  // Resolved when the theater loads; the table itself stays const.
+  mutable AnimControlType Anims[BSTATE_COUNT]{};
 
   /*
   **	This is a mask flag used to determine if all the necessary prerequisite
@@ -782,8 +797,11 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	The construction animation graphic data pointer is
   **	pointed to by this element.
   */
-  const void* BuildupData = nullptr;
+  // Resolved when the theater loads; the table itself stays const.
+  mutable const void* BuildupData = nullptr;
 
+  // Points this type at its construction animation; nullptr clears it.
+  void Set_Buildup_Data(const void* data) const { BuildupData = data; }
   void Init_Anim(BStateType state, int start, int count, int rate) const;
 };
 
@@ -917,11 +935,15 @@ class UnitTypeClass : public TechnoTypeClass {
   /*
   **	The width or height of the largest dimension for this unit.
   */
-  int MaxSize = 0;
+  // Resolved when the theater loads; the table itself stays const.
+  mutable int MaxSize = 0;
 
   /*
   **	This is the explicit unit class constructor.
   */
+  // Records the largest shape dimension found while loading the imagery.
+  void Set_Max_Size(int size) const { MaxSize = size; }
+
   UnitTypeClass(UnitType type, int name, const char* ininame, AnimType exp,
                 unsigned char level, uint64_t pre, bool is_goodie,
                 bool is_leader, bool is_eight, bool is_nominal,

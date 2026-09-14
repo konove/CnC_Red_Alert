@@ -1281,7 +1281,7 @@ void InfantryTypeClass::One_Time() {
       uclass->CameoData = MixArchive::Retrieve(fullname);
     }
 #else
-    ((const void*&)uclass->CameoData) = MixArchive::Retrieve(fullname);
+    uclass->CameoData = MixArchive::Retrieve(fullname);
 #endif
   }
 }

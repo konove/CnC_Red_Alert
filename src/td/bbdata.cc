@@ -593,9 +593,9 @@ void BulletTypeClass::One_Time() {
       DiskFile file(fullname);
 
       if (file.IsAvailable()) {
-        (const void*&)bullet.ImageData = Load_Alloc_Data(file);
+        bullet.Set_Image_Data(Load_Alloc_Data(file));
       } else {
-        (const void*&)bullet.ImageData = MixArchive::Retrieve(fullname);
+        bullet.Set_Image_Data(MixArchive::Retrieve(fullname));
       }
     }
   }

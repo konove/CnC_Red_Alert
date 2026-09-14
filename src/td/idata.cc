@@ -1812,7 +1812,7 @@ void InfantryTypeClass::One_Time() {
     auto fullname = std::filesystem::path(uclass->IniName)
                         .replace_extension(".SHP")
                         .string();
-    (const void*&)uclass->ImageData = MixArchive::Retrieve(fullname);
+    uclass->Set_Image_Data(MixArchive::Retrieve(fullname));
 
     /*
     **	The small build image icon sized shapes are always generic.
@@ -1825,7 +1825,7 @@ void InfantryTypeClass::One_Time() {
     }
     fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    (const void*&)uclass->CameoData = MixArchive::Retrieve(fullname);
+    uclass->Set_Cameo_Data(MixArchive::Retrieve(fullname));
   }
 }
 
@@ -1854,7 +1854,7 @@ void InfantryTypeClass::Init(TheaterType theater) {
 
       uclass = &As_Reference(index);
 
-      (const void*&)uclass->CameoData = nullptr;
+      uclass->Set_Cameo_Data(nullptr);
 
       const auto filename = std::string(uclass->IniName).substr(0, 4) + "ICNH";
 
@@ -1863,7 +1863,7 @@ void InfantryTypeClass::Init(TheaterType theater) {
                                 .string();
       cameo_ptr = MixArchive::Retrieve(fullname);
       if (cameo_ptr) {
-        (const void*&)uclass->CameoData = cameo_ptr;
+        uclass->Set_Cameo_Data(cameo_ptr);
       }
     }
   }
