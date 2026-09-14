@@ -40,6 +40,12 @@
 #ifndef CNC_RED_ALERT_TECH_PIPE_H_
 #define CNC_RED_ALERT_TECH_PIPE_H_
 
+#include <cstddef>
+#include <span>
+#include <type_traits>
+
+#include "base/types.h"
+
 /*
 **	A "push through" pipe interface abstract class used for such purposes as
 *compression *	and translation of data. In STL terms, this is functionally
@@ -57,11 +63,22 @@ class Pipe {
   Pipe(Pipe&&) = delete;
   Pipe& operator=(Pipe&&) = delete;
 
-  virtual int Flush();
-  virtual int End() { return Flush(); }
+  virtual base::ssize Flush();
+  virtual base::ssize End() { return Flush(); }
   void SetSink(Pipe* sink) { sink_ = sink; }
   void SetSink(Pipe& sink) { sink_ = &sink; }
-  virtual int Put(const void* source, int length);
+
+  // Pushes bytes down the chain and returns how many reached its far end.
+  // A link that buffers returns less than it was given; the rest follows on
+  // a later Put or Flush.
+  virtual base::ssize Put(std::span<const std::byte> bytes);
+
+  // Pushes one trivially copyable value; returns what Put returns.
+  template <typename T>
+    requires std::is_trivially_copyable_v<T>
+  base::ssize WriteObject(const T& value) {
+    return Put(std::as_bytes(std::span(&value, 1)));
+  }
 
  protected:
   // The pipe we push data to. Caller must ensure sink outlives this pipe.

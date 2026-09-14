@@ -20,7 +20,9 @@
 
 #include <cstring>
 #include <memory>
+#include <span>
 
+#include "base/numeric.h"
 #include "tech/blowfish.h"
 #include "tech/blowpipe.h"
 #include "tech/pipe.h"
@@ -37,7 +39,8 @@ std::unique_ptr<BlowPipe> MakePKEncryptPipe(Pipe& sink, const PKey& key,
   // Generate a random blowfish key.
   char blowfish_key[kMaxKeyBlockSize];
   memset(blowfish_key, 0, sizeof(blowfish_key));
-  rng.Get(blowfish_key, kBlowfishKeySize);
+  rng.Get(
+      std::as_writable_bytes(std::span(blowfish_key).first(kBlowfishKeySize)));
 
   // Calculate plain key length (padded to PK block size).
   const int plain_len =
@@ -48,7 +51,8 @@ std::unique_ptr<BlowPipe> MakePKEncryptPipe(Pipe& sink, const PKey& key,
   const int encrypted_len = key.Encrypt(blowfish_key, plain_len, encrypted_key);
 
   // Write the encrypted key header to the sink.
-  sink.Put(encrypted_key, encrypted_len);
+  sink.Put(std::as_bytes(
+      std::span(encrypted_key).first(base::ToSize(encrypted_len))));
 
   // Create and configure the BlowPipe.
   auto pipe = std::make_unique<BlowPipe>(BlowPipe::ENCRYPT);

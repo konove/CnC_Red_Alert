@@ -40,10 +40,14 @@
 
 #include "tech/blwstraw.h"
 
+#include <cstddef>
 #include <cstring>
+#include <span>
 
 #include "base/numeric.h"
+#include "base/types.h"
 #include "tech/blowfish.h"
+#include "tech/byte_view.h"
 #include "tech/straw.h"
 /***********************************************************************************************
  * BlowStraw::Get -- Fetch a block of data from the straw. *
@@ -65,7 +69,9 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int BlowStraw::Get(void* source, int slen) {
+base::ssize BlowStraw::Get(std::span<std::byte> buffer) {
+  void* source = buffer.data();
+  int slen = static_cast<int>(buffer.size());
   /*
   **	Verify the parameter for legality.
   */
@@ -78,11 +84,11 @@ int BlowStraw::Get(void* source, int slen) {
   *through *	unchanged.
   */
   if (!BF.has_value()) {
-    return Straw::Get(source, slen);
+    return Straw::Get(buffer);
   }
   BlowfishEngine& engine = *BF;
 
-  int total = 0;
+  base::ssize total = 0;
 
   while (slen > 0) {
     /*
@@ -105,7 +111,8 @@ int BlowStraw::Get(void* source, int slen) {
     /*
     **	Fetch and encrypt/decrypt the next block.
     */
-    const int incount = Straw::Get(Buffer.data(), kBlockSize);
+    const int incount = static_cast<int>(
+        Straw::Get(WritableByteView(Buffer.data(), kBlockSize)));
     if (incount == 0) {
       break;
     }

@@ -3,6 +3,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "gtest/gtest.h"
 #include "tech/rndstraw.h"
@@ -22,8 +23,8 @@ TEST(RandomSourceTest, SameSeedGivesSameBytes) {
   Seed(second, 7);
   std::array<uint8_t, 1000> a{};
   std::array<uint8_t, 1000> b{};
-  EXPECT_EQ(first.Get(a.data(), a.size()), 1000);
-  EXPECT_EQ(second.Get(b.data(), b.size()), 1000);
+  EXPECT_EQ(first.Get(std::as_writable_bytes(std::span(a))), 1000);
+  EXPECT_EQ(second.Get(std::as_writable_bytes(std::span(b))), 1000);
   EXPECT_EQ(a, b);
 }
 
@@ -34,8 +35,8 @@ TEST(RandomSourceTest, DifferentSeedGivesDifferentBytes) {
   Seed(second, 8);
   std::array<uint8_t, 64> a{};
   std::array<uint8_t, 64> b{};
-  first.Get(a.data(), a.size());
-  second.Get(b.data(), b.size());
+  first.Get(std::as_writable_bytes(std::span(a)));
+  second.Get(std::as_writable_bytes(std::span(b)));
   EXPECT_NE(a, b);
 }
 
@@ -43,7 +44,8 @@ TEST(RandomSourceTest, FillsEveryRequestedByte) {
   RandomStraw rng;
   Seed(rng, 3);
   std::array<uint8_t, 4096> bytes{};
-  EXPECT_EQ(rng.Get(bytes.data(), 4000), 4000);
+  EXPECT_EQ(rng.Get(std::as_writable_bytes(std::span(bytes).first(4000))),
+            4000);
   // Bytes past the request stay untouched.
   for (int i = 4000; i < 4096; ++i) {
     EXPECT_EQ(bytes[static_cast<std::size_t>(i)], 0);

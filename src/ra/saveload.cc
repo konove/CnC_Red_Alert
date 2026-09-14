@@ -45,6 +45,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <utility>
 #include <vector>
 
@@ -483,7 +484,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   memset(descr_buf, '\0', sizeof(descr_buf));
   sprintf(descr_buf, "%s\r\n", descr);    // put CR-LF after text
   descr_buf[strlen(descr_buf) + 1] = 26;  // put CTRL-Z after nullptr
-  fpipe.Put(descr_buf, kDescripMax);
+  fpipe.Put(std::as_bytes(std::span(descr_buf)));
 
   /*
   **	Magic and version come right after the description so the load dialog
@@ -503,7 +504,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   **	Store a dummy message digest.
   */
   char digest[20];
-  fpipe.Put(digest, sizeof(digest));
+  fpipe.Put(std::as_bytes(std::span(digest)));
 
   /*
   **	Dump the save game data to the file. The data is compressed
@@ -546,7 +547,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   pipe.Flush();
   file.Seek(pos, SeekOrigin::kBegin);
   sha.Result(digest);
-  fpipe.Put(digest, sizeof(digest));
+  fpipe.Put(std::as_bytes(std::span(digest)));
 
   pipe.End();
 
@@ -626,7 +627,7 @@ bool Load_Game(int id) {
   /*
   **	Read & discard the save-game's header info
   */
-  if (fstraw.Get(descr_buf, kDescripMax) != kDescripMax) {
+  if (fstraw.Get(std::as_writable_bytes(std::span(descr_buf))) != kDescripMax) {
     return false;
   }
 
@@ -646,7 +647,7 @@ bool Load_Game(int id) {
   **	Get the message digest that is embedded in the file.
   */
   char digest[20];
-  fstraw.Get(digest, sizeof(digest));
+  fstraw.Get(std::as_writable_bytes(std::span(digest)));
 
   /*
   **	Remember the file position since we must seek back here to
@@ -661,8 +662,8 @@ bool Load_Game(int id) {
   SHAStraw sha;
   sha.SetSource(fstraw);
   for (;;) {
-    if (sha.Get(staging_buffer, sizeof(staging_buffer)) !=
-        sizeof(staging_buffer)) {
+    if (sha.Get(std::as_writable_bytes(std::span(staging_buffer))) !=
+        std::ssize(staging_buffer)) {
       break;
     }
   }
@@ -1275,7 +1276,7 @@ bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
   /*
   **	Read in the description, scenario #, and the house
   */
-  if (straw.Get(descr_buf, kDescripMax) != kDescripMax) {
+  if (straw.Get(std::as_writable_bytes(std::span(descr_buf))) != kDescripMax) {
     return false;
   }
 

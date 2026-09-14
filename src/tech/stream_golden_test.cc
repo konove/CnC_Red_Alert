@@ -6,10 +6,12 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <span>
 #include <string>
 #include <vector>
 
 #include "absl/strings/escaping.h"
+#include "base/types.h"
 #include "gtest/gtest.h"
 #include "tech/b64pipe.h"
 #include "tech/b64straw.h"
@@ -41,18 +43,20 @@ constexpr int kSaveBlockSize = 4096;
 class VectorPipe : public Pipe {
  public:
   std::vector<uint8_t> bytes;
-  int Put(const void* data, int length) override {
-    const auto* first = static_cast<const uint8_t*>(data);
-    bytes.insert(bytes.end(), first, first + length);
-    return length;
+  base::ssize Put(std::span<const std::byte> data) override {
+    for (const std::byte byte : data) {
+      bytes.push_back(std::to_integer<uint8_t>(byte));
+    }
+    return std::ssize(data);
   }
 };
 
 std::vector<uint8_t> Drain(Straw& straw, int chunk_size) {
   std::vector<uint8_t> result;
   std::vector<uint8_t> chunk(static_cast<std::size_t>(chunk_size));
-  for (int count = straw.Get(chunk.data(), chunk_size); count != 0;
-       count = straw.Get(chunk.data(), chunk_size)) {
+  for (base::ssize count = straw.Get(std::as_writable_bytes(std::span(chunk)));
+       count != 0;
+       count = straw.Get(std::as_writable_bytes(std::span(chunk)))) {
     result.insert(result.end(), chunk.begin(), chunk.begin() + count);
   }
   return result;
@@ -84,7 +88,7 @@ std::vector<uint8_t> Input() {
 void PutInPieces(Pipe& pipe, const std::vector<uint8_t>& bytes) {
   for (std::size_t at = 0; at < bytes.size(); at += 997) {
     const std::size_t piece = std::min<std::size_t>(997, bytes.size() - at);
-    pipe.Put(bytes.data() + at, static_cast<int>(piece));
+    pipe.Put(std::as_bytes(std::span(bytes).subspan(at, piece)));
   }
   pipe.Flush();
 }
@@ -118,13 +122,12 @@ void ExpectCompresses(int block_size, const std::string& golden) {
   PutInPieces(compressor, input);
   EXPECT_EQ(Sha1Hex(encoded.bytes), golden);
 
-  BufferStraw plain(input.data(), static_cast<int>(input.size()));
+  BufferStraw plain(std::as_bytes(std::span(input)));
   CodecStraw compressing_straw(CodecStraw::COMPRESS, block_size);
   compressing_straw.SetSource(plain);
   EXPECT_EQ(Drain(compressing_straw, 1000), encoded.bytes);
 
-  BufferStraw compressed(encoded.bytes.data(),
-                         static_cast<int>(encoded.bytes.size()));
+  BufferStraw compressed(std::as_bytes(std::span(encoded.bytes)));
   CodecStraw decompressor(CodecStraw::DECOMPRESS, block_size);
   decompressor.SetSource(compressed);
   EXPECT_EQ(Drain(decompressor, 1000), input);
@@ -163,14 +166,13 @@ TEST(StreamGoldenTest, BlowfishEncryptsWithFixedKey) {
   EXPECT_EQ(Sha1Hex(encrypted.bytes),
             "2fea48225f216a5c044f307a870ae4b2a88a8afc");
 
-  BufferStraw plain(input.data(), static_cast<int>(input.size()));
+  BufferStraw plain(std::as_bytes(std::span(input)));
   BlowStraw encrypting_straw(BlowStraw::ENCRYPT);
   encrypting_straw.Key(key.data(), static_cast<int>(key.size()));
   encrypting_straw.SetSource(plain);
   EXPECT_EQ(Drain(encrypting_straw, 1000), encrypted.bytes);
 
-  BufferStraw cipher(encrypted.bytes.data(),
-                     static_cast<int>(encrypted.bytes.size()));
+  BufferStraw cipher(std::as_bytes(std::span(encrypted.bytes)));
   BlowStraw decryptor(BlowStraw::DECRYPT);
   decryptor.Key(key.data(), static_cast<int>(key.size()));
   decryptor.SetSource(cipher);
@@ -198,7 +200,7 @@ TEST(StreamGoldenTest, SaveGameChainProducesPinnedBytesAndDigest) {
   EXPECT_EQ(absl::BytesToHexString({digest.data(), digest.size()}),
             Sha1Hex(file.bytes));
 
-  BufferStraw stored(file.bytes.data(), static_cast<int>(file.bytes.size()));
+  BufferStraw stored(std::as_bytes(std::span(file.bytes)));
   BlowStraw decrypt(BlowStraw::DECRYPT);
   LZOStraw decompress(LZOStraw::DECOMPRESS, kSaveBlockSize);
   decrypt.Key(key.data(), static_cast<int>(key.size()));
@@ -211,14 +213,15 @@ TEST(StreamGoldenTest, SaveGameChainProducesPinnedBytesAndDigest) {
 // Get_UUBlock pushes the entries back through a decoding pipe.
 TEST(StreamGoldenTest, Base64EncodesInUuBlockLines) {
   const std::vector<uint8_t> input = Input();
-  BufferStraw plain(input.data(), static_cast<int>(input.size()));
+  BufferStraw plain(std::as_bytes(std::span(input)));
   Base64Straw encoder(Base64Straw::ENCODE);
   encoder.SetSource(plain);
   std::vector<std::vector<uint8_t>> lines;
   std::vector<uint8_t> joined;
   for (;;) {
     std::array<uint8_t, 70> line{};
-    const int length = encoder.Get(line.data(), 70);
+    const auto length =
+        static_cast<int>(encoder.Get(std::as_writable_bytes(std::span(line))));
     if (length == 0) {
       break;
     }
@@ -239,19 +242,19 @@ TEST(StreamGoldenTest, Base64EncodesInUuBlockLines) {
   EXPECT_EQ(pipe_encoded.bytes, unsplit);
 
   std::vector<uint8_t> block(input.size() + 16);
-  BufferPipe block_pipe(block.data(), static_cast<int>(block.size()));
+  BufferPipe block_pipe(std::as_writable_bytes(std::span(block)));
   Base64Pipe decoding_pipe(Base64Pipe::DECODE);
   decoding_pipe.SetSink(&block_pipe);
-  int total = 0;
+  base::ssize total = 0;
   for (const auto& line : lines) {
-    total += decoding_pipe.Put(line.data(), static_cast<int>(line.size()));
+    total += decoding_pipe.Put(std::as_bytes(std::span(line)));
   }
   total += decoding_pipe.End();
   ASSERT_EQ(total, kInputSize);
   block.resize(kInputSize);
   EXPECT_EQ(block, input);
 
-  BufferStraw encoded(unsplit.data(), static_cast<int>(unsplit.size()));
+  BufferStraw encoded(std::as_bytes(std::span(unsplit)));
   Base64Straw decoder(Base64Straw::DECODE);
   decoder.SetSource(encoded);
   EXPECT_EQ(Drain(decoder, 1000), input);

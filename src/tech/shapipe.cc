@@ -40,6 +40,11 @@
 
 #include "tech/shapipe.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <span>
+
+#include "base/types.h"
 #include "tech/pipe.h"
 
 /***********************************************************************************************
@@ -60,9 +65,9 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int SHAPipe::Put(const void* source, int slen) {
-  SHA.Hash(source, slen);
-  return Pipe::Put(source, slen);
+base::ssize SHAPipe::Put(std::span<const std::byte> bytes) {
+  SHA.Hash(bytes.data(), static_cast<int32_t>(bytes.size()));
+  return Pipe::Put(bytes);
 }
 
 /***********************************************************************************************

@@ -41,8 +41,11 @@
 #define CNC_RED_ALERT_TECH_BLWSTRAW_H_
 
 #include <array>
+#include <cstddef>
 #include <optional>
+#include <span>
 
+#include "base/types.h"
 #include "tech/blowfish.h"
 #include "tech/straw.h"
 
@@ -60,7 +63,7 @@ class BlowStraw : public Straw {
   explicit BlowStraw(CryptControl control) : Control(control) {}
   ~BlowStraw() override = default;
 
-  int Get(void* source, int slen) override;
+  base::ssize Get(std::span<std::byte> buffer) override;
 
   // Submit key for blowfish engine.
   void Key(const void* key, int length);

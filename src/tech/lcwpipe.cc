@@ -42,12 +42,15 @@
 
 #include "tech/lcwpipe.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <span>
 #include <utility>
 
 #include "base/numeric.h"
+#include "base/types.h"
+#include "tech/byte_view.h"
 #include "tech/codec_block.h"
 #include "tech/lcw.h"
 #include "tech/pipe.h"
@@ -99,12 +102,14 @@ LCWPipe::LCWPipe(CompControl control, int blocksize)
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-int LCWPipe::Put(const void* source, int slen) {
+base::ssize LCWPipe::Put(std::span<const std::byte> bytes) {
+  const void* source = bytes.data();
+  int slen = static_cast<int>(bytes.size());
   if (source == nullptr || slen < 1) {
-    return Pipe::Put(source, slen);
+    return Pipe::Put(bytes);
   }
 
-  int total = 0;
+  base::ssize total = 0;
 
   /*
   **	Copy as much as can fit into the buffer from the source data supplied.
@@ -168,7 +173,7 @@ int LCWPipe::Put(const void* source, int slen) {
             corrupt_ = true;
             break;
           }
-          total += Pipe::Put(Buffer2.data(), BlockHeader.UncompCount);
+          total += Pipe::Put(ByteView(Buffer2.data(), BlockHeader.UncompCount));
           Counter = 0;
           BlockHeader.CompCount = 0xFFFF;
         }
@@ -193,8 +198,8 @@ int LCWPipe::Put(const void* source, int slen) {
 
         BlockHeader.CompCount = static_cast<uint16_t>(len);
         BlockHeader.UncompCount = static_cast<uint16_t>(BlockSize);
-        total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
-        total += Pipe::Put(Buffer2.data(), len);
+        total += Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
+        total += Pipe::Put(ByteView(Buffer2.data(), len));
         Counter = 0;
       }
     }
@@ -211,8 +216,8 @@ int LCWPipe::Put(const void* source, int slen) {
 
       BlockHeader.CompCount = static_cast<uint16_t>(len);
       BlockHeader.UncompCount = static_cast<uint16_t>(BlockSize);
-      total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
-      total += Pipe::Put(Buffer2.data(), len);
+      total += Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
+      total += Pipe::Put(ByteView(Buffer2.data(), len));
     }
 
     /*
@@ -247,8 +252,8 @@ int LCWPipe::Put(const void* source, int slen) {
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-int LCWPipe::Flush() {
-  int total = 0;
+base::ssize LCWPipe::Flush() {
+  base::ssize total = 0;
 
   /*
   **	If there is accumulated data, then it must processed.
@@ -261,7 +266,7 @@ int LCWPipe::Flush() {
       *through *	as if were already decompressed.
       */
       if (BlockHeader.CompCount == 0xFFFF) {
-        total += Pipe::Put(Buffer.data(), Counter);
+        total += Pipe::Put(ByteView(Buffer.data(), Counter));
         Counter = 0;
       }
 
@@ -273,8 +278,8 @@ int LCWPipe::Flush() {
       *decompressed.
       */
       if (Counter > 0) {
-        total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
-        total += Pipe::Put(Buffer.data(), Counter);
+        total += Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
+        total += Pipe::Put(ByteView(Buffer.data(), Counter));
         Counter = 0;
         BlockHeader.CompCount = 0xFFFF;
       }
@@ -288,8 +293,8 @@ int LCWPipe::Flush() {
 
       BlockHeader.CompCount = static_cast<uint16_t>(len);
       BlockHeader.UncompCount = static_cast<uint16_t>(Counter);
-      total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
-      total += Pipe::Put(Buffer2.data(), len);
+      total += Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
+      total += Pipe::Put(ByteView(Buffer2.data(), len));
       Counter = 0;
     }
   }

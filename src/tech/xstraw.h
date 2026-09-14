@@ -40,8 +40,11 @@
 #ifndef CNC_RED_ALERT_TECH_XSTRAW_H_
 #define CNC_RED_ALERT_TECH_XSTRAW_H_
 
+#include <cstddef>
+#include <span>
+
 #include "absl/base/attributes.h"
-#include "tech/buff.h"
+#include "base/types.h"
 #include "tech/file.h"
 #include "tech/straw.h"
 
@@ -51,25 +54,16 @@
 */
 class BufferStraw : public Straw {
  public:
-  // Creates a non-owning view into the buffer.
-  explicit BufferStraw(const Buffer& buffer)
-      : BufferPtr(buffer.Get_Buffer(), buffer.Get_Size()), Index(0) {}
-  BufferStraw(const void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND, int length)
-      : BufferPtr((void*)buffer, length), Index(0) {}
-  ~BufferStraw() override = default;
+  // Reads from buffer, which must outlive the straw.
+  explicit BufferStraw(
+      std::span<const std::byte> buffer ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : buffer_(buffer) {}
 
-  BufferStraw(const BufferStraw&) = delete;
-  BufferStraw& operator=(const BufferStraw&) = delete;
-  BufferStraw(BufferStraw&&) = delete;
-  BufferStraw& operator=(BufferStraw&&) = delete;
-
-  int Get(void* source, int slen) override;
+  base::ssize Get(std::span<std::byte> buffer) override;
 
  private:
-  Buffer BufferPtr;
-  int Index;
-
-  bool Is_Valid() { return BufferPtr.Is_Valid(); }
+  std::span<const std::byte> buffer_;
+  base::ssize index_ = 0;  // Bytes handed out so far.
 };
 
 /*
@@ -89,7 +83,7 @@ class FileStraw : public Straw {
   FileStraw(FileStraw&&) = delete;
   FileStraw& operator=(FileStraw&&) = delete;
 
-  int Get(void* source, int slen) override;
+  base::ssize Get(std::span<std::byte> buffer) override;
 
  private:
   File* file_;

@@ -40,8 +40,11 @@
 #ifndef CNC_RED_ALERT_TECH_XPIPE_H_
 #define CNC_RED_ALERT_TECH_XPIPE_H_
 
+#include <cstddef>
+#include <span>
+
 #include "absl/base/attributes.h"
-#include "tech/buff.h"
+#include "base/types.h"
 #include "tech/file.h"
 #include "tech/pipe.h"
 
@@ -53,27 +56,17 @@
 */
 class BufferPipe : public Pipe {
  public:
-  // Creates a non-owning view into the buffer.
-  explicit BufferPipe(const Buffer& buffer)
-      : BufferPtr(buffer.Get_Buffer(), buffer.Get_Size()), Index(0) {}
-  // clang suggests lifetimebound here, but its lifetimebound-violation check
-  // cannot verify it.
+  // Stores into buffer, which must outlive the pipe. Bytes that do not fit
+  // are dropped. clang suggests lifetimebound here, but its
+  // lifetimebound-violation check cannot verify it.
   // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
-  BufferPipe(void* buffer, int length) : BufferPtr(buffer, length), Index(0) {}
-  ~BufferPipe() override = default;
+  explicit BufferPipe(std::span<std::byte> buffer) : buffer_(buffer) {}
 
-  BufferPipe(const BufferPipe&) = delete;
-  BufferPipe& operator=(const BufferPipe&) = delete;
-  BufferPipe(BufferPipe&&) = delete;
-  BufferPipe& operator=(BufferPipe&&) = delete;
-
-  int Put(const void* source, int slen) override;
+  base::ssize Put(std::span<const std::byte> bytes) override;
 
  private:
-  Buffer BufferPtr;
-  int Index;
-
-  bool Is_Valid() { return BufferPtr.Is_Valid(); }
+  std::span<std::byte> buffer_;
+  base::ssize index_ = 0;  // Bytes stored so far.
 };
 
 /*
@@ -94,8 +87,8 @@ class FilePipe : public Pipe {
   FilePipe(FilePipe&&) = delete;
   FilePipe& operator=(FilePipe&&) = delete;
 
-  int Put(const void* source, int slen) override;
-  int End() override;
+  base::ssize Put(std::span<const std::byte> bytes) override;
+  base::ssize End() override;
 
  private:
   File* file_;

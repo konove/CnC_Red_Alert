@@ -1,11 +1,14 @@
 #include "tech/fixed.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <initializer_list>
+#include <span>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/types.h"
 #include "gtest/gtest.h"
 #include "tech/archive.h"
 #include "tech/pipe.h"
@@ -239,10 +242,11 @@ TEST(FixedAsStringTest, StripsTrailingZeros) {
 
 class ByteSink : public Pipe {
  public:
-  int Put(const void* source, int slen) override {
-    const auto* begin = static_cast<const uint8_t*>(source);
-    bytes.insert(bytes.end(), begin, begin + slen);
-    return slen;
+  base::ssize Put(std::span<const std::byte> data) override {
+    for (const std::byte byte : data) {
+      bytes.push_back(std::to_integer<uint8_t>(byte));
+    }
+    return std::ssize(data);
   }
   std::vector<uint8_t> bytes;
 };
@@ -256,7 +260,7 @@ TEST(FixedSerializeTest, RoundTripsRawBits) {
     out.Serialize(writer);
     EXPECT_EQ(sink.bytes.size(), 2U);
 
-    BufferStraw straw(sink.bytes.data(), static_cast<int>(sink.bytes.size()));
+    BufferStraw straw(std::as_bytes(std::span(sink.bytes)));
     ArchiveReader reader(straw);
     fixed in;
     in.Serialize(reader);

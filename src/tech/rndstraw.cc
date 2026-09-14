@@ -61,8 +61,8 @@
 #include <utility>
 
 #include "base/numeric.h"
+#include "base/types.h"
 #include "tech/sha.h"
-#include "tech/straw.h"
 
 namespace {
 
@@ -285,18 +285,10 @@ void RandomStraw::Scramble_Seed() {
  * HISTORY: * 07/04/1996 JLB : Created. * 07/10/1996 JLB : Revamped to make
  *cryptographically secure.                               *
  *=============================================================================================*/
-int RandomStraw::Get(void* source, int slen) {
-  if (source == nullptr || slen < 1) {
-    return Straw::Get(source, slen);
-  }
-
-  int total = 0;
-  while (slen > 0) {
-    *static_cast<char*>(source) = static_cast<char>(Random[Current++].Next());
+base::ssize RandomStraw::Get(std::span<std::byte> buffer) {
+  for (std::byte& byte : buffer) {
+    byte = static_cast<std::byte>(Random[Current++].Next());
     Current %= static_cast<int>(std::size(Random));
-    source = static_cast<char*>(source) + sizeof(char);
-    slen--;
-    total++;
   }
-  return total;
+  return std::ssize(buffer);
 }

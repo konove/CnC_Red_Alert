@@ -40,10 +40,14 @@
 
 #include "tech/b64straw.h"
 
+#include <cstddef>
 #include <cstring>
+#include <span>
 
 #include "base/numeric.h"
+#include "base/types.h"
 #include "tech/base64.h"
+#include "tech/byte_view.h"
 #include "tech/straw.h"
 
 /***********************************************************************************************
@@ -66,8 +70,10 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int Base64Straw::Get(void* source, int slen) {
-  int total = 0;
+base::ssize Base64Straw::Get(std::span<std::byte> buffer) {
+  void* source = buffer.data();
+  int slen = static_cast<int>(buffer.size());
+  base::ssize total = 0;
 
   char* from;
   int fromsize;
@@ -109,7 +115,8 @@ int Base64Straw::Get(void* source, int slen) {
     /*
     **	More bytes are needed, so fetch and process another base 64 block.
     */
-    const int incount = Straw::Get(from, fromsize);
+    const int incount =
+        static_cast<int>(Straw::Get(WritableByteView(from, fromsize)));
     if (Control == ENCODE) {
       Counter = Base64_Encode(from, incount, to, tosize);
     } else {

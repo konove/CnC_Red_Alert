@@ -1,10 +1,13 @@
 // Round-trip coverage for non-heap Red Alert save state.
 
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <span>
 #include <type_traits>
 #include <vector>
 
+#include "base/types.h"
 #include "gtest/gtest.h"
 #include "ra/_wsproto.h"
 #include "ra/defines.h"
@@ -30,17 +33,18 @@ static_assert(std::is_trivially_default_constructible_v<SpecialClass>);
 
 class GlobalsPipe : public Pipe {
  public:
-  int Put(const void* source, int length) override {
-    const auto* begin = static_cast<const uint8_t*>(source);
-    bytes.insert(bytes.end(), begin, begin + length);
-    return length;
+  base::ssize Put(std::span<const std::byte> data) override {
+    for (const std::byte byte : data) {
+      bytes.push_back(std::to_integer<uint8_t>(byte));
+    }
+    return std::ssize(data);
   }
   std::vector<uint8_t> bytes;
 };
 
 template <class T>
 bool ReadValue(T& value, const std::vector<uint8_t>& bytes) {
-  BufferStraw straw(bytes.data(), static_cast<int>(bytes.size()));
+  BufferStraw straw(std::as_bytes(std::span(bytes)));
   // The call operator is non-const; misc-const-correctness misses the call
   // because its argument is template-dependent.
   // NOLINTNEXTLINE(misc-const-correctness)

@@ -40,9 +40,12 @@
 #ifndef CNC_RED_ALERT_TECH_LCWPIPE_H_
 #define CNC_RED_ALERT_TECH_LCWPIPE_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 #include <vector>
 
+#include "base/types.h"
 #include "tech/pipe.h"
 
 /*
@@ -58,8 +61,8 @@ class LCWPipe : public Pipe {
   explicit LCWPipe(CompControl /*control*/, int blocksize = 1024 * 8);
   ~LCWPipe() override = default;
 
-  int Flush() override;
-  int Put(const void* source, int slen) override;
+  base::ssize Flush() override;
+  base::ssize Put(std::span<const std::byte> bytes) override;
 
  private:
   /*

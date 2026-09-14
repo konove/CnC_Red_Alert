@@ -41,7 +41,10 @@
 #define CNC_RED_ALERT_TECH_B64PIPE_H_
 
 #include <array>
+#include <cstddef>
+#include <span>
 
+#include "base/types.h"
 #include "tech/pipe.h"
 
 /*
@@ -61,8 +64,8 @@ class Base64Pipe : public Pipe {
   Base64Pipe(Base64Pipe&&) = delete;
   Base64Pipe& operator=(Base64Pipe&&) = delete;
 
-  int Flush() override;
-  int Put(const void* source, int slen) override;
+  base::ssize Flush() override;
+  base::ssize Put(std::span<const std::byte> bytes) override;
 
  private:
   /*

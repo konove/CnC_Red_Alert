@@ -3,6 +3,11 @@
 #ifndef CNC_RED_ALERT_TD_SAVEPIPE_H_
 #define CNC_RED_ALERT_TD_SAVEPIPE_H_
 
+#include <cstddef>
+#include <iterator>
+#include <span>
+
+#include "base/types.h"
 #include "tech/pipe.h"
 
 // ArchiveWriter does not interpret Put's result because compression pipes
@@ -12,12 +17,12 @@ class SaveGamePipe : public Pipe {
  public:
   explicit SaveGamePipe(Pipe& sink) { SetSink(sink); }
 
-  int Put(const void* source, int length) override {
+  base::ssize Put(std::span<const std::byte> bytes) override {
     if (!ok_) {
       return 0;
     }
-    const int written = Pipe::Put(source, length);
-    ok_ = written == length;
+    const base::ssize written = Pipe::Put(bytes);
+    ok_ = written == std::ssize(bytes);
     return written;
   }
 

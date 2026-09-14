@@ -40,6 +40,13 @@
 #ifndef CNC_RED_ALERT_TECH_STRAW_H_
 #define CNC_RED_ALERT_TECH_STRAW_H_
 
+#include <cstddef>
+#include <span>
+#include <type_traits>
+
+#include "base/numeric.h"
+#include "base/types.h"
+
 /*
 **	This is a demand driven data carrier. It will retrieve the byte request
 *by passing *	the request down the chain (possibly processing on the way) in
@@ -59,7 +66,18 @@ class Straw {
 
   void SetSource(Straw* source) { source_ = source; }
   void SetSource(Straw& source) { source_ = &source; }
-  virtual int Get(void* buffer, int length);
+  // Pulls up to buffer.size() bytes through the chain into buffer and returns
+  // how many were stored, which is fewer only once the data runs out.
+  virtual base::ssize Get(std::span<std::byte> buffer);
+
+  // Pulls one trivially copyable value. Returns false on a short read, in
+  // which case value is partially written.
+  template <typename T>
+    requires std::is_trivially_copyable_v<T>
+  bool ReadObject(T& value) {
+    return Get(std::as_writable_bytes(std::span(&value, 1))) ==
+           base::ToSigned(sizeof(T));
+  }
 
  protected:
   // The straw we pull data from. Caller must ensure source outlives this straw.

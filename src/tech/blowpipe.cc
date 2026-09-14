@@ -41,11 +41,15 @@
 
 #include "tech/blowpipe.h"
 
+#include <cstddef>
 #include <cstring>
+#include <span>
 #include <utility>
 
 #include "base/numeric.h"
+#include "base/types.h"
 #include "tech/blowfish.h"
+#include "tech/byte_view.h"
 #include "tech/pipe.h"
 /***********************************************************************************************
  * BlowPipe::Flush -- Flushes any pending data out the pipe. *
@@ -62,10 +66,10 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int BlowPipe::Flush() {
-  int total = 0;
+base::ssize BlowPipe::Flush() {
+  base::ssize total = 0;
   if (Counter > 0 && BF.has_value()) {
-    total += Pipe::Put(Buffer.data(), Counter);
+    total += Pipe::Put(ByteView(Buffer.data(), Counter));
   }
   Counter = 0;
   total += Pipe::Flush();
@@ -92,9 +96,11 @@ int BlowPipe::Flush() {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int BlowPipe::Put(const void* source, int slen) {
+base::ssize BlowPipe::Put(std::span<const std::byte> bytes) {
+  const void* source = bytes.data();
+  int slen = static_cast<int>(bytes.size());
   if (source == nullptr || slen < 1) {
-    return Pipe::Put(source, slen);
+    return Pipe::Put(bytes);
   }
 
   /*
@@ -102,11 +108,11 @@ int BlowPipe::Put(const void* source, int slen) {
   *through *	unchanged in any way.
   */
   if (!BF.has_value()) {
-    return Pipe::Put(source, slen);
+    return Pipe::Put(bytes);
   }
   BlowfishEngine& engine = *BF;
 
-  int total = 0;
+  base::ssize total = 0;
 
   /*
   **	If there is a partial block accumulated, then tag on the new data to
@@ -128,7 +134,7 @@ int BlowPipe::Put(const void* source, int slen) {
       } else {
         engine.Encrypt(Buffer.data(), kBlockSize, Buffer.data());
       }
-      total += Pipe::Put(Buffer.data(), kBlockSize);
+      total += Pipe::Put(ByteView(Buffer.data(), kBlockSize));
       Counter = 0;
     }
   }
@@ -143,7 +149,7 @@ int BlowPipe::Put(const void* source, int slen) {
     } else {
       engine.Encrypt(source, kBlockSize, Buffer.data());
     }
-    total += Pipe::Put(Buffer.data(), kBlockSize);
+    total += Pipe::Put(ByteView(Buffer.data(), kBlockSize));
     source = (char*)source + kBlockSize;
     slen -= kBlockSize;
   }

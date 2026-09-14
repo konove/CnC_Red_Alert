@@ -72,11 +72,15 @@
 #include "ra/ini.h"
 
 #include <cctype>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <span>
+#include <string_view>
 
 #include "base/numeric.h"
+#include "base/types.h"
 #include "tech/b64pipe.h"
 #include "tech/b64straw.h"
 #include "tech/crc.h"
@@ -332,30 +336,30 @@ int INIClass::Save(File& file) const {
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
 int INIClass::Save(Pipe& pipe) const {
-  int total = 0;
+  base::ssize total = 0;
+  const auto put = [&pipe, &total](std::string_view text) {
+    total += pipe.Put(std::as_bytes(std::span(text)));
+  };
 
   INISection* secptr = SectionList.First();
   while (secptr && secptr->Is_Valid()) {
     /*
     **	Output the section identifier.
     */
-    total += pipe.Put("[", 1);
-    total += pipe.Put(secptr->Section.data(),
-                      static_cast<int>(secptr->Section.size()));
-    total += pipe.Put("]", 1);
-    total += pipe.Put("\r\n", static_cast<int>(strlen("\r\n")));
+    put("[");
+    put(secptr->Section);
+    put("]");
+    put("\r\n");
 
     /*
     **	Output all the entries and values in this section.
     */
     INIEntry* entryptr = secptr->EntryList.First();
     while (entryptr && entryptr->Is_Valid()) {
-      total += pipe.Put(entryptr->Entry.data(),
-                        static_cast<int>(entryptr->Entry.size()));
-      total += pipe.Put("=", 1);
-      total += pipe.Put(entryptr->Value.data(),
-                        static_cast<int>(entryptr->Value.size()));
-      total += pipe.Put("\r\n", static_cast<int>(strlen("\r\n")));
+      put(entryptr->Entry);
+      put("=");
+      put(entryptr->Value);
+      put("\r\n");
 
       entryptr = entryptr->Next();
     }
@@ -364,13 +368,13 @@ int INIClass::Save(Pipe& pipe) const {
     **	After the last entry in this section, output an extra
     **	blank line for readability purposes.
     */
-    total += pipe.Put("\r\n", static_cast<int>(strlen("\r\n")));
+    put("\r\n");
 
     secptr = secptr->Next();
   }
   total += pipe.End();
 
-  return total;
+  return static_cast<int>(total);
 }
 
 /***********************************************************************************************
@@ -532,7 +536,8 @@ bool INIClass::Put_UUBlock(const char* section, const void* block, int len) {
 
   Clear(section);
 
-  BufferStraw straw(block, len);
+  BufferStraw straw(
+      std::span(static_cast<const std::byte*>(block), base::ToSize(len)));
   Base64Straw bstraw(Base64Straw::ENCODE);
   bstraw.SetSource(straw);
 
@@ -542,7 +547,8 @@ bool INIClass::Put_UUBlock(const char* section, const void* block, int len) {
     char buffer[71];
     char sbuffer[32];
 
-    const int length = bstraw.Get(buffer, sizeof(buffer) - 1);
+    const auto length = static_cast<int>(bstraw.Get(
+        std::as_writable_bytes(std::span(buffer).first(sizeof(buffer) - 1))));
     buffer[length] = '\0';
     if (length == 0) {
       break;
@@ -588,22 +594,23 @@ int INIClass::Get_UUBlock(const char* section, void* block, int len) const {
   }
 
   Base64Pipe b64pipe(Base64Pipe::DECODE);
-  BufferPipe bpipe(block, len);
+  BufferPipe bpipe(
+      std::span(static_cast<std::byte*>(block), base::ToSize(len)));
 
   b64pipe.SetSink(&bpipe);
 
-  int total = 0;
+  base::ssize total = 0;
   const int counter = Entry_Count(section);
   for (int index = 0; index < counter; index++) {
     char buffer[128];
 
     const int length = Get_String(section, Get_Entry(section, index), "=",
                                   buffer, sizeof(buffer));
-    const int outcount = b64pipe.Put(buffer, length);
-    total += outcount;
+    total += b64pipe.Put(
+        std::as_bytes(std::span(buffer).first(base::ToSize(length))));
   }
   total += b64pipe.End();
-  return total;
+  return static_cast<int>(total);
 }
 
 /***********************************************************************************************

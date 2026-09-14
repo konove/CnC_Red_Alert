@@ -41,8 +41,11 @@
 #define CNC_RED_ALERT_TECH_BLOWPIPE_H_
 
 #include <array>
+#include <cstddef>
 #include <optional>
+#include <span>
 
+#include "base/types.h"
 #include "tech/blowfish.h"
 #include "tech/pipe.h"
 
@@ -56,9 +59,9 @@ class BlowPipe : public Pipe {
 
   explicit BlowPipe(CryptControl control) : Control(control) {}
   ~BlowPipe() override = default;
-  int Flush() override;
+  base::ssize Flush() override;
 
-  int Put(const void* source, int slen) override;
+  base::ssize Put(std::span<const std::byte> bytes) override;
 
   // Submit key for blowfish engine.
   void Key(const void* key, int length);

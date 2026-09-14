@@ -1727,14 +1727,14 @@ bool Main_Loop() {
         class HexPipe : public Pipe {
          public:
           std::string fields;
-          int Put(const void* data, int length) override {
+          base::ssize Put(std::span<const std::byte> bytes) override {
             constexpr char hex[] = "0123456789abcdef";
-            const auto* bytes = static_cast<const uint8_t*>(data);
-            for (int i = 0; i < length; ++i) {
-              fields += hex[bytes[i] >> 4];
-              fields += hex[bytes[i] & 15];
+            for (const std::byte byte : bytes) {
+              const auto value = std::to_integer<uint8_t>(byte);
+              fields += hex[value >> 4];
+              fields += hex[value & 15];
             }
-            return length;
+            return std::ssize(bytes);
           }
         } sink;
         ArchiveWriter writer(sink);
@@ -1763,17 +1763,17 @@ bool Main_Loop() {
       bool trace = std::getenv("TD_MAP_TRACE") != nullptr;
       std::string fields;
       uint64_t hash = 14695981039346656037ULL;
-      int Put(const void* data, int length) override {
-        const auto* bytes = static_cast<const uint8_t*>(data);
-        for (int i = 0; i < length; ++i) {
-          hash = (hash ^ bytes[i]) * 1099511628211ULL;
+      base::ssize Put(std::span<const std::byte> bytes) override {
+        for (const std::byte byte : bytes) {
+          const auto value = std::to_integer<uint8_t>(byte);
+          hash = (hash ^ value) * 1099511628211ULL;
           if (trace) {
             constexpr char hex[] = "0123456789abcdef";
-            fields += hex[bytes[i] >> 4];
-            fields += hex[bytes[i] & 15];
+            fields += hex[value >> 4];
+            fields += hex[value & 15];
           }
         }
-        return length;
+        return std::ssize(bytes);
       }
     } map_sink;
     ArchiveWriter map_writer(map_sink);

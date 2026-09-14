@@ -64,7 +64,7 @@ int Read_Line(Straw& file, char* buffer, int len, bool& eof) {
   int count = 0;
   for (;;) {
     char c;
-    if (file.Get(&c, sizeof(c)) != sizeof(c)) {
+    if (!file.ReadObject(c)) {
       eof = true;
       buffer[0] = '\0';
       break;

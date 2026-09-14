@@ -41,11 +41,14 @@
 
 #include "tech/xstraw.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstring>
+#include <iterator>
 #include <span>
 
 #include "base/numeric.h"
+#include "base/types.h"
 #include "sdllib/file_access.h"
 
 //---------------------------------------------------------------------------------------------------------
@@ -71,28 +74,14 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int BufferStraw::Get(void* source, int slen) {
-  int total = 0;
-
-  if (Is_Valid() && source != nullptr && slen > 0) {
-    int len = slen;
-    if (BufferPtr.Get_Size() != 0) {
-      const int theoretical_max =
-          static_cast<int>(BufferPtr.Get_Size() - Index);
-      len = slen < theoretical_max ? slen : theoretical_max;
-    }
-
-    if (len > 0) {
-      memmove(source, static_cast<char*>(BufferPtr.Get_Buffer()) + Index,
-              base::ToSize(len));
-    }
-
-    Index += len;
-    //		Length -= len;
-    //		BufferPtr = ((char *)BufferPtr) + len;
-    total += len;
+base::ssize BufferStraw::Get(std::span<std::byte> buffer) {
+  const base::ssize count =
+      std::min(std::ssize(buffer), std::ssize(buffer_) - index_);
+  if (count > 0) {
+    std::memmove(buffer.data(), buffer_.data() + index_, base::ToSize(count));
+    index_ += count;
   }
-  return total;
+  return count;
 }
 
 //---------------------------------------------------------------------------------------------------------
@@ -117,8 +106,8 @@ int BufferStraw::Get(void* source, int slen) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int FileStraw::Get(void* source, int slen) {
-  if (Valid_File() && source != nullptr && slen > 0) {
+base::ssize FileStraw::Get(std::span<std::byte> buffer) {
+  if (Valid_File() && !buffer.empty()) {
     if (!file_->IsOpen()) {
       HasOpened = true;
       if (!file_->IsAvailable()) {
@@ -129,8 +118,7 @@ int FileStraw::Get(void* source, int slen) {
       }
     }
 
-    return static_cast<int>(file_->Read(
-        std::span(static_cast<std::byte*>(source), base::ToSize(slen))));
+    return file_->Read(buffer);
   }
   return 0;
 }

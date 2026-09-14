@@ -1,11 +1,14 @@
 // Exercise real game serializers without loading MIX files or starting SDL.
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <new>
+#include <span>
 #include <vector>
 
 #include "base/numeric.h"
+#include "base/types.h"
 #include "gtest/gtest.h"
 #include "td/cell.h"
 #include "td/defines.h"
@@ -32,10 +35,10 @@ class CountingBufferPipe : public BufferPipe {
  public:
   using BufferPipe::BufferPipe;
   int count = 0;
-  int Put(const void* data, int length) override {
-    const int written = BufferPipe::Put(data, length);
-    EXPECT_EQ(written, length);
-    count += written;
+  base::ssize Put(std::span<const std::byte> data) override {
+    const base::ssize written = BufferPipe::Put(data);
+    EXPECT_EQ(written, std::ssize(data));
+    count += static_cast<int>(written);
     return written;
   }
 };
@@ -43,7 +46,7 @@ class CountingBufferPipe : public BufferPipe {
 template <class T>
 std::vector<uint8_t> Save(T& object) {
   std::vector<uint8_t> bytes(8192);
-  CountingBufferPipe sink(bytes.data(), static_cast<int>(bytes.size()));
+  CountingBufferPipe sink(std::as_writable_bytes(std::span(bytes)));
   ArchiveWriter writer(sink);
   object.Serialize(writer);
   bytes.resize(base::ToSize(sink.count));
@@ -52,7 +55,7 @@ std::vector<uint8_t> Save(T& object) {
 
 template <class T>
 bool Restore(T& object, const std::vector<uint8_t>& bytes) {
-  BufferStraw source(bytes.data(), static_cast<int>(bytes.size()));
+  BufferStraw source(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(source);
   object.Serialize(reader);
   if (!reader.ok()) {
@@ -209,7 +212,7 @@ TEST_F(TdArchiveRoundTripTest, CellRestoresFlagsAndGappedObjectAndTriggerReferen
 // public map dimensions, rather than relying on the serializer for both ends.
 std::vector<uint8_t> MapFields(int32_t growth_count = 2) {
   std::vector<uint8_t> bytes(128);
-  CountingBufferPipe sink(bytes.data(), static_cast<int>(bytes.size()));
+  CountingBufferPipe sink(std::as_writable_bytes(std::span(bytes)));
   ArchiveWriter writer(sink);
   int32_t x = 1;
   int32_t y = 2;
@@ -244,7 +247,7 @@ TEST_F(TdArchiveRoundTripTest, MapRejectsOversizedScanListBeforeReadingEntries) 
   MapClass& map = Map;
   map.MapClass::Init_Clear();
   const auto bytes = MapFields(51);
-  BufferStraw source(bytes.data(), static_cast<int>(bytes.size()));
+  BufferStraw source(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(source);
   map.Serialize(reader);
   EXPECT_FALSE(reader.ok());
@@ -303,7 +306,7 @@ TEST_F(TdArchiveRoundTripTest, TruncatedCellHouseAndUnitRecordsFail) {
   const auto check = [](auto& object) {
     auto bytes = Save(object);
     bytes.pop_back();
-    BufferStraw source(bytes.data(), static_cast<int>(bytes.size()));
+    BufferStraw source(std::as_bytes(std::span(bytes)));
     ArchiveReader reader(source);
     object.Serialize(reader);
     EXPECT_FALSE(reader.ok());

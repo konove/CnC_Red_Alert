@@ -1,9 +1,12 @@
 #include "ra/crate.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <initializer_list>
+#include <span>
 #include <vector>
 
+#include "base/types.h"
 #include "gtest/gtest.h"
 #include "ra/defines.h"
 #include "ra/globals.h"
@@ -20,17 +23,18 @@ namespace {
 
 class CratePipe : public Pipe {
  public:
-  int Put(const void* source, int length) override {
-    const auto* begin = static_cast<const uint8_t*>(source);
-    bytes.insert(bytes.end(), begin, begin + length);
-    return length;
+  base::ssize Put(std::span<const std::byte> data) override {
+    for (const std::byte byte : data) {
+      bytes.push_back(std::to_integer<uint8_t>(byte));
+    }
+    return std::ssize(data);
   }
 
   std::vector<uint8_t> bytes;
 };
 
 bool ReadCrate(CrateClass& crate, const std::vector<uint8_t>& bytes) {
-  BufferStraw straw(bytes.data(), static_cast<int>(bytes.size()));
+  BufferStraw straw(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(straw);
   reader(crate);
   return reader.ok();

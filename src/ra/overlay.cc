@@ -47,7 +47,10 @@
 
 #include <cassert>
 #include <cstdlib>
+#include <span>
 
+#include "base/numeric.h"
+#include "base/types.h"
 #include "ra/building.h"
 #include "ra/ccini.h"
 #include "ra/cell.h"
@@ -273,14 +276,15 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
         ini.Get_UUBlock("OverlayPack", staging_buffer, sizeof(staging_buffer));
 
     if (len > 0) {
-      BufferStraw bpipe(staging_buffer, len);
+      BufferStraw bpipe(
+          std::as_bytes(std::span(staging_buffer).first(base::ToSize(len))));
       LCWStraw uncomp(LCWStraw::DECOMPRESS);
       uncomp.SetSource(&bpipe);
 
       for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
         OverlayType classid;
 
-        uncomp.Get(&classid, sizeof(classid));
+        uncomp.ReadObject(classid);
 
         if ((classid != OVERLAY_NONE) &&
             (Session.Type == GAME_NORMAL ||
@@ -363,19 +367,19 @@ void OverlayClass::Write_INI(CCINIClass& ini) {
   ini.Clear(INI_Name());
   ini.Clear("OverlayPack");
 
-  BufferPipe bpipe(staging_buffer, sizeof(staging_buffer));
+  BufferPipe bpipe(std::as_writable_bytes(std::span(staging_buffer)));
   LCWPipe comppipe(LCWPipe::COMPRESS);
 
   comppipe.SetSink(&bpipe);
 
-  int total = 0;
+  base::ssize total = 0;
   CellClass* cellptr = &Map[static_cast<CELL>(0)];
   for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {
-    total += comppipe.Put(&cellptr->Overlay, sizeof(cellptr->Overlay));
+    total += comppipe.WriteObject(cellptr->Overlay);
     cellptr++;
   }
   if (total) {
-    ini.Put_UUBlock("OverlayPack", staging_buffer, total);
+    ini.Put_UUBlock("OverlayPack", staging_buffer, static_cast<int>(total));
   }
 
   //	for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {

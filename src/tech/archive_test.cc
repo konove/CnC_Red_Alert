@@ -1,9 +1,12 @@
 #include "tech/archive.h"
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 #include <vector>
 
 #include "absl/base/attributes.h"
+#include "base/types.h"
 #include "gtest/gtest.h"
 #include "tech/pipe.h"
 #include "tech/xstraw.h"
@@ -13,10 +16,11 @@ namespace {
 // Pipe terminator that appends everything it receives to a vector.
 class VectorPipe : public Pipe {
  public:
-  int Put(const void* source, int slen) override {
-    const auto* begin = static_cast<const uint8_t*>(source);
-    bytes_.insert(bytes_.end(), begin, begin + slen);
-    return slen;
+  base::ssize Put(std::span<const std::byte> data) override {
+    for (const std::byte byte : data) {
+      bytes_.push_back(std::to_integer<uint8_t>(byte));
+    }
+    return std::ssize(data);
   }
   [[nodiscard]] const std::vector<uint8_t>& bytes() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -39,7 +43,7 @@ std::vector<uint8_t> WriteWith(Fn fn) {
 // Reads `bytes` through `fn` and reports whether the reader stayed healthy.
 template <class Fn>
 bool ReadWith(const std::vector<uint8_t>& bytes, Fn fn) {
-  BufferStraw straw(bytes.data(), static_cast<int>(bytes.size()));
+  BufferStraw straw(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(straw);
   fn(reader);
   return reader.ok();
@@ -182,7 +186,7 @@ TEST(ArchiveTest, RvalueProxiesAreAccepted) {
 
 TEST(ArchiveTest, ShortReadFailsOnceAndZeroFillsTheRest) {
   const std::vector<uint8_t> bytes = {1, 0};  // half of an int32_t
-  BufferStraw straw(bytes.data(), static_cast<int>(bytes.size()));
+  BufferStraw straw(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(straw);
   int32_t first = -1;
   int32_t second = -1;
@@ -202,7 +206,7 @@ TEST(ArchiveTest, SectionTagsMatchOrFail) {
   EXPECT_EQ(bytes.size(), 8U);
 
   {
-    BufferStraw straw(bytes.data(), static_cast<int>(bytes.size()));
+    BufferStraw straw(std::as_bytes(std::span(bytes)));
     ArchiveReader reader(straw);
     EXPECT_TRUE(reader.Section(FourCC("HOUS")));
     int32_t v = 0;
@@ -211,7 +215,7 @@ TEST(ArchiveTest, SectionTagsMatchOrFail) {
     EXPECT_TRUE(reader.ok());
   }
   {
-    BufferStraw straw(bytes.data(), static_cast<int>(bytes.size()));
+    BufferStraw straw(std::as_bytes(std::span(bytes)));
     ArchiveReader reader(straw);
     EXPECT_FALSE(reader.Section(FourCC("TEAM")));
     EXPECT_EQ(reader.error(), "section tag mismatch");
@@ -220,7 +224,7 @@ TEST(ArchiveTest, SectionTagsMatchOrFail) {
 
 TEST(ArchiveTest, FailKeepsTheFirstError) {
   const std::vector<uint8_t> bytes;
-  BufferStraw straw(bytes.data(), 0);
+  BufferStraw straw(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(straw);
   reader.Fail("first");
   reader.Fail("second");
@@ -231,10 +235,13 @@ TEST(ArchiveTest, FailKeepsTheFirstError) {
 
 TEST(ArchiveTest, BytesEscapeHatchRoundTrips) {
   const char blob[4] = {'x', 'y', 'z', 'w'};
-  const auto bytes = WriteWith([&](auto& ar) { ar.Bytes(blob, sizeof(blob)); });
+  const auto bytes =
+      WriteWith([&](auto& ar) { ar.Bytes(std::as_bytes(std::span(blob))); });
   EXPECT_EQ(bytes, (std::vector<uint8_t>{'x', 'y', 'z', 'w'}));
   char read[4] = {};
-  EXPECT_TRUE(ReadWith(bytes, [&](auto& ar) { ar.Bytes(read, sizeof(read)); }));
+  EXPECT_TRUE(ReadWith(bytes, [&](auto& ar) {
+    ar.Bytes(std::as_writable_bytes(std::span(read)));
+  }));
   EXPECT_EQ(read[3], 'w');
 }
 

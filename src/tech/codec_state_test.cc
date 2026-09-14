@@ -5,8 +5,10 @@
 #include <cstdint>
 #include <cstring>
 #include <iterator>
+#include <span>
 #include <vector>
 
+#include "base/types.h"
 #include "gtest/gtest.h"
 #include "tech/b64straw.h"
 #include "tech/blwstraw.h"
@@ -29,19 +31,20 @@ namespace {
 class ByteSink : public Pipe {
  public:
   std::vector<uint8_t> bytes;
-  int Put(const void* data, int length) override {
-    const auto* first = static_cast<const uint8_t*>(data);
-    bytes.insert(bytes.end(), first, first + length);
-    return length;
+  base::ssize Put(std::span<const std::byte> data) override {
+    for (const std::byte byte : data) {
+      bytes.push_back(std::to_integer<uint8_t>(byte));
+    }
+    return std::ssize(data);
   }
 };
 
 std::vector<uint8_t> Drain(Straw& straw) {
   std::vector<uint8_t> result;
   std::array<uint8_t, 7> chunk{};
-  for (int count = straw.Get(chunk.data(), static_cast<int>(chunk.size()));
+  for (base::ssize count = straw.Get(std::as_writable_bytes(std::span(chunk)));
        count != 0;
-       count = straw.Get(chunk.data(), static_cast<int>(chunk.size()))) {
+       count = straw.Get(std::as_writable_bytes(std::span(chunk)))) {
     result.insert(result.end(), chunk.begin(), chunk.begin() + count);
   }
   return result;
@@ -58,17 +61,17 @@ void CheckBlocks() {
   CodecPipe compressor(CodecPipe::COMPRESS, 128);
   compressor.SetSink(encoded);
   for (const auto& byte : source) {
-    compressor.Put(&byte, 1);
+    compressor.WriteObject(byte);
   }
   compressor.Flush();
   ASSERT_FALSE(encoded.bytes.empty());
-  BufferStraw compressed(encoded.bytes.data(), static_cast<int>(encoded.bytes.size()));
+  BufferStraw compressed(std::as_bytes(std::span(encoded.bytes)));
   CodecStraw decompressor(CodecStraw::DECOMPRESS, 128);
   decompressor.SetSource(compressed);
   const std::vector<uint8_t> expected(source.begin(), source.end());
   EXPECT_EQ(Drain(decompressor), expected);
 
-  BufferStraw plain(source.data(), static_cast<int>(source.size()));
+  BufferStraw plain(std::as_bytes(std::span(source)));
   CodecStraw compressing_straw(CodecStraw::COMPRESS, 128);
   compressing_straw.SetSource(plain);
   const auto straw_encoded = Drain(compressing_straw);
@@ -77,7 +80,7 @@ void CheckBlocks() {
   CodecPipe decompressing_pipe(CodecPipe::DECOMPRESS, 128);
   decompressing_pipe.SetSink(decoded);
   for (const auto& byte : straw_encoded) {
-    decompressing_pipe.Put(&byte, 1);
+    decompressing_pipe.WriteObject(byte);
   }
   decompressing_pipe.Flush();
   EXPECT_EQ(decoded.bytes, expected);
@@ -89,7 +92,7 @@ TEST(CodecStateTest, LcwDecodesLiteralAndRunBlocksWithFragmentedHeaders) {
       5, 0, 3, 0, 0x83, 'a', 'b', 'c', 0x80,
       5, 0, 5, 0, 0xfe, 5, 0, 'x', 0x80};
   const std::vector<uint8_t> expected = {'a', 'b', 'c', 'x', 'x', 'x', 'x', 'x'};
-  BufferStraw source(encoded.data(), static_cast<int>(encoded.size()));
+  BufferStraw source(std::as_bytes(std::span(encoded)));
   LCWStraw straw(LCWStraw::DECOMPRESS, 128);
   straw.SetSource(source);
   EXPECT_EQ(Drain(straw), expected);
@@ -97,7 +100,7 @@ TEST(CodecStateTest, LcwDecodesLiteralAndRunBlocksWithFragmentedHeaders) {
   LCWPipe pipe(LCWPipe::DECOMPRESS, 128);
   pipe.SetSink(decoded);
   for (const auto& byte : encoded) {
-    pipe.Put(&byte, 1);
+    pipe.WriteObject(byte);
   }
   pipe.Flush();
   EXPECT_EQ(decoded.bytes, expected);
@@ -113,13 +116,14 @@ TEST(CodecStateTest, Base64HandlesShortFinalGroups) {
   constexpr const char* expected[] = {"YQ==", "YWI=", "YWJj", "YWJjZA==", "YWJjZGU="};
   for (const int length : {1, 2, 3, 4, 5}) {
     constexpr char input[] = "abcde";
-    BufferStraw plain(input, length);
+    BufferStraw plain(
+        std::as_bytes(std::span(input, static_cast<std::size_t>(length))));
     Base64Straw encoder(Base64Straw::ENCODE);
     encoder.SetSource(plain);
     const auto bytes = Drain(encoder);
     ASSERT_EQ(bytes.size(), std::strlen(expected[length - 1]));
     EXPECT_EQ(std::memcmp(bytes.data(), expected[length - 1], bytes.size()), 0);
-    BufferStraw encoded(bytes.data(), static_cast<int>(bytes.size()));
+    BufferStraw encoded(std::as_bytes(std::span(bytes)));
     Base64Straw decoder(Base64Straw::DECODE);
     decoder.SetSource(encoded);
     const auto decoded = Drain(decoder);
@@ -215,15 +219,14 @@ TEST(CodecStateTest, LzwRoundTripsIncompressibleBlocks) {
   ByteSink encoded;
   LZWPipe compressor(LZWPipe::COMPRESS, 128);
   compressor.SetSink(encoded);
-  compressor.Put(source.data(), static_cast<int>(source.size()));
+  compressor.Put(std::as_bytes(std::span(source)));
   compressor.Flush();
-  BufferStraw compressed(encoded.bytes.data(),
-                         static_cast<int>(encoded.bytes.size()));
+  BufferStraw compressed(std::as_bytes(std::span(encoded.bytes)));
   LZWStraw decompressor(LZWStraw::DECOMPRESS, 128);
   decompressor.SetSource(compressed);
   EXPECT_EQ(Drain(decompressor), expected);
 
-  BufferStraw plain(source.data(), static_cast<int>(source.size()));
+  BufferStraw plain(std::as_bytes(std::span(source)));
   LZWStraw compressing_straw(LZWStraw::COMPRESS, 128);
   compressing_straw.SetSource(plain);
   const std::vector<uint8_t> straw_encoded = Drain(compressing_straw);
@@ -231,8 +234,7 @@ TEST(CodecStateTest, LzwRoundTripsIncompressibleBlocks) {
   ByteSink decoded;
   LZWPipe decompressing_pipe(LZWPipe::DECOMPRESS, 128);
   decompressing_pipe.SetSink(decoded);
-  decompressing_pipe.Put(straw_encoded.data(),
-                         static_cast<int>(straw_encoded.size()));
+  decompressing_pipe.Put(std::as_bytes(std::span(straw_encoded)));
   decompressing_pipe.Flush();
   EXPECT_EQ(decoded.bytes, expected);
 }
@@ -244,15 +246,15 @@ TEST(CodecStateTest, UnkeyedBlowStrawReadsOnlyWhatWasRequested) {
   for (int i = 0; auto& byte : data) {
     byte = static_cast<uint8_t>(i++);
   }
-  BufferStraw source(data.data(), static_cast<int>(data.size()));
+  BufferStraw source(std::as_bytes(std::span(data)));
   BlowStraw straw(BlowStraw::DECRYPT);
   straw.SetSource(source);
   std::array<uint8_t, 5> head{};
-  ASSERT_EQ(straw.Get(head.data(), static_cast<int>(head.size())), 5);
+  ASSERT_EQ(straw.Get(std::as_writable_bytes(std::span(head))), 5);
   EXPECT_TRUE(std::equal(head.begin(), head.end(), data.begin()));
 
   std::array<uint8_t, 64> rest{};
-  ASSERT_EQ(source.Get(rest.data(), static_cast<int>(rest.size())), 27);
+  ASSERT_EQ(source.Get(std::as_writable_bytes(std::span(rest))), 27);
   EXPECT_TRUE(std::equal(data.begin() + 5, data.end(), rest.begin()));
 }
 
@@ -261,11 +263,11 @@ TEST(CodecStateTest, ShaStrawHashesOnlyTheBytesItReturned) {
   for (int i = 0; auto& byte : data) {
     byte = static_cast<uint8_t>(i++ * 3);
   }
-  BufferStraw source(data.data(), static_cast<int>(data.size()));
+  BufferStraw source(std::as_bytes(std::span(data)));
   SHAStraw sha;
   sha.SetSource(source);
   std::array<uint8_t, 5> head{};
-  ASSERT_EQ(sha.Get(head.data(), static_cast<int>(head.size())), 5);
+  ASSERT_EQ(sha.Get(std::as_writable_bytes(std::span(head))), 5);
 
   SHAEngine expected_engine;
   expected_engine.Hash(data.data(), 5);
@@ -276,6 +278,6 @@ TEST(CodecStateTest, ShaStrawHashesOnlyTheBytesItReturned) {
   EXPECT_EQ(actual, expected);
 
   std::array<uint8_t, 64> rest{};
-  ASSERT_EQ(source.Get(rest.data(), static_cast<int>(rest.size())), 27);
+  ASSERT_EQ(source.Get(std::as_writable_bytes(std::span(rest))), 27);
   EXPECT_TRUE(std::equal(data.begin() + 5, data.end(), rest.begin()));
 }

@@ -41,6 +41,11 @@
 
 #include "tech/shastraw.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <span>
+
+#include "base/types.h"
 #include "tech/straw.h"
 
 /***********************************************************************************************
@@ -64,13 +69,13 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int SHAStraw::Get(void* source, int slen) {
-  if (source == nullptr || slen < 1) {
+base::ssize SHAStraw::Get(std::span<std::byte> buffer) {
+  if (buffer.empty()) {
     return 0;
   }
 
-  const int counter = Straw::Get(source, slen);
-  SHA.Hash(source, counter);
+  const base::ssize counter = Straw::Get(buffer);
+  SHA.Hash(buffer.data(), static_cast<int32_t>(counter));
   return counter;
 }
 

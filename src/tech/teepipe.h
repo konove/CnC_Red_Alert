@@ -3,7 +3,12 @@
 #ifndef CNC_RED_ALERT_TECH_TEEPIPE_H_
 #define CNC_RED_ALERT_TECH_TEEPIPE_H_
 
+#include <cstddef>
+#include <iterator>
+#include <span>
+
 #include "absl/base/attributes.h"
+#include "base/types.h"
 #include "tech/pipe.h"
 
 // Forwards bytes to the main sink and copies them to a diagnostic sink.
@@ -18,11 +23,11 @@ class TeePipe : public Pipe {
     SetSink(main_sink);
   }
 
-  int Put(const void* source, int length) override {
-    if (copy_sink_ != nullptr && copy_ok_ && source != nullptr && length > 0) {
-      copy_ok_ = copy_sink_->Put(source, length) == length;
+  base::ssize Put(std::span<const std::byte> bytes) override {
+    if (copy_sink_ != nullptr && copy_ok_ && !bytes.empty()) {
+      copy_ok_ = copy_sink_->Put(bytes) == std::ssize(bytes);
     }
-    return Pipe::Put(source, length);
+    return Pipe::Put(bytes);
   }
 
   [[nodiscard]] bool copy_ok() const { return copy_ok_; }

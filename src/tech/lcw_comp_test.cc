@@ -8,6 +8,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/types.h"
 #include "gtest/gtest.h"
 #include "tech/lcw.h"
 #include "tech/lcwpipe.h"
@@ -22,19 +23,20 @@ namespace {
 class ByteSink : public Pipe {
  public:
   std::vector<uint8_t> bytes;
-  int Put(const void* data, int length) override {
-    const auto* first = static_cast<const uint8_t*>(data);
-    bytes.insert(bytes.end(), first, first + length);
-    return length;
+  base::ssize Put(std::span<const std::byte> data) override {
+    for (const std::byte byte : data) {
+      bytes.push_back(std::to_integer<uint8_t>(byte));
+    }
+    return std::ssize(data);
   }
 };
 
 std::vector<uint8_t> Drain(Straw& straw) {
   std::vector<uint8_t> result;
   std::vector<uint8_t> chunk(999);
-  for (int count = straw.Get(chunk.data(), static_cast<int>(chunk.size()));
+  for (base::ssize count = straw.Get(std::as_writable_bytes(std::span(chunk)));
        count != 0;
-       count = straw.Get(chunk.data(), static_cast<int>(chunk.size()))) {
+       count = straw.Get(std::as_writable_bytes(std::span(chunk)))) {
     result.insert(result.end(), chunk.begin(), chunk.begin() + count);
   }
   return result;
@@ -152,16 +154,15 @@ void ExpectPipeStrawRoundTrip(const std::vector<uint8_t>& plain,
   compressor.SetSink(encoded);
   for (std::size_t at = 0; at < plain.size(); at += 1234) {
     const std::size_t piece = std::min<std::size_t>(1234, plain.size() - at);
-    compressor.Put(plain.data() + at, static_cast<int>(piece));
+    compressor.Put(std::as_bytes(std::span(plain).subspan(at, piece)));
   }
   compressor.Flush();
-  BufferStraw compressed(encoded.bytes.data(),
-                         static_cast<int>(encoded.bytes.size()));
+  BufferStraw compressed(std::as_bytes(std::span(encoded.bytes)));
   LCWStraw decompressor(LCWStraw::DECOMPRESS, block_size);
   decompressor.SetSource(compressed);
   EXPECT_EQ(Drain(decompressor), plain);
 
-  BufferStraw source(plain.data(), static_cast<int>(plain.size()));
+  BufferStraw source(std::as_bytes(std::span(plain)));
   LCWStraw compressing_straw(LCWStraw::COMPRESS, block_size);
   compressing_straw.SetSource(source);
   const std::vector<uint8_t> straw_encoded = Drain(compressing_straw);
@@ -172,7 +173,8 @@ void ExpectPipeStrawRoundTrip(const std::vector<uint8_t>& plain,
   for (std::size_t at = 0; at < straw_encoded.size(); at += 777) {
     const std::size_t piece =
         std::min<std::size_t>(777, straw_encoded.size() - at);
-    decompressing_pipe.Put(straw_encoded.data() + at, static_cast<int>(piece));
+    decompressing_pipe.Put(
+        std::as_bytes(std::span(straw_encoded).subspan(at, piece)));
   }
   decompressing_pipe.Flush();
   EXPECT_EQ(decoded.bytes, plain);
@@ -212,55 +214,57 @@ TEST(LcwCompTest, MapAndOverlayPacksRoundTripThroughStagingBuffer) {
   }
 
   std::vector<char> staging(32000);
-  BufferPipe map_sink(staging.data(), static_cast<int>(staging.size()));
-  int map_total = 0;
+  BufferPipe map_sink(std::as_writable_bytes(std::span(staging)));
+  base::ssize map_total = 0;
   {
     LCWPipe comp(LCWPipe::COMPRESS);
     comp.SetSink(&map_sink);
     for (const uint16_t& type : types) {
-      map_total += comp.Put(&type, sizeof(type));
+      map_total += comp.WriteObject(type);
     }
     for (const uint8_t& icon : icons) {
-      map_total += comp.Put(&icon, sizeof(icon));
+      map_total += comp.WriteObject(icon);
     }
     map_total += comp.Flush();
   }
   ASSERT_GT(map_total, 0);
   ASSERT_LT(map_total, 32000);  // Nothing was clipped by the staging buffer.
 
-  BufferStraw map_source(staging.data(), map_total);
+  BufferStraw map_source(std::as_bytes(
+      std::span(staging).first(static_cast<std::size_t>(map_total))));
   LCWStraw decomp(LCWStraw::DECOMPRESS);
   decomp.SetSource(&map_source);
   std::vector<uint16_t> read_types(kCells);
   std::vector<uint8_t> read_icons(kCells);
   for (uint16_t& type : read_types) {
-    ASSERT_EQ(decomp.Get(&type, sizeof(type)), sizeof(type));
+    ASSERT_TRUE(decomp.ReadObject(type));
   }
   for (uint8_t& icon : read_icons) {
-    ASSERT_EQ(decomp.Get(&icon, sizeof(icon)), sizeof(icon));
+    ASSERT_TRUE(decomp.ReadObject(icon));
   }
   EXPECT_EQ(read_types, types);
   EXPECT_EQ(read_icons, icons);
 
-  BufferPipe overlay_sink(staging.data(), static_cast<int>(staging.size()));
-  int overlay_total = 0;
+  BufferPipe overlay_sink(std::as_writable_bytes(std::span(staging)));
+  base::ssize overlay_total = 0;
   {
     LCWPipe comppipe(LCWPipe::COMPRESS);
     comppipe.SetSink(&overlay_sink);
     for (const int8_t& overlay : overlays) {
-      overlay_total += comppipe.Put(&overlay, sizeof(overlay));
+      overlay_total += comppipe.WriteObject(overlay);
     }
     overlay_total += comppipe.Flush();
   }
   ASSERT_GT(overlay_total, 0);
   ASSERT_LT(overlay_total, 32000);
 
-  BufferStraw overlay_source(staging.data(), overlay_total);
+  BufferStraw overlay_source(std::as_bytes(
+      std::span(staging).first(static_cast<std::size_t>(overlay_total))));
   LCWStraw uncomp(LCWStraw::DECOMPRESS);
   uncomp.SetSource(&overlay_source);
   std::vector<int8_t> read_overlays(kCells);
   for (int8_t& overlay : read_overlays) {
-    ASSERT_EQ(uncomp.Get(&overlay, sizeof(overlay)), sizeof(overlay));
+    ASSERT_TRUE(uncomp.ReadObject(overlay));
   }
   EXPECT_EQ(read_overlays, overlays);
 }

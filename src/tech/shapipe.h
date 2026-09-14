@@ -40,6 +40,10 @@
 #ifndef CNC_RED_ALERT_TECH_SHAPIPE_H_
 #define CNC_RED_ALERT_TECH_SHAPIPE_H_
 
+#include <cstddef>
+#include <span>
+
+#include "base/types.h"
 #include "tech/pipe.h"
 #include "tech/sha.h"
 
@@ -58,7 +62,7 @@ class SHAPipe : public Pipe {
   SHAPipe(SHAPipe&&) = delete;
   SHAPipe& operator=(SHAPipe&&) = delete;
 
-  int Put(const void* source, int slen) override;
+  base::ssize Put(std::span<const std::byte> bytes) override;
 
   // Fetch the SHA hash value (stored in result buffer -- 20 bytes long).
   int Result(void* result) const;

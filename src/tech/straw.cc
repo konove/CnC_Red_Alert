@@ -18,9 +18,14 @@
 
 #include "tech/straw.h"
 
-int Straw::Get(void* buffer, int length) {
+#include <cstddef>
+#include <span>
+
+#include "base/types.h"
+
+base::ssize Straw::Get(std::span<std::byte> buffer) {
   if (source_ != nullptr) {
-    return source_->Get(buffer, length);
+    return source_->Get(buffer);
   }
   return 0;
 }

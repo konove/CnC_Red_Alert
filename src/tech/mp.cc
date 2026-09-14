@@ -99,6 +99,7 @@
 #include <span>
 
 #include "base/numeric.h"
+#include "tech/byte_view.h"
 #include "tech/straw.h"
 
 /***********************************************************************************************
@@ -2449,7 +2450,7 @@ void XMP_Randomize(uint32_t* result, Straw& rng, int total_bits,
   const int nbytes = (total_bits / 8) + 1;
 
   XMP_Init(result, 0, precision);
-  rng.Get(result, nbytes);
+  rng.Get(WritableByteView(result, nbytes));
 
   ((unsigned char*)result)[nbytes - 1] &=
       static_cast<unsigned char>(~(~0 << (total_bits % 8)));

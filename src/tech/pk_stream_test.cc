@@ -2,9 +2,12 @@
 // one half of a key pair opens with the other half.
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
+#include <span>
 #include <vector>
 
+#include "base/types.h"
 #include "gtest/gtest.h"
 #include "tech/pipe.h"
 #include "tech/pk.h"
@@ -19,18 +22,20 @@ namespace {
 class VectorPipe : public Pipe {
  public:
   std::vector<uint8_t> bytes;
-  int Put(const void* data, int length) override {
-    const auto* first = static_cast<const uint8_t*>(data);
-    bytes.insert(bytes.end(), first, first + length);
-    return length;
+  base::ssize Put(std::span<const std::byte> data) override {
+    for (const std::byte byte : data) {
+      bytes.push_back(std::to_integer<uint8_t>(byte));
+    }
+    return std::ssize(data);
   }
 };
 
 std::vector<uint8_t> Drain(Straw& straw) {
   std::vector<uint8_t> result;
   std::array<uint8_t, 100> chunk{};
-  for (int count = straw.Get(chunk.data(), chunk.size()); count != 0;
-       count = straw.Get(chunk.data(), chunk.size())) {
+  for (base::ssize count = straw.Get(std::as_writable_bytes(std::span(chunk)));
+       count != 0;
+       count = straw.Get(std::as_writable_bytes(std::span(chunk)))) {
     result.insert(result.end(), chunk.begin(), chunk.begin() + count);
   }
   return result;
@@ -71,13 +76,13 @@ TEST_F(PkStreamTest, EncryptPipeRoundTripsThroughDecryptStraw) {
   VectorPipe sink;
   const auto pipe = MakePKEncryptPipe(sink, fast_key_, rng);
   ASSERT_NE(pipe, nullptr);
-  pipe->Put(plain.data(), static_cast<int>(plain.size()));
+  pipe->Put(std::as_bytes(std::span(plain)));
   pipe->Flush();
   const int header_size =
       fast_key_.Block_Count(56) * fast_key_.Crypt_Block_Size();
   ASSERT_EQ(std::ssize(sink.bytes), header_size + std::ssize(plain));
 
-  BufferStraw source(sink.bytes.data(), static_cast<int>(sink.bytes.size()));
+  BufferStraw source(std::as_bytes(std::span(sink.bytes)));
   const auto straw = MakePKDecryptStraw(source, slow_key_);
   ASSERT_NE(straw, nullptr);
   EXPECT_EQ(Drain(*straw), plain);
@@ -85,7 +90,7 @@ TEST_F(PkStreamTest, EncryptPipeRoundTripsThroughDecryptStraw) {
 
 TEST_F(PkStreamTest, DecryptStrawRejectsShortHeader) {
   const std::array<uint8_t, 10> truncated{};
-  BufferStraw source(truncated.data(), truncated.size());
+  BufferStraw source(std::as_bytes(std::span(truncated)));
   EXPECT_EQ(MakePKDecryptStraw(source, slow_key_), nullptr);
 }
 

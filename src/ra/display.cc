@@ -109,6 +109,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <span>
 #include <utility>
 #include <vector>
 
@@ -4391,7 +4392,8 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   */
   static const char* const MAPPACK = "MapPack";
   len = ini.Get_UUBlock(MAPPACK, staging_buffer, sizeof(staging_buffer));
-  BufferStraw bstraw(staging_buffer, len);
+  BufferStraw bstraw(
+      std::as_bytes(std::span(staging_buffer).first(base::ToSize(len))));
   Map.Read_Binary(bstraw);
 
   LastTheater = Scen.Theater;
@@ -4464,7 +4466,7 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
   **	Write the map template data out to the ini file.
   */
   static const char* const MAPPACK = "MapPack";
-  BufferPipe bpipe(staging_buffer, sizeof(staging_buffer));
+  BufferPipe bpipe(std::as_writable_bytes(std::span(staging_buffer)));
   const int len = Map.Write_Binary(bpipe);
   ini.Clear(MAPPACK);
   if (len) {

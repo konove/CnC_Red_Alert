@@ -19,7 +19,9 @@
 #include "tech/pkstraw.h"
 
 #include <memory>
+#include <span>
 
+#include "base/numeric.h"
 #include "tech/blowfish.h"
 #include "tech/blwstraw.h"
 #include "tech/pk.h"
@@ -37,14 +39,15 @@ std::unique_ptr<BlowStraw> MakePKDecryptStraw(Straw& source, const PKey& key) {
 
   // Read the encrypted key header.
   char encrypted_key[kMaxKeyBlockSize];
-  const int got = source.Get(encrypted_key, encrypted_len);
-  if (got != encrypted_len) {
+  if (source.Get(std::as_writable_bytes(
+          std::span(encrypted_key).first(base::ToSize(encrypted_len)))) !=
+      encrypted_len) {
     return nullptr;
   }
 
   // Decrypt to get the blowfish key.
   char blowfish_key[kMaxKeyBlockSize];
-  key.Decrypt(encrypted_key, got, blowfish_key);
+  key.Decrypt(encrypted_key, encrypted_len, blowfish_key);
 
   // Create and configure the BlowStraw.
   auto straw = std::make_unique<BlowStraw>(BlowStraw::DECRYPT);

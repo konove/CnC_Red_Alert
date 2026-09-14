@@ -75,6 +75,7 @@
 #include <iterator>
 #include <new>
 
+#include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/ccptr.h"
@@ -1091,24 +1092,24 @@ int32_t MapClass::Overpass() {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 int MapClass::Write_Binary(Pipe& pipe) {
-  int total = 0;
+  base::ssize total = 0;
 
   LCWPipe comp(LCWPipe::COMPRESS);
   comp.SetSink(&pipe);
 
   CellClass* cellptr = &Array[0];
   for (int i = 0; i < MAP_CELL_TOTAL; i++) {
-    total += comp.Put(&cellptr->TType, sizeof(cellptr->TType));
+    total += comp.WriteObject(cellptr->TType);
     cellptr++;
   }
 
   cellptr = &Array[0];
   for (int i = 0; i < MAP_CELL_TOTAL; i++) {
-    total += comp.Put(&cellptr->TIcon, sizeof(cellptr->TIcon));
+    total += comp.WriteObject(cellptr->TIcon);
     cellptr++;
   }
 
-  return total;
+  return static_cast<int>(total);
 }
 
 /***********************************************************************************************
@@ -1136,12 +1137,12 @@ bool MapClass::Read_Binary(Straw& straw) {
     default:
       cellptr = &Array[0];
       for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-        decomp.Get(&cellptr->TType, sizeof(cellptr->TType));
+        decomp.ReadObject(cellptr->TType);
         cellptr++;
       }
       cellptr = &Array[0];
       for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-        decomp.Get(&cellptr->TIcon, sizeof(cellptr->TIcon));
+        decomp.ReadObject(cellptr->TIcon);
         cellptr->Recalc_Attributes();
         cellptr++;
       }
@@ -1152,8 +1153,8 @@ bool MapClass::Read_Binary(Straw& straw) {
     case 2:
       cellptr = &Array[0];
       for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-        decomp.Get(&cellptr->TType, sizeof(cellptr->TType));
-        decomp.Get(&cellptr->TIcon, sizeof(cellptr->TIcon));
+        decomp.ReadObject(cellptr->TType);
+        decomp.ReadObject(cellptr->TIcon);
         cellptr->Recalc_Attributes();
         cellptr++;
       }

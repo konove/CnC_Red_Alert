@@ -40,6 +40,10 @@
 #ifndef CNC_RED_ALERT_TECH_SHASTRAW_H_
 #define CNC_RED_ALERT_TECH_SHASTRAW_H_
 
+#include <cstddef>
+#include <span>
+
+#include "base/types.h"
 #include "tech/sha.h"
 #include "tech/straw.h"
 
@@ -58,7 +62,7 @@ class SHAStraw : public Straw {
   SHAStraw(SHAStraw&&) = delete;
   SHAStraw& operator=(SHAStraw&&) = delete;
 
-  int Get(void* source, int slen) override;
+  base::ssize Get(std::span<std::byte> buffer) override;
 
   // Fetch the SHA hash value (stored in result buffer -- 20 bytes long).
   int Result(void* result) const;

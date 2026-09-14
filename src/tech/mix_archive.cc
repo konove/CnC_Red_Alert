@@ -52,7 +52,7 @@ bool MixArchive::Open(std::string_view filename, const PKey* key) {
   } alternate{};
 
   // Read initial metadata to determine format
-  if (straw->Get(&alternate, sizeof(alternate)) != sizeof(alternate)) {
+  if (!straw->ReadObject(alternate)) {
     return false;
   }
 
@@ -70,7 +70,7 @@ bool MixArchive::Open(std::string_view filename, const PKey* key) {
       straw = decrypt_straw.get();
     }
 
-    if (straw->Get(&file_header, sizeof(file_header)) != sizeof(file_header)) {
+    if (!straw->ReadObject(file_header)) {
       return false;
     }
   } else {
@@ -79,7 +79,8 @@ bool MixArchive::Open(std::string_view filename, const PKey* key) {
     char header_buf[sizeof(file_header)];
     std::memcpy(header_buf, &alternate, sizeof(alternate));
     const int rest = sizeof(file_header) - sizeof(alternate);
-    if (straw->Get(header_buf + sizeof(alternate), rest) != rest) {
+    if (straw->Get(std::as_writable_bytes(
+            std::span(header_buf).subspan(sizeof(alternate)))) != rest) {
       return false;
     }
     std::memcpy(&file_header, header_buf, sizeof(file_header));
@@ -94,7 +95,8 @@ bool MixArchive::Open(std::string_view filename, const PKey* key) {
 
   file_index_.resize(static_cast<std::size_t>(file_header.count));
   const int index_bytes = file_header.count * int{sizeof(FileEntry)};
-  if (straw->Get(file_index_.data(), index_bytes) != index_bytes) {
+  if (straw->Get(std::as_writable_bytes(std::span(file_index_))) !=
+      index_bytes) {
     return false;
   }
 
@@ -164,8 +166,7 @@ bool MixArchive::Cache() {
   file.Seek(data_start_, SeekOrigin::kBegin);
 
   // Read directly into the vector buffer
-  if (const int actual = straw->Get(data_.data(), data_size_);
-      actual != data_size_) {
+  if (straw->Get(data_) != data_size_) {
     data_.clear();
     return false;
   }
@@ -176,7 +177,7 @@ bool MixArchive::Cache() {
     char computed[kShaSize];
 
     sha.Result(computed);
-    file_straw.Get(expected, sizeof(expected));
+    file_straw.Get(std::as_writable_bytes(std::span(expected)));
 
     if (std::memcmp(expected, computed, sizeof(expected)) != 0) {
       data_.clear();  // Corrupt data

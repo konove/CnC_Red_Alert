@@ -1,8 +1,11 @@
 #include "ra/heap.h"
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 #include <vector>
 
+#include "base/types.h"
 #include "gtest/gtest.h"
 #include "tech/archive.h"
 #include "tech/pipe.h"
@@ -33,10 +36,11 @@ static_assert(!Serializable<Gadget>);
 
 class VectorPipe : public Pipe {
  public:
-  int Put(const void* source, int slen) override {
-    const auto* begin = static_cast<const uint8_t*>(source);
-    bytes.insert(bytes.end(), begin, begin + slen);
-    return slen;
+  base::ssize Put(std::span<const std::byte> data) override {
+    for (const std::byte byte : data) {
+      bytes.push_back(std::to_integer<uint8_t>(byte));
+    }
+    return std::ssize(data);
   }
   std::vector<uint8_t> bytes;
 };
@@ -55,7 +59,7 @@ std::vector<uint8_t> Save(const TFixedIHeapClass<Widget>& heap) {
 }
 
 bool Load(TFixedIHeapClass<Widget>& heap, const std::vector<uint8_t>& bytes) {
-  BufferStraw straw(bytes.data(), static_cast<int>(bytes.size()));
+  BufferStraw straw(std::as_bytes(std::span(bytes)));
   return heap.Load(straw);
 }
 

@@ -41,7 +41,10 @@
 #define CNC_RED_ALERT_TECH_B64STRAW_H_
 
 #include <array>
+#include <cstddef>
+#include <span>
 
+#include "base/types.h"
 #include "tech/straw.h"
 
 /*
@@ -61,7 +64,7 @@ class Base64Straw : public Straw {
   Base64Straw(Base64Straw&&) = delete;
   Base64Straw& operator=(Base64Straw&&) = delete;
 
-  int Get(void* source, int slen) override;
+  base::ssize Get(std::span<std::byte> buffer) override;
 
  private:
   /*

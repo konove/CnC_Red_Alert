@@ -41,15 +41,19 @@
 
 #include "tech/lzostraw.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <span>
 #include <utility>
 #include <vector>
 
 #include "base/numeric.h"
+#include "base/types.h"
 #include "lzo/lzo.h"
 #include "lzo/lzo1x.h"
 #include "lzo/lzoconf.h"
+#include "tech/byte_view.h"
 #include "tech/codec_block.h"
 #include "tech/straw.h"
 
@@ -104,8 +108,10 @@ LZOStraw::LZOStraw(CompControl control, int blocksize)
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-int LZOStraw::Get(void* destbuf, int slen) {
-  int total = 0;
+base::ssize LZOStraw::Get(std::span<std::byte> buffer) {
+  void* destbuf = buffer.data();
+  int slen = static_cast<int>(buffer.size());
+  base::ssize total = 0;
 
   /*
   **	Verify parameters for legality.
@@ -144,7 +150,8 @@ int LZOStraw::Get(void* destbuf, int slen) {
       if (corrupt_) {
         break;
       }
-      int incount = Straw::Get(&BlockHeader, sizeof(BlockHeader));
+      int incount = static_cast<int>(
+          Straw::Get(std::as_writable_bytes(std::span(&BlockHeader, 1))));
       if (incount != sizeof(BlockHeader)) {
         break;
       }
@@ -156,7 +163,8 @@ int LZOStraw::Get(void* destbuf, int slen) {
         break;
       }
 
-      incount = Straw::Get(staging_.data(), BlockHeader.CompCount);
+      incount = static_cast<int>(
+          Straw::Get(WritableByteView(staging_.data(), BlockHeader.CompCount)));
       if (std::cmp_not_equal(incount, BlockHeader.CompCount)) {
         break;
       }
@@ -170,8 +178,8 @@ int LZOStraw::Get(void* destbuf, int slen) {
       }
       Counter = BlockHeader.UncompCount;
     } else {
-      BlockHeader.UncompCount =
-          static_cast<uint16_t>(Straw::Get(Buffer.data(), BlockSize));
+      BlockHeader.UncompCount = static_cast<uint16_t>(static_cast<int>(
+          Straw::Get(WritableByteView(Buffer.data(), BlockSize))));
       if (BlockHeader.UncompCount == 0) {
         break;
       }

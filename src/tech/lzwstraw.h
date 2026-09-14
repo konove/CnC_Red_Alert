@@ -40,9 +40,12 @@
 #ifndef CNC_RED_ALERT_TECH_LZWSTRAW_H_
 #define CNC_RED_ALERT_TECH_LZWSTRAW_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 #include <vector>
 
+#include "base/types.h"
 #include "tech/straw.h"
 
 /*
@@ -59,7 +62,7 @@ class LZWStraw : public Straw {
   explicit LZWStraw(CompControl control, int blocksize = 1024 * 8);
   ~LZWStraw() override = default;
 
-  int Get(void* destbuf, int slen) override;
+  base::ssize Get(std::span<std::byte> buffer) override;
 
  private:
   /*

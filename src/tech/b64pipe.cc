@@ -40,10 +40,14 @@
 
 #include "tech/b64pipe.h"
 
+#include <cstddef>
 #include <cstring>
+#include <span>
 
 #include "base/numeric.h"
+#include "base/types.h"
 #include "tech/base64.h"
+#include "tech/byte_view.h"
 #include "tech/pipe.h"
 
 /***********************************************************************************************
@@ -65,12 +69,14 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int Base64Pipe::Put(const void* source, int slen) {
+base::ssize Base64Pipe::Put(std::span<const std::byte> bytes) {
+  const void* source = bytes.data();
+  int slen = static_cast<int>(bytes.size());
   if (source == nullptr || slen < 1) {
-    return Pipe::Put(source, slen);
+    return Pipe::Put(bytes);
   }
 
-  int total = 0;
+  base::ssize total = 0;
 
   char* from;
   int fromsize;
@@ -103,7 +109,7 @@ int Base64Pipe::Put(const void* source, int slen) {
       } else {
         outcount = Base64_Decode(from, fromsize, to, tosize);
       }
-      total += Pipe::Put(to, outcount);
+      total += Pipe::Put(ByteView(to, outcount));
       Counter = 0;
     }
   }
@@ -116,7 +122,7 @@ int Base64Pipe::Put(const void* source, int slen) {
       outcount = Base64_Decode(source, fromsize, to, tosize);
     }
     source = (char*)source + fromsize;
-    total += Pipe::Put(to, outcount);
+    total += Pipe::Put(ByteView(to, outcount));
     slen -= fromsize;
   }
 
@@ -144,18 +150,18 @@ int Base64Pipe::Put(const void* source, int slen) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int Base64Pipe::Flush() {
-  int len = 0;
+base::ssize Base64Pipe::Flush() {
+  base::ssize len = 0;
 
   if (Counter) {
     if (Control == ENCODE) {
       const int chars = Base64_Encode(PBuffer.data(), Counter, CBuffer.data(),
                                       static_cast<int>(CBuffer.size()));
-      len += Pipe::Put(CBuffer.data(), chars);
+      len += Pipe::Put(ByteView(CBuffer.data(), chars));
     } else {
       const int chars = Base64_Decode(CBuffer.data(), Counter, PBuffer.data(),
                                       static_cast<int>(PBuffer.size()));
-      len += Pipe::Put(PBuffer.data(), chars);
+      len += Pipe::Put(ByteView(PBuffer.data(), chars));
     }
     Counter = 0;
   }

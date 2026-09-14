@@ -2,10 +2,13 @@
 // block headers and payloads instead of reading or writing past their buffers.
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
+#include <span>
 #include <string_view>
 #include <vector>
 
+#include "base/types.h"
 #include "gtest/gtest.h"
 #include "tech/lcwpipe.h"
 #include "tech/lcwstraw.h"
@@ -24,19 +27,20 @@ constexpr int kBlockSize = 128;
 class ByteSink : public Pipe {
  public:
   std::vector<uint8_t> bytes;
-  int Put(const void* data, int length) override {
-    const auto* first = static_cast<const uint8_t*>(data);
-    bytes.insert(bytes.end(), first, first + length);
-    return length;
+  base::ssize Put(std::span<const std::byte> data) override {
+    for (const std::byte byte : data) {
+      bytes.push_back(std::to_integer<uint8_t>(byte));
+    }
+    return std::ssize(data);
   }
 };
 
 std::vector<uint8_t> Drain(Straw& straw) {
   std::vector<uint8_t> result;
   std::array<uint8_t, 7> chunk{};
-  for (int count = straw.Get(chunk.data(), static_cast<int>(chunk.size()));
+  for (base::ssize count = straw.Get(std::as_writable_bytes(std::span(chunk)));
        count != 0;
-       count = straw.Get(chunk.data(), static_cast<int>(chunk.size()))) {
+       count = straw.Get(std::as_writable_bytes(std::span(chunk)))) {
     result.insert(result.end(), chunk.begin(), chunk.begin() + count);
   }
   return result;
@@ -81,7 +85,7 @@ std::vector<uint8_t> Compress(const std::vector<uint8_t>& plain) {
   ByteSink sink;
   PipeType pipe(PipeType::COMPRESS, kBlockSize);
   pipe.SetSink(sink);
-  pipe.Put(plain.data(), static_cast<int>(plain.size()));
+  pipe.Put(std::as_bytes(std::span(plain)));
   pipe.Flush();
   return sink.bytes;
 }
@@ -103,11 +107,11 @@ void ExpectDecodes(const std::vector<uint8_t>& encoded,
   ByteSink sink;
   PipeType pipe(PipeType::DECOMPRESS, kBlockSize);
   pipe.SetSink(sink);
-  pipe.Put(encoded.data(), static_cast<int>(encoded.size()));
+  pipe.Put(std::as_bytes(std::span(encoded)));
   pipe.Flush();
   EXPECT_EQ(sink.bytes, expected) << "pipe";
 
-  BufferStraw source(encoded.data(), static_cast<int>(encoded.size()));
+  BufferStraw source(std::as_bytes(std::span(encoded)));
   StrawType straw(StrawType::DECOMPRESS, kBlockSize);
   straw.SetSource(source);
   EXPECT_EQ(Drain(straw), expected) << "straw";

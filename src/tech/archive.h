@@ -20,11 +20,13 @@
 // The archives are unbuffered: raw Pipe::Put and Straw::Get calls may be
 // interleaved with archive calls on the same chain.
 
+#include <algorithm>
 #include <bit>
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
-#include <cstring>
+#include <iterator>
+#include <span>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -82,7 +84,11 @@ class ArchiveBase {
       using E = std::remove_all_extents_t<V>;
       if constexpr (sizeof(E) == 1 && ArchiveScalar<E>) {
         // Byte arrays, including char[] strings, go through in one call.
-        self().Raw(&value, static_cast<int>(sizeof(V)));
+        if constexpr (Derived::kIsReading) {
+          self().Raw(std::as_writable_bytes(std::span(value)));
+        } else {
+          self().Raw(std::as_bytes(std::span(value)));
+        }
       } else {
         for (auto& element : value) {
           Field(element);
@@ -129,7 +135,7 @@ class ArchiveWriter : public ArchiveBase<ArchiveWriter> {
 
   // Writes bytes verbatim. The escape hatch for data that is not yet
   // field-wise; every use should disappear as the migration completes.
-  void Bytes(const void* data, int size) { sink_.Put(data, size); }
+  void Bytes(std::span<const std::byte> data) { sink_.Put(data); }
 
   template <ArchiveScalar T>
   void Scalar(const T& value) {
@@ -137,9 +143,9 @@ class ArchiveWriter : public ArchiveBase<ArchiveWriter> {
     if constexpr (std::endian::native == std::endian::big) {
       little = std::byteswap(little);
     }
-    sink_.Put(&little, sizeof(little));
+    sink_.WriteObject(little);
   }
-  void Raw(const void* data, int size) { sink_.Put(data, size); }
+  void Raw(std::span<const std::byte> data) { sink_.Put(data); }
 
  private:
   Pipe& sink_;
@@ -167,7 +173,7 @@ class ArchiveReader : public ArchiveBase<ArchiveReader> {
   }
 
   // Reads bytes verbatim; see ArchiveWriter::Bytes.
-  void Bytes(void* data, int size) { Raw(data, size); }
+  void Bytes(std::span<std::byte> data) { Raw(data); }
 
   [[nodiscard]] bool ok() const { return error_.empty(); }
   [[nodiscard]] std::string_view error() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -184,19 +190,19 @@ class ArchiveReader : public ArchiveBase<ArchiveReader> {
   template <ArchiveScalar T>
   void Scalar(T& value) {
     T little{};
-    Raw(&little, sizeof(little));
+    Raw(std::as_writable_bytes(std::span(&little, 1)));
     if constexpr (std::endian::native == std::endian::big) {
       little = std::byteswap(little);
     }
     value = little;
   }
-  void Raw(void* data, int size) {
+  void Raw(std::span<std::byte> data) {
     if (!ok()) {
-      std::memset(data, 0, static_cast<std::size_t>(size));
+      std::ranges::fill(data, std::byte{0});
       return;
     }
-    if (source_.Get(data, size) != size) {
-      std::memset(data, 0, static_cast<std::size_t>(size));
+    if (source_.Get(data) != std::ssize(data)) {
+      std::ranges::fill(data, std::byte{0});
       Fail("unexpected end of data");
     }
   }

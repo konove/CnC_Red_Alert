@@ -41,11 +41,14 @@
 
 #include "tech/xpipe.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstring>
+#include <iterator>
 #include <span>
 
 #include "base/numeric.h"
+#include "base/types.h"
 #include "sdllib/file_access.h"
 #include "tech/pipe.h"
 
@@ -71,28 +74,14 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int BufferPipe::Put(const void* source, int slen) {
-  int total = 0;
-
-  if (Is_Valid() && source != nullptr && slen > 0) {
-    int len = slen;
-    if (BufferPtr.Get_Size() != 0) {
-      const int theoretical_max =
-          static_cast<int>(BufferPtr.Get_Size() - Index);
-      len = slen < theoretical_max ? slen : theoretical_max;
-    }
-
-    if (len > 0) {
-      memmove(static_cast<char*>(BufferPtr.Get_Buffer()) + Index, source,
-              base::ToSize(len));
-    }
-
-    Index += len;
-    //		Length -= len;
-    //		Buffer = ((char *)Buffer) + len;
-    total += len;
+base::ssize BufferPipe::Put(std::span<const std::byte> bytes) {
+  const base::ssize count =
+      std::min(std::ssize(bytes), std::ssize(buffer_) - index_);
+  if (count > 0) {
+    std::memmove(buffer_.data() + index_, bytes.data(), base::ToSize(count));
+    index_ += count;
   }
-  return total;
+  return count;
 }
 
 //---------------------------------------------------------------------------------------------------------
@@ -127,8 +116,8 @@ FilePipe::~FilePipe() {
  *                                                                                             *
  * HISTORY: * 07/05/1996 JLB : Created. *
  *=============================================================================================*/
-int FilePipe::End() {
-  const int total = Pipe::End();
+base::ssize FilePipe::End() {
+  const base::ssize total = Pipe::End();
   if (Valid_File() && HasOpened) {
     HasOpened = false;
     file_->Close();
@@ -152,15 +141,14 @@ int FilePipe::End() {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int FilePipe::Put(const void* source, int slen) {
-  if (Valid_File() && source != nullptr && slen > 0) {
+base::ssize FilePipe::Put(std::span<const std::byte> bytes) {
+  if (Valid_File() && !bytes.empty()) {
     if (!file_->IsOpen()) {
       HasOpened = true;
       file_->Open(FileAccess::kWrite);
     }
 
-    return static_cast<int>(file_->Write(
-        std::span(static_cast<const std::byte*>(source), base::ToSize(slen))));
+    return file_->Write(bytes);
   }
   return 0;
 }

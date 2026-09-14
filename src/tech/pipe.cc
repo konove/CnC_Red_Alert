@@ -18,14 +18,20 @@
 
 #include "tech/pipe.h"
 
-int Pipe::Put(const void* source, int length) {
+#include <cstddef>
+#include <iterator>
+#include <span>
+
+#include "base/types.h"
+
+base::ssize Pipe::Put(std::span<const std::byte> bytes) {
   if (sink_ != nullptr) {
-    return sink_->Put(source, length);
+    return sink_->Put(bytes);
   }
-  return length;
+  return std::ssize(bytes);
 }
 
-int Pipe::Flush() {
+base::ssize Pipe::Flush() {
   if (sink_ != nullptr) {
     return sink_->Flush();
   }

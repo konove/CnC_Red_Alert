@@ -42,12 +42,16 @@
 
 #include "tech/lzwpipe.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <span>
 #include <utility>
 
 #include "base/numeric.h"
+#include "base/types.h"
 #include "tech/buff.h"
+#include "tech/byte_view.h"
 #include "tech/codec_block.h"
 #include "tech/lzw.h"
 #include "tech/pipe.h"
@@ -100,12 +104,14 @@ LZWPipe::LZWPipe(CompControl control, int blocksize)
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-int LZWPipe::Put(const void* source, int slen) {
+base::ssize LZWPipe::Put(std::span<const std::byte> bytes) {
+  const void* source = bytes.data();
+  int slen = static_cast<int>(bytes.size());
   if (source == nullptr || slen < 1) {
-    return Pipe::Put(source, slen);
+    return Pipe::Put(bytes);
   }
 
-  int total = 0;
+  base::ssize total = 0;
 
   /*
   **	Copy as much as can fit into the buffer from the source data supplied.
@@ -171,7 +177,8 @@ int LZWPipe::Put(const void* source, int slen) {
             corrupt_ = true;
             break;
           }
-          total += Pipe::Put(output_buffer_.data(), BlockHeader.UncompCount);
+          total += Pipe::Put(
+              ByteView(output_buffer_.data(), BlockHeader.UncompCount));
           Counter = 0;
           BlockHeader.CompCount = 0xFFFF;
         }
@@ -198,8 +205,8 @@ int LZWPipe::Put(const void* source, int slen) {
 
         BlockHeader.CompCount = static_cast<uint16_t>(len);
         BlockHeader.UncompCount = static_cast<uint16_t>(BlockSize);
-        total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
-        total += Pipe::Put(output_buffer_.data(), len);
+        total += Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
+        total += Pipe::Put(ByteView(output_buffer_.data(), len));
         Counter = 0;
       }
     }
@@ -218,8 +225,8 @@ int LZWPipe::Put(const void* source, int slen) {
 
       BlockHeader.CompCount = static_cast<uint16_t>(len);
       BlockHeader.UncompCount = static_cast<uint16_t>(BlockSize);
-      total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
-      total += Pipe::Put(output_buffer_.data(), len);
+      total += Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
+      total += Pipe::Put(ByteView(output_buffer_.data(), len));
     }
 
     /*
@@ -254,8 +261,8 @@ int LZWPipe::Put(const void* source, int slen) {
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-int LZWPipe::Flush() {
-  int total = 0;
+base::ssize LZWPipe::Flush() {
+  base::ssize total = 0;
 
   /*
   **	If there is accumulated data, then it must processed.
@@ -268,7 +275,7 @@ int LZWPipe::Flush() {
       *through *	as if were already decompressed.
       */
       if (BlockHeader.CompCount == 0xFFFF) {
-        total += Pipe::Put(source_buffer_.data(), Counter);
+        total += Pipe::Put(ByteView(source_buffer_.data(), Counter));
         Counter = 0;
       }
 
@@ -280,8 +287,8 @@ int LZWPipe::Flush() {
       *decompressed.
       */
       if (Counter > 0) {
-        total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
-        total += Pipe::Put(source_buffer_.data(), Counter);
+        total += Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
+        total += Pipe::Put(ByteView(source_buffer_.data(), Counter));
         Counter = 0;
         BlockHeader.CompCount = 0xFFFF;
       }
@@ -297,8 +304,8 @@ int LZWPipe::Flush() {
 
       BlockHeader.CompCount = static_cast<uint16_t>(len);
       BlockHeader.UncompCount = static_cast<uint16_t>(Counter);
-      total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
-      total += Pipe::Put(output_buffer_.data(), len);
+      total += Pipe::Put(std::as_bytes(std::span(&BlockHeader, 1)));
+      total += Pipe::Put(ByteView(output_buffer_.data(), len));
       Counter = 0;
     }
   }

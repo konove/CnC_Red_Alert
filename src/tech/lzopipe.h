@@ -40,9 +40,12 @@
 #ifndef CNC_RED_ALERT_TECH_LZOPIPE_H_
 #define CNC_RED_ALERT_TECH_LZOPIPE_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 #include <vector>
 
+#include "base/types.h"
 #include "tech/pipe.h"
 
 /*
@@ -58,8 +61,8 @@ class LZOPipe : public Pipe {
   explicit LZOPipe(CompControl /*control*/, int blocksize = 1024 * 8);
   ~LZOPipe() override = default;
 
-  int Flush() override;
-  int Put(const void* source, int slen) override;
+  base::ssize Flush() override;
+  base::ssize Put(std::span<const std::byte> bytes) override;
 
  private:
   /*
