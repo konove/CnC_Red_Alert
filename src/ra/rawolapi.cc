@@ -720,7 +720,7 @@ bool RAChatEventSink::bSpecialMessage(const char* szMessage) {
   }
   const UtcDate today = TodayUtc();
   char szCode[5];
-  memcpy((void*)szCode, (void*)&szMessage[4], 4);
+  memcpy(szCode, &szMessage[4], 4);
   szCode[4] = 0;
   const int iCode = tech::ParseInteger<int>(szCode).value_or(0);
   return iCode == (((today.month * 99) ^ (today.day * 33)) ^ today.year);

@@ -47,7 +47,6 @@
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/memflag.h"
 #include "sdllib/misc.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
@@ -65,7 +64,6 @@
 #include "td/slider.h"
 #include "td/textbtn.h"
 #include "td/theme.h"
-#include "td/vector.h"
 #include "tech/mix_archive.h"
 
 class MusicListClass : public ListClass {
@@ -484,13 +482,11 @@ void MusicListClass::Draw_Entry(int index, int x, int y, int width,
       }
     }
 
-    Conquer_Clip_Text_Print(
-        static_cast<char*>(Add_Long_To_Pointer(List[index], 1)), x, y, CC_GREEN,
-        TBLACK, flags, width, Tabs);
+    Conquer_Clip_Text_Print(Get_Item(index) + 1, x, y, CC_GREEN, TBLACK, flags,
+                            width, Tabs);
 
   } else {
-    Conquer_Clip_Text_Print(
-        static_cast<char*>(Add_Long_To_Pointer(List[index], 1)), x, y,
-        selected ? BLUE : WHITE, TBLACK, TextFlags, width, Tabs);
+    Conquer_Clip_Text_Print(Get_Item(index) + 1, x, y, selected ? BLUE : WHITE,
+                            TBLACK, TextFlags, width, Tabs);
   }
 }

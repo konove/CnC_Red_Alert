@@ -101,18 +101,17 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
   const int buffsize = keyfr->width * keyfr->height;
 
   // get offset into data
-  auto* ptr = static_cast<char*>(Add_Long_To_Pointer(
-      dataptr,
-      (int32_t{framenumber} << 3) + kKeyFrameHeaderSize));
+  const auto* ptr = static_cast<const char*>(Add_Long_To_Pointer(
+      dataptr, (int32_t{framenumber} << 3) + kKeyFrameHeaderSize));
   Mem_Copy(ptr, &offset[0], 12);
   const char frameflags = static_cast<char>(offset[0] >> 24);
 
   if (frameflags & KF_KEYFRAME) {
-    ptr = static_cast<char*>(
+    ptr = static_cast<const char*>(
         Add_Long_To_Pointer(dataptr, offset[0] & 0x00FFFFFF));
 
     if (keyfr->flags & 1) {
-      ptr = static_cast<char*>(Add_Long_To_Pointer(ptr, 768));
+      ptr = static_cast<const char*>(Add_Long_To_Pointer(ptr, 768));
     }
     LCW_Uncompress(ptr, buffptr, buffsize);
   } else {
@@ -122,9 +121,8 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
     if (frameflags & KF_DELTA) {
       currframe = static_cast<uint16_t>(offset[1]);
 
-      ptr = static_cast<char*>(Add_Long_To_Pointer(
-          dataptr,
-          (int32_t{currframe} << 3) + kKeyFrameHeaderSize));
+      ptr = static_cast<const char*>(Add_Long_To_Pointer(
+          dataptr, (int32_t{currframe} << 3) + kKeyFrameHeaderSize));
       Mem_Copy(ptr, &offset[0], kSubFrameOffs * sizeof(uint32_t));
     }
 
@@ -134,10 +132,10 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
     // key delta
     uint32_t offdiff = (offset[0] & 0x00FFFFFF) - offcurr;
 
-    ptr = static_cast<char*>(Add_Long_To_Pointer(dataptr, offcurr));
+    ptr = static_cast<const char*>(Add_Long_To_Pointer(dataptr, offcurr));
 
     if (keyfr->flags & 1) {
-      ptr = static_cast<char*>(Add_Long_To_Pointer(ptr, 768));
+      ptr = static_cast<const char*>(Add_Long_To_Pointer(ptr, 768));
     }
 
     const int32_t length = LCW_Uncompress(ptr, buffptr, buffsize);
@@ -146,8 +144,9 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
       return nullptr;
     }
 
-    Apply_XOR_Delta(static_cast<char*>(buffptr),
-                    static_cast<char*>(Add_Long_To_Pointer(ptr, offdiff)));
+    Apply_XOR_Delta(
+        static_cast<char*>(buffptr),
+        static_cast<const char*>(Add_Long_To_Pointer(ptr, offdiff)));
 
     if (frameflags & KF_DELTA) {
       // adjust to delta after the keydelta
@@ -158,8 +157,9 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
       while (currframe <= framenumber) {
         offdiff = (offset[subframe] & 0x00FFFFFF) - offcurr;
 
-        Apply_XOR_Delta(static_cast<char*>(buffptr),
-                        static_cast<char*>(Add_Long_To_Pointer(ptr, offdiff)));
+        Apply_XOR_Delta(
+            static_cast<char*>(buffptr),
+            static_cast<const char*>(Add_Long_To_Pointer(ptr, offdiff)));
 
         currframe++;
         subframe += 2;

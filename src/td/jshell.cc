@@ -352,8 +352,8 @@ int32_t Translucent_Table_Size(int count) { return 256 + (256 * count); }
  *=============================================================================================*/
 void* Build_Translucent_Table(const void* palette, const TLucentType* control,
                               int count, void* buffer) {
-  const unsigned char* table;  // Remap table pointer.
-  int index;                   // Working color index.
+  unsigned char* table;  // Remap table pointer.
+  int index;             // Working color index.
 
   if (count && control && palette) {
     if (!buffer) {
@@ -370,9 +370,9 @@ void* Build_Translucent_Table(const void* palette, const TLucentType* control,
       for (index = 0; index < count; index++) {
         static_cast<unsigned char*>(buffer)[control[index].SourceColor] =
             static_cast<unsigned char>(index);
-        Build_Fading_Table(palette, (void*)table, control[index].DestColor,
+        Build_Fading_Table(palette, table, control[index].DestColor,
                            control[index].Fading);
-        table = static_cast<unsigned char*>(Add_Long_To_Pointer(table, 256));
+        table += 256;
       }
     }
   }
@@ -411,8 +411,8 @@ void* Build_Translucent_Table(const void* palette, const TLucentType* control,
 void* Conquer_Build_Translucent_Table(const void* palette,
                                       const TLucentType* control, int count,
                                       void* buffer) {
-  const unsigned char* table;  // Remap table pointer.
-  int index;                   // Working color index.
+  unsigned char* table;  // Remap table pointer.
+  int index;             // Working color index.
 
   if (count && control && palette) {
     if (!buffer) {
@@ -429,10 +429,9 @@ void* Conquer_Build_Translucent_Table(const void* palette,
       for (index = 0; index < count; index++) {
         static_cast<unsigned char*>(buffer)[control[index].SourceColor] =
             static_cast<unsigned char>(index);
-        Conquer_Build_Fading_Table(palette, (void*)table,
-                                   control[index].DestColor,
+        Conquer_Build_Fading_Table(palette, table, control[index].DestColor,
                                    control[index].Fading);
-        table = static_cast<unsigned char*>(Add_Long_To_Pointer(table, 256));
+        table += 256;
       }
     }
   }

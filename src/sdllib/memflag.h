@@ -93,9 +93,14 @@ extern "C" {
 void Mem_Copy(const void* source, void* dest, size_t bytes_to_copy);
 }
 
-inline void* Add_Long_To_Pointer(const void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND,
+inline const void* Add_Long_To_Pointer(
+    const void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND, base::ssize size) {
+  return static_cast<const char*>(ptr) + size;
+}
+
+inline void* Add_Long_To_Pointer(void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND,
                                  base::ssize size) {
-  return (void*)(static_cast<const char*>(ptr) + size);
+  return static_cast<char*>(ptr) + size;
 }
 
 extern void (*Memory_Error)();

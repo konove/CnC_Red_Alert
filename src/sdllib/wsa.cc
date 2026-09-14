@@ -881,7 +881,7 @@ static bool Apply_Delta(const SysAnimHeaderType* sys_header, int curr_frame,
 
     // A corrupt offset table must not copy from outside the loaded file data
     // or past the delta buffer, which holds largest_frame_size bytes.
-    const auto* const anim_end = static_cast<char*>(
+    const auto* const anim_end = static_cast<const char*>(
         Add_Long_To_Pointer(sys_header, sys_header->anim_mem_size));
     if (frame_offset < 0 || frame_data_size <= 0 ||
         std::cmp_greater(frame_data_size, sys_header->largest_frame_size) ||

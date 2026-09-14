@@ -2259,7 +2259,7 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
 
   const char* retval = nullptr;
   char* buffer = nullptr;
-  void* ptr;
+  const void* ptr;
 
   /*
   **	If there is no shape file, then there can be no radar icon imagery.
@@ -2331,7 +2331,7 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
               const int gety = (icony * 24) + (y * val) + (zoomfactor / 2);
               if (getx < pixel_width && gety < pixel_height) {
                 for (lp = 0; lp < 9; lp++) {
-                  pixel = *static_cast<char*>(Add_Long_To_Pointer(
+                  pixel = *static_cast<const char*>(Add_Long_To_Pointer(
                       ptr,
                       ((gety - _offy[lp]) * pixel_width) + getx - _offx[lp]));
                   if (pixel == LTGREEN) {
