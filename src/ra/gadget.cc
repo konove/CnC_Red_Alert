@@ -76,7 +76,7 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
-#include "tech/cdfile.h"
+#include "tech/disk_file.h"
 
 /*
 **	This records the current gadget the the gadget system is "stuck on".
@@ -479,7 +479,7 @@ KeyNumType GadgetClass::Input() {
       GraphicBufferClass temp_page(
           SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
           static_cast<int32_t>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
-      CDFileClass file;
+      DiskFile file;
       char filename[30];
 
       //			Hide_Mouse();

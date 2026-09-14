@@ -130,7 +130,7 @@
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
 #include "tech/2keyfbuf.h"
-#include "tech/cdfile.h"
+#include "tech/disk_file.h"
 #include "tech/file.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
@@ -1890,7 +1890,7 @@ bool Main_Loop() {
     } else {
       Debug_MotionCapture = false;
 
-      CDFileClass file;
+      DiskFile file;
       char filename[30];
 
       for (base::ssize index = 0; index < sequence; index++) {
