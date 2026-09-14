@@ -1,10 +1,12 @@
 // Tests for encoding multi-precision numbers into fixed-length buffers.
 
+#include "tech/mp.h"
+
 #include <array>
 #include <cstdint>
 
 #include "gtest/gtest.h"
-#include "tech/mp.h"
+#include "tech/random_source.h"
 
 namespace {
 
@@ -47,6 +49,41 @@ TEST(XmpEncodeTest, LongBufferIsSignExtended) {
   EXPECT_EQ(buffer, (std::array<unsigned char, 10>{0xff, 0xff, 0x80, 0x00,
                                                    0x00, 0x00, 0x00, 0x00,
                                                    0x00, 0x01}));
+}
+
+// Seeds a generator so that its bytes are neither all zero nor all ones.
+void Seed(RandomSource& rng) {
+  for (int32_t value = 1; rng.Seed_Bits_Needed() > 0; ++value) {
+    rng.Seed_Long(value * 7919);
+  }
+}
+
+TEST(XmpRandomizeTest, FullPrecisionStaysInsideTheDigits) {
+  RandomSource rng;
+  Seed(rng);
+  // A guard digit after the number catches a write past its end.
+  std::array<uint32_t, kPrecision + 1> digits{};
+  digits.fill(0xa5a5a5a5);
+
+  XMP_Randomize(digits.data(), rng, kPrecision * 32, kPrecision);
+
+  EXPECT_EQ(digits[kPrecision], 0xa5a5a5a5U);
+  EXPECT_NE(digits[0] | digits[1], 0U);
+}
+
+TEST(XmpRandomizeTest, ClearsBitsAboveTheRequestedCount) {
+  RandomSource rng;
+  Seed(rng);
+  for (const int bits : {1, 7, 8, 12, 32, 45, 63}) {
+    std::array<uint32_t, kPrecision + 1> digits{};
+    digits.fill(0xffffffff);
+
+    XMP_Randomize(digits.data(), rng, bits, kPrecision);
+
+    const uint64_t value = digits[0] | (uint64_t{digits[1]} << 32);
+    EXPECT_EQ(value >> bits, 0U) << bits;
+    EXPECT_EQ(digits[kPrecision], 0xffffffffU) << bits;
+  }
 }
 
 }  // namespace

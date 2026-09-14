@@ -2457,13 +2457,19 @@ void XMP_Randomize(uint32_t* result, ByteSource& rng, int total_bits,
 
   total_bits = std::min(total_bits, precision * 32);
 
-  const int nbytes = (total_bits / 8) + 1;
+  // Whole bytes, plus one for any leftover bits. The old count always added
+  // a byte, which ran one past the digits when total_bits filled them.
+  const int nbytes = (total_bits + 7) / 8;
 
   XMP_Init(result, 0, precision);
-  rng.Read(std::span(AsBytes(result), base::ToSize(nbytes)));
+  const std::span<std::byte> bytes(AsBytes(result), base::ToSize(nbytes));
+  rng.Read(bytes);
 
-  ((unsigned char*)result)[nbytes - 1] &=
-      static_cast<unsigned char>(~(~0 << (total_bits % 8)));
+  // Clear the bits above total_bits in a partial last byte. The digits are
+  // little-endian, so that byte holds the number's top bits.
+  if (const int leftover = total_bits % 8; leftover != 0) {
+    bytes.back() &= std::byte{static_cast<unsigned char>((1U << leftover) - 1)};
+  }
 }
 
 /***********************************************************************************************

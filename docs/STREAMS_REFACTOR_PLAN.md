@@ -28,9 +28,9 @@
     short read (the old straws asked again); the old `Base64Straw` stopped at a group that decoded
     to no bytes, whereas the adapter carries on like the pipe did (malformed input only).
   - Test-local sinks named `ByteSink`/`VectorPipe` became `RecordingSink`.
-- Left alone: `XMP_Randomize` (`tech/mp.cc`) reads `total_bits / 8 + 1` bytes into the digit array,
-  one byte past its end when `total_bits == precision * 32`; it predates this plan and no caller in
-  the game reaches that case.
+- Follow-up: `XMP_Randomize` (`tech/mp.cc`) read `total_bits / 8 + 1` bytes into the digit array,
+  one byte past its end when `total_bits == precision * 32`; it now reads `(total_bits + 7) / 8` and
+  masks only a partial last byte, with tests in `tech/mp_test.cc`.
 
 ## Context
 
