@@ -46,6 +46,9 @@
   DiskFile over DiskStream; d52fac76 Turn MixFileClass<T> into MixArchive; 06530739 Remove
   CDFileClass; 58da36b1 Record step 7 of the file I/O refactor as done; 5c1f5f02 Move Tiberian Dawn
   onto GameFile.
+- Follow-up (`b115a46d`): `MixFileVqaIo` (two copies) → `GameFileVqaIo` in `tech/game_file_vqa_io.*`
+  over a ByteStream; `VqaIo` now uses `std::string_view`/`std::span<std::byte>`/`SeekOrigin`/bool;
+  `SeekOrigin` lives in `base/seek_origin.h`.
 - The refactor is complete.
 
 ## Context
