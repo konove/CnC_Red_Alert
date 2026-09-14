@@ -23,7 +23,10 @@
   `SearchPaths::Add/Clear/Refresh/ HasAny/SetCdDrive/Resolve`; `FindExistingFile()` in
   `tech/disk_file.h`; CDFileClass keeps only `SetSearchEnabled`. The `Get_CD_Index` extern lives in
   search_paths.cc; tech tests stub it once in search_paths_test.cc.
-- Next: step 5.
+- Step 5 is complete (`eebca547`): `tech/byte_stream.{h,cc}` — ByteStream, DiskStream (Open() →
+  nullptr on failure), MemoryStream, RangeStream (clipped to the inner stream; re-seeks the inner
+  stream before every read).
+- Next: step 6.
 
 ## Context
 
