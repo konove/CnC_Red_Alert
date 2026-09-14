@@ -187,7 +187,7 @@ class UnitClass final : public DriveClass {
   [[nodiscard]] int Pip_Count() const override;
   [[nodiscard]] InfantryType Crew_Type() const override;
   [[nodiscard]] DirType Fire_Direction() const override;
-  [[nodiscard]] bool Ok_To_Move(DirType dir) const override;
+  bool Ok_To_Move(DirType dir) override;
   [[nodiscard]] FireErrorType Can_Fire(TARGET target, int which) const override;
   [[nodiscard]] fixed Tiberium_Load() const override;
 
@@ -214,7 +214,7 @@ class UnitClass final : public DriveClass {
   **	User I/O.
   */
   [[nodiscard]] ActionType What_Action(CELL cell) const override;
-  ActionType What_Action(const ObjectClass* object) const override;
+  ActionType What_Action(ObjectClass* object) override;
   void Active_Click_With(ActionType action, ObjectClass* object) override;
   void Active_Click_With(ActionType action, CELL cell) override;
 

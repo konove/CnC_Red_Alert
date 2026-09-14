@@ -227,7 +227,7 @@ bool CCINIClass::Load(ByteSource& file, bool withdigest) {
  * HISTORY: * 07/03/1996 JLB : Created. * 08/21/1996 JLB : Handles message
  *digest control.                                          *
  *=============================================================================================*/
-bool CCINIClass::Save(File& file, bool withdigest) const {
+bool CCINIClass::Save(File& file, bool withdigest) {
   FileSink fp(file);
   return Save(fp, withdigest);
 }
@@ -253,7 +253,7 @@ bool CCINIClass::Save(File& file, bool withdigest) const {
  * HISTORY: * 07/03/1996 JLB : Created. * 08/21/1996 JLB : Handles message
  *digest control.                                          *
  *=============================================================================================*/
-bool CCINIClass::Save(ByteSink& pipe, bool withdigest) const {
+bool CCINIClass::Save(ByteSink& pipe, bool withdigest) {
   if (!withdigest) {
     return INIClass::Save(pipe);
   }
@@ -261,18 +261,17 @@ bool CCINIClass::Save(ByteSink& pipe, bool withdigest) const {
   /*
   **	Just in case these entries are present, clear them out.
   */
-  ((CCINIClass*)this)->Clear("Digest");
+  Clear("Digest");
 
   /*
   **	Calculate what the new digest should be.
   */
-  ((CCINIClass*)this)->Calculate_Message_Digest();
+  Calculate_Message_Digest();
 
   /*
   **	Store the actual digest into the INI database.
   */
-  ((CCINIClass*)this)
-      ->Put_UUBlock("Digest", Digest.data(), static_cast<int>(Digest.size()));
+  Put_UUBlock("Digest", Digest.data(), static_cast<int>(Digest.size()));
 
   /*
   **	Output the database to the pipe specified.
@@ -283,7 +282,7 @@ bool CCINIClass::Save(ByteSink& pipe, bool withdigest) const {
   **	Remove the digest from the database. It shouldn't stick around as if it
   *were real data *	since it isn't really part of the INI database proper.
   */
-  ((CCINIClass*)this)->Clear("Digest");
+  Clear("Digest");
 
   return saved;
 }
@@ -1491,7 +1490,7 @@ bool CCINIClass::Put_Buildings(const char* section, const char* entry,
  *=============================================================================================*/
 int CCINIClass::Get_Unique_ID() const {
   if (!IsDigestPresent) {
-    ((CCINIClass*)this)->Calculate_Message_Digest();
+    Calculate_Message_Digest();
   }
 
   CrcEngine crc;
@@ -1517,7 +1516,7 @@ int CCINIClass::Get_Unique_ID() const {
  *                                                                                             *
  * HISTORY: * 11/01/1996 JLB : Created. *
  *=============================================================================================*/
-void CCINIClass::Calculate_Message_Digest() {
+void CCINIClass::Calculate_Message_Digest() const {
   /*
   **	Calculate the message digest for the INI data that was read.
   */

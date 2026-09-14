@@ -2655,7 +2655,7 @@ void InfantryClass::Response_Attack() {
  *                                                                                             *
  * HISTORY: * 03/01/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType InfantryClass::What_Action(const ObjectClass* object) const {
+ActionType InfantryClass::What_Action(ObjectClass* object) {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
   assert(object != nullptr);
@@ -2773,8 +2773,8 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
   if (House->Is_Ally(object) && House->IsPlayerControl && object->Is_Techno()) {
     if (object->What_Am_I() != RTTI_VESSEL ||
         *dynamic_cast<const VesselClass*>(object) != VESSEL_CARRIER) {
-      switch (((InfantryClass*)this)
-                  ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass*)object)) {
+      switch (Transmit_Message(RADIO_CAN_LOAD,
+                               dynamic_cast<TechnoClass*>(object))) {
         case RADIO_ROGER:
           action = ACTION_ENTER;
           break;

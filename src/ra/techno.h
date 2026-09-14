@@ -319,8 +319,8 @@ class TechnoClass : public RadioClass,
     return PrimaryFacing.Current();
   }
   CELL Nearby_Location(const TechnoClass* techno = nullptr) const;
-  [[nodiscard]] TechnoTypeClass* Techno_Type_Class() const {
-    return (TechnoTypeClass*)&Class_Of();
+  [[nodiscard]] const TechnoTypeClass* Techno_Type_Class() const {
+    return &dynamic_cast<const TechnoTypeClass&>(Class_Of());
   }
   [[nodiscard]] bool Is_Visible_On_Radar() const;
   [[nodiscard]] int Anti_Air() const;
@@ -329,9 +329,8 @@ class TechnoClass : public RadioClass,
   [[nodiscard]] int Time_To_Build() const;
   [[nodiscard]] int What_Weapon_Should_I_Use(TARGET target) const;
   [[nodiscard]] ActionType What_Action(CELL cell) const override;
-  ActionType What_Action(const ObjectClass* object) const override;
-  [[nodiscard]] virtual BuildingClass* Find_Docking_Bay(StructType b,
-                                                        bool friendly) const;
+  ActionType What_Action(ObjectClass* object) override;
+  virtual BuildingClass* Find_Docking_Bay(StructType b, bool friendly);
   virtual CELL Find_Exit_Cell(const TechnoClass* techno) const;
   [[nodiscard]] COORDINATE Fire_Coord(int which) const override;
   virtual DirType Desired_Load_Dir(ObjectClass* /*unused*/, CELL& moveto) const;
@@ -370,7 +369,7 @@ class TechnoClass : public RadioClass,
   */
   [[nodiscard]] fixed Area_Modify(CELL cell) const;
   virtual int Made_A_Kill() { return Crew.Add_Kill(); }
-  void Base_Is_Attacked(const TechnoClass* enemy);
+  void Base_Is_Attacked(TechnoClass* enemy);
   void Kill_Cargo(TechnoClass* source);
   void Record_The_Kill(TechnoClass* source) override;
   virtual bool Target_Something_Nearby(ThreatType threat = THREAT_NORMAL);

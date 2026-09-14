@@ -2261,7 +2261,7 @@ void AircraftClass::Player_Assign_Mission(MissionType mission, TARGET target,
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType AircraftClass::What_Action(const ObjectClass* target) const {
+ActionType AircraftClass::What_Action(ObjectClass* target) {
   DCHECK_EQ(Aircraft.ID(this), ID);
   DCHECK(IsActive);
 
@@ -2277,16 +2277,14 @@ ActionType AircraftClass::What_Action(const ObjectClass* target) const {
 
   if (House->IsPlayerControl && House->Is_Ally(target) &&
       target->What_Am_I() == RTTI_BUILDING &&
-      ((AircraftClass*)this)
-              ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass*)target) ==
+      Transmit_Message(RADIO_CAN_LOAD, dynamic_cast<TechnoClass*>(target)) ==
           RADIO_ROGER) {
     action = ACTION_ENTER;
   }
   if (!Class->IsFixedWing && House->IsPlayerControl && House->Is_Ally(target) &&
       target->What_Am_I() == RTTI_VESSEL &&
       *dynamic_cast<const VesselClass*>(target) == VESSEL_CARRIER &&
-      ((AircraftClass*)this)
-              ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass*)target) ==
+      Transmit_Message(RADIO_CAN_LOAD, dynamic_cast<TechnoClass*>(target)) ==
           RADIO_ROGER) {
     action = ACTION_ENTER;
   }

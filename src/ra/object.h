@@ -185,7 +185,7 @@ class ObjectClass : public AbstractClass {
   */
   [[nodiscard]] virtual bool Is_Players_Army() const { return false; }
   [[nodiscard]] virtual const void* Get_Image_Data() const;
-  virtual ActionType What_Action(const ObjectClass* /*unused*/) const;
+  virtual ActionType What_Action(ObjectClass* /*unused*/);
   [[nodiscard]] virtual ActionType What_Action(CELL /*unused*/) const;
   [[nodiscard]] virtual LayerType In_Which_Layer() const;
   [[nodiscard]] bool Is_Infantry() const { return RTTI == RTTI_INFANTRY; }

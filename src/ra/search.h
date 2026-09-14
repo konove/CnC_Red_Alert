@@ -149,15 +149,18 @@ class IndexClass {
   /*
   **	If the index table is sorted and ready for searching, this flag will be
   *true. Sorting *	of the table only occurs when absolutely necessary.
+  **	Mutable because const lookups sort the table lazily: the order of the
+  **	nodes is a cache, not part of the logical contents.
   */
-  bool IsSorted{false};
+  mutable bool IsSorted{false};
 
   /*
   **	This records a pointer to the last element found by the Is_Present()
   *function. Using *	this last recorded value can allow quick fetches of data
-  *whenever possible.
+  *whenever possible. Mutable for the same reason as IsSorted: it is a cache
+  **	that const lookups refresh.
   */
-  const NodeElement* Archive;
+  mutable const NodeElement* Archive;
 
  public:
   //-------------------------------------------------------------------------------------
@@ -178,12 +181,12 @@ class IndexClass {
   /*
   **	Invalidate the archive pointer.
   */
-  void Invalidate_Archive();
+  void Invalidate_Archive() const;
 
   /*
   **	Set archive to specified value.
   */
-  void Set_Archive(const NodeElement* node);
+  void Set_Archive(const NodeElement* node) const;
 
   /*
   **	Search for the node in the index table.
@@ -378,7 +381,7 @@ bool IndexClass<T>::Is_Present(int id) const {
   *return success.
   */
   if (nodeptr != nullptr) {
-    ((IndexClass<T>*)this)->Set_Archive(nodeptr);
+    Set_Archive(nodeptr);
     return true;
   }
 
@@ -453,7 +456,7 @@ bool IndexClass<T>::Is_Archive_Same(int id) const {
  * HISTORY: * 11/02/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-void IndexClass<T>::Invalidate_Archive() {
+void IndexClass<T>::Invalidate_Archive() const {
   Archive = nullptr;
 }
 
@@ -473,7 +476,7 @@ void IndexClass<T>::Invalidate_Archive() {
  * HISTORY: * 11/02/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-void IndexClass<T>::Set_Archive(const NodeElement* node) {
+void IndexClass<T>::Set_Archive(const NodeElement* node) const {
   Archive = node;
 }
 
@@ -639,8 +642,8 @@ const IndexClass<T>::NodeElement* IndexClass<T>::Search_For_Node(int id) const {
   */
   if (!IsSorted) {
     qsort(&IndexTable[0], base::ToSize(IndexCount), sizeof(IndexTable[0]), search_compfunc);
-    ((IndexClass<T>*)this)->Invalidate_Archive();
-    ((IndexClass<T>*)this)->IsSorted = true;
+    Invalidate_Archive();
+    IsSorted = true;
   }
 
   /*

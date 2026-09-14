@@ -329,7 +329,7 @@ void ObjectClass::AI() {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType ObjectClass::What_Action(const ObjectClass* /*unused*/) const {
+ActionType ObjectClass::What_Action(ObjectClass* /*unused*/) {
   assert(IsActive);
 
   return ACTION_NONE;

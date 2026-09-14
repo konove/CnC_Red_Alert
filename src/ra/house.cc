@@ -158,6 +158,7 @@
 #include <new>
 #include <utility>
 
+#include "absl/base/attributes.h"
 #include "absl/log/check.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -1051,7 +1052,7 @@ void HouseClass::AI() {
     */
     const int maxteams = Random_Pick(2, ((Control.TechLevel - 1) / 3) + 1);
     for (int index = 0; index < maxteams; index++) {
-      const TeamTypeClass* ttype = Suggested_New_Team(true);
+      TeamTypeClass* ttype = Suggested_New_Team(true);
       if (ttype != nullptr) {
         ScenarioInit++;
         ttype->Create_One_Of();
@@ -1111,7 +1112,7 @@ void HouseClass::AI() {
   ** (Use the same timer for some extra capture-the-flag logic.)
   */
   if (!IsAlerted && TeamTime.IsFinished()) {
-    const TeamTypeClass* ttype = Suggested_New_Team(false);
+    TeamTypeClass* ttype = Suggested_New_Team(false);
     if (ttype) {
       ttype->Create_One_Of();
     }
@@ -2350,7 +2351,7 @@ const unsigned char* HouseClass::Remap_Table(bool blushing,
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-const TeamTypeClass* HouseClass::Suggested_New_Team(bool alertcheck) {
+TeamTypeClass* HouseClass::Suggested_New_Team(bool alertcheck) {
   CHECK_EQ(Houses.ID(this), ID);
 
   return TeamTypeClass::Suggested_New_Team(this, AScan, UScan, IScan, VScan,
@@ -6352,32 +6353,49 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-int* HouseClass::Factory_Counter(RTTIType rtti) {
+namespace {
+
+// Shared body of both Factory_Counter overloads; `House` is deduced as
+// `HouseClass` or `const HouseClass`, so the result carries the receiver's
+// constness without a cast.
+template <class House>
+auto* Factory_Counter_Of(House& house ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                         RTTIType rtti) {
   switch (rtti) {
     case RTTI_UNITTYPE:
     case RTTI_UNIT:
-      return &UnitFactories;
+      return &house.UnitFactories;
 
     case RTTI_VESSELTYPE:
     case RTTI_VESSEL:
-      return &VesselFactories;
+      return &house.VesselFactories;
 
     case RTTI_AIRCRAFTTYPE:
     case RTTI_AIRCRAFT:
-      return &AircraftFactories;
+      return &house.AircraftFactories;
 
     case RTTI_INFANTRYTYPE:
     case RTTI_INFANTRY:
-      return &InfantryFactories;
+      return &house.InfantryFactories;
 
     case RTTI_BUILDINGTYPE:
     case RTTI_BUILDING:
-      return &BuildingFactories;
+      return &house.BuildingFactories;
 
     default:
       break;
   }
-  return nullptr;
+  return decltype(&house.UnitFactories){nullptr};
+}
+
+}  // namespace
+
+int* HouseClass::Factory_Counter(RTTIType rtti) {
+  return Factory_Counter_Of(*this, rtti);
+}
+
+const int* HouseClass::Factory_Counter(RTTIType rtti) const {
+  return Factory_Counter_Of(*this, rtti);
 }
 
 /***********************************************************************************************
@@ -6923,7 +6941,7 @@ void HouseClass::Set_Factory(RTTIType rtti, FactoryClass* factory) {
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
 int HouseClass::Factory_Count(RTTIType rtti) const {
-  const int* ptr = ((HouseClass*)this)->Factory_Counter(rtti);
+  const int* ptr = Factory_Counter(rtti);
   if (ptr != nullptr) {
     return *ptr;
   }

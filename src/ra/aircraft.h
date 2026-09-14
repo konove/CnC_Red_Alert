@@ -122,7 +122,7 @@ class AircraftClass : public FootClass, public FlyClass {
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
-  ActionType What_Action(const ObjectClass* target) const override;
+  ActionType What_Action(ObjectClass* target) override;
   [[nodiscard]] ActionType What_Action(CELL cell) const override;
   DirType Desired_Load_Dir(ObjectClass* object, CELL& moveto) const override;
   [[nodiscard]] int Pip_Count() const override;

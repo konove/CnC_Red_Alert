@@ -290,9 +290,10 @@ class ObjectTypeClass : public AbstractTypeClass {
   /*
   **	Points to the dimension data for each shape in the image list. By using
   *this *	data, the minimum number of cells will be redrawn when the
-  *object changes shape.
+  *object changes shape. Filled lazily while drawing, so it is a cache rather
+  *than part of the type's logical state.
   */
-  std::unique_ptr<Rect[]> DimensionData;
+  mutable std::unique_ptr<Rect[]> DimensionData;
 
   // This points to the radar imagery for this object.
   std::unique_ptr<char[]> RadarIcon;

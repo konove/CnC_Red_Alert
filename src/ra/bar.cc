@@ -235,7 +235,6 @@ void ProgressBarClass::Redraw() const {
 
   Show_Mouse();
 
-  auto* me = (ProgressBarClass*)this;
-  me->LastDisplayCurrent = CurrentValue;
-  me->IsDrawn = true;
+  LastDisplayCurrent = CurrentValue;
+  IsDrawn = true;
 }

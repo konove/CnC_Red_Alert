@@ -85,14 +85,15 @@ class ProgressBarClass {
 
   /*
   **	This is the current value as of the last time the bargraph was rendered.
+  **	Drawing bookkeeping, updated by the const draw routines.
   */
-  fixed LastDisplayCurrent;
+  mutable fixed LastDisplayCurrent;
 
   /*
   **	If the bargraph has been drawn at least once, then this flag will
-  **	be true.
+  **	be true. Drawing bookkeeping, like LastDisplayCurrent.
   */
-  bool IsDrawn : 1 {false};
+  mutable bool IsDrawn : 1 {false};
 };
 
 #endif  // CNC_RED_ALERT_RA_BAR_H_

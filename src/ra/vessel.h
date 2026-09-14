@@ -147,7 +147,7 @@ class VesselClass : public DriveClass {
   [[nodiscard]] FireErrorType Can_Fire(TARGET target, int which) const override;
 
   void Enter_Idle_Mode(bool initial = false) override;
-  ActionType What_Action(const ObjectClass* object) const override;
+  ActionType What_Action(ObjectClass* object) override;
   [[nodiscard]] ActionType What_Action(CELL cell) const override;
   void Active_Click_With(ActionType action, CELL cell) override;
   void Active_Click_With(ActionType action, ObjectClass* object) override;

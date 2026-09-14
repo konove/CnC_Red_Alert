@@ -3360,7 +3360,7 @@ bool UnitClass::Start_Driver(COORDINATE& headto) {
  *                                                                                             *
  * HISTORY: * 01/11/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType UnitClass::What_Action(const ObjectClass* object) const {
+ActionType UnitClass::What_Action(ObjectClass* object) {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -3453,8 +3453,7 @@ ActionType UnitClass::What_Action(const ObjectClass* object) const {
   if ((House->IsPlayerControl && object->Is_Techno() &&
        dynamic_cast<const TechnoClass*>(object)->House->Is_Ally(this)) &&
       (object->What_Am_I() == RTTI_BUILDING &&
-       ((UnitClass*)this)
-               ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass*)object) ==
+       Transmit_Message(RADIO_CAN_LOAD, dynamic_cast<TechnoClass*>(object)) ==
            RADIO_ROGER)) {
     action = ACTION_ENTER;
   }
@@ -3464,10 +3463,9 @@ ActionType UnitClass::What_Action(const ObjectClass* object) const {
   */
   if (House->IsPlayerControl && action == ACTION_SELECT &&
       object->What_Am_I() == RTTI_BUILDING) {
-    auto* building = (BuildingClass*)object;
+    auto* building = dynamic_cast<BuildingClass*>(object);
     if (building->Class->Type == STRUCT_REPAIR &&
-        ((UnitClass*)this)->Transmit_Message(RADIO_CAN_LOAD, building) ==
-            RADIO_ROGER &&
+        Transmit_Message(RADIO_CAN_LOAD, building) == RADIO_ROGER &&
         !building->In_Radio_Contact() && !building->Is_Something_Attached()) {
       action = ACTION_MOVE;
     }
@@ -3479,8 +3477,8 @@ ActionType UnitClass::What_Action(const ObjectClass* object) const {
   if (House->Is_Ally(object) && House->IsPlayerControl && object->Is_Techno() &&
       object->What_Am_I() == RTTI_VESSEL) {
     if (*dynamic_cast<const VesselClass*>(object) != VESSEL_CARRIER) {
-      switch (((UnitClass*)this)
-                  ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass*)object)) {
+      switch (Transmit_Message(RADIO_CAN_LOAD,
+                               dynamic_cast<TechnoClass*>(object))) {
         case RADIO_ROGER:
           action = ACTION_ENTER;
           break;
@@ -4052,7 +4050,7 @@ DirType UnitClass::Fire_Direction() const {
  *                                                                                             *
  * HISTORY: * 05/12/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Ok_To_Move(DirType dir) const {
+bool UnitClass::Ok_To_Move(DirType dir) {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -4061,7 +4059,7 @@ bool UnitClass::Ok_To_Move(DirType dir) const {
       return false;
     }
     if (SecondaryFacing.Difference(dir)) {
-      ((UnitClass*)this)->SecondaryFacing.Set_Desired(dir);
+      SecondaryFacing.Set_Desired(dir);
       return false;
     }
   }
@@ -4096,8 +4094,11 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
   const FireErrorType fire = DriveClass::Can_Fire(target, which);
 
   if (fire == FIRE_OK) {
+    // Bind the type once: CCPtr's operator-> has an unset branch that the
+    // static analyzer otherwise follows into a null dereference here.
+    const UnitTypeClass& type = *Class;
     const WeaponTypeClass* weapon =
-        which == 0 ? Class->PrimaryWeapon : Class->SecondaryWeapon;
+        which == 0 ? type.PrimaryWeapon : type.SecondaryWeapon;
 
     /*
     **	If this unit cannot fire while moving, then bail.

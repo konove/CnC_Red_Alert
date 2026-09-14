@@ -379,9 +379,9 @@ TeamClass::~TeamClass() {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-TeamClass::TeamClass(const TeamTypeClass* type, HouseClass* owner)
+TeamClass::TeamClass(TeamTypeClass* type, HouseClass* owner)
     : AbstractClass(RTTI_TEAM, Teams.ID(this)),
-      Class((TeamTypeClass*)type),
+      Class(type),
       House(owner) {
   assert(Class);
   assert(Class->IsActive);

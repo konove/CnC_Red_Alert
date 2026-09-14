@@ -66,9 +66,11 @@ class DoorClass {
 
   /*
   **	If the animation for this door indicates that the object it is
-  **	attached to should be redrawn, then this flag will be true.
+  **	attached to should be redrawn, then this flag will be true. Drawing
+  **	clears it from const draw routines, so it is redraw bookkeeping rather
+  **	than logical state.
   */
-  bool IsToRedraw : 1 {false};
+  mutable bool IsToRedraw : 1 {false};
 
  public:
   DoorClass();
@@ -82,7 +84,7 @@ class DoorClass {
   }
 
   [[nodiscard]] bool Time_To_Redraw() const { return IsToRedraw; }
-  void Clear_Redraw_Flag() { IsToRedraw = false; }
+  void Clear_Redraw_Flag() const { IsToRedraw = false; }
   void AI();
   [[nodiscard]] int Door_Stage() const;
   [[nodiscard]] bool Is_Door_Opening() const { return State == IS_OPENING; }

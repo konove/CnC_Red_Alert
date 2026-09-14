@@ -2695,7 +2695,7 @@ void BuildingClass::Sell_Back(int control) {
  *                                                                                             *
  * HISTORY: * 01/18/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType BuildingClass::What_Action(const ObjectClass* object) const {
+ActionType BuildingClass::What_Action(ObjectClass* object) {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 

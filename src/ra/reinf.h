@@ -5,7 +5,7 @@
 #include "ra/teamtype.h"
 #include "ra/type.h"
 
-bool Do_Reinforcements(const TeamTypeClass* team);
+bool Do_Reinforcements(TeamTypeClass* team);
 bool Create_Special_Reinforcement(const HouseClass* house,
                                   const TechnoTypeClass* type,
                                   const TechnoTypeClass* another,

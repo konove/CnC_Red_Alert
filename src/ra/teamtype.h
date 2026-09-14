@@ -168,7 +168,7 @@ class TeamTypeClass : public AbstractTypeClass {
   */
   // the heap owns the new object; many callers create without keeping it.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  TeamClass* Create_One_Of() const;
+  TeamClass* Create_One_Of();
   void Destroy_All_Of() const;
   void Detach(TARGET target, bool all = true);
 
@@ -179,7 +179,7 @@ class TeamTypeClass : public AbstractTypeClass {
                TextPrintType flags) const;
   static const char* Name_From_Mission(TeamMissionType order);
   static TeamMissionType Mission_From_Name(const char* name);
-  static const TeamTypeClass* Suggested_New_Team(HouseClass* house,
+  static TeamTypeClass* Suggested_New_Team(HouseClass* house,
                                                  uint64_t atypes,
                                                  uint64_t utypes,
                                                  uint64_t itypes,

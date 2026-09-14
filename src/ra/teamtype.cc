@@ -343,7 +343,7 @@ void TeamTypeClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-TeamClass* TeamTypeClass::Create_One_Of() const {
+TeamClass* TeamTypeClass::Create_One_Of() {
   if (ScenarioInit || std::cmp_less(Number, MaxAllowed)) {
     //	if (ScenarioInit || TeamClass::Number[ID] < MaxAllowed) {
     return new TeamClass(this, HouseClass::As_Pointer(House));
@@ -407,7 +407,7 @@ void TeamTypeClass::Destroy_All_Of() const {
  * HISTORY: * 07/13/1995 JLB : Created. * 07/21/1995 JLB : Will autocreate team
  *even if no members in field.                        *
  *=============================================================================================*/
-const TeamTypeClass* TeamTypeClass::Suggested_New_Team(
+TeamTypeClass* TeamTypeClass::Suggested_New_Team(
     HouseClass* house, uint64_t /*unused*/, uint64_t /*unused*/,
     uint64_t /*unused*/, uint64_t /*unused*/, bool alerted)
 // TeamTypeClass const * TeamTypeClass::Suggested_New_Team(HouseClass * house,
@@ -416,11 +416,11 @@ const TeamTypeClass* TeamTypeClass::Suggested_New_Team(
   //	TeamTypeClass const * best = nullptr;
   //	int bestvalue = 0;
 
-  const TeamTypeClass* choices[20];
+  TeamTypeClass* choices[20];
   int choicecount = 0;
 
   for (int index = 0; index < TeamTypes.Count(); index++) {
-    const TeamTypeClass* ttype = TeamTypes.Ptr(index);
+    TeamTypeClass* ttype = TeamTypes.Ptr(index);
 
     assert(ttype != nullptr);
 

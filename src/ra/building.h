@@ -269,7 +269,7 @@ class BuildingClass : public TechnoClass {
   [[nodiscard]] InfantryType Crew_Type() const override;
   [[nodiscard]] int Pip_Count() const override;
   [[nodiscard]] bool Can_Player_Move() const override;
-  ActionType What_Action(const ObjectClass* object) const override;
+  ActionType What_Action(ObjectClass* object) override;
   [[nodiscard]] ActionType What_Action(CELL cell) const override;
   [[nodiscard]] bool Can_Demolish() const override;
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {

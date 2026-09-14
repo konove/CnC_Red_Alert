@@ -558,7 +558,7 @@ void DriveClass::Assign_Destination(TARGET target) {
   **	it to unload at the refinery.
   */
   if (b != nullptr && *b == STRUCT_REFINERY && What_Am_I() == RTTI_UNIT &&
-      ((UnitTypeClass*)Techno_Type_Class())->IsToHarvest) {
+      dynamic_cast<const UnitTypeClass&>(*Techno_Type_Class()).IsToHarvest) {
     if (Contact_With_Whom() != b && !b->In_Radio_Contact()) {
       /*
       **	Establish radio contact protocol. If the facility responds
@@ -1448,7 +1448,7 @@ void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-bool DriveClass::Ok_To_Move(DirType /*unused*/) const {
+bool DriveClass::Ok_To_Move(DirType /*unused*/) {
   assert(IsActive);
 
   return true;

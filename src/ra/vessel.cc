@@ -768,7 +768,7 @@ void VesselClass::Per_Cell_Process(PCPType why) {
  *                                                                                             *
  * HISTORY: * 04/16/1996 BWG : Created. *
  *=============================================================================================*/
-ActionType VesselClass::What_Action(const ObjectClass* object) const {
+ActionType VesselClass::What_Action(ObjectClass* object) {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 

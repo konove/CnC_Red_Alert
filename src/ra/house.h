@@ -669,6 +669,8 @@ class HouseClass {
   void Do_All_To_Hunt() const;
   void Super_Weapon_Handler();
   int* Factory_Counter(RTTIType rtti) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  [[nodiscard]] const int* Factory_Counter(RTTIType rtti) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
   [[nodiscard]] int Factory_Count(RTTIType rtti) const;
   DiffType Assign_Handicap(DiffType handicap);
   [[nodiscard]] TARGET Find_Juicy_Target(COORDINATE coord) const;
@@ -756,7 +758,7 @@ class HouseClass {
   [[nodiscard]] fixed Power_Fraction() const;
   [[nodiscard]] fixed Tiberium_Fraction() const;
   void Begin_Production() { IsStarted = true; }
-  const TeamTypeClass* Suggested_New_Team(bool alertcheck = false);
+  TeamTypeClass* Suggested_New_Team(bool alertcheck = false);
   void Adjust_Threat(int region, int threat);
   void Tracking_Remove(const TechnoClass* techno);
   void Tracking_Add(const TechnoClass* techno);

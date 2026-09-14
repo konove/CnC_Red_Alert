@@ -1226,7 +1226,7 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) const {
   /*
   **	Tells the door logic that it has been drawn.
   */
-  ((TechnoClass*)this)->Clear_Redraw_Flag();
+  Clear_Redraw_Flag();
 
   if (IsSelected) {
     GraphicViewPortClass draw_window(
@@ -3488,7 +3488,7 @@ void TechnoClass::Player_Assign_Mission(MissionType mission, TARGET target,
  * HISTORY: * 01/19/1995 JLB : Created. * 03/21/1995 JLB : Special target
  *control for trees.                                        *
  *=============================================================================================*/
-ActionType TechnoClass::What_Action(const ObjectClass* object) const {
+ActionType TechnoClass::What_Action(ObjectClass* object) {
   assert(IsActive);
 
   if (object != nullptr) {
@@ -4427,7 +4427,7 @@ void TechnoClass::Techno_Draw_Object(const void* shapefile, int shapenum, int x,
     // Lazily cache per-frame bounding rectangles in the type class. Only do
     // this when the shapefile matches the type's own image data, because the
     // cache is shared across all instances of this type.
-    TechnoTypeClass* ttype = Techno_Type_Class();
+    const TechnoTypeClass* ttype = Techno_Type_Class();
     if (shapefile == ttype->Get_Image_Data() &&
         shapenum < Get_Build_Frame_Count(shapefile) - 1) {
       if (ttype->DimensionData == nullptr) {
@@ -4791,7 +4791,7 @@ bool TechnoClass::Is_In_Same_Zone(CELL cell) const {
  *between guard area and attack.                                * 11/01/1996
  *JLB : Allow recruit of guard area units in multiplay. *
  *=============================================================================================*/
-void TechnoClass::Base_Is_Attacked(const TechnoClass* enemy) {
+void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
   assert(IsActive);
 
   FootClass* defender[6] = {};
@@ -5063,8 +5063,8 @@ void TechnoClass::Base_Is_Attacked(const TechnoClass* enemy) {
   }
 
   if (risktotal > desired && enemy->Is_Foot()) {
-    ((FootClass*)enemy)
-        ->BaseAttackTimer.Set(kTicksPerMinute * Rule.BaseDefenseDelay);
+    dynamic_cast<FootClass*>(enemy)->BaseAttackTimer.Set(kTicksPerMinute *
+                                                         Rule.BaseDefenseDelay);
   }
 }
 
@@ -5853,8 +5853,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
  * HISTORY: * 07/18/1995 JLB : Created. * 08/13/1995 JLB : Recognizes the
  *"IsLeader" method of building preference.                 *
  *=============================================================================================*/
-BuildingClass* TechnoClass::Find_Docking_Bay(StructType b,
-                                             bool friendly) const {
+BuildingClass* TechnoClass::Find_Docking_Bay(StructType b, bool friendly) {
   assert(IsActive);
 
   BuildingClass* best = nullptr;
@@ -5884,8 +5883,7 @@ BuildingClass* TechnoClass::Find_Docking_Bay(StructType b,
           (What_Am_I() == RTTI_AIRCRAFT ||
            Map[building->Center_Coord()].Zones[Techno_Type_Class()->MZone] ==
                Map[Center_Coord()].Zones[Techno_Type_Class()->MZone]) &&
-          ((TechnoClass*)this)->Transmit_Message(RADIO_CAN_LOAD, building) ==
-              RADIO_ROGER) {
+          Transmit_Message(RADIO_CAN_LOAD, building) == RADIO_ROGER) {
         /*
         **	If the building qualifies and this building is better than the
         **	last qualifying building (as rated by distance), then record

@@ -191,7 +191,7 @@ static bool Need_To_Take(const AircraftClass* air) {
  *                                                                                             *
  * HISTORY: * 06/25/1996 JLB : Created. *
  *=============================================================================================*/
-static FootClass* Create_Group(const TeamTypeClass* teamtype) {
+static FootClass* Create_Group(TeamTypeClass* teamtype) {
   assert(teamtype != nullptr);
 
   auto* team = new TeamClass(teamtype);
@@ -391,7 +391,7 @@ static TechnoClass* Who_Can_Pop_Out_Of(CELL origin) {
  *Announces reinforcements.                                                *
  *   02/15/1996 JLB : Recognizes team reinforcement location. *
  *=============================================================================================*/
-bool Do_Reinforcements(const TeamTypeClass* teamtype) {
+bool Do_Reinforcements(TeamTypeClass* teamtype) {
   assert(teamtype != nullptr);
 
   /*
@@ -407,10 +407,9 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   *location of this *	team if there are no team missions previously assigned.
   */
   if (teamtype->MissionCount == 0) {
-    auto* tt = (TeamTypeClass*)teamtype;
-    tt->MissionCount = 1;
-    tt->MissionList[0].Mission = TMISSION_ATT_WAYPT;
-    tt->MissionList[0].Data.Value = teamtype->Origin;
+    teamtype->MissionCount = 1;
+    teamtype->MissionList[0].Mission = TMISSION_ATT_WAYPT;
+    teamtype->MissionList[0].Data.Value = teamtype->Origin;
   }
 
   FootClass* object = Create_Group(teamtype);

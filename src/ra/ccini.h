@@ -62,8 +62,10 @@ class CCINIClass : public INIClass {
 
   bool Load(File& file, bool withdigest);
   bool Load(ByteSource& file, bool withdigest);
-  bool Save(File& file, bool withdigest) const;
-  bool Save(ByteSink& pipe, bool withdigest) const;
+  // Saving with a digest temporarily stores the digest as an INI section, so
+  // these overloads change the database while they run.
+  bool Save(File& file, bool withdigest);
+  bool Save(ByteSink& pipe, bool withdigest);
 
   uint64_t Get_Buildings(const char* section, const char* entry,
                          uint64_t defvalue) const;
@@ -136,16 +138,18 @@ class CCINIClass : public INIClass {
   [[nodiscard]] int Get_Unique_ID() const;
 
  private:
-  void Calculate_Message_Digest();
+  void Calculate_Message_Digest() const;
   void Invalidate_Message_Digest();
 
-  bool IsDigestPresent : 1 {false};
+  // The digest is a lazily computed cache of the database contents: const
+  // queries such as Get_Unique_ID() fill it on first use.
+  mutable bool IsDigestPresent : 1 {false};
 
   /*
   **	This is the message digest (SHA) of the INI database that was embedded
   *as part of *	the INI file.
   */
-  Sha1Digest Digest{};
+  mutable Sha1Digest Digest{};
 };
 
 #endif  // CNC_RED_ALERT_RA_CCINI_H_
