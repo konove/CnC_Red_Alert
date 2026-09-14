@@ -195,7 +195,7 @@ class IconListClass : public ListClass {
   virtual int SetSelectType(int iSelectTypeNew) {
     //	Provided to enable horrible hacks, mainly involved with dealing with
     // ListClass's inability 	to have no item selected...
-    int iSelectTypeOld = iSelectType;
+    const int iSelectTypeOld = iSelectType;
     iSelectType = iSelectTypeNew;
     return iSelectTypeOld;
   }

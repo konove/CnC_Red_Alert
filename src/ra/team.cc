@@ -423,8 +423,8 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
   FootClass* unit = Member;
   if (MissionTarget != kTargetNone) {
     while (unit != nullptr) {
-      bool tar = unit->TarCom == MissionTarget;
-      bool nav = unit->NavCom == MissionTarget;
+      const bool tar = unit->TarCom == MissionTarget;
+      const bool nav = unit->NavCom == MissionTarget;
       if (tar || nav) {
         /*
         ** If the unit was doing something related to the team mission
@@ -487,7 +487,7 @@ void TeamClass::AI() {
   assert(Teams.ID(this) == ID);
 
   int desired = 0;
-  bool old_under = IsUnderStrength;
+  const bool old_under = IsUnderStrength;
 
   /*
   ** If the team has been suspended then we need to check if it's time for
@@ -605,7 +605,7 @@ void TeamClass::AI() {
       int max = 0x7FFFFFFF;
 
       for (int index = 0; index < Buildings.Count(); index++) {
-        BuildingClass* b = Buildings.Ptr(index);
+        const BuildingClass* b = Buildings.Ptr(index);
 
         if (b != nullptr && !b->IsInLimbo && b->House == House &&
             b->Class->PrimaryWeapon == nullptr) {
@@ -651,7 +651,7 @@ void TeamClass::AI() {
     **	a gesture at random.
     */
     FootClass* techno = Member;
-    DoType doaction = Percent_Chance(50) ? DO_GESTURE1 : DO_GESTURE2;
+    const DoType doaction = Percent_Chance(50) ? DO_GESTURE1 : DO_GESTURE2;
     while (techno) {
       if (Is_It_Breathing(techno) && techno->What_Am_I() == RTTI_INFANTRY) {
         dynamic_cast<InfantryClass*>(techno)->Do_Action(doaction);
@@ -740,7 +740,7 @@ void TeamClass::AI() {
           if (static_cast<unsigned>(mission->Data.Value) <
                   ScenarioClass::kWaypointCount &&
               Member != nullptr) {
-            FootClass* leader = Fetch_A_Leader();
+            const FootClass* leader = Fetch_A_Leader();
             CELL movecell = Scen.Waypoint[mission->Data.Value];
             if ((!Is_Leaving_Map()) &&
                 (leader->Can_Enter_Cell(movecell) != MOVE_OK)) {
@@ -1237,7 +1237,7 @@ int TeamClass::Recruit(int typeindex) {
 
         for (int index = 0; index < Infantry.Count(); index++) {
           InfantryClass* infantry = Infantry.Ptr(index);
-          int d = infantry->Distance(center);
+          const int d = infantry->Distance(center);
 
           if ((d < bestdist || bestdist == -1) &&
               Can_Add(infantry, typeindex)) {
@@ -1260,7 +1260,7 @@ int TeamClass::Recruit(int typeindex) {
 
         for (int index = 0; index < Aircraft.Count(); index++) {
           AircraftClass* aircraft = Aircraft.Ptr(index);
-          int d = aircraft->Distance(center);
+          const int d = aircraft->Distance(center);
 
           if ((d < bestdist || bestdist == -1) &&
               Can_Add(aircraft, typeindex)) {
@@ -1283,7 +1283,7 @@ int TeamClass::Recruit(int typeindex) {
 
         for (int index = 0; index < Units.Count(); index++) {
           UnitClass* unit = Units.Ptr(index);
-          int d = unit->Distance(center);
+          const int d = unit->Distance(center);
 
           if (unit->House == House &&
               unit->Class == Class->Members[typeindex].Class) {
@@ -1318,7 +1318,7 @@ int TeamClass::Recruit(int typeindex) {
 
         for (int index = 0; index < Vessels.Count(); index++) {
           VesselClass* vessel = Vessels.Ptr(index);
-          int d = vessel->Distance(center);
+          const int d = vessel->Distance(center);
 
           if (vessel->House == House &&
               vessel->Class == Class->Members[typeindex].Class) {
@@ -1458,7 +1458,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
 
       if (Is_It_Breathing(trial_unit) && trial_unit->House->Is_Ally(House) &&
           trial_unit->Team != this) {
-        int trial_distance = team_member->Distance(trial_unit);
+        const int trial_distance = team_member->Distance(trial_unit);
 
         if (distance == -1 || trial_distance < distance) {
           distance = trial_distance;
@@ -1477,7 +1477,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
       if (Is_It_Breathing(trial_infantry) &&
           trial_infantry->House->Is_Ally(House) &&
           trial_infantry->Team != this) {
-        int trial_distance = team_member->Distance(trial_infantry);
+        const int trial_distance = team_member->Distance(trial_infantry);
 
         if (distance == -1 || trial_distance < distance) {
           distance = trial_distance;
@@ -1494,7 +1494,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
 
       if (Is_It_Breathing(trial_vessel) &&
           trial_vessel->House->Is_Ally(House) && trial_vessel->Team != this) {
-        int trial_distance = team_member->Distance(trial_vessel);
+        const int trial_distance = team_member->Distance(trial_vessel);
 
         if (distance == -1 || trial_distance < distance) {
           distance = trial_distance;
@@ -1539,7 +1539,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
         **	Keep a record of the team member that is nearest to the team's
         **	target.
         */
-        int try_dist = team_member->Distance(Target);
+        const int try_dist = team_member->Distance(Target);
         if (!dist || try_dist < dist) {
           dist = try_dist;
           closest = team_member;
@@ -1556,7 +1556,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     if (quantity) {
       x /= quantity;
       y /= quantity;
-      COORDINATE coord =
+      const COORDINATE coord =
           XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y));
       center = ::As_Target(coord);
 
@@ -1631,7 +1631,7 @@ void TeamClass::Took_Damage(FootClass* /*unused*/, ResultType result,
           *that have firepower.
           */
           if (Target_Legal(Target)) {
-            TechnoClass* techno = As_Techno(Target);
+            const TechnoClass* techno = As_Techno(Target);
 
             if ((techno &&
                  dynamic_cast<const TechnoTypeClass&>(techno->Class_Of())
@@ -1690,8 +1690,8 @@ void TeamClass::Coordinate_Attack() {
   */
   if (Is_Target_Cell(Target) && Member != nullptr &&
       Fetch_A_Leader()->What_Am_I() != RTTI_AIRCRAFT) {
-    CellClass* cellptr = &Map[As_Cell(Target)];
-    TemplateType tt = cellptr->TType;
+    const CellClass* cellptr = &Map[As_Cell(Target)];
+    const TemplateType tt = cellptr->TType;
     if (cellptr->Cell_Object()) {
       Target = cellptr->Cell_Object()->As_Target();
     } else {
@@ -1801,7 +1801,7 @@ bool TeamClass::Coordinate_Regroup() {
           retval = false;
           if (!unit->IsFormationMove) {
             unit->Assign_Mission(MISSION_MOVE);
-            CELL dest = unit->Adjust_Dest(As_Cell(Zone));
+            const CELL dest = unit->Adjust_Dest(As_Cell(Zone));
             unit->Assign_Destination(::As_Target(dest));
           } else {
             retval = true;  // formations are always considered regrouped.
@@ -1845,7 +1845,8 @@ void TeamClass::Coordinate_Do() {
   assert(Teams.ID(this) == ID);
 
   FootClass* unit = Member;
-  MissionType do_mission = Class->MissionList[CurrentMission].Data.Mission;
+  const MissionType do_mission =
+      Class->MissionList[CurrentMission].Data.Mission;
 
   /*
   **	For each unit either head it back to the team center or give it the main
@@ -1864,7 +1865,7 @@ void TeamClass::Coordinate_Do() {
         unit->Assign_Mission(MISSION_MOVE);
         unit->Assign_Destination(Zone);
         unit->Assign_Mission(MISSION_MOVE);
-        CELL dest = unit->Adjust_Dest(As_Cell(Zone));
+        const CELL dest = unit->Adjust_Dest(As_Cell(Zone));
         unit->Assign_Destination(::As_Target(dest));
 
       } else {
@@ -1974,7 +1975,7 @@ void TeamClass::Coordinate_Move() {
               ** a formation move
               */
               if (Is_Target_Cell(Target) && unit->IsFormationMove) {
-                CELL newcell = unit->Adjust_Dest(As_Cell(Target));
+                const CELL newcell = unit->Adjust_Dest(As_Cell(Target));
                 if (Coord_Cell(unit->Coord) != newcell) {
                   unit->Assign_Destination(::As_Target(newcell));
                 } else {
@@ -2223,7 +2224,7 @@ int TeamClass::TMission_Load() {
   assert(Teams.ID(this) == ID);
 
   FootClass* unit = Member;
-  FootClass* trans = nullptr;
+  const FootClass* trans = nullptr;
 
   /*
   ** First locate the transport in the team, if there is one.  There should
@@ -2341,7 +2342,7 @@ bool TeamClass::Is_A_Member(const void* who) const {
   assert(IsActive);
   assert(Teams.ID(this) == ID);
 
-  FootClass* unit = Member;
+  const FootClass* unit = Member;
   while (unit != nullptr) {
     if (unit == who) {
       return true;
@@ -2434,7 +2435,7 @@ bool TeamClass::Is_Leaving_Map() const {
  *=============================================================================================*/
 bool TeamClass::Has_Entered_Map() const {
   bool ok = true;
-  FootClass* foot = Member;
+  const FootClass* foot = Member;
   while (foot != nullptr) {
     if (!foot->IsLocked) {
       ok = false;
@@ -2498,7 +2499,7 @@ int TeamClass::TMission_Formation() {
   FootClass* member = Member;
   const TeamMissionClass* mission = &Class->MissionList[CurrentMission];
   Formation = mission->Data.Formation;
-  int group = ID + 10;
+  const int group = ID + 10;
   int xdir = 0;
   int ydir = 0;
   bool evenodd = true;
@@ -2630,7 +2631,7 @@ int TeamClass::TMission_Formation() {
     TeamMaxSpeed[group] = MPH_LIGHT_SPEED;
     member = Member;
     while (member != nullptr) {
-      RTTIType mytype = member->What_Am_I();
+      const RTTIType mytype = member->What_Am_I();
       SpeedType memspeed = SPEED_NONE;
       MPHType memmax = MPH_IMMOBILE;
       bool speedcheck = false;
@@ -2783,9 +2784,9 @@ int TeamClass::TMission_Attack() {
  *=============================================================================================*/
 int TeamClass::TMission_Spy() {
   if (Is_Target_Cell(MissionTarget)) {
-    CELL cell = As_Cell(MissionTarget);
-    CellClass* cellptr = &Map[cell];
-    ObjectClass* bldg = cellptr->Cell_Building();
+    const CELL cell = As_Cell(MissionTarget);
+    const CellClass* cellptr = &Map[cell];
+    const ObjectClass* bldg = cellptr->Cell_Building();
     if (bldg != nullptr) {
       Assign_Mission_Target(bldg->As_Target());
       Coordinate_Attack();
@@ -2953,7 +2954,8 @@ int TeamClass::TMission_Patrol() {
   if (Frame % (Rule.PatrolTime * kTicksPerMinute) == 0) {
     FootClass* leader = Fetch_A_Leader();
     if (leader != nullptr) {
-      TARGET target = leader->Greatest_Threat(THREAT_NORMAL | THREAT_RANGE);
+      const TARGET target =
+          leader->Greatest_Threat(THREAT_NORMAL | THREAT_RANGE);
 
       if (Target_Legal(target)) {
         Assign_Mission_Target(target);

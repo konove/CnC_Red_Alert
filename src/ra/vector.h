@@ -186,7 +186,7 @@ bool VectorClass<T>::Resize(base::ssize newsize, T* array) {
       // NOLINT below: the static analyzer does not model the initialization
       // performed by `new T[n]()`, so it reads every element of a heap array
       // as indeterminate no matter how it was allocated.
-      base::ssize copycount = newsize < VectorMax ? newsize : VectorMax;
+      const base::ssize copycount = newsize < VectorMax ? newsize : VectorMax;
       for (base::ssize index = 0; index < copycount; index++) {
         // NOLINTNEXTLINE(clang-analyzer-core.uninitialized.Assign)
         newptr[index] = Vector[index];

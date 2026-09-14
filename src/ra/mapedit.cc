@@ -173,7 +173,7 @@ void MapEditClass::One_Time() {
       POPUP_HOUSELIST, POPUP_HOUSE_X, POPUP_HOUSE_Y, POPUP_HOUSE_W,
       POPUP_HOUSE_H, TPF_EFNT | TPF_NOSHADOW, MFCD::Retrieve("EBTN-UP.SHP"),
       MFCD::Retrieve("EBTN-DN.SHP"));
-  for (HousesType house : magic_enum::enum_values<HousesType>()) {
+  for (const HousesType house : magic_enum::enum_values<HousesType>()) {
     HouseList->Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
 
@@ -185,7 +185,7 @@ void MapEditClass::One_Time() {
       POPUP_MISSION_H, TPF_EFNT | TPF_NOSHADOW, MFCD::Retrieve("EBTN-UP.SHP"),
       MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (auto mission : MapEditMissions) {
+  for (const auto mission : MapEditMissions) {
     MissionList->Add_Item(MissionClass::Mission_Name(mission));
   }
 

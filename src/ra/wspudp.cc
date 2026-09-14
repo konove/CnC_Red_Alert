@@ -137,7 +137,7 @@ UDPInterfaceClass::~UDPInterfaceClass() {
  * HISTORY: * 8/5/97 12:12PM ST : Created *
  *=============================================================================================*/
 void UDPInterfaceClass::Set_Broadcast_Address(void* address) {
-  char* ip_addr = static_cast<char*>(address);
+  const char* ip_addr = static_cast<char*>(address);
   assert(strlen(ip_addr) <= strlen("xxx.xxx.xxx.xxx"));
 
   auto* baddr = new unsigned char[4];
@@ -202,7 +202,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
   char hostname[128];
   gethostname(hostname, 128);
   WWDebugString(hostname);
-  struct hostent* host_info = gethostbyname(hostname);
+  const struct hostent* host_info = gethostbyname(hostname);
 
   /*
   ** Clear out any old local addresses from the local address list.
@@ -217,14 +217,14 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
   *any packets that
   ** we send to ourselves.
   */
-  auto** addresses = (uint32_t**)host_info->h_addr_list;
+  auto* const* addresses = (uint32_t**)host_info->h_addr_list;
 
   for (;;) {
     if (!*addresses) {
       break;
     }
 
-    uint32_t address = **addresses++;
+    const uint32_t address = **addresses++;
     // address = ntohl (address);
 
     char temp[128];
@@ -324,9 +324,9 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       ** Call the recvfrom function to get the outstanding packet.
       */
       socklen_t addr_len = sizeof(addr);
-      int rc = static_cast<int>(recvfrom(Socket, SocketBytes(ReceiveBuffer),
-                                         sizeof(ReceiveBuffer), 0,
-                                         (sockaddr*)&addr, &addr_len));
+      const int rc = static_cast<int>(
+          recvfrom(Socket, SocketBytes(ReceiveBuffer), sizeof(ReceiveBuffer), 0,
+                   (sockaddr*)&addr, &addr_len));
       if (rc == SOCKET_ERROR) {
         Clear_Socket_Error(Socket);
         return;
@@ -369,7 +369,7 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
                            false);  // don't need to be notified any more
         return;
       }
-      int packetnum = 0;
+      const int packetnum = 0;
 
       /*
       ** Get a pointer to the packet.
@@ -391,10 +391,9 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       *Winsock will
       ** send us another WRITE message when it is ready to receive more data.
       */
-      int rc = static_cast<int>(sendto(Socket, SocketBytes(packet->Buffer),
-                                       base::ToSize(packet->BufferLen), 0,
-                                       (sockaddr*)&addr,
-                                       sizeof(addr)));
+      const int rc = static_cast<int>(sendto(
+          Socket, SocketBytes(packet->Buffer), base::ToSize(packet->BufferLen),
+          0, (sockaddr*)&addr, sizeof(addr)));
 
       if (rc == -1) {
         if (Get_Last_Error() == EWOULDBLOCK) {

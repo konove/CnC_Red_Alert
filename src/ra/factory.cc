@@ -249,7 +249,7 @@ void FactoryClass::AI() {
 bool FactoryClass::Has_Changed() {
   assert(Factories.ID(this) == ID);
 
-  bool changed = IsDifferent;
+  const bool changed = IsDifferent;
   IsDifferent = false;
   return changed;
 }
@@ -461,7 +461,7 @@ bool FactoryClass::Abandon() {
       **	Refund all money expended so far, back to the owner of the
       *object under construction.
       */
-      int money = Object->Class_Of().Cost_Of() * Object->House->CostBias;
+      const int money = Object->Class_Of().Cost_Of() * Object->House->CostBias;
       House->Refund_Money(money - Balance);
       Balance = 0;
 
@@ -595,7 +595,7 @@ int FactoryClass::Cost_Per_Tick() {
   assert(Factories.ID(this) == ID);
 
   if (Object) {
-    int steps = STEP_COUNT - Fetch_Stage();
+    const int steps = STEP_COUNT - Fetch_Stage();
     if (steps) {
       return Balance / steps;
     }

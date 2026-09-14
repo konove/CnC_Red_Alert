@@ -45,7 +45,7 @@
 #include "sdllib/gbuffer.h"
 #include "tech/wwfile.h"
 
-static void Write_Pcx_ScanLine(FileClass& file, int scansize, char* ptr);
+static void Write_Pcx_ScanLine(FileClass& file, int scansize, const char* ptr);
 
 /***************************************************************************
  * WRITE_PCX_FILE -- Write the data in ViewPort to a pcx file              *
@@ -95,7 +95,7 @@ static const unsigned char rle_full_run =
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 int Write_PCX_File(FileClass& file, GraphicBufferClass& pic,
-                   PaletteClass* palette) {
+                   const PaletteClass* palette) {
   unsigned char palcopy[256 * sizeof(RGB)];
   int VP_Scan_Line;
   char* ptr;
@@ -192,7 +192,7 @@ int Write_PCX_File(FileClass& file, GraphicBufferClass& pic,
  * HISTORY: * 05/04/1995 JRJ : Created. * 06/03/1996 JLB : Converted to C++ and
  *file class I/O.                                     *
  *=============================================================================================*/
-static void Write_Pcx_ScanLine(FileClass& file, int scansize, char* ptr) {
+static void Write_Pcx_ScanLine(FileClass& file, int scansize, const char* ptr) {
   auto last = static_cast<unsigned char>(*ptr);
   unsigned char rle = 1;
   unsigned char c;

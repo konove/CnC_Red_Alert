@@ -398,7 +398,7 @@ void HouseTypeClass::Init_Heap() {
  *=============================================================================================*/
 HousesType HouseTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
-    for (HousesType house : magic_enum::enum_values<HousesType>()) {
+    for (const HousesType house : magic_enum::enum_values<HousesType>()) {
       if (stricmp(As_Reference(house).IniName, name) == 0) {
         //			if (stricmp(Pointers[house]->IniName, name) ==
         // 0) {

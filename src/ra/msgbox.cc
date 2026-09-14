@@ -149,7 +149,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, kTpfText);
   int width;
   int height;
-  int lines = Format_Window_String(buffer, 510, width, height);
+  const int lines = Format_Window_String(buffer, 510, width, height);
   TextPrintType tpf = kTpfText;
 
   width = std::max(width, 180);
@@ -159,8 +159,8 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   // make sure dialog is wide enough for the buttons
   width = std::max((bwidth * numbuttons) + 80, width);
 
-  int x = (SeenBuff.Get_Width() - width) / 2;
-  int y = (SeenBuff.Get_Height() - height) / 2;
+  const int x = (SeenBuff.Get_Width() - width) / 2;
+  const int y = (SeenBuff.Get_Height() - height) / 2;
   int printx = x + 40;
 
   /*

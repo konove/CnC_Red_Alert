@@ -473,7 +473,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
     return;
   }
 
-  int shapenum = Shape_Number();
+  const int shapenum = Shape_Number();
 
   /*
   **	Certain aircraft use algorithmic rotation for some stages. Set the
@@ -490,7 +490,8 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
   */
   int jitter = 0;
   if (Height == FLIGHT_LEVEL && Get_Speed() < 3) {
-    static int _jitter[] = {0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, -1, -1, -1, 0};
+    static const int _jitter[] = {0, 0, 0, 0, 1,  1,  1,  0,
+                                  0, 0, 0, 0, -1, -1, -1, 0};
     jitter = _jitter[Frame % 16];
   }
 
@@ -555,8 +556,8 @@ void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
   }
 
   if (*this == AIRCRAFT_TRANSPORT) {
-    int _stretch[magic_enum::enum_count<FacingType>()] = {8, 9, 10, 9,
-                                                          8, 9, 10, 9};
+    const int _stretch[magic_enum::enum_count<FacingType>()] = {8, 9, 10, 9,
+                                                                8, 9, 10, 9};
 
     /*
     **	Dual rotors offset along flight axis.
@@ -564,7 +565,7 @@ void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
     auto xx = static_cast<int16_t>(x);
     auto yy =
         static_cast<int16_t>(y - Lepton_To_Pixel(static_cast<LEPTON>(Height)));
-    FacingType face = Dir_Facing(SecondaryFacing);
+    const FacingType face = Dir_Facing(SecondaryFacing);
     base::MovePoint(xx, yy, SecondaryFacing.Current(), static_cast<int16_t>(_stretch[face]));
     CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
                   flags, nullptr, DisplayClass::UnitShadow);
@@ -605,7 +606,7 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
   AircraftType classid;  // Unit class.
   char buf[128];
 
-  int counter = ini.Entry_Count(INI_Name());
+  const int counter = ini.Entry_Count(INI_Name());
   for (int index = 0; index < counter; index++) {
     const char* entry = ini.Get_Entry(INI_Name(), index);
 
@@ -624,7 +625,7 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
           /*
           **	Read the raw data.
           */
-          char* token = strtok(nullptr, ",");
+          const char* token = strtok(nullptr, ",");
           if (token) {
             strength = tech::ParseInteger<int>(token).value_or(0);
           } else {
@@ -1135,7 +1136,7 @@ int AircraftClass::Mission_Unload() {
         Status = UNLOAD_PASSENGERS;
       } else {
         if (!Is_LZ_Clear(NavCom)) {
-          FootClass* foot = Attached_Object();
+          const FootClass* foot = Attached_Object();
           if (foot != nullptr && foot->Team &&
               foot->Team->Class->Origin != -1) {
             Assign_Destination(
@@ -1162,7 +1163,7 @@ int AircraftClass::Mission_Unload() {
     */
     case FLY_TO_LZ: {
       if (Is_LZ_Clear(NavCom)) {
-        int distance = Process_Fly_To(true, NavCom);
+        const int distance = Process_Fly_To(true, NavCom);
 
         if (distance < 0x0100) {
           SecondaryFacing.Set_Desired(Pose_Dir());
@@ -1281,7 +1282,7 @@ bool AircraftClass::Is_LZ_Clear(TARGET target) const {
   if (!Target_Legal(target)) {
     return false;
   }
-  CELL cell = As_Cell(target);
+  const CELL cell = As_Cell(target);
   if (!Map.In_Radar(cell)) {
     return false;
   }
@@ -1292,7 +1293,7 @@ bool AircraftClass::Is_LZ_Clear(TARGET target) const {
   *aircraft. This presumes that *	the two objects know what they are
   *doing.
   */
-  ObjectClass* object = Map[cell].Cell_Object();
+  const ObjectClass* object = Map[cell].Cell_Object();
   if (object) {
     if (object == this) {
       return true;
@@ -1682,7 +1683,7 @@ int AircraftClass::Mission_Move() {
 
       case FLY_TOWARD_TARGET: {
         PrimaryFacing.Set_Desired(Direction(NavCom));
-        int distance = Distance(NavCom);
+        const int distance = Distance(NavCom);
 
         if (distance < 0x00C0) {
           MissionType mission = MISSION_GUARD;
@@ -1803,7 +1804,7 @@ int AircraftClass::Mission_Move() {
     */
     case FLY_TO_LZ:
       if (Is_LZ_Clear(NavCom)) {
-        int distance = Process_Fly_To(true, NavCom);
+        const int distance = Process_Fly_To(true, NavCom);
 
         if (distance < 0x0080) {
           if (Target_Legal(TarCom)) {
@@ -2300,7 +2301,7 @@ ActionType AircraftClass::What_Action(const ObjectClass* target) const {
   */
   if (House->IsPlayerControl && action == ACTION_SELECT &&
       target->What_Am_I() == RTTI_BUILDING) {
-    auto* building = (BuildingClass*)target;
+    const auto* building = (BuildingClass*)target;
     if (building->Class->Type == STRUCT_REPAIR &&
         !building->In_Radio_Contact() && !building->Is_Something_Attached()) {
       action = ACTION_ENTER;
@@ -2486,7 +2487,7 @@ int AircraftClass::Mission_Attack() {
           return 1;
         }
 
-        int distance = Process_Fly_To(true, NavCom);
+        const int distance = Process_Fly_To(true, NavCom);
 
         if (distance < 0x0200) {
           SecondaryFacing.Set_Desired(Direction(TarCom));
@@ -2635,26 +2636,26 @@ TARGET AircraftClass::New_LZ(TARGET oldlz) const {
 
   if (Target_Legal(oldlz) &&
       (!Is_LZ_Clear(oldlz) || !Cell_Seems_Ok(As_Cell(oldlz)))) {
-    COORDINATE coord = As_Coord(oldlz);
+    const COORDINATE coord = As_Coord(oldlz);
 
     /*
     **	Scan outward in a series of concentric rings up to certain distance
     **	in cells.
     */
     for (int radius = 0; radius < Rule.LZScanRadius / CELL_LEPTON_W; radius++) {
-      FacingType modifier = Random_Pick(FACING_N, FACING_NW);
+      const FacingType modifier = Random_Pick(FACING_N, FACING_NW);
       CELL lastcell = -1;
 
       /*
       **	Perform a radius scan out from the original center location. Try
       *to *	find a cell that is allowed to be a legal LZ.
       */
-      for (FacingType facing : magic_enum::enum_values<FacingType>()) {
-        CELL newcell = Coord_Cell(
+      for (const FacingType facing : magic_enum::enum_values<FacingType>()) {
+        const CELL newcell = Coord_Cell(
             Coord_Move(coord, Facing_Dir(facing + modifier),
                        static_cast<uint16_t>(radius * ICON_LEPTON_W)));
         if (Map.In_Radar(newcell)) {
-          TARGET newtarget = ::As_Target(newcell);
+          const TARGET newtarget = ::As_Target(newcell);
 
           if (newcell != lastcell && Is_LZ_Clear(newtarget) &&
               Cell_Seems_Ok(newcell)) {
@@ -2874,7 +2875,7 @@ DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
   DCHECK_EQ(Aircraft.ID(this), ID);
   DCHECK(IsActive);
 
-  CELL center = Coord_Cell(Center_Coord());
+  const CELL center = Coord_Cell(Center_Coord());
   for (int sweep = FACING_N; sweep < FACING_S; sweep++) {
     moveto = Adjacent_Cell(center, FACING_S + sweep);
     if (Map.In_Radar(moveto) &&
@@ -2977,7 +2978,7 @@ bool AircraftClass::Process_Landing() {
   IsLanding = true;
 
   if (Class->IsFixedWing) {
-    int distance = Distance(NavCom);
+    const int distance = Distance(NavCom);
 
     if (distance > 0x0100) {
       SecondaryFacing.Set_Desired(::Direction(Fire_Coord(0), As_Coord(NavCom)));
@@ -3039,7 +3040,7 @@ MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
     return MOVE_NO;
   }
 
-  CellClass* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map[cell];
 
   const ObjectClass* occupier = cellptr->Cell_Occupier();
 
@@ -3083,8 +3084,8 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
   DCHECK(IsActive);
 
   if (Target_Legal(target)) {
-    int range = Weapon_Range(0);
-    COORDINATE tcoord = As_Coord(target);
+    const int range = Weapon_Range(0);
+    const COORDINATE tcoord = As_Coord(target);
     CELL bestcell = 0;
     CELL best2cell = 0;
     int bestval = -1;
@@ -3095,7 +3096,8 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
     */
     COORDINATE altcoord = 0;
     if (Is_Target_Object(target) && As_Object(target)->Is_Foot()) {
-      TARGET alttarg = dynamic_cast<FootClass*>(As_Object(target))->NavCom;
+      const TARGET alttarg =
+          dynamic_cast<FootClass*>(As_Object(target))->NavCom;
       if (Target_Legal(alttarg)) {
         altcoord = As_Coord(alttarg);
       }
@@ -3103,9 +3105,9 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
 
     for (int r = range - 0x0100; r > 0x0100; r -= 0x0100) {
       for (int face = 0; face < 255; face += 16) {
-        COORDINATE newcoord = Coord_Move(tcoord, static_cast<DirType>(face),
-                                         static_cast<uint16_t>(r));
-        CELL newcell = Coord_Cell(newcoord);
+        const COORDINATE newcoord = Coord_Move(
+            tcoord, static_cast<DirType>(face), static_cast<uint16_t>(r));
+        const CELL newcell = Coord_Cell(newcoord);
 
         if (Map.In_Radar(newcell) &&
             (Session.Type != GAME_NORMAL || Map[newcell].IsVisible) &&
@@ -3176,9 +3178,9 @@ bool AircraftClass::Cell_Seems_Ok(CELL cell, bool strict) const {
   **	Make sure that no other aircraft are heading to the selected location.
   *If they *	are, then don't consider the location as valid.
   */
-  TARGET astarget = ::As_Target(cell);
+  const TARGET astarget = ::As_Target(cell);
   for (int index = 0; index < Aircraft.Count(); index++) {
-    AircraftClass* air = Aircraft.Ptr(index);
+    const AircraftClass* air = Aircraft.Ptr(index);
     if ((air && (strict || air != this) && !air->IsInLimbo) &&
         (Coord_Cell(air->Coord) == cell || air->NavCom == astarget)) {
       return false;
@@ -3388,7 +3390,7 @@ int AircraftClass::Mission_Enter() {
         Assign_Destination(kTargetNone);
         Enter_Idle_Mode();
       } else {
-        int distance = Process_Fly_To(true, NavCom);
+        const int distance = Process_Fly_To(true, NavCom);
 
         if (Class->IsFixedWing) {
           if (distance < 0x0400) {
@@ -3485,7 +3487,7 @@ TARGET AircraftClass::Good_LZ() const {
   CELL bestcell = 0;
   int bestdist = -1;
   for (int index = 0; index < Buildings.Count(); index++) {
-    BuildingClass* building = Buildings.Ptr(index);
+    const BuildingClass* building = Buildings.Ptr(index);
 
     if (building && !building->IsInLimbo && building->House == House) {
       int dist = Distance(building);
@@ -3533,7 +3535,7 @@ void AircraftClass::Set_Speed(int speed) {
 
   FootClass::Set_Speed(speed);
 
-  MPHType sp = static_cast<MPHType>(std::min(
+  const MPHType sp = static_cast<MPHType>(std::min(
       Class->MaxSpeed * SpeedBias * House->AirspeedBias, int(MPH_LIGHT_SPEED)));
   Fly_Speed(speed, sp);
 }
@@ -3703,7 +3705,7 @@ int AircraftClass::Mission_Guard() {
         (Height == 0 && (Contact_With_Whom()->What_Am_I() != RTTI_BUILDING ||
                          *dynamic_cast<BuildingClass*>(Contact_With_Whom()) !=
                              STRUCT_REPAIR))) {
-      BuildingClass* building = Find_Docking_Bay(STRUCT_REPAIR, true);
+      const BuildingClass* building = Find_Docking_Bay(STRUCT_REPAIR, true);
       if (building != nullptr) {
         Assign_Destination(building->As_Target());
         Assign_Target(kTargetNone);
@@ -3719,7 +3721,7 @@ int AircraftClass::Mission_Guard() {
   **	to rearm.
   */
   if ((Ammo == 0 && Is_Weapon_Equipped()) && (!In_Radio_Contact())) {
-    BuildingClass* building = Find_Docking_Bay(STRUCT_HELIPAD, false);
+    const BuildingClass* building = Find_Docking_Bay(STRUCT_HELIPAD, false);
     if (!Class->IsFixedWing) {
       int dist = 0x7FFFFFFF;
       if (building) {
@@ -3775,7 +3777,7 @@ int AircraftClass::Mission_Guard() {
   *protective *	shield of their base.
   */
   if (House->State != STATE_ATTACKED) {
-    TARGET target = House->Find_Juicy_Target(Coord);
+    const TARGET target = House->Find_Juicy_Target(Coord);
 
     if (Target_Legal(target)) {
       Assign_Target(target);
@@ -3845,8 +3847,9 @@ void AircraftClass::Response_Attack() {
   DCHECK_EQ(Aircraft.ID(this), ID);
   DCHECK(IsActive);
 
-  static VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL};
-  VocType response = _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
+  static const VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL};
+  const VocType response =
+      _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
   if (AllowVoice) {
     Sound_Effect(response, fixed(1), -(ID + 1));
   }
@@ -3869,8 +3872,9 @@ void AircraftClass::Response_Move() {
   DCHECK_EQ(Aircraft.ID(this), ID);
   DCHECK(IsActive);
 
-  static VocType _response[] = {VOC_ACKNOWL, VOC_AFFIRM};
-  VocType response = _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
+  static const VocType _response[] = {VOC_ACKNOWL, VOC_AFFIRM};
+  const VocType response =
+      _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
   if (AllowVoice) {
     Sound_Effect(response, fixed(1), -(ID + 1));
   }
@@ -3893,9 +3897,10 @@ void AircraftClass::Response_Select() {
   DCHECK_EQ(Aircraft.ID(this), ID);
   DCHECK(IsActive);
 
-  static VocType _response[] = {VOC_VEHIC,  VOC_REPORT, VOC_YESSIR,
-                                VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
-  VocType response = _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
+  static const VocType _response[] = {VOC_VEHIC,  VOC_REPORT, VOC_YESSIR,
+                                      VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
+  const VocType response =
+      _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
   if (AllowVoice) {
     Sound_Effect(response, fixed(1), -(ID + 1));
   }
@@ -3926,11 +3931,11 @@ FireErrorType AircraftClass::Can_Fire(TARGET target, int which) const {
     return FIRE_AMMO;
   }
 
-  bool camera =
+  const bool camera =
       Class->PrimaryWeapon != nullptr && Class->PrimaryWeapon->IsCamera;
-  bool fudge = Passenger || (Class->PrimaryWeapon != nullptr &&
-                             Class->PrimaryWeapon->Bullet != nullptr &&
-                             Class->PrimaryWeapon->Bullet->IsParachuted);
+  const bool fudge = Passenger || (Class->PrimaryWeapon != nullptr &&
+                                   Class->PrimaryWeapon->Bullet != nullptr &&
+                                   Class->PrimaryWeapon->Bullet->IsParachuted);
 
   if (fudge && !camera && !Ammo && !Passenger) {
     return FIRE_AMMO;
@@ -3955,7 +3960,7 @@ FireErrorType AircraftClass::Can_Fire(TARGET target, int which) const {
     return FIRE_RANGE;
   }
 
-  FireErrorType canfire = FootClass::Can_Fire(target, which);
+  const FireErrorType canfire = FootClass::Can_Fire(target, which);
 
   /*
   **	Double check to make sure that the facing is roughly toward
@@ -3963,7 +3968,7 @@ FireErrorType AircraftClass::Can_Fire(TARGET target, int which) const {
   **	temporarily postponed.
   */
   if ((canfire == FIRE_OK) && Class->IsFixedWing) {
-    int diff = PrimaryFacing.Difference(Direction(TarCom));
+    const int diff = PrimaryFacing.Difference(Direction(TarCom));
     if (std::abs(diff) > (fudge ? 16 : 8)) {
       return FIRE_FACING;
     }
@@ -3998,7 +4003,7 @@ bool AircraftClass::Landing_Takeoff_AI() {
   *level, it will be moved into the appropriate render *	layer.
   */
   if (Is_Door_Closed() && (IsLanding || IsTakingOff)) {
-    LayerType layer = In_Which_Layer();
+    const LayerType layer = In_Which_Layer();
 
     if (IsLanding) {
       Mark(MARK_UP);
@@ -4134,7 +4139,7 @@ bool AircraftClass::Edge_Of_World_AI() {
       *fulfilled.
       */
       while (Is_Something_Attached()) {
-        FootClass* obj = Detach_Object();
+        const FootClass* obj = Detach_Object();
 
         /*
         **	Flag the owning house that civ evacuation has occurred.

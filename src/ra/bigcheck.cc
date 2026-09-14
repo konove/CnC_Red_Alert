@@ -50,7 +50,7 @@ bool BigCheckBoxClass::Draw_Me(bool forced) {
       }
     }
 
-    TextPrintType flags = TextFlags;
+    const TextPrintType flags = TextFlags;
 
     RemapControlType* pScheme;
 

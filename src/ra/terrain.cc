@@ -269,7 +269,7 @@ bool TerrainClass::Mark(MarkType mark) {
   assert(IsActive);
 
   if (ObjectClass::Mark(mark)) {
-    CELL cell = Coord_Cell(Coord);
+    const CELL cell = Coord_Cell(Coord);
 
     switch (mark) {
       case MARK_UP:
@@ -616,7 +616,7 @@ bool TerrainClass::Limbo() {
   assert(IsActive);
 
   if (!IsInLimbo) {
-    CELL cell = Coord_Cell(Coord);
+    const CELL cell = Coord_Cell(Coord);
     Map[cell].Flag.Occupy.Monolith = false;
   }
   return ObjectClass::Limbo();
@@ -665,8 +665,8 @@ unsigned char* TerrainClass::Radar_Icon(CELL cell) {
 
   auto* icon =
       (unsigned char*)Class->Get_Radar_Data();  // get a pointer to radar icons
-  int width = *icon++;                          // extract the width from data
-  int height = *icon++;                         // extract the width from data
+  const int width = *icon++;                    // extract the width from data
+  const int height = *icon++;                   // extract the width from data
 
   /*
   ** Icon number that we need can be found by converting the cell and base
@@ -674,11 +674,13 @@ unsigned char* TerrainClass::Radar_Icon(CELL cell) {
   ** multiplying it by the width of the terrain in icons, which we
   ** conveniently stored out as the first byte of every icon we made.
   */
-  int basecell = Coord_Cell(Coord);  // find the base cell of terrain
-  int ydiff = static_cast<CELL>(Cell_Y(cell) - Cell_Y(static_cast<CELL>(basecell)));
-  int xdiff = static_cast<CELL>(Cell_X(cell) - Cell_X(static_cast<CELL>(basecell)));
+  const int basecell = Coord_Cell(Coord);  // find the base cell of terrain
+  const int ydiff =
+      static_cast<CELL>(Cell_Y(cell) - Cell_Y(static_cast<CELL>(basecell)));
+  const int xdiff =
+      static_cast<CELL>(Cell_X(cell) - Cell_X(static_cast<CELL>(basecell)));
   if (xdiff < width && ydiff < height) {
-    int iconnum = (ydiff * width) + xdiff;
+    const int iconnum = (ydiff * width) + xdiff;
     return icon + (static_cast<base::ssize>(iconnum) * 9);
   }
   return nullptr;
@@ -721,12 +723,13 @@ COORDINATE TerrainClass::Target_Coord() const {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void TerrainClass::Read_INI(CCINIClass& ini) {
-  int len = ini.Entry_Count(INI_Name());
+  const int len = ini.Entry_Count(INI_Name());
 
   for (int index = 0; index < len; index++) {
     const char* entry = ini.Get_Entry(INI_Name(), index);
-    TerrainType terrain = ini.Get_TerrainType(INI_Name(), entry, TERRAIN_NONE);
-    CELL cell = tech::ParseInteger<CELL>(entry).value_or(0);
+    const TerrainType terrain =
+        ini.Get_TerrainType(INI_Name(), entry, TERRAIN_NONE);
+    const CELL cell = tech::ParseInteger<CELL>(entry).value_or(0);
 
     if (terrain != TERRAIN_NONE) {
       new TerrainClass(terrain, cell);

@@ -126,7 +126,7 @@ int WOL_Main() {
 
   pWolapi->bInGame = false;
 
-  int iLoginResult = WOL_Login_Dialog(pWolapi);
+  const int iLoginResult = WOL_Login_Dialog(pWolapi);
   if (iLoginResult == 1) {
     pWolapi->SetOptionDefaults();
     bool bKeepGoing = true;

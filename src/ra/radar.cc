@@ -240,14 +240,14 @@ void RadarClass::Init_Clear() {
  * HISTORY: * 12/11/1994 JLB : Created. *
  *=============================================================================================*/
 bool RadarClass::Radar_Activate(int control) {
-  bool old = IsRadarActive;
+  const bool old = IsRadarActive;
 
   switch (control) {
     /*
     ** Toggle the state of the radar map on or off.
     */
     case -1: {
-      bool temp = !static_cast<bool>(IsRadarActive);
+      const bool temp = !static_cast<bool>(IsRadarActive);
       if (temp) {
         Radar_Activate(1);
       } else {
@@ -479,7 +479,7 @@ void RadarClass::Draw_It(bool forced) {
           */
           if (LogicPage->Lock()) {
             for (int index = 0; index < PixelPtr; index++) {
-              CELL cell = PixelStack[index];
+              const CELL cell = PixelStack[index];
               if (Cell_On_Radar(cell)) {
                 (*this)[cell].IsPlot = false;
                 Plot_Radar_Pixel(cell);
@@ -498,7 +498,7 @@ void RadarClass::Draw_It(bool forced) {
 
             for (int y = 0; y < MapCellHeight; y++) {
               for (int x = 0; x < MapCellWidth; x++) {
-                CELL cell = XY_Cell(MapCellX + x, MapCellY + y);
+                const CELL cell = XY_Cell(MapCellX + x, MapCellY + y);
                 if (Cell_On_Radar(cell) && (*this)[cell].IsPlot) {
                   PixelStack[PixelPtr++] = cell;
                   IsRadarToRedraw = true;
@@ -581,7 +581,7 @@ void RadarClass::Draw_It(bool forced) {
       **	If the radar is not active, then only draw the cover plate if
       *forced to do so.
       */
-      int val = DoesRadarExist ? MAX_RADAR_FRAMES : 0;
+      const int val = DoesRadarExist ? MAX_RADAR_FRAMES : 0;
       CC_Draw_Shape(RadarAnim, val, RadX, RadY + 2, WINDOW_MAIN,
                     SHAPE_NORMAL);
       FullRedraw = false;
@@ -723,7 +723,7 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
           ColorRemaps[dynamic_cast<TechnoClass*>(obj)->House->RemapColor].Bar;
       int xoff;
       int yoff;
-      int subsize = std::max(1, size / 3);
+      const int subsize = std::max(1, size / 3);
 
       switch (obj->What_Am_I()) {
         case RTTI_INFANTRY:
@@ -776,7 +776,7 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
 void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
   // int lpx,lpy;
 
-  OverlayType overlay = (*this)[cell].Overlay;
+  const OverlayType overlay = (*this)[cell].Overlay;
   if (overlay != OVERLAY_NONE) {
     const OverlayTypeClass* otype = &OverlayTypeClass::As_Reference(overlay);
 
@@ -836,8 +836,8 @@ void RadarClass::Zoom_Mode(CELL cell) {
   ** Figure out exactly what size we need to zoom the map to.
   */
   if (!IsZoomed) {
-    int xfactor = RadIWidth / MapCellWidth;
-    int yfactor = RadIHeight / MapCellHeight;
+    const int xfactor = RadIWidth / MapCellWidth;
+    const int yfactor = RadIHeight / MapCellHeight;
     ZoomFactor = std::max(std::min(xfactor, yfactor), 1);
     map_c_width = MapCellWidth;
     map_c_height = MapCellHeight;
@@ -860,8 +860,8 @@ void RadarClass::Zoom_Mode(CELL cell) {
   ** Find the amount of remainder because this will let us calculate
   ** how to center the thing.
   */
-  int rem_x = RadIWidth - (map_c_width * ZoomFactor);
-  int rem_y = RadIHeight - (map_c_height * ZoomFactor);
+  const int rem_x = RadIWidth - (map_c_width * ZoomFactor);
+  const int rem_y = RadIHeight - (map_c_height * ZoomFactor);
 
   /*
   ** Finally mark the map so it shows just as much as it is supposed
@@ -915,9 +915,9 @@ void RadarClass::Zoom_Mode(CELL cell) {
 bool RadarClass::Is_Zoomable() const {
   CHECK_NE(MapCellWidth, 0);
   CHECK_NE(MapCellHeight, 0);
-  int xfactor = RadIWidth / MapCellWidth;
-  int yfactor = RadIHeight / MapCellHeight;
-  int factor = std::max(std::min(xfactor, yfactor), 1);
+  const int xfactor = RadIWidth / MapCellWidth;
+  const int yfactor = RadIHeight / MapCellHeight;
+  const int factor = std::max(std::min(xfactor, yfactor), 1);
   return factor != 3;
 }
 
@@ -975,7 +975,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
 
   bool usjamming = false;
   if (LogicPage->Lock()) {
-    CellClass* cellptr = &(*this)[cell];
+    const CellClass* cellptr = &(*this)[cell];
     x = RadX + RadOffX + BaseX + (x * ZoomFactor);
     y = RadY + RadOffY + BaseY + (y * ZoomFactor);
 
@@ -983,9 +983,9 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
     **	Determine what (if any) vehicle or unit should be rendered in this blip.
     */
     int color = TBLACK;  // Color of the pixel to plot.
-    int housebit = 1 << PlayerPtr->Class->House;
-    int celljammed = (*this)[cell].Jammed;
-    int jammed = celljammed & (0xFFFF - housebit);
+    const int housebit = 1 << PlayerPtr->Class->House;
+    const int celljammed = (*this)[cell].Jammed;
+    const int jammed = celljammed & (0xFFFF - housebit);
     if (!jammed && ((*this)[cell].IsMapped || Debug_Unshroud)) {
       // 		if (!jammed && ((*this)[cell].IsVisible ||
       // Debug_Unshroud)) {
@@ -1169,7 +1169,7 @@ int RadarClass::Click_In_Radar(int& ptr_x, int& ptr_y, bool change) const {
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
 CELL RadarClass::Click_Cell_Calc(int x, int y) const {
-  int result = Click_In_Radar(x, y, true);
+  const int result = Click_In_Radar(x, y, true);
   switch (result) {
     case 1:
       return XY_Cell(x, y);
@@ -1211,7 +1211,7 @@ void RadarClass::Cursor_Cell(CELL cell, bool value) {
   ** If this cell is not on the radar don't bother doing anything.
   */
   if (Cell_On_Radar(cell)) {
-    bool temp = (*this)[cell].IsRadarCursor;
+    const bool temp = (*this)[cell].IsRadarCursor;
 
     if (temp != value) {
       /*
@@ -1318,7 +1318,7 @@ void RadarClass::Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x, int& y) {
  * HISTORY: * 11/09/1995 BWG : Created. *
  *=============================================================================================*/
 bool RadarClass::Jam_Cell(CELL cell, HouseClass* house /*KO, bool shadeit*/) {
-  auto jam = static_cast<uint16_t>(1 << house->Class->House);
+  const auto jam = static_cast<uint16_t>(1 << house->Class->House);
   (*this)[cell].Jammed |= jam;
   if (house != PlayerPtr) {
     Shroud_Cell(cell /*KO, shadeit*/);
@@ -1344,7 +1344,7 @@ bool RadarClass::Jam_Cell(CELL cell, HouseClass* house /*KO, bool shadeit*/) {
  * HISTORY: * 11/09/1995 BWG : Created. *
  *=============================================================================================*/
 bool RadarClass::UnJam_Cell(CELL cell, HouseClass* house) {
-  auto jam = static_cast<uint16_t>(1 << house->Class->House);
+  const auto jam = static_cast<uint16_t>(1 << house->Class->House);
   (*this)[cell].Redraw_Objects();
   (*this)[cell].Jammed &= 0xFFFF - jam;
   Radar_Pixel(cell);
@@ -1381,10 +1381,10 @@ void RadarClass::Radar_Cursor(bool forced) {
   ** figure out these function calls as we will need to call them multiple
   *times.
   */
-  int tac_cell = Coord_Cell(TacticalCoord);
-  int tac_cell_x = static_cast<CELL>(Cell_X(static_cast<CELL>(tac_cell)));
-  int tac_cell_y = static_cast<CELL>(Cell_Y(static_cast<CELL>(tac_cell)));
-  int barlen = 6;
+  const int tac_cell = Coord_Cell(TacticalCoord);
+  const int tac_cell_x = static_cast<CELL>(Cell_X(static_cast<CELL>(tac_cell)));
+  const int tac_cell_y = static_cast<CELL>(Cell_Y(static_cast<CELL>(tac_cell)));
+  const int barlen = 6;
 
   /*
   ** If the current tactical cell is invalid or we haven't moved and we are not
@@ -1406,8 +1406,10 @@ void RadarClass::Radar_Cursor(bool forced) {
     *pixel coordinates back
     ** to the cells that need to be redraw.
     **/
-    int last_cell_x = static_cast<CELL>(Cell_X(static_cast<CELL>(_last_pos)));
-    int last_cell_y = static_cast<CELL>(Cell_Y(static_cast<CELL>(_last_pos)));
+    const int last_cell_x =
+        static_cast<CELL>(Cell_X(static_cast<CELL>(_last_pos)));
+    const int last_cell_y =
+        static_cast<CELL>(Cell_Y(static_cast<CELL>(_last_pos)));
 
     Cell_XY_To_Radar_Pixel(last_cell_x, last_cell_y, x1, y1);
     Cell_XY_To_Radar_Pixel(last_cell_x + Lepton_To_Cell(TacLeptonWidth),
@@ -1699,7 +1701,7 @@ bool RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
     return false;
   }
 
-  int result = Map.Click_In_Radar(x, y, false);
+  const int result = Map.Click_In_Radar(x, y, false);
 
   if (result == 1) {
     cell = Map.RadarClass::Click_Cell_Calc(x, y);
@@ -1891,19 +1893,21 @@ void RadarClass::Set_Radar_Position(CELL cell) {
 
   if (RadarCell != newcell) {
     bool forced = false;
-    int xmod = newx;
-    int ymod = newy;
+    const int xmod = newx;
+    const int ymod = newy;
 
-    int radx = static_cast<CELL>(Cell_X(static_cast<CELL>(RadarCell)) - xmod);
-    int rady = static_cast<CELL>(Cell_Y(static_cast<CELL>(RadarCell)) - ymod);
+    const int radx =
+        static_cast<CELL>(Cell_X(static_cast<CELL>(RadarCell)) - xmod);
+    const int rady =
+        static_cast<CELL>(Cell_Y(static_cast<CELL>(RadarCell)) - ymod);
 
     RadarX = newx;
     RadarY = newy;
     RadarCell = newcell;
 
     if (Map.IsSidebarActive && Map.IsRadarActive) {
-      int radw = RadarCellWidth - std::abs(radx);   // Replicable width.
-      int radh = RadarCellHeight - std::abs(rady);  // Replicable height.
+      const int radw = RadarCellWidth - std::abs(radx);   // Replicable width.
+      const int radh = RadarCellHeight - std::abs(rady);  // Replicable height.
 
       if (radw < 1) {
         forced = true;
@@ -2128,7 +2132,7 @@ void RadarClass::Player_Names(bool on) {
  *=============================================================================================*/
 bool RadarClass::Spy_Next_House() {
   bool tospy = false;
-  int spiedby = 1 << PlayerPtr->Class->House;
+  const int spiedby = 1 << PlayerPtr->Class->House;
 
   IsPlayerNames = false;
   IsRadarToRedraw = true;
@@ -2154,7 +2158,7 @@ bool RadarClass::Spy_Next_House() {
   house = std::max(house, firsthouse);
 
   while (house < maxhouse && !tospy) {
-    HouseClass* hptr = HouseClass::As_Pointer(house);
+    const HouseClass* hptr = HouseClass::As_Pointer(house);
     if ((hptr && hptr->IsActive && hptr != PlayerPtr) &&
         (hptr->RadarSpied & spiedby)) {
       tospy = true;
@@ -2356,7 +2360,7 @@ void RadarClass::Draw_Names() {
     Fancy_Text_Print(txt, RadX + RadOffX, y, color, TBLACK, style);
 
     kills = 0;
-    for (HousesType h : magic_enum::enum_values<HousesType>()) {
+    for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       kills += ptr->UnitsKilled[h];
       kills += ptr->BuildingsKilled[h];
     }

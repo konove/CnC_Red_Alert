@@ -459,7 +459,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
       Show_Mouse();
     }
 
-    KeyNumType input = buttons->Input();
+    const KeyNumType input = buttons->Input();
     switch (static_cast<int>(input)) {
       case ButtonKey(200):
         Whom = list.Current_Object()->House;

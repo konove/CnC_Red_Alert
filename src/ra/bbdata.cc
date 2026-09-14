@@ -182,13 +182,13 @@ void BulletTypeClass::One_Time() {
   /*
   **	Load the bullet shapes.
   */
-  for (BulletType index : magic_enum::enum_values<BulletType>()) {
+  for (const BulletType index : magic_enum::enum_values<BulletType>()) {
     BulletTypeClass& bullet = As_Reference(index);
 
     if (!bullet.IsInvisible) {
-      auto fullname = std::filesystem::path(bullet.GraphicName)
-                          .replace_extension(".SHP")
-                          .string();
+      const auto fullname = std::filesystem::path(bullet.GraphicName)
+                                .replace_extension(".SHP")
+                                .string();
 
 #ifdef NDEBUG
       const_cast<BulletTypeClass&>(bullet).SetBorrowedImage(

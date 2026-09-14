@@ -293,7 +293,7 @@ TechnoClass* As_Techno(TARGET target) {
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* As_Object(TARGET target) {
-  int val = Target_Value(target);
+  const int val = Target_Value(target);
   ObjectClass* object = nullptr;
   switch (Target_Kind(target)) {
     case RTTI_INFANTRY:
@@ -466,10 +466,10 @@ COORDINATE As_Coord(TARGET target) {
     *target number is *	actually the cell index number.
     */
     if (Is_Target_Cell(target)) {
-      int v = Target_Value(target);
+      const int v = Target_Value(target);
 
-      int x = ((v & 0x0FFF) << 4) + 0x0008;
-      int y = ((v >> 12 & 0x0FFF) << 4) + 0x0008;
+      const int x = ((v & 0x0FFF) << 4) + 0x0008;
+      const int y = ((v >> 12 & 0x0FFF) << 4) + 0x0008;
       return XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y));
     }
 
@@ -478,7 +478,7 @@ COORDINATE As_Coord(TARGET target) {
     *then ask it *	for the center coordinate. Return the center coordinate
     *as the target's coordinate.
     */
-    ObjectClass* obj = As_Object(target);
+    const ObjectClass* obj = As_Object(target);
     if (obj != nullptr) {
       assert(obj->IsActive);
       return obj->Target_Coord();
@@ -522,7 +522,7 @@ COORDINATE As_Movement_Coord(TARGET target) {
     *then ask it *	for the center coordinate. Return the center coordinate
     *as the target's coordinate.
     */
-    ObjectClass* obj = As_Object(target);
+    const ObjectClass* obj = As_Object(target);
     if (obj) {
       return obj->Docking_Coord();
     }
@@ -786,7 +786,7 @@ TARGET As_Target(COORDINATE coord) {
  * HISTORY: * 07/16/1996 JLB : Created. *
  *=============================================================================================*/
 const TechnoTypeClass* As_TechnoType(TARGET target) {
-  int val = Target_Value(target);
+  const int val = Target_Value(target);
   switch (Target_Kind(target)) {
     case RTTI_INFANTRYTYPE:
       return &InfantryTypeClass::As_Reference(static_cast<InfantryType>(val));

@@ -169,7 +169,7 @@ template <class Archive>
 static void SerializeTriggerLists(Archive& ar) {
   SerializeTriggerList(ar, MapTriggers);
   SerializeTriggerList(ar, LogicTriggers);
-  for (HousesType house : magic_enum::enum_values<HousesType>()) {
+  for (const HousesType house : magic_enum::enum_values<HousesType>()) {
     SerializeTriggerList(ar, HouseTriggers[house]);
   }
 }
@@ -493,7 +493,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
     header(magic, version, scenario32, house);
   }
 
-  int pos = static_cast<int>(file.Seek(0, SEEK_CUR));
+  const int pos = static_cast<int>(file.Seek(0, SEEK_CUR));
 
   /*
   **	Store a dummy message digest.
@@ -650,7 +650,7 @@ bool Load_Game(int id) {
   **	Remember the file position since we must seek back here to
   **	perform the real saved game read.
   */
-  int32_t pos = file.Seek(0, SEEK_CUR);
+  const int32_t pos = file.Seek(0, SEEK_CUR);
 
   /*
   **	Pass the rest of the file through the hash straw so that
@@ -733,8 +733,8 @@ bool Load_Game(int id) {
       if (IsMissionCounterstrike(Scen.ScenarioName)) {
         cd = 2;
         if (Expansion_AM_Present()) {
-          int current_drive = CCFileClass::Get_CD_Drive();
-          int index = Get_CD_Index(current_drive, 1 * 60);
+          const int current_drive = CCFileClass::Get_CD_Drive();
+          const int index = Get_CD_Index(current_drive, 1 * 60);
           if (index == 3) {
             cd = 3;
           }
@@ -761,7 +761,7 @@ bool Load_Game(int id) {
       ** The scenario is available so set RequiredCD to whatever is currently
       ** in the drive.
       */
-      int current_drive = CCFileClass::Get_CD_Drive();
+      const int current_drive = CCFileClass::Get_CD_Drive();
       RequiredCD = Get_CD_Index(current_drive, 1 * 60);
     }
   }

@@ -2178,13 +2178,13 @@ void AnimTypeClass::Init_Heap() {
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void AnimTypeClass::One_Time() {
-  for (AnimType index : magic_enum::enum_values<AnimType>()) {
+  for (const AnimType index : magic_enum::enum_values<AnimType>()) {
     const AnimTypeClass& anim = As_Reference(index);
 
     if (!anim.IsTheater) {
-      auto fullname = std::filesystem::path(As_Reference(index).IniName)
-                          .replace_extension(".SHP")
-                          .string();
+      const auto fullname = std::filesystem::path(As_Reference(index).IniName)
+                                .replace_extension(".SHP")
+                                .string();
 
 #ifndef NDEBUG
       RawFileClass file(fullname.c_str());
@@ -2218,13 +2218,13 @@ void AnimTypeClass::One_Time() {
  *=============================================================================================*/
 void AnimTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
-    for (AnimType index : magic_enum::enum_values<AnimType>()) {
+    for (const AnimType index : magic_enum::enum_values<AnimType>()) {
       AnimTypeClass& anim = As_Reference(index);
 
       if (anim.IsTheater) {
-        auto fullname = std::filesystem::path(anim.IniName)
-                            .replace_extension(Theaters[theater].Suffix)
-                            .string();
+        const auto fullname = std::filesystem::path(anim.IniName)
+                                  .replace_extension(Theaters[theater].Suffix)
+                                  .string();
 
         anim.SetBorrowedImage(MFCD::RetrieveData(fullname));
       }

@@ -82,19 +82,19 @@ const char* SimpleEditDlgClass::Show() {
   /*
   **	Dialog & button dimensions
   */
-  int x_margin = 36;  // margin width/height
-  int y_margin = 20;  // margin width/height
-  int d_gap_y = 10;
+  const int x_margin = 36;  // margin width/height
+  const int y_margin = 20;  // margin width/height
+  const int d_gap_y = 10;
 
-  int d_dialog_w = iDialogWidth;
+  const int d_dialog_w = iDialogWidth;
   int d_dialog_h = !szPrompt2.empty() ? 58 + (2 * d_gap_y) + (2 * y_margin)
                                       : 38 + d_gap_y + (2 * y_margin);
   if (!szTitle.empty()) {
     d_dialog_h += 20 + (2 * d_gap_y);
   }
-  int d_dialog_x = ((640 - d_dialog_w) / 2);
-  int d_dialog_y = ((400 - d_dialog_h) / 2);
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // coord of x-center
+  const int d_dialog_x = ((640 - d_dialog_w) / 2);
+  const int d_dialog_y = ((400 - d_dialog_h) / 2);
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // coord of x-center
 
   /*
           if( szTitle )
@@ -106,24 +106,24 @@ const char* SimpleEditDlgClass::Show() {
           }
   */
 
-  int d_prompt_w = String_Pixel_Width(szPrompt.c_str());
-  int d_prompt_x = d_dialog_x + x_margin;
-  int d_prompt_y = !szTitle.empty() ? (d_dialog_y + (3 * d_gap_y) + 20)
-                                    : (d_dialog_y + d_gap_y);
+  const int d_prompt_w = String_Pixel_Width(szPrompt.c_str());
+  const int d_prompt_x = d_dialog_x + x_margin;
+  const int d_prompt_y = !szTitle.empty() ? (d_dialog_y + (3 * d_gap_y) + 20)
+                                          : (d_dialog_y + d_gap_y);
 
-  int d_edit_w = d_dialog_w - d_prompt_w - (2 * x_margin);
-  int d_edit_x = d_dialog_x + d_prompt_w + x_margin;
-  int d_edit_y = d_prompt_y;
+  const int d_edit_w = d_dialog_w - d_prompt_w - (2 * x_margin);
+  const int d_edit_x = d_dialog_x + d_prompt_w + x_margin;
+  const int d_edit_y = d_prompt_y;
 
-  int d_prompt2_w =
+  const int d_prompt2_w =
       !szPrompt2.empty() ? String_Pixel_Width(szPrompt2.c_str()) : 0;
-  int d_prompt2_h = 20;
-  int d_prompt2_x = d_dialog_x + x_margin;
-  int d_prompt2_y = d_prompt_y + d_prompt2_h + d_gap_y;
+  const int d_prompt2_h = 20;
+  const int d_prompt2_x = d_dialog_x + x_margin;
+  const int d_prompt2_y = d_prompt_y + d_prompt2_h + d_gap_y;
 
-  int d_edit2_w = d_dialog_w - d_prompt2_w - (2 * x_margin);
-  int d_edit2_x = d_dialog_x + d_prompt2_w + x_margin;
-  int d_edit2_y = d_prompt2_y;
+  const int d_edit2_w = d_dialog_w - d_prompt2_w - (2 * x_margin);
+  const int d_edit2_x = d_dialog_x + d_prompt2_w + x_margin;
+  const int d_edit2_y = d_prompt2_y;
 
   const int d_ok_w = 80;
   const int d_ok_h = 18;

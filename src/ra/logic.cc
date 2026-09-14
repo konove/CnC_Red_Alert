@@ -198,10 +198,11 @@ void LogicClass::Debug_Dump(MonoClass* mono) {
     mono->Sub_Window(15, 13, 63, 10);
     mono->Pan(1);
     mono->Sub_Window(15, 13, 64, 10);
-    int graph = kRecordHeight * fixed(static_cast<int>(kTimerSecond - SpareTicks),
-                                      kTimerSecond);
+    const int graph =
+        kRecordHeight *
+        fixed(static_cast<int>(kTimerSecond - SpareTicks), kTimerSecond);
     for (int row = 1; row < kRecordHeight; row += 2) {
-      static unsigned char _barchar[4] = {' ', 220, 0, 219};
+      static const unsigned char _barchar[4] = {' ', 220, 0, 219};
       char str[2];
       int index = 0;
 
@@ -383,14 +384,14 @@ void LogicClass::AI() {
   **	House processing is performed.
   */
   if (Session.Type == GAME_NORMAL) {
-    for (HousesType house : magic_enum::enum_values<HousesType>()) {
+    for (const HousesType house : magic_enum::enum_values<HousesType>()) {
       HouseClass* hptr = HouseClass::As_Pointer(house);
       if (hptr != nullptr && hptr->IsActive) {
         hptr->AI();
       }
     }
   } else {
-    for (HousesType house : magic_enum::enum_values<HousesType>()) {
+    for (const HousesType house : magic_enum::enum_values<HousesType>()) {
       if (house < HOUSE_MULTI1) {
         continue;
       }

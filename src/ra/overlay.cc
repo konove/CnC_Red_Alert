@@ -173,7 +173,7 @@ bool OverlayClass::Mark(MarkType mark) {
   assert(IsActive);
 
   if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
-    CELL cell = Coord_Cell(Coord);
+    const CELL cell = Coord_Cell(Coord);
     CellClass* cellptr = &Map[cell];
 
     /*
@@ -266,8 +266,8 @@ bool OverlayClass::Mark(MarkType mark) {
  *=============================================================================================*/
 void OverlayClass::Read_INI(CCINIClass& ini) {
   if (NewINIFormat > 1) {
-    int len = ini.Get_UUBlock("OverlayPack", staging_buffer,
-                              sizeof(staging_buffer));
+    const int len =
+        ini.Get_UUBlock("OverlayPack", staging_buffer, sizeof(staging_buffer));
 
     if (len > 0) {
       BufferStraw bpipe(staging_buffer, len);
@@ -296,8 +296,8 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
             HousesType owner = HOUSE_NONE;
             int distance = 0x7FFFFFFF;
             for (int index = 0; index < Buildings.Count(); index++) {
-              BuildingClass* building = Buildings.Ptr(index);
-              int newdist =
+              const BuildingClass* building = Buildings.Ptr(index);
+              const int newdist =
                   ::Distance(building->Center_Coord(), Cell_Coord(cell));
               if (newdist < distance) {
                 distance = newdist;
@@ -312,11 +312,11 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
   }
 
   if (NewINIFormat < 2 || ini.Is_Present("Overlay")) {
-    int len = ini.Entry_Count(INI_Name());
+    const int len = ini.Entry_Count(INI_Name());
     for (int index = 0; index < len; index++) {
       const char* entry = ini.Get_Entry(INI_Name(), index);
-      CELL cell = tech::ParseInteger<CELL>(entry).value_or(0);
-      OverlayType classid =
+      const CELL cell = tech::ParseInteger<CELL>(entry).value_or(0);
+      const OverlayType classid =
           ini.Get_OverlayType(INI_Name(), entry, OVERLAY_NONE);
 
       /*
@@ -338,8 +338,8 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
           HousesType owner = HOUSE_NONE;
           int distance = 0x7FFFFFFF;
           for (int j = 0; j < Buildings.Count(); j++) {
-            BuildingClass* building = Buildings.Ptr(j);
-            int newdist =
+            const BuildingClass* building = Buildings.Ptr(j);
+            const int newdist =
                 ::Distance(building->Center_Coord(), Cell_Coord(cell));
             if (newdist < distance) {
               distance = newdist;

@@ -608,7 +608,8 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
     //---------------------------------------------------------------------
     char* concat_test = new char[base::ToSize(MaxChars + 1)];
     Fancy_Text_Print(TXT_NONE, 0, 0, tlabel->Color, TBLACK, tlabel->Style);
-    int name_width = String_Pixel_Width(tlabel->Text) - String_Pixel_Width(msg);
+    const int name_width =
+        String_Pixel_Width(tlabel->Text) - String_Pixel_Width(msg);
     int width;
 
     port::SafeCopy(concat_test, msg, base::ToSize(MaxChars));
@@ -1069,7 +1070,7 @@ int MessageListClass::Input(KeyNumType& input) {
             */
             Fancy_Text_Print(TXT_NONE, 0, 0, EditLabel->Color, TBLACK,
                              EditLabel->Style);
-            int width = String_Pixel_Width(EditBuf);
+            const int width = String_Pixel_Width(EditBuf);
             if (width >= Width - 10) {
               overflowed = true;
               EditCurPos--;

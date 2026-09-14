@@ -1725,7 +1725,7 @@ LandType TemplateTypeClass::Land_Type(int icon) const {
   if (icontrol != nullptr) {
     const unsigned char* map = icontrol->Control_Map();
     if (map != nullptr) {
-      static LandType _land[16] = {
+      static const LandType _land[16] = {
           LAND_CLEAR, LAND_CLEAR, LAND_CLEAR,
           LAND_CLEAR,  // Clear
           LAND_CLEAR, LAND_CLEAR,
@@ -1765,7 +1765,7 @@ LandType TemplateTypeClass::Land_Type(int icon) const {
  *=============================================================================================*/
 TemplateType TemplateTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
-    for (TemplateType index : magic_enum::enum_values<TemplateType>()) {
+    for (const TemplateType index : magic_enum::enum_values<TemplateType>()) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
         return index;
       }
@@ -1829,17 +1829,17 @@ const int16_t* TemplateTypeClass::Occupy_List(bool /*placement*/) const {
  *loading now (as it should).                         *
  *=============================================================================================*/
 void TemplateTypeClass::Init(TheaterType theater) {
-  for (TemplateType index : magic_enum::enum_values<TemplateType>()) {
+  for (const TemplateType index : magic_enum::enum_values<TemplateType>()) {
     TemplateTypeClass& tplate = As_Reference(index);
 
     tplate.ClearImage();
     if (tplate.Theater & 1 << theater) {
-      auto fullname = std::filesystem::path(tplate.IniName)
-                          .replace_extension(Theaters[theater].Suffix)
-                          .string();
+      const auto fullname = std::filesystem::path(tplate.IniName)
+                                .replace_extension(Theaters[theater].Suffix)
+                                .string();
 
       // Working loaded iconset pointer.
-      auto data = MFCD::RetrieveData(fullname);
+      const auto data = MFCD::RetrieveData(fullname);
       tplate.SetBorrowedImage(data);
       const void* ptr = data.data();
 
@@ -1929,7 +1929,7 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
  *map editing interface functions.                                    *
  *=============================================================================================*/
 void TemplateTypeClass::Prep_For_Add() {
-  for (TemplateType index : magic_enum::enum_values<TemplateType>()) {
+  for (const TemplateType index : magic_enum::enum_values<TemplateType>()) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
     }

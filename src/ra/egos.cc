@@ -228,7 +228,7 @@ void EgoClass::Render() {
  * HISTORY: * 9/9/96 11:58PM ST : Created *
  *=============================================================================================*/
 void EgoClass::Wipe(GraphicBufferClass* background) {
-  int width = String_Pixel_Width(Text);
+  const int width = String_Pixel_Width(Text);
   int x = XPos;
 
   if (Flags & TPF_RIGHT) {
@@ -381,7 +381,7 @@ void Show_Who_Was_Responsible() {
   ** Deault speed of credits scolling. This is the frame delay between pixel
   *scrolls.
   */
-  static int speed = 3;
+  static const int speed = 3;
 
   /*
   ** Read in the credits file to be displayed
@@ -424,7 +424,7 @@ void Show_Who_Was_Responsible() {
   int startcolumn;
   int endcolumn;
   int x;
-  int y = SeenBuff.Get_Height() + 2;
+  const int y = SeenBuff.Get_Height() + 2;
   EgoClass* ego;
   TextPrintType flags;
 
@@ -589,7 +589,7 @@ void Show_Who_Was_Responsible() {
   ** Work out which palette entries the font needs so we dont fade those colors.
   */
   memset(PaletteLUT, 1, sizeof(PaletteLUT));
-  int pcolor = PCOLOR_GREEN;
+  const int pcolor = PCOLOR_GREEN;
 
   for (int index = 0; index < 6; index++) {
     PaletteLUT[ColorRemaps[pcolor].FontRemap[10 + index]] = 0;
@@ -676,7 +676,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Start any old song.
   */
-  fixed oldvolume = Options.ScoreVolume;
+  const fixed oldvolume = Options.ScoreVolume;
   if (oldvolume == 0) {
     Options.Set_Score_Volume(fixed(4, 10), false);
   }
@@ -685,7 +685,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Init misc timing variables.
   */
-  int time = static_cast<int>(TickCount.Value());
+  const int time = static_cast<int>(TickCount.Value());
   int frame = 0;
   int picture_frame = 0;
   int slide_number = 0;

@@ -127,7 +127,7 @@ void Detach_This_From_All(TARGET target, bool all) {
     */
     if (As_TriggerType(target) != nullptr) {
       for (int j = 0; j < Triggers.Count(); j++) {
-        TriggerClass* tp = Triggers.Ptr(j);
+        const TriggerClass* tp = Triggers.Ptr(j);
 
         if (tp->Class->As_Target() == target) {
           Detach_This_From_All(tp->As_Target());

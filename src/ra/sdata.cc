@@ -288,7 +288,7 @@ void SmudgeTypeClass::Init_Heap() {
  *=============================================================================================*/
 SmudgeType SmudgeTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
-    for (SmudgeType index : magic_enum::enum_values<SmudgeType>()) {
+    for (const SmudgeType index : magic_enum::enum_values<SmudgeType>()) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
         return index;
       }
@@ -343,12 +343,12 @@ const int16_t* SmudgeTypeClass::Occupy_List(bool /*placement*/) const {
  *=============================================================================================*/
 void SmudgeTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
-    for (SmudgeType index : magic_enum::enum_values<SmudgeType>()) {
+    for (const SmudgeType index : magic_enum::enum_values<SmudgeType>()) {
       SmudgeTypeClass& smudge = As_Reference(index);
       // Fully constructed smudge data set name.
-      auto fullname = std::filesystem::path(smudge.IniName)
-                          .replace_extension(Theaters[theater].Suffix)
-                          .string();
+      const auto fullname = std::filesystem::path(smudge.IniName)
+                                .replace_extension(Theaters[theater].Suffix)
+                                .string();
       smudge.SetBorrowedImage(MFCD::RetrieveData(fullname));
     }
   }
@@ -406,7 +406,7 @@ void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 void SmudgeTypeClass::Prep_For_Add() {
-  for (SmudgeType index : magic_enum::enum_values<SmudgeType>()) {
+  for (const SmudgeType index : magic_enum::enum_values<SmudgeType>()) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
     }

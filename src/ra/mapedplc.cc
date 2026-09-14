@@ -281,7 +281,7 @@ int MapEditClass::Placement_Dialog() {
   ListClass housebtn(BUTTON_HOUSE, D_GDI_X, D_GDI_Y, 60, 8 * 16,
                      TPF_EFNT | TPF_NOSHADOW, MFCD::Retrieve("EBTN-UP.SHP"),
                      MFCD::Retrieve("EBTN-DN.SHP"));
-  for (HousesType each_house : magic_enum::enum_values<HousesType>()) {
+  for (const HousesType each_house : magic_enum::enum_values<HousesType>()) {
     housebtn.Add_Item(HouseTypeClass::As_Reference(each_house).IniName);
   }
 
@@ -1659,7 +1659,7 @@ void MapEditClass::Place_Trigger() {
   /*
   **	Assign trigger to an object
   */
-  AttachType a1 = CurTrigger->Attaches_To();
+  const AttachType a1 = CurTrigger->Attaches_To();
   if (object && (a1 & ATTACH_OBJECT) != 0) {
     if (CurTrigger) {
       TriggerClass* tt = Find_Or_Make(CurTrigger);

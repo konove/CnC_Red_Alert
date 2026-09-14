@@ -379,7 +379,7 @@ int WinsockInterfaceClass::Read(void* buffer, int& buffer_len, void* address,
   /*
   ** Get the oldest packet for reading
   */
-  int packetnum = 0;
+  const int packetnum = 0;
   WinsockBufferType* packet = InBuffers[packetnum];
 
   assert(buffer_len >= packet->BufferLen);
@@ -573,7 +573,7 @@ bool WinsockInterfaceClass::Set_Socket_Options() {
   u_long mode = 1;
   ioctlsocket(Socket, FIONBIO, &mode);
 #else
-  int flags = fcntl(Socket, F_GETFL, 0);
+  const int flags = fcntl(Socket, F_GETFL, 0);
   fcntl(Socket, F_SETFL, flags | O_NONBLOCK);
 #endif
 

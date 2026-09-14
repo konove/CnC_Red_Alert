@@ -402,7 +402,7 @@ VocType Voc_From_Name(const char* name) {
     return VOC_NONE;
   }
 
-  for (VocType voc : magic_enum::enum_values<VocType>()) {
+  for (const VocType voc : magic_enum::enum_values<VocType>()) {
     if (stricmp(name, SoundEffectName[voc].Name) == 0) {
       return voc;
     }
@@ -476,7 +476,7 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation,
   fixed volume(1);
   pan_value = 0;
   if (coord && !Map.In_View(cell_pos)) {
-    int distance = Distance(coord, Map.TacticalCoord) / CELL_LEPTON_W;
+    const int distance = Distance(coord, Map.TacticalCoord) / CELL_LEPTON_W;
     fixed dfixed = fixed(distance, 128 + 64);
     dfixed.Sub_Saturate(1);
     volume = fixed(1) - dfixed;
@@ -594,9 +594,9 @@ int Sound_Effect(VocType voc, fixed volume, int variation, int16_t pan_value,
       }
     }
   }
-  auto name = std::filesystem::path(SoundEffectName[voc].Name)
-                  .replace_extension(ext)
-                  .string();
+  const auto name = std::filesystem::path(SoundEffectName[voc].Name)
+                        .replace_extension(ext)
+                        .string();
   const void* ptr = MFCD::Retrieve(name);
 
   /*
@@ -868,9 +868,9 @@ void Speak_AI() {
       if (speech == nullptr) {
         _index = static_cast<int>((_index + 1) % std::ssize(SpeechRecord));
 
-        auto name = std::filesystem::path(Speech[SpeakQueue])
-                        .replace_extension(".AUD")
-                        .string();
+        const auto name = std::filesystem::path(Speech[SpeakQueue])
+                              .replace_extension(".AUD")
+                              .string();
 
         CCFileClass file(name.c_str());
         if (file.Is_Available() &&

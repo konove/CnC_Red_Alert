@@ -118,7 +118,7 @@ AnimType Anim_From_Name(const char* name) {
     return ANIM_NONE;
   }
 
-  for (AnimType anim : magic_enum::enum_values<AnimType>()) {
+  for (const AnimType anim : magic_enum::enum_values<AnimType>()) {
     if (stricmp(AnimTypeClass::As_Reference(anim).IniName, name) == 0) {
       return anim;
     }
@@ -146,7 +146,7 @@ AnimType Anim_From_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 12/11/1994 JLB : Created. *
  *=============================================================================================*/
-void Shorten_Attached_Anims(ObjectClass* obj) {
+void Shorten_Attached_Anims(const ObjectClass* obj) {
   if (obj != nullptr) {
     for (int index = 0; index < Anims.Count(); index++) {
       AnimClass& anim = *Anims.Ptr(index);
@@ -276,7 +276,7 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) const {
     const void* shapefile = Get_Image_Data();
     if (shapefile != nullptr) {
       const void* transtable = nullptr;
-      int shapenum = Class->Start + Fetch_Stage();
+      const int shapenum = Class->Start + Fetch_Stage();
       const void* remap = nullptr;
 
       /*
@@ -683,7 +683,7 @@ void AnimClass::AI() {
     Mark(MARK_CHANGE);
 
     if (Graphic_Logic()) {
-      int stage = Fetch_Stage();
+      const int stage = Fetch_Stage();
 
       /*
       **	If this animation is attached to another object and it is a
@@ -893,7 +893,7 @@ void AnimClass::Middle() {
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
-  CELL cell = Coord_Cell(Center_Coord());
+  const CELL cell = Coord_Cell(Center_Coord());
   CellClass* cellptr = &Map[cell];
 
   if (Class->Type == ANIM_ATOM_BLAST) {

@@ -392,7 +392,7 @@ void VesselTypeClass::Display(int x, int y, WindowNumberType window,
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselTypeClass::Prep_For_Add() {
-  for (VesselType index : magic_enum::enum_values<VesselType>()) {
+  for (const VesselType index : magic_enum::enum_values<VesselType>()) {
     if (As_Reference(index).Get_Image_Data() != nullptr) {
       Map.Add_To_List(&As_Reference(index));
     }
@@ -486,14 +486,14 @@ void VesselTypeClass::Dimensions(int& width, int& height) const {
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselTypeClass::One_Time() {
-  for (VesselType index : magic_enum::enum_values<VesselType>()) {
+  for (const VesselType index : magic_enum::enum_values<VesselType>()) {
     VesselTypeClass& uclass = As_Reference(index);
     if (uclass.Level != -1 || index == VESSEL_CARRIER) {
       /*
       **	Fetch the supporting data files for the unit.
       */
-      auto filename = std::string(uclass.Graphic_Name()) + "ICON";
-      auto fullname =
+      const auto filename = std::string(uclass.Graphic_Name()) + "ICON";
+      const auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
       uclass.CameoData = MFCD::Retrieve(fullname);
     }
@@ -501,9 +501,9 @@ void VesselTypeClass::One_Time() {
     /*
     **	Fetch a pointer to the unit's shape data.
     */
-    auto fullname = std::filesystem::path(uclass.Graphic_Name())
-                        .replace_extension(".SHP")
-                        .string();
+    const auto fullname = std::filesystem::path(uclass.Graphic_Name())
+                              .replace_extension(".SHP")
+                              .string();
     uclass.SetBorrowedImage(MFCD::RetrieveData(fullname));
 
     uclass.MaxSize = 26;
@@ -617,7 +617,7 @@ const int16_t* VesselTypeClass::Overlap_List() const {
  *=============================================================================================*/
 VesselType VesselTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
-    for (VesselType classid : magic_enum::enum_values<VesselType>()) {
+    for (const VesselType classid : magic_enum::enum_values<VesselType>()) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
         return classid;
       }

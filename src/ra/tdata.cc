@@ -510,7 +510,7 @@ void TerrainTypeClass::One_Time() {}
  *=============================================================================================*/
 void TerrainTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
-    for (TerrainType index : magic_enum::enum_values<TerrainType>()) {
+    for (const TerrainType index : magic_enum::enum_values<TerrainType>()) {
       TerrainTypeClass& terrain = As_Reference(index);
       /*
       **	Clear any existing shape pointer. All terrain is theater
@@ -523,9 +523,9 @@ void TerrainTypeClass::Init(TheaterType theater) {
         /*
         **	Load in the appropriate object shape data.
         */
-        auto fullname = std::filesystem::path(terrain.IniName)
-                            .replace_extension(Theaters[theater].Suffix)
-                            .string();
+        const auto fullname = std::filesystem::path(terrain.IniName)
+                                  .replace_extension(Theaters[theater].Suffix)
+                                  .string();
         terrain.SetBorrowedImage(MFCD::RetrieveData(fullname));
 
         IsTheaterShape =
@@ -554,7 +554,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
  *=============================================================================================*/
 TerrainType TerrainTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
-    for (TerrainType index : magic_enum::enum_values<TerrainType>()) {
+    for (const TerrainType index : magic_enum::enum_values<TerrainType>()) {
       if (stricmp(name, As_Reference(index).IniName) == 0) {
         return index;
       }
@@ -603,7 +603,7 @@ void TerrainTypeClass::Display(int x, int y, WindowNumberType window,
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
 void TerrainTypeClass::Prep_For_Add() {
-  for (TerrainType index : magic_enum::enum_values<TerrainType>()) {
+  for (const TerrainType index : magic_enum::enum_values<TerrainType>()) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
     }

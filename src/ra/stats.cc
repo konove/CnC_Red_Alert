@@ -365,8 +365,8 @@ void Send_Statistics_Packet() {
       **
       **	Game was a draw
       */
-      HouseClass* player1 = nullptr;
-      HouseClass* player2 = nullptr;
+      const HouseClass* player1 = nullptr;
+      const HouseClass* player2 = nullptr;
       for (int h = 0; h < Session.Players.Count(); h++) {
         HouseClass* ptr =
             HouseClass::As_Pointer(static_cast<HousesType>(h + HOUSE_MULTI1));
@@ -391,13 +391,13 @@ void Send_Statistics_Packet() {
           if (strcmp(szIPAddress, "255.255.255.255") == 0) {
             //	Ok. It's not set. Let's try to get it ourselves...
             char szHostName[512];
-            int iRes = gethostname(szHostName, 512);
+            const int iRes = gethostname(szHostName, 512);
             if (iRes == 0)  //	else forget about trying
             {
               //						debugprint(
               //"gethostname
               // got me %s\n", szHostName );
-              struct hostent* pHostent = gethostbyname(szHostName);
+              const struct hostent* pHostent = gethostbyname(szHostName);
               if (pHostent)  //	else forget about trying
               {
                 int i = 0;
@@ -412,8 +412,8 @@ void Send_Statistics_Packet() {
                   //	Now, is it an address in a private network? If so we
                   // should ignore it.
                   //	First and second digits.
-                  auto q1 = static_cast<unsigned char>(piAddress[0]);
-                  auto q2 = static_cast<unsigned char>(piAddress[1]);
+                  const auto q1 = static_cast<unsigned char>(piAddress[0]);
+                  const auto q2 = static_cast<unsigned char>(piAddress[1]);
                   //								debugprint(
                   //"ip: %s\n", szAsciiIP );
                   if (q1 == 10 || (q1 == 172 && (q2 >= 16 && q2 <= 31)) ||
@@ -532,7 +532,7 @@ void Send_Statistics_Packet() {
     /*
     ** Avg. frame rate.
     */
-    int32_t divisor = GameEndTime / 60;
+    const int32_t divisor = GameEndTime / 60;
     if (divisor != 0) {
       stats.Add_Field(FIELD_FRAME_RATE,
                       static_cast<int32_t>(Frame) / (GameEndTime / 60));

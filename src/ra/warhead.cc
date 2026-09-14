@@ -76,7 +76,7 @@ TFixedIHeapClass<WarheadTypeClass> Warheads;
  *=============================================================================================*/
 WarheadTypeClass::WarheadTypeClass(const char* name)
     : ID(Warheads.ID(this)), IniName(name) {
-  for (ArmorType armor : magic_enum::enum_values<ArmorType>()) {
+  for (const ArmorType armor : magic_enum::enum_values<ArmorType>()) {
     Modifier[armor] = fixed(1);
   }
 }
@@ -172,8 +172,8 @@ bool WarheadTypeClass::Read_INI(CCINIClass& ini) {
     char buffer[128];
     if (ini.Get_String(Name(), "Verses", "100%%,100%%,100%%,100%%,100%%",
                        buffer, sizeof(buffer))) {
-      char* aval = strtok(buffer, ",");
-      for (ArmorType armor : magic_enum::enum_values<ArmorType>()) {
+      const char* aval = strtok(buffer, ",");
+      for (const ArmorType armor : magic_enum::enum_values<ArmorType>()) {
         Modifier[armor] = fixed::FromString(aval);
         aval = strtok(nullptr, ",");
       }

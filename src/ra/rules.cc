@@ -227,7 +227,7 @@ RulesClass::RulesClass()
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-static void Difficulty_Get(CCINIClass& ini, DifficultyClass& diff,
+static void Difficulty_Get(const CCINIClass& ini, DifficultyClass& diff,
                            const char* section) {
   if (ini.Is_Present(section)) {
     diff.FirepowerBias = ini.Get_Fixed(section, "FirePower", fixed(1));
@@ -694,7 +694,7 @@ bool RulesClass::AI(CCINIClass& ini) {
 bool RulesClass::Powerups(CCINIClass& ini) {
   static const char* const POWERUPS = "Powerups";
   if (ini.Is_Present(POWERUPS)) {
-    for (CrateType crate : magic_enum::enum_values<CrateType>()) {
+    for (const CrateType crate : magic_enum::enum_values<CrateType>()) {
       char buffer[128];
       if (ini.Get_String(POWERUPS, CrateNames[crate], "0,NONE", buffer,
                          sizeof(buffer))) {
@@ -753,7 +753,7 @@ bool RulesClass::Land_Types(CCINIClass& ini) {
   /*
   **	Fetch the movement characteristic data for terrain types.
   */
-  for (LandType land : magic_enum::enum_values<LandType>()) {
+  for (const LandType land : magic_enum::enum_values<LandType>()) {
     static const char* _lands[magic_enum::enum_count<LandType>()] = {
         "Clear", "Road",  "Water", "Rock", "Wall",
         "Ore",   "Beach", "Rough", "River"};
@@ -796,7 +796,7 @@ bool RulesClass::Themes(CCINIClass& ini) {
   static const char* const THEMECONTROL = "ThemeControl";
 
   if (ini.Is_Present(THEMECONTROL)) {
-    for (ThemeType theme : magic_enum::enum_values<ThemeType>()) {
+    for (const ThemeType theme : magic_enum::enum_values<ThemeType>()) {
       if (ini.Is_Present(THEMECONTROL, ThemeClass::Base_Name(theme))) {
         char buffer[128];
         int scen = 1;
@@ -911,14 +911,14 @@ bool RulesClass::Objects(CCINIClass& ini) {
   /*
   **	Fetch the house attribute override values.
   */
-  for (HousesType house : magic_enum::enum_values<HousesType>()) {
+  for (const HousesType house : magic_enum::enum_values<HousesType>()) {
     HouseTypeClass::As_Reference(house).Read_INI(ini);
   }
 
   /*
   **	Fetch the mission control values.
   */
-  for (MissionType mission : magic_enum::enum_values<MissionType>()) {
+  for (const MissionType mission : magic_enum::enum_values<MissionType>()) {
     MissionControlClass* miss = &MissionControl[mission];
     miss->Mission = mission;
     miss->Read_INI(ini);

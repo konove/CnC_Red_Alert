@@ -79,6 +79,6 @@ GraphicBufferClass* Read_PCX_File(const char* name, BufferClass& Buff,
                                   char* palette = nullptr);
 
 int Write_PCX_File(FileClass& file, GraphicBufferClass& pic,
-                   PaletteClass* palette);
+                   const PaletteClass* palette);
 
 #endif  // CNC_RED_ALERT_RA_FILEPCX_H_

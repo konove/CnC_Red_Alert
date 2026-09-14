@@ -227,7 +227,7 @@ void ScorePrintClass::Update() {
   if (AnimTimer.IsFinished()) {
     AnimTimer.Set(1);
 
-    int pos = XPos + (Stage * 12);
+    const int pos = XPos + (Stage * 12);
     // print the letter properly
     if (Stage) {
       Set_Font_Palette(PrimaryPalette);
@@ -251,8 +251,8 @@ ScoreScaleClass::ScoreScaleClass(const void* string, int xpos, int ypos,
     : ScoreAnimClass(xpos, ypos, string), Palette(&palette[0]) {}
 
 void ScoreScaleClass::Update() {
-  static int _destx[] = {0, 80, 107, 134, 180, 228};
-  static int _destw[] = {6, 20, 30, 40, 60, 80};
+  static const int _destx[] = {0, 80, 107, 134, 180, 228};
+  static const int _destw[] = {6, 20, 30, 40, 60, 80};
 
   /*
   ** Restore the background for the scaled-up letter
@@ -344,11 +344,11 @@ void ScoreClass::Presentation() {
   CCFileClass file(kFameFileName);
   struct Fame hallfame[NUMFAMENAMES];
   const void* oldfont;
-  int oldfontxspacing = FontXSpacing;
-  int house = (PlayerPtr->Class->House == HOUSE_USSR ||
-               PlayerPtr->Class->House == HOUSE_UKRAINE)
-                  ? 1
-                  : 0;  // 0 or 1
+  const int oldfontxspacing = FontXSpacing;
+  const int house = (PlayerPtr->Class->House == HOUSE_USSR ||
+                     PlayerPtr->Class->House == HOUSE_UKRAINE)
+                        ? 1
+                        : 0;  // 0 or 1
   char inter_pal[15];
   sprintf(inter_pal, "SCORPAL1.PAL");
 
@@ -418,8 +418,8 @@ void ScoreClass::Presentation() {
   */
   int leadership = 0;
   for (int index = 0; index < Logic.Count(); index++) {
-    ObjectClass* object = Logic[index];
-    HousesType owner = object->Owner();
+    const ObjectClass* object = Logic[index];
+    const HousesType owner = object->Owner();
     if (house &&
         (owner == HOUSE_USSR || owner == HOUSE_BAD || owner == HOUSE_UKRAINE)) {
       leadership++;
@@ -432,7 +432,7 @@ void ScoreClass::Presentation() {
   int uspoints = 0;
 
   for (HousesType hous = HOUSE_SPAIN; hous <= HOUSE_BAD; hous++) {
-    HouseClass* hows = HouseClass::As_Pointer(hous);
+    const HouseClass* hows = HouseClass::As_Pointer(hous);
     if (hous == HOUSE_USSR || hous == HOUSE_BAD || hous == HOUSE_UKRAINE) {
       NKilled += hows->UnitsLost;
       NBKilled += hows->BuildingsLost;
@@ -490,10 +490,10 @@ void ScoreClass::Presentation() {
   Keyboard->Clear();
   for (i = 0; i <= 130; i++) {
     Set_Font_Palette(greenpal);
-    int lead = leadership * i / 100;
+    const int lead = leadership * i / 100;
     Count_Up_Print("%3d%%", lead, leadership, 244, 26);
     if (i >= 30) {
-      int econo = economy * (i - 30) / 100;
+      const int econo = economy * (i - 30) / 100;
       Count_Up_Print("%3d%%", econo, economy, 244, 38);
     }
     Print_Minutes(minutes);
@@ -534,7 +534,7 @@ void ScoreClass::Presentation() {
   */
   Set_Logic_Page(SeenBuff);
   Play_Sample(sfx4, 255, Options.Normalize_Volume(150));
-  int indx = 0;
+  const int indx = 0;
   Alloc_Object(new ScorePrintClass(TXT_SCORE_CASU, _casuax[indx], _casuay[indx],
                                    greenpal));
   Call_Back_Delay(9);
@@ -759,7 +759,7 @@ void Cycle_Wait_Click(bool cycle) {
     if (cycle) {
       counter = ++counter & 7;
       if (counter == 0 && Options.IsPaletteScroll) {
-        RGBClass rgb = ScorePalette[233];
+        const RGBClass rgb = ScorePalette[233];
         for (int i = 233; i < 237; i++) {
           ScorePalette[i] = ScorePalette[i + 1];
         }
@@ -819,7 +819,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     ** Now draw some fires, if appropriate
     */
     if (i >= 61) {
-      int firecount = Extract_Shape_Count(fireball_shape);
+      const int firecount = Extract_Shape_Count(fireball_shape);
       int shapeindex = (i - 61) / 2;
       if (shapeindex < firecount) {
         CC_Draw_Shape(fireball_shape, shapeindex, 10, 10, WINDOW_MAIN,
@@ -848,7 +848,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     Call_Back_Delay(1);
   }
 
-  int i = std::max(GBKilled, NBKilled);
+  const int i = std::max(GBKilled, NBKilled);
   for (int q = 0; q <= i; q++) {
     Set_Font_Palette(redpal);
     Count_Up_Print("%d", q, NBKilled, BUILDING_X + 16, BUILDING_Y + 10);
@@ -882,13 +882,13 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
                               int gkilled, int nkilled, int ypos) {
   int i;
   int maxval;
-  int xpos = 174;
-  int house = (PlayerPtr->Class->House == HOUSE_USSR ||
-               PlayerPtr->Class->House == HOUSE_UKRAINE)
-                  ? 1
-                  : 0;  // 0 or 1
+  const int xpos = 174;
+  const int house = (PlayerPtr->Class->House == HOUSE_USSR ||
+                     PlayerPtr->Class->House == HOUSE_UKRAINE)
+                        ? 1
+                        : 0;  // 0 or 1
   if (house) {
-    int temp = gkilled;
+    const int temp = gkilled;
     gkilled = nkilled;
     nkilled = temp;
     const void* tempptr = yellowptr;
@@ -1000,7 +1000,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   ** Initialize a bunch of objects for the infantrymen who pose for the bar
   ** graphs of casualties.
   */
-  int r = NUMINFANTRYMEN / 2;
+  const int r = NUMINFANTRYMEN / 2;
   for (i = 0; i < NUMINFANTRYMEN / 2; i++) {
     InfantryMan[i + 0].xpos = InfantryMan[i + r].xpos = (i * 10) + 7;
     InfantryMan[i + 0].ypos = 11;
@@ -1071,13 +1071,13 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
 }
 
 void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
-  static int _credsx[2] = {276, 276};
-  static int _credsy[2] = {173, 58};
-  static int _credpx[2] = {228, 236};
-  static int _credpy[2] = {config::kIsGerman ? 181 : 189 - 12, 74};
-  static int _credtx[2] = {config::kIsGerman ? 162 : 182,
-                           config::kIsGerman ? 162 : 182};
-  static int _credty[2] = {config::kIsGerman ? 173 : 179 - 12, 62};
+  static const int _credsx[2] = {276, 276};
+  static const int _credsy[2] = {173, 58};
+  static const int _credpx[2] = {228, 236};
+  static const int _credpy[2] = {config::kIsGerman ? 181 : 189 - 12, 74};
+  static const int _credtx[2] = {config::kIsGerman ? 162 : 182,
+                                 config::kIsGerman ? 162 : 182};
+  static const int _credty[2] = {config::kIsGerman ? 173 : 179 - 12, 62};
 
   int credobj;
   int i;
@@ -1247,7 +1247,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
         if (index) {
           str[--index] = 0;
 
-          int xposindex6 = (xpos + (index * 6)) * 2;
+          const int xposindex6 = (xpos + (index * 6)) * 2;
           HidPage.Blit(SeenBuff, xposindex6, (ypos - 100) * 2, xposindex6,
                        ypos * 2, 12, 12);
           HidPage.Blit(HidPage, xposindex6, (ypos - 100) * 2, xposindex6,
@@ -1458,7 +1458,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
       // Each displayed infantryman stands for 11 ticks of the graph, so i / 11
       // is the man the bar has just reached. Kill him off unless he is already
       // dead or dying.
-      int anim = InfantryMan[i / 11].anim;
+      const int anim = InfantryMan[i / 11].anim;
       if (anim != -1 && anim < DO_GUN_DEATH) {
         if (i / 11) {
           // Cosmetic death animations use the non-sync RNG so they cannot
@@ -1480,7 +1480,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
     LogicPage->Draw_Line((0 + std::min(i, nkilled) + 1) * 2, 0 + 34,
                          (0 + std::min(i, nkilled) + 1) * 2, 0 + 34, TBLACK);
     if (i <= nkilled) {
-      int anim = InfantryMan[(NUMINFANTRYMEN / 2) + (i / 11)].anim;
+      const int anim = InfantryMan[(NUMINFANTRYMEN / 2) + (i / 11)].anim;
       if (anim != -1 && anim < DO_GUN_DEATH) {
         if (i / 11) {
           New_Infantry_Anim((NUMINFANTRYMEN / 2) + (i / 11),
@@ -1575,7 +1575,7 @@ void Multi_Score_Presentation() {
   int i;
   int k;
   const void* oldfont;
-  int oldfontxspacing = FontXSpacing;
+  const int oldfontxspacing = FontXSpacing;
 
   FontXSpacing = 0;
   Map.Override_Mouse_Shape(MOUSE_NORMAL);
@@ -1649,7 +1649,7 @@ void Multi_Score_Presentation() {
   int y = 41;
   for (i = 0; i < MAX_MULTI_NAMES; i++) {
     if (strlen(Session.Score[i].Name)) {
-      int color = Session.Score[i].Color;
+      const int color = Session.Score[i].Color;
       remap[8] = ColorRemaps[color].FontRemap[11];
       remap[6] = ColorRemaps[color].FontRemap[12];
       remap[4] = ColorRemaps[color].FontRemap[13];

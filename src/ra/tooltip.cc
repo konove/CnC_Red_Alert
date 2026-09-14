@@ -102,8 +102,8 @@ ToolTipClass* ToolTipClass::GetToolTipHit() {
 bool ToolTipClass::bGadgetHit() const {
   //	Returns true if the mouse is currently over the gadget to which *this is
   // bound.
-  int x = Get_Mouse_X();
-  int y = Get_Mouse_Y();
+  const int x = Get_Mouse_X();
+  const int y = Get_Mouse_Y();
   return x > pGadget->X && x < pGadget->X + pGadget->Width && y > pGadget->Y &&
          y < pGadget->Y + pGadget->Height;
 }

@@ -325,7 +325,7 @@ void HouseClass::One_Time() {
  *for multiplay only.                                  *
  *=============================================================================================*/
 DiffType HouseClass::Assign_Handicap(DiffType handicap) {
-  DiffType old = Difficulty;
+  const DiffType old = Difficulty;
   Difficulty = handicap;
 
   if (Session.Type != GAME_NORMAL) {
@@ -876,7 +876,7 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
   /*
   **	Special hack to get certain objects to exist for both sides in the game.
   */
-  int own = type->Get_Ownable();
+  const int own = type->Get_Ownable();
 
   /*
   **	Check to see if this owner can build the object type specified.
@@ -952,7 +952,7 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
 void HouseClass::Init() {
   Houses.Free_All();
 
-  for (HousesType index : magic_enum::enum_values<HousesType>()) {
+  for (const HousesType index : magic_enum::enum_values<HousesType>()) {
     HouseTriggers[index].Clear();
   }
 }
@@ -1039,7 +1039,7 @@ void HouseClass::AI() {
     /*
     **	Adjusted to reduce maximum number of teams created.
     */
-    int maxteams = Random_Pick(2, ((Control.TechLevel - 1) / 3) + 1);
+    const int maxteams = Random_Pick(2, ((Control.TechLevel - 1) / 3) + 1);
     for (int index = 0; index < maxteams; index++) {
       const TeamTypeClass* ttype = Suggested_New_Team(true);
       if (ttype != nullptr) {
@@ -1199,7 +1199,7 @@ void HouseClass::AI() {
     if (unit) {
       unit->Mark(MARK_CHANGE);
     } else {
-      CELL cell = As_Cell(FlagLocation);
+      const CELL cell = As_Cell(FlagLocation);
       Map[cell].Redraw_Objects();
     }
   }
@@ -1224,11 +1224,11 @@ void HouseClass::AI() {
   //	Includes count of VESSEL_MISSILESUBs. ajw
   if (Scen.AutoSonarTimer.IsFinished() && VQuantity[VESSEL_SS] > 0) {
     int iCount = 0;
-    for (int i : BQuantity) {
+    for (const int i : BQuantity) {
       iCount += i;
     }
     if (!iCount) {
-      for (int i : UQuantity) {
+      for (const int i : UQuantity) {
         iCount += i;
       }
       if (!iCount) {
@@ -1305,7 +1305,7 @@ void HouseClass::AI() {
       jammed = false;
     } else {
       for (int index = 0; index < Buildings.Count(); index++) {
-        BuildingClass* building = Buildings.Ptr(index);
+        const BuildingClass* building = Buildings.Ptr(index);
         if (building != nullptr && !building->IsInLimbo &&
             building->House == PlayerPtr) {
           if (*building == STRUCT_RADAR /* || *building == STRUCT_EYE */) {
@@ -1423,7 +1423,7 @@ void HouseClass::Super_Weapon_Handler() {
   **	the graphic needs changing for the special weapon and updates the
   **	sidebar as necessary.
   */
-  for (SpecialWeaponType special :
+  for (const SpecialWeaponType special :
        magic_enum::enum_values<SpecialWeaponType>()) {
     SuperClass* super = &SuperWeapon[special];
 
@@ -1508,7 +1508,7 @@ void HouseClass::Super_Weapon_Handler() {
         (IsHuman || IQ >= Rule.IQSuperWeapons)) {
       bool canfire = false;
       for (int index = 0; index < Buildings.Count(); index++) {
-        BuildingClass* bldg = Buildings.Ptr(index);
+        const BuildingClass* bldg = Buildings.Ptr(index);
         if (*bldg == STRUCT_ADVANCED_TECH && bldg->House == this &&
             !bldg->IsInLimbo) {
           if (!bldg->HasFired) {
@@ -1554,7 +1554,8 @@ void HouseClass::Super_Weapon_Handler() {
             Map.IsTargettingMode == kSpcChrono2) {
           if (Map.IsTargettingMode == kSpcChrono2) {
             // Only a live chrono tank keeps its own targeting mode alive.
-            auto* unit = dynamic_cast<UnitClass*>(As_Object(UnitToTeleport));
+            const auto* unit =
+                dynamic_cast<UnitClass*>(As_Object(UnitToTeleport));
             if (unit == nullptr || !unit->IsActive ||
                 *unit != UNIT_CHRONOTANK) {
               Map.IsTargettingMode = SPC_NONE;
@@ -1646,11 +1647,11 @@ void HouseClass::Super_Weapon_Handler() {
   **	being destroyed is a good example of this.
   */
   if (SuperWeapon[SPC_SONAR_PULSE].Is_Present()) {
-    unsigned usspy = 1U << Class->House;
+    const unsigned usspy = 1U << Class->House;
     bool present = false;
     bool powered = false;
     for (int q = 0; q < Buildings.Count() && !powered; q++) {
-      BuildingClass* bldg = Buildings.Ptr(q);
+      const BuildingClass* bldg = Buildings.Ptr(q);
       if (*bldg == STRUCT_SUB_PEN &&
           bldg->House->Class->House != Class->House && bldg->SpiedBy & usspy) {
         present = true;
@@ -1860,7 +1861,7 @@ void HouseClass::Harvested(int tiberium) {
   CHECK_EQ(Houses.ID(this), ID);
   DCHECK(tiberium >= 0);
 
-  int64_t oldtib = Tiberium;
+  const int64_t oldtib = Tiberium;
 
   Tiberium += tiberium;
   if (Tiberium > Capacity) {
@@ -1937,7 +1938,7 @@ void HouseClass::Spend_Money(int money) {
   CHECK_EQ(Houses.ID(this), ID);
   DCHECK(money >= 0);
 
-  int64_t oldtib = Tiberium;
+  const int64_t oldtib = Tiberium;
   if (money > Tiberium) {
     money -= static_cast<int>(Tiberium);
     Tiberium = 0;
@@ -1995,7 +1996,7 @@ void HouseClass::Refund_Money(int money) {
 int HouseClass::Adjust_Capacity(int adjust, bool inanger) {
   CHECK_EQ(Houses.ID(this), ID);
 
-  int64_t oldcap = Capacity;
+  const int64_t oldcap = Capacity;
   int retval = 0;
 
   Capacity += adjust;
@@ -2158,7 +2159,7 @@ void HouseClass::Make_Ally(HousesType house) {
     }
 
     if (Session.Type != GAME_NORMAL && !ScenarioInit) {
-      HouseClass* hptr = As_Pointer(house);
+      const HouseClass* hptr = As_Pointer(house);
 
       /*
       **	An alliance with another human player will cause the computer
@@ -2184,7 +2185,7 @@ void HouseClass::Make_Ally(HousesType house) {
 
         if (object != nullptr && object->Is_Techno() && !object->IsInLimbo &&
             object->Owner() == Class->House) {
-          TARGET target = dynamic_cast<TechnoClass*>(object)->TarCom;
+          const TARGET target = dynamic_cast<TechnoClass*>(object)->TarCom;
           if ((Target_Legal(target) && As_Techno(target) != nullptr) &&
               Is_Ally(As_Techno(target))) {
             dynamic_cast<TechnoClass*>(object)->Assign_Target(kTargetNone);
@@ -2365,13 +2366,13 @@ const TeamTypeClass* HouseClass::Suggested_New_Team(bool alertcheck) {
 void HouseClass::Adjust_Threat(int region, int threat) {
   CHECK_EQ(Houses.ID(this), ID);
 
-  static int _val[] = {
+  static const int _val[] = {
       -kMapRegionWidth - 1, -kMapRegionWidth, -kMapRegionWidth + 1, -1, 0, 1,
       kMapRegionWidth - 1,  kMapRegionWidth,  kMapRegionWidth + 1};
-  static int _thr[] = {2, 1, 2, 1, 0, 1, 2, 1, 2};
+  static const int _thr[] = {2, 1, 2, 1, 0, 1, 2, 1, 2};
   bool neg;
-  int* val = &_val[0];
-  int* thr = &_thr[0];
+  const int* val = &_val[0];
+  const int* thr = &_thr[0];
 
   if (threat < 0) {
     threat = -threat;
@@ -2566,7 +2567,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
   ** Loop through all of the building objects on the map
   ** and see which ones are available.
   */
-  BuildingClass* bestptr = nullptr;
+  const BuildingClass* bestptr = nullptr;
   int best = -1;
 
   for (int index = 0; index < Buildings.Count(); index++) {
@@ -2584,7 +2585,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
   }
 
   if (bestptr) {
-    CELL cell = Coord_Cell(bestptr->Center_Coord());
+    const CELL cell = Coord_Cell(bestptr->Center_Coord());
     Place_Special_Blast(id, cell);
   }
 }
@@ -2641,8 +2642,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
               new BulletClass(BULLET_NUKE_DOWN, As_Target(cell), nullptr, 200,
                               WARHEAD_NUKE, MPH_VERY_FAST);
           if (bullet) {
-            int celly = std::max(Cell_Y(cell) - 15, 1);
-            COORDINATE start = Cell_Coord(XY_Cell(Cell_X(cell), celly));
+            const int celly = std::max(Cell_Y(cell) - 15, 1);
+            const COORDINATE start = Cell_Coord(XY_Cell(Cell_X(cell), celly));
             if (!bullet->Unlimbo(start, DIR_S)) {
               delete bullet;
             }
@@ -2747,8 +2748,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
 
     case SPC_IRON_CURTAIN:
       if (SuperWeapon[SPC_IRON_CURTAIN].Is_Ready()) {
-        int x = Keyboard->MouseQX - Map.TacPixelX;
-        int y = Keyboard->MouseQY - Map.TacPixelY;
+        const int x = Keyboard->MouseQX - Map.TacPixelX;
+        const int y = Keyboard->MouseQY - Map.TacPixelY;
         TechnoClass* tech = Map[cell].Cell_Techno(x, y);
         if (tech) {
           switch (tech->What_Am_I()) {
@@ -2781,8 +2782,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
 
     case SPC_CHRONOSPHERE:
       if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready()) {
-        int x = Keyboard->MouseQX - Map.TacPixelX;
-        int y = Keyboard->MouseQY - Map.TacPixelY;
+        const int x = Keyboard->MouseQX - Map.TacPixelX;
+        const int y = Keyboard->MouseQY - Map.TacPixelY;
         TechnoClass* tech = Map[cell].Cell_Techno(x, y);
         if (tech && Is_Ally(tech)) {
           if (tech->What_Am_I() == RTTI_UNIT ||
@@ -2877,8 +2878,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
            *dynamic_cast<UnitClass*>(tech) != UNIT_CHRONOTANK)) {
         if (!ChronalVortex.Is_Active() &&
             Percent_Chance(Rule.VortexChance * 100)) {
-          int x = Random_Pick(0, Map.MapCellWidth - 1);
-          int y = Random_Pick(0, Map.MapCellHeight - 1);
+          const int x = Random_Pick(0, Map.MapCellWidth - 1);
+          const int y = Random_Pick(0, Map.MapCellHeight - 1);
           ChronalVortex.Appear(
               Cell_Coord(XY_Cell(Map.MapCellX + x, Map.MapCellY + y)));
 
@@ -3207,7 +3208,7 @@ bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
   uint64_t bflag = uint64_t{1} << btype;
   return std::ranges::any_of(
       magic_enum::enum_values<HousesType>(), [&](HousesType index) {
-        HouseClass* house = As_Pointer(index);
+        const HouseClass* house = As_Pointer(index);
         return house && !Is_Ally(house) && (house->ActiveBScan & bflag) != 0;
       });
 }
@@ -3336,7 +3337,7 @@ bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
       /*
       **	Remove the flag from a cell
       */
-      CELL cell = As_Cell(target);
+      const CELL cell = As_Cell(target);
       if (Map.In_Radar(cell)) {
         rc = Map[cell].Flag_Remove();
         if (rc && FlagLocation == target) {
@@ -3683,7 +3684,7 @@ void HouseClass::Tally_Score() {
   /*
   ** Loop through all houses, tallying up each player's score
   */
-  for (HousesType house : magic_enum::enum_values<HousesType>()) {
+  for (const HousesType house : magic_enum::enum_values<HousesType>()) {
     hptr = As_Pointer(house);
     /*
     ** Skip this house if it's not human.
@@ -3772,7 +3773,7 @@ void HouseClass::Tally_Score() {
     /*
     **	Tally up all kills for this player
     */
-    for (HousesType house2 : magic_enum::enum_values<HousesType>()) {
+    for (const HousesType house2 : magic_enum::enum_values<HousesType>()) {
       Session.Score[score_index].Kills[Session.CurGame] +=
           hptr->UnitsKilled[house2];
       Session.Score[score_index].Kills[Session.CurGame] +=
@@ -4067,7 +4068,7 @@ void HouseClass::Sell_Wall(CELL cell) {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (static_cast<unsigned>(cell) > 0) {
-    OverlayType overlay = Map[cell].Overlay;
+    const OverlayType overlay = Map[cell].Overlay;
 
     if (overlay != OVERLAY_NONE && Map[cell].Owner == Class->House) {
       const OverlayTypeClass& optr = OverlayTypeClass::As_Reference(overlay);
@@ -4221,9 +4222,9 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
     int AntiArmor;     // Average armor defense for the base.
     int AntiInfantry;  // Average infantry defense for the base.
   } zoneinfo = {0, 0, 0};
-  int antiair = building->Anti_Air();
-  int antiarmor = building->Anti_Armor();
-  int antiinfantry = building->Anti_Infantry();
+  const int antiair = building->Anti_Air();
+  const int antiarmor = building->Anti_Armor();
+  const int antiinfantry = building->Anti_Infantry();
 
   /*
   **	Never place combat buildings adjacent to each other. This is partly
@@ -4239,7 +4240,7 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
   **	Determine the average zone strengths for the base. This value is
   **	used to determine what zones are considered under or over strength.
   */
-  for (ZoneType z : magic_enum::enum_values<ZoneType>()) {
+  for (const ZoneType z : magic_enum::enum_values<ZoneType>()) {
     if (z < ZONE_NORTH) {
       continue;
     }
@@ -4261,7 +4262,7 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
   *very under *	defended.
   */
   memset(&zonerating[0], '\0', sizeof(zonerating));
-  for (ZoneType z : magic_enum::enum_values<ZoneType>()) {
+  for (const ZoneType z : magic_enum::enum_values<ZoneType>()) {
     int diff;
 
     diff = zoneinfo.AntiAir - ZoneInfo[z].AirDefense;
@@ -4296,7 +4297,7 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
   ZoneType zone =
       Random_Pick(magic_enum::enum_values<ZoneType>().front(), ZONE_WEST);
   int largest = 0;
-  for (ZoneType z : magic_enum::enum_values<ZoneType>()) {
+  for (const ZoneType z : magic_enum::enum_values<ZoneType>()) {
     if (zonerating[z] > largest) {
       zone = z;
       largest = zonerating[z];
@@ -4311,11 +4312,11 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
   /*
   **	Could not build in preferred zone, so try building in any zone.
   */
-  static ZoneType _zones[] = {ZONE_CORE, ZONE_NORTH, ZONE_SOUTH, ZONE_EAST,
-                              ZONE_WEST};
-  int start = Random_Pick<int>(0, std::ssize(_zones) - 1);
+  static const ZoneType _zones[] = {ZONE_CORE, ZONE_NORTH, ZONE_SOUTH,
+                                    ZONE_EAST, ZONE_WEST};
+  const int start = Random_Pick<int>(0, std::ssize(_zones) - 1);
   for (int zz = 0; zz < std::ssize(_zones); zz++) {
-    ZoneType tryzone = _zones[(zz + start) % std::ssize(_zones)];
+    const ZoneType tryzone = _zones[(zz + start) % std::ssize(_zones)];
     zcell = Find_Cell_In_Zone(building, tryzone);
     if (zcell) {
       return Cell_Coord(zcell);
@@ -4350,7 +4351,7 @@ void HouseClass::Recalc_Center() {
   */
   Center = 0;
   Radius = 0;
-  for (ZoneType zone : magic_enum::enum_values<ZoneType>()) {
+  for (const ZoneType zone : magic_enum::enum_values<ZoneType>()) {
     ZoneInfo[zone].AirDefense = 0;
     ZoneInfo[zone].ArmorDefense = 0;
     ZoneInfo[zone].InfantryDefense = 0;
@@ -4376,7 +4377,7 @@ void HouseClass::Recalc_Center() {
         *is that cheap *	buildings don't affect the base disposition as
         *much as the more expensive *	buildings do.
         */
-        int weight = (b->Class->Cost_Of() / 1000) + 1;
+        const int weight = (b->Class->Cost_Of() / 1000) + 1;
         for (int i = 0; i < weight; i++) {
           x += Coord_X(b->Center_Coord());
           y += Coord_Y(b->Center_Coord());
@@ -4425,7 +4426,7 @@ void HouseClass::Recalc_Center() {
 
         if (b != nullptr && !b->IsInLimbo &&
             static_cast<HouseClass*>(b->House) == this && b->Strength > 0) {
-          ZoneType z = Which_Zone(b);
+          const ZoneType z = Which_Zone(b);
 
           if (z != ZONE_NONE) {
             ZoneInfo[z].ArmorDefense += b->Anti_Armor();
@@ -4466,7 +4467,7 @@ int HouseClass::Expert_AI() {
   *try *	to find a new enemy.
   */
   if (Enemy != HOUSE_NONE) {
-    HouseClass* h = As_Pointer(Enemy);
+    const HouseClass* h = As_Pointer(Enemy);
 
     if (h == nullptr || !h->IsActive || h->IsDefeated || Is_Ally(h) ||
         h->BScan == 0) {
@@ -4489,8 +4490,8 @@ int HouseClass::Expert_AI() {
     int maxbuilding = 0;
     int enemycount = 0;
 
-    for (HousesType house : magic_enum::enum_values<HousesType>()) {
-      HouseClass* h = As_Pointer(house);
+    for (const HousesType house : magic_enum::enum_values<HousesType>()) {
+      const HouseClass* h = As_Pointer(house);
       if (h != nullptr && h->IsActive && !h->IsDefeated && !Is_Ally(h)) {
         /*
         **	Perform a special restriction check to ensure that no enemy is
@@ -4618,7 +4619,7 @@ int HouseClass::Expert_AI() {
   */
   UrgencyType urgency[magic_enum::enum_count<StrategyType>()];
 
-  for (StrategyType strat : magic_enum::enum_values<StrategyType>()) {
+  for (const StrategyType strat : magic_enum::enum_values<StrategyType>()) {
     urgency[strat] = URGENCY_NONE;
 
     switch (strat) {
@@ -4675,7 +4676,7 @@ int HouseClass::Expert_AI() {
   **	actions tend to greatly affect the lower urgency actions.
   */
   for (UrgencyType u = URGENCY_CRITICAL; u >= URGENCY_LOW; u--) {
-    for (StrategyType strat : magic_enum::enum_values<StrategyType>()) {
+    for (const StrategyType strat : magic_enum::enum_values<StrategyType>()) {
       if (urgency[strat] == u) {
         switch (strat) {
           case STRATEGY_BUILD_POWER:
@@ -4731,7 +4732,7 @@ int HouseClass::Expert_AI() {
 UrgencyType HouseClass::Check_Build_Power() const {
   CHECK_EQ(Houses.ID(this), ID);
 
-  fixed frac = Power_Fraction();
+  const fixed frac = Power_Fraction();
   UrgencyType urgency = URGENCY_NONE;
 
   if (frac < 1 && Can_Make_Money()) {
@@ -4891,9 +4892,9 @@ UrgencyType HouseClass::Check_Raise_Power() const {
 bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
   CHECK_EQ(Houses.ID(this), ID);
 
-  bool shuffle =
+  const bool shuffle =
       (Frame <= kTicksPerMinute || CurBuildings != 0) && !Percent_Chance(33);
-  bool forced = CurBuildings == 0;
+  const bool forced = CurBuildings == 0;
   int index;
   for (index = 0; index < Aircraft.Count(); index++) {
     AircraftClass* a = Aircraft.Ptr(index);
@@ -5052,7 +5053,7 @@ bool HouseClass::AI_Raise_Power(UrgencyType urgency) const {
   /*
   **	Sell off structures in this order.
   */
-  static struct {
+  static const struct {
     StructType Structure;
     UrgencyType Urgency;
   } _types[] = {{STRUCT_CHRONOSPHERE, URGENCY_LOW},
@@ -5072,7 +5073,7 @@ bool HouseClass::AI_Raise_Power(UrgencyType urgency) const {
   */
   // Sells the first qualifying building; the side effect is the point, so this
   // stays a loop. NOLINTNEXTLINE(readability-use-anyofallof)
-  for (auto& _type : _types) {
+  for (const auto& _type : _types) {
     if (urgency >= _type.Urgency) {
       BuildingClass* b = Find_Building(_type.Structure);
       if (b != nullptr) {
@@ -5106,7 +5107,7 @@ bool HouseClass::AI_Raise_Money(UrgencyType urgency) const {
   /*
   **	Sell off structures in this order.
   */
-  static struct {
+  static const struct {
     StructType Structure;
     UrgencyType Urgency;
   } _types[] = {{STRUCT_CHRONOSPHERE, URGENCY_LOW},
@@ -5131,7 +5132,7 @@ bool HouseClass::AI_Raise_Money(UrgencyType urgency) const {
   **	Find a structure to sell and then sell it. Bail from further scanning
   *until *	the next time.
   */
-  for (auto& _type : _types) {
+  for (const auto& _type : _types) {
     if (urgency >= _type.Urgency) {
       b = Find_Building(_type.Structure);
       if (b != nullptr) {
@@ -5167,7 +5168,7 @@ int HouseClass::AI_Building() {
   }
 
   if (Session.Type == GAME_NORMAL && Base.House == Class->House) {
-    BaseNodeClass* node = Base.Next_Buildable();
+    const BaseNodeClass* node = Base.Next_Buildable();
     if (node) {
       BuildStructure = node->Type;
     }
@@ -5178,7 +5179,7 @@ int HouseClass::AI_Building() {
     **	Don't suggest anything to build if the base is already big enough.
     */
     int quant = 0;
-    for (HousesType h : magic_enum::enum_values<HousesType>()) {
+    for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       const HouseClass* hptr = As_Pointer(h);
 
       if (hptr != nullptr && hptr->IsActive && hptr->IsHuman &&
@@ -5192,9 +5193,9 @@ int HouseClass::AI_Building() {
 
     BuildChoice.Free_All();
     BuildChoiceClass* choiceptr;
-    int money = static_cast<int>(Available_Money());
-    bool hasincome = BQuantity[STRUCT_REFINERY] > 0 && !IsTiberiumShort &&
-                     UQuantity[UNIT_HARVESTER] > 0;
+    const int money = static_cast<int>(Available_Money());
+    const bool hasincome = BQuantity[STRUCT_REFINERY] > 0 && !IsTiberiumShort &&
+                           UQuantity[UNIT_HARVESTER] > 0;
     const BuildingTypeClass* b = nullptr;
     const HouseClass* enemy = nullptr;
     if (Enemy != HOUSE_NONE) {
@@ -5372,8 +5373,8 @@ int HouseClass::AI_Building() {
         threat_quantity = enemy->CurAircraft;
       }
       if (!airthreat) {
-        for (HousesType house : magic_enum::enum_values<HousesType>()) {
-          HouseClass* h = As_Pointer(house);
+        for (const HousesType house : magic_enum::enum_values<HousesType>()) {
+          const HouseClass* h = As_Pointer(house);
           if (h != nullptr && !Is_Ally(house) && h->AScan != 0) {
             airthreat = true;
             break;
@@ -5583,7 +5584,7 @@ int HouseClass::AI_Unit() {
     *be *	twice the number required to fill all teams.
     */
     for (int index = 0; index < Teams.Count(); index++) {
-      TeamClass* tptr = Teams.Ptr(index);
+      const TeamClass* tptr = Teams.Ptr(index);
       if (tptr != nullptr) {
         const TeamTypeClass* team = tptr->Class;
         if (((team->IsReinforcable && !tptr->IsFullStrength) ||
@@ -5613,7 +5614,8 @@ int HouseClass::AI_Unit() {
           const TechnoTypeClass* memtype = team->Members[subindex].Class;
 
           if (memtype->What_Am_I() == RTTI_UNITTYPE) {
-            int subtype = dynamic_cast<const UnitTypeClass*>(memtype)->Type;
+            const int subtype =
+                dynamic_cast<const UnitTypeClass*>(memtype)->Type;
             counter[subtype] =
                 std::max(counter[subtype], team->Members[subindex].Quantity);
           }
@@ -5626,7 +5628,7 @@ int HouseClass::AI_Unit() {
     **	in play.
     */
     for (int uindex = 0; uindex < Units.Count(); uindex++) {
-      UnitClass* unit = Units.Ptr(uindex);
+      const UnitClass* unit = Units.Ptr(uindex);
       if (unit != nullptr && unit->Is_Recruitable(this) &&
           counter[unit->Class->Type] > 0) {
         counter[unit->Class->Type]--;
@@ -5641,7 +5643,7 @@ int HouseClass::AI_Unit() {
     int bestval = -1;
     int bestcount = 0;
     UnitType bestlist[magic_enum::enum_count<UnitType>()];
-    for (UnitType utype : magic_enum::enum_values<UnitType>()) {
+    for (const UnitType utype : magic_enum::enum_values<UnitType>()) {
       if (counter[utype] > 0 &&
           Can_Build(&UnitTypeClass::As_Reference(utype), Class->House) &&
           UnitTypeClass::As_Reference(utype).Cost_Of() <= Available_Money()) {
@@ -5665,7 +5667,7 @@ int HouseClass::AI_Unit() {
   if (IsBaseBuilding) {
     int counter[magic_enum::enum_count<UnitType>()];
     int total = 0;
-    for (UnitType index : magic_enum::enum_values<UnitType>()) {
+    for (const UnitType index : magic_enum::enum_values<UnitType>()) {
       const UnitTypeClass* utype = &UnitTypeClass::As_Reference(index);
       if (Can_Build(utype, ActLike) && utype->Type != UNIT_HARVESTER) {
         if (utype->PrimaryWeapon != nullptr) {
@@ -5681,7 +5683,7 @@ int HouseClass::AI_Unit() {
 
     if (total > 0) {
       int choice = Random_Pick(0, total - 1);
-      for (UnitType index : magic_enum::enum_values<UnitType>()) {
+      for (const UnitType index : magic_enum::enum_values<UnitType>()) {
         if (choice < counter[index]) {
           BuildUnit = index;
           break;
@@ -5709,7 +5711,7 @@ int HouseClass::AI_Vessel() {
     if (Session.Type == GAME_NORMAL) {
       memset(counter, 0x00, sizeof(counter));
     } else {
-      for (VesselType index : magic_enum::enum_values<VesselType>()) {
+      for (const VesselType index : magic_enum::enum_values<VesselType>()) {
         if (Can_Build(&VesselTypeClass::As_Reference(index), Class->House) &&
             VesselTypeClass::As_Reference(index).Level <= Control.TechLevel) {
           counter[index] = 16;
@@ -5724,7 +5726,7 @@ int HouseClass::AI_Vessel() {
     *be *	twice the number required to fill all teams.
     */
     for (int index = 0; index < Teams.Count(); index++) {
-      TeamClass* tptr = Teams.Ptr(index);
+      const TeamClass* tptr = Teams.Ptr(index);
       if (tptr) {
         const TeamTypeClass* team = tptr->Class;
 
@@ -5754,9 +5756,9 @@ int HouseClass::AI_Vessel() {
                    (!team->IsAutocreate || IsAlerted))) {
         for (int subindex = 0; subindex < team->ClassCount; subindex++) {
           if (team->Members[subindex].Class->What_Am_I() == RTTI_VESSELTYPE) {
-            int subtype = dynamic_cast<const VesselTypeClass*>(
-                              team->Members[subindex].Class)
-                              ->Type;
+            const int subtype = dynamic_cast<const VesselTypeClass*>(
+                                    team->Members[subindex].Class)
+                                    ->Type;
             counter[subtype] =
                 std::max(counter[subtype], team->Members[subindex].Quantity);
           }
@@ -5769,7 +5771,7 @@ int HouseClass::AI_Vessel() {
     **	in play.
     */
     for (int vindex = 0; vindex < Vessels.Count(); vindex++) {
-      VesselClass* unit = Vessels.Ptr(vindex);
+      const VesselClass* unit = Vessels.Ptr(vindex);
       if (unit != nullptr && unit->Is_Recruitable(this) &&
           counter[unit->Class->Type] > 0) {
         counter[unit->Class->Type]--;
@@ -5784,7 +5786,7 @@ int HouseClass::AI_Vessel() {
     int bestval = -1;
     int bestcount = 0;
     VesselType bestlist[magic_enum::enum_count<VesselType>()];
-    for (VesselType utype : magic_enum::enum_values<VesselType>()) {
+    for (const VesselType utype : magic_enum::enum_values<VesselType>()) {
       if (counter[utype] > 0 &&
           Can_Build(&VesselTypeClass::As_Reference(utype), Class->House) &&
           VesselTypeClass::As_Reference(utype).Cost_Of() <= Available_Money()) {
@@ -5846,7 +5848,7 @@ int HouseClass::AI_Infantry() {
     *be *	twice the number required to fill all teams.
     */
     for (int index = 0; index < Teams.Count(); index++) {
-      TeamClass* tptr = Teams.Ptr(index);
+      const TeamClass* tptr = Teams.Ptr(index);
       if (tptr != nullptr) {
         const TeamTypeClass* team = tptr->Class;
 
@@ -5879,9 +5881,9 @@ int HouseClass::AI_Infantry() {
            (!team->IsAutocreate || IsAlerted))) {
         for (int subindex = 0; subindex < team->ClassCount; subindex++) {
           if (team->Members[subindex].Class->What_Am_I() == RTTI_INFANTRYTYPE) {
-            int subtype = dynamic_cast<const InfantryTypeClass*>(
-                              team->Members[subindex].Class)
-                              ->Type;
+            const int subtype = dynamic_cast<const InfantryTypeClass*>(
+                                    team->Members[subindex].Class)
+                                    ->Type;
             //									counter[subtype]
             //= 1;
             counter[subtype] =
@@ -5897,7 +5899,7 @@ int HouseClass::AI_Infantry() {
     **	in play.
     */
     for (int uindex = 0; uindex < Infantry.Count(); uindex++) {
-      InfantryClass* infantry = Infantry.Ptr(uindex);
+      const InfantryClass* infantry = Infantry.Ptr(uindex);
       if (infantry != nullptr && infantry->Is_Recruitable(this) &&
           counter[infantry->Class->Type] > 0) {
         counter[infantry->Class->Type]--;
@@ -5912,7 +5914,7 @@ int HouseClass::AI_Infantry() {
     int bestval = -1;
     int bestcount = 0;
     InfantryType bestlist[magic_enum::enum_count<InfantryType>()];
-    for (InfantryType utype : magic_enum::enum_values<InfantryType>()) {
+    for (const InfantryType utype : magic_enum::enum_values<InfantryType>()) {
       if ((utype != INFANTRY_DOG || !(IScan & kInfantryFlagDog)) &&
           (counter[utype] > 0 &&
            Can_Build(&InfantryTypeClass::As_Reference(utype), Class->House) &&
@@ -5931,7 +5933,7 @@ int HouseClass::AI_Infantry() {
     *type class.
     */
     if (bestcount) {
-      int pick = Random_Pick(0, bestcount - 1);
+      const int pick = Random_Pick(0, bestcount - 1);
       BuildInfantry = bestlist[pick];
     }
   }
@@ -5953,7 +5955,7 @@ int HouseClass::AI_Infantry() {
     } typetrack[magic_enum::enum_count<InfantryType>()];
     int count = 0;
     int total = 0;
-    for (InfantryType index : magic_enum::enum_values<InfantryType>()) {
+    for (const InfantryType index : magic_enum::enum_values<InfantryType>()) {
       if (Can_Build(&InfantryTypeClass::As_Reference(index), ActLike) &&
           InfantryTypeClass::As_Reference(index).Level <= Control.TechLevel) {
         typetrack[count].Value = 0;
@@ -6447,7 +6449,7 @@ ZoneType HouseClass::Which_Zone(COORDINATE coord) const {
     return ZONE_NONE;
   }
 
-  int distance = Distance(Center, coord);
+  const int distance = Distance(Center, coord);
   if (distance <= Radius) {
     return ZONE_CORE;
   }
@@ -6455,7 +6457,7 @@ ZoneType HouseClass::Which_Zone(COORDINATE coord) const {
     return ZONE_NONE;
   }
 
-  DirType facing = Direction(Center, coord);
+  const DirType facing = Direction(Center, coord);
   if (facing < DIR_NE || facing > DIR_NW) {
     return ZONE_NORTH;
   }
@@ -6688,7 +6690,7 @@ CELL HouseClass::Where_To_Go(const FootClass* object) const {
     zone = Random_Pick(ZONE_NORTH, ZONE_WEST);
   }
 
-  CELL cell = Random_Cell_In_Zone(zone);
+  const CELL cell = Random_Cell_In_Zone(zone);
   CHECK_NE(cell, 0);
 
   return Map.Nearby_Location(cell, SPEED_TRACK, Map[cell].Zones[MZONE_NORMAL],
@@ -6714,7 +6716,7 @@ CELL HouseClass::Where_To_Go(const FootClass* object) const {
 TARGET HouseClass::Find_Juicy_Target(COORDINATE coord) const {
   CHECK_EQ(Houses.ID(this), ID);
 
-  UnitClass* best = nullptr;
+  const UnitClass* best = nullptr;
   int value = 0;
 
   for (int index = 0; index < Units.Count(); index++) {
@@ -6955,7 +6957,7 @@ void HouseClass::Read_INI(CCINIClass& ini) {
   HouseClass* p;      // Pointer to current player data.
   const char* hname;  //	Pointer to house name.
 
-  for (HousesType index : magic_enum::enum_values<HousesType>()) {
+  for (const HousesType index : magic_enum::enum_values<HousesType>()) {
     hname = HouseTypeClass::As_Reference(index).IniName;
 
     p = new HouseClass(index);
@@ -6983,10 +6985,11 @@ void HouseClass::Read_INI(CCINIClass& ini) {
     p->Control.Edge = ini.Get_SourceType(hname, "Edge", SOURCE_NORTH);
     p->IsPlayerControl = ini.Get_Bool(hname, "PlayerControl", false);
 
-    int owners = static_cast<int>(ini.Get_Owners(hname, "Allies", 1 << HOUSE_NEUTRAL));
+    const int owners =
+        static_cast<int>(ini.Get_Owners(hname, "Allies", 1 << HOUSE_NEUTRAL));
     p->Make_Ally(index);
     p->Make_Ally(HOUSE_NEUTRAL);
-    for (HousesType h : magic_enum::enum_values<HousesType>()) {
+    for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       if ((owners & 1 << h) != 0) {
         p->Make_Ally(h);
       }
@@ -7014,10 +7017,10 @@ void HouseClass::Write_INI(CCINIClass& ini) {
   **	The identity house control object. Only if the house value differs from
   *the *	identity, will the data be written out.
   */
-  HouseStaticClass control;
+  const HouseStaticClass control;
 
-  for (HousesType i : magic_enum::enum_values<HousesType>()) {
-    HouseClass* p = As_Pointer(i);
+  for (const HousesType i : magic_enum::enum_values<HousesType>()) {
+    const HouseClass* p = As_Pointer(i);
 
     if (p != nullptr) {
       const char* name = p->Class->IniName;
@@ -7298,11 +7301,11 @@ bool HouseClass::Is_Allowed_To_Ally(HousesType house) const {
   */
   int housecount = 0;
   int allycount = 0;
-  for (HousesType house2 : magic_enum::enum_values<HousesType>()) {
+  for (const HousesType house2 : magic_enum::enum_values<HousesType>()) {
     if (house2 < HOUSE_MULTI1) {
       continue;
     }
-    HouseClass* hptr = As_Pointer(house2);
+    const HouseClass* hptr = As_Pointer(house2);
     if (hptr != nullptr && hptr->IsActive && !hptr->IsDefeated) {
       housecount++;
       if (Is_Ally(hptr)) {
@@ -7340,7 +7343,7 @@ void HouseClass::Computer_Paranoid() {
   *other computer *	controlled houses and then make enemies with all other
   *human controlled houses.
   */
-  for (HousesType house : magic_enum::enum_values<HousesType>()) {
+  for (const HousesType house : magic_enum::enum_values<HousesType>()) {
     if (house < HOUSE_MULTI1) {
       continue;
     }
@@ -7353,11 +7356,11 @@ void HouseClass::Computer_Paranoid() {
       **	Break alliance with every human it is allied with and make
       *friends with *	any other computer players.
       */
-      for (HousesType house2 : magic_enum::enum_values<HousesType>()) {
+      for (const HousesType house2 : magic_enum::enum_values<HousesType>()) {
         if (house2 < HOUSE_MULTI1) {
           continue;
         }
-        HouseClass* hptr2 = As_Pointer(house2);
+        const HouseClass* hptr2 = As_Pointer(house2);
         if (hptr2 != nullptr && hptr2->IsActive && !hptr2->IsDefeated) {
           if (hptr2->IsHuman) {
             hptr->Make_Enemy(house2);
@@ -7423,7 +7426,7 @@ void HouseClass::Adjust_Drain(int adjust) {
  * HISTORY: * 10/11/1996 BWG : Created. *
  *=============================================================================================*/
 void HouseClass::Update_Spied_Power_Plants() {
-  base::ssize count = CurrentObject.Count();
+  const base::ssize count = CurrentObject.Count();
   if (count) {
     for (int index = 0; index < count; index++) {
       const ObjectClass* tech = CurrentObject[index];
@@ -7474,7 +7477,7 @@ CELL HouseClass::Find_Cell_In_Zone(const TechnoClass* techno,
   /*
   **	Pick a random location within the zone specified.
   */
-  CELL trycell = Random_Cell_In_Zone(zone);
+  const CELL trycell = Random_Cell_In_Zone(zone);
 
   const int16_t* list = nullptr;
   if (techno->What_Am_I() == RTTI_BUILDING) {
@@ -7500,7 +7503,7 @@ CELL HouseClass::Find_Cell_In_Zone(const TechnoClass* techno,
       }
 
       if (ok) {
-        int dist = Distance(Cell_Coord(cell), Cell_Coord(trycell));
+        const int dist = Distance(Cell_Coord(cell), Cell_Coord(trycell));
         if (bestval == -1 || dist < bestval) {
           bestval = dist;
           bestcell = cell;
@@ -7621,10 +7624,10 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
   *it to *	the legal map area.
   */
   if (!Map.In_Radar(cell)) {
-    int x = std::clamp(Cell_X(cell), Map.MapCellX,
-                       Map.MapCellX + Map.MapCellWidth - 1);
-    int y = std::clamp(Cell_Y(cell), Map.MapCellY,
-                       Map.MapCellY + Map.MapCellHeight - 1);
+    const int x = std::clamp(Cell_X(cell), Map.MapCellX,
+                             Map.MapCellX + Map.MapCellWidth - 1);
+    const int y = std::clamp(Cell_Y(cell), Map.MapCellY,
+                             Map.MapCellY + Map.MapCellHeight - 1);
     cell = XY_Cell(x, y);
   }
   return cell;

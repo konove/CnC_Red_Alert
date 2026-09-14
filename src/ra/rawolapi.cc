@@ -622,7 +622,7 @@ STDMETHODIMP RAChatEventSink::OnPublicMessage(HRESULT /*res*/,
     if (strlen(szMessage) > 3 && szMessage[0] == 35 && szMessage[1] == 97 &&
         szMessage[2] == 106 && szMessage[3] == 119) {
       if (strlen(szMessage) > 4) {
-        int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
+        const int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
         if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1 && pOwner->bEggSounds) {
           Speak((VoxType)i);
         }
@@ -675,7 +675,7 @@ STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT /*res*/,
       if (strlen(szMessage) > 3 && szMessage[0] == 35 && szMessage[1] == 97 &&
           szMessage[2] == 106 && szMessage[3] == 119) {
         if (strlen(szMessage) > 4) {
-          int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
+          const int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
           if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1 && pOwner->bEggSounds) {
             Speak((VoxType)i);
           }
@@ -714,7 +714,7 @@ bool RAChatEventSink::bSpecialMessage(const char* szMessage) {
   char szCode[5];
   memcpy((void*)szCode, (void*)&szMessage[4], 4);
   szCode[4] = 0;
-  int iCode = tech::ParseInteger<int>(szCode).value_or(0);
+  const int iCode = tech::ParseInteger<int>(szCode).value_or(0);
   return iCode == (((today.month * 99) ^ (today.day * 33)) ^ today.year);
 }
 
@@ -792,7 +792,7 @@ STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT /*res*/,
   // LastUpdateChannelCallLevel = %i \n", ChannelFilter,
   // pOwner->LastUpdateChannelCallLevel );
 
-  int iLobbyCur =
+  const int iLobbyCur =
       iChannelLobbyNumber((unsigned char*)pOwner->szChannelNameCurrent);
 
   Channel* pChannelListTail = nullptr;
@@ -820,7 +820,7 @@ STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT /*res*/,
         }
         break;
       case CHANNELFILTER_LOBBIES: {
-        int iLobby = iChannelLobbyNumber(pChannelListIn->name);
+        const int iLobby = iChannelLobbyNumber(pChannelListIn->name);
         if (iLobby == -1) {
           //				debugprint( "(OnChannelList filtered
           // this one.)\n", pChannelListIn->name );
@@ -877,7 +877,7 @@ void RAChatEventSink::DeleteChannelList() {
   // copied during OnChannelList().
   //	debugprint( "DeleteChannelList\n" );
   while (pChannelList) {
-    Channel* pChannelHead = pChannelList;
+    const Channel* pChannelHead = pChannelList;
     pChannelList = pChannelHead->next;
     delete pChannelHead;
   }
@@ -919,7 +919,7 @@ void RAChatEventSink::DeleteUserList() {
   // during OnUserList().
   //	debugprint( "DeleteUserList\n" );
   while (pUserList) {
-    User* pUserHead = pUserList;
+    const User* pUserHead = pUserList;
     pUserList = pUserHead->next;
     delete pUserHead;
   }
@@ -939,7 +939,7 @@ STDMETHODIMP RAChatEventSink::OnUpdateList(HRESULT hRes, Update* pUpdateList) {
 
   //	Count the updates.
   int iUpdates = 0;
-  Update* pUpdate = pUpdateList;
+  const Update* pUpdate = pUpdateList;
 
   while (pUpdate != nullptr) {
     pUpdate = pUpdate->next;
@@ -1065,7 +1065,7 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
   if (strstr(szMessage, "<<groans>>") || strstr(szMessage, "<<groaning>>") ||
       strstr(szMessage, "<<dies>>") || strstr(szMessage, "<<dying>>") ||
       strstr(szMessage, "<<groan>>") || strstr(szMessage, "<<died>>")) {
-    int i = rand() % 30;
+    const int i = rand() % 30;
     if (i == 0) {
       Sound_Effect(VOC_DOG_HURT);
     } else if (i == 1) {
@@ -1338,7 +1338,7 @@ STDMETHODIMP RAChatEventSink::OnGameStart(HRESULT hRes, Channel* /*channel*/,
 
   //	Delete any existing list.
   while (pGameUserList) {
-    User* pGameUserHead = pGameUserList;
+    const User* pGameUserHead = pGameUserList;
     pGameUserList = pGameUserList->next;
     delete pGameUserHead;
   }
@@ -1479,7 +1479,7 @@ void RAChatEventSink::DeleteUserIPList() {
   //	Same as DeleteUserList but for pUserIPList.
   //	debugprint( "DeleteUserIPList\n" );
   while (pUserIPList) {
-    User* pUserHead = pUserIPList;
+    const User* pUserHead = pUserIPList;
     pUserIPList = pUserHead->next;
     delete pUserHead;
   }
@@ -1871,7 +1871,7 @@ void RANetUtilEventSink::DeleteLadderList() {
   //	debugprint( "DeleteLadderList()\n" );
   //	Delete all Ladders allocated on the heap.
   while (pLadderList) {
-    Ladder* pLadderHead = pLadderList;
+    const Ladder* pLadderHead = pLadderList;
     pLadderList = pLadderHead->next;
     delete pLadderHead;
   }

@@ -586,10 +586,10 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
       TechnoClass* contact = Contact_With_Whom();
 
       assert(contact->IsActive);
-      int xxx = x + (Lepton_To_Pixel(Coord_X(contact->Render_Coord())) -
-                     Lepton_To_Pixel(Coord_X(Render_Coord())));
-      int yyy = y + (Lepton_To_Pixel(Coord_Y(contact->Render_Coord())) -
-                     Lepton_To_Pixel(Coord_Y(Render_Coord())));
+      const int xxx = x + (Lepton_To_Pixel(Coord_X(contact->Render_Coord())) -
+                           Lepton_To_Pixel(Coord_X(Render_Coord())));
+      const int yyy = y + (Lepton_To_Pixel(Coord_Y(contact->Render_Coord())) -
+                           Lepton_To_Pixel(Coord_Y(Render_Coord())));
       contact->Draw_It(xxx, yyy, window);
       contact->IsToDisplay = false;
     }
@@ -627,7 +627,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
     *building itself. For human controlled buildings, the factory *	pointer
     *is part of the house structure and must be retrieved from there.
     */
-    FactoryClass* factory = nullptr;
+    const FactoryClass* factory = nullptr;
     if (House->IsHuman) {
       factory = House->Fetch_Factory(Class->ToBuild);
     } else {
@@ -640,7 +640,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
     *of this building.
     */
     if (factory != nullptr) {
-      TechnoClass* obj = factory->Get_Object();
+      const TechnoClass* obj = factory->Get_Object();
       if (obj != nullptr) {
         CC_Draw_Shape(obj->Techno_Type_Class()->Get_Cameo_Data(), 0, x, y,
                       window, SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_NORMAL,
@@ -768,8 +768,8 @@ int BuildingClass::Shape_Number() const {
           **	building.
           */
           if (Health_Ratio() <= Rule.ConditionYellow) {
-            int last1 = Class->Anims[BSTATE_IDLE].Start +
-                        Class->Anims[BSTATE_IDLE].Count;
+            const int last1 = Class->Anims[BSTATE_IDLE].Start +
+                              Class->Anims[BSTATE_IDLE].Count;
             int last2 = Class->Anims[BSTATE_ACTIVE].Start +
                         Class->Anims[BSTATE_ACTIVE].Count;
             int largest = std::max(last1, last2);
@@ -1013,9 +1013,9 @@ void BuildingClass::AI() {
   **	accordingly.
   */
   if (Strength != LastStrength) {
-    int oldpower = Power_Output();
+    const int oldpower = Power_Output();
     LastStrength = Strength;
-    int newpower = Power_Output();
+    const int newpower = Power_Output();
     House->Adjust_Power(newpower - oldpower);
   }
 
@@ -1105,7 +1105,7 @@ void BuildingClass::AI() {
       Frame % kTicksPerSecond == 0) {
     IsJammed = false;
     for (int index = 0; index < Units.Count(); index++) {
-      UnitClass* obj = Units.Ptr(index);
+      const UnitClass* obj = Units.Ptr(index);
       if (obj != nullptr && !obj->IsInLimbo && !obj->House->Is_Ally(House) &&
           obj->Class->IsJammer && Distance(obj) <= Rule.RadarJamRadius) {
         IsJammed = true;
@@ -1329,7 +1329,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
         **	Destroy all attached objects.
         */
         while (Attached_Object()) {
-          FootClass* obj = Detach_Object();
+          const FootClass* obj = Detach_Object();
 
           Detach_All(true);
           delete obj;
@@ -1348,7 +1348,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
         Sound_Effect(VOC_KABOOM22, Coord);
         while (*offset != kRefreshEol) {
-          CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
+          const CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
 
           /*
           **	If the building is destroyed, then lots of
@@ -1406,7 +1406,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
         */
         if (SpiedBy) {
           SpiedBy = 0;
-          StructType struc = *this;
+          const StructType struc = *this;
           if (struc == STRUCT_RADAR /* || struc == STRUCT_EYE */) {
             Update_Radar_Spied();
           }
@@ -1441,8 +1441,8 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
         ** be hit with damage.
         */
         if (*this == STRUCT_BARREL || *this == STRUCT_BARREL3) {
-          COORDINATE center = Center_Coord();
-          CELL cellcenter = Coord_Cell(center);
+          const COORDINATE center = Center_Coord();
+          const CELL cellcenter = Coord_Cell(center);
 
           BulletClass* bullet;
 
@@ -1493,7 +1493,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
       case RESULT_MAJOR:
         Sound_Effect(VOC_KABOOM1, Coord);
         while (*offset != kRefreshEol) {
-          CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
+          const CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
           AnimClass* anim = nullptr;
 
           /*
@@ -1775,7 +1775,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
 
       if (Random_Pick(0, odds) == 1) {
         i = nullptr;
-        InfantryType typ = Crew_Type();
+        const InfantryType typ = Crew_Type();
         if (typ != INFANTRY_NONE) {
           i = new InfantryClass(typ, House->Class->House);
         }
@@ -2085,7 +2085,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
                 FactoryClass* temp = Factory;
                 bldg->Factory = Factory;
                 Factory = nullptr;
-                int retval = bldg->Exit_Object(base);
+                const int retval = bldg->Exit_Object(base);
                 bldg->Factory = nullptr;
                 Factory = temp;
                 return retval;
@@ -2113,8 +2113,8 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
 
           cell = Find_Exit_Cell(base);
           if (cell != 0) {
-            DirType dir = Direction(cell);
-            COORDINATE start = Exit_Coord();
+            const DirType dir = Direction(cell);
+            const COORDINATE start = Exit_Coord();
 
             ScenarioInit++;
             if (base->Unlimbo(start, dir)) {
@@ -2148,8 +2148,8 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         default:
           cell = Find_Exit_Cell(base);
           if (cell != 0) {
-            DirType dir = Direction(cell);
-            COORDINATE start = Exit_Coord();
+            const DirType dir = Direction(cell);
+            const COORDINATE start = Exit_Coord();
 
             ScenarioInit++;
             if (base->Unlimbo(start, dir)) {
@@ -2184,7 +2184,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         *calling routine will probably abandon this *	building in preference
         *to building another.
         */
-        BaseNodeClass* node = Base.Next_Buildable(
+        const BaseNodeClass* node = Base.Next_Buildable(
             dynamic_cast<BuildingClass*>(base)->Class->Type);
         COORDINATE coord = 0;
         if (node) {
@@ -2245,7 +2245,7 @@ void BuildingClass::Update_Buildables() {
   if (House == PlayerPtr && !IsInLimbo && IsDiscoveredByPlayer) {
     switch (Class->ToBuild) {
       case RTTI_VESSELTYPE:
-        for (VesselType v : magic_enum::enum_values<VesselType>()) {
+        for (const VesselType v : magic_enum::enum_values<VesselType>()) {
           if (PlayerPtr->Can_Build(&VesselTypeClass::As_Reference(v),
                                    ActLike)) {
             Map.Add(RTTI_VESSELTYPE, v);
@@ -2254,7 +2254,7 @@ void BuildingClass::Update_Buildables() {
         break;
 
       case RTTI_BUILDINGTYPE:
-        for (StructType i : magic_enum::enum_values<StructType>()) {
+        for (const StructType i : magic_enum::enum_values<StructType>()) {
           if (PlayerPtr->Can_Build(&BuildingTypeClass::As_Reference(i),
                                    ActLike)) {
             Map.Add(RTTI_BUILDINGTYPE, i);
@@ -2263,7 +2263,7 @@ void BuildingClass::Update_Buildables() {
         break;
 
       case RTTI_UNITTYPE:
-        for (UnitType u : magic_enum::enum_values<UnitType>()) {
+        for (const UnitType u : magic_enum::enum_values<UnitType>()) {
           if (PlayerPtr->Can_Build(&UnitTypeClass::As_Reference(u), ActLike)) {
             Map.Add(RTTI_UNITTYPE, u);
           }
@@ -2271,7 +2271,7 @@ void BuildingClass::Update_Buildables() {
         break;
 
       case RTTI_INFANTRYTYPE:
-        for (InfantryType f : magic_enum::enum_values<InfantryType>()) {
+        for (const InfantryType f : magic_enum::enum_values<InfantryType>()) {
           if (PlayerPtr->Can_Build(&InfantryTypeClass::As_Reference(f),
                                    ActLike)) {
             if (InfantryTypeClass::As_Reference(f).IsDog) {
@@ -2288,7 +2288,7 @@ void BuildingClass::Update_Buildables() {
         break;
 
       case RTTI_AIRCRAFTTYPE:
-        for (AircraftType a : magic_enum::enum_values<AircraftType>()) {
+        for (const AircraftType a : magic_enum::enum_values<AircraftType>()) {
           if (PlayerPtr->Can_Build(&AircraftTypeClass::As_Reference(a),
                                    ActLike)) {
             Map.Add(RTTI_AIRCRAFTTYPE, a);
@@ -2708,7 +2708,7 @@ ActionType BuildingClass::What_Action(const ObjectClass* object) const {
           action = ACTION_NONE;
           if (*this == STRUCT_KENNEL) {
             for (int index = 0; index < Buildings.Count(); index++) {
-              BuildingClass* bldg = Buildings.Ptr(index);
+              const BuildingClass* bldg = Buildings.Ptr(index);
               if (bldg != this && bldg->Owner() == Owner() &&
                   *bldg == STRUCT_KENNEL) {
                 action = ACTION_SELF;
@@ -2717,7 +2717,7 @@ ActionType BuildingClass::What_Action(const ObjectClass* object) const {
             }
           } else {
             for (int index = 0; index < Buildings.Count(); index++) {
-              BuildingClass* bldg = Buildings.Ptr(index);
+              const BuildingClass* bldg = Buildings.Ptr(index);
               if (bldg != this && bldg->Owner() == Owner() &&
                   bldg->Class->ToBuild == RTTI_INFANTRYTYPE &&
                   *bldg != STRUCT_KENNEL) {
@@ -2909,7 +2909,7 @@ FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
-  FireErrorType canfire = TechnoClass::Can_Fire(target, which);
+  const FireErrorType canfire = TechnoClass::Can_Fire(target, which);
 
   if (canfire == FIRE_OK) {
     /*
@@ -3056,7 +3056,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     House->Adjust_Power(-Power_Output());
     LastStrength = 0;
     House->Adjust_Drain(-Class->Drain);
-    int booty = House->Adjust_Capacity(-Class->Capacity, true);
+    const int booty = House->Adjust_Capacity(-Class->Capacity, true);
 
     /*
     **	If there is something loaded, then it gets captured as well.
@@ -3105,7 +3105,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     House->IsRecalcNeeded = true;
     newowner->IsRecalcNeeded = true;
     HouseClass* oldowner = House;
-    TARGET tocap = As_Target();
+    const TARGET tocap = As_Target();
 
     IsCaptured = true;
     TechnoClass::Captured(newowner);
@@ -3166,7 +3166,8 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     */
     const int16_t* offset = Occupy_List();
     while (*offset != kRefreshEol) {
-      CELL footprint_cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
+      const CELL footprint_cell =
+          static_cast<CELL>(Coord_Cell(Coord) + *offset++);
       Map.Radar_Pixel(footprint_cell);
     }
     return true;
@@ -3317,7 +3318,7 @@ int BuildingClass::Mission_Guard() {
     **	If there is no target available, then search for one.
     */
     if (!Target_Legal(TarCom)) {
-      ThreatType threat = THREAT_NORMAL;
+      const ThreatType threat = THREAT_NORMAL;
       Assign_Target(Greatest_Threat(threat));
     }
 
@@ -3577,10 +3578,10 @@ int BuildingClass::Mission_Deconstruction() {
             **	Unlimbo the MCV onto the map. The MCV should start in the same
             **	health condition that the construction yard was in.
             */
-            fixed ratio = Health_Ratio();
-            int money = Refund_Amount();
-            TARGET arch = ArchiveTarget;
-            COORDINATE place = Coord_Snap(Adjacent_Cell(Coord, DIR_SE));
+            const fixed ratio = Health_Ratio();
+            const int money = Refund_Amount();
+            const TARGET arch = ArchiveTarget;
+            const COORDINATE place = Coord_Snap(Adjacent_Cell(Coord, DIR_SE));
 
             delete this;
 
@@ -3685,7 +3686,7 @@ int BuildingClass::Mission_Attack() {
           return 1;
         }
         if (!PrimaryFacing.Is_Rotating()) {
-          DirType facing = Direction(TarCom);
+          const DirType facing = Direction(TarCom);
           if (PrimaryFacing.Difference(facing)) {
             PrimaryFacing.Set_Desired(facing);
           } else {
@@ -3703,7 +3704,7 @@ int BuildingClass::Mission_Attack() {
           Assign_Target(kTargetNone);
           Status = SAM_READY;
         } else {
-          FireErrorType error = Can_Fire(TarCom, 0);
+          const FireErrorType error = Can_Fire(TarCom, 0);
           if (error == FIRE_ILLEGAL || error == FIRE_CANT ||
               error == FIRE_RANGE) {
             Assign_Target(kTargetNone);
@@ -3735,7 +3736,7 @@ int BuildingClass::Mission_Attack() {
     return 1;
   }
 
-  int primary = What_Weapon_Should_I_Use(TarCom);
+  const int primary = What_Weapon_Should_I_Use(TarCom);
   IsReadyToCommence = true;
   switch (Can_Fire(TarCom, primary)) {
     case FIRE_ILLEGAL:
@@ -3822,7 +3823,7 @@ int BuildingClass::Mission_Harvest() {
 
         FootClass* techno = Attached_Object();
         if (techno) {
-          int bail = techno->Offload_Tiberium_Bail();
+          const int bail = techno->Offload_Tiberium_Bail();
 
           if (bail) {
             House->Harvested(bail);
@@ -4078,7 +4079,7 @@ int BuildingClass::Mission_Repair() {
           if (pfrac < fixed::_1_2) {
             pfrac = fixed::_1_2;
           }
-          int time = pfrac.Inverse() * Rule.ReloadRate * kTicksPerMinute;
+          const int time = pfrac.Inverse() * Rule.ReloadRate * kTicksPerMinute;
           IsReadyToCommence = false;
           return time;
         }
@@ -4119,9 +4120,9 @@ int BuildingClass::Mission_Missile() {
       ** opening on the building, the missile rising, and smoke broiling.
       */
       case DOOR_OPENING: {
-        COORDINATE door =
+        const COORDINATE door =
             Coord_Move(Center_Coord(), static_cast<DirType>(0xC0), 0x30);
-        auto* sput = new AnimClass(ANIM_SPUTDOOR, door);
+        const auto* sput = new AnimClass(ANIM_SPUTDOOR, door);
         if (sput) {
           IsReadyToCommence = false;
           Status = LAUNCH_UP;
@@ -4135,16 +4136,16 @@ int BuildingClass::Mission_Missile() {
       ** actually handles launching the missile into the air.
       */
       case LAUNCH_UP: {
-        AnimClass* sput = As_Animation(AnimToTrack);
+        const AnimClass* sput = As_Animation(AnimToTrack);
         if (sput && (sput->Fetch_Stage() >= 19)) {
-          CELL center = Coord_Cell(Center_Coord());
-          CELL cell = XY_Cell(Cell_X(center), 1);
-          TARGET targ = ::As_Target(cell);
+          const CELL center = Coord_Cell(Center_Coord());
+          const CELL cell = XY_Cell(Cell_X(center), 1);
+          const TARGET targ = ::As_Target(cell);
 
           auto* bullet = new BulletClass(BULLET_GPS_SATELLITE, targ, this, 200,
                                          WARHEAD_FIRE, MPH_ROCKET);
           if (bullet) {
-            COORDINATE launch =
+            const COORDINATE launch =
                 Coord_Move(Center_Coord(), static_cast<DirType>(0xC0), 0x30);
             if (!bullet->Unlimbo(launch, DIR_N)) {
               delete bullet;
@@ -4194,13 +4195,13 @@ int BuildingClass::Mission_Missile() {
       ** actually handles launching the missile into the air.
       */
       case LAUNCH_UP: {
-        CELL center = Coord_Cell(Center_Coord());
-        CELL cell = XY_Cell(Cell_X(center), 1);
-        TARGET targ = ::As_Target(cell);
+        const CELL center = Coord_Cell(Center_Coord());
+        const CELL cell = XY_Cell(Cell_X(center), 1);
+        const TARGET targ = ::As_Target(cell);
         auto* bullet = new BulletClass(BULLET_NUKE_UP, targ, this, 200,
                                        WARHEAD_HE, MPH_VERY_FAST);
         if (bullet) {
-          COORDINATE launch =
+          const COORDINATE launch =
               Coord_Move(Center_Coord(), static_cast<DirType>(28), 0xA0);
           if (!bullet->Unlimbo(launch, DIR_N)) {
             delete bullet;
@@ -4227,8 +4228,8 @@ int BuildingClass::Mission_Missile() {
               new BulletClass(BULLET_NUKE_DOWN, ::As_Target(House->NukeDest),
                               this, 200, WARHEAD_NUKE, MPH_VERY_FAST);
           if (bullet) {
-            int celly = std::max(Cell_Y(House->NukeDest) - 64, 1);
-            COORDINATE start =
+            const int celly = std::max(Cell_Y(House->NukeDest) - 64, 1);
+            const COORDINATE start =
                 Cell_Coord(XY_Cell(Cell_X(House->NukeDest), celly));
             if (!bullet->Unlimbo(start, DIR_S)) {
               delete bullet;
@@ -4443,8 +4444,8 @@ int BuildingClass::Mission_Unload() {
   assert(IsActive);
 
   if (*this == STRUCT_WEAP) {
-    CELL cell = static_cast<CELL>(Coord_Cell(Coord) + Class->ExitList[0]);
-    COORDINATE coord = Cell_Coord(cell);
+    const CELL cell = static_cast<CELL>(Coord_Cell(Coord) + Class->ExitList[0]);
+    const COORDINATE coord = Cell_Coord(cell);
     CellClass* cellptr = &Map[cell];
     enum { INITIAL, CLEAR_BIB, OPEN, LEAVE, CLOSE };
     enum { DOOR_STAGES = 5, DOOR_RATE = 8 };
@@ -4478,7 +4479,7 @@ int BuildingClass::Mission_Unload() {
           /*
           **	Scatter everything around the weapon's factory door.
           */
-          for (FacingType f : magic_enum::enum_values<FacingType>()) {
+          for (const FacingType f : magic_enum::enum_values<FacingType>()) {
             CellClass* cptr = &cellptr->Adjacent_Cell(f);
             if (cptr->Cell_Building() == nullptr) {
               cptr->Incoming(coord, true, true);
@@ -4690,7 +4691,7 @@ void BuildingClass::Detach_All(bool all) {
   ** build that thing; if so, abandon production of it.
   */
   if (House) {
-    FactoryClass* factory = House->Fetch_Factory(Class->ToBuild);
+    const FactoryClass* factory = House->Fetch_Factory(Class->ToBuild);
 
     /*
     **	If a factory was found, then temporarily disable this building and then
@@ -4698,7 +4699,7 @@ void BuildingClass::Detach_All(bool all) {
     **	not, then the object being produced must be abandoned.
     */
     if (factory) {
-      TechnoClass* object = factory->Get_Object();
+      const TechnoClass* object = factory->Get_Object();
       IsInLimbo = true;
       if (object && !object->Techno_Type_Class()->Who_Can_Build_Me(
                         true, false, House->Class->House)) {
@@ -4767,12 +4768,12 @@ CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
   assert(IsActive);
 
   const CELL* ptr;
-  CELL origin = Coord_Cell(Coord);
+  const CELL origin = Coord_Cell(Coord);
 
   ptr = Class->ExitList;
   if (ptr != nullptr) {
     while (*ptr != kRefreshEol) {
-      CELL cell = static_cast<CELL>(origin + *ptr++);
+      const CELL cell = static_cast<CELL>(origin + *ptr++);
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
         return cell;
       }
@@ -4880,7 +4881,7 @@ COORDINATE BuildingClass::Exit_Coord() const {
 CELL BuildingClass::Check_Point(CheckPointType cp) const {
   CELL xoffset = 6;  // Downwind offset.
   CELL yoffset = 5;  // Crosswind offset.
-  CELL cell = Coord_Cell(Center_Coord());
+  const CELL cell = Coord_Cell(Center_Coord());
 
   switch (cp) {
     case CHECK_STACK:
@@ -4927,7 +4928,7 @@ CELL BuildingClass::Check_Point(CheckPointType cp) const {
 void BuildingClass::Update_Radar_Spied() {
   House->RadarSpied = 0;
   for (int index = 0; index < Buildings.Count(); index++) {
-    BuildingClass* obj = Buildings.Ptr(index);
+    const BuildingClass* obj = Buildings.Ptr(index);
     if (obj && !obj->IsInLimbo && obj->House == House) {
       if (*obj == STRUCT_RADAR /* || *obj == STRUCT_EYE */) {
         House->RadarSpied |= obj->SpiedBy;
@@ -4963,7 +4964,7 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
   char buf[128];
   char* trigname;  // building's trigger's name
 
-  int len = ini.Entry_Count(INI_Name());
+  const int len = ini.Entry_Count(INI_Name());
   for (int index = 0; index < len; index++) {
     const char* entry = ini.Get_Entry(INI_Name(), index);
 
@@ -5008,7 +5009,7 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
       trigname = strtok(nullptr, ",");
 
       bool sellable = false;
-      char* token_pointer = strtok(nullptr, ",");
+      const char* token_pointer = strtok(nullptr, ",");
       if (token_pointer) {
         sellable = tech::ParseInteger<int>(token_pointer).value_or(0) != 0;
       }
@@ -5079,7 +5080,7 @@ void BuildingClass::Write_INI(CCINIClass& ini) {
   **	Write the data out.
   */
   for (int index = 0; index < Buildings.Count(); index++) {
-    BuildingClass* building = Buildings.Ptr(index);
+    const BuildingClass* building = Buildings.Ptr(index);
     if (!building->IsInLimbo) {
       char uname[10];
       char buf[127];
@@ -5114,7 +5115,7 @@ void BuildingClass::Write_INI(CCINIClass& ini) {
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 COORDINATE BuildingClass::Target_Coord() const {
-  COORDINATE coord = Center_Coord();
+  const COORDINATE coord = Center_Coord();
 
   if (Class->FoundationFace != FACING_NONE) {
     return Adjacent_Cell(coord, Class->FoundationFace);
@@ -5411,8 +5412,8 @@ void BuildingClass::Repair_AI() {
   if (IsRepairing && Frame % (Rule.RepairRate * kTicksPerMinute) == 0) {
     IsWrenchVisible = !static_cast<bool>(IsWrenchVisible);
     Mark(MARK_CHANGE);
-    int cost = Class->Repair_Cost();
-    int step = Class->Repair_Step();
+    const int cost = Class->Repair_Cost();
+    const int step = Class->Repair_Step();
 
     /*
     **	Check for and expend any necessary monies to continue the repair.
@@ -5448,7 +5449,7 @@ void BuildingClass::Repair_AI() {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Animation_AI() {
-  bool stagechange = Graphic_Logic();
+  const bool stagechange = Graphic_Logic();
   bool toloop = false;
 
   /*

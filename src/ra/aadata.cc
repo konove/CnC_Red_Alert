@@ -370,7 +370,7 @@ void AircraftTypeClass::Init_Heap() {
  *=============================================================================================*/
 AircraftType AircraftTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
-    for (AircraftType classid : magic_enum::enum_values<AircraftType>()) {
+    for (const AircraftType classid : magic_enum::enum_values<AircraftType>()) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
         return classid;
       }
@@ -383,15 +383,15 @@ AircraftType AircraftTypeClass::From_Name(const char* name) {
 /// Loads graphics and other data files for all aircraft types
 /// WARNING: Reads from disk - must only be called ONCE
 void AircraftTypeClass::One_Time() {
-  for (AircraftType index : magic_enum::enum_values<AircraftType>()) {
+  for (const AircraftType index : magic_enum::enum_values<AircraftType>()) {
     auto& uclass = As_Reference(index);
 
     // Load cameo icon: "<GraphicName>ICON.SHP"
-    auto cameo_file = std::string(uclass.Graphic_Name()) + "ICON.SHP";
+    const auto cameo_file = std::string(uclass.Graphic_Name()) + "ICON.SHP";
     uclass.CameoData = MFCD::Retrieve(cameo_file);
 
     // Load aircraft shape: "<GraphicName>.SHP"
-    auto shape_file = std::string(uclass.Graphic_Name()) + ".SHP";
+    const auto shape_file = std::string(uclass.Graphic_Name()) + ".SHP";
     uclass.SetBorrowedImage(MFCD::RetrieveData(shape_file));
   }
 
@@ -437,7 +437,7 @@ ObjectClass* AircraftTypeClass::Create_One_Of(HouseClass* house) const {
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 void AircraftTypeClass::Prep_For_Add() {
-  for (AircraftType index : magic_enum::enum_values<AircraftType>()) {
+  for (const AircraftType index : magic_enum::enum_values<AircraftType>()) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
     }

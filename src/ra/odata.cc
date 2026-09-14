@@ -668,7 +668,7 @@ void OverlayTypeClass::One_Time() {}
  *=============================================================================================*/
 OverlayType OverlayTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
-    for (OverlayType index : magic_enum::enum_values<OverlayType>()) {
+    for (const OverlayType index : magic_enum::enum_values<OverlayType>()) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
         return index;
       }
@@ -773,7 +773,7 @@ void OverlayTypeClass::Display(int x, int y, WindowNumberType window,
  * HISTORY: * 08/06/1994 JLB : Created *
  *=============================================================================================*/
 void OverlayTypeClass::Prep_For_Add() {
-  for (OverlayType index : magic_enum::enum_values<OverlayType>()) {
+  for (const OverlayType index : magic_enum::enum_values<OverlayType>()) {
     const OverlayTypeClass& overlay = As_Reference(index);
     if (overlay.Get_Image_Data() != nullptr && !overlay.IsWall &&
         (!overlay.IsTiberium || index == OVERLAY_GOLD1 ||
@@ -869,7 +869,7 @@ void OverlayTypeClass::Draw_It(int x, int y, int data) const {
  *=============================================================================================*/
 void OverlayTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
-    for (OverlayType index : magic_enum::enum_values<OverlayType>()) {
+    for (const OverlayType index : magic_enum::enum_values<OverlayType>()) {
       OverlayTypeClass& overlay = As_Reference(index);
       std::string fullname;  // Fully constructed iconset name.
 

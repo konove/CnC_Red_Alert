@@ -72,25 +72,25 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   /*
   **	Dialog & button dimensions
   */
-  int d_list_w = config::kIsGerman ? 360 : 330;
+  const int d_list_w = config::kIsGerman ? 360 : 330;
 
-  int d_dialog_w = d_list_w + 80;  // dialog width
-  int d_dialog_h = 180;            // dialog height
-  int d_dialog_x = ((640 - d_dialog_w) / 2);
-  int d_dialog_y = ((400 - d_dialog_h) / 2);
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // coord of x-center
+  const int d_dialog_w = d_list_w + 80;  // dialog width
+  const int d_dialog_h = 180;            // dialog height
+  const int d_dialog_x = ((640 - d_dialog_w) / 2);
+  const int d_dialog_y = ((400 - d_dialog_h) / 2);
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // coord of x-center
 
-  int d_margin = 14;  // margin width/height
+  const int d_margin = 14;  // margin width/height
 
   //	int d_list_w = 100 * 2;
-  int d_list_h = 14;
-  int d_list_x = d_dialog_cx - (d_list_w / 2);
-  int d_list_y = d_dialog_y + d_margin + 24;
+  const int d_list_h = 14;
+  const int d_list_x = d_dialog_cx - (d_list_w / 2);
+  const int d_list_y = d_dialog_y + d_margin + 24;
 
-  int d_ok_w = 80;
-  int d_ok_h = 26;
-  int d_ok_x = d_dialog_cx - (d_ok_w / 2);
-  int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin;
+  const int d_ok_w = 80;
+  const int d_ok_h = 26;
+  const int d_ok_x = d_dialog_cx - (d_ok_w / 2);
+  const int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin;
 
   /*
   **	Button enumerations

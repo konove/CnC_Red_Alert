@@ -94,9 +94,9 @@ void* Small_Icon(const void* iconptr, int iconnum) {
     //		data = &iptr->Icons[iconnum*(24*24)];
 
     for (int index = 0; index < 9; index++) {
-      int _offsets[9] = {4 + (4 * 24),  12 + (4 * 24),  20 + (4 * 24),
-                         4 + (12 * 24), 12 + (12 * 24), 20 + (12 * 24),
-                         4 + (20 * 24), 12 + (20 * 24), 20 + (20 * 24)};
+      const int _offsets[9] = {4 + (4 * 24),  12 + (4 * 24),  20 + (4 * 24),
+                               4 + (12 * 24), 12 + (12 * 24), 20 + (12 * 24),
+                               4 + (20 * 24), 12 + (20 * 24), 20 + (20 * 24)};
       _icon[index] = data[_offsets[index]];
     }
   }
@@ -306,7 +306,7 @@ int Load_Picture(const char* filename, BufferClass& scratchbuf,
  *=============================================================================================*/
 void* Load_Alloc_Data(FileClass& file) {
   void* ptr = nullptr;
-  int32_t size = file.Size();
+  const int32_t size = file.Size();
 
   ptr = new char[base::ToSize(size)];
   if (ptr) {
@@ -317,7 +317,7 @@ void* Load_Alloc_Data(FileClass& file) {
 
 // Modern RAII version that returns owned data as a vector.
 std::vector<std::byte> LoadAllocData(FileClass& file) {
-  int32_t size = file.Size();
+  const int32_t size = file.Size();
   std::vector<std::byte> data(static_cast<size_t>(size));
   file.Read(data.data(), size);
   return data;
@@ -519,7 +519,7 @@ void* Conquer_Build_Fading_Table(const PaletteClass& palette, void* dest,
         int bvalue = 0;
         for (int id = PaletteClass::COLOR_COUNT - 16;
              id < PaletteClass::COLOR_COUNT - 1; id++) {
-          int diff = palette[id].Difference(trycolor);
+          const int diff = palette[id].Difference(trycolor);
           if (best == -1 || diff < bvalue) {
             best = id;
             bvalue = diff;

@@ -308,15 +308,16 @@ const int16_t* BulletClass::Occupy_List(bool /*placement*/) const {
     static int16_t _list[25];
     const int16_t* ptr = Coord_Spillage_List(Coord, 5);
     int index = 0;
-    CELL cell1 = Coord_Cell(Coord);
+    const CELL cell1 = Coord_Cell(Coord);
 
     while (ptr[index] != kRefreshEol) {
       _list[index] = ptr[index];
       index++;
     }
 
-    COORDINATE coord = Coord_Move(Coord, DIR_N, static_cast<uint16_t>(Height));
-    CELL cell2 = Coord_Cell(coord);
+    const COORDINATE coord =
+        Coord_Move(Coord, DIR_N, static_cast<uint16_t>(Height));
+    const CELL cell2 = Coord_Cell(coord);
     ptr = Coord_Spillage_List(coord, 5);
     while (*ptr != kRefreshEol) {
       _list[index++] = static_cast<int16_t>(*ptr + (cell2 - cell1));
@@ -568,7 +569,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) const {
   /*
   **	Get the basic shape number for this projectile.
   */
-  int shapenum = Shape_Number();
+  const int shapenum = Shape_Number();
 
   /*
   **	For flying projectiles, draw the shadow and adjust the actual projectile
@@ -650,7 +651,7 @@ void BulletClass::Detach(TARGET target, bool all) {
   assert(Bullets.ID(this) == ID);
   assert(IsActive);
 
-  ObjectClass* obj = As_Object(target);
+  const ObjectClass* obj = As_Object(target);
   if ((Payback != nullptr && obj == Payback) &&
       (Payback->What_Am_I() != RTTI_INFANTRY ||
        !dynamic_cast<InfantryClass*>(Payback)->Class->IsDog))
@@ -932,8 +933,8 @@ bool BulletClass::Is_Forced_To_Explode(COORDINATE& coord) const {
   **	travel in anything but water.
   */
   if (Class->IsSubSurface) {
-    int d = ::Distance(Coord_Fraction(coord),
-                       XY_Coord(CELL_LEPTON_W / 2, CELL_LEPTON_W / 2));
+    const int d = ::Distance(Coord_Fraction(coord),
+                             XY_Coord(CELL_LEPTON_W / 2, CELL_LEPTON_W / 2));
     if (cellptr->Land_Type() != LAND_WATER ||
         (d < CELL_LEPTON_W / 3 && cellptr->Cell_Techno() != nullptr &&
          cellptr->Cell_Techno() != Payback)) {
@@ -1057,7 +1058,7 @@ void BulletClass::Bullet_Explodes(bool forced) {
   }
 
   if (anim != ANIM_NONE) {
-    auto* aptr = new AnimClass(anim, Coord);
+    const auto* aptr = new AnimClass(anim, Coord);
     /*
     ** Special case trap: if they're making the nuclear explosion,
     ** and no anim is available, force the nuclear damage anyway

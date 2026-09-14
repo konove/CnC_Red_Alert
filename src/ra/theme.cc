@@ -553,7 +553,7 @@ ThemeType ThemeClass::From_Name(const char* name) {
     **	First search for an exact name match with the filename
     **	of the theme. This is guaranteed to be unique.
     */
-    for (ThemeType theme : magic_enum::enum_values<ThemeType>()) {
+    for (const ThemeType theme : magic_enum::enum_values<ThemeType>()) {
       if (stricmp(_themes[theme].Name, name) == 0) {
         return theme;
       }
@@ -564,7 +564,7 @@ ThemeType ThemeClass::From_Name(const char* name) {
     **	a substring within the full name of the score. This might
     **	yield a match, but is not guaranteed to be unique.
     */
-    for (ThemeType theme : magic_enum::enum_values<ThemeType>()) {
+    for (const ThemeType theme : magic_enum::enum_values<ThemeType>()) {
       if (strstr(Text_String(_themes[theme].Fullname), name) != nullptr) {
         return theme;
       }

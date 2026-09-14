@@ -621,7 +621,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
       SerialDefaults.Baud = -1;
     }
 
-    int initcount = ini.Entry_Count("InitStrings");
+    const int initcount = ini.Entry_Count("InitStrings");
     for (int index = 0; index < initcount; index++) {
       entry = new char[INITSTRBUF_MAX];
       entry[0] = 0;
@@ -640,7 +640,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
     }
 
     //	Read the entry names in
-    int phonecount = ini.Entry_Count("PhoneBook");
+    const int phonecount = ini.Entry_Count("PhoneBook");
     for (int index = 0; index < phonecount; index++) {
       //	Create a new phone book entry
       phone = new PhoneEntryClass();
@@ -916,7 +916,8 @@ void SessionClass::Write_MultiPlayer_Settings() {
 ** question is one of those.  We'll know that by the file name: if it's
 ** K0 -> M9, it's 126x126.
 */
-bool Is_Mission_126x126(char* file_name)  //	This is no longer used. ajw
+bool Is_Mission_126x126(
+    const char* file_name)  //	This is no longer used. ajw
 {
   if (isdigit(file_name[5])) {
     return false;
@@ -956,7 +957,7 @@ void SessionClass::Read_Scenario_Descriptions() {
   if (file.Is_Available()) {
     INIClass ini;
     ini.Load(file);
-    int count = ini.Entry_Count("Missions");
+    const int count = ini.Entry_Count("Missions");
     // debugprint( "Found %i missions in Missions.pkt\n", count );
     for (int index = 0; index < count; index++) {
       const char* fname = ini.Get_Entry("Missions", index);
@@ -990,7 +991,7 @@ void SessionClass::Read_Scenario_Descriptions() {
     INIClass ini;
     ini.Load(mission_file);
 
-    int count = ini.Entry_Count("Missions");
+    const int count = ini.Entry_Count("Missions");
     for (int index = 0; index < count; index++) {
       const char* fname = ini.Get_Entry("Missions", index);
       char buffer[128];
@@ -1016,7 +1017,7 @@ void SessionClass::Read_Scenario_Descriptions() {
     if (file2.Is_Available()) {
       INIClass ini;
       ini.Load(file2);
-      int count = ini.Entry_Count("Missions");
+      const int count = ini.Entry_Count("Missions");
       // debugprint( "Found %i missions in cstrike.pkt\n", count );
       for (int index = 0; index < count; index++) {
         const char* fname = ini.Get_Entry("Missions", index);
@@ -1043,7 +1044,7 @@ void SessionClass::Read_Scenario_Descriptions() {
     if (file2.Is_Available()) {
       INIClass ini;
       ini.Load(file2);
-      int count = ini.Entry_Count("Missions");
+      const int count = ini.Entry_Count("Missions");
       // debugprint( "Found %i missions in aftmath.pkt\n", count );
       for (int index = 0; index < count; index++) {
         const char* fname = ini.Get_Entry("Missions", index);
@@ -1311,7 +1312,7 @@ uint32_t SessionClass::Compute_Unique_ID() {
   //------------------------------------------------------------------------
   // Now add in the free space on the hard drive
   //------------------------------------------------------------------------
-  uint64_t diskfree = Disk_Space_Available();
+  const uint64_t diskfree = Disk_Space_Available();
   Add_CRC(&id, diskfree & 0xFFFFFFFF);
   Add_CRC(&id, diskfree >> 32);
 

@@ -523,7 +523,7 @@ void SidebarClass::Refresh_Cells(CELL cell, const int16_t* list) {
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Activate_Repair(int control) {
-  bool old = IsRepairActive;
+  const bool old = IsRepairActive;
 
   if (control == -1) {
     control = IsRepairActive ? 0 : 1;
@@ -569,7 +569,7 @@ bool SidebarClass::Activate_Repair(int control) {
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Activate_Upgrade(int control) {
-  bool old = IsUpgradeActive;
+  const bool old = IsUpgradeActive;
   if (control == -1) {
     control = IsUpgradeActive ? 0 : 1;
   }
@@ -612,7 +612,7 @@ bool SidebarClass::Activate_Upgrade(int control) {
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Activate_Demolish(int control) {
-  bool old = IsDemolishActive;
+  const bool old = IsDemolishActive;
 
   if (control == -1) {
     control = IsDemolishActive ? 0 : 1;
@@ -659,7 +659,7 @@ bool SidebarClass::Add(RTTIType type, int id) {
   ** Add the sidebar only if we're not in editor mode.
   */
   if (!MapEditorActive) {
-    int column = Which_Column(type);
+    const int column = Which_Column(type);
 
     if (Column[column].Add(type, id)) {
       Activate(1);
@@ -743,7 +743,7 @@ void SidebarClass::Draw_It(bool complete) {
       /*
       **	Draw the outline box around the sidebar buttons.
       */
-      int shape = complete ? 0 : 1;
+      const int shape = complete ? 0 : 1;
 
       /*
       ** The sidebar shape is too big in 640x400 so it needs to be drawn in
@@ -803,7 +803,7 @@ void SidebarClass::Draw_It(bool complete) {
  *key toggles sidebar.                                               *
  *=============================================================================================*/
 void SidebarClass::AI(KeyNumType& input, int x, int y) {
-  bool redraw = false;
+  const bool redraw = false;
 
   /*
   **	Toggle the sidebar in and out with the <TAB> key.
@@ -908,7 +908,7 @@ void SidebarClass::Recalc() {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Activate(int control) {
-  bool old = IsSidebarActive;
+  const bool old = IsSidebarActive;
 
   if (Session.Play) {
     return old;
@@ -1026,9 +1026,10 @@ void SidebarClass::StripClass::One_Time(int /*unused*/) {
   */
   ClockShapes = MFCD::Retrieve("CLOCK.SHP");
 
-  for (SpecialWeaponType lp : magic_enum::enum_values<SpecialWeaponType>()) {
-    auto filename = std::string(SpecialWeaponFile[lp]) + "ICON";
-    auto fullname =
+  for (const SpecialWeaponType lp :
+       magic_enum::enum_values<SpecialWeaponType>()) {
+    const auto filename = std::string(SpecialWeaponFile[lp]) + "ICON";
+    const auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
     SpecialShapes[lp] = MFCD::Retrieve(fullname);
   }
@@ -1466,7 +1467,7 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
   */
   if (IsBuilding) {
     for (int index = 0; index < BuildableCount; index++) {
-      int factoryid = Buildables[index].Factory;
+      const int factoryid = Buildables[index].Factory;
 
       if (factoryid != -1) {
         FactoryClass* factory = Factories.Raw_Ptr(factoryid);
@@ -1480,7 +1481,7 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
             *factory. Buildings are *	the main exception to the ability to
             *leave the factory under their own *	power.
             */
-            TechnoClass* pending = factory->Get_Object();
+            const TechnoClass* pending = factory->Get_Object();
             if (pending != nullptr) {
               switch (pending->What_Am_I()) {
                 case RTTI_VESSEL:
@@ -1576,8 +1577,8 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       int shapenum = 0;
       const void* remapper = nullptr;
       FactoryClass* factory = nullptr;
-      int index = i + TopIndex;
-      int x = X;
+      const int index = i + TopIndex;
+      const int x = X;
       int y = Y + (i * kObjectHeight * 2);
 
       /*
@@ -1881,11 +1882,11 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
  *=============================================================================================*/
 bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
                                                    KeyNumType& key) {
-  int index = Strip->TopIndex + Index;
-  RTTIType otype = Strip->Buildables[index].BuildableType;
-  int oid = Strip->Buildables[index].BuildableID;
-  int fnumber = Strip->Buildables[index].Factory;
-  RemapControlType* scheme = Get_Color_Scheme();
+  const int index = Strip->TopIndex + Index;
+  const RTTIType otype = Strip->Buildables[index].BuildableType;
+  const int oid = Strip->Buildables[index].BuildableID;
+  const int fnumber = Strip->Buildables[index].Factory;
+  const RemapControlType* scheme = Get_Color_Scheme();
 
   const ObjectTypeClass* choice = nullptr;
   SpecialWeaponType spc = SPC_NONE;

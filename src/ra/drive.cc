@@ -110,9 +110,10 @@
 void DriveClass::Response_Select() {
   assert(IsActive);
 
-  static VocType _response[] = {VOC_VEHIC,  VOC_REPORT, VOC_YESSIR,
-                                VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
-  VocType response = _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
+  static const VocType _response[] = {VOC_VEHIC,  VOC_REPORT, VOC_YESSIR,
+                                      VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
+  const VocType response =
+      _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
   if (AllowVoice) {
     Sound_Effect(response, fixed(1), -(ID + 1));
   }
@@ -135,11 +136,12 @@ void DriveClass::Response_Select() {
 void DriveClass::Response_Move() {
   assert(IsActive);
 
-  static VocType _response[] = {
+  static const VocType _response[] = {
       VOC_ACKNOWL,
       VOC_AFFIRM,
   };
-  VocType response = _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
+  const VocType response =
+      _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
   if (AllowVoice) {
     Sound_Effect(response, fixed(1), -(ID + 1));
   }
@@ -162,8 +164,9 @@ void DriveClass::Response_Move() {
 void DriveClass::Response_Attack() {
   assert(IsActive);
 
-  static VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL};
-  VocType response = _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
+  static const VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL};
+  const VocType response =
+      _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
   if (AllowVoice) {
     Sound_Effect(response, fixed(1), -(ID + 1));
   }
@@ -222,7 +225,7 @@ void DriveClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
       toface = toface + static_cast<FacingType>(Random_Pick(0, 2) - 1);
     }
 
-    for (FacingType face : magic_enum::enum_values<FacingType>()) {
+    for (const FacingType face : magic_enum::enum_values<FacingType>()) {
       newface = toface + face;
       newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
@@ -283,7 +286,7 @@ bool DriveClass::Stop_Driver() {
     ** Safe off whether the vehicle is down or not so we know whether
     ** we have to put it back down.
     */
-    int temp = IsDown;
+    const int temp = IsDown;
 
     /*
     ** If the vehicle is down, pick it up so it doesn't interfere with
@@ -484,7 +487,7 @@ COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType& dir) {
   int x;
   int y;
   int temp;
-  TrackControlType flags = TrackControl[TrackNumber].Flag;
+  const TrackControlType flags = TrackControl[TrackNumber].Flag;
 
   x = Coord_X(adj);
   y = Coord_Y(adj);
@@ -704,7 +707,7 @@ bool DriveClass::While_Moving() {
           newtrack = &TrackControl[tnum];
           if (newtrack->Track && RawTracks[newtrack->Track - 1].Entry) {
             COORDINATE c = Head_To_Coord();
-            int oldspeed = Speed;
+            const int oldspeed = Speed;
 
             c = Adjacent_Cell(c, nextface);
 
@@ -813,7 +816,7 @@ void DriveClass::Per_Cell_Process(PCPType why) {
   assert(IsActive);
 
   if (why == PCP_END) {
-    CELL cell = Coord_Cell(Coord);
+    const CELL cell = Coord_Cell(Coord);
 
     /*
     **	Check to see if it has reached its destination. If so, then clear the
@@ -928,13 +931,13 @@ bool DriveClass::Start_Of_Move() {
         *destination is *	blocked by a friendly temporary blockage, then
         *cause that blockage *	to scatter.
         */
-        CELL cell =
+        const CELL cell =
             Adjacent_Cell(Coord_Cell(Center_Coord()), PrimaryFacing.Current());
         if (Map.In_Radar(cell)) {
-          MoveType ok = Can_Enter_Cell(cell);
+          const MoveType ok = Can_Enter_Cell(cell);
           if (ok == MOVE_TEMP) {
             CellClass* cellptr = &Map[cell];
-            TechnoClass* blockage = cellptr->Cell_Techno();
+            const TechnoClass* blockage = cellptr->Cell_Techno();
             if (blockage && House->Is_Ally(blockage)) {
               /*
               **	If the target can be told to get out of the way, only
@@ -994,12 +997,12 @@ bool DriveClass::Start_Of_Move() {
     **	blocked by a friendly temporary blockage, then cause that blockage
     **	to scatter.
     */
-    CELL cell = Adjacent_Cell(Coord_Cell(Center_Coord()), Path[0]);
+    const CELL cell = Adjacent_Cell(Coord_Cell(Center_Coord()), Path[0]);
     if (Map.In_Radar(cell)) {
-      MoveType ok = Can_Enter_Cell(cell);
+      const MoveType ok = Can_Enter_Cell(cell);
       if (ok == MOVE_TEMP) {
         CellClass* cellptr = &Map[cell];
-        TechnoClass* blockage = cellptr->Cell_Techno();
+        const TechnoClass* blockage = cellptr->Cell_Techno();
         if (blockage && House->Is_Ally(blockage)) {
           /*
           **	If the target can be told to get out of the way, only bother
@@ -1408,15 +1411,15 @@ void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
       ** If we have not passed the per cell process point we need
       ** to deal with it.
       */
-      int tracknum = TrackControl[TrackNumber].Track;
+      const int tracknum = TrackControl[TrackNumber].Track;
       if (tracknum) {
         const TrackType* ptr = RawTracks[tracknum - 1].Track;
-        int cellidx = RawTracks[tracknum - 1].Cell;
+        const int cellidx = RawTracks[tracknum - 1].Cell;
         if (cellidx > -1) {
           DirType dir = ptr[cellidx].Facing;
 
           if (TrackIndex < cellidx && cellidx != -1) {
-            COORDINATE offset = Smooth_Turn(ptr[cellidx].Offset, dir);
+            const COORDINATE offset = Smooth_Turn(ptr[cellidx].Offset, dir);
             Map[offset].Flag.Occupy.Vehicle = value;
           }
         }

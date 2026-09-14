@@ -278,7 +278,7 @@ void MonoClass::Sub_Window(int x, int y, int w, int h) {
 void MonoClass::Draw_Box(int x, int y, int w, int h, MonoAttribute attrib,
                          BoxStyleType thick) {
   CellType cell{};
-  MonoAttribute oldattrib = Attrib;
+  const MonoAttribute oldattrib = Attrib;
 
   if (!Enabled || !w || !h) {
     return;
@@ -573,7 +573,7 @@ void MonoClass::Printf(int text, ...) {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 void MonoClass::Print(const char* ptr) {
-  int startcol = X;
+  const int startcol = X;
   const char* text;
   CellType cell{};
 
@@ -666,9 +666,9 @@ void MonoClass::Print(const char* ptr) {
  *=============================================================================================*/
 void MonoClass::Text_Print(const char* text, int x, int y,
                            MonoAttribute attrib) {
-  int oldx = X;
-  int oldy = Y;
-  MonoAttribute oldattrib = Attrib;
+  const int oldx = X;
+  const int oldy = Y;
+  const MonoAttribute oldattrib = Attrib;
 
   X = x;
   Y = y;
@@ -698,9 +698,9 @@ void MonoClass::Text_Print(const char* text, int x, int y,
  * HISTORY: * 06/04/1996 JLB : Created. *
  *=============================================================================================*/
 void MonoClass::Text_Print(int text, int x, int y, MonoAttribute attrib) {
-  int oldx = X;
-  int oldy = Y;
-  MonoAttribute oldattrib = Attrib;
+  const int oldx = X;
+  const int oldy = Y;
+  const MonoAttribute oldattrib = Attrib;
 
   if (text != 0) {
     X = x;
@@ -782,7 +782,7 @@ void MonoClass::View() {
   if (displace) {
     for (int line = 0; line < LINES; line++) {
       for (int col = 0; col < COLUMNS; col++) {
-        CellType temp = Page_Ptr()->Data[line][col];
+        const CellType temp = Page_Ptr()->Data[line][col];
         Page_Ptr()->Data[line][col] = Raw_Ptr(0)->Data[line][col];
         Raw_Ptr(0)->Data[line][col] = temp;
       }

@@ -990,7 +990,7 @@ int IPXManagerClass::Service() {
 
   // Cursor into temp_receive_buffer above. This was a member, which left the
   // object holding a pointer into this frame's stack after Service() returned.
-  char* cur_data_buf = nullptr;
+  const char* cur_data_buf = nullptr;
 
   if (PacketTransport) {
     do {
@@ -1047,12 +1047,12 @@ int IPXManagerClass::Service() {
               *match it to an existing player.
               */
               if (event->Type == EventClass::FRAMESYNC) {
-                int id = event->ID;
+                const int id = event->ID;
 
                 assert(id != PlayerPtr->ID);
                 for (int k = 1; k < Session.Players.Count(); k++) {
                   if (Session.Players[k]->Player.ID == id) {
-                    int iConnectionIndex = Connection_Index(id);
+                    const int iConnectionIndex = Connection_Index(id);
                     if (iConnectionIndex !=
                         CONNECTION_NONE)  //	(else
                                           // Create_Connections() has not
@@ -1427,7 +1427,7 @@ void* IPXManagerClass::Oldest_Send() {
   for (int i = 0; i < NumConnections; i++) {
     queues[base::ToSize(i)] = Connection[i]->Queue;
   }
-  SendQueueType* oldest = ConnectionClass::OldestUnackedSend(queues);
+  const SendQueueType* oldest = ConnectionClass::OldestUnackedSend(queues);
   return oldest != nullptr ? oldest->Buffer : nullptr;
 
 } /* end of Oldest_Send */

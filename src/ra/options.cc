@@ -415,7 +415,7 @@ void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
       **	Convert the working palette entry into an HSV format for
       **	manipulation.
       */
-      HSVClass hsv = oldpal[index].ToHSV();
+      const HSVClass hsv = oldpal[index].ToHSV();
 
       /*
       **	Adjust contrast by moving the value toward the center according
@@ -430,10 +430,10 @@ void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
       v = temp;
       temp = hsv.Saturation_Component() * (color * 256) / 0x80;  // Color
       temp = Bound(temp, 0, 0xFF);
-      int s = temp;
+      const int s = temp;
       temp = hsv.Hue_Component() * (tint * 256) / 0x80;  // Tint
       temp = Bound(temp, 0, 0xFF);
-      int h = temp;
+      const int h = temp;
 
       /*
       **	Replace the working palette entry according to the newly
@@ -789,10 +789,10 @@ void OptionsClass::Set() {
  *a more consistent manner.                          *
  *=============================================================================================*/
 int OptionsClass::Normalize_Delay(int delay) const {
-  static int _adjust[][8] = {{2, 2, 1, 1, 1, 1, 1, 1},
-                             {3, 3, 3, 2, 2, 2, 1, 1},
-                             {5, 4, 4, 3, 3, 2, 2, 1},
-                             {7, 6, 5, 4, 4, 4, 3, 2}};
+  static const int _adjust[][8] = {{2, 2, 1, 1, 1, 1, 1, 1},
+                                   {3, 3, 3, 2, 2, 2, 1, 1},
+                                   {5, 4, 4, 3, 3, 2, 2, 1},
+                                   {7, 6, 5, 4, 4, 4, 3, 2}};
   if (delay) {
     if (delay < 5) {
       delay = _adjust[delay - 1][GameSpeed];

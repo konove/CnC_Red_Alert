@@ -514,35 +514,35 @@ int Main_Menu(int32_t /*unused*/) {
   /*
   **	Dialog & button dimensions
   */
-  int d_dialog_w = 304;
-  int d_dialog_h = 200;
-  int d_dialog_x = 170;
-  int d_dialog_y = 150;
+  const int d_dialog_w = 304;
+  const int d_dialog_h = 200;
+  const int d_dialog_x = 170;
+  const int d_dialog_y = 150;
 
-  int d_start_w = 236;
-  int d_start_h = 18;
-  int d_start_x = 204;
+  const int d_start_w = 236;
+  const int d_start_h = 18;
+  const int d_start_x = 204;
 
-  int d_load_w = 236;
-  int d_load_h = 18;
-  int d_load_x = 204;
+  const int d_load_w = 236;
+  const int d_load_h = 18;
+  const int d_load_x = 204;
 
-  int d_multi_w = 236;
-  int d_multi_h = 18;
-  int d_multi_x = 204;
+  const int d_multi_w = 236;
+  const int d_multi_h = 18;
+  const int d_multi_x = 204;
 
-  int d_intro_w = 236;
-  int d_intro_h = 18;
-  int d_intro_x = 204;
+  const int d_intro_w = 236;
+  const int d_intro_h = 18;
+  const int d_intro_x = 204;
 
-  int d_exit_w = 236;  // changed value to 118 V.Grippi
-  int d_exit_h = 18;
-  int d_exit_x = 204;  // Added V.Grippi
+  const int d_exit_w = 236;  // changed value to 118 V.Grippi
+  const int d_exit_h = 18;
+  const int d_exit_x = 204;  // Added V.Grippi
 
   int starty = d_dialog_y + 24;
 
   // Denzil 5/1/98 - No internet play
-  static int max_buttons = 7;
+  static const int max_buttons = 7;
 
   /*
   **	Button enumerations:
@@ -561,8 +561,8 @@ int Main_Menu(int32_t /*unused*/) {
   /*
   **	Dialog variables:
   */
-  bool bExpansionCS = Expansion_CS_Present();
-  bool bExpansionAM = Expansion_AM_Present();
+  const bool bExpansionCS = Expansion_CS_Present();
+  const bool bExpansionAM = Expansion_AM_Present();
   KeyNumType input;  // input from user
   int retval = 0;    // return value
   int curbutton;
@@ -665,7 +665,7 @@ int Main_Menu(int32_t /*unused*/) {
   Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), TBLACK,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  fixed oldvolume = Options.ScoreVolume;
+  const fixed oldvolume = Options.ScoreVolume;
   if (oldvolume == 0) {
     Options.Set_Score_Volume(fixed(4, 10), false);
   }

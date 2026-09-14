@@ -25,21 +25,21 @@ PaletteClass::PaletteClass(const RGBClass& col) noexcept {
 void PaletteClass::Set(int fade, void (*callback)()) {
   if (fade) {
     // fade to new palette
-    auto start_time = TickCount.Value();
+    const auto start_time = TickCount.Value();
 
     PaletteClass fade_palette;
 
     while (true) {
-      int cur_time =
-          static_cast<int>(std::min<int64_t>(TickCount.Value() - start_time, fade));
+      const int cur_time = static_cast<int>(
+          std::min<int64_t>(TickCount.Value() - start_time, fade));
 
       const unsigned char* old_ptr = CurrentPalette;
       const unsigned char* new_ptr = *this;
       unsigned char* out_ptr = fade_palette;
 
       for (int c = 0; c < COLOR_COUNT * 3; c++) {
-        int new_val = *new_ptr++ & 0x3F;
-        int old_val = *old_ptr++ & 0x3F;
+        const int new_val = *new_ptr++ & 0x3F;
+        const int old_val = *old_ptr++ & 0x3F;
         *out_ptr++ = static_cast<unsigned char>(
             old_val + ((new_val - old_val) * cur_time / fade));
       }
@@ -83,7 +83,7 @@ int PaletteClass::Closest_Color(const RGBClass& col) const {
   int diff = 256 * 3;
 
   for (int i = 0; i < COLOR_COUNT; i++) {
-    int new_diff =
+    const int new_diff =
         std::abs(col.Red_Component() - data_[i].Red_Component()) +
         std::abs(col.Green_Component() - data_[i].Green_Component()) +
         std::abs(col.Blue_Component() - data_[i].Blue_Component());

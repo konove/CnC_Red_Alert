@@ -48,7 +48,7 @@ Widget* Allocate(TFixedIHeapClass<Widget>& heap, int32_t value) {
   return w;
 }
 
-std::vector<uint8_t> Save(TFixedIHeapClass<Widget>& heap) {
+std::vector<uint8_t> Save(const TFixedIHeapClass<Widget>& heap) {
   VectorPipe pipe;
   EXPECT_TRUE(heap.Save(pipe));
   return pipe.bytes;
@@ -62,14 +62,14 @@ bool Load(TFixedIHeapClass<Widget>& heap, const std::vector<uint8_t>& bytes) {
 TEST(HeapSerializeTest, SparseSlotsRoundTripIntoTheSameSlots) {
   TFixedIHeapClass<Widget> source;
   source.Set_Heap(8);
-  Widget* a = Allocate(source, 10);
+  const Widget* a = Allocate(source, 10);
   Widget* b = Allocate(source, 20);
   Widget* c = Allocate(source, 30);
   c->flag = true;
   source.Free(b);  // leaves slots 0 and 2 active
   ASSERT_EQ(source.Count(), 2);
 
-  std::vector<uint8_t> bytes = Save(source);
+  const std::vector<uint8_t> bytes = Save(source);
   // count + 2 x (index + ID + value + flag)
   EXPECT_EQ(bytes.size(), 4U + (2 * (4 + 4 + 4 + 1)));
 
@@ -89,7 +89,7 @@ TEST(HeapSerializeTest, SparseSlotsRoundTripIntoTheSameSlots) {
 TEST(HeapSerializeTest, EmptyHeapRoundTrips) {
   TFixedIHeapClass<Widget> source;
   source.Set_Heap(4);
-  std::vector<uint8_t> bytes = Save(source);
+  const std::vector<uint8_t> bytes = Save(source);
   EXPECT_EQ(bytes.size(), 4U);
 
   TFixedIHeapClass<Widget> loaded;
@@ -116,7 +116,7 @@ TEST(HeapSerializeTest, CountBeyondCapacityFails) {
   for (int i = 0; i < 6; i++) {
     Allocate(source, i);
   }
-  std::vector<uint8_t> bytes = Save(source);
+  const std::vector<uint8_t> bytes = Save(source);
 
   TFixedIHeapClass<Widget> smaller;
   smaller.Set_Heap(4);
@@ -126,7 +126,7 @@ TEST(HeapSerializeTest, CountBeyondCapacityFails) {
 TEST(HeapSerializeTest, SlotIndexOutOfRangeFails) {
   TFixedIHeapClass<Widget> source;
   source.Set_Heap(8);
-  Widget* w = Allocate(source, 1);
+  const Widget* w = Allocate(source, 1);
   EXPECT_EQ(source.ID(w), 0);
   std::vector<uint8_t> bytes = Save(source);
   bytes[4] = 0x7F;  // slot index low byte: 127 is past an 8-slot heap

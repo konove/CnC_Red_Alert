@@ -205,7 +205,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   }
 
   CellClass* cellptr = &Map[cell];
-  ObjectClass* impacto = cellptr->Cell_Occupier();
+  const ObjectClass* impacto = cellptr->Cell_Occupier();
 
   /*
   **	Fill the list of unit IDs that will have damage
@@ -337,7 +337,7 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
     return ANIM_NONE;
   }
 
-  static AnimType _aplist[] = {
+  static const AnimType _aplist[] = {
       ANIM_VEH_HIT3,  // Small fragment throwing explosion -- burn/exp mix.
       ANIM_VEH_HIT2,  //	Small fragment throwing explosion -- pop &
                       // sparkles.
@@ -345,7 +345,7 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
       ANIM_FBALL1,    // Large fireball explosion (bulges rightward).
   };
 
-  static AnimType _helist[] = {
+  static const AnimType _helist[] = {
       ANIM_VEH_HIT1,  //	Small fireball explosion (bulges rightward).
       ANIM_VEH_HIT2,  //	Small fragment throwing explosion -- pop &
                       // sparkles.
@@ -353,13 +353,13 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
       ANIM_FBALL1,    // Large fireball explosion (bulges rightward).
   };
 
-  static AnimType _firelist[] = {
+  static const AnimType _firelist[] = {
       ANIM_NAPALM1,  // Small napalm burn.
       ANIM_NAPALM2,  // Medium napalm burn.
       ANIM_NAPALM3,  // Large napalm burn.
   };
 
-  static AnimType _waterlist[] = {
+  static const AnimType _waterlist[] = {
       ANIM_WATER_EXP3,
       ANIM_WATER_EXP2,
       ANIM_WATER_EXP1,
@@ -447,13 +447,13 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
  *=============================================================================================*/
 void Wide_Area_Damage(COORDINATE coord, LEPTON radius, int rawdamage,
                       TechnoClass* source, WarheadType warhead) {
-  int cell_radius = (radius + CELL_LEPTON_W - 1) / CELL_LEPTON_W;
-  CELL cell = Coord_Cell(coord);
+  const int cell_radius = (radius + CELL_LEPTON_W - 1) / CELL_LEPTON_W;
+  const CELL cell = Coord_Cell(coord);
 
   for (int x = -cell_radius; x <= cell_radius; x++) {
     for (int y = -cell_radius; y <= cell_radius; y++) {
-      int xpos = Cell_X(cell) + x;
-      int ypos = Cell_Y(cell) + y;
+      const int xpos = Cell_X(cell) + x;
+      const int ypos = Cell_Y(cell) + y;
 
       /*
       **	If the potential damage cell is outside of the map bounds,
@@ -466,17 +466,18 @@ void Wide_Area_Damage(COORDINATE coord, LEPTON radius, int rawdamage,
       if (static_cast<unsigned>(ypos) > MAP_CELL_H) {
         continue;
       }
-      CELL tcell = XY_Cell(xpos, ypos);
+      const CELL tcell = XY_Cell(xpos, ypos);
       if (!Map.In_Radar(tcell)) {
         continue;
       }
 
-      int dist_from_center =
+      const int dist_from_center =
           Distance(XY_Coord(static_cast<LEPTON>(x + cell_radius),
                             static_cast<LEPTON>(y + cell_radius)),
                    XY_Coord(static_cast<LEPTON>(cell_radius),
                             static_cast<LEPTON>(cell_radius)));
-      int damage = rawdamage * fixed(cell_radius, dist_from_center).Inverse();
+      const int damage =
+          rawdamage * fixed(cell_radius, dist_from_center).Inverse();
       Explosion_Damage(Cell_Coord(tcell), damage, source, warhead);
       if (warhead == WARHEAD_FIRE && damage > 100) {
         new SmudgeClass(Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),

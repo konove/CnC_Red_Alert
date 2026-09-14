@@ -111,7 +111,7 @@
 #include "tech/number_parse.h"
 #include "tech/readline.h"
 
-static int atoh(char* str);
+static int atoh(const char* str);
 
 /***********************************************************************************************
  * TeamTypeClass::Draw_It -- Display the team type in a list box. *
@@ -365,7 +365,7 @@ TeamClass* TeamTypeClass::Create_One_Of() const {
  *=============================================================================================*/
 void TeamTypeClass::Destroy_All_Of() const {
   for (int index = 0; index < Teams.Count(); index++) {
-    TeamClass* team = Teams.Ptr(index);
+    const TeamClass* team = Teams.Ptr(index);
 
     if (team->Class == this) {
       delete team;
@@ -687,7 +687,7 @@ bool TeamTypeClass::Edit() {
       BUTTON_HOUSE, housetext, sizeof(housetext), TPF_EFNT | TPF_NOSHADOW,
       name_edt.X + name_edt.Width + D_SPACING_X, name_edt.Y, 55, 8 * 5,
       MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
-  for (HousesType house : magic_enum::enum_values<HousesType>()) {
+  for (const HousesType house : magic_enum::enum_values<HousesType>()) {
     housebtn.Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
   if (House == HOUSE_NONE) {
@@ -863,7 +863,7 @@ bool TeamTypeClass::Edit() {
       BUTTON_QUARRY, qtext, sizeof(qtext), TPF_EFNT | TPF_NOSHADOW,
       missionlist1.X + missionlist1.Width + 15, missionlist1.Y, 100, 5 * 8,
       MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
-  for (QuarryType q : magic_enum::enum_values<QuarryType>()) {
+  for (const QuarryType q : magic_enum::enum_values<QuarryType>()) {
     qlist.Add_Item(QuarryName[q]);
   }
   qlist.Set_Selected_Index(0);
@@ -874,7 +874,7 @@ bool TeamTypeClass::Edit() {
       BUTTON_FORMATION, ftext, sizeof(ftext), TPF_EFNT | TPF_NOSHADOW,
       missionlist1.X + missionlist1.Width + 15, missionlist1.Y, 100, 5 * 8,
       MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
-  for (FormationType f : magic_enum::enum_values<FormationType>()) {
+  for (const FormationType f : magic_enum::enum_values<FormationType>()) {
     flist.Add_Item(FormationName[f]);
   }
   flist.Set_Selected_Index(0);
@@ -885,7 +885,7 @@ bool TeamTypeClass::Edit() {
       BUTTON_MISSION, mtext, sizeof(mtext), TPF_EFNT | TPF_NOSHADOW,
       missionlist1.X + missionlist1.Width + 15, missionlist1.Y, 100, 5 * 8,
       MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
-  for (MissionType m : magic_enum::enum_values<MissionType>()) {
+  for (const MissionType m : magic_enum::enum_values<MissionType>()) {
     mlist.Add_Item(MissionClass::Mission_Name(m));
   }
   mlist.Set_Selected_Index(0);
@@ -1048,7 +1048,7 @@ bool TeamTypeClass::Edit() {
     /*
     **	Get user input
     */
-    KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input();
 
     /*
     **	Process input
@@ -1271,7 +1271,7 @@ bool TeamTypeClass::Edit() {
       */
       case ButtonKey(BUTTON_DELETE):
         if (missionlist2.Count()) {
-          TeamMissionClass* tm = missionlist2.Current_Item();
+          const TeamMissionClass* tm = missionlist2.Current_Item();
           missionlist2.Remove_Index(missionlist2.Current_Index());
           delete tm;
         }
@@ -1389,7 +1389,7 @@ bool TeamTypeClass::Edit() {
   return (!cancel);
 }
 
-int atoh(char* str) {
+int atoh(const char* str) {
   int retval = 0;
   while (*str) {
     retval *= 16;
@@ -1613,7 +1613,7 @@ void TeamTypeClass::Read_INI(CCINIClass& ini) {
   TeamTypeClass* team;  // Working team pointer.
   char buf[500];        // INI entry buffer
 
-  int len = ini.Entry_Count(INI_Name());
+  const int len = ini.Entry_Count(INI_Name());
 
   /*
   **	Loop for all team entries, create and fill in.
@@ -1719,8 +1719,8 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
     return;
   }
   for (int index = 0; index < ClassCount; index++) {
-    char* p1 = strtok(nullptr, ",:");
-    char* p2 = strtok(nullptr, ",:");
+    const char* p1 = strtok(nullptr, ",:");
+    const char* p2 = strtok(nullptr, ",:");
     if (p1 == nullptr || p2 == nullptr) {
       ClassCount = 0;
       MissionCount = 0;
@@ -1731,28 +1731,28 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
     /*
     **	See if this is an infantry name
     */
-    InfantryType i_id = InfantryTypeClass::From_Name(p1);
+    const InfantryType i_id = InfantryTypeClass::From_Name(p1);
     if (i_id != INFANTRY_NONE) {
       otype = &InfantryTypeClass::As_Reference(i_id);
     } else {
       /*
       **	See if this is a unit name
       */
-      UnitType u_id = UnitTypeClass::From_Name(p1);
+      const UnitType u_id = UnitTypeClass::From_Name(p1);
       if (u_id != UNIT_NONE) {
         otype = &UnitTypeClass::As_Reference(u_id);
       } else {
         /*
         **	See if this is an aircraft name
         */
-        AircraftType a_id = AircraftTypeClass::From_Name(p1);
+        const AircraftType a_id = AircraftTypeClass::From_Name(p1);
         if (a_id != AIRCRAFT_NONE) {
           otype = &AircraftTypeClass::As_Reference(a_id);
         } else {
           /*
           **	See if this is a vessel name.
           */
-          VesselType v_id = VesselTypeClass::From_Name(p1);
+          const VesselType v_id = VesselTypeClass::From_Name(p1);
           if (v_id != VESSEL_NONE) {
             otype = &VesselTypeClass::As_Reference(v_id);
           }

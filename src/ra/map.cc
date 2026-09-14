@@ -966,7 +966,7 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
     List_Copy(object->Occupy_List(), std::ssize(xlist), xlist);
     const int16_t* list = xlist;
     while (*list != kRefreshEol) {
-      CELL newcell = static_cast<CELL>(cell + *list++);
+      const CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Occupy_Down(object);
         (*this)[newcell].Recalc_Attributes();
@@ -977,7 +977,7 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
     List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
     list = xlist;
     while (*list != kRefreshEol) {
-      CELL newcell = static_cast<CELL>(cell + *list++);
+      const CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Overlap_Down(object);
         (*this)[newcell].Redraw_Objects();
@@ -1015,7 +1015,7 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
     List_Copy(object->Occupy_List(), std::ssize(xlist), xlist);
     const int16_t* list = xlist;
     while (*list != kRefreshEol) {
-      CELL newcell = static_cast<CELL>(cell + *list++);
+      const CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Occupy_Up(object);
         (*this)[newcell].Recalc_Attributes();
@@ -1026,7 +1026,7 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
     List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
     list = xlist;
     while (*list != kRefreshEol) {
-      CELL newcell = static_cast<CELL>(cell + *list++);
+      const CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Overlap_Up(object);
         (*this)[newcell].Redraw_Objects();
@@ -1064,7 +1064,7 @@ void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
     List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
     const int16_t* list = xlist;
     while (*list != kRefreshEol) {
-      CELL newcell = static_cast<CELL>(cell + *list++);
+      const CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Overlap_Down(object);
         (*this)[newcell].Redraw_Objects();
@@ -1101,7 +1101,7 @@ void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
     List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
     const int16_t* list = xlist;
     while (*list != kRefreshEol) {
-      CELL newcell = static_cast<CELL>(cell + *list++);
+      const CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Overlap_Up(object);
         (*this)[newcell].Redraw_Objects();
@@ -1137,7 +1137,7 @@ int32_t MapClass::Overpass() {
   */
   for (int y = 0; y < MapCellHeight; y++) {
     for (int x = 0; x < MapCellWidth; x++) {
-      CELL cell =
+      const CELL cell =
           static_cast<CELL>(((MapCellY + y) * MAP_CELL_W) + (MapCellX + x));
       value += (*this)[cell].Tiberium_Adjust(true);
       (*this)[cell].Recalc_Attributes();
@@ -1283,9 +1283,9 @@ void MapClass::Logic() {
   subcount = std::max(subcount, 1);
   int index;
   for (index = TiberiumScan; index < MAP_CELL_TOTAL; index++) {
-    CELL cell = static_cast<CELL>(index);
+    const CELL cell = static_cast<CELL>(index);
     if (In_Radar(cell)) {
-      CellClass* ptr = &(*this)[cell];
+      const CellClass* ptr = &(*this)[cell];
 
       /*
       **	Tiberium cells can grow.
@@ -1343,7 +1343,7 @@ void MapClass::Logic() {
     */
     if (TiberiumGrowthCount) {
       for (int i = 0; i < TiberiumGrowthCount; i++) {
-        CELL cell = TiberiumGrowth[i];
+        const CELL cell = TiberiumGrowth[i];
         CellClass* newcell = &(*this)[cell];
         newcell->Grow_Tiberium();
       }
@@ -1440,7 +1440,7 @@ bool MapClass::Place_Random_Crate() {
   **	Give a good effort to scan for and place a crate down on the map.
   */
   for (int index = 0; index < 1000; index++) {
-    CELL cell = MapEditClass::Pick_Random_Location();
+    const CELL cell = MapEditClass::Pick_Random_Location();
 
     if (Crates[crateindex].Create_Crate(cell)) {
       return true;
@@ -1622,27 +1622,27 @@ bool MapClass::Validate() {
 ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
   ObjectClass* object = nullptr;
   int distance = 0;
-  CELL cell = Coord_Cell(coord);
+  const CELL cell = Coord_Cell(coord);
 
   /*
   **	Scan through current and adjacent cells, looking for the
   **	closest object (within reason) to the specified coordinate.
   */
-  static int _offsets[] = {0,
-                           -1,
-                           1,
-                           -MAP_CELL_W,
-                           MAP_CELL_W,
-                           MAP_CELL_W - 1,
-                           MAP_CELL_W + 1,
-                           -(MAP_CELL_W - 1),
-                           -(MAP_CELL_W + 1)};
-  for (int _offset : _offsets) {
+  static const int _offsets[] = {0,
+                                 -1,
+                                 1,
+                                 -MAP_CELL_W,
+                                 MAP_CELL_W,
+                                 MAP_CELL_W - 1,
+                                 MAP_CELL_W + 1,
+                                 -(MAP_CELL_W - 1),
+                                 -(MAP_CELL_W + 1)};
+  for (const int _offset : _offsets) {
     /*
     **	Examine the cell for close object. Make sure that the cell actually is a
     **	legal one.
     */
-    CELL newcell = static_cast<CELL>(cell + _offset);
+    const CELL newcell = static_cast<CELL>(cell + _offset);
     if (In_Radar(newcell)) {
       /*
       **	Search through all objects that occupy this cell and then
@@ -1802,7 +1802,7 @@ int MapClass::Zone_Span(CELL cell, int zone, MZoneType check) {
   int filled = 0;
   int xbegin = Cell_X(cell);
   int xend = xbegin;
-  int y = Cell_Y(cell);
+  const int y = Cell_Y(cell);
 
   /*
   **	Perform some preliminary legality checks. If the cell specified
@@ -1818,7 +1818,7 @@ int MapClass::Zone_Span(CELL cell, int zone, MZoneType check) {
   **	until a boundary is reached.
   */
   for (; xbegin >= MapCellX; xbegin--) {
-    CellClass* cellptr = &(*this)[XY_Cell(xbegin, y)];
+    const CellClass* cellptr = &(*this)[XY_Cell(xbegin, y)];
     if (cellptr->Zones[check] != 0 ||
         !cellptr->Is_Clear_To_Move(
             check == MZONE_WATER ? SPEED_FLOAT : SPEED_TRACK, true, true, -1,
@@ -1848,7 +1848,7 @@ int MapClass::Zone_Span(CELL cell, int zone, MZoneType check) {
   **	extent of the current span.
   */
   for (; xend < MapCellX + MapCellWidth; xend++) {
-    CellClass* cellptr = &(*this)[XY_Cell(xend, y)];
+    const CellClass* cellptr = &(*this)[XY_Cell(xend, y)];
     if (cellptr->Zones[check] != 0 ||
         !cellptr->Is_Clear_To_Move(
             check == MZONE_WATER ? SPEED_FLOAT : SPEED_TRACK, true, true, -1,
@@ -1911,17 +1911,17 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
                                MZoneType check) const {
   CELL topten[10];
   int count = 0;
-  int xx = Cell_X(cell);
-  int yy = Cell_Y(cell);
+  const int xx = Cell_X(cell);
+  const int yy = Cell_Y(cell);
 
   /*
   **	Determine the limits of the scanning in the four directions so that
   **	it won't scan past the edge of the world.
   */
-  int left = xx - MapCellX;
-  int right = MapCellWidth - left - 1;
-  int top = yy - MapCellY;
-  int bottom = MapCellHeight - top - 1;
+  const int left = xx - MapCellX;
+  const int right = MapCellWidth - left - 1;
+  const int top = yy - MapCellY;
+  const int bottom = MapCellHeight - top - 1;
 
   /*
   **	Radiate outward from the specified location, looking for the closest
@@ -2031,8 +2031,8 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
  *=============================================================================================*/
 bool MapClass::Base_Region(CELL cell, HousesType& house, ZoneType& zone) const {
   if (static_cast<unsigned>(cell) < MAP_CELL_TOTAL && In_Radar(cell)) {
-    for (HousesType candidate : magic_enum::enum_values<HousesType>()) {
-      HouseClass* h = HouseClass::As_Pointer(candidate);
+    for (const HousesType candidate : magic_enum::enum_values<HousesType>()) {
+      const HouseClass* h = HouseClass::As_Pointer(candidate);
 
       if (h && h->IsActive && !h->IsDefeated && h->Center) {
         zone = h->Which_Zone(cell);
@@ -2061,13 +2061,13 @@ bool MapClass::Base_Region(CELL cell, HousesType& house, ZoneType& zone) const {
  *=============================================================================================*/
 bool MapClass::Destroy_Bridge_At(CELL cell) {
   if (In_Radar(cell) && !Special.IsCaptureTheFlag) {
-    CellClass* cellptr = &(*this)[cell];
+    const CellClass* cellptr = &(*this)[cell];
     TemplateType ttype = cellptr->TType;
 
     if (ttype == TEMPLATE_BRIDGE1 || ttype == TEMPLATE_BRIDGE2) {
-      int icon = cellptr->TIcon;
-      int w = TemplateTypeClass::As_Reference(ttype).Width;
-      int h = TemplateTypeClass::As_Reference(ttype).Height;
+      const int icon = cellptr->TIcon;
+      const int w = TemplateTypeClass::As_Reference(ttype).Width;
+      const int h = TemplateTypeClass::As_Reference(ttype).Height;
 
       cell = static_cast<CELL>(cell - (icon % w));
       cell = static_cast<CELL>(cell - (MAP_CELL_W * (icon / w)));
@@ -2084,9 +2084,9 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
     }
 
     if (ttype == TEMPLATE_BRIDGE1H || ttype == TEMPLATE_BRIDGE2H) {
-      int icon = cellptr->TIcon;
-      int bridge_w = TemplateTypeClass::As_Reference(ttype).Width;
-      int bridge_h = TemplateTypeClass::As_Reference(ttype).Height;
+      const int icon = cellptr->TIcon;
+      const int bridge_w = TemplateTypeClass::As_Reference(ttype).Width;
+      const int bridge_h = TemplateTypeClass::As_Reference(ttype).Height;
 
       cell = static_cast<CELL>(cell - (icon % bridge_w));
       cell = static_cast<CELL>(cell - (MAP_CELL_W * (icon / bridge_w)));
@@ -2110,7 +2110,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
       */
       for (int y = 0; y < bridge_h; y++) {
         for (int x = 0; x < bridge_w; x++) {
-          CellClass* bridge_cell = &(*this)[cell];
+          const CellClass* bridge_cell = &(*this)[cell];
           if (bridge_cell->TType == ttype) {
             /*
             **	Any unit that is firing on the bridge at this location, will
@@ -2140,9 +2140,9 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
      ** All this code is for the multi-part bridges.
      */
     if (ttype >= TEMPLATE_BRIDGE_1A && ttype <= TEMPLATE_BRIDGE_3E) {
-      int icon = cellptr->TIcon;
-      int w = TemplateTypeClass::As_Reference(ttype).Width;
-      int h = TemplateTypeClass::As_Reference(ttype).Height;
+      const int icon = cellptr->TIcon;
+      const int w = TemplateTypeClass::As_Reference(ttype).Width;
+      const int h = TemplateTypeClass::As_Reference(ttype).Height;
 
       cell = static_cast<CELL>(cell - (icon % w));
       cell = static_cast<CELL>(cell - (MAP_CELL_W * (icon / w)));
@@ -2167,7 +2167,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
       if (ttype == TEMPLATE_BRIDGE_3C) {
         // check the template below us, at x-1, y+1
         CELL cell2 = static_cast<CELL>(cell + (MAP_CELL_W - 1));
-        CellClass* celptr = &(*this)[cell2];
+        const CellClass* celptr = &(*this)[cell2];
         if (celptr->TType == TEMPLATE_BRIDGE_3C) {
           // It was also destroyed.  Update us and it.
           new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3D),
@@ -2203,7 +2203,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
         Scen.IsBridgeChanged = true;
 
         // Point to the template below us, x-1, y+2
-        CELL cell2 = static_cast<CELL>(cell + (MAP_CELL_W * 2) - 1);
+        const CELL cell2 = static_cast<CELL>(cell + (MAP_CELL_W * 2) - 1);
         switch ((*this)[cell2].TType) {
           case TEMPLATE_BRIDGE_3A:
           case TEMPLATE_BRIDGE_3B:
@@ -2221,7 +2221,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
       } else {
         if (cellptr->TType == TEMPLATE_BRIDGE_2C) {
           // Point to the template above us, x+2, y-1
-          CELL cell2 = static_cast<CELL>(cell - (MAP_CELL_W - 2));
+          const CELL cell2 = static_cast<CELL>(cell - (MAP_CELL_W - 2));
           switch ((*this)[cell2].TType) {
             case TEMPLATE_BRIDGE_3A:
             case TEMPLATE_BRIDGE_3B:
@@ -2247,7 +2247,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
         int tdata = 0;
         for (y = 0; y < h; y++) {
           for (x = 0; x < w; x++) {
-            CellClass* ptr = &(*this)[static_cast<CELL>(cell + x)];
+            const CellClass* ptr = &(*this)[static_cast<CELL>(cell + x)];
             if (ptr->TType == cellptr->TType ||
                 ptr->Land_Type() == LAND_RIVER ||
                 ptr->Land_Type() == LAND_WATER) {
@@ -2374,8 +2374,8 @@ int MapClass::Intact_Bridge_Count() const {
  * HISTORY: * 09/25/1996 JLB : Created. *
  *=============================================================================================*/
 CELL MapClass::Pick_Random_Location() {
-  int x = Map.MapCellX + Random_Pick(0, Map.MapCellWidth - 1);
-  int y = Map.MapCellY + Random_Pick(0, Map.MapCellHeight - 1);
+  const int x = Map.MapCellX + Random_Pick(0, Map.MapCellWidth - 1);
+  const int y = Map.MapCellY + Random_Pick(0, Map.MapCellHeight - 1);
 
   return XY_Cell(x, y);
 }
@@ -2400,8 +2400,8 @@ void MapClass::Shroud_The_Map() {
       /*
       ** BG: remove "ring of darkness" around edge of map.
       */
-      int x = Cell_X(cell);
-      int y = Cell_Y(cell);
+      const int x = Cell_X(cell);
+      const int y = Cell_Y(cell);
       if (x >= Map.MapCellX && x < Map.MapCellX + Map.MapCellWidth &&
           y >= Map.MapCellY && y < Map.MapCellY + Map.MapCellHeight) {
         cellptr->IsMapped = false;

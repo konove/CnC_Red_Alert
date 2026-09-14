@@ -113,9 +113,9 @@ void TabClass::Draw_It(bool complete) {
   *needs *	to be redrawn.
   */
   if ((complete || IsTabToRedraw) && LogicPage->Lock()) {
-    int width = SeenBuff.Get_Width();
-    int rightx = width - 1;
-    int tab_height = TAB_HEIGHT * 2;
+    const int width = SeenBuff.Get_Width();
+    const int rightx = width - 1;
+    const int tab_height = TAB_HEIGHT * 2;
 
     LogicPage->Fill_Rect(0, 0, rightx, tab_height - 1, BLACK);
     //		LogicPage->Fill_Rect(0, 0, rightx, tab_height-(2 * 2),
@@ -155,7 +155,7 @@ void TabClass::Draw_Credits_Tab() {
                 (320 - EVA_WIDTH) * 2, 0, WINDOW_MAIN, SHAPE_NORMAL);
 
   if (Scen.MissionTimer.IsRunning()) {
-    bool light =
+    const bool light =
         Scen.MissionTimer.Value() < kTicksPerMinute * Rule.TimerWarning ||
         Map.FlasherTimer.HasTimeLeft();
     CC_Draw_Shape(TabShape, light ? 4 : 2, 320, 0, WINDOW_MAIN, SHAPE_NORMAL);
@@ -288,7 +288,7 @@ void TabClass::Set_Active(int select) {
  *=============================================================================================*/
 void TabClass::One_Time() {
   SidebarClass::One_Time();
-  RawFileClass file("tabs.shp");
+  const RawFileClass file("tabs.shp");
   TabShape = MFCD::Retrieve("TABS.SHP");
 }
 

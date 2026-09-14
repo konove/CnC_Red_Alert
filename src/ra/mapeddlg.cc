@@ -181,7 +181,7 @@ int MapEditClass::New_Scenario() {
   /*
   **	Create houses
   */
-  for (HousesType house : magic_enum::enum_values<HousesType>()) {
+  for (const HousesType house : magic_enum::enum_values<HousesType>()) {
     new HouseClass(house);
   }
 
@@ -642,8 +642,8 @@ int MapEditClass::Load_Scenario() {
     if (scen_nump < 100) {
       sprintf(scen_buf, "%d", scen_nump);  // init edit buffer
     } else {
-      char first = static_cast<char>(scen_nump / 36);
-      char second = static_cast<char>(scen_nump % 36);
+      const char first = static_cast<char>(scen_nump / 36);
+      const char second = static_cast<char>(scen_nump % 36);
       scen_buf[0] = static_cast<char>(first + 'A');
       // Mono_Printf("picking map, scen# = %d, first = %c, second = %d
       // (numeric)\n",scen_nump,
@@ -781,7 +781,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Get user input
       */
-      KeyNumType input = commands->Input();
+      const KeyNumType input = commands->Input();
 
       /*
       **	Process input
@@ -1069,7 +1069,7 @@ int MapEditClass::Load_Scenario() {
     CELL cell;              // for drawing map symbology
     int color;              // for drawing map symbology
     ObjectClass* occupier;  // cell's occupier
-    RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+    const RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
     /*
     **	Buttons
@@ -1656,7 +1656,7 @@ int MapEditClass::Load_Scenario() {
    *   02/13/1996 JLB : Revamped to new system.                              *
    *=========================================================================*/
   int MapEditClass::Scenario_Dialog() {
-    TheaterType orig_theater = Scen.Theater;  // original theater
+    const TheaterType orig_theater = Scen.Theater;  // original theater
     HousesType house = PlayerPtr->Class->House;
     HousesType newhouse = house;
     HouseStaticClass hdata[magic_enum::enum_count<HousesType>()];
@@ -1664,8 +1664,8 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Fill in the house data for each house that exists.
     */
-    for (HousesType h : magic_enum::enum_values<HousesType>()) {
-      HouseClass* hptr = HouseClass::As_Pointer(h);
+    for (const HousesType h : magic_enum::enum_values<HousesType>()) {
+      const HouseClass* hptr = HouseClass::As_Pointer(h);
       if (hptr) {
         hdata[h] = hptr->Control;
       }
@@ -1743,7 +1743,7 @@ int MapEditClass::Load_Scenario() {
                              D_DIALOG_X + 30, D_DIALOG_Y + 30, 65,
                              8 * 5, MFCD::Retrieve("EBTN-UP.SHP"),
                              MFCD::Retrieve("EBTN-DN.SHP"));
-    for (TheaterType t : magic_enum::enum_values<TheaterType>()) {
+    for (const TheaterType t : magic_enum::enum_values<TheaterType>()) {
       theaterbtn.Add_Item(Theaters[t].Name);
     }
     theaterbtn.Set_Selected_Index(orig_theater);
@@ -1877,7 +1877,7 @@ int MapEditClass::Load_Scenario() {
         theaterbtn.X, theaterbtn.Y + theaterbtn.Height + 24, 50, 7 * 10,
         MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
     intro.Add_Item("<none>");
-    for (VQType v : magic_enum::enum_values<VQType>()) {
+    for (const VQType v : magic_enum::enum_values<VQType>()) {
       intro.Add_Item(VQName[v]);
     }
     intro.Set_Selected_Index((int)Scen.IntroMovie + 1);
@@ -1891,7 +1891,7 @@ int MapEditClass::Load_Scenario() {
                            intro.Y, 50, 7 * 10, MFCD::Retrieve("EBTN-UP.SHP"),
                            MFCD::Retrieve("EBTN-DN.SHP"));
     briefing.Add_Item("<none>");
-    for (VQType v : magic_enum::enum_values<VQType>()) {
+    for (const VQType v : magic_enum::enum_values<VQType>()) {
       briefing.Add_Item(VQName[v]);
     }
     briefing.Set_Selected_Index((int)Scen.BriefMovie + 1);
@@ -1902,7 +1902,7 @@ int MapEditClass::Load_Scenario() {
         briefing.X + briefing.Width + 10, briefing.Y, 50, 7 * 10,
         MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
     action.Add_Item("<none>");
-    for (VQType v : magic_enum::enum_values<VQType>()) {
+    for (const VQType v : magic_enum::enum_values<VQType>()) {
       action.Add_Item(VQName[v]);
     }
     action.Set_Selected_Index((int)Scen.ActionMovie + 1);
@@ -1913,7 +1913,7 @@ int MapEditClass::Load_Scenario() {
                       action.Y, 50, 7 * 10, MFCD::Retrieve("EBTN-UP.SHP"),
                       MFCD::Retrieve("EBTN-DN.SHP"));
     win.Add_Item("<none>");
-    for (VQType v : magic_enum::enum_values<VQType>()) {
+    for (const VQType v : magic_enum::enum_values<VQType>()) {
       win.Add_Item(VQName[v]);
     }
     win.Set_Selected_Index((int)Scen.WinMovie + 1);
@@ -1924,7 +1924,7 @@ int MapEditClass::Load_Scenario() {
                        50, 7 * 10, MFCD::Retrieve("EBTN-UP.SHP"),
                        MFCD::Retrieve("EBTN-DN.SHP"));
     lose.Add_Item("<none>");
-    for (VQType v : magic_enum::enum_values<VQType>()) {
+    for (const VQType v : magic_enum::enum_values<VQType>()) {
       lose.Add_Item(VQName[v]);
     }
     lose.Set_Selected_Index((int)Scen.LoseMovie + 1);
@@ -1936,7 +1936,7 @@ int MapEditClass::Load_Scenario() {
                        D_DIALOG_Y + 105, 55, 7 * 10, TPF_EFNT | TPF_NOSHADOW,
                        MFCD::Retrieve("EBTN-UP.SHP"),
                        MFCD::Retrieve("EBTN-DN.SHP"));
-    for (HousesType h : magic_enum::enum_values<HousesType>()) {
+    for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       housebtn.Add_Item(HouseTypeClass::As_Reference(h).IniName);
     }
     housebtn.Set_Selected_Index(PlayerPtr->Class->House);
@@ -1949,7 +1949,7 @@ int MapEditClass::Load_Scenario() {
         BUTTON_BASE, basetext, sizeof(basetext), TPF_EFNT | TPF_NOSHADOW,
         D_DIALOG_X + 30, D_DIALOG_Y + 80, 65, 7 * 10,
         MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
-    for (HousesType h : magic_enum::enum_values<HousesType>()) {
+    for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       basebtn.Add_Item(HouseTypeClass::As_Reference(h).IniName);
     }
     if (Base.House != HOUSE_NONE) {
@@ -1965,7 +1965,7 @@ int MapEditClass::Load_Scenario() {
         basebtn.X + basebtn.Width + 30, basebtn.Y, 85, 7 * 10,
         MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
     themebtn.Add_Item("<none>");
-    for (ThemeType th : magic_enum::enum_values<ThemeType>()) {
+    for (const ThemeType th : magic_enum::enum_values<ThemeType>()) {
       themebtn.Add_Item(ThemeClass::Full_Name(th));
     }
     if (Scen.TransitTheme != THEME_NONE) {
@@ -2017,7 +2017,7 @@ int MapEditClass::Load_Scenario() {
                         maxunit.Y + 20, 100, 7 * 4, TPF_EFNT | TPF_NOSHADOW,
                         MFCD::Retrieve("EBTN-UP.SHP"),
                         MFCD::Retrieve("EBTN-DN.SHP"));
-    for (SourceType source : magic_enum::enum_values<SourceType>()) {
+    for (const SourceType source : magic_enum::enum_values<SourceType>()) {
       if (source > SOURCE_WEST) {
         break;
       }
@@ -2043,7 +2043,7 @@ int MapEditClass::Load_Scenario() {
                           housebtn.Y, 65, 7 * 10, TPF_EFNT | TPF_NOSHADOW,
                           MFCD::Retrieve("EBTN-UP.SHP"),
                           MFCD::Retrieve("EBTN-DN.SHP"));
-    for (HousesType h : magic_enum::enum_values<HousesType>()) {
+    for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       allies.Add_Item(HouseTypeClass::As_Reference(h).IniName);
       if (hdata[house].Allies & (1L << h)) {
         allies.Check_Item(h, true);
@@ -2058,7 +2058,7 @@ int MapEditClass::Load_Scenario() {
                            housebtn.Y, 65, 7 * 10, TPF_EFNT | TPF_NOSHADOW,
                            MFCD::Retrieve("EBTN-UP.SHP"),
                            MFCD::Retrieve("EBTN-DN.SHP"));
-    for (HousesType h : magic_enum::enum_values<HousesType>()) {
+    for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       control.Add_Item(HouseTypeClass::As_Reference(h).IniName);
       if (HouseClass::As_Pointer(h)->IsPlayerControl) {
         control.Check_Item(h, true);
@@ -2133,13 +2133,13 @@ int MapEditClass::Load_Scenario() {
       *settings of the *	house should change as well.
       */
       if (housechange) {
-        HouseStaticClass* hstatic = &hdata[newhouse];
+        const HouseStaticClass* hstatic = &hdata[newhouse];
         creditbtn.Set_Value(
             static_cast<int>(hstatic->InitialCredits / 100));
         techlevel.Set_Value(hstatic->TechLevel);
         sourcebtn.Set_Selected_Index(hstatic->Edge);
         maxunit.Set_Value(hstatic->MaxUnit + hstatic->MaxInfantry);
-        for (HousesType h : magic_enum::enum_values<HousesType>()) {
+        for (const HousesType h : magic_enum::enum_values<HousesType>()) {
           allies.Check_Item(h, (hstatic->Allies & (1L << h)) != 0);
         }
         smarties.Set_Value(hstatic->IQ);
@@ -2297,7 +2297,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Get user input
       */
-      KeyNumType input = commands->Input();
+      const KeyNumType input = commands->Input();
 
       /*
       **	Process input
@@ -2391,7 +2391,7 @@ int MapEditClass::Load_Scenario() {
         hstatic->MaxUnit = maxunit.Get_Value() / 2;
         hstatic->MaxInfantry = maxunit.Get_Value() / 2;
         hstatic->IQ = smarties.Get_Value();
-        for (HousesType h : magic_enum::enum_values<HousesType>()) {
+        for (const HousesType h : magic_enum::enum_values<HousesType>()) {
           if (allies.Is_Checked(h)) {
             hstatic->Allies = static_cast<int>(hstatic->Allies | (1L << h));
           } else {
@@ -2418,7 +2418,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Copy the dialog data back into the appropriate game data locations.
     */
-    for (HousesType h : magic_enum::enum_values<HousesType>()) {
+    for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       HouseClass* hptr = HouseClass::As_Pointer(h);
       if (hptr != nullptr) {
         hptr->Control = hdata[h];
@@ -2454,7 +2454,7 @@ int MapEditClass::Load_Scenario() {
     **	  theater; if not compatible, set TType to TEMPLATE_NONE & TIcon to 0
     **	- Then, re-initialize the TypeClasses for the new Theater
     */
-    auto theater = TheaterType(theaterbtn.Current_Index());
+    const auto theater = TheaterType(theaterbtn.Current_Index());
     if (theater != orig_theater) {
       int theater_mask;            // template/terrain mask
       TerrainClass* terrain;       // cell's terrain pointer
@@ -2812,7 +2812,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Get user input
       */
-      KeyNumType input = commands->Input();
+      const KeyNumType input = commands->Input();
 
       /*
       **	Process input

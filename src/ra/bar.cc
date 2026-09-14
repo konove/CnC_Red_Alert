@@ -197,14 +197,14 @@ void ProgressBarClass::Redraw() const {
   **	The working "length" of the bargraph is dependant on whether the
   **	bargraph is horizontal or vertical.
   */
-  int size = Is_Horizontal() ? w : h;
+  const int size = Is_Horizontal() ? w : h;
 
   /*
   **	Determine the number of pixels to fill in the bargraph depending on the
   **	size of the internal value. The larger the internal value the more
   **	filled the bargraph becomes.
   */
-  int fill = CurrentValue * size;
+  const int fill = CurrentValue * size;
 
   /*
   **	Draw the filled portion of the bargraph if there is any pixels to draw.

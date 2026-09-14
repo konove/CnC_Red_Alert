@@ -206,10 +206,11 @@ int IconListClass::Add_Item(
       //	Stupid usage of globals for font stuff... <grumble>
       if (TextFlags == TPF_TYPE) {
         const void* pFontBefore = Set_Font(TypeFontPtr);
-        int FontXSpacingBefore = FontXSpacing;
+        const int FontXSpacingBefore = FontXSpacing;
         FontXSpacing = -2;
 
-        int iWidthToClipAt = IsScrollActive ? Width : Width - UpGadget.Width;
+        const int iWidthToClipAt =
+            IsScrollActive ? Width : Width - UpGadget.Width;
         //	This call will place '\r's in the string where line breaks
         // should occur.
         Format_Window_String_New(text, iWidthToClipAt, iWidthMax, iHeight,
@@ -222,7 +223,8 @@ int IconListClass::Add_Item(
         //	Currently never called. Test well if you use IconList with a
         // font other than TPF_TYPE, 	as the character spacing globals get set
         // weirdly, I've found.
-        int iWidthToClipAt = IsScrollActive ? Width : Width - UpGadget.Width;
+        const int iWidthToClipAt =
+            IsScrollActive ? Width : Width - UpGadget.Width;
         //	This call will place '\r's in the string where line breaks
         // should occur.
         Format_Window_String_New(text, iWidthToClipAt, iWidthMax, iHeight,
@@ -232,7 +234,7 @@ int IconListClass::Add_Item(
       //	Each break character causes a line to be added to list.
       char szBreakchars[] = "\r\n\v\f";
       char* szToken;
-      char* szNextChar = szText;
+      const char* szNextChar = szText;
       szToken = strtok(szText, szBreakchars);
       while (szToken) {
         while (szNextChar < szToken) {
@@ -402,7 +404,7 @@ void IconListClass::Remove_Item(int index) {
 
 void IconListClass::Draw_Entry(int index, int x, int y, int width,
                                bool selected) {
-  IconList_ItemExtras* pExtras = ExtrasList[index];
+  const IconList_ItemExtras* pExtras = ExtrasList[index];
 
   int xText = x;
   //	ajw If I end up needing to use SHAPEs for icons, figure out shape width
@@ -411,7 +413,8 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
   for (int iIcon = 0; iIcon != 3; iIcon++) {
     if (pExtras->pIcon[iIcon] && pExtras->IconKind[iIcon] == ICON_DIB) {
       //	Push text over to accommodate icon.
-      int iWidthIcon = PREICONGAP + AsImage(pExtras->pIcon[iIcon]).Width();
+      const int iWidthIcon =
+          PREICONGAP + AsImage(pExtras->pIcon[iIcon]).Width();
       xText += iWidthIcon;
       width -= iWidthIcon;
       bIconsPresent = true;
@@ -485,7 +488,7 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
     // appropriately. 	(Ignore others. This is a hack because having more than
     // one tab will now break this.)
     if (Tabs) {
-      int tab = *Tabs - (xText - x);
+      const int tab = *Tabs - (xText - x);
       Conquer_Clip_Text_Print(List[index], xText, y, pRemap, TBLACK, flags,
                               width, &tab);
     } else {
@@ -778,7 +781,7 @@ int IconListClass::OffsetToIndex(int iIndex, int y) {
 
 int Format_Window_String_New(const char* string, int maxlinelen, int& width,
                              int& height, char* szReturn, int iExtraChars) {
-  char* const szReturnStart = szReturn;
+  const char* const szReturnStart = szReturn;
   int linelen;
   int lines = 0;
   width = 0;

@@ -335,7 +335,7 @@ void TActionClass::Read_INI() {
   if (Action == TACTION_PLAY_SOUND &&
       (Data.Value < 0 ||
        std::cmp_greater_equal(Data.Value, magic_enum::enum_count<VocType>()))) {
-    int fixed = Data.Value & 0xFF;
+    const int fixed = Data.Value & 0xFF;
     if (fixed >= 0 && std::cmp_less(fixed, magic_enum::enum_count<VocType>())) {
       DLOG(WARNING) << "Read_INI: Fixed corrupted sound value " << Data.Value
                     << " -> " << fixed;
@@ -477,7 +477,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     */
     case TACTION_REVEAL_ZONE:
       if (!PlayerPtr->IsVisionary) {
-        int zone = Map[Scen.Waypoint[Data.Value]].Zones[MZONE_CRUSHER];
+        const int zone = Map[Scen.Waypoint[Data.Value]].Zones[MZONE_CRUSHER];
 
         for (CELL map_cell = 0; map_cell < MAP_CELL_TOTAL; map_cell++) {
           if (std::cmp_equal(Map[map_cell].Zones[MZONE_CRUSHER], zone)) {

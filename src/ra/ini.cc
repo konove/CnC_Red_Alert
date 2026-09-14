@@ -132,7 +132,7 @@ bool INIClass::Clear(const char* section, const char* entry) {
     INISection* secptr = Find_Section(section);
     if (secptr != nullptr) {
       if (entry != nullptr) {
-        INIEntry* entptr = secptr->Find_Entry(entry);
+        const INIEntry* entptr = secptr->Find_Entry(entry);
         if (entptr != nullptr) {
           /*
           **	Remove the entry from the entry index list.
@@ -230,7 +230,7 @@ bool INIClass::Load(Straw& file)
       **	of the entry loop and let the outer section loop take
       **	care of it.
       */
-      int len = Read_Line(file, buffer, sizeof(buffer), end_of_file);
+      const int len = Read_Line(file, buffer, sizeof(buffer), end_of_file);
       if (buffer[0] == '[' && strchr(buffer, ']') != nullptr) {
         break;
       }
@@ -386,7 +386,7 @@ int INIClass::Save(Pipe& pipe) const {
  *=============================================================================================*/
 INIClass::INISection* INIClass::Find_Section(const char* section) const {
   if (section != nullptr) {
-    uint32_t crc = CrcEngine::Compute(section);
+    const uint32_t crc = CrcEngine::Compute(section);
 
     if (SectionIndex.Is_Present(static_cast<int>(crc))) {
       return SectionIndex.Fetch_Index(static_cast<int>(crc));
@@ -427,7 +427,7 @@ int INIClass::Section_Count() const { return SectionIndex.Count(); }
  * HISTORY: * 07/02/1996 JLB : Created. * 11/02/1996 JLB : Uses index manager. *
  *=============================================================================================*/
 int INIClass::Entry_Count(const char* section) const {
-  INISection* secptr = Find_Section(section);
+  const INISection* secptr = Find_Section(section);
   if (secptr != nullptr) {
     return secptr->EntryIndex.Count();
   }
@@ -454,7 +454,7 @@ int INIClass::Entry_Count(const char* section) const {
  *=============================================================================================*/
 INIClass::INIEntry* INIClass::Find_Entry(const char* section,
                                          const char* entry) const {
-  INISection* secptr = Find_Section(section);
+  const INISection* secptr = Find_Section(section);
   if (secptr != nullptr) {
     return secptr->Find_Entry(entry);
   }
@@ -481,10 +481,10 @@ INIClass::INIEntry* INIClass::Find_Entry(const char* section,
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
 const char* INIClass::Get_Entry(const char* section, int index) const {
-  INISection* secptr = Find_Section(section);
+  const INISection* secptr = Find_Section(section);
 
   if (secptr != nullptr && index < secptr->EntryIndex.Count()) {
-    INIEntry* entryptr = secptr->EntryList.First();
+    const INIEntry* entryptr = secptr->EntryList.First();
 
     while (entryptr != nullptr && entryptr->Is_Valid()) {
       if (index == 0) {
@@ -536,7 +536,7 @@ bool INIClass::Put_UUBlock(const char* section, const void* block, int len) {
     char buffer[71];
     char sbuffer[32];
 
-    int length = bstraw.Get(buffer, sizeof(buffer) - 1);
+    const int length = bstraw.Get(buffer, sizeof(buffer) - 1);
     buffer[length] = '\0';
     if (length == 0) {
       break;
@@ -587,13 +587,13 @@ int INIClass::Get_UUBlock(const char* section, void* block, int len) const {
   b64pipe.SetSink(&bpipe);
 
   int total = 0;
-  int counter = Entry_Count(section);
+  const int counter = Entry_Count(section);
   for (int index = 0; index < counter; index++) {
     char buffer[128];
 
-    int length = Get_String(section, Get_Entry(section, index), "=", buffer,
-                            sizeof(buffer));
-    int outcount = b64pipe.Put(buffer, length);
+    const int length = Get_String(section, Get_Entry(section, index), "=",
+                                  buffer, sizeof(buffer));
+    const int outcount = b64pipe.Put(buffer, length);
     total += outcount;
   }
   total += b64pipe.End();
@@ -645,7 +645,7 @@ bool INIClass::Put_TextBlock(const char* section, const char* text) {
     if (count > 0) {
       if (count >= 75) {
         while (count) {
-          char c = buffer[count];
+          const char c = buffer[count];
 
           if (isspace(c)) {
             break;
@@ -703,7 +703,7 @@ int INIClass::Get_TextBlock(const char* section, char* buffer, int len) const {
     return 0;
   }
 
-  int elen = Entry_Count(section);
+  const int elen = Entry_Count(section);
   int total = 0;
   for (int index = 0; index < elen; index++) {
     /*
@@ -717,7 +717,7 @@ int INIClass::Get_TextBlock(const char* section, char* buffer, int len) const {
 
     Get_String(section, Get_Entry(section, index), "", buffer, len);
 
-    int partial = static_cast<int>(strlen(buffer));
+    const int partial = static_cast<int>(strlen(buffer));
     total += partial;
     buffer += partial;
     len -= partial;
@@ -810,7 +810,7 @@ int INIClass::Get_Int(const char* section, const char* entry,
     return defvalue;
   }
 
-  INIEntry* entryptr = Find_Entry(section, entry);
+  const INIEntry* entryptr = Find_Entry(section, entry);
   if (entryptr) {
     return tech::ParseIniInteger(entryptr->Value).value_or(defvalue);
   }
@@ -879,7 +879,7 @@ int INIClass::Get_Hex(const char* section, const char* entry,
     return defvalue;
   }
 
-  INIEntry* entryptr = Find_Entry(section, entry);
+  const INIEntry* entryptr = Find_Entry(section, entry);
   if (entryptr) {
     if (const auto value = tech::ParseHex<uint32_t>(entryptr->Value)) {
       return static_cast<int>(*value);
@@ -992,7 +992,7 @@ int INIClass::Get_String(const char* section, const char* entry,
   **	Fetch the entry string if it is present. If not, then the normal default
   **	value will be used as the entry value.
   */
-  INIEntry* entryptr = Find_Entry(section, entry);
+  const INIEntry* entryptr = Find_Entry(section, entry);
   if (entryptr) {
     {
       defvalue = entryptr->Value.c_str();
@@ -1172,7 +1172,7 @@ PKey INIClass::Get_PKey(bool fast) const {
   *parse the *	exponent from the database.
   */
   if (fast) {
-    BigInt exp = PKey::Fast_Exponent();
+    const BigInt exp = PKey::Fast_Exponent();
     exp.DEREncode((unsigned char*)buffer);
     key.Decode_Exponent(buffer);
   } else {

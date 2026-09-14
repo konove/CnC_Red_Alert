@@ -43,28 +43,28 @@
 #include "sdllib/wwstd.h"
 
 bool Get_Broadcast_Addresses() {
-  int d_dialog_w = 640;                     // dialog width
-  int d_dialog_h = 320;                     // dialog height
-  int d_dialog_x = (640 - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = (400 - d_dialog_h) / 2;  // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
+  const int d_dialog_w = 640;                             // dialog width
+  const int d_dialog_h = 320;                             // dialog height
+  const int d_dialog_x = (640 - d_dialog_w) / 2;          // dialog x-coord
+  const int d_dialog_y = (400 - d_dialog_h) / 2;          // centered y-coord
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
 
-  int d_margin2 = 14;  // small margin
+  const int d_margin2 = 14;  // small margin
 
-  int d_ip_address_list_w = 600;
-  int d_ip_address_list_h = ((20 * 6) + 3) * 2;  // 6 rows high
-  int d_ip_address_list_x = d_dialog_cx - (d_ip_address_list_w / 2);
-  int d_ip_address_list_y = d_margin2 + d_dialog_y;
+  const int d_ip_address_list_w = 600;
+  const int d_ip_address_list_h = ((20 * 6) + 3) * 2;  // 6 rows high
+  const int d_ip_address_list_x = d_dialog_cx - (d_ip_address_list_w / 2);
+  const int d_ip_address_list_y = d_margin2 + d_dialog_y;
 
-  int d_ok_w = 80;
-  int d_ok_h = 18;
-  int d_ok_x = d_dialog_cx + (d_dialog_w / 4);
-  int d_ok_y = d_dialog_y + d_dialog_h - 40;
+  const int d_ok_w = 80;
+  const int d_ok_h = 18;
+  const int d_ok_x = d_dialog_cx + (d_dialog_w / 4);
+  const int d_ok_y = d_dialog_y + d_dialog_h - 40;
 
-  int d_cancel_w = config::kIsEnglish ? 80 : 100;
-  int d_cancel_h = 18;
-  int d_cancel_x = d_dialog_cx - (d_dialog_w / 4);
-  int d_cancel_y = d_dialog_y + d_dialog_h - 40;
+  const int d_cancel_w = config::kIsEnglish ? 80 : 100;
+  const int d_cancel_h = 18;
+  const int d_cancel_x = d_dialog_cx - (d_dialog_w / 4);
+  const int d_cancel_y = d_dialog_y + d_dialog_h - 40;
 
   //------------------------------------------------------------------------
   //	Button Enumerations
@@ -239,7 +239,7 @@ bool Get_Broadcast_Addresses() {
 
   for (int i = 0; i < ip_address_list.Count(); i++) {
     std::string addr = ip_address_list.Get_Item(i);
-    size_t hash_pos = addr.find('#');
+    const size_t hash_pos = addr.find('#');
     if (hash_pos != std::string::npos) {
       addr.resize(hash_pos);
     }

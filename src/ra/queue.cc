@@ -216,14 +216,14 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
                                           int packetlen, int64_t* their_frame,
                                           uint16_t* their_sent,
                                           uint16_t* their_recv);
-static RetcodeType Process_Serial_Packet(char* multi_packet_buf, int packetlen,
-                                         int first_time);
+static RetcodeType Process_Serial_Packet(const char* multi_packet_buf,
+                                         int packetlen, int first_time);
 static int Can_Advance(ConnManClass* net, int max_ahead,
                        const int64_t* their_frame, const uint16_t* their_sent,
                        const uint16_t* their_recv);
-static int Process_Reconnect_Dialog(Timer<SystemTickSource>* timeout_timer,
-                                    const int64_t* their_frame, int num_conn,
-                                    bool reconn, bool fresh);
+static int Process_Reconnect_Dialog(
+    const Timer<SystemTickSource>* timeout_timer, const int64_t* their_frame,
+    int num_conn, bool reconn, bool fresh);
 static int Handle_Timeout(ConnManClass* net, int64_t* their_frame,
                           uint16_t* their_sent, uint16_t* their_recv);
 static void Stop_Game();
@@ -244,7 +244,7 @@ static int Breakup_Receive_Packet(void* buf, int bufsize);
 //...........................................................................
 static int Execute_DoList(
     int max_houses, HousesType base_house, ConnManClass* net,
-    Timer<FrameTickSource>* skip_crc,
+    const Timer<FrameTickSource>* skip_crc,
     //	ConnManClass *net, TCountDownTimerClass *skip_crc,
     int64_t* their_frame, uint16_t* their_sent, uint16_t* their_recv);
 static void Clean_DoList(ConnManClass* net);
@@ -255,7 +255,7 @@ static void Queue_Playback();
 // Debugging:
 //...........................................................................
 static void Compute_Game_CRC();
-static void Print_CRCs(EventClass* ev);
+static void Print_CRCs(const EventClass* ev);
 // Bytes a compressed packet spends on each event's type tag.
 constexpr int kEventTypeSize = static_cast<int>(sizeof(EventClass::EventType));
 
@@ -265,10 +265,11 @@ static void Print_Framesync_Values(int64_t curframe, int max_ahead,
                                    int num_connections, uint16_t* their_recv,
                                    uint16_t* their_sent, uint16_t my_sent);
 
-static void Dump_Packet_Too_Late_Stuff(EventClass* event, ConnManClass* net,
-                                       int64_t* their_frame,
-                                       uint16_t* their_sent,
-                                       uint16_t* their_recv);
+static void Dump_Packet_Too_Late_Stuff(const EventClass* event,
+                                       ConnManClass* net,
+                                       const int64_t* their_frame,
+                                       const uint16_t* their_sent,
+                                       const uint16_t* their_recv);
 
 /***************************************************************************
  * Queue_Mission -- Queue a mega mission event.                            *
@@ -635,13 +636,13 @@ static void Queue_AI_Multiplayer() {
     FRAMESYNC_TIMEOUT = 15 * 60,  // timeout waiting for frame sync packet
   };
 
-  int timeout_factor = Session.Type == GAME_INTERNET ? 6 : 1;
+  const int timeout_factor = Session.Type == GAME_INTERNET ? 6 : 1;
 
   //........................................................................
   // Variables for sending, receiving & parsing packets:
   //........................................................................
   ConnManClass* net = nullptr;       // ptr to access all multiplayer functions
-  EventClass packet;                 // for sending single frame-sync's
+  const EventClass packet;           // for sending single frame-sync's
   char* multi_packet_buf = nullptr;  // buffer for sending/receiving
   int multi_packet_max = 0;          // max length of multi_packet_buf
 
@@ -1819,7 +1820,7 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
                                           uint16_t* their_sent,
                                           uint16_t* their_recv) {
   EventClass event_storage;
-  EventClass* event = &event_storage;
+  const EventClass* event = &event_storage;
   int index;
   RetcodeType retcode = RC_NORMAL;
   int i;
@@ -1967,14 +1968,14 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static RetcodeType Process_Serial_Packet(char* multi_packet_buf, int packetlen,
-                                         int first_time) {
+static RetcodeType Process_Serial_Packet(const char* multi_packet_buf,
+                                         int packetlen, int first_time) {
   SerialPacketType serial_storage;
   SerialPacketType* serial_packet =
       &serial_storage;  // for parsing serial packets
   int player_gone;
   EventClass event_storage;
-  EventClass* event = &event_storage;
+  const EventClass* event = &event_storage;
 
   //------------------------------------------------------------------------
   //	Determine if this packet means that the other player has left the game
@@ -2018,7 +2019,7 @@ static RetcodeType Process_Serial_Packet(char* multi_packet_buf, int packetlen,
     if (!Session.Messages.Concat_Message(serial_packet->Name, serial_packet->ID,
                                          serial_packet->Message.Message,
                                          Rule.MessageDelay * kTicksPerMinute)) {
-      char* ptr = &serial_packet->Message.Message[0];
+      const char* ptr = &serial_packet->Message.Message[0];
       if (!strncmp(ptr, "SECRET UNITS ON ", 15) && NewUnitsEnabled) {
         Enable_Secret_Units();
       }
@@ -2196,9 +2197,9 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Process_Reconnect_Dialog(Timer<SystemTickSource>* timeout_timer,
-                                    const int64_t* their_frame, int num_conn,
-                                    bool reconn, bool fresh) {
+static int Process_Reconnect_Dialog(
+    const Timer<SystemTickSource>* timeout_timer, const int64_t* their_frame,
+    int num_conn, bool reconn, bool fresh) {
   static int displayed_time = 0;  // time value currently displayed
   int new_time;
   int i;
@@ -3292,7 +3293,8 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Execute_DoList(int max_houses, HousesType base_house,
-                          ConnManClass* net, Timer<FrameTickSource>* skip_crc,
+                          ConnManClass* net,
+                          const Timer<FrameTickSource>* skip_crc,
                           int64_t* their_frame, uint16_t* their_sent,
                           uint16_t* their_recv) {
   HousesType house;
@@ -3939,7 +3941,7 @@ void Add_CRC(uint32_t* crc, uint32_t val) {
  * HISTORY:                                                                *
  *   05/09/1995 BRR : Created.                                             *
  *=========================================================================*/
-static void Print_CRCs(EventClass* ev) {
+static void Print_CRCs(const EventClass* ev) {
   int i;
   int j;
   InfantryClass* infp;
@@ -3970,7 +3972,7 @@ static void Print_CRCs(EventClass* ev) {
     GameCRC = 0;
     housep = HouseClass::As_Pointer(house);
     if (housep) {
-      HousesType actlike = housep->ActLike;
+      const HousesType actlike = housep->ActLike;
       color = housep->RemapColor;
       fprintf(fp, "%s: IsHuman:%d  Color:%s  ID:%d  ActLike:%s\n",
               housep->IniName, housep->IsHuman, ColorNames[color], housep->ID,
@@ -4457,9 +4459,10 @@ static void Print_Framesync_Values(int64_t /*curframe*/, int /*max_ahead*/,
  * HISTORY:                                                                *
  *   06/28/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Dump_Packet_Too_Late_Stuff(EventClass* event, ConnManClass* net,
-                                int64_t* their_frame, uint16_t* their_sent,
-                                uint16_t* their_recv) {
+void Dump_Packet_Too_Late_Stuff(const EventClass* event, ConnManClass* net,
+                                const int64_t* their_frame,
+                                const uint16_t* their_sent,
+                                const uint16_t* their_recv) {
   FILE* fp;
   int i;
   HousesType house;

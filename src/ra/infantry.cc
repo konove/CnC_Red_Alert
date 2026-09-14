@@ -474,7 +474,7 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
   **	When infantry gets hit, it gets scared.
   */
   if (res != RESULT_DESTROYED) {
-    COORDINATE source_coord = source ? source->Coord : 0;
+    const COORDINATE source_coord = source ? source->Coord : 0;
 
     /*
     **	If an engineer is damaged and it is just sitting there, then tell it
@@ -692,7 +692,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
           }
 
           if (*this == INFANTRY_SPY) {
-            unsigned housespy = 1U << House->Class->House;
+            const unsigned housespy = 1U << House->Class->House;
 
             if (tech->Trigger.Is_Valid()) {
               tech->Trigger->Spring(TEVENT_SPIED, this);
@@ -706,7 +706,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
             tech->SpiedBy |= housespy;
             tech->Mark(MARK_OVERLAP_DOWN);
             if (tech->What_Am_I() == RTTI_BUILDING) {
-              StructType build = *dynamic_cast<BuildingClass*>(tech);
+              const StructType build = *dynamic_cast<BuildingClass*>(tech);
               if (build == STRUCT_RADAR /* || build == STRUCT_EYE */) {
                 tech->House->RadarSpied |= housespy;
               }
@@ -726,7 +726,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
               tech->House->IsThieved = true;
 
               if (tech->What_Am_I() == RTTI_BUILDING) {
-                auto* bldg = dynamic_cast<BuildingClass*>(tech);
+                const auto* bldg = dynamic_cast<BuildingClass*>(tech);
                 if (bldg->Class->Capacity) {
                   /*
                   ** If we just raided a storage facility (refinery or silo)
@@ -860,12 +860,12 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
     /*
     ** If entering a cell with a land mine in it, blow up the mine.
     */
-    BuildingClass* bldng = cellptr->Cell_Building();
+    const BuildingClass* bldng = cellptr->Cell_Building();
     if (bldng != nullptr && *bldng == STRUCT_APMINE) {
       /*
       ** Show the animation and get rid of the land mine
       */
-      COORDINATE blcoord = bldng->Center_Coord();
+      const COORDINATE blcoord = bldng->Center_Coord();
       new AnimClass(
           Combat_Anim(Rule.APMineDamage, WARHEAD_HE, cellptr->Land_Type()),
           blcoord);
@@ -874,7 +874,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
       for (int index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
         if (obj != nullptr && !obj->IsInLimbo) {
-          int dist = ::Distance(obj->Coord, blcoord);
+          const int dist = ::Distance(obj->Coord, blcoord);
           if (dist <= 0xC0) {
             damage = Rule.APMineDamage;
             obj->Take_Damage(damage, 0, WARHEAD_HE);
@@ -895,7 +895,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
     *move. In such a case the unit should have been destroyed *	anyway, so blow
     *it up now.
     */
-    LandType land = Map[Coord].Land_Type();
+    const LandType land = Map[Coord].Land_Type();
     if (!IsDriving && !Class->IsBomber &&
         (land == LAND_ROCK || land == LAND_WATER || land == LAND_RIVER)) {
       int damage = Strength;
@@ -1219,7 +1219,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
     return MOVE_NO;
   }
 
-  CellClass* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map[cell];
 
   /*
   **	Walls are considered impassable for infantry UNLESS the wall has a hole
@@ -1483,7 +1483,7 @@ const int16_t* InfantryClass::Overlap_List(bool /*redraw*/) const {
    *infantry *	can be.
    */
 
-  static Rect rect(-16, -24, 32, 36);
+  static const Rect rect(-16, -24, 32, 36);
   return Coord_Spillage_List(Coord, rect, true);
 
   //		return(Coord_Spillage_List(Coord, 24 /*+ ((Doing > DO_WALK ||
@@ -1520,7 +1520,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   ** illegal so he won't be constantly healing healed infantrymen.
   */
   if (Combat_Damage() < 0) {
-    TechnoClass* targ = As_Techno(target);
+    const TechnoClass* targ = As_Techno(target);
     if (targ == nullptr || targ->Health_Ratio() >= Rule.ConditionGreen) {
       return FIRE_ILLEGAL;
     }
@@ -1794,7 +1794,7 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
       toface = Dir_Facing(Direction8(threat, Coord));
       toface = toface + static_cast<FacingType>(Random_Pick(0, 4) - 2);
     } else {
-      COORDINATE coord = Coord_Fraction(Center_Coord());
+      const COORDINATE coord = Coord_Fraction(Center_Coord());
 
       if (coord != 0x00800080L) {
         toface = Dir_Facing(
@@ -1808,8 +1808,8 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
     CELL newcell = 0;
     CELL altcell = 0;
     bool found = false;
-    for (FacingType face : magic_enum::enum_values<FacingType>()) {
-      FacingType newface = toface + face;
+    for (const FacingType face : magic_enum::enum_values<FacingType>()) {
+      const FacingType newface = toface + face;
       newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
       if (Map.In_Radar(newcell) && Can_Enter_Cell(newcell) == MOVE_OK) {
@@ -1985,7 +1985,7 @@ bool InfantryClass::Start_Driver(COORDINATE& headto) {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
-  COORDINATE old = headto;
+  const COORDINATE old = headto;
 
   /*
   **	Convert the head to coordinate to a legal sub-position location.
@@ -2291,7 +2291,7 @@ void InfantryClass::Response_Select() {
     static VocType _shock_response[] = {VOC_STYES1, VOC_STJUMP1, VOC_STJUICE1};
 
     int size = 0;
-    VocType* response = nullptr;
+    const VocType* response = nullptr;
     HousesType house = PlayerPtr->ActLike;
     switch (Class->Type) {
       case INFANTRY_GENERAL:
@@ -2744,7 +2744,7 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
   */
   if (action == ACTION_NONE && object->What_Am_I() == RTTI_BUILDING &&
       House->IsPlayerControl) {
-    StructType blah = *(BuildingClass*)object;
+    const StructType blah = *(BuildingClass*)object;
     if (blah == STRUCT_AVMINE || blah == STRUCT_APMINE) {
       return ACTION_MOVE;
     }
@@ -2800,14 +2800,14 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
         */
         action = ACTION_CAPTURE;
         if (object->What_Am_I() == RTTI_BUILDING) {
-          CELL cell = As_Cell(object->As_Target());
-          int targzone = Map[As_Cell(As_Target())].Zones[Class->MZone];
+          const CELL cell = As_Cell(object->As_Target());
+          const int targzone = Map[As_Cell(As_Target())].Zones[Class->MZone];
           const int16_t* list =
               ((BuildingClass*)object)->Class->Occupy_List(false);
           bool found = false;
           while (*list != kRefreshEol && !found) {
-            CELL newcell = static_cast<CELL>(cell + *list++);
-            for (FacingType i : magic_enum::enum_values<FacingType>()) {
+            const CELL newcell = static_cast<CELL>(cell + *list++);
+            for (const FacingType i : magic_enum::enum_values<FacingType>()) {
               if (std::cmp_equal(
                       Map[Adjacent_Cell(newcell, i)].Zones[Class->MZone],
                       targzone)) {
@@ -3129,7 +3129,7 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
   DirType dir;
   TriggerTypeClass* tp;
 
-  int len = ini.Entry_Count(INI_Name());
+  const int len = ini.Entry_Count(INI_Name());
   for (int index = 0; index < len; index++) {
     const char* entry = ini.Get_Entry(INI_Name(), index);
 
@@ -3154,27 +3154,28 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
           /*
           **	3rd token: strength.
           */
-          int strength =
+          const int strength =
               tech::ParseInteger<int>(strtok(nullptr, ",\n\r")).value_or(0);
 
           /*
           **	4th token: cell #.
           */
-          CELL cell =
+          const CELL cell =
               tech::ParseInteger<CELL>(strtok(nullptr, ",\n\r")).value_or(0);
           COORDINATE coord = Cell_Coord(cell);
 
           /*
           **	5th token: cell sub-location.
           */
-          int sub = std::clamp(
+          const int sub = std::clamp(
               tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0), 0, 4);
           coord = Coord_Add(Coord_Whole(coord), StoppingCoordAbs[sub]);
 
           /*
           **	Fetch the mission and facing.
           */
-          MissionType mission = Mission_From_Name(strtok(nullptr, ",\n\r"));
+          const MissionType mission =
+              Mission_From_Name(strtok(nullptr, ",\n\r"));
           validation = strtok(nullptr, ",\n\r");
           if (validation) {
             dir = static_cast<DirType>(
@@ -3250,7 +3251,7 @@ void InfantryClass::Write_INI(CCINIClass& ini) {
   **	Write the infantry data out.
   */
   for (int index = 0; index < Infantry.Count(); index++) {
-    InfantryClass* infantry = Infantry.Ptr(index);
+    const InfantryClass* infantry = Infantry.Ptr(index);
     if (!infantry->IsInLimbo) {
       char uname[10];
       char buf[128];
@@ -3382,13 +3383,13 @@ bool InfantryClass::Edge_Of_World_AI() {
  *=============================================================================================*/
 void InfantryClass::Firing_AI() {
   if (Target_Legal(TarCom)) {
-    int primary = What_Weapon_Should_I_Use(TarCom);
+    const int primary = What_Weapon_Should_I_Use(TarCom);
 
     if (!IsFiring) {
       switch (Can_Fire(TarCom, primary)) {
         case FIRE_ILLEGAL:
           if (Combat_Damage(primary) < 0) {
-            ObjectClass* targ = As_Object(TarCom);
+            const ObjectClass* targ = As_Object(TarCom);
             if (targ) {
               if ((targ->What_Am_I() == RTTI_INFANTRY &&
                    *this == INFANTRY_MEDIC) ||
@@ -3639,7 +3640,7 @@ void InfantryClass::Movement_AI() {
         **	toward the unit. Shorten the precalculated path to be no longer
         **	than the distance to the target.
         */
-        int d = Lepton_To_Cell(static_cast<LEPTON>(Distance(NavCom)));
+        const int d = Lepton_To_Cell(static_cast<LEPTON>(Distance(NavCom)));
         if (d < kConquerPathMax) {
           Path[d] = FACING_NONE;
         }
@@ -3721,7 +3722,7 @@ void InfantryClass::Movement_AI() {
         **	current location and the next location in the path.
         */
         COORDINATE acoord = Adjacent_Cell(Coord, Path[0]);
-        CELL acell = Coord_Cell(acoord);
+        const CELL acell = Coord_Cell(acoord);
 
         if (Can_Enter_Cell(acell) != MOVE_OK) {
           if ((Mission == MISSION_MOVE || Mission == MISSION_ENTER) &&

@@ -329,7 +329,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   **	events must be verified manually by examining the house that
   **	they are assigned to.
   */
-  HouseClass* hptr = HouseClass::As_Pointer(house);
+  const HouseClass* hptr = HouseClass::As_Pointer(house);
   int index;
   if (hptr != nullptr) {
     switch (Event) {
@@ -338,7 +338,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       */
       case TEVENT_LEAVES_MAP:
         for (index = 0; index < Teams.Count(); index++) {
-          TeamClass* ptr = Teams.Ptr(index);
+          const TeamClass* ptr = Teams.Ptr(index);
           if (ptr->Class == Team && ptr->Is_Empty() && ptr->IsLeaveMap) {
             //					if (ptr->Class == Team &&
             // ptr->House == hptr && ptr->Is_Empty() && ptr->IsLeaveMap) {

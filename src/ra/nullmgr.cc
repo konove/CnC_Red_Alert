@@ -451,7 +451,7 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
   /*
   ** Shift up the baud rate to sensible values
   */
-  int baud = settings->Baud;
+  const int baud = settings->Baud;
   //	if (baud == 14400) baud = 19200;
   //	if (baud == 28800) baud = 38400;
 
@@ -695,7 +695,7 @@ int NullModemClass::Service() {
   uint16_t length;
   SerialHeaderType header;  // decoded packet start, length
   SerialCRCType crc;        // decoded packet CRC
-  char moredata = 0;
+  const char moredata = 0;
 
   if (NumConnections == 0) {
     return 0;
@@ -1089,7 +1089,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   port::SafeCopy(buffer, Text_String(TXT_INITIALIZING_MODEM));
 
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, kTpfText);
-  int lines =
+  const int lines =
       Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
   width = std::max(width, 180);
@@ -1169,7 +1169,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   ** Send the user supplied modem init string
   */
   if (settings->InitStringIndex != -1) {
-    std::string initStr = Session.InitStrings[settings->InitStringIndex];
+    const std::string initStr = Session.InitStrings[settings->InitStringIndex];
 
     std::istringstream tokenStream(initStr);
     std::string token;
@@ -1196,8 +1196,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   if (settings->Port == 1 && ModemRegistry) {
     // Helper lambda to handle the "Append AT -> Send -> Check Error" pattern.
     // Captures context to access 'buffer' and other necessary variables.
-    auto sendInitCommand = [&](const char* cmdSuffix, int errorMsgId,
-                               int timeout = DEFAULT_TIMEOUT) -> bool {
+    const auto sendInitCommand = [&](const char* cmdSuffix, int errorMsgId,
+                                     int timeout = DEFAULT_TIMEOUT) -> bool {
       if (!cmdSuffix) {
         return true;  // Nothing to send, proceed.
       }
@@ -1205,7 +1205,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
       std::string fullCommand = "AT";
       fullCommand += cmdSuffix;
 
-      int result =
+      const int result =
           Send_Modem_Command(fullCommand.c_str(), '\r', buffer, 81, timeout, 1);
 
       // Stop initialization only when the command failed and the user clicked
@@ -1218,7 +1218,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
     const char* flowCmd = settings->HardwareFlowControl
                               ? ModemRegistry->Get_Modem_Hardware_Flow_Control()
                               : ModemRegistry->Get_Modem_No_Flow_Control();
-    int flowTimeout = settings->HardwareFlowControl ? 300 : DEFAULT_TIMEOUT;
+    const int flowTimeout =
+        settings->HardwareFlowControl ? 300 : DEFAULT_TIMEOUT;
 
     if (!sendInitCommand(flowCmd, TXT_NO_FLOW_CONTROL_RESPONSE, flowTimeout)) {
       return 0;
@@ -1324,7 +1325,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, kTpfText);
   Format_Window_String(buffer.data(), SeenBuff.Get_Height(), width, height);
 
-  int text_width = width;
+  const int text_width = width;
   width = std::max(width, 180);
   width += 80;
   height += 120;
@@ -2040,7 +2041,7 @@ int NullModemClass::Send_Modem_Command(const char* command, char terminator,
  *=============================================================================================*/
 int NullModemClass::Verify_And_Convert_To_Int(char* buffer) {
   int value = 0;
-  int len = static_cast<int>(strlen(buffer));
+  const int len = static_cast<int>(strlen(buffer));
 
   for (int i = 0; i < len; i++) {
     if (!isdigit(*(buffer + i))) {

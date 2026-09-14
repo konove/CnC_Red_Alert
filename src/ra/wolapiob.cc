@@ -359,12 +359,12 @@ void WolapiObject::PrepareButtonsAndIcons() {
 
   //	Set up standard wol buttons, used by both main dialogs. Note hardcoded
   // ID values: must match values in dialog.
-  int iWolButtons_x = 34;
-  int iWolButtons_y = 20;
-  int iWolButtons_dx = 53;
+  const int iWolButtons_x = 34;
+  const int iWolButtons_y = 20;
+  const int iWolButtons_dx = 53;
   int xWolButton = iWolButtons_x;
-  int xTTip = 10;  //	Offset for tooltip.
-  int yTTip = -5;  //	Offset for tooltip.
+  const int xTTip = 10;  //	Offset for tooltip.
+  const int yTTip = -5;  //	Offset for tooltip.
   pShpBtnDiscon =
       new ShapeButtonClass(100, pShpDiscon, xWolButton, iWolButtons_y);
   pTTipDiscon = new ToolTipClass(pShpBtnDiscon, TXT_WOL_TTIP_DISCON,
@@ -588,8 +588,8 @@ HRESULT WolapiObject::GetChatServer() {
     //		debugprint( "RequestServerList call failed\n" );
     return E_FAIL;
   }
-  DWORD dwTimeLimit = Get_Time_Ms();  //	ajw My own extra timeout at one
-                                      // minute, in case wolapi chokes.
+  const DWORD dwTimeLimit = Get_Time_Ms();  //	ajw My own extra timeout at one
+                                            // minute, in case wolapi chokes.
   //	debugprint( "Called RequestServerList...\n" );
   DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   Keyboard->Clear();  //	Set up for escape key checking.
@@ -681,7 +681,7 @@ HRESULT WolapiObject::AttemptLogin(const char* szName, const char* szPass,
     return CHAT_E_CON_ERROR;
   }
 
-  DWORD dwTimeStart = Get_Time_Ms();
+  const DWORD dwTimeStart = Get_Time_Ms();
   DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   Keyboard->Clear();  //	Set up for escape key checking.
   bool bCancel = false;
@@ -741,7 +741,7 @@ void WolapiObject::Logout() {
     //		debugprint( "RequestLogout() call failed\n" );
   }
 
-  DWORD dwTimePatience =
+  const DWORD dwTimePatience =
       Get_Time_Ms();  //	After 5 seconds we run out of patience and bail.
   DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestLogoutWait &&
@@ -853,7 +853,7 @@ void WolapiObject::ListChannels() {
     if (pChannel->type == 0) {
       //	Show chat channel.
       char* pShow;
-      int iLobby = iChannelLobbyNumber(pChannel->name);
+      const int iLobby = iChannelLobbyNumber(pChannel->name);
       if (iLobby == -1) {
         //	Regular chat channel.
         pShow = new char[strlen((char*)pChannel->name) + 10];
@@ -887,7 +887,7 @@ void WolapiObject::ListChannels() {
       void* pGameKindIcon;
       if (pChannel->type == GAME_TYPE) {
         //	Get RedAlert GameKind.
-        auto GameKind =
+        const auto GameKind =
             (CREATEGAMEINFO::GAMEKIND)(pChannel->reserved & 0xFF000000);
         switch (GameKind) {
           case CREATEGAMEINFO::RAGAME:
@@ -947,7 +947,7 @@ void WolapiObject::ListChannels() {
         iLatencyUse = 0;
       }
 
-      static int iLatencyBarX = 227 - iLatencyIconWidth - 19;
+      static const int iLatencyBarX = 227 - iLatencyIconWidth - 19;
 
       pILChannels->Add_Item(pShow, szHelp, pGameKindIcon, ICON_DIB,
                             CHANNELTYPE_GAMECHANNEL, (void*)pChannel, nullptr,
@@ -990,7 +990,7 @@ HRESULT WolapiObject::ChannelJoin(Channel* pChannelToJoin) {
   pChatSink->hresRequestJoinResult = 0;
 
   //	debugprint( "RequestChannelJoin(), %s\n", pChannelToJoin->name );
-  HRESULT hRes = pChat->RequestChannelJoin(pChannelToJoin);
+  const HRESULT hRes = pChat->RequestChannelJoin(pChannelToJoin);
   if (!SUCCEEDED(hRes)) {
     //		debugprint( "RequestChannelJoin() call failed, result %i ", hRes
     //);
@@ -999,7 +999,7 @@ HRESULT WolapiObject::ChannelJoin(Channel* pChannelToJoin) {
   }
   pChatSink->bIgnoreChannelLists = true;  //	Turn off response to channel
                                           // lists.
-  DWORD dwTimeStart = Get_Time_Ms();
+  const DWORD dwTimeStart = Get_Time_Ms();
   DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestChannelJoinWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
@@ -1048,7 +1048,7 @@ bool WolapiObject::ChannelLeave() {
   }
   pChatSink->bIgnoreChannelLists = true;  //	Turn off response to channel
                                           // lists.
-  DWORD dwTimeStart = Get_Time_Ms();
+  const DWORD dwTimeStart = Get_Time_Ms();
   DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestChannelLeaveWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
@@ -1125,7 +1125,7 @@ bool WolapiObject::ListChannelUsers() {
 
     // debugprint( "ListChannelUsers(), pUserList = %i\n", pChatSink->pUserList
     // ); 	Save users in current list.
-    int iCount = pListToUse->Count();
+    const int iCount = pListToUse->Count();
     CHANNELUSERINFO* pUsersSaved = nullptr;
     int iUsersSaved = 0;
     if (iCount) {
@@ -1180,7 +1180,8 @@ bool WolapiObject::ListChannelUsers() {
       }
 
       if (CurrentLevel == WOL_LEVEL_INGAMECHANNEL || bInLobby) {
-        int iRank = pNetUtilSink->GetUserRank((char*)pUser->name, bShowRankRA);
+        const int iRank =
+            pNetUtilSink->GetUserRank((char*)pUser->name, bShowRankRA);
         char szNameToShow[WOL_NAME_LEN_MAX + 40];
         if (iRank) {
           //					debugprint("  Found %s has rank
@@ -1191,14 +1192,14 @@ bool WolapiObject::ListChannelUsers() {
           port::SafeCopy(szNameToShow, (char*)pUser->name);
         }
 
-        static int iLatencyBarX = 248 - iLatencyIconWidth - 5 - 16;
+        static const int iLatencyBarX = 248 - iLatencyIconWidth - 5 - 16;
 
         //	If we have had a chance to request pings to the player, there'll
         // be some avg. results waiting for us.
         int iLatencyBarWidth = 0;
         int iLatency;
         if (CurrentLevel == WOL_LEVEL_INGAMECHANNEL) {
-          uint32_t UserIP = pChatSink->GetUserIP((char*)pUser->name);
+          const uint32_t UserIP = pChatSink->GetUserIP((char*)pUser->name);
           //					debugprint( "player %s ip
           // address %i\n", szNameToShow, UserIP );
           if (UserIP && pNetUtil->GetAvgPing(UserIP, &iLatency) == S_OK) {
@@ -1234,7 +1235,7 @@ bool WolapiObject::ListChannelUsers() {
     //	Reset multiselectedness, color, and item text for a user. Slow.
     //	(What a bloody, bloody hack.)
     for (int iUser = 0; iUser != iUsersSaved; iUser++) {
-      int iFind = pListToUse->Find(
+      const int iFind = pListToUse->Find(
           pUsersSaved[iUser]
               .szName);  //	Finds any item beginning with szName...
       if (iFind != -1) {
@@ -1402,7 +1403,7 @@ void WolapiObject::WritePlayerListItem(char* szDest, std::size_t iSize,
   port::SafeCopy(szHouse,
                  Text_String(HouseTypeClass::As_Reference(House).Full_Name()));
 
-  int iRank = pNetUtilSink->GetUserRank(
+  const int iRank = pNetUtilSink->GetUserRank(
       szName, bShowRankRA);  //	Horrendous inefficiency here, when called for
                              // relisting players...
   if (iRank) {
@@ -1420,12 +1421,12 @@ void WolapiObject::RequestPlayerPings() {
   for (int i = 0; i < pILPlayers->Count(); i++) {
     User* pUser = (User*)pILPlayers->Get_Item_ExtraDataPtr(i);
     if (pUser && !(pUser->flags & CHAT_USER_MYSELF)) {
-      uint32_t UserIP = pChatSink->GetUserIP((char*)pUser->name);
+      const uint32_t UserIP = pChatSink->GetUserIP((char*)pUser->name);
       if (UserIP) {
         int iUnused;
         in_addr inaddrUser{};
         inaddrUser.s_addr = UserIP;
-        char* szIP = inet_ntoa(inaddrUser);
+        const char* szIP = inet_ntoa(inaddrUser);
         //				debugprint( "RequestPing of %s, ipaddr
         // of %i, aka %s\n", (char*)pUser->name, UserIP, szIP );
         pNetUtil->RequestPing(szIP, 1000, &iUnused);
@@ -1445,7 +1446,7 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
 
   if (strlen(szMessage) > 4 && szMessage[0] == 63 && szMessage[1] == 97 &&
       szMessage[2] == 106 && szMessage[3] == 119) {
-    int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
+    const int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
     if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1) {
       Speak((VoxType)i);
     }
@@ -1453,7 +1454,7 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
   }
   if (strlen(szMessage) > 4 && szMessage[0] == 35 && szMessage[1] == 97 &&
       szMessage[2] == 106 && szMessage[3] == 119) {
-    int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
+    const int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
     if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1) {
       Speak((VoxType)i);
     }
@@ -1465,7 +1466,7 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
   User* pUserListSend = nullptr;
   User* pUserNew;
   User* pUserTail = nullptr;
-  int iCount = ILUsers.Count();
+  const int iCount = ILUsers.Count();
   int iPrivatePrintLen = 1;
   for (int i = 0; i != iCount; i++) {
     if (ILUsers.bItemIsMultiSelected(i)) {
@@ -1556,13 +1557,13 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
         bEgg8Player = true;
         return;
       }
-      HRESULT hRes = pChat->RequestPublicMessage(szMessage);
+      const HRESULT hRes = pChat->RequestPublicMessage(szMessage);
       if (hRes != S_OK) {
         //				debugprint( " RequestPublicMessage()
         // failed with: " ); 				DebugChatDef( hRes );
       }
     } else {
-      HRESULT hRes = pChat->RequestPublicAction(szMessage);
+      const HRESULT hRes = pChat->RequestPublicAction(szMessage);
       if (hRes != S_OK) {
         //				debugprint( " RequestPublicAction()
         // failed with: " ); 				DebugChatDef( hRes );
@@ -1634,7 +1635,7 @@ bool WolapiObject::ChannelCreate(
 
   pChatSink->bRequestChannelCreateWait = true;
 
-  HRESULT hRes = pChat->RequestChannelCreate(&ChannelNew);
+  const HRESULT hRes = pChat->RequestChannelCreate(&ChannelNew);
   if (!SUCCEEDED(hRes)) {
     //		debugprint( "RequestChannelCreate() call failed:" );
     DebugChatDef(hRes);
@@ -1642,7 +1643,7 @@ bool WolapiObject::ChannelCreate(
   }
   pChatSink->bIgnoreChannelLists = true;  //	Turn off response to channel
                                           // lists.
-  DWORD dwTimeStart = Get_Time_Ms();
+  const DWORD dwTimeStart = Get_Time_Ms();
   DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestChannelCreateWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
@@ -1690,7 +1691,7 @@ void WolapiObject::DoFindPage() {
 
   if (strcmp(szNameDlgResult, TXT_WOL_LOCATE) == 0) {
     //	Locate user.
-    HRESULT hRes = Locate(pFindPageDlg->szEdit);
+    const HRESULT hRes = Locate(pFindPageDlg->szEdit);
     switch (hRes) {
       case CHAT_S_FIND_NOTHERE:
         bPump_In_Call_Back = true;
@@ -1717,7 +1718,7 @@ void WolapiObject::DoFindPage() {
         break;
       case S_OK: {
         char* szChannel = (char*)pChatSink->OnFindChannel.name;
-        int iLobby = iChannelLobbyNumber((unsigned char*)szChannel);
+        const int iLobby = iChannelLobbyNumber((unsigned char*)szChannel);
         char* szFound;
         if (iLobby != -1) {
           char szLobbyName[REASONABLELOBBYINTERPRETEDNAMELEN];
@@ -1796,7 +1797,7 @@ HRESULT WolapiObject::Locate(const char* szUser) {
     //		debugprint( "RequestFind() call failed\n" );
     return 0;
   }
-  DWORD dwTimeStart = Get_Time_Ms();
+  const DWORD dwTimeStart = Get_Time_Ms();
   DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestFindWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
@@ -1840,7 +1841,7 @@ HRESULT WolapiObject::Page(const char* szUser, const char* szSend,
   if (!bWaitForResult) {
     return 0;
   }
-  DWORD dwTimeStart = Get_Time_Ms();
+  const DWORD dwTimeStart = Get_Time_Ms();
   DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestPageWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
@@ -2279,7 +2280,7 @@ bool WolapiObject::EnterLevel_Games() {
   //	A pointer to the GameTypeInfos entry is stored in the item for
   // convenience later.
   for (unsigned int i = 0; i + 2 < nGameTypeInfos; i++) {
-    int iType = GameTypeInfos[i].iGameType;
+    const int iType = GameTypeInfos[i].iGameType;
     if (iType != GAME_TYPE)  //	Else it is our game - skip it here since we put
                              // it at the top.
     {
@@ -2482,7 +2483,7 @@ void WolapiObject::OnExitingChatChannel() {
 
   //	debugprint( "*** OnExitingChatChannel() - szChannelNameCurrent '%s',
   // CurrentLevel %i\n", szChannelNameCurrent, CurrentLevel );
-  int iLobby = iChannelLobbyNumber((unsigned char*)szChannelNameCurrent);
+  const int iLobby = iChannelLobbyNumber((unsigned char*)szChannelNameCurrent);
   char* szMess;
   if (iLobby == -1) {
     szMess =
@@ -2636,7 +2637,8 @@ void WolapiObject::OnFailedToEnterGameChannel() {
 
   //	Because we don't save the channel key as well, assume the usual lobby
   // password. If we fail, we'll return to top level.
-  HRESULT hRes = ChannelJoin(szChannelReturnOnGameEnterFail, LOBBYPASSWORD);
+  const HRESULT hRes =
+      ChannelJoin(szChannelReturnOnGameEnterFail, LOBBYPASSWORD);
   if (hRes == S_OK) {
     OnEnteringChatChannel(
         szChannelReturnOnGameEnterFail, false,
@@ -2690,7 +2692,7 @@ void WolapiObject::RejoinLobbyAfterGame() {
     sprintf(szChannelToJoin, "%s%i", LOB_PREFIX, iLobbyReturnAfterGame);
     // debugprint( "RejoinLobbyAfterGame, channel is %s\n", szChannelToJoin );
 
-    HRESULT hRes = ChannelJoin(szChannelToJoin, LOBBYPASSWORD);
+    const HRESULT hRes = ChannelJoin(szChannelToJoin, LOBBYPASSWORD);
     if (hRes == S_OK) {
       // OnEnteringChatChannel( szChannelToJoin, false );		Done
       // automatically now in wol_chat.
@@ -2937,7 +2939,7 @@ bool WolapiObject::GetNameOfBeginningLobby(char* szNameToSet,
   }
 
   //	All lobbies have 50 or more users. So just choose a random one.
-  int iChoice = (rand() % iCount);
+  const int iChoice = (rand() % iCount);
   pChannel = pChatSink->pChannelList;
   for (int i = 0; i != iChoice; i++) {
     pChannel = pChannel->next;
@@ -2964,7 +2966,7 @@ bool WolapiObject::GetLobbyChannels() {
     return false;
   }
 
-  DWORD dwTimeStart = Get_Time_Ms();
+  const DWORD dwTimeStart = Get_Time_Ms();
   DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestChannelListForLobbiesWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
@@ -3053,7 +3055,7 @@ bool WolapiObject::RequestGameStart() {
     return false;
   }
 
-  DWORD dwTimeStart = Get_Time_Ms();
+  const DWORD dwTimeStart = Get_Time_Ms();
   DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestGameStartWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {

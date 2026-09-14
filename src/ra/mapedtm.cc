@@ -348,7 +348,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
     /*
     **	Get user input
     */
-    KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input();
 
     /*
     **	Process input
@@ -537,7 +537,7 @@ int MapEditClass::Team_Members(HousesType house) {
   */
   int lheld = 0;
   int rheld = 0;
-  int32_t tdelay[3] = {5, 20, 0};
+  const int32_t tdelay[3] = {5, 20, 0};
   int tindex = 0;
   int64_t heldtime = 0;
 
@@ -566,22 +566,22 @@ int MapEditClass::Team_Members(HousesType house) {
   **	checking to be sure this house can own the object
   */
   i = 0;
-  for (InfantryType i_id : magic_enum::enum_values<InfantryType>()) {
+  for (const InfantryType i_id : magic_enum::enum_values<InfantryType>()) {
     teamclass[i] = &InfantryTypeClass::As_Reference(i_id);
     i++;
   }
 
-  for (AircraftType a_id : magic_enum::enum_values<AircraftType>()) {
+  for (const AircraftType a_id : magic_enum::enum_values<AircraftType>()) {
     teamclass[i] = &AircraftTypeClass::As_Reference(a_id);
     i++;
   }
 
-  for (UnitType u_id : magic_enum::enum_values<UnitType>()) {
+  for (const UnitType u_id : magic_enum::enum_values<UnitType>()) {
     teamclass[i] = &UnitTypeClass::As_Reference(u_id);
     i++;
   }
 
-  for (VesselType v_id : magic_enum::enum_values<VesselType>()) {
+  for (const VesselType v_id : magic_enum::enum_values<VesselType>()) {
     teamclass[i] = &VesselTypeClass::As_Reference(v_id);
     i++;
   }
@@ -926,12 +926,12 @@ int MapEditClass::Team_Members(HousesType house) {
  *=============================================================================================*/
 void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
                                HousesType house) {
-  int numcols = (D_DIALOG_W - 64) / D_PICTURE_W;
-  int col = index % numcols;
-  int row = index / numcols;
-  int dlg_y = 0;
-  int x = D_DIALOG_X + 32 + (col * D_PICTURE_W);
-  int y = dlg_y + 8 + 13 + (row * D_ROW_H);
+  const int numcols = (D_DIALOG_W - 64) / D_PICTURE_W;
+  const int col = index % numcols;
+  const int row = index / numcols;
+  const int dlg_y = 0;
+  const int x = D_DIALOG_X + 32 + (col * D_PICTURE_W);
+  const int y = dlg_y + 8 + 13 + (row * D_ROW_H);
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*

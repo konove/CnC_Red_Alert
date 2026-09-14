@@ -160,8 +160,8 @@ void ChronalVortexClass::Appear(COORDINATE coordinate) {
   x -= 32;
   y -= 32;
 
-  LEPTON lx = Pixel_To_Lepton(x);
-  LEPTON ly = Pixel_To_Lepton(y);
+  const LEPTON lx = Pixel_To_Lepton(x);
+  const LEPTON ly = Pixel_To_Lepton(y);
 
   Position = XY_Coord(lx, ly);
 
@@ -575,10 +575,10 @@ void ChronalVortexClass::Attack() {
   x += 32;
   y += 12;
 
-  LEPTON lx = Pixel_To_Lepton(x);
-  LEPTON ly = Pixel_To_Lepton(y);
+  const LEPTON lx = Pixel_To_Lepton(x);
+  const LEPTON ly = Pixel_To_Lepton(y);
 
-  COORDINATE here = XY_Coord(lx, ly);
+  const COORDINATE here = XY_Coord(lx, ly);
 
   /*
   ** Scan through the ground layer objects and see who we should attack
@@ -662,10 +662,10 @@ void ChronalVortexClass::Zap_Target() {
     x += 32;
     y += 12;
 
-    LEPTON lx = Pixel_To_Lepton(x);
-    LEPTON ly = Pixel_To_Lepton(y);
+    const LEPTON lx = Pixel_To_Lepton(x);
+    const LEPTON ly = Pixel_To_Lepton(y);
 
-    COORDINATE here = XY_Coord(lx, ly);
+    const COORDINATE here = XY_Coord(lx, ly);
 
     /*
     ** Create a temporary techno object se we can access the lightning ability
@@ -675,7 +675,7 @@ void ChronalVortexClass::Zap_Target() {
     if (temptech != nullptr) {
       temptech->Coord = here;
       ObjectClass* obj = As_Object(TargetObject);
-      TARGET target = As_Target(obj->Center_Coord());
+      const TARGET target = As_Target(obj->Center_Coord());
       Sound_Effect(VOC_TESLA_ZAP, obj->Center_Coord());
       temptech->Electric_Zap(target, 0, here, LightningRemap);
       delete temptech;
@@ -733,22 +733,23 @@ void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass* inbuffer, int x,
 
   auto* destptr = static_cast<unsigned char*>(destbuf.Get_Buffer());
 
-  int destx = x;
-  int desty = y;
+  const int destx = x;
+  const int desty = y;
 
-  int dest_width = width;
-  int dest_height = height;
+  const int dest_width = width;
+  const int dest_height = height;
 
   if (inbuffer->Lock()) {
     /*
     ** Get a pointer to the section of buffer we are going to work on.
     */
-    unsigned char* bufptr = inbuffer->Get_Offset() + destx +
-                            (static_cast<base::ssize>(desty) *
-                             (inbuffer->Get_Width() + inbuffer->Get_XAdd() +
-                              inbuffer->Get_Pitch()));
+    const unsigned char* bufptr =
+        inbuffer->Get_Offset() + destx +
+        (static_cast<base::ssize>(desty) *
+         (inbuffer->Get_Width() + inbuffer->Get_XAdd() +
+          inbuffer->Get_Pitch()));
 
-    int modulo =
+    const int modulo =
         inbuffer->Get_Pitch() + inbuffer->Get_XAdd() + inbuffer->Get_Width();
 
     for (int yy = desty; yy < desty + dest_height; yy++) {
@@ -833,8 +834,8 @@ void ChronalVortexClass::Render() {
         RenderBuffer =
             new GraphicBufferClass(CELL_PIXEL_W * 4, CELL_PIXEL_H * 4, nullptr);
       }
-      CELL xc = Coord_XCell(Position);
-      CELL yc = Coord_YCell(Position);
+      const CELL xc = Coord_XCell(Position);
+      const CELL yc = Coord_YCell(Position);
       CellClass* cellptr;
       CELL cell;
       const TemplateTypeClass* ttype = nullptr;
@@ -846,10 +847,10 @@ void ChronalVortexClass::Render() {
       ** Temporarily modify the tactical window so it works with our offscreen
       *buffer
       */
-      int wx = WindowList[WINDOW_TACTICAL][WINDOWX];
-      int wy = WindowList[WINDOW_TACTICAL][WINDOWY];
-      int ww = WindowList[WINDOW_TACTICAL][WINDOWWIDTH];
-      int wh = WindowList[WINDOW_TACTICAL][WINDOWHEIGHT];
+      const int wx = WindowList[WINDOW_TACTICAL][WINDOWX];
+      const int wy = WindowList[WINDOW_TACTICAL][WINDOWY];
+      const int ww = WindowList[WINDOW_TACTICAL][WINDOWWIDTH];
+      const int wh = WindowList[WINDOW_TACTICAL][WINDOWHEIGHT];
 
       WindowList[WINDOW_TACTICAL][WINDOWX] = 0;
       WindowList[WINDOW_TACTICAL][WINDOWY] = 0;
@@ -943,15 +944,17 @@ void ChronalVortexClass::Render() {
       *tactical map so *	we can blit it to the hid page.
       */
       // Coord_Whole(Position);
-      COORDINATE render_pos =
+      const COORDINATE render_pos =
           XY_Coord(static_cast<LEPTON>(xc * CELL_LEPTON_W),
                    static_cast<LEPTON>(yc * CELL_LEPTON_H));
 
-      int xtac = Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(Map.TacticalCoord)));
+      const int xtac =
+          Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(Map.TacticalCoord)));
       int xoff = Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(render_pos)));
       xoff -= xtac;
 
-      int ytac = Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(Map.TacticalCoord)));
+      const int ytac =
+          Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(Map.TacticalCoord)));
       int yoff = Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(render_pos)));
       yoff -= ytac;
 
@@ -970,8 +973,8 @@ void ChronalVortexClass::Render() {
 
       int source_x = 0;
       int source_y = 0;
-      int source_width = CELL_PIXEL_W * 4;
-      int source_height = CELL_PIXEL_H * 4;
+      const int source_width = CELL_PIXEL_W * 4;
+      const int source_height = CELL_PIXEL_H * 4;
 
       int dest_x = Lepton_To_Pixel(static_cast<LEPTON>(xoff));
       int dest_y = Lepton_To_Pixel(static_cast<LEPTON>(yoff));
@@ -1027,8 +1030,8 @@ void ChronalVortexClass::Render() {
  *=============================================================================================*/
 void ChronalVortexClass::Set_Redraw() {
   if (Active) {
-    CELL xc = Coord_XCell(Position);
-    CELL yc = Coord_YCell(Position);
+    const CELL xc = Coord_XCell(Position);
+    const CELL yc = Coord_YCell(Position);
 
     CELL cell;
 
@@ -1156,7 +1159,7 @@ void ChronalVortexClass::Build_Fading_Table(const PaletteClass& palette,
               (id < kCycleColorStart ||
                id >= kCycleColorStart + kCycleColorCount) &&
               id != kPulseColor && id != kEmberColor) {
-            int diff = palette[id].Difference(trycolor);
+            const int diff = palette[id].Difference(trycolor);
             if (best == -1 || diff < bvalue) {
               best = id;
               bvalue = diff;

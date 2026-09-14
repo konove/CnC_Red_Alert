@@ -118,7 +118,7 @@ bool Read_Private_Config_Struct(FileClass& file, NewConfigType* config) {
  *   08/05/1992 MML : Created.                                             *
  *=========================================================================*/
 unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
-                                char* profile) {
+                                const char* profile) {
   char buffer[16];  // Integer staging buffer.
   WWGetPrivateProfileString(section, entry, "0", buffer, sizeof(buffer),
                             profile);
@@ -143,7 +143,7 @@ unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
  * HISTORY: * 08/05/1992 JLB : Created. *
  *=============================================================================================*/
 int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
-                           char* profile) {
+                           const char* profile) {
   char buffer[16];  // Integer staging buffer.
 
   /*
@@ -215,7 +215,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
   char c2;                 // Working character values.
   int len;                 // Working substring length value.
   int entrylen;            // Byte length of specified entry.
-  char* orig_retbuf = nullptr;  // original retbuffer ptr
+  const char* orig_retbuf = nullptr;  // original retbuffer ptr
 
   //	if (!retlen) return(NULL);
 
@@ -732,7 +732,7 @@ int Write_Bin_Length(const char* buffer) {
   return WriteBinBufferMax;
 }
 
-bool Write_Bin_Num(void* num, int length, const char* buffer) {
+bool Write_Bin_Num(const void* num, int length, const char* buffer) {
   char* ptr;
 
   if (buffer != WriteBinBuffer || length <= 0 || length > 4 ||
@@ -763,7 +763,7 @@ int Write_Bin_PosSet(int pos, const char* buffer) {
   return WriteBinBufferPos;
 }
 
-bool Write_Bin_String(char* string, int length, const char* buffer) {
+bool Write_Bin_String(const char* string, int length, const char* buffer) {
   char* ptr;
 
   if (buffer != WriteBinBuffer || length < 0 || length > 255 ||

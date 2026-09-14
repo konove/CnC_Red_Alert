@@ -197,7 +197,7 @@ int main(int argc, char* argv[])
 #endif  // _WIN32
 
   // Change to executable's directory (if path is present)
-  auto dir_path = std::filesystem::path(argv[0]).parent_path();
+  const auto dir_path = std::filesystem::path(argv[0]).parent_path();
 
   if (!dir_path.empty()) {
     std::filesystem::current_path(dir_path);
@@ -210,7 +210,7 @@ int main(int argc, char* argv[])
     // 3, to install "Shared Internet Components".
     WIN32_FIND_DATA wfd{};
     HANDLE hWOLSetupFile = FindFirstFile("wolsetup.exe", &wfd);
-    bool bWOLSetupFile = (hWOLSetupFile != INVALID_HANDLE_VALUE);
+    const bool bWOLSetupFile = (hWOLSetupFile != INVALID_HANDLE_VALUE);
     //	if( bWOLSetupFile )
     //		debugprint( "Found wolsetup.exe\n" );
     FindClose(hWOLSetupFile);
@@ -407,7 +407,7 @@ bool InitDDraw() {
     ScreenHeight = 400;
   }
 
-  int yoff = VisiblePage.Get_Height() == 480 ? 40 : 0;
+  const int yoff = VisiblePage.Get_Height() == 480 ? 40 : 0;
 
   SeenBuff.Attach(&VisiblePage, 0, yoff, ScreenWidth, ScreenHeight);
   HidPage.Attach(&HiddenPage, 0, yoff, ScreenWidth, ScreenHeight);
@@ -442,7 +442,7 @@ void __cdecl Prog_End() {
   // type heaps. The custom heap allocator (TFixedIHeapClass) never calls
   // destructors when it frees its buffer, so RAII members (unique_ptr, variant
   // holding vector) must be released explicitly before global destruction.
-  auto reset_object_type = [](ObjectTypeClass* obj) {
+  const auto reset_object_type = [](ObjectTypeClass* obj) {
     obj->DimensionData.reset();
     obj->RadarIcon.reset();
     obj->ClearImage();
@@ -579,9 +579,9 @@ void Read_Setup_Options(RawFileClass* config_file) {
     */
     char netbuf[512];
     memset(netbuf, 0, sizeof(netbuf));
-    char* netptr = netbuf;
-    bool found = ini.Get_String("Options", "DestNet", nullptr, netbuf,
-                                sizeof(netbuf)) != 0;
+    const char* netptr = netbuf;
+    const bool found = ini.Get_String("Options", "DestNet", nullptr, netbuf,
+                                      sizeof(netbuf)) != 0;
 
     if (found && netptr != nullptr && strlen(netbuf)) {
       NetNumType net;
@@ -591,7 +591,7 @@ void Read_Setup_Options(RawFileClass* config_file) {
       ** Scan the string, pulling off each address piece
       */
       int i = 0;
-      char* p = strtok(netbuf, ".");
+      const char* p = strtok(netbuf, ".");
       while (p != nullptr) {
         const auto byte = tech::ParseHex<uint8_t>(p);
         if (!byte || i >= 10) {

@@ -76,7 +76,7 @@
 #include "tech/ftimer.h"
 #include "tech/rawfile.h"
 
-static bool Receive_Remote_File(char* file_name, int file_length,
+static bool Receive_Remote_File(const char* file_name, int file_length,
                                 int gametype);
 
 #define RESPONSE_TIMEOUT (int64_t{60} * 60)
@@ -225,8 +225,7 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
  *                                                                                             *
  * HISTORY: * 8/22/96 3:07PM ST : Created *
  *=============================================================================================*/
-bool Receive_Remote_File(char* file_name, int file_length,
-                         int gametype) {
+bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   // WWDebugString ("RA95 - In Receive_Remote_File\n");
   uint16_t product_id;
   IPXAddressClass sender_address;
@@ -234,21 +233,21 @@ bool Receive_Remote_File(char* file_name, int file_length,
   /*
   ** Dialog & button dimensions
   */
-  int d_dialog_w = 400;                     // dialog width
-  int d_dialog_h = 180;                      // dialog height
-  int d_dialog_x = (640 - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = (400 - d_dialog_h) / 2;  // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
+  const int d_dialog_w = 400;                             // dialog width
+  const int d_dialog_h = 180;                             // dialog height
+  const int d_dialog_x = (640 - d_dialog_w) / 2;          // dialog x-coord
+  const int d_dialog_y = (400 - d_dialog_h) / 2;          // centered y-coord
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
 
-  int d_cancel_w = config::kIsEnglish ? 80 : 100;
-  int d_cancel_h = 18;
-  int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
-  int d_cancel_y = d_dialog_y + d_dialog_h - 40;
+  const int d_cancel_w = config::kIsEnglish ? 80 : 100;
+  const int d_cancel_h = 18;
+  const int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
+  const int d_cancel_y = d_dialog_y + d_dialog_h - 40;
 
-  int d_progress_w = 200;
-  int d_progress_h = 20;
-  int d_progress_x = (SeenBuff.Get_Width() / 2) - (d_progress_w / 2);
-  int d_progress_y = d_dialog_y + 90;
+  const int d_progress_w = 200;
+  const int d_progress_h = 20;
+  const int d_progress_x = (SeenBuff.Get_Width() / 2) - (d_progress_w / 2);
+  const int d_progress_y = d_dialog_y + 90;
 
   int width;
   int height;
@@ -494,29 +493,29 @@ bool Receive_Remote_File(char* file_name, int file_length,
  *                                                                                             *
  * HISTORY: * 8/22/96 3:09PM ST : Created *
  *=============================================================================================*/
-bool Send_Remote_File(char* file_name, int gametype) {
+bool Send_Remote_File(const char* file_name, int gametype) {
   // WWDebugString ("RA95 - In Send_Remote_File\n");
 
   /*
   ** Dialog & button dimensions
   */
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
-  int d_dialog_w = 240 * factor;                     // dialog width
-  int d_dialog_h = 90 * factor;                      // dialog height
-  int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
+  const int d_dialog_w = 240 * factor;                       // dialog width
+  const int d_dialog_h = 90 * factor;                        // dialog height
+  const int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
+  const int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // centered y-coord
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
 
-  int d_cancel_w = (config::kIsEnglish ? 40 : 50) * factor;
-  int d_cancel_h = 9 * factor;
-  int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
-  int d_cancel_y = d_dialog_y + d_dialog_h - (20 * factor);
+  const int d_cancel_w = (config::kIsEnglish ? 40 : 50) * factor;
+  const int d_cancel_h = 9 * factor;
+  const int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
+  const int d_cancel_y = d_dialog_y + d_dialog_h - (20 * factor);
 
-  int d_progress_w = 100 * factor;
-  int d_progress_h = 10 * factor;
-  int d_progress_x = (SeenBuff.Get_Width() / 2) - (d_progress_w / 2);
-  int d_progress_y = d_dialog_y + (45 * factor);
+  const int d_progress_w = 100 * factor;
+  const int d_progress_h = 10 * factor;
+  const int d_progress_x = (SeenBuff.Get_Width() / 2) - (d_progress_w / 2);
+  const int d_progress_y = d_dialog_y + (45 * factor);
 
   int width;
   int height;

@@ -273,7 +273,7 @@ void HelpClass::Draw_It(bool forced) {
     if (Cost) {
       char buffer[15];
       sprintf(buffer, "$%d", Cost);
-      int width = String_Pixel_Width(buffer);
+      const int width = String_Pixel_Width(buffer);
 
       Plain_Text_Print(buffer, DrawX, DrawY + FontHeight, Color, BLACK,
                        TPF_MAP | TPF_NOSHADOW);
@@ -313,8 +313,8 @@ void HelpClass::Set_Text(int text) {
       DrawX = X - Width;
       DrawY = Y;
     } else {
-      int right = TacPixelX + Lepton_To_Pixel(TacLeptonWidth) - 6;
-      int bottom = TacPixelY + Lepton_To_Pixel(TacLeptonHeight) - 2;
+      const int right = TacPixelX + Lepton_To_Pixel(TacLeptonWidth) - 6;
+      const int bottom = TacPixelY + Lepton_To_Pixel(TacLeptonHeight) - 2;
 
       DrawX = X + X_OFFSET;
       DrawY = Y + Y_OFFSET;

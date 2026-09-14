@@ -63,24 +63,24 @@ bool WOL_Download_Dialog(IDownload* pDownload,
   /*
   ** Dialog & button dimensions
   */
-  int d_dialog_w = 400;                             // dialog width
-  int d_dialog_h = 180;                             // dialog height
-  int d_dialog_x = ((640 - d_dialog_w) / 2);        // dialog x-coord
-  int d_dialog_y = ((400 - d_dialog_h) / 2);        // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
+  const int d_dialog_w = 400;                             // dialog width
+  const int d_dialog_h = 180;                             // dialog height
+  const int d_dialog_x = ((640 - d_dialog_w) / 2);        // dialog x-coord
+  const int d_dialog_y = ((400 - d_dialog_h) / 2);        // centered y-coord
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
 
-  int d_margin = 34;
-  int d_txt6_h = 15;
+  const int d_margin = 34;
+  const int d_txt6_h = 15;
 
-  int d_cancel_w = config::kIsEnglish ? 80 : 100;
-  int d_cancel_h = 18;
-  int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
-  int d_cancel_y = d_dialog_y + d_dialog_h - 40;
+  const int d_cancel_w = config::kIsEnglish ? 80 : 100;
+  const int d_cancel_h = 18;
+  const int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
+  const int d_cancel_y = d_dialog_y + d_dialog_h - 40;
 
-  int d_progress_w = 200;
-  int d_progress_h = 20;
-  int d_progress_x = (SeenBuff.Get_Width() / 2) - (d_progress_w / 2);
-  int d_progress_y = d_dialog_y + 90;
+  const int d_progress_w = 200;
+  const int d_progress_h = 20;
+  const int d_progress_x = (SeenBuff.Get_Width() / 2) - (d_progress_w / 2);
+  const int d_progress_y = d_dialog_y + 90;
 
   //	int	width;
   //	int	height;

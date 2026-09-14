@@ -459,7 +459,7 @@ bool TListClass<T>::Draw_Me(bool forced) {
     */
     if (List.Count()) {
       for (int index = 0; index < LineCount; index++) {
-        int line = CurrentTopIndex + index;
+        const int line = CurrentTopIndex + index;
 
         if (List.Count() > line) {
           /*
@@ -711,7 +711,7 @@ void TListClass<T>::Set_Selected_Index(int index) {
 
 template <class T>
 int TListClass<T>::Step_Selected_Index(int step) {
-  int old = SelectedIndex;
+  const int old = SelectedIndex;
 
   Set_Selected_Index(old + step);
   return old;

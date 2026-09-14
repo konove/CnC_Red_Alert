@@ -126,11 +126,11 @@ bool CrateClass::Create_Crate(CELL cell) {
  *cell so that tracking can occur.                      *
  *=============================================================================================*/
 bool CrateClass::Put_Crate(CELL& cell) {
-  int old = ScenarioInit;
+  const int old = ScenarioInit;
   ScenarioInit = 0;
 
   if (Map.In_Radar(cell)) {
-    CellClass* cellptr = &Map[cell];
+    const CellClass* cellptr = &Map[cell];
 
     while (cellptr->Overlay != OVERLAY_NONE &&
            !cellptr->Is_Clear_To_Build(SPEED_FLOAT) &&

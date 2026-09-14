@@ -98,8 +98,8 @@ void Dialog_Box(int x, int y, int w, int h) {
   /*
   **	Draw the background block.
   */
-  int cx = w / 2;
-  int cy = h / 2;
+  const int cx = w / 2;
+  const int cy = h / 2;
   const void* shapedata = MFCD::Retrieve("DD-BKGND.SHP");
   CC_Draw_Shape(shapedata, 0, cx - 312, cy - 192, WINDOW_PARTIAL,
                 SHAPE_WIN_REL);
@@ -124,7 +124,7 @@ void Dialog_Box(int x, int y, int w, int h) {
   CC_Draw_Shape(shapedata, 0, 0, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
   shapedata = MFCD::Retrieve("DD-RIGHT.SHP");
-  int rightx = w - 14;
+  const int rightx = w - 14;
   CC_Draw_Shape(shapedata, 0, rightx, cy - 200, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 0, rightx, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
@@ -334,10 +334,10 @@ int Format_Window_String(char* string, int max_line_len, int& width,
  *appropriate enumeration parameters.                                *
  *=============================================================================================*/
 void Window_Box(WindowNumberType window, BoxStyleEnum style) {
-  int x = WindowList[window][WINDOWX];
-  int y = WindowList[window][WINDOWY];
-  int w = WindowList[window][WINDOWWIDTH];
-  int h = WindowList[window][WINDOWHEIGHT];
+  const int x = WindowList[window][WINDOWX];
+  const int y = WindowList[window][WINDOWY];
+  const int w = WindowList[window][WINDOWWIDTH];
+  const int h = WindowList[window][WINDOWHEIGHT];
 
   /*
   **	If it is to be rendered to the seenpage, then
@@ -417,7 +417,7 @@ void Simple_Text_Print(const char* text, int x, int y,
   /*
   **	A gradient font always requires special fixups for the palette
   */
-  int point = flag & static_cast<TextPrintType>(0x000F);
+  const int point = flag & static_cast<TextPrintType>(0x000F);
   if (point == TPF_VCR || point == TPF_6PT_GRAD || point == TPF_METAL12 ||
       point == TPF_EFNT || point == TPF_TYPE) {
     /*
@@ -970,7 +970,7 @@ void Draw_Caption(const char* text, int x, int y, int w) {
       Fancy_Text_Print(text, (w / 2) + x, 16 + y,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_CENTER | kTpfText);
-      int length = String_Pixel_Width(text);
+      const int length = String_Pixel_Width(text);
       LogicPage->Draw_Line(
           x + (w / 2) - (length / 2), y + FontHeight + FontYSpacing + 16,
           x + (w / 2) + (length / 2), y + FontHeight + FontYSpacing + 16,

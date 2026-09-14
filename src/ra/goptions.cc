@@ -95,7 +95,7 @@ bool RedrawOptionsMenu;
  *Adjusts menu for multiplay mode.                                         *
  *=============================================================================================*/
 void GameOptionsClass::Process() {
-  static struct {
+  static const struct {
     int ID;          // Button ID to use.
     int Text;        // Text number to use for this button.
     bool Multiplay;  // Allowed in multiplayer version?
@@ -119,7 +119,7 @@ void GameOptionsClass::Process() {
   int curbutton = 7;
   int y;
   TextButtonClass* buttonsel[std::size(_constants)];
-  static int num_buttons = sizeof(_constants) / sizeof(_constants[0]);
+  static const int num_buttons = sizeof(_constants) / sizeof(_constants[0]);
 
   int num_players = 0;
   int i;
@@ -340,7 +340,7 @@ void GameOptionsClass::Process() {
     /*
     **	Get user input.
     */
-    KeyNumType input = buttons->Input();
+    const KeyNumType input = buttons->Input();
 
     /*
     **	Process Input.

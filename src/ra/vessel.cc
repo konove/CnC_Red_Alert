@@ -336,7 +336,7 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
       return MOVE_NO;
     }
 
-    TechnoClass* techno = cellptr->Cell_Techno();
+    const TechnoClass* techno = cellptr->Cell_Techno();
     if (techno != nullptr && techno->Cloak == CLOAKED &&
         !House->Is_Ally(techno)) {
       return MOVE_CLOAK;
@@ -431,8 +431,8 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
   **	with the render process.
   */
   if (Visual_Character() != VISUAL_HIDDEN) {
-    DirType rotation = DIR_N;
-    int scale = 0x0100;
+    const DirType rotation = DIR_N;
+    const int scale = 0x0100;
 
     /*
     **	Actually perform the draw. Overlay an optional shimmer effect as
@@ -710,9 +710,9 @@ void VesselClass::Per_Cell_Process(PCPType why) {
     IsPlanningToLook = false;
 
     if (IsToSelfRepair) {
-      for (FacingType face : magic_enum::enum_values<FacingType>()) {
-        CELL cell = Coord_Cell(Adjacent_Cell(Center_Coord(), face));
-        BuildingClass* whom = Map[cell].Cell_Building();
+      for (const FacingType face : magic_enum::enum_values<FacingType>()) {
+        const CELL cell = Coord_Cell(Adjacent_Cell(Center_Coord(), face));
+        const BuildingClass* whom = Map[cell].Cell_Building();
         if (whom != nullptr &&
             (*whom == STRUCT_SHIP_YARD || *whom == STRUCT_SUB_PEN)) {
           if (IsOwnedByPlayer) {
@@ -772,12 +772,12 @@ ActionType VesselClass::What_Action(const ObjectClass* object) const {
       // check to see if the transporter can unload.
       bool found = false;
       if (*this != VESSEL_CARRIER) {
-        for (FacingType face : magic_enum::enum_values<FacingType>()) {
+        for (const FacingType face : magic_enum::enum_values<FacingType>()) {
           if (found) {
             break;
           }
-          CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
-          CellClass* cell = &Map[cellnum];
+          const CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
+          const CellClass* cell = &Map[cellnum];
           if (!Map.In_Radar(cellnum) ||
               Ground[cell->Land_Type()].Cost[SPEED_FOOT] == 0 ||
               cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
@@ -799,7 +799,7 @@ ActionType VesselClass::What_Action(const ObjectClass* object) const {
   */
   if (House->IsPlayerControl && action == ACTION_SELECT &&
       object->What_Am_I() == RTTI_BUILDING) {
-    auto* building = (BuildingClass*)object;
+    const auto* building = (BuildingClass*)object;
 
     if (building->Class->ToBuild == RTTI_VESSELTYPE &&
         building->House->Is_Ally(this)) {
@@ -945,7 +945,7 @@ ResultType VesselClass::Take_Damage(int& damage, int distance,
   if (res == RESULT_DESTROYED) {
     Death_Announcement(source);
     if (Class->Explosion != ANIM_NONE) {
-      AnimType anim = Class->Explosion;
+      const AnimType anim = Class->Explosion;
 
       new AnimClass(anim, Coord);
 
@@ -1027,7 +1027,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
     }
     return FIRE_OK;
   }
-  FireErrorType fire = DriveClass::Can_Fire(target, which);
+  const FireErrorType fire = DriveClass::Can_Fire(target, which);
   if (*this == VESSEL_DD) {
     Mono_Set_Cursor(0, 0);
   }
@@ -1045,7 +1045,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
       isbridgetarget = Is_Target_Cell(target);  // enable shooting at bridges
       isseatarget |= isbridgetarget;
     }
-    BuildingClass* bldg = As_Building(target);
+    const BuildingClass* bldg = As_Building(target);
     if (bldg != nullptr && bldg->Class->Speed == SPEED_FLOAT) {
       isseatarget = true;
     }
@@ -1061,7 +1061,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
       ** If it's a torpedo, let's check line-of-sight to make sure that
       ** there's only water squares between us and the target.
       */
-      ObjectClass* obj = As_Object(target);
+      const ObjectClass* obj = As_Object(target);
       COORDINATE coord = Center_Coord();
       if (obj != nullptr) {
         int totaldist = ::Distance(coord, obj->Center_Coord());
@@ -1074,7 +1074,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
           /*
           ** Check for friendly boats in the way.
           */
-          TechnoClass* tech = Map[coord].Cell_Techno();
+          const TechnoClass* tech = Map[coord].Cell_Techno();
           if (tech != nullptr && tech != this && House->Is_Ally(tech)) {
             return FIRE_RANGE;
           }
@@ -1556,9 +1556,9 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
   */
   FacingType bestdir = FACING_N;
   int bestval = -1;
-  for (FacingType face : magic_enum::enum_values<FacingType>()) {
+  for (const FacingType face : magic_enum::enum_values<FacingType>()) {
     int value = 0;
-    CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
+    const CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
 
     /*
     **	Base the initial value of the potential cell according to whether the
@@ -1572,7 +1572,7 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
                   ? 128
                   : -128;
     } else {
-      CellClass* cell = &Map[cellnum];
+      const CellClass* cell = &Map[cellnum];
       if (Ground[cell->Land_Type()].Cost[SPEED_FOOT] == 0 ||
           cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
           cell->Flag.Occupy.Monolith ||
@@ -1606,8 +1606,9 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
   */
   moveto = 0;
   if (bestval > 0) {
-    static DirType _desired_to_actual[magic_enum::enum_count<FacingType>()] = {
-        DIR_S, DIR_SW, DIR_NW, DIR_NW, DIR_NE, DIR_NE, DIR_NE, DIR_SE};
+    static const DirType
+        _desired_to_actual[magic_enum::enum_count<FacingType>()] = {
+            DIR_S, DIR_SW, DIR_NW, DIR_NW, DIR_NE, DIR_NE, DIR_NE, DIR_SE};
 
     moveto = Adjacent_Cell(Coord_Cell(Coord), bestdir);
     return _desired_to_actual[bestdir];
@@ -1725,12 +1726,13 @@ int VesselClass::Mission_Unload() {
           FootClass* passenger = Detach_Object();
 
           if (passenger != nullptr) {
-            DirType toface = DIR_S + PrimaryFacing;
+            const DirType toface = DIR_S + PrimaryFacing;
             bool placed = false;
 
-            for (FacingType face : magic_enum::enum_values<FacingType>()) {
-              DirType newface = toface + Facing_Dir(face);
-              CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
+            for (const FacingType face :
+                 magic_enum::enum_values<FacingType>()) {
+              const DirType newface = toface + Facing_Dir(face);
+              const CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
               if (passenger->Can_Enter_Cell(newcell) == MOVE_OK) {
                 ScenarioInit++;
@@ -1760,7 +1762,8 @@ int VesselClass::Mission_Unload() {
               /*
               **	Tell everyone around the transport to scatter.
               */
-              for (FacingType face : magic_enum::enum_values<FacingType>()) {
+              for (const FacingType face :
+                   magic_enum::enum_values<FacingType>()) {
                 CellClass* cellptr = &Map[Coord].Adjacent_Cell(face);
                 if (cellptr->Is_Clear_To_Move(SPEED_TRACK, true, true)) {
                   cellptr->Incoming(0, true);
@@ -1876,7 +1879,7 @@ int VesselClass::Mission_Retreat() {
         //				CELL cell =
         // Map.Calculated_Cell(House->Control.Edge, (Team.Is_Valid()) ?
         // Team->Class->Origin : -1, -1, Class->Speed);
-        CELL cell = Map.Calculated_Cell(
+        const CELL cell = Map.Calculated_Cell(
             House->Control.Edge, Team.Is_Valid() ? Team->Class->Origin : -1,
             Coord_Cell(Center_Coord()), Class->Speed);
         if (Team.Is_Valid()) {
@@ -1939,7 +1942,7 @@ void VesselClass::Read_INI(CCINIClass& ini) {
   VesselType classid;   // Vessel class.
   char buf[128];
 
-  int len = ini.Entry_Count(INI_Name());
+  const int len = ini.Entry_Count(INI_Name());
   for (int index = 0; index < len; index++) {
     const char* entry = ini.Get_Entry(INI_Name(), index);
 
@@ -1954,17 +1957,18 @@ void VesselClass::Read_INI(CCINIClass& ini) {
           /*
           **	Read the raw data.
           */
-          int strength =
+          const int strength =
               tech::ParseInteger<int>(strtok(nullptr, ",\r\n")).value_or(0);
 
-          CELL cell =
+          const CELL cell =
               tech::ParseInteger<CELL>(strtok(nullptr, ",\r\n")).value_or(0);
 
-          COORDINATE coord = Cell_Coord(cell);
+          const COORDINATE coord = Cell_Coord(cell);
 
-          DirType dir = static_cast<DirType>(
+          const DirType dir = static_cast<DirType>(
               tech::ParseInteger<int>(strtok(nullptr, ",\r\n")).value_or(0));
-          MissionType mission = Mission_From_Name(strtok(nullptr, ",\n\r"));
+          const MissionType mission =
+              Mission_From_Name(strtok(nullptr, ",\n\r"));
 
           vessel->Trigger = nullptr;
           TriggerTypeClass* tp =
@@ -2032,7 +2036,7 @@ void VesselClass::Write_INI(CCINIClass& ini) {
   **	Write the vessel data out.
   */
   for (int index = 0; index < Vessels.Count(); index++) {
-    VesselClass* vessel = Vessels.Ptr(index);
+    const VesselClass* vessel = Vessels.Ptr(index);
     if (vessel != nullptr && !vessel->IsInLimbo && vessel->IsActive) {
       char uname[10];
       char buf[128];
@@ -2097,7 +2101,7 @@ ActionType VesselClass::What_Action(CELL cell) const {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
-  ActionType action = DriveClass::What_Action(cell);
+  const ActionType action = DriveClass::What_Action(cell);
   if (action == ACTION_NOMOVE && Map[cell].Land_Type() == LAND_BEACH) {
     return ACTION_MOVE;
   }
@@ -2127,7 +2131,7 @@ ActionType VesselClass::What_Action(CELL cell) const {
  *=============================================================================================*/
 void VesselClass::Rotation_AI() {
   if (Target_Legal(TarCom) && !IsRotating) {
-    DirType dir = Direction(TarCom);
+    const DirType dir = Direction(TarCom);
 
     if (Class->IsTurretEquipped) {
       SecondaryFacing.Set_Desired(dir);
@@ -2174,8 +2178,8 @@ void VesselClass::Combat_AI() {
     *weapon can fire, then the *	failure code returned is that from the
     *primary weapon.
     */
-    int primary = What_Weapon_Should_I_Use(TarCom);
-    FireErrorType ok = Can_Fire(TarCom, primary);
+    const int primary = What_Weapon_Should_I_Use(TarCom);
+    const FireErrorType ok = Can_Fire(TarCom, primary);
 
     switch (ok) {
       case FIRE_OK:
@@ -2251,8 +2255,8 @@ bool VesselClass::Edge_Of_World_AI() {
 void VesselClass::Repair_AI() {
   if (IsSelfRepairing && (Frame % (kTicksPerMinute * Rule.RepairRate) == 0)) {
     Mark(MARK_CHANGE);
-    int cost = Class->Repair_Cost();
-    int step = Class->Repair_Step();
+    const int cost = Class->Repair_Cost();
+    const int step = Class->Repair_Step();
 
     if (House->Available_Money() >= cost) {
       House->Spend_Money(cost);

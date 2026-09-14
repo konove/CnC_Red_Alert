@@ -231,7 +231,7 @@ bool Dial8Class::Action(unsigned flags, KeyNumType& key) {
  *   02/06/1995 BR : Created.                                              *
  *=========================================================================*/
 bool Dial8Class::Draw_Me(bool forced) {
-  RemapControlType* scheme = Get_Color_Scheme();
+  const RemapControlType* scheme = Get_Color_Scheme();
 
   /*
   **	Redraw if parent indicates a redraw is needed

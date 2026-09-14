@@ -42,6 +42,9 @@ class GlobalsPipe : public Pipe {
 template <class T>
 bool ReadValue(T& value, const std::vector<uint8_t>& bytes) {
   BufferStraw straw(bytes.data(), static_cast<int>(bytes.size()));
+  // The call operator is non-const; misc-const-correctness misses the call
+  // because its argument is template-dependent.
+  // NOLINTNEXTLINE(misc-const-correctness)
   ArchiveReader reader(straw);
   reader(value);
   return reader.ok();
@@ -49,7 +52,7 @@ bool ReadValue(T& value, const std::vector<uint8_t>& bytes) {
 
 TEST(SaveGlobalsTest, SpecialFlagsUseExactlyOneByteForEveryCombination) {
   for (int flags = 0; flags < 256; ++flags) {
-    std::vector<uint8_t> bytes{static_cast<uint8_t>(flags)};
+    const std::vector<uint8_t> bytes{static_cast<uint8_t>(flags)};
     SpecialClass special{};
     ASSERT_TRUE(ReadValue(special, bytes));
     GlobalsPipe pipe;

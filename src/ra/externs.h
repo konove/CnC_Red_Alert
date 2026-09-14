@@ -395,12 +395,13 @@ extern int UnitBuildPenalty;
 */
 bool Receive_Remote_File(char* file_name, unsigned int file_length,
                          unsigned int crc, int gametype);
-bool Send_Remote_File(char* file_name, int gametype);
+bool Send_Remote_File(const char* file_name, int gametype);
 bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
                                  int gametype);
 
-bool Find_Local_Scenario(char* description, char* filename, unsigned int length,
-                         char* digest, bool official);
+bool Find_Local_Scenario(const char* description, char* filename,
+                         unsigned int length, const char* digest,
+                         bool official);
 
 void Focus_Loss();
 void Focus_Restore();

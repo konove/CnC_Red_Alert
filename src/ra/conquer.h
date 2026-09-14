@@ -797,7 +797,7 @@ void Heap_Dump_Check(const char* string);
 
 // Loads the resolution-specific ("H"-prefixed) variant of a file, or nullptr if
 // it is not available. The caller owns the returned buffer.
-void* Hires_Load(char* name);
+void* Hires_Load(const char* name);
 
 // Jolts the screen up and down the given number of times, for explosions and
 // similar. Blocks until the shaking is done.

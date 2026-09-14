@@ -979,7 +979,7 @@ void UnitTypeClass::Init_Heap() {
  *=============================================================================================*/
 UnitType UnitTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
-    for (UnitType classid : magic_enum::enum_values<UnitType>()) {
+    for (const UnitType classid : magic_enum::enum_values<UnitType>()) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
         return classid;
       }
@@ -1034,7 +1034,7 @@ void UnitTypeClass::Display(int x, int y, WindowNumberType window,
  *interface functions.                                    *
  *=============================================================================================*/
 void UnitTypeClass::Prep_For_Add() {
-  for (UnitType index : magic_enum::enum_values<UnitType>()) {
+  for (const UnitType index : magic_enum::enum_values<UnitType>()) {
     if (As_Reference(index).Get_Image_Data() != nullptr) {
       Map.Add_To_List(&As_Reference(index));
     }
@@ -1058,9 +1058,9 @@ void UnitTypeClass::Prep_For_Add() {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 void UnitTypeClass::One_Time() {
-  for (UnitType index : magic_enum::enum_values<UnitType>()) {
+  for (const UnitType index : magic_enum::enum_values<UnitType>()) {
     UnitTypeClass& uclass = As_Reference(index);
-    CCFileClass file;
+    const CCFileClass file;
 
     int largest = 0;
     //		if (uclass.Level != -1) {
@@ -1069,7 +1069,7 @@ void UnitTypeClass::One_Time() {
     /*
     **	Fetch the supporting data files for the unit.
     */
-    auto filename = std::string(uclass.Graphic_Name()) + "ICON";
+    const auto filename = std::string(uclass.Graphic_Name()) + "ICON";
     auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
 #ifndef NDEBUG
@@ -1264,7 +1264,7 @@ int UnitTypeClass::Max_Pips() const {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 void UnitTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
-  static struct {
+  static const struct {
     signed char X, Y;
   } _adjust[32] = {{1, 2},                                  // N
                    {-1, 1},  {-2, 0},  {-3, 0},  {-3, 1},   // NW

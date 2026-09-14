@@ -241,9 +241,10 @@ void ScenarioClass::Do_Fade_AI() {
     if (FadeTimer.IsFinished()) {
       IsFadingColor = false;
     }
-    fixed newsat = Options.Get_Saturation() *
-                   fixed(static_cast<int>(kGrayFadeTime - FadeTimer.Value()),
-                         static_cast<int>(kGrayFadeTime));
+    const fixed newsat =
+        Options.Get_Saturation() *
+        fixed(static_cast<int>(kGrayFadeTime - FadeTimer.Value()),
+              static_cast<int>(kGrayFadeTime));
     GameOptionsClass::Adjust_Palette(
         OriginalPalette, GamePalette, Options.Get_Brightness(), newsat,
         Options.Get_Tint(), Options.Get_Contrast());
@@ -253,8 +254,9 @@ void ScenarioClass::Do_Fade_AI() {
     if (FadeTimer.IsFinished()) {
       IsFadingBW = false;
     }
-    fixed newsat =
-        Options.Get_Saturation() * fixed(static_cast<int>(FadeTimer.Value()), kGrayFadeTime);
+    const fixed newsat =
+        Options.Get_Saturation() *
+        fixed(static_cast<int>(FadeTimer.Value()), kGrayFadeTime);
     GameOptionsClass::Adjust_Palette(
         OriginalPalette, GamePalette, Options.Get_Brightness(), newsat,
         Options.Get_Tint(), Options.Get_Contrast());
@@ -285,7 +287,7 @@ void ScenarioClass::Do_Fade_AI() {
  *=============================================================================================*/
 bool ScenarioClass::Set_Global_To(int global, bool value) {
   if (static_cast<unsigned>(global) < std::ssize(Scen.GlobalFlags)) {
-    bool previous = GlobalFlags[global];
+    const bool previous = GlobalFlags[global];
     if (previous != value) {
       GlobalFlags[global] = value;
       IsGlobalChanged = true;
@@ -446,7 +448,7 @@ bool Read_Scenario(char* name) {
       /*
       ** Find out if the CD in the current drive is the Aftermath disc.
       */
-      int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
+      const int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
       if ((!Using_DVD() || cd_index != 5) && cd_index != 3) {
         GamePalette.Set(kFadePaletteFast, Call_Back);
         RequiredCD = 3;
@@ -592,7 +594,7 @@ void Fill_In_Data() {
   *number *	of triggers that have this action must be recorded.
   */
   for (int index = 0; index < TriggerTypes.Count(); index++) {
-    TriggerTypeClass* tp = TriggerTypes.Ptr(index);
+    const TriggerTypeClass* tp = TriggerTypes.Ptr(index);
     if (tp->Action1.Action == TACTION_ALLOWWIN ||
         (tp->ActionControl != MULTI_ONLY &&
          tp->Action2.Action == TACTION_ALLOWWIN)) {
@@ -604,10 +606,10 @@ void Fill_In_Data() {
   **	Move available money to silos, if the scenario flag so indicates.
   */
   if (Scen.IsMoneyTiberium) {
-    for (HousesType house : magic_enum::enum_values<HousesType>()) {
+    for (const HousesType house : magic_enum::enum_values<HousesType>()) {
       HouseClass* hptr = HouseClass::As_Pointer(house);
       if (hptr != nullptr) {
-        int tomove = static_cast<int>(hptr->Capacity - hptr->Tiberium);
+        const int tomove = static_cast<int>(hptr->Capacity - hptr->Tiberium);
         hptr->Credits -= tomove;
         hptr->Tiberium += tomove;
       }
@@ -700,7 +702,7 @@ void Clear_Scenario() {
   MapTriggers.Clear();
   LogicTriggers.Clear();
 
-  for (HousesType house : magic_enum::enum_values<HousesType>()) {
+  for (const HousesType house : magic_enum::enum_values<HousesType>()) {
     HouseTriggers[house].Clear();
   }
 
@@ -783,7 +785,7 @@ void Do_Win() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
+  const int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
 
   /*
   ** Hack section.  If it's allied scenario 10, variation A, then skip the
@@ -1007,7 +1009,7 @@ void Do_Lose() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
+  const int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
 
   /*
   **	Announce win to player.
@@ -1096,7 +1098,7 @@ void Do_Draw() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
+  const int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
 
   /*
   **	Announce win to player.
@@ -1221,7 +1223,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
   // Track which text ID each button position represents after shifting.
   int left_btn_text_id = left_btn;
-  int right_btn_text_id = right_btn;
+  const int right_btn_text_id = right_btn;
   bool process;      // loop while true
   KeyNumType input;  // user input
   int selection = 0;
@@ -1331,7 +1333,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   // If text is longer than one page, truncate at the last space.
   std::string_view page_text = msg.substr(0, kMaxCharsPerPage - 1);
   if (page_text.size() < msg.size()) {
-    size_t last_space = page_text.rfind(' ');
+    const size_t last_space = page_text.rfind(' ');
     if (last_space != std::string_view::npos) {
       page_text = page_text.substr(0, last_space);
     }
@@ -1349,8 +1351,8 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   Format_Window_String(buffer, 300, width, height);
   height += numbuttons == 0 ? 30 : 60;
 
-  int x = (SeenBuff.Get_Width() - width) / 2;
-  int y = (SeenBuff.Get_Height() - height) / 2;
+  const int x = (SeenBuff.Get_Width() - width) / 2;
+  const int y = (SeenBuff.Get_Height() - height) / 2;
 
   /*
   **	Other inits.
@@ -1698,7 +1700,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
     ** Find which variations are available for this scenario
     */
     int available = 0;  // Variations A.. that exist, in order.
-    for (ScenarioVarType candidate :
+    for (const ScenarioVarType candidate :
          magic_enum::enum_values<ScenarioVarType>()) {
       if (candidate == SCEN_VAR_LOSE) {
         break;
@@ -1748,7 +1750,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
   if (scenario < 100) {
     sprintf(ScenarioName, "SC%c%02d%c%c.INI", c_player, scenario, c_dir, c_var);
   } else {
-    char first = static_cast<char>((scenario / 36) + 'A');
+    const char first = static_cast<char>((scenario / 36) + 'A');
     char second = static_cast<char>(scenario % 36);
 
     if (second < 10) {
@@ -1809,7 +1811,7 @@ void ScenarioClass::Set_Scenario_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created.  V.Grippi added CS check 2/5/97 *
  *=============================================================================================*/
-bool Read_Scenario_INI(char* fname, bool /*unused*/) {
+bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   //	char fname[kMaxFname+kMaxExt];			// full INI
   // filename
 
@@ -1896,7 +1898,7 @@ bool Read_Scenario_INI(char* fname, bool /*unused*/) {
     // requested is an RA CD, then don't set the palette, leave the map screen
     // up.
 
-    int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
+    const int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
     if ((!Using_DVD() || cd_index != 5) && cd_index != RequiredCD) {
       if ((RequiredCD == 0 || RequiredCD == 1) && Session.Type == GAME_NORMAL) {
         SeenBuff.Clear();
@@ -2181,7 +2183,7 @@ bool Read_Scenario_INI(char* fname, bool /*unused*/) {
     *units *	to create.
     */
     if (!MapEditorActive) {
-      int save_init = ScenarioInit;  // turn ScenarioInit off
+      const int save_init = ScenarioInit;  // turn ScenarioInit off
       ScenarioInit = 0;
       Create_Units(ini.Get_Bool("Basic", "Official", false));
       ScenarioInit = save_init;  // turn ScenarioInit back on
@@ -2229,7 +2231,7 @@ bool Read_Scenario_INI(char* fname, bool /*unused*/) {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. * 05/11/1995 JLB : Updates movie data. *
  *=============================================================================================*/
-void Write_Scenario_INI(char* fname) {
+void Write_Scenario_INI(const char* fname) {
   if constexpr (config::kCheatKeysEnabled) {
     CCFileClass file(fname);
 
@@ -2512,7 +2514,7 @@ static void Remove_AI_Players() {
  * HISTORY: * 06/09/1995 BRR : Created. *
  *=============================================================================================*/
 static void Create_Units(bool official) {
-  static struct {
+  static const struct {
     int MinLevel;
     UnitType AllyType[2];
     UnitType SovietType[2];
@@ -2523,7 +2525,7 @@ static void Create_Units(bool official) {
   static int num_units[std::size(utable)];  // # of each type of unit to create
   int tot_units;                             // total # units to create
 
-  static struct {
+  static const struct {
     int MinLevel;
     int AllyCount;
     InfantryType AllyType;
@@ -2662,7 +2664,7 @@ static void Create_Units(bool official) {
   **	If there are insufficient waypoints to account for all players, then
   *randomly assign *	starting points until there is enough.
   */
-  int deficiency = look_for - num_waypts;
+  const int deficiency = look_for - num_waypts;
   //	int deficiency = (Session.Players.Count() + Session.Options.AIPlayers) -
   // num_waypts;
   if (deficiency > 0) {
@@ -2700,7 +2702,7 @@ static void Create_Units(bool official) {
     **	wapoint from the existing houses.
     */
     if (numtaken == 0) {
-      int pick = Random_Pick(0, num_waypts - 1);
+      const int pick = Random_Pick(0, num_waypts - 1);
       centroid = waypts[pick];
       taken[pick] = true;
       numtaken++;

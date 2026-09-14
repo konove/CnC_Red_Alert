@@ -168,7 +168,7 @@ bool FixedHeapClass::Set_Heap(int count, void* buffer) {
  *=============================================================================================*/
 void* FixedHeapClass::Allocate() {
   if (ActiveCount < TotalCount) {
-    int index = static_cast<int>(base::first_false(FreeFlag));
+    const int index = static_cast<int>(base::first_false(FreeFlag));
 
     if (index != -1) {
       ActiveCount++;
@@ -196,7 +196,7 @@ void* FixedHeapClass::Allocate() {
  *=============================================================================================*/
 bool FixedHeapClass::Free(void* pointer) {
   if (pointer && ActiveCount) {
-    int index = ID(pointer);
+    const int index = ID(pointer);
 
     if (static_cast<unsigned>(index) < static_cast<unsigned>(TotalCount)) {
       if (FreeFlag[base::ToSize(index)]) {
@@ -347,7 +347,7 @@ void FixedIHeapClass::Clear() {
 bool FixedIHeapClass::Set_Heap(int count, void* buffer) {
   // avoid reallocating if possible
   // this is a workaround to prevent use-after-free errors in rule loading
-  void* reuse_buf = nullptr;
+  const void* reuse_buf = nullptr;
   if (count == TotalCount && !buffer && IsAllocated) {
     reuse_buf = buffer = Buffer;
     Buffer = nullptr;

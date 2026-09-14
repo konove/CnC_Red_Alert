@@ -226,8 +226,8 @@ bool GaugeClass::Draw_Me(bool forced) {
     **	Colourize the inside of the gauge if indicated.
     */
     if (IsColorized) {
-      int middle = Value_To_Pixel(CurValue);
-      unsigned char color = Get_Color_Scheme()->Bright;
+      const int middle = Value_To_Pixel(CurValue);
+      const unsigned char color = Get_Color_Scheme()->Bright;
       if (IsHorizontal) {
         if (middle >= X + 1) {
           LogicPage->Fill_Rect(X + 1, Y + 1, middle, Y + Height - 2, color);
@@ -294,8 +294,8 @@ bool GaugeClass::Action(unsigned flags, KeyNumType& key) {
     ** the thumb (only if we clicked on the thumb.)
     */
     if (flags & LEFTPRESS) {
-      int curpix = Value_To_Pixel(CurValue);
-      int clickpix = IsHorizontal ? Get_Mouse_X() : Get_Mouse_Y();
+      const int curpix = Value_To_Pixel(CurValue);
+      const int clickpix = IsHorizontal ? Get_Mouse_X() : Get_Mouse_Y();
 
       if (clickpix > curpix && clickpix - curpix < Thumb_Pixels()) {
         ClickDiff = clickpix - curpix;
@@ -474,9 +474,9 @@ bool TriColorGaugeClass::Draw_Me(bool forced) {
     /*
     **	Colourize the inside of the gauge if indicated.
     */
-    int red = Value_To_Pixel(RedLimit);
-    int yellow = Value_To_Pixel(YellowLimit);
-    int middle = Value_To_Pixel(CurValue);
+    const int red = Value_To_Pixel(RedLimit);
+    const int yellow = Value_To_Pixel(YellowLimit);
+    const int middle = Value_To_Pixel(CurValue);
 
     if (CurValue <= RedLimit) {
       if (IsHorizontal) {

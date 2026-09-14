@@ -518,7 +518,7 @@ void EventClass::Execute() {
     **	Make or break alliance.
     */
     case ALLY: {
-      HouseClass* house = Houses.Raw_Ptr(Data.General.Value);
+      const HouseClass* house = Houses.Raw_Ptr(Data.General.Value);
       if (Houses.Raw_Ptr(ID)->Is_Ally(house)) {
         Houses.Raw_Ptr(ID)->Make_Enemy(
             static_cast<HousesType>(Data.General.Value));
@@ -544,14 +544,14 @@ void EventClass::Execute() {
     */
     case SPECIAL: {
       Special = Data.Options.Data;
-      HouseClass* house = Houses.Raw_Ptr(ID);
+      const HouseClass* house = Houses.Raw_Ptr(ID);
 
       // The format string comes from the localized string table, so verify the
       // translation still takes exactly one %s before using it.
-      auto format =
+      const auto format =
           absl::ParsedFormat<'s'>::New(Text_String(TXT_SPECIAL_WARNING));
       if (format != nullptr) {
-        std::string message = absl::StrFormat(*format, house->Name());
+        const std::string message = absl::StrFormat(*format, house->Name());
         Session.Messages.Add_Message(
             nullptr, 0, message.c_str(), house->RemapColor,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200);
@@ -746,7 +746,7 @@ void EventClass::Execute() {
         *this is a *	special queued move mission and there is already a valid
         *navigation *	target for this unit.
         */
-        bool q = Data.MegaMission.Mission == MISSION_QMOVE;
+        const bool q = Data.MegaMission.Mission == MISSION_QMOVE;
 
         techno->Assign_Mission(Data.MegaMission.Mission);
 
@@ -786,7 +786,7 @@ void EventClass::Execute() {
         //   If the destination is a shipyard or sub pen, set the IsToSelfRepair
         //   flag Otherwise, clear both IsToSelfRepair and IsSelfRepairing
         //
-        RTTIType rt = techno->What_Am_I();
+        const RTTIType rt = techno->What_Am_I();
         //				rt = Data.MegaMission.Whom;
         if (rt == RTTI_VESSEL && techno != nullptr &&
             techno->What_Am_I() == RTTI_VESSEL &&
@@ -900,7 +900,7 @@ void EventClass::Execute() {
       ** we're not already inside a dialog box routine!)
       */
       if (SpecialDialog == SDLG_NONE) {
-        Timer<SystemTickSource> timer{int64_t{kTicksPerSecond} * 4};
+        const Timer<SystemTickSource> timer{int64_t{kTicksPerSecond} * 4};
 
         WWMessageBox().Process(TXT_SAVING_GAME, TXT_NONE);
 
@@ -999,7 +999,8 @@ void EventClass::Execute() {
         std::string message;
         // The format string lives in the localized string table, so verify the
         // translation still takes exactly one %s before using it.
-        auto format = absl::ParsedFormat<'s'>::New(TXT_WOL_DRAW_PROPOSED_OTHER);
+        const auto format =
+            absl::ParsedFormat<'s'>::New(TXT_WOL_DRAW_PROPOSED_OTHER);
         for (i = 0; i < Session.Players.Count(); i++) {
           if (ID == Session.Players[i]->Player.ID) {
             if (format != nullptr) {
@@ -1030,7 +1031,7 @@ void EventClass::Execute() {
         std::string message;
         // The format string lives in the localized string table, so verify the
         // translation still takes exactly one %s before using it.
-        auto format =
+        const auto format =
             absl::ParsedFormat<'s'>::New(TXT_WOL_DRAW_RETRACTED_OTHER);
         for (i = 0; i < Session.Players.Count(); i++) {
           if (ID == Session.Players[i]->Player.ID) {

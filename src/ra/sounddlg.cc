@@ -103,42 +103,42 @@ void SoundControlsClass::Process() {
   /*
   ** Adjust dialog controls for resolution
   */
-  int option_width = OPTION_WIDTH * 2;
-  int option_height = OPTION_HEIGHT * 2;
+  const int option_width = OPTION_WIDTH * 2;
+  const int option_height = OPTION_HEIGHT * 2;
 
-  int option_x = OPTION_X * 2;
-  int option_y = OPTION_Y * 2;
+  const int option_x = OPTION_X * 2;
+  const int option_y = OPTION_Y * 2;
 
-  int listbox_x = LISTBOX_X * 2;
-  int listbox_y = LISTBOX_Y * 2;
-  int listbox_w = LISTBOX_W * 2;
-  int listbox_h = (LISTBOX_H * 2) + 2;
+  const int listbox_x = LISTBOX_X * 2;
+  const int listbox_y = LISTBOX_Y * 2;
+  const int listbox_w = LISTBOX_W * 2;
+  const int listbox_h = (LISTBOX_H * 2) + 2;
 
-  int button_width = BUTTON_WIDTH * 2;
-  int button_x = BUTTON_X * 2;
-  int button_y = BUTTON_Y * 2;
+  const int button_width = BUTTON_WIDTH * 2;
+  const int button_x = BUTTON_X * 2;
+  const int button_y = BUTTON_Y * 2;
 
-  int stop_x = STOP_X * 2;
-  int stop_y = STOP_Y * 2;
+  const int stop_x = STOP_X * 2;
+  const int stop_y = STOP_Y * 2;
 
-  int play_x = PLAY_X * 2;
-  int play_y = PLAY_Y * 2;
+  const int play_x = PLAY_X * 2;
+  const int play_y = PLAY_Y * 2;
 
-  int onoff_width = ONOFF_WIDTH * 2;
-  int shuffle_x = SHUFFLE_X * 2;
-  int shuffle_y = SHUFFLE_Y * 2;
-  int repeat_x = REPEAT_X * 2;
-  int repeat_y = REPEAT_Y * 2;
+  const int onoff_width = ONOFF_WIDTH * 2;
+  const int shuffle_x = SHUFFLE_X * 2;
+  const int shuffle_y = SHUFFLE_Y * 2;
+  const int repeat_x = REPEAT_X * 2;
+  const int repeat_y = REPEAT_Y * 2;
 
-  int mslider_x = MSLIDER_X * 2;
-  int mslider_y = MSLIDER_Y * 2;
-  int mslider_w = MSLIDER_W * 2;
-  int mslider_height = MSLIDER_HEIGHT * 2;
+  const int mslider_x = MSLIDER_X * 2;
+  const int mslider_y = MSLIDER_Y * 2;
+  const int mslider_w = MSLIDER_W * 2;
+  const int mslider_height = MSLIDER_HEIGHT * 2;
 
-  int fxslider_x = FXSLIDER_X * 2;
-  int fxslider_y = FXSLIDER_Y * 2;
-  int fxslider_w = FXSLIDER_W * 2;
-  int fxslider_height = FXSLIDER_HEIGHT * 2;
+  const int fxslider_x = FXSLIDER_X * 2;
+  const int fxslider_y = FXSLIDER_Y * 2;
+  const int fxslider_w = FXSLIDER_W * 2;
+  const int fxslider_height = FXSLIDER_HEIGHT * 2;
 
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   //	ThemeType theme;
@@ -265,10 +265,10 @@ void SoundControlsClass::Process() {
   **	Add all the themes to the list box. The list box entries are constructed
   **	and then stored into allocated EMS memory blocks.
   */
-  for (ThemeType index : magic_enum::enum_values<ThemeType>()) {
+  for (const ThemeType index : magic_enum::enum_values<ThemeType>()) {
     if (ThemeClass::Is_Allowed(index)) {
       char buffer[100];
-      int length = ThemeClass::Track_Length(index);
+      const int length = ThemeClass::Track_Length(index);
       const char* fullname = ThemeClass::Full_Name(index);
 
       void* ptr = new char[sizeof(buffer)];
@@ -351,7 +351,7 @@ void SoundControlsClass::Process() {
     /*
     **	Get user input.
     */
-    KeyNumType input = optionsbtn->Input();
+    const KeyNumType input = optionsbtn->Input();
 
     /*
     **	Process Input.

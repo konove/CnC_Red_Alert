@@ -179,7 +179,7 @@ bool CCINIClass::Load(FileClass& file, bool withdigest) {
  *digest control.                                          *
  *=============================================================================================*/
 bool CCINIClass::Load(Straw& file, bool withdigest) {
-  bool ok = INIClass::Load(file);
+  const bool ok = INIClass::Load(file);
 
   Invalidate_Message_Digest();
   if (ok && withdigest) {
@@ -187,7 +187,7 @@ bool CCINIClass::Load(Straw& file, bool withdigest) {
     **	If a digest is present, fetch it.
     */
     unsigned char digest[20];
-    int len = Get_UUBlock("Digest", digest, sizeof(digest));
+    const int len = Get_UUBlock("Digest", digest, sizeof(digest));
     if (len > 0) {
       Clear("Digest");
 
@@ -276,7 +276,7 @@ int CCINIClass::Save(Pipe& pipe, bool withdigest) const {
   /*
   **	Output the database to the pipe specified.
   */
-  int length = INIClass::Save(pipe);
+  const int length = INIClass::Save(pipe);
 
   /*
   **	Remove the digest from the database. It shouldn't stick around as if it
@@ -320,7 +320,8 @@ static inline int Scale_To_256(int val) {
  *=============================================================================================*/
 LEPTON CCINIClass::Get_Lepton(const char* section, const char* entry,
                               LEPTON defvalue) const {
-  fixed result = Get_Fixed(section, entry, fixed(defvalue, CELL_LEPTON_W));
+  const fixed result =
+      Get_Fixed(section, entry, fixed(defvalue, CELL_LEPTON_W));
   return static_cast<LEPTON>(result * CELL_LEPTON_W);
 }
 
@@ -371,7 +372,8 @@ bool CCINIClass::Put_Lepton(const char* section, const char* entry,
  *=============================================================================================*/
 MPHType CCINIClass::Get_MPHType(const char* section, const char* entry,
                                 MPHType defvalue) const {
-  int val = Get_Int(section, entry, static_cast<int>(defvalue) * 100 / 256);
+  const int val =
+      Get_Int(section, entry, static_cast<int>(defvalue) * 100 / 256);
   return static_cast<MPHType>(Scale_To_256(val));
 }
 
@@ -431,7 +433,7 @@ int32_t CCINIClass::Get_Owners(const char* section, const char* entry,
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     ownable = 0;
-    char* name = strtok(buffer, ",");
+    const char* name = strtok(buffer, ",");
 
     while (name) {
       ownable |= Owner_From_Name(name);
@@ -468,7 +470,7 @@ bool CCINIClass::Put_Owners(const char* section, const char* entry,
   buffer.reserve(128);
 
   // Helper lambda to safely append with comma separation
-  auto append = [&](const std::string_view str) {
+  const auto append = [&](const std::string_view str) {
     if (!buffer.empty()) {
       buffer += ',';
     }
@@ -768,7 +770,7 @@ WarheadType CCINIClass::Get_WarheadType(const char* section, const char* entry,
   char buffer[128];
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    for (WarheadType wh : magic_enum::enum_values<WarheadType>()) {
+    for (const WarheadType wh : magic_enum::enum_values<WarheadType>()) {
       if (stricmp(WarheadTypeClass::As_Pointer(wh)->Name(), buffer) == 0) {
         return wh;
       }
@@ -886,7 +888,7 @@ BulletType CCINIClass::Get_BulletType(const char* section, const char* entry,
   char buffer[128];
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    for (BulletType proj : magic_enum::enum_values<BulletType>()) {
+    for (const BulletType proj : magic_enum::enum_values<BulletType>()) {
       if (stricmp(BulletTypeClass::As_Reference(proj).Name(), buffer) == 0) {
         //			if (stricmp(ProjectileNames[proj], buffer) == 0)
         //{
@@ -1009,7 +1011,7 @@ VQType CCINIClass::Get_VQType(const char* section, const char* entry,
   char buffer[128];
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    for (VQType vq : magic_enum::enum_values<VQType>()) {
+    for (const VQType vq : magic_enum::enum_values<VQType>()) {
       if (stricmp(buffer, VQName[vq]) == 0) {
         return vq;
       }
@@ -1398,9 +1400,9 @@ uint64_t CCINIClass::Get_Buildings(const char* section, const char* entry,
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     pre = 0;
-    char* token = strtok(buffer, ",");
+    const char* token = strtok(buffer, ",");
     while (token != nullptr && *token != '\0') {
-      StructType building = BuildingTypeClass::From_Name(token);
+      const StructType building = BuildingTypeClass::From_Name(token);
       if (building != STRUCT_NONE) {
         pre |= uint64_t{1} << building;
       }
@@ -1447,7 +1449,7 @@ bool CCINIClass::Put_Buildings(const char* section, const char* entry,
   constexpr int limit =
       std::min(32, static_cast<int>(magic_enum::enum_count<StructType>()));
 
-  auto append = [&](const std::string_view name) {
+  const auto append = [&](const std::string_view name) {
     if (!buffer.empty()) {
       buffer += ',';
     }

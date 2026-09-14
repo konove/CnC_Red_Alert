@@ -52,11 +52,11 @@
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 
-static bool ReadSavedNicks(WolapiObject* pWO, IconListClass& NickList,
+static bool ReadSavedNicks(const WolapiObject* pWO, IconListClass& NickList,
                            char* szNameBuffer, char* szPassBuffer);
-static bool bSaveNick(WolapiObject* pWO, const char* szNickToSave,
+static bool bSaveNick(const WolapiObject* pWO, const char* szNickToSave,
                       const char* szPassToSave, bool bPassIsMangled);
-static void DeleteNick(WolapiObject* pWO, int iOneBasedEntryToDelete);
+static void DeleteNick(const WolapiObject* pWO, int iOneBasedEntryToDelete);
 // char* LoadShpFile( const char* szShpFile );
 
 // #include "ra/woldebug.h"
@@ -74,45 +74,46 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   /*
   **	Dialog & button dimensions
   */
-  int d_dialog_w = config::kIsFrench ? 320 : 300;  // dialog width
-  int d_dialog_h = 170;  // dialog height
-  int d_dialog_x = ((640 - d_dialog_w) / 2);
-  int d_dialog_y = ((510 - d_dialog_h) / 2);
+  const int d_dialog_w = config::kIsFrench ? 320 : 300;  // dialog width
+  const int d_dialog_h = 170;                            // dialog height
+  const int d_dialog_x = ((640 - d_dialog_w) / 2);
+  const int d_dialog_y = ((510 - d_dialog_h) / 2);
 
-  int top_margin = 0;
+  const int top_margin = 0;
 
-  int d_name_w = 132;
-  int d_name_x = d_dialog_x + (config::kIsFrench ? 50 : 40);
-  int d_name_y = d_dialog_y + top_margin + 50;
+  const int d_name_w = 132;
+  const int d_name_x = d_dialog_x + (config::kIsFrench ? 50 : 40);
+  const int d_name_y = d_dialog_y + top_margin + 50;
 
-  int d_pass_w = 72;
-  int d_pass_x = d_name_x + d_name_w + 12;
-  int d_pass_y = d_name_y;
+  const int d_pass_w = 72;
+  const int d_pass_x = d_name_x + d_name_w + 12;
+  const int d_pass_y = d_name_y;
 
-  int d_list_w = d_name_w;
-  int d_list_h = 40;
-  int d_list_x = d_name_x;
-  int d_list_y = d_dialog_y + top_margin + 80;
+  const int d_list_w = d_name_w;
+  const int d_list_h = 40;
+  const int d_list_x = d_name_x;
+  const int d_list_y = d_dialog_y + top_margin + 80;
 
   //	int d_save_w = d_pass_w;
-  int d_save_h = 18;
-  int d_save_x = d_pass_x + (d_pass_w / 2) - (d_pass_w / 2);
-  int d_save_y = d_list_y;  // + ( d_list_h / 2 ) - ( d_save_h / 2 );
+  const int d_save_h = 18;
+  const int d_save_x = d_pass_x + (d_pass_w / 2) - (d_pass_w / 2);
+  const int d_save_y = d_list_y;  // + ( d_list_h / 2 ) - ( d_save_h / 2 );
 
-  int d_delete_w = d_pass_w;
-  int d_delete_h = 20;
-  int d_delete_x = d_save_x;
-  int d_delete_y = d_list_y + d_list_h - d_delete_h;
+  const int d_delete_w = d_pass_w;
+  const int d_delete_h = 20;
+  const int d_delete_x = d_save_x;
+  const int d_delete_y = d_list_y + d_list_h - d_delete_h;
 
-  int d_connect_w = config::kIsFrench ? 90 : 80;
-  int d_connect_x = d_name_x + (d_name_w / 2) - (d_connect_w / 2);
-  int d_connect_y = d_dialog_y + top_margin +
-                    130;  // d_dialog_y + d_dialog_h - d_connect_h - d_margin;
+  const int d_connect_w = config::kIsFrench ? 90 : 80;
+  const int d_connect_x = d_name_x + (d_name_w / 2) - (d_connect_w / 2);
+  const int d_connect_y =
+      d_dialog_y + top_margin +
+      130;  // d_dialog_y + d_dialog_h - d_connect_h - d_margin;
 
-  int d_cancel_w = 80;
-  int d_cancel_x =
+  const int d_cancel_w = 80;
+  const int d_cancel_x =
       d_pass_x + (d_pass_w / 2) - (d_cancel_w / 2);  // d_dialog_cx + d_margin;
-  int d_cancel_y = d_connect_y;
+  const int d_cancel_y = d_connect_y;
 
   /*
   **	Button enumerations
@@ -169,7 +170,8 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   // call... sigh
   Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), TBLACK,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  int iSaveTextWidth = String_Pixel_Width(TXT_WOL_SAVELOGIN) + BIGCHECK_OFFSETX;
+  const int iSaveTextWidth =
+      String_Pixel_Width(TXT_WOL_SAVELOGIN) + BIGCHECK_OFFSETX;
   BigCheckBoxClass SaveCheckBox(BUTTON_SAVECHECK, d_save_x, d_save_y,
                                 iSaveTextWidth, d_save_h, TXT_WOL_SAVELOGIN,
                                 TPF_6PT_GRAD | TPF_NOSHADOW, true);
@@ -270,7 +272,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
     **	Get user input.
     */
     bTabKeyPressedHack = false;
-    KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input();
 
     /*
     **	The first time through the processing loop, set the edit
@@ -354,7 +356,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
         //	If we have not done RequestServerList() yet, do it now.
         if (!pWO->pChatSink->pServer) {
           bool bBreak = false;
-          HRESULT hRes = pWO->GetChatServer();
+          const HRESULT hRes = pWO->GetChatServer();
           switch (hRes) {
             case E_FAIL:
               bBreak = true;
@@ -393,8 +395,8 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
         }
 
         //	RequestConnection()...
-        HRESULT hRes = pWO->AttemptLogin(szNameBuffer, szPassBuffer,
-                                         PassEdit.bClearOnNextSetFocus);
+        const HRESULT hRes = pWO->AttemptLogin(szNameBuffer, szPassBuffer,
+                                               PassEdit.bClearOnNextSetFocus);
         if (hRes == S_OK) {
           if (SaveCheckBox.IsOn && !bSaveNick(pWO, szNameBuffer, szPassBuffer,
                                               PassEdit.bClearOnNextSetFocus)) {
@@ -487,7 +489,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
 }
 
 //***********************************************************************************************
-bool ReadSavedNicks(WolapiObject* pWO, IconListClass& NickList,
+bool ReadSavedNicks(const WolapiObject* pWO, IconListClass& NickList,
                     char* szNameBuffer, char* szPassBuffer) {
   //	Read saved nickname/passwords from the registry.
   //	Set up the list of nick/passwords.
@@ -514,7 +516,7 @@ bool ReadSavedNicks(WolapiObject* pWO, IconListClass& NickList,
 }
 
 //***********************************************************************************************
-bool bSaveNick(WolapiObject* pWO, const char* szNickToSave,
+bool bSaveNick(const WolapiObject* pWO, const char* szNickToSave,
                const char* szPassToSave, bool bPassIsMangled) {
   //	Saves specified nick and password in the registry, using SetNick.
   //	Returns false if nick can't be saved.
@@ -591,7 +593,7 @@ bool bSaveNick(WolapiObject* pWO, const char* szNickToSave,
 }
 
 //***********************************************************************************************
-void DeleteNick(WolapiObject* pWO, int iOneBasedEntryToDelete) {
+void DeleteNick(const WolapiObject* pWO, int iOneBasedEntryToDelete) {
   //	Delete a nick from the registry via wolapi SetNick.
   //	If nick to delete is in position one, and there is a second nick, move
   // the second nick into position one.
@@ -604,15 +606,15 @@ void DeleteNick(WolapiObject* pWO, int iOneBasedEntryToDelete) {
       pWO->pChat->SetNick(1, szNick, szPass, 0);  //	(Already
                                                   // mangled.)
       //	Delete slot 2.
-      HRESULT hRes = pWO->pChat->SetNick(2, "", "", 0);
+      const HRESULT hRes = pWO->pChat->SetNick(2, "", "", 0);
       DebugChatDef(hRes);
     } else {
       //	No second nick.
-      HRESULT hRes = pWO->pChat->SetNick(1, "", "", 0);
+      const HRESULT hRes = pWO->pChat->SetNick(1, "", "", 0);
       DebugChatDef(hRes);
     }
   } else {
-    HRESULT hRes = pWO->pChat->SetNick(2, "", "", 0);
+    const HRESULT hRes = pWO->pChat->SetNick(2, "", "", 0);
     DebugChatDef(hRes);
   }
 }

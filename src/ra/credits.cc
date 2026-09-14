@@ -129,7 +129,7 @@ void CreditClass::Graphic_Logic(bool forced) {
     if (Scen.MissionTimer.IsRunning()) {
       int64_t secs = Scen.MissionTimer.Value() / kTicksPerSecond;
       int64_t mins = secs / 60;
-      int64_t hours = mins / 60;
+      const int64_t hours = mins / 60;
       secs %= 60;
       mins %= 60;
 

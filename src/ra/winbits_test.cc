@@ -70,11 +70,11 @@ std::vector<std::uint8_t> MakeBmp(int width, int height, std::uint8_t first) {
   const std::uint32_t bits_offset = 14 + 40 + (2 * 4);
 
   std::vector<std::uint8_t> bmp;
-  auto put16 = [&bmp](std::uint16_t v) {
+  const auto put16 = [&bmp](std::uint16_t v) {
     bmp.push_back(static_cast<std::uint8_t>(v & 0xFFU));
     bmp.push_back(static_cast<std::uint8_t>(v >> 8U));
   };
-  auto put32 = [&bmp](std::uint32_t v) {
+  const auto put32 = [&bmp](std::uint32_t v) {
     for (int i = 0; i < 4; ++i) {
       bmp.push_back(static_cast<std::uint8_t>((v >> (8 * i)) & 0xFFU));
     }
@@ -139,7 +139,7 @@ TEST(WinBitsTest, SaveAndRestoreRoundTripsARectangle) {
 }
 
 TEST(WinBitsTest, DrawDibTurnsTheImageRightWayUp) {
-  TestScreen screen;
+  const TestScreen screen;
   const auto image = dib::Image::FromBmp(MakeBmp(2, 2, 10));
   ASSERT_TRUE(image.has_value());
 
@@ -154,7 +154,7 @@ TEST(WinBitsTest, DrawDibTurnsTheImageRightWayUp) {
 }
 
 TEST(WinBitsTest, DrawDibClipsEachRowToTheGivenWidth) {
-  TestScreen screen;
+  const TestScreen screen;
   const auto image = dib::Image::FromBmp(MakeBmp(3, 1, 20));
   ASSERT_TRUE(image.has_value());
 
@@ -166,7 +166,7 @@ TEST(WinBitsTest, DrawDibClipsEachRowToTheGivenWidth) {
 }
 
 TEST(WinBitsTest, DrawDibDrawsNothingForANegativeWidth) {
-  TestScreen screen;
+  const TestScreen screen;
   const auto image = dib::Image::FromBmp(MakeBmp(2, 2, 30));
   ASSERT_TRUE(image.has_value());
 

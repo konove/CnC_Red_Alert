@@ -604,7 +604,7 @@ bool TriggerTypeClass::Edit() {
                                ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                                MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (ThemeType theme : magic_enum::enum_values<ThemeType>()) {
+  for (const ThemeType theme : magic_enum::enum_values<ThemeType>()) {
     themetype1list.Add_Item(ThemeClass::Full_Name(theme));
     themetype2list.Add_Item(ThemeClass::Full_Name(theme));
   }
@@ -634,7 +634,7 @@ bool TriggerTypeClass::Edit() {
                                ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                                MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (VQType movie : magic_enum::enum_values<VQType>()) {
+  for (const VQType movie : magic_enum::enum_values<VQType>()) {
     movietype1list.Add_Item(VQName[movie]);
     movietype2list.Add_Item(VQName[movie]);
   }
@@ -664,7 +664,7 @@ bool TriggerTypeClass::Edit() {
                                ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                                MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (VocType sound : magic_enum::enum_values<VocType>()) {
+  for (const VocType sound : magic_enum::enum_values<VocType>()) {
     soundtype1list.Add_Item(Voc_Name(sound));
     soundtype2list.Add_Item(Voc_Name(sound));
   }
@@ -694,7 +694,7 @@ bool TriggerTypeClass::Edit() {
                                 ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                                 MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (VoxType speech : magic_enum::enum_values<VoxType>()) {
+  for (const VoxType speech : magic_enum::enum_values<VoxType>()) {
     speechtype1list.Add_Item(Speech_Name(speech));
     speechtype2list.Add_Item(Speech_Name(speech));
   }
@@ -724,7 +724,7 @@ bool TriggerTypeClass::Edit() {
                            ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                            MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (StructType ss : magic_enum::enum_values<StructType>()) {
+  for (const StructType ss : magic_enum::enum_values<StructType>()) {
     btype1list.Add_Item(
         Text_String(BuildingTypeClass::As_Reference(ss).Full_Name()));
     btype2list.Add_Item(
@@ -756,7 +756,7 @@ bool TriggerTypeClass::Edit() {
                            ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                            MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (InfantryType ii : magic_enum::enum_values<InfantryType>()) {
+  for (const InfantryType ii : magic_enum::enum_values<InfantryType>()) {
     itype1list.Add_Item(
         Text_String(InfantryTypeClass::As_Reference(ii).Full_Name()));
     itype2list.Add_Item(
@@ -788,7 +788,7 @@ bool TriggerTypeClass::Edit() {
                            ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                            MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (AircraftType aa : magic_enum::enum_values<AircraftType>()) {
+  for (const AircraftType aa : magic_enum::enum_values<AircraftType>()) {
     atype1list.Add_Item(
         Text_String(AircraftTypeClass::As_Reference(aa).Full_Name()));
     atype2list.Add_Item(
@@ -820,7 +820,7 @@ bool TriggerTypeClass::Edit() {
                            ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                            MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (UnitType uu : magic_enum::enum_values<UnitType>()) {
+  for (const UnitType uu : magic_enum::enum_values<UnitType>()) {
     utype1list.Add_Item(
         Text_String(UnitTypeClass::As_Reference(uu).Full_Name()));
     utype2list.Add_Item(
@@ -862,7 +862,7 @@ bool TriggerTypeClass::Edit() {
                            ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                            MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (HousesType hh : magic_enum::enum_values<HousesType>()) {
+  for (const HousesType hh : magic_enum::enum_values<HousesType>()) {
     htype1list.Add_Item(HouseTypeClass::As_Reference(hh).IniName);
     htype2list.Add_Item(HouseTypeClass::As_Reference(hh).IniName);
     htype3list.Add_Item(HouseTypeClass::As_Reference(hh).IniName);
@@ -903,7 +903,8 @@ bool TriggerTypeClass::Edit() {
                      TPF_EFNT | TPF_NOSHADOW, AD2_X, AD2_Y, ED_WIDTH, ED_HEIGHT,
                      MFCD::Retrieve("EBTN-UP.SHP"),
                      MFCD::Retrieve("EBTN-DN.SHP"));
-  for (SpecialWeaponType spec : magic_enum::enum_values<SpecialWeaponType>()) {
+  for (const SpecialWeaponType spec :
+       magic_enum::enum_values<SpecialWeaponType>()) {
     spc1.Add_Item(SpecialWeaponName[spec]);
     spc2.Add_Item(SpecialWeaponName[spec]);
   }
@@ -933,7 +934,7 @@ bool TriggerTypeClass::Edit() {
                        TPF_EFNT | TPF_NOSHADOW, AD2_X, AD2_Y, ED_WIDTH,
                        ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                        MFCD::Retrieve("EBTN-DN.SHP"));
-  for (QuarryType q : magic_enum::enum_values<QuarryType>()) {
+  for (const QuarryType q : magic_enum::enum_values<QuarryType>()) {
     qlist1.Add_Item(QuarryName[q]);
     qlist2.Add_Item(QuarryName[q]);
   }
@@ -965,7 +966,7 @@ bool TriggerTypeClass::Edit() {
       BUTTON_HOUSE, housetext, sizeof(housetext), TPF_EFNT | TPF_NOSHADOW,
       name_edt.X + name_edt.Width + 20, name_edt.Y, 95, 8 * 5,
       MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
-  for (HousesType house : magic_enum::enum_values<HousesType>()) {
+  for (const HousesType house : magic_enum::enum_values<HousesType>()) {
     housebtn.Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
   if (House == HOUSE_NONE) {
@@ -1413,7 +1414,7 @@ bool TriggerTypeClass::Edit() {
     /*
     **	Get user input
     */
-    KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input();
 
     /*
     **	Process input
@@ -1869,7 +1870,7 @@ void TriggerTypeClass::Read_INI(CCINIClass& ini) {
   TriggerTypeClass* trigger;  // Working trigger pointer.
   char buf[128];
 
-  int len = ini.Entry_Count(INI_Name());
+  const int len = ini.Entry_Count(INI_Name());
   for (int index = 0; index < len; index++) {
     const char* entry = ini.Get_Entry(INI_Name(), index);
 

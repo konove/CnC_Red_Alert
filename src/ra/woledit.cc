@@ -104,7 +104,7 @@ bool WOLEditClass::Action(unsigned flags, KeyNumType& key) {
       flags = 0;
 
     } else {
-      auto ascii = (KeyASCIIType)(KeyboardClass::To_ASCII(key) & 0xff);
+      const auto ascii = (KeyASCIIType)(KeyboardClass::To_ASCII(key) & 0xff);
 
       //
       // Allow numeric keypad presses to map to ascii numbers

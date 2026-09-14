@@ -167,12 +167,12 @@ static bool Is_Overlapped(const PathType* path, CELL cell) {
   return IsOverlapped(path->Overlap, cell);
 }
 
-static void Set_Overlap(PathType* path, CELL cell) {
+static void Set_Overlap(const PathType* path, CELL cell) {
   DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
   SetOverlap(path->Overlap, cell);
 }
 
-static void Clear_Overlap(PathType* path, CELL cell) {
+static void Clear_Overlap(const PathType* path, CELL cell) {
   DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
   ClearOverlap(path->Overlap, cell);
 }
@@ -254,7 +254,8 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
   FacingType curr_dir = dir;
   CELL curr_pos = Adjacent_Cell(cell, Opposite(curr_dir));
   int idx = path->Length;                      // start at the last position
-  FacingType* list = &path->Command[idx - 1];  // point to the last command
+  const FacingType* list =
+      &path->Command[idx - 1];  // point to the last command
   int checkx;
   int checky;
   bool last_was_line = false;
@@ -348,7 +349,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
     */
 
     if (path->Command[path->Length - 1] == Opposite(dir)) {
-      CELL pos = Adjacent_Cell(cell, Opposite(dir));
+      const CELL pos = Adjacent_Cell(cell, Opposite(dir));
       Clear_Overlap(path, pos);
       path->Length--;
     } else {
@@ -410,7 +411,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
     ** Now we need to register the new direction, updating the cell structure
     ** and the cost.
     */
-    int cpos = path->Length++;
+    const int cpos = path->Length++;
     path->Command[cpos] = dir;  // save of the direction we moved
     path->Cost += cost;         // figure new cost for cell
     Set_Overlap(path, cell);    // mark the we have entered point
@@ -437,7 +438,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
  *=============================================================================================*/
 PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
                                MoveType threshhold) {
-  CELL source = Coord_Cell(Coord);  // Source expressed as cell
+  const CELL source = Coord_Cell(Coord);  // Source expressed as cell
   static PathType path;             // Main path control.
   CELL next;                        // Next cell to enter
   CELL startcell;                   // Cell we started in
@@ -907,10 +908,10 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
 
         checkcell = Adjacent_Cell(oldcell, newdir);
 
-        int checkx = Cell_X(checkcell);
-        int checky = Cell_Y(checkcell);
-        int checkval = Point_Relative_To_Line(checkx, checky, startx, starty,
-                                              targetx, targety);
+        const int checkx = Cell_X(checkcell);
+        const int checky = Cell_Y(checkcell);
+        const int checkval = Point_Relative_To_Line(checkx, checky, startx,
+                                                    starty, targetx, targety);
         if (checkval && !online) {
           forcefail = (checkval ^ oldval) < 0;
         } else {
@@ -990,9 +991,9 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
       ** Find out which side of the line this cell is on.  If it is on
       ** a side, then store off that side.
       */
-      int newx = Cell_X(newcell);
-      int newy = Cell_Y(newcell);
-      int val =
+      const int newx = Cell_X(newcell);
+      const int newy = Cell_Y(newcell);
+      const int val =
           Point_Relative_To_Line(newx, newy, startx, starty, targetx, targety);
       if (val) {
         oldval = val;
@@ -1074,7 +1075,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   *first command facing.
   */
 #ifdef DIAGONAL
-  static FacingType _trans[magic_enum::enum_count<FacingType>()] = {
+  static const FacingType _trans[magic_enum::enum_count<FacingType>()] = {
       static_cast<FacingType>(0),  static_cast<FacingType>(0),
       static_cast<FacingType>(1),  static_cast<FacingType>(2),
       static_cast<FacingType>(3),  static_cast<FacingType>(-2),
@@ -1306,7 +1307,7 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) {
 
 int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
                              MoveType threshhold) {
-  MoveType move = Can_Enter_Cell(cell, face);
+  const MoveType move = Can_Enter_Cell(cell, face);
 
   if (move < MOVE_MOVING_BLOCK && Distance(Cell_Coord(cell)) > 0x0100) {
     threshhold = MOVE_MOVING_BLOCK;
@@ -1329,7 +1330,7 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
     }
   }
 
-  static int _value[magic_enum::enum_count<MoveType>()] = {
+  static const int _value[magic_enum::enum_count<MoveType>()] = {
       1,   //	MOVE_OK
       1,   //	MOVE_CLOAK
       3,   //	MOVE_MOVING_BLOCK

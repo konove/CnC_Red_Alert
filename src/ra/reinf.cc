@@ -280,7 +280,7 @@ static FootClass* Create_Group(const TeamTypeClass* teamtype) {
   **	For JUST transport helicopters, consider the loaner a gift if there are
   **	no passengers.
   */
-  auto* air_transport = dynamic_cast<AircraftClass*>(transport);
+  const auto* air_transport = dynamic_cast<AircraftClass*>(transport);
   if (air_transport != nullptr && object == nullptr &&
       *air_transport == AIRCRAFT_TRANSPORT) {
     transport->IsALoaner = false;
@@ -456,17 +456,18 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   **	Pick the location where the reinforcements appear and then place
   **	them there.
   */
-  auto eface = static_cast<FacingType>(source << 1);  // Facing to enter map.
+  const auto eface =
+      static_cast<FacingType>(source << 1);  // Facing to enter map.
 
   CELL cell = Map.Calculated_Cell(source, teamtype->Origin, -1,
                                   object->Techno_Type_Class()->Speed);
   /*
   **	For the ants, they will pop out of the ant hill directly.
   */
-  auto* unit = dynamic_cast<UnitClass*>(object);
+  const auto* unit = dynamic_cast<UnitClass*>(object);
   if (teamtype->Origin != -1 && unit != nullptr &&
       (*unit == UNIT_ANT1 || *unit == UNIT_ANT2 || *unit == UNIT_ANT3)) {
-    CELL newcell = Scen.Waypoint[teamtype->Origin];
+    const CELL newcell = Scen.Waypoint[teamtype->Origin];
     if ((newcell != -1) && (Map[newcell].TType == TEMPLATE_HILL01)) {
       cell = newcell;
     }
@@ -504,8 +505,8 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
       *whole placement process.
       */
       bool found = false;
-      for (FacingType adj : magic_enum::enum_values<FacingType>()) {
-        CELL trycell = Adjacent_Cell(newcell, adj);
+      for (const FacingType adj : magic_enum::enum_values<FacingType>()) {
+        const CELL trycell = Adjacent_Cell(newcell, adj);
         if (!Map.In_Radar(trycell) &&
             object->Can_Enter_Cell(trycell, adj) == MOVE_OK) {
           newcell = trycell;
@@ -576,7 +577,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
-bool Create_Special_Reinforcement(HouseClass* house,
+bool Create_Special_Reinforcement(const HouseClass* house,
                                   const TechnoTypeClass* type,
                                   const TechnoTypeClass* another,
                                   TeamMissionType mission, int argument) {
@@ -621,7 +622,7 @@ bool Create_Special_Reinforcement(HouseClass* house,
         team->Members[1].Quantity = 1;
       }
 
-      bool ok = Do_Reinforcements(team);
+      const bool ok = Do_Reinforcements(team);
       if (!ok) {
         delete team;
       }
@@ -716,13 +717,13 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
         source = SOURCE_NORTH;
         break;
     }
-    CELL newcell = Map.Calculated_Cell(source, -1, -1, SPEED_WINGED);
+    const CELL newcell = Map.Calculated_Cell(source, -1, -1, SPEED_WINGED);
 
     /*
     ** Try and place the object onto the map.
     */
     ScenarioInit++;
-    bool placed = obj->Unlimbo(Cell_Coord(newcell), DIR_N);
+    const bool placed = obj->Unlimbo(Cell_Coord(newcell), DIR_N);
     ScenarioInit--;
     if (placed) {
       /*

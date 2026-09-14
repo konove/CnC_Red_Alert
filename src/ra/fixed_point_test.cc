@@ -59,8 +59,8 @@ TEST(FixedPointTest, MatchesLegacyOutsideGameDomain) {
   // Large and negative inputs wrap exactly as the unsigned originals did.
   const int kSamples[] = {-65536, -256, -1,       0x10000,   0x7FFF,
                           0xFFFFFF,  0x1000000, 0x7FFFFFFF, 12345};
-  for (int a : kSamples) {
-    for (int b : kSamples) {
+  for (const int a : kSamples) {
+    for (const int b : kSamples) {
       EXPECT_EQ(Fixed_To_Cardinal(a, b), ExpectedFixedToCardinal(a, b))
           << a << ", " << b;
       EXPECT_EQ(Cardinal_To_Fixed(a, b), ExpectedCardinalToFixed(a, b))

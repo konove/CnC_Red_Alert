@@ -182,7 +182,7 @@ class AnimClass final : public ObjectClass, public StageClass {
   friend class TFixedIHeapClass<AnimClass>;
 };
 
-void Shorten_Attached_Anims(ObjectClass* obj);
+void Shorten_Attached_Anims(const ObjectClass* obj);
 AnimType Anim_From_Name(const char* name);
 
 class ArchiveReader;

@@ -155,7 +155,7 @@ void PowerClass::One_Time() {
  *color depending on amount of power.                    *
  *=============================================================================================*/
 void PowerClass::Draw_It(bool complete) {
-  static int _modtable[] = {0, -1, 0, 1, 0, -1, -2, -1, 0, 1, 2, 1, 0};
+  static const int _modtable[] = {0, -1, 0, 1, 0, -1, -2, -1, 0, 1, 2, 1, 0};
 
   if (complete || IsPowerToRedraw) {
     BStart(BENCH_POWER);
@@ -268,8 +268,8 @@ void PowerClass::Draw_It(bool complete) {
  *=============================================================================================*/
 void PowerClass::AI(KeyNumType& input, int x, int y) {
   if (Map.IsSidebarActive /*IsActive*/) {
-    int olddrain = DrainHeight;
-    int oldpower = PowerHeight;
+    const int olddrain = DrainHeight;
+    const int oldpower = PowerHeight;
 
     /*
     ** If the recorded power value has changed we need to adjust for
@@ -388,7 +388,7 @@ void PowerClass::Refresh_Cells(CELL cell, const int16_t* list) {
  *   06/14/1995 PWG : Created.                                             *
  *=========================================================================*/
 int PowerClass::Power_Height(int value) {
-  int num =
+  const int num =
       value / POWER_STEP_LEVEL;  // figure out the initial num of DRAIN_VALUE's
   int retval = 0;                // currently there is no power
 

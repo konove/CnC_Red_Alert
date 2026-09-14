@@ -103,11 +103,12 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
     /*
     **	Special check to not scroll within the special no-scroll regions.
     */
-    bool noscroll = false;
+    const bool noscroll = false;
 
     if (!noscroll) {
-      bool at_screen_edge = y <= 0 || x <= 0 || x >= SeenBuff.Get_Width() - 1 ||
-                            y >= SeenBuff.Get_Height() - 1;
+      const bool at_screen_edge = y <= 0 || x <= 0 ||
+                                  x >= SeenBuff.Get_Width() - 1 ||
+                                  y >= SeenBuff.Get_Height() - 1;
 
       /*
       **	Verify that the mouse is over a scroll region.
@@ -147,17 +148,15 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
                                         200, altx, alty);
         }
 
-        int control = Dir_Facing(direction);
+        const int control = Dir_Facing(direction);
 
         /*
         **	The mouse is over a scroll region so set the mouse shape
         *accordingly if the map *	can be scrolled in the direction
         *indicated.
         */
-        static int _rate[9] = {
-            0x01C0, 0x0180, 0x0140,
-            0x0100, 0x00C0, 0x0080,
-            0x0040, 0x0020, 0x0010};
+        static const int _rate[9] = {0x01C0, 0x0180, 0x0140, 0x0100, 0x00C0,
+                                     0x0080, 0x0040, 0x0020, 0x0010};
         if (MapEditorActive) {
           rate = Options.ScrollRate + 1;
         } else {
@@ -254,7 +253,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
  * HISTORY: * 08/10/1995 JLB : Created. *
  *=============================================================================================*/
 bool ScrollClass::Set_Autoscroll(int control) {
-  bool old = IsAutoScroll;
+  const bool old = IsAutoScroll;
 
   if (control == -1) {
     IsAutoScroll = !IsAutoScroll;

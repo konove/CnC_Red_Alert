@@ -88,41 +88,41 @@ GameType Select_MPlayer_Game() {
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
-  int d_dialog_w = 380;
+  const int d_dialog_w = 380;
   //	The Westwood Online button makes the dialog taller, and it recentres
   //	rather than keeping the fixed y the smaller one used.
   int d_dialog_h = config::kWolapiEnabled ? 178 : 156;  //	ajw
-  int d_dialog_y = config::kWolapiEnabled ? (510 - d_dialog_h) / 2 : 180;
-  int d_dialog_x = (640 - d_dialog_w) / 2;
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);
+  const int d_dialog_y = config::kWolapiEnabled ? (510 - d_dialog_h) / 2 : 180;
+  const int d_dialog_x = (640 - d_dialog_w) / 2;
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);
 
-  int d_txt6_h = 14;
-  int d_margin = 14;
+  const int d_txt6_h = 14;
+  const int d_margin = 14;
 
-  int d_modemserial_w = 160;
-  int d_modemserial_h = 18;
-  int d_modemserial_x = d_dialog_cx - (d_modemserial_w / 2);
-  int d_modemserial_y = d_dialog_y + d_margin + d_txt6_h + d_margin;
+  const int d_modemserial_w = 160;
+  const int d_modemserial_h = 18;
+  const int d_modemserial_x = d_dialog_cx - (d_modemserial_w / 2);
+  const int d_modemserial_y = d_dialog_y + d_margin + d_txt6_h + d_margin;
 
-  int d_skirmish_w = 160;
-  int d_skirmish_h = 18;
-  int d_skirmish_x = d_dialog_cx - (d_skirmish_w / 2);
-  int d_skirmish_y = d_modemserial_y + d_modemserial_h + 4;
+  const int d_skirmish_w = 160;
+  const int d_skirmish_h = 18;
+  const int d_skirmish_x = d_dialog_cx - (d_skirmish_w / 2);
+  const int d_skirmish_y = d_modemserial_y + d_modemserial_h + 4;
 
-  int d_ipx_w = 160;
-  int d_ipx_h = 18;
-  int d_ipx_x = d_dialog_cx - (d_ipx_w / 2);
-  int d_ipx_y = d_skirmish_y + d_skirmish_h + 4;
+  const int d_ipx_w = 160;
+  const int d_ipx_h = 18;
+  const int d_ipx_x = d_dialog_cx - (d_ipx_w / 2);
+  const int d_ipx_y = d_skirmish_y + d_skirmish_h + 4;
 
   //	ajw 7/2/98 - added button
-  int d_wol_w = 160;
-  int d_wol_h = 18;
-  int d_wol_x = d_dialog_cx - (d_wol_w / 2);
-  int d_wol_y = d_ipx_y + d_ipx_h + 4;
+  const int d_wol_w = 160;
+  const int d_wol_h = 18;
+  const int d_wol_x = d_dialog_cx - (d_wol_w / 2);
+  const int d_wol_y = d_ipx_y + d_ipx_h + 4;
 
-  int d_cancel_w = 120;
-  int d_cancel_h = 18;
-  int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
+  const int d_cancel_w = 120;
+  const int d_cancel_h = 18;
+  const int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
   int d_cancel_y = config::kWolapiEnabled ? d_wol_y + d_wol_h + d_margin
                                           : d_ipx_y + d_ipx_h + d_margin;
 
@@ -146,7 +146,7 @@ GameType Select_MPlayer_Game() {
   const bool has_ipx = Ipx.Is_IPX();
   //	The IPX and Westwood Online buttons are each present or not; the count
   //	drives keyboard navigation, so it has to match what was actually built.
-  int num_of_buttons =
+  const int num_of_buttons =
       NUM_OF_BUTTONS - (has_ipx ? 0 : 1) - (config::kWolapiEnabled ? 0 : 1);
   //------------------------------------------------------------------------
   //	Redraw values: in order from "top" to "bottom" layer of the dialog
@@ -642,7 +642,7 @@ int Surrender_Dialog(const char* text) {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input();
 
     //.....................................................................
     //	Process input
@@ -831,7 +831,7 @@ int Abort_Dialog() {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input();
 
     //.....................................................................
     //	Process input

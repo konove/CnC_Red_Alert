@@ -279,7 +279,7 @@ ArmorType Armor_From_Name(const char* name) {
     return ARMOR_NONE;
   }
 
-  for (ArmorType index : magic_enum::enum_values<ArmorType>()) {
+  for (const ArmorType index : magic_enum::enum_values<ArmorType>()) {
     if (stricmp(ArmorName[index], name) == 0) {
       return index;
     }

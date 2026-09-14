@@ -275,7 +275,7 @@ void ObjectClass::AI() {
   **	Falling logic is handled here.
   */
   if (IsFalling) {
-    LayerType layer = In_Which_Layer();
+    const LayerType layer = In_Which_Layer();
 
     Height += Riser;
     if (Height <= 0) {
@@ -1104,8 +1104,9 @@ bool ObjectClass::Select() {
   *that *	the entire selection list is cleared.
   */
   if (CurrentObject.Count() > 0) {
-    HouseClass* tryhptr = HouseClass::As_Pointer(Owner());
-    HouseClass* oldhptr = HouseClass::As_Pointer(CurrentObject[0]->Owner());
+    const HouseClass* tryhptr = HouseClass::As_Pointer(Owner());
+    const HouseClass* oldhptr =
+        HouseClass::As_Pointer(CurrentObject[0]->Owner());
     //		if (Owner() != CurrentObject[0]->Owner() ||
     // CurrentObject[0]->Owner() != PlayerPtr->Class->House) {
     if (oldhptr->IsPlayerControl != tryhptr->IsPlayerControl ||
@@ -1151,7 +1152,7 @@ bool ObjectClass::Render(bool forced)  // const
 
   int x;
   int y;
-  COORDINATE coord = Render_Coord();
+  const COORDINATE coord = Render_Coord();
 
   if (MapEditorActive || Debug_Unshroud ||
       ((forced || IsToDisplay) && IsDown && !IsInLimbo)) {
@@ -1490,10 +1491,10 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
   assert(IsActive);
 
   ResultType result = RESULT_NONE;
-  int oldstrength = Strength;
+  const int oldstrength = Strength;
 
   if (oldstrength && damage != 0 && (forced || !Class_Of().IsImmune)) {
-    int maxstrength = Class_Of().MaxStrength;
+    const int maxstrength = Class_Of().MaxStrength;
 
     /*
     **	Modify damage based on the warhead type and the armor of the object.
@@ -2124,7 +2125,7 @@ BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
       // BG: Hack so only kennels can build dogs, and no other, and barracks can
       //     only build humans and no other.
       if (What_Am_I() == RTTI_INFANTRYTYPE) {
-        auto* me = (InfantryTypeClass*)this;
+        const auto* me = (InfantryTypeClass*)this;
         if (me->IsDog) {
           if (*building == STRUCT_KENNEL) {
             if (building->IsLeader) {
@@ -2146,7 +2147,7 @@ BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
         **	fixed wing craft only.
         */
         if (What_Am_I() == RTTI_AIRCRAFTTYPE) {
-          auto* air = (AircraftTypeClass*)this;
+          const auto* air = (AircraftTypeClass*)this;
           if ((*building == STRUCT_HELIPAD && !air->IsFixedWing) ||
               (*building == STRUCT_AIRSTRIP && air->IsFixedWing)) {
             if (building->IsLeader) {

@@ -69,52 +69,52 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   /*
   **	Dialog & button dimensions
   */
-  int d_dialog_w = 300;  // dialog width
-  int d_dialog_h = 270;  // dialog height
-  int d_dialog_x = ((640 - d_dialog_w) / 2);
-  int d_dialog_y = ((400 - d_dialog_h) / 2);
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // coord of x-center
+  const int d_dialog_w = 300;  // dialog width
+  const int d_dialog_h = 270;  // dialog height
+  const int d_dialog_x = ((640 - d_dialog_w) / 2);
+  const int d_dialog_y = ((400 - d_dialog_h) / 2);
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // coord of x-center
 
-  int d_margin = 14;  // margin width/height
+  const int d_margin = 14;  // margin width/height
 
-  int d_gaugeplayers_w = 140;
-  int d_gaugeplayers_h = 18;
-  int d_gaugeplayers_x = d_dialog_cx - (d_gaugeplayers_w / 2);
-  int d_gaugeplayers_y = d_dialog_y + d_margin + 42;
+  const int d_gaugeplayers_w = 140;
+  const int d_gaugeplayers_h = 18;
+  const int d_gaugeplayers_x = d_dialog_cx - (d_gaugeplayers_w / 2);
+  const int d_gaugeplayers_y = d_dialog_y + d_margin + 42;
 
-  int d_checktourn_w = 150;
-  int d_checktourn_h = 18;
-  int d_checktourn_x = d_dialog_cx - (d_checktourn_w / 2);
-  int d_checktourn_y = d_gaugeplayers_y + d_gaugeplayers_h + 10;
+  const int d_checktourn_w = 150;
+  const int d_checktourn_h = 18;
+  const int d_checktourn_x = d_dialog_cx - (d_checktourn_w / 2);
+  const int d_checktourn_y = d_gaugeplayers_y + d_gaugeplayers_h + 10;
 
-  int d_checkpriv_w = d_checktourn_w;
-  int d_checkpriv_h = 18;
-  int d_checkpriv_x = d_checktourn_x;
-  int d_checkpriv_y = d_checktourn_y + d_checktourn_h + 10;
+  const int d_checkpriv_w = d_checktourn_w;
+  const int d_checkpriv_h = 18;
+  const int d_checkpriv_x = d_checktourn_x;
+  const int d_checkpriv_y = d_checktourn_y + d_checktourn_h + 10;
 
-  int d_checkra_w = d_checktourn_w;
-  int d_checkra_h = 18;
-  int d_checkra_x = d_checktourn_x;
-  int d_checkra_y = d_checkpriv_y + d_checkpriv_h + 20;
+  const int d_checkra_w = d_checktourn_w;
+  const int d_checkra_h = 18;
+  const int d_checkra_x = d_checktourn_x;
+  const int d_checkra_y = d_checkpriv_y + d_checkpriv_h + 20;
 
-  int d_checkcs_w = d_checktourn_w;
-  int d_checkcs_h = 18;
-  int d_checkcs_x = d_checktourn_x;
-  int d_checkcs_y = d_checkra_y + d_checkra_h + 5;
+  const int d_checkcs_w = d_checktourn_w;
+  const int d_checkcs_h = 18;
+  const int d_checkcs_x = d_checktourn_x;
+  const int d_checkcs_y = d_checkra_y + d_checkra_h + 5;
 
-  int d_checkam_w = d_checktourn_w;
-  int d_checkam_h = 18;
-  int d_checkam_x = d_checktourn_x;
-  int d_checkam_y = d_checkcs_y + d_checkcs_h + 5;
+  const int d_checkam_w = d_checktourn_w;
+  const int d_checkam_h = 18;
+  const int d_checkam_x = d_checktourn_x;
+  const int d_checkam_y = d_checkcs_y + d_checkcs_h + 5;
 
-  int d_ok_w = 60;
-  int d_ok_h = 26;
-  int d_ok_x = d_dialog_x + (d_dialog_w / 3) - (d_ok_w / 2);
-  int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin;
+  const int d_ok_w = 60;
+  const int d_ok_h = 26;
+  const int d_ok_x = d_dialog_x + (d_dialog_w / 3) - (d_ok_w / 2);
+  const int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin;
 
-  int d_cancel_w = 80;
-  int d_cancel_x = d_dialog_x + ((d_dialog_w * 2) / 3) - (d_cancel_w / 2);
-  int d_cancel_y = d_ok_y;
+  const int d_cancel_w = 80;
+  const int d_cancel_x = d_dialog_x + ((d_dialog_w * 2) / 3) - (d_cancel_w / 2);
+  const int d_cancel_y = d_ok_y;
 
   /*
   **	Button enumerations

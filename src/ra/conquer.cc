@@ -197,7 +197,8 @@ static void Color_Cycle() {
     if (_timer.IsFinished()) {
       _timer.Set(kTimerSecond / 4);
 
-      RGBClass first = GamePalette[kCycleColorStart + kCycleColorCount - 1];
+      const RGBClass first =
+          GamePalette[kCycleColorStart + kCycleColorCount - 1];
       for (int index = kCycleColorStart + kCycleColorCount - 1;
            index >= kCycleColorStart; index--) {
         GamePalette[index] = GamePalette[index - 1];
@@ -281,7 +282,7 @@ static void Toggle_Formation() {
   // The three passes are ordered units, infantry, vessels because a mixed
   // group takes its speed from whichever type is found first.
   for (int index = 0; index < Units.Count(); index++) {
-    UnitClass* obj = Units.Ptr(index);
+    const UnitClass* obj = Units.Ptr(index);
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr && obj->IsSelected) {
       team = obj->Group;
       if (std::cmp_not_equal(team, kNoGroup)) {
@@ -294,7 +295,7 @@ static void Toggle_Formation() {
   }
   if (std::cmp_equal(team, kNoGroup)) {
     for (int index = 0; index < Infantry.Count(); index++) {
-      InfantryClass* obj = Infantry.Ptr(index);
+      const InfantryClass* obj = Infantry.Ptr(index);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           obj->IsSelected) {
         team = obj->Group;
@@ -310,7 +311,7 @@ static void Toggle_Formation() {
 
   if (std::cmp_equal(team, kNoGroup)) {
     for (int index = 0; index < Vessels.Count(); index++) {
-      VesselClass* obj = Vessels.Ptr(index);
+      const VesselClass* obj = Vessels.Ptr(index);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           obj->IsSelected) {
         team = obj->Group;
@@ -334,8 +335,8 @@ static void Toggle_Formation() {
         std::cmp_equal(obj->Group, team)) {
       obj->Mark(MARK_CHANGE);
       if (set_form) {
-        int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+        const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
         minx = std::min(xc, minx);
         maxx = std::max(xc, maxx);
         miny = std::min(yc, miny);
@@ -356,8 +357,8 @@ static void Toggle_Formation() {
         std::cmp_equal(obj->Group, team)) {
       obj->Mark(MARK_CHANGE);
       if (set_form) {
-        int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+        const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
         minx = std::min(xc, minx);
         maxx = std::max(xc, maxx);
         miny = std::min(yc, miny);
@@ -375,8 +376,8 @@ static void Toggle_Formation() {
         std::cmp_equal(obj->Group, team)) {
       obj->Mark(MARK_CHANGE);
       if (set_form) {
-        int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+        const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
         minx = std::min(xc, minx);
         maxx = std::max(xc, maxx);
         miny = std::min(yc, miny);
@@ -395,15 +396,15 @@ static void Toggle_Formation() {
   // Offsets are taken from where each unit already stands, so the formation
   // locks in the group's current shape rather than imposing a canned one.
   if (set_form) {
-    int center_x = (((maxx - minx) / 2) + minx);
-    int center_y = (((maxy - miny) / 2) + miny);
+    const int center_x = (((maxx - minx) / 2) + minx);
+    const int center_y = (((maxy - miny) / 2) + miny);
 
     for (int i = 0; i < Units.Count(); i++) {
       UnitClass* obj = Units.Ptr(i);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           std::cmp_equal(obj->Group, team)) {
-        int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+        const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
 
         obj->XFormOffset = xc - center_x;
         obj->YFormOffset = yc - center_y;
@@ -414,8 +415,8 @@ static void Toggle_Formation() {
       InfantryClass* obj = Infantry.Ptr(i);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           std::cmp_equal(obj->Group, team)) {
-        int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+        const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
 
         obj->XFormOffset = xc - center_x;
         obj->YFormOffset = yc - center_y;
@@ -426,8 +427,8 @@ static void Toggle_Formation() {
       VesselClass* obj = Vessels.Ptr(i);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           std::cmp_equal(obj->Group, team)) {
-        int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+        const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
 
         obj->XFormOffset = xc - center_x;
         obj->YFormOffset = yc - center_y;
@@ -468,7 +469,7 @@ static void Toggle_Formation() {
   char txt[MAX_MESSAGE_LENGTH + 32] = {};
   // TXT_TO comes from the localized string table, so verify the translation
   // still takes exactly one %s before using it.
-  auto format = absl::ParsedFormat<'s'>::New(Text_String(TXT_TO));
+  const auto format = absl::ParsedFormat<'s'>::New(Text_String(TXT_TO));
   if (format != nullptr) {
     port::SafeCopy(txt,
                    absl::StrFormat(*format, pWolapi->szExternalPager).c_str());
@@ -590,11 +591,11 @@ static void Message_Input(KeyNumType& input) {
         Map.Flag_To_Redraw(false);
 
       } else if (input - KN_F1 < Ipx.Num_Connections() && !Session.ObiWan) {
-        int id = Ipx.Connection_ID(input - KN_F1);
+        const int id = Ipx.Connection_ID(input - KN_F1);
         Session.MessageAddress = *Ipx.Connection_Address(id);
         // TXT_TO comes from the localized string table, so verify the
         // translation still takes exactly one %s before using it.
-        auto format = absl::ParsedFormat<'s'>::New(Text_String(TXT_TO));
+        const auto format = absl::ParsedFormat<'s'>::New(Text_String(TXT_TO));
         if (format != nullptr) {
           port::SafeCopy(
               txt, absl::StrFormat(*format, Ipx.Connection_Name(id)).c_str());
@@ -672,7 +673,7 @@ static void Message_Input(KeyNumType& input) {
       // A chat message is how the secret units get switched on for everyone
       // at once: both ends recognize the phrase and enable them locally, so
       // the setting stays in step without a new packet type.
-      char* ptr = &serial_packet->Message.Message[0];
+      const char* ptr = &serial_packet->Message.Message[0];
       if (!strncmp(ptr, "SECRET UNITS ON ", 15) && NewUnitsEnabled) {
         Enable_Secret_Units();
       }
@@ -1011,10 +1012,10 @@ void Keyboard_Process(KeyNumType& input) {
   constexpr unsigned kModifierBits =
       unsigned{WWKEY_SHIFT_BIT} | unsigned{WWKEY_ALT_BIT} |
       unsigned{WWKEY_CTRL_BIT} | unsigned{WWKEY_VK_BIT};
-  auto plain =
+  const auto plain =
       static_cast<KeyNumType>(static_cast<unsigned>(input) & ~kModifierBits);
-  auto key = static_cast<KeyNumType>(static_cast<unsigned>(input) &
-                                     ~unsigned{WWKEY_VK_BIT});
+  const auto key = static_cast<KeyNumType>(static_cast<unsigned>(input) &
+                                           ~unsigned{WWKEY_VK_BIT});
 
   if constexpr (config::kCheatKeysEnabled) {
     if (Debug_Flag) {
@@ -1022,7 +1023,7 @@ void Keyboard_Process(KeyNumType& input) {
         case static_cast<unsigned>(KN_M) | static_cast<unsigned>(KN_SHIFT_BIT):
         case static_cast<unsigned>(KN_M) | static_cast<unsigned>(KN_ALT_BIT):
         case static_cast<unsigned>(KN_M) | static_cast<unsigned>(KN_CTRL_BIT):
-          for (HousesType house : magic_enum::enum_values<HousesType>()) {
+          for (const HousesType house : magic_enum::enum_values<HousesType>()) {
             Houses.Ptr(house)->Refund_Money(10000);
           }
           break;
@@ -1455,7 +1456,7 @@ void IPX_Call_Back() {
     // it over.
     if (Session.GPacket.Command == NET_SIGN_OFF) {
       for (int i = 0; i < Ipx.Num_Connections(); i++) {
-        int id = Ipx.Connection_ID(i);
+        const int id = Ipx.Connection_ID(i);
 
         if (Session.GAddress == *Ipx.Connection_Address(id)) {
           Destroy_Connection(id, 0);
@@ -1510,7 +1511,7 @@ void IPX_Call_Back() {
 
 SourceType Source_From_Name(const char* name) {
   if (name) {
-    for (SourceType source : magic_enum::enum_values<SourceType>()) {
+    for (const SourceType source : magic_enum::enum_values<SourceType>()) {
       if (stricmp(SourceName[source], name) == 0) {
         return source;
       }
@@ -1528,7 +1529,7 @@ const char* Name_From_Source(const SourceType source) {
 
 TheaterType Theater_From_Name(const char* name) {
   if (name != nullptr) {
-    for (TheaterType index : magic_enum::enum_values<TheaterType>()) {
+    for (const TheaterType index : magic_enum::enum_values<TheaterType>()) {
       if (stricmp(name, Theaters[index].Name) == 0) {
         return index;
       }
@@ -1859,7 +1860,7 @@ bool Main_Loop() {
     if (frames.empty()) {
       // Sized when a capture run starts rather than once per process, so that
       // an edit to MovieTime takes effect on the next run.
-      int frame_count = Rule.MovieTime * kTicksPerMinute;
+      const int frame_count = Rule.MovieTime * kTicksPerMinute;
       frames.resize(base::ToSize(frame_count));
     }
 
@@ -1868,7 +1869,7 @@ bool Main_Loop() {
         SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
         static_cast<int32_t>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
 
-    base::ssize size =
+    const base::ssize size =
         static_cast<base::ssize>(SeenBuff.Get_Width()) * SeenBuff.Get_Height();
 
     if (sequence < std::ssize(frames)) {
@@ -2068,9 +2069,9 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
   }
 
   if (name) {
-    auto fullname =
+    const auto fullname =
         std::filesystem::path(name).replace_extension(".VQA").string();
-    auto pal_name =
+    const auto pal_name =
         std::filesystem::path(name).replace_extension(".VQP").string();
     if (!CCFileClass(fullname.c_str()).Is_Available()) {
       DLOG(WARNING) << "Play_Movie: file not found: " << fullname;
@@ -2189,8 +2190,8 @@ std::string Fading_Table_Name(const char* base, const TheaterType theater) {
 std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile,
                                        const int shape_num, int frames,
                                        const int zoom_factor) {
-  static int off_x[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
-  static int off_y[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
+  static const int off_x[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
+  static const int off_y[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
 
   // If there is no shape file, then there can be no radar icon imagery.
   if (shapefile == nullptr) {
@@ -2199,14 +2200,14 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile,
 
   // Get the pixel width and height of the frame we built.  This will
   // be used to extract icons and build pixels.
-  int pixel_width = Get_Build_Frame_Width(shapefile);
-  int pixel_height = Get_Build_Frame_Height(shapefile);
+  const int pixel_width = Get_Build_Frame_Width(shapefile);
+  const int pixel_height = Get_Build_Frame_Height(shapefile);
 
   // Find the width and height in icons, adjust these by half an
   // icon because the artists may be sloppy and miss the edge of an
   // icon one way or the other.
-  int icon_width = (pixel_width + 12) / 24;
-  int icon_height = (pixel_height + 12) / 24;
+  const int icon_width = (pixel_width + 12) / 24;
+  const int icon_height = (pixel_height + 12) / 24;
 
   // If we have been told to build as many frames as possible, then
   // find out how many frames there are to build.
@@ -2241,8 +2242,8 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile,
         for (int icon_x = 0; icon_x < icon_width; icon_x++) {
           for (int y = 0; y < zoom_factor; y++) {
             for (int x = 0; x < zoom_factor; x++) {
-              int getx = (icon_x * 24) + (x * val) + (zoom_factor / 2);
-              int gety = (icon_y * 24) + (y * val) + (zoom_factor / 2);
+              const int getx = (icon_x * 24) + (x * val) + (zoom_factor / 2);
+              const int gety = (icon_y * 24) + (y * val) + (zoom_factor / 2);
               if (getx < pixel_width && gety < pixel_height) {
                 char pixel = 0;
                 for (int lp = 0; lp < 9; ++lp) {
@@ -2321,12 +2322,12 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
         buffer =
             static_cast<unsigned char*>(Get_Shape_Header_Data(shape_pointer));
 
-        BitmapClass bm(width, height, buffer);
+        const BitmapClass bm(width, height, buffer);
         width *= 2;
         height *= 2;
         memset(x_buffer, '\0', kShapeBufferSize);
         GraphicBufferClass gb(width, height, x_buffer);
-        TPoint2D pt(width / 2, height / 2);
+        const TPoint2D pt(width / 2, height / 2);
 
         gb.Scale_Rotate(bm, pt, static_cast<int32_t>(scale),
                         static_cast<uint8_t>(256 - rotation + 64));
@@ -2405,8 +2406,8 @@ Rect Shape_Dimensions(const void* shapedata, const int shape_num) {
   }
   const char* shape = static_cast<char*>(Get_Shape_Header_Data(sh));
 
-  int width = Get_Build_Frame_Width(shapedata);
-  int height = Get_Build_Frame_Height(shapedata);
+  const int width = Get_Build_Frame_Width(shapedata);
+  const int height = Get_Build_Frame_Height(shapedata);
 
   // Four scans, one per edge, each narrowing the search area for the next:
   // the top scan also gives a first guess at the left edge, the bottom scan
@@ -2414,7 +2415,7 @@ Rect Shape_Dimensions(const void* shapedata, const int shape_num) {
   rect.X = 0;
   rect.Y = 0;
   int x_limit = width - 1;
-  int y_limit = height - 1;
+  const int y_limit = height - 1;
 
   // Find top edge of the shape.
   for (int y = 0; y <= y_limit; y++) {
@@ -2695,8 +2696,8 @@ void Handle_Team(const int team, const int action) {
           if (obj->IsSelected) {
             obj->Group = static_cast<unsigned char>(team);
             obj->Mark(MARK_CHANGE);
-            int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-            int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+            const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+            const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
             minx = std::min(xc, minx);
             maxx = std::max(xc, maxx);
             miny = std::min(yc, miny);
@@ -2718,8 +2719,8 @@ void Handle_Team(const int team, const int action) {
           if (obj->IsSelected) {
             obj->Group = static_cast<unsigned char>(team);
             obj->Mark(MARK_CHANGE);
-            int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-            int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+            const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+            const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
             minx = std::min(xc, minx);
             maxx = std::max(xc, maxx);
             miny = std::min(yc, miny);
@@ -2741,8 +2742,8 @@ void Handle_Team(const int team, const int action) {
           if (obj->IsSelected) {
             obj->Group = static_cast<unsigned char>(team);
             obj->Mark(MARK_CHANGE);
-            int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-            int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+            const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+            const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
             minx = std::min(xc, minx);
             maxx = std::max(xc, maxx);
             miny = std::min(yc, miny);
@@ -2914,7 +2915,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
   // Check the last drive
   if (!new_cd_drive) {
     // Check the last CD drive we used if it's different from the current one
-    int last_drive = CCFileClass::Get_Last_CD_Drive();
+    const int last_drive = CCFileClass::Get_Last_CD_Drive();
 
     // Make sure the last drive is valid and it isn't the current drive
     // Skipped when it is the current drive, which the search above already
@@ -2952,7 +2953,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
       char buffer[128];
       // Search all present CD drives for the required disc.
       for (int i = 0; i < CDList.Get_Number_Of_Drives(); i++) {
-        int cd_drive = CDList.Get_Next_CD_Drive();
+        const int cd_drive = CDList.Get_Next_CD_Drive();
         cd_current = Get_CD_Index(cd_drive, drive_search_timeout);
 
         if (cd_current >= 0) {
@@ -2990,7 +2991,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
 
       // The wording is fixed by the language this build was compiled for; only
       // the disc name varies.
-      auto insert_prompt = [&buffer](const char* disc_name) {
+      const auto insert_prompt = [&buffer](const char* disc_name) {
         if constexpr (config::kBuildLanguage == config::BuildLanguage::French) {
           snprintf(buffer, sizeof(buffer), "Insèrez le %s", disc_name);
         } else if constexpr (config::kBuildLanguage ==
@@ -3010,7 +3011,8 @@ bool Force_CD_Available(int cd_desired)  // ajw
         // translation still takes a %d followed by a %s before using it.
         const int text =
             cd_desired == CD_ANY ? TXT_CD_DIALOG_1 : TXT_CD_DIALOG_2;  // 0 or 1
-        auto format = absl::ParsedFormat<'d', 's'>::New(Text_String(text));
+        const auto format =
+            absl::ParsedFormat<'d', 's'>::New(Text_String(text));
         if (format != nullptr) {
           port::SafeCopy(
               buffer, absl::StrFormat(*format, cd_desired + 1,
@@ -3102,7 +3104,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
   return true;
 }
 
-void* Hires_Load(char* name) {
+void* Hires_Load(const char* name) {
   char filename[30];
 
   sprintf(filename, "H%s", name);
@@ -3119,7 +3121,7 @@ void* Hires_Load(char* name) {
 
 CrateType Crate_From_Name(const char* name) {
   if (name != nullptr) {
-    for (CrateType crate : magic_enum::enum_values<CrateType>()) {
+    for (const CrateType crate : magic_enum::enum_values<CrateType>()) {
       if (stricmp(name, CrateNames[crate]) == 0) {
         return crate;
       }
@@ -3138,7 +3140,7 @@ int Owner_From_Name(const char* text) {
     if (stricmp(text, "allies") == 0 || stricmp(text, "allied") == 0) {
       ownable |= static_cast<unsigned>(kHouseFlagAllies);
     } else {
-      HousesType h = HouseTypeClass::From_Name(text);
+      const HousesType h = HouseTypeClass::From_Name(text);
       if (h != HOUSE_NONE && (h < HOUSE_MULTI1 || h > HOUSE_MULTI8)) {
         ownable |= 1U << static_cast<unsigned>(h);
       }
@@ -3158,7 +3160,7 @@ void Shake_The_Screen(int shakes) {
   while (shakes-- != 0) {
     // Hold each offset for exactly one tick, so the shake runs at game speed
     // rather than as fast as the machine can blit.
-    int64_t x = TickCount.Value();
+    const int64_t x = TickCount.Value();
     // Never repeat the previous offset, so every tick visibly moves the screen.
     int new_y_off;
     do {

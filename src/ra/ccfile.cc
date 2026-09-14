@@ -198,7 +198,7 @@ int32_t CCFileClass::Read(void* buffer, int32_t size) {
   **	all that is required for the read.
   */
   if (Is_Resident()) {
-    int32_t maximum = static_cast<int32_t>(Data.Get_Size()) - Position;
+    const int32_t maximum = static_cast<int32_t>(Data.Get_Size()) - Position;
 
     size = maximum < size ? maximum : size;
     //		size = std::min(maximum, size);
@@ -214,7 +214,7 @@ int32_t CCFileClass::Read(void* buffer, int32_t size) {
     return size;
   }
 
-  int32_t s = CDFileClass::Read(buffer, size);
+  const int32_t s = CDFileClass::Read(buffer, size);
 
   /*
   **	If the file was opened by this routine, then close it at this time.
@@ -460,7 +460,7 @@ bool CCFileClass::Open(FileAccess rights) {
     *support however. Also *	note that the filename attached to this object
     *is NOT the same as the file *	attached to the file handle.
     */
-    std::string dupfile = File_Name();
+    const std::string dupfile = File_Name();
     Open(loc->mixfile->Filename().c_str(), FileAccess::kRead);
     Searching(false);  // Disable multi-drive search.
     Set_Name(dupfile.c_str());

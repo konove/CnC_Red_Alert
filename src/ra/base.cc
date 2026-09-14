@@ -161,7 +161,7 @@ BuildingClass* BaseClass::Get_Building(int index) const {
 
   // Helper lambda to check if a candidate object matches our criteria.
   // Returns the cast pointer if successful, nullptr otherwise.
-  auto check_candidate = [&](ObjectClass* candidate) -> BuildingClass* {
+  const auto check_candidate = [&](ObjectClass* candidate) -> BuildingClass* {
     if (!candidate) {
       return nullptr;
     }
@@ -343,7 +343,7 @@ void BaseClass::Read_INI(CCINIClass& ini) {
   /*
   **	Read the number of buildings that will go into the base node list
   */
-  int count = ini.Get_Int(INI_Name(), "Count", 0);
+  const int count = ini.Get_Int(INI_Name(), "Count", 0);
 
   /*
   **	Read each entry in turn, in the same order they were written out.

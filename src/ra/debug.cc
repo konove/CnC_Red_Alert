@@ -121,9 +121,9 @@ void Debug_Key(unsigned input) {
         if (ChronalVortex.Is_Active()) {
           ChronalVortex.Disappear();
         } else {
-          int xxxx = Get_Mouse_X() + Map.TacPixelX;
-          int yyyy = Get_Mouse_Y() + Map.TacPixelY;
-          CELL cell = Map.DisplayClass::Click_Cell_Calc(xxxx, yyyy);
+          const int xxxx = Get_Mouse_X() + Map.TacPixelX;
+          const int yyyy = Get_Mouse_Y() + Map.TacPixelY;
+          const CELL cell = Map.DisplayClass::Click_Cell_Calc(xxxx, yyyy);
           ChronalVortex.Appear(Cell_Coord(cell));
         }
         break;
@@ -133,7 +133,7 @@ void Debug_Key(unsigned input) {
         break;
 
       case KN_P: {
-        for (SpecialWeaponType spc :
+        for (const SpecialWeaponType spc :
              magic_enum::enum_values<SpecialWeaponType>()) {
           PlayerPtr->SuperWeapon[spc].Enable(true, true);
           PlayerPtr->SuperWeapon[spc].Forced_Charge(true);
@@ -165,9 +165,10 @@ void Debug_Key(unsigned input) {
       } break;
 
       case KN_GRAVE: {
-        WarheadType warhead = Random_Pick(WARHEAD_HE, WARHEAD_FIRE);
-        COORDINATE coord = Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y());
-        int damage = 1000;
+        const WarheadType warhead = Random_Pick(WARHEAD_HE, WARHEAD_FIRE);
+        const COORDINATE coord =
+            Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y());
+        const int damage = 1000;
         new AnimClass(Combat_Anim(damage, warhead, Map[coord].Land_Type()),
                       coord);
         Explosion_Damage(coord, damage, nullptr, warhead);
@@ -312,22 +313,22 @@ void Debug_Key(unsigned input) {
         if (CurrentObject.Count() && CurrentObject[0]->Is_Techno()) {
           const auto& ttype =
               (const TechnoTypeClass&)CurrentObject[0]->Class_Of();
-          int sight = ((int)ttype.SightRange) << 8;
+          const int sight = ((int)ttype.SightRange) << 8;
           int weapon = 0;
           if (ttype.PrimaryWeapon != nullptr) {
             weapon = ttype.PrimaryWeapon->Range;
           }
           Set_Logic_Page(SeenBuff);
-          COORDINATE center = CurrentObject[0]->Center_Coord();
-          COORDINATE center2 = CurrentObject[0]->Fire_Coord(0);
+          const COORDINATE center = CurrentObject[0]->Center_Coord();
+          const COORDINATE center2 = CurrentObject[0]->Fire_Coord(0);
 
           for (int r = 0; r < 255; r += 10) {
             int x;
             int y;
             int x1;
             int y1;
-            auto r1 = (DirType)r;
-            auto r2 = (DirType)((r + 10) & 0xFF);
+            const auto r1 = (DirType)r;
+            const auto r2 = (DirType)((r + 10) & 0xFF);
 
             if (Map.Coord_To_Pixel(
                     Coord_Move(center, r1, static_cast<uint16_t>(sight)), x,
@@ -384,8 +385,8 @@ static const char* Bench_Time(BenchType btype) {
   if (rootcount == 0) {
     rootcount = 1;
   }
-  int64_t roottime = Benches[BENCH_GAME_FRAME].Value();
-  int64_t count = Benches[btype].Count();
+  const int64_t roottime = Benches[BENCH_GAME_FRAME].Value();
+  const int64_t count = Benches[btype].Count();
   int64_t time = Benches[btype].Value();
   if (count > 0 && count * time > roottime * rootcount) {
     time = roottime / count;
@@ -481,7 +482,7 @@ static void Benchmarks(MonoClass* mono) {
     mono->Set_Cursor(66, 4);
     mono->Printf("%7d", Benches[BENCH_SCENARIO].Value());
 
-    for (BenchType index : magic_enum::enum_values<BenchType>()) {
+    for (const BenchType index : magic_enum::enum_values<BenchType>()) {
       if (index != BENCH_RULES && index != BENCH_SCENARIO) {
         Benches[index].Reset();
       }
@@ -518,7 +519,7 @@ void Self_Regulate() {
     if (MonoClass::Is_Enabled()) {
       if (_first) {
         _first = false;
-        for (DMonoType index : magic_enum::enum_values<DMonoType>()) {
+        for (const DMonoType index : magic_enum::enum_values<DMonoType>()) {
           MonoArray[index].Clear();
         }
       }

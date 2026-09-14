@@ -313,7 +313,7 @@ bool FootClass::Mark(MarkType mark) {
 
   if (TechnoClass::Mark(mark)) {
     //		short list[32];
-    CELL cell = Coord_Cell(Coord);
+    const CELL cell = Coord_Cell(Coord);
 
     if (In_Which_Layer() != LAYER_GROUND &&
         (mark == MARK_UP || mark == MARK_DOWN)) {
@@ -381,11 +381,11 @@ bool FootClass::Basic_Path() {
     *then *	find a nearby cell that can be entered and try to head toward
     *that instead. *	EXCEPT when that cell is very close -- then just bail.
     */
-    int dist = Distance(NavCom);
-    int checkdist =
+    const int dist = Distance(NavCom);
+    const int checkdist =
         Team.Is_Valid() ? Rule.StrayDistance : Rule.CloseEnoughDistance;
     if (Can_Enter_Cell(cell) > MOVE_CLOAK && dist > checkdist) {
-      CELL cell2 =
+      const CELL cell2 =
           Map.Nearby_Location(cell, Techno_Type_Class()->Speed,
                               Map[Coord].Zones[Techno_Type_Class()->MZone],
                               Techno_Type_Class()->MZone);
@@ -396,7 +396,7 @@ bool FootClass::Basic_Path() {
     }
 
     if (What_Am_I() == RTTI_INFANTRY) {
-      CELL mycell = Coord_Cell(Center_Coord());
+      const CELL mycell = Coord_Cell(Center_Coord());
       ObjectClass* obj = Map[mycell].Cell_Occupier();
       while (obj) {
         if (obj != this && obj->What_Am_I() == RTTI_INFANTRY) {
@@ -855,7 +855,7 @@ void FootClass::Approach_Target() {
   **	and within range.
   */
   if (Target_Legal(TarCom)) {
-    int primary = What_Weapon_Should_I_Use(TarCom);
+    const int primary = What_Weapon_Should_I_Use(TarCom);
 
     /*
     **	If the target is too far away then head toward it.
@@ -872,7 +872,7 @@ void FootClass::Approach_Target() {
       ** max range so that people can stand far away from the buildings and
       ** hit them.
       */
-      BuildingClass* obj = As_Building(TarCom);
+      const BuildingClass* obj = As_Building(TarCom);
       if (obj) {
         maxrange += (obj->Class->Width() + obj->Class->Height()) * (0x100 / 4);
       }
@@ -884,11 +884,11 @@ void FootClass::Approach_Target() {
       maxrange -= 0x00B7;
       maxrange = std::max(maxrange, 0);
 
-      COORDINATE tcoord = As_Coord(TarCom);
+      const COORDINATE tcoord = As_Coord(TarCom);
       COORDINATE trycoord = 0;
-      CELL tcell = Coord_Cell(tcoord);
+      const CELL tcell = Coord_Cell(tcoord);
       CELL trycell = tcell;
-      DirType dir = Direction256(tcoord, Center_Coord());
+      const DirType dir = Direction256(tcoord, Center_Coord());
       bool found = false;
 
       /*
@@ -899,10 +899,10 @@ void FootClass::Approach_Target() {
       *destination *	and let "the chips fall where they may."
       */
       for (int range = maxrange; range > 0x0080; range -= 0x0100) {
-        static int _angles[] = {0,  8,   -8, 16,  -16, 24, -24,
-                                32, -32, 48, -48, 64,  -64};
+        static const int _angles[] = {0,  8,   -8, 16,  -16, 24, -24,
+                                      32, -32, 48, -48, 64,  -64};
 
-        for (int _angle : _angles) {
+        for (const int _angle : _angles) {
           trycoord =
               Coord_Move(tcoord, dir + _angle, static_cast<uint16_t>(range));
 
@@ -994,7 +994,7 @@ int FootClass::Mission_Guard_Area() {
   **	Make sure that the unit has not strayed too far from the home position.
   **	If it has, then race back to it.
   */
-  int maxrange = Threat_Range(1) / 2;
+  const int maxrange = Threat_Range(1) / 2;
 
   if (!IsFiring && !Target_Legal(NavCom) &&
       Distance(ArchiveTarget) > maxrange) {
@@ -1003,7 +1003,7 @@ int FootClass::Mission_Guard_Area() {
   }
 
   if (!Target_Legal(TarCom)) {
-    COORDINATE old = Coord;
+    const COORDINATE old = Coord;
     Coord = As_Coord(ArchiveTarget);
     Target_Something_Nearby(THREAT_AREA);
     Coord = old;
@@ -1090,7 +1090,7 @@ ResultType FootClass::Take_Damage(int& damage, int distance,
                                   bool forced) {
   assert(IsActive);
 
-  ResultType result =
+  const ResultType result =
       TechnoClass::Take_Damage(damage, distance, warhead, source, forced);
 
   if (result != RESULT_NONE && Team) {
@@ -1125,7 +1125,7 @@ ResultType FootClass::Take_Damage(int& damage, int distance,
       *sitting there and taking damage.
       */
       if (source != nullptr && Is_Allowed_To_Retaliate(source)) {
-        int primary = What_Weapon_Should_I_Use(source->As_Target());
+        const int primary = What_Weapon_Should_I_Use(source->As_Target());
         if (In_Range(source, primary) || !House->IsHuman) {
           Assign_Target(source->As_Target());
         }
@@ -1280,7 +1280,8 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
 
     case ACTION_MOVE:
       if (AllowVoice) {
-        COORDINATE coord = Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y());
+        const COORDINATE coord =
+            Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y());
         OutList.Add(
             EventClass(ANIM_MOVE_FLASH, PlayerPtr->Class->House, coord));
       }
@@ -1370,8 +1371,8 @@ void FootClass::Per_Cell_Process(PCPType why) {
     **	then shimmer the cloaked object.
     */
     if (Cloak == CLOAKED) {
-      for (FacingType face : magic_enum::enum_values<FacingType>()) {
-        CELL cell = Adjacent_Cell(Coord_Cell(Coord), face);
+      for (const FacingType face : magic_enum::enum_values<FacingType>()) {
+        const CELL cell = Adjacent_Cell(Coord_Cell(Coord), face);
 
         if (Map.In_Radar(cell)) {
           const TechnoClass* techno = Map[cell].Cell_Techno();
@@ -1392,7 +1393,7 @@ void FootClass::Per_Cell_Process(PCPType why) {
     if (Target_Legal(TarCom) &&
         (What_Am_I() != RTTI_INFANTRY ||
          !dynamic_cast<InfantryClass*>(this)->Class->IsDog)) {
-      int primary = What_Weapon_Should_I_Use(TarCom);
+      const int primary = What_Weapon_Should_I_Use(TarCom);
       bool inrange = In_Range(TarCom, primary);
       const TechnoClass* techno = As_Techno(TarCom);
       if (techno != nullptr && techno->Is_Foot()) {
@@ -1423,8 +1424,8 @@ void FootClass::Per_Cell_Process(PCPType why) {
       /*
       **	Check for horizontal trigger crossing.
       */
-      int x = Cell_X(Coord_Cell(Coord));
-      int y = Cell_Y(Coord_Cell(Coord));
+      const int x = Cell_X(Coord_Cell(Coord));
+      const int y = Cell_Y(Coord_Cell(Coord));
       for (int index = 0; index < Map.MapCellWidth; index++) {
         trigger = Map[XY_Cell(index + Map.MapCellX, y)].Trigger;
         if ((trigger != nullptr) &&
@@ -1807,7 +1808,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
   ** cannot abandon it as it will destroy us if we return to base.
   */
   if (Target_Legal(TarCom)) {
-    TechnoClass* techno = As_Techno(TarCom);
+    const TechnoClass* techno = As_Techno(TarCom);
     if (techno != nullptr && techno->Is_Weapon_Equipped()) {
       return 0;
     }
@@ -1826,7 +1827,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
   ** Find the distance to the target modified by the range.  If the
   ** the distance is 0, then things are ok.
   */
-  int dist = Distance(tarcom) - Weapon_Range(0);
+  const int dist = Distance(tarcom) - Weapon_Range(0);
   int threat = Risk() * 1024;
   int speed = -1;
   if (dist > 0) {
@@ -1836,7 +1837,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
     */
     speed = std::max(static_cast<int>(Techno_Type_Class()->MaxSpeed), 1);
 
-    int ratio = speed > 0 ? std::max(dist / speed, 1) : 1;
+    const int ratio = speed > 0 ? std::max(dist / speed, 1) : 1;
 
     /*
     ** Finally modify the threat by the distance the unit is away.
@@ -1924,7 +1925,7 @@ TARGET FootClass::Greatest_Threat(ThreatType method)  // const
   /*
   **	Perform the search for the target.
   */
-  TARGET target = TechnoClass::Greatest_Threat(method);
+  const TARGET target = TechnoClass::Greatest_Threat(method);
 
   /*
   **	If no target could be located and this object is under scan range
@@ -2173,13 +2174,13 @@ CELL FootClass::Adjust_Dest(CELL cell) const {
   assert(IsActive);
 
   if (IsFormationMove) {
-    int xdest = Cell_X(cell);
-    int ydest = Cell_Y(cell);
+    const int xdest = Cell_X(cell);
+    const int ydest = Cell_Y(cell);
 
-    int newx = Bound(XFormOffset + xdest, Map.MapCellX,
-                     Map.MapCellX + Map.MapCellWidth - 1);
-    int newy = Bound(YFormOffset + ydest, Map.MapCellY,
-                     Map.MapCellY + Map.MapCellHeight - 1);
+    const int newx = Bound(XFormOffset + xdest, Map.MapCellX,
+                           Map.MapCellX + Map.MapCellWidth - 1);
+    const int newy = Bound(YFormOffset + ydest, Map.MapCellY,
+                           Map.MapCellY + Map.MapCellHeight - 1);
 
     cell = XY_Cell(newx, newy);
   }
@@ -2209,7 +2210,7 @@ void FootClass::Handle_Navigation_List() {
   **	currently no navigation target for this object.
   */
   if (!Target_Legal(NavCom)) {
-    TARGET target = NavQueue[0];
+    const TARGET target = NavQueue[0];
 
     /*
     **	Check to see if the navigation queue even exists and

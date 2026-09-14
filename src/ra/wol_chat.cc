@@ -55,15 +55,17 @@
 // #include "ra/woldebug.h"
 
 static bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist,
-                         Channel* pChannel, char* szChannelName, bool bGame);
+                         Channel* pChannel, const char* szChannelName,
+                         bool bGame);
 static bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist,
-                         IconListClass& chanlist, int iIndex, bool bGame);
+                         const IconListClass& chanlist, int iIndex, bool bGame);
 static bool ExitChatChannel(WolapiObject* pWO);
 static void CreateChatChannel(WolapiObject* pWO);
 static bool CreateGameChannel(WolapiObject* pWO, const CREATEGAMEINFO& cgi);
 static bool ProcessChannelListSelection(WolapiObject* pWO,
                                         IconListClass& chatlist,
-                                        IconListClass& chanlist, int iIndex);
+                                        const IconListClass& chanlist,
+                                        int iIndex);
 
 enum LIST_EXPAND_STATE {
   LES_NORMAL,
@@ -103,18 +105,18 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
-  int d_dialog_w = 640;                       // dialog width
-  int d_dialog_h = 400;                       // dialog height
-  int d_dialog_x = ((640 - d_dialog_w) / 2);  // dialog x-coord
-  int d_dialog_y = ((400 - d_dialog_h) / 2);  // centered y-coord
+  const int d_dialog_w = 640;                       // dialog width
+  const int d_dialog_h = 400;                       // dialog height
+  const int d_dialog_x = ((640 - d_dialog_w) / 2);  // dialog x-coord
+  const int d_dialog_y = ((400 - d_dialog_h) / 2);  // centered y-coord
 
-  int d_margin1 = 34;  // large margin
-  int d_margin2 = 14;  // small margin
+  const int d_margin1 = 34;  // large margin
+  const int d_margin2 = 14;  // small margin
 
-  int d_chatlist_w = 340;
-  int d_chatlist_x = d_dialog_x + d_margin1;
-  int d_chatlist_y = d_dialog_y + d_margin2 + d_margin1 + 27;
-  int d_chatlist_h = 337 - d_chatlist_y;
+  const int d_chatlist_w = 340;
+  const int d_chatlist_x = d_dialog_x + d_margin1;
+  const int d_chatlist_y = d_dialog_y + d_margin2 + d_margin1 + 27;
+  const int d_chatlist_h = 337 - d_chatlist_y;
 
   d_chanlist_w = 227;
   d_chanlist_h = 100;
@@ -128,9 +130,9 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
 
   d_userlist_h = d_chatlist_y + d_chatlist_h - d_userlist_y;
 
-  int d_action_w = 100;
-  int d_action_x = d_dialog_x + 500;
-  int d_action_y = 365;
+  const int d_action_w = 100;
+  const int d_action_x = d_dialog_x + 500;
+  const int d_action_y = 365;
 
   //	int d_chanpriv_w = 60;
   //	int d_chanpriv_h = 9 *2;
@@ -142,23 +144,23 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   //	int d_cgame_x = d_dialog_x + 390; //d_dialog_cx - d_cgame_w / 2;
   //	int d_cgame_y = d_action_y;
 
-  int d_back_w = 100;
-  int d_back_x = d_dialog_x + 100;
-  int d_back_y = d_action_y;
+  const int d_back_w = 100;
+  const int d_back_x = d_dialog_x + 100;
+  const int d_back_y = d_action_y;
 
-  int d_join_w = 100;
-  int d_join_x = d_dialog_x + 210;
-  int d_join_y = d_action_y;
+  const int d_join_w = 100;
+  const int d_join_x = d_dialog_x + 210;
+  const int d_join_y = d_action_y;
 
-  int d_create_w = 100;
-  int d_create_x =
+  const int d_create_w = 100;
+  const int d_create_x =
       d_dialog_x + 320;  //((d_dialog_w * 5) / 6) - (d_create_w / 2);
-  int d_create_y = d_action_y;
+  const int d_create_y = d_action_y;
 
-  int d_send_w = d_chanlist_x + d_chanlist_w - d_chatlist_x;
-  int d_send_h = 18;
-  int d_send_x = d_chatlist_x;
-  int d_send_y = d_chatlist_y + d_chatlist_h + 5;
+  const int d_send_w = d_chanlist_x + d_chanlist_w - d_chatlist_x;
+  const int d_send_h = 18;
+  const int d_send_x = d_chatlist_x;
+  const int d_send_y = d_chatlist_y + d_chatlist_h + 5;
 
   //------------------------------------------------------------------------
   //	Button Enumerations
@@ -216,8 +218,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   //------------------------------------------------------------------------
   GadgetClass* commands;  // button list
 
-  char* pShpExpand = (char*)MFCD::Retrieve("exp.shp");
-  char* pShpUnexpand = (char*)MFCD::Retrieve("unexp.shp");
+  const char* pShpExpand = (char*)MFCD::Retrieve("exp.shp");
+  const char* pShpUnexpand = (char*)MFCD::Retrieve("unexp.shp");
 
   IconListClass chatlist(BUTTON_CHATLIST, d_chatlist_x, d_chatlist_y,
                          d_chatlist_w, d_chatlist_h, TPF_TYPE,
@@ -265,8 +267,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   EditClass sendedit(BUTTON_SENDEDIT, szSendBuffer, MAXCHATSENDLENGTH, kTpfText,
                      d_send_x, d_send_y, d_send_w, d_send_h);
 
-  char* pShpRankRA = (char*)MFCD::Retrieve("rank_ra.shp");
-  char* pShpRankAM = (char*)MFCD::Retrieve("rank_am.shp");
+  const char* pShpRankRA = (char*)MFCD::Retrieve("rank_ra.shp");
+  const char* pShpRankAM = (char*)MFCD::Retrieve("rank_am.shp");
   ShapeButtonClass RankRABtn(BUTTON_RANKRA, pShpRankRA,
                              d_userlist_x + d_userlist_w - ((16 * 4) + 1),
                              d_userlist_y - 14);
@@ -876,7 +878,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
             break;
           case WOL_LEVEL_INLOBBY: {
             pWO->bPump_In_Call_Back = true;
-            CREATEGAMEINFO CreateGameInfo = WOL_CreateGame_Dialog(pWO);
+            const CREATEGAMEINFO CreateGameInfo = WOL_CreateGame_Dialog(pWO);
             pWO->bPump_In_Call_Back = false;
             if (CreateGameInfo.bCreateGame &&
                 CreateGameChannel(pWO, CreateGameInfo)) {
@@ -1135,7 +1137,7 @@ void ResizeUserList(IconListClass& userlist, bool bExpand) {
 
 //***********************************************************************************************
 bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist,
-                  IconListClass& chanlist, int iIndex, bool bGame) {
+                  const IconListClass& chanlist, int iIndex, bool bGame) {
   //	Enter the channel specified in chanlist at iIndex.
   //	Called to enter chat channels, "lobbies", and game channels.
 
@@ -1147,7 +1149,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist,
 
 //***********************************************************************************************
 bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
-                  char* szChannelName, bool bGame) {
+                  const char* szChannelName, bool bGame) {
   //	Called to cause the user to enter a channel (chat, lobby, or game).
   //	If pChannel is NULL, szChannelName will be used.
 
@@ -1203,7 +1205,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
   bool bKeepTrying = true;
 
   //	Set password automatically for our lobbies, if trying to join one.
-  int iLobby = iChannelLobbyNumber(pChannel->name);
+  const int iLobby = iChannelLobbyNumber(pChannel->name);
   if (iLobby != -1) {
     port::SafeCopy((char*)pChannel->key, LOBBYPASSWORD, sizeof(pChannel->key));
   }
@@ -1418,7 +1420,7 @@ bool CreateGameChannel(WolapiObject* pWO, const CREATEGAMEINFO& cgi) {
 
 //***********************************************************************************************
 bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
-                                 IconListClass& chanlist, int iIndex) {
+                                 const IconListClass& chanlist, int iIndex) {
   //	Takes whatever action necessary due to user selecting iIndex from
   // chanlist. 	Returns true if user selected to enter a game channel, else
   // false.
@@ -1495,10 +1497,10 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
         return false;
       }
       //	Check if local user is allowed to join GameKind.
-      auto* pChannel = (Channel*)chanlist.Get_Item_ExtraDataPtr(iIndex);
+      const auto* pChannel = (Channel*)chanlist.Get_Item_ExtraDataPtr(iIndex);
       if (pChannel->type == GAME_TYPE) {
         //	It is a game of our type, at least.
-        auto GameKind =
+        const auto GameKind =
             (CREATEGAMEINFO::GAMEKIND)(pChannel->reserved & 0xFF000000);
         switch (GameKind) {
           case CREATEGAMEINFO::RAGAME:

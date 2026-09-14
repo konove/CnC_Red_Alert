@@ -3103,7 +3103,7 @@ void BuildingTypeClass::One_Time() {
       {STRUCT_TESLA, BSTATE_ACTIVE, 0, 10, 2},
   };
 
-  for (StructType sindex : magic_enum::enum_values<StructType>()) {
+  for (const StructType sindex : magic_enum::enum_values<StructType>()) {
     BuildingTypeClass& building = As_Reference(sindex);
 
     /*
@@ -3116,7 +3116,7 @@ void BuildingTypeClass::One_Time() {
         buffer[3] = 'F';
       }
 
-      auto fullname =
+      const auto fullname =
           std::filesystem::path(buffer).replace_extension(".SHP").string();
       building.CameoData = MFCD::Retrieve(fullname);
     }
@@ -3132,7 +3132,7 @@ void BuildingTypeClass::One_Time() {
     building.BuildupData = dataptr;
     if (dataptr != nullptr) {
       int timedelay = 1;
-      int count = Get_Build_Frame_Count(dataptr);
+      const int count = Get_Build_Frame_Count(dataptr);
       if (count > 0) {
         timedelay = Rule.BuildupTime * kTicksPerMinute / count;
       }
@@ -3184,7 +3184,7 @@ void BuildingTypeClass::One_Time() {
  *=============================================================================================*/
 StructType BuildingTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
-    for (StructType classid : magic_enum::enum_values<StructType>()) {
+    for (const StructType classid : magic_enum::enum_values<StructType>()) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
         return classid;
       }
@@ -3239,7 +3239,7 @@ void BuildingTypeClass::Display(int x, int y, WindowNumberType window,
  *interface routines.                                     *
  *=============================================================================================*/
 void BuildingTypeClass::Prep_For_Add() {
-  for (StructType index : magic_enum::enum_values<StructType>()) {
+  for (const StructType index : magic_enum::enum_values<StructType>()) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
     }
@@ -3346,7 +3346,7 @@ void BuildingTypeClass::Init_Anim(BStateType state, int start, int count,
  *=============================================================================================*/
 void BuildingTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
-    for (StructType sindex : magic_enum::enum_values<StructType>()) {
+    for (const StructType sindex : magic_enum::enum_values<StructType>()) {
       BuildingTypeClass* classptr = &As_Reference(sindex);
 
       if (classptr->IsTheater) {
@@ -3366,7 +3366,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
         classptr->BuildupData = MFCD::Retrieve(fullname);
         if (classptr->BuildupData) {
           int timedelay = 1;
-          int count = Get_Build_Frame_Count(classptr->BuildupData);
+          const int count = Get_Build_Frame_Count(classptr->BuildupData);
           if (count != 0) {
             timedelay = 5 * kTicksPerSecond / count;
           }
@@ -3516,8 +3516,8 @@ const int16_t* BuildingTypeClass::Overlap_List() const {
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Width() const {
-  static int width[magic_enum::enum_count<BSizeType>()] = {1, 2, 1, 2, 2,
-                                                           3, 3, 4, 5};
+  static const int width[magic_enum::enum_count<BSizeType>()] = {1, 2, 1, 2, 2,
+                                                                 3, 3, 4, 5};
   return width[Size];
 }
 
@@ -3536,8 +3536,8 @@ int BuildingTypeClass::Width() const {
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Height(bool bib) const {
-  static int height[magic_enum::enum_count<BSizeType>()] = {1, 1, 2, 2, 3,
-                                                            2, 3, 2, 5};
+  static const int height[magic_enum::enum_count<BSizeType>()] = {1, 1, 2, 2, 3,
+                                                                  2, 3, 2, 5};
   return height[Size] + (bib && IsBibbed ? 1 : 0);
 }
 
@@ -3612,7 +3612,7 @@ bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, CELL& cell) const {
  * HISTORY: * 06/29/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Max_Pips() const {
-  int maxpips = Width() * ICON_PIXEL_W / 4;
+  const int maxpips = Width() * ICON_PIXEL_W / 4;
   return Bound(Capacity / 100, 0, maxpips);
 }
 
@@ -3696,7 +3696,7 @@ bool BuildingTypeClass::Flush_For_Placement(CELL cell,
     const int16_t* list = Occupy_List(true);
 
     while (*list != kRefreshEol) {
-      CELL newcell = static_cast<CELL>(cell + *list++);
+      const CELL newcell = static_cast<CELL>(cell + *list++);
 
       if (Map.In_Radar(newcell)) {
         TechnoClass* occupier = Map[newcell].Cell_Techno();

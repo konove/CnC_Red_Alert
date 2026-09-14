@@ -80,7 +80,7 @@ static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 static bool operator==(const GAMEPARAMS& gp1, const GAMEPARAMS& gp2);
 static bool operator==(const GlobalPacketType& gp1,
                        const GlobalPacketType& gp2);
-static PlayerColorType PlayerColorTypeOf(RemapControlType* pColorRemap);
+static PlayerColorType PlayerColorTypeOf(const RemapControlType* pColorRemap);
 
 extern bool disable_current_msgbox;
 
@@ -209,7 +209,7 @@ void WOL_GameSetupDialog::Initialize() {
   d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
 
   d_txt6_h = 12 + 1;  // ht of 6-pt text
-  int d_text_h = 12;
+  const int d_text_h = 12;
   d_margin1 = 34;  // large margin
 
   d_color_w = 20;
@@ -238,7 +238,7 @@ void WOL_GameSetupDialog::Initialize() {
   d_playerlist_x = d_dialog_x + d_margin1;
   d_playerlist_y = 75;  // d_dialog_y + d_margin1 + d_txt6_h + 6 + 36;
 
-  int d_tab_h = 19;
+  const int d_tab_h = 19;
 
   d_scenariolist_w = 200;
   //	d_scenariolist_h = (4 * d_txt6_h) + 3*2;		// 4
@@ -436,8 +436,8 @@ void WOL_GameSetupDialog::Initialize() {
 
   if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME) {
     bAftermathUnits = true;
-    int current_drive = CCFileClass::Get_CD_Drive();
-    int cd_index = Get_CD_Index(current_drive, 1 * 60);
+    const int current_drive = CCFileClass::Get_CD_Drive();
+    const int cd_index = Get_CD_Index(current_drive, 1 * 60);
     if (cd_index != 3 && cd_index != 5) {
       WOL_PrintMessage(*pILDisc, TXT_WOL_AMDISCNEEDED,
                        WOLCOLORREMAP_LOCALMACHINEMESS);
@@ -518,10 +518,10 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   int tabs[] = {77 * 2};       // tabs for player list box
   int optiontabs[] = {8 * 2};  // tabs for option list box
 
-  CCFileClass loadfile("SAVEGAME.NET");
+  const CCFileClass loadfile("SAVEGAME.NET");
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
-  int cbox_x[] = {
+  const int cbox_x[] = {
       d_color_x,
       d_color_x + d_color_w,
       d_color_x + (d_color_w * 2),
@@ -543,11 +543,11 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 
   //	If I'm not already listed with a color, give myself a color.
   //	(I may have already received my assigned color from the game host.)
-  int iItem = pILPlayers->Find(
+  const int iItem = pILPlayers->Find(
       pWO->szMyName);  //	(I must be in the list I just got.)
   DCHECK(iItem != -1);
   RemapControlType* pColorRemap = pILPlayers->Get_Item_Color(iItem);
-  PlayerColorType Color = PlayerColorTypeOf(pColorRemap);
+  const PlayerColorType Color = PlayerColorTypeOf(pColorRemap);
 
   //	debugprint( "Starting up, I see myself as color %i\n", Color );
   if (Color == PCOLOR_NONE) {
@@ -1016,8 +1016,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             pWO->bSelfDestruct = true;
             break;
         }
-        int iGameInfoSpacingY = 14;
-        int iGameInfoSecondColumnX = 0;  // 170;
+        const int iGameInfoSpacingY = 14;
+        const int iGameInfoSecondColumnX = 0;  // 170;
         //	Game kind.
         Fancy_Text_Print(szGameKind, d_gamekind_x,
                          d_gamekind_y - (iGameInfoSpacingY * 1), scheme, TBLACK,
@@ -1973,7 +1973,7 @@ void WOL_GameSetupDialog::SetPlayerColor(const char* szName,
 //***********************************************************************************************
 PlayerColorType WOL_GameSetupDialog::GetPlayerColor(const char* szName) {
   //	Returns player color, if player is found in list, else PCOLOR_NONE.
-  int iItem = pILPlayers->Find(szName);
+  const int iItem = pILPlayers->Find(szName);
   if (iItem == -1) {
     //	Player name was not found in list.
     return PCOLOR_NONE;
@@ -2009,7 +2009,7 @@ void WOL_GameSetupDialog::SetPlayerHouse(const char* szName, HousesType House) {
 //***********************************************************************************************
 HousesType WOL_GameSetupDialog::GetPlayerHouse(const char* szName) {
   //	Returns player house for user if found in list, else HOUSE_NONE.
-  int iItem = pILPlayers->Find(szName);
+  const int iItem = pILPlayers->Find(szName);
   if (iItem == -1) {
     //	Player name was not found in list.
     return HOUSE_NONE;
@@ -2024,7 +2024,7 @@ bool WOL_GameSetupDialog::SetPlayerAccepted(const char* szName,
   //	Sets player's 'accepted' state to true or false.
   //	Value is stored in the player list: if there is an accepted icon, player
   // has accepted.
-  int iItem = pILPlayers->Find(szName);
+  const int iItem = pILPlayers->Find(szName);
   if (iItem == -1) {
     //	Player name was not found in list.
     //		debugprint( "SetPlayerAccepted() - could not find '%s'.\n",
@@ -2039,7 +2039,7 @@ bool WOL_GameSetupDialog::SetPlayerAccepted(const char* szName,
 //***********************************************************************************************
 bool WOL_GameSetupDialog::IveAccepted() {
   //	Returns true if I am marked as "accepted".
-  int iItem = pILPlayers->Find(pWO->szMyName);
+  const int iItem = pILPlayers->Find(pWO->szMyName);
   if (iItem == -1) {
     return false;
   }
@@ -2053,7 +2053,7 @@ bool WOL_GameSetupDialog::SetPlayerReadyToGo(const char* szName,
   //	Set szReadyState to "ready", "need scenario", or NULL.
   //	First two cases are regarded as player being ready to go.
   //	Value is stored in the player list in the hidden string field.
-  int iItem = pILPlayers->Find(szName);
+  const int iItem = pILPlayers->Find(szName);
   if (iItem == -1) {
     //	Player name was not found in list.
     //		debugprint( "SetPlayerReadyToGo() - could not find '%s'.\n",
@@ -2078,7 +2078,7 @@ void WOL_GameSetupDialog::ResetReadyToGo() {
 //***********************************************************************************************
 bool WOL_GameSetupDialog::bPlayerReadyToGo(const char* szName) {
   //	Returns true if player is marked as "ready to go".
-  int iItem = pILPlayers->Find(szName);
+  const int iItem = pILPlayers->Find(szName);
   if (iItem == -1) {
     return false;
   }
@@ -2116,7 +2116,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
   if (!option) {
     return;
   }
-  auto opt = static_cast<WOL_GAMEOPT>(*option);
+  const auto opt = static_cast<WOL_GAMEOPT>(*option);
   szRequest += 3;
 
   switch (opt) {
@@ -2127,7 +2127,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
                                  magic_enum::enum_count<PlayerColorType>())) {
         return;
       }
-      auto ColorDesired = static_cast<PlayerColorType>(*color);
+      const auto ColorDesired = static_cast<PlayerColorType>(*color);
       if (pILPlayers->FindColor(&ColorRemaps[ColorDesired == PCOLOR_DIALOG_BLUE
                                                  ? PCOLOR_REALLY_BLUE
                                                  : ColorDesired]) == -1) {
@@ -2148,7 +2148,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
       break;
     }
     case WOL_GAMEOPT_REQHOUSE: {
-      HousesType HouseChoice =
+      const HousesType HouseChoice =
           (HousesType)tech::ParseInteger<int>(szRequest).value_or(0);
       //		debugprint( "Host received: '%s' changed house to
       //%u.\n", (char*)pUser->name, HouseChoice );
@@ -2254,7 +2254,7 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
     if (!option) {
       return;
     }
-    auto opt = static_cast<WOL_GAMEOPT>(*option);
+    const auto opt = static_cast<WOL_GAMEOPT>(*option);
     szInform += 3;
     switch (opt) {
       case WOL_GAMEOPT_INFCOLOR: {
@@ -2274,7 +2274,7 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
                                    magic_enum::enum_count<PlayerColorType>())) {
           return;
         }
-        auto Color = static_cast<PlayerColorType>(*color);
+        const auto Color = static_cast<PlayerColorType>(*color);
         szInform += 3;
         SetPlayerColor(szInform, Color);  //	(szInform is now sitting at the
                                           // start of the name string.)
@@ -2302,7 +2302,7 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
                                    magic_enum::enum_count<HousesType>())) {
           return;
         }
-        auto House = static_cast<HousesType>(*house);
+        const auto House = static_cast<HousesType>(*house);
         szInform += 3;
         SetPlayerHouse(szInform, House);  //	(szInform is now sitting at the
                                           // start of the name string.)
@@ -2758,7 +2758,7 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (!szToken) {
     return false;
   }
-  int iRulesID = tech::ParseInteger<int>(szToken).value_or(0);
+  const int iRulesID = tech::ParseInteger<int>(szToken).value_or(0);
 
   //	strtok( NULL, szDelimiter ) here should give NULL; nothing checks.
   //	if( szToken )
@@ -2928,8 +2928,9 @@ void Debug_GlobalPacketType( const GlobalPacketType& gp1 )
 */
 
 //***********************************************************************************************
-PlayerColorType PlayerColorTypeOf(RemapControlType* pColorRemap) {
-  for (PlayerColorType pcolor : magic_enum::enum_values<PlayerColorType>()) {
+PlayerColorType PlayerColorTypeOf(const RemapControlType* pColorRemap) {
+  for (const PlayerColorType pcolor :
+       magic_enum::enum_values<PlayerColorType>()) {
     if (&ColorRemaps[pcolor] == pColorRemap) {
       return pcolor;
     }
@@ -3066,7 +3067,7 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
     // doesn't change here.
 
     //	Assign color to new guest.
-    PlayerColorType Color = ColorNextAvailable();
+    const PlayerColorType Color = ColorNextAvailable();
     SetPlayerColor((char*)pUser->name, Color);
 
     //	Previously, I was sending an individual color, house, and acceptedstate
@@ -3109,7 +3110,7 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
               PlayerColorTypeOf(pILPlayers->Get_Item_Color(i)));
 
       if (strcmp(szPlayerName, (char*)pUser->name) != 0) {
-        HousesType House =
+        const HousesType House =
             WolapiObject::PullPlayerHouse_From(pILPlayers->Get_Item(i));
         if (House != HOUSE_NONE) {
           //				InformAboutPlayerHouse( szPlayerName,
@@ -3167,7 +3168,7 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
       strlen(szToken) != 2 || message_end - szToken <= 2) {
     return;
   }
-  auto nPlayers = static_cast<unsigned int>(*player_count);
+  const auto nPlayers = static_cast<unsigned int>(*player_count);
 
   //	We have to assist strtok a bit because of calls below that may also call
   // strtok()...
@@ -3176,7 +3177,7 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
   for (unsigned int nPlayer = 0; nPlayer != nPlayers; ++nPlayer) {
     //	Read in length of following string.
     szToken = strtok(szRemaining, szDelimiter);
-    int iLen = tech::ParseInteger<int>(szToken).value_or(-1);
+    const int iLen = tech::ParseInteger<int>(szToken).value_or(-1);
     if (szToken == nullptr || message_end - szToken <= 2 ||
         strlen(szToken) != 2 || iLen < 0 || iLen >= 50 ||
         static_cast<size_t>(iLen) >= strlen(szToken + 3)) {
@@ -3196,7 +3197,7 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
 
     //	Read color.
     szToken = strtok(szRemaining, szDelimiter);
-    PlayerColorType Color =
+    const PlayerColorType Color =
         (PlayerColorType)tech::ParseInteger<int>(szToken).value_or(0);
     SetPlayerColor(szPlayerName, Color);
 
@@ -3206,12 +3207,12 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
 
     //	Read whether there is a house field.
     szToken = strtok(szRemaining, szDelimiter);
-    bool bHouseField = (bool)tech::ParseInteger<int>(szToken).value_or(0);
+    const bool bHouseField = (bool)tech::ParseInteger<int>(szToken).value_or(0);
 
     if (bHouseField) {
       //	Read house.
       szToken = strtok(nullptr, szDelimiter);
-      HousesType House =
+      const HousesType House =
           (HousesType)tech::ParseInteger<int>(szToken).value_or(0);
       SetPlayerHouse(szPlayerName, House);
       //	SetPlayerHouse may call strtok, so we can't use the strtok(
@@ -3253,7 +3254,7 @@ void WOL_GameSetupDialog::ClearAllAccepts() {
   //	Clears all "player has accepted" marks.
   // debugprint( "ClearAllAccepts()\n" );
   for (int i = 0; i < pILPlayers->Count(); i++) {
-    User* pUser = (User*)pILPlayers->Get_Item_ExtraDataPtr(i);
+    const User* pUser = (User*)pILPlayers->Get_Item_ExtraDataPtr(i);
     if (pUser &&
         !(pUser->flags &
           CHAT_USER_CHANNELOWNER)) {  //	pUser null if this is an "early
@@ -3386,7 +3387,7 @@ void WOL_GameSetupDialog::HostSaysGo() {
   User* pUser = pWO->pChatSink->pGameUserList;
   while (pUser) {
     char szUser[WOL_NAME_LEN_MAX + 10];
-    PlayerColorType Color = GetPlayerColor((char*)pUser->name);
+    const PlayerColorType Color = GetPlayerColor((char*)pUser->name);
     sprintf(szUser, " %s %02i", (char*)pUser->name,
             Color);  //	What if player left just now, and got removed from list.
                      // Ok to continue and fail on game start?
@@ -3544,7 +3545,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
     port::SafeCopy(szPlayerName, szToken);
     szToken = strtok(nullptr, szDelimiter);
 
-    PlayerColorType Color =
+    const PlayerColorType Color =
         (PlayerColorType)tech::ParseInteger<int>(szToken).value_or(0);
     SetPlayerColor(szPlayerName, Color);  //	ajw note: inserts if not found.
     szToken = strtok(nullptr, szDelimiter);

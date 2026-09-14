@@ -177,11 +177,11 @@ bool SmudgeClass::Mark(MarkType mark) {
   assert(IsActive);
 
   if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
-    CELL origin = Coord_Cell(Coord);
+    const CELL origin = Coord_Cell(Coord);
 
     for (int w = 0; w < Class->Width; w++) {
       for (int h = 0; h < Class->Height; h++) {
-        CELL newcell = static_cast<CELL>(origin + w + (h * MAP_CELL_W));
+        const CELL newcell = static_cast<CELL>(origin + w + (h * MAP_CELL_W));
         if (Map.In_Radar(newcell)) {
           CellClass* cell = &Map[newcell];
 
@@ -298,7 +298,7 @@ void SmudgeClass::Disown(CELL cell) {
 void SmudgeClass::Read_INI(CCINIClass& ini) {
   char buf[128];  // Working string staging buffer.
 
-  int len = ini.Entry_Count(INI_Name());
+  const int len = ini.Entry_Count(INI_Name());
   for (int index = 0; index < len; index++) {
     const char* entry = ini.Get_Entry(INI_Name(), index);
     SmudgeType smudge;  // Smudge type.
@@ -306,10 +306,10 @@ void SmudgeClass::Read_INI(CCINIClass& ini) {
     ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
     smudge = SmudgeTypeClass::From_Name(strtok(buf, ","));
     if (smudge != SMUDGE_NONE) {
-      char* ptr = strtok(nullptr, ",");
+      const char* ptr = strtok(nullptr, ",");
       if (ptr != nullptr) {
         int data = 0;
-        CELL cell = tech::ParseInteger<CELL>(ptr).value_or(0);
+        const CELL cell = tech::ParseInteger<CELL>(ptr).value_or(0);
         ptr = strtok(nullptr, ",");
         if (ptr != nullptr) {
           data = tech::ParseInteger<int>(ptr).value_or(0);

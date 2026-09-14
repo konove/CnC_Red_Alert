@@ -239,7 +239,7 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
                           bool forced) {
   assert(Triggers.ID(this) == ID);
 
-  bool e1 = Class->Event1(Event1, event, Class->House, obj, forced);
+  const bool e1 = Class->Event1(Event1, event, Class->House, obj, forced);
   bool e2 = false;
   bool execute = false;
 
@@ -314,7 +314,7 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
     *matching *	trigger event. Otherwise perform the action for both events.
     */
     bool ok = false;
-    HousesType hh = Class->House;
+    const HousesType hh = Class->House;
     if (Class->EventControl == MULTI_LINKED) {
       if (e1 || forced) {
         ok |= Class->Action1(hh, obj, ID, cell);

@@ -200,7 +200,7 @@ CellClass::CellClass()
 int CellClass::Cell_Color(bool override) const {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  BuildingClass* object = Cell_Building();
+  const BuildingClass* object = Cell_Building();
   if (object && !object->Class->IsInvisible) {
     return ColorRemaps[object->House->RemapColor].Bar;
   }
@@ -252,8 +252,8 @@ TechnoClass* CellClass::Cell_Techno(int x, int y) const {
     object = Cell_Occupier();
     while (object) {
       if (object->Is_Techno()) {
-        COORDINATE coord = Coord_Fraction(object->Center_Coord());
-        int32_t dist = Distance(coord, click);
+        const COORDINATE coord = Coord_Fraction(object->Center_Coord());
+        const int32_t dist = Distance(coord, click);
         if (!close || dist < distance) {
           close = dynamic_cast<TechnoClass*>(object);
           distance = dist;
@@ -402,7 +402,7 @@ ObjectClass* CellClass::Cell_Object(int x, int y) const {
 void CellClass::Redraw_Objects(bool forced) {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  CELL cell = Cell_Number();
+  const CELL cell = Cell_Number();
 
   if (Map.In_View(cell) && (forced || !MapEditClass::Is_Cell_Flagged(cell))) {
     /*
@@ -906,10 +906,10 @@ InfantryClass* CellClass::Cell_Infantry() const {
   int& py = WindowList[WINDOW_PARTIAL][WINDOWY];
   int& pw = WindowList[WINDOW_PARTIAL][WINDOWWIDTH];
   int& ph = WindowList[WINDOW_PARTIAL][WINDOWHEIGHT];
-  int& tx = WindowList[WINDOW_TACTICAL][WINDOWX];
-  int& ty = WindowList[WINDOW_TACTICAL][WINDOWY];
-  int& tw = WindowList[WINDOW_TACTICAL][WINDOWWIDTH];
-  int& th = WindowList[WINDOW_TACTICAL][WINDOWHEIGHT];
+  const int& tx = WindowList[WINDOW_TACTICAL][WINDOWX];
+  const int& ty = WindowList[WINDOW_TACTICAL][WINDOWY];
+  const int& tw = WindowList[WINDOW_TACTICAL][WINDOWWIDTH];
+  const int& th = WindowList[WINDOW_TACTICAL][WINDOWHEIGHT];
 
   px = cellx + tx;
   py = celly + ty;
@@ -1006,7 +1006,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       /*
       **	Draw debug cell visualization instead of normal terrain.
       */
-      CELL cell = Cell_Number();
+      const CELL cell = Cell_Number();
       LogicPage->Fill_Rect(Map.TacPixelX + x, Map.TacPixelY + y,
                            Map.TacPixelX + x + ICON_PIXEL_W - 1,
                            Map.TacPixelY + y + ICON_PIXEL_H - 1,
@@ -1150,7 +1150,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         SpeedType loco = SPEED_NONE;
         if (Map.PendingObjectPtr &&
             (Map.PendingObjectPtr->What_Am_I() == RTTI_BUILDING)) {
-          auto* obj = dynamic_cast<BuildingClass*>(Map.PendingObjectPtr);
+          const auto* obj = dynamic_cast<BuildingClass*>(Map.PendingObjectPtr);
           loco = obj->Class->Speed;
         }
 
@@ -1176,9 +1176,9 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
               * the icon
               */
               case RTTI_TEMPLATETYPE: {
-                auto* tptr = (TemplateTypeClass*)Map.PendingObject;
+                const auto* tptr = (TemplateTypeClass*)Map.PendingObject;
                 if (tptr->Get_Image_Data()) {
-                  CELL cell = Cell_Number();
+                  const CELL cell = Cell_Number();
                   icon = (Cell_X(cell) - Cell_X(static_cast<CELL>(
                                              Map.ZoneCell + Map.ZoneOffset))) +
                          ((Cell_Y(cell) - Cell_Y(static_cast<CELL>(
@@ -1379,10 +1379,10 @@ void CellClass::Concrete_Calc() {}
 void CellClass::Wall_Update() {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  static FacingType _offsets[5] = {FACING_N, FACING_E, FACING_S, FACING_W,
-                                   FACING_NONE};
+  static const FacingType _offsets[5] = {FACING_N, FACING_E, FACING_S, FACING_W,
+                                         FACING_NONE};
 
-  for (auto& _offset : _offsets) {
+  for (const auto& _offset : _offsets) {
     CellClass& newcell = Adjacent_Cell(_offset);
 
     if (newcell.Overlay != OVERLAY_NONE &&
@@ -1582,7 +1582,8 @@ bool CellClass::Reduce_Wall(int damage) {
  *sub-position algorithm.                                   *
  *=============================================================================================*/
 int CellClass::Spot_Index(COORDINATE coord) {
-  COORDINATE rel = Coord_Fraction(coord);  // Sub coordinate value within cell.
+  const COORDINATE rel =
+      Coord_Fraction(coord);  // Sub coordinate value within cell.
 
   /*
   **	If the coordinate is close enough to the center of the cell, then return
@@ -1633,7 +1634,7 @@ int CellClass::Spot_Index(COORDINATE coord) {
 COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  int spot_index = Spot_Index(coord);
+  const int spot_index = Spot_Index(coord);
 
   /*
   **	This precalculated sequence table records the closest spots to any given
@@ -1684,7 +1685,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
     sequence = &_sequence[spot_index][0];
   }
   for (int index = 0; index < 4; index++) {
-    int pos = *sequence++;
+    const int pos = *sequence++;
 
     if (Is_Spot_Free(pos)) {
       return Coord_Add(coord, StoppingCoordAbs[pos]);
@@ -1719,7 +1720,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
 int CellClass::Clear_Icon() const {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  CELL cell = Cell_Number();
+  const CELL cell = Cell_Number();
   return (Cell_X(cell) & 0x03) | (Cell_Y(cell) & 0x03) << 2;
   //	return((cell & 0x03) | ((unsigned(cell)>>5) & 0x0C));
 }
@@ -1812,9 +1813,9 @@ const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
 void CellClass::Adjust_Threat(HousesType house, int threat_value) {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  int region = MapEditClass::Cell_Region(Cell_Number());
+  const int region = MapEditClass::Cell_Region(Cell_Number());
 
-  for (HousesType lp : magic_enum::enum_values<HousesType>()) {
+  for (const HousesType lp : magic_enum::enum_values<HousesType>()) {
     if (lp == house) {
       continue;
     }
@@ -1854,8 +1855,8 @@ int32_t CellClass::Tiberium_Adjust(bool pregame) {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
   if ((Overlay != OVERLAY_NONE) &&
       (OverlayTypeClass::As_Reference(Overlay).Land == LAND_TIBERIUM)) {
-    static int _adj[9] = {0, 1, 3, 4, 6, 7, 8, 10, 11};
-    static int _adjgem[9] = {0, 0, 0, 1, 1, 1, 2, 2, 2};
+    static const int _adj[9] = {0, 1, 3, 4, 6, 7, 8, 10, 11};
+    static const int _adjgem[9] = {0, 0, 0, 1, 1, 1, 2, 2, 2};
     int count = 0;
 
     /*
@@ -1893,8 +1894,8 @@ int32_t CellClass::Tiberium_Adjust(bool pregame) {
     **	Add up all adjacent cells that contain tiberium.
     ** (Skip those cells which aren't on the map)
     */
-    for (FacingType face : magic_enum::enum_values<FacingType>()) {
-      CellClass& adj = Adjacent_Cell(face);
+    for (const FacingType face : magic_enum::enum_values<FacingType>()) {
+      const CellClass& adj = Adjacent_Cell(face);
 
       if (adj.Overlay != OVERLAY_NONE &&
           OverlayTypeClass::As_Reference(adj.Overlay).Land == LAND_TIBERIUM) {
@@ -1978,11 +1979,11 @@ bool CellClass::Goodie_Check(FootClass* object) {
       }
 
     } else {
-      int pick = Random_Pick(1, total_shares);
+      const int pick = Random_Pick(1, total_shares);
 
       int share_count = 0;
       bool found = false;
-      for (CrateType candidate : magic_enum::enum_values<CrateType>()) {
+      for (const CrateType candidate : magic_enum::enum_values<CrateType>()) {
         share_count += CrateShares[candidate];
         if (pick <= share_count) {
           powerup = candidate;
@@ -2199,7 +2200,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
     **	Create the effect requested.
     */
     bool tospeak = false;
-    auto give_crate_money = [&] {
+    const auto give_crate_money = [&] {
       if (force_money > 0) {
         object->House->Refund_Money(force_money);
       } else {
@@ -2276,7 +2277,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	If no unit type has been determined, then pick one at random.
         */
         while (utp == nullptr) {
-          UnitType utype = Random_Pick(
+          const UnitType utype = Random_Pick(
               magic_enum::enum_values<UnitType>().front(),
               static_cast<UnitType>(HouseClass::kOriginalUnitCount - 1 - 3));
           if (utype != UNIT_MCV || Session.Options.Bases) {
@@ -2302,7 +2303,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
             **	Try to place the object into a nearby cell if something is
             *preventing *	placement at the crate location.
             */
-            CELL cell =
+            const CELL cell =
                 Map.Nearby_Location(Cell_Number(), goodie_unit->Class->Speed);
             if (goodie_unit->Unlimbo(::Cell_Coord(cell))) {
               return false;
@@ -2319,7 +2320,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       */
       case CRATE_SQUAD:
         for (int index = 0; index < 5; index++) {
-          static InfantryType _inf[] = {
+          static const InfantryType _inf[] = {
               INFANTRY_E1, INFANTRY_E1, INFANTRY_E1,
               INFANTRY_E1, INFANTRY_E1, INFANTRY_E1,
               INFANTRY_E2, INFANTRY_E3, INFANTRY_RENOVATOR};
@@ -2366,7 +2367,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           object->Take_Damage(d, 0, WARHEAD_HE, nullptr, true);
         }
         for (int index = 0; index < 5; index++) {
-          COORDINATE frag_coord =
+          const COORDINATE frag_coord =
               Coord_Scatter(Cell_Coord(), Random_Pick(0, 0x0200));
           new AnimClass(ANIM_FBALL1, frag_coord);
           damage = CrateData[powerup];
@@ -2438,8 +2439,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
           if (obj != nullptr && obj->Is_Techno() &&
               Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius &&
               dynamic_cast<TechnoClass*>(obj)->ArmorBias == 1) {
-            fixed val = dynamic_cast<TechnoClass*>(obj)->ArmorBias *
-                        fixed(CrateData[powerup], 256).Inverse();
+            const fixed val = dynamic_cast<TechnoClass*>(obj)->ArmorBias *
+                              fixed(CrateData[powerup], 256).Inverse();
             dynamic_cast<TechnoClass*>(obj)->ArmorBias = val;
             if (obj->Owner() == PlayerPtr->Class->House) {
               tospeak = true;
@@ -2462,7 +2463,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
               obj->What_Am_I() != RTTI_AIRCRAFT) {
             auto* foot = dynamic_cast<FootClass*>(obj);
 
-            fixed val = foot->SpeedBias * fixed(CrateData[powerup], 256);
+            const fixed val = foot->SpeedBias * fixed(CrateData[powerup], 256);
             foot->SpeedBias = val;
             if (foot->IsOwnedByPlayer) {
               tospeak = true;
@@ -2482,8 +2483,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
           if (obj && obj->Is_Techno() &&
               Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius &&
               dynamic_cast<TechnoClass*>(obj)->FirepowerBias == 1) {
-            fixed val = dynamic_cast<TechnoClass*>(obj)->FirepowerBias *
-                        fixed(CrateData[powerup], 256);
+            const fixed val = dynamic_cast<TechnoClass*>(obj)->FirepowerBias *
+                              fixed(CrateData[powerup], 256);
             dynamic_cast<TechnoClass*>(obj)->FirepowerBias = val;
             if (obj->Owner() == PlayerPtr->Class->House) {
               tospeak = true;
@@ -2880,10 +2881,10 @@ bool CellClass::Spread_Tiberium(bool forced) {
     return false;
   }
 
-  FacingType offset = Random_Pick(FACING_N, FACING_NW);
+  const FacingType offset = Random_Pick(FACING_N, FACING_NW);
   // Placing the overlay is the point of the search, so not any_of.
   // NOLINTNEXTLINE(readability-use-anyofallof)
-  for (FacingType index : magic_enum::enum_values<FacingType>()) {
+  for (const FacingType index : magic_enum::enum_values<FacingType>()) {
     CellClass* newcell = &Adjacent_Cell(index + offset);
 
     if (newcell != nullptr && newcell->Can_Tiberium_Germinate()) {

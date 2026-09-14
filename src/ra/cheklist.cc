@@ -105,7 +105,8 @@ CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
  *=============================================================================================*/
 CheckListClass::~CheckListClass() {
   while (CheckListClass::Count()) {
-    auto* obj = port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(0));
+    const auto* obj =
+        port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(0));
 
     ListClass::Remove_Item(0);
     delete obj;
@@ -132,7 +133,7 @@ int CheckListClass::Add_Item(const char* text) {
 }
 
 const char* CheckListClass::Current_Item() const {
-  auto* obj =
+  const auto* obj =
       port::RestoreMutableObject<CheckObject>(ListClass::Current_Item());
   if (obj) {
     return obj->Text;
@@ -156,7 +157,7 @@ const char* CheckListClass::Current_Item() const {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 const char* CheckListClass::Get_Item(int index) const {
-  auto* obj =
+  const auto* obj =
       port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(index));
   if (obj) {
     return obj->Text;
@@ -182,7 +183,7 @@ const char* CheckListClass::Get_Item(int index) const {
  *=============================================================================================*/
 void CheckListClass::Remove_Item(const char* text) {
   for (int index = 0; index < Count(); index++) {
-    auto* obj =
+    const auto* obj =
         port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(index));
     if (obj && stricmp(obj->Text, text) == 0) {
       ListClass::Remove_Item(index);
@@ -211,7 +212,7 @@ void CheckListClass::Remove_Item(const char* text) {
  *=============================================================================================*/
 void CheckListClass::Set_Selected_Index(const char* text) {
   for (int index = 0; index < Count(); index++) {
-    auto* obj =
+    const auto* obj =
         port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(index));
     if (obj && stricmp(obj->Text, text) == 0) {
       Set_Selected_Index(index);
@@ -263,7 +264,7 @@ void CheckListClass::Check_Item(int index, bool checked) {
  *   02/14/1996 JLB : Revamped.                                            *
  *=========================================================================*/
 bool CheckListClass::Is_Checked(int index) const {
-  auto* obj =
+  const auto* obj =
       port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(index));
   if (obj) {
     return obj->IsChecked;
@@ -339,7 +340,7 @@ void CheckListClass::Draw_Entry(int index, int x, int y, int width,
     return;
   }
 
-  auto* obj =
+  const auto* obj =
       port::RestoreMutableObject<CheckObject>(ListClass::Get_Item(index));
 
   if (obj) {

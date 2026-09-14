@@ -189,7 +189,7 @@ void Special_Dialog(bool simple) {
       Dialog_Box(OPTION_X, OPTION_Y, OPTION_WIDTH, OPTION_HEIGHT);
       Draw_Caption(TXT_SPECIAL_OPTIONS, OPTION_X, OPTION_Y, OPTION_WIDTH);
 
-      for (auto& _option : _options) {
+      for (const auto& _option : _options) {
         Fancy_Text_Print(_option.Description, _option.Button->X + 20,
                          _option.Button->Y, GadgetClass::Get_Color_Scheme(),
                          TBLACK,
@@ -199,13 +199,13 @@ void Special_Dialog(bool simple) {
       Show_Mouse();
     }
 
-    KeyNumType input = buttons->Input();
+    const KeyNumType input = buttons->Input();
     switch (static_cast<int>(input)) {
       case KN_ESC:
       case ButtonKey(200):
         process = false;
-        for (auto& _option : _options) {
-          bool setting = _option.Setting;
+        for (const auto& _option : _options) {
+          const bool setting = _option.Setting;
           switch (_option.Description) {
             case TXT_THREE_POINT:
               oldspecial.IsThreePoint = setting;
@@ -233,7 +233,7 @@ void Special_Dialog(bool simple) {
         break;
 
       default:
-        int index = (input & ~KN_BUTTON) - 100;
+        const int index = (input & ~KN_BUTTON) - 100;
         if (static_cast<unsigned>(index) <
             sizeof(_options) / sizeof(_options[0])) {
           _options[index].Setting = _options[index].Button->IsOn;
@@ -341,7 +341,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   char buffer[BUFFSIZE];
   bool process;      // loop while true
   KeyNumType input;  // user input
-  TextButtonClass ok;
+  const TextButtonClass ok;
 
   if (btext == TXT_NONE) {
     btext = TXT_OK;
@@ -378,8 +378,8 @@ const char* Fetch_Password(int caption, int message, int btext) {
   width += 80;
   height += (60 + 25) * 2;
 
-  int x = (SeenBuff.Get_Width() - width) / 2;
-  int y = (SeenBuff.Get_Height() - height) / 2;
+  const int x = (SeenBuff.Get_Width() - width) / 2;
+  const int y = (SeenBuff.Get_Height() - height) / 2;
 
   /*
   **	Create the "ok" and password edit buttons.
@@ -389,8 +389,8 @@ const char* Fetch_Password(int caption, int message, int btext) {
 
   static char pbuffer[45];
   memset(pbuffer, '\0', sizeof(pbuffer));
-  int editx = x + 52;
-  int editwidth = ((SeenBuff.Get_Width() / 2) - editx) * 2;
+  const int editx = x + 52;
+  const int editwidth = ((SeenBuff.Get_Width() / 2) - editx) * 2;
   PWEditClass button2(2, &pbuffer[0], sizeof(pbuffer),
                       TPF_6PT_GRAD | TPF_NOSHADOW, editx, y + height - 70,
                       editwidth, 20);
@@ -598,7 +598,7 @@ int Fetch_Difficulty(bool amath) {
     /*
     **	Fetch and process input.
     */
-    KeyNumType input = buttonlist->Input();
+    const KeyNumType input = buttonlist->Input();
 
     switch (static_cast<int>(input)) {
       case KN_RETURN:

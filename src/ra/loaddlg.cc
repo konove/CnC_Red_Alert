@@ -136,34 +136,34 @@ bool LoadOptionsClass::Process() {
   /*
   **	Dialog & button dimensions
   */
-  int d_dialog_w = 500;                           // dialog width
-  int d_dialog_h = 312;                           // dialog height
-  int d_dialog_x = (640 - d_dialog_w) / 2;        // centered x-coord
-  int d_dialog_y = (400 - d_dialog_h) / 2;        // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // coord of x-center
+  const int d_dialog_w = 500;                             // dialog width
+  const int d_dialog_h = 312;                             // dialog height
+  const int d_dialog_x = (640 - d_dialog_w) / 2;          // centered x-coord
+  const int d_dialog_y = (400 - d_dialog_h) / 2;          // centered y-coord
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // coord of x-center
 
-  int d_txt8_h = 22;  // ht of 8-pt text
-  int d_margin = 14;  // margin width/height
-  int x_margin = 32;  // margin width/height
+  const int d_txt8_h = 22;  // ht of 8-pt text
+  const int d_margin = 14;  // margin width/height
+  const int x_margin = 32;  // margin width/height
 
-  int d_list_w = d_dialog_w - (x_margin * 2);
-  int d_list_h = 208;
-  int d_list_x = d_dialog_x + x_margin;
-  int d_list_y = d_dialog_y + d_margin + d_txt8_h + d_margin;
+  const int d_list_w = d_dialog_w - (x_margin * 2);
+  const int d_list_h = 208;
+  const int d_list_x = d_dialog_x + x_margin;
+  const int d_list_y = d_dialog_y + d_margin + d_txt8_h + d_margin;
 
-  int d_edit_w = d_dialog_w - (x_margin * 2);
-  int d_edit_x = d_dialog_x + x_margin;
-  int d_edit_y = d_list_y + d_list_h - 60 + d_margin + d_txt8_h;
+  const int d_edit_w = d_dialog_w - (x_margin * 2);
+  const int d_edit_x = d_dialog_x + x_margin;
+  const int d_edit_y = d_list_y + d_list_h - 60 + d_margin + d_txt8_h;
 
-  int d_button_w = config::kIsEnglish ? 80 : 100;
-  int d_button_h = 26;
-  int d_button_x = d_dialog_cx - d_button_w - d_margin;
-  int d_button_y = d_dialog_y + d_dialog_h - d_button_h - d_margin;
+  const int d_button_w = config::kIsEnglish ? 80 : 100;
+  const int d_button_h = 26;
+  const int d_button_x = d_dialog_cx - d_button_w - d_margin;
+  const int d_button_y = d_dialog_y + d_dialog_h - d_button_h - d_margin;
 
-  int d_cancel_w = config::kIsEnglish ? 80 : 120;
-  int d_cancel_h = 26;
-  int d_cancel_x = d_dialog_cx + d_margin;
-  int d_cancel_y = d_dialog_y + d_dialog_h - d_cancel_h - d_margin;
+  const int d_cancel_w = config::kIsEnglish ? 80 : 120;
+  const int d_cancel_h = 26;
+  const int d_cancel_x = d_dialog_cx + d_margin;
+  const int d_cancel_y = d_dialog_y + d_dialog_h - d_cancel_h - d_margin;
 
   /*
   **	Button enumerations
@@ -553,7 +553,7 @@ bool LoadOptionsClass::Process() {
             **	Strip any leading parenthesis off of the description.
             */
             if (game_descr[0] == '(') {
-              char* ptr = strchr(game_descr, ')');
+              const char* ptr = strchr(game_descr, ')');
               if (ptr != nullptr) {
                 memmove(game_descr, ptr + 1, strlen(ptr + 1) + 1);
                 strtrim(game_descr);
@@ -604,7 +604,7 @@ void LoadOptionsClass::Clear_List(ListClass* list) {
   /*
   ** For every item in the list, free its buffer & remove it from the list.
   */
-  int j = list->Count();
+  const int j = list->Count();
   for (int i = 0; i < j; i++) {
     list->Remove_Item(list->Get_Item(0));
   }
@@ -668,7 +668,8 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
       /*
       ** get the game's info; if success, add it to the list
       */
-      bool ok = Get_Savefile_Info(id, descr, sizeof(descr), &scenario, &house);
+      const bool ok =
+          Get_Savefile_Info(id, descr, sizeof(descr), &scenario, &house);
 
       fdata = new FileEntryClass;
 

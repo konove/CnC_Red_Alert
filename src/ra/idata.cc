@@ -1107,7 +1107,7 @@ ObjectClass* InfantryTypeClass::Create_One_Of(HouseClass* house) const {
 bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
   auto* i = new InfantryClass(Type, house);
   if (i != nullptr) {
-    COORDINATE coord = Map[cell].Closest_Free_Spot(Cell_Coord(cell));
+    const COORDINATE coord = Map[cell].Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {
       return i->Unlimbo(coord, DIR_E);
     }
@@ -1194,7 +1194,7 @@ void InfantryTypeClass::Display(int x, int y, WindowNumberType window,
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryTypeClass::Prep_For_Add() {
-  for (InfantryType index : magic_enum::enum_values<InfantryType>()) {
+  for (const InfantryType index : magic_enum::enum_values<InfantryType>()) {
     Map.Add_To_List(&As_Reference(index));
   }
 }
@@ -1219,7 +1219,7 @@ void InfantryTypeClass::Prep_For_Add() {
  *=============================================================================================*/
 InfantryType InfantryTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
-    for (InfantryType classid : magic_enum::enum_values<InfantryType>()) {
+    for (const InfantryType classid : magic_enum::enum_values<InfantryType>()) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
         return classid;
       }
@@ -1245,8 +1245,8 @@ InfantryType InfantryTypeClass::From_Name(const char* name) {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryTypeClass::One_Time() {
-  for (InfantryType index : magic_enum::enum_values<InfantryType>()) {
-    CCFileClass file;
+  for (const InfantryType index : magic_enum::enum_values<InfantryType>()) {
+    const CCFileClass file;
 
     InfantryTypeClass* uclass = &As_Reference(index);
 
