@@ -96,8 +96,7 @@
  *   BuildingClass::Toggle_Primary -- Toggles the primary factory state. *
  *   BuildingClass::Unlimbo -- Removes a building from limbo state. *
  *   BuildingClass::Update_Buildables -- Informs sidebar of additional
- *construction options.   * BuildingClass::Update_Specials -- removes computer
- *specials for lost bld                  * BuildingClass::What_Action --
+ *construction options.   * BuildingClass::What_Action --
  *Determines action to perform if click on specified object.  *
  *   BuildingClass::What_Action -- Determines what action will occur. *
  *   BuildingClass::Write_INI -- Writes all building data to an INI file. *
@@ -2555,11 +2554,6 @@ bool BuildingClass::Limbo() {
       Map.Recalc();
       IsInLimbo = false;
     }
-#ifdef NEVER
-    if (!House->IsHuman) {
-      Update_Specials();
-    }
-#endif
   }
   return TechnoClass::Limbo();
 }
@@ -3411,9 +3405,6 @@ bool BuildingClass::Captured(HouseClass* newowner) {
 #ifdef NEVER
     if (IsOwnedByPlayer && !ScenarioInit) {
       Map.Recalc();
-    }
-    if (!House->IsHuman) {
-      Update_Specials();
     }
 #endif
 
@@ -4517,22 +4508,6 @@ void BuildingClass::Enter_Idle_Mode(bool initial) {
   }
   Assign_Mission(mission);
 }
-
-/***************************************************************************
- * BuildingClass::Update_Specials -- removes computer specials             *
- *                                                                         *
- *                                                                         *
- *                                                                         *
- * INPUT:                                                                  *
- *                                                                         *
- * OUTPUT:                                                                 *
- *                                                                         *
- * WARNINGS:                                                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   06/21/1995 PWG : Created.                                             *
- *=========================================================================*/
-void BuildingClass::Update_Specials() { Validate(); }
 
 /***********************************************************************************************
  * BuildingClass::Pip_Count -- Determines "full" pips to display for building. *

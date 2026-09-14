@@ -62,7 +62,7 @@ class FuseClass {
   void Arm_Fuse(COORDINATE location, COORDINATE target, int time = 0xFF,
                 int arming = 0);
   bool Fuse_Checkup(COORDINATE newlocation);
-  COORDINATE Fuse_Target();
+  [[nodiscard]] COORDINATE Fuse_Target() const;
 
   /*
   **	File I/O.
@@ -96,6 +96,6 @@ class FuseClass {
   int16_t Proximity{0};
 };
 
-inline COORDINATE FuseClass::Fuse_Target() { return HeadTo; }
+inline COORDINATE FuseClass::Fuse_Target() const { return HeadTo; }
 
 #endif  // CNC_RED_ALERT_TD_FUSE_H_

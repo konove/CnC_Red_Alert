@@ -2980,7 +2980,7 @@ void TechnoClass::Do_Shimmer() {
  *                                                                                             *
  * HISTORY: * 07/07/1995 JLB : Created. *
  *=============================================================================================*/
-VisualType TechnoClass::Visual_Character(bool raw) {
+VisualType TechnoClass::Visual_Character(bool raw) const {
   /*
   **	When uncloaked or in map editor mode, always draw the object normally.
   */
@@ -3290,6 +3290,8 @@ int TechnoClass::Threat_Range(int control) const {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Commented. *
  *=============================================================================================*/
+// Not const: sends defenders to the attacked base.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void TechnoClass::Base_Is_Attacked(const TechnoClass* enemy) {
   FootClass* defender[6];
   int value[6];

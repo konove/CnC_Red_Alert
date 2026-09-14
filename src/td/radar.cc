@@ -518,7 +518,7 @@ void RadarClass::Draw_It(bool forced) {
  * HISTORY:                                                                *
  *   04/12/1995 PWG : Created.                                             *
  *=========================================================================*/
-void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
+void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   TerrainClass* list[4];
   int listidx = 0;
   int lp;
@@ -610,7 +610,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
  *                                                                                             *
  * HISTORY: * 08/17/1995 JLB : Created. *
  *=============================================================================================*/
-void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
+void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) const {
   ObjectClass* obj;
   int xoff;
   int yoff;
@@ -947,7 +947,7 @@ void RadarClass::Radar_Pixel(CELL cell) {
  * HISTORY: * 05/30/1995 PWG : Created. * 07/16/1995 JLB : Recognizes when
  *sidebar is closed now.                                   *
  *=============================================================================================*/
-int RadarClass::Click_In_Radar(int& ptr_x, int& ptr_y, bool change) {
+int RadarClass::Click_In_Radar(int& ptr_x, int& ptr_y, bool change) const {
   int x = ptr_x;
   int y = ptr_y;
 
@@ -1125,7 +1125,8 @@ void RadarClass::Mark_Radar(int x1, int y1, int x2, int y2, bool value,
  *                                                                                             *
  * HISTORY: * 05/22/1991 JLB : Created. * 11/17/1995 PWG : Created. *
  *=============================================================================================*/
-void RadarClass::Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x, int& y) {
+void RadarClass::Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x,
+                                        int& y) const {
   x = (cellx - RadarX) * ZoomFactor;
   y = (celly - RadarY) * ZoomFactor;
 }
@@ -1747,7 +1748,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-CELL RadarClass::Radar_Position() { return static_cast<CELL>(RadarCell); }
+CELL RadarClass::Radar_Position() const { return static_cast<CELL>(RadarCell); }
 
 /***********************************************************************************************
  * RadarClass::Set_Map_Dimensions -- Sets the tactical map dimensions. *
@@ -1807,7 +1808,7 @@ void RadarClass::Set_Tactical_Position(COORDINATE coord) {
  *                                                                                             *
  * HISTORY: * 05/03/1995 JLB : Created. *
  *=============================================================================================*/
-bool RadarClass::Cell_On_Radar(CELL cell) {
+bool RadarClass::Cell_On_Radar(CELL cell) const {
   if (static_cast<unsigned>(cell) > MAP_CELL_TOTAL) {
     return false;
   }
@@ -1852,7 +1853,7 @@ void RadarClass::Player_Names(bool on) {
  *                                                                                             *
  * HISTORY: * 06/07/1995 BRR : Created. *
  *=============================================================================================*/
-void RadarClass::Draw_Names() {
+void RadarClass::Draw_Names() const {
   int c_idx;
   HousesType house;
   HouseClass* ptr;

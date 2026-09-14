@@ -189,7 +189,7 @@ class IPXManagerClass : public ConnManClass {
   Initialization routines.
   .....................................................................*/
   int Init();
-  int Is_IPX();
+  [[nodiscard]] int Is_IPX() const;
   void Set_Timing(int32_t retrydelta, int32_t maxretries,
                   int32_t timeout) override;
   void Set_Bridge(NetNumType bridge);
@@ -226,7 +226,7 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   This routine reports which connection has an error on it.
   .....................................................................*/
-  int Get_Bad_Connection();
+  [[nodiscard]] int Get_Bad_Connection() const;
 
   /*.....................................................................
   Queue utility routines.  The application can determine how many

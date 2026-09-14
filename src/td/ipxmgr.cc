@@ -335,7 +335,7 @@ int IPXManagerClass::Init() {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Is_IPX() { return IPXStatus; } /* end of Is_IPX */
+int IPXManagerClass::Is_IPX() const { return IPXStatus; } /* end of Is_IPX */
 
 /***************************************************************************
  * IPXManagerClass::Set_Timing -- sets timing for all connections
@@ -1240,7 +1240,7 @@ int IPXManagerClass::Service() {
  * HISTORY:                                                                *
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-int IPXManagerClass::Get_Bad_Connection() {
+int IPXManagerClass::Get_Bad_Connection() const {
   return BadConnection;
 
 } /* end of Get_Bad_Connection */

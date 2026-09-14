@@ -1155,6 +1155,8 @@ void Cycle_Wait_Click() {
   Keyboard::Clear();
 }
 
+// Not const: plays the score screen animation.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void ScoreClass::Do_Nod_Buildings_Graph() {
   int shapenum;
   const InfantryTypeClass* ramboclass;
@@ -1373,6 +1375,8 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
   }
 }
 
+// Not const: plays the score screen animation.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void ScoreClass::Do_Nod_Casualties_Graph() {
   int i;
   int gdikilled;

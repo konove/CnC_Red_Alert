@@ -303,7 +303,7 @@ class FootClass : public TechnoClass {
   **	File I/O.
   */
 
-  CELL Safety_Point(CELL src, CELL dst, int start, int max);
+  CELL Safety_Point(CELL src, CELL dst, int start, int max) const;
   int Rescue_Mission(TARGET tarcom);
 
  private:
@@ -311,7 +311,7 @@ class FootClass : public TechnoClass {
                     MoveType threshhold);
   PathType* Find_Path(CELL dest, FacingType* final_moves, int maxlen,
                       MoveType threshhold);
-  void Debug_Draw_Map(const char* txt, CELL start, CELL dest, bool pause);
+  void Debug_Draw_Map(const char* txt, CELL start, CELL dest, bool pause) const;
   static void Debug_Draw_Path(PathType* path);
   bool Follow_Edge(CELL start, CELL target, PathType* path, FacingType search,
                    FacingType olddir, int threat, int threat_stage,

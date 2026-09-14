@@ -199,7 +199,8 @@ class BuildingClass final : public TechnoClass {
   static void Init();
 
   TARGET Target_Scan();
-  const BuildingTypeClass::AnimControlType* Fetch_Anim_Control() {
+  [[nodiscard]] const BuildingTypeClass::AnimControlType* Fetch_Anim_Control()
+      const {
     return &Class->Anims[BState];
   }
 
@@ -313,7 +314,6 @@ class BuildingClass final : public TechnoClass {
   // Saves building state and checked references without scenario side effects.
   template <class Archive>
   void Serialize(Archive& ar);
-  void Update_Specials();
 
   BulletClass* Fire_At(TARGET target, int which) override;
 

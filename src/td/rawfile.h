@@ -139,11 +139,11 @@ EZERO,                 // Non-error.
   RawFileClass(RawFileClass&&) = delete;
   RawFileClass& operator=(RawFileClass&&) = delete;
 
-  const char* File_Name() const override;
+  [[nodiscard]] const char* File_Name() const override;
   const char* Set_Name(const char* filename) override;
   bool Create() override;
   bool Delete() override;
-  bool Is_Open() const override;
+  [[nodiscard]] bool Is_Open() const override;
   bool Open(const char* filename,
             FileAccess rights = FileAccess::kRead) override;
   bool Open(FileAccess rights = FileAccess::kRead) override;

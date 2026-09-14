@@ -174,13 +174,13 @@ class DisplayClass : public MapClass {
   virtual void Set_Tactical_Position(COORDINATE coord);
   void Refresh_Band();
   void Select_These(COORDINATE coord1, COORDINATE coord2);
-  COORDINATE Pixel_To_Coord(int x, int y);
-  bool Coord_To_Pixel(COORDINATE coord, int& x, int& y);
-  bool Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest);
+  [[nodiscard]] COORDINATE Pixel_To_Coord(int x, int y) const;
+  bool Coord_To_Pixel(COORDINATE coord, int& x, int& y) const;
+  bool Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest) const;
   static void Remove(const ObjectClass* object, LayerType layer);
   static void Submit(const ObjectClass* object, LayerType layer);
   CELL Calculated_Cell(SourceType dir, HousesType house);
-  bool In_View(CELL cell);
+  [[nodiscard]] bool In_View(CELL cell) const;
   bool Passes_Proximity_Check(const ObjectTypeClass* object);
   ObjectClass* Cell_Object(CELL cell, int x = 0, int y = 0);
   static ObjectClass* Next_Object(ObjectClass* object);

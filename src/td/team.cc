@@ -1385,6 +1385,8 @@ void TeamClass::Coordinate_Unload() {
  *                                                                                             *
  * HISTORY: * 04/06/1995 JLB : Created. *
  *=============================================================================================*/
+// Not const: orders the team member.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void TeamClass::Coordinate_Conscript(FootClass* unit) {
   Validate();
   if (unit && !unit->IsInitiated && !unit->IsInLimbo) {

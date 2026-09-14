@@ -124,7 +124,7 @@ class TcpipManagerClass {
   void Set_Protocol_UDP(bool state);
   static void Clear_Socket_Error(SOCKET socket);
 
-  bool Get_Connected() { return Connected; }
+  [[nodiscard]] bool Get_Connected() const { return Connected; }
 
   typedef enum ConnectStatusEnum {
     CONNECTED_OK = 0,

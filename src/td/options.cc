@@ -128,6 +128,8 @@ OptionsClass::OptionsClass()
  *                                                                                             *
  * HISTORY: * 07/21/1994 JLB : Created. *
  *=============================================================================================*/
+// Not const: applies the score volume to the audio system.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void OptionsClass::One_Time() { Set_Score_Vol(ScoreVolume); }
 
 /***********************************************************************************************
@@ -655,7 +657,7 @@ void OptionsClass::Load_Settings() {
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-void OptionsClass::Save_Settings() {
+void OptionsClass::Save_Settings() const {
   char* buffer;  // INI staging buffer pointer.
   CCFileClass file;
 

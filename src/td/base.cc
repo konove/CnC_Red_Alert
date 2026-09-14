@@ -81,7 +81,7 @@
 #include "tech/number_parse.h"
 #include "tech/wwfile.h"
 
-bool BaseNodeClass::operator==(const BaseNodeClass& node) {
+bool BaseNodeClass::operator==(const BaseNodeClass& node) const {
   return Type == node.Type && Coord == node.Coord;
 }
 
@@ -96,7 +96,7 @@ bool BaseNodeClass::operator==(const BaseNodeClass& node) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-bool BaseNodeClass::operator!=(const BaseNodeClass& node) {
+bool BaseNodeClass::operator!=(const BaseNodeClass& node) const {
   return Type != node.Type || Coord != node.Coord;
 }
 

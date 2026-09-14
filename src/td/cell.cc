@@ -1705,6 +1705,8 @@ int CellClass::Clear_Icon() const {
  *                                                                                             *
  * HISTORY: * 01/10/1995 JLB : Created. *
  *=============================================================================================*/
+// Not const: scatters the units in the cell.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void CellClass::Incoming(COORDINATE threat, bool forced) {
   Validate();
   ObjectClass* object = nullptr;
@@ -1767,6 +1769,8 @@ const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
  * HISTORY:                                                                *
  *   04/24/1995 PWG : Created.                                             *
  *=========================================================================*/
+// Not const: changes the other houses' threat values.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void CellClass::Adjust_Threat(HousesType house, int threat_value) {
   Validate();
   const int region = MapEditClass::Cell_Region(Cell_Number());
@@ -2295,6 +2299,8 @@ bool CellClass::Flag_Remove() {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
+// Not const: starts the occupants' shimmer effect.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void CellClass::Shimmer() {
   Validate();
   ObjectClass* object = Cell_Occupier();

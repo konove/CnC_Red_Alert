@@ -3197,6 +3197,8 @@ void InfantryClass::Set_Occupy_Bit(CELL cell, int spot_index) {
  * HISTORY:                                                                *
  *   06/08/1995 PWG : Created.                                             *
  *=========================================================================*/
+// Not const: changes the cell's infantry occupancy.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void InfantryClass::Clear_Occupy_Bit(CELL cell, int spot_index) {
   Validate();
   /*

@@ -385,7 +385,7 @@ void PowerClass::Refresh_Cells(CELL cell, const int16_t* list) {
  * HISTORY:                                                                *
  *   06/14/1995 PWG : Created.                                             *
  *=========================================================================*/
-int PowerClass::Power_Height(int value) {
+int PowerClass::Power_Height(int value) const {
   const int num =
       value / POWER_STEP_LEVEL;  // figure out the initial num of DRAIN_VALUE's
   int retval = 0;                // currently there is no power

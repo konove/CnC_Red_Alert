@@ -311,7 +311,7 @@ class TechnoClass : public RadioClass,
   **	object interacts with the map and thus indirectly controls rendering.
   */
   virtual const void* Remap_Table();
-  VisualType Visual_Character(bool raw = false);
+  [[nodiscard]] VisualType Visual_Character(bool raw = false) const;
   void Techno_Draw_Object(const void* shapefile, int shapenum, int x, int y,
                           WindowNumberType window);
   void Draw_It(int x, int y, WindowNumberType window) override;

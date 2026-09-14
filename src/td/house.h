@@ -467,7 +467,7 @@ class HouseClass {
   void Adjust_Drain(int adjust) { Drain += adjust; }
   int Adjust_Capacity(int adjust, bool inanger = false);
   [[nodiscard]] int Power_Fraction() const;
-  int Tiberium_Fraction() {
+  [[nodiscard]] int Tiberium_Fraction() const {
     return !static_cast<int>(Tiberium)
                ? 0
                : Cardinal_To_Fixed(static_cast<int>(Capacity),
@@ -508,11 +508,10 @@ class HouseClass {
   // bool one_time_effect = false); 		void  Remove_Ion_Cannon();
   // void
   // Remove_Air_Strike(); 		void  Remove_Nuke_Bomb();
-  void Detach(TARGET target, bool all);
   void Add_Nuke_Piece(int piece = -1);
   //		void  Make_Air_Strike_Available(bool present, bool
   // one_time_effect = false);
-  bool Has_Nuke_Device();
+  [[nodiscard]] bool Has_Nuke_Device() const;
 
   /*
   **	This vector holds the recorded status of the map regions. It is through

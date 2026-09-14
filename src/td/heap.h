@@ -77,9 +77,9 @@ class FixedHeapClass {
   FixedHeapClass& operator=(FixedHeapClass&&) = delete;
 
   virtual int ID(const void* pointer);
-  int Count() { return ActiveCount; }
-  int Length() { return TotalCount; }
-  int Avail() { return TotalCount - ActiveCount; }
+  [[nodiscard]] int Count() const { return ActiveCount; }
+  [[nodiscard]] int Length() const { return TotalCount; }
+  [[nodiscard]] int Avail() const { return TotalCount - ActiveCount; }
   [[nodiscard]] bool Is_Allocated(int index) const {
     return index >= 0 && index < TotalCount && FreeFlag[base::ToSize(index)];
   }

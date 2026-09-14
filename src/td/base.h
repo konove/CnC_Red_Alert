@@ -56,8 +56,8 @@ class ArchiveWriter;
 class BaseNodeClass {
  public:
   BaseNodeClass() = default;
-  bool operator==(const BaseNodeClass& node);
-  bool operator!=(const BaseNodeClass& node);
+  bool operator==(const BaseNodeClass& node) const;
+  bool operator!=(const BaseNodeClass& node) const;
   bool operator>(const BaseNodeClass& node);
 
   StructType Type = STRUCT_NONE;

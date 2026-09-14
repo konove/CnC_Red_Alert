@@ -64,7 +64,7 @@ class TabClass : public SidebarClass {
   /*
   **	File I/O.
   */
-  int Get_Tab_Height() { return Tab_Height; }
+  [[nodiscard]] int Get_Tab_Height() const { return Tab_Height; }
 
   CreditClass Credits;
 

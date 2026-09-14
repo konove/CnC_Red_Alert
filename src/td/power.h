@@ -106,7 +106,7 @@ class PowerClass : public RadarClass {
   };
 
  private:
-  int Power_Height(int value);
+  [[nodiscard]] int Power_Height(int value) const;
 
   bool IsActive : 1 = false;
 

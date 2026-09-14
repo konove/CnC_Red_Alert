@@ -113,6 +113,8 @@ void GameOptionsClass::Adjust_Variables_For_Resolution() {
  *the mission objective.                                 * 07/27/1995 JLB :
  *Adjusts menu for multiplay mode.                                         *
  *=============================================================================================*/
+// Not const: runs the dialog, which can load, save or quit the game.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void GameOptionsClass::Process() {
   static const struct {
     int ID;          // Button ID to use.

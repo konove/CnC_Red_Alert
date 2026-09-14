@@ -69,7 +69,7 @@ class OptionsClass {
   ** File I/O routines
   */
   void Load_Settings();
-  void Save_Settings();
+  void Save_Settings() const;
 
   void Set();
 

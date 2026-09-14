@@ -1120,9 +1120,6 @@ void ObjectClass::Detach_All(bool all) {
 void ObjectClass::Detach_This_From_All(TARGET target, bool all) {
   int index;
   if (Target_Legal(target)) {
-    for (index = 0; index < Houses.Count(); index++) {
-      Houses.Ptr(index)->Detach(target, all);
-    }
     for (index = 0; index < Teams.Count(); index++) {
       Teams.Ptr(index)->Detach(target, all);
     }

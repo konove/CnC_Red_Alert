@@ -315,14 +315,14 @@ class ConnectionClass {
   /*.....................................................................
   Utility routines.
   .....................................................................*/
-  uint16_t Magic_Num() { return MagicNum; }
-  int32_t Retry_Delta() { return RetryDelta; }
+  [[nodiscard]] uint16_t Magic_Num() const { return MagicNum; }
+  [[nodiscard]] int32_t Retry_Delta() const { return RetryDelta; }
   void Set_Retry_Delta(int32_t delta) { RetryDelta = delta; }
-  int32_t Max_Retries() { return MaxRetries; }
+  [[nodiscard]] int32_t Max_Retries() const { return MaxRetries; }
   void Set_Max_Retries(int32_t retries) { MaxRetries = retries; }
-  int32_t Time_Out() { return Timeout; }
+  [[nodiscard]] int32_t Time_Out() const { return Timeout; }
   void Set_TimeOut(int32_t t) { Timeout = t; }
-  int Max_Packet_Len() { return MaxPacketLen; }
+  [[nodiscard]] int Max_Packet_Len() const { return MaxPacketLen; }
   static const char* Command_Name(int command);
 
   /*

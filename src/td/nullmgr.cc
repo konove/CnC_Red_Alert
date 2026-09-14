@@ -1369,6 +1369,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
  * HISTORY:                                                                *
  *   06/02/1995 DRD : Created.                                             *
  *=========================================================================*/
+// Not const: dials through the serial port.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
                                           bool reconnect) {
   // Timer_Test(__LINE__, __FILE__);
@@ -1611,6 +1613,8 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
  * HISTORY:                                                                *
  *   06/02/1995 DRD : Created.                                             *
  *=========================================================================*/
+// Not const: answers through the serial port.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
@@ -1866,6 +1870,8 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
  * HISTORY:                                                                *
  *   06/02/1995 DRD : Created.                                             *
  *=========================================================================*/
+// Not const: hangs up through the serial port.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 bool NullModemClass::Hangup_Modem() {
   int status;
   int delay;

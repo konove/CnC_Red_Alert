@@ -1578,7 +1578,7 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
  *   08/09/1995 JLB : Uses new coordinate system. *
  *=============================================================================================*/
 #define EDGE_ZONE (CELL_LEPTON_W * 2)
-bool DisplayClass::Coord_To_Pixel(COORDINATE coord, int& x, int& y) {
+bool DisplayClass::Coord_To_Pixel(COORDINATE coord, int& x, int& y) const {
   if (coord) {
     const int xtac = Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(TacticalCoord)));
     int xoff = Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(coord)));
@@ -1618,7 +1618,8 @@ bool DisplayClass::Coord_To_Pixel(COORDINATE coord, int& x, int& y) {
  *                                                                                             *
  * HISTORY: * 03/27/1995 BWG : Created. *
  *=============================================================================================*/
-bool DisplayClass::Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest) {
+bool DisplayClass::Push_Onto_TacMap(COORDINATE& source,
+                                    COORDINATE& dest) const {
   if (!source || !dest) {
     return false;
   }
@@ -2324,7 +2325,7 @@ ObjectClass* DisplayClass::Prev_Object(ObjectClass* object) {
  *variables in display class.                           * 12/10/1994 JLB : Uses
  *union to speed building coordinate value.                           *
  *=============================================================================================*/
-COORDINATE DisplayClass::Pixel_To_Coord(int x, int y) {
+COORDINATE DisplayClass::Pixel_To_Coord(int x, int y) const {
   /*
   **	Normalize the pixel coorindates to be relative to the upper left corner
   **	of the tactical map. The coordinates are expressed in leptons.
@@ -2617,6 +2618,8 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
  * HISTORY: * 01/19/1995 JLB : Created. * 04/25/1995 JLB : Limited to
  *non-building type.                                            *
  *=============================================================================================*/
+// Not const: changes which objects are selected.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void DisplayClass::Select_These(COORDINATE coord1, COORDINATE coord2) {
   const COORDINATE tcoord =
       TacticalCoord;  // Cell_Coord(TacticalCell) & 0xFF00FF00L;
@@ -3680,7 +3683,7 @@ void DisplayClass::Repair_Mode_Control(int control) {
  * HISTORY: * 04/30/1994 JLB : Created. * 04/30/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-bool DisplayClass::In_View(CELL cell) {
+bool DisplayClass::In_View(CELL cell) const {
   const COORDINATE coord = Cell_Coord(cell) & 0xFF00FF00L;
   const COORDINATE tcoord = TacticalCoord & 0xFF00FF00L;
 

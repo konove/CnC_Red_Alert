@@ -86,11 +86,11 @@ class RadarClass : public DisplayClass {
   // int leptony=0); 		virtual void Set_Tactical_Position(CELL cell);
   void Set_Tactical_Position(COORDINATE coord) override;
   void Zoom_Mode(CELL cell);
-  int Click_In_Radar(int& x, int& y, bool change = false);
-  void Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x, int& y);
+  int Click_In_Radar(int& x, int& y, bool change = false) const;
+  void Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x, int& y) const;
 
   void Set_Radar_Position(CELL cell);
-  CELL Radar_Position();
+  [[nodiscard]] CELL Radar_Position() const;
   bool Radar_Activate(int control);
   void Plot_Radar_Pixel(CELL cell);
   void Radar_Pixel(CELL cell);
@@ -98,13 +98,13 @@ class RadarClass : public DisplayClass {
   void Cursor_Cell(CELL cell, bool value);
   void Mark_Radar(int x1, int y1, int x2, int y2, bool value, int barlen);
   void Radar_Cursor(bool forced = false);
-  void Render_Terrain(CELL cell, int x, int y, int size);
-  bool Cell_On_Radar(CELL cell);
-  void Render_Infantry(CELL cell, int x, int y, int size);
+  void Render_Terrain(CELL cell, int x, int y, int size) const;
+  [[nodiscard]] bool Cell_On_Radar(CELL cell) const;
+  void Render_Infantry(CELL cell, int x, int y, int size) const;
   void Render_Overlay(CELL cell, int x, int y, int size);
   void Radar_Anim();
-  bool Is_Radar_Active() { return IsRadarActive; }
-  bool Is_Radar_Existing() { return DoesRadarExist; }
+  [[nodiscard]] bool Is_Radar_Active() const { return IsRadarActive; }
+  [[nodiscard]] bool Is_Radar_Existing() const { return DoesRadarExist; }
 
   /*
   **	File I/O.
@@ -114,9 +114,9 @@ class RadarClass : public DisplayClass {
   ** Toggles player names on & off
   */
   void Player_Names(bool on);
-  int Is_Player_Names() { return IsPlayerNames; }
-  void Draw_Names();
-  int Is_Zoomed() { return IsZoomed; }
+  [[nodiscard]] int Is_Player_Names() const { return IsPlayerNames; }
+  void Draw_Names() const;
+  [[nodiscard]] int Is_Zoomed() const { return IsZoomed; }
 
  protected:
   /*

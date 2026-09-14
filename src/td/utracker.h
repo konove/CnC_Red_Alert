@@ -60,7 +60,7 @@ class UnitTrackerClass {
 
   int Get_Unit_Total(int unit_type);
   int32_t* Get_All_Totals();
-  int Get_Unit_Count() { return UnitCount; }
+  [[nodiscard]] int Get_Unit_Count() const { return UnitCount; }
 
   void To_Network_Format();
   void To_PC_Format();

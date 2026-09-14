@@ -54,7 +54,6 @@
  *build legality checker.                          * HouseClass::Clobber_All --
  *removes house & all its objects                                *
  *   HouseClass::Debug_Dump -- Dumps the house status data to the mono screen. *
- *   HouseClass::Detach -- Removes specified object from house tracking systems.
  ** HouseClass::Does_Enemy_Building_Exist -- Checks for enemy building of
  *specified type.     * HouseClass::Flag_Attach -- Attach flag to specified cell
  *(or thereabouts).                * HouseClass::Flag_Attach -- Attaches the
@@ -1449,11 +1448,9 @@ void HouseClass::AI() {
     */
     for (int index = 0; index < Buildings.Count(); index++) {
       BuildingClass* building = Buildings.Ptr(index);
-      if (building && building->Owner() == Class->House) {
-        building->Update_Specials();
-        if (PlayerPtr == building->House) {
-          building->Update_Buildables();
-        }
+      if (building && building->Owner() == Class->House &&
+          PlayerPtr == building->House) {
+        building->Update_Buildables();
       }
     }
   }
@@ -3119,32 +3116,6 @@ void HouseClass::Add_Nuke_Piece(int piece) {
 }
 
 /***********************************************************************************************
- * HouseClass::Detach -- Removes specified object from house tracking systems. *
- *                                                                                             *
- *    This routine is called when an object is to be removed from the game
- *system. If the      * specified object is part of the house tracking system,
- *then it will be removed.          *
- *                                                                                             *
- * INPUT:   target   -- The target value of the object that is to be removed
- *from the game.    *
- *                                                                                             *
- *          all      -- Is the target going away for good as opposed to just
- *cloaking/hiding?  *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/18/1995 JLB : commented *
- *=============================================================================================*/
-void HouseClass::Detach(TARGET /*unused*/, bool /*unused*/) {
-  Validate();
-  //	if (LaunchSite == target) {
-  //		LaunchSite = TARGET_NONE;
-  //	}
-}
-
-/***********************************************************************************************
  * HouseClass::Does_Enemy_Building_Exist -- Checks for enemy building of
  *specified type.       *
  *                                                                                             *
@@ -4299,7 +4270,7 @@ int HouseClass::Power_Fraction() const {
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-bool HouseClass::Has_Nuke_Device() {
+bool HouseClass::Has_Nuke_Device() const {
   Validate();
   if (GameToPlay != GAME_NORMAL || !IsHuman) {
     return true;

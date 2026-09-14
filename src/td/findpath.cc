@@ -1450,7 +1450,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   return path->Length;
 }
 
-CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) {
+CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
   FacingType dir;
   CELL next;
   int lp;
@@ -1583,7 +1583,7 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
 }
 
 void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
-                               bool pause) {
+                               bool pause) const {
   if (!Debug_Find_Path || !DrawPath) {
     return;
   }
