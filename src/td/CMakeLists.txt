@@ -8,9 +8,7 @@ list(FILTER TD_SOURCES EXCLUDE REGEX "_test\\.cc$")
 list(REMOVE_ITEM TD_SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/startup.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/ccdde.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/cdfile.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/dde.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/rawfile.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/winstub.cc"
 )
 
