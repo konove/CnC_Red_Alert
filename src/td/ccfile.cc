@@ -48,9 +48,12 @@
 
 #include <algorithm>
 #include <cerrno>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <iterator>
+#include <span>
 #include <string>
 #include <string_view>
 
@@ -58,7 +61,6 @@
 // #include	<fcntl.h>
 // #include	<io.h>
 // #include	<dos.h>
-#include <iterator>
 
 #include "base/numeric.h"
 #include "base/types.h"
@@ -130,14 +132,14 @@ CCFileClass::CCFileClass()
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-base::ssize CCFileClass::Write(const void* buffer, base::ssize size) {
+base::ssize CCFileClass::Write(const std::span<const std::byte> buffer) {
   // A file inside a mixfile is read-only. This must not fall through: for a
   // resident file the base class would write through a null handle.
   if (Pointer || FromDisk) {
     return 0;
   }
 
-  return CDFileClass::Write(buffer, size);
+  return CDFileClass::Write(buffer);
 }
 
 /***********************************************************************************************
@@ -159,7 +161,8 @@ base::ssize CCFileClass::Write(const void* buffer, base::ssize size) {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-base::ssize CCFileClass::Read(void* buffer, base::ssize size) {
+base::ssize CCFileClass::Read(const std::span<std::byte> buffer) {
+  base::ssize size = std::ssize(buffer);
   bool opened = false;
 
   if ((!IsOpen()) && Open()) {
@@ -173,7 +176,7 @@ base::ssize CCFileClass::Read(void* buffer, base::ssize size) {
   if (Pointer) {
     size = std::min(size, Length - Position);
     if (size) {
-      Mem_Copy(Add_Long_To_Pointer(Pointer, Position), buffer,
+      Mem_Copy(Add_Long_To_Pointer(Pointer, Position), buffer.data(),
                base::ToSize(size));
       Position += size;
     }
@@ -191,7 +194,7 @@ base::ssize CCFileClass::Read(void* buffer, base::ssize size) {
     size = std::min(size, Length - Position);
     if (size > 0) {
       CDFileClass::Seek(Start + Position, SeekOrigin::kBegin);
-      size = CDFileClass::Read(buffer, size);
+      size = CDFileClass::Read(buffer.first(base::ToSize(size)));
       Position += size;
     }
     if (opened) {
@@ -200,7 +203,7 @@ base::ssize CCFileClass::Read(void* buffer, base::ssize size) {
     return size;
   }
 
-  const base::ssize s = CDFileClass::Read(buffer, size);
+  const base::ssize s = CDFileClass::Read(buffer);
   if (opened) {
     Close();
   }

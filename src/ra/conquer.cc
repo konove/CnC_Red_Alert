@@ -741,12 +741,11 @@ static void Do_Record_Playback() {
   // Record a game
   if (Session.Record) {
     // Save the map's location
-    Session.RecordFile.Write(&Map.DesiredTacticalCoord,
-                             sizeof(Map.DesiredTacticalCoord));
+    Session.RecordFile.WriteObject(Map.DesiredTacticalCoord);
 
     // Save the current object list count
     count = static_cast<int>(CurrentObject.Count());
-    Session.RecordFile.Write(&count, sizeof(count));
+    Session.RecordFile.WriteObject(count);
 
     // Save a CRC of the selected-object list.
     sum = 0;
@@ -754,23 +753,23 @@ static void Do_Record_Playback() {
       ltgt = static_cast<uint32_t>(CurrentObject[i]->As_Target());
       sum += ltgt;
     }
-    Session.RecordFile.Write(&sum, sizeof(sum));
+    Session.RecordFile.WriteObject(sum);
 
     // Save all selected objects.
     for (i = 0; i < count; i++) {
       tgt = CurrentObject[i]->As_Target();
-      Session.RecordFile.Write(&tgt, sizeof(tgt));
+      Session.RecordFile.WriteObject(tgt);
     }
 
     // Save team-selection and formation events
-    Session.RecordFile.Write(&TeamEvent, sizeof(TeamEvent));
-    Session.RecordFile.Write(&TeamNumber, sizeof(TeamNumber));
-    Session.RecordFile.Write(&FormationEvent, sizeof(FormationEvent));
+    Session.RecordFile.WriteObject(TeamEvent);
+    Session.RecordFile.WriteObject(TeamNumber);
+    Session.RecordFile.WriteObject(FormationEvent);
     Session.RecordFile.Write(TeamMaxSpeed, sizeof(TeamMaxSpeed));
     Session.RecordFile.Write(TeamSpeed, sizeof(TeamSpeed));
-    Session.RecordFile.Write(&FormMove, sizeof(FormMove));
-    Session.RecordFile.Write(&FormSpeed, sizeof(FormSpeed));
-    Session.RecordFile.Write(&FormMaxSpeed, sizeof(FormMaxSpeed));
+    Session.RecordFile.WriteObject(FormMove);
+    Session.RecordFile.WriteObject(FormSpeed);
+    Session.RecordFile.WriteObject(FormMaxSpeed);
     TeamEvent = 0;
     TeamNumber = 0;
     FormationEvent = 0;
@@ -779,12 +778,12 @@ static void Do_Record_Playback() {
   // Play back a game ("attract" mode)
   if (Session.Play) {
     // Read & set the map's location.
-    if ((Session.RecordFile.Read(&coord, sizeof(coord)) == sizeof(coord)) &&
-        (coord != Map.DesiredTacticalCoord)) {
+    if (Session.RecordFile.ReadObject(coord) &&
+        coord != Map.DesiredTacticalCoord) {
       Map.Set_Tactical_Position(coord);
     }
 
-    if (Session.RecordFile.Read(&count, sizeof(count)) == sizeof(count)) {
+    if (Session.RecordFile.ReadObject(count)) {
       // Compute a CRC of the current object-selection list.
       sum = 0;
       for (i = 0; i < CurrentObject.Count(); i++) {
@@ -794,7 +793,7 @@ static void Do_Record_Playback() {
 
       // Load the CRC of the objects on disk; if it doesn't match, select
       // all objects as they're loaded.
-      Session.RecordFile.Read(&sum2, sizeof(sum2));
+      Session.RecordFile.ReadObject(sum2);
       if (sum2 != sum) {
         Unselect_All();
       }
@@ -802,7 +801,7 @@ static void Do_Record_Playback() {
       AllowVoice = true;
 
       for (i = 0; i < count; ++i) {
-        if (Session.RecordFile.Read(&tgt, sizeof(tgt)) == sizeof(tgt)) {
+        if (Session.RecordFile.ReadObject(tgt)) {
           ObjectClass* obj = As_Object(tgt);
           if (obj != nullptr && sum2 != sum) {
             obj->Select();
@@ -815,9 +814,9 @@ static void Do_Record_Playback() {
     }
 
     // Save team-selection and formation events
-    Session.RecordFile.Read(&TeamEvent, sizeof(TeamEvent));
-    Session.RecordFile.Read(&TeamNumber, sizeof(TeamNumber));
-    Session.RecordFile.Read(&FormationEvent, sizeof(FormationEvent));
+    Session.RecordFile.ReadObject(TeamEvent);
+    Session.RecordFile.ReadObject(TeamNumber);
+    Session.RecordFile.ReadObject(FormationEvent);
     if (TeamEvent) {
       Handle_Team(TeamNumber, TeamEvent - 1);
     }
@@ -827,9 +826,9 @@ static void Do_Record_Playback() {
 
     Session.RecordFile.Read(TeamMaxSpeed, sizeof(TeamMaxSpeed));
     Session.RecordFile.Read(TeamSpeed, sizeof(TeamSpeed));
-    Session.RecordFile.Read(&FormMove, sizeof(FormMove));
-    Session.RecordFile.Read(&FormSpeed, sizeof(FormSpeed));
-    Session.RecordFile.Read(&FormMaxSpeed, sizeof(FormMaxSpeed));
+    Session.RecordFile.ReadObject(FormMove);
+    Session.RecordFile.ReadObject(FormSpeed);
+    Session.RecordFile.ReadObject(FormMaxSpeed);
     // The map isn't drawn in playback mode, so draw it here.
     Map.Render();
   }

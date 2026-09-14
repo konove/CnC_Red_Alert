@@ -3306,14 +3306,13 @@ static void Do_Record_Playback() {
     /*.....................................................................
     Save the map's location
     .....................................................................*/
-    RecordFile.Write(&Map.DesiredTacticalCoord,
-                     sizeof(Map.DesiredTacticalCoord));
+    RecordFile.WriteObject(Map.DesiredTacticalCoord);
 
     /*.....................................................................
     Save the current object list count
     .....................................................................*/
     count = static_cast<int>(CurrentObject.Count());
-    RecordFile.Write(&count, sizeof(count));
+    RecordFile.WriteObject(count);
 
     /*.....................................................................
     Save a CRC of the selected-object list.
@@ -3323,14 +3322,14 @@ static void Do_Record_Playback() {
       ltgt = static_cast<uint32_t>(CurrentObject[i]->As_Target());
       sum += ltgt;
     }
-    RecordFile.Write(&sum, sizeof(sum));
+    RecordFile.WriteObject(sum);
 
     /*.....................................................................
     Save all selected objects.
     .....................................................................*/
     for (i = 0; i < count; i++) {
       tgt = CurrentObject[i]->As_Target();
-      RecordFile.Write(&tgt, sizeof(tgt));
+      RecordFile.WriteObject(tgt);
     }
 
     /*.....................................................................
@@ -3348,12 +3347,11 @@ static void Do_Record_Playback() {
     /*.....................................................................
     Read & set the map's location.
     .....................................................................*/
-    if ((RecordFile.Read(&coord, sizeof(coord)) == sizeof(coord)) &&
-        (coord != Map.DesiredTacticalCoord)) {
+    if (RecordFile.ReadObject(coord) && coord != Map.DesiredTacticalCoord) {
       Map.Set_Tactical_Position(coord);
     }
 
-    if (RecordFile.Read(&count, sizeof(count)) == sizeof(count)) {
+    if (RecordFile.ReadObject(count)) {
       /*..................................................................
       Compute a CRC of the current object-selection list.
       ..................................................................*/
@@ -3367,7 +3365,7 @@ static void Do_Record_Playback() {
       Load the CRC of the objects on disk; if it doesn't match, select
       all objects as they're loaded.
       ..................................................................*/
-      RecordFile.Read(&sum2, sizeof(sum2));
+      RecordFile.ReadObject(sum2);
       if (sum2 != sum) {
         Unselect_All();
       }
@@ -3375,7 +3373,7 @@ static void Do_Record_Playback() {
       AllowVoice = true;
 
       for (i = 0; i < count; i++) {
-        if (RecordFile.Read(&tgt, sizeof(tgt)) == sizeof(tgt)) {
+        if (RecordFile.ReadObject(tgt)) {
           obj = As_Object(tgt);
           if (obj && sum2 != sum) {
             obj->Select();

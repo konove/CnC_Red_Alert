@@ -235,13 +235,13 @@ int32_t Load_Uncompress(File& file, BufferClass& uncomp_buff,
   /*
   **	Read in the size of the file (supposedly).
   */
-  file.Read(&size, sizeof(size));
+  file.ReadObject(size);
 
   /*
   **	Read in the header block. This block contains the compression type
   **	and skip data (among other things).
   */
-  file.Read(&header, sizeof(header));
+  file.ReadObject(header);
   size -= sizeof(header);
 
   /*

@@ -952,7 +952,7 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
       unsigned char TIcon;  // Template icon number.
     } temp{};
 
-    if (file.Read(&temp, sizeof(temp)) != sizeof(temp)) {
+    if (!file.ReadObject(temp)) {
       break;
     }
     if (temp.TType == static_cast<TemplateType>(255)) {

@@ -621,7 +621,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Load the reference palette for the font.
   */
-  MixAwareFile("EGOPAL.PAL").Read(&CCPalette, sizeof(CCPalette));
+  MixAwareFile("EGOPAL.PAL").ReadObject(CCPalette);
 
   /*
   ** Copy the font palette entries into the combo palette.

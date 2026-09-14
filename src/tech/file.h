@@ -40,9 +40,15 @@
 #ifndef CNC_RED_ALERT_TECH_FILE_H_
 #define CNC_RED_ALERT_TECH_FILE_H_
 
+#include <cstddef>
 #include <cstdio>
+#include <span>
+#include <string>
 #include <string_view>
+#include <type_traits>
+#include <vector>
 
+#include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/file_access.h"
 
@@ -113,12 +119,47 @@ class File {
                     FileAccess rights = FileAccess::kRead) = 0;
   virtual bool Open(FileAccess rights = FileAccess::kRead) = 0;
 
-  // Reads up to size bytes into buffer and returns the number read, which is
-  // less than size only at the end of the file.
-  virtual base::ssize Read(void* buffer, base::ssize size) = 0;
+  // Reads up to buffer.size() bytes into buffer and returns the number read,
+  // which is less than the buffer size only at the end of the file.
+  virtual base::ssize Read(std::span<std::byte> buffer) = 0;
 
-  // Writes size bytes from buffer and returns the number written.
-  virtual base::ssize Write(const void* buffer, base::ssize size) = 0;
+  // Writes buffer to the file and returns the number of bytes written.
+  virtual base::ssize Write(std::span<const std::byte> buffer) = 0;
+
+  // Reads one trivially copyable value. Returns false on a short read, in
+  // which case value is partially written.
+  template <typename T>
+    requires std::is_trivially_copyable_v<T>
+  bool ReadObject(T& value) {
+    return Read(std::as_writable_bytes(std::span(&value, 1))) ==
+           base::ToSigned(sizeof(T));
+  }
+
+  // Writes one trivially copyable value. Returns false on a short write.
+  template <typename T>
+    requires std::is_trivially_copyable_v<T>
+  bool WriteObject(const T& value) {
+    return Write(std::as_bytes(std::span(&value, 1))) ==
+           base::ToSigned(sizeof(T));
+  }
+
+  // Reads up to count bytes; the result is shorter at the end of the file.
+  std::vector<std::byte> ReadBytes(base::ssize count);
+
+  // Reads up to count bytes as text; the result is shorter at the end of the
+  // file.
+  std::string ReadString(base::ssize count);
+
+  // Raw-pointer forms of Read and Write for callers not yet on spans. A
+  // derived class that overrides the span forms needs "using File::Read;" and
+  // "using File::Write;" to keep these visible.
+  base::ssize Read(void* buffer, base::ssize size) {
+    return Read(std::span(static_cast<std::byte*>(buffer), base::ToSize(size)));
+  }
+  base::ssize Write(const void* buffer, base::ssize size) {
+    return Write(
+        std::span(static_cast<const std::byte*>(buffer), base::ToSize(size)));
+  }
 
   // Moves the file position by offset from origin and returns the new
   // position, measured from the start of the file.

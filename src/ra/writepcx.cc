@@ -101,22 +101,22 @@ int Write_PCX_File(File& file, GraphicBufferClass& pic,
   int VP_Scan_Line;
   char* ptr;
   RGB* pal;
-  PCX_HEADER header = {10,
-                       5,
-                       1,
-                       8,
-                       0,
-                       0,
-                       static_cast<int16_t>(pic.Get_Width() - 1),
-                       static_cast<int16_t>(pic.Get_Height() - 1),
-                       static_cast<int16_t>(pic.Get_Width()),
-                       static_cast<int16_t>(pic.Get_Height()),
-                       {},
-                       0,
-                       1,
-                       static_cast<int16_t>(pic.Get_Width()),
-                       1,
-                       {0}};
+  const PCX_HEADER header = {10,
+                             5,
+                             1,
+                             8,
+                             0,
+                             0,
+                             static_cast<int16_t>(pic.Get_Width() - 1),
+                             static_cast<int16_t>(pic.Get_Height() - 1),
+                             static_cast<int16_t>(pic.Get_Width()),
+                             static_cast<int16_t>(pic.Get_Height()),
+                             {},
+                             0,
+                             1,
+                             static_cast<int16_t>(pic.Get_Width()),
+                             1,
+                             {0}};
 
   /*
   **	Open the output file and write out the header information. If the file
@@ -128,7 +128,7 @@ int Write_PCX_File(File& file, GraphicBufferClass& pic,
     file.Open(FileAccess::kWrite);
     open = true;
   }
-  file.Write(&header, sizeof(header));
+  file.WriteObject(header);
 
   /*
   **	Write out the picture, line by line.
@@ -144,8 +144,8 @@ int Write_PCX_File(File& file, GraphicBufferClass& pic,
   /*
   **	Special marker for end of RLE data.
   */
-  unsigned char ender = 0x0C;
-  file.Write(&ender, sizeof(ender));
+  const unsigned char ender = 0x0C;
+  file.WriteObject(ender);
 
   /*
   **	Convert the palette from 6 bit to 8 bit format.
@@ -198,22 +198,22 @@ static void Write_Pcx_ScanLine(File& file, int scansize, const char* ptr) {
   unsigned char rle = 1;
   unsigned char c;
   for (int i = 1; i < scansize; i++) {
-    auto color = static_cast<unsigned char>(0xff & *++ptr);
+    const auto color = static_cast<unsigned char>(0xff & *++ptr);
     if (color == last) {
       rle++;
       if (rle == rle_max_run) {
-        file.Write(&rle_full_run, sizeof(rle_full_run));
-        file.Write(&color, sizeof(color));
+        file.WriteObject(rle_full_run);
+        file.WriteObject(color);
         rle = 0;
       }
     } else {
       if (rle) {
         if (rle == 1 && rle_code != (rle_code & last)) {
-          file.Write(&last, sizeof(last));
+          file.WriteObject(last);
         } else {
           c = static_cast<unsigned char>(rle | rle_code);
-          file.Write(&c, sizeof(c));
-          file.Write(&last, sizeof(last));
+          file.WriteObject(c);
+          file.WriteObject(last);
         }
       }
       last = color;
@@ -222,11 +222,11 @@ static void Write_Pcx_ScanLine(File& file, int scansize, const char* ptr) {
   }
   if (rle) {
     if (rle == 1 && rle_code != (rle_code & last)) {
-      file.Write(&last, sizeof(last));
+      file.WriteObject(last);
     } else {
       c = static_cast<unsigned char>(rle | rle_code);
-      file.Write(&c, sizeof(c));
-      file.Write(&last, sizeof(last));
+      file.WriteObject(c);
+      file.WriteObject(last);
     }
   }
 }

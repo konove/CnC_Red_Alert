@@ -41,8 +41,10 @@
 #ifndef CNC_RED_ALERT_TD_CCFILE_H_
 #define CNC_RED_ALERT_TD_CCFILE_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
+#include <span>
 #include <string_view>
 
 #include "base/types.h"
@@ -73,8 +75,10 @@ class CCFileClass : public CDFileClass {
   bool Open(FileAccess rights = FileAccess::kRead) override;
   bool IsAvailable() override;
   [[nodiscard]] bool IsOpen() const override;
-  base::ssize Read(void* buffer, base::ssize size) override;
-  base::ssize Write(const void* buffer, base::ssize size) override;
+  using File::Read;
+  using File::Write;
+  base::ssize Read(std::span<std::byte> buffer) override;
+  base::ssize Write(std::span<const std::byte> buffer) override;
   base::ssize Seek(base::ssize offset,
                    SeekOrigin origin = SeekOrigin::kCurrent) override;
   base::ssize Size() override;

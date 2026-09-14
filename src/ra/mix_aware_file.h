@@ -28,8 +28,10 @@
 // Originally CCFILE.H (class CCFileClass) by Joe L. Bostic, started October 17,
 // 1994.
 
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
+#include <span>
 #include <string_view>
 
 #include "base/types.h"
@@ -95,12 +97,14 @@ class MixAwareFile : public CDFileClass {
   // Reads up to size bytes into buffer and returns the number actually read,
   // which is less than size at end of file. A file that is not open is opened
   // for the read and closed again afterwards.
-  base::ssize Read(void* buffer, base::ssize size) override;
+  using File::Read;
+  base::ssize Read(std::span<std::byte> buffer) override;
 
   // Writes size bytes from buffer and returns the number written. Files packed
   // in a cached mixfile are read-only; writing one writes nothing and returns
   // 0.
-  base::ssize Write(const void* buffer, base::ssize size) override;
+  using File::Write;
+  base::ssize Write(std::span<const std::byte> buffer) override;
 
   // Moves the file position by offset relative to origin and returns the new
   // position. For a resident file the position is clamped to [0, Size()].

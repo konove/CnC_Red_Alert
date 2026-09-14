@@ -52,8 +52,11 @@
 #include "tech/memory_file.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdio>
 #include <cstring>
+#include <iterator>
+#include <span>
 #include <string_view>
 
 #include "base/numeric.h"
@@ -278,8 +281,9 @@ bool MemoryFile::Open(FileAccess access) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-base::ssize MemoryFile::Read(void* buffer, base::ssize size) {
-  if (buffer_ == nullptr || buffer == nullptr || size == 0) {
+base::ssize MemoryFile::Read(const std::span<std::byte> buffer) {
+  const base::ssize size = std::ssize(buffer);
+  if (buffer_ == nullptr || size == 0) {
     return 0;
   }
 
@@ -294,7 +298,7 @@ base::ssize MemoryFile::Read(void* buffer, base::ssize size) {
   }
 
   const base::ssize bytes_to_copy = std::min(size, size_ - position_);
-  memmove(buffer, &buffer_[position_], base::ToSize(bytes_to_copy));
+  memmove(buffer.data(), &buffer_[position_], base::ToSize(bytes_to_copy));
   position_ += bytes_to_copy;
 
   if (opened_here) {
@@ -391,8 +395,9 @@ base::ssize MemoryFile::Size() { return size_; }
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-base::ssize MemoryFile::Write(const void* buffer, base::ssize size) {
-  if (buffer_ == nullptr || buffer == nullptr || size == 0) {
+base::ssize MemoryFile::Write(const std::span<const std::byte> buffer) {
+  const base::ssize size = std::ssize(buffer);
+  if (buffer_ == nullptr || size == 0) {
     return 0;
   }
 
@@ -407,7 +412,7 @@ base::ssize MemoryFile::Write(const void* buffer, base::ssize size) {
   }
 
   const base::ssize bytes_to_write = std::min(size, capacity_ - position_);
-  memmove(&buffer_[position_], buffer, base::ToSize(bytes_to_write));
+  memmove(&buffer_[position_], buffer.data(), base::ToSize(bytes_to_write));
   position_ += bytes_to_write;
 
   size_ = std::max(position_, size_);

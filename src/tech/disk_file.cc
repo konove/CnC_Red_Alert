@@ -59,7 +59,10 @@
 #include "tech/disk_file.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdio>
+#include <iterator>
+#include <span>
 #include <string>
 #include <string_view>
 
@@ -344,7 +347,8 @@ void DiskFile::Close() {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-base::ssize DiskFile::Read(void* buffer, base::ssize size) {
+base::ssize DiskFile::Read(const std::span<std::byte> buffer) {
+  base::ssize size = std::ssize(buffer);
   bool opened_for_this_read = false;
 
   /*
@@ -372,7 +376,7 @@ base::ssize DiskFile::Read(void* buffer, base::ssize size) {
   }
 
   size_t bytes_read = 0;
-  IO_Read_File(handle_, buffer, base::ToSize(size), bytes_read);
+  IO_Read_File(handle_, buffer.data(), base::ToSize(size), bytes_read);
   // doesn't bother looping, the below code is broken anyway (buffer isn't
   // incremented)
 
@@ -404,7 +408,7 @@ base::ssize DiskFile::Read(void* buffer, base::ssize size) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-base::ssize DiskFile::Write(const void* buffer, base::ssize size) {
+base::ssize DiskFile::Write(const std::span<const std::byte> buffer) {
   bool opened_for_this_write = false;
 
   /*
@@ -420,7 +424,7 @@ base::ssize DiskFile::Write(const void* buffer, base::ssize size) {
   }
 
   size_t bytes_written = 0;
-  IO_Write_File(handle_, buffer, base::ToSize(size), bytes_written);
+  IO_Write_File(handle_, buffer.data(), buffer.size(), bytes_written);
 
   /*
   **	Fixup the bias length if necessary.

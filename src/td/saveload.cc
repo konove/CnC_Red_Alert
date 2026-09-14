@@ -136,12 +136,12 @@ bool Save_Game(int id, const char* descr) {
     return false;
   }
 
-  if (file.Write(&scenario, sizeof(scenario)) != sizeof(scenario)) {
+  if (!file.WriteObject(scenario)) {
     file.Close();
     return false;
   }
 
-  if (file.Write(&house, sizeof(house)) != sizeof(house)) {
+  if (!file.WriteObject(house)) {
     file.Close();
     return false;
   }
@@ -151,7 +151,7 @@ bool Save_Game(int id, const char* descr) {
   */
   version = kSaveGameVersion;
 
-  if (file.Write(&version, sizeof(version)) != sizeof(version)) {
+  if (!file.WriteObject(version)) {
     file.Close();
     return false;
   }
@@ -261,12 +261,12 @@ bool Load_Game(int id) {
     return false;
   }
 
-  if (file.Read(&scenario, sizeof(scenario)) != sizeof(scenario)) {
+  if (!file.ReadObject(scenario)) {
     file.Close();
     return false;
   }
 
-  if (file.Read(&house, sizeof(house)) != sizeof(house)) {
+  if (!file.ReadObject(house)) {
     file.Close();
     return false;
   }
@@ -285,7 +285,7 @@ bool Load_Game(int id) {
   /*
   **	Read in & verify the save-game ID code
   */
-  if (file.Read(&version, sizeof(version)) != sizeof(version)) {
+  if (!file.ReadObject(version)) {
     file.Close();
     return false;
   }
@@ -581,7 +581,7 @@ bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
     /*
     **	Read & verify the save-game version #
     */
-    if (file.Read(&version, sizeof(version)) != sizeof(version)) {
+    if (!file.ReadObject(version)) {
       file.Close();
       return false;
     }

@@ -40,8 +40,10 @@
 #ifndef CNC_RED_ALERT_TECH_MEMORY_FILE_H_
 #define CNC_RED_ALERT_TECH_MEMORY_FILE_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
+#include <span>
 #include <string_view>
 
 #include "absl/base/attributes.h"
@@ -73,8 +75,10 @@ class MemoryFile final : public File {
   bool Open(std::string_view filename,
             FileAccess access = FileAccess::kRead) override;
   bool Open(FileAccess access = FileAccess::kRead) override;
-  base::ssize Read(void* buffer, base::ssize size) override;
-  base::ssize Write(const void* buffer, base::ssize size) override;
+  using File::Read;
+  using File::Write;
+  base::ssize Read(std::span<std::byte> buffer) override;
+  base::ssize Write(std::span<const std::byte> buffer) override;
   base::ssize Seek(base::ssize offset,
                    SeekOrigin origin = SeekOrigin::kCurrent) override;
   base::ssize Size() override;

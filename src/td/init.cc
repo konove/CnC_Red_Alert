@@ -2888,32 +2888,32 @@ int Version_Number() {
  *   05/15/1995 BRR : Created.                                             *
  *=========================================================================*/
 void Save_Recording_Values() {
-  RecordFile.Write(&GameToPlay, sizeof(GameToPlay));
-  RecordFile.Write(&ModemGameToPlay, sizeof(ModemGameToPlay));
-  RecordFile.Write(&BuildLevel, sizeof(BuildLevel));
+  RecordFile.WriteObject(GameToPlay);
+  RecordFile.WriteObject(ModemGameToPlay);
+  RecordFile.WriteObject(BuildLevel);
   RecordFile.Write(MPlayerName, sizeof(MPlayerName));
-  RecordFile.Write(&MPlayerPrefColor, sizeof(MPlayerPrefColor));
-  RecordFile.Write(&MPlayerColorIdx, sizeof(MPlayerColorIdx));
-  RecordFile.Write(&MPlayerHouse, sizeof(MPlayerHouse));
-  RecordFile.Write(&MPlayerLocalID, sizeof(MPlayerLocalID));
-  RecordFile.Write(&MPlayerCount, sizeof(MPlayerCount));
-  RecordFile.Write(&MPlayerBases, sizeof(MPlayerBases));
-  RecordFile.Write(&MPlayerCredits, sizeof(MPlayerCredits));
-  RecordFile.Write(&MPlayerTiberium, sizeof(MPlayerTiberium));
-  RecordFile.Write(&MPlayerGoodies, sizeof(MPlayerGoodies));
-  RecordFile.Write(&MPlayerGhosts, sizeof(MPlayerGhosts));
-  RecordFile.Write(&MPlayerUnitCount, sizeof(MPlayerUnitCount));
+  RecordFile.WriteObject(MPlayerPrefColor);
+  RecordFile.WriteObject(MPlayerColorIdx);
+  RecordFile.WriteObject(MPlayerHouse);
+  RecordFile.WriteObject(MPlayerLocalID);
+  RecordFile.WriteObject(MPlayerCount);
+  RecordFile.WriteObject(MPlayerBases);
+  RecordFile.WriteObject(MPlayerCredits);
+  RecordFile.WriteObject(MPlayerTiberium);
+  RecordFile.WriteObject(MPlayerGoodies);
+  RecordFile.WriteObject(MPlayerGhosts);
+  RecordFile.WriteObject(MPlayerUnitCount);
   RecordFile.Write(MPlayerID, sizeof(MPlayerID));
   RecordFile.Write(MPlayerHouses, sizeof(MPlayerHouses));
-  RecordFile.Write(&Seed, sizeof(Seed));
-  RecordFile.Write(&Scenario, sizeof(Scenario));
-  RecordFile.Write(&ScenPlayer, sizeof(ScenPlayer));
-  RecordFile.Write(&ScenDir, sizeof(ScenDir));
-  RecordFile.Write(&Whom, sizeof(Whom));
+  RecordFile.WriteObject(Seed);
+  RecordFile.WriteObject(Scenario);
+  RecordFile.WriteObject(ScenPlayer);
+  RecordFile.WriteObject(ScenDir);
+  RecordFile.WriteObject(Whom);
   RecordFile.Write(&Special, sizeof(SpecialClass));
   RecordFile.Write(&Options, sizeof(GameOptionsClass));
-  RecordFile.Write(&FrameSendRate, sizeof(FrameSendRate));
-  RecordFile.Write(&CommProtocol, sizeof(CommProtocol));
+  RecordFile.WriteObject(FrameSendRate);
+  RecordFile.WriteObject(CommProtocol);
 
   if (SuperRecord) {
     RecordFile.Close();
@@ -2938,32 +2938,32 @@ void Save_Recording_Values() {
 void Load_Recording_Values() {
   Read_MultiPlayer_Settings();
 
-  RecordFile.Read(&GameToPlay, sizeof(GameToPlay));
-  RecordFile.Read(&ModemGameToPlay, sizeof(ModemGameToPlay));
-  RecordFile.Read(&BuildLevel, sizeof(BuildLevel));
+  RecordFile.ReadObject(GameToPlay);
+  RecordFile.ReadObject(ModemGameToPlay);
+  RecordFile.ReadObject(BuildLevel);
   RecordFile.Read(MPlayerName, sizeof(MPlayerName));
-  RecordFile.Read(&MPlayerPrefColor, sizeof(MPlayerPrefColor));
-  RecordFile.Read(&MPlayerColorIdx, sizeof(MPlayerColorIdx));
-  RecordFile.Read(&MPlayerHouse, sizeof(MPlayerHouse));
-  RecordFile.Read(&MPlayerLocalID, sizeof(MPlayerLocalID));
-  RecordFile.Read(&MPlayerCount, sizeof(MPlayerCount));
-  RecordFile.Read(&MPlayerBases, sizeof(MPlayerBases));
-  RecordFile.Read(&MPlayerCredits, sizeof(MPlayerCredits));
-  RecordFile.Read(&MPlayerTiberium, sizeof(MPlayerTiberium));
-  RecordFile.Read(&MPlayerGoodies, sizeof(MPlayerGoodies));
-  RecordFile.Read(&MPlayerGhosts, sizeof(MPlayerGhosts));
-  RecordFile.Read(&MPlayerUnitCount, sizeof(MPlayerUnitCount));
+  RecordFile.ReadObject(MPlayerPrefColor);
+  RecordFile.ReadObject(MPlayerColorIdx);
+  RecordFile.ReadObject(MPlayerHouse);
+  RecordFile.ReadObject(MPlayerLocalID);
+  RecordFile.ReadObject(MPlayerCount);
+  RecordFile.ReadObject(MPlayerBases);
+  RecordFile.ReadObject(MPlayerCredits);
+  RecordFile.ReadObject(MPlayerTiberium);
+  RecordFile.ReadObject(MPlayerGoodies);
+  RecordFile.ReadObject(MPlayerGhosts);
+  RecordFile.ReadObject(MPlayerUnitCount);
   RecordFile.Read(MPlayerID, sizeof(MPlayerID));
   RecordFile.Read(MPlayerHouses, sizeof(MPlayerHouses));
-  RecordFile.Read(&Seed, sizeof(Seed));
-  RecordFile.Read(&Scenario, sizeof(Scenario));
-  RecordFile.Read(&ScenPlayer, sizeof(ScenPlayer));
-  RecordFile.Read(&ScenDir, sizeof(ScenDir));
-  RecordFile.Read(&Whom, sizeof(Whom));
+  RecordFile.ReadObject(Seed);
+  RecordFile.ReadObject(Scenario);
+  RecordFile.ReadObject(ScenPlayer);
+  RecordFile.ReadObject(ScenDir);
+  RecordFile.ReadObject(Whom);
   RecordFile.Read(&Special, sizeof(SpecialClass));
   RecordFile.Read(&Options, sizeof(GameOptionsClass));
-  RecordFile.Read(&FrameSendRate, sizeof(FrameSendRate));
-  RecordFile.Read(&CommProtocol, sizeof(CommProtocol));
+  RecordFile.ReadObject(FrameSendRate);
+  RecordFile.ReadObject(CommProtocol);
 }
 
 /***********************************************************************************************

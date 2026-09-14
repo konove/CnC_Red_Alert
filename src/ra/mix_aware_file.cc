@@ -24,6 +24,7 @@
 #include "ra/mix_aware_file.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
@@ -51,7 +52,7 @@ MixAwareFile::MixAwareFile(const std::string_view filename) {
 
 MixAwareFile::MixAwareFile() = default;
 
-base::ssize MixAwareFile::Write(const void* buffer, base::ssize size) {
+base::ssize MixAwareFile::Write(const std::span<const std::byte> buffer) {
   // A resident file is a view into the mixfile cache, so writing is not
   // allowed. It must not fall through: IsOpen() reports the resident file as
   // open, so the base class would skip opening a handle and write through a
@@ -60,19 +61,21 @@ base::ssize MixAwareFile::Write(const void* buffer, base::ssize size) {
     return 0;
   }
 
-  return CDFileClass::Write(buffer, size);
+  return CDFileClass::Write(buffer);
 }
 
-base::ssize MixAwareFile::Read(void* buffer, base::ssize size) {
+base::ssize MixAwareFile::Read(const std::span<std::byte> buffer) {
   // A read on a closed file opens it for just this call.
   const bool opened_for_this_read = !IsOpen() && Open();
 
   // If the file is part of a cached mixfile, then a mere copy is all that is
   // required for the read, clipped to the bytes left after the position.
   if (IsResident()) {
-    size = std::min(size, resident_data_.Get_Size() - resident_position_);
+    const base::ssize size = std::min(
+        std::ssize(buffer), resident_data_.Get_Size() - resident_position_);
     if (size) {
-      memmove(buffer, static_cast<char*>(resident_data_) + resident_position_,
+      memmove(buffer.data(),
+              static_cast<char*>(resident_data_) + resident_position_,
               base::ToSize(size));
       resident_position_ += size;
     }
@@ -84,7 +87,7 @@ base::ssize MixAwareFile::Read(void* buffer, base::ssize size) {
 
   // A file on disk, or one inside a mixfile on disk (the bias set up by Open
   // keeps the read inside the embedded file).
-  const base::ssize bytes_read = CDFileClass::Read(buffer, size);
+  const base::ssize bytes_read = CDFileClass::Read(buffer);
 
   // If the file was opened by this routine, then close it at this time.
   if (opened_for_this_read) {

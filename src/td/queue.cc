@@ -3282,7 +3282,7 @@ static void Queue_Record() {
   //------------------------------------------------------------------------
   //	Save the # of events, then all events.
   //------------------------------------------------------------------------
-  RecordFile.Write(&j, sizeof(j));
+  RecordFile.WriteObject(j);
   for (i = 0; i < DoList.Count; i++) {
     if (std::cmp_equal(Frame, DoList[i].Frame) && !DoList[i].IsExecuted) {
       RecordFile.Write(&DoList[i], sizeof(EventClass));
@@ -3389,7 +3389,7 @@ static void Queue_Playback() {
   //	Read the DoList from disk
   //------------------------------------------------------------------------
   ok = 1;
-  if (RecordFile.Read(&numevents, sizeof(numevents)) == sizeof(numevents)) {
+  if (RecordFile.ReadObject(numevents)) {
     for (i = 0; i < numevents; i++) {
       if (RecordFile.Read(&event, sizeof(EventClass)) == sizeof(EventClass)) {
         event.IsExecuted = 0;
