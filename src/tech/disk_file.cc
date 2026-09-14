@@ -62,9 +62,11 @@
 #include <cstddef>
 #include <cstdio>
 #include <iterator>
+#include <optional>
 #include <span>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "absl/strings/ascii.h"
 #include "base/numeric.h"
@@ -257,39 +259,30 @@ bool DiskFile::IsAvailable() {
     return true;
   }
 
-  /*
-  **	Perform a raw open of the file. If this open fails for ANY REASON,
-  *including a missing *	CD-ROM, this routine will return a failure
-  *condition. In all but the missing file *	condition, go through the normal
-  *error recover channels.
-  */
-  for (;;) {
-    handle_ = IO_Open_File(filename_.c_str(), FileAccess::kRead);
-    if (!handle_) {
-      // retry with lowercase name for case-sensitive fs
-      const std::string lower_name = absl::AsciiStrToLower(filename_);
-      handle_ = IO_Open_File(lower_name.c_str(), FileAccess::kRead);
-
-      if (handle_) {
-        // if successful, replace the filename with the working one
-        filename_ = lower_name;
-      }
-    }
-
-    if (!handle_) {
-      return false;
-    }
-    break;
+  // The name is replaced by the one that exists, so a later Open() finds the
+  // lowercase file too.
+  std::optional<std::string> found = FindExistingFile(filename_);
+  if (!found) {
+    return false;
   }
-
-  /*
-  **	Since the file could be opened, then close it and return that the file
-  *exists.
-  */
-  IO_Close_File(handle_);
-  handle_ = nullptr;
-
+  filename_ = *std::move(found);
   return true;
+}
+
+std::optional<std::string> FindExistingFile(const std::string_view path) {
+  // Opening is the existence test; it is what Open() will do next.
+  std::string name(path);
+  if (void* const handle = IO_Open_File(name.c_str(), FileAccess::kRead)) {
+    IO_Close_File(handle);
+    return name;
+  }
+  std::string lower_name = absl::AsciiStrToLower(name);
+  if (void* const handle =
+          IO_Open_File(lower_name.c_str(), FileAccess::kRead)) {
+    IO_Close_File(handle);
+    return lower_name;
+  }
+  return std::nullopt;
 }
 
 /***********************************************************************************************

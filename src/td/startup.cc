@@ -83,7 +83,7 @@
 #include "td/jshell.h"
 #include "td/keyframe.h"
 #include "td/special.h"
-#include "tech/cdfile.h"
+#include "tech/search_paths.h"
 #endif  // TD_NO_ENTRY_POINT
 
 #ifdef _WIN32
@@ -257,7 +257,7 @@ int main(int argc, char* argv[])
       return EXIT_FAILURE;
     }
 
-    CDFileClass::SetCdDrive(CDList.Get_First_CD_Drive());
+    SearchPaths::SetCdDrive(CDList.Get_First_CD_Drive());
 
     if (!cfile.IsAvailable()) {
       // just create an empty config, we don't care about most of it anyway

@@ -131,6 +131,7 @@
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/number_parse.h"
+#include "tech/search_paths.h"
 
 ModemRegistryEntryClass* ModemRegistry = nullptr;  // Ptr to modem registry data
 
@@ -5686,7 +5687,7 @@ int Com_Show_Scenario_Dialog() {
                     IsMissionAftermath(Session.ScenarioFileName)))) {
                 MixAwareFile check_file(Session.ScenarioFileName);
                 if (!check_file.IsAvailable()) {
-                  const int current_drive = MixAwareFile::current_cd_drive();
+                  const int current_drive = SearchPaths::current_cd_drive();
                   const int index = Get_CD_Index(current_drive, 1 * 60);
                   bool needcd = false;
                   if (IsMissionCounterstrike(Session.ScenarioFileName) &&

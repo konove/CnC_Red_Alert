@@ -47,25 +47,16 @@
 
 #include "tech/cdfile.h"
 
-#include <filesystem>
-#include <ranges>
 #include <string>
 #include <string_view>
-#include <vector>
 
 #include "sdllib/file_access.h"
 #include "tech/disk_file.h"
-
-std::vector<std::string> CDFileClass::search_paths_;
-std::string CDFileClass::raw_path_;
-int CDFileClass::current_cd_drive_ = 0;
-int CDFileClass::last_cd_drive_ = 0;
+#include "tech/search_paths.h"
 
 CDFileClass::CDFileClass(const std::string_view filename) {
   CDFileClass::SetName(filename);
 }
-
-extern int Get_CD_Index(int cd_drive, int timeout);
 
 /***********************************************************************************************
  * CDFileClass::Open -- Opens the file object -- with path search. *
@@ -85,166 +76,16 @@ extern int Get_CD_Index(int cd_drive, int timeout);
  *=============================================================================================*/
 bool CDFileClass::Open(FileAccess rights) { return DiskFile::Open(rights); }
 
-/***********************************************************************************************
- * CDFC::RefreshSearchPaths -- Updates the search path when a CD changes or
- *is added        *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 5/22/96 9:01AM ST : Created *
- *=============================================================================================*/
-void CDFileClass::RefreshSearchPaths() {
-  ClearSearchPaths();
-  ProcessPathTokens(raw_path_);
-}
-
-int CDFileClass::AddSearchPaths(const std::string_view new_paths) {
-  if (new_paths.empty()) {
-    return 0;
-  }
-
-  // Append to persistent storage.
-  // Check !empty() to avoid adding a leading semicolon.
-  if (!raw_path_.empty()) {
-    raw_path_ += ';';
-  }
-  raw_path_ += new_paths;
-
-  // Process only the newly added paths to avoid redundant scanning.
-  return ProcessPathTokens(new_paths);
-}
-
-int CDFileClass::ProcessPathTokens(std::string_view paths) {
-  bool found_valid_path = false;
-
-  for (const auto token_range : paths | std::views::split(';')) {
-    // Materialize the view into a string for manipulation.
-    std::string path(token_range.begin(), token_range.end());
-
-    if (path.empty()) {
-      continue;
-    }
-
-    // Ensure the path ends with a directory separator.
-    // Use std::filesystem to handle platform-specific separators.
-    if (!path.empty() &&
-        path.back() != std::filesystem::path::preferred_separator &&
-        path.back() != ':') {
-      path += std::filesystem::path::preferred_separator;
-    }
-
-    // Handle Wildcard Resolution ("?:").
-    // If a path starts with "?:", it is a placeholder for the CD-ROM drive.
-    // We check if the current CD drive has the correct disc (timeout: 2*60
-    // ticks).
-    if (path.starts_with("?:")) {
-      if (current_cd_drive_ && Get_CD_Index(current_cd_drive_, 120) >= 0) {
-        // Map the internal drive index (0=A, 1=B...) to a char.
-        path[0] = static_cast<char>(current_cd_drive_ + 'A');
-
-        AddSearchPath(path);
-        found_valid_path = true;
-      }
-      // If the wildcard logic was hit (even if no CD found), skip the default
-      // add.
-      continue;
-    }
-
-    AddSearchPath(path);
-    found_valid_path = true;
-  }
-
-  return found_valid_path ? 0 : 1;
-}
-
-/***********************************************************************************************
- * CDFC::AddSearchPath -- Add a new path to the search path list *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    path *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 5/22/96 10:12AM ST : Created *
- *=============================================================================================*/
-void CDFileClass::AddSearchPath(const std::string& path) {
-  search_paths_.push_back(path);
-}
-
-/***********************************************************************************************
- * CDFC::SetCdDrive -- sets the current CD drive letter *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 5/22/96 9:39AM ST : Created *
- *=============================================================================================*/
-void CDFileClass::SetCdDrive(int drive) {
-  last_cd_drive_ = current_cd_drive_;
-  current_cd_drive_ = drive;
-}
-
-/***********************************************************************************************
- * CDFileClass::ClearSearchPaths -- Removes all record of a search path. *
- *                                                                                             *
- *    Use this routine to clear out any previous path(s) set with
- *AddSearchPaths()          * function. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/18/1994 JLB : Created. *
- *=============================================================================================*/
-void CDFileClass::ClearSearchPaths() { search_paths_.clear(); }
-
 void CDFileClass::SetName(const std::string_view filename) {
-  // Copied first, because filename may view this object's current name, which
-  // the SetName calls below overwrite.
-  const std::string name(filename);
-
-  // Try to find the file in the current directory first.
-  // This preserves the optimization of checking the local filesystem before
-  // iterating through the CD/Network search paths.
-  DiskFile::SetName(name);
-
-  // If the file system is disabled, no search paths exist, the name is empty
-  // (a search path alone would name a directory), or the file was found
-  // locally, keep the name as given.
-  if (search_disabled_ || search_paths_.empty() || name.empty() ||
-      DiskFile::IsAvailable()) {
+  if (search_disabled_) {
+    DiskFile::SetName(filename);
     return;
   }
-
-  // Iterate through all registered search paths.
-  for (const auto& base_path : search_paths_) {
-    // AddSearchPath guarantees base_path ends with a path separator, so we can
-    // safely concatenate directly.
-    DiskFile::SetName(base_path + name);
-    if (DiskFile::IsAvailable()) {
-      return;
-    }
-  }
-
-  // All path searching has failed. Just set the file name to the plain text
-  // passed to this routine and be done with it.
-  DiskFile::SetName(name);
+  // Resolved into a string before SetName runs, since filename may view this
+  // object's current name.
+  const std::string resolved =
+      SearchPaths::Resolve(filename).value_or(std::string(filename));
+  DiskFile::SetName(resolved);
 }
 
 /***********************************************************************************************

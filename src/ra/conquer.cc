@@ -137,6 +137,7 @@
 #include "tech/ftimer.h"
 #include "tech/rect.h"
 #include "tech/rgb.h"
+#include "tech/search_paths.h"
 #include "winvq/vqa32/vqaplay.h"
 
 // The key that answers a page from a Westwood Online user outside the
@@ -2891,7 +2892,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
   }
 
   // Find out if the CD in the current drive is the one we are looking for
-  const int current_drive = MixAwareFile::current_cd_drive();
+  const int current_drive = SearchPaths::current_cd_drive();
   int cd_current = Get_CD_Index(current_drive, 1 * 60);
 
   if (Using_DVD()) {
@@ -2922,12 +2923,12 @@ bool Force_CD_Available(int cd_desired)  // ajw
   // Check the last drive
   if (!new_cd_drive) {
     // Check the last CD drive we used if it's different from the current one
-    const int last_drive = MixAwareFile::last_cd_drive();
+    const int last_drive = SearchPaths::last_cd_drive();
 
     // Make sure the last drive is valid and it isn't the current drive
     // Skipped when it is the current drive, which the search above already
     // covered.
-    if (last_drive && last_drive != MixAwareFile::current_cd_drive()) {
+    if (last_drive && last_drive != SearchPaths::current_cd_drive()) {
       // Find out if there is a C&C cd in the last drive and if so is it the one
       // we are looking for
       // Give it a nice big timeout so the CD changer has time to swap the discs
@@ -3066,8 +3067,8 @@ bool Force_CD_Available(int cd_desired)  // ajw
 
   CurrentCD = cd_current;
 
-  MixAwareFile::SetCdDrive(new_cd_drive);
-  MixAwareFile::RefreshSearchPaths();
+  SearchPaths::SetCdDrive(new_cd_drive);
+  SearchPaths::Refresh();
 
   // If it broke out of the query for CD-ROM loop, then this means that the
   // CD-ROM has been inserted.

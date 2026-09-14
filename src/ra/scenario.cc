@@ -157,6 +157,7 @@
 #include "tech/disk_file.h"
 #include "tech/ftimer.h"
 #include "tech/number_parse.h"
+#include "tech/search_paths.h"
 
 static void Remove_AI_Players();
 static void Create_Units(bool official);
@@ -450,7 +451,7 @@ bool Read_Scenario(char* name) {
       ** Find out if the CD in the current drive is the Aftermath disc.
       */
       const int cd_index =
-          Get_CD_Index(MixAwareFile::current_cd_drive(), 1 * 60);
+          Get_CD_Index(SearchPaths::current_cd_drive(), 1 * 60);
       if ((!Using_DVD() || cd_index != 5) && cd_index != 3) {
         GamePalette.Set(kFadePaletteFast, Call_Back);
         RequiredCD = 3;
@@ -1856,7 +1857,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
         if (IsMissionCounterstrike(Scen.ScenarioName)) {
           RequiredCD = 2;
           if (Is_Aftermath_Installed() ||
-              Get_CD_Index(MixAwareFile::current_cd_drive(), 1 * 60) == 3) {
+              Get_CD_Index(SearchPaths::current_cd_drive(), 1 * 60) == 3) {
             RequiredCD = 3;
           }
         }
@@ -1900,7 +1901,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     // requested is an RA CD, then don't set the palette, leave the map screen
     // up.
 
-    const int cd_index = Get_CD_Index(MixAwareFile::current_cd_drive(), 1 * 60);
+    const int cd_index = Get_CD_Index(SearchPaths::current_cd_drive(), 1 * 60);
     if ((!Using_DVD() || cd_index != 5) && cd_index != RequiredCD) {
       if ((RequiredCD == 0 || RequiredCD == 1) && Session.Type == GAME_NORMAL) {
         SeenBuff.Clear();

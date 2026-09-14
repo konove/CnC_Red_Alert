@@ -157,6 +157,7 @@
 #include "tech/random.h"
 #include "tech/rgb.h"
 #include "tech/rndstraw.h"
+#include "tech/search_paths.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
 #include "winvq/vqa32/vqaplay.h"
@@ -1407,7 +1408,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     */
     if (strstr(string, "-CD")) {
       // Use original arg to preserve case-sensitive path on Unix systems
-      MixAwareFile::AddSearchPaths(original_arg.substr(3));
+      SearchPaths::Add(original_arg.substr(3));
       continue;
     }
 
@@ -2216,7 +2217,7 @@ static void Init_CDROM_Access() {
   /*
   **	Always try to look at the CD-ROM for data files.
   */
-  if (!MixAwareFile::HasSearchPaths()) {
+  if (!SearchPaths::HasAny()) {
     /*
     **	This call is needed because of a side effect of this function. It will
     *examine the *	CD-ROMs attached to this computer and set the
@@ -2232,7 +2233,7 @@ static void Init_CDROM_Access() {
     int error;
 
     do {
-      error = MixAwareFile::AddSearchPaths("?:\\");
+      error = SearchPaths::Add("?:\\");
       switch (error) {
         case 1:
           VisiblePage.Clear();
@@ -2472,7 +2473,7 @@ static void Bootstrap() {
   **	Be sure to short circuit the CD-ROM check if there is a CD-ROM override
   **	path.
   */
-  if (MixAwareFile::HasSearchPaths()) {
+  if (SearchPaths::HasAny()) {
     RequiredCD = -2;
   }
 

@@ -10,14 +10,7 @@
 
 #include "gtest/gtest.h"
 #include "sdllib/file_access.h"
-
-// CDFileClass resolves "?:" search paths through the game's CD probe, which
-// only cdfile.cc declares. No drive is ever current in these tests, so this
-// is never called.
-// NOLINTBEGIN(misc-use-internal-linkage): satisfies cdfile.cc's extern.
-int Get_CD_Index(int cd_drive, int timeout);
-int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) { return -1; }
-// NOLINTEND(misc-use-internal-linkage)
+#include "tech/search_paths.h"
 
 namespace {
 
@@ -38,11 +31,11 @@ class CDFileTest : public ::testing::Test {
     second_dir_ = root / "second";
     std::filesystem::create_directories(first_dir_);
     std::filesystem::create_directories(second_dir_);
-    CDFileClass::ClearSearchPaths();
+    SearchPaths::Clear();
   }
 
   void TearDown() override {
-    CDFileClass::ClearSearchPaths();
+    SearchPaths::Clear();
     std::filesystem::remove_all(first_dir_.parent_path());
   }
 
@@ -65,7 +58,7 @@ class CDFileTest : public ::testing::Test {
 TEST_F(CDFileTest, NameFoundWithoutSearchingIsKept) {
   WriteFile(in_first(), "a");
   WriteFile(in_second(), "b");
-  CDFileClass::AddSearchPaths(second_dir());
+  SearchPaths::Add(second_dir());
 
   const CDFileClass file(in_first());
   EXPECT_EQ(file.FileName(), in_first());
@@ -75,16 +68,16 @@ TEST_F(CDFileTest, SearchPathsAreTriedInRegistrationOrder) {
   WriteFile(in_first(), "a");
   WriteFile(in_second(), "b");
 
-  CDFileClass::AddSearchPaths(first_dir() + ";" + second_dir());
+  SearchPaths::Add(first_dir() + ";" + second_dir());
   EXPECT_EQ(CDFileClass(kName).FileName(), in_first());
 
-  CDFileClass::ClearSearchPaths();
-  CDFileClass::AddSearchPaths(second_dir() + ";" + first_dir());
+  SearchPaths::Clear();
+  SearchPaths::Add(second_dir() + ";" + first_dir());
   EXPECT_EQ(CDFileClass(kName).FileName(), in_second());
 }
 
 TEST_F(CDFileTest, NameFoundNowhereStaysVerbatim) {
-  CDFileClass::AddSearchPaths(first_dir());
+  SearchPaths::Add(first_dir());
   CDFileClass file(kName);
   EXPECT_EQ(file.FileName(), kName);
   EXPECT_FALSE(file.IsAvailable());
@@ -92,7 +85,7 @@ TEST_F(CDFileTest, NameFoundNowhereStaysVerbatim) {
 
 TEST_F(CDFileTest, DisabledSearchTakesNameVerbatim) {
   WriteFile(in_first(), "a");
-  CDFileClass::AddSearchPaths(first_dir());
+  SearchPaths::Add(first_dir());
 
   CDFileClass file;
   file.SetSearchEnabled(false);
@@ -101,7 +94,7 @@ TEST_F(CDFileTest, DisabledSearchTakesNameVerbatim) {
 }
 
 TEST_F(CDFileTest, EmptyNameIsNotSearched) {
-  CDFileClass::AddSearchPaths(first_dir());
+  SearchPaths::Add(first_dir());
   CDFileClass file;
   file.SetName("");
   EXPECT_TRUE(file.FileName().empty());
@@ -109,7 +102,7 @@ TEST_F(CDFileTest, EmptyNameIsNotSearched) {
 
 TEST_F(CDFileTest, ReadOpenSearchesButWriteOpenDoesNot) {
   WriteFile(in_first(), "a");
-  CDFileClass::AddSearchPaths(first_dir());
+  SearchPaths::Add(first_dir());
 
   CDFileClass file;
   file.Open(kName, FileAccess::kRead);

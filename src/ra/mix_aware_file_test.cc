@@ -21,6 +21,7 @@
 #include "tech/crc.h"
 #include "tech/disk_file.h"
 #include "tech/file.h"
+#include "tech/search_paths.h"
 
 // The real definition lives in the game, which would drag all of it in. No
 // CD drive is ever current here, so it is never called.
@@ -90,7 +91,7 @@ class MixAwareFileTest : public ::testing::Test {
 
   void TearDown() override {
     MFCD::Free_All();
-    MixAwareFile::ClearSearchPaths();
+    SearchPaths::Clear();
     std::filesystem::remove(mix_path_);
     std::filesystem::remove(loose_path_);
     std::filesystem::remove_all(search_dir_);
@@ -116,7 +117,7 @@ class MixAwareFileTest : public ::testing::Test {
   void WriteLooseCopy(const std::string& bytes) {
     std::filesystem::create_directories(search_dir_);
     WriteFile(search_dir_ / kPackedName, {bytes.begin(), bytes.end()});
-    MixAwareFile::AddSearchPaths(search_dir_.string());
+    SearchPaths::Add(search_dir_.string());
   }
 
   [[nodiscard]] const std::filesystem::path& loose_path() const

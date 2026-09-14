@@ -131,6 +131,7 @@
 #include "tech/crc.h"
 #include "tech/disk_file.h"
 #include "tech/number_parse.h"
+#include "tech/search_paths.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifdef _WIN32
@@ -358,13 +359,13 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   }
 #endif
 
-  CCFileClass::AddSearchPaths(".");  // allow running without CD
+  SearchPaths::Add(".");  // allow running without CD
 
   DLOG(INFO) << "C&C95 - About to search for CD drives";
   /*
   **	Always try to look at the CD-ROM for data files.
   */
-  if (!CCFileClass::HasSearchPaths()) {
+  if (!SearchPaths::HasAny()) {
     /*
     ** If there are no search drives specified then we must be playing
     ** off cd, so read files from there.
@@ -379,9 +380,9 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
         Prog_End();
         exit(EXIT_FAILURE);
       }
-      CCFileClass::SetCdDrive(CDList.Get_First_CD_Drive());
+      SearchPaths::SetCdDrive(CDList.Get_First_CD_Drive());
 
-      error = CCFileClass::AddSearchPaths("?:\\");
+      error = SearchPaths::Add("?:\\");
       switch (error) {
         case 1:
           Set_Palette(GamePalette);
@@ -687,7 +688,7 @@ void Uninit_Game() {
 
   delete[] static_cast<char*>(SpeechBuffer);
 
-  CCFileClass::ClearSearchPaths();
+  SearchPaths::Clear();
   MFCD::Free_All();
 
   Units.Set_Heap(0);
@@ -1053,7 +1054,7 @@ bool Select_Game(bool fade) {
           ** Ensure that CD1 or CD2 is in the drive. These missions
           ** are not on the covert CD.
           */
-          cd_index = Get_CD_Index(CCFileClass::current_cd_drive(), 1 * 60);
+          cd_index = Get_CD_Index(SearchPaths::current_cd_drive(), 1 * 60);
           /*
           ** If cd_index == 2 then its a covert CD
           */
@@ -2397,7 +2398,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     **	File search path override.
     */
     if (strstr(string, "-CD")) {
-      CCFileClass::AddSearchPaths(original_arg.substr(3));
+      SearchPaths::Add(original_arg.substr(3));
       continue;
     }
 #ifdef JAPANESE

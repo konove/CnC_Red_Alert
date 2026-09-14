@@ -49,6 +49,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <limits>
+#include <optional>
 #include <span>
 #include <string>
 #include <string_view>
@@ -60,6 +61,11 @@
 #ifndef WWERROR
 #define WWERROR (-1)
 #endif
+
+// Returns path if a file exists there, otherwise the lowercased path if a file
+// exists there (game data is named in upper case, while Unix installs often
+// carry it in lower case), otherwise nullopt.
+std::optional<std::string> FindExistingFile(std::string_view path);
 
 // A File that reads and writes a single file on disk through the low-level
 // IO_* routines. Originally RAWFILE.H (class RawFileClass). Derived classes add

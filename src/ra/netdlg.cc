@@ -206,6 +206,7 @@ constexpr size_t kGameListItemSize = MPLAYER_NAME_MAX + 64;
 #include "ra/config.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
+#include "tech/search_paths.h"
 
 //---------------------------------------------------------------------------
 //	The possible states of the join-game dialog
@@ -2481,7 +2482,7 @@ static int Net_Join_Dialog() {
               IsMissionAftermath(Session.ScenarioFileName)))) {
           MixAwareFile check_file(Session.ScenarioFileName);
           if (!check_file.IsAvailable()) {
-            const int current_drive = MixAwareFile::current_cd_drive();
+            const int current_drive = SearchPaths::current_cd_drive();
             const int index = Get_CD_Index(current_drive, 1 * 60);
             bool needcd = false;
             if (IsMissionCounterstrike(Session.ScenarioFileName) &&

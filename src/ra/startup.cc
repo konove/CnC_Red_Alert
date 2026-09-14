@@ -82,9 +82,9 @@
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
-#include "tech/cdfile.h"
 #include "tech/disk_file.h"
 #include "tech/number_parse.h"
+#include "tech/search_paths.h"
 
 #ifdef _WIN32
 #include <direct.h>  //chdir
@@ -300,7 +300,7 @@ int main(int argc, char* argv[])
       WWMouse = new WWMouseClass(&SeenBuff, 48, 48);
       MouseInstalled = true;
 
-      CDFileClass::SetCdDrive(CDList.Get_First_CD_Drive());
+      SearchPaths::SetCdDrive(CDList.Get_First_CD_Drive());
 
       /*
       ** See if we should run the intro

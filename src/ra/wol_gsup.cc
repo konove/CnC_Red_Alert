@@ -85,6 +85,7 @@ static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 #include "ra/ww_audio.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
+#include "tech/search_paths.h"
 
 #define PARAMREFRESHWAIT 2000
 
@@ -449,7 +450,7 @@ void WOL_GameSetupDialog::Initialize() {
 
   if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME) {
     bAftermathUnits = true;
-    const int current_drive = MixAwareFile::current_cd_drive();
+    const int current_drive = SearchPaths::current_cd_drive();
     const int cd_index = Get_CD_Index(current_drive, 1 * 60);
     if (cd_index != 3 && cd_index != 5) {
       WOL_PrintMessage(*pILDisc, TXT_WOL_AMDISCNEEDED,
