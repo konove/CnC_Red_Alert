@@ -1802,7 +1802,7 @@ bool RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
             cell = XY_Cell(cell_x, cell_y);
             Map.Set_Tactical_Position(Cell_Coord(cell));
             cell = Coord_Cell(Map.DesiredTacticalCoord);
-            Map.DisplayClass::IsDisplayToRedraw = true;
+            Map.IsDisplayToRedraw = true;
             Map.Flag_To_Redraw(true);
             Map.SpecialRadarFrame = 4;
           }

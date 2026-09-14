@@ -3455,7 +3455,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
       Set_Default_Mouse(MOUSE_NORMAL, wsmall);
       IsRubberBand = false;
       IsTentative = false;
-      Map.DisplayClass::IsDisplayToRedraw = true;
+      Map.IsDisplayToRedraw = true;
       Map.Flag_To_Redraw(false);
 
     } else {
