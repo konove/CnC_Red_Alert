@@ -19,7 +19,11 @@
 - Step 3 is complete: `4c7bb308` base::ssize + SeekOrigin + Error() removed; `f68ea3f8` span I/O,
   ReadObject/WriteObject/ReadBytes/ReadString, 105 call sites converted; raw-pointer Read/Write
   remain as non-virtual adapters on File (each override carries `using File::Read/Write`).
-- Next: step 4.
+- Step 4 is complete (`68279c24`): `tech/search_paths.{h,cc}` with
+  `SearchPaths::Add/Clear/Refresh/ HasAny/SetCdDrive/Resolve`; `FindExistingFile()` in
+  `tech/disk_file.h`; CDFileClass keeps only `SetSearchEnabled`. The `Get_CD_Index` extern lives in
+  search_paths.cc; tech tests stub it once in search_paths_test.cc.
+- Next: step 5.
 
 ## Context
 
