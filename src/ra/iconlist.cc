@@ -46,10 +46,17 @@
 #include "ra/dialog.h"
 #include "ra/dib.h"
 #include "ra/externs.h"
+#include "ra/gadget.h"
 #include "ra/inline.h"
+#include "ra/list.h"
+#include "ra/vector_dynamic.h"
 #include "ra/winbits.h"
+#include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 
 namespace {
 

@@ -7,7 +7,7 @@
 #include "base/types.h"
 #include "ra/defines.h"
 #include "ra/dib.h"
-#include "ra/externs.h"
+#include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/ww_win.h"
 

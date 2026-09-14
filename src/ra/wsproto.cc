@@ -67,6 +67,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <utility>
 
 #include "base/numeric.h"
 #include "port/socket_bytes.h"
@@ -74,6 +75,7 @@
 #include "ra/ipxaddr.h"
 #include "ra/jshell.h"
 #include "ra/vector.h"
+#include "sdllib/net_select.h"
 
 #ifdef _WIN32
 #include <winsock.h>

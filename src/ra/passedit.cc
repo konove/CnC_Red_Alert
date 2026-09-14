@@ -3,6 +3,8 @@
 #include <cstring>
 #include <string>
 
+#include "ra/woledit.h"
+
 void PassEditClass::Set_Focus() {
   if (bClearOnNextSetFocus) {
     // The buffer holds the saved, scrambled password. Throw it away rather

@@ -28,17 +28,17 @@
 
 #include "ra/conquer.h"
 
-#include <fcntl.h>
-
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <filesystem>
 #include <iterator>
 #include <memory>
+#include <span>
 #include <string>
 #include <utility>
 #include <vector>
@@ -63,6 +63,7 @@
 #include "ra/debug.h"
 #include "ra/defines.h"
 #include "ra/display.h"
+#include "ra/display_constants.h"
 #include "ra/event.h"
 #include "ra/externs.h"
 #include "ra/face.h"
@@ -75,7 +76,9 @@
 #include "ra/infantry.h"
 #include "ra/init.h"
 #include "ra/inline.h"
+#include "ra/internet.h"
 #include "ra/interpal.h"
+#include "ra/ipx.h"
 #include "ra/ipxaddr.h"
 #include "ra/ipxgconn.h"
 #include "ra/ipxmgr.h"
@@ -95,6 +98,7 @@
 #include "ra/object.h"
 #include "ra/palette.h"
 #include "ra/queue.h"
+#include "ra/rawolapi.h"
 #include "ra/rules.h"
 #include "ra/saveload.h"
 #include "ra/scenario.h"
@@ -115,11 +119,13 @@
 #include "ra/ww_audio.h"
 #include "sdllib/bitmap.h"
 #include "sdllib/drawbuff.h"
+#include "sdllib/file_access.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/playcd.h"
 #include "sdllib/shape.h"
+#include "sdllib/timer.h"
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"

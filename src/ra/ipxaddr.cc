@@ -50,6 +50,7 @@
 #include <cstring>
 
 #include "ra/_wsproto.h"
+#include "ra/ipx.h"
 #include "ra/wsproto.h"
 
 /***************************************************************************

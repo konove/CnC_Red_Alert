@@ -54,9 +54,10 @@
 
 #include "ra/theme.h"
 
-#include <iterator>
 #include <cstring>
 #include <filesystem>
+#include <iterator>
+#include <string>
 
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"

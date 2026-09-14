@@ -54,7 +54,8 @@
 
 #include "ra/bench_util.h"
 #include "ra/config.h"
-#include "ra/display.h"
+#include "ra/defines.h"
+#include "ra/display_constants.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/globals.h"
@@ -63,6 +64,8 @@
 #include "ra/mapedit.h"
 #include "ra/msglist.h"
 #include "ra/session.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 
 GadgetClass* GScreenClass::Buttons = nullptr;

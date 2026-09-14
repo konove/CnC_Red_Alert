@@ -49,14 +49,17 @@
 #include <cstdlib>
 
 #include "ra/building.h"
+#include "ra/ccini.h"
 #include "ra/cell.h"
 #include "ra/coord.h"
+#include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/map.h"
 #include "ra/mapedit.h"
+#include "ra/object.h"
 #include "ra/session.h"
 #include "tech/lcwpipe.h"
 #include "tech/lcwstraw.h"

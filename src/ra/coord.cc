@@ -28,10 +28,12 @@
 #include "base/trig.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/const.h"
-#include "ra/display.h"
+#include "ra/defines.h"
+#include "ra/display_constants.h"
+#include "ra/face.h"
 #include "ra/inline.h"
-#include "ra/jshell.h"
 #include "ra/target.h"
+#include "tech/rect.h"
 
 const int16_t* Coord_Spillage_List(const COORDINATE coord, const Rect& rect,
                                    const bool no_center) {

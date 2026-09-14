@@ -59,9 +59,14 @@
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/bench_util.h"
+#include "ra/ccini.h"
 #include "ra/config.h"
 #include "ra/const.h"
+#include "ra/defines.h"
 #include "ra/externs.h"
+#include "ra/monoc.h"
+#include "ra/object.h"
+#include "tech/fixed.h"
 
 /***********************************************************************************************
  * MissionClass::MissionClass -- Default constructor for the mission object

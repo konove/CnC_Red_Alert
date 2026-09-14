@@ -54,6 +54,9 @@
 
 #include "port/safe_string.h"
 #include "ra/_wsproto.h"
+#include "ra/connect.h"
+#include "ra/ipx.h"
+#include "ra/ipxaddr.h"
 #include "ra/wsproto.h"
 
 /*

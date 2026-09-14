@@ -49,8 +49,12 @@
 #include "ra/face.h"
 #include "ra/globals.h"
 #include "ra/goptions.h"
+#include "ra/help.h"
 #include "ra/inline.h"
+#include "ra/jshell.h"
 #include "sdllib/gbuffer.h"
+#include "sdllib/keyboard.h"
+#include "tech/ftimer.h"
 
 #define SCROLL_DELAY 1
 

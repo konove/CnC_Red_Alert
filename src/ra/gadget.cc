@@ -66,12 +66,15 @@
 
 #include "ra/config.h"
 #include "ra/control.h"
+#include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/filepcx.h"
 #include "ra/globals.h"
 #include "ra/jshell.h"
+#include "ra/link.h"
 #include "ra/ww_audio.h"
 #include "sdllib/gbuffer.h"
+#include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "tech/cdfile.h"
 

@@ -56,7 +56,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
-#include <string>
 
 #include "externs.h"
 #include "magic_enum/magic_enum.hpp"
@@ -64,11 +63,10 @@
 #include "ra/conquer.h"
 #include "ra/const.h"
 #include "ra/defines.h"
-#include "ra/display.h"
+#include "ra/display_constants.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
-#include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/smudge.h"

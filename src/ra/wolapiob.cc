@@ -21,7 +21,24 @@
 
 #include "ra/wolapiob.h"
 
+#include <cstdlib>
+#include <span>
+
+#include "port/win32/win32_types.h"
+#include "ra/ccfile.h"
+#include "ra/conquer.h"
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/dib.h"
+#include "ra/globals.h"
+#include "ra/iconlist.h"
+#include "ra/type.h"
+#include "ra/wolapi/chatdefs.h"
+#include "ra/wolapi/wolapi.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/wwstd.h"
 #include "tech/number_parse.h"
+#include "tech/rgb.h"
 
 #ifdef _WIN32
 #include <winsock.h>
@@ -59,7 +76,6 @@
 #include "ra/tooltip.h"
 #include "ra/wol_gsup.h"
 #include "ra/wol_main.h"
-#include "ra/woldebug.h"
 #include "ra/wolstrng.h"
 #include "ra/ww_audio.h"
 #include "sdllib/timer.h"

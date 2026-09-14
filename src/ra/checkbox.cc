@@ -44,8 +44,11 @@
 #include "ra/compat.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
+#include "ra/gadget.h"
+#include "ra/toggle.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
+#include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 

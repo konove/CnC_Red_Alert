@@ -1,6 +1,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "base/types.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/type.h"

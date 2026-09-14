@@ -46,6 +46,8 @@
 
 #include <cstring>
 
+#include "ra/wsproto.h"
+
 #ifdef _WIN32
 /*
 ** This file normally resides with the SDK. However, since it needs fixing up

@@ -62,19 +62,20 @@
  *- - */
 
 #include "ra/vortex.h"
-#include "tech/archive.h"
 
 #include <algorithm>
-#include <cstdio>
 #include <cstdint>
+#include <cstdio>
 
+#include "base/types.h"
 #include "ra/building.h"
-#include "ra/scenario.h"
 #include "ra/ccfile.h"
 #include "ra/cell.h"
 #include "ra/conquer.h"
 #include "ra/coord.h"
+#include "ra/defines.h"
 #include "ra/display.h"
+#include "ra/display_constants.h"
 #include "ra/externs.h"
 #include "ra/globals.h"
 #include "ra/inline.h"
@@ -83,6 +84,8 @@
 #include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/mouse.h"
+#include "ra/palette.h"
+#include "ra/scenario.h"
 #include "ra/target.h"
 #include "ra/techno.h"
 #include "ra/type.h"
@@ -90,10 +93,11 @@
 #include "ra/ww_audio.h"
 #include "sdllib/buffer.h"
 #include "sdllib/drawbuff.h"
+#include "sdllib/gbuffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_win.h"
+#include "tech/archive.h"
 #include "tech/rgb.h"
-#include "base/types.h"
 
 /*
 ** Instance of chronal vortex class. This must be the only instance.

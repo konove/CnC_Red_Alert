@@ -42,6 +42,9 @@
 
 #include "ra/toggle.h"
 
+#include "ra/control.h"
+#include "ra/gadget.h"
+#include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 
 /***********************************************************************************************

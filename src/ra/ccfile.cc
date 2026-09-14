@@ -51,6 +51,7 @@
 
 #include <cerrno>
 #include <cstdint>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
@@ -65,8 +66,11 @@
 #include "ra/jshell.h"
 #include "ra/startup.h"
 #include "sdllib/file.h"
+#include "sdllib/file_access.h"
+#include "tech/cdfile.h"
 #include "tech/mixfile.h"
 #include "tech/rawfile.h"
+#include "tech/wwfile.h"
 
 /***********************************************************************************************
  * CCFileClass::CCFileClass -- Filename based constructor for C&C file. *

@@ -48,7 +48,6 @@
 #include <string>
 
 #include "ra/ccfile.h"
-#include "ra/compat.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -67,7 +66,7 @@
 #include "ra/session.h"
 #include "ra/textbtn.h"
 #include "ra/vector.h"
-#include "ra/vector_dynamic.h"
+#include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"

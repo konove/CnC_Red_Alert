@@ -67,7 +67,7 @@
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/display.h"
+#include "ra/display_constants.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/globals.h"

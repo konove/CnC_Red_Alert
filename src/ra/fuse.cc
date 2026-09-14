@@ -47,8 +47,8 @@
 
 #include "ra/coord.h"
 #include "ra/defines.h"
-#include "ra/display.h"
-
+#include "ra/display_constants.h"
+#include "tech/wwfile.h"
 
 /***********************************************************************************************
  * FuseClass::Arm_Fuse -- Sets up fuse for detonation check. *

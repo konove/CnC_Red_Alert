@@ -43,12 +43,15 @@
 #include "ra/egos.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstring>
 
 #include "base/numeric.h"
+#include "base/types.h"
 #include "port/safe_string.h"
 #include "ra/ccfile.h"
 #include "ra/conquer.h"
+#include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
@@ -62,13 +65,13 @@
 #include "ra/vector_dynamic.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
+#include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/memflag.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
-#include "base/types.h"
 
 /*
 ** List of Ego Class instances

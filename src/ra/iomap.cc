@@ -34,7 +34,6 @@
 #include "ra/externs.h"
 #include "ra/gscreen.h"
 #include "ra/help.h"
-#include "ra/jshell.h"
 #include "ra/map.h"
 #include "ra/mouse.h"
 #include "ra/object.h"

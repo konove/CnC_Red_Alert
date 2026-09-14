@@ -42,6 +42,7 @@
 #include "ra/flasher.h"
 
 #include "ra/config.h"
+#include "ra/monoc.h"
 
 /***********************************************************************************************
  * FlasherClass::Debug_Dump -- Displays current status to the monochrome screen.

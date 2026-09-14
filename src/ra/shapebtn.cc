@@ -47,6 +47,7 @@
 #include "ra/defines.h"
 #include "ra/globals.h"
 #include "ra/keyframe.h"
+#include "ra/toggle.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"

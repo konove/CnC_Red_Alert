@@ -51,11 +51,16 @@
 
 #include <algorithm>
 
+#include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
+#include "ra/gadget.h"
+#include "ra/gauge.h"
 #include "ra/globals.h"
+#include "ra/shapebtn.h"
 #include "sdllib/drawbuff.h"
+#include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "tech/fixed.h"
 

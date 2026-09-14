@@ -48,6 +48,7 @@
 #include "base/numeric.h"
 #include "port/aligned_buffer.h"
 #include "port/unaligned.h"
+#include "ra/connect.h"
 #include "sdllib/wincomm.h"
 
 /***************************************************************************

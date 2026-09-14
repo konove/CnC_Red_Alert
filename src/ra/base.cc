@@ -67,15 +67,12 @@
 #include "ra/externs.h"
 #include "ra/house.h"
 #include "ra/map.h"
-#include "ra/mapedit.h"
 #include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/type.h"
 #include "ra/vector.h"
 #include "tech/archive.h"
 #include "tech/number_parse.h"
-#include "tech/pipe.h"
-#include "tech/straw.h"
 
 /***********************************************************************************************
  * BaseNodeClass::operator == -- equality operator *

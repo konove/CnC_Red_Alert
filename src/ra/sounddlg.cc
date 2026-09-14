@@ -60,7 +60,6 @@
 #include "ra/textbtn.h"
 #include "ra/theme.h"
 #include "ra/vector.h"
-#include "ra/vector_dynamic.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"

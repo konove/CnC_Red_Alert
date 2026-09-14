@@ -60,7 +60,6 @@
  *pre-prolog "please wait" page.                      *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
-#include "base/numeric.h"
 #include "ra/init.h"
 
 #include <algorithm>
@@ -80,6 +79,7 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/match.h"
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/platform.h"
@@ -92,7 +92,6 @@
 #include "ra/const.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/event.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/globals.h"
@@ -102,7 +101,6 @@
 #include "ra/house.h"
 #include "ra/ini.h"
 #include "ra/inline.h"
-#include "ra/internet.h"
 #include "ra/intro.h"
 #include "ra/ipx.h"
 #include "ra/ipxaddr.h"
@@ -132,7 +130,6 @@
 #include "ra/theme.h"
 #include "ra/type.h"
 #include "ra/vector.h"
-#include "ra/vector_dynamic.h"
 #include "ra/wsproto.h"
 #include "ra/wspudp.h"
 #include "sdllib/file.h"
@@ -157,7 +154,6 @@
 #include "tech/pk.h"
 #include "tech/ramfile.h"
 #include "tech/random.h"
-#include "tech/rawfile.h"
 #include "tech/rgb.h"
 #include "tech/rndstraw.h"
 #include "tech/xpipe.h"

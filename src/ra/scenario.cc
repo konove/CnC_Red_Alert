@@ -69,6 +69,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cctype>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -78,6 +79,7 @@
 
 #include "absl/log/log.h"
 #include "magic_enum/magic_enum.hpp"
+#include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -90,7 +92,6 @@
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
-#include "ra/compat.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/const.h"
@@ -111,7 +112,6 @@
 #include "ra/ini.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/link.h"
 #include "ra/logic.h"
 #include "ra/map.h"
 #include "ra/mapedit.h"
@@ -154,6 +154,7 @@
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "tech/ftimer.h"
 #include "tech/number_parse.h"
 #include "tech/rawfile.h"
 

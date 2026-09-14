@@ -56,10 +56,9 @@
 #include <cstring>
 
 #include "port/safe_string.h"
-#include "ra/compat.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
-#include "ra/config.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/globals.h"
@@ -71,6 +70,7 @@
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
+#include "sdllib/wwstd.h"
 
 /***********************************************************************************************
  * Dialog_Box -- draws a dialog background box *

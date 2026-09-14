@@ -72,18 +72,24 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
+#include <cstring>
 
 #include "base/numeric.h"
-#include "port/aligned_buffer.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
 #include "ra/_wsproto.h"
 #include "ra/combuf.h"
 #include "ra/connect.h"
+#include "ra/connmgr.h"
 #include "ra/event.h"
 #include "ra/externs.h"
 #include "ra/house.h"
+#include "ra/ipx.h"
+#include "ra/ipxaddr.h"
+#include "ra/ipxconn.h"
+#include "ra/ipxgconn.h"
 #include "ra/monoc.h"
 #include "ra/session.h"
 #include "ra/vector.h"

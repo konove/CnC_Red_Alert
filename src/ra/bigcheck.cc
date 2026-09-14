@@ -22,10 +22,15 @@
 #include "ra/bigcheck.h"
 
 #include "ra/conquer.h"
+#include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
+#include "ra/toggle.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 
 //***********************************************************************************************
 bool BigCheckBoxClass::Draw_Me(bool forced) {

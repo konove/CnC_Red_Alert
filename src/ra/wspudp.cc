@@ -59,8 +59,11 @@
 #include "port/socket_bytes.h"
 #include "port/unaligned.h"
 #include "ra/externs.h"
+#include "ra/internet.h"
 #include "ra/jshell.h"
 #include "ra/vector.h"
+#include "ra/wsproto.h"
+#include "sdllib/net_select.h"
 
 #ifdef _WIN32
 #include <nspapi.h>

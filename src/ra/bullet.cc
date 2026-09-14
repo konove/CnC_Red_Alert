@@ -72,6 +72,7 @@
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display.h"
+#include "ra/display_constants.h"
 #include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/facing.h"

@@ -50,11 +50,13 @@
 #include <chrono>
 #include <cstdint>
 #include <cstring>
+#include <span>
 #include <utility>
 
 #include "base/numeric.h"
 #include "port/aligned_buffer.h"
 #include "port/unaligned.h"
+#include "ra/combuf.h"
 
 /*
 ********************************* Globals ***********************************

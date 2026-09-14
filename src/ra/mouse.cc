@@ -51,10 +51,15 @@
 #include <cassert>
 
 #include "magic_enum/magic_enum.hpp"
+#include "ra/defines.h"
 #include "ra/externs.h"
+#include "ra/jshell.h"
+#include "ra/scroll.h"
 #include "sdllib/gbuffer.h"
+#include "sdllib/keyboard.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
+#include "tech/ftimer.h"
 
 /*
 **	This points to the loaded mouse shapes.

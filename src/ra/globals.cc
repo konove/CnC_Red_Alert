@@ -39,8 +39,11 @@
 #include "ra/globals.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
+#include <span>
 #include <string>
+#include <vector>
 
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
@@ -94,7 +97,6 @@
 #include "ra/vessel.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/playcd.h"
-#include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/bench.h"

@@ -23,14 +23,12 @@
 #include <cstring>
 #include <string>
 #include <string_view>
-#include <utility>
 
 #include "absl/base/attributes.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "base/numeric.h"
 #include "ra/ccfile.h"
-#include "ra/compat.h"
 #include "ra/externs.h"
 #include "ra/filepcx.h"
 #include "ra/graphics_loader.h"
@@ -38,6 +36,7 @@
 #include "ra/mapedit.h"
 #include "ra/palette.h"
 #include "ra/theme.h"
+#include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/iconcach.h"
 #include "sdllib/ww_audio.h"

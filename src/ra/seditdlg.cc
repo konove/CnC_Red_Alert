@@ -29,14 +29,19 @@
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
+#include "ra/edit.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
+#include "ra/globals.h"
 #include "ra/inline.h"
 #include "ra/msgbox.h"
 #include "ra/textbtn.h"
 #include "ra/woledit.h"
 #include "sdllib/font.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 
 bool disable_current_msgbox = false;
 

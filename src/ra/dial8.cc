@@ -44,13 +44,16 @@
 #include "ra/dial8.h"
 
 #include "ra/control.h"
+#include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/face.h"
+#include "ra/gadget.h"
 #include "ra/globals.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
+#include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 
 /***************************************************************************

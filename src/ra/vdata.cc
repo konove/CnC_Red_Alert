@@ -65,7 +65,6 @@
 #include "port/ex_string.h"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
-#include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/face.h"

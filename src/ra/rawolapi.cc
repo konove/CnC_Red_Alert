@@ -24,6 +24,7 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <ctime>
 #include <iterator>
@@ -32,14 +33,20 @@
 #include "absl/log/check.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
+#include "port/win32/win32_com.h"
 #include "port/win32/win32_system.h"
+#include "port/win32/win32_types.h"
+#include "ra/conquer.h"
+#include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/jshell.h"
 #include "ra/msgbox.h"
 #include "ra/wol_gsup.h"
+#include "ra/wolapi/chatdefs.h"
+#include "ra/wolapi/downloaddefs.h"
 #include "ra/wolapi/netutildefs.h"
+#include "ra/wolapi/wolapi.h"
 #include "ra/wolapiob.h"
-#include "ra/woldebug.h"
 #include "ra/wolstrng.h"
 #include "ra/ww_audio.h"
 #include "sdllib/timer.h"

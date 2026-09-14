@@ -41,12 +41,11 @@
 #include "ra/msgbox.h"
 
 #include <algorithm>
-#include <cstddef>
 #include <cstdint>
 #include <cstring>
 
 #include "base/numeric.h"
-#include "ra/control.h"
+#include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"

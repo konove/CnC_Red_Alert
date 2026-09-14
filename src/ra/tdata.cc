@@ -56,7 +56,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
-#include <string>
 
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"

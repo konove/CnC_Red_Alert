@@ -46,7 +46,7 @@
 
 #include "ra/coord.h"
 #include "ra/defines.h"
-#include "ra/display.h"
+#include "ra/display_constants.h"
 #include "ra/face.h"
 #include "tech/fixed.h"
 
@@ -71,7 +71,7 @@
 ImpactType FlyClass::Physics(COORDINATE& coord, DirType facing) {
   if (SpeedAdd != MPH_IMMOBILE) {
     int actual = static_cast<int>(SpeedAdd) + SpeedAccum;
-    div_t result = div(actual, PIXEL_LEPTON_W);
+    const std::div_t result = std::div(actual, PIXEL_LEPTON_W);
     SpeedAccum = result.rem;
     actual -= result.rem;
     const COORDINATE old = coord;

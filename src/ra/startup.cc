@@ -46,10 +46,12 @@
 #include <cstring>
 #include <filesystem>
 
+#include "absl/base/log_severity.h"
 #include "absl/log/globals.h"
 #include "absl/log/initialize.h"
 #include "port/win32/win32_registry.h"
 #include "port/win32/win32_system.h"
+#include "port/win32/win32_types.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -69,6 +71,7 @@
 #include "ra/profile.h"
 #include "ra/session.h"
 #include "ra/special.h"
+#include "ra/type.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/file.h"
 #include "sdllib/gbuffer.h"
@@ -82,7 +85,6 @@
 #include "tech/cdfile.h"
 #include "tech/number_parse.h"
 #include "tech/rawfile.h"
-#include "tech/wwfile.h"
 
 #ifdef _WIN32
 #include <direct.h>  //chdir

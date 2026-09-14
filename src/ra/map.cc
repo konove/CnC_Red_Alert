@@ -79,10 +79,13 @@
 #include "ra/anim.h"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
+#include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display.h"
+#include "ra/display_constants.h"
 #include "ra/externs.h"
 #include "ra/globals.h"
+#include "ra/gscreen.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/layer.h"
@@ -103,6 +106,8 @@
 #include "tech/fixed.h"
 #include "tech/lcwpipe.h"
 #include "tech/lcwstraw.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 #define MCW MAP_CELL_W
 const int MapClass::RadiusOffset[] = {

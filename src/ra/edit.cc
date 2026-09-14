@@ -26,12 +26,14 @@
 
 #include "ra/conquer.h"
 #include "ra/control.h"
+#include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
+#include "ra/gadget.h"
 #include "ra/globals.h"
 #include "ra/jshell.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
+#include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 

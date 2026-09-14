@@ -42,10 +42,14 @@
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
+#include "ra/defines.h"
 #include "ra/dialog.h"
+#include "ra/edit.h"
 #include "ra/gadget.h"
 #include "ra/keyframe.h"
+#include "ra/link.h"
 #include "sdllib/font.h"
+#include "sdllib/keyboard.h"
 
 DropListClass::DropListClass(int id, char* text, int max_len,
                              TextPrintType flags, int x, int y, int w, int h,

@@ -5,7 +5,6 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/carry.h"
 #include "ra/defines.h"
-#include "ra/jshell.h"
 #include "ra/options.h"
 #include "ra/scenario.h"
 #include "ra/score.h"

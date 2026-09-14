@@ -50,8 +50,11 @@
 
 #include "ra/weapon.h"
 
+#include <cstddef>
+
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
+#include "ra/ccini.h"
 #include "ra/const.h"
 #include "ra/defines.h"
 #include "ra/externs.h"

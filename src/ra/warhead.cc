@@ -48,10 +48,10 @@
 #include <cstring>
 
 #include "magic_enum/magic_enum.hpp"
+#include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/heap.h"
-#include "ra/jshell.h"
 
 /***************************************************************************
 **	This is the warhead data object array.

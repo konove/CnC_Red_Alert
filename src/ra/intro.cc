@@ -49,9 +49,7 @@
 #include "ra/palette.h"
 #include "ra/special.h"
 #include "sdllib/gbuffer.h"
-#include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
-#include "winvq/vqa32/vqaplay.h"
 
 /***********************************************************************************************
  * Choose_Side -- play the introduction movies, select house *

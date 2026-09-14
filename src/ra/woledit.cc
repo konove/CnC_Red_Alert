@@ -25,10 +25,14 @@
 
 #include "ra/woledit.h"
 
-#include "ra/conquer.h"
+#include "ra/control.h"
+#include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
+#include "ra/gadget.h"
+#include "ra/jshell.h"
 #include "sdllib/font.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/wwstd.h"
 
 bool bTabKeyPressedHack = false;
 

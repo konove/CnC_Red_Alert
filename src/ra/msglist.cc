@@ -54,7 +54,6 @@
  *   MessageListClass::Reset -- Reset so no messages are visible.          *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "base/numeric.h"
 #include "ra/msglist.h"
 
 #include <algorithm>
@@ -63,8 +62,10 @@
 #include <cstring>
 #include <utility>
 
+#include "base/numeric.h"
 #include "port/safe_string.h"
 #include "ra/conquer.h"
+#include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
@@ -74,6 +75,7 @@
 #include "ra/ww_audio.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
+#include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/ftimer.h"

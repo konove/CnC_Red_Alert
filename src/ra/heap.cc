@@ -52,7 +52,7 @@
 
 #include "ra/heap.h"
 
-#include <cstddef>
+#include <cstdint>
 #include <cstring>
 
 #include "base/algorithm.h"

@@ -52,11 +52,16 @@
 
 #include "ra/bench_util.h"
 #include "ra/conquer.h"
+#include "ra/defines.h"
 #include "ra/externs.h"
+#include "ra/gadget.h"
 #include "ra/house.h"
+#include "ra/jshell.h"
 #include "ra/mapedit.h"
+#include "ra/radar.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
+#include "sdllib/keyboard.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
 

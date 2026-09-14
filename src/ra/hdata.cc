@@ -57,7 +57,6 @@
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/heap.h"
-#include "ra/jshell.h"
 #include "ra/type.h"
 #include "tech/fixed.h"
 

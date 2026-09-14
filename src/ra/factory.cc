@@ -60,9 +60,11 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 
 #include "ra/building.h"
 #include "ra/ccptr.h"
+#include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/globals.h"
 #include "ra/heap.h"
@@ -70,6 +72,7 @@
 #include "ra/jshell.h"
 #include "ra/rules.h"
 #include "ra/techno.h"
+#include "ra/type.h"
 #include "tech/fixed.h"
 
 /***********************************************************************************************

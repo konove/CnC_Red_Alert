@@ -43,8 +43,10 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 
 #include "port/unaligned.h"
+#include "port/win32/win32_com.h"
 #include "ra/aircraft.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -55,6 +57,7 @@
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
+#include "ra/ipx.h"
 #include "ra/scenario.h"
 #include "ra/session.h"
 #include "ra/special.h"

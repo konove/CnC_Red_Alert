@@ -52,9 +52,12 @@
 #include "ra/trigger.h"
 
 #include <cassert>
+#include <cstddef>
+#include <cstdint>
 
 #include "ra/cell.h"
 #include "ra/config.h"
+#include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
@@ -63,12 +66,14 @@
 #include "ra/house.h"
 #include "ra/jshell.h"
 #include "ra/map.h"
-#include "ra/mapedit.h"
 #include "ra/monoc.h"
+#include "ra/object.h"
 #include "ra/scenario.h"
 #include "ra/taction.h"
 #include "ra/target.h"
+#include "ra/tevent.h"
 #include "ra/tracker.h"
+#include "ra/trigtype.h"
 #include "ra/vector_dynamic.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"

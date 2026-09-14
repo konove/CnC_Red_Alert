@@ -47,16 +47,21 @@
 #include "ra/jshell.h"
 
 #include <cstdarg>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <vector>
 
 #include "base/numeric.h"
 #include "base/types.h"
 #include "ra/ccfile.h"
+#include "ra/compat.h"
 #include "ra/monoc.h"
+#include "ra/palette.h"
 #include "ra/startup.h"
+#include "sdllib/iff.h"
 #include "sdllib/memflag.h"
 #include "sdllib/misc.h"
 #include "sdllib/tile.h"

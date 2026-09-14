@@ -9,7 +9,6 @@
 #include "ra/_wsproto.h"
 #include "ra/defines.h"
 #include "ra/globals.h"
-#include "ra/jshell.h"
 #include "ra/ipx.h"
 #include "ra/ipxaddr.h"
 #include "ra/score.h"

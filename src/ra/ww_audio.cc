@@ -60,7 +60,7 @@
 #include "ra/config.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
-#include "ra/display.h"
+#include "ra/display_constants.h"
 #include "ra/externs.h"
 #include "ra/globals.h"
 #include "ra/goptions.h"

@@ -1,7 +1,6 @@
 #include "ra/serialize.h"
 
 #include <concepts>
-#include <cstddef>
 #include <cstdint>
 
 #include "ra/aircraft.h"
@@ -23,9 +22,9 @@
 #include "ra/terrain.h"
 #include "ra/type.h"
 #include "ra/unit.h"
-#include "ra/vessel.h"
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
+#include "ra/vessel.h"
 #include "tech/archive.h"
 
 namespace {

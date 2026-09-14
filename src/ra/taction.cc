@@ -49,16 +49,15 @@
 #include "ra/taction.h"
 
 #include <cassert>
-#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <format>
+#include <string>
 #include <utility>
 
 #include "absl/log/log.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
-#include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/building.h"
@@ -69,6 +68,7 @@
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
+#include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/infantry.h"

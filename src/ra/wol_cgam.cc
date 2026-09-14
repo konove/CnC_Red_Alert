@@ -19,37 +19,31 @@
 //	Wol_CGam.cpp - Create game dialog.
 //	ajw 09/9/98
 
-#include "absl/log/check.h"
-#include "port/ex_string.h"
+#include <cstring>
+
 #include "port/safe_string.h"
 #include "port/sleep.h"
-#include "port/win32/win32_registry.h"
-#include "port/win32/win32_system.h"
 #include "ra/bigcheck.h"
-#include "ra/cheklist.h"
+#include "ra/conquer.h"
+#include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/drop.h"
-#include "ra/edit.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/gauge.h"
-#include "ra/iconlist.h"
-#include "ra/init.h"
+#include "ra/globals.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/msgbox.h"
 #include "ra/seditdlg.h"
-#include "ra/shapebtn.h"
 #include "ra/statbtn.h"
 #include "ra/textbtn.h"
-#include "ra/theme.h"
 #include "ra/wol_main.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
-#include "ra/ww_audio.h"
-#include "sdllib/font.h"
-#include "sdllib/timer.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 
 // extern char* LoadShpFile( const char* szShpFile );
 

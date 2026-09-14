@@ -51,6 +51,7 @@
 #include "ra/score.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <utility>
@@ -58,7 +59,6 @@
 #include "base/types.h"
 #include "ra/ccfile.h"
 #include "ra/ccptr.h"
-#include "ra/compat.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -84,14 +84,18 @@
 #include "ra/vector.h"
 #include "ra/ww_audio.h"
 #include "sdllib/drawbuff.h"
+#include "sdllib/file_access.h"
 #include "sdllib/font.h"
+#include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/shape.h"
 #include "sdllib/wsa.h"
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
+#include "sdllib/wwstd.h"
 #include "tech/fixed.h"
+#include "tech/ftimer.h"
 #include "tech/random.h"
 #include "tech/rgb.h"
 

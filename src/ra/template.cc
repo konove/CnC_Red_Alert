@@ -47,15 +47,18 @@
 #include "ra/template.h"
 
 #include <cassert>
+#include <cstddef>
 #include <utility>
 
 #include "ra/cell.h"
 #include "ra/coord.h"
+#include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
 #include "ra/map.h"
 #include "ra/mapedit.h"
+#include "ra/object.h"
 #include "sdllib/tile.h"
 
 /***********************************************************************************************

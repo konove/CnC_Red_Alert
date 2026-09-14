@@ -65,24 +65,24 @@
 
 #include <cassert>
 
+#include "ra/abstract.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/building.h"
 #include "ra/bullet.h"
 #include "ra/cell.h"
 #include "ra/coord.h"
+#include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/map.h"
-#include "ra/mapedit.h"
-#include "ra/overlay.h"
-#include "ra/smudge.h"
+#include "ra/object.h"
 #include "ra/team.h"
 #include "ra/teamtype.h"
 #include "ra/techno.h"
-#include "ra/terrain.h"
+#include "ra/terrain.h"  // IWYU pragma: keep
 #include "ra/trigger.h"
 #include "ra/trigtype.h"
 #include "ra/type.h"

@@ -142,6 +142,7 @@
 #include "ra/logic.h"
 #include "ra/map.h"
 #include "ra/mapedit.h"
+#include "ra/monoc.h"
 #include "ra/radio.h"
 #include "ra/rules.h"
 #include "ra/target.h"
@@ -158,7 +159,6 @@
 #include "session.h"
 #include "tech/fixed.h"
 #include "tech/rawfile.h"
-#include "tech/rect.h"
 
 /*
 **	Selected objects have a special marking box around them. This is the

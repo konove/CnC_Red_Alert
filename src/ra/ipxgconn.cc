@@ -50,6 +50,10 @@
 #include "port/aligned_buffer.h"
 #include "port/unaligned.h"
 #include "ra/combuf.h"
+#include "ra/connect.h"
+#include "ra/ipx.h"
+#include "ra/ipxaddr.h"
+#include "ra/ipxconn.h"
 
 /***************************************************************************
  * IPXGlobalConnClass::IPXGlobalConnClass -- class constructor             *

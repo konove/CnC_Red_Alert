@@ -42,6 +42,7 @@
 #include "ra/logic.h"
 
 #include <algorithm>
+#include <cstdint>
 
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
@@ -50,13 +51,14 @@
 #include "ra/conquer.h"
 #include "ra/coord.h"
 #include "ra/debug.h"
+#include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/factory.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
-#include "ra/jshell.h"
 #include "ra/mapedit.h"
+#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"

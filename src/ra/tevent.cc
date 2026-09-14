@@ -50,6 +50,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <format>
+#include <string>
 #include <utility>
 
 #include "port/ex_string.h"

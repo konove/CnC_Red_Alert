@@ -18,21 +18,24 @@
 
 //	ToolTip.cpp
 
-#include "base/numeric.h"
 #include "ra/tooltip.h"
 
 #include <cstdint>
 #include <cstring>
 
+#include "base/numeric.h"
 #include "base/types.h"
 #include "port/safe_string.h"
+#include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
+#include "ra/gadget.h"
 #include "ra/iconlist.h"
 #include "ra/winbits.h"
 #include "sdllib/font.h"
 #include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 
 namespace {
 

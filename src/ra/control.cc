@@ -45,6 +45,9 @@
 
 #include "ra/control.h"
 
+#include "ra/gadget.h"
+#include "sdllib/keyboard.h"
+
 /***********************************************************************************************
  * ControlClass::ControlClass -- Constructor for control class objects. *
  *                                                                                             *

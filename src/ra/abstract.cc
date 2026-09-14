@@ -25,8 +25,9 @@
 #include "ra/ccptr.h"
 #include "ra/config.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
+#include "ra/face.h"
 #include "ra/inline.h"
+#include "ra/monoc.h"
 #include "ra/target.h"
 #include "ra/type.h"
 

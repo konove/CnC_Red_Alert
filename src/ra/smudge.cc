@@ -53,13 +53,16 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "ra/ccini.h"
 #include "ra/cell.h"
 #include "ra/coord.h"
+#include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
 #include "ra/map.h"
 #include "ra/mapedit.h"
+#include "ra/object.h"
 #include "tech/number_parse.h"
 
 HousesType SmudgeClass::ToOwn = HOUSE_NONE;

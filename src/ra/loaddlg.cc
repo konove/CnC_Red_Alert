@@ -46,6 +46,7 @@
 
 #include <algorithm>
 #include <charconv>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <filesystem>

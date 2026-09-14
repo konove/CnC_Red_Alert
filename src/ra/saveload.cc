@@ -45,7 +45,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <new>
 #include <utility>
 #include <vector>
 
@@ -64,19 +63,17 @@
 #include "ra/ccptr.h"
 #include "ra/cell.h"
 #include "ra/conquer.h"
+#include "ra/defines.h"
 #include "ra/expand.h"
 #include "ra/externs.h"
 #include "ra/factory.h"
 #include "ra/globals.h"
-#include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/layer.h"
-#include "ra/link.h"
-#include "ra/logic.h"
 #include "ra/mapedit.h"
 #include "ra/mission_id.h"
 #include "ra/mouse.h"
@@ -88,6 +85,7 @@
 #include "ra/score.h"
 #include "ra/serialize.h"
 #include "ra/session.h"
+#include "ra/sidebar.h"
 #include "ra/smudge.h"
 #include "ra/special.h"
 #include "ra/startup.h"
@@ -105,15 +103,19 @@
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/vortex.h"
+#include "sdllib/file_access.h"
+#include "tech/archive.h"
 #include "tech/bfiofile.h"
 #include "tech/blowfish.h"
 #include "tech/blowpipe.h"
 #include "tech/blwstraw.h"
 #include "tech/lzopipe.h"
 #include "tech/lzostraw.h"
+#include "tech/pipe.h"
 #include "tech/rawfile.h"
 #include "tech/shapipe.h"
 #include "tech/shastraw.h"
+#include "tech/straw.h"
 #include "tech/teepipe.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"

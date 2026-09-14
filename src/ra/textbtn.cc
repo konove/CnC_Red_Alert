@@ -46,12 +46,15 @@
 
 #include "ra/textbtn.h"
 
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/control.h"
+#include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/globals.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/toggle.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"

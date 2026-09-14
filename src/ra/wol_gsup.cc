@@ -20,6 +20,8 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <ctime>
 #include <random>
@@ -28,18 +30,35 @@
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
+#include "port/win32/win32_types.h"
 #include "ra/bigcheck.h"
+#include "ra/ccfile.h"
 #include "ra/config.h"
+#include "ra/conquer.h"
+#include "ra/coord.h"
+#include "ra/defines.h"
+#include "ra/dib.h"
 #include "ra/externs.h"
+#include "ra/globals.h"
 #include "ra/iconlist.h"
+#include "ra/ipx.h"
 #include "ra/mission_id.h"
+#include "ra/rawolapi.h"
 #include "ra/session.h"
 #include "ra/tooltip.h"
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
+#include "ra/version.h"
+#include "ra/winbits.h"
 #include "ra/wol_main.h"
+#include "ra/wolapi/chatdefs.h"
+#include "ra/wolapi/wolapi.h"
+#include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 #include "ra/wsproto.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/wwstd.h"
 #include "tech/number_parse.h"
 
 static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
@@ -47,8 +66,6 @@ static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 #include "absl/log/check.h"
 #include "port/safe_string.h"
 #include "port/sleep.h"
-#include "port/win32/win32_registry.h"
-#include "port/win32/win32_system.h"
 #include "ra/_wsproto.h"
 #include "ra/cheklist.h"
 #include "ra/dialog.h"
@@ -56,7 +73,6 @@ static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 #include "ra/edit.h"
 #include "ra/gadget.h"
 #include "ra/gauge.h"
-#include "ra/init.h"
 #include "ra/inline.h"
 #include "ra/internet.h"
 #include "ra/jshell.h"
@@ -66,10 +82,7 @@ static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 #include "ra/shapebtn.h"
 #include "ra/statbtn.h"
 #include "ra/textbtn.h"
-#include "ra/theme.h"
-#include "ra/woldebug.h"
 #include "ra/ww_audio.h"
-#include "sdllib/font.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 

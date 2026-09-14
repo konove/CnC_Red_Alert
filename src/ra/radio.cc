@@ -50,7 +50,11 @@
 
 #include "magic_enum/magic_enum.hpp"
 #include "ra/config.h"
-#include "ra/techno.h"
+#include "ra/defines.h"
+#include "ra/globals.h"
+#include "ra/mission.h"
+#include "ra/monoc.h"
+#include "ra/techno.h"  // IWYU pragma: keep
 
 /*
 **	These are the text representations of the radio messages that can be

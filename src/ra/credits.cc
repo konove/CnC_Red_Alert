@@ -43,6 +43,7 @@
 #include "ra/credits.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdlib>
 
 #include "ra/bench_util.h"

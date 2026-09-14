@@ -45,21 +45,17 @@
 
 #include <array>
 #include <cstdio>
-#include <type_traits>
-#include <utility>
 
 #include "base/numeric.h"
 #include "ra/base.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
-#include "ra/control.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/dial8.h"
-#include "ra/display.h"
+#include "ra/display_constants.h"
 #include "ra/externs.h"
-#include "ra/facing.h"
 #include "ra/gauge.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
@@ -70,7 +66,6 @@
 #include "ra/object.h"
 #include "ra/techno.h"
 #include "ra/textbtn.h"
-#include "ra/txtlabel.h"
 #include "ra/type.h"
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"

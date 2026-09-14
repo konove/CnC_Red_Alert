@@ -21,6 +21,10 @@
 
 #include "ra/wol_main.h"
 
+#include "port/win32/win32_com.h"
+#include "port/win32/win32_types.h"
+#include "ra/conquer.h"
+#include "ra/defines.h"
 #include "ra/wol_gsup.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
@@ -28,32 +32,13 @@
 static bool ReregisterWolapiDLL();
 static void HandleDLLFail();
 
-#include "absl/log/check.h"
 #include "port/ex_string.h"
-#include "port/safe_string.h"
 #include "port/sleep.h"
 #include "port/win32/win32_registry.h"
 #include "port/win32/win32_system.h"
-#include "ra/cheklist.h"
-#include "ra/dialog.h"
-#include "ra/drop.h"
-#include "ra/edit.h"
 #include "ra/externs.h"
-#include "ra/gadget.h"
-#include "ra/gauge.h"
-#include "ra/init.h"
-#include "ra/inline.h"
-#include "ra/jshell.h"
 #include "ra/msgbox.h"
-#include "ra/shapebtn.h"
-#include "ra/statbtn.h"
-#include "ra/textbtn.h"
 #include "ra/theme.h"
-#include "ra/woldebug.h"
-#include "ra/ww_audio.h"
-#include "sdllib/font.h"
-#include "sdllib/timer.h"
-#include "sdllib/ww_mouse.h"
 
 //***********************************************************************************************
 //	The first time through, pWolapi is NULL thus wolapi gets set up.

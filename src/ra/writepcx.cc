@@ -42,6 +42,7 @@
 #include "base/types.h"
 #include "ra/filepcx.h"
 #include "ra/palette.h"
+#include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
 #include "tech/wwfile.h"
 
