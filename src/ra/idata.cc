@@ -77,12 +77,12 @@
 #include "ra/jshell.h"
 #include "ra/map.h"
 #include "ra/mapedit.h"
-#include "ra/mix_aware_file.h"
 #include "ra/object.h"
 #include "ra/rules.h"
 #include "ra/type.h"
 #include "sdllib/shape.h"
 #include "tech/disk_file.h"
+#include "tech/game_file.h"
 
 static DoInfoStruct DogDoControls[magic_enum::enum_count<DoType>()] = {
     {0, 1, 1},      // DO_STAND_READY
@@ -1246,7 +1246,7 @@ InfantryType InfantryTypeClass::From_Name(const char* name) {
  *=============================================================================================*/
 void InfantryTypeClass::One_Time() {
   for (const InfantryType index : magic_enum::enum_values<InfantryType>()) {
-    const MixAwareFile file;
+    const GameFile file;
 
     InfantryTypeClass* uclass = &As_Reference(index);
 

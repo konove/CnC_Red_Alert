@@ -73,7 +73,6 @@
 #include "ra/keyframe.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
-#include "ra/mix_aware_file.h"
 #include "ra/nullmgr.h"
 #include "ra/object.h"
 #include "ra/palette.h"
@@ -96,6 +95,7 @@
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
+#include "tech/game_file.h"
 #include "tech/random.h"
 #include "tech/rgb.h"
 
@@ -345,7 +345,7 @@ void ScoreClass::Presentation() {
   int i;
   const void* yellowptr;
   const void* redptr;
-  MixAwareFile file(kFameFileName);
+  GameFile file(kFameFileName);
   struct Fame hallfame[NUMFAMENAMES];
   const void* oldfont;
   const int oldfontxspacing = FontXSpacing;

@@ -487,7 +487,7 @@ bool SessionClass::Load(Straw& file) {
  * HISTORY:                                                                *
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-int SessionClass::Save(MixAwareFile& file) {
+int SessionClass::Save(GameFile& file) {
   FilePipe pipe(file);
   ArchiveWriter writer(pipe);
   Serialize(writer);
@@ -513,7 +513,7 @@ int SessionClass::Save(MixAwareFile& file) {
  * HISTORY:                                                                *
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-bool SessionClass::Load(MixAwareFile& file) {
+bool SessionClass::Load(GameFile& file) {
   FileStraw straw(file);
   ArchiveReader reader(straw);
   Serialize(reader);
@@ -544,7 +544,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
   int i;
   CELL cell;
 
-  //	MixAwareFile file (kConfigFileName);
+  //	GameFile file (kConfigFileName);
 
   //------------------------------------------------------------------------
   //	Clear the initstring entries
@@ -955,7 +955,7 @@ void SessionClass::Read_Scenario_Descriptions() {
   /*
   **	Fetch the main multiplayer scenario packet data.
   */
-  MixAwareFile file("MISSIONS.PKT");
+  GameFile file("MISSIONS.PKT");
   if (file.IsAvailable()) {
     INIClass ini;
     ini.Load(file);
@@ -969,7 +969,7 @@ void SessionClass::Read_Scenario_Descriptions() {
                                      IsMissionCounterstrike(fname)));
     }
   /*		//	ajw Copy file for viewing.
-                  MixAwareFile fileCopy( "msns_pkt.txt" );
+                  GameFile fileCopy( "msns_pkt.txt" );
                   file.Seek( 0, SEEK_SET );
                   long lSize = file.Size();
                   char* pData = new char[ lSize + 1 ];
@@ -989,7 +989,7 @@ void SessionClass::Read_Scenario_Descriptions() {
     // debugprint("Found file '%s'.\n", block.cAlternateFileName);
     // debugprint("Found file '%s'.\n", block.cFileName);
     // debugprint( "Found alternate PKT file.\n" );
-    MixAwareFile mission_file(state.name);
+    GameFile mission_file(state.name);
     INIClass ini;
     ini.Load(mission_file);
 
@@ -1015,7 +1015,7 @@ void SessionClass::Read_Scenario_Descriptions() {
   ** of problems without obviously giving the maps away to non-CS owners.
   */
   if (Is_Counterstrike_Installed()) {
-    MixAwareFile file2("CSTRIKE.PKT");
+    GameFile file2("CSTRIKE.PKT");
     if (file2.IsAvailable()) {
       INIClass ini;
       ini.Load(file2);
@@ -1029,7 +1029,7 @@ void SessionClass::Read_Scenario_Descriptions() {
                                        IsMissionCounterstrike(fname)));
       }
       /*ajw Copy file for viewing.
-                              MixAwareFile fileCopy( "cs_pkt.txt" );
+                              GameFile fileCopy( "cs_pkt.txt" );
                               file2.Seek( 0, SEEK_SET );
                               long lSize = file2.Size();
                               char* pData = new char[ lSize + 1 ];
@@ -1042,7 +1042,7 @@ void SessionClass::Read_Scenario_Descriptions() {
 
   // Aftermath scenarios are now in their own pkt file.
   if (Is_Aftermath_Installed()) {
-    MixAwareFile file2("AFTMATH.PKT");
+    GameFile file2("AFTMATH.PKT");
     if (file2.IsAvailable()) {
       INIClass ini;
       ini.Load(file2);
@@ -1069,7 +1069,7 @@ void SessionClass::Read_Scenario_Descriptions() {
   found = Find_First_File("*.MPR", state);
   while (found) {
     // debugprint( "Found MPR '%s'\n", file_name );
-    MixAwareFile mission_file(state.name);
+    GameFile mission_file(state.name);
     INIClass ini;
     ini.Load(mission_file);
 

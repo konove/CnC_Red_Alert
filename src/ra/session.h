@@ -47,13 +47,13 @@
 #include "ra/defines.h"
 #include "ra/event.h"
 #include "ra/ipxaddr.h"
-#include "ra/mix_aware_file.h"
 #include "ra/msglist.h"
 #include "ra/object.h"
 #include "ra/special.h"
 #include "ra/target.h"
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
+#include "tech/game_file.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"
 
@@ -542,8 +542,8 @@ class SessionClass {
 
   int Save(Pipe& file);
   bool Load(Straw& file);
-  int Save(MixAwareFile& file);
-  bool Load(MixAwareFile& file);
+  int Save(GameFile& file);
+  bool Load(GameFile& file);
 
   //.....................................................................
   // Debugging / Sync Bugs
@@ -662,7 +662,7 @@ class SessionClass {
   //.....................................................................
   // For Recording & Playing back a file
   //.....................................................................
-  MixAwareFile RecordFile;
+  GameFile RecordFile;
   bool Record : 1 {false};  // set via command line
   bool Play : 1 {false};
   bool Attract : 1 {false};

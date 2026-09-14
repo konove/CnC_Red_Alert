@@ -73,13 +73,13 @@
 #include "ra/externs.h"
 #include "ra/ini.h"
 #include "ra/jshell.h"
-#include "ra/mix_aware_file.h"
 #include "ra/session.h"
 #include "ra/theme.h"
 #include "ra/ww_audio.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_audio.h"
 #include "tech/fixed.h"
+#include "tech/game_file.h"
 #include "tech/hsv.h"
 #include "tech/rgb.h"
 
@@ -465,7 +465,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Create filename and read the file.
   */
-  MixAwareFile file(kConfigFileName);
+  GameFile file(kConfigFileName);
   INIClass ini;
   ini.Load(file);
 
@@ -654,7 +654,7 @@ void OptionsClass::Load_Settings() {
  *hotkeys.                                                         *
  *=============================================================================================*/
 void OptionsClass::Save_Settings() const {
-  MixAwareFile file(kConfigFileName);
+  GameFile file(kConfigFileName);
   INIClass ini;
 
   /*

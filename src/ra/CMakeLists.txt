@@ -179,11 +179,10 @@ add_gtest(
 
 
 add_gtest(
-    NAME ra_mix_aware_file_test
-    SOURCES mix_aware_file_test.cc mix_aware_file.cc
-    LIBS base tech port sdllib vqa32 absl::strings absl::check absl::log magic_enum::magic_enum
+    NAME ra_file_handles_test
+    SOURCES file_handles_test.cc file_handles.cc
+    LIBS base tech sdllib absl::strings absl::check absl::log
 )
-apply_language_setting(ra_mix_aware_file_test)
 
 add_gtest(
     NAME ra_path_overlap_test

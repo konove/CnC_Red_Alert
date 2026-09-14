@@ -766,15 +766,15 @@ void CC_Draw_Shape(std::span<const std::byte> shapefile, int shape_num, int x,
 // a different button layout and a full redraw, so this cannot just set a flag.
 void Go_Editor(bool flag);
 
-class MixAwareFile;
+class GameFile;
 
 // Serves VQA movie data to the player through the game's mix-file layer
-// (MixAwareFile), so movies can be read from .MIX archives as well as loose
+// (GameFile), so movies can be read from .MIX archives as well as loose
 // files. Install on a handle with VQA_SetIo() before VQA_Open().
 class MixFileVqaIo final : public VqaIo {
  public:
   MixFileVqaIo();
-  ~MixFileVqaIo() override;  // Out-of-line: MixAwareFile is incomplete here.
+  ~MixFileVqaIo() override;  // Out-of-line: GameFile is incomplete here.
   MixFileVqaIo(const MixFileVqaIo&) = delete;
   MixFileVqaIo& operator=(const MixFileVqaIo&) = delete;
   MixFileVqaIo(MixFileVqaIo&&) = delete;
@@ -786,7 +786,7 @@ class MixFileVqaIo final : public VqaIo {
   void Close() override;
 
  private:
-  std::unique_ptr<MixAwareFile> file_;  // Null when no file is open.
+  std::unique_ptr<GameFile> file_;  // Null when no file is open.
 };
 // Debugging leftovers from the original build: declared here but never defined
 // or called anywhere in the tree.

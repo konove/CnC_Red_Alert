@@ -55,7 +55,6 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
-#include "ra/mix_aware_file.h"
 #include "ra/palette.h"
 #include "ra/profile.h"
 #include "ra/scenario.h"
@@ -68,6 +67,7 @@
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "tech/game_file.h"
 
 // #define CS_DEBUG
 
@@ -342,7 +342,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
   /*
   **	Add in all the expansion scenarios.
   */
-  MixAwareFile file;
+  GameFile file;
   char buffer[128];
   char buffer2[128];
   char* sbuffer = ShapeBuffer;

@@ -71,9 +71,6 @@ std::optional<std::string> FindExistingFile(std::string_view path);
 // IO_* routines. Originally RAWFILE.H (class RawFileClass). Derived classes add
 // buffering, search paths and mixfile support.
 //
-// A file can be biased (see Bias()) so that a byte range inside a larger file,
-// such as an entry in a mixfile, behaves as a whole file of its own.
-//
 class DiskFile : public File {
  public:
   explicit DiskFile(std::string_view filename);
@@ -107,29 +104,9 @@ class DiskFile : public File {
   base::ssize Size() override;
   void Close() override;
 
-  // Makes the byte range starting at start, length bytes long, appear as the
-  // whole file. start is added to the current bias; start == 0 removes the
-  // bias. length == -1 extends the range to the end of the file.
-  void Bias(base::ssize start, base::ssize length = -1);
-
-  // Returns the offset in the underlying file at which the biased range
-  // begins, or 0 for an unbiased file.
-  [[nodiscard]] base::ssize bias_start() const { return bias_start_; }
-
- protected:
-  // Seeks in the underlying file, ignoring any bias.
-  base::ssize RawSeek(base::ssize offset,
-                      SeekOrigin origin = SeekOrigin::kCurrent);
-
  private:
   // Access rights passed to the most recent Open().
   FileAccess rights_ = FileAccess::kRead;
-
-  // Offset of the biased range in the underlying file; see Bias().
-  base::ssize bias_start_ = 0;
-
-  // Length of the biased range, or -1 if the file is not biased.
-  base::ssize bias_length_ = -1;
 
   // Low-level IO handle, or nullptr when the file is closed.
   void* handle_ = nullptr;

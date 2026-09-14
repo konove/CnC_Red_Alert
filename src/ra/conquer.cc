@@ -87,7 +87,6 @@
 #include "ra/logic.h"
 #include "ra/mapedit.h"
 #include "ra/mission_id.h"
-#include "ra/mix_aware_file.h"
 #include "ra/monoc.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
@@ -135,6 +134,7 @@
 #include "tech/file.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
+#include "tech/game_file.h"
 #include "tech/rect.h"
 #include "tech/rgb.h"
 #include "tech/search_paths.h"
@@ -1958,7 +1958,7 @@ MixFileVqaIo::MixFileVqaIo() = default;
 MixFileVqaIo::~MixFileVqaIo() { Close(); }
 
 int MixFileVqaIo::Open(const char* filename) {
-  auto file = std::make_unique<MixAwareFile>(filename);
+  auto file = std::make_unique<GameFile>(filename);
 
   if (!file->IsAvailable()) {
     return 1;
@@ -2003,7 +2003,7 @@ int Load_Interpolated_Palettes(const char* filename, const bool add) {
   int start_palette;
 
   PalettesRead = false;
-  MixAwareFile file(filename);
+  GameFile file(filename);
 
   if (!add) {
     for (i = 0; i < std::ssize(InterpolatedPalettes); i++) {
@@ -2082,7 +2082,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
         std::filesystem::path(name).replace_extension(".VQA").string();
     const auto pal_name =
         std::filesystem::path(name).replace_extension(".VQP").string();
-    if (!MixAwareFile(fullname).IsAvailable()) {
+    if (!GameFile(fullname).IsAvailable()) {
       DLOG(WARNING) << "Play_Movie: file not found: " << fullname;
       return;
     }
@@ -3098,7 +3098,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
 
     MainMix = MFCD::Register("MAIN.MIX", &FastKey, &CryptRandom);
     assert(MainMix != nullptr);
-    if (MixAwareFile("MOVIES1.MIX").IsAvailable()) {
+    if (GameFile("MOVIES1.MIX").IsAvailable()) {
       MoviesMix = MFCD::Register("MOVIES1.MIX", &FastKey, &CryptRandom);
     } else {
       MoviesMix = MFCD::Register("MOVIES2.MIX", &FastKey, &CryptRandom);
@@ -3116,7 +3116,7 @@ void* Hires_Load(const char* name) {
   char filename[30];
 
   sprintf(filename, "H%s", name);
-  MixAwareFile file(filename);
+  GameFile file(filename);
 
   if (file.IsAvailable()) {
     const base::ssize length = file.Size();

@@ -1,7 +1,7 @@
-// Tests for MixAwareFile over cached and uncached mixfiles, and for the
-// integer-handle file API built on it.
+// Tests for GameFile over loose files and cached, uncached and nested
+// mixfiles.
 
-#include "ra/mix_aware_file.h"
+#include "tech/game_file.h"
 
 #include <bit>
 #include <cstdint>
@@ -15,25 +15,20 @@
 
 #include "absl/base/attributes.h"
 #include "gtest/gtest.h"
-#include "ra/externs.h"
-#include "sdllib/file.h"
-#include "sdllib/file_access.h"
 #include "tech/crc.h"
-#include "tech/disk_file.h"
 #include "tech/file.h"
+#include "tech/mixfile.h"
 #include "tech/search_paths.h"
 
-// The real definition lives in the game, which would drag all of it in. No
-// CD drive is ever current here, so it is never called.
-int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) { return -1; }
-
 namespace {
+
+using MFCD = MixFileClass<GameFile>;
 
 // Names of the file packed in the test mixfile and of the mixfile packed inside
 // the outer one for the nesting tests. Unusual enough that no loose file by
 // these names sits in the working directory.
-constexpr const char* kPackedName = "MIX_AWARE_FILE_TEST.BIN";
-constexpr const char* kInnerName = "MIX_AWARE_FILE_TEST_INNER.MIX";
+constexpr const char* kPackedName = "GAME_FILE_TEST.BIN";
+constexpr const char* kInnerName = "GAME_FILE_TEST_INNER.MIX";
 
 void PutInt16(std::vector<char>& out, int value) {
   out.push_back(static_cast<char>(value & 0xff));
@@ -74,17 +69,17 @@ void WriteFile(const std::filesystem::path& path,
   ASSERT_TRUE(file.good()) << path;
 }
 
-class MixAwareFileTest : public ::testing::Test {
+class GameFileTest : public ::testing::Test {
  protected:
   void SetUp() override {
     const std::string test_name =
         ::testing::UnitTest::GetInstance()->current_test_info()->name();
     mix_path_ = std::filesystem::temp_directory_path() /
-                ("mix_aware_file_test_" + test_name + ".mix");
+                ("game_file_test_" + test_name + ".mix");
     loose_path_ = std::filesystem::temp_directory_path() /
-                  ("mix_aware_file_test_" + test_name + ".txt");
+                  ("game_file_test_" + test_name + ".txt");
     search_dir_ = std::filesystem::temp_directory_path() /
-                  ("mix_aware_file_test_" + test_name + ".dir");
+                  ("game_file_test_" + test_name + ".dir");
     WriteFile(mix_path_, MixImage());
     ASSERT_NE(MFCD::Register(mix_path_.string()), nullptr);
   }
@@ -131,11 +126,10 @@ class MixAwareFileTest : public ::testing::Test {
   std::filesystem::path search_dir_;
 };
 
-TEST_F(MixAwareFileTest, CachedFileReadsAndSeeksWithinItsImage) {
+TEST_F(GameFileTest, CachedFileReadsAndSeeksWithinItsImage) {
   CacheMixfile();
-  MixAwareFile file(kPackedName);
+  GameFile file(kPackedName);
   ASSERT_TRUE(file.Open());
-  EXPECT_TRUE(file.IsResident());
   EXPECT_EQ(file.Size(), 4);
 
   char buffer[8] = {};
@@ -150,20 +144,18 @@ TEST_F(MixAwareFileTest, CachedFileReadsAndSeeksWithinItsImage) {
   EXPECT_EQ(buffer[0], 'd');
 }
 
-TEST_F(MixAwareFileTest, WriteToCachedFileWritesNothing) {
+TEST_F(GameFileTest, WriteToCachedFileWritesNothing) {
   CacheMixfile();
-  MixAwareFile file(kPackedName);
+  GameFile file(kPackedName);
   ASSERT_TRUE(file.Open());
-  ASSERT_TRUE(file.IsResident());
 
   // Used to fall through to the base class and write through a null handle.
   EXPECT_EQ(file.Write("zz", 2), 0);
 }
 
-TEST_F(MixAwareFileTest, UncachedFileReadsOnlyItsBytesOfTheMixfile) {
-  MixAwareFile file(kPackedName);
+TEST_F(GameFileTest, UncachedFileReadsOnlyItsBytesOfTheMixfile) {
+  GameFile file(kPackedName);
   ASSERT_TRUE(file.Open());
-  EXPECT_FALSE(file.IsResident());
   EXPECT_EQ(file.Size(), 4);
 
   char buffer[8] = {};
@@ -171,29 +163,28 @@ TEST_F(MixAwareFileTest, UncachedFileReadsOnlyItsBytesOfTheMixfile) {
   EXPECT_EQ(std::string(buffer, 4), "abcd");
 }
 
-TEST_F(MixAwareFileTest, SizeOfUnopenedPackedFileIsItsOwnSize) {
-  MixAwareFile file(kPackedName);
+TEST_F(GameFileTest, SizeOfUnopenedPackedFileIsItsOwnSize) {
+  GameFile file(kPackedName);
   EXPECT_EQ(file.Size(), 4);
 }
 
-TEST_F(MixAwareFileTest, DeleteRefusesPackedFile) {
-  MixAwareFile file(kPackedName);
+TEST_F(GameFileTest, DeleteRefusesPackedFile) {
+  GameFile file(kPackedName);
   EXPECT_FALSE(file.Delete());
   EXPECT_TRUE(file.IsAvailable());
 }
 
-TEST_F(MixAwareFileTest, DeleteRemovesLooseFile) {
+TEST_F(GameFileTest, DeleteRemovesLooseFile) {
   WriteFile(loose_path(), {'h', 'i'});
-  MixAwareFile file(loose_path().string());
+  GameFile file(loose_path().string());
   EXPECT_TRUE(file.Delete());
   EXPECT_FALSE(std::filesystem::exists(loose_path()));
 }
 
-TEST_F(MixAwareFileTest, UncachedMixfileInsideUncachedMixfileReadsItsBytes) {
+TEST_F(GameFileTest, UncachedMixfileInsideUncachedMixfileReadsItsBytes) {
   RegisterNestedMixfiles();
-  MixAwareFile file(kPackedName);
+  GameFile file(kPackedName);
   ASSERT_TRUE(file.Open());
-  EXPECT_FALSE(file.IsResident());
   EXPECT_EQ(file.Size(), 4);
 
   char buffer[8] = {};
@@ -201,24 +192,22 @@ TEST_F(MixAwareFileTest, UncachedMixfileInsideUncachedMixfileReadsItsBytes) {
   EXPECT_EQ(std::string(buffer, 4), "abcd");
 }
 
-TEST_F(MixAwareFileTest, CachedMixfileInsideUncachedMixfileReadsItsBytes) {
+TEST_F(GameFileTest, CachedMixfileInsideUncachedMixfileReadsItsBytes) {
   RegisterNestedMixfiles();
   ASSERT_TRUE(MFCD::Cache(kInnerName));
-  MixAwareFile file(kPackedName);
+  GameFile file(kPackedName);
   ASSERT_TRUE(file.Open());
-  EXPECT_TRUE(file.IsResident());
 
   char buffer[8] = {};
   EXPECT_EQ(file.Read(buffer, 8), 4);
   EXPECT_EQ(std::string(buffer, 4), "abcd");
 }
 
-TEST_F(MixAwareFileTest, LooseFileOnSearchPathOverridesPackedCopy) {
+TEST_F(GameFileTest, LooseFileOnSearchPathOverridesPackedCopy) {
   CacheMixfile();
   WriteLooseCopy("LOOSE");
-  MixAwareFile file(kPackedName);
+  GameFile file(kPackedName);
   ASSERT_TRUE(file.Open());
-  EXPECT_FALSE(file.IsResident());
   EXPECT_EQ(file.Size(), 5);
 
   char buffer[8] = {};
@@ -226,43 +215,13 @@ TEST_F(MixAwareFileTest, LooseFileOnSearchPathOverridesPackedCopy) {
   EXPECT_EQ(std::string(buffer, 5), "LOOSE");
 }
 
-TEST_F(MixAwareFileTest, HandleApiOnMissingNameHandsOutAnUnopenedSlot) {
-  // Open() never reports failure today, so the caller gets a slot whose reads
-  // return nothing. The refactor makes this return WWERROR instead.
-  const int handle =
-      OpenFileHandle("MIX_AWARE_FILE_TEST_MISSING.BIN", FileAccess::kRead);
-  EXPECT_NE(handle, WWERROR);
-  EXPECT_EQ(FileHandleSize(handle), 0);
+TEST_F(GameFileTest, OpenOfNameFoundNowhereFails) {
+  GameFile file("GAME_FILE_TEST_MISSING.BIN");
+  EXPECT_FALSE(file.IsAvailable());
+  EXPECT_FALSE(file.Open());
+  EXPECT_EQ(file.Size(), 0);
   char buffer[4] = {};
-  EXPECT_EQ(ReadFileHandle(handle, buffer, 4), 0);
-  CloseFileHandle(handle);
-}
-
-TEST_F(MixAwareFileTest, HandleApiReadsPackedFile) {
-  CacheMixfile();
-  const int handle = OpenFileHandle(kPackedName, FileAccess::kRead);
-  ASSERT_NE(handle, WWERROR);
-  EXPECT_EQ(FileHandleSize(handle), 4);
-  EXPECT_EQ(SeekFileHandle(handle, 1, SEEK_SET), 1);
-
-  char buffer[8] = {};
-  EXPECT_EQ(ReadFileHandle(handle, buffer, 8), 3);
-  EXPECT_EQ(std::string(buffer, 3), "bcd");
-  CloseFileHandle(handle);
-  EXPECT_EQ(FileHandleSize(handle), 0);
-}
-
-TEST_F(MixAwareFileTest, HandleApiIgnoresInvalidHandles) {
-  char buffer[4] = {};
-  // Each used to index the handle table unchecked; only WWERROR (-1) was
-  // rejected.
-  for (const int handle : {WWERROR, -2, 10, 1000}) {
-    EXPECT_EQ(ReadFileHandle(handle, buffer, 4), 0) << handle;
-    EXPECT_EQ(WriteFileHandle(handle, buffer, 4), 0) << handle;
-    EXPECT_EQ(FileHandleSize(handle), 0) << handle;
-    EXPECT_EQ(SeekFileHandle(handle, 0, SEEK_SET), 0) << handle;
-    CloseFileHandle(handle);
-  }
+  EXPECT_EQ(file.Read(buffer, 4), 0);
 }
 
 }  // namespace

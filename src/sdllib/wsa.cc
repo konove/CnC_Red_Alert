@@ -16,6 +16,7 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/iff.h"
 #include "sdllib/memflag.h"
+#include "sdllib/wwstd.h"
 
 //
 // WSA animation header allocation type.
@@ -111,7 +112,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   char* delta_buffer;
   char* delta_back;
   SysAnimHeaderType* sys_header;
-  WSA_FileHeaderType file_header;
+  WSA_FileHeaderType file_header = {};
 
   /*======================================================================*/
   /* Open the file to get the header information
@@ -120,6 +121,9 @@ void* Open_Animation(const char* file_name, char* user_buffer,
 
   anim_flags = 0;
   fh = OpenFileHandle(file_name, FileAccess::kRead);
+  if (fh == kInvalidHandle) {
+    return nullptr;
+  }
   ReadFileHandle(fh, &file_header, sizeof(WSA_FileHeaderType));
 
   /*======================================================================*/

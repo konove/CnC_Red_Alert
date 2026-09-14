@@ -26,7 +26,7 @@
 //   digest
 //
 // Example:
-//   using MFCD = MixFileClass<MixAwareFile>;
+//   using MFCD = MixFileClass<GameFile>;
 //   MFCD::Register("GENERAL.MIX");     // Creates and registers in global list
 //   MFCD::Cache("GENERAL.MIX");        // Load into RAM
 //   void* data = MFCD::Retrieve("MOUSE.SHP");
@@ -73,7 +73,8 @@ class MixFileClass : public Node<MixFileClass<T>> {
     // The mixfile containing this file.
     MixFileClass* mixfile;
 
-    // Absolute file offset (if uncached) or relative (if cached).
+    // Offset of the file from the start of the mixfile (if uncached) or of the
+    // cached data (if cached).
     std::int32_t offset = 0;
 
     // Size of the embedded file.
@@ -248,8 +249,7 @@ bool MixFileClass<T>::Open(std::string_view filename, const PKey* key) {
   // Calculate start position.
   // Seek returns long, cast to int32_t to match class member (assuming < 2GB
   // files)
-  data_start_ = static_cast<std::int32_t>(file.Seek(0, SeekOrigin::kCurrent) +
-                                          file.bias_start());
+  data_start_ = static_cast<std::int32_t>(file.Seek(0, SeekOrigin::kCurrent));
 
   return true;
 }
@@ -301,9 +301,7 @@ bool MixFileClass<T>::Cache() {
     return false;
   }
 
-  // Bias alignment logic
-  file.Bias(0);
-  file.Bias(data_start_);
+  file.Seek(data_start_, SeekOrigin::kBegin);
 
   // Read directly into the vector buffer
   if (const int actual = straw->Get(data_.data(), data_size_);
@@ -373,8 +371,6 @@ std::optional<typename MixFileClass<T>::FileLocation> MixFileClass<T>::Offset(
       return FileLocation{
           .data = view,
           .mixfile = mix,
-          // If cached, offset is relative to buffer. If not, absolute file
-          // offset.
           .offset = cached ? it->offset : it->offset + mix->data_start_,
           .size = it->size,
       };

@@ -31,12 +31,12 @@
 #include "ra/dib.h"
 #include "ra/globals.h"
 #include "ra/iconlist.h"
-#include "ra/mix_aware_file.h"
 #include "ra/type.h"
 #include "ra/wolapi/chatdefs.h"
 #include "ra/wolapi/wolapi.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/wwstd.h"
+#include "tech/game_file.h"
 #include "tech/number_parse.h"
 #include "tech/rgb.h"
 
@@ -441,7 +441,7 @@ void WolapiObject::PrepareButtonsAndIcons() {
       // debugprint( "Couldn't find %s in mix.\n", IconInfo.szFile );
       continue;
     }
-    MixAwareFile icon_file(IconInfo.szFile);
+    GameFile icon_file(IconInfo.szFile);
     IconInfo.Icon = dib::Image::FromBmp(
         {pFileData, static_cast<std::size_t>(icon_file.Size())});
     if (IconInfo.Icon.has_value()) {

@@ -58,7 +58,6 @@
 #include "ra/goptions.h"
 #include "ra/graphics_loader.h"
 #include "ra/jshell.h"
-#include "ra/mix_aware_file.h"
 #include "ra/palette.h"
 #include "ra/theme.h"
 #include "ra/vector.h"
@@ -72,6 +71,7 @@
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
+#include "tech/game_file.h"
 
 /*
 ** List of Ego Class instances
@@ -397,7 +397,7 @@ void Show_Who_Was_Responsible() {
   *centered.
   **  If the text starts after column 40 it will be right justified.
   */
-  MixAwareFile creditsfile("credits.txt");
+  GameFile creditsfile("credits.txt");
   if (!creditsfile.IsAvailable()) {
     return;
   }
@@ -621,7 +621,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Load the reference palette for the font.
   */
-  MixAwareFile("EGOPAL.PAL").ReadObject(CCPalette);
+  GameFile("EGOPAL.PAL").ReadObject(CCPalette);
 
   /*
   ** Copy the font palette entries into the combo palette.

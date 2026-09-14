@@ -84,7 +84,7 @@ constexpr int StdioOrigin(SeekOrigin origin) {
 
 // File: the interface every file object in the game implements. Concrete
 // files live on disk (DiskFile), in memory (MemoryFile) or inside the game's
-// mixfile archives (MixAwareFile); code that reads or writes takes a File&.
+// mixfile archives (GameFile); code that reads or writes takes a File&.
 //
 // Originally WWFILE.H (class FileClass) by Joe L. Bostic, August 8, 1994.
 class File {

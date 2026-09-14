@@ -33,7 +33,6 @@
 #include "ra/graphics_loader.h"
 #include "ra/interpal.h"
 #include "ra/mapedit.h"
-#include "ra/mix_aware_file.h"
 #include "ra/palette.h"
 #include "ra/theme.h"
 #include "sdllib/file_access.h"
@@ -42,6 +41,7 @@
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "tech/file.h"
+#include "tech/game_file.h"
 
 /***********************************************************************************************
  * Focus_Loss -- this function is called when a library function detects focus
@@ -150,14 +150,14 @@ void Load_Title_Screen(std::string_view name, GraphicViewPortClass* video_page,
  *                                                                         *
  * HISTORY:                                                                *
  *   05/03/1995 JRJ : Created.                                             *
- *   04/30/1996 ST : Tidied up and modified to use MixAwareFile             *
+ *   04/30/1996 ST : Tidied up and modified to use GameFile             *
  *=========================================================================*/
 
 class BufferedFileReader {
  public:
   static constexpr size_t kBufferSize = 2048;
 
-  explicit BufferedFileReader(MixAwareFile& file ABSL_ATTRIBUTE_LIFETIME_BOUND)
+  explicit BufferedFileReader(GameFile& file ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : file_(file) {}
 
   // Delete copy/move to prevent accidental state duplication.
@@ -185,7 +185,7 @@ class BufferedFileReader {
     return bytes_in_buffer_ > 0;
   }
 
-  MixAwareFile& file_;
+  GameFile& file_;
 
   // Use std::array for standard compliance and bounds awareness.
   std::array<uint8_t, kBufferSize> buffer_{};
@@ -197,7 +197,7 @@ class BufferedFileReader {
 
 GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
                                   int32_t Size) {
-  MixAwareFile file_handle(name);
+  GameFile file_handle(name);
 
   if (!file_handle.IsAvailable()) {
     return nullptr;

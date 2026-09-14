@@ -76,7 +76,6 @@
 #include "ra/layer.h"
 #include "ra/mapedit.h"
 #include "ra/mission_id.h"
-#include "ra/mix_aware_file.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
 #include "ra/overlay.h"
@@ -111,6 +110,7 @@
 #include "tech/blwstraw.h"
 #include "tech/disk_file.h"
 #include "tech/file.h"
+#include "tech/game_file.h"
 #include "tech/lzopipe.h"
 #include "tech/lzostraw.h"
 #include "tech/pipe.h"
@@ -731,7 +731,7 @@ bool Load_Game(int id) {
   ** CD to request later
   */
   if (load_net) {
-    MixAwareFile scenario_file(Scen.ScenarioName);
+    GameFile scenario_file(Scen.ScenarioName);
     if (!scenario_file.IsAvailable()) {
       int cd = -1;
       if (IsMissionCounterstrike(Scen.ScenarioName)) {
@@ -991,7 +991,7 @@ bool Load_Game(int id) {
 
   } else {
     if (load_net) {
-      MixAwareFile scenario_file(Scen.ScenarioName);
+      GameFile scenario_file(Scen.ScenarioName);
 
       /*
       ** Fix up the session class variables
@@ -1037,7 +1037,7 @@ bool Load_Game(int id) {
   **	Rescan the scenario file for any rules updates.
   */
   CCINIClass ini;
-  MixAwareFile fc(Scen.ScenarioName);
+  GameFile fc(Scen.ScenarioName);
   ini.Load(fc, true);
 
   /*
@@ -1100,7 +1100,7 @@ bool Load_Game(int id) {
         }
       }
       CCINIClass mpini;
-      MixAwareFile mplayer_ini("MPLAYER.INI");
+      GameFile mplayer_ini("MPLAYER.INI");
       if (mpini.Load(mplayer_ini, false)) {
         Rule.General(mpini);
         Rule.Recharge(mpini);

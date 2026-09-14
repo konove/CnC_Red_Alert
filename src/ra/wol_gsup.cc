@@ -42,7 +42,6 @@
 #include "ra/iconlist.h"
 #include "ra/ipx.h"
 #include "ra/mission_id.h"
-#include "ra/mix_aware_file.h"
 #include "ra/rawolapi.h"
 #include "ra/session.h"
 #include "ra/tooltip.h"
@@ -59,6 +58,7 @@
 #include "sdllib/drawbuff.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/wwstd.h"
+#include "tech/game_file.h"
 #include "tech/number_parse.h"
 
 static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
@@ -532,7 +532,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   int tabs[] = {77 * 2};       // tabs for player list box
   int optiontabs[] = {8 * 2};  // tabs for option list box
 
-  const MixAwareFile loadfile("SAVEGAME.NET");
+  const GameFile loadfile("SAVEGAME.NET");
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   const int cbox_x[] = {
@@ -2788,7 +2788,7 @@ void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) const {
   port::SafeCopy(
       GParams.GPacket.ScenarioInfo.Scenario,
       Session.Scenarios[Session.Options.ScenarioIndex]->Description());
-  MixAwareFile file(
+  GameFile file(
       Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
   GParams.GPacket.ScenarioInfo.FileLength =
       static_cast<unsigned int>(file.Size());

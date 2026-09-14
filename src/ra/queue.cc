@@ -116,7 +116,6 @@
 #include "ra/logic.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
-#include "ra/mix_aware_file.h"
 #include "ra/monoc.h"
 #include "ra/mouse.h"
 #include "ra/msgbox.h"
@@ -146,6 +145,7 @@
 #include "sdllib/ww_mouse.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
+#include "tech/game_file.h"
 #include "tech/random.h"
 
 // #include "ra/woldebug.h"

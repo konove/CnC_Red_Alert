@@ -67,9 +67,9 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
-#include "ra/mix_aware_file.h"
 #include "ra/ww_audio.h"
 #include "tech/fixed.h"
+#include "tech/game_file.h"
 
 /***************************************************************************
 **	Controls what special effects may occur on the sound effect.
@@ -872,7 +872,7 @@ void Speak_AI() {
                               .replace_extension(".AUD")
                               .string();
 
-        MixAwareFile file(name);
+        GameFile file(name);
         if (file.IsAvailable() &&
             file.Read(SpeechBuffer[_index], kSpeechBufferSize)) {
           speech = SpeechBuffer[_index];

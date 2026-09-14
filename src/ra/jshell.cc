@@ -57,7 +57,6 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "ra/compat.h"
-#include "ra/mix_aware_file.h"
 #include "ra/monoc.h"
 #include "ra/palette.h"
 #include "ra/startup.h"
@@ -67,6 +66,7 @@
 #include "sdllib/tile.h"
 #include "sdllib/ww_win.h"
 #include "tech/file.h"
+#include "tech/game_file.h"
 #include "tech/rgb.h"
 
 /***********************************************************************************************
@@ -288,7 +288,7 @@ int32_t Load_Uncompress(File& file, BuffType& uncomp_buff, BuffType& dest_buff,
 int Load_Picture(const char* filename, BufferClass& scratchbuf,
                  BufferClass& destbuf, unsigned char* palette,
                  PicturePlaneType /*unused*/) {
-  MixAwareFile fc(filename);
+  GameFile fc(filename);
   return Load_Uncompress(fc, scratchbuf, destbuf, palette) / 8000;
 }
 

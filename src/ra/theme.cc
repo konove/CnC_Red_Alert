@@ -68,11 +68,11 @@
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/mix_aware_file.h"
 #include "ra/scenario.h"
 #include "sdllib/ww_audio.h"
 #include "session.h"
 #include "tech/fixed.h"
+#include "tech/game_file.h"
 
 /*
 **	These are the actual filename list for the theme sample files.
@@ -595,8 +595,7 @@ ThemeType ThemeClass::From_Name(const char* name) {
 void ThemeClass::Scan() {
   for (int index = 0; index < std::ssize(_themes); ++index) {
     _themes[index].Available =
-        MixAwareFile(Theme_File_Name(static_cast<ThemeType>(index)))
-            .IsAvailable();
+        GameFile(Theme_File_Name(static_cast<ThemeType>(index))).IsAvailable();
   }
 }
 

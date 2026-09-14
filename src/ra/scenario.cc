@@ -116,7 +116,6 @@
 #include "ra/mapedit.h"
 #include "ra/mapsel.h"
 #include "ra/mission_id.h"
-#include "ra/mix_aware_file.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
@@ -156,6 +155,7 @@
 #include "sdllib/wwstd.h"
 #include "tech/disk_file.h"
 #include "tech/ftimer.h"
+#include "tech/game_file.h"
 #include "tech/number_parse.h"
 #include "tech/search_paths.h"
 
@@ -380,7 +380,7 @@ bool Start_Scenario(char* name, bool briefing) {
     sprintf(buffer, "%s.VQA", VQName[Scen.BriefMovie]);
   }
   if (Session.Type == GAME_NORMAL &&
-      (Scen.BriefMovie == VQ_NONE || !MixAwareFile(buffer).IsAvailable())) {
+      (Scen.BriefMovie == VQ_NONE || !GameFile(buffer).IsAvailable())) {
     /*
     ** Make sure the mouse is visible before showing the restatement.
     */
@@ -460,7 +460,7 @@ bool Read_Scenario(char* name) {
         }
       }
       CCINIClass ini;
-      MixAwareFile fc("MPLAYER.INI");
+      GameFile fc("MPLAYER.INI");
       if (ini.Load(fc, false)) {
         Rule.General(ini);
         Rule.Recharge(ini);
@@ -1191,7 +1191,7 @@ BriefingAction Restate_Mission() {
   bool has_video = false;
   if (Scen.BriefMovie != VQ_NONE) {
     const auto video_filename = std::string(VQName[Scen.BriefMovie]) + ".VQA";
-    has_video = MixAwareFile(video_filename).IsAvailable();
+    has_video = GameFile(video_filename).IsAvailable();
   }
 
   // Choose buttons based on video availability.
@@ -1710,7 +1710,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
       }
       sprintf(fname, "SC%c%02d%c%c.INI", c_player, scenario, c_dir,
               'A' + candidate);
-      if (!MixAwareFile(fname).IsAvailable()) {
+      if (!GameFile(fname).IsAvailable()) {
         break;
       }
       available++;
@@ -1924,7 +1924,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   */
   //	sprintf(fname, "%s.INI", root);
   CCINIClass ini;
-  MixAwareFile file(fname);
+  GameFile file(fname);
   //	file.Cache();
 
   if (!ini.Load(file, true)) {
@@ -2145,7 +2145,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	the mission.ini file.  VG 10/17/96
   */
   INIClass mini;
-  MixAwareFile fc("MISSION.INI");
+  GameFile fc("MISSION.INI");
   mini.Load(fc);
   mini.Get_TextBlock(fname, Scen.BriefingText, sizeof(Scen.BriefingText));
 
@@ -2236,7 +2236,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
  *=============================================================================================*/
 void Write_Scenario_INI(const char* fname) {
   if constexpr (config::kCheatKeysEnabled) {
-    MixAwareFile file(fname);
+    GameFile file(fname);
 
     CCINIClass ini;
 

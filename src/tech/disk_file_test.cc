@@ -1,7 +1,5 @@
-// Characterization tests for DiskFile: implicit open on Read/Write, the
-// Bias() window, the lowercase-name retry, and Open() never reporting failure.
-// They pin current behaviour so the file I/O refactor can prove equivalence
-// (docs/FILE_IO_REFACTOR_PLAN.md).
+// Tests for DiskFile: implicit open on Read/Write, the lowercase-name retry,
+// and Open() reporting a missing file.
 
 #include "tech/disk_file.h"
 
@@ -62,35 +60,6 @@ TEST_F(DiskFileTest, WriteOpensAndClosesImplicitly) {
   EXPECT_EQ(ReadFile(path()), "hi");
 }
 
-TEST_F(DiskFileTest, BiasWindowLimitsSizeSeekAndRead) {
-  DiskFile file(path());
-  file.Bias(1, 4);
-  EXPECT_EQ(file.Size(), 4);
-
-  file.Open();
-  EXPECT_EQ(file.Seek(10, SeekOrigin::kBegin), 4);
-  EXPECT_EQ(file.Seek(0, SeekOrigin::kBegin), 0);
-  char buffer[8] = {};
-  EXPECT_EQ(file.Read(buffer, 8), 4);
-  EXPECT_EQ(std::string(buffer, 4), "abcd");
-  EXPECT_EQ(file.Seek(-1, SeekOrigin::kEnd), 3);
-  // A seek to before the start of the file is ignored: the position stays
-  // where it was (a resident MixAwareFile clamps to 0 instead).
-  EXPECT_EQ(file.Seek(-10, SeekOrigin::kCurrent), 3);
-}
-
-TEST_F(DiskFileTest, BiasAccumulatesAndSetNameClearsIt) {
-  DiskFile file(path());
-  file.Bias(1, 4);
-  file.Bias(1, 2);
-  EXPECT_EQ(file.bias_start(), 2);
-  EXPECT_EQ(file.Size(), 2);
-
-  file.SetName(path());
-  EXPECT_EQ(file.bias_start(), 0);
-  EXPECT_EQ(file.Size(), 5);
-}
-
 TEST_F(DiskFileTest, IsAvailableRetriesLowercaseNameAndRenames) {
   // The retry lowercases the whole name, so it only finds all-lowercase files.
   const std::filesystem::path lower =
@@ -114,11 +83,20 @@ TEST_F(DiskFileTest, IsAvailableRetriesLowercaseNameAndRenames) {
   std::filesystem::remove(lower);
 }
 
-TEST_F(DiskFileTest, OpenOfMissingFileReturnsTrueButIsNotOpen) {
+TEST_F(DiskFileTest, OpenOfMissingFileFails) {
   DiskFile file(path() + ".missing");
-  EXPECT_TRUE(file.Open());
+  EXPECT_FALSE(file.Open());
   EXPECT_FALSE(file.IsOpen());
   EXPECT_FALSE(file.IsAvailable());
+  EXPECT_EQ(file.Size(), 0);
+}
+
+TEST_F(DiskFileTest, SeekIsIgnoredBeforeTheStartOfTheFile) {
+  DiskFile file(path());
+  ASSERT_TRUE(file.Open());
+  EXPECT_EQ(file.Seek(-1, SeekOrigin::kEnd), 4);
+  // stdio refuses a seek to before the start, so the position stays put.
+  EXPECT_EQ(file.Seek(-10, SeekOrigin::kCurrent), 4);
 }
 
 }  // namespace

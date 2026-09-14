@@ -31,7 +31,6 @@
 #include "ra/globals.h"
 #include "ra/init.h"
 #include "ra/jshell.h"
-#include "ra/mix_aware_file.h"
 #include "ra/palette.h"
 #include "ra/textbtn.h"
 #include "ra/wsproto.h"
@@ -41,6 +40,7 @@
 #include "sdllib/misc.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "tech/game_file.h"
 
 bool Get_Broadcast_Addresses() {
   const int d_dialog_w = 640;                             // dialog width
@@ -129,7 +129,7 @@ bool Get_Broadcast_Addresses() {
   CCINIClass ip_ini;
   int res = 0;
 
-  MixAwareFile fc("IP.INI");
+  GameFile fc("IP.INI");
   if (ip_ini.Load(fc, false)) {
     int entry = 0;
     char entry_name[16];
