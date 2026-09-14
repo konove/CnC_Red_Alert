@@ -105,7 +105,6 @@
 #include "ra/vortex.h"
 #include "sdllib/file_access.h"
 #include "tech/archive.h"
-#include "tech/bfiofile.h"
 #include "tech/blowfish.h"
 #include "tech/blowpipe.h"
 #include "tech/blwstraw.h"
@@ -464,7 +463,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   /*
   **	Open the file
   */
-  BufferIOFileClass file(name);
+  RawFileClass file(name);
 
   FilePipe fpipe(&file);
 
@@ -1270,7 +1269,7 @@ bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
   **	Generate the filename to load
   */
   sprintf(name, "SAVEGAME.%03d", id);
-  BufferIOFileClass file(name);
+  RawFileClass file(name);
 
   FileStraw straw(file);
 

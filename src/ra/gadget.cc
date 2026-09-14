@@ -493,7 +493,6 @@ KeyNumType GadgetClass::Input() {
         }
       }
 
-      file.Cache(200000);
       Write_PCX_File(file, temp_page, &GamePalette);
       Sound_Effect(VOC_BEEP);
     }

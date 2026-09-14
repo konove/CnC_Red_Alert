@@ -55,7 +55,7 @@
 #include <vector>
 
 #include "sdllib/file_access.h"
-#include "tech/bfiofile.h"
+#include "tech/rawfile.h"
 #include "tech/wwfile.h"
 
 std::vector<std::string> CDFileClass::search_paths_;
@@ -85,9 +85,7 @@ extern int Get_CD_Index(int cd_drive, int timeout);
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-bool CDFileClass::Open(FileAccess rights) {
-  return BufferIOFileClass::Open(rights);
-}
+bool CDFileClass::Open(FileAccess rights) { return RawFileClass::Open(rights); }
 
 /***********************************************************************************************
  * CDFC::RefreshSearchPaths -- Updates the search path when a CD changes or
@@ -226,13 +224,13 @@ void CDFileClass::SetName(const std::string_view filename) {
   // Try to find the file in the current directory first.
   // This preserves the optimization of checking the local filesystem before
   // iterating through the CD/Network search paths.
-  BufferIOFileClass::SetName(name);
+  RawFileClass::SetName(name);
 
   // If the file system is disabled, no search paths exist, the name is empty
   // (a search path alone would name a directory), or the file was found
   // locally, keep the name as given.
   if (search_disabled_ || search_paths_.empty() || name.empty() ||
-      BufferIOFileClass::DoIsAvailable(AvailabilityCheck::kQuick)) {
+      RawFileClass::DoIsAvailable(AvailabilityCheck::kQuick)) {
     return;
   }
 
@@ -240,15 +238,15 @@ void CDFileClass::SetName(const std::string_view filename) {
   for (const auto& base_path : search_paths_) {
     // AddSearchPath guarantees base_path ends with a path separator, so we can
     // safely concatenate directly.
-    BufferIOFileClass::SetName(base_path + name);
-    if (BufferIOFileClass::DoIsAvailable(AvailabilityCheck::kQuick)) {
+    RawFileClass::SetName(base_path + name);
+    if (RawFileClass::DoIsAvailable(AvailabilityCheck::kQuick)) {
       return;
     }
   }
 
   // All path searching has failed. Just set the file name to the plain text
   // passed to this routine and be done with it.
-  BufferIOFileClass::SetName(name);
+  RawFileClass::SetName(name);
 }
 
 /***********************************************************************************************
@@ -258,7 +256,7 @@ void CDFileClass::SetName(const std::string_view filename) {
  *is being        * opened only for READ access, it will search all specified
  *directories looking for the    * file. If after a complete search the file
  *still couldn't be found, then it is opened     * using the normal
- *BufferIOFileClass system -- resulting in normal error procedures.       *
+ *RawFileClass system -- resulting in normal error procedures.       *
  *                                                                                             *
  * INPUT:   filename -- Pointer to the override filename to supply for this file
  *object. It    * would be the base filename (sans any directory specification).
@@ -290,8 +288,8 @@ bool CDFileClass::Open(const std::string_view filename, FileAccess rights) {
   **	If writing is requested, then multiple drive searching is not performed.
   */
   if (search_disabled_ || rights == FileAccess::kWrite) {
-    BufferIOFileClass::SetName(filename);
-    return BufferIOFileClass::Open(rights);
+    RawFileClass::SetName(filename);
+    return RawFileClass::Open(rights);
   }
 
   /*
@@ -299,5 +297,5 @@ bool CDFileClass::Open(const std::string_view filename, FileAccess rights) {
   **	using the normal procedure.
   */
   SetName(filename);
-  return BufferIOFileClass::Open(rights);
+  return RawFileClass::Open(rights);
 }

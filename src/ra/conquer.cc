@@ -1890,7 +1890,6 @@ bool Main_Loop() {
       Debug_MotionCapture = false;
 
       CDFileClass file;
-      file.Cache(200000);
       char filename[30];
 
       for (base::ssize index = 0; index < sequence; index++) {
