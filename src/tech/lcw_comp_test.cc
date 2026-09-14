@@ -10,9 +10,9 @@
 
 #include "base/types.h"
 #include "gtest/gtest.h"
+#include "tech/block_codec.h"
 #include "tech/byte_sink.h"
 #include "tech/byte_source.h"
-#include "tech/codec_block.h"
 #include "tech/lcw.h"
 #include "tech/lcw_sink.h"
 #include "tech/lcw_source.h"

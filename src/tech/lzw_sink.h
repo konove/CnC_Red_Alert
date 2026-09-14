@@ -1,115 +1,15 @@
-/*
-**	Command & Conquer Red Alert(tm)
-**	Copyright 2025 Electronic Arts Inc.
-**
-**	This program is free software: you can redistribute it and/or modify
-**	it under the terms of the GNU General Public License as published by
-**	the Free Software Foundation, either version 3 of the License, or
-**	(at your option) any later version.
-**
-**	This program is distributed in the hope that it will be useful,
-**	but WITHOUT ANY WARRANTY; without even the implied warranty of
-**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**	GNU General Public License for more details.
-**
-**	You should have received a copy of the GNU General Public License
-**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/* $Header: /CounterStrike/LZWPIPE.H 1     3/03/97 10:25a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : LZWPIPE.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 06/30/96 *
- *                                                                                             *
- *                  Last Update : June 30, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// File: LzwSink, a sink that LZW-compresses or decompresses in blocks.
 
 #ifndef CNC_RED_ALERT_TECH_LZW_SINK_H_
 #define CNC_RED_ALERT_TECH_LZW_SINK_H_
 
-#include <cstddef>
-#include <cstdint>
-#include <span>
-#include <vector>
+#include "tech/block_backends.h"
+#include "tech/transform_sink.h"
 
-#include "base/types.h"
-#include "tech/byte_sink.h"
-#include "tech/codec_block.h"
-
-/*
-**	Performs LZW compression/decompression on the data stream that is piped
-*through this *	class. The data is compressed in blocks so of small enough size
-*to be compressed *	quickly and large enough size to get decent compression
-*rates.
-*/
-class LzwSink : public ChainedSink {
- public:
-  // next must outlive this sink.
-  LzwSink(CodecMode control, ByteSink& next, int blocksize = 1024 * 8);
-  ~LzwSink() override = default;
-
-  bool Flush() override;
-  bool Write(std::span<const std::byte> bytes) override;
-
- private:
-  /*
-  **	This tells the pipe if it should be decompressing or compressing the
-  *data stream.
-  */
-  CodecMode Control;
-
-  /*
-  **	The number of bytes accumulated into the staging buffer.
-  */
-  int Counter = 0;
-
-  /*
-  **	Working buffers that compression/decompression will use.
-  */
-  std::vector<char> source_buffer_;
-  std::vector<char> output_buffer_;
-
-  /*
-  **	The working block size. Data will be compressed in chunks of this size.
-  */
-  int BlockSize;
-
-  /*
-  **	LZW compression requires a safety margin when decompressing over itself.
-  *This *	margin is only for the worst case situation (very rare).
-  */
-  int SafetyMargin;
-
-  /*
-  **	Each block has a header of this format.
-  */
-  struct {
-    uint16_t CompCount = 0xFFFF;  // Size of data block (compressed).
-    uint16_t UncompCount = 0;     // Bytes of uncompressed data it represents.
-  } BlockHeader;
-
-  // Set once the stream yields a block that cannot be decoded safely; all
-  // later data is dropped.
-  bool corrupt_ = false;
-
- public:
-  LzwSink(const LzwSink&) = delete;
-  LzwSink& operator=(const LzwSink&) = delete;
-  LzwSink(LzwSink&&) = delete;
-  LzwSink& operator=(LzwSink&&) = delete;
-};
+// Compresses or decompresses the bytes written to it with LZW; see BlockCodec.
+//
+// Example:
+//   LzwSink compressor(CodecMode::kCompress, file_sink, 4096);
+using LzwSink = TransformSink<LzwCodec>;
 
 #endif  // CNC_RED_ALERT_TECH_LZW_SINK_H_

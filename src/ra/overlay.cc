@@ -63,7 +63,7 @@
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/session.h"
-#include "tech/codec_block.h"
+#include "tech/block_codec.h"
 #include "tech/lcw_sink.h"
 #include "tech/lcw_source.h"
 #include "tech/number_parse.h"
