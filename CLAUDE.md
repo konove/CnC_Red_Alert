@@ -153,6 +153,11 @@ Chromium-style paths relative to the `src/` include root (configured via
 #include "src/ra/object.h"       // WRONG - src/ is the include root, don't repeat it
 ```
 
+clang-tidy's `misc-include-cleaner` requires every `.cc` file to include the headers it uses
+directly and nothing more. It misses two kinds of use: a complete type needed only for an implicit
+derived-to-base conversion, and a header that supplies template definitions for an explicit
+instantiation. Keep those with `#include "td/vector_impl.h"  // IWYU pragma: keep`.
+
 ### New Files
 
 - NO Electronic Arts copyright header (only applies to original EA code)

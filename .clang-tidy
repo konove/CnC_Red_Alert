@@ -93,7 +93,6 @@ Checks: '*,
          -llvmlibc-implementation-in-namespace,
          -llvmlibc-inline-function-decl,
          -llvmlibc-restrict-system-libc-headers,
-         -misc-include-cleaner,
          -misc-multiple-inheritance,
          -misc-no-recursion,
          -misc-non-private-member-variables-in-classes,
@@ -119,6 +118,11 @@ WarningsAsErrors: '*'
 HeaderFilterRegex: '.*/CnC_Red_Alert/src/(base|port|sdllib|tech|jshell|winvq|ra|td)/.*'
 FormatStyle: file
 CheckOptions:
+  # glibc spells POSIX declarations through private headers: htonl and in_addr
+  # through <netinet/in.h> instead of <arpa/inet.h>, SOL_SOCKET through
+  # <asm-generic/socket.h>, timeval through <bits/types/struct_timeval.h>. The
+  # portable spellings the Windows/macOS branches share stay as written.
+  misc-include-cleaner.IgnoreHeaders: 'asm-generic/.*;bits/.*;arpa/inet\.h;netinet/in\.h;sys/time\.h'
   # Types have no `static`: the only way to give a .cc-local struct or enum
   # internal linkage is an anonymous namespace, which the codebase does not use
   # (misc-use-anonymous-namespace stays excluded). Functions and variables are

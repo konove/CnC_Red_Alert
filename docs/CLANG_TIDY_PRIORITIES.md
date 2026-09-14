@@ -154,7 +154,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `readability-make-member-function-const`                        | Enabled | Commit `Enable readability-make-member-function-const`: 165 reports judged by logical constness; 122 functions became `const`, 45 that exist to change state keep a reasoned suppression, and three dead no-ops were deleted. See review below.                                                                                                                                                                              |
 | `misc-override-with-different-visibility`                       | Enabled | Commit `Match override access to the base declarations`: 19 overrides moved to their base's access level in both games' gadget, turret, drive, building and list classes.                                                                                                                                                                                                                                                    |
 | `misc-header-include-cycle`                                     | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                                                                                                                                                                                |
-| `misc-include-cleaner`                                          | Skipped | Commit `Record the remaining P3 policy decisions`: 3,214 reports; include-what-you-use already enforces the project's include policy. See review below.                                                                                                                                                                                                                                                                      |
+| `misc-include-cleaner`                                          | Enabled | Commit `Enable misc-include-cleaner`: 3,285 reports; the fix-its add 767 includes and remove 312 in 303 files. `IgnoreHeaders` exempts glibc's private spellings of POSIX network headers, and five includes whose use the check cannot see stay under `IWYU pragma: keep`. See review below.                                                                                                                                |
 | `clang-diagnostic-missing-prototypes`                           | Enabled | Commit `Declare shared symbols in headers and give file-local ones internal linkage`: header drift fixed (`Expansion_Dialog`, `Smart_Printf`, `Write_Bin_Init`, `LCW_Uncompress`, dead `output` stub); local `extern` declarations and prototypes moved into the defining file's header. See review below.                                                                                                                   |
 | `clang-diagnostic-missing-variable-declarations`                | Enabled | Commit `Declare shared symbols in headers and give file-local ones internal linkage`: shared globals declared in their headers; unused DOS globals `MaxDevice`, `DefaultDrive` and `CallingDOSInt` deleted. See review below.                                                                                                                                                                                                |
 | `misc-use-internal-linkage`                                     | Enabled | Commit `Declare shared symbols in headers and give file-local ones internal linkage`: 240 file-local functions and variables made `static`; `AnalyzeTypes` off because types only get internal linkage from anonymous namespaces. See review below.                                                                                                                                                                          |
@@ -1094,6 +1094,51 @@ are non-const, with a template-dependent argument the check does not see as a mu
 `SerializeObjectList` sets its `seen` bitset only when reading, and the check reports it from the
 writer instantiation, where that `if constexpr` branch is discarded.
 
+### Include cleaner review (2026-09-13)
+
+`misc-include-cleaner` is now enforced. For each `.cc` file it reports a symbol whose declaring
+header is not included directly, and an include that nothing in the file uses: 3,285 reports, 2,993
+missing includes and 292 unused ones in 308 files. The fix-its, collected per translation unit and
+merged with `clang-apply-replacements`, add 767 includes and remove 312 across 303 files.
+
+The earlier review kept it excluded because include-what-you-use already runs in the strict build.
+IWYU runs without `--error`, though, so its suggestions never fail a build; this check is the first
+include rule that does. IWYU keeps running as advice.
+
+**glibc private headers.** For `htonl`, `in_addr`, `SOL_SOCKET` and `timeval` the check names the
+header glibc declares them in (`<netinet/in.h>`, `<asm-generic/socket.h>`,
+`<bits/types/struct_timeval.h>`) and calls the POSIX `<arpa/inet.h>` and `<sys/time.h>` includes
+unused. Those includes sit in the non-Windows branch that macOS shares, so `IgnoreHeaders` exempts
+the five spellings, which accounted for 33 reports.
+
+**One file, two configurations.** TD's `startup.cc` is also compiled into two tests with
+`TD_NO_ENTRY_POINT`, which drops `main()` and the 17 headers only it uses. The fix-its from the two
+configurations contradict each other, so the file was fixed by hand: those headers now sit under the
+same `#ifndef`.
+
+**Uses the check does not see.** Removing `techno.h` from both games' `radio.cc` and `terrain.h`
+from RA's `target.cc` broke implicit derived-to-base pointer conversions. Removing
+`td/vector_impl.h` from `vector.cc` and `heap_test.cc` left TD's explicit vector instantiations
+without member definitions, which failed only at link time. The five includes are back under
+`// IWYU pragma: keep`.
+
+**Conflicts and odd suggestions.** `explicit_bzero` is declared only in `<string.h>`, which
+`modernize-deprecated-headers` rejects; `tech/rndstraw.cc` includes it under a `NOLINT`. Both
+`fly.cc` files called the global `div` with `<cstdlib>` included, and the check traced that
+declaration to `absl/log/check.h`; they call `std::div` now. The two `absl` includes the fix-its
+spelled with angle brackets use quotes.
+
+**Scope.** The check analyzes only a translation unit's main file. Headers are compiled through the
+`*_verify_interface_header_sets` wrappers, whose main file is the generated `.cxx`, so includes in
+headers remain IWYU's advice. Only the Linux configuration is analyzed. An include inside
+`#ifdef _WIN32` is invisible to it, but one outside such a block whose only uses are inside would
+read as unused; the removals were checked for that, and the network headers are the case
+`IgnoreHeaders` covers.
+
+Includes change no code. The full strict build of both games is clean, all 359 tests pass, and the
+RA and TD save/load checks report identical state. A probe that includes `<vector>` without using it
+confirms the check reports an error.
+
 ### Member function const review (2026-09-13)
 
 `readability-make-member-function-const` is now enforced. It reports a member function that writes
@@ -1443,7 +1488,6 @@ every site.
 | `cppcoreguidelines-macro-usage`                              | 2,134   | 2,094 are constants and 40 function-like macros. 1,310 are the text-string IDs in each game's `conquer.h`, and the next largest group is the `sdllib/keyboard.h` key codes.                                             |
 | `modernize-macro-to-enum`, `cppcoreguidelines-macro-to-enum` | 2,256   | The same macro groups. As enumerators they would change type wherever they meet integer arithmetic and `printf`-style formatting.                                                                                       |
 | `cppcoreguidelines-use-enum-class`                           | 517     | 178 are unnamed enums used as integer constants. 46 are the per-dialog `RedrawType` levels, compared as ordered values 110 times. 137 are the core type enums in each game's `defines.h`, which index arrays and loops. |
-| `misc-include-cleaner`                                       | 3,214   | Include-what-you-use already runs in the strict build with the project's `.iwyu_mappings`; a second, differently tuned include policy would fight it.                                                                   |
 | `portability-template-virtual-member-function`               | 35      | See below.                                                                                                                                                                                                              |
 
 `portability-template-virtual-member-function` reports 35 virtual members of the heap, vector and
