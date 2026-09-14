@@ -6,6 +6,8 @@
 #include <SDL_mouse.h>
 #include <SDL_scancode.h>
 
+#include <cstdint>
+
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 

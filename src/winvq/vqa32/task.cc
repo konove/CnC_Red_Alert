@@ -53,6 +53,7 @@
  ****************************************************************************/
 
 #include <cstdint>
+#include <memory>
 #include <utility>
 
 #ifdef _WIN32

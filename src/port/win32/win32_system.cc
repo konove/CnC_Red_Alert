@@ -1,5 +1,10 @@
 #include "port/win32/win32_system.h"
 
+#include <algorithm>
+#include <cstdint>
+
+#include "port/win32/win32_types.h"
+
 #ifndef _WIN32
 
 #include <cstring>

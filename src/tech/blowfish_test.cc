@@ -1,10 +1,10 @@
 // Tests for the Blowfish block cipher against the published test vectors.
 
+#include "tech/blowfish.h"
+
 #include <array>
-#include <cstdint>
 
 #include "gtest/gtest.h"
-#include "tech/blowfish.h"
 
 namespace {
 

@@ -1,7 +1,5 @@
 #include "port/safe_string.h"
 
-#include <memory>
-
 #include "gtest/gtest.h"
 
 namespace port {

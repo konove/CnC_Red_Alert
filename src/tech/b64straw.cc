@@ -44,6 +44,7 @@
 
 #include "base/numeric.h"
 #include "tech/base64.h"
+#include "tech/straw.h"
 
 /***********************************************************************************************
  * Base64Straw::Get -- Fetch data and convert it to/from base 64 encoding. *

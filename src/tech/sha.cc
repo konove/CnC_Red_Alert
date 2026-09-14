@@ -44,7 +44,6 @@
 
 #include <cstdint>
 #include <cstring>
-#include <iterator>
 #include <utility>
 
 #include "base/numeric.h"

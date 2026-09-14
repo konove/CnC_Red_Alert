@@ -50,6 +50,7 @@
 #include "base/numeric.h"
 #include "tech/codec_block.h"
 #include "tech/lcw.h"
+#include "tech/straw.h"
 
 /***********************************************************************************************
  * LCWStraw::LCWStraw -- Constructor for LCW straw object. *

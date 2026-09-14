@@ -51,6 +51,7 @@
 #include "tech/buff.h"
 #include "tech/codec_block.h"
 #include "tech/lzw.h"
+#include "tech/pipe.h"
 
 /***********************************************************************************************
  * LZWPipe::LZWPipe -- Constructor for the LZW processor pipe. *

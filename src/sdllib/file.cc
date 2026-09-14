@@ -5,6 +5,7 @@
 #include <string>
 
 #include "absl/strings/ascii.h"
+#include "sdllib/file_access.h"
 
 #ifdef _WIN32
 #include <windows.h>

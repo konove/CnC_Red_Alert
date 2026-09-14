@@ -3,6 +3,7 @@
 #include <cstring>
 
 #include "base/numeric.h"
+#include "base/types.h"
 #include "sdllib/memflag.h"
 
 void (*Memory_Error)() = nullptr;

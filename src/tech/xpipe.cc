@@ -44,6 +44,8 @@
 #include <cstring>
 
 #include "base/numeric.h"
+#include "sdllib/file_access.h"
+#include "tech/pipe.h"
 
 //---------------------------------------------------------------------------------------------------------
 // BufferPipe

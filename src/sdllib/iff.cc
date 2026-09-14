@@ -1,6 +1,7 @@
 #include "sdllib/iff.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 
 

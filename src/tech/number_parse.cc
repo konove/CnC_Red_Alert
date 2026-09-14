@@ -2,6 +2,8 @@
 #include "tech/number_parse.h"
 
 #include <cstdint>
+#include <optional>
+#include <string_view>
 
 #include "absl/strings/ascii.h"
 

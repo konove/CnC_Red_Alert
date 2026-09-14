@@ -1,14 +1,14 @@
 // Tests for the tagged-field packets sent to the Westwood statistics server.
 
+#include "tech/packet.h"
+
 #include <array>
 #include <cstdint>
 #include <cstring>
 #include <memory>
-#include <span>
 
 #include "gtest/gtest.h"
 #include "tech/field.h"
-#include "tech/packet.h"
 
 namespace {
 

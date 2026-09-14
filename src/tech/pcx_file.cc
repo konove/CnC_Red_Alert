@@ -40,9 +40,9 @@
 #include <cstdint>
 #include <utility>
 
-#include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/file.h"
+#include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/memflag.h"
 

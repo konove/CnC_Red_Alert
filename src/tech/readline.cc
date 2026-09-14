@@ -21,6 +21,7 @@
 #include <cctype>
 #include <cstring>
 
+#include "tech/straw.h"
 #include "tech/wwfile.h"
 #include "tech/xstraw.h"
 

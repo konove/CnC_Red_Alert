@@ -46,6 +46,7 @@
 #include <utility>
 
 #include "base/numeric.h"
+#include "tech/pipe.h"
 /***********************************************************************************************
  * BlowPipe::Flush -- Flushes any pending data out the pipe. *
  *                                                                                             *

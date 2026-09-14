@@ -3,6 +3,7 @@
 #include "tech/mixfile.h"
 
 #include <bit>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <filesystem>

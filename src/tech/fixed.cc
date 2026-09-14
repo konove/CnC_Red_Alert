@@ -19,6 +19,9 @@
 #include "tech/fixed.h"
 
 #include <charconv>
+#include <cstdint>
+#include <string>
+#include <string_view>
 
 #include "absl/strings/ascii.h"
 #include "absl/strings/str_format.h"

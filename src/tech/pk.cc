@@ -51,6 +51,8 @@
 #include <cstring>
 
 #include "base/numeric.h"
+#include "tech/int.h"
+#include "tech/straw.h"
 /***********************************************************************************************
  * PKey::PKey -- Construct a key using encoded strings. *
  *                                                                                             *

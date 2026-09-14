@@ -16,6 +16,7 @@
 #include "base/types.h"
 #include "port/unaligned.h"
 #include "sdllib/file.h"
+#include "sdllib/file_access.h"
 #include "sdllib/memflag.h"
 #include "sdllib/wwstd.h"
 

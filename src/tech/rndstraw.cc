@@ -48,6 +48,9 @@
 
 #include "tech/rndstraw.h"
 
+// explicit_bzero is a C library extension that <cstring> does not declare.
+#include <string.h>  // NOLINT(modernize-deprecated-headers)
+
 #include <algorithm>
 #include <climits>
 #include <cstddef>
@@ -59,6 +62,7 @@
 
 #include "base/numeric.h"
 #include "tech/sha.h"
+#include "tech/straw.h"
 
 namespace {
 

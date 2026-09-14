@@ -10,6 +10,7 @@
 #include <SDL_surface.h>
 #include <SDL_video.h>
 
+#include <cstdint>
 #include <cstring>
 #include <utility>
 

@@ -21,6 +21,9 @@
 #include <memory>
 
 #include "tech/blowfish.h"
+#include "tech/blwstraw.h"
+#include "tech/pk.h"
+#include "tech/straw.h"
 
 namespace {
 constexpr int kBlowfishKeySize = BlowfishEngine::MAX_KEY_LENGTH;

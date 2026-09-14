@@ -44,6 +44,7 @@
 
 #include "base/numeric.h"
 #include "tech/base64.h"
+#include "tech/pipe.h"
 
 /***********************************************************************************************
  * Base64Pipe::Put -- Processes a block of data through the pipe. *

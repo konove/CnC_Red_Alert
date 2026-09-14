@@ -1,6 +1,7 @@
 // Round-trip tests for the LCW encoder, through the bounded decoder and
 // through the LCW pipe and straw, including the map and overlay pack layout.
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <span>

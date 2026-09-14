@@ -1,5 +1,7 @@
 #include "port/win32/win32_com.h"
 
+#include "port/win32/win32_types.h"
+
 #ifndef _WIN32
 
 // The published values, so that a sink comparing an incoming iid against

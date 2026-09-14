@@ -97,9 +97,9 @@
 #include <cstring>
 #include <iterator>
 #include <span>
-#include <utility>
 
 #include "base/numeric.h"
+#include "tech/straw.h"
 
 /***********************************************************************************************
  * _Byte_Precision -- Determines the number of bytes significant in long

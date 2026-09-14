@@ -44,6 +44,7 @@
 #include <cstring>
 
 #include "base/numeric.h"
+#include "tech/straw.h"
 /***********************************************************************************************
  * BlowStraw::Get -- Fetch a block of data from the straw. *
  *                                                                                             *

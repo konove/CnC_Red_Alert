@@ -4,7 +4,6 @@
 #include <cstdint>
 #include <cstring>
 #include <iterator>
-#include <utility>
 #include <vector>
 
 #include "gtest/gtest.h"

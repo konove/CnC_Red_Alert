@@ -43,6 +43,7 @@
 #include "tech/buff.h"
 
 #include "base/numeric.h"
+#include "base/types.h"
 
 /***********************************************************************************************
  * Buffer::Buffer -- Constructor for buffer object. *

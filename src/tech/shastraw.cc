@@ -41,6 +41,8 @@
 
 #include "tech/shastraw.h"
 
+#include "tech/straw.h"
+
 /***********************************************************************************************
  * SHAStraw::Get -- Fetch data from the straw and process the SHA with the data.
  **

@@ -52,6 +52,7 @@
 #include "lzo/lzo1x.h"
 #include "lzo/lzoconf.h"
 #include "tech/codec_block.h"
+#include "tech/straw.h"
 
 /***********************************************************************************************
  * LZOStraw::LZOStraw -- Constructor for LZO straw object. *

@@ -1,7 +1,6 @@
 #include "winvq/vqa32/unvq.h"
 
 #include <array>
-#include <cstddef>
 #include <cstdint>
 
 #include "base/numeric.h"

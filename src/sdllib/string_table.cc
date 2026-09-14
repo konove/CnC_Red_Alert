@@ -1,5 +1,6 @@
 #include "sdllib/string_table.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <span>

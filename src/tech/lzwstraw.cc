@@ -50,6 +50,7 @@
 #include "tech/buff.h"
 #include "tech/codec_block.h"
 #include "tech/lzw.h"
+#include "tech/straw.h"
 
 /***********************************************************************************************
  * LZWStraw::LZWStraw -- Constructor for LZW straw object. *

@@ -50,8 +50,13 @@
 #include <cerrno>
 #include <filesystem>
 #include <ranges>
+#include <string>
+#include <string_view>
+#include <vector>
 
-#include "sdllib/file.h"
+#include "sdllib/file_access.h"
+#include "tech/bfiofile.h"
+#include "tech/wwfile.h"
 
 std::vector<std::string> CDFileClass::search_paths_;
 std::string CDFileClass::raw_path_;

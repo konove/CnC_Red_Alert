@@ -53,9 +53,12 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <cstdio>
 #include <cstring>
 
 #include "base/numeric.h"
+#include "sdllib/file_access.h"
+#include "tech/wwfile.h"
 
 /***********************************************************************************************
  * RAMFileClass::RAMFileClass -- Construct a RAM buffer based "file" object. *

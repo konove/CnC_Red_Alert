@@ -12,6 +12,7 @@
 #include "port/aligned_buffer.h"
 #include "port/unaligned.h"
 #include "sdllib/file.h"
+#include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/iff.h"
 #include "sdllib/memflag.h"

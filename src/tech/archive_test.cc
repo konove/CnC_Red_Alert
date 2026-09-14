@@ -5,6 +5,7 @@
 
 #include "absl/base/attributes.h"
 #include "gtest/gtest.h"
+#include "tech/pipe.h"
 #include "tech/xstraw.h"
 
 namespace {

@@ -47,6 +47,7 @@
 #include "tech/blowfish.h"
 
 #include <cassert>
+#include <climits>
 #include <cstdint>
 #include <cstring>
 

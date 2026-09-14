@@ -44,6 +44,7 @@
 #include "base/numeric.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
+#include "tech/field.h"
 
 // htons/ntohs
 #ifdef _WIN32

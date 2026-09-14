@@ -58,9 +58,13 @@
 #include <algorithm>
 #include <cerrno>
 #include <cstdint>
+#include <cstdio>
 #include <cstring>
 
 #include "base/numeric.h"
+#include "sdllib/file_access.h"
+#include "tech/rawfile.h"
+#include "tech/wwfile.h"
 /***********************************************************************************************
  * BufferIOFileClass::BufferIOFileClass -- Filename based constructor for a file
  *object.       *

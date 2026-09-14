@@ -51,6 +51,7 @@
 #include "base/numeric.h"
 #include "tech/codec_block.h"
 #include "tech/lcw.h"
+#include "tech/pipe.h"
 
 /***********************************************************************************************
  * LCWPipe::LCWPipe -- Constructor for the LCW processor pipe. *

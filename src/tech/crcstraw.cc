@@ -45,6 +45,8 @@
 #include <cstdint>
 #include <span>
 
+#include "tech/straw.h"
+
 /***********************************************************************************************
  * CRCStraw::Get -- Fetch the data requested and calculate CRC on it. *
  *                                                                                             *

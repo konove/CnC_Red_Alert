@@ -43,6 +43,8 @@
 
 #include "tech/bench.h"
 
+#include <cstdint>
+
 /***********************************************************************************************
  * Benchmark::Reset -- Clear out the benchmark statistics. *
  *                                                                                             *
