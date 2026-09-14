@@ -55,6 +55,8 @@
   over a ByteStream; `VqaIo` now uses `std::string_view`/`std::span<std::byte>`/`SeekOrigin`/bool;
   `SeekOrigin` lives in `base/seek_origin.h`.
 - The refactor is complete.
+- Later (streams refactor A4, `b25297a8`): `ByteStream::ok()` and `File::ok()` report C-library read
+  and write errors, so `FileSource` can tell the end of a file from a failed read.
 
 ## Context
 
