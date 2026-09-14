@@ -93,7 +93,6 @@ Checks: '*,
          -llvmlibc-implementation-in-namespace,
          -llvmlibc-inline-function-decl,
          -llvmlibc-restrict-system-libc-headers,
-         -misc-const-correctness,
          -misc-include-cleaner,
          -misc-multiple-inheritance,
          -misc-no-recursion,
@@ -133,6 +132,11 @@ CheckOptions:
   # `while (count)`); every other bool/int crossing must be explicit.
   readability-implicit-bool-conversion.AllowPointerConditions: true
   readability-implicit-bool-conversion.AllowIntegerConditions: true
+  # LLVM 23 reports pointers written through `*p++ = value`, arrays of
+  # pointers used to call non-const members and parameters of functions whose
+  # address is taken as pointee-const; their fix-its do not compile. Locals,
+  # references and values are still checked.
+  misc-const-correctness.WarnPointersAsPointers: false
   # Same-width unsigned-to-signed conversions are the game's own compact types
   # flowing into int -- LEPTON (uint16_t), COORDINATE (uint32_t) and the
   # rest of the do-not-touch list in docs/TYPE_MIGRATION.md. Warning on those is

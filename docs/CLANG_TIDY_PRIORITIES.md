@@ -150,7 +150,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-covered-switch-default`                       | Skipped | Commit `Document variadic and thread-safety check policy`: conflicts with GCC's `-Wswitch-default`, which the build already requires (see `CMakeLists.txt`); 16 reports are defaults on fully covered switches.                                                                                                                                                                                                              |
 | `readability-implicit-bool-conversion`                          | Enabled | Commit `Enable readability-implicit-bool-conversion`: with `AllowPointerConditions` and `AllowIntegerConditions` (Google style), 1,572 reports; flags and predicates became `bool` in four commits. See review below.                                                                                                                                                                                                        |
 | `readability-inconsistent-declaration-parameter-name`           | Enabled | Commit `Name declaration parameters after their definitions`: 164 reports, applied with the check's fix-its. TD's `WWGetPrivateProfileString` definition took RA's parameter names instead, because the header-side rename made 66 correct calls read as swapped arguments to `readability-suspicious-call-argument`.                                                                                                        |
-| `misc-const-correctness`                                        | Skipped | Commit `Document P3 checks the legacy-code policy rules out`: 4,090 reports of locals that could be `const`; const everywhere is what CLAUDE.md's legacy-code rules list it under changes to avoid unless requested, and the fix-its would churn most dialog and game-logic functions. See review below.                                                                                                                     |
+| `misc-const-correctness`                                        | Enabled | Commit `Enable misc-const-correctness`: 4,072 reports; three commits add 4,126 `const` qualifiers with the check's fix-its. Pointee warnings are off (`WarnPointersAsPointers: false`) because LLVM 23 misses writes through `*p++`, arrays of pointers and function-pointer hooks, and about 40 of those fix-its did not compile. See review below.                                                                         |
 | `readability-make-member-function-const`                        | Skipped | Commit `Record the remaining P3 policy decisions`: bitwise const only; of 103 functions its fix-its touched, 29 were accessors and many others mutate state through globals. See review below.                                                                                                                                                                                                                               |
 | `misc-override-with-different-visibility`                       | Enabled | Commit `Match override access to the base declarations`: 19 overrides moved to their base's access level in both games' gadget, turret, drive, building and list classes.                                                                                                                                                                                                                                                    |
 | `misc-header-include-cycle`                                     | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                                                                                                                                                                                |
@@ -1038,6 +1038,62 @@ A TD save/load run crashed once at exit while this landed: the SDL audio callbac
 from a mix file that `Uninit_Game` has already freed. The race predates this work and is not fixed
 here.
 
+### Const correctness review (2026-09-13)
+
+`misc-const-correctness` is enforced with LLVM 23's defaults except `WarnPointersAsPointers: false`.
+With the defaults, the Linux build reported 4,072 variables that are never modified. The check's
+fix-its, collected per translation unit and merged with `clang-apply-replacements`, add 4,126
+`const` qualifiers in three commits; about 510 of them make a pointer or reference point to `const`,
+and 209 are range-for variables:
+
+| Commit                                                           | Files |
+| ---------------------------------------------------------------- | ----- |
+| `Declare never-modified variables const in the shared libraries` | 62    |
+| `Declare never-modified variables const in Red Alert`            | 153   |
+| `Declare never-modified variables const in Tiberian Dawn`        | 120   |
+
+Pointer parameters that became pointer-to-`const` changed in their header declarations too. Once
+WSA's `Apply_XOR_Delta` stopped casting its delta to a mutable pointer,
+`readability-non-const-parameter` asked for `const char*` on that parameter as well. Adding `const`
+changes no value, class layout or save format, and a `const` local can still be elided on return.
+The full strict build of both games is clean, all 359 tests pass, and the RA and TD save/load checks
+report identical state.
+
+**Pointee analysis.** The default also asks for `const T*` on pointers whose target is never
+written. LLVM 23 misses three kinds of write, and about 40 of the 454 pointee fix-its did not
+compile:
+
+- A write through a post-incremented pointer, `*p++ = value`: the blitters, palette fades, the
+  base64 and Blowfish coders and the bignum routines in `tech/mp.cc`.
+- An array of pointers used to call non-const members or swapped in place: the dialog `buttons`
+  arrays, the radar terrain sort and the techno defender sort.
+- A parameter of a function whose address is stored in a `void (*)(char*)` hook, as both games'
+  `Print_Error_End_Exit` is in `Memory_Error_Exit`.
+
+```cpp
+void Fill(unsigned char* dest) {
+  unsigned char* p = dest;  // "pointee of variable 'p' ... can be declared 'const'"
+  *p++ = 0;
+}
+```
+
+The pointee fix-its that compiled are kept. Warning on the rest would mean a `NOLINT` on every
+output-pointer loop, so the option is off; revisit it after an LLVM upgrade.
+
+**What the fix-its could not do.** Thirteen function-local `static struct { ... } table[]` lookup
+tables report with an empty fix-it; they are `static const struct` by hand. The fix-its also place
+`const` after the type (`int const x`). `.clang-format` now sets `QualifierAlignment: Left`, which
+moved those to the tree's `const int x` spelling; it leaves all-caps typedefs alone because they
+could be macros, so the 345 lines with `CELL`, `COORDINATE`, `TARGET`, `LEPTON`, `HRESULT` and
+`DWORD` were reordered by script. Elsewhere the setting would move 23 qualifiers in the unbuilt
+`winvq/vqm32` and `vqaview` sources, which are left as they are.
+
+**Suppressions.** Four variables carry `NOLINTNEXTLINE(misc-const-correctness)`, all template false
+positives. Both games' save tests call the `ArchiveWriter` and `ArchiveReader` call operators, which
+are non-const, with a template-dependent argument the check does not see as a mutation. TD's
+`SerializeObjectList` sets its `seen` bitset only when reading, and the check reports it from the
+writer instantiation, where that `if constexpr` branch is discarded.
+
 ### Switch fallback review (2026-09-12)
 
 `clang-diagnostic-switch`, `clang-diagnostic-switch-default` and
@@ -1094,14 +1150,13 @@ The eight member-named parameters (`ToolTipClass::Move`, `WolapiObject::LinkToCh
 
 ### Legacy-code policy exclusions (2026-09-12)
 
-Four P3 names are retained because the change they ask for is one the project's own rules steer away
-from. CLAUDE.md's legacy-code section lists smart pointers everywhere, const everywhere and STL
-containers everywhere under changes to avoid unless requested. Measured in the combined sweep:
+Three P3 names are retained because the change they ask for is one the project's own rules steer
+away from. CLAUDE.md's legacy-code section lists smart pointers everywhere and STL containers
+everywhere under changes to avoid unless requested. Measured in the combined sweep:
 
 | Check                                                               | Reports | What enabling would require                                     |
 | ------------------------------------------------------------------- | ------- | --------------------------------------------------------------- |
 | `cppcoreguidelines-owning-memory`                                   | 1,240   | `gsl::owner` or smart pointers on every raw `new`/`delete`      |
-| `misc-const-correctness`                                            | 4,090   | `const` on every local that is never modified                   |
 | `modernize-avoid-c-arrays` (and `cppcoreguidelines-avoid-c-arrays`) | 2,252   | `std::array` or containers for every C array, including layouts |
 
 Many of the C arrays are fixed-layout data tables, network packets and save structures, where a
