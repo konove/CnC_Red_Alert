@@ -2,7 +2,14 @@
 
 ## Resume checkpoint (2026-09-14)
 
-- Plan approved (v2). No steps complete yet. Next: step 0 characterization tests.
+- Step 0 is complete: `tech/rawfile_test.cc`, `tech/cdfile_test.cc` and the nested-mixfile,
+  loose-override and missing-name handle tests in `ra/mix_aware_file_test.cc`. Baselines:
+  `tools/ra_saveload_smoke.sh` → 240 object positions identical;
+  `tools/td_saveload_smoke.sh ... SCG01EA --team` → 5951 game states identical.
+- Pinned quirks worth knowing: a `RawFileClass` seek to before the start of the file leaves the
+  position unchanged, whereas a resident `MixAwareFile` clamps to 0; the lowercase retry lowercases
+  the whole path, so it only finds all-lowercase files.
+- Next: step 1.
 
 ## Context
 
