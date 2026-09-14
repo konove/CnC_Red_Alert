@@ -250,8 +250,14 @@ You will encounter: `strcpy`/`strcat`/`sprintf`, raw `new`/`delete`, C-style cas
 **Acceptable changes:** Safe string functions, buffer overflow fixes, add `override`, IWYU fixes,
 self-contained headers, fixed-width integer types (`long` → `int32_t`, etc.).
 
-**Avoid unless requested:** Class hierarchy refactoring, smart pointers everywhere, const
-everywhere, STL containers everywhere, removing globals.
+**Const:** Declare locals, range-for variables and references `const` when they are never modified;
+clang-tidy's `misc-const-correctness` enforces it. Write `const` before the type (`const int x`,
+`const T* p`); `.clang-format` sets `QualifierAlignment: Left`. Make pointers point to `const` when
+the target is never written, though the check does not require it: LLVM 23 misses writes through
+`*p++`, so pointee warnings are off. Adding `const` to member functions stays opportunistic.
+
+**Avoid unless requested:** Class hierarchy refactoring, smart pointers everywhere, STL containers
+everywhere, removing globals.
 
 ## Integer Types
 
