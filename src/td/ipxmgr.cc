@@ -992,7 +992,7 @@ int IPXManagerClass::Service() {
   // here left the object pointing into this frame's stack after Service()
   // returned.
   IPXHeaderType* cur_header_buf = nullptr;
-  char* cur_data_buf = nullptr;
+  const char* cur_data_buf = nullptr;
 
   if (Winsock.Get_Connected()) {
     while ((recv_length = Winsock.Read(temp_receive_buffer, 1024)) != 0) {
@@ -1554,7 +1554,7 @@ void* IPXManagerClass::Oldest_Send() {
   for (int i = 0; i < NumConnections; i++) {
     queues[base::ToSize(i)] = Connection[i]->Queue;
   }
-  SendQueueType* oldest = ConnectionClass::OldestUnackedSend(queues);
+  const SendQueueType* oldest = ConnectionClass::OldestUnackedSend(queues);
   return oldest != nullptr ? oldest->Buffer : nullptr;
 
 } /* end of Oldest_Send */

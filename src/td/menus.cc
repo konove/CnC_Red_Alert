@@ -620,7 +620,7 @@ int Main_Menu(int timeout) {
   };
 
 #ifdef NEWMENU
-  bool expansions = Expansion_Present();
+  const bool expansions = Expansion_Present();
 #endif
   KeyNumType input;  // input from user
   int retval = 0;    // return value

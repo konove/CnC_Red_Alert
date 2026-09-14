@@ -302,8 +302,8 @@ void HouseClass::Serialize(Archive& ar) {
       ar.Fail("invalid house state");
       return;
     }
-    for (int factory : {AircraftFactory, InfantryFactory, UnitFactory,
-                        BuildingFactory, SpecialFactory}) {
+    for (const int factory : {AircraftFactory, InfantryFactory, UnitFactory,
+                              BuildingFactory, SpecialFactory}) {
       if (factory < -1 || factory >= Factories.Length()) {
         ar.Fail("invalid house factory slot");
         return;
@@ -453,7 +453,8 @@ void MissionClass::Serialize(Archive& ar) {
   ObjectClass::Serialize(ar);
   ar(Mission, SuspendedMission, MissionQueue, Status, Timer);
   if constexpr (Archive::kIsReading) {
-    for (MissionType mission : {Mission, SuspendedMission, MissionQueue}) {
+    for (const MissionType mission :
+         {Mission, SuspendedMission, MissionQueue}) {
       if (mission < MISSION_NONE || mission >= MISSION_COUNT) {
         ar.Fail("invalid saved mission");
       }

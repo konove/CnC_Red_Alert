@@ -194,8 +194,8 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
                                           int packetlen, int* their_frame,
                                           uint16_t* their_sent,
                                           uint16_t* their_recv);
-static RetcodeType Process_Serial_Packet(char* multi_packet_buf, int packetlen,
-                                         int first_time);
+static RetcodeType Process_Serial_Packet(const char* multi_packet_buf,
+                                         int packetlen, int first_time);
 static int Can_Advance(ConnManClass* net, int max_ahead, const int* their_frame,
                        const uint16_t* their_sent, const uint16_t* their_recv);
 static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
@@ -247,12 +247,14 @@ constexpr int kEventTypeSize = static_cast<int>(sizeof(EventClass::EventType));
 static void Init_Queue_Mono(ConnManClass* net);
 static void Update_Queue_Mono(ConnManClass* net, int flow_index);
 static void Print_Framesync_Values(int64_t curframe, int max_ahead,
-                                   int num_connections, uint16_t* their_recv,
-                                   uint16_t* their_sent, uint16_t my_sent);
+                                   int num_connections,
+                                   const uint16_t* their_recv,
+                                   const uint16_t* their_sent,
+                                   uint16_t my_sent);
 #endif  // DEMO
 static void Print_CRCs(EventClass* /*unused*/);
 
-static void Dump_Packet_Too_Late_Stuff(EventClass* event);
+static void Dump_Packet_Too_Late_Stuff(const EventClass* event);
 
 /***************************************************************************
  * Queue_Mission -- Queue a mega mission event.                            *
@@ -583,13 +585,13 @@ static void Queue_AI_Multiplayer() {
     FRAMESYNC_TIMEOUT = 25 * 60,  // timeout waiting for frame sync packet
   };
 
-  int timeout_factor = GameToPlay == GAME_INTERNET ? 6 : 1;
+  const int timeout_factor = GameToPlay == GAME_INTERNET ? 6 : 1;
 
   //........................................................................
   // Variables for sending, receiving & parsing packets:
   //........................................................................
   ConnManClass* net = nullptr;  // ptr to access all multiplayer functions
-  EventClass packet;            // for sending single frame-sync's
+  const EventClass packet;      // for sending single frame-sync's
   char* multi_packet_buf = nullptr;  // buffer for sending/receiving
   int multi_packet_max = 0;          // max length of multi_packet_buf
 
@@ -1636,7 +1638,7 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
                                           uint16_t* their_sent,
                                           uint16_t* their_recv) {
   EventClass event_storage;
-  EventClass* event = &event_storage;
+  const EventClass* event = &event_storage;
   int index;
   RetcodeType retcode = RC_NORMAL;
   int i;
@@ -1754,14 +1756,14 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static RetcodeType Process_Serial_Packet(char* multi_packet_buf, int packetlen,
-                                         int first_time) {
+static RetcodeType Process_Serial_Packet(const char* multi_packet_buf,
+                                         int packetlen, int first_time) {
   SerialPacketType serial_storage;
   SerialPacketType* serial_packet =
       &serial_storage;  // for parsing serial packets
   int player_gone;
   EventClass event_storage;
-  EventClass* event = &event_storage;
+  const EventClass* event = &event_storage;
   char txt[MAX_MESSAGE_LENGTH + 80];
   uint16_t magic_number;
   uint16_t crc;
@@ -4143,8 +4145,10 @@ static void Update_Queue_Mono(ConnManClass* net, int flow_index) {
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static void Print_Framesync_Values(int64_t curframe, int max_ahead,
-                                   int num_connections, uint16_t* their_recv,
-                                   uint16_t* their_sent, uint16_t my_sent) {
+                                   int num_connections,
+                                   const uint16_t* their_recv,
+                                   const uint16_t* their_sent,
+                                   uint16_t my_sent) {
 #if (SHOW_MONO)
   int i;
 
@@ -4199,7 +4203,7 @@ static void Print_Framesync_Values(int64_t curframe, int max_ahead,
  * HISTORY:                                                                *
  *   06/28/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Dump_Packet_Too_Late_Stuff(EventClass* event) {
+void Dump_Packet_Too_Late_Stuff(const EventClass* event) {
   FILE* fp;
   int i;
 

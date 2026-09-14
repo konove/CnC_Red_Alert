@@ -282,7 +282,7 @@ bool VectorClass<T>::Resize(base::ssize newsize, T* array) {
       *This *	presumes that there is a functional assignment operator for each
       **	of the objects in the vector.
       */
-      int copycount = static_cast<int>(
+      const int copycount = static_cast<int>(
           std::cmp_less(newsize, VectorMax) ? newsize : VectorMax);
       for (int index = 0; index < copycount; index++) {
         newptr[index] = Vector[index];
@@ -511,7 +511,7 @@ bool DynamicVectorClass<T>::Add_Head(const T& object) {
  *=============================================================================================*/
 template <class T>
 bool DynamicVectorClass<T>::Delete(const T& object) {
-  int index = ID(object);
+  const int index = ID(object);
   if (index != -1) {
     return Delete(index);
   }

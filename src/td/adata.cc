@@ -2261,9 +2261,9 @@ AnimTypeClass::AnimTypeClass(AnimType anim, const char* name, int size,
  *=============================================================================================*/
 void AnimTypeClass::One_Time() {
   for (AnimType index = ANIM_FIRST; index < ANIM_COUNT; ++index) {
-    auto fullname = std::filesystem::path(As_Reference(index).IniName)
-                        .replace_extension(".SHP")
-                        .string();
+    const auto fullname = std::filesystem::path(As_Reference(index).IniName)
+                              .replace_extension(".SHP")
+                              .string();
 
     RawFileClass file(fullname.c_str());
     if (file.Is_Available()) {

@@ -214,7 +214,7 @@ int UnitClass::Validate() const {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 static void Recoil_Adjust(DirType dir, int& x, int& y) {
-  static struct {
+  static const struct {
     signed char X, Y;
   } _adjust[32] = {{0, 1},                                  // N
                    {0, 1},   {0, 1},   {-1, 1},  {-1, 1},   // NE
@@ -226,7 +226,7 @@ static void Recoil_Adjust(DirType dir, int& x, int& y) {
                    {1, 0},   {1, 1},   {1, 1},   {1, 1},    // NW
                    {1, 1},   {0, 1},   {0, 1}};
 
-  int index = Facing_To_32(dir);
+  const int index = Facing_To_32(dir);
   x += _adjust[index].X;
   y += _adjust[index].Y;
 }
@@ -249,7 +249,7 @@ static void Recoil_Adjust(DirType dir, int& x, int& y) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 static void Turret_Adjust(DirType dir, int& x, int& y) {
-  static struct {
+  static const struct {
     signed char X, Y;
   } _adjust[32] = {{1, 2},                                  // N
                    {-1, 1},  {-2, 0},  {-3, 0},  {-3, 1},   // NW
@@ -261,7 +261,7 @@ static void Turret_Adjust(DirType dir, int& x, int& y) {
                    {5, -1},  {5, -1},  {4, 0},   {3, 0},    // NE
                    {2, 0},   {2, 1},   {1, 2}};
 
-  int index = Facing_To_32(dir);
+  const int index = Facing_To_32(dir);
   x += _adjust[index].X;
   y += _adjust[index].Y;
 }
@@ -675,7 +675,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
         if ((!IsDriving && !IsRotating && !IsTethered) &&
             (Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER)) {
           CELL cell;
-          DirType dir = Desired_Load_Dir(from, cell);
+          const DirType dir = Desired_Load_Dir(from, cell);
 
           /*
           **	If no adjacent free cells are detected, then passenger loading
@@ -860,7 +860,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
   *and it has *	passengers that pop out, then the passengers will inherit the
   *select state.
   */
-  bool select = IsSelected && IsOwnedByPlayer;
+  const bool select = IsSelected && IsOwnedByPlayer;
 
   /*
   **	In order for a this to be damaged, it must either be a unit
@@ -1349,7 +1349,7 @@ void UnitClass::Find_LZ() {
  *=============================================================================================*/
 bool UnitClass::Unload_Hovercraft_Process() {
   Validate();
-  bool unloaded = false;
+  const bool unloaded = false;
   FootClass* unit;  // The unit to be unloaded.
   CELL cell;        // Cell to unload to.
 
@@ -1494,7 +1494,7 @@ bool UnitClass::Goto_Clear_Spot() {
 
     ptr = &_offsets[0];
     while (*ptr) {
-      CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *ptr++);
+      const CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *ptr++);
 
       if (BuildingTypeClass::As_Reference(STRUCT_CONST).Legal_Placement(cell)) {
         Assign_Destination(::As_Target(cell));
@@ -1580,7 +1580,7 @@ bool UnitClass::Try_To_Deploy() {
           **	Force the newly placed construction yard to be in the same
           *strength *	ratio as the MCV that deployed into it.
           */
-          int ratio = Health_Ratio();
+          const int ratio = Health_Ratio();
           building->Strength = static_cast<int16_t>(
               Fixed_To_Cardinal(building->Class->MaxStrength, ratio));
           /*
@@ -1628,7 +1628,7 @@ bool UnitClass::Try_To_Deploy() {
  *=============================================================================================*/
 void UnitClass::Per_Cell_Process(bool center) {
   Validate();
-  CELL cell = Coord_Cell(Coord);
+  const CELL cell = Coord_Cell(Coord);
   TechnoClass* whom;
   HousesType house;
 
@@ -1749,7 +1749,7 @@ void UnitClass::Per_Cell_Process(bool center) {
   if (center && IsALoaner && !Map.In_Radar(cell)) {
     if (IsReturning || !Is_Something_Attached()) {
       if (*this == UNIT_GUNBOAT) {
-        CELL current_cell = Coord_Cell(Coord);
+        const CELL current_cell = Coord_Cell(Coord);
         if (Cell_X(current_cell) <= Map.MapCellX) {
           Assign_Mission(MISSION_HUNT);
           Assign_Destination(::As_Target(
@@ -1891,7 +1891,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
   int shapenum;           // Working shape number.
   const void* shapefile;  // Working shape file pointer.
   int facing = Facing_To_32(PrimaryFacing.Current());
-  int tfacing = Facing_To_32(SecondaryFacing.Current());
+  const int tfacing = Facing_To_32(SecondaryFacing.Current());
 
   /*
   **	Verify the legality of the unit class.
@@ -1971,7 +1971,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
       */
       if (IsHarvesting && !PrimaryFacing.Is_Rotating() && !NavCom &&
           !IsDriving) {
-        static char _hstage[6] = {0, 1, 2, 3, 2, 1};
+        static const char _hstage[6] = {0, 1, 2, 3, 2, 1};
         shapenum = 32 + ((BodyShape[facing] + 2) / 4 * 4) +
                    _hstage[Fetch_Stage() % std::ssize(_hstage)];
       } else {
@@ -2174,7 +2174,7 @@ bool UnitClass::Tiberium_Check(CELL& center, int x, int y) {
 bool UnitClass::Goto_Tiberium() {
   Validate();
   if (!Target_Legal(NavCom)) {
-    CELL center = Coord_Cell(Center_Coord());
+    const CELL center = Coord_Cell(Center_Coord());
     if (Map[center].Land_Type() == LAND_TIBERIUM) {
       return true;
     }
@@ -2230,7 +2230,7 @@ bool UnitClass::Goto_Tiberium() {
  *=============================================================================================*/
 bool UnitClass::Harvesting() {
   Validate();
-  CELL cell = Coord_Cell(Coord);
+  const CELL cell = Coord_Cell(Coord);
   CellClass* ptr = &Map[cell];
 
   /*
@@ -2326,12 +2326,12 @@ int UnitClass::Mission_Unload() {
             FootClass* passenger = Detach_Object();
 
             if (passenger) {
-              DirType toface = DIR_S + PrimaryFacing;
+              const DirType toface = DIR_S + PrimaryFacing;
               bool placed = false;
 
               for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
-                DirType newface = toface + face;
-                CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
+                const DirType newface = toface + face;
+                const CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
                 if (passenger->Can_Enter_Cell(newcell) == MOVE_OK) {
                   ScenarioInit++;
@@ -2646,7 +2646,7 @@ int UnitClass::Mission_Hunt() {
 void UnitClass::Look(bool incremental) {
   Validate();
   if (!IsInLimbo && IsOwnedByPlayer) {
-    int sight = Class->SightRange;
+    const int sight = Class->SightRange;
 
     if (sight) {
       Map.Sight_From(Coord_Cell(Coord), sight,
@@ -2915,14 +2915,15 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
         return MOVE_OK;
       }
 
-      bool is_moving = (obj->What_Am_I() == RTTI_INFANTRY ||
-                        obj->What_Am_I() == RTTI_UNIT) &&
-                       Target_Legal(dynamic_cast<FootClass*>(obj)->NavCom);
+      const bool is_moving =
+          (obj->What_Am_I() == RTTI_INFANTRY ||
+           obj->What_Am_I() == RTTI_UNIT) &&
+          Target_Legal(dynamic_cast<FootClass*>(obj)->NavCom);
 
       if (House->Is_Ally(obj)) {
         if (is_moving) {
-          int face = Dir_Facing(PrimaryFacing);
-          int techface =
+          const int face = Dir_Facing(PrimaryFacing);
+          const int techface =
               Dir_Facing(dynamic_cast<const FootClass*>(obj)->PrimaryFacing) ^
               4;
           if (face == techface && Distance(obj) <= 0x1FF) {
@@ -3157,7 +3158,7 @@ bool UnitClass::Stop_Driver() {
     ** Safe off whether the vehicle is down or not so we know whether
     ** we have to put it back down.
     */
-    int temp = IsDown;
+    const int temp = IsDown;
 
     /*
     ** If the vehicle is down, pick it up so it doesnt interfere with
@@ -3246,8 +3247,8 @@ bool UnitClass::Limbo() {
  *=============================================================================================*/
 void UnitClass::Response_Select() {
   Validate();
-  static VocType _response[] = {VOC_VEHIC,  VOC_UNIT,   VOC_YESSIR,
-                                VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
+  static const VocType _response[] = {VOC_VEHIC,  VOC_UNIT,   VOC_YESSIR,
+                                      VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
   VocType response = _response[Sim_Random_Pick(
       0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
 
@@ -3277,8 +3278,8 @@ void UnitClass::Response_Select() {
  *=============================================================================================*/
 void UnitClass::Response_Move() {
   Validate();
-  static VocType _response[] = {VOC_MOVEOUT, VOC_MOVEOUT, VOC_MOVEOUT,
-                                VOC_ACKNOWL, VOC_AFFIRM,  VOC_AFFIRM};
+  static const VocType _response[] = {VOC_MOVEOUT, VOC_MOVEOUT, VOC_MOVEOUT,
+                                      VOC_ACKNOWL, VOC_AFFIRM,  VOC_AFFIRM};
   VocType response = _response[Sim_Random_Pick(
       0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
 
@@ -3308,8 +3309,8 @@ void UnitClass::Response_Move() {
  *=============================================================================================*/
 void UnitClass::Response_Attack() {
   Validate();
-  static VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL, VOC_YESSIR, VOC_YESSIR,
-                                VOC_YESSIR};
+  static const VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL, VOC_YESSIR,
+                                      VOC_YESSIR, VOC_YESSIR};
   VocType response = _response[Sim_Random_Pick(
       0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
 
@@ -3394,7 +3395,7 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
   */
   if (IsOwnedByPlayer && action == ACTION_SELECT &&
       object->What_Am_I() == RTTI_BUILDING) {
-    auto* building = dynamic_cast<BuildingClass*>(object);
+    const auto* building = dynamic_cast<BuildingClass*>(object);
     if (building->Class->Type == STRUCT_REPAIR &&
         !building->In_Radio_Contact() && !building->Is_Something_Attached()) {
       action = ACTION_MOVE;
@@ -3406,7 +3407,7 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
 
 ActionType UnitClass::What_Action(CELL cell) const {
   Validate();
-  ActionType action = TarComClass::What_Action(cell);
+  const ActionType action = TarComClass::What_Action(cell);
   if (action == ACTION_MOVE && Map[cell].Land_Type() == LAND_TIBERIUM &&
       Class->IsToHarvest) {
     return ACTION_HARVEST;
@@ -3481,13 +3482,14 @@ void UnitClass::Read_INI(char* buffer) {
           /*
           **	Read the raw data.
           */
-          int strength =
+          const int strength =
               tech::ParseInteger<int>(strtok(nullptr, ",\r\n")).value_or(0);
-          COORDINATE coord = Cell_Coord(
+          const COORDINATE coord = Cell_Coord(
               tech::ParseInteger<CELL>(strtok(nullptr, ",\r\n")).value_or(0));
-          DirType dir = static_cast<DirType>(
+          const DirType dir = static_cast<DirType>(
               tech::ParseInteger<int>(strtok(nullptr, ",\r\n")).value_or(0));
-          MissionType mission = Mission_From_Name(strtok(nullptr, ",\n\r"));
+          const MissionType mission =
+              Mission_From_Name(strtok(nullptr, ",\n\r"));
           unit->Trigger = TriggerClass::As_Pointer(strtok(nullptr, ",\r\n"));
           if (unit->Trigger) {
             unit->Trigger->AttachCount++;
@@ -3748,7 +3750,7 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   int bestval = -1;
   for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
     int value = 0;
-    CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
+    const CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
 
     /*
     **	Base the initial value of the potential cell according to whether the
@@ -3762,7 +3764,7 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
                   ? 128
                   : -128;
     } else {
-      CellClass* cell = &Map[cellnum];
+      const CellClass* cell = &Map[cellnum];
       if (Ground[cell->Land_Type()].Cost[SPEED_FOOT] == 0 ||
           cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
           cell->Flag.Occupy.Monolith ||
@@ -3804,7 +3806,7 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   */
   moveto = 0;
   if (bestval > 0) {
-    static DirType _desired_to_actual[FACING_COUNT] = {
+    static const DirType _desired_to_actual[FACING_COUNT] = {
         DIR_S, DIR_SW, DIR_NW, DIR_NW, DIR_NE, DIR_NE, DIR_NE, DIR_SE};
 
     moveto = Adjacent_Cell(Coord_Cell(Coord), bestdir);

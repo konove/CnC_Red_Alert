@@ -179,7 +179,7 @@ int CellClass::Validate() const {
  *=============================================================================================*/
 int CellClass::Cell_Color(bool override) const {
   Validate();
-  BuildingClass* object = Cell_Building();
+  const BuildingClass* object = Cell_Building();
   if (object) {
     return object->House->Class->Color;
   }
@@ -376,7 +376,7 @@ ObjectClass* CellClass::Cell_Object(int x, int y) const {
  *=============================================================================================*/
 void CellClass::Redraw_Objects(bool forced) {
   Validate();
-  CELL cell = Cell_Number();
+  const CELL cell = Cell_Number();
 
   if (Map.In_View(cell) && (forced || !MapEditClass::Is_Cell_Flagged(cell))) {
     /*
@@ -515,7 +515,7 @@ void CellClass::Recalc_Attributes() {
     */
     const char* ptr = ttype->AltIcons;
     if (ptr) {
-      int icon = TIcon;
+      const int icon = TIcon;
 
       while (*ptr != -1) {
         if (icon == *ptr++) {
@@ -845,10 +845,10 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
   Validate();
   const TemplateTypeClass* ttype = nullptr;
   int icon;  // The icon number to use from the template set.
-  CELL cell = Cell_Number();
+  const CELL cell = Cell_Number();
   void* remap = nullptr;
-  TemplateTypeClass* tptr = nullptr;
-  TriggerClass* trig = nullptr;
+  const TemplateTypeClass* tptr = nullptr;
+  const TriggerClass* trig = nullptr;
   int i = 0;
   char waypt[2] = {};
 
@@ -1164,7 +1164,7 @@ void CellClass::Concrete_Calc() {
   */
   index = 0;
   for (int i = 0; i < std::ssize(_even); i++) {
-    CellClass& cellptr = Adjacent_Cell(*ptr++);
+    const CellClass& cellptr = Adjacent_Cell(*ptr++);
 
     //		if ((cellptr->IsConcrete) ||
     //					cellptr->Concrete == C_UPDOWN_RIGHT ||
@@ -1345,10 +1345,10 @@ void CellClass::Concrete_Calc() {
  *=============================================================================================*/
 void CellClass::Wall_Update() {
   Validate();
-  static FacingType _offsets[5] = {FACING_N, FACING_E, FACING_S, FACING_W,
-                                   FACING_NONE};
+  static const FacingType _offsets[5] = {FACING_N, FACING_E, FACING_S, FACING_W,
+                                         FACING_NONE};
 
-  for (auto& _offset : _offsets) {
+  for (const auto& _offset : _offsets) {
     CellClass& newcell = Adjacent_Cell(_offset);
 
     if (newcell.Overlay != OVERLAY_NONE &&
@@ -1547,7 +1547,8 @@ TriggerClass* CellClass::Get_Trigger() const {
  *sub-position algorithm.                                   *
  *=============================================================================================*/
 int CellClass::Spot_Index(COORDINATE coord) {
-  COORDINATE rel = coord & 0x00FF00FFL;  // Sub coordinate value within cell.
+  const COORDINATE rel =
+      coord & 0x00FF00FFL;  // Sub coordinate value within cell.
 
   /*
   **	If the coordinate is close enough to the center of the cell, then return
@@ -1597,7 +1598,7 @@ int CellClass::Spot_Index(COORDINATE coord) {
  *=============================================================================================*/
 COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
   Validate();
-  int spot_index = Spot_Index(coord);
+  const int spot_index = Spot_Index(coord);
 
   /*
   **	This precalculated sequence table records the closest spots to any given
@@ -1648,7 +1649,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
     sequence = &_sequence[spot_index][0];
   }
   for (int index = 0; index < 4; index++) {
-    int pos = *sequence++;
+    const int pos = *sequence++;
 
     if (Is_Spot_Free(pos)) {
       return Coord_Add(coord, StoppingCoordAbs[pos]);
@@ -1682,7 +1683,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
  *=============================================================================================*/
 int CellClass::Clear_Icon() const {
   Validate();
-  CELL cell = Cell_Number();
+  const CELL cell = Cell_Number();
   return (cell & 0x03) | (cell >> 4 & 0x0C);
 }
 
@@ -1768,7 +1769,7 @@ const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
  *=========================================================================*/
 void CellClass::Adjust_Threat(HousesType house, int threat_value) {
   Validate();
-  int region = MapEditClass::Cell_Region(Cell_Number());
+  const int region = MapEditClass::Cell_Region(Cell_Number());
 
   for (HousesType lp = HOUSE_FIRST; lp < HOUSE_COUNT; lp++) {
     if (lp == house) {
@@ -1809,7 +1810,7 @@ int32_t CellClass::Tiberium_Adjust(bool pregame) {
   Validate();
   if ((Overlay != OVERLAY_NONE) &&
       (OverlayTypeClass::As_Reference(Overlay).Land == LAND_TIBERIUM)) {
-    static int _adj[9] = {0, 1, 3, 4, 6, 7, 8, 10, 11};
+    static const int _adj[9] = {0, 1, 3, 4, 6, 7, 8, 10, 11};
     int count = 0;
 
     /*
@@ -1824,7 +1825,7 @@ int32_t CellClass::Tiberium_Adjust(bool pregame) {
     ** (Skip those cells which aren't on the map)
     */
     for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
-      CellClass& adj = Adjacent_Cell(face);
+      const CellClass& adj = Adjacent_Cell(face);
 
       if (adj.Overlay != OVERLAY_NONE &&
           OverlayTypeClass::As_Reference(adj.Overlay).Land == LAND_TIBERIUM) {
@@ -1876,7 +1877,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
     REVEAL,        // Reveal the entire map.
     TOTAL_CRATES,
   };
-  static int _what[] = {
+  static const int _what[] = {
       DARKNESS, DARKNESS, REVEAL, REVEAL, NUKE,
       //		ION,ION,
       NUKE_MISSILE, ION_BLAST, ION_BLAST, AIR_STRIKE, AIR_STRIKE, AIR_STRIKE,
@@ -1886,7 +1887,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
 
   if (object && Overlay != OVERLAY_NONE &&
       OverlayTypeClass::As_Reference(Overlay).IsCrate) {
-    bool steel = Overlay == OVERLAY_STEEL_CRATE;
+    const bool steel = Overlay == OVERLAY_STEEL_CRATE;
     COORDINATE coord;  // Temporary working coordinate value.
 
     /*
@@ -2063,7 +2064,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           }
 
           while (!utp) {
-            UnitType utype =
+            const UnitType utype =
                 Random_Pick(UNIT_HTANK, static_cast<UnitType>(UNIT_COUNT - 1));
             if (utype != UNIT_MCV || MPlayerBases) {
               utp = &UnitTypeClass::As_Reference(utype);
@@ -2090,7 +2091,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         */
         case SQUAD:
           for (index = 0; index < 5; index++) {
-            static InfantryType _inf[] = {
+            static const InfantryType _inf[] = {
                 INFANTRY_E1, INFANTRY_E1, INFANTRY_E1, INFANTRY_E1,
                 INFANTRY_E1, INFANTRY_E1, INFANTRY_E2, INFANTRY_E3,
                 INFANTRY_E4, INFANTRY_E5, INFANTRY_E7, INFANTRY_RAMBO};
@@ -2161,7 +2162,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           damage = 400;
           object->Take_Damage(damage, 0, WARHEAD_HE);
           for (index = 0; index < 5; index++) {
-            COORDINATE blast_coord =
+            const COORDINATE blast_coord =
                 Coord_Scatter(Cell_Coord(), Random_Pick(0, 0x0200));
             new AnimClass(ANIM_FBALL1, blast_coord);
             damage = 400;

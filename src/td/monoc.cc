@@ -163,7 +163,7 @@ MonoClass::~MonoClass() { PageUsage[Page] = nullptr; }
 void MonoClass::Draw_Box(int x, int y, int w, int h, char attrib,
                          BoxStyleType thick) {
   CellType cell;
-  char oldattrib = Attrib;
+  const char oldattrib = Attrib;
 
   if (!Enabled || !w || !h) {
     return;
@@ -429,7 +429,7 @@ void MonoClass::Printf(int text, ...) {
  *=============================================================================================*/
 void MonoClass::Print(const char* ptr) {
   //	int optr;
-  char startcol = X;
+  const char startcol = X;
   const char* text;
   CellType cell;
 
@@ -523,9 +523,9 @@ void MonoClass::Print(const char* ptr) {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 void MonoClass::Text_Print(const char* text, int x, int y, char attrib) {
-  char oldx = X;
-  char oldy = Y;
-  char oldattrib = Attrib;
+  const char oldx = X;
+  const char oldy = Y;
+  const char oldattrib = Attrib;
 
   X = static_cast<char>(x);
   Y = static_cast<char>(y);

@@ -206,7 +206,7 @@ OverlayClass::OverlayClass(OverlayType type, CELL pos, HousesType house)
 bool OverlayClass::Mark(MarkType mark) {
   Validate();
   if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
-    CELL cell = Coord_Cell(Coord);
+    const CELL cell = Coord_Cell(Coord);
     CellClass* cellptr = &Map[cell];
 
     /*
@@ -301,10 +301,10 @@ bool OverlayClass::Mark(MarkType mark) {
               *adjacent *	cells since their shape can be altered by the
               *presence of *	concrete at this location.
               */
-              static FacingType _face[4] = {FACING_N, FACING_E, FACING_S,
-                                            FACING_W};
+              static const FacingType _face[4] = {FACING_N, FACING_E, FACING_S,
+                                                  FACING_W};
 
-              for (auto& index : _face) {
+              for (const auto& index : _face) {
                 cellptr->Adjacent_Cell(index).Concrete_Calc();
               }
             }
@@ -413,7 +413,7 @@ void OverlayClass::Write_INI(char* buffer) {
   **	Write the unit data out.
   */
   for (index = 0; index < MAP_CELL_TOTAL; index++) {
-    CellClass* cellptr = &Map[index];
+    const CellClass* cellptr = &Map[index];
 
     if (cellptr->Overlay != OVERLAY_NONE) {
       sprintf(uname, "%03d", index);

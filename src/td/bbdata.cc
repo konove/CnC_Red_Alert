@@ -586,9 +586,9 @@ void BulletTypeClass::One_Time() {
     const BulletTypeClass& bullet = As_Reference(index);
 
     if (!bullet.IsInvisible) {
-      auto fullname = std::filesystem::path(bullet.IniName)
-                          .replace_extension(".SHP")
-                          .string();
+      const auto fullname = std::filesystem::path(bullet.IniName)
+                                .replace_extension(".SHP")
+                                .string();
 
       RawFileClass file(fullname.c_str());
 

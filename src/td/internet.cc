@@ -117,7 +117,7 @@ int Read_Game_Options();
  *                                                                                             *
  * HISTORY: * 6/9/96 1:44PM ST : Created *
  *=============================================================================================*/
-void Check_From_WChat(char* wchat_name) {
+void Check_From_WChat(const char* wchat_name) {
 #ifndef DEMO
 
   char default_string[] = {"Error"};
@@ -413,25 +413,25 @@ bool Do_The_Internet_Menu_Thang() {
 #endif
 #ifndef DEMO
 
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   /*
   ** Dialog & button dimensions
   */
-  int d_dialog_w = 120 * factor;                     // dialog width
-  int d_dialog_h = 80 * factor;                      // dialog height
-  int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
+  const int d_dialog_w = 120 * factor;                       // dialog width
+  const int d_dialog_h = 80 * factor;                        // dialog height
+  const int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
+  const int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // centered y-coord
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
 
 #if (defined(GERMAN) || defined(FRENCH))
   int d_cancel_w = 50 * factor;
 #else
-  int d_cancel_w = 40 * factor;
+  const int d_cancel_w = 40 * factor;
 #endif
-  int d_cancel_h = 9 * factor;
-  int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
-  int d_cancel_y = d_dialog_y + d_dialog_h - (20 * factor);
+  const int d_cancel_h = 9 * factor;
+  const int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
+  const int d_cancel_y = d_dialog_y + d_dialog_h - (20 * factor);
 
 #if (defined(GERMAN) || defined(FRENCH))
   int width = 160 * factor;
@@ -479,7 +479,7 @@ bool Do_The_Internet_Menu_Thang() {
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   char users_name[256];
-  int buffer_len = sizeof(users_name);
+  const int buffer_len = sizeof(users_name);
   bool process;
   bool display;
   KeyNumType input;

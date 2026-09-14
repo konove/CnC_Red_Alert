@@ -1346,9 +1346,9 @@ void TemplateTypeClass::Init(TheaterType theater) {
     (const void*&)tplate.ImageData = nullptr;
     if (tplate.Theater & 1 << theater) {
       // Fully constructed iconset name.
-      auto fullname = std::filesystem::path(tplate.IniName)
-                          .replace_extension(Theaters[theater].Suffix)
-                          .string();
+      const auto fullname = std::filesystem::path(tplate.IniName)
+                                .replace_extension(Theaters[theater].Suffix)
+                                .string();
       ptr = MFCD::Retrieve(fullname);
       (const void*&)tplate.ImageData = ptr;
       Register_Icon_Set(ptr,

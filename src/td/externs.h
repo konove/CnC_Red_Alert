@@ -419,7 +419,7 @@ extern uint32_t PlanetWestwoodStartTime;
 void Check_For_Focus_Loss();
 void Create_Main_Window(void* instance, int command_show, int width,
                         int height);
-void Check_From_WChat(char* wchat_name);
+void Check_From_WChat(const char* wchat_name);
 void Check_VQ_Palette_Set();
 void Focus_Loss();
 void Focus_Restore();

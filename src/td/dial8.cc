@@ -249,7 +249,7 @@ bool Dial8Class::Draw_Me(bool forced) {
     **	Draw background & decorations.
     */
     Draw_Box(X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, true);
-    for (auto& i : FacePoint) {
+    for (const auto& i : FacePoint) {
       Draw_Box(i[0] - 1, i[1] - 1, 3, 3, BOXSTYLE_GREEN_RAISED, false);
     }
 

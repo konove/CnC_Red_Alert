@@ -659,9 +659,9 @@ void TerrainTypeClass::Init(TheaterType theater) {
         /*
         **	Load in the appropriate object shape data.
         */
-        auto fullname = std::filesystem::path(terrain.IniName)
-                            .replace_extension(Theaters[theater].Suffix)
-                            .string();
+        const auto fullname = std::filesystem::path(terrain.IniName)
+                                  .replace_extension(Theaters[theater].Suffix)
+                                  .string();
         (const void*&)terrain.ImageData = MFCD::Retrieve(fullname);
 
         IsTheaterShape = true;

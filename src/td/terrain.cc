@@ -325,7 +325,7 @@ bool TerrainClass::Mark(MarkType mark) {
   if (ObjectClass::Mark(mark)) {
     const int16_t* overlap = Class->Overlap_List();
     const int16_t* occupy = Class->Occupy_List();
-    CELL cell = Coord_Cell(Coord);
+    const CELL cell = Coord_Cell(Coord);
 
     switch (mark) {
       case MARK_UP:
@@ -680,7 +680,7 @@ void TerrainClass::Start_To_Crumble() {
 bool TerrainClass::Limbo() {
   Validate();
   if (!IsInLimbo) {
-    CELL cell = Coord_Cell(Coord);
+    const CELL cell = Coord_Cell(Coord);
     Map[cell].Flag.Occupy.Monolith = false;
   }
   return ObjectClass::Limbo();
@@ -740,8 +740,8 @@ unsigned char* TerrainClass::Radar_Icon(CELL cell) {
   Validate();
   auto* icon =
       (unsigned char*)Class->Get_Radar_Data();  // get a pointer to radar icons
-  int width = *icon++;                          // extract the width from data
-  int height = *icon++;                         // extract the width from data
+  const int width = *icon++;                    // extract the width from data
+  const int height = *icon++;                   // extract the width from data
 
   /*
   ** Icon number that we need can be found by converting the cell and base
@@ -749,13 +749,13 @@ unsigned char* TerrainClass::Radar_Icon(CELL cell) {
   ** multiplying it by the width of the terrain in icons, which we
   ** conveniantly stored out as the first byte of every icon we made.
   */
-  int basecell = Coord_Cell(Coord);  // find the base cell of terrain
-  int ydiff =
+  const int basecell = Coord_Cell(Coord);  // find the base cell of terrain
+  const int ydiff =
       static_cast<CELL>(Cell_Y(cell) - Cell_Y(static_cast<CELL>(basecell)));
-  int xdiff =
+  const int xdiff =
       static_cast<CELL>(Cell_X(cell) - Cell_X(static_cast<CELL>(basecell)));
   if (xdiff < width && ydiff < height) {
-    int iconnum = (ydiff * width) + xdiff;
+    const int iconnum = (ydiff * width) + xdiff;
     return icon + (static_cast<base::ssize>(iconnum) * 9);
   }
   return nullptr;

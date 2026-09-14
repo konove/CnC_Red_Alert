@@ -254,7 +254,7 @@ BulletClass* TurretClass::Fire_At(TARGET target, int which) {
 FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
   DirType dir;  // The facing to impart upon the projectile.
   int diff;
-  FireErrorType fire = DriveClass::Can_Fire(target, which);
+  const FireErrorType fire = DriveClass::Can_Fire(target, which);
 
   if (fire == FIRE_OK) {
     const WeaponTypeClass* weapon =
@@ -447,9 +447,9 @@ DirType TurretClass::Fire_Direction() const {
       int diff2 = SecondaryFacing.Difference(DIR_W);
       diff1 = std::abs(diff1);
       diff2 = std::abs(diff2);
-      int diff = std::min(diff1, diff2);
-      int adj = Fixed_To_Cardinal(std::abs(SecondaryFacing.Difference(DIR_N)),
-                                  64 - diff);
+      const int diff = std::min(diff1, diff2);
+      const int adj = Fixed_To_Cardinal(
+          std::abs(SecondaryFacing.Difference(DIR_N)), 64 - diff);
       if (SecondaryFacing.Difference(DIR_N) < 0) {
         return static_cast<DirType>(SecondaryFacing - (DirType)adj);
       }

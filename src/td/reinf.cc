@@ -80,7 +80,7 @@
  *failure condition.                                    * 06/19/1995 JLB :
  *Announces reinforcements.                                                *
  *=============================================================================================*/
-bool Do_Reinforcements(TeamTypeClass* teamtype) {
+bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   /*
   **	preform some preliminary checks for validity.
   */
@@ -183,7 +183,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
         *transports. The one *	exception is for the hover lander which never
         *becomes part of the team.
         */
-        auto* unit = dynamic_cast<UnitClass*>(temp);
+        const auto* unit = dynamic_cast<UnitClass*>(temp);
         if (team && (unit == nullptr || *unit != UNIT_HOVER)) {
           ScenarioInit++;
           team->Add(temp);
@@ -214,7 +214,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
           **	A-10s are always considered loaners since the player should
           **	never be allowed to control them.
           */
-          auto* air = dynamic_cast<AircraftClass*>(temp);
+          const auto* air = dynamic_cast<AircraftClass*>(temp);
           if (air != nullptr && *air == AIRCRAFT_A10) {
             temp->IsALoaner = true;
           }
@@ -335,7 +335,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
           */
           FacingType adj;
           for (adj = FACING_N; adj < FACING_COUNT; adj++) {
-            CELL trycell = Adjacent_Cell(newcell, adj);
+            const CELL trycell = Adjacent_Cell(newcell, adj);
             if (!Map.In_Radar(trycell) &&
                 object->Can_Enter_Cell(trycell, adj) == MOVE_OK) {
               newcell = trycell;
@@ -442,7 +442,8 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
     case SOURCE_BEACH:
       cell = Map.Calculated_Cell(SOURCE_BEACH, teamtype->House);
       if (cell) {
-        CELL edge = XY_Cell(Cell_X(cell), Map.MapCellY + Map.MapCellHeight);
+        const CELL edge =
+            XY_Cell(Cell_X(cell), Map.MapCellY + Map.MapCellHeight);
 
         placed = object->Unlimbo(Cell_Coord(edge), DIR_N);
         if (placed) {
@@ -500,7 +501,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
-bool Create_Special_Reinforcement(HouseClass* house,
+bool Create_Special_Reinforcement(const HouseClass* house,
                                   const TechnoTypeClass* type,
                                   const TechnoTypeClass* another,
                                   TeamMissionType mission, int argument) {
@@ -524,7 +525,7 @@ bool Create_Special_Reinforcement(HouseClass* house,
           bool found = false;
           for (int index = Map.MapCellX;
                index < Map.MapCellX + Map.MapCellWidth - 1; index++) {
-            CELL cell = XY_Cell(index, Map.MapCellY + Map.MapCellHeight);
+            const CELL cell = XY_Cell(index, Map.MapCellY + Map.MapCellHeight);
             if (Map[cell].Is_Generally_Clear() &&
                 Map[cell - MAP_CELL_W].Is_Generally_Clear()) {
               found = true;
@@ -588,7 +589,7 @@ bool Create_Special_Reinforcement(HouseClass* house,
         team->DesiredNum[1] = 1;
       }
 
-      bool ok = Do_Reinforcements(team);
+      const bool ok = Do_Reinforcements(team);
       if (!ok && GameToPlay == GAME_NORMAL) {
         delete team;
       }
@@ -670,13 +671,13 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
         source = SOURCE_NORTH;
         break;
     }
-    CELL newcell = Map.Calculated_Cell(source, house->Class->House);
+    const CELL newcell = Map.Calculated_Cell(source, house->Class->House);
 
     /*
     ** Try and place the object onto the map.
     */
     ScenarioInit++;
-    bool placed = obj->Unlimbo(Cell_Coord(newcell), DIR_N);
+    const bool placed = obj->Unlimbo(Cell_Coord(newcell), DIR_N);
     ScenarioInit--;
     if (placed) {
       /*

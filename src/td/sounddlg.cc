@@ -83,7 +83,7 @@ class MusicListClass : public ListClass {
 };
 
 int SoundControlsClass::Init() {
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   Option_Width = 292 * factor;
   Option_Height = 146 * factor;
 
@@ -147,7 +147,7 @@ int SoundControlsClass::Init() {
 void SoundControlsClass::Process() {
   //	ThemeType theme;
 
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   Init();
   /*
@@ -289,7 +289,7 @@ void SoundControlsClass::Process() {
        index++) {
     if (ThemeClass::Is_Allowed(index)) {
       char buffer[100];
-      int length = ThemeClass::Track_Length(index);
+      const int length = ThemeClass::Track_Length(index);
       const char* fullname = ThemeClass::Full_Name(index);
 
       void* ptr = new char[sizeof(buffer)];
@@ -377,7 +377,7 @@ void SoundControlsClass::Process() {
     /*
     **	Get user input.
     */
-    KeyNumType input = optionsbtn->Input();
+    const KeyNumType input = optionsbtn->Input();
 
     /*
     **	Process Input.

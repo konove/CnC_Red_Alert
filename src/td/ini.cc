@@ -102,8 +102,8 @@ static void Assign_Houses();
 static void Remove_AI_Players();
 static void Create_Units();
 static void Sort_Cells(CELL* cells, int numcells, CELL* outcells);
-static int Furthest_Cell(CELL* ref_cells, int num_ref_cells, CELL* test_cells,
-                         int num_test_cells);
+static int Furthest_Cell(const CELL* ref_cells, int num_ref_cells,
+                         const CELL* test_cells, int num_test_cells);
 static CELL Clip_Scatter(CELL cell, int maxdist);
 static CELL Clip_Move(CELL cell, FacingType facing, int dist);
 
@@ -248,7 +248,7 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-bool Read_Scenario_Ini(char* root, bool fresh) {
+bool Read_Scenario_Ini(const char* root, bool fresh) {
   char* buffer;                       // Scenario.ini staging buffer pointer.
   char fname[kMaxFname + kMaxExt];    // full INI filename
   char buf[128];                      // Working string staging buffer.
@@ -601,7 +601,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
         }
 
         for (int i = 0; i < MPlayerMax; i++) {
-          auto house = static_cast<HousesType>(i + (int)HOUSE_MULTI1);
+          const auto house = static_cast<HousesType>(i + (int)HOUSE_MULTI1);
           HouseClass* housep = HouseClass::As_Pointer(house);
           housep->BlitzTime = GameRandomRange(rndmin, rndmax);
         }
@@ -615,7 +615,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
     **	to create.
     */
     if (!Debug_Map) {
-      int save_init = ScenarioInit;  // turn ScenarioInit off
+      const int save_init = ScenarioInit;  // turn ScenarioInit off
       ScenarioInit = 0;
       Create_Units();
       ScenarioInit = save_init;  // turn ScenarioInit back on
@@ -656,7 +656,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. * 05/11/1995 JLB : Updates movie data. *
  *=============================================================================================*/
-void Write_Scenario_Ini(char* root) {
+void Write_Scenario_Ini(const char* root) {
   if constexpr (config::kCheatKeysEnabled) {
     char* buffer;                       // Scenario.ini staging buffer pointer.
     char fname[kMaxFname + kMaxExt];    // full scenario name
@@ -971,7 +971,7 @@ static void Create_Units() {
     NUM_INFANTRY_CATEGORIES = 5,
   };
 
-  static struct {
+  static const struct {
     int MinLevel;
     int GDICount;
     UnitType GDIType;
@@ -987,7 +987,7 @@ static void Create_Units() {
       num_units[NUM_UNIT_CATEGORIES];  // # of each type of unit to create
   int tot_units;                       // total # units to create
 
-  static struct {
+  static const struct {
     int MinLevel;
     int GDICount;
     InfantryType GDIType;
@@ -1477,8 +1477,8 @@ static void Sort_Cells(CELL* cells, int numcells, CELL* outcells) {
  *                                                                                             *
  * HISTORY: * 07/19/1995 BRR : Created. *
  *=============================================================================================*/
-static int Furthest_Cell(CELL* ref_cells, int num_ref_cells, CELL* test_cells,
-                         int num_test_cells) {
+static int Furthest_Cell(const CELL* ref_cells, int num_ref_cells,
+                         const CELL* test_cells, int num_test_cells) {
   int i;
   int j;
   int mindist;     // minimum distance a test_cell is from a ref_cell

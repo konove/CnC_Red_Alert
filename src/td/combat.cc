@@ -166,7 +166,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   //	if (!Map.In_Radar(cell)) return;
 
   CellClass* cellptr = &Map[cell];
-  ObjectClass* impacto = cellptr->Cell_Occupier();
+  const ObjectClass* impacto = cellptr->Cell_Occupier();
 
   /*
   **	Fill the list of unit IDs that will have damage

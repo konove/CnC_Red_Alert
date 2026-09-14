@@ -827,22 +827,22 @@ int MapEditClass::Edit_Team() {
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_NEU_X,
       D_NEU_Y, D_NEU_W, D_NEU_H);
 
-  TextButtonClass multi1btn(
+  const TextButtonClass multi1btn(
       BUTTON_MULTI1, "M1",
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_MULTI1_X,
       D_MULTI1_Y, D_MULTI1_W, D_MULTI1_H);
 
-  TextButtonClass multi2btn(
+  const TextButtonClass multi2btn(
       BUTTON_MULTI2, "M2",
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_MULTI2_X,
       D_MULTI2_Y, D_MULTI2_W, D_MULTI2_H);
 
-  TextButtonClass multi3btn(
+  const TextButtonClass multi3btn(
       BUTTON_MULTI3, "M3",
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_MULTI3_X,
       D_MULTI3_Y, D_MULTI3_W, D_MULTI3_H);
 
-  TextButtonClass multi4btn(
+  const TextButtonClass multi4btn(
       BUTTON_MULTI4, "M4",
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_MULTI4_X,
       D_MULTI4_Y, D_MULTI4_W, D_MULTI4_H);
@@ -1589,7 +1589,7 @@ int MapEditClass::Team_Members(HousesType house) {
   */
   int lheld = 0;
   int rheld = 0;
-  int64_t tdelay[3] = {5, 20, 0};
+  const int64_t tdelay[3] = {5, 20, 0};
   int tindex = 0;
   int64_t heldtime = 0;
 
@@ -2007,11 +2007,11 @@ int MapEditClass::Team_Members(HousesType house) {
  *=============================================================================================*/
 void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
                                HousesType house, int pic_x, int pic_y) {
-  int numcols = (D_DIALOG_W - 32) / D_PICTURE_W;
-  int col = index % numcols;
-  int row = index / numcols;
-  int x = pic_x + (col * D_PICTURE_W);
-  int y = pic_y + (row * D_ROW_H);
+  const int numcols = (D_DIALOG_W - 32) / D_PICTURE_W;
+  const int col = index % numcols;
+  const int row = index / numcols;
+  const int x = pic_x + (col * D_PICTURE_W);
+  const int y = pic_y + (row * D_ROW_H);
 
   WindowList[WINDOW_EDITOR][WINDOWX] = 0;
   WindowList[WINDOW_EDITOR][WINDOWY] = 0;

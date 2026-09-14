@@ -288,9 +288,9 @@ void SmudgeTypeClass::Init(TheaterType theater) {
       const SmudgeTypeClass& smudge = As_Reference(index);
 
       // Fully constructed smudge data set name.
-      auto fullname = std::filesystem::path(smudge.IniName)
-                          .replace_extension(Theaters[theater].Suffix)
-                          .string();
+      const auto fullname = std::filesystem::path(smudge.IniName)
+                                .replace_extension(Theaters[theater].Suffix)
+                                .string();
       (const void*&)smudge.ImageData = MFCD::Retrieve(fullname);
     }
   }

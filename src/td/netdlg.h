@@ -11,7 +11,7 @@ void Shutdown_Network();
 bool Remote_Connect();
 void Destroy_Connection(int id, int error);
 bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address);
-uint32_t Compute_Name_CRC(char* name);
+uint32_t Compute_Name_CRC(const char* name);
 void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
                           int timeval);
 

@@ -71,7 +71,7 @@ TEST(TdHeapTest, FieldObjectsPreserveSparseSlots) {
 
 
 TEST(TdHeapTest, RejectsNegativeCountsAndOutOfRangeSlots) {
-  for (bool invalid_count : {false, true}) {
+  for (const bool invalid_count : {false, true}) {
     std::array<uint8_t, 256> bytes{};
     BufferPipe sink(bytes.data(), 256);
     ArchiveWriter writer(sink);

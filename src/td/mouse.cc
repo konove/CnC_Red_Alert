@@ -234,7 +234,7 @@ void MouseClass::AI(KeyNumType& input, int x, int y) {
 #endif
 
     if (!IsSmall || control->SmallFrame != -1) {
-      int baseframe = IsSmall ? control->SmallFrame : control->StartFrame;
+      const int baseframe = IsSmall ? control->SmallFrame : control->StartFrame;
       mouse_shape_ptr = Extract_Shape(MouseShapes, baseframe + Frame);
       if (mouse_shape_ptr) {
         Set_Mouse_Cursor(control->X, control->Y, mouse_shape_ptr);

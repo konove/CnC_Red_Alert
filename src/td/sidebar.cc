@@ -216,7 +216,7 @@ void SidebarClass::One_Time() {
   ** sidebar.  They are now variables because we need to change them for
   ** variable resolutions.
   */
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   SideBarWidth = SIDEBARWIDTH * factor;
   SideX = SeenBuff.Get_Width() - SideBarWidth;
   SideY = Map.RadY + Map.RadHeight + (factor - 1);
@@ -245,8 +245,9 @@ void SidebarClass::One_Time() {
   **	Set up the coordinates for the sidebar strips. These coordinates are for
   **	the upper left corner.
   */
-  int width = SideWidth - PowWidth - ((StripClass::STRIP_WIDTH * factor) << 1);
-  int spacing = width / 3;
+  const int width =
+      SideWidth - PowWidth - ((StripClass::STRIP_WIDTH * factor) << 1);
+  const int spacing = width / 3;
 
   Column[0].X = SideX + PowWidth + spacing;
   Column[0].Y = SideY + TopHeight + 1;
@@ -512,7 +513,7 @@ void SidebarClass::Refresh_Cells(CELL cell, const int16_t* list) {
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Activate_Repair(int control) {
-  bool old = IsRepairActive;
+  const bool old = IsRepairActive;
 
   if (control == -1) {
     control = IsRepairActive ? 0 : 1;
@@ -558,7 +559,7 @@ bool SidebarClass::Activate_Repair(int control) {
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Activate_Upgrade(int control) {
-  bool old = IsUpgradeActive;
+  const bool old = IsUpgradeActive;
   if (control == -1) {
     control = IsUpgradeActive ? 0 : 1;
   }
@@ -601,7 +602,7 @@ bool SidebarClass::Activate_Upgrade(int control) {
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Activate_Demolish(int control) {
-  bool old = IsDemolishActive;
+  const bool old = IsDemolishActive;
 
   if (control == -1) {
     control = IsDemolishActive ? 0 : 1;
@@ -936,10 +937,10 @@ void SidebarClass::Recalc() {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Activate(int control) {
-  bool old = IsSidebarActive;
+  const bool old = IsSidebarActive;
 
-  int sidex = SeenBuff.Get_Width() - SideBarWidth;
-  int sidewidth = SeenBuff.Get_Width() - sidex;
+  const int sidex = SeenBuff.Get_Width() - SideBarWidth;
+  const int sidewidth = SeenBuff.Get_Width() - sidex;
 
   if (PlaybackGame) {
     return old;
@@ -1053,7 +1054,7 @@ SidebarClass::StripClass::StripClass(const InitClass& /*unused*/) {
  *=============================================================================================*/
 void SidebarClass::StripClass::One_Time(int /*unused*/) {
   static const char* _file[3] = {"ION", "ATOM", "BOMB"};
-  int factor = Get_Resolution_Factor();
+  const int factor = Get_Resolution_Factor();
 
   ObjectWidth = OBJECT_WIDTH << factor;
   ObjectHeight = OBJECT_HEIGHT << factor;
@@ -1071,7 +1072,7 @@ void SidebarClass::StripClass::One_Time(int /*unused*/) {
     } else {
       filename = std::string(_file[lp]) + "ICON";
     }
-    auto fullname =
+    const auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
     SpecialShapes[lp] = MFCD::Retrieve(fullname);
   }
@@ -1195,9 +1196,9 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
     } else {
       filename = std::string(_file[lp]) + "ICON";
     }
-    auto fullname = std::filesystem::path(filename)
-                        .replace_extension(Theaters[theater].Suffix)
-                        .string();
+    const auto fullname = std::filesystem::path(filename)
+                              .replace_extension(Theaters[theater].Suffix)
+                              .string();
     cameo_ptr = MFCD::Retrieve(fullname);
     if (cameo_ptr) {
       SpecialShapes[lp] = cameo_ptr;
@@ -1570,7 +1571,7 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
   */
   if (IsBuilding) {
     for (int index = 0; index < BuildableCount; index++) {
-      int factoryid = Buildables[index].Factory;
+      const int factoryid = Buildables[index].Factory;
 
       if (factoryid != -1) {
         FactoryClass* factory = Factories.Raw_Ptr(factoryid);
@@ -1584,7 +1585,7 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
             *factory. Buildings are *	the main exception to the ability to
             *leave the factory under their own *	power.
             */
-            TechnoClass* pending = factory->Get_Object();
+            const TechnoClass* pending = factory->Get_Object();
             if (pending) {
               switch (pending->What_Am_I()) {
                 case RTTI_UNIT:
@@ -1673,8 +1674,8 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       int shapenum = 0;
       const void* remapper = nullptr;
       FactoryClass* factory = nullptr;
-      int index = i + TopIndex;
-      int x = X;
+      const int index = i + TopIndex;
+      const int x = X;
       int y = Y + (i * ObjectHeight);
       y--;
 
@@ -2017,7 +2018,7 @@ bool SidebarClass::StripClass::Recalc() {
  *=============================================================================================*/
 SidebarClass::StripClass::SelectClass::SelectClass() noexcept
     : ControlClass(0, 0, 0, 0, 0, LEFTPRESS | RIGHTPRESS | LEFTUP) {
-  int factor = Get_Resolution_Factor();
+  const int factor = Get_Resolution_Factor();
 
   Width = OBJECT_WIDTH << factor;
   Height = OBJECT_HEIGHT << factor;
@@ -2045,7 +2046,7 @@ SidebarClass::StripClass::SelectClass::SelectClass() noexcept
  *=============================================================================================*/
 void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
                                                       int index) {
-  int factor = Get_Resolution_Factor();
+  const int factor = Get_Resolution_Factor();
   Strip = &strip;
   Index = index;
   X = strip.X;
@@ -2071,10 +2072,10 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
  *=============================================================================================*/
 bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
                                                    KeyNumType& key) {
-  int index = Strip->TopIndex + Index;
-  RTTIType otype = Strip->Buildables[index].BuildableType;
-  int oid = Strip->Buildables[index].BuildableID;
-  int fnumber = Strip->Buildables[index].Factory;
+  const int index = Strip->TopIndex + Index;
+  const RTTIType otype = Strip->Buildables[index].BuildableType;
+  const int oid = Strip->Buildables[index].BuildableID;
+  const int fnumber = Strip->Buildables[index].Factory;
 
   FactoryClass* factory = nullptr;
   const ObjectTypeClass* choice = nullptr;

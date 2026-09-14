@@ -131,41 +131,42 @@ bool LoadOptionsClass::Process() {
   /*
   **	Dialog & button dimensions
   */
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
-  int d_dialog_w = 250 * factor;
-  int d_dialog_h = 156 * factor;
-  int d_dialog_x = (SeenBuff.Get_Width() - d_dialog_w) >> 1;
-  int d_dialog_y = (SeenBuff.Get_Height() - d_dialog_h) >> 1;
-  int d_dialog_cx = d_dialog_x + (d_dialog_w >> 1);
-  int d_txt8_h = 11 * factor;
-  int d_margin = 7 * factor;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int d_dialog_w = 250 * factor;
+  const int d_dialog_h = 156 * factor;
+  const int d_dialog_x = (SeenBuff.Get_Width() - d_dialog_w) >> 1;
+  const int d_dialog_y = (SeenBuff.Get_Height() - d_dialog_h) >> 1;
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w >> 1);
+  const int d_txt8_h = 11 * factor;
+  const int d_margin = 7 * factor;
 
-  int d_list_w = d_dialog_w - (d_margin * 2);
-  int d_list_h = 104 * factor;
-  int d_list_x = d_dialog_x + d_margin;
-  int d_list_y = d_dialog_y + d_margin + d_txt8_h + d_margin;
+  const int d_list_w = d_dialog_w - (d_margin * 2);
+  const int d_list_h = 104 * factor;
+  const int d_list_x = d_dialog_x + d_margin;
+  const int d_list_y = d_dialog_y + d_margin + d_txt8_h + d_margin;
 
-  int d_edit_w = d_dialog_w - (d_margin * 2);
-  int d_edit_x = d_dialog_x + d_margin;
-  int d_edit_y = d_list_y + d_list_h - (30 * factor) + d_margin + d_txt8_h;
+  const int d_edit_w = d_dialog_w - (d_margin * 2);
+  const int d_edit_x = d_dialog_x + d_margin;
+  const int d_edit_y =
+      d_list_y + d_list_h - (30 * factor) + d_margin + d_txt8_h;
 
 #ifdef german
   int d_button_w = 50 * factor;
 #else
-  int d_button_w = 40 * factor;
+  const int d_button_w = 40 * factor;
 #endif
-  int d_button_h = 13 * factor;
-  int d_button_x = d_dialog_cx - d_button_w - d_margin;
-  int d_button_y = d_dialog_y + d_dialog_h - d_button_h - d_margin;
+  const int d_button_h = 13 * factor;
+  const int d_button_x = d_dialog_cx - d_button_w - d_margin;
+  const int d_button_y = d_dialog_y + d_dialog_h - d_button_h - d_margin;
 
 #ifdef german
   int d_cancel_w = 50 * factor;
 #else
-  int d_cancel_w = 40 * factor;
+  const int d_cancel_w = 40 * factor;
 #endif
-  int d_cancel_h = 13 * factor;
-  int d_cancel_x = d_dialog_cx + d_margin;
-  int d_cancel_y = d_dialog_y + d_dialog_h - d_cancel_h - d_margin;
+  const int d_cancel_h = 13 * factor;
+  const int d_cancel_x = d_dialog_cx + d_margin;
+  const int d_cancel_y = d_dialog_y + d_dialog_h - d_cancel_h - d_margin;
   /*
   **	Button enumerations
   */
@@ -526,7 +527,7 @@ void LoadOptionsClass::Clear_List(ListClass* list) {
   /*
   ** For every item in the list, free its buffer & remove it from the list.
   */
-  int j = list->Count();
+  const int j = list->Count();
   for (int i = 0; i < j; i++) {
     list->Remove_Item(list->Get_Item(0));
   }
@@ -589,7 +590,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
     /*
     ** get the game's info; if success, add it to the list
     */
-    bool ok = Get_Savefile_Info(id, descr, &scenario, &house);
+    const bool ok = Get_Savefile_Info(id, descr, &scenario, &house);
 
     fdata = new FileEntryClass;
 

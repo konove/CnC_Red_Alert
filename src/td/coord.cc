@@ -141,10 +141,10 @@ const int16_t* Coord_Spillage_List(COORDINATE coord, int maxsize) {
 
     x = Fixed_To_Cardinal(ICON_PIXEL_W, Coord_XLepton(coord));
     y = Fixed_To_Cardinal(ICON_PIXEL_H, Coord_YLepton(coord));
-    int left = x - maxsize;
-    int right = x + maxsize;
-    int top = y - maxsize;
-    int bottom = y + maxsize;
+    const int left = x - maxsize;
+    const int right = x + maxsize;
+    const int top = y - maxsize;
+    const int bottom = y + maxsize;
 
     _manual[index++] = 0;
     if (left < 0) {
@@ -178,7 +178,7 @@ const int16_t* Coord_Spillage_List(COORDINATE coord, int maxsize) {
   /*
   **	Determine the number of leptons "leeway" allowed this unit.
   */
-  int posval = Pixel2Lepton[(ICON_PIXEL_W - maxsize) / 2];
+  const int posval = Pixel2Lepton[(ICON_PIXEL_W - maxsize) / 2];
 
   x = Coord_XLepton(coord) - 0x0080;
   y = Coord_YLepton(coord) - 0x0080;

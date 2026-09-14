@@ -73,7 +73,7 @@ ImpactType FlyClass::Physics(COORDINATE& coord, DirType facing) {
     div_t result = div(actual, PIXEL_LEPTON_W);
     SpeedAccum = result.rem;
     actual -= result.rem;
-    COORDINATE old = coord;
+    const COORDINATE old = coord;
 
     /*
     **	If movement occurred that is at least one

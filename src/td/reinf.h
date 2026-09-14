@@ -6,8 +6,8 @@
 #include "td/teamtype.h"
 #include "td/type.h"
 
-bool Do_Reinforcements(TeamTypeClass* team);
-bool Create_Special_Reinforcement(HouseClass* house,
+bool Do_Reinforcements(const TeamTypeClass* team);
+bool Create_Special_Reinforcement(const HouseClass* house,
                                   const TechnoTypeClass* type,
                                   const TechnoTypeClass* another,
                                   TeamMissionType mission = TMISSION_NONE,

@@ -488,7 +488,7 @@ void Map_Selection() {
   static unsigned char localpalette[768];
   int scenario;
   bool lastscenario;
-  int house = PlayerPtr->Class->House;
+  const int house = PlayerPtr->Class->House;
   int attackxcoord = 0;
 
   static const int _countryx[] = {195, 217, 115, 167, 244, 97, 130, 142, 171,
@@ -836,7 +836,7 @@ void Map_Selection() {
   /*
   ** Now dissolve in first advance of territories
   */
-  int xcoord = house == HOUSE_GOOD ? 0 : 204;
+  const int xcoord = house == HOUSE_GOOD ? 0 : 204;
   SysMemPage.Blit(backpage, xcoord, 1, 0, 0, 20 * 6, 8);
   Play_Sample(text2, 255, Options.Normalize_Sound(90));
   if (house == HOUSE_GOOD) {
@@ -1145,8 +1145,8 @@ void Map_Selection() {
     */
     Set_Logic_Page(SysMemPage);
     europe->Blit(SysMemPage);
-    int shape = CountryArray[scenario].CountryShape[ScenDir][selection];
-    int xshuffled_rows = shape + (house == HOUSE_GOOD ? 0 : 18);
+    const int shape = CountryArray[scenario].CountryShape[ScenDir][selection];
+    const int xshuffled_rows = shape + (house == HOUSE_GOOD ? 0 : 18);
     CC_Draw_Shape(countryshape, shape, _countryx[xshuffled_rows],
                   _countryy[xshuffled_rows], WINDOW_MAIN,
                   SHAPE_WIN_REL | SHAPE_CENTER, nullptr, nullptr);

@@ -213,7 +213,7 @@ int32_t CCFileClass::Read(void* buffer, int32_t size) {
   **	all that is required for the read.
   */
   if (Pointer) {
-    int32_t maximum = Length - Position;
+    const int32_t maximum = Length - Position;
 
     size = std::min(maximum, size);
     if (size) {
@@ -232,7 +232,7 @@ int32_t CCFileClass::Read(void* buffer, int32_t size) {
   **	on disk, then a special read operation is necessary.
   */
   if (FromDisk) {
-    int32_t maximum = Length - Position;
+    const int32_t maximum = Length - Position;
 
     size = std::min(maximum, size);
     if (size > 0) {
@@ -246,7 +246,7 @@ int32_t CCFileClass::Read(void* buffer, int32_t size) {
     return size;
   }
 
-  int32_t s = CDFileClass::Read(buffer, size);
+  const int32_t s = CDFileClass::Read(buffer, size);
   if (opened) {
     Close();
   }
@@ -432,8 +432,8 @@ bool CCFileClass::Open(FileAccess rights) {
     */
     if (loc->data.empty()) {
       // Not cached - read from disk
-      int32_t start = loc->offset;
-      int32_t length = loc->size;
+      const int32_t start = loc->offset;
+      const int32_t length = loc->size;
 
       /*
       **	This is a legitimate open to the file. All access to the file
@@ -441,7 +441,7 @@ bool CCFileClass::Open(FileAccess rights) {
       *support however. Also *	note that the filename attached to this object
       *is NOT the same as the file *	attached to the file handle.
       */
-      std::string dupfile = File_Name();
+      const std::string dupfile = File_Name();
       Open(loc->mixfile->Filename().c_str(), FileAccess::kRead);
       Searching(false);  // Disable multi-drive search.
       Set_Name(dupfile.c_str());

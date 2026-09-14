@@ -220,7 +220,7 @@ void DriveClass::Approach_Target() {
     **	infantry, AND the infantry is pretty darn close, then just try
     **	to drive over the infantry instead of firing on it.
     */
-    TechnoClass* target = As_Techno(TarCom);
+    const TechnoClass* target = As_Techno(TarCom);
     if (Class->Primary != WEAPON_FLAME_TONGUE && Class->IsCrusher &&
         Distance(TarCom) < 0x0180 && target && target->Class_Of().IsCrushable) {
       Assign_Destination(TarCom);
@@ -436,7 +436,7 @@ COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType* dir) {
   int x;
   int y;
   int temp;
-  TrackControlType flags = TrackControl[TrackNumber].Flag;
+  const TrackControlType flags = TrackControl[TrackNumber].Flag;
 
   x = Coord_X(adj);
   y = Coord_Y(adj);
@@ -553,7 +553,8 @@ void DriveClass::Assign_Destination(TARGET target) {
         **	Last check to make sure that the loading square is free from
         *permanent *	occupation (such as a building).
         */
-        CELL cell = static_cast<CELL>(Coord_Cell(b->Center_Coord()) + (MAP_CELL_W - 1));
+        const CELL cell =
+            static_cast<CELL>(Coord_Cell(b->Center_Coord()) + (MAP_CELL_W - 1));
         if (Ground[Map[cell].Land_Type()].Cost[Class->Speed]) {
           if (Transmit_Message(RADIO_DOCKING) == RADIO_ROGER) {
             FootClass::Assign_Destination(target);
@@ -688,7 +689,7 @@ bool DriveClass::While_Moving() {
           newtrack = &TrackControl[tnum];
           if (newtrack->Track && RawTracks[newtrack->Track - 1].Entry) {
             COORDINATE c = Head_To_Coord();
-            int oldspeed = Speed;
+            const int oldspeed = Speed;
 
             c = Adjacent_Cell(c, nextface);
 
@@ -726,7 +727,7 @@ bool DriveClass::While_Moving() {
 
               case MOVE_TEMP:
                 if (*this == UNIT_HARVESTER || !House->IsHuman) {
-                  bool old = Special.IsScatter;
+                  const bool old = Special.IsScatter;
                   Special.IsScatter = true;
                   Map[Coord_Cell(c)].Incoming(0, true);
                   Special.IsScatter = old;
@@ -790,7 +791,7 @@ bool DriveClass::While_Moving() {
  *Distinguishes between center and near-center conditions.                 *
  *=============================================================================================*/
 void DriveClass::Per_Cell_Process(bool center) {
-  CELL cell = Coord_Cell(Coord);
+  const CELL cell = Coord_Cell(Coord);
 
   /*
   **	Check to see if it has reached its destination. If so, then clear the
@@ -918,13 +919,13 @@ bool DriveClass::Start_Of_Move() {
         *destination is *	blocked by a friendly temporary blockage, then
         *cause that blockage *	to scatter.
         */
-        CELL cell =
+        const CELL cell =
             Adjacent_Cell(Coord_Cell(Center_Coord()), PrimaryFacing.Current());
         if (Map.In_Radar(cell) && (Can_Enter_Cell(cell) == MOVE_TEMP)) {
           CellClass* cellptr = &Map[cell];
-          TechnoClass* blockage = cellptr->Cell_Techno();
+          const TechnoClass* blockage = cellptr->Cell_Techno();
           if (blockage && House->Is_Ally(blockage)) {
-            bool old = Special.IsScatter;
+            const bool old = Special.IsScatter;
             Special.IsScatter = true;
             cellptr->Incoming(0, true);
             Special.IsScatter = old;
@@ -952,12 +953,12 @@ bool DriveClass::Start_Of_Move() {
     **	blocked by a friendly temporary blockage, then cause that blockage
     **	to scatter.
     */
-    CELL cell = Adjacent_Cell(Coord_Cell(Center_Coord()), Path[0]);
+    const CELL cell = Adjacent_Cell(Coord_Cell(Center_Coord()), Path[0]);
     if (Map.In_Radar(cell) && (Can_Enter_Cell(cell) == MOVE_TEMP)) {
       CellClass* cellptr = &Map[cell];
-      TechnoClass* blockage = cellptr->Cell_Techno();
+      const TechnoClass* blockage = cellptr->Cell_Techno();
       if (blockage && House->Is_Ally(blockage)) {
-        bool old = Special.IsScatter;
+        const bool old = Special.IsScatter;
         Special.IsScatter = true;
         cellptr->Incoming(0, true);
         Special.IsScatter = old;
@@ -1023,7 +1024,7 @@ bool DriveClass::Start_Of_Move() {
     *it to *	get out of the way.
     */
     if (cando == MOVE_TEMP) {
-      bool old = Special.IsScatter;
+      const bool old = Special.IsScatter;
       Special.IsScatter = true;
       Map[destcell].Incoming(0, true);
       Special.IsScatter = old;
@@ -1143,7 +1144,7 @@ bool DriveClass::Start_Of_Move() {
         *it to *	get out of the way.
         */
         if (cando == MOVE_TEMP) {
-          bool old = Special.IsScatter;
+          const bool old = Special.IsScatter;
           Special.IsScatter = true;
           Map[destcell].Incoming(0, true);
           Special.IsScatter = old;
@@ -1538,15 +1539,15 @@ void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
       ** If we have not passed the per cell process point we need
       ** to deal with it.
       */
-      int tracknum = TrackControl[TrackNumber].Track;
+      const int tracknum = TrackControl[TrackNumber].Track;
       if (tracknum) {
         const TrackType* ptr = RawTracks[tracknum - 1].Track;
-        int cellidx = RawTracks[tracknum - 1].Cell;
+        const int cellidx = RawTracks[tracknum - 1].Cell;
         if (cellidx > -1) {
           DirType dir = ptr[cellidx].Facing;
 
           if (TrackIndex < cellidx && cellidx != -1) {
-            COORDINATE offset = Smooth_Turn(ptr[cellidx].Offset, &dir);
+            const COORDINATE offset = Smooth_Turn(ptr[cellidx].Offset, &dir);
             Map[Coord_Cell(offset)].Flag.Occupy.Vehicle = value;
           }
         }

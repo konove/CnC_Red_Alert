@@ -341,7 +341,7 @@ void FootClass::Set_Speed(int speed) {
  *=============================================================================================*/
 bool FootClass::Mark(MarkType mark) {
   if (TechnoClass::Mark(mark)) {
-    CELL cell = Coord_Cell(Coord);
+    const CELL cell = Coord_Cell(Coord);
 
     /*
     **	Inform the map of the refresh, occupation, and overlap
@@ -385,7 +385,7 @@ bool FootClass::Mark(MarkType mark) {
 bool FootClass::Basic_Path() {
   PathType* path;  // Pointer to path control structure.
   CELL cell;
-  bool skip_path = false;
+  const bool skip_path = false;
 
   Path[0] = FACING_NONE;
 
@@ -399,11 +399,11 @@ bool FootClass::Basic_Path() {
     */
     //		IsFindPath = true;
     if (Can_Enter_Cell(cell) == MOVE_NO && Distance(NavCom) > 0x0300) {
-      static int _faceadjust[8] = {0, 1, -1, 2, -2, 3, -3, 4};
-      auto f2 = static_cast<FacingType>(
+      static const int _faceadjust[8] = {0, 1, -1, 2, -2, 3, -3, 4};
+      const auto f2 = static_cast<FacingType>(
           (unsigned)::Direction(cell, Coord_Cell(Coord)) >> 5);
 
-      for (int index : _faceadjust) {
+      for (const int index : _faceadjust) {
         CELL cell2;
 
         cell2 = Adjacent_Cell(cell, static_cast<FacingType>(f2 + index & 0x7));
@@ -919,7 +919,7 @@ void FootClass::Approach_Target() {
       ** max range so that people can stand far away from the buildings and
       ** hit them.
       */
-      BuildingClass* obj = As_Building(TarCom);
+      const BuildingClass* obj = As_Building(TarCom);
       if (obj) {
         maxrange += (obj->Class->Width() + obj->Class->Height()) * (0x100 / 4);
       }
@@ -938,11 +938,11 @@ void FootClass::Approach_Target() {
 #endif
       maxrange = std::max(maxrange, 0);
 
-      COORDINATE tcoord = As_Coord(TarCom);
+      const COORDINATE tcoord = As_Coord(TarCom);
       COORDINATE trycoord = 0;
-      CELL tcell = Coord_Cell(tcoord);
+      const CELL tcell = Coord_Cell(tcoord);
       CELL trycell = tcell;
-      DirType dir = Direction256(tcoord, Center_Coord());
+      const DirType dir = Direction256(tcoord, Center_Coord());
       bool found = false;
 
       /*
@@ -953,10 +953,10 @@ void FootClass::Approach_Target() {
       *destination *	and let "the chips fall where they may."
       */
       for (int range = maxrange; range > 0x0080; range -= 0x0100) {
-        static int _angles[] = {0,  8,   -8, 16,  -16, 24, -24,
-                                32, -32, 48, -48, 64,  -64};
+        static const int _angles[] = {0,  8,   -8, 16,  -16, 24, -24,
+                                      32, -32, 48, -48, 64,  -64};
 
-        for (int _angle : _angles) {
+        for (const int _angle : _angles) {
           trycoord =
               Coord_Move(tcoord, dir + _angle, static_cast<uint16_t>(range));
 
@@ -1023,7 +1023,7 @@ int FootClass::Mission_Guard_Area() {
   **	Make sure that the unit has not strayed too far from the home position.
   **	If it has, then race back to it.
   */
-  int maxrange = std::max(Weapon_Range(0), Weapon_Range(1)) + 0x0100;
+  const int maxrange = std::max(Weapon_Range(0), Weapon_Range(1)) + 0x0100;
   if (!Target_Legal(NavCom) &&
       (Distance(ArchiveTarget) > maxrange ||
        (!Target_Legal(TarCom) && Distance(ArchiveTarget) > 0x0200))) {
@@ -1032,7 +1032,7 @@ int FootClass::Mission_Guard_Area() {
   }
 
   if (!Target_Legal(TarCom)) {
-    COORDINATE old = Coord;
+    const COORDINATE old = Coord;
     Coord = As_Coord(ArchiveTarget);
     Target_Something_Nearby(THREAT_AREA);
     Coord = old;
@@ -1154,7 +1154,7 @@ bool FootClass::Limbo() {
  *=============================================================================================*/
 ResultType FootClass::Take_Damage(int& damage, int distance,
                                   WarheadType warhead, TechnoClass* source) {
-  ResultType result =
+  const ResultType result =
       TechnoClass::Take_Damage(damage, distance, warhead, source);
 
   if (result != RESULT_NONE && Team) {
@@ -1174,7 +1174,7 @@ ResultType FootClass::Take_Damage(int& damage, int distance,
       if (As_Techno(TarCom)) {
         weap = As_Techno(TarCom)->Techno_Type_Class()->Primary;
       }
-      bool tweap = weap != WEAPON_NONE && weap != WEAPON_NIKE;
+      const bool tweap = weap != WEAPON_NONE && weap != WEAPON_NIKE;
 
       /*
       **	This ensures that if a unit is in sticky mode, then it will snap
@@ -1338,7 +1338,8 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
 
     case ACTION_MOVE:
       if (AllowVoice) {
-        COORDINATE coord = Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y());
+        const COORDINATE coord =
+            Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y());
         OutList.Add(
             EventClass(ANIM_MOVE_FLASH, PlayerPtr->Class->House, coord));
       }
@@ -1392,7 +1393,7 @@ void FootClass::Per_Cell_Process(bool center) {
   */
   if (Cloak == CLOAKED) {
     for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
-      CELL cell = Adjacent_Cell(Coord_Cell(Coord), face);
+      const CELL cell = Adjacent_Cell(Coord_Cell(Coord), face);
 
       if (Map.In_Radar(cell)) {
         const TechnoClass* techno = Map[cell].Cell_Techno();
@@ -1717,7 +1718,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
   ** cannot abandon it as it will destroy us if we return to base.
   */
   if (Target_Legal(TarCom)) {
-    TechnoClass* techno = As_Techno(TarCom);
+    const TechnoClass* techno = As_Techno(TarCom);
     if (techno && techno->Techno_Type_Class()->Primary != WEAPON_NONE) {
       return 0;
     }
@@ -1736,7 +1737,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
   ** Find the distance to the target modified by the range.  If the
   ** the distance is 0, then things are ok.
   */
-  int dist = Distance(tarcom) - Weapon_Range(0);
+  const int dist = Distance(tarcom) - Weapon_Range(0);
   int threat = Risk() * 256;
   int speed = -1;
   if (dist > 0) {
@@ -1746,7 +1747,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
     */
     speed = std::max(static_cast<int>(Techno_Type_Class()->MaxSpeed), 1);
 
-    int ratio = speed > 0 ? std::max(dist / speed, 1) : 1;
+    const int ratio = speed > 0 ? std::max(dist / speed, 1) : 1;
 
     /*
     ** Finally modify the threat by the distance the unit is away.

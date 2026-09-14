@@ -96,9 +96,9 @@ void* Small_Icon(const void* iconptr, int iconnum) {
     data = &((unsigned char*)iptr + iptr->Icons)[static_cast<base::ssize>(iconnum) * (base::ssize{24} * 24)];
 
     for (int index = 0; index < 9; index++) {
-      int _offsets[9] = {4 + (4 * 24),  12 + (4 * 24),  20 + (4 * 24),
-                         4 + (12 * 24), 12 + (12 * 24), 20 + (12 * 24),
-                         4 + (20 * 24), 12 + (20 * 24), 20 + (20 * 24)};
+      const int _offsets[9] = {4 + (4 * 24),  12 + (4 * 24),  20 + (4 * 24),
+                               4 + (12 * 24), 12 + (12 * 24), 20 + (12 * 24),
+                               4 + (20 * 24), 12 + (20 * 24), 20 + (20 * 24)};
       _icon[index] = data[_offsets[index]];
     }
   }

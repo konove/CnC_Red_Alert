@@ -448,7 +448,7 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
   /*
   ** Shift up the baud rate to sensible values
   */
-  int baud = settings->Baud;
+  const int baud = settings->Baud;
   //	if (baud == 14400) baud = 19200;
   //	if (baud == 28800) baud = 38400;
 
@@ -699,7 +699,7 @@ int NullModemClass::Service() {
   uint16_t length;
   SerialHeaderType header;  // decoded packet start, length
   SerialCRCType crc;        // decoded packet CRC
-  char moredata = 0;
+  const char moredata = 0;
 
   if (NumConnections == 0) {
     return 0;
@@ -1109,7 +1109,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   int height;  // dialog dimensions
   char buffer[80 * 3];
 
-  int factor = SeenBuff.Get_Width() / 320;
+  const int factor = SeenBuff.Get_Width() / 320;
 
   /*
   **	Determine the dimensions of the text to be used for the dialog box.
@@ -1200,7 +1200,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   if (settings->InitStringIndex == -1) {
     status = Send_Modem_Command("", '\r', buffer, 81, 300, 1);
   } else {
-    size_t str_length = 2 + strlen(InitStrings[settings->InitStringIndex]);
+    const size_t str_length =
+        2 + strlen(InitStrings[settings->InitStringIndex]);
     /*
     ** Split up the init string into seperate strings if it contains one or more
     *'|' characters.
@@ -1372,7 +1373,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
                                           bool reconnect) {
   // Timer_Test(__LINE__, __FILE__);
 
-  int factor = SeenBuff.Get_Width() / 320;
+  const int factor = SeenBuff.Get_Width() / 320;
 
   /*........................................................................
   Button Enumerations
@@ -1415,7 +1416,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
-  int text_width = width;
+  const int text_width = width;
   width = std::max(width, 50 * factor);
   width += 40 * factor;
   height += 60 * factor;
@@ -1611,7 +1612,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
  *   06/02/1995 DRD : Created.                                             *
  *=========================================================================*/
 DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   /*........................................................................
   Button Enumerations
@@ -2196,7 +2197,7 @@ int NullModemClass::Send_Modem_Command(const char* command, char terminator,
  *=============================================================================================*/
 int NullModemClass::Verify_And_Convert_To_Int(char* buffer) {
   int value = 0;
-  int len = static_cast<int>(strlen(buffer));
+  const int len = static_cast<int>(strlen(buffer));
 
   for (int i = 0; i < len; i++) {
     if (!isdigit(*(buffer + i))) {

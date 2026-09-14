@@ -135,7 +135,7 @@ void PowerClass::Init_Clear() {
 void PowerClass::One_Time() {
   RadarClass::One_Time();
 
-  int factor = Get_Resolution_Factor();
+  const int factor = Get_Resolution_Factor();
   PowX = SeenBuff.Get_Width() - Map.RadWidth;
   PowY = Map.RadY + Map.RadHeight + (13 << factor);
   PowWidth = 8 << factor;
@@ -168,7 +168,7 @@ void PowerClass::One_Time() {
  *color depending on amount of power.                    *
  *=============================================================================================*/
 void PowerClass::Draw_It(bool complete) {
-  static int _modtable[] = {0, -1, 0, 1, 0, -1, -2, -1, 0, 1, 2, 1, 0};
+  static const int _modtable[] = {0, -1, 0, 1, 0, -1, -2, -1, 0, 1, 2, 1, 0};
   int power_color;
 
   //		PowX = TacPixelX + TacWidth*ICON_PIXEL_W;	// X position of
@@ -180,7 +180,7 @@ void PowerClass::Draw_It(bool complete) {
       /*
       ** 1st get the height of the filled section of the power bar
       */
-      int bottom = PowY + PowHeight - 1;
+      const int bottom = PowY + PowHeight - 1;
       int power_height = PowerHeight == DesiredPowerHeight
                              ? PowerHeight + (_modtable[PowerBounce] * PowerDir)
                              : PowerHeight;
@@ -275,8 +275,8 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
   //	}
 
   if (Map.IsSidebarActive /*IsActive*/) {
-    int olddrain = DrainHeight;
-    int oldpower = PowerHeight;
+    const int olddrain = DrainHeight;
+    const int oldpower = PowerHeight;
 
     /*
     ** If the recorded power value has changed we need to adjust for
@@ -386,7 +386,7 @@ void PowerClass::Refresh_Cells(CELL cell, const int16_t* list) {
  *   06/14/1995 PWG : Created.                                             *
  *=========================================================================*/
 int PowerClass::Power_Height(int value) {
-  int num =
+  const int num =
       value / POWER_STEP_LEVEL;  // figure out the initial num of DRAIN_VALUE's
   int retval = 0;                // currently there is no power
 

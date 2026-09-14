@@ -402,9 +402,9 @@ void AircraftTypeClass::Init(TheaterType theater) {
 
       const auto filename = std::string(uclass.IniName).substr(0, 4) + "ICNH";
 
-      auto fullname = std::filesystem::path(filename)
-                          .replace_extension(Theaters[theater].Suffix)
-                          .string();
+      const auto fullname = std::filesystem::path(filename)
+                                .replace_extension(Theaters[theater].Suffix)
+                                .string();
 
       const void* cameo_ptr = MFCD::Retrieve(fullname);
       if (cameo_ptr) {

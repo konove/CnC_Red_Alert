@@ -97,8 +97,8 @@ CreditClass::CreditClass() = default;
 // #define XX (320 - 120)
 // #define WW 50
 void CreditClass::Graphic_Logic(bool forced) {
-  int factor = Get_Resolution_Factor();
-  int xx = SeenBuff.Get_Width() - (120 << factor);
+  const int factor = Get_Resolution_Factor();
+  const int xx = SeenBuff.Get_Width() - (120 << factor);
   if (forced || IsToRedraw) {
     /*
     **	Play a sound effect when the money display changes, but only if a sound

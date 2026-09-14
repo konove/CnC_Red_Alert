@@ -142,7 +142,7 @@ void Nod_Ending() {
 #ifdef NOT_FOR_WIN95
   char* satpic = new char[64000];
 #endif  // NOT_FOR_WIN95
-  int oldfontxspacing = FontXSpacing;
+  const int oldfontxspacing = FontXSpacing;
   const void* oldfont;
 
   Score.Presentation();
@@ -167,8 +167,8 @@ void Nod_Ending() {
 #else
   SysMemPage.Blit(*PseudoSeenBuff);
 #endif  // NOT_FOR_WIN95
-  void* kanefinl = Load_Sample("KANEFINL.AUD");
-  void* loopie6m = Load_Sample("LOOPIE6M.AUD");
+  const void* kanefinl = Load_Sample("KANEFINL.AUD");
+  const void* loopie6m = Load_Sample("LOOPIE6M.AUD");
 
   Play_Movie("NODFINAL", THEME_NONE, false);
 
@@ -211,10 +211,10 @@ void Nod_Ending() {
       if (Is_Sample_Playing(kanefinl)) {
         Clear_KeyBuffer();
       } else {
-        int key = Keyboard::Get();
+        const int key = Keyboard::Get();
         if ((key & 0x10FF) == KN_LMOUSE && !(key & KN_RLSE_BIT)) {
-          int mousex = ActiveKeyboard->MouseQX;
-          int mousey = ActiveKeyboard->MouseQY;
+          const int mousex = ActiveKeyboard->MouseQX;
+          const int mousey = ActiveKeyboard->MouseQY;
           if (mousey >= 44 && mousey <= 354) {
             done = true;
             if (mousex < 320 && mousey < 200) {

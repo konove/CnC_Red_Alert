@@ -320,7 +320,7 @@ void GadgetClass::Delete_List() {
   while (g) {
     g->Clear_Focus();
 
-    GadgetClass* temp = g;
+    const GadgetClass* temp = g;
     g = g->Get_Next();
     delete temp;
   }
@@ -757,7 +757,7 @@ bool GadgetClass::Has_Focus() { return this == Focused; }
  * HISTORY: * 01/03/1995 MML : Created. *
  *=============================================================================================*/
 bool GadgetClass::Is_List_To_Redraw() {
-  GadgetClass* gadget = this;
+  const GadgetClass* gadget = this;
 
   while (gadget != nullptr) {
     if (gadget->IsToRepaint) {

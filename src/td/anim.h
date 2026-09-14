@@ -194,7 +194,7 @@ class AnimClass final : public ObjectClass, private StageClass {
   unsigned char Accum = 0;
 };
 
-void Shorten_Attached_Anims(ObjectClass* obj);
+void Shorten_Attached_Anims(const ObjectClass* obj);
 
 extern template void AnimClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void AnimClass::Serialize<ArchiveReader>(ArchiveReader&);

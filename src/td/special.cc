@@ -199,7 +199,7 @@ void Special_Dialog() {
       Dialog_Box(OPTION_X, OPTION_Y, OPTION_WIDTH, OPTION_HEIGHT);
       Draw_Caption(TXT_SPECIAL_OPTIONS, OPTION_X, OPTION_Y, OPTION_WIDTH);
 
-      for (auto& _option : _options) {
+      for (const auto& _option : _options) {
         Fancy_Text_Print(_option.Description, _option.Button->X + 10,
                          _option.Button->Y, CC_GREEN, TBLACK,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
@@ -208,12 +208,12 @@ void Special_Dialog() {
       Show_Mouse();
     }
 
-    KeyNumType input = buttons->Input();
+    const KeyNumType input = buttons->Input();
     switch (static_cast<int>(input)) {
       case KN_ESC:
       case ButtonKey(200):
         process = false;
-        for (auto& _option : _options) {
+        for (const auto& _option : _options) {
           switch (_option.Description) {
             case TXT_SEPARATE_HELIPAD:
               oldspecial.IsSeparate = _option.Setting;
@@ -281,7 +281,7 @@ void Special_Dialog() {
         break;
 
       default:
-        int index = (input & ~KN_BUTTON) - 100;
+        const int index = (input & ~KN_BUTTON) - 100;
         if (static_cast<unsigned>(index) <
             sizeof(_options) / sizeof(_options[0])) {
           _options[index].Setting = !_options[index].Setting;

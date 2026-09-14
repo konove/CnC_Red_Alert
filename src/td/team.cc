@@ -203,8 +203,8 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
   */
   FootClass* unit = Member;
   while (unit) {
-    bool tar = unit->TarCom == MissionTarget;
-    bool nav = unit->NavCom == MissionTarget;
+    const bool tar = unit->TarCom == MissionTarget;
+    const bool nav = unit->NavCom == MissionTarget;
     if (tar || nav) {
       /*
       ** If the unit was doing something related to the team mission
@@ -264,7 +264,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
 void TeamClass::AI() {
   Validate();
   int desired = 0;
-  bool old_under = IsUnderStrength;
+  const bool old_under = IsUnderStrength;
 
   /*
   ** If the team has been suspended then we need to check if its time for
@@ -362,7 +362,7 @@ void TeamClass::AI() {
       int max = 0x7FFFFFFF;
 
       for (int index = 0; index < Buildings.Count(); index++) {
-        BuildingClass* b = Buildings.Ptr(index);
+        const BuildingClass* b = Buildings.Ptr(index);
 
         if (b && !b->IsInLimbo && b->House == House &&
             b->Class->Primary == WEAPON_NONE) {
@@ -406,7 +406,7 @@ void TeamClass::AI() {
     **	a gesture at random.
     */
     FootClass* techno = Member;
-    DoType doaction = Random_Pick(1, 2) == 1 ? DO_GESTURE1 : DO_GESTURE2;
+    const DoType doaction = Random_Pick(1, 2) == 1 ? DO_GESTURE1 : DO_GESTURE2;
     while (techno) {
       if (!techno->IsInLimbo && techno->What_Am_I() == RTTI_INFANTRY) {
         dynamic_cast<InfantryClass*>(techno)->Do_Action(doaction);
@@ -1011,7 +1011,7 @@ void TeamClass::Calc_Center(CELL& center, CELL& obj_center) const {
   unit = Member;
   while (unit) {
     if (unit->IsInitiated && !unit->IsInLimbo) {
-      CELL c = Coord_Cell(unit->Center_Coord());
+      const CELL c = Coord_Cell(unit->Center_Coord());
       if (unit->Distance(Target) < dist) {
         dist = unit->Distance(Target);
         obj_center = c;
@@ -1025,7 +1025,7 @@ void TeamClass::Calc_Center(CELL& center, CELL& obj_center) const {
   if (quantity) {
     x /= quantity;
     y /= quantity;
-    CELL cell = XY_Cell(static_cast<int>(x), static_cast<int>(y));
+    const CELL cell = XY_Cell(static_cast<int>(x), static_cast<int>(y));
     center = cell;
   }
 }
@@ -1067,7 +1067,7 @@ void TeamClass::Took_Damage(FootClass* /*unused*/, ResultType result,
         *that have firepower.
         */
         if (Target_Legal(Target)) {
-          TechnoClass* techno = As_Techno(Target);
+          const TechnoClass* techno = As_Techno(Target);
 
           if ((techno &&
                dynamic_cast<const TechnoTypeClass&>(techno->Class_Of())
@@ -1419,7 +1419,7 @@ void TeamClass::Coordinate_Conscript(FootClass* unit) {
  *=========================================================================*/
 bool TeamClass::Is_A_Member(const void* who) const {
   Validate();
-  FootClass* unit = Member;
+  const FootClass* unit = Member;
   while (unit) {
     if (unit == who) {
       return true;

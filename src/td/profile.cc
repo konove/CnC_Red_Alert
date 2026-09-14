@@ -217,7 +217,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
   char c2;            // Working character values.
   int len;            // Working substring length value.
   int entrylen;       // Byte length of specified entry.
-  char* orig_retbuf = nullptr;  // original dest ptr
+  const char* orig_retbuf = nullptr;  // original dest ptr
 
   /*
   **	Fill in the default value just in case the entry could not be found.

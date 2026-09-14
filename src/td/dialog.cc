@@ -263,7 +263,7 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
   int h;           // Window dimensions.
   int border;      // Width of border.
 
-  static int _border[BOXSTYLE_COUNT][2] = {
+  static const int _border[BOXSTYLE_COUNT][2] = {
       {0, 0},   // 0 Simple beveled edge.
       {2, 4},   // 1 Wide raised border.
       {1, 1},   // 2 Thick beveled edge.
@@ -362,11 +362,11 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
 
       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
   };
-  static unsigned char _textpalmedium[16] = {0,   25, 119, 41, 0, 158, 0, 178,
-                                             125, 0,  202, 0,  0, 0,   0, 0};
+  static const unsigned char _textpalmedium[16] = {
+      0, 25, 119, 41, 0, 158, 0, 178, 125, 0, 202, 0, 0, 0, 0, 0};
 
-  static unsigned char _textpalbright[16] = {0,   24, 2,   4, 0, 5, 0, 176,
-                                             127, 0,  201, 0, 0, 0, 0, 0};
+  static const unsigned char _textpalbright[16] = {
+      0, 24, 2, 4, 0, 5, 0, 176, 127, 0, 201, 0, 0, 0, 0, 0};
   ///////////////////////#endif	//(0)
 
   int point;                      // Requested font size.

@@ -185,10 +185,12 @@ bool SliderClass::Set_Value(int value) {
  *JLB : Created.                                                       *
  *=============================================================================================*/
 void SliderClass::Recalc_Thumb() {
-  int length = IsHorizontal ? Width : Height;
-  int size = Fixed_To_Cardinal(length, Cardinal_To_Fixed(MaxValue, Thumb));
+  const int length = IsHorizontal ? Width : Height;
+  const int size =
+      Fixed_To_Cardinal(length, Cardinal_To_Fixed(MaxValue, Thumb));
   ThumbSize = std::max(size, 4);
-  int start = Fixed_To_Cardinal(length, Cardinal_To_Fixed(MaxValue, CurValue));
+  const int start =
+      Fixed_To_Cardinal(length, Cardinal_To_Fixed(MaxValue, CurValue));
   ThumbStart = std::min(start, length - ThumbSize);
 }
 

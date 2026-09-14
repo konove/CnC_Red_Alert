@@ -390,7 +390,7 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
     MissionList[i] = mission;
   }
 
-  char* ptr = strtok(nullptr, ",");
+  const char* ptr = strtok(nullptr, ",");
   if (ptr) {
     IsReinforcable = tech::ParseInteger<int>(ptr).value_or(0) != 0;
   }
@@ -860,7 +860,7 @@ TARGET TeamTypeClass::As_Target() const {
 
 void TeamTypeClass::Destroy_All_Of() const {
   for (int index = 0; index < Teams.Count(); index++) {
-    TeamClass* team = Teams.Ptr(index);
+    const TeamClass* team = Teams.Ptr(index);
 
     if (team->Class == this) {
       delete team;

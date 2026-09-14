@@ -396,7 +396,7 @@ EventClass::EventClass(EventType type, int id, CELL cell) : EventClass() {
 void EventClass::Execute() {
   TechnoClass* techno;
   AnimClass* anim = nullptr;
-  HouseClass* house = nullptr;
+  const HouseClass* house = nullptr;
   char txt[80];
   int i;
   // #if (0)

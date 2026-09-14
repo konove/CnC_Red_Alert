@@ -238,7 +238,7 @@ TechnoClass* As_Techno(TARGET target) {
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* As_Object(TARGET target) {
-  int val = Target_Value(target);
+  const int val = Target_Value(target);
   ObjectClass* object = nullptr;
 
   switch (Target_Kind(target)) {
@@ -433,7 +433,7 @@ COORDINATE As_Coord(TARGET target) {
     *then ask it *	for the center coordinate. Return the center coordinate
     *as the target's coordinate.
     */
-    ObjectClass* obj = As_Object(target);
+    const ObjectClass* obj = As_Object(target);
     if (obj) {
       return obj->Target_Coord();
     }
@@ -476,7 +476,7 @@ COORDINATE As_Movement_Coord(TARGET target) {
     *then ask it *	for the center coordinate. Return the center coordinate
     *as the target's coordinate.
     */
-    ObjectClass* obj = As_Object(target);
+    const ObjectClass* obj = As_Object(target);
     if (obj) {
       return obj->Docking_Coord();
     }

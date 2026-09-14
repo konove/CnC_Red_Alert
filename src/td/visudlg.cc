@@ -73,26 +73,27 @@
  * HISTORY: * 06/18/1995 JLB : Created. *
  *=============================================================================================*/
 void VisualControlsClass::Process() {
-  static int _titles[4] = {TXT_BRIGHTNESS, TXT_COLOR, TXT_CONTRAST, TXT_TINT};
+  static const int _titles[4] = {TXT_BRIGHTNESS, TXT_COLOR, TXT_CONTRAST,
+                                 TXT_TINT};
 
   enum {
     NUM_OF_BUTTONS = 6,
   };
 
   // Make them resolution independent
-  int option_width = kOptionWidth * 2;    // Width of dialog box.
-  int option_height = kOptionHeight * 2;  // Height of dialog box.
-  int option_x = kOptionX * 2;
-  int option_y = kOptionY * 2;
-  int text_y = kTextY * 2;
-  int slider_x = kSliderX * 2;
-  int slider_y = kSliderY * 2;
-  int slider_width = kSliderWidth * 2;  // Width of each control slider.
-  int slider_height =
+  const int option_width = kOptionWidth * 2;    // Width of dialog box.
+  const int option_height = kOptionHeight * 2;  // Height of dialog box.
+  const int option_x = kOptionX * 2;
+  const int option_y = kOptionY * 2;
+  const int text_y = kTextY * 2;
+  const int slider_x = kSliderX * 2;
+  const int slider_y = kSliderY * 2;
+  const int slider_width = kSliderWidth * 2;  // Width of each control slider.
+  const int slider_height =
       kSliderHeight * 2;  // Height of each control slider.
-  int slider_y_spacing =
-      kSliderYSpacing * 2;      // Vertical spacing between sliders.
-  int button_y = kButtonY * 2;  // Options button y pos
+  const int slider_y_spacing =
+      kSliderYSpacing * 2;            // Vertical spacing between sliders.
+  const int button_y = kButtonY * 2;  // Options button y pos
 
   /*
   **	Variables.
@@ -257,7 +258,7 @@ void VisualControlsClass::Process() {
     /*
     **	Get and process player input.
     */
-    KeyNumType input = optionsbtn.Input();
+    const KeyNumType input = optionsbtn.Input();
     switch (static_cast<int>(input)) {
       case ButtonKey(BUTTON_BRIGHTNESS):
         Options.Set_Brightness(brightness.Get_Value());

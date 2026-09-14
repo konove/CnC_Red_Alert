@@ -509,7 +509,7 @@ void Keyboard_Process(KeyNumType& input) {
   ** Use WWKEY values because KN values have WWKEY_VK_BIT or'd in with them
   ** and we need WWKEY_VK_BIT to still be set if it is.
   */
-  auto plain = static_cast<KeyNumType>(
+  const auto plain = static_cast<KeyNumType>(
       input & ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT | WWKEY_CTRL_BIT));
 
   if constexpr (config::kCheatKeysEnabled) {
@@ -815,7 +815,7 @@ static void Message_Input(KeyNumType& input) {
   int sent_so_far;
   uint16_t magic_number;
   uint16_t crc;
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   /*
   **	Check keyboard input for a request to send a message.
@@ -1714,7 +1714,7 @@ bool Main_Loop() {
                 << infantry->Mission << " navcom " << infantry->NavCom;
     }
     // Compare every serialized field of migrated objects in smoke runs.
-    auto log_heap = [](auto& heap, const char* kind) {
+    const auto log_heap = [](auto& heap, const char* kind) {
       for (int index = 0; index < heap.Count(); ++index) {
         // Stream directly to hex so growing field lists cannot be truncated.
         class HexPipe : public Pipe {
@@ -2106,9 +2106,9 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
   memset(&PaletteInterpolationTable[0][0], 0, 65536);
 
   if (name) {
-    auto fullname =
+    const auto fullname =
         std::filesystem::path(name).replace_extension(".VQA").string();
-    auto palname =
+    const auto palname =
         std::filesystem::path(name).replace_extension(".VQP").string();
     if constexpr (config::kCheatKeysEnabled) {
       Mono_Set_Cursor(0, 0);
@@ -2282,13 +2282,13 @@ std::string Fading_Table_Name(const char* base, TheaterType theater) {
  *=============================================================================================*/
 const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
                            int zoomfactor) {
-  static int _offx[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
-  static int _offy[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
+  static const int _offx[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
+  static const int _offy[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
   int lp;
   int framelp;
   char pixel = 0;
 
-  char* retval = nullptr;
+  const char* retval = nullptr;
   char* buffer = nullptr;
   void* ptr;
 
@@ -2303,16 +2303,16 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
   ** Get the pixel width and height of the frame we built.  This will
   ** be used to extract icons and build pixels.
   */
-  int pixel_width = Get_Build_Frame_Width(shapefile);
-  int pixel_height = Get_Build_Frame_Height(shapefile);
+  const int pixel_width = Get_Build_Frame_Width(shapefile);
+  const int pixel_height = Get_Build_Frame_Height(shapefile);
 
   /*
   ** Find the width and height in icons, adjust these by half an
   ** icon because the artists may be sloppy and miss the edge of an
   ** icon one way or the other.
   */
-  int icon_width = (pixel_width + 12) / 24;
-  int icon_height = (pixel_height + 12) / 24;
+  const int icon_width = (pixel_width + 12) / 24;
+  const int icon_height = (pixel_height + 12) / 24;
 
   /*
   ** If we have been told to build as many frames as possible, then
@@ -2338,7 +2338,7 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
   retval = buffer;
   *buffer++ = static_cast<char>(icon_width);
   *buffer++ = static_cast<char>(icon_height);
-  int val = 24 / zoomfactor;
+  const int val = 24 / zoomfactor;
 
   for (framelp = 0; framelp < frames; framelp++) {
     /*
@@ -2359,8 +2359,8 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
         for (int iconx = 0; iconx < icon_width; iconx++) {
           for (int y = 0; y < zoomfactor; y++) {
             for (int x = 0; x < zoomfactor; x++) {
-              int getx = (iconx * 24) + (x * val) + (zoomfactor / 2);
-              int gety = (icony * 24) + (y * val) + (zoomfactor / 2);
+              const int getx = (iconx * 24) + (x * val) + (zoomfactor / 2);
+              const int gety = (icony * 24) + (y * val) + (zoomfactor / 2);
               if (getx < pixel_width && gety < pixel_height) {
                 for (lp = 0; lp < 9; lp++) {
                   pixel = *static_cast<char*>(Add_Long_To_Pointer(
@@ -2411,15 +2411,15 @@ void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
     if (shape_size) {
       shape_pointer =
           static_cast<unsigned char*>(Get_Shape_Header_Data(shape_size));
-      int source_width = Get_Build_Frame_Width(shapefile);
-      int source_height = Get_Build_Frame_Height(shapefile);
+      const int source_width = Get_Build_Frame_Width(shapefile);
+      const int source_height = Get_Build_Frame_Height(shapefile);
 
       // FIXME: can't find this one anywhere
       //  (this is the only user)
       // LogicPage->Texture_Fill_Rect (xpos, ypos, width, height, shape_pointer,
       // source_width, source_height);
       if (LogicPage->Lock()) {
-        unsigned char* shape_end =
+        const unsigned char* shape_end =
             shape_pointer +
             (static_cast<base::ssize>(source_width) * source_height);
 
@@ -3088,7 +3088,7 @@ bool Force_CD_Available(int cd) {
     /*
     ** Check the last CD drive we used if its different from the current one
     */
-    int last_drive = CCFileClass::Get_Last_CD_Drive();
+    const int last_drive = CCFileClass::Get_Last_CD_Drive();
     /*
     ** Make sure the last drive is valid and it isnt the current drive
     */

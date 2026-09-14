@@ -277,6 +277,9 @@ void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects)
     }
     objects.Clear();
   }
+  // set() runs only in the reading instantiation; misc-const-correctness
+  // checks the writer, which discards that `if constexpr` branch.
+  // NOLINTNEXTLINE(misc-const-correctness)
   std::bitset<65536> seen;
   for (int32_t i = 0; i < count; ++i) {
     ObjectClass* object = nullptr;

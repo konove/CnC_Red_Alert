@@ -112,7 +112,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   GraphicBufferClass seen_buff_save(VisiblePage.Get_Width(),
                                     VisiblePage.Get_Height(), nullptr);
 
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   if (b1txt && *b1txt == '\0') {
     b1txt = nullptr;
@@ -181,8 +181,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   // BG #endif
   height += numbuttons == 0 ? 30 * factor : 60 * factor;
 
-  int x = (SeenBuff.Get_Width() - width) / 2;
-  int y = (SeenBuff.Get_Height() - height) / 2;
+  const int x = (SeenBuff.Get_Width() - width) / 2;
+  const int y = (SeenBuff.Get_Height() - height) / 2;
 
   /*
   **	Other inits.

@@ -73,7 +73,7 @@ bool ConfirmationClass::Process(int text) { return Process(Text_String(text)); }
  *none * HISTORY:    12/31/1994 MML : Created. *
  *=============================================================================================*/
 bool ConfirmationClass::Process(const char* string) {
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   enum { NUM_OF_BUTTONS = 2 };
 
@@ -96,8 +96,8 @@ bool ConfirmationClass::Process(const char* string) {
   Format_Window_String(buffer, 200 * factor, width, height);
   width += 60 * factor;
   height += 60 * factor;
-  int x = ((320 * factor) - width) / 2;
-  int y = ((200 * factor) - height) / 2;
+  const int x = ((320 * factor) - width) / 2;
+  const int y = ((200 * factor) - height) / 2;
 
   Set_Logic_Page(SeenBuff);
 
@@ -194,7 +194,7 @@ bool ConfirmationClass::Process(const char* string) {
     /*
     **	Get user input.
     */
-    KeyNumType input = yesbtn.Input();
+    const KeyNumType input = yesbtn.Input();
 
     /*
     **	Process Input.

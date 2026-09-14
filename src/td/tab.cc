@@ -107,8 +107,8 @@ void TabClass::Draw_It(bool complete) {
   **	Redraw the top bar imagery if flagged to do so or if the entire display
   *needs *	to be redrawn.
   */
-  int width = SeenBuff.Get_Width();
-  int rightx = width - 1;
+  const int width = SeenBuff.Get_Width();
+  const int rightx = width - 1;
 
   if (complete || IsTabToRedraw) {
     if (LogicPage->Lock()) {
@@ -178,7 +178,7 @@ void TabClass::Hilite_Tab(int /*tab*/) {
 void TabClass::AI(KeyNumType& input, int x, int y) {
   if (y >= 0 && y < Tab_Height && x < SeenBuff.Get_Width() - 1 && x > 0) {
     bool ok = false;
-    int width = SeenBuff.Get_Width();
+    const int width = SeenBuff.Get_Width();
 
     /*
     **	If the mouse is at the top of the screen, then the tab bars only work
@@ -246,7 +246,7 @@ void TabClass::Set_Active(int select) {
 }
 
 void TabClass::One_Time() {
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   Eva_Width = 80 * factor;
   Tab_Height = 8 * factor;
 

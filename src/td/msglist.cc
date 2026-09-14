@@ -700,7 +700,7 @@ int MessageListClass::Input(KeyNumType& input) {
           */
           Fancy_Text_Print(TXT_NONE, 0, 0, EditLabel->Color, TBLACK,
                            EditLabel->Style);
-          int width = String_Pixel_Width(EditBuf);
+          const int width = String_Pixel_Width(EditBuf);
           if (width >= Width) {
             EditBuf[EditCurPos--] = 0;
             retcode = 0;

@@ -173,7 +173,7 @@ bool Start_Scenario(char* root, bool briefing) {
       *palette
       ** will be correct on the textured buttons.
       */
-      bool oldinmain = InMainLoop;
+      const bool oldinmain = InMainLoop;
       InMainLoop = true;
       Restate_Mission(ScenarioName, TXT_OK, TXT_NONE);
       InMainLoop = oldinmain;
@@ -370,8 +370,8 @@ void Do_Win() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
-  int y = Map.TacPixelY + (Lepton_To_Pixel(Map.TacLeptonHeight) / 2) - 32;
+  const int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
+  const int y = Map.TacPixelY + (Lepton_To_Pixel(Map.TacLeptonHeight) / 2) - 32;
 
   /*
   **	Announce win to player.
@@ -549,7 +549,7 @@ void Do_Win() {
     **	Remove the building from the prebuild list.
     */
     for (int index = 0; index < Base.Nodes.Count(); index++) {
-      BaseNodeClass* node = Base.Get_Node(index);
+      const BaseNodeClass* node = Base.Get_Node(index);
 
       if (node && node->Type == SabotagedType) {
         Base.Nodes.Delete(index);
@@ -592,8 +592,8 @@ void Do_Lose() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
-  int y = Map.TacPixelY + (Lepton_To_Pixel(Map.TacLeptonHeight) / 2) - 32;
+  const int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
+  const int y = Map.TacPixelY + (Lepton_To_Pixel(Map.TacLeptonHeight) / 2) - 32;
 
   /*
   **	Announce win to player.
@@ -673,7 +673,7 @@ void Do_Lose() {
  * HISTORY: * 08/24/1995 JLB : Created. *
  *=============================================================================================*/
 void Do_Restart() {
-  bool hidden = Get_Mouse_State() != 0;
+  const bool hidden = Get_Mouse_State() != 0;
 
   if (hidden) {
     Show_Mouse();
@@ -747,7 +747,7 @@ bool Restate_Mission(const char* name, int right_btn, int left_btn) {
       port::SafeCopy(_buff, BriefingText);
       // port::SafeCopy(_ShapeBuffer, BriefingText);
 
-      bool hidden = Get_Mouse_State() != 0;
+      const bool hidden = Get_Mouse_State() != 0;
       if (hidden) {
         Show_Mouse();
       }

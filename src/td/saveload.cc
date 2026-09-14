@@ -92,7 +92,7 @@
 */
 
 // Write the theater/map, object heaps, ordered layers, and globals as fields.
-bool Save_Game(int id, char* descr) {
+bool Save_Game(int id, const char* descr) {
   RawFileClass file;
   char name[kMaxFname + kMaxExt];
   int i;
@@ -487,12 +487,12 @@ static void Serialize_Misc_Values(Archive& ar) {
         (ScenVar >= SCEN_VAR_COUNT && ScenVar != SCEN_VAR_LOSE)) {
       ar.Fail("invalid saved scenario direction or variant");
     }
-    for (CELL cell : Waypoint) {
+    for (const CELL cell : Waypoint) {
       if (cell < -1 || cell >= MAP_CELL_TOTAL) {
         ar.Fail("invalid saved waypoint");
       }
     }
-    for (CELL cell : Views) {
+    for (const CELL cell : Views) {
       if (cell < -1 || cell >= MAP_CELL_TOTAL) {
         ar.Fail("invalid saved view");
       }

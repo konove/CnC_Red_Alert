@@ -14,7 +14,7 @@ int Com_Scenario_Dialog();
 int Com_Show_Scenario_Dialog();
 
 void Smart_Printf(const char* format, ...);
-void Hex_Dump_Data(char* buffer, int length);
+void Hex_Dump_Data(const char* buffer, int length);
 void itoh(int i, char* s);
 
 class ModemRegistryEntryClass;

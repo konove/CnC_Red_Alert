@@ -40,6 +40,9 @@ template <class T>
 std::array<uint8_t, 64> Save(T& value) {
   std::array<uint8_t, 64> bytes{};
   BufferPipe sink(bytes.data(), static_cast<int>(bytes.size()));
+  // The call operator is non-const; misc-const-correctness misses the call
+  // because its argument is template-dependent.
+  // NOLINTNEXTLINE(misc-const-correctness)
   ArchiveWriter writer(sink);
   writer(value);
   return bytes;
@@ -48,6 +51,9 @@ std::array<uint8_t, 64> Save(T& value) {
 template <class T>
 void Restore(T& value, const std::array<uint8_t, 64>& bytes) {
   BufferStraw source(bytes.data(), static_cast<int>(bytes.size()));
+  // The call operator is non-const; misc-const-correctness misses the call
+  // because its argument is template-dependent.
+  // NOLINTNEXTLINE(misc-const-correctness)
   ArchiveReader reader(source);
   reader(value);
   ASSERT_TRUE(reader.ok()) << reader.error();
@@ -321,7 +327,7 @@ TEST(TdSaveValuesTest, SuperweaponResumesPartialChargeAtRestoredFrame) {
   SuperClass weapon(100, VOX_ION_READY, VOX_ION_CHARGING);
   ASSERT_TRUE(weapon.Enable());
   Frame = 125;
-  auto bytes = Save(weapon);
+  const auto bytes = Save(weapon);
   Frame = 1000;
   SuperClass loaded;
   Restore(loaded, bytes);
@@ -342,7 +348,7 @@ TEST(TdSaveValuesTest, SuperweaponSuspensionPreservesRemainingCharge) {
   ASSERT_TRUE(weapon.Enable());
   Frame += 30;
   ASSERT_TRUE(weapon.Suspend(true));
-  auto bytes = Save(weapon);
+  const auto bytes = Save(weapon);
   Frame = 2000;
   SuperClass loaded;
   Restore(loaded, bytes);
@@ -400,7 +406,7 @@ TEST(TdSaveValuesTest, RandomStreamsResumeAfterMixedDraws) {
 }
 
 TEST(TdSaveValuesTest, RandomStateRejectsInvalidIndexAndTruncation) {
-  for (int32_t index : {-1, 256}) {
+  for (const int32_t index : {-1, 256}) {
     TdRandomState state{1, 2, index};
     auto bytes = Save(state);
     BufferStraw source(bytes.data(), static_cast<int>(bytes.size()));

@@ -131,7 +131,7 @@ bool SuperClass::Enable(bool onetime, bool player, bool quiet) {
   if (!IsPresent) {
     IsPresent = true;
     IsOneTime = onetime;
-    bool retval = Recharge(player && !quiet);
+    const bool retval = Recharge(player && !quiet);
     if (quiet) {
       Suspend(true);
     }

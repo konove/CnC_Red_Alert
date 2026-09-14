@@ -122,12 +122,12 @@ void EListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
 }
 
 bool Expansion_Dialog() {
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
-  int option_width = 236 * factor;
-  int option_height = 162 * factor;
-  int option_x = ((320 * factor) - option_width) / 2;
-  int option_y = ((200 * factor) - option_height) / 2;
+  const int option_width = 236 * factor;
+  const int option_height = 162 * factor;
+  const int option_x = ((320 * factor) - option_width) / 2;
+  const int option_y = ((200 * factor) - option_height) / 2;
 
   GadgetClass* buttons = nullptr;
 
@@ -235,7 +235,7 @@ bool Expansion_Dialog() {
       Show_Mouse();
     }
 
-    KeyNumType input = buttons->Input();
+    const KeyNumType input = buttons->Input();
     switch (static_cast<int>(input)) {
       case KN_RETURN:
       case ButtonKey(200):
@@ -290,12 +290,12 @@ bool Expansion_Dialog() {
  * HISTORY: * 3/26/97 11:07AM ST : Created *
  *=============================================================================================*/
 bool Bonus_Dialog() {
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
-  int option_width = 236 * factor;
-  int option_height = 162 * factor;
-  int option_x = ((320 * factor) - option_width) / 2;
-  int option_y = ((200 * factor) - option_height) / 2;
+  const int option_width = 236 * factor;
+  const int option_height = 162 * factor;
+  const int option_x = ((320 * factor) - option_width) / 2;
+  const int option_y = ((200 * factor) - option_height) / 2;
 
   GadgetClass* buttons = nullptr;
 
@@ -327,10 +327,10 @@ bool Bonus_Dialog() {
   /*
   **	Add in all the expansion scenarios.
   */
-  int gdi_scen_names[3] = {TXT_BONUS_MISSION_1, TXT_BONUS_MISSION_2,
-                           TXT_BONUS_MISSION_3};
+  const int gdi_scen_names[3] = {TXT_BONUS_MISSION_1, TXT_BONUS_MISSION_2,
+                                 TXT_BONUS_MISSION_3};
 
-  int nod_scen_names[2] = {TXT_BONUS_MISSION_4, TXT_BONUS_MISSION_5};
+  const int nod_scen_names[2] = {TXT_BONUS_MISSION_4, TXT_BONUS_MISSION_5};
 
   for (int index = 60; index < 63; index++) {
     char buffer[128];
@@ -395,7 +395,7 @@ bool Bonus_Dialog() {
       Show_Mouse();
     }
 
-    KeyNumType input = buttons->Input();
+    const KeyNumType input = buttons->Input();
     switch (static_cast<int>(input)) {
       case KN_RETURN:
       case ButtonKey(200):

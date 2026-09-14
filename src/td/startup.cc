@@ -221,7 +221,7 @@ int main(int argc, char* argv[])
 #endif
 
   // Change to executable's directory (if path is present)
-  auto dir_path = std::filesystem::path(argv[0]).parent_path();
+  const auto dir_path = std::filesystem::path(argv[0]).parent_path();
 
   if (!dir_path.empty()) {
     std::filesystem::current_path(dir_path);
@@ -314,7 +314,7 @@ int main(int argc, char* argv[])
         ScreenHeight = 400;
       }
 
-      int yoff = VisiblePage.Get_Height() == 480 ? 40 : 0;
+      const int yoff = VisiblePage.Get_Height() == 480 ? 40 : 0;
 
       SeenBuff.Attach(&VisiblePage, 0, yoff, ScreenWidth, ScreenHeight);
       HidPage.Attach(&HiddenPage, 0, yoff, ScreenWidth, ScreenHeight);
@@ -554,8 +554,8 @@ void Read_Setup_Options(RawFileClass* config_file) {
     */
     char netbuf[512];
     memset(netbuf, 0, sizeof(netbuf));
-    char* netptr = WWGetPrivateProfileString("Options", "DestNet", nullptr,
-                                             netbuf, sizeof(netbuf), buffer);
+    const char* netptr = WWGetPrivateProfileString(
+        "Options", "DestNet", nullptr, netbuf, sizeof(netbuf), buffer);
 
     if (netptr && strlen(netbuf)) {
       NetNumType net;
@@ -565,7 +565,7 @@ void Read_Setup_Options(RawFileClass* config_file) {
       ** Scan the string, pulling off each address piece
       */
       int i = 0;
-      char* p = strtok(netbuf, ".");
+      const char* p = strtok(netbuf, ".");
       while (p) {
         const auto byte = tech::ParseHex<uint8_t>(p);
         if (!byte || i >= 10) {

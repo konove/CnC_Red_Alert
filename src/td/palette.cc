@@ -14,20 +14,21 @@ unsigned char CurrentPalette[3 * 256];
 void Fade_Palette_To(unsigned char* palette, int fade, void (*callback)()) {
   if (fade) {
     // fade to new palette
-    auto start_time = TickCount.Time();
+    const auto start_time = TickCount.Time();
 
     unsigned char fade_palette[256 * 3];
 
     while (true) {
-      int cur_time = std::min<int>(static_cast<int>(TickCount.Time() - start_time), fade);
+      const int cur_time =
+          std::min<int>(static_cast<int>(TickCount.Time() - start_time), fade);
 
       const unsigned char* old_ptr = CurrentPalette;
       const unsigned char* new_ptr = palette;
       unsigned char* out_ptr = fade_palette;
 
       for (int c = 0; c < 256 * 3; c++) {
-        int new_val = *new_ptr++ & 0x3F;
-        int old_val = *old_ptr++ & 0x3F;
+        const int new_val = *new_ptr++ & 0x3F;
+        const int old_val = *old_ptr++ & 0x3F;
         *out_ptr++ = static_cast<unsigned char>(
             old_val + ((new_val - old_val) * cur_time / fade));
       }

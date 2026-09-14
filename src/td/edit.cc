@@ -261,7 +261,8 @@ bool EditClass::Action(unsigned flags, KeyNumType& key) {
       flags = 0;
 
     } else {
-      auto ascii = static_cast<KeyASCIIType>(Keyboard::To_ASCII(key) & 0x00ff);
+      const auto ascii =
+          static_cast<KeyASCIIType>(Keyboard::To_ASCII(key) & 0x00ff);
 
       /*
       ** Allow numeric keypad presses to map to ascii numbers

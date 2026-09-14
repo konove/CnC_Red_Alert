@@ -373,7 +373,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
   Validate();
   const void* shapefile;  // Working shape file pointer.
   int shapenum = 0;
-  int facing = Facing_To_32(SecondaryFacing);
+  const int facing = Facing_To_32(SecondaryFacing);
 
   /*
   **	Verify the legality of the unit class.
@@ -407,7 +407,8 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
   if (Altitude == FLIGHT_LEVEL && !Class->IsFixedWing) {
     Jitter++;
 
-    static int _jitter[] = {0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, -1, -1, -1, 0};
+    static const int _jitter[] = {0, 0, 0, 0, 1,  1,  1,  0,
+                                  0, 0, 0, 0, -1, -1, -1, 0};
     jitter = _jitter[Jitter % 16];
   }
 
@@ -449,14 +450,14 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
     }
 
     if (*this == AIRCRAFT_TRANSPORT) {
-      int _stretch[FACING_COUNT] = {8, 9, 10, 9, 8, 9, 10, 9};
+      const int _stretch[FACING_COUNT] = {8, 9, 10, 9, 8, 9, 10, 9};
 
       /*
       **	Dual rotors offset along flight axis.
       */
       auto xx = static_cast<int16_t>(x);
       auto yy = static_cast<int16_t>(y - Altitude);
-      FacingType face = Dir_Facing(SecondaryFacing);
+      const FacingType face = Dir_Facing(SecondaryFacing);
       base::MovePoint(xx, yy, SecondaryFacing.Current(), static_cast<int16_t>(_stretch[face]));
       CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
                     flags, nullptr, MouseClass::UnitShadow);
@@ -765,7 +766,7 @@ void AircraftClass::AI() {
   */
   if (Is_Door_Closed() && (IsLanding || IsTakingOff)) {
     Mark();
-    LayerType layer = In_Which_Layer();
+    const LayerType layer = In_Which_Layer();
 
     if (IsLanding) {
       if (Altitude) {
@@ -1086,7 +1087,7 @@ int AircraftClass::Mission_Unload() {
           }
           SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
 
-          int navdist = Distance(As_Movement_Coord(NavCom));
+          const int navdist = Distance(As_Movement_Coord(NavCom));
           Altitude = FLIGHT_LEVEL;
           if (navdist < 0x0600) {
             Altitude = Fixed_To_Cardinal(FLIGHT_LEVEL,
@@ -1097,7 +1098,7 @@ int AircraftClass::Mission_Unload() {
             FootClass* unit = Detach_Object();
 
             if (unit) {
-              CELL cell = Contact_With_Whom()->Find_Exit_Cell(unit);
+              const CELL cell = Contact_With_Whom()->Find_Exit_Cell(unit);
               if (cell) {
                 ScenarioInit++;
                 if (!unit->Unlimbo(Cell_Coord(cell))) {
@@ -1174,7 +1175,7 @@ int AircraftClass::Mission_Unload() {
       */
       case FLY_TO_LZ: {
         if (Is_LZ_Clear(NavCom)) {
-          int distance = Process_Fly_To(true);
+          const int distance = Process_Fly_To(true);
 
           if (distance < 0x0100) {
             SecondaryFacing.Set_Desired(Pose_Dir());
@@ -1291,12 +1292,12 @@ bool AircraftClass::Is_LZ_Clear(TARGET target) const {
   if (!Target_Legal(target)) {
     return false;
   }
-  CELL cell = As_Cell(target);
+  const CELL cell = As_Cell(target);
   if (!Map.In_Radar(cell)) {
     return false;
   }
 
-  ObjectClass* object = Map[cell].Cell_Object();
+  const ObjectClass* object = Map[cell].Cell_Object();
   if (object) {
     if (object == this) {
       return true;
@@ -1458,9 +1459,9 @@ int AircraftClass::Mission_Retreat() {
  *=============================================================================================*/
 int AircraftClass::Exit_Object(TechnoClass* unit) {
   Validate();
-  static FacingType _toface[FACING_COUNT] = {FACING_S,  FACING_SW, FACING_SE,
-                                             FACING_NW, FACING_NE, FACING_N,
-                                             FACING_W,  FACING_E};
+  static const FacingType _toface[FACING_COUNT] = {
+      FACING_S,  FACING_SW, FACING_SE, FACING_NW,
+      FACING_NE, FACING_N,  FACING_W,  FACING_E};
   CELL cell = 0;
 
   /*
@@ -1714,7 +1715,7 @@ int AircraftClass::Mission_Move() {
     */
     case FLY_TO_LZ:
       if (Is_LZ_Clear(NavCom)) {
-        int distance = Process_Fly_To(true);
+        const int distance = Process_Fly_To(true);
 
         if (distance < 0x0080) {
           if (Target_Legal(TarCom)) {
@@ -2298,7 +2299,7 @@ int AircraftClass::Mission_Attack() {
           return 1;
         }
 
-        int distance = Process_Fly_To(true);
+        const int distance = Process_Fly_To(true);
 
         if (distance < 0x0200) {
           SecondaryFacing.Set_Desired(Direction(TarCom));
@@ -2426,14 +2427,14 @@ TARGET AircraftClass::New_LZ(TARGET oldlz) const {
   Validate();
   if (Target_Legal(oldlz) &&
       (!Is_LZ_Clear(oldlz) || !Cell_Seems_Ok(As_Cell(oldlz)))) {
-    COORDINATE coord = As_Coord(oldlz);
+    const COORDINATE coord = As_Coord(oldlz);
 
     /*
     **	Scan outward in a series of concentric rings up to certain distance
     **	in cells.
     */
     for (int radius = 0; radius < 16; radius++) {
-      FacingType modifier = Random_Pick(FACING_N, FACING_NW);
+      const FacingType modifier = Random_Pick(FACING_N, FACING_NW);
       CELL lastcell = -1;
 
       /*
@@ -2441,11 +2442,11 @@ TARGET AircraftClass::New_LZ(TARGET oldlz) const {
       *to *	find a cell that is allowed to be a legal LZ.
       */
       for (FacingType facing = FACING_N; facing < FACING_COUNT; facing++) {
-        CELL newcell = Coord_Cell(
+        const CELL newcell = Coord_Cell(
             Coord_Move(coord, Facing_Dir(facing + modifier),
                        static_cast<uint16_t>(radius * ICON_LEPTON_W)));
         if (Map.In_Radar(newcell)) {
-          TARGET newtarget = ::As_Target(newcell);
+          const TARGET newtarget = ::As_Target(newcell);
 
           if (newcell != lastcell && Is_LZ_Clear(newtarget) &&
               Cell_Seems_Ok(newcell)) {
@@ -2679,7 +2680,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
 DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
                                         CELL& moveto) const {
   Validate();
-  CELL center = Coord_Cell(Center_Coord());
+  const CELL center = Coord_Cell(Center_Coord());
   for (int sweep = FACING_N; sweep < FACING_S; sweep++) {
     moveto = Adjacent_Cell(center, FACING_S + sweep);
     if (Map.In_Radar(moveto) && (Coord_Cell(object->Center_Coord()) == moveto ||
@@ -2802,7 +2803,7 @@ MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
     return MOVE_NO;
   }
 
-  CellClass* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map[cell];
 
   if ((!cellptr->Cell_Occupier() || !cellptr->Cell_Occupier()->Is_Techno() ||
        dynamic_cast<TechnoClass*>(cellptr->Cell_Occupier())
@@ -2840,8 +2841,8 @@ MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
 TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
   Validate();
   if (Target_Legal(target)) {
-    int range = Weapon_Range(0);
-    COORDINATE tcoord = As_Coord(target);
+    const int range = Weapon_Range(0);
+    const COORDINATE tcoord = As_Coord(target);
     CELL bestcell = 0;
     CELL best2cell = 0;
     int bestval = -1;
@@ -2849,14 +2850,14 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
 
     for (int r = range - 0x0180; r > 0x0180; r -= 0x0100) {
       for (int face = 0; face < 255; face += 16) {
-        COORDINATE newcoord = Coord_Move(tcoord, static_cast<DirType>(face),
-                                         static_cast<uint16_t>(r));
-        CELL newcell = Coord_Cell(newcoord);
+        const COORDINATE newcoord = Coord_Move(
+            tcoord, static_cast<DirType>(face), static_cast<uint16_t>(r));
+        const CELL newcell = Coord_Cell(newcoord);
 
         if (Map.In_Radar(newcell) &&
             (GameToPlay != GAME_NORMAL || Map[newcell].IsVisible) &&
             Cell_Seems_Ok(newcell, true)) {
-          int dist = Distance(newcoord);
+          const int dist = Distance(newcoord);
           if (bestval == -1 || dist < bestval) {
             best2val = bestval;
             best2cell = bestcell;
@@ -2915,9 +2916,9 @@ bool AircraftClass::Cell_Seems_Ok(CELL cell, bool strict) const {
   **	Make sure that no other aircraft are heading to the selected location.
   *If they *	are, then don't consider the location as valid.
   */
-  TARGET astarget = ::As_Target(cell);
+  const TARGET astarget = ::As_Target(cell);
   for (int index = 0; index < Aircraft.Count(); index++) {
-    AircraftClass* air = Aircraft.Ptr(index);
+    const AircraftClass* air = Aircraft.Ptr(index);
     if ((air && (strict || air != this) && !air->IsInLimbo) &&
         (Coord_Cell(air->Coord) == cell || air->NavCom == astarget)) {
       return false;
@@ -3029,7 +3030,7 @@ int AircraftClass::Mission_Enter() {
         Assign_Destination(kTargetNone);
         Enter_Idle_Mode();
       } else {
-        int distance = Process_Fly_To(true);
+        const int distance = Process_Fly_To(true);
 
         if (distance < 0x0080) {
           if (Target_Legal(TarCom)) {
@@ -3104,7 +3105,7 @@ TARGET AircraftClass::Good_LZ() const {
   CELL bestcell = 0;
   int bestdist = -1;
   for (int index = 0; index < Buildings.Count(); index++) {
-    BuildingClass* building = Buildings.Ptr(index);
+    const BuildingClass* building = Buildings.Ptr(index);
 
     if (building && !building->IsInLimbo && building->House == House) {
       int dist = Distance(building);
@@ -3346,7 +3347,7 @@ int AircraftClass::Mission_Guard() {
         (Altitude == 0 && (Contact_With_Whom()->What_Am_I() != RTTI_BUILDING ||
                            *dynamic_cast<BuildingClass*>(Contact_With_Whom()) !=
                                STRUCT_REPAIR))) {
-      BuildingClass* building = Find_Docking_Bay(STRUCT_REPAIR, true);
+      const BuildingClass* building = Find_Docking_Bay(STRUCT_REPAIR, true);
       if (building) {
         Assign_Destination(building->As_Target());
         Assign_Target(kTargetNone);
@@ -3362,7 +3363,7 @@ int AircraftClass::Mission_Guard() {
   **	to rearm.
   */
   if ((Ammo == 0 && Class->Primary != WEAPON_NONE) && (!In_Radio_Contact())) {
-    BuildingClass* building = Find_Docking_Bay(STRUCT_HELIPAD, false);
+    const BuildingClass* building = Find_Docking_Bay(STRUCT_HELIPAD, false);
     if (building) {
       Assign_Destination(building->As_Target());
       Assign_Target(kTargetNone);
@@ -3452,9 +3453,9 @@ int AircraftClass::Mission_Guard_Area() {
  *=============================================================================================*/
 void AircraftClass::Response_Attack() {
   Validate();
-  static VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL, VOC_YESSIR, VOC_YESSIR,
-                                VOC_YESSIR};
-  VocType response = _response[Sim_Random_Pick(
+  static const VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL, VOC_YESSIR,
+                                      VOC_YESSIR, VOC_YESSIR};
+  const VocType response = _response[Sim_Random_Pick(
       0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
   if (AllowVoice) {
     Sound_Effect(response, 0, -(Aircraft.ID(this) + 1));
@@ -3476,9 +3477,9 @@ void AircraftClass::Response_Attack() {
  *=============================================================================================*/
 void AircraftClass::Response_Move() {
   Validate();
-  static VocType _response[] = {VOC_MOVEOUT, VOC_MOVEOUT, VOC_MOVEOUT,
-                                VOC_ACKNOWL, VOC_AFFIRM,  VOC_AFFIRM};
-  VocType response = _response[Sim_Random_Pick(
+  static const VocType _response[] = {VOC_MOVEOUT, VOC_MOVEOUT, VOC_MOVEOUT,
+                                      VOC_ACKNOWL, VOC_AFFIRM,  VOC_AFFIRM};
+  const VocType response = _response[Sim_Random_Pick(
       0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
   if (AllowVoice) {
     Sound_Effect(response, 0, -(Aircraft.ID(this) + 1));
@@ -3500,9 +3501,9 @@ void AircraftClass::Response_Move() {
  *=============================================================================================*/
 void AircraftClass::Response_Select() {
   Validate();
-  static VocType _response[] = {VOC_VEHIC,  VOC_UNIT,   VOC_YESSIR,
-                                VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
-  VocType response = _response[Sim_Random_Pick(
+  static const VocType _response[] = {VOC_VEHIC,  VOC_UNIT,   VOC_YESSIR,
+                                      VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
+  const VocType response = _response[Sim_Random_Pick(
       0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
   if (AllowVoice) {
     Sound_Effect(response, 0, -(Aircraft.ID(this) + 1));

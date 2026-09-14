@@ -147,7 +147,7 @@ void BaseClass::Read_INI(char* buffer) {
   /*
   **	Read the number of buildings that will go into the base node list
   */
-  int count = WWGetPrivateProfileInt(INI_Name(), "Count", 0, buffer);
+  const int count = WWGetPrivateProfileInt(INI_Name(), "Count", 0, buffer);
 
   /*
   **	Read each entry in turn, in the same order they were written out.
@@ -263,7 +263,7 @@ BuildingClass* BaseClass::Get_Building(int index) {
   ** Check the location on the map where this building should be; if it's
   ** there, return a pointer to it.
   */
-  CELL cell = Coord_Cell(Nodes[index].Coord);
+  const CELL cell = Coord_Cell(Nodes[index].Coord);
 
   obj[0] = Map[cell].Cell_Building();
   obj[1] = Map[cell].Overlappers[0];

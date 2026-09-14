@@ -44,8 +44,8 @@ void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
 
   int remap_index;
   for (remap_index = 1; remap_index < ALLOWED_START; remap_index++) {
-    uint8_t origred = pal8[(remap_index * 3) + 0];
-    uint8_t origgreen = pal8[(remap_index * 3) + 1];
+    const uint8_t origred = pal8[(remap_index * 3) + 0];
+    const uint8_t origgreen = pal8[(remap_index * 3) + 1];
 
     int tmp = (origred - targetred) * (frac >> 1);
     idealred = origred - (tmp >> 7);
@@ -59,7 +59,7 @@ void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
     matchcolor = color;  // Default color (self).
     matchvalue = INT_MAX;     // Ridiculous match value init.
 
-    auto* palptr = pal8 + (static_cast<base::ssize>(ALLOWED_START) * 3);
+    const auto* palptr = pal8 + (static_cast<base::ssize>(ALLOWED_START) * 3);
 
     for (int color_index = ALLOWED_START; color_index < 256; color_index++) {
       int compval = 0;

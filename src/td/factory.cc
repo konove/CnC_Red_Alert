@@ -313,7 +313,7 @@ void FactoryClass::AI() {
  *=============================================================================================*/
 bool FactoryClass::Has_Changed() {
   Validate();
-  bool changed = IsDifferent;
+  const bool changed = IsDifferent;
   IsDifferent = false;
   return changed;
 }
@@ -671,7 +671,7 @@ int FactoryClass::Get_Special_Item() const {
 int FactoryClass::Cost_Per_Tick() {
   Validate();
   if (Object) {
-    int steps = STEP_COUNT - Fetch_Stage();
+    const int steps = STEP_COUNT - Fetch_Stage();
     if (steps) {
       return Balance / steps;
     }

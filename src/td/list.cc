@@ -325,7 +325,7 @@ bool ListClass::Draw_Me(bool forced) {
     */
     if (List.Count()) {
       for (int index = 0; index < LineCount; index++) {
-        int line = CurrentTopIndex + index;
+        const int line = CurrentTopIndex + index;
 
         if (List.Count() > line) {
           /*
@@ -846,7 +846,7 @@ void ListClass::Set_Selected_Index(int index) {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 int ListClass::Step_Selected_Index(int step) {
-  int old = SelectedIndex;
+  const int old = SelectedIndex;
 
   Set_Selected_Index(old + step);
   return old;

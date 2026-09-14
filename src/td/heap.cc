@@ -178,7 +178,7 @@ bool FixedHeapClass::Set_Heap(int count, void* buffer) {
  *=============================================================================================*/
 void* FixedHeapClass::Allocate() {
   if (ActiveCount < TotalCount) {
-    int index = static_cast<int>(base::first_false(FreeFlag));
+    const int index = static_cast<int>(base::first_false(FreeFlag));
 
     if (index != -1) {
       ActiveCount++;
@@ -206,7 +206,7 @@ void* FixedHeapClass::Allocate() {
  *=============================================================================================*/
 bool FixedHeapClass::Free(void* pointer) {
   if (pointer && ActiveCount) {
-    int index = ID(pointer);
+    const int index = ID(pointer);
 
     if (static_cast<unsigned>(index) < static_cast<unsigned>(TotalCount)) {
       if (FreeFlag[base::ToSize(index)]) {

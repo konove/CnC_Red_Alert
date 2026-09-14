@@ -777,7 +777,7 @@ bool ObjectClass::Select() {
 bool ObjectClass::Render(bool forced) {
   int x;
   int y;
-  COORDINATE coord = Render_Coord();
+  const COORDINATE coord = Render_Coord();
 
   if (Debug_Map || Debug_Unshroud ||
       ((forced || IsToDisplay) && IsDown && !IsInLimbo)) {
@@ -803,7 +803,7 @@ bool ObjectClass::Render(bool forced) {
             cell = Adjacent_Cell(Coord_Cell(foot->Head_To_Coord()),
                                  foot->Path[0] + FACING_S & FACING_NW);
             Map.Coord_To_Pixel(Cell_Coord(cell), oldx, oldy);
-            for (auto& index : foot->Path) {
+            for (const auto& index : foot->Path) {
               if (index == FACING_NONE) {
                 break;
               }
@@ -1210,10 +1210,10 @@ RadioMessageType ObjectClass::Receive_Message(RadioClass* /*unused*/,
 ResultType ObjectClass::Take_Damage(int& damage, int distance,
                                     WarheadType warhead, TechnoClass* source) {
   ResultType result = RESULT_NONE;
-  int oldstrength = Strength;
+  const int oldstrength = Strength;
 
   if (oldstrength && damage && !Class_Of().IsImmune) {
-    int maxstrength = Class_Of().MaxStrength;
+    const int maxstrength = Class_Of().MaxStrength;
 
     /*
     **	Modify damage based on the warhead type and the armor of the object.

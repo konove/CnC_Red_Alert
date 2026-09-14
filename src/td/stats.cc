@@ -291,8 +291,8 @@ void Send_Statistics_Packet() {
     **
     */
     CCDebugString("C&C95 - Adding stats field for completion status.\n");
-    HouseClass* player1 = HouseClass::As_Pointer(MPlayerHouses[0]);
-    HouseClass* player2 = HouseClass::As_Pointer(MPlayerHouses[1]);
+    const HouseClass* player1 = HouseClass::As_Pointer(MPlayerHouses[0]);
+    const HouseClass* player2 = HouseClass::As_Pointer(MPlayerHouses[1]);
 
     int completion = -1;
 
@@ -604,7 +604,7 @@ void Send_Statistics_Packet() {
   /*
   ** Send it.....
   */
-  CountDownTimerClass send_timer;
+  const CountDownTimerClass send_timer;
 
 #ifdef _WIN32
   CCDebugString("C&C95 - About to send stats packet to DDE server.\n");

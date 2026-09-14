@@ -143,7 +143,7 @@ int AnimClass::Validate() const {
  *                                                                                             *
  * HISTORY: * 12/11/1994 JLB : Created. *
  *=============================================================================================*/
-void Shorten_Attached_Anims(ObjectClass* obj) {
+void Shorten_Attached_Anims(const ObjectClass* obj) {
   if (obj) {
     for (int index = 0; index < Anims.Count(); index++) {
       AnimClass& anim = *Anims.Ptr(index);
@@ -257,7 +257,7 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) {
     const void* shapefile = Class->Get_Image_Data();
     if (shapefile) {
       const void* transtable = nullptr;
-      int shapenum = Class->Start + Fetch_Stage();
+      const int shapenum = Class->Start + Fetch_Stage();
       const void* remap = nullptr;
 
       /*
@@ -762,7 +762,7 @@ void AnimClass::AI() {
     Mark(MARK_CHANGE);
 
     if (Graphic_Logic()) {
-      int stage = Fetch_Stage();
+      const int stage = Fetch_Stage();
 
       /*
       **	If this animation is attached to another object and it is a
@@ -919,7 +919,7 @@ LayerType AnimClass::In_Which_Layer() const {
  *=============================================================================================*/
 void AnimClass::Start() {
   Validate();
-  CELL cell = Coord_Cell(Coord);
+  const CELL cell = Coord_Cell(Coord);
 
   Mark();
 
@@ -968,7 +968,7 @@ void AnimClass::Start() {
  *=============================================================================================*/
 void AnimClass::Middle() {
   Validate();
-  CELL cell = Coord_Cell(Center_Coord());
+  const CELL cell = Coord_Cell(Center_Coord());
   CellClass* cellptr = &Map[cell];
 
   if (Class->Type == ANIM_ATOM_BLAST) {
@@ -1007,8 +1007,8 @@ void AnimClass::Middle() {
     }
     for (int x = -radius; x <= radius; x++) {
       for (int y = -radius; y <= radius; y++) {
-        int xpos = Cell_X(cell) + x;
-        int ypos = Cell_Y(cell) + y;
+        const int xpos = Cell_X(cell) + x;
+        const int ypos = Cell_Y(cell) + y;
 
         /*
         **	If the potential damage cell is outside of the map bounds,
@@ -1021,12 +1021,12 @@ void AnimClass::Middle() {
         if (static_cast<unsigned>(ypos) > MAP_CELL_H) {
           continue;
         }
-        CELL tcell = XY_Cell(xpos, ypos);
+        const CELL tcell = XY_Cell(xpos, ypos);
         if (!Map.In_Radar(tcell)) {
           continue;
         }
 
-        int damage = rawdamage / ((std::abs(radius) / 2) + 1);
+        const int damage = rawdamage / ((std::abs(radius) / 2) + 1);
         Explosion_Damage(Cell_Coord(tcell), damage, building, WARHEAD_FIRE);
         new SmudgeClass(Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
                         Cell_Coord(tcell));
@@ -1072,7 +1072,7 @@ void AnimClass::Middle() {
     COORDINATE c2 = Coord_Move(
         Center_Coord(), static_cast<DirType>((Class->Type - ANIM_FLAME_N) << 5),
         0x00E0);
-    COORDINATE c3 = Map.Closest_Free_Spot(
+    const COORDINATE c3 = Map.Closest_Free_Spot(
         Coord_Move(Center_Coord(),
                    static_cast<DirType>((Class->Type - ANIM_FLAME_N) << 5),
                    0x0140),
@@ -1203,7 +1203,7 @@ COORDINATE AnimClass::Adjust_Coord(COORDINATE coord) {
   } else {
     return coord;
   }
-  COORDINATE addval = XYPixel_Coord(x, y);
+  const COORDINATE addval = XYPixel_Coord(x, y);
   coord = Coord_Add(coord, addval);
   return coord;
 }

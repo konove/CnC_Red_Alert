@@ -477,7 +477,7 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
   */
   if (damage && res != RESULT_DESTROYED && *this == INFANTRY_E4) {
     damage = 5;
-    ResultType newres =
+    const ResultType newres =
         FootClass::Take_Damage(damage, distance, warhead, source);
     res = std::max(res, newres);
   }
@@ -584,7 +584,7 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
   **	When infantry gets hit, it gets scared.
   */
   if (res != RESULT_DESTROYED) {
-    COORDINATE c4 = source ? source->Coord : 0;
+    const COORDINATE c4 = source ? source->Coord : 0;
     if (source) {
       Scatter(c4);
     }
@@ -653,7 +653,7 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
 void InfantryClass::Draw_It(int x, int y, WindowNumberType window) {
   Validate();
   const void* shapefile;  // Working shape file pointer.
-  int facing = Facing_To_32(PrimaryFacing.Current());
+  const int facing = Facing_To_32(PrimaryFacing.Current());
 
   /*
   **	Verify the legality of the unit class.
@@ -671,7 +671,7 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) {
   **	the current animation stage.
   */
   int shapenum;
-  int facenum = HumanShape[facing];
+  const int facenum = HumanShape[facing];
 
   /*
   **	Fetch the shape pointer to use for the infantry. This is controlled by
@@ -1154,8 +1154,8 @@ void InfantryClass::AI() {
     IsStoked = false;
     Do_Action(Random_Pick(0, 1) == 0 ? DO_GESTURE1 : DO_GESTURE2);
     if (*this == INFANTRY_RAMBO) {
-      VocType _response[] = {VOC_RAMBO_LEFTY, VOC_RAMBO_LAUGH, VOC_RAMBO_COMIN,
-                             VOC_RAMBO_TUFF};
+      const VocType _response[] = {VOC_RAMBO_LEFTY, VOC_RAMBO_LAUGH,
+                                   VOC_RAMBO_COMIN, VOC_RAMBO_TUFF};
       Sound_Effect(
           _response[Sim_Random_Pick(
               0,
@@ -1356,7 +1356,7 @@ void InfantryClass::AI() {
         **	toward the unit. Shorten the precalculated path to be no longer
         **	than the distance to the target.
         */
-        int d = Lepton_To_Cell(Distance(NavCom));
+        const int d = Lepton_To_Cell(Distance(NavCom));
         if (d < kConquerPathMax) {
           Path[d] = FACING_NONE;
         }
@@ -1400,7 +1400,7 @@ void InfantryClass::AI() {
         **	current location and the next location in the path.
         */
         COORDINATE acoord = Adjacent_Cell(Coord, Path[0]);
-        CELL acell = Coord_Cell(acoord);
+        const CELL acell = Coord_Cell(acoord);
 
         if (Can_Enter_Cell(acell) != MOVE_OK) {
           if ((Mission == MISSION_MOVE || Mission == MISSION_ENTER) &&
@@ -1619,7 +1619,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   if (IsLocked && !IsALoaner && !ScenarioInit && !Map.In_Radar(cell)) {
     return MOVE_NO;
   }
-  CellClass* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map[cell];
 
   /*
   **	Walls are considered impassable for infantry UNLESS the wall has a hole
@@ -1896,7 +1896,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   ** If we're moving, but not facing the right direction, then exit.
   */
   if (!Special.IsDefenderAdvantage && IsDriving) {
-    int diff = PrimaryFacing.Difference(Direction(TarCom));
+    const int diff = PrimaryFacing.Difference(Direction(TarCom));
     if (std::abs(diff) >= 32) {
       return FIRE_MOVING;
     }
@@ -2012,7 +2012,7 @@ void InfantryClass::Random_Animate() {
         PrimaryFacing.Set(Facing_Dir(Random_Pick(FACING_N, FACING_NW)));
         if (Sim_Random_Pick(1, 20) == 1 && !IsSelected &&
             *this == INFANTRY_MOEBIUS && IsDiscoveredByPlayer) {
-          static VocType _response[] = {
+          static const VocType _response[] = {
               //						VOC_EXCELLENT1,
               //						VOC_EXCELLENT2,
               VOC_EXCELLENT3,
@@ -2116,7 +2116,7 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced) {
       toface = Dir_Facing(Direction8(threat, Coord));
       toface = toface + (Random_Pick(0, 4) - 2);
     } else {
-      COORDINATE coord = Coord & 0x00FF00FFL;
+      const COORDINATE coord = Coord & 0x00FF00FFL;
 
       if (coord != 0x00800080L) {
         toface = Dir_Facing(
@@ -2279,7 +2279,7 @@ bool InfantryClass::Stop_Driver() {
  *=============================================================================================*/
 bool InfantryClass::Start_Driver(COORDINATE& headto) {
   Validate();
-  COORDINATE old = headto;
+  const COORDINATE old = headto;
 
   /*
   **	Convert the head to coordinate to a legal sub-position location.
@@ -2572,14 +2572,15 @@ void InfantryClass::Response_Select() {
   Validate();
   VocType response;
   if (*this == INFANTRY_RAMBO) {
-    static VocType _response[] = {VOC_RAMBO_YEA, VOC_RAMBO_YES, VOC_RAMBO_YO};
+    static const VocType _response[] = {VOC_RAMBO_YEA, VOC_RAMBO_YES,
+                                        VOC_RAMBO_YO};
     response = _response[Sim_Random_Pick(
         0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
   } else {
     if (Class->IsCivilian) {
       if (*this == INFANTRY_MOEBIUS) {
-        static VocType _response[] = {VOC_YES, VOC_COMMANDER, VOC_HELLO,
-                                      VOC_HMMM};
+        static const VocType _response[] = {VOC_YES, VOC_COMMANDER, VOC_HELLO,
+                                            VOC_HMMM};
         response = _response[Sim_Random_Pick(
             0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
       } else {
@@ -2590,9 +2591,9 @@ void InfantryClass::Response_Select() {
         }
       }
     } else {
-      static VocType _response[] = {VOC_ACKNOWL, VOC_REPORT, VOC_REPORT,
-                                    VOC_YESSIR,  VOC_YESSIR, VOC_READY,
-                                    VOC_AWAIT};
+      static const VocType _response[] = {VOC_ACKNOWL, VOC_REPORT, VOC_REPORT,
+                                          VOC_YESSIR,  VOC_YESSIR, VOC_READY,
+                                          VOC_AWAIT};
       response = _response[Sim_Random_Pick(
           0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
     }
@@ -2621,14 +2622,14 @@ void InfantryClass::Response_Move() {
   Validate();
   VocType response;
   if (*this == INFANTRY_RAMBO) {
-    static VocType _response[] = {VOC_RAMBO_UGOTIT, VOC_RAMBO_ONIT,
-                                  VOC_RAMBO_NOPROB};
+    static const VocType _response[] = {VOC_RAMBO_UGOTIT, VOC_RAMBO_ONIT,
+                                        VOC_RAMBO_NOPROB};
     response = _response[Sim_Random_Pick(
         0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
   } else {
     if (Class->IsCivilian) {
       if (*this == INFANTRY_MOEBIUS) {
-        static VocType _response[] = {VOC_OF_COURSE, VOC_YESYES};
+        static const VocType _response[] = {VOC_OF_COURSE, VOC_YESYES};
         response = _response[Sim_Random_Pick(
             0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
       } else {
@@ -2639,9 +2640,9 @@ void InfantryClass::Response_Move() {
         }
       }
     } else {
-      static VocType _response[] = {VOC_MOVEOUT, VOC_MOVEOUT,    VOC_MOVEOUT,
-                                    VOC_ROGER,   VOC_RIGHT_AWAY, VOC_UGOTIT,
-                                    VOC_AFFIRM,  VOC_AFFIRM};
+      static const VocType _response[] = {
+          VOC_MOVEOUT,    VOC_MOVEOUT, VOC_MOVEOUT, VOC_ROGER,
+          VOC_RIGHT_AWAY, VOC_UGOTIT,  VOC_AFFIRM,  VOC_AFFIRM};
       response = _response[Sim_Random_Pick(
           0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
     }
@@ -2671,8 +2672,8 @@ void InfantryClass::Response_Attack() {
   Validate();
   VocType response;
   if (*this == INFANTRY_RAMBO) {
-    static VocType _response[] = {VOC_RAMBO_NOPROB, VOC_RAMBO_UGOTIT,
-                                  VOC_RAMBO_NOPROB, VOC_RAMBO_ONIT};
+    static const VocType _response[] = {VOC_RAMBO_NOPROB, VOC_RAMBO_UGOTIT,
+                                        VOC_RAMBO_NOPROB, VOC_RAMBO_ONIT};
     response = _response[Sim_Random_Pick(
         0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
   } else {
@@ -2683,9 +2684,9 @@ void InfantryClass::Response_Attack() {
         response = VOC_GUY_OKAY;
       }
     } else {
-      static VocType _response[] = {VOC_RIGHT_AWAY, VOC_AFFIRM,  VOC_AFFIRM,
-                                    VOC_UGOTIT,     VOC_NO_PROB, VOC_YESSIR,
-                                    VOC_YESSIR,     VOC_YESSIR};
+      static const VocType _response[] = {
+          VOC_RIGHT_AWAY, VOC_AFFIRM, VOC_AFFIRM, VOC_UGOTIT,
+          VOC_NO_PROB,    VOC_YESSIR, VOC_YESSIR, VOC_YESSIR};
       response = _response[Sim_Random_Pick(
           0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
     }
@@ -2982,7 +2983,7 @@ void InfantryClass::Read_INI(char* buffer) {
           /*
           **	3rd token: strength.
           */
-          int strength =
+          const int strength =
               tech::ParseInteger<int>(strtok(nullptr, ",\n\r")).value_or(0);
 
           /*
@@ -3003,8 +3004,9 @@ void InfantryClass::Read_INI(char* buffer) {
           /*
           **	Fetch the mission and facing.
           */
-          MissionType mission = Mission_From_Name(strtok(nullptr, ",\n\r"));
-          DirType dir = static_cast<DirType>(
+          const MissionType mission =
+              Mission_From_Name(strtok(nullptr, ",\n\r"));
+          const DirType dir = static_cast<DirType>(
               tech::ParseInteger<int>(strtok(nullptr, ",\n\r")).value_or(0));
           infantry->Trigger =
               TriggerClass::As_Pointer(strtok(nullptr, ",\n\r"));

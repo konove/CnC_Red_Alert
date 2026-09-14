@@ -266,18 +266,19 @@ bool TemplateClass::Mark(MarkType mark) {
 
     for (int y = 0; std::cmp_less(y, Class->Height); y++) {
       for (int x = 0; std::cmp_less(x, Class->Width); x++) {
-        CELL cell = static_cast<CELL>(Coord_Cell(Coord) + (y * MAP_CELL_W) + x);
+        const CELL cell =
+            static_cast<CELL>(Coord_Cell(Coord) + (y * MAP_CELL_W) + x);
         if (Map.In_Radar(cell)) {
           CellClass* cellptr = &Map[cell];
-          int number = (y * Class->Width) + x;
+          const int number = (y * Class->Width) + x;
 
           /*
           **	Determine if this logical icon actually maps to a real icon. If
           *no real *	icon is associated with this logical position, then
           *don't do any action *	since none is required.
           */
-          char* mapptr = static_cast<char*>(map);
-          bool real = mapptr[number] != -1;
+          const char* mapptr = static_cast<char*>(map);
+          const bool real = mapptr[number] != -1;
 
           if (real) {
             /*

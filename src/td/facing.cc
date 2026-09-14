@@ -145,8 +145,8 @@ bool FacingClass::Rotation_Adjust(int rate) {
   if (Is_Rotating()) {
     rate = std::min(rate, 127);
 
-    DirType oldfacing = CurrentFacing;
-    int diff = Difference();
+    const DirType oldfacing = CurrentFacing;
+    const int diff = Difference();
 
     /*
     **	If the allowed facing change is greater than the difference between

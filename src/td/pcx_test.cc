@@ -32,7 +32,7 @@ class PcxFile {
     header[66] = padded ? 4 : 2;  // Bytes per scanline.
     std::ofstream out(path_, std::ios::binary);
     out.write(header.data(), static_cast<std::streamsize>(header.size()));
-    for (uint8_t pixel : pixels) {
+    for (const uint8_t pixel : pixels) {
       out.put(static_cast<char>(pixel));
     }
     EXPECT_TRUE(out.good());
@@ -59,28 +59,28 @@ class PcxFile {
 };
 
 TEST(PcxTest, RejectsMissingFirstPixel) {
-  for (bool padded : {false, true}) {
+  for (const bool padded : {false, true}) {
     EXPECT_EQ(PcxFile({}, padded).Load(), nullptr);
   }
 }
 
 TEST(PcxTest, RejectsTruncatedLiteralPixels) {
   constexpr std::array<uint8_t, 1> pixels{7};
-  for (bool padded : {false, true}) {
+  for (const bool padded : {false, true}) {
     EXPECT_EQ(PcxFile(pixels, padded).Load(), nullptr);
   }
 }
 
 TEST(PcxTest, RejectsMissingRunColor) {
   constexpr std::array<uint8_t, 1> pixels{194};
-  for (bool padded : {false, true}) {
+  for (const bool padded : {false, true}) {
     EXPECT_EQ(PcxFile(pixels, padded).Load(), nullptr);
   }
 }
 
 TEST(PcxTest, RejectsMissingPixelAfterRun) {
   constexpr std::array<uint8_t, 2> pixels{193, 7};
-  for (bool padded : {false, true}) {
+  for (const bool padded : {false, true}) {
     EXPECT_EQ(PcxFile(pixels, padded).Load(), nullptr);
   }
 }
@@ -97,7 +97,7 @@ TEST(PcxTest, RejectsMissingTrailingRunColor) {
 
 TEST(PcxTest, DecodesLiteralPixels) {
   constexpr std::array<uint8_t, 3> pixels{7, 8, 0};
-  for (bool padded : {false, true}) {
+  for (const bool padded : {false, true}) {
     const auto image = PcxFile(std::span(pixels).first(padded ? 3 : 2), padded).Load();
     ASSERT_NE(image, nullptr);
     const auto* decoded = static_cast<const uint8_t*>(image->Get_Buffer());
@@ -108,7 +108,7 @@ TEST(PcxTest, DecodesLiteralPixels) {
 
 TEST(PcxTest, DecodesRepeatedPixels) {
   constexpr std::array<uint8_t, 4> pixels{194, 7, 194, 0};
-  for (bool padded : {false, true}) {
+  for (const bool padded : {false, true}) {
     const auto image = PcxFile(std::span(pixels).first(padded ? 4 : 2), padded).Load();
     ASSERT_NE(image, nullptr);
     const auto* decoded = static_cast<const uint8_t*>(image->Get_Buffer());

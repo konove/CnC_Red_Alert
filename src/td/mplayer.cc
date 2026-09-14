@@ -112,38 +112,38 @@ void Show_Internet_Connection_Progress();
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 GameType Select_MPlayer_Game() {
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   bool ipx_avail = false;
   int number_of_buttons;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  int d_dialog_w = 190 * factor;
-  int d_dialog_h = 26 * 4 * factor;
-  int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;
+  const int d_dialog_w = 190 * factor;
+  const int d_dialog_h = 26 * 4 * factor;
+  const int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;
   //	d_dialog_y = ((200 - d_dialog_h) / 2),
-  int d_dialog_y = ((136 * factor) - d_dialog_h) / 2;
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);
+  const int d_dialog_y = ((136 * factor) - d_dialog_h) / 2;
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);
 
-  int d_txt6_h = 11 * factor;
-  int d_margin = 7 * factor;
+  const int d_txt6_h = 11 * factor;
+  const int d_margin = 7 * factor;
 
-  int d_modemserial_w = 80 * factor;
-  int d_modemserial_h = 9 * factor;
-  int d_modemserial_x = d_dialog_cx - (d_modemserial_w / 2);
-  int d_modemserial_y = d_dialog_y + d_margin + d_txt6_h + d_margin;
-  int d_ipx_w = 80 * factor;
-  int d_ipx_h = 9 * factor;
-  int d_ipx_x = d_dialog_cx - (d_ipx_w / 2);
-  int d_ipx_y = d_modemserial_y + d_modemserial_h + (2 * factor);
+  const int d_modemserial_w = 80 * factor;
+  const int d_modemserial_h = 9 * factor;
+  const int d_modemserial_x = d_dialog_cx - (d_modemserial_w / 2);
+  const int d_modemserial_y = d_dialog_y + d_margin + d_txt6_h + d_margin;
+  const int d_ipx_w = 80 * factor;
+  const int d_ipx_h = 9 * factor;
+  const int d_ipx_x = d_dialog_cx - (d_ipx_w / 2);
+  const int d_ipx_y = d_modemserial_y + d_modemserial_h + (2 * factor);
   //	int 	d_ipx_y = d_internet_y + d_internet_h + 2*factor;
 
-  int d_cancel_w = 60 * factor;
-  int d_cancel_h = 9 * factor;
-  int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
-  int d_cancel_y = d_ipx_y + d_ipx_h + d_margin;
+  const int d_cancel_w = 60 * factor;
+  const int d_cancel_h = 9 * factor;
+  const int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
+  const int d_cancel_y = d_ipx_y + d_ipx_h + d_margin;
 
-  CountDownTimerClass delay;
+  const CountDownTimerClass delay;
 
   /*........................................................................
   Button enumerations:
@@ -1166,28 +1166,29 @@ static void Garble_Message(char* buf) {
  *   07/05/1995 BRR : Created.                                             *
  *=========================================================================*/
 int Surrender_Dialog() {
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  int d_dialog_w = 170 * factor;                     // dialog width
-  int d_dialog_h = 53 * factor;                      // dialog height
-  int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // centered x-coord
-  int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // coord of x-center
+  const int d_dialog_w = 170 * factor;                       // dialog width
+  const int d_dialog_h = 53 * factor;                        // dialog height
+  const int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // centered x-coord
+  const int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // centered y-coord
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // coord of x-center
 
-  int d_margin = 5 * factor;      // margin width/height
-  int d_topmargin = 20 * factor;  // top margin
+  const int d_margin = 5 * factor;      // margin width/height
+  const int d_topmargin = 20 * factor;  // top margin
 
-  int d_ok_w = 45 * factor;                                  // ok width
-  int d_ok_h = 9 * factor;                                   // ok height
-  int d_ok_x = d_dialog_cx - d_ok_w - (5 * factor);          // ok x
-  int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin;  // ok y
+  const int d_ok_w = 45 * factor;                                  // ok width
+  const int d_ok_h = 9 * factor;                                   // ok height
+  const int d_ok_x = d_dialog_cx - d_ok_w - (5 * factor);          // ok x
+  const int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin;  // ok y
 
-  int d_cancel_w = 45 * factor;               // cancel width
-  int d_cancel_h = 9 * factor;                // cancel height
-  int d_cancel_x = d_dialog_cx + (5 * factor);                       // cancel x
-  int d_cancel_y = d_dialog_y + d_dialog_h - d_cancel_h - d_margin;  // cancel y
+  const int d_cancel_w = 45 * factor;                 // cancel width
+  const int d_cancel_h = 9 * factor;                  // cancel height
+  const int d_cancel_x = d_dialog_cx + (5 * factor);  // cancel x
+  const int d_cancel_y =
+      d_dialog_y + d_dialog_h - d_cancel_h - d_margin;  // cancel y
 
   /*........................................................................
   Button enumerations

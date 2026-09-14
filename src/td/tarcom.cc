@@ -164,7 +164,7 @@ void TarComClass::AI() {
   }
 
   if (Target_Legal(TarCom) && !IsRotating) {
-    DirType dir = Direction(TarCom);
+    const DirType dir = Direction(TarCom);
 
     if (Class->IsTurretEquipped) {
       SecondaryFacing.Set_Desired(dir);

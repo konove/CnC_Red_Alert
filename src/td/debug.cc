@@ -100,7 +100,7 @@
 #define UPDATE_INTERVAL kTimerSecond
 void Self_Regulate() {
   static CountDownTimerClass DebugTimer{};
-  static ObjectClass* _lastobject = nullptr;
+  static const ObjectClass* _lastobject = nullptr;
 
   if (!DebugTimer.Time()) {
     DebugTimer.Set(UPDATE_INTERVAL);
@@ -657,22 +657,22 @@ void Debug_Key(unsigned input) {
         if (CurrentObject.Count() && CurrentObject[0]->Is_Techno()) {
           const auto& ttype =
               (const TechnoTypeClass&)CurrentObject[0]->Class_Of();
-          int sight = ((int)ttype.SightRange) << 8;
+          const int sight = ((int)ttype.SightRange) << 8;
           int weapon = 0;
           if (ttype.Primary != WEAPON_NONE) {
             weapon = Weapons[ttype.Primary].Range;
           }
           Set_Logic_Page(SeenBuff);
-          COORDINATE center = CurrentObject[0]->Center_Coord();
-          COORDINATE center2 = CurrentObject[0]->Fire_Coord(0);
+          const COORDINATE center = CurrentObject[0]->Center_Coord();
+          const COORDINATE center2 = CurrentObject[0]->Fire_Coord(0);
 
           for (int r = 0; r < 255; r += 10) {
             int x;
             int y;
             int x1;
             int y1;
-            auto r1 = (DirType)r;
-            auto r2 = (DirType)((r + 10) & 0xFF);
+            const auto r1 = (DirType)r;
+            const auto r2 = (DirType)((r + 10) & 0xFF);
 
             if (Map.Coord_To_Pixel(
                     Coord_Move(center, r1, static_cast<uint16_t>(sight)), x,

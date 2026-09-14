@@ -163,7 +163,7 @@ void LogicClass::Debug_Dump(MonoClass* mono) {
   */
   for (int column = 0; column < RECORDCOUNT; column++) {
     for (int row = 1; row < RECORDHEIGHT; row += 2) {
-      static unsigned char _barchar[4] = {' ', 220, 0, 219};
+      static const unsigned char _barchar[4] = {' ', 220, 0, 219};
       char str[2];
       int index = 0;
 

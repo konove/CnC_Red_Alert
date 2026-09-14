@@ -898,7 +898,8 @@ void HouseClass::AI() {
     /*
     **	Adjusted to reduce maximum number of teams created.
     */
-    int maxteams = Random_Pick(2, static_cast<int>(((BuildLevel - 1) / 3) + 1));
+    const int maxteams =
+        Random_Pick(2, static_cast<int>(((BuildLevel - 1) / 3) + 1));
     for (int index = 0; index < maxteams; index++) {
       const TeamTypeClass* ttype = Suggested_New_Team(true);
       if (ttype) {
@@ -1098,7 +1099,7 @@ void HouseClass::AI() {
     if (unit) {
       unit->Mark(MARK_CHANGE);
     } else {
-      CELL cell = As_Cell(FlagLocation);
+      const CELL cell = As_Cell(FlagLocation);
       Map[cell].Redraw_Objects();
     }
   }
@@ -1510,7 +1511,7 @@ void HouseClass::Attacked() {
 void HouseClass::Harvested(int tiberium) {
   Validate();
   DCHECK(tiberium >= 0);
-  int64_t oldtib = Tiberium;
+  const int64_t oldtib = Tiberium;
 
   Tiberium += tiberium;
   if (Tiberium > Capacity) {
@@ -1561,7 +1562,7 @@ int64_t HouseClass::Available_Money() const {
 void HouseClass::Spend_Money(int money) {
   Validate();
   DCHECK(money >= 0);
-  int64_t oldtib = Tiberium;
+  const int64_t oldtib = Tiberium;
   if (money > Tiberium) {
     money -= static_cast<int>(Tiberium);
     Tiberium = 0;
@@ -1617,7 +1618,7 @@ void HouseClass::Refund_Money(int money) {
  *=============================================================================================*/
 int HouseClass::Adjust_Capacity(int adjust, bool inanger) {
   Validate();
-  int64_t oldcap = Capacity;
+  const int64_t oldcap = Capacity;
   int retval = 0;
 
   Capacity += adjust;
@@ -1707,7 +1708,7 @@ void HouseClass::Read_INI(char* buffer) {
 
     maxbuilding = std::max(maxbuilding, 150);
 
-    int credits = WWGetPrivateProfileInt(hname, "Credits", 0, buffer);
+    const int credits = WWGetPrivateProfileInt(hname, "Credits", 0, buffer);
 
     p = new HouseClass(index);
 
@@ -1725,9 +1726,9 @@ void HouseClass::Read_INI(char* buffer) {
       WWGetPrivateProfileString(hname, "Allies", "", buf, sizeof(buf) - 1,
                                 buffer);
       if (strlen(buf)) {
-        char* tok = strtok(buf, ", \t");
+        const char* tok = strtok(buf, ", \t");
         while (tok) {
-          HousesType h = HouseTypeClass::From_Name(tok);
+          const HousesType h = HouseTypeClass::From_Name(tok);
           p->Make_Ally(h);
           tok = strtok(nullptr, ", \t");
         }
@@ -1763,7 +1764,7 @@ void HouseClass::Read_INI(char* buffer) {
  *=============================================================================================*/
 void HouseClass::Write_INI(char* buffer) {
   for (HousesType i = HOUSE_FIRST; i < HOUSE_COUNT; i++) {
-    HouseClass* p = As_Pointer(i);
+    const HouseClass* p = As_Pointer(i);
 
     if (p) {
       WWWritePrivateProfileInt(p->Class->IniName, "Credits",
@@ -1907,7 +1908,7 @@ void HouseClass::Make_Ally(HousesType house) {
         ObjectClass* object = Logic[index];
 
         if (object && !object->IsInLimbo && object->Owner() == Class->House) {
-          TARGET target = dynamic_cast<TechnoClass*>(object)->TarCom;
+          const TARGET target = dynamic_cast<TechnoClass*>(object)->TarCom;
           if ((Target_Legal(target) && As_Techno(target)) &&
               Is_Ally(As_Techno(target))) {
             dynamic_cast<TechnoClass*>(object)->TarCom = kTargetNone;
@@ -2050,13 +2051,13 @@ const TeamTypeClass* HouseClass::Suggested_New_Team(bool alertcheck) {
  *=============================================================================================*/
 void HouseClass::Adjust_Threat(int region, int threat) {
   Validate();
-  static int _val[] = {
+  static const int _val[] = {
       -MAP_REGION_WIDTH - 1, -MAP_REGION_WIDTH, -MAP_REGION_WIDTH + 1, -1, 0, 1,
       MAP_REGION_WIDTH - 1,  MAP_REGION_WIDTH,  MAP_REGION_WIDTH + 1};
-  static int _thr[] = {2, 1, 2, 1, 0, 1, 2, 1, 2};
+  static const int _thr[] = {2, 1, 2, 1, 0, 1, 2, 1, 2};
   bool neg;
-  int* val = &_val[0];
-  int* thr = &_thr[0];
+  const int* val = &_val[0];
+  const int* thr = &_thr[0];
 
   if (threat < 0) {
     threat = -threat;
@@ -2184,7 +2185,7 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
  *=============================================================================================*/
 ProdFailType HouseClass::Suspend_Production(RTTIType type) {
   Validate();
-  int* factory = nullptr;
+  const int* factory = nullptr;
 
   switch (type) {
     case RTTI_AIRCRAFT:
@@ -2370,7 +2371,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
   ** Loop through all of the building objects on the map
   ** and see which ones are available.
   */
-  BuildingClass* bestptr = nullptr;
+  const BuildingClass* bestptr = nullptr;
   int best = -1;
 
   for (int index = 0; index < Buildings.Count(); index++) {
@@ -2388,7 +2389,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
   }
 
   if (bestptr) {
-    CELL cell = Coord_Cell(bestptr->Center_Coord());
+    const CELL cell = Coord_Cell(bestptr->Center_Coord());
     Place_Special_Blast(id, cell);
   }
 }
@@ -2485,7 +2486,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           */
           auto* bullet = new BulletClass(BULLET_NUKE_DOWN);
           if (bullet) {
-            COORDINATE start = Cell_Coord(XY_Cell(Cell_X(cell), 0));
+            const COORDINATE start = Cell_Coord(XY_Cell(Cell_X(cell), 0));
             bullet->Assign_Target(As_Target(cell));
             bullet->Payback = nullptr;
             bullet->Strength = 1;
@@ -3161,9 +3162,9 @@ void HouseClass::Detach(TARGET /*unused*/, bool /*unused*/) {
  *=============================================================================================*/
 bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
   Validate();
-  uint64_t bflag = uint64_t{1} << btype;
+  const uint64_t bflag = uint64_t{1} << btype;
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
-    HouseClass* house = As_Pointer(index);
+    const HouseClass* house = As_Pointer(index);
 
     if (house && !Is_Ally(house) && (house->BScan & bflag) != 0) {
       return true;
@@ -3238,7 +3239,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         *This will be *	twice the number required to fill all teams.
         */
         for (int index = 0; index < Teams.Count(); index++) {
-          TeamClass* tptr = Teams.Ptr(index);
+          const TeamClass* tptr = Teams.Ptr(index);
           if (tptr) {
             const TeamTypeClass* team = tptr->Class;
 
@@ -3271,7 +3272,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
             for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
                  subindex++) {
               if (team->Class[subindex]->What_Am_I() == RTTI_UNITTYPE) {
-                int subtype =
+                const int subtype =
                     dynamic_cast<const UnitTypeClass*>(team->Class[subindex])
                         ->Type;
                 counter[subtype] =
@@ -3286,7 +3287,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         *currently *	in play.
         */
         for (int uindex = 0; uindex < Units.Count(); uindex++) {
-          UnitClass* unit = Units.Ptr(uindex);
+          const UnitClass* unit = Units.Ptr(uindex);
           if (unit && !unit->Team && unit->House == this &&
               unit->Mission != MISSION_GUARD_AREA &&
               unit->Mission != MISSION_HUNT &&
@@ -3355,7 +3356,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         *This will be *	twice the number required to fill all teams.
         */
         for (int index = 0; index < Teams.Count(); index++) {
-          TeamClass* tptr = Teams.Ptr(index);
+          const TeamClass* tptr = Teams.Ptr(index);
           if (tptr) {
             const TeamTypeClass* team = tptr->Class;
 
@@ -3385,9 +3386,9 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
             for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
                  subindex++) {
               if (team->Class[subindex]->What_Am_I() == RTTI_INFANTRYTYPE) {
-                int subtype = dynamic_cast<const InfantryTypeClass*>(
-                                  team->Class[subindex])
-                                  ->Type;
+                const int subtype = dynamic_cast<const InfantryTypeClass*>(
+                                        team->Class[subindex])
+                                        ->Type;
                 //									counter[subtype]
                 //= 1;
                 counter[subtype] =
@@ -3403,7 +3404,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         *currently *	in play.
         */
         for (int uindex = 0; uindex < Infantry.Count(); uindex++) {
-          InfantryClass* infantry = Infantry.Ptr(uindex);
+          const InfantryClass* infantry = Infantry.Ptr(uindex);
           if (infantry && !infantry->Team && infantry->House == this &&
               infantry->Mission != MISSION_GUARD_AREA &&
               infantry->Mission != MISSION_HUNT &&
@@ -3451,7 +3452,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
     case RTTI_BUILDING:
     case RTTI_BUILDINGTYPE:
       if (CurBuildings < MaxBuilding) {
-        BaseNodeClass* node = Base.Next_Buildable();
+        const BaseNodeClass* node = Base.Next_Buildable();
         if (node) {
           techno = &BuildingTypeClass::As_Reference(node->Type);
         }
@@ -3500,7 +3501,7 @@ bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
       /*
       **	Remove the flag from a cell
       */
-      CELL cell = As_Cell(target);
+      const CELL cell = As_Cell(target);
       if (Map.In_Radar(cell)) {
         rc = Map[cell].Flag_Remove();
         if (rc && FlagLocation == target) {
@@ -4323,7 +4324,7 @@ bool HouseClass::Has_Nuke_Device() {
 void HouseClass::Sell_Wall(CELL cell) {
   Validate();
   if (static_cast<unsigned>(cell) > 0) {
-    OverlayType overlay = Map[cell].Overlay;
+    const OverlayType overlay = Map[cell].Overlay;
 
     if (overlay != OVERLAY_NONE && Map[cell].Owner == Class->House) {
       const OverlayTypeClass& optr = OverlayTypeClass::As_Reference(overlay);

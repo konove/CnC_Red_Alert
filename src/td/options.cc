@@ -744,10 +744,10 @@ void OptionsClass::Set() {
  *a more consistent manner.                          *
  *=============================================================================================*/
 int OptionsClass::Normalize_Delay(int delay) const {
-  static int _adjust[][8] = {{2, 2, 1, 1, 1, 1, 1, 1},
-                             {3, 3, 3, 2, 2, 2, 1, 1},
-                             {5, 4, 4, 3, 3, 2, 2, 1},
-                             {7, 6, 5, 4, 4, 4, 3, 2}};
+  static const int _adjust[][8] = {{2, 2, 1, 1, 1, 1, 1, 1},
+                                   {3, 3, 3, 2, 2, 2, 1, 1},
+                                   {5, 4, 4, 3, 3, 2, 2, 1},
+                                   {7, 6, 5, 4, 4, 4, 3, 2}};
   if (delay) {
     if (delay < 5) {
       delay = _adjust[delay - 1][GameSpeed];

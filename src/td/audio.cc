@@ -414,9 +414,9 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
     }
   }
   // Working filename of sound effect.
-  auto name = std::filesystem::path(SoundEffectName[voc].Name)
-                  .replace_extension(ext)
-                  .string();
+  const auto name = std::filesystem::path(SoundEffectName[voc].Name)
+                        .replace_extension(ext)
+                        .string();
   const void* ptr = MFCD::Retrieve(name);
 
   /*
@@ -580,9 +580,9 @@ void Speak_AI() {
     CurrentVoice = VOX_NONE;
     if (SpeakQueue != VOX_NONE) {
       if (SpeakQueue != _last) {
-        auto name = std::filesystem::path(Speech[SpeakQueue])
-                        .replace_extension(".AUD")
-                        .string();
+        const auto name = std::filesystem::path(Speech[SpeakQueue])
+                              .replace_extension(".AUD")
+                              .string();
 
         if (CCFileClass(name.c_str()).Read(SpeechBuffer, SPEECH_BUFFER_SIZE)) {
           Play_Sample(SpeechBuffer, 254, Options.Volume);

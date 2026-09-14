@@ -152,7 +152,7 @@ int ColorListClass::Add_Item(int text, char color) {
  *   04/19/1995 BRR : Created.                                             *
  *=========================================================================*/
 void ColorListClass::Remove_Item(const char* text) {
-  int index = List.ID(text);
+  const int index = List.ID(text);
   if (index != -1) {
     Colors.Delete(index);
     ListClass::Remove_Item(text);

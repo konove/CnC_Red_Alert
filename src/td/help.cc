@@ -281,7 +281,7 @@ void HelpClass::Draw_It(bool forced) {
     if (Cost) {
       char buffer[15];
       sprintf(buffer, "$%d", Cost);
-      int width = String_Pixel_Width(buffer);
+      const int width = String_Pixel_Width(buffer);
       Fancy_Text_Print(buffer, DrawX, DrawY + FontHeight, Color, BLACK,
                        TPF_MAP | TPF_NOSHADOW);
       LogicPage->Draw_Rect(DrawX - 1, DrawY + FontHeight, DrawX + width + 1,
@@ -323,8 +323,8 @@ void HelpClass::Set_Text(int text) {
       DrawX = X - Width;
       DrawY = Y;
     } else {
-      int right = TacPixelX + Lepton_To_Pixel(TacLeptonWidth) - 3;
-      int bottom = TacPixelY + Lepton_To_Pixel(TacLeptonHeight) - 1;
+      const int right = TacPixelX + Lepton_To_Pixel(TacLeptonWidth) - 3;
+      const int bottom = TacPixelY + Lepton_To_Pixel(TacLeptonHeight) - 1;
 
       DrawX = X + X_OFFSET;
       DrawY = Y + Y_OFFSET;
@@ -337,7 +337,7 @@ void HelpClass::Set_Text(int text) {
       DrawX = std::max(DrawX, TacPixelX + 1);
       DrawY = std::max(DrawY, TacPixelY + 1);
     }
-    int lines = Cost ? 2 : 1;
+    const int lines = Cost ? 2 : 1;
     memcpy(OverlapList,
            Text_Overlap_List(Text_String(Text), DrawX - 1, DrawY, lines),
            sizeof(OverlapList));

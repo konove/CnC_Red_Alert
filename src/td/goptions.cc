@@ -82,7 +82,7 @@
 #include <iterator>
 
 void GameOptionsClass::Adjust_Variables_For_Resolution() {
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   OptionWidth = (216 + 8) * factor;
   OptionHeight = 100 * factor;
@@ -114,7 +114,7 @@ void GameOptionsClass::Adjust_Variables_For_Resolution() {
  *Adjusts menu for multiplay mode.                                         *
  *=============================================================================================*/
 void GameOptionsClass::Process() {
-  static struct {
+  static const struct {
     int ID;          // Button ID to use.
     int Text;        // Text number to use for this button.
     bool Multiplay;  // Allowed in multiplayer version?
@@ -144,7 +144,7 @@ void GameOptionsClass::Process() {
   **	Build the button list for all of the buttons for this dialog.
   */
   int maxwidth = 0;
-  int resfactor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int resfactor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   for (int index = 0; index < std::ssize(_constants);
        index++) {
@@ -323,7 +323,7 @@ void GameOptionsClass::Process() {
     /*
     **	Get user input.
     */
-    KeyNumType input = buttons->Input();
+    const KeyNumType input = buttons->Input();
 
     /*
     **	Process Input.
@@ -566,7 +566,7 @@ void GameOptionsClass::Process() {
  *=============================================================================================*/
 void Draw_Caption(int text, int x, int y, int w) {
   OptionControlType option = OPTION_NONE;
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   /*
   **	Determine the filigree to use depending on the text of the caption.
@@ -640,7 +640,7 @@ void Draw_Caption(int text, int x, int y, int w) {
         text, (w / 2) + x, (5 * factor) + y, CC_GREEN, TBLACK,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-    int length = String_Pixel_Width(Text_String(text));
+    const int length = String_Pixel_Width(Text_String(text));
     LogicPage->Draw_Line(x + (w / 2) - (length / 2),
                          y + FontHeight + FontYSpacing + (5 * factor),
                          x + (w / 2) + (length / 2),

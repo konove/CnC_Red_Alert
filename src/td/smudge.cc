@@ -207,11 +207,11 @@ void SmudgeClass::Init() { Smudges.Free_All(); }
 bool SmudgeClass::Mark(MarkType mark) {
   Validate();
   if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
-    CELL origin = Coord_Cell(Coord);
+    const CELL origin = Coord_Cell(Coord);
 
     for (int w = 0; w < Class->Width; w++) {
       for (int h = 0; h < Class->Height; h++) {
-        CELL newcell = static_cast<CELL>(origin + w + (h * MAP_CELL_W));
+        const CELL newcell = static_cast<CELL>(origin + w + (h * MAP_CELL_W));
         if (Map.In_Radar(newcell)) {
           CellClass* cell = &Map[newcell];
 
@@ -284,7 +284,7 @@ bool SmudgeClass::Mark(MarkType mark) {
 void SmudgeClass::Read_INI(char* buffer) {
   char buf[128];  // Working string staging buffer.
 
-  int len = static_cast<int>(strlen(buffer)) + 2;
+  const int len = static_cast<int>(strlen(buffer)) + 2;
   char* tbuffer = buffer + len;
 
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
@@ -296,10 +296,10 @@ void SmudgeClass::Read_INI(char* buffer) {
                               sizeof(buf) - 1, buffer);
     smudge = SmudgeTypeClass::From_Name(strtok(buf, ","));
     if (smudge != SMUDGE_NONE) {
-      char* ptr = strtok(nullptr, ",");
+      const char* ptr = strtok(nullptr, ",");
       if (ptr) {
         int data = 0;
-        CELL cell = tech::ParseInteger<CELL>(ptr).value_or(0);
+        const CELL cell = tech::ParseInteger<CELL>(ptr).value_or(0);
         ptr = strtok(nullptr, ",");
         if (ptr) {
           data = tech::ParseInteger<int>(ptr).value_or(0);

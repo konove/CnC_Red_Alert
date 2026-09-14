@@ -1658,7 +1658,7 @@ ObjectClass* InfantryTypeClass::Create_One_Of(HouseClass* house) const {
 bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
   auto* i = new InfantryClass(Type, house);
   if (i) {
-    COORDINATE coord = Map[cell].Closest_Free_Spot(Cell_Coord(cell));
+    const COORDINATE coord = Map[cell].Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {
       return i->Unlimbo(coord, DIR_E);
     }
@@ -1801,7 +1801,7 @@ void InfantryTypeClass::One_Time() {
 
   for (index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
     const InfantryTypeClass* uclass;
-    CCFileClass file;
+    const CCFileClass file;
 
     uclass = &As_Reference(index);
 
@@ -1849,7 +1849,7 @@ void InfantryTypeClass::Init(TheaterType theater) {
 
     for (index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
       const InfantryTypeClass* uclass;
-      CCFileClass file;
+      const CCFileClass file;
 
       uclass = &As_Reference(index);
 
@@ -1857,9 +1857,9 @@ void InfantryTypeClass::Init(TheaterType theater) {
 
       const auto filename = std::string(uclass->IniName).substr(0, 4) + "ICNH";
 
-      auto fullname = std::filesystem::path(filename)
-                          .replace_extension(Theaters[theater].Suffix)
-                          .string();
+      const auto fullname = std::filesystem::path(filename)
+                                .replace_extension(Theaters[theater].Suffix)
+                                .string();
       cameo_ptr = MFCD::Retrieve(fullname);
       if (cameo_ptr) {
         (const void*&)uclass->CameoData = cameo_ptr;

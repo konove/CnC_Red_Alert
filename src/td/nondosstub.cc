@@ -242,7 +242,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
     return nullptr;
   }
 
-  int width = header.width - header.x + 1;
+  const int width = header.width - header.x + 1;
   int height = header.height - header.y + 1;
 
   GraphicBufferClass* pic;
@@ -250,7 +250,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
 
   if (Buff) {
     buffer = static_cast<char*>(Buff);
-    int max_lines = Size / width;
+    const int max_lines = Size / width;
     height = std::min(max_lines - 1, height);
     pic = new GraphicBufferClass(width, height, buffer, Size);
     if (!pic->Get_Buffer()) {
@@ -285,7 +285,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
             delete pic;
             return nullptr;
           }
-          int color = *color_result;
+          const int color = *color_result;
           memset(buffer + scan_pos + i, color, base::ToSize(rle));
           i += rle;
         } else {
@@ -300,7 +300,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
       delete pic;
       return nullptr;
     }
-    int rle = *rle_result;
+    const int rle = *rle_result;
     if ((rle > 192) && (!reader.ReadByte().ok())) {
       delete pic;
       return nullptr;
@@ -321,7 +321,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
           delete pic;
           return nullptr;
         }
-        int color = *color_result;
+        const int color = *color_result;
         memset(buffer + i, color, base::ToSize(rle));
         i += rle;
       } else {

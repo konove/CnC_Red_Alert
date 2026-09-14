@@ -741,7 +741,7 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
 
   const int16_t* list = object->Occupy_List();
   while (*list != REFRESH_EOL) {
-    CELL newcell = static_cast<CELL>(cell + *list++);
+    const CELL newcell = static_cast<CELL>(cell + *list++);
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Occupy_Down(object);
       (*this)[newcell].Recalc_Attributes();
@@ -751,7 +751,7 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
 
   list = object->Overlap_List();
   while (*list != REFRESH_EOL) {
-    CELL newcell = static_cast<CELL>(cell + *list++);
+    const CELL newcell = static_cast<CELL>(cell + *list++);
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Overlap_Down(object);
       (*this)[newcell].Redraw_Objects();
@@ -784,7 +784,7 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
 
   const int16_t* list = object->Occupy_List();
   while (*list != REFRESH_EOL) {
-    CELL newcell = static_cast<CELL>(cell + *list++);
+    const CELL newcell = static_cast<CELL>(cell + *list++);
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Occupy_Up(object);
       (*this)[newcell].Recalc_Attributes();
@@ -794,7 +794,7 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
 
   list = object->Overlap_List();
   while (*list != REFRESH_EOL) {
-    CELL newcell = static_cast<CELL>(cell + *list++);
+    const CELL newcell = static_cast<CELL>(cell + *list++);
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Overlap_Up(object);
       (*this)[newcell].Redraw_Objects();
@@ -827,7 +827,7 @@ void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
 
   const int16_t* list = object->Overlap_List();
   while (*list != REFRESH_EOL) {
-    CELL newcell = static_cast<CELL>(cell + *list++);
+    const CELL newcell = static_cast<CELL>(cell + *list++);
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Overlap_Down(object);
       (*this)[newcell].Redraw_Objects();
@@ -859,7 +859,7 @@ void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
 
   const int16_t* list = object->Overlap_List();
   while (*list != REFRESH_EOL) {
-    CELL newcell = static_cast<CELL>(cell + *list++);
+    const CELL newcell = static_cast<CELL>(cell + *list++);
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Overlap_Up(object);
       (*this)[newcell].Redraw_Objects();
@@ -1092,7 +1092,7 @@ void MapClass::Logic() {
     if (!IsForwardScan) {
       cell = static_cast<CELL>(MAP_CELL_TOTAL - 1 - index);
     }
-    CellClass* ptr = &(*this)[cell];
+    const CellClass* ptr = &(*this)[cell];
 
     if (Special.IsTGrowth && ptr->Land_Type() == LAND_TIBERIUM &&
         ptr->OverlayData < 11) {
@@ -1106,7 +1106,7 @@ void MapClass::Logic() {
     /*
     **	Heavy Tiberium growth can spread.
     */
-    TerrainClass* terrain = ptr->Cell_Terrain();
+    const TerrainClass* terrain = ptr->Cell_Terrain();
     if ((Special.IsTSpread && ptr->Land_Type() == LAND_TIBERIUM &&
          ptr->OverlayData > 6) ||
         (terrain && terrain->Class->IsTiberiumSpawn)) {
@@ -1142,7 +1142,8 @@ void MapClass::Logic() {
     */
     if (TiberiumGrowthCount) {
       for (int i = 0; i < tries; i++) {
-        CELL cell = TiberiumGrowth[Random_Pick(0, TiberiumGrowthCount - 1)];
+        const CELL cell =
+            TiberiumGrowth[Random_Pick(0, TiberiumGrowthCount - 1)];
         CellClass* newcell = &(*this)[cell];
         if (newcell->Land_Type() == LAND_TIBERIUM &&
             newcell->OverlayData < 12 - 1) {
@@ -1157,14 +1158,15 @@ void MapClass::Logic() {
     */
     if (TiberiumSpreadCount) {
       for (int i = 0; i < tries; i++) {
-        CELL cell = TiberiumSpread[Random_Pick(0, TiberiumSpreadCount - 1)];
+        const CELL cell =
+            TiberiumSpread[Random_Pick(0, TiberiumSpreadCount - 1)];
 
         /*
         **	Find a pseudo-random adjacent cell that doesn't contain any
         *tiberium.
         */
         if (Map.In_Radar(cell)) {
-          FacingType offset = Random_Pick(FACING_N, FACING_NW);
+          const FacingType offset = Random_Pick(FACING_N, FACING_NW);
           for (FacingType j = FACING_N; j < FACING_COUNT; j++) {
             CellClass* newcell = &(*this)[cell].Adjacent_Cell(j + offset);
 
@@ -1258,12 +1260,12 @@ int MapClass::Cell_Threat(CELL cell, HousesType house) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 bool MapClass::Place_Random_Crate() {
-  int old = ScenarioInit;
+  const int old = ScenarioInit;
   ScenarioInit = 0;
   for (int index = 0; index < 100; index++) {
-    int x = Random_Pick(0, MapCellWidth - 1);
-    int y = Random_Pick(0, MapCellHeight - 1);
-    CELL cell = XY_Cell(MapCellX + x, MapCellY + y);
+    const int x = Random_Pick(0, MapCellWidth - 1);
+    const int y = Random_Pick(0, MapCellHeight - 1);
+    const CELL cell = XY_Cell(MapCellX + x, MapCellY + y);
 
     CellClass* ptr = &(*this)[cell];
     if (ptr->Is_Generally_Clear() && ptr->Overlay == OVERLAY_NONE) {
@@ -1410,27 +1412,27 @@ bool MapClass::Validate() {
 ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
   ObjectClass* object = nullptr;
   int distance = 0;
-  CELL cell = Coord_Cell(coord);
+  const CELL cell = Coord_Cell(coord);
 
   /*
   **	Scan through current and adjacent cells, looking for the
   **	closest object (within reason) to the specified coordinate.
   */
-  static int _offsets[] = {0,
-                           -1,
-                           1,
-                           -MAP_CELL_W,
-                           MAP_CELL_W,
-                           MAP_CELL_W - 1,
-                           MAP_CELL_W + 1,
-                           -(MAP_CELL_W - 1),
-                           -(MAP_CELL_W + 1)};
-  for (int _offset : _offsets) {
+  static const int _offsets[] = {0,
+                                 -1,
+                                 1,
+                                 -MAP_CELL_W,
+                                 MAP_CELL_W,
+                                 MAP_CELL_W - 1,
+                                 MAP_CELL_W + 1,
+                                 -(MAP_CELL_W - 1),
+                                 -(MAP_CELL_W + 1)};
+  for (const int _offset : _offsets) {
     /*
     **	Examine the cell for close object. Make sure that the cell actually is a
     **	legal one.
     */
-    CELL newcell = static_cast<CELL>(cell + _offset);
+    const CELL newcell = static_cast<CELL>(cell + _offset);
     if (In_Radar(newcell)) {
       /*
       **	Search through all objects that occupy this cell and then

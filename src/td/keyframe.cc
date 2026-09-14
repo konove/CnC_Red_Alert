@@ -112,7 +112,7 @@ static int Length;
 
 void* Get_Shape_Header_Data(void* ptr) {
   if (UseBigShapeBuffer) {
-    auto* header = static_cast<ShapeHeaderType*>(ptr);
+    const auto* header = static_cast<ShapeHeaderType*>(ptr);
     return header->shape_data +
            std::bit_cast<intptr_t>(header->shape_buffer
                                        ? TheaterShapeBufferStart

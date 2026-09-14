@@ -234,7 +234,7 @@ const int16_t* BulletClass::Occupy_List(bool /*placement*/) const {
         static CELL _list[10];
         const int16_t* ptr = Coord_Spillage_List(Coord, 5);
         int index = 0;
-        CELL cell1 = Coord_Cell(Coord);
+        const CELL cell1 = Coord_Cell(Coord);
 
         while (ptr[index] != REFRESH_EOL) {
           _list[index] = ptr[index];
@@ -243,7 +243,7 @@ const int16_t* BulletClass::Occupy_List(bool /*placement*/) const {
 
         COORDINATE coord = XY_Coord(0, Altitude);
         coord = Coord_Sub(Coord, coord);
-        CELL cell2 = Coord_Cell(coord);
+        const CELL cell2 = Coord_Cell(coord);
         ptr = Coord_Spillage_List(coord, 5);
         while (*ptr != REFRESH_EOL) {
           _list[index++] = static_cast<CELL>(*ptr++ + (cell2 - cell1));
@@ -380,7 +380,7 @@ void BulletClass::AI() {
       Mark();
       //			IsLocked = true;
       if (!Class->IsHigh) {
-        CellClass* cellptr = &Map[Coord_Cell(coord)];
+        const CellClass* cellptr = &Map[Coord_Cell(coord)];
         if (cellptr->Overlay != OVERLAY_NONE &&
             OverlayTypeClass::As_Reference(cellptr->Overlay).IsHigh) {
           forced = true;
@@ -486,7 +486,7 @@ void BulletClass::AI() {
  *=============================================================================================*/
 void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
   Validate();
-  int facing = Facing_To_32(PrimaryFacing);
+  const int facing = Facing_To_32(PrimaryFacing);
 
   /*
   **	Certain projectiles aren't visible. This includes small bullets (which
@@ -588,7 +588,7 @@ void BulletClass::Init() { Bullets.Free_All(); }
  *=============================================================================================*/
 void BulletClass::Detach(TARGET target, bool all) {
   Validate();
-  ObjectClass* obj = As_Object(target);
+  const ObjectClass* obj = As_Object(target);
 
   if (obj == Payback) {
     Payback = nullptr;

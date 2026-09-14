@@ -231,7 +231,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   (void)MFCD::Register("DEMOL.MIX");
   MFCD::Cache("DEMOL.MIX");
 #else
-  int temp = RequiredCD;
+  const int temp = RequiredCD;
   RequiredCD = -2;
 
   (void)MFCD::Register("CCLOCAL.MIX");
@@ -1920,7 +1920,7 @@ bool Select_Game(bool fade) {
   **	properly set.
   */
   DLOG(INFO) << "C&C95 - Initialising message system.";
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   Messages.Init(Map.TacPixelX, Map.TacPixelY, 6, MAX_MESSAGE_LENGTH,
                 (6 * factor) + 1);
 
@@ -1995,7 +1995,7 @@ bool Select_Game(bool fade) {
  * HISTORY: * 06/06/1995 BRR : Created. *
  *=============================================================================================*/
 static void Play_Intro(bool for_real) {
-  bool playright = !Key_Down(KN_LCTRL) || !Key_Down(KN_RCTRL);
+  const bool playright = !Key_Down(KN_LCTRL) || !Key_Down(KN_RCTRL);
   static int _counter = -1;
   static const char* _names[] = {
 #ifdef DEMO
@@ -2154,7 +2154,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
   Debug_Unshroud = false;
 
   for (int index = 1; index < argc; index++) {
-    std::string original_arg = argv[index];  // Copy for preserving case.
+    const std::string original_arg = argv[index];  // Copy for preserving case.
     char* string = strupr(argv[index]);      // Pointer to argument.
 
     if (strncmp(string, "-SEED", 5) == 0) {
@@ -2419,7 +2419,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
       ** Scan the command-line string, pulling off each address piece
       */
       int i = 0;
-      char* p = strtok(string + 8, ".");
+      const char* p = strtok(string + 8, ".");
       while (p) {
         const auto byte = tech::ParseHex<uint8_t>(p);
         if (!byte || i >= 10) {
@@ -2550,7 +2550,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     if (strnicmp(string, "-X", strlen("-O")) == 0) {
       string += strlen("-X");
       while (*string) {
-        char code = *string++;
+        const char code = *string++;
         switch (toupper(code)) {
 #ifdef ONHOLD
           /*
@@ -3033,7 +3033,7 @@ uint32_t Obfuscate(const char* string) {
   **	This is necessary to support the cypher process that occurs later.
   */
   if (length < 16 || length & 0x03) {
-    int maxlen = std::max((length + 3) & 0x00FC, 16);
+    const int maxlen = std::max((length + 3) & 0x00FC, 16);
     int index;
     for (index = length; index < maxlen; index++) {
       buffer[index] = static_cast<char>(
@@ -3053,7 +3053,7 @@ uint32_t Obfuscate(const char* string) {
   **	Record a copy of this initial transformation to be used in a later
   **	self referential transformation.
   */
-  int32_t copy = code;
+  const int32_t copy = code;
 
   /*
   **	Reverse the character string and combine with the previous
@@ -3078,7 +3078,7 @@ uint32_t Obfuscate(const char* string) {
   strrev(buffer);  // Restore original string order.
   for (int index = 0; index < length; index++) {
     code ^= static_cast<unsigned char>(buffer[index]);
-    auto temp = static_cast<unsigned char>(code);
+    const auto temp = static_cast<unsigned char>(code);
     buffer[index] = static_cast<char>(buffer[index] ^ temp);
     code >>= 8;
     code = static_cast<int>(code | static_cast<int32_t>(temp) << 24);
@@ -3091,10 +3091,10 @@ uint32_t Obfuscate(const char* string) {
   *10%.
   */
   for (int index = 0; index < length; index++) {
-    static unsigned char _lossbits[] = {0x00, 0x08, 0x00, 0x20,
-                                        0x00, 0x04, 0x10, 0x00};
-    static unsigned char _addbits[] = {0x10, 0x00, 0x00, 0x80,
-                                       0x40, 0x00, 0x00, 0x04};
+    static const unsigned char _lossbits[] = {0x00, 0x08, 0x00, 0x20,
+                                              0x00, 0x04, 0x10, 0x00};
+    static const unsigned char _addbits[] = {0x10, 0x00, 0x00, 0x80,
+                                             0x40, 0x00, 0x00, 0x04};
 
     buffer[index] = static_cast<char>(
         buffer[index] | _addbits[index % std::ssize(_addbits)]);
@@ -3117,10 +3117,10 @@ uint32_t Obfuscate(const char* string) {
     // yields the same result: the transformation below uses only +, * and ^,
     // whose low 8 bits depend only on the low 8 bits of their operands, and
     // only those low 8 bits are stored back into the buffer.
-    int16_t key1 = static_cast<unsigned char>(buffer[index]);
-    int16_t key2 = static_cast<unsigned char>(buffer[index + 1]);
-    int16_t key3 = static_cast<unsigned char>(buffer[index + 2]);
-    int16_t key4 = static_cast<unsigned char>(buffer[index + 3]);
+    const int16_t key1 = static_cast<unsigned char>(buffer[index]);
+    const int16_t key2 = static_cast<unsigned char>(buffer[index + 1]);
+    const int16_t key3 = static_cast<unsigned char>(buffer[index + 2]);
+    const int16_t key4 = static_cast<unsigned char>(buffer[index + 3]);
     int16_t val1 = key1;
     int16_t val2 = key2;
     int16_t val3 = key3;
@@ -3131,10 +3131,10 @@ uint32_t Obfuscate(const char* string) {
     val3 = static_cast<int16_t>(val3 + key3);
     val4 = static_cast<int16_t>(val4 * key4);
 
-    int16_t s3 = val3;
+    const int16_t s3 = val3;
     val3 = static_cast<int16_t>(val3 ^ val1);
     val3 = static_cast<int16_t>(val3 * key1);
-    int16_t s2 = val2;
+    const int16_t s2 = val2;
     val2 = static_cast<int16_t>(val2 ^ val4);
     val2 = static_cast<int16_t>(val2 + val3);
     val2 = static_cast<int16_t>(val2 * key3);

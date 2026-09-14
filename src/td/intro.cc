@@ -115,7 +115,7 @@ void Choose_Side() {
   const void* speech = nullptr;
   int statichandle;
   bool speechplaying = false;
-  int oldfontxspacing = FontXSpacing;
+  const int oldfontxspacing = FontXSpacing;
   int setpalette = 0;
   int gdi_start_palette;
 

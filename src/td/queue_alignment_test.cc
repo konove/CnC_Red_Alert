@@ -64,7 +64,7 @@ TEST_F(QueueAlignmentTest, ExtractsCompressedFrameAndPayloadFromOddAddress) {
   std::memcpy(packet, &frame, header_size);
   auto* payload = packet + header_size;
   port::WriteUnaligned(payload, EventClass::RESPONSE_TIME);
-  decltype(frame.Data.FrameInfo.Delay) delay = 9;
+  decltype(frame.Data.FrameInfo.Delay) const delay = 9;
   port::WriteUnaligned(payload + sizeof(EventClass::EventType), delay);
   const int size = static_cast<int>(
       header_size + sizeof(EventClass::EventType) + sizeof(delay));

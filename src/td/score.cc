@@ -392,7 +392,7 @@ void ScorePrintClass::Update() {
   if (!Timer.Time()) {
     Timer.Set(1);
 
-    int pos = XPos + (Stage * 6);
+    const int pos = XPos + (Stage * 6);
     if (Stage) {
       localstr[0] = ((char*)DataPtr)[Stage - 1];
 
@@ -466,7 +466,7 @@ void MultiStagePrintClass::Update() {
     ** Do 10 stages at once
     */
     for (int wibble = 0; wibble < 10; wibble++) {
-      int pos = XPos + (Stage * 6);
+      const int pos = XPos + (Stage * 6);
       if (Stage) {
         localstr[0] = ((char*)DataPtr)[Stage - 1];
 
@@ -514,8 +514,8 @@ ScoreScaleClass::ScoreScaleClass(const void* string, int xpos, int ypos,
 }
 
 void ScoreScaleClass::Update() {
-  static int _destx[] = {0, 80, 107, 134, 180, 228};
-  static int _destw[] = {6, 20, 30, 40, 60, 80};
+  static const int _destx[] = {0, 80, 107, 134, 180, 228};
+  static const int _destw[] = {6, 20, 30, 40, 60, 80};
 
   /*
   ** Restore the background for the scaled-up letter
@@ -657,8 +657,8 @@ void ScoreClass::Presentation() {
   struct Fame hallfame[NUMFAMENAMES];
   void* anim;
   const void* oldfont;
-  int oldfontxspacing = FontXSpacing;
-  int house = PlayerPtr->Class->House;  // 0 or 1
+  const int oldfontxspacing = FontXSpacing;
+  const int house = PlayerPtr->Class->House;  // 0 or 1
   char inter_pal[15];
 
   /*
@@ -706,14 +706,14 @@ void ScoreClass::Presentation() {
   anim = Open_Animation(ScreenNames[house], nullptr, 0L,
                         WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, Palette);
 
-  int minutes = static_cast<int>(ElapsedTime / kTimerMinute) + 1;
+  const int minutes = static_cast<int>(ElapsedTime / kTimerMinute) + 1;
 
   /*
   **	Determine leadership rating.
   */
   int leadership = 0;
   for (int index = 0; index < Logic.Count(); index++) {
-    ObjectClass* object = Logic[index];
+    const ObjectClass* object = Logic[index];
     if (object->Owner() == house) {
       leadership++;
     }
@@ -1215,7 +1215,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     ** Now draw some fires, if appropriate
     */
     if (i >= 61) {
-      int firecount = Extract_Shape_Count(fball1ptr);
+      const int firecount = Extract_Shape_Count(fball1ptr);
       int shapeindex = (i - 61) >> 1;
       if (shapeindex < firecount) {
         CC_Draw_Shape(
@@ -1410,8 +1410,8 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   ** Initialize a bunch of objects for the infantrymen who pose for the bar
   ** graphs of casualties.
   */
-  int q = NUMINFANTRYMEN / 3;
-  int r = q * 2;
+  const int q = NUMINFANTRYMEN / 3;
+  const int r = q * 2;
   for (i = 0; i < NUMINFANTRYMEN / 3; i++) {
     InfantryMan[i + 0].xpos = InfantryMan[i + q].xpos =
         InfantryMan[i + r].xpos = (i * 10) + 7;
@@ -1510,17 +1510,17 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
 }
 
 void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
-  static int _credsx[2] = {276, 276};
-  static int _credsy[2] = {173, 58};
-  static int _credpx[2] = {228, 236};
+  static const int _credsx[2] = {276, 276};
+  static const int _credsy[2] = {173, 58};
+  static const int _credpx[2] = {228, 236};
 #ifdef GERMAN
   static int _credpy[2] = {181, 74};
   static int _credtx[2] = {162, 162};
   static int _credty[2] = {173, 62};
 #else
-  static int _credpy[2] = {189 - 12, 74};
-  static int _credtx[2] = {182, 182};
-  static int _credty[2] = {179 - 12, 62};
+  static const int _credpy[2] = {189 - 12, 74};
+  static const int _credtx[2] = {182, 182};
+  static const int _credty[2] = {179 - 12, 62};
 #endif
 
   int credobj;
@@ -1715,7 +1715,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
         if (index) {
           str[--index] = 0;
 
-          int xposindex6 = xpos + (index * 6);
+          const int xposindex6 = xpos + (index * 6);
 
           PseudoSeenBuff->Fill_Rect(xposindex6, ypos, xposindex6 + 6, ypos + 6,
                                     TBLACK);
@@ -1934,7 +1934,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
     LogicPage->Draw_Line(0 + std::min(i, gkilled) + 1, 0 + 5,
                          0 + std::min(i, gkilled) + 1, 0 + 5, TBLACK);
     if (i <= gkilled) {
-      int anim = InfantryMan[i / 11].anim;
+      const int anim = InfantryMan[i / 11].anim;
       if (anim != -1 && anim < DO_GUN_DEATH) {
         if (i / 11) {
           New_Infantry_Anim(i / 11, DO_GUN_DEATH + (Random() & 3));
@@ -1953,7 +1953,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
     LogicPage->Draw_Line(0 + std::min(i, nkilled) + 1, 0 + 17,
                          0 + std::min(i, nkilled) + 1, 0 + 17, TBLACK);
     if (i <= nkilled) {
-      int anim = InfantryMan[(NUMINFANTRYMEN / 3) + (i / 11)].anim;
+      const int anim = InfantryMan[(NUMINFANTRYMEN / 3) + (i / 11)].anim;
       if (anim != -1 && anim < DO_GUN_DEATH) {
         if (i / 11) {
           New_Infantry_Anim((NUMINFANTRYMEN / 3) + (i / 11),
@@ -1974,7 +1974,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
     LogicPage->Draw_Line(0 + std::min(i, ckilled) + 1, 0 + 29,
                          0 + std::min(i, ckilled) + 1, 0 + 29, TBLACK);
     if (i <= ckilled) {
-      int anim = InfantryMan[(NUMINFANTRYMEN * 2 / 3) + (i / 11)].anim;
+      const int anim = InfantryMan[(NUMINFANTRYMEN * 2 / 3) + (i / 11)].anim;
       if (anim != -1 && anim < DO_GUN_DEATH) {
         if (i / 11) {
           New_Infantry_Anim((NUMINFANTRYMEN * 2 / 3) + (i / 11),
@@ -2109,7 +2109,7 @@ void Multi_Score_Presentation() {
   int k;
   void* anim;
   const void* oldfont;
-  int oldfontxspacing = FontXSpacing;
+  const int oldfontxspacing = FontXSpacing;
   const unsigned char* pal;
 
   FontXSpacing = 0;

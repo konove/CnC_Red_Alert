@@ -212,7 +212,7 @@ void MapEditClass::One_Time() {
       POPUP_MISSION_H, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       Hires_Retrieve("BTN-UP.SHP"), Hires_Retrieve("BTN-DN.SHP"));
 
-  for (auto mission : MapEditMissions) {
+  for (const auto mission : MapEditMissions) {
     MissionList->Add_Item(MissionClass::Mission_Name(mission));
   }
 

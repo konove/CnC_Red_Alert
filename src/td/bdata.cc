@@ -3705,7 +3705,7 @@ void BuildingTypeClass::One_Time() {
       } else {
         filename = std::string(building.IniName) + "ICON";
       }
-      auto fullname =
+      const auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
       (const void*&)building.CameoData = MFCD::Retrieve(fullname);
     }
@@ -3713,14 +3713,14 @@ void BuildingTypeClass::One_Time() {
     /*
     **	Fetch the construction animation for this building.
     */
-    std::string filename = std::string(building.IniName) + "MAKE";
+    const std::string filename = std::string(building.IniName) + "MAKE";
     auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
     const void* dataptr = MFCD::Retrieve(fullname);
     (const void*&)building.BuildupData = dataptr;
     if (dataptr) {
       int timedelay = 1;
-      int count = Get_Build_Frame_Count(dataptr);
+      const int count = Get_Build_Frame_Count(dataptr);
       if (count) {
         timedelay = 5 * kTicksPerSecond / count;
       }
@@ -3973,7 +3973,7 @@ bool BuildingTypeClass::Legal_Placement(CELL pos) const {
   */
   offset = Occupy_List(true);
   while (*offset != REFRESH_EOL) {
-    CELL cell = static_cast<CELL>(pos + *offset++);
+    const CELL cell = static_cast<CELL>(pos + *offset++);
     if (!Map.In_Radar(cell)) {
       return false;
     }
@@ -4052,9 +4052,9 @@ void BuildingTypeClass::Init(TheaterType theater) {
       const BuildingTypeClass* classptr = &As_Reference(sindex);
 
       if (classptr->IsTheater) {
-        auto fullname = std::filesystem::path(classptr->IniName)
-                            .replace_extension(Theaters[theater].Suffix)
-                            .string();
+        const auto fullname = std::filesystem::path(classptr->IniName)
+                                  .replace_extension(Theaters[theater].Suffix)
+                                  .string();
         (const void*&)classptr->ImageData = MFCD::Retrieve(fullname);
       }
 
@@ -4065,9 +4065,9 @@ void BuildingTypeClass::Init(TheaterType theater) {
         const auto filename =
             std::string(classptr->IniName).substr(0, 4) + "ICNH";
 
-        auto fullname = std::filesystem::path(filename)
-                            .replace_extension(Theaters[theater].Suffix)
-                            .string();
+        const auto fullname = std::filesystem::path(filename)
+                                  .replace_extension(Theaters[theater].Suffix)
+                                  .string();
 
         cameo_ptr = MFCD::Retrieve(fullname);
         if (cameo_ptr) {
@@ -4096,7 +4096,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 void BuildingTypeClass::Dimensions(int& width, int& height) const {
-  static struct {
+  static const struct {
     int Width;
     int Height;
   } _dimensions[BSIZE_COUNT] = {{1, 1}, {2, 1}, {1, 2}, {2, 2}, {2, 3},
@@ -4243,7 +4243,7 @@ const int16_t* BuildingTypeClass::Overlap_List() const {
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Width() const {
-  static int width[BSIZE_COUNT] = {1, 2, 1, 2, 2, 3, 3, 4, 5};
+  static const int width[BSIZE_COUNT] = {1, 2, 1, 2, 2, 3, 3, 4, 5};
   return width[Size];
 }
 
@@ -4261,7 +4261,7 @@ int BuildingTypeClass::Width() const {
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Height() const {
-  static int height[BSIZE_COUNT] = {1, 1, 2, 2, 3, 2, 3, 2, 5};
+  static const int height[BSIZE_COUNT] = {1, 1, 2, 2, 3, 2, 3, 2, 5};
   return height[Size];
 }
 

@@ -252,7 +252,7 @@ void Modem_Signoff() {
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 int Test_Null_Modem() {
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   /*........................................................................
   Button Enumerations
   ........................................................................*/
@@ -925,49 +925,49 @@ void Destroy_Null_Connection(int id, int error) {
 GameType Select_Serial_Dialog() {
   int rc;
 
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  int d_dialog_w = 160 * factor;                     // dialog width
-  int d_dialog_h = 94 * factor;                      // dialog height
-  int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
+  const int d_dialog_w = 160 * factor;                       // dialog width
+  const int d_dialog_h = 94 * factor;                        // dialog height
+  const int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
   //		D_DIALOG_Y = ((200 - D_DIALOG_H) / 2),
   //// dialog y-coord
-  int d_dialog_y = ((136 * factor) - d_dialog_h) / 2;  // dialog y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
+  const int d_dialog_y = ((136 * factor) - d_dialog_h) / 2;  // dialog y-coord
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
 
-  int d_txt6_h = 11 * factor;  // ht of 6-pt text
-  int d_margin = 7;            // margin width/height
+  const int d_txt6_h = 11 * factor;  // ht of 6-pt text
+  const int d_margin = 7;            // margin width/height
 
-  int d_dial_w = 90 * factor;
-  int d_dial_h = 9 * factor;
-  int d_dial_x = d_dialog_cx - (d_dial_w / 2);
-  int d_dial_y = d_dialog_y + d_margin + d_txt6_h + d_margin;
+  const int d_dial_w = 90 * factor;
+  const int d_dial_h = 9 * factor;
+  const int d_dial_x = d_dialog_cx - (d_dial_w / 2);
+  const int d_dial_y = d_dialog_y + d_margin + d_txt6_h + d_margin;
 
-  int d_answer_w = 90 * factor;
-  int d_answer_h = 9 * factor;
-  int d_answer_x = d_dialog_cx - (d_answer_w / 2);
-  int d_answer_y = d_dial_y + d_dial_h + 2;
+  const int d_answer_w = 90 * factor;
+  const int d_answer_h = 9 * factor;
+  const int d_answer_x = d_dialog_cx - (d_answer_w / 2);
+  const int d_answer_y = d_dial_y + d_dial_h + 2;
 
-  int d_nullmodem_w = 90 * factor;
-  int d_nullmodem_h = 9 * factor;
-  int d_nullmodem_x = d_dialog_cx - (d_nullmodem_w / 2);
-  int d_nullmodem_y = d_answer_y + d_answer_h + 2;
+  const int d_nullmodem_w = 90 * factor;
+  const int d_nullmodem_h = 9 * factor;
+  const int d_nullmodem_x = d_dialog_cx - (d_nullmodem_w / 2);
+  const int d_nullmodem_y = d_answer_y + d_answer_h + 2;
 
-  int d_settings_w = 90 * factor;
-  int d_settings_h = 9 * factor;
-  int d_settings_x = d_dialog_cx - (d_settings_w / 2);
-  int d_settings_y = d_nullmodem_y + d_nullmodem_h + 2;
+  const int d_settings_w = 90 * factor;
+  const int d_settings_h = 9 * factor;
+  const int d_settings_x = d_dialog_cx - (d_settings_w / 2);
+  const int d_settings_y = d_nullmodem_y + d_nullmodem_h + 2;
 
 #if (defined(GERMAN) || defined(FRENCH))
   int d_cancel_w = 50 * factor;
 #else
-  int d_cancel_w = 40 * factor;
+  const int d_cancel_w = 40 * factor;
 #endif
-  int d_cancel_h = 9 * factor;
-  int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
-  int d_cancel_y = d_settings_y + d_settings_h + d_margin;
+  const int d_cancel_h = 9 * factor;
+  const int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
+  const int d_cancel_y = d_settings_y + d_settings_h + d_margin;
 
   /*........................................................................
   Button Enumerations
@@ -1416,35 +1416,35 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  int d_dialog_w = 340;                   // dialog width
-  int d_dialog_h = 170;                   // dialog height
-  int d_dialog_x = 320 - (d_dialog_w / 2);  // dialog x-coord
-  int d_dialog_y = 200 - (d_dialog_h / 2);  // dialog y-coord
+  const int d_dialog_w = 340;                     // dialog width
+  const int d_dialog_h = 170;                     // dialog height
+  const int d_dialog_x = 320 - (d_dialog_w / 2);  // dialog x-coord
+  const int d_dialog_y = 200 - (d_dialog_h / 2);  // dialog y-coord
 
-  int d_compression_w = 50;
-  int d_compression_h = 18;
-  int d_compression_x = d_dialog_x + (d_dialog_w / 2) + 40;
-  int d_compression_y = d_dialog_y + 30;
+  const int d_compression_w = 50;
+  const int d_compression_h = 18;
+  const int d_compression_x = d_dialog_x + (d_dialog_w / 2) + 40;
+  const int d_compression_y = d_dialog_y + 30;
 
-  int d_errorcorrection_w = 50;
-  int d_errorcorrection_h = 18;
-  int d_errorcorrection_x = d_dialog_x + (d_dialog_w / 2) + 40;
-  int d_errorcorrection_y = d_dialog_y + 52;
+  const int d_errorcorrection_w = 50;
+  const int d_errorcorrection_h = 18;
+  const int d_errorcorrection_x = d_dialog_x + (d_dialog_w / 2) + 40;
+  const int d_errorcorrection_y = d_dialog_y + 52;
 
-  int d_hardwareflowcontrol_w = 50;
-  int d_hardwareflowcontrol_h = 18;
-  int d_hardwareflowcontrol_x = d_dialog_x + (d_dialog_w / 2) + 40;
-  int d_hardwareflowcontrol_y = d_dialog_y + 74;
+  const int d_hardwareflowcontrol_w = 50;
+  const int d_hardwareflowcontrol_h = 18;
+  const int d_hardwareflowcontrol_x = d_dialog_x + (d_dialog_w / 2) + 40;
+  const int d_hardwareflowcontrol_y = d_dialog_y + 74;
 
-  int d_default_w = 100;
-  int d_default_h = 18;
-  int d_default_x = d_dialog_x + (d_dialog_w / 2) - (d_default_w / 2);
-  int d_default_y = d_dialog_y + 110;
+  const int d_default_w = 100;
+  const int d_default_h = 18;
+  const int d_default_x = d_dialog_x + (d_dialog_w / 2) - (d_default_w / 2);
+  const int d_default_y = d_dialog_y + 110;
 
-  int d_ok_w = 100;
-  int d_ok_h = 18;
-  int d_ok_x = d_dialog_x + (d_dialog_w / 2) - (d_ok_w / 2);
-  int d_ok_y = d_dialog_y + d_dialog_h - 24;
+  const int d_ok_w = 100;
+  const int d_ok_h = 18;
+  const int d_ok_x = d_dialog_x + (d_dialog_w / 2) - (d_ok_w / 2);
+  const int d_ok_y = d_dialog_y + d_dialog_h - 24;
 
   enum {
     BUTTON_COMPRESSION = 100,
@@ -1707,18 +1707,18 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
  *=========================================================================*/
 static int Com_Settings_Dialog(SerialSettingsType* settings) {
   /* ###Change collision detected! C:\PROJECTS\CODE\NULLDLG.CPP... */
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  int d_dialog_w = 301 * factor;                     // dialog width
-  int d_dialog_h = 200 * factor;                     // dialog height
-  int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // dialog y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
+  const int d_dialog_w = 301 * factor;                       // dialog width
+  const int d_dialog_h = 200 * factor;                       // dialog height
+  const int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
+  const int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // dialog y-coord
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
 
-  int d_txt6_h = (6 * factor) + 1;  // ht of 6-pt text
-  int d_margin = 5 * factor;      // margin width/height
+  const int d_txt6_h = (6 * factor) + 1;  // ht of 6-pt text
+  const int d_margin = 5 * factor;        // margin width/height
 
 #ifdef EDIT_IRQ
   int d_portlist_w = 80 * factor;
@@ -1753,108 +1753,110 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   int d_baud_y = d_baudlist_y - d_margin - d_txt6_h;
 
 #endif  // EDIT_IRQ
-  int d_initstrlist_w = ((INITSTRBUF_MAX - 1) * 6 * factor) + 8 + (3 * factor);
-  int d_initstrlist_h = 21 * factor;
-  int d_initstrlist_x = d_dialog_cx - (d_initstrlist_w / 2);
-  int d_initstrlist_y = d_dialog_y + ((d_margin + d_txt6_h) * 2) + d_margin +
-                        (10 * factor) + (35 * factor) +
-                        ((d_margin + d_txt6_h) * 2) + d_margin + (4 * factor);
+  const int d_initstrlist_w =
+      ((INITSTRBUF_MAX - 1) * 6 * factor) + 8 + (3 * factor);
+  const int d_initstrlist_h = 21 * factor;
+  const int d_initstrlist_x = d_dialog_cx - (d_initstrlist_w / 2);
+  const int d_initstrlist_y =
+      d_dialog_y + ((d_margin + d_txt6_h) * 2) + d_margin + (10 * factor) +
+      (35 * factor) + ((d_margin + d_txt6_h) * 2) + d_margin + (4 * factor);
 
-  int d_initstr_w = ((INITSTRBUF_MAX - 1) * 6 * factor) + (3 * factor);
-  int d_initstr_h = 9 * factor;
-  int d_initstr_x = d_initstrlist_x;
-  int d_initstr_y = d_initstrlist_y - d_margin - d_txt6_h;
+  const int d_initstr_w = ((INITSTRBUF_MAX - 1) * 6 * factor) + (3 * factor);
+  const int d_initstr_h = 9 * factor;
+  const int d_initstr_x = d_initstrlist_x;
+  const int d_initstr_y = d_initstrlist_y - d_margin - d_txt6_h;
 
 #ifndef EDIT_IRQ
-  int d_portlist_w = (80 * factor) + 80;
-  int d_portlist_h = 35 * factor;
-  int d_portlist_x = d_initstrlist_x;
-  int d_portlist_y =
+  const int d_portlist_w = (80 * factor) + 80;
+  const int d_portlist_h = 35 * factor;
+  const int d_portlist_x = d_initstrlist_x;
+  const int d_portlist_y =
       d_dialog_y + ((d_margin + d_txt6_h) * 2) + d_margin + (10 * factor);
 
-  int d_port_w = d_portlist_w;
-  int d_port_h = 9 * factor;
-  int d_port_x = d_portlist_x;  // + 31 *factor;
-  int d_port_y = d_portlist_y - d_margin - d_txt6_h;
+  const int d_port_w = d_portlist_w;
+  const int d_port_h = 9 * factor;
+  const int d_port_x = d_portlist_x;  // + 31 *factor;
+  const int d_port_y = d_portlist_y - d_margin - d_txt6_h;
 
-  int d_baudlist_w = 80 * factor;
-  int d_baudlist_h = 35 * factor;
+  const int d_baudlist_w = 80 * factor;
+  const int d_baudlist_h = 35 * factor;
   int d_baudlist_x = d_dialog_x + (d_dialog_w * 5 / 6) - (d_baudlist_w / 2);
   d_baudlist_x -= 32;
-  int d_baudlist_y = d_portlist_y;
+  const int d_baudlist_y = d_portlist_y;
 
-  int d_baud_w = ((BAUDBUF_MAX - 1) * 6 * factor) + (3 * factor);
-  int d_baud_h = 9 * factor;
-  int d_baud_x = d_baudlist_x + (31 * factor);
-  int d_baud_y = d_baudlist_y - d_margin - d_txt6_h;
+  const int d_baud_w = ((BAUDBUF_MAX - 1) * 6 * factor) + (3 * factor);
+  const int d_baud_h = 9 * factor;
+  const int d_baud_x = d_baudlist_x + (31 * factor);
+  const int d_baud_y = d_baudlist_y - d_margin - d_txt6_h;
 
 #endif  // EDIT_IRQ
 
-  int d_add_w = 45 * factor;
-  int d_add_h = 9 * factor;
+  const int d_add_w = 45 * factor;
+  const int d_add_h = 9 * factor;
 #ifdef FRENCH
   int d_add_x = (d_dialog_cx - (d_add_w / 2)) + 34 * factor;
 #else
-  int d_add_x = d_dialog_cx - (d_add_w / 2);
+  const int d_add_x = d_dialog_cx - (d_add_w / 2);
 #endif
-  int d_add_y = d_initstr_y - d_add_h - (3 * factor);
+  const int d_add_y = d_initstr_y - d_add_h - (3 * factor);
 
-  int d_delete_w = 45 * factor;
-  int d_delete_h = 9 * factor;
+  const int d_delete_w = 45 * factor;
+  const int d_delete_h = 9 * factor;
 
 #ifdef FRENCH
   int d_delete_x =
       14 * factor + d_dialog_x + ((d_dialog_w * 3) / 4) - (d_delete_w / 2);
 #else
-  int d_delete_x = d_dialog_x + (d_dialog_w * 3 / 4) - (d_delete_w / 2);
+  const int d_delete_x = d_dialog_x + (d_dialog_w * 3 / 4) - (d_delete_w / 2);
 #endif
-  int d_delete_y = d_initstr_y - d_add_h - (3 * factor);
+  const int d_delete_y = d_initstr_y - d_add_h - (3 * factor);
 
-  int d_cwaitstrlist_w =
+  const int d_cwaitstrlist_w =
       ((CWAITSTRBUF_MAX - 1 + 9) * 6 * factor) + (3 * factor);
-  int d_cwaitstrlist_h = 27 * factor;
-  int d_cwaitstrlist_x = d_initstrlist_x;
-  int d_cwaitstrlist_y = d_initstrlist_y + d_initstrlist_h +
-                         ((d_margin + d_txt6_h) * 2) + (2 * factor);
+  const int d_cwaitstrlist_h = 27 * factor;
+  const int d_cwaitstrlist_x = d_initstrlist_x;
+  const int d_cwaitstrlist_y = d_initstrlist_y + d_initstrlist_h +
+                               ((d_margin + d_txt6_h) * 2) + (2 * factor);
 
-  int d_cwaitstr_w = ((CWAITSTRBUF_MAX - 1) * 6 * factor) + (3 * factor);
-  int d_cwaitstr_h = 9 * factor;
-  int d_cwaitstr_x = d_cwaitstrlist_x;
-  int d_cwaitstr_y = d_cwaitstrlist_y - d_margin - d_txt6_h;
+  const int d_cwaitstr_w = ((CWAITSTRBUF_MAX - 1) * 6 * factor) + (3 * factor);
+  const int d_cwaitstr_h = 9 * factor;
+  const int d_cwaitstr_x = d_cwaitstrlist_x;
+  const int d_cwaitstr_y = d_cwaitstrlist_y - d_margin - d_txt6_h;
 
-  int d_tone_w = 80 * factor;
-  int d_tone_h = 9 * factor;
-  int d_tone_x = d_dialog_x + (d_dialog_w * 3 / 4) - (d_tone_w / 2);
-  int d_tone_y = d_cwaitstrlist_y;
+  const int d_tone_w = 80 * factor;
+  const int d_tone_h = 9 * factor;
+  const int d_tone_x = d_dialog_x + (d_dialog_w * 3 / 4) - (d_tone_w / 2);
+  const int d_tone_y = d_cwaitstrlist_y;
 
-  int d_pulse_w = 80 * factor;
-  int d_pulse_h = 9 * factor;
-  int d_pulse_x = d_dialog_x + (d_dialog_w * 3 / 4) - (d_pulse_w / 2);
-  int d_pulse_y = d_tone_y + d_tone_h + d_margin;
+  const int d_pulse_w = 80 * factor;
+  const int d_pulse_h = 9 * factor;
+  const int d_pulse_x = d_dialog_x + (d_dialog_w * 3 / 4) - (d_pulse_w / 2);
+  const int d_pulse_y = d_tone_y + d_tone_h + d_margin;
 
-  int d_save_w = 40 * factor;
-  int d_save_h = 9 * factor;
-  int d_save_x = d_dialog_x + (d_dialog_w / 5) - (d_save_w / 2);
-  int d_save_y = d_dialog_y + d_dialog_h - d_save_h - d_margin - (2 * factor);
+  const int d_save_w = 40 * factor;
+  const int d_save_h = 9 * factor;
+  const int d_save_x = d_dialog_x + (d_dialog_w / 5) - (d_save_w / 2);
+  const int d_save_y =
+      d_dialog_y + d_dialog_h - d_save_h - d_margin - (2 * factor);
 
 #if (defined(GERMAN) || defined(FRENCH))
   int d_cancel_w = 50 * factor;
 #else
-  int d_cancel_w = 40 * factor;
+  const int d_cancel_w = 40 * factor;
 #endif
-  int d_cancel_h = 9 * factor;
-  int d_cancel_x = d_dialog_x + (d_dialog_w * 4 / 5) - (d_cancel_w / 2);
-  int d_cancel_y =
+  const int d_cancel_h = 9 * factor;
+  const int d_cancel_x = d_dialog_x + (d_dialog_w * 4 / 5) - (d_cancel_w / 2);
+  const int d_cancel_y =
       d_dialog_y + d_dialog_h - d_cancel_h - d_margin - (2 * factor);
 
 #if (defined(GERMAN) || defined(FRENCH))
   int d_advanced_w = 50 * factor;
 #else
-  int d_advanced_w = 40 * factor;
+  const int d_advanced_w = 40 * factor;
 #endif
-  int d_advanced_h = 9 * factor;
-  int d_advanced_x = d_dialog_x + (d_dialog_w / 2) - (d_advanced_w / 2);
-  int d_advanced_y =
+  const int d_advanced_h = 9 * factor;
+  const int d_advanced_x = d_dialog_x + (d_dialog_w / 2) - (d_advanced_w / 2);
+  const int d_advanced_y =
       d_dialog_y + d_dialog_h - d_advanced_h - d_margin - (2 * factor);
 
   /*........................................................................
@@ -3070,86 +3072,87 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
 #define TXT_HOST_INTERNET_GAME (4567 + 1)
 #define TXT_JOIN_INTERNET_GAME (4567 + 2)
 int Com_Scenario_Dialog() {
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  int d_dialog_w = 290 * factor;                     // dialog width
-  int d_dialog_h = 190 * factor;                     // dialog height
-  int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // dialog y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
+  const int d_dialog_w = 290 * factor;                       // dialog width
+  const int d_dialog_h = 190 * factor;                       // dialog height
+  const int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
+  const int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // dialog y-coord
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
 
-  int d_txt6_h = (6 * factor) + 1;  // ht of 6-pt text
-  int d_margin1 = 5 * factor;     // margin width/height
-  int d_margin2 = 2 * factor;     // margin width/height
+  const int d_txt6_h = (6 * factor) + 1;  // ht of 6-pt text
+  const int d_margin1 = 5 * factor;       // margin width/height
+  const int d_margin2 = 2 * factor;       // margin width/height
 
-  int d_name_w = 70 * factor;
-  int d_name_h = 9 * factor;
-  int d_name_x = d_dialog_x + (108 * factor);
-  int d_name_y = d_dialog_y + d_margin1 + d_txt6_h + d_txt6_h + d_margin1;
+  const int d_name_w = 70 * factor;
+  const int d_name_h = 9 * factor;
+  const int d_name_x = d_dialog_x + (108 * factor);
+  const int d_name_y = d_dialog_y + d_margin1 + d_txt6_h + d_txt6_h + d_margin1;
 
-  int d_credits_w = ((CREDITSBUF_MAX - 1) * 6 * factor) + (3 * factor);
-  int d_credits_h = 9 * factor;
-  int d_credits_x = d_name_x;
-  int d_credits_y = d_name_y + d_name_h + d_margin2;
+  const int d_credits_w = ((CREDITSBUF_MAX - 1) * 6 * factor) + (3 * factor);
+  const int d_credits_h = 9 * factor;
+  const int d_credits_x = d_name_x;
+  const int d_credits_y = d_name_y + d_name_h + d_margin2;
 
-  int d_gdi_w = 30 * factor;
-  int d_gdi_h = 9 * factor;
-  int d_gdi_x = d_dialog_cx + (d_dialog_w / 4);
-  int d_gdi_y = d_dialog_y + d_margin1 + d_txt6_h + d_txt6_h + d_margin1;
+  const int d_gdi_w = 30 * factor;
+  const int d_gdi_h = 9 * factor;
+  const int d_gdi_x = d_dialog_cx + (d_dialog_w / 4);
+  const int d_gdi_y = d_dialog_y + d_margin1 + d_txt6_h + d_txt6_h + d_margin1;
 
-  int d_nod_w = 30 * factor;
-  int d_nod_h = 9 * factor;
-  int d_nod_x = d_gdi_x + d_gdi_w + (d_margin1 / 2);
-  int d_nod_y = d_gdi_y;
+  const int d_nod_w = 30 * factor;
+  const int d_nod_h = 9 * factor;
+  const int d_nod_x = d_gdi_x + d_gdi_w + (d_margin1 / 2);
+  const int d_nod_y = d_gdi_y;
 
-  int d_color_w = 10 * factor;
-  int d_color_h = 9 * factor;
-  int d_color_y = d_gdi_y + d_gdi_h + d_margin2;
+  const int d_color_w = 10 * factor;
+  const int d_color_h = 9 * factor;
+  const int d_color_y = d_gdi_y + d_gdi_h + d_margin2;
 
-  int d_opponent_x = d_name_x;
-  int d_opponent_y = d_color_y + d_color_h + d_margin2;
+  const int d_opponent_x = d_name_x;
+  const int d_opponent_y = d_color_y + d_color_h + d_margin2;
 
-  int d_scenariolist_w = 182 * factor;
-  int d_scenariolist_h = 27 * factor;
-  int d_scenariolist_x = d_dialog_cx - (d_scenariolist_w / 2);
-  int d_scenariolist_y = d_opponent_y + d_txt6_h + (3 * factor) + d_txt6_h;
+  const int d_scenariolist_w = 182 * factor;
+  const int d_scenariolist_h = 27 * factor;
+  const int d_scenariolist_x = d_dialog_cx - (d_scenariolist_w / 2);
+  const int d_scenariolist_y =
+      d_opponent_y + d_txt6_h + (3 * factor) + d_txt6_h;
 
   // d_count_x is calculated below after other enums
-  int d_count_w = 25 * factor;
-  int d_count_h = 7 * factor;
-  int d_count_y = d_scenariolist_y + d_scenariolist_h + d_margin2;
+  const int d_count_w = 25 * factor;
+  const int d_count_h = 7 * factor;
+  const int d_count_y = d_scenariolist_y + d_scenariolist_h + d_margin2;
 
   // d_level_x is calculated below after other enums
-  int d_level_w = 25 * factor;
-  int d_level_h = 7 * factor;
-  int d_level_y = d_count_y;
+  const int d_level_w = 25 * factor;
+  const int d_level_h = 7 * factor;
+  const int d_level_y = d_count_y;
 
 #if (defined(GERMAN) || defined(FRENCH))
   int d_bases_w = 120 * factor;  // BGA:100;
 #else
-  int d_bases_w = 110 * factor;
+  const int d_bases_w = 110 * factor;
 #endif
-  int d_bases_h = 9 * factor;
-  int d_bases_x = d_dialog_cx - d_bases_w - d_margin2;
-  int d_bases_y = d_count_y + d_count_h + d_margin2;
+  const int d_bases_h = 9 * factor;
+  const int d_bases_x = d_dialog_cx - d_bases_w - d_margin2;
+  const int d_bases_y = d_count_y + d_count_h + d_margin2;
 
 #if (defined(GERMAN) || defined(FRENCH))
   int d_goodies_w = 120 * factor;
 #else
-  int d_goodies_w = 110 * factor;
+  const int d_goodies_w = 110 * factor;
 #endif
-  int d_goodies_h = 9 * factor;
-  int d_goodies_x = d_dialog_cx + d_margin2;
-  int d_goodies_y = d_bases_y;
+  const int d_goodies_h = 9 * factor;
+  const int d_goodies_x = d_dialog_cx + d_margin2;
+  const int d_goodies_y = d_bases_y;
 
-  int d_count_x =
+  const int d_count_x =
       d_dialog_cx - d_count_w - ((2 * 6 * factor) + (3 * factor)) -
       ((d_bases_w - ((13 * 6 * factor) + (3 * factor) + d_count_w)) / 2) -
       d_margin2;
 
-  int d_level_x =
+  const int d_level_x =
       d_dialog_cx + (11 * 6 * factor) +
       ((d_goodies_w - ((13 * 6 * factor) + (3 * factor) + d_level_w)) / 2) +
       d_margin2;
@@ -3157,40 +3160,40 @@ int Com_Scenario_Dialog() {
 #if (defined(GERMAN) || defined(FRENCH))
   int d_tiberium_w = 120 * factor;
 #else
-  int d_tiberium_w = 110 * factor;
+  const int d_tiberium_w = 110 * factor;
 #endif
-  int d_tiberium_h = 9 * factor;
-  int d_tiberium_x = d_dialog_cx - d_bases_w - d_margin2;
-  int d_tiberium_y = d_bases_y + d_bases_h + d_margin2;
+  const int d_tiberium_h = 9 * factor;
+  const int d_tiberium_x = d_dialog_cx - d_bases_w - d_margin2;
+  const int d_tiberium_y = d_bases_y + d_bases_h + d_margin2;
 
 #if (defined(GERMAN) || defined(FRENCH))
   int d_ghosts_w = 120 * factor;
 #else
-  int d_ghosts_w = 110 * factor;
+  const int d_ghosts_w = 110 * factor;
 #endif
-  int d_ghosts_h = 9 * factor;
-  int d_ghosts_x = d_dialog_cx + d_margin2;
-  int d_ghosts_y = d_tiberium_y;
+  const int d_ghosts_h = 9 * factor;
+  const int d_ghosts_x = d_dialog_cx + d_margin2;
+  const int d_ghosts_y = d_tiberium_y;
 
-  int d_ok_w = 45 * factor;
-  int d_ok_h = 9 * factor;
-  int d_ok_x = d_tiberium_x + (d_tiberium_w / 2) - (d_ok_w / 2);
-  int d_ok_y = d_tiberium_y + d_tiberium_h + d_margin1;
+  const int d_ok_w = 45 * factor;
+  const int d_ok_h = 9 * factor;
+  const int d_ok_x = d_tiberium_x + (d_tiberium_w / 2) - (d_ok_w / 2);
+  const int d_ok_y = d_tiberium_y + d_tiberium_h + d_margin1;
 
-  int d_cancel_w = 45 * factor;
-  int d_cancel_h = 9 * factor;
-  int d_cancel_x = d_ghosts_x + (d_ghosts_w / 2) - (d_cancel_w / 2);
-  int d_cancel_y = d_tiberium_y + d_tiberium_h + d_margin1;
+  const int d_cancel_w = 45 * factor;
+  const int d_cancel_h = 9 * factor;
+  const int d_cancel_x = d_ghosts_x + (d_ghosts_w / 2) - (d_cancel_w / 2);
+  const int d_cancel_y = d_tiberium_y + d_tiberium_h + d_margin1;
 
-  int d_message_w = d_dialog_w - (d_margin1 * 2);
-  int d_message_h = 34 * factor;
-  int d_message_x = d_dialog_x + d_margin1;
-  int d_message_y = d_cancel_y + d_cancel_h + d_margin1;
+  const int d_message_w = d_dialog_w - (d_margin1 * 2);
+  const int d_message_h = 34 * factor;
+  const int d_message_x = d_dialog_x + d_margin1;
+  const int d_message_y = d_cancel_y + d_cancel_h + d_margin1;
 
-  int d_send_w = 80 * factor;
-  int d_send_h = 9 * factor;
-  int d_send_x = d_dialog_cx - (d_send_w / 2);
-  int d_send_y = d_message_y + d_message_h + d_margin2;
+  const int d_send_w = 80 * factor;
+  const int d_send_h = 9 * factor;
+  const int d_send_x = d_dialog_cx - (d_send_w / 2);
+  const int d_send_y = d_message_y + d_message_h + d_margin2;
 
   /*........................................................................
   Button Enumerations
@@ -3235,12 +3238,12 @@ int Com_Scenario_Dialog() {
   char credbuf[CREDITSBUF_MAX];          // for credit edit box
   int old_cred;                          // old value in credits buffer
   int transmit;                          // 1 = re-transmit new game options
-  int cbox_x[] = {d_gdi_x,
-                  d_gdi_x + d_color_w,
-                  d_gdi_x + (d_color_w * 2),
-                  d_gdi_x + (d_color_w * 3),
-                  d_gdi_x + (d_color_w * 4),
-                  d_gdi_x + (d_color_w * 5)};
+  const int cbox_x[] = {d_gdi_x,
+                        d_gdi_x + d_color_w,
+                        d_gdi_x + (d_color_w * 2),
+                        d_gdi_x + (d_color_w * 3),
+                        d_gdi_x + (d_color_w * 4),
+                        d_gdi_x + (d_color_w * 5)};
   int parms_received = 0;  // 1 = game options received
   int changed = 0;         // 1 = user has changed an option
 
@@ -3631,7 +3634,7 @@ int Com_Scenario_Dialog() {
           if (oppscorescreen) {
             sprintf(txt, "%s", Text_String(TXT_WAITING_FOR_OPPONENT));
 
-            int txtwidth = String_Pixel_Width(txt);
+            const int txtwidth = String_Pixel_Width(txt);
 
             Fancy_Text_Print(txt, d_dialog_cx - (txtwidth / 2), d_opponent_y,
                              CC_GREEN, TBLACK,
@@ -4573,63 +4576,63 @@ int Com_Scenario_Dialog() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 int Com_Show_Scenario_Dialog() {
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  int d_dialog_w = 306 * factor;                     // dialog width
-  int d_dialog_h = 187 * factor;                     // dialog height
-  int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // dialog y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
+  const int d_dialog_w = 306 * factor;                       // dialog width
+  const int d_dialog_h = 187 * factor;                       // dialog height
+  const int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
+  const int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // dialog y-coord
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
 
-  int d_txt6_h = (6 * factor) + 1;  // ht of 6-pt text
-  int d_margin1 = 5 * factor;     // margin width/height
-  int d_margin2 = 2 * factor;     // margin width/height
+  const int d_txt6_h = (6 * factor) + 1;  // ht of 6-pt text
+  const int d_margin1 = 5 * factor;       // margin width/height
+  const int d_margin2 = 2 * factor;       // margin width/height
 
-  int d_name_w = 70 * factor;
-  int d_name_h = 9 * factor;
-  int d_name_x = d_dialog_cx;
-  int d_name_y = d_dialog_y + d_margin1 + d_txt6_h + d_txt6_h;
+  const int d_name_w = 70 * factor;
+  const int d_name_h = 9 * factor;
+  const int d_name_x = d_dialog_cx;
+  const int d_name_y = d_dialog_y + d_margin1 + d_txt6_h + d_txt6_h;
 
-  int d_gdi_w = 30 * factor;
-  int d_gdi_h = 9 * factor;
-  int d_gdi_x = d_dialog_cx;
-  int d_gdi_y = d_name_y + d_name_h + d_margin2;
+  const int d_gdi_w = 30 * factor;
+  const int d_gdi_h = 9 * factor;
+  const int d_gdi_x = d_dialog_cx;
+  const int d_gdi_y = d_name_y + d_name_h + d_margin2;
 
-  int d_nod_w = 30 * factor;
-  int d_nod_h = 9 * factor;
-  int d_nod_x = d_gdi_x + d_gdi_w + d_margin2;
-  int d_nod_y = d_gdi_y;
+  const int d_nod_w = 30 * factor;
+  const int d_nod_h = 9 * factor;
+  const int d_nod_x = d_gdi_x + d_gdi_w + d_margin2;
+  const int d_nod_y = d_gdi_y;
 
-  int d_color_w = 10 * factor;
-  int d_color_h = 9 * factor;
-  int d_color_y = d_gdi_y + d_gdi_h + d_margin2;
+  const int d_color_w = 10 * factor;
+  const int d_color_h = 9 * factor;
+  const int d_color_y = d_gdi_y + d_gdi_h + d_margin2;
 
-  int d_opponent_y = d_color_y + d_color_h + d_margin1;
-  int d_scenario_y = d_opponent_y + d_txt6_h;
-  int d_credits_y = d_scenario_y + d_txt6_h;
-  int d_count_y = d_credits_y + d_txt6_h;
-  int d_level_y = d_count_y + d_txt6_h;
-  int d_bases_y = d_level_y + d_txt6_h;
-  int d_goodies_y = d_bases_y + d_txt6_h;
-  int d_tiberium_y = d_goodies_y + d_txt6_h;
-  int d_ghosts_y = d_tiberium_y + d_txt6_h;
+  const int d_opponent_y = d_color_y + d_color_h + d_margin1;
+  const int d_scenario_y = d_opponent_y + d_txt6_h;
+  const int d_credits_y = d_scenario_y + d_txt6_h;
+  const int d_count_y = d_credits_y + d_txt6_h;
+  const int d_level_y = d_count_y + d_txt6_h;
+  const int d_bases_y = d_level_y + d_txt6_h;
+  const int d_goodies_y = d_bases_y + d_txt6_h;
+  const int d_tiberium_y = d_goodies_y + d_txt6_h;
+  const int d_ghosts_y = d_tiberium_y + d_txt6_h;
 
-  int d_cancel_w = 45 * factor;
-  int d_cancel_h = 9 * factor;
-  int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
-  int d_cancel_y = d_ghosts_y + d_txt6_h + d_margin1;
+  const int d_cancel_w = 45 * factor;
+  const int d_cancel_h = 9 * factor;
+  const int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
+  const int d_cancel_y = d_ghosts_y + d_txt6_h + d_margin1;
 
-  int d_message_w = d_dialog_w - (d_margin1 * 2);
-  int d_message_h = 34 * factor;
-  int d_message_x = d_dialog_x + d_margin1;
-  int d_message_y = d_cancel_y + d_cancel_h + d_margin1;
+  const int d_message_w = d_dialog_w - (d_margin1 * 2);
+  const int d_message_h = 34 * factor;
+  const int d_message_x = d_dialog_x + d_margin1;
+  const int d_message_y = d_cancel_y + d_cancel_h + d_margin1;
 
-  int d_send_w = 80 * factor;
-  int d_send_h = 9 * factor;
-  int d_send_x = d_dialog_cx - (d_send_w / 2);
-  int d_send_y = d_message_y + d_message_h + d_margin2;
+  const int d_send_w = 80 * factor;
+  const int d_send_h = 9 * factor;
+  const int d_send_x = d_dialog_cx - (d_send_w / 2);
+  const int d_send_y = d_message_y + d_message_h + d_margin2;
 
   /*........................................................................
   Button Enumerations
@@ -4664,12 +4667,12 @@ int Com_Show_Scenario_Dialog() {
   char namebuf[MPLAYER_NAME_MAX] = {0};  // buffer for player's name
   int transmit;                          // 1 = re-transmit new game options
   int first;                             // 1 = no packets received yet
-  int cbox_x[] = {d_dialog_cx,
-                  d_dialog_cx + d_color_w,
-                  d_dialog_cx + (d_color_w * 2),
-                  d_dialog_cx + (d_color_w * 3),
-                  d_dialog_cx + (d_color_w * 4),
-                  d_dialog_cx + (d_color_w * 5)};
+  const int cbox_x[] = {d_dialog_cx,
+                        d_dialog_cx + d_color_w,
+                        d_dialog_cx + (d_color_w * 2),
+                        d_dialog_cx + (d_color_w * 3),
+                        d_dialog_cx + (d_color_w * 4),
+                        d_dialog_cx + (d_color_w * 5)};
   int parms_received = 0;  // 1 = game options received
   int changed = 0;         // 1 = user has changed an option
 
@@ -4902,7 +4905,7 @@ int Com_Show_Scenario_Dialog() {
           if (oppscorescreen) {
             sprintf(txt, "%s", Text_String(TXT_WAITING_FOR_OPPONENT));
 
-            int txtwidth = String_Pixel_Width(txt);
+            const int txtwidth = String_Pixel_Width(txt);
 
             Fancy_Text_Print(txt, d_dialog_cx - (txtwidth / 2), d_opponent_y,
                              CC_GREEN, TBLACK,
@@ -5735,54 +5738,54 @@ int Com_Show_Scenario_Dialog() {
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Phone_Dialog() {
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  int d_dialog_w = 280 * factor;                     // dialog width
-  int d_dialog_h = 150 * factor;                     // dialog height
-  int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // dialog y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
+  const int d_dialog_w = 280 * factor;                       // dialog width
+  const int d_dialog_h = 150 * factor;                       // dialog height
+  const int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
+  const int d_dialog_y = ((200 * factor) - d_dialog_h) / 2;  // dialog y-coord
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
 
-  int d_txt6_h = 11 * factor;  // ht of 6-pt text
-  int d_margin = 7 * factor;   // margin width/height
+  const int d_txt6_h = 11 * factor;  // ht of 6-pt text
+  const int d_margin = 7 * factor;   // margin width/height
 
-  int d_phonelist_w = 268 * factor;
-  int d_phonelist_h = 87 * factor;
-  int d_phonelist_x = d_dialog_cx - (d_phonelist_w / 2);
-  int d_phonelist_y = d_dialog_y + d_margin + d_txt6_h + (11 * factor);
+  const int d_phonelist_w = 268 * factor;
+  const int d_phonelist_h = 87 * factor;
+  const int d_phonelist_x = d_dialog_cx - (d_phonelist_w / 2);
+  const int d_phonelist_y = d_dialog_y + d_margin + d_txt6_h + (11 * factor);
 
-  int d_add_w = 45 * factor;
-  int d_add_h = 9 * factor;
-  int d_add_x = d_dialog_cx - (d_add_w / 2) - d_margin - d_add_w;
-  int d_add_y = d_phonelist_y + d_phonelist_h + d_margin;
+  const int d_add_w = 45 * factor;
+  const int d_add_h = 9 * factor;
+  const int d_add_x = d_dialog_cx - (d_add_w / 2) - d_margin - d_add_w;
+  const int d_add_y = d_phonelist_y + d_phonelist_h + d_margin;
 
-  int d_edit_w = 45 * factor;
-  int d_edit_h = 9 * factor;
-  int d_edit_x = d_dialog_cx - (d_edit_w / 2);
-  int d_edit_y = d_phonelist_y + d_phonelist_h + d_margin;
+  const int d_edit_w = 45 * factor;
+  const int d_edit_h = 9 * factor;
+  const int d_edit_x = d_dialog_cx - (d_edit_w / 2);
+  const int d_edit_y = d_phonelist_y + d_phonelist_h + d_margin;
 
-  int d_delete_w = 45 * factor;
-  int d_delete_h = 9 * factor;
-  int d_delete_x = d_dialog_cx + (d_delete_w / 2) + d_margin;
-  int d_delete_y = d_phonelist_y + d_phonelist_h + d_margin;
+  const int d_delete_w = 45 * factor;
+  const int d_delete_h = 9 * factor;
+  const int d_delete_x = d_dialog_cx + (d_delete_w / 2) + d_margin;
+  const int d_delete_y = d_phonelist_y + d_phonelist_h + d_margin;
 
-  int d_numedit_w =
+  const int d_numedit_w =
       ((PhoneEntryClass::PHONE_MAX_NUM - 1) * 6 * factor) + (3 * factor);
-  int d_numedit_h = 9 * factor;
-  int d_numedit_x = d_dialog_cx - (d_numedit_w / 2);
-  int d_numedit_y = d_add_y + d_add_h + d_margin;
+  const int d_numedit_h = 9 * factor;
+  const int d_numedit_x = d_dialog_cx - (d_numedit_w / 2);
+  const int d_numedit_y = d_add_y + d_add_h + d_margin;
 
-  int d_dial_w = 45 * factor;
-  int d_dial_h = 9 * factor;
-  int d_dial_x = d_dialog_cx - (d_numedit_w / 2) - d_margin - d_dial_w;
-  int d_dial_y = d_add_y + d_add_h + d_margin;
+  const int d_dial_w = 45 * factor;
+  const int d_dial_h = 9 * factor;
+  const int d_dial_x = d_dialog_cx - (d_numedit_w / 2) - d_margin - d_dial_w;
+  const int d_dial_y = d_add_y + d_add_h + d_margin;
 
-  int d_cancel_w = 45 * factor;
-  int d_cancel_h = 9 * factor;
-  int d_cancel_x = d_dialog_cx + (d_numedit_w / 2) + d_margin;
-  int d_cancel_y = d_add_y + d_add_h + d_margin;
+  const int d_cancel_w = 45 * factor;
+  const int d_cancel_h = 9 * factor;
+  const int d_cancel_x = d_dialog_cx + (d_numedit_w / 2) + d_margin;
+  const int d_cancel_y = d_add_y + d_add_h + d_margin;
 
   /*........................................................................
   Button Enumerations
@@ -6334,64 +6337,67 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  int d_dialog_w = 230 * factor;                     // dialog width
-  int d_dialog_h = 105 * factor;                     // dialog height
-  int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = ((136 * factor) - d_dialog_h) / 2;  // dialog y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
+  const int d_dialog_w = 230 * factor;                       // dialog width
+  const int d_dialog_h = 105 * factor;                       // dialog height
+  const int d_dialog_x = ((320 * factor) - d_dialog_w) / 2;  // dialog x-coord
+  const int d_dialog_y = ((136 * factor) - d_dialog_h) / 2;  // dialog y-coord
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
 
-  int d_margin = 7 * factor;  // margin width/height
+  const int d_margin = 7 * factor;  // margin width/height
 
-  int d_name_w = ((PhoneEntryClass::PHONE_MAX_NAME - 1) * 6) + (3 * factor);
-  int d_name_h = 9 * factor;
-  int d_name_x = d_dialog_x + ((d_dialog_w - d_name_w) * 3 / 4) - (5 * factor);
-  int d_name_y = d_dialog_y + (25 * factor);
+  const int d_name_w =
+      ((PhoneEntryClass::PHONE_MAX_NAME - 1) * 6) + (3 * factor);
+  const int d_name_h = 9 * factor;
+  const int d_name_x =
+      d_dialog_x + ((d_dialog_w - d_name_w) * 3 / 4) - (5 * factor);
+  const int d_name_y = d_dialog_y + (25 * factor);
 
-  int d_number_w = ((PhoneEntryClass::PHONE_MAX_NUM - 1) * 6) + (3 * factor);
-  int d_number_h = 9 * factor;
-  int d_number_x =
+  const int d_number_w =
+      ((PhoneEntryClass::PHONE_MAX_NUM - 1) * 6) + (3 * factor);
+  const int d_number_h = 9 * factor;
+  const int d_number_x =
       d_dialog_x + ((d_dialog_w - d_number_w) * 3 / 4) - (5 * factor);
-  int d_number_y = d_name_y + d_name_h + d_margin;
+  const int d_number_y = d_name_y + d_name_h + d_margin;
 
 #if (defined(GERMAN) || defined(FRENCH))
   int d_default_w = 130 * factor;
 #else
-  int d_default_w = 104 * factor;
+  const int d_default_w = 104 * factor;
 #endif
-  int d_default_h = 9 * factor;
-  int d_default_x = d_dialog_cx - (d_default_w / 2);
-  int d_default_y = d_number_y + d_number_h + d_margin;
+  const int d_default_h = 9 * factor;
+  const int d_default_x = d_dialog_cx - (d_default_w / 2);
+  const int d_default_y = d_number_y + d_number_h + d_margin;
 
 #if (defined(GERMAN) || defined(FRENCH))
   int d_custom_w = 130 * factor;
 #else
-  int d_custom_w = 100 * factor;
+  const int d_custom_w = 100 * factor;
 #endif
-  int d_custom_h = 9 * factor;
-  int d_custom_x = d_dialog_cx - (d_default_w / 2);
-  int d_custom_y = d_default_y + d_default_h + d_margin;
+  const int d_custom_h = 9 * factor;
+  const int d_custom_x = d_dialog_cx - (d_default_w / 2);
+  const int d_custom_y = d_default_y + d_default_h + d_margin;
 
 #if (defined(GERMAN) || defined(FRENCH))
   int d_save_w = 55 * factor;
 #else
-  int d_save_w = 45 * factor;
+  const int d_save_w = 45 * factor;
 #endif
-  int d_save_h = 9 * factor;
-  int d_save_x = d_dialog_cx - d_margin - d_save_w;
-  int d_save_y = d_dialog_y + d_dialog_h - d_margin - d_save_h;
+  const int d_save_h = 9 * factor;
+  const int d_save_x = d_dialog_cx - d_margin - d_save_w;
+  const int d_save_y = d_dialog_y + d_dialog_h - d_margin - d_save_h;
 
 #if (defined(GERMAN) || defined(FRENCH))
   int d_cancel_w = 55 * factor;
 #else
-  int d_cancel_w = 45 * factor;
+  const int d_cancel_w = 45 * factor;
 #endif
-  int d_cancel_h = 9 * factor;
-  int d_cancel_x = d_dialog_cx + d_margin;
-  int d_cancel_y = d_dialog_y + d_dialog_h - d_margin - d_cancel_h;
+  const int d_cancel_h = 9 * factor;
+  const int d_cancel_x = d_dialog_cx + d_margin;
+  const int d_cancel_y = d_dialog_y + d_dialog_h - d_margin - d_cancel_h;
 
   /*........................................................................
   Button Enumerations
@@ -7033,7 +7039,7 @@ void Smart_Printf(const char* format, ...) {
   }
 }
 
-void Hex_Dump_Data(char* buffer, int length) {
+void Hex_Dump_Data(const char* buffer, int length) {
   int i;
   int offset = 0;
   char buff[10];

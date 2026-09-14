@@ -1435,7 +1435,7 @@ void UnitTypeClass::Prep_For_Add() {
 void UnitTypeClass::One_Time() {
   for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
     const UnitTypeClass& uclass = As_Reference(index);
-    CCFileClass file;
+    const CCFileClass file;
     int largest;  // Largest dimension of shape (so far).
 
     const void* ptr;  // Shape pointer and set pointer.
@@ -1451,7 +1451,7 @@ void UnitTypeClass::One_Time() {
       } else {
         filename = std::string(uclass.IniName) + "ICON";
       }
-      auto fullname =
+      const auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
       (const void*&)uclass.CameoData = MFCD::Retrieve(fullname);
     }
@@ -1460,9 +1460,9 @@ void UnitTypeClass::One_Time() {
     **	Fetch a pointer to the unit's shape data.
     */
     if (!uclass.IsPieceOfEight || (Special.IsJurassic && AreThingiesEnabled)) {
-      auto fullname = std::filesystem::path(uclass.IniName)
-                          .replace_extension(".SHP")
-                          .string();
+      const auto fullname = std::filesystem::path(uclass.IniName)
+                                .replace_extension(".SHP")
+                                .string();
       ptr = MFCD::Retrieve(fullname);
     } else {
       ptr = nullptr;
@@ -1515,7 +1515,7 @@ void UnitTypeClass::Init(TheaterType theater) {
       (const void*&)uclass.CameoData = nullptr;
 
       if (uclass.IsBuildable) {
-        auto fullname =
+        const auto fullname =
             std::filesystem::path(std::string(uclass.IniName) + "ICNH")
                 .replace_extension(".VQA")
                 .string();

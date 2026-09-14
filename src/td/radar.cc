@@ -165,7 +165,7 @@ RadarClass::RadarClass() = default;
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
 void RadarClass::One_Time() {
-  int factor = Get_Resolution_Factor();
+  const int factor = Get_Resolution_Factor();
   RadWidth = 80 << factor;
   RadHeight = 70 << factor;
   RadX = SeenBuff.Get_Width() - RadWidth;
@@ -245,14 +245,14 @@ void RadarClass::Init_Clear() {
  * HISTORY: * 12/11/1994 JLB : Created. *
  *=============================================================================================*/
 bool RadarClass::Radar_Activate(int control) {
-  bool old = IsRadarActive;
+  const bool old = IsRadarActive;
 
   switch (control) {
     /*
     ** Toggle the state of the radar map on or off.
     */
     case -1: {
-      bool temp = !static_cast<bool>(IsRadarActive);
+      const bool temp = !static_cast<bool>(IsRadarActive);
       if (temp) {
         Radar_Activate(1);
       } else {
@@ -413,7 +413,7 @@ void RadarClass::Draw_It(bool forced) {
           **	Render all pixels in the "to redraw" stack.
           */
           for (int index = 0; index < PixelPtr; index++) {
-            CELL cell = PixelStack[index];
+            const CELL cell = PixelStack[index];
             if (Cell_On_Radar(cell)) {
               (*this)[cell].IsPlot = false;
               Plot_Radar_Pixel(cell);
@@ -431,7 +431,7 @@ void RadarClass::Draw_It(bool forced) {
 
             for (int y = 0; y < MapCellHeight; y++) {
               for (int x = 0; x < MapCellWidth; x++) {
-                CELL cell = XY_Cell(MapCellX + x, MapCellY + y);
+                const CELL cell = XY_Cell(MapCellX + x, MapCellY + y);
                 if (Cell_On_Radar(cell) && (*this)[cell].IsPlot) {
                   PixelStack[PixelPtr++] = cell;
                   IsRadarToRedraw = true;
@@ -452,7 +452,7 @@ void RadarClass::Draw_It(bool forced) {
         Radar_Cursor(RadarCursorRedraw);
 
       } else {
-        GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
+        const GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
         //				if (LogicPage->Lock()) {
         CC_Draw_Shape(RadarAnim, RADAR_ACTIVATED_FRAME, RadX, RadY + 1,
                       WINDOW_MAIN, SHAPE_NORMAL);
@@ -494,7 +494,7 @@ void RadarClass::Draw_It(bool forced) {
       *forced to do so.
       */
       //			if (forced) {
-      int val = DoesRadarExist ? MAX_RADAR_FRAMES : 0;
+      const int val = DoesRadarExist ? MAX_RADAR_FRAMES : 0;
       CC_Draw_Shape(RadarAnim, val, RadX, RadY + 1, WINDOW_MAIN, SHAPE_NORMAL);
       FullRedraw = false;
       IsRadarToRedraw = false;
@@ -623,7 +623,7 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
       switch (obj->What_Am_I()) {
         case RTTI_INFANTRY: {
           // int divisor = 255 / ZoomFactor;
-          int divisor = 86;
+          const int divisor = 86;
           if (ZoomFactor >= 3) {
             xoff = Coord_XLepton(obj->Coord) / divisor;
             yoff = Coord_YLepton(obj->Coord) / divisor;
@@ -671,7 +671,7 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
  *   04/18/1995 PWG : Created.                                             *
  *=========================================================================*/
 void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
-  OverlayType overlay = (*this)[cell].Overlay;
+  const OverlayType overlay = (*this)[cell].Overlay;
   if (overlay != OVERLAY_NONE) {
     const OverlayTypeClass* otype = &OverlayTypeClass::As_Reference(overlay);
 
@@ -717,8 +717,8 @@ void RadarClass::Zoom_Mode(CELL cell) {
   ** Figure out exactly what size we need to zoom the map to.
   */
   if (!IsZoomed) {
-    int xfactor = RadIWidth / MapCellWidth;
-    int yfactor = RadIHeight / MapCellHeight;
+    const int xfactor = RadIWidth / MapCellWidth;
+    const int yfactor = RadIHeight / MapCellHeight;
     ZoomFactor = std::min(xfactor, yfactor);
     map_c_width = MapCellWidth;
     map_c_height = MapCellHeight;
@@ -738,8 +738,8 @@ void RadarClass::Zoom_Mode(CELL cell) {
   ** Find the amount of remainder because this will let us calculate
   ** how to center the thing.
   */
-  int rem_x = RadIWidth - (map_c_width * ZoomFactor);
-  int rem_y = RadIHeight - (map_c_height * ZoomFactor);
+  const int rem_x = RadIWidth - (map_c_width * ZoomFactor);
+  const int rem_y = RadIHeight - (map_c_height * ZoomFactor);
 
   /*
   ** Finally mark the map so it shows just as much as it is supposed
@@ -823,7 +823,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
   y = Cell_Y(cell) - RadarY;
 
   if (LogicPage->Lock()) {
-    CellClass* cellptr = &(*this)[cell];
+    const CellClass* cellptr = &(*this)[cell];
     x = RadX + RadOffX + BaseX + (x * ZoomFactor);
     y = RadY + RadOffY + BaseY + (y * ZoomFactor);
 
@@ -999,7 +999,7 @@ int RadarClass::Click_In_Radar(int& ptr_x, int& ptr_y, bool change) {
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
 CELL RadarClass::Click_Cell_Calc(int x, int y) {
-  int result = Click_In_Radar(x, y, true);
+  const int result = Click_In_Radar(x, y, true);
   switch (result) {
     case 1:
       return XY_Cell(x, y);
@@ -1036,7 +1036,7 @@ bool RadarClass::Map_Cell(CELL cell, HouseClass* house) {
 }
 
 void RadarClass::Cursor_Cell(CELL cell, bool value) {
-  bool temp = (*this)[cell].IsRadarCursor;
+  const bool temp = (*this)[cell].IsRadarCursor;
 
   /*
   ** If this cell is not on the radar don't botther doing anything.
@@ -1159,10 +1159,10 @@ void RadarClass::Radar_Cursor(bool forced) {
   ** figure out these function calls as we will need to call them multiple
   *times.
   */
-  int tac_cell = Coord_Cell(TacticalCoord);
-  int tac_cell_x = static_cast<CELL>(Cell_X(static_cast<CELL>(tac_cell)));
-  int tac_cell_y = static_cast<CELL>(Cell_Y(static_cast<CELL>(tac_cell)));
-  int barlen = 6;
+  const int tac_cell = Coord_Cell(TacticalCoord);
+  const int tac_cell_x = static_cast<CELL>(Cell_X(static_cast<CELL>(tac_cell)));
+  const int tac_cell_y = static_cast<CELL>(Cell_Y(static_cast<CELL>(tac_cell)));
+  const int barlen = 6;
   /*
   ** If the current tactical cell is invalid or we haven't moved and we are not
   *forced to redraw then
@@ -1183,8 +1183,10 @@ void RadarClass::Radar_Cursor(bool forced) {
     *pixel coordinates back
     ** to the cells that need to be redraw.
     **/
-    int last_cell_x = static_cast<CELL>(Cell_X(static_cast<CELL>(_last_pos)));
-    int last_cell_y = static_cast<CELL>(Cell_Y(static_cast<CELL>(_last_pos)));
+    const int last_cell_x =
+        static_cast<CELL>(Cell_X(static_cast<CELL>(_last_pos)));
+    const int last_cell_y =
+        static_cast<CELL>(Cell_Y(static_cast<CELL>(_last_pos)));
 
     Cell_XY_To_Radar_Pixel(last_cell_x, last_cell_y, x1, y1);
     Cell_XY_To_Radar_Pixel(last_cell_x + Lepton_To_Cell(TacLeptonWidth),
@@ -1433,7 +1435,7 @@ bool RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     y = Get_Mouse_Y();
   }
 
-  int result = Map.Click_In_Radar(x, y, false);
+  const int result = Map.Click_In_Radar(x, y, false);
 
   if (result == 1) {
     cell = Map.RadarClass::Click_Cell_Calc(x, y);
@@ -1623,19 +1625,21 @@ void RadarClass::Set_Radar_Position(CELL cell) {
 
   if (RadarCell != newcell) {
     bool forced = false;
-    int xmod = newx;
-    int ymod = newy;
+    const int xmod = newx;
+    const int ymod = newy;
 
-    int radx = static_cast<CELL>(Cell_X(static_cast<CELL>(RadarCell)) - xmod);
-    int rady = static_cast<CELL>(Cell_Y(static_cast<CELL>(RadarCell)) - ymod);
+    const int radx =
+        static_cast<CELL>(Cell_X(static_cast<CELL>(RadarCell)) - xmod);
+    const int rady =
+        static_cast<CELL>(Cell_Y(static_cast<CELL>(RadarCell)) - ymod);
 
     RadarX = newx;
     RadarY = newy;
     RadarCell = newcell;
 
     if (Map.IsSidebarActive && Map.IsRadarActive) {
-      int radw = RadarCellWidth - std::abs(radx);   // Replicable width.
-      int radh = RadarCellHeight - std::abs(rady);  // Replicable height.
+      const int radw = RadarCellWidth - std::abs(radx);   // Replicable width.
+      const int radh = RadarCellHeight - std::abs(rady);  // Replicable height.
 
       if (radw < 1) {
         forced = true;
@@ -1808,8 +1812,8 @@ bool RadarClass::Cell_On_Radar(CELL cell) {
     return false;
   }
 
-  int x = Cell_X(cell) - RadarX;
-  int y = Cell_Y(cell) - RadarY;
+  const int x = Cell_X(cell) - RadarX;
+  const int y = Cell_Y(cell) - RadarY;
   return static_cast<unsigned>(x) < static_cast<unsigned>(RadarCellWidth) &&
          static_cast<unsigned>(y) < static_cast<unsigned>(RadarCellHeight);
 
@@ -1860,7 +1864,7 @@ void RadarClass::Draw_Names() {
   int kills;
   int color;
   TextPrintType style;
-  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   /*
   ** Do nothing if the sidebar isn't there
