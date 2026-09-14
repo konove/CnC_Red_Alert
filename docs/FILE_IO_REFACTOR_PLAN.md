@@ -26,7 +26,14 @@
 - Step 5 is complete (`eebca547`): `tech/byte_stream.{h,cc}` — ByteStream, DiskStream (Open() →
   nullptr on failure), MemoryStream, RangeStream (clipped to the inner stream; re-seeks the inner
   stream before every read).
-- Next: step 6.
+- Step 6 is complete (`5cee5fa8`): `tech/game_file.{h,cc}` replaces `ra/mix_aware_file.*`; handle
+  API in `ra/file_handles.cc`; DiskFile has no Bias; `MixFileClass::Offset` offsets are relative to
+  the mixfile. Deviation from the design: no missing-media handler — the old `Error()` CD prompt had
+  no reachable trigger, so a failed open just returns false and the explicit `Force_CD_Available`
+  calls keep doing the prompting. Real-data check done with a throwaway tech test (MAIN1–4.MIX +
+  REDALERT.MIX registered with the public key from `ra/const.h`): REDINTRO/PROLOG/ALLY1.VQA and
+  BIGF226M/CRUS226M.AUD open through the nested archives.
+- Next: step 7.
 
 ## Context
 
