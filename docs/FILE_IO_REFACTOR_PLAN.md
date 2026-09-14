@@ -38,7 +38,15 @@
   `game_file_test` nested cases cover it and CCFileClass is gone in the same commit. Note: the TD
   smoke script's `--building` fixture fails on SCB01EA ("could not create linked fixtures") before
   and after; use SCB01EA without a fixture (6600 states) or SCG01EA with one.
-- Next: step 8.
+- Step 8 is complete: CDFileClass removed; `MixFileClass<T>` → `MixArchive` (`tech/mix_archive.*`,
+  no `MFCD`); DiskFile over DiskStream; `void*` Read/Write gone from File (typed spans,
+  `ReadObject`, and a byte-sized `Read(T*, count)` remain). Not done: MemoryFile still has its own
+  buffer code (one user, no gain); `GameFile::OpenStream` is the stream factory for new code.
+  Commits: e4b836af Drop the void\* Read and Write overloads from File; b478e372 Reimplement
+  DiskFile over DiskStream; d52fac76 Turn MixFileClass<T> into MixArchive; 06530739 Remove
+  CDFileClass; 58da36b1 Record step 7 of the file I/O refactor as done; 5c1f5f02 Move Tiberian Dawn
+  onto GameFile.
+- The refactor is complete.
 
 ## Context
 
