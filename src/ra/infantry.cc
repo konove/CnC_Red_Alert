@@ -2671,7 +2671,7 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
   */
   if (*this == INFANTRY_RENOVATOR && object->What_Am_I() == RTTI_BUILDING &&
       House->IsPlayerControl) {
-    const BuildingClass* bldg = (BuildingClass*)object;
+    const auto* bldg = dynamic_cast<const BuildingClass*>(object);
     if (bldg->Class->IsRepairable) {
       if (House->Is_Ally(bldg)) {
         if (bldg->Health_Ratio() == 1) {
@@ -2703,7 +2703,7 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
         if (object->Health_Ratio() < Rule.ConditionGreen) {
           // If it's a mechanic force-moving into an APC, don't try to heal it.
           if (*this == INFANTRY_MECHANIC && object->What_Am_I() == RTTI_UNIT &&
-              *(UnitClass*)object == UNIT_APC &&
+              *dynamic_cast<const UnitClass*>(object) == UNIT_APC &&
               (KeyboardClass::Down(Options.KeyForceMove1) ||
                KeyboardClass::Down(Options.KeyForceMove2))) {
           } else {
@@ -2711,8 +2711,9 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
           }
         }
       }
-      if (!object->Is_Techno() ||
-          !((TechnoClass*)object)->Techno_Type_Class()->Max_Passengers()) {
+      if (!object->Is_Techno() || !dynamic_cast<const TechnoClass*>(object)
+                                       ->Techno_Type_Class()
+                                       ->Max_Passengers()) {
         if (action == ACTION_GUARD_AREA || action == ACTION_MOVE) {
           return action;
         }
@@ -2737,7 +2738,7 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
   */
   if (Class->IsBomber && action == ACTION_ATTACK &&
       object->What_Am_I() == RTTI_BUILDING) {
-    const BuildingClass* obj = (BuildingClass*)object;
+    const auto* obj = dynamic_cast<const BuildingClass*>(object);
     /*
     ** Hack: Tanya should shoot barrels, bomb other structures.
     */
@@ -2753,7 +2754,7 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
   */
   if (action == ACTION_NONE && object->What_Am_I() == RTTI_BUILDING &&
       House->IsPlayerControl) {
-    const StructType blah = *(BuildingClass*)object;
+    const StructType blah = *dynamic_cast<const BuildingClass*>(object);
     if (blah == STRUCT_AVMINE || blah == STRUCT_APMINE) {
       return ACTION_MOVE;
     }
@@ -2771,7 +2772,7 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
   */
   if (House->Is_Ally(object) && House->IsPlayerControl && object->Is_Techno()) {
     if (object->What_Am_I() != RTTI_VESSEL ||
-        *(VesselClass*)object != VESSEL_CARRIER) {
+        *dynamic_cast<const VesselClass*>(object) != VESSEL_CARRIER) {
       switch (((InfantryClass*)this)
                   ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass*)object)) {
         case RADIO_ROGER:
@@ -2795,9 +2796,9 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
         // *)object)->Pip_Count() == 0 && *((AircraftClass *)object) ==
         // AIRCRAFT_TRANSPORT) ||
         object->What_Am_I() == RTTI_BUILDING &&
-        ((BuildingClass*)object)->Class->IsCaptureable) {
+        dynamic_cast<const BuildingClass*>(object)->Class->IsCaptureable) {
       if (*this == INFANTRY_THIEF && object->What_Am_I() == RTTI_BUILDING &&
-          ((BuildingClass*)object)->Class->Capacity == 0) {
+          dynamic_cast<const BuildingClass*>(object)->Class->Capacity == 0) {
         action = ACTION_NONE;
       } else {
         /*
@@ -2812,7 +2813,8 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
           const CELL cell = As_Cell(object->As_Target());
           const int targzone = Map[As_Cell(As_Target())].Zones[Class->MZone];
           const int16_t* list =
-              ((BuildingClass*)object)->Class->Occupy_List(false);
+              dynamic_cast<const BuildingClass*>(object)->Class->Occupy_List(
+                  false);
           bool found = false;
           while (*list != kRefreshEol && !found) {
             const CELL newcell = static_cast<CELL>(cell + *list++);

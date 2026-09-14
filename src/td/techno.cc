@@ -1197,8 +1197,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   **	Special case so that SAM site doesn't fire on aircraft that are landed.
   */
   if (otype == RTTI_AIRCRAFT && What_Am_I() == RTTI_BUILDING &&
-      *(BuildingClass*)this == STRUCT_SAM) {
-    if (((AircraftClass*)object)->Altitude == 0) {
+      *dynamic_cast<const BuildingClass*>(this) == STRUCT_SAM) {
+    if (dynamic_cast<const AircraftClass*>(object)->Altitude == 0) {
       return false;
     }
   }
@@ -3338,7 +3338,7 @@ void TechnoClass::Base_Is_Attacked(const TechnoClass* enemy) {
   ** If the threat has already been dealt with then we don't need to do
   ** any work.  Check for that here.
   */
-  if (!((FootClass*)enemy)->BaseAttackTimer.Expired()) {
+  if (!dynamic_cast<const FootClass*>(enemy)->BaseAttackTimer.Expired()) {
     return;
   }
 
@@ -3865,13 +3865,13 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
       if (object) {
         pip = PIP_FULL;
         if (object->What_Am_I() == RTTI_INFANTRY) {
-          if (*(InfantryClass*)object == INFANTRY_RAMBO) {
+          if (*dynamic_cast<const InfantryClass*>(object) == INFANTRY_RAMBO) {
             pip = PIP_COMMANDO;
           }
-          if (*(InfantryClass*)object == INFANTRY_E7) {
+          if (*dynamic_cast<const InfantryClass*>(object) == INFANTRY_E7) {
             pip = PIP_ENGINEER;
           }
-          if (((InfantryClass*)object)->Class->IsCivilian) {
+          if (dynamic_cast<const InfantryClass*>(object)->Class->IsCivilian) {
             pip = PIP_CIVILIAN;
           }
         }

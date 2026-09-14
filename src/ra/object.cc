@@ -2126,7 +2126,7 @@ BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
       // BG: Hack so only kennels can build dogs, and no other, and barracks can
       //     only build humans and no other.
       if (What_Am_I() == RTTI_INFANTRYTYPE) {
-        const auto* me = (InfantryTypeClass*)this;
+        const auto* me = dynamic_cast<const InfantryTypeClass*>(this);
         if (me->IsDog) {
           if (*building == STRUCT_KENNEL) {
             if (building->IsLeader) {
@@ -2148,7 +2148,7 @@ BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
         **	fixed wing craft only.
         */
         if (What_Am_I() == RTTI_AIRCRAFTTYPE) {
-          const auto* air = (AircraftTypeClass*)this;
+          const auto* air = dynamic_cast<const AircraftTypeClass*>(this);
           if ((*building == STRUCT_HELIPAD && !air->IsFixedWing) ||
               (*building == STRUCT_AIRSTRIP && air->IsFixedWing)) {
             if (building->IsLeader) {

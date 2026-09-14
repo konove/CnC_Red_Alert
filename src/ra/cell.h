@@ -241,12 +241,18 @@ class CellClass {
   [[nodiscard]] COORDINATE Free_Spot() const {
     return Closest_Free_Spot(Cell_Coord());
   }
+  // Returns the cell adjacent to this one in direction `face`, or this cell
+  // itself when `face` is invalid or the neighbour lies outside the map.
   CellClass& Adjacent_Cell(FacingType face) ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return (CellClass&)(*static_cast<const CellClass*>(this))
-        .Adjacent_Cell(face);
+    return *(this + Adjacent_Offset(face));
   }
   [[nodiscard]] const CellClass& Adjacent_Cell(FacingType face) const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND;
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return *(this + Adjacent_Offset(face));
+  }
+  // Returns the cell-index delta from this cell to its neighbour in direction
+  // `face`, or 0 when `face` is invalid or the neighbour lies off the map.
+  [[nodiscard]] int Adjacent_Offset(FacingType face) const;
   [[nodiscard]] InfantryClass* Cell_Infantry() const;
   [[nodiscard]] LandType Land_Type() const { return Land; }
   [[nodiscard]] ObjectClass* Cell_Find_Object(RTTIType rtti) const;

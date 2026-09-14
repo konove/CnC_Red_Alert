@@ -33,9 +33,9 @@
  *                  Last Update : October 6, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * CellClass::Adjacent_Cell -- Determines the adjacent cell
- *according to facing.             * CellClass::Adjust_Threat -- Allows
- *adjustment of threat at cell level                     *
+ * Functions: * CellClass::Adjacent_Offset -- Determines the offset to the
+ * adjacent cell according to facing.             * CellClass::Adjust_Threat --
+ * Allows adjustment of threat at cell level                     *
  *   CellClass::Can_Tiberium_Germinate -- Determines if Tiberium can begin
  *growth in the cell. * CellClass::Can_Tiberium_Grow -- Determines if Tiberium
  *can grow in this cell.             * CellClass::Can_Tiberium_Spread --
@@ -1178,7 +1178,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
               * the icon
               */
               case RTTI_TEMPLATETYPE: {
-                const auto* tptr = (TemplateTypeClass*)Map.PendingObject;
+                const auto* tptr =
+                    dynamic_cast<const TemplateTypeClass*>(Map.PendingObject);
                 if (tptr->Get_Image_Data()) {
                   const CELL cell = Cell_Number();
                   icon = (Cell_X(cell) - Cell_X(static_cast<CELL>(
@@ -1198,7 +1199,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
               */
               case RTTI_OVERLAYTYPE:
                 OverlayTypeClass::As_Reference(
-                    ((OverlayTypeClass*)Map.PendingObject)->Type)
+                    dynamic_cast<const OverlayTypeClass*>(Map.PendingObject)
+                        ->Type)
                     .Draw_It(x, y, OverlayData);
                 break;
 
@@ -1207,7 +1209,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
               */
               case RTTI_SMUDGETYPE:
                 SmudgeTypeClass::As_Reference(
-                    ((SmudgeTypeClass*)Map.PendingObject)->Type)
+                    dynamic_cast<const SmudgeTypeClass*>(Map.PendingObject)
+                        ->Type)
                     .Draw_It(x, y, 0);
                 break;
 
@@ -1771,35 +1774,28 @@ void CellClass::Incoming(COORDINATE threat, bool forced, bool nokidding) {
 }
 
 /***********************************************************************************************
- * CellClass::Adjacent_Cell -- Determines the adjacent cell according to facing.
+ * CellClass::Adjacent_Offset -- Determines the offset to the adjacent cell.
  **
  *                                                                                             *
- *    Use this routine to return a reference to the adjacent cell in the
- *direction specified.  *
- *                                                                                             *
- * INPUT:   face  -- The direction to use when determining the adjacent cell. *
- *                                                                                             *
- * OUTPUT:  Returns with a reference to the adjacent cell. *
- *                                                                                             *
- * WARNINGS:   If the facing value is invalid, then a reference to the same cell
- *is returned.  *
+ *    Both Adjacent_Cell overloads share this so that neither has to cast
+ *away const.       *
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
+int CellClass::Adjacent_Offset(FacingType face) const {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   if (static_cast<unsigned>(face) >= magic_enum::enum_count<FacingType>()) {
-    return *this;
+    return 0;
   }
 
   // Check the index before forming the pointer: pointer arithmetic that leaves
   // the cell array is undefined even if the result is never dereferenced.
   const int adjacent = Cell_Number() + AdjacentCell[face];
   if (adjacent < 0 || adjacent >= MAP_CELL_TOTAL) {
-    return *this;
+    return 0;
   }
-  return *(this + AdjacentCell[face]);
+  return AdjacentCell[face];
 }
 
 /***************************************************************************

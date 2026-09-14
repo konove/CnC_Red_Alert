@@ -31,7 +31,7 @@ void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
   frac = std::min(frac, 255);
 
   // Record the target gun values.
-  auto* pal8 = (uint8_t*)palette;
+  const auto* pal8 = static_cast<const uint8_t*>(palette);
   targetred = pal8[(color * 3) + 0];
   targetgreen = pal8[(color * 3) + 0];
 

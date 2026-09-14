@@ -1779,7 +1779,7 @@ void FootClass::Death_Announcement(const TechnoClass* source) const {
         *dynamic_cast<const InfantryClass*>(source) != INFANTRY_RAMBO) {
       if (What_Am_I() == RTTI_INFANTRY &&
           dynamic_cast<const InfantryTypeClass&>(Class_Of()).IsCivilian &&
-          !((InfantryClass*)this)->IsTechnician) {
+          !dynamic_cast<const InfantryClass*>(this)->IsTechnician) {
         if (Options.IsDeathAnnounce) {
           Speak(VOX_DEAD_CIV);
         }

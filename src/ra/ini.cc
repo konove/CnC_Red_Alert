@@ -667,7 +667,7 @@ bool INIClass::Put_TextBlock(const char* section, const char* text) {
       strtrim(buffer);
       Put_String(section, b, buffer);
       index++;
-      text = (char*)text + count;
+      text += count;
     } else {
       break;
     }

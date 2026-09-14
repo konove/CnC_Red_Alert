@@ -72,8 +72,8 @@
  *=============================================================================================*/
 PKey::PKey(const void* exponent, const void* modulus)
     : BitPrecision(Modulus.BitCount() - 1) {
-  Modulus.DERDecode((unsigned char*)modulus);
-  Exponent.DERDecode((unsigned char*)exponent);
+  Modulus.DERDecode(static_cast<const unsigned char*>(modulus));
+  Exponent.DERDecode(static_cast<const unsigned char*>(exponent));
 }
 
 /***********************************************************************************************

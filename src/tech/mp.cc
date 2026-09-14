@@ -345,11 +345,12 @@ int XMP_Encode(unsigned char* to, const uint32_t* from, int precision) {
 
   const bool is_negative = XMP_Is_Negative(from, precision);
   const auto filler = static_cast<unsigned char>(is_negative ? 0xff : 0);
-  unsigned char* number_ptr;
+  const unsigned char* number_ptr;
 
-  auto* const end = (unsigned char*)from;
-  for (number_ptr = static_cast<unsigned char*>(end) + precision - 1;
-       number_ptr > static_cast<unsigned char*>(end); number_ptr--) {
+  // Byte view of the number's representation, which reinterpret_cast defines.
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+  const auto* const end = reinterpret_cast<const unsigned char*>(from);
+  for (number_ptr = end + precision - 1; number_ptr > end; number_ptr--) {
     if (*number_ptr != filler) {
       break;
     }
@@ -926,7 +927,9 @@ int XMP_Count_Bits(const uint32_t* number, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 int XMP_Count_Bytes(const uint32_t* number, int precision) {
-  const auto* ptr = (unsigned char*)number;
+  // Byte view of the number's representation, which reinterpret_cast defines.
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+  const auto* ptr = reinterpret_cast<const unsigned char*>(number);
   int count = 0;
   for (int index = 0; index < precision * static_cast<int>(sizeof(uint32_t));
        index++) {

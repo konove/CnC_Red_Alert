@@ -897,7 +897,7 @@ void OverlayTypeClass::Init(TheaterType theater) {
 
       IsTheaterShape = overlay.IsTheater;
       if (overlay.RadarIcon) {
-        delete[] (char*)overlay.RadarIcon;
+        delete[] static_cast<const unsigned char*>(overlay.RadarIcon);
       }
       (const void*&)overlay.RadarIcon =
           Get_Radar_Icon(overlay.Get_Image_Data(), 0, -1, 3);

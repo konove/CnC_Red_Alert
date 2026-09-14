@@ -861,7 +861,7 @@ bool TechnoClass::Is_Visible_On_Radar() const {
   ** Hack: MRJ is invisible to radar, unless it's allied with the player.
   */
   if (What_Am_I() == RTTI_UNIT) {
-    if (*(UnitClass*)this == UNIT_MRJ) {
+    if (*dynamic_cast<const UnitClass*>(this) == UNIT_MRJ) {
       if (!House->Is_Ally(PlayerPtr)) {
         return false;
       }
@@ -1713,7 +1713,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   */
   if (otype == RTTI_INFANTRY &&
       ((const InfantryTypeClass*)tclass)->Type == INFANTRY_SPY) {
-    if (What_Am_I() == RTTI_INFANTRY && ((InfantryClass*)this)->Class->IsDog) {
+    if (What_Am_I() == RTTI_INFANTRY &&
+        dynamic_cast<const InfantryClass*>(this)->Class->IsDog) {
       // continue executing...
     } else {
       BEnd(BENCH_EVAL_OBJECT);
@@ -1725,8 +1726,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   **	Special case so that SAM site doesn't fire on aircraft that are landed.
   */
   if (otype == RTTI_AIRCRAFT && What_Am_I() == RTTI_BUILDING &&
-      *(BuildingClass*)this == STRUCT_SAM) {
-    if (((AircraftClass*)object)->Height == 0) {
+      *dynamic_cast<const BuildingClass*>(this) == STRUCT_SAM) {
+    if (dynamic_cast<const AircraftClass*>(object)->Height == 0) {
       BEnd(BENCH_EVAL_OBJECT);
       return false;
     }
@@ -1756,8 +1757,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   ** is other than a sub pen or shipyard.
   */
   if (otype == RTTI_BUILDING && What_Am_I() == RTTI_VESSEL &&
-      *(VesselClass*)this == VESSEL_SS) {
-    const StructType ostruc = *(BuildingClass*)object;
+      *dynamic_cast<const VesselClass*>(this) == VESSEL_SS) {
+    const StructType ostruc = *dynamic_cast<const BuildingClass*>(object);
     if (ostruc != STRUCT_SUB_PEN && ostruc != STRUCT_SHIP_YARD) {
       BEnd(BENCH_EVAL_OBJECT);
       return false;
@@ -1769,7 +1770,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   **	if the building is not aggressive. That is, unless it is part of a team.
   *A team *	is allowed to pick any target it so chooses.
   */
-  if ((!Is_Foot() || !((FootClass*)this)->Team.Is_Valid()) &&
+  if ((!Is_Foot() || !dynamic_cast<const FootClass*>(this)->Team.Is_Valid()) &&
       (House->IsHuman ||
        (House->IsPlayerControl && Session.Type == GAME_NORMAL)) &&
       otype == RTTI_BUILDING && tclass->PrimaryWeapon == nullptr) {
@@ -2948,7 +2949,7 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
     // if the object firing is a cloaked civilian, don't require uncloaking
     // before allowing firing.
     if (What_Am_I() == RTTI_INFANTRY &&
-        ((InfantryClass*)this)->Class->IsCivilian) {
+        dynamic_cast<const InfantryClass*>(this)->Class->IsCivilian) {
       return FIRE_OK;
     }
     return FIRE_CLOAKED;
@@ -3561,9 +3562,10 @@ ActionType TechnoClass::What_Action(const ObjectClass* object) const {
         if (Can_Player_Move() || In_Range(object, primary)) {
           if (In_Range(object, primary) ||
               (What_Am_I() == RTTI_INFANTRY &&
-               ((InfantryClass*)this)->Class->IsCapture &&
+               dynamic_cast<const InfantryClass*>(this)->Class->IsCapture &&
                object->What_Am_I() == RTTI_BUILDING &&
-               ((BuildingClass*)object)->Class->IsCaptureable)) {
+               dynamic_cast<const BuildingClass*>(object)
+                   ->Class->IsCaptureable)) {
             return ACTION_ATTACK;
           }
           if (!Can_Player_Move()) {
@@ -3636,7 +3638,8 @@ ActionType TechnoClass::What_Action(CELL cell) const {
   *submarines.
   */
   if (What_Am_I() == RTTI_VESSEL) {
-    const WeaponTypeClass* weapon = ((VesselClass*)this)->Class->PrimaryWeapon;
+    const WeaponTypeClass* weapon =
+        dynamic_cast<const VesselClass*>(this)->Class->PrimaryWeapon;
     if (weapon && weapon->Bullet->IsSubSurface) {
       ctrldown = false;
     }
@@ -4834,7 +4837,8 @@ void TechnoClass::Base_Is_Attacked(const TechnoClass* enemy) {
   ** If the threat has already been dealt with then we don't need to do
   ** any work. Check for that here.
   */
-  if (enemy->Is_Foot() && ((FootClass*)enemy)->BaseAttackTimer.HasTimeLeft()) {
+  if (enemy->Is_Foot() &&
+      dynamic_cast<const FootClass*>(enemy)->BaseAttackTimer.HasTimeLeft()) {
     return;
   }
 
@@ -5101,7 +5105,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
   *recieved.
   */
   if (What_Am_I() == RTTI_AIRCRAFT &&
-      ((AircraftClass*)this)->Class->IsFixedWing) {
+      dynamic_cast<const AircraftClass*>(this)->Class->IsFixedWing) {
     return false;
   }
 
@@ -5136,7 +5140,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
   *of attacking. *	Dogs must be attacked using normal target processing.
   */
   if (source->What_Am_I() == RTTI_INFANTRY &&
-      ((InfantryClass*)source)->Class->IsDog) {
+      dynamic_cast<const InfantryClass*>(source)->Class->IsDog) {
     return false;
   }
 
@@ -5167,7 +5171,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
   */
   if (House->IsHuman && !Rule.IsSmartDefense &&
       (What_Am_I() != RTTI_INFANTRY ||
-       *(InfantryClass*)this != INFANTRY_TANYA ||
+       *dynamic_cast<const InfantryClass*>(this) != INFANTRY_TANYA ||
        source->What_Am_I() != RTTI_INFANTRY)) {
     return false;
   }
@@ -5176,8 +5180,8 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
   **	If this object is part of a team that prevents retaliation then don't
   *allow retaliation.
   */
-  if (Is_Foot() && ((FootClass*)this)->Team.Is_Valid() &&
-      ((FootClass*)this)->Team->Class->IsSuicide) {
+  if (Is_Foot() && dynamic_cast<const FootClass*>(this)->Team.Is_Valid() &&
+      dynamic_cast<const FootClass*>(this)->Team->Class->IsSuicide) {
     return false;
   }
 
@@ -5584,12 +5588,12 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
       if (object != nullptr) {
         pip = PIP_FULL;
         if (object->What_Am_I() == RTTI_INFANTRY) {
-          pip = ((InfantryClass*)object)->Class->Pip;
+          pip = dynamic_cast<const InfantryClass*>(object)->Class->Pip;
         }
         if (What_Am_I() == RTTI_VESSEL &&
-            *(VesselClass*)this == VESSEL_CARRIER) {
+            *dynamic_cast<const VesselClass*>(this) == VESSEL_CARRIER) {
           if (object->What_Am_I() == RTTI_AIRCRAFT) {
-            const auto* heli = (AircraftClass*)object;
+            const auto* heli = dynamic_cast<const AircraftClass*>(object);
             if (heli->Ammo != heli->Techno_Type_Class()->MaxAmmo) {
               pip = PIP_ENGINEER;
               if (!heli->Ammo) {
@@ -5615,8 +5619,9 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
     ** Check if it's a harvester, to show the right type of pips for the
     ** various minerals it could have harvested.
     */
-    if (What_Am_I() == RTTI_UNIT && *(UnitClass*)this == UNIT_HARVESTER) {
-      const auto* harv = (UnitClass*)this;
+    if (What_Am_I() == RTTI_UNIT &&
+        *dynamic_cast<const UnitClass*>(this) == UNIT_HARVESTER) {
+      const auto* harv = dynamic_cast<const UnitClass*>(this);
 
       const int iron = harv->Gems;
       const int nickel = harv->Gold;
@@ -5649,7 +5654,8 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
     /*
     ** Check if it's a Chrono tank, to show the recharge gauge.
     */
-    else if (What_Am_I() == RTTI_UNIT && *(UnitClass*)this == UNIT_CHRONOTANK) {
+    else if (What_Am_I() == RTTI_UNIT &&
+             *dynamic_cast<const UnitClass*>(this) == UNIT_CHRONOTANK) {
       for (int index = 0; index < 5; index++) {
         int shape = PIP_EMPTY;
         if (index < pips) {
@@ -5678,8 +5684,9 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
       bool building = false;
       int pip = PIP_FULL;  // green
       if (!IsOwnedByPlayer && What_Am_I() == RTTI_BUILDING) {
-        if (*(BuildingClass*)this == STRUCT_POWER ||
-            *(BuildingClass*)this == STRUCT_ADVANCED_POWER) {
+        if (*dynamic_cast<const BuildingClass*>(this) == STRUCT_POWER ||
+            *dynamic_cast<const BuildingClass*>(this) ==
+                STRUCT_ADVANCED_POWER) {
           building = true;
           if (House->Power_Fraction() < 1) {
             pip = PIP_ENGINEER;  // gold
@@ -5725,7 +5732,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
     PipEnum prishape = PIP_PRIMARY;
 
     if (What_Am_I() == RTTI_BUILDING) {
-      if (*(BuildingClass*)this == STRUCT_KENNEL) {
+      if (*dynamic_cast<const BuildingClass*>(this) == STRUCT_KENNEL) {
         prishape = PIP_PRI;
       }
     }
@@ -5737,10 +5744,10 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
   **	Display what group this unit belongs to. This corresponds to the team
   **	number assigned with the <CTRL> key.
   */
-  if (Is_Foot() && ((FootClass*)this)->Group != 0xFF &&
-      ((FootClass*)this)->Group < 10) {
+  if (Is_Foot() && dynamic_cast<const FootClass*>(this)->Group != 0xFF &&
+      dynamic_cast<const FootClass*>(this)->Group < 10) {
     int yval = -1;
-    int group = ((FootClass*)this)->Group + 1;
+    int group = dynamic_cast<const FootClass*>(this)->Group + 1;
 
     if (Class_Of().Max_Pips()) {
       yval -= 4;
@@ -5756,7 +5763,8 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
     ** If this unit is part of a formation, draw an 'F' after the group
     ** number.
     */
-    if (((FootClass*)this)->XFormOffset != kNoFormationOffset) {
+    if (dynamic_cast<const FootClass*>(this)->XFormOffset !=
+        kNoFormationOffset) {
       CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_LETTERF, x + 8, y + yval,
                     window, SHAPE_CENTER | SHAPE_WIN_REL);
     }
@@ -5774,7 +5782,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
     ** loop thru all of their buildings to see if ANY of them are spied
     ** upon, 'cause once you spy any money, you've spied all of it.
     */
-    if (((BuildingClass*)this)->Class->Capacity) {
+    if (dynamic_cast<const BuildingClass*>(this)->Class->Capacity) {
       for (int index = 0; index < Buildings.Count(); index++) {
         const BuildingClass* building = Buildings.Ptr(index);
         if (building->House == House && building->Class->Capacity) {
@@ -5786,7 +5794,8 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
     /*
     ** Print word "Decoy" above buildings that are spied upon or fake
     */
-    if (((BuildingClass*)this)->Class->IsFake && (spiedby || IsOwnedByPlayer)) {
+    if (dynamic_cast<const BuildingClass*>(this)->Class->IsFake &&
+        (spiedby || IsOwnedByPlayer)) {
       CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_DECOY, x, y - 16, window,
                     SHAPE_WIN_REL);
     }
@@ -5795,7 +5804,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
     ** See if we should print the credits for a spied refinery
     */
     // If it's a refinery/silo, print the enemy's money
-    if (spiedby && ((BuildingClass*)this)->Class->Capacity) {
+    if (spiedby && dynamic_cast<const BuildingClass*>(this)->Class->Capacity) {
       int64_t money = House->Available_Money();
 
       /*

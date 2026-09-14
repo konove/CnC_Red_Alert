@@ -2284,7 +2284,7 @@ ActionType AircraftClass::What_Action(const ObjectClass* target) const {
   }
   if (!Class->IsFixedWing && House->IsPlayerControl && House->Is_Ally(target) &&
       target->What_Am_I() == RTTI_VESSEL &&
-      *(VesselClass*)target == VESSEL_CARRIER &&
+      *dynamic_cast<const VesselClass*>(target) == VESSEL_CARRIER &&
       ((AircraftClass*)this)
               ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass*)target) ==
           RADIO_ROGER) {
@@ -2304,7 +2304,7 @@ ActionType AircraftClass::What_Action(const ObjectClass* target) const {
   */
   if (House->IsPlayerControl && action == ACTION_SELECT &&
       target->What_Am_I() == RTTI_BUILDING) {
-    const auto* building = (BuildingClass*)target;
+    const auto* building = dynamic_cast<const BuildingClass*>(target);
     if (building->Class->Type == STRUCT_REPAIR &&
         !building->In_Radio_Contact() && !building->Is_Something_Attached()) {
       action = ACTION_ENTER;
@@ -3048,10 +3048,11 @@ MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
   const ObjectClass* occupier = cellptr->Cell_Occupier();
 
   if (occupier == nullptr || !occupier->Is_Techno() ||
-      ((TechnoClass*)occupier)->House->Is_Ally(House) ||
-      (((TechnoClass*)occupier)->Cloak != CLOAKED && ScenarioInit == 0 &&
+      dynamic_cast<const TechnoClass*>(occupier)->House->Is_Ally(House) ||
+      (dynamic_cast<const TechnoClass*>(occupier)->Cloak != CLOAKED &&
+       ScenarioInit == 0 &&
        (occupier->What_Am_I() != RTTI_BUILDING ||
-        !((BuildingClass*)occupier)->Class->IsInvisible))) {
+        !dynamic_cast<const BuildingClass*>(occupier)->Class->IsInvisible))) {
     if (!cellptr->Is_Clear_To_Move(SPEED_TRACK, false, false)) {
       return MOVE_NO;
     }

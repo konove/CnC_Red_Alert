@@ -162,7 +162,7 @@ IconListClass::~IconListClass() {
   if (bDoAlloc) {
     //	Delete all alloc'ed strings.
     for (int i = 0; i < List.Count(); i++) {
-      delete[] (char*)List[i];
+      delete[] List[i];
     }
   }
 }
@@ -371,7 +371,7 @@ void IconListClass::Remove_Item(int index) {
     ExtrasList.Delete(index);
     if (bDoAlloc) {
       //	Delete alloc'ed string.
-      delete[] (char*)List[index];
+      delete[] List[index];
     }
     ListClass::Remove_Item(index);
 
@@ -648,7 +648,7 @@ void IconListClass::Clear() {
   if (bDoAlloc) {
     //	Delete all alloc'ed strings.
     for (int i = 0; i < List.Count(); i++) {
-      delete[] (char*)List[i];
+      delete[] List[i];
     }
   }
 
@@ -704,7 +704,7 @@ bool IconListClass::Set_Item(unsigned int index, const char* szText) {
   }
 
   //	Delete alloc'ed string.
-  delete[] (char*)List[index];
+  delete[] List[index];
 
   //	Reassign List's ptr to a fresh copy of the text.
   List[index] = DuplicateString(szText);

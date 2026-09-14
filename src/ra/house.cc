@@ -6130,31 +6130,31 @@ void HouseClass::Production_Begun(const TechnoClass* product) {
   if (product != nullptr) {
     switch (product->What_Am_I()) {
       case RTTI_UNIT:
-        if (*(UnitClass*)product == BuildUnit) {
+        if (*dynamic_cast<const UnitClass*>(product) == BuildUnit) {
           BuildUnit = UNIT_NONE;
         }
         break;
 
       case RTTI_VESSEL:
-        if (*(VesselClass*)product == BuildVessel) {
+        if (*dynamic_cast<const VesselClass*>(product) == BuildVessel) {
           BuildVessel = VESSEL_NONE;
         }
         break;
 
       case RTTI_INFANTRY:
-        if (*(InfantryClass*)product == BuildInfantry) {
+        if (*dynamic_cast<const InfantryClass*>(product) == BuildInfantry) {
           BuildInfantry = INFANTRY_NONE;
         }
         break;
 
       case RTTI_BUILDING:
-        if (*(BuildingClass*)product == BuildStructure) {
+        if (*dynamic_cast<const BuildingClass*>(product) == BuildStructure) {
           BuildStructure = STRUCT_NONE;
         }
         break;
 
       case RTTI_AIRCRAFT:
-        if (*(AircraftClass*)product == BuildAircraft) {
+        if (*dynamic_cast<const AircraftClass*>(product) == BuildAircraft) {
           BuildAircraft = AIRCRAFT_NONE;
         }
         break;
@@ -6201,7 +6201,7 @@ void HouseClass::Tracking_Remove(const TechnoClass* techno) {
 
     case RTTI_INFANTRY:
       CurInfantry--;
-      if (!((InfantryClass*)techno)->IsTechnician) {
+      if (!dynamic_cast<const InfantryClass*>(techno)->IsTechnician) {
         type = dynamic_cast<const InfantryTypeClass&>(techno->Class_Of()).Type;
         if (type >= kOriginalInfantryCount) {
           type -= kOriginalInfantryCount;
@@ -6286,7 +6286,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
       CurInfantry++;
       infantry =
           dynamic_cast<const InfantryTypeClass&>(techno->Class_Of()).Type;
-      if (!((InfantryClass*)techno)->IsTechnician) {
+      if (!dynamic_cast<const InfantryClass*>(techno)->IsTechnician) {
         quant = infantry;
         if (quant >= kOriginalInfantryCount) {
           quant -= kOriginalInfantryCount;
@@ -6401,7 +6401,8 @@ void HouseClass::Active_Remove(const TechnoClass* techno) {
   }
 
   if (techno->What_Am_I() == RTTI_BUILDING) {
-    int* fptr = Factory_Counter(((BuildingClass*)techno)->Class->ToBuild);
+    int* fptr = Factory_Counter(
+        dynamic_cast<const BuildingClass*>(techno)->Class->ToBuild);
     if (fptr != nullptr) {
       *fptr = *fptr - 1;
     }
@@ -6429,7 +6430,8 @@ void HouseClass::Active_Add(const TechnoClass* techno) {
   }
 
   if (techno->What_Am_I() == RTTI_BUILDING) {
-    int* fptr = Factory_Counter(((BuildingClass*)techno)->Class->ToBuild);
+    int* fptr = Factory_Counter(
+        dynamic_cast<const BuildingClass*>(techno)->Class->ToBuild);
     if (fptr != nullptr) {
       *fptr = *fptr + 1;
     }
@@ -7439,9 +7441,9 @@ void HouseClass::Update_Spied_Power_Plants() {
   const base::ssize count = CurrentObject.Count();
   if (count) {
     for (int index = 0; index < count; index++) {
-      const ObjectClass* tech = CurrentObject[index];
+      ObjectClass* tech = CurrentObject[index];
       if (tech && tech->What_Am_I() == RTTI_BUILDING) {
-        auto* bldg = (BuildingClass*)tech;
+        auto* bldg = dynamic_cast<BuildingClass*>(tech);
         if (!bldg->IsOwnedByPlayer &&
             (*bldg == STRUCT_POWER || *bldg == STRUCT_ADVANCED_POWER)) {
           if (bldg->SpiedBy & 1 << PlayerPtr->Class->House) {

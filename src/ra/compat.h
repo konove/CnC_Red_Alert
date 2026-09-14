@@ -93,14 +93,14 @@ typedef enum MenuIndexType {
 
 inline int16_t Get_IconSet_MapWidth(const void* data) {
   if (data) {
-    return ((IControl_Type*)data)->MapWidth;
+    return static_cast<const IControl_Type*>(data)->MapWidth;
   }
   return 0;
 }
 
 inline int16_t Get_IconSet_MapHeight(const void* data) {
   if (data) {
-    return ((IControl_Type*)data)->MapHeight;
+    return static_cast<const IControl_Type*>(data)->MapHeight;
   }
   return 0;
 }
@@ -108,8 +108,8 @@ inline int16_t Get_IconSet_MapHeight(const void* data) {
 inline const unsigned char* Get_IconSet_ControlMap(
     const void* data ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   if (data) {
-    return (const unsigned char*)((char*)data +
-                                  ((IControl_Type*)data)->ColorMap);
+    return static_cast<const unsigned char*>(data) +
+           static_cast<const IControl_Type*>(data)->ColorMap;
   }
   return nullptr;
 }

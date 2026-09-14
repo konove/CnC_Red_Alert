@@ -668,7 +668,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
 
         IsTheaterShape = true;
         if (terrain.RadarIcon) {
-          delete[] (char*)terrain.RadarIcon;
+          delete[] static_cast<const unsigned char*>(terrain.RadarIcon);
         }
         (const void*&)terrain.RadarIcon =
             Get_Radar_Icon(terrain.Get_Image_Data(), 0, 1, 3);

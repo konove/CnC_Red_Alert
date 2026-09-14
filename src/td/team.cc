@@ -170,7 +170,7 @@ TeamClass::~TeamClass() {
     }
 
     if (Class->IsTransient && !Number[TeamTypes.ID(Class)]) {
-      delete (TeamTypeClass*)Class;
+      delete Class;
     }
   }
 }

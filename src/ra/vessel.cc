@@ -808,7 +808,7 @@ ActionType VesselClass::What_Action(const ObjectClass* object) const {
   */
   if (House->IsPlayerControl && action == ACTION_SELECT &&
       object->What_Am_I() == RTTI_BUILDING) {
-    const auto* building = (BuildingClass*)object;
+    const auto* building = dynamic_cast<const BuildingClass*>(object);
 
     if (building->Class->ToBuild == RTTI_VESSELTYPE &&
         building->House->Is_Ally(this)) {

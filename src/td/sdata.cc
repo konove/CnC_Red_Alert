@@ -154,16 +154,10 @@ static const SmudgeTypeClass Bibx2(SMUDGE_BIB2, "BIB2", TXT_BIB, 3,
                                    false  // Is this a crater smudge?
 );
 
-/*
-** The watcom code optimiser screws up the last constructor call. Making it
-*'volatile' reduces the
-** level of optimisation enough for the problem not to manifest.
-*/
-static const volatile SmudgeTypeClass Bibx3(
-    SMUDGE_BIB3, "BIB3", TXT_BIB, 2,
-    2,     // Width and height of smudge (in icons).
-    true,  // Is this a building bib?
-    false  // Is this a crater smudge?
+static const SmudgeTypeClass Bibx3(SMUDGE_BIB3, "BIB3", TXT_BIB, 2,
+                                   2,  // Width and height of smudge (in icons).
+                                   true,  // Is this a building bib?
+                                   false  // Is this a crater smudge?
 );
 
 /*
@@ -172,21 +166,21 @@ static const volatile SmudgeTypeClass Bibx3(
 **	smudge type object pointer.
 */
 const SmudgeTypeClass* const SmudgeTypeClass::Pointers[SMUDGE_COUNT] = {
-    &Crater1,                             // SMUDGE_CRATER1
-    &Crater2,                             // SMUDGE_CRATER2
-    &Crater3,                             // SMUDGE_CRATER3
-    &Crater4,                             // SMUDGE_CRATER4
-    &Crater5,                             // SMUDGE_CRATER5
-    &Crater6,                             // SMUDGE_CRATER6
-    &Scorch1,                             // SMUDGE_SCORCH1
-    &Scorch2,                             // SMUDGE_SCORCH2
-    &Scorch3,                             // SMUDGE_SCORCH3
-    &Scorch4,                             // SMUDGE_SCORCH4
-    &Scorch5,                             // SMUDGE_SCORCH5
-    &Scorch6,                             // SMUDGE_SCORCH6
-    &Bibx1,                               // SMUDGE_BIB1
-    &Bibx2,                               //	SMUDGE_BIB2
-    (const SmudgeTypeClass* const)&Bibx3  // SMUDGE_BIB3
+    &Crater1,  // SMUDGE_CRATER1
+    &Crater2,  // SMUDGE_CRATER2
+    &Crater3,  // SMUDGE_CRATER3
+    &Crater4,  // SMUDGE_CRATER4
+    &Crater5,  // SMUDGE_CRATER5
+    &Crater6,  // SMUDGE_CRATER6
+    &Scorch1,  // SMUDGE_SCORCH1
+    &Scorch2,  // SMUDGE_SCORCH2
+    &Scorch3,  // SMUDGE_SCORCH3
+    &Scorch4,  // SMUDGE_SCORCH4
+    &Scorch5,  // SMUDGE_SCORCH5
+    &Scorch6,  // SMUDGE_SCORCH6
+    &Bibx1,    // SMUDGE_BIB1
+    &Bibx2,    //	SMUDGE_BIB2
+    &Bibx3,    // SMUDGE_BIB3
 };
 
 /***********************************************************************************************

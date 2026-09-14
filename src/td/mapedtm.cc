@@ -1611,7 +1611,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Set up the team data arrays (ObjectTypeClass pointers & count)
   */
-  teamclass = (const TechnoTypeClass**)(new TechnoTypeClass*[MAX_TEAM_CLASSES]);
+  teamclass = new const TechnoTypeClass*[MAX_TEAM_CLASSES];
   teamcount = new int[MAX_TEAM_CLASSES];
 
   /*

@@ -874,10 +874,11 @@ int MapEditClass::Place_Object() {
         save_ttype = (*this)[template_cell].TType;
         save_ticon = (*this)[template_cell].TIcon;
         (*this)[template_cell].TType =
-            ((TemplateTypeClass*)PendingObject)->Type;
+            dynamic_cast<const TemplateTypeClass*>(PendingObject)->Type;
         (*this)[template_cell].TIcon = static_cast<unsigned char>(
             Cell_X(*occupy) +
-            (Cell_Y(*occupy) * ((TemplateTypeClass*)PendingObject)->Width));
+            (Cell_Y(*occupy) *
+             dynamic_cast<const TemplateTypeClass*>(PendingObject)->Width));
         (*this)[template_cell].Recalc_Attributes();
 
         /*
@@ -1012,7 +1013,7 @@ int MapEditClass::Place_Object() {
     ** Update the Tiberium computation if we're placing an overlay
     */
     if (PendingObject->What_Am_I() == RTTI_OVERLAYTYPE &&
-        ((OverlayTypeClass*)PendingObject)->IsTiberium) {
+        dynamic_cast<const OverlayTypeClass*>(PendingObject)->IsTiberium) {
       TotalValue = Overpass();
       Flag_To_Redraw(false);
     }
@@ -1024,8 +1025,9 @@ int MapEditClass::Place_Object() {
       //			node.Type = ((BuildingTypeClass
       //*)PendingObject)->Type; 			node.Cell =
       // Coord_Cell(PendingObjectPtr->Coord);
-      Base.Nodes.Add(BaseNodeClass(((BuildingTypeClass*)PendingObject)->Type,
-                                   Coord_Cell(PendingObjectPtr->Coord)));
+      Base.Nodes.Add(BaseNodeClass(
+          dynamic_cast<const BuildingTypeClass*>(PendingObject)->Type,
+          Coord_Cell(PendingObjectPtr->Coord)));
     }
 
     PendingObjectPtr = nullptr;

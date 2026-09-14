@@ -237,7 +237,9 @@ bool FixedHeapClass::Free(void* pointer) {
  *=============================================================================================*/
 int FixedHeapClass::ID(const void* pointer) {
   if (pointer && Size) {
-    return static_cast<int>(((char*)pointer - (char*)Buffer) / Size);
+    return static_cast<int>(
+        (static_cast<const char*>(pointer) - static_cast<const char*>(Buffer)) /
+        Size);
   }
   return -1;
 }

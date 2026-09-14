@@ -3562,7 +3562,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
             **	selected group, or it just plain has never been assigned a
             **	formation offset, then it can't be a formation move.
             */
-            const FootClass* foot = (FootClass*)tobject;
+            const auto* foot = dynamic_cast<const FootClass*>(tobject);
             if (std::cmp_not_equal(foot->Group, group) ||
                 foot->XFormOffset == kNoFormationOffset) {
               FormMove = false;
@@ -3602,7 +3602,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
                 continue;
               }
 
-              const FootClass* foot = (FootClass*)obj;
+              const auto* foot = dynamic_cast<const FootClass*>(obj);
 
               /*
               **	Only consider objects that are owned by the player.

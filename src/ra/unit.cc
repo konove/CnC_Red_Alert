@@ -3370,7 +3370,7 @@ ActionType UnitClass::What_Action(const ObjectClass* object) const {
   ** Allow units to move onto land mines.
   */
   if (action == ACTION_NONE && object->What_Am_I() == RTTI_BUILDING) {
-    const StructType blah = *(BuildingClass*)object;
+    const StructType blah = *dynamic_cast<const BuildingClass*>(object);
     if (blah == STRUCT_AVMINE || blah == STRUCT_APMINE) {
       return ACTION_MOVE;
     }
@@ -3478,7 +3478,7 @@ ActionType UnitClass::What_Action(const ObjectClass* object) const {
   */
   if (House->Is_Ally(object) && House->IsPlayerControl && object->Is_Techno() &&
       object->What_Am_I() == RTTI_VESSEL) {
-    if (*(VesselClass*)object != VESSEL_CARRIER) {
+    if (*dynamic_cast<const VesselClass*>(object) != VESSEL_CARRIER) {
       switch (((UnitClass*)this)
                   ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass*)object)) {
         case RADIO_ROGER:
@@ -4760,7 +4760,8 @@ bool UnitClass::Should_Crush_It(const TechnoClass* it) const {
   /*
   ** Don't allow crushing of spies by computer-controlled vehicles.
   */
-  if (it->What_Am_I() == RTTI_INFANTRY && *(InfantryClass*)it == INFANTRY_SPY) {
+  if (it->What_Am_I() == RTTI_INFANTRY &&
+      *dynamic_cast<const InfantryClass*>(it) == INFANTRY_SPY) {
     return false;
   }
 

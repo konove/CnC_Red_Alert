@@ -1052,7 +1052,8 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
               * the icon
               */
               case RTTI_TEMPLATETYPE:
-                tptr = (TemplateTypeClass*)Map.PendingObject;
+                tptr =
+                    dynamic_cast<const TemplateTypeClass*>(Map.PendingObject);
                 if (tptr->Get_Image_Data()) {
                   icon =
                       Cell_X(cell) -
@@ -1071,7 +1072,8 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
               */
               case RTTI_OVERLAYTYPE:
                 OverlayTypeClass::As_Reference(
-                    ((OverlayTypeClass*)Map.PendingObject)->Type)
+                    dynamic_cast<const OverlayTypeClass*>(Map.PendingObject)
+                        ->Type)
                     .Draw_It(x, y, OverlayData);
                 break;
 
@@ -1080,7 +1082,8 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
               */
               case RTTI_SMUDGETYPE:
                 SmudgeTypeClass::As_Reference(
-                    ((SmudgeTypeClass*)Map.PendingObject)->Type)
+                    dynamic_cast<const SmudgeTypeClass*>(Map.PendingObject)
+                        ->Type)
                     .Draw_It(x, y, 0);
                 break;
               default:

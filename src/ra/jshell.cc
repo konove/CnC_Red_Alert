@@ -92,11 +92,13 @@
 void* Small_Icon(const void* iconptr, int iconnum) {
   static unsigned char _icon[9];
   const auto* iptr = static_cast<const IControl_Type*>(iconptr);
-  unsigned char* data;
+  const unsigned char* data;
 
   if (iconptr) {
-    iconnum = ((unsigned char*)iptr + iptr->Map)[iconnum];
-    data = &((unsigned char*)iptr + iptr->Icons)[static_cast<base::ssize>(iconnum) * (base::ssize{24} * 24)];
+    iconnum = (static_cast<const unsigned char*>(iconptr) + iptr->Map)[iconnum];
+    data = &(static_cast<const unsigned char*>(iconptr) +
+             iptr->Icons)[static_cast<base::ssize>(iconnum) *
+                          (base::ssize{24} * 24)];
     //		data = &iptr->Icons[iconnum*(24*24)];
 
     for (int index = 0; index < 9; index++) {
