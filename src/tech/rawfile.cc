@@ -69,7 +69,6 @@
 #include "base/numeric.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
-#include "tech/wwfile.h"
 
 /***********************************************************************************************
  * RawFileClass::Error -- Handles displaying a file error message. *
@@ -233,7 +232,7 @@ bool RawFileClass::Open(FileAccess rights) {
 }
 
 /***********************************************************************************************
- * RawFileClass::DoIsAvailable -- Checks to see if the specified file is
+ * RawFileClass::IsAvailable -- Checks to see if the specified file is
  *available to open.     *
  *                                                                                             *
  *    This routine will examine the disk system to see if the specified file can
@@ -250,7 +249,7 @@ bool RawFileClass::Open(FileAccess rights) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-bool RawFileClass::DoIsAvailable(AvailabilityCheck mode) {
+bool RawFileClass::IsAvailable() {
   if (filename_.empty()) {
     return false;
   }
@@ -260,14 +259,6 @@ bool RawFileClass::DoIsAvailable(AvailabilityCheck mode) {
   *availability check. *	Return true in this case.
   */
   if (IsOpen()) {
-    return true;
-  }
-
-  // If this is a blocking check, then go through the normal open channels,
-  // since those channels ensure that the file must exist.
-  if (mode == AvailabilityCheck::kBlocking) {
-    RawFileClass::Open(FileAccess::kRead);
-    RawFileClass::Close();
     return true;
   }
 

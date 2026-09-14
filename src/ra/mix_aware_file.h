@@ -119,17 +119,16 @@ class MixAwareFile : public CDFileClass {
   // be deleted.
   bool Delete() override;
 
+  // Returns true if the file is open, is packed in a registered mixfile, or is
+  // found on disk.
+  bool IsAvailable() override;
+
   // Handles a file error. All three arguments are ignored: the only recovery
   // attempted is making sure the scenario's required CD (RequiredCD) is in a
   // drive, prompting the player for it. If the player cancels, the game exits
   // and this never returns; otherwise it returns, even when can_retry is false.
   void Error(int error, bool can_retry = false,
              std::string_view filename = {}) override;
-
- protected:
-  // Returns true if the file is open, is packed in a registered mixfile, or is
-  // found on disk. mode is passed on to the disk check.
-  bool DoIsAvailable(AvailabilityCheck mode) override;
 
  private:
   // A view of the file's bytes inside the RAM image of a cached mixfile, or an

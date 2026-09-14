@@ -59,7 +59,6 @@
 
 #include "base/numeric.h"
 #include "sdllib/file_access.h"
-#include "tech/wwfile.h"
 
 /***********************************************************************************************
  * RAMFileClass::RAMFileClass -- Construct a RAM buffer based "file" object. *
@@ -164,7 +163,7 @@ bool RAMFileClass::Delete() {
 }
 
 /***********************************************************************************************
- * RAMFileClass::DoIsAvailable -- Determines if the "file" is available. *
+ * RAMFileClass::IsAvailable -- Determines if the "file" is available. *
  *                                                                                             *
  *    RAM files are always available. *
  *                                                                                             *
@@ -176,7 +175,7 @@ bool RAMFileClass::Delete() {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool RAMFileClass::DoIsAvailable(AvailabilityCheck /*mode*/) { return true; }
+bool RAMFileClass::IsAvailable() { return true; }
 
 /***********************************************************************************************
  * RAMFileClass::IsOpen -- Is the file open? *

@@ -66,6 +66,7 @@ class RAMFileClass final : public FileClass {
   void SetName(std::string_view /*filename*/) override {}
   bool Create() override;
   bool Delete() override;
+  bool IsAvailable() override;
   [[nodiscard]] bool IsOpen() const override;
   bool Open(std::string_view filename,
             FileAccess access = FileAccess::kRead) override;
@@ -77,9 +78,6 @@ class RAMFileClass final : public FileClass {
   void Close() override;
   void Error(int /*error*/, bool /*can_retry*/ = false,
              std::string_view /*filename*/ = {}) override {}
-
- protected:
-  bool DoIsAvailable(AvailabilityCheck mode) override;
 
  private:
   // The memory the "file" lives in.

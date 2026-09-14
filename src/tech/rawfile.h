@@ -86,6 +86,7 @@ class RawFileClass : public FileClass {
   void SetName(std::string_view filename) override;
   bool Create() override;
   bool Delete() override;
+  bool IsAvailable() override;
   [[nodiscard]] bool IsOpen() const override;
   bool Open(std::string_view filename,
             FileAccess rights = FileAccess::kRead) override;
@@ -108,8 +109,6 @@ class RawFileClass : public FileClass {
   [[nodiscard]] int bias_start() const { return bias_start_; }
 
  protected:
-  bool DoIsAvailable(AvailabilityCheck mode) override;
-
   // Seeks in the underlying file, ignoring any bias.
   int32_t RawSeek(int32_t offset, int origin = SEEK_CUR);
 

@@ -37,7 +37,6 @@
 #include <algorithm>
 #include <bit>
 #include <cassert>
-#include <cerrno>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -309,7 +308,6 @@ bool MixFileClass<T>::Cache() {
   if (const int actual = straw->Get(data_.data(), data_size_);
       actual != data_size_) {
     data_.clear();
-    file.Error(EIO);
     return false;
   }
 

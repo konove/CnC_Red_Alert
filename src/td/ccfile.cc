@@ -72,7 +72,6 @@
 #include "td/jshell.h"
 #include "tech/cdfile.h"
 #include "tech/mixfile.h"
-#include "tech/wwfile.h"
 // #include	<share.h>
 // #include	"ccfile.h"
 
@@ -322,7 +321,7 @@ int32_t CCFileClass::Size() {
 }
 
 /***********************************************************************************************
- * CCFileClass::DoIsAvailable -- Checks for existence of file on disk or in
+ * CCFileClass::IsAvailable -- Checks for existence of file on disk or in
  *mixfile.            *
  *                                                                                             *
  *    This routine will examine the mixfile system looking for the file. If the
@@ -337,11 +336,11 @@ int32_t CCFileClass::Size() {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-bool CCFileClass::DoIsAvailable(AvailabilityCheck /*mode*/) {
+bool CCFileClass::IsAvailable() {
   if (MFCD::Offset(FileName()).has_value()) {
     return true;
   }
-  return CDFileClass::DoIsAvailable(AvailabilityCheck::kQuick);
+  return CDFileClass::IsAvailable();
 }
 
 /***********************************************************************************************
@@ -419,8 +418,7 @@ bool CCFileClass::Open(FileAccess rights) {
   **	of whether it also exists in RAM. This is slower, but allows
   **	upgrade files to work.
   */
-  if (HasAccess(rights, FileAccess::kWrite) ||
-      CDFileClass::DoIsAvailable(AvailabilityCheck::kQuick)) {
+  if (HasAccess(rights, FileAccess::kWrite) || CDFileClass::IsAvailable()) {
     return CDFileClass::Open(rights);
   }
 
@@ -475,13 +473,6 @@ bool CCFileClass::Open(FileAccess rights) {
 
 static CCFileClass Handles[10];
 
-#ifdef NEVER
-bool __cdecl Set_Search_Drives(const char*) {
-  CCFileClass::Set_Search_Path(path);
-  return (true);
-}
-#endif
-
 int __cdecl OpenFileHandle(const std::string_view file_name, FileAccess mode) {
   for (int index = 0; index < std::ssize(Handles); index++) {
     if (!Handles[index].IsOpen()) {
@@ -521,20 +512,6 @@ bool __cdecl FileExists(const std::string_view file_name) {
   return file.IsAvailable();
 }
 
-#ifdef NEVER
-int __cdecl Delete_File(const char* file_name) {
-  return (CCFileClass(file_name).Delete());
-}
-
-int __cdecl Create_File(const char* file_name) {
-  return (CCFileClass(file_name).Create());
-}
-
-ULONG __cdecl Load_Data(const char* name, VOID* ptr, ULONG size) {
-  return (CCFileClass(name).Read(ptr, size));
-}
-#endif
-
 void* __cdecl Load_Alloc_Data(const char* name, int /*unused*/) {
   CCFileClass file(name);
 
@@ -548,12 +525,6 @@ int32_t __cdecl FileHandleSize(int handle) {
   return 0;
 }
 
-#ifdef NEVER
-ULONG __cdecl Write_Data(const char* name, const VOID* ptr, ULONG size) {
-  return (CCFileClass(name).Write(ptr, size));
-}
-#endif
-
 int32_t __cdecl SeekFileHandle(int handle, int32_t offset, int origin) {
   if (handle != kInvalidHandle && Handles[handle].IsOpen()) {
     return Handles[handle].Seek(offset, origin);
@@ -566,32 +537,4 @@ void WWDOS_Shutdown() {
     Handle.SetName({});
   }
 }
-
-#ifdef NEVER
-bool __cdecl Multi_Drive_Search(bool on) {
-  //	return(CCFileClass::Multi_Drive_Search(on));
-  return (on);
-}
-
-VOID __cdecl WWDOS_Init() {}
-
-VOID __cdecl WWDOS_Shutdown() {}
-
-int __cdecl Find_Disk_Number(const char*) { return (0); }
-#endif
-
-// ULONG cdecl Load_Uncompress(BYTE const *file, BuffType uncomp_buff, BuffType
-// dest_buff, VOID *reserved_data)
-//{
-//	return(Load_Uncompress(CCFileClass(file), uncomp_buff, dest_buff,
-// reserved_data)); 	return(CCFileClass(file).Load_Uncompress(uncomp_buff,
-// dest_buff, reserved_data));
-// }
-
-// extern "C" {
-// int MaxDevice;
-// int DefaultDrive;
-// char CallingDOSInt;
-
-//}
 

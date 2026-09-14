@@ -56,7 +56,6 @@
 
 #include "sdllib/file_access.h"
 #include "tech/rawfile.h"
-#include "tech/wwfile.h"
 
 std::vector<std::string> CDFileClass::search_paths_;
 std::string CDFileClass::raw_path_;
@@ -230,7 +229,7 @@ void CDFileClass::SetName(const std::string_view filename) {
   // (a search path alone would name a directory), or the file was found
   // locally, keep the name as given.
   if (search_disabled_ || search_paths_.empty() || name.empty() ||
-      RawFileClass::DoIsAvailable(AvailabilityCheck::kQuick)) {
+      RawFileClass::IsAvailable()) {
     return;
   }
 
@@ -239,7 +238,7 @@ void CDFileClass::SetName(const std::string_view filename) {
     // AddSearchPath guarantees base_path ends with a path separator, so we can
     // safely concatenate directly.
     RawFileClass::SetName(base_path + name);
-    if (RawFileClass::DoIsAvailable(AvailabilityCheck::kQuick)) {
+    if (RawFileClass::IsAvailable()) {
       return;
     }
   }

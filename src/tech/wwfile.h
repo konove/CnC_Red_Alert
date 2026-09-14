@@ -53,12 +53,6 @@
 
 #include "sdllib/file_access.h"
 
-// Specifies how thoroughly to check file availability.
-enum class AvailabilityCheck {
-  kQuick,     // Fast check, may return false for temporarily unavailable files
-  kBlocking,  // Full check with error recovery, may block waiting for media
-};
-
 class FileClass {
  public:
   FileClass() = default;
@@ -82,14 +76,9 @@ class FileClass {
   virtual bool Create() = 0;
   virtual bool Delete() = 0;
 
-  // Returns true if the file is available to be opened.
-  bool IsAvailable() { return DoIsAvailable(AvailabilityCheck::kQuick); }
-
-  // Returns true if the file is available. Uses full error recovery which may
-  // block waiting for media (e.g., prompting for CD-ROM).
-  bool IsAvailableStrict() {
-    return DoIsAvailable(AvailabilityCheck::kBlocking);
-  }
+  // Returns true if the file is available to be opened. Never blocks waiting
+  // for media.
+  virtual bool IsAvailable() = 0;
 
   [[nodiscard]] virtual bool IsOpen() const = 0;
   virtual bool Open(std::string_view filename,
@@ -102,9 +91,6 @@ class FileClass {
   virtual void Close() = 0;
   virtual void Error(int error, bool can_retry = false,
                      std::string_view filename = {}) = 0;
-
- protected:
-  virtual bool DoIsAvailable(AvailabilityCheck mode) = 0;
 };
 
 #endif  // CNC_RED_ALERT_TECH_WWFILE_H_

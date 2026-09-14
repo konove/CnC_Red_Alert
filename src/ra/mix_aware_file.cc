@@ -43,7 +43,6 @@
 #include "tech/cdfile.h"
 #include "tech/mixfile.h"
 #include "tech/rawfile.h"
-#include "tech/wwfile.h"
 
 // The name is copied by SetName, so filename need not outlive the object.
 MixAwareFile::MixAwareFile(const std::string_view filename) {
@@ -149,7 +148,7 @@ int32_t MixAwareFile::Size() {
   // open on a mixfile on disk does not take this path: its handle is open, so
   // the check succeeds and the biased CDFileClass::Size() below reports the
   // embedded length.
-  if (!CDFileClass::DoIsAvailable(AvailabilityCheck::kQuick)) {
+  if (!CDFileClass::IsAvailable()) {
     if (const auto location = MFCD::Offset(FileName())) {
       return location->size;
     }
@@ -163,15 +162,15 @@ bool MixAwareFile::Delete() {
   Close();
 
   // Only a loose file on disk can be deleted. Without this check the base class
-  // would take the mixfile lookup in DoIsAvailable() as proof that the file
+  // would take the mixfile lookup in IsAvailable() as proof that the file
   // exists and then try to delete a disk file that is not there.
-  if (!CDFileClass::DoIsAvailable(AvailabilityCheck::kQuick)) {
+  if (!CDFileClass::IsAvailable()) {
     return false;
   }
   return CDFileClass::Delete();
 }
 
-bool MixAwareFile::DoIsAvailable(AvailabilityCheck mode) {
+bool MixAwareFile::IsAvailable() {
   // A file that is open is presumed available.
   if (IsOpen()) {
     return true;
@@ -186,7 +185,7 @@ bool MixAwareFile::DoIsAvailable(AvailabilityCheck mode) {
 
   // Otherwise a manual check of the file system is required to determine if the
   // file is actually available.
-  return CDFileClass::DoIsAvailable(mode);
+  return CDFileClass::IsAvailable();
 }
 
 bool MixAwareFile::IsOpen() const {
@@ -217,8 +216,7 @@ bool MixAwareFile::Open(FileAccess rights) {
   // disk. If it does, then open this file regardless of whether it also exists
   // in a mixfile. This is slower, but allows upgrade files to work. Writes
   // always go to disk, since mixfile contents are read-only.
-  if (HasAccess(rights, FileAccess::kWrite) ||
-      CDFileClass::DoIsAvailable(AvailabilityCheck::kQuick)) {
+  if (HasAccess(rights, FileAccess::kWrite) || CDFileClass::IsAvailable()) {
     return CDFileClass::Open(rights);
   }
 
