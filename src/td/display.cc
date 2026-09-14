@@ -956,7 +956,7 @@ void DisplayClass::AI(KeyNumType& input, int x, int y) {
  *system.                                                   * 05/31/1994 JLB :
  *Sorts object position if this is for the ground layer.                   *
  *=============================================================================================*/
-void DisplayClass::Submit(const ObjectClass* object, LayerType layer) {
+void DisplayClass::Submit(ObjectClass* object, LayerType layer) {
   if (object) {
     Layer[layer].Submit(object, layer == LAYER_GROUND);
   }
@@ -979,9 +979,9 @@ void DisplayClass::Submit(const ObjectClass* object, LayerType layer) {
  * HISTORY: * 05/31/1994 JLB : Created. * 05/31/1994 JLB : Improved layer
  *system.                                                   *
  *=============================================================================================*/
-void DisplayClass::Remove(const ObjectClass* object, LayerType layer) {
+void DisplayClass::Remove(ObjectClass* object, LayerType layer) {
   if (object) {
-    Layer[layer].Delete((ObjectClass*)object);
+    Layer[layer].Delete(object);
   }
 }
 

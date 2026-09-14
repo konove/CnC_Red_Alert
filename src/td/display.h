@@ -177,8 +177,8 @@ class DisplayClass : public MapClass {
   [[nodiscard]] COORDINATE Pixel_To_Coord(int x, int y) const;
   bool Coord_To_Pixel(COORDINATE coord, int& x, int& y) const;
   bool Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest) const;
-  static void Remove(const ObjectClass* object, LayerType layer);
-  static void Submit(const ObjectClass* object, LayerType layer);
+  static void Remove(ObjectClass* object, LayerType layer);
+  static void Submit(ObjectClass* object, LayerType layer);
   CELL Calculated_Cell(SourceType dir, HousesType house);
   [[nodiscard]] bool In_View(CELL cell) const;
   bool Passes_Proximity_Check(const ObjectTypeClass* object);

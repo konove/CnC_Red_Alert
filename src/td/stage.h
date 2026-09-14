@@ -46,25 +46,29 @@
 #include "td/monoc.h"
 
 class StageClass {
+  // The animation state is mutable because a firing animation restarts from
+  // const queries: UnitClass::Can_Fire() const resets the stage and rate when
+  // a fire-animated unit is cleared to fire (precedent: FootClass::IsFiring).
+
   /*
   **	This handles the animation stage of the object. This includes smoke,
   *walking, *	flapping, and rocket flames.
   */
-  uint16_t Stage{0};
+  mutable uint16_t Stage{0};
 
   /*
   **	This is the countdown timer for stage animation. When this counts down
   **	to zero, then the stage increments by one and the time cycle starts
   **	over again.
   */
-  unsigned char StageTimer{0};
+  mutable unsigned char StageTimer{0};
 
   /*
   **	This is the value to assign the StageTimer whenever it needs to be
   *reset. Thus, *	this value is the control of how fast the stage value
   *increments.
   */
-  unsigned char Rate{0};
+  mutable unsigned char Rate{0};
 
  public:
   // Field-wise saved-game support.
@@ -82,8 +86,8 @@ class StageClass {
 
   [[nodiscard]] int Fetch_Stage() const { return Stage; }
   [[nodiscard]] int Fetch_Rate() const { return Rate; }
-  void Set_Stage(int stage) { Stage = static_cast<uint16_t>(stage); }
-  void Set_Rate(unsigned char rate) { Rate = StageTimer = rate; }
+  void Set_Stage(int stage) const { Stage = static_cast<uint16_t>(stage); }
+  void Set_Rate(unsigned char rate) const { Rate = StageTimer = rate; }
   void AI() {}
   bool Graphic_Logic() {
     if (Rate) {

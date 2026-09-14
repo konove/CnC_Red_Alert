@@ -4920,7 +4920,7 @@ bool BuildingClass::Flush_For_Placement(TechnoClass* techno, CELL cell) {
       const CELL newcell = static_cast<CELL>(cell + *list++);
 
       if (Map.In_Radar(newcell)) {
-        const TechnoClass* occupier = Map[newcell].Cell_Techno();
+        TechnoClass* occupier = Map[newcell].Cell_Techno();
         if (occupier) {
           again = true;
           if (occupier->House->Is_Ally(this)) {

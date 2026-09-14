@@ -581,12 +581,8 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
   */
   if ((cf == FIRE_OK) && Class->IsFireAnim) {
     if (!IsFiring) {
-      UnitClass* nonconst;
-
-      nonconst = (UnitClass*)this;
-      nonconst->Set_Rate(
-          static_cast<unsigned char>(Options.Normalize_Delay(2)));
-      nonconst->Set_Stage(0);
+      Set_Rate(static_cast<unsigned char>(Options.Normalize_Delay(2)));
+      Set_Stage(0);
       IsFiring = true;
       cf = FIRE_BUSY;
     } else {

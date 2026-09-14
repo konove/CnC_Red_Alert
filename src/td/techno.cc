@@ -3294,7 +3294,7 @@ int TechnoClass::Threat_Range(int control) const {
  *=============================================================================================*/
 // Not const: sends defenders to the attacked base.
 // NOLINTNEXTLINE(readability-make-member-function-const)
-void TechnoClass::Base_Is_Attacked(const TechnoClass* enemy) {
+void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
   FootClass* defender[6];
   int value[6];
   int count = 0;
@@ -3501,7 +3501,7 @@ void TechnoClass::Base_Is_Attacked(const TechnoClass* enemy) {
   }
 
   if (risktotal > desired) {
-    ((FootClass*)enemy)->BaseAttackTimer.Set(int64_t{15} * 15);
+    dynamic_cast<FootClass*>(enemy)->BaseAttackTimer.Set(int64_t{15} * 15);
   }
 }
 
@@ -3924,8 +3924,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
  * HISTORY: * 07/18/1995 JLB : Created. * 08/13/1995 JLB : Recognizes the
  *"IsLeader" method of building preference.                 *
  *=============================================================================================*/
-BuildingClass* TechnoClass::Find_Docking_Bay(StructType b,
-                                             bool friendly) const {
+BuildingClass* TechnoClass::Find_Docking_Bay(StructType b, bool friendly) {
   BuildingClass* best = nullptr;
 
   /*
@@ -3950,8 +3949,7 @@ BuildingClass* TechnoClass::Find_Docking_Bay(StructType b,
           (friendly ? building->House->Is_Ally(this)
                     : building->House == House) &&
           !building->IsInLimbo && *building == b &&
-          ((TechnoClass*)this)->Transmit_Message(RADIO_CAN_LOAD, building) ==
-              RADIO_ROGER) {
+          Transmit_Message(RADIO_CAN_LOAD, building) == RADIO_ROGER) {
         /*
         **	If the building qualifies and this building is better than the
         **	last qualifying building (as rated by distance), then record

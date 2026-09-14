@@ -63,12 +63,12 @@ class LinkClass {
   [[nodiscard]] virtual const LinkClass& Head_Of_List() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND final;
   virtual LinkClass& Head_Of_List() ABSL_ATTRIBUTE_LIFETIME_BOUND final {
-    return (LinkClass&)static_cast<const LinkClass*>(this)->Head_Of_List();
+    return Head_Of(*this);
   }
   [[nodiscard]] virtual const LinkClass& Tail_Of_List() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND final;
   virtual LinkClass& Tail_Of_List() ABSL_ATTRIBUTE_LIFETIME_BOUND final {
-    return (LinkClass&)static_cast<const LinkClass*>(this)->Tail_Of_List();
+    return Tail_Of(*this);
   }
   virtual void Zap();
   virtual LinkClass* Remove() ABSL_ATTRIBUTE_LIFETIME_BOUND;
@@ -80,6 +80,31 @@ class LinkClass {
   LinkClass& operator=(const LinkClass&) = delete;
 
  private:
+  // The list walks behind both Head_Of_List and Tail_Of_List overloads. Self
+  // is LinkClass or const LinkClass, so neither overload casts away const.
+  template <class Self>
+  static Self& Head_Of(Self& self ABSL_ATTRIBUTE_LIFETIME_BOUND) {
+    Self* link = &self;
+    while (link->Prev) {
+      link = link->Prev;
+      if (link == &self) {
+        break;  // Safety check
+      }
+    }
+    return *link;
+  }
+  template <class Self>
+  static Self& Tail_Of(Self& self ABSL_ATTRIBUTE_LIFETIME_BOUND) {
+    Self* link = &self;
+    while (link->Next) {
+      link = link->Next;
+      if (link == &self) {
+        break;  // Safety check
+      }
+    }
+    return *link;
+  }
+
   /*
   **	Pointers to previous and next link objects in chain.
   */

@@ -218,7 +218,7 @@ class TechnoClass : public RadioClass,
   [[nodiscard]] virtual int Refund_Amount() const;
   virtual CELL Find_Exit_Cell(const TechnoClass* techno) const;
   [[nodiscard]] virtual BuildingClass* Find_Docking_Bay(StructType b,
-                                                        bool friendly) const;
+                                                        bool friendly);
   [[nodiscard]] virtual int Threat_Range(int control) const;
   [[nodiscard]] virtual InfantryType Crew_Type() const;
   [[nodiscard]] const TechnoTypeClass* Techno_Type_Class() const {
@@ -258,7 +258,7 @@ class TechnoClass : public RadioClass,
   **	Combat related.
   */
   virtual int Made_A_Kill() { return CrewClass::Add_Kill(); }
-  void Base_Is_Attacked(const TechnoClass* enemy);
+  void Base_Is_Attacked(TechnoClass* enemy);
   void Kill_Cargo(TechnoClass* source);
   void Record_The_Kill(TechnoClass* source) override;
   virtual bool Target_Something_Nearby(ThreatType threat = THREAT_NORMAL);

@@ -201,6 +201,10 @@ class CellClass {
   /*
   **	Query functions.
   */
+  // Returns the first live occupier of the cell, or nullptr. The non-const
+  // overload also clears the occupier chain head when it finds a dead object
+  // in front, so the stale entry is not reported again.
+  [[nodiscard]] ObjectClass* Cell_Occupier();
   [[nodiscard]] ObjectClass* Cell_Occupier() const;
   static int Spot_Index(COORDINATE coord);
   [[nodiscard]] bool Is_Spot_Free(int spot_index) const {
@@ -214,12 +218,18 @@ class CellClass {
   [[nodiscard]] bool Is_Generally_Clear() const;
   [[nodiscard]] TARGET As_Target() const { return ::As_Target(Cell_Number()); }
   [[nodiscard]] BuildingClass* Cell_Building() const;
+  // Returns the cell adjacent to this one in direction `face`, or this cell
+  // itself when `face` is invalid or the neighbour lies outside the map.
   [[nodiscard]] const CellClass& Adjacent_Cell(FacingType face) const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND;
-  CellClass& Adjacent_Cell(FacingType face) ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return (CellClass&)(*static_cast<const CellClass*>(this))
-        .Adjacent_Cell(face);
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return *(this + Adjacent_Offset(face));
   }
+  CellClass& Adjacent_Cell(FacingType face) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return *(this + Adjacent_Offset(face));
+  }
+  // Returns the cell-index delta from this cell to its neighbour in direction
+  // `face`, or 0 when `face` is invalid or the neighbour lies off the map.
+  [[nodiscard]] int Adjacent_Offset(FacingType face) const;
   [[nodiscard]] COORDINATE Cell_Coord() const;
   [[nodiscard]] int Cell_Color(bool override = false) const;
   [[nodiscard]] CELL Cell_Number() const;

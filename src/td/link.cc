@@ -154,16 +154,7 @@ LinkClass* LinkClass::Get_Prev() const { return Prev; }
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-const LinkClass& LinkClass::Head_Of_List() const {
-  const LinkClass* link = this;
-  while (link->Prev) {
-    link = link->Prev;
-    if (link == this) {
-      break;  // Safety check
-    }
-  }
-  return *link;
-}
+const LinkClass& LinkClass::Head_Of_List() const { return Head_Of(*this); }
 
 /***********************************************************************************************
  * LinkClass::Tail_Of_List -- Scans for the object at the end of the list. *
@@ -179,16 +170,7 @@ const LinkClass& LinkClass::Head_Of_List() const {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-const LinkClass& LinkClass::Tail_Of_List() const {
-  const LinkClass* link = this;
-  while (link->Next) {
-    link = link->Next;
-    if (link == this) {
-      break;  // Safety check
-    }
-  }
-  return *link;
-}
+const LinkClass& LinkClass::Tail_Of_List() const { return Tail_Of(*this); }
 
 /***********************************************************************************************
  * LinkClass::Add -- This object adds itself to the given list *

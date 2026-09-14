@@ -70,7 +70,7 @@ TEST_F(QueueAlignmentTest, ExtractsCompressedFrameAndPayloadFromOddAddress) {
   const int size = static_cast<int>(
       header_size + sizeof(EventClass::EventType) + sizeof(delay));
   EXPECT_EQ(Extract_Compressed_Events(packet, size), 2);
-  ASSERT_EQ(DoList.Count, 2);
+  ASSERT_EQ(DoList.Count(), 2);
   EXPECT_EQ(DoList[0].Type, EventClass::FRAMEINFO);
   EXPECT_EQ(DoList[1].Type, EventClass::RESPONSE_TIME);
   EXPECT_EQ(DoList[1].Frame, 123);
@@ -89,7 +89,7 @@ TEST_F(QueueAlignmentTest, ExtractsUncompressedEventWithoutMutatingPacket) {
   port::WriteUnaligned(bytes.data() + 1, event);
   const auto before = bytes;
   EXPECT_EQ(Extract_Uncompressed_Events(bytes.data() + 1, sizeof(event)), 1);
-  ASSERT_EQ(DoList.Count, 1);
+  ASSERT_EQ(DoList.Count(), 1);
   EXPECT_EQ(DoList[0].Frame, 321);
   EXPECT_EQ(DoList[0].Data.FrameInfo.Delay, 11);
   EXPECT_FALSE(DoList[0].IsExecuted);
@@ -99,6 +99,6 @@ TEST_F(QueueAlignmentTest, ExtractsUncompressedEventWithoutMutatingPacket) {
 TEST_F(QueueAlignmentTest, RejectsTruncatedCompressedType) {
   std::array<uint8_t, 3> bytes{};
   EXPECT_EQ(Extract_Compressed_Events(bytes.data(), bytes.size()), 0);
-  EXPECT_EQ(DoList.Count, 0);
+  EXPECT_EQ(DoList.Count(), 0);
 }
 }  // namespace

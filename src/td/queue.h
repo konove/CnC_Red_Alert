@@ -74,15 +74,15 @@
 template <class T, int size>
 class QueueClass {
  public:
+  //-------------- Functions --------------------
+  QueueClass() noexcept;  // Default constructor.
+
   /*
   **	This is the count of the number of objects in the queue. If this count
   *is zero, *	then the operator[], First(), and Next() functions are
   *undefined. Check this *	value BEFORE calling these functions.
   */
-  const int Count{0};
-
-  //-------------- Functions --------------------
-  QueueClass() noexcept;  // Default constructor.
+  [[nodiscard]] int Count() const { return Count_; }
 
   /*
   **	The bracket subscript operator functions similarly to the way a normal
@@ -116,7 +116,8 @@ class QueueClass {
   bool Add(const T& /*q*/);
 
  private:
-  int Head = 0;  // Index of element in list the longest.
+  int Count_ = 0;  // Number of objects currently in the queue.
+  int Head = 0;    // Index of element in list the longest.
   int Tail = 0;  // Index where next new addition will go.
 
   T Array[size];  // Raw array of objects.
@@ -157,7 +158,7 @@ QueueClass<T, size>::QueueClass() noexcept {
  *=============================================================================================*/
 template <class T, int size>
 void QueueClass<T, size>::Init() {
-  (int&)Count = 0;
+  Count_ = 0;
   Head = 0;
   Tail = 0;
 }
@@ -180,13 +181,13 @@ void QueueClass<T, size>::Init() {
  *=============================================================================================*/
 template <class T, int size>
 bool QueueClass<T, size>::Add(const T& q) {
-  if (Count < size) {
+  if (Count_ < size) {
     Array[Tail] = q;
     Tail = (Tail + 1) & (size - 1);
-    (int&)Count = Count + 1;
+    Count_++;
     return true;
   }
-  Mono_Printf("Queue Add failed Count %d size %d tail %d head %d \n", Count,
+  Mono_Printf("Queue Add failed Count %d size %d tail %d head %d \n", Count_,
               size, Tail, Head);
   return false;
 }
@@ -210,11 +211,11 @@ bool QueueClass<T, size>::Add(const T& q) {
  *=============================================================================================*/
 template <class T, int size>
 int QueueClass<T, size>::Next() {
-  if (Count) {
+  if (Count_) {
     Head = (Head + 1) & (size - 1);
-    (int&)Count = Count - 1;
+    Count_--;
   }
-  return Count;
+  return Count_;
 }
 
 /***********************************************************************************************

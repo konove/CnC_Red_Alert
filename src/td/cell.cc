@@ -34,9 +34,9 @@
  *                  Last Update : August 17, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * CellClass::Adjacent_Cell -- Determines the adjacent cell
- *according to facing.             * CellClass::Adjust_Threat -- Allows
- *adjustment of threat at cell level                     * CellClass::CellClass
+ * Functions: * CellClass::Adjacent_Offset -- Determines the offset to the
+ * adjacent cell according to facing.             * CellClass::Adjust_Threat --
+ * Allows adjustment of threat at cell level                     * CellClass::CellClass
  *-- Constructor for cell objects.                                     *
  *   CellClass::Cell_Building -- Return with building at specified cell. *
  *   CellClass::Cell_Color   -- Determine what radar color to use for this cell.
@@ -1729,25 +1729,18 @@ void CellClass::Incoming(COORDINATE threat, bool forced) {
 }
 
 /***********************************************************************************************
- * CellClass::Adjacent_Cell -- Determines the adjacent cell according to facing.
+ * CellClass::Adjacent_Offset -- Determines the offset to the adjacent cell.
  **
  *                                                                                             *
- *    Use this routine to return a reference to the adjacent cell in the
- *direction specified.  *
- *                                                                                             *
- * INPUT:   face  -- The direction to use when determining the adjacent cell. *
- *                                                                                             *
- * OUTPUT:  Returns with a reference to the adjacent cell. *
- *                                                                                             *
- * WARNINGS:   If the facing value is invalid, then a reference to the same cell
- *is returned.  *
+ *    Both Adjacent_Cell overloads share this so that neither has to cast
+ *away const.       *
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
+int CellClass::Adjacent_Offset(FacingType face) const {
   Validate();
   if (static_cast<unsigned>(face) >= FACING_COUNT) {
-    return *this;
+    return 0;
   }
 
   // The original formed the pointer first and tested its cell number against
@@ -1755,9 +1748,9 @@ const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
   // array is undefined even if the result is never dereferenced.
   const int adjacent = Cell_Number() + AdjacentCell[face];
   if (adjacent < 0 || adjacent >= MAP_CELL_TOTAL) {
-    return *this;
+    return 0;
   }
-  return *(this + AdjacentCell[face]);
+  return AdjacentCell[face];
 }
 
 /***************************************************************************
@@ -2329,12 +2322,23 @@ void CellClass::Shimmer() {
  *                                                                                             *
  * HISTORY: * 08/17/1995 JLB : Created. *
  *=============================================================================================*/
+ObjectClass* CellClass::Cell_Occupier() {
+  ObjectClass* ptr = OccupierPtr;
+
+  while (ptr && !ptr->IsActive) {
+    ptr = ptr->Next;
+    OccupierPtr = nullptr;
+  }
+
+  return ptr;
+}
+
+// Same walk as the non-const overload, minus the cleanup of the chain head.
 ObjectClass* CellClass::Cell_Occupier() const {
   ObjectClass* ptr = OccupierPtr;
 
   while (ptr && !ptr->IsActive) {
     ptr = ptr->Next;
-    (ObjectClass*&)OccupierPtr = nullptr;
   }
 
   return ptr;
