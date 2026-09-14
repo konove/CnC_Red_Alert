@@ -98,9 +98,9 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
-#include <span>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -124,6 +124,7 @@
 #include "tech/file.h"
 #include "tech/fixed.h"
 #include "tech/pipe.h"
+#include "tech/sha.h"
 #include "tech/shapipe.h"
 #include "tech/straw.h"
 #include "tech/xpipe.h"
@@ -184,8 +185,9 @@ bool CCINIClass::Load(Straw& file, bool withdigest) {
     /*
     **	If a digest is present, fetch it.
     */
-    unsigned char digest[20];
-    const int len = Get_UUBlock("Digest", digest, sizeof(digest));
+    Sha1Digest digest{};
+    const int len =
+        Get_UUBlock("Digest", digest.data(), static_cast<int>(digest.size()));
     if (len > 0) {
       Clear("Digest");
 
@@ -198,7 +200,7 @@ bool CCINIClass::Load(Straw& file, bool withdigest) {
       **	If the message digests don't match, then return with the special
       *error code.
       */
-      if (memcmp(digest, Digest, sizeof(digest)) != 0) {
+      if (digest != Digest) {
         return true;
       }
     }
@@ -269,7 +271,8 @@ bool CCINIClass::Save(Pipe& pipe, bool withdigest) const {
   /*
   **	Store the actual digest into the INI database.
   */
-  ((CCINIClass*)this)->Put_UUBlock("Digest", Digest, sizeof(Digest));
+  ((CCINIClass*)this)
+      ->Put_UUBlock("Digest", Digest.data(), static_cast<int>(Digest.size()));
 
   /*
   **	Output the database to the pipe specified.
@@ -1491,7 +1494,11 @@ int CCINIClass::Get_Unique_ID() const {
     ((CCINIClass*)this)->Calculate_Message_Digest();
   }
 
-  return static_cast<int>(CrcEngine::Compute(Digest));
+  CrcEngine crc;
+  for (const std::byte byte : Digest) {
+    crc.Update(std::to_integer<uint8_t>(byte));
+  }
+  return static_cast<int>(crc.Value());
 }
 
 /***********************************************************************************************
@@ -1517,7 +1524,7 @@ void CCINIClass::Calculate_Message_Digest() {
   NullPipe discard;
   SHAPipe sha(discard);
   INIClass::Save(sha);
-  sha.Result(Digest);
+  Digest = sha.digest();
   IsDigestPresent = true;
 }
 

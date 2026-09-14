@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "absl/strings/escaping.h"
+#include "absl/strings/str_cat.h"
 #include "base/types.h"
 #include "gtest/gtest.h"
 #include "tech/b64pipe.h"
@@ -96,9 +96,12 @@ void PutInPieces(Pipe& pipe, const std::vector<uint8_t>& bytes) {
 std::string Sha1Hex(const std::vector<uint8_t>& bytes) {
   SHAEngine sha;
   sha.Hash(bytes.data(), static_cast<int32_t>(bytes.size()));
-  std::array<char, 20> digest{};
-  sha.Result(digest.data());
-  return absl::BytesToHexString({digest.data(), digest.size()});
+  std::string hex;
+  for (const std::byte byte : sha.Digest()) {
+    absl::StrAppend(&hex,
+                    absl::Hex(std::to_integer<int>(byte), absl::kZeroPad2));
+  }
+  return hex;
 }
 
 std::array<uint8_t, BlowfishEngine::MAX_KEY_LENGTH> Key() {
@@ -185,10 +188,9 @@ TEST(StreamGoldenTest, SaveGameChainProducesPinnedBytesAndDigest) {
   EXPECT_EQ(Sha1Hex(file.bytes), "2338b443f754c7b2e6e587dab7c29deff557d0b1");
 
   // The digest written into the save covers the stream exactly as stored.
-  std::array<char, 20> digest{};
-  sha.Result(digest.data());
-  EXPECT_EQ(absl::BytesToHexString({digest.data(), digest.size()}),
-            Sha1Hex(file.bytes));
+  SHAEngine stored_hash;
+  stored_hash.Hash(file.bytes.data(), static_cast<int32_t>(file.bytes.size()));
+  EXPECT_EQ(sha.digest(), stored_hash.Digest());
 
   BufferStraw stored(std::as_bytes(std::span(file.bytes)));
   BlowStraw decrypt(BlowStraw::DECRYPT, stored);

@@ -116,6 +116,7 @@
 #include "tech/lzostraw.h"
 #include "tech/pipe.h"
 #include "tech/search_paths.h"
+#include "tech/sha.h"
 #include "tech/shapipe.h"
 #include "tech/shastraw.h"
 #include "tech/straw.h"
@@ -503,8 +504,8 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   /*
   **	Store a dummy message digest.
   */
-  char digest[20];
-  fpipe.Put(std::as_bytes(std::span(digest)));
+  Sha1Digest digest{};
+  fpipe.Put(digest);
 
   /*
   **	Dump the save game data to the file. The data is compressed
@@ -542,8 +543,8 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   */
   pipe.Flush();
   file.Seek(pos, SeekOrigin::kBegin);
-  sha.Result(digest);
-  fpipe.Put(std::as_bytes(std::span(digest)));
+  digest = sha.digest();
+  fpipe.Put(digest);
 
   // Finish closes the file, so it runs even when the tee already failed.
   const bool finished = pipe.Finish();
@@ -642,8 +643,8 @@ bool Load_Game(int id) {
   /*
   **	Get the message digest that is embedded in the file.
   */
-  char digest[20];
-  fstraw.Get(std::as_writable_bytes(std::span(digest)));
+  Sha1Digest digest{};
+  fstraw.Get(digest);
 
   /*
   **	Remember the file position since we must seek back here to
@@ -655,7 +656,7 @@ bool Load_Game(int id) {
   **	Pass the rest of the file through the hash straw so that
   **	the digest can be compaired to the one in the file.
   */
-  char actual[20];
+  Sha1Digest actual{};
   {
     SHAStraw sha(fstraw);
     for (;;) {
@@ -664,7 +665,7 @@ bool Load_Game(int id) {
         break;
       }
     }
-    sha.Result(actual);
+    actual = sha.digest();
   }
 
   Call_Back();
@@ -673,7 +674,7 @@ bool Load_Game(int id) {
   **	Compare the two digests. If they differ then return a failure condition
   **	before any damage could be done.
   */
-  if (memcmp(actual, digest, sizeof(digest)) != 0) {
+  if (actual != digest) {
     return false;
   }
 

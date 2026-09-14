@@ -34,8 +34,7 @@
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
  * Functions: * SHAStraw::Get -- Fetch data from the straw and process the SHA
- *with the data.             * SHAStraw::Result -- Fetches the current SHA
- *digest.                                       *
+ *with the data.             * digest.                                       *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -79,21 +78,3 @@ base::ssize SHAStraw::Get(std::span<std::byte> buffer) {
   return counter;
 }
 
-/***********************************************************************************************
- * SHAStraw::Result -- Fetches the current SHA digest. *
- *                                                                                             *
- *    Use this routine to fetch the current SHA digest from the straw. It will
- *return the      * digest of the data that has passed through this straw
- *segment.                           *
- *                                                                                             *
- * INPUT:   result   -- Pointer to the buffer to hold the message digest. The
- *buffer must be   * 20 bytes long. *
- *                                                                                             *
- * OUTPUT:  Returns with the number of bytes stored into the digest buffer. This
- *will always   * be 20. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/03/1996 JLB : Created. *
- *=============================================================================================*/
-int SHAStraw::Result(void* result) const { return SHA.Result(result); }

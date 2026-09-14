@@ -33,7 +33,7 @@
  *                  Last Update : July 3, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * SHAPipe::Result -- Fetches the current SHA value. * SHAPipe::Put
+ * Functions: *  SHAPipe::Put
  *-- Pass data through the pipe, but use it to build a SHA digest.             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
@@ -69,20 +69,3 @@ bool SHAPipe::Put(std::span<const std::byte> bytes) {
   return ChainedPipe::Put(bytes);
 }
 
-/***********************************************************************************************
- * SHAPipe::Result -- Fetches the current SHA value. *
- *                                                                                             *
- *    This routine will return the SHA digest for the data that has passed
- *through this        * link in the pipe chain. It is a non-destructive read. *
- *                                                                                             *
- * INPUT:   result   -- Pointer to the buffer to hold the SHA digest. This
- *buffer must be      * 20 bytes long. *
- *                                                                                             *
- * OUTPUT:  Returns with the number of bytes copied into the buffer. This will
- *be 20.          *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/03/1996 JLB : Created. *
- *=============================================================================================*/
-int SHAPipe::Result(void* result) const { return SHA.Result(result); }

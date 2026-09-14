@@ -255,14 +255,13 @@ void RandomStraw::Scramble_Seed() {
       std::as_writable_bytes(std::span(Random));
 
   for (int index = 0; index < kSeedBytes; index++) {
-    char digest[20];
 
     sha.Hash(&Random[0], sizeof(Random));
-    sha.Result(digest);
+    const Sha1Digest digest = sha.Digest();
 
     const int tocopy =
-        std::min(static_cast<int>(sizeof(digest)), kSeedBytes - index);
-    memmove(seed_bytes.data() + index, digest, base::ToSize(tocopy));
+        std::min(static_cast<int>(digest.size()), kSeedBytes - index);
+    memmove(seed_bytes.data() + index, digest.data(), base::ToSize(tocopy));
   }
 }
 

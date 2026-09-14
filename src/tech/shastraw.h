@@ -64,8 +64,8 @@ class SHAStraw : public ChainedStraw {
 
   base::ssize Get(std::span<std::byte> buffer) override;
 
-  // Fetch the SHA hash value (stored in result buffer -- 20 bytes long).
-  int Result(void* result) const;
+  // Returns the digest of the data that has passed this link so far.
+  [[nodiscard]] Sha1Digest digest() const { return SHA.Digest(); }
 
  protected:
   SHAEngine SHA;

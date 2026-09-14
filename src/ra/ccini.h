@@ -46,6 +46,7 @@
 #include "ra/ini.h"
 #include "tech/file.h"
 #include "tech/pipe.h"
+#include "tech/sha.h"
 #include "tech/straw.h"
 
 class TriggerTypeClass;
@@ -144,7 +145,7 @@ class CCINIClass : public INIClass {
   **	This is the message digest (SHA) of the INI database that was embedded
   *as part of *	the INI file.
   */
-  unsigned char Digest[20]{};
+  Sha1Digest Digest{};
 };
 
 #endif  // CNC_RED_ALERT_RA_CCINI_H_

@@ -29,6 +29,7 @@
 #include "tech/listnode.h"
 #include "tech/pk.h"
 #include "tech/pkstraw.h"
+#include "tech/sha.h"
 #include "tech/shastraw.h"
 #include "tech/straw.h"
 #include "tech/xstraw.h"
@@ -167,14 +168,11 @@ bool MixArchive::Cache() {
   }
 
   if (has_digest_) {
-    constexpr int kShaSize = 20;
-    char expected[kShaSize];
-    char computed[kShaSize];
+    const Sha1Digest computed = sha.digest();
+    Sha1Digest expected{};
+    file_straw.Get(expected);
 
-    sha.Result(computed);
-    file_straw.Get(std::as_writable_bytes(std::span(expected)));
-
-    if (std::memcmp(expected, computed, sizeof(expected)) != 0) {
+    if (expected != computed) {
       data_.clear();  // Corrupt data
       return false;
     }

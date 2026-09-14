@@ -40,8 +40,13 @@
 #ifndef CNC_RED_ALERT_TECH_SHA_H_
 #define CNC_RED_ALERT_TECH_SHA_H_
 
+#include <array>
+#include <cstddef>
 #include <cstdint>
 #include <new>
+
+// A SHA-1 digest: 20 bytes, most significant first.
+using Sha1Digest = std::array<std::byte, 20>;
 
 /*
 **	This implements the Secure Hash Algorithm. It is a cryptographically
@@ -50,28 +55,19 @@
 */
 class SHAEngine {
  public:
-  SHAEngine() {
-    Acc.Long[0] = SA;
-    Acc.Long[1] = SB;
-    Acc.Long[2] = SC;
-    Acc.Long[3] = SD;
-    Acc.Long[4] = SE;
-  }
+  SHAEngine() = default;
 
   void Init() { new (static_cast<void*>(this)) SHAEngine; }
 
-  // Fetch result as if source data were to stop now.
-  int Result(void* result) const;
+  // Returns the digest of everything hashed so far, as if the data stopped
+  // here. Hashing may continue afterwards.
+  [[nodiscard]] Sha1Digest Digest() const;
 
   void Hash(const void* data, int32_t length);
 
-  static int Digest_Size() { return sizeof(SHADigest); }
-
  private:
-  typedef union {
-    uint32_t Long[5];
-    unsigned char Char[20];
-  } SHADigest;
+  // The five 32-bit words the algorithm accumulates.
+  using Accumulator = std::array<uint32_t, 5>;
 
   /*
   **	This holds the calculated final result. It is cached
@@ -80,7 +76,7 @@ class SHAEngine {
   */
   // Result() is const and fills this cache lazily.
   mutable bool IsCached = false;
-  mutable SHADigest FinalResult{};
+  mutable Sha1Digest FinalResult{};
 
   enum {
     // These are the initial seeds to the block accumulators.
@@ -153,7 +149,7 @@ class SHAEngine {
   }
 
   // Process a full source data block.
-  static void Process_Block(const void* source, SHADigest& acc);
+  static void Process_Block(const void* source, Accumulator& acc);
 
   // Processes a partially filled source accumulator buffer.
   void Process_Partial(const void*& data, int32_t& length);
@@ -163,7 +159,7 @@ class SHAEngine {
   **	are updated by a block processing step that occurs
   **	every 512 bits of source data.
   */
-  SHADigest Acc{};
+  Accumulator Acc{SA, SB, SC, SD, SE};
 
   /*
   **	This is the running length of the source data

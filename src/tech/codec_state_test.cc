@@ -129,17 +129,13 @@ TEST(CodecStateTest, Base64HandlesShortFinalGroups) {
 TEST(CodecStateTest, ShaResetRestoresKnownDigestAfterPartialInput) {
   SHAEngine hash;
   hash.Hash("discard this partial block", 26);
-  std::array<uint8_t, 20> discarded{};
-  hash.Result(discarded.data());
+  static_cast<void>(hash.Digest());
   hash.Init();
   hash.Hash("a", 1);
   hash.Hash("bc", 2);
-  std::array<uint8_t, 20> actual{};
-  EXPECT_EQ(hash.Result(actual.data()), 20);
+  const Sha1Digest actual = hash.Digest();
   EXPECT_EQ(std::memcmp(actual.data(), SHA_DIGEST1a, actual.size()), 0);
-  std::array<uint8_t, 20> cached{};
-  hash.Result(cached.data());
-  EXPECT_EQ(cached, actual);
+  EXPECT_EQ(hash.Digest(), actual);
 }
 }  // namespace
 
@@ -257,11 +253,7 @@ TEST(CodecStateTest, ShaStrawHashesOnlyTheBytesItReturned) {
 
   SHAEngine expected_engine;
   expected_engine.Hash(data.data(), 5);
-  std::array<uint8_t, 20> expected{};
-  expected_engine.Result(expected.data());
-  std::array<uint8_t, 20> actual{};
-  sha.Result(actual.data());
-  EXPECT_EQ(actual, expected);
+  EXPECT_EQ(sha.digest(), expected_engine.Digest());
 
   std::array<uint8_t, 64> rest{};
   ASSERT_EQ(source.Get(std::as_writable_bytes(std::span(rest))), 27);
