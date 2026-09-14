@@ -67,7 +67,7 @@ TEST(BlowfishEngineTest, RoundTripsInPlaceThroughOneBuffer) {
   engine.Submit_Key(vector.key.data(), static_cast<int>(vector.key.size()));
 
   std::array<unsigned char, 11> data{};
-  std::copy(vector.plain.begin(), vector.plain.end(), data.begin());
+  std::ranges::copy(vector.plain, data.begin());
   data[8] = 0xAA;
   data[9] = 0xBB;
   data[10] = 0xCC;

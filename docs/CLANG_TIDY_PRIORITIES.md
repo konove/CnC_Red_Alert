@@ -1,6 +1,6 @@
 # Clang-tidy priorities
 
-Updated: 2026-09-13, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
+Updated: 2026-09-14, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
 This tracks **all 118 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
@@ -84,7 +84,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-switch-bool`                             | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                                                                                                                                                                                                                                                           |
 | `clang-diagnostic-duplicate-enum`                          | Enabled | Commit `Drop the implicit FIRST enum aliases and fix mixed enum operations`: 25 reports, all an `X_FIRST = 0` alias duplicating the first real enumerator (22 TD enums, three RA trigger/team enums); uses now name that enumerator, per the magic_enum no-alias rule.                                                                                                                                                                                                                                  |
 | `clang-diagnostic-missing-braces`                          | Enabled | Commit `Brace the infantry animation control tables`: all 680 reports were rows of TD's `[DO_COUNT][3]` tables in `idata.cc`, now one brace pair per row; layout unchanged.                                                                                                                                                                                                                                                                                                                             |
-| `clang-diagnostic-cast-qual`                               | Skipped | Commit `Fix four writes through const and document cast-qual policy`: 422 reports. Four were writes through `const` and are fixed by design. The other ~260 write through a `const` object, so the only mechanical fix is `const_cast`, which the enabled `cppcoreguidelines-pro-type-const-cast` rejects; they need API const-correctness work instead. See review below.                                                                                                                              |
+| `clang-diagnostic-cast-qual`                               | Enabled | Commits `Const-qualify the read-only downcasts` through `Let ListClass own its item strings` (eleven commits): 387 sites, none fixed with a cast. Found TD dialogs corrupting the shared text table in place, `Base_Is_Attacked` mutating a const enemy, per-player house colors written into the shared type, and a Blowfish in-place path that wrote over its const source. See the enablement review below.                                                                                          |
 | `misc-explicit-constructor`                                | Enabled | Commit `Make single-argument constructors explicit where conversion is unintended`: 125 reports; the check's fix-its made 69 constructors explicit (file, pipe, straw, heap, vector, dialog and game-object constructors) with no call site relying on the conversion. The 56 deliberate conversions stay implicit under a reasoned `NOLINTNEXTLINE`: object-to-type-ID operators, `CCPtr`, `TargetClass`, `FacingClass`, countdown timers, choice tables, palettes and big integers. See review below. |
 | `cppcoreguidelines-explicit-constructor`                   | Enabled | Alias enabled with `misc-explicit-constructor` in commit `Make single-argument constructors explicit where conversion is unintended`.                                                                                                                                                                                                                                                                                                                                                                   |
 | `google-explicit-constructor`                              | Enabled | Alias enabled with `misc-explicit-constructor` in commit `Make single-argument constructors explicit where conversion is unintended`.                                                                                                                                                                                                                                                                                                                                                                   |
@@ -129,7 +129,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `cppcoreguidelines-use-enum-class`                              | Skipped | Commit `Record the remaining P3 policy decisions`: 517 reports; unnamed integer-constant enums, ordered dialog redraw levels and the `defines.h` index enums. See review below.                                                                                                                                                                                                                                              |
 | `modernize-avoid-c-style-cast`                                  | Skipped | Commit `Record the remaining P3 policy decisions`: 1,393 casts; `docs/TYPE_MIGRATION.md` makes cast replacement opportunistic and rules out a codebase-wide hunt. See review below.                                                                                                                                                                                                                                          |
 | `google-readability-casting`                                    | Skipped | Commit `Record the remaining P3 policy decisions`: alias of `modernize-avoid-c-style-cast`, skipped with it.                                                                                                                                                                                                                                                                                                                 |
-| `cppcoreguidelines-pro-type-cstyle-cast`                        | Skipped | Commit `Record the remaining P3 policy decisions`: 866 type-unsafe casts (549 unrelated types, 187 downcasts, 132 dropping `const`); the `const` ones need the API work from the cast-qual review. See review below.                                                                                                                                                                                                         |
+| `cppcoreguidelines-pro-type-cstyle-cast`                        | Skipped | Commit `Record the remaining P3 policy decisions`: 866 type-unsafe casts (549 unrelated types, 187 downcasts, 132 dropping `const`); the `const` subset is gone since `clang-diagnostic-cast-qual` was enabled. See review below.                                                                                                                                                                                            |
 | `clang-diagnostic-old-style-cast`                               | Skipped | Commit `Record the remaining P3 policy decisions`: 0 reports because the clang flag set passes `-Wno-old-style-cast`; GCC's strict set already has `-Wold-style-cast`.                                                                                                                                                                                                                                                       |
 | `clang-diagnostic-deprecated-enum-enum-conversion`              | Enabled | Commit `Drop the implicit FIRST enum aliases and fix mixed enum operations`: 76 reports; the `WWKEY_*` modifier bits are flags, so they became integer constants, and five facing-to-animation offsets cast the facing to `int`.                                                                                                                                                                                             |
 | `clang-diagnostic-deprecated-anon-enum-enum-conversion`         | Enabled | Commit `Drop the implicit FIRST enum aliases and fix mixed enum operations`: three TD editor house-button offsets now subtract from an integer key number.                                                                                                                                                                                                                                                                   |
@@ -1310,7 +1310,54 @@ compiling that showed about 60 more whose result is written. Every one of those 
 already enforced, rejects each of them. The two checks together require the writes themselves to go:
 `const` type-class tables that are patched at load time, list nodes that hand out mutable parents
 from `const` accessors, and blitters that decode into buffers typed as `const`. That is API work to
-do module by module, after which this check can be revisited.
+do module by module, after which this check can be revisited. That work is done; see the next
+section.
+
+### Const-dropping cast enablement (2026-09-14)
+
+`clang-diagnostic-cast-qual` is now enforced. A fresh sweep
+(`-Weverything -Wcast-qual -fsyntax-only` over the 475 project translation units of the strict
+compile database) found 387 sites: ra 217, td 139, sdllib 17, tech 14. Every one was fixed at the
+declaration that lied, in eleven commits, and none with `const_cast`; the fix-its were not used
+because they only spell the same cast differently. Class downcasts became `dynamic_cast` to the
+const type, since `cppcoreguidelines-pro-type-static-cast-downcast` is also enforced.
+
+| Group                                          | Sites | Fix                                                                                                                                                       |
+| ---------------------------------------------- | ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Read-only downcasts of `this` and const params | 119   | Cast to the const type; `Adjacent_Cell` overloads share `Adjacent_Offset`; TD's facing pun became enum arithmetic.                                        |
+| Receivers of `MixArchive::Retrieve` data       | ~45   | `const void*` members and locals; `Extract_Shape`, the mouse cursor setters, `LCW_Uncompress` and `Buffer_To_Page` take const data.                       |
+| String handles                                 | ~25   | `const char*` locals; `WWGetPrivateProfileString` returns const; four dialogs stop formatting the shared text table in place.                             |
+| Const members that mutate                      | ~35   | `What_Action(ObjectClass*)`, `Ok_To_Move`, `Find_Docking_Bay`, `Base_Is_Attacked`, `CCINIClass::Save`, team creation are non-const; caches are `mutable`. |
+| Type tables patched at load                    | 36    | `mutable` image, cameo, radar-icon, buildup and animation fields behind const setters; the tables stay const.                                             |
+| TD house colors                                | 14    | `Color`/`BrightColor` live in `HouseClass`, seeded from the type and serialized.                                                                          |
+| Dead uncompressed-shape cache                  | 2     | `UseBigShapeBuffer` was never true; the header-stamping path and RA's unbuilt `keyframe.cc` are deleted.                                                  |
+| Codecs and allocator                           | 10    | Blowfish drops its null-destination aliasing; LZW takes spans; `Free` takes `void*`; dead `GenericNode::Main_List` deleted.                               |
+| List-box items                                 | 50    | `ListClass` owns `std::vector<std::string>` items with `Set_Item`/`Clear`; the dialogs stop allocating and freeing lines themselves.                      |
+
+Four bugs came out of it. TD's `Net_Fake_New_Dialog`, `Net_Fake_Join_Dialog` and the internet
+dialog, and RA's file-transfer dialog, passed `Text_String()` results to `Format_Window_String`,
+which inserts line breaks in place, so every call corrupted the shared string table (and the later
+prints depended on it). `Base_Is_Attacked` set a timer on an enemy it took as `const`. TD wrote each
+player's chosen colors into the shared `HouseTypeClass`, so two houses of one type clobbered each
+other. `BlowfishEngine::Encrypt`/`Decrypt` with a null destination wrote over the const source; no
+caller used it, and a test now covers explicit in-place use.
+
+GCC's `-Wcast-qual`, which the GCC strict flag set already carries, also reports C-style casts to
+plain `void*`, which clang's does not. A GCC syntax-only sweep of the same translation units found
+four more, the largest being `Add_Long_To_Pointer` returning `void*` for a `const void*` input; it
+has const and non-const overloads now, and both sweeps report zero. The GCC sweep needs the strict
+database's commands with the clang-only flags removed and **without** `-w`, which silences every
+later `-W` flag and reads as a clean tree.
+
+Verification: clang-tidy with the enabled configuration over all 475 translation units, both sweeps
+at zero, a probe confirming the check reports, CTest (438 tests, including the new `list_test.cc`),
+and the RA and TD save/load smoke tests including the TD team and building fixtures. The network and
+modem dialogs, whose list boxes changed most, were not exercised at run time; that remains a manual
+check.
+
+Follow-ups noted while working: `tech/2keyfbuf.cc` still reads the three big-shape-buffer globals
+that are now always false, `IsTheaterShape` is set but never read, and TD's `Get_Last_Frame_Length`
+is always zero.
 
 ### Nodiscard review (2026-09-12)
 
@@ -1483,7 +1530,7 @@ every site.
 | Check                                                        | Reports | Why it stays excluded                                                                                                                                                                                                   |
 | ------------------------------------------------------------ | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `modernize-avoid-c-style-cast`, `google-readability-casting` | 1,393   | `docs/TYPE_MIGRATION.md` makes cast replacement opportunistic, inside code already being migrated, and forbids a codebase-wide cast hunt.                                                                               |
-| `cppcoreguidelines-pro-type-cstyle-cast`                     | 866     | The type-unsafe subset of the same casts: 549 between unrelated types, 187 downcasts and 132 that cast away `const`. The cast-qual review showed the `const` ones need API work first.                                  |
+| `cppcoreguidelines-pro-type-cstyle-cast`                     | 866     | The type-unsafe subset of the same casts: 549 between unrelated types, 187 downcasts and 132 that cast away `const`; the `const` subset was removed when `clang-diagnostic-cast-qual` was enabled (2026-09-14).         |
 | `clang-diagnostic-old-style-cast`                            | 0       | The clang flag set passes `-Wno-old-style-cast`, so enabling the name enforces nothing; the GCC strict set already has `-Wold-style-cast`.                                                                              |
 | `cppcoreguidelines-macro-usage`                              | 2,134   | 2,094 are constants and 40 function-like macros. 1,310 are the text-string IDs in each game's `conquer.h`, and the next largest group is the `sdllib/keyboard.h` key codes.                                             |
 | `modernize-macro-to-enum`, `cppcoreguidelines-macro-to-enum` | 2,256   | The same macro groups. As enumerators they would change type wherever they meet integer arithmetic and `printf`-style formatting.                                                                                       |

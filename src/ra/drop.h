@@ -68,7 +68,7 @@ class DropListClass : public EditClass {
   void Zap() override;
 
   virtual int Add_Item(const char* text);
-  virtual const char* Current_Item();
+  virtual const char* Current_Item() ABSL_ATTRIBUTE_LIFETIME_BOUND;
   virtual int Current_Index();
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(const char* text);
