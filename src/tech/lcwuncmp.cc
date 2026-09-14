@@ -77,11 +77,11 @@ extern "C" {
  * HISTORY:                                                                *
  *    03/20/1995 IML : Created.                                            *
  *=========================================================================*/
-int32_t __cdecl LCW_Uncompress(void* source, void* dest, int32_t length)
+int32_t __cdecl LCW_Uncompress(const void* source, void* dest, int32_t length)
 // unsigned long LCW_Uncompress (void * source, void * dest, unsigned long
 // length)
 {
-  unsigned char* source_ptr;
+  const unsigned char* source_ptr;
   unsigned char* dest_ptr;
   unsigned char* copy_ptr;
   unsigned char* dest_end;
@@ -90,7 +90,7 @@ int32_t __cdecl LCW_Uncompress(void* source, void* dest, int32_t length)
   unsigned count;
 
   /* Copy the source and destination ptrs. */
-  source_ptr = static_cast<unsigned char*>(source);
+  source_ptr = static_cast<const unsigned char*>(source);
   dest_ptr = static_cast<unsigned char*>(dest);
 
   dest_end = dest_ptr + length;

@@ -298,8 +298,7 @@ ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 
 ScoreAnimClass::ScoreAnimClass(int x, int y, const void* data)
     : XPos(x), YPos(y), DataPtr(data) {
-  BlitList.Add(x * 2, y * 2, x * 2, y * 2, 2 * String_Pixel_Width((char*)data),
-               16);
+  BlitList.Add(x * 2, y * 2, x * 2, y * 2, 2 * String_Pixel_Width(Text()), 16);
 
   Timer.Set(0);
   Timer.Start();
@@ -379,7 +378,7 @@ void ScorePrintClass::Update() {
   static char _whitepal[] = {0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
                              0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F};
 
-  if (Stage && ((char*)DataPtr)[Stage - 1] == 0) {
+  if (Stage && Text()[Stage - 1] == 0) {
     for (auto& ScoreObj : ScoreObjs) {
       if (ScoreObj == this) {
         ScoreObj = nullptr;
@@ -397,7 +396,7 @@ void ScorePrintClass::Update() {
 
     const int pos = XPos + (Stage * 6);
     if (Stage) {
-      localstr[0] = ((char*)DataPtr)[Stage - 1];
+      localstr[0] = Text()[Stage - 1];
 
       /*
       ** Clear out the white letter overlay
@@ -416,8 +415,8 @@ void ScorePrintClass::Update() {
       Set_Font_Palette(PrimaryPalette);
       TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * YPos, TBLACK, TBLACK);
     }
-    if (((char*)DataPtr)[Stage]) {
-      localstr[0] = ((char*)DataPtr)[Stage];
+    if (Text()[Stage]) {
+      localstr[0] = Text()[Stage];
       Set_Font_Palette(_whitepal);
       TextPrintBuffer->Print(localstr, pos * 2, 2 * (YPos - 1), TBLACK, TBLACK);
       TextPrintBuffer->Print(localstr, pos * 2, 2 * (YPos + 1), TBLACK, TBLACK);
@@ -449,7 +448,7 @@ void MultiStagePrintClass::Update() {
   static char _whitepal[] = {0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
                              0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F};
 
-  if (Stage && ((char*)DataPtr)[Stage - 1] == 0) {
+  if (Stage && Text()[Stage - 1] == 0) {
     for (auto& ScoreObj : ScoreObjs) {
       if (ScoreObj == this) {
         ScoreObj = nullptr;
@@ -471,7 +470,7 @@ void MultiStagePrintClass::Update() {
     for (int wibble = 0; wibble < 10; wibble++) {
       const int pos = XPos + (Stage * 6);
       if (Stage) {
-        localstr[0] = ((char*)DataPtr)[Stage - 1];
+        localstr[0] = Text()[Stage - 1];
 
         /*
         ** Clear out the white letter overlay
@@ -491,8 +490,8 @@ void MultiStagePrintClass::Update() {
         TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * YPos, TBLACK,
                                TBLACK);
       }
-      if (((char*)DataPtr)[Stage]) {
-        localstr[0] = ((char*)DataPtr)[Stage];
+      if (Text()[Stage]) {
+        localstr[0] = Text()[Stage];
         Set_Font_Palette(_whitepal);
         TextPrintBuffer->Print(localstr, pos * 2, 2 * (YPos - 1), TBLACK,
                                TBLACK);
@@ -503,7 +502,7 @@ void MultiStagePrintClass::Update() {
       }
       Stage++;
 
-      if (((char*)DataPtr)[Stage - 1] == 0) {
+      if (Text()[Stage - 1] == 0) {
         break;
       }
     }
@@ -535,7 +534,7 @@ void ScoreScaleClass::Update() {
     if (Stage) {
       Set_Font_Palette(Palette);
       TextPrintBuffer->Fill_Rect(0, 0, 14, 14, TBLACK);
-      TextPrintBuffer->Print((char*)DataPtr, 0, 0, TBLACK, TBLACK);
+      TextPrintBuffer->Print(Text(), 0, 0, TBLACK, TBLACK);
       TextPrintBuffer->Scale(HidPage, 0, 0, _destx[Stage] * 2, YPos * 2, 10, 10,
                              _destw[Stage] * 2, _destw[Stage] * 2, true);
 
@@ -551,8 +550,7 @@ void ScoreScaleClass::Update() {
           ScoreObj = nullptr;
         }
       }
-      TextPrintBuffer->Print((char*)DataPtr, XPos * 2, YPos * 2, TBLACK,
-                             TBLACK);
+      TextPrintBuffer->Print(Text(), XPos * 2, YPos * 2, TBLACK, TBLACK);
       // TextPrintBuffer->Blit(HidPage, XPos * 2, YPos * 2, XPos
       // * 2, YPos * 2,2 * 6, 2 * 6);
       // BlitList.Add (XPos, YPos, XPos, YPos, 6,6);

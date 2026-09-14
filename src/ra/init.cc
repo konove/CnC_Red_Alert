@@ -2170,7 +2170,7 @@ static void Init_Fonts() {
   GradFont6Ptr = MixArchive::Retrieve("GRAD6FNT.FNT");
   EditorFont = MixArchive::Retrieve("EDITFNT.FNT");
   Font8Ptr = MixArchive::Retrieve("8POINT.FNT");
-  FontPtr = (char*)Font8Ptr;
+  FontPtr = Font8Ptr;
   Set_Font(FontPtr);
   Font3Ptr = MixArchive::Retrieve("3POINT.FNT");
   ScoreFontPtr = MixArchive::Retrieve("SCOREFNT.FNT");

@@ -99,7 +99,7 @@ bool TemplateClass::Mark(MarkType mark) {
   static bool noup = false;
   const void* iset = Get_Image_Data();
   if (iset && ObjectClass::Mark(mark)) {
-    void* map = Get_Icon_Set_Map(iset);
+    const void* map = Get_Icon_Set_Map(iset);
 
     for (int y = 0; std::cmp_less(y, Class->Height); y++) {
       for (int x = 0; std::cmp_less(x, Class->Width); x++) {
@@ -114,7 +114,7 @@ bool TemplateClass::Mark(MarkType mark) {
           *no real *	icon is associated with this logical position, then
           *don't do any action *	since none is required.
           */
-          const char* mapptr = static_cast<char*>(map);
+          const char* mapptr = static_cast<const char*>(map);
           const bool real = mapptr[number] != -1;
 
           if (real) {

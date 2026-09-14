@@ -135,9 +135,9 @@
 #include "tech/fixed.h"
 #include "tech/mix_archive.h"
 
-void* SidebarClass::SidebarShape = nullptr;
-void* SidebarClass::SidebarMiddleShape = nullptr;
-void* SidebarClass::SidebarBottomShape = nullptr;
+const void* SidebarClass::SidebarShape = nullptr;
+const void* SidebarClass::SidebarMiddleShape = nullptr;
+const void* SidebarClass::SidebarBottomShape = nullptr;
 
 /***************************************************************************
 **	This holds the translucent table for use with the construction clock
@@ -175,7 +175,7 @@ SidebarClass::StripClass::SelectClass
 /*
 ** Shape data pointers
 */
-void* SidebarClass::StripClass::LogoShapes = nullptr;
+const void* SidebarClass::StripClass::LogoShapes = nullptr;
 const void* SidebarClass::StripClass::ClockShapes;
 const void* SidebarClass::StripClass::SpecialShapes
     [magic_enum::enum_count<SpecialWeaponType>()];
@@ -272,7 +272,7 @@ void SidebarClass::One_Time() {
   *dependant)
   */
   if (SidebarShape == nullptr) {
-    SidebarShape = (void*)MixArchive::Retrieve("SIDEBAR.SHP");
+    SidebarShape = MixArchive::Retrieve("SIDEBAR.SHP");
   }
 }
 
@@ -417,11 +417,11 @@ void SidebarClass::Reload_Sidebar() {
 
   std::string sidename = sidebarnames[houseloaded];
   sidename[4] = '1';
-  SidebarShape = (void*)MixArchive::Retrieve(sidename);
+  SidebarShape = MixArchive::Retrieve(sidename);
   sidename[4] = '2';
-  SidebarMiddleShape = (void*)MixArchive::Retrieve(sidename);
+  SidebarMiddleShape = MixArchive::Retrieve(sidename);
   sidename[4] = '3';
-  SidebarBottomShape = (void*)MixArchive::Retrieve(sidename);
+  SidebarBottomShape = MixArchive::Retrieve(sidename);
 
   SidebarClass::StripClass::Reload_LogoShapes();
   SidebarClass::StripClass::Reload_LogoShapes();
@@ -1202,7 +1202,7 @@ void SidebarClass::StripClass::Reload_LogoShapes() {
   if (PlayerPtr) {
     houseloaded = PlayerPtr->ActLike;
   }
-  LogoShapes = (void*)MixArchive::Retrieve(stripnames[houseloaded]);
+  LogoShapes = MixArchive::Retrieve(stripnames[houseloaded]);
 }
 
 /***********************************************************************************************

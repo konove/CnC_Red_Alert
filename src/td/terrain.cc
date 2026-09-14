@@ -739,10 +739,10 @@ COORDINATE TerrainClass::Center_Coord() const {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-unsigned char* TerrainClass::Radar_Icon(CELL cell) {
+const unsigned char* TerrainClass::Radar_Icon(CELL cell) {
   Validate();
-  auto* icon =
-      (unsigned char*)Class->Get_Radar_Data();  // get a pointer to radar icons
+  const auto* icon = static_cast<const unsigned char*>(
+      Class->Get_Radar_Data());                 // get a pointer to radar icons
   const int width = *icon++;                    // extract the width from data
   const int height = *icon++;                   // extract the width from data
 

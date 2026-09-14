@@ -1816,7 +1816,7 @@ void XMP_Decode_ASCII(const char* str, uint32_t* mpn, int precision) {
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-static void XMP_Hybrid_Mul(uint16_t* prod, uint16_t* multiplicand,
+static void XMP_Hybrid_Mul(uint16_t* prod, const uint16_t* multiplicand,
                            uint16_t multiplier, int precision) {
   uint32_t carry = 0;
   for (int i = 0; i < precision; ++i) {
@@ -1863,8 +1863,8 @@ void XMP_Double_Mul(uint32_t* prod, const uint32_t* multiplicand,
 
   // Multiply multiplicand by each word in multiplier, accumulating prod.
   for (int i = 0; i < precision * 2; ++i) {
-    XMP_Hybrid_Mul(product_ptr++, (uint16_t*)multiplicand, *multiplier_ptr++,
-                   precision * 2);
+    XMP_Hybrid_Mul(product_ptr++, (const uint16_t*)multiplicand,
+                   *multiplier_ptr++, precision * 2);
   }
 }
 

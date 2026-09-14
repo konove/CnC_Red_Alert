@@ -407,7 +407,8 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   **	The fading palettes will have to be generated as well.
   */
   sprintf(fullname, "%s.PAL", Theaters[theater].Root);
-  const PaletteClass* ptr = (PaletteClass*)MixArchive::Retrieve(fullname);
+  const auto* ptr =
+      static_cast<const PaletteClass*>(MixArchive::Retrieve(fullname));
   GamePalette = *ptr;
 
   OriginalPalette = GamePalette;

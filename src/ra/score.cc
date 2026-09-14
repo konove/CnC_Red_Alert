@@ -218,7 +218,7 @@ void ScorePrintClass::Update() {
   static char _whitepal[] = {0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
                              0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F};
 
-  if (Stage && ((char*)DataPtr)[Stage - 1] == 0) {
+  if (Stage && Text()[Stage - 1] == 0) {
     for (auto& ScoreObj : ScoreObjs) {
       if (ScoreObj == this) {
         ScoreObj = nullptr;
@@ -236,12 +236,12 @@ void ScorePrintClass::Update() {
     // print the letter properly
     if (Stage) {
       Set_Font_Palette(PrimaryPalette);
-      localstr[0] = ((char*)DataPtr)[Stage - 1];
+      localstr[0] = Text()[Stage - 1];
       HidPage.Print(localstr, pos - 12, YPos, TBLACK, TBLACK);
       HidPage.Blit(SeenBuff, pos - 12, YPos - 2, pos - 12, YPos - 2, 14, 16);
     }
-    if (((char*)DataPtr)[Stage]) {
-      localstr[0] = ((char*)DataPtr)[Stage];
+    if (Text()[Stage]) {
+      localstr[0] = Text()[Stage];
       Set_Font_Palette(_whitepal);
       SeenBuff.Print(localstr, pos, YPos - 1, TBLACK, TBLACK);
       SeenBuff.Print(localstr, pos, YPos + 1, TBLACK, TBLACK);
@@ -267,7 +267,7 @@ void ScoreScaleClass::Update() {
     if (Stage) {
       Set_Font_Palette(Palette);
       HidPage.Fill_Rect(0, 0, 14, 14, TBLACK);
-      HidPage.Print((char*)DataPtr, 0, 0, TBLACK, TBLACK);
+      HidPage.Print(Text(), 0, 0, TBLACK, TBLACK);
       HidPage.Scale(SeenBuff, 0, 0, _destx[Stage] * 2, YPos, 10, 12,
                     _destw[Stage] * 2, _destw[Stage] * 2, true);
       Stage--;
@@ -278,7 +278,7 @@ void ScoreScaleClass::Update() {
           ScoreObj = nullptr;
         }
       }
-      HidPage.Print((char*)DataPtr, XPos, YPos, TBLACK, TBLACK);
+      HidPage.Print(Text(), XPos, YPos, TBLACK, TBLACK);
       HidPage.Blit(SeenBuff, XPos, YPos, XPos, YPos, 12, 12);
       delete this;
       return;

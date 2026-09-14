@@ -728,7 +728,7 @@ void ChronalVortexClass::Zap_Target() {
  *=============================================================================================*/
 void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass* inbuffer, int x,
                                           int y, int width, int height,
-                                          unsigned char* remap_table) {
+                                          const unsigned char* remap_table) {
   unsigned char getx;
   unsigned char gety;
   unsigned char remap_color;
@@ -942,7 +942,7 @@ void ChronalVortexClass::Render() {
       Coordinate_Remap(RenderBuffer,
                        Lepton_To_Pixel(Coord_X(Coord_Fraction(Position))),
                        Lepton_To_Pixel(Coord_Y(Coord_Fraction(Position))), 64,
-                       64, (unsigned char*)lut_ptr);
+                       64, static_cast<const unsigned char*>(lut_ptr));
 
       /*
       ** Calculate the pixel position of our fresh block of cells on the

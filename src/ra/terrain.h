@@ -124,7 +124,7 @@ class TerrainClass final : public ObjectClass, public StageClass {
   */
   void Draw_It(int x, int y, WindowNumberType window) const override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
-  unsigned char* Radar_Icon(CELL cell);
+  const unsigned char* Radar_Icon(CELL cell);
 
   /*
   **	User I/O.

@@ -364,8 +364,6 @@ extern bool IsTheaterShape;
 extern void Reset_Theater_Shapes();
 extern TheaterType LastTheater;
 
-void Coordinate_Remap(GraphicViewPortClass* inbuffer, int x, int y, int width,
-                      int height, unsigned char* remap_table);
 void Do_Vortex(int x, int y, int frame);
 
 // Shutdown state: 0 = running, 1 = clean shutdown, 2 = complete, 3 = emergency.

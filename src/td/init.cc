@@ -262,7 +262,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   f.Open("8FAT.FNT");
   MapFontPtr = Load_Alloc_Data(f);
   Font8Ptr = MixArchive::Retrieve(FONT8);
-  FontPtr = (char*)Font8Ptr;
+  FontPtr = Font8Ptr;
   Set_Font(FontPtr);
   Font3Ptr = MixArchive::Retrieve(FONT3);
   //	Font6Ptr = MixArchive::Retrieve(FONT6);

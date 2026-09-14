@@ -43,10 +43,11 @@ typedef struct {
   int32_t Map;  // Icon map offset (if present).
 } IControl_Type;
 
-inline void* Get_Icon_Set_Map(
+inline const void* Get_Icon_Set_Map(
     const void* iconset ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   if (iconset != nullptr) {
-    return (char*)iconset + ((IControl_Type*)iconset)->Map;
+    return static_cast<const char*>(iconset) +
+           static_cast<const IControl_Type*>(iconset)->Map;
   }
   return nullptr;
 }

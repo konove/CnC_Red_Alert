@@ -33,6 +33,7 @@
 #include "absl/log/check.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
+#include "port/socket_bytes.h"
 #include "port/win32/win32_com.h"
 #include "port/win32/win32_system.h"
 #include "port/win32/win32_types.h"
@@ -514,7 +515,7 @@ bool operator<(const User& u1, const User& u2) {
   if (!(u1.flags & CHAT_USER_VOICE) && u2.flags & CHAT_USER_VOICE) {
     return false;
   }
-  return (stricmp((char*)u1.name, (char*)u2.name) < 0);
+  return (stricmp(SocketBytes(u1.name), SocketBytes(u2.name)) < 0);
 }
 
 //***********************************************************************************************
@@ -2065,9 +2066,10 @@ void DebugChatDef(HRESULT hRes) {
 //***********************************************************************************************
 int iChannelLobbyNumber(const unsigned char* szChannelName) {
   //	Returns lobby number of channel, or -1 for "channel is not a lobby".
-  if (strncmp((char*)szChannelName, LOB_PREFIX, strlen(LOB_PREFIX)) == 0) {
+  if (strncmp(SocketBytes(szChannelName), LOB_PREFIX, strlen(LOB_PREFIX)) ==
+      0) {
     char szNum[10];
-    port::SafeCopy(szNum, (char*)szChannelName + strlen(LOB_PREFIX));
+    port::SafeCopy(szNum, SocketBytes(szChannelName) + strlen(LOB_PREFIX));
     //		debugprint( " ^ iChannelLobbyNumber returning atoi of %s\n",
     // szNum );
     return tech::ParseInteger<int>(szNum).value_or(0);

@@ -29,7 +29,8 @@
 extern void* MainWindow;  // Declared by the Windows viewer as an HWND.
 void* MainWindow = nullptr;
 
-int32_t LCW_Uncompress(void* /*source*/, void* /*dest*/, int32_t /*length*/) {
+int32_t LCW_Uncompress(const void* /*source*/, void* /*dest*/,
+                       int32_t /*length*/) {
   return 0;
 }
 

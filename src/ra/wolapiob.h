@@ -342,16 +342,16 @@ class WolapiObject {
   bool bShowRankUpdated{false};  //	set true when bShowRankRA value changes
 
   //	Standard wol buttons.
-  char* pShpDiscon{nullptr};
-  char* pShpLeave{nullptr};
-  char* pShpRefresh{nullptr};
-  char* pShpSquelch{nullptr};
-  char* pShpBan{nullptr};
-  char* pShpKick{nullptr};
-  char* pShpFindpage{nullptr};
-  char* pShpOptions{nullptr};
-  char* pShpLadder{nullptr};
-  char* pShpHelp{nullptr};
+  const void* pShpDiscon{nullptr};
+  const void* pShpLeave{nullptr};
+  const void* pShpRefresh{nullptr};
+  const void* pShpSquelch{nullptr};
+  const void* pShpBan{nullptr};
+  const void* pShpKick{nullptr};
+  const void* pShpFindpage{nullptr};
+  const void* pShpOptions{nullptr};
+  const void* pShpLadder{nullptr};
+  const void* pShpHelp{nullptr};
   ShapeButtonClass* pShpBtnDiscon{nullptr};
   ShapeButtonClass* pShpBtnLeave{nullptr};
   ShapeButtonClass* pShpBtnRefresh{nullptr};

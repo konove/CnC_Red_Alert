@@ -363,16 +363,16 @@ void WolapiObject::LinkToGameDlg(IconListClass* pILDisc,
 void WolapiObject::PrepareButtonsAndIcons() {
   //	Load shapes for buttons. Store images in this order: up, down, disabled.
   // pShpDiscon = LoadShpFile( "discon.shp" ); etc
-  pShpDiscon = (char*)MixArchive::Retrieve("discon.shp");
-  pShpLeave = (char*)MixArchive::Retrieve("leave.shp");
-  pShpRefresh = (char*)MixArchive::Retrieve("refresh.shp");
-  pShpSquelch = (char*)MixArchive::Retrieve("squelch.shp");
-  pShpBan = (char*)MixArchive::Retrieve("ban.shp");
-  pShpKick = (char*)MixArchive::Retrieve("kick.shp");
-  pShpFindpage = (char*)MixArchive::Retrieve("findpage.shp");
-  pShpOptions = (char*)MixArchive::Retrieve("ops.shp");
-  pShpLadder = (char*)MixArchive::Retrieve("ladder.shp");
-  pShpHelp = (char*)MixArchive::Retrieve("help.shp");
+  pShpDiscon = MixArchive::Retrieve("discon.shp");
+  pShpLeave = MixArchive::Retrieve("leave.shp");
+  pShpRefresh = MixArchive::Retrieve("refresh.shp");
+  pShpSquelch = MixArchive::Retrieve("squelch.shp");
+  pShpBan = MixArchive::Retrieve("ban.shp");
+  pShpKick = MixArchive::Retrieve("kick.shp");
+  pShpFindpage = MixArchive::Retrieve("findpage.shp");
+  pShpOptions = MixArchive::Retrieve("ops.shp");
+  pShpLadder = MixArchive::Retrieve("ladder.shp");
+  pShpHelp = MixArchive::Retrieve("help.shp");
 
   //	Set up standard wol buttons, used by both main dialogs. Note hardcoded
   // ID values: must match values in dialog.

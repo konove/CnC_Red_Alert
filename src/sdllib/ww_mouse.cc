@@ -106,12 +106,12 @@ WWMouseClass::WWMouseClass([[maybe_unused]] GraphicViewPortClass* scr,
 
 WWMouseClass::~WWMouseClass() { Clear_Cursor_Clip(); }
 
-void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
+void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, const void* cursor) {
   if (cursor == nullptr || PrevCursor == cursor) {
     return;
   }
 
-  const auto* cursor_shape = static_cast<Shape_Type*>(cursor);
+  const auto* cursor_shape = static_cast<const Shape_Type*>(cursor);
 
   if (cursor_shape->Width == 0 || cursor_shape->OriginalHeight == 0 ||
       std::cmp_greater(cursor_shape->Width, MaxWidth) ||
@@ -127,7 +127,7 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
 
   // Shape data is LCW compressed starting at byte 10 (after the header).
   auto* decompressed_data = new uint8_t[cursor_shape->DataLength];
-  LCW_Uncompress(static_cast<uint8_t*>(cursor) + 10, decompressed_data,
+  LCW_Uncompress(static_cast<const uint8_t*>(cursor) + 10, decompressed_data,
                  cursor_shape->DataLength);
 
   // After LCW decompression, the shape is still RLE encoded.
@@ -209,7 +209,7 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
 
   SDL_SetCursor(sdl_cursor.get());
 
-  PrevCursor = static_cast<char*>(cursor);
+  PrevCursor = static_cast<const char*>(cursor);
   sdl_cursor_ = std::move(sdl_cursor);
   sdl_surface_ = std::move(sdl_surf);
   MouseXHot = xhotspot;
@@ -333,7 +333,7 @@ int Get_Mouse_State() {
   return 0;
 }
 
-void Set_Mouse_Cursor(int hotx, int hoty, void* cursor) {
+void Set_Mouse_Cursor(int hotx, int hoty, const void* cursor) {
   if (Mouse) {
     Mouse->Set_Cursor(hotx, hoty, cursor);
   }

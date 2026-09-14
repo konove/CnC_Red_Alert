@@ -70,7 +70,7 @@ static AudioCallback ExtraCallback = nullptr;
 struct ChannelState {
   const void* sample = nullptr;
   SDL_AudioStream* stream = nullptr;
-  uint8_t* in_ptr = nullptr;
+  const uint8_t* in_ptr = nullptr;
 
   int priority = 0;
   int local_volume = 255;  // per-sound volume [0, 255], set at play time
@@ -107,9 +107,9 @@ static int ToMixerAmplitude(const int raw_volume) {
   return static_cast<int>(powf(normalized, 2.0F) * 32767.0F);
 }
 
-static uint8_t* DecodeADPCMBlock(ChannelState& chan, int block_size,
-                                 uint8_t* in_ptr
-                                     ABSL_ATTRIBUTE_LIFETIME_BOUND) {
+static const uint8_t* DecodeADPCMBlock(ChannelState& chan, int block_size,
+                                       const uint8_t* in_ptr
+                                           ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   const auto clamp = [](int v, int min, int max) {
     return std::clamp(v, min, max);
   };
@@ -142,9 +142,9 @@ static uint8_t* DecodeADPCMBlock(ChannelState& chan, int block_size,
   return in_ptr;
 }
 
-static uint8_t* DecodeWestwoodBlock(const ChannelState& chan, int block_size,
-                                    uint8_t* in_ptr
-                                        ABSL_ATTRIBUTE_LIFETIME_BOUND) {
+static const uint8_t* DecodeWestwoodBlock(
+    const ChannelState& chan, int block_size,
+    const uint8_t* in_ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   int prev_sample = 0x80;  // Previous sample (starting value).
 
   const auto* in_end = in_ptr + block_size;
@@ -607,7 +607,7 @@ int Play_Sample_Handle(const void* sample, int priority, int volume,
 
   chan.offset = 0;
   chan.length = header->UncompSize / channels / (bits / 8);
-  chan.in_ptr = (uint8_t*)sample + sizeof(AUDHeaderType);
+  chan.in_ptr = static_cast<const uint8_t*>(sample) + sizeof(AUDHeaderType);
 
   chan.compression = static_cast<SCompressType>(header->Compression);
 

@@ -924,8 +924,8 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
   GameFile file;
   char fname[kMaxFname + kMaxExt];
   int i;
-  char* map;
-  void* rawmap;
+  const char* map;
+  const void* rawmap;
   const void* shape;
 
   /*
@@ -969,7 +969,7 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
       if (shape) {
         rawmap = Get_Icon_Set_Map(shape);
         if (rawmap) {
-          map = static_cast<char*>(rawmap);
+          map = static_cast<const char*>(rawmap);
           if (map[temp.TIcon] == -1) {
             temp.TIcon = 0;
             temp.TType = TEMPLATE_NONE;

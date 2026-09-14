@@ -58,7 +58,8 @@ int32_t SeekFileHandle(int /*handle*/, int32_t offset, int origin) {
 void SDL_Event_Handler(SDL_Event* /*event*/) {}
 
 // Frame 0 decoding is not under test; leave the delta buffer alone.
-int32_t LCW_Uncompress(void* /*source*/, void* /*dest*/, int32_t /*length*/) {
+int32_t LCW_Uncompress(const void* /*source*/, void* /*dest*/,
+                       int32_t /*length*/) {
   return 0;
 }
 

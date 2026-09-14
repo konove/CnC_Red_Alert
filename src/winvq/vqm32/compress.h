@@ -46,7 +46,7 @@
 extern "C" {
 #endif
 
-int32_t __cdecl LCW_Uncompress(void* source, void* dest, int32_t length);
+int32_t __cdecl LCW_Uncompress(const void* source, void* dest, int32_t length);
 int32_t AudioZap(void* source, void* dest, int32_t size);
 int32_t __cdecl AudioUnzap(void* source, void* dest, int32_t /*unused*/);
 

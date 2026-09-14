@@ -74,9 +74,9 @@ class SidebarClass : public PowerClass {
   static constexpr int kColumnTwoY = 7 + 70 + 13;
   static constexpr int kColumns = 2;  // Side strips on the sidebar.
 
-  static void* SidebarShape;
-  static void* SidebarMiddleShape;  // Only used in Win95 version
-  static void* SidebarBottomShape;  // Only used in Win95 version
+  static const void* SidebarShape;
+  static const void* SidebarMiddleShape;  // Only used in Win95 version
+  static const void* SidebarBottomShape;  // Only used in Win95 version
 
   SidebarClass();
 
@@ -272,7 +272,7 @@ class SidebarClass : public PowerClass {
     **	Pointer to the shape data for small versions of the logos. These are
     *used as *	placeholder pieces on the side bar.
     */
-    static void* LogoShapes;
+    static const void* LogoShapes;
 
     /*
     **	This points to the animation sequence of frames used to mark the passage

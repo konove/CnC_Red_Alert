@@ -17,10 +17,10 @@ int Extract_Shape_Count(const std::span<const std::byte> span) {
   return Extract_Shape_Count(span.data());
 }
 
-void* Extract_Shape(const void* buffer, int shape) {
+const void* Extract_Shape(const void* buffer, int shape) {
   const auto* block = static_cast<const ShapeBlock_Type*>(buffer);
   uint32_t offset;  // Offset of shape data, from start of block
-  char* bytebuf = (char*)buffer;
+  const char* bytebuf = static_cast<const char*>(buffer);
 
   /*
   ----------------------- Return if invalid argument -----------------------

@@ -743,7 +743,7 @@ inline int GraphicViewPortClass::Get_Pitch() const {
  * HISTORY:                                                                *
  *   01/12/1995 PWG : Created.                                             *
  *=========================================================================*/
-inline int32_t Buffer_To_Page(int x, int y, int w, int h, void* Buffer,
+inline int32_t Buffer_To_Page(int x, int y, int w, int h, const void* Buffer,
                               GraphicViewPortClass& view) {
   int32_t return_code = 0;
   if (view.Lock()) {

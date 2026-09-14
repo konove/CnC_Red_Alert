@@ -127,7 +127,7 @@ int32_t Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel,
 }
 
 int32_t Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
-                       int pixel_height, void* Buffer, void* view) {
+                       int pixel_height, const void* Buffer, void* view) {
   auto* vp_dst = static_cast<GraphicViewPortClass*>(view);
 
   int src_x0 = 0;
@@ -167,7 +167,7 @@ int32_t Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
     }
   }
 
-  const auto* src_offset = static_cast<uint8_t*>(Buffer) + src_x0 +
+  const auto* src_offset = static_cast<const uint8_t*>(Buffer) + src_x0 +
                            (static_cast<base::ssize>(src_y0) * pixel_width);
 
   const base::ssize dst_area =

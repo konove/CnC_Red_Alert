@@ -125,8 +125,8 @@ extern char* ShapeBuffer;
 */
 int Extract_Shape_Count(const void* buffer);
 int Extract_Shape_Count(std::span<const std::byte> span);
-void* Extract_Shape(const void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                    int shape);
+const void* Extract_Shape(const void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                          int shape);
 
 /*
 ------------------------------- setshape.asm --------------------------------

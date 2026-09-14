@@ -689,7 +689,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   ** loop through the list and take care of rendering the correct icon.
   */
   for (lp = 0; lp < listidx; lp++) {
-    unsigned char* icon = list[lp]->Radar_Icon(cell);
+    const unsigned char* icon = list[lp]->Radar_Icon(cell);
     if (!icon) {
       continue;
     }
@@ -788,7 +788,7 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
     const OverlayTypeClass* otype = &OverlayTypeClass::As_Reference(overlay);
 
     if (otype->IsRadarVisible) {
-      unsigned char* icon = otype->Radar_Icon((*this)[cell].OverlayData);
+      const unsigned char* icon = otype->Radar_Icon((*this)[cell].OverlayData);
       if (!icon) {
         return;
       }
@@ -1043,9 +1043,8 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         icon &= 0x00FF;
         icon = *(iconset->Map_Data() + icon);
 
-        unsigned char* data =
-            (unsigned char*)icondata +
-            (static_cast<base::ssize>(icon) * (base::ssize{24} * 24));
+        const unsigned char* data = icondata + (static_cast<base::ssize>(icon) *
+                                                (base::ssize{24} * 24));
         Buffer_To_Page(0, 0, 24, 24, data, TileStage);
         TileStage.Scale(*LogicPage, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor,
                         true);

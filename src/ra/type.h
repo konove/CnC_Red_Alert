@@ -1941,7 +1941,7 @@ class OverlayTypeClass : public ObjectTypeClass {
   [[nodiscard]] const int16_t* Occupy_List(
       bool placement = false) const override;
   virtual void Draw_It(int x, int y, int data) const;
-  [[nodiscard]] virtual unsigned char* Radar_Icon(int data) const
+  [[nodiscard]] virtual const unsigned char* Radar_Icon(int data) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   void Display(int x, int y, WindowNumberType window,

@@ -101,6 +101,10 @@ class ScoreAnimClass {
   int YPos;
   Timer<SystemTickSource> AnimTimer;
   const void* DataPtr;
+  // The animation's text, for the text-style animations.
+  [[nodiscard]] const char* Text() const {
+    return static_cast<const char*>(DataPtr);
+  }
   virtual void Update() {}
   virtual ~ScoreAnimClass() { DataPtr = nullptr; }
   ScoreAnimClass(const ScoreAnimClass&) = delete;
