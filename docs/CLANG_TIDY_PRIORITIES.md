@@ -107,7 +107,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `cert-msc32-c`                                             | Enabled | Alias enabled with `bugprone-random-generator-seed` in the same commit.                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `cert-msc51-cpp`                                           | Enabled | Alias enabled with `bugprone-random-generator-seed` in the same commit.                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `modernize-use-integer-sign-comparison`                    | Enabled | Commit `Compare mixed-sign integers with std::cmp functions`: 238 reports, applied with the check's fix-its (`std::cmp_less` and friends, with `<utility>`); the values compared are unchanged, and the comparisons are now correct for negative operands.                                                                                                                                                                                                                                              |
-| `modernize-use-nodiscard`                                  | Enabled | Commit `Mark value-returning functions nodiscard`: 927 reports; the check's fix-its applied 921 attributes; 47 declarations whose results the engine deliberately ignores (`Validate`, `Create_And_Place`, `Create_One_Of`, the `AI_*` helpers) keep no attribute under a reasoned suppression, and no call site discards a result. See review below.                                                                                                                                                   |
+| `modernize-use-nodiscard`                                  | Enabled | Commit `Mark value-returning functions nodiscard`: 927 reports; the check's fix-its applied 921 attributes; 49 declarations whose results the engine deliberately ignores (`Validate`, `Create_And_Place`, `Create_One_Of`, the `AI_*` helpers, the message boxes' `int` `Process`) keep no attribute under a reasoned suppression, and no call site discards a result. See review below.                                                                                                               |
 
 ## P3 — Broader safety and maintainability
 
@@ -151,7 +151,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `readability-implicit-bool-conversion`                          | Enabled | Commit `Enable readability-implicit-bool-conversion`: with `AllowPointerConditions` and `AllowIntegerConditions` (Google style), 1,572 reports; flags and predicates became `bool` in four commits. See review below.                                                                                                                                                                                                        |
 | `readability-inconsistent-declaration-parameter-name`           | Enabled | Commit `Name declaration parameters after their definitions`: 164 reports, applied with the check's fix-its. TD's `WWGetPrivateProfileString` definition took RA's parameter names instead, because the header-side rename made 66 correct calls read as swapped arguments to `readability-suspicious-call-argument`.                                                                                                        |
 | `misc-const-correctness`                                        | Enabled | Commit `Enable misc-const-correctness`: 4,072 reports; three commits add 4,126 `const` qualifiers with the check's fix-its. Pointee warnings are off (`WarnPointersAsPointers: false`) because LLVM 23 misses writes through `*p++`, arrays of pointers and function-pointer hooks, and about 40 of those fix-its did not compile. See review below.                                                                         |
-| `readability-make-member-function-const`                        | Skipped | Commit `Record the remaining P3 policy decisions`: bitwise const only; of 103 functions its fix-its touched, 29 were accessors and many others mutate state through globals. See review below.                                                                                                                                                                                                                               |
+| `readability-make-member-function-const`                        | Enabled | Commit `Enable readability-make-member-function-const`: 165 reports judged by logical constness; 122 functions became `const`, 45 that exist to change state keep a reasoned suppression, and three dead no-ops were deleted. See review below.                                                                                                                                                                              |
 | `misc-override-with-different-visibility`                       | Enabled | Commit `Match override access to the base declarations`: 19 overrides moved to their base's access level in both games' gadget, turret, drive, building and list classes.                                                                                                                                                                                                                                                    |
 | `misc-header-include-cycle`                                     | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                                                                                                                                                                                |
 | `misc-include-cleaner`                                          | Skipped | Commit `Record the remaining P3 policy decisions`: 3,214 reports; include-what-you-use already enforces the project's include policy. See review below.                                                                                                                                                                                                                                                                      |
@@ -1094,6 +1094,59 @@ are non-const, with a template-dependent argument the check does not see as a mu
 `SerializeObjectList` sets its `seen` bitset only when reading, and the check reports it from the
 writer instantiation, where that `if constexpr` branch is discarded.
 
+### Member function const review (2026-09-13)
+
+`readability-make-member-function-const` is now enforced. It reports a member function that writes
+no field of its own object and calls nothing non-const on it: bitwise constness, 165 reports. The
+earlier review kept it excluded because many of those functions change game or network state through
+globals and pointer members. This time each report was judged by logical constness instead, whether
+the function leaves alone the state it is responsible for:
+
+| Result                                         | Functions |
+| ---------------------------------------------- | --------- |
+| Declared `const` with the check's fix-its      | 117       |
+| Kept non-const under a reasoned suppression    | 45        |
+| Deleted as dead no-ops                         | 3         |
+| Declared `const` once their callees were const | 5         |
+
+**Declared `const`.** Accessors (the connection, queue, radar, vortex, viewport, mouse and heap
+getters), comparisons, coordinate conversions (`Coord_To_Pixel`, `Push_Onto_TacMap`,
+`Cell_On_Radar`, `Click_In_Radar`), drawing that only reads the object (`Draw_Names`,
+`Render_Terrain`, `EgoClass::Render`, `TeamMissionClass::Draw_It`), formatting and saving
+(`Save_Settings`, `WritePlayerListItem`, `SetGParamsToCurrent`), and both message boxes, whose
+`Process` shows a modal box and returns the button without changing the box. RA's
+`BaseNodeClass::operator!=` and the other two `Process` overloads in each game followed once their
+callees were `const`. RA's `xTargetClass::operator==` now takes a `const` reference, since a `const`
+operator with a mutable parameter is ambiguous with its C++20 reversed form.
+
+**Suppressed.** Functions that exist to change state keep no qualifier, under a comment that names
+the state (`// Not const: sends a chat request.`) and a `NOLINTNEXTLINE`:
+
+- `CellClass::Incoming`, `Adjust_Threat` and `Shimmer`, and RA's `Goodie_Check`, which act on the
+  cell's occupants, the houses' threat tables and the crate.
+- `DisplayClass::Select_These`, `EventClass::Execute`, RA's `TActionClass::operator()` and
+  `ChronalVortexClass::Set_Redraw`.
+- The null-modem `Dial_Modem`, `Answer_Modem` and `Hangup_Modem`, which drive the serial port, and
+  twelve Westwood Online chat requests (`Kick`, `Ban`, `Squelch`, `ChannelJoin`, `SendGo`, ...).
+- `OptionsClass::One_Time`, the sidebar strips' `Activate` and `Deactivate`, and the score screen's
+  `Do_Nod_Buildings_Graph` and `Do_Nod_Casualties_Graph` animations.
+- TD's `GameOptionsClass::Process`, `InfantryClass::Clear_Occupy_Bit`,
+  `TeamClass::Coordinate_Conscript` and `TechnoClass::Base_Is_Attacked`.
+
+**Deleted.** RA's `MapClass::Shroud_From` had no callers. TD's `BuildingClass::Update_Specials` and
+`HouseClass::Detach` only ran `Validate()`. Dropping the `Update_Specials` call left a nested `if`,
+merged for `readability-redundant-nested-if`.
+
+**Knock-on checks.** `modernize-use-nodiscard` reports only `const` member functions, so the newly
+`const` ones that return a value added 90 reports; the fix-its applied 88 attributes, and the
+message boxes' `int` `Process` overload stays without one (see the nodiscard review). The `--format`
+pass of `clang-apply-replacements` split the one-line accessors in both `combuf.h` headers around
+their trailing comments; those comments now sit above the accessors.
+
+Adding `const` changes no value, class layout or save format. The full strict build of both games is
+clean, all 359 tests pass, and the RA and TD save/load checks report identical state. A probe class
+with a non-const getter confirms the check reports an error.
+
 ### Switch fallback review (2026-09-12)
 
 `clang-diagnostic-switch`, `clang-diagnostic-switch-default` and
@@ -1231,7 +1284,10 @@ functions whose results the engine ignores on purpose:
 | `CarryoverClass::Create`        | 1        | Recreated for its side effect.                      |
 
 Those 47 declarations keep no attribute, each under a `NOLINTNEXTLINE` that says why. With them
-excluded, no call site in either game discards a `[[nodiscard]]` result.
+excluded, no call site in either game discards a `[[nodiscard]]` result. The member function const
+review below added two more: the `int` overload of `WWMessageBox::Process` and
+`CCMessageBox::Process`, whose result 142 calls ignore because an informational box has nothing to
+answer.
 
 ### Declaration and linkage review (2026-09-12)
 
@@ -1388,16 +1444,7 @@ every site.
 | `modernize-macro-to-enum`, `cppcoreguidelines-macro-to-enum` | 2,256   | The same macro groups. As enumerators they would change type wherever they meet integer arithmetic and `printf`-style formatting.                                                                                       |
 | `cppcoreguidelines-use-enum-class`                           | 517     | 178 are unnamed enums used as integer constants. 46 are the per-dialog `RedrawType` levels, compared as ordered values 110 times. 137 are the core type enums in each game's `defines.h`, which index arrays and loops. |
 | `misc-include-cleaner`                                       | 3,214   | Include-what-you-use already runs in the strict build with the project's `.iwyu_mappings`; a second, differently tuned include policy would fight it.                                                                   |
-| `readability-make-member-function-const`                     | 155     | See below.                                                                                                                                                                                                              |
 | `portability-template-virtual-member-function`               | 35      | See below.                                                                                                                                                                                                              |
-
-`readability-make-member-function-const` checks bitwise constness: a member function qualifies if it
-does not write the object's own fields. Applying its fix-its to all 155 reports touched 103 distinct
-functions. Only 29 were one-line accessors. Most of the rest change game or network state through
-globals or pointer members: `CellClass::Adjust_Threat`, `Shimmer`, `Clear_Occupy_Bit`, the radar and
-tactical `Render` paths, and the Westwood Online `Kick`, `Ban`, `Squelch`, `ChannelJoin` and
-`SendGo`. Marking those `const` would advertise them as read-only. The fix-its were reverted. Adding
-`const` to accessors stays welcome where the code is touched.
 
 `portability-template-virtual-member-function` reports 35 virtual members of the heap, vector and
 mix-file class templates. Clang and GCC only instantiate a virtual member that some specialization

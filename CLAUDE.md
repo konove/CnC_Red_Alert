@@ -254,7 +254,10 @@ self-contained headers, fixed-width integer types (`long` → `int32_t`, etc.).
 clang-tidy's `misc-const-correctness` enforces it. Write `const` before the type (`const int x`,
 `const T* p`); `.clang-format` sets `QualifierAlignment: Left`. Make pointers point to `const` when
 the target is never written, though the check does not require it: LLVM 23 misses writes through
-`*p++`, so pointee warnings are off. Adding `const` to member functions stays opportunistic.
+`*p++`, so pointee warnings are off. Declare member functions `const` when they leave the object's
+state alone; `readability-make-member-function-const` enforces it. A function that exists to change
+game, network or UI state stays non-const even if it writes no field of its own — suppress the check
+with a comment naming that state.
 
 **Avoid unless requested:** Class hierarchy refactoring, smart pointers everywhere, STL containers
 everywhere, removing globals.
