@@ -6,6 +6,7 @@
 #include <cstring>
 #include <iterator>
 #include <span>
+#include <string_view>
 #include <vector>
 
 #include "base/types.h"
@@ -260,4 +261,47 @@ TEST(CodecStateTest, ShaStrawHashesOnlyTheBytesItReturned) {
   std::array<uint8_t, 64> rest{};
   ASSERT_EQ(source.Read(std::as_writable_bytes(std::span(rest))), 27);
   EXPECT_TRUE(std::equal(data.begin() + 5, data.end(), rest.begin()));
+}
+
+// A pull link reads only as much of its source as its codec can use, so the
+// source position after a partial read is the same whichever straw or
+// adapter implements it.
+TEST(CodecStateTest, SourcesReadOnlyWhatTheirCodecNeeds) {
+  std::vector<uint8_t> plain(300);
+  for (int i = 0; auto& byte : plain) {
+    byte = static_cast<uint8_t>(i++ * 5);
+  }
+  {
+    // A block header, then that block's compressed bytes.
+    RecordingSink encoded;
+    LzoSink compressor(CodecMode::kCompress, encoded, 128);
+    compressor.Write(std::as_bytes(std::span(plain)));
+    compressor.Finish();
+    SpanSource source(std::as_bytes(std::span(encoded.bytes)));
+    LzoSource decompressor(CodecMode::kDecompress, source, 128);
+    std::array<std::byte, 1> one{};
+    ASSERT_EQ(decompressor.Read(one), 1);
+    const int first_block = 4 + encoded.bytes[0] + (encoded.bytes[1] << 8);
+    EXPECT_EQ(source.bytes_remaining(),
+              std::ssize(encoded.bytes) - first_block);
+  }
+  {
+    // One 8-byte block for a keyed cipher.
+    SpanSource source(std::as_bytes(std::span(plain)));
+    BlowfishSource cipher(CipherMode::kDecrypt, source);
+    const std::array<char, 4> key = {'k', 'e', 'y', '!'};
+    cipher.Key(key.data(), static_cast<int>(key.size()));
+    std::array<std::byte, 1> one{};
+    ASSERT_EQ(cipher.Read(one), 1);
+    EXPECT_EQ(source.bytes_remaining(), std::ssize(plain) - 8);
+  }
+  {
+    // One 4-character group for Base64.
+    constexpr std::string_view kEncoded = "YWJjZGVmZ2hp";
+    SpanSource source(std::as_bytes(std::span(kEncoded)));
+    Base64Source decoder(Base64Mode::kDecode, source);
+    std::array<std::byte, 1> one{};
+    ASSERT_EQ(decoder.Read(one), 1);
+    EXPECT_EQ(source.bytes_remaining(), std::ssize(kEncoded) - 4);
+  }
 }

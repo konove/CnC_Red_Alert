@@ -118,6 +118,10 @@ class ChainedSink : public ByteSink {
     return ByteSink::ok() && next_.ok();
   }
 
+ protected:
+  // The sink this link writes to.
+  [[nodiscard]] ByteSink& next() const { return next_; }
+
  private:
   ByteSink& next_;
 };
