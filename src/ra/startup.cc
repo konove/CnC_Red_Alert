@@ -64,7 +64,6 @@
 #include "ra/ipxaddr.h"
 #include "ra/ipxmgr.h"
 #include "ra/jshell.h"
-#include "ra/keyframe.h"
 #include "ra/language.h"
 #include "ra/nullconn.h"
 #include "ra/palette.h"
@@ -251,11 +250,6 @@ int main(int argc, char* argv[])
     DiskFile cfile(kConfigFileName);
 
     Keyboard = new KeyboardClass();
-
-    /*
-    ** If there is loads of memory then use uncompressed shapes
-    */
-    Check_Use_Compressed_Shapes();
 
     /*
     ** If there is not enough disk space free, don't allow the product to run.

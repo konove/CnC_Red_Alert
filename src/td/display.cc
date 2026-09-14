@@ -1061,13 +1061,6 @@ void DisplayClass::Read_INI(char* buffer) {
   Theater = Theater_From_Name(name);
 
   /*
-  ** Remove any old theater specific uncompressed shapes
-  */
-  if (Theater != LastTheater) {
-    Reset_Theater_Shapes();
-  }
-
-  /*
   **	Now that the theater is known, init the entire map hierarchy
   */
   Init(Theater);

@@ -1631,9 +1631,6 @@ bool Main_Loop() {
   // Call the focus loss handler
   Check_For_Focus_Loss();
 
-  // Allocate extra memory for uncompressed shapes as needed
-  Reallocate_Big_Shape_Buffer();
-
   // Sync-bug trapping code
   if (Frame >= Session.TrapFrame) {
     Session.Trap_Object();
@@ -2206,8 +2203,6 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile,
         Build_Frame(shapefile, static_cast<uint16_t>(shape_num + frame_num),
                     SysMemPage.Get_Buffer());
     if (ptr != nullptr) {
-      ptr = Get_Shape_Header_Data(ptr);
-
       // Loop through the icon width and the icon height building icons
       // into the buffer pointer.  When the getx or gety falls outside of
       // the width and height of the shape, just insert transparent pixels.
@@ -2289,11 +2284,9 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
       // 0x0100 is 1.0 in the 24.8 fixed point scale, so this is "no rotation
       // and no scaling" -- the common case, which skips the slow path below.
       if (rotation != DIR_N || scale != 0x0100) {
-        // Get the raw shape data without the new header and flag to use the old
-        // shape drawing
+        // Flag to use the old shape drawing
         UseOldShapeDraw = true;
-        buffer =
-            static_cast<unsigned char*>(Get_Shape_Header_Data(shape_pointer));
+        buffer = static_cast<unsigned char*>(shape_pointer);
 
         const BitmapClass bm(width, height, buffer);
         width *= 2;
@@ -2377,7 +2370,7 @@ Rect Shape_Dimensions(const void* shapedata, const int shape_num) {
   if (sh == nullptr) {
     return rect;
   }
-  const char* shape = static_cast<char*>(Get_Shape_Header_Data(sh));
+  const char* shape = static_cast<const char*>(sh);
 
   const int width = Get_Build_Frame_Width(shapedata);
   const int height = Get_Build_Frame_Height(shapedata);

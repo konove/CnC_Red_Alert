@@ -33,7 +33,6 @@ list(REMOVE_ITEM RA_SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/dpmi.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/ipx95.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/itable.cc"  # ADPCM tables for adpcm.cc
-        "${CMAKE_CURRENT_SOURCE_DIR}/keyframe.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/number.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/rand.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/stub.cc"

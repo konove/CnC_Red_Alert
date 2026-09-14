@@ -70,7 +70,6 @@
 #include "ra/inline.h"
 #include "ra/interpal.h"
 #include "ra/jshell.h"
-#include "ra/keyframe.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
 #include "ra/nullmgr.h"
@@ -339,10 +338,6 @@ void ScoreClass::Presentation() {
   static const int _bldggy[2] = {138, 138};
   static const int _bldgny[2] = {150, 150};
 
-  /*
-  ** Fix for the score screen crash due to uncompressed shape buffer overflow.
-  */
-  Disable_Uncompressed_Shapes();
   int i;
   const void* yellowptr;
   const void* redptr;
@@ -717,11 +712,6 @@ void ScoreClass::Presentation() {
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;
   ControlQ = false;
-
-  /*
-  ** Fix for the score screen crash due to uncompressed shape buffer overflow.
-  */
-  Enable_Uncompressed_Shapes();
 }
 
 void Cycle_Wait_Click(bool cycle) {

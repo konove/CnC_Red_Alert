@@ -329,7 +329,6 @@ template <class Archive>
 void MouseClass::Serialize(Archive& ar) {
   if constexpr (Archive::kIsReading) {
     LastTheater = THEATER_NONE;
-    Reset_Theater_Shapes();
     Init_Theater(Scen.Theater);
     TerrainTypeClass::Init(Scen.Theater);
     TemplateTypeClass::Init(Scen.Theater);

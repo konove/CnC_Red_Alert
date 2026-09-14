@@ -1532,11 +1532,6 @@ bool Main_Loop() {
   Check_For_Focus_Loss();
 
   /*
-  ** Allocate extra memory for uncompressed shapes as needed
-  */
-  Reallocate_Big_Shape_Buffer();
-
-  /*
   ** Sync-bug trapping code
   */
   if (Frame >= TrapFrame) {
@@ -2323,7 +2318,6 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
     ptr = Build_Frame(shapefile, static_cast<uint16_t>(shapenum + framelp),
                       SysMemPage.Get_Buffer());
     if (ptr != nullptr) {
-      ptr = Get_Shape_Header_Data(ptr);
       /*
       ** Loop through the icon width and the icon height building icons
       ** into the buffer pointer.  When the getx or gety falls outside of
@@ -2383,8 +2377,7 @@ void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
     }
 
     if (shape_size) {
-      shape_pointer =
-          static_cast<unsigned char*>(Get_Shape_Header_Data(shape_size));
+      shape_pointer = static_cast<unsigned char*>(shape_size);
       const int source_width = Get_Build_Frame_Width(shapefile);
       const int source_height = Get_Build_Frame_Height(shapefile);
 

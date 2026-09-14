@@ -361,7 +361,6 @@ extern "C" {
 extern bool IsTheaterShape;
 }
 
-extern void Reset_Theater_Shapes();
 extern TheaterType LastTheater;
 
 void Do_Vortex(int x, int y, int frame);

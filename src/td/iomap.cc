@@ -307,9 +307,6 @@ void MouseClass::Serialize(Archive& ar) {
       ar.Fail("invalid saved theater");
       return;
     }
-    if (Theater != LastTheater) {
-      Reset_Theater_Shapes();
-    }
     Init_Theater(Theater);
     TerrainTypeClass::Init(Theater);
     TemplateTypeClass::Init(Theater);

@@ -4313,13 +4313,6 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   Scen.Theater = ini.Get_TheaterType(name, "Theater", THEATER_TEMPERATE);
 
   /*
-  ** Remove any old theater specific uncompressed shapes
-  */
-  if (Scen.Theater != LastTheater) {
-    Reset_Theater_Shapes();
-  }
-
-  /*
   **	Now that the theater is known, init the entire map hierarchy
   */
   Init(Scen.Theater);

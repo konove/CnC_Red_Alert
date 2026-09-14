@@ -80,7 +80,6 @@
 #include "td/house.h"
 #include "td/interpal.h"
 #include "td/jshell.h"
-#include "td/keyframe.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
 #include "td/mouse.h"
@@ -681,7 +680,6 @@ void ScoreClass::Presentation() {
       SeenBuff.Get_Width(), SeenBuff.Get_Height(), static_cast<void*>(nullptr));
   TextPrintBuffer->Clear();
   BlitList.Clear();
-  Disable_Uncompressed_Shapes();
 
   ControlQ = false;
   FontXSpacing = 0;
@@ -1088,7 +1086,6 @@ void ScoreClass::Presentation() {
   delete TextPrintBuffer;
   TextPrintBuffer = nullptr;
   BlitList.Clear();
-  Enable_Uncompressed_Shapes();
 }
 
 void Cycle_Wait_Click() {

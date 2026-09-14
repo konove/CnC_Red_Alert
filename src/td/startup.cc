@@ -81,7 +81,6 @@
 #include "td/goptions.h"
 #include "td/init.h"
 #include "td/jshell.h"
-#include "td/keyframe.h"
 #include "td/special.h"
 #include "tech/search_paths.h"
 #endif  // TD_NO_ENTRY_POINT
@@ -241,11 +240,6 @@ int main(int argc, char* argv[])
     TickCount.Start();
 
     DiskFile cfile("CONQUER.INI");
-
-    /*
-    ** If there is loads of memory then use uncompressed shapes
-    */
-    Check_Use_Compressed_Shapes();
 
     /*
     ** If there is not enough disk space free, dont allow the product to run.

@@ -2496,10 +2496,6 @@ int MapEditClass::Load_Scenario() {
       }
 
       /*
-      ** Remove any old theater specific uncompressed shapes
-      */
-      Reset_Theater_Shapes();
-      /*
       ** Force shapes to reload
       */
       LastTheater = THEATER_NONE;
