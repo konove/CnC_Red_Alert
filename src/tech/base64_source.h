@@ -1,95 +1,15 @@
-/*
-**	Command & Conquer Red Alert(tm)
-**	Copyright 2025 Electronic Arts Inc.
-**
-**	This program is free software: you can redistribute it and/or modify
-**	it under the terms of the GNU General Public License as published by
-**	the Free Software Foundation, either version 3 of the License, or
-**	(at your option) any later version.
-**
-**	This program is distributed in the hope that it will be useful,
-**	but WITHOUT ANY WARRANTY; without even the implied warranty of
-**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**	GNU General Public License for more details.
-**
-**	You should have received a copy of the GNU General Public License
-**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/* $Header: /CounterStrike/B64STRAW.H 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : B64STRAW.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 07/02/96 *
- *                                                                                             *
- *                  Last Update : July 2, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// File: Base64Source, a source that Base64-encodes or decodes.
 
 #ifndef CNC_RED_ALERT_TECH_BASE64_SOURCE_H_
 #define CNC_RED_ALERT_TECH_BASE64_SOURCE_H_
 
-#include <array>
-#include <cstddef>
-#include <span>
+#include "tech/base64_codec.h"
+#include "tech/transform_source.h"
 
-#include "base/types.h"
-#include "tech/base64.h"
-#include "tech/byte_source.h"
-
-/*
-**	Performs Base 64 encoding/decoding on the data that is drawn through the
-*straw. Note that *	encoding increases the data size by about 30%. The
-*reverse occurs when decoding.
-*/
-class Base64Source : public ChainedSource {
- public:
-  Base64Source(Base64Mode control, ByteSource& source)
-      : ChainedSource(source), Control(control) {}
-  ~Base64Source() override = default;
-
-  Base64Source(const Base64Source&) = delete;
-  Base64Source& operator=(const Base64Source&) = delete;
-  Base64Source(Base64Source&&) = delete;
-  Base64Source& operator=(Base64Source&&) = delete;
-
-  base::ssize Read(std::span<std::byte> buffer) override;
-
- private:
-  /*
-  **	Indicates if this is for encoding or decoding of Base64 data.
-  */
-  Base64Mode Control;
-
-  /*
-  **	The counter of the number of accumulated bytes pending for processing.
-  */
-  int Counter = 0;
-
-  /*
-  **	Buffer that holds the Base64 coded bytes. This will be the staging
-  *buffer if *	this is for a decoding process. Otherwise, it will be used as a
-  *scratch buffer.
-  */
-  std::array<char, 4> CBuffer{};
-
-  /*
-  **	Buffer that holds the plain bytes. This will be the staging buffer if
-  *this *	is for an encoding process. Otherwise, it will be used as a
-  *scratch buffer.
-  */
-  std::array<char, 3> PBuffer{};
-};
+// Encodes or decodes the bytes read through it; see Base64Codec.
+//
+// Example:
+//   Base64Source encoder(Base64Mode::kEncode, span_source);
+using Base64Source = TransformSource<Base64Codec>;
 
 #endif  // CNC_RED_ALERT_TECH_BASE64_SOURCE_H_

@@ -98,9 +98,19 @@
 #include <iterator>
 #include <span>
 
+#include "absl/base/attributes.h"
 #include "base/numeric.h"
 #include "tech/byte_source.h"
-#include "tech/byte_view.h"
+
+namespace {
+
+// The digits are filled with random bytes; any byte pattern is a valid
+// digit.
+std::byte* AsBytes(void* data ABSL_ATTRIBUTE_LIFETIME_BOUND) {
+  return static_cast<std::byte*>(data);
+}
+
+}  // namespace
 
 /***********************************************************************************************
  * _Byte_Precision -- Determines the number of bytes significant in long
@@ -2450,7 +2460,7 @@ void XMP_Randomize(uint32_t* result, ByteSource& rng, int total_bits,
   const int nbytes = (total_bits / 8) + 1;
 
   XMP_Init(result, 0, precision);
-  rng.Read(WritableByteView(result, nbytes));
+  rng.Read(std::span(AsBytes(result), base::ToSize(nbytes)));
 
   ((unsigned char*)result)[nbytes - 1] &=
       static_cast<unsigned char>(~(~0 << (total_bits % 8)));
