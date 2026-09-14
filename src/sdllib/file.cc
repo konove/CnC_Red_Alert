@@ -17,19 +17,23 @@
 #endif
 
 void* IO_Open_File(const char* filename, FileAccess mode) {
-  const char* mode_str;
-
-  if (mode == FileAccess::kRead) {
-    mode_str = "rb";
-  } else if (mode == FileAccess::kWrite) {
-    mode_str = "wb";
-  } else if (mode == FileAccess::kReadWrite) {
-    mode_str = "w+b";
-  } else {
-    return nullptr;
+  switch (mode) {
+    case FileAccess::kRead:
+      return fopen(filename, "rb");
+    case FileAccess::kWrite:
+      return fopen(filename, "wb");
+    case FileAccess::kReadWrite: {
+      // "w+b" would empty an existing file; read-write access means keeping
+      // its contents (the record file appends to itself). Only create the
+      // file when there is nothing to keep.
+      if (FILE* const file = fopen(filename, "r+b")) {
+        return file;
+      }
+      return fopen(filename, "w+b");
+    }
+    default:
+      return nullptr;
   }
-
-  return fopen(filename, mode_str);
 }
 
 void IO_Close_File(void* handle) {
