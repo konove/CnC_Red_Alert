@@ -20,7 +20,6 @@
 #include <string>
 
 #include "ra/_wsproto.h"
-#include "ra/ccfile.h"
 #include "ra/ccini.h"
 #include "ra/colrlist.h"
 #include "ra/config.h"
@@ -32,6 +31,7 @@
 #include "ra/globals.h"
 #include "ra/init.h"
 #include "ra/jshell.h"
+#include "ra/mix_aware_file.h"
 #include "ra/palette.h"
 #include "ra/textbtn.h"
 #include "ra/wsproto.h"
@@ -129,7 +129,7 @@ bool Get_Broadcast_Addresses() {
   CCINIClass ip_ini;
   int res = 0;
 
-  CCFileClass fc("IP.INI");
+  MixAwareFile fc("IP.INI");
   if (ip_ini.Load(fc, false)) {
     int entry = 0;
     char entry_name[16];

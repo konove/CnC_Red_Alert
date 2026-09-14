@@ -58,7 +58,6 @@
 #include "ra/building.h"
 #include "ra/bullet.h"
 #include "ra/carry.h"
-#include "ra/ccfile.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
@@ -76,6 +75,7 @@
 #include "ra/layer.h"
 #include "ra/mapedit.h"
 #include "ra/mission_id.h"
+#include "ra/mix_aware_file.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
 #include "ra/overlay.h"
@@ -527,7 +527,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   const char* dump_path = std::getenv("RA_SAVE_DUMP");
   if (dump_path != nullptr && dump_path[0] != '\0') {
     dump_file.Open(dump_path, FileAccess::kWrite);
-    dump_open = dump_file.Is_Open();
+    dump_open = dump_file.IsOpen();
     if (!dump_open) {
       DLOG(WARNING) << "Cannot open RA_SAVE_DUMP: " << dump_path;
     }
@@ -729,13 +729,13 @@ bool Load_Game(int id) {
   ** CD to request later
   */
   if (load_net) {
-    CCFileClass scenario_file(Scen.ScenarioName);
+    MixAwareFile scenario_file(Scen.ScenarioName);
     if (!scenario_file.Is_Available()) {
       int cd = -1;
       if (IsMissionCounterstrike(Scen.ScenarioName)) {
         cd = 2;
         if (Expansion_AM_Present()) {
-          const int current_drive = CCFileClass::Get_CD_Drive();
+          const int current_drive = MixAwareFile::Get_CD_Drive();
           const int index = Get_CD_Index(current_drive, 1 * 60);
           if (index == 3) {
             cd = 3;
@@ -763,7 +763,7 @@ bool Load_Game(int id) {
       ** The scenario is available so set RequiredCD to whatever is currently
       ** in the drive.
       */
-      const int current_drive = CCFileClass::Get_CD_Drive();
+      const int current_drive = MixAwareFile::Get_CD_Drive();
       RequiredCD = Get_CD_Index(current_drive, 1 * 60);
     }
   }
@@ -989,7 +989,7 @@ bool Load_Game(int id) {
 
   } else {
     if (load_net) {
-      CCFileClass scenario_file(Scen.ScenarioName);
+      MixAwareFile scenario_file(Scen.ScenarioName);
 
       /*
       ** Fix up the session class variables
@@ -1035,7 +1035,7 @@ bool Load_Game(int id) {
   **	Rescan the scenario file for any rules updates.
   */
   CCINIClass ini;
-  CCFileClass fc(Scen.ScenarioName);
+  MixAwareFile fc(Scen.ScenarioName);
   ini.Load(fc, true);
 
   /*
@@ -1090,7 +1090,7 @@ bool Load_Game(int id) {
       /*
       ** Find out if the CD in the current drive is the Aftermath disc.
       */
-      if (Get_CD_Index(CCFileClass::Get_CD_Drive(), 60) != 3) {
+      if (Get_CD_Index(MixAwareFile::Get_CD_Drive(), 60) != 3) {
         GamePalette.Set(kFadePaletteFast, Call_Back);
         // force Aftermath CD in drive.
         if (!Force_CD_Available(3)) {
@@ -1098,7 +1098,7 @@ bool Load_Game(int id) {
         }
       }
       CCINIClass mpini;
-      CCFileClass mplayer_ini("MPLAYER.INI");
+      MixAwareFile mplayer_ini("MPLAYER.INI");
       if (mpini.Load(mplayer_ini, false)) {
         Rule.General(mpini);
         Rule.Recharge(mpini);

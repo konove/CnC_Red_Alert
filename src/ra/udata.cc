@@ -62,7 +62,6 @@
 
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
-#include "ra/ccfile.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
@@ -75,6 +74,7 @@
 #include "ra/jshell.h"
 #include "ra/keyframe.h"
 #include "ra/mapedit.h"
+#include "ra/mix_aware_file.h"
 #include "ra/object.h"
 #include "ra/type.h"
 #include "ra/unit.h"
@@ -1059,7 +1059,7 @@ void UnitTypeClass::Prep_For_Add() {
 void UnitTypeClass::One_Time() {
   for (const UnitType index : magic_enum::enum_values<UnitType>()) {
     UnitTypeClass& uclass = As_Reference(index);
-    const CCFileClass file;
+    const MixAwareFile file;
 
     int largest = 0;
     //		if (uclass.Level != -1) {

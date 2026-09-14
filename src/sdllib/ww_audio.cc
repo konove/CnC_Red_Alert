@@ -367,7 +367,7 @@ int File_Stream_Sample_Vol(const char* filename, int volume,
   }
 
   // try to open file and get header
-  const int handle = Open_File(filename, FileAccess::kRead);
+  const int handle = OpenFileHandle(filename, FileAccess::kRead);
 
   if (handle < 0) {
     return -1;
@@ -375,8 +375,8 @@ int File_Stream_Sample_Vol(const char* filename, int volume,
 
   AUDHeaderType header;
 
-  if (Read_File(handle, &header, sizeof(header)) != sizeof(header)) {
-    Close_File(handle);
+  if (ReadFileHandle(handle, &header, sizeof(header)) != sizeof(header)) {
+    CloseFileHandle(handle);
     return -1;
   }
 
@@ -384,7 +384,7 @@ int File_Stream_Sample_Vol(const char* filename, int volume,
   const int bits = header.Flags & 2 ? 16 : 8;
 
   if (header.Compression != SCOMP_SOS || channels != 1 || bits != 16) {
-    Close_File(handle);
+    CloseFileHandle(handle);
     printf("\trate %i size %i/%i channels %i bits %i comp %i\n", header.Rate,
            header.Size, header.UncompSize, channels, bits, header.Compression);
     return -1;
@@ -436,7 +436,7 @@ void Sound_Callback() {
     if (!chan.playing) {
       // clean up file
       // (may have stopped playing due to fade)
-      Close_File(chan.file_handle);
+      CloseFileHandle(chan.file_handle);
       chan.file_handle = -1;
       continue;
     }
@@ -450,14 +450,14 @@ void Sound_Callback() {
     }
 
     uint16_t block_header[4];
-    if (Read_File(chan.file_handle, block_header, 8) != 8) {
+    if (ReadFileHandle(chan.file_handle, block_header, 8) != 8) {
       // must be eof
 
       SDL_LockAudioDevice(AudioDevice);
       SDL_AudioStreamFlush(chan.stream);
       SDL_UnlockAudioDevice(AudioDevice);
 
-      Close_File(chan.file_handle);
+      CloseFileHandle(chan.file_handle);
       chan.file_handle = -1;
     } else {
       // read block
@@ -465,7 +465,7 @@ void Sound_Callback() {
 
       auto* buf = new uint8_t[in_size];
 
-      Read_File(chan.file_handle, buf, in_size);
+      ReadFileHandle(chan.file_handle, buf, in_size);
 
       SDL_LockAudioDevice(AudioDevice);
       DecodeADPCMBlock(chan, in_size, buf);
@@ -529,7 +529,7 @@ void Stop_Sample(int handle) {
   SDL_UnlockAudioDevice(AudioDevice);
 
   if (Channels[handle].file_handle != -1) {
-    Close_File(Channels[handle].file_handle);
+    CloseFileHandle(Channels[handle].file_handle);
     Channels[handle].file_handle = -1;
   }
 }
@@ -700,8 +700,8 @@ static int32_t Sample_Read(int fh, void* buffer, base::ssize size) {
 
   size -= base::ssize{sizeof(RawHeader)};
   outbuffer = Add_Long_To_Pointer(buffer, sizeof(RawHeader));
-  actual_bytes_read = Read_File(fh, &RawHeader, sizeof(RawHeader));
-  actual_bytes_read += Read_File(
+  actual_bytes_read = ReadFileHandle(fh, &RawHeader, sizeof(RawHeader));
+  actual_bytes_read += ReadFileHandle(
       fh, outbuffer,
       static_cast<int32_t>(std::min<base::ssize>(size, RawHeader.Size)));
   Mem_Copy(&RawHeader, buffer, sizeof(RawHeader));
@@ -713,17 +713,18 @@ void* Load_Sample(const char* filename) {
   base::ssize size;
   int fh;
 
-  if (!filename || !Find_File(filename)) {
+  if (!filename || !FileExists(filename)) {
     return nullptr;
   }
 
-  fh = Open_File(filename, FileAccess::kRead);
+  fh = OpenFileHandle(filename, FileAccess::kRead);
   if (fh != kInvalidHandle) {
-    size = base::ToSigned(File_Size(fh)) + base::ssize{sizeof(AUDHeaderType)};
+    size =
+        base::ToSigned(FileHandleSize(fh)) + base::ssize{sizeof(AUDHeaderType)};
     buffer = new char[base::ToSize(size)];
     Sample_Read(fh, buffer, size);
 
-    Close_File(fh);
+    CloseFileHandle(fh);
   }
   return buffer;
 }

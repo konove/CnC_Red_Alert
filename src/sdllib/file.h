@@ -49,14 +49,16 @@
 #define SEEK_END 2  // Seek from end of file.
 #endif
 
-// These are actually implemented in the game, but used by audio and WSA
-int Open_File(const char* file_name, FileAccess mode);
-void Close_File(int handle);
-int32_t Read_File(int handle, void* buf, int32_t bytes);
-int32_t Write_File(int handle, const void* buf, int32_t bytes);
-int32_t Seek_File(int handle, int32_t offset, int starting);
-int32_t File_Size(int handle);
-bool Find_File(const char* file_name);
+// Integer-handle file access for the audio and WSA code. The game implements
+// these (ra/mix_aware_file.cc, td/ccfile.cc) so that names resolve through its
+// mixfiles. A handle is WWERROR (-1) when the open failed.
+int OpenFileHandle(const char* file_name, FileAccess mode);
+void CloseFileHandle(int handle);
+int32_t ReadFileHandle(int handle, void* buffer, int32_t size);
+int32_t WriteFileHandle(int handle, const void* buffer, int32_t size);
+int32_t SeekFileHandle(int handle, int32_t offset, int origin);
+int32_t FileHandleSize(int handle);
+bool FileExists(const char* file_name);
 
 // low level IO implemented here
 void* IO_Open_File(const char* filename, FileAccess mode);

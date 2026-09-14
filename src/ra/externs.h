@@ -48,7 +48,6 @@
 #include "ra/base.h"
 #include "ra/building.h"
 #include "ra/carry.h"
-#include "ra/ccfile.h"
 #include "ra/cell.h"
 #include "ra/event.h"
 #include "ra/goptions.h"
@@ -57,6 +56,7 @@
 #include "ra/ipxmgr.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
+#include "ra/mix_aware_file.h"
 #include "ra/mouse.h"
 #include "ra/overlay.h"
 #include "ra/queue.h"
@@ -82,8 +82,8 @@
 // Scratch space for packing and unpacking the MapPack and OverlayPack INI blocks.
 inline char staging_buffer[32000];
 
-// Convenient alias for MixFileClass<CCFileClass>; keeps call sites short.
-using MFCD = MixFileClass<CCFileClass>;
+// Convenient alias for MixFileClass<MixAwareFile>; keeps call sites short.
+using MFCD = MixFileClass<MixAwareFile>;
 
 extern bool IsVQ640;
 extern uint32_t GameVersion;

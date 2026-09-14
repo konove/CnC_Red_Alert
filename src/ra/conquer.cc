@@ -55,7 +55,6 @@
 #include "ra/aircraft.h"
 #include "ra/bench_util.h"
 #include "ra/building.h"
-#include "ra/ccfile.h"
 #include "ra/ccptr.h"
 #include "ra/config.h"
 #include "ra/const.h"
@@ -88,6 +87,7 @@
 #include "ra/logic.h"
 #include "ra/mapedit.h"
 #include "ra/mission_id.h"
+#include "ra/mix_aware_file.h"
 #include "ra/monoc.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
@@ -1958,7 +1958,7 @@ MixFileVqaIo::MixFileVqaIo() = default;
 MixFileVqaIo::~MixFileVqaIo() { Close(); }
 
 int MixFileVqaIo::Open(const char* filename) {
-  auto file = std::make_unique<CCFileClass>(filename);
+  auto file = std::make_unique<MixAwareFile>(filename);
 
   if (!file->Is_Available()) {
     return 1;
@@ -2000,7 +2000,7 @@ int Load_Interpolated_Palettes(const char* filename, const bool add) {
   int start_palette;
 
   PalettesRead = false;
-  CCFileClass file(filename);
+  MixAwareFile file(filename);
 
   if (!add) {
     for (i = 0; i < std::ssize(InterpolatedPalettes); i++) {
@@ -2079,7 +2079,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
         std::filesystem::path(name).replace_extension(".VQA").string();
     const auto pal_name =
         std::filesystem::path(name).replace_extension(".VQP").string();
-    if (!CCFileClass(fullname.c_str()).Is_Available()) {
+    if (!MixAwareFile(fullname.c_str()).Is_Available()) {
       DLOG(WARNING) << "Play_Movie: file not found: " << fullname;
       return;
     }
@@ -2889,7 +2889,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
   }
 
   // Find out if the CD in the current drive is the one we are looking for
-  const int current_drive = CCFileClass::Get_CD_Drive();
+  const int current_drive = MixAwareFile::Get_CD_Drive();
   int cd_current = Get_CD_Index(current_drive, 1 * 60);
 
   if (Using_DVD()) {
@@ -2920,12 +2920,12 @@ bool Force_CD_Available(int cd_desired)  // ajw
   // Check the last drive
   if (!new_cd_drive) {
     // Check the last CD drive we used if it's different from the current one
-    const int last_drive = CCFileClass::Get_Last_CD_Drive();
+    const int last_drive = MixAwareFile::Get_Last_CD_Drive();
 
     // Make sure the last drive is valid and it isn't the current drive
     // Skipped when it is the current drive, which the search above already
     // covered.
-    if (last_drive && last_drive != CCFileClass::Get_CD_Drive()) {
+    if (last_drive && last_drive != MixAwareFile::Get_CD_Drive()) {
       // Find out if there is a C&C cd in the last drive and if so is it the one
       // we are looking for
       // Give it a nice big timeout so the CD changer has time to swap the discs
@@ -3064,8 +3064,8 @@ bool Force_CD_Available(int cd_desired)  // ajw
 
   CurrentCD = cd_current;
 
-  CCFileClass::Set_CD_Drive(new_cd_drive);
-  CCFileClass::Refresh_Search_Drives();
+  MixAwareFile::Set_CD_Drive(new_cd_drive);
+  MixAwareFile::Refresh_Search_Drives();
 
   // If it broke out of the query for CD-ROM loop, then this means that the
   // CD-ROM has been inserted.
@@ -3095,7 +3095,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
 
     MainMix = MFCD::Register("MAIN.MIX", &FastKey, &CryptRandom);
     assert(MainMix != nullptr);
-    if (CCFileClass("MOVIES1.MIX").Is_Available()) {
+    if (MixAwareFile("MOVIES1.MIX").Is_Available()) {
       MoviesMix = MFCD::Register("MOVIES1.MIX", &FastKey, &CryptRandom);
     } else {
       MoviesMix = MFCD::Register("MOVIES2.MIX", &FastKey, &CryptRandom);
@@ -3113,7 +3113,7 @@ void* Hires_Load(const char* name) {
   char filename[30];
 
   sprintf(filename, "H%s", name);
-  CCFileClass file(filename);
+  MixAwareFile file(filename);
 
   if (file.Is_Available()) {
     const int length = file.Size();

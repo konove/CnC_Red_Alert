@@ -44,7 +44,6 @@
 #include "port/aligned_buffer.h"
 #include "port/safe_string.h"
 #include "port/socket_bytes.h"
-#include "ra/ccfile.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -56,6 +55,7 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
+#include "ra/mix_aware_file.h"
 #include "ra/palette.h"
 #include "ra/profile.h"
 #include "ra/scenario.h"
@@ -342,7 +342,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
   /*
   **	Add in all the expansion scenarios.
   */
-  CCFileClass file;
+  MixAwareFile file;
   char buffer[128];
   char buffer2[128];
   char* sbuffer = ShapeBuffer;

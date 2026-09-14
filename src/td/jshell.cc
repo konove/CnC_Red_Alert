@@ -225,7 +225,7 @@ int32_t Load_Uncompress(FileClass& file, BufferClass& uncomp_buff,
   **	isn't opened, then open it. Record this fact so that it can be
   **	restored to its closed state at the end.
   */
-  if (!file.Is_Open()) {
+  if (!file.IsOpen()) {
     if (!file.Open()) {
       return 0;
     }

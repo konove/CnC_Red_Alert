@@ -37,7 +37,7 @@
  *with the file object.      * RawFileClass::RawFileClass -- Default constructor
  *for a file object.                      * RawFileClass::~RawFileClass --
  *Default deconstructor for a file object.                   *
- *   RawFileClass::Is_Open -- Checks to see if the file is open or not. *
+ *   RawFileClass::IsOpen -- Checks to see if the file is open or not. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -92,7 +92,7 @@ class RawFileClass : public FileClass {
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   bool Create() override;
   bool Delete() override;
-  [[nodiscard]] bool Is_Open() const override;
+  [[nodiscard]] bool IsOpen() const override;
   bool Open(const char* filename,
             FileAccess rights = FileAccess::kRead) override;
   bool Open(FileAccess rights = FileAccess::kRead) override;
@@ -117,7 +117,7 @@ class RawFileClass : public FileClass {
   int BiasLength;
 
  protected:
-  bool Do_Is_Available(AvailabilityCheck mode) override;
+  bool DoIsAvailable(AvailabilityCheck mode) override;
 
   int32_t Raw_Seek(int32_t pos, int dir = SEEK_CUR);
 
@@ -215,7 +215,7 @@ inline RawFileClass::~RawFileClass() {
 }
 
 /***********************************************************************************************
- * RawFileClass::Is_Open -- Checks to see if the file is open or not. *
+ * RawFileClass::IsOpen -- Checks to see if the file is open or not. *
  *                                                                                             *
  *    Use this routine to determine if the file is open. It returns true if it
  *is.             *
@@ -229,6 +229,6 @@ inline RawFileClass::~RawFileClass() {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-inline bool RawFileClass::Is_Open() const { return Handle != nullptr; }
+inline bool RawFileClass::IsOpen() const { return Handle != nullptr; }
 
 #endif  // CNC_RED_ALERT_TECH_RAWFILE_H_

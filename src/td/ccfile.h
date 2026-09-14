@@ -69,7 +69,7 @@ class CCFileClass : public CDFileClass {
     return Open(rights);
   }
   bool Open(FileAccess rights = FileAccess::kRead) override;
-  [[nodiscard]] bool Is_Open() const override;
+  [[nodiscard]] bool IsOpen() const override;
   int32_t Read(void* buffer, int32_t size) override;
   int32_t Seek(int32_t pos, int dir = SEEK_CUR) override;
   int32_t Size() override;
@@ -79,7 +79,7 @@ class CCFileClass : public CDFileClass {
              const char* filename = nullptr) override;
 
  protected:
-  bool Do_Is_Available(AvailabilityCheck mode) override;
+  bool DoIsAvailable(AvailabilityCheck mode) override;
 
  private:
   /*

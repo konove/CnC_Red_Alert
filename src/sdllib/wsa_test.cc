@@ -26,26 +26,26 @@ int64_t file_pos = 0;
 }  // namespace
 
 // Link-time stubs for the file layer the game supplies.
-int Open_File(const char* /*file_name*/, FileAccess /*mode*/) {
+int OpenFileHandle(const char* /*file_name*/, FileAccess /*mode*/) {
   file_pos = 0;
   return 1;
 }
 
-void Close_File(int /*handle*/) {}
+void CloseFileHandle(int /*handle*/) {}
 
-int32_t Read_File(int /*handle*/, void* buf, int32_t bytes) {
+int32_t ReadFileHandle(int /*handle*/, void* buffer, int32_t size) {
   const int64_t available =
       std::max<int64_t>(0, std::ssize(file_image) - file_pos);
-  const int64_t count = std::min(static_cast<int64_t>(bytes), available);
-  std::memcpy(buf, file_image.data() + file_pos, static_cast<size_t>(count));
+  const int64_t count = std::min(static_cast<int64_t>(size), available);
+  std::memcpy(buffer, file_image.data() + file_pos, static_cast<size_t>(count));
   file_pos += count;
   return static_cast<int32_t>(count);
 }
 
-int32_t Seek_File(int /*handle*/, int32_t offset, int starting) {
-  if (starting == SEEK_SET) {
+int32_t SeekFileHandle(int /*handle*/, int32_t offset, int origin) {
+  if (origin == SEEK_SET) {
     file_pos = offset;
-  } else if (starting == SEEK_CUR) {
+  } else if (origin == SEEK_CUR) {
     file_pos += offset;
   } else {
     file_pos = std::ssize(file_image) + offset;

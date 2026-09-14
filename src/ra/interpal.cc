@@ -49,7 +49,7 @@
 #include <algorithm>
 #include <cstdint>
 
-#include "ra/ccfile.h"
+#include "ra/mix_aware_file.h"
 #include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
 
@@ -74,7 +74,7 @@ unsigned char* InterpolationPalette;
  *=============================================================================================*/
 
 void Read_Interpolation_Palette(const char* palette_file_name) {
-  CCFileClass palette_file(palette_file_name);
+  MixAwareFile palette_file(palette_file_name);
 
   if (palette_file.Is_Available()) {
     palette_file.Open(FileAccess::kRead);
@@ -101,7 +101,7 @@ void Read_Interpolation_Palette(const char* palette_file_name) {
  *=============================================================================================*/
 
 void Write_Interpolation_Palette(const char* palette_file_name) {
-  CCFileClass palette_file(palette_file_name);
+  MixAwareFile palette_file(palette_file_name);
 
   if (!palette_file.Is_Available()) {
     palette_file.Open(FileAccess::kWrite);

@@ -80,7 +80,7 @@ int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
                        320, 200, {}, 0, 1, 320, 1,   {}};
 
   // Open file name
-  file_handle = Open_File(name, FileAccess::kWrite);
+  file_handle = OpenFileHandle(name, FileAccess::kWrite);
   if (file_handle == -1) {
     return 0;
   }
@@ -88,7 +88,7 @@ int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
   header.width = static_cast<int16_t>(pic.Get_Width() - 1);
   header.height = static_cast<int16_t>(pic.Get_Height() - 1);
   header.byte_per_line = static_cast<int16_t>(pic.Get_Width());
-  Write_File(file_handle, &header, sizeof(PCX_HEADER));
+  WriteFileHandle(file_handle, &header, sizeof(PCX_HEADER));
 
   VP_Scan_Line = pic.Get_Width() + pic.Get_XAdd();
   Graphic_Buffer = pic.Get_Graphic_Buffer();
@@ -109,9 +109,9 @@ int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
     pal++;
   }
   i = 0x0c;
-  Write_File(file_handle, &i, 1);
-  Write_File(file_handle, palcopy, 256 * sizeof(RGB));
-  Close_File(file_handle);
+  WriteFileHandle(file_handle, &i, 1);
+  WriteFileHandle(file_handle, palcopy, 256 * sizeof(RGB));
+  CloseFileHandle(file_handle);
   return 0;
 }
 
@@ -143,7 +143,7 @@ void Write_Pcx_ScanLine(int file_handle, int scansize, const char* ptr) {
   const auto write_char = [&](unsigned char x) {
     *file_ptr++ = x;
     if (file_ptr >= &pool[kPoolSize]) {
-      Write_File(file_handle, pool, kPoolSize);
+      WriteFileHandle(file_handle, pool, kPoolSize);
       file_ptr = pool;
     }
   };
@@ -181,5 +181,5 @@ void Write_Pcx_ScanLine(int file_handle, int scansize, const char* ptr) {
     }
   }
 
-  Write_File(file_handle, pool, static_cast<int32_t>(file_ptr - pool));
+  WriteFileHandle(file_handle, pool, static_cast<int32_t>(file_ptr - pool));
 }

@@ -37,7 +37,7 @@
  *   RAMFileClass::Create -- Effectively clears the buffer of data. *
  *   RAMFileClass::Delete -- Effectively clears the buffer of data. *
  *   RAMFileClass::Is_Available -- Determines if the "file" is available. *
- *   RAMFileClass::Is_Open -- Is the file open? * RAMFileClass::Open -- Opens a
+ *   RAMFileClass::IsOpen -- Is the file open? * RAMFileClass::Open -- Opens a
  *RAM based file for read or write.                           *
  *   RAMFileClass::Open -- Opens the RAM based file. *
  *   RAMFileClass::RAMFileClass -- Construct a RAM buffer based "file" object. *
@@ -132,7 +132,7 @@ RAMFileClass::~RAMFileClass() {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool RAMFileClass::Create() {
-  if (!Is_Open()) {
+  if (!IsOpen()) {
     Length = 0;
     return true;
   }
@@ -155,7 +155,7 @@ bool RAMFileClass::Create() {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool RAMFileClass::Delete() {
-  if (!Is_Open()) {
+  if (!IsOpen()) {
     Length = 0;
     return true;
   }
@@ -163,7 +163,7 @@ bool RAMFileClass::Delete() {
 }
 
 /***********************************************************************************************
- * RAMFileClass::Do_Is_Available -- Determines if the "file" is available. *
+ * RAMFileClass::DoIsAvailable -- Determines if the "file" is available. *
  *                                                                                             *
  *    RAM files are always available. *
  *                                                                                             *
@@ -175,10 +175,10 @@ bool RAMFileClass::Delete() {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool RAMFileClass::Do_Is_Available(AvailabilityCheck /*mode*/) { return true; }
+bool RAMFileClass::DoIsAvailable(AvailabilityCheck /*mode*/) { return true; }
 
 /***********************************************************************************************
- * RAMFileClass::Is_Open -- Is the file open? *
+ * RAMFileClass::IsOpen -- Is the file open? *
  *                                                                                             *
  *    This answers the question whether the file is open or not. *
  *                                                                                             *
@@ -190,7 +190,7 @@ bool RAMFileClass::Do_Is_Available(AvailabilityCheck /*mode*/) { return true; }
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool RAMFileClass::Is_Open() const { return IsOpen; }
+bool RAMFileClass::IsOpen() const { return is_open_; }
 
 /***********************************************************************************************
  * RAMFileClass::Open -- Opens a RAM based file for read or write. *
@@ -232,13 +232,13 @@ bool RAMFileClass::Open(const char* /*filename*/, FileAccess access) {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool RAMFileClass::Open(FileAccess access) {
-  if (Buffer == nullptr || Is_Open()) {
+  if (Buffer == nullptr || IsOpen()) {
     return false;
   }
 
   Offset = 0;
   Access = access;
-  IsOpen = true;
+  is_open_ = true;
 
   switch (access) {
     default:
@@ -253,7 +253,7 @@ bool RAMFileClass::Open(FileAccess access) {
       break;
   }
 
-  return Is_Open();
+  return IsOpen();
 }
 
 /***********************************************************************************************
@@ -283,7 +283,7 @@ int32_t RAMFileClass::Read(void* buffer, int32_t size) {
   }
 
   bool hasopened = false;
-  if (!Is_Open()) {
+  if (!IsOpen()) {
     Open(FileAccess::kRead);
     hasopened = true;
   } else {
@@ -324,7 +324,7 @@ int32_t RAMFileClass::Read(void* buffer, int32_t size) {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 int32_t RAMFileClass::Seek(int32_t pos, int dir) {
-  if (Buffer == nullptr || !Is_Open()) {
+  if (Buffer == nullptr || !IsOpen()) {
     return Offset;
   }
 
@@ -397,7 +397,7 @@ int32_t RAMFileClass::Write(const void* buffer, int32_t size) {
   }
 
   bool hasopened = false;
-  if (!Is_Open()) {
+  if (!IsOpen()) {
     Open(FileAccess::kWrite);
     hasopened = true;
   } else {
@@ -434,4 +434,4 @@ int32_t RAMFileClass::Write(const void* buffer, int32_t size) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-void RAMFileClass::Close() { IsOpen = false; }
+void RAMFileClass::Close() { is_open_ = false; }

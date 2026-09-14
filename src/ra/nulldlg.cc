@@ -67,7 +67,6 @@
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
-#include "ra/ccfile.h"
 #include "ra/ccini.h"
 #include "ra/cheklist.h"
 #include "ra/colrlist.h"
@@ -93,6 +92,7 @@
 #include "ra/list.h"
 #include "ra/mapedit.h"
 #include "ra/mission_id.h"
+#include "ra/mix_aware_file.h"
 #include "ra/monoc.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
@@ -2797,7 +2797,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   // event ptr
   int64_t msg_timeout = 1200;  // init to 20 seconds
 
-  CCFileClass loadfile("SAVEGAME.NET");
+  MixAwareFile loadfile("SAVEGAME.NET");
   bool load_game = false;  // 1 = load a saved game
   NodeNameType* who;       // node to add to Players
   char* item;              // for filling in lists
@@ -3747,7 +3747,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         port::SafeCopy(
             SendPacket.ScenarioInfo.Scenario,
             Session.Scenarios[Session.Options.ScenarioIndex]->Description());
-        CCFileClass file(
+        MixAwareFile file(
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 
         SendPacket.ScenarioInfo.FileLength =
@@ -4377,7 +4377,7 @@ bool Find_Local_Scenario(const char* description, char* filename,
     // Session.Scenarios[index]->Description());
     if (!strcmp(Session.Scenarios[index]->Description(), description)) {
       // debugprint("found matching description.\n");
-      CCFileClass file(Session.Scenarios[index]->Get_Filename());
+      MixAwareFile file(Session.Scenarios[index]->Get_Filename());
 
       /*
       ** Possible rejection on the basis of availability.
@@ -5684,9 +5684,9 @@ int Com_Show_Scenario_Dialog() {
                     IsMissionCounterstrike(Session.ScenarioFileName)) ||
                    (Expansion_AM_Present() &&
                     IsMissionAftermath(Session.ScenarioFileName)))) {
-                CCFileClass check_file(Session.ScenarioFileName);
+                MixAwareFile check_file(Session.ScenarioFileName);
                 if (!check_file.Is_Available()) {
-                  const int current_drive = CCFileClass::Get_CD_Drive();
+                  const int current_drive = MixAwareFile::Get_CD_Drive();
                   const int index = Get_CD_Index(current_drive, 1 * 60);
                   bool needcd = false;
                   if (IsMissionCounterstrike(Session.ScenarioFileName) &&

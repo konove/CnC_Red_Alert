@@ -88,7 +88,6 @@
 #include "ra/building.h"
 #include "ra/bullet.h"
 #include "ra/carry.h"
-#include "ra/ccfile.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
@@ -117,6 +116,7 @@
 #include "ra/mapedit.h"
 #include "ra/mapsel.h"
 #include "ra/mission_id.h"
+#include "ra/mix_aware_file.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
@@ -379,7 +379,7 @@ bool Start_Scenario(char* name, bool briefing) {
     sprintf(buffer, "%s.VQA", VQName[Scen.BriefMovie]);
   }
   if (Session.Type == GAME_NORMAL &&
-      (Scen.BriefMovie == VQ_NONE || !CCFileClass(buffer).Is_Available())) {
+      (Scen.BriefMovie == VQ_NONE || !MixAwareFile(buffer).Is_Available())) {
     /*
     ** Make sure the mouse is visible before showing the restatement.
     */
@@ -449,7 +449,7 @@ bool Read_Scenario(char* name) {
       /*
       ** Find out if the CD in the current drive is the Aftermath disc.
       */
-      const int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
+      const int cd_index = Get_CD_Index(MixAwareFile::Get_CD_Drive(), 1 * 60);
       if ((!Using_DVD() || cd_index != 5) && cd_index != 3) {
         GamePalette.Set(kFadePaletteFast, Call_Back);
         RequiredCD = 3;
@@ -458,7 +458,7 @@ bool Read_Scenario(char* name) {
         }
       }
       CCINIClass ini;
-      CCFileClass fc("MPLAYER.INI");
+      MixAwareFile fc("MPLAYER.INI");
       if (ini.Load(fc, false)) {
         Rule.General(ini);
         Rule.Recharge(ini);
@@ -1189,7 +1189,7 @@ BriefingAction Restate_Mission() {
   bool has_video = false;
   if (Scen.BriefMovie != VQ_NONE) {
     const auto video_filename = std::string(VQName[Scen.BriefMovie]) + ".VQA";
-    has_video = CCFileClass(video_filename.c_str()).Is_Available();
+    has_video = MixAwareFile(video_filename.c_str()).Is_Available();
   }
 
   // Choose buttons based on video availability.
@@ -1708,7 +1708,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
       }
       sprintf(fname, "SC%c%02d%c%c.INI", c_player, scenario, c_dir,
               'A' + candidate);
-      if (!CCFileClass(fname).Is_Available()) {
+      if (!MixAwareFile(fname).Is_Available()) {
         break;
       }
       available++;
@@ -1855,7 +1855,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
         if (IsMissionCounterstrike(Scen.ScenarioName)) {
           RequiredCD = 2;
           if (Is_Aftermath_Installed() ||
-              Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60) == 3) {
+              Get_CD_Index(MixAwareFile::Get_CD_Drive(), 1 * 60) == 3) {
             RequiredCD = 3;
           }
         }
@@ -1899,7 +1899,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     // requested is an RA CD, then don't set the palette, leave the map screen
     // up.
 
-    const int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
+    const int cd_index = Get_CD_Index(MixAwareFile::Get_CD_Drive(), 1 * 60);
     if ((!Using_DVD() || cd_index != 5) && cd_index != RequiredCD) {
       if ((RequiredCD == 0 || RequiredCD == 1) && Session.Type == GAME_NORMAL) {
         SeenBuff.Clear();
@@ -1922,7 +1922,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   */
   //	sprintf(fname, "%s.INI", root);
   CCINIClass ini;
-  CCFileClass file(fname);
+  MixAwareFile file(fname);
   //	file.Cache();
 
   if (!ini.Load(file, true)) {
@@ -2143,7 +2143,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	the mission.ini file.  VG 10/17/96
   */
   INIClass mini;
-  CCFileClass fc("MISSION.INI");
+  MixAwareFile fc("MISSION.INI");
   mini.Load(fc);
   mini.Get_TextBlock(fname, Scen.BriefingText, sizeof(Scen.BriefingText));
 
@@ -2234,7 +2234,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
  *=============================================================================================*/
 void Write_Scenario_INI(const char* fname) {
   if constexpr (config::kCheatKeysEnabled) {
-    CCFileClass file(fname);
+    MixAwareFile file(fname);
 
     CCINIClass ini;
 

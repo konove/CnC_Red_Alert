@@ -16,20 +16,21 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CNC_RED_ALERT_RA_CCFILE_H_
-#define CNC_RED_ALERT_RA_CCFILE_H_
+#ifndef CNC_RED_ALERT_RA_MIX_AWARE_FILE_H_
+#define CNC_RED_ALERT_RA_MIX_AWARE_FILE_H_
 
-// File: CCFileClass, the game's file object that can read files packed inside
-// mixfiles as if they were loose files on disk. ccfile.cc also defines the
-// integer-handle file API declared in sdllib/file.h (Open_File, Read_File, ...)
-// on top of it, for the audio and image code outside the game.
+// File: MixAwareFile, the game's file object that can read files packed inside
+// mixfiles as if they were loose files on disk. mix_aware_file.cc also defines
+// the integer-handle file API declared in sdllib/file.h (OpenFileHandle,
+// ReadFileHandle, ...) on top of it, for the audio and image code outside the
+// game.
 //
-// Originally CCFILE.H by Joe L. Bostic, started October 17, 1994.
+// Originally CCFILE.H (class CCFileClass) by Joe L. Bostic, started October 17,
+// 1994.
 
 #include <cstdint>
 #include <cstdio>
 
-#include "ra/compat.h"
 #include "tech/buff.h"
 #include "tech/cdfile.h"
 #include "tech/wwfile.h"
@@ -44,31 +45,35 @@
 // how patch files override packed data.
 //
 // Example:
-//   CCFileClass file("RULES.INI");
+//   MixAwareFile file("RULES.INI");
 //   if (file.Is_Available()) {
 //     file.Open();
 //     const int32_t size = file.Size();
 //     file.Read(buffer, size);
 //   }
-class CCFileClass : public CDFileClass {
+class MixAwareFile : public CDFileClass {
  public:
   // Constructs a file object bound to filename. The name is resolved against
   // the CD search paths immediately.
-  explicit CCFileClass(const char* filename);
-  CCFileClass();
-  ~CCFileClass() override = default;
-  CCFileClass(CCFileClass&&) = delete;
-  CCFileClass& operator=(CCFileClass&&) = delete;
+  explicit MixAwareFile(const char* filename);
+  MixAwareFile();
+
+  MixAwareFile(const MixAwareFile&) = delete;
+  MixAwareFile& operator=(const MixAwareFile&) = delete;
+  MixAwareFile(MixAwareFile&&) = delete;
+  MixAwareFile& operator=(MixAwareFile&&) = delete;
+
+  ~MixAwareFile() override = default;
 
   // Returns true if the file is open on the RAM image of a cached mixfile, in
   // which case reads and seeks never touch the file handle.
-  [[nodiscard]] bool Is_Resident() const {
-    return Data.Get_Buffer() != nullptr;
+  [[nodiscard]] bool IsResident() const {
+    return resident_data_.Get_Buffer() != nullptr;
   }
 
   // Returns true if the file is open, either on a cached mixfile image or
   // through a valid file handle.
-  [[nodiscard]] bool Is_Open() const override;
+  [[nodiscard]] bool IsOpen() const override;
 
   // Assigns filename to the file object and opens it; see Open(FileAccess).
   bool Open(const char* filename,
@@ -89,10 +94,10 @@ class CCFileClass : public CDFileClass {
   // for the read and closed again afterwards.
   int32_t Read(void* buffer, int32_t size) override;
 
-  // Moves the file position by pos relative to dir (SEEK_SET, SEEK_CUR or
+  // Moves the file position by offset relative to origin (SEEK_SET, SEEK_CUR or
   // SEEK_END) and returns the new position. For a resident file the position is
   // clamped to [0, Size()].
-  int32_t Seek(int32_t pos, int dir = SEEK_CUR) override;
+  int32_t Seek(int32_t offset, int origin = SEEK_CUR) override;
 
   // Returns the size of the file in bytes. For a file packed in a mixfile this
   // is the size of the embedded file, not the mixfile, even when the file is
@@ -115,14 +120,14 @@ class CCFileClass : public CDFileClass {
   // Handles a file error. All three arguments are ignored: the only recovery
   // attempted is making sure the scenario's required CD (RequiredCD) is in a
   // drive, prompting the player for it. If the player cancels, the game exits
-  // and this never returns; otherwise it returns, even when canretry is false.
-  void Error(int error, bool canretry = false,
+  // and this never returns; otherwise it returns, even when can_retry is false.
+  void Error(int error, bool can_retry = false,
              const char* filename = nullptr) override;
 
  protected:
   // Returns true if the file is open, is packed in a registered mixfile, or is
   // found on disk. mode is passed on to the disk check.
-  bool Do_Is_Available(AvailabilityCheck mode) override;
+  bool DoIsAvailable(AvailabilityCheck mode) override;
 
  private:
   // A view of the file's bytes inside the RAM image of a cached mixfile, or an
@@ -130,16 +135,12 @@ class CCFileClass : public CDFileClass {
   // it belongs to the mixfile cache. While it is set, the inherited file handle
   // is invalid and all access is routed through this image, whose size stands
   // in for the file length.
-  ::Buffer Data;
+  ::Buffer resident_data_;
 
-  // Current read position within Data, from zero to the size of the file in
-  // bytes. Tracked here because a resident file has no handle to hold one.
-  int32_t Position;
-
- public:
-  // Force these to never be invoked.
-  const CCFileClass& operator=(const CCFileClass& c) = delete;
-  CCFileClass(const CCFileClass&) = delete;
+  // Current read position within resident_data_, from zero to the size of the
+  // file in bytes. Tracked here because a resident file has no handle to hold
+  // one.
+  int32_t resident_position_ = 0;
 };
 
-#endif  // CNC_RED_ALERT_RA_CCFILE_H_
+#endif  // CNC_RED_ALERT_RA_MIX_AWARE_FILE_H_

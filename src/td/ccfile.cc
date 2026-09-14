@@ -36,7 +36,7 @@
  ** CCFileClass::CCFileClass -- Filename based constructor for C&C file. *
  *   CCFileClass::Close -- Closes the file. * CCFileClass::Is_Available --
  *Checks for existence of file on disk or in mixfile.          *
- *   CCFileClass::Is_Open -- Determines if the file is open. * CCFileClass::Open
+ *   CCFileClass::IsOpen -- Determines if the file is open. * CCFileClass::Open
  *-- Opens a file from either the mixfile system or the rawfile system.   *
  *   CCFileClass::Read -- Reads data from the file. * CCFileClass::Seek -- Moves
  *the current file pointer in the file.                          *
@@ -207,7 +207,7 @@ int32_t CCFileClass::Write(const void* buffer, int32_t size) {
 int32_t CCFileClass::Read(void* buffer, int32_t size) {
   bool opened = false;
 
-  if ((!Is_Open()) && Open()) {
+  if ((!IsOpen()) && Open()) {
     opened = true;
   }
 
@@ -321,7 +321,7 @@ int32_t CCFileClass::Size() {
 }
 
 /***********************************************************************************************
- * CCFileClass::Do_Is_Available -- Checks for existence of file on disk or in
+ * CCFileClass::DoIsAvailable -- Checks for existence of file on disk or in
  *mixfile.            *
  *                                                                                             *
  *    This routine will examine the mixfile system looking for the file. If the
@@ -336,15 +336,15 @@ int32_t CCFileClass::Size() {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-bool CCFileClass::Do_Is_Available(AvailabilityCheck /*mode*/) {
+bool CCFileClass::DoIsAvailable(AvailabilityCheck /*mode*/) {
   if (MFCD::Offset(File_Name()).has_value()) {
     return true;
   }
-  return CDFileClass::Do_Is_Available(AvailabilityCheck::kQuick);
+  return CDFileClass::DoIsAvailable(AvailabilityCheck::kQuick);
 }
 
 /***********************************************************************************************
- * CCFileClass::Is_Open -- Determines if the file is open. *
+ * CCFileClass::IsOpen -- Determines if the file is open. *
  *                                                                                             *
  *    A mixfile is open if there is a pointer to the mixfile data. In absence of
  *this,         * the the file is open if the file handle is valid. *
@@ -357,7 +357,7 @@ bool CCFileClass::Do_Is_Available(AvailabilityCheck /*mode*/) {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-bool CCFileClass::Is_Open() const {
+bool CCFileClass::IsOpen() const {
   /*
   **	If the file is part of a cached file, then return that it is opened. A
   *closed file *	doesn't have a valid pointer.
@@ -365,7 +365,7 @@ bool CCFileClass::Is_Open() const {
   if (Pointer) {
     return true;
   }
-  return CDFileClass::Is_Open();
+  return CDFileClass::IsOpen();
 }
 
 /***********************************************************************************************
@@ -419,7 +419,7 @@ bool CCFileClass::Open(FileAccess rights) {
   **	upgrade files to work.
   */
   if (HasAccess(rights, FileAccess::kWrite) ||
-      CDFileClass::Do_Is_Available(AvailabilityCheck::kQuick)) {
+      CDFileClass::DoIsAvailable(AvailabilityCheck::kQuick)) {
     return CDFileClass::Open(rights);
   }
 
@@ -481,9 +481,9 @@ bool __cdecl Set_Search_Drives(const char*) {
 }
 #endif
 
-int __cdecl Open_File(const char* file_name, FileAccess mode) {
+int __cdecl OpenFileHandle(const char* file_name, FileAccess mode) {
   for (int index = 0; index < std::ssize(Handles); index++) {
-    if (!Handles[index].Is_Open()) {
+    if (!Handles[index].IsOpen()) {
       Handles[index].Set_Name(file_name);
       if (Handles[index].Open(mode)) {
         //			if (Handles[index].Open(file_name, mode)) {
@@ -495,27 +495,27 @@ int __cdecl Open_File(const char* file_name, FileAccess mode) {
   return kInvalidHandle;
 }
 
-void __cdecl Close_File(int handle) {
-  if (handle != kInvalidHandle && Handles[handle].Is_Open()) {
+void __cdecl CloseFileHandle(int handle) {
+  if (handle != kInvalidHandle && Handles[handle].IsOpen()) {
     Handles[handle].Close();
   }
 }
 
-int32_t __cdecl Read_File(int handle, void* buf, int32_t bytes) {
-  if (handle != kInvalidHandle && Handles[handle].Is_Open()) {
-    return Handles[handle].Read(buf, bytes);
+int32_t __cdecl ReadFileHandle(int handle, void* buffer, int32_t size) {
+  if (handle != kInvalidHandle && Handles[handle].IsOpen()) {
+    return Handles[handle].Read(buffer, size);
   }
   return 0;
 }
 
-int32_t __cdecl Write_File(int handle, const void* buf, int32_t bytes) {
-  if (handle != kInvalidHandle && Handles[handle].Is_Open()) {
-    return Handles[handle].Write(buf, bytes);
+int32_t __cdecl WriteFileHandle(int handle, const void* buffer, int32_t size) {
+  if (handle != kInvalidHandle && Handles[handle].IsOpen()) {
+    return Handles[handle].Write(buffer, size);
   }
   return 0;
 }
 
-bool __cdecl Find_File(const char* file_name) {
+bool __cdecl FileExists(const char* file_name) {
   CCFileClass file(file_name);
   return file.Is_Available();
 }
@@ -540,8 +540,8 @@ void* __cdecl Load_Alloc_Data(const char* name, int /*unused*/) {
   return Load_Alloc_Data(file);
 }
 
-int32_t __cdecl File_Size(int handle) {
-  if (handle != kInvalidHandle && Handles[handle].Is_Open()) {
+int32_t __cdecl FileHandleSize(int handle) {
+  if (handle != kInvalidHandle && Handles[handle].IsOpen()) {
     return Handles[handle].Size();
   }
   return 0;
@@ -553,9 +553,9 @@ ULONG __cdecl Write_Data(const char* name, const VOID* ptr, ULONG size) {
 }
 #endif
 
-int32_t __cdecl Seek_File(int handle, int32_t offset, int starting) {
-  if (handle != kInvalidHandle && Handles[handle].Is_Open()) {
-    return Handles[handle].Seek(offset, starting);
+int32_t __cdecl SeekFileHandle(int handle, int32_t offset, int origin) {
+  if (handle != kInvalidHandle && Handles[handle].IsOpen()) {
+    return Handles[handle].Seek(offset, origin);
   }
   return 0;
 }

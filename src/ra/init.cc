@@ -84,7 +84,6 @@
 #include "port/ex_string.h"
 #include "port/platform.h"
 #include "ra/_wsproto.h"
-#include "ra/ccfile.h"
 #include "ra/ccini.h"
 #include "ra/compat.h"
 #include "ra/config.h"
@@ -112,6 +111,7 @@
 #include "ra/mapedit.h"
 #include "ra/menus.h"
 #include "ra/mission_id.h"
+#include "ra/mix_aware_file.h"
 #include "ra/monoc.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
@@ -184,8 +184,8 @@ static void Init_Random();
 
 #define ATTRACT_MODE_TIMEOUT 3600  // timeout for attract mode
 
-static bool Load_Recording_Values(CCFileClass& file);
-static bool Save_Recording_Values(CCFileClass& file);
+static bool Load_Recording_Values(MixAwareFile& file);
+static bool Save_Recording_Values(MixAwareFile& file);
 
 #include "ra/config.h"
 #include "ra/expand.h"
@@ -310,7 +310,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   /*
   **	Find and process any rules for this game.
   */
-  CCFileClass fc("RULES.INI");
+  MixAwareFile fc("RULES.INI");
   if (RuleINI.Load(fc, false)) {
     Rule.Process(RuleINI);
   }
@@ -318,7 +318,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   //	This is safe to do, as only rules for aftermath units are included in
   // this ini.
   if (Is_Aftermath_Installed()) {
-    CCFileClass aftermath_ini("AFTRMATH.INI");
+    MixAwareFile aftermath_ini("AFTRMATH.INI");
     if (AftermathINI.Load(aftermath_ini, false)) {
       Rule.Process(AftermathINI);
     }
@@ -1406,7 +1406,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     */
     if (strstr(string, "-CD")) {
       // Use original arg to preserve case-sensitive path on Unix systems
-      CCFileClass::Add_Search_Drives(original_arg.substr(3));
+      MixAwareFile::Add_Search_Drives(original_arg.substr(3));
       continue;
     }
 
@@ -2215,7 +2215,7 @@ static void Init_CDROM_Access() {
   /*
   **	Always try to look at the CD-ROM for data files.
   */
-  if (!CCFileClass::Is_There_Search_Drives()) {
+  if (!MixAwareFile::Is_There_Search_Drives()) {
     /*
     **	This call is needed because of a side effect of this function. It will
     *examine the *	CD-ROMs attached to this computer and set the
@@ -2231,7 +2231,7 @@ static void Init_CDROM_Access() {
     int error;
 
     do {
-      error = CCFileClass::Add_Search_Drives("?:\\");
+      error = MixAwareFile::Add_Search_Drives("?:\\");
       switch (error) {
         case 1:
           VisiblePage.Clear();
@@ -2296,14 +2296,14 @@ static void Init_Bootstrap_Mixfiles() {
   RequiredCD = -2;
 
   if constexpr (config::kWolapiEnabled) {
-    CCFileClass fileWolapiMix("WOLAPI.MIX");
+    MixAwareFile fileWolapiMix("WOLAPI.MIX");
     if (fileWolapiMix.Is_Available()) {
       MFCD::Register("WOLAPI.MIX", &FastKey, &CryptRandom);
       MFCD::Cache("WOLAPI.MIX");
     }
   }
 
-  CCFileClass file2("EXPAND2.MIX");
+  MixAwareFile file2("EXPAND2.MIX");
   if (file2.Is_Available()) {
     MFCD::Register("EXPAND2.MIX", &FastKey, &CryptRandom);
     bool ok = MFCD::Cache("EXPAND2.MIX");
@@ -2314,7 +2314,7 @@ static void Init_Bootstrap_Mixfiles() {
     assert(ok);
   }
 
-  CCFileClass file("EXPAND.MIX");
+  MixAwareFile file("EXPAND.MIX");
   if (file.Is_Available()) {
     MFCD::Register("EXPAND.MIX", &FastKey, &CryptRandom);
     const bool ok = MFCD::Cache("EXPAND.MIX");
@@ -2360,20 +2360,20 @@ static void Init_Bootstrap_Mixfiles() {
 static void Extract(const char* filename, const char* outname);
 
 static void Init_Secondary_Mixfiles() {
-  if (CCFileClass("MAIN1.MIX").Is_Available()) {
+  if (MixAwareFile("MAIN1.MIX").Is_Available()) {
     // MAIN1-4 from steam
 
     // extract the extra missions from the expansion "discs"
     // (they don't contain the base missions)
-    if (CCFileClass("MAIN3.MIX").Is_Available() &&
-        !CCFileClass("GENERAL3.MIX").Is_Available()) {
+    if (MixAwareFile("MAIN3.MIX").Is_Available() &&
+        !MixAwareFile("GENERAL3.MIX").Is_Available()) {
       const MFCD* tmp = MFCD::Register("MAIN3.MIX", &FastKey, &CryptRandom);
       Extract("GENERAL.MIX", "GENERAL3.MIX");
       delete tmp;
     }
 
-    if (CCFileClass("MAIN4.MIX").Is_Available() &&
-        !CCFileClass("GENERAL4.MIX").Is_Available()) {
+    if (MixAwareFile("MAIN4.MIX").Is_Available() &&
+        !MixAwareFile("GENERAL4.MIX").Is_Available()) {
       const MFCD* tmp = MFCD::Register("MAIN4.MIX", &FastKey, &CryptRandom);
       Extract("GENERAL.MIX", "GENERAL4.MIX");
       Extract("SCORES.MIX", "SCORES.MIX");  // also extract scores
@@ -2421,12 +2421,12 @@ static void Init_Secondary_Mixfiles() {
         MFCD::Register("GENERAL.MIX", &FastKey, &CryptRandom);  // Never cached.
   }
 
-  if (CCFileClass("MOVIES1.MIX").Is_Available()) {
+  if (MixAwareFile("MOVIES1.MIX").Is_Available()) {
     MoviesMix =
         MFCD::Register("MOVIES1.MIX", &FastKey, &CryptRandom);  // Never cached.
   }
   // load both sets of movies if possible
-  if (CCFileClass("MOVIES2.MIX").Is_Available()) {
+  if (MixAwareFile("MOVIES2.MIX").Is_Available()) {
     MoviesMix =
         MFCD::Register("MOVIES2.MIX", &FastKey, &CryptRandom);  // Never cached.
   }
@@ -2471,7 +2471,7 @@ static void Bootstrap() {
   **	Be sure to short circuit the CD-ROM check if there is a CD-ROM override
   **	path.
   */
-  if (CCFileClass::Is_There_Search_Drives()) {
+  if (MixAwareFile::Is_There_Search_Drives()) {
     RequiredCD = -2;
   }
 
@@ -2631,7 +2631,7 @@ static void Init_Bulk_Data() {
   **	Fetch the tutorial message data.
   */
   INIClass ini;
-  CCFileClass fc("TUTORIAL.INI");
+  MixAwareFile fc("TUTORIAL.INI");
   ini.Load(fc);
   int totallen = 0;
   for (int index = 0; index < std::ssize(TutorialTextOffsets); index++) {
@@ -2739,7 +2739,7 @@ static void SerializeRecording(Archive& ar) {
   }
 }
 
-bool Save_Recording_Values(CCFileClass& file) {
+bool Save_Recording_Values(MixAwareFile& file) {
   FilePipe pipe(file);
   ArchiveWriter writer(pipe);
   SerializeRecording(writer);
@@ -2764,7 +2764,7 @@ bool Save_Recording_Values(CCFileClass& file) {
  * HISTORY:                                                                *
  *   09/28/1995 BRR : Created.                                             *
  *=========================================================================*/
-bool Load_Recording_Values(CCFileClass& file) {
+bool Load_Recording_Values(MixAwareFile& file) {
   FileStraw straw(file);
   ArchiveReader reader(straw);
   SerializeRecording(reader);
@@ -2772,8 +2772,8 @@ bool Load_Recording_Values(CCFileClass& file) {
 }
 
 void Extract(const char* filename, const char* outname) {
-  CCFileClass inFile(filename);
-  CCFileClass outFile(outname);
+  MixAwareFile inFile(filename);
+  MixAwareFile outFile(outname);
 
   inFile.Open();
   outFile.Open(FileAccess::kWrite);

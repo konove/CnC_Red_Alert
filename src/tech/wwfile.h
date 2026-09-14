@@ -74,15 +74,15 @@ class FileClass {
   virtual bool Delete() = 0;
 
   // Returns true if the file is available to be opened.
-  bool Is_Available() { return Do_Is_Available(AvailabilityCheck::kQuick); }
+  bool Is_Available() { return DoIsAvailable(AvailabilityCheck::kQuick); }
 
   // Returns true if the file is available. Uses full error recovery which may
   // block waiting for media (e.g., prompting for CD-ROM).
   bool Is_Available_Strict() {
-    return Do_Is_Available(AvailabilityCheck::kBlocking);
+    return DoIsAvailable(AvailabilityCheck::kBlocking);
   }
 
-  [[nodiscard]] virtual bool Is_Open() const = 0;
+  [[nodiscard]] virtual bool IsOpen() const = 0;
   virtual bool Open(const char* filename,
                     FileAccess rights = FileAccess::kRead) = 0;
   virtual bool Open(FileAccess rights = FileAccess::kRead) = 0;
@@ -99,7 +99,7 @@ class FileClass {
   operator const char*() const { return File_Name(); }
 
  protected:
-  virtual bool Do_Is_Available(AvailabilityCheck mode) = 0;
+  virtual bool DoIsAvailable(AvailabilityCheck mode) = 0;
 };
 
 #endif  // CNC_RED_ALERT_TECH_WWFILE_H_

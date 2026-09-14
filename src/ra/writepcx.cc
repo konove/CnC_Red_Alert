@@ -124,7 +124,7 @@ int Write_PCX_File(FileClass& file, GraphicBufferClass& pic,
   *is *	open for write.
   */
   bool open = false;
-  if (!file.Is_Open()) {
+  if (!file.IsOpen()) {
     file.Open(FileAccess::kWrite);
     open = true;
   }

@@ -57,7 +57,6 @@
 #include <utility>
 
 #include "base/types.h"
-#include "ra/ccfile.h"
 #include "ra/ccptr.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
@@ -74,6 +73,7 @@
 #include "ra/keyframe.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
+#include "ra/mix_aware_file.h"
 #include "ra/nullmgr.h"
 #include "ra/object.h"
 #include "ra/palette.h"
@@ -345,7 +345,7 @@ void ScoreClass::Presentation() {
   int i;
   const void* yellowptr;
   const void* redptr;
-  CCFileClass file(kFameFileName);
+  MixAwareFile file(kFameFileName);
   struct Fame hallfame[NUMFAMENAMES];
   const void* oldfont;
   const int oldfontxspacing = FontXSpacing;

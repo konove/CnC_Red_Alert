@@ -62,7 +62,6 @@
 
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
-#include "ra/ccfile.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
@@ -78,6 +77,7 @@
 #include "ra/jshell.h"
 #include "ra/map.h"
 #include "ra/mapedit.h"
+#include "ra/mix_aware_file.h"
 #include "ra/object.h"
 #include "ra/rules.h"
 #include "ra/type.h"
@@ -1246,7 +1246,7 @@ InfantryType InfantryTypeClass::From_Name(const char* name) {
  *=============================================================================================*/
 void InfantryTypeClass::One_Time() {
   for (const InfantryType index : magic_enum::enum_values<InfantryType>()) {
-    const CCFileClass file;
+    const MixAwareFile file;
 
     InfantryTypeClass* uclass = &As_Reference(index);
 

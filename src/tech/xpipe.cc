@@ -152,7 +152,7 @@ int FilePipe::End() {
  *=============================================================================================*/
 int FilePipe::Put(const void* source, int slen) {
   if (Valid_File() && source != nullptr && slen > 0) {
-    if (!File->Is_Open()) {
+    if (!File->IsOpen()) {
       HasOpened = true;
       File->Open(FileAccess::kWrite);
     }

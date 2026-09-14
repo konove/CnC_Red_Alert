@@ -242,7 +242,7 @@ bool RawFileClass::Open(FileAccess rights) {
 }
 
 /***********************************************************************************************
- * RawFileClass::Do_Is_Available -- Checks to see if the specified file is
+ * RawFileClass::DoIsAvailable -- Checks to see if the specified file is
  *available to open.     *
  *                                                                                             *
  *    This routine will examine the disk system to see if the specified file can
@@ -259,7 +259,7 @@ bool RawFileClass::Open(FileAccess rights) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-bool RawFileClass::Do_Is_Available(AvailabilityCheck mode) {
+bool RawFileClass::DoIsAvailable(AvailabilityCheck mode) {
   void* file;
   int open_failed;
 
@@ -267,7 +267,7 @@ bool RawFileClass::Do_Is_Available(AvailabilityCheck mode) {
   **	If the file is already open, then is must have already passed the
   *availability check. *	Return true in this case.
   */
-  if (Is_Open()) {
+  if (IsOpen()) {
     return true;
   }
 
@@ -344,7 +344,7 @@ void RawFileClass::Close() {
   **	If the file is open, then close it. If the file is already closed, then
   *just return. This *	isn't considered an error condition.
   */
-  if (Is_Open()) {
+  if (IsOpen()) {
     for (;;) {
       /*
       **	Close the file. If there was an error in the close operation --
@@ -396,7 +396,7 @@ int32_t RawFileClass::Read(void* buffer, int32_t size) {
   **	If the file isn't opened, open it. This serves as a convenience
   **	for the programmer.
   */
-  if (!Is_Open()) {
+  if (!IsOpen()) {
     /*
     **	The error check here is moot. Open will never return unless it
     *succeeded.
@@ -448,7 +448,7 @@ int32_t RawFileClass::Write(const void* buffer, int32_t size) {
   *to *	it. Otherwise, open the file for writing and then close the file when
   *the *	output is finished.
   */
-  if (!Is_Open()) {
+  if (!IsOpen()) {
     if (!Open(FileAccess::kWrite)) {
       return 0;
     }
@@ -499,7 +499,7 @@ int32_t RawFileClass::Seek(int32_t pos, int dir) {
   /*
   **	If the file isn't opened, then this is a fatal error condition.
   */
-  if (!Is_Open()) {
+  if (!IsOpen()) {
     Error(EBADF, false, Filename);
   }
 
@@ -532,7 +532,7 @@ int32_t RawFileClass::Size() {
   /*
   **	If the file is open, then proceed normally.
   */
-  if (Is_Open()) {
+  if (IsOpen()) {
     return IO_Get_File_Size(Handle);
   } else {
     /*

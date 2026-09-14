@@ -25,13 +25,13 @@
 #include <span>
 
 #include "port/win32/win32_types.h"
-#include "ra/ccfile.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/dib.h"
 #include "ra/globals.h"
 #include "ra/iconlist.h"
+#include "ra/mix_aware_file.h"
 #include "ra/type.h"
 #include "ra/wolapi/chatdefs.h"
 #include "ra/wolapi/wolapi.h"
@@ -441,9 +441,9 @@ void WolapiObject::PrepareButtonsAndIcons() {
       // debugprint( "Couldn't find %s in mix.\n", IconInfo.szFile );
       continue;
     }
-    CCFileClass ccfileDib(IconInfo.szFile);
+    MixAwareFile icon_file(IconInfo.szFile);
     IconInfo.Icon = dib::Image::FromBmp(
-        {pFileData, static_cast<std::size_t>(ccfileDib.Size())});
+        {pFileData, static_cast<std::size_t>(icon_file.Size())});
     if (IconInfo.Icon.has_value()) {
       dib::RemapToPalette(*IconInfo.Icon, Palette);
     }

@@ -56,8 +56,8 @@
 
 #include "base/numeric.h"
 #include "base/types.h"
-#include "ra/ccfile.h"
 #include "ra/compat.h"
+#include "ra/mix_aware_file.h"
 #include "ra/monoc.h"
 #include "ra/palette.h"
 #include "ra/startup.h"
@@ -221,7 +221,7 @@ int32_t Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
   **	isn't opened, then open it. Record this fact so that it can be
   **	restored to its closed state at the end.
   */
-  if (!file.Is_Open()) {
+  if (!file.IsOpen()) {
     if (!file.Open()) {
       return 0;
     }
@@ -288,7 +288,7 @@ int32_t Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
 int Load_Picture(const char* filename, BufferClass& scratchbuf,
                  BufferClass& destbuf, unsigned char* palette,
                  PicturePlaneType /*unused*/) {
-  CCFileClass fc(filename);
+  MixAwareFile fc(filename);
   return Load_Uncompress(fc, scratchbuf, destbuf, palette) / 8000;
 }
 

@@ -56,7 +56,6 @@
 #include "absl/log/log.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
-#include "ra/ccfile.h"
 #include "ra/config.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
@@ -68,6 +67,7 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
+#include "ra/mix_aware_file.h"
 #include "ra/ww_audio.h"
 #include "tech/fixed.h"
 
@@ -872,7 +872,7 @@ void Speak_AI() {
                               .replace_extension(".AUD")
                               .string();
 
-        CCFileClass file(name.c_str());
+        MixAwareFile file(name.c_str());
         if (file.Is_Available() &&
             file.Read(SpeechBuffer[_index], kSpeechBufferSize)) {
           speech = SpeechBuffer[_index];

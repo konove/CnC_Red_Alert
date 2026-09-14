@@ -61,7 +61,6 @@
 
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
-#include "ra/ccfile.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
@@ -69,6 +68,7 @@
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/mix_aware_file.h"
 #include "ra/scenario.h"
 #include "sdllib/ww_audio.h"
 #include "session.h"
@@ -595,7 +595,7 @@ ThemeType ThemeClass::From_Name(const char* name) {
 void ThemeClass::Scan() {
   for (int index = 0; index < std::ssize(_themes); ++index) {
     _themes[index].Available =
-        CCFileClass(Theme_File_Name(static_cast<ThemeType>(index)))
+        MixAwareFile(Theme_File_Name(static_cast<ThemeType>(index)))
             .Is_Available();
   }
 }

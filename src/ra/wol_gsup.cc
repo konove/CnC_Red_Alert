@@ -32,7 +32,6 @@
 #include "port/ex_string.h"
 #include "port/win32/win32_types.h"
 #include "ra/bigcheck.h"
-#include "ra/ccfile.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/coord.h"
@@ -43,6 +42,7 @@
 #include "ra/iconlist.h"
 #include "ra/ipx.h"
 #include "ra/mission_id.h"
+#include "ra/mix_aware_file.h"
 #include "ra/rawolapi.h"
 #include "ra/session.h"
 #include "ra/tooltip.h"
@@ -449,7 +449,7 @@ void WOL_GameSetupDialog::Initialize() {
 
   if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME) {
     bAftermathUnits = true;
-    const int current_drive = CCFileClass::Get_CD_Drive();
+    const int current_drive = MixAwareFile::Get_CD_Drive();
     const int cd_index = Get_CD_Index(current_drive, 1 * 60);
     if (cd_index != 3 && cd_index != 5) {
       WOL_PrintMessage(*pILDisc, TXT_WOL_AMDISCNEEDED,
@@ -531,7 +531,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   int tabs[] = {77 * 2};       // tabs for player list box
   int optiontabs[] = {8 * 2};  // tabs for option list box
 
-  const CCFileClass loadfile("SAVEGAME.NET");
+  const MixAwareFile loadfile("SAVEGAME.NET");
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   const int cbox_x[] = {
@@ -2787,7 +2787,7 @@ void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) const {
   port::SafeCopy(
       GParams.GPacket.ScenarioInfo.Scenario,
       Session.Scenarios[Session.Options.ScenarioIndex]->Description());
-  CCFileClass file(
+  MixAwareFile file(
       Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
   GParams.GPacket.ScenarioInfo.FileLength =
       static_cast<unsigned int>(file.Size());

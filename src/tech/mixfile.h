@@ -26,7 +26,7 @@
 //   digest
 //
 // Example:
-//   using MFCD = MixFileClass<CCFileClass>;
+//   using MFCD = MixFileClass<MixAwareFile>;
 //   MFCD::Register("GENERAL.MIX");     // Creates and registers in global list
 //   MFCD::Cache("GENERAL.MIX");        // Load into RAM
 //   void* data = MFCD::Retrieve("MOUSE.SHP");

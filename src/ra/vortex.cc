@@ -69,7 +69,6 @@
 
 #include "base/types.h"
 #include "ra/building.h"
-#include "ra/ccfile.h"
 #include "ra/cell.h"
 #include "ra/conquer.h"
 #include "ra/coord.h"
@@ -83,6 +82,7 @@
 #include "ra/layer.h"
 #include "ra/map.h"
 #include "ra/mapedit.h"
+#include "ra/mix_aware_file.h"
 #include "ra/mouse.h"
 #include "ra/palette.h"
 #include "ra/scenario.h"
@@ -1082,7 +1082,7 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
   if (theater != Theater) {
     Theater = theater;
 
-    CCFileClass file(_remaps[static_cast<int>(Theater)]);
+    MixAwareFile file(_remaps[static_cast<int>(Theater)]);
 
     if (file.Is_Available()) {
       file.Read(VortexRemapTables, int64_t{MAX_REMAP_SHADES} * 256);

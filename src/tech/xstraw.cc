@@ -117,7 +117,7 @@ int BufferStraw::Get(void* source, int slen) {
  *=============================================================================================*/
 int FileStraw::Get(void* source, int slen) {
   if (Valid_File() && source != nullptr && slen > 0) {
-    if (!File->Is_Open()) {
+    if (!File->IsOpen()) {
       HasOpened = true;
       if (!File->Is_Available()) {
         return 0;

@@ -62,7 +62,7 @@ class RAMFileClass final : public FileClass {
   }
   bool Create() override;
   bool Delete() override;
-  [[nodiscard]] bool Is_Open() const override;
+  [[nodiscard]] bool IsOpen() const override;
   bool Open(const char* filename,
             FileAccess access = FileAccess::kRead) override;
   bool Open(FileAccess access = FileAccess::kRead) override;
@@ -75,7 +75,7 @@ class RAMFileClass final : public FileClass {
              const char* /*filename*/ = nullptr) override {}
 
  protected:
-  bool Do_Is_Available(AvailabilityCheck mode) override;
+  bool DoIsAvailable(AvailabilityCheck mode) override;
 
  private:
   /*
@@ -107,7 +107,7 @@ class RAMFileClass final : public FileClass {
   /*
   **	Is the file currently open?
   */
-  bool IsOpen = false;
+  bool is_open_ = false;
 
   /*
   **	Was the file buffer allocated during construction of this object?

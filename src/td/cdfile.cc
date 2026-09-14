@@ -366,7 +366,7 @@ const char* CDFileClass::Set_Name(const char* filename) {
   */
   RawFileClass::Set_Name(filename);
   if (IsDisabled || !First ||
-      RawFileClass::Do_Is_Available(AvailabilityCheck::kQuick)) {
+      RawFileClass::DoIsAvailable(AvailabilityCheck::kQuick)) {
     return File_Name();
   }
 
@@ -394,7 +394,7 @@ const char* CDFileClass::Set_Name(const char* filename) {
     *process will continue.
     */
     RawFileClass::Set_Name(path);
-    if (RawFileClass::Do_Is_Available(AvailabilityCheck::kQuick)) {
+    if (RawFileClass::DoIsAvailable(AvailabilityCheck::kQuick)) {
       return File_Name();
     }
 

@@ -47,7 +47,6 @@
 #include <cstring>
 #include <string>
 
-#include "ra/ccfile.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -61,6 +60,7 @@
 #include "ra/ipxmgr.h"
 #include "ra/jshell.h"
 #include "ra/mission_id.h"
+#include "ra/mix_aware_file.h"
 #include "ra/nullmgr.h"
 #include "ra/palette.h"
 #include "ra/session.h"
@@ -307,7 +307,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   /*
   ** If the file name is already in use, use the temp file name
   */
-  CCFileClass test_file(file_name);
+  MixAwareFile test_file(file_name);
 
   std::string save_file_name;
   if (test_file.Is_Available()) {
@@ -580,7 +580,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   SerialPacketType file_info;
   GlobalPacketType net_file_info;
 
-  CCFileClass send_file(file_name);
+  MixAwareFile send_file(file_name);
 
   if (!send_file.Is_Available()) {
     // WWDebugString ("RA95 - Error - could not find file to send to client\n");

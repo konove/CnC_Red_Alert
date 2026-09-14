@@ -49,7 +49,6 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/safe_string.h"
-#include "ra/ccfile.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -59,6 +58,7 @@
 #include "ra/goptions.h"
 #include "ra/graphics_loader.h"
 #include "ra/jshell.h"
+#include "ra/mix_aware_file.h"
 #include "ra/palette.h"
 #include "ra/theme.h"
 #include "ra/vector.h"
@@ -397,7 +397,7 @@ void Show_Who_Was_Responsible() {
   *centered.
   **  If the text starts after column 40 it will be right justified.
   */
-  CCFileClass creditsfile("credits.txt");
+  MixAwareFile creditsfile("credits.txt");
   if (!creditsfile.Is_Available()) {
     return;
   }
@@ -621,7 +621,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Load the reference palette for the font.
   */
-  CCFileClass("EGOPAL.PAL").Read(&CCPalette, sizeof(CCPalette));
+  MixAwareFile("EGOPAL.PAL").Read(&CCPalette, sizeof(CCPalette));
 
   /*
   ** Copy the font palette entries into the combo palette.

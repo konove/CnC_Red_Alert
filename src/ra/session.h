@@ -43,11 +43,11 @@
 
 #include "absl/base/attributes.h"
 #include "port/ex_string.h"
-#include "ra/ccfile.h"
 #include "ra/connect.h"
 #include "ra/defines.h"
 #include "ra/event.h"
 #include "ra/ipxaddr.h"
+#include "ra/mix_aware_file.h"
 #include "ra/msglist.h"
 #include "ra/object.h"
 #include "ra/special.h"
@@ -542,8 +542,8 @@ class SessionClass {
 
   int Save(Pipe& file);
   bool Load(Straw& file);
-  int Save(CCFileClass& file);
-  bool Load(CCFileClass& file);
+  int Save(MixAwareFile& file);
+  bool Load(MixAwareFile& file);
 
   //.....................................................................
   // Debugging / Sync Bugs
@@ -662,7 +662,7 @@ class SessionClass {
   //.....................................................................
   // For Recording & Playing back a file
   //.....................................................................
-  CCFileClass RecordFile;
+  MixAwareFile RecordFile;
   bool Record : 1 {false};  // set via command line
   bool Play : 1 {false};
   bool Attract : 1 {false};

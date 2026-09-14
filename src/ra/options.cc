@@ -69,11 +69,11 @@
 
 #include "ra/options.h"
 
-#include "ra/ccfile.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/ini.h"
 #include "ra/jshell.h"
+#include "ra/mix_aware_file.h"
 #include "ra/session.h"
 #include "ra/theme.h"
 #include "ra/ww_audio.h"
@@ -465,7 +465,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Create filename and read the file.
   */
-  CCFileClass file(kConfigFileName);
+  MixAwareFile file(kConfigFileName);
   INIClass ini;
   ini.Load(file);
 
@@ -654,7 +654,7 @@ void OptionsClass::Load_Settings() {
  *hotkeys.                                                         *
  *=============================================================================================*/
 void OptionsClass::Save_Settings() const {
-  CCFileClass file(kConfigFileName);
+  MixAwareFile file(kConfigFileName);
   INIClass ini;
 
   /*
