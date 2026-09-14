@@ -1893,7 +1893,7 @@ void TriggerTypeClass::Read_INI(CCINIClass& ini) {
     /*
     **	Fill in the trigger.
     */
-    trigger->Fill_In((char*)entry, buf);
+    trigger->Fill_In(entry, buf);
   }
 
   if (NewINIFormat < 2) {
@@ -1935,7 +1935,7 @@ void TriggerTypeClass::Read_INI(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerTypeClass::Fill_In(char* name, char* entry) {
+void TriggerTypeClass::Fill_In(const char* name, char* entry) {
   assert(TriggerTypes.ID(this) == ID);
 
   /*

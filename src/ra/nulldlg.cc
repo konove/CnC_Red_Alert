@@ -2262,19 +2262,19 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       case ButtonKey(BUTTON_PORTLIST):
         if (portlist.Current_Index() != port_index) {
           port_index = portlist.Current_Index();
-          item = (char*)portlist.Current_Item();
+          const char* const current = portlist.Current_Item();
           {
             if (port_index == port_custom_index) {
               /*
               ** This is the custom entry
               */
-              temp = strchr(item, '-');
-              if (temp) {
-                pos = static_cast<int>(temp - item) + 2;
-                if (*(item + pos) == '?') {
+              const char* const sep = strchr(current, '-');
+              if (sep) {
+                pos = static_cast<int>(sep - current) + 2;
+                if (*(current + pos) == '?') {
                   portbuf[0] = 0;
                 } else {
-                  port::SafeCopy(portbuf, item + pos);
+                  port::SafeCopy(portbuf, current + pos);
                 }
               }
               port_edt.Set_Focus();
@@ -2282,7 +2282,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
               /*
               ** Must be a modem name entry so just copy iy
               */
-              port::SafeCopy(portbuf, item);
+              port::SafeCopy(portbuf, current);
             }
           }
           port_edt.Set_Text(portbuf, PORTBUF_MAX);
@@ -2295,8 +2295,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         break;
 
       case ButtonKey(BUTTON_BAUD):
-        item = (char*)baudlist.Current_Item();
-        port::SafeCopy(baudbuf, item);
+        port::SafeCopy(baudbuf, baudlist.Current_Item());
         baud_edt.Set_Text(baudbuf, BAUDBUF_MAX);
         initstr_edt.Set_Focus();
         initstr_edt.Flag_To_Redraw();
@@ -2306,8 +2305,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       case ButtonKey(BUTTON_BAUDLIST):
         if (baudlist.Current_Index() != baud_index) {
           baud_index = baudlist.Current_Index();
-          item = (char*)baudlist.Current_Item();
-          port::SafeCopy(baudbuf, item, BAUDBUF_MAX);
+          port::SafeCopy(baudbuf, baudlist.Current_Item(), BAUDBUF_MAX);
           baud_edt.Set_Text(baudbuf, BAUDBUF_MAX);
           baud_edt.Clear_Focus();
           display = REDRAW_BUTTONS;
@@ -2317,8 +2315,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       case ButtonKey(BUTTON_INITSTRLIST):
         if (initstrlist.Current_Index() != initstr_index) {
           initstr_index = initstrlist.Current_Index();
-          item = (char*)initstrlist.Current_Item();
-          port::SafeCopy(initstrbuf, item);
+          port::SafeCopy(initstrbuf, initstrlist.Current_Item());
           initstr_edt.Set_Text(initstrbuf, INITSTRBUF_MAX);
         }
         initstr_edt.Set_Focus();
@@ -2386,15 +2383,15 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       case ButtonKey(BUTTON_CWAITSTRLIST):
         if (cwaitstrlist.Current_Index() != cwaitstr_index) {
           cwaitstr_index = cwaitstrlist.Current_Index();
-          item = (char*)cwaitstrlist.Current_Item();
+          const char* const current = cwaitstrlist.Current_Item();
           if (cwaitstr_index < 3) {
-            port::SafeCopy(cwaitstrbuf, item);
+            port::SafeCopy(cwaitstrbuf, current);
             cwaitstr_edt.Clear_Focus();
           } else {
-            temp = strchr(item, '-');
-            if (temp) {
-              pos = static_cast<int>(temp - item) + 2;
-              port::SafeCopy(cwaitstrbuf, item + pos);
+            const char* const sep = strchr(current, '-');
+            if (sep) {
+              pos = static_cast<int>(sep - current) + 2;
+              port::SafeCopy(cwaitstrbuf, current + pos);
             }
             cwaitstr_edt.Set_Focus();
           }
@@ -4661,7 +4658,7 @@ int Com_Show_Scenario_Dialog() {
   bool load_game = false;            // 1 = load saved game
   NodeNameType* who;                 // node to add to Players
   char* item;                        // for filling in lists
-  char* p;
+  const char* p;
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   Session.Options.ScenarioDescription[0] =
       0;  // Flag that we dont know the scenario name yet
@@ -5014,7 +5011,7 @@ int Com_Show_Scenario_Dialog() {
             //	d_dialog_x + d_dialog_w - 16*2, d_scenario_y + d_txt6_h,
             // BLACK);
 
-            p = (char*)Text_String(TXT_SCENARIO_COLON);
+            p = Text_String(TXT_SCENARIO_COLON);
             if (Session.Options.ScenarioDescription[0]) {
               //							sprintf(txt,"%s
               //%s",p, Session.Options.ScenarioDescription);

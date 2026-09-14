@@ -421,8 +421,8 @@ void SoundControlsClass::Process() {
       case KN_SPACE:
       case ButtonKey(BUTTON_PLAY):
         if (listbox.Count()) {
-          Theme.Queue_Song(
-              static_cast<ThemeType>(*(unsigned char*)listbox.Current_Item()));
+          Theme.Queue_Song(static_cast<ThemeType>(
+              static_cast<unsigned char>(*listbox.Current_Item())));
         }
         break;
 

@@ -1625,7 +1625,7 @@ void TeamTypeClass::Read_INI(CCINIClass& ini) {
     if (team != nullptr) {
       const char* entry = ini.Get_Entry(INI_Name(), index);
       ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
-      team->Fill_In((char*)entry, buf);
+      team->Fill_In(entry, buf);
     }
   }
 }
@@ -1655,7 +1655,7 @@ void TeamTypeClass::Read_INI(CCINIClass& ini) {
  * HISTORY: * 11/28/1994 BR : Created. * 11/29/1995 JLB : Revamped to use new
  *team class.                                          *
  *=============================================================================================*/
-void TeamTypeClass::Fill_In(char* name, char* entry) {
+void TeamTypeClass::Fill_In(const char* name, char* entry) {
   assert(TeamTypes.ID(this) == ID);
 
   /*

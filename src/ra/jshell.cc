@@ -373,7 +373,7 @@ int32_t Translucent_Table_Size(int count) { return 256 + (256 * count); }
 void* Build_Translucent_Table(const PaletteClass& palette,
                               const TLucentType* control, int count,
                               void* buffer) {
-  const unsigned char* table;  // Remap table pointer.
+  unsigned char* table;        // Remap table pointer.
   int index;                   // Working color index.
 
   if (count && control && palette) {
@@ -391,9 +391,9 @@ void* Build_Translucent_Table(const PaletteClass& palette,
       for (index = 0; index < count; index++) {
         static_cast<unsigned char*>(buffer)[control[index].SourceColor] =
             static_cast<unsigned char>(index);
-        Build_Fading_Table(palette, (void*)table, control[index].DestColor,
+        Build_Fading_Table(palette, table, control[index].DestColor,
                            control[index].Fading);
-        table = (unsigned char*)table + 256;
+        table += 256;
       }
     }
   }
@@ -432,7 +432,7 @@ void* Build_Translucent_Table(const PaletteClass& palette,
 void* Conquer_Build_Translucent_Table(const PaletteClass& palette,
                                       const TLucentType* control, int count,
                                       void* buffer) {
-  const unsigned char* table;  // Remap table pointer.
+  unsigned char* table;  // Remap table pointer.
 
   if (count && control) {
     if (!buffer) {
@@ -449,10 +449,9 @@ void* Conquer_Build_Translucent_Table(const PaletteClass& palette,
       for (int index = 0; index < count; index++) {
         static_cast<unsigned char*>(buffer)[control[index].SourceColor] =
             static_cast<unsigned char>(index);
-        Conquer_Build_Fading_Table(palette, (void*)table,
-                                   control[index].DestColor,
+        Conquer_Build_Fading_Table(palette, table, control[index].DestColor,
                                    control[index].Fading);
-        table = (unsigned char*)table + 256;
+        table += 256;
       }
     }
   }

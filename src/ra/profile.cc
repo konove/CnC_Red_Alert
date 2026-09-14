@@ -49,6 +49,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/base/attributes.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -204,9 +205,9 @@ bool WWWritePrivateProfileInt(const char* section, const char* entry, int value,
   return WWWritePrivateProfileString(section, entry, buffer, profile);
 }
 
-char* WWGetPrivateProfileString(const char* section, const char* key,
-                                const char* def, char* dest, int dest_len,
-                                const char* ini_data) {
+const char* WWGetPrivateProfileString(const char* section, const char* key,
+                                      const char* def, char* dest, int dest_len,
+                                      const char* ini_data) {
   const char* workptr;     // Working pointer into profile block.
   const char* altworkptr = nullptr;  // Alternate work pointer.
   char sec[50];            // Working section buffer.
@@ -327,7 +328,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
           /*
           **	No bracket found; set 'next' to the end of the file
           */
-          next = (char*)workptr + strlen(workptr) - 1;
+          next = workptr + strlen(workptr) - 1;
           break;
         }
       }
@@ -382,7 +383,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
             **	the next '='
             */
             if (workptr == nullptr || altworkptr < workptr) {
-              return (char*)retval;
+              return retval;
             }
 
             /*
@@ -395,7 +396,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
               **	Just return if there's no entry past the '='.
               */
               if (workptr >= altworkptr) {
-                return (char*)retval;
+                return retval;
               }
 
               workptr++;  // Skip the whitespace
@@ -412,7 +413,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
               *(dest + len) = '\0';  // Insert trailing null.
               strtrim(dest);
             }
-            return (char*)retval;
+            return retval;
           }
 
           /*
@@ -488,7 +489,18 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
     }
   }
 
-  return (char*)retval;
+  return retval;
+}
+
+// Returns a writable cursor into `profile` at the entry (or, with a nullptr
+// `entry`, the first entry of the section) that WWGetPrivateProfileString
+// finds, or nullptr if there is none. The lookup hands back a const view, so
+// the cursor is rebuilt from its offset into the buffer being edited.
+static char* Find_Profile_Entry(const char* section, const char* entry,
+                                char* profile ABSL_ATTRIBUTE_LIFETIME_BOUND) {
+  const char* found =
+      WWGetPrivateProfileString(section, entry, nullptr, nullptr, 0, profile);
+  return found == nullptr ? nullptr : profile + (found - profile);
 }
 
 /***********************************************************************************************
@@ -525,8 +537,7 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
   **	buffer length. 'offset' will point to 1st entry in the section, NULL if
   **	section not found.
   */
-  offset =
-      WWGetPrivateProfileString(section, nullptr, nullptr, nullptr, 0, profile);
+  offset = Find_Profile_Entry(section, nullptr, profile);
 
   /*
   **	If the section could not be found, then add it to the end. Don't add
@@ -591,8 +602,7 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
   **	with 0 length will just return the offset of the found entry, NULL if
   **	entry not found.
   */
-  offset =
-      WWGetPrivateProfileString(section, entry, nullptr, nullptr, 0, profile);
+  offset = Find_Profile_Entry(section, entry, profile);
 
   /*
   **	Remove any existing entry
@@ -620,8 +630,7 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
     **	Entry doesn't exist, so point 'offset' to the 1st entry position in
     **	the section.
     */
-    offset = WWGetPrivateProfileString(section, nullptr, nullptr, nullptr, 0,
-                                       profile);
+    offset = Find_Profile_Entry(section, nullptr, profile);
   }
 
   /*

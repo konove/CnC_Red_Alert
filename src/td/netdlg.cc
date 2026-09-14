@@ -4285,9 +4285,12 @@ static int Net_Fake_New_Dialog() {
   bool player_joined = false;
   CountDownTimerClass join_timer;
 
+  // Format_Window_String inserts line breaks in place, so format a copy rather
+  // than the shared string table.
+  char buffer[80 * 3];
+  port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
   Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String((char*)Text_String(TXT_CONNECTING),
-                       SeenBuff.Get_Height(), width, height);
+  Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
 #if (defined(GERMAN) || defined(FRENCH))
   d_dialog_w = width + 25 * factor;
@@ -4488,7 +4491,7 @@ static int Net_Fake_New_Dialog() {
         ...............................................................*/
         Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(TXT_CONNECTING, d_dialog_cx - (width / 2),
+        Fancy_Text_Print(buffer, d_dialog_cx - (width / 2),
                          d_dialog_y + (25 * factor), CC_GREEN, TBLACK,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
@@ -4888,9 +4891,12 @@ static int Net_Fake_Join_Dialog() {
   int height = 80 * factor;
 #endif  // GERMAN | FRENCH
 
+  // Format_Window_String inserts line breaks in place, so format a copy rather
+  // than the shared string table.
+  char buffer[80 * 3];
+  port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
   Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String((char*)Text_String(TXT_CONNECTING),
-                       SeenBuff.Get_Height(), width, height);
+  Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
 #if (defined(GERMAN) || defined(FRENCH))
   d_dialog_w = width + 25 * factor;
@@ -5055,7 +5061,7 @@ static int Net_Fake_Join_Dialog() {
         ...............................................................*/
         Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(TXT_CONNECTING, d_dialog_cx - (width / 2),
+        Fancy_Text_Print(buffer, d_dialog_cx - (width / 2),
                          d_dialog_y + (25 * factor), CC_GREEN, TBLACK,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 

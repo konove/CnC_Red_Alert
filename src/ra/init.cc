@@ -950,7 +950,7 @@ bool Select_Game(bool /*fade*/) {
               delete PacketTransport;
               // we don't even have IPX
               PacketTransport = new UDPInterfaceClass;
-              PacketTransport->Set_Broadcast_Address((char*)"255.255.255.255");
+              PacketTransport->Set_Broadcast_Address("255.255.255.255");
               WWDebugString("RA95 - About to call Init_Network.\n");
               if (Session.Type == GAME_IPX && Init_Network() &&
                   Remote_Connect()) {
@@ -2641,18 +2641,19 @@ static void Init_Bulk_Data() {
   }
 
   // now allocate and copy
-  TutorialTextData = new char[base::ToSize(totallen)];
-  char* textptr = (char*)TutorialTextData;
+  char* const text_data = new char[base::ToSize(totallen)];
+  char* textptr = text_data;
 
   for (int index = 0; index < std::ssize(TutorialTextOffsets); index++) {
     char num[10];
     sprintf(num, "%d", index);
-    const int textoffset = static_cast<int>(textptr - TutorialTextData);
+    const int textoffset = static_cast<int>(textptr - text_data);
     if (ini.Get_String("Tutorial", num, "", textptr, totallen - textoffset)) {
       TutorialTextOffsets[index] = static_cast<uint16_t>(textoffset);
       textptr += strlen(textptr) + 1;
     }
   }
+  TutorialTextData = text_data;
 
   /*
   **	Perform one-time game system initializations.

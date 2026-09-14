@@ -2640,23 +2640,23 @@ static int Net_Join_Dialog() {
                                      PCOLOR_BROWN, kTpfText, 1200);
         Sound_Effect(VOC_SYS_ERROR);
 
-        item = nullptr;
+        const char* message = nullptr;
         if (why == REJECT_DUPLICATE_NAME) {
-          item = (char*)Text_String(TXT_NAME_MUSTBE_UNIQUE);
+          message = Text_String(TXT_NAME_MUSTBE_UNIQUE);
         } else if (why == REJECT_GAME_FULL) {
-          item = (char*)Text_String(TXT_GAME_FULL);
+          message = Text_String(TXT_GAME_FULL);
         } else if (why == REJECT_VERSION_TOO_OLD) {
-          item = (char*)Text_String(TXT_YOURGAME_OUTDATED);
+          message = Text_String(TXT_YOURGAME_OUTDATED);
         } else if (why == REJECT_VERSION_TOO_NEW) {
-          item = (char*)Text_String(TXT_DESTGAME_OUTDATED);
+          message = Text_String(TXT_DESTGAME_OUTDATED);
         } else if (why == REJECT_MISMATCH) {
-          item = (char*)Text_String(TXT_MISMATCH);
+          message = Text_String(TXT_MISMATCH);
         } else if (why == REJECT_DISBANDED) {
-          item = (char*)Text_String(TXT_GAME_CANCELLED);
+          message = Text_String(TXT_GAME_CANCELLED);
         }
-        if (item) {
-          Session.Messages.Add_Message(nullptr, 0, item, PCOLOR_BROWN, kTpfText,
-                                       1200);
+        if (message) {
+          Session.Messages.Add_Message(nullptr, 0, message, PCOLOR_BROWN,
+                                       kTpfText, 1200);
         }
 
         Send_Join_Queries(game_index, joinstate, 0, 0, 1, namebuf);

@@ -13,10 +13,10 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
 // Reads a string value from an INI buffer. If key is nullptr, writes all key
 // names in the section to dest (null-separated, double-null terminated).
 // Returns pointer to the value in ini_data, or nullptr if not found.
-char* WWGetPrivateProfileString(const char* section, const char* key,
-                                const char* def,
-                                char* dest ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                                int dest_len, const char* ini_data);
+const char* WWGetPrivateProfileString(const char* section, const char* key,
+                                      const char* def,
+                                      char* dest ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                                      int dest_len, const char* ini_data);
 
 unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
                                 const char* profile);

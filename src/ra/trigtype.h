@@ -131,7 +131,7 @@ class TriggerTypeClass : public AbstractTypeClass {
   */
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
-  void Fill_In(char* name, char* entry);
+  void Fill_In(const char* name, char* entry);
   void Build_INI_Entry(std::string& buffer) const;
 
   static const char* INI_Name() { return "Trigs"; }

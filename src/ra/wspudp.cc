@@ -139,8 +139,8 @@ UDPInterfaceClass::~UDPInterfaceClass() {
  *                                                                                             *
  * HISTORY: * 8/5/97 12:12PM ST : Created *
  *=============================================================================================*/
-void UDPInterfaceClass::Set_Broadcast_Address(void* address) {
-  const char* ip_addr = static_cast<char*>(address);
+void UDPInterfaceClass::Set_Broadcast_Address(const void* address) {
+  const char* ip_addr = static_cast<const char*>(address);
   assert(strlen(ip_addr) <= strlen("xxx.xxx.xxx.xxx"));
 
   auto* baddr = new unsigned char[4];

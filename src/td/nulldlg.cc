@@ -2564,14 +2564,14 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       case ButtonKey(BUTTON_PORTLIST):
         if (portlist.Current_Index() != port_index) {
           port_index = portlist.Current_Index();
-          item = (char*)portlist.Current_Item();
+          const char* const current = portlist.Current_Item();
           if (port_index < 4) {
-            temp = strchr(item, ' ');
-            if (!temp) {
-              strncpy(portbuf, item, PORTBUF_MAX);
+            const char* const sep = strchr(current, ' ');
+            if (!sep) {
+              strncpy(portbuf, current, PORTBUF_MAX);
             } else {
-              pos = static_cast<int>(temp - item);
-              strncpy(portbuf, item, base::ToSize(pos));
+              pos = static_cast<int>(sep - current);
+              strncpy(portbuf, current, base::ToSize(pos));
               portbuf[pos] = 0;
             }
             port_edt.Clear_Focus();
@@ -2597,13 +2597,13 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
               /*
               ** This is the custom entry
               */
-              temp = strchr(item, '-');
-              if (temp) {
-                pos = static_cast<int>(temp - item) + 2;
-                if (*(item + pos) == '?') {
+              const char* const sep = strchr(current, '-');
+              if (sep) {
+                pos = static_cast<int>(sep - current) + 2;
+                if (*(current + pos) == '?') {
                   portbuf[0] = 0;
                 } else {
-                  strncpy(portbuf, item + pos, PORTBUF_MAX);
+                  strncpy(portbuf, current + pos, PORTBUF_MAX);
                 }
               }
               port_edt.Set_Focus();
@@ -2611,7 +2611,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
               /*
               ** Must be a modem name entry so just copy iy
               */
-              strncpy(portbuf, item, PORTBUF_MAX);
+              strncpy(portbuf, current, PORTBUF_MAX);
             }
           }
           port_edt.Set_Text(portbuf, PORTBUF_MAX);
@@ -2693,8 +2693,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 #endif  // EDIT_IRQ
 
       case ButtonKey(BUTTON_BAUD):
-        item = (char*)baudlist.Current_Item();
-        strncpy(baudbuf, item, BAUDBUF_MAX);
+        strncpy(baudbuf, baudlist.Current_Item(), BAUDBUF_MAX);
         baud_edt.Set_Text(baudbuf, BAUDBUF_MAX);
         initstr_edt.Set_Focus();
         initstr_edt.Flag_To_Redraw();
@@ -2704,8 +2703,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       case ButtonKey(BUTTON_BAUDLIST):
         if (baudlist.Current_Index() != baud_index) {
           baud_index = baudlist.Current_Index();
-          item = (char*)baudlist.Current_Item();
-          strncpy(baudbuf, item, BAUDBUF_MAX);
+          strncpy(baudbuf, baudlist.Current_Item(), BAUDBUF_MAX);
           baud_edt.Set_Text(baudbuf, BAUDBUF_MAX);
           baud_edt.Clear_Focus();
           display = REDRAW_BUTTONS;
@@ -2715,8 +2713,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       case ButtonKey(BUTTON_INITSTRLIST):
         if (initstrlist.Current_Index() != initstr_index) {
           initstr_index = initstrlist.Current_Index();
-          item = (char*)initstrlist.Current_Item();
-          strncpy(initstrbuf, item, INITSTRBUF_MAX);
+          strncpy(initstrbuf, initstrlist.Current_Item(), INITSTRBUF_MAX);
           initstr_edt.Set_Text(initstrbuf, INITSTRBUF_MAX);
         }
         initstr_edt.Set_Focus();
@@ -2784,15 +2781,15 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       case ButtonKey(BUTTON_CWAITSTRLIST):
         if (cwaitstrlist.Current_Index() != cwaitstr_index) {
           cwaitstr_index = cwaitstrlist.Current_Index();
-          item = (char*)cwaitstrlist.Current_Item();
+          const char* const current = cwaitstrlist.Current_Item();
           if (cwaitstr_index < 3) {
-            strncpy(cwaitstrbuf, item, CWAITSTRBUF_MAX);
+            strncpy(cwaitstrbuf, current, CWAITSTRBUF_MAX);
             cwaitstr_edt.Clear_Focus();
           } else {
-            temp = strchr(item, '-');
-            if (temp) {
-              pos = static_cast<int>(temp - item) + 2;
-              strncpy(cwaitstrbuf, item + pos, CWAITSTRBUF_MAX);
+            const char* const sep = strchr(current, '-');
+            if (sep) {
+              pos = static_cast<int>(sep - current) + 2;
+              strncpy(cwaitstrbuf, current + pos, CWAITSTRBUF_MAX);
             }
             cwaitstr_edt.Set_Focus();
           }

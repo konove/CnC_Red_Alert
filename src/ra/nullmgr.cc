@@ -1649,8 +1649,9 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         x = (SeenBuff.Get_Width() - width) / 2;
         y = (SeenBuff.Get_Height() - height) / 2;
 
-        SerialPort->Write_To_Serial_Port((unsigned char*)"ATA\r",
-                                         static_cast<int>(strlen("ATA\r")));
+        static constexpr unsigned char kAnswerCommand[] = {'A', 'T', 'A', '\r'};
+        SerialPort->Write_To_Serial_Port(
+            kAnswerCommand, static_cast<int>(sizeof(kAnswerCommand)));
 
         ring = true;
         delay = ModemWaitCarrier;

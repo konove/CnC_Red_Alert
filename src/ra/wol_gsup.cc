@@ -1119,22 +1119,20 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       if (display >= REDRAW_PARMS) {
         char txt[80];
 
-        char* szScenarioDesc;
+        const char* szScenarioDesc;
         bool bOfficial;
-        char* szScenarioFileName;
+        const char* szScenarioFileName;
         if (!bHost) {
           szScenarioDesc = Session.Options.ScenarioDescription;
           bOfficial = Session.ScenarioIsOfficial;
           szScenarioFileName = Session.ScenarioFileName;
         } else {
           szScenarioDesc =
-              (char*)Session.Scenarios[Session.Options.ScenarioIndex]
-                  ->Description();
+              Session.Scenarios[Session.Options.ScenarioIndex]->Description();
           bOfficial =
               Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official();
           szScenarioFileName =
-              (char*)Session.Scenarios[Session.Options.ScenarioIndex]
-                  ->Get_Filename();
+              Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename();
         }
 
         if (*szScenarioDesc) {
@@ -3777,7 +3775,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
     //		debugprint( "Scen.ScenarioName = %s\n", Scen.ScenarioName );
     port::SafeCopy(
         Session.Options.ScenarioDescription,
-        (char*)Session.Scenarios[Session.Options.ScenarioIndex]->Description());
+        Session.Scenarios[Session.Options.ScenarioIndex]->Description());
   }
 
   Options.GameSpeed = 0;

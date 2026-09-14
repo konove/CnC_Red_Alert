@@ -397,8 +397,8 @@ void SoundControlsClass::Process() {
       */
       case KN_SPACE:
       case ButtonKey(BUTTON_PLAY):
-        Theme.Queue_Song(
-            static_cast<ThemeType>(*(unsigned char*)listbox.Current_Item()));
+        Theme.Queue_Song(static_cast<ThemeType>(
+            static_cast<unsigned char>(*listbox.Current_Item())));
         break;
 
       /*
@@ -477,12 +477,12 @@ void MusicListClass::Draw_Entry(int index, int x, int y, int width,
       }
     }
 
-    Conquer_Clip_Text_Print((char*)List[index] + 1, x, y, scheme, TBLACK, flags,
-                            width, Tabs);
+    Conquer_Clip_Text_Print(List[index] + 1, x, y, scheme, TBLACK, flags, width,
+                            Tabs);
 
   } else {
     Conquer_Clip_Text_Print(
-        (char*)List[index] + 1, x, y,
+        List[index] + 1, x, y,
         selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
         TBLACK, TextFlags, width, Tabs);
   }
