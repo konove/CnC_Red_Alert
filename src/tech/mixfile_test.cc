@@ -13,11 +13,11 @@
 
 #include "gtest/gtest.h"
 #include "tech/crc.h"
-#include "tech/rawfile.h"
+#include "tech/disk_file.h"
 
 namespace {
 
-using Mix = MixFileClass<RawFileClass>;
+using Mix = MixFileClass<DiskFile>;
 
 void PutInt16(std::vector<char>& out, int value) {
   out.push_back(static_cast<char>(value & 0xff));

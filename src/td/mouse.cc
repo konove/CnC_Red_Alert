@@ -56,7 +56,7 @@
 #include "td/externs.h"
 #include "td/jshell.h"
 #include "td/scroll.h"
-#include "tech/rawfile.h"
+#include "tech/disk_file.h"
 
 /*
 **	This points to the loaded mouse shapes.
@@ -282,7 +282,7 @@ void MouseClass::One_Time() {
   **	Override the mouse shape file with the one in the current directory, but
   *only if there *	is an override file available.
   */
-  RawFileClass file("MOUSE.SHP");
+  DiskFile file("MOUSE.SHP");
   if (file.IsAvailable()) {
     MouseShapes = Load_Alloc_Data(file);
   } else {

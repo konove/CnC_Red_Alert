@@ -2018,7 +2018,7 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
   PalettesRead = false;
   CCFileClass file(filename);
 
-  //	RawFileClass	*palette_file;
+  //	DiskFile	*palette_file;
 
   if (!add) {
     for (i = 0; i < std::ssize(InterpolatedPalettes); i++) {
@@ -2034,7 +2034,7 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
     }
   }
 
-  //	palette_file = new RawFileClass (filename);
+  //	palette_file = new DiskFile (filename);
   //	if (file.IsAvailable()){
 
   file.Open(FileAccess::kRead);

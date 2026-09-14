@@ -57,7 +57,7 @@
 #include "ra/heap.h"
 #include "ra/jshell.h"
 #include "ra/type.h"
-#include "tech/rawfile.h"
+#include "tech/disk_file.h"
 
 /***********************************************************************************************
  * BulletTypeClass::BulletTypeClass -- Constructor for bullet type objects. *
@@ -193,7 +193,7 @@ void BulletTypeClass::One_Time() {
       const_cast<BulletTypeClass&>(bullet).SetBorrowedImage(
           MFCD::RetrieveData(fullname));
 #else
-      RawFileClass file(fullname);
+      DiskFile file(fullname);
 
       if (file.IsAvailable()) {
         bullet.SetOwnedImage(LoadAllocData(file));

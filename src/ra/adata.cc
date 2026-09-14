@@ -58,8 +58,8 @@
 #include "ra/heap.h"
 #include "ra/jshell.h"
 #include "ra/type.h"
+#include "tech/disk_file.h"
 #include "tech/fixed.h"
-#include "tech/rawfile.h"
 
 static const AnimTypeClass AtomBomb(
     ANIM_ATOM_BLAST,  // Animation number.
@@ -2186,7 +2186,7 @@ void AnimTypeClass::One_Time() {
                                 .string();
 
 #ifndef NDEBUG
-      RawFileClass file(fullname);
+      DiskFile file(fullname);
       if (file.IsAvailable()) {
         As_Reference(index).SetOwnedImage(LoadAllocData(file));
       } else {

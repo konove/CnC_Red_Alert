@@ -23,12 +23,12 @@
 #include <string_view>
 #include <vector>
 
+#include "tech/disk_file.h"
 #include "tech/file.h"
-#include "tech/rawfile.h"
 
 // File I/O class with multi-directory search support.
 //
-// CDFileClass extends RawFileClass to search for files across multiple
+// CDFileClass extends DiskFile to search for files across multiple
 // directories and drives. This is designed for CD-ROM games where data may
 // exist on both the hard drive and CD-ROM.
 //
@@ -45,7 +45,7 @@
 //   CDFileClass::AddSearchPaths("C:\GameData;?:\Assets");
 //   CDFileClass file("textures\player.bmp");
 //   file.Open(FileAccess::kRead);  // Searches C:\GameData, then CD drive
-class CDFileClass : public RawFileClass {
+class CDFileClass : public DiskFile {
  public:
   explicit CDFileClass(std::string_view filename);
   CDFileClass() = default;

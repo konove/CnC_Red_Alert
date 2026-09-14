@@ -33,16 +33,16 @@
  *                  Last Update : October 18, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * RawFileClass::FileName -- Returns with the filename associate
- *with the file object.      * RawFileClass::RawFileClass -- Default constructor
- *for a file object.                      * RawFileClass::~RawFileClass --
+ * Functions: * DiskFile::FileName -- Returns with the filename associate
+ *with the file object.      * DiskFile::DiskFile -- Default constructor
+ *for a file object.                      * DiskFile::~DiskFile --
  *Default deconstructor for a file object.                   *
- *   RawFileClass::IsOpen -- Checks to see if the file is open or not. *
+ *   DiskFile::IsOpen -- Checks to see if the file is open or not. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CNC_RED_ALERT_TECH_RAWFILE_H_
-#define CNC_RED_ALERT_TECH_RAWFILE_H_
+#ifndef CNC_RED_ALERT_TECH_DISK_FILE_H_
+#define CNC_RED_ALERT_TECH_DISK_FILE_H_
 
 #include <climits>
 #include <cstdint>
@@ -58,26 +58,26 @@
 #define WWERROR (-1)
 #endif
 
-// The first concrete file class: reads and writes a single file on disk
-// through the low-level IO_* routines. Derived classes add buffering, search
-// paths and mixfile support.
+// A File that reads and writes a single file on disk through the low-level
+// IO_* routines. Originally RAWFILE.H (class RawFileClass). Derived classes add
+// buffering, search paths and mixfile support.
 //
 // A file can be biased (see Bias()) so that a byte range inside a larger file,
 // such as an entry in a mixfile, behaves as a whole file of its own.
 //
 // Override Error() when more sophisticated error handling is required; the
 // version here ignores every error.
-class RawFileClass : public File {
+class DiskFile : public File {
  public:
-  explicit RawFileClass(std::string_view filename);
-  RawFileClass() = default;
+  explicit DiskFile(std::string_view filename);
+  DiskFile() = default;
 
-  RawFileClass(const RawFileClass&) = delete;
-  RawFileClass& operator=(const RawFileClass&) = delete;
-  RawFileClass(RawFileClass&&) = delete;
-  RawFileClass& operator=(RawFileClass&&) = delete;
+  DiskFile(const DiskFile&) = delete;
+  DiskFile& operator=(const DiskFile&) = delete;
+  DiskFile(DiskFile&&) = delete;
+  DiskFile& operator=(DiskFile&&) = delete;
 
-  ~RawFileClass() override;
+  ~DiskFile() override;
 
   [[nodiscard]] std::string_view FileName() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND override {
@@ -130,7 +130,7 @@ class RawFileClass : public File {
 };
 
 /***********************************************************************************************
- * RawFileClass::~RawFileClass -- Default deconstructor for a file object. *
+ * DiskFile::~DiskFile -- Default deconstructor for a file object. *
  *                                                                                             *
  *    This constructs a null file object. A null file object has no file handle
  *or filename    * associated with it. In order to use a file object created in
@@ -144,15 +144,15 @@ class RawFileClass : public File {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-inline RawFileClass::~RawFileClass() {
+inline DiskFile::~DiskFile() {
   // Derived overrides commit their own state in their own destructors;
-  // by the time this runs the object is a plain RawFileClass.
-  RawFileClass::Close();
+  // by the time this runs the object is a plain DiskFile.
+  DiskFile::Close();
   // filename_ (std::string) automatically cleans up via RAII
 }
 
 /***********************************************************************************************
- * RawFileClass::IsOpen -- Checks to see if the file is open or not. *
+ * DiskFile::IsOpen -- Checks to see if the file is open or not. *
  *                                                                                             *
  *    Use this routine to determine if the file is open. It returns true if it
  *is.             *
@@ -166,6 +166,6 @@ inline RawFileClass::~RawFileClass() {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-inline bool RawFileClass::IsOpen() const { return handle_ != nullptr; }
+inline bool DiskFile::IsOpen() const { return handle_ != nullptr; }
 
-#endif  // CNC_RED_ALERT_TECH_RAWFILE_H_
+#endif  // CNC_RED_ALERT_TECH_DISK_FILE_H_

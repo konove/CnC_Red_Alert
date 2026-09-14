@@ -82,7 +82,7 @@
 #include "ra/rules.h"
 #include "ra/type.h"
 #include "sdllib/shape.h"
-#include "tech/rawfile.h"
+#include "tech/disk_file.h"
 
 static DoInfoStruct DogDoControls[magic_enum::enum_count<DoType>()] = {
     {0, 1, 1},      // DO_STAND_READY
@@ -1256,7 +1256,7 @@ void InfantryTypeClass::One_Time() {
                         .string();
 
 #ifndef NDEBUG
-    RawFileClass sfile(fullname);
+    DiskFile sfile(fullname);
     if (sfile.IsAvailable()) {
       uclass->SetOwnedImage(LoadAllocData(sfile));
     } else {
@@ -1273,7 +1273,7 @@ void InfantryTypeClass::One_Time() {
         std::filesystem::path(filename).replace_extension(".SHP").string();
 
 #ifndef NDEBUG
-    RawFileClass ifile(fullname);
+    DiskFile ifile(fullname);
     if (ifile.IsAvailable()) {
       uclass->CameoData = Load_Alloc_Data(ifile);
     } else {

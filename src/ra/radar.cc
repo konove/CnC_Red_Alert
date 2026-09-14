@@ -125,7 +125,7 @@
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/rawfile.h"
+#include "tech/disk_file.h"
 
 // void const * RadarClass::CoverShape;
 RadarClass::RTacticalClass RadarClass::RadarButton;
@@ -405,21 +405,21 @@ void RadarClass::Draw_It(bool forced) {
     port::SafeCopy(name, _hiresradarnames[PlayerPtr->ActLike]);
     //		}
 #ifndef NDEBUG
-    RawFileClass file(name);
+    DiskFile file(name);
     if (file.IsAvailable()) {
       RadarAnim = Load_Alloc_Data(file);
     } else {
       RadarAnim = MFCD::Retrieve(name);
     }
     port::SafeCopy(name, "PULSE.SHP");
-    RawFileClass file2(name);
+    DiskFile file2(name);
     if (file2.IsAvailable()) {
       RadarPulse = Load_Alloc_Data(file2);
     } else {
       RadarPulse = MFCD::Retrieve(name);
     }
     port::SafeCopy(name, _frames[PlayerPtr->ActLike]);
-    RawFileClass file3(name);
+    DiskFile file3(name);
     if (file3.IsAvailable()) {
       RadarFrame = Load_Alloc_Data(file3);
     } else {
@@ -428,7 +428,7 @@ void RadarClass::Draw_It(bool forced) {
 #else
     RadarAnim = MFCD::Retrieve(name);
     port::SafeCopy(name, "PULSE.SHP");
-    RawFileClass file3(name);
+    DiskFile file3(name);
     if (file3.IsAvailable()) {
       RadarPulse = Load_Alloc_Data(file3);
     } else {

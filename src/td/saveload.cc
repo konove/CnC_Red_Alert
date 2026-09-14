@@ -84,7 +84,7 @@
 #include "td/unit.h"
 #include "td/vector.h"
 #include "tech/archive.h"
-#include "tech/rawfile.h"
+#include "tech/disk_file.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
 
@@ -94,7 +94,7 @@
 
 // Write the theater/map, object heaps, ordered layers, and globals as fields.
 bool Save_Game(int id, const char* descr) {
-  RawFileClass file;
+  DiskFile file;
   char name[kMaxFname + kMaxExt];
   int i;
   int32_t version = 0;
@@ -232,7 +232,7 @@ bool Save_Game(int id, const char* descr) {
 
 // Load heaps before ordered object lists; rebuild runtime placement/UI state last.
 bool Load_Game(int id) {
-  RawFileClass file;
+  DiskFile file;
   char name[kMaxFname + kMaxExt];
   int i;
   int32_t version = 0;
@@ -537,7 +537,7 @@ bool Load_Misc_Values(ArchiveReader& file) {
  *   01/12/1995 BR : Created.                                              *
  *=========================================================================*/
 bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
-  RawFileClass file;
+  DiskFile file;
   char name[kMaxFname + kMaxExt];
   int32_t version = 0;
   char descr_buf[kDescripMax];

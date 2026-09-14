@@ -48,7 +48,7 @@
 #include "td/jshell.h"
 #include "td/keyframe.h"
 #include "td/type.h"
-#include "tech/rawfile.h"
+#include "tech/disk_file.h"
 
 // Dinosaur death animations
 static const AnimTypeClass TricDie(
@@ -2265,7 +2265,7 @@ void AnimTypeClass::One_Time() {
                               .replace_extension(".SHP")
                               .string();
 
-    RawFileClass file(fullname);
+    DiskFile file(fullname);
     if (file.IsAvailable()) {
       (const void*&)As_Reference(index).ImageData = Load_Alloc_Data(file);
     } else {

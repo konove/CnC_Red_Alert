@@ -857,7 +857,7 @@ void Send_Statistics_Packet() {
   /*
   ** Save it to disk as well so I can see it
   */
-  //	RawFileClass anotherfile ("packet.net");
+  //	DiskFile anotherfile ("packet.net");
   //	anotherfile.Write(packet, packet_size);
   // debugprint( "Wrote out packet.net\n" );
 

@@ -41,8 +41,8 @@
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
 #include "tech/cdfile.h"
+#include "tech/disk_file.h"
 #include "tech/mixfile.h"
-#include "tech/rawfile.h"
 
 // The name is copied by SetName, so filename need not outlive the object.
 MixAwareFile::MixAwareFile(const std::string_view filename) {

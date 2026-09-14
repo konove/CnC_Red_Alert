@@ -91,9 +91,9 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/wwstd.h"
 #include "tech/archive.h"
+#include "tech/disk_file.h"
 #include "tech/number_parse.h"
 #include "tech/pipe.h"
-#include "tech/rawfile.h"
 #include "tech/straw.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
@@ -562,7 +562,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
   //	Create filename and read the file.
   INIClass ini;
-  RawFileClass fc(kConfigFileName);
+  DiskFile fc(kConfigFileName);
   if (ini.Load(fc)) {
     //	Get the player's last-used Handle
     ini.Get_String("MultiPlayer", "Handle", "Noname", Handle, sizeof(Handle));
@@ -843,7 +843,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
 void SessionClass::Write_MultiPlayer_Settings() {
 
   INIClass ini;
-  RawFileClass file(kConfigFileName);
+  DiskFile file(kConfigFileName);
   if (ini.Load(file)) {
     //	Save the player's last-used Handle & Color
     ini.Put_Int("MultiPlayer", "PhoneIndex", CurPhoneIdx);

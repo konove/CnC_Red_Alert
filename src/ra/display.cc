@@ -169,8 +169,8 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
+#include "tech/disk_file.h"
 #include "tech/number_parse.h"
-#include "tech/rawfile.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
 
@@ -268,7 +268,7 @@ void DisplayClass::One_Time() {
   TransIconset = MFCD::Retrieve("TRANS.ICN");
 
 #ifndef NDEBUG
-  RawFileClass file("SHADOW.SHP");
+  DiskFile file("SHADOW.SHP");
   if (file.IsAvailable()) {
     ShadowShapes = Load_Alloc_Data(file);
   } else {

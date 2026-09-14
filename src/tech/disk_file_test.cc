@@ -1,9 +1,9 @@
-// Characterization tests for RawFileClass: implicit open on Read/Write, the
+// Characterization tests for DiskFile: implicit open on Read/Write, the
 // Bias() window, the lowercase-name retry, and Open() never reporting failure.
 // They pin current behaviour so the file I/O refactor can prove equivalence
 // (docs/FILE_IO_REFACTOR_PLAN.md).
 
-#include "tech/rawfile.h"
+#include "tech/disk_file.h"
 
 #include <cstdio>
 #include <filesystem>
@@ -28,13 +28,13 @@ std::string ReadFile(const std::filesystem::path& path) {
   return {std::istreambuf_iterator<char>(file), {}};
 }
 
-class RawFileTest : public ::testing::Test {
+class DiskFileTest : public ::testing::Test {
  protected:
   void SetUp() override {
     const std::string test_name =
         ::testing::UnitTest::GetInstance()->current_test_info()->name();
     path_ = std::filesystem::temp_directory_path() /
-            ("rawfile_test_" + test_name + ".bin");
+            ("disk_file_test_" + test_name + ".bin");
     WriteFile(path_, "xabcd");
   }
 
@@ -46,23 +46,23 @@ class RawFileTest : public ::testing::Test {
   std::filesystem::path path_;
 };
 
-TEST_F(RawFileTest, ReadOpensAndClosesImplicitly) {
-  RawFileClass file(path());
+TEST_F(DiskFileTest, ReadOpensAndClosesImplicitly) {
+  DiskFile file(path());
   char buffer[8] = {};
   EXPECT_EQ(file.Read(buffer, 8), 5);
   EXPECT_EQ(std::string(buffer, 5), "xabcd");
   EXPECT_FALSE(file.IsOpen());
 }
 
-TEST_F(RawFileTest, WriteOpensAndClosesImplicitly) {
-  RawFileClass file(path());
+TEST_F(DiskFileTest, WriteOpensAndClosesImplicitly) {
+  DiskFile file(path());
   EXPECT_EQ(file.Write("hi", 2), 2);
   EXPECT_FALSE(file.IsOpen());
   EXPECT_EQ(ReadFile(path()), "hi");
 }
 
-TEST_F(RawFileTest, BiasWindowLimitsSizeSeekAndRead) {
-  RawFileClass file(path());
+TEST_F(DiskFileTest, BiasWindowLimitsSizeSeekAndRead) {
+  DiskFile file(path());
   file.Bias(1, 4);
   EXPECT_EQ(file.Size(), 4);
 
@@ -78,8 +78,8 @@ TEST_F(RawFileTest, BiasWindowLimitsSizeSeekAndRead) {
   EXPECT_EQ(file.Seek(-10, SEEK_CUR), 3);
 }
 
-TEST_F(RawFileTest, BiasAccumulatesAndSetNameClearsIt) {
-  RawFileClass file(path());
+TEST_F(DiskFileTest, BiasAccumulatesAndSetNameClearsIt) {
+  DiskFile file(path());
   file.Bias(1, 4);
   file.Bias(1, 2);
   EXPECT_EQ(file.bias_start(), 2);
@@ -90,10 +90,10 @@ TEST_F(RawFileTest, BiasAccumulatesAndSetNameClearsIt) {
   EXPECT_EQ(file.Size(), 5);
 }
 
-TEST_F(RawFileTest, IsAvailableRetriesLowercaseNameAndRenames) {
+TEST_F(DiskFileTest, IsAvailableRetriesLowercaseNameAndRenames) {
   // The retry lowercases the whole name, so it only finds all-lowercase files.
   const std::filesystem::path lower =
-      std::filesystem::temp_directory_path() / "rawfile_test_lowercase.bin";
+      std::filesystem::temp_directory_path() / "disk_file_test_lowercase.bin";
   const std::filesystem::path upper =
       lower.parent_path() / absl::AsciiStrToUpper(lower.filename().string());
   WriteFile(lower, "x");
@@ -102,19 +102,19 @@ TEST_F(RawFileTest, IsAvailableRetriesLowercaseNameAndRenames) {
     GTEST_SKIP() << "case-insensitive filesystem";
   }
 
-  RawFileClass file(upper.string());
+  DiskFile file(upper.string());
   EXPECT_TRUE(file.IsAvailable());
   EXPECT_EQ(file.FileName(), lower.string());
 
   // Open() alone does not retry.
-  RawFileClass direct(upper.string());
+  DiskFile direct(upper.string());
   direct.Open();
   EXPECT_FALSE(direct.IsOpen());
   std::filesystem::remove(lower);
 }
 
-TEST_F(RawFileTest, OpenOfMissingFileReturnsTrueButIsNotOpen) {
-  RawFileClass file(path() + ".missing");
+TEST_F(DiskFileTest, OpenOfMissingFileReturnsTrueButIsNotOpen) {
+  DiskFile file(path() + ".missing");
   EXPECT_TRUE(file.Open());
   EXPECT_FALSE(file.IsOpen());
   EXPECT_FALSE(file.IsAvailable());

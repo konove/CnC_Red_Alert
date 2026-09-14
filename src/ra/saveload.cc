@@ -108,10 +108,10 @@
 #include "tech/blowfish.h"
 #include "tech/blowpipe.h"
 #include "tech/blwstraw.h"
+#include "tech/disk_file.h"
 #include "tech/lzopipe.h"
 #include "tech/lzostraw.h"
 #include "tech/pipe.h"
-#include "tech/rawfile.h"
 #include "tech/shapipe.h"
 #include "tech/shastraw.h"
 #include "tech/straw.h"
@@ -463,7 +463,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   /*
   **	Open the file
   */
-  RawFileClass file(name);
+  DiskFile file(name);
 
   FilePipe fpipe(&file);
 
@@ -520,7 +520,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
 
   // Tee the field-wise body before compression. The dump has Section tags
   // but no save header, encryption, or digest, so it can be compared directly.
-  RawFileClass dump_file;
+  DiskFile dump_file;
   FilePipe dump_pipe(dump_file);
   bool dump_open = false;
   const char* dump_path = std::getenv("RA_SAVE_DUMP");
@@ -613,7 +613,7 @@ bool Load_Game(int id) {
   /*
   **	Open the file
   */
-  RawFileClass file(name);
+  DiskFile file(name);
   if (!file.IsAvailable()) {
     return false;
   }
@@ -1269,7 +1269,7 @@ bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
   **	Generate the filename to load
   */
   sprintf(name, "SAVEGAME.%03d", id);
-  RawFileClass file(name);
+  DiskFile file(name);
 
   FileStraw straw(file);
 

@@ -87,7 +87,7 @@
 bool Expansion_CS_Present() {
   //	ajw 9/29/98
   return Is_Counterstrike_Installed();
-  //	RawFileClass file("EXPAND.MIX");
+  //	DiskFile file("EXPAND.MIX");
   //	return(file.IsAvailable());
 }
 
@@ -107,7 +107,7 @@ bool Expansion_CS_Present() {
 bool Expansion_AM_Present() {
   //	ajw 9/29/98
   return Is_Aftermath_Installed();
-  //	RawFileClass file("EXPAND2.MIX");
+  //	DiskFile file("EXPAND2.MIX");
   //	return(file.IsAvailable());
 }
 

@@ -522,7 +522,7 @@ void VQAClass::Read_Palettes() {
   /*
   ** If the palette file is available the open it
   */
-  PaletteFile = new RawFileClass(PaletteFilename);
+  PaletteFile = new DiskFile(PaletteFilename);
   if (PaletteFile->Is_Available()) {
     PaletteFile->Open(READ);
 
@@ -583,7 +583,7 @@ void VQAClass::Write_Palettes() {
   *one
   */
   if (NumPalettes && !PalettesRead) {
-    PaletteFile = new RawFileClass(PaletteFilename);
+    PaletteFile = new DiskFile(PaletteFilename);
     PaletteFile->Open(WRITE);
 
     /*

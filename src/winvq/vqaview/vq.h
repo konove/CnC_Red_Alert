@@ -126,7 +126,7 @@ class VQAClass {
   BOOL vqa_is_open;
   unsigned char* InterpolatedPalettes[50];  // Max 50 palette changes in a vq
   BOOL PalettesRead;
-  RawFileClass* PaletteFile;
+  DiskFile* PaletteFile;
   unsigned NumPalettes;
 
   /*=========================================================================*/

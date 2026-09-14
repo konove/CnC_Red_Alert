@@ -129,8 +129,8 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "tech/crc.h"
+#include "tech/disk_file.h"
 #include "tech/number_parse.h"
-#include "tech/rawfile.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifdef _WIN32
@@ -2815,7 +2815,7 @@ int Version_Number() {
     /*
     **	Fetch the virgin text file (if present).
     */
-    RawFileClass file("VERSION.TXT");
+    DiskFile file("VERSION.TXT");
     if (file.IsAvailable()) {
       file.Read(VersionText, sizeof(VersionText));
       VersionText[sizeof(VersionText) - 1] = '\0';
@@ -2847,7 +2847,7 @@ int Version_Number() {
   sprintf(VersionText, ".07");  // Win95 USA version number
 #endif                          // FRENCH | GERMAN
 
-  RawFileClass file("VERSION.TXT");
+  DiskFile file("VERSION.TXT");
   char version[16];
   memset(version, 0, sizeof(version));
   if (file.IsAvailable()) {

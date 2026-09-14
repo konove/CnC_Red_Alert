@@ -72,8 +72,8 @@
 #include "sdllib/misc.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "tech/disk_file.h"
 #include "tech/ftimer.h"
-#include "tech/rawfile.h"
 
 static bool Receive_Remote_File(const char* file_name, int file_length,
                                 int gametype);
@@ -316,7 +316,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
     save_file_name = std::string(file_name);
   }
 
-  RawFileClass save_file(save_file_name);
+  DiskFile save_file(save_file_name);
 
   /*
   ** If the file already exists then delete it and re-create it.

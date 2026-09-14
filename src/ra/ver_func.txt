@@ -57,7 +57,7 @@ int Version_Number()
 		/*
 		**	Fetch the virgin text file (if present).
 		*/
-		RawFileClass file("VERSION.TXT");
+		DiskFile file("VERSION.TXT");
 		if (file.Is_Available()) {
 			file.Read(VersionText, sizeof(VersionText));
 			VersionText[sizeof(VersionText)-1] = '\0';

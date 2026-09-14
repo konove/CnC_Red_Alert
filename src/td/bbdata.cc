@@ -48,7 +48,7 @@
 #include "td/externs.h"
 #include "td/jshell.h"
 #include "td/type.h"
-#include "tech/rawfile.h"
+#include "tech/disk_file.h"
 
 /***************************************************************************
 **	Detailed information about each class of bullet (projectile) in the
@@ -590,7 +590,7 @@ void BulletTypeClass::One_Time() {
                                 .replace_extension(".SHP")
                                 .string();
 
-      RawFileClass file(fullname);
+      DiskFile file(fullname);
 
       if (file.IsAvailable()) {
         (const void*&)bullet.ImageData = Load_Alloc_Data(file);

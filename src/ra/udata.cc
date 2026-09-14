@@ -79,7 +79,7 @@
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "sdllib/shape.h"
-#include "tech/rawfile.h"
+#include "tech/disk_file.h"
 
 /*
 **	This is the list of animation stages to use when the harvester
@@ -1072,7 +1072,7 @@ void UnitTypeClass::One_Time() {
     auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
 #ifndef NDEBUG
-    RawFileClass datafile(fullname);
+    DiskFile datafile(fullname);
     if (datafile.IsAvailable()) {
       uclass.CameoData = Load_Alloc_Data(datafile);
     } else {
@@ -1090,7 +1090,7 @@ void UnitTypeClass::One_Time() {
                    .replace_extension(".SHP")
                    .string();
 #ifndef NDEBUG
-    RawFileClass shpfile(fullname);
+    DiskFile shpfile(fullname);
     if (shpfile.IsAvailable()) {
       uclass.SetOwnedImage(LoadAllocData(shpfile));
     } else {

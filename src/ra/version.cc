@@ -58,7 +58,7 @@
 #include "ra/conquer.h"
 #include "ra/externs.h"
 #include "ra/rawolapi.h"
-#include "tech/rawfile.h"
+#include "tech/disk_file.h"
 
 /****************************** Globals ************************************/
 //---------------------------------------------------------------------------
@@ -327,7 +327,7 @@ char* VersionClass::Version_Name() {
  *   10/26/1995 BRR : Created.                                             *
  *=========================================================================*/
 void VersionClass::Read_Text_String() {
-  RawFileClass file("VERSION.TXT");
+  DiskFile file("VERSION.TXT");
 
   if (file.IsAvailable()) {
     file.Read(VersionText, sizeof(VersionText));
@@ -575,7 +575,7 @@ const char* Version_Name() {
     version += "AM";
   }
 
-  RawFileClass file("VERSION.TXT");
+  DiskFile file("VERSION.TXT");
   if (file.IsAvailable()) {
     char file_content[26] = {};
     version += '\r';

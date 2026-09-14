@@ -23,6 +23,6 @@ add_gtest(
     NAME tech_test
     SOURCES 2keyfbuf_test.cc archive_test.cc codec_state_test.cc fixed_test.cc number_parse_test.cc ftimer_test.cc teepipe_test.cc
         blowfish_test.cc codec_corrupt_test.cc lcw_comp_test.cc mixfile_test.cc mp_test.cc
-        packet_test.cc rawfile_test.cc cdfile_test.cc
+        packet_test.cc disk_file_test.cc cdfile_test.cc
     LIBS tech
 )

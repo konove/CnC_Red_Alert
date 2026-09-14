@@ -76,8 +76,8 @@
 #include "td/tcpip.h"
 #include "td/text.h"
 #include "td/textbtn.h"
+#include "tech/disk_file.h"
 #include "tech/number_parse.h"
-#include "tech/rawfile.h"
 
 #ifdef _WIN32
 #include "td/ccdde.h"
@@ -123,7 +123,7 @@ void Check_From_WChat(const char* wchat_name) {
   char default_string[] = {"Error"};
   char key_string[256];
   char* ini_file = nullptr;
-  RawFileClass wchat_file;
+  DiskFile wchat_file;
 
   /*
   ** Get a pointer to C&CSPAWN.INI either by reading it from disk or getting it

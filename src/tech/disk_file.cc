@@ -33,30 +33,30 @@
  *                  Last Update : August 4, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * RawFileClass::Bias -- Bias a file with a specific starting
- *position and length.           * RawFileClass::Close -- Perform a closure of
- *the file.                                     * RawFileClass::Create --
+ * Functions: * DiskFile::Bias -- Bias a file with a specific starting
+ *position and length.           * DiskFile::Close -- Perform a closure of
+ *the file.                                     * DiskFile::Create --
  *Creates an empty file.                                            *
- *   RawFileClass::Delete -- Deletes the file object from the disk. *
- *   RawFileClass::Error -- Handles displaying a file error message. *
- *   RawFileClass::Get_Date_Time -- Gets the date and time the file was last
- *modified.         * RawFileClass::IsAvailable -- Checks to see if the
- *specified file is available to open.   * RawFileClass::Open -- Assigns name
- *and opens file in one operation.                       * RawFileClass::Open --
+ *   DiskFile::Delete -- Deletes the file object from the disk. *
+ *   DiskFile::Error -- Handles displaying a file error message. *
+ *   DiskFile::Get_Date_Time -- Gets the date and time the file was last
+ *modified.         * DiskFile::IsAvailable -- Checks to see if the
+ *specified file is available to open.   * DiskFile::Open -- Assigns name
+ *and opens file in one operation.                       * DiskFile::Open --
  *Opens the file object with the rights specified.                    *
- *   RawFileClass::RawFileClass -- Simple constructor for a file object. *
- *   RawFileClass::RawSeek -- Performs a seek on the unbiased file *
- *   RawFileClass::Read -- Reads the specified number of bytes into a memory
- *buffer.           * RawFileClass::Seek -- Reposition the file pointer as
- *indicated.                           * RawFileClass::Set_Date_Time -- Sets the
- *date and time the file was last modified.         * RawFileClass::SetName --
+ *   DiskFile::DiskFile -- Simple constructor for a file object. *
+ *   DiskFile::RawSeek -- Performs a seek on the unbiased file *
+ *   DiskFile::Read -- Reads the specified number of bytes into a memory
+ *buffer.           * DiskFile::Seek -- Reposition the file pointer as
+ *indicated.                           * DiskFile::Set_Date_Time -- Sets the
+ *date and time the file was last modified.         * DiskFile::SetName --
  *Manually sets the name for a file object.                       *
- *   RawFileClass::Size -- Determines size of file (in bytes). *
- *   RawFileClass::Write -- Writes the specified data to the buffer specified. *
+ *   DiskFile::Size -- Determines size of file (in bytes). *
+ *   DiskFile::Write -- Writes the specified data to the buffer specified. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "tech/rawfile.h"
+#include "tech/disk_file.h"
 
 #include <algorithm>
 #include <cerrno>
@@ -71,7 +71,7 @@
 #include "sdllib/file_access.h"
 
 /***********************************************************************************************
- * RawFileClass::Error -- Handles displaying a file error message. *
+ * DiskFile::Error -- Handles displaying a file error message. *
  *                                                                                             *
  *    Display an error message as indicated. If it is allowed to retry, then
  *pressing a key    * will return from this function. Otherwise, it will exit
@@ -94,11 +94,11 @@
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void RawFileClass::Error(int /*error*/, bool /*canretry*/,
-                         std::string_view /*filename*/) {}
+void DiskFile::Error(int /*error*/, bool /*canretry*/,
+                     std::string_view /*filename*/) {}
 
 /***********************************************************************************************
- * RawFileClass::RawFileClass -- Simple constructor for a file object. *
+ * DiskFile::DiskFile -- Simple constructor for a file object. *
  *                                                                                             *
  *    This constructor is called when a file object is created with a supplied
  *filename, but   * not opened at the same time. In this case, an assumption is
@@ -114,11 +114,10 @@ void RawFileClass::Error(int /*error*/, bool /*canretry*/,
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-RawFileClass::RawFileClass(const std::string_view filename)
-    : filename_(filename) {}
+DiskFile::DiskFile(const std::string_view filename) : filename_(filename) {}
 
 /***********************************************************************************************
- * RawFileClass::SetName -- Manually sets the name for a file object. *
+ * DiskFile::SetName -- Manually sets the name for a file object. *
  *                                                                                             *
  *    This routine will set the name for the file object to the name specified.
  *This name is   * duplicated in free store. This allows the supplied name to be
@@ -134,13 +133,13 @@ RawFileClass::RawFileClass(const std::string_view filename)
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void RawFileClass::SetName(const std::string_view filename) {
+void DiskFile::SetName(const std::string_view filename) {
   Bias(0);
   filename_ = filename;
 }
 
 /***********************************************************************************************
- * RawFileClass::Open -- Assigns name and opens file in one operation. *
+ * DiskFile::Open -- Assigns name and opens file in one operation. *
  *                                                                                             *
  *    This routine will assign the specified filename to the file object and
  *open it at the    * same time. If the file object was already open, then it
@@ -160,13 +159,13 @@ void RawFileClass::SetName(const std::string_view filename) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-bool RawFileClass::Open(const std::string_view filename, FileAccess rights) {
+bool DiskFile::Open(const std::string_view filename, FileAccess rights) {
   SetName(filename);
   return Open(rights);
 }
 
 /***********************************************************************************************
- * RawFileClass::Open -- Opens the file object with the rights specified. *
+ * DiskFile::Open -- Opens the file object with the rights specified. *
  *                                                                                             *
  *    This routine is used to open the specified file object with the access
  *rights indicated. * This only works if the file has already been assigned a
@@ -183,7 +182,7 @@ bool RawFileClass::Open(const std::string_view filename, FileAccess rights) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-bool RawFileClass::Open(FileAccess rights) {
+bool DiskFile::Open(FileAccess rights) {
   Close();
 
   /*
@@ -232,7 +231,7 @@ bool RawFileClass::Open(FileAccess rights) {
 }
 
 /***********************************************************************************************
- * RawFileClass::IsAvailable -- Checks to see if the specified file is
+ * DiskFile::IsAvailable -- Checks to see if the specified file is
  *available to open.     *
  *                                                                                             *
  *    This routine will examine the disk system to see if the specified file can
@@ -249,7 +248,7 @@ bool RawFileClass::Open(FileAccess rights) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-bool RawFileClass::IsAvailable() {
+bool DiskFile::IsAvailable() {
   if (filename_.empty()) {
     return false;
   }
@@ -298,7 +297,7 @@ bool RawFileClass::IsAvailable() {
 }
 
 /***********************************************************************************************
- * RawFileClass::Close -- Perform a closure of the file. *
+ * DiskFile::Close -- Perform a closure of the file. *
  *                                                                                             *
  *    Close the file object. In the rare case of an error, handle it as
  *appropriate.           *
@@ -312,7 +311,7 @@ bool RawFileClass::IsAvailable() {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-void RawFileClass::Close() {
+void DiskFile::Close() {
   /*
   **	If the file is open, then close it. If the file is already closed, then
   *just return. This *	isn't considered an error condition.
@@ -329,7 +328,7 @@ void RawFileClass::Close() {
 }
 
 /***********************************************************************************************
- * RawFileClass::Read -- Reads the specified number of bytes into a memory
+ * DiskFile::Read -- Reads the specified number of bytes into a memory
  *buffer.             *
  *                                                                                             *
  *    This routine will read the specified number of bytes and place the data
@@ -352,7 +351,7 @@ void RawFileClass::Close() {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int32_t RawFileClass::Read(void* buffer, int32_t size) {
+int32_t DiskFile::Read(void* buffer, int32_t size) {
   bool opened_for_this_read = false;
 
   /*
@@ -395,7 +394,7 @@ int32_t RawFileClass::Read(void* buffer, int32_t size) {
 }
 
 /***********************************************************************************************
- * RawFileClass::Write -- Writes the specified data to the buffer specified. *
+ * DiskFile::Write -- Writes the specified data to the buffer specified. *
  *                                                                                             *
  *    This routine will write the data specified to the file. *
  *                                                                                             *
@@ -412,7 +411,7 @@ int32_t RawFileClass::Read(void* buffer, int32_t size) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int32_t RawFileClass::Write(const void* buffer, int32_t size) {
+int32_t DiskFile::Write(const void* buffer, int32_t size) {
   bool opened_for_this_write = false;
 
   /*
@@ -453,7 +452,7 @@ int32_t RawFileClass::Write(const void* buffer, int32_t size) {
 }
 
 /***********************************************************************************************
- * RawFileClass::Seek -- Reposition the file pointer as indicated. *
+ * DiskFile::Seek -- Reposition the file pointer as indicated. *
  *                                                                                             *
  *    Use this routine to move the filepointer to the position indicated. It can
  *move either   * relative to current position or absolute from the beginning or
@@ -474,7 +473,7 @@ int32_t RawFileClass::Write(const void* buffer, int32_t size) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int32_t RawFileClass::Seek(int32_t offset, int origin) {
+int32_t DiskFile::Seek(int32_t offset, int origin) {
   /*
   **	A file that is biased will have a seek operation modified so that the
   *file appears to *	exist only within the bias range. All bytes outside of
@@ -494,7 +493,7 @@ int32_t RawFileClass::Seek(int32_t offset, int origin) {
         origin = SEEK_SET;
         offset += bias_start_ + bias_length_;
         //				offset = (offset <=
-        //bias_start_+bias_length_) ?
+        // bias_start_+bias_length_) ?
         // offset : bias_start_+bias_length_; 				offset =
         // (offset >= bias_start_) ? offset : bias_start_;
         break;
@@ -529,7 +528,7 @@ int32_t RawFileClass::Seek(int32_t offset, int origin) {
 }
 
 /***********************************************************************************************
- * RawFileClass::Size -- Determines size of file (in bytes). *
+ * DiskFile::Size -- Determines size of file (in bytes). *
  *                                                                                             *
  *    Use this routine to determine the size of the file. The file must exist or
  *this is an    * error condition. *
@@ -543,7 +542,7 @@ int32_t RawFileClass::Seek(int32_t offset, int origin) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int32_t RawFileClass::Size() {
+int32_t DiskFile::Size() {
   int32_t size = 0;
 
   /*
@@ -579,7 +578,7 @@ int32_t RawFileClass::Size() {
 }
 
 /***********************************************************************************************
- * RawFileClass::Create -- Creates an empty file. *
+ * DiskFile::Create -- Creates an empty file. *
  *                                                                                             *
  *    This routine will create an empty file from the file object. The file
  *object's filename  * must already have been assigned before this routine will
@@ -595,7 +594,7 @@ int32_t RawFileClass::Size() {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-bool RawFileClass::Create() {
+bool DiskFile::Create() {
   Close();
   if (Open(FileAccess::kWrite)) {
     /*
@@ -614,7 +613,7 @@ bool RawFileClass::Create() {
 }
 
 /***********************************************************************************************
- * RawFileClass::Delete -- Deletes the file object from the disk. *
+ * DiskFile::Delete -- Deletes the file object from the disk. *
  *                                                                                             *
  *    This routine will delete the file object from the disk. If the file object
  *doesn't       * exist, then this routine will return as if it had succeeded
@@ -629,7 +628,7 @@ bool RawFileClass::Create() {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-bool RawFileClass::Delete() {
+bool DiskFile::Delete() {
   /*
   **	If the file was open, then it must be closed first.
   */
@@ -673,7 +672,7 @@ bool RawFileClass::Delete() {
 }
 
 /***********************************************************************************************
- * RawFileClass::Bias -- Bias a file with a specific starting position and
+ * DiskFile::Bias -- Bias a file with a specific starting position and
  *length.             *
  *                                                                                             *
  *    This will bias a file by giving it an artificial starting position and
@@ -694,14 +693,14 @@ bool RawFileClass::Delete() {
  *                                                                                             *
  * HISTORY: * 06/02/1996 JLB : Created. *
  *=============================================================================================*/
-void RawFileClass::Bias(int start, int length) {
+void DiskFile::Bias(int start, int length) {
   if (start == 0) {
     bias_start_ = 0;
     bias_length_ = -1;
     return;
   }
 
-  bias_length_ = RawFileClass::Size();
+  bias_length_ = DiskFile::Size();
   bias_start_ += start;
   if (length != -1) {
     bias_length_ = bias_length_ < length ? bias_length_ : length;
@@ -713,12 +712,12 @@ void RawFileClass::Bias(int start, int length) {
   **	file was open.
   */
   if (IsOpen()) {
-    RawFileClass::Seek(0, SEEK_SET);
+    DiskFile::Seek(0, SEEK_SET);
   }
 }
 
 /***********************************************************************************************
- * RawFileClass::RawSeek -- Performs a seek on the unbiased file *
+ * DiskFile::RawSeek -- Performs a seek on the unbiased file *
  *                                                                                             *
  *    This will perform a seek on the file as if it were unbiased. This is in
  *spite of any     * bias setting the file may have. The ability to perform a
@@ -735,7 +734,7 @@ void RawFileClass::Bias(int start, int length) {
  *                                                                                             *
  * HISTORY: * 08/04/1996 JLB : Created. *
  *=============================================================================================*/
-int32_t RawFileClass::RawSeek(int32_t offset, int origin) {
+int32_t DiskFile::RawSeek(int32_t offset, int origin) {
   /*
   **	If the file isn't opened, then this is a fatal error condition.
   */

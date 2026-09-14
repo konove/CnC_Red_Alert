@@ -154,9 +154,9 @@
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "tech/disk_file.h"
 #include "tech/ftimer.h"
 #include "tech/number_parse.h"
-#include "tech/rawfile.h"
 
 static void Remove_AI_Players();
 static void Create_Units(bool official);
@@ -2293,7 +2293,7 @@ void Write_Scenario_INI(const char* fname) {
       ini.Put_TextBlock("Briefing", Scen.BriefingText);
     }
     //	sprintf(fname, "%s.INI", root);
-    RawFileClass rawfile(fname);
+    DiskFile rawfile(fname);
     ini.Save(rawfile, true);
   }
 }

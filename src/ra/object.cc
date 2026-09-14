@@ -157,8 +157,8 @@
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
 #include "session.h"
+#include "tech/disk_file.h"
 #include "tech/fixed.h"
-#include "tech/rawfile.h"
 
 /*
 **	Selected objects have a special marking box around them. This is the
@@ -2069,7 +2069,7 @@ void ObjectTypeClass::One_Time() {
   SelectShapes = MFCD::Retrieve("SELECT.SHP");
 
 #ifndef NDEBUG
-  RawFileClass file("PIPS.SHP");
+  DiskFile file("PIPS.SHP");
   if (file.IsAvailable()) {
     PipShapes = Load_Alloc_Data(file);
   } else {

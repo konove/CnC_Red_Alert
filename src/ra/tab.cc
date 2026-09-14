@@ -61,8 +61,8 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/shape.h"
 #include "sdllib/wwstd.h"
+#include "tech/disk_file.h"
 #include "tech/fixed.h"
-#include "tech/rawfile.h"
 
 const void* TabClass::TabShape = nullptr;
 
@@ -288,7 +288,7 @@ void TabClass::Set_Active(int select) {
  *=============================================================================================*/
 void TabClass::One_Time() {
   SidebarClass::One_Time();
-  const RawFileClass file("tabs.shp");
+  const DiskFile file("tabs.shp");
   TabShape = MFCD::Retrieve("TABS.SHP");
 }
 

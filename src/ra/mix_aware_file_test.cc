@@ -22,7 +22,7 @@
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
 #include "tech/crc.h"
-#include "tech/rawfile.h"
+#include "tech/disk_file.h"
 
 // The real definitions live in the game, which would drag all of it in. The
 // CD is always present, so MixAwareFile::Error() always returns.

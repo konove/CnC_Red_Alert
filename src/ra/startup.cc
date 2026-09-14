@@ -83,8 +83,8 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "tech/cdfile.h"
+#include "tech/disk_file.h"
 #include "tech/number_parse.h"
-#include "tech/rawfile.h"
 
 #ifdef _WIN32
 #include <direct.h>  //chdir
@@ -100,7 +100,7 @@ extern bool RA95AlreadyRunning;
 #ifdef _WIN32
 HINSTANCE ProgramInstance;
 #endif
-static void Read_Setup_Options(RawFileClass* config_file);
+static void Read_Setup_Options(DiskFile* config_file);
 
 /***********************************************************************************************
  * main -- Initial startup routine (preps library systems). *
@@ -248,7 +248,7 @@ int main(int argc, char* argv[])
 
   if (Parse_Command_Line(argc, argv)) {
     InitTickTimer();
-    RawFileClass cfile(kConfigFileName);
+    DiskFile cfile(kConfigFileName);
 
     Keyboard = new KeyboardClass();
 
@@ -552,7 +552,7 @@ void Print_Error_Exit(char* string) {
  *                                                                                             *
  * HISTORY: * 6/7/96 4:09PM ST : Created * 09/30/1996 JLB : Uses INI class. *
  *=============================================================================================*/
-void Read_Setup_Options(RawFileClass* config_file) {
+void Read_Setup_Options(DiskFile* config_file) {
   if (config_file->IsAvailable()) {
     INIClass ini;
 

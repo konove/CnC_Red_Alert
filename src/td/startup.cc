@@ -59,8 +59,8 @@
 #include "td/ipxmgr.h"
 #include "td/nullmgr.h"
 #include "td/profile.h"
+#include "tech/disk_file.h"
 #include "tech/number_parse.h"
-#include "tech/rawfile.h"
 
 // The two tests that link this file define TD_NO_ENTRY_POINT; these headers
 // serve only main().
@@ -97,7 +97,7 @@ void Delete_Swap_Files();
 [[maybe_unused]] [[noreturn]] static void Print_Error_End_Exit(char* string);
 [[maybe_unused]] [[noreturn]] static void Print_Error_Exit(char* string);
 
-[[maybe_unused]] static void Read_Setup_Options(RawFileClass* config_file);
+[[maybe_unused]] static void Read_Setup_Options(DiskFile* config_file);
 
 bool SpawnedFromWChat = false;
 
@@ -240,7 +240,7 @@ int main(int argc, char* argv[])
     InitTickTimer();
     TickCount.Start();
 
-    RawFileClass cfile("CONQUER.INI");
+    DiskFile cfile("CONQUER.INI");
 
     /*
     ** If there is loads of memory then use uncompressed shapes
@@ -531,7 +531,7 @@ void Print_Error_Exit(char* string) {
  *                                                                                             *
  * HISTORY: * 6/7/96 4:09PM ST : Created *
  *=============================================================================================*/
-void Read_Setup_Options(RawFileClass* config_file) {
+void Read_Setup_Options(DiskFile* config_file) {
   char* buffer = new char[base::ToSize(config_file->Size() + 1)];
   buffer[config_file->Size()] = 0;
 
