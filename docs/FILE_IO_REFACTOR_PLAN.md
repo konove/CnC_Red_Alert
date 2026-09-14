@@ -9,7 +9,9 @@
 - Pinned quirks worth knowing: a `RawFileClass` seek to before the start of the file leaves the
   position unchanged, whereas a resident `MixAwareFile` clamps to 0; the lowercase retry lowercases
   the whole path, so it only finds all-lowercase files.
-- Next: step 1.
+- Step 1 is complete (`aadf673c` BufferIOFileClass removed, `1bc0ec62` dead interface removed,
+  `d593a6e1` read-write open no longer truncates). Smoke baselines unchanged.
+- Next: step 2.
 
 ## Context
 
