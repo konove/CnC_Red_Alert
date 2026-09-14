@@ -17,14 +17,8 @@
 #include "sdllib/file_access.h"
 #include "tech/byte_stream.h"
 #include "tech/file.h"
-#include "tech/mixfile.h"
+#include "tech/mix_archive.h"
 #include "tech/search_paths.h"
-
-namespace {
-
-using MixArchive = MixFileClass<GameFile>;
-
-}  // namespace
 
 std::unique_ptr<ByteStream> GameFile::OpenStream(const std::string_view name,
                                                  const FileAccess rights) {

@@ -68,6 +68,7 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 
 // #define CS_DEBUG
 
@@ -333,8 +334,9 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
                          OPTION_Y + OPTION_HEIGHT - 50);
 
   EListClass list(202, OPTION_X + 35, OPTION_Y + 30, OPTION_WIDTH - 70,
-                  OPTION_HEIGHT - 85, kTpfButton, MFCD::Retrieve("BTN-UP.SHP"),
-                  MFCD::Retrieve("BTN-DN.SHP"));
+                  OPTION_HEIGHT - 85, kTpfButton,
+                  MixArchive::Retrieve("BTN-UP.SHP"),
+                  MixArchive::Retrieve("BTN-DN.SHP"));
   buttons = &ok;
   cancel.Add(*buttons);
   list.Add(*buttons);

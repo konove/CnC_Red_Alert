@@ -17,12 +17,10 @@
 #include "gtest/gtest.h"
 #include "tech/crc.h"
 #include "tech/file.h"
-#include "tech/mixfile.h"
+#include "tech/mix_archive.h"
 #include "tech/search_paths.h"
 
 namespace {
-
-using MFCD = MixFileClass<GameFile>;
 
 // Names of the file packed in the test mixfile and of the mixfile packed inside
 // the outer one for the nesting tests. Unusual enough that no loose file by
@@ -81,11 +79,11 @@ class GameFileTest : public ::testing::Test {
     search_dir_ = std::filesystem::temp_directory_path() /
                   ("game_file_test_" + test_name + ".dir");
     WriteFile(mix_path_, MixImage());
-    ASSERT_NE(MFCD::Register(mix_path_.string()), nullptr);
+    ASSERT_NE(MixArchive::Register(mix_path_.string()), nullptr);
   }
 
   void TearDown() override {
-    MFCD::Free_All();
+    MixArchive::Free_All();
     SearchPaths::Clear();
     std::filesystem::remove(mix_path_);
     std::filesystem::remove(loose_path_);
@@ -95,17 +93,17 @@ class GameFileTest : public ::testing::Test {
   // Cache() finds mixfiles by basename, not by the path they were registered
   // under.
   void CacheMixfile() const {
-    ASSERT_TRUE(MFCD::Cache(mix_path_.filename().string()));
+    ASSERT_TRUE(MixArchive::Cache(mix_path_.filename().string()));
   }
 
   // Replaces the flat fixture with the test mixfile packed inside an outer
   // mixfile on disk, registered as kInnerName through the outer one. Neither
   // is cached afterwards.
   void RegisterNestedMixfiles() {
-    MFCD::Free_All();
+    MixArchive::Free_All();
     WriteFile(mix_path_, MixImageHolding(kInnerName, MixImage()));
-    ASSERT_NE(MFCD::Register(mix_path_.string()), nullptr);
-    ASSERT_NE(MFCD::Register(kInnerName), nullptr);
+    ASSERT_NE(MixArchive::Register(mix_path_.string()), nullptr);
+    ASSERT_NE(MixArchive::Register(kInnerName), nullptr);
   }
 
   // Puts a loose copy of kPackedName holding bytes on the search path.
@@ -194,7 +192,7 @@ TEST_F(GameFileTest, UncachedMixfileInsideUncachedMixfileReadsItsBytes) {
 
 TEST_F(GameFileTest, CachedMixfileInsideUncachedMixfileReadsItsBytes) {
   RegisterNestedMixfiles();
-  ASSERT_TRUE(MFCD::Cache(kInnerName));
+  ASSERT_TRUE(MixArchive::Cache(kInnerName));
   GameFile file(kPackedName);
   ASSERT_TRUE(file.Open());
 

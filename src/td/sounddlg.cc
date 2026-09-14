@@ -66,6 +66,7 @@
 #include "td/textbtn.h"
 #include "td/theme.h"
 #include "td/vector.h"
+#include "tech/mix_archive.h"
 
 class MusicListClass : public ListClass {
  public:
@@ -176,7 +177,7 @@ void SoundControlsClass::Process() {
   } else {
     strcpy(filename, "BTN-STH.SHP");
   }
-  ShapeButtonClass stopbtn(BUTTON_STOP, MFCD::Retrieve(filename),
+  ShapeButtonClass stopbtn(BUTTON_STOP, MixArchive::Retrieve(filename),
                            Option_X + Stop_X, Option_Y + Stop_Y);
 
   /*
@@ -188,7 +189,7 @@ void SoundControlsClass::Process() {
     strcpy(filename, "BTN-PLH.SHP");
   }
 
-  ShapeButtonClass playbtn(BUTTON_PLAY, MFCD::Retrieve(filename),
+  ShapeButtonClass playbtn(BUTTON_PLAY, MixArchive::Retrieve(filename),
                            Option_X + Play_X, Option_Y + Play_Y);
 
   /*

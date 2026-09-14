@@ -88,6 +88,7 @@
 #include "td/special.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "tech/mix_archive.h"
 
 #define MCW MAP_CELL_W
 
@@ -3708,7 +3709,7 @@ void BuildingTypeClass::One_Time() {
       }
       const auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
-      (const void*&)building.CameoData = MFCD::Retrieve(fullname);
+      (const void*&)building.CameoData = MixArchive::Retrieve(fullname);
     }
 
     /*
@@ -3717,7 +3718,7 @@ void BuildingTypeClass::One_Time() {
     const std::string filename = std::string(building.IniName) + "MAKE";
     auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    const void* dataptr = MFCD::Retrieve(fullname);
+    const void* dataptr = MixArchive::Retrieve(fullname);
     (const void*&)building.BuildupData = dataptr;
     if (dataptr) {
       int timedelay = 1;
@@ -3734,11 +3735,11 @@ void BuildingTypeClass::One_Time() {
     fullname = std::filesystem::path(building.IniName)
                    .replace_extension(".SHP")
                    .string();
-    (const void*&)building.ImageData = MFCD::Retrieve(fullname);
+    (const void*&)building.ImageData = MixArchive::Retrieve(fullname);
   }
 
   // Try to load weap2.shp
-  WarFactoryOverlay = MFCD::Retrieve("WEAP2.SHP");
+  WarFactoryOverlay = MixArchive::Retrieve("WEAP2.SHP");
 
   /*
   **	Install all the special animation sequences for the different building
@@ -4056,7 +4057,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
         const auto fullname = std::filesystem::path(classptr->IniName)
                                   .replace_extension(Theaters[theater].Suffix)
                                   .string();
-        (const void*&)classptr->ImageData = MFCD::Retrieve(fullname);
+        (const void*&)classptr->ImageData = MixArchive::Retrieve(fullname);
       }
 
       if (Get_Resolution_Factor()) {
@@ -4070,7 +4071,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
                                   .replace_extension(Theaters[theater].Suffix)
                                   .string();
 
-        cameo_ptr = MFCD::Retrieve(fullname);
+        cameo_ptr = MixArchive::Retrieve(fullname);
         if (cameo_ptr) {
           (const void*&)classptr->CameoData = cameo_ptr;
         }

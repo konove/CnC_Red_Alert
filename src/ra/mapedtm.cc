@@ -67,6 +67,7 @@
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
 #include "tech/ftimer.h"
+#include "tech/mix_archive.h"
 
 /***************************************************************************
  * MapEditClass::Handle_Teams -- main team-dialog-handling function        *
@@ -268,8 +269,8 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
 
   TListClass<CCPtr<TeamTypeClass> > teamlist(
       TEAM_LIST, D_LIST_X, D_LIST_Y, D_LIST_W, D_LIST_H,
-      TPF_EFNT | TPF_NOSHADOW, MFCD::Retrieve("EBTN-UP.SHP"),
-      MFCD::Retrieve("EBTN-DN.SHP"));
+      TPF_EFNT | TPF_NOSHADOW, MixArchive::Retrieve("EBTN-UP.SHP"),
+      MixArchive::Retrieve("EBTN-DN.SHP"));
 
   TextButtonClass editbtn(BUTTON_EDIT, "Edit", kTpfEButton, D_EDIT_X, D_EDIT_Y,
                           D_EDIT_W);

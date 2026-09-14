@@ -81,6 +81,7 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/ftimer.h"
+#include "tech/mix_archive.h"
 #include "tech/readline.h"
 
 #ifdef _WIN32
@@ -238,8 +239,9 @@ bool LoadOptionsClass::Process() {
                             d_cancel_y, d_cancel_w);
 
   ListClass listbtn(BUTTON_LIST, d_list_x, d_list_y, d_list_w, list_ht,
-                    TPF_6PT_GRAD | TPF_NOSHADOW, MFCD::Retrieve("BTN-UP.SHP"),
-                    MFCD::Retrieve("BTN-DN.SHP"));
+                    TPF_6PT_GRAD | TPF_NOSHADOW,
+                    MixArchive::Retrieve("BTN-UP.SHP"),
+                    MixArchive::Retrieve("BTN-DN.SHP"));
 
   EditClass editbtn(BUTTON_EDIT, game_descr, sizeof(game_descr) - 4,
                     TPF_6PT_GRAD | TPF_NOSHADOW, d_edit_x, d_edit_y, d_edit_w,

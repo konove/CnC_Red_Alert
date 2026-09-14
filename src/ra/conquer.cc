@@ -135,6 +135,7 @@
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 #include "tech/rect.h"
 #include "tech/rgb.h"
 #include "tech/search_paths.h"
@@ -3096,16 +3097,16 @@ bool Force_CD_Available(int cd_desired)  // ajw
     delete ScoreMix;
     delete MainMix;
 
-    MainMix = MFCD::Register("MAIN.MIX", &FastKey, &CryptRandom);
+    MainMix = MixArchive::Register("MAIN.MIX", &FastKey, &CryptRandom);
     assert(MainMix != nullptr);
     if (GameFile("MOVIES1.MIX").IsAvailable()) {
-      MoviesMix = MFCD::Register("MOVIES1.MIX", &FastKey, &CryptRandom);
+      MoviesMix = MixArchive::Register("MOVIES1.MIX", &FastKey, &CryptRandom);
     } else {
-      MoviesMix = MFCD::Register("MOVIES2.MIX", &FastKey, &CryptRandom);
+      MoviesMix = MixArchive::Register("MOVIES2.MIX", &FastKey, &CryptRandom);
     }
     assert(MoviesMix != nullptr);
-    GeneralMix = MFCD::Register("GENERAL.MIX", &FastKey, &CryptRandom);
-    ScoreMix = MFCD::Register("SCORES.MIX", &FastKey, &CryptRandom);
+    GeneralMix = MixArchive::Register("GENERAL.MIX", &FastKey, &CryptRandom);
+    ScoreMix = MixArchive::Register("SCORES.MIX", &FastKey, &CryptRandom);
     ThemeClass::Scan();
   }
 

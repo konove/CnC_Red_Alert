@@ -95,6 +95,7 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
+#include "tech/mix_archive.h"
 
 /***************************************************************************
  * MapEditClass::Placement_Dialog -- adds an object to the scenario        *
@@ -278,9 +279,9 @@ int MapEditClass::Placement_Dialog() {
   */
   ControlClass* commands;
 
-  ListClass housebtn(BUTTON_HOUSE, D_GDI_X, D_GDI_Y, 60, 8 * 16,
-                     TPF_EFNT | TPF_NOSHADOW, MFCD::Retrieve("EBTN-UP.SHP"),
-                     MFCD::Retrieve("EBTN-DN.SHP"));
+  ListClass housebtn(
+      BUTTON_HOUSE, D_GDI_X, D_GDI_Y, 60, 8 * 16, TPF_EFNT | TPF_NOSHADOW,
+      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
   for (const HousesType each_house : magic_enum::enum_values<HousesType>()) {
     housebtn.Add_Item(HouseTypeClass::As_Reference(each_house).IniName);
   }

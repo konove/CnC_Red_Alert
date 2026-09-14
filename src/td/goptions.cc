@@ -80,6 +80,7 @@
 #include "td/textbtn.h"
 #include "td/theme.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 
 void GameOptionsClass::Adjust_Variables_For_Resolution() {
   const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
@@ -628,10 +629,11 @@ void Draw_Caption(int text, int x, int y, int w) {
   **	Draw the filigree at the corners of the dialog.
   */
   if (option != OPTION_NONE) {
-    CC_Draw_Shape(MFCD::Retrieve("OPTIONS.SHP"), option, x + 12, y + 11,
+    CC_Draw_Shape(MixArchive::Retrieve("OPTIONS.SHP"), option, x + 12, y + 11,
                   WINDOW_MAIN, SHAPE_CENTER);
-    CC_Draw_Shape(MFCD::Retrieve("OPTIONS.SHP"), static_cast<int>(option) + 1,
-                  x + w - 14, y + 11, WINDOW_MAIN, SHAPE_CENTER);
+    CC_Draw_Shape(MixArchive::Retrieve("OPTIONS.SHP"),
+                  static_cast<int>(option) + 1, x + w - 14, y + 11, WINDOW_MAIN,
+                  SHAPE_CENTER);
   }
 
   /*

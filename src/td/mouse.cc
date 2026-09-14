@@ -53,10 +53,10 @@
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/jshell.h"
 #include "td/scroll.h"
 #include "tech/disk_file.h"
+#include "tech/mix_archive.h"
 
 /*
 **	This points to the loaded mouse shapes.
@@ -286,7 +286,7 @@ void MouseClass::One_Time() {
   if (file.IsAvailable()) {
     MouseShapes = Load_Alloc_Data(file);
   } else {
-    MouseShapes = MFCD::Retrieve("MOUSE.SHP");
+    MouseShapes = MixArchive::Retrieve("MOUSE.SHP");
   }
 }
 

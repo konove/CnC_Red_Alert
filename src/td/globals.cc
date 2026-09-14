@@ -94,6 +94,7 @@
 #include "td/unit.h"
 #include "td/vector.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifdef JAPANESE
@@ -291,12 +292,12 @@ bool GameInFocus;
 /***************************************************************************
 **	This holds the theater specific mixfiles.
 */
-MFCD* TheaterData = nullptr;
-MFCD* TheaterIcons = nullptr;
-MFCD* LowTheaterData;
-MFCD* MoviesMix = nullptr;
-MFCD* GeneralMix = nullptr;
-MFCD* ScoreMix = nullptr;
+MixArchive* TheaterData = nullptr;
+MixArchive* TheaterIcons = nullptr;
+MixArchive* LowTheaterData;
+MixArchive* MoviesMix = nullptr;
+MixArchive* GeneralMix = nullptr;
+MixArchive* ScoreMix = nullptr;
 
 /***************************************************************************
 **	This is the options control class. The options control such things as

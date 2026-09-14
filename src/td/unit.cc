@@ -160,6 +160,7 @@
 #include "td/type.h"
 #include "td/utracker.h"
 #include "td/vector.h"
+#include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 
 /*
@@ -2119,7 +2120,8 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
   *else.
   */
   if (Flagged != HOUSE_NONE) {
-    CC_Draw_Shape(MFCD::Retrieve("FLAGFLY.SHP"), static_cast<int>(Frame % 14), x, y, window,
+    CC_Draw_Shape(MixArchive::Retrieve("FLAGFLY.SHP"),
+                  static_cast<int>(Frame % 14), x, y, window,
                   SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
                   HouseClass::As_Pointer(Flagged)->Remap_Table(false, false),
                   MouseClass::UnitShadow);

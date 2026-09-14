@@ -126,6 +126,7 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/disk_file.h"
+#include "tech/mix_archive.h"
 
 // void const * RadarClass::CoverShape;
 RadarClass::RTacticalClass RadarClass::RadarButton;
@@ -409,32 +410,32 @@ void RadarClass::Draw_It(bool forced) {
     if (file.IsAvailable()) {
       RadarAnim = Load_Alloc_Data(file);
     } else {
-      RadarAnim = MFCD::Retrieve(name);
+      RadarAnim = MixArchive::Retrieve(name);
     }
     port::SafeCopy(name, "PULSE.SHP");
     DiskFile file2(name);
     if (file2.IsAvailable()) {
       RadarPulse = Load_Alloc_Data(file2);
     } else {
-      RadarPulse = MFCD::Retrieve(name);
+      RadarPulse = MixArchive::Retrieve(name);
     }
     port::SafeCopy(name, _frames[PlayerPtr->ActLike]);
     DiskFile file3(name);
     if (file3.IsAvailable()) {
       RadarFrame = Load_Alloc_Data(file3);
     } else {
-      RadarFrame = MFCD::Retrieve(_frames[PlayerPtr->ActLike]);
+      RadarFrame = MixArchive::Retrieve(_frames[PlayerPtr->ActLike]);
     }
 #else
-    RadarAnim = MFCD::Retrieve(name);
+    RadarAnim = MixArchive::Retrieve(name);
     port::SafeCopy(name, "PULSE.SHP");
     DiskFile file3(name);
     if (file3.IsAvailable()) {
       RadarPulse = Load_Alloc_Data(file3);
     } else {
-      RadarPulse = MFCD::Retrieve(name);
+      RadarPulse = MixArchive::Retrieve(name);
     }
-    RadarFrame = MFCD::Retrieve(_frames[PlayerPtr->ActLike]);
+    RadarFrame = MixArchive::Retrieve(_frames[PlayerPtr->ActLike]);
 #endif
     _house = PlayerPtr->ActLike;
   }

@@ -130,6 +130,7 @@
 #include "tech/crc.h"
 #include "tech/disk_file.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 #include "tech/search_paths.h"
 #include "winvq/vqa32/vqaplay.h"
@@ -231,23 +232,23 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   */
   DLOG(INFO) << "C&C95 - About to register CCLOCAL.MIX";
 #ifdef DEMO
-  (void)MFCD::Register("DEMOL.MIX");
-  MFCD::Cache("DEMOL.MIX");
+  (void)MixArchive::Register("DEMOL.MIX");
+  MixArchive::Cache("DEMOL.MIX");
 #else
   const int temp = RequiredCD;
   RequiredCD = -2;
 
-  (void)MFCD::Register("CCLOCAL.MIX");
-  MFCD::Cache("CCLOCAL.MIX");
+  (void)MixArchive::Register("CCLOCAL.MIX");
+  MixArchive::Cache("CCLOCAL.MIX");
   DLOG(INFO) << "C&C95 - About to register UPDATE.MIX";
-  (void)MFCD::Register("UPDATE.MIX");
+  (void)MixArchive::Register("UPDATE.MIX");
   DLOG(INFO) << "C&C95 - About to register UPDATEC.MIX";
-  (void)MFCD::Register("UPDATEC.MIX");
-  MFCD::Cache("UPDATEC.MIX");
+  (void)MixArchive::Register("UPDATEC.MIX");
+  MixArchive::Cache("UPDATEC.MIX");
 
 #ifdef JAPANESE
   DLOG(INFO) << "C&C95 - About to register LANGUAGE.MIX";
-  (void)MFCD::Register("LANGUAGE.MIX");
+  (void)MixArchive::Register("LANGUAGE.MIX");
 #endif  // JAPANESE
 
   RequiredCD = temp;
@@ -260,20 +261,20 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   Green12GradFontPtr = Load_Alloc_Data(f);
   f.Open("8FAT.FNT");
   MapFontPtr = Load_Alloc_Data(f);
-  Font8Ptr = MFCD::Retrieve(FONT8);
+  Font8Ptr = MixArchive::Retrieve(FONT8);
   FontPtr = (char*)Font8Ptr;
   Set_Font(FontPtr);
-  Font3Ptr = MFCD::Retrieve(FONT3);
-  //	Font6Ptr = MFCD::Retrieve(FONT6);
+  Font3Ptr = MixArchive::Retrieve(FONT3);
+  //	Font6Ptr = MixArchive::Retrieve(FONT6);
   f.Open("6POINT.FNT");
   Font6Ptr = Load_Alloc_Data(f);
-  // ScoreFontPtr = MFCD::Retrieve("12GRNGRD.FNT");	//GRAD12FN");
+  // ScoreFontPtr = MixArchive::Retrieve("12GRNGRD.FNT");	//GRAD12FN");
   // //("SCOREFNT.FNT");
   f.Open("12GRNGRD.FNT");
   ScoreFontPtr = Load_Alloc_Data(f);
-  FontLEDPtr = MFCD::Retrieve("LED.FNT");
-  VCRFontPtr = MFCD::Retrieve("VCR.FNT");
-  //	GradFont6Ptr = MFCD::Retrieve("GRAD6FNT.FNT");
+  FontLEDPtr = MixArchive::Retrieve("LED.FNT");
+  VCRFontPtr = MixArchive::Retrieve("VCR.FNT");
+  //	GradFont6Ptr = MixArchive::Retrieve("GRAD6FNT.FNT");
   f.Open("GRAD6FNT.FNT");
   GradFont6Ptr = Load_Alloc_Data(f);
   BlackPalette = new unsigned char[768]();
@@ -302,7 +303,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   ** to set one of our own.
   */
   if (MouseInstalled) {
-    temp_mouse_shapes = MFCD::Retrieve("MOUSE.SHP");
+    temp_mouse_shapes = MixArchive::Retrieve("MOUSE.SHP");
     if (temp_mouse_shapes) {
       Set_Mouse_Cursor(0, 0, Extract_Shape(temp_mouse_shapes, 0));
       while (Get_Mouse_State() > 1) {
@@ -322,7 +323,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   AllSurfaces.SurfacesRestored = false;
 
   DLOG(INFO) << "C&C95 - About to load the language file";
-  SystemStrings = MFCD::RetrieveData(Language_Name("CONQUER"));
+  SystemStrings = MixArchive::RetrieveData(Language_Name("CONQUER"));
 
   /*
   **	Default palette initialization. Uses the desert palette for convenience,
@@ -438,25 +439,25 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
         continue;
       }
 
-      (void)MFCD::Register(state.name);
-      MFCD::Cache(state.name);
+      (void)MixArchive::Register(state.name);
+      MixArchive::Cache(state.name);
     } while (Find_Next_File(state));
   }
   if (Find_First_File("SS*.MIX", state)) {
     do {
-      (void)MFCD::Register(state.name);
+      (void)MixArchive::Register(state.name);
     } while (Find_Next_File(state));
   }
 #endif  // DEMO
 
   DLOG(INFO) << "C&C95 - About to register GENERAL.MIX";
-  MFCD::Unregister("GENERAL.MIX");
-  GeneralMix = MFCD::Register("GENERAL.MIX");
+  MixArchive::Unregister("GENERAL.MIX");
+  GeneralMix = MixArchive::Register("GENERAL.MIX");
 
   //	if (!_dos_findfirst("SC*.MIX", _A_NORMAL, &ff)) {
   //		do {
   //			new MixFileClass(ff.name);
-  //			MFCD::Cache(ff.name);
+  //			MixArchive::Cache(ff.name);
   //		} while(!_dos_findnext(&ff));
   //	}
 
@@ -464,10 +465,10 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   **	Inform the file system of the various MIX files.
   */
 #ifdef DEMO
-  (void)MFCD::Register("DEMO.MIX");
+  (void)MixArchive::Register("DEMO.MIX");
   if (GameFile("DEMOM.MIX").IsAvailable()) {
     if (!MoviesMix) {
-      MoviesMix = MFCD::Register("DEMOM.MIX");
+      MoviesMix = MixArchive::Register("DEMOM.MIX");
     }
     ScoresPresent = true;
     ThemeClass::Scan();
@@ -475,20 +476,20 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
 
 #else
   DLOG(INFO) << "C&C95 - About to register CONQUER.MIX";
-  (void)MFCD::Register("CONQUER.MIX");
+  (void)MixArchive::Register("CONQUER.MIX");
   DLOG(INFO) << "C&C95 - About to register TRANSIT.MIX";
-  (void)MFCD::Register("TRANSIT.MIX");
+  (void)MixArchive::Register("TRANSIT.MIX");
 
   DLOG(INFO) << "C&C95 - About to register GENERAL.MIX";
   if (!GeneralMix) {
-    GeneralMix = MFCD::Register("GENERAL.MIX");  // Never cached.
+    GeneralMix = MixArchive::Register("GENERAL.MIX");  // Never cached.
   }
 
   //	if (GameFile("MOVIES.MIX").IsAvailable()) {
   DLOG(INFO) << "C&C95 - About to register MOVIES.MIX";
   if (!MoviesMix) {
-    MoviesMix = MFCD::Register("MOVIES.MIX");  // Never cached.
-                                               //	}
+    MoviesMix = MixArchive::Register("MOVIES.MIX");  // Never cached.
+                                                     //	}
   }
 
   /*
@@ -499,7 +500,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   //	if (GameFile("SCORES.MIX").IsAvailable()) {
   ScoresPresent = true;
   if (!ScoreMix) {
-    ScoreMix = MFCD::Register("SCORES.MIX");
+    ScoreMix = MixArchive::Register("SCORES.MIX");
     ThemeClass::Scan();
   }
 //	}
@@ -511,10 +512,10 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   */
   DLOG(INFO) << "C&C95 - About to register SPEECH.MIX";
   if (GameFile("SPEECH.MIX").IsAvailable()) {
-    (void)MFCD::Register("SPEECH.MIX");  // Never cached.
+    (void)MixArchive::Register("SPEECH.MIX");  // Never cached.
   }
   DLOG(INFO) << "C&C95 - About to register SOUNDS.MIX";
-  (void)MFCD::Register("SOUNDS.MIX");
+  (void)MixArchive::Register("SOUNDS.MIX");
 
   /*
   **	Initialize the animation system.
@@ -560,18 +561,18 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   // FreeLibrary(hCCLibrary);
 
 #ifdef DEMO
-  MFCD::Cache("DEMO.MIX");
-  MFCD::Cache("SOUNDS.MIX");
+  MixArchive::Cache("DEMO.MIX");
+  MixArchive::Cache("SOUNDS.MIX");
 #else
   /*
   **	Cache the main game data. This operation can take a very long time.
   */
-  MFCD::Cache("CONQUER.MIX");
+  MixArchive::Cache("CONQUER.MIX");
   if (SampleType != 0 && !Debug_Quiet) {
-    MFCD::Cache("SOUNDS.MIX");
+    MixArchive::Cache("SOUNDS.MIX");
     if (Special.IsJuvenile) {
-      (void)MFCD::Register("ZOUNDS.MIX");
-      MFCD::Cache("ZOUNDS.MIX");
+      (void)MixArchive::Register("ZOUNDS.MIX");
+      MixArchive::Cache("ZOUNDS.MIX");
     }
   }
   Call_Back();
@@ -689,7 +690,7 @@ void Uninit_Game() {
   delete[] static_cast<char*>(SpeechBuffer);
 
   SearchPaths::Clear();
-  MFCD::Free_All();
+  MixArchive::Free_All();
 
   Units.Set_Heap(0);
   Factories.Set_Heap(0);

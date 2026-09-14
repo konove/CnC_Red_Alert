@@ -70,6 +70,7 @@
 #include "td/object.h"
 #include "td/overlay.h"
 #include "td/type.h"
+#include "tech/mix_archive.h"
 
 static const OverlayTypeClass Road(
     OVERLAY_ROAD,  // Overlay type number.
@@ -892,7 +893,7 @@ void OverlayTypeClass::Init(TheaterType theater) {
                        .replace_extension(".SHP")
                        .string();
       }
-      (const void*&)overlay.ImageData = MFCD::Retrieve(fullname);
+      (const void*&)overlay.ImageData = MixArchive::Retrieve(fullname);
 
       IsTheaterShape = overlay.IsTheater;
       if (overlay.RadarIcon) {

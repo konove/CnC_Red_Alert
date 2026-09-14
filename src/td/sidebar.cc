@@ -132,6 +132,7 @@
 #include "td/text.h"
 #include "td/type.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 
 /***************************************************************************
 **	This holds the translucent table for use with the construction clock
@@ -1074,7 +1075,7 @@ void SidebarClass::StripClass::One_Time(int /*unused*/) {
     }
     const auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    SpecialShapes[lp] = MFCD::Retrieve(fullname);
+    SpecialShapes[lp] = MixArchive::Retrieve(fullname);
   }
 }
 
@@ -1199,7 +1200,7 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
     const auto fullname = std::filesystem::path(filename)
                               .replace_extension(Theaters[theater].Suffix)
                               .string();
-    cameo_ptr = MFCD::Retrieve(fullname);
+    cameo_ptr = MixArchive::Retrieve(fullname);
     if (cameo_ptr) {
       SpecialShapes[lp] = cameo_ptr;
     }

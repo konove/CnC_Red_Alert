@@ -155,6 +155,7 @@
 #include "tech/crc.h"
 #include "tech/file.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 #include "tech/pipe.h"
 #include "tech/search_paths.h"
 #include "winvq/vqa32/vqaplay.h"
@@ -3232,9 +3233,9 @@ bool Force_CD_Available(int cd) {
     delete GeneralMix;
     delete ScoreMix;
 
-    MoviesMix = MFCD::Register("MOVIES.MIX");
-    GeneralMix = MFCD::Register("GENERAL.MIX");
-    ScoreMix = MFCD::Register("SCORES.MIX");
+    MoviesMix = MixArchive::Register("MOVIES.MIX");
+    GeneralMix = MixArchive::Register("GENERAL.MIX");
+    ScoreMix = MixArchive::Register("SCORES.MIX");
     ThemeClass::Scan();
   }
 #endif
@@ -3412,6 +3413,6 @@ const void* Hires_Retrieve(const char* name) {
   } else {
     port::SafeCopy(filename, name);
   }
-  return MFCD::Retrieve(filename);
+  return MixArchive::Retrieve(filename);
 }
 int Get_Resolution_Factor() { return SeenBuff.Get_Width() == 320 ? 0 : 1; }

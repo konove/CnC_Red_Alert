@@ -36,6 +36,7 @@
 #include "td/mapedit.h"
 #include "td/object.h"
 #include "td/type.h"
+#include "tech/mix_archive.h"
 
 const void* AircraftTypeClass::LRotorData = nullptr;
 const void* AircraftTypeClass::RRotorData = nullptr;
@@ -296,18 +297,18 @@ void AircraftTypeClass::One_Time() {
     }
     auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    (const void*&)uclass.CameoData = MFCD::Retrieve(fullname);
+    (const void*&)uclass.CameoData = MixArchive::Retrieve(fullname);
 
     // Load the main sprite sheet (shared across all houses).
     fullname = std::filesystem::path(uclass.IniName)
                    .replace_extension(".SHP")
                    .string();
 
-    (const void*&)uclass.ImageData = MFCD::Retrieve(fullname);
+    (const void*&)uclass.ImageData = MixArchive::Retrieve(fullname);
   }
 
-  LRotorData = MFCD::Retrieve("LROTOR.SHP");
-  RRotorData = MFCD::Retrieve("RROTOR.SHP");
+  LRotorData = MixArchive::Retrieve("LROTOR.SHP");
+  RRotorData = MixArchive::Retrieve("RROTOR.SHP");
 }
 
 ObjectClass* AircraftTypeClass::Create_One_Of(HouseClass* house) const {
@@ -406,7 +407,7 @@ void AircraftTypeClass::Init(TheaterType theater) {
                                 .replace_extension(Theaters[theater].Suffix)
                                 .string();
 
-      const void* cameo_ptr = MFCD::Retrieve(fullname);
+      const void* cameo_ptr = MixArchive::Retrieve(fullname);
       if (cameo_ptr) {
         (const void*&)uclass.CameoData = cameo_ptr;
       }

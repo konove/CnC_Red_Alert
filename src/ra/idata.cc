@@ -83,6 +83,7 @@
 #include "sdllib/shape.h"
 #include "tech/disk_file.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 
 static DoInfoStruct DogDoControls[magic_enum::enum_count<DoType>()] = {
     {0, 1, 1},      // DO_STAND_READY
@@ -1260,10 +1261,10 @@ void InfantryTypeClass::One_Time() {
     if (sfile.IsAvailable()) {
       uclass->SetOwnedImage(LoadAllocData(sfile));
     } else {
-      uclass->SetBorrowedImage(MFCD::RetrieveData(fullname));
+      uclass->SetBorrowedImage(MixArchive::RetrieveData(fullname));
     }
 #else
-    uclass->SetBorrowedImage(MFCD::RetrieveData(fullname));
+    uclass->SetBorrowedImage(MixArchive::RetrieveData(fullname));
 #endif
 
     // The small build image icon sized shapes are always generic.
@@ -1277,10 +1278,10 @@ void InfantryTypeClass::One_Time() {
     if (ifile.IsAvailable()) {
       uclass->CameoData = Load_Alloc_Data(ifile);
     } else {
-      uclass->CameoData = MFCD::Retrieve(fullname);
+      uclass->CameoData = MixArchive::Retrieve(fullname);
     }
 #else
-    ((const void*&)uclass->CameoData) = MFCD::Retrieve(fullname);
+    ((const void*&)uclass->CameoData) = MixArchive::Retrieve(fullname);
 #endif
   }
 }

@@ -67,12 +67,14 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
+#include "tech/mix_archive.h"
 
 class MusicListClass : public ListClass {
  public:
   MusicListClass(int id, int x, int y, int w, int h)
       : ListClass(id, x, y, w, h, TPF_6PT_GRAD | TPF_NOSHADOW,
-                  MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP")) {}
+                  MixArchive::Retrieve("BTN-UP.SHP"),
+                  MixArchive::Retrieve("BTN-DN.SHP")) {}
   ~MusicListClass() override = default;
   MusicListClass(const MusicListClass&) = delete;
   MusicListClass& operator=(const MusicListClass&) = delete;
@@ -159,13 +161,13 @@ void SoundControlsClass::Process() {
   /*
   **	Stop playing button.
   */
-  ShapeButtonClass stopbtn(BUTTON_STOP, MFCD::Retrieve("BTN-ST.SHP"),
+  ShapeButtonClass stopbtn(BUTTON_STOP, MixArchive::Retrieve("BTN-ST.SHP"),
                            option_x + stop_x, option_y + stop_y);
 
   /*
   **	Start playing button.
   */
-  ShapeButtonClass playbtn(BUTTON_PLAY, MFCD::Retrieve("BTN-PL.SHP"),
+  ShapeButtonClass playbtn(BUTTON_PLAY, MixArchive::Retrieve("BTN-PL.SHP"),
                            option_x + play_x, option_y + play_y);
 
   /*

@@ -59,6 +59,7 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/wwstd.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 
 static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
@@ -350,18 +351,19 @@ void WOL_GameSetupDialog::Initialize() {
 
   pILPlayers = new IconListClass(BUTTON_PLAYERLIST, d_playerlist_x,
                                  d_playerlist_y, d_playerlist_w, d_playerlist_h,
-                                 TPF_TYPE, MFCD::Retrieve("BTN-UP.SHP"),
-                                 MFCD::Retrieve("BTN-DN.SHP"), true, 2);
+                                 TPF_TYPE, MixArchive::Retrieve("BTN-UP.SHP"),
+                                 MixArchive::Retrieve("BTN-DN.SHP"), true, 2);
   //	ListClass scenariolist(BUTTON_SCENARIOLIST, d_scenariolist_x,
   // d_scenariolist_y, d_scenariolist_w, d_scenariolist_h, kTpfText,
-  // MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
+  // MixArchive::Retrieve("BTN-UP.SHP"), MixArchive::Retrieve("BTN-DN.SHP"));
   pILScens = new IconListClass(
       BUTTON_SCENARIOLIST, d_scenariolist_x, d_scenariolist_y, d_scenariolist_w,
-      d_scenariolist_h, TPF_TYPE, MFCD::Retrieve("BTN-UP.SHP"),
-      MFCD::Retrieve("BTN-DN.SHP"), true, 1);
-  pILDisc = new IconListClass(BUTTON_DISCLIST, d_disc_x, d_disc_y, d_disc_w,
-                              d_disc_h, TPF_TYPE, MFCD::Retrieve("BTN-UP.SHP"),
-                              MFCD::Retrieve("BTN-DN.SHP"), true, 0, 300);
+      d_scenariolist_h, TPF_TYPE, MixArchive::Retrieve("BTN-UP.SHP"),
+      MixArchive::Retrieve("BTN-DN.SHP"), true, 1);
+  pILDisc =
+      new IconListClass(BUTTON_DISCLIST, d_disc_x, d_disc_y, d_disc_w, d_disc_h,
+                        TPF_TYPE, MixArchive::Retrieve("BTN-UP.SHP"),
+                        MixArchive::Retrieve("BTN-DN.SHP"), true, 0, 300);
 
   pEditSend = new EditClass(BUTTON_SENDEDIT, szSendBuffer, MAXCHATSENDLENGTH,
                             kTpfText, d_send_x, d_send_y, d_send_w, d_send_h);
@@ -378,7 +380,8 @@ void WOL_GameSetupDialog::Initialize() {
                                    d_aiplayers_y, d_aiplayers_w, d_aiplayers_h);
   pCheckListOptions = new CheckListClass(
       BUTTON_PARAMS, d_options_x, d_options_y, d_options_w, d_options_h,
-      kTpfText, MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
+      kTpfText, MixArchive::Retrieve("BTN-UP.SHP"),
+      MixArchive::Retrieve("BTN-DN.SHP"));
   //	pTextBtnOk = new TextButtonClass( BUTTON_OK, TXT_OK, kTpfButton, d_ok_x,
   // d_ok_y, 60*2 ); 	TextButtonClass loadbtn(BUTTON_LOAD,
   // TXT_LOAD_BUTTON, kTpfButton, d_load_x, d_load_y, 60*2);
@@ -440,8 +443,8 @@ void WOL_GameSetupDialog::Initialize() {
   Fancy_Text_Print("", 0, 0, nullptr, 0, kTpfText);
   pDropListHouse = new DropListClass(
       BUTTON_HOUSE, szHouseBuffer, sizeof(szHouseBuffer), kTpfText, d_house_x,
-      d_house_y, d_house_w, d_house_h, MFCD::Retrieve("BTN-UP.SHP"),
-      MFCD::Retrieve("BTN-DN.SHP"));
+      d_house_y, d_house_w, d_house_h, MixArchive::Retrieve("BTN-UP.SHP"),
+      MixArchive::Retrieve("BTN-DN.SHP"));
 
   //	ajw - This checkbox is not used. Could be turned on, though.
   pCheckAftermathUnits = new BigCheckBoxClass(
@@ -464,14 +467,14 @@ void WOL_GameSetupDialog::Initialize() {
   bSlowUnitBuildRate = true;
 
 #define TABSPACING 38
-  pShpBtnScenarioRA =
-      new ShapeButtonClass(BUTTON_SCENARIO_RA, MFCD::Retrieve("tabra.shp"),
-                           d_scenariolist_x, d_scenariolist_y - d_tab_h);
+  pShpBtnScenarioRA = new ShapeButtonClass(
+      BUTTON_SCENARIO_RA, MixArchive::Retrieve("tabra.shp"), d_scenariolist_x,
+      d_scenariolist_y - d_tab_h);
   pShpBtnScenarioCS = new ShapeButtonClass(
-      BUTTON_SCENARIO_CS, MFCD::Retrieve("tabcs.shp"),
+      BUTTON_SCENARIO_CS, MixArchive::Retrieve("tabcs.shp"),
       d_scenariolist_x + TABSPACING, d_scenariolist_y - d_tab_h);
   pShpBtnScenarioAM = new ShapeButtonClass(
-      BUTTON_SCENARIO_AM, MFCD::Retrieve("tabam.shp"),
+      BUTTON_SCENARIO_AM, MixArchive::Retrieve("tabam.shp"),
       d_scenariolist_x + TABSPACING, d_scenariolist_y - d_tab_h);
 
   int iScenarioUserTabPos;
@@ -485,9 +488,9 @@ void WOL_GameSetupDialog::Initialize() {
     iScenarioUserTabPos = d_scenariolist_x + TABSPACING;
   }
 
-  pShpBtnScenarioUser =
-      new ShapeButtonClass(BUTTON_SCENARIO_USER, MFCD::Retrieve("tabus.shp"),
-                           iScenarioUserTabPos, d_scenariolist_y - d_tab_h);
+  pShpBtnScenarioUser = new ShapeButtonClass(
+      BUTTON_SCENARIO_USER, MixArchive::Retrieve("tabus.shp"),
+      iScenarioUserTabPos, d_scenariolist_y - d_tab_h);
 
   //	Change draw behavior of tab buttons.
   pShpBtnScenarioRA->ReflectButtonState = true;

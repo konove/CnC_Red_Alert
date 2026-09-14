@@ -133,6 +133,7 @@
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
+#include "tech/mix_archive.h"
 
 void* SidebarClass::SidebarShape = nullptr;
 void* SidebarClass::SidebarMiddleShape = nullptr;
@@ -271,7 +272,7 @@ void SidebarClass::One_Time() {
   *dependant)
   */
   if (SidebarShape == nullptr) {
-    SidebarShape = (void*)MFCD::Retrieve("SIDEBAR.SHP");
+    SidebarShape = (void*)MixArchive::Retrieve("SIDEBAR.SHP");
   }
 }
 
@@ -325,7 +326,7 @@ void SidebarClass::Init_IO() {
     Repair.IsPressed = false;
     Repair.IsToggleType = true;
     Repair.ReflectButtonState = true;
-    Repair.Set_Shape(MFCD::Retrieve("REPAIR.SHP"));
+    Repair.Set_Shape(MixArchive::Retrieve("REPAIR.SHP"));
 
     Upgrade.IsSticky = true;
     Upgrade.ID = BUTTON_UPGRADE;
@@ -334,14 +335,14 @@ void SidebarClass::Init_IO() {
     Upgrade.IsPressed = false;
     Upgrade.IsToggleType = true;
     Upgrade.ReflectButtonState = true;
-    Upgrade.Set_Shape(MFCD::Retrieve("SELL.SHP"));
+    Upgrade.Set_Shape(MixArchive::Retrieve("SELL.SHP"));
 
     Zoom.IsSticky = true;
     Zoom.ID = BUTTON_ZOOM;
     Zoom.X = 0x24c;
     Zoom.Y = 0x96;
     Zoom.IsPressed = false;
-    Zoom.Set_Shape(MFCD::Retrieve("MAP.SHP"));
+    Zoom.Set_Shape(MixArchive::Retrieve("MAP.SHP"));
 
     if ((IsRadarActive && Is_Zoomable()) || Session.Type != GAME_NORMAL) {
       Zoom.Enable();
@@ -416,11 +417,11 @@ void SidebarClass::Reload_Sidebar() {
 
   std::string sidename = sidebarnames[houseloaded];
   sidename[4] = '1';
-  SidebarShape = (void*)MFCD::Retrieve(sidename);
+  SidebarShape = (void*)MixArchive::Retrieve(sidename);
   sidename[4] = '2';
-  SidebarMiddleShape = (void*)MFCD::Retrieve(sidename);
+  SidebarMiddleShape = (void*)MixArchive::Retrieve(sidename);
   sidename[4] = '3';
-  SidebarBottomShape = (void*)MFCD::Retrieve(sidename);
+  SidebarBottomShape = (void*)MixArchive::Retrieve(sidename);
 
   SidebarClass::StripClass::Reload_LogoShapes();
   SidebarClass::StripClass::Reload_LogoShapes();
@@ -1025,14 +1026,14 @@ void SidebarClass::StripClass::One_Time(int /*unused*/) {
   /*
   ** Sidebar is player team specific in Hires
   */
-  ClockShapes = MFCD::Retrieve("CLOCK.SHP");
+  ClockShapes = MixArchive::Retrieve("CLOCK.SHP");
 
   for (const SpecialWeaponType lp :
        magic_enum::enum_values<SpecialWeaponType>()) {
     const auto filename = std::string(SpecialWeaponFile[lp]) + "ICON";
     const auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    SpecialShapes[lp] = MFCD::Retrieve(fullname);
+    SpecialShapes[lp] = MixArchive::Retrieve(fullname);
   }
 }
 
@@ -1114,7 +1115,7 @@ void SidebarClass::StripClass::Init_IO(int id) {
   UpButton[ID].X = X + (kUpXOffset * 2);
   UpButton[ID].Y = Y + (kUpYOffset * 2);
 
-  UpButton[ID].Set_Shape(MFCD::Retrieve("STRIPUP.SHP"));
+  UpButton[ID].Set_Shape(MixArchive::Retrieve("STRIPUP.SHP"));
 
   DownButton[ID].IsSticky = true;
   DownButton[ID].ID = static_cast<unsigned>(kButtonDown + id);
@@ -1127,7 +1128,7 @@ void SidebarClass::StripClass::Init_IO(int id) {
   UpButton[ID].Y--;
   DownButton[ID].Y--;
 
-  DownButton[ID].Set_Shape(MFCD::Retrieve("STRIPDN.SHP"));
+  DownButton[ID].Set_Shape(MixArchive::Retrieve("STRIPDN.SHP"));
 
   for (int index = 0; index < kMaxVisible; index++) {
     SelectClass& g = SelectButton[ID][index];
@@ -1201,7 +1202,7 @@ void SidebarClass::StripClass::Reload_LogoShapes() {
   if (PlayerPtr) {
     houseloaded = PlayerPtr->ActLike;
   }
-  LogoShapes = (void*)MFCD::Retrieve(stripnames[houseloaded]);
+  LogoShapes = (void*)MixArchive::Retrieve(stripnames[houseloaded]);
 }
 
 /***********************************************************************************************

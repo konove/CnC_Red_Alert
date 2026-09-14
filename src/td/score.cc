@@ -94,6 +94,7 @@
 #include "td/type.h"
 #include "td/vector.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 
 #define SCORETEXT_X 184
 // #define SCORETEXT_Y 8
@@ -330,8 +331,8 @@ ScoreCredsClass::ScoreCredsClass(int xpos, int ypos, const void* data, int max,
     : ScoreAnimClass(xpos, ypos, data),
       MaxStage(max),
       TimerReset(timer),
-      CashTurn(MFCD::Retrieve("CASHTURN.AUD")),
-      Clock1(MFCD::Retrieve("CLOCK1.AUD")) {
+      CashTurn(MixArchive::Retrieve("CASHTURN.AUD")),
+      Clock1(MixArchive::Retrieve("CLOCK1.AUD")) {
   Stage = 0;
 }
 
@@ -698,9 +699,9 @@ void ScoreClass::Presentation() {
 
   Set_Logic_Page(SysMemPage);
 
-  const void* country4 = MFCD::Retrieve("COUNTRY4.AUD");
-  const void* sfx4 = MFCD::Retrieve("SFX4.AUD");
-  Beepy6 = MFCD::Retrieve("BEEPY6.AUD");
+  const void* country4 = MixArchive::Retrieve("COUNTRY4.AUD");
+  const void* sfx4 = MixArchive::Retrieve("SFX4.AUD");
+  Beepy6 = MixArchive::Retrieve("BEEPY6.AUD");
 
   /*
   ** Load the background for the score screen
@@ -773,8 +774,8 @@ void ScoreClass::Presentation() {
 
   // Load up the shapes for the Nod score screen
   if (house == HOUSE_GOOD) {
-    yellowptr = MFCD::Retrieve("BAR3YLW.SHP");
-    redptr = MFCD::Retrieve("BAR3RED.SHP");
+    yellowptr = MixArchive::Retrieve("BAR3YLW.SHP");
+    redptr = MixArchive::Retrieve("BAR3RED.SHP");
   }
 
   /* Change to the six-point font for Text_Print */
@@ -809,11 +810,11 @@ void ScoreClass::Presentation() {
   /*
   ** Background's up, so now load various shapes and animations
   */
-  const void* timeshape = MFCD::Retrieve("TIME.SHP");
+  const void* timeshape = MixArchive::Retrieve("TIME.SHP");
   ScoreObjs[0] = new ScoreTimeClass(233, 2, timeshape, 30, 4);
 
-  const void* hiscore1shape = MFCD::Retrieve("HISCORE1.SHP");
-  const void* hiscore2shape = MFCD::Retrieve("HISCORE2.SHP");
+  const void* hiscore1shape = MixArchive::Retrieve("HISCORE1.SHP");
+  const void* hiscore2shape = MixArchive::Retrieve("HISCORE2.SHP");
   ScoreObjs[1] = new ScoreTimeClass(4, 97, hiscore1shape, 10, 4);
   ScoreObjs[2] = new ScoreTimeClass(8, 172, hiscore2shape, 10, 4);
 
@@ -824,7 +825,7 @@ void ScoreClass::Presentation() {
     /*
     ** load the logo
     */
-    const void* logoptr = MFCD::Retrieve("LOGOS.SHP");
+    const void* logoptr = MixArchive::Retrieve("LOGOS.SHP");
     CC_Draw_Shape(logoptr, 1, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, nullptr,
                   nullptr);
 
@@ -1163,9 +1164,9 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
   int shapenum;
   const InfantryTypeClass* ramboclass;
 
-  const void* factptr = MFCD::Retrieve("FACT.SHP");
-  const void* rmboptr = MFCD::Retrieve("RMBO.SHP");
-  const void* fball1ptr = MFCD::Retrieve("FBALL1.SHP");
+  const void* factptr = MixArchive::Retrieve("FACT.SHP");
+  const void* rmboptr = MixArchive::Retrieve("RMBO.SHP");
+  const void* fball1ptr = MixArchive::Retrieve("FBALL1.SHP");
   ramboclass = &InfantryTypeClass::As_Reference(INFANTRY_E5);
 
   /*
@@ -1386,8 +1387,8 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   int civkilled;
   int max;
 
-  const void* e1ptr = MFCD::Retrieve("E1.SHP");
-  const void* c1ptr = MFCD::Retrieve("C1.SHP");
+  const void* e1ptr = MixArchive::Retrieve("E1.SHP");
+  const void* c1ptr = MixArchive::Retrieve("C1.SHP");
 
   gdikilled = GKilled;
   nodkilled = NKilled;
@@ -1534,7 +1535,7 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
   int min;
   int add;
 
-  const void* credshape = MFCD::Retrieve("CREDS.SHP");
+  const void* credshape = MixArchive::Retrieve("CREDS.SHP");
 
   Alloc_Object(new ScorePrintClass(TXT_SCORE_ENDCRED, _credtx[house],
                                    _credty[house], pal));
@@ -1681,7 +1682,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
   int ascii = 0;
   int index = 0;
 
-  const void* keystrok = MFCD::Retrieve("KEYSTROK.AUD");
+  const void* keystrok = MixArchive::Retrieve("KEYSTROK.AUD");
 
   /*
   ** Ready the hidpage so it can restore background under zoomed letters

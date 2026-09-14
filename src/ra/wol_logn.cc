@@ -51,6 +51,7 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "tech/mix_archive.h"
 
 static bool ReadSavedNicks(const WolapiObject* pWO, IconListClass& NickList,
                            char* szNameBuffer, char* szPassBuffer);
@@ -155,8 +156,8 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
 
   IconListClass NickList(LISTBOX_NICKS, d_list_x, d_list_y, d_list_w, d_list_h,
                          TPF_6PT_GRAD | TPF_NOSHADOW,
-                         MFCD::Retrieve("BTN-UP.SHP"),
-                         MFCD::Retrieve("BTN-DN.SHP"), true, 1, 0);
+                         MixArchive::Retrieve("BTN-UP.SHP"),
+                         MixArchive::Retrieve("BTN-DN.SHP"), true, 1, 0);
 
   WOLEditClass NameEdit(EDITBOX_NAME, szNameBuffer, sizeof(szNameBuffer),
                         TPF_6PT_GRAD | TPF_NOSHADOW, d_name_x, d_name_y,

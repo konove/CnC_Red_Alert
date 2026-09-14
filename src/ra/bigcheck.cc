@@ -24,13 +24,13 @@
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/toggle.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "tech/mix_archive.h"
 
 //***********************************************************************************************
 bool BigCheckBoxClass::Draw_Me(bool forced) {
@@ -39,19 +39,19 @@ bool BigCheckBoxClass::Draw_Me(bool forced) {
 
     if (!IsOn) {
       if (!IsDisabled) {
-        CC_Draw_Shape(MFCD::Retrieve("bigcheck.shp"), 0, X, Y, WINDOW_MAIN,
-                      SHAPE_NORMAL);
+        CC_Draw_Shape(MixArchive::Retrieve("bigcheck.shp"), 0, X, Y,
+                      WINDOW_MAIN, SHAPE_NORMAL);
       } else {
-        CC_Draw_Shape(MFCD::Retrieve("bigcheck.shp"), 2, X, Y, WINDOW_MAIN,
-                      SHAPE_NORMAL);
+        CC_Draw_Shape(MixArchive::Retrieve("bigcheck.shp"), 2, X, Y,
+                      WINDOW_MAIN, SHAPE_NORMAL);
       }
     } else {
       if (!IsDisabled) {
-        CC_Draw_Shape(MFCD::Retrieve("bigcheck.shp"), 1, X, Y, WINDOW_MAIN,
-                      SHAPE_NORMAL);
+        CC_Draw_Shape(MixArchive::Retrieve("bigcheck.shp"), 1, X, Y,
+                      WINDOW_MAIN, SHAPE_NORMAL);
       } else {
-        CC_Draw_Shape(MFCD::Retrieve("bigcheck.shp"), 3, X, Y, WINDOW_MAIN,
-                      SHAPE_NORMAL);
+        CC_Draw_Shape(MixArchive::Retrieve("bigcheck.shp"), 3, X, Y,
+                      WINDOW_MAIN, SHAPE_NORMAL);
       }
     }
 

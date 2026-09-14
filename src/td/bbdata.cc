@@ -45,10 +45,10 @@
 
 #include "td/conquer.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/jshell.h"
 #include "td/type.h"
 #include "tech/disk_file.h"
+#include "tech/mix_archive.h"
 
 /***************************************************************************
 **	Detailed information about each class of bullet (projectile) in the
@@ -595,7 +595,7 @@ void BulletTypeClass::One_Time() {
       if (file.IsAvailable()) {
         (const void*&)bullet.ImageData = Load_Alloc_Data(file);
       } else {
-        (const void*&)bullet.ImageData = MFCD::Retrieve(fullname);
+        (const void*&)bullet.ImageData = MixArchive::Retrieve(fullname);
       }
     }
   }

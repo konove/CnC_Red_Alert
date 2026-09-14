@@ -58,6 +58,7 @@
 #include "ra/jshell.h"
 #include "ra/type.h"
 #include "tech/disk_file.h"
+#include "tech/mix_archive.h"
 
 /***********************************************************************************************
  * BulletTypeClass::BulletTypeClass -- Constructor for bullet type objects. *
@@ -191,14 +192,14 @@ void BulletTypeClass::One_Time() {
 
 #ifdef NDEBUG
       const_cast<BulletTypeClass&>(bullet).SetBorrowedImage(
-          MFCD::RetrieveData(fullname));
+          MixArchive::RetrieveData(fullname));
 #else
       DiskFile file(fullname);
 
       if (file.IsAvailable()) {
         bullet.SetOwnedImage(LoadAllocData(file));
       } else {
-        bullet.SetBorrowedImage(MFCD::RetrieveData(fullname));
+        bullet.SetBorrowedImage(MixArchive::RetrieveData(fullname));
       }
 #endif
     }

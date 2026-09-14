@@ -129,6 +129,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "tech/mix_archive.h"
 
 const void* ObjectTypeClass::SelectShapes = nullptr;
 
@@ -936,7 +937,7 @@ const int16_t* ObjectTypeClass::Overlap_List() const {
  * HISTORY: * 11/01/1994 JLB : Created. *
  *=============================================================================================*/
 void ObjectTypeClass::One_Time() {
-  SelectShapes = MFCD::Retrieve("SELECT.SHP");
+  SelectShapes = MixArchive::Retrieve("SELECT.SHP");
 #ifdef FRENCH
   PipShapes = Hires_Retrieve("PIPS_F.SHP");
 #else

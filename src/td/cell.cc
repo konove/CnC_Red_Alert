@@ -129,6 +129,7 @@
 #include "td/unit.h"
 #include "td/utracker.h"
 #include "td/vector.h"
+#include "tech/mix_archive.h"
 
 // #define FIXUP 0
 
@@ -1095,7 +1096,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
       if (IsFlagged) {
         const void* const_remap =
             HouseClass::As_Pointer(Owner)->Remap_Table(false, false);
-        CC_Draw_Shape(MFCD::Retrieve("FLAGFLY.SHP"),
+        CC_Draw_Shape(MixArchive::Retrieve("FLAGFLY.SHP"),
                       static_cast<int>(Frame % 14), x + (ICON_PIXEL_W / 2),
                       y + (ICON_PIXEL_H / 2), WINDOW_TACTICAL,
                       SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING, const_remap,

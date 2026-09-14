@@ -150,6 +150,7 @@
 #include "ra/weapon.h"
 #include "ra/ww_audio.h"
 #include "tech/fixed.h"
+#include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 #include "tech/rect.h"
 
@@ -3894,7 +3895,7 @@ void InfantryClass::Movement_AI() {
  *=============================================================================================*/
 const void* InfantryClass::Get_Image_Data() const {
   if (!IsOwnedByPlayer && *this == INFANTRY_SPY) {
-    return MFCD::Retrieve("E1.SHP");
+    return MixArchive::Retrieve("E1.SHP");
   }
   return TechnoClass::Get_Image_Data();
 }

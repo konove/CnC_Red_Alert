@@ -80,6 +80,7 @@
 #include "sdllib/shape.h"
 #include "tech/disk_file.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 
 /*
 **	This is the list of animation stages to use when the harvester
@@ -1076,10 +1077,10 @@ void UnitTypeClass::One_Time() {
     if (datafile.IsAvailable()) {
       uclass.CameoData = Load_Alloc_Data(datafile);
     } else {
-      uclass.CameoData = MFCD::Retrieve(fullname);
+      uclass.CameoData = MixArchive::Retrieve(fullname);
     }
 #else
-    ((const void*&)uclass.CameoData) = MFCD::Retrieve(fullname);
+    ((const void*&)uclass.CameoData) = MixArchive::Retrieve(fullname);
 #endif
     //		}
 
@@ -1094,10 +1095,10 @@ void UnitTypeClass::One_Time() {
     if (shpfile.IsAvailable()) {
       uclass.SetOwnedImage(LoadAllocData(shpfile));
     } else {
-      uclass.SetBorrowedImage(MFCD::RetrieveData(fullname));
+      uclass.SetBorrowedImage(MixArchive::RetrieveData(fullname));
     }
 #else
-    uclass.SetBorrowedImage(MFCD::RetrieveData(fullname));
+    uclass.SetBorrowedImage(MixArchive::RetrieveData(fullname));
 #endif
     // Read the shape pointer back from the owner rather than from a local the
     // store just moved from.
@@ -1115,16 +1116,16 @@ void UnitTypeClass::One_Time() {
   **	Load any custom shapes at this time.
   */
   if (WakeShapes == nullptr) {
-    WakeShapes = MFCD::Retrieve("WAKE.SHP");
+    WakeShapes = MixArchive::Retrieve("WAKE.SHP");
   }
   if (TurretShapes == nullptr) {
-    TurretShapes = MFCD::Retrieve("TURR.SHP");
+    TurretShapes = MixArchive::Retrieve("TURR.SHP");
   }
   if (SamShapes == nullptr) {
-    SamShapes = MFCD::Retrieve("SSAM.SHP");
+    SamShapes = MixArchive::Retrieve("SSAM.SHP");
   }
   if (MGunShapes == nullptr) {
-    MGunShapes = MFCD::Retrieve("MGUN.SHP");
+    MGunShapes = MixArchive::Retrieve("MGUN.SHP");
   }
 }
 

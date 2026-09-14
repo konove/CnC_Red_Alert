@@ -70,6 +70,7 @@
 #include "td/object.h"
 #include "td/template.h"
 #include "td/type.h"
+#include "tech/mix_archive.h"
 
 static const char slope00000001[] = {7, -1};
 static const char slope000000101[] = {6, 8, -1};
@@ -1350,7 +1351,7 @@ void TemplateTypeClass::Init(TheaterType theater) {
       const auto fullname = std::filesystem::path(tplate.IniName)
                                 .replace_extension(Theaters[theater].Suffix)
                                 .string();
-      ptr = MFCD::Retrieve(fullname);
+      ptr = MixArchive::Retrieve(fullname);
       (const void*&)tplate.ImageData = ptr;
       Register_Icon_Set(ptr,
                         true);  // Register icon set for video memory caching

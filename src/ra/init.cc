@@ -151,6 +151,7 @@
 #include "tech/ftimer.h"
 #include "tech/game_file.h"
 #include "tech/memory_file.h"
+#include "tech/mix_archive.h"
 #include "tech/mpu.h"
 #include "tech/number_parse.h"
 #include "tech/pk.h"
@@ -2101,13 +2102,13 @@ static void Init_Expansion_Files() {
       if (stricmp(state.name, "scores.mix") == 0) {
         continue;
       }
-      MFCD::Register(state.name, &FastKey, &CryptRandom);
-      MFCD::Cache(state.name);
+      MixArchive::Register(state.name, &FastKey, &CryptRandom);
+      MixArchive::Cache(state.name);
     } while (Find_Next_File(state));
   }
   if (Find_First_File("SS*.MIX", state)) {
     do {
-      MFCD::Register(state.name, &FastKey, &CryptRandom);
+      MixArchive::Register(state.name, &FastKey, &CryptRandom);
     } while (Find_Next_File(state));
   }
 }
@@ -2169,19 +2170,20 @@ static void Init_One_Time_Systems() {
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 static void Init_Fonts() {
-  Metal12FontPtr = MFCD::Retrieve("12METFNT.FNT");
-  MapFontPtr = MFCD::Retrieve("HELP.FNT");
-  Font6Ptr = MFCD::Retrieve("6POINT.FNT");
-  GradFont6Ptr = MFCD::Retrieve("GRAD6FNT.FNT");
-  EditorFont = MFCD::Retrieve("EDITFNT.FNT");
-  Font8Ptr = MFCD::Retrieve("8POINT.FNT");
+  Metal12FontPtr = MixArchive::Retrieve("12METFNT.FNT");
+  MapFontPtr = MixArchive::Retrieve("HELP.FNT");
+  Font6Ptr = MixArchive::Retrieve("6POINT.FNT");
+  GradFont6Ptr = MixArchive::Retrieve("GRAD6FNT.FNT");
+  EditorFont = MixArchive::Retrieve("EDITFNT.FNT");
+  Font8Ptr = MixArchive::Retrieve("8POINT.FNT");
   FontPtr = (char*)Font8Ptr;
   Set_Font(FontPtr);
-  Font3Ptr = MFCD::Retrieve("3POINT.FNT");
-  ScoreFontPtr = MFCD::Retrieve("SCOREFNT.FNT");
-  FontLEDPtr = MFCD::Retrieve("LED.FNT");
-  VCRFontPtr = MFCD::Retrieve("VCR.FNT");
-  TypeFontPtr = MFCD::Retrieve("8POINT.FNT");  //("TYPE.FNT"); //VG 10/17/96
+  Font3Ptr = MixArchive::Retrieve("3POINT.FNT");
+  ScoreFontPtr = MixArchive::Retrieve("SCOREFNT.FNT");
+  FontLEDPtr = MixArchive::Retrieve("LED.FNT");
+  VCRFontPtr = MixArchive::Retrieve("VCR.FNT");
+  TypeFontPtr =
+      MixArchive::Retrieve("8POINT.FNT");  //("TYPE.FNT"); //VG 10/17/96
 }
 
 /***********************************************************************************************
@@ -2300,45 +2302,46 @@ static void Init_Bootstrap_Mixfiles() {
   if constexpr (config::kWolapiEnabled) {
     GameFile fileWolapiMix("WOLAPI.MIX");
     if (fileWolapiMix.IsAvailable()) {
-      MFCD::Register("WOLAPI.MIX", &FastKey, &CryptRandom);
-      MFCD::Cache("WOLAPI.MIX");
+      MixArchive::Register("WOLAPI.MIX", &FastKey, &CryptRandom);
+      MixArchive::Cache("WOLAPI.MIX");
     }
   }
 
   GameFile file2("EXPAND2.MIX");
   if (file2.IsAvailable()) {
-    MFCD::Register("EXPAND2.MIX", &FastKey, &CryptRandom);
-    bool ok = MFCD::Cache("EXPAND2.MIX");
+    MixArchive::Register("EXPAND2.MIX", &FastKey, &CryptRandom);
+    bool ok = MixArchive::Cache("EXPAND2.MIX");
     assert(ok);
 
-    MFCD::Register("HIRES1.MIX", &FastKey, &CryptRandom);
-    ok = MFCD::Cache("HIRES1.MIX");
+    MixArchive::Register("HIRES1.MIX", &FastKey, &CryptRandom);
+    ok = MixArchive::Cache("HIRES1.MIX");
     assert(ok);
   }
 
   GameFile file("EXPAND.MIX");
   if (file.IsAvailable()) {
-    MFCD::Register("EXPAND.MIX", &FastKey, &CryptRandom);
-    const bool ok = MFCD::Cache("EXPAND.MIX");
+    MixArchive::Register("EXPAND.MIX", &FastKey, &CryptRandom);
+    const bool ok = MixArchive::Cache("EXPAND.MIX");
     assert(ok);
   }
 
-  MFCD::Register("REDALERT.MIX", &FastKey, &CryptRandom);
+  MixArchive::Register("REDALERT.MIX", &FastKey, &CryptRandom);
 
   /*
   **	Bootstrap enough of the system so that the error dialog box can
   *successfully *	be displayed.
   */
-  MFCD::Register("LOCAL.MIX", &FastKey, &CryptRandom);  // Cached.
-  bool ok = MFCD::Cache("LOCAL.MIX");
+  MixArchive::Register("LOCAL.MIX", &FastKey, &CryptRandom);  // Cached.
+  bool ok = MixArchive::Cache("LOCAL.MIX");
   assert(ok);
 
-  MFCD::Register("HIRES.MIX", &FastKey, &CryptRandom);
-  ok = MFCD::Cache("HIRES.MIX");
+  MixArchive::Register("HIRES.MIX", &FastKey, &CryptRandom);
+  ok = MixArchive::Cache("HIRES.MIX");
   assert(ok);
 
-  MFCD::Register("NCHIRES.MIX", &FastKey,
-                 &CryptRandom);  // Non-cached hires stuff incl VQ palettes
+  MixArchive::Register(
+      "NCHIRES.MIX", &FastKey,
+      &CryptRandom);  // Non-cached hires stuff incl VQ palettes
 
   RequiredCD = temp;
 }
@@ -2369,29 +2372,31 @@ static void Init_Secondary_Mixfiles() {
     // (they don't contain the base missions)
     if (GameFile("MAIN3.MIX").IsAvailable() &&
         !GameFile("GENERAL3.MIX").IsAvailable()) {
-      const MFCD* tmp = MFCD::Register("MAIN3.MIX", &FastKey, &CryptRandom);
+      const MixArchive* tmp =
+          MixArchive::Register("MAIN3.MIX", &FastKey, &CryptRandom);
       Extract("GENERAL.MIX", "GENERAL3.MIX");
       delete tmp;
     }
 
     if (GameFile("MAIN4.MIX").IsAvailable() &&
         !GameFile("GENERAL4.MIX").IsAvailable()) {
-      const MFCD* tmp = MFCD::Register("MAIN4.MIX", &FastKey, &CryptRandom);
+      const MixArchive* tmp =
+          MixArchive::Register("MAIN4.MIX", &FastKey, &CryptRandom);
       Extract("GENERAL.MIX", "GENERAL4.MIX");
       Extract("SCORES.MIX", "SCORES.MIX");  // also extract scores
       delete tmp;
     }
 
     // load the first two to get both movies
-    MFCD::Register("MAIN2.MIX", &FastKey, &CryptRandom);
-    MFCD::Register("MAIN1.MIX", &FastKey, &CryptRandom);
+    MixArchive::Register("MAIN2.MIX", &FastKey, &CryptRandom);
+    MixArchive::Register("MAIN1.MIX", &FastKey, &CryptRandom);
 
     // load extra missions
-    MFCD::Register("GENERAL4.MIX", &FastKey, &CryptRandom);
-    MFCD::Register("GENERAL3.MIX", &FastKey, &CryptRandom);
+    MixArchive::Register("GENERAL4.MIX", &FastKey, &CryptRandom);
+    MixArchive::Register("GENERAL3.MIX", &FastKey, &CryptRandom);
   } else {
     // assume regular/TFD files
-    MainMix = MFCD::Register("MAIN.MIX", &FastKey, &CryptRandom);
+    MainMix = MixArchive::Register("MAIN.MIX", &FastKey, &CryptRandom);
     assert(MainMix != nullptr);
   }
 
@@ -2415,22 +2420,22 @@ static void Init_Secondary_Mixfiles() {
   **	Inform the file system of the various MIX files.
   */
   ConquerMix =
-      MFCD::Register("CONQUER.MIX", &FastKey, &CryptRandom);  // Cached.
-  //	MFCD::Register("TRANSIT.MIX", &FastKey, &CryptRandom);
+      MixArchive::Register("CONQUER.MIX", &FastKey, &CryptRandom);  // Cached.
+  //	MixArchive::Register("TRANSIT.MIX", &FastKey, &CryptRandom);
 
   if (GeneralMix == nullptr) {
-    GeneralMix =
-        MFCD::Register("GENERAL.MIX", &FastKey, &CryptRandom);  // Never cached.
+    GeneralMix = MixArchive::Register("GENERAL.MIX", &FastKey,
+                                      &CryptRandom);  // Never cached.
   }
 
   if (GameFile("MOVIES1.MIX").IsAvailable()) {
-    MoviesMix =
-        MFCD::Register("MOVIES1.MIX", &FastKey, &CryptRandom);  // Never cached.
+    MoviesMix = MixArchive::Register("MOVIES1.MIX", &FastKey,
+                                     &CryptRandom);  // Never cached.
   }
   // load both sets of movies if possible
   if (GameFile("MOVIES2.MIX").IsAvailable()) {
-    MoviesMix =
-        MFCD::Register("MOVIES2.MIX", &FastKey, &CryptRandom);  // Never cached.
+    MoviesMix = MixArchive::Register("MOVIES2.MIX", &FastKey,
+                                     &CryptRandom);  // Never cached.
   }
   assert(MoviesMix != nullptr);
 
@@ -2438,17 +2443,17 @@ static void Init_Secondary_Mixfiles() {
   **	Register the score mixfile.
   */
   ScoresPresent = true;
-  ScoreMix = MFCD::Register("SCORES.MIX", &FastKey, &CryptRandom);
+  ScoreMix = MixArchive::Register("SCORES.MIX", &FastKey, &CryptRandom);
   ThemeClass::Scan();
 
   /*
   **	These are sound card specific, but the install program would have
   **	copied the correct versions to the hard drive.
   */
-  MFCD::Register("SPEECH.MIX", &FastKey, &CryptRandom);   // Never cached.
-  MFCD::Register("SOUNDS.MIX", &FastKey, &CryptRandom);   // Cached.
-  MFCD::Register("RUSSIAN.MIX", &FastKey, &CryptRandom);  // Cached.
-  MFCD::Register("ALLIES.MIX", &FastKey, &CryptRandom);   // Cached.
+  MixArchive::Register("SPEECH.MIX", &FastKey, &CryptRandom);   // Never cached.
+  MixArchive::Register("SOUNDS.MIX", &FastKey, &CryptRandom);   // Cached.
+  MixArchive::Register("RUSSIAN.MIX", &FastKey, &CryptRandom);  // Cached.
+  MixArchive::Register("ALLIES.MIX", &FastKey, &CryptRandom);   // Cached.
 }
 
 /***********************************************************************************************
@@ -2520,13 +2525,13 @@ static void Bootstrap() {
 
   // The .ENG suffix is the same in every language build: localized releases
   // ship a translated CONQUER.ENG under the same name.
-  SystemStrings = MFCD::RetrieveData("CONQUER.ENG");
-  DebugStrings = MFCD::RetrieveData("DEBUG.ENG");
+  SystemStrings = MixArchive::RetrieveData("CONQUER.ENG");
+  DebugStrings = MixArchive::RetrieveData("DEBUG.ENG");
 
   /*
   **	Default palette initialization.
   */
-  const void* palette_data = MFCD::Retrieve("TEMPERAT.PAL");
+  const void* palette_data = MixArchive::Retrieve("TEMPERAT.PAL");
   if (!palette_data) {
     // Missing data files are a user setup problem, not a bug: report and exit
     // quietly rather than abort with a stack trace.
@@ -2577,7 +2582,7 @@ static void Init_Mouse() {
   ** to set one of our own.
   */
   if (MouseInstalled) {
-    const void* temp_mouse_shapes = MFCD::Retrieve("MOUSE.SHP");
+    const void* temp_mouse_shapes = MixArchive::Retrieve("MOUSE.SHP");
     if (temp_mouse_shapes) {
       Set_Mouse_Cursor(0, 0, Extract_Shape(temp_mouse_shapes, 0));
       while (Get_Mouse_State() > 1) {
@@ -2621,11 +2626,11 @@ static void Init_Bulk_Data() {
   /*
   **	Cache the main game data. This operation can take a very long time.
   */
-  MFCD::Cache("CONQUER.MIX");
+  MixArchive::Cache("CONQUER.MIX");
   if (SampleType != 0 && !Debug_Quiet) {
-    MFCD::Cache("SOUNDS.MIX");
-    MFCD::Cache("RUSSIAN.MIX");
-    MFCD::Cache("ALLIES.MIX");
+    MixArchive::Cache("SOUNDS.MIX");
+    MixArchive::Cache("RUSSIAN.MIX");
+    MixArchive::Cache("ALLIES.MIX");
   }
   Call_Back();
 

@@ -171,6 +171,7 @@
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
+#include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 
 /***********************************************************************************************
@@ -2111,8 +2112,8 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
   */
   if (Flagged != HOUSE_NONE) {
     CC_Draw_Shape(
-        MFCD::Retrieve("FLAGFLY.SHP"), static_cast<int>(Frame % 14), x, y, window,
-        SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
+        MixArchive::Retrieve("FLAGFLY.SHP"), static_cast<int>(Frame % 14), x, y,
+        window, SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
         HouseClass::As_Pointer(Flagged)->Remap_Table(false, Class->Remap),
         MouseClass::UnitShadow);
   }

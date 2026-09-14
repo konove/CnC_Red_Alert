@@ -103,6 +103,7 @@
 #include "tech/buff.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
+#include "tech/mix_archive.h"
 #include "tech/pk.h"
 #include "tech/random.h"
 #include "tech/rgb.h"
@@ -456,12 +457,12 @@ DMonoType MonoPage = DMONO_STRESS;  // The current page.
 /***************************************************************************
 **	This holds the theater specific mixfiles.
 */
-MFCD* TheaterData = nullptr;
-MFCD* MoviesMix = nullptr;
-MFCD* GeneralMix = nullptr;
-MFCD* ScoreMix = nullptr;
-MFCD* MainMix = nullptr;
-MFCD* ConquerMix = nullptr;
+MixArchive* TheaterData = nullptr;
+MixArchive* MoviesMix = nullptr;
+MixArchive* GeneralMix = nullptr;
+MixArchive* ScoreMix = nullptr;
+MixArchive* MainMix = nullptr;
+MixArchive* ConquerMix = nullptr;
 
 /***************************************************************************
 **	This is the options control class. The options control such things as

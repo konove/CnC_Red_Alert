@@ -55,6 +55,7 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/ftimer.h"
+#include "tech/mix_archive.h"
 
 // #include "ra/woldebug.h"
 
@@ -222,27 +223,27 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   //------------------------------------------------------------------------
   GadgetClass* commands;  // button list
 
-  const char* pShpExpand = (char*)MFCD::Retrieve("exp.shp");
-  const char* pShpUnexpand = (char*)MFCD::Retrieve("unexp.shp");
+  const char* pShpExpand = (char*)MixArchive::Retrieve("exp.shp");
+  const char* pShpUnexpand = (char*)MixArchive::Retrieve("unexp.shp");
 
   IconListClass chatlist(BUTTON_CHATLIST, d_chatlist_x, d_chatlist_y,
                          d_chatlist_w, d_chatlist_h, TPF_TYPE,
-                         MFCD::Retrieve("BTN-UP.SHP"),
-                         MFCD::Retrieve("BTN-DN.SHP"), true, 0, 500);
+                         MixArchive::Retrieve("BTN-UP.SHP"),
+                         MixArchive::Retrieve("BTN-DN.SHP"), true, 0, 500);
   ShapeButtonClass ExpandChanBtn(BUTTON_EXPANDCHANNELS, pShpExpand,
                                  d_chanlist_x + d_chanlist_w - 17,
                                  d_chanlist_y - 14);
   IconListClass chanlist(BUTTON_CHANLIST, d_chanlist_x, d_chanlist_y,
                          d_chanlist_w, d_chanlist_h, TPF_TYPE,
-                         MFCD::Retrieve("BTN-UP.SHP"),
-                         MFCD::Retrieve("BTN-DN.SHP"), true, 1);
+                         MixArchive::Retrieve("BTN-UP.SHP"),
+                         MixArchive::Retrieve("BTN-DN.SHP"), true, 1);
   ShapeButtonClass ExpandUserBtn(BUTTON_EXPANDUSERS, pShpExpand,
                                  d_userlist_x + d_userlist_w - 17,
                                  d_userlist_y - 14);
   IconListClass userlist(BUTTON_USERLIST, d_userlist_x, d_userlist_y,
                          d_userlist_w, d_userlist_h, TPF_TYPE,
-                         MFCD::Retrieve("BTN-UP.SHP"),
-                         MFCD::Retrieve("BTN-DN.SHP"), true, 2);
+                         MixArchive::Retrieve("BTN-UP.SHP"),
+                         MixArchive::Retrieve("BTN-DN.SHP"), true, 2);
   TextButtonClass ActionBtn(BUTTON_ACTION, TXT_WOL_ACTION, kTpfButton,
                             d_action_x, d_action_y, d_action_w);
   TextButtonClass CreateBtn(BUTTON_CREATE, TXT_WOL_NEWSOMETHING, kTpfButton,
@@ -271,8 +272,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   EditClass sendedit(BUTTON_SENDEDIT, szSendBuffer, MAXCHATSENDLENGTH, kTpfText,
                      d_send_x, d_send_y, d_send_w, d_send_h);
 
-  const char* pShpRankRA = (char*)MFCD::Retrieve("rank_ra.shp");
-  const char* pShpRankAM = (char*)MFCD::Retrieve("rank_am.shp");
+  const char* pShpRankRA = (char*)MixArchive::Retrieve("rank_ra.shp");
+  const char* pShpRankAM = (char*)MixArchive::Retrieve("rank_am.shp");
   ShapeButtonClass RankRABtn(BUTTON_RANKRA, pShpRankRA,
                              d_userlist_x + d_userlist_w - ((16 * 4) + 1),
                              d_userlist_y - 14);

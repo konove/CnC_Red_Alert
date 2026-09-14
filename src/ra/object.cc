@@ -159,6 +159,7 @@
 #include "session.h"
 #include "tech/disk_file.h"
 #include "tech/fixed.h"
+#include "tech/mix_archive.h"
 
 /*
 **	Selected objects have a special marking box around them. This is the
@@ -2066,17 +2067,17 @@ const int16_t* ObjectTypeClass::Overlap_List() const {
  * HISTORY: * 11/01/1994 JLB : Created. *
  *=============================================================================================*/
 void ObjectTypeClass::One_Time() {
-  SelectShapes = MFCD::Retrieve("SELECT.SHP");
+  SelectShapes = MixArchive::Retrieve("SELECT.SHP");
 
 #ifndef NDEBUG
   DiskFile file("PIPS.SHP");
   if (file.IsAvailable()) {
     PipShapes = Load_Alloc_Data(file);
   } else {
-    PipShapes = MFCD::Retrieve("PIPS.SHP");
+    PipShapes = MixArchive::Retrieve("PIPS.SHP");
   }
 #else
-  PipShapes = MFCD::Retrieve("PIPS.SHP");
+  PipShapes = MixArchive::Retrieve("PIPS.SHP");
 #endif
 }
 

@@ -156,6 +156,7 @@
 #include "tech/disk_file.h"
 #include "tech/ftimer.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 #include "tech/search_paths.h"
 
@@ -1249,7 +1250,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     return "MORE";
   }();
 
-  const void* briefsnd = MFCD::Retrieve("BRIEFING.AUD");
+  const void* briefsnd = MixArchive::Retrieve("BRIEFING.AUD");
 
   GadgetClass::Set_Color_Scheme(&ColorRemaps[PCOLOR_TYPE]);
 

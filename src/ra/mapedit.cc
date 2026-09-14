@@ -114,6 +114,7 @@
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
+#include "tech/mix_archive.h"
 
 char MapEditClass::HealthBuf[20];
 
@@ -182,8 +183,8 @@ void MapEditClass::One_Time() {
   */
   HouseList = new ListClass(
       POPUP_HOUSELIST, POPUP_HOUSE_X, POPUP_HOUSE_Y, POPUP_HOUSE_W,
-      POPUP_HOUSE_H, TPF_EFNT | TPF_NOSHADOW, MFCD::Retrieve("EBTN-UP.SHP"),
-      MFCD::Retrieve("EBTN-DN.SHP"));
+      POPUP_HOUSE_H, TPF_EFNT | TPF_NOSHADOW,
+      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
   for (const HousesType house : magic_enum::enum_values<HousesType>()) {
     HouseList->Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
@@ -193,8 +194,8 @@ void MapEditClass::One_Time() {
   */
   MissionList = new ListClass(
       POPUP_MISSIONLIST, POPUP_MISSION_X, POPUP_MISSION_Y, POPUP_MISSION_W,
-      POPUP_MISSION_H, TPF_EFNT | TPF_NOSHADOW, MFCD::Retrieve("EBTN-UP.SHP"),
-      MFCD::Retrieve("EBTN-DN.SHP"));
+      POPUP_MISSION_H, TPF_EFNT | TPF_NOSHADOW,
+      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
 
   for (const auto mission : MapEditMissions) {
     MissionList->Add_Item(MissionClass::Mission_Name(mission));

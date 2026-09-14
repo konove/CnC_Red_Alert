@@ -60,11 +60,6 @@
 #include "td/ipxmgr.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
-#include "tech/game_file.h"
-#include "tech/mixfile.h"
-
-// Convenient alias for MixFileClass<GameFile>.
-using MFCD = MixFileClass<GameFile>;
 #include "td/monoc.h"
 #include "td/msglist.h"
 #include "td/nodename.h"
@@ -82,6 +77,8 @@ using MFCD = MixFileClass<GameFile>;
 #include "td/trigger.h"
 #include "td/type.h"
 #include "td/unit.h"
+#include "tech/game_file.h"
+#include "tech/mix_archive.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifdef JAPANESE
@@ -150,11 +147,11 @@ extern LogicClass Logic;
 extern MapEditClass Map;
 extern ScoreClass Score;
 extern MonoClass MonoArray[MonoClass::MAX_MONO_PAGES];
-extern MFCD* ScoreMix;
-extern MFCD* TheaterData;
-extern MFCD* LowTheaterData;
-extern MFCD* MoviesMix;
-extern MFCD* GeneralMix;
+extern MixArchive* ScoreMix;
+extern MixArchive* TheaterData;
+extern MixArchive* LowTheaterData;
+extern MixArchive* MoviesMix;
+extern MixArchive* GeneralMix;
 extern ThemeClass Theme;
 
 /*

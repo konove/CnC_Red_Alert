@@ -68,6 +68,7 @@
 #include "td/globals.h"
 #include "td/jshell.h"
 #include "td/text.h"
+#include "tech/mix_archive.h"
 
 /***********************************************************************************************
  * Dialog_Box -- draws a dialog background box *
@@ -138,8 +139,8 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
 
   if (filled) {
     if (style.Filler == CC_GREEN_BKGD) {
-      CC_Texture_Fill(MFCD::Retrieve("BTEXTURE.SHP"), InMainLoop ? 1 : 0, x, y,
-                      w, h);
+      CC_Texture_Fill(MixArchive::Retrieve("BTEXTURE.SHP"), InMainLoop ? 1 : 0,
+                      x, y, w, h);
     } else {
       LogicPage->Fill_Rect(x, y, x + w, y + h,
                            static_cast<unsigned char>(style.Filler));

@@ -170,6 +170,7 @@
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
 #include "tech/disk_file.h"
+#include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
@@ -265,17 +266,17 @@ void DisplayClass::One_Time() {
   /*
   **	Load the generic transparent icon set.
   */
-  TransIconset = MFCD::Retrieve("TRANS.ICN");
+  TransIconset = MixArchive::Retrieve("TRANS.ICN");
 
 #ifndef NDEBUG
   DiskFile file("SHADOW.SHP");
   if (file.IsAvailable()) {
     ShadowShapes = Load_Alloc_Data(file);
   } else {
-    ShadowShapes = MFCD::Retrieve("SHADOW.SHP");
+    ShadowShapes = MixArchive::Retrieve("SHADOW.SHP");
   }
 #else
-  ShadowShapes = MFCD::Retrieve("SHADOW.SHP");
+  ShadowShapes = MixArchive::Retrieve("SHADOW.SHP");
 #endif
 
   Set_View_Dimensions(0, 16);
@@ -394,7 +395,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   if (Scen.Theater != LastTheater) {
     delete TheaterData;
 
-    TheaterData = MFCD::Register(fullname, &FastKey, &CryptRandom);
+    TheaterData = MixArchive::Register(fullname, &FastKey, &CryptRandom);
 
     const bool theaterload = TheaterData->Cache();
     assert(theaterload);
@@ -405,7 +406,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   **	The fading palettes will have to be generated as well.
   */
   sprintf(fullname, "%s.PAL", Theaters[theater].Root);
-  const PaletteClass* ptr = (PaletteClass*)MFCD::Retrieve(fullname);
+  const PaletteClass* ptr = (PaletteClass*)MixArchive::Retrieve(fullname);
   GamePalette = *ptr;
 
   OriginalPalette = GamePalette;

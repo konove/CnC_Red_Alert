@@ -75,6 +75,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 
 const void* UnitTypeClass::WakeShapes = nullptr;
 
@@ -1452,7 +1453,7 @@ void UnitTypeClass::One_Time() {
       }
       const auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
-      (const void*&)uclass.CameoData = MFCD::Retrieve(fullname);
+      (const void*&)uclass.CameoData = MixArchive::Retrieve(fullname);
     }
 
     /*
@@ -1462,7 +1463,7 @@ void UnitTypeClass::One_Time() {
       const auto fullname = std::filesystem::path(uclass.IniName)
                                 .replace_extension(".SHP")
                                 .string();
-      ptr = MFCD::Retrieve(fullname);
+      ptr = MixArchive::Retrieve(fullname);
     } else {
       ptr = nullptr;
     }
@@ -1486,7 +1487,7 @@ void UnitTypeClass::One_Time() {
   **	Load the wake shapes in at this time.
   */
   if (!WakeShapes) {
-    WakeShapes = MFCD::Retrieve("WAKE.SHP");
+    WakeShapes = MixArchive::Retrieve("WAKE.SHP");
   }
 }
 
@@ -1518,7 +1519,7 @@ void UnitTypeClass::Init(TheaterType theater) {
             std::filesystem::path(std::string(uclass.IniName) + "ICNH")
                 .replace_extension(".VQA")
                 .string();
-        cameo_ptr = MFCD::Retrieve(fullname);
+        cameo_ptr = MixArchive::Retrieve(fullname);
         if (cameo_ptr) {
           (const void*&)uclass.CameoData = cameo_ptr;
         }

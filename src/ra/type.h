@@ -278,7 +278,7 @@ class ObjectTypeClass : public AbstractTypeClass {
   int16_t MaxStrength{0};
 
   // Image data with ownership tracking. Either:
-  // - borrowed span pointing into cached MIX data (from MFCD::Retrieve)
+  // - borrowed span pointing into cached MIX data (from MixArchive::Retrieve)
   // - owned vector allocated for loose files (from Load_Alloc_Data)
   using ImageDataType =
       std::variant<std::span<const std::byte>, std::vector<std::byte>>;

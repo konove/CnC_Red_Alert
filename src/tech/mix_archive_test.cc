@@ -1,6 +1,6 @@
 // Tests for opening plain MIX archives, including corrupt headers.
 
-#include "tech/mixfile.h"
+#include "tech/mix_archive.h"
 
 #include <bit>
 #include <cstddef>
@@ -13,11 +13,10 @@
 
 #include "gtest/gtest.h"
 #include "tech/crc.h"
-#include "tech/disk_file.h"
 
 namespace {
 
-using Mix = MixFileClass<DiskFile>;
+using Mix = MixArchive;
 
 void PutInt16(std::vector<char>& out, int value) {
   out.push_back(static_cast<char>(value & 0xff));
@@ -62,7 +61,7 @@ class MixFileTest : public ::testing::Test {
   // Writes image to a uniquely named temp file and registers it.
   Mix* Register(const MixImage& image) {
     const std::string name =
-        std::string("mixfile_test_") +
+        std::string("mix_archive_test_") +
         ::testing::UnitTest::GetInstance()->current_test_info()->name() +
         ".mix";
     path_ = std::filesystem::temp_directory_path() / name;
@@ -85,7 +84,7 @@ class MixFileTest : public ::testing::Test {
 
 TEST_F(MixFileTest, ValidArchiveServesItsFile) {
   ASSERT_NE(Register(MixImage{}), nullptr);
-  ASSERT_TRUE(Mix::Cache("mixfile_test_ValidArchiveServesItsFile.mix"));
+  ASSERT_TRUE(Mix::Cache("mix_archive_test_ValidArchiveServesItsFile.mix"));
 
   const std::span<const std::byte> data = Mix::RetrieveData("a.bin");
   ASSERT_EQ(data.size(), 4U);

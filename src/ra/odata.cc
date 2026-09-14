@@ -78,6 +78,7 @@
 #include "ra/overlay.h"
 #include "ra/type.h"
 #include "sdllib/shape.h"
+#include "tech/mix_archive.h"
 
 static const OverlayTypeClass Sandbag(
     OVERLAY_SANDBAG_WALL,  // Overlay type number.
@@ -882,7 +883,7 @@ void OverlayTypeClass::Init(TheaterType theater) {
                        .replace_extension(".SHP")
                        .string();
       }
-      overlay.SetBorrowedImage(MFCD::RetrieveData(fullname));
+      overlay.SetBorrowedImage(MixArchive::RetrieveData(fullname));
 
       IsTheaterShape = overlay.IsTheater;  // Tell Build_Frame if this is a
                                            // theater specific shape

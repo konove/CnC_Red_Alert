@@ -130,6 +130,7 @@
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 #include "tech/search_paths.h"
 
@@ -1821,21 +1822,21 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                      d_port_y, d_port_w, d_port_h, EditClass::kAlphanumeric);
 
   ListClass portlist(BUTTON_PORTLIST, d_portlist_x, d_portlist_y, d_portlist_w,
-                     d_portlist_h, kTpfText, MFCD::Retrieve("BTN-UP.SHP"),
-                     MFCD::Retrieve("BTN-DN.SHP"));
+                     d_portlist_h, kTpfText, MixArchive::Retrieve("BTN-UP.SHP"),
+                     MixArchive::Retrieve("BTN-DN.SHP"));
 
   EditClass baud_edt(BUTTON_BAUD, baudbuf, BAUDBUF_MAX, kTpfText, d_baud_x,
                      d_baud_y, d_baud_w, d_baud_h, EditClass::kNumeric);
   ListClass baudlist(BUTTON_BAUDLIST, d_baudlist_x, d_baudlist_y, d_baudlist_w,
-                     d_baudlist_h, kTpfText, MFCD::Retrieve("BTN-UP.SHP"),
-                     MFCD::Retrieve("BTN-DN.SHP"));
+                     d_baudlist_h, kTpfText, MixArchive::Retrieve("BTN-UP.SHP"),
+                     MixArchive::Retrieve("BTN-DN.SHP"));
   EditClass initstr_edt(BUTTON_INITSTR, initstrbuf, INITSTRBUF_MAX, kTpfText,
                         d_initstr_x, d_initstr_y, d_initstr_w, d_initstr_h,
                         EditClass::kAlphanumeric);
   ListClass initstrlist(BUTTON_INITSTRLIST, d_initstrlist_x, d_initstrlist_y,
                         d_initstrlist_w, d_initstrlist_h, kTpfText,
-                        MFCD::Retrieve("BTN-UP.SHP"),
-                        MFCD::Retrieve("BTN-DN.SHP"));
+                        MixArchive::Retrieve("BTN-UP.SHP"),
+                        MixArchive::Retrieve("BTN-DN.SHP"));
   TextButtonClass addbtn(BUTTON_ADD, TXT_ADD, kTpfButton, d_add_x, d_add_y,
                          d_add_w, d_add_h);
   TextButtonClass deletebtn(BUTTON_DELETE, TXT_DELETE_BUTTON, kTpfButton,
@@ -1845,8 +1846,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                          d_cwaitstr_h, EditClass::kAlphanumeric);
   ListClass cwaitstrlist(BUTTON_CWAITSTRLIST, d_cwaitstrlist_x,
                          d_cwaitstrlist_y, d_cwaitstrlist_w, d_cwaitstrlist_h,
-                         kTpfText, MFCD::Retrieve("BTN-UP.SHP"),
-                         MFCD::Retrieve("BTN-DN.SHP"));
+                         kTpfText, MixArchive::Retrieve("BTN-UP.SHP"),
+                         MixArchive::Retrieve("BTN-DN.SHP"));
   TextButtonClass tonebtn(BUTTON_TONE, TXT_TONE_BUTTON, kTpfButton, d_tone_x,
                           d_tone_y, d_tone_w, d_tone_h);
   TextButtonClass pulsebtn(BUTTON_PULSE, TXT_PULSE_BUTTON, kTpfButton,
@@ -2829,17 +2830,17 @@ int Com_Scenario_Dialog(bool skirmish) {
   Fancy_Text_Print("", 0, 0, nullptr, 0, kTpfText);
   DropListClass housebtn(BUTTON_HOUSE, housetext, sizeof(housetext), kTpfText,
                          d_house_x, d_house_y, d_house_w, d_house_h,
-                         MFCD::Retrieve("BTN-UP.SHP"),
-                         MFCD::Retrieve("BTN-DN.SHP"));
+                         MixArchive::Retrieve("BTN-UP.SHP"),
+                         MixArchive::Retrieve("BTN-DN.SHP"));
 #endif
   ColorListClass playerlist(BUTTON_PLAYERLIST, d_playerlist_x, d_playerlist_y,
                             d_playerlist_w, d_playerlist_h, kTpfText,
-                            MFCD::Retrieve("BTN-UP.SHP"),
-                            MFCD::Retrieve("BTN-DN.SHP"));
+                            MixArchive::Retrieve("BTN-UP.SHP"),
+                            MixArchive::Retrieve("BTN-DN.SHP"));
   ListClass scenariolist(BUTTON_SCENARIOLIST, d_scenariolist_x,
                          d_scenariolist_y, d_scenariolist_w, d_scenariolist_h,
-                         kTpfText, MFCD::Retrieve("BTN-UP.SHP"),
-                         MFCD::Retrieve("BTN-DN.SHP"));
+                         kTpfText, MixArchive::Retrieve("BTN-UP.SHP"),
+                         MixArchive::Retrieve("BTN-DN.SHP"));
   GaugeClass countgauge(BUTTON_COUNT, d_count_x, d_count_y, d_count_w,
                         d_count_h);
 
@@ -2868,9 +2869,10 @@ int Com_Scenario_Dialog(bool skirmish) {
   StaticButtonClass staticai(0, "     ", kTpfText,
                              d_aiplayers_x + d_aiplayers_w + 6, d_aiplayers_y);
 
-  CheckListClass optionlist(
-      BUTTON_OPTIONS, d_options_x, d_options_y, d_options_w, d_options_h,
-      kTpfText, MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
+  CheckListClass optionlist(BUTTON_OPTIONS, d_options_x, d_options_y,
+                            d_options_w, d_options_h, kTpfText,
+                            MixArchive::Retrieve("BTN-UP.SHP"),
+                            MixArchive::Retrieve("BTN-DN.SHP"));
   TextButtonClass okbtn(BUTTON_OK, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w,
                         d_ok_h);
   TextButtonClass loadbtn(BUTTON_LOAD, TXT_LOAD_BUTTON, kTpfButton, d_load_x,
@@ -4683,18 +4685,18 @@ int Com_Show_Scenario_Dialog() {
   Fancy_Text_Print("", 0, 0, nullptr, 0, kTpfText);
   DropListClass housebtn(BUTTON_HOUSE, housetext, sizeof(housetext), kTpfText,
                          d_house_x, d_house_y, d_house_w, d_house_h,
-                         MFCD::Retrieve("BTN-UP.SHP"),
-                         MFCD::Retrieve("BTN-DN.SHP"));
+                         MixArchive::Retrieve("BTN-UP.SHP"),
+                         MixArchive::Retrieve("BTN-DN.SHP"));
 #endif  // OLDWAY
   TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w);
   ListClass gamelist(BUTTON_GAMELIST, d_gamelist_x, d_gamelist_y, d_gamelist_w,
-                     d_gamelist_h, kTpfText, MFCD::Retrieve("BTN-UP.SHP"),
-                     MFCD::Retrieve("BTN-DN.SHP"));
+                     d_gamelist_h, kTpfText, MixArchive::Retrieve("BTN-UP.SHP"),
+                     MixArchive::Retrieve("BTN-DN.SHP"));
   ColorListClass playerlist(BUTTON_PLAYERLIST, d_playerlist_x, d_playerlist_y,
                             d_playerlist_w, d_playerlist_h, kTpfText,
-                            MFCD::Retrieve("BTN-UP.SHP"),
-                            MFCD::Retrieve("BTN-DN.SHP"));
+                            MixArchive::Retrieve("BTN-UP.SHP"),
+                            MixArchive::Retrieve("BTN-DN.SHP"));
 
   GaugeClass countgauge(BUTTON_COUNT, d_count_x, d_count_y, d_count_w,
                         d_count_h);
@@ -4720,9 +4722,10 @@ int Com_Show_Scenario_Dialog() {
   StaticButtonClass staticai(0, "     ", kTpfText,
                              d_aiplayers_x + d_aiplayers_w + 6, d_aiplayers_y);
 
-  CheckListClass optionlist(
-      BUTTON_OPTIONS, d_options_x, d_options_y, d_options_w, d_options_h,
-      kTpfText, MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
+  CheckListClass optionlist(BUTTON_OPTIONS, d_options_x, d_options_y,
+                            d_options_w, d_options_h, kTpfText,
+                            MixArchive::Retrieve("BTN-UP.SHP"),
+                            MixArchive::Retrieve("BTN-DN.SHP"));
 
   /*
   ------------------------- Build the button list --------------------------
@@ -6138,8 +6141,8 @@ static int Phone_Dialog() {
 
   ListClass phonelist(BUTTON_PHONELIST, d_phonelist_x, d_phonelist_y,
                       d_phonelist_w, d_phonelist_h, kTpfText,
-                      MFCD::Retrieve("BTN-UP.SHP"),
-                      MFCD::Retrieve("BTN-DN.SHP"));
+                      MixArchive::Retrieve("BTN-UP.SHP"),
+                      MixArchive::Retrieve("BTN-DN.SHP"));
   TextButtonClass addbtn(BUTTON_ADD, TXT_ADD, kTpfButton, d_add_x, d_add_y,
                          d_add_w, d_add_h);
   TextButtonClass editbtn(BUTTON_EDIT, TXT_EDIT, kTpfButton, d_edit_x, d_edit_y,

@@ -102,6 +102,7 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 
 /***************************************************************************
@@ -1739,10 +1740,10 @@ int MapEditClass::Load_Scenario() {
     */
     char theatertext[45] = "";
     DropListClass theaterbtn(LIST_THEATER, theatertext, sizeof(theatertext) - 1,
-                             TPF_EFNT | TPF_NOSHADOW,
-                             D_DIALOG_X + 30, D_DIALOG_Y + 30, 65,
-                             8 * 5, MFCD::Retrieve("EBTN-UP.SHP"),
-                             MFCD::Retrieve("EBTN-DN.SHP"));
+                             TPF_EFNT | TPF_NOSHADOW, D_DIALOG_X + 30,
+                             D_DIALOG_Y + 30, 65, 8 * 5,
+                             MixArchive::Retrieve("EBTN-UP.SHP"),
+                             MixArchive::Retrieve("EBTN-DN.SHP"));
     for (const TheaterType t : magic_enum::enum_values<TheaterType>()) {
       theaterbtn.Add_Item(Theaters[t].Name);
     }
@@ -1872,10 +1873,11 @@ int MapEditClass::Load_Scenario() {
     **	Intro movie name.
     */
     char introtext[kMaxFname + kMaxExt];
-    DropListClass intro(
-        BUTTON_INTRO, introtext, sizeof(introtext), TPF_EFNT | TPF_NOSHADOW,
-        theaterbtn.X, theaterbtn.Y + theaterbtn.Height + 24, 50, 7 * 10,
-        MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
+    DropListClass intro(BUTTON_INTRO, introtext, sizeof(introtext),
+                        TPF_EFNT | TPF_NOSHADOW, theaterbtn.X,
+                        theaterbtn.Y + theaterbtn.Height + 24, 50, 7 * 10,
+                        MixArchive::Retrieve("EBTN-UP.SHP"),
+                        MixArchive::Retrieve("EBTN-DN.SHP"));
     intro.Add_Item("<none>");
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       intro.Add_Item(VQName[v]);
@@ -1888,8 +1890,9 @@ int MapEditClass::Load_Scenario() {
     char brieftext[kMaxFname + kMaxExt];
     DropListClass briefing(BUTTON_BRIEFING, brieftext, sizeof(brieftext),
                            TPF_EFNT | TPF_NOSHADOW, intro.X + intro.Width + 10,
-                           intro.Y, 50, 7 * 10, MFCD::Retrieve("EBTN-UP.SHP"),
-                           MFCD::Retrieve("EBTN-DN.SHP"));
+                           intro.Y, 50, 7 * 10,
+                           MixArchive::Retrieve("EBTN-UP.SHP"),
+                           MixArchive::Retrieve("EBTN-DN.SHP"));
     briefing.Add_Item("<none>");
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       briefing.Add_Item(VQName[v]);
@@ -1897,10 +1900,11 @@ int MapEditClass::Load_Scenario() {
     briefing.Set_Selected_Index((int)Scen.BriefMovie + 1);
 
     char actiontext[kMaxFname + kMaxExt];
-    DropListClass action(
-        BUTTON_ACTION, actiontext, sizeof(actiontext), TPF_EFNT | TPF_NOSHADOW,
-        briefing.X + briefing.Width + 10, briefing.Y, 50, 7 * 10,
-        MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
+    DropListClass action(BUTTON_ACTION, actiontext, sizeof(actiontext),
+                         TPF_EFNT | TPF_NOSHADOW,
+                         briefing.X + briefing.Width + 10, briefing.Y, 50,
+                         7 * 10, MixArchive::Retrieve("EBTN-UP.SHP"),
+                         MixArchive::Retrieve("EBTN-DN.SHP"));
     action.Add_Item("<none>");
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       action.Add_Item(VQName[v]);
@@ -1910,8 +1914,8 @@ int MapEditClass::Load_Scenario() {
     char wintext[kMaxFname + kMaxExt];
     DropListClass win(BUTTON_WIN, wintext, sizeof(wintext),
                       TPF_EFNT | TPF_NOSHADOW, action.X + action.Width + 10,
-                      action.Y, 50, 7 * 10, MFCD::Retrieve("EBTN-UP.SHP"),
-                      MFCD::Retrieve("EBTN-DN.SHP"));
+                      action.Y, 50, 7 * 10, MixArchive::Retrieve("EBTN-UP.SHP"),
+                      MixArchive::Retrieve("EBTN-DN.SHP"));
     win.Add_Item("<none>");
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       win.Add_Item(VQName[v]);
@@ -1921,8 +1925,8 @@ int MapEditClass::Load_Scenario() {
     char losetext[kMaxFname + kMaxExt];
     DropListClass lose(BUTTON_LOSE, losetext, sizeof(losetext),
                        TPF_EFNT | TPF_NOSHADOW, win.X + win.Width + 10, win.Y,
-                       50, 7 * 10, MFCD::Retrieve("EBTN-UP.SHP"),
-                       MFCD::Retrieve("EBTN-DN.SHP"));
+                       50, 7 * 10, MixArchive::Retrieve("EBTN-UP.SHP"),
+                       MixArchive::Retrieve("EBTN-DN.SHP"));
     lose.Add_Item("<none>");
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       lose.Add_Item(VQName[v]);
@@ -1932,10 +1936,10 @@ int MapEditClass::Load_Scenario() {
     /*
     **	House choice list.
     */
-    ListClass housebtn(BUTTON_HOUSE, D_DIALOG_X + 30,
-                       D_DIALOG_Y + 105, 55, 7 * 10, TPF_EFNT | TPF_NOSHADOW,
-                       MFCD::Retrieve("EBTN-UP.SHP"),
-                       MFCD::Retrieve("EBTN-DN.SHP"));
+    ListClass housebtn(BUTTON_HOUSE, D_DIALOG_X + 30, D_DIALOG_Y + 105, 55,
+                       7 * 10, TPF_EFNT | TPF_NOSHADOW,
+                       MixArchive::Retrieve("EBTN-UP.SHP"),
+                       MixArchive::Retrieve("EBTN-DN.SHP"));
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       housebtn.Add_Item(HouseTypeClass::As_Reference(h).IniName);
     }
@@ -1945,10 +1949,11 @@ int MapEditClass::Load_Scenario() {
     **	Base house choice drop down list.
     */
     char basetext[35];
-    DropListClass basebtn(
-        BUTTON_BASE, basetext, sizeof(basetext), TPF_EFNT | TPF_NOSHADOW,
-        D_DIALOG_X + 30, D_DIALOG_Y + 80, 65, 7 * 10,
-        MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
+    DropListClass basebtn(BUTTON_BASE, basetext, sizeof(basetext),
+                          TPF_EFNT | TPF_NOSHADOW, D_DIALOG_X + 30,
+                          D_DIALOG_Y + 80, 65, 7 * 10,
+                          MixArchive::Retrieve("EBTN-UP.SHP"),
+                          MixArchive::Retrieve("EBTN-DN.SHP"));
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       basebtn.Add_Item(HouseTypeClass::As_Reference(h).IniName);
     }
@@ -1960,10 +1965,11 @@ int MapEditClass::Load_Scenario() {
     **	Opening scenario theme.
     */
     char themetext[65];
-    DropListClass themebtn(
-        BUTTON_THEME, themetext, sizeof(themetext), TPF_EFNT | TPF_NOSHADOW,
-        basebtn.X + basebtn.Width + 30, basebtn.Y, 85, 7 * 10,
-        MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
+    DropListClass themebtn(BUTTON_THEME, themetext, sizeof(themetext),
+                           TPF_EFNT | TPF_NOSHADOW,
+                           basebtn.X + basebtn.Width + 30, basebtn.Y, 85,
+                           7 * 10, MixArchive::Retrieve("EBTN-UP.SHP"),
+                           MixArchive::Retrieve("EBTN-DN.SHP"));
     themebtn.Add_Item("<none>");
     for (const ThemeType th : magic_enum::enum_values<ThemeType>()) {
       themebtn.Add_Item(ThemeClass::Full_Name(th));
@@ -2015,8 +2021,8 @@ int MapEditClass::Load_Scenario() {
     */
     ListClass sourcebtn(BUTTON_SOURCE, housebtn.X + housebtn.Width + 15,
                         maxunit.Y + 20, 100, 7 * 4, TPF_EFNT | TPF_NOSHADOW,
-                        MFCD::Retrieve("EBTN-UP.SHP"),
-                        MFCD::Retrieve("EBTN-DN.SHP"));
+                        MixArchive::Retrieve("EBTN-UP.SHP"),
+                        MixArchive::Retrieve("EBTN-DN.SHP"));
     for (const SourceType source : magic_enum::enum_values<SourceType>()) {
       if (source > SOURCE_WEST) {
         break;
@@ -2041,8 +2047,8 @@ int MapEditClass::Load_Scenario() {
     */
     CheckListClass allies(BUTTON_ALLIES, techlevel.X + techlevel.Width + 5,
                           housebtn.Y, 65, 7 * 10, TPF_EFNT | TPF_NOSHADOW,
-                          MFCD::Retrieve("EBTN-UP.SHP"),
-                          MFCD::Retrieve("EBTN-DN.SHP"));
+                          MixArchive::Retrieve("EBTN-UP.SHP"),
+                          MixArchive::Retrieve("EBTN-DN.SHP"));
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       allies.Add_Item(HouseTypeClass::As_Reference(h).IniName);
       if (hdata[house].Allies & (1L << h)) {
@@ -2056,8 +2062,8 @@ int MapEditClass::Load_Scenario() {
     */
     CheckListClass control(BUTTON_CONTROL, allies.X + allies.Width + 10,
                            housebtn.Y, 65, 7 * 10, TPF_EFNT | TPF_NOSHADOW,
-                           MFCD::Retrieve("EBTN-UP.SHP"),
-                           MFCD::Retrieve("EBTN-DN.SHP"));
+                           MixArchive::Retrieve("EBTN-UP.SHP"),
+                           MixArchive::Retrieve("EBTN-DN.SHP"));
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       control.Add_Item(HouseTypeClass::As_Reference(h).IniName);
       if (HouseClass::As_Pointer(h)->IsPlayerControl) {
@@ -2731,8 +2737,8 @@ int MapEditClass::Load_Scenario() {
 
     TListClass<CCPtr<TriggerTypeClass> > triggerlist(
         TRIGGER_LIST, D_LIST_X, D_LIST_Y, D_LIST_W, D_LIST_H,
-        TPF_EFNT | TPF_NOSHADOW, MFCD::Retrieve("EBTN-UP.SHP"),
-        MFCD::Retrieve("EBTN-DN.SHP"));
+        TPF_EFNT | TPF_NOSHADOW, MixArchive::Retrieve("EBTN-UP.SHP"),
+        MixArchive::Retrieve("EBTN-DN.SHP"));
 
     TextButtonClass editbtn(BUTTON_EDIT, "Edit", kTpfEButton, D_EDIT_X,
                             D_EDIT_Y, D_EDIT_W, D_EDIT_H);

@@ -57,12 +57,12 @@
 #include "td/control.h"
 #include "td/defines.h"
 #include "td/dialog.h"
-#include "td/externs.h"
 #include "td/gadget.h"
 #include "td/gauge.h"
 #include "td/globals.h"
 #include "td/jshell.h"
 #include "td/shapebtn.h"
+#include "tech/mix_archive.h"
 
 /***********************************************************************************************
  * SliderClass::SliderClass -- Normal constructor for a slider (with thumb)
@@ -81,10 +81,10 @@ SliderClass::SliderClass(unsigned id, int x, int y, int w, int h,
                          bool belong_to_list)
     : GaugeClass(id, x, y, w, h), BelongToList(belong_to_list) {
   if (!BelongToList) {
-    PlusGadget = new ShapeButtonClass(id, MFCD::Retrieve("BTN-PLUS.SHP"),
+    PlusGadget = new ShapeButtonClass(id, MixArchive::Retrieve("BTN-PLUS.SHP"),
                                       X + Width + 2, Y);
-    MinusGadget =
-        new ShapeButtonClass(id, MFCD::Retrieve("BTN-MINS.SHP"), X - 6, Y);
+    MinusGadget = new ShapeButtonClass(id, MixArchive::Retrieve("BTN-MINS.SHP"),
+                                       X - 6, Y);
 
     if (PlusGadget) {
       PlusGadget->Make_Peer(*this);

@@ -190,6 +190,7 @@
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 #include "tech/random.h"
 
 #define SHOW_MONO 0
@@ -1539,17 +1540,17 @@ static int Net_Join_Dialog() {
   Fancy_Text_Print("", 0, 0, nullptr, 0, kTpfText);
   DropListClass housebtn(BUTTON_HOUSE, housetext, sizeof(housetext), kTpfText,
                          d_house_x, d_house_y, d_house_w, d_house_h,
-                         MFCD::Retrieve("BTN-UP.SHP"),
-                         MFCD::Retrieve("BTN-DN.SHP"));
+                         MixArchive::Retrieve("BTN-UP.SHP"),
+                         MixArchive::Retrieve("BTN-DN.SHP"));
 #endif
 
   ListClass gamelist(BUTTON_GAMELIST, d_gamelist_x, d_gamelist_y, d_gamelist_w,
-                     d_gamelist_h, kTpfText, MFCD::Retrieve("BTN-UP.SHP"),
-                     MFCD::Retrieve("BTN-DN.SHP"));
+                     d_gamelist_h, kTpfText, MixArchive::Retrieve("BTN-UP.SHP"),
+                     MixArchive::Retrieve("BTN-DN.SHP"));
   ColorListClass playerlist(BUTTON_PLAYERLIST, d_playerlist_x, d_playerlist_y,
                             d_playerlist_w, d_playerlist_h, kTpfText,
-                            MFCD::Retrieve("BTN-UP.SHP"),
-                            MFCD::Retrieve("BTN-DN.SHP"));
+                            MixArchive::Retrieve("BTN-UP.SHP"),
+                            MixArchive::Retrieve("BTN-DN.SHP"));
   TextButtonClass joinbtn(BUTTON_JOIN, TXT_JOIN, kTpfButton, d_join_x, d_join_y,
                           d_join_w);
   TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
@@ -1564,9 +1565,10 @@ static int Net_Join_Dialog() {
                           d_credits_h);
   GaugeClass aiplayersgauge(BUTTON_AI_PLAYERS, d_aiplayers_x, d_aiplayers_y,
                             d_aiplayers_w, d_aiplayers_h);
-  CheckListClass optionlist(
-      BUTTON_OPTIONS, d_options_x, d_options_y, d_options_w, d_options_h,
-      kTpfText, MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
+  CheckListClass optionlist(BUTTON_OPTIONS, d_options_x, d_options_y,
+                            d_options_w, d_options_h, kTpfText,
+                            MixArchive::Retrieve("BTN-UP.SHP"),
+                            MixArchive::Retrieve("BTN-DN.SHP"));
   StaticButtonClass descrip(0, "", TPF_CENTER | kTpfText, d_dialog_x + 32,
                             d_name_y, d_dialog_w - 64, d_txt6_h + 1);
   StaticButtonClass staticcount(0, "     ", kTpfText, d_count_x + d_count_w + 4,
@@ -4164,12 +4166,12 @@ static int Net_New_Dialog() {
 
   ColorListClass playerlist(BUTTON_PLAYERLIST, d_playerlist_x, d_playerlist_y,
                             d_playerlist_w, d_playerlist_h, kTpfText,
-                            MFCD::Retrieve("BTN-UP.SHP"),
-                            MFCD::Retrieve("BTN-DN.SHP"));
+                            MixArchive::Retrieve("BTN-UP.SHP"),
+                            MixArchive::Retrieve("BTN-DN.SHP"));
   ListClass scenariolist(BUTTON_SCENARIOLIST, d_scenariolist_x,
                          d_scenariolist_y, d_scenariolist_w, d_scenariolist_h,
-                         kTpfText, MFCD::Retrieve("BTN-UP.SHP"),
-                         MFCD::Retrieve("BTN-DN.SHP"));
+                         kTpfText, MixArchive::Retrieve("BTN-UP.SHP"),
+                         MixArchive::Retrieve("BTN-DN.SHP"));
   TextButtonClass rejectbtn(BUTTON_REJECT, TXT_REJECT, kTpfButton, d_reject_x,
                             d_reject_y);
   GaugeClass countgauge(BUTTON_COUNT, d_count_x, d_count_y, d_count_w,
@@ -4180,9 +4182,10 @@ static int Net_New_Dialog() {
                           d_credits_h);
   GaugeClass aiplayersgauge(BUTTON_AIPLAYERS, d_aiplayers_x, d_aiplayers_y,
                             d_aiplayers_w, d_aiplayers_h);
-  CheckListClass optionlist(
-      BUTTON_OPTIONS, d_options_x, d_options_y, d_options_w, d_options_h,
-      kTpfText, MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
+  CheckListClass optionlist(BUTTON_OPTIONS, d_options_x, d_options_y,
+                            d_options_w, d_options_h, kTpfText,
+                            MixArchive::Retrieve("BTN-UP.SHP"),
+                            MixArchive::Retrieve("BTN-DN.SHP"));
   TextButtonClass okbtn(BUTTON_OK, TXT_OK, kTpfButton, d_ok_x, d_ok_y, 120);
   TextButtonClass loadbtn(BUTTON_LOAD, TXT_LOAD_BUTTON, kTpfButton, d_load_x,
                           d_load_y, 120);

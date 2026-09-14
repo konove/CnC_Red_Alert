@@ -75,15 +75,14 @@
 #include "ra/warhead.h"
 #include "sdllib/playcd.h"
 #include "tech/bench.h"
+#include "tech/buff.h"
 #include "tech/game_file.h"
-#include "tech/mixfile.h"
+#include "tech/mix_archive.h"
 #include "tech/rndstraw.h"
 
 // Scratch space for packing and unpacking the MapPack and OverlayPack INI blocks.
 inline char staging_buffer[32000];
 
-// Convenient alias for MixFileClass<GameFile>; keeps call sites short.
-using MFCD = MixFileClass<GameFile>;
 
 extern bool IsVQ640;
 extern uint32_t GameVersion;
@@ -194,12 +193,12 @@ extern LogicClass Logic;
 extern MapEditClass Map;
 extern ScoreClass Score;
 extern MonoClass MonoArray[magic_enum::enum_count<DMonoType>()];
-extern MFCD* TheaterData;
-extern MFCD* MoviesMix;
-extern MFCD* GeneralMix;
-extern MFCD* ScoreMix;
-extern MFCD* MainMix;
-extern MFCD* ConquerMix;
+extern MixArchive* TheaterData;
+extern MixArchive* MoviesMix;
+extern MixArchive* GeneralMix;
+extern MixArchive* ScoreMix;
+extern MixArchive* MainMix;
+extern MixArchive* ConquerMix;
 extern ThemeClass Theme;
 extern SpecialClass Special;
 

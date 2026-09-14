@@ -44,11 +44,11 @@
 
 #include "td/conquer.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/jshell.h"
 #include "td/keyframe.h"
 #include "td/type.h"
 #include "tech/disk_file.h"
+#include "tech/mix_archive.h"
 
 // Dinosaur death animations
 static const AnimTypeClass TricDie(
@@ -2269,7 +2269,8 @@ void AnimTypeClass::One_Time() {
     if (file.IsAvailable()) {
       (const void*&)As_Reference(index).ImageData = Load_Alloc_Data(file);
     } else {
-      (const void*&)As_Reference(index).ImageData = MFCD::Retrieve(fullname);
+      (const void*&)As_Reference(index).ImageData =
+          MixArchive::Retrieve(fullname);
     }
     // Load shells skip AnimClass's gameplay constructor. Derived frame limits
     // must be ready for both restored animations and newly created ones.

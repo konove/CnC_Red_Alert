@@ -76,6 +76,7 @@
 #include "td/type.h"
 #include "td/vector.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 
 /*
  * There were too many parameters for the InfantryTypeClass constructor so I
@@ -1811,7 +1812,7 @@ void InfantryTypeClass::One_Time() {
     auto fullname = std::filesystem::path(uclass->IniName)
                         .replace_extension(".SHP")
                         .string();
-    (const void*&)uclass->ImageData = MFCD::Retrieve(fullname);
+    (const void*&)uclass->ImageData = MixArchive::Retrieve(fullname);
 
     /*
     **	The small build image icon sized shapes are always generic.
@@ -1824,7 +1825,7 @@ void InfantryTypeClass::One_Time() {
     }
     fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    (const void*&)uclass->CameoData = MFCD::Retrieve(fullname);
+    (const void*&)uclass->CameoData = MixArchive::Retrieve(fullname);
   }
 }
 
@@ -1860,7 +1861,7 @@ void InfantryTypeClass::Init(TheaterType theater) {
       const auto fullname = std::filesystem::path(filename)
                                 .replace_extension(Theaters[theater].Suffix)
                                 .string();
-      cameo_ptr = MFCD::Retrieve(fullname);
+      cameo_ptr = MixArchive::Retrieve(fullname);
       if (cameo_ptr) {
         (const void*&)uclass->CameoData = cameo_ptr;
       }

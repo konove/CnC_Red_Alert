@@ -71,6 +71,7 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
+#include "tech/mix_archive.h"
 
 /***********************************************************************************************
  * Dialog_Box -- draws a dialog background box *
@@ -100,7 +101,7 @@ void Dialog_Box(int x, int y, int w, int h) {
   */
   const int cx = w / 2;
   const int cy = h / 2;
-  const void* shapedata = MFCD::Retrieve("DD-BKGND.SHP");
+  const void* shapedata = MixArchive::Retrieve("DD-BKGND.SHP");
   CC_Draw_Shape(shapedata, 0, cx - 312, cy - 192, WINDOW_PARTIAL,
                 SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 1, cx, cy - 192, WINDOW_PARTIAL, SHAPE_WIN_REL);
@@ -109,7 +110,7 @@ void Dialog_Box(int x, int y, int w, int h) {
   /*
   **	Draw the side strips.
   */
-  shapedata = MFCD::Retrieve("DD-EDGE.SHP");
+  shapedata = MixArchive::Retrieve("DD-EDGE.SHP");
   for (int yy = 0; yy < h; yy += 6) {
     CC_Draw_Shape(shapedata, 0, 14, yy, WINDOW_PARTIAL, SHAPE_WIN_REL);
     CC_Draw_Shape(shapedata, 1, w - ((7 + 8) * 2), yy, WINDOW_PARTIAL,
@@ -119,27 +120,27 @@ void Dialog_Box(int x, int y, int w, int h) {
   /*
   **	Draw the border bars.
   */
-  shapedata = MFCD::Retrieve("DD-LEFT.SHP");
+  shapedata = MixArchive::Retrieve("DD-LEFT.SHP");
   CC_Draw_Shape(shapedata, 0, 0, cy - 200, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 0, 0, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
-  shapedata = MFCD::Retrieve("DD-RIGHT.SHP");
+  shapedata = MixArchive::Retrieve("DD-RIGHT.SHP");
   const int rightx = w - 14;
   CC_Draw_Shape(shapedata, 0, rightx, cy - 200, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 0, rightx, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
-  shapedata = MFCD::Retrieve("DD-BOTM.SHP");
+  shapedata = MixArchive::Retrieve("DD-BOTM.SHP");
   CC_Draw_Shape(shapedata, 0, cx - 320, h - 16, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 0, cx, h - 16, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
-  shapedata = MFCD::Retrieve("DD-TOP.SHP");
+  shapedata = MixArchive::Retrieve("DD-TOP.SHP");
   CC_Draw_Shape(shapedata, 0, cx - 320, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 0, cx, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
   /*
   **	Draw the corner caps.
   */
-  shapedata = MFCD::Retrieve("DD-CRNR.SHP");
+  shapedata = MixArchive::Retrieve("DD-CRNR.SHP");
   CC_Draw_Shape(shapedata, 0, 0, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 1, w - 23, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 2, 0, h - 24, WINDOW_PARTIAL, SHAPE_WIN_REL);

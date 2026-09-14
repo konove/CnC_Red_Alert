@@ -54,7 +54,6 @@
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/gauge.h"
 #include "ra/globals.h"
@@ -63,6 +62,7 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "tech/fixed.h"
+#include "tech/mix_archive.h"
 
 /***********************************************************************************************
  * SliderClass::SliderClass -- Normal constructor for a slider (with thumb)
@@ -81,10 +81,10 @@ SliderClass::SliderClass(unsigned id, int x, int y, int w, int h,
                          bool belong_to_list)
     : GaugeClass(id, x, y, w, h), BelongToList(belong_to_list) {
   if (!BelongToList) {
-    PlusGadget = new ShapeButtonClass(id, MFCD::Retrieve("BTN-PLUS.SHP"),
+    PlusGadget = new ShapeButtonClass(id, MixArchive::Retrieve("BTN-PLUS.SHP"),
                                       X + Width + 2, Y);
-    MinusGadget =
-        new ShapeButtonClass(id, MFCD::Retrieve("BTN-MINS.SHP"), X - 6, Y);
+    MinusGadget = new ShapeButtonClass(id, MixArchive::Retrieve("BTN-MINS.SHP"),
+                                       X - 6, Y);
 
     if (PlusGadget) {
       PlusGadget->Make_Peer(*this);

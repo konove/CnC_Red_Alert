@@ -57,6 +57,7 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/ftimer.h"
+#include "tech/mix_archive.h"
 #include "tech/rgb.h"
 
 // Scenario filenames for the secret ant missions (Easter egg campaign).
@@ -184,14 +185,14 @@ std::string Map_Selection() {
   int selection = 0;
   static Timer<SystemTickSource> timer;
 
-  const void* appear1 = MFCD::Retrieve("MAPWIPE2.AUD");
-  const void* bleep11 = MFCD::Retrieve("BLEEP11.AUD");
-  const void* country4 = MFCD::Retrieve("MAPWIPE5.AUD");
-  const void* toney7 = MFCD::Retrieve("TONEY7.AUD");
-  const void* bleep17 = MFCD::Retrieve("BLEEP17.AUD");
+  const void* appear1 = MixArchive::Retrieve("MAPWIPE2.AUD");
+  const void* bleep11 = MixArchive::Retrieve("BLEEP11.AUD");
+  const void* country4 = MixArchive::Retrieve("MAPWIPE5.AUD");
+  const void* toney7 = MixArchive::Retrieve("TONEY7.AUD");
+  const void* bleep17 = MixArchive::Retrieve("BLEEP17.AUD");
 
-  const void* scold1 = MFCD::Retrieve("TONEY4.AUD");
-  const void* country1 = MFCD::Retrieve("TONEY10.AUD");
+  const void* scold1 = MixArchive::Retrieve("TONEY4.AUD");
+  const void* country1 = MixArchive::Retrieve("TONEY10.AUD");
 
   auto* pseudo_seen_buf =
       new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));

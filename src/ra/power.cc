@@ -64,6 +64,7 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
+#include "tech/mix_archive.h"
 
 /*
 **	Points to the shape to use for the "desired" power level indicator.
@@ -140,8 +141,8 @@ void PowerClass::One_Time() {
   PowerButton.Y = POWER_Y * 2;
   PowerButton.Width = (POWER_WIDTH * 2) - 1;
   PowerButton.Height = POWER_HEIGHT * 2;
-  PowerShape = MFCD::Retrieve("POWER.SHP");
-  PowerBarShape = MFCD::Retrieve("POWERBAR.SHP");
+  PowerShape = MixArchive::Retrieve("POWER.SHP");
+  PowerBarShape = MixArchive::Retrieve("POWERBAR.SHP");
 }
 
 /***********************************************************************************************

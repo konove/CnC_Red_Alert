@@ -109,6 +109,7 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 #include "tech/readline.h"
 
@@ -687,7 +688,7 @@ bool TeamTypeClass::Edit() {
   DropListClass housebtn(
       BUTTON_HOUSE, housetext, sizeof(housetext), TPF_EFNT | TPF_NOSHADOW,
       name_edt.X + name_edt.Width + D_SPACING_X, name_edt.Y, 55, 8 * 5,
-      MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
+      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
   for (const HousesType house : magic_enum::enum_values<HousesType>()) {
     housebtn.Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
@@ -763,7 +764,7 @@ bool TeamTypeClass::Edit() {
   DropListClass triggerbtn(
       BUTTON_TRIGGER, trigtext, sizeof(trigtext), TPF_EFNT | TPF_NOSHADOW,
       D_DIALOG_X + D_DIALOG_W - 95, membersbtn.Y, 60, 8 * 5,
-      MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
+      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
   triggerbtn.Add_Item("<NONE>");
   for (int index = 0; index < TriggerTypes.Count(); index++) {
     triggerbtn.Add_Item(TriggerTypes.Ptr(index)->IniName);
@@ -842,7 +843,7 @@ bool TeamTypeClass::Edit() {
   DropListClass missionlist1(
       BUTTON_MISSION1, droptext, sizeof(droptext), TPF_EFNT | TPF_NOSHADOW,
       reinforcebtn.X, reinforcebtn.Y + 15, 170, 8 * 8,
-      MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
+      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
   for (TeamMissionType tm = TMISSION_ATTACK; tm < TMISSION_COUNT; tm++) {
     missionlist1.Add_Item(TeamTypeClass::Name_From_Mission(tm));
   }
@@ -863,7 +864,7 @@ bool TeamTypeClass::Edit() {
   DropListClass qlist(
       BUTTON_QUARRY, qtext, sizeof(qtext), TPF_EFNT | TPF_NOSHADOW,
       missionlist1.X + missionlist1.Width + 15, missionlist1.Y, 100, 5 * 8,
-      MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
+      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
   for (const QuarryType q : magic_enum::enum_values<QuarryType>()) {
     qlist.Add_Item(QuarryName[q]);
   }
@@ -874,7 +875,7 @@ bool TeamTypeClass::Edit() {
   DropListClass flist(
       BUTTON_FORMATION, ftext, sizeof(ftext), TPF_EFNT | TPF_NOSHADOW,
       missionlist1.X + missionlist1.Width + 15, missionlist1.Y, 100, 5 * 8,
-      MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
+      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
   for (const FormationType f : magic_enum::enum_values<FormationType>()) {
     flist.Add_Item(FormationName[f]);
   }
@@ -885,7 +886,7 @@ bool TeamTypeClass::Edit() {
   DropListClass mlist(
       BUTTON_MISSION, mtext, sizeof(mtext), TPF_EFNT | TPF_NOSHADOW,
       missionlist1.X + missionlist1.Width + 15, missionlist1.Y, 100, 5 * 8,
-      MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
+      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
   for (const MissionType m : magic_enum::enum_values<MissionType>()) {
     mlist.Add_Item(MissionClass::Mission_Name(m));
   }
@@ -894,8 +895,8 @@ bool TeamTypeClass::Edit() {
 
   TListClass<TeamMissionClass*> missionlist2(
       BUTTON_MISSION2, missionlist1.X + 60, missionlist1.Y + 22, 240, 8 * 7,
-      TPF_EFNT | TPF_NOSHADOW, MFCD::Retrieve("EBTN-UP.SHP"),
-      MFCD::Retrieve("EBTN-DN.SHP"));
+      TPF_EFNT | TPF_NOSHADOW, MixArchive::Retrieve("EBTN-UP.SHP"),
+      MixArchive::Retrieve("EBTN-DN.SHP"));
   for (int index = 0; index < MissionCount; index++) {
     missionlist2.Add_Item(new TeamMissionClass(MissionList[index]));
     //		missionlist2.Add_Item(&TeamMissions[MissionList[index].Mission]);

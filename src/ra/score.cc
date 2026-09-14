@@ -96,6 +96,7 @@
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 #include "tech/random.h"
 #include "tech/rgb.h"
 
@@ -179,8 +180,8 @@ ScoreCredsClass::ScoreCredsClass(int xpos, int ypos, const void* data,
     : ScoreAnimClass(xpos, ypos, data),
       MaxStage(maxval),
       TimerReset(xtimer),
-      CashTurn(MFCD::Retrieve("CASHTURN.AUD")),
-      Clock1(MFCD::Retrieve("CLOCK1.AUD")) {}
+      CashTurn(MixArchive::Retrieve("CASHTURN.AUD")),
+      Clock1(MixArchive::Retrieve("CLOCK1.AUD")) {}
 
 void ScoreCredsClass::Update() {
   GraphicViewPortClass* oldpage;
@@ -368,9 +369,9 @@ void ScoreClass::Presentation() {
   // Set_Logic_Page(SysMemPage);
   BlackPalette.Set();
 
-  const void* country4 = MFCD::Retrieve("COUNTRY4.AUD");
-  const void* sfx4 = MFCD::Retrieve("SFX4.AUD");
-  Beepy6 = MFCD::Retrieve("BEEPY6.AUD");
+  const void* country4 = MixArchive::Retrieve("COUNTRY4.AUD");
+  const void* sfx4 = MixArchive::Retrieve("SFX4.AUD");
+  Beepy6 = MixArchive::Retrieve("BEEPY6.AUD");
 
   /*
   ** Load the background for the score screen
@@ -379,8 +380,8 @@ void ScoreClass::Presentation() {
   const int minutes = static_cast<int>(ElapsedTime / kTimerMinute) + 1;
 
   // Load up the shapes for the Nod score screen
-  yellowptr = MFCD::Retrieve("BAR3BHR.SHP");
-  redptr = MFCD::Retrieve("BAR3RHR.SHP");
+  yellowptr = MixArchive::Retrieve("BAR3BHR.SHP");
+  redptr = MixArchive::Retrieve("BAR3RHR.SHP");
 
   /* Change to the six-point font for Text_Print */
   oldfont = Set_Font(ScoreFontPtr);
@@ -397,9 +398,9 @@ void ScoreClass::Presentation() {
   /*
   ** Background's up, so now load various shapes and animations
   */
-  const void* timeshape = MFCD::Retrieve("TIMEHR.SHP");
-  const void* hiscore1shape = MFCD::Retrieve("HISC1-HR.SHP");
-  const void* hiscore2shape = MFCD::Retrieve("HISC2-HR.SHP");
+  const void* timeshape = MixArchive::Retrieve("TIMEHR.SHP");
+  const void* hiscore1shape = MixArchive::Retrieve("HISC1-HR.SHP");
+  const void* hiscore2shape = MixArchive::Retrieve("HISC2-HR.SHP");
   ScoreObjs[0] = new ScoreTimeClass(238, 2, timeshape, 30, 4);
   ScoreObjs[1] = new ScoreTimeClass(4, 89, hiscore1shape, 10, 4);
   ScoreObjs[2] = new ScoreTimeClass(4, 180, hiscore2shape, 10, 4);
@@ -778,9 +779,9 @@ void Cycle_Wait_Click(bool cycle) {
 // Not const: plays the score screen animation.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void ScoreClass::Do_Nod_Buildings_Graph() {
-  const auto power_plant_shape = MFCD::RetrieveData("POWR.SHP");
-  const auto tanya_shape = MFCD::RetrieveData("E7.SHP");
-  const auto fireball_shape = MFCD::RetrieveData("FBALL1.SHP");
+  const auto power_plant_shape = MixArchive::RetrieveData("POWR.SHP");
+  const auto tanya_shape = MixArchive::RetrieveData("E7.SHP");
+  const auto fireball_shape = MixArchive::RetrieveData("FBALL1.SHP");
   const InfantryTypeClass* ramboclass =
       &InfantryTypeClass::As_Reference(INFANTRY_TANYA);
 
@@ -984,7 +985,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   int nodkilled;
   int maxval;
 
-  const void* e1ptr = MFCD::Retrieve("E1.SHP");
+  const void* e1ptr = MixArchive::Retrieve("E1.SHP");
 
   gdikilled = GKilled;
   nodkilled = NKilled;
@@ -1093,7 +1094,7 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
   int add;
 
   const void* credshape =
-      MFCD::Retrieve(house ? "CREDSUHR.SHP" : "CREDSAHR.SHP");
+      MixArchive::Retrieve(house ? "CREDSUHR.SHP" : "CREDSAHR.SHP");
 
   Alloc_Object(new ScorePrintClass(TXT_SCORE_ENDCRED, _credtx[house],
                                    _credty[house], pal));
@@ -1214,7 +1215,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
   int ascii;
   int index = 0;
 
-  const void* keystrok = MFCD::Retrieve("KEYSTROK.AUD");
+  const void* keystrok = MixArchive::Retrieve("KEYSTROK.AUD");
 
   /*
   ** Ready the hidpage so it can restore background under zoomed letters

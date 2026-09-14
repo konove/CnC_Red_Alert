@@ -77,6 +77,7 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/iconcach.h"
 #include "sdllib/ww_win.h"
+#include "tech/mix_archive.h"
 
 static const TemplateTypeClass Empty(TEMPLATE_CLEAR1,
                                      kTheaterFlagTemperate | kTheaterFlagSnow |
@@ -1838,7 +1839,7 @@ void TemplateTypeClass::Init(TheaterType theater) {
                                 .string();
 
       // Working loaded iconset pointer.
-      const auto data = MFCD::RetrieveData(fullname);
+      const auto data = MixArchive::RetrieveData(fullname);
       tplate.SetBorrowedImage(data);
       const void* ptr = data.data();
 

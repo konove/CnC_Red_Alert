@@ -59,6 +59,7 @@
 #include "td/mapedit.h"
 #include "td/special.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 
 /***************************************************************************
 **	Controls what special effects may occur on the sound effect.
@@ -418,7 +419,7 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
   const auto name = std::filesystem::path(SoundEffectName[voc].Name)
                         .replace_extension(ext)
                         .string();
-  const void* ptr = MFCD::Retrieve(name);
+  const void* ptr = MixArchive::Retrieve(name);
 
   /*
   **	If the sound data pointer is not null, then presume that it is valid.

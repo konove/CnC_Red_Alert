@@ -77,6 +77,7 @@
 #include "ra/type.h"
 #include "ra/vessel.h"
 #include "sdllib/shape.h"
+#include "tech/mix_archive.h"
 
 // Submarine
 static const VesselTypeClass VesselSubmarine(
@@ -494,7 +495,7 @@ void VesselTypeClass::One_Time() {
       const auto filename = std::string(uclass.Graphic_Name()) + "ICON";
       const auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
-      uclass.CameoData = MFCD::Retrieve(fullname);
+      uclass.CameoData = MixArchive::Retrieve(fullname);
     }
 
     /*
@@ -503,7 +504,7 @@ void VesselTypeClass::One_Time() {
     const auto fullname = std::filesystem::path(uclass.Graphic_Name())
                               .replace_extension(".SHP")
                               .string();
-    uclass.SetBorrowedImage(MFCD::RetrieveData(fullname));
+    uclass.SetBorrowedImage(MixArchive::RetrieveData(fullname));
 
     uclass.MaxSize = 26;
   }

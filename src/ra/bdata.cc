@@ -101,6 +101,7 @@
 #include "ra/type.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
+#include "tech/mix_archive.h"
 
 #define FATSHIP
 
@@ -3118,7 +3119,7 @@ void BuildingTypeClass::One_Time() {
 
       const auto fullname =
           std::filesystem::path(buffer).replace_extension(".SHP").string();
-      building.CameoData = MFCD::Retrieve(fullname);
+      building.CameoData = MixArchive::Retrieve(fullname);
     }
 
     /*
@@ -3128,7 +3129,7 @@ void BuildingTypeClass::One_Time() {
         std::filesystem::path(std::string(building.Graphic_Name()) + "MAKE")
             .replace_extension(".SHP")
             .string();
-    const void* dataptr = MFCD::Retrieve(fullname);
+    const void* dataptr = MixArchive::Retrieve(fullname);
     building.BuildupData = dataptr;
     if (dataptr != nullptr) {
       int timedelay = 1;
@@ -3145,16 +3146,16 @@ void BuildingTypeClass::One_Time() {
     fullname = std::filesystem::path(building.Graphic_Name())
                    .replace_extension(".SHP")
                    .string();
-    building.SetBorrowedImage(MFCD::RetrieveData(fullname));
+    building.SetBorrowedImage(MixArchive::RetrieveData(fullname));
   }
 
   // Try to load weap2.shp and tesla coil's lightning shapes
   auto fullname =
       std::filesystem::path("WEAP2").replace_extension(".SHP").string();
-  WarFactoryOverlay = MFCD::Retrieve(fullname);
+  WarFactoryOverlay = MixArchive::Retrieve(fullname);
   fullname =
       std::filesystem::path("LITNING").replace_extension(".SHP").string();
-  LightningShapes = MFCD::Retrieve(fullname);
+  LightningShapes = MixArchive::Retrieve(fullname);
 
   /*
   **	Install all the special animation sequences for the different building
@@ -3353,7 +3354,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
         auto fullname = std::filesystem::path(classptr->Graphic_Name())
                             .replace_extension(Theaters[theater].Suffix)
                             .string();
-        classptr->SetBorrowedImage(MFCD::RetrieveData(fullname));
+        classptr->SetBorrowedImage(MixArchive::RetrieveData(fullname));
 
         /*
         **	Buildup data is probably theater specific as well. Fetch a
@@ -3363,7 +3364,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
                                          "MAKE")
                        .replace_extension(Theaters[theater].Suffix)
                        .string();
-        classptr->BuildupData = MFCD::Retrieve(fullname);
+        classptr->BuildupData = MixArchive::Retrieve(fullname);
         if (classptr->BuildupData) {
           int timedelay = 1;
           const int count = Get_Build_Frame_Count(classptr->BuildupData);

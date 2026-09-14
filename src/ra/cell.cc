@@ -151,6 +151,7 @@
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
+#include "tech/mix_archive.h"
 
 /***********************************************************************************************
  * CellClass::CellClass -- Constructor for cell objects. *
@@ -1223,7 +1224,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       if (IsFlagged) {
         const void* flag_remap =
             HouseClass::As_Pointer(Owner)->Remap_Table(false, REMAP_NORMAL);
-        CC_Draw_Shape(MFCD::Retrieve("FLAGFLY.SHP"),
+        CC_Draw_Shape(MixArchive::Retrieve("FLAGFLY.SHP"),
                       static_cast<int>(Frame % 14), x + (ICON_PIXEL_W / 2),
                       y + (ICON_PIXEL_H / 2), WINDOW_TACTICAL,
                       SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING, flag_remap,

@@ -52,7 +52,6 @@
 
 #include "magic_enum/magic_enum.hpp"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/jshell.h"
 #include "ra/scroll.h"
 #include "sdllib/gbuffer.h"
@@ -60,6 +59,7 @@
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
 #include "tech/ftimer.h"
+#include "tech/mix_archive.h"
 
 /*
 **	This points to the loaded mouse shapes.
@@ -294,7 +294,7 @@ void MouseClass::AI(KeyNumType& input, int x, int y) {
 void MouseClass::One_Time() {
   ScrollClass::One_Time();
 
-  MouseShapes = MFCD::Retrieve("MOUSE.SHP");
+  MouseShapes = MixArchive::Retrieve("MOUSE.SHP");
 }
 
 /***********************************************************************************************

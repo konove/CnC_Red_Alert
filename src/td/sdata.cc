@@ -67,6 +67,7 @@
 #include "td/object.h"
 #include "td/smudge.h"
 #include "td/type.h"
+#include "tech/mix_archive.h"
 
 static const SmudgeTypeClass Crater1(
 
@@ -293,7 +294,7 @@ void SmudgeTypeClass::Init(TheaterType theater) {
       const auto fullname = std::filesystem::path(smudge.IniName)
                                 .replace_extension(Theaters[theater].Suffix)
                                 .string();
-      (const void*&)smudge.ImageData = MFCD::Retrieve(fullname);
+      (const void*&)smudge.ImageData = MixArchive::Retrieve(fullname);
     }
   }
 }

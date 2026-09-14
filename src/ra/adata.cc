@@ -60,6 +60,7 @@
 #include "ra/type.h"
 #include "tech/disk_file.h"
 #include "tech/fixed.h"
+#include "tech/mix_archive.h"
 
 static const AnimTypeClass AtomBomb(
     ANIM_ATOM_BLAST,  // Animation number.
@@ -2190,11 +2191,12 @@ void AnimTypeClass::One_Time() {
       if (file.IsAvailable()) {
         As_Reference(index).SetOwnedImage(LoadAllocData(file));
       } else {
-        As_Reference(index).SetBorrowedImage(MFCD::RetrieveData(fullname));
+        As_Reference(index).SetBorrowedImage(
+            MixArchive::RetrieveData(fullname));
       }
 #else
       const_cast<AnimTypeClass&>(As_Reference(index))
-          .SetBorrowedImage(MFCD::RetrieveData(fullname));
+          .SetBorrowedImage(MixArchive::RetrieveData(fullname));
 #endif
     }
   }
@@ -2225,7 +2227,7 @@ void AnimTypeClass::Init(TheaterType theater) {
                                   .replace_extension(Theaters[theater].Suffix)
                                   .string();
 
-        anim.SetBorrowedImage(MFCD::RetrieveData(fullname));
+        anim.SetBorrowedImage(MixArchive::RetrieveData(fullname));
       }
     }
   }

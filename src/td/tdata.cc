@@ -61,6 +61,7 @@
 #include "td/object.h"
 #include "td/terrain.h"
 #include "td/type.h"
+#include "tech/mix_archive.h"
 
 #define TREE_NORMAL 600
 // #define TREE_WEAK 400
@@ -663,7 +664,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
         const auto fullname = std::filesystem::path(terrain.IniName)
                                   .replace_extension(Theaters[theater].Suffix)
                                   .string();
-        (const void*&)terrain.ImageData = MFCD::Retrieve(fullname);
+        (const void*&)terrain.ImageData = MixArchive::Retrieve(fullname);
 
         IsTheaterShape = true;
         if (terrain.RadarIcon) {

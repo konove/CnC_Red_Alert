@@ -142,9 +142,9 @@ void Choose_Side() {
   f.Open("NOD_SLCT.AUD");
   speechn = Load_Alloc_Data(f);
 
-  //	staticaud = MFCD::Retrieve("STRUGGLE.AUD");
-  //	speechg = MFCD::Retrieve("GDI_SLCT.AUD");
-  //	speechn = MFCD::Retrieve("NOD_SLCT.AUD");
+  //	staticaud = MixArchive::Retrieve("STRUGGLE.AUD");
+  //	speechg = MixArchive::Retrieve("GDI_SLCT.AUD");
+  //	speechn = MixArchive::Retrieve("NOD_SLCT.AUD");
 
   if (Special.IsFromInstall) {
     {

@@ -41,6 +41,7 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 
 bool Get_Broadcast_Addresses() {
   const int d_dialog_w = 640;                             // dialog width
@@ -109,7 +110,7 @@ bool Get_Broadcast_Addresses() {
   ColorListClass ip_address_list(
       BUTTON_IPLIST, d_ip_address_list_x, d_ip_address_list_y,
       d_ip_address_list_w, d_ip_address_list_h, kTpfText,
-      MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
+      MixArchive::Retrieve("BTN-UP.SHP"), MixArchive::Retrieve("BTN-DN.SHP"));
 
   TextButtonClass okbtn(BUTTON_OK, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w,
                         d_ok_h);

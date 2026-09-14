@@ -74,6 +74,7 @@
 #include "ra/object.h"
 #include "ra/type.h"
 #include "sdllib/shape.h"
+#include "tech/mix_archive.h"
 
 const void* AircraftTypeClass::LRotorData = nullptr;
 const void* AircraftTypeClass::RRotorData = nullptr;
@@ -388,15 +389,15 @@ void AircraftTypeClass::One_Time() {
 
     // Load cameo icon: "<GraphicName>ICON.SHP"
     const auto cameo_file = std::string(uclass.Graphic_Name()) + "ICON.SHP";
-    uclass.CameoData = MFCD::Retrieve(cameo_file);
+    uclass.CameoData = MixArchive::Retrieve(cameo_file);
 
     // Load aircraft shape: "<GraphicName>.SHP"
     const auto shape_file = std::string(uclass.Graphic_Name()) + ".SHP";
-    uclass.SetBorrowedImage(MFCD::RetrieveData(shape_file));
+    uclass.SetBorrowedImage(MixArchive::RetrieveData(shape_file));
   }
 
-  LRotorData = MFCD::Retrieve("LROTOR.SHP");
-  RRotorData = MFCD::Retrieve("RROTOR.SHP");
+  LRotorData = MixArchive::Retrieve("LROTOR.SHP");
+  RRotorData = MixArchive::Retrieve("RROTOR.SHP");
 }
 
 /***********************************************************************************************

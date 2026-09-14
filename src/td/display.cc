@@ -145,6 +145,7 @@
 #include "td/unit.h"
 #include "td/vector.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 
 /*
@@ -239,9 +240,9 @@ void DisplayClass::One_Time() {
   /*
   **	Load the generic transparent icon set.
   */
-  TransIconset = MFCD::Retrieve("TRANS.ICN");
+  TransIconset = MixArchive::Retrieve("TRANS.ICN");
 
-  ShadowShapes = MFCD::Retrieve("SHADOW.SHP");
+  ShadowShapes = MixArchive::Retrieve("SHADOW.SHP");
 
   Set_View_Dimensions(0, Map.Get_Tab_Height());
 
@@ -370,7 +371,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   sprintf(fullname, "%s.MIX", Theaters[Theater].Root);
   if (Theater != LastTheater) {
     delete TheaterData;
-    TheaterData = MFCD::Register(fullname);
+    TheaterData = MixArchive::Register(fullname);
     TheaterData->Cache();
   }
 
@@ -382,7 +383,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   snprintf(iconname, sizeof(iconname), "%.4sICNH.MIX", Theaters[Theater].Root);
   if (Theater != LastTheater) {
     delete TheaterIcons;
-    TheaterIcons = MFCD::Register(iconname);
+    TheaterIcons = MixArchive::Register(iconname);
     TheaterIcons->Cache();
   }
 
@@ -391,7 +392,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   **	The fading palettes will have to be generated as well.
   */
   sprintf(fullname, "%s.PAL", Theaters[theater].Root);
-  const void* ptr = MFCD::Retrieve(fullname);
+  const void* ptr = MixArchive::Retrieve(fullname);
   Mem_Copy(ptr, GamePalette, 768);
 
   Mem_Copy(GamePalette, OriginalPalette, 768);

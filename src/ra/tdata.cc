@@ -72,6 +72,7 @@
 #include "ra/terrain.h"
 #include "ra/type.h"
 #include "sdllib/shape.h"
+#include "tech/mix_archive.h"
 
 static const int16_t List000011101000[] = {
     MAP_CELL_W, MAP_CELL_W + 1, MAP_CELL_W + 2, MAP_CELL_W * 2, kRefreshEol};
@@ -525,7 +526,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
         const auto fullname = std::filesystem::path(terrain.IniName)
                                   .replace_extension(Theaters[theater].Suffix)
                                   .string();
-        terrain.SetBorrowedImage(MFCD::RetrieveData(fullname));
+        terrain.SetBorrowedImage(MixArchive::RetrieveData(fullname));
 
         IsTheaterShape =
             true;  // Let Build_Frame know that this is a theater specific shape

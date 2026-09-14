@@ -97,6 +97,7 @@
 #include "sdllib/ww_win.h"
 #include "tech/archive.h"
 #include "tech/game_file.h"
+#include "tech/mix_archive.h"
 #include "tech/rgb.h"
 
 /*
@@ -824,7 +825,7 @@ void ChronalVortexClass::Render() {
 
     sprintf(fname, "HOLE%04d.lut", frame);
 
-    const void* lut_ptr = MFCD::Retrieve(fname);
+    const void* lut_ptr = MixArchive::Retrieve(fname);
     if (lut_ptr) {
       /*
       ** Build a representation of the area of the screen where the vortex will
