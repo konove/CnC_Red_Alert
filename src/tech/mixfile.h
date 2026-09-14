@@ -168,8 +168,7 @@ class MixFileClass : public Node<MixFileClass<T>> {
 
 template <class T>
 bool MixFileClass<T>::Open(std::string_view filename, const PKey* key) {
-  const std::string name(filename);  // File classes need a terminated name.
-  T file(name.c_str());
+  T file(filename);
   filename_ = file.FileName();
 
   FileStraw file_straw(file);
@@ -287,7 +286,7 @@ bool MixFileClass<T>::Cache() {
     return false;
   }
 
-  T file(filename_.c_str());
+  T file(filename_);
   FileStraw file_straw(file);
   Straw* straw = &file_straw;
 

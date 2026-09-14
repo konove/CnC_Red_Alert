@@ -32,6 +32,7 @@
 #include <optional>
 #include <span>
 #include <string>
+#include <string_view>
 
 #include "base/numeric.h"
 #include "ra/conquer.h"
@@ -45,14 +46,14 @@
 #include "tech/wwfile.h"
 
 // The name is copied by SetName, so filename need not outlive the object.
-MixAwareFile::MixAwareFile(const char* filename) {
+MixAwareFile::MixAwareFile(const std::string_view filename) {
   MixAwareFile::SetName(filename);
 }
 
 MixAwareFile::MixAwareFile() = default;
 
 void MixAwareFile::Error(int /*error*/, bool /*can_retry*/,
-                         const char* /*filename*/) {
+                         std::string_view /*filename*/) {
   // A missing CD is the only failure this can recover from, so ask for the
   // disc and give up if the player cancels.
   if (!Force_CD_Available(RequiredCD)) {
@@ -238,12 +239,12 @@ bool MixAwareFile::Open(FileAccess rights) {
     // file object is adjusted for mixfile support, however. Also note that the
     // filename attached to this object is NOT the same as the file attached to
     // the file handle.
-    const std::string embedded_name = FileName();
-    Open(location->mixfile->Filename().c_str(), FileAccess::kRead);
+    const std::string embedded_name(FileName());
+    Open(location->mixfile->Filename(), FileAccess::kRead);
     // Put the embedded file's name back. Search is disabled so SetName
     // takes the name verbatim instead of probing the search paths for it.
     SetSearchEnabled(false);
-    SetName(embedded_name.c_str());
+    SetName(embedded_name);
     SetSearchEnabled(true);
     // The bias must be set after SetName, which clears it; Bias() adds start
     // to the existing bias rather than replacing it. offset is absolute within
@@ -281,7 +282,7 @@ MixAwareFile* OpenFileForHandle(int handle) {
 
 }  // namespace
 
-int __cdecl OpenFileHandle(const char* file_name, FileAccess mode) {
+int __cdecl OpenFileHandle(const std::string_view file_name, FileAccess mode) {
   for (int handle = 0; handle < std::ssize(handle_table); handle++) {
     if (!handle_table[handle].IsOpen()) {
       if (handle_table[handle].Open(file_name, mode)) {
@@ -315,7 +316,7 @@ int32_t __cdecl WriteFileHandle(int handle, const void* buffer, int32_t size) {
   return 0;
 }
 
-bool __cdecl FileExists(const char* file_name) {
+bool __cdecl FileExists(const std::string_view file_name) {
   MixAwareFile file(file_name);
   return file.IsAvailable();
 }

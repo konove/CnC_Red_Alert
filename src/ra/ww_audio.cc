@@ -872,7 +872,7 @@ void Speak_AI() {
                               .replace_extension(".AUD")
                               .string();
 
-        MixAwareFile file(name.c_str());
+        MixAwareFile file(name);
         if (file.IsAvailable() &&
             file.Read(SpeechBuffer[_index], kSpeechBufferSize)) {
           speech = SpeechBuffer[_index];

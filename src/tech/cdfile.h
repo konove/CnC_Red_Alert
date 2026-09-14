@@ -23,7 +23,6 @@
 #include <string_view>
 #include <vector>
 
-#include "absl/base/attributes.h"
 #include "tech/bfiofile.h"
 #include "tech/wwfile.h"
 
@@ -48,7 +47,7 @@
 //   file.Open(FileAccess::kRead);  // Searches C:\GameData, then CD drive
 class CDFileClass : public BufferIOFileClass {
  public:
-  explicit CDFileClass(const char* filename);
+  explicit CDFileClass(std::string_view filename);
   CDFileClass() = default;
 
   CDFileClass(const CDFileClass&) = delete;
@@ -58,9 +57,12 @@ class CDFileClass : public BufferIOFileClass {
 
   ~CDFileClass() override = default;
 
-  const char* SetName(const char* filename)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  bool Open(const char* filename,
+  // Binds filename to the file object. Unless search is disabled, the current
+  // directory and then each search path is checked for the file, and the first
+  // location where it exists is stored as the name. A name found nowhere is
+  // stored as given.
+  void SetName(std::string_view filename) override;
+  bool Open(std::string_view filename,
             FileAccess rights = FileAccess::kRead) override;
   bool Open(FileAccess rights = FileAccess::kRead) override;
 

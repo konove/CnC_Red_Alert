@@ -49,6 +49,7 @@
 #include <cstdio>
 #include <limits>
 #include <string>
+#include <string_view>
 
 #include "absl/base/attributes.h"
 #include "tech/wwfile.h"
@@ -68,7 +69,7 @@
 // version here ignores every error.
 class RawFileClass : public FileClass {
  public:
-  explicit RawFileClass(const char* filename);
+  explicit RawFileClass(std::string_view filename);
   RawFileClass() = default;
 
   RawFileClass(const RawFileClass&) = delete;
@@ -78,14 +79,15 @@ class RawFileClass : public FileClass {
 
   ~RawFileClass() override;
 
-  [[nodiscard]] const char* FileName() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  const char* SetName(const char* filename)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  [[nodiscard]] std::string_view FileName() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override {
+    return filename_;
+  }
+  void SetName(std::string_view filename) override;
   bool Create() override;
   bool Delete() override;
   [[nodiscard]] bool IsOpen() const override;
-  bool Open(const char* filename,
+  bool Open(std::string_view filename,
             FileAccess rights = FileAccess::kRead) override;
   bool Open(FileAccess rights = FileAccess::kRead) override;
   int32_t Read(void* buffer, int32_t size) override;
@@ -94,7 +96,7 @@ class RawFileClass : public FileClass {
   int32_t Write(const void* buffer, int32_t size) override;
   void Close() override;
   void Error(int error, bool can_retry = false,
-             const char* filename = nullptr) override;
+             std::string_view filename = {}) override;
 
   // Makes the byte range starting at start, length bytes long, appear as the
   // whole file. start is added to the current bias; start == 0 removes the
@@ -127,27 +129,6 @@ class RawFileClass : public FileClass {
   // Name of the file on disk; empty if none has been assigned.
   std::string filename_;
 };
-
-/***********************************************************************************************
- * RawFileClass::FileName -- Returns with the filename associate with the file
- *object.        *
- *                                                                                             *
- *    Use this routine to determine what filename is associated with this file
- *object. If no   * filename has yet been assigned, then this routing will
- *return NULL.                      *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the file name associated with this file
- *object or NULL   * if one doesn't exist. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/18/1994 JLB : Created. *
- *=============================================================================================*/
-inline const char* RawFileClass::FileName() const {
-  return filename_.empty() ? nullptr : filename_.c_str();
-}
 
 /***********************************************************************************************
  * RawFileClass::~RawFileClass -- Default deconstructor for a file object. *

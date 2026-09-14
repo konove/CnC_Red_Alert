@@ -1072,7 +1072,7 @@ void UnitTypeClass::One_Time() {
     auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
 #ifndef NDEBUG
-    RawFileClass datafile(fullname.c_str());
+    RawFileClass datafile(fullname);
     if (datafile.IsAvailable()) {
       uclass.CameoData = Load_Alloc_Data(datafile);
     } else {
@@ -1090,7 +1090,7 @@ void UnitTypeClass::One_Time() {
                    .replace_extension(".SHP")
                    .string();
 #ifndef NDEBUG
-    RawFileClass shpfile(fullname.c_str());
+    RawFileClass shpfile(fullname);
     if (shpfile.IsAvailable()) {
       uclass.SetOwnedImage(LoadAllocData(shpfile));
     } else {

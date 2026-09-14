@@ -2079,7 +2079,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
         std::filesystem::path(name).replace_extension(".VQA").string();
     const auto pal_name =
         std::filesystem::path(name).replace_extension(".VQP").string();
-    if (!MixAwareFile(fullname.c_str()).IsAvailable()) {
+    if (!MixAwareFile(fullname).IsAvailable()) {
       DLOG(WARNING) << "Play_Movie: file not found: " << fullname;
       return;
     }

@@ -63,6 +63,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <string>
+#include <string_view>
 
 #include "absl/strings/ascii.h"
 #include "base/numeric.h"
@@ -95,7 +96,7 @@
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 void RawFileClass::Error(int /*error*/, bool /*canretry*/,
-                         const char* /*filename*/) {}
+                         std::string_view /*filename*/) {}
 
 /***********************************************************************************************
  * RawFileClass::RawFileClass -- Simple constructor for a file object. *
@@ -114,8 +115,8 @@ void RawFileClass::Error(int /*error*/, bool /*canretry*/,
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-RawFileClass::RawFileClass(const char* filename)
-    : filename_(filename ? filename : "") {}
+RawFileClass::RawFileClass(const std::string_view filename)
+    : filename_(filename) {}
 
 /***********************************************************************************************
  * RawFileClass::SetName -- Manually sets the name for a file object. *
@@ -127,25 +128,16 @@ RawFileClass::RawFileClass(const char* filename)
  *                                                                                             *
  * INPUT:   filename -- The filename to assign to this file object. *
  *                                                                                             *
- * OUTPUT:  Returns with a pointer to the allocated copy of this filename. This
- *pointer is     * guaranteed to remain valid for the duration of this file
- *object or until the name  * is changed -- whichever is sooner. *
+ * OUTPUT:  none *
  *                                                                                             *
  * WARNINGS:   Because of the allocation this routine must perform, memory could
  *become        * fragmented. *
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-const char* RawFileClass::SetName(const char* filename) {
-  if (filename == nullptr) {
-    filename_.clear();
-    return nullptr;
-  }
-
+void RawFileClass::SetName(const std::string_view filename) {
   Bias(0);
-
   filename_ = filename;
-  return filename_.c_str();
 }
 
 /***********************************************************************************************
@@ -169,7 +161,7 @@ const char* RawFileClass::SetName(const char* filename) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-bool RawFileClass::Open(const char* filename, FileAccess rights) {
+bool RawFileClass::Open(const std::string_view filename, FileAccess rights) {
   SetName(filename);
   return Open(rights);
 }
@@ -757,7 +749,7 @@ int32_t RawFileClass::RawSeek(int32_t offset, int origin) {
   **	If the file isn't opened, then this is a fatal error condition.
   */
   if (!IsOpen()) {
-    Error(EBADF, false, filename_.c_str());
+    Error(EBADF, false, filename_);
   }
 
   offset = static_cast<int32_t>(IO_Seek_File(handle_, offset, origin));

@@ -30,7 +30,9 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <string_view>
 
+#include "sdllib/file_access.h"
 #include "tech/buff.h"
 #include "tech/cdfile.h"
 #include "tech/wwfile.h"
@@ -55,7 +57,7 @@ class MixAwareFile : public CDFileClass {
  public:
   // Constructs a file object bound to filename. The name is resolved against
   // the CD search paths immediately.
-  explicit MixAwareFile(const char* filename);
+  explicit MixAwareFile(std::string_view filename);
   MixAwareFile();
 
   MixAwareFile(const MixAwareFile&) = delete;
@@ -76,8 +78,8 @@ class MixAwareFile : public CDFileClass {
   [[nodiscard]] bool IsOpen() const override;
 
   // Assigns filename to the file object and opens it; see Open(FileAccess).
-  bool Open(const char* filename,
-            FileAccess rights = FileAccess::kRead) override {
+  bool Open(const std::string_view filename,
+            const FileAccess rights = FileAccess::kRead) override {
     SetName(filename);
     return Open(rights);
   }
@@ -122,7 +124,7 @@ class MixAwareFile : public CDFileClass {
   // drive, prompting the player for it. If the player cancels, the game exits
   // and this never returns; otherwise it returns, even when can_retry is false.
   void Error(int error, bool can_retry = false,
-             const char* filename = nullptr) override;
+             std::string_view filename = {}) override;
 
  protected:
   // Returns true if the file is open, is packed in a registered mixfile, or is
@@ -135,7 +137,7 @@ class MixAwareFile : public CDFileClass {
   // it belongs to the mixfile cache. While it is set, the inherited file handle
   // is invalid and all access is routed through this image, whose size stands
   // in for the file length.
-  ::Buffer resident_data_;
+  Buffer resident_data_;
 
   // Current read position within resident_data_, from zero to the size of the
   // file in bytes. Tracked here because a resident file has no handle to hold

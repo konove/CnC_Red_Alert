@@ -63,7 +63,7 @@ std::string CDFileClass::raw_path_;
 int CDFileClass::current_cd_drive_ = 0;
 int CDFileClass::last_cd_drive_ = 0;
 
-CDFileClass::CDFileClass(const char* filename) {
+CDFileClass::CDFileClass(const std::string_view filename) {
   CDFileClass::SetName(filename);
 }
 
@@ -218,62 +218,37 @@ void CDFileClass::SetCdDrive(int drive) {
  *=============================================================================================*/
 void CDFileClass::ClearSearchPaths() { search_paths_.clear(); }
 
-/***********************************************************************************************
- * CDFileClass::SetName -- Performs a multiple directory scan to set the
- *filename.            *
- *                                                                                             *
- *    This routine will scan all the directories specified in the path list and
- *if the file    * was found in one of the directories, it will set the filename
- *to a composite of the      * correct directory and the filename. It is used to
- *allow path searching when searching    * for files. Typical use is to support
- *CD-ROM drives. This routine examines the current    * directory first before
- *scanning through the path list. If after scanning the entire      * path list,
- *the file still could not be found, then the file object's name is set with *
- *    just the raw filename as passed to this routine. *
- *                                                                                             *
- * INPUT:   filename -- Pointer to the filename to set as the name of this file
- *object.        *
- *                                                                                             *
- * OUTPUT:  Returns a pointer to the final and complete filename of this file
- *object. This     * may have a path attached to the file. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/18/1994 JLB : Created. *
- *=============================================================================================*/
-const char* CDFileClass::SetName(const char* filename) {
+void CDFileClass::SetName(const std::string_view filename) {
+  // Copied first, because filename may view this object's current name, which
+  // the SetName calls below overwrite.
+  const std::string name(filename);
+
   // Try to find the file in the current directory first.
   // This preserves the optimization of checking the local filesystem before
   // iterating through the CD/Network search paths.
-  BufferIOFileClass::SetName(filename);
+  BufferIOFileClass::SetName(name);
 
-  // If the file system is disabled, no search paths exist, or the file
-  // was found locally, return the current result immediately.
-  if (search_disabled_ || search_paths_.empty() ||
+  // If the file system is disabled, no search paths exist, the name is empty
+  // (a search path alone would name a directory), or the file was found
+  // locally, keep the name as given.
+  if (search_disabled_ || search_paths_.empty() || name.empty() ||
       BufferIOFileClass::DoIsAvailable(AvailabilityCheck::kQuick)) {
-    return FileName();
+    return;
   }
 
   // Iterate through all registered search paths.
   for (const auto& base_path : search_paths_) {
-    // Construct the full path.
-    // Note: AddSearchPath guarantees base_path ends with a path separator,
-    // so we can safely concatenate directly.
-    const std::string full_path = base_path + filename;
-
-    // Check availability on this specific drive/path.
-    BufferIOFileClass::SetName(full_path.c_str());
+    // AddSearchPath guarantees base_path ends with a path separator, so we can
+    // safely concatenate directly.
+    BufferIOFileClass::SetName(base_path + name);
     if (BufferIOFileClass::DoIsAvailable(AvailabilityCheck::kQuick)) {
-      return FileName();
+      return;
     }
   }
 
-  /*
-  **	At this point, all path searching has failed. Just set the file name to
-  *the *	plain text passed to this routine and be done with it.
-  */
-  BufferIOFileClass::SetName(filename);
-  return FileName();
+  // All path searching has failed. Just set the file name to the plain text
+  // passed to this routine and be done with it.
+  BufferIOFileClass::SetName(name);
 }
 
 /***********************************************************************************************
@@ -300,14 +275,14 @@ const char* CDFileClass::SetName(const char* filename) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-bool CDFileClass::Open(const char* filename, FileAccess rights) {
+bool CDFileClass::Open(const std::string_view filename, FileAccess rights) {
   CDFileClass::Close();
 
   /*
   **	Verify that there is a filename associated with this file object. If
   *not, then this is a *	big error condition.
   */
-  if (!filename) {
+  if (filename.empty()) {
     Error(ENOENT, false);
   }
 

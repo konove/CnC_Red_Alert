@@ -55,6 +55,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <string_view>
 
 #include "base/numeric.h"
 #include "sdllib/file_access.h"
@@ -211,7 +212,7 @@ bool RAMFileClass::IsOpen() const { return is_open_; }
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool RAMFileClass::Open(const char* /*filename*/, FileAccess access) {
+bool RAMFileClass::Open(std::string_view /*filename*/, FileAccess access) {
   return Open(access);
 }
 

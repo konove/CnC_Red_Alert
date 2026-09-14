@@ -59,6 +59,7 @@
 #include <cerrno>
 #include <cstdint>
 #include <cstdio>
+#include <string_view>
 #include <cstring>
 
 #include "base/numeric.h"
@@ -83,7 +84,7 @@
  *                                                                                             *
  * HISTORY: * 11/10/1995 DRD : Created. *
  *=============================================================================================*/
-BufferIOFileClass::BufferIOFileClass(const char* filename) {
+BufferIOFileClass::BufferIOFileClass(const std::string_view filename) {
   BufferIOFileClass::SetName(filename);
 }
 
@@ -346,24 +347,22 @@ bool BufferIOFileClass::Commit() {
  * INPUT:   filename -- Pointer to the filename to set as the name of this file
  *object.        *
  *                                                                                             *
- * OUTPUT:  Returns a pointer to the final and complete filename of this file
- *object. This     * may have a path attached to the file. *
+ * OUTPUT:  none *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
  * HISTORY: * 11/15/1995 DRD : Created. *
  *=============================================================================================*/
-const char* BufferIOFileClass::SetName(const char* filename) {
-  if (FileName() && use_buffer_) {
-    if (strcmp(filename, FileName()) == 0) {
-      return FileName();
+void BufferIOFileClass::SetName(const std::string_view filename) {
+  if (!FileName().empty() && use_buffer_) {
+    if (filename == FileName()) {
+      return;
     }
     Commit();
     is_buffer_loaded_ = false;
   }
 
   RawFileClass::SetName(filename);
-  return FileName();
 }
 
 /***********************************************************************************************
@@ -430,7 +429,7 @@ bool BufferIOFileClass::IsOpen() const {
  *                                                                                             *
  * HISTORY: * 11/14/1995 DRD : Created. *
  *=============================================================================================*/
-bool BufferIOFileClass::Open(const char* filename, FileAccess rights) {
+bool BufferIOFileClass::Open(const std::string_view filename, FileAccess rights) {
   SetName(filename);
   return BufferIOFileClass::Open(rights);
 }

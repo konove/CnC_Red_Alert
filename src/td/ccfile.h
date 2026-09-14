@@ -43,6 +43,7 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <string_view>
 
 #include "tech/cdfile.h"
 #include "tech/wwfile.h"
@@ -55,7 +56,7 @@
 */
 class CCFileClass : public CDFileClass {
  public:
-  explicit CCFileClass(const char* filename);
+  explicit CCFileClass(std::string_view filename);
   CCFileClass();
   ~CCFileClass() override = default;
   CCFileClass(CCFileClass&&) = delete;
@@ -63,7 +64,7 @@ class CCFileClass : public CDFileClass {
 
   // Delete should be overloaded here as well. Don't allow deletes of mixfiles.
 
-  bool Open(const char* filename,
+  bool Open(std::string_view filename,
             FileAccess rights = FileAccess::kRead) override {
     SetName(filename);
     return Open(rights);
@@ -76,7 +77,7 @@ class CCFileClass : public CDFileClass {
   int32_t Write(const void* buffer, int32_t size) override;
   void Close() override;
   void Error(int error, bool canretry = false,
-             const char* filename = nullptr) override;
+             std::string_view filename = {}) override;
 
  protected:
   bool DoIsAvailable(AvailabilityCheck mode) override;

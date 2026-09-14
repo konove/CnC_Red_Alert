@@ -1206,7 +1206,7 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
     }
   }
 
-  CCFileClass(Fading_Table_Name("CLOCK", theater).c_str())
+  CCFileClass(Fading_Table_Name("CLOCK", theater))
       .Read(ClockTranslucentTable, sizeof(ClockTranslucentTable));
   LastTheater = theater;
 }

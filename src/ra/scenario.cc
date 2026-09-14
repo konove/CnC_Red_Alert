@@ -1190,7 +1190,7 @@ BriefingAction Restate_Mission() {
   bool has_video = false;
   if (Scen.BriefMovie != VQ_NONE) {
     const auto video_filename = std::string(VQName[Scen.BriefMovie]) + ".VQA";
-    has_video = MixAwareFile(video_filename.c_str()).IsAvailable();
+    has_video = MixAwareFile(video_filename).IsAvailable();
   }
 
   // Choose buttons based on video availability.

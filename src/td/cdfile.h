@@ -66,8 +66,8 @@ class CDFileClass : public RawFileClass {
   CDFileClass(CDFileClass&&) = delete;
   CDFileClass& operator=(CDFileClass&&) = delete;
 
-  const char* SetName(const char* filename) override;
-  bool Open(const char* filename,
+  void SetName(std::string_view filename) override;
+  bool Open(std::string_view filename,
             FileAccess rights = FileAccess::kRead) override;
   bool Open(FileAccess rights = FileAccess::kRead) override;
 

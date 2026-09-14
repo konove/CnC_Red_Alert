@@ -42,8 +42,8 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <string_view>
 
-#include "absl/base/attributes.h"
 #include "tech/rawfile.h"
 #include "tech/wwfile.h"
 
@@ -58,7 +58,7 @@ class BufferIOFileClass : public RawFileClass {
   // Smallest buffer Cache() will use.
   static constexpr int32_t kMinimumBufferSize = 1024;
 
-  explicit BufferIOFileClass(const char* filename);
+  explicit BufferIOFileClass(std::string_view filename);
   BufferIOFileClass() = default;
 
   BufferIOFileClass(const BufferIOFileClass&) = delete;
@@ -71,10 +71,9 @@ class BufferIOFileClass : public RawFileClass {
   bool Cache(int32_t size = 0, void* buffer = nullptr);
   void Free();
   bool Commit();
-  const char* SetName(const char* filename)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  void SetName(std::string_view filename) override;
   [[nodiscard]] bool IsOpen() const override;
-  bool Open(const char* filename,
+  bool Open(std::string_view filename,
             FileAccess rights = FileAccess::kRead) override;
   bool Open(FileAccess rights = FileAccess::kRead) override;
   int32_t Read(void* buffer, int32_t size) override;

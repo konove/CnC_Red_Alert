@@ -49,6 +49,7 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <string_view>
 
 #include "sdllib/file_access.h"
 
@@ -68,8 +69,16 @@ class FileClass {
   FileClass(FileClass&&) = delete;
   FileClass& operator=(FileClass&&) = delete;
 
-  [[nodiscard]] virtual const char* FileName() const = 0;
-  virtual const char* SetName(const char* filename) = 0;
+  // Returns the name bound to the file object, which is empty if none has
+  // been assigned. The view is invalidated by the next SetName() or Open()
+  // with a name.
+  [[nodiscard]] virtual std::string_view FileName() const = 0;
+
+  // Binds filename to the file object without opening it. Derived classes may
+  // store a resolved form of the name (such as one with a search path
+  // prepended); FileName() returns what was stored. The name is copied.
+  virtual void SetName(std::string_view filename) = 0;
+
   virtual bool Create() = 0;
   virtual bool Delete() = 0;
 
@@ -83,7 +92,7 @@ class FileClass {
   }
 
   [[nodiscard]] virtual bool IsOpen() const = 0;
-  virtual bool Open(const char* filename,
+  virtual bool Open(std::string_view filename,
                     FileAccess rights = FileAccess::kRead) = 0;
   virtual bool Open(FileAccess rights = FileAccess::kRead) = 0;
   virtual int32_t Read(void* buffer, int32_t size) = 0;
@@ -92,11 +101,7 @@ class FileClass {
   virtual int32_t Write(const void* buffer, int32_t size) = 0;
   virtual void Close() = 0;
   virtual void Error(int error, bool can_retry = false,
-                     const char* filename = nullptr) = 0;
-
-  // legacy C interfaces take the object where a pointer or name is expected.
-  // NOLINTNEXTLINE(*-explicit-constructor)
-  operator const char*() const { return FileName(); }
+                     std::string_view filename = {}) = 0;
 
  protected:
   virtual bool DoIsAvailable(AvailabilityCheck mode) = 0;

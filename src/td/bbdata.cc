@@ -590,7 +590,7 @@ void BulletTypeClass::One_Time() {
                                 .replace_extension(".SHP")
                                 .string();
 
-      RawFileClass file(fullname.c_str());
+      RawFileClass file(fullname);
 
       if (file.IsAvailable()) {
         (const void*&)bullet.ImageData = Load_Alloc_Data(file);

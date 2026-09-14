@@ -48,7 +48,6 @@
 
 #include <cstddef>
 #include <filesystem>
-#include <string>
 
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ccini.h"
@@ -194,7 +193,7 @@ void BulletTypeClass::One_Time() {
       const_cast<BulletTypeClass&>(bullet).SetBorrowedImage(
           MFCD::RetrieveData(fullname));
 #else
-      RawFileClass file(fullname.c_str());
+      RawFileClass file(fullname);
 
       if (file.IsAvailable()) {
         bullet.SetOwnedImage(LoadAllocData(file));

@@ -47,6 +47,7 @@
 #include <climits>
 #include <cstdint>
 #include <cstdio>
+#include <string_view>
 
 #include "tech/wwfile.h"
 
@@ -139,12 +140,12 @@ EZERO,                 // Non-error.
   RawFileClass(RawFileClass&&) = delete;
   RawFileClass& operator=(RawFileClass&&) = delete;
 
-  [[nodiscard]] const char* FileName() const override;
-  const char* SetName(const char* filename) override;
+  [[nodiscard]] std::string_view FileName() const override;
+  void SetName(std::string_view filename) override;
   bool Create() override;
   bool Delete() override;
   [[nodiscard]] bool IsOpen() const override;
-  bool Open(const char* filename,
+  bool Open(std::string_view filename,
             FileAccess rights = FileAccess::kRead) override;
   bool Open(FileAccess rights = FileAccess::kRead) override;
   int32_t Read(void* buffer, int32_t size) override;
@@ -153,7 +154,7 @@ EZERO,                 // Non-error.
   int32_t Write(const void* buffer, int32_t size) override;
   void Close() override;
   void Error(int error, bool canretry = false,
-             const char* filename = nullptr) override;
+             std::string_view filename = {}) override;
 
  protected:
   bool DoIsAvailable(AvailabilityCheck mode) override;
@@ -196,7 +197,9 @@ object or NULL   *
  * HISTORY: *
 ;*   10/18/1994 JLB : Created. *
  *=============================================================================================*/
-inline const char* RawFileClass::FileName() const { return Filename; }
+inline std::string_view RawFileClass::FileName() const {
+  return Filename != nullptr ? std::string_view(Filename) : std::string_view();
+}
 
 /***********************************************************************************************
  * RawFileClass::RawFileClass -- Default constructor for a file object. *

@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "absl/base/attributes.h"
 #include "gtest/gtest.h"
 #include "ra/conquer.h"
 #include "ra/externs.h"
@@ -94,7 +95,8 @@ class MixAwareFileTest : public ::testing::Test {
     ASSERT_TRUE(MFCD::Cache(mix_path_.filename().string()));
   }
 
-  [[nodiscard]] const std::filesystem::path& loose_path() const {
+  [[nodiscard]] const std::filesystem::path& loose_path() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return loose_path_;
   }
 
@@ -156,7 +158,7 @@ TEST_F(MixAwareFileTest, DeleteRefusesPackedFile) {
 
 TEST_F(MixAwareFileTest, DeleteRemovesLooseFile) {
   WriteFile(loose_path(), {'h', 'i'});
-  MixAwareFile file(loose_path().c_str());
+  MixAwareFile file(loose_path().string());
   EXPECT_TRUE(file.Delete());
   EXPECT_FALSE(std::filesystem::exists(loose_path()));
 }

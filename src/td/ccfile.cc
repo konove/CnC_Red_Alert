@@ -52,6 +52,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include <string_view>
 
 // #include	<direct.h>
 // #include	<fcntl.h>
@@ -100,9 +101,9 @@
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 void CCFileClass::Error(int /*error*/, bool /*canretry*/,
-                        const char* /*filename*/) {
+                        std::string_view /*filename*/) {
 #ifdef DEMO
-  if (strstr(FileName(), "\\")) {
+  if (FileName().find('\\') != std::string_view::npos) {
     if (!Force_CD_Available(-1)) {
       Prog_End();
       exit(EXIT_FAILURE);
@@ -135,7 +136,7 @@ void CCFileClass::Error(int /*error*/, bool /*canretry*/,
  *                                                                                             *
  * HISTORY: * 03/20/1995 JLB : Created. *
  *=============================================================================================*/
-CCFileClass::CCFileClass(const char* filename)
+CCFileClass::CCFileClass(const std::string_view filename)
     : FromDisk(false), Pointer(nullptr), Start(0), Position(0), Length(0) {
   SetName(filename);
 }
@@ -444,10 +445,10 @@ bool CCFileClass::Open(FileAccess rights) {
       *support however. Also *	note that the filename attached to this object
       *is NOT the same as the file *	attached to the file handle.
       */
-      const std::string dupfile = FileName();
-      Open(loc->mixfile->Filename().c_str(), FileAccess::kRead);
+      const std::string dupfile(FileName());
+      Open(loc->mixfile->Filename(), FileAccess::kRead);
       SetSearchEnabled(false);  // Disable multi-drive search.
-      SetName(dupfile.c_str());
+      SetName(dupfile);
       SetSearchEnabled(true);
       Start = start;
       Length = length;
@@ -481,7 +482,7 @@ bool __cdecl Set_Search_Drives(const char*) {
 }
 #endif
 
-int __cdecl OpenFileHandle(const char* file_name, FileAccess mode) {
+int __cdecl OpenFileHandle(const std::string_view file_name, FileAccess mode) {
   for (int index = 0; index < std::ssize(Handles); index++) {
     if (!Handles[index].IsOpen()) {
       Handles[index].SetName(file_name);
@@ -515,7 +516,7 @@ int32_t __cdecl WriteFileHandle(int handle, const void* buffer, int32_t size) {
   return 0;
 }
 
-bool __cdecl FileExists(const char* file_name) {
+bool __cdecl FileExists(const std::string_view file_name) {
   CCFileClass file(file_name);
   return file.IsAvailable();
 }
@@ -562,7 +563,7 @@ int32_t __cdecl SeekFileHandle(int handle, int32_t offset, int origin) {
 
 void WWDOS_Shutdown() {
   for (auto& Handle : Handles) {
-    Handle.SetName(nullptr);
+    Handle.SetName({});
   }
 }
 

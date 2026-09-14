@@ -1256,7 +1256,7 @@ void InfantryTypeClass::One_Time() {
                         .string();
 
 #ifndef NDEBUG
-    RawFileClass sfile(fullname.c_str());
+    RawFileClass sfile(fullname);
     if (sfile.IsAvailable()) {
       uclass->SetOwnedImage(LoadAllocData(sfile));
     } else {
@@ -1273,7 +1273,7 @@ void InfantryTypeClass::One_Time() {
         std::filesystem::path(filename).replace_extension(".SHP").string();
 
 #ifndef NDEBUG
-    RawFileClass ifile(fullname.c_str());
+    RawFileClass ifile(fullname);
     if (ifile.IsAvailable()) {
       uclass->CameoData = Load_Alloc_Data(ifile);
     } else {

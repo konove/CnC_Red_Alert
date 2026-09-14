@@ -40,6 +40,7 @@
 
 #include <cstdint>
 #include <ctime>
+#include <string_view>
 
 #include "sdllib/file_access.h"
 
@@ -52,13 +53,13 @@
 // Integer-handle file access for the audio and WSA code. The game implements
 // these (ra/mix_aware_file.cc, td/ccfile.cc) so that names resolve through its
 // mixfiles. A handle is WWERROR (-1) when the open failed.
-int OpenFileHandle(const char* file_name, FileAccess mode);
+int OpenFileHandle(std::string_view file_name, FileAccess mode);
 void CloseFileHandle(int handle);
 int32_t ReadFileHandle(int handle, void* buffer, int32_t size);
 int32_t WriteFileHandle(int handle, const void* buffer, int32_t size);
 int32_t SeekFileHandle(int handle, int32_t offset, int origin);
 int32_t FileHandleSize(int handle);
-bool FileExists(const char* file_name);
+bool FileExists(std::string_view file_name);
 
 // low level IO implemented here
 void* IO_Open_File(const char* filename, FileAccess mode);

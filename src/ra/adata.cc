@@ -49,7 +49,6 @@
 
 #include <cstddef>
 #include <filesystem>
-#include <string>
 
 #include "magic_enum/magic_enum.hpp"
 #include "ra/conquer.h"
@@ -2182,12 +2181,12 @@ void AnimTypeClass::One_Time() {
     const AnimTypeClass& anim = As_Reference(index);
 
     if (!anim.IsTheater) {
-      const auto fullname = std::filesystem::path(As_Reference(index).IniName)
+      const auto fullname = std::filesystem::path(anim.IniName)
                                 .replace_extension(".SHP")
                                 .string();
 
 #ifndef NDEBUG
-      RawFileClass file(fullname.c_str());
+      RawFileClass file(fullname);
       if (file.IsAvailable()) {
         As_Reference(index).SetOwnedImage(LoadAllocData(file));
       } else {

@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <string_view>
 #include <vector>
 
 #include "gtest/gtest.h"
@@ -26,7 +27,7 @@ int64_t file_pos = 0;
 }  // namespace
 
 // Link-time stubs for the file layer the game supplies.
-int OpenFileHandle(const char* /*file_name*/, FileAccess /*mode*/) {
+int OpenFileHandle(std::string_view /*file_name*/, FileAccess /*mode*/) {
   file_pos = 0;
   return 1;
 }

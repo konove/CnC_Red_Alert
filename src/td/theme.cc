@@ -354,7 +354,7 @@ const char* ThemeClass::Theme_File_Name(ThemeType theme) {
     static auto name = std::filesystem::path(_themes[theme].Name)
                            .replace_extension(".VAR")
                            .string();
-    CCFileClass file(name.c_str());
+    CCFileClass file(name);
     if (file.IsAvailable()) {
       return name.data();
     }

@@ -585,7 +585,7 @@ void Speak_AI() {
                               .replace_extension(".AUD")
                               .string();
 
-        if (CCFileClass(name.c_str()).Read(SpeechBuffer, SPEECH_BUFFER_SIZE)) {
+        if (CCFileClass(name).Read(SpeechBuffer, SPEECH_BUFFER_SIZE)) {
           Play_Sample(SpeechBuffer, 254, Options.Volume);
         }
         _last = SpeakQueue;

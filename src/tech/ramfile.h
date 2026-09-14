@@ -42,6 +42,7 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <string_view>
 
 #include "absl/base/attributes.h"
 #include "tech/wwfile.h"
@@ -61,12 +62,12 @@ class RAMFileClass final : public FileClass {
 
   ~RAMFileClass() override;
 
-  [[nodiscard]] const char* FileName() const override { return "UNKNOWN"; }
-  const char* SetName(const char* /*filename*/) override { return FileName(); }
+  [[nodiscard]] std::string_view FileName() const override { return "UNKNOWN"; }
+  void SetName(std::string_view /*filename*/) override {}
   bool Create() override;
   bool Delete() override;
   [[nodiscard]] bool IsOpen() const override;
-  bool Open(const char* filename,
+  bool Open(std::string_view filename,
             FileAccess access = FileAccess::kRead) override;
   bool Open(FileAccess access = FileAccess::kRead) override;
   int32_t Read(void* buffer, int32_t size) override;
@@ -75,7 +76,7 @@ class RAMFileClass final : public FileClass {
   int32_t Write(const void* buffer, int32_t size) override;
   void Close() override;
   void Error(int /*error*/, bool /*can_retry*/ = false,
-             const char* /*filename*/ = nullptr) override {}
+             std::string_view /*filename*/ = {}) override {}
 
  protected:
   bool DoIsAvailable(AvailabilityCheck mode) override;

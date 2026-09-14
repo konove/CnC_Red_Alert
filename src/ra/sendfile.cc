@@ -316,7 +316,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
     save_file_name = std::string(file_name);
   }
 
-  RawFileClass save_file(save_file_name.c_str());
+  RawFileClass save_file(save_file_name);
 
   /*
   ** If the file already exists then delete it and re-create it.
