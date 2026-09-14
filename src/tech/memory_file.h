@@ -41,7 +41,6 @@
 #define CNC_RED_ALERT_TECH_MEMORY_FILE_H_
 
 #include <cstddef>
-#include <cstdint>
 #include <cstdio>
 #include <span>
 #include <string_view>
@@ -49,6 +48,7 @@
 #include "absl/base/attributes.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
+#include "sdllib/file_access.h"
 #include "tech/file.h"
 
 // A File that reads and writes a caller-supplied memory buffer, for code
