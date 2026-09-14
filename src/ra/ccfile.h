@@ -16,29 +16,15 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/CCFILE.H 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : CCFILE.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : October 17, 1994 *
- *                                                                                             *
- *                  Last Update : October 17, 1994   [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
-
 #ifndef CNC_RED_ALERT_RA_CCFILE_H_
 #define CNC_RED_ALERT_RA_CCFILE_H_
+
+// File: CCFileClass, the game's file object that can read files packed inside
+// mixfiles as if they were loose files on disk. ccfile.cc also defines the
+// integer-handle file API declared in sdllib/file.h (Open_File, Read_File, ...)
+// on top of it, for the audio and image code outside the game.
+//
+// Originally CCFILE.H by Joe L. Bostic, started October 17, 1994.
 
 #include <cstdint>
 #include <cstdio>
@@ -48,65 +34,106 @@
 #include "tech/cdfile.h"
 #include "tech/wwfile.h"
 
-/*
-**	This derived class for file access knows about mixfiles (packed files).
-*It can handle opening *	a file that is embedded within a mixfile. This
-*is true if the mixfile is cached or resides on *	disk. It is functionally
-*similar to pakfiles, except much faster and less RAM intensive.
-*/
+// A file object that knows about mixfiles (packed archives). Opening a name
+// that is packed inside a registered mixfile works whether that mixfile is
+// cached in RAM or still on disk; the caller sees an ordinary file either way.
+// It is functionally similar to pakfiles, but much faster and less RAM
+// intensive.
+//
+// A loose file on disk with the same name wins over the mixfile copy, which is
+// how patch files override packed data.
+//
+// Example:
+//   CCFileClass file("RULES.INI");
+//   if (file.Is_Available()) {
+//     file.Open();
+//     const int32_t size = file.Size();
+//     file.Read(buffer, size);
+//   }
 class CCFileClass : public CDFileClass {
  public:
+  // Constructs a file object bound to filename. The name is resolved against
+  // the CD search paths immediately.
   explicit CCFileClass(const char* filename);
   CCFileClass();
-  ~CCFileClass() override { Position = 0; }
+  ~CCFileClass() override = default;
   CCFileClass(CCFileClass&&) = delete;
   CCFileClass& operator=(CCFileClass&&) = delete;
 
-  // Delete should be overloaded here as well. Don't allow deletes of mixfiles.
-
+  // Returns true if the file is open on the RAM image of a cached mixfile, in
+  // which case reads and seeks never touch the file handle.
   [[nodiscard]] bool Is_Resident() const {
     return Data.Get_Buffer() != nullptr;
   }
+
+  // Returns true if the file is open, either on a cached mixfile image or
+  // through a valid file handle.
   [[nodiscard]] bool Is_Open() const override;
+
+  // Assigns filename to the file object and opens it; see Open(FileAccess).
   bool Open(const char* filename,
             FileAccess rights = FileAccess::kRead) override {
     Set_Name(filename);
     return Open(rights);
   }
+
+  // Opens the file, closing it first if it was open. A write, or a name found
+  // as a loose file on disk, opens the disk file. Otherwise, if the name is in
+  // a registered mixfile, the file is opened on the cached RAM image or on the
+  // byte range inside the mixfile on disk. A name found nowhere falls through
+  // to a normal disk open. Returns whether the file was opened.
   bool Open(FileAccess rights = FileAccess::kRead) override;
+
+  // Reads up to size bytes into buffer and returns the number actually read,
+  // which is less than size at end of file. A file that is not open is opened
+  // for the read and closed again afterwards.
   int32_t Read(void* buffer, int32_t size) override;
+
+  // Moves the file position by pos relative to dir (SEEK_SET, SEEK_CUR or
+  // SEEK_END) and returns the new position. For a resident file the position is
+  // clamped to [0, Size()].
   int32_t Seek(int32_t pos, int dir = SEEK_CUR) override;
+
+  // Returns the size of the file in bytes. For a file packed in a mixfile this
+  // is the size of the embedded file, not the mixfile, even when the file is
+  // not open. Returns 0 for a file that is not found anywhere.
   int32_t Size() override;
+
+  // Writes size bytes from buffer and returns the number written. Files packed
+  // in a cached mixfile are read-only; writing one writes nothing and returns
+  // 0.
   int32_t Write(const void* buffer, int32_t size) override;
+
+  // Closes the file and resets the position to the start.
   void Close() override;
+
+  // Closes the file and deletes it from disk. Returns false, deleting nothing,
+  // if there is no loose file by this name; a file packed in a mixfile cannot
+  // be deleted.
+  bool Delete() override;
+
+  // Handles a file error. All three arguments are ignored: the only recovery
+  // attempted is making sure the scenario's required CD (RequiredCD) is in a
+  // drive, prompting the player for it. If the player cancels, the game exits
+  // and this never returns; otherwise it returns, even when canretry is false.
   void Error(int error, bool canretry = false,
              const char* filename = nullptr) override;
 
  protected:
+  // Returns true if the file is open, is packed in a registered mixfile, or is
+  // found on disk. mode is passed on to the disk check.
   bool Do_Is_Available(AvailabilityCheck mode) override;
 
  private:
-  /*
-  **	This indicates the file is actually part of a resident image of the
-  *mixfile *	itself. In this case, the embedded file handle is invalid. All
-  *file access actually *	gets routed through the cached version of the
-  *file. This is a pointer to the start *	of the RAM image of the file.
-  */
+  // A view of the file's bytes inside the RAM image of a cached mixfile, or an
+  // empty buffer if the file is not resident. The buffer never owns the memory;
+  // it belongs to the mixfile cache. While it is set, the inherited file handle
+  // is invalid and all access is routed through this image, whose size stands
+  // in for the file length.
   ::Buffer Data;
-  //		void * Pointer;
 
-  /*
-  **	This is the size of the file if it was embedded in a mixfile. The size
-  *must be manually *	kept track of because the DOS file size is invalid.
-  */
-  //		long Length;
-
-  /*
-  **	This is the current seek position of the file. It is duplicated here if
-  *the file is *	part of a mixfile since the DOS seek position is not
-  *accurate. This value will *	range from zero to the size of the file in
-  *bytes.
-  */
+  // Current read position within Data, from zero to the size of the file in
+  // bytes. Tracked here because a resident file has no handle to hold one.
   int32_t Position;
 
  public:

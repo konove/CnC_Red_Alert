@@ -179,6 +179,13 @@ add_gtest(
 
 
 add_gtest(
+    NAME ra_ccfile_test
+    SOURCES ccfile_test.cc ccfile.cc
+    LIBS base tech port sdllib vqa32 absl::strings absl::check absl::log magic_enum::magic_enum
+)
+apply_language_setting(ra_ccfile_test)
+
+add_gtest(
     NAME ra_path_overlap_test
     SOURCES path_overlap_test.cc
     LIBS base absl::check absl::log magic_enum::magic_enum
