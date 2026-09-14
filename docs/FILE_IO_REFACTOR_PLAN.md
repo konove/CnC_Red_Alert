@@ -16,7 +16,10 @@
   FileStraw/FilePipe's `File` member became `file_`. Also `63aece55`: tests link
   `src/testing/gtest_main.cc`, which makes death tests undumpable so ctest runs stop filling
   systemd-coredump.
-- Next: step 3.
+- Step 3 is complete: `4c7bb308` base::ssize + SeekOrigin + Error() removed; `f68ea3f8` span I/O,
+  ReadObject/WriteObject/ReadBytes/ReadString, 105 call sites converted; raw-pointer Read/Write
+  remain as non-virtual adapters on File (each override carries `using File::Read/Write`).
+- Next: step 4.
 
 ## Context
 
