@@ -3272,7 +3272,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
 
       IsRubberBand = false;
       IsTentative = false;
-      Map.DisplayClass::IsDisplayToRedraw = true;
+      Map.IsDisplayToRedraw = true;
       Map.Flag_To_Redraw(false);
 
     } else {

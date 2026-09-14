@@ -911,7 +911,7 @@ static void Message_Input(KeyNumType& input) {
   */
   if (rc == 2) {
     Map.Flag_To_Redraw(false);
-    Map.DisplayClass::IsDisplayToRedraw = true;
+    Map.IsDisplayToRedraw = true;
   }
 
   /*
