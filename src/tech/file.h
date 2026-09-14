@@ -150,15 +150,35 @@ class File {
   // file.
   std::string ReadString(base::ssize count);
 
-  // Raw-pointer forms of Read and Write for callers not yet on spans. A
-  // derived class that overrides the span forms needs "using File::Read;" and
-  // "using File::Write;" to keep these visible.
-  base::ssize Read(void* buffer, base::ssize size) {
-    return Read(std::span(static_cast<std::byte*>(buffer), base::ToSize(size)));
+  // Typed spans of trivially copyable elements. The count returned is still
+  // in bytes. A derived class that overrides the std::byte forms needs
+  // "using File::Read;" and "using File::Write;" to keep these visible.
+  template <typename T, std::size_t N>
+    requires(std::is_trivially_copyable_v<T> &&
+             !std::is_same_v<std::remove_cv_t<T>, std::byte>)
+  base::ssize Read(std::span<T, N> buffer) {
+    return Read(std::as_writable_bytes(buffer));
   }
-  base::ssize Write(const void* buffer, base::ssize size) {
-    return Write(
-        std::span(static_cast<const std::byte*>(buffer), base::ToSize(size)));
+  template <typename T, std::size_t N>
+    requires(std::is_trivially_copyable_v<T> &&
+             !std::is_same_v<std::remove_cv_t<T>, std::byte>)
+  base::ssize Write(std::span<T, N> buffer) {
+    return Write(std::as_bytes(buffer));
+  }
+
+  // A character buffer and a byte count, for the many callers that read text
+  // or raw bytes into a char array. Only byte-sized element types are
+  // accepted, so the count cannot be misread as elements; use ReadObject()
+  // or a span for anything else.
+  template <typename T>
+    requires(sizeof(T) == 1 && std::is_trivially_copyable_v<T>)
+  base::ssize Read(T* buffer, base::ssize count) {
+    return Read(std::span(buffer, base::ToSize(count)));
+  }
+  template <typename T>
+    requires(sizeof(T) == 1 && std::is_trivially_copyable_v<T>)
+  base::ssize Write(const T* buffer, base::ssize count) {
+    return Write(std::span(buffer, base::ToSize(count)));
   }
 
   // Moves the file position by offset from origin and returns the new

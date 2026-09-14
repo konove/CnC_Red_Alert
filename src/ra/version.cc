@@ -330,7 +330,7 @@ void VersionClass::Read_Text_String() {
   DiskFile file("VERSION.TXT");
 
   if (file.IsAvailable()) {
-    file.Read(VersionText, sizeof(VersionText));
+    file.ReadObject(VersionText);
     VersionText[sizeof(VersionText) - 1] = '\0';
     while (VersionText[strlen(VersionText) - 1] == '\r') {
       VersionText[strlen(VersionText) - 1] = '\0';

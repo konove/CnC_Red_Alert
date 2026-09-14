@@ -767,8 +767,8 @@ static void Do_Record_Playback() {
     Session.RecordFile.WriteObject(TeamEvent);
     Session.RecordFile.WriteObject(TeamNumber);
     Session.RecordFile.WriteObject(FormationEvent);
-    Session.RecordFile.Write(TeamMaxSpeed, sizeof(TeamMaxSpeed));
-    Session.RecordFile.Write(TeamSpeed, sizeof(TeamSpeed));
+    Session.RecordFile.WriteObject(TeamMaxSpeed);
+    Session.RecordFile.WriteObject(TeamSpeed);
     Session.RecordFile.WriteObject(FormMove);
     Session.RecordFile.WriteObject(FormSpeed);
     Session.RecordFile.WriteObject(FormMaxSpeed);
@@ -826,8 +826,8 @@ static void Do_Record_Playback() {
       Toggle_Formation();
     }
 
-    Session.RecordFile.Read(TeamMaxSpeed, sizeof(TeamMaxSpeed));
-    Session.RecordFile.Read(TeamSpeed, sizeof(TeamSpeed));
+    Session.RecordFile.ReadObject(TeamMaxSpeed);
+    Session.RecordFile.ReadObject(TeamSpeed);
     Session.RecordFile.ReadObject(FormMove);
     Session.RecordFile.ReadObject(FormSpeed);
     Session.RecordFile.ReadObject(FormMaxSpeed);
@@ -1973,7 +1973,10 @@ int MixFileVqaIo::Open(const char* filename) {
 }
 
 int MixFileVqaIo::Read(void* buffer, const int64_t bytes) {
-  return file_->Read(buffer, static_cast<base::ssize>(bytes)) != bytes ? 1 : 0;
+  return file_->Read(std::span(static_cast<std::byte*>(buffer),
+                               base::ToSize(bytes))) != bytes
+             ? 1
+             : 0;
 }
 
 int MixFileVqaIo::Seek(const int64_t offset, const int origin) {
@@ -2028,7 +2031,7 @@ int Load_Interpolated_Palettes(const char* filename, const bool add) {
 
   if (file.IsAvailable()) {
     file.Open(FileAccess::kRead);
-    file.Read(&num_palettes, 4);
+    file.ReadObject(num_palettes);
 
     for (i = 0; i < num_palettes; i++) {
       // 256 x 256: the blended result for every pair of palette indices.
@@ -3121,7 +3124,7 @@ void* Hires_Load(const char* name) {
 
   if (file.IsAvailable()) {
     const base::ssize length = file.Size();
-    void* return_ptr = new char[base::ToSize(length)];
+    char* return_ptr = new char[base::ToSize(length)];
     file.Read(return_ptr, length);
     return return_ptr;
   }

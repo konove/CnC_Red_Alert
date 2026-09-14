@@ -397,43 +397,35 @@ void DisplayClass::Init_Theater(TheaterType theater) {
 
   Mem_Copy(GamePalette, OriginalPalette, 768);
 
-  GameFile(Fading_Table_Name("GREEN", theater))
-      .Read(FadingGreen, sizeof(FadingGreen));
+  GameFile(Fading_Table_Name("GREEN", theater)).ReadObject(FadingGreen);
   if (theater == THEATER_DESERT) {
     FadingGreen[196] = 160;
   }
 
-  GameFile(Fading_Table_Name("YELLOW", theater))
-      .Read(FadingYellow, sizeof(FadingYellow));
+  GameFile(Fading_Table_Name("YELLOW", theater)).ReadObject(FadingYellow);
 
-  GameFile(Fading_Table_Name("RED", theater))
-      .Read(FadingRed, sizeof(FadingRed));
+  GameFile(Fading_Table_Name("RED", theater)).ReadObject(FadingRed);
 
   GameFile(Fading_Table_Name("MOUSE", theater))
-      .Read(MouseTranslucentTable, sizeof(MouseTranslucentTable));
+      .ReadObject(MouseTranslucentTable);
 
   //	MouseDrawPtr = MouseTranslucentTable;
   //	MouseDrawPtr2 = Add_Long_To_Pointer(MouseTranslucentTable, 256L);
   //	MouseDrawVal = 1;
   //	MouseDrawFlags = (int)SHAPE_GHOST;
 
-  GameFile(Fading_Table_Name("TRANS", theater))
-      .Read(TranslucentTable, sizeof(TranslucentTable));
+  GameFile(Fading_Table_Name("TRANS", theater)).ReadObject(TranslucentTable);
 
   GameFile(Fading_Table_Name("WHITE", theater))
-      .Read(WhiteTranslucentTable, sizeof(WhiteTranslucentTable));
+      .ReadObject(WhiteTranslucentTable);
 
-  GameFile(Fading_Table_Name("SHADOW", theater))
-      .Read(ShadowTrans, sizeof(ShadowTrans));
+  GameFile(Fading_Table_Name("SHADOW", theater)).ReadObject(ShadowTrans);
 
-  GameFile(Fading_Table_Name("UNITS", theater))
-      .Read(UnitShadow, sizeof(UnitShadow));
+  GameFile(Fading_Table_Name("UNITS", theater)).ReadObject(UnitShadow);
 
-  GameFile(Fading_Table_Name("SHADE", theater))
-      .Read(FadingShade, sizeof(FadingShade));
+  GameFile(Fading_Table_Name("SHADE", theater)).ReadObject(FadingShade);
 
-  GameFile(Fading_Table_Name("LIGHT", theater))
-      .Read(FadingLight, sizeof(FadingLight));
+  GameFile(Fading_Table_Name("LIGHT", theater)).ReadObject(FadingLight);
 
   /*
   **	Create the shadow color used by aircraft.

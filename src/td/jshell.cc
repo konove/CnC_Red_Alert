@@ -252,7 +252,7 @@ int32_t Load_Uncompress(File& file, BufferClass& uncomp_buff,
   if (header.Skip) {
     size -= header.Skip;
     if (reserved_data) {
-      file.Read(reserved_data, header.Skip);
+      file.Read(static_cast<char*>(reserved_data), header.Skip);
     } else {
       file.Seek(header.Skip, SeekOrigin::kCurrent);
     }
@@ -273,7 +273,7 @@ int32_t Load_Uncompress(File& file, BufferClass& uncomp_buff,
   **	Read in the bulk of the data.
   */
   Mem_Copy(&header, sptr, sizeof(header));
-  file.Read(Add_Long_To_Pointer(sptr, sizeof(header)), size);
+  file.Read(static_cast<char*>(sptr) + sizeof(header), size);
 
   /*
   **	Decompress the data.

@@ -248,7 +248,7 @@ int32_t Load_Uncompress(File& file, BuffType& uncomp_buff, BuffType& dest_buff,
   if (header.Skip) {
     size -= header.Skip;
     if (reserved_data) {
-      file.Read(reserved_data, header.Skip);
+      file.Read(static_cast<char*>(reserved_data), header.Skip);
     } else {
       file.Seek(header.Skip, SeekOrigin::kCurrent);
     }
@@ -310,13 +310,9 @@ int Load_Picture(const char* filename, BufferClass& scratchbuf,
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 void* Load_Alloc_Data(File& file) {
-  void* ptr = nullptr;
   const base::ssize size = file.Size();
-
-  ptr = new char[base::ToSize(size)];
-  if (ptr) {
-    file.Read(ptr, size);
-  }
+  char* const ptr = new char[base::ToSize(size)];
+  file.Read(ptr, size);
   return ptr;
 }
 

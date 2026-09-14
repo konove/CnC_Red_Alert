@@ -65,6 +65,7 @@
 
 #include "td/conquer.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -72,6 +73,7 @@
 #include <filesystem>
 #include <iterator>
 #include <memory>
+#include <span>
 #include <string>
 #include <utility>
 
@@ -1987,7 +1989,10 @@ int MixFileVqaIo::Open(const char* filename) {
 }
 
 int MixFileVqaIo::Read(void* buffer, int64_t bytes) {
-  return file_->Read(buffer, static_cast<base::ssize>(bytes)) != bytes ? 1 : 0;
+  return file_->Read(std::span(static_cast<std::byte*>(buffer),
+                               base::ToSize(bytes))) != bytes
+             ? 1
+             : 0;
 }
 
 int MixFileVqaIo::Seek(int64_t offset, int origin) {
@@ -2044,7 +2049,7 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
   //	if (file.IsAvailable()){
 
   file.Open(FileAccess::kRead);
-  file.Read(&num_palettes, 4);
+  file.ReadObject(num_palettes);
 
   for (i = 0; i < num_palettes; i++) {
     InterpolatedPalettes[i + start_palette] = new unsigned char[65536]();

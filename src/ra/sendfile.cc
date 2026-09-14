@@ -574,7 +574,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   int max_chunk_size;
   int total_blocks;
 
-  void* read_ptr;
+  unsigned char* read_ptr;
 
   RemoteFileTransferType send_packet;
   SerialPacketType file_info;

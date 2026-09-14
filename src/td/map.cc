@@ -1032,8 +1032,7 @@ bool MapClass::Write_Binary(const char* root) {
     /*
     **	Save TType.
     */
-    if (file->Write(&Map[i].TType, sizeof(TemplateType)) !=
-        sizeof(TemplateType)) {
+    if (!file->WriteObject(Map[i].TType)) {
       file->Close();
       delete file;
       return false;
@@ -1042,8 +1041,7 @@ bool MapClass::Write_Binary(const char* root) {
     /*
     **	Save TIcon.
     */
-    if (file->Write(&Map[i].TIcon, sizeof(unsigned char)) !=
-        sizeof(unsigned char)) {
+    if (!file->WriteObject(Map[i].TIcon)) {
       file->Close();
       delete file;
       return false;

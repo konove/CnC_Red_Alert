@@ -41,7 +41,9 @@
 
 #include "tech/xstraw.h"
 
+#include <cstddef>
 #include <cstring>
+#include <span>
 
 #include "base/numeric.h"
 #include "sdllib/file_access.h"
@@ -127,7 +129,8 @@ int FileStraw::Get(void* source, int slen) {
       }
     }
 
-    return static_cast<int>(file_->Read(source, slen));
+    return static_cast<int>(file_->Read(
+        std::span(static_cast<std::byte*>(source), base::ToSize(slen))));
   }
   return 0;
 }

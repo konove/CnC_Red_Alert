@@ -49,7 +49,6 @@ file(GLOB_RECURSE RA_HEADERS
 )
 list(REMOVE_ITEM RA_HEADERS
         "${CMAKE_CURRENT_SOURCE_DIR}/bmp8.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/bufferx.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/cominit.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/confdlg.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/crew.h"

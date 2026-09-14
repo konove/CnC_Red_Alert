@@ -1207,7 +1207,7 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
   }
 
   GameFile(Fading_Table_Name("CLOCK", theater))
-      .Read(ClockTranslucentTable, sizeof(ClockTranslucentTable));
+      .ReadObject(ClockTranslucentTable);
   LastTheater = theater;
 }
 

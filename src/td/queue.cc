@@ -3285,7 +3285,7 @@ static void Queue_Record() {
   RecordFile.WriteObject(j);
   for (i = 0; i < DoList.Count; i++) {
     if (std::cmp_equal(Frame, DoList[i].Frame) && !DoList[i].IsExecuted) {
-      RecordFile.Write(&DoList[i], sizeof(EventClass));
+      RecordFile.WriteObject(DoList[i]);
       j--;
     }
   }
@@ -3391,7 +3391,7 @@ static void Queue_Playback() {
   ok = 1;
   if (RecordFile.ReadObject(numevents)) {
     for (i = 0; i < numevents; i++) {
-      if (RecordFile.Read(&event, sizeof(EventClass)) == sizeof(EventClass)) {
+      if (RecordFile.ReadObject(event)) {
         event.IsExecuted = 0;
         DoList.Add(event);
       } else {

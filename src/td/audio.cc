@@ -586,7 +586,8 @@ void Speak_AI() {
                               .replace_extension(".AUD")
                               .string();
 
-        if (GameFile(name).Read(SpeechBuffer, SPEECH_BUFFER_SIZE)) {
+        if (GameFile(name).Read(static_cast<char*>(SpeechBuffer),
+                                SPEECH_BUFFER_SIZE)) {
           Play_Sample(SpeechBuffer, 254, Options.Volume);
         }
         _last = SpeakQueue;

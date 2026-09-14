@@ -875,7 +875,8 @@ void Speak_AI() {
 
         GameFile file(name);
         if (file.IsAvailable() &&
-            file.Read(SpeechBuffer[_index], kSpeechBufferSize)) {
+            file.Read(static_cast<char*>(SpeechBuffer[_index]),
+                      kSpeechBufferSize)) {
           speech = SpeechBuffer[_index];
           SpeechRecord[_index] = SpeakQueue;
         }

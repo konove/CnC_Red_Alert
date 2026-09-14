@@ -609,7 +609,7 @@ void ScoreClass::Presentation() {
     for (i = 0; i < NUMFAMENAMES; i++) {
       hallfame[i].name[0] = static_cast<char>(hallfame[i].score = hallfame[i].level = 0);
       hallfame[i].side = 0;
-      file.Write(&hallfame[i], sizeof(struct Fame));
+      file.WriteObject(hallfame[i]);
     }
 
     file.Close();
@@ -617,7 +617,7 @@ void ScoreClass::Presentation() {
 
   file.Open(FileAccess::kRead);
   for (i = 0; i < NUMFAMENAMES; i++) {
-    file.Read(&hallfame[i], sizeof(struct Fame));
+    file.ReadObject(hallfame[i]);
   }
   file.Close();
 
@@ -686,7 +686,7 @@ void ScoreClass::Presentation() {
 
     file.Open(FileAccess::kWrite);
     for (i = 0; i < NUMFAMENAMES; i++) {
-      file.Write(&hallfame[i], sizeof(struct Fame));
+      file.WriteObject(hallfame[i]);
     }
     file.Close();
   } else {

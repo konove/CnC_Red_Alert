@@ -568,12 +568,12 @@ bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
     }
     port::SafeCopy(buf, descr_buf, kDescripMax);
 
-    if (file.Read(scenp, sizeof(unsigned)) != sizeof(unsigned)) {
+    if (!file.ReadObject(*scenp)) {
       file.Close();
       return false;
     }
 
-    if (file.Read(housep, sizeof(HousesType)) != sizeof(HousesType)) {
+    if (!file.ReadObject(*housep)) {
       file.Close();
       return false;
     }

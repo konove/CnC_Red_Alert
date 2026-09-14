@@ -48,7 +48,6 @@
 
 #include <algorithm>
 
-#include "base/types.h"
 #include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
 #include "tech/game_file.h"
@@ -78,7 +77,7 @@ void Read_Interpolation_Palette(const char* palette_file_name) {
 
   if (palette_file.IsAvailable()) {
     palette_file.Open(FileAccess::kRead);
-    palette_file.Read(&PaletteInterpolationTable[0][0], base::ssize{256} * 256);
+    palette_file.ReadObject(PaletteInterpolationTable);
     palette_file.Close();
     InterpolationPaletteChanged = false;
   }
@@ -104,8 +103,7 @@ void Write_Interpolation_Palette(const char* palette_file_name) {
 
   if (!palette_file.IsAvailable()) {
     palette_file.Open(FileAccess::kWrite);
-    palette_file.Write(&PaletteInterpolationTable[0][0],
-                       base::ssize{256} * 256);
+    palette_file.WriteObject(PaletteInterpolationTable);
     palette_file.Close();
   }
 }

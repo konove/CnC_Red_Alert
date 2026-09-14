@@ -2,10 +2,13 @@
 // outside the game (audio streaming, WSA animation, PCX writing) that cannot
 // use GameFile directly. Shared by both games.
 
+#include <cstddef>
 #include <cstdint>
 #include <iterator>
+#include <span>
 #include <string_view>
 
+#include "base/numeric.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
 #include "sdllib/wwstd.h"
@@ -52,14 +55,16 @@ void __cdecl CloseFileHandle(int handle) {
 
 int32_t __cdecl ReadFileHandle(int handle, void* buffer, int32_t size) {
   if (GameFile* const file = OpenFileForHandle(handle)) {
-    return static_cast<int32_t>(file->Read(buffer, size));
+    return static_cast<int32_t>(file->Read(
+        std::span(static_cast<std::byte*>(buffer), base::ToSize(size))));
   }
   return 0;
 }
 
 int32_t __cdecl WriteFileHandle(int handle, const void* buffer, int32_t size) {
   if (GameFile* const file = OpenFileForHandle(handle)) {
-    return static_cast<int32_t>(file->Write(buffer, size));
+    return static_cast<int32_t>(file->Write(
+        std::span(static_cast<const std::byte*>(buffer), base::ToSize(size))));
   }
   return 0;
 }

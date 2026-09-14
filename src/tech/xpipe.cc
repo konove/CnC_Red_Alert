@@ -41,7 +41,9 @@
 
 #include "tech/xpipe.h"
 
+#include <cstddef>
 #include <cstring>
+#include <span>
 
 #include "base/numeric.h"
 #include "sdllib/file_access.h"
@@ -157,7 +159,8 @@ int FilePipe::Put(const void* source, int slen) {
       file_->Open(FileAccess::kWrite);
     }
 
-    return static_cast<int>(file_->Write(source, slen));
+    return static_cast<int>(file_->Write(
+        std::span(static_cast<const std::byte*>(source), base::ToSize(slen))));
   }
   return 0;
 }

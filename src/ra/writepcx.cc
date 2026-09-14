@@ -164,7 +164,7 @@ int Write_PCX_File(File& file, GraphicBufferClass& pic,
   /*
   **	Write the palette out.
   */
-  file.Write(palcopy, sizeof(palcopy));
+  file.WriteObject(palcopy);
 
   /*
   **	Close the file (if necessary) and exit with no error flag.
