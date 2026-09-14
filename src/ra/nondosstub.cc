@@ -198,7 +198,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
                                   int32_t Size) {
   MixAwareFile file_handle(name);
 
-  if (!file_handle.Is_Available()) {
+  if (!file_handle.IsAvailable()) {
     return nullptr;
   }
 

@@ -34,7 +34,7 @@
  *                  Last Update : October 18, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * RawFileClass::File_Name -- Returns with the filename associate
+ * Functions: * RawFileClass::FileName -- Returns with the filename associate
  *with the file object.      * RawFileClass::RawFileClass -- Default constructor
  *for a file object.                      * RawFileClass::IsOpen -- Checks to
  *see if the file is open or not.                        *
@@ -139,8 +139,8 @@ EZERO,                 // Non-error.
   RawFileClass(RawFileClass&&) = delete;
   RawFileClass& operator=(RawFileClass&&) = delete;
 
-  [[nodiscard]] const char* File_Name() const override;
-  const char* Set_Name(const char* filename) override;
+  [[nodiscard]] const char* FileName() const override;
+  const char* SetName(const char* filename) override;
   bool Create() override;
   bool Delete() override;
   [[nodiscard]] bool IsOpen() const override;
@@ -178,7 +178,7 @@ EZERO,                 // Non-error.
 };
 
 /***********************************************************************************************
- * RawFileClass::File_Name -- Returns with the filename associate with the file
+ * RawFileClass::FileName -- Returns with the filename associate with the file
 object.        *
  * *
  *    Use this routine to determine what filename is associated with this file
@@ -196,7 +196,7 @@ object or NULL   *
  * HISTORY: *
 ;*   10/18/1994 JLB : Created. *
  *=============================================================================================*/
-inline const char* RawFileClass::File_Name() const { return Filename; }
+inline const char* RawFileClass::FileName() const { return Filename; }
 
 /***********************************************************************************************
  * RawFileClass::RawFileClass -- Default constructor for a file object. *

@@ -596,7 +596,7 @@ void ThemeClass::Scan() {
   for (int index = 0; index < std::ssize(_themes); ++index) {
     _themes[index].Available =
         MixAwareFile(Theme_File_Name(static_cast<ThemeType>(index)))
-            .Is_Available();
+            .IsAvailable();
   }
 }
 

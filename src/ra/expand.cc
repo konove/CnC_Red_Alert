@@ -88,7 +88,7 @@ bool Expansion_CS_Present() {
   //	ajw 9/29/98
   return Is_Counterstrike_Installed();
   //	RawFileClass file("EXPAND.MIX");
-  //	return(file.Is_Available());
+  //	return(file.IsAvailable());
 }
 
 /***********************************************************************************************
@@ -108,7 +108,7 @@ bool Expansion_AM_Present() {
   //	ajw 9/29/98
   return Is_Aftermath_Installed();
   //	RawFileClass file("EXPAND2.MIX");
-  //	return(file.Is_Available());
+  //	return(file.IsAvailable());
 }
 
 static const char* ExpandNames[] = {"SCG20EA", "SCG21EA", "SCG22EA", "SCG23EA",
@@ -362,7 +362,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     port::SafeAppend(buffer2, ".INI");
     Scen.Set_Scenario_Name(buffer);
     Scen.Scenario = index;
-    file.Set_Name(buffer);
+    file.SetName(buffer);
     bool bOk;
     if (index < 36) {
       bOk = bCounterstrike;
@@ -370,7 +370,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
       bOk = !bCounterstrike;
     }
 
-    if (bOk && file.Is_Available()) {
+    if (bOk && file.IsAvailable()) {
       auto* obj = new EObjectClass;
       switch (buffer[2]) {
         case 'G':

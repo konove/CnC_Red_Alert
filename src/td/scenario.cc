@@ -166,7 +166,7 @@ bool Start_Scenario(char* root, bool briefing) {
     sprintf(buffer, "%s.VQA", BriefMovie);
     CCFileClass file(buffer);
 
-    if (GameToPlay == GAME_NORMAL && !file.Is_Available()) {
+    if (GameToPlay == GAME_NORMAL && !file.IsAvailable()) {
       VisiblePage.Clear();
       Set_Palette(GamePalette);
       //			Show_Mouse();
@@ -716,7 +716,7 @@ bool Restate_Mission(const char* name, int right_btn, int left_btn) {
     port::SafeCopy(fname, name);
     port::SafeAppend(fname, ".CPS");
 
-    if (CCFileClass(fname).Is_Available()) {
+    if (CCFileClass(fname).IsAvailable()) {
       CCMessageBox box(TXT_NONE, true);
       return (box.Process(fname, right_btn, left_btn));
     }
@@ -733,7 +733,7 @@ bool Restate_Mission(const char* name, int right_btn, int left_btn) {
     sprintf(buffer1, "%s.VQA", ActionMovie);
     CCFileClass file1(buffer);
     CCFileClass file2(buffer1);
-    if (!file1.Is_Available() && !file2.Is_Available()) {
+    if (!file1.IsAvailable() && !file2.IsAvailable()) {
       right_btn = TXT_OK;
       left_btn = TXT_NONE;
       brief = false;

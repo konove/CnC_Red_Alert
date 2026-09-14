@@ -151,7 +151,7 @@ TEST_F(MixAwareFileTest, SizeOfUnopenedPackedFileIsItsOwnSize) {
 TEST_F(MixAwareFileTest, DeleteRefusesPackedFile) {
   MixAwareFile file(kPackedName);
   EXPECT_FALSE(file.Delete());
-  EXPECT_TRUE(file.Is_Available());
+  EXPECT_TRUE(file.IsAvailable());
 }
 
 TEST_F(MixAwareFileTest, DeleteRemovesLooseFile) {

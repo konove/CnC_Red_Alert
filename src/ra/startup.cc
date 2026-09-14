@@ -268,12 +268,12 @@ int main(int argc, char* argv[])
       return EXIT_FAILURE;
     }
 
-    if (!cfile.Is_Available()) {
+    if (!cfile.IsAvailable()) {
       // just create an empty config, we don't care about most of it anyway
       cfile.Create();
     }
 
-    if (cfile.Is_Available()) {
+    if (cfile.IsAvailable()) {
       Read_Private_Config_Struct(cfile, &NewConfig);
 
       Read_Setup_Options(&cfile);
@@ -300,7 +300,7 @@ int main(int argc, char* argv[])
       WWMouse = new WWMouseClass(&SeenBuff, 48, 48);
       MouseInstalled = true;
 
-      CDFileClass::Set_CD_Drive(CDList.Get_First_CD_Drive());
+      CDFileClass::SetCdDrive(CDList.Get_First_CD_Drive());
 
       /*
       ** See if we should run the intro
@@ -553,7 +553,7 @@ void Print_Error_Exit(char* string) {
  * HISTORY: * 6/7/96 4:09PM ST : Created * 09/30/1996 JLB : Uses INI class. *
  *=============================================================================================*/
 void Read_Setup_Options(RawFileClass* config_file) {
-  if (config_file->Is_Available()) {
+  if (config_file->IsAvailable()) {
     INIClass ini;
 
     ini.Load(*config_file);

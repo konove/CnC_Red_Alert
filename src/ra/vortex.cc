@@ -1084,7 +1084,7 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
 
     MixAwareFile file(_remaps[static_cast<int>(Theater)]);
 
-    if (file.Is_Available()) {
+    if (file.IsAvailable()) {
       file.Read(VortexRemapTables, int64_t{MAX_REMAP_SHADES} * 256);
     } else {
       for (i = 0; i < MAX_REMAP_SHADES; i++) {

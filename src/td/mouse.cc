@@ -283,12 +283,11 @@ void MouseClass::One_Time() {
   *only if there *	is an override file available.
   */
   RawFileClass file("MOUSE.SHP");
-  if (file.Is_Available()) {
+  if (file.IsAvailable()) {
     MouseShapes = Load_Alloc_Data(file);
   } else {
     MouseShapes = MFCD::Retrieve("MOUSE.SHP");
   }
-
 }
 
 /***********************************************************************************************

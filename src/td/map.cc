@@ -936,8 +936,8 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
   /*
   **	Create object & open file.
   */
-  file.Set_Name(fname);
-  if (!file.Is_Available()) {
+  file.SetName(fname);
+  if (!file.IsAvailable()) {
     return false;
   }
   file.Open(FileAccess::kRead);

@@ -2188,7 +2188,7 @@ void AnimTypeClass::One_Time() {
 
 #ifndef NDEBUG
       RawFileClass file(fullname.c_str());
-      if (file.Is_Available()) {
+      if (file.IsAvailable()) {
         As_Reference(index).SetOwnedImage(LoadAllocData(file));
       } else {
         As_Reference(index).SetBorrowedImage(MFCD::RetrieveData(fullname));

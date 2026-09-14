@@ -270,7 +270,7 @@ void Send_Statistics_Packet() {
     memset(abuffer, '\0', base::ToSize(ShapeBufferSize));
     sprintf(fname, "%s.INI", ScenarioName);
     CCFileClass fileo;
-    fileo.Set_Name(fname);
+    fileo.SetName(fname);
     fileo.Read(abuffer, ShapeBufferSize - 1);
     fileo.Close();
     WWGetPrivateProfileString("Basic", "Name", "Nulls-Ville", namebuffer, 40,

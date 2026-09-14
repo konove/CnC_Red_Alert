@@ -46,7 +46,7 @@
 //
 // Example:
 //   MixAwareFile file("RULES.INI");
-//   if (file.Is_Available()) {
+//   if (file.IsAvailable()) {
 //     file.Open();
 //     const int32_t size = file.Size();
 //     file.Read(buffer, size);
@@ -78,7 +78,7 @@ class MixAwareFile : public CDFileClass {
   // Assigns filename to the file object and opens it; see Open(FileAccess).
   bool Open(const char* filename,
             FileAccess rights = FileAccess::kRead) override {
-    Set_Name(filename);
+    SetName(filename);
     return Open(rights);
   }
 

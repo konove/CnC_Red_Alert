@@ -448,7 +448,7 @@ void Read_MultiPlayer_Settings() {
   Create filename and read the file.
   ------------------------------------------------------------------------*/
   CCFileClass file("CONQUER.INI");
-  if (!file.Is_Available()) {
+  if (!file.IsAvailable()) {
     return;
   }
   file.Read(buffer, ShapeBufferSize - 1);
@@ -789,8 +789,8 @@ void Write_MultiPlayer_Settings() {
   buffer = ShapeBuffer;
   memset(buffer, '\0', base::ToSize(ShapeBufferSize));
 
-  file.Set_Name("CONQUER.INI");
-  if (file.Is_Available()) {
+  file.SetName("CONQUER.INI");
+  if (file.IsAvailable()) {
     file.Open(FileAccess::kRead);
     file.Read(buffer, ShapeBufferSize - 1);
     file.Close();
@@ -916,9 +916,9 @@ void Read_Scenario_Descriptions() {
     Set_Scenario_Name(ScenarioName, i, SCEN_PLAYER_MPLAYER, SCEN_DIR_EAST,
                       SCEN_VAR_A);
     sprintf(fname, "%s.INI", ScenarioName);
-    file.Set_Name(fname);
+    file.SetName(fname);
 
-    if (file.Is_Available()) {
+    if (file.IsAvailable()) {
       MPlayerFilenum.Add(i);
     }
   }
@@ -941,7 +941,7 @@ void Read_Scenario_Descriptions() {
     Set_Scenario_Name(ScenarioName, MPlayerFilenum[i], SCEN_PLAYER_MPLAYER,
                       SCEN_DIR_EAST, SCEN_VAR_A);
     sprintf(fname, "%s.INI", ScenarioName);
-    file.Set_Name(fname);
+    file.SetName(fname);
     file.Read(buffer, ShapeBufferSize - 1);
     file.Close();
 

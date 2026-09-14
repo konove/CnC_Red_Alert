@@ -314,7 +314,7 @@ int ThemeClass::Play_Song(ThemeType theme) {
 #ifdef DEMO
       if (_themes[theme].Scenario != 99) {
         CCFileClass file(Theme_File_Name(theme));
-        if (file.Is_Available()) {
+        if (file.IsAvailable()) {
           Current = File_Stream_Sample_Vol(Theme_File_Name(theme), 0xFF, true);
         } else {
           Current = -1;
@@ -355,7 +355,7 @@ const char* ThemeClass::Theme_File_Name(ThemeType theme) {
                            .replace_extension(".VAR")
                            .string();
     CCFileClass file(name.c_str());
-    if (file.Is_Available()) {
+    if (file.IsAvailable()) {
       return name.data();
     }
   }
@@ -455,7 +455,7 @@ bool ThemeClass::Is_Allowed(ThemeType index) {
 
   sprintf(buffer, "%s.AUD", Base_Name(index));
   CCFileClass file(buffer);
-  if (_themes[index].Scenario == 99 || !file.Is_Available()) {
+  if (_themes[index].Scenario == 99 || !file.IsAvailable()) {
     _themes[index].Scenario = 99;
     return (false);
   }
@@ -545,7 +545,7 @@ void ThemeClass::Scan() {
     //			_themes[theme].Available = false;
     //		} else {
     _themes[theme].Available =
-        CCFileClass(Theme_File_Name(theme)).Is_Available();
+        CCFileClass(Theme_File_Name(theme)).IsAvailable();
     //		}
   }
 }

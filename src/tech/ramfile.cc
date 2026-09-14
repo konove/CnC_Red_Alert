@@ -36,7 +36,7 @@
  * Functions: * RAMFileClass::Close -- This will 'close' the ram file. *
  *   RAMFileClass::Create -- Effectively clears the buffer of data. *
  *   RAMFileClass::Delete -- Effectively clears the buffer of data. *
- *   RAMFileClass::Is_Available -- Determines if the "file" is available. *
+ *   RAMFileClass::IsAvailable -- Determines if the "file" is available. *
  *   RAMFileClass::IsOpen -- Is the file open? * RAMFileClass::Open -- Opens a
  *RAM based file for read or write.                           *
  *   RAMFileClass::Open -- Opens the RAM based file. *
@@ -85,11 +85,11 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-RAMFileClass::RAMFileClass(void* buffer, int len)
-    : Buffer(static_cast<char*>(buffer)), MaxLength(len), Length(len) {
-  if (buffer == nullptr && len > 0) {
-    Buffer = new char[base::ToSize(len)];
-    IsAllocated = true;
+RAMFileClass::RAMFileClass(void* buffer, int size)
+    : buffer_(static_cast<char*>(buffer)), capacity_(size), size_(size) {
+  if (buffer == nullptr && size > 0) {
+    buffer_ = new char[base::ToSize(size)];
+    owns_buffer_ = true;
   }
 }
 
@@ -109,10 +109,10 @@ RAMFileClass::RAMFileClass(void* buffer, int len)
  *=============================================================================================*/
 RAMFileClass::~RAMFileClass() {
   Close();
-  if (IsAllocated) {
-    delete[] Buffer;
-    Buffer = nullptr;
-    IsAllocated = false;
+  if (owns_buffer_) {
+    delete[] buffer_;
+    buffer_ = nullptr;
+    owns_buffer_ = false;
   }
 }
 
@@ -133,7 +133,7 @@ RAMFileClass::~RAMFileClass() {
  *=============================================================================================*/
 bool RAMFileClass::Create() {
   if (!IsOpen()) {
-    Length = 0;
+    size_ = 0;
     return true;
   }
   return false;
@@ -156,7 +156,7 @@ bool RAMFileClass::Create() {
  *=============================================================================================*/
 bool RAMFileClass::Delete() {
   if (!IsOpen()) {
-    Length = 0;
+    size_ = 0;
     return true;
   }
   return false;
@@ -232,12 +232,12 @@ bool RAMFileClass::Open(const char* /*filename*/, FileAccess access) {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool RAMFileClass::Open(FileAccess access) {
-  if (Buffer == nullptr || IsOpen()) {
+  if (buffer_ == nullptr || IsOpen()) {
     return false;
   }
 
-  Offset = 0;
-  Access = access;
+  position_ = 0;
+  access_ = access;
   is_open_ = true;
 
   switch (access) {
@@ -246,7 +246,7 @@ bool RAMFileClass::Open(FileAccess access) {
       break;
 
     case FileAccess::kWrite:
-      Length = 0;
+      size_ = 0;
       break;
 
     case FileAccess::kReadWrite:
@@ -278,29 +278,29 @@ bool RAMFileClass::Open(FileAccess access) {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 int32_t RAMFileClass::Read(void* buffer, int32_t size) {
-  if (Buffer == nullptr || buffer == nullptr || size == 0) {
+  if (buffer_ == nullptr || buffer == nullptr || size == 0) {
     return 0;
   }
 
-  bool hasopened = false;
+  bool opened_here = false;
   if (!IsOpen()) {
     Open(FileAccess::kRead);
-    hasopened = true;
+    opened_here = true;
   } else {
-    if (!HasAccess(Access, FileAccess::kRead)) {
+    if (!HasAccess(access_, FileAccess::kRead)) {
       return 0;
     }
   }
 
-  const int tocopy = size < Length - Offset ? size : Length - Offset;
-  memmove(buffer, &Buffer[Offset], base::ToSize(tocopy));
-  Offset += tocopy;
+  const int bytes_to_copy = size < size_ - position_ ? size : size_ - position_;
+  memmove(buffer, &buffer_[position_], base::ToSize(bytes_to_copy));
+  position_ += bytes_to_copy;
 
-  if (hasopened) {
+  if (opened_here) {
     Close();
   }
 
-  return tocopy;
+  return bytes_to_copy;
 }
 
 /***********************************************************************************************
@@ -310,12 +310,12 @@ int32_t RAMFileClass::Read(void* buffer, int32_t size) {
  *location specified * by the offset and direction parameters. It functions
  *similarly to the regular file       * seek method. *
  *                                                                                             *
- * INPUT:   pos   -- The signed offset from the home position specified by the
- *"dir"           * parameter. *
+ * INPUT:   offset   -- The signed offset from the home position specified by
+ * the "origin"           * parameter. *
  *                                                                                             *
- *          dir   -- The home position to base the position offset on. This will
- *either be     * the start of the file, the end of the file, or the current
- *read/write     * position. *
+ *          origin   -- The home position to base the position offset on. This
+ * will either be     * the start of the file, the end of the file, or the
+ * current read/write     * position. *
  *                                                                                             *
  * OUTPUT:  Returns with the new file position. *
  *                                                                                             *
@@ -323,36 +323,36 @@ int32_t RAMFileClass::Read(void* buffer, int32_t size) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int32_t RAMFileClass::Seek(int32_t pos, int dir) {
-  if (Buffer == nullptr || !IsOpen()) {
-    return Offset;
+int32_t RAMFileClass::Seek(int32_t offset, int origin) {
+  if (buffer_ == nullptr || !IsOpen()) {
+    return position_;
   }
 
-  int maxoffset = Length;
-  if (HasAccess(Access, FileAccess::kWrite)) {
-    maxoffset = MaxLength;
+  int max_position = size_;
+  if (HasAccess(access_, FileAccess::kWrite)) {
+    max_position = capacity_;
   }
 
-  switch (dir) {
+  switch (origin) {
     case SEEK_CUR:
-      Offset = Offset + pos;
+      position_ = position_ + offset;
       break;
 
     case SEEK_SET:
-      Offset = pos;
+      position_ = offset;
       break;
 
     case SEEK_END:
-      Offset = maxoffset + pos;
+      position_ = max_position + offset;
       break;
     default:
       break;
   }
 
-  Offset = std::clamp(Offset, 0, maxoffset);
-  Length = std::max(Offset, Length);
+  position_ = std::clamp(position_, 0, max_position);
+  size_ = std::max(position_, size_);
 
-  return Offset;
+  return position_;
 }
 
 /***********************************************************************************************
@@ -371,7 +371,7 @@ int32_t RAMFileClass::Seek(int32_t pos, int dir) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int32_t RAMFileClass::Size() { return Length; }
+int32_t RAMFileClass::Size() { return size_; }
 
 /***********************************************************************************************
  * RAMFileClass::Write -- Copies data to the ram file. *
@@ -392,32 +392,32 @@ int32_t RAMFileClass::Size() { return Length; }
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 int32_t RAMFileClass::Write(const void* buffer, int32_t size) {
-  if (Buffer == nullptr || buffer == nullptr || size == 0) {
+  if (buffer_ == nullptr || buffer == nullptr || size == 0) {
     return 0;
   }
 
-  bool hasopened = false;
+  bool opened_here = false;
   if (!IsOpen()) {
     Open(FileAccess::kWrite);
-    hasopened = true;
+    opened_here = true;
   } else {
-    if (!HasAccess(Access, FileAccess::kWrite)) {
+    if (!HasAccess(access_, FileAccess::kWrite)) {
       return 0;
     }
   }
 
-  const int maxwrite = MaxLength - Offset;
-  const int towrite = size < maxwrite ? size : maxwrite;
-  memmove(&Buffer[Offset], buffer, base::ToSize(towrite));
-  Offset += towrite;
+  const int space_left = capacity_ - position_;
+  const int bytes_to_write = size < space_left ? size : space_left;
+  memmove(&buffer_[position_], buffer, base::ToSize(bytes_to_write));
+  position_ += bytes_to_write;
 
-  Length = std::max(Offset, Length);
+  size_ = std::max(position_, size_);
 
-  if (hasopened) {
+  if (opened_here) {
     Close();
   }
 
-  return towrite;
+  return bytes_to_write;
 }
 
 /***********************************************************************************************

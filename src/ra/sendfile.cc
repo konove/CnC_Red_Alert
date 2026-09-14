@@ -310,7 +310,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   MixAwareFile test_file(file_name);
 
   std::string save_file_name;
-  if (test_file.Is_Available()) {
+  if (test_file.IsAvailable()) {
     save_file_name = "DOWNLOAD.TMP";
   } else {
     save_file_name = std::string(file_name);
@@ -321,7 +321,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   /*
   ** If the file already exists then delete it and re-create it.
   */
-  if (save_file.Is_Available()) {
+  if (save_file.IsAvailable()) {
     save_file.Delete();
   }
 
@@ -582,7 +582,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
 
   MixAwareFile send_file(file_name);
 
-  if (!send_file.Is_Available()) {
+  if (!send_file.IsAvailable()) {
     // WWDebugString ("RA95 - Error - could not find file to send to client\n");
     //		debugprint("RA95 - Error - could not find file to send to
     // client\n");

@@ -139,10 +139,10 @@ void Check_From_WChat(const char* wchat_name) {
   }
 
   if (wchat_name) {
-    wchat_file.Set_Name(wchat_name);
+    wchat_file.SetName(wchat_name);
   }
 
-  if (!wchat_name || wchat_file.Is_Available()) {
+  if (!wchat_name || wchat_file.IsAvailable()) {
     /*
     ** Read the ini file from disk if we founf it there
     */
@@ -252,7 +252,7 @@ int Read_Game_Options(const char* name) {
   ------------------------------------------------------------------------*/
   CCFileClass file(filename);
 
-  if (name && !file.Is_Available()) {
+  if (name && !file.IsAvailable()) {
     return 0;
   }
   if (name) {

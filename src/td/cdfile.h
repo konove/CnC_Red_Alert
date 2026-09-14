@@ -48,12 +48,13 @@
 *functionality of searching *	across multiple directories or drives. It is
 *designed for the typical case of a CD-ROM game *	were some data exists in
 *the current directory (hard drive) and the rest exists on the CD-ROM.
-**	Searching for the file occurs by first examining the current directory.
-*If the file does not *	exist there, then all the paths available are examined
-*in turn until the file can be found. *	For opening files to write, only the
-*current directory is examined. The directory search order *	is controlled by
-*the path list as submitted to Set_Search_Drives(). The format of the path
-**	string is the same as the DOS path string.
+**	Searching for the file occurs by first examining the current
+* directory. If the file does not *	exist there, then all the paths
+* available are examined in turn until the file can be found. *	For opening
+* files to write, only the current directory is examined. The directory search
+* order *	is controlled by the path list as submitted to
+* Set_Search_Drives(). The format of the path *	string is the same as the DOS
+* path string.
 */
 class CDFileClass : public RawFileClass {
  public:
@@ -65,21 +66,21 @@ class CDFileClass : public RawFileClass {
   CDFileClass(CDFileClass&&) = delete;
   CDFileClass& operator=(CDFileClass&&) = delete;
 
-  const char* Set_Name(const char* filename) override;
+  const char* SetName(const char* filename) override;
   bool Open(const char* filename,
             FileAccess rights = FileAccess::kRead) override;
   bool Open(FileAccess rights = FileAccess::kRead) override;
 
-  void Searching(int on) { IsDisabled = !on; }
+  void SetSearchEnabled(int on) { IsDisabled = !on; }
 
-  static bool Is_There_Search_Drives() { return First != nullptr; }
+  static bool HasSearchPaths() { return First != nullptr; }
   static int Set_Search_Drives(char* pathlist);
-  static void Add_Search_Drive(char* path);
-  static void Clear_Search_Drives();
-  static void Refresh_Search_Drives();
-  static void Set_CD_Drive(int drive);
-  static int Get_CD_Drive() { return current_cd_drive_; }
-  static int Get_Last_CD_Drive() { return last_cd_drive_; }
+  static void AddSearchPath(char* path);
+  static void ClearSearchPaths();
+  static void RefreshSearchPaths();
+  static void SetCdDrive(int drive);
+  static int current_cd_drive() { return current_cd_drive_; }
+  static int last_cd_drive() { return last_cd_drive_; }
 
  private:
   /*
@@ -117,6 +118,6 @@ class CDFileClass : public RawFileClass {
   static int last_cd_drive_;
 };
 
-extern int Get_CD_Drive();
+extern int current_cd_drive();
 
 #endif  // CNC_RED_ALERT_TD_CDFILE_H_

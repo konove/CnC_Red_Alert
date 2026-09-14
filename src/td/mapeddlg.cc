@@ -3377,8 +3377,8 @@ int MapEditClass::Import_Triggers() {
   ........................................................................*/
   inibuf = new char[30000];
   memset(inibuf, '\0', 30000);
-  file.Set_Name("MASTER.INI");
-  if (!file.Is_Available()) {
+  file.SetName("MASTER.INI");
+  if (!file.IsAvailable()) {
     file.Close();
     delete[] inibuf;
     return (-1);
@@ -3720,8 +3720,8 @@ int MapEditClass::Import_Teams() {
   ........................................................................*/
   inibuf = new char[30000];
   memset(inibuf, '\0', 30000);
-  file.Set_Name("MASTER.INI");
-  if (!file.Is_Available()) {
+  file.SetName("MASTER.INI");
+  if (!file.IsAvailable()) {
     file.Close();
     delete[] inibuf;
     return (-1);

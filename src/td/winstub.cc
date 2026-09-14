@@ -644,7 +644,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
 
   CCFileClass file_handle(name);
 
-  if (!file_handle.Is_Available()) {
+  if (!file_handle.IsAvailable()) {
     return NULL;
   }
 

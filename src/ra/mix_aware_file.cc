@@ -44,9 +44,9 @@
 #include "tech/rawfile.h"
 #include "tech/wwfile.h"
 
-// The name is copied by Set_Name, so filename need not outlive the object.
+// The name is copied by SetName, so filename need not outlive the object.
 MixAwareFile::MixAwareFile(const char* filename) {
-  MixAwareFile::Set_Name(filename);
+  MixAwareFile::SetName(filename);
 }
 
 MixAwareFile::MixAwareFile() = default;
@@ -149,7 +149,7 @@ int32_t MixAwareFile::Size() {
   // the check succeeds and the biased CDFileClass::Size() below reports the
   // embedded length.
   if (!CDFileClass::DoIsAvailable(AvailabilityCheck::kQuick)) {
-    if (const auto location = MFCD::Offset(File_Name())) {
+    if (const auto location = MFCD::Offset(FileName())) {
       return location->size;
     }
     return 0;
@@ -179,7 +179,7 @@ bool MixAwareFile::DoIsAvailable(AvailabilityCheck mode) {
   // A file that is part of a mixfile is also presumed available. This is
   // checked before the disk because it is a lookup in memory, and it cannot
   // block waiting for media.
-  if (MFCD::Offset(File_Name()).has_value()) {
+  if (MFCD::Offset(FileName()).has_value()) {
     return true;
   }
 
@@ -222,7 +222,7 @@ bool MixAwareFile::Open(FileAccess rights) {
   }
 
   // Check to see if the file is part of a registered mixfile.
-  const auto location = MFCD::Offset(File_Name());
+  const auto location = MFCD::Offset(FileName());
   if (!location) {
     // The file cannot be found in any mixfile, so it must reside as an
     // individual file on the disk. Or else it is just plain missing, and the
@@ -238,14 +238,14 @@ bool MixAwareFile::Open(FileAccess rights) {
     // file object is adjusted for mixfile support, however. Also note that the
     // filename attached to this object is NOT the same as the file attached to
     // the file handle.
-    const std::string embedded_name = File_Name();
+    const std::string embedded_name = FileName();
     Open(location->mixfile->Filename().c_str(), FileAccess::kRead);
-    // Put the embedded file's name back. Searching is off so Set_Name takes the
-    // name verbatim instead of probing the search paths for it.
-    Searching(false);
-    Set_Name(embedded_name.c_str());
-    Searching(true);
-    // The bias must be set after Set_Name, which clears it; Bias() adds start
+    // Put the embedded file's name back. Search is disabled so SetName
+    // takes the name verbatim instead of probing the search paths for it.
+    SetSearchEnabled(false);
+    SetName(embedded_name.c_str());
+    SetSearchEnabled(true);
+    // The bias must be set after SetName, which clears it; Bias() adds start
     // to the existing bias rather than replacing it. offset is absolute within
     // the mixfile here, since the mixfile is not cached.
     Bias(location->offset, location->size);
@@ -317,7 +317,7 @@ int32_t __cdecl WriteFileHandle(int handle, const void* buffer, int32_t size) {
 
 bool __cdecl FileExists(const char* file_name) {
   MixAwareFile file(file_name);
-  return file.Is_Available();
+  return file.IsAvailable();
 }
 
 int32_t __cdecl FileHandleSize(int handle) {

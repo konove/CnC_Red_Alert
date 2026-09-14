@@ -615,7 +615,7 @@ bool Load_Game(int id) {
   **	Open the file
   */
   RawFileClass file(name);
-  if (!file.Is_Available()) {
+  if (!file.IsAvailable()) {
     return false;
   }
 
@@ -730,12 +730,12 @@ bool Load_Game(int id) {
   */
   if (load_net) {
     MixAwareFile scenario_file(Scen.ScenarioName);
-    if (!scenario_file.Is_Available()) {
+    if (!scenario_file.IsAvailable()) {
       int cd = -1;
       if (IsMissionCounterstrike(Scen.ScenarioName)) {
         cd = 2;
         if (Expansion_AM_Present()) {
-          const int current_drive = MixAwareFile::Get_CD_Drive();
+          const int current_drive = MixAwareFile::current_cd_drive();
           const int index = Get_CD_Index(current_drive, 1 * 60);
           if (index == 3) {
             cd = 3;
@@ -763,7 +763,7 @@ bool Load_Game(int id) {
       ** The scenario is available so set RequiredCD to whatever is currently
       ** in the drive.
       */
-      const int current_drive = MixAwareFile::Get_CD_Drive();
+      const int current_drive = MixAwareFile::current_cd_drive();
       RequiredCD = Get_CD_Index(current_drive, 1 * 60);
     }
   }
@@ -1090,7 +1090,7 @@ bool Load_Game(int id) {
       /*
       ** Find out if the CD in the current drive is the Aftermath disc.
       */
-      if (Get_CD_Index(MixAwareFile::Get_CD_Drive(), 60) != 3) {
+      if (Get_CD_Index(MixAwareFile::current_cd_drive(), 60) != 3) {
         GamePalette.Set(kFadePaletteFast, Call_Back);
         // force Aftermath CD in drive.
         if (!Force_CD_Available(3)) {

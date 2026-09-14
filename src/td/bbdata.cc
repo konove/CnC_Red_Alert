@@ -592,7 +592,7 @@ void BulletTypeClass::One_Time() {
 
       RawFileClass file(fullname.c_str());
 
-      if (file.Is_Available()) {
+      if (file.IsAvailable()) {
         (const void*&)bullet.ImageData = Load_Alloc_Data(file);
       } else {
         (const void*&)bullet.ImageData = MFCD::Retrieve(fullname);

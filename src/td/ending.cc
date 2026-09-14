@@ -89,7 +89,7 @@ void GDI_Ending() {
   }
 
   CountDownTimerClass count;
-  if (CCFileClass("TRAILER.VQA").Is_Available()) {
+  if (CCFileClass("TRAILER.VQA").IsAvailable()) {
     Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
     CCFileClass f("ATTRACT2.CPS");
     Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
@@ -266,7 +266,7 @@ void Nod_Ending() {
   Play_Movie(fname);
 
   CountDownTimerClass count;
-  if (CCFileClass("TRAILER.VQA").Is_Available()) {
+  if (CCFileClass("TRAILER.VQA").IsAvailable()) {
     Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
     CCFileClass attract_file("ATTRACT2.CPS");
     Load_Uncompress(attract_file, SysMemPage, SysMemPage, Palette);

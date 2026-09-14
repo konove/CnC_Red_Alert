@@ -33,12 +33,12 @@
  *                  Last Update : September 22, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * CDFileClass::Clear_Search_Drives -- Removes all record of a
+ * Functions: * CDFileClass::ClearSearchPaths -- Removes all record of a
  *search path.                  * CDFileClass::Open -- Opens the file object --
  *with path search.                           * CDFileClass::Open -- Opens the
  *file wherever it can be found.                             *
- *   CDFileClass::Set_Name -- Performs a multiple directory scan to set the
- *filename.          * CDFileClass::Set_Search_Drives -- Sets a list of search
+ *   CDFileClass::SetName -- Performs a multiple directory scan to set the
+ *filename.          * CDFileClass::AddSearchPaths -- Sets a list of search
  *paths for file access.            * Is_Disk_Inserted -- Checks to see if a
  *disk is inserted in specified drive.               * harderr_handler --
  *Handles hard DOS errors.                                               *
@@ -63,11 +63,10 @@ std::string CDFileClass::raw_path_;
 int CDFileClass::current_cd_drive_ = 0;
 int CDFileClass::last_cd_drive_ = 0;
 
-CDFileClass::CDFileClass(const char* filename) : is_disabled_(false) {
-  CDFileClass::Set_Name(filename);
+CDFileClass::CDFileClass(const char* filename) {
+  CDFileClass::SetName(filename);
 }
 
-CDFileClass::CDFileClass() : is_disabled_(false) {}
 extern int Get_CD_Index(int cd_drive, int timeout);
 
 /***********************************************************************************************
@@ -91,7 +90,7 @@ bool CDFileClass::Open(FileAccess rights) {
 }
 
 /***********************************************************************************************
- * CDFC::Refresh_Search_Drives -- Updates the search path when a CD changes or
+ * CDFC::RefreshSearchPaths -- Updates the search path when a CD changes or
  *is added        *
  *                                                                                             *
  *                                                                                             *
@@ -104,12 +103,12 @@ bool CDFileClass::Open(FileAccess rights) {
  *                                                                                             *
  * HISTORY: * 5/22/96 9:01AM ST : Created *
  *=============================================================================================*/
-void CDFileClass::Refresh_Search_Drives() {
-  Clear_Search_Drives();
-  Process_Path_Tokens(raw_path_);
+void CDFileClass::RefreshSearchPaths() {
+  ClearSearchPaths();
+  ProcessPathTokens(raw_path_);
 }
 
-int CDFileClass::Add_Search_Drives(const std::string_view new_paths) {
+int CDFileClass::AddSearchPaths(const std::string_view new_paths) {
   if (new_paths.empty()) {
     return 0;
   }
@@ -122,11 +121,11 @@ int CDFileClass::Add_Search_Drives(const std::string_view new_paths) {
   raw_path_ += new_paths;
 
   // Process only the newly added paths to avoid redundant scanning.
-  return Process_Path_Tokens(new_paths);
+  return ProcessPathTokens(new_paths);
 }
 
-int CDFileClass::Process_Path_Tokens(std::string_view paths) {
-  bool found_valid_drive = false;
+int CDFileClass::ProcessPathTokens(std::string_view paths) {
+  bool found_valid_path = false;
 
   for (const auto token_range : paths | std::views::split(';')) {
     // Materialize the view into a string for manipulation.
@@ -153,23 +152,23 @@ int CDFileClass::Process_Path_Tokens(std::string_view paths) {
         // Map the internal drive index (0=A, 1=B...) to a char.
         path[0] = static_cast<char>(current_cd_drive_ + 'A');
 
-        Add_Search_Drive(path);
-        found_valid_drive = true;
+        AddSearchPath(path);
+        found_valid_path = true;
       }
       // If the wildcard logic was hit (even if no CD found), skip the default
       // add.
       continue;
     }
 
-    Add_Search_Drive(path);
-    found_valid_drive = true;
+    AddSearchPath(path);
+    found_valid_path = true;
   }
 
-  return found_valid_drive ? 0 : 1;
+  return found_valid_path ? 0 : 1;
 }
 
 /***********************************************************************************************
- * CDFC::Add_Search_Drive -- Add a new path to the search path list *
+ * CDFC::AddSearchPath -- Add a new path to the search path list *
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
@@ -181,12 +180,12 @@ int CDFileClass::Process_Path_Tokens(std::string_view paths) {
  *                                                                                             *
  * HISTORY: * 5/22/96 10:12AM ST : Created *
  *=============================================================================================*/
-void CDFileClass::Add_Search_Drive(const std::string& path) {
+void CDFileClass::AddSearchPath(const std::string& path) {
   search_paths_.push_back(path);
 }
 
 /***********************************************************************************************
- * CDFC::Set_CD_Drive -- sets the current CD drive letter *
+ * CDFC::SetCdDrive -- sets the current CD drive letter *
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
@@ -198,16 +197,16 @@ void CDFileClass::Add_Search_Drive(const std::string& path) {
  *                                                                                             *
  * HISTORY: * 5/22/96 9:39AM ST : Created *
  *=============================================================================================*/
-void CDFileClass::Set_CD_Drive(int drive) {
+void CDFileClass::SetCdDrive(int drive) {
   last_cd_drive_ = current_cd_drive_;
   current_cd_drive_ = drive;
 }
 
 /***********************************************************************************************
- * CDFileClass::Clear_Search_Drives -- Removes all record of a search path. *
+ * CDFileClass::ClearSearchPaths -- Removes all record of a search path. *
  *                                                                                             *
  *    Use this routine to clear out any previous path(s) set with
- *Set_Search_Drives()          * function. *
+ *AddSearchPaths()          * function. *
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *
@@ -217,10 +216,10 @@ void CDFileClass::Set_CD_Drive(int drive) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-void CDFileClass::Clear_Search_Drives() { search_paths_.clear(); }
+void CDFileClass::ClearSearchPaths() { search_paths_.clear(); }
 
 /***********************************************************************************************
- * CDFileClass::Set_Name -- Performs a multiple directory scan to set the
+ * CDFileClass::SetName -- Performs a multiple directory scan to set the
  *filename.            *
  *                                                                                             *
  *    This routine will scan all the directories specified in the path list and
@@ -242,30 +241,30 @@ void CDFileClass::Clear_Search_Drives() { search_paths_.clear(); }
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-const char* CDFileClass::Set_Name(const char* filename) {
+const char* CDFileClass::SetName(const char* filename) {
   // Try to find the file in the current directory first.
   // This preserves the optimization of checking the local filesystem before
   // iterating through the CD/Network search paths.
-  BufferIOFileClass::Set_Name(filename);
+  BufferIOFileClass::SetName(filename);
 
   // If the file system is disabled, no search paths exist, or the file
   // was found locally, return the current result immediately.
-  if (is_disabled_ || search_paths_.empty() ||
+  if (search_disabled_ || search_paths_.empty() ||
       BufferIOFileClass::DoIsAvailable(AvailabilityCheck::kQuick)) {
-    return File_Name();
+    return FileName();
   }
 
   // Iterate through all registered search paths.
   for (const auto& base_path : search_paths_) {
     // Construct the full path.
-    // Note: Add_Search_Drive guarantees base_path ends with a path separator,
+    // Note: AddSearchPath guarantees base_path ends with a path separator,
     // so we can safely concatenate directly.
     const std::string full_path = base_path + filename;
 
     // Check availability on this specific drive/path.
-    BufferIOFileClass::Set_Name(full_path.c_str());
+    BufferIOFileClass::SetName(full_path.c_str());
     if (BufferIOFileClass::DoIsAvailable(AvailabilityCheck::kQuick)) {
-      return File_Name();
+      return FileName();
     }
   }
 
@@ -273,8 +272,8 @@ const char* CDFileClass::Set_Name(const char* filename) {
   **	At this point, all path searching has failed. Just set the file name to
   *the *	plain text passed to this routine and be done with it.
   */
-  BufferIOFileClass::Set_Name(filename);
-  return File_Name();
+  BufferIOFileClass::SetName(filename);
+  return FileName();
 }
 
 /***********************************************************************************************
@@ -315,8 +314,8 @@ bool CDFileClass::Open(const char* filename, FileAccess rights) {
   /*
   **	If writing is requested, then multiple drive searching is not performed.
   */
-  if (is_disabled_ || rights == FileAccess::kWrite) {
-    BufferIOFileClass::Set_Name(filename);
+  if (search_disabled_ || rights == FileAccess::kWrite) {
+    BufferIOFileClass::SetName(filename);
     return BufferIOFileClass::Open(rights);
   }
 
@@ -324,6 +323,6 @@ bool CDFileClass::Open(const char* filename, FileAccess rights) {
   **	Perform normal multiple drive searching for the filename and open
   **	using the normal procedure.
   */
-  Set_Name(filename);
+  SetName(filename);
   return BufferIOFileClass::Open(rights);
 }

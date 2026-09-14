@@ -2070,7 +2070,7 @@ void ObjectTypeClass::One_Time() {
 
 #ifndef NDEBUG
   RawFileClass file("PIPS.SHP");
-  if (file.Is_Available()) {
+  if (file.IsAvailable()) {
     PipShapes = Load_Alloc_Data(file);
   } else {
     PipShapes = MFCD::Retrieve("PIPS.SHP");

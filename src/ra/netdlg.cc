@@ -2480,8 +2480,8 @@ static int Net_Join_Dialog() {
              (Expansion_AM_Present() &&
               IsMissionAftermath(Session.ScenarioFileName)))) {
           MixAwareFile check_file(Session.ScenarioFileName);
-          if (!check_file.Is_Available()) {
-            const int current_drive = MixAwareFile::Get_CD_Drive();
+          if (!check_file.IsAvailable()) {
+            const int current_drive = MixAwareFile::current_cd_drive();
             const int index = Get_CD_Index(current_drive, 1 * 60);
             bool needcd = false;
             if (IsMissionCounterstrike(Session.ScenarioFileName) &&
@@ -4214,7 +4214,7 @@ static int Net_New_Dialog() {
   optionlist.Add_Tail(*commands);
   okbtn.Add_Tail(*commands);
   cancelbtn.Add_Tail(*commands);
-  if (loadfile.Is_Available()) {
+  if (loadfile.IsAvailable()) {
     // loadbtn.Add_Tail(*commands);
   } else {
     cancelbtn.X = loadbtn.X;
@@ -4472,7 +4472,7 @@ static int Net_New_Dialog() {
         optionlist.Add_Tail(*commands);
         okbtn.Add_Tail(*commands);
         cancelbtn.Add_Tail(*commands);
-        if (loadfile.Is_Available()) {
+        if (loadfile.IsAvailable()) {
           loadbtn.Add_Tail(*commands);
         }
         commands->Draw_All();

@@ -873,7 +873,7 @@ void Speak_AI() {
                               .string();
 
         MixAwareFile file(name.c_str());
-        if (file.Is_Available() &&
+        if (file.IsAvailable() &&
             file.Read(SpeechBuffer[_index], kSpeechBufferSize)) {
           speech = SpeechBuffer[_index];
           SpeechRecord[_index] = SpeakQueue;

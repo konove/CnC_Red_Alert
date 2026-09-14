@@ -398,7 +398,7 @@ void Show_Who_Was_Responsible() {
   **  If the text starts after column 40 it will be right justified.
   */
   MixAwareFile creditsfile("credits.txt");
-  if (!creditsfile.Is_Available()) {
+  if (!creditsfile.IsAvailable()) {
     return;
   }
   char* credits = new char[base::ToSize(creditsfile.Size() + 1)];

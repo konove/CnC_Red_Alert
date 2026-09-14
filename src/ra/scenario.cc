@@ -379,7 +379,7 @@ bool Start_Scenario(char* name, bool briefing) {
     sprintf(buffer, "%s.VQA", VQName[Scen.BriefMovie]);
   }
   if (Session.Type == GAME_NORMAL &&
-      (Scen.BriefMovie == VQ_NONE || !MixAwareFile(buffer).Is_Available())) {
+      (Scen.BriefMovie == VQ_NONE || !MixAwareFile(buffer).IsAvailable())) {
     /*
     ** Make sure the mouse is visible before showing the restatement.
     */
@@ -449,7 +449,8 @@ bool Read_Scenario(char* name) {
       /*
       ** Find out if the CD in the current drive is the Aftermath disc.
       */
-      const int cd_index = Get_CD_Index(MixAwareFile::Get_CD_Drive(), 1 * 60);
+      const int cd_index =
+          Get_CD_Index(MixAwareFile::current_cd_drive(), 1 * 60);
       if ((!Using_DVD() || cd_index != 5) && cd_index != 3) {
         GamePalette.Set(kFadePaletteFast, Call_Back);
         RequiredCD = 3;
@@ -1189,7 +1190,7 @@ BriefingAction Restate_Mission() {
   bool has_video = false;
   if (Scen.BriefMovie != VQ_NONE) {
     const auto video_filename = std::string(VQName[Scen.BriefMovie]) + ".VQA";
-    has_video = MixAwareFile(video_filename.c_str()).Is_Available();
+    has_video = MixAwareFile(video_filename.c_str()).IsAvailable();
   }
 
   // Choose buttons based on video availability.
@@ -1708,7 +1709,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
       }
       sprintf(fname, "SC%c%02d%c%c.INI", c_player, scenario, c_dir,
               'A' + candidate);
-      if (!MixAwareFile(fname).Is_Available()) {
+      if (!MixAwareFile(fname).IsAvailable()) {
         break;
       }
       available++;
@@ -1855,7 +1856,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
         if (IsMissionCounterstrike(Scen.ScenarioName)) {
           RequiredCD = 2;
           if (Is_Aftermath_Installed() ||
-              Get_CD_Index(MixAwareFile::Get_CD_Drive(), 1 * 60) == 3) {
+              Get_CD_Index(MixAwareFile::current_cd_drive(), 1 * 60) == 3) {
             RequiredCD = 3;
           }
         }
@@ -1899,7 +1900,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     // requested is an RA CD, then don't set the palette, leave the map screen
     // up.
 
-    const int cd_index = Get_CD_Index(MixAwareFile::Get_CD_Drive(), 1 * 60);
+    const int cd_index = Get_CD_Index(MixAwareFile::current_cd_drive(), 1 * 60);
     if ((!Using_DVD() || cd_index != 5) && cd_index != RequiredCD) {
       if ((RequiredCD == 0 || RequiredCD == 1) && Session.Type == GAME_NORMAL) {
         SeenBuff.Clear();
@@ -2244,7 +2245,7 @@ void Write_Scenario_INI(const char* fname) {
     **	out. Preloading the scenario will preserve these manually
     **	maintained entries.
     */
-    if (file.Is_Available()) {
+    if (file.IsAvailable()) {
       ini.Load(file, true);
     }
 

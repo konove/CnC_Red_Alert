@@ -187,7 +187,7 @@ SessionClass::SessionClass()
 
   LastMessage[0] = 0;
 
-  RecordFile.Set_Name("RECORD.BIN");  // always uses this name
+  RecordFile.SetName("RECORD.BIN");  // always uses this name
 
   GameName[0] = 0;
 
@@ -956,7 +956,7 @@ void SessionClass::Read_Scenario_Descriptions() {
   **	Fetch the main multiplayer scenario packet data.
   */
   MixAwareFile file("MISSIONS.PKT");
-  if (file.Is_Available()) {
+  if (file.IsAvailable()) {
     INIClass ini;
     ini.Load(file);
     const int count = ini.Entry_Count("Missions");
@@ -1016,7 +1016,7 @@ void SessionClass::Read_Scenario_Descriptions() {
   */
   if (Is_Counterstrike_Installed()) {
     MixAwareFile file2("CSTRIKE.PKT");
-    if (file2.Is_Available()) {
+    if (file2.IsAvailable()) {
       INIClass ini;
       ini.Load(file2);
       const int count = ini.Entry_Count("Missions");
@@ -1043,7 +1043,7 @@ void SessionClass::Read_Scenario_Descriptions() {
   // Aftermath scenarios are now in their own pkt file.
   if (Is_Aftermath_Installed()) {
     MixAwareFile file2("AFTMATH.PKT");
-    if (file2.Is_Available()) {
+    if (file2.IsAvailable()) {
       INIClass ini;
       ini.Load(file2);
       const int count = ini.Entry_Count("Missions");

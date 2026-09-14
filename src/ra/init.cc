@@ -533,7 +533,7 @@ bool Select_Game(bool /*fade*/) {
     ** If we're playing back a recording, load all pertinent values & skip
     ** the menu loop.  Hide the now-useless mouse pointer.
     */
-    if (Session.Play && Session.RecordFile.Is_Available()) {
+    if (Session.Play && Session.RecordFile.IsAvailable()) {
       if (Session.RecordFile.Open(FileAccess::kRead)) {
         if (Load_Recording_Values(Session.RecordFile)) {
           process = false;
@@ -1009,7 +1009,7 @@ bool Select_Game(bool /*fade*/) {
           break;
 
         case SEL_TIMEOUT:
-          if (Session.Attract && Session.RecordFile.Is_Available()) {
+          if (Session.Attract && Session.RecordFile.IsAvailable()) {
             Session.Play = true;
             if (Session.RecordFile.Open(FileAccess::kRead)) {
               if (Load_Recording_Values(Session.RecordFile)) {
@@ -1406,7 +1406,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     */
     if (strstr(string, "-CD")) {
       // Use original arg to preserve case-sensitive path on Unix systems
-      MixAwareFile::Add_Search_Drives(original_arg.substr(3));
+      MixAwareFile::AddSearchPaths(original_arg.substr(3));
       continue;
     }
 
@@ -2215,7 +2215,7 @@ static void Init_CDROM_Access() {
   /*
   **	Always try to look at the CD-ROM for data files.
   */
-  if (!MixAwareFile::Is_There_Search_Drives()) {
+  if (!MixAwareFile::HasSearchPaths()) {
     /*
     **	This call is needed because of a side effect of this function. It will
     *examine the *	CD-ROMs attached to this computer and set the
@@ -2231,7 +2231,7 @@ static void Init_CDROM_Access() {
     int error;
 
     do {
-      error = MixAwareFile::Add_Search_Drives("?:\\");
+      error = MixAwareFile::AddSearchPaths("?:\\");
       switch (error) {
         case 1:
           VisiblePage.Clear();
@@ -2297,14 +2297,14 @@ static void Init_Bootstrap_Mixfiles() {
 
   if constexpr (config::kWolapiEnabled) {
     MixAwareFile fileWolapiMix("WOLAPI.MIX");
-    if (fileWolapiMix.Is_Available()) {
+    if (fileWolapiMix.IsAvailable()) {
       MFCD::Register("WOLAPI.MIX", &FastKey, &CryptRandom);
       MFCD::Cache("WOLAPI.MIX");
     }
   }
 
   MixAwareFile file2("EXPAND2.MIX");
-  if (file2.Is_Available()) {
+  if (file2.IsAvailable()) {
     MFCD::Register("EXPAND2.MIX", &FastKey, &CryptRandom);
     bool ok = MFCD::Cache("EXPAND2.MIX");
     assert(ok);
@@ -2315,7 +2315,7 @@ static void Init_Bootstrap_Mixfiles() {
   }
 
   MixAwareFile file("EXPAND.MIX");
-  if (file.Is_Available()) {
+  if (file.IsAvailable()) {
     MFCD::Register("EXPAND.MIX", &FastKey, &CryptRandom);
     const bool ok = MFCD::Cache("EXPAND.MIX");
     assert(ok);
@@ -2360,20 +2360,20 @@ static void Init_Bootstrap_Mixfiles() {
 static void Extract(const char* filename, const char* outname);
 
 static void Init_Secondary_Mixfiles() {
-  if (MixAwareFile("MAIN1.MIX").Is_Available()) {
+  if (MixAwareFile("MAIN1.MIX").IsAvailable()) {
     // MAIN1-4 from steam
 
     // extract the extra missions from the expansion "discs"
     // (they don't contain the base missions)
-    if (MixAwareFile("MAIN3.MIX").Is_Available() &&
-        !MixAwareFile("GENERAL3.MIX").Is_Available()) {
+    if (MixAwareFile("MAIN3.MIX").IsAvailable() &&
+        !MixAwareFile("GENERAL3.MIX").IsAvailable()) {
       const MFCD* tmp = MFCD::Register("MAIN3.MIX", &FastKey, &CryptRandom);
       Extract("GENERAL.MIX", "GENERAL3.MIX");
       delete tmp;
     }
 
-    if (MixAwareFile("MAIN4.MIX").Is_Available() &&
-        !MixAwareFile("GENERAL4.MIX").Is_Available()) {
+    if (MixAwareFile("MAIN4.MIX").IsAvailable() &&
+        !MixAwareFile("GENERAL4.MIX").IsAvailable()) {
       const MFCD* tmp = MFCD::Register("MAIN4.MIX", &FastKey, &CryptRandom);
       Extract("GENERAL.MIX", "GENERAL4.MIX");
       Extract("SCORES.MIX", "SCORES.MIX");  // also extract scores
@@ -2421,12 +2421,12 @@ static void Init_Secondary_Mixfiles() {
         MFCD::Register("GENERAL.MIX", &FastKey, &CryptRandom);  // Never cached.
   }
 
-  if (MixAwareFile("MOVIES1.MIX").Is_Available()) {
+  if (MixAwareFile("MOVIES1.MIX").IsAvailable()) {
     MoviesMix =
         MFCD::Register("MOVIES1.MIX", &FastKey, &CryptRandom);  // Never cached.
   }
   // load both sets of movies if possible
-  if (MixAwareFile("MOVIES2.MIX").Is_Available()) {
+  if (MixAwareFile("MOVIES2.MIX").IsAvailable()) {
     MoviesMix =
         MFCD::Register("MOVIES2.MIX", &FastKey, &CryptRandom);  // Never cached.
   }
@@ -2471,7 +2471,7 @@ static void Bootstrap() {
   **	Be sure to short circuit the CD-ROM check if there is a CD-ROM override
   **	path.
   */
-  if (MixAwareFile::Is_There_Search_Drives()) {
+  if (MixAwareFile::HasSearchPaths()) {
     RequiredCD = -2;
   }
 

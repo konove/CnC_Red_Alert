@@ -55,55 +55,80 @@
 */
 class BufferIOFileClass : public RawFileClass {
  public:
+  // Smallest buffer Cache() will use.
+  static constexpr int32_t kMinimumBufferSize = 1024;
+
   explicit BufferIOFileClass(const char* filename);
-  BufferIOFileClass();
-  ~BufferIOFileClass() override;
+  BufferIOFileClass() = default;
 
   BufferIOFileClass(const BufferIOFileClass&) = delete;
   BufferIOFileClass& operator=(const BufferIOFileClass&) = delete;
   BufferIOFileClass(BufferIOFileClass&&) = delete;
   BufferIOFileClass& operator=(BufferIOFileClass&&) = delete;
 
-  bool Cache(int32_t size = 0, void* ptr = nullptr);
+  ~BufferIOFileClass() override;
+
+  bool Cache(int32_t size = 0, void* buffer = nullptr);
   void Free();
   bool Commit();
-  const char* Set_Name(const char* filename)
+  const char* SetName(const char* filename)
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   [[nodiscard]] bool IsOpen() const override;
   bool Open(const char* filename,
             FileAccess rights = FileAccess::kRead) override;
   bool Open(FileAccess rights = FileAccess::kRead) override;
   int32_t Read(void* buffer, int32_t size) override;
-  int32_t Seek(int32_t pos, int dir = SEEK_CUR) override;
+  int32_t Seek(int32_t offset, int origin = SEEK_CUR) override;
   int32_t Size() override;
   int32_t Write(const void* buffer, int32_t size) override;
   void Close() override;
-
-  enum { MINIMUM_BUFFER_SIZE = 1024 };
 
  protected:
   bool DoIsAvailable(AvailabilityCheck mode) override;
 
  private:
-  bool IsAllocated : 1;
-  bool is_open_ : 1;
-  bool IsDiskOpen : 1;
-  bool IsCached : 1;
-  bool IsChanged : 1;
-  bool UseBuffer : 1;
+  // Cache() allocated buffer_, so Free() must delete it.
+  bool owns_buffer_ : 1 = false;
 
-  FileAccess BufferRights;
+  // The file was opened while buffering was active.
+  bool is_open_ : 1 = false;
 
-  void* Buffer;
+  // The file on disk is open too, because the buffer cannot hold everything
+  // the access rights require.
+  bool is_disk_open_ : 1 = false;
 
-  int32_t BufferSize;
-  int32_t BufferPos;
-  int32_t BufferFilePos;
-  int32_t BufferChangeBeg;
-  int32_t BufferChangeEnd;
-  int32_t FileSize;
-  int32_t FilePos;
-  int32_t TrueFileStart;
+  // buffer_ holds the file bytes starting at buffer_file_position_.
+  bool is_buffer_loaded_ : 1 = false;
+
+  // buffer_ has changes that Commit() has not written yet.
+  bool has_unwritten_changes_ : 1 = false;
+
+  // Reads, writes and seeks go through buffer_ instead of straight to disk.
+  bool use_buffer_ : 1 = false;
+
+  // Access rights of the buffered open.
+  FileAccess buffer_rights_ = FileAccess::kRead;
+
+  void* buffer_ = nullptr;
+  int32_t buffer_size_ = 0;
+
+  // Read/write position within buffer_.
+  int32_t buffer_position_ = 0;
+
+  // File offset of the first byte in buffer_.
+  int32_t buffer_file_position_ = 0;
+
+  // Changed range of buffer_, [change_begin_, change_end_), or -1 for both
+  // when nothing has changed.
+  int32_t change_begin_ = -1;
+  int32_t change_end_ = -1;
+
+  int32_t file_size_ = 0;
+  int32_t file_position_ = 0;
+
+  // Offset of the file within the underlying raw file, nonzero when the file
+  // is biased inside a larger one.
+  int32_t true_file_start_ = 0;
 };
 
 #endif  // CNC_RED_ALERT_TECH_BFIOFILE_H_

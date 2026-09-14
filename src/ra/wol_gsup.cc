@@ -449,7 +449,7 @@ void WOL_GameSetupDialog::Initialize() {
 
   if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME) {
     bAftermathUnits = true;
-    const int current_drive = MixAwareFile::Get_CD_Drive();
+    const int current_drive = MixAwareFile::current_cd_drive();
     const int cd_index = Get_CD_Index(current_drive, 1 * 60);
     if (cd_index != 3 && cd_index != 5) {
       WOL_PrintMessage(*pILDisc, TXT_WOL_AMDISCNEEDED,

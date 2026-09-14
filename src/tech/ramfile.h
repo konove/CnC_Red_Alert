@@ -46,20 +46,23 @@
 #include "absl/base/attributes.h"
 #include "tech/wwfile.h"
 
+// A "file" that reads and writes a caller-supplied memory buffer, for code
+// written against FileClass that needs to work on data already in memory.
 class RAMFileClass final : public FileClass {
  public:
-  RAMFileClass(void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND, int len);
-  ~RAMFileClass() override;
+  // Wraps size bytes at buffer. A null buffer with a positive size allocates a
+  // scratch buffer of that size, which is only useful for writing.
+  RAMFileClass(void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND, int size);
 
   RAMFileClass(const RAMFileClass&) = delete;
   RAMFileClass& operator=(const RAMFileClass&) = delete;
   RAMFileClass(RAMFileClass&&) = delete;
   RAMFileClass& operator=(RAMFileClass&&) = delete;
 
-  [[nodiscard]] const char* File_Name() const override { return "UNKNOWN"; }
-  const char* Set_Name(const char* /*filename*/) override {
-    return File_Name();
-  }
+  ~RAMFileClass() override;
+
+  [[nodiscard]] const char* FileName() const override { return "UNKNOWN"; }
+  const char* SetName(const char* /*filename*/) override { return FileName(); }
   bool Create() override;
   bool Delete() override;
   [[nodiscard]] bool IsOpen() const override;
@@ -67,52 +70,36 @@ class RAMFileClass final : public FileClass {
             FileAccess access = FileAccess::kRead) override;
   bool Open(FileAccess access = FileAccess::kRead) override;
   int32_t Read(void* buffer, int32_t size) override;
-  int32_t Seek(int32_t pos, int dir = SEEK_CUR) override;
+  int32_t Seek(int32_t offset, int origin = SEEK_CUR) override;
   int32_t Size() override;
   int32_t Write(const void* buffer, int32_t size) override;
   void Close() override;
-  void Error(int /*error*/, bool /*canretry*/ = false,
+  void Error(int /*error*/, bool /*can_retry*/ = false,
              const char* /*filename*/ = nullptr) override {}
 
  protected:
   bool DoIsAvailable(AvailabilityCheck mode) override;
 
  private:
-  /*
-  **	Pointer to the buffer that the "file" will reside in.
-  */
-  char* Buffer;
+  // The memory the "file" lives in.
+  char* buffer_;
 
-  /*
-  **	The maximum size of the buffer. The file occupying the buffer
-  **	may be smaller than this size.
-  */
-  int MaxLength;
+  // Size of buffer_. The file occupying it may be smaller.
+  int capacity_;
 
-  /*
-  **	The number of bytes in the sub-file occupying the buffer.
-  */
-  int Length;
+  // Number of bytes of file data in buffer_.
+  int size_;
 
-  /*
-  **	The current file position offset within the buffer.
-  */
-  int Offset = 0;
+  // Current read/write position within buffer_.
+  int position_ = 0;
 
-  /*
-  **	The file was opened with this access mode.
-  */
-  FileAccess Access = FileAccess::kRead;
+  // Access mode of the current open.
+  FileAccess access_ = FileAccess::kRead;
 
-  /*
-  **	Is the file currently open?
-  */
   bool is_open_ = false;
 
-  /*
-  **	Was the file buffer allocated during construction of this object?
-  */
-  bool IsAllocated = false;
+  // The constructor allocated buffer_, so the destructor must delete it.
+  bool owns_buffer_ = false;
 };
 
 #endif  // CNC_RED_ALERT_TECH_RAMFILE_H_

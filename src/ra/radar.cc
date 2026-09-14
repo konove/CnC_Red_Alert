@@ -406,21 +406,21 @@ void RadarClass::Draw_It(bool forced) {
     //		}
 #ifndef NDEBUG
     RawFileClass file(name);
-    if (file.Is_Available()) {
+    if (file.IsAvailable()) {
       RadarAnim = Load_Alloc_Data(file);
     } else {
       RadarAnim = MFCD::Retrieve(name);
     }
     port::SafeCopy(name, "PULSE.SHP");
     RawFileClass file2(name);
-    if (file2.Is_Available()) {
+    if (file2.IsAvailable()) {
       RadarPulse = Load_Alloc_Data(file2);
     } else {
       RadarPulse = MFCD::Retrieve(name);
     }
     port::SafeCopy(name, _frames[PlayerPtr->ActLike]);
     RawFileClass file3(name);
-    if (file3.Is_Available()) {
+    if (file3.IsAvailable()) {
       RadarFrame = Load_Alloc_Data(file3);
     } else {
       RadarFrame = MFCD::Retrieve(_frames[PlayerPtr->ActLike]);
@@ -429,7 +429,7 @@ void RadarClass::Draw_It(bool forced) {
     RadarAnim = MFCD::Retrieve(name);
     port::SafeCopy(name, "PULSE.SHP");
     RawFileClass file3(name);
-    if (file3.Is_Available()) {
+    if (file3.IsAvailable()) {
       RadarPulse = Load_Alloc_Data(file3);
     } else {
       RadarPulse = MFCD::Retrieve(name);

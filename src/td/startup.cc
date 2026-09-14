@@ -257,14 +257,14 @@ int main(int argc, char* argv[])
       return EXIT_FAILURE;
     }
 
-    CDFileClass::Set_CD_Drive(CDList.Get_First_CD_Drive());
+    CDFileClass::SetCdDrive(CDList.Get_First_CD_Drive());
 
-    if (!cfile.Is_Available()) {
+    if (!cfile.IsAvailable()) {
       // just create an empty config, we don't care about most of it anyway
       cfile.Create();
     }
 
-    if (cfile.Is_Available()) {
+    if (cfile.IsAvailable()) {
       char* cdata = static_cast<char*>(Load_Alloc_Data(cfile));
       Read_Private_Config_Struct(cdata, &NewConfig);
       delete[] cdata;
@@ -535,7 +535,7 @@ void Read_Setup_Options(RawFileClass* config_file) {
   char* buffer = new char[base::ToSize(config_file->Size() + 1)];
   buffer[config_file->Size()] = 0;
 
-  if (config_file->Is_Available()) {
+  if (config_file->IsAvailable()) {
     config_file->Read(buffer, config_file->Size());
 
     AllowHardwareBlitFills =

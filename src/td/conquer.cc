@@ -1972,7 +1972,7 @@ MixFileVqaIo::~MixFileVqaIo() { Close(); }
 int MixFileVqaIo::Open(const char* filename) {
   auto file = std::make_unique<CCFileClass>(filename);
 
-  if (!file->Is_Available()) {
+  if (!file->IsAvailable()) {
     return 1;
   }
   if (!file->Open(filename, FileAccess::kRead)) {
@@ -2035,7 +2035,7 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
   }
 
   //	palette_file = new RawFileClass (filename);
-  //	if (file.Is_Available()){
+  //	if (file.IsAvailable()){
 
   file.Open(FileAccess::kRead);
   file.Read(&num_palettes, 4);
@@ -2163,7 +2163,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       ** unless the covert CD is inserted.
       */
       if (!stricmp(palname, "CC2TEASE.VQP")) {
-        int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
+        int cd_index = Get_CD_Index(CCFileClass::current_cd_drive(), 1 * 60);
         /*
         ** If cd_index == 2 then its a covert CD
         */
@@ -2179,7 +2179,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       ** if the covert CD is inserted.
       */
       if (!stricmp(palname, "RETRO.VQP")) {
-        int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
+        int cd_index = Get_CD_Index(CCFileClass::current_cd_drive(), 1 * 60);
         /*
         ** If cd_index == 2 then its a covert CD
         */
@@ -3071,7 +3071,7 @@ bool Force_CD_Available(int cd) {
   /*
   ** Find out if the CD in the current drive is the one we are looking for
   */
-  current_drive = CCFileClass::Get_CD_Drive();
+  current_drive = CCFileClass::current_cd_drive();
   cd_index = Get_CD_Index(current_drive, 1 * 60);
   if ((cd_index >= 0) && (cd == cd_index || cd == -1)) {
     /*
@@ -3090,11 +3090,11 @@ bool Force_CD_Available(int cd) {
     /*
     ** Check the last CD drive we used if its different from the current one
     */
-    const int last_drive = CCFileClass::Get_Last_CD_Drive();
+    const int last_drive = CCFileClass::last_cd_drive();
     /*
     ** Make sure the last drive is valid and it isnt the current drive
     */
-    if (last_drive && last_drive != CCFileClass::Get_CD_Drive()) {
+    if (last_drive && last_drive != CCFileClass::current_cd_drive()) {
       /*
       ** Find out if there is a C&C cd in the last drive and if so is it the one
       *we are looking for
@@ -3211,8 +3211,8 @@ bool Force_CD_Available(int cd) {
 
 #ifndef DEMO
 
-  CCFileClass::Set_CD_Drive(new_cd_drive);
-  CCFileClass::Refresh_Search_Drives();
+  CCFileClass::SetCdDrive(new_cd_drive);
+  CCFileClass::RefreshSearchPaths();
 
   /*
   **	If it broke out of the query for CD-ROM loop, then this means that the

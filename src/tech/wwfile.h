@@ -68,17 +68,17 @@ class FileClass {
   FileClass(FileClass&&) = delete;
   FileClass& operator=(FileClass&&) = delete;
 
-  [[nodiscard]] virtual const char* File_Name() const = 0;
-  virtual const char* Set_Name(const char* filename) = 0;
+  [[nodiscard]] virtual const char* FileName() const = 0;
+  virtual const char* SetName(const char* filename) = 0;
   virtual bool Create() = 0;
   virtual bool Delete() = 0;
 
   // Returns true if the file is available to be opened.
-  bool Is_Available() { return DoIsAvailable(AvailabilityCheck::kQuick); }
+  bool IsAvailable() { return DoIsAvailable(AvailabilityCheck::kQuick); }
 
   // Returns true if the file is available. Uses full error recovery which may
   // block waiting for media (e.g., prompting for CD-ROM).
-  bool Is_Available_Strict() {
+  bool IsAvailableStrict() {
     return DoIsAvailable(AvailabilityCheck::kBlocking);
   }
 
@@ -87,16 +87,16 @@ class FileClass {
                     FileAccess rights = FileAccess::kRead) = 0;
   virtual bool Open(FileAccess rights = FileAccess::kRead) = 0;
   virtual int32_t Read(void* buffer, int32_t size) = 0;
-  virtual int32_t Seek(int32_t pos, int dir = SEEK_CUR) = 0;
+  virtual int32_t Seek(int32_t offset, int origin = SEEK_CUR) = 0;
   virtual int32_t Size() = 0;
   virtual int32_t Write(const void* buffer, int32_t size) = 0;
   virtual void Close() = 0;
-  virtual void Error(int error, bool canretry = false,
+  virtual void Error(int error, bool can_retry = false,
                      const char* filename = nullptr) = 0;
 
   // legacy C interfaces take the object where a pointer or name is expected.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  operator const char*() const { return File_Name(); }
+  operator const char*() const { return FileName(); }
 
  protected:
   virtual bool DoIsAvailable(AvailabilityCheck mode) = 0;

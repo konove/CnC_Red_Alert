@@ -358,13 +358,13 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   }
 #endif
 
-  CCFileClass::Add_Search_Drives(".");  // allow running without CD
+  CCFileClass::AddSearchPaths(".");  // allow running without CD
 
   DLOG(INFO) << "C&C95 - About to search for CD drives";
   /*
   **	Always try to look at the CD-ROM for data files.
   */
-  if (!CCFileClass::Is_There_Search_Drives()) {
+  if (!CCFileClass::HasSearchPaths()) {
     /*
     ** If there are no search drives specified then we must be playing
     ** off cd, so read files from there.
@@ -379,9 +379,9 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
         Prog_End();
         exit(EXIT_FAILURE);
       }
-      CCFileClass::Set_CD_Drive(CDList.Get_First_CD_Drive());
+      CCFileClass::SetCdDrive(CDList.Get_First_CD_Drive());
 
-      error = CCFileClass::Add_Search_Drives("?:\\");
+      error = CCFileClass::AddSearchPaths("?:\\");
       switch (error) {
         case 1:
           Set_Palette(GamePalette);
@@ -464,7 +464,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   */
 #ifdef DEMO
   (void)MFCD::Register("DEMO.MIX");
-  if (CCFileClass("DEMOM.MIX").Is_Available()) {
+  if (CCFileClass("DEMOM.MIX").IsAvailable()) {
     if (!MoviesMix) {
       MoviesMix = MFCD::Register("DEMOM.MIX");
     }
@@ -483,7 +483,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
     GeneralMix = MFCD::Register("GENERAL.MIX");  // Never cached.
   }
 
-  //	if (CCFileClass("MOVIES.MIX").Is_Available()) {
+  //	if (CCFileClass("MOVIES.MIX").IsAvailable()) {
   DLOG(INFO) << "C&C95 - About to register MOVIES.MIX";
   if (!MoviesMix) {
     MoviesMix = MFCD::Register("MOVIES.MIX");  // Never cached.
@@ -495,7 +495,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   */
   DLOG(INFO) << "C&C95 - About to register SCORES.MIX";
   ScoresPresent = false;
-  //	if (CCFileClass("SCORES.MIX").Is_Available()) {
+  //	if (CCFileClass("SCORES.MIX").IsAvailable()) {
   ScoresPresent = true;
   if (!ScoreMix) {
     ScoreMix = MFCD::Register("SCORES.MIX");
@@ -509,7 +509,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   **	copied the coorect versions to the hard drive.
   */
   DLOG(INFO) << "C&C95 - About to register SPEECH.MIX";
-  if (CCFileClass("SPEECH.MIX").Is_Available()) {
+  if (CCFileClass("SPEECH.MIX").IsAvailable()) {
     (void)MFCD::Register("SPEECH.MIX");  // Never cached.
   }
   DLOG(INFO) << "C&C95 - About to register SOUNDS.MIX";
@@ -687,7 +687,7 @@ void Uninit_Game() {
 
   delete[] static_cast<char*>(SpeechBuffer);
 
-  CCFileClass::Clear_Search_Drives();
+  CCFileClass::ClearSearchPaths();
   MFCD::Free_All();
 
   Units.Set_Heap(0);
@@ -856,7 +856,7 @@ bool Select_Game(bool fade) {
     ** If we're playing back a recording, load all pertinant values & skip
     ** the menu loop.  Hide the now-useless mouse pointer.
     */
-    if (PlaybackGame && RecordFile.Is_Available()) {
+    if (PlaybackGame && RecordFile.IsAvailable()) {
       if (RecordFile.Open(FileAccess::kRead)) {
         Load_Recording_Values();
         process = false;
@@ -1053,7 +1053,7 @@ bool Select_Game(bool fade) {
           ** Ensure that CD1 or CD2 is in the drive. These missions
           ** are not on the covert CD.
           */
-          cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
+          cd_index = Get_CD_Index(CCFileClass::current_cd_drive(), 1 * 60);
           /*
           ** If cd_index == 2 then its a covert CD
           */
@@ -1397,10 +1397,10 @@ bool Select_Game(bool fade) {
           Hide_Mouse();
 
           // verify existence of movie file before playing this sequence.
-          if (CCFileClass("TRAILER.VQA").Is_Available()) {
+          if (CCFileClass("TRAILER.VQA").IsAvailable()) {
             Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
             VisiblePage.Clear();
-            if (CCFileClass("ATTRACT2.CPS").Is_Available()) {
+            if (CCFileClass("ATTRACT2.CPS").IsAvailable()) {
               CCFileClass f("ATTRACT2.CPS");
               Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
               SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
@@ -1416,10 +1416,10 @@ bool Select_Game(bool fade) {
             Play_Movie("TRAILER");  // Red Alert teaser.
           }
 
-          if (CCFileClass("SIZZLE.VQA").Is_Available()) {
+          if (CCFileClass("SIZZLE.VQA").IsAvailable()) {
             Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
             VisiblePage.Clear();
-            if (CCFileClass("ATTRACT2.CPS").Is_Available()) {
+            if (CCFileClass("ATTRACT2.CPS").IsAvailable()) {
               CCFileClass f("ATTRACT2.CPS");
               Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
               SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
@@ -1435,10 +1435,10 @@ bool Select_Game(bool fade) {
             Play_Movie("SIZZLE");  // Red Alert teaser.
           }
 
-          if (CCFileClass("SIZZLE2.VQA").Is_Available()) {
+          if (CCFileClass("SIZZLE2.VQA").IsAvailable()) {
             Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
             VisiblePage.Clear();
-            if (CCFileClass("ATTRACT2.CPS").Is_Available()) {
+            if (CCFileClass("ATTRACT2.CPS").IsAvailable()) {
               CCFileClass f("ATTRACT2.CPS");
               Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
               SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
@@ -1456,7 +1456,7 @@ bool Select_Game(bool fade) {
 
           Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
           VisiblePage.Clear();
-          if (CCFileClass("ATTRACT2.CPS").Is_Available()) {
+          if (CCFileClass("ATTRACT2.CPS").IsAvailable()) {
             CCFileClass f("ATTRACT2.CPS");
             Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
             SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
@@ -1501,7 +1501,7 @@ bool Select_Game(bool fade) {
           break;
 
         case SEL_TIMEOUT:
-          if (AllowAttract && RecordFile.Is_Available()) {
+          if (AllowAttract && RecordFile.IsAvailable()) {
             PlaybackGame = true;
             if (RecordFile.Open(FileAccess::kRead)) {
               Load_Recording_Values();
@@ -2397,7 +2397,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     **	File search path override.
     */
     if (strstr(string, "-CD")) {
-      CCFileClass::Add_Search_Drives(original_arg.substr(3));
+      CCFileClass::AddSearchPaths(original_arg.substr(3));
       continue;
     }
 #ifdef JAPANESE
@@ -2739,7 +2739,7 @@ void Parse_INI_File() {
   Create filename and read the file.
   ------------------------------------------------------------------------*/
   CCFileClass file("CONQUER.INI");
-  if (!file.Is_Available()) {
+  if (!file.IsAvailable()) {
     return;
   } else {
     file.Read(buffer, ShapeBufferSize - 1);
@@ -2816,7 +2816,7 @@ int Version_Number() {
     **	Fetch the virgin text file (if present).
     */
     RawFileClass file("VERSION.TXT");
-    if (file.Is_Available()) {
+    if (file.IsAvailable()) {
       file.Read(VersionText, sizeof(VersionText));
       VersionText[sizeof(VersionText) - 1] = '\0';
       while (VersionText[sizeof(VersionText) - 1] == '\r') {
@@ -2850,7 +2850,7 @@ int Version_Number() {
   RawFileClass file("VERSION.TXT");
   char version[16];
   memset(version, 0, sizeof(version));
-  if (file.Is_Available()) {
+  if (file.IsAvailable()) {
     file.Read(version, sizeof(version));
   }
   strncat(VersionText, version, sizeof(VersionText) - strlen(VersionText) - 1);

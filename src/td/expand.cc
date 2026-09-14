@@ -84,7 +84,7 @@ static char* CreateIndexedListItem(int index, const std::string& str) {
 bool Expansion_Present() {
   CCFileClass file("EXPAND.DAT");
 
-  return file.Is_Available();
+  return file.IsAvailable();
 }
 
 class EListClass : public ListClass {
@@ -167,8 +167,8 @@ bool Expansion_Dialog() {
     Set_Scenario_Name(buffer, index, SCEN_PLAYER_GDI, SCEN_DIR_EAST,
                       SCEN_VAR_A);
     port::SafeAppend(buffer, ".INI");
-    file.Set_Name(buffer);
-    if (file.Is_Available()) {
+    file.SetName(buffer);
+    if (file.IsAvailable()) {
       file.Read(sbuffer, 1000);
       sbuffer[1000] = '\r';
       sbuffer[1000 + 1] = '\n';
@@ -188,8 +188,8 @@ bool Expansion_Dialog() {
     Set_Scenario_Name(buffer, index, SCEN_PLAYER_NOD, SCEN_DIR_EAST,
                       SCEN_VAR_A);
     port::SafeAppend(buffer, ".INI");
-    file.Set_Name(buffer);
-    if (file.Is_Available()) {
+    file.SetName(buffer);
+    if (file.IsAvailable()) {
       file.Read(sbuffer, 1000);
       sbuffer[1000] = '\r';
       sbuffer[1000 + 1] = '\n';
@@ -339,8 +339,8 @@ bool Bonus_Dialog() {
     Set_Scenario_Name(buffer, index, SCEN_PLAYER_GDI, SCEN_DIR_EAST,
                       SCEN_VAR_A);
     port::SafeAppend(buffer, ".INI");
-    file.Set_Name(buffer);
-    if (file.Is_Available()) {
+    file.SetName(buffer);
+    if (file.IsAvailable()) {
       list.Add_Item(CreateIndexedListItem(
           index,
           std::format("GDI: {}", Text_String(gdi_scen_names[index - 60]))));
@@ -354,8 +354,8 @@ bool Bonus_Dialog() {
     Set_Scenario_Name(buffer, index, SCEN_PLAYER_NOD, SCEN_DIR_EAST,
                       SCEN_VAR_A);
     port::SafeAppend(buffer, ".INI");
-    file.Set_Name(buffer);
-    if (file.Is_Available()) {
+    file.SetName(buffer);
+    if (file.IsAvailable()) {
       list.Add_Item(CreateIndexedListItem(
           index,
           std::format("NOD: {}", Text_String(nod_scen_names[index - 60]))));

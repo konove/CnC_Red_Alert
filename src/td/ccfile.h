@@ -65,7 +65,7 @@ class CCFileClass : public CDFileClass {
 
   bool Open(const char* filename,
             FileAccess rights = FileAccess::kRead) override {
-    Set_Name(filename);
+    SetName(filename);
     return Open(rights);
   }
   bool Open(FileAccess rights = FileAccess::kRead) override;

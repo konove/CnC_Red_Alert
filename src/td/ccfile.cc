@@ -34,7 +34,7 @@
  *---------------------------------------------------------------------------------------------*
  * Functions: * CCFileClass::CCFileClass -- Default constructor for file object.
  ** CCFileClass::CCFileClass -- Filename based constructor for C&C file. *
- *   CCFileClass::Close -- Closes the file. * CCFileClass::Is_Available --
+ *   CCFileClass::Close -- Closes the file. * CCFileClass::IsAvailable --
  *Checks for existence of file on disk or in mixfile.          *
  *   CCFileClass::IsOpen -- Determines if the file is open. * CCFileClass::Open
  *-- Opens a file from either the mixfile system or the rawfile system.   *
@@ -102,7 +102,7 @@
 void CCFileClass::Error(int /*error*/, bool /*canretry*/,
                         const char* /*filename*/) {
 #ifdef DEMO
-  if (strstr(File_Name(), "\\")) {
+  if (strstr(FileName(), "\\")) {
     if (!Force_CD_Available(-1)) {
       Prog_End();
       exit(EXIT_FAILURE);
@@ -137,7 +137,7 @@ void CCFileClass::Error(int /*error*/, bool /*canretry*/,
  *=============================================================================================*/
 CCFileClass::CCFileClass(const char* filename)
     : FromDisk(false), Pointer(nullptr), Start(0), Position(0), Length(0) {
-  Set_Name(filename);
+  SetName(filename);
 }
 
 /***********************************************************************************************
@@ -179,7 +179,7 @@ int32_t CCFileClass::Write(const void* buffer, int32_t size) {
   *with a fatal *	message.
   */
   if (Pointer || FromDisk) {
-    Error(EACCES, false, File_Name());
+    Error(EACCES, false, FileName());
   }
 
   return CDFileClass::Write(buffer, size);
@@ -337,7 +337,7 @@ int32_t CCFileClass::Size() {
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
 bool CCFileClass::DoIsAvailable(AvailabilityCheck /*mode*/) {
-  if (MFCD::Offset(File_Name()).has_value()) {
+  if (MFCD::Offset(FileName()).has_value()) {
     return true;
   }
   return CDFileClass::DoIsAvailable(AvailabilityCheck::kQuick);
@@ -427,7 +427,7 @@ bool CCFileClass::Open(FileAccess rights) {
   **	Check to see if file is part of a mixfile and that mixfile is currently
   *loaded *	into RAM.
   */
-  auto loc = MFCD::Offset(File_Name());
+  auto loc = MFCD::Offset(FileName());
   if (loc) {
     /*
     **	If the mixfile is located on disk, then fake out the file system to read
@@ -444,11 +444,11 @@ bool CCFileClass::Open(FileAccess rights) {
       *support however. Also *	note that the filename attached to this object
       *is NOT the same as the file *	attached to the file handle.
       */
-      const std::string dupfile = File_Name();
+      const std::string dupfile = FileName();
       Open(loc->mixfile->Filename().c_str(), FileAccess::kRead);
-      Searching(false);  // Disable multi-drive search.
-      Set_Name(dupfile.c_str());
-      Searching(true);
+      SetSearchEnabled(false);  // Disable multi-drive search.
+      SetName(dupfile.c_str());
+      SetSearchEnabled(true);
       Start = start;
       Length = length;
       FromDisk = true;
@@ -484,7 +484,7 @@ bool __cdecl Set_Search_Drives(const char*) {
 int __cdecl OpenFileHandle(const char* file_name, FileAccess mode) {
   for (int index = 0; index < std::ssize(Handles); index++) {
     if (!Handles[index].IsOpen()) {
-      Handles[index].Set_Name(file_name);
+      Handles[index].SetName(file_name);
       if (Handles[index].Open(mode)) {
         //			if (Handles[index].Open(file_name, mode)) {
         return index;
@@ -517,7 +517,7 @@ int32_t __cdecl WriteFileHandle(int handle, const void* buffer, int32_t size) {
 
 bool __cdecl FileExists(const char* file_name) {
   CCFileClass file(file_name);
-  return file.Is_Available();
+  return file.IsAvailable();
 }
 
 #ifdef NEVER
@@ -562,7 +562,7 @@ int32_t __cdecl SeekFileHandle(int handle, int32_t offset, int origin) {
 
 void WWDOS_Shutdown() {
   for (auto& Handle : Handles) {
-    Handle.Set_Name(nullptr);
+    Handle.SetName(nullptr);
   }
 }
 

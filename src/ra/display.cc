@@ -269,7 +269,7 @@ void DisplayClass::One_Time() {
 
 #ifndef NDEBUG
   RawFileClass file("SHADOW.SHP");
-  if (file.Is_Available()) {
+  if (file.IsAvailable()) {
     ShadowShapes = Load_Alloc_Data(file);
   } else {
     ShadowShapes = MFCD::Retrieve("SHADOW.SHP");

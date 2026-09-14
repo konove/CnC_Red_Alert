@@ -196,7 +196,7 @@ void BulletTypeClass::One_Time() {
 #else
       RawFileClass file(fullname.c_str());
 
-      if (file.Is_Available()) {
+      if (file.IsAvailable()) {
         bullet.SetOwnedImage(LoadAllocData(file));
       } else {
         bullet.SetBorrowedImage(MFCD::RetrieveData(fullname));

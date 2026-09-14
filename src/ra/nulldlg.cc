@@ -2912,7 +2912,7 @@ int Com_Scenario_Dialog(bool skirmish) {
     okbtn.Add_Tail(*commands);
   }
   cancelbtn.Add_Tail(*commands);
-  if (!skirmish && loadfile.Is_Available()) {
+  if (!skirmish && loadfile.IsAvailable()) {
   } else {
     cancelbtn.X = loadbtn.X;
   }
@@ -3137,7 +3137,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           (!ok_button_added && gameoptions && kludge_timer.IsFinished())) {
         okbtn.Add_Tail(*commands);
         ok_button_added = true;
-        if (loadfile.Is_Available()) {
+        if (loadfile.IsAvailable()) {
           loadbtn.Add_Tail(*commands);
         }
         display = std::max(display, REDRAW_BUTTONS);
@@ -4386,7 +4386,7 @@ bool Find_Local_Scenario(const char* description, char* filename,
       /*
       ** Possible rejection on the basis of size.
       */
-      if (file.Is_Available() && std::cmp_equal(file.Size(), length)) {
+      if (file.IsAvailable() && std::cmp_equal(file.Size(), length)) {
         // debugprint("length matches.\n");
         /*
         ** We don't know the digest for 'official' scenarios so assume its
@@ -5685,8 +5685,8 @@ int Com_Show_Scenario_Dialog() {
                    (Expansion_AM_Present() &&
                     IsMissionAftermath(Session.ScenarioFileName)))) {
                 MixAwareFile check_file(Session.ScenarioFileName);
-                if (!check_file.Is_Available()) {
-                  const int current_drive = MixAwareFile::Get_CD_Drive();
+                if (!check_file.IsAvailable()) {
+                  const int current_drive = MixAwareFile::current_cd_drive();
                   const int index = Get_CD_Index(current_drive, 1 * 60);
                   bool needcd = false;
                   if (IsMissionCounterstrike(Session.ScenarioFileName) &&

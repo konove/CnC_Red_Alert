@@ -490,7 +490,7 @@ void OptionsClass::Load_Settings() {
   **	Create filename and read the file.
   */
   CCFileClass file("CONQUER.INI");
-  if (!file.Is_Available()) {
+  if (!file.IsAvailable()) {
     return;
   }
   file.Read(buffer, ShapeBufferSize - 1);
@@ -669,8 +669,8 @@ void OptionsClass::Save_Settings() const {
   buffer = ShapeBuffer;
   memset(buffer, '\0', base::ToSize(ShapeBufferSize));
 
-  file.Set_Name("CONQUER.INI");
-  if (file.Is_Available()) {
+  file.SetName("CONQUER.INI");
+  if (file.IsAvailable()) {
     file.Read(buffer, ShapeBufferSize - 1);
   }
 

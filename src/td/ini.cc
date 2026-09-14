@@ -192,7 +192,7 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
     */
     for (i = SCEN_VAR_A; i < SCEN_VAR_COUNT; i++) {
       sprintf(fname, "SC%c%02d%c%c.INI", c_player, scenario, c_dir, 'A' + i);
-      if (!CCFileClass(fname).Is_Available()) {
+      if (!CCFileClass(fname).IsAvailable()) {
         break;
       }
     }
@@ -313,7 +313,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
 
   sprintf(fname, "%s.INI", root);
   CCFileClass file(fname);
-  if (!file.Is_Available()) {
+  if (!file.IsAvailable()) {
     return false;
   }
   file.Read(buffer, ShapeBufferSize - 1);
@@ -693,8 +693,8 @@ void Write_Scenario_Ini(const char* root) {
     **	Create scenario filename and clear the buffer to empty.
     */
     sprintf(fname, "%s.INI", root);
-    file.Set_Name(fname);
-    if (file.Is_Available()) {
+    file.SetName(fname);
+    if (file.IsAvailable()) {
       //		file.Open(READ);
       file.Read(buffer, ShapeBufferSize - 1);
       //		file.Close();
@@ -745,8 +745,8 @@ void Write_Scenario_Ini(const char* root) {
     */
     memset(buffer, '\0', base::ToSize(ShapeBufferSize));
 
-    file.Set_Name("MASTER.INI");
-    if (file.Is_Available()) {
+    file.SetName("MASTER.INI");
+    if (file.IsAvailable()) {
       //		file.Open(READ);
       file.Read(buffer, ShapeBufferSize - 1);
       //		file.Close();

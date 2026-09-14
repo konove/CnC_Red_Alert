@@ -433,7 +433,7 @@ void GameOptionsClass::Process() {
             BreakoutAllowed = true;
             char buffer[25];
             sprintf(buffer, "%s.VQA", BriefMovie);
-            if (CCFileClass(buffer).Is_Available()) {
+            if (CCFileClass(buffer).IsAvailable()) {
               Play_Movie(BriefMovie);
             } else {
               Play_Movie(ActionMovie);

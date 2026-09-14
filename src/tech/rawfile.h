@@ -33,7 +33,7 @@
  *                  Last Update : October 18, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * RawFileClass::File_Name -- Returns with the filename associate
+ * Functions: * RawFileClass::FileName -- Returns with the filename associate
  *with the file object.      * RawFileClass::RawFileClass -- Default constructor
  *for a file object.                      * RawFileClass::~RawFileClass --
  *Default deconstructor for a file object.                   *
@@ -57,38 +57,30 @@
 #define WWERROR (-1)
 #endif
 
-/*
-**	This is the definition of the raw file class. It is derived from the
-*abstract base FileClass *	and handles the interface to the low level DOS
-*routines. This is the first class in the *	chain of derived file
-* classes that actually performs a useful function. With this class, *
-*	I/O is possible. More sophisticated features, such as packed files,
-* CD-ROM support, *	file caching, and XMS/EMS memory support, are
-* handled by derived classes.
-**
-**	Of particular importance is the need to override the error routine if
-*more sophisticated *	error handling is required. This is more than
-*likely if greater functionality is derived *	from this base class.
-*/
+// The first concrete file class: reads and writes a single file on disk
+// through the low-level IO_* routines. Derived classes add buffering, search
+// paths and mixfile support.
+//
+// A file can be biased (see Bias()) so that a byte range inside a larger file,
+// such as an entry in a mixfile, behaves as a whole file of its own.
+//
+// Override Error() when more sophisticated error handling is required; the
+// version here ignores every error.
 class RawFileClass : public FileClass {
  public:
-  /*
-  **	This is a record of the access rights used to open the file. These
-  *rights are *	used if the file object is duplicated.
-  */
-  FileAccess Rights;
-
   explicit RawFileClass(const char* filename);
-  RawFileClass();
-  RawFileClass(const RawFileClass& f);
-  RawFileClass& operator=(const RawFileClass& f);
+  RawFileClass() = default;
+
+  RawFileClass(const RawFileClass&) = delete;
+  RawFileClass& operator=(const RawFileClass&) = delete;
   RawFileClass(RawFileClass&&) = delete;
   RawFileClass& operator=(RawFileClass&&) = delete;
+
   ~RawFileClass() override;
 
-  [[nodiscard]] const char* File_Name() const
+  [[nodiscard]] const char* FileName() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  const char* Set_Name(const char* filename)
+  const char* SetName(const char* filename)
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   bool Create() override;
   bool Delete() override;
@@ -97,59 +89,47 @@ class RawFileClass : public FileClass {
             FileAccess rights = FileAccess::kRead) override;
   bool Open(FileAccess rights = FileAccess::kRead) override;
   int32_t Read(void* buffer, int32_t size) override;
-  int32_t Seek(int32_t pos, int dir = SEEK_CUR) override;
+  int32_t Seek(int32_t offset, int origin = SEEK_CUR) override;
   int32_t Size() override;
   int32_t Write(const void* buffer, int32_t size) override;
   void Close() override;
-  void Error(int error, bool canretry = false,
+  void Error(int error, bool can_retry = false,
              const char* filename = nullptr) override;
 
+  // Makes the byte range starting at start, length bytes long, appear as the
+  // whole file. start is added to the current bias; start == 0 removes the
+  // bias. length == -1 extends the range to the end of the file.
   void Bias(int start, int length = -1);
 
-  void* Get_File_Handle() { return Handle; }
-
-  /*
-  **	These bias values enable a sub-portion of a file to appear as if it
-  **	were the whole file. This comes in very handy for multi-part files such
-  *as *	mixfiles.
-  */
-  int BiasStart;
-  int BiasLength;
+  // Returns the offset in the underlying file at which the biased range
+  // begins, or 0 for an unbiased file.
+  [[nodiscard]] int bias_start() const { return bias_start_; }
 
  protected:
   bool DoIsAvailable(AvailabilityCheck mode) override;
 
-  int32_t Raw_Seek(int32_t pos, int dir = SEEK_CUR);
+  // Seeks in the underlying file, ignoring any bias.
+  int32_t RawSeek(int32_t offset, int origin = SEEK_CUR);
 
  private:
-  /*
-  **	This is the low level DOS handle. A -1 indicates an empty condition.
-  */
-  void* Handle;
+  // Access rights passed to the most recent Open().
+  FileAccess rights_ = FileAccess::kRead;
 
-  /*
-  **	This holds the filename string. Using std::string provides automatic
-  **	memory management (RAII).
-  */
-  std::string Filename_;
+  // Offset of the biased range in the underlying file; see Bias().
+  int bias_start_ = 0;
 
-  //
-  // file date and time are in the following formats:
-  //
-  //      date   bits 0-4   day (0-31)
-  //             bits 5-8   month (1-12)
-  //             bits 9-15  year (0-119 representing 1980-2099)
-  //
-  //      time   bits 0-4   second/2 (0-29)
-  //             bits 5-10  minutes (0-59)
-  //             bits 11-15 hours (0-23)
-  //
-  uint16_t Date;
-  uint16_t Time;
+  // Length of the biased range, or -1 if the file is not biased.
+  int bias_length_ = -1;
+
+  // Low-level IO handle, or nullptr when the file is closed.
+  void* handle_ = nullptr;
+
+  // Name of the file on disk; empty if none has been assigned.
+  std::string filename_;
 };
 
 /***********************************************************************************************
- * RawFileClass::File_Name -- Returns with the filename associate with the file
+ * RawFileClass::FileName -- Returns with the filename associate with the file
  *object.        *
  *                                                                                             *
  *    Use this routine to determine what filename is associated with this file
@@ -165,32 +145,9 @@ class RawFileClass : public FileClass {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-inline const char* RawFileClass::File_Name() const {
-  return Filename_.empty() ? nullptr : Filename_.c_str();
+inline const char* RawFileClass::FileName() const {
+  return filename_.empty() ? nullptr : filename_.c_str();
 }
-
-/***********************************************************************************************
- * RawFileClass::RawFileClass -- Default constructor for a file object. *
- *                                                                                             *
- *    This constructs a null file object. A null file object has no file handle
- *or filename    * associated with it. In order to use a file object created in
- *this fashion it must be     * assigned a name and then opened. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/18/1994 JLB : Created. *
- *=============================================================================================*/
-inline RawFileClass::RawFileClass()
-    : Rights(FileAccess::kRead),
-      BiasStart(0),
-      BiasLength(-1),
-      Handle(nullptr),
-      Date(0),
-      Time(0) {}
 
 /***********************************************************************************************
  * RawFileClass::~RawFileClass -- Default deconstructor for a file object. *
@@ -211,7 +168,7 @@ inline RawFileClass::~RawFileClass() {
   // Derived overrides commit their own state in their own destructors;
   // by the time this runs the object is a plain RawFileClass.
   RawFileClass::Close();
-  // Filename_ (std::string) automatically cleans up via RAII
+  // filename_ (std::string) automatically cleans up via RAII
 }
 
 /***********************************************************************************************
@@ -229,6 +186,6 @@ inline RawFileClass::~RawFileClass() {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-inline bool RawFileClass::IsOpen() const { return Handle != nullptr; }
+inline bool RawFileClass::IsOpen() const { return handle_ != nullptr; }
 
 #endif  // CNC_RED_ALERT_TECH_RAWFILE_H_

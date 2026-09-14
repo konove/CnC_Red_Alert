@@ -170,13 +170,13 @@ template <class T>
 bool MixFileClass<T>::Open(std::string_view filename, const PKey* key) {
   const std::string name(filename);  // File classes need a terminated name.
   T file(name.c_str());
-  filename_ = file.File_Name();
+  filename_ = file.FileName();
 
   FileStraw file_straw(file);
   std::unique_ptr<BlowStraw> decrypt_straw;
   Straw* straw = &file_straw;
 
-  if (!file.Is_Available()) {
+  if (!file.IsAvailable()) {
     return false;
   }
 
@@ -250,7 +250,7 @@ bool MixFileClass<T>::Open(std::string_view filename, const PKey* key) {
   // Seek returns long, cast to int32_t to match class member (assuming < 2GB
   // files)
   data_start_ =
-      static_cast<std::int32_t>(file.Seek(0, SEEK_CUR) + file.BiasStart);
+      static_cast<std::int32_t>(file.Seek(0, SEEK_CUR) + file.bias_start());
 
   return true;
 }

@@ -601,7 +601,7 @@ void ScoreClass::Presentation() {
   ** First check for the existence of the file, and if there isn't one,
   ** make a new one filled with blanks.
   */
-  if (!file.Is_Available()) {
+  if (!file.IsAvailable()) {
     // hall of fame doesn't exist, so blank it out & write it
     file.Open(FileAccess::kWrite);
 

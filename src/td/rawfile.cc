@@ -38,14 +38,14 @@
  *   RawFileClass::Create -- Creates an empty file. * RawFileClass::Delete --
  *Deletes the file object from the disk.                            *
  *   RawFileClass::Error -- Handles displaying a file error message. *
- *   RawFileClass::Is_Available -- Checks to see if the specified file is
+ *   RawFileClass::IsAvailable -- Checks to see if the specified file is
  *available to open.   * RawFileClass::Open -- Assigns name and opens file in
  *one operation.                       * RawFileClass::Open -- Opens the file
  *object with the rights specified.                    *
  *   RawFileClass::RawFileClass -- Simple constructor for a file object. *
  *   RawFileClass::Read -- Reads the specified number of bytes into a memory
  *buffer.           * RawFileClass::Seek -- Reposition the file pointer as
- *indicated.                           * RawFileClass::Set_Name -- Manually sets
+ *indicated.                           * RawFileClass::SetName -- Manually sets
  *the name for a file object.                       * RawFileClass::Size --
  *Determines size of file (in bytes).                                 *
  *   RawFileClass::Write -- Writes the specified data to the buffer specified. *
@@ -122,7 +122,7 @@ RawFileClass::~RawFileClass() {
 }
 
 /***********************************************************************************************
- * RawFileClass::Set_Name -- Manually sets the name for a file object. *
+ * RawFileClass::SetName -- Manually sets the name for a file object. *
  *                                                                                             *
  *    This routine will set the name for the file object to the name specified.
  *This name is   * duplicated in free store. This allows the supplied name to be
@@ -140,7 +140,7 @@ RawFileClass::~RawFileClass() {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-const char* RawFileClass::Set_Name(const char* filename) {
+const char* RawFileClass::SetName(const char* filename) {
   if (Allocated) {
     delete[] Filename;
     Filename = nullptr;
@@ -185,7 +185,7 @@ const char* RawFileClass::Set_Name(const char* filename) {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 bool RawFileClass::Open(const char* filename, FileAccess rights) {
-  Set_Name(filename);
+  SetName(filename);
   return Open(rights);
 }
 

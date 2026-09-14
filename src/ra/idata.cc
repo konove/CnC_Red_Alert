@@ -1257,7 +1257,7 @@ void InfantryTypeClass::One_Time() {
 
 #ifndef NDEBUG
     RawFileClass sfile(fullname.c_str());
-    if (sfile.Is_Available()) {
+    if (sfile.IsAvailable()) {
       uclass->SetOwnedImage(LoadAllocData(sfile));
     } else {
       uclass->SetBorrowedImage(MFCD::RetrieveData(fullname));
@@ -1274,7 +1274,7 @@ void InfantryTypeClass::One_Time() {
 
 #ifndef NDEBUG
     RawFileClass ifile(fullname.c_str());
-    if (ifile.Is_Available()) {
+    if (ifile.IsAvailable()) {
       uclass->CameoData = Load_Alloc_Data(ifile);
     } else {
       uclass->CameoData = MFCD::Retrieve(fullname);

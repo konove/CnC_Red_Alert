@@ -662,7 +662,7 @@ void OptionsClass::Save_Settings() const {
   *be *	explicitly written out by this routine. By preloading the database,
   *these entries *	will be carried over.
   */
-  if (file.Is_Available()) {
+  if (file.IsAvailable()) {
     ini.Load(file);
   }
 

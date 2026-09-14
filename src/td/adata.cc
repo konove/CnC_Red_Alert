@@ -2266,7 +2266,7 @@ void AnimTypeClass::One_Time() {
                               .string();
 
     RawFileClass file(fullname.c_str());
-    if (file.Is_Available()) {
+    if (file.IsAvailable()) {
       (const void*&)As_Reference(index).ImageData = Load_Alloc_Data(file);
     } else {
       (const void*&)As_Reference(index).ImageData = MFCD::Retrieve(fullname);
