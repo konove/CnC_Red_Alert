@@ -240,15 +240,16 @@ bool MixFileClass<T>::Open(std::string_view filename, const PKey* key) {
     }
   }
 
-  if (int64_t{file.Seek(0, SEEK_CUR)} + data_size_ > int64_t{file.Size()}) {
+  if (int64_t{file.Seek(0, SeekOrigin::kCurrent)} + data_size_ >
+      int64_t{file.Size()}) {
     return false;
   }
 
   // Calculate start position.
   // Seek returns long, cast to int32_t to match class member (assuming < 2GB
   // files)
-  data_start_ =
-      static_cast<std::int32_t>(file.Seek(0, SEEK_CUR) + file.bias_start());
+  data_start_ = static_cast<std::int32_t>(file.Seek(0, SeekOrigin::kCurrent) +
+                                          file.bias_start());
 
   return true;
 }

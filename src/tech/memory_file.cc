@@ -52,13 +52,14 @@
 #include "tech/memory_file.h"
 
 #include <algorithm>
-#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <string_view>
 
 #include "base/numeric.h"
+#include "base/types.h"
 #include "sdllib/file_access.h"
+#include "tech/file.h"
 
 /***********************************************************************************************
  * MemoryFile::MemoryFile -- Construct a RAM buffer based "file" object. *
@@ -85,7 +86,7 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-MemoryFile::MemoryFile(void* buffer, int size)
+MemoryFile::MemoryFile(void* buffer, base::ssize size)
     : buffer_(static_cast<char*>(buffer)), capacity_(size), size_(size) {
   if (buffer == nullptr && size > 0) {
     buffer_ = new char[base::ToSize(size)];
@@ -277,7 +278,7 @@ bool MemoryFile::Open(FileAccess access) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int32_t MemoryFile::Read(void* buffer, int32_t size) {
+base::ssize MemoryFile::Read(void* buffer, base::ssize size) {
   if (buffer_ == nullptr || buffer == nullptr || size == 0) {
     return 0;
   }
@@ -292,7 +293,7 @@ int32_t MemoryFile::Read(void* buffer, int32_t size) {
     }
   }
 
-  const int bytes_to_copy = size < size_ - position_ ? size : size_ - position_;
+  const base::ssize bytes_to_copy = std::min(size, size_ - position_);
   memmove(buffer, &buffer_[position_], base::ToSize(bytes_to_copy));
   position_ += bytes_to_copy;
 
@@ -323,33 +324,32 @@ int32_t MemoryFile::Read(void* buffer, int32_t size) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int32_t MemoryFile::Seek(int32_t offset, int origin) {
+base::ssize MemoryFile::Seek(base::ssize offset, SeekOrigin origin) {
   if (buffer_ == nullptr || !IsOpen()) {
     return position_;
   }
 
-  int max_position = size_;
+  base::ssize max_position = size_;
   if (HasAccess(access_, FileAccess::kWrite)) {
     max_position = capacity_;
   }
 
   switch (origin) {
-    case SEEK_CUR:
+    case SeekOrigin::kCurrent:
       position_ = position_ + offset;
       break;
 
-    case SEEK_SET:
+    case SeekOrigin::kBegin:
       position_ = offset;
       break;
 
-    case SEEK_END:
-      position_ = max_position + offset;
-      break;
+    case SeekOrigin::kEnd:
     default:
+      position_ = max_position + offset;
       break;
   }
 
-  position_ = std::clamp(position_, 0, max_position);
+  position_ = std::clamp<base::ssize>(position_, 0, max_position);
   size_ = std::max(position_, size_);
 
   return position_;
@@ -371,7 +371,7 @@ int32_t MemoryFile::Seek(int32_t offset, int origin) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int32_t MemoryFile::Size() { return size_; }
+base::ssize MemoryFile::Size() { return size_; }
 
 /***********************************************************************************************
  * MemoryFile::Write -- Copies data to the ram file. *
@@ -391,7 +391,7 @@ int32_t MemoryFile::Size() { return size_; }
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int32_t MemoryFile::Write(const void* buffer, int32_t size) {
+base::ssize MemoryFile::Write(const void* buffer, base::ssize size) {
   if (buffer_ == nullptr || buffer == nullptr || size == 0) {
     return 0;
   }
@@ -406,8 +406,7 @@ int32_t MemoryFile::Write(const void* buffer, int32_t size) {
     }
   }
 
-  const int space_left = capacity_ - position_;
-  const int bytes_to_write = size < space_left ? size : space_left;
+  const base::ssize bytes_to_write = std::min(size, capacity_ - position_);
   memmove(&buffer_[position_], buffer, base::ToSize(bytes_to_write));
   position_ += bytes_to_write;
 

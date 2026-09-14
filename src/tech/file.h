@@ -40,18 +40,41 @@
 #ifndef CNC_RED_ALERT_TECH_FILE_H_
 #define CNC_RED_ALERT_TECH_FILE_H_
 
-#define YEAR(dt) ((((dt) & 0xFE000000) >> (9 + 16)) + 1980)
-#define MONTH(dt) (((dt) & 0x01E00000) >> (5 + 16))
-#define DAY(dt) (((dt) & 0x001F0000) >> (0 + 16))
-#define HOUR(dt) (((dt) & 0x0000F800) >> 11)
-#define MINUTE(dt) (((dt) & 0x000007E0) >> 5)
-#define SECOND(dt) (((dt) & 0x0000001F) << 1)
-
-#include <cstdint>
 #include <cstdio>
 #include <string_view>
 
+#include "base/types.h"
 #include "sdllib/file_access.h"
+
+// Where a Seek() offset is measured from.
+enum class SeekOrigin { kBegin, kCurrent, kEnd };
+
+// Maps a stdio SEEK_* constant, which the C-style file APIs still pass, to
+// SeekOrigin. Anything unrecognized counts as SEEK_CUR, as the file classes
+// have always treated it.
+constexpr SeekOrigin SeekOriginFromStdio(int origin) {
+  switch (origin) {
+    case SEEK_SET:
+      return SeekOrigin::kBegin;
+    case SEEK_END:
+      return SeekOrigin::kEnd;
+    default:
+      return SeekOrigin::kCurrent;
+  }
+}
+
+// The stdio SEEK_* constant for origin.
+constexpr int StdioOrigin(SeekOrigin origin) {
+  switch (origin) {
+    case SeekOrigin::kBegin:
+      return SEEK_SET;
+    case SeekOrigin::kEnd:
+      return SEEK_END;
+    case SeekOrigin::kCurrent:
+    default:
+      return SEEK_CUR;
+  }
+}
 
 // File: the interface every file object in the game implements. Concrete
 // files live on disk (DiskFile), in memory (MemoryFile) or inside the game's
@@ -89,13 +112,23 @@ class File {
   virtual bool Open(std::string_view filename,
                     FileAccess rights = FileAccess::kRead) = 0;
   virtual bool Open(FileAccess rights = FileAccess::kRead) = 0;
-  virtual int32_t Read(void* buffer, int32_t size) = 0;
-  virtual int32_t Seek(int32_t offset, int origin = SEEK_CUR) = 0;
-  virtual int32_t Size() = 0;
-  virtual int32_t Write(const void* buffer, int32_t size) = 0;
+
+  // Reads up to size bytes into buffer and returns the number read, which is
+  // less than size only at the end of the file.
+  virtual base::ssize Read(void* buffer, base::ssize size) = 0;
+
+  // Writes size bytes from buffer and returns the number written.
+  virtual base::ssize Write(const void* buffer, base::ssize size) = 0;
+
+  // Moves the file position by offset from origin and returns the new
+  // position, measured from the start of the file.
+  virtual base::ssize Seek(base::ssize offset,
+                           SeekOrigin origin = SeekOrigin::kCurrent) = 0;
+
+  // Returns the size of the file in bytes.
+  virtual base::ssize Size() = 0;
+
   virtual void Close() = 0;
-  virtual void Error(int error, bool can_retry = false,
-                     std::string_view filename = {}) = 0;
 };
 
 #endif  // CNC_RED_ALERT_TECH_FILE_H_

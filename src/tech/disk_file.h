@@ -52,6 +52,7 @@
 #include <string_view>
 
 #include "absl/base/attributes.h"
+#include "base/types.h"
 #include "tech/file.h"
 
 #ifndef WWERROR
@@ -65,8 +66,6 @@
 // A file can be biased (see Bias()) so that a byte range inside a larger file,
 // such as an entry in a mixfile, behaves as a whole file of its own.
 //
-// Override Error() when more sophisticated error handling is required; the
-// version here ignores every error.
 class DiskFile : public File {
  public:
   explicit DiskFile(std::string_view filename);
@@ -91,36 +90,36 @@ class DiskFile : public File {
   bool Open(std::string_view filename,
             FileAccess rights = FileAccess::kRead) override;
   bool Open(FileAccess rights = FileAccess::kRead) override;
-  int32_t Read(void* buffer, int32_t size) override;
-  int32_t Seek(int32_t offset, int origin = SEEK_CUR) override;
-  int32_t Size() override;
-  int32_t Write(const void* buffer, int32_t size) override;
+  base::ssize Read(void* buffer, base::ssize size) override;
+  base::ssize Write(const void* buffer, base::ssize size) override;
+  base::ssize Seek(base::ssize offset,
+                   SeekOrigin origin = SeekOrigin::kCurrent) override;
+  base::ssize Size() override;
   void Close() override;
-  void Error(int error, bool can_retry = false,
-             std::string_view filename = {}) override;
 
   // Makes the byte range starting at start, length bytes long, appear as the
   // whole file. start is added to the current bias; start == 0 removes the
   // bias. length == -1 extends the range to the end of the file.
-  void Bias(int start, int length = -1);
+  void Bias(base::ssize start, base::ssize length = -1);
 
   // Returns the offset in the underlying file at which the biased range
   // begins, or 0 for an unbiased file.
-  [[nodiscard]] int bias_start() const { return bias_start_; }
+  [[nodiscard]] base::ssize bias_start() const { return bias_start_; }
 
  protected:
   // Seeks in the underlying file, ignoring any bias.
-  int32_t RawSeek(int32_t offset, int origin = SEEK_CUR);
+  base::ssize RawSeek(base::ssize offset,
+                      SeekOrigin origin = SeekOrigin::kCurrent);
 
  private:
   // Access rights passed to the most recent Open().
   FileAccess rights_ = FileAccess::kRead;
 
   // Offset of the biased range in the underlying file; see Bias().
-  int bias_start_ = 0;
+  base::ssize bias_start_ = 0;
 
   // Length of the biased range, or -1 if the file is not biased.
-  int bias_length_ = -1;
+  base::ssize bias_length_ = -1;
 
   // Low-level IO handle, or nullptr when the file is closed.
   void* handle_ = nullptr;

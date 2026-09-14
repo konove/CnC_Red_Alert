@@ -23,9 +23,9 @@
 
 #include "ra/mix_aware_file.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <cstdio>
-#include <cstdlib>
 #include <cstring>
 #include <iterator>
 #include <new>
@@ -35,13 +35,13 @@
 #include <string_view>
 
 #include "base/numeric.h"
-#include "ra/conquer.h"
+#include "base/types.h"
 #include "ra/externs.h"
-#include "ra/startup.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
 #include "tech/cdfile.h"
 #include "tech/disk_file.h"
+#include "tech/file.h"
 #include "tech/mixfile.h"
 
 // The name is copied by SetName, so filename need not outlive the object.
@@ -51,21 +51,11 @@ MixAwareFile::MixAwareFile(const std::string_view filename) {
 
 MixAwareFile::MixAwareFile() = default;
 
-void MixAwareFile::Error(int /*error*/, bool /*can_retry*/,
-                         std::string_view /*filename*/) {
-  // A missing CD is the only failure this can recover from, so ask for the
-  // disc and give up if the player cancels.
-  if (!Force_CD_Available(RequiredCD)) {
-    Emergency_Exit(EXIT_FAILURE);
-  }
-}
-
-int32_t MixAwareFile::Write(const void* buffer, int32_t size) {
+base::ssize MixAwareFile::Write(const void* buffer, base::ssize size) {
   // A resident file is a view into the mixfile cache, so writing is not
   // allowed. It must not fall through: IsOpen() reports the resident file as
   // open, so the base class would skip opening a handle and write through a
-  // null one. Error() is no help here, since it only prompts for a CD and
-  // returns whenever the disc is present.
+  // null one.
   if (IsResident()) {
     return 0;
   }
@@ -73,17 +63,14 @@ int32_t MixAwareFile::Write(const void* buffer, int32_t size) {
   return CDFileClass::Write(buffer, size);
 }
 
-int32_t MixAwareFile::Read(void* buffer, int32_t size) {
+base::ssize MixAwareFile::Read(void* buffer, base::ssize size) {
   // A read on a closed file opens it for just this call.
   const bool opened_for_this_read = !IsOpen() && Open();
 
   // If the file is part of a cached mixfile, then a mere copy is all that is
   // required for the read, clipped to the bytes left after the position.
   if (IsResident()) {
-    const int32_t bytes_left =
-        static_cast<int32_t>(resident_data_.Get_Size()) - resident_position_;
-
-    size = bytes_left < size ? bytes_left : size;
+    size = std::min(size, resident_data_.Get_Size() - resident_position_);
     if (size) {
       memmove(buffer, static_cast<char*>(resident_data_) + resident_position_,
               base::ToSize(size));
@@ -97,7 +84,7 @@ int32_t MixAwareFile::Read(void* buffer, int32_t size) {
 
   // A file on disk, or one inside a mixfile on disk (the bias set up by Open
   // keeps the read inside the embedded file).
-  const int32_t bytes_read = CDFileClass::Read(buffer, size);
+  const base::ssize bytes_read = CDFileClass::Read(buffer, size);
 
   // If the file was opened by this routine, then close it at this time.
   if (opened_for_this_read) {
@@ -107,22 +94,21 @@ int32_t MixAwareFile::Read(void* buffer, int32_t size) {
   return bytes_read;
 }
 
-int32_t MixAwareFile::Seek(int32_t offset, int origin) {
+base::ssize MixAwareFile::Seek(base::ssize offset, SeekOrigin origin) {
   // When the file is resident, a mere adjustment of the virtual file position
-  // is all that is required of a seek. An unrecognized origin is treated as
-  // SEEK_CUR.
+  // is all that is required of a seek.
   if (IsResident()) {
-    const auto image_size = static_cast<int32_t>(resident_data_.Get_Size());
+    const base::ssize image_size = resident_data_.Get_Size();
     switch (origin) {
-      case SEEK_END:
+      case SeekOrigin::kEnd:
         resident_position_ = image_size;
         break;
 
-      case SEEK_SET:
+      case SeekOrigin::kBegin:
         resident_position_ = 0;
         break;
 
-      case SEEK_CUR:
+      case SeekOrigin::kCurrent:
       default:
         break;
     }
@@ -137,10 +123,10 @@ int32_t MixAwareFile::Seek(int32_t offset, int origin) {
   return CDFileClass::Seek(offset, origin);
 }
 
-int32_t MixAwareFile::Size() {
+base::ssize MixAwareFile::Size() {
   // If the file is resident, the size is already known.
   if (IsResident()) {
-    return static_cast<int32_t>(resident_data_.Get_Size());
+    return resident_data_.Get_Size();
   }
 
   // If the file is not available as a stand-alone file, then search for it in
@@ -248,7 +234,7 @@ bool MixAwareFile::Open(FileAccess rights) {
     // to the existing bias rather than replacing it. offset is absolute within
     // the mixfile here, since the mixfile is not cached.
     Bias(location->offset, location->size);
-    Seek(0, SEEK_SET);
+    Seek(0, SeekOrigin::kBegin);
   } else {
     // Cached mixfile: point at the file's bytes in the RAM image. The handle
     // stays closed.
@@ -302,14 +288,14 @@ void __cdecl CloseFileHandle(int handle) {
 
 int32_t __cdecl ReadFileHandle(int handle, void* buffer, int32_t size) {
   if (MixAwareFile* const file = OpenFileForHandle(handle)) {
-    return file->Read(buffer, size);
+    return static_cast<int32_t>(file->Read(buffer, size));
   }
   return 0;
 }
 
 int32_t __cdecl WriteFileHandle(int handle, const void* buffer, int32_t size) {
   if (MixAwareFile* const file = OpenFileForHandle(handle)) {
-    return file->Write(buffer, size);
+    return static_cast<int32_t>(file->Write(buffer, size));
   }
   return 0;
 }
@@ -321,14 +307,15 @@ bool __cdecl FileExists(const std::string_view file_name) {
 
 int32_t __cdecl FileHandleSize(int handle) {
   if (MixAwareFile* const file = OpenFileForHandle(handle)) {
-    return file->Size();
+    return static_cast<int32_t>(file->Size());
   }
   return 0;
 }
 
 int32_t __cdecl SeekFileHandle(int handle, int32_t offset, int origin) {
   if (MixAwareFile* const file = OpenFileForHandle(handle)) {
-    return file->Seek(offset, origin);
+    return static_cast<int32_t>(
+        file->Seek(offset, SeekOriginFromStdio(origin)));
   }
   return 0;
 }

@@ -250,7 +250,7 @@ int32_t Load_Uncompress(File& file, BuffType& uncomp_buff, BuffType& dest_buff,
     if (reserved_data) {
       file.Read(reserved_data, header.Skip);
     } else {
-      file.Seek(header.Skip, SEEK_CUR);
+      file.Seek(header.Skip, SeekOrigin::kCurrent);
     }
     header.Skip = 0;
   }
@@ -311,7 +311,7 @@ int Load_Picture(const char* filename, BufferClass& scratchbuf,
  *=============================================================================================*/
 void* Load_Alloc_Data(File& file) {
   void* ptr = nullptr;
-  const int32_t size = file.Size();
+  const base::ssize size = file.Size();
 
   ptr = new char[base::ToSize(size)];
   if (ptr) {
@@ -322,8 +322,8 @@ void* Load_Alloc_Data(File& file) {
 
 // Modern RAII version that returns owned data as a vector.
 std::vector<std::byte> LoadAllocData(File& file) {
-  const int32_t size = file.Size();
-  std::vector<std::byte> data(static_cast<size_t>(size));
+  const base::ssize size = file.Size();
+  std::vector<std::byte> data(base::ToSize(size));
   file.Read(data.data(), size);
   return data;
 }

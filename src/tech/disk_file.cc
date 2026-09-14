@@ -59,16 +59,16 @@
 #include "tech/disk_file.h"
 
 #include <algorithm>
-#include <cerrno>
-#include <cstdint>
 #include <cstdio>
 #include <string>
 #include <string_view>
 
 #include "absl/strings/ascii.h"
 #include "base/numeric.h"
+#include "base/types.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
+#include "tech/file.h"
 
 /***********************************************************************************************
  * DiskFile::Error -- Handles displaying a file error message. *
@@ -94,9 +94,6 @@
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void DiskFile::Error(int /*error*/, bool /*canretry*/,
-                     std::string_view /*filename*/) {}
-
 /***********************************************************************************************
  * DiskFile::DiskFile -- Simple constructor for a file object. *
  *                                                                                             *
@@ -189,10 +186,6 @@ bool DiskFile::Open(FileAccess rights) {
   **	Verify that there is a filename associated with this file object. If
   *not, then this is a *	big error condition.
   */
-  if (filename_.empty()) {
-    Error(ENOENT, false);
-  }
-
   /*
   **	Record the access rights used for this open call. These rights will be
   *used if the *	file object is duplicated.
@@ -213,7 +206,7 @@ bool DiskFile::Open(FileAccess rights) {
     **	Biased files must be positioned past the bias start position.
     */
     if (bias_start_ != 0 || bias_length_ != -1) {
-      Seek(0, SEEK_SET);
+      Seek(0, SeekOrigin::kBegin);
     }
 
     /*
@@ -351,7 +344,7 @@ void DiskFile::Close() {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int32_t DiskFile::Read(void* buffer, int32_t size) {
+base::ssize DiskFile::Read(void* buffer, base::ssize size) {
   bool opened_for_this_read = false;
 
   /*
@@ -374,7 +367,7 @@ int32_t DiskFile::Read(void* buffer, int32_t size) {
   *of *	the file.
   */
   if (bias_length_ != -1) {
-    const int bytes_left_in_bias = bias_length_ - Seek(0);
+    const base::ssize bytes_left_in_bias = bias_length_ - Seek(0);
     size = size < bytes_left_in_bias ? size : bytes_left_in_bias;
   }
 
@@ -390,7 +383,7 @@ int32_t DiskFile::Read(void* buffer, int32_t size) {
   if (opened_for_this_read) {
     Close();
   }
-  return static_cast<int32_t>(bytes_read);
+  return base::ToSigned(bytes_read);
 }
 
 /***********************************************************************************************
@@ -411,7 +404,7 @@ int32_t DiskFile::Read(void* buffer, int32_t size) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int32_t DiskFile::Write(const void* buffer, int32_t size) {
+base::ssize DiskFile::Write(const void* buffer, base::ssize size) {
   bool opened_for_this_write = false;
 
   /*
@@ -448,7 +441,7 @@ int32_t DiskFile::Write(const void* buffer, int32_t size) {
   *of bytes *	requested, since the case of the disk being full is caught by
   *this routine.
   */
-  return static_cast<int32_t>(bytes_written);
+  return base::ToSigned(bytes_written);
 }
 
 /***********************************************************************************************
@@ -473,7 +466,7 @@ int32_t DiskFile::Write(const void* buffer, int32_t size) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int32_t DiskFile::Seek(int32_t offset, int origin) {
+base::ssize DiskFile::Seek(base::ssize offset, SeekOrigin origin) {
   /*
   **	A file that is biased will have a seek operation modified so that the
   *file appears to *	exist only within the bias range. All bytes outside of
@@ -481,16 +474,16 @@ int32_t DiskFile::Seek(int32_t offset, int origin) {
   */
   if (bias_length_ != -1) {
     switch (origin) {
-      case SEEK_SET:
-        offset = std::min<int32_t>(offset, bias_length_);
+      case SeekOrigin::kBegin:
+        offset = std::min(offset, bias_length_);
         offset += bias_start_;
         break;
 
-      case SEEK_CUR:
+      case SeekOrigin::kCurrent:
         break;
 
-      case SEEK_END:
-        origin = SEEK_SET;
+      case SeekOrigin::kEnd:
+        origin = SeekOrigin::kBegin;
         offset += bias_start_ + bias_length_;
         //				offset = (offset <=
         // bias_start_+bias_length_) ?
@@ -504,18 +497,18 @@ int32_t DiskFile::Seek(int32_t offset, int origin) {
     /*
     **	Perform the modified raw seek into the file.
     */
-    int32_t new_position = RawSeek(offset, origin) - bias_start_;
+    base::ssize new_position = RawSeek(offset, origin) - bias_start_;
 
     /*
     **	Perform a final double check to make sure the file position fits with
     *the bias range.
     */
     if (new_position < 0) {
-      new_position = RawSeek(bias_start_, SEEK_SET) - bias_start_;
+      new_position = RawSeek(bias_start_, SeekOrigin::kBegin) - bias_start_;
     }
     if (new_position > bias_length_) {
       new_position =
-          RawSeek(bias_start_ + bias_length_, SEEK_SET) - bias_start_;
+          RawSeek(bias_start_ + bias_length_, SeekOrigin::kBegin) - bias_start_;
     }
     return new_position;
   }
@@ -542,8 +535,8 @@ int32_t DiskFile::Seek(int32_t offset, int origin) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int32_t DiskFile::Size() {
-  int32_t size = 0;
+base::ssize DiskFile::Size() {
+  base::ssize size = 0;
 
   /*
   **	A biased file already has its length determined.
@@ -556,7 +549,7 @@ int32_t DiskFile::Size() {
   **	If the file is open, then proceed normally.
   */
   if (IsOpen()) {
-    size = static_cast<int32_t>(IO_Get_File_Size(handle_));
+    size = static_cast<base::ssize>(IO_Get_File_Size(handle_));
   } else {
     /*
     **	If the file wasn't open, then open the file and call this routine again.
@@ -603,7 +596,7 @@ bool DiskFile::Create() {
     *to the *	correct length.
     */
     if (bias_length_ != -1) {
-      Seek(0, SEEK_SET);
+      Seek(0, SeekOrigin::kBegin);
     }
 
     Close();
@@ -638,10 +631,6 @@ bool DiskFile::Delete() {
   **	If there is no filename associated with this object, then this indicates
   *a fatal error *	condition. Report this and abort.
   */
-  if (filename_.empty()) {
-    Error(ENOENT, false);
-  }
-
   /*
   **	Repetitively try to delete the file if possible. Either return with
   *success, or *	abort the program with an error.
@@ -693,7 +682,7 @@ bool DiskFile::Delete() {
  *                                                                                             *
  * HISTORY: * 06/02/1996 JLB : Created. *
  *=============================================================================================*/
-void DiskFile::Bias(int start, int length) {
+void DiskFile::Bias(base::ssize start, base::ssize length) {
   if (start == 0) {
     bias_start_ = 0;
     bias_length_ = -1;
@@ -712,7 +701,7 @@ void DiskFile::Bias(int start, int length) {
   **	file was open.
   */
   if (IsOpen()) {
-    DiskFile::Seek(0, SEEK_SET);
+    DiskFile::Seek(0, SeekOrigin::kBegin);
   }
 }
 
@@ -734,15 +723,12 @@ void DiskFile::Bias(int start, int length) {
  *                                                                                             *
  * HISTORY: * 08/04/1996 JLB : Created. *
  *=============================================================================================*/
-int32_t DiskFile::RawSeek(int32_t offset, int origin) {
+base::ssize DiskFile::RawSeek(base::ssize offset, SeekOrigin origin) {
   /*
   **	If the file isn't opened, then this is a fatal error condition.
   */
-  if (!IsOpen()) {
-    Error(EBADF, false, filename_);
-  }
-
-  offset = static_cast<int32_t>(IO_Seek_File(handle_, offset, origin));
+  offset = static_cast<base::ssize>(
+      IO_Seek_File(handle_, offset, StdioOrigin(origin)));
 
   /*
   **	Return with the new position of the file. This will range between zero

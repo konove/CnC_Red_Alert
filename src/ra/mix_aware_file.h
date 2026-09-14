@@ -32,6 +32,7 @@
 #include <cstdio>
 #include <string_view>
 
+#include "base/types.h"
 #include "sdllib/file_access.h"
 #include "tech/buff.h"
 #include "tech/cdfile.h"
@@ -50,7 +51,7 @@
 //   MixAwareFile file("RULES.INI");
 //   if (file.IsAvailable()) {
 //     file.Open();
-//     const int32_t size = file.Size();
+//     const base::ssize size = file.Size();
 //     file.Read(buffer, size);
 //   }
 class MixAwareFile : public CDFileClass {
@@ -94,22 +95,22 @@ class MixAwareFile : public CDFileClass {
   // Reads up to size bytes into buffer and returns the number actually read,
   // which is less than size at end of file. A file that is not open is opened
   // for the read and closed again afterwards.
-  int32_t Read(void* buffer, int32_t size) override;
-
-  // Moves the file position by offset relative to origin (SEEK_SET, SEEK_CUR or
-  // SEEK_END) and returns the new position. For a resident file the position is
-  // clamped to [0, Size()].
-  int32_t Seek(int32_t offset, int origin = SEEK_CUR) override;
-
-  // Returns the size of the file in bytes. For a file packed in a mixfile this
-  // is the size of the embedded file, not the mixfile, even when the file is
-  // not open. Returns 0 for a file that is not found anywhere.
-  int32_t Size() override;
+  base::ssize Read(void* buffer, base::ssize size) override;
 
   // Writes size bytes from buffer and returns the number written. Files packed
   // in a cached mixfile are read-only; writing one writes nothing and returns
   // 0.
-  int32_t Write(const void* buffer, int32_t size) override;
+  base::ssize Write(const void* buffer, base::ssize size) override;
+
+  // Moves the file position by offset relative to origin and returns the new
+  // position. For a resident file the position is clamped to [0, Size()].
+  base::ssize Seek(base::ssize offset,
+                   SeekOrigin origin = SeekOrigin::kCurrent) override;
+
+  // Returns the size of the file in bytes. For a file packed in a mixfile this
+  // is the size of the embedded file, not the mixfile, even when the file is
+  // not open. Returns 0 for a file that is not found anywhere.
+  base::ssize Size() override;
 
   // Closes the file and resets the position to the start.
   void Close() override;
@@ -123,13 +124,6 @@ class MixAwareFile : public CDFileClass {
   // found on disk.
   bool IsAvailable() override;
 
-  // Handles a file error. All three arguments are ignored: the only recovery
-  // attempted is making sure the scenario's required CD (RequiredCD) is in a
-  // drive, prompting the player for it. If the player cancels, the game exits
-  // and this never returns; otherwise it returns, even when can_retry is false.
-  void Error(int error, bool can_retry = false,
-             std::string_view filename = {}) override;
-
  private:
   // A view of the file's bytes inside the RAM image of a cached mixfile, or an
   // empty buffer if the file is not resident. The buffer never owns the memory;
@@ -141,7 +135,7 @@ class MixAwareFile : public CDFileClass {
   // Current read position within resident_data_, from zero to the size of the
   // file in bytes. Tracked here because a resident file has no handle to hold
   // one.
-  int32_t resident_position_ = 0;
+  base::ssize resident_position_ = 0;
 };
 
 #endif  // CNC_RED_ALERT_RA_MIX_AWARE_FILE_H_

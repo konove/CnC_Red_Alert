@@ -61,63 +61,20 @@
 #include <iterator>
 
 #include "base/numeric.h"
+#include "base/types.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
 #include "sdllib/memflag.h"
-#include "sdllib/misc.h"
 #include "sdllib/wwstd.h"
 #include "td/ccfile.h"
 #include "td/conquer.h"
 #include "td/externs.h"
 #include "td/jshell.h"
 #include "tech/cdfile.h"
+#include "tech/file.h"
 #include "tech/mixfile.h"
 // #include	<share.h>
 // #include	"ccfile.h"
-
-/***********************************************************************************************
- * CCFileClass::Error -- Handles displaying a file error message. *
- *                                                                                             *
- *    Display an error message as indicated. If it is allowed to retry, then
- *pressing a key    * will return from this function. Otherwise, it will exit
- *the program with "exit()".       *
- *                                                                                             *
- * INPUT:   error    -- The error number (same as the DOSERR.H error numbers). *
- *                                                                                             *
- *          canretry -- Can this routine exit normally so that retrying can
- *occur? If this is  * false, then the program WILL exit in this routine. *
- *                                                                                             *
- *          filename -- Optional filename to report with this error. If no
- *filename is         * supplied, then no filename is listed in the error
- *message.             *
- *                                                                                             *
- * OUTPUT:  none, but this routine might not return at all if the "canretry"
- *parameter is      * false or the player pressed ESC. *
- *                                                                                             *
- * WARNINGS:   This routine may not return at all. It handles being in text mode
- *as well as    * if in a graphic mode. *
- *                                                                                             *
- * HISTORY: * 10/17/1994 JLB : Created. *
- *=============================================================================================*/
-void CCFileClass::Error(int /*error*/, bool /*canretry*/,
-                        std::string_view /*filename*/) {
-#ifdef DEMO
-  if (FileName().find('\\') != std::string_view::npos) {
-    if (!Force_CD_Available(-1)) {
-      Prog_End();
-      exit(EXIT_FAILURE);
-    }
-  }
-
-#else
-
-  if (!Force_CD_Available(RequiredCD)) {
-    Prog_End();
-    exit(EXIT_FAILURE);
-  }
-
-#endif
-}
 
 /***********************************************************************************************
  * CCFileClass::CCFileClass -- Filename based constructor for C&C file. *
@@ -173,13 +130,11 @@ CCFileClass::CCFileClass()
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-int32_t CCFileClass::Write(const void* buffer, int32_t size) {
-  /*
-  **	If this is part of a mixfile, then writing is not allowed. Error out
-  *with a fatal *	message.
-  */
+base::ssize CCFileClass::Write(const void* buffer, base::ssize size) {
+  // A file inside a mixfile is read-only. This must not fall through: for a
+  // resident file the base class would write through a null handle.
   if (Pointer || FromDisk) {
-    Error(EACCES, false, FileName());
+    return 0;
   }
 
   return CDFileClass::Write(buffer, size);
@@ -204,7 +159,7 @@ int32_t CCFileClass::Write(const void* buffer, int32_t size) {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-int32_t CCFileClass::Read(void* buffer, int32_t size) {
+base::ssize CCFileClass::Read(void* buffer, base::ssize size) {
   bool opened = false;
 
   if ((!IsOpen()) && Open()) {
@@ -216,9 +171,7 @@ int32_t CCFileClass::Read(void* buffer, int32_t size) {
   **	all that is required for the read.
   */
   if (Pointer) {
-    const int32_t maximum = Length - Position;
-
-    size = std::min(maximum, size);
+    size = std::min(size, Length - Position);
     if (size) {
       Mem_Copy(Add_Long_To_Pointer(Pointer, Position), buffer,
                base::ToSize(size));
@@ -235,11 +188,9 @@ int32_t CCFileClass::Read(void* buffer, int32_t size) {
   **	on disk, then a special read operation is necessary.
   */
   if (FromDisk) {
-    const int32_t maximum = Length - Position;
-
-    size = std::min(maximum, size);
+    size = std::min(size, Length - Position);
     if (size > 0) {
-      CDFileClass::Seek(Start + Position, SEEK_SET);
+      CDFileClass::Seek(Start + Position, SeekOrigin::kBegin);
       size = CDFileClass::Read(buffer, size);
       Position += size;
     }
@@ -249,7 +200,7 @@ int32_t CCFileClass::Read(void* buffer, int32_t size) {
     return size;
   }
 
-  const int32_t s = CDFileClass::Read(buffer, size);
+  const base::ssize s = CDFileClass::Read(buffer, size);
   if (opened) {
     Close();
   }
@@ -276,25 +227,25 @@ int32_t CCFileClass::Read(void* buffer, int32_t size) {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-int32_t CCFileClass::Seek(int32_t pos, int dir) {
+base::ssize CCFileClass::Seek(base::ssize offset, SeekOrigin origin) {
   if (Pointer || FromDisk) {
-    switch (dir) {
-      case SEEK_END:
+    switch (origin) {
+      case SeekOrigin::kEnd:
         Position = Length;
         break;
 
-      case SEEK_SET:
+      case SeekOrigin::kBegin:
         Position = 0;
         break;
 
-      case SEEK_CUR:
+      case SeekOrigin::kCurrent:
       default:
         break;
     }
-    Position = std::clamp<int32_t>(Position + pos, 0, Length);
+    Position = std::clamp<base::ssize>(Position + offset, 0, Length);
     return Position;
   }
-  return CDFileClass::Seek(pos, dir);
+  return CDFileClass::Seek(offset, origin);
 }
 
 /***********************************************************************************************
@@ -312,7 +263,7 @@ int32_t CCFileClass::Seek(int32_t pos, int dir) {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-int32_t CCFileClass::Size() {
+base::ssize CCFileClass::Size() {
   if (Pointer || FromDisk) {
     return Length;
   }
@@ -495,14 +446,14 @@ void __cdecl CloseFileHandle(int handle) {
 
 int32_t __cdecl ReadFileHandle(int handle, void* buffer, int32_t size) {
   if (handle != kInvalidHandle && Handles[handle].IsOpen()) {
-    return Handles[handle].Read(buffer, size);
+    return static_cast<int32_t>(Handles[handle].Read(buffer, size));
   }
   return 0;
 }
 
 int32_t __cdecl WriteFileHandle(int handle, const void* buffer, int32_t size) {
   if (handle != kInvalidHandle && Handles[handle].IsOpen()) {
-    return Handles[handle].Write(buffer, size);
+    return static_cast<int32_t>(Handles[handle].Write(buffer, size));
   }
   return 0;
 }
@@ -520,14 +471,15 @@ void* __cdecl Load_Alloc_Data(const char* name, int /*unused*/) {
 
 int32_t __cdecl FileHandleSize(int handle) {
   if (handle != kInvalidHandle && Handles[handle].IsOpen()) {
-    return Handles[handle].Size();
+    return static_cast<int32_t>(Handles[handle].Size());
   }
   return 0;
 }
 
 int32_t __cdecl SeekFileHandle(int handle, int32_t offset, int origin) {
   if (handle != kInvalidHandle && Handles[handle].IsOpen()) {
-    return Handles[handle].Seek(offset, origin);
+    return static_cast<int32_t>(
+        Handles[handle].Seek(offset, SeekOriginFromStdio(origin)));
   }
   return 0;
 }

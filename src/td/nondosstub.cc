@@ -42,6 +42,7 @@
 #include "td/mapedit.h"
 #include "td/palette.h"
 #include "td/theme.h"
+#include "tech/file.h"
 #include "tech/pcx_file.h"
 #include "winvq/vqa32/vqaplay.h"
 
@@ -331,7 +332,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
   }
 
   if (palette) {
-    file_handle.Seek(-static_cast<int>(256 * sizeof(RGB)), SEEK_END);
+    file_handle.Seek(-static_cast<int>(256 * sizeof(RGB)), SeekOrigin::kEnd);
     file_handle.Read(palette, 256L * sizeof(RGB));
 
     for (int i = 0; i < 256 * 3; i++) {

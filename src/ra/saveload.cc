@@ -49,6 +49,7 @@
 #include <vector>
 
 #include "absl/log/log.h"
+#include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -109,6 +110,7 @@
 #include "tech/blowpipe.h"
 #include "tech/blwstraw.h"
 #include "tech/disk_file.h"
+#include "tech/file.h"
 #include "tech/lzopipe.h"
 #include "tech/lzostraw.h"
 #include "tech/pipe.h"
@@ -494,7 +496,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
     header(magic, version, scenario32, house);
   }
 
-  const int pos = static_cast<int>(file.Seek(0, SEEK_CUR));
+  const base::ssize pos = file.Seek(0, SeekOrigin::kCurrent);
 
   /*
   **	Store a dummy message digest.
@@ -543,7 +545,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   **	the data image as it exists on the disk.
   */
   pipe.Flush();
-  file.Seek(pos, SEEK_SET);
+  file.Seek(pos, SeekOrigin::kBegin);
   sha.Result(digest);
   fpipe.Put(digest, sizeof(digest));
 
@@ -651,7 +653,7 @@ bool Load_Game(int id) {
   **	Remember the file position since we must seek back here to
   **	perform the real saved game read.
   */
-  const int32_t pos = file.Seek(0, SEEK_CUR);
+  const base::ssize pos = file.Seek(0, SeekOrigin::kCurrent);
 
   /*
   **	Pass the rest of the file through the hash straw so that
@@ -682,7 +684,7 @@ bool Load_Game(int id) {
   /*
   **	Set up the pipe so that the scenario data can be read.
   */
-  file.Seek(pos, SEEK_SET);
+  file.Seek(pos, SeekOrigin::kBegin);
   BlowStraw bstraw(BlowStraw::DECRYPT);
   LZOStraw straw(LZOStraw::DECOMPRESS, SAVE_BLOCK_SIZE);
   //	LZWStraw straw(LZWStraw::DECOMPRESS, SAVE_BLOCK_SIZE);

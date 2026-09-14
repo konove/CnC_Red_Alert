@@ -45,6 +45,7 @@
 #include <cstdio>
 #include <string_view>
 
+#include "base/types.h"
 #include "tech/cdfile.h"
 #include "tech/file.h"
 
@@ -72,13 +73,12 @@ class CCFileClass : public CDFileClass {
   bool Open(FileAccess rights = FileAccess::kRead) override;
   bool IsAvailable() override;
   [[nodiscard]] bool IsOpen() const override;
-  int32_t Read(void* buffer, int32_t size) override;
-  int32_t Seek(int32_t pos, int dir = SEEK_CUR) override;
-  int32_t Size() override;
-  int32_t Write(const void* buffer, int32_t size) override;
+  base::ssize Read(void* buffer, base::ssize size) override;
+  base::ssize Write(const void* buffer, base::ssize size) override;
+  base::ssize Seek(base::ssize offset,
+                   SeekOrigin origin = SeekOrigin::kCurrent) override;
+  base::ssize Size() override;
   void Close() override;
-  void Error(int error, bool canretry = false,
-             std::string_view filename = {}) override;
 
  private:
   /*
@@ -102,7 +102,7 @@ class CCFileClass : public CDFileClass {
   *only valid *	if the file is part of a mixfile that resides on disk. It serves
   *as the counterpart *	to the "Pointer" variable.
   */
-  int32_t Start;
+  base::ssize Start;
 
   /*
   **	This is the current seek position of the file. It is duplicated here if
@@ -110,13 +110,13 @@ class CCFileClass : public CDFileClass {
   *accurate. This value will *	range from zero to the size of the file in
   *bytes.
   */
-  int32_t Position;
+  base::ssize Position;
 
   /*
   **	This is the size of the file if it was embedded in a mixfile. The size
   *must be manually *	kept track of because the DOS file size is invalid.
   */
-  int32_t Length;
+  base::ssize Length;
 
  public:
   // Force these to never be invoked.

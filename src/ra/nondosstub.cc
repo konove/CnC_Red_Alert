@@ -41,6 +41,7 @@
 #include "sdllib/iconcach.h"
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
+#include "tech/file.h"
 
 /***********************************************************************************************
  * Focus_Loss -- this function is called when a library function detects focus
@@ -300,7 +301,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
   }
 
   if (palette) {
-    file_handle.Seek(-static_cast<int>(256 * sizeof(RGB)), SEEK_END);
+    file_handle.Seek(-static_cast<int>(256 * sizeof(RGB)), SeekOrigin::kEnd);
     file_handle.Read(palette, 256L * sizeof(RGB));
 
     for (int i = 0; i < 256 * 3; i++) {

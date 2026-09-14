@@ -717,7 +717,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
   }
 
   if (palette) {
-    file_handle.Seek(-(256 * sizeof(RGB)), SEEK_END);
+    file_handle.Seek(-(256 * sizeof(RGB)), SeekOrigin::kEnd);
     file_handle.Read(palette, 256L * sizeof(RGB));
 
     pal = (RGB*)palette;

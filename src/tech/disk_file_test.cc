@@ -14,6 +14,7 @@
 
 #include "absl/strings/ascii.h"
 #include "gtest/gtest.h"
+#include "tech/file.h"
 
 namespace {
 
@@ -67,15 +68,15 @@ TEST_F(DiskFileTest, BiasWindowLimitsSizeSeekAndRead) {
   EXPECT_EQ(file.Size(), 4);
 
   file.Open();
-  EXPECT_EQ(file.Seek(10, SEEK_SET), 4);
-  EXPECT_EQ(file.Seek(0, SEEK_SET), 0);
+  EXPECT_EQ(file.Seek(10, SeekOrigin::kBegin), 4);
+  EXPECT_EQ(file.Seek(0, SeekOrigin::kBegin), 0);
   char buffer[8] = {};
   EXPECT_EQ(file.Read(buffer, 8), 4);
   EXPECT_EQ(std::string(buffer, 4), "abcd");
-  EXPECT_EQ(file.Seek(-1, SEEK_END), 3);
+  EXPECT_EQ(file.Seek(-1, SeekOrigin::kEnd), 3);
   // A seek to before the start of the file is ignored: the position stays
   // where it was (a resident MixAwareFile clamps to 0 instead).
-  EXPECT_EQ(file.Seek(-10, SEEK_CUR), 3);
+  EXPECT_EQ(file.Seek(-10, SeekOrigin::kCurrent), 3);
 }
 
 TEST_F(DiskFileTest, BiasAccumulatesAndSetNameClearsIt) {

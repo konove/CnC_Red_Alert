@@ -254,7 +254,7 @@ int32_t Load_Uncompress(File& file, BufferClass& uncomp_buff,
     if (reserved_data) {
       file.Read(reserved_data, header.Skip);
     } else {
-      file.Seek(header.Skip, SEEK_CUR);
+      file.Seek(header.Skip, SeekOrigin::kCurrent);
     }
     header.Skip = 0;
   }

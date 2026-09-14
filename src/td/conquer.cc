@@ -154,6 +154,7 @@
 #include "tech/2keyfbuf.h"
 #include "tech/archive.h"
 #include "tech/crc.h"
+#include "tech/file.h"
 #include "tech/pipe.h"
 #include "winvq/vqa32/vqaplay.h"
 
@@ -1984,11 +1985,14 @@ int MixFileVqaIo::Open(const char* filename) {
 }
 
 int MixFileVqaIo::Read(void* buffer, int64_t bytes) {
-  return file_->Read(buffer, static_cast<int32_t>(bytes)) != bytes ? 1 : 0;
+  return file_->Read(buffer, static_cast<base::ssize>(bytes)) != bytes ? 1 : 0;
 }
 
 int MixFileVqaIo::Seek(int64_t offset, int origin) {
-  return file_->Seek(static_cast<int32_t>(offset), origin) == -1 ? 1 : 0;
+  return file_->Seek(static_cast<base::ssize>(offset),
+                     SeekOriginFromStdio(origin)) == -1
+             ? 1
+             : 0;
 }
 
 void MixFileVqaIo::Close() {
@@ -3296,7 +3300,7 @@ static void Do_Record_Playback() {
     .....................................................................*/
     if (SuperRecord) {
       RecordFile.Open(FileAccess::kReadWrite);
-      RecordFile.Seek(0, SEEK_END);
+      RecordFile.Seek(0, SeekOrigin::kEnd);
     }
 
     /*.....................................................................

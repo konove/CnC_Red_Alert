@@ -132,6 +132,7 @@
 #include "sdllib/wwstd.h"
 #include "tech/2keyfbuf.h"
 #include "tech/cdfile.h"
+#include "tech/file.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/rect.h"
@@ -1971,11 +1972,14 @@ int MixFileVqaIo::Open(const char* filename) {
 }
 
 int MixFileVqaIo::Read(void* buffer, const int64_t bytes) {
-  return file_->Read(buffer, static_cast<int32_t>(bytes)) != bytes ? 1 : 0;
+  return file_->Read(buffer, static_cast<base::ssize>(bytes)) != bytes ? 1 : 0;
 }
 
 int MixFileVqaIo::Seek(const int64_t offset, const int origin) {
-  return file_->Seek(static_cast<int32_t>(offset), origin) == -1 ? 1 : 0;
+  return file_->Seek(static_cast<base::ssize>(offset),
+                     SeekOriginFromStdio(origin)) == -1
+             ? 1
+             : 0;
 }
 
 void MixFileVqaIo::Close() {
@@ -3115,7 +3119,7 @@ void* Hires_Load(const char* name) {
   MixAwareFile file(filename);
 
   if (file.IsAvailable()) {
-    const int length = file.Size();
+    const base::ssize length = file.Size();
     void* return_ptr = new char[base::ToSize(length)];
     file.Read(return_ptr, length);
     return return_ptr;

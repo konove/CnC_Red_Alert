@@ -80,6 +80,7 @@
 #include "absl/log/log.h"
 #include "absl/strings/match.h"
 #include "base/numeric.h"
+#include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/platform.h"
@@ -2682,7 +2683,7 @@ static void Init_Bulk_Data() {
  *=============================================================================================*/
 static void Init_Keys() {
   std::string keys = GetKeys();
-  MemoryFile file(keys.data(), static_cast<int>(keys.size()));
+  MemoryFile file(keys.data(), std::ssize(keys));
   INIClass ini;
   ini.Load(file);
 
@@ -2783,7 +2784,7 @@ void Extract(const char* filename, const char* outname) {
   int64_t size = inFile.Size();
 
   while (size > 0) {
-    const int32_t bytes = inFile.Read(buffer.get(), 32768);
+    const base::ssize bytes = inFile.Read(buffer.get(), 32768);
     outFile.Write(buffer.get(), bytes);
     size -= bytes;
   }

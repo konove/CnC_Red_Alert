@@ -47,7 +47,6 @@
 
 #include "tech/cdfile.h"
 
-#include <cerrno>
 #include <filesystem>
 #include <ranges>
 #include <string>
@@ -275,13 +274,6 @@ void CDFileClass::SetName(const std::string_view filename) {
 bool CDFileClass::Open(const std::string_view filename, FileAccess rights) {
   CDFileClass::Close();
 
-  /*
-  **	Verify that there is a filename associated with this file object. If
-  *not, then this is a *	big error condition.
-  */
-  if (filename.empty()) {
-    Error(ENOENT, false);
-  }
 
   /*
   **	If writing is requested, then multiple drive searching is not performed.

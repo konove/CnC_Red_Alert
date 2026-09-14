@@ -6,7 +6,6 @@
 #include <bit>
 #include <cstdint>
 #include <cstdio>
-#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <ios>
@@ -16,20 +15,16 @@
 
 #include "absl/base/attributes.h"
 #include "gtest/gtest.h"
-#include "ra/conquer.h"
 #include "ra/externs.h"
-#include "ra/startup.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
 #include "tech/crc.h"
 #include "tech/disk_file.h"
+#include "tech/file.h"
 
-// The real definitions live in the game, which would drag all of it in. The
-// CD is always present, so MixAwareFile::Error() always returns.
-int RequiredCD = -1;
-bool Force_CD_Available(int /*cd_desired*/) { return true; }
+// The real definition lives in the game, which would drag all of it in. No
+// CD drive is ever current here, so it is never called.
 int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) { return -1; }
-void Emergency_Exit(int code) { std::exit(code); }
 
 namespace {
 
@@ -146,10 +141,10 @@ TEST_F(MixAwareFileTest, CachedFileReadsAndSeeksWithinItsImage) {
   EXPECT_EQ(file.Read(buffer, 2), 2);
   EXPECT_EQ(std::string(buffer, 2), "ab");
 
-  EXPECT_EQ(file.Seek(10, SEEK_SET), 4);
+  EXPECT_EQ(file.Seek(10, SeekOrigin::kBegin), 4);
   EXPECT_EQ(file.Read(buffer, 1), 0);
-  EXPECT_EQ(file.Seek(-10, SEEK_CUR), 0);
-  EXPECT_EQ(file.Seek(-1, SEEK_END), 3);
+  EXPECT_EQ(file.Seek(-10, SeekOrigin::kCurrent), 0);
+  EXPECT_EQ(file.Seek(-1, SeekOrigin::kEnd), 3);
   EXPECT_EQ(file.Read(buffer, 8), 1);
   EXPECT_EQ(buffer[0], 'd');
 }

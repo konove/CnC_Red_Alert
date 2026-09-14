@@ -45,6 +45,7 @@
 #include <string_view>
 
 #include "absl/base/attributes.h"
+#include "base/types.h"
 #include "tech/file.h"
 
 // A File that reads and writes a caller-supplied memory buffer, for code
@@ -54,7 +55,7 @@ class MemoryFile final : public File {
  public:
   // Wraps size bytes at buffer. A null buffer with a positive size allocates a
   // scratch buffer of that size, which is only useful for writing.
-  MemoryFile(void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND, int size);
+  MemoryFile(void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND, base::ssize size);
 
   MemoryFile(const MemoryFile&) = delete;
   MemoryFile& operator=(const MemoryFile&) = delete;
@@ -72,26 +73,25 @@ class MemoryFile final : public File {
   bool Open(std::string_view filename,
             FileAccess access = FileAccess::kRead) override;
   bool Open(FileAccess access = FileAccess::kRead) override;
-  int32_t Read(void* buffer, int32_t size) override;
-  int32_t Seek(int32_t offset, int origin = SEEK_CUR) override;
-  int32_t Size() override;
-  int32_t Write(const void* buffer, int32_t size) override;
+  base::ssize Read(void* buffer, base::ssize size) override;
+  base::ssize Write(const void* buffer, base::ssize size) override;
+  base::ssize Seek(base::ssize offset,
+                   SeekOrigin origin = SeekOrigin::kCurrent) override;
+  base::ssize Size() override;
   void Close() override;
-  void Error(int /*error*/, bool /*can_retry*/ = false,
-             std::string_view /*filename*/ = {}) override {}
 
  private:
   // The memory the "file" lives in.
   char* buffer_;
 
   // Size of buffer_. The file occupying it may be smaller.
-  int capacity_;
+  base::ssize capacity_;
 
   // Number of bytes of file data in buffer_.
-  int size_;
+  base::ssize size_;
 
   // Current read/write position within buffer_.
-  int position_ = 0;
+  base::ssize position_ = 0;
 
   // Access mode of the current open.
   FileAccess access_ = FileAccess::kRead;
