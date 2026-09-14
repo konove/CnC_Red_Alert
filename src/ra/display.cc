@@ -1604,7 +1604,8 @@ bool DisplayClass::Coord_To_Pixel(COORDINATE coord, int& x, int& y) const {
  *                                                                                             *
  * HISTORY: * 03/27/1995 BWG : Created. *
  *=============================================================================================*/
-bool DisplayClass::Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest) {
+bool DisplayClass::Push_Onto_TacMap(COORDINATE& source,
+                                    COORDINATE& dest) const {
   if (!source || !dest) {
     return false;
   }
@@ -2654,6 +2655,8 @@ bool DisplayClass::Good_Reinforcement_Cell(CELL outcell, CELL incell,
  *non-building type.                                            * 03/06/1996 JLB
  *: Allows selection of aircraft with bounding box.                          *
  *=============================================================================================*/
+// Not const: changes which objects are selected.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void DisplayClass::Select_These(COORDINATE coord1, COORDINATE coord2) {
   const COORDINATE tcoord =
       TacticalCoord;  // Cell_Coord(TacticalCell) & 0xFF00FF00L;

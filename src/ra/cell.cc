@@ -1747,6 +1747,8 @@ int CellClass::Clear_Icon() const {
  * HISTORY: * 01/10/1995 JLB : Created. * 08/02/1996 JLB : Added the "nokidding"
  *parameter.                                         *
  *=============================================================================================*/
+// Not const: scatters the units in the cell.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void CellClass::Incoming(COORDINATE threat, bool forced, bool nokidding) {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
@@ -1810,6 +1812,8 @@ const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
  * HISTORY:                                                                *
  *   04/24/1995 PWG : Created.                                             *
  *=========================================================================*/
+// Not const: changes the other houses' threat values.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void CellClass::Adjust_Threat(HousesType house, int threat_value) {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
@@ -1933,6 +1937,8 @@ int32_t CellClass::Tiberium_Adjust(bool pregame) {
  *goodies to the crates.                                  * 06/17/1996 JLB :
  *Revamped for Red Alert                                                   *
  *=============================================================================================*/
+// Not const: opens the crate and grants its reward.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 bool CellClass::Goodie_Check(FootClass* object) {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
@@ -2595,6 +2601,8 @@ bool CellClass::Flag_Remove() {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
+// Not const: starts the occupants' shimmer effect.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void CellClass::Shimmer() {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 

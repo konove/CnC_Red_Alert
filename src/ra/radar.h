@@ -92,11 +92,11 @@ class RadarClass : public DisplayClass {
   void Set_Tactical_Position(COORDINATE coord) override;
   void Zoom_Mode(CELL cell);
   int Click_In_Radar(int& x, int& y, bool change = false) const;
-  void Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x, int& y);
+  void Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x, int& y) const;
 
   [[nodiscard]] bool Is_Zoomable() const;
   void Set_Radar_Position(CELL cell);
-  CELL Radar_Position();
+  [[nodiscard]] CELL Radar_Position() const;
   bool Radar_Activate(int control);
   void Plot_Radar_Pixel(CELL cell);
   void Radar_Pixel(CELL cell);
@@ -104,24 +104,24 @@ class RadarClass : public DisplayClass {
   void Cursor_Cell(CELL cell, bool value);
   void Mark_Radar(int x1, int y1, int x2, int y2, bool value, int barlen);
   void Radar_Cursor(bool forced = false);
-  void Render_Terrain(CELL cell, int x, int y, int size);
-  bool Cell_On_Radar(CELL cell);
+  void Render_Terrain(CELL cell, int x, int y, int size) const;
+  [[nodiscard]] bool Cell_On_Radar(CELL cell) const;
   static void Render_Infantry(CELL cell, int x, int y, int size);
   void Render_Overlay(CELL cell, int x, int y, int size);
   void Radar_Anim();
-  bool Is_Radar_Active();
-  bool Is_Radar_Existing();
+  [[nodiscard]] bool Is_Radar_Active() const;
+  [[nodiscard]] bool Is_Radar_Existing() const;
 
   /*
   ** Toggles player names on & off
   */
   void Player_Names(bool on);
-  int Is_Player_Names() { return IsPlayerNames; }
-  bool Spying_On_House() { return IsHouseSpy; }
-  void Draw_Names();
+  [[nodiscard]] int Is_Player_Names() const { return IsPlayerNames; }
+  [[nodiscard]] bool Spying_On_House() const { return IsHouseSpy; }
+  void Draw_Names() const;
   bool Draw_House_Info();
-  int Is_Zoomed() { return IsZoomed; }
-  bool Get_Jammed();
+  [[nodiscard]] int Is_Zoomed() const { return IsZoomed; }
+  [[nodiscard]] bool Get_Jammed() const;
   void Set_Jammed(bool jam) { IsRadarJammed = jam; }
   bool Spy_Next_House();
   void Activate_Pulse();

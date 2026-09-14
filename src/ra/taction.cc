@@ -372,6 +372,8 @@ void TActionClass::Read_INI() {
  * HISTORY: * 02/22/1996 JLB : Created. * 04/10/1996 JLB : Added the ID
  *parameter.                                                  *
  *=============================================================================================*/
+// Not const: carries out the action.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
                               CELL cell) {
   /*

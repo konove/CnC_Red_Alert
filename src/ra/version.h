@@ -134,7 +134,7 @@ class VersionClass {
   //.....................................................................
   void Init_Clipping();
   uint32_t Clip_Version(uint32_t minver, uint32_t maxver);
-  uint32_t Get_Clipped_Version() { return MaxClipVer; }
+  [[nodiscard]] uint32_t Get_Clipped_Version() const { return MaxClipVer; }
 
   //.....................................................................
   // These routines return the theoretical lowest & highest version #'s

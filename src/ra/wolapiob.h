@@ -376,7 +376,7 @@ class WolapiObject {
   WOL_GAMETYPEINFO OldRAGameTypeInfos[3];  //	Used for storing old red alert
                                            // icons only.
 
-  bool bLoggedIn();
+  [[nodiscard]] bool bLoggedIn() const;
 
   void LinkToChatDlg(IconListClass* chat_list, IconListClass* channels_list,
                      IconListClass* users_list, StaticButtonClass* static_users);
@@ -419,7 +419,7 @@ class WolapiObject {
   //	Writes a game-channel player list item into szDest, truncating to
   //	iSize rather than overflowing.
   void WritePlayerListItem(char* szDest, std::size_t iSize, const char* szName,
-                           HousesType House);
+                           HousesType House) const;
 
   void RequestPlayerPings();
 
@@ -493,7 +493,7 @@ class WolapiObject {
 
  protected:
   void GetGameTypeInfo(int iGameType, WOL_GAMETYPEINFO& GameTypeInfo,
-                       std::span<const dib::Color> palette);
+                       std::span<const dib::Color> palette) const;
   void* IconForGameType(int iGameType);
   [[nodiscard]] const char* NameOfGameType(int iGameType) const;
   [[nodiscard]] const char* URLForGameType(int iGameType) const;

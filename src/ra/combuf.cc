@@ -742,7 +742,7 @@ void CommBufferClass::Add_Delay(int64_t delay) {
  * HISTORY:                                                                *
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
-int32_t CommBufferClass::Avg_Response_Time() {
+int32_t CommBufferClass::Avg_Response_Time() const {
   return static_cast<int32_t>(MeanDelay);
 
 } /* end of Avg_Response_Time */
@@ -765,7 +765,7 @@ int32_t CommBufferClass::Avg_Response_Time() {
  * HISTORY:                                                                *
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
-int32_t CommBufferClass::Max_Response_Time() {
+int32_t CommBufferClass::Max_Response_Time() const {
   return static_cast<int32_t>(MaxDelay);
 
 } /* end of Max_Response_Time */

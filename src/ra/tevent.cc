@@ -241,7 +241,7 @@ void TEventClass::Reset(TDEventClass& td) const {
  *=============================================================================================*/
 bool TEventClass::operator()(TDEventClass& td, TEventType event,
                              HousesType house, const ObjectClass* object,
-                             bool forced) {
+                             bool forced) const {
   /*
   **	If this trigger event has been forced, then no further checks are
   *required. *	Force the trigger to be tripped.

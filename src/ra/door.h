@@ -81,7 +81,7 @@ class DoorClass {
     IsToRedraw = is_to_redraw;
   }
 
-  bool Time_To_Redraw() { return IsToRedraw; }
+  [[nodiscard]] bool Time_To_Redraw() const { return IsToRedraw; }
   void Clear_Redraw_Flag() { IsToRedraw = false; }
   void AI();
   [[nodiscard]] int Door_Stage() const;

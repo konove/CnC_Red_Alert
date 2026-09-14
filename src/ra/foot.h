@@ -415,7 +415,7 @@ class FootClass : public TechnoClass {
   bool Restore_Mission() override;
   [[nodiscard]] CELL Adjust_Dest(CELL cell) const;
 
-  CELL Safety_Point(CELL src, CELL dst, int start, int max);
+  [[nodiscard]] CELL Safety_Point(CELL src, CELL dst, int start, int max) const;
   int Rescue_Mission(TARGET tarcom);
 
  private:

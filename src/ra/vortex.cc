@@ -1028,6 +1028,8 @@ void ChronalVortexClass::Render() {
  *                                                                                             *
  * HISTORY: * 8/29/96 4:50PM ST : Created *
  *=============================================================================================*/
+// Not const: flags the cells under the vortex for redraw.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void ChronalVortexClass::Set_Redraw() {
   if (Active) {
     const CELL xc = Coord_XCell(Position);

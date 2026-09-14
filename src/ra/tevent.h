@@ -163,7 +163,7 @@ struct TEventClass {
 
   void Reset(TDEventClass& td) const;
   bool operator()(TDEventClass& td, TEventType event, HousesType house,
-                  const ObjectClass* object, bool forced);
+                  const ObjectClass* object, bool forced) const;
   void Read_INI();
   void Build_INI_Entry(std::string& buffer) const;
 };

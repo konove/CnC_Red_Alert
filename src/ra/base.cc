@@ -88,7 +88,7 @@
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-bool BaseNodeClass::operator==(const BaseNodeClass& node) {
+bool BaseNodeClass::operator==(const BaseNodeClass& node) const {
   return Type == node.Type && Cell == node.Cell;
 }
 
@@ -103,7 +103,7 @@ bool BaseNodeClass::operator==(const BaseNodeClass& node) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-bool BaseNodeClass::operator!=(const BaseNodeClass& node) {
+bool BaseNodeClass::operator!=(const BaseNodeClass& node) const {
   return !(*this == node);
 }
 

@@ -562,7 +562,7 @@ NeedType TeamMission_Needs(TeamMissionType tmtype) {
  * HISTORY: * 01/05/1996 JLB : Created. *
  *=============================================================================================*/
 void TeamMissionClass::Draw_It(int index, int x, int y, int width, int height,
-                               bool selected, TextPrintType flags) {
+                               bool selected, TextPrintType flags) const {
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   static int _tabs[] = {13, 40};
   if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {

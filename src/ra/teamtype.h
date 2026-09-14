@@ -92,7 +92,7 @@ class TeamMissionClass {
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator const char*() const { return Description(0); }
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
-               TextPrintType flags);
+               TextPrintType flags) const;
 
   TeamMissionType Mission;  // Mission type.
   union {

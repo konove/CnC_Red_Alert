@@ -83,7 +83,7 @@ class TriggerClass {
   */
   bool Spring(TEventType event = TEVENT_ANY, ObjectClass* object = nullptr,
               CELL cell = 0, bool forced = false);
-  void Detach(TARGET target, bool all = true);
+  void Detach(TARGET target, bool all = true) const;
 
   /*
   **	File I/O routines

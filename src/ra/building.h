@@ -253,7 +253,8 @@ class BuildingClass : public TechnoClass {
   static void Init();
 
   TARGET Target_Scan();
-  const BuildingTypeClass::AnimControlType* Fetch_Anim_Control() {
+  [[nodiscard]] const BuildingTypeClass::AnimControlType* Fetch_Anim_Control()
+      const {
     return &Class->Anims[BState];
   }
 

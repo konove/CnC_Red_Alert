@@ -165,7 +165,7 @@ class MessageListClass {
   char* Get_Edit_Buf() ABSL_ATTRIBUTE_LIFETIME_BOUND;
   char* Get_Overflow_Buf() ABSL_ATTRIBUTE_LIFETIME_BOUND { return OverflowBuf; }
   void Clear_Overflow_Buf() { OverflowBuf[0] = 0; }
-  int Is_Edit() { return IsEdit; }
+  [[nodiscard]] int Is_Edit() const { return IsEdit; }
   void Set_Edit_Color(PlayerColorType color);
 
   //.....................................................................

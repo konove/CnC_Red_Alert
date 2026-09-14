@@ -491,7 +491,7 @@ void WolapiObject::PrepareButtonsAndIcons() {
 //***********************************************************************************************
 void WolapiObject::GetGameTypeInfo(int iGameType,
                                    WOL_GAMETYPEINFO& GameTypeInfo,
-                                   std::span<const dib::Color> Palette) {
+                                   std::span<const dib::Color> Palette) const {
   unsigned char* pVirtualFile;
   int iFileLength;
   //	debugprint( "GetGametypeInfo, type %i\n", iGameType );
@@ -720,7 +720,7 @@ HRESULT WolapiObject::AttemptLogin(const char* szName, const char* szPass,
 }
 
 //***********************************************************************************************
-bool WolapiObject::bLoggedIn() { return pChatSink->bConnected; }
+bool WolapiObject::bLoggedIn() const { return pChatSink->bConnected; }
 
 //***********************************************************************************************
 void WolapiObject::Logout() {
@@ -980,6 +980,8 @@ HRESULT WolapiObject::ChannelJoin(const char* szChannelName,
 }
 
 //***********************************************************************************************
+// Not const: sends a chat request and waits for the reply.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 HRESULT WolapiObject::ChannelJoin(Channel* pChannelToJoin) {
   //	Returns an HRESULT, the meaning of which is totally customized for my
   // own uses.
@@ -1034,6 +1036,8 @@ HRESULT WolapiObject::ChannelJoin(Channel* pChannelToJoin) {
 }
 
 //***********************************************************************************************
+// Not const: sends a chat request and waits for the reply.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 bool WolapiObject::ChannelLeave() {
   //	Returns false upon total failure.
   WWMessageBox().Process(TXT_WOL_WAIT, TXT_NONE);
@@ -1397,7 +1401,8 @@ HousesType WolapiObject::PullPlayerHouse_From(const char* szSource) {
 
 //***********************************************************************************************
 void WolapiObject::WritePlayerListItem(char* szDest, std::size_t iSize,
-                                       const char* szName, HousesType House) {
+                                       const char* szName,
+                                       HousesType House) const {
   //	Sets szDest to the way a player list item appears in a game channel.
   char szHouse[50];
   port::SafeCopy(szHouse,
@@ -1779,6 +1784,8 @@ void WolapiObject::DoFindPage() {
 }
 
 //***********************************************************************************************
+// Not const: sends a chat request and waits for the reply.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 HRESULT WolapiObject::Locate(const char* szUser) {
   //	Returns HRESULT with possibly customized meanings.
 
@@ -1817,6 +1824,8 @@ HRESULT WolapiObject::Locate(const char* szUser) {
 }
 
 //***********************************************************************************************
+// Not const: sends a chat request and waits for the reply.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 HRESULT WolapiObject::Page(const char* szUser, const char* szSend,
                            bool bWaitForResult) {
   //	Returns HRESULT with possibly customized meanings.
@@ -1899,6 +1908,8 @@ void WolapiObject::DoKick(IconListClass* pILUsersOrPlayers, bool bAndBan) {
 }
 
 //***********************************************************************************************
+// Not const: sends a chat request.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 bool WolapiObject::Kick(User* pUserToKick) {
   //	Returns false if something terrible happens.
   //	debugprint( "RequestUserKick()\n" );
@@ -1907,6 +1918,8 @@ bool WolapiObject::Kick(User* pUserToKick) {
 }
 
 //***********************************************************************************************
+// Not const: sends a chat request.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 bool WolapiObject::Ban(User* pUserToKick) {
   //	Returns false if something terrible happens.
   //	debugprint( "RequestChannelBan()\n" );
@@ -1950,6 +1963,8 @@ void WolapiObject::DoSquelch(IconListClass* pILUsersOrPlayers) {
 }
 
 //***********************************************************************************************
+// Not const: sends a chat request.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 bool WolapiObject::Squelch(User* pUserToSquelch) {
   //	Returns true if user is now squelched, false if not squelched.
   //	Sets User pointer flags value.
@@ -2784,6 +2799,8 @@ bool WolapiObject::RequestLadders(const char* szName) {
 }
 
 //***********************************************************************************************
+// Not const: sends a chat request.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 bool WolapiObject::RequestIPs(const char* szName) {
   //	If szName is NULL, calls RequestUserIP() until IPs for all users in
   // pChatSink's current 	list have been asked for. Does not wait for
@@ -2951,6 +2968,8 @@ bool WolapiObject::GetNameOfBeginningLobby(char* szNameToSet,
 }
 
 //***********************************************************************************************
+// Not const: sends a chat request and waits for the reply.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 bool WolapiObject::GetLobbyChannels() {
   //	Modal version of UpdateChannels, for fetching lobby names.
 
@@ -3013,6 +3032,8 @@ User* WolapiObject::pGameHost() {
 }
 
 //***********************************************************************************************
+// Not const: sends a chat request.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 bool WolapiObject::SendGameOpt(const char* szSend, User* pUserPriv) {
   //	Used during game setup to send public or private game options string.
   //	If pUserPriv is NULL, message is public, else private to pUserPriv.
@@ -3036,6 +3057,8 @@ bool WolapiObject::SendGameOpt(const char* szSend, User* pUserPriv) {
 }
 
 //***********************************************************************************************
+// Not const: sends a chat request and waits for the reply.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 bool WolapiObject::RequestGameStart() {
   //	Host is starting a game.
 
@@ -3078,6 +3101,8 @@ bool WolapiObject::RequestGameStart() {
 }
 
 //***********************************************************************************************
+// Not const: sends a chat request.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 bool WolapiObject::SendGo(const char* szSend) {
   //	Send a "GO" message to all players included in the list that came back
   // from OnGameStart. 	(Don't just broadcast it. We don't want to include any

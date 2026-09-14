@@ -2768,7 +2768,7 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
 }
 
 //***********************************************************************************************
-void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) {
+void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) const {
   //	Sets values in a GAMEPARAMS to the current game settings.
 
   port::SafeCopy(

@@ -56,8 +56,8 @@ class EgoClass {
   EgoClass& operator=(EgoClass&&) = delete;
 
   bool Scroll(int distance);
-  void Render();
-  void Wipe(GraphicBufferClass* background);
+  void Render() const;
+  void Wipe(GraphicBufferClass* background) const;
 
   char* Text;
   int XPos;

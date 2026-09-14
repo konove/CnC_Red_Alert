@@ -466,8 +466,8 @@ class MultiMission {
   [[nodiscard]] const char* Get_Digest() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return Digest;
   }
-  bool Get_Official() { return IsOfficial; }
-  bool Get_Expansion() {
+  [[nodiscard]] bool Get_Official() const { return IsOfficial; }
+  [[nodiscard]] bool Get_Expansion() const {
     return IsExpansion;
   }  //	Implied "IsCounterstrike". No longer used. -ajw
 

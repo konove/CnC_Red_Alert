@@ -88,7 +88,6 @@ class MapClass : public GScreenClass {
   void Sight_From(CELL cell, int sightrange, HouseClass* house,
                   bool incremental = false);
   static void Jam_From(CELL cell, int jamrange, HouseClass* house);
-  void Shroud_From(CELL cell, int sightrange);
   static void UnJam_From(CELL cell, int jamrange, HouseClass* house);
   void Place_Down(CELL cell, ObjectClass* object);
   void Pick_Up(CELL cell, ObjectClass* object);

@@ -112,7 +112,7 @@ class WOL_GameSetupDialog {
   bool bParamsUnfresh();
   void SendParams();
   bool AcceptParams(char* szParams);
-  void SetGParamsToCurrent(GAMEPARAMS& GParams);
+  void SetGParamsToCurrent(GAMEPARAMS& GParams) const;
 
   void AcceptNewGuestPlayerInfo(char* szMsg);
 

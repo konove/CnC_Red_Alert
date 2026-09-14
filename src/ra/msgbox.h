@@ -54,11 +54,13 @@ class WWMessageBox {
  public:
   explicit WWMessageBox(int caption = TXT_NONE) : Caption(caption) {}
   int Process(const char* msg, const char* b1txt, const char* b2txt = nullptr,
-              const char* b3txt = nullptr, bool preserve = false);
+              const char* b3txt = nullptr, bool preserve = false) const;
+  // Informational boxes ignore which button was pressed.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   int Process(int msg, int b1txt = TXT_OK, int b2txt = TXT_NONE,
-              int b3txt = TXT_NONE, bool preserve = false);
+              int b3txt = TXT_NONE, bool preserve = false) const;
   int Process(const char* msg, int b1txt = TXT_OK, int b2txt = TXT_NONE,
-              int b3txt = TXT_NONE, bool preserve = false);
+              int b3txt = TXT_NONE, bool preserve = false) const;
 };
 
 #endif  // CNC_RED_ALERT_RA_MSGBOX_H_

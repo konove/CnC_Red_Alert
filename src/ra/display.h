@@ -176,7 +176,7 @@ class DisplayClass : public MapClass {
   void Select_These(COORDINATE coord1, COORDINATE coord2);
   [[nodiscard]] COORDINATE Pixel_To_Coord(int x, int y) const;
   bool Coord_To_Pixel(COORDINATE coord, int& x, int& y) const;
-  bool Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest);
+  bool Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest) const;
   static void Remove(const ObjectClass* object, LayerType layer);
   static void Submit(const ObjectClass* object, LayerType layer);
   [[nodiscard]] CELL Calculated_Cell(SourceType dir, WAYPOINT waypoint = -1,

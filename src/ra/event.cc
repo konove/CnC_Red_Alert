@@ -491,6 +491,8 @@ EventClass::EventClass(EventType type, void* ptr, uint32_t size)
  *                                                                                             *
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
+// Not const: applies the event to the game.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void EventClass::Execute() {
   TechnoClass* techno;
   AnimClass* anim = nullptr;

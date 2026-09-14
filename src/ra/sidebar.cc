@@ -1219,6 +1219,8 @@ void SidebarClass::StripClass::Reload_LogoShapes() {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
+// Not const: adds the strip's buttons to the map's gadget list.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void SidebarClass::StripClass::Activate() {
   UpButton[ID].Zap();
   Map.Add_A_Button(UpButton[ID]);
@@ -1248,6 +1250,8 @@ void SidebarClass::StripClass::Activate() {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
+// Not const: removes the strip's buttons from the map's gadget list.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void SidebarClass::StripClass::Deactivate() {
   Map.Remove_A_Button(UpButton[ID]);
   Map.Remove_A_Button(DownButton[ID]);

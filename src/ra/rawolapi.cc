@@ -1879,7 +1879,7 @@ void RANetUtilEventSink::DeleteLadderList() {
 }
 
 //***********************************************************************************************
-int RANetUtilEventSink::GetUserRank(const char* szName, bool bRankRA) {
+int RANetUtilEventSink::GetUserRank(const char* szName, bool bRankRA) const {
   //	Searches for szName in ladder list, returns player rank if found, else
   // 0. 	Slow linear search. 	If bRankRA, returns RA rank, else
   // returns AM rank. 	debugprint( "GetUserRank: Asked for %s, ", szName );

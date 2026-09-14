@@ -113,10 +113,12 @@ class CommBufferClass {
                  int extralen = 0);
   int UnQueue_Send(void* buf, int* buflen, int index, void* extrabuf = nullptr,
                    int* extralen = nullptr);
-  int Num_Send() { return SendCount; }  // # entries in queue
-  int Max_Send() { return MaxSend; }    // max # send queue entries
-  SendQueueType* Get_Send(int index);   // random access to queue
-  uint32_t Send_Total() { return SendTotal; }
+  // # entries in queue
+  [[nodiscard]] int Num_Send() const { return SendCount; }
+  // max # send queue entries
+  [[nodiscard]] int Max_Send() const { return MaxSend; }
+  SendQueueType* Get_Send(int index);  // random access to queue
+  [[nodiscard]] uint32_t Send_Total() const { return SendTotal; }
 
   /*
   ....................... Receive Queue routines ........................
@@ -125,18 +127,20 @@ class CommBufferClass {
                     int extralen = 0);
   int UnQueue_Receive(void* buf, int* buflen, int index,
                       void* extrabuf = nullptr, int* extralen = nullptr);
-  int Num_Receive() { return ReceiveCount; }  // # entries in queue
-  int Max_Receive() { return MaxReceive; }    // max # recv queue entries
-  ReceiveQueueType* Get_Receive(int index);   // random access to queue
-  uint32_t Receive_Total() { return ReceiveTotal; }
+  // # entries in queue
+  [[nodiscard]] int Num_Receive() const { return ReceiveCount; }
+  // max # recv queue entries
+  [[nodiscard]] int Max_Receive() const { return MaxReceive; }
+  ReceiveQueueType* Get_Receive(int index);  // random access to queue
+  [[nodiscard]] uint32_t Receive_Total() const { return ReceiveTotal; }
 
   /*
   ....................... Response time routines ........................
   */
-  void Add_Delay(int64_t delay);  // accumulates response time
-  int32_t Avg_Response_Time();    // gets mean response time
-  int32_t Max_Response_Time();    // gets max response time
-  void Reset_Response_Time();           // resets computations
+  void Add_Delay(int64_t delay);                    // accumulates response time
+  [[nodiscard]] int32_t Avg_Response_Time() const;  // gets mean response time
+  [[nodiscard]] int32_t Max_Response_Time() const;  // gets max response time
+  void Reset_Response_Time();                       // resets computations
 
   /*
   ........................ Debug output routines ........................

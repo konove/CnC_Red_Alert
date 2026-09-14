@@ -494,7 +494,7 @@ TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void TriggerClass::Detach(TARGET target, bool /*unused*/) {
+void TriggerClass::Detach(TARGET target, bool /*unused*/) const {
   if (Is_Target_TriggerType(target)) {
     assert(static_cast<TriggerTypeClass*>(Class) != As_TriggerType(target));
     //		if (Class == As_TriggerType(target)) {

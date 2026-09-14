@@ -88,7 +88,7 @@ bool cancel_current_msgbox = false;
 #define BUTTON_3 3
 #define BUTTON_FLAG 0x8000
 int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
-                          const char* b3txt, bool preserve) {
+                          const char* b3txt, bool preserve) const {
 #define BUFFSIZE (511)
   char buffer[BUFFSIZE];
   int retval = -1;
@@ -464,7 +464,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
  * HISTORY: * 12/12/1994 BR : Created. * 06/18/1995 JLB : Simplified. *
  *=============================================================================================*/
 int WWMessageBox::Process(int msg, int b1txt, int b2txt, int b3txt,
-                          bool preserve) {
+                          bool preserve) const {
   return Process(Text_String(msg), b1txt, b2txt, b3txt, preserve);
 }
 
@@ -489,7 +489,7 @@ int WWMessageBox::Process(int msg, int b1txt, int b2txt, int b3txt,
  * HISTORY: * 06/18/1995 JLB : Created. *
  *=============================================================================================*/
 int WWMessageBox::Process(const char* msg, int b1txt, int b2txt, int b3txt,
-                          bool preserve) {
+                          bool preserve) const {
   return Process(msg, Text_String(b1txt), Text_String(b2txt),
                  Text_String(b3txt), preserve);
 }

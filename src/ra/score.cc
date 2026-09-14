@@ -771,6 +771,8 @@ void Cycle_Wait_Click(bool cycle) {
   Keyboard->Clear();
 }
 
+// Not const: plays the score screen animation.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void ScoreClass::Do_Nod_Buildings_Graph() {
   const auto power_plant_shape = MFCD::RetrieveData("POWR.SHP");
   const auto tanya_shape = MFCD::RetrieveData("E7.SHP");
@@ -970,6 +972,8 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
   /*BG	if (!Keyboard->Check()) */ Call_Back_Delay(40);
 }
 
+// Not const: plays the score screen animation.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void ScoreClass::Do_Nod_Casualties_Graph() {
   int i;
   int gdikilled;

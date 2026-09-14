@@ -1287,6 +1287,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
  *   06/02/1995 DRD : Created.                                             *
  *   8/2/96      ST : Win32 support                                        *
  *=========================================================================*/
+// Not const: dials through the serial port.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 DialStatusType NullModemClass::Dial_Modem(const char* string,
                                           DialMethodType method,
                                           bool reconnect) {
@@ -1472,6 +1474,8 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
  *   06/02/1995 DRD : Created.                                             *
  *   8/2/96      ST : Added Win32 support                                  *
  *=========================================================================*/
+// Not const: answers through the serial port.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   /*
   ** Get the resolution factor
@@ -1710,6 +1714,8 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
  *   06/02/1995 DRD : Created.                                             *
  *   8/2/96         : Added Win32 support                                  *
  *=========================================================================*/
+// Not const: hangs up through the serial port.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 bool NullModemClass::Hangup_Modem() {
   int status;
   int delay;

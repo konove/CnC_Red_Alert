@@ -207,7 +207,7 @@ bool EgoClass::Scroll(int distance) {
  *                                                                                             *
  * HISTORY: * 9/9/96 11:57PM ST : Created *
  *=============================================================================================*/
-void EgoClass::Render() {
+void EgoClass::Render() const {
   if (YPos < LogicPage->Get_Height() && YPos > -16) {
     Fancy_Text_Print(Text, XPos, YPos, GadgetClass::Get_Color_Scheme(), TBLACK,
                      Flags);
@@ -227,7 +227,7 @@ void EgoClass::Render() {
  *                                                                                             *
  * HISTORY: * 9/9/96 11:58PM ST : Created *
  *=============================================================================================*/
-void EgoClass::Wipe(GraphicBufferClass* background) {
+void EgoClass::Wipe(GraphicBufferClass* background) const {
   const int width = String_Pixel_Width(Text);
   int x = XPos;
 

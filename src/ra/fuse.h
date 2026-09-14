@@ -70,7 +70,7 @@ class FuseClass {
   bool Fuse_Checkup(COORDINATE newlocation);
   void Fuse_Write(FileClass& file);
   void Fuse_Read(FileClass& file);
-  COORDINATE Fuse_Target();
+  [[nodiscard]] COORDINATE Fuse_Target() const;
 
   /*
   **	Fuses can detonate if enough time has elapsed. This value counts
@@ -100,6 +100,6 @@ class FuseClass {
   int16_t Proximity = 0;
 };
 
-inline COORDINATE FuseClass::Fuse_Target() { return HeadTo; }
+inline COORDINATE FuseClass::Fuse_Target() const { return HeadTo; }
 
 #endif  // CNC_RED_ALERT_RA_FUSE_H_

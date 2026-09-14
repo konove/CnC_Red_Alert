@@ -1250,7 +1250,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   return path->Length;
 }
 
-CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) {
+CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
   FacingType dir;
   CELL next;
   int lp;

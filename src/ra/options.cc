@@ -126,6 +126,8 @@ OptionsClass::OptionsClass()
  *                                                                                             *
  * HISTORY: * 07/21/1994 JLB : Created. *
  *=============================================================================================*/
+// Not const: applies the score volume to the audio system.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void OptionsClass::One_Time() { Set_Score_Vol(ScoreVolume * 256); }
 
 /***********************************************************************************************
@@ -651,7 +653,7 @@ void OptionsClass::Load_Settings() {
  *up.                                               * 07/30/1996 JLB : Handles
  *hotkeys.                                                         *
  *=============================================================================================*/
-void OptionsClass::Save_Settings() {
+void OptionsClass::Save_Settings() const {
   CCFileClass file(kConfigFileName);
   INIClass ini;
 

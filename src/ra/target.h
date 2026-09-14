@@ -130,7 +130,7 @@ class xTargetClass {
   }
 
   // comparison operator
-  int operator==(xTargetClass& tgt) {
+  int operator==(const xTargetClass& tgt) const {
     return tgt.Target.Target == Target.Target ? 1 : 0;
   }
 
