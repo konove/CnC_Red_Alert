@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CNC_RED_ALERT_TECH_RAMFILE_H_
-#define CNC_RED_ALERT_TECH_RAMFILE_H_
+#ifndef CNC_RED_ALERT_TECH_MEMORY_FILE_H_
+#define CNC_RED_ALERT_TECH_MEMORY_FILE_H_
 
 #include <cstdint>
 #include <cstdio>
@@ -47,20 +47,21 @@
 #include "absl/base/attributes.h"
 #include "tech/file.h"
 
-// A "file" that reads and writes a caller-supplied memory buffer, for code
+// A File that reads and writes a caller-supplied memory buffer, for code
 // written against File that needs to work on data already in memory.
-class RAMFileClass final : public File {
+// Originally RAMFILE.H (class RAMFileClass).
+class MemoryFile final : public File {
  public:
   // Wraps size bytes at buffer. A null buffer with a positive size allocates a
   // scratch buffer of that size, which is only useful for writing.
-  RAMFileClass(void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND, int size);
+  MemoryFile(void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND, int size);
 
-  RAMFileClass(const RAMFileClass&) = delete;
-  RAMFileClass& operator=(const RAMFileClass&) = delete;
-  RAMFileClass(RAMFileClass&&) = delete;
-  RAMFileClass& operator=(RAMFileClass&&) = delete;
+  MemoryFile(const MemoryFile&) = delete;
+  MemoryFile& operator=(const MemoryFile&) = delete;
+  MemoryFile(MemoryFile&&) = delete;
+  MemoryFile& operator=(MemoryFile&&) = delete;
 
-  ~RAMFileClass() override;
+  ~MemoryFile() override;
 
   [[nodiscard]] std::string_view FileName() const override { return "UNKNOWN"; }
   void SetName(std::string_view /*filename*/) override {}
@@ -101,4 +102,4 @@ class RAMFileClass final : public File {
   bool owns_buffer_ = false;
 };
 
-#endif  // CNC_RED_ALERT_TECH_RAMFILE_H_
+#endif  // CNC_RED_ALERT_TECH_MEMORY_FILE_H_

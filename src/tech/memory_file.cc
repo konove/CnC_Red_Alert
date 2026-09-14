@@ -33,23 +33,23 @@
  *                  Last Update : July 3, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * RAMFileClass::Close -- This will 'close' the ram file. *
- *   RAMFileClass::Create -- Effectively clears the buffer of data. *
- *   RAMFileClass::Delete -- Effectively clears the buffer of data. *
- *   RAMFileClass::IsAvailable -- Determines if the "file" is available. *
- *   RAMFileClass::IsOpen -- Is the file open? * RAMFileClass::Open -- Opens a
+ * Functions: * MemoryFile::Close -- This will 'close' the ram file. *
+ *   MemoryFile::Create -- Effectively clears the buffer of data. *
+ *   MemoryFile::Delete -- Effectively clears the buffer of data. *
+ *   MemoryFile::IsAvailable -- Determines if the "file" is available. *
+ *   MemoryFile::IsOpen -- Is the file open? * MemoryFile::Open -- Opens a
  *RAM based file for read or write.                           *
- *   RAMFileClass::Open -- Opens the RAM based file. *
- *   RAMFileClass::RAMFileClass -- Construct a RAM buffer based "file" object. *
- *   RAMFileClass::Read -- Read data from the file. * RAMFileClass::Seek --
+ *   MemoryFile::Open -- Opens the RAM based file. *
+ *   MemoryFile::MemoryFile -- Construct a RAM buffer based "file" object. *
+ *   MemoryFile::Read -- Read data from the file. * MemoryFile::Seek --
  *Controls the ram file virtual read position.                        *
- *   RAMFileClass::Size -- Returns with the size of the ram file. *
- *   RAMFileClass::Write -- Copies data to the ram file. *
- *   RAMFileClass::~RAMFileClass -- Destructor for the RAM file class. *
+ *   MemoryFile::Size -- Returns with the size of the ram file. *
+ *   MemoryFile::Write -- Copies data to the ram file. *
+ *   MemoryFile::~MemoryFile -- Destructor for the RAM file class. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "tech/ramfile.h"
+#include "tech/memory_file.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -61,7 +61,7 @@
 #include "sdllib/file_access.h"
 
 /***********************************************************************************************
- * RAMFileClass::RAMFileClass -- Construct a RAM buffer based "file" object. *
+ * MemoryFile::MemoryFile -- Construct a RAM buffer based "file" object. *
  *                                                                                             *
  *    This routine will construct a "file" object that actually is just a front
  *end processor  * for a buffer. Access to the buffer will appear as if it was
@@ -85,7 +85,7 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-RAMFileClass::RAMFileClass(void* buffer, int size)
+MemoryFile::MemoryFile(void* buffer, int size)
     : buffer_(static_cast<char*>(buffer)), capacity_(size), size_(size) {
   if (buffer == nullptr && size > 0) {
     buffer_ = new char[base::ToSize(size)];
@@ -94,7 +94,7 @@ RAMFileClass::RAMFileClass(void* buffer, int size)
 }
 
 /***********************************************************************************************
- * RAMFileClass::~RAMFileClass -- Destructor for the RAM file class. *
+ * MemoryFile::~MemoryFile -- Destructor for the RAM file class. *
  *                                                                                             *
  *    The destructor will deallocate any buffer that it allocated. Otherwise it
  *does nothing.  *
@@ -107,7 +107,7 @@ RAMFileClass::RAMFileClass(void* buffer, int size)
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-RAMFileClass::~RAMFileClass() {
+MemoryFile::~MemoryFile() {
   Close();
   if (owns_buffer_) {
     delete[] buffer_;
@@ -117,7 +117,7 @@ RAMFileClass::~RAMFileClass() {
 }
 
 /***********************************************************************************************
- * RAMFileClass::Create -- Effectively clears the buffer of data. *
+ * MemoryFile::Create -- Effectively clears the buffer of data. *
  *                                                                                             *
  *    This routine "clears" the buffer of data. It only makes the buffer appear
  *empty by       * resetting the internal length to zero. *
@@ -131,7 +131,7 @@ RAMFileClass::~RAMFileClass() {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool RAMFileClass::Create() {
+bool MemoryFile::Create() {
   if (!IsOpen()) {
     size_ = 0;
     return true;
@@ -140,7 +140,7 @@ bool RAMFileClass::Create() {
 }
 
 /***********************************************************************************************
- * RAMFileClass::Delete -- Effectively clears the buffer of data. *
+ * MemoryFile::Delete -- Effectively clears the buffer of data. *
  *                                                                                             *
  *    This routine "clears" the buffer of data. It only makes the buffer appear
  *empty by       * resetting the internal length to zero. *
@@ -154,7 +154,7 @@ bool RAMFileClass::Create() {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool RAMFileClass::Delete() {
+bool MemoryFile::Delete() {
   if (!IsOpen()) {
     size_ = 0;
     return true;
@@ -163,7 +163,7 @@ bool RAMFileClass::Delete() {
 }
 
 /***********************************************************************************************
- * RAMFileClass::IsAvailable -- Determines if the "file" is available. *
+ * MemoryFile::IsAvailable -- Determines if the "file" is available. *
  *                                                                                             *
  *    RAM files are always available. *
  *                                                                                             *
@@ -175,10 +175,10 @@ bool RAMFileClass::Delete() {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool RAMFileClass::IsAvailable() { return true; }
+bool MemoryFile::IsAvailable() { return true; }
 
 /***********************************************************************************************
- * RAMFileClass::IsOpen -- Is the file open? *
+ * MemoryFile::IsOpen -- Is the file open? *
  *                                                                                             *
  *    This answers the question whether the file is open or not. *
  *                                                                                             *
@@ -190,10 +190,10 @@ bool RAMFileClass::IsAvailable() { return true; }
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool RAMFileClass::IsOpen() const { return is_open_; }
+bool MemoryFile::IsOpen() const { return is_open_; }
 
 /***********************************************************************************************
- * RAMFileClass::Open -- Opens a RAM based file for read or write. *
+ * MemoryFile::Open -- Opens a RAM based file for read or write. *
  *                                                                                             *
  *    This routine will open the ram file. The name is meaningless so that
  *parameter is        * ignored. If the access mode is for write, then the
@@ -211,12 +211,12 @@ bool RAMFileClass::IsOpen() const { return is_open_; }
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool RAMFileClass::Open(std::string_view /*filename*/, FileAccess access) {
+bool MemoryFile::Open(std::string_view /*filename*/, FileAccess access) {
   return Open(access);
 }
 
 /***********************************************************************************************
- * RAMFileClass::Open -- Opens the RAM based file. *
+ * MemoryFile::Open -- Opens the RAM based file. *
  *                                                                                             *
  *    This will open the ram based file for read or write. If the file is opened
  *for write,    * the the 'file' can be written up to the limit of the buffer's
@@ -231,7 +231,7 @@ bool RAMFileClass::Open(std::string_view /*filename*/, FileAccess access) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool RAMFileClass::Open(FileAccess access) {
+bool MemoryFile::Open(FileAccess access) {
   if (buffer_ == nullptr || IsOpen()) {
     return false;
   }
@@ -257,7 +257,7 @@ bool RAMFileClass::Open(FileAccess access) {
 }
 
 /***********************************************************************************************
- * RAMFileClass::Read -- Read data from the file. *
+ * MemoryFile::Read -- Read data from the file. *
  *                                                                                             *
  *    Use this routine just like a normal file read. It will copy the bytes from
  *the ram       * buffer to the destination specified. When the ram buffer is
@@ -277,7 +277,7 @@ bool RAMFileClass::Open(FileAccess access) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int32_t RAMFileClass::Read(void* buffer, int32_t size) {
+int32_t MemoryFile::Read(void* buffer, int32_t size) {
   if (buffer_ == nullptr || buffer == nullptr || size == 0) {
     return 0;
   }
@@ -304,7 +304,7 @@ int32_t RAMFileClass::Read(void* buffer, int32_t size) {
 }
 
 /***********************************************************************************************
- * RAMFileClass::Seek -- Controls the ram file virtual read position. *
+ * MemoryFile::Seek -- Controls the ram file virtual read position. *
  *                                                                                             *
  *    This routine will move the read/write position of the ram file to the
  *location specified * by the offset and direction parameters. It functions
@@ -323,7 +323,7 @@ int32_t RAMFileClass::Read(void* buffer, int32_t size) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int32_t RAMFileClass::Seek(int32_t offset, int origin) {
+int32_t MemoryFile::Seek(int32_t offset, int origin) {
   if (buffer_ == nullptr || !IsOpen()) {
     return position_;
   }
@@ -356,7 +356,7 @@ int32_t RAMFileClass::Seek(int32_t offset, int origin) {
 }
 
 /***********************************************************************************************
- * RAMFileClass::Size -- Returns with the size of the ram file. *
+ * MemoryFile::Size -- Returns with the size of the ram file. *
  *                                                                                             *
  *    This will return the size of the 'real' data in the ram file. The real
  *data is either    * the entire buffer, if opened for READ, or just the written
@@ -371,10 +371,10 @@ int32_t RAMFileClass::Seek(int32_t offset, int origin) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int32_t RAMFileClass::Size() { return size_; }
+int32_t MemoryFile::Size() { return size_; }
 
 /***********************************************************************************************
- * RAMFileClass::Write -- Copies data to the ram file. *
+ * MemoryFile::Write -- Copies data to the ram file. *
  *                                                                                             *
  *    This function similarly to the regular write operation supported for
  *files. It copies    * the data specified to the current write position in the
@@ -391,7 +391,7 @@ int32_t RAMFileClass::Size() { return size_; }
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int32_t RAMFileClass::Write(const void* buffer, int32_t size) {
+int32_t MemoryFile::Write(const void* buffer, int32_t size) {
   if (buffer_ == nullptr || buffer == nullptr || size == 0) {
     return 0;
   }
@@ -421,7 +421,7 @@ int32_t RAMFileClass::Write(const void* buffer, int32_t size) {
 }
 
 /***********************************************************************************************
- * RAMFileClass::Close -- This will 'close' the ram file. *
+ * MemoryFile::Close -- This will 'close' the ram file. *
  *                                                                                             *
  *    Closing a ram file actually does nothing but record that it is now closed.
  **
@@ -434,4 +434,4 @@ int32_t RAMFileClass::Write(const void* buffer, int32_t size) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-void RAMFileClass::Close() { is_open_ = false; }
+void MemoryFile::Close() { is_open_ = false; }

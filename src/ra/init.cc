@@ -149,10 +149,10 @@
 #include "tech/crc.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
+#include "tech/memory_file.h"
 #include "tech/mpu.h"
 #include "tech/number_parse.h"
 #include "tech/pk.h"
-#include "tech/ramfile.h"
 #include "tech/random.h"
 #include "tech/rgb.h"
 #include "tech/rndstraw.h"
@@ -2682,7 +2682,7 @@ static void Init_Bulk_Data() {
  *=============================================================================================*/
 static void Init_Keys() {
   std::string keys = GetKeys();
-  RAMFileClass file(keys.data(), static_cast<int>(keys.size()));
+  MemoryFile file(keys.data(), static_cast<int>(keys.size()));
   INIClass ini;
   ini.Load(file);
 
