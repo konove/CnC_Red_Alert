@@ -16,50 +16,14 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/RAWFILE.CPP 1     3/03/97 10:25a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Westwood Library *
- *                                                                                             *
- *                    File Name : RAWFILE.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : August 8, 1994 *
- *                                                                                             *
- *                  Last Update : August 4, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * DiskFile::Bias -- Bias a file with a specific starting
- *position and length.           * DiskFile::Close -- Perform a closure of
- *the file.                                     * DiskFile::Create --
- *Creates an empty file.                                            *
- *   DiskFile::Delete -- Deletes the file object from the disk. *
- *   DiskFile::Error -- Handles displaying a file error message. *
- *   DiskFile::Get_Date_Time -- Gets the date and time the file was last
- *modified.         * DiskFile::IsAvailable -- Checks to see if the
- *specified file is available to open.   * DiskFile::Open -- Assigns name
- *and opens file in one operation.                       * DiskFile::Open --
- *Opens the file object with the rights specified.                    *
- *   DiskFile::DiskFile -- Simple constructor for a file object. *
- *   DiskFile::RawSeek -- Performs a seek on the unbiased file *
- *   DiskFile::Read -- Reads the specified number of bytes into a memory
- *buffer.           * DiskFile::Seek -- Reposition the file pointer as
- *indicated.                           * DiskFile::Set_Date_Time -- Sets the
- *date and time the file was last modified.         * DiskFile::SetName --
- *Manually sets the name for a file object.                       *
- *   DiskFile::Size -- Determines size of file (in bytes). *
- *   DiskFile::Write -- Writes the specified data to the buffer specified. *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// File: DiskFile implementation.
+//
+// Originally RAWFILE.CPP by Joe L. Bostic, August 8, 1994.
 
 #include "tech/disk_file.h"
 
 #include <cstddef>
-#include <cstdio>
+#include <memory>
 #include <optional>
 #include <span>
 #include <string>
@@ -67,195 +31,11 @@
 #include <utility>
 
 #include "absl/strings/ascii.h"
-#include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
+#include "tech/byte_stream.h"
 #include "tech/file.h"
-
-/***********************************************************************************************
- * DiskFile::Error -- Handles displaying a file error message. *
- *                                                                                             *
- *    Display an error message as indicated. If it is allowed to retry, then
- *pressing a key    * will return from this function. Otherwise, it will exit
- *the program with "exit()".       *
- *                                                                                             *
- * INPUT:   error    -- The error number (same as the DOSERR.H error numbers). *
- *                                                                                             *
- *          canretry -- Can this routine exit normally so that retrying can
- *occur? If this is  * false, then the program WILL exit in this routine. *
- *                                                                                             *
- *          filename -- Optional filename to report with this error. If no
- *filename is         * supplied, then no filename is listed in the error
- *message.             *
- *                                                                                             *
- * OUTPUT:  none, but this routine might not return at all if the "canretry"
- *parameter is      * false or the player pressed ESC. *
- *                                                                                             *
- * WARNINGS:   This routine may not return at all. It handles being in text mode
- *as well as    * if in a graphic mode. *
- *                                                                                             *
- * HISTORY: * 10/17/1994 JLB : Created. *
- *=============================================================================================*/
-/***********************************************************************************************
- * DiskFile::DiskFile -- Simple constructor for a file object. *
- *                                                                                             *
- *    This constructor is called when a file object is created with a supplied
- *filename, but   * not opened at the same time. In this case, an assumption is
- *made that the supplied       * filename is a constant string. A duplicate of
- *the filename string is not created since   * it would be wasteful in that
- *case.                                                       *
- *                                                                                             *
- * INPUT:   filename -- The filename to assign to this file object. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/17/1994 JLB : Created. *
- *=============================================================================================*/
-DiskFile::DiskFile(const std::string_view filename) : filename_(filename) {}
-
-/***********************************************************************************************
- * DiskFile::SetName -- Manually sets the name for a file object. *
- *                                                                                             *
- *    This routine will set the name for the file object to the name specified.
- *This name is   * duplicated in free store. This allows the supplied name to be
- *a temporarily constructed  * text string. Setting the name in this fashion
- *doesn't affect the closed or opened state  * of the file. *
- *                                                                                             *
- * INPUT:   filename -- The filename to assign to this file object. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   Because of the allocation this routine must perform, memory could
- *become        * fragmented. *
- *                                                                                             *
- * HISTORY: * 10/17/1994 JLB : Created. *
- *=============================================================================================*/
-void DiskFile::SetName(const std::string_view filename) {
-  filename_ = filename;
-}
-
-/***********************************************************************************************
- * DiskFile::Open -- Assigns name and opens file in one operation. *
- *                                                                                             *
- *    This routine will assign the specified filename to the file object and
- *open it at the    * same time. If the file object was already open, then it
- *will be closed first. If the     * file object was previously assigned a
- *filename, then it will be replaced with the new    * name. Typically, this
- *routine is used when an anonymous file object has been crated and  * now it
- *needs to be assigned a name and opened. *
- *                                                                                             *
- * INPUT:   filename -- The filename to assign to this file object. *
- *                                                                                             *
- *          rights   -- The open file access rights to use. *
- *                                                                                             *
- * OUTPUT:  bool; Was the file opened? The return value of this is moot, since
- *the open file   * is designed to never return unless it succeeded. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/17/1994 JLB : Created. *
- *=============================================================================================*/
-bool DiskFile::Open(const std::string_view filename, FileAccess rights) {
-  SetName(filename);
-  return Open(rights);
-}
-
-/***********************************************************************************************
- * DiskFile::Open -- Opens the file object with the rights specified. *
- *                                                                                             *
- *    This routine is used to open the specified file object with the access
- *rights indicated. * This only works if the file has already been assigned a
- *filename. It is guaranteed, by   * the error handler, that this routine will
- *always return with success.                    *
- *                                                                                             *
- * INPUT:   rights   -- The file access rights to use when opening this file.
- *This is a        * combination of READ and/or WRITE bit flags. *
- *                                                                                             *
- * OUTPUT:  bool; Was the file opened successfully? This will always return true
- *by reason of  * the error handler. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/17/1994 JLB : Created. *
- *=============================================================================================*/
-bool DiskFile::Open(FileAccess rights) {
-  Close();
-
-  /*
-  **	Verify that there is a filename associated with this file object. If
-  *not, then this is a *	big error condition.
-  */
-  /*
-  **	Record the access rights used for this open call. These rights will be
-  *used if the *	file object is duplicated.
-  */
-  rights_ = rights;
-
-  /*
-  **	Repetitively try to open the file. Abort if a fatal error condition
-  *occurs.
-  */
-  for (;;) {
-    /*
-    **	Try to open the file according to the access rights specified.
-    */
-
-    handle_ = IO_Open_File(filename_.c_str(), rights);
-
-    /*
-    **	If the handle indicates the file is not open, then this is an error
-    *condition. *	For the case of the file cannot be found, then allow a
-    *retry. All other cases *	are fatal.
-    */
-    break;
-  }
-
-  return IsOpen();
-}
-
-/***********************************************************************************************
- * DiskFile::IsAvailable -- Checks to see if the specified file is
- *available to open.     *
- *                                                                                             *
- *    This routine will examine the disk system to see if the specified file can
- *be opened     * or not. Use this routine before opening a file in order to
- *make sure that is available   * or to perform other necessary actions. *
- *                                                                                             *
- * INPUT:   mode -- kQuick for fast check that may fail silently, kBlocking for
- *full error      * recovery which may block waiting for media. *
- *                                                                                             *
- * OUTPUT:  bool; Is the file available to be opened? *
- *                                                                                             *
- * WARNINGS:   Depending on the mode passed in, this routine may never
- *return.            *
- *                                                                                             *
- * HISTORY: * 10/18/1994 JLB : Created. *
- *=============================================================================================*/
-bool DiskFile::IsAvailable() {
-  if (filename_.empty()) {
-    return false;
-  }
-
-  /*
-  **	If the file is already open, then is must have already passed the
-  *availability check. *	Return true in this case.
-  */
-  if (IsOpen()) {
-    return true;
-  }
-
-  // The name is replaced by the one that exists, so a later Open() finds the
-  // lowercase file too.
-  std::optional<std::string> found = FindExistingFile(filename_);
-  if (!found) {
-    return false;
-  }
-  filename_ = *std::move(found);
-  return true;
-}
 
 std::optional<std::string> FindExistingFile(const std::string_view path) {
   // Opening is the existence test; it is what Open() will do next.
@@ -273,283 +53,81 @@ std::optional<std::string> FindExistingFile(const std::string_view path) {
   return std::nullopt;
 }
 
-/***********************************************************************************************
- * DiskFile::Close -- Perform a closure of the file. *
- *                                                                                             *
- *    Close the file object. In the rare case of an error, handle it as
- *appropriate.           *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   Some rare error conditions may cause this routine to abort the
- *program.         *
- *                                                                                             *
- * HISTORY: * 10/18/1994 JLB : Created. *
- *=============================================================================================*/
-void DiskFile::Close() {
-  /*
-  **	If the file is open, then close it. If the file is already closed, then
-  *just return. This *	isn't considered an error condition.
-  */
+bool DiskFile::Create() {
+  Close();
+  return DiskStream::Open(filename_, FileAccess::kWrite) != nullptr;
+}
+
+bool DiskFile::Delete() {
+  Close();
+  if (!IsAvailable()) {
+    return false;
+  }
+  return IO_Delete_File(filename_.c_str());
+}
+
+bool DiskFile::IsAvailable() {
+  if (filename_.empty()) {
+    return false;
+  }
   if (IsOpen()) {
-    IO_Close_File(handle_);
-
-    /*
-    **	At this point the file must have been closed. Mark the file as empty and
-    *return.
-    */
-    handle_ = nullptr;
+    return true;
   }
+  std::optional<std::string> found = FindExistingFile(filename_);
+  if (!found) {
+    return false;
+  }
+  filename_ = *std::move(found);
+  return true;
 }
 
-/***********************************************************************************************
- * DiskFile::Read -- Reads the specified number of bytes into a memory
- *buffer.             *
- *                                                                                             *
- *    This routine will read the specified number of bytes and place the data
- *into the buffer  * indicated. It is legal to call this routine with a request
- *for more bytes than are in    * the file. This condition can result in fewer
- *bytes being read than requested. Determine  * this by examining the return
- *value.                                                      *
- *                                                                                             *
- * INPUT:   buffer   -- Pointer to the buffer to read data into. If nullptr is
- *passed, no read    * is performed. *
- *                                                                                             *
- *          size     -- The number of bytes to read. If nullptr is passed, then
- * no read is        * performed. *
- *                                                                                             *
- * OUTPUT:  Returns with the number of bytes read into the buffer. If this
- *number is less      * than requested, it indicates that the file has been
- *exhausted.                     *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/18/1994 JLB : Created. *
- *=============================================================================================*/
+bool DiskFile::Open(const std::string_view filename, const FileAccess rights) {
+  SetName(filename);
+  return Open(rights);
+}
+
+bool DiskFile::Open(const FileAccess rights) {
+  Close();
+  if (filename_.empty()) {
+    return false;
+  }
+  stream_ = DiskStream::Open(filename_, rights);
+  return IsOpen();
+}
+
 base::ssize DiskFile::Read(const std::span<std::byte> buffer) {
-  bool opened_for_this_read = false;
-
-  /*
-  **	If the file isn't opened, open it. This serves as a convenience
-  **	for the programmer.
-  */
-  if (!IsOpen()) {
-    /*
-    **	The error check here is moot. Open will never return unless it
-    *succeeded.
-    */
-    if (!Open(FileAccess::kRead)) {
-      return 0;
-    }
-    opened_for_this_read = true;
-  }
-
-
-  size_t bytes_read = 0;
-  IO_Read_File(handle_, buffer.data(), buffer.size(), bytes_read);
-  // doesn't bother looping, the below code is broken anyway (buffer isn't
-  // incremented)
-
-  /*
-  **	Close the file if it was opened by this routine and return
-  **	the actual number of bytes read into the buffer.
-  */
-  if (opened_for_this_read) {
-    Close();
-  }
-  return base::ToSigned(bytes_read);
-}
-
-/***********************************************************************************************
- * DiskFile::Write -- Writes the specified data to the buffer specified. *
- *                                                                                             *
- *    This routine will write the data specified to the file. *
- *                                                                                             *
- * INPUT:   buffer   -- The buffer that holds the data to write. *
- *                                                                                             *
- *          size     -- The number of bytes to write to the file. *
- *                                                                                             *
- * OUTPUT:  Returns with the number of bytes written to the file. This routine
- *catches the     * case of a disk full condition, so this routine will always
- *return with the number  * matching the size request. *
- *                                                                                             *
- * WARNINGS:   A fatal file condition could cause this routine to never return.
- **
- *                                                                                             *
- * HISTORY: * 10/18/1994 JLB : Created. *
- *=============================================================================================*/
-base::ssize DiskFile::Write(const std::span<const std::byte> buffer) {
-  bool opened_for_this_write = false;
-
-  /*
-  **	Check to open status of the file. If the file is open, then merely write
-  *to *	it. Otherwise, open the file for writing and then close the file when
-  *the *	output is finished.
-  */
-  if (!IsOpen()) {
-    if (!Open(FileAccess::kWrite)) {
-      return 0;
-    }
-    opened_for_this_write = true;
-  }
-
-  size_t bytes_written = 0;
-  IO_Write_File(handle_, buffer.data(), buffer.size(), bytes_written);
-
-
-  /*
-  **	If this routine had to open the file, then close it before returning.
-  */
-  if (opened_for_this_write) {
-    Close();
-  }
-
-  /*
-  **	Return with the number of bytes written. This will always be the number
-  *of bytes *	requested, since the case of the disk being full is caught by
-  *this routine.
-  */
-  return base::ToSigned(bytes_written);
-}
-
-/***********************************************************************************************
- * DiskFile::Seek -- Reposition the file pointer as indicated. *
- *                                                                                             *
- *    Use this routine to move the filepointer to the position indicated. It can
- *move either   * relative to current position or absolute from the beginning or
- *ending of the file. This  * routine will only return if it successfully
- *performed the seek.                          *
- *                                                                                             *
- * INPUT:   offset   -- The position to seek to. This is interpreted as relative
- * to the position  * indicated by the "origin" parameter. *
- *                                                                                             *
- *          origin   -- The relative position to relate the seek to. This can be
- *either SEEK_SET  * for the beginning of the file, SEEK_CUR for the current
- *position, or      * SEEK_END for the end of the file. *
- *                                                                                             *
- * OUTPUT:  This routine returns the position that the seek ended up at. *
- *                                                                                             *
- * WARNINGS:   If there was a file error, then this routine might never return.
- **
- *                                                                                             *
- * HISTORY: * 10/18/1994 JLB : Created. *
- *=============================================================================================*/
-base::ssize DiskFile::Seek(const base::ssize offset, const SeekOrigin origin) {
+  const bool opened_for_this_read = !IsOpen() && Open(FileAccess::kRead);
   if (!IsOpen()) {
     return 0;
   }
-  return static_cast<base::ssize>(
-      IO_Seek_File(handle_, offset, StdioOrigin(origin)));
+  const base::ssize bytes_read = stream_->Read(buffer);
+  if (opened_for_this_read) {
+    Close();
+  }
+  return bytes_read;
 }
 
-/***********************************************************************************************
- * DiskFile::Size -- Determines size of file (in bytes). *
- *                                                                                             *
- *    Use this routine to determine the size of the file. The file must exist or
- *this is an    * error condition. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the number of bytes in the file. *
- *                                                                                             *
- * WARNINGS:   This routine handles error conditions and will not return unless
- *the file       * exists and can successfully be queried for file length. *
- *                                                                                             *
- * HISTORY: * 10/18/1994 JLB : Created. *
- *=============================================================================================*/
+base::ssize DiskFile::Write(const std::span<const std::byte> buffer) {
+  const bool opened_for_this_write = !IsOpen() && Open(FileAccess::kWrite);
+  if (!IsOpen()) {
+    return 0;
+  }
+  const base::ssize bytes_written = stream_->Write(buffer);
+  if (opened_for_this_write) {
+    Close();
+  }
+  return bytes_written;
+}
+
+base::ssize DiskFile::Seek(const base::ssize offset, const SeekOrigin origin) {
+  return IsOpen() ? stream_->Seek(offset, origin) : 0;
+}
+
 base::ssize DiskFile::Size() {
   if (IsOpen()) {
-    return static_cast<base::ssize>(IO_Get_File_Size(handle_));
+    return stream_->Size();
   }
-  // Opened just to be measured; Open() cannot fail silently here, since a
-  // missing file reports a size of 0 either way.
-  base::ssize size = 0;
-  if (Open()) {
-    size = Size();
-    Close();
-  }
-  return size;
-}
-
-/***********************************************************************************************
- * DiskFile::Create -- Creates an empty file. *
- *                                                                                             *
- *    This routine will create an empty file from the file object. The file
- *object's filename  * must already have been assigned before this routine will
- *function.                       *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  bool; Was the file successfully created? This routine will always
- *return true.     *
- *                                                                                             *
- * WARNINGS:   A fatal error condition could occur with this routine. Especially
- *if the disk   * is full or a read-only media was selected. *
- *                                                                                             *
- * HISTORY: * 10/18/1994 JLB : Created. *
- *=============================================================================================*/
-bool DiskFile::Create() {
-  Close();
-  if (Open(FileAccess::kWrite)) {
-    Close();
-    return true;
-  }
-  return false;
-}
-
-/***********************************************************************************************
- * DiskFile::Delete -- Deletes the file object from the disk. *
- *                                                                                             *
- *    This routine will delete the file object from the disk. If the file object
- *doesn't       * exist, then this routine will return as if it had succeeded
- *(since the effect is the     * same). *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  bool; Was the file deleted? If the file was already missing, the
- *this value will   * be false. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/18/1994 JLB : Created. *
- *=============================================================================================*/
-bool DiskFile::Delete() {
-  /*
-  **	If the file was open, then it must be closed first.
-  */
-  Close();
-
-  /*
-  **	If there is no filename associated with this object, then this indicates
-  *a fatal error *	condition. Report this and abort.
-  */
-  /*
-  **	Repetitively try to delete the file if possible. Either return with
-  *success, or *	abort the program with an error.
-  */
-  for (;;) {
-    /*
-    **	If the file is already missing, then return with this fact. No action is
-    *necessary. *	This can occur as this section loops if the file exists
-    *on a floppy and the floppy *	was removed, the file deleted on another
-    *machine, and then the floppy was *	reinserted. Admittedly, this is a rare
-    *case, but is handled here.
-    */
-    if (!IsAvailable()) {
-      return false;
-    }
-
-    if (!IO_Delete_File(filename_.c_str())) {
-      return false;
-    }
-    break;
-  }
-
-  /*
-  **	DOS reports that the file was successfully deleted. Return with this
-  *fact.
-  */
-  return true;
+  const std::unique_ptr<DiskStream> stream =
+      DiskStream::Open(filename_, FileAccess::kRead);
+  return stream != nullptr ? stream->Size() : 0;
 }
