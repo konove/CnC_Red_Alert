@@ -55,6 +55,7 @@
 #include <cstring>
 
 #include "base/numeric.h"
+#include "base/seek_origin.h"
 #include "base/types.h"
 #include "sdllib/buffer.h"
 #include "sdllib/iff.h"

@@ -11,8 +11,8 @@
 #include <string>
 
 #include "absl/strings/ascii.h"
+#include "base/seek_origin.h"
 #include "gtest/gtest.h"
-#include "tech/file.h"
 
 namespace {
 

@@ -47,6 +47,7 @@
 #include <string_view>
 
 #include "absl/base/attributes.h"
+#include "base/seek_origin.h"
 #include "base/types.h"
 #include "tech/file.h"
 

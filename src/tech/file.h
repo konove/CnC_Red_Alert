@@ -41,7 +41,6 @@
 #define CNC_RED_ALERT_TECH_FILE_H_
 
 #include <cstddef>
-#include <cstdio>
 #include <span>
 #include <string>
 #include <string_view>
@@ -49,38 +48,9 @@
 #include <vector>
 
 #include "base/numeric.h"
+#include "base/seek_origin.h"
 #include "base/types.h"
 #include "sdllib/file_access.h"
-
-// Where a Seek() offset is measured from.
-enum class SeekOrigin { kBegin, kCurrent, kEnd };
-
-// Maps a stdio SEEK_* constant, which the C-style file APIs still pass, to
-// SeekOrigin. Anything unrecognized counts as SEEK_CUR, as the file classes
-// have always treated it.
-constexpr SeekOrigin SeekOriginFromStdio(int origin) {
-  switch (origin) {
-    case SEEK_SET:
-      return SeekOrigin::kBegin;
-    case SEEK_END:
-      return SeekOrigin::kEnd;
-    default:
-      return SeekOrigin::kCurrent;
-  }
-}
-
-// The stdio SEEK_* constant for origin.
-constexpr int StdioOrigin(SeekOrigin origin) {
-  switch (origin) {
-    case SeekOrigin::kBegin:
-      return SEEK_SET;
-    case SeekOrigin::kEnd:
-      return SEEK_END;
-    case SeekOrigin::kCurrent:
-    default:
-      return SEEK_CUR;
-  }
-}
 
 // File: the interface every file object in the game implements. Concrete
 // files live on disk (DiskFile), in memory (MemoryFile) or inside the game's

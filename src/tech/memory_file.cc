@@ -60,9 +60,9 @@
 #include <string_view>
 
 #include "base/numeric.h"
+#include "base/seek_origin.h"
 #include "base/types.h"
 #include "sdllib/file_access.h"
-#include "tech/file.h"
 
 /***********************************************************************************************
  * MemoryFile::MemoryFile -- Construct a RAM buffer based "file" object. *

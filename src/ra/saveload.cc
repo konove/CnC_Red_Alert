@@ -49,6 +49,7 @@
 #include <vector>
 
 #include "absl/log/log.h"
+#include "base/seek_origin.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -109,7 +110,6 @@
 #include "tech/blowpipe.h"
 #include "tech/blwstraw.h"
 #include "tech/disk_file.h"
-#include "tech/file.h"
 #include "tech/game_file.h"
 #include "tech/lzopipe.h"
 #include "tech/lzostraw.h"

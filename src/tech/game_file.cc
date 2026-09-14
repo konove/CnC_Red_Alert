@@ -12,11 +12,11 @@
 #include <string_view>
 #include <utility>
 
+#include "base/seek_origin.h"
 #include "base/types.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
 #include "tech/byte_stream.h"
-#include "tech/file.h"
 #include "tech/mix_archive.h"
 #include "tech/search_paths.h"
 

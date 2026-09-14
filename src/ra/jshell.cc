@@ -55,6 +55,7 @@
 #include <vector>
 
 #include "base/numeric.h"
+#include "base/seek_origin.h"
 #include "base/types.h"
 #include "ra/compat.h"
 #include "ra/monoc.h"

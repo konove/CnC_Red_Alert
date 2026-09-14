@@ -32,6 +32,7 @@
 #include <string_view>
 
 #include "absl/base/attributes.h"
+#include "base/seek_origin.h"
 #include "base/types.h"
 #include "sdllib/file_access.h"
 #include "tech/byte_stream.h"

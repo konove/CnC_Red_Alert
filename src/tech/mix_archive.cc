@@ -21,10 +21,10 @@
 
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
+#include "base/seek_origin.h"
 #include "sdllib/file_access.h"
 #include "tech/blwstraw.h"
 #include "tech/crc.h"
-#include "tech/file.h"
 #include "tech/game_file.h"
 #include "tech/listnode.h"
 #include "tech/pk.h"

@@ -131,10 +131,10 @@
 #include "sdllib/wwstd.h"
 #include "tech/2keyfbuf.h"
 #include "tech/disk_file.h"
-#include "tech/file.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/game_file.h"
+#include "tech/game_file_vqa_io.h"
 #include "tech/mix_archive.h"
 #include "tech/rect.h"
 #include "tech/rgb.h"
@@ -1954,45 +1954,6 @@ void Go_Editor(const bool flag) {
   }
 }
 
-MixFileVqaIo::MixFileVqaIo() = default;
-
-MixFileVqaIo::~MixFileVqaIo() { Close(); }
-
-int MixFileVqaIo::Open(const char* filename) {
-  auto file = std::make_unique<GameFile>(filename);
-
-  if (!file->IsAvailable()) {
-    return 1;
-  }
-  if (!file->Open(filename, FileAccess::kRead)) {
-    return 1;
-  }
-
-  file_ = std::move(file);
-  return 0;
-}
-
-int MixFileVqaIo::Read(void* buffer, const int64_t bytes) {
-  return file_->Read(std::span(static_cast<std::byte*>(buffer),
-                               base::ToSize(bytes))) != bytes
-             ? 1
-             : 0;
-}
-
-int MixFileVqaIo::Seek(const int64_t offset, const int origin) {
-  return file_->Seek(static_cast<base::ssize>(offset),
-                     SeekOriginFromStdio(origin)) == -1
-             ? 1
-             : 0;
-}
-
-void MixFileVqaIo::Close() {
-  if (file_ != nullptr) {
-    file_->Close();
-    file_.reset();
-  }
-}
-
 void Rebuild_Interpolated_Palette(unsigned char* interpal) {
   for (int y = 0; y < 255; y++) {
     for (int x = y + 1; x < 256; x++) {
@@ -2109,7 +2070,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
     Keyboard->Clear();
 
     VqaPlayer player;
-    MixFileVqaIo movie_io;  // Must outlive the open movie.
+    GameFileVqaIo movie_io;  // Must outlive the open movie.
     player.SetIo(&movie_io);
 
     if (IsVQ640) {

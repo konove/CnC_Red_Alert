@@ -269,7 +269,7 @@ class VqaIo;
 //
 // Example:
 //   VqaPlayer player;
-//   MixFileVqaIo io;  // any VqaIo implementation
+//   GameFileVqaIo io;  // any VqaIo implementation
 //   player.SetIo(&io);
 //   if (player.Open("INTRO.VQA", &AnimControl) == 0) {
 //     player.Play(VQAMODE_RUN);

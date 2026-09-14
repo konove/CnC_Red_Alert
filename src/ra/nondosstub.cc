@@ -28,6 +28,7 @@
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "base/numeric.h"
+#include "base/seek_origin.h"
 #include "ra/externs.h"
 #include "ra/filepcx.h"
 #include "ra/graphics_loader.h"
@@ -40,7 +41,6 @@
 #include "sdllib/iconcach.h"
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
-#include "tech/file.h"
 #include "tech/game_file.h"
 
 /***********************************************************************************************

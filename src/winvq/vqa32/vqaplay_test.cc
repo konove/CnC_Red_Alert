@@ -5,12 +5,18 @@
 
 #include "winvq/vqa32/vqaplay.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <iterator>
+#include <span>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/seek_origin.h"
+#include "base/types.h"
 #include "gtest/gtest.h"
 #include "winvq/vqa32/vqafile.h"
 #include "winvq/vqa32/vqaio.h"
@@ -39,33 +45,44 @@ namespace {
 // tests can assert on the interaction.
 class FakeVqaIo final : public VqaIo {
  public:
-  int Open(const char* /*filename*/) override {
+  bool Open(std::string_view /*name*/) override {
     opens++;
     if (fail_open) {
-      return 1;
+      return false;
     }
     pos = 0;
-    return 0;
+    return true;
   }
 
-  int Read(void* buffer, int64_t bytes) override {
-    if (fail_read || bytes < 0 ||
-        pos + bytes > static_cast<int64_t>(data.size())) {
-      return 1;
+  bool Read(std::span<std::byte> buffer) override {
+    const int64_t bytes = std::ssize(buffer);
+    if (fail_read || pos + bytes > static_cast<int64_t>(data.size())) {
+      return false;
     }
-    memcpy(buffer, data.data() + pos, static_cast<size_t>(bytes));
+    memcpy(buffer.data(), data.data() + pos, buffer.size());
     pos += bytes;
-    return 0;
+    return true;
   }
 
   // Like a real file, refuses to move outside the data.
-  int Seek(int64_t offset, int origin) override {
-    const int64_t target = origin == SEEK_SET ? offset : pos + offset;
+  bool Seek(base::ssize offset, SeekOrigin origin) override {
+    int64_t target = offset;
+    switch (origin) {
+      case SeekOrigin::kCurrent:
+        target += pos;
+        break;
+      case SeekOrigin::kEnd:
+        target += static_cast<int64_t>(data.size());
+        break;
+      case SeekOrigin::kBegin:
+      default:
+        break;
+    }
     if (target < 0 || std::cmp_greater(target, data.size())) {
-      return 1;
+      return false;
     }
     pos = target;
-    return 0;
+    return true;
   }
 
   void Close() override { closes++; }

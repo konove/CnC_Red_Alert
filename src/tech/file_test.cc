@@ -1,6 +1,5 @@
 // Tests for the File interface helpers, using MemoryFile as the concrete file.
 
-#include "tech/file.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -8,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/seek_origin.h"
 #include "gtest/gtest.h"
 #include "sdllib/file_access.h"
 #include "tech/memory_file.h"

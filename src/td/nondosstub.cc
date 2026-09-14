@@ -27,6 +27,7 @@
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "base/numeric.h"
+#include "base/seek_origin.h"
 #include "sdllib/file_access.h"
 #include "td/defines.h"
 #include "td/externs.h"
@@ -42,7 +43,6 @@
 #include "td/mapedit.h"
 #include "td/palette.h"
 #include "td/theme.h"
-#include "tech/file.h"
 #include "tech/pcx_file.h"
 #include "winvq/vqa32/vqaplay.h"
 

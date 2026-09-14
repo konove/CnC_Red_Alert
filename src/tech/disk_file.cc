@@ -31,11 +31,11 @@
 #include <utility>
 
 #include "absl/strings/ascii.h"
+#include "base/seek_origin.h"
 #include "base/types.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
 #include "tech/byte_stream.h"
-#include "tech/file.h"
 
 std::optional<std::string> FindExistingFile(const std::string_view path) {
   // Opening is the existence test; it is what Open() will do next.

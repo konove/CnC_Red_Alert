@@ -14,9 +14,9 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
+#include "base/seek_origin.h"
 #include "gtest/gtest.h"
 #include "tech/crc.h"
-#include "tech/file.h"
 #include "tech/mix_archive.h"
 #include "tech/search_paths.h"
 

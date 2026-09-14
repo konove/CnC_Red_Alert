@@ -9,10 +9,10 @@
 #include <string_view>
 
 #include "base/numeric.h"
+#include "base/seek_origin.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
 #include "sdllib/wwstd.h"
-#include "tech/file.h"
 #include "tech/game_file.h"
 
 namespace {

@@ -43,6 +43,7 @@
 
 #include "td/winstub.h"
 
+#include "base/seek_origin.h"
 #include "td/function.h"
 #include "td/tcpip.h"
 

@@ -62,13 +62,14 @@
 #include "td/special.h"
 #include "td/textblit.h"
 #include "tech/game_file.h"
+#include "tech/game_file_vqa_io.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifndef DEMO
 
 // Opens a movie on the given player without playing it. The io object must
 // stay alive until the player is closed. Returns true if the movie opened.
-static bool Open_Movie(VqaPlayer& player, MixFileVqaIo& io, const char* name) {
+static bool Open_Movie(VqaPlayer& player, GameFileVqaIo& io, const char* name) {
   if (!Debug_Quiet && Get_Digi_Handle() != -1) {
     AnimControl.OptionFlags |= VQAOPTF_AUDIO;
   } else {
@@ -104,8 +105,8 @@ void Choose_Side() {
   void* anim;
   VqaPlayer gdibrief_player;
   VqaPlayer nodbrief_player;
-  MixFileVqaIo gdibrief_io;
-  MixFileVqaIo nodbrief_io;  // Must outlive the open players.
+  GameFileVqaIo gdibrief_io;
+  GameFileVqaIo nodbrief_io;  // Must outlive the open players.
   bool gdibrief = false;
   bool nodbrief = false;  // Movie opened successfully?
   const void* staticaud;

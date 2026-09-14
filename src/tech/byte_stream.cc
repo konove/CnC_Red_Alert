@@ -13,10 +13,10 @@
 #include <utility>
 
 #include "base/numeric.h"
+#include "base/seek_origin.h"
 #include "base/types.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
-#include "tech/file.h"
 
 // Moves position by offset from origin within [0, size] and returns it.
 namespace {
