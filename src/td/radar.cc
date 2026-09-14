@@ -637,16 +637,15 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) const {
           }
           LogicPage->Put_Pixel(
               x + xoff, y + yoff,
-              dynamic_cast<InfantryClass*>(obj)->House->Class->BrightColor);
+              dynamic_cast<InfantryClass*>(obj)->House->BrightColor);
         } break;
 
         case RTTI_UNIT:
         case RTTI_AIRCRAFT:
           // PWG: Slowdown?
           // if (LogicPage->Lock()){
-          Fat_Put_Pixel(
-              x, y, dynamic_cast<UnitClass*>(obj)->House->Class->BrightColor,
-              size, *LogicPage);
+          Fat_Put_Pixel(x, y, dynamic_cast<UnitClass*>(obj)->House->BrightColor,
+                        size, *LogicPage);
           // LogicPage->Unlock();
           //}
           break;

@@ -370,6 +370,11 @@ class HouseClass {
   */
   const unsigned char* RemapTable = nullptr;
   PlayerColorType RemapColor = REMAP_NONE;
+
+  // Radar and text colors for this house; start as the type's defaults and
+  // change with the player's color choice.
+  unsigned char Color = 0;
+  unsigned char BrightColor = 0;
   char Name[MPLAYER_NAME_MAX]{};
 
   /*

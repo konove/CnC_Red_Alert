@@ -49,10 +49,7 @@
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/defines.h"
-#include "td/externs.h"
-#include "td/globals.h"
 #include "td/jshell.h"
-#include "td/special.h"
 #include "td/type.h"
 
 const int COLOR_GOOD = 180;            // GOLD
@@ -267,29 +264,6 @@ HousesType HouseTypeClass::From_Name(const char* name) {
     }
   }
   return HOUSE_NONE;
-}
-
-/***********************************************************************************************
- * HouseTypeClass::One_Time -- One-time initialization *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/21/1994 JLB : Converted to member function. *
- *=============================================================================================*/
-void HouseTypeClass::One_Time() {
-  /*
-  ** Change the radar color for special units; otherwise, they'll be the same
-  ** color as the player!
-  */
-  if (Special.IsJurassic && AreThingiesEnabled) {
-    (unsigned char&)HouseJP.Color = static_cast<unsigned char>(COLOR_BAD);
-    (unsigned char&)HouseJP.BrightColor =
-        static_cast<unsigned char>(COLOR_BRIGHT_BAD);
-  }
 }
 
 /***********************************************************************************************

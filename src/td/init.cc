@@ -610,7 +610,6 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   ObjectTypeClass::One_Time();
   BuildingTypeClass::One_Time();
   BulletTypeClass::One_Time();
-  HouseTypeClass::One_Time();
 
   TemplateTypeClass::One_Time();
   OverlayTypeClass::One_Time();

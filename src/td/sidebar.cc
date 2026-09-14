@@ -853,17 +853,17 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
       switch (index) {
         default:
         case 2:
-          Map.Help_Text(TXT_UPGRADE, -1, -1, PlayerPtr->Class->Color);
+          Map.Help_Text(TXT_UPGRADE, -1, -1, PlayerPtr->Color);
           break;
 
         case 1:
           Map.Help_Text(
               PlayerPtr->Class->House == HOUSE_GOOD ? TXT_SELL : TXT_DEMOLISH,
-              x, y, PlayerPtr->Class->Color);
+              x, y, PlayerPtr->Color);
           break;
 
         case 0:
-          Map.Help_Text(TXT_REPAIR, x, y, PlayerPtr->Class->Color);
+          Map.Help_Text(TXT_REPAIR, x, y, PlayerPtr->Color);
           break;
       }
     }

@@ -172,7 +172,9 @@ class HouseTypeClass {
 
   /*
   **	Each house is assigned a unique identification color to be used on the
-  **	radar map and other color significant areas.
+  **	radar map and other color significant areas. These are only defaults:
+  **	the per-game values live in HouseClass, which copies them at
+  **	construction and changes them with the player's color choice.
   */
   unsigned char Color;
 
@@ -201,7 +203,6 @@ class HouseTypeClass {
 
   static HousesType From_Name(const char* name);
   static const HouseTypeClass& As_Reference(HousesType house);
-  static void One_Time();
 
  private:
   static const HouseTypeClass* const Pointers[HOUSE_COUNT];

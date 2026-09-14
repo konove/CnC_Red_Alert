@@ -266,10 +266,10 @@ void HouseClass::Serialize(Archive& ar) {
      InfantryFactories, UnitFactories, BuildingFactories, SpecialFactories,
      Power, Drain, Edge, AircraftFactory, InfantryFactory, UnitFactory,
      BuildingFactory, SpecialFactory, FlagLocation, FlagHome, remap_id,
-     RemapColor, Name, UnitsKilled, UnitsLost, BuildingsKilled, BuildingsLost,
-     WhoLastHurtMe, Regions, BlitzTime, NukeDest, Allies, DamageTime, TeamTime,
-     TriggerTime, SpeakAttackDelay, SpeakPowerDelay, SpeakMoneyDelay,
-     SpeakMaxedDelay);
+     RemapColor, Color, BrightColor, Name, UnitsKilled, UnitsLost,
+     BuildingsKilled, BuildingsLost, WhoLastHurtMe, Regions, BlitzTime,
+     NukeDest, Allies, DamageTime, TeamTime, TriggerTime, SpeakAttackDelay,
+     SpeakPowerDelay, SpeakMoneyDelay, SpeakMaxedDelay);
   if constexpr (Archive::kIsReading) {
     IsActive = saved_IsActive;
     IsHuman = saved_IsHuman;

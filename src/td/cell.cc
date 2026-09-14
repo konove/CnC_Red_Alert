@@ -181,7 +181,7 @@ int CellClass::Cell_Color(bool override) const {
   Validate();
   const BuildingClass* object = Cell_Building();
   if (object) {
-    return object->House->Class->Color;
+    return object->House->Color;
   }
 
   if (override) {

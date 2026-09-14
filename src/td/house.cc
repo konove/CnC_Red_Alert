@@ -433,6 +433,15 @@ HouseClass::HouseClass(HousesType house)
   Power = 0;
   RemapTable = Class->RemapTable;
   RemapColor = Class->RemapColor;
+  Color = Class->Color;
+  BrightColor = Class->BrightColor;
+  // Give the special units their own radar color; otherwise they would be the
+  // same color as the player.
+  if (house == HOUSE_JP && Special.IsJurassic && AreThingiesEnabled) {
+    const HouseTypeClass& bad = HouseTypeClass::As_Reference(HOUSE_BAD);
+    Color = bad.Color;
+    BrightColor = bad.BrightColor;
+  }
   Resigned = false;
   SpeakAttackDelay = 1;
   SpeakMaxedDelay = 1;
@@ -4190,38 +4199,38 @@ void HouseClass::Init_Data(PlayerColorType color, HousesType house,
   switch (color) {
     case REMAP_YELLOW:
       RemapTable = RemapYellow;
-      (unsigned char&)Class->Color = 157;
-      (unsigned char&)Class->BrightColor = 5;
+      Color = 157;
+      BrightColor = 5;
       break;
 
     case REMAP_RED:
       RemapTable = RemapRed;
-      (unsigned char&)Class->Color = 123;
-      (unsigned char&)Class->BrightColor = 127;
+      Color = 123;
+      BrightColor = 127;
       break;
 
     case REMAP_AQUA:
       RemapTable = RemapBlueGreen;
-      (unsigned char&)Class->Color = 135;
-      (unsigned char&)Class->BrightColor = 2;
+      Color = 135;
+      BrightColor = 2;
       break;
 
     case REMAP_ORANGE:
       RemapTable = RemapOrange;
-      (unsigned char&)Class->Color = 26;
-      (unsigned char&)Class->BrightColor = 24;
+      Color = 26;
+      BrightColor = 24;
       break;
 
     case REMAP_GREEN:
       RemapTable = RemapGreen;
-      (unsigned char&)Class->Color = 167;
-      (unsigned char&)Class->BrightColor = 159;
+      Color = 167;
+      BrightColor = 159;
       break;
 
     case REMAP_BLUE:
       RemapTable = RemapBlue;
-      (unsigned char&)Class->Color = 203;
-      (unsigned char&)Class->BrightColor = 201;
+      Color = 203;
+      BrightColor = 201;
       break;
     default:
       break;
